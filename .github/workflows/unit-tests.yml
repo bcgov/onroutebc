@@ -38,7 +38,7 @@ jobs:
         with:
           commands: |
             npm ci
-            npm run test:cov
+            npm run test
           dir: ${{ matrix.dir }}
           sonar_args: >
             -Dsonar.exclusions=**/coverage/**,**/node_modules/**

@@ -48,7 +48,7 @@ services:
     entrypoint:
       - "sh"
       - "-c"
-      - "npm i && npm run start"
+      - "npm ci && npm run start"
     environment:
       NODE_ENV: development
       BACKEND_URL: backend
@@ -59,7 +59,7 @@ services:
       retries: 3
       start_period: 40s
     hostname: frontend
-    image: node:14
+    image: node:18
     links:
       - backend
     ports:

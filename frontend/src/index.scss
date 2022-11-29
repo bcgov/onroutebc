@@ -1,0 +1,21 @@
+body {
+  margin: 0;
+  /* Fonts from  https://developer.gov.bc.ca/Design-System/Typography */
+  font-family: 'BCSans', 'Noto Sans', 'Verdana', 'Arial', 'sans-serif' !important;
+  display: flex;
+  flex-flow: column;
+  background-color: gray !important;
+
+}
+
+.feature-container {
+  padding: 10px;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+:focus {
+  outline: 2px solid #3b99fc;
+  outline-offset: 1px;
+}
+
