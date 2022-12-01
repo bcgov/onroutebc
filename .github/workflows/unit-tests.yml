@@ -28,10 +28,10 @@ jobs:
         dir: [backend, frontend]
         include:
           - dir: backend
-            sonar_projectKey: bcgov_nr-quickstart-typescript_backend
+            sonar_projectKey: bcgov_onroutebc_backend
             token: SONAR_TOKEN_BACKEND
           - dir: frontend
-            sonar_projectKey: bcgov_nr-quickstart-typescript_frontend
+            sonar_projectKey: bcgov_onroutebc_frontend
             token: SONAR_TOKEN_FRONTEND
     steps:
       - uses: bcgov-nr/action-test-and-analyse@v0.0.1
