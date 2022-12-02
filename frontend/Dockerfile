@@ -1,17 +1,14 @@
-# RedHat UBI 8 with nodejs 14
-#FROM registry.access.redhat.com/ubi8/ubi as builder
-#RUN dnf module install -y nodejs:18
-
-FROM node:18-alpine
+FROM node:18.12.1-alpine
 
 # Set the working directory to /app inside the container
 WORKDIR /app
 
+# Set variables
+#ARG NODE_ENV
+#ENV NODE_ENV ${NODE_ENV}
+
 # Install app dependencies
 COPY ./package*.json ./
-
-# Clear cache to avoid permission errors on the /.npm directory
-#RUN npm cache clear --force
 
 # Assign permissions to npm folder
 RUN mkdir /.npm && chmod 777 /.npm

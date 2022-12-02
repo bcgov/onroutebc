@@ -1,32 +1,38 @@
-import React, { FormEvent } from "react";
-import { Col, Form, Row, Stack } from "react-bootstrap";
+import { useForm } from "react-hook-form";
+import { Button } from "../../../common/components/button/Button";
 import "./VehicleForm.scss";
 
 export const VehicleForm = () => {
-  const handleSubmit = (e: FormEvent) => {
-    e.preventDefault();
 
-    window.alert("Vehicle Submitted!");
-  };
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
 
   return (
-    <Form onSubmit={handleSubmit}>
-      <Stack gap={4}>
-        <Row className="vehicle-form">
-          <Col>
-            <Form.Group controlId="unit">
-              <Form.Label>Unit #</Form.Label>
-              <Form.Control required />
-            </Form.Group>
-          </Col>
-          <Col>
-            <Form.Group controlId="plate">
-              <Form.Label>Plate</Form.Label>
-              <Form.Control required />
-            </Form.Group>
-          </Col>
-        </Row>
-      </Stack>
-    </Form>
+    <div className="mv-form-container">
+      <form className="mv-form">
+        <div>
+          <label className="mv-label">First Name</label>
+          <input className="mv-input" {...register("firstName")} />
+        </div>
+        <div>
+          <label className="mv-label">Last Name</label>
+          <input className="mv-input" {...register("lastName", { required: true })} />
+          {errors.lastName && <label className="mv-label">Last name is required.</label>}
+        </div>
+        <div>
+          <label className="mv-label">Age</label>
+          <input className="mv-input" {...register("age", { pattern: /\d+/ })} />
+          {errors.age && <label className="mv-label">Please enter number for age.</label>}
+        </div>
+
+        <Button color={"BC-Gov-PrimaryButton"} className={"mt-5"} onClick={handleSubmit((data) => console.log(data))}>
+          Submit
+        </Button>
+
+      </form>
+    </div>
   );
 };

@@ -3,17 +3,21 @@ import "./Button.scss";
 
 interface IButtonProps {
   children: React.ReactNode;
-  label: string;
   color?: "BC-Gov-PrimaryButton" | "BC-Gov-SecondaryButton";
   onClick: () => void;
+  className?: string;
 }
 
-export const Button = ({ children, label, color = "BC-Gov-PrimaryButton", onClick } : IButtonProps) => {
+export const Button = ({
+  children,
+  color = "BC-Gov-PrimaryButton",
+  onClick,
+  className,
+}: IButtonProps) => {
   return (
     <button
-      aria-label={label}
       onClick={onClick}
-      className={color}
+      className={color + " " + className}
     >
       {children}
     </button>

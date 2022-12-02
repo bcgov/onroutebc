@@ -1,22 +1,31 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Button } from '../../../common/components/button/Button';
-import * as routes from '../../../constants/routes';
-import { List } from '../list/List';
+import React, { useState } from "react";
+import { Button } from "../../../common/components/button/Button";
+import { VehicleForm } from "../form/VehicleForm";
+import { List } from "../list/List";
+
+import SlidingPane from "react-sliding-pane";
+import "react-sliding-pane/dist/react-sliding-pane.css";
 
 export const Dashboard = React.memo(() => {
-
-  const navigate = useNavigate()
-
-  const handleCreateNew = () => {
-    navigate("./new");
-  };
+  const [showForm, setShowForm] = useState<boolean>(false);
 
   return (
-    <div>
+    <>
       <p>Manage Vehicles Dashboard</p>
-      <Button label="Create" color={"BC-Gov-PrimaryButton"} onClick={handleCreateNew}>Create New</Button>
-      <List/>
-    </div>
+      <Button color={"BC-Gov-PrimaryButton"} onClick={() => setShowForm(true)}>
+        Create New
+      </Button>
+      <List />
+
+      <SlidingPane
+        isOpen={showForm}
+        onRequestClose={() => setShowForm(false)}
+        from="right"
+        width="40%"
+        hideHeader={true}
+      >
+        <VehicleForm />
+      </SlidingPane>
+    </>
   );
 });
