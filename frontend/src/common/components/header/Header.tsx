@@ -4,8 +4,7 @@ import { NavLink } from "react-router-dom";
 import "./Header.scss";
 import * as routes from "../../../constants/routes";
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faBars } from '@fortawesome/free-solid-svg-icons'
+import MenuIcon from '@mui/icons-material/Menu';
 
 interface IListItemProps {
   path: string;
@@ -59,7 +58,7 @@ export const Header = () => {
   const NavButton = () => (
     <div className="other">
       <button className="nav-btn" onClick={toggleDropdown}>
-        <FontAwesomeIcon icon={faBars} />
+        <MenuIcon/>
       </button>
     </div>
   );

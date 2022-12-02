@@ -5,7 +5,6 @@ import reportWebVitals from './reportWebVitals';
 
 // Import Styles
 import './index.scss';
-import 'bootstrap/dist/css/bootstrap.min.css';
 import '@bcgov/bc-sans/css/BCSans.css'
 
 const root = ReactDOM.createRoot(

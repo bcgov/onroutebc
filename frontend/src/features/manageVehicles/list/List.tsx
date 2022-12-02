@@ -1,39 +1,35 @@
 import React from "react";
-import { Table } from "react-bootstrap";
+//import MaterialTable from "material-table";
 
 export const List = () => {
   return (
     <div className="my-3">
-      <Table variant="dark" striped bordered hover>
-        <thead>
-          <tr>
-            <th>VIN</th>
-            <th>Company</th>
-            <th>Vehicle Type</th>
-            <th>Other</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>1</td>
-            <td></td>
-            <td></td>
-            <td></td>
-          </tr>
-          <tr>
-            <td>2</td>
-            <td></td>
-            <td></td>
-            <td></td>
-          </tr>
-          <tr>
-            <td>3</td>
-            <td></td>
-            <td></td>
-            <td></td>
-          </tr>
-        </tbody>
-      </Table>
+      <p>test</p>
+
     </div>
   );
 };
+
+/*
+      <MaterialTable
+          columns={[
+            { title: "Ad", field: "name" },
+            { title: "Soyad", field: "surname" },
+            { title: "Doğum", field: "birthYear", type: "numeric" },
+            {
+              title: "Doğum Yeri",
+              field: "birthCity",
+              lookup: { 34: "İstanbul", 63: "Şanlurfa" },
+            },
+          ]}
+          data={[
+            {
+              name: "Mehmet",
+              surname: "Baran",
+              birthYear: 1987,
+              birthCity: 63,
+            },
+          ]}
+          title="Demo Title"
+        />
+        */
