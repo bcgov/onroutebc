@@ -4,8 +4,6 @@ import { NavLink } from "react-router-dom";
 import "./Header.scss";
 import * as routes from "../../../constants/routes";
 
-import MenuIcon from '@mui/icons-material/Menu';
-
 interface IListItemProps {
   path: string;
   label: string;
@@ -58,7 +56,7 @@ export const Header = () => {
   const NavButton = () => (
     <div className="other">
       <button className="nav-btn" onClick={toggleDropdown}>
-        <MenuIcon/>
+        <i className="fa fa-bars" id="menu"></i>
       </button>
     </div>
   );

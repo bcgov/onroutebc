@@ -14,18 +14,18 @@ export const VehicleForm = () => {
     <div className="mv-form-container">
       <form className="mv-form">
         <div>
-          <label className="mv-label">First Name</label>
-          <input className="mv-input" {...register("firstName")} />
+          <label className="mv-label">Make</label>
+          <input className="mv-input" {...register("make")} />
         </div>
         <div>
-          <label className="mv-label">Last Name</label>
-          <input className="mv-input" {...register("lastName", { required: true })} />
-          {errors.lastName && <label className="mv-label">Last name is required.</label>}
+          <label className="mv-label">Year</label>
+          <input className="mv-input" {...register("year", { required: true })} />
+          {errors.year && <label className="mv-label">Year is required.</label>}
         </div>
         <div>
-          <label className="mv-label">Age</label>
-          <input className="mv-input" {...register("age", { pattern: /\d+/ })} />
-          {errors.age && <label className="mv-label">Please enter number for age.</label>}
+          <label className="mv-label">VIN</label>
+          <input className="mv-input" {...register("vin", { pattern: /\d+/ })} />
+          {errors.vin && <label className="mv-label">Please enter number for VIN.</label>}
         </div>
 
         <Button color={"BC-Gov-PrimaryButton"} className={"mt-5"} onClick={handleSubmit((data) => console.log(data))}>
