@@ -1,17 +1,17 @@
 <!-- PROJECT SHIELDS -->
 
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=bcgov_nr-quickstart-typescript&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=bcgov_nr-quickstart-typescript)
-[![Merge to Main](https://github.com/bcgov/nr-quickstart-typescript/actions/workflows/merge-main.yml/badge.svg)](https://github.com/bcgov/nr-quickstart-typescript/actions/workflows/merge-main.yml)
-[![Unit Tests and Analysis](https://github.com/bcgov/nr-quickstart-typescript/actions/workflows/unit-tests.yml/badge.svg)](https://github.com/bcgov/nr-quickstart-typescript/actions/workflows/unit-tests.yml)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=bcgov_onroutebc&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=bcgov_onroutebc)
+[![Merge to Main](https://github.com/bcgov/onroutebc/actions/workflows/merge-main.yml/badge.svg)](https://github.com/bcgov/onroutebc/actions/workflows/merge-main.yml)
+[![Unit Tests and Analysis](https://github.com/bcgov/onroutebc/actions/workflows/unit-tests.yml/badge.svg)](https://github.com/bcgov/onroutebc/actions/workflows/unit-tests.yml)
 
-[![Issues](https://img.shields.io/github/issues/bcgov/nr-quickstart-typescript)](/../../issues)
-[![Pull Requests](https://img.shields.io/github/issues-pr/bcgov/nr-quickstart-typescript)](/../../pulls)
-[![MIT License](https://img.shields.io/github/license/bcgov/nr-quickstart-typescript.svg)](/LICENSE.md)
+[![Issues](https://img.shields.io/github/issues/bcgov/onroutebc)](/../../issues)
+[![Pull Requests](https://img.shields.io/github/issues-pr/bcgov/onroutebc)](/../../pulls)
+[![MIT License](https://img.shields.io/github/license/bcgov/onroutebc.svg)](/LICENSE.md)
 [![Lifecycle](https://img.shields.io/badge/Lifecycle-Experimental-339999)](https://github.com/bcgov/repomountie/blob/master/doc/lifecycle-badges.md)
 
 # QuickStart: OpenShift, TypeScript and Postgres/PostGIS
 
-The DevOps Quickstart is a fully functional set of pipeline workflows and a starter application stack intended to help Agile DevOps teams hit the ground running.  Currently OpenShift is supported with plans for AWS (Amazon Web Services).  Pipelines are run using [GitHub Actions](https://github.com/bcgov/nr-quickstart-typescript/actions).
+The DevOps Quickstart is a fully functional set of pipeline workflows and a starter application stack intended to help Agile DevOps teams hit the ground running.  Currently OpenShift is supported with plans for AWS (Amazon Web Services).  Pipelines are run using [GitHub Actions](https://github.com/bcgov/onroutebc/actions).
 
 Features:
 * Pull Request-based pipeline
@@ -114,7 +114,7 @@ The following are required:
 
 Create a new repository using this repository as a template.
 
-* Select bcgov/nr-quickstart-typescript under Repository template
+* Select bcgov/onroutebc under Repository template
 * Check Codecov | Code Coverage to grant access
 * Jira cannot be unchecked (I try every time!)
 
@@ -213,7 +213,7 @@ Pull Requests:
 
 Packages are available from your repository (link on right).  All should have visibility set to public for the workflows to run successfully.
 
-E.g. https://github.com/bcgov/nr-quickstart-typescript/packages
+E.g. https://github.com/bcgov/onroutebc/packages
 
 ### Branch Protection
 
