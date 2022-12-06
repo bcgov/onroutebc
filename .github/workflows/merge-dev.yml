@@ -1,4 +1,4 @@
-name: Merge to Main
+name: Merge to Dev
 
 on:
   push:
