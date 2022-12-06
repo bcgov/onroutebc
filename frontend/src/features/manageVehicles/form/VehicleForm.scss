@@ -1,0 +1,100 @@
+/*
+
+Manage Vehicles Styles
+
+mv - manage vehicles
+
+*/
+
+.mv-form-container {
+  padding: 10px;
+  background-color: darkgray;
+  min-height: 90%;
+  z-index: 10;
+}
+
+.vehicle-form-row {
+  margin: auto;
+}
+
+.mv-form {
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.mv-h1 {
+  font-weight: 100;
+  color: white;
+  text-align: center;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgb(79, 98, 148);
+}
+
+.mv-p {
+  color: #bf1650;
+}
+
+.mv-p::before {
+  display: inline;
+  content: "⚠ ";
+}
+
+.mv-input {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  border-radius: 4px;
+  border: 1px solid white;
+  padding: 10px 15px;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+.mv-label {
+  line-height: 2;
+  text-align: left;
+  display: block;
+  margin-bottom: 13px;
+  margin-top: 20px;
+  color: white;
+  font-size: 14px;
+  font-weight: 200;
+}
+
+.mv-input[type="submit"] {
+  background: #003366;
+  color: white;
+  text-transform: uppercase;
+  border: none;
+  margin-top: 40px;
+  padding: 20px;
+  font-size: 16px;
+  font-weight: 100;
+  letter-spacing: 10px;
+}
+
+.mv-input[type="submit"]:hover {
+  background: #bf1650;
+}
+
+.mv-input[type="button"]:active,
+.mv-input[type="submit"]:active {
+  transition: 0.3s all;
+  transform: translateY(3px);
+  border: 1px solid transparent;
+  opacity: 0.8;
+}
+
+.mv-input:disabled {
+  opacity: 0.4;
+}
+
+.mv-input[type="button"]:hover {
+  transition: 0.3s all;
+}
+
+.mv-input[type="button"],
+.mv-input[type="submit"] {
+  -webkit-appearance: none;
+}
+

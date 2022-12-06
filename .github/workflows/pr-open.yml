@@ -31,7 +31,7 @@ jobs:
             [Frontend](https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}/) available
 
             Once merged, code will be promoted and handed off to following workflow run.
-            [Main Merge Workflow](https://github.com/${{ github.repository }}/actions/workflows/merge-main.yml)
+            [Main Merge Workflow](https://github.com/${{ github.repository }}/actions/workflows/merge-dev.yml)
 
   secret-search:
     name: Secret Search
