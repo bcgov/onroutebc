@@ -3,7 +3,7 @@ import React from 'react';
 export const HomePage = React.memo(() => {
   return (
     <div>
-      <p>OnRouteBc Home</p>
+      <p>OnRouteBc Home - Test</p>
     </div>
   );
 });
