@@ -10,5 +10,5 @@ COPY ./entrypoint.sh .
 
 EXPOSE 1433
 
-# Use this line to use onroutebc_ddl_v1.sql for DDL for local development
-CMD /bin/bash ./entrypoint.sh
+# Use this line to use a DDL file during startup for local development
+# CMD /bin/bash ./entrypoint.sh
