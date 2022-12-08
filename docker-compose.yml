@@ -16,13 +16,12 @@ services:
 
   sql-server-db:
     container_name: sql-server-db
-    image: mcr.microsoft.com/mssql/server:2019-latest
+    build:
+      context: ./database/mssql
+      dockerfile: Dockerfile
     ports:
       - "1433:1433"
-    environment:
-      SA_PASSWORD: "change_this_password"
-      ACCEPT_EULA: "Y"
-
+    
   backend:
     container_name: backend
     entrypoint:
