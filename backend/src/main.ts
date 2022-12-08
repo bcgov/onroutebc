@@ -5,15 +5,15 @@ import { AppModule } from "./app.module";
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const config = new DocumentBuilder()
-    .setTitle("Users example")
-    .setDescription("The user API description")
+    .setTitle("Vehciles API")
+    .setDescription("The vehicles API description")
     .setVersion("1.0")
-    .addTag("users")
+    .addTag("Vehicles")
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup("api", app, document);
 
-  await app.listen(3000);
+  await app.listen(5000);
 }
 bootstrap();

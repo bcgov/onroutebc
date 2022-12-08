@@ -4,7 +4,7 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { ConfigModule } from "@nestjs/config";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
-import { UsersModule } from "./users/users.module";
+import { VehiclesModule } from './vehicles/vehicles.module';
 
 console.log("Var check - POSTGRESQL_HOST", process.env.POSTGRESQL_HOST);
 console.log("Var check - POSTGRESQL_DATABASE", process.env.POSTGRESQL_DATABASE);
@@ -24,12 +24,12 @@ if (process.env.POSTGRESQL_PASSWORD != null ){
       port: 5432,
       database: process.env.POSTGRESQL_DATABASE || "postgres",
       username: process.env.POSTGRESQL_USER || "postgres",
-      password: process.env.POSTGRESQL_PASSWORD,
+      password: process.env.POSTGRESQL_PASSWORD || "Aot123#",
       // entities: [User],
       autoLoadEntities: true, // Auto load all entities regiestered by typeorm forFeature method.
       synchronize: true, // This changes the DB schema to match changes to entities, which we might not want.
-    }),
-    UsersModule,
+    }),    
+    VehiclesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
