@@ -4,41 +4,68 @@ import { NavLink } from "react-router-dom";
 import "./Header.scss";
 import * as routes from "../../../constants/routes";
 
-interface IListItemProps {
+interface NavItemProps {
   path: string;
   label: string;
 }
 
 export const Header = () => {
-  const TOGGLE_WIDTH = 768;
-  const { innerWidth } = window;
-  // Show or hide the dropdown which shows the nav links
-  // Do not show the dropdown on initial page load if screen size is small
-  const [showDropdownMenu, setToggleMenu] = useState(() => {
-    return innerWidth < TOGGLE_WIDTH;
-  });
+  
+  const mediaQuery: string = "(max-width: 768px)";
+  const mediaQueryList: MediaQueryList = window.matchMedia(mediaQuery);
 
-  const getWindowWidth = () => {
-    return window.innerWidth;
-  };
+  const [headerColor, setHeaderColor] = useState("#036"); // bcgov blue
+  const [menuOpen, setMenuOpen] = useState(!mediaQueryList.matches);
 
-  const toggleDropdown = () => {
-    if (getWindowWidth() < TOGGLE_WIDTH) {
-      setToggleMenu(!showDropdownMenu);
+  /**
+   * 
+   * On page load, set the colour of the header and 
+   * add an event listener for screen width for the navbar responsiveness
+   *
+   */
+  useEffect(() => {
+    const configureHeaderColor = () => {
+
+      const DEPLOY_ENV: string | undefined =
+        process.env.REACT_APP_DEPLOY_ENVIRONMENT;
+
+      let color: string;
+      switch (DEPLOY_ENV) {
+        case "prod":
+          color = "#036";
+          break;
+        case "test":
+          color = "orange";
+          break;
+        case "uat":
+          color = "purple";
+          break;
+        // Default is the dev environment.
+        // DEPLOY_ENV may be 'dev' or a number corresponding to the pull request #, or undefined
+        default:
+          color = "green";
+          break;
+      }
+      setHeaderColor(color);
+    };
+    configureHeaderColor();
+
+    const handleResize = () => {
+      mediaQueryList.matches ? setMenuOpen(false) : setMenuOpen(true);
+    };
+    mediaQueryList.addEventListener("change", handleResize);
+    return () => mediaQueryList.removeEventListener("change", handleResize);
+
+    // Remove "React Hook useEffect has a missing dependency: 'mediaQueryList'"" warning
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // If the window width is under 768px, then toggle visibility, otherwise keep menu visible
+  const menuToggleHandler = () => {
+    if (mediaQueryList.matches) {
+      setMenuOpen((toggle) => !toggle);
     }
   };
-
-  // Add event listener when user changes the width of the window
-  // Hide the dropdown menu when width changes
-  useEffect(() => {
-    const onWidthChanged = () => {
-      setToggleMenu(getWindowWidth() < TOGGLE_WIDTH);
-    };
-    window.addEventListener("resize", onWidthChanged);
-    return () => {
-      window.removeEventListener("resize", onWidthChanged);
-    };
-  }, []);
 
   const Brand = () => (
     <div className="banner">
@@ -55,15 +82,15 @@ export const Header = () => {
 
   const NavButton = () => (
     <div className="other">
-      <button className="nav-btn" onClick={toggleDropdown}>
-        <i className="fa fa-bars" id="menu"></i>
+      <button className="nav-btn" onClick={menuToggleHandler}>
+        <i className="fa fa-bars"></i>
       </button>
     </div>
   );
 
-  const ListItem = ({ path, label } : IListItemProps ) => (
+  const NavItem = ({ path, label }: NavItemProps) => (
     <li>
-      <NavLink to={path} onClick={toggleDropdown}>
+      <NavLink to={path} onClick={menuToggleHandler}>
         {label}
       </NavLink>
     </li>
@@ -72,13 +99,12 @@ export const Header = () => {
   const Navigation = () => (
     <nav
       className="navigation-main"
-      id="navbar"
-      style={{ display: !showDropdownMenu ? "block" : "none" }}
+      style={{ display: menuOpen ? "block" : "none" }}
     >
       <div className="list-container">
         <ul>
-          <ListItem path={routes.HOME} label="Home"/>
-          <ListItem path={routes.MANAGE_VEHICLES} label="Manage Vehicles"/>
+          <NavItem path={routes.HOME} label="Home" />
+          <NavItem path={routes.MANAGE_VEHICLES} label="Manage Vehicles" />
         </ul>
       </div>
     </nav>
@@ -86,7 +112,7 @@ export const Header = () => {
 
   return (
     <div className="nav-container">
-      <header>
+      <header style={{ backgroundColor: headerColor }}>
         <Brand />
         <NavButton />
       </header>
