@@ -4,13 +4,7 @@ import { NavLink } from "react-router-dom";
 import "./Header.scss";
 import * as routes from "../../../constants/routes";
 
-interface NavItemProps {
-  path: string;
-  label: string;
-}
-
 export const Header = () => {
-  
   const mediaQuery: string = "(max-width: 768px)";
   const mediaQueryList: MediaQueryList = window.matchMedia(mediaQuery);
 
@@ -18,14 +12,13 @@ export const Header = () => {
   const [menuOpen, setMenuOpen] = useState(!mediaQueryList.matches);
 
   /**
-   * 
-   * On page load, set the colour of the header and 
+   *
+   * On page load, set the colour of the header and
    * add an event listener for screen width for the navbar responsiveness
    *
    */
   useEffect(() => {
     const configureHeaderColor = () => {
-
       const DEPLOY_ENV: string | undefined =
         process.env.REACT_APP_DEPLOY_ENVIRONMENT;
 
@@ -88,14 +81,6 @@ export const Header = () => {
     </div>
   );
 
-  const NavItem = ({ path, label }: NavItemProps) => (
-    <li>
-      <NavLink to={path} onClick={menuToggleHandler}>
-        {label}
-      </NavLink>
-    </li>
-  );
-
   const Navigation = () => (
     <nav
       className="navigation-main"
@@ -103,8 +88,16 @@ export const Header = () => {
     >
       <div className="list-container">
         <ul>
-          <NavItem path={routes.HOME} label="Home" />
-          <NavItem path={routes.MANAGE_VEHICLES} label="Manage Vehicles" />
+          <li>
+            <NavLink to={routes.HOME} onClick={menuToggleHandler}>
+              Home
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to={routes.MANAGE_VEHICLES} onClick={menuToggleHandler}>
+              Manage Vehicles
+            </NavLink>
+          </li>
         </ul>
       </div>
     </nav>
@@ -112,7 +105,7 @@ export const Header = () => {
 
   return (
     <div className="nav-container">
-      <header style={{ backgroundColor: headerColor }}>
+      <header style={{ backgroundColor: headerColor }} data-testid="header-background">
         <Brand />
         <NavButton />
       </header>
