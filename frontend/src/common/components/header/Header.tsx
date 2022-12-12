@@ -4,6 +4,12 @@ import { NavLink } from "react-router-dom";
 import "./Header.scss";
 import * as routes from "../../../constants/routes";
 
+interface ListItemProps {
+  path: string;
+  label: string;
+  onClickHandler: () => void;
+}
+
 export const Header = () => {
   const mediaQuery: string = "(max-width: 768px)";
   const mediaQueryList: MediaQueryList = window.matchMedia(mediaQuery);
@@ -81,6 +87,14 @@ export const Header = () => {
     </div>
   );
 
+  const ListItem = ({ path, label, onClickHandler } : ListItemProps ) => (
+    <li onClick={onClickHandler}>
+      <NavLink to={path}>
+        {label}
+      </NavLink>
+    </li>
+  );
+
   const Navigation = () => (
     <nav
       className="navigation-main"
@@ -88,16 +102,8 @@ export const Header = () => {
     >
       <div className="list-container">
         <ul>
-          <li>
-            <NavLink to={routes.HOME} onClick={menuToggleHandler}>
-              Home
-            </NavLink>
-          </li>
-          <li>
-            <NavLink to={routes.MANAGE_VEHICLES} onClick={menuToggleHandler}>
-              Manage Vehicles
-            </NavLink>
-          </li>
+          <ListItem path={routes.HOME} label="Home" onClickHandler={menuToggleHandler}/>
+          <ListItem path={routes.MANAGE_VEHICLES} label="Manage Vehicles" onClickHandler={menuToggleHandler}/>
         </ul>
       </div>
     </nav>

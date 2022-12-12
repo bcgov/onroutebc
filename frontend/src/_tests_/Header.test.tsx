@@ -1,4 +1,4 @@
-import { getByTestId, render, screen } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { Header } from "../common/components/header/Header";
 import { BrowserRouter as Router } from "react-router-dom";
 
@@ -22,7 +22,6 @@ const renderHeader = () => {
 
 beforeEach(() => {
   jest.resetModules();
-  process.env.REACT_APP_DEPLOY_ENVIRONMENT = "test";
 });
 
 test("Should render Header/Nav without breaking", () => {
@@ -31,7 +30,7 @@ test("Should render Header/Nav without breaking", () => {
   expect(screen.getByText("onRouteBc")).toBeInTheDocument();
 });
 
-test("Should render orange background for test environment", () => {
+test("Should render blue background for prod environment", () => {
   mockMatchMedia();
   const wrapper = render(
     <Router>
@@ -39,7 +38,8 @@ test("Should render orange background for test environment", () => {
     </Router>
   );
 
+  process.env.REACT_APP_DEPLOY_ENVIRONMENT = "prod";
   const header = wrapper.getByTestId("header-background");
   const styles = getComputedStyle(header);
-  expect(styles.backgroundColor).toBe("orange");
+  expect(styles.backgroundColor).toBe("rgb(0, 51, 102)"); //rgb(0, 51, 102) == #036
 });
