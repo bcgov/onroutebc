@@ -93,7 +93,7 @@ objects:
                 - name: VITE_DEPLOY_ENVIRONMENT
                   value: ${ZONE}
                 - name: VITE_DEPLOY_ENVIRONMENT_TEST
-                  value: test
+                  value: test2
               ports:
                 - containerPort: 3000
                   protocol: TCP
