@@ -55,7 +55,7 @@ export const Header = () => {
           height="50px"
         />
       </a>
-      <h1>onRouteBc --{DEPLOY_ENV}--</h1>
+      <h1>onRouteBc --{DEPLOY_ENV}-- .{import.meta.env.VITE_DEPLOY_ENVIRONMENT_TEST}.</h1>
     </div>
   );
 
