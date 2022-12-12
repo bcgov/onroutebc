@@ -7,6 +7,7 @@
       "dom.iterable",
       "esnext"
     ],
+    "types": ["vitest/globals", "vite/client", "vite-plugin-svgr/client"],
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
@@ -14,7 +15,7 @@
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
-    "module": "esnext",
+    "module": "es6",
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
@@ -25,6 +26,7 @@
     "strictNullChecks": true
   },
   "include": [
+    ".eslintrc.cjs",
     "src"
   ]
 }

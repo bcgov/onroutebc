@@ -1,3 +1,4 @@
+import React from 'react';
 import { useCallback, useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 
@@ -5,12 +6,12 @@ import "./Header.scss";
 import * as routes from "../../../constants/routes";
 
 export const Header = () => {
-  const mediaQuery: string = "(max-width: 768px)";
+  const mediaQuery = "(max-width: 768px)";
   const mediaQueryList: MediaQueryList = window.matchMedia(mediaQuery);
   const [menuOpen, setMenuOpen] = useState(!mediaQueryList.matches);
 
   const DEPLOY_ENV: string | undefined =
-    process.env.REACT_APP_DEPLOY_ENVIRONMENT;
+    import.meta.env.VITE_DEPLOY_ENVIRONMENT;
 
   let headerColor: string;
   switch (DEPLOY_ENV) {
