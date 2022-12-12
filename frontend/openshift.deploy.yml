@@ -87,14 +87,13 @@ objects:
             - image: ${NAME}-${ZONE}-${COMPONENT}:${IMAGE_TAG}
               imagePullPolicy: Always
               name: ${NAME}
-              args:
-                - name: VITE_DEPLOY_ENVIRONMENT
-                  value: ${ZONE}
               env:
                 - name: BACKEND_URL
                   value: https://${NAME}-${ZONE}-backend.${DOMAIN}
                 - name: VITE_DEPLOY_ENVIRONMENT
                   value: ${ZONE}
+                - name: VITE_DEPLOY_ENVIRONMENT_TEST
+                  value: test
               ports:
                 - containerPort: 3000
                   protocol: TCP
