@@ -24,11 +24,7 @@ const renderHeader = () => {
 
 beforeEach(() => {
   jest.resetModules();
-  process.env.REACT_APP_DEPLOY_ENVIRONMENT = OLD_DEPLOY_ENVIRONMENT; // Make a copy
-});
-
-afterAll(() => {
-  process.env.REACT_APP_DEPLOY_ENVIRONMENT = OLD_DEPLOY_ENVIRONMENT; // Restore old environment
+  process.env.REACT_APP_DEPLOY_ENVIRONMENT = "prod"; // Make a copy
 });
 
 test("Should render Header/Nav without breaking", () => {
@@ -45,8 +41,9 @@ test("Should render blue background for prod environment", () => {
     </Router>
   );
 
-  process.env.REACT_APP_DEPLOY_ENVIRONMENT = 'prod';
   const header = wrapper.getByTestId("header-background");
   const styles = getComputedStyle(header);
   expect(styles.backgroundColor).toBe("rgb(0, 51, 102)"); //rgb(0, 51, 102) == #036
+
+  process.env.REACT_APP_DEPLOY_ENVIRONMENT = OLD_DEPLOY_ENVIRONMENT; // reset env variable
 });
