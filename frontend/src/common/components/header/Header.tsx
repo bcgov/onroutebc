@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 
 import "./Header.scss";
@@ -40,11 +40,11 @@ export const Header = () => {
   }, [mediaQueryList]);
 
   // If the window width is under the mediaquery width, then toggle visibility, otherwise keep menu visible
-  function menuToggleHandler() {
+  const menuToggleHandler = useCallback(() => {
     if (mediaQueryList.matches) {
       setMenuOpen((toggle) => !toggle);
     }
-  }
+  }, [mediaQueryList]);
 
   const Brand = () => (
     <div className="banner">
