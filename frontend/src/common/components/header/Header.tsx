@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 
 import "./Header.scss";
@@ -7,58 +7,44 @@ import * as routes from "../../../constants/routes";
 export const Header = () => {
   const mediaQuery: string = "(max-width: 768px)";
   const mediaQueryList: MediaQueryList = window.matchMedia(mediaQuery);
-
-  const [headerColor, setHeaderColor] = useState("#036"); // bcgov blue
   const [menuOpen, setMenuOpen] = useState(!mediaQueryList.matches);
 
-  /**
-   *
-   * On page load, set the colour of the header and
-   * add an event listener for screen width for the navbar responsiveness
-   *
-   */
+  const DEPLOY_ENV: string | undefined =
+    process.env.REACT_APP_DEPLOY_ENVIRONMENT;
+
+  let headerColor: string;
+  switch (DEPLOY_ENV) {
+    case "prod":
+      headerColor = "#036";
+      break;
+    case "test":
+      headerColor = "orange";
+      break;
+    case "uat":
+      headerColor = "purple";
+      break;
+    // Default is the dev environment.
+    // DEPLOY_ENV may be 'dev' or a number corresponding to the pull request #, or undefined
+    default:
+      headerColor = "green";
+      break;
+  }
+
+  // Add event handler to check when the browser screen size changes
   useEffect(() => {
-    const configureHeaderColor = () => {
-      const DEPLOY_ENV: string | undefined =
-        process.env.REACT_APP_DEPLOY_ENVIRONMENT;
-
-      let color: string;
-      switch (DEPLOY_ENV) {
-        case "prod":
-          color = "#036";
-          break;
-        case "test":
-          color = "orange";
-          break;
-        case "uat":
-          color = "purple";
-          break;
-        // Default is the dev environment.
-        // DEPLOY_ENV may be 'dev' or a number corresponding to the pull request #, or undefined
-        default:
-          color = "green";
-          break;
-      }
-      setHeaderColor(color);
-    };
-    configureHeaderColor();
-
     const handleResize = () => {
       mediaQueryList.matches ? setMenuOpen(false) : setMenuOpen(true);
     };
     mediaQueryList.addEventListener("change", handleResize);
     return () => mediaQueryList.removeEventListener("change", handleResize);
+  }, [mediaQueryList]);
 
-    // Remove "React Hook useEffect has a missing dependency: 'mediaQueryList'"" warning
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // If the window width is under 768px, then toggle visibility, otherwise keep menu visible
-  const menuToggleHandler = useCallback(() => {
+  // If the window width is under the mediaquery width, then toggle visibility, otherwise keep menu visible
+  function menuToggleHandler() {
     if (mediaQueryList.matches) {
       setMenuOpen((toggle) => !toggle);
     }
-  }, [mediaQueryList]);
+  }
 
   const Brand = () => (
     <div className="banner">
