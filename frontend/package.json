@@ -21,7 +21,7 @@
     "start": "vite",
     "build": "tsc -p tsconfig.prod.json && vite build",
     "serve": "vite preview",
-    "test": "vitest",
+    "test": "vitest watch --reporter verbose",
     "test:no-watch": "vitest run",
     "test:cov": "vitest run --coverage"
   },
