@@ -15,12 +15,13 @@
     "react-router-dom": "^6.4.4",
     "react-sliding-pane": "^7.3.0",
     "sass": "^1.56.1",
+    "serve": "^14.1.2",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
     "start": "vite",
     "build": "tsc && vite build",
-    "serve": "vite preview",
+    "serve-vite": "vite preview",
     "test": "vitest watch --reporter verbose",
     "test:no-watch": "vitest run",
     "test:cov": "vitest run --coverage"
