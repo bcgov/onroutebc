@@ -1,14 +1,8 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 
 import "./Header.scss";
 import * as routes from "../../../constants/routes";
-
-interface ListItemProps {
-  path: string;
-  label: string;
-  onClickHandler: () => void;
-}
 
 export const Header = () => {
   const mediaQuery: string = "(max-width: 768px)";
@@ -60,11 +54,11 @@ export const Header = () => {
   }, []);
 
   // If the window width is under 768px, then toggle visibility, otherwise keep menu visible
-  const menuToggleHandler = () => {
+  const menuToggleHandler = useCallback(() => {
     if (mediaQueryList.matches) {
       setMenuOpen((toggle) => !toggle);
     }
-  };
+  }, [mediaQueryList]);
 
   const Brand = () => (
     <div className="banner">
@@ -87,14 +81,6 @@ export const Header = () => {
     </div>
   );
 
-  const ListItem = ({ path, label, onClickHandler } : ListItemProps ) => (
-    <li onClick={onClickHandler}>
-      <NavLink to={path}>
-        {label}
-      </NavLink>
-    </li>
-  );
-
   const Navigation = () => (
     <nav
       className="navigation-main"
@@ -102,8 +88,16 @@ export const Header = () => {
     >
       <div className="list-container">
         <ul>
-          <ListItem path={routes.HOME} label="Home" onClickHandler={menuToggleHandler}/>
-          <ListItem path={routes.MANAGE_VEHICLES} label="Manage Vehicles" onClickHandler={menuToggleHandler}/>
+          <li>
+            <NavLink to={routes.HOME} onClick={menuToggleHandler}>
+              Home
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to={routes.MANAGE_VEHICLES} onClick={menuToggleHandler}>
+              Manage Vehicles
+            </NavLink>
+          </li>
         </ul>
       </div>
     </nav>
@@ -111,7 +105,10 @@ export const Header = () => {
 
   return (
     <div className="nav-container">
-      <header style={{ backgroundColor: headerColor }} data-testid="header-background">
+      <header
+        style={{ backgroundColor: headerColor }}
+        data-testid="header-background"
+      >
         <Brand />
         <NavButton />
       </header>
