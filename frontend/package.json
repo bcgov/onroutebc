@@ -19,7 +19,7 @@
   },
   "scripts": {
     "start": "vite",
-    "build": "tsc -p tsconfig.prod.json && vite build",
+    "build": "tsc && vite build",
     "serve": "vite preview",
     "test": "vitest watch --reporter verbose",
     "test:no-watch": "vitest run",
