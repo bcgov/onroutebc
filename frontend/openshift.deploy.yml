@@ -56,6 +56,15 @@ objects:
           referencePolicy:
             type: Local
   - apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      labels:
+        app: ${NAME}-${ZONE}
+      name: ${NAME}-${ZONE}-${COMPONENT}
+    data:
+      web.properties: |
+        window.VITE_DEPLOY_ENVIRONMENT=${ZONE}
+  - apiVersion: v1
     kind: DeploymentConfig
     metadata:
       labels:
@@ -91,7 +100,10 @@ objects:
                 - name: BACKEND_URL
                   value: https://${NAME}-${ZONE}-backend.${DOMAIN}
                 - name: VITE_DEPLOY_ENVIRONMENT
-                  value: ${ZONE}
+                  valueFrom:
+                    configMapKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: VITE_DEPLOY_ENVIRONMENT 
               ports:
                 - containerPort: 3000
                   protocol: TCP
@@ -120,6 +132,13 @@ objects:
                 initialDelaySeconds: 15
                 periodSeconds: 30
                 timeoutSeconds: 5
+          volumes:
+            - name: config
+              configMap:
+                name: ${NAME}-${ZONE}-${COMPONENT}
+                items:
+                  - key: "web.properties"
+                    path: "config.js"
   - apiVersion: v1
     kind: Service
     metadata:

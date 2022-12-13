@@ -1,0 +1,1 @@
+window.VITE_DEPLOY_ENVIRONMENT = "test";
