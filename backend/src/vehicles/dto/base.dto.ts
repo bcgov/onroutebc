@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Timestamp } from 'typeorm';
 
 export class BaseDto {
    @ApiProperty({
@@ -11,7 +10,7 @@ export class BaseDto {
   @ApiProperty({
     description: 'Created Date and Time'
   })
-  createdDateTime: Timestamp;
+  createdDateTime: string;
 
   @ApiProperty({
     description: 'Updated by',
@@ -22,5 +21,5 @@ export class BaseDto {
   @ApiProperty({
     description: 'Updated Date and Time'
   })
-  updatedDateTime: Timestamp;
+  updatedDateTime: string;
 }

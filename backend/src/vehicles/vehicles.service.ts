@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from "@nestjs/typeorm";
-import { Vehicle } from "./entities/vehicle.entity";
 
 import { CreatePowerUnitDto } from './dto/create-powerUnit.dto';
 import { UpdatePowerUnitDto } from './dto/update-PowerUnit.dto';
@@ -15,22 +14,22 @@ export class VehiclesService {
     private powerUnitRepository: Repository<PowerUnit>
   ) {}
 
-  async create(vehicle: CreatePowerUnitDto): Promise<Vehicle> {
-    const newVehicle = this.powerUnitRepository.create(vehicle);
-    await this.powerUnitRepository.save(newVehicle);
-    return newVehicle;
+  async create(powerUnit: CreatePowerUnitDto): Promise<PowerUnit> {
+    const newPowerUnit = this.powerUnitRepository.create(powerUnit);
+    await this.powerUnitRepository.save(newPowerUnit);
+    return newPowerUnit;
   }
 
-  async findAll(): Promise<Vehicle[]> {
+  async findAll(): Promise<PowerUnit[]> {
     return this.powerUnitRepository.find();
   }
 
-  async findOne(powerUnitId: any): Promise<Vehicle> {
+  async findOne(powerUnitId: any): Promise<PowerUnit> {
     return this.powerUnitRepository.findOneOrFail({where: {powerUnitId}});
   }
 
-  async update(powerUnitId: number, updateVehicleDto: UpdatePowerUnitDto): Promise<Vehicle> {
-    await this.powerUnitRepository.update({ powerUnitId }, updateVehicleDto);
+  async update(powerUnitId: number, updatePowerUnitDto: UpdatePowerUnitDto): Promise<PowerUnit> {
+    await this.powerUnitRepository.update({ powerUnitId }, updatePowerUnitDto);
     return this.findOne({where: {powerUnitId}});
   }
 
