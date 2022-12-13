@@ -56,6 +56,14 @@ objects:
           referencePolicy:
             type: Local
   - apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      labels:
+        app: ${NAME}-${ZONE}
+      name: ${NAME}-${ZONE}-${COMPONENT}
+    data:
+      REACT_APP_DEPLOY_ENVIRONMENT: ${ZONE}
+  - apiVersion: v1
     kind: DeploymentConfig
     metadata:
       labels:
@@ -91,7 +99,10 @@ objects:
                 - name: BACKEND_URL
                   value: https://${NAME}-${ZONE}-backend.${DOMAIN}
                 - name: REACT_APP_DEPLOY_ENVIRONMENT
-                  value: ${ZONE}
+                  valueFrom:
+                    configMapKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: REACT_APP_DEPLOY_ENVIRONMENT 
               ports:
                 - containerPort: 3000
                   protocol: TCP
