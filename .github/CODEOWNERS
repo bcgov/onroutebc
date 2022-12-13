@@ -1,0 +1,11 @@
+# Default codeowners:
+* @john-fletcher-aot @gchauhan-aot @praju-aot @krishnan-aot @devin-aot
+
+# Frontend:
+/frontend/** @devin-aot @krishnan-aot
+
+# Backend:
+/backend/**  @gchauhan-aot @praju-aot
+
+# Database:
+/database/** @gchauhan-aot @john-fletcher-aot
