@@ -29,3 +29,5 @@ export const Dashboard = React.memo(() => {
     </>
   );
 });
+
+Dashboard.displayName = 'Dashboard';
