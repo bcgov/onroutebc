@@ -7,3 +7,5 @@ export const HomePage = React.memo(() => {
     </div>
   );
 });
+
+HomePage.displayName = 'HomePage';

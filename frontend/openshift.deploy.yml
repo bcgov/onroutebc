@@ -90,8 +90,10 @@ objects:
               env:
                 - name: BACKEND_URL
                   value: https://${NAME}-${ZONE}-backend.${DOMAIN}
-                - name: REACT_APP_DEPLOY_ENVIRONMENT
+                - name: VITE_DEPLOY_ENVIRONMENT
                   value: ${ZONE}
+                - name: VITE_DEPLOY_ENVIRONMENT_TEST
+                  value: test2
               ports:
                 - containerPort: 3000
                   protocol: TCP

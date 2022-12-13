@@ -45,26 +45,11 @@ services:
 
   frontend:
     container_name: frontend
-    entrypoint:
-      - "sh"
-      - "-c"
-      - "npm i && npm run start"
-    environment:
-      NODE_ENV: development
-      BACKEND_URL: backend
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000"]
-      interval: 1m30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
-    hostname: frontend
-    image: node:14
-    links:
-      - backend
+    build:
+      context: ./frontend/
+      dockerfile: Dockerfile
+      args:
+        VITE_DEPLOY_ENVIRONMENT: prod
     ports:
       - "3000:3000"
-    volumes:
-      - ./frontend:/app:z
-      - /app/node_modules
-    working_dir: "/app"
+
