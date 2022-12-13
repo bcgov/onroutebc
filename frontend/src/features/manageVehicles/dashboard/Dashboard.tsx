@@ -5,16 +5,25 @@ import { List } from "../list/List";
 
 import SlidingPane from "react-sliding-pane";
 import "react-sliding-pane/dist/react-sliding-pane.css";
+import AddVehicleSplitButton from "./AddVehicleSplitButton";
 
 export const Dashboard = React.memo(() => {
-  const [showForm, setShowForm] = useState<boolean>(false);
+  const [showForm, setShowForm] = useState<boolean>(true);
 
   return (
     <>
       <p>Manage Vehicles Dashboard</p>
-      <Button color={"BC-Gov-PrimaryButton"} onClick={() => setShowForm(true)}>
-        Create New
-      </Button>
+      <AddVehicleSplitButton />
+      {/* <ButtonGroup variant="contained" aria-label="split button">
+        <Button color={"BC-Gov-PrimaryButton"} onClick={() => setShowForm(true)}>
+          Power Unit
+        </Button>
+        <Button color={"BC-Gov-PrimaryButton"} onClick={() => setShowForm(true)}>
+          Trailer
+        </Button>
+        <ArrowDropDownIcon />
+      </ButtonGroup> */}
+
       <List />
 
       <SlidingPane
