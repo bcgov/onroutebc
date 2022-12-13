@@ -31,6 +31,9 @@ EXPOSE 3000
 # Start the app
 #CMD [ "npx", "serve", "build" ]
 
-FROM nginx
-COPY ./nginx/default.conf /etc/nginx/conf.d/default.conf
+# Stage 1, based on Nginx, to have only the compiled app, ready for production with Nginx
+FROM nginx:1.17 as production-stage
+RUN mkdir /app
 COPY --from=builder /app/build /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/nginx.conf
+CMD ["nginx", "-g", "daemon off;"]
