@@ -62,7 +62,8 @@ objects:
         app: ${NAME}-${ZONE}
       name: ${NAME}-${ZONE}-${COMPONENT}
     data:
-      REACT_APP_DEPLOY_ENVIRONMENT: ${ZONE}
+      web.properties: |
+        window.REACT_APP_DEPLOY_ENVIRONMENT=${ZONE}
   - apiVersion: v1
     kind: DeploymentConfig
     metadata:
@@ -95,6 +96,11 @@ objects:
             - image: ${NAME}-${ZONE}-${COMPONENT}:${IMAGE_TAG}
               imagePullPolicy: Always
               name: ${NAME}
+              volumeMounts:
+                #override config.js file
+                - name: config
+                  mountPath: "/usr/share/nginx/html/config.js"
+                  subPath: "config.js"
               env:
                 - name: BACKEND_URL
                   value: https://${NAME}-${ZONE}-backend.${DOMAIN}
@@ -131,6 +137,13 @@ objects:
                 initialDelaySeconds: 15
                 periodSeconds: 30
                 timeoutSeconds: 5
+          volumes:
+            - name: config
+              configMap:
+                name: ${NAME}-${ZONE}-${COMPONENT}
+                items:
+                  - key: "web.properties"
+                    path: "config.js"
   - apiVersion: v1
     kind: Service
     metadata:

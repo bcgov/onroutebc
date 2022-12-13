@@ -1,0 +1,1 @@
+window.REACT_APP_DEPLOY_ENVIRONMENT = "test";

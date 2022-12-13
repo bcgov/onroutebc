@@ -1,4 +1,4 @@
-FROM node:18.12.1-alpine
+FROM node:18.12.1-alpine as builder
 
 # Set the working directory to /app inside the container
 WORKDIR /app
@@ -29,4 +29,8 @@ RUN npm run build
 EXPOSE 3000
 
 # Start the app
-CMD [ "npx", "serve", "build" ]
+#CMD [ "npx", "serve", "build" ]
+
+FROM nginx
+COPY ./nginx/default.conf /etc/nginx/conf.d/default.conf
+COPY --from=builder /app/build /usr/share/nginx/html
