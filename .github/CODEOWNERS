@@ -1,0 +1,18 @@
+# Default codeowners:
+* @john-fletcher-aot @gchauhan-aot @praju-aot @krishnan-aot @devin-aot
+
+# Frontend:
+/frontend/** @devin-aot @krishnan-aot
+
+# Backend:
+/backend/**  @gchauhan-aot @praju-aot
+
+# Database:
+/database/** @gchauhan-aot @john-fletcher-aot
+
+# Devops:
+Dockerfile @devin-aot @cberg-aot
+Dockerfile @devin-aot @cberg-aot
+Dockerfile @devin-aot @cberg-aot
+docker-compose.yml @devin-aot @cberg-aot
+/.github/** @devin-aot @cberg-aot

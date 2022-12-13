@@ -1,41 +1,41 @@
-# RedHat UBI 8 with nodejs 14
-# https://catalog.redhat.com/software/container-stacks/detail/5ec53f50ef29fd35586d9a56
-FROM registry.access.redhat.com/ubi8/ubi:8.7 as builder
-RUN dnf module install -y nodejs:16
+FROM node:18.12.1-alpine
 
-# Install packages, build and keep only prod packages
+# Set the working directory to /app inside the container
 WORKDIR /app
-COPY . ./
-RUN npm ci --only=prod && \
-    npm run build
-
-# Deployment container
-FROM registry.access.redhat.com/ubi8/ubi-micro:8.7
 
 # Set node to production 
+ARG NODE_ENV
 ENV NODE_ENV production
 
-# Node packages and dependencies
-COPY --from=builder /usr/bin/node /usr/bin/
-COPY --from=builder /usr/lib64/libz.so.1 /usr/lib64/
-COPY --from=builder /usr/lib64/libbrotlidec.so.1 /usr/lib64/
-COPY --from=builder /usr/lib64/libbrotlienc.so.1 /usr/lib64/
-COPY --from=builder /usr/lib64/libcrypto.so.1.1 /usr/lib64/
-COPY --from=builder /usr/lib64/libssl.so.1.1 /usr/lib64/
-COPY --from=builder /usr/lib64/libstdc++.so.6 /usr/lib64/
-COPY --from=builder /usr/lib64/libgcc_s.so.1 /usr/lib64/
-COPY --from=builder /usr/lib64/libbrotlicommon.so.1 /usr/lib64/
+# Set variables
+ARG POSTGRESQL_HOST
+ARG POSTGRESQL_USER
+ARG POSTGRESQL_PASSWORD
+ARG POSTGRESQL_DATABASE
 
-# Copy over app
-WORKDIR /app
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/dist ./dist
+ENV POSTGRESQL_HOST ${POSTGRESQL_HOST}
+ENV POSTGRESQL_USER ${POSTGRESQL_USER}
+ENV POSTGRESQL_PASSWORD ${POSTGRESQL_PASSWORD}
+ENV POSTGRESQL_DATABASE ${POSTGRESQL_DATABASE}
 
-# Expose port - mostly a convention, for readability
-EXPOSE 3000
+# Install app dependencies
+COPY ./package*.json ./
 
-# Non-privileged user
-USER app
+# Assign permissions to npm folder
+RUN mkdir /.npm && chmod 777 /.npm
 
-# Start up command
-ENTRYPOINT ["node", "dist/main"]
+# Install dependencies (npm ci makes sure the exact versions in the lockfile gets installed)
+RUN npm ci
+
+# Copy app files
+COPY . .
+
+# Build
+RUN npm run build
+
+# Expose Port
+EXPOSE 5000
+
+# Start the app
+CMD ["npm", "run", "start:prod"]
+
