@@ -96,6 +96,11 @@ objects:
             - image: ${NAME}-${ZONE}-${COMPONENT}:${IMAGE_TAG}
               imagePullPolicy: Always
               name: ${NAME}
+              volumeMounts:
+                #override config.js file
+                - name: config
+                  mountPath: "/usr/share/nginx/html/config.js"
+                  subPath: "config.js"
               env:
                 - name: BACKEND_URL
                   value: https://${NAME}-${ZONE}-backend.${DOMAIN}
