@@ -1,44 +1,50 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 
 import "./Header.scss";
 import * as routes from "../../../constants/routes";
 
-interface IListItemProps {
-  path: string;
-  label: string;
-}
-
 export const Header = () => {
-  const TOGGLE_WIDTH = 768;
-  const { innerWidth } = window;
-  // Show or hide the dropdown which shows the nav links
-  // Do not show the dropdown on initial page load if screen size is small
-  const [showDropdownMenu, setToggleMenu] = useState(() => {
-    return innerWidth < TOGGLE_WIDTH;
-  });
+  const mediaQuery = "(max-width: 768px)";
+  const mediaQueryList: MediaQueryList = window.matchMedia(mediaQuery);
+  const [menuOpen, setMenuOpen] = useState(!mediaQueryList.matches);
 
-  const getWindowWidth = () => {
-    return window.innerWidth;
-  };
+  const DEPLOY_ENV: string | undefined =
+    import.meta.env.VITE_DEPLOY_ENVIRONMENT;
 
-  const toggleDropdown = () => {
-    if (getWindowWidth() < TOGGLE_WIDTH) {
-      setToggleMenu(!showDropdownMenu);
-    }
-  };
+  let headerColor: string;
+  switch (DEPLOY_ENV) {
+    case "prod":
+      headerColor = "#036";
+      break;
+    case "test":
+      headerColor = "orange";
+      break;
+    case "uat":
+      headerColor = "purple";
+      break;
+    // Default is the dev environment.
+    // DEPLOY_ENV may be 'dev' or a number corresponding to the pull request #, or undefined
+    default:
+      headerColor = "green";
+      break;
+  }
 
-  // Add event listener when user changes the width of the window
-  // Hide the dropdown menu when width changes
+  // Add event handler to check when the browser screen size changes
   useEffect(() => {
-    const onWidthChanged = () => {
-      setToggleMenu(getWindowWidth() < TOGGLE_WIDTH);
+    const handleResize = () => {
+      mediaQueryList.matches ? setMenuOpen(false) : setMenuOpen(true);
     };
-    window.addEventListener("resize", onWidthChanged);
-    return () => {
-      window.removeEventListener("resize", onWidthChanged);
-    };
-  }, []);
+    mediaQueryList.addEventListener("change", handleResize);
+    return () => mediaQueryList.removeEventListener("change", handleResize);
+  }, [mediaQueryList]);
+
+  // If the window width is under the mediaquery width, then toggle visibility, otherwise keep menu visible
+  const menuToggleHandler = useCallback(() => {
+    if (mediaQueryList.matches) {
+      setMenuOpen((toggle) => !toggle);
+    }
+  }, [mediaQueryList]);
 
   const Brand = () => (
     <div className="banner">
@@ -55,30 +61,29 @@ export const Header = () => {
 
   const NavButton = () => (
     <div className="other">
-      <button className="nav-btn" onClick={toggleDropdown}>
-        <i className="fa fa-bars" id="menu"></i>
+      <button className="nav-btn" onClick={menuToggleHandler}>
+        <i className="fa fa-bars"></i>
       </button>
     </div>
-  );
-
-  const ListItem = ({ path, label } : IListItemProps ) => (
-    <li>
-      <NavLink to={path} onClick={toggleDropdown}>
-        {label}
-      </NavLink>
-    </li>
   );
 
   const Navigation = () => (
     <nav
       className="navigation-main"
-      id="navbar"
-      style={{ display: !showDropdownMenu ? "block" : "none" }}
+      style={{ display: menuOpen ? "block" : "none" }}
     >
       <div className="list-container">
         <ul>
-          <ListItem path={routes.HOME} label="Home"/>
-          <ListItem path={routes.MANAGE_VEHICLES} label="Manage Vehicles"/>
+          <li>
+            <NavLink to={routes.HOME} onClick={menuToggleHandler}>
+              Home
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to={routes.MANAGE_VEHICLES} onClick={menuToggleHandler}>
+              Manage Vehicles
+            </NavLink>
+          </li>
         </ul>
       </div>
     </nav>
@@ -86,7 +91,10 @@ export const Header = () => {
 
   return (
     <div className="nav-container">
-      <header>
+      <header
+        style={{ backgroundColor: headerColor }}
+        data-testid="header-background"
+      >
         <Brand />
         <NavButton />
       </header>

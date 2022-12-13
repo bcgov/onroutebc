@@ -14,44 +14,49 @@ services:
     volumes:
       - /pgdata
 
+  sql-server-db:
+    container_name: sql-server-db
+    build:
+      context: ./database/mssql
+      dockerfile: Dockerfile
+    ports:
+      - "1433:1433"
+    volumes:
+      - /sql_data
+
   backend:
     container_name: backend
-    entrypoint:
-      - "sh"
-      - "-c"
-      - "npm i && npm run start"
-    environment:
-      NODE_ENV: development
-      POSTGRESQL_HOST: database
-      POSTGRESQL_USER: default
-      POSTGRESQL_PASSWORD: default
-      POSTGRESQL_DATABASE: default
+    build:
+      context: ./backend/
+      dockerfile: Dockerfile
+      args:
+        NODE_ENV: development
+        POSTGRESQL_HOST: database
+        POSTGRESQL_USER: default
+        POSTGRESQL_PASSWORD: default
+        POSTGRESQL_DATABASE: default
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      test: ["CMD", "curl", "-f", "http://localhost:5000"]
       interval: 1m30s
       timeout: 10s
       retries: 3
       start_period: 40s
     hostname: backend
-    image: node:14
     links:
       - database
     ports:
-      - "3001:3000"
+      - "5000:5000"
     volumes:
       - ./backend:/app:z
       - /app/node_modules
-    working_dir: "/app"
 
   frontend:
     container_name: frontend
-    entrypoint:
-      - "sh"
-      - "-c"
-      - "npm i && npm run start"
-    environment:
-      NODE_ENV: development
-      BACKEND_URL: backend
+    build:
+      context: ./frontend/
+      dockerfile: Dockerfile
+      args:
+        VITE_DEPLOY_ENVIRONMENT: prod
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000"]
       interval: 1m30s
@@ -59,7 +64,6 @@ services:
       retries: 3
       start_period: 40s
     hostname: frontend
-    image: node:14
     links:
       - backend
     ports:
@@ -67,4 +71,3 @@ services:
     volumes:
       - ./frontend:/app:z
       - /app/node_modules
-    working_dir: "/app"

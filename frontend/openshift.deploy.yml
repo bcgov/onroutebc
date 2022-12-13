@@ -90,6 +90,8 @@ objects:
               env:
                 - name: BACKEND_URL
                   value: https://${NAME}-${ZONE}-backend.${DOMAIN}
+                - name: VITE_DEPLOY_ENVIRONMENT
+                  value: ${ZONE}
               ports:
                 - containerPort: 3000
                   protocol: TCP
