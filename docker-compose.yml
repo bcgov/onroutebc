@@ -57,6 +57,15 @@ services:
       dockerfile: Dockerfile
       args:
         VITE_DEPLOY_ENVIRONMENT: prod
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    hostname: frontend
+    links:
+      - backend
     ports:
       - "3000:3000"
     volumes:
