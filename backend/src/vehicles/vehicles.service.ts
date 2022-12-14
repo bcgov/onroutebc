@@ -1,17 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from "@nestjs/typeorm";
+import { InjectRepository } from '@nestjs/typeorm';
 
 import { CreatePowerUnitDto } from './dto/create-powerUnit.dto';
 import { UpdatePowerUnitDto } from './dto/update-PowerUnit.dto';
 import { Repository } from 'typeorm';
 import { PowerUnit } from './entities/powerUnit.entity';
 
-
 @Injectable()
 export class VehiclesService {
   constructor(
     @InjectRepository(PowerUnit)
-    private powerUnitRepository: Repository<PowerUnit>
+    private powerUnitRepository: Repository<PowerUnit>,
   ) {}
 
   async create(powerUnit: CreatePowerUnitDto): Promise<PowerUnit> {
@@ -25,15 +24,20 @@ export class VehiclesService {
   }
 
   async findOne(powerUnitId: any): Promise<PowerUnit> {
-    return this.powerUnitRepository.findOneOrFail({where: {powerUnitId}});
+    return this.powerUnitRepository.findOneOrFail({ where: { powerUnitId } });
   }
 
-  async update(powerUnitId: number, updatePowerUnitDto: UpdatePowerUnitDto): Promise<PowerUnit> {
+  async update(
+    powerUnitId: number,
+    updatePowerUnitDto: UpdatePowerUnitDto,
+  ): Promise<PowerUnit> {
     await this.powerUnitRepository.update({ powerUnitId }, updatePowerUnitDto);
-    return this.findOne({where: {powerUnitId}});
+    return this.findOne({ where: { powerUnitId } });
   }
 
-  async remove(powerUnitId: number): Promise<{ deleted: boolean; message?: string }> {
+  async remove(
+    powerUnitId: number,
+  ): Promise<{ deleted: boolean; message?: string }> {
     try {
       await this.powerUnitRepository.delete(powerUnitId);
       return { deleted: true };

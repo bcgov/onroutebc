@@ -10,8 +10,17 @@ import { TrailerType } from './entities/trailerType.entity';
 import { Trailer } from './entities/trailer.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Country,ProvinceState,PowerUnitType,PowerUnit,TrailerType,Trailer])],
+  imports: [
+    TypeOrmModule.forFeature([
+      Country,
+      ProvinceState,
+      PowerUnitType,
+      PowerUnit,
+      TrailerType,
+      Trailer,
+    ]),
+  ],
   controllers: [VehiclesController],
-  providers: [VehiclesService]
+  providers: [VehiclesService],
 })
 export class VehiclesModule {}
