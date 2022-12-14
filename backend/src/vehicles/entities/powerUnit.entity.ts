@@ -56,7 +56,7 @@ export class PowerUnit extends BaseEntity {
   @JoinColumn({ name: 'POWER_UNIT_TYPE_ID' })
   powerUnitType: PowerUnitType;
 
-  @ApiProperty({ example: 'TODO', description: 'Steer Axle Tire Size' })
+  @ApiProperty({ example: '12', description: 'Steer Axle Tire Size' })
   @Column({ type: 'integer', name: 'STEER_AXLE_TIRE_SIZE', nullable: true })
   steerAxleTireSize: number;
 }

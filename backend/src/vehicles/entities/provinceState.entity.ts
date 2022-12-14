@@ -12,7 +12,7 @@ import { Country } from './country.entity';
 import { PowerUnit } from './powerUnit.entity';
 import { Trailer } from './trailer.entity';
 
-@Entity({ schema: 'ort_vehicles', name: 'ORT_PROVINCE_STATE' })
+@Entity({ schema: 'ort_vehicles', name: 'ORT_VT_PROVINCE_STATE' })
 export class ProvinceState extends BaseEntity {
   @ApiProperty({
     example: '1',
@@ -32,16 +32,20 @@ export class ProvinceState extends BaseEntity {
   @Column({ length: 2, name: 'PROVINCE_STATE_CODE', nullable: false })
   provinceStateCode: string;
 
+  @ApiProperty({ example: '1', description: 'Sort Order' })
+  @Column({ type: 'integer', width: 4, name: 'SORT_ORDER', nullable: false })
+  sortOrder: string;
+
   @ApiProperty({ example: '1', description: 'Primary Key of Country' })
   @ManyToOne(() => Country, (Country) => Country.provinceStates)
   @JoinColumn({ name: 'COUNTRY_ID' })
   country: Country;
 
-  @ApiProperty({ example: 'TODO', description: 'Power Unit' })
+  @ApiProperty({ description: 'Power Unit' })
   @OneToMany(() => PowerUnit, (PowerUnit) => PowerUnit.provinceState)
   powerUnits: PowerUnit[];
 
-  @ApiProperty({ example: 'TODO', description: 'Power Unit' })
+  @ApiProperty({ description: 'Power Unit' })
   @OneToMany(() => Trailer, (Trailer) => Trailer.provinceState)
   trailers: Trailer[];
 }

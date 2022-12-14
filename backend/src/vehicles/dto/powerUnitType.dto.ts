@@ -7,13 +7,16 @@ export class PowerUnitTypeDto extends BaseDto {
   })
   typeId: number;
 
-  @ApiProperty({ example: 'TODO', description: 'Trailer Type' })
+  @ApiProperty({ example: 'Truck Tractor', description: 'Power Unit Type' })
   type: string;
 
-  @ApiProperty({ example: 'TODO', description: 'Trailer Type Description' })
+  @ApiProperty({
+    example: 'Truck Tractor',
+    description: 'Power Unit Description',
+  })
   description: string;
 
-  @ApiProperty({ example: 'TODO', description: 'Trailer Type Alias' })
+  @ApiProperty({ example: 'TODO', description: 'Power Type Alias' })
   alias: string;
 
   @ApiProperty({

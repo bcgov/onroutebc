@@ -3,7 +3,7 @@ import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { BaseEntity } from './base.entity';
 import { PowerUnit } from './powerUnit.entity';
 
-@Entity({ schema: 'ort_vehicles', name: 'ORT_POWER_UNIT_TYPE' })
+@Entity({ schema: 'ort_vehicles', name: 'ORT_VT_POWER_UNIT_TYPE' })
 export class PowerUnitType extends BaseEntity {
   @ApiProperty({
     example: '1',

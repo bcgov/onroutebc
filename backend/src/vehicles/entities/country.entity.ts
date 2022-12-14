@@ -3,7 +3,7 @@ import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { BaseEntity } from './base.entity';
 import { ProvinceState } from './provinceState.entity';
 
-@Entity({ schema: 'ort_vehicles', name: 'ORT_COUNTRY' })
+@Entity({ schema: 'ort_vehicles', name: 'ORT_VT_COUNTRY' })
 export class Country extends BaseEntity {
   @ApiProperty({ example: '1', description: 'The Country ID' })
   @PrimaryGeneratedColumn({ type: 'integer', name: 'COUNTRY_ID' })
@@ -17,7 +17,11 @@ export class Country extends BaseEntity {
   @Column({ length: 2, name: 'COUNTRY_CODE', nullable: false })
   countryCode: string;
 
-  @ApiProperty({ example: 'TODO', description: 'Province State' })
+  @ApiProperty({ example: '1', description: 'Sort Order' })
+  @Column({ type: 'integer', width: 4, name: 'SORT_ORDER', nullable: false })
+  sortOrder: string;
+
+  @ApiProperty({ description: 'Province State' })
   @OneToMany(() => ProvinceState, (ProvinceState) => ProvinceState.country)
   provinceStates: ProvinceState[];
 }
