@@ -3,7 +3,7 @@ import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { BaseEntity } from './base.entity';
 import { ProvinceState } from './provinceState.entity';
 
-@Entity({ schema: 'ort_vehicles', name: 'ORT_VT_COUNTRY' })
+@Entity({ name: 'ORT_VT_COUNTRY' })
 export class Country extends BaseEntity {
   @ApiProperty({ example: '1', description: 'The Country ID' })
   @PrimaryGeneratedColumn({ type: 'integer', name: 'COUNTRY_ID' })

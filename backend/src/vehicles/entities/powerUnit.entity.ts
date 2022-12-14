@@ -10,7 +10,7 @@ import { PowerUnitType } from './powerUnitType.entity';
 import { ProvinceState } from './provinceState.entity';
 import { BaseEntity } from './base.entity';
 
-@Entity({ schema: 'ort_vehicles', name: 'ORT_POWER_UNIT' })
+@Entity({ name: 'ORT_POWER_UNIT' })
 export class PowerUnit extends BaseEntity {
   @ApiProperty({
     example: '1',
