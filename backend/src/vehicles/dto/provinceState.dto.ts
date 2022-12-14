@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { BaseDto } from './base.dto';
-import { CountryDto } from './Country.dto';
+import { CountryDto } from './country.dto';
 
 export class ProvinceStateDto extends BaseDto {
   @ApiProperty({
