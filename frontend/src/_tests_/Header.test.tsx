@@ -2,8 +2,10 @@ import { render, screen } from "@testing-library/react";
 import { Header } from "../common/components/header/Header";
 import { BrowserRouter as Router } from "react-router-dom";
 import { vi } from 'vitest';
+import { Config } from "../config";
 
-const OLD_DEPLOY_ENVIRONMENT = import.meta.env.VITE_DEPLOY_ENVIRONMENT;
+//const OLD_DEPLOY_ENVIRONMENT = import.meta.env.VITE_DEPLOY_ENVIRONMENT;
+const OLD_DEPLOY_ENVIRONMENT = Config.VITE_DEPLOY_ENVIRONMENT;
 
 const mockMatchMedia = () => {
   window.matchMedia = vi.fn().mockImplementation((query) => ({
@@ -25,7 +27,8 @@ const renderHeader = () => {
 
 beforeEach(() => {
   vi.resetModules();
-  import.meta.env.VITE_DEPLOY_ENVIRONMENT = "prod"; // Make a copy
+  //import.meta.env.VITE_DEPLOY_ENVIRONMENT = "prod"; // Make a copy
+  Config.VITE_DEPLOY_ENVIRONMENT = "prod";
 });
 
 test("Should render Header/Nav without breaking", () => {
@@ -46,5 +49,6 @@ test("Should render blue background for prod environment", () => {
   const styles = getComputedStyle(header);
   expect(styles.backgroundColor).toBe("rgb(0, 51, 102)"); //rgb(0, 51, 102) == #036
 
-  import.meta.env.VITE_DEPLOY_ENVIRONMENT = OLD_DEPLOY_ENVIRONMENT; // reset env variable
+  //import.meta.env.VITE_DEPLOY_ENVIRONMENT = OLD_DEPLOY_ENVIRONMENT; // reset env variable
+  Config.VITE_DEPLOY_ENVIRONMENT = "prod";
 });

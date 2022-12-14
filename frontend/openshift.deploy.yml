@@ -101,6 +101,7 @@ objects:
                 - name: config
                   mountPath: "/usr/share/nginx/html/config.js"
                   subPath: "config.js"
+                  readOnly: false
               env:
                 - name: BACKEND_URL
                   value: https://${NAME}-${ZONE}-backend.${DOMAIN}
