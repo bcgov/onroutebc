@@ -2,13 +2,13 @@
 version: "3.8"
 
 services:
-  database:
-    container_name: database
+  postgres-db:
+    container_name: postgres-db
     environment:
       POSTGRES_USER: default
       POSTGRES_PASSWORD: default
       POSTGRES_DB: default
-    hostname: database
+    hostname: postgres-db
     image: postgres:13
     restart: always
     volumes:
@@ -16,25 +16,44 @@ services:
 
   sql-server-db:
     container_name: sql-server-db
+    env_file:
+      - /database/.env
     build:
       context: ./database/mssql
       dockerfile: Dockerfile
+      args:
+        MSSQL_HOST: ${MSSQL_HOST:-localhost}
+        MSSQL_PORT: ${MSSQL_PORT:-1433}
+        MSSQL_DB: ${MSSQL_DB:-onroutebc}
+        MSSQL_SA_USER: ${MSSQL_SA_USER:-SA}
+        MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD:-YourStrong@Passw0rd}
+        MSSQL_ENCRYPT: ${MSSQL_ENCRYPT:-false}
+    hostname: sql-server-db
     ports:
-      - "1433:1433"
+      - "${MSSQL_PORT:-1433}:${MSSQL_PORT:-1433}"
     volumes:
       - /sql_data
 
   backend:
     container_name: backend
+    env_file:
+      - /backend/.env
     build:
       context: ./backend/
       dockerfile: Dockerfile
       args:
         NODE_ENV: development
+        DB_TYPE: ${DB_TYPE:-mssql}
         POSTGRESQL_HOST: database
         POSTGRESQL_USER: default
         POSTGRESQL_PASSWORD: default
         POSTGRESQL_DATABASE: default
+        MSSQL_HOST: ${MSSQL_HOST:-localhost}
+        MSSQL_PORT: ${MSSQL_PORT:-1433}
+        MSSQL_DB: ${MSSQL_DB:-onroutebc}
+        MSSQL_SA_USER: ${MSSQL_SA_USER:-SA}
+        MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD:-YourStrong@Passw0rd}
+        MSSQL_ENCRYPT: ${MSSQL_ENCRYPT:-false}
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5000"]
       interval: 1m30s
@@ -43,7 +62,8 @@ services:
       start_period: 40s
     hostname: backend
     links:
-      - database
+      - postgres-db
+      - sql-server-db
     ports:
       - "5000:5000"
     volumes:
@@ -52,6 +72,8 @@ services:
 
   frontend:
     container_name: frontend
+    env_file:
+      - /frontend/.env
     build:
       context: ./frontend/
       dockerfile: Dockerfile
