@@ -58,39 +58,15 @@ objects:
   - apiVersion: v1
     kind: ConfigMap
     metadata:
-      labels:
-        app: ${NAME}-${ZONE}
-      name: ${NAME}-${ZONE}-${COMPONENT}
+      name:  hello-world-scripts
     data:
-      web.properties: |
-        window.VITE_DEPLOY_ENVIRONMENT=${ZONE}
       generate-config.sh: |
         #!/bin/bash
         echo "generate-config.sh"
         # Recreate config file
         rm -rf ./config.js
         touch ./config.js
-        # Add assignment 
-        echo "window._env_ = {" >> ./config.js
-        # Read each line in .env file
-        # Each line represents key=value pairs
-        while read -r line || [[ -n "$line" ]];
-        do
-          # Split env variables by character `=`
-          if printf '%s\n' "$line" | grep -q -e '='; then
-            varname=$(printf '%s\n' "$line" | sed -e 's/=.*//')
-            varvalue=$(printf '%s\n' "$line" | sed -e 's/^[^=]*=//')
-          fi
-
-          # Read value of current variable if exists as Environment variable
-          value=$(printf '%s\n' "${!varname}")
-          # Otherwise use value from .env file
-          [[ -z $value ]] && value=${varvalue}
-          
-          # Append configuration property to JS file
-          echo "  $varname: \"$value\"," >> ./config.js
-        done < .env
-        echo "}" >> ./config.js
+        echo "window.VITE_DEPLOY_ENVIRONMENT = ${ZONE}" >> ./config.js
   - apiVersion: v1
     kind: DeploymentConfig
     metadata:
@@ -126,12 +102,6 @@ objects:
               env:
                 - name: BACKEND_URL
                   value: https://${NAME}-${ZONE}-backend.${DOMAIN}
-                - name: VITE_DEPLOY_ENVIRONMENT
-                  configMap:
-                    name: web-config
-                    items:
-                      - key: "web.properties"
-                        path: "config.js"
               ports:
                 - containerPort: 3000
                   protocol: TCP
@@ -167,37 +137,21 @@ objects:
                     - /bin/sh
                     - -c
                     - |
-                      echo "scripts in /generate-config"
-                      ls -lh /generate-config
+                      echo "scripts in /hello-world-scripts"
+                      ls -lh /hello-world-scripts
                       echo "copy scripts to /tmp"
-                      cp /generate-config/*.sh /tmp
+                      cp /hello-world-scripts/*.sh /tmp
                       echo "apply 'chmod +x' to /tmp/*.sh"
                       chmod +x /tmp/*.sh
-                      echo "execute generate-config.sh now"
-                      /tmp/generate-config.sh
+                      echo "execute script-one.sh now"
+                      /tmp/script-one.sh
               volumeMounts:
-                #override config.js file
-                - name: config
-                  mountPath: "/usr/share/nginx/html/config.js"
-                  subPath: "config.js"
-                  readOnly: false
-                - name: tmpfs
-                  mountPath: /usr/share/nginx/html/configs
-                  readOnly: false
-                - mountPath: /${NAME}-${ZONE}-${COMPONENT}
-                  name: generate-config-volume
+                - mountPath: /hello-world-scripts
+                  name: hello-world-scripts-volume
           volumes:
-            - name: config
+            - name: hello-world-scripts-volume
               configMap:
-                name: ${NAME}-${ZONE}-${COMPONENT}
-                items:
-                  - key: "web.properties"
-                    path: "config.js"
-            - name: tmpfs
-              emptyDir: {}
-            - name: generate-config-volume
-              configMap:
-                name: ${NAME}-${ZONE}-${COMPONENT}
+                name: hello-world-scripts
   - apiVersion: v1
     kind: Service
     metadata:
