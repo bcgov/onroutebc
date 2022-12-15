@@ -106,10 +106,7 @@ objects:
                 - name: BACKEND_URL
                   value: https://${NAME}-${ZONE}-backend.${DOMAIN}
                 - name: VITE_DEPLOY_ENVIRONMENT
-                  valueFrom:
-                    configMapKeyRef:
-                      name: ${NAME}-${ZONE}-${COMPONENT}
-                      key: VITE_DEPLOY_ENVIRONMENT
+                  value: ${ZONE}
                       
 
               ports:
