@@ -60,10 +60,7 @@ objects:
     metadata:
       name:  hello-world-scripts
     data:
-      generate-config.sh: |
-        #!/bin/bash
-        echo "generate-config.sh"
-        # Recreate config file
+      script-one.sh: |
         rm -rf ./config.js
         touch ./config.js
         echo "window.VITE_DEPLOY_ENVIRONMENT = ${ZONE}" >> ./config.js
