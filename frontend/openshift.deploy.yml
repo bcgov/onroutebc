@@ -100,11 +100,12 @@ objects:
                 - name: BACKEND_URL
                   value: https://${NAME}-${ZONE}-backend.${DOMAIN}
                 - name: VITE_DEPLOY_ENVIRONMENT
-                  configMap:
-                    name: web-config
-                    items:
-                      - key: "web.properties"
-                        path: "config.js"
+                  valueFrom:
+                    configMapKeyRef:
+                      name: web-config
+                      items:
+                        - key: "web.properties"
+                          path: "config.js"
               ports:
                 - containerPort: 3000
                   protocol: TCP
