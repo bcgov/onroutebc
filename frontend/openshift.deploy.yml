@@ -136,16 +136,16 @@ objects:
                     - /bin/sh
                     - -c
                     - |
-                      echo "scripts in /hello-world-scripts"
-                      ls -lh /hello-world-scripts
-                      echo "copy scripts to /tmpfs"
-                      cp /hello-world-scripts/*.sh /tmpfs
-                      echo "apply 'chmod +x' to /tmpfs/*.sh"
-                      chmod +x /tmpfs/*.sh
+                      echo "scripts in /mnt/hello-world-scripts"
+                      ls -lh /mnt/hello-world-scripts
+                      echo "copy scripts to /usr/share/nginx/html/config/"
+                      cp /mnt/hello-world-scripts/*.sh /usr/share/nginx/html/config/
+                      echo "apply 'chmod +x' to /usr/share/nginx/html/config/*.sh"
+                      chmod +x /usr/share/nginx/html/config/*.sh
                       echo "execute script-one.sh now"
-                      /tmpfs/script-one.sh
+                      /usr/share/nginx/html/config/script-one.sh
               volumeMounts:
-                - mountPath: /hello-world-scripts
+                - mountPath: /mnt/hello-world-scripts
                   name: hello-world-scripts-volume
                   readOnly: false
                 - mountPath: /usr/share/nginx/html/config/

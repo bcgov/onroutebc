@@ -28,6 +28,7 @@ EXPOSE 3000
 # Stage 1, based on Nginx, to have only the compiled app, ready for production with Nginx
 FROM nginx as production-stage
 RUN mkdir /app
+RUN mkdir /usr/share/nginx/html/config
 COPY --from=builder /app/build /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/nginx.conf
 CMD ["nginx", "-g", "daemon off;"]
