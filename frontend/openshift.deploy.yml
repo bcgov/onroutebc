@@ -64,6 +64,8 @@ objects:
         rm -rf ./config.js
         touch ./config.js
         echo "window.VITE_DEPLOY_ENVIRONMENT = ${ZONE}" >> ./config.js
+      web.properties: |
+        window.VITE_DEPLOY_ENVIRONMENT=${ZONE}
   - apiVersion: v1
     kind: DeploymentConfig
     metadata:
@@ -136,19 +138,24 @@ objects:
                     - |
                       echo "scripts in /hello-world-scripts"
                       ls -lh /hello-world-scripts
-                      echo "copy scripts to /tmp"
-                      cp /hello-world-scripts/*.sh /tmp
-                      echo "apply 'chmod +x' to /tmp/*.sh"
-                      chmod +x /tmp/*.sh
+                      echo "copy scripts to /tmpfs"
+                      cp /hello-world-scripts/*.sh /tmpfs
+                      echo "apply 'chmod +x' to /tmpfs/*.sh"
+                      chmod +x /tmpfs/*.sh
                       echo "execute script-one.sh now"
-                      /tmp/script-one.sh
+                      /tmpfs/script-one.sh
               volumeMounts:
                 - mountPath: /hello-world-scripts
                   name: hello-world-scripts-volume
+                  readOnly: false
+                - mountPath: /usr/share/nginx/html/config/
+                  name: tmpfs
           volumes:
             - name: hello-world-scripts-volume
               configMap:
                 name: hello-world-scripts
+            - name: tmpfs
+              emptyDir: {}
   - apiVersion: v1
     kind: Service
     metadata:
