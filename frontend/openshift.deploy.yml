@@ -62,8 +62,9 @@ objects:
         app: ${NAME}-${ZONE}
       name: ${NAME}-${ZONE}-${COMPONENT}
     data:
+      VITE_DEPLOY_ENVIRONMENT: ${VITE_DEPLOY_ENVIRONMENT}
       web.properties: |
-        window.VITE_DEPLOY_ENVIRONMENT=${ZONE}
+        window.VITE_DEPLOY_ENVIRONMENT=${VITE_DEPLOY_ENVIRONMENT}
   - apiVersion: v1
     kind: DeploymentConfig
     metadata:
@@ -103,7 +104,7 @@ objects:
                   valueFrom:
                     configMapKeyRef:
                       name: ${NAME}-${ZONE}-${COMPONENT}
-                      key: "web.properties"
+                      key: VITE_DEPLOY_ENVIRONMENT
               ports:
                 - containerPort: 3000
                   protocol: TCP
