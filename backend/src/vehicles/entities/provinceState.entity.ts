@@ -12,7 +12,7 @@ import { Country } from './country.entity';
 import { PowerUnit } from './powerUnit.entity';
 import { Trailer } from './trailer.entity';
 
-@Entity({ name: 'ORT_VT_PROVINCE_STATE' })
+@Entity({ name: 'ORBC_VT_PROVINCE_STATE' })
 export class ProvinceState extends BaseEntity {
   @ApiProperty({
     example: '1',

@@ -3,7 +3,7 @@ import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { BaseEntity } from './base.entity';
 import { Trailer } from './trailer.entity';
 
-@Entity({ name: 'ORT_VT_TRAILER_TYPE' })
+@Entity({ name: 'ORBC_VT_TRAILER_TYPE' })
 export class TrailerType extends BaseEntity {
   @ApiProperty({
     example: '1',

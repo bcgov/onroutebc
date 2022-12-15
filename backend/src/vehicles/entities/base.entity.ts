@@ -13,7 +13,6 @@ export class BaseEntity {
 
   @ApiProperty({ example: 'User1', description: 'Created User Name' })
   @CreateDateColumn({
-    type: 'timestamp',
     name: 'DB_CREATE_TIMESTAMP',
     nullable: false,
   })
@@ -30,7 +29,6 @@ export class BaseEntity {
 
   @ApiProperty({ example: 'User1', description: 'Created User Name' })
   @UpdateDateColumn({
-    type: 'timestamp',
     name: 'DB_LAST_UPDATE_TIMESTAMP',
     nullable: false,
   })

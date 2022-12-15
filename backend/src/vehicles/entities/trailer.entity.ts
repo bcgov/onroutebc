@@ -10,7 +10,7 @@ import { TrailerType } from './trailerType.entity';
 import { ProvinceState } from './provinceState.entity';
 import { BaseEntity } from './base.entity';
 
-@Entity({ name: 'ORT_TRAILER' })
+@Entity({ name: 'ORBC_TRAILER' })
 export class Trailer extends BaseEntity {
   @ApiProperty({
     example: '1',
