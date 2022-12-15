@@ -66,7 +66,6 @@ objects:
         window["_env_"] =  {
           "window.VITE_DEPLOY_ENVIRONMENT=${ZONE}"
         }
-      VITE_DEPLOY_ENVIRONMENT: $ZONE
   - apiVersion: v1
     kind: DeploymentConfig
     metadata:
@@ -106,11 +105,6 @@ objects:
               env:
                 - name: BACKEND_URL
                   value: https://${NAME}-${ZONE}-backend.${DOMAIN}
-                - name: VITE_DEPLOY_ENVIRONMENT
-                  valueFrom:
-                    configMapKeyRef:
-                      name: ${NAME}-${ZONE}-${COMPONENT}
-                      key: VITE_DEPLOY_ENVIRONMENT
               ports:
                 - containerPort: 3000
                   protocol: TCP
