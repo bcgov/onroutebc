@@ -5,7 +5,8 @@ import reportWebVitals from './reportWebVitals';
 
 // Import Styles
 import './index.scss';
-import '@bcgov/bc-sans/css/BCSans.css'
+import '@bcgov/bc-sans/css/BCSans.css';
+import './i18n/i18n';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement

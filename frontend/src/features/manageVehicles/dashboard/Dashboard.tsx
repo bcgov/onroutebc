@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Button } from "../../../common/components/button/Button";
-import { VehicleForm } from "../form/VehicleForm";
+import { PowerUnitForm } from "../form/PowerUnitForm";
 import { List } from "../list/List";
 
 import SlidingPane from "react-sliding-pane";
@@ -33,7 +33,7 @@ export const Dashboard = React.memo(() => {
         width="40%"
         hideHeader={true}
       >
-        <VehicleForm />
+        <PowerUnitForm />
       </SlidingPane>
     </>
   );
