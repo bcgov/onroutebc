@@ -64,6 +64,8 @@ objects:
     data:
       web.properties: |
         window.VITE_DEPLOY_ENVIRONMENT=${ZONE}
+      VITE_DEPLOY_ENVIRONMENT: ${ZONE}
+
   - apiVersion: v1
     kind: DeploymentConfig
     metadata:
