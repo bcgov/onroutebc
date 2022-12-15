@@ -108,7 +108,7 @@ objects:
                 - name: VITE_DEPLOY_ENVIRONMENT
                   valueFrom:
                     configMapKeyRef:
-                      name: VITE_DEPLOY_ENVIRONMENT
+                      name: ${NAME}-${ZONE}-${COMPONENT}
                       key: VITE_DEPLOY_ENVIRONMENT
                       
 
