@@ -137,7 +137,8 @@ objects:
               #override config.js file
               - mountPath: /usr/share/nginx/html/config.js
                 name: ${NAME}-${ZONE}-${COMPONENT}
-                readOnly: true
+                subPath: "config.js"
+                readOnly: false
           volumes:
           - configMap:
               defaultMode: 420
