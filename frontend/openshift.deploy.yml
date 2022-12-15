@@ -63,7 +63,9 @@ objects:
       name: ${NAME}-${ZONE}-${COMPONENT}
     data:
       config.js: |-
-        VITE_DEPLOY_ENVIRONMENT: ${ZONE}
+        window["_env_"] =  {
+          "VITE_DEPLOY_ENVIRONMENT": "${ZONE}"
+        }
   - apiVersion: v1
     kind: DeploymentConfig
     metadata:
@@ -97,7 +99,7 @@ objects:
               lifecycle:
                 postStart:
                   exec:
-                    command: ["/bin/sh", "-c", "envsubst < /usr/share/nginx/html/configs/config.js > /usr/share/nginx/html/configs/config.js;" ]
+                    command: ["/bin/sh", "-c", "envsubst < /tmp/config.js > /usr/share/nginx/html/configs/config.js;" ]
               imagePullPolicy: Always
               name: ${NAME}
               env:
@@ -133,6 +135,9 @@ objects:
                 timeoutSeconds: 5
               volumeMounts:
               - mountPath: /usr/share/nginx/html/configs
+                name: tmpfs
+                readOnly: false
+              - mountPath: /tmp
                 name: ${NAME}-${ZONE}-${COMPONENT}
           volumes:
           - configMap:
