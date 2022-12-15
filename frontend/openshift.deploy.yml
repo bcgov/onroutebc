@@ -99,7 +99,7 @@ objects:
               lifecycle:
                 postStart:
                   exec:
-                    command: ["/bin/sh", "-c", "envsubst < /tmp/${NAME}-${ZONE}-${COMPONENT}/config.js > /usr/share/nginx/html/config.js;" ]
+                    command: ["/bin/sh", "-c", "envsubst < /tmp/${NAME}-${ZONE}-${COMPONENT}/config.js > /usr/share/nginx/html/configs/config.js;" ]
               imagePullPolicy: Always
               name: ${NAME}
               env:
@@ -134,6 +134,8 @@ objects:
                 periodSeconds: 30
                 timeoutSeconds: 5
               volumeMounts:
+              - mountPath: /usr/share/nginx/html/configs
+                name: tmpfs
               - mountPath: /tmp/${NAME}-${ZONE}-${COMPONENT}
                 name: ${NAME}-${ZONE}-${COMPONENT}
                 readOnly: true
