@@ -18,16 +18,17 @@ if (process.env.POSTGRESQL_PASSWORD != null) {
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: process.env.POSTGRESQL_HOST || 'localhost',
-      port: 5432,
-      database: process.env.POSTGRESQL_DATABASE || 'postgres',
-      username: process.env.POSTGRESQL_USER || 'postgres',
-      password: process.env.POSTGRESQL_PASSWORD,
+    TypeOrmModule.forRoot({ 
+      type: process.env.DB_TYPE==='mssql'?'mssql':'postgres',
+      host: process.env.DB_TYPE === 'mssql'? process.env.MSSQL_HOST: process.env.POSTGRESQL_HOST,
+      port: process.env.DB_TYPE === 'mssql'? parseInt(process.env.MSSQL_PORT):5432,
+      database: process.env.DB_TYPE === 'mssql'? process.env.MSSQL_DB : process.env.POSTGRESQL_DATABASE,
+      username: process.env.DB_TYPE === 'mssql'? process.env.MSSQL_SA_USER : process.env.POSTGRESQL_USER,
+      password: process.env.DB_TYPE === 'mssql'? process.env.MSSQL_SA_PASSWORD : process.env.POSTGRESQL_PASSWORD,
       // entities: [User],
       autoLoadEntities: true, // Auto load all entities regiestered by typeorm forFeature method.
-      synchronize: true, // This changes the DB schema to match changes to entities, which we might not want.
+      synchronize: process.env.DB_TYPE === 'mssql'? true: true, // This changes the DB schema to match changes to entities, which we might not want.
+      options: { encrypt: process.env.DB_TYPE === 'mssql'? false: null },
     }),
     VehiclesModule,
   ],
