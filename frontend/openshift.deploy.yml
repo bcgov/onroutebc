@@ -138,7 +138,7 @@ objects:
                 name: tmpfs
                 subPath: "config.js"
               #override config.js file
-              - mountPath: /usr/share/nginx/html/configs/config.js
+              - mountPath: /usr/share/nginx/html/configs/
                 name: ${NAME}-${ZONE}-${COMPONENT}
           volumes:
           - configMap:
