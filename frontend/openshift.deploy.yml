@@ -111,7 +111,7 @@ objects:
                   valueFrom:
                     configMapKeyRef:
                       name: ${NAME}-${ZONE}-${COMPONENT}
-                      key: "web.properties"
+                      key: VITE_DEPLOY_ENVIRONMENT
               ports:
                 - containerPort: 3000
                   protocol: TCP
