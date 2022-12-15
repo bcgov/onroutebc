@@ -96,12 +96,6 @@ objects:
             - image: ${NAME}-${ZONE}-${COMPONENT}:${IMAGE_TAG}
               imagePullPolicy: Always
               name: ${NAME}
-              volumeMounts:
-                #override config.js file
-                - name: config
-                  mountPath: "/usr/share/nginx/html/config.js"
-                  subPath: "config.js"
-                  readOnly: false
               env:
                 - name: BACKEND_URL
                   value: https://${NAME}-${ZONE}-backend.${DOMAIN}
@@ -139,6 +133,19 @@ objects:
                 initialDelaySeconds: 15
                 periodSeconds: 30
                 timeoutSeconds: 5
+              lifecycle:
+                postStart:
+                  exec:
+                    command: ["/bin/sh", "-c", "envsubst < /tmp/${NAME}-${ZONE}-${COMPONENT}/config.js > /usr/share/nginx/html/configs/config.js;" ]
+              volumeMounts:
+                #override config.js file
+                - name: config
+                  mountPath: "/usr/share/nginx/html/config.js"
+                  subPath: "config.js"
+                  readOnly: false
+                - name: tmpfs
+                  mountPath: /usr/share/nginx/html/configs
+                  readOnly: false
           volumes:
             - name: config
               configMap:
@@ -146,6 +153,8 @@ objects:
                 items:
                   - key: "web.properties"
                     path: "config.js"
+            - name: tmpfs
+              emptyDir: {}
   - apiVersion: v1
     kind: Service
     metadata:
