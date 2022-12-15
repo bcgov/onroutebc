@@ -1,4 +1,4 @@
-FROM node:18.12.1-alpine
+FROM node:18.12.1-alpine as builder
 
 # Set the working directory to /app inside the container
 WORKDIR /app
@@ -28,5 +28,9 @@ RUN npm run build
 # Expose Port
 EXPOSE 3000
 
-# Start the app
-CMD [ "npx", "serve", "build" ]
+# Stage 1, based on Nginx, to have only the compiled app, ready for production with Nginx
+FROM nginx as production-stage
+RUN mkdir /app
+COPY --from=builder /app/build /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/nginx.conf
+CMD ["nginx", "-g", "daemon off;"]
