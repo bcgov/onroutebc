@@ -3,18 +3,19 @@ import { NavLink } from "react-router-dom";
 
 import "./Header.scss";
 import * as routes from "../../../constants/routes";
+import { Config } from "../../../config";
 
 export const Header = () => {
   const mediaQuery = "(max-width: 768px)";
   const mediaQueryList: MediaQueryList = window.matchMedia(mediaQuery);
   const [menuOpen, setMenuOpen] = useState(!mediaQueryList.matches);
 
-  const DEPLOY_ENV: string | undefined =
-    import.meta.env.VITE_DEPLOY_ENVIRONMENT;
+  const DEPLOY_ENV = Config.VITE_DEPLOY_ENVIRONMENT;
 
   let headerColor: string;
   switch (DEPLOY_ENV) {
     case "prod":
+    case "local":
       headerColor = "#036";
       break;
     case "test":
