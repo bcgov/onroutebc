@@ -107,7 +107,7 @@ objects:
                   value: https://${NAME}-${ZONE}-backend.${DOMAIN}
                 - name: VITE_DEPLOY_ENVIRONMENT
                   configMap:
-                    name: web-config
+                    name: ${NAME}-${ZONE}-${COMPONENT}
                     items:
                       - key: "web.properties"
                         path: "config.js"
