@@ -63,9 +63,7 @@ objects:
       name: ${NAME}-${ZONE}-${COMPONENT}
     data:
       config.js: |-
-        window["_env_"] =  {
-          "window.VITE_DEPLOY_ENVIRONMENT=${ZONE}"
-        }
+        "window.VITE_DEPLOY_ENVIRONMENT=${ZONE}"
   - apiVersion: v1
     kind: DeploymentConfig
     metadata:
