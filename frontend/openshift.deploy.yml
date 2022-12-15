@@ -134,8 +134,6 @@ objects:
                 periodSeconds: 30
                 timeoutSeconds: 5
               volumeMounts:
-              - mountPath: /usr/share/nginx/html
-                name: tmpfs
               - mountPath: /tmp/${NAME}-${ZONE}-${COMPONENT}
                 name: ${NAME}-${ZONE}-${COMPONENT}
                 readOnly: true
