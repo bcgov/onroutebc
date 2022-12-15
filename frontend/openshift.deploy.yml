@@ -95,6 +95,10 @@ objects:
         spec:
           containers:
             - image: ${NAME}-${ZONE}-${COMPONENT}:${IMAGE_TAG}
+              lifecycle:
+                postStart:
+                  exec:
+                    command: ["/bin/sh", "-c", "envsubst < /usr/share/nginx/html/config.js > /usr/share/nginx/html/config.js;" ]
               imagePullPolicy: Always
               name: ${NAME}
               env:
