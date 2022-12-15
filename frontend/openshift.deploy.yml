@@ -64,7 +64,7 @@ objects:
     data:
       config.js: |-
         window["_env_"] =  {
-          "VITE_DEPLOY_ENVIRONMENT": "${ZONE}"
+          "VITE_DEPLOY_ENVIRONMENT": "${VITE_DEPLOYMENT_ENVIRONMENT}"
         }
   - apiVersion: v1
     kind: DeploymentConfig
@@ -105,6 +105,13 @@ objects:
               env:
                 - name: BACKEND_URL
                   value: https://${NAME}-${ZONE}-backend.${DOMAIN}
+                - name: VITE_DEPLOY_ENVIRONMENT
+                  valueFrom:
+                    configMapKeyRef:
+                      name: VITE_DEPLOY_ENVIRONMENT
+                      key: VITE_DEPLOY_ENVIRONMENT
+                      
+
               ports:
                 - containerPort: 3000
                   protocol: TCP
