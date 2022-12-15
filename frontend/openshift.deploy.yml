@@ -64,6 +64,8 @@ objects:
     data:
       web.properties: |
         window.VITE_DEPLOY_ENVIRONMENT=${ZONE}
+      VITE_DEPLOY_ENVIRONMENT: ${ZONE}
+
   - apiVersion: v1
     kind: DeploymentConfig
     metadata:
@@ -106,11 +108,10 @@ objects:
                 - name: BACKEND_URL
                   value: https://${NAME}-${ZONE}-backend.${DOMAIN}
                 - name: VITE_DEPLOY_ENVIRONMENT
-                  configMap:
-                    name: web-config
-                    items:
-                      - key: "web.properties"
-                        path: "config.js"
+                  valueFrom:
+                    configMapKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: VITE_DEPLOY_ENVIRONMENT
               ports:
                 - containerPort: 3000
                   protocol: TCP
