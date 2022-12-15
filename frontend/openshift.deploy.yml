@@ -140,12 +140,11 @@ objects:
                 periodSeconds: 30
                 timeoutSeconds: 5
               volumeMounts:
-                - mountPath: /usr/share/nginx/html/config/
-                  name: tmpfs
-                - mountPath: /tmp/${NAME}-${ZONE}-${COMPONENT}
-                  name: ${NAME}-${ZONE}-${COMPONENT}
-                  readOnly: true
-      restartPolicy: Always
+              - mountPath: /usr/share/nginx/html/config/
+                name: tmpfs
+              - mountPath: /tmp/${NAME}-${ZONE}-${COMPONENT}
+                name: ${NAME}-${ZONE}-${COMPONENT}
+                readOnly: true
           volumes:
           - configMap:
               defaultMode: 420
