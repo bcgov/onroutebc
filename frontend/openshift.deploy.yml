@@ -64,7 +64,7 @@ objects:
     data:
       config.js: |-
         window["_env_"] =  {
-          "VITE_DEPLOY_ENVIRONMENT": "${VITE_DEPLOYMENT_ENVIRONMENT}"
+          "VITE_DEPLOY_ENVIRONMENT": "${VITE_DEPLOY_ENVIRONMENT}"
         }
   - apiVersion: v1
     kind: DeploymentConfig
