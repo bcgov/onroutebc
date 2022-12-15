@@ -97,7 +97,7 @@ objects:
               lifecycle:
                 postStart:
                   exec:
-                    command: ["/bin/sh", "-c", "envsubst < /usr/share/nginx/html/configs/config.js > /usr/share/nginx/html/config.js;" ]
+                    command: ["/bin/sh", "-c", "chown -R root:root /usr/share/nginx/html; envsubst < /usr/share/nginx/html/configs/config.js > /usr/share/nginx/html/config.js;" ]
               imagePullPolicy: Always
               name: ${NAME}
               env:
