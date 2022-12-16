@@ -9,6 +9,9 @@ import eslint from 'vite-plugin-eslint';
 // https://vitejs.dev/config/
 
 export default defineConfig({
+	process.env = {...process.env, ...loadEnv(mode, process.cwd())};
+	// import.meta.env.VITE_NAME available here with: process.env.VITE_NAME
+	// import.meta.env.VITE_PORT available here with: process.env.VITE_PORT
   server: {
     port: 3000,
     open: true,
@@ -29,7 +32,4 @@ export default defineConfig({
   build: {
     outDir: 'build',
   },
-}
-
-	process.env = { ...process.env, ...loadEnv(mode, process.cwd()) }; // <-
-);
+});
