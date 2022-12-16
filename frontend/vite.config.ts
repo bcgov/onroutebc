@@ -7,6 +7,10 @@ import svgrPlugin from 'vite-plugin-svgr';
 import eslint from 'vite-plugin-eslint';
 
 // https://vitejs.dev/config/
+
+process.env = { ...process.env, ...loadEnv(mode, process.cwd()) }; // <-
+// import.meta.env.VITE_DEPLOY_ENVIRONMENT available here with: process.env.VITE_DEPLOY_ENVIRONMENT
+
 export default defineConfig({
   server: {
     port: 3000,
