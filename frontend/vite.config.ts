@@ -10,7 +10,7 @@ import eslint from 'vite-plugin-eslint';
 
 export default ({ mode }) => {
 	  process.env = { ...process.env, ...loadEnv(mode, process.cwd()) }; // <-
-
+}
 export default defineConfig({
   server: {
     port: 3000,
