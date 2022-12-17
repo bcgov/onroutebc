@@ -63,10 +63,8 @@ objects:
       name: ${NAME}-${ZONE}-${COMPONENT}
     data:
       web.properties: |
-        let VITE_DEPLOY_ENVIRONMENT =
-          (window._env_ && window._env_.VITE_DEPLOY_ENVIRONMENT) ||
-            process.env.VITE_DEPLOY_ENVIRONMENT ||
-        window.VITE_DEPLOY_ENVIRONMENT=${VITE_DEPLOY_ENVIRONMENT}
+        var VITE_DEPLOY_ENVIRONMENT=${VITE_DEPLOY_ENVIRONMENT}
+        window.VITE_DEPLOY_ENVIRONMENT=VITE_DEPLOY_ENVIRONMENT
       VITE_DEPLOY_ENVIRONMENT: ${ZONE}
 
   - apiVersion: v1
