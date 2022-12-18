@@ -96,14 +96,12 @@ objects:
         spec:
           containers:
             - image: ${NAME}-${ZONE}-${COMPONENT}:${IMAGE_TAG}
+              lifecycle:
+                postStart:
+                  exec:
+                    command: ["/bin/sh", "-c", "envsubst < ./dist/env-config.template.js > ./dist/env-config.js && exec nginx -g 'daemon off;'"]
               imagePullPolicy: Always
               name: ${NAME}
-              volumeMounts:
-                #override config.js file
-                - name: config
-                  mountPath: "/usr/share/nginx/html/config.js"
-                  subPath: "config.js"
-                  readOnly: false
               env:
                 - name: BACKEND_URL
                   value: https://${NAME}-${ZONE}-backend.${DOMAIN}
@@ -140,7 +138,17 @@ objects:
                 initialDelaySeconds: 15
                 periodSeconds: 30
                 timeoutSeconds: 5
+              volumeMounts:
+                #override config.js file
+                - name: config
+                  mountPath: "/usr/share/nginx/html/config.js"
+                  subPath: "config.js"
+                  readOnly: false
+                - name: tmpfs
+                  mountPath: /mnt/tmp
           volumes:
+            - name: tmpfs
+              emptyDir: {}
             - name: config
               configMap:
                 name: ${NAME}-${ZONE}-${COMPONENT}
