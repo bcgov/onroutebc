@@ -27,6 +27,12 @@ services:
       MSSQL_SA_PASSWORD: YourStrong@Passw0rd
       MSSQL_ENCRYPT: false
       MSSQL_DDL_FILENAME: sample_ddl.sql
+    healthcheck:
+      test: /opt/mssql-tools/bin/sqlcmd -S sql-server-db -U SA -P "YourStrong@Passw0rd" -Q "SELECT 1" || exit 1
+      interval: 20s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
     hostname: sql-server-db
     ports:
       - "1433:1433"
@@ -57,6 +63,9 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
+    depends_on:
+      sql-server-db:
+        condition: service_healthy
     hostname: backend
     links:
       - sql-server-db
