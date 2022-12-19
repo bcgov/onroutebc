@@ -96,10 +96,10 @@ objects:
         spec:
           containers:
             - image: ${NAME}-${ZONE}-${COMPONENT}:${IMAGE_TAG}
-							lifecycle:
+              lifecycle:
                 postStart:
                   exec:
-										command: ["/bin/sh", "-c", "envsubst < /tmp/config.js.template > /usr/share/nginx/html/config/config.js;" ] 
+                    command: ["/bin/sh", "-c", "envsubst < /tmp/config.js.template > /usr/share/nginx/html/config/config.js;" ] 
               imagePullPolicy: Always
               name: ${NAME}
               env:
