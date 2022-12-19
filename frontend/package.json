@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-		"@geprog/vite-plugin-env-config":"4.0.10",
+    "@geprog/vite-plugin-env-config": "4.0.10",
     "@bcgov/bc-sans": "^1.0.1",
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
