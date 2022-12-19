@@ -99,7 +99,7 @@ objects:
               lifecycle:
                 postStart:
                   exec:
-                    command: ["/bin/sh", "-c", "envsubst < /tmp/envvars/env.template.js > /usr/share/nginxc/html/envvars/env.js && exec nginx -g 'daemon off;'"]
+                    command: ["/bin/sh", "-c", "envsubst < /tmp/envvars/env.template.js > /usr/share/nginx/html/envvars/env.js && exec nginx -g 'daemon off;'"]
               imagePullPolicy: Always
               name: ${NAME}
               env:
