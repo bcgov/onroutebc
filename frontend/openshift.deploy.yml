@@ -142,7 +142,6 @@ objects:
                 #override config.js file
                 - name: env
                   mountPath: /tmp/envvars
-                  subPath: env.template.js
                 - name: tmpfs
                   mountPath: /usr/share/nginx/html/envvars
                   readOnly: false
