@@ -138,6 +138,7 @@ objects:
                 #override config.js file
                 - name: env-config
                   mountPath: /usr/share/nginx/html/env-config.js
+                  subPath: env-config.js
           volumes:
             - name: env-config
               configMap:
