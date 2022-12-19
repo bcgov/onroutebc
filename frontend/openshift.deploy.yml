@@ -97,7 +97,7 @@ objects:
               lifecycle:
                 postStart:
                    exec:
-                       command: ["/bin/sh", "-c", "envsubst < /usr/share/nginx/html/env-config.template.js > /usr/share/nginx/html/env-config.js;"]
+                       command: ["/bin/sh", "-c", "envsubst < /usr/share/nginx/html/env-config.template.js > /usr/share/nginx/html/configs/env-config.js;"]
               imagePullPolicy: Always
               name: ${NAME}
               env:
@@ -139,7 +139,7 @@ objects:
               volumeMounts:
                 #override config.js file
                 - name: env-config
-                  mountPath: /usr/share/nginx/html
+                  mountPath: /usr/share/nginx/html/configs
                   subPath: env-config.js
                   readOnly: false
           volumes:
