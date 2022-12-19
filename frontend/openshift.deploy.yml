@@ -63,7 +63,7 @@ objects:
       name: ${NAME}-${ZONE}-${COMPONENT}
     data:
       env.template.js: |
-        VITE_DEPLOY_ENVIRONMENT=${VITE_DEPLOY_ENVIRONMENT}
+        VITE_DEPLOY_ENVIRONMENT=${ZONE}
       VITE_DEPLOY_ENVIRONMENT: ${ZONE}
 
   - apiVersion: v1
@@ -96,10 +96,6 @@ objects:
         spec:
           containers:
             - image: ${NAME}-${ZONE}-${COMPONENT}:${IMAGE_TAG}
-              lifecycle:
-                postStart:
-                  exec:
-                    command: ["/bin/sh", "-c", "envsubst < /tmp/envvars/env.template.js > /usr/share/nginx/html/envvars/env.js;"]
               imagePullPolicy: Always
               name: ${NAME}
               env:
@@ -140,14 +136,9 @@ objects:
                 timeoutSeconds: 5
               volumeMounts:
                 #override config.js file
-                - name: env
-                  mountPath: /tmp/envvars
-                - name: tmpfs
-                  mountPath: /usr/share/nginx/html/envvars
-                  readOnly: false
+                - name: env-config
+                  mountPath: /usr/share/nginx/html/env-config.js
           volumes:
-            - name: tmpfs
-              emptyDir: {}
             - name: env
               configMap:
                 name: ${NAME}-${ZONE}-${COMPONENT}
