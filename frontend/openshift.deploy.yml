@@ -140,7 +140,7 @@ objects:
                 timeoutSeconds: 5
               volumeMounts:
                 - name: config
-                  mountPath: "/tmp/config.js.template"
+                  mountPath: "/tmp"
                   subPath: "config.js.template"
                   readOnly: false
                 - name: tmpfs
