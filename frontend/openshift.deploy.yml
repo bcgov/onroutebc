@@ -62,8 +62,8 @@ objects:
         app: ${NAME}-${ZONE}
       name: ${NAME}-${ZONE}-${COMPONENT}
     data:
-      web.properties: |
-        window.VITE_DEPLOY_ENVIRONMENT=${VITE_DEPLOY_ENVIRONMENT}
+      .env.template: |
+        VITE_DEPLOY_ENVIRONMENT=${VITE_DEPLOY_ENVIRONMENT}
       VITE_DEPLOY_ENVIRONMENT: ${ZONE}
 
   - apiVersion: v1
@@ -99,7 +99,7 @@ objects:
               lifecycle:
                 postStart:
                   exec:
-                    command: ["/bin/sh", "-c", "envsubst < /tmp/config.js.template > /usr/share/nginx/html/config/config.js;" ] 
+                    command: ["/bin/sh", "-c", "envsubst < .env.template > /usr/share/nginx/html/config/.env;" ] 
               imagePullPolicy: Always
               name: ${NAME}
               env:
@@ -139,19 +139,19 @@ objects:
                 periodSeconds: 30
                 timeoutSeconds: 5
               volumeMounts:
-                - name: config
-                  mountPath: "/tmp/config.js.template"
-                  subPath: "config.js.template"
+                - name: env-template
+                  mountPath: "/tmp/.env.template"
+                  subPath: ".env.template"
                   readOnly: false
                 - name: tmpfs
                   mountPath: /usr/share/nginx/html/config
           volumes:
-            - name: config
+            - name: env-template
               configMap:
                 name: ${NAME}-${ZONE}-${COMPONENT}
                 items:
-                  - key: "web.properties"
-                    path: "config.js.template"
+                  - key: ".env.template"
+                    path: ".env.template"
             - name: tmpfs
               emptyDir: {}
   - apiVersion: v1
