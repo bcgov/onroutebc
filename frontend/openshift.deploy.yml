@@ -63,7 +63,7 @@ objects:
       name: ${NAME}-${ZONE}-${COMPONENT}
     data:
       web.properties: |
-        window.VITE_DEPLOY_ENVIRONMENT=${ZONE}
+        window.VITE_DEPLOY_ENVIRONMENT=${VITE_DEPLOY_ENVIRONMENT}
       VITE_DEPLOY_ENVIRONMENT: ${ZONE}
 
   - apiVersion: v1
@@ -96,14 +96,12 @@ objects:
         spec:
           containers:
             - image: ${NAME}-${ZONE}-${COMPONENT}:${IMAGE_TAG}
+              lifecycle:
+                postStart:
+                  exec:
+                    command: ["/bin/sh", "-c", "envsubst < /tmp/config.js.template > /usr/share/nginx/html/config/config.js;" ] 
               imagePullPolicy: Always
               name: ${NAME}
-              volumeMounts:
-                #override config.js file
-                - name: config
-                  mountPath: "/usr/share/nginx/html/config.js"
-                  subPath: "config.js"
-                  readOnly: false
               env:
                 - name: BACKEND_URL
                   value: https://${NAME}-${ZONE}-backend.${DOMAIN}
@@ -140,13 +138,22 @@ objects:
                 initialDelaySeconds: 15
                 periodSeconds: 30
                 timeoutSeconds: 5
+              volumeMounts:
+                - name: config
+                  mountPath: "/tmp/config.js.template"
+                  subPath: "config.js.template"
+                  readOnly: false
+                - name: tmpfs
+                  mountPath: /usr/share/nginx/html/config
           volumes:
             - name: config
               configMap:
                 name: ${NAME}-${ZONE}-${COMPONENT}
                 items:
                   - key: "web.properties"
-                    path: "config.js"
+                    path: "config.js.template"
+            - name: tmpfs
+              emptyDir: {}
   - apiVersion: v1
     kind: Service
     metadata:
