@@ -63,7 +63,11 @@ objects:
       name: ${NAME}-${ZONE}-${COMPONENT}
     data:
       web.properties: |
-        window.VITE_DEPLOY_ENVIRONMENT=${VITE_DEPLOY_ENVIRONMENT}
+				var config = (() => {
+					return {
+						"VITE_DEPLOY_ENVIRONMENT": "${VITE_DEPLOY_ENVIRONMENT}"
+					};
+				})();
       VITE_DEPLOY_ENVIRONMENT: ${ZONE}
 
   - apiVersion: v1

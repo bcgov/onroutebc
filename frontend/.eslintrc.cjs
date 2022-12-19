@@ -28,4 +28,7 @@ module.exports = {
       "version": "detect"
     }
   }
+  globals: {
+    config: "readable"
+  }
 }
