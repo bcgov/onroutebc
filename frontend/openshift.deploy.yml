@@ -140,7 +140,7 @@ objects:
                 timeoutSeconds: 5
               volumeMounts:
                 #override config.js file
-                - name: env.template
+                - name: env
                   mountPath: /tmp
                   subPath: env.template.js
                 - name: tmpfs
@@ -150,7 +150,7 @@ objects:
           volumes:
             - name: tmpfs
               emptyDir: {}
-            - name: env.template
+            - name: env
               configMap:
                 name: ${NAME}-${ZONE}-${COMPONENT}
                 items:
