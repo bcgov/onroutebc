@@ -10,7 +10,7 @@ export const Header = () => {
   const mediaQueryList: MediaQueryList = window.matchMedia(mediaQuery);
   const [menuOpen, setMenuOpen] = useState(!mediaQueryList.matches);
 
-  const DEPLOY_ENV = config.VITE_DEPLOY_ENVIRONMENT;
+  const DEPLOY_ENV = Config.VITE_DEPLOY_ENVIRONMENT;
 
   let headerColor: string;
   switch (DEPLOY_ENV) {
