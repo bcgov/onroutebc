@@ -62,8 +62,8 @@ objects:
         app: ${NAME}-${ZONE}
       name: ${NAME}-${ZONE}-${COMPONENT}
     data:
-      web.properties: |
-        window.VITE_DEPLOY_ENVIRONMENT=${ZONE}
+      env.template.js: |
+        VITE_DEPLOY_ENVIRONMENT=${VITE_DEPLOY_ENVIRONMENT}
       VITE_DEPLOY_ENVIRONMENT: ${ZONE}
 
   - apiVersion: v1
@@ -99,7 +99,7 @@ objects:
               lifecycle:
                 postStart:
                   exec:
-                    command: ["/bin/sh", "-c", "envsubst < ./dist/env-config.template.js > ./dist/env-config.js && exec nginx -g 'daemon off;'"]
+                    command: ["/bin/sh", "-c", "envsubst < /tmp/env.template.js > /usr/share/nginxc/html/env.js && exec nginx -g 'daemon off;'"]
               imagePullPolicy: Always
               name: ${NAME}
               env:
@@ -140,21 +140,22 @@ objects:
                 timeoutSeconds: 5
               volumeMounts:
                 #override config.js file
-                - name: config
-                  mountPath: "/usr/share/nginx/html/config.js"
-                  subPath: "config.js"
-                  readOnly: false
+                - name: env.template
+                  mountPath: /tmp
+                  subPath: env.template.js
                 - name: tmpfs
-                  mountPath: /mnt/tmp
+                  mountPath: /usr/share/nginx/html
+                  subPath: env.js
+                  readOnly: false
           volumes:
             - name: tmpfs
               emptyDir: {}
-            - name: config
+            - name: env.template
               configMap:
                 name: ${NAME}-${ZONE}-${COMPONENT}
                 items:
-                  - key: "web.properties"
-                    path: "config.js"
+                  - key: "env.template.js"
+                    path: "env.template.js"
   - apiVersion: v1
     kind: Service
     metadata:
