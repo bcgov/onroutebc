@@ -22,7 +22,7 @@ services:
     environment:
       MSSQL_HOST: sql-server-db
       MSSQL_PORT: 1433
-      MSSQL_DB: onroutebc
+      MSSQL_DB: ORBC_DEV
       MSSQL_SA_USER: SA
       MSSQL_SA_PASSWORD: YourStrong@Passw0rd
       MSSQL_ENCRYPT: false
