@@ -152,6 +152,8 @@ objects:
                 items:
                   - key: "web.properties"
                     path: "config.js"
+            - name: tmpfs
+              emptyDir: {}
   - apiVersion: v1
     kind: Service
     metadata:
