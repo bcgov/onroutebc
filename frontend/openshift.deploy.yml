@@ -96,6 +96,10 @@ objects:
         spec:
           containers:
             - image: ${NAME}-${ZONE}-${COMPONENT}:${IMAGE_TAG}
+            - lifecycle:
+                postStart:
+                   exec:
+                       command: ["/bin/sh", "-c", "envsubst < /usr/share/nginx/html/env-config.template.js > /usr/share/nginx/html/env-config.js;"]
               imagePullPolicy: Always
               name: ${NAME}
               env:
@@ -139,13 +143,10 @@ objects:
                 - name: env-config
                   mountPath: /usr/share/nginx/html/env-config.js
                   subPath: env-config.js
+                  readOnly: false
           volumes:
             - name: env-config
-              configMap:
-                name: ${NAME}-${ZONE}-${COMPONENT}
-                items:
-                  - key: "env-config.template.js"
-                    path: "env-config.js"
+              emptyDir: {}
   - apiVersion: v1
     kind: Service
     metadata:
