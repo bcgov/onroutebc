@@ -6,13 +6,17 @@ import viteTsconfigPaths from 'vite-tsconfig-paths';
 import svgrPlugin from 'vite-plugin-svgr';
 import eslint from 'vite-plugin-eslint';
 
+// vite.config.js / vite.config.ts
+import { envConfig } from '@geprog/vite-plugin-env-config';
+
+
 // https://vitejs.dev/config/
 export default defineConfig({
   server: {
     port: 3000,
     open: true,
   },
-  plugins: [eslint(), react(), viteTsconfigPaths(), svgrPlugin()],
+  plugins: [envConfig({ variables: ['VITE_DEPLOY_ENVIRONMENT'] }), eslint(), react(), viteTsconfigPaths(), svgrPlugin()],
   test: {
     globals: true,
     environment: 'jsdom',
