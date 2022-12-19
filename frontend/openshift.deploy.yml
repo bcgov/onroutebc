@@ -137,7 +137,7 @@ objects:
               volumeMounts:
                 #override config.js file
                 - name: env-config
-                  mountPath: /usr/share/nginx/html/env-config.js
+                  mountPath: /usr/share/nginx/html
                   subPath: env-config.js
           volumes:
             - name: env-config
@@ -145,7 +145,7 @@ objects:
                 name: ${NAME}-${ZONE}-${COMPONENT}
                 items:
                   - key: "env-config.template.js"
-                    path: "env-config.template.js"
+                    path: "env-config.js"
   - apiVersion: v1
     kind: Service
     metadata:
