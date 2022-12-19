@@ -99,7 +99,7 @@ objects:
               lifecycle:
                 postStart:
                   exec:
-                    command: ["/bin/sh", "-c", "envsubst < /tmp/env.template.js > /usr/share/nginxc/html/env.js && exec nginx -g 'daemon off;'"]
+                    command: ["/bin/sh", "-c", "envsubst < /tmp/env.template.js > /usr/share/nginxc/html/envvars/env.js && exec nginx -g 'daemon off;'"]
               imagePullPolicy: Always
               name: ${NAME}
               env:
@@ -144,8 +144,7 @@ objects:
                   mountPath: /tmp
                   subPath: env.template.js
                 - name: tmpfs
-                  mountPath: /usr/share/nginx/html
-                  subPath: env.js
+                  mountPath: /usr/share/nginx/html/envvars
                   readOnly: false
           volumes:
             - name: tmpfs
