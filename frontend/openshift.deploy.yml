@@ -62,7 +62,7 @@ objects:
         app: ${NAME}-${ZONE}
       name: ${NAME}-${ZONE}-${COMPONENT}
     data:
-      env.template.js: |
+      env-config.template.js: |
         VITE_DEPLOY_ENVIRONMENT=${ZONE}
       VITE_DEPLOY_ENVIRONMENT: ${ZONE}
 
@@ -139,12 +139,12 @@ objects:
                 - name: env-config
                   mountPath: /usr/share/nginx/html/env-config.js
           volumes:
-            - name: env
+            - name: env-config
               configMap:
                 name: ${NAME}-${ZONE}-${COMPONENT}
                 items:
-                  - key: "env.template.js"
-                    path: "env.template.js"
+                  - key: "env-config.template.js"
+                    path: "env-config.template.js"
   - apiVersion: v1
     kind: Service
     metadata:
