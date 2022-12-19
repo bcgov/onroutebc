@@ -63,7 +63,7 @@ objects:
       name: ${NAME}-${ZONE}-${COMPONENT}
     data:
       env-config.template.js: |
-        VITE_DEPLOY_ENVIRONMENT=${ZONE}
+        (function(window){window.env=window.env||{};window.env['VITE_DEPLOY_ENVIRONMENT']='${ZONE}';})(this);
       VITE_DEPLOY_ENVIRONMENT: ${ZONE}
 
   - apiVersion: v1
