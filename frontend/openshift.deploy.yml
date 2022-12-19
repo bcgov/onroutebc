@@ -62,8 +62,6 @@ objects:
         app: ${NAME}-${ZONE}
       name: ${NAME}-${ZONE}-${COMPONENT}
     data:
-      env-config.template.js: |
-        (function(window){window.env=window.env||{};window.env['VITE_DEPLOY_ENVIRONMENT']='${ZONE}';})(this);
       VITE_DEPLOY_ENVIRONMENT: ${ZONE}
 
   - apiVersion: v1
@@ -96,7 +94,7 @@ objects:
         spec:
           containers:
             - image: ${NAME}-${ZONE}-${COMPONENT}:${IMAGE_TAG}
-            - lifecycle:
+              lifecycle:
                 postStart:
                    exec:
                        command: ["/bin/sh", "-c", "envsubst < /usr/share/nginx/html/env-config.template.js > /usr/share/nginx/html/env-config.js;"]
