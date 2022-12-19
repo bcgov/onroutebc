@@ -4,13 +4,15 @@ import { NavLink } from "react-router-dom";
 import "./Header.scss";
 import * as routes from "../../../constants/routes";
 import { Config } from "../../../config";
+import { getEnvConfig } from '@geprog/vite-plugin-env-config';
+
 
 export const Header = () => {
   const mediaQuery = "(max-width: 768px)";
   const mediaQueryList: MediaQueryList = window.matchMedia(mediaQuery);
   const [menuOpen, setMenuOpen] = useState(!mediaQueryList.matches);
 
-  const DEPLOY_ENV = Config.VITE_DEPLOY_ENVIRONMENT;
+	const DEPLOY_ENV = getEnvConfig('VITE_DEPLOY_ENVIRONMENT');
 
   let headerColor: string;
   switch (DEPLOY_ENV) {
