@@ -139,7 +139,7 @@ objects:
               volumeMounts:
                 #override config.js file
                 - name: env-config
-                  mountPath: /usr/share/nginx/html/env-config.js
+                  mountPath: /usr/share/nginx/html
                   subPath: env-config.js
                   readOnly: false
           volumes:
