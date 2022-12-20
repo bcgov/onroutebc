@@ -14,12 +14,6 @@ export default defineConfig({
   },
 	envDir: '/usr/share/nginx/html/config',
   env = loadEnv('production', '/usr/share/nginx/html/config', '')
-  return {
-    // vite config
-    define: {
-      VITE_DEPLOY_ENVIRONMENT: env.VITE_DEPLOY_ENVIRONMENT,
-    },
-  },
   plugins: [eslint(), react(), viteTsconfigPaths(), svgrPlugin()],
   test: {
     globals: true,
