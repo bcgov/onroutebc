@@ -14,7 +14,7 @@ export class TrailerDto extends BaseDto {
   unitNumber: string;
 
   @ApiProperty({
-    description: 'The Power Unit plate Number',
+    description: 'The Trailer plate Number',
     example: 'AS 5895',
   })
   plateNumber: string;

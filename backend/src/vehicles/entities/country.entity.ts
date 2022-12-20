@@ -21,7 +21,7 @@ export class Country extends BaseEntity {
   @Column({ type: 'integer', name: 'SORT_ORDER', nullable: true })
   sortOrder: string;
 
-  @ApiProperty({ description: 'Province ' })
+  @ApiProperty({ description: 'Province' })
   @OneToMany(() => Province, (Province) => Province.country)
   provinces: Province[];
 }

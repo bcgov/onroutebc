@@ -64,7 +64,7 @@ console.log(
         process.env.DB_TYPE === 'mssql'
           ? process.env.MSSQL_SA_PASSWORD
           : process.env.POSTGRESQL_PASSWORD,
-      options: { encrypt: process.env.DB_TYPE === 'mssql' ? false : true },
+      options: { encrypt: process.env.MSSQL_ENCRYPT === 'true' },
       // entities: [User],
       autoLoadEntities: true, // Auto load all entities regiestered by typeorm forFeature method.
       synchronize: false, // This changes the DB schema to match changes to entities, which we might not want.

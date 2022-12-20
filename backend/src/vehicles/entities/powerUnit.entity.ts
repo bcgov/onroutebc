@@ -29,9 +29,9 @@ export class PowerUnit extends BaseEntity {
 
   @ApiProperty({
     example: 'BC',
-    description: 'The Prov/ where the vehicle was registered',
+    description: 'The Prov where the vehicle was registered',
   })
-  @ManyToOne(() => Province)
+  @ManyToOne(() => Province, (Province) => Province.powerUnits)
   @JoinColumn({ name: 'PROVINCE_ID' })
   province: Province;
 
