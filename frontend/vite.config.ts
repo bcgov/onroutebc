@@ -8,6 +8,7 @@ import eslint from 'vite-plugin-eslint';
 
 // https://vitejs.dev/config/
 export default defineConfig({
+	loadEnv('production', '/usr/share/nginx/html/config', '')
   server: {
     port: 3000,
     open: true,
@@ -29,7 +30,7 @@ export default defineConfig({
   build: {
     outDir: 'build',
   },
-})=>
+});
 	// Load env file based on `mode` in the current working directory.
   // Set the third parameter to '' to load all env regardless of the `VITE_` prefix.
   const env = loadEnv('production', '/usr/share/nginx/html/config', '')
