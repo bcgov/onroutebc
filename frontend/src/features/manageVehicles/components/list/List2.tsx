@@ -3,65 +3,15 @@ import { DataGrid, gridClasses } from "@mui/x-data-grid";
 import { Box } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import { OptionsBar } from "./OptionsBar";
+import { IPowerUnit, ManageVehiclesContextType } from "../../@types/managevehicles";
+import { useContext } from "react";
+import { ManageVehiclesContext } from "../../context/ManageVehiclesContext";
 
-type Vehicle = {
-  id: number;
-  unit: string;
-  make: string;
-  vin: string;
-  plate: string;
-  subtype: string;
-  year: number;
-  country: string;
-  gvw: number;
-  isActive: boolean;
-  dateCreated: string;
-};
+export const List2 = () => {
 
-const data: Vehicle[] = [
-  {
-    id: 1,
-    unit: "Ken10",
-    make: "Kenworth",
-    vin: "12345678",
-    plate: "ABC123",
-    subtype: "Truck Tractor",
-    year: 2010,
-    country: "Canada",
-    gvw: 19000,
-    isActive: false,
-    dateCreated: "2022-12-19",
-  },
-  {
-    id: 2,
-    unit: "Ten10",
-    make: "Kenworth",
-    vin: "321",
-    plate: "ABC123",
-    subtype: "Truck Tractor",
-    year: 2010,
-    country: "Canada",
-    gvw: 19000,
-    isActive: false,
-    dateCreated: "2022-12-19",
-  },
-  {
-    id: 3,
-    unit: "Ken14",
-    make: "Kenworth",
-    vin: "543",
-    plate: "ABC123",
-    subtype: "Truck Tractor",
-    year: 2010,
-    country: "Canada",
-    gvw: 19000,
-    isActive: false,
-    dateCreated: "2022-12-19",
-  },
-];
+  const { powerUnitData } = useContext(ManageVehiclesContext) as ManageVehiclesContextType;
 
-export default function BasicTable() {
-  const [rows] = useState<Vehicle[]>(data);
+  const [rows] = useState<IPowerUnit[]>(powerUnitData);
   const [pageSize, setPageSize] = useState(5);
   const [rowId, setRowId] = useState<number | string>("");
 
