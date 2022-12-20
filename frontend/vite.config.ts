@@ -12,7 +12,7 @@ export default defineConfig({
     port: 3000,
     open: true,
   },
-	envDir: src/config,
+	envDir: '/usr/share/nginx/html/config',
   plugins: [eslint(), react(), viteTsconfigPaths(), svgrPlugin()],
   test: {
     globals: true,
