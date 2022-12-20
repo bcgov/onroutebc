@@ -16,15 +16,15 @@ export class PowerUnit extends BaseEntity {
     example: '1',
     description: 'The Power Unit ID',
   })
-  @PrimaryGeneratedColumn({ type: 'integer', name: 'POWER_UNIT_ID' })
-  powerUnitId: number;
+  @PrimaryGeneratedColumn({ type: 'bigint', name: 'POWER_UNIT_ID' })
+  powerUnitId: string;
 
   @ApiProperty({ example: '10', description: 'Unit Number' })
   @Column({ length: 10, name: 'UNIT_NUMBER', nullable: true })
   unitNumber: string;
 
   @ApiProperty({ example: 'CWJR 897665', description: 'Plate Number' })
-  @Column({ length: 10, name: 'PLATE_NUMBER', nullable: false })
+  @Column({ length: 10, name: 'PLATE', nullable: false })
   plateNumber: string;
 
   @ApiProperty({
@@ -32,11 +32,11 @@ export class PowerUnit extends BaseEntity {
     description: 'The Prov/State where the vehicle was registered',
   })
   @ManyToOne(() => ProvinceState)
-  @JoinColumn({ name: 'PROVINCE_STATE_ID' })
+  @JoinColumn({ name: 'PROVINCE_ID' })
   provinceState: ProvinceState;
 
   @ApiProperty({ example: '2022', description: 'The year of Manufacture' })
-  @Column({ type: 'integer', width: 4, name: 'YEAR', nullable: false })
+  @Column({ type: 'smallint', width: 4, name: 'YEAR', nullable: false })
   year: number;
 
   @ApiProperty({ example: 'Kenworth', description: 'Make of the vehicle' })
@@ -48,7 +48,13 @@ export class PowerUnit extends BaseEntity {
   vin: string;
 
   @ApiProperty({ example: '63500', description: 'Licensed GVW' })
-  @Column({ type: 'integer', width: 40, name: 'LICENSED_GVW', nullable: false })
+  @Column({
+    type: 'decimal',
+    precision: 18,
+    scale: 2,
+    name: 'LICENSED_GVW',
+    nullable: false,
+  })
   licensedGvw: number;
 
   @ApiProperty({ example: '1', description: 'Power Unit Type Id' })

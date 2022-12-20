@@ -29,7 +29,7 @@ export class VehiclesController {
 
   @Get('/powerUnit/:powerUnitId')
   findOne(@Param('powerUnitId') powerUnitId: string) {
-    return this.vehcilesService.findOne(+powerUnitId);
+    return this.vehcilesService.findOne(powerUnitId);
   }
 
   @Put('/powerUnit/:powerUnitId')
@@ -37,11 +37,11 @@ export class VehiclesController {
     @Param('powerUnitId') powerUnitId: string,
     @Body() updateUserDto: UpdatePowerUnitDto,
   ) {
-    return this.vehcilesService.update(+powerUnitId, updateUserDto);
+    return this.vehcilesService.update(powerUnitId, updateUserDto);
   }
 
   @Delete('/powerUnit/:powerUnitId')
   remove(@Param('powerUnitId') powerUnitId: string) {
-    return this.vehcilesService.remove(+powerUnitId);
+    return this.vehcilesService.remove(powerUnitId);
   }
 }

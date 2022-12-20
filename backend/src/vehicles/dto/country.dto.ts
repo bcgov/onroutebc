@@ -10,6 +10,6 @@ export class CountryDto extends BaseDto {
   @ApiProperty({ example: 'CANADA', description: 'Country Name' })
   countryName: string;
 
-  @ApiProperty({ example: 'CA', description: 'Country Code' })
-  countryCode: string;
+  // @ApiProperty({ example: 'CA', description: 'Country Code' })
+  // countryCode: string;
 }

@@ -23,20 +23,20 @@ export class VehiclesService {
     return this.powerUnitRepository.find();
   }
 
-  async findOne(powerUnitId: any): Promise<PowerUnit> {
+  async findOne(powerUnitId: string): Promise<PowerUnit> {
     return this.powerUnitRepository.findOneOrFail({ where: { powerUnitId } });
   }
 
   async update(
-    powerUnitId: number,
+    powerUnitId: string,
     updatePowerUnitDto: UpdatePowerUnitDto,
   ): Promise<PowerUnit> {
     await this.powerUnitRepository.update({ powerUnitId }, updatePowerUnitDto);
-    return this.findOne({ where: { powerUnitId } });
+    return this.findOne(powerUnitId);
   }
 
   async remove(
-    powerUnitId: number,
+    powerUnitId: string,
   ): Promise<{ deleted: boolean; message?: string }> {
     try {
       await this.powerUnitRepository.delete(powerUnitId);

@@ -5,7 +5,7 @@ export class TrailerDto extends BaseDto {
   @ApiProperty({
     description: 'The Trailer ID',
   })
-  trailerId: number;
+  trailerId: string;
 
   @ApiProperty({
     description: 'The Unit Number',
@@ -49,11 +49,11 @@ export class TrailerDto extends BaseDto {
   })
   emptyTrailerWidth: number;
 
-  @ApiProperty({
-    description: 'The Company ID',
-    example: '12',
-  })
-  companyId: number;
+  // @ApiProperty({
+  //   description: 'The Company ID',
+  //   example: '12',
+  // })
+  // companyId: number;
 
   @ApiProperty({
     description: 'The Trailer Type',

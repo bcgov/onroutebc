@@ -7,7 +7,7 @@ export class PowerUnitDto extends BaseDto {
   @ApiProperty({
     description: 'The Power Unit ID',
   })
-  powerUnitId: number;
+  powerUnitId: string;
 
   @ApiProperty({
     description: 'The Unit Number',

@@ -13,16 +13,24 @@ export class PowerUnitType extends BaseEntity {
   typeId: number;
 
   @ApiProperty({ example: 'TODO', description: 'Trailer Type' })
-  @Column({ length: 100, name: 'TYPE', nullable: false })
+  @Column({ length: 150, name: 'TYPE', nullable: false })
   type: string;
 
   @ApiProperty({ example: 'TODO', description: 'Trailer Type Description' })
-  @Column({ length: 500, name: 'DESCRIPTION', nullable: false })
+  @Column({ length: 500, name: 'DESCRIPTION', nullable: true })
   description: string;
 
   @ApiProperty({ example: 'TODO', description: 'Trailer Type Alias' })
   @Column({ length: 50, name: 'ALIAS', nullable: true })
   alias: string;
+
+  @ApiProperty({ example: '1', description: 'Sort Order' })
+  @Column({ type: 'integer', name: 'SORT_ORDER', nullable: true })
+  sortOrder: string;
+
+  @ApiProperty({ example: 'TODO', description: 'Is Active' })
+  @Column({ type: 'bit', name: 'IS_ACTIVE', nullable: false })
+  isActive: string;
 
   @ApiProperty({ example: 'TODO', description: 'Power Unit Type' })
   @OneToMany(() => PowerUnit, (PowerUnit) => PowerUnit.powerUnitType)

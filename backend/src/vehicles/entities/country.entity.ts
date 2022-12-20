@@ -13,12 +13,12 @@ export class Country extends BaseEntity {
   @Column({ length: 50, name: 'COUNTRY_NAME', nullable: false })
   countryName: string;
 
-  @ApiProperty({ example: 'CA', description: 'Country Code' })
-  @Column({ length: 2, name: 'COUNTRY_CODE', nullable: false })
-  countryCode: string;
+  // @ApiProperty({ example: 'CA', description: 'Country Code' })
+  // @Column({ length: 2, name: 'COUNTRY_CODE', nullable: false })
+  // countryCode: string;
 
   @ApiProperty({ example: '1', description: 'Sort Order' })
-  @Column({ type: 'integer', width: 4, name: 'SORT_ORDER', nullable: false })
+  @Column({ type: 'integer', name: 'SORT_ORDER', nullable: true })
   sortOrder: string;
 
   @ApiProperty({ description: 'Province State' })

@@ -67,7 +67,7 @@ console.log(
       options: { encrypt: process.env.DB_TYPE === 'mssql' ? false : true },
       // entities: [User],
       autoLoadEntities: true, // Auto load all entities regiestered by typeorm forFeature method.
-      synchronize: true, // This changes the DB schema to match changes to entities, which we might not want.
+      synchronize: false, // This changes the DB schema to match changes to entities, which we might not want.
     }),
     VehiclesModule,
   ],

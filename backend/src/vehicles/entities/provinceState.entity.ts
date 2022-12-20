@@ -12,7 +12,7 @@ import { Country } from './country.entity';
 import { PowerUnit } from './powerUnit.entity';
 import { Trailer } from './trailer.entity';
 
-@Entity({ name: 'ORBC_VT_PROVINCE_STATE' })
+@Entity({ name: 'ORBC_VT_PROVINCE' })
 export class ProvinceState extends BaseEntity {
   @ApiProperty({
     example: '1',
@@ -33,7 +33,7 @@ export class ProvinceState extends BaseEntity {
   provinceStateCode: string;
 
   @ApiProperty({ example: '1', description: 'Sort Order' })
-  @Column({ type: 'integer', width: 4, name: 'SORT_ORDER', nullable: false })
+  @Column({ type: 'integer', name: 'SORT_ORDER', nullable: true })
   sortOrder: string;
 
   @ApiProperty({ example: '1', description: 'Primary Key of Country' })
