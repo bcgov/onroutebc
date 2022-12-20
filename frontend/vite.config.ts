@@ -13,7 +13,6 @@ export default defineConfig({
     open: true,
   },
 	envDir: '/usr/share/nginx/html/config',
-  env = loadEnv('production', '/usr/share/nginx/html/config', '')
   plugins: [eslint(), react(), viteTsconfigPaths(), svgrPlugin()],
   test: {
     globals: true,
@@ -30,4 +29,14 @@ export default defineConfig({
   build: {
     outDir: 'build',
   },
-});
+})=>
+	// Load env file based on `mode` in the current working directory.
+  // Set the third parameter to '' to load all env regardless of the `VITE_` prefix.
+  const env = loadEnv('production', '/usr/share/nginx/html/config', '')
+  return {
+    // vite config
+    define: {
+      __VITE_DEPLOY_ENVIRONMENT__: env.VITE_DEPLOY_ENVIRONMENT
+    },
+  }
+})
