@@ -8,7 +8,7 @@ import eslint from 'vite-plugin-eslint';
 
 // https://vitejs.dev/config/
 export default defineConfig({
-	loadEnv('production', '/usr/share/nginx/html/config', '')
+	loadEnv("production", "/usr/share/nginx/html/config", '')
   server: {
     port: 3000,
     open: true,
