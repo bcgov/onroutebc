@@ -23,7 +23,7 @@ export const CSVOptions = () => {
   };
 
   return (
-    <div className="csv-options-container">
+    <div className="csv-container">
       <IconButton
         aria-label="more"
         id="long-button"

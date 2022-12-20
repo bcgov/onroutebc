@@ -23,8 +23,8 @@ const TabPanel = (props: TabPanelProps) => {
     <div
       role="tabpanel"
       hidden={value !== index}
-      id={`simple-tabpanel-${index}`}
-      aria-labelledby={`simple-tab-${index}`}
+      id={`dash-tabpanel-${index}`}
+      aria-labelledby={`dash-tab-${index}`}
       {...other}
     >
       {value === index && children}
@@ -34,8 +34,8 @@ const TabPanel = (props: TabPanelProps) => {
 
 const TabProps = (index: number) => {
   return {
-    id: `simple-tab-${index}`,
-    "aria-controls": `simple-tabpanel-${index}`,
+    id: `dash-tab-${index}`,
+    "aria-controls": `dash-tabpanel-${index}`,
   };
 };
 
@@ -60,7 +60,7 @@ export const Dashboard = React.memo(() => {
         <Tabs
           value={value}
           onChange={handleChange}
-          aria-label="basic tabs example"
+          aria-label="vehicle inventory tabs"
         >
           <Tab label="Power Unit" {...TabProps(0)} />
           <Tab label="Trailer" {...TabProps(1)} />

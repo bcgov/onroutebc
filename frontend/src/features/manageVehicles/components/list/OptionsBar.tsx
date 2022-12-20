@@ -6,7 +6,7 @@ import { Trash } from "./Trash";
 
 export const OptionsBar = () => {
   return (
-    <div className="search-filter-bar-container">
+    <div className="options-container">
       <Search />
       <Trash />
       <Filter />

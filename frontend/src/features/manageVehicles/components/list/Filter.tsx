@@ -22,9 +22,9 @@ export const Filter = () => {
     <>
       <Button
         aria-label="filter"
-        id="long-button"
+        id="filter-button"
         variant="contained"
-        aria-controls={open ? "long-menu" : undefined}
+        aria-controls={open ? "filter-menu" : undefined}
         aria-expanded={open ? "true" : undefined}
         aria-haspopup="true"
         onClick={handleClick}
@@ -33,9 +33,9 @@ export const Filter = () => {
         Filter
       </Button>
       <Menu
-        id="long-menu"
+        id="filter-menu"
         MenuListProps={{
-          "aria-labelledby": "long-button",
+          "aria-labelledby": "filter-button",
         }}
         anchorEl={anchorEl}
         open={open}
