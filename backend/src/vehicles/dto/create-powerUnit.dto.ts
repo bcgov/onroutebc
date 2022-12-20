@@ -4,7 +4,7 @@ import { PowerUnitDto } from './powerUnit.dto';
 export class CreatePowerUnitDto extends PickType(PowerUnitDto, [
   'unitNumber',
   'plateNumber',
-  'provinceState',
+  'province',
   'year',
   'make',
   'vin',

@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { BaseEntity } from './base.entity';
-import { ProvinceState } from './provinceState.entity';
+import { Province } from './province.entity';
 
 @Entity({ name: 'ORBC_VT_COUNTRY' })
 export class Country extends BaseEntity {
@@ -21,7 +21,7 @@ export class Country extends BaseEntity {
   @Column({ type: 'integer', name: 'SORT_ORDER', nullable: true })
   sortOrder: string;
 
-  @ApiProperty({ description: 'Province State' })
-  @OneToMany(() => ProvinceState, (ProvinceState) => ProvinceState.country)
-  provinceStates: ProvinceState[];
+  @ApiProperty({ description: 'Province ' })
+  @OneToMany(() => Province, (Province) => Province.country)
+  provinces: Province[];
 }

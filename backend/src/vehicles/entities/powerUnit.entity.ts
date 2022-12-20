@@ -7,7 +7,7 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { PowerUnitType } from './powerUnitType.entity';
-import { ProvinceState } from './provinceState.entity';
+import { Province } from './province.entity';
 import { BaseEntity } from './base.entity';
 
 @Entity({ name: 'ORBC_POWER_UNIT' })
@@ -29,11 +29,11 @@ export class PowerUnit extends BaseEntity {
 
   @ApiProperty({
     example: 'BC',
-    description: 'The Prov/State where the vehicle was registered',
+    description: 'The Prov/ where the vehicle was registered',
   })
-  @ManyToOne(() => ProvinceState)
+  @ManyToOne(() => Province)
   @JoinColumn({ name: 'PROVINCE_ID' })
-  provinceState: ProvinceState;
+  province: Province;
 
   @ApiProperty({ example: '2022', description: 'The year of Manufacture' })
   @Column({ type: 'smallint', width: 4, name: 'YEAR', nullable: false })

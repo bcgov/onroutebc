@@ -2,20 +2,20 @@ import { ApiProperty } from '@nestjs/swagger';
 import { BaseDto } from './base.dto';
 import { CountryDto } from './country.dto';
 
-export class ProvinceStateDto extends BaseDto {
+export class ProvinceDto extends BaseDto {
   @ApiProperty({
-    description: 'The Province/State ID',
+    description: 'The Province ID',
   })
-  provinceStateId: number;
+  provinceId: number;
 
   @ApiProperty({
     example: 'British Columbia',
-    description: 'Province State Name',
+    description: 'Province Name',
   })
-  provinceStateName: string;
+  provinceName: string;
 
-  @ApiProperty({ example: 'BC', description: 'Province State Code' })
-  provinceStateCode: string;
+  @ApiProperty({ example: 'BC', description: 'Province Code' })
+  provinceCode: string;
 
   @ApiProperty({ example: '1', description: 'Country ID' })
   country: CountryDto;

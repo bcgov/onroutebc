@@ -18,10 +18,4 @@ export class PowerUnitTypeDto extends BaseDto {
 
   @ApiProperty({ example: 'TODO', description: 'Power Type Alias' })
   alias: string;
-
-  @ApiProperty({
-    description: 'Created by',
-    example: 'user1',
-  })
-  createdUser: string;
 }

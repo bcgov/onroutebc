@@ -3,7 +3,7 @@ import { VehiclesService } from './vehicles.service';
 import { VehiclesController } from './vehicles.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PowerUnit } from './entities/powerUnit.entity';
-import { ProvinceState } from './entities/provinceState.entity';
+import { Province } from './entities/province.entity';
 import { Country } from './entities/country.entity';
 import { PowerUnitType } from './entities/powerUnitType.entity';
 import { TrailerType } from './entities/trailerType.entity';
@@ -13,7 +13,7 @@ import { Trailer } from './entities/trailer.entity';
   imports: [
     TypeOrmModule.forFeature([
       Country,
-      ProvinceState,
+      Province,
       PowerUnitType,
       PowerUnit,
       TrailerType,

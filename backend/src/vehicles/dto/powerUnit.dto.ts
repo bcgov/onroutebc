@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { BaseDto } from './base.dto';
-import { ProvinceStateDto } from './provinceState.dto';
+import { ProvinceDto } from './province.dto';
 import { PowerUnitTypeDto } from './powerUnitType.dto';
 
 export class PowerUnitDto extends BaseDto {
@@ -25,7 +25,7 @@ export class PowerUnitDto extends BaseDto {
     description: 'The province/state where the vehicle is registered',
     example: '1',
   })
-  provinceState: ProvinceStateDto;
+  province: ProvinceDto;
 
   @ApiProperty({
     description: 'The Year Of Manufacture',
