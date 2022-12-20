@@ -75,6 +75,7 @@ services:
     volumes:
       - ./backend:/app:z
       - /app/node_modules
+      - /app/dist
 
   frontend:
     container_name: frontend
