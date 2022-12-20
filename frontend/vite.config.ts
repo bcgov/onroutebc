@@ -13,7 +13,7 @@ export default defineConfig({
     open: true,
   },
 	envDir: '/usr/share/nginx/html/config',
-  const env = loadEnv(mode, process.cwd(), '')
+  env = loadEnv('production', '/usr/share/nginx/html/config', '')
   return {
     // vite config
     define: {
