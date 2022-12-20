@@ -64,9 +64,7 @@ objects:
     data:
       web.properties: |-
         // runtime-config.js vars
-        window["env"] = {
-          VITE_DEPLOY_ENVIRONMENT=${VITE_DEPLOY_ENVIRONMENT}
-        };
+        window.VITE_DEPLOY_ENVIRONMENT=${VITE_DEPLOY_ENVIRONMENT}
       VITE_DEPLOY_ENVIRONMENT: ${ZONE}
 
   - apiVersion: v1
