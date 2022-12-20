@@ -7,27 +7,35 @@ import svgrPlugin from 'vite-plugin-svgr';
 import eslint from 'vite-plugin-eslint';
 
 // https://vitejs.dev/config/
-export default defineConfig({
-	loadEnv("production", "/usr/share/nginx/html/config", '')
-  server: {
-    port: 3000,
-    open: true,
-  },
-	envDir: '/usr/share/nginx/html/config',
-  plugins: [eslint(), react(), viteTsconfigPaths(), svgrPlugin()],
-  test: {
-    globals: true,
-    environment: 'jsdom',
-    setupFiles: './src/setupTests.ts',
-    coverage: {
-      reporter: ['text', 'html'],
-      exclude: [
-        'node_modules/',
-        'src/setupTests.ts',
-      ],
+export default defineConfig(({ command, mode }) => {
+  // Load env file based on `mode` in the current working directory.
+  // Set the third parameter to '' to load all env regardless of the `VITE_` prefix.
+  const env = loadEnv("production", "/usr/share/nginx/html/config", '')
+  return {
+    // vite config
+		server: {
+			port: 3000,
+			open: true,
+		},
+		envDir: '/usr/share/nginx/html/config',
+		plugins: [eslint(), react(), viteTsconfigPaths(), svgrPlugin()],
+		test: {
+			globals: true,
+			environment: 'jsdom',
+			setupFiles: './src/setupTests.ts',
+			coverage: {
+				reporter: ['text', 'html'],
+				exclude: [
+					'node_modules/',
+					'src/setupTests.ts',
+				],
+			},
+		},
+		build: {
+			outDir: 'build',
+		},
+    define: {
+      __VITE_DEPLOY_ENVIRONMENT__: env.VITE_DEPLOY_ENVIRONMENT,
     },
-  },
-  build: {
-    outDir: 'build',
-  },
+  }
 })
