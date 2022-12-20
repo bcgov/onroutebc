@@ -13,6 +13,13 @@ export default defineConfig({
     open: true,
   },
 	envDir: '/usr/share/nginx/html/config',
+  const env = loadEnv(mode, process.cwd(), '')
+  return {
+    // vite config
+    define: {
+      VITE_DEPLOY_ENVIRONMENT: env.VITE_DEPLOY_ENVIRONMENT,
+    },
+  },
   plugins: [eslint(), react(), viteTsconfigPaths(), svgrPlugin()],
   test: {
     globals: true,
