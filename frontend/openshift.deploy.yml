@@ -64,7 +64,7 @@ objects:
     data:
       web.properties: |-
         // runtime-config.js vars
-        window["_env_"] = {
+        window.env. = {
           VITE_DEPLOY_ENVIRONMENT=${VITE_DEPLOY_ENVIRONMENT}
         };
       VITE_DEPLOY_ENVIRONMENT: ${ZONE}
@@ -100,7 +100,7 @@ objects:
           containers:
             - image: ${NAME}-${ZONE}-${COMPONENT}:${IMAGE_TAG}
               lifecycle:
-                postStart:
+                pretart:
                   exec:
                     command: ["/bin/sh", "-c", "envsubst < /tmp/config.js.template > /usr/share/nginx/html/config/config.js;" ] 
               imagePullPolicy: Always
