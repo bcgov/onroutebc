@@ -7,13 +7,13 @@ WORKDIR /app
 # Copy app files
 COPY . ./
 
-# Assign permissions to npm folder
+# Create and Assign permissions to npm folder
 RUN mkdir /.npm && chmod 777 /.npm
 
 # Install packages, build and keep only prod packages
 RUN npm ci
 RUN npm run build
-RUN npm ci --only=prod  
+RUN npm prune --production
 
 
 
@@ -40,6 +40,7 @@ ENV MSSQL_SA_PASSWORD ${MSSQL_SA_PASSWORD}
 ENV MSSQL_ENCRYPT ${MSSQL_ENCRYPT}
 
 # Copy production files from build
+COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
 

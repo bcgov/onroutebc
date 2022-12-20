@@ -72,10 +72,6 @@ services:
       - postgres-db
     ports:
       - "5000:5000"
-    volumes:
-      - ./backend:/app:z
-      - /app/node_modules
-      - /app/dist
 
   frontend:
     container_name: frontend
