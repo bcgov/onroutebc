@@ -99,7 +99,7 @@ objects:
               lifecycle:
                 postStart:
                   exec:
-                    command: ["/bin/sh", "-c", "envsubst < .env.template > /usr/share/nginx/html/config/.env;" ] 
+                    command: ["/bin/sh", "-c", "envsubst < /tmp/.env.template > /usr/share/nginx/html/config/.env;" ] 
               imagePullPolicy: Always
               name: ${NAME}
               env:
