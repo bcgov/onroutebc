@@ -1,4 +1,5 @@
 import React from 'react';
+import loadEnv from 'vite'
 
 export const HomePage = React.memo(() => {
 
