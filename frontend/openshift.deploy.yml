@@ -100,7 +100,7 @@ objects:
           containers:
             - image: ${NAME}-${ZONE}-${COMPONENT}:${IMAGE_TAG}
               lifecycle:
-                pretart:
+                postStart:
                   exec:
                     command: ["/bin/sh", "-c", "envsubst < /tmp/config.js.template > /usr/share/nginx/html/config/config.js;" ] 
               imagePullPolicy: Always
