@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Button } from "@mui/material";
 import { VehicleForm } from "../form/VehicleForm";
 import { List } from "../list/List";
+import { List_fancy } from "../list/List_fancy";
 
 import SlidingPane from "react-sliding-pane";
 import "react-sliding-pane/dist/react-sliding-pane.css";
@@ -70,7 +71,7 @@ export const Dashboard = React.memo(() => {
         <List />
       </TabPanel>
       <TabPanel value={value} index={1}>
-        Item Two
+        <List_fancy/>
       </TabPanel>
       <TabPanel value={value} index={2}>
         Item Three

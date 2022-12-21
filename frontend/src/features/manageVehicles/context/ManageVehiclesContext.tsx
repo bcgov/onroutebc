@@ -19,9 +19,9 @@ const sampleData: IPowerUnit[] = [
   },
   {
     id: 2,
-    unit: "Ken10",
+    unit: "Ken11",
     make: "Kenworth",
-    vin: "12345678",
+    vin: "4321",
     plate: "ABC123",
     subtype: "Truck Tractor",
     year: 2010,
@@ -32,9 +32,9 @@ const sampleData: IPowerUnit[] = [
   },
   {
     id: 3,
-    unit: "Ken10",
+    unit: "Ken12",
     make: "Kenworth",
-    vin: "12345678",
+    vin: "5555",
     plate: "ABC123",
     subtype: "Truck Tractor",
     year: 2010,
