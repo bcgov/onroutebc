@@ -1,7 +1,7 @@
 import * as React from "react";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import "./List.scss";
+import "./Options.scss";
 import { Button } from "@mui/material";
 
 const options = ["Vehicle Type"];

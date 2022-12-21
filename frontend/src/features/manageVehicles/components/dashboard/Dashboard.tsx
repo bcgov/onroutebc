@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import { Button } from "@mui/material";
 import { VehicleForm } from "../form/VehicleForm";
-//import { List } from "../list/List";
-import { List2 } from "../list/List2";
+import { List } from "../list/List";
 
 import SlidingPane from "react-sliding-pane";
 import "react-sliding-pane/dist/react-sliding-pane.css";
@@ -68,7 +67,7 @@ export const Dashboard = React.memo(() => {
         </Tabs>
       </Box>
       <TabPanel value={value} index={0}>
-        <List2 />
+        <List />
       </TabPanel>
       <TabPanel value={value} index={1}>
         Item Two

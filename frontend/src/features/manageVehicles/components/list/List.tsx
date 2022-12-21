@@ -1,132 +1,85 @@
-import { useMemo } from "react";
-import MaterialReactTable, {
-  MRT_ColumnDef,
-  MRT_GlobalFilterTextField,
-  MRT_ToggleFiltersButton,
-} from "material-react-table";
-import "./List.scss";
-import { Box, IconButton } from "@mui/material";
-
-type Vehicle = {
-  unit: string;
-  make: string;
-  vin: string;
-  plate: string;
-  subtype: string;
-  year: number;
-  country: string;
-  gvw: number;
-  isActive: boolean;
-};
-
-const data: Vehicle[] = [
-  {
-    unit: "Ken10",
-    make: "Kenworth",
-    vin: "12345678",
-    plate: "ABC123",
-    subtype: "Truck Tractor",
-    year: 2010,
-    country: "Canada",
-    gvw: 19000,
-    isActive: false,
-  },
-  {
-    unit: "Ken10",
-    make: "Kenworth",
-    vin: "12345678",
-    plate: "ABC123",
-    subtype: "Truck Tractor",
-    year: 2010,
-    country: "Canada",
-    gvw: 19000,
-    isActive: false,
-  },
-  {
-    unit: "Ken10",
-    make: "Kenworth",
-    vin: "12345678",
-    plate: "ABC123",
-    subtype: "Truck Tractor",
-    year: 2010,
-    country: "Canada",
-    gvw: 19000,
-    isActive: false,
-  },
-];
+import { useMemo, useState } from "react";
+import { DataGrid, gridClasses } from "@mui/x-data-grid";
+import { Box } from "@mui/material";
+import { grey } from "@mui/material/colors";
+import { Options } from "../options/Options";
+import { IPowerUnit, ManageVehiclesContextType } from "../../@types/managevehicles";
+import { useContext } from "react";
+import { ManageVehiclesContext } from "../../context/ManageVehiclesContext";
 
 export const List = () => {
-  const columns = useMemo<MRT_ColumnDef<Vehicle>[]>(
+
+  const { powerUnitData } = useContext(ManageVehiclesContext) as ManageVehiclesContextType;
+
+  const [rows] = useState<IPowerUnit[]>(powerUnitData);
+  const [pageSize, setPageSize] = useState(5);
+  const [rowId, setRowId] = useState<number | string>("");
+
+  console.log(rowId);
+
+  const columns = useMemo(
     () => [
       {
-        accessorKey: "unit",
-        header: "Unit #",
+        field: "unit",
+        headerName: "Unit #",
+        width: 120,
+        sortable: false,
+        filterable: false,
+      },
+      { field: "make", headerName: "Make", width: 170 },
+      { field: "vin", headerName: "VIN", width: 200 },
+      {
+        field: "plate",
+        headerName: "Plate",
+        width: 100,
+        type: "singleSelect",
+        valueOptions: ["basic", "editor", "admin"],
+        editable: true,
       },
       {
-        accessorKey: "make",
-        header: "Make",
+        field: "subtype",
+        headerName: "Vehicle Type",
+        width: 200,
+        editable: true,
       },
       {
-        accessorKey: "vin",
-        header: "VIN",
-      },
-      {
-        accessorKey: "plate",
-        header: "Plate",
-      },
-      {
-        accessorKey: "subtype",
-        header: "Vehicle Subtype",
-      },
-      {
-        accessorKey: "isActive",
-        header: "Active Permit",
+        field: "dateCreated",
+        headerName: "Date Created",
+        width: 150,
       },
     ],
     []
   );
 
   return (
-    <div className="table-container">
-      <MaterialReactTable
+    <Box
+      sx={{
+        height: 400,
+        width: "100%",
+      }}
+    >
+      <Options />
+      <DataGrid
         columns={columns}
-        data={data}
-        muiTopToolbarProps={{
-          sx: { zIndex: 0 },
-        }}
-        muiBottomToolbarProps={{
-          sx: { zIndex: 0 },
-        }}
-        muiSearchTextFieldProps={{
-          placeholder: "Search all users",
-          sx: { minWidth: "300px" },
-          variant: "outlined",
-          inputProps: {
-            style: {
-              padding: "10px",
-            },
+        rows={rows}
+        getRowId={(row) => row.id}
+        disableColumnMenu
+        rowsPerPageOptions={[5, 10, 20]}
+        pageSize={pageSize}
+        onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
+        checkboxSelection
+        getRowSpacing={(params) => ({
+          top: params.isFirstVisible ? 0 : 5,
+          bottom: params.isLastVisible ? 0 : 5,
+        })}
+        sx={{
+          [`& .${gridClasses.row}`]: {
+            bgcolor: (theme) =>
+              theme.palette.mode === "light" ? grey[200] : grey[900],
           },
         }}
-        initialState={{
-          showGlobalFilter: true, //show the global filter by default
-        }}
-        positionGlobalFilter="left"
-        renderTopToolbar={({ table }) => (
-          <Box>
-            <MRT_GlobalFilterTextField table={table} />
-            {/* add custom button to print table  */}
-            <IconButton
-              onClick={() => {
-                alert("Delete Selected Accounts");
-              }}
-            >
-              <i className="fa fa-trash"></i>
-            </IconButton>
-            {/* along-side built-in buttons in whatever order you want them */}
-            <MRT_ToggleFiltersButton table={table} />
-          </Box>
-        )}
+        onCellEditCommit={(params) => setRowId(params.id)}
       />
-    </div>
+    </Box>
   );
-};
+}
