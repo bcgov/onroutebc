@@ -1,10 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
-import { BaseEntity } from './base.entity';
+import { Base } from './base.entity';
 import { Trailer } from './trailer.entity';
 
 @Entity({ name: 'ORBC_VT_TRAILER_TYPE' })
-export class TrailerType extends BaseEntity {
+export class TrailerType extends Base {
   @ApiProperty({
     example: '1',
     description: 'The Trailer Type ID',

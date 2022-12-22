@@ -8,10 +8,10 @@ import {
 } from 'typeorm';
 import { TrailerType } from './trailerType.entity';
 import { Province } from './province.entity';
-import { BaseEntity } from './base.entity';
+import { Base } from './base.entity';
 
 @Entity({ name: 'ORBC_TRAILER' })
-export class Trailer extends BaseEntity {
+export class Trailer extends Base {
   @ApiProperty({
     example: '1',
     description: 'The Trailer ID',

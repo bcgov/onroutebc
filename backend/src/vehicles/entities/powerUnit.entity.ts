@@ -8,10 +8,10 @@ import {
 } from 'typeorm';
 import { PowerUnitType } from './powerUnitType.entity';
 import { Province } from './province.entity';
-import { BaseEntity } from './base.entity';
+import { Base } from './base.entity';
 
 @Entity({ name: 'ORBC_POWER_UNIT' })
-export class PowerUnit extends BaseEntity {
+export class PowerUnit extends Base {
   @ApiProperty({
     example: '1',
     description: 'The Power Unit ID',

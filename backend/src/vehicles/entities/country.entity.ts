@@ -1,10 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
-import { BaseEntity } from './base.entity';
+import { Base } from './base.entity';
 import { Province } from './province.entity';
 
 @Entity({ name: 'ORBC_VT_COUNTRY' })
-export class Country extends BaseEntity {
+export class Country extends Base {
   @ApiProperty({ example: '1', description: 'The Country ID' })
   @PrimaryGeneratedColumn({ type: 'integer', name: 'COUNTRY_ID' })
   countryId: number;

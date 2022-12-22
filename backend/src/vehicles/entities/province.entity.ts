@@ -7,13 +7,13 @@ import {
   ManyToOne,
   OneToMany,
 } from 'typeorm';
-import { BaseEntity } from './base.entity';
+import { Base } from './base.entity';
 import { Country } from './country.entity';
 import { PowerUnit } from './powerUnit.entity';
 import { Trailer } from './trailer.entity';
 
 @Entity({ name: 'ORBC_VT_PROVINCE' })
-export class Province extends BaseEntity {
+export class Province extends Base {
   @ApiProperty({
     example: '1',
     description: 'The Province ID',
