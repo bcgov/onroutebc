@@ -4,15 +4,22 @@ FROM node:18.12.1-alpine as builder
 # Set the working directory to /app inside the container
 WORKDIR /app
 
-# Copy app files
-COPY . ./
+# Install app dependencies
+COPY ./package*.json ./
 
 # Create and Assign permissions to npm folder
 RUN mkdir /.npm && chmod 777 /.npm
 
 # Install packages, build and keep only prod packages
 RUN npm ci
+
+# Copy app files
+COPY . ./
+
+#Build
 RUN npm run build
+
+#Prune
 RUN npm prune --production
 
 
