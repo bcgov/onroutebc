@@ -11,7 +11,6 @@ COPY . ./
 RUN mkdir /.npm && chmod 777 /.npm
 
 # Install packages, build and keep only prod packages
-RUN npm cache clean --force
 RUN npm ci
 RUN npm run build
 RUN npm prune --production
@@ -20,6 +19,10 @@ RUN npm prune --production
 
 # Deployment container
 FROM node:18.12.1-alpine
+RUN npm cache clean --force
+
+# Create and Assign permissions to npm folder
+RUN mkdir /.npm && chmod 777 /.npm
 
 # Set the working directory to /app inside the deployment container
 WORKDIR /app
