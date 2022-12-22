@@ -1,11 +1,11 @@
-import { useMemo, useContext } from "react";
+import { useMemo, useContext, useState } from "react";
 import MaterialReactTable, {
   MRT_ColumnDef,
   MRT_GlobalFilterTextField,
-  MRT_ToggleFiltersButton,
+  MRT_TableInstance,
 } from "material-react-table";
 import "./List.scss";
-import { Box, IconButton } from "@mui/material";
+import { Box, Button, IconButton, Menu, MenuItem } from "@mui/material";
 import { IPowerUnit, ManageVehiclesContextType } from "../../@types/managevehicles";
 import { ManageVehiclesContext } from "../../context/ManageVehiclesContext";
 
@@ -49,29 +49,44 @@ export const List_fancy = () => {
         columns={columns}
         data={powerUnitData}
         muiTopToolbarProps={{
-          sx: { zIndex: 0 },
+          // resolve z-index conflict with sliding panel
+          sx: { zIndex: 0 }, 
         }}
         muiBottomToolbarProps={{
+          // resolve z-index conflict with sliding panel
           sx: { zIndex: 0 },
         }}
         muiSearchTextFieldProps={{
-          placeholder: "Search all users",
-          sx: { minWidth: "300px" },
+          placeholder: "Search",
+          sx: { 
+            minWidth: "300px",
+            backgroundColor: "white",
+          },
           variant: "outlined",
           inputProps: {
-            style: {
+            sx: {
               padding: "10px",
             },
-          },
+            
+          },          
         }}
+        muiTableHeadRowProps={{
+          sx: {backgroundColor: 'lightGrey'},
+        }}
+        enableColumnActions={false}
+        enableRowSelection
         initialState={{
           showGlobalFilter: true, //show the global filter by default
         }}
         positionGlobalFilter="left"
         renderTopToolbar={({ table }) => (
-          <Box>
-            <MRT_GlobalFilterTextField table={table} />
-            {/* add custom button to print table  */}
+          <Box sx={{
+            display: 'flex',
+            padding: '10px 0px',
+            backgroundColor: '#F2F2F2'
+          }}>
+            <MRT_GlobalFilterTextField table={table}/>
+            <CustomFilter table={table}/>
             <IconButton
               onClick={() => {
                 alert("Delete Selected Accounts");
@@ -79,11 +94,75 @@ export const List_fancy = () => {
             >
               <i className="fa fa-trash"></i>
             </IconButton>
-            {/* along-side built-in buttons in whatever order you want them */}
-            <MRT_ToggleFiltersButton table={table} />
           </Box>
         )}
       />
     </div>
   );
 };
+
+const options = ["Truck Tractor", "Tandem", "Tridem"];
+const ITEM_HEIGHT = 48;
+
+export const CustomFilter = ({table} : {table: MRT_TableInstance<IPowerUnit>}) => {
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+    //table.setShowFilters(true);
+    console.log("table.getGlobalFilterFn()", table.getGlobalFilterFn());
+    console.log("table.getGlobalAutoFilterFn()", table.getGlobalAutoFilterFn());
+    console.log("table.getAllColumns()", table.getAllColumns());
+    //console.log(table.setColumnFilters("5555"));
+    //table.setColumnFilters([{id: 'vin', value: '5'}])
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+    table.setShowFilters(false);
+    table.resetColumnFilters();
+  };
+
+  return (
+    <>
+      <Button
+        aria-label="filter"
+        id="filter-button"
+        variant="contained"
+        aria-controls={open ? "filter-menu" : undefined}
+        aria-expanded={open ? "true" : undefined}
+        aria-haspopup="true"
+        onClick={handleClick}
+        startIcon={<i className="fa fa-filter"></i>}
+        sx={{ margin: '0px 20px'}}
+      >
+        Filter
+      </Button>
+      <Menu
+        id="filter-menu"
+        MenuListProps={{
+          "aria-labelledby": "filter-button",
+        }}
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+        PaperProps={{
+          style: {
+            maxHeight: ITEM_HEIGHT * 4.5,
+            width: "20ch",
+          },
+        }}
+      >
+        {options.map((option) => (
+          <MenuItem
+            key={option}
+            selected={option === "Pyxis"}
+            onClick={() => {table.setColumnFilters([{id: 'subtype', value: option}])}}
+          >
+            {option}
+          </MenuItem>
+        ))}
+      </Menu>
+    </>
+  );
+}
