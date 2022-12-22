@@ -1,13 +1,36 @@
-FROM node:18.12.1-alpine
+# Build container
+FROM node:18.12.1-alpine as builder
 
 # Set the working directory to /app inside the container
 WORKDIR /app
 
-# Set variables
+# Copy app files
+COPY . ./
 
-# Set node to production 
+# Create and Assign permissions to npm folder
+RUN mkdir /.npm && chmod 777 /.npm
+
+# Install packages, build and keep only prod packages
+RUN npm ci
+RUN npm run build
+RUN npm prune --production
+
+
+
+# Deployment container
+FROM node:18.12.1-alpine
+RUN npm cache clean --force
+
+# Create and Assign permissions to npm folder
+RUN mkdir /.npm && chmod 777 /.npm
+
+# Set the working directory to /app inside the deployment container
+WORKDIR /app
+
+# Set node to production
 ENV NODE_ENV production
 
+# Set environment variables
 ENV DB_TYPE ${DB_TYPE}
 ENV POSTGRESQL_HOST ${POSTGRESQL_HOST}
 ENV POSTGRESQL_USER ${POSTGRESQL_USER}
@@ -20,20 +43,10 @@ ENV MSSQL_SA_USER ${MSSQL_SA_USER}
 ENV MSSQL_SA_PASSWORD ${MSSQL_SA_PASSWORD}
 ENV MSSQL_ENCRYPT ${MSSQL_ENCRYPT}
 
-# Install app dependencies
-COPY ./package*.json ./
-
-# Assign permissions to npm folder
-RUN mkdir /.npm && chmod 777 /.npm
-
-# Install dependencies (npm ci makes sure the exact versions in the lockfile gets installed)
-RUN npm ci
-
-# Copy app files
-COPY . .
-
-# Build
-RUN npm run build
+# Copy production files from build
+COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/dist ./dist
 
 # Expose Port
 EXPOSE 5000
