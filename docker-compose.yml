@@ -20,13 +20,13 @@ services:
       context: ./database/mssql
       dockerfile: Dockerfile
     environment:
-      MSSQL_HOST: localhost
-      MSSQL_PORT: 1433
-      MSSQL_DB: onroutebc
-      MSSQL_SA_USER: SA
-      MSSQL_SA_PASSWORD: YourStrong@Passw0rd
-      MSSQL_ENCRYPT: false
-      MSSQL_DDL_FILENAME: sample_ddl.sql
+      MSSQL_HOST: ${MSSQL_HOST}
+      MSSQL_PORT: ${MSSQL_PORT}
+      MSSQL_DB: ${MSSQL_DB}
+      MSSQL_SA_USER: ${MSSQL_SA_USER}
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD}
+      MSSQL_ENCRYPT: ${MSSQL_ENCRYPT}
+      MSSQL_INIT_DDL_FILENAME: ${MSSQL_INIT_DDL_FILENAME}
     hostname: sql-server-db
     ports:
       - "1433:1433"
