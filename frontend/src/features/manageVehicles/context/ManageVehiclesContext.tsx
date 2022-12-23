@@ -1,54 +1,52 @@
 import { useState, createContext } from "react";
-import { IPowerUnit, ManageVehiclesContextType } from "../@types/managevehicles";
+import {
+  IPowerUnit,
+  ManageVehiclesContextType,
+} from "../@types/managevehicles";
 
-export const ManageVehiclesContext = createContext<ManageVehiclesContextType | null>(null);
+export const ManageVehiclesContext = createContext<ManageVehiclesContextType>({
+  powerUnitData: [],
+  setPowerUnitData: null,
+  trailerData: [],
+  isError: false,
+  setIsError: null,
+  isLoading: false,
+  setIsLoading: null,
+  isRefetching: false,
+  setIsRefetching: null,
+  rowCount: 0,
+  setRowCount: null,
+});
 
-const sampleData: IPowerUnit[] = [
-  {
-    id: 1,
-    unit: "Ken10",
-    make: "Kenworth",
-    vin: "12345678",
-    plate: "ABC123",
-    subtype: "Tandem",
-    year: 2010,
-    country: "Canada",
-    gvw: 19000,
-    isActive: false,
-    dateCreated: "2022-12-19",
-  },
-  {
-    id: 2,
-    unit: "Ken11",
-    make: "Kenworth",
-    vin: "4321",
-    plate: "ABC123",
-    subtype: "Truck Tractor",
-    year: 2010,
-    country: "Canada",
-    gvw: 19000,
-    isActive: false,
-    dateCreated: "2022-12-19",
-  },
-  {
-    id: 3,
-    unit: "Ken12",
-    make: "Kenworth",
-    vin: "5555",
-    plate: "ABC123",
-    subtype: "Tridem",
-    year: 2010,
-    country: "Canada",
-    gvw: 19000,
-    isActive: false,
-    dateCreated: "2022-12-19",
-  },
-];
-
-export const ManageVehiclesProvider = ({ children } : { children: React.ReactNode } ) => {
-  const [powerUnitData] = useState<IPowerUnit[]>(sampleData);
+export const ManageVehiclesProvider = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
+  
+  //data and fetching state
+  const [powerUnitData, setPowerUnitData] = useState<IPowerUnit[]>([]);
+  const [isError, setIsError] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isRefetching, setIsRefetching] = useState(false);
+  const [rowCount, setRowCount] = useState(0);
 
   return (
-    <ManageVehiclesContext.Provider value={{ powerUnitData }}>{children}</ManageVehiclesContext.Provider>
+    <ManageVehiclesContext.Provider
+      value={{
+        powerUnitData,
+        setPowerUnitData,
+        isError,
+        setIsError,
+        isLoading,
+        setIsLoading,
+        isRefetching,
+        setIsRefetching,
+        rowCount,
+        setRowCount,
+      }}
+    >
+      {children}
+    </ManageVehiclesContext.Provider>
   );
 };

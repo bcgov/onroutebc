@@ -1,21 +1,33 @@
-import * as React from "react";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
-import "./Options.scss";
-import { Button } from "@mui/material";
+import { Button, Menu, MenuItem } from "@mui/material";
+import { MRT_TableInstance } from "material-react-table";
+import { useState } from "react";
+import { IPowerUnit } from "../../@types/managevehicles";
 
-const options = ["Vehicle Type"];
-
+const options = ["Truck Tractor", "Tandem", "Tridem"];
 const ITEM_HEIGHT = 48;
 
-export const Filter = () => {
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+export const Filter= ({
+  table,
+}: {
+  table: MRT_TableInstance<IPowerUnit>;
+}) => {
+
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
+
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
+    //table.setShowFilters(true);
+    console.log("table.getGlobalFilterFn()", table.getGlobalFilterFn());
+    console.log("table.getGlobalAutoFilterFn()", table.getGlobalAutoFilterFn());
+    console.log("table.getAllColumns()", table.getAllColumns());
+    //console.log(table.setColumnFilters("5555"));
+    //table.setColumnFilters([{id: 'vin', value: '5'}])
   };
   const handleClose = () => {
     setAnchorEl(null);
+    table.setShowFilters(false);
+    table.resetColumnFilters();
   };
 
   return (
@@ -29,6 +41,7 @@ export const Filter = () => {
         aria-haspopup="true"
         onClick={handleClick}
         startIcon={<i className="fa fa-filter"></i>}
+        sx={{ margin: "0px 20px" }}
       >
         Filter
       </Button>
@@ -51,7 +64,9 @@ export const Filter = () => {
           <MenuItem
             key={option}
             selected={option === "Pyxis"}
-            onClick={handleClose}
+            onClick={() => {
+              table.setColumnFilters([{ id: "subtype", value: option }]);
+            }}
           >
             {option}
           </MenuItem>

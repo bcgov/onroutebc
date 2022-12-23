@@ -8,8 +8,8 @@ export const Options = () => {
   return (
     <div className="options-container">
       <Search />
-      <Trash />
       <Filter />
+      <Trash />
       <CSVOptions />
     </div>
   );
