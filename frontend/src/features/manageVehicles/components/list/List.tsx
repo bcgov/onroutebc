@@ -1,32 +1,54 @@
-import { useContext, useMemo } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import MaterialReactTable, {
   MRT_ColumnDef,
   MRT_GlobalFilterTextField,
 } from "material-react-table";
 import "./List.scss";
 import { Box } from "@mui/material";
-import {
-  IPowerUnit,
-  ManageVehiclesContextType,
-} from "../../@types/managevehicles";
-import { ManageVehiclesContext } from "../../context/ManageVehiclesContext";
+import { IPowerUnit, VehiclesContextType } from "../../@types/managevehicles";
+import { VehiclesContext } from "../../context/VehiclesContext";
 import { columnPowerUnitData } from "./Columns";
 import { Filter } from "../options/Filter";
 import { Trash } from "../options/Trash";
 import { CSVOptions } from "../options/CSVOptions";
 
 export const List = () => {
+  // Data and fetching state
+  const { powerUnitData } = useContext(VehiclesContext) as VehiclesContextType;
 
-  // data and fetching state
-  const { powerUnitData, isError, isLoading, isRefetching, rowCount } = useContext(
-    ManageVehiclesContext
-  ) as ManageVehiclesContextType;
+  // Table state
+  const [isError, setIsError] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // blurs content
+  const [isRefetching, setIsRefetching] = useState(false); // used for progress bar
+  const [rowCount, setRowCount] = useState(0);
 
-  // table column definitions
+  // Table column definitions
   const columnsPowerUnit = useMemo<MRT_ColumnDef<IPowerUnit>[]>(
     () => columnPowerUnitData,
     []
   );
+
+  // TODO: clean this up
+  useEffect(() => {
+
+    console.log("UseEffect!");
+
+    if (!powerUnitData.length) {
+      setIsLoading(true);
+    } else {
+      setIsRefetching(true);
+    }
+
+    if (powerUnitData) {
+      setRowCount(powerUnitData.length);
+      setIsError(false);
+      setIsLoading(false);
+      setIsRefetching(false);
+    } else {
+      setIsError(true);
+    }
+
+  }, [powerUnitData]);
 
   return (
     <div className="table-container">
@@ -47,11 +69,10 @@ export const List = () => {
         }
         rowCount={rowCount}
         state={{
-          isLoading: isLoading,
+          isLoading,
           showAlertBanner: isError,
           showProgressBars: isRefetching,
         }}
-
         // Search Bar
         positionGlobalFilter="left"
         initialState={{ showGlobalFilter: true }} //show the search bar by default
@@ -68,12 +89,10 @@ export const List = () => {
             },
           },
         }}
-
         // Row Header
         muiTableHeadRowProps={{
           sx: { backgroundColor: "lightGrey" },
         }}
-
         // Custom options
         renderTopToolbar={({ table }) => (
           <Box

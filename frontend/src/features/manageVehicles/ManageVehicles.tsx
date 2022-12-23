@@ -1,6 +1,6 @@
 import React from "react";
 import { Dashboard } from "./components/dashboard/Dashboard";
-import { ManageVehiclesProvider } from "./context/ManageVehiclesContext";
+import { ManageVehiclesProvider } from "./context/VehiclesContext";
 
 export const ManageVehicles = React.memo(() => {
   return (

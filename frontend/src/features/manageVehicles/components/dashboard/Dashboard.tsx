@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Button } from "@mui/material";
 import { VehicleForm } from "../form/VehicleForm";
 import { List } from "../list/List";
@@ -8,7 +8,6 @@ import "react-sliding-pane/dist/react-sliding-pane.css";
 import { Box, Tabs, Tab } from "@mui/material";
 
 import "./Dashboard.scss";
-import { useVehiclesApi } from "../../hooks/useVehiclesApi";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -42,12 +41,6 @@ const TabProps = (index: number) => {
 export const Dashboard = React.memo(() => {
   const [showForm, setShowForm] = useState<boolean>(false);
   const [value, setValue] = useState(0);
-  const vehiclesApi = useVehiclesApi();
-
-  // Fetch all power unit data on initial page load
-  useEffect(() => {
-    vehiclesApi.getAllPowerUnits();
-  }, []);
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);

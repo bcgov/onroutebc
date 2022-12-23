@@ -36,19 +36,7 @@ export interface ITrailer {
   dateCreated: string;
 }
 
-export interface ManageVehiclesContextType {
+export interface VehiclesContextType {
   powerUnitData: IPowerUnit[];
-  setPowerUnitData: Dispatch<SetStateAction<IPowerUnit[]>>;
   trailerData?: ITrailer[];
-
-  // Table state
-  isError: boolean;
-  setIsError: Dispatch<SetStateAction<boolen>>;
-  isLoading: boolean;
-  setIsLoading: Dispatch<SetStateAction<boolen>>;
-  isRefetching: boolean;
-  setIsRefetching: Dispatch<SetStateAction<boolen>>;
-  rowCount: number;
-  setRowCount: Dispatch<SetStateAction<number>>;
-
 }
