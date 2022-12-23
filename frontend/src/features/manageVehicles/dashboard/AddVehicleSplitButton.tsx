@@ -8,20 +8,30 @@ import Paper from '@mui/material/Paper';
 import Popper from '@mui/material/Popper';
 import MenuItem from '@mui/material/MenuItem';
 import MenuList from '@mui/material/MenuList';
+import { Vehicle } from '../../../constants/enums';
+import { useTranslation } from "react-i18next";
 
-const options = ['Power Unit', 'Trailer'];
+interface SplitButtonProps {
+  setFormMode: (mode: Vehicle) => void;
+}
 
-export default function AddVehicleSplitButton() {
+export default function AddVehicleSplitButton({
+  setFormMode
+}: SplitButtonProps) {
+  const { t } = useTranslation();
+  const options = [t(Vehicle.POWER_UNIT), t(Vehicle.TRAILER)];
   const [open, setOpen] = React.useState(false);
   const anchorRef = React.useRef<HTMLDivElement>(null);
   const [selectedIndex, setSelectedIndex] = React.useState(1);
+
+  setFormMode(Vehicle.POWER_UNIT);
 
   const handleClick = () => {
     console.info(`You clicked ${options[selectedIndex]}`);
   };
 
   const handleMenuItemClick = (
-    event: React.MouseEvent<HTMLLIElement, MouseEvent>,
+    _event: React.MouseEvent<HTMLLIElement, MouseEvent>,
     index: number,
   ) => {
     setSelectedIndex(index);

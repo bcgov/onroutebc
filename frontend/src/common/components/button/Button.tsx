@@ -18,6 +18,7 @@ export const Button = ({
     <button
       onClick={onClick}
       className={color + " " + className}
+      style={{marginTop: '1em'}}
     >
       {children}
     </button>
