@@ -13,9 +13,6 @@ DBSTATUS=1
 ERRCODE=1
 i=0
 
-# Continue loop while the database is not yet fully initialized
-# Database will be considered initialized once the sqlcmd returns a value of
-# zero (0) which indicates that all system databases are in ready state.
 while ([ $DBSTATUS -ne 0 ] || [ $ERRCODE -ne 0 ]) && [ $i -lt 60 ]; do
     echo "Checking db status..."
 	((i=i+1))
@@ -34,7 +31,7 @@ if [ $DBSTATUS -ne 0 ] || [ $ERRCODE -ne 0 ]; then
 	exit 1
 fi
 
-# Run the setup script to create the DB and the schema in the DB
+# Run the setup script to create the DB
 echo "Executing $MSSQL_INIT_DDL_FILENAME ..."
 /opt/mssql-tools/bin/sqlcmd -U $MSSQL_SA_USER -P $MSSQL_SA_PASSWORD -d master -i /usr/config/$MSSQL_INIT_DDL_FILENAME
 
@@ -46,7 +43,7 @@ ORBC_DB_VERSION=$(/opt/mssql-tools/bin/sqlcmd -U $MSSQL_SA_USER -P $MSSQL_SA_PAS
 echo "ORBC DB Version: $ORBC_DB_VERSION"
 
 # Look for new database version DDL files, and execute them in sequence when found.
-# DDL file names match the following pattern: v_NN_ddl.sql where NN is the version the
+# DDL file names match the following pattern: v_N_ddl.sql where N is the version the
 # database will be brought up to after execution.
 # Example: v_2_ddl.sql will migrate the database from version 1 to version 2.
 
