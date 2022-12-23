@@ -38,6 +38,7 @@ GO
 
 DECLARE @VersionDescription VARCHAR(255)
 SET @VersionDescription = 'Initialize versions system table'
+
 INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [DDL_FILE_SHA1], [RELEASE_DATE]) VALUES ($(VERSION_ID), @VersionDescription, '$(FILE_HASH)', getdate())
 
 COMMIT
