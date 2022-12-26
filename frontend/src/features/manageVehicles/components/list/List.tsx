@@ -1,16 +1,19 @@
-import { memo, useContext, useEffect, useMemo, useState } from "react";
+import { memo, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import MaterialReactTable, {
   MRT_ColumnDef,
   MRT_GlobalFilterTextField,
+  MRT_Row,
 } from "material-react-table";
 import "./List.scss";
-import { Box } from "@mui/material";
+import { Box, IconButton, Tooltip } from "@mui/material";
 import { IPowerUnit, VehiclesContextType } from "../../@types/managevehicles";
 import { VehiclesContext } from "../../context/VehiclesContext";
 import { columnPowerUnitData } from "./Columns";
 import { Filter } from "../options/Filter";
 import { Trash } from "../options/Trash";
 import { CSVOptions } from "../options/CSVOptions";
+
+import { Delete, Edit, ContentCopy } from '@mui/icons-material';
 
 export const List = memo(() => {
   // Data and fetching state
@@ -50,6 +53,22 @@ export const List = memo(() => {
 
   }, [powerUnitData]);
 
+  
+
+  const handleDeleteRow = useCallback(
+    (row: MRT_Row<IPowerUnit>) => {
+      if (
+        !confirm(`Are you sure you want to delete ${row.getValue('unitNumber')}`)
+      ) {
+        return;
+      }
+      //send api delete request here, then refetch or update local table data for re-render
+      //tableData.splice(row.index, 1);
+      //setTableData([...tableData]);
+    },
+    [],
+  );
+  
   return (
     <div className="table-container">
       <MaterialReactTable
@@ -58,10 +77,46 @@ export const List = memo(() => {
         data={powerUnitData}
         columns={columnsPowerUnit}
 
+        // Column widths
+        defaultColumn={{
+          maxSize: 200, //allow columns to get larger than default
+          size: 50, //make columns wider by default
+        }}
+
         // Disable the default column actions so that we can use our custom actions
         enableColumnActions={false}
         // Enable checkboxes for row selection
         enableRowSelection={true}
+
+    
+        // Row copy, delete, and edit options
+        enableRowActions={true}
+        positionActionsColumn="last"
+        displayColumnDefOptions={{
+          'mrt-row-actions': {
+            header: ""
+          },
+        }}
+        renderRowActions={({ row, table }) => (
+          <Box sx={{ display: 'flex', justifyContent: "flex-end" }}>
+            <Tooltip arrow placement="left" title="Edit">
+              <IconButton onClick={() => table.setEditingRow(row)}>
+                <Edit />
+              </IconButton>
+            </Tooltip>
+            <Tooltip arrow placement="top" title="Copy">
+              <IconButton onClick={() => table.setEditingRow(row)}>
+                <ContentCopy />
+              </IconButton>
+            </Tooltip>
+            <Tooltip arrow placement="top" title="Delete">
+              <IconButton color="error" onClick={() => handleDeleteRow(row)}>
+                <Delete />
+              </IconButton>
+            </Tooltip>
+          </Box>
+        )}
+        
 
         // State
         rowCount={rowCount}
@@ -104,7 +159,7 @@ export const List = memo(() => {
         // Cell/Body container
         muiTableContainerProps={{
           sx: {
-            border: "1px solid #DBDCDC",
+            outline: "1px solid #DBDCDC",
             height: "60vh"
           }
         }}

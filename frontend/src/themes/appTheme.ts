@@ -11,9 +11,9 @@ export const appTheme = createTheme({
       dark: "#000C3A",
     },
     secondary: {
-      light: "#FFF263",
-      main: "#FBC02D",
-      dark: "#C49000",
+      light: "#F2F2F2",
+      main: "#ffffff",
+      dark: "#F2F2F2",
     },
     success: { main: "#2E8540" },
     error: { main: "#FF3E34" },

@@ -3,7 +3,7 @@ import { MRT_TableInstance } from "material-react-table";
 import { useState } from "react";
 import { IPowerUnit } from "../../@types/managevehicles";
 
-const options = ["Truck Tractor", "Tandem", "Tridem"];
+const options = ["AST", "BBB", "CCC"];
 const ITEM_HEIGHT = 48;
 
 export const Filter= ({
@@ -36,6 +36,7 @@ export const Filter= ({
         aria-label="filter"
         id="filter-button"
         variant="contained"
+        color="secondary"
         aria-controls={open ? "filter-menu" : undefined}
         aria-expanded={open ? "true" : undefined}
         aria-haspopup="true"
@@ -65,7 +66,7 @@ export const Filter= ({
             key={option}
             selected={option === "Pyxis"}
             onClick={() => {
-              table.setColumnFilters([{ id: "subtype", value: option }]);
+              table.setColumnFilters([{ id: "plateNumber", value: option }]);
             }}
           >
             {option}
