@@ -48,7 +48,7 @@ export const Dashboard = React.memo(() => {
 
   return (
     <>
-      <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+      <Box sx={{ borderBottom: 1, borderColor: "divider", padding: "10px 60px 0px 60px" }}>
         <div className="dash-banner">
           <h2>Vehicle Inventory</h2>
           <Button variant="contained" onClick={() => setShowForm(true)}>

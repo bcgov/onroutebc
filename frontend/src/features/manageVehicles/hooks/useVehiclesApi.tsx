@@ -1,9 +1,6 @@
-import { useContext } from "react";
 import { IPowerUnit } from "../@types/managevehicles";
-import { VehiclesContext } from "../context/VehiclesContext";
 import { VEHICLES_API } from "./endpoints/endpoints";
 
-// context consumer hook
 export const useVehiclesApi = () => {
 
   /**

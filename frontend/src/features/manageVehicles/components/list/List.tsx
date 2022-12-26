@@ -1,4 +1,4 @@
-import { useContext, useEffect, useMemo, useState } from "react";
+import { memo, useContext, useEffect, useMemo, useState } from "react";
 import MaterialReactTable, {
   MRT_ColumnDef,
   MRT_GlobalFilterTextField,
@@ -12,7 +12,7 @@ import { Filter } from "../options/Filter";
 import { Trash } from "../options/Trash";
 import { CSVOptions } from "../options/CSVOptions";
 
-export const List = () => {
+export const List = memo(() => {
   // Data and fetching state
   const { powerUnitData } = useContext(VehiclesContext) as VehiclesContextType;
 
@@ -53,12 +53,74 @@ export const List = () => {
   return (
     <div className="table-container">
       <MaterialReactTable
+
+        // Required Props
         data={powerUnitData}
         columns={columnsPowerUnit}
+
+        // Disable the default column actions so that we can use our custom actions
         enableColumnActions={false}
+        // Enable checkboxes for row selection
         enableRowSelection={true}
+
+        // State
+        rowCount={rowCount}
+        state={{
+          isLoading,
+          showAlertBanner: isError,
+          showProgressBars: isRefetching,
+        }}
+
+        // Render a custom options Bar (inclues search, filter, trash, and csv options)
+        renderTopToolbar={({ table }) => (
+          <Box
+            sx={{
+              display: "flex",
+              padding: "10px 0px",
+              backgroundColor: "white",
+            }}
+          >
+            <MRT_GlobalFilterTextField table={table} />
+            <Filter table={table} />
+            <Trash />
+            <CSVOptions />
+          </Box>
+        )}
+
+        /*
+        * 
+        * STYLES 
+        * 
+        */
+
+        // Main table container
+        muiTablePaperProps={{
+          sx: {
+            border: "none",
+            boxShadow: "none"
+          }
+        }}
+
+        // Cell/Body container
+        muiTableContainerProps={{
+          sx: {
+            border: "1px solid #DBDCDC",
+            height: "60vh"
+          }
+        }}
+
+        // Pagination
+        muiBottomToolbarProps={{
+          sx: {
+            zIndex: 0, // resolve z-index conflict with sliding panel
+            backgroundColor: "#F2F2F2"
+          }
+        }}
+        
+        // Top toolbar
         muiTopToolbarProps={{ sx: { zIndex: 0 } }} // resolve z-index conflict with sliding panel
-        muiBottomToolbarProps={{ sx: { zIndex: 0 } }} // resolve z-index conflict with sliding panel
+
+        // Alert banner
         muiToolbarAlertBannerProps={
           isError
             ? {
@@ -67,12 +129,7 @@ export const List = () => {
               }
             : undefined
         }
-        rowCount={rowCount}
-        state={{
-          isLoading,
-          showAlertBanner: isError,
-          showProgressBars: isRefetching,
-        }}
+        
         // Search Bar
         positionGlobalFilter="left"
         initialState={{ showGlobalFilter: true }} //show the search bar by default
@@ -89,26 +146,15 @@ export const List = () => {
             },
           },
         }}
+
         // Row Header
         muiTableHeadRowProps={{
-          sx: { backgroundColor: "lightGrey" },
+          sx: { backgroundColor: "#F2F2F2" },
         }}
-        // Custom options
-        renderTopToolbar={({ table }) => (
-          <Box
-            sx={{
-              display: "flex",
-              padding: "10px 0px",
-              backgroundColor: "#F2F2F2",
-            }}
-          >
-            <MRT_GlobalFilterTextField table={table} />
-            <Filter table={table} />
-            <Trash />
-            <CSVOptions />
-          </Box>
-        )}
+        
       />
     </div>
   );
-};
+});
+
+List.displayName = "List";
