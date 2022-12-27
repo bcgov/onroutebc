@@ -1,33 +1,82 @@
-import { Button, Menu, MenuItem } from "@mui/material";
+import { Button, Checkbox, Menu, MenuItem } from "@mui/material";
 import { MRT_TableInstance } from "material-react-table";
 import { useState } from "react";
 import { IPowerUnit } from "../../@types/managevehicles";
+import { NestedMenuItem } from "mui-nested-menu";
 
-const options = ["AST", "BBB", "CCC"];
-const ITEM_HEIGHT = 48;
+const options = [
+  {
+    label: "Plate Number",
+    accessKey: "plateNumber",
+    subOptions: [
+      { label: "AST", isChecked: false },
+      { label: "BBB", isChecked: false },
+      { label: "CCC", isChecked: false },
+    ],
+  },
+  {
+    label: "Vehicle Type",
+    accessKey: "vin",
+    subOptions: [
+      { label: "Trailer", isChecked: false },
+      { label: "Tandem", isChecked: false },
+    ],
+  },
+];
 
-export const Filter= ({
-  table,
-}: {
-  table: MRT_TableInstance<IPowerUnit>;
-}) => {
-
+export const Filter = ({ table }: { table: MRT_TableInstance<IPowerUnit> }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
+  /*
+  const [isChecked, setIsChecked] = useState(() =>
+    options.map(({ subOptions }) => subOptions.map(() => false))
+  );
+  */
+
+  const [filters, setFilters] = useState(options);
+
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
-    //table.setShowFilters(true);
-    console.log("table.getGlobalFilterFn()", table.getGlobalFilterFn());
-    console.log("table.getGlobalAutoFilterFn()", table.getGlobalAutoFilterFn());
-    console.log("table.getAllColumns()", table.getAllColumns());
-    //console.log(table.setColumnFilters("5555"));
-    //table.setColumnFilters([{id: 'vin', value: '5'}])
   };
+
   const handleClose = () => {
     setAnchorEl(null);
     table.setShowFilters(false);
     table.resetColumnFilters();
+  };
+
+  /*
+  const toggleCheckboxValue = (parentIndex: number, subIndex: number) => {
+    const updatedCheckboxes = isChecked.map((parent, i) =>
+      parent.map((sub, j) => (i === parentIndex && j === subIndex ? !sub : sub))
+    );
+    setIsChecked(updatedCheckboxes);
+  };
+  */
+
+  const toggleCheckboxes = (parentIndex: number, subIndex: number) => {
+    const updatedCheckboxes = filters;
+    updatedCheckboxes[parentIndex].subOptions[subIndex].isChecked =
+      !updatedCheckboxes[parentIndex].subOptions[subIndex].isChecked;
+    setFilters(updatedCheckboxes);
+    assignFilters(updatedCheckboxes);
+  };
+
+  const assignFilters = (
+    filters: {
+      label: string;
+      accessKey: string;
+      subOptions: { label: string; isChecked: boolean }[];
+    }[]
+  ) => {
+    filters.map((parent) =>
+      parent.subOptions.map((sub) => {
+        if (sub.isChecked) {
+          table.setColumnFilters([{ id: parent.accessKey, value: sub.label }]);
+        }
+      })
+    );
   };
 
   return (
@@ -56,21 +105,30 @@ export const Filter= ({
         onClose={handleClose}
         PaperProps={{
           style: {
-            maxHeight: ITEM_HEIGHT * 4.5,
+            maxHeight: 200,
             width: "20ch",
           },
         }}
       >
-        {options.map((option) => (
-          <MenuItem
-            key={option}
-            selected={option === "Pyxis"}
-            onClick={() => {
-              table.setColumnFilters([{ id: "plateNumber", value: option }]);
-            }}
+        {options.map((option, parentIndex) => (
+          <NestedMenuItem
+            key={option.label}
+            label={option.label}
+            parentMenuOpen={open}
           >
-            {option}
-          </MenuItem>
+            {option.subOptions.map((subOption, index) => (
+              <MenuItem
+                key={subOption.label}
+              >
+                <Checkbox
+                  key={subOption.label}
+                  onClick={() => toggleCheckboxes(parentIndex, index)}
+                  checked={filters[parentIndex].subOptions[index].isChecked}
+                />
+                {subOption.label}
+              </MenuItem>
+            ))}
+          </NestedMenuItem>
         ))}
       </Menu>
     </>
