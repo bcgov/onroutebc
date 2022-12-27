@@ -2,56 +2,84 @@
 version: "3.8"
 
 services:
-  database:
-    container_name: database
+  postgres-db:
+    container_name: postgres-db
     environment:
       POSTGRES_USER: default
       POSTGRES_PASSWORD: default
       POSTGRES_DB: default
-    hostname: database
+    hostname: postgres-db
     image: postgres:13
     restart: always
     volumes:
       - /pgdata
 
+  sql-server-db:
+    container_name: sql-server-db
+    build:
+      context: ./database/mssql
+      dockerfile: Dockerfile
+    environment:
+      MSSQL_HOST: sql-server-db
+      MSSQL_PORT: 1433
+      MSSQL_DB: ORBC_DEV
+      MSSQL_SA_USER: SA
+      MSSQL_SA_PASSWORD: YourStrong@Passw0rd
+      MSSQL_ENCRYPT: false
+      MSSQL_DDL_FILENAME: sample_ddl.sql
+    healthcheck:
+      test: /opt/mssql-tools/bin/sqlcmd -S $$MSSQL_HOST -U $$MSSQL_SA_USER -P $$MSSQL_SA_PASSWORD -Q "USE $$MSSQL_DB" | grep "Changed database context to '$$MSSQL_DB'"
+      interval: 20s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    hostname: sql-server-db
+    ports:
+      - "1433:1433"
+    volumes:
+      - /sql_data
+
   backend:
     container_name: backend
-    entrypoint:
-      - "sh"
-      - "-c"
-      - "npm i && npm run start"
+    build:
+      context: ./backend/
+      dockerfile: Dockerfile
     environment:
       NODE_ENV: development
-      POSTGRESQL_HOST: database
+      DB_TYPE: mssql
+      POSTGRESQL_HOST: postgres-db
       POSTGRESQL_USER: default
       POSTGRESQL_PASSWORD: default
       POSTGRESQL_DATABASE: default
+      MSSQL_HOST: sql-server-db
+      MSSQL_PORT: 1433
+      MSSQL_DB: ORBC_DEV
+      MSSQL_SA_USER: SA
+      MSSQL_SA_PASSWORD: YourStrong@Passw0rd
+      MSSQL_ENCRYPT: false
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      test: ["CMD", "curl", "-f", "http://localhost:5000"]
       interval: 1m30s
       timeout: 10s
       retries: 3
       start_period: 40s
+    depends_on:
+      sql-server-db:
+        condition: service_healthy
     hostname: backend
-    image: node:14
     links:
-      - database
+      - sql-server-db
+      - postgres-db
     ports:
-      - "3001:3000"
-    volumes:
-      - ./backend:/app:z
-      - /app/node_modules
-    working_dir: "/app"
+      - "5000:5000"
 
   frontend:
     container_name: frontend
-    entrypoint:
-      - "sh"
-      - "-c"
-      - "npm i && npm run start"
-    environment:
-      NODE_ENV: development
-      BACKEND_URL: backend
+    build:
+      context: ./frontend/
+      dockerfile: Dockerfile
+      args:
+        VITE_DEPLOY_ENVIRONMENT: prod
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000"]
       interval: 1m30s
@@ -59,7 +87,6 @@ services:
       retries: 3
       start_period: 40s
     hostname: frontend
-    image: node:14
     links:
       - backend
     ports:
@@ -67,4 +94,3 @@ services:
     volumes:
       - ./frontend:/app:z
       - /app/node_modules
-    working_dir: "/app"

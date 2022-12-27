@@ -7,9 +7,6 @@ WORKDIR /app
 #ARG NODE_ENV
 #ENV NODE_ENV ${NODE_ENV}
 
-ARG REACT_APP_DEPLOY_ENVIRONMENT
-ENV REACT_APP_DEPLOY_ENVIRONMENT ${REACT_APP_DEPLOY_ENVIRONMENT}
-
 # Install app dependencies
 COPY ./package*.json ./
 
@@ -28,9 +25,9 @@ RUN npm run build
 # Expose Port
 EXPOSE 3000
 
-# Start the app
-#CMD [ "npx", "serve", "build" ]
-
-FROM nginx
-COPY ./nginx/default.conf /etc/nginx/conf.d/default.conf
+# Stage 1, based on Nginx, to have only the compiled app, ready for production with Nginx
+FROM nginx as production-stage
+RUN mkdir /app
 COPY --from=builder /app/build /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/nginx.conf
+CMD ["nginx", "-g", "daemon off;"]
