@@ -1,6 +1,8 @@
 import { MRT_ColumnDef } from "material-react-table";
 import { IPowerUnit } from "../../@types/managevehicles";
 
+const plateOptions = ["AAA"];
+
 export const columnPowerUnitData : MRT_ColumnDef<IPowerUnit>[] = 
 [
   {
@@ -18,6 +20,8 @@ export const columnPowerUnitData : MRT_ColumnDef<IPowerUnit>[] =
   {
     accessorKey: "plateNumber",
     header: "Plate",
+    filterVariant: 'multi-select',
+    filterSelectOptions: plateOptions,
   },
   {
     accessorKey: "licensedGvw",

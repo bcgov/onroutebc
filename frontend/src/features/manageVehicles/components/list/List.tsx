@@ -14,6 +14,8 @@ import { Trash } from "../options/Trash";
 import { CSVOptions } from "../options/CSVOptions";
 
 import { Delete, Edit, ContentCopy } from '@mui/icons-material';
+import { ColumnFiltersState } from "@tanstack/table-core";
+import { FilterList } from "./FilterList";
 
 export const List = memo(() => {
   // Data and fetching state
@@ -24,6 +26,9 @@ export const List = memo(() => {
   const [isLoading, setIsLoading] = useState(false); // blurs content
   const [isRefetching, setIsRefetching] = useState(false); // used for progress bar
   const [rowCount, setRowCount] = useState(0);
+
+  
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
   // Table column definitions
   const columnsPowerUnit = useMemo<MRT_ColumnDef<IPowerUnit>[]>(
@@ -124,10 +129,14 @@ export const List = memo(() => {
           isLoading,
           showAlertBanner: isError,
           showProgressBars: isRefetching,
+          columnFilters
         }}
+
+        onColumnFiltersChange={setColumnFilters}
 
         // Render a custom options Bar (inclues search, filter, trash, and csv options)
         renderTopToolbar={({ table }) => (
+          <>
           <Box
             sx={{
               display: "flex",
@@ -140,6 +149,8 @@ export const List = memo(() => {
             <Trash />
             <CSVOptions />
           </Box>
+          <FilterList table={table} filters={columnFilters}/>
+          </>
         )}
 
         /*

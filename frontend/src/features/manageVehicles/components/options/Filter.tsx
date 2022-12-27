@@ -3,19 +3,20 @@ import { MRT_TableInstance } from "material-react-table";
 import { useState } from "react";
 import { IPowerUnit } from "../../@types/managevehicles";
 import { NestedMenuItem } from "mui-nested-menu";
+import { ColumnFiltersState } from "@tanstack/table-core";
 
 const options = [
   {
     label: "Plate Number",
     accessKey: "plateNumber",
     subOptions: [
-      { label: "AST", isChecked: false },
+      { label: "AS", isChecked: false },
       { label: "BBB", isChecked: false },
-      { label: "CCC", isChecked: false },
+      { label: "CBA", isChecked: false },
     ],
   },
   {
-    label: "Vehicle Type",
+    label: "VIN",
     accessKey: "vin",
     subOptions: [
       { label: "Trailer", isChecked: false },
@@ -42,8 +43,8 @@ export const Filter = ({ table }: { table: MRT_TableInstance<IPowerUnit> }) => {
 
   const handleClose = () => {
     setAnchorEl(null);
-    table.setShowFilters(false);
-    table.resetColumnFilters();
+    //table.setShowFilters(false);
+    //table.resetColumnFilters();
   };
 
   /*
@@ -70,13 +71,25 @@ export const Filter = ({ table }: { table: MRT_TableInstance<IPowerUnit> }) => {
       subOptions: { label: string; isChecked: boolean }[];
     }[]
   ) => {
+
+    const list: Array<{id: string, value: unknown}> = [];
+
+    console.log('filters', filters);
+
     filters.map((parent) =>
       parent.subOptions.map((sub) => {
         if (sub.isChecked) {
-          table.setColumnFilters([{ id: parent.accessKey, value: sub.label }]);
+          console.log('Test', parent.accessKey, sub.label)
+          list.push({ id: parent.accessKey, value: sub.label });
+          
         }
       })
     );
+
+    console.log('listssss', list);
+
+    table.setColumnFilters(list);
+    //table.setColumnFilters([{id: 'plateNumber', value: 'AS'}]);
   };
 
   return (
