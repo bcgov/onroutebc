@@ -20,13 +20,13 @@ services:
       context: ./database/mssql
       dockerfile: Dockerfile
     environment:
-      MSSQL_HOST: sql-server-db
-      MSSQL_PORT: 1433
-      MSSQL_DB: ORBC_DEV
-      MSSQL_SA_USER: SA
-      MSSQL_SA_PASSWORD: YourStrong@Passw0rd
-      MSSQL_ENCRYPT: false
-      MSSQL_DDL_FILENAME: sample_ddl.sql
+      MSSQL_HOST: ${MSSQL_HOST}
+      MSSQL_PORT: ${MSSQL_PORT}
+      MSSQL_DB: ${MSSQL_DB}
+      MSSQL_SA_USER: ${MSSQL_SA_USER}
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD}
+      MSSQL_ENCRYPT: ${MSSQL_ENCRYPT}
+      MSSQL_INIT_DDL_FILENAME: ${MSSQL_INIT_DDL_FILENAME}
     healthcheck:
       test: /opt/mssql-tools/bin/sqlcmd -S $$MSSQL_HOST -U $$MSSQL_SA_USER -P $$MSSQL_SA_PASSWORD -Q "USE $$MSSQL_DB" | grep "Changed database context to '$$MSSQL_DB'"
       interval: 20s
