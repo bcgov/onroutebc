@@ -1,6 +1,8 @@
 #!/bin/bash
+# Taken from https://github.com/microsoft/mssql-docker/blob/master/linux/preview/examples/mssql-customize/entrypoint.sh
 
-# Run init-script with long timeout - and make it run in the background
-/opt/mssql-tools/bin/sqlcmd -S $MSSQL_HOST -l 60 -U $MSSQL_SA_USER -P $MSSQL_SA_PASSWORD -i $MSSQL_DDL_FILENAME &
-# Start SQL server
+# Start the script to create and initialize the DB
+/usr/config/configure-db.sh &
+
+# Start SQL Server
 /opt/mssql/bin/sqlservr
