@@ -149,7 +149,7 @@ export const List = memo(() => {
             <Trash />
             <CSVOptions />
           </Box>
-          <FilterList table={table} filters={columnFilters}/>
+          <FilterList filters={columnFilters}/>
           </>
         )}
 

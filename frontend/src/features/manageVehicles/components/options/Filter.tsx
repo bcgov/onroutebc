@@ -28,13 +28,6 @@ const options = [
 export const Filter = ({ table }: { table: MRT_TableInstance<IPowerUnit> }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
-
-  /*
-  const [isChecked, setIsChecked] = useState(() =>
-    options.map(({ subOptions }) => subOptions.map(() => false))
-  );
-  */
-
   const [filters, setFilters] = useState(options);
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -43,18 +36,7 @@ export const Filter = ({ table }: { table: MRT_TableInstance<IPowerUnit> }) => {
 
   const handleClose = () => {
     setAnchorEl(null);
-    //table.setShowFilters(false);
-    //table.resetColumnFilters();
   };
-
-  /*
-  const toggleCheckboxValue = (parentIndex: number, subIndex: number) => {
-    const updatedCheckboxes = isChecked.map((parent, i) =>
-      parent.map((sub, j) => (i === parentIndex && j === subIndex ? !sub : sub))
-    );
-    setIsChecked(updatedCheckboxes);
-  };
-  */
 
   const toggleCheckboxes = (parentIndex: number, subIndex: number) => {
     const updatedCheckboxes = filters;
@@ -74,22 +56,26 @@ export const Filter = ({ table }: { table: MRT_TableInstance<IPowerUnit> }) => {
 
     const list: Array<{id: string, value: unknown}> = [];
 
-    console.log('filters', filters);
+    filters.forEach((parent) => {
 
-    filters.map((parent) =>
-      parent.subOptions.map((sub) => {
+      const subList : string[] = [];
+      let isApplied = false;
+
+      parent.subOptions.forEach((sub) => {
         if (sub.isChecked) {
-          console.log('Test', parent.accessKey, sub.label)
-          list.push({ id: parent.accessKey, value: sub.label });
-          
+          isApplied= true;
+          subList.push(sub.label);
         }
       })
-    );
 
-    console.log('listssss', list);
-
+      if (isApplied){
+        list.push({ id: parent.accessKey, value: subList });
+      }
+      
+    });
+      
     table.setColumnFilters(list);
-    //table.setColumnFilters([{id: 'plateNumber', value: 'AS'}]);
+
   };
 
   return (
