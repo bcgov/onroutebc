@@ -62,6 +62,7 @@ objects:
       database-host: ${DATABASE_HOST}
       database-encrypt: false 
       database-port: 1433 
+  - apiVersion: v1
     kind: Secret
     metadata:
       labels:
