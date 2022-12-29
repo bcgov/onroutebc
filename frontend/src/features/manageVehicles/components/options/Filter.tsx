@@ -1,9 +1,8 @@
 import { Button, Checkbox, Menu, MenuItem } from "@mui/material";
 import { MRT_TableInstance } from "material-react-table";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IPowerUnit } from "../../@types/managevehicles";
 import { NestedMenuItem } from "mui-nested-menu";
-import { ColumnFiltersState } from "@tanstack/table-core";
 
 const options = [
   {
@@ -25,10 +24,47 @@ const options = [
   },
 ];
 
-export const Filter = ({ table }: { table: MRT_TableInstance<IPowerUnit> }) => {
+export const Filter = ({
+  table,
+  filters,
+}: {
+  filters: Array<{ id: string; value: unknown }>;
+  table: MRT_TableInstance<IPowerUnit>;
+}) => {
+  
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
-  const [filters, setFilters] = useState(options);
+  const [filterList, setFilterList] = useState(options);
+
+  useEffect(() => {
+    // Reset all isChecked values to false
+    filterList.forEach((parent) => {
+      parent.subOptions.forEach((x) => {
+        x.isChecked = false;
+      });
+    });
+
+    // Update the checkboxes in the Filter button dropdown menu
+    // For each applied filter, set the checkbox as true
+    filters.forEach((parent) => {
+      // cast sub option type as an array
+      const arr = parent.value as Array<string>;
+      filterList.forEach((p) => {
+        if (parent.id === p.accessKey) {
+          p.subOptions.forEach((sub) => {
+            arr.forEach((x) => {
+              // if the filter is applied, then set checkbox to true
+              if (sub.label === x) {
+                sub.isChecked = true;
+              }
+            });
+          });
+        }
+      });
+    });
+
+    setFilterList(filterList);
+  }, [table]);
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -39,10 +75,10 @@ export const Filter = ({ table }: { table: MRT_TableInstance<IPowerUnit> }) => {
   };
 
   const toggleCheckboxes = (parentIndex: number, subIndex: number) => {
-    const updatedCheckboxes = filters;
+    const updatedCheckboxes = filterList;
     updatedCheckboxes[parentIndex].subOptions[subIndex].isChecked =
       !updatedCheckboxes[parentIndex].subOptions[subIndex].isChecked;
-    setFilters(updatedCheckboxes);
+    setFilterList(updatedCheckboxes);
     assignFilters(updatedCheckboxes);
   };
 
@@ -53,29 +89,25 @@ export const Filter = ({ table }: { table: MRT_TableInstance<IPowerUnit> }) => {
       subOptions: { label: string; isChecked: boolean }[];
     }[]
   ) => {
-
-    const list: Array<{id: string, value: unknown}> = [];
+    const list: Array<{ id: string; value: unknown }> = [];
 
     filters.forEach((parent) => {
-
-      const subList : string[] = [];
+      const subList: string[] = [];
       let isApplied = false;
 
       parent.subOptions.forEach((sub) => {
         if (sub.isChecked) {
-          isApplied= true;
+          isApplied = true;
           subList.push(sub.label);
         }
-      })
+      });
 
-      if (isApplied){
+      if (isApplied) {
         list.push({ id: parent.accessKey, value: subList });
       }
-      
     });
-      
-    table.setColumnFilters(list);
 
+    table.setColumnFilters(list);
   };
 
   return (
@@ -116,13 +148,11 @@ export const Filter = ({ table }: { table: MRT_TableInstance<IPowerUnit> }) => {
             parentMenuOpen={open}
           >
             {option.subOptions.map((subOption, index) => (
-              <MenuItem
-                key={subOption.label}
-              >
+              <MenuItem key={subOption.label}>
                 <Checkbox
                   key={subOption.label}
                   onClick={() => toggleCheckboxes(parentIndex, index)}
-                  checked={filters[parentIndex].subOptions[index].isChecked}
+                  checked={filterList[parentIndex].subOptions[index].isChecked}
                 />
                 {subOption.label}
               </MenuItem>

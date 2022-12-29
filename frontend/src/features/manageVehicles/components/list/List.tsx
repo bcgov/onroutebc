@@ -27,7 +27,7 @@ export const List = memo(() => {
   const [isRefetching, setIsRefetching] = useState(false); // used for progress bar
   const [rowCount, setRowCount] = useState(0);
 
-  
+  // Filters
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
   // Table column definitions
@@ -37,6 +37,7 @@ export const List = memo(() => {
   );
 
   // TODO: clean this up
+  // See https://www.material-react-table.com/docs/examples/remote
   useEffect(() => {
 
     console.log("UseEffect!");
@@ -145,11 +146,11 @@ export const List = memo(() => {
             }}
           >
             <MRT_GlobalFilterTextField table={table} />
-            <Filter table={table} />
+            <Filter table={table} filters={columnFilters}/>
             <Trash />
             <CSVOptions />
           </Box>
-          <FilterList filters={columnFilters}/>
+          <FilterList table={table} filters={columnFilters}/>
           </>
         )}
 
