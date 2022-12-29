@@ -40,16 +40,16 @@ parameters:
     value: bcgov/onroutebc:prod-backend
   - name: DATABASE_NAME
     description: Name of Database to connect to 
-    required: true
+    required: false
   - name: DATABASE_USER
     description: User connecting to database
-    required: true
+    required: false
   - name: DATABASE_PASSWORD
     description: Password of user connecting to database
-    required: true
+    required: false
   - name: DATABASE_HOST
     description: Host url/service of database connection
-    required: true
+    required: false
 objects:
   - apiVersion: v1
     kind: ConfigMap
