@@ -80,7 +80,12 @@ jobs:
           - name: backend
             file: backend/openshift.deploy.yml
             overwrite: true
-            parameters: -p MIN_REPLICAS=1 -p MAX_REPLICAS=2
+            parameters: 
+              -p MIN_REPLICAS=1 -p MAX_REPLICAS=2
+              -p DATABASE_NAME=${{secrets.OC_DATABASE_NAME}}
+              -p DATABASE_USER=${{secrets.OC_DATABASE_USER}}
+              -p DATABASE_PASSWORD=${{secrets.OC_DATABASE_PASSWORD}}
+              -p DATABASE_HOST=${{secrets.OC_DATABASE_HOST}}
           - name: database
             file: database/openshift.deploy.yml
             overwrite: false
@@ -103,8 +108,4 @@ jobs:
           parameters:
             -p ZONE=${{ github.event.number }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/${{ matrix.name }}:${{ github.event.number }} 
-            -p DATABASE_NAME=${{secrets.OC_DATABASE_NAME}}
-            -p DATABASE_USER=${{secrets.OC_DATABASE_USER}}
-            -p DATABASE_PASSWORD=${{secrets.OC_DATABASE_PASSWORD}}
-            -p DATABASE_HOST=${{secrets.OC_DATABASE_HOST}}
             ${{ matrix.parameters }}
