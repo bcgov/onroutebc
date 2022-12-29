@@ -1,4 +1,11 @@
-import { memo, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import {
+  memo,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import MaterialReactTable, {
   MRT_ColumnDef,
   MRT_GlobalFilterTextField,
@@ -6,19 +13,26 @@ import MaterialReactTable, {
 } from "material-react-table";
 import "./List.scss";
 import { Box, IconButton, Tooltip } from "@mui/material";
-import { IPowerUnit, VehiclesContextType } from "../../@types/managevehicles";
+import { IPowerUnit, VehiclesContextType } from "../../types/managevehicles";
 import { VehiclesContext } from "../../context/VehiclesContext";
-import { columnPowerUnitData } from "./Columns";
+import { PowerUnit_ColumnDef } from "./Columns";
 import { Filter } from "../options/Filter";
 import { Trash } from "../options/Trash";
 import { CSVOptions } from "../options/CSVOptions";
+import { Delete, Edit, ContentCopy } from "@mui/icons-material";
+import { BC_BACKGROUND_LIGHT } from "../../../../constants/bcGovStyles";
 
-import { Delete, Edit, ContentCopy } from '@mui/icons-material';
-import { ColumnFiltersState } from "@tanstack/table-core";
-import { FilterList } from "./FilterList";
+/*
+ *
+ * The List component uses Material React Table (MRT)
+ * For detailed documentation, see here:
+ * https://www.material-react-table.com/docs/getting-started/usage
+ *
+ *
+ */
 
 export const List = memo(() => {
-  // Data and fetching state
+  // Data, fetched from backend API
   const { powerUnitData } = useContext(VehiclesContext) as VehiclesContextType;
 
   // Table state
@@ -27,21 +41,16 @@ export const List = memo(() => {
   const [isRefetching, setIsRefetching] = useState(false); // used for progress bar
   const [rowCount, setRowCount] = useState(0);
 
-  // Filters
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-
-  // Table column definitions
+  // Column definitions for the table
   const columnsPowerUnit = useMemo<MRT_ColumnDef<IPowerUnit>[]>(
-    () => columnPowerUnitData,
+    () => PowerUnit_ColumnDef,
     []
   );
 
-  // TODO: clean this up
+  // TODO: Refactor. The original code from MRT set the table state in a
+  // try/catch block during the fetching of data
   // See https://www.material-react-table.com/docs/examples/remote
   useEffect(() => {
-
-    console.log("UseEffect!");
-
     if (!powerUnitData.length) {
       setIsLoading(true);
     } else {
@@ -56,55 +65,44 @@ export const List = memo(() => {
     } else {
       setIsError(true);
     }
-
   }, [powerUnitData]);
 
-  
+  const handleDeleteRow = useCallback((row: MRT_Row<IPowerUnit>) => {
+    if (
+      !confirm(`Are you sure you want to delete ${row.getValue("unitNumber")}`)
+    ) {
+      return;
+    }
+    //send api delete request here, then refetch or update local table data for re-render
+  }, []);
 
-  const handleDeleteRow = useCallback(
-    (row: MRT_Row<IPowerUnit>) => {
-      if (
-        !confirm(`Are you sure you want to delete ${row.getValue('unitNumber')}`)
-      ) {
-        return;
-      }
-      //send api delete request here, then refetch or update local table data for re-render
-      //tableData.splice(row.index, 1);
-      //setTableData([...tableData]);
-    },
-    [],
-  );
-  
   return (
     <div className="table-container">
       <MaterialReactTable
-
         // Required Props
         data={powerUnitData}
         columns={columnsPowerUnit}
-
-        // Column widths
-        defaultColumn={{
-          maxSize: 200, //allow columns to get larger than default
-          size: 50, //make columns wider by default
+        // State variables and actions
+        rowCount={rowCount}
+        state={{
+          isLoading,
+          showAlertBanner: isError,
+          showProgressBars: isRefetching,
         }}
-
         // Disable the default column actions so that we can use our custom actions
         enableColumnActions={false}
         // Enable checkboxes for row selection
         enableRowSelection={true}
-
-    
         // Row copy, delete, and edit options
         enableRowActions={true}
         positionActionsColumn="last"
         displayColumnDefOptions={{
-          'mrt-row-actions': {
-            header: ""
+          "mrt-row-actions": {
+            header: "",
           },
         }}
         renderRowActions={({ row, table }) => (
-          <Box sx={{ display: 'flex', justifyContent: "flex-end" }}>
+          <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
             <Tooltip arrow placement="left" title="Edit">
               <IconButton onClick={() => table.setEditingRow(row)}>
                 <Edit />
@@ -122,22 +120,8 @@ export const List = memo(() => {
             </Tooltip>
           </Box>
         )}
-        
-
-        // State
-        rowCount={rowCount}
-        state={{
-          isLoading,
-          showAlertBanner: isError,
-          showProgressBars: isRefetching,
-          columnFilters
-        }}
-
-        onColumnFiltersChange={setColumnFilters}
-
         // Render a custom options Bar (inclues search, filter, trash, and csv options)
         renderTopToolbar={({ table }) => (
-          <>
           <Box
             sx={{
               display: "flex",
@@ -146,47 +130,46 @@ export const List = memo(() => {
             }}
           >
             <MRT_GlobalFilterTextField table={table} />
-            <Filter table={table} filters={columnFilters}/>
+            <Filter />
             <Trash />
             <CSVOptions />
           </Box>
-          <FilterList table={table} filters={columnFilters}/>
-          </>
         )}
-
         /*
-        * 
-        * STYLES 
-        * 
-        */
+         *
+         * STYLES
+         *
+         */
 
         // Main table container
         muiTablePaperProps={{
           sx: {
             border: "none",
-            boxShadow: "none"
-          }
+            boxShadow: "none",
+          },
         }}
-
+        // Column widths
+        defaultColumn={{
+          maxSize: 200, //allow columns to get larger than default
+          minSize: 25,
+          size: 50,
+        }}
         // Cell/Body container
         muiTableContainerProps={{
           sx: {
             outline: "1px solid #DBDCDC",
-            height: "60vh"
-          }
+            height: "60vh",
+          },
         }}
-
         // Pagination
         muiBottomToolbarProps={{
           sx: {
             zIndex: 0, // resolve z-index conflict with sliding panel
-            backgroundColor: "#F2F2F2"
-          }
+            backgroundColor: BC_BACKGROUND_LIGHT,
+          },
         }}
-        
         // Top toolbar
         muiTopToolbarProps={{ sx: { zIndex: 0 } }} // resolve z-index conflict with sliding panel
-
         // Alert banner
         muiToolbarAlertBannerProps={
           isError
@@ -196,7 +179,6 @@ export const List = memo(() => {
               }
             : undefined
         }
-        
         // Search Bar
         positionGlobalFilter="left"
         initialState={{ showGlobalFilter: true }} //show the search bar by default
@@ -213,12 +195,10 @@ export const List = memo(() => {
             },
           },
         }}
-
         // Row Header
         muiTableHeadRowProps={{
-          sx: { backgroundColor: "#F2F2F2" },
+          sx: { backgroundColor: BC_BACKGROUND_LIGHT },
         }}
-        
       />
     </div>
   );

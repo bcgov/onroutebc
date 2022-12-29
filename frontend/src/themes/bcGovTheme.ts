@@ -1,17 +1,23 @@
 import { createTheme } from "@mui/material/styles";
-// Theme documentation: https://mui.com/material-ui/customization/theming/
+import { BC_PRIMARY_BLUE, BC_BACKGROUND_LIGHT } from "../constants/bcGovStyles";
 
-export const BACKGROUND_COLOR = { backgroundColor: "#e9ecf5" };
+/*
+ *
+ * Code based on WPS repo
+ * https://github.com/bcgov/wps/blob/main/web/src/app/theme.ts
+ * https://mui.com/material-ui/customization/theming/
+ *
+ */
 
-export const appTheme = createTheme({
+export const bcGovTheme = createTheme({
   palette: {
     primary: {
       light: "#3E5C93",
-      main: "#003366",
+      main: BC_PRIMARY_BLUE,
       dark: "#000C3A",
     },
     secondary: {
-      light: "#F2F2F2",
+      light: BC_BACKGROUND_LIGHT,
       main: "#ffffff",
       dark: "#F2F2F2",
     },
@@ -25,7 +31,9 @@ export const appTheme = createTheme({
     button: {
       textTransform: "none",
     },
-    fontFamily: ["BCSans", "Noto Sans", "Verdana", "Arial", "sans-serif"].join(","),
+    fontFamily: ["BCSans", "Noto Sans", "Verdana", "Arial", "sans-serif"].join(
+      ","
+    ),
   },
   breakpoints: {
     values: {

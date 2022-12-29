@@ -14,14 +14,6 @@ export interface IPowerUnit {
   steerAxleTireSize: number
 }
 
-export interface IPowerUnitAPIResponse {
-  data: Array<IPowerUnit>;
-  /*meta: {
-    totalRowCount: number;
-  };
-  */
-}
-
 export interface ITrailer {
   id: number;
   unit: string;

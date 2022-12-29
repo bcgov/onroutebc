@@ -3,35 +3,22 @@ import { NavLink } from "react-router-dom";
 
 import "./Header.scss";
 import * as routes from "../../../constants/routes";
+import { BC_PRIMARY_BLUE } from "../../../constants/bcGovStyles";
+import { getOpenshiftEnv } from "../../helpers/helpers";
+
+/*
+ * The Header component includes the BC Gov banner and Navigation bar
+ * and is responsive for mobile
+ * 
+ * The banner colour changes based on the Openshift Environment
+ * (Dev, Test, UAT, and Prod)
+ *
+ */
 
 export const Header = () => {
   const mediaQuery = "(max-width: 768px)";
   const mediaQueryList: MediaQueryList = window.matchMedia(mediaQuery);
   const [menuOpen, setMenuOpen] = useState(!mediaQueryList.matches);
-
-  // Get the openshift environment name from the url
-  // Example:
-  // https://onroutebc-99-frontend.apps.silver.devops.gov.bc.ca
-  // env = ["-test-", "test"]
-  // use env[1] to get "test"
-  const getOpenshiftEnv = () => {
-    const url = window.location.href;
-    const { hostname } = new URL(url);
-    const env = hostname.match( '-(.*)-' );
-
-    if (hostname === "localhost") return 'localhost';
-
-    if (env){
-      // If the environment is a number then it is in the dev environment
-      // The number corresponds to the PR in github
-      if (!isNaN(Number(env[1]))){
-        return "dev";
-      }
-      // If isNaN, then it should be 'test', 'prod', or 'uat'
-      return env[1];
-    }
-    return "other";
-  }
 
   let headerColor: string;
   switch (getOpenshiftEnv()) {
@@ -46,8 +33,9 @@ export const Header = () => {
       break;
     case "prod":
     case "localhost":
+    case "other":
     default:
-      headerColor = "#036";
+      headerColor = BC_PRIMARY_BLUE;
       break;
   }
 

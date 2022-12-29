@@ -9,6 +9,16 @@ import { Box, Tabs, Tab } from "@mui/material";
 
 import "./Dashboard.scss";
 
+/*
+ * The Dashboard component contains the Vehicle Inventory header, 
+ * Add Vehicle button, Tabs, and the Sliding Panel (which holds the Form component)
+ * 
+ * Code for the Tabs is based on the example from MUI Tabs
+ * See the 'basic tabs' typescript example here:
+ * https://mui.com/material-ui/react-tabs/#basic-tabs
+ *
+ */
+
 interface TabPanelProps {
   children?: React.ReactNode;
   index: number;
@@ -48,7 +58,13 @@ export const Dashboard = React.memo(() => {
 
   return (
     <>
-      <Box sx={{ borderBottom: 1, borderColor: "divider", padding: "10px 60px 0px 60px" }}>
+      <Box
+        sx={{
+          borderBottom: 1,
+          borderColor: "divider",
+          padding: "10px 60px 0px 60px",
+        }}
+      >
         <div className="dash-banner">
           <h2>Vehicle Inventory</h2>
           <Button variant="contained" onClick={() => setShowForm(true)}>
