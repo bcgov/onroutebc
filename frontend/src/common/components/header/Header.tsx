@@ -9,24 +9,45 @@ export const Header = () => {
   const mediaQueryList: MediaQueryList = window.matchMedia(mediaQuery);
   const [menuOpen, setMenuOpen] = useState(!mediaQueryList.matches);
 
-  const DEPLOY_ENV: string | undefined =
-    import.meta.env.VITE_DEPLOY_ENVIRONMENT;
+  // Get the openshift environment name from the url
+  // Example:
+  // https://onroutebc-99-frontend.apps.silver.devops.gov.bc.ca
+  // env = ["-test-", "test"]
+  // use env[1] to get "test"
+  const getOpenshiftEnv = () => {
+    const url = window.location.href;
+    const { hostname } = new URL(url);
+    const env = hostname.match( '-(.*)-' );
+
+    if (hostname === "localhost") return 'localhost';
+
+    if (env){
+      // If the environment is a number then it is in the dev environment
+      // The number corresponds to the PR in github
+      if (!isNaN(Number(env[1]))){
+        return "dev";
+      }
+      // If isNaN, then it should be 'test', 'prod', or 'uat'
+      return env[1];
+    }
+    return "other";
+  }
 
   let headerColor: string;
-  switch (DEPLOY_ENV) {
-    case "prod":
-      headerColor = "#036";
-      break;
+  switch (getOpenshiftEnv()) {
     case "test":
       headerColor = "orange";
       break;
     case "uat":
       headerColor = "purple";
       break;
-    // Default is the dev environment.
-    // DEPLOY_ENV may be 'dev' or a number corresponding to the pull request #, or undefined
-    default:
+    case "dev":
       headerColor = "green";
+      break;
+    case "prod":
+    case "localhost":
+    default:
+      headerColor = "#036";
       break;
   }
 
