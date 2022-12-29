@@ -125,6 +125,7 @@ objects:
                       name: ${NAME}-${ZONE}-database
                       key: database-host
                 - name: MSSQL_PORT
+                  valueFrom:
                     configMapKeyRef:
                       name: ${NAME}-${ZONE}-database
                       key: database-port
