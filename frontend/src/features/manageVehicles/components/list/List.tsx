@@ -47,7 +47,7 @@ export const List = memo(() => {
     []
   );
 
-  // TODO: Refactor. The original code from MRT set the table state in a
+  // Needs a Refactor. The original code from MRT set the table state in a
   // try/catch block during the fetching of data
   // See https://www.material-react-table.com/docs/examples/remote
   useEffect(() => {

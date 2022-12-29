@@ -7,7 +7,6 @@ import { IPowerUnit } from "../../types/managevehicles";
  * For a list of options, see here:
  * https://www.material-react-table.com/docs/api/column-options
  * 
- * TODO: Use constant variables instead of hardcoding
  * 
  */
 

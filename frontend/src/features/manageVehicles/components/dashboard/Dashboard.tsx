@@ -1,11 +1,10 @@
 import React, { useState } from "react";
-import { Button } from "@mui/material";
+import { Button, Box, Tabs, Tab } from "@mui/material";
 import { VehicleForm } from "../form/VehicleForm";
 import { List } from "../list/List";
 
 import SlidingPane from "react-sliding-pane";
 import "react-sliding-pane/dist/react-sliding-pane.css";
-import { Box, Tabs, Tab } from "@mui/material";
 
 import "./Dashboard.scss";
 

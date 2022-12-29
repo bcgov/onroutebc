@@ -1,4 +1,4 @@
-import { useState, createContext, useEffect } from "react";
+import { useState, createContext, useEffect, useMemo } from "react";
 import { IPowerUnit, VehiclesContextType } from "../types/managevehicles";
 import { useVehiclesApi } from "../hooks/useVehiclesApi";
 
@@ -21,7 +21,13 @@ export const ManageVehiclesProvider = ({
 }) => {
   
   // Data
-  const [powerUnitData, setPowerUnitData] = useState<IPowerUnit[]>([]);
+  const [powerUnits, setPowerUnits] = useState<IPowerUnit[]>([]);
+
+  // React Context Provider values should not have non-stable identities
+  // Wrapping the value in a useMemo hook will avoid additional render passes.
+  const powerUnitData = useMemo<IPowerUnit[]>(() : IPowerUnit[] => {
+    return powerUnits;
+  }, [powerUnits]);
 
   // Custom hook to fetch the data from the API
   const vehiclesApi = useVehiclesApi();
@@ -30,7 +36,7 @@ export const ManageVehiclesProvider = ({
   useEffect(() => {
     const fetch = async () => {
       const data = await vehiclesApi.getAllPowerUnits();
-      setPowerUnitData(data);
+      setPowerUnits(data);
     };
     fetch();
   }, []);
