@@ -31,6 +31,9 @@ if [ $DBSTATUS -ne 0 ] || [ $ERRCODE -ne 0 ]; then
 	exit 1
 fi
 
+# Run database unit tests if configured to do so
+/usr/config/test/test-runner.sh
+
 # Run the setup script to create the DB
 echo "Executing $MSSQL_INIT_DDL_FILENAME ..."
 /opt/mssql-tools/bin/sqlcmd -U $MSSQL_SA_USER -P $MSSQL_SA_PASSWORD -d master -i /usr/config/$MSSQL_INIT_DDL_FILENAME
@@ -38,7 +41,7 @@ echo "Executing $MSSQL_INIT_DDL_FILENAME ..."
 # Retrieve the version of the ORBC database from the version history table.
 # If the version history table does not exist (which will be the case for a
 # containerized db) then a value of zero (0) will be returned.
-ORBC_DB_VERSION=$(/opt/mssql-tools/bin/sqlcmd -U $MSSQL_SA_USER -P $MSSQL_SA_PASSWORD -h -1 -l 60 -i /usr/config/get-orbc-db-version.sql)
+ORBC_DB_VERSION=$(/opt/mssql-tools/bin/sqlcmd -U $MSSQL_SA_USER -P $MSSQL_SA_PASSWORD -h -1 -i /usr/config/get-orbc-db-version.sql)
 
 echo "ORBC DB Version: $ORBC_DB_VERSION"
 
