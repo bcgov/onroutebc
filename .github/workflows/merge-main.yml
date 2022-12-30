@@ -90,6 +90,10 @@ jobs:
           parameters:
             -p ZONE=test -p PROMOTE=${{ github.repository }}/${{ matrix.name }}:test
             -p NAME=${{ github.event.repository.name }} ${{ matrix.parameters }}
+            -p DATABASE_NAME=${{secrets.OC_DATABASE_NAME}}
+            -p DATABASE_USER=${{secrets.OC_DATABASE_USER}}
+            -p DATABASE_PASSWORD=${{secrets.OC_DATABASE_PASSWORD}}
+            -p DATABASE_HOST=${{secrets.OC_DATABASE_HOST}}
           penetration_test: true
 
   deploys-prod:
@@ -122,6 +126,10 @@ jobs:
           parameters:
             -p ZONE=prod -p PROMOTE=${{ github.repository }}/${{ matrix.name }}:test
             -p NAME=${{ github.event.repository.name }} ${{ matrix.parameters }}
+            -p DATABASE_NAME=${{secrets.OC_DATABASE_NAME}}
+            -p DATABASE_USER=${{secrets.OC_DATABASE_USER}}
+            -p DATABASE_PASSWORD=${{secrets.OC_DATABASE_PASSWORD}}
+            -p DATABASE_HOST=${{secrets.OC_DATABASE_HOST}}
           penetration_test: false
 
   image-promotions:
