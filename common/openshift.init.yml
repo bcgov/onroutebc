@@ -27,7 +27,7 @@ objects:
     metadata:
       labels:
         app: ${NAME}-${ZONE}
-      name: ${NAME}-${ZONE}-${DATABASE_NAME}
+      name: ${NAME}-${ZONE}-database
     data:
       database-name: "${DATABASE_NAME}"
       database-host: "${DATABASE_HOST}"
@@ -38,7 +38,7 @@ objects:
     metadata:
       labels:
         app: ${NAME}-${ZONE}
-      name: ${NAME}-${ZONE}-${DATABASE_NAME}
+      name: ${NAME}-${ZONE}-database
     data:
       database-user: "${DATABASE_USER}"
       database-password: "${DATABASE_PASSWORD}"
