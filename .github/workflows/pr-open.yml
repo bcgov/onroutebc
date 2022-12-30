@@ -91,11 +91,11 @@ jobs:
           - name: init
             file: common/openshift.init.yml
             overwrite: false
-            parameters: 
-              -p DATABASE_NAME="${{secrets.OC_DATABASE_NAME}}"
-              -p DATABASE_USER="${{secrets.OC_DATABASE_USER}}"
-              -p DATABASE_PASSWORD="${{secrets.OC_DATABASE_PASSWORD}}"
-              -p DATABASE_HOST="${{secrets.OC_DATABASE_HOST}}"
+            #parameters: 
+            #-p DATABASE_NAME=${{secrets.OC_DATABASE_NAME}}
+            #-p DATABASE_USER=${{secrets.OC_DATABASE_USER}}
+            #-p DATABASE_PASSWORD=${{secrets.OC_DATABASE_PASSWORD}}
+            #-p DATABASE_HOST=${{secrets.OC_DATABASE_HOST}}
     steps:
       - uses: bcgov-nr/action-deployer-openshift@v0.0.2
         with:
@@ -109,4 +109,8 @@ jobs:
             -p ZONE=${{ github.event.number }} 
             -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/${{ matrix.name }}:${{ github.event.number }} 
+            -p DATABASE_NAME=${{secrets.OC_DATABASE_NAME}}
+            -p DATABASE_USER=${{secrets.OC_DATABASE_USER}}
+            -p DATABASE_PASSWORD=${{secrets.OC_DATABASE_PASSWORD}}
+            -p DATABASE_HOST=${{secrets.OC_DATABASE_HOST}}
             ${{ matrix.parameters }}
