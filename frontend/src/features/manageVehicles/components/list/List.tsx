@@ -69,18 +69,18 @@ export const List = memo(() => {
     }
   }, [powerUnitData]);
 
-  const handleDeleteRow = useCallback((row: MRT_Row<IPowerUnit>) => {
+  const handleDeleteRow = (row: MRT_Row<IPowerUnit>) => {
     if (
       !confirm(`Are you sure you want to delete ${row.getValue("unitNumber")}`)
     ) {
       return;
     }
     //send api delete request here, then refetch or update local table data for re-render
-  }, []);
+  };
 
-  const handleSetEditingRow = useCallback((table: MRT_TableInstance<IPowerUnit>, row: SetStateAction<MRT_Row<IPowerUnit> | null>) => {
+  const handleSetEditingRow = (table: MRT_TableInstance<IPowerUnit>, row: SetStateAction<MRT_Row<IPowerUnit> | null>) => {
     table.setEditingRow(row);
-  }, []);
+  };
 
   return (
     <div className="table-container">
@@ -110,17 +110,17 @@ export const List = memo(() => {
         renderRowActions={({ row, table }) => (
           <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
             <Tooltip arrow placement="left" title="Edit">
-              <IconButton onClick={useCallback(() => (table.setEditingRow(row)), [])}>
+              <IconButton onClick={useCallback(() => handleSetEditingRow(table, row), [])}>
                 <Edit />
               </IconButton>
             </Tooltip>
             <Tooltip arrow placement="top" title="Copy">
-              <IconButton onClick={() => handleSetEditingRow(table, row)}>
+              <IconButton onClick={useCallback(() => handleSetEditingRow(table, row), [])}>
                 <ContentCopy />
               </IconButton>
             </Tooltip>
             <Tooltip arrow placement="top" title="Delete">
-              <IconButton color="error" onClick={() => handleDeleteRow(row)}>
+              <IconButton color="error" onClick={useCallback(() => handleDeleteRow(row), [])}>
                 <Delete />
               </IconButton>
             </Tooltip>
