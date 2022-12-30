@@ -19,15 +19,12 @@ export const ManageVehiclesProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  
   // Data
   const [powerUnits, setPowerUnits] = useState<IPowerUnit[]>([]);
 
   // React Context Provider values should not have non-stable identities
   // Wrapping the value in a useMemo hook will avoid additional render passes.
-  const powerUnitData = useMemo<IPowerUnit[]>(() => (
-    powerUnits
-  ), [powerUnits]);
+  const powerUnitData = useMemo<IPowerUnit[]>(() => powerUnits, [powerUnits]);
 
   // Custom hook to fetch the data from the API
   const vehiclesApi = useVehiclesApi();
@@ -42,8 +39,11 @@ export const ManageVehiclesProvider = ({
   }, []);
 
   return (
-    <VehiclesContext.Provider value={{powerUnitData}}>
-      {children}
-    </VehiclesContext.Provider>
+    <>
+      {/*tslint:disable-next-line*/}
+      <VehiclesContext.Provider value={{ powerUnitData }}>
+        {children}
+      </VehiclesContext.Provider>
+    </>
   );
 };

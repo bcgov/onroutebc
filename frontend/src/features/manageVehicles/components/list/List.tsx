@@ -105,16 +105,19 @@ export const List = memo(() => {
         renderRowActions={useCallback(({table, row} : {table: MRT_TableInstance<IPowerUnit>, row: MRT_Row<IPowerUnit>}) => (
           <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
             <Tooltip arrow placement="left" title="Edit">
+              {/*tslint:disable-next-line*/}
               <IconButton onClick={() => table.setEditingRow(row)}>
                 <Edit />
               </IconButton>
             </Tooltip>
             <Tooltip arrow placement="top" title="Copy">
+              {/*tslint:disable-next-line*/}
               <IconButton onClick={() => table.setEditingRow(row)}>
                 <ContentCopy />
               </IconButton>
             </Tooltip>
             <Tooltip arrow placement="top" title="Delete">
+              {/*tslint:disable-next-line*/}
               <IconButton color="error" onClick={() => handleDeleteRow(row)}>
                 <Delete />
               </IconButton>
