@@ -92,15 +92,10 @@ jobs:
             file: common/openshift.init.yml
             overwrite: false
             parameters: 
-              -p DATABASE_NAME=${{env.DATABASE_NAME}}
-              -p DATABASE_USER=${{env.DATABASE_USER}}
-              -p DATABASE_PASSWORD=${{env.DATABASE_PASSWORD}}
-              -p DATABASE_HOST=${{env.DATABASE_HOST}}
-            env:
-              DATABASE_NAME=${{secrets.OC_DATABASE_NAME}}
-              DATABASE_USER=${{secrets.OC_DATABASE_USER}}
-              DATABASE_PASSWORD=${{secrets.OC_DATABASE_PASSWORD}}
-              DATABASE_HOST=${{secrets.OC_DATABASE_HOST}}
+              -p DATABASE_NAME="${{secrets.OC_DATABASE_NAME}}"
+              -p DATABASE_USER="${{secrets.OC_DATABASE_USER}}"
+              -p DATABASE_PASSWORD="${{secrets.OC_DATABASE_PASSWORD}}"
+              -p DATABASE_HOST="${{secrets.OC_DATABASE_HOST}}"
     steps:
       - uses: bcgov-nr/action-deployer-openshift@v0.0.2
         with:
