@@ -68,14 +68,14 @@ export const List = memo(() => {
     }
   }, [powerUnitData]);
 
-  const handleDeleteRow = useCallback((row: MRT_Row<IPowerUnit>) => {
+  const handleDeleteRow = (row: MRT_Row<IPowerUnit>) => {
     if (
       !confirm(`Are you sure you want to delete ${row.getValue("unitNumber")}`)
     ) {
       return;
     }
     //send api delete request here, then refetch or update local table data for re-render
-  }, []);
+  };
 
   return (
     <div className="table-container">
