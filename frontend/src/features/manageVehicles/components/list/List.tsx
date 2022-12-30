@@ -102,7 +102,7 @@ export const List = memo(() => {
             header: "",
           },
         }}
-        renderRowActions={({table, row} : {table: MRT_TableInstance<IPowerUnit>, row: MRT_Row<IPowerUnit>}) => (
+        renderRowActions={useCallback(({table, row} : {table: MRT_TableInstance<IPowerUnit>, row: MRT_Row<IPowerUnit>}) => (
           <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
             <Tooltip arrow placement="left" title="Edit">
               <IconButton onClick={() => table.setEditingRow(row)}>
@@ -120,7 +120,7 @@ export const List = memo(() => {
               </IconButton>
             </Tooltip>
           </Box>
-        )}
+        ), [])}
         // Render a custom options Bar (inclues search, filter, trash, and csv options)
         renderTopToolbar={useCallback(({ table } : { table : MRT_TableInstance<IPowerUnit>}) => (
           <Box
