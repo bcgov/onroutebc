@@ -10,7 +10,14 @@ const ENV = getOpenshiftEnv();
  * https://onroutebc-backend.apps.silver.devops.gov.bc.ca
  * 
  */
-export const MV_BACKEND_URL = import.meta.env.VITE_BACKEND_API|| ((window as any)._env_ && (window as any)._env_.VITE_BACKEND_API) 
+export const MV_BACKEND_URL = 
+  ENV === "localhost"
+    ? "http://localhost:5000"
+    : ENV === ("test" || "uat" || "prod")
+    ? `https://onroutebc-${ENV}-backend.apps.silver.devops.gov.bc.ca`
+    : !isNaN(Number(ENV))
+    ? `https://onroutebc-${ENV.toString()}-backend.apps.silver.devops.gov.bc.ca`
+    : `https://onroutebc-backend.apps.silver.devops.gov.bc.ca`;
 
 export const VEHICLES_API = {
   GET_ALL_POWER_UNITS: `${MV_BACKEND_URL}/vehicles/powerUnit`,

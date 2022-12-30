@@ -34,7 +34,6 @@ export const Header = () => {
       break;
     case "prod":
     case "localhost":
-    case "other":
     default:
       headerColor = BC_PRIMARY_BLUE;
       break;
