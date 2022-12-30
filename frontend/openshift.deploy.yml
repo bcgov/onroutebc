@@ -88,7 +88,7 @@ objects:
               imagePullPolicy: Always
               name: ${NAME}
               env:
-                - name: BACKEND_URL
+                - name: VITE_BACKEND_API
                   value: https://${NAME}-${ZONE}-backend.${DOMAIN}
               ports:
                 - containerPort: 3000
