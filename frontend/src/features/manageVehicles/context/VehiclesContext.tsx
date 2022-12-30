@@ -25,9 +25,9 @@ export const ManageVehiclesProvider = ({
 
   // React Context Provider values should not have non-stable identities
   // Wrapping the value in a useMemo hook will avoid additional render passes.
-  const powerUnitData = useMemo<IPowerUnit[]>(() : IPowerUnit[] => {
-    return powerUnits;
-  }, [powerUnits]);
+  const powerUnitData = useMemo(() => (
+    powerUnits
+  ), [powerUnits]);
 
   // Custom hook to fetch the data from the API
   const vehiclesApi = useVehiclesApi();

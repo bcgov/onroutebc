@@ -10,6 +10,7 @@ import MaterialReactTable, {
   MRT_ColumnDef,
   MRT_GlobalFilterTextField,
   MRT_Row,
+  MRT_TableInstance,
 } from "material-react-table";
 import "./List.scss";
 import { Box, IconButton, Tooltip } from "@mui/material";
@@ -104,24 +105,24 @@ export const List = memo(() => {
         renderRowActions={({ row, table }) => (
           <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
             <Tooltip arrow placement="left" title="Edit">
-              <IconButton onClick={() => table.setEditingRow(row)}>
+              <IconButton onClick={useCallback(() => (table.setEditingRow(row)), [])}>
                 <Edit />
               </IconButton>
             </Tooltip>
             <Tooltip arrow placement="top" title="Copy">
-              <IconButton onClick={() => table.setEditingRow(row)}>
+              <IconButton onClick={useCallback(() => (table.setEditingRow(row)), [])}>
                 <ContentCopy />
               </IconButton>
             </Tooltip>
             <Tooltip arrow placement="top" title="Delete">
-              <IconButton color="error" onClick={() => handleDeleteRow(row)}>
+              <IconButton color="error" onClick={useCallback(() => handleDeleteRow(row), [])}>
                 <Delete />
               </IconButton>
             </Tooltip>
           </Box>
         )}
         // Render a custom options Bar (inclues search, filter, trash, and csv options)
-        renderTopToolbar={({ table }) => (
+        renderTopToolbar={useCallback(({ table } : { table : MRT_TableInstance<IPowerUnit>}) => (
           <Box
             sx={{
               display: "flex",
@@ -134,7 +135,7 @@ export const List = memo(() => {
             <Trash />
             <CSVOptions />
           </Box>
-        )}
+        ),[])}
         /*
          *
          * STYLES
