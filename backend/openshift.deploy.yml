@@ -56,7 +56,7 @@ objects:
     metadata:
       labels:
         app: ${NAME}-${ZONE}
-      name: ${NAME}-${ZONE}-database
+      name: ${NAME}-${ZONE}-${COMPONENT}
     data:
       database-name: "${DATABASE_NAME}"
       database-host: "${DATABASE_HOST}"
@@ -67,8 +67,8 @@ objects:
     metadata:
       labels:
         app: ${NAME}-${ZONE}
-      name: ${NAME}-${ZONE}-database
-    data:
+      name: ${NAME}-${ZONE}-${COMPONENT}
+    stringData:
       database-user: "${DATABASE_USER}"
       database-password: "${DATABASE_PASSWORD}"
   - apiVersion: v1
