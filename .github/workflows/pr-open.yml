@@ -50,12 +50,10 @@ jobs:
       packages: write
     strategy:
       matrix:
-        package: [backend, database, frontend]
+        package: [backend, frontend]
         include:
           - package: backend
             triggers: ('backend/')
-          - package: database
-            triggers: ('database/')
           - package: frontend
             triggers: ('frontend/')
     steps:
@@ -75,15 +73,12 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        name: [backend, database, init, frontend]
+        name: [backend, init, frontend]
         include:
           - name: backend
             file: backend/openshift.deploy.yml
             overwrite: true
             parameters: -p MIN_REPLICAS=1 -p MAX_REPLICAS=2
-          - name: database
-            file: database/openshift.deploy.yml
-            overwrite: false
           - name: frontend
             file: frontend/openshift.deploy.yml
             overwrite: true
