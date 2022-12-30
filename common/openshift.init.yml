@@ -4,29 +4,24 @@ parameters:
   - name: NAME
     description: Product name
     value: onroutebc
-  - name: PG_DATABASE
-    description: Postgres database name
-    value: database
   - name: ZONE
     description: Deployment zone, e.g. pr-### or prod
     required: true
   - name: PROMOTE
     description: Dummy param, for convenience in deployments
-  - name: DB_PASSWORD
-    description: Password for the PostgreSQL connection user.
-    from: "[a-zA-Z0-9]{16}"
-    generate: expression
+  - name: DATABASE_NAME
+    description: Name of Database to connect to 
+    required: true
+  - name: DATABASE_USER
+    description: User connecting to database
+    required: true
+  - name: DATABASE_PASSWORD
+    description: Password of user connecting to database
+    required: true
+  - name: DATABASE_HOST
+    description: Host url/service of database connection
+    required: true
 objects:
-  - apiVersion: v1
-    kind: Secret
-    metadata:
-      name: ${NAME}-${ZONE}-${PG_DATABASE}
-      labels:
-        app: ${NAME}-${ZONE}
-    stringData:
-      database-name: ${NAME}
-      database-password: ${DB_PASSWORD}
-      database-user: ${NAME}
   - apiVersion: networking.k8s.io/v1
     kind: NetworkPolicy
     metadata:
