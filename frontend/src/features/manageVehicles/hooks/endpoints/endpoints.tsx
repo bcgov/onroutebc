@@ -9,6 +9,11 @@ const ENV = getOpenshiftEnv();
  * If the env is unknown, it may be in prod, try the following url:
  * https://onroutebc-backend.apps.silver.devops.gov.bc.ca
  * 
+ * In the future we will refactor to use an .env variable instead 
+ * of getting the openshift environment through the URL
+ * 
+ * Ignore sonarcloud lint error until we do the refactor.
+ * 
  */
 export const MV_BACKEND_URL = 
   ENV === "localhost"
