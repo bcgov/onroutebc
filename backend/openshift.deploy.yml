@@ -118,12 +118,12 @@ objects:
                 - name: MSSQL_ENCRYPT
                   valueFrom:
                     configMapKeyRef:
-                      name: ${NAME}-database
+                      name: ${NAME}-${ZONE}-database
                       key: database-encrypt
                 - name: MSSQL_SA_PASSWORD
                   valueFrom:
                     secretKeyRef:
-                      name: ${NAME}-database
+                      name: ${NAME}-${ZONE}-database
                       key: database-password
                 - name: MSSQL_SA_USER
                   valueFrom:
