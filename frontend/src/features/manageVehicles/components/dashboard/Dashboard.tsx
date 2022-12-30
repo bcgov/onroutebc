@@ -51,10 +51,9 @@ export const Dashboard = React.memo(() => {
   const [showForm, setShowForm] = useState<boolean>(false);
   const [value, setValue] = useState(0);
 
-  const handleChange = function(event: React.SyntheticEvent, newValue: number){
+  function handleChange (event: React.SyntheticEvent, newValue: number){
     setValue(newValue);
   };
-
 
   return (
     <>
@@ -94,7 +93,7 @@ export const Dashboard = React.memo(() => {
 
       <SlidingPane
         isOpen={showForm}
-        onRequestClose={() => setShowForm(false)}
+        onRequestClose={useCallback(() => (setShowForm(true)), [])}
         from="right"
         width="40%"
         hideHeader={true}
