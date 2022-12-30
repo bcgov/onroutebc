@@ -103,32 +103,32 @@ objects:
                 - name: MSSQL_HOST
                   valueFrom:
                     configMapKeyRef:
-                      name: ${NAME}-${ZONE}-database
+                      name: ${NAME}-${ZONE}-${COMPONENT}
                       key: database-host
                 - name: MSSQL_PORT
                   valueFrom:
                     configMapKeyRef:
-                      name: ${NAME}-${ZONE}-database
+                      name: ${NAME}-${ZONE}-${COMPONENT}
                       key: database-port
                 - name: MSSQL_DB
                   valueFrom:
                     configMapKeyRef:
-                      name: ${NAME}-${ZONE}-database
+                      name: ${NAME}-${ZONE}-${COMPONENT}
                       key: database-name
                 - name: MSSQL_ENCRYPT
                   valueFrom:
                     configMapKeyRef:
-                      name: ${NAME}-${ZONE}-database
+                      name: ${NAME}-${ZONE}-${COMPONENT}
                       key: database-encrypt
                 - name: MSSQL_SA_PASSWORD
                   valueFrom:
                     secretKeyRef:
-                      name: ${NAME}-${ZONE}-database
+                      name: ${NAME}-${ZONE}-${COMPONENT}
                       key: database-password
                 - name: MSSQL_SA_USER
                   valueFrom:
                     secretKeyRef:
-                      name: ${NAME}-${ZONE}-database
+                      name: ${NAME}-${ZONE}-${COMPONENT}
                       key: database-user
               ports:
                 - containerPort: 5000
