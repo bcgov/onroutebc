@@ -1,6 +1,5 @@
 import {
   memo,
-  SetStateAction,
   useCallback,
   useContext,
   useEffect,
@@ -69,18 +68,14 @@ export const List = memo(() => {
     }
   }, [powerUnitData]);
 
-  const handleDeleteRow = (row: MRT_Row<IPowerUnit>) => {
+  const handleDeleteRow = useCallback((row: MRT_Row<IPowerUnit>) => {
     if (
       !confirm(`Are you sure you want to delete ${row.getValue("unitNumber")}`)
     ) {
       return;
     }
     //send api delete request here, then refetch or update local table data for re-render
-  };
-
-  const handleSetEditingRow = (table: MRT_TableInstance<IPowerUnit>, row: MRT_Row<IPowerUnit>) => {
-    table.setEditingRow(row);
-  };
+  }, []);
 
   return (
     <div className="table-container">
@@ -107,25 +102,25 @@ export const List = memo(() => {
             header: "",
           },
         }}
-        renderRowActions={useCallback(({table, row} : {table: MRT_TableInstance<IPowerUnit>, row: MRT_Row<IPowerUnit>}) => (
+        renderRowActions={({table, row} : {table: MRT_TableInstance<IPowerUnit>, row: MRT_Row<IPowerUnit>}) => (
           <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
             <Tooltip arrow placement="left" title="Edit">
-              <IconButton onClick={useCallback(() => handleSetEditingRow(table, row), [])}>
+              <IconButton onClick={() => table.setEditingRow(row)}>
                 <Edit />
               </IconButton>
             </Tooltip>
             <Tooltip arrow placement="top" title="Copy">
-              <IconButton onClick={useCallback(() => handleSetEditingRow(table, row), [])}>
+              <IconButton onClick={() => table.setEditingRow(row)}>
                 <ContentCopy />
               </IconButton>
             </Tooltip>
             <Tooltip arrow placement="top" title="Delete">
-              <IconButton color="error" onClick={useCallback(() => handleDeleteRow(row), [])}>
+              <IconButton color="error" onClick={() => handleDeleteRow(row)}>
                 <Delete />
               </IconButton>
             </Tooltip>
           </Box>
-        ), [])}
+        )}
         // Render a custom options Bar (inclues search, filter, trash, and csv options)
         renderTopToolbar={useCallback(({ table } : { table : MRT_TableInstance<IPowerUnit>}) => (
           <Box
