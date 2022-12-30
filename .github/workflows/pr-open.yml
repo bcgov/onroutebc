@@ -92,10 +92,10 @@ jobs:
             file: common/openshift.init.yml
             overwrite: false
             parameters: 
-              -p DATABASE_NAME=${{DATABASE_NAME}}
-              -p DATABASE_USER=${{DATABASE_USER}}
-              -p DATABASE_PASSWORD=${{DATABASE_PASSWORD}}
-              -p DATABASE_HOST=${{DATABASE_HOST}}
+              -p DATABASE_NAME=${{env.DATABASE_NAME}}
+              -p DATABASE_USER=${{env.DATABASE_USER}}
+              -p DATABASE_PASSWORD=${{env.DATABASE_PASSWORD}}
+              -p DATABASE_HOST=${{env.DATABASE_HOST}}
             env:
               DATABASE_NAME=${{secrets.OC_DATABASE_NAME}}
               DATABASE_USER=${{secrets.OC_DATABASE_USER}}
