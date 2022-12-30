@@ -81,6 +81,18 @@ parameters:
   - name: PROMOTE
     description: Image (namespace/name:tag) to promote/import
     required: true
+  - name: DATABASE_NAME
+    description: Name of Database to connect to 
+    required: true
+  - name: DATABASE_USER
+    description: User connecting to database
+    required: true
+  - name: DATABASE_PASSWORD
+    description: Password of user connecting to database
+    required: true
+  - name: DATABASE_HOST
+    description: Host url/service of database connection
+    required: true
 objects:
   - kind: PersistentVolumeClaim
     apiVersion: v1
