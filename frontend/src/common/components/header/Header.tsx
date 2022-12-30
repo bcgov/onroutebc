@@ -14,21 +14,22 @@ import { getOpenshiftEnv } from "../../helpers/helpers";
  * (Dev, Test, UAT, and Prod)
  *
  */
-
 export const Header = () => {
   const mediaQuery = "(max-width: 768px)";
   const mediaQueryList: MediaQueryList = window.matchMedia(mediaQuery);
   const [menuOpen, setMenuOpen] = useState(!mediaQueryList.matches);
 
   let headerColor: string;
-  switch (getOpenshiftEnv()) {
+  const env = getOpenshiftEnv();
+  switch (!isNaN(Number(env)) || env) {
     case "test":
       headerColor = "orange";
       break;
     case "uat":
       headerColor = "purple";
       break;
-    case "dev":
+    // if the env is a number, then its in dev
+    case true:
       headerColor = "green";
       break;
     case "prod":
