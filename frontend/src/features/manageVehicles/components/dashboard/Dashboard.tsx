@@ -55,9 +55,6 @@ export const Dashboard = React.memo(() => {
     setValue(newValue);
   };
 
-  const handleShowForm = useCallback((x : boolean) => {
-    setShowForm(x);
-  }, []);
 
   return (
     <>
@@ -70,7 +67,7 @@ export const Dashboard = React.memo(() => {
       >
         <div className="dash-banner">
           <h2>Vehicle Inventory</h2>
-          <Button variant="contained" onClick={() => handleShowForm(true)}>
+          <Button variant="contained" onClick={useCallback(() => (setShowForm(true)), [])}>
             Add Vehicle <i className="fa fa-chevron-down dash-downarrow"></i>
           </Button>
         </div>
@@ -97,7 +94,7 @@ export const Dashboard = React.memo(() => {
 
       <SlidingPane
         isOpen={showForm}
-        onRequestClose={() => handleShowForm(false)}
+        onRequestClose={() => setShowForm(false)}
         from="right"
         width="40%"
         hideHeader={true}
