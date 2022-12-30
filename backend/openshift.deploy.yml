@@ -58,6 +58,7 @@ objects:
         app: ${NAME}-${ZONE}
       name: ${NAME}-${ZONE}-${COMPONENT}
     data:
+      database-type: mssql
       database-name: "${DATABASE_NAME}"
       database-host: "${DATABASE_HOST}"
       database-encrypt: "false"
@@ -120,6 +121,11 @@ objects:
               imagePullPolicy: Always
               name: ${NAME}
               env:
+                - name: DB_TYPE
+                  valueFrom:
+                    configMapKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: database-type
                 - name: MSSQL_HOST
                   valueFrom:
                     configMapKeyRef:
