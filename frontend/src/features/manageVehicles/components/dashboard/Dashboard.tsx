@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { Button, Box, Tabs, Tab } from "@mui/material";
 import { VehicleForm } from "../form/VehicleForm";
 import { List } from "../list/List";
@@ -51,9 +51,13 @@ export const Dashboard = React.memo(() => {
   const [showForm, setShowForm] = useState<boolean>(false);
   const [value, setValue] = useState(0);
 
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleChange = function(event: React.SyntheticEvent, newValue: number){
     setValue(newValue);
   };
+
+  const handleShowForm = useCallback((x : boolean) => {
+    setShowForm(x);
+  }, []);
 
   return (
     <>
@@ -66,7 +70,7 @@ export const Dashboard = React.memo(() => {
       >
         <div className="dash-banner">
           <h2>Vehicle Inventory</h2>
-          <Button variant="contained" onClick={() => setShowForm(true)}>
+          <Button variant="contained" onClick={() => handleShowForm(true)}>
             Add Vehicle <i className="fa fa-chevron-down dash-downarrow"></i>
           </Button>
         </div>
@@ -93,7 +97,7 @@ export const Dashboard = React.memo(() => {
 
       <SlidingPane
         isOpen={showForm}
-        onRequestClose={() => setShowForm(false)}
+        onRequestClose={() => handleShowForm(false)}
         from="right"
         width="40%"
         hideHeader={true}
