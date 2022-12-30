@@ -11,16 +11,16 @@ parameters:
     description: Dummy param, for convenience in deployments
   - name: DATABASE_NAME
     description: Name of Database to connect to 
-    required: false
+    required: true
   - name: DATABASE_USER
     description: User connecting to database
-    required: false
+    required: true
   - name: DATABASE_PASSWORD
     description: Password of user connecting to database
-    required: false
+    required: true
   - name: DATABASE_HOST
     description: Host url/service of database connection
-    required: false
+    required: true
 objects:
   - apiVersion: v1
     kind: ConfigMap
