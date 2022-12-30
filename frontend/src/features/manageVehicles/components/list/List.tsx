@@ -1,5 +1,6 @@
 import {
   memo,
+  SetStateAction,
   useCallback,
   useContext,
   useEffect,
@@ -68,14 +69,18 @@ export const List = memo(() => {
     }
   }, [powerUnitData]);
 
-  const handleDeleteRow = (row: MRT_Row<IPowerUnit>) => {
+  const handleDeleteRow = useCallback((row: MRT_Row<IPowerUnit>) => {
     if (
       !confirm(`Are you sure you want to delete ${row.getValue("unitNumber")}`)
     ) {
       return;
     }
     //send api delete request here, then refetch or update local table data for re-render
-  };
+  }, []);
+
+  const handleSetEditingRow = useCallback((table: MRT_TableInstance<IPowerUnit>, row: SetStateAction<MRT_Row<IPowerUnit> | null>) => {
+    table.setEditingRow(row);
+  }, []);
 
   return (
     <div className="table-container">
@@ -110,12 +115,12 @@ export const List = memo(() => {
               </IconButton>
             </Tooltip>
             <Tooltip arrow placement="top" title="Copy">
-              <IconButton onClick={useCallback(() => (table.setEditingRow(row)), [])}>
+              <IconButton onClick={() => handleSetEditingRow(table, row)}>
                 <ContentCopy />
               </IconButton>
             </Tooltip>
             <Tooltip arrow placement="top" title="Delete">
-              <IconButton color="error" onClick={useCallback(() => handleDeleteRow(row), [])}>
+              <IconButton color="error" onClick={() => handleDeleteRow(row)}>
                 <Delete />
               </IconButton>
             </Tooltip>
