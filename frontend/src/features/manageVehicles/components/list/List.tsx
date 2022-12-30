@@ -78,7 +78,7 @@ export const List = memo(() => {
     //send api delete request here, then refetch or update local table data for re-render
   };
 
-  const handleSetEditingRow = (table: MRT_TableInstance<IPowerUnit>, row: SetStateAction<MRT_Row<IPowerUnit> | null>) => {
+  const handleSetEditingRow = (table: MRT_TableInstance<IPowerUnit>, row: MRT_Row<IPowerUnit>) => {
     table.setEditingRow(row);
   };
 
@@ -107,7 +107,7 @@ export const List = memo(() => {
             header: "",
           },
         }}
-        renderRowActions={({ row, table }) => (
+        renderRowActions={useCallback(({table, row} : {table: MRT_TableInstance<IPowerUnit>, row: MRT_Row<IPowerUnit>}) => (
           <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
             <Tooltip arrow placement="left" title="Edit">
               <IconButton onClick={useCallback(() => handleSetEditingRow(table, row), [])}>
@@ -125,7 +125,7 @@ export const List = memo(() => {
               </IconButton>
             </Tooltip>
           </Box>
-        )}
+        ), [])}
         // Render a custom options Bar (inclues search, filter, trash, and csv options)
         renderTopToolbar={useCallback(({ table } : { table : MRT_TableInstance<IPowerUnit>}) => (
           <Box
