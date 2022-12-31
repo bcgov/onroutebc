@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { BaseDto } from './base.dto';
 import { ProvinceDto } from './province.dto';
 import { PowerUnitTypeDto } from './powerUnitType.dto';
+import { JoinColumn, OneToOne } from 'typeorm';
 
 export class PowerUnitDto extends BaseDto {
   @ApiProperty({
@@ -25,6 +26,8 @@ export class PowerUnitDto extends BaseDto {
     description: 'The province/state where the vehicle is registered',
     example: '1',
   })
+  @OneToOne(() => ProvinceDto)
+  @JoinColumn()
   province: ProvinceDto;
 
   @ApiProperty({
@@ -55,6 +58,8 @@ export class PowerUnitDto extends BaseDto {
     description: 'The power unit type ID',
     example: '1',
   })
+  @OneToOne(() => PowerUnitTypeDto)
+  @JoinColumn()
   powerUnitType: PowerUnitTypeDto;
 
   @ApiProperty({

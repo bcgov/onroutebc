@@ -68,14 +68,11 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        name: [backend, database, frontend, init]
+        name: [backend, frontend, init]
         include:
           - name: backend
             file: backend/openshift.deploy.yml
             overwrite: true
-          - name: database
-            file: database/openshift.deploy.yml
-            overwrite: false
           - name: frontend
             file: frontend/openshift.deploy.yml
             overwrite: true
@@ -93,6 +90,10 @@ jobs:
           parameters:
             -p ZONE=test -p PROMOTE=${{ github.repository }}/${{ matrix.name }}:test
             -p NAME=${{ github.event.repository.name }} ${{ matrix.parameters }}
+            -p DATABASE_NAME=${{secrets.OC_DATABASE_NAME}}
+            -p DATABASE_USER=${{secrets.OC_DATABASE_USER}}
+            -p DATABASE_PASSWORD=${{secrets.OC_DATABASE_PASSWORD}}
+            -p DATABASE_HOST=${{secrets.OC_DATABASE_HOST}}
           penetration_test: true
 
   deploys-prod:
@@ -103,14 +104,11 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        name: [backend, database, frontend, init]
+        name: [backend, frontend, init]
         include:
           - name: backend
             file: backend/openshift.deploy.yml
             overwrite: true
-          - name: database
-            file: database/openshift.deploy.yml
-            overwrite: false
           - name: frontend
             file: frontend/openshift.deploy.yml
             overwrite: true
@@ -128,6 +126,10 @@ jobs:
           parameters:
             -p ZONE=prod -p PROMOTE=${{ github.repository }}/${{ matrix.name }}:test
             -p NAME=${{ github.event.repository.name }} ${{ matrix.parameters }}
+            -p DATABASE_NAME=${{secrets.OC_DATABASE_NAME}}
+            -p DATABASE_USER=${{secrets.OC_DATABASE_USER}}
+            -p DATABASE_PASSWORD=${{secrets.OC_DATABASE_PASSWORD}}
+            -p DATABASE_HOST=${{secrets.OC_DATABASE_HOST}}
           penetration_test: false
 
   image-promotions:
