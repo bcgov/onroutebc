@@ -23,7 +23,7 @@ while test -f "/usr/config/versions/v_${NEXTVER}_ddl.sql"; do
     # The FILE_HASH is saved to the database as a verification that the DDL was not altered
     # from what is present in the git repository.
     FILE_HASH=($(sha1sum /usr/config/versions/v_${NEXTVER}_ddl.sql))
-    /opt/mssql-tools/bin/sqlcmd -U $MSSQL_SA_USER -P $MSSQL_SA_PASSWORD -v VERSION_ID=${NEXTVER} FILE_HASH=${FILE_HASH} MSSQL_DB=${UNIT_TEST_DB_NAME} -i /usr/config/versions/v_${NEXTVER}_ddl.sql
+    /opt/mssql-tools/bin/sqlcmd -U $MSSQL_SA_USER -P $MSSQL_SA_PASSWORD -v FILE_HASH=${FILE_HASH} MSSQL_DB=${UNIT_TEST_DB_NAME} -i /usr/config/versions/v_${NEXTVER}_ddl.sql
 
     echo "Checking for test ${TESTS_DIR}/v_${NEXTVER}_test.sh"
     if test -f "${TESTS_DIR}/v_${NEXTVER}_test.sh"; then

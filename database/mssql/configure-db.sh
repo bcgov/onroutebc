@@ -13,7 +13,7 @@ DBSTATUS=1
 ERRCODE=1
 i=0
 
-while ([ $DBSTATUS -ne 0 ] || [ $ERRCODE -ne 0 ]) && [ $i -lt 60 ]; do
+while ([[ $DBSTATUS -ne 0 ]] || [[ $ERRCODE -ne 0 ]]) && [[ $i -lt 60 ]]; do
     echo "Checking db status..."
 	((i=i+1))
 	DBSTATUS=$(/opt/mssql-tools/bin/sqlcmd -h -1 -t 1 -U $MSSQL_SA_USER -P $MSSQL_SA_PASSWORD -Q "SET NOCOUNT ON; Select SUM(state) from sys.databases")
@@ -26,13 +26,15 @@ done
 
 # If the sqlcmd status is still non-zero or the sqlcmd is still returning an
 # error code after 60 iterations, consider the sql-server-db container failed and exit.
-if [ $DBSTATUS -ne 0 ] || [ $ERRCODE -ne 0 ]; then 
+if [[ $DBSTATUS -ne 0 ]] || [[ $ERRCODE -ne 0 ]]; then 
 	echo "SQL Server took more than 60 seconds to start up or one or more databases are not in an ONLINE state"
 	exit 1
 fi
 
 # Run database unit tests if configured to do so
-/usr/config/test/test-runner.sh
+if [[ $MSSQL_RUN_TESTS -eq 1 ]]; then
+    /usr/config/test/test-runner.sh
+fi
 
 # Run the setup script to create the DB
 echo "Executing $MSSQL_INIT_DDL_FILENAME ..."
@@ -61,7 +63,7 @@ while test -f "/usr/config/versions/v_${NEXTVER}_ddl.sql"; do
     # The FILE_HASH is saved to the database as a verification that the DDL was not altered
     # from what is present in the git repository.
     FILE_HASH=($(sha1sum /usr/config/versions/v_${NEXTVER}_ddl.sql))
-    /opt/mssql-tools/bin/sqlcmd -U $MSSQL_SA_USER -P $MSSQL_SA_PASSWORD -v VERSION_ID=${NEXTVER} FILE_HASH=${FILE_HASH} -i /usr/config/versions/v_${NEXTVER}_ddl.sql
+    /opt/mssql-tools/bin/sqlcmd -U $MSSQL_SA_USER -P $MSSQL_SA_PASSWORD -v FILE_HASH=${FILE_HASH} -i /usr/config/versions/v_${NEXTVER}_ddl.sql
     ((NEXTVER=NEXTVER+1))
     echo "Next migration file to check: /usr/config/versions/v_${NEXTVER}_ddl.sql"
 done
