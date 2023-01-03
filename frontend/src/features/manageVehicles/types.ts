@@ -3,7 +3,7 @@ interface Vehicle {
     make: string,
     year: string,
     vin: string,
-    plate: string
+    plateNumber: string
 }
 
 /**
@@ -26,7 +26,7 @@ export enum AxleType {
 /**
  * 
  */
-interface AxleGroup {
+export interface AxleGroup {
     axleFrontGroup: AxleFrontGroup,
     axleTypeFront: AxleType,
     axleTypeRear: AxleType,
@@ -45,7 +45,7 @@ export interface PowerUnit extends Vehicle {
     powerUnitType: string,
     country: string,
     province: string,
-    licensedGVW: number,
+    licensedGvw: number,
     steerAxleTireSize: number,
     axleGroup: AxleGroup
 }

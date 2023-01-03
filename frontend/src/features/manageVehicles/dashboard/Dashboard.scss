@@ -1,3 +1,16 @@
 .dash-container {
   display: flex;
 }
+
+.slide-pane__header {
+  background: #313132 0% 0% no-repeat padding-box;
+  color: white;
+}
+
+.slide-pane__header .slide-pane__title, .slide-pane__header .slide-pane__close {
+  font-weight: bold;
+}
+
+.slide-pane__content {
+  padding: 0px;
+}

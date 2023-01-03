@@ -1,4 +1,4 @@
-import { useForm, useFormContext } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import "./VehicleForm.scss";
 import TextField from '@mui/material/TextField';
@@ -8,23 +8,32 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
 import FormLabel from '@mui/material/FormLabel';
 import { Vehicle } from "../../../constants/enums";
-import { AxleFrontGroup, AxleType } from "../types";
+import { AxleFrontGroup, AxleType, AxleGroup } from "../types";
 import Input from '@mui/material/Input';
 import FilledInput from '@mui/material/FilledInput';
 import OutlinedInput from '@mui/material/OutlinedInput';
+
+/**
+ * The props that can be passed to the axle group form.
+ */
+interface AxleGroupFormProps {
+    axleGroup? : AxleGroup,
+}
 
 /**
  * The AxleGroupForm component provides a form containing the fields pertaining
  * to axle groups. It is only intended to be a subsection in a bigger component.
  * @returns A react component with axle group form fields.
  */
-export const AxleGroupForm = () => {
+export const AxleGroupForm = ({
+    axleGroup
+}: AxleGroupFormProps) => {
     const translationPrefix = 'vehicle.axle-group';
-    const {
+    const { 
         register,
         handleSubmit,
-        formState: { errors },
-    } = useForm();
+        formState: { errors }
+    } = useFormContext();
 
     const boldTextStyle = {
         fontWeight: 'bold'
@@ -41,7 +50,10 @@ export const AxleGroupForm = () => {
                     <RadioGroup
                         row
                         aria-labelledby="axle-front-group-radiogroup"
-                        name="axle-front-group-radiogroup"
+                        {...register("axle-front-group", {
+                            required: true,
+                        })}
+                        defaultValue={null}
                     >
                         <FormControlLabel value={AxleFrontGroup.Single} control={<Radio />} label={t(`${translationPrefix}.axle-front-group.single`)} />
                         <FormControlLabel value={AxleFrontGroup.Tandem} control={<Radio />} label={t(`${translationPrefix}.axle-front-group.tandem`)} />
@@ -57,7 +69,9 @@ export const AxleGroupForm = () => {
                     <RadioGroup
                         row
                         aria-labelledby="axle-type-front-radiogroup"
-                        name="axle-type-front-radiogroup"
+                        {...register("axle-type-front", {
+                            required: true,
+                        })}
                     >
                         <FormControlLabel value={AxleType.Steering} control={<Radio />} label={t(`${translationPrefix}.axle-type.steering`)} />
                         <FormControlLabel value={AxleType.Drive} control={<Radio />} label={t(`${translationPrefix}.axle-type.drive`)} />
@@ -72,7 +86,10 @@ export const AxleGroupForm = () => {
                     <RadioGroup
                         row
                         aria-labelledby="axle-type-rear-radiogroup"
-                        name="axle-type-rear-radiogroup"
+                        {...register("axle-type-rear", {
+                            
+                            required: true,
+                        })}
                     >
                         <FormControlLabel value={AxleType.Steering} control={<Radio />} label={t(`${translationPrefix}.axle-type.steering`)} />
                         <FormControlLabel value={AxleType.Drive} control={<Radio />} label={t(`${translationPrefix}.axle-type.drive`)} />

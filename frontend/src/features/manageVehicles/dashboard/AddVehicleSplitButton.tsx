@@ -13,28 +13,43 @@ import { useTranslation } from "react-i18next";
 
 interface SplitButtonProps {
   setFormMode: (mode: Vehicle) => void;
+  openSlidePanel: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function AddVehicleSplitButton({
-  setFormMode
+  setFormMode,
+  openSlidePanel
 }: SplitButtonProps) {
   const { t } = useTranslation();
-  const options = [t(Vehicle.POWER_UNIT), t(Vehicle.TRAILER)];
+  const options = [
+    {
+      vehicleMode: Vehicle.POWER_UNIT,
+      translationKey: "vehicle.power-unit"
+    },
+    {
+      vehicleMode: Vehicle.TRAILER,
+      translationKey: "vehicle.trailer"
+    },
+  ]
+  // const options = [t("vehicle.power-unit"), t("vehicle.trailer")];
   const [open, setOpen] = React.useState(false);
   const anchorRef = React.useRef<HTMLDivElement>(null);
   const [selectedIndex, setSelectedIndex] = React.useState(1);
 
-  setFormMode(Vehicle.POWER_UNIT);
+  // setFormMode(Vehicle.POWER_UNIT);
 
   const handleClick = () => {
-    console.info(`You clicked ${options[selectedIndex]}`);
+    // console.info(`You clicked ${options[selectedIndex]}`);
   };
 
   const handleMenuItemClick = (
     _event: React.MouseEvent<HTMLLIElement, MouseEvent>,
     index: number,
+    vehicleMode: Vehicle,
   ) => {
     setSelectedIndex(index);
+    setFormMode(vehicleMode);
+    openSlidePanel(true);
     setOpen(false);
   };
 
@@ -89,15 +104,17 @@ export default function AddVehicleSplitButton({
             <Paper>
               <ClickAwayListener onClickAway={handleClose}>
                 <MenuList id="split-button-menu" autoFocusItem>
-                  {options.map((option, index) => (
+                  {options.map((option, index) => {
+                    const { vehicleMode, translationKey } = option;
+                    return (
                     <MenuItem
-                      key={option}
+                      key={vehicleMode}
                       selected={index === selectedIndex}
-                      onClick={(event) => handleMenuItemClick(event, index)}
+                      onClick={(event) => handleMenuItemClick(event, index, vehicleMode)}
                     >
-                      {option}
+                      {t(translationKey)}
                     </MenuItem>
-                  ))}
+                  )})}
                 </MenuList>
               </ClickAwayListener>
             </Paper>

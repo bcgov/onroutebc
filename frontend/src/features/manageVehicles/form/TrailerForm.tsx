@@ -3,4 +3,10 @@ import { Button } from "../../../common/components/button/Button";
 import "./VehicleForm.scss";
 
 
-export const TrailerForm = () => {};
+export const TrailerForm = () => {
+    return (
+        <div>
+
+        </div>
+    );
+};

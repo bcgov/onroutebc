@@ -1,3 +1,5 @@
+import { PowerUnit } from '../types';
+
 /**
  * Utility to handle the interactions with Vehicle APIs.
  */
@@ -6,16 +8,16 @@
 
  /**
   * Adds a power unit.
-  * @param {Array} route The route to be created
+  * @param {PowerUnit} powerUnit The route to be created
   * @returns Response from the Create Route API.
   */
-  export const addPowerUnit = async (route) => {
-     return fetch(`${ONROUTE_BC_BACKEND_API_URL}/route`, {
+  export const addPowerUnit = async (powerUnit: PowerUnit) => {
+     return fetch(`${ONROUTE_BC_BACKEND_API_URL}/powerUnit`, {
          method: 'POST',
          headers: {
              'Content-Type': 'application/json'
          },
-         body: JSON.stringify(route)
+         body: JSON.stringify(powerUnit)
      })
      .then((response) => response.json());
  }
