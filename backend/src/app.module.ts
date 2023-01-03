@@ -5,6 +5,7 @@ import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { VehiclesModule } from './vehicles/vehicles.module';
+import * as path from 'path';
 
 console.log(
   'Var check - DB_TYPE',
@@ -38,10 +39,11 @@ console.log(
     ? process.env.MSSQL_SA_PASSWORD
     : process.env.POSTGRESQL_PASSWORD,
 );
+const envPath = path.resolve(process.cwd() + '/../');
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ envFilePath: '../../.env' }),
+    ConfigModule.forRoot({ envFilePath: `${envPath}/.env` }),
     TypeOrmModule.forRoot({
       type: process.env.DB_TYPE === 'mssql' ? 'mssql' : 'postgres',
       host:
