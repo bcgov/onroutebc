@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { JoinColumn, OneToOne } from 'typeorm';
 import { BaseDto } from './base.dto';
 import { ProvinceDto } from './province.dto';
 import { TrailerTypeDto } from './trailerType.dto';
@@ -26,8 +25,6 @@ export class TrailerDto extends BaseDto {
     description: 'The province/state where the vehicle is registered',
     example: '1',
   })
-  @OneToOne(() => ProvinceDto)
-  @JoinColumn()
   province: ProvinceDto;
 
   @ApiProperty({
@@ -64,7 +61,5 @@ export class TrailerDto extends BaseDto {
     description: 'The Trailer Type',
     example: 'Pole',
   })
-  @OneToOne(() => TrailerTypeDto)
-  @JoinColumn()
   trailerType: TrailerTypeDto;
 }

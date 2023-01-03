@@ -41,7 +41,7 @@ console.log(
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({ envFilePath: '../../.env' }),
     TypeOrmModule.forRoot({
       type: process.env.DB_TYPE === 'mssql' ? 'mssql' : 'postgres',
       host:
