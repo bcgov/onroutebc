@@ -25,15 +25,14 @@ export class VehiclesController {
   }
 
   @Post('/trailer')
-  createTrailer(@Body() createPowerUnitDto: CreateTrailerDto) {
-    return this.vehcilesService.createTrailer(createPowerUnitDto);
+  createTrailer(@Body() createTrailerDto: CreateTrailerDto) {
+    return this.vehcilesService.createTrailer(createTrailerDto);
   }
 
   @Get('/powerUnit')
   findAllPowerUnit() {
     return this.vehcilesService.findAllPowerUnit();
   }
-
 
   @Get('/trailer')
   findAllTrailer() {
@@ -55,9 +54,11 @@ export class VehiclesController {
     @Param('powerUnitId') powerUnitId: string,
     @Body() updatePowerUnitDto: UpdatePowerUnitDto,
   ) {
-    return this.vehcilesService.updatePowerUnit(powerUnitId, updatePowerUnitDto);
+    return this.vehcilesService.updatePowerUnit(
+      powerUnitId,
+      updatePowerUnitDto,
+    );
   }
-
 
   @Put('/trailer/:trailerId')
   updateTrailer(

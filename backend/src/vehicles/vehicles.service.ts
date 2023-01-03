@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 
 import { CreatePowerUnitDto } from './dto/create-powerUnit.dto';
 import { UpdatePowerUnitDto } from './dto/update-PowerUnit.dto';
-import {  Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { PowerUnit } from './entities/powerUnit.entity';
 import { Trailer } from './entities/trailer.entity';
 import { CreateTrailerDto } from './dto/create-trailer.dto';
@@ -24,34 +24,27 @@ export class VehiclesService {
     return newTrailer;
   }
 
-
   async createPowerUnit(powerUnit: CreatePowerUnitDto): Promise<PowerUnit> {
     const newPowerUnit = this.powerUnitRepository.create(powerUnit);
     await this.powerUnitRepository.save(newPowerUnit);
     return newPowerUnit;
-  } 
+  }
   async findAllPowerUnit(): Promise<PowerUnit[]> {
-
     return await this.powerUnitRepository.find({
       relations: {
         powerUnitType: true,
-        province:true
+        province: true,
       },
-  });
-   
-
+    });
   }
 
   async findAlltrailer(): Promise<Trailer[]> {
-  
     return await this.trailerRepository.find({
       relations: {
         trailerType: true,
-        province:true
+        province: true,
       },
-  });
-   
-
+    });
   }
 
   async findOnePowerUnit(powerUnitId: string): Promise<PowerUnit> {
@@ -77,7 +70,6 @@ export class VehiclesService {
     await this.trailerRepository.update({ trailerId }, updateTrailerDto);
     return this.findOneTrailer(trailerId);
   }
-  
 
   async removePowerUnit(
     powerUnitId: string,
@@ -89,8 +81,6 @@ export class VehiclesService {
       return { deleted: false, message: err.message };
     }
   }
-
-
 
   async removeTrailer(
     trailerId: string,
