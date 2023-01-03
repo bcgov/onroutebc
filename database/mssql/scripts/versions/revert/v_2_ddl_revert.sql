@@ -18,6 +18,6 @@ DROP TABLE [dbo].[ORBC_VT_COUNTRY]
 DECLARE @VersionDescription VARCHAR(255)
 SET @VersionDescription = 'Reverting initial creation of schema entities for manage vehicles feature'
 
-INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [DDL_FILE_SHA1], [RELEASE_DATE]) VALUES ($(VERSION_ID), @VersionDescription, '$(FILE_HASH)', getdate())
+INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [DDL_FILE_SHA1], [RELEASE_DATE]) VALUES (1, @VersionDescription, '$(FILE_HASH)', getdate())
 
 COMMIT
