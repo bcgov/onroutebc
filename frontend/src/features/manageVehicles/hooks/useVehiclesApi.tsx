@@ -1,5 +1,6 @@
 import { IPowerUnit } from "../types/managevehicles";
-import { VEHICLES_API } from "./endpoints/endpoints";
+import { CreatePowerUnit } from "../types";
+import { MV_BACKEND_URL, VEHICLES_API } from "./endpoints/endpoints";
 
 /*
  *
@@ -25,6 +26,36 @@ export const useVehiclesApi = () => {
       return [];
     }
   };
-  
+
   return { getAllPowerUnits };
+};
+
+/**
+ * Adds a power unit.
+ * @param {CreatePowerUnit} powerUnit The power unit to be added
+ * @returns Response from the create powerUnit API.
+ */
+export const addPowerUnit = (powerUnit: CreatePowerUnit) => {
+  return fetch(`${MV_BACKEND_URL}/vehicles/powerUnit`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(powerUnit),
+  }).then((response) => response.json());
+};
+
+/**
+ * Updates a power unit.
+ * @param {CreatePowerUnit} powerUnit The power unit to be added
+ * @returns Response from the create powerUnit API.
+ */
+export const updatePowerUnit = (powerUnit: CreatePowerUnit) => {
+  return fetch(`${MV_BACKEND_URL}/vehicles/powerUnit`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(powerUnit),
+  }).then((response) => response.json());
 };

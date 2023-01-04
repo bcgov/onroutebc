@@ -1,6 +1,6 @@
 import { useForm, FormProvider } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { Button } from "../../../common/components/button/Button";
+import { Button } from "../../../../common/components/button/Button";
 import "./VehicleForm.scss";
 import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
@@ -8,18 +8,16 @@ import AccordionDetails from "@mui/material/AccordionDetails";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { AxleGroupForm } from "./AxleGroupForm";
 import { useState } from "react";
-import { PowerUnit, AxleFrontGroup, AxleGroup, AxleType } from "../types";
-import Radio from "@mui/material/Radio";
-import RadioGroup from "@mui/material/RadioGroup";
+import { CreatePowerUnit, AxleFrontGroup, AxleGroup, AxleType } from "../../types";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import FormControl from "@mui/material/FormControl";
 import FormLabel from "@mui/material/FormLabel";
 import OutlinedInput from "@mui/material/OutlinedInput";
-import { addPowerUnit, updatePowerUnit } from "../api/vehicleServices";
+import { addPowerUnit, updatePowerUnit } from "../../hooks/useVehiclesApi";
 
 interface PowerUnitFormProps {
   displaySnackBar?: React.Dispatch<React.SetStateAction<boolean>>;
-  powerUnit?: PowerUnit;
+  powerUnit?: CreatePowerUnit;
 }
 
 /**
