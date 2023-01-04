@@ -17,6 +17,10 @@ import OutlinedInput from '@mui/material/OutlinedInput';
  * The props that can be passed to the axle group form.
  */
 interface AxleGroupFormProps {
+    /**
+     * The object containing the fields of the axle group (optional).
+     * If given, it will be used to set the values of the fields.
+     */
     axleGroup? : AxleGroup,
 }
 
@@ -53,7 +57,7 @@ export const AxleGroupForm = ({
                         {...register("axle-front-group", {
                             required: true,
                         })}
-                        defaultValue={null}
+                        defaultValue={axleGroup?.axleFrontGroup}
                     >
                         <FormControlLabel value={AxleFrontGroup.Single} control={<Radio />} label={t(`${translationPrefix}.axle-front-group.single`)} />
                         <FormControlLabel value={AxleFrontGroup.Tandem} control={<Radio />} label={t(`${translationPrefix}.axle-front-group.tandem`)} />
@@ -72,6 +76,7 @@ export const AxleGroupForm = ({
                         {...register("axle-type-front", {
                             required: true,
                         })}
+                        defaultValue={axleGroup?.axleTypeFront}
                     >
                         <FormControlLabel value={AxleType.Steering} control={<Radio />} label={t(`${translationPrefix}.axle-type.steering`)} />
                         <FormControlLabel value={AxleType.Drive} control={<Radio />} label={t(`${translationPrefix}.axle-type.drive`)} />
@@ -90,6 +95,7 @@ export const AxleGroupForm = ({
                             
                             required: true,
                         })}
+                        defaultValue={axleGroup?.axleTypeRear}
                     >
                         <FormControlLabel value={AxleType.Steering} control={<Radio />} label={t(`${translationPrefix}.axle-type.steering`)} />
                         <FormControlLabel value={AxleType.Drive} control={<Radio />} label={t(`${translationPrefix}.axle-type.drive`)} />
@@ -104,7 +110,7 @@ export const AxleGroupForm = ({
                     </FormLabel>
                     <OutlinedInput
                         aria-labelledby="axle-group-number-label"
-
+                        defaultValue={axleGroup?.axleGroupNumber}
                     />
                 </FormControl>
                 {/* <TextField 
@@ -122,6 +128,7 @@ export const AxleGroupForm = ({
                     <OutlinedInput
                         aria-labelledby="axle-group-spacing-label"
                         margin="dense"
+                        defaultValue={axleGroup?.axleGroupSpacing}
                     />
                 </FormControl>
 
@@ -134,18 +141,20 @@ export const AxleGroupForm = ({
                     <OutlinedInput
                         aria-labelledby="interaxle-spread-front-label"
                         margin="dense"
+                        defaultValue={axleGroup?.interaxleSpreadFront}
                     />
                 </FormControl>
 
             </div>
             <div>
                 <FormControl margin="normal">
-                    <FormLabel id="interaxle-spread-front-label" sx={boldTextStyle}>
-                        {t('vehicle.axle-group.interaxle-spread-front')}
+                    <FormLabel id="interaxle-spread-rear-label" sx={boldTextStyle}>
+                        {t('vehicle.axle-group.interaxle-spread-rear')}
                     </FormLabel>
                     <OutlinedInput
-                        aria-labelledby="interaxle-spread-front-label"
+                        aria-labelledby="interaxle-spread-rear-label"
                         margin="dense"
+                        defaultValue={axleGroup?.interaxleSpreadRear}
                     />
                 </FormControl>
 
@@ -165,6 +174,7 @@ export const AxleGroupForm = ({
                     <OutlinedInput
                         aria-labelledby="interaxle-spread-front-label"
                         margin="dense"
+                        defaultValue={axleGroup?.numberOfTiresFront}
                     />
                 </FormControl>
                 {/* <TextField
@@ -182,6 +192,7 @@ export const AxleGroupForm = ({
                     <OutlinedInput
                         aria-labelledby="number-of-tires-rear-label"
                         margin="dense"
+                        defaultValue={axleGroup?.numberOfTiresRear}
                     />
                 </FormControl>
                 {/* <TextField
