@@ -125,7 +125,7 @@ jobs:
           oc_token: ${{ secrets.OC_TOKEN }}
           overwrite: ${{ matrix.overwrite }}
           parameters:
-            -p ZONE=prod -p PROMOTE=${{ github.repository }}/${{ matrix.name }}:test
+            -p ZONE="prod" -p PROMOTE=${{ github.repository }}/${{ matrix.name }}:test
             -p NAME=${{ github.event.repository.name }} ${{ matrix.parameters }}
             -p DATABASE_NAME=${{secrets.OC_DATABASE_NAME}}
             -p DATABASE_USER=${{secrets.OC_DATABASE_USER}}
