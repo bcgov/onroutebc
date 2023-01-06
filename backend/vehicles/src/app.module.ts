@@ -2,7 +2,6 @@ import 'dotenv/config';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
-import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PowerUnitsModule } from './power-units/power-units.module';
 import { TrailersModule } from './trailers/trailers.module';

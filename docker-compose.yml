@@ -43,7 +43,7 @@ services:
   backend:
     container_name: backend
     build:
-      context: ./backend/
+      context: ./backend/vehicles/
       dockerfile: Dockerfile
     environment:
       NODE_ENV: development

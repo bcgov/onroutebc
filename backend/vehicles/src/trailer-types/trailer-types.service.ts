@@ -1,26 +1,47 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { CreateTrailerTypeDto } from './dto/create-trailer-type.dto';
 import { UpdateTrailerTypeDto } from './dto/update-trailer-type.dto';
+import { TrailerType } from './entities/trailer-type.entity';
 
 @Injectable()
 export class TrailerTypesService {
-  create(createTrailerTypeDto: CreateTrailerTypeDto) {
-    return 'This action adds a new trailerType';
+  constructor(
+    @InjectRepository(TrailerType)
+    private trailerTypeRepository: Repository<TrailerType>,
+  ) {}
+
+  async create(trailerType: CreateTrailerTypeDto): Promise<TrailerType> {
+    const newTrailerType = this.trailerTypeRepository.create(trailerType);
+    await this.trailerTypeRepository.save(newTrailerType);
+    return newTrailerType;
   }
 
-  findAll() {
-    return `This action returns all trailerTypes`;
+  async findAll(): Promise<TrailerType[]> {
+    return this.trailerTypeRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} trailerType`;
+  async findOne(typeId: number): Promise<TrailerType> {
+    return this.trailerTypeRepository.findOneOrFail({ where: { typeId } });
   }
 
-  update(id: number, updateTrailerTypeDto: UpdateTrailerTypeDto) {
-    return `This action updates a #${id} trailerType`;
+  async update(
+    typeId: number,
+    updatePowerUnitDto: UpdateTrailerTypeDto,
+  ): Promise<TrailerType> {
+    await this.trailerTypeRepository.update({ typeId }, updatePowerUnitDto);
+    return this.findOne(typeId);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} trailerType`;
+  async remove(
+    typeId: number,
+  ): Promise<{ deleted: boolean; message?: string }> {
+    try {
+      await this.trailerTypeRepository.delete(typeId);
+      return { deleted: true };
+    } catch (err) {
+      return { deleted: false, message: err.message };
+    }
   }
 }

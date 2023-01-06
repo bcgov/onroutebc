@@ -33,10 +33,7 @@ export class TrailersController {
   }
 
   @Put(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateTrailerDto: UpdateTrailerDto,
-  ) {
+  update(@Param('id') id: string, @Body() updateTrailerDto: UpdateTrailerDto) {
     return this.trailersService.update(id, updateTrailerDto);
   }
 

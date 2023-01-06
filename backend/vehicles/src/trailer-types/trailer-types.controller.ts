@@ -3,9 +3,9 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
+  Put,
 } from '@nestjs/common';
 import { TrailerTypesService } from './trailer-types.service';
 import { CreateTrailerTypeDto } from './dto/create-trailer-type.dto';
@@ -32,7 +32,7 @@ export class TrailerTypesController {
     return this.trailerTypesService.findOne(+id);
   }
 
-  @Patch(':id')
+  @Put(':id')
   update(
     @Param('id') id: string,
     @Body() updateTrailerTypeDto: UpdateTrailerTypeDto,

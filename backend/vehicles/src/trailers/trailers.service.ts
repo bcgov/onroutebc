@@ -33,9 +33,9 @@ export class TrailersService {
 
   async update(
     trailerId: string,
-    updatePowerUnitDto: UpdateTrailerDto,
+    updateTrailerDto: UpdateTrailerDto,
   ): Promise<Trailer> {
-    await this.trailerRepository.update({ trailerId }, updatePowerUnitDto);
+    await this.trailerRepository.update({ trailerId }, updateTrailerDto);
     return this.findOne(trailerId);
   }
 

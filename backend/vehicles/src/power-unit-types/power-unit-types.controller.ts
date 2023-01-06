@@ -3,9 +3,9 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
+  Put,
 } from '@nestjs/common';
 import { PowerUnitTypesService } from './power-unit-types.service';
 import { CreatePowerUnitTypeDto } from './dto/create-power-unit-type.dto';
@@ -32,7 +32,7 @@ export class PowerUnitTypesController {
     return this.powerUnitTypesService.findOne(+id);
   }
 
-  @Patch(':id')
+  @Put(':id')
   update(
     @Param('id') id: string,
     @Body() updatePowerUnitTypeDto: UpdatePowerUnitTypeDto,
