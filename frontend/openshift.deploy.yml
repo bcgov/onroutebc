@@ -75,7 +75,9 @@ objects:
       name: ${NAME}-${ZONE}-${COMPONENT}
     data:
       web.properties: |
-        window.VITE_DEPLOY_ENVIRONMENT=${ZONE}
+        window["_env_"] =  {
+          VITE_DEPLOY_ENVIRONMENT=${ZONE}
+        }
   - apiVersion: v1
     kind: DeploymentConfig
     metadata:
