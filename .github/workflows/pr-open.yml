@@ -96,7 +96,7 @@ jobs:
           overwrite: ${{ matrix.overwrite }}
           penetration_test: false
           parameters:
-            -p ZONE=cberg
+            -p ZONE='cberg'
             -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/${{ matrix.name }}:${{ github.event.number }} 
             -p DATABASE_NAME=${{secrets.OC_DATABASE_NAME}}
