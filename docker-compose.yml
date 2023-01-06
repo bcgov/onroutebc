@@ -40,8 +40,8 @@ services:
     volumes:
       - /sql_data
 
-  backend:
-    container_name: backend
+  vehicles:
+    container_name: vehicles
     build:
       context: ./backend/vehicles/
       dockerfile: Dockerfile
@@ -67,7 +67,7 @@ services:
     depends_on:
       sql-server-db:
         condition: service_healthy
-    hostname: backend
+    hostname: vehicles
     links:
       - sql-server-db
       - postgres-db
@@ -89,7 +89,7 @@ services:
       start_period: 40s
     hostname: frontend
     links:
-      - backend
+      - vehicles
     ports:
       - "3000:3000"
     volumes:

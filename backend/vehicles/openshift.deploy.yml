@@ -9,7 +9,7 @@ parameters:
     value: onroutebc
   - name: COMPONENT
     description: Component name
-    value: backend
+    value: backend-vehicles
   - name: ZONE
     description: Deployment zone, e.g. pr-### or prod
     required: true
@@ -37,7 +37,7 @@ parameters:
     value: ghcr.io
   - name: PROMOTE
     description: Image (namespace/name:tag) to promote/import
-    value: bcgov/onroutebc:prod-backend
+    value: bcgov/onroutebc:prod-backend-vehicles
   - name: DATABASE_NAME
     description: Name of Database to connect to 
     required: true
