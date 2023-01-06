@@ -74,10 +74,10 @@ objects:
         app: ${NAME}-${ZONE}
       name: ${NAME}-${ZONE}-${COMPONENT}
     data:
-      web.properties: |
+      web.properties: |-
         window["_env_"] =  {
           VITE_DEPLOY_ENVIRONMENT=${ZONE}
-        };
+        }
   - apiVersion: v1
     kind: DeploymentConfig
     metadata:
