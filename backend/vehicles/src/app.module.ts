@@ -9,6 +9,7 @@ import { PowerUnitTypesModule } from './power-unit-types/power-unit-types.module
 import { TrailerTypesModule } from './trailer-types/trailer-types.module';
 import { CommonModule } from './common/common.module';
 import * as path from 'path';
+import { AppController } from './app.controller';
 
 console.log(
   'Var check - DB_TYPE',
@@ -43,6 +44,8 @@ console.log(
     : process.env.POSTGRESQL_PASSWORD,
 );
 const envPath = path.resolve(process.cwd() + '/../../');
+
+console.log("envPath", envPath);
 
 @Module({
   imports: [
@@ -80,7 +83,7 @@ const envPath = path.resolve(process.cwd() + '/../../');
     TrailerTypesModule,
     CommonModule,
   ],
-  controllers: [],
+  controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {}

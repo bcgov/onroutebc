@@ -6,7 +6,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableCors();
   const config = new DocumentBuilder()
-    .setTitle('Vehciles API')
+    .setTitle('Vehicles API')
     .setDescription('The vehicles API description')
     .setVersion('1.0')
     .addTag('Vehicles')

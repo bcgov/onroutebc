@@ -59,7 +59,7 @@ services:
       MSSQL_SA_PASSWORD: YourStrong@Passw0rd
       MSSQL_ENCRYPT: false
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5000"]
+      test: ["CMD", "curl", "-f", "http://localhost:5000/vehicles/healthcheck"]
       interval: 1m30s
       timeout: 10s
       retries: 3

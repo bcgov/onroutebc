@@ -168,7 +168,7 @@ objects:
                   memory: ${MEMORY_LIMIT}
               readinessProbe:
                 httpGet:
-                  path: /
+                  path: /vehicles/healthcheck
                   port: 5000
                   scheme: HTTP
                 initialDelaySeconds: 60
@@ -178,7 +178,7 @@ objects:
                 successThreshold: 1
                 failureThreshold: 3
                 httpGet:
-                  path: /
+                  path: /vehicles/healthcheck
                   port: 5000
                   scheme: HTTP
                 initialDelaySeconds: 60
