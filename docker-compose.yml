@@ -40,10 +40,10 @@ services:
     volumes:
       - /sql_data
 
-  backend:
-    container_name: backend
+  vehicles:
+    container_name: vehicles
     build:
-      context: ./backend/
+      context: ./backend/vehicles/
       dockerfile: Dockerfile
     environment:
       NODE_ENV: development
@@ -59,7 +59,7 @@ services:
       MSSQL_SA_PASSWORD: YourStrong@Passw0rd
       MSSQL_ENCRYPT: false
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5000"]
+      test: ["CMD", "curl", "-f", "http://localhost:5000/"]
       interval: 1m30s
       timeout: 10s
       retries: 3
@@ -67,7 +67,7 @@ services:
     depends_on:
       sql-server-db:
         condition: service_healthy
-    hostname: backend
+    hostname: vehicles
     links:
       - sql-server-db
       - postgres-db
@@ -89,7 +89,7 @@ services:
       start_period: 40s
     hostname: frontend
     links:
-      - backend
+      - vehicles
     ports:
       - "3000:3000"
     volumes:
