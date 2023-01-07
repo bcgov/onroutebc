@@ -76,7 +76,8 @@ objects:
     data:
       web.properties: |-
         window["_env_"] =  {
-          "VITE_DEPLOY_ENVIRONMENT":"${ZONE}"
+          "VITE_DEPLOY_ENVIRONMENT":"${ZONE}",
+          "VITE_API_VEHICLE_URL":"https://${NAME}-${ZONE}-backend-vehicles.${DOMAIN}"
         }
   - apiVersion: v1
     kind: DeploymentConfig
@@ -113,6 +114,12 @@ objects:
               env:
                 - name: BACKEND_URL
                   value: https://${NAME}-${ZONE}-backend.${DOMAIN}
+                - name: VITE_API_VEHICLE_URL
+                  configMap:
+                    name: web-config
+                    items:
+                      - key: "web.properties"
+                        path: "config.js"
                 - name: VITE_DEPLOY_ENVIRONMENT
                   configMap:
                     name: web-config

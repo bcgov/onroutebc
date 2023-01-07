@@ -79,8 +79,9 @@ services:
     build:
       context: ./frontend/
       dockerfile: Dockerfile
-      args:
-        VITE_DEPLOY_ENVIRONMENT: prod
+    environment:
+      VITE_DEPLOY_ENVIRONMENT: docker
+      VITE_API_VEHICLE_URL: http://localhost:5000
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000"]
       interval: 1m30s
