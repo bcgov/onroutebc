@@ -5,6 +5,7 @@ import { vi } from 'vitest';
 
 const mockMatchMedia = () => {
   window.matchMedia = vi.fn().mockImplementation((query) => ({
+    envConfig: vi.fn(),
     matches: query !== "(max-width: 768px)",
     media: "",
     onchange: null,
