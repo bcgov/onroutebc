@@ -4,7 +4,6 @@ import { NavLink } from "react-router-dom";
 import "./Header.scss";
 import * as routes from "../../../constants/routes";
 import { BC_PRIMARY_BLUE } from "../../../constants/bcGovStyles";
-import { Config } from "../../../config";
 
 /*
  * The Header component includes the BC Gov banner and Navigation bar
@@ -20,7 +19,7 @@ export const Header = () => {
   const [menuOpen, setMenuOpen] = useState(!mediaQueryList.matches);
 
   let headerColor: string;
-  const env = Config.VITE_DEPLOY_ENVIRONMENT;
+  const env = import.meta.env.VITE_DEPLOY_ENVIRONMENT || envConfig.VITE_DEPLOY_ENVIRONMENT;
   switch (!isNaN(Number(env)) || env) {
     case "test":
       headerColor = "orange";

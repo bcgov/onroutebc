@@ -1,9 +1,8 @@
 import React from 'react';
-import { Config } from '../../config';
 
 export const HomePage = React.memo(() => {
 
-  const DEPLOY_ENV = Config.VITE_DEPLOY_ENVIRONMENT;
+  const DEPLOY_ENV = import.meta.env.VITE_DEPLOY_ENVIRONMENT || envConfig.VITE_DEPLOY_ENVIRONMENT;
 
   return (
     <div>
