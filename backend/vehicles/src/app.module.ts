@@ -11,41 +11,7 @@ import { CommonModule } from './common/common.module';
 import * as path from 'path';
 import { AppController } from './app.controller';
 
-console.log(
-  'Var check - DB_TYPE',
-  process.env.DB_TYPE === 'mssql' ? 'mssql' : 'postgres',
-);
-console.log(
-  'Var check - DB_HOST',
-  process.env.DB_TYPE === 'mssql'
-    ? process.env.MSSQL_HOST
-    : process.env.POSTGRESQL_HOST,
-);
-console.log(
-  'Var check - DB_PORT',
-  process.env.DB_TYPE === 'mssql' ? parseInt(process.env.MSSQL_PORT) : 5432,
-);
-console.log(
-  'Var check - DB_DATABASE',
-  process.env.DB_TYPE === 'mssql'
-    ? process.env.MSSQL_DB
-    : process.env.POSTGRESQL_DATABASE,
-);
-console.log(
-  'Var check - DB_USERNAME',
-  process.env.DB_TYPE === 'mssql'
-    ? process.env.MSSQL_SA_USER
-    : process.env.POSTGRESQL_USER,
-);
-console.log(
-  'Var check - DB_PASSWORD',
-  process.env.DB_TYPE === 'mssql'
-    ? process.env.MSSQL_SA_PASSWORD
-    : process.env.POSTGRESQL_PASSWORD,
-);
 const envPath = path.resolve(process.cwd() + '/../../');
-
-console.log("envPath", envPath);
 
 @Module({
   imports: [
