@@ -27,6 +27,7 @@
   },
   "include": [
     ".eslintrc.cjs",
-    "src"
+    "src",
+    "public"
   ]
 }

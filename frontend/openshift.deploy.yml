@@ -74,10 +74,13 @@ objects:
         app: ${NAME}-${ZONE}
       name: ${NAME}-${ZONE}-${COMPONENT}
     data:
-      web.properties: |-
-        window["_env_"] =  {
-          "VITE_DEPLOY_ENVIRONMENT":"${ZONE}"
-        }
+      config.js: |-
+        const envConfig = (() => {
+          return {
+            "VITE_DEPLOY_ENVIRONMENT":"${ZONE}",
+            "VITE_API_VEHICLE_URL":"https://${NAME}-${ZONE}-backend-vehicles.${DOMAIN}"
+          };
+        })();
   - apiVersion: v1
     kind: DeploymentConfig
     metadata:
@@ -110,15 +113,6 @@ objects:
             - image: ${NAME}-${ZONE}-${COMPONENT}:${IMAGE_TAG}
               imagePullPolicy: Always
               name: ${NAME}
-              env:
-                - name: BACKEND_URL
-                  value: https://${NAME}-${ZONE}-backend.${DOMAIN}
-                - name: VITE_DEPLOY_ENVIRONMENT
-                  configMap:
-                    name: web-config
-                    items:
-                      - key: "web.properties"
-                        path: "config.js"
               ports:
                 - containerPort: 3000
                   protocol: TCP
@@ -151,15 +145,11 @@ objects:
                 #override config.js file
                 - name: config
                   mountPath: "/usr/share/nginx/html/config.js"
-                  subPath: "config.js"
-                  readOnly: false
+                  subPath: config.js
           volumes:
             - name: config
               configMap:
                 name: ${NAME}-${ZONE}-${COMPONENT}
-                items:
-                  - key: "web.properties"
-                    path: "config.js"
   - apiVersion: v1
     kind: Service
     metadata:

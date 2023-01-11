@@ -5,9 +5,9 @@ services:
   postgres-db:
     container_name: postgres-db
     environment:
-      POSTGRES_USER: default
-      POSTGRES_PASSWORD: default
-      POSTGRES_DB: default
+      POSTGRES_USER: ${POSTGRESQL_USER}
+      POSTGRES_PASSWORD: ${POSTGRESQL_PASSWORD}
+      POSTGRES_DB: ${POSTGRESQL_DATABASE}
     hostname: postgres-db
     image: postgres:13
     restart: always
@@ -20,7 +20,7 @@ services:
       context: ./database/mssql
       dockerfile: Dockerfile
     environment:
-      MSSQL_HOST: ${MSSQL_HOST}
+      MSSQL_HOST: sql-server-db
       MSSQL_PORT: ${MSSQL_PORT}
       MSSQL_DB: ${MSSQL_DB}
       MSSQL_SA_USER: ${MSSQL_SA_USER}
@@ -40,24 +40,24 @@ services:
     volumes:
       - /sql_data
 
-  vehicles:
-    container_name: vehicles
+  vehicles-api:
+    container_name: vehicles-api
     build:
       context: ./backend/vehicles/
       dockerfile: Dockerfile
     environment:
       NODE_ENV: development
-      DB_TYPE: mssql
+      DB_TYPE: ${DB_TYPE}
       POSTGRESQL_HOST: postgres-db
-      POSTGRESQL_USER: default
-      POSTGRESQL_PASSWORD: default
-      POSTGRESQL_DATABASE: default
+      POSTGRES_USER: ${POSTGRESQL_USER}
+      POSTGRES_PASSWORD: ${POSTGRESQL_PASSWORD}
+      POSTGRES_DB: ${POSTGRESQL_DATABASE}
       MSSQL_HOST: sql-server-db
-      MSSQL_PORT: 1433
-      MSSQL_DB: ORBC_DEV
-      MSSQL_SA_USER: SA
-      MSSQL_SA_PASSWORD: YourStrong@Passw0rd
-      MSSQL_ENCRYPT: false
+      MSSQL_PORT: ${MSSQL_PORT}
+      MSSQL_DB: ${MSSQL_DB}
+      MSSQL_SA_USER: ${MSSQL_SA_USER}
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD}
+      MSSQL_ENCRYPT: ${MSSQL_ENCRYPT}
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5000/"]
       interval: 1m30s
@@ -67,7 +67,7 @@ services:
     depends_on:
       sql-server-db:
         condition: service_healthy
-    hostname: vehicles
+    hostname: vehicles-api
     links:
       - sql-server-db
       - postgres-db
@@ -79,8 +79,9 @@ services:
     build:
       context: ./frontend/
       dockerfile: Dockerfile
-      args:
-        VITE_DEPLOY_ENVIRONMENT: prod
+    environment:
+      VITE_DEPLOY_ENVIRONMENT: ${VITE_DEPLOY_ENVIRONMENT}
+      VITE_API_VEHICLE_URL: ${VITE_API_VEHICLE_URL}
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000"]
       interval: 1m30s
@@ -89,7 +90,7 @@ services:
       start_period: 40s
     hostname: frontend
     links:
-      - vehicles
+      - vehicles-api
     ports:
       - "3000:3000"
     volumes:
