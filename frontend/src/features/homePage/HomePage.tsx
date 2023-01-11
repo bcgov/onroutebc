@@ -6,7 +6,7 @@ export const HomePage = React.memo(() => {
 
   return (
     <div>
-      <p>OnRouteBc Home -{DEPLOY_ENV}-</p>
+      <p>OnRouteBC Home -{DEPLOY_ENV}-</p>
     </div>
   );
 });
