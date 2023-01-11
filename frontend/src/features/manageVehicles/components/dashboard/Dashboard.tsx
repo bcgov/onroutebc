@@ -6,8 +6,15 @@ import { useTranslation } from "react-i18next";
 import { PowerUnitForm } from "../form/PowerUnitForm";
 import { TrailerForm } from "../form/TrailerForm";
 
-import SlidingPane from "react-sliding-pane";
-import "react-sliding-pane/dist/react-sliding-pane.css";
+// import SlidingPane from "react-sliding-pane";
+import Snackbar from "@mui/material/Snackbar";
+import IconButton from "@mui/material/IconButton";
+import CloseIcon from "@mui/icons-material/Close";
+import Alert from "@mui/material/Alert";
+// import "react-sliding-pane/dist/react-sliding-pane.css";
+
+import SlidingPane from "../sliding-pane/react-sliding-pane";
+import "../sliding-pane/react-sliding-pane.css";
 
 import "./Dashboard.scss";
 
@@ -27,9 +34,18 @@ interface TabPanelProps {
   value: number;
 }
 
-enum Vehicle {
+export enum Vehicle {
   POWER_UNIT,
   TRAILER,
+}
+
+/**
+ * Type for displaying snackbar (aka toast message) after an operation.
+ */
+export interface DisplaySnackBarOptions {
+  display: boolean;
+  messageI18NKey: string;
+  isError: boolean;
 }
 
 const TabPanel = (props: TabPanelProps) => {
@@ -59,6 +75,44 @@ export const Dashboard = React.memo(() => {
   const [showForm, setShowForm] = useState<boolean>(false);
   const [value, setValue] = useState(0);
   const [addVehicleMode, setAddVehicleMode] = useState<Vehicle | null>(null);
+  const [snackBarStatus, setSnackBarStatus] = useState<DisplaySnackBarOptions>({
+    display: true,
+    messageI18NKey: "",
+    isError: false,
+  });
+
+  /**
+   * Displays a snackbar.
+   * @param display - boolean indicating if the snackbar should be displayed.
+   * @param isError - boolean indicating if the snackbar expresses an error.
+   * @param messageI18NKey - string containing the i8n message key.
+   */
+  const displaySnackBar = useCallback(function (
+    options: DisplaySnackBarOptions
+  ) {
+    const { messageI18NKey: message, isError, display } = options;
+    setSnackBarStatus(() => {
+      return {
+        messageI18NKey: message,
+        isError: isError,
+        display: display,
+      };
+    });
+  },
+  []);
+
+  /**
+   * Clears the state of snackbar and closes it.
+   */
+  const closeSnackBar = useCallback(
+    () =>
+      setSnackBarStatus({
+        display: false,
+        isError: false,
+        messageI18NKey: "",
+      }),
+    []
+  );
 
   /**
    * Closes the slide panel
@@ -87,7 +141,7 @@ export const Dashboard = React.memo(() => {
         }}
       >
         <div className="dash-banner">
-          <h2>{t('vehicle.dashboard.vehicle-inventory')}</h2>
+          <h2>{t("vehicle.dashboard.vehicle-inventory")}</h2>
           <Button
             variant="contained"
             onClick={useCallback(() => setShowForm(true), [])}
@@ -96,14 +150,42 @@ export const Dashboard = React.memo(() => {
           </Button>
         </div>
 
+        <div>
+          <Snackbar
+            anchorOrigin={{ vertical: "top", horizontal: "center" }}
+            open={snackBarStatus.display}
+            onClose={closeSnackBar}
+            action={
+              <>
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  sx={{ p: 0.5 }}
+                  onClick={closeSnackBar}
+                >
+                  <CloseIcon />
+                </IconButton>
+              </>
+            }
+            key="manage-vehicle-snackbar"
+          >
+            <Alert
+              onClose={closeSnackBar}
+              severity={snackBarStatus.isError ? "error": "success"}
+              sx={{ width: "100%" }}
+            >
+              {t(snackBarStatus.messageI18NKey)}
+            </Alert>
+          </Snackbar>
+        </div>
         <Tabs
           value={value}
           onChange={handleChange}
           aria-label="vehicle inventory tabs"
         >
-          <Tab label={t('vehicle.power-unit')} {...TabProps(0)} />
-          <Tab label={t('vehicle.trailer')} {...TabProps(1)} />
-          <Tab label={t('vehicle.vehicle-configuration')} {...TabProps(2)} />
+          <Tab label={t("vehicle.power-unit")} {...TabProps(0)} />
+          <Tab label={t("vehicle.trailer")} {...TabProps(1)} />
+          <Tab label={t("vehicle.vehicle-configuration")} {...TabProps(2)} />
         </Tabs>
       </Box>
       <TabPanel value={value} index={0}>
@@ -121,11 +203,15 @@ export const Dashboard = React.memo(() => {
         onRequestClose={closeSlidePanel}
         from="right"
         width="28%"
-        title={t("add-vehicle.power-unit")}
-        hideHeader={true}
+        title={t("vehicle.add-vehicle.power-unit")}
+        closeIcon="X"
+        // hideHeader={true}
       >
+        <PowerUnitForm displaySnackBar={displaySnackBar} />
         {/* <VehicleForm /> */}
-        {addVehicleMode === Vehicle.POWER_UNIT && <PowerUnitForm />}
+        {addVehicleMode === Vehicle.POWER_UNIT && (
+          <PowerUnitForm displaySnackBar={displaySnackBar} />
+        )}
         {addVehicleMode === Vehicle.TRAILER && <TrailerForm />}
       </SlidingPane>
     </>

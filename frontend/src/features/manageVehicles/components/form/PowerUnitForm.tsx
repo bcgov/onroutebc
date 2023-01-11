@@ -1,4 +1,4 @@
-import { useForm, FormProvider } from "react-hook-form";
+import { useForm, FormProvider, FieldValues } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Button } from "../../../../common/components/button/Button";
 import "./VehicleForm.scss";
@@ -8,15 +8,19 @@ import AccordionDetails from "@mui/material/AccordionDetails";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { AxleGroupForm } from "./AxleGroupForm";
 import { useState } from "react";
-import { CreatePowerUnit, AxleFrontGroup, AxleGroup, AxleType } from "../../types";
+import { CreatePowerUnit, AxleFrontGroup, AxleGroup, AxleType, UpdatePowerUnit } from "../../types";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import FormControl from "@mui/material/FormControl";
 import FormLabel from "@mui/material/FormLabel";
 import OutlinedInput from "@mui/material/OutlinedInput";
 import { addPowerUnit, updatePowerUnit } from "../../hooks/useVehiclesApi";
+import { DisplaySnackBarOptions } from '../dashboard/Dashboard';
 
+/**
+ * Props used by the power unit form.
+ */
 interface PowerUnitFormProps {
-  displaySnackBar?: React.Dispatch<React.SetStateAction<boolean>>;
+  displaySnackBar: (options: DisplaySnackBarOptions) => void;
   powerUnit?: CreatePowerUnit;
 }
 
@@ -57,9 +61,25 @@ export const PowerUnitForm = ({
   /**
    *
    */
-  const onAddVehicle = function (data) {
+  const onAddVehicle = function (data: FieldValues) {
     // const formValues =  getValues();
+    const createPowerUnit = (data as CreatePowerUnit);
     console.log(data);
+    addPowerUnit(createPowerUnit)
+    // .then(displaySnackBar(() => {
+    //   display: true,
+    //   messageI18NKey: "xyz",
+    //   isError: false,
+    // }));
+  };
+
+  /**
+   * 
+   * @param powerUnit The powe
+   */
+   const onEditVehicle = function (powerUnit: UpdatePowerUnit) {
+    // const formValues =  getValues();
+    console.log(powerUnit);
     // addPowerUnit(formValues).then(displaySnackBar());
   };
 
