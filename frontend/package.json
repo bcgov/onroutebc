@@ -15,7 +15,7 @@
     "react-hook-form": "^7.40.0",
     "react-router-dom": "^6.6.2",
     "react-sliding-pane": "^7.3.0",
-    "sass": "^1.56.1"
+    "sass": "^1.57.1"
   },
   "scripts": {
     "start": "vite",
