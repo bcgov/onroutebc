@@ -21,11 +21,14 @@ COPY . .
 # Build
 RUN npm run build
 
+# Non-privileged user
+USER app
+
 # Expose Port
 EXPOSE 3000
 
-# Stage 1, based on Nginx, to have only the compiled app, ready for production with Nginx
-FROM nginx as production-stage
+# Have only the compiled app, ready for production with Nginx
+FROM nginx:1.23.3-alpine as production-stage
 RUN mkdir /app
 COPY --from=builder /app/build /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/nginx.conf
