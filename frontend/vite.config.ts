@@ -5,9 +5,11 @@ import react from '@vitejs/plugin-react';
 import viteTsconfigPaths from 'vite-tsconfig-paths';
 import svgrPlugin from 'vite-plugin-svgr';
 import eslint from 'vite-plugin-eslint';
+import path from 'path';
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  envDir: path.resolve(process.cwd() + '/../'),
   server: {
     port: 3000,
     open: true,
@@ -26,6 +28,7 @@ export default defineConfig({
     },
   },
   build: {
+    emptyOutDir: true,
     outDir: 'build',
   },
 });

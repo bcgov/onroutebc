@@ -4,6 +4,13 @@ import { BrowserRouter as Router } from "react-router-dom";
 import { vi } from 'vitest';
 
 const mockMatchMedia = () => {
+  Object.defineProperty(window, 'envConfig', {
+    value: {
+      VITE_DEPLOY_ENVIRONMENT: "docker",
+      VITE_API_VEHICLE_URL: "http://localhost:5000",
+    },
+  });
+
   window.matchMedia = vi.fn().mockImplementation((query) => ({
     matches: query !== "(max-width: 768px)",
     media: "",

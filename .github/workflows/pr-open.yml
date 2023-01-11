@@ -27,7 +27,7 @@ jobs:
             Thanks for the PR!
 
             Any successful deployments (not always required) will be available below.
-            [Backend](https://${{ env.PREFIX }}-backend.${{ env.DOMAIN }}/) available
+            [Backend - Vehicles](https://${{ env.PREFIX }}-backend-vehicles.${{ env.DOMAIN }}/) available
             [Frontend](https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}/) available
 
             Once merged, code will be promoted and handed off to following workflow run.
@@ -50,10 +50,10 @@ jobs:
       packages: write
     strategy:
       matrix:
-        package: [backend, frontend]
+        package: [backend/vehicles, frontend]
         include:
-          - package: backend
-            triggers: ('backend/')
+          - package: backend/vehicles
+            triggers: ('backend/vehicles/')
           - package: frontend
             triggers: ('frontend/')
     steps:
@@ -73,10 +73,10 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        name: [backend, init, frontend]
+        name: [backend/vehicles, init, frontend]
         include:
-          - name: backend
-            file: backend/openshift.deploy.yml
+          - name: backend/vehicles
+            file: backend/vehicles/openshift.deploy.yml
             overwrite: true
             parameters: -p MIN_REPLICAS=1 -p MAX_REPLICAS=2
           - name: frontend
@@ -86,13 +86,8 @@ jobs:
           - name: init
             file: common/openshift.init.yml
             overwrite: false
-            #parameters: 
-            #-p DATABASE_NAME=${{secrets.OC_DATABASE_NAME}}
-            #-p DATABASE_USER=${{secrets.OC_DATABASE_USER}}
-            #-p DATABASE_PASSWORD=${{secrets.OC_DATABASE_PASSWORD}}
-            #-p DATABASE_HOST=${{secrets.OC_DATABASE_HOST}}
     steps:
-      - uses: bcgov-nr/action-deployer-openshift@v0.0.2
+      - uses: bcgov-nr/action-deployer-openshift@v1.0.0
         with:
           file: ${{ matrix.file }}
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
@@ -101,7 +96,7 @@ jobs:
           overwrite: ${{ matrix.overwrite }}
           penetration_test: false
           parameters:
-            -p ZONE=${{ github.event.number }} 
+            -p ZONE=${{ github.event.number }}
             -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/${{ matrix.name }}:${{ github.event.number }} 
             -p DATABASE_NAME=${{secrets.OC_DATABASE_NAME}}

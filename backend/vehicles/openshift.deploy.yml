@@ -9,7 +9,7 @@ parameters:
     value: onroutebc
   - name: COMPONENT
     description: Component name
-    value: frontend
+    value: backend-vehicles
   - name: ZONE
     description: Deployment zone, e.g. pr-### or prod
     required: true
@@ -37,7 +37,7 @@ parameters:
     value: ghcr.io
   - name: PROMOTE
     description: Image (namespace/name:tag) to promote/import
-    value: bcgov/onroutebc:prod-frontend
+    value: bcgov/onroutebc:prod-backend-vehicles
   - name: DATABASE_NAME
     description: Name of Database to connect to 
     required: true
@@ -51,6 +51,27 @@ parameters:
     description: Host url/service of database connection
     required: true
 objects:
+  - apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      labels:
+        app: ${NAME}-${ZONE}
+      name: ${NAME}-${ZONE}-${COMPONENT}
+    data:
+      database-type: mssql
+      database-name: "${DATABASE_NAME}"
+      database-host: "${DATABASE_HOST}"
+      database-encrypt: "false"
+      database-port: "1433"
+  - apiVersion: v1
+    kind: Secret
+    metadata:
+      labels:
+        app: ${NAME}-${ZONE}
+      name: ${NAME}-${ZONE}-${COMPONENT}
+    stringData:
+      database-user: "${DATABASE_USER}"
+      database-password: "${DATABASE_PASSWORD}"
   - apiVersion: v1
     kind: ImageStream
     metadata:
@@ -67,20 +88,6 @@ objects:
             name: ${REGISTRY}/${PROMOTE}
           referencePolicy:
             type: Local
-  - apiVersion: v1
-    kind: ConfigMap
-    metadata:
-      labels:
-        app: ${NAME}-${ZONE}
-      name: ${NAME}-${ZONE}-${COMPONENT}
-    data:
-      config.js: |-
-        const envConfig = (() => {
-          return {
-            "VITE_DEPLOY_ENVIRONMENT":"${ZONE}",
-            "VITE_API_VEHICLE_URL":"https://${NAME}-${ZONE}-backend-vehicles.${DOMAIN}"
-          };
-        })();
   - apiVersion: v1
     kind: DeploymentConfig
     metadata:
@@ -113,8 +120,44 @@ objects:
             - image: ${NAME}-${ZONE}-${COMPONENT}:${IMAGE_TAG}
               imagePullPolicy: Always
               name: ${NAME}
+              env:
+                - name: DB_TYPE
+                  valueFrom:
+                    configMapKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: database-type
+                - name: MSSQL_HOST
+                  valueFrom:
+                    configMapKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: database-host
+                - name: MSSQL_PORT
+                  valueFrom:
+                    configMapKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: database-port
+                - name: MSSQL_DB
+                  valueFrom:
+                    configMapKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: database-name
+                - name: MSSQL_ENCRYPT
+                  valueFrom:
+                    configMapKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: database-encrypt
+                - name: MSSQL_SA_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: database-password
+                - name: MSSQL_SA_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: database-user
               ports:
-                - containerPort: 3000
+                - containerPort: 5000
                   protocol: TCP
               resources:
                 requests:
@@ -126,30 +169,21 @@ objects:
               readinessProbe:
                 httpGet:
                   path: /
-                  port: 3000
+                  port: 5000
                   scheme: HTTP
-                initialDelaySeconds: 15
-                periodSeconds: 30
-                timeoutSeconds: 1
+                initialDelaySeconds: 60
+                periodSeconds: 15
+                timeoutSeconds: 5
               livenessProbe:
                 successThreshold: 1
                 failureThreshold: 3
                 httpGet:
                   path: /
-                  port: 3000
+                  port: 5000
                   scheme: HTTP
-                initialDelaySeconds: 15
+                initialDelaySeconds: 60
                 periodSeconds: 30
                 timeoutSeconds: 5
-              volumeMounts:
-                #override config.js file
-                - name: config
-                  mountPath: "/usr/share/nginx/html/config.js"
-                  subPath: config.js
-          volumes:
-            - name: config
-              configMap:
-                name: ${NAME}-${ZONE}-${COMPONENT}
   - apiVersion: v1
     kind: Service
     metadata:
@@ -158,10 +192,10 @@ objects:
       name: ${NAME}-${ZONE}-${COMPONENT}
     spec:
       ports:
-        - name: 3000-tcp
+        - name: 5000-tcp
           protocol: TCP
           port: 80
-          targetPort: 3000
+          targetPort: 5000
       selector:
         deploymentconfig: ${NAME}-${ZONE}-${COMPONENT}
   - apiVersion: route.openshift.io/v1
@@ -173,7 +207,7 @@ objects:
     spec:
       host: ${NAME}-${ZONE}-${COMPONENT}.${DOMAIN}
       port:
-        targetPort: 3000-tcp
+        targetPort: 5000-tcp
       to:
         kind: Service
         name: ${NAME}-${ZONE}-${COMPONENT}

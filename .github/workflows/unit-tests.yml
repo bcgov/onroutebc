@@ -25,9 +25,9 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        dir: [backend, frontend]
+        dir: [backend/vehicles, frontend]
         include:
-          - dir: backend
+          - dir: backend/vehicles
             sonar_projectKey: bcgov_onroutebc_backend
             token: SONAR_TOKEN_BACKEND
           - dir: frontend

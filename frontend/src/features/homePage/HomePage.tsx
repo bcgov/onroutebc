@@ -2,9 +2,11 @@ import React from 'react';
 
 export const HomePage = React.memo(() => {
 
+  const DEPLOY_ENV = import.meta.env.VITE_DEPLOY_ENVIRONMENT || envConfig.VITE_DEPLOY_ENVIRONMENT;
+
   return (
     <div>
-      <p>OnRouteBc Home</p>
+      <p>OnRouteBc Home -{DEPLOY_ENV}-</p>
     </div>
   );
 });

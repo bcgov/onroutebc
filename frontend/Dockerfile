@@ -4,8 +4,7 @@ FROM node:18.12.1-alpine as builder
 WORKDIR /app
 
 # Set variables
-#ARG NODE_ENV
-#ENV NODE_ENV ${NODE_ENV}
+#ENV NODE_ENV production
 
 # Install app dependencies
 COPY ./package*.json ./
