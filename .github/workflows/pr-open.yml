@@ -96,3 +96,24 @@ jobs:
             -p DATABASE_PASSWORD=${{secrets.OC_DATABASE_PASSWORD}}
             -p DATABASE_HOST=${{secrets.OC_DATABASE_HOST}}
             ${{ matrix.parameters }}
+      - name: Delete Previous deployments
+        uses: actions/github-script@v6
+          with:
+            script: |
+              const deployments = await github.rest.repos.listDeployments({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                sha: context.sha
+              });
+              await Promise.all(
+                deployments.data.map(async (deployment) => {
+                  await github.rest.repos.createDeploymentStatus({ 
+                    owner: context.repo.owner, 
+                    repo: context.repo.repo, 
+                    deployment_id: deployment.id, 
+                    state: 'inactive' 
+                  });
+                  console.log(deployment);
+                  return;
+                })
+              );
