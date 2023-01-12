@@ -67,8 +67,10 @@ jobs:
     environment: test
     runs-on: ubuntu-22.04
     strategy:
+      max-parallel: 1
+      fail-fast: true
       matrix:
-        name: [backend/vehicles, frontend, init]
+        name: [init, backend/vehicles, frontend]
         include:
           - name: backend/vehicles
             file: backend/vehicles/openshift.deploy.yml
@@ -104,8 +106,10 @@ jobs:
     environment: prod
     runs-on: ubuntu-22.04
     strategy:
+      max-parallel: 1
+      fail-fast: true
       matrix:
-        name: [backend/vehicles, frontend, init]
+        name: [init, backend/vehicles, frontend]
         include:
           - name: backend/vehicles
             file: backend/vehicles/openshift.deploy.yml
