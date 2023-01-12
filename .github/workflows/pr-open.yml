@@ -60,7 +60,6 @@ jobs:
     name: Deploys
     needs:
       - builds
-    environment: dev
     runs-on: ubuntu-22.04
     strategy:
       matrix:
@@ -69,7 +68,9 @@ jobs:
           - name: backend/vehicles
             file: backend/vehicles/openshift.deploy.yml
             overwrite: true
+            environment: dev
             parameters: -p MIN_REPLICAS=1 -p MAX_REPLICAS=2
+    environment: name: ${{ matrix.environment }}
     steps:
       - uses: bcgov-nr/action-deployer-openshift@v1.0.0
         with:
@@ -98,7 +99,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Deploys
-        uses: bcgov-nr/action-deployer-openshift.yml@main
+        uses: bcgov-nr/action-deployer-openshift@v1.0.0
         with:
           file: frontend/openshift.deploy.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
