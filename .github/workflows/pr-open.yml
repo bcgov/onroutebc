@@ -78,26 +78,7 @@ jobs:
             file: common/openshift.init.yml
             overwrite: false
     steps:
-      - uses: bcgov-nr/action-deployer-openshift@v1.0.0
-        with:
-          file: ${{ matrix.file }}
-          oc_namespace: ${{ secrets.OC_NAMESPACE }}
-          oc_server: ${{ secrets.OC_SERVER }}
-          oc_token: ${{ secrets.OC_TOKEN }}
-          overwrite: ${{ matrix.overwrite }}
-          penetration_test: false
-          verification_retry_attempts: 1
-          parameters:
-            -p ZONE=${{ github.event.number }}
-            -p NAME=${{ github.event.repository.name }}
-            -p PROMOTE=${{ github.repository }}/${{ matrix.name }}:${{ github.event.number }} 
-            -p DATABASE_NAME=${{secrets.OC_DATABASE_NAME}}
-            -p DATABASE_USER=${{secrets.OC_DATABASE_USER}}
-            -p DATABASE_PASSWORD=${{secrets.OC_DATABASE_PASSWORD}}
-            -p DATABASE_HOST=${{secrets.OC_DATABASE_HOST}}
-            ${{ matrix.parameters }}
-      - name: Delete Previous deployments
-        uses: actions/github-script@v6
+      - uses: actions/github-script@v6
           with:
             script: |
               const deployments = await github.rest.repos.listDeployments({
