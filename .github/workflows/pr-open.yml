@@ -98,6 +98,7 @@ jobs:
             ${{ matrix.parameters }}
       - name: Delete Previous deployments
         uses: actions/github-script@v6
+        id: set-result
         with:
           script: |
             const deployments = await github.rest.repos.listDeployments({
@@ -107,13 +108,12 @@ jobs:
             });
             await Promise.all(
               deployments.data.map(async (deployment) => {
-                await github.rest.repos.createDeploymentStatus({ 
-                  owner: context.repo.owner, 
-                  repo: context.repo.repo, 
-                  deployment_id: deployment.id, 
-                  state: 'inactive' 
-                });
+                console.log("deployment");
                 console.log(deployment);
-                return;
+                return deployment;
               })
             );
+            console.log("deployments");
+            console.log(deployments);
+      - name: Get result
+        run: echo "${{steps.set-result.outputs.result}}"
