@@ -61,8 +61,10 @@ jobs:
     needs:
       - builds
     runs-on: ubuntu-22.04
+    environment: dev
     strategy:
       max-parallel: 1
+      fail-fast: true
       matrix:
         name: [init, backend/vehicles, frontend]
         include:
