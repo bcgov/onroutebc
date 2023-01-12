@@ -64,10 +64,10 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        name: [frontend]
+        name: [backend/vehicles]
         include:
-          - name: frontend
-            file: frontend/openshift.deploy.yml
+          - name: backend/vehicles
+            file: backend/vehicles/openshift.deploy.yml
             overwrite: true
             parameters: -p MIN_REPLICAS=1 -p MAX_REPLICAS=2
     steps:
