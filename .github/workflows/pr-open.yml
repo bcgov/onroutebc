@@ -64,19 +64,12 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        name: [backend/vehicles, init, frontend]
+        name: [frontend]
         include:
-          - name: backend/vehicles
-            file: backend/vehicles/openshift.deploy.yml
-            overwrite: true
-            parameters: -p MIN_REPLICAS=1 -p MAX_REPLICAS=2
           - name: frontend
             file: frontend/openshift.deploy.yml
             overwrite: true
             parameters: -p MIN_REPLICAS=1 -p MAX_REPLICAS=2
-          - name: init
-            file: common/openshift.init.yml
-            overwrite: false
     steps:
       - uses: bcgov-nr/action-deployer-openshift@v1.0.0
         with:
@@ -96,28 +89,3 @@ jobs:
             -p DATABASE_PASSWORD=${{secrets.OC_DATABASE_PASSWORD}}
             -p DATABASE_HOST=${{secrets.OC_DATABASE_HOST}}
             ${{ matrix.parameters }}
-      - name: Delete Previous deployments
-        uses: actions/github-script@v6
-        id: set-result
-        with:
-          script: |
-            const deployments = await github.rest.repos.listDeployments({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              sha: context.sha
-            });
-            console.log("context.repo.owner");
-            console.log(context.repo.owner);
-            console.log("context.repo.repo");
-            console.log(context.repo.repo);
-            await Promise.all(
-              deployments.data.map(async (deployment) => {
-                console.log("deployment");
-                console.log(deployment);
-                return deployment;
-              })
-            );
-            console.log("deployments");
-            console.log(deployments);
-      - name: Get result
-        run: echo "${{steps.set-result.outputs.result}}"
