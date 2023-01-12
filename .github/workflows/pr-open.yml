@@ -72,6 +72,7 @@ jobs:
       - builds
     runs-on: ubuntu-22.04
     strategy:
+      max-parallel: 1
       matrix:
         name: [backend/vehicles, init, frontend]
         include:
@@ -79,17 +80,14 @@ jobs:
             file: backend/vehicles/openshift.deploy.yml
             overwrite: true
             parameters: -p MIN_REPLICAS=1 -p MAX_REPLICAS=2
-            environment: dev
           - name: frontend
             file: frontend/openshift.deploy.yml
             overwrite: true
             parameters: -p MIN_REPLICAS=1 -p MAX_REPLICAS=2
-            environment: dev
           - name: init
             file: common/openshift.init.yml
             overwrite: false
-            environment: dev
-    environment: ${{ matrix.environment }}
+    environment: dev
     steps:
       - uses: bcgov-nr/action-deployer-openshift@v1.0.0
         with:
