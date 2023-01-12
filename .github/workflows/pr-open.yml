@@ -106,6 +106,10 @@ jobs:
               repo: context.repo.repo,
               sha: context.sha
             });
+            console.log("context.repo.owner");
+            console.log(context.repo.owner);
+            console.log("context.repo.repo");
+            console.log(context.repo.repo);
             await Promise.all(
               deployments.data.map(async (deployment) => {
                 console.log("deployment");
