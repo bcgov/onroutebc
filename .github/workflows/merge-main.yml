@@ -87,6 +87,7 @@ jobs:
           oc_server: ${{ secrets.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
           overwrite: ${{ matrix.overwrite }}
+          verification_retry_attempts: 1
           parameters:
             -p ZONE=test
             -p NAME=${{ github.event.repository.name }} ${{ matrix.parameters }}
