@@ -1,0 +1,21 @@
+USE $(MSSQL_DB)
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+SET NOCOUNT ON
+GO
+BEGIN TRANSACTION
+
+DROP TABLE [dbo].[ORBC_MM_COMPANY_USER]
+DROP TABLE [dbo].[ORBC_COMPANY]
+DROP TABLE [dbo].[ORBC_USER]
+DROP TABLE [dbo].[ORBC_VT_DIRECTORY]
+
+DECLARE @VersionDescription VARCHAR(255)
+SET @VersionDescription = 'Reverting initial creation of schema entities for manage profile feature'
+
+INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [DDL_FILE_SHA1], [RELEASE_DATE]) VALUES (2, @VersionDescription, '$(FILE_HASH)', getdate())
+
+COMMIT
