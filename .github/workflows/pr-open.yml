@@ -70,7 +70,7 @@ jobs:
             overwrite: true
             environment: dev
             parameters: -p MIN_REPLICAS=1 -p MAX_REPLICAS=2
-    environment: name: ${{ matrix.environment }}
+    environment: ${{ matrix.environment }}
     steps:
       - uses: bcgov-nr/action-deployer-openshift@v1.0.0
         with:
