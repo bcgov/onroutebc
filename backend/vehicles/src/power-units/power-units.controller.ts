@@ -6,11 +6,14 @@ import {
   Param,
   Delete,
   Put,
+  HttpStatus,
 } from '@nestjs/common';
 import { PowerUnitsService } from './power-units.service';
 import { CreatePowerUnitDto } from './dto/create-power-unit.dto';
 import { UpdatePowerUnitDto } from './dto/update-power-unit.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { CustomNotFoundException } from 'src/common/exception/custom.notfound.exception';
+import { PowerUnit } from './entities/power-unit.entity';
 
 @ApiTags('Power Units')
 @Controller('vehicles/powerUnits')
@@ -23,21 +26,43 @@ export class PowerUnitsController {
   }
 
   @Get()
-  findAll() {
-    return this.powerUnitsService.findAll();
+  async findAll():Promise<PowerUnit[]> {
+   const powerUnit = await  this.powerUnitsService.findAll();
+   if (powerUnit.length > 0)
+   {
+    return powerUnit;
+   }else{
+    throw new CustomNotFoundException("Get all power unit failed.Power unit data do not exist in database yet",HttpStatus.NOT_FOUND)
+   }
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.powerUnitsService.findOne(id);
+  async findOne(@Param('id') id: string): Promise<PowerUnit> {
+    const powerUnit = await this.powerUnitsService.findOne(id);
+    if (powerUnit)
+    {
+    return powerUnit
+  }
+    else 
+    {
+    throw new CustomNotFoundException("Get power unit failed. Power unit with id "+id+" does not exist in database",HttpStatus.NOT_FOUND)
+    }
   }
 
   @Put(':id')
-  update(
+  async update(
     @Param('id') id: string,
     @Body() updatePowerUnitDto: UpdatePowerUnitDto,
-  ) {
-    return this.powerUnitsService.update(id, updatePowerUnitDto);
+  ): Promise<PowerUnit> {
+    const powerUnit = await this.powerUnitsService.update(id, updatePowerUnitDto);
+    if (powerUnit)
+    {
+    return powerUnit
+  }
+    else 
+    {
+    throw new CustomNotFoundException("Update power unit failed. Power unit with id "+id+" does not exist in database",HttpStatus.NOT_FOUND)
+    }
   }
 
   @Delete(':id')

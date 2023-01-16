@@ -6,7 +6,6 @@
 import {ArgumentsHost, Catch, ExceptionFilter, Injectable} from '@nestjs/common';
 import { Timestamp } from 'typeorm';
 
-@Injectable()
 @Catch()
 export class FallbackExceptionFilter implements ExceptionFilter{
 

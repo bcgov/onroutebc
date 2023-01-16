@@ -4,6 +4,7 @@ import { CreatePowerUnitDto } from './dto/create-power-unit.dto';
 import { UpdatePowerUnitDto } from './dto/update-power-unit.dto';
 import { Repository } from 'typeorm';
 import { PowerUnit } from './entities/power-unit.entity';
+import { InternalServerErrorException } from '@nestjs/common/exceptions';
 
 @Injectable()
 export class PowerUnitsService {
@@ -19,7 +20,7 @@ export class PowerUnitsService {
   }
 
   async findAll(): Promise<PowerUnit[]> {
-    return this.powerUnitRepository.find({
+    return await this.powerUnitRepository.find({
       relations: {
         powerUnitType: true,
         province: true,
@@ -28,7 +29,7 @@ export class PowerUnitsService {
   }
 
   async findOne(powerUnitId: string): Promise<PowerUnit> {
-    return this.powerUnitRepository.findOneOrFail({ where: { powerUnitId } });
+    return await this.powerUnitRepository.findOne({ where: { powerUnitId } });
   }
 
   async update(
@@ -46,7 +47,7 @@ export class PowerUnitsService {
       await this.powerUnitRepository.delete(powerUnitId);
       return { deleted: true };
     } catch (err) {
-      return { deleted: false, message: err.message };
+      throw new InternalServerErrorException("Deletion failed for id "+powerUnitId);
     }
   }
 }
