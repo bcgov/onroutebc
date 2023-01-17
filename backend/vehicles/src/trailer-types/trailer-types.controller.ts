@@ -29,7 +29,7 @@ export class TrailerTypesController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.trailerTypesService.findOne(+id);
+    return this.trailerTypesService.findOne(id);
   }
 
   @Put(':id')
@@ -37,11 +37,11 @@ export class TrailerTypesController {
     @Param('id') id: string,
     @Body() updateTrailerTypeDto: UpdateTrailerTypeDto,
   ) {
-    return this.trailerTypesService.update(+id, updateTrailerTypeDto);
+    return this.trailerTypesService.update(id, updateTrailerTypeDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.trailerTypesService.remove(+id);
+    return this.trailerTypesService.remove(id);
   }
 }

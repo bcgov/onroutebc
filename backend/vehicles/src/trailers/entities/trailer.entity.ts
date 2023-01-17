@@ -27,12 +27,12 @@ export class Trailer extends Base {
   @Column({ length: 10, name: 'PLATE', nullable: false })
   plateNumber: string;
 
-  @ApiProperty({
-    example: 'BC',
-    description: 'The Prov/ where the vehicle was registered',
-  })
+  // @ApiProperty({
+  //   example: 'BC',
+  //   description: 'The province/state where the vehicle is registered',
+  // })
   @ManyToOne(() => Province)
-  @JoinColumn({ name: 'PROVINCE_ID' })
+  @JoinColumn({ name: 'PROVINCE_CODE' })
   province: Province;
 
   @ApiProperty({ example: '2022', description: 'The year of Manufacture' })
@@ -61,8 +61,7 @@ export class Trailer extends Base {
   // @Column({ type: 'integer', name: 'COMPANY_ID', nullable: true })
   // companyId: number;
 
-  @ApiProperty({ example: '1', description: 'Primary Key of Trailer Type' })
   @ManyToOne(() => TrailerType, (TrailerType) => TrailerType.trailers)
-  @JoinColumn({ name: 'TRAILER_TYPE_ID' })
+  @JoinColumn({ name: 'TRAILER_TYPE_CODE' })
   trailerType: TrailerType;
 }

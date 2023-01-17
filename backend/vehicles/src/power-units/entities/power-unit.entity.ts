@@ -29,10 +29,10 @@ export class PowerUnit extends Base {
 
   @ApiProperty({
     example: 'BC',
-    description: 'The Prov where the vehicle was registered',
+    description: 'The province/state where the vehicle is registered',
   })
   @ManyToOne(() => Province, (Province) => Province.powerUnits)
-  @JoinColumn({ name: 'PROVINCE_ID' })
+  @JoinColumn({ name: 'PROVINCE_CODE' })
   province: Province;
 
   @ApiProperty({ example: '2022', description: 'The year of Manufacture' })
@@ -57,9 +57,8 @@ export class PowerUnit extends Base {
   })
   licensedGvw: number;
 
-  @ApiProperty({ example: '1', description: 'Power Unit Type Id' })
   @ManyToOne(() => PowerUnitType, (powerUnitType) => powerUnitType.powerUnits)
-  @JoinColumn({ name: 'POWER_UNIT_TYPE_ID' })
+  @JoinColumn({ name: 'POWER_UNIT_TYPE_CODE' })
   powerUnitType: PowerUnitType;
 
   @ApiProperty({ example: '12', description: 'Steer Axle Tire Size' })

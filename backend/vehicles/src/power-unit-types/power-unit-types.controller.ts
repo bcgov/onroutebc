@@ -29,7 +29,7 @@ export class PowerUnitTypesController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.powerUnitTypesService.findOne(+id);
+    return this.powerUnitTypesService.findOne(id);
   }
 
   @Put(':id')
@@ -37,11 +37,11 @@ export class PowerUnitTypesController {
     @Param('id') id: string,
     @Body() updatePowerUnitTypeDto: UpdatePowerUnitTypeDto,
   ) {
-    return this.powerUnitTypesService.update(+id, updatePowerUnitTypeDto);
+    return this.powerUnitTypesService.update(id, updatePowerUnitTypeDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.powerUnitTypesService.remove(+id);
+    return this.powerUnitTypesService.remove(id);
   }
 }

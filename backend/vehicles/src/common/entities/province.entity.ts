@@ -2,10 +2,10 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   Entity,
   Column,
-  PrimaryGeneratedColumn,
   JoinColumn,
   ManyToOne,
   OneToMany,
+  PrimaryColumn,
 } from 'typeorm';
 import { Base } from './base.entity';
 import { Country } from './country.entity';
@@ -14,12 +14,9 @@ import { Trailer } from '../../trailers/entities/trailer.entity';
 
 @Entity({ name: 'ORBC_VT_PROVINCE' })
 export class Province extends Base {
-  @ApiProperty({
-    example: '1',
-    description: 'The Province ID',
-  })
-  @PrimaryGeneratedColumn({ type: 'integer', name: 'PROVINCE_ID' })
-  provinceId: number;
+  @ApiProperty({ example: 'BC', description: 'Province Code' })
+  @PrimaryColumn({ length: 2, name: 'PROVINCE_CODE', nullable: false })
+  provinceCode: string;
 
   @ApiProperty({
     example: 'British Columbia',
@@ -28,17 +25,12 @@ export class Province extends Base {
   @Column({ length: 100, name: 'PROVINCE_NAME', nullable: false })
   provinceName: string;
 
-  @ApiProperty({ example: 'BC', description: 'Province Code' })
-  @Column({ length: 2, name: 'PROVINCE_CODE', nullable: false })
-  provinceCode: string;
-
   @ApiProperty({ example: '1', description: 'Sort Order' })
   @Column({ type: 'integer', name: 'SORT_ORDER', nullable: true })
   sortOrder: string;
 
-  @ApiProperty({ example: '1', description: 'Primary Key of Country' })
   @ManyToOne(() => Country, (Country) => Country.provinces)
-  @JoinColumn({ name: 'COUNTRY_ID' })
+  @JoinColumn({ name: 'COUNTRY_CODE' })
   country: Country;
 
   @ApiProperty({ description: 'Power Unit' })

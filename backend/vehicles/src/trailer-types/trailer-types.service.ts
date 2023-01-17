@@ -22,23 +22,23 @@ export class TrailerTypesService {
     return this.trailerTypeRepository.find();
   }
 
-  async findOne(typeId: number): Promise<TrailerType> {
-    return this.trailerTypeRepository.findOneOrFail({ where: { typeId } });
+  async findOne(typeCode: string): Promise<TrailerType> {
+    return this.trailerTypeRepository.findOneOrFail({ where: { typeCode } });
   }
 
   async update(
-    typeId: number,
+    typeCode: string,
     updatePowerUnitDto: UpdateTrailerTypeDto,
   ): Promise<TrailerType> {
-    await this.trailerTypeRepository.update({ typeId }, updatePowerUnitDto);
-    return this.findOne(typeId);
+    await this.trailerTypeRepository.update({ typeCode }, updatePowerUnitDto);
+    return this.findOne(typeCode);
   }
 
   async remove(
-    typeId: number,
+    typeCode: string,
   ): Promise<{ deleted: boolean; message?: string }> {
     try {
-      await this.trailerTypeRepository.delete(typeId);
+      await this.trailerTypeRepository.delete(typeCode);
       return { deleted: true };
     } catch (err) {
       return { deleted: false, message: err.message };

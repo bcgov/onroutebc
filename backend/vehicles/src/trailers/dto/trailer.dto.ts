@@ -11,7 +11,7 @@ export class TrailerDto extends BaseDto {
 
   @ApiProperty({
     description: 'The Unit Number',
-    example: 'Ken1',
+    example: 'KEN1',
   })
   unitNumber: string;
 
@@ -23,7 +23,7 @@ export class TrailerDto extends BaseDto {
 
   @ApiProperty({
     description: 'The province/state where the vehicle is registered',
-    example: '1',
+    example: 'BC',
   })
   province: ProvinceDto;
 
@@ -40,7 +40,7 @@ export class TrailerDto extends BaseDto {
   make: string;
 
   @ApiProperty({
-    description: 'The vin of the vehicle',
+    description: 'The VIN of the vehicle',
     example: '1ZVFT80N475211367',
   })
   vin: string;
@@ -59,7 +59,7 @@ export class TrailerDto extends BaseDto {
 
   @ApiProperty({
     description: 'The Trailer Type',
-    example: '1',
+    example: 'BOOSTR',
   })
   trailerType: TrailerTypeDto;
 }

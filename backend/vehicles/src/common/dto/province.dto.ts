@@ -3,10 +3,8 @@ import { BaseDto } from './base.dto';
 import { CountryDto } from './country.dto';
 
 export class ProvinceDto extends BaseDto {
-  @ApiProperty({
-    description: 'The Province ID',
-  })
-  provinceId: number;
+  @ApiProperty({ example: 'BC', description: 'Province Code' })
+  provinceCode: string;
 
   @ApiProperty({
     example: 'British Columbia',
@@ -14,9 +12,6 @@ export class ProvinceDto extends BaseDto {
   })
   provinceName: string;
 
-  @ApiProperty({ example: 'BC', description: 'Province Code' })
-  provinceCode: string;
-
-  @ApiProperty({ example: '1', description: 'Country ID' })
+  @ApiProperty({ example: 'CA', description: 'Country Code' })
   country: CountryDto;
 }

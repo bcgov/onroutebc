@@ -2,8 +2,7 @@ import { PickType } from '@nestjs/swagger';
 import { PowerUnitTypeDto } from './power-unit-type.dto';
 
 export class CreatePowerUnitTypeDto extends PickType(PowerUnitTypeDto, [
-  'typeId',
+  'typeCode',
   'type',
   'description',
-  'alias',
 ] as const) {}

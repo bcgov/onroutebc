@@ -22,26 +22,26 @@ export class PowerUnitTypesService {
     return this.powerUnitTypeRepository.find();
   }
 
-  async findOne(typeId: number): Promise<PowerUnitType> {
-    return this.powerUnitTypeRepository.findOneOrFail({ where: { typeId } });
+  async findOne(typeCode: string): Promise<PowerUnitType> {
+    return this.powerUnitTypeRepository.findOneOrFail({ where: { typeCode } });
   }
 
   async update(
-    typeId: number,
+    typeCode: string,
     updatePowerUnitTypeDto: UpdatePowerUnitTypeDto,
   ): Promise<PowerUnitType> {
     await this.powerUnitTypeRepository.update(
-      { typeId },
+      { typeCode },
       updatePowerUnitTypeDto,
     );
-    return this.findOne(typeId);
+    return this.findOne(typeCode);
   }
 
   async remove(
-    typeId: number,
+    typeCode: string,
   ): Promise<{ deleted: boolean; message?: string }> {
     try {
-      await this.powerUnitTypeRepository.delete(typeId);
+      await this.powerUnitTypeRepository.delete(typeCode);
       return { deleted: true };
     } catch (err) {
       return { deleted: false, message: err.message };
