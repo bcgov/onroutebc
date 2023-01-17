@@ -11,6 +11,7 @@ import { PowerUnitsService } from './power-units.service';
 import { CreatePowerUnitDto } from './dto/create-power-unit.dto';
 import { UpdatePowerUnitDto } from './dto/update-power-unit.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { PowerUnitDto } from './dto/power-unit.dto';
 
 @ApiTags('Power Units')
 @Controller('vehicles/powerUnits')
@@ -28,8 +29,8 @@ export class PowerUnitsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.powerUnitsService.findOne(id);
+  findOne(@Param('id') id: string) : Promise<PowerUnitDto> {
+     return this.powerUnitsService.findOne(id);
   }
 
   @Put(':id')
