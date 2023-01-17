@@ -3,7 +3,7 @@ name: Merge to Main
 on:
   push:
     branches:
-      - main
+      - experimental
     paths-ignore:
       - ".github/ISSUE_TEMPLATE/*"
       - "**.md"
@@ -82,7 +82,7 @@ jobs:
             file: common/openshift.init.yml
             overwrite: false
     steps:
-      - uses: bcgov-nr/action-deployer-openshift@v1.0.1
+      - uses: bcgov-nr/action-deployer-openshift@v1.0.0
         with:
           file: ${{ matrix.file }}
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
@@ -172,7 +172,7 @@ jobs:
             file: common/openshift.init.yml
             overwrite: false
     steps:
-      - uses: bcgov-nr/action-deployer-openshift@v1.0.1
+      - uses: bcgov-nr/action-deployer-openshift@v1.0.0
         with:
           file: ${{ matrix.file }}
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
