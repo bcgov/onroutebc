@@ -99,6 +99,7 @@ jobs:
             -p DATABASE_HOST=${{secrets.OC_DATABASE_HOST}}
           penetration_test: true
 	gitversion:
+    name: gitversion
 		steps:
 			# gitversion/setup@v0.9.7 action omitted for brevity.
 
