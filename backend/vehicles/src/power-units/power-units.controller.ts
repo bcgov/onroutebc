@@ -10,7 +10,7 @@ import {
 import { PowerUnitsService } from './power-units.service';
 import { CreatePowerUnitDto } from './dto/create-power-unit.dto';
 import { UpdatePowerUnitDto } from './dto/update-power-unit.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { PowerUnitDto } from './dto/power-unit.dto';
 
 @ApiTags('Power Units')
@@ -23,11 +23,21 @@ export class PowerUnitsController {
     return this.powerUnitsService.create(createPowerUnitDto);
   }
 
+  @ApiOkResponse({
+    description: 'The Power Unit records',
+    type: PowerUnitDto,
+    isArray: true
+})
   @Get()
   findAll() {
     return this.powerUnitsService.findAll();
   }
 
+  @ApiOkResponse({
+    description: 'The Power Unit record',
+    type: PowerUnitDto,
+    isArray: false
+  })
   @Get(':id')
   findOne(@Param('id') id: string) : Promise<PowerUnitDto> {
      return this.powerUnitsService.findOne(id);
