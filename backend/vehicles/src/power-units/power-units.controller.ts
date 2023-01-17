@@ -26,8 +26,8 @@ export class PowerUnitsController {
   @ApiOkResponse({
     description: 'The Power Unit records',
     type: PowerUnitDto,
-    isArray: true
-})
+    isArray: true,
+  })
   @Get()
   findAll() {
     return this.powerUnitsService.findAll();
@@ -36,11 +36,11 @@ export class PowerUnitsController {
   @ApiOkResponse({
     description: 'The Power Unit record',
     type: PowerUnitDto,
-    isArray: false
+    isArray: false,
   })
   @Get(':id')
-  findOne(@Param('id') id: string) : Promise<PowerUnitDto> {
-     return this.powerUnitsService.findOne(id);
+  findOne(@Param('id') id: string) {
+    return this.powerUnitsService.findOne(id);
   }
 
   @Put(':id')

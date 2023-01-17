@@ -17,9 +17,16 @@ export class PowerUnitsService {
   ) {}
 
   async create(powerUnit: CreatePowerUnitDto): Promise<PowerUnitDto> {
-    const newPowerUnit = this.classMapper.map(powerUnit, CreatePowerUnitDto, PowerUnit);
-    return this.classMapper.mapAsync(await this.powerUnitRepository.save(newPowerUnit),PowerUnit, PowerUnitDto) ;
-   // return newPowerUnit;
+    const newPowerUnit = this.classMapper.map(
+      powerUnit,
+      CreatePowerUnitDto,
+      PowerUnit,
+    );
+    return this.classMapper.mapAsync(
+      await this.powerUnitRepository.save(newPowerUnit),
+      PowerUnit,
+      PowerUnitDto,
+    );
   }
 
   async findAll(): Promise<PowerUnitDto[]> {
@@ -53,7 +60,11 @@ export class PowerUnitsService {
     powerUnitId: string,
     updatePowerUnitDto: UpdatePowerUnitDto,
   ): Promise<PowerUnitDto> {
-    const newPowerUnit = this.classMapper.map(updatePowerUnitDto, UpdatePowerUnitDto, PowerUnit);
+    const newPowerUnit = this.classMapper.map(
+      updatePowerUnitDto,
+      UpdatePowerUnitDto,
+      PowerUnit,
+    );
     await this.powerUnitRepository.update({ powerUnitId }, newPowerUnit);
     return this.findOne(powerUnitId);
   }

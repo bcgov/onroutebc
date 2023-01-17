@@ -8,5 +8,5 @@ export class PowerUnitDto extends CreatePowerUnitDto {
     example: '1',
     description: 'The Power Unit ID',
   })
-  powerUnitId: string; 
+  powerUnitId: string;
 }

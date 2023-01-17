@@ -31,10 +31,6 @@ export class Trailer extends Base {
   @Column({ length: 10, name: 'PLATE', nullable: false })
   plateNumber: string;
 
-  // @ApiProperty({
-  //   example: 'BC',
-  //   description: 'The province/state where the vehicle is registered',
-  // })
   @AutoMap(() => Province)
   @ManyToOne(() => Province)
   @JoinColumn({ name: 'PROVINCE_CODE' })
@@ -65,10 +61,6 @@ export class Trailer extends Base {
     nullable: false,
   })
   emptyTrailerWidth: number;
-
-  // @ApiProperty({ example: 'UBC Limited', description: 'Company ID' })
-  // @Column({ type: 'integer', name: 'COMPANY_ID', nullable: true })
-  // companyId: number;
 
   @AutoMap(() => TrailerType)
   @ManyToOne(() => TrailerType, (TrailerType) => TrailerType.trailers)

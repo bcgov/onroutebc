@@ -52,8 +52,7 @@ export class PowerUnitsProfile extends AutomapperProfile {
           (d) => d.powerUnitType.typeCode,
           mapFrom((s) => s.powerUnitTypeCode),
         ),
-      );      
-
+      );
     };
   }
 }

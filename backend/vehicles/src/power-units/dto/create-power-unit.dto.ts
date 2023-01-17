@@ -52,7 +52,7 @@ export class CreatePowerUnitDto {
   })
   licensedGvw: number;
 
-  @AutoMap(() => PowerUnitTypeDto)
+  @AutoMap()
   @ApiProperty({
     description: 'The power unit type Code',
     example: 'CONCRET',
