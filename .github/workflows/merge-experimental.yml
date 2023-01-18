@@ -111,8 +111,9 @@ jobs:
           echo "UncommittedChanges: ${{ steps.gitversion.outputs.uncommittedChanges }}"
           echo "CommitDate: ${{ steps.gitversion.outputs.commitDate }}"
   pre-release:        
-    name: Calculate SemVer
+    name: Create pre-release candidate
     runs-on: ubuntu-22.04
+    steps:
       - name: Create Pre-Release
         uses: actions/create-release@v1
         env:
