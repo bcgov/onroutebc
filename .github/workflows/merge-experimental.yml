@@ -110,19 +110,6 @@ jobs:
           echo "CommitsSinceVersionSourcePadded: ${{ steps.gitversion.outputs.commitsSinceVersionSourcePadded }}"
           echo "UncommittedChanges: ${{ steps.gitversion.outputs.uncommittedChanges }}"
           echo "CommitDate: ${{ steps.gitversion.outputs.commitDate }}"
-  pre-release:        
-    name: Create pre-release candidate
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Create Pre-Release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
-        with:
-          tag_name: ${{ steps.gitversion.outputs.fullSemVer }}
-          release_name: Release ${{ steps.gitversion.outputs.fullSemVer }}
-          draft: false
-          prerelease: true
   deploys-test:
     name: TEST Deployments
     needs:
@@ -162,6 +149,19 @@ jobs:
             -p DATABASE_PASSWORD=${{secrets.OC_DATABASE_PASSWORD}}
             -p DATABASE_HOST=${{secrets.OC_DATABASE_HOST}}
           penetration_test: true
+  pre-release:        
+    name: Create pre-release candidate
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Create Pre-Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+        with:
+          tag_name: ${{ steps.gitversion.outputs.fullSemVer }}
+          release_name: Release ${{ steps.gitversion.outputs.fullSemVer }}
+          draft: false
+          prerelease: true
   deploys-prod:
     name: PROD Deployments
     needs:
