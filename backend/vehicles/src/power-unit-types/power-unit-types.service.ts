@@ -1,7 +1,10 @@
+import { Mapper } from '@automapper/core';
+import { InjectMapper } from '@automapper/nestjs';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreatePowerUnitTypeDto } from './dto/create-power-unit-type.dto';
+import { PowerUnitTypeDto } from './dto/power-unit-type.dto';
 import { UpdatePowerUnitTypeDto } from './dto/update-power-unit-type.dto';
 import { PowerUnitType } from './entities/power-unit-type.entity';
 
@@ -10,38 +13,58 @@ export class PowerUnitTypesService {
   constructor(
     @InjectRepository(PowerUnitType)
     private powerUnitTypeRepository: Repository<PowerUnitType>,
+    @InjectMapper() private readonly classMapper: Mapper,
   ) {}
 
-  async create(powerUnitType: CreatePowerUnitTypeDto): Promise<PowerUnitType> {
-    const newPowerUnitType = this.powerUnitTypeRepository.create(powerUnitType);
-    await this.powerUnitTypeRepository.save(newPowerUnitType);
-    return newPowerUnitType;
+  async create(
+    powerUnitType: CreatePowerUnitTypeDto,
+  ): Promise<PowerUnitTypeDto> {
+    const newPowerUnitType = this.classMapper.map(
+      powerUnitType,
+      CreatePowerUnitTypeDto,
+      PowerUnitType,
+    );
+    await this.powerUnitTypeRepository.insert(newPowerUnitType);
+    return this.findOne(newPowerUnitType.typeCode);
   }
 
-  async findAll(): Promise<PowerUnitType[]> {
-    return this.powerUnitTypeRepository.find();
+  async findAll(): Promise<PowerUnitTypeDto[]> {
+    return this.classMapper.mapArrayAsync(
+      await this.powerUnitTypeRepository.find(),
+      PowerUnitType,
+      PowerUnitTypeDto,
+    );
   }
 
-  async findOne(typeId: number): Promise<PowerUnitType> {
-    return this.powerUnitTypeRepository.findOneOrFail({ where: { typeId } });
+  async findOne(typeCode: string): Promise<PowerUnitTypeDto> {
+    return this.classMapper.mapAsync(
+      await this.powerUnitTypeRepository.findOneOrFail({
+        where: { typeCode },
+      }),
+      PowerUnitType,
+      PowerUnitTypeDto,
+    );
   }
 
   async update(
-    typeId: number,
+    typeCode: string,
     updatePowerUnitTypeDto: UpdatePowerUnitTypeDto,
-  ): Promise<PowerUnitType> {
-    await this.powerUnitTypeRepository.update(
-      { typeId },
+  ): Promise<PowerUnitTypeDto> {
+    const newPowerUnitType = this.classMapper.map(
       updatePowerUnitTypeDto,
+      UpdatePowerUnitTypeDto,
+      PowerUnitType,
     );
-    return this.findOne(typeId);
+
+    await this.powerUnitTypeRepository.update({ typeCode }, newPowerUnitType);
+    return this.findOne(typeCode);
   }
 
   async remove(
-    typeId: number,
+    typeCode: string,
   ): Promise<{ deleted: boolean; message?: string }> {
     try {
-      await this.powerUnitTypeRepository.delete(typeId);
+      await this.powerUnitTypeRepository.delete(typeCode);
       return { deleted: true };
     } catch (err) {
       return { deleted: false, message: err.message };

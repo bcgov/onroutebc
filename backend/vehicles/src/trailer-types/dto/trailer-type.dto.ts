@@ -1,21 +1,15 @@
+import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
-import { BaseDto } from '../../common/dto/base.dto';
 
-export class TrailerTypeDto extends BaseDto {
-  @ApiProperty({
-    description: 'The Trailer Type ID',
-  })
-  typeId: number;
-
-  @ApiProperty({ example: 'TODO', description: 'Trailer Type' })
+export class TrailerTypeDto {
+  @AutoMap()
+  @ApiProperty({ example: 'Boosters', description: 'Trailer Type' })
   type: string;
 
+  @AutoMap()
   @ApiProperty({
-    example: 'TODO',
-    description: 'TODO',
+    example: 'A Booster is similar to a jeep, but it is used behind a load.',
+    description: 'Trailer Type Description',
   })
   description: string;
-
-  @ApiProperty({ example: 'TODO', description: 'Trailer Type Alias' })
-  alias: string;
 }

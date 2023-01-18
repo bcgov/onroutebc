@@ -1,22 +1,21 @@
+import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
 import { BaseDto } from './base.dto';
 import { CountryDto } from './country.dto';
 
 export class ProvinceDto extends BaseDto {
-  @ApiProperty({
-    description: 'The Province ID',
-  })
-  provinceId: number;
+  @AutoMap()
+  @ApiProperty({ example: 'BC', description: 'Province Code' })
+  provinceCode: string;
 
+  @AutoMap()
   @ApiProperty({
     example: 'British Columbia',
     description: 'Province Name',
   })
   provinceName: string;
 
-  @ApiProperty({ example: 'BC', description: 'Province Code' })
-  provinceCode: string;
-
-  @ApiProperty({ example: '1', description: 'Country ID' })
+  @AutoMap(() => CountryDto)
+  @ApiProperty({ example: 'CA', description: 'Country Code' })
   country: CountryDto;
 }

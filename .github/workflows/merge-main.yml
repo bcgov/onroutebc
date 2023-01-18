@@ -67,8 +67,10 @@ jobs:
     environment: test
     runs-on: ubuntu-22.04
     strategy:
+      max-parallel: 1
+      fail-fast: true
       matrix:
-        name: [backend/vehicles, frontend, init]
+        name: [init, backend/vehicles, frontend]
         include:
           - name: backend/vehicles
             file: backend/vehicles/openshift.deploy.yml
@@ -80,7 +82,7 @@ jobs:
             file: common/openshift.init.yml
             overwrite: false
     steps:
-      - uses: bcgov-nr/action-deployer-openshift@v1.0.0
+      - uses: bcgov-nr/action-deployer-openshift@v1.0.1
         with:
           file: ${{ matrix.file }}
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
@@ -104,8 +106,10 @@ jobs:
     environment: prod
     runs-on: ubuntu-22.04
     strategy:
+      max-parallel: 1
+      fail-fast: true
       matrix:
-        name: [backend/vehicles, frontend, init]
+        name: [init, backend/vehicles, frontend]
         include:
           - name: backend/vehicles
             file: backend/vehicles/openshift.deploy.yml
@@ -117,7 +121,7 @@ jobs:
             file: common/openshift.init.yml
             overwrite: false
     steps:
-      - uses: bcgov-nr/action-deployer-openshift@v1.0.0
+      - uses: bcgov-nr/action-deployer-openshift@v1.0.1
         with:
           file: ${{ matrix.file }}
           oc_namespace: ${{ secrets.OC_NAMESPACE }}

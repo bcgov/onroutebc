@@ -1,9 +1,9 @@
-import { PickType } from '@nestjs/swagger';
-import { TrailerTypeDto } from './trailer-type.dto';
+import { AutoMap } from '@automapper/classes';
+import { ApiProperty } from '@nestjs/swagger';
+import { UpdateTrailerTypeDto } from './update-trailer-type.dto';
 
-export class CreateTrailerTypeDto extends PickType(TrailerTypeDto, [
-  'typeId',
-  'type',
-  'description',
-  'alias',
-] as const) {}
+export class CreateTrailerTypeDto extends UpdateTrailerTypeDto {
+  @AutoMap()
+  @ApiProperty({ example: 'BOOSTR', description: 'The Trailer Type Code' })
+  typeCode: string;
+}
