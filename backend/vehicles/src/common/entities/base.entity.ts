@@ -4,7 +4,7 @@ import { Column, CreateDateColumn, UpdateDateColumn, Timestamp } from 'typeorm';
 export class Base {
   @ApiProperty({ example: '1', description: 'Concurrency Control Number' })
   @Column({
-    type: 'bigint',
+    type: 'integer',
     name: 'CONCURRENCY_CONTROL_NUMBER',
     nullable: true,
   })
