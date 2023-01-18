@@ -1,18 +1,8 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
+import { TrailerTypeDto } from './trailer-type.dto';
 
-export class UpdateTrailerTypeDto {
-  @AutoMap()
-  @ApiProperty({ example: 'Boosters', description: 'Trailer Type' })
-  type: string;
-
-  @AutoMap()
-  @ApiProperty({
-    example: 'A Booster is similar to a jeep, but it is used behind a load.',
-    description: 'Trailer Type Description',
-  })
-  description: string;
-
+export class UpdateTrailerTypeDto extends TrailerTypeDto {
   @AutoMap()
   @ApiProperty({ example: '1', description: 'Sort Order' })
   sortOrder: string;
