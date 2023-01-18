@@ -98,12 +98,12 @@ jobs:
             -p DATABASE_PASSWORD=${{secrets.OC_DATABASE_PASSWORD}}
             -p DATABASE_HOST=${{secrets.OC_DATABASE_HOST}}
           penetration_test: true
-  gitversion:
-    name: gitversion
+  semver:
+    name: Calculate SemVer
     runs-on: ubuntu-22.04
     steps:
       # gitversion/setup@v0.9.7 action omitted for brevity.
-      - name: Determine Version
+      - name: Determine SemVersion
         uses: gittools/actions/gitversion/execute@v0.9.7
       - name: Display GitVersion outputs
         run: |
