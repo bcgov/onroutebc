@@ -59,18 +59,13 @@ jobs:
         with:
           sarif_file: "trivy-results.sarif"
 
-  install-gitversion:
-    name: Install GitVersion
+  gitVersion:
+    name: Install GitVersion & Calclulate Semver
     runs-on: ubuntu-22.04
     steps:
       - uses: gittools/actions/gitversion/setup@v0.9.7
         with:
           versionSpec: '5.x'
-
-  calculate-semver:
-    name: Calculate SemVer
-    runs-on: ubuntu-22.04
-    steps:
       # gitversion/setup@v0.9.7 action omitted for brevity.
       - name: Determine SemVersion
         id:   gitversion
@@ -110,6 +105,7 @@ jobs:
           echo "CommitsSinceVersionSourcePadded: ${{ steps.gitversion.outputs.commitsSinceVersionSourcePadded }}"
           echo "UncommittedChanges: ${{ steps.gitversion.outputs.uncommittedChanges }}"
           echo "CommitDate: ${{ steps.gitversion.outputs.commitDate }}"
+
   deploys-test:
     name: TEST Deployments
     needs:
@@ -149,10 +145,6 @@ jobs:
             -p DATABASE_PASSWORD=${{secrets.OC_DATABASE_PASSWORD}}
             -p DATABASE_HOST=${{secrets.OC_DATABASE_HOST}}
           penetration_test: true
-  pre-release:        
-    name: Create pre-release candidate
-    runs-on: ubuntu-22.04
-    steps:
       - name: Create Pre-Release
         uses: actions/create-release@v1
         env:
