@@ -10,28 +10,46 @@ import {
 import { PowerUnitsService } from './power-units.service';
 import { CreatePowerUnitDto } from './dto/create-power-unit.dto';
 import { UpdatePowerUnitDto } from './dto/update-power-unit.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { PowerUnitDto } from './dto/power-unit.dto';
 
 @ApiTags('Power Units')
 @Controller('vehicles/powerUnits')
 export class PowerUnitsController {
   constructor(private readonly powerUnitsService: PowerUnitsService) {}
 
+  @ApiCreatedResponse({
+    description: 'The Power Unit Resource',
+    type: PowerUnitDto,
+  })
   @Post()
   create(@Body() createPowerUnitDto: CreatePowerUnitDto) {
     return this.powerUnitsService.create(createPowerUnitDto);
   }
 
+  @ApiOkResponse({
+    description: 'The Power Unit Resource',
+    type: PowerUnitDto,
+    isArray: true,
+  })
   @Get()
   findAll() {
     return this.powerUnitsService.findAll();
   }
 
+  @ApiOkResponse({
+    description: 'The Power Unit Resource',
+    type: PowerUnitDto,
+  })
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.powerUnitsService.findOne(id);
   }
 
+  @ApiOkResponse({
+    description: 'The Power Unit Resource',
+    type: PowerUnitDto,
+  })
   @Put(':id')
   update(
     @Param('id') id: string,
