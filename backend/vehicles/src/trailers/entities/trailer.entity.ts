@@ -29,7 +29,7 @@ export class Trailer extends Base {
   @AutoMap()
   @ApiProperty({ example: 'CWJR 897665', description: 'Plate Number' })
   @Column({ length: 10, name: 'PLATE', nullable: false })
-  plateNumber: string;
+  plate: string;
 
   @AutoMap(() => Province)
   @ManyToOne(() => Province)

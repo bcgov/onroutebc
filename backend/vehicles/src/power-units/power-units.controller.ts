@@ -18,13 +18,17 @@ import { PowerUnitDto } from './dto/power-unit.dto';
 export class PowerUnitsController {
   constructor(private readonly powerUnitsService: PowerUnitsService) {}
 
+  @ApiOkResponse({
+    description: 'The Power Unit Resource',
+    type: PowerUnitDto,
+  })
   @Post()
   create(@Body() createPowerUnitDto: CreatePowerUnitDto) {
     return this.powerUnitsService.create(createPowerUnitDto);
   }
 
   @ApiOkResponse({
-    description: 'The Power Unit records',
+    description: 'The Power Unit Resource',
     type: PowerUnitDto,
     isArray: true,
   })
@@ -34,15 +38,18 @@ export class PowerUnitsController {
   }
 
   @ApiOkResponse({
-    description: 'The Power Unit record',
+    description: 'The Power Unit Resource',
     type: PowerUnitDto,
-    isArray: false,
   })
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.powerUnitsService.findOne(id);
   }
 
+  @ApiOkResponse({
+    description: 'The Power Unit Resource',
+    type: PowerUnitDto,
+  })
   @Put(':id')
   update(
     @Param('id') id: string,

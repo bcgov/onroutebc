@@ -38,10 +38,10 @@ export class PowerUnitType extends Base {
     example: '1',
     description: 'Is Active Flag - 1 (Active)/ 0 (Deactive)',
   })
-  @Column({ type: 'bit', name: 'IS_ACTIVE', nullable: false })
+  @Column({ type: 'bit', name: 'IS_ACTIVE', nullable: false, default: 1 })
   isActive: string;
 
-  // @AutoMap(() => [PowerUnit])
+  @AutoMap(() => [PowerUnit])
   @OneToMany(() => PowerUnit, (PowerUnit) => PowerUnit.powerUnitType)
   powerUnits: PowerUnit[];
 }

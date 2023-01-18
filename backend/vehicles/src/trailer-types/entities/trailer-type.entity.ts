@@ -34,10 +34,10 @@ export class TrailerType extends Base {
     example: '1',
     description: 'Is Active Flag - 1 (Active)/ 0 (Deactive)',
   })
-  @Column({ type: 'bit', name: 'IS_ACTIVE', nullable: false })
+  @Column({ type: 'bit', name: 'IS_ACTIVE', nullable: false, default: 1 })
   isActive: string;
 
-  //@AutoMap(() => [Trailer])
+  @AutoMap(() => [Trailer])
   @OneToMany(() => Trailer, (Trailer) => Trailer.trailerType)
   trailers: Trailer[];
 }

@@ -1,6 +1,5 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
-import { PowerUnitTypeDto } from '../../power-unit-types/dto/power-unit-type.dto';
 
 export class CreatePowerUnitDto {
   @AutoMap()
@@ -15,7 +14,7 @@ export class CreatePowerUnitDto {
     description: 'The Power Unit plate Number',
     example: 'AS 5895',
   })
-  plateNumber: string;
+  plate: string;
 
   @AutoMap()
   @ApiProperty({

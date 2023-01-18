@@ -14,7 +14,7 @@ export class CreateTrailerDto {
     description: 'The Trailer plate Number',
     example: 'AS 5895',
   })
-  plateNumber: string;
+  plate: string;
 
   @AutoMap()
   @ApiProperty({
