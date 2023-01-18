@@ -10,7 +10,7 @@ import {
 import { PowerUnitTypesService } from './power-unit-types.service';
 import { CreatePowerUnitTypeDto } from './dto/create-power-unit-type.dto';
 import { UpdatePowerUnitTypeDto } from './dto/update-power-unit-type.dto';
-import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { PowerUnitTypeDto } from './dto/power-unit-type.dto';
 
 @ApiTags('Power Unit Types')
@@ -18,7 +18,7 @@ import { PowerUnitTypeDto } from './dto/power-unit-type.dto';
 export class PowerUnitTypesController {
   constructor(private readonly powerUnitTypesService: PowerUnitTypesService) {}
 
-  @ApiOkResponse({
+  @ApiCreatedResponse({
     description: 'The Power Unit Type Resource',
     type: PowerUnitTypeDto,
   })

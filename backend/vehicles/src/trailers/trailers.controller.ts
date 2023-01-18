@@ -10,7 +10,7 @@ import {
 import { TrailersService } from './trailers.service';
 import { CreateTrailerDto } from './dto/create-trailer.dto';
 import { UpdateTrailerDto } from './dto/update-trailer.dto';
-import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { TrailerDto } from './dto/trailer.dto';
 
 @ApiTags('Trailers')
@@ -18,7 +18,7 @@ import { TrailerDto } from './dto/trailer.dto';
 export class TrailersController {
   constructor(private readonly trailersService: TrailersService) {}
 
-  @ApiOkResponse({
+  @ApiCreatedResponse({
     description: 'The Trailer Resource',
     type: TrailerDto,
   })
