@@ -1,21 +1,19 @@
+import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
-import { BaseDto } from '../../common/dto/base.dto';
 
-export class PowerUnitTypeDto extends BaseDto {
+export class PowerUnitTypeDto {
+  @AutoMap()
   @ApiProperty({
-    description: 'The Power Unit Type ID',
+    example: 'Concrete Pumper Trucks',
+    description: 'Power Unit Type',
   })
-  typeId: number;
-
-  @ApiProperty({ example: 'Truck Tractor', description: 'Power Unit Type' })
   type: string;
 
+  @AutoMap()
   @ApiProperty({
-    example: 'Truck Tractor',
+    example:
+      'Concrete Pumper Trucks are used to pump concrete from a cement mixer truck to where the concrete is actually needed. They travel on the highway at their equipped weight with no load.',
     description: 'Power Unit Description',
   })
   description: string;
-
-  @ApiProperty({ example: 'TODO', description: 'Power Type Alias' })
-  alias: string;
 }
