@@ -63,6 +63,7 @@ jobs:
     name: Install GitVersion & Calclulate Semver
     runs-on: ubuntu-22.04
     steps:
+      - uses: actions/checkout@v3
       - uses: gittools/actions/gitversion/setup@v0.9.7
         with:
           versionSpec: '5.x'
