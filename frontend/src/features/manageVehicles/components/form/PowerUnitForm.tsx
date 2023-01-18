@@ -8,13 +8,23 @@ import AccordionDetails from "@mui/material/AccordionDetails";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { AxleGroupForm } from "./AxleGroupForm";
 import { useState } from "react";
-import { CreatePowerUnit, AxleFrontGroup, AxleGroup, AxleType, UpdatePowerUnit } from "../../types";
+import {
+  CreatePowerUnit,
+  AxleFrontGroup,
+  AxleGroup,
+  AxleType,
+  UpdatePowerUnit,
+} from "../../types";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import FormControl from "@mui/material/FormControl";
 import FormLabel from "@mui/material/FormLabel";
 import OutlinedInput from "@mui/material/OutlinedInput";
 import { addPowerUnit, updatePowerUnit } from "../../hooks/useVehiclesApi";
-import { DisplaySnackBarOptions } from '../dashboard/Dashboard';
+import { DisplaySnackBarOptions } from "../dashboard/Dashboard";
+import MenuItem from '@mui/material/MenuItem';
+import Select, { SelectChangeEvent } from "@mui/material/Select";
+
+import CountriesAndStates from "../../../../constants/countries_and_states.json";
 
 /**
  * Props used by the power unit form.
@@ -38,8 +48,11 @@ export const PowerUnitForm = ({
     handleSubmit,
     formState: { errors },
     getValues,
+    watch,
+    resetField
   } = formMethods;
 
+  const countrySelected = watch('country');
   const axleGroupTest = {
     axleFrontGroup: "Single",
     axleTypeFront: "Steering",
@@ -58,14 +71,18 @@ export const PowerUnitForm = ({
   const translationPrefix = "vehicle.axle-group";
   const [numberOfAxleGroups, setNumberOfAxleGroups] = useState(1);
 
+  const makes = (() => {
+    return []
+  });
+
   /**
    *
    */
   const onAddVehicle = function (data: FieldValues) {
     // const formValues =  getValues();
-    const createPowerUnit = (data as CreatePowerUnit);
+    const createPowerUnit = data as CreatePowerUnit;
     console.log(data);
-    addPowerUnit(createPowerUnit)
+    addPowerUnit(createPowerUnit);
     // .then(displaySnackBar(() => {
     //   display: true,
     //   messageI18NKey: "xyz",
@@ -74,10 +91,10 @@ export const PowerUnitForm = ({
   };
 
   /**
-   * 
+   *
    * @param powerUnit The powe
    */
-   const onEditVehicle = function (powerUnit: UpdatePowerUnit) {
+  const onEditVehicle = function (powerUnit: UpdatePowerUnit) {
     // const formValues =  getValues();
     console.log(powerUnit);
     // addPowerUnit(formValues).then(displaySnackBar());
@@ -107,6 +124,15 @@ export const PowerUnitForm = ({
   //     return axleGroupForms;
   //   };
 
+  function getProvinceOptions(selectedCountry: string) {
+    return CountriesAndStates
+      .filter((country) => country.abbreviation === selectedCountry)
+      .flatMap((country) => country.states)
+      .map((state) => (
+        <MenuItem key={`state-${state.abbreviation}`} value={state.abbreviation}>{state.name}</MenuItem>
+      ))
+  }
+
   const { t } = useTranslation();
   return (
     <div>
@@ -131,7 +157,9 @@ export const PowerUnitForm = ({
                     {t("vehicle.power-unit.unit-number")}
                   </FormLabel>
                   <OutlinedInput
+                    
                     aria-labelledby="power-unit-unit-number-label"
+                    error={true}
                     // defaultValue={axleGroup?.axleGroupNumber}
                     {...register("unitNumber", {
                       required: true,
@@ -144,13 +172,23 @@ export const PowerUnitForm = ({
                   <FormLabel id="power-unit-make-label" sx={boldTextStyle}>
                     {t("vehicle.power-unit.make")}
                   </FormLabel>
-                  <OutlinedInput
+                  <Select
+                    defaultValue={"Kenworth"}
+                    {...register("make", {
+                      required: false,
+                    })}
+                  >
+                    <MenuItem value={"Kenworth"}>Kenworth</MenuItem>
+                    <MenuItem value={"Peterbilt"}>Peterbilt</MenuItem>
+                    <MenuItem value={"Volvo"}>Volvo</MenuItem>
+                  </Select>
+                  {/* <OutlinedInput
                     aria-labelledby="power-unit-make-label"
                     // defaultValue={axleGroup?.axleGroupNumber}
                     {...register("make", {
                       required: false,
                     })}
-                  />
+                  /> */}
                 </FormControl>
               </div>
               <div>
@@ -158,13 +196,24 @@ export const PowerUnitForm = ({
                   <FormLabel id="power-unit-year-label" sx={boldTextStyle}>
                     {t("vehicle.power-unit.year")}
                   </FormLabel>
-                  <OutlinedInput
+                  <Select
+                    aria-labelledby="power-unit-year-label"
+                    defaultValue={''}
+                    {...register("year", {
+                      required: false,
+                    })}
+                  >
+                    <MenuItem value={2022}>2022</MenuItem>
+                    <MenuItem value={2021}>2021</MenuItem>
+                    <MenuItem value={2020}>2020</MenuItem>
+                  </Select>
+                  {/* <OutlinedInput
                     aria-labelledby="power-unit-year-label"
                     // defaultValue={axleGroup?.axleGroupNumber}
                     {...register("year", {
                       required: false,
                     })}
-                  />
+                  /> */}
                 </FormControl>
               </div>
               <div>
@@ -217,13 +266,20 @@ export const PowerUnitForm = ({
                   <FormLabel id="power-unit-country-label" sx={boldTextStyle}>
                     {t("vehicle.power-unit.country")}
                   </FormLabel>
-                  <OutlinedInput
+                  <Select
                     aria-labelledby="power-unit-country-label"
-                    // defaultValue={axleGroup?.axleGroupNumber}
+                    defaultValue={''}
                     {...register("country", {
                       required: false,
                     })}
-                  />
+                    // onChange={() => resetField('province')}
+                  >
+                    {
+                      CountriesAndStates.map((country) => (
+                        <MenuItem key={`country-${country.name}`}value={country.abbreviation}>{country.name}</MenuItem>
+                      ))
+                    }
+                  </Select>
                 </FormControl>
               </div>
               <div>
@@ -231,13 +287,15 @@ export const PowerUnitForm = ({
                   <FormLabel id="power-unit-province-label" sx={boldTextStyle}>
                     {t("vehicle.power-unit.province")}
                   </FormLabel>
-                  <OutlinedInput
+                  <Select
                     aria-labelledby="power-unit-province-label"
-                    // defaultValue={axleGroup?.axleGroupNumber}
+                    defaultValue={''}
                     {...register("province", {
                       required: false,
                     })}
-                  />
+                  >
+                    {getProvinceOptions(countrySelected)}
+                  </Select>
                 </FormControl>
               </div>
               <div>

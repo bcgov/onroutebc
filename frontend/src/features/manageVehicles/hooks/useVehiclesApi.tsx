@@ -1,6 +1,6 @@
 import { IPowerUnit } from "../types/managevehicles";
 import { CreatePowerUnit } from "../types";
-import { MV_BACKEND_URL, VEHICLES_API } from "./endpoints/endpoints";
+import { VEHICLES_API } from "./endpoints/endpoints";
 
 /*
  *
@@ -36,7 +36,7 @@ export const useVehiclesApi = () => {
  * @returns Response from the create powerUnit API.
  */
 export const addPowerUnit = (powerUnit: CreatePowerUnit) => {
-  return fetch(`${MV_BACKEND_URL}/vehicles/powerUnit`, {
+  return fetch(`${VEHICLES_API.POWER_UNIT}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -51,7 +51,7 @@ export const addPowerUnit = (powerUnit: CreatePowerUnit) => {
  * @returns Response from the create powerUnit API.
  */
 export const updatePowerUnit = (powerUnit: CreatePowerUnit) => {
-  return fetch(`${MV_BACKEND_URL}/vehicles/powerUnit`, {
+  return fetch(`${VEHICLES_API.POWER_UNIT}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
