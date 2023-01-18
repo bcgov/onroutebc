@@ -105,6 +105,9 @@ jobs:
           echo "CommitsSinceVersionSourcePadded: ${{ steps.gitversion.outputs.commitsSinceVersionSourcePadded }}"
           echo "UncommittedChanges: ${{ steps.gitversion.outputs.uncommittedChanges }}"
           echo "CommitDate: ${{ steps.gitversion.outputs.commitDate }}"
+      - name: Save GitVersion
+        run: |
+          echo "FullSemVer: ${{ steps.gitversion.outputs.fullSemVer }}" >> $GITHUB_ENV
 
   deploys-test:
     name: TEST Deployments
@@ -150,10 +153,11 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
         with:
-          tag_name: ${{ steps.gitversion.outputs.fullSemVer }}
-          release_name: Release ${{ steps.gitversion.outputs.fullSemVer }}
+          tag_name: ${{ env.fullSemVer }}
+          release_name: Release ${{ env.fullSemVer }}
           draft: false
           prerelease: true
+
   deploys-prod:
     name: PROD Deployments
     needs:
