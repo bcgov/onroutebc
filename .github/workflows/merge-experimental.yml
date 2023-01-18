@@ -104,7 +104,6 @@ jobs:
     steps:
       # gitversion/setup@v0.9.7 action omitted for brevity.
       - name: Determine Version
-        id:   gitversion
         uses: gittools/actions/gitversion/execute@v0.9.7
       - name: Display GitVersion outputs
         run: |
@@ -141,7 +140,6 @@ jobs:
           echo "UncommittedChanges: ${{ steps.gitversion.outputs.uncommittedChanges }}"
           echo "CommitDate: ${{ steps.gitversion.outputs.commitDate }}"
     - name: Create Pre-Release
-      id: create_release
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
