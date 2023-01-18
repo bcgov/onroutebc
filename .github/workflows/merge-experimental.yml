@@ -99,11 +99,16 @@ jobs:
             -p DATABASE_HOST=${{secrets.OC_DATABASE_HOST}}
           penetration_test: true
   semver:
+    name: Install GitVersion
+    uses: gittools/actions/gitversion/setup@v0.9.7
+    with:
+      versionSpec: '5.x'
     name: Calculate SemVer
     runs-on: ubuntu-22.04
     steps:
       # gitversion/setup@v0.9.7 action omitted for brevity.
       - name: Determine SemVersion
+        id:   gitversion
         uses: gittools/actions/gitversion/execute@v0.9.7
       - name: Display GitVersion outputs
         run: |
