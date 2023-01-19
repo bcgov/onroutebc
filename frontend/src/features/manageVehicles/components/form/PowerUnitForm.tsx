@@ -7,7 +7,8 @@ import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { AxleGroupForm } from "./AxleGroupForm";
-import { useState } from "react";
+import { SyntheticEvent, useState } from "react";
+import { COUNTRIES_THAT_SUPPORT_PROVINCE } from "../../../../constants/countries";
 import {
   CreatePowerUnit,
   AxleFrontGroup,
@@ -21,7 +22,7 @@ import FormLabel from "@mui/material/FormLabel";
 import OutlinedInput from "@mui/material/OutlinedInput";
 import { addPowerUnit, updatePowerUnit } from "../../hooks/useVehiclesApi";
 import { DisplaySnackBarOptions } from "../dashboard/Dashboard";
-import MenuItem from '@mui/material/MenuItem';
+import MenuItem from "@mui/material/MenuItem";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 
 import CountriesAndStates from "../../../../constants/countries_and_states.json";
@@ -32,11 +33,11 @@ import CountriesAndStates from "../../../../constants/countries_and_states.json"
 interface PowerUnitFormProps {
   displaySnackBar: (options: DisplaySnackBarOptions) => void;
   powerUnit?: CreatePowerUnit;
+  isEditMode?: boolean;
 }
 
 /**
- *
- * @returns
+ * @returns React component containing the form for adding or editing a power unit.
  */
 export const PowerUnitForm = ({
   displaySnackBar,
@@ -49,10 +50,10 @@ export const PowerUnitForm = ({
     formState: { errors },
     getValues,
     watch,
-    resetField
+    resetField,
   } = formMethods;
 
-  const countrySelected = watch('country');
+  const countrySelected = watch("country");
   const axleGroupTest = {
     axleFrontGroup: "Single",
     axleTypeFront: "Steering",
@@ -70,10 +71,14 @@ export const PowerUnitForm = ({
   };
   const translationPrefix = "vehicle.axle-group";
   const [numberOfAxleGroups, setNumberOfAxleGroups] = useState(1);
+  const [selectedProvince, setSelectedProvince] = useState("");
 
-  const makes = (() => {
-    return []
-  });
+  const [shouldDisplayProvince, setShouldDisplayProvince] =
+    useState<boolean>(true);
+
+  const makes = () => {
+    return [];
+  };
 
   /**
    *
@@ -125,12 +130,18 @@ export const PowerUnitForm = ({
   //   };
 
   function getProvinceOptions(selectedCountry: string) {
-    return CountriesAndStates
-      .filter((country) => country.abbreviation === selectedCountry)
+    return CountriesAndStates.filter(
+      (country) => country.abbreviation === selectedCountry
+    )
       .flatMap((country) => country.states)
       .map((state) => (
-        <MenuItem key={`state-${state.abbreviation}`} value={state.abbreviation}>{state.name}</MenuItem>
-      ))
+        <MenuItem
+          key={`state-${state.abbreviation}`}
+          value={state.abbreviation}
+        >
+          {state.name}
+        </MenuItem>
+      ));
   }
 
   const { t } = useTranslation();
@@ -157,7 +168,6 @@ export const PowerUnitForm = ({
                     {t("vehicle.power-unit.unit-number")}
                   </FormLabel>
                   <OutlinedInput
-                    
                     aria-labelledby="power-unit-unit-number-label"
                     error={true}
                     // defaultValue={axleGroup?.axleGroupNumber}
@@ -198,7 +208,7 @@ export const PowerUnitForm = ({
                   </FormLabel>
                   <Select
                     aria-labelledby="power-unit-year-label"
-                    defaultValue={''}
+                    defaultValue={""}
                     {...register("year", {
                       required: false,
                     })}
@@ -268,36 +278,62 @@ export const PowerUnitForm = ({
                   </FormLabel>
                   <Select
                     aria-labelledby="power-unit-country-label"
-                    defaultValue={''}
+                    defaultValue={""}
                     {...register("country", {
                       required: false,
+                      onChange: (event: SelectChangeEvent) => {
+                        console.log(event);
+                        const country: string = event.target.value as string;
+                        resetField("province", { defaultValue: "" });
+                        setSelectedProvince(() => "");
+                        
+                        if (!COUNTRIES_THAT_SUPPORT_PROVINCE.find(supportedCountry => supportedCountry === country)) {
+                          setShouldDisplayProvince(() => false);
+                        } else {
+                          setShouldDisplayProvince(() => true);
+                        }
+                        // if selected country supports provinces, then display
+                      },
                     })}
                     // onChange={() => resetField('province')}
                   >
-                    {
-                      CountriesAndStates.map((country) => (
-                        <MenuItem key={`country-${country.name}`}value={country.abbreviation}>{country.name}</MenuItem>
-                      ))
-                    }
+                    {CountriesAndStates.map((country) => (
+                      <MenuItem
+                        key={`country-${country.name}`}
+                        value={country.abbreviation}
+                      >
+                        {country.name}
+                      </MenuItem>
+                    ))}
                   </Select>
                 </FormControl>
               </div>
-              <div>
-                <FormControl margin="normal">
-                  <FormLabel id="power-unit-province-label" sx={boldTextStyle}>
-                    {t("vehicle.power-unit.province")}
-                  </FormLabel>
-                  <Select
-                    aria-labelledby="power-unit-province-label"
-                    defaultValue={''}
-                    {...register("province", {
-                      required: false,
-                    })}
-                  >
-                    {getProvinceOptions(countrySelected)}
-                  </Select>
-                </FormControl>
-              </div>
+              {shouldDisplayProvince && (
+                <div>
+                  <FormControl margin="normal">
+                    <FormLabel
+                      id="power-unit-province-label"
+                      sx={boldTextStyle}
+                    >
+                      {t("vehicle.power-unit.province")}
+                    </FormLabel>
+                    <Select
+                      aria-labelledby="power-unit-province-label"
+                      defaultValue={""}
+                      {...register("province", {
+                        required: false,
+                      })}
+                      onChange={(event) =>
+                        setSelectedProvince(() => event.target.value as string)
+                      }
+                      value={selectedProvince}
+                    >
+                      {getProvinceOptions(countrySelected)}
+                    </Select>
+                  </FormControl>
+                </div>
+              )}
+
               <div>
                 <FormControl margin="normal">
                   <FormLabel
