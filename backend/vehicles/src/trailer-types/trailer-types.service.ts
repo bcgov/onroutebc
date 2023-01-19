@@ -2,7 +2,6 @@ import { Mapper } from '@automapper/core';
 import { InjectMapper } from '@automapper/nestjs';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { CreateTrailerTypeDto } from './dto/create-trailer-type.dto';
 import { TrailerTypeDto } from './dto/trailer-type.dto';
 import { UpdateTrailerTypeDto } from './dto/update-trailer-type.dto';
