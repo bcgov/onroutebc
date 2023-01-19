@@ -8,10 +8,10 @@ import {
   Put,
 } from '@nestjs/common';
 import { TrailersService } from './trailers.service';
-import { CreateTrailerDto } from './dto/create-trailer.dto';
-import { UpdateTrailerDto } from './dto/update-trailer.dto';
+import { CreateTrailerDto } from './dto/request/create-trailer.dto';
+import { UpdateTrailerDto } from './dto/request/update-trailer.dto';
 import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { TrailerDto } from './dto/trailer.dto';
+import { ReadTrailerDto } from './dto/response/read-trailer.dto';
 
 @ApiTags('Trailers')
 @Controller('vehicles/trailers')
@@ -20,7 +20,7 @@ export class TrailersController {
 
   @ApiCreatedResponse({
     description: 'The Trailer Resource',
-    type: TrailerDto,
+    type: ReadTrailerDto,
   })
   @Post()
   create(@Body() createTrailerDto: CreateTrailerDto) {
@@ -29,7 +29,7 @@ export class TrailersController {
 
   @ApiOkResponse({
     description: 'The Trailer Resource',
-    type: TrailerDto,
+    type: ReadTrailerDto,
     isArray: true,
   })
   @Get()
@@ -39,24 +39,27 @@ export class TrailersController {
 
   @ApiOkResponse({
     description: 'The Trailer Resource',
-    type: TrailerDto,
+    type: ReadTrailerDto,
   })
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.trailersService.findOne(id);
+  @Get(':trailerId')
+  findOne(@Param('trailerId') trailerId: string) {
+    return this.trailersService.findOne(trailerId);
   }
 
   @ApiOkResponse({
     description: 'The Trailer Resource',
-    type: TrailerDto,
+    type: ReadTrailerDto,
   })
-  @Put(':id')
-  update(@Param('id') id: string, @Body() updateTrailerDto: UpdateTrailerDto) {
-    return this.trailersService.update(id, updateTrailerDto);
+  @Put(':trailerId')
+  update(
+    @Param('trailerId') trailerId: string,
+    @Body() updateTrailerDto: UpdateTrailerDto,
+  ) {
+    return this.trailersService.update(trailerId, updateTrailerDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.trailersService.remove(id);
+  @Delete(':trailerId')
+  remove(@Param('trailerId') trailerId: string) {
+    return this.trailersService.remove(trailerId);
   }
 }

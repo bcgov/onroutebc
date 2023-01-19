@@ -3,9 +3,9 @@ import { InjectMapper } from '@automapper/nestjs';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CreateTrailerDto } from './dto/create-trailer.dto';
-import { TrailerDto } from './dto/trailer.dto';
-import { UpdateTrailerDto } from './dto/update-trailer.dto';
+import { CreateTrailerDto } from './dto/request/create-trailer.dto';
+import { ReadTrailerDto } from './dto/response/read-trailer.dto';
+import { UpdateTrailerDto } from './dto/request/update-trailer.dto';
 import { Trailer } from './entities/trailer.entity';
 
 @Injectable()
@@ -16,16 +16,16 @@ export class TrailersService {
     @InjectMapper() private readonly classMapper: Mapper,
   ) {}
 
-  async create(trailer: CreateTrailerDto): Promise<TrailerDto> {
+  async create(trailer: CreateTrailerDto): Promise<ReadTrailerDto> {
     const newTrailer = this.classMapper.map(trailer, CreateTrailerDto, Trailer);
     return this.classMapper.mapAsync(
       await this.trailerRepository.save(newTrailer),
       Trailer,
-      TrailerDto,
+      ReadTrailerDto,
     );
   }
 
-  async findAll(): Promise<TrailerDto[]> {
+  async findAll(): Promise<ReadTrailerDto[]> {
     return this.classMapper.mapArrayAsync(
       await this.trailerRepository.find({
         relations: {
@@ -34,11 +34,11 @@ export class TrailersService {
         },
       }),
       Trailer,
-      TrailerDto,
+      ReadTrailerDto,
     );
   }
 
-  async findOne(trailerId: string): Promise<TrailerDto> {
+  async findOne(trailerId: string): Promise<ReadTrailerDto> {
     return this.classMapper.mapAsync(
       await this.trailerRepository.findOneOrFail({
         where: { trailerId },
@@ -48,14 +48,14 @@ export class TrailersService {
         },
       }),
       Trailer,
-      TrailerDto,
+      ReadTrailerDto,
     );
   }
 
   async update(
     trailerId: string,
     updateTrailerDto: UpdateTrailerDto,
-  ): Promise<TrailerDto> {
+  ): Promise<ReadTrailerDto> {
     const newTrailer = this.classMapper.map(
       updateTrailerDto,
       UpdateTrailerDto,
