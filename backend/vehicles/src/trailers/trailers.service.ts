@@ -19,7 +19,7 @@ export class TrailersService {
   }
 
   async findAll(): Promise<Trailer[]> {
-    return this.trailerRepository.find({
+    return await this.trailerRepository.find({
       relations: {
         trailerType: true,
         province: true,
@@ -28,7 +28,7 @@ export class TrailersService {
   }
 
   async findOne(trailerId: string): Promise<Trailer> {
-    return this.trailerRepository.findOneOrFail({ where: { trailerId } });
+    return await this.trailerRepository.findOne({ where: { trailerId } });
   }
 
   async update(

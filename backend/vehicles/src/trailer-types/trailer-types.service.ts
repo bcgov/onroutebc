@@ -19,11 +19,11 @@ export class TrailerTypesService {
   }
 
   async findAll(): Promise<TrailerType[]> {
-    return this.trailerTypeRepository.find();
+    return await this.trailerTypeRepository.find();
   }
 
   async findOne(typeId: number): Promise<TrailerType> {
-    return this.trailerTypeRepository.findOneOrFail({ where: { typeId } });
+    return await this.trailerTypeRepository.findOne({ where: { typeId } });
   }
 
   async update(

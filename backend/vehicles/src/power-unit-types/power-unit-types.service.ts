@@ -19,11 +19,11 @@ export class PowerUnitTypesService {
   }
 
   async findAll(): Promise<PowerUnitType[]> {
-    return this.powerUnitTypeRepository.find();
+    return await this.powerUnitTypeRepository.find();
   }
 
   async findOne(typeId: number): Promise<PowerUnitType> {
-    return this.powerUnitTypeRepository.findOneOrFail({ where: { typeId } });
+    return await this.powerUnitTypeRepository.findOne({ where: { typeId } });
   }
 
   async update(

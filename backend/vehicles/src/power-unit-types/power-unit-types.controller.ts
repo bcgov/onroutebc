@@ -6,11 +6,14 @@ import {
   Param,
   Delete,
   Put,
+  HttpStatus,
 } from '@nestjs/common';
 import { PowerUnitTypesService } from './power-unit-types.service';
 import { CreatePowerUnitTypeDto } from './dto/create-power-unit-type.dto';
 import { UpdatePowerUnitTypeDto } from './dto/update-power-unit-type.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { CustomNotFoundException } from 'src/common/exception/custom.notfound.exception';
+import { PowerUnitType } from './entities/power-unit-type.entity';
 
 @ApiTags('Power Unit Types')
 @Controller('vehicles/power-unit-types')
@@ -23,25 +26,46 @@ export class PowerUnitTypesController {
   }
 
   @Get()
-  findAll() {
-    return this.powerUnitTypesService.findAll();
+  async findAll():Promise<PowerUnitType[]>  {
+    const powerUnitType = await this.powerUnitTypesService.findAll();
+    if (powerUnitType.length > 0)
+   {
+    return powerUnitType;
+   }else{
+    throw new CustomNotFoundException("Get all power unit failed.Power unit types do not exist in database yet",HttpStatus.NOT_FOUND)
+   }
   }
+  
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.powerUnitTypesService.findOne(+id);
+  async findOne(@Param('id') id: string):Promise<PowerUnitType> {
+    const powerUnitType = await this.powerUnitTypesService.findOne(+id);
+    if (powerUnitType)
+   {
+    return powerUnitType;
+   }else{
+    throw new CustomNotFoundException("Get power unit failed. Power unit with id "+id+" does not exist in database",HttpStatus.NOT_FOUND)
+   }
   }
 
   @Put(':id')
-  update(
+  async update(
     @Param('id') id: string,
     @Body() updatePowerUnitTypeDto: UpdatePowerUnitTypeDto,
   ) {
-    return this.powerUnitTypesService.update(+id, updatePowerUnitTypeDto);
+    const powerUnitType = await this.powerUnitTypesService.update(+id, updatePowerUnitTypeDto);
+    if (powerUnitType)
+    {
+    return powerUnitType
+  }
+    else 
+    {
+    throw new CustomNotFoundException("Update power unit type failed. Power unit type with id "+id+" does not exist in database",HttpStatus.NOT_FOUND)
+    }
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string) {
     return this.powerUnitTypesService.remove(+id);
   }
 }
