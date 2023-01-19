@@ -9,4 +9,10 @@ export class PowerUnitDto extends CreatePowerUnitDto {
     description: 'The Power Unit ID',
   })
   powerUnitId: string;
+
+  @AutoMap()
+  @ApiProperty({
+    description: 'Created Date and Time',
+  })
+  createdDateTime: string;
 }

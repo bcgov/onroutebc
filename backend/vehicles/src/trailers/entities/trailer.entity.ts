@@ -33,7 +33,7 @@ export class Trailer extends Base {
 
   @AutoMap(() => Province)
   @ManyToOne(() => Province)
-  @JoinColumn({ name: 'PROVINCE_CODE' })
+  @JoinColumn({ name: 'PROVINCE_ID' })
   province: Province;
 
   @AutoMap()
