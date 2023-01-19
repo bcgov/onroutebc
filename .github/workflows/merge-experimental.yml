@@ -77,7 +77,7 @@ jobs:
         uses: gittools/actions/gitversion/execute@v0.9.7
         with:
           useConfigFile: true
-          configFilePath: onroutebc/.github/GitVersion.yaml
+          configFilePath: GitVersion.yaml
 
       - name: Display GitVersion outputs
         run: |
