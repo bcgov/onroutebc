@@ -19,9 +19,9 @@ export class CreatePowerUnitDto {
   @AutoMap()
   @ApiProperty({
     description: 'The province/state where the vehicle is registered',
-    example: 'BC',
+    example: 'CA-BC',
   })
-  provinceCode: string;
+  provinceId: string;
 
   @AutoMap()
   @ApiProperty({

@@ -19,8 +19,8 @@ export class PowerUnitsProfile extends AutomapperProfile {
         PowerUnit,
         PowerUnitDto,
         forMember(
-          (d) => d.provinceCode,
-          mapFrom((s) => s.province.provinceCode),
+          (d) => d.provinceId,
+          mapFrom((s) => s.province.provinceId),
         ),
         forMember(
           (d) => d.powerUnitTypeCode,
@@ -32,8 +32,8 @@ export class PowerUnitsProfile extends AutomapperProfile {
         CreatePowerUnitDto,
         PowerUnit,
         forMember(
-          (d) => d.province.provinceCode,
-          mapFrom((s) => s.provinceCode),
+          (d) => d.province.provinceId,
+          mapFrom((s) => s.provinceId),
         ),
         forMember(
           (d) => d.powerUnitType.typeCode,
@@ -45,8 +45,8 @@ export class PowerUnitsProfile extends AutomapperProfile {
         UpdatePowerUnitDto,
         PowerUnit,
         forMember(
-          (d) => d.province.provinceCode,
-          mapFrom((s) => s.provinceCode),
+          (d) => d.province.provinceId,
+          mapFrom((s) => s.provinceId),
         ),
         forMember(
           (d) => d.powerUnitType.typeCode,

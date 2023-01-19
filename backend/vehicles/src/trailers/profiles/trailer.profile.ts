@@ -19,8 +19,8 @@ export class TrailersProfile extends AutomapperProfile {
         Trailer,
         TrailerDto,
         forMember(
-          (d) => d.provinceCode,
-          mapFrom((s) => s.province.provinceCode),
+          (d) => d.provinceId,
+          mapFrom((s) => s.province.provinceId),
         ),
         forMember(
           (d) => d.trailerTypeCode,
@@ -32,8 +32,8 @@ export class TrailersProfile extends AutomapperProfile {
         CreateTrailerDto,
         Trailer,
         forMember(
-          (d) => d.province.provinceCode,
-          mapFrom((s) => s.provinceCode),
+          (d) => d.province.provinceId,
+          mapFrom((s) => s.provinceId),
         ),
         forMember(
           (d) => d.trailerType.typeCode,
@@ -45,8 +45,8 @@ export class TrailersProfile extends AutomapperProfile {
         UpdateTrailerDto,
         Trailer,
         forMember(
-          (d) => d.province.provinceCode,
-          mapFrom((s) => s.provinceCode),
+          (d) => d.province.provinceId,
+          mapFrom((s) => s.provinceId),
         ),
         forMember(
           (d) => d.trailerType.typeCode,

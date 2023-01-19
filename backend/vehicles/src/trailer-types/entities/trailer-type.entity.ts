@@ -7,7 +7,7 @@ import { Trailer } from '../../trailers/entities/trailer.entity';
 @Entity({ name: 'ORBC_VT_TRAILER_TYPE' })
 export class TrailerType extends Base {
   @AutoMap()
-  @ApiProperty({ example: 'BOOSTR', description: 'The Trailer Type Code' })
+  @ApiProperty({ example: 'BOOSTER', description: 'The Trailer Type Code' })
   @PrimaryColumn({ length: 7, name: 'TYPE_CODE', nullable: false })
   typeCode: string;
 

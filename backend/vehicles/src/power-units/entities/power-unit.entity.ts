@@ -32,12 +32,8 @@ export class PowerUnit extends Base {
   plate: string;
 
   @AutoMap(() => Province)
-  @ApiProperty({
-    example: 'BC',
-    description: 'The province/state where the vehicle is registered',
-  })
   @ManyToOne(() => Province, (Province) => Province.powerUnits)
-  @JoinColumn({ name: 'PROVINCE_CODE' })
+  @JoinColumn({ name: 'PROVINCE_ID' })
   province: Province;
 
   @AutoMap()

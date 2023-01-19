@@ -16,8 +16,13 @@ import { AutoMap } from '@automapper/classes';
 @Entity({ name: 'ORBC_VT_PROVINCE' })
 export class Province extends Base {
   @AutoMap()
+  @ApiProperty({ example: 'CA-BC', description: 'Province ID' })
+  @PrimaryColumn({ length: 5, name: 'PROVINCE_ID', nullable: false })
+  provinceId: string;
+
+  @AutoMap()
   @ApiProperty({ example: 'BC', description: 'Province Code' })
-  @PrimaryColumn({ length: 2, name: 'PROVINCE_CODE', nullable: false })
+  @Column({ length: 2, name: 'PROVINCE_CODE', nullable: false })
   provinceCode: string;
 
   @AutoMap()
