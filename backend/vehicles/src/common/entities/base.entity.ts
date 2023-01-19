@@ -1,6 +1,12 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
-import { Column, CreateDateColumn, UpdateDateColumn, Timestamp, VersionColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  Timestamp,
+  VersionColumn,
+} from 'typeorm';
 
 export class Base {
   @AutoMap()

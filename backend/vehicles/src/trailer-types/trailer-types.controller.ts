@@ -8,10 +8,10 @@ import {
   Put,
 } from '@nestjs/common';
 import { TrailerTypesService } from './trailer-types.service';
-import { CreateTrailerTypeDto } from './dto/create-trailer-type.dto';
-import { UpdateTrailerTypeDto } from './dto/update-trailer-type.dto';
+import { CreateTrailerTypeDto } from './dto/request/create-trailer-type.dto';
+import { UpdateTrailerTypeDto } from './dto/request/update-trailer-type.dto';
 import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { TrailerTypeDto } from './dto/trailer-type.dto';
+import { ReadTrailerTypeDto } from './dto/response/read-trailer-type.dto';
 
 @ApiTags('Trailer Types')
 @Controller('vehicles/trailer-types')
@@ -20,7 +20,7 @@ export class TrailerTypesController {
 
   @ApiCreatedResponse({
     description: 'The Trailer Type Resource',
-    type: TrailerTypeDto,
+    type: ReadTrailerTypeDto,
   })
   @Post()
   create(@Body() createTrailerTypeDto: CreateTrailerTypeDto) {
@@ -29,7 +29,7 @@ export class TrailerTypesController {
 
   @ApiOkResponse({
     description: 'The Trailer Type Resource',
-    type: TrailerTypeDto,
+    type: ReadTrailerTypeDto,
     isArray: true,
   })
   @Get()
@@ -39,27 +39,27 @@ export class TrailerTypesController {
 
   @ApiOkResponse({
     description: 'The Trailer Type Resource',
-    type: TrailerTypeDto,
+    type: ReadTrailerTypeDto,
   })
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.trailerTypesService.findOne(id);
+  @Get(':typeCode')
+  findOne(@Param('typeCode') typeCode: string) {
+    return this.trailerTypesService.findOne(typeCode);
   }
 
   @ApiOkResponse({
     description: 'The Trailer Type Resource',
-    type: TrailerTypeDto,
+    type: ReadTrailerTypeDto,
   })
-  @Put(':id')
+  @Put(':typeCode')
   update(
-    @Param('id') id: string,
+    @Param('typeCode') typeCode: string,
     @Body() updateTrailerTypeDto: UpdateTrailerTypeDto,
   ) {
-    return this.trailerTypesService.update(id, updateTrailerTypeDto);
+    return this.trailerTypesService.update(typeCode, updateTrailerTypeDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.trailerTypesService.remove(id);
+  @Delete(':typeCode')
+  remove(@Param('typeCode') typeCode: string) {
+    return this.trailerTypesService.remove(typeCode);
   }
 }

@@ -8,10 +8,10 @@ import {
   Put,
 } from '@nestjs/common';
 import { PowerUnitTypesService } from './power-unit-types.service';
-import { CreatePowerUnitTypeDto } from './dto/create-power-unit-type.dto';
-import { UpdatePowerUnitTypeDto } from './dto/update-power-unit-type.dto';
+import { CreatePowerUnitTypeDto } from './dto/request/create-power-unit-type.dto';
+import { UpdatePowerUnitTypeDto } from './dto/request/update-power-unit-type.dto';
 import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { PowerUnitTypeDto } from './dto/power-unit-type.dto';
+import { ReadPowerUnitTypeDto } from './dto/response/read-power-unit-type.dto';
 
 @ApiTags('Power Unit Types')
 @Controller('vehicles/power-unit-types')
@@ -20,7 +20,7 @@ export class PowerUnitTypesController {
 
   @ApiCreatedResponse({
     description: 'The Power Unit Type Resource',
-    type: PowerUnitTypeDto,
+    type: ReadPowerUnitTypeDto,
   })
   @Post()
   create(@Body() createPowerUnitTypeDto: CreatePowerUnitTypeDto) {
@@ -29,7 +29,7 @@ export class PowerUnitTypesController {
 
   @ApiOkResponse({
     description: 'The Power Unit Type Resource',
-    type: PowerUnitTypeDto,
+    type: ReadPowerUnitTypeDto,
     isArray: true,
   })
   @Get()
@@ -39,27 +39,27 @@ export class PowerUnitTypesController {
 
   @ApiOkResponse({
     description: 'The Power Unit Type Resource',
-    type: PowerUnitTypeDto,
+    type: ReadPowerUnitTypeDto,
   })
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.powerUnitTypesService.findOne(id);
+  @Get(':typeCode')
+  findOne(@Param('typeCode') typeCode: string) {
+    return this.powerUnitTypesService.findOne(typeCode);
   }
 
   @ApiOkResponse({
     description: 'The Power Unit Type Resource',
-    type: PowerUnitTypeDto,
+    type: ReadPowerUnitTypeDto,
   })
-  @Put(':id')
+  @Put(':typeCode')
   update(
-    @Param('id') id: string,
+    @Param('typeCode') typeCode: string,
     @Body() updatePowerUnitTypeDto: UpdatePowerUnitTypeDto,
   ) {
-    return this.powerUnitTypesService.update(id, updatePowerUnitTypeDto);
+    return this.powerUnitTypesService.update(typeCode, updatePowerUnitTypeDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.powerUnitTypesService.remove(id);
+  @Delete(':typeCode')
+  remove(@Param('typeCode') typeCode: string) {
+    return this.powerUnitTypesService.remove(typeCode);
   }
 }

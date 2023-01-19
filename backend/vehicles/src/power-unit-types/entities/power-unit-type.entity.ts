@@ -7,14 +7,14 @@ import { PowerUnit } from '../../power-units/entities/power-unit.entity';
 @Entity({ name: 'ORBC_VT_POWER_UNIT_TYPE' })
 export class PowerUnitType extends Base {
   @AutoMap()
-  @ApiProperty({ example: 'CONCRET', description: 'The Power Unit Type Code' })
+  @ApiProperty({ example: 'CONCRET', description: 'Unique identifier of the power unit type.' })
   @PrimaryColumn({ length: 7, name: 'TYPE_CODE', nullable: false })
   typeCode: string;
 
   @AutoMap()
   @ApiProperty({
     example: 'Concrete Pumper Trucks',
-    description: 'Power Unit Type',
+    description: 'Short description of the power unit type.',
   })
   @Column({ length: 150, name: 'TYPE', nullable: false })
   type: string;
@@ -23,13 +23,13 @@ export class PowerUnitType extends Base {
   @ApiProperty({
     example:
       'Concrete Pumper Trucks are used to pump concrete from a cement mixer truck to where the concrete is actually needed. They travel on the highway at their equipped weight with no load.',
-    description: 'Power Unit Type Description',
+    description: 'Long description of the power unit type.',
   })
   @Column({ length: 500, name: 'DESCRIPTION', nullable: true })
   description: string;
 
   @AutoMap()
-  @ApiProperty({ example: '1', description: 'Sort Order' })
+  @ApiProperty({ example: '1', description: 'Order that the type should be presented in user interfaces.' })
   @Column({ type: 'integer', name: 'SORT_ORDER', nullable: true })
   sortOrder: string;
 

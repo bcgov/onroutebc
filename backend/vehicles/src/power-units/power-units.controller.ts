@@ -8,10 +8,10 @@ import {
   Put,
 } from '@nestjs/common';
 import { PowerUnitsService } from './power-units.service';
-import { CreatePowerUnitDto } from './dto/create-power-unit.dto';
-import { UpdatePowerUnitDto } from './dto/update-power-unit.dto';
+import { CreatePowerUnitDto } from './dto/request/create-power-unit.dto';
+import { UpdatePowerUnitDto } from './dto/request/update-power-unit.dto';
 import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { PowerUnitDto } from './dto/power-unit.dto';
+import { ReadPowerUnitDto } from './dto/response/read-power-unit.dto';
 
 @ApiTags('Power Units')
 @Controller('vehicles/powerUnits')
@@ -20,7 +20,7 @@ export class PowerUnitsController {
 
   @ApiCreatedResponse({
     description: 'The Power Unit Resource',
-    type: PowerUnitDto,
+    type: ReadPowerUnitDto,
   })
   @Post()
   create(@Body() createPowerUnitDto: CreatePowerUnitDto) {
@@ -29,7 +29,7 @@ export class PowerUnitsController {
 
   @ApiOkResponse({
     description: 'The Power Unit Resource',
-    type: PowerUnitDto,
+    type: ReadPowerUnitDto,
     isArray: true,
   })
   @Get()
@@ -39,27 +39,27 @@ export class PowerUnitsController {
 
   @ApiOkResponse({
     description: 'The Power Unit Resource',
-    type: PowerUnitDto,
+    type: ReadPowerUnitDto,
   })
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.powerUnitsService.findOne(id);
+  @Get(':powerUnitId')
+  findOne(@Param('powerUnitId') powerUnitId: string) {
+    return this.powerUnitsService.findOne(powerUnitId);
   }
 
   @ApiOkResponse({
     description: 'The Power Unit Resource',
-    type: PowerUnitDto,
+    type: ReadPowerUnitDto,
   })
-  @Put(':id')
+  @Put(':powerUnitId')
   update(
-    @Param('id') id: string,
+    @Param('powerUnitId') powerUnitId: string,
     @Body() updatePowerUnitDto: UpdatePowerUnitDto,
   ) {
-    return this.powerUnitsService.update(id, updatePowerUnitDto);
+    return this.powerUnitsService.update(powerUnitId, updatePowerUnitDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.powerUnitsService.remove(id);
+  @Delete(':powerUnitId')
+  remove(@Param('powerUnitId') powerUnitId: string) {
+    return this.powerUnitsService.remove(powerUnitId);
   }
 }
