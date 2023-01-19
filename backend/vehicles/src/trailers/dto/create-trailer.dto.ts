@@ -19,9 +19,9 @@ export class CreateTrailerDto {
   @AutoMap()
   @ApiProperty({
     description: 'The province/state where the vehicle is registered',
-    example: 'BC',
+    example: 'CA-BC',
   })
-  provinceCode: string;
+  provinceId: string;
 
   @AutoMap()
   @ApiProperty({
@@ -60,7 +60,7 @@ export class CreateTrailerDto {
   @AutoMap()
   @ApiProperty({
     description: 'The Trailer Type',
-    example: 'BOOSTR',
+    example: 'BOOSTER',
   })
   trailerTypeCode: string;
 }
