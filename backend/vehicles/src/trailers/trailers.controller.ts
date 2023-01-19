@@ -9,11 +9,11 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { TrailersService } from './trailers.service';
-import { CreateTrailerDto } from './dto/create-trailer.dto';
-import { UpdateTrailerDto } from './dto/update-trailer.dto';
+import { CreateTrailerDto } from './dto/request/create-trailer.dto';
+import { UpdateTrailerDto } from './dto/request/update-trailer.dto';
 import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { CustomNotFoundException } from 'src/common/exception/custom.notfound.exception';
-import { TrailerDto } from './dto/trailer.dto';
+import { ReadTrailerDto } from './dto/response/read-trailer.dto';
 
 @ApiTags('Trailers')
 @Controller('vehicles/trailers')
@@ -22,7 +22,7 @@ export class TrailersController {
 
   @ApiCreatedResponse({
     description: 'The Trailer Resource',
-    type: TrailerDto,
+    type: ReadTrailerDto,
   })
   @Post()
   create(@Body() createTrailerDto: CreateTrailerDto) {
@@ -31,11 +31,11 @@ export class TrailersController {
 
   @ApiOkResponse({
     description: 'The Trailer Resource',
-    type: TrailerDto,
+    type: ReadTrailerDto,
     isArray: true,
   })
   @Get()
-  async findAll(): Promise<TrailerDto[]> {
+  async findAll(): Promise<ReadTrailerDto[]> {
     const trailer = await this.trailersService.findAll();
     if (trailer.length > 0)
     {
@@ -47,26 +47,26 @@ export class TrailersController {
 
   @ApiOkResponse({
     description: 'The Trailer Resource',
-    type: TrailerDto,
+    type: ReadTrailerDto,
   })
-  @Get(':id')
-  async findOne(@Param('id') id: string): Promise<TrailerDto> {
-    const trailer = await this.trailersService.findOne(id);
+  @Get(':trailerId')
+  async findOne(@Param('trailerId') trailerId: string): Promise<ReadTrailerDto> {
+    const trailer = await this.trailersService.findOne(trailerId);
     if (trailer)
     {
      return trailer;
     }else{
-     throw new CustomNotFoundException("Get trailer failed. Trailer with id "+id+" does not exist in database",HttpStatus.NOT_FOUND)
+     throw new CustomNotFoundException("Get trailer failed. Trailer with id "+trailerId+" does not exist in database",HttpStatus.NOT_FOUND)
     }
   }
 
   @ApiOkResponse({
     description: 'The Trailer Resource',
-    type: TrailerDto,
+    type: ReadTrailerDto,
   })
-  @Put(':id')
-  async update(@Param('id') id: string, @Body() updateTrailerDto: UpdateTrailerDto):Promise<TrailerDto> {
-    const trailer = await this.trailersService.update(id, updateTrailerDto);
+  @Put(':trailerId')
+  async update(@Param('trailerId') trailerId: string, @Body() updateTrailerDto: UpdateTrailerDto):Promise<ReadTrailerDto> {
+    const trailer = await this.trailersService.update(trailerId, updateTrailerDto);
     if (trailer)
     {
      return trailer;
@@ -75,9 +75,9 @@ export class TrailersController {
     }
   }
 
-  @Delete(':id')
-  async remove(@Param('id') id: string) {
-    const deleteResult = await this.trailersService.remove(+id);
+  @Delete(':trailerId')
+  async remove(@Param('trailerId') trailerId: string) {
+    const deleteResult = await this.trailersService.remove(+trailerId);
     if(deleteResult.affected > 0 )
     {
       return { deleted: true };

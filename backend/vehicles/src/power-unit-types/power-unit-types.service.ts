@@ -3,9 +3,9 @@ import { InjectMapper } from '@automapper/nestjs';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, Repository } from 'typeorm';
-import { CreatePowerUnitTypeDto } from './dto/create-power-unit-type.dto';
-import { PowerUnitTypeDto } from './dto/power-unit-type.dto';
-import { UpdatePowerUnitTypeDto } from './dto/update-power-unit-type.dto';
+import { CreatePowerUnitTypeDto } from './dto/request/create-power-unit-type.dto';
+import { ReadPowerUnitTypeDto } from './dto/response/read-power-unit-type.dto';
+import { UpdatePowerUnitTypeDto } from './dto/request/update-power-unit-type.dto';
 import { PowerUnitType } from './entities/power-unit-type.entity';
 
 @Injectable()
@@ -18,7 +18,7 @@ export class PowerUnitTypesService {
 
   async create(
     powerUnitType: CreatePowerUnitTypeDto,
-  ): Promise<PowerUnitTypeDto> {
+  ): Promise<ReadPowerUnitTypeDto> {
     const newPowerUnitType = this.classMapper.map(
       powerUnitType,
       CreatePowerUnitTypeDto,
@@ -28,28 +28,28 @@ export class PowerUnitTypesService {
     return this.findOne(newPowerUnitType.typeCode);
   }
 
-  async findAll(): Promise<PowerUnitTypeDto[]> {
+  async findAll(): Promise<ReadPowerUnitTypeDto[]> {
     return this.classMapper.mapArrayAsync(
       await this.powerUnitTypeRepository.find(),
       PowerUnitType,
-      PowerUnitTypeDto,
+      ReadPowerUnitTypeDto,
     );
   }
 
-  async findOne(typeCode: string): Promise<PowerUnitTypeDto> {
+  async findOne(typeCode: string): Promise<ReadPowerUnitTypeDto> {
     return this.classMapper.mapAsync(
       await this.powerUnitTypeRepository.findOne({
         where: { typeCode },
       }),
       PowerUnitType,
-      PowerUnitTypeDto,
+      ReadPowerUnitTypeDto,
     );
   }
 
   async update(
     typeCode: string,
     updatePowerUnitTypeDto: UpdatePowerUnitTypeDto,
-  ): Promise<PowerUnitTypeDto> {
+  ): Promise<ReadPowerUnitTypeDto> {
     const newPowerUnitType = this.classMapper.map(
 				 
       updatePowerUnitTypeDto,
@@ -63,7 +63,7 @@ export class PowerUnitTypesService {
 
 
   async remove(
-    typeCode: number,
+    typeCode: string,
   ): Promise<DeleteResult> {
    return await this.powerUnitTypeRepository.delete(typeCode);
       
