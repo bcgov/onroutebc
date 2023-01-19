@@ -11,20 +11,31 @@ import {
 import { PowerUnitsService } from './power-units.service';
 import { CreatePowerUnitDto } from './dto/create-power-unit.dto';
 import { UpdatePowerUnitDto } from './dto/update-power-unit.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { CustomNotFoundException } from 'src/common/exception/custom.notfound.exception';
 import { PowerUnit } from './entities/power-unit.entity';
+import { PowerUnitDto } from './dto/power-unit.dto';
+
 
 @ApiTags('Power Units')
 @Controller('vehicles/powerUnits')
 export class PowerUnitsController {
   constructor(private readonly powerUnitsService: PowerUnitsService) {}
 
+  @ApiCreatedResponse({
+    description: 'The Power Unit Resource',
+    type: PowerUnitDto,
+  })
   @Post()
   create(@Body() createPowerUnitDto: CreatePowerUnitDto) {
     return this.powerUnitsService.create(createPowerUnitDto);
   }
 
+  @ApiOkResponse({
+    description: 'The Power Unit Resource',
+    type: PowerUnitDto,
+    isArray: true,
+  })
   @Get()
   async findAll():Promise<PowerUnit[]> {
    const powerUnit = await  this.powerUnitsService.findAll();
@@ -36,6 +47,10 @@ export class PowerUnitsController {
    }
   }
 
+  @ApiOkResponse({
+    description: 'The Power Unit Resource',
+    type: PowerUnitDto,
+  })
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<PowerUnit> {
     const powerUnit = await this.powerUnitsService.findOne(id);
@@ -49,6 +64,10 @@ export class PowerUnitsController {
     }
   }
 
+  @ApiOkResponse({
+    description: 'The Power Unit Resource',
+    type: PowerUnitDto,
+  })
   @Put(':id')
   async update(
     @Param('id') id: string,

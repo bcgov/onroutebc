@@ -11,20 +11,30 @@ import {
 import { TrailersService } from './trailers.service';
 import { CreateTrailerDto } from './dto/create-trailer.dto';
 import { UpdateTrailerDto } from './dto/update-trailer.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { CustomNotFoundException } from 'src/common/exception/custom.notfound.exception';
 import { Trailer } from './entities/trailer.entity';
+import { TrailerDto } from './dto/trailer.dto';
 
 @ApiTags('Trailers')
 @Controller('vehicles/trailers')
 export class TrailersController {
   constructor(private readonly trailersService: TrailersService) {}
 
+  @ApiCreatedResponse({
+    description: 'The Trailer Resource',
+    type: TrailerDto,
+  })
   @Post()
   create(@Body() createTrailerDto: CreateTrailerDto) {
     return this.trailersService.create(createTrailerDto);
   }
 
+  @ApiOkResponse({
+    description: 'The Trailer Resource',
+    type: TrailerDto,
+    isArray: true,
+  })
   @Get()
   async findAll(): Promise<Trailer[]> {
     const trailer = await this.trailersService.findAll();
@@ -36,6 +46,10 @@ export class TrailersController {
     }
   }
 
+  @ApiOkResponse({
+    description: 'The Trailer Resource',
+    type: TrailerDto,
+  })
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<Trailer> {
     const trailer = await this.trailersService.findOne(id);
@@ -47,6 +61,10 @@ export class TrailersController {
     }
   }
 
+  @ApiOkResponse({
+    description: 'The Trailer Resource',
+    type: TrailerDto,
+  })
   @Put(':id')
   async update(@Param('id') id: string, @Body() updateTrailerDto: UpdateTrailerDto):Promise<Trailer> {
     const trailer = await this.trailersService.update(id, updateTrailerDto);

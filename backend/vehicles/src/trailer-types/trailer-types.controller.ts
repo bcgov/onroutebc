@@ -11,8 +11,9 @@ import {
 import { TrailerTypesService } from './trailer-types.service';
 import { CreateTrailerTypeDto } from './dto/create-trailer-type.dto';
 import { UpdateTrailerTypeDto } from './dto/update-trailer-type.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { TrailerType } from './entities/trailer-type.entity';
+import { TrailerTypeDto } from './dto/trailer-type.dto';
 import { CustomNotFoundException } from 'src/common/exception/custom.notfound.exception';
 
 @ApiTags('Trailer Types')
@@ -20,11 +21,20 @@ import { CustomNotFoundException } from 'src/common/exception/custom.notfound.ex
 export class TrailerTypesController {
   constructor(private readonly trailerTypesService: TrailerTypesService) {}
 
+  @ApiCreatedResponse({
+    description: 'The Trailer Type Resource',
+    type: TrailerTypeDto,
+  })
   @Post()
   create(@Body() createTrailerTypeDto: CreateTrailerTypeDto) {
     return this.trailerTypesService.create(createTrailerTypeDto);
   }
 
+  @ApiOkResponse({
+    description: 'The Trailer Type Resource',
+    type: TrailerTypeDto,
+    isArray: true,
+  })
   @Get()
   async findAll(): Promise<TrailerType[]> {
     const trailerType = await this.trailerTypesService.findAll();
@@ -36,6 +46,10 @@ export class TrailerTypesController {
     }
   }
 
+  @ApiOkResponse({
+    description: 'The Trailer Type Resource',
+    type: TrailerTypeDto,
+  })
   @Get(':id')
   async findOne(@Param('id') id: string) {
     const trailerType = await this.trailerTypesService.findOne(+id);
@@ -47,6 +61,10 @@ export class TrailerTypesController {
     }
   }
 
+  @ApiOkResponse({
+    description: 'The Trailer Type Resource',
+    type: TrailerTypeDto,
+  })
   @Put(':id')
   async update(
     @Param('id') id: string,
@@ -63,7 +81,7 @@ export class TrailerTypesController {
 
   @Delete(':id')
   async remove(@Param('id') id: string) {
-    const deleteResult = await this.trailerTypesService.remove(+id);
+    const deleteResult = await this.trailerTypesService.remove(id);
     if(deleteResult.affected)
     {
       return { deleted: true };
