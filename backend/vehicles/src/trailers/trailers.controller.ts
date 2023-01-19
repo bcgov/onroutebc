@@ -71,7 +71,7 @@ export class TrailersController {
     {
      return trailer;
     }else{
-     throw new CustomNotFoundException("Update trailer failed. Trailer with id "+id+" does not exist in database",HttpStatus.NOT_FOUND)
+     throw new CustomNotFoundException("Update trailer failed. Trailer with id "+trailerId+" does not exist in database",HttpStatus.NOT_FOUND)
     }
   }
 
@@ -82,7 +82,7 @@ export class TrailersController {
     {
       return { deleted: true };
     }else{
-      throw new CustomNotFoundException("Delete trailer failed. Trailer with id "+id+" does not exist in database",HttpStatus.NOT_FOUND)
+      throw new CustomNotFoundException("Delete trailer failed. Trailer with id "+trailerId+" does not exist in database",HttpStatus.NOT_FOUND)
 
     }
   }

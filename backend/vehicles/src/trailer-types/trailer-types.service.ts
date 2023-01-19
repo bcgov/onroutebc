@@ -6,6 +6,7 @@ import { CreateTrailerTypeDto } from './dto/request/create-trailer-type.dto';
 import { ReadTrailerTypeDto } from './dto/response/read-trailer-type.dto';
 import { UpdateTrailerTypeDto } from './dto/request/update-trailer-type.dto';
 import { DeleteResult, Repository } from 'typeorm';
+import { TrailerType } from './entities/trailer-type.entity';
 
 @Injectable()
 export class TrailerTypesService {

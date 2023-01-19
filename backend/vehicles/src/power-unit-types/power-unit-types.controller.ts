@@ -57,7 +57,7 @@ export class PowerUnitTypesController {
    {
     return powerUnitType;
    }else{
-    throw new CustomNotFoundException("Get power unit failed. Power unit with id "+typeCode+" does not exist in database",HttpStatus.NOT_FOUND)
+    throw new CustomNotFoundException("Get power unit failed. Power unit with typeCode "+typeCode+" does not exist in database",HttpStatus.NOT_FOUND)
    }
   }
 
@@ -77,18 +77,18 @@ export class PowerUnitTypesController {
   }
     else 
     {
-    throw new CustomNotFoundException("Update power unit type failed. Power unit type with id "+typeCode+" does not exist in database",HttpStatus.NOT_FOUND)
+    throw new CustomNotFoundException("Update power unit type failed. Power unit type with typeCode "+typeCode+" does not exist in database",HttpStatus.NOT_FOUND)
     }
   }
 
   @Delete(':typeCode')
-  async remove(@Param('itypeCoded') typeCode: string) {
+  async remove(@Param('typeCode') typeCode: string) {
     const deleteResult = await this.powerUnitTypesService.remove(typeCode);
     if(deleteResult.affected >0)
     {
       return { deleted: true };
     }else{
-      throw new CustomNotFoundException("Delete power unit type failed. Power unit type with id "+typeCode+" does not exist in database",HttpStatus.NOT_FOUND)
+      throw new CustomNotFoundException("Delete power unit type failed. Power unit type with typeCode "+typeCode+" does not exist in database",HttpStatus.NOT_FOUND)
 
     }
   }
