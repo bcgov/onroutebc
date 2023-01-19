@@ -5,68 +5,62 @@ export class ReadTrailerDto {
   @AutoMap()
   @ApiProperty({
     example: '1',
-    description: 'The Trailer ID',
+    description: 'Unique identifier for this vehicle record in a company inventory.',
   })
   trailerId: string;
 
   @AutoMap()
   @ApiProperty({
-    description: 'The Unit Number',
+    description: 'Number or code that the company uses to refer to the vehicle.',
     example: 'KEN1',
   })
   unitNumber: string;
 
   @AutoMap()
   @ApiProperty({
-    description: 'The Trailer plate Number',
+    description: 'License plate.',
     example: 'AS 5895',
   })
   plate: string;
 
   @AutoMap()
   @ApiProperty({
-    description: 'The province/state where the vehicle is registered',
+    description: 'Canadian province or US state of registration of the vehicle.',
     example: 'CA-BC',
   })
   provinceId: string;
 
   @AutoMap()
   @ApiProperty({
-    description: 'The Year Of Manufacture',
+    description: 'Year of manufacture of the vehicle.',
     example: '2010',
   })
   year: number;
 
   @AutoMap()
   @ApiProperty({
-    description: 'The make of the vehicle',
+    description: 'Make (manufacturer) of the vehicle.',
     example: 'Kenworth',
   })
   make: string;
 
   @AutoMap()
   @ApiProperty({
-    description: 'The VIN of the vehicle',
+    description: 'Vehicle identification number for the trailer.',
     example: '1ZVFT80N475211367',
   })
   vin: string;
 
   @AutoMap()
   @ApiProperty({
-    description: 'The Empty Trailer Width',
+    description: 'Width in metres of the empty trailer.',
     example: '3.2',
   })
   emptyTrailerWidth: number;
 
-  // @ApiProperty({
-  //   description: 'The Company ID',
-  //   example: '12',
-  // })
-  // companyId: number;
-
   @AutoMap()
   @ApiProperty({
-    description: 'The Trailer Type',
+    description: 'Type of the trailer.',
     example: 'BOOSTER',
   })
   trailerTypeCode: string;

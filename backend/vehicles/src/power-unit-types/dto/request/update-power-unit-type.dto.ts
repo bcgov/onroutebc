@@ -5,7 +5,7 @@ export class UpdatePowerUnitTypeDto {
   @AutoMap()
   @ApiProperty({
     example: 'Concrete Pumper Trucks',
-    description: 'Power Unit Type',
+    description: 'Short description of the power unit type.',
   })
   type: string;
 
@@ -13,11 +13,11 @@ export class UpdatePowerUnitTypeDto {
   @ApiProperty({
     example:
       'Concrete Pumper Trucks are used to pump concrete from a cement mixer truck to where the concrete is actually needed. They travel on the highway at their equipped weight with no load.',
-    description: 'Power Unit Description',
+    description: 'Long description of the power unit type.',
   })
   description: string;
 
   @AutoMap()
-  @ApiProperty({ example: '1', description: 'Sort Order' })
+  @ApiProperty({ example: '1', description: 'Order that the type should be presented in user interfaces.' })
   sortOrder: string;
 }
