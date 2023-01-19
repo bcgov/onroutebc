@@ -9,4 +9,10 @@ export class TrailerDto extends CreateTrailerDto {
     description: 'The Trailer ID',
   })
   trailerId: string;
+
+  @AutoMap()
+  @ApiProperty({
+    description: 'Created Date and Time',
+  })
+  createdDateTime: string;  
 }

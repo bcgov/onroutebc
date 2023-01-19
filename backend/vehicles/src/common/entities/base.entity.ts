@@ -1,12 +1,11 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
-import { Column, CreateDateColumn, UpdateDateColumn, Timestamp } from 'typeorm';
+import { Column, CreateDateColumn, UpdateDateColumn, Timestamp, VersionColumn } from 'typeorm';
 
 export class Base {
   @AutoMap()
-  @ApiProperty({description: 'Concurrency Control Number' })
-  @Column({
-    type: 'integer',
+  @ApiProperty({ description: 'Concurrency Control Number' })
+  @VersionColumn({
     name: 'CONCURRENCY_CONTROL_NUMBER',
     nullable: true,
   })
@@ -22,15 +21,16 @@ export class Base {
   createdUser: string;
 
   @AutoMap()
-  @ApiProperty({description: 'Created User Name' })
+  @ApiProperty({ description: 'Resource Creation Date' })
   @CreateDateColumn({
+    default: () => 'NOW()',
     name: 'APP_CREATE_TIMESTAMP',
     nullable: true,
   })
-  createdDateTime: Timestamp;
+  createdDateTime: Date;
 
   @AutoMap()
-  @ApiProperty({description: 'Updated User Name' })
+  @ApiProperty({ description: 'Updated User Name' })
   @Column({
     length: 30,
     name: 'APP_LAST_UPDATE_USERID',
@@ -39,10 +39,11 @@ export class Base {
   updatedUser: string;
 
   @AutoMap()
-  @ApiProperty({ description: 'Created User Name' })
+  @ApiProperty({ description: 'Resource Update Date' })
   @UpdateDateColumn({
+    default: () => 'NOW()',
     name: 'APP_LAST_UPDATE_TIMESTAMP',
     nullable: true,
   })
-  updatedDateTime: Timestamp;
+  updatedDateTime: Date;
 }
