@@ -68,12 +68,16 @@ jobs:
         with:
           versionSpec: '5.x'
       # gitversion/setup@v0.9.7 action omitted for brevity.
+      - name: Debug
+        run: |
+          ls -a
+
       - name: Determine SemVersion
         id:   gitversion
         uses: gittools/actions/gitversion/execute@v0.9.7
         with:
           useConfigFile: true
-          configFilePath: .github/GitVersion.yaml
+          configFilePath: onroutebc/.github/GitVersion.yaml
 
       - name: Display GitVersion outputs
         run: |
