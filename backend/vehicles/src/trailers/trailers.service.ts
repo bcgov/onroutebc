@@ -40,7 +40,7 @@ export class TrailersService {
 
   async findOne(trailerId: string): Promise<TrailerDto> {
     return this.classMapper.mapAsync(
-      await this.trailerRepository.findOneOrFail({
+      await this.trailerRepository.findOne({
         where: { trailerId },
         relations: {
           trailerType: true,

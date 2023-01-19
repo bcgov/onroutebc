@@ -44,7 +44,7 @@ export class PowerUnitsService {
 
   async findOne(powerUnitId: string): Promise<PowerUnitDto> {
     return this.classMapper.mapAsync(
-      await this.powerUnitRepository.findOneOrFail({
+      await this.powerUnitRepository.findOne({
         where: { powerUnitId },
         relations: {
           powerUnitType: true,

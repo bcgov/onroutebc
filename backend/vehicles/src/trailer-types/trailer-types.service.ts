@@ -36,7 +36,7 @@ export class TrailerTypesService {
 
   async findOne(typeCode: string): Promise<TrailerTypeDto> {
     return this.classMapper.mapAsync(
-      await this.trailerTypeRepository.findOneOrFail({
+      await this.trailerTypeRepository.findOne({
         where: { typeCode },
       }),
       TrailerType,
