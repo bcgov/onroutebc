@@ -1,4 +1,9 @@
-import { PartialType } from '@nestjs/swagger';
-import { CreateTrailerTypeDto } from './create-trailer-type.dto';
+import { AutoMap } from '@automapper/classes';
+import { ApiProperty } from '@nestjs/swagger';
+import { TrailerTypeDto } from './trailer-type.dto';
 
-export class UpdateTrailerTypeDto extends PartialType(CreateTrailerTypeDto) {}
+export class UpdateTrailerTypeDto extends TrailerTypeDto {
+  @AutoMap()
+  @ApiProperty({ example: '1', description: 'Sort Order' })
+  sortOrder: string;
+}
