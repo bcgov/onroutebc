@@ -60,6 +60,13 @@ export class TrailersController {
 
   @Delete(':id')
   async remove(@Param('id') id: string) {
-    return await this.trailersService.remove(id);
+    const deleteResult = await this.trailersService.remove(+id);
+    if(deleteResult.affected > 0 )
+    {
+      return { deleted: true };
+    }else{
+      throw new CustomNotFoundException("Delete trailer failed. Trailer with id "+id+" does not exist in database",HttpStatus.NOT_FOUND)
+
+    }
   }
 }

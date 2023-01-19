@@ -63,6 +63,14 @@ export class TrailerTypesController {
 
   @Delete(':id')
   async remove(@Param('id') id: string) {
-    return this.trailerTypesService.remove(+id);
+    const deleteResult = await this.trailerTypesService.remove(+id);
+    if(deleteResult.affected)
+    {
+      return { deleted: true };
+    }
+    else{
+      throw new CustomNotFoundException("Delete trailer types failed.Trailer type with id "+id+" does not exist in database",HttpStatus.NOT_FOUND)
+
+    }
   }
 }

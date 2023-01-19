@@ -2,9 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreatePowerUnitDto } from './dto/create-power-unit.dto';
 import { UpdatePowerUnitDto } from './dto/update-power-unit.dto';
-import { Repository } from 'typeorm';
+import { DeleteResult, Repository } from 'typeorm';
 import { PowerUnit } from './entities/power-unit.entity';
-import { InternalServerErrorException } from '@nestjs/common/exceptions';
 
 @Injectable()
 export class PowerUnitsService {
@@ -42,12 +41,9 @@ export class PowerUnitsService {
 
   async remove(
     powerUnitId: string,
-  ): Promise<{ deleted: boolean; message?: string }> {
-    try {
-      await this.powerUnitRepository.delete(powerUnitId);
-      return { deleted: true };
-    } catch (err) {
-      throw new InternalServerErrorException("Deletion failed for id "+powerUnitId);
-    }
+  ): Promise<DeleteResult> {
+    
+     return await this.powerUnitRepository.delete(powerUnitId);
+     
   }
 }

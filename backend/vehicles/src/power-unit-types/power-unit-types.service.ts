@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DeleteResult, Repository } from 'typeorm';
 import { CreatePowerUnitTypeDto } from './dto/create-power-unit-type.dto';
 import { UpdatePowerUnitTypeDto } from './dto/update-power-unit-type.dto';
 import { PowerUnitType } from './entities/power-unit-type.entity';
@@ -39,12 +39,8 @@ export class PowerUnitTypesService {
 
   async remove(
     typeId: number,
-  ): Promise<{ deleted: boolean; message?: string }> {
-    try {
-      await this.powerUnitTypeRepository.delete(typeId);
-      return { deleted: true };
-    } catch (err) {
-      return { deleted: false, message: err.message };
-    }
+  ): Promise<DeleteResult> {
+   return await this.powerUnitTypeRepository.delete(typeId);
+      
   }
 }

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DeleteResult, Repository } from 'typeorm';
 import { CreateTrailerDto } from './dto/create-trailer.dto';
 import { UpdateTrailerDto } from './dto/update-trailer.dto';
 import { Trailer } from './entities/trailer.entity';
@@ -40,13 +40,8 @@ export class TrailersService {
   }
 
   async remove(
-    trailerId: string,
-  ): Promise<{ deleted: boolean; message?: string }> {
-    try {
-      await this.trailerRepository.delete(trailerId);
-      return { deleted: true };
-    } catch (err) {
-      return { deleted: false, message: err.message };
-    }
+    trailerId: number,
+  ): Promise<DeleteResult> {
+       return await this.trailerRepository.delete(trailerId);
   }
 }

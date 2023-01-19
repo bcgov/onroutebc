@@ -66,7 +66,16 @@ export class PowerUnitsController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.powerUnitsService.remove(id);
+ async remove(@Param('id') id: string) {
+    const deleteResult =  await this.powerUnitsService.remove(id);
+    if (deleteResult.affected >0)
+      {
+        return { deleted: true };
+      }
+      else{
+        throw new CustomNotFoundException("Delete power unit failed. Power unit with id "+id+" does not exist in database",HttpStatus.NOT_FOUND)
+
+      }
+      
   }
 }
