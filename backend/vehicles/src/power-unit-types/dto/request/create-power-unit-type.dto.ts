@@ -1,7 +1,11 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class PowerUnitTypeDto {
+export class CreatePowerUnitTypeDto {
+  @AutoMap()
+  @ApiProperty({ example: 'CONCRET', description: 'The Power Unit Type Code' })
+  typeCode: string;
+
   @AutoMap()
   @ApiProperty({
     example: 'Concrete Pumper Trucks',
@@ -16,4 +20,8 @@ export class PowerUnitTypeDto {
     description: 'Power Unit Description',
   })
   description: string;
+
+  @AutoMap()
+  @ApiProperty({ example: '1', description: 'Sort Order' })
+  sortOrder: string;
 }

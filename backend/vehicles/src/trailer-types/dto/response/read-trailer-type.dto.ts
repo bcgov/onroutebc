@@ -1,7 +1,11 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class TrailerTypeDto {
+export class ReadTrailerTypeDto {
+  @AutoMap()
+  @ApiProperty({ example: 'BOOSTER', description: 'The Trailer Type Code' })
+  typeCode: string;
+
   @AutoMap()
   @ApiProperty({ example: 'Boosters', description: 'Trailer Type' })
   type: string;

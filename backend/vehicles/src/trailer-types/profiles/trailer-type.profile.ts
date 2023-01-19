@@ -2,9 +2,9 @@ import { AutomapperProfile, InjectMapper } from '@automapper/nestjs';
 import { createMap, Mapper } from '@automapper/core';
 import { Injectable } from '@nestjs/common';
 import { TrailerType } from '../entities/trailer-type.entity';
-import { TrailerTypeDto } from '../dto/trailer-type.dto';
-import { CreateTrailerTypeDto } from '../dto/create-trailer-type.dto';
-import { UpdateTrailerTypeDto } from '../dto/update-trailer-type.dto';
+import { ReadTrailerTypeDto } from '../dto/response/read-trailer-type.dto';
+import { CreateTrailerTypeDto } from '../dto/request/create-trailer-type.dto';
+import { UpdateTrailerTypeDto } from '../dto/request/update-trailer-type.dto';
 
 @Injectable()
 export class TrailerTypesProfile extends AutomapperProfile {
@@ -14,7 +14,7 @@ export class TrailerTypesProfile extends AutomapperProfile {
 
   override get profile() {
     return (mapper) => {
-      createMap(mapper, TrailerType, TrailerTypeDto);
+      createMap(mapper, TrailerType, ReadTrailerTypeDto);
       createMap(mapper, CreateTrailerTypeDto, TrailerType);
       createMap(mapper, UpdateTrailerTypeDto, TrailerType);
     };
