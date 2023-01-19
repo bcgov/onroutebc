@@ -12,7 +12,6 @@ import { TrailerTypesService } from './trailer-types.service';
 import { CreateTrailerTypeDto } from './dto/create-trailer-type.dto';
 import { UpdateTrailerTypeDto } from './dto/update-trailer-type.dto';
 import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { TrailerType } from './entities/trailer-type.entity';
 import { TrailerTypeDto } from './dto/trailer-type.dto';
 import { CustomNotFoundException } from 'src/common/exception/custom.notfound.exception';
 
@@ -36,7 +35,7 @@ export class TrailerTypesController {
     isArray: true,
   })
   @Get()
-  async findAll(): Promise<TrailerType[]> {
+  async findAll(): Promise<TrailerTypeDto[]> {
     const trailerType = await this.trailerTypesService.findAll();
     if (trailerType.length > 0)
     {
@@ -51,8 +50,8 @@ export class TrailerTypesController {
     type: TrailerTypeDto,
   })
   @Get(':id')
-  async findOne(@Param('id') id: string) {
-    const trailerType = await this.trailerTypesService.findOne(+id);
+  async findOne(@Param('id') id: string): Promise<TrailerTypeDto> {
+    const trailerType = await this.trailerTypesService.findOne(id);
     if (trailerType)
     {
      return trailerType;
@@ -69,8 +68,8 @@ export class TrailerTypesController {
   async update(
     @Param('id') id: string,
     @Body() updateTrailerTypeDto: UpdateTrailerTypeDto,
-  ) {
-    const trailerType = await this.trailerTypesService.update(+id, updateTrailerTypeDto);
+  ): Promise<TrailerTypeDto> {
+    const trailerType = await this.trailerTypesService.update(id, updateTrailerTypeDto);
     if (trailerType)
     {
      return trailerType;

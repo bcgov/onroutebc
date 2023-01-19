@@ -13,7 +13,6 @@ import { CreatePowerUnitDto } from './dto/create-power-unit.dto';
 import { UpdatePowerUnitDto } from './dto/update-power-unit.dto';
 import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { CustomNotFoundException } from 'src/common/exception/custom.notfound.exception';
-import { PowerUnit } from './entities/power-unit.entity';
 import { PowerUnitDto } from './dto/power-unit.dto';
 
 
@@ -37,7 +36,7 @@ export class PowerUnitsController {
     isArray: true,
   })
   @Get()
-  async findAll():Promise<PowerUnit[]> {
+  async findAll():Promise<PowerUnitDto[]> {
    const powerUnit = await  this.powerUnitsService.findAll();
    if (powerUnit.length > 0)
    {
@@ -52,7 +51,7 @@ export class PowerUnitsController {
     type: PowerUnitDto,
   })
   @Get(':id')
-  async findOne(@Param('id') id: string): Promise<PowerUnit> {
+  async findOne(@Param('id') id: string): Promise<PowerUnitDto> {
     const powerUnit = await this.powerUnitsService.findOne(id);
     if (powerUnit)
     {
@@ -72,7 +71,7 @@ export class PowerUnitsController {
   async update(
     @Param('id') id: string,
     @Body() updatePowerUnitDto: UpdatePowerUnitDto,
-  ): Promise<PowerUnit> {
+  ): Promise<PowerUnitDto> {
     const powerUnit = await this.powerUnitsService.update(id, updatePowerUnitDto);
     if (powerUnit)
     {

@@ -13,7 +13,6 @@ import { CreatePowerUnitTypeDto } from './dto/create-power-unit-type.dto';
 import { UpdatePowerUnitTypeDto } from './dto/update-power-unit-type.dto';
 import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { CustomNotFoundException } from 'src/common/exception/custom.notfound.exception';
-import { PowerUnitType } from './entities/power-unit-type.entity';
 import { PowerUnitTypeDto } from './dto/power-unit-type.dto';
 
 @ApiTags('Power Unit Types')
@@ -36,7 +35,7 @@ export class PowerUnitTypesController {
     isArray: true,
   })
   @Get()
-  async findAll():Promise<PowerUnitType[]>  {
+  async findAll():Promise<PowerUnitTypeDto[]>  {
     const powerUnitType = await this.powerUnitTypesService.findAll();
     if (powerUnitType.length > 0)
    {
@@ -52,8 +51,8 @@ export class PowerUnitTypesController {
     type: PowerUnitTypeDto,
   })
   @Get(':id')
-  async findOne(@Param('id') id: string):Promise<PowerUnitType> {
-    const powerUnitType = await this.powerUnitTypesService.findOne(+id);
+  async findOne(@Param('id') id: string):Promise<PowerUnitTypeDto> {
+    const powerUnitType = await this.powerUnitTypesService.findOne(id);
     if (powerUnitType)
    {
     return powerUnitType;
@@ -70,8 +69,8 @@ export class PowerUnitTypesController {
   async update(
     @Param('id') id: string,
     @Body() updatePowerUnitTypeDto: UpdatePowerUnitTypeDto,
-  ) {
-    const powerUnitType = await this.powerUnitTypesService.update(+id, updatePowerUnitTypeDto);
+  ): Promise<PowerUnitTypeDto> {
+    const powerUnitType = await this.powerUnitTypesService.update(id, updatePowerUnitTypeDto);
     if (powerUnitType)
     {
     return powerUnitType

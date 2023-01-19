@@ -38,7 +38,7 @@ export class PowerUnitTypesService {
 
   async findOne(typeCode: string): Promise<PowerUnitTypeDto> {
     return this.classMapper.mapAsync(
-      await this.powerUnitTypeRepository.findOneOrFail({
+      await this.powerUnitTypeRepository.findOne({
         where: { typeCode },
       }),
       PowerUnitType,
