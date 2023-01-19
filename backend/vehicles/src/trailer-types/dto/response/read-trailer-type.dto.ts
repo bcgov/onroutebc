@@ -3,11 +3,17 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class ReadTrailerTypeDto {
   @AutoMap()
-  @ApiProperty({ example: 'BOOSTER', description: 'Unique identifier of the trailer type.' })
+  @ApiProperty({
+    example: 'BOOSTER',
+    description: 'Unique identifier of the trailer type.',
+  })
   typeCode: string;
 
   @AutoMap()
-  @ApiProperty({ example: 'Boosters', description: 'Short description of the trailer type.' })
+  @ApiProperty({
+    example: 'Boosters',
+    description: 'Short description of the trailer type.',
+  })
   type: string;
 
   @AutoMap()

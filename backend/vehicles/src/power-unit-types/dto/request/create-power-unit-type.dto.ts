@@ -3,7 +3,10 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class CreatePowerUnitTypeDto {
   @AutoMap()
-  @ApiProperty({ example: 'CONCRET', description: 'Unique identifier of the power unit type.' })
+  @ApiProperty({
+    example: 'CONCRET',
+    description: 'Unique identifier of the power unit type.',
+  })
   typeCode: string;
 
   @AutoMap()
@@ -22,6 +25,9 @@ export class CreatePowerUnitTypeDto {
   description: string;
 
   @AutoMap()
-  @ApiProperty({ example: '1', description: 'Order that the type should be presented in user interfaces.' })
+  @ApiProperty({
+    example: '1',
+    description: 'Order that the type should be presented in user interfaces.',
+  })
   sortOrder: string;
 }

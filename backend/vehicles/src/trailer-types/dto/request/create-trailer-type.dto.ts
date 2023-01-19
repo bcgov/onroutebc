@@ -3,11 +3,17 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateTrailerTypeDto {
   @AutoMap()
-  @ApiProperty({ example: 'BOOSTER', description: 'Unique identifier of the trailer type.' })
+  @ApiProperty({
+    example: 'BOOSTER',
+    description: 'Unique identifier of the trailer type.',
+  })
   typeCode: string;
 
   @AutoMap()
-  @ApiProperty({ example: 'Boosters', description: 'Short description of the trailer type.' })
+  @ApiProperty({
+    example: 'Boosters',
+    description: 'Short description of the trailer type.',
+  })
   type: string;
 
   @AutoMap()
@@ -18,6 +24,9 @@ export class CreateTrailerTypeDto {
   description: string;
 
   @AutoMap()
-  @ApiProperty({ example: '1', description: 'Order that the type should be presented in user interfaces.' })
+  @ApiProperty({
+    example: '1',
+    description: 'Order that the type should be presented in user interfaces.',
+  })
   sortOrder: string;
 }

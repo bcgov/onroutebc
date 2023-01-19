@@ -7,7 +7,10 @@ import { PowerUnit } from '../../power-units/entities/power-unit.entity';
 @Entity({ name: 'ORBC_VT_POWER_UNIT_TYPE' })
 export class PowerUnitType extends Base {
   @AutoMap()
-  @ApiProperty({ example: 'CONCRET', description: 'Unique identifier of the power unit type.' })
+  @ApiProperty({
+    example: 'CONCRET',
+    description: 'Unique identifier of the power unit type.',
+  })
   @PrimaryColumn({ length: 7, name: 'TYPE_CODE', nullable: false })
   typeCode: string;
 
@@ -29,7 +32,10 @@ export class PowerUnitType extends Base {
   description: string;
 
   @AutoMap()
-  @ApiProperty({ example: '1', description: 'Order that the type should be presented in user interfaces.' })
+  @ApiProperty({
+    example: '1',
+    description: 'Order that the type should be presented in user interfaces.',
+  })
   @Column({ type: 'integer', name: 'SORT_ORDER', nullable: true })
   sortOrder: string;
 
