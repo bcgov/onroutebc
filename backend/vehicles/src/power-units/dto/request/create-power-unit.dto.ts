@@ -4,7 +4,8 @@ import { ApiProperty } from '@nestjs/swagger';
 export class CreatePowerUnitDto {
   @AutoMap()
   @ApiProperty({
-    description: 'Number or code that the company uses to refer to the vehicle.',
+    description:
+      'Number or code that the company uses to refer to the vehicle.',
     example: 'KEN1',
   })
   unitNumber: string;
@@ -18,7 +19,8 @@ export class CreatePowerUnitDto {
 
   @AutoMap()
   @ApiProperty({
-    description: 'Canadian province or US state of registration of the vehicle.',
+    description:
+      'Canadian province or US state of registration of the vehicle.',
     example: 'CA-BC',
   })
   provinceId: string;

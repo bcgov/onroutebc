@@ -5,13 +5,15 @@ export class ReadPowerUnitDto {
   @AutoMap()
   @ApiProperty({
     example: '1',
-    description: 'Unique identifier for this vehicle record in a company inventory.',
+    description:
+      'Unique identifier for this vehicle record in a company inventory.',
   })
   powerUnitId: string;
 
   @AutoMap()
   @ApiProperty({
-    description: 'Number or code that the company uses to refer to the vehicle.',
+    description:
+      'Number or code that the company uses to refer to the vehicle.',
     example: 'KEN1',
   })
   unitNumber: string;
@@ -25,7 +27,8 @@ export class ReadPowerUnitDto {
 
   @AutoMap()
   @ApiProperty({
-    description: 'Canadian province or US state of registration of the vehicle.',
+    description:
+      'Canadian province or US state of registration of the vehicle.',
     example: 'CA-BC',
   })
   provinceId: string;

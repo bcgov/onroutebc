@@ -18,6 +18,9 @@ export class UpdatePowerUnitTypeDto {
   description: string;
 
   @AutoMap()
-  @ApiProperty({ example: '1', description: 'Order that the type should be presented in user interfaces.' })
+  @ApiProperty({
+    example: '1',
+    description: 'Order that the type should be presented in user interfaces.',
+  })
   sortOrder: string;
 }
