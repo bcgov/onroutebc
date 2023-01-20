@@ -36,13 +36,7 @@ export class PowerUnitTypesController {
   })
   @Get()
   async findAll():Promise<ReadPowerUnitTypeDto[]>  {
-    const powerUnitType = await this.powerUnitTypesService.findAll();
-    if (powerUnitType.length > 0)
-   {
-    return powerUnitType;
-   }else{
-    throw new CustomNotFoundException("Get all power unit failed.Power unit types do not exist in database yet",HttpStatus.NOT_FOUND)
-   }
+    return await this.powerUnitTypesService.findAll();
   }
   
 
@@ -57,7 +51,7 @@ export class PowerUnitTypesController {
    {
     return powerUnitType;
    }else{
-    throw new CustomNotFoundException("Get power unit failed. Power unit with typeCode "+typeCode+" does not exist in database",HttpStatus.NOT_FOUND)
+    throw new CustomNotFoundException("Data not found",HttpStatus.NOT_FOUND)
    }
   }
 
@@ -77,7 +71,7 @@ export class PowerUnitTypesController {
   }
     else 
     {
-    throw new CustomNotFoundException("Update power unit type failed. Power unit type with typeCode "+typeCode+" does not exist in database",HttpStatus.NOT_FOUND)
+    throw new CustomNotFoundException("Data not found",HttpStatus.NOT_FOUND)
     }
   }
 
@@ -88,7 +82,7 @@ export class PowerUnitTypesController {
     {
       return { deleted: true };
     }else{
-      throw new CustomNotFoundException("Delete power unit type failed. Power unit type with typeCode "+typeCode+" does not exist in database",HttpStatus.NOT_FOUND)
+      throw new CustomNotFoundException("Data not found",HttpStatus.NOT_FOUND)
 
     }
   }

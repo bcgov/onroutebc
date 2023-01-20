@@ -36,13 +36,7 @@ export class TrailersController {
   })
   @Get()
   async findAll(): Promise<ReadTrailerDto[]> {
-    const trailer = await this.trailersService.findAll();
-    if (trailer.length > 0)
-    {
-     return trailer;
-    }else{
-     throw new CustomNotFoundException("Get all trailers failed. Trailer information does not exist in database yet.",HttpStatus.NOT_FOUND)
-    }
+    return await this.trailersService.findAll();
   }
 
   @ApiOkResponse({
@@ -56,7 +50,7 @@ export class TrailersController {
     {
      return trailer;
     }else{
-     throw new CustomNotFoundException("Get trailer failed. Trailer with id "+trailerId+" does not exist in database",HttpStatus.NOT_FOUND)
+     throw new CustomNotFoundException("Data not found",HttpStatus.NOT_FOUND)
     }
   }
 
@@ -71,7 +65,7 @@ export class TrailersController {
     {
      return trailer;
     }else{
-     throw new CustomNotFoundException("Update trailer failed. Trailer with id "+trailerId+" does not exist in database",HttpStatus.NOT_FOUND)
+     throw new CustomNotFoundException("Data not found",HttpStatus.NOT_FOUND)
     }
   }
 
@@ -82,7 +76,7 @@ export class TrailersController {
     {
       return { deleted: true };
     }else{
-      throw new CustomNotFoundException("Delete trailer failed. Trailer with id "+trailerId+" does not exist in database",HttpStatus.NOT_FOUND)
+      throw new CustomNotFoundException("Data not found",HttpStatus.NOT_FOUND)
 
     }
   }

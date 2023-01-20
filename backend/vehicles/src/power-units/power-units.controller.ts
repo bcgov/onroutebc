@@ -36,13 +36,7 @@ export class PowerUnitsController {
   })
   @Get()
   async findAll():Promise<ReadPowerUnitDto[]> {
-   const powerUnit = await  this.powerUnitsService.findAll();
-   if (powerUnit.length > 0)
-   {
-    return powerUnit;
-   }else{
-    throw new CustomNotFoundException("Get all power unit failed.Power unit data do not exist in database yet",HttpStatus.NOT_FOUND)
-   }
+   return await  this.powerUnitsService.findAll();
   }
 
   @ApiOkResponse({
@@ -58,7 +52,7 @@ export class PowerUnitsController {
   }
     else 
     {
-    throw new CustomNotFoundException("Get power unit failed. Power unit with id "+powerUnitId+" does not exist in database",HttpStatus.NOT_FOUND)
+    throw new CustomNotFoundException("Data not found",HttpStatus.NOT_FOUND)
     }
   }
 
@@ -78,7 +72,7 @@ export class PowerUnitsController {
   }
     else 
     {
-    throw new CustomNotFoundException("Update power unit failed. Power unit with id "+powerUnitId+" does not exist in database",HttpStatus.NOT_FOUND)
+    throw new CustomNotFoundException("Data not found",HttpStatus.NOT_FOUND)
     }
   }
 
@@ -90,7 +84,7 @@ export class PowerUnitsController {
         return { deleted: true };
       }
       else{
-        throw new CustomNotFoundException("Delete power unit failed. Power unit with id "+powerUnitId+" does not exist in database",HttpStatus.NOT_FOUND)
+        throw new CustomNotFoundException("Data not found",HttpStatus.NOT_FOUND)
 
       }
       

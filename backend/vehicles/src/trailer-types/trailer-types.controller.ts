@@ -36,13 +36,7 @@ export class TrailerTypesController {
   })
   @Get()
   async findAll(): Promise<ReadTrailerTypeDto[]> {
-    const trailerType = await this.trailerTypesService.findAll();
-    if (trailerType.length > 0)
-    {
-     return trailerType;
-    }else{
-     throw new CustomNotFoundException("Get all trailer types failed.Trailer types do not exist in database yet",HttpStatus.NOT_FOUND)
-    }
+    return await this.trailerTypesService.findAll();
   }
 
   @ApiOkResponse({
@@ -56,7 +50,7 @@ export class TrailerTypesController {
     {
      return trailerType;
     }else{
-     throw new CustomNotFoundException("Get trailer types failed.Trailer type with typeCode "+typeCode+" does not exist in database",HttpStatus.NOT_FOUND)
+     throw new CustomNotFoundException("Data not found",HttpStatus.NOT_FOUND)
     }
   }
 
@@ -74,7 +68,7 @@ export class TrailerTypesController {
     {
      return trailerType;
     }else{
-     throw new CustomNotFoundException("Update trailer types failed.Trailer type with typeCode "+typeCode+" does not exist in database",HttpStatus.NOT_FOUND)
+     throw new CustomNotFoundException("Data not found",HttpStatus.NOT_FOUND)
     }
   }
 
@@ -86,7 +80,7 @@ export class TrailerTypesController {
       return { deleted: true };
     }
     else{
-      throw new CustomNotFoundException("Delete trailer types failed.Trailer type with typeCode "+typeCode+" does not exist in database",HttpStatus.NOT_FOUND)
+      throw new CustomNotFoundException("Data not found",HttpStatus.NOT_FOUND)
 
     }
   }
