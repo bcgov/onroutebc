@@ -44,7 +44,7 @@ export const AddVehicleButton = ({
     handleClose(event);
   };
 
-  function handleListKeyDown(event: React.KeyboardEvent) {
+  const handleListKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === "Tab") {
       event.preventDefault();
       setOpen(false);
