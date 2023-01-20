@@ -2,10 +2,10 @@ import { Mapper } from '@automapper/core';
 import { InjectMapper } from '@automapper/nestjs';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { CreateTrailerTypeDto } from './dto/request/create-trailer-type.dto';
 import { ReadTrailerTypeDto } from './dto/response/read-trailer-type.dto';
 import { UpdateTrailerTypeDto } from './dto/request/update-trailer-type.dto';
+import { DeleteResult, Repository } from 'typeorm';
 import { TrailerType } from './entities/trailer-type.entity';
 
 @Injectable()
@@ -36,7 +36,7 @@ export class TrailerTypesService {
 
   async findOne(typeCode: string): Promise<ReadTrailerTypeDto> {
     return this.classMapper.mapAsync(
-      await this.trailerTypeRepository.findOneOrFail({
+      await this.trailerTypeRepository.findOne({
         where: { typeCode },
       }),
       TrailerType,
@@ -58,14 +58,12 @@ export class TrailerTypesService {
     return this.findOne(typeCode);
   }
 
+
   async remove(
     typeCode: string,
-  ): Promise<{ deleted: boolean; message?: string }> {
-    try {
-      await this.trailerTypeRepository.delete(typeCode);
-      return { deleted: true };
-    } catch (err) {
-      return { deleted: false, message: err.message };
-    }
+  ): Promise<DeleteResult> {
+  
+       return await this.trailerTypeRepository.delete(typeCode);
+      
   }
 }

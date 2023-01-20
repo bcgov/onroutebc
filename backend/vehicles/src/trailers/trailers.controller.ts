@@ -6,11 +6,13 @@ import {
   Param,
   Delete,
   Put,
+  HttpStatus,
 } from '@nestjs/common';
 import { TrailersService } from './trailers.service';
 import { CreateTrailerDto } from './dto/request/create-trailer.dto';
 import { UpdateTrailerDto } from './dto/request/update-trailer.dto';
 import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { CustomNotFoundException } from 'src/common/exception/custom.notfound.exception';
 import { ReadTrailerDto } from './dto/response/read-trailer.dto';
 
 @ApiTags('Trailers')
@@ -33,8 +35,8 @@ export class TrailersController {
     isArray: true,
   })
   @Get()
-  findAll() {
-    return this.trailersService.findAll();
+  async findAll(): Promise<ReadTrailerDto[]> {
+    return await this.trailersService.findAll();
   }
 
   @ApiOkResponse({
@@ -42,8 +44,14 @@ export class TrailersController {
     type: ReadTrailerDto,
   })
   @Get(':trailerId')
-  findOne(@Param('trailerId') trailerId: string) {
-    return this.trailersService.findOne(trailerId);
+  async findOne(@Param('trailerId') trailerId: string): Promise<ReadTrailerDto> {
+    const trailer = await this.trailersService.findOne(trailerId);
+    if (trailer)
+    {
+     return trailer;
+    }else{
+     throw new CustomNotFoundException("Data not found",HttpStatus.NOT_FOUND)
+    }
   }
 
   @ApiOkResponse({
@@ -51,15 +59,25 @@ export class TrailersController {
     type: ReadTrailerDto,
   })
   @Put(':trailerId')
-  update(
-    @Param('trailerId') trailerId: string,
-    @Body() updateTrailerDto: UpdateTrailerDto,
-  ) {
-    return this.trailersService.update(trailerId, updateTrailerDto);
+  async update(@Param('trailerId') trailerId: string, @Body() updateTrailerDto: UpdateTrailerDto):Promise<ReadTrailerDto> {
+    const trailer = await this.trailersService.update(trailerId, updateTrailerDto);
+    if (trailer)
+    {
+     return trailer;
+    }else{
+     throw new CustomNotFoundException("Data not found",HttpStatus.NOT_FOUND)
+    }
   }
 
   @Delete(':trailerId')
-  remove(@Param('trailerId') trailerId: string) {
-    return this.trailersService.remove(trailerId);
+  async remove(@Param('trailerId') trailerId: string) {
+    const deleteResult = await this.trailersService.remove(+trailerId);
+    if(deleteResult.affected > 0 )
+    {
+      return { deleted: true };
+    }else{
+      throw new CustomNotFoundException("Data not found",HttpStatus.NOT_FOUND)
+
+    }
   }
 }

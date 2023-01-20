@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreatePowerUnitDto } from './dto/request/create-power-unit.dto';
 import { UpdatePowerUnitDto } from './dto/request/update-power-unit.dto';
-import { Repository } from 'typeorm';
+import { DeleteResult, Repository } from 'typeorm';
 import { PowerUnit } from './entities/power-unit.entity';
 import { InjectMapper } from '@automapper/nestjs';
 import { Mapper } from '@automapper/core';
@@ -44,7 +44,7 @@ export class PowerUnitsService {
 
   async findOne(powerUnitId: string): Promise<ReadPowerUnitDto> {
     return this.classMapper.mapAsync(
-      await this.powerUnitRepository.findOneOrFail({
+      await this.powerUnitRepository.findOne({
         where: { powerUnitId },
         relations: {
           powerUnitType: true,
@@ -68,15 +68,9 @@ export class PowerUnitsService {
     await this.powerUnitRepository.update({ powerUnitId }, newPowerUnit);
     return this.findOne(powerUnitId);
   }
-
   async remove(
     powerUnitId: string,
-  ): Promise<{ deleted: boolean; message?: string }> {
-    try {
-      await this.powerUnitRepository.delete(powerUnitId);
-      return { deleted: true };
-    } catch (err) {
-      return { deleted: false, message: err.message };
-    }
+  ): Promise<DeleteResult> {
+     return await this.powerUnitRepository.delete(powerUnitId);
   }
 }

@@ -6,11 +6,13 @@ import {
   Param,
   Delete,
   Put,
+  HttpStatus,
 } from '@nestjs/common';
 import { PowerUnitsService } from './power-units.service';
 import { CreatePowerUnitDto } from './dto/request/create-power-unit.dto';
 import { UpdatePowerUnitDto } from './dto/request/update-power-unit.dto';
 import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { CustomNotFoundException } from 'src/common/exception/custom.notfound.exception';
 import { ReadPowerUnitDto } from './dto/response/read-power-unit.dto';
 
 @ApiTags('Power Units')
@@ -33,8 +35,8 @@ export class PowerUnitsController {
     isArray: true,
   })
   @Get()
-  findAll() {
-    return this.powerUnitsService.findAll();
+  async findAll():Promise<ReadPowerUnitDto[]> {
+   return await  this.powerUnitsService.findAll();
   }
 
   @ApiOkResponse({
@@ -42,8 +44,16 @@ export class PowerUnitsController {
     type: ReadPowerUnitDto,
   })
   @Get(':powerUnitId')
-  findOne(@Param('powerUnitId') powerUnitId: string) {
-    return this.powerUnitsService.findOne(powerUnitId);
+  async findOne(@Param('powerUnitId') powerUnitId: string): Promise<ReadPowerUnitDto> {
+    const powerUnit = await this.powerUnitsService.findOne(powerUnitId);
+    if (powerUnit)
+    {
+    return powerUnit
+  }
+    else 
+    {
+    throw new CustomNotFoundException("Data not found",HttpStatus.NOT_FOUND)
+    }
   }
 
   @ApiOkResponse({
@@ -51,15 +61,32 @@ export class PowerUnitsController {
     type: ReadPowerUnitDto,
   })
   @Put(':powerUnitId')
-  update(
+  async update(
     @Param('powerUnitId') powerUnitId: string,
     @Body() updatePowerUnitDto: UpdatePowerUnitDto,
-  ) {
-    return this.powerUnitsService.update(powerUnitId, updatePowerUnitDto);
+  ): Promise<ReadPowerUnitDto> {
+    const powerUnit = await this.powerUnitsService.update(powerUnitId, updatePowerUnitDto);
+    if (powerUnit)
+    {
+    return powerUnit
+  }
+    else 
+    {
+    throw new CustomNotFoundException("Data not found",HttpStatus.NOT_FOUND)
+    }
   }
 
   @Delete(':powerUnitId')
-  remove(@Param('powerUnitId') powerUnitId: string) {
-    return this.powerUnitsService.remove(powerUnitId);
+ async remove(@Param('powerUnitId') powerUnitId: string) {
+    const deleteResult =  await this.powerUnitsService.remove(powerUnitId);
+    if (deleteResult.affected >0)
+      {
+        return { deleted: true };
+      }
+      else{
+        throw new CustomNotFoundException("Data not found",HttpStatus.NOT_FOUND)
+
+      }
+      
   }
 }

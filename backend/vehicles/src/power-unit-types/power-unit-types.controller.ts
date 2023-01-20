@@ -6,11 +6,13 @@ import {
   Param,
   Delete,
   Put,
+  HttpStatus,
 } from '@nestjs/common';
 import { PowerUnitTypesService } from './power-unit-types.service';
 import { CreatePowerUnitTypeDto } from './dto/request/create-power-unit-type.dto';
 import { UpdatePowerUnitTypeDto } from './dto/request/update-power-unit-type.dto';
 import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { CustomNotFoundException } from 'src/common/exception/custom.notfound.exception';
 import { ReadPowerUnitTypeDto } from './dto/response/read-power-unit-type.dto';
 
 @ApiTags('Power Unit Types')
@@ -33,17 +35,24 @@ export class PowerUnitTypesController {
     isArray: true,
   })
   @Get()
-  findAll() {
-    return this.powerUnitTypesService.findAll();
+  async findAll():Promise<ReadPowerUnitTypeDto[]>  {
+    return await this.powerUnitTypesService.findAll();
   }
+  
 
   @ApiOkResponse({
     description: 'The Power Unit Type Resource',
     type: ReadPowerUnitTypeDto,
   })
   @Get(':typeCode')
-  findOne(@Param('typeCode') typeCode: string) {
-    return this.powerUnitTypesService.findOne(typeCode);
+  async findOne(@Param('typeCode') typeCode: string):Promise<ReadPowerUnitTypeDto> {
+    const powerUnitType = await this.powerUnitTypesService.findOne(typeCode);
+    if (powerUnitType)
+   {
+    return powerUnitType;
+   }else{
+    throw new CustomNotFoundException("Data not found",HttpStatus.NOT_FOUND)
+   }
   }
 
   @ApiOkResponse({
@@ -51,15 +60,30 @@ export class PowerUnitTypesController {
     type: ReadPowerUnitTypeDto,
   })
   @Put(':typeCode')
-  update(
+  async update(
     @Param('typeCode') typeCode: string,
     @Body() updatePowerUnitTypeDto: UpdatePowerUnitTypeDto,
-  ) {
-    return this.powerUnitTypesService.update(typeCode, updatePowerUnitTypeDto);
+  ): Promise<ReadPowerUnitTypeDto> {
+    const powerUnitType = await this.powerUnitTypesService.update(typeCode, updatePowerUnitTypeDto);
+    if (powerUnitType)
+    {
+    return powerUnitType
+  }
+    else 
+    {
+    throw new CustomNotFoundException("Data not found",HttpStatus.NOT_FOUND)
+    }
   }
 
   @Delete(':typeCode')
-  remove(@Param('typeCode') typeCode: string) {
-    return this.powerUnitTypesService.remove(typeCode);
+  async remove(@Param('typeCode') typeCode: string) {
+    const deleteResult = await this.powerUnitTypesService.remove(typeCode);
+    if(deleteResult.affected >0)
+    {
+      return { deleted: true };
+    }else{
+      throw new CustomNotFoundException("Data not found",HttpStatus.NOT_FOUND)
+
+    }
   }
 }

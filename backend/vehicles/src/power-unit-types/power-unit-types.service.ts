@@ -2,7 +2,7 @@ import { Mapper } from '@automapper/core';
 import { InjectMapper } from '@automapper/nestjs';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DeleteResult, Repository } from 'typeorm';
 import { CreatePowerUnitTypeDto } from './dto/request/create-power-unit-type.dto';
 import { ReadPowerUnitTypeDto } from './dto/response/read-power-unit-type.dto';
 import { UpdatePowerUnitTypeDto } from './dto/request/update-power-unit-type.dto';
@@ -38,7 +38,7 @@ export class PowerUnitTypesService {
 
   async findOne(typeCode: string): Promise<ReadPowerUnitTypeDto> {
     return this.classMapper.mapAsync(
-      await this.powerUnitTypeRepository.findOneOrFail({
+      await this.powerUnitTypeRepository.findOne({
         where: { typeCode },
       }),
       PowerUnitType,
@@ -51,6 +51,7 @@ export class PowerUnitTypesService {
     updatePowerUnitTypeDto: UpdatePowerUnitTypeDto,
   ): Promise<ReadPowerUnitTypeDto> {
     const newPowerUnitType = this.classMapper.map(
+				 
       updatePowerUnitTypeDto,
       UpdatePowerUnitTypeDto,
       PowerUnitType,
@@ -60,14 +61,11 @@ export class PowerUnitTypesService {
     return this.findOne(typeCode);
   }
 
+
   async remove(
     typeCode: string,
-  ): Promise<{ deleted: boolean; message?: string }> {
-    try {
-      await this.powerUnitTypeRepository.delete(typeCode);
-      return { deleted: true };
-    } catch (err) {
-      return { deleted: false, message: err.message };
-    }
+  ): Promise<DeleteResult> {
+   return await this.powerUnitTypeRepository.delete(typeCode);
+      
   }
 }
