@@ -1,6 +1,6 @@
 import { IPowerUnit } from "../types/managevehicles";
-import { CreatePowerUnit } from "../types";
-import { VEHICLES_API } from "./endpoints/endpoints";
+import { CreatePowerUnit, PowerUnitType } from "../types";
+import { VEHICLES_API, VEHICLE_URL } from "./endpoints/endpoints";
 
 /*
  *
@@ -28,6 +28,26 @@ export const useVehiclesApi = () => {
   };
 
   return { getAllPowerUnits };
+};
+
+const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+/**
+ * Gets the power unit types.
+ * @returns Array<PowerUnitType>
+ */
+export const getPowerUnitTypes = async (): Promise<Array<PowerUnitType>> => {
+  await delay(1000);
+  return [
+    {
+      description: "XYZ",
+      type: "CONCRETE TRUCKS",
+      typeCode: "CONCRET"
+    }
+  ]
+  // return fetch(`${VEHICLES_API.POWER_UNIT_TYPES}`).then((response) =>
+  //   response.json()
+  // );
 };
 
 /**

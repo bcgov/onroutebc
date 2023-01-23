@@ -7,7 +7,7 @@ interface Vehicle {
   make: string;
   year: string;
   vin: string;
-  plateNumber: string;
+  plate: string;
 }
 
 /**
@@ -43,15 +43,23 @@ export interface AxleGroup {
 }
 
 /**
- * Object type for creating or updating a power unit.
+ * Object type for creating a power unit.
  */
 export interface CreatePowerUnit extends Vehicle {
-  powerUnitType: string;
-  country: string;
-  province: string;
+  powerUnitTypeCode: string;
+  provinceId: string;
   licensedGvw: number;
   steerAxleTireSize: number;
   axleGroup: AxleGroup;
+}
+
+/**
+ * Object type for power unit types.
+ */
+export interface PowerUnitType {
+  typeCode: string;
+  type: string;
+  description: string;
 }
 
 /**
