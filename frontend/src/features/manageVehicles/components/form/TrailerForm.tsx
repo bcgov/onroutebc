@@ -1,12 +1,10 @@
-import { useForm } from "react-hook-form";
-import { Button } from "../../../common/components/button/Button";
-import "./VehicleForm.scss";
-
-
+/**
+ * TODO - Add Trailer Form
+ * @returns
+ */
 export const TrailerForm = () => {
     return (
         <div>
-
         </div>
     );
 };

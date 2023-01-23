@@ -1,5 +1,5 @@
 import { useForm, FormProvider, FieldValues } from "react-hook-form";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { Button } from "../../../../common/components/button/Button";
 import "./VehicleForm.scss";
@@ -42,6 +42,7 @@ interface PowerUnitFormProps {
   displaySnackBar: (options: DisplaySnackBarOptions) => void;
   powerUnit?: CreatePowerUnit;
   isEditMode?: boolean;
+  closeSlidePanel: () => void;
 }
 
 /**
@@ -50,6 +51,7 @@ interface PowerUnitFormProps {
 export const PowerUnitForm = ({
   displaySnackBar,
   powerUnit,
+  closeSlidePanel,
 }: PowerUnitFormProps) => {
   const formMethods = useForm();
   const {
@@ -61,11 +63,22 @@ export const PowerUnitForm = ({
     resetField,
   } = formMethods;
 
+  const queryClient = useQueryClient();
+
   const powerUnitTypesQuery = useQuery({
     queryKey: ["powerUnitTypes"],
     queryFn: getPowerUnitTypes,
     retry: false,
   });
+
+  const addVehicleQuery = useMutation({
+    mutationFn: addPowerUnit,
+    onSuccess: data => {
+      queryClient.invalidateQueries(["powerUnits"]);
+      closeSlidePanel();
+      // close slide panel
+    }
+  })
 
   function sss() {
     powerUnitTypesQuery.data?.map((powerUnitType: PowerUnitType) => (
@@ -113,7 +126,7 @@ export const PowerUnitForm = ({
     // const formValues =  getValues();
     const createPowerUnit = data as CreatePowerUnit;
     console.log(data);
-    addPowerUnit(createPowerUnit);
+    addVehicleQuery.mutate(createPowerUnit);
     // .then(displaySnackBar(() => {
     //   display: true,
     //   messageI18NKey: "xyz",
@@ -233,13 +246,6 @@ export const PowerUnitForm = ({
                       </MenuItem>
                     ))}
                   </Select>
-                  {/* <OutlinedInput
-                    aria-labelledby="power-unit-make-label"
-                    // defaultValue={axleGroup?.axleGroupNumber}
-                    {...register("make", {
-                      required: false,
-                    })}
-                  /> */}
                 </FormControl>
               </div>
               <div>
@@ -260,13 +266,6 @@ export const PowerUnitForm = ({
                       </MenuItem>
                     ))}
                   </Select>
-                  {/* <OutlinedInput
-                    aria-labelledby="power-unit-year-label"
-                    // defaultValue={axleGroup?.axleGroupNumber}
-                    {...register("year", {
-                      required: false,
-                    })}
-                  /> */}
                 </FormControl>
               </div>
               <div>
@@ -275,6 +274,7 @@ export const PowerUnitForm = ({
                     {t("vehicle.power-unit.vin")}
                   </FormLabel>
                   <OutlinedInput
+                    inputProps={{ maxLength: 17 }}
                     aria-labelledby="power-unit-vin-label"
                     // defaultValue={axleGroup?.axleGroupNumber}
                     {...register("vin", {

@@ -16,6 +16,8 @@ import Alert from "@mui/material/Alert";
 import SlidingPane from "../sliding-pane/react-sliding-pane";
 import "../sliding-pane/react-sliding-pane.css";
 
+import { VEHICLE_TYPES_ENUM } from "../form/constants";
+
 import "./Dashboard.scss";
 import { AddVehicleButton } from "./AddVehicleButton";
 
@@ -75,7 +77,8 @@ const TabProps = (index: number) => {
 export const Dashboard = React.memo(() => {
   const [showForm, setShowForm] = useState<boolean>(false);
   const [value, setValue] = useState(0);
-  const [addVehicleMode, setAddVehicleMode] = useState<Vehicle | null>(null);
+  const [addVehicleMode, setAddVehicleMode] =
+    useState<VEHICLE_TYPES_ENUM | null>(null);
   const [snackBarStatus, setSnackBarStatus] = useState<DisplaySnackBarOptions>({
     display: true,
     messageI18NKey: "",
@@ -123,6 +126,17 @@ export const Dashboard = React.memo(() => {
     setAddVehicleMode(null);
   }, []);
 
+  /**
+   * Opens the slide panel
+   */
+  const openSlidePanel = useCallback(function (
+    vehicleMode: VEHICLE_TYPES_ENUM
+  ) {
+    setShowForm(true);
+    setAddVehicleMode(vehicleMode);
+  },
+  []);
+
   const handleChange = useCallback(
     (event: React.SyntheticEvent, newValue: number) => {
       setValue(newValue);
@@ -143,7 +157,10 @@ export const Dashboard = React.memo(() => {
       >
         <div className="dash-banner">
           <h2>{t("vehicle.dashboard.vehicle-inventory")}</h2>
-          <AddVehicleButton setShowForm={setShowForm} />
+          <AddVehicleButton
+            openSlidePanel={openSlidePanel}
+            setAddVehicleMode={setAddVehicleMode}
+          />
         </div>
 
         <div>
@@ -199,16 +216,20 @@ export const Dashboard = React.memo(() => {
         onRequestClose={closeSlidePanel}
         from="right"
         width="28%"
-        title={t("vehicle.add-vehicle.power-unit")}
+        title={
+          addVehicleMode === VEHICLE_TYPES_ENUM.POWER_UNIT
+            ? t("vehicle.add-vehicle.power-unit")
+            : t("vehicle.add-vehicle.trailer")
+        }
         closeIcon="X"
-        // hideHeader={true}
       >
-        <PowerUnitForm displaySnackBar={displaySnackBar} />
-        {/* <VehicleForm /> */}
-        {addVehicleMode === Vehicle.POWER_UNIT && (
-          <PowerUnitForm displaySnackBar={displaySnackBar} />
+        {addVehicleMode === VEHICLE_TYPES_ENUM.POWER_UNIT && (
+          <PowerUnitForm
+            displaySnackBar={displaySnackBar}
+            closeSlidePanel={closeSlidePanel}
+          />
         )}
-        {addVehicleMode === Vehicle.TRAILER && <TrailerForm />}
+        {addVehicleMode === VEHICLE_TYPES_ENUM.TRAILER && <TrailerForm />}
       </SlidingPane>
     </>
   );

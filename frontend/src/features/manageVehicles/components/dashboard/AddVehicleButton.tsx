@@ -7,6 +7,9 @@ import Popper from "@mui/material/Popper";
 import MenuItem from "@mui/material/MenuItem";
 import MenuList from "@mui/material/MenuList";
 import Stack from "@mui/material/Stack";
+import { useTranslation } from "react-i18next";
+
+import { VEHICLE_TYPES_ENUM } from "../form/constants";
 
 /**
  *
@@ -17,15 +20,33 @@ import Stack from "@mui/material/Stack";
  *
  */
 export const AddVehicleButton = ({
-  setShowForm,
+  openSlidePanel,
+  setAddVehicleMode,
 }: {
-  setShowForm: React.Dispatch<React.SetStateAction<boolean>>;
+  setAddVehicleMode: React.Dispatch<
+    React.SetStateAction<VEHICLE_TYPES_ENUM | null>
+  >;
+  openSlidePanel: (vehicleMode: VEHICLE_TYPES_ENUM) => void;
 }) => {
-  const [open, setOpen] = React.useState(false);
+  const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const anchorRef = React.useRef<HTMLButtonElement>(null);
+  // const [selectedIndex, setSelectedIndex] = React.useState<VEHICLE_TYPES_ENUM | null>(null);
+
+  const { t } = useTranslation();
+
+  const options = [
+    {
+      vehicleMode: VEHICLE_TYPES_ENUM.POWER_UNIT,
+      translationKey: "vehicle.power-unit",
+    },
+    {
+      vehicleMode: VEHICLE_TYPES_ENUM.TRAILER,
+      translationKey: "vehicle.trailer",
+    },
+  ];
 
   const handleToggle = () => {
-    setOpen((prevOpen) => !prevOpen);
+    setIsMenuOpen((prevOpen) => !prevOpen);
   };
 
   const handleClose = (event: Event | React.SyntheticEvent) => {
@@ -36,33 +57,38 @@ export const AddVehicleButton = ({
       return;
     }
 
-    setOpen(false);
+    setIsMenuOpen(false);
   };
 
-  const handleShowForm = (event: Event | React.SyntheticEvent) => {
-    setShowForm(true);
-    handleClose(event);
+  const handleMenuItemClick = (
+    _event: React.MouseEvent<HTMLLIElement, MouseEvent>,
+    _index: number,
+    vehicleMode: VEHICLE_TYPES_ENUM,
+  ) => {
+    // setSelectedIndex(index);
+    openSlidePanel(vehicleMode);
+    setIsMenuOpen(false);
   };
 
   const handleListKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === "Tab") {
       event.preventDefault();
-      setOpen(false);
+      setIsMenuOpen(false);
     } else if (event.key === "Escape") {
-      setOpen(false);
+      setIsMenuOpen(false);
     }
-  }
+  };
 
   // return focus to the button when we transitioned from !open -> open
-  const prevOpen = React.useRef(open);
+  const prevOpen = React.useRef(isMenuOpen);
   React.useEffect(() => {
-    if (prevOpen.current === true && open === false) {
+    if (prevOpen.current === true && isMenuOpen === false) {
       // eslint-disable-next-line  @typescript-eslint/no-non-null-assertion
       anchorRef.current!.focus();
     }
 
-    prevOpen.current = open;
-  }, [open]);
+    prevOpen.current = isMenuOpen;
+  }, [isMenuOpen]);
 
   return (
     <Stack direction="row" spacing={2}>
@@ -71,15 +97,15 @@ export const AddVehicleButton = ({
           ref={anchorRef}
           id="composition-button"
           variant="contained"
-          aria-controls={open ? "composition-menu" : undefined}
-          aria-expanded={open ? "true" : undefined}
+          aria-controls={isMenuOpen ? "composition-menu" : undefined}
+          aria-expanded={isMenuOpen ? "true" : undefined}
           aria-haspopup="true"
           onClick={handleToggle}
         >
           Add Vehicle <i className="fa fa-chevron-down dash-downarrow"></i>
         </Button>
         <Popper
-          open={open}
+          open={isMenuOpen}
           anchorEl={anchorRef.current}
           role={undefined}
           placement="bottom-start"
@@ -98,13 +124,25 @@ export const AddVehicleButton = ({
               <Paper>
                 <ClickAwayListener onClickAway={handleClose}>
                   <MenuList
-                    autoFocusItem={open}
+                    autoFocusItem={isMenuOpen}
                     id="composition-menu"
                     aria-labelledby="composition-button"
                     onKeyDown={handleListKeyDown}
                   >
-                    <MenuItem onClick={handleShowForm}>Add PowerUnit</MenuItem>
-                    <MenuItem>Add Trailer</MenuItem>
+                    {options.map((option, index) => {
+                      const { vehicleMode, translationKey } = option;
+                      return (
+                        <MenuItem
+                          key={vehicleMode}
+                          // selected={index === selectedIndex}
+                          onClick={(event) =>
+                            handleMenuItemClick(event, index, vehicleMode)
+                          }
+                        >
+                          {t(translationKey)}
+                        </MenuItem>
+                      );
+                    })}
                   </MenuList>
                 </ClickAwayListener>
               </Paper>
