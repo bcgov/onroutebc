@@ -94,9 +94,13 @@
   }
   .slide-pane__content {
     position: relative;
-    overflow-y: auto;
+    overflow-y: scroll;
+    scrollbar-width: none;
     padding: 24px 32px;
     flex: 1 1 auto;
+  }
+  .slide-pane__content::-webkit-scrollbar {
+    display: none;
   }
   .slide-pane__subtitle {
     font-size: 12px;
