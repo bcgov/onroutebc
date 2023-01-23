@@ -86,7 +86,7 @@ export class TrailersController {
       trailerId,
       updateTrailerDto,
     );
-    if (trailer) {
+    if (!trailer) {
       throw new DataNotFoundException();
     }
     return trailer;
