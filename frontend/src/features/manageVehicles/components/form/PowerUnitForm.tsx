@@ -6,7 +6,7 @@ import {
 } from "react-hook-form";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
-import { Button } from "../../../../common/components/button/Button";
+import { Button } from "@mui/material";
 import "./VehicleForm.scss";
 import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
@@ -192,6 +192,7 @@ export const PowerUnitForm = ({
     );
   }
 
+  const ADD_VEHICLE_BTN_HEIGHT = "75px";
   const { t } = useTranslation();
   return (
     <div>
@@ -205,7 +206,7 @@ export const PowerUnitForm = ({
           >
             {t("vehicle.power-unit-details")}
           </AccordionSummary>
-          <AccordionDetails>
+          <AccordionDetails style={{ paddingBottom: ADD_VEHICLE_BTN_HEIGHT }}>
             <div id="power-unit-form">
               <div>
                 <Controller
@@ -533,11 +534,15 @@ export const PowerUnitForm = ({
           {t("vehicle.form.add-axle-group")}
         </Button>
       </div> */}
-      <div>
+      <div className="add-vehicle-button-container" style={{ height: ADD_VEHICLE_BTN_HEIGHT }}>
         <Button
-          color={"BC-Gov-PrimaryButton"}
           key="add-vehicle-button"
-          className={"mt-5 add-vehicle-button"}
+          aria-label="Add Vehicle"
+          variant="contained"
+          color="primary"
+          sx={{
+            width: "100%",
+          }}
           onClick={formMethods.handleSubmit(onAddVehicle)}
         >
           {t("vehicle.form.submit")}
