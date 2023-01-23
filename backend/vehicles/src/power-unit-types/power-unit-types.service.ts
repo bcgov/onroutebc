@@ -51,7 +51,6 @@ export class PowerUnitTypesService {
     updatePowerUnitTypeDto: UpdatePowerUnitTypeDto,
   ): Promise<ReadPowerUnitTypeDto> {
     const newPowerUnitType = this.classMapper.map(
-				 
       updatePowerUnitTypeDto,
       UpdatePowerUnitTypeDto,
       PowerUnitType,
@@ -61,11 +60,7 @@ export class PowerUnitTypesService {
     return this.findOne(typeCode);
   }
 
-
-  async remove(
-    typeCode: string,
-  ): Promise<DeleteResult> {
-   return await this.powerUnitTypeRepository.delete(typeCode);
-      
+  async remove(typeCode: string): Promise<DeleteResult> {
+    return await this.powerUnitTypeRepository.delete(typeCode);
   }
 }

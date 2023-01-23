@@ -68,9 +68,7 @@ export class PowerUnitsService {
     await this.powerUnitRepository.update({ powerUnitId }, newPowerUnit);
     return this.findOne(powerUnitId);
   }
-  async remove(
-    powerUnitId: string,
-  ): Promise<DeleteResult> {
-     return await this.powerUnitRepository.delete(powerUnitId);
+  async remove(powerUnitId: string): Promise<DeleteResult> {
+    return await this.powerUnitRepository.delete(powerUnitId);
   }
 }

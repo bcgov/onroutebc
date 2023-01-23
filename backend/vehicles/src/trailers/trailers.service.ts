@@ -66,9 +66,7 @@ export class TrailersService {
     return this.findOne(trailerId);
   }
 
-  async remove(
-    trailerId: number,
-  ): Promise<DeleteResult> {
-       return await this.trailerRepository.delete(trailerId);
+  async remove(trailerId: number): Promise<DeleteResult> {
+    return await this.trailerRepository.delete(trailerId);
   }
 }
