@@ -1,7 +1,7 @@
 import { useFormContext } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import ".././VehicleForm.scss";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import FormControl from "@mui/material/FormControl";
 import FormLabel from "@mui/material/FormLabel";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
@@ -59,30 +59,55 @@ export const CountryAndProvince = ({
   };
 
   /**
-   *
-   * @param selectedCountry
-   * @returns
+   * Function to handle changes on selecting a country.
+   * @param event the select event
    */
-  function getProvinceOptions(selectedCountry: string) {
-    return CountriesAndStates.filter(
-      (country) => country.abbreviation === selectedCountry
-    )
-      .flatMap((country) => country.states)
-      .map((state) => (
-        <MenuItem
-          key={`state-${state.abbreviation}`}
-          value={state.abbreviation}
-        >
-          {state.name}
-        </MenuItem>
-      ));
-  }
+  const onChangeCountry = useCallback(function (event: SelectChangeEvent) {
+    const country: string = event.target.value as string;
+    resetField("province", { defaultValue: "" });
+    setSelectedProvince(() => "");
+    if (
+      !COUNTRIES_THAT_SUPPORT_PROVINCE.find(
+        (supportedCountry) => supportedCountry === country
+      )
+    ) {
+      setShouldDisplayProvince(() => false);
+      setValue("province", country);
+      setValue("provinceId", country + "-" + country);
+    } else {
+      setShouldDisplayProvince(() => true);
+    }
+  }, []);
+
+  /**
+   * Function to handle changes on selecting a province/state.
+   * @param event the select event
+   */
+  const onChangeProvince = useCallback(function (event: SelectChangeEvent) {
+    resetField("provinceId", { defaultValue: "" });
+    const provinceSelected: string = event.target.value;
+    setSelectedProvince(() => event.target.value as string);
+    setValue("provinceId", countrySelected + "-" + provinceSelected);
+  }, []);
+
+  /**
+   * Returns the list of provinces for the country selected.
+   * @param selectedCountry string representing the country
+   */
+  const getProvinces = useCallback(
+    function (selectedCountry: string) {
+      return CountriesAndStates.filter(
+        (country) => country.abbreviation === selectedCountry
+      ).flatMap((country) => country.states);
+    },
+    []
+  );
 
   const { t } = useTranslation();
   return (
     <div>
       <div>
-        <FormControl margin="normal">
+        <FormControl margin="normal" error={Boolean(errors.country)}>
           <FormLabel id="power-unit-country-label" sx={boldTextStyle}>
             {t("vehicle.power-unit.country")}
           </FormLabel>
@@ -91,22 +116,7 @@ export const CountryAndProvince = ({
             defaultValue={country}
             {...register("country", {
               required: false,
-              onChange: (event: SelectChangeEvent) => {
-                const country: string = event.target.value as string;
-                resetField("province", { defaultValue: "" });
-                setSelectedProvince(() => "");
-                if (
-                  !COUNTRIES_THAT_SUPPORT_PROVINCE.find(
-                    (supportedCountry) => supportedCountry === country
-                  )
-                ) {
-                  setShouldDisplayProvince(() => false);
-                  setValue("province", country);
-                  setValue("provinceId", country + "-" + country);
-                } else {
-                  setShouldDisplayProvince(() => true);
-                }
-              },
+              onChange: onChangeCountry,
             })}
           >
             {CountriesAndStates.map((country) => (
@@ -122,7 +132,7 @@ export const CountryAndProvince = ({
       </div>
       {shouldDisplayProvince && (
         <div>
-          <FormControl margin="normal">
+          <FormControl margin="normal" error={shouldDisplayProvince}>
             <FormLabel id="power-unit-province-label" sx={boldTextStyle}>
               {t("vehicle.power-unit.province")}
             </FormLabel>
@@ -130,20 +140,19 @@ export const CountryAndProvince = ({
               aria-labelledby="power-unit-province-label"
               defaultValue={province}
               {...register("province", {
-                required: false,
+                required: shouldDisplayProvince,
+                onChange: onChangeProvince,
               })}
-              onChange={(event) => {
-                resetField("provinceId", { defaultValue: "" });
-                const provinceSelected: string = event.target.value as string;
-                setSelectedProvince(() => event.target.value as string);
-                setValue(
-                  "provinceId",
-                  countrySelected + "-" + provinceSelected
-                );
-              }}
               value={selectedProvince}
             >
-              {getProvinceOptions(countrySelected)}
+              {getProvinces(countrySelected).map((state) => (
+                <MenuItem
+                  key={`state-${state.abbreviation}`}
+                  value={state.abbreviation}
+                >
+                  {state.name}
+                </MenuItem>
+              ))}
             </Select>
           </FormControl>
         </div>

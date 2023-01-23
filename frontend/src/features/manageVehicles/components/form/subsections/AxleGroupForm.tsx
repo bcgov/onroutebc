@@ -1,16 +1,15 @@
 import { useFormContext } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import "./VehicleForm.scss";
-import TextField from '@mui/material/TextField';
+// import TextField from '@mui/material/TextField';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
 import FormLabel from '@mui/material/FormLabel';
-import { Vehicle } from "../../../constants/enums";
-import { AxleFrontGroup, AxleType, AxleGroup } from "../types";
-import Input from '@mui/material/Input';
-import FilledInput from '@mui/material/FilledInput';
+import { AxleFrontGroup, AxleType, AxleGroup } from "../../../types";
+// import Input from '@mui/material/Input';
+// import FilledInput from '@mui/material/FilledInput';
 import OutlinedInput from '@mui/material/OutlinedInput';
 
 /**

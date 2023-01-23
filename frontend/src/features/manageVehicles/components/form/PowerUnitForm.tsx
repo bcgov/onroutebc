@@ -1,4 +1,9 @@
-import { useForm, FormProvider, FieldValues } from "react-hook-form";
+import {
+  useForm,
+  FormProvider,
+  FieldValues,
+  Controller,
+} from "react-hook-form";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { Button } from "../../../../common/components/button/Button";
@@ -7,7 +12,7 @@ import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { AxleGroupForm } from "./AxleGroupForm";
+// import { AxleGroupForm } from "./AxleGroupForm";
 import { useState } from "react";
 import { COUNTRIES_THAT_SUPPORT_PROVINCE } from "../../../../constants/countries";
 import { MAKES } from "./constants";
@@ -57,10 +62,11 @@ export const PowerUnitForm = ({
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, dirtyFields, isDirty },
     getValues,
     watch,
     resetField,
+    control,
   } = formMethods;
 
   const queryClient = useQueryClient();
@@ -73,51 +79,40 @@ export const PowerUnitForm = ({
 
   const addVehicleQuery = useMutation({
     mutationFn: addPowerUnit,
-    onSuccess: data => {
-      queryClient.invalidateQueries(["powerUnits"]);
-      closeSlidePanel();
-      // close slide panel
-    }
-  })
+    onSuccess: (data) => {
+      if (data.status != 200) {
+        queryClient.invalidateQueries(["powerUnits"]);
+        closeSlidePanel();
+      } else {
+        // Display Error in the form.
+      }
+    },
+  });
 
-  function sss() {
-    powerUnitTypesQuery.data?.map((powerUnitType: PowerUnitType) => (
-      <MenuItem
-        key={`powerUnitType-${powerUnitType.typeCode}`}
-        value={powerUnitType.typeCode}
-      >
-        {powerUnitType.type}
-      </MenuItem>
-    ));
-  }
+  // const countrySelected = watch("country");
+  // const axleGroupTest = {
+  //   axleFrontGroup: "Single",
+  //   axleTypeFront: "Steering",
+  //   axleTypeRear: "Steering",
+  //   axleGroupNumber: 10,
+  //   axleGroupSpacing: 3,
+  //   interaxleSpreadFront: 1,
+  //   interaxleSpreadRear: 4,
+  //   numberOfTiresFront: 4,
+  //   numberOfTiresRear: 4,
+  // };
 
-  const countrySelected = watch("country");
-  const axleGroupTest = {
-    axleFrontGroup: "Single",
-    axleTypeFront: "Steering",
-    axleTypeRear: "Steering",
-    axleGroupNumber: 10,
-    axleGroupSpacing: 3,
-    interaxleSpreadFront: 1,
-    interaxleSpreadRear: 4,
-    numberOfTiresFront: 4,
-    numberOfTiresRear: 4,
-  };
-
+  console.log("isDirty::", isDirty);
   const boldTextStyle = {
     fontWeight: "bold",
-    width: '300px'
+    width: "300px",
   };
-  const translationPrefix = "vehicle.axle-group";
-  const [numberOfAxleGroups, setNumberOfAxleGroups] = useState(1);
-  const [selectedProvince, setSelectedProvince] = useState<string>("");
+  // const translationPrefix = "vehicle.axle-group";
+  // const [numberOfAxleGroups, setNumberOfAxleGroups] = useState(1);
+  // const [selectedProvince, setSelectedProvince] = useState<string>("");
 
-  const [shouldDisplayProvince, setShouldDisplayProvince] =
-    useState<boolean>(true);
-
-  const makes = () => {
-    return [];
-  };
+  // const [shouldDisplayProvince, setShouldDisplayProvince] =
+  //   useState<boolean>(true);
 
   /**
    *
@@ -125,6 +120,7 @@ export const PowerUnitForm = ({
   const onAddVehicle = function (data: FieldValues) {
     // const formValues =  getValues();
     const createPowerUnit = data as CreatePowerUnit;
+    console.log(dirtyFields);
     console.log(data);
     addVehicleQuery.mutate(createPowerUnit);
     // .then(displaySnackBar(() => {
@@ -138,11 +134,11 @@ export const PowerUnitForm = ({
    *
    * @param powerUnit The powe
    */
-  const onEditVehicle = function (powerUnit: UpdatePowerUnit) {
-    // const formValues =  getValues();
-    console.log(powerUnit);
-    // addPowerUnit(formValues).then(displaySnackBar());
-  };
+  // const onEditVehicle = function (powerUnit: UpdatePowerUnit) {
+  //   // const formValues =  getValues();
+  //   console.log(powerUnit);
+  //   // addPowerUnit(formValues).then(displaySnackBar());
+  // };
 
   //   const addAxleGroup = function () {
   //     setNumberOfAxleGroups((numberOfAxleGroups) => numberOfAxleGroups + 1);
@@ -168,20 +164,20 @@ export const PowerUnitForm = ({
   //     return axleGroupForms;
   //   };
 
-  function getProvinceOptions(selectedCountry: string) {
-    return CountriesAndStates.filter(
-      (country) => country.abbreviation === selectedCountry
-    )
-      .flatMap((country) => country.states)
-      .map((state) => (
-        <MenuItem
-          key={`state-${state.abbreviation}`}
-          value={state.abbreviation}
-        >
-          {state.name}
-        </MenuItem>
-      ));
-  }
+  // function getProvinceOptions(selectedCountry: string) {
+  //   return CountriesAndStates.filter(
+  //     (country) => country.abbreviation === selectedCountry
+  //   )
+  //     .flatMap((country) => country.states)
+  //     .map((state) => (
+  //       <MenuItem
+  //         key={`state-${state.abbreviation}`}
+  //         value={state.abbreviation}
+  //       >
+  //         {state.name}
+  //       </MenuItem>
+  //     ));
+  // }
 
   /**
    * @returns an array of numbers containing range
@@ -212,41 +208,68 @@ export const PowerUnitForm = ({
           <AccordionDetails>
             <div id="power-unit-form">
               <div>
-                <FormControl margin="normal">
-                  <FormLabel
-                    id="power-unit-unit-number-label"
-                    sx={boldTextStyle}
-                  >
-                    {t("vehicle.power-unit.unit-number")}
-                  </FormLabel>
-                  <OutlinedInput
-                    aria-labelledby="power-unit-unit-number-label"
-                    error={true}
-                    // defaultValue={axleGroup?.axleGroupNumber}
-                    {...register("unitNumber", {
-                      required: true,
-                    })}
-                  />
-                </FormControl>
+                <Controller
+                  key="controller-powerunit-unitNumber"
+                  name="unitNumber"
+                  control={control}
+                  rules={{ required: true }}
+                  defaultValue=""
+                  render={() => (
+                    <>
+                      <FormControl
+                        margin="normal"
+                        error={Boolean(errors["unitNumber"])}
+                      >
+                        <FormLabel
+                          id="power-unit-unit-number-label"
+                          sx={boldTextStyle}
+                        >
+                          {t("vehicle.power-unit.unit-number")}
+                        </FormLabel>
+                        <OutlinedInput
+                          aria-labelledby="power-unit-unit-number-label"
+                          // defaultValue={axleGroup?.axleGroupNumber}
+                          {...register("unitNumber", {
+                            required: true,
+                          })}
+                        />
+                      </FormControl>
+                    </>
+                  )}
+                />
               </div>
               <div>
-                <FormControl margin="normal">
-                  <FormLabel id="power-unit-make-label" sx={boldTextStyle}>
-                    {t("vehicle.power-unit.make")}
-                  </FormLabel>
-                  <Select
-                    defaultValue={""}
-                    {...register("make", {
-                      required: false,
-                    })}
-                  >
-                    {MAKES.map((make) => (
-                      <MenuItem key={`make-${make}`} value={make}>
-                        {make}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
+                <Controller
+                  key="controller-powerunit-make"
+                  name="make"
+                  control={control}
+                  rules={{ required: true }}
+                  defaultValue=""
+                  render={() => (
+                    <>
+                      <FormControl margin="normal">
+                        <FormLabel
+                          id="power-unit-make-label"
+                          sx={boldTextStyle}
+                        >
+                          {t("vehicle.power-unit.make")}
+                        </FormLabel>
+                        <Select
+                          defaultValue={""}
+                          {...register("make", {
+                            required: true,
+                          })}
+                        >
+                          {MAKES.map((make) => (
+                            <MenuItem key={`make-${make}`} value={make}>
+                              {make}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    </>
+                  )}
+                />
               </div>
               <div>
                 <FormControl margin="normal">
@@ -280,7 +303,7 @@ export const PowerUnitForm = ({
                     {...register("vin", {
                       required: false,
                       minLength: 17,
-                      maxLength: 17
+                      maxLength: 17,
                     })}
                   />
                 </FormControl>
