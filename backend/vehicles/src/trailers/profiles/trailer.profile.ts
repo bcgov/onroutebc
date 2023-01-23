@@ -2,9 +2,9 @@ import { AutomapperProfile, InjectMapper } from '@automapper/nestjs';
 import { createMap, forMember, mapFrom, Mapper } from '@automapper/core';
 import { Injectable } from '@nestjs/common';
 import { Trailer } from '../entities/trailer.entity';
-import { TrailerDto } from '../dto/trailer.dto';
-import { UpdateTrailerDto } from '../dto/update-trailer.dto';
-import { CreateTrailerDto } from '../dto/create-trailer.dto';
+import { ReadTrailerDto } from '../dto/response/read-trailer.dto';
+import { UpdateTrailerDto } from '../dto/request/update-trailer.dto';
+import { CreateTrailerDto } from '../dto/request/create-trailer.dto';
 
 @Injectable()
 export class TrailersProfile extends AutomapperProfile {
@@ -17,10 +17,10 @@ export class TrailersProfile extends AutomapperProfile {
       createMap(
         mapper,
         Trailer,
-        TrailerDto,
+        ReadTrailerDto,
         forMember(
-          (d) => d.provinceCode,
-          mapFrom((s) => s.province.provinceCode),
+          (d) => d.provinceId,
+          mapFrom((s) => s.province.provinceId),
         ),
         forMember(
           (d) => d.trailerTypeCode,
@@ -32,8 +32,8 @@ export class TrailersProfile extends AutomapperProfile {
         CreateTrailerDto,
         Trailer,
         forMember(
-          (d) => d.province.provinceCode,
-          mapFrom((s) => s.provinceCode),
+          (d) => d.province.provinceId,
+          mapFrom((s) => s.provinceId),
         ),
         forMember(
           (d) => d.trailerType.typeCode,
@@ -45,8 +45,8 @@ export class TrailersProfile extends AutomapperProfile {
         UpdateTrailerDto,
         Trailer,
         forMember(
-          (d) => d.province.provinceCode,
-          mapFrom((s) => s.provinceCode),
+          (d) => d.province.provinceId,
+          mapFrom((s) => s.provinceId),
         ),
         forMember(
           (d) => d.trailerType.typeCode,

@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from "react";
-import { Button, Box, Tabs, Tab } from "@mui/material";
+import { Box, Tabs, Tab } from "@mui/material";
 // import { VehicleForm } from "../form/VehicleForm";
 import { List } from "../list/List";
 import { useTranslation } from "react-i18next";
@@ -17,6 +17,7 @@ import SlidingPane from "../sliding-pane/react-sliding-pane";
 import "../sliding-pane/react-sliding-pane.css";
 
 import "./Dashboard.scss";
+import { AddVehicleButton } from "./AddVehicleButton";
 
 /*
  * The Dashboard component contains the Vehicle Inventory header,
@@ -142,12 +143,7 @@ export const Dashboard = React.memo(() => {
       >
         <div className="dash-banner">
           <h2>{t("vehicle.dashboard.vehicle-inventory")}</h2>
-          <Button
-            variant="contained"
-            onClick={useCallback(() => setShowForm(true), [])}
-          >
-            Add Vehicle <i className="fa fa-chevron-down dash-downarrow"></i>
-          </Button>
+          <AddVehicleButton setShowForm={setShowForm} />
         </div>
 
         <div>
@@ -171,7 +167,7 @@ export const Dashboard = React.memo(() => {
           >
             <Alert
               onClose={closeSnackBar}
-              severity={snackBarStatus.isError ? "error": "success"}
+              severity={snackBarStatus.isError ? "error" : "success"}
               sx={{ width: "100%" }}
             >
               {t(snackBarStatus.messageI18NKey)}

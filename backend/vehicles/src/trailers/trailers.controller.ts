@@ -6,12 +6,14 @@ import {
   Param,
   Delete,
   Put,
+  HttpStatus,
 } from '@nestjs/common';
 import { TrailersService } from './trailers.service';
-import { CreateTrailerDto } from './dto/create-trailer.dto';
-import { UpdateTrailerDto } from './dto/update-trailer.dto';
+import { CreateTrailerDto } from './dto/request/create-trailer.dto';
+import { UpdateTrailerDto } from './dto/request/update-trailer.dto';
 import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { TrailerDto } from './dto/trailer.dto';
+import { CustomNotFoundException } from 'src/common/exception/custom.notfound.exception';
+import { ReadTrailerDto } from './dto/response/read-trailer.dto';
 
 @ApiTags('Trailers')
 @Controller('vehicles/trailers')
@@ -20,7 +22,7 @@ export class TrailersController {
 
   @ApiCreatedResponse({
     description: 'The Trailer Resource',
-    type: TrailerDto,
+    type: ReadTrailerDto,
   })
   @Post()
   create(@Body() createTrailerDto: CreateTrailerDto) {
@@ -29,34 +31,53 @@ export class TrailersController {
 
   @ApiOkResponse({
     description: 'The Trailer Resource',
-    type: TrailerDto,
+    type: ReadTrailerDto,
     isArray: true,
   })
   @Get()
-  findAll() {
-    return this.trailersService.findAll();
+  async findAll(): Promise<ReadTrailerDto[]> {
+    return await this.trailersService.findAll();
   }
 
   @ApiOkResponse({
     description: 'The Trailer Resource',
-    type: TrailerDto,
+    type: ReadTrailerDto,
   })
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.trailersService.findOne(id);
+  @Get(':trailerId')
+  async findOne(@Param('trailerId') trailerId: string): Promise<ReadTrailerDto> {
+    const trailer = await this.trailersService.findOne(trailerId);
+    if (trailer)
+    {
+     return trailer;
+    }else{
+     throw new CustomNotFoundException("Data not found",HttpStatus.NOT_FOUND)
+    }
   }
 
   @ApiOkResponse({
     description: 'The Trailer Resource',
-    type: TrailerDto,
+    type: ReadTrailerDto,
   })
-  @Put(':id')
-  update(@Param('id') id: string, @Body() updateTrailerDto: UpdateTrailerDto) {
-    return this.trailersService.update(id, updateTrailerDto);
+  @Put(':trailerId')
+  async update(@Param('trailerId') trailerId: string, @Body() updateTrailerDto: UpdateTrailerDto):Promise<ReadTrailerDto> {
+    const trailer = await this.trailersService.update(trailerId, updateTrailerDto);
+    if (trailer)
+    {
+     return trailer;
+    }else{
+     throw new CustomNotFoundException("Data not found",HttpStatus.NOT_FOUND)
+    }
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.trailersService.remove(id);
+  @Delete(':trailerId')
+  async remove(@Param('trailerId') trailerId: string) {
+    const deleteResult = await this.trailersService.remove(+trailerId);
+    if(deleteResult.affected > 0 )
+    {
+      return { deleted: true };
+    }else{
+      throw new CustomNotFoundException("Data not found",HttpStatus.NOT_FOUND)
+
+    }
   }
 }

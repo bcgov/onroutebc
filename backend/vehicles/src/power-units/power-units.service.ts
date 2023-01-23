@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreatePowerUnitDto } from './dto/create-power-unit.dto';
-import { UpdatePowerUnitDto } from './dto/update-power-unit.dto';
-import { Repository } from 'typeorm';
+import { CreatePowerUnitDto } from './dto/request/create-power-unit.dto';
+import { UpdatePowerUnitDto } from './dto/request/update-power-unit.dto';
+import { DeleteResult, Repository } from 'typeorm';
 import { PowerUnit } from './entities/power-unit.entity';
 import { InjectMapper } from '@automapper/nestjs';
 import { Mapper } from '@automapper/core';
-import { PowerUnitDto } from './dto/power-unit.dto';
+import { ReadPowerUnitDto } from './dto/response/read-power-unit.dto';
 
 @Injectable()
 export class PowerUnitsService {
@@ -16,7 +16,7 @@ export class PowerUnitsService {
     @InjectMapper() private readonly classMapper: Mapper,
   ) {}
 
-  async create(powerUnit: CreatePowerUnitDto): Promise<PowerUnitDto> {
+  async create(powerUnit: CreatePowerUnitDto): Promise<ReadPowerUnitDto> {
     const newPowerUnit = this.classMapper.map(
       powerUnit,
       CreatePowerUnitDto,
@@ -25,11 +25,11 @@ export class PowerUnitsService {
     return this.classMapper.mapAsync(
       await this.powerUnitRepository.save(newPowerUnit),
       PowerUnit,
-      PowerUnitDto,
+      ReadPowerUnitDto,
     );
   }
 
-  async findAll(): Promise<PowerUnitDto[]> {
+  async findAll(): Promise<ReadPowerUnitDto[]> {
     return this.classMapper.mapArrayAsync(
       await this.powerUnitRepository.find({
         relations: {
@@ -38,13 +38,13 @@ export class PowerUnitsService {
         },
       }),
       PowerUnit,
-      PowerUnitDto,
+      ReadPowerUnitDto,
     );
   }
 
-  async findOne(powerUnitId: string): Promise<PowerUnitDto> {
+  async findOne(powerUnitId: string): Promise<ReadPowerUnitDto> {
     return this.classMapper.mapAsync(
-      await this.powerUnitRepository.findOneOrFail({
+      await this.powerUnitRepository.findOne({
         where: { powerUnitId },
         relations: {
           powerUnitType: true,
@@ -52,14 +52,14 @@ export class PowerUnitsService {
         },
       }),
       PowerUnit,
-      PowerUnitDto,
+      ReadPowerUnitDto,
     );
   }
 
   async update(
     powerUnitId: string,
     updatePowerUnitDto: UpdatePowerUnitDto,
-  ): Promise<PowerUnitDto> {
+  ): Promise<ReadPowerUnitDto> {
     const newPowerUnit = this.classMapper.map(
       updatePowerUnitDto,
       UpdatePowerUnitDto,
@@ -68,15 +68,9 @@ export class PowerUnitsService {
     await this.powerUnitRepository.update({ powerUnitId }, newPowerUnit);
     return this.findOne(powerUnitId);
   }
-
   async remove(
     powerUnitId: string,
-  ): Promise<{ deleted: boolean; message?: string }> {
-    try {
-      await this.powerUnitRepository.delete(powerUnitId);
-      return { deleted: true };
-    } catch (err) {
-      return { deleted: false, message: err.message };
-    }
+  ): Promise<DeleteResult> {
+     return await this.powerUnitRepository.delete(powerUnitId);
   }
 }

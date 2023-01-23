@@ -1,10 +1,10 @@
 import { AutomapperProfile, InjectMapper } from '@automapper/nestjs';
 import { createMap, forMember, mapFrom, Mapper } from '@automapper/core';
 import { Injectable } from '@nestjs/common';
-import { PowerUnitDto } from '../dto/power-unit.dto';
+import { ReadPowerUnitDto } from '../dto/response/read-power-unit.dto';
 import { PowerUnit } from '../entities/power-unit.entity';
-import { CreatePowerUnitDto } from '../dto/create-power-unit.dto';
-import { UpdatePowerUnitDto } from '../dto/update-power-unit.dto';
+import { CreatePowerUnitDto } from '../dto/request/create-power-unit.dto';
+import { UpdatePowerUnitDto } from '../dto/request/update-power-unit.dto';
 
 @Injectable()
 export class PowerUnitsProfile extends AutomapperProfile {
@@ -17,10 +17,10 @@ export class PowerUnitsProfile extends AutomapperProfile {
       createMap(
         mapper,
         PowerUnit,
-        PowerUnitDto,
+        ReadPowerUnitDto,
         forMember(
-          (d) => d.provinceCode,
-          mapFrom((s) => s.province.provinceCode),
+          (d) => d.provinceId,
+          mapFrom((s) => s.province.provinceId),
         ),
         forMember(
           (d) => d.powerUnitTypeCode,
@@ -32,8 +32,8 @@ export class PowerUnitsProfile extends AutomapperProfile {
         CreatePowerUnitDto,
         PowerUnit,
         forMember(
-          (d) => d.province.provinceCode,
-          mapFrom((s) => s.provinceCode),
+          (d) => d.province.provinceId,
+          mapFrom((s) => s.provinceId),
         ),
         forMember(
           (d) => d.powerUnitType.typeCode,
@@ -45,8 +45,8 @@ export class PowerUnitsProfile extends AutomapperProfile {
         UpdatePowerUnitDto,
         PowerUnit,
         forMember(
-          (d) => d.province.provinceCode,
-          mapFrom((s) => s.provinceCode),
+          (d) => d.province.provinceId,
+          mapFrom((s) => s.provinceId),
         ),
         forMember(
           (d) => d.powerUnitType.typeCode,

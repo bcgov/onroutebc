@@ -6,12 +6,14 @@ import {
   Param,
   Delete,
   Put,
+  HttpStatus,
 } from '@nestjs/common';
 import { TrailerTypesService } from './trailer-types.service';
-import { CreateTrailerTypeDto } from './dto/create-trailer-type.dto';
-import { UpdateTrailerTypeDto } from './dto/update-trailer-type.dto';
+import { CreateTrailerTypeDto } from './dto/request/create-trailer-type.dto';
+import { UpdateTrailerTypeDto } from './dto/request/update-trailer-type.dto';
 import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { TrailerTypeDto } from './dto/trailer-type.dto';
+import { ReadTrailerTypeDto } from './dto/response/read-trailer-type.dto';
+import { CustomNotFoundException } from 'src/common/exception/custom.notfound.exception';
 
 @ApiTags('Trailer Types')
 @Controller('vehicles/trailer-types')
@@ -20,7 +22,7 @@ export class TrailerTypesController {
 
   @ApiCreatedResponse({
     description: 'The Trailer Type Resource',
-    type: TrailerTypeDto,
+    type: ReadTrailerTypeDto,
   })
   @Post()
   create(@Body() createTrailerTypeDto: CreateTrailerTypeDto) {
@@ -29,37 +31,57 @@ export class TrailerTypesController {
 
   @ApiOkResponse({
     description: 'The Trailer Type Resource',
-    type: TrailerTypeDto,
+    type: ReadTrailerTypeDto,
     isArray: true,
   })
   @Get()
-  findAll() {
-    return this.trailerTypesService.findAll();
+  async findAll(): Promise<ReadTrailerTypeDto[]> {
+    return await this.trailerTypesService.findAll();
   }
 
   @ApiOkResponse({
     description: 'The Trailer Type Resource',
-    type: TrailerTypeDto,
+    type: ReadTrailerTypeDto,
   })
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.trailerTypesService.findOne(id);
+  @Get(':typeCode')
+  async findOne(@Param('typeCode') typeCode: string): Promise<ReadTrailerTypeDto> {
+    const trailerType = await this.trailerTypesService.findOne(typeCode);
+    if (trailerType)
+    {
+     return trailerType;
+    }else{
+     throw new CustomNotFoundException("Data not found",HttpStatus.NOT_FOUND)
+    }
   }
 
   @ApiOkResponse({
     description: 'The Trailer Type Resource',
-    type: TrailerTypeDto,
+    type: ReadTrailerTypeDto,
   })
-  @Put(':id')
-  update(
-    @Param('id') id: string,
+  @Put(':typeCode')
+  async update(
+    @Param('typeCode') typeCode: string,
     @Body() updateTrailerTypeDto: UpdateTrailerTypeDto,
-  ) {
-    return this.trailerTypesService.update(id, updateTrailerTypeDto);
+  ): Promise<ReadTrailerTypeDto> {
+    const trailerType = await this.trailerTypesService.update(typeCode, updateTrailerTypeDto);
+    if (trailerType)
+    {
+     return trailerType;
+    }else{
+     throw new CustomNotFoundException("Data not found",HttpStatus.NOT_FOUND)
+    }
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.trailerTypesService.remove(id);
+  @Delete(':typeCode')
+  async remove(@Param('typeCode') typeCode: string) {
+    const deleteResult = await this.trailerTypesService.remove(typeCode);
+    if(deleteResult.affected)
+    {
+      return { deleted: true };
+    }
+    else{
+      throw new CustomNotFoundException("Data not found",HttpStatus.NOT_FOUND)
+
+    }
   }
 }
