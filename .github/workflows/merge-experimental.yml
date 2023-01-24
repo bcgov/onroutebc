@@ -166,8 +166,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
         with:
-          tag_name: ${{ GitVersion.outputs.fullSemVer }}
-          release_name: Release ${{ GitVersion.outputs.fullSemVer }}
+          tag_name: ${{ needs.GitVersion.outputs.fullSemVer }}
+          release_name: Release ${{ needs.GitVersion.outputs.fullSemVer }}
           draft: false
           prerelease: true
 
