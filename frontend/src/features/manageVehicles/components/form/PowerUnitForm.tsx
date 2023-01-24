@@ -54,7 +54,7 @@ interface PowerUnitFormProps {
 export const PowerUnitForm = ({
   displaySnackBar,
   powerUnit,
-  powerUnitId,
+  //powerUnitId,
   closeSlidePanel,
 }: PowerUnitFormProps) => {
   const formMethods = useForm<CreatePowerUnit>({
@@ -81,7 +81,6 @@ export const PowerUnitForm = ({
   const {
     register,
     handleSubmit,
-    formState: { isDirty },
     control,
   } = formMethods;
 
@@ -96,7 +95,7 @@ export const PowerUnitForm = ({
   const addVehicleQuery = useMutation({
     mutationFn: addPowerUnit,
     onSuccess: (response) => {
-      if (response.status === 200) {
+      if (response.status === 201) {
         queryClient.invalidateQueries(["powerUnits"]);
         closeSlidePanel();
         displaySnackBar({

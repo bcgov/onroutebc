@@ -1,7 +1,6 @@
 import {
   memo,
   useCallback,
-  useContext,
   useEffect,
   useMemo,
   useState,
@@ -14,8 +13,7 @@ import MaterialReactTable, {
 } from "material-react-table";
 import "./List.scss";
 import { Box, IconButton, Tooltip } from "@mui/material";
-import { IPowerUnit, VehiclesContextType } from "../../types/managevehicles";
-import { VehiclesContext } from "../../context/VehiclesContext";
+import { IPowerUnit } from "../../types/managevehicles";
 import { PowerUnit_ColumnDef } from "./Columns";
 import { Filter } from "../options/Filter";
 import { Trash } from "../options/Trash";
@@ -43,7 +41,7 @@ export const List = memo(() => {
     isFetching,
     isLoading,
     error,
-    refetch,
+    //refetch,
   } = useQuery({
     queryKey: ["powerUnits"],
     queryFn: getAllPowerUnits,

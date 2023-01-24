@@ -21,11 +21,7 @@ import { VEHICLE_TYPES_ENUM } from "../form/constants";
  */
 export const AddVehicleButton = ({
   openSlidePanel,
-  setAddVehicleMode,
 }: {
-  setAddVehicleMode: React.Dispatch<
-    React.SetStateAction<VEHICLE_TYPES_ENUM | null>
-  >;
   openSlidePanel: (vehicleMode: VEHICLE_TYPES_ENUM) => void;
 }) => {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);

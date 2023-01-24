@@ -39,6 +39,7 @@ export const getAllPowerUnits = async (): Promise<IPowerUnit[]> => {
       return Promise.reject(err.errorMessage);
     }
     return data;
+    // eslint-disable-next-line  @typescript-eslint/no-explicit-any
   } catch (error: any) {
     // Handle network errors
     // Error type has name and message
