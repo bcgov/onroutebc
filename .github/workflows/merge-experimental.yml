@@ -161,9 +161,12 @@ jobs:
             -p DATABASE_HOST=${{secrets.OC_DATABASE_HOST}}
           penetration_test: true
 
-      - name: Create Pre-Release
-        uses: actions/create-release@v1
-        needs: GitVersion
+  pre-release:
+    name: Create Pre-Release
+    runs-on: ubuntu-22.04
+    needs: GitVersion
+    steps:
+      - uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
         with:
