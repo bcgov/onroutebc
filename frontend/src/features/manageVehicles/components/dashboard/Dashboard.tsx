@@ -221,17 +221,6 @@ export const Dashboard = React.memo(() => {
           <PowerUnitForm
             displaySnackBar={displaySnackBar}
             closeSlidePanel={closeSlidePanel}
-            powerUnit={{
-              make: "Volvo",
-              year: 2022,
-              powerUnitTypeCode: "CONCRET",
-              provinceId: "US-CA",
-              plate: "XYZ-123",
-              unitNumber: "K123",
-              licensedGvw: 123,
-              steerAxleTireSize: 40,
-              vin: "1G34T134F134G3455",
-            }}
           />
         )}
         {addVehicleMode === VEHICLE_TYPES_ENUM.TRAILER && <TrailerForm />}
