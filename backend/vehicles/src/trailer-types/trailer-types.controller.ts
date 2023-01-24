@@ -6,16 +6,35 @@ import {
   Param,
   Delete,
   Put,
-  HttpStatus,
 } from '@nestjs/common';
 import { TrailerTypesService } from './trailer-types.service';
 import { CreateTrailerTypeDto } from './dto/request/create-trailer-type.dto';
 import { UpdateTrailerTypeDto } from './dto/request/update-trailer-type.dto';
-import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiCreatedResponse,
+  ApiInternalServerErrorResponse,
+  ApiMethodNotAllowedResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { ReadTrailerTypeDto } from './dto/response/read-trailer-type.dto';
-import { CustomNotFoundException } from 'src/common/exception/custom.notfound.exception';
+import { DataNotFoundException } from 'src/common/exception/data-not-found.exception';
+import { ExceptionDto } from 'src/common/dto/exception.dto';
 
 @ApiTags('Trailer Types')
+@ApiNotFoundResponse({
+  description: 'The Trailer Type Api Not Found Response',
+  type: ExceptionDto,
+})
+@ApiMethodNotAllowedResponse({
+  description: 'The Trailer Type Api Method Not Allowed Response',
+  type: ExceptionDto,
+})
+@ApiInternalServerErrorResponse({
+  description: 'The Trailer Type Api Internal Server Error Response',
+  type: ExceptionDto,
+})
 @Controller('vehicles/trailer-types')
 export class TrailerTypesController {
   constructor(private readonly trailerTypesService: TrailerTypesService) {}
@@ -44,14 +63,14 @@ export class TrailerTypesController {
     type: ReadTrailerTypeDto,
   })
   @Get(':typeCode')
-  async findOne(@Param('typeCode') typeCode: string): Promise<ReadTrailerTypeDto> {
+  async findOne(
+    @Param('typeCode') typeCode: string,
+  ): Promise<ReadTrailerTypeDto> {
     const trailerType = await this.trailerTypesService.findOne(typeCode);
-    if (trailerType)
-    {
-     return trailerType;
-    }else{
-     throw new CustomNotFoundException("Data not found",HttpStatus.NOT_FOUND)
+    if (trailerType) {
+      throw new DataNotFoundException();
     }
+    return trailerType;
   }
 
   @ApiOkResponse({
@@ -63,25 +82,23 @@ export class TrailerTypesController {
     @Param('typeCode') typeCode: string,
     @Body() updateTrailerTypeDto: UpdateTrailerTypeDto,
   ): Promise<ReadTrailerTypeDto> {
-    const trailerType = await this.trailerTypesService.update(typeCode, updateTrailerTypeDto);
-    if (trailerType)
-    {
-     return trailerType;
-    }else{
-     throw new CustomNotFoundException("Data not found",HttpStatus.NOT_FOUND)
+    const trailerType = await this.trailerTypesService.update(
+      typeCode,
+      updateTrailerTypeDto,
+    );
+    if (!trailerType) {
+      throw new DataNotFoundException();
     }
+    return trailerType;
   }
 
   @Delete(':typeCode')
   async remove(@Param('typeCode') typeCode: string) {
     const deleteResult = await this.trailerTypesService.remove(typeCode);
-    if(deleteResult.affected)
-    {
+    if (deleteResult.affected) {
       return { deleted: true };
-    }
-    else{
-      throw new CustomNotFoundException("Data not found",HttpStatus.NOT_FOUND)
-
+    } else {
+      throw new DataNotFoundException();
     }
   }
 }

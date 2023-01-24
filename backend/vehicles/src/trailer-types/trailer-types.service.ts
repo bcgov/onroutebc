@@ -58,12 +58,7 @@ export class TrailerTypesService {
     return this.findOne(typeCode);
   }
 
-
-  async remove(
-    typeCode: string,
-  ): Promise<DeleteResult> {
-  
-       return await this.trailerTypeRepository.delete(typeCode);
-      
+  async remove(typeCode: string): Promise<DeleteResult> {
+    return await this.trailerTypeRepository.delete(typeCode);
   }
 }
