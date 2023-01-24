@@ -68,6 +68,8 @@ jobs:
         with:
           ref: ${{ github.head_ref }}   # checkout the correct branch name
           fetch-depth: 0                # fetch the whole repo history
+          useConfigFile: true
+          configFilePath: onroutebc/.github/GitVersion.yaml
 
       - name: Git Version
         id: version
