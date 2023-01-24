@@ -25,7 +25,7 @@ export const PowerUnit_ColumnDef : MRT_ColumnDef<IPowerUnit>[] =
     header: "VIN",
   },
   {
-    accessorKey: "plateNumber",
+    accessorKey: "plate",
     header: "Plate",
     filterVariant: 'multi-select',
   },
