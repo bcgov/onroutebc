@@ -153,7 +153,6 @@ export const Dashboard = React.memo(() => {
           <h2>{t("vehicle.dashboard.vehicle-inventory")}</h2>
           <AddVehicleButton
             openSlidePanel={openSlidePanel}
-            setAddVehicleMode={setAddVehicleMode}
           />
         </div>
 
