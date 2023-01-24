@@ -1,12 +1,12 @@
 export interface IPowerUnit {
   concurrencyControlNumber: null,
   createdUser: null,
-  createdDateTime: null,
+  createdDateTime: string | null,
   updatedUser: null,
   updatedDateTime: null,
   powerUnitId: string,
   unitNumber: string,
-  plateNumber: string,
+  plate: string,
   year: number,
   make: string,
   vin: string,
@@ -31,4 +31,9 @@ export interface ITrailer {
 export interface VehiclesContextType {
   powerUnitData: IPowerUnit[];
   trailerData?: ITrailer[];
+}
+
+interface ApiErrorResponse {
+  status: number;
+  errorMessage: string; // array?
 }

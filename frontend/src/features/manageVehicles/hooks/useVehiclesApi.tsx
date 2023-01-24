@@ -1,6 +1,6 @@
-import { IPowerUnit } from "../types/managevehicles";
+import { ApiErrorResponse, IPowerUnit } from "../types/managevehicles";
 import { CreatePowerUnit, PowerUnitType } from "../types";
-import { VEHICLES_API, VEHICLE_URL } from "./endpoints/endpoints";
+import { VEHICLES_API } from "./endpoints/endpoints";
 
 /*
  *
@@ -8,26 +8,38 @@ import { VEHICLES_API, VEHICLE_URL } from "./endpoints/endpoints";
  *
  */
 
-export const useVehiclesApi = () => {
-  /**
-   * Fetch*
-   All Power Unit Data
-   * @return {*}  {Promise<void>}
-   */
-  const getAllPowerUnits = async (): Promise<IPowerUnit[]> => {
-    const url = new URL(VEHICLES_API.GET_ALL_POWER_UNITS);
+/**
+ * Fetch*
+ * All Power Unit Data
+ * @return {*}  {Promise<void>}
+ */
+export const getAllPowerUnits = async (): Promise<IPowerUnit[]> => {
+  const url = new URL(VEHICLES_API.GET_ALL_POWER_UNITS);
 
-    try {
-      const response = await fetch(url.href);
-      const json = await response.json();
-      return json;
-    } catch (error) {
-      console.error(error);
-      return [];
+  try {
+    /*
+      // Use for testing error response
+      const response = await fetch(
+        "http://localhost:5000/vehicles/powerUnits/1111",
+        { method: "DELETE" }
+      );
+      */
+
+    const response = await fetch(url.href);
+    const data = await response.json();
+
+    // Handle API errors created from the backend API
+    if (!response.ok) {
+      const err: ApiErrorResponse = data;
+      return Promise.reject(err.errorMessage);
     }
-  };
-
-  return { getAllPowerUnits };
+    return data;
+  } catch (error: any) {
+    // Handle network errors
+    // Error type has name and message
+    // eslint-disable-next-line  @typescript-eslint/no-explicit-any
+    return Promise.reject(error.message);
+  }
 };
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -42,9 +54,9 @@ export const getPowerUnitTypes = async (): Promise<Array<PowerUnitType>> => {
     {
       description: "XYZ",
       type: "CONCRETE TRUCKS",
-      typeCode: "CONCRET"
-    }
-  ]
+      typeCode: "CONCRET",
+    },
+  ];
   // return fetch(`${VEHICLES_API.POWER_UNIT_TYPES}`).then((response) =>
   //   response.json()
   // );
