@@ -5,7 +5,7 @@
 interface Vehicle {
   unitNumber: string;
   make: string;
-  year: string;
+  year: number;
   vin: string;
   plate: string;
 }
@@ -50,7 +50,9 @@ export interface CreatePowerUnit extends Vehicle {
   provinceId: string;
   licensedGvw: number;
   steerAxleTireSize: number;
-  axleGroup: AxleGroup;
+  axleGroup?: AxleGroup;
+  country?: string;
+  province?: string;
 }
 
 /**

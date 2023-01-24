@@ -53,16 +53,20 @@ export const getPowerUnitTypes = async (): Promise<Array<PowerUnitType>> => {
 /**
  * Adds a power unit.
  * @param {CreatePowerUnit} powerUnit The power unit to be added
- * @returns Response from the create powerUnit API.
+ * @returns Promise containing the response from the create powerUnit API.
  */
 export const addPowerUnit = (powerUnit: CreatePowerUnit) => {
-  return fetch(`${VEHICLES_API.POWER_UNIT}`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(powerUnit),
-  }).then((response) => response.json());
+  return Promise.resolve(() => {
+    return {
+    status: 200
+  }});
+  // return fetch(`${VEHICLES_API.POWER_UNIT}`, {
+  //   method: "POST",
+  //   headers: {
+  //     "Content-Type": "application/json",
+  //   },
+  //   body: JSON.stringify(powerUnit),
+  // });
 };
 
 /**

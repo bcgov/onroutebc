@@ -12,6 +12,7 @@
     "vehicle.power-unit.province": "Province / State Registered",
     "vehicle.add-vehicle.power-unit": "Add Vehicle: Power Unit",
     "vehicle.add-vehicle.trailer": "Add Vehicle: Trailer",
+    "vehicle.add-vehicle.add-power-unit-success": "Power unit has been added successfully",
     "vehicle.power-unit": "Power Unit",
     "vehicle.vehicle-configuration": "Vehicle Configuration",
     "vehicle.power-unit-details": "Power Unit Details",

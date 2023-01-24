@@ -35,27 +35,29 @@ interface CountryAndProvinceProps {
  * @returns A react component with the country and province fields.
  */
 export const CountryAndProvince = ({
-  country = "",
-  province = "",
+  country,
+  province,
 }: CountryAndProvinceProps) => {
   const {
     register,
-    formState: { errors },
     resetField,
     watch,
     setValue,
+    getValues,
+    getFieldState
   } = useFormContext();
 
   /**
    * State for displaying selected province
    */
-  const [selectedProvince, setSelectedProvince] = useState<string>("");
+  const [selectedProvince, setSelectedProvince] = useState<string>(province || "");
   const [shouldDisplayProvince, setShouldDisplayProvince] =
     useState<boolean>(true);
 
   const countrySelected = watch("country");
   const boldTextStyle = {
     fontWeight: "bold",
+    width: "300px",
   };
 
   /**
@@ -64,6 +66,7 @@ export const CountryAndProvince = ({
    */
   const onChangeCountry = useCallback(function (event: SelectChangeEvent) {
     const country: string = event.target.value as string;
+    console.log('On change triggered');
     resetField("province", { defaultValue: "" });
     setSelectedProvince(() => "");
     if (
@@ -87,7 +90,8 @@ export const CountryAndProvince = ({
     resetField("provinceId", { defaultValue: "" });
     const provinceSelected: string = event.target.value;
     setSelectedProvince(() => event.target.value as string);
-    setValue("provinceId", countrySelected + "-" + provinceSelected);
+
+    setValue("provinceId", getValues('country') + "-" + provinceSelected);
   }, []);
 
   /**
@@ -97,7 +101,7 @@ export const CountryAndProvince = ({
   const getProvinces = useCallback(
     function (selectedCountry: string) {
       return CountriesAndStates.filter(
-        (country) => country.abbreviation === selectedCountry
+        (country) => country.code === selectedCountry
       ).flatMap((country) => country.states);
     },
     []
@@ -107,13 +111,13 @@ export const CountryAndProvince = ({
   return (
     <div>
       <div>
-        <FormControl margin="normal" error={Boolean(errors.country)}>
+        <FormControl margin="normal" error={getFieldState('country')['invalid']}>
           <FormLabel id="power-unit-country-label" sx={boldTextStyle}>
             {t("vehicle.power-unit.country")}
           </FormLabel>
           <Select
             aria-labelledby="power-unit-country-label"
-            defaultValue={country}
+            defaultValue={country || ""}
             {...register("country", {
               required: false,
               onChange: onChangeCountry,
@@ -122,7 +126,7 @@ export const CountryAndProvince = ({
             {CountriesAndStates.map((country) => (
               <MenuItem
                 key={`country-${country.name}`}
-                value={country.abbreviation}
+                value={country.code}
               >
                 {country.name}
               </MenuItem>
@@ -132,13 +136,13 @@ export const CountryAndProvince = ({
       </div>
       {shouldDisplayProvince && (
         <div>
-          <FormControl margin="normal" error={shouldDisplayProvince}>
+          <FormControl margin="normal" size="small">
             <FormLabel id="power-unit-province-label" sx={boldTextStyle}>
               {t("vehicle.power-unit.province")}
             </FormLabel>
             <Select
               aria-labelledby="power-unit-province-label"
-              defaultValue={province}
+              defaultValue={province || ""}
               {...register("province", {
                 required: shouldDisplayProvince,
                 onChange: onChangeProvince,
@@ -147,10 +151,10 @@ export const CountryAndProvince = ({
             >
               {getProvinces(countrySelected).map((state) => (
                 <MenuItem
-                  key={`state-${state.abbreviation}`}
-                  value={state.abbreviation}
+                  key={`state-${state?.code}`}
+                  value={state?.code}
                 >
-                  {state.name}
+                  {state?.name}
                 </MenuItem>
               ))}
             </Select>

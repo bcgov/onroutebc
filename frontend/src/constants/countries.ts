@@ -1,1 +1,1 @@
-export const COUNTRIES_THAT_SUPPORT_PROVINCE = ["US"];
+export const COUNTRIES_THAT_SUPPORT_PROVINCE = ["US", "CA"];

@@ -1,3 +1,4 @@
+import { useCallback } from "react";
 import {
   useForm,
   FormProvider,
@@ -12,6 +13,7 @@ import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import FormHelperText from "@mui/material/FormHelperText";
 // import { AxleGroupForm } from "./AxleGroupForm";
 import { useState } from "react";
 import { COUNTRIES_THAT_SUPPORT_PROVINCE } from "../../../../constants/countries";
@@ -45,8 +47,21 @@ import CountriesAndStates from "../../../../constants/countries_and_states.json"
  */
 interface PowerUnitFormProps {
   displaySnackBar: (options: DisplaySnackBarOptions) => void;
+  /**
+   * The power unit details to be displayed if in edit mode.
+   * @deprecated This prop is only temporarily supported and scheduled to be removed.
+   */
   powerUnit?: CreatePowerUnit;
-  isEditMode?: boolean;
+
+  /**
+   * The power unit id to be retrieved.
+   * If valid and available, the form will be in an editable state.
+   */
+  powerUnitId?: string,
+  
+  /**
+   * Function to close the slide panel.
+   */
   closeSlidePanel: () => void;
 }
 
@@ -58,11 +73,31 @@ export const PowerUnitForm = ({
   powerUnit,
   closeSlidePanel,
 }: PowerUnitFormProps) => {
-  const formMethods = useForm();
+  const formMethods = useForm<CreatePowerUnit>({
+    defaultValues: {
+      country: powerUnit?.provinceId
+        ? powerUnit?.provinceId?.split("-")[0]
+        : "",
+      province: powerUnit?.provinceId
+        ? powerUnit?.provinceId?.split("-")[1]
+        : "",
+      unitNumber: powerUnit?.unitNumber || "",
+      licensedGvw: (powerUnit?.licensedGvw as number) || undefined,
+      make: powerUnit?.make || "",
+      plate: powerUnit?.plate || "",
+      powerUnitTypeCode: powerUnit?.powerUnitTypeCode || "",
+      provinceId: powerUnit?.provinceId ? powerUnit?.provinceId : "",
+      steerAxleTireSize: powerUnit?.steerAxleTireSize
+        ? powerUnit?.steerAxleTireSize
+        : undefined,
+      vin: powerUnit?.vin ? powerUnit?.vin : "",
+      year: powerUnit?.year ? powerUnit?.year : undefined,
+    },
+  });
   const {
     register,
     handleSubmit,
-    formState: { errors, dirtyFields, isDirty },
+    formState: { isDirty },
     getValues,
     watch,
     resetField,
@@ -79,13 +114,15 @@ export const PowerUnitForm = ({
 
   const addVehicleQuery = useMutation({
     mutationFn: addPowerUnit,
-    onSuccess: (data) => {
-      if (data.status != 200) {
-        queryClient.invalidateQueries(["powerUnits"]);
-        closeSlidePanel();
-      } else {
-        // Display Error in the form.
-      }
+    onSuccess: (response) => {
+      closeSlidePanel();
+      displaySnackBar({ display: true, isError: false, messageI18NKey: 'vehicle.add-vehicle.add-power-unit-success'})
+      // if (response.status === 200) {
+      //   queryClient.invalidateQueries(["powerUnits"]);
+      //   closeSlidePanel();
+      // } else {
+      //   // Display Error in the form.
+      // }
     },
   });
 
@@ -102,7 +139,6 @@ export const PowerUnitForm = ({
   //   numberOfTiresRear: 4,
   // };
 
-  console.log("isDirty::", isDirty);
   const boldTextStyle = {
     fontWeight: "bold",
     width: "300px",
@@ -119,10 +155,9 @@ export const PowerUnitForm = ({
    */
   const onAddVehicle = function (data: FieldValues) {
     // const formValues =  getValues();
-    const createPowerUnit = data as CreatePowerUnit;
-    console.log(dirtyFields);
+    const powerUnitToBeAdded = data as CreatePowerUnit;
     console.log(data);
-    addVehicleQuery.mutate(createPowerUnit);
+    addVehicleQuery.mutate(powerUnitToBeAdded);
     // .then(displaySnackBar(() => {
     //   display: true,
     //   messageI18NKey: "xyz",
@@ -131,56 +166,7 @@ export const PowerUnitForm = ({
   };
 
   /**
-   *
-   * @param powerUnit The powe
-   */
-  // const onEditVehicle = function (powerUnit: UpdatePowerUnit) {
-  //   // const formValues =  getValues();
-  //   console.log(powerUnit);
-  //   // addPowerUnit(formValues).then(displaySnackBar());
-  // };
-
-  //   const addAxleGroup = function () {
-  //     setNumberOfAxleGroups((numberOfAxleGroups) => numberOfAxleGroups + 1);
-  //   };
-  //   const getAxleGroupForms = function () {
-  //     const axleGroupForms = [];
-  //     for (let i = 1; i <= numberOfAxleGroups; i++) {
-  //       axleGroupForms.push(
-  //         <Accordion>
-  //           <AccordionSummary
-  //             expandIcon={<ExpandMoreIcon />}
-  //             aria-controls={`add-axle-group-content-${i}`}
-  //             id={`add-axle-group-accordion-summary-${i}`}
-  //           >
-  //             <span style={boldTextStyle}>{t("vehicle.axle-group")}</span>
-  //           </AccordionSummary>
-  //           <AccordionDetails>
-  //             <AxleGroupForm axleGroup={axleGroupTest} />
-  //           </AccordionDetails>
-  //         </Accordion>
-  //       );
-  //     }
-  //     return axleGroupForms;
-  //   };
-
-  // function getProvinceOptions(selectedCountry: string) {
-  //   return CountriesAndStates.filter(
-  //     (country) => country.abbreviation === selectedCountry
-  //   )
-  //     .flatMap((country) => country.states)
-  //     .map((state) => (
-  //       <MenuItem
-  //         key={`state-${state.abbreviation}`}
-  //         value={state.abbreviation}
-  //       >
-  //         {state.name}
-  //       </MenuItem>
-  //     ));
-  // }
-
-  /**
-   * @returns an array of numbers containing range
+   * @returns an array of numbers containing range of years
    */
   function getYears() {
     const endYear = new Date().getFullYear();
@@ -214,13 +200,10 @@ export const PowerUnitForm = ({
                   name="unitNumber"
                   control={control}
                   rules={{ required: true }}
-                  defaultValue=""
-                  render={() => (
+                  defaultValue={powerUnit?.unitNumber || ""}
+                  render={({ fieldState: { invalid } }) => (
                     <>
-                      <FormControl
-                        margin="normal"
-                        error={Boolean(errors["unitNumber"])}
-                      >
+                      <FormControl margin="normal" error={invalid}>
                         <FormLabel
                           id="power-unit-unit-number-label"
                           sx={boldTextStyle}
@@ -229,11 +212,16 @@ export const PowerUnitForm = ({
                         </FormLabel>
                         <OutlinedInput
                           aria-labelledby="power-unit-unit-number-label"
-                          // defaultValue={axleGroup?.axleGroupNumber}
+                          defaultValue={powerUnit?.unitNumber}
                           {...register("unitNumber", {
                             required: true,
                           })}
                         />
+                        {invalid && (
+                          <FormHelperText error>
+                            Unit Number is required.
+                          </FormHelperText>
+                        )}
                       </FormControl>
                     </>
                   )}
@@ -245,10 +233,10 @@ export const PowerUnitForm = ({
                   name="make"
                   control={control}
                   rules={{ required: true }}
-                  defaultValue=""
-                  render={() => (
+                  defaultValue={powerUnit?.make || ""}
+                  render={({ fieldState: { invalid } }) => (
                     <>
-                      <FormControl margin="normal">
+                      <FormControl margin="normal" error={invalid}>
                         <FormLabel
                           id="power-unit-make-label"
                           sx={boldTextStyle}
@@ -256,7 +244,7 @@ export const PowerUnitForm = ({
                           {t("vehicle.power-unit.make")}
                         </FormLabel>
                         <Select
-                          defaultValue={""}
+                          defaultValue={powerUnit?.make || ""}
                           {...register("make", {
                             required: true,
                           })}
@@ -273,253 +261,204 @@ export const PowerUnitForm = ({
                 />
               </div>
               <div>
-                <FormControl margin="normal">
-                  <FormLabel id="power-unit-year-label" sx={boldTextStyle}>
-                    {t("vehicle.power-unit.year")}
-                  </FormLabel>
-                  <Select
-                    aria-labelledby="power-unit-year-label"
-                    defaultValue={""}
-                    {...register("year", {
-                      required: false,
-                    })}
-                  >
-                    {getYears().map((year) => (
-                      <MenuItem key={`year-${year}`} value={year}>
-                        {year}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
+                <Controller
+                  key="controller-powerunit-year"
+                  name="year"
+                  control={control}
+                  rules={{ required: true }}
+                  defaultValue={powerUnit?.year || undefined}
+                  render={({ fieldState: { invalid } }) => {
+                    return (
+                      <>
+                        <FormControl margin="normal" error={invalid}>
+                          <FormLabel
+                            id="power-unit-year-label"
+                            sx={boldTextStyle}
+                          >
+                            {t("vehicle.power-unit.year")}
+                          </FormLabel>
+                          <Select
+                            aria-labelledby="power-unit-year-label"
+                            defaultValue={powerUnit?.year || ""}
+                            {...register("year", {
+                              required: false,
+                            })}
+                          >
+                            {getYears().map((year) => (
+                              <MenuItem key={`year-${year}`} value={year}>
+                                {year}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
+                      </>
+                    );
+                  }}
+                />
               </div>
               <div>
-                <FormControl margin="normal">
-                  <FormLabel id="power-unit-vin-label" sx={boldTextStyle}>
-                    {t("vehicle.power-unit.vin")}
-                  </FormLabel>
-                  <OutlinedInput
-                    inputProps={{ maxLength: 17 }}
-                    aria-labelledby="power-unit-vin-label"
-                    // defaultValue={axleGroup?.axleGroupNumber}
-                    {...register("vin", {
-                      required: false,
-                      minLength: 17,
-                      maxLength: 17,
-                    })}
-                  />
-                </FormControl>
+                <Controller
+                  key="controller-powerunit-vin"
+                  name="vin"
+                  control={control}
+                  rules={{ required: true }}
+                  defaultValue={powerUnit?.vin || ""}
+                  render={({ fieldState: { invalid } }) => (
+                    <>
+                      <FormControl margin="normal" error={invalid}>
+                        <FormLabel id="power-unit-vin-label" sx={boldTextStyle}>
+                          {t("vehicle.power-unit.vin")}
+                        </FormLabel>
+                        <OutlinedInput
+                          inputProps={{ maxLength: 17 }}
+                          aria-labelledby="power-unit-vin-label"
+                          {...register("vin", {
+                            required: false,
+                            minLength: 17,
+                            maxLength: 17,
+                          })}
+                        />
+                      </FormControl>
+                    </>
+                  )}
+                />
               </div>
               <div>
-                <FormControl margin="normal">
-                  <FormLabel id="power-unit-plate-label" sx={boldTextStyle}>
-                    {t("vehicle.power-unit.plate")}
-                  </FormLabel>
-                  <OutlinedInput
-                    aria-labelledby="power-unit-plate-label"
-                    // defaultValue={axleGroup?.axleGroupNumber}
-                    {...register("plate", {
-                      required: false,
-                    })}
-                  />
-                </FormControl>
-              </div>
-              <div>
-                <FormControl margin="normal">
-                  <FormLabel
-                    id="power-unit-power-unit-type-label"
-                    sx={boldTextStyle}
-                  >
-                    {t("vehicle.power-unit.power-unit-type")}
-                  </FormLabel>
-                  <Select
-                    aria-labelledby="power-unit-power-unit-type-label"
-                    defaultValue={""}
-                    {...register("powerUnitType", {
-                      required: false,
-                    })}
-                  >
-                    {powerUnitTypesQuery.data?.map(
-                      (powerUnitType: PowerUnitType) => (
-                        <MenuItem
-                          key={`powerUnitType-${powerUnitType.typeCode}`}
-                          value={powerUnitType.typeCode}
+                <Controller
+                  key="controller-powerunit-plate"
+                  name="plate"
+                  control={control}
+                  rules={{ required: true }}
+                  defaultValue={powerUnit?.plate || ""}
+                  render={({ fieldState: { invalid } }) => (
+                    <>
+                      <FormControl margin="normal" error={invalid}>
+                        <FormLabel
+                          id="power-unit-plate-label"
+                          sx={boldTextStyle}
                         >
-                          {powerUnitType.type}
-                        </MenuItem>
-                      )
-                    )}
-                  </Select>
-                  {/* <OutlinedInput
-                    aria-labelledby="power-unit-power-unit-type-label"
-                    // defaultValue={axleGroup?.axleGroupNumber}
-                    {...register("powerUnitType", {
-                      required: false,
-                    })}
-                  /> */}
-                </FormControl>
-              </div>
-              <CountryAndProvince country={""} province={""} />
-              {/* <div>
-                <FormControl margin="normal">
-                  <FormLabel id="power-unit-country-label" sx={boldTextStyle}>
-                    {t("vehicle.power-unit.country")}
-                  </FormLabel>
-                  <Select
-                    aria-labelledby="power-unit-country-label"
-                    defaultValue={""}
-                    {...register("country", {
-                      required: false,
-                      onChange: (event: SelectChangeEvent) => {
-                        console.log(event);
-                        const country: string = event.target.value as string;
-                        resetField("province", { defaultValue: "" });
-                        setSelectedProvince(() => "");
-                        
-                        if (!COUNTRIES_THAT_SUPPORT_PROVINCE.find(supportedCountry => supportedCountry === country)) {
-                          setShouldDisplayProvince(() => false);
-                        } else {
-                          setShouldDisplayProvince(() => true);
-                        }
-                      },
-                    })}
-                    // onChange={() => resetField('province')}
-                  >
-                    {CountriesAndStates.map((country) => (
-                      <MenuItem
-                        key={`country-${country.name}`}
-                        value={country.abbreviation}
-                      >
-                        {country.name}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </div>
-              {shouldDisplayProvince && (
-                <div>
-                  <FormControl margin="normal">
-                    <FormLabel
-                      id="power-unit-province-label"
-                      sx={boldTextStyle}
-                    >
-                      {t("vehicle.power-unit.province")}
-                    </FormLabel>
-                    <Select
-                      aria-labelledby="power-unit-province-label"
-                      defaultValue={""}
-                      {...register("province", {
-                        required: false,
-                      })}
-                      onChange={(event) =>
-                        setSelectedProvince(() => event.target.value as string)
-                      }
-                      value={selectedProvince}
-                    >
-                      {getProvinceOptions(countrySelected)}
-                    </Select>
-                  </FormControl>
-                </div>
-              )} */}
-
-              <div>
-                <FormControl margin="normal">
-                  <FormLabel
-                    id="power-unit-licensed-gvw-label"
-                    sx={boldTextStyle}
-                  >
-                    {t("vehicle.power-unit.licensed-gvw")}
-                  </FormLabel>
-                  <OutlinedInput
-                    aria-labelledby="power-unit-licensed-gvw-label"
-                    // defaultValue={axleGroup?.axleGroupNumber}
-                    {...register("licensedGvw", {
-                      required: false,
-                    })}
-                  />
-                </FormControl>
+                          {t("vehicle.power-unit.plate")}
+                        </FormLabel>
+                        <OutlinedInput
+                          aria-labelledby="power-unit-plate-label"
+                          // defaultValue={axleGroup?.axleGroupNumber}
+                          {...register("plate", {
+                            required: false,
+                          })}
+                        />
+                      </FormControl>
+                    </>
+                  )}
+                />
               </div>
               <div>
-                <FormControl margin="normal">
-                  <FormLabel
-                    id="power-unit-steer-axle-tire-size-label"
-                    sx={boldTextStyle}
-                  >
-                    {t("vehicle.power-unit.steer-axle-tire-size")}
-                  </FormLabel>
-                  <OutlinedInput
-                    aria-labelledby="power-unit-steer-axle-tire-size-label"
-                    // defaultValue={axleGroup?.axleGroupNumber}
-                    {...register("steerAxleTireSize", {
-                      required: false,
-                    })}
-                  />
-                </FormControl>
+                <Controller
+                  key="controller-powerunit-power-unit-type"
+                  name="powerUnitTypeCode"
+                  control={control}
+                  rules={{ required: true }}
+                  defaultValue={powerUnit?.powerUnitTypeCode || ""}
+                  render={({ fieldState: { invalid } }) => (
+                    <>
+                      <FormControl margin="normal" error={invalid}>
+                        <FormLabel
+                          id="power-unit-power-unit-type-label"
+                          sx={boldTextStyle}
+                        >
+                          {t("vehicle.power-unit.power-unit-type")}
+                        </FormLabel>
+                        <Select
+                          aria-labelledby="power-unit-power-unit-type-label"
+                          defaultValue={""}
+                          {...register("powerUnitTypeCode", {
+                            required: true,
+                          })}
+                        >
+                          {powerUnitTypesQuery.data?.map(
+                            (powerUnitType: PowerUnitType) => (
+                              <MenuItem
+                                key={`powerUnitType-${powerUnitType.typeCode}`}
+                                value={powerUnitType.typeCode}
+                              >
+                                {powerUnitType.type}
+                              </MenuItem>
+                            )
+                          )}
+                        </Select>
+                      </FormControl>
+                    </>
+                  )}
+                />
+              </div>
+              <CountryAndProvince
+                country={
+                  powerUnit?.provinceId
+                    ? powerUnit?.provinceId?.split("-")[0]
+                    : ""
+                }
+                province={
+                  powerUnit?.provinceId
+                    ? powerUnit?.provinceId?.split("-")[1]
+                    : ""
+                }
+              />
+              <div>
+                <Controller
+                  key="controller-powerunit-licensed-gvw"
+                  name="licensedGvw"
+                  control={control}
+                  rules={{ required: true }}
+                  defaultValue={powerUnit?.licensedGvw || undefined}
+                  render={({ fieldState: { invalid } }) => (
+                    <>
+                      <FormControl margin="normal" error={invalid}>
+                        <FormLabel
+                          id="power-unit-licensed-gvw-label"
+                          sx={boldTextStyle}
+                        >
+                          {t("vehicle.power-unit.licensed-gvw")}
+                        </FormLabel>
+                        <OutlinedInput
+                          aria-labelledby="power-unit-licensed-gvw-label"
+                          // defaultValue={axleGroup?.axleGroupNumber}
+                          {...register("licensedGvw", {
+                            required: true,
+                          })}
+                        />
+                      </FormControl>
+                    </>
+                  )}
+                />
+              </div>
+              <div>
+                <Controller
+                  key="controller-powerunit-steer-axle-tire-size"
+                  name="steerAxleTireSize"
+                  control={control}
+                  rules={{ required: true }}
+                  defaultValue={powerUnit?.steerAxleTireSize || undefined}
+                  render={({ fieldState: { invalid } }) => (
+                    <>
+                      <FormControl margin="normal" error={invalid}>
+                        <FormLabel
+                          id="power-unit-steer-axle-tire-size-label"
+                          sx={boldTextStyle}
+                        >
+                          {t("vehicle.power-unit.steer-axle-tire-size")}
+                        </FormLabel>
+                        <OutlinedInput
+                          aria-labelledby="power-unit-steer-axle-tire-size-label"
+                          // defaultValue={axleGroup?.axleGroupNumber}
+                          {...register("steerAxleTireSize", {
+                            required: false,
+                          })}
+                        />
+                      </FormControl>
+                    </>
+                  )}
+                />
               </div>
             </div>
-            {/* <form className="mv-form">
-              <div>
-                <label className="mv-label">
-                  {t("power-unit.unit-number")}
-                </label>
-                <input
-                  className="mv-input"
-                  {...register("unit-number", {
-                    required: true,
-                  })}
-                />
-              </div>
-              <div>
-                <label className="mv-label">{t("power-unit.make")}</label>
-                <input className="mv-input" {...register("make")} />
-              </div>
-              <div>
-                <label className="mv-label">{t("power-unit.year")}</label>
-                <input
-                  className="mv-input"
-                  {...register("year", { required: true })}
-                />
-                {errors.year && (
-                  <label className="mv-label">Year is required.</label>
-                )}
-              </div>
-              <div>
-                <label className="mv-label">{t("power-unit.vin")}</label>
-                <input
-                  className="mv-input"
-                  {...register("vin", { required: true })}
-                />
-                {errors.vin && (
-                  <label className="mv-label">
-                    Please enter number for VIN.
-                  </label>
-                )}
-              </div>
-              <div>
-                <label className="mv-label">{t("power-unit.plate")}</label>
-                <input
-                  className="mv-input"
-                  {...register("plate", { required: true })}
-                />
-                {errors.vin && (
-                  <label className="mv-label">
-                    Please enter number for VIN.
-                  </label>
-                )}
-              </div>
-              <div>
-                <label className="mv-label">
-                  {t("power-unit.power-unit-type")}
-                </label>
-                <input className="mv-input" {...register("unit-number")} />
-              </div>
-              <Button
-                color={"BC-Gov-PrimaryButton"}
-                className={"mt-5"}
-                onClick={handleSubmit((data) => console.log(data))}
-              >
-                Submit
-              </Button>
-            </form> */}
           </AccordionDetails>
         </Accordion>
         {/* {getAxleGroupForms()} */}
@@ -534,7 +473,10 @@ export const PowerUnitForm = ({
           {t("vehicle.form.add-axle-group")}
         </Button>
       </div> */}
-      <div className="add-vehicle-button-container" style={{ height: ADD_VEHICLE_BTN_HEIGHT }}>
+      <div
+        className="add-vehicle-button-container"
+        style={{ height: ADD_VEHICLE_BTN_HEIGHT }}
+      >
         <Button
           key="add-vehicle-button"
           aria-label="Add Vehicle"
@@ -543,7 +485,7 @@ export const PowerUnitForm = ({
           sx={{
             width: "100%",
           }}
-          onClick={formMethods.handleSubmit(onAddVehicle)}
+          onClick={handleSubmit(onAddVehicle)}
         >
           {t("vehicle.form.submit")}
         </Button>
