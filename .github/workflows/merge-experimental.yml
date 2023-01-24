@@ -163,6 +163,7 @@ jobs:
 
       - name: Create Pre-Release
         uses: actions/create-release@v1
+        needs: GitVersion
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
         with:
