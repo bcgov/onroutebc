@@ -14,7 +14,6 @@ import AccordionDetails from "@mui/material/AccordionDetails";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import FormHelperText from "@mui/material/FormHelperText";
 // import { AxleGroupForm } from "./AxleGroupForm";
-// import { MAKES } from "./constants";
 import { CreatePowerUnit, PowerUnitType } from "../../types/managevehicles";
 import FormControl from "@mui/material/FormControl";
 import FormLabel from "@mui/material/FormLabel";
@@ -122,19 +121,6 @@ export const PowerUnitForm = ({
     addVehicleQuery.mutate(powerUnitToBeAdded);
   };
 
-  /**
-   * @returns an array of numbers containing range of years
-   */
-  function getYears() {
-    const endYear = new Date().getFullYear();
-    const DIFFERENCE_BETWEEN_START_YEAR_END_YEAR = 20;
-    const startYear = endYear - DIFFERENCE_BETWEEN_START_YEAR_END_YEAR;
-    return Array.from(
-      { length: endYear - startYear + 1 },
-      (_, i) => endYear - i
-    );
-  }
-
   const ADD_VEHICLE_BTN_HEIGHT = "75px";
   const { t } = useTranslation();
   return (
@@ -209,18 +195,6 @@ export const PowerUnitForm = ({
                             required: true,
                           })}
                         />
-                        {/* <Select
-                          defaultValue={powerUnit?.make || ""}
-                          {...register("make", {
-                            required: true,
-                          })}
-                        >
-                          {MAKES.map((make) => (
-                            <MenuItem key={`make-${make}`} value={make}>
-                              {make}
-                            </MenuItem>
-                          ))}
-                        </Select> */}
                         {invalid && (
                           <FormHelperText error>
                             {t("vehicle.power-unit.required", {
@@ -258,19 +232,6 @@ export const PowerUnitForm = ({
                               valueAsNumber: true
                             })}
                           />
-                          {/* <Select
-                            aria-labelledby="power-unit-year-label"
-                            defaultValue={powerUnit?.year || ""}
-                            {...register("year", {
-                              required: true,
-                            })}
-                          >
-                            {getYears().map((year) => (
-                              <MenuItem key={`year-${year}`} value={year}>
-                                {year}
-                              </MenuItem>
-                            ))}
-                          </Select> */}
                           {invalid && (
                             <FormHelperText error>
                               {t("vehicle.power-unit.required", {
