@@ -30,7 +30,6 @@ export const AddVehicleButton = ({
 }) => {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const anchorRef = React.useRef<HTMLButtonElement>(null);
-  // const [selectedIndex, setSelectedIndex] = React.useState<VEHICLE_TYPES_ENUM | null>(null);
 
   const { t } = useTranslation();
 
@@ -65,7 +64,6 @@ export const AddVehicleButton = ({
     _index: number,
     vehicleMode: VEHICLE_TYPES_ENUM,
   ) => {
-    // setSelectedIndex(index);
     openSlidePanel(vehicleMode);
     setIsMenuOpen(false);
   };
@@ -134,7 +132,6 @@ export const AddVehicleButton = ({
                       return (
                         <MenuItem
                           key={vehicleMode}
-                          // selected={index === selectedIndex}
                           onClick={(event) =>
                             handleMenuItemClick(event, index, vehicleMode)
                           }
