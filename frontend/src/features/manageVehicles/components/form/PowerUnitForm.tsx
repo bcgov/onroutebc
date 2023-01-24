@@ -434,6 +434,7 @@ export const PowerUnitForm = ({
                           // defaultValue={axleGroup?.axleGroupNumber}
                           {...register("licensedGvw", {
                             required: true,
+                            valueAsNumber: true
                           })}
                         />
                         {invalid && (
@@ -469,6 +470,7 @@ export const PowerUnitForm = ({
                           // defaultValue={axleGroup?.axleGroupNumber}
                           {...register("steerAxleTireSize", {
                             required: true,
+                            valueAsNumber: true
                           })}
                         />
                         {invalid && (
