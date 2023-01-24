@@ -118,7 +118,7 @@ jobs:
           echo "CommitsSinceVersionSourcePadded: ${{ steps.gitversion.outputs.commitsSinceVersionSourcePadded }}"
           echo "UncommittedChanges: ${{ steps.gitversion.outputs.uncommittedChanges }}"
           echo "CommitDate: ${{ steps.gitversion.outputs.commitDate }}"
-          echo "SEMVER=$GITVERSION_SEMVER" >> "$GITHUB_ENV"
+          echo "SEMVER=${{ steps.gitversion.outputs.fullSemVer }}" >> "$GITHUB_ENV"
   deploys-test:
     name: TEST Deployments
     needs:
@@ -158,6 +158,7 @@ jobs:
             -p DATABASE_PASSWORD=${{secrets.OC_DATABASE_PASSWORD}}
             -p DATABASE_HOST=${{secrets.OC_DATABASE_HOST}}
           penetration_test: true
+
       - name: Create Pre-Release
         uses: actions/create-release@v1
         env:
