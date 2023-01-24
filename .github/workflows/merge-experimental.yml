@@ -118,7 +118,8 @@ jobs:
           echo "CommitsSinceVersionSourcePadded: ${{ steps.gitversion.outputs.commitsSinceVersionSourcePadded }}"
           echo "UncommittedChanges: ${{ steps.gitversion.outputs.uncommittedChanges }}"
           echo "CommitDate: ${{ steps.gitversion.outputs.commitDate }}"
-    outputs: ${{ steps.gitversion.outputs}}
+    outputs: 
+      fullSemVer: ${{ steps.gitversion.outputs.fullSemVer}}
 
   deploys-test:
     name: TEST Deployments
