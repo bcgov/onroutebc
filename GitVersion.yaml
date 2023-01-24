@@ -13,8 +13,8 @@ continuous-delivery-fallback-tag: ''
 branches:
   development:
     increment: Patch
-    # Everything except main and master
-    regex: ^(?!(main|master)$)
+    # main only
+    regex: ^main$
     track-merge-target: true
     source-branches: []
   feature:
