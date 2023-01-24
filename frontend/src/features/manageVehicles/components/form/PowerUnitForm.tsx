@@ -1,4 +1,3 @@
-import { useCallback } from "react";
 import {
   useForm,
   FormProvider,
@@ -15,32 +14,16 @@ import AccordionDetails from "@mui/material/AccordionDetails";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import FormHelperText from "@mui/material/FormHelperText";
 // import { AxleGroupForm } from "./AxleGroupForm";
-import { useState } from "react";
-import { COUNTRIES_THAT_SUPPORT_PROVINCE } from "../../../../constants/countries";
 import { MAKES } from "./constants";
-import {
-  CreatePowerUnit,
-  AxleFrontGroup,
-  AxleGroup,
-  AxleType,
-  UpdatePowerUnit,
-  PowerUnitType,
-} from "../../types";
-import FormControlLabel from "@mui/material/FormControlLabel";
+import { CreatePowerUnit, PowerUnitType } from "../../types";
 import FormControl from "@mui/material/FormControl";
 import FormLabel from "@mui/material/FormLabel";
 import OutlinedInput from "@mui/material/OutlinedInput";
-import {
-  addPowerUnit,
-  updatePowerUnit,
-  getPowerUnitTypes,
-} from "../../hooks/useVehiclesApi";
+import { addPowerUnit, getPowerUnitTypes } from "../../hooks/useVehiclesApi";
 import { DisplaySnackBarOptions } from "../dashboard/Dashboard";
 import MenuItem from "@mui/material/MenuItem";
-import Select, { SelectChangeEvent } from "@mui/material/Select";
+import Select from "@mui/material/Select";
 import { CountryAndProvince } from "./subsections/CountryAndProvince";
-
-import CountriesAndStates from "../../../../constants/countries_and_states.json";
 
 /**
  * Props used by the power unit form.
@@ -57,8 +40,8 @@ interface PowerUnitFormProps {
    * The power unit id to be retrieved.
    * If valid and available, the form will be in an editable state.
    */
-  powerUnitId?: string,
-  
+  powerUnitId?: string;
+
   /**
    * Function to close the slide panel.
    */
@@ -71,6 +54,7 @@ interface PowerUnitFormProps {
 export const PowerUnitForm = ({
   displaySnackBar,
   powerUnit,
+  powerUnitId,
   closeSlidePanel,
 }: PowerUnitFormProps) => {
   const formMethods = useForm<CreatePowerUnit>({
@@ -98,9 +82,6 @@ export const PowerUnitForm = ({
     register,
     handleSubmit,
     formState: { isDirty },
-    getValues,
-    watch,
-    resetField,
     control,
   } = formMethods;
 
@@ -115,54 +96,35 @@ export const PowerUnitForm = ({
   const addVehicleQuery = useMutation({
     mutationFn: addPowerUnit,
     onSuccess: (response) => {
-      closeSlidePanel();
-      displaySnackBar({ display: true, isError: false, messageI18NKey: 'vehicle.add-vehicle.add-power-unit-success'})
-      // if (response.status === 200) {
-      //   queryClient.invalidateQueries(["powerUnits"]);
-      //   closeSlidePanel();
-      // } else {
-      //   // Display Error in the form.
-      // }
+      if (response.status === 200) {
+        queryClient.invalidateQueries(["powerUnits"]);
+        closeSlidePanel();
+        displaySnackBar({
+          display: true,
+          isError: false,
+          messageI18NKey: "vehicle.add-vehicle.add-power-unit-success",
+        });
+      } else {
+        // Display Error in the form.
+      }
     },
   });
 
-  // const countrySelected = watch("country");
-  // const axleGroupTest = {
-  //   axleFrontGroup: "Single",
-  //   axleTypeFront: "Steering",
-  //   axleTypeRear: "Steering",
-  //   axleGroupNumber: 10,
-  //   axleGroupSpacing: 3,
-  //   interaxleSpreadFront: 1,
-  //   interaxleSpreadRear: 4,
-  //   numberOfTiresFront: 4,
-  //   numberOfTiresRear: 4,
-  // };
-
-  const boldTextStyle = {
+  /**
+   * Custom css overrides for the form fields
+   */
+  const formFieldStyle = {
     fontWeight: "bold",
     width: "300px",
+    marginLeft: "8px",
   };
-  // const translationPrefix = "vehicle.axle-group";
-  // const [numberOfAxleGroups, setNumberOfAxleGroups] = useState(1);
-  // const [selectedProvince, setSelectedProvince] = useState<string>("");
-
-  // const [shouldDisplayProvince, setShouldDisplayProvince] =
-  //   useState<boolean>(true);
 
   /**
-   *
+   * Adds a vehicle.
    */
   const onAddVehicle = function (data: FieldValues) {
-    // const formValues =  getValues();
     const powerUnitToBeAdded = data as CreatePowerUnit;
-    console.log(data);
     addVehicleQuery.mutate(powerUnitToBeAdded);
-    // .then(displaySnackBar(() => {
-    //   display: true,
-    //   messageI18NKey: "xyz",
-    //   isError: false,
-    // }));
   };
 
   /**
@@ -206,7 +168,7 @@ export const PowerUnitForm = ({
                       <FormControl margin="normal" error={invalid}>
                         <FormLabel
                           id="power-unit-unit-number-label"
-                          sx={boldTextStyle}
+                          sx={formFieldStyle}
                         >
                           {t("vehicle.power-unit.unit-number")}
                         </FormLabel>
@@ -239,7 +201,7 @@ export const PowerUnitForm = ({
                       <FormControl margin="normal" error={invalid}>
                         <FormLabel
                           id="power-unit-make-label"
-                          sx={boldTextStyle}
+                          sx={formFieldStyle}
                         >
                           {t("vehicle.power-unit.make")}
                         </FormLabel>
@@ -273,7 +235,7 @@ export const PowerUnitForm = ({
                         <FormControl margin="normal" error={invalid}>
                           <FormLabel
                             id="power-unit-year-label"
-                            sx={boldTextStyle}
+                            sx={formFieldStyle}
                           >
                             {t("vehicle.power-unit.year")}
                           </FormLabel>
@@ -306,7 +268,7 @@ export const PowerUnitForm = ({
                   render={({ fieldState: { invalid } }) => (
                     <>
                       <FormControl margin="normal" error={invalid}>
-                        <FormLabel id="power-unit-vin-label" sx={boldTextStyle}>
+                        <FormLabel id="power-unit-vin-label" sx={formFieldStyle}>
                           {t("vehicle.power-unit.vin")}
                         </FormLabel>
                         <OutlinedInput
@@ -335,7 +297,7 @@ export const PowerUnitForm = ({
                       <FormControl margin="normal" error={invalid}>
                         <FormLabel
                           id="power-unit-plate-label"
-                          sx={boldTextStyle}
+                          sx={formFieldStyle}
                         >
                           {t("vehicle.power-unit.plate")}
                         </FormLabel>
@@ -363,7 +325,7 @@ export const PowerUnitForm = ({
                       <FormControl margin="normal" error={invalid}>
                         <FormLabel
                           id="power-unit-power-unit-type-label"
-                          sx={boldTextStyle}
+                          sx={formFieldStyle}
                         >
                           {t("vehicle.power-unit.power-unit-type")}
                         </FormLabel>
@@ -414,7 +376,7 @@ export const PowerUnitForm = ({
                       <FormControl margin="normal" error={invalid}>
                         <FormLabel
                           id="power-unit-licensed-gvw-label"
-                          sx={boldTextStyle}
+                          sx={formFieldStyle}
                         >
                           {t("vehicle.power-unit.licensed-gvw")}
                         </FormLabel>
@@ -442,7 +404,7 @@ export const PowerUnitForm = ({
                       <FormControl margin="normal" error={invalid}>
                         <FormLabel
                           id="power-unit-steer-axle-tire-size-label"
-                          sx={boldTextStyle}
+                          sx={formFieldStyle}
                         >
                           {t("vehicle.power-unit.steer-axle-tire-size")}
                         </FormLabel>

@@ -55,18 +55,22 @@ export const CountryAndProvince = ({
     useState<boolean>(true);
 
   const countrySelected = watch("country");
-  const boldTextStyle = {
+  /**
+   * Custom css overrides for the form fields
+   */
+  const formFieldStyle = {
     fontWeight: "bold",
     width: "300px",
   };
 
   /**
    * Function to handle changes on selecting a country.
+   * When the selected country supports provinces, provinces are displayed.
+   * Otherwise, the province field is hidden.
    * @param event the select event
    */
   const onChangeCountry = useCallback(function (event: SelectChangeEvent) {
     const country: string = event.target.value as string;
-    console.log('On change triggered');
     resetField("province", { defaultValue: "" });
     setSelectedProvince(() => "");
     if (
@@ -74,6 +78,8 @@ export const CountryAndProvince = ({
         (supportedCountry) => supportedCountry === country
       )
     ) {
+      // If country does not support province, as per API spec, set country to province too
+      // even though the field is hidden.
       setShouldDisplayProvince(() => false);
       setValue("province", country);
       setValue("provinceId", country + "-" + country);
@@ -112,7 +118,7 @@ export const CountryAndProvince = ({
     <div>
       <div>
         <FormControl margin="normal" error={getFieldState('country')['invalid']}>
-          <FormLabel id="power-unit-country-label" sx={boldTextStyle}>
+          <FormLabel id="power-unit-country-label" sx={formFieldStyle}>
             {t("vehicle.power-unit.country")}
           </FormLabel>
           <Select
@@ -137,7 +143,7 @@ export const CountryAndProvince = ({
       {shouldDisplayProvince && (
         <div>
           <FormControl margin="normal" size="small">
-            <FormLabel id="power-unit-province-label" sx={boldTextStyle}>
+            <FormLabel id="power-unit-province-label" sx={formFieldStyle}>
               {t("vehicle.power-unit.province")}
             </FormLabel>
             <Select

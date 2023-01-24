@@ -1,6 +1,5 @@
 import React, { useCallback, useState } from "react";
 import { Box, Tabs, Tab } from "@mui/material";
-// import { VehicleForm } from "../form/VehicleForm";
 import { List } from "../list/List";
 import { useTranslation } from "react-i18next";
 import { PowerUnitForm } from "../form/PowerUnitForm";
@@ -35,11 +34,6 @@ interface TabPanelProps {
   children?: React.ReactNode;
   index: number;
   value: number;
-}
-
-export enum Vehicle {
-  POWER_UNIT,
-  TRAILER,
 }
 
 /**

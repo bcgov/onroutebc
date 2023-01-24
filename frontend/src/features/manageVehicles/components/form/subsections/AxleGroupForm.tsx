@@ -1,15 +1,12 @@
 import { useFormContext } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import "./VehicleForm.scss";
-// import TextField from '@mui/material/TextField';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
 import FormLabel from '@mui/material/FormLabel';
 import { AxleFrontGroup, AxleType, AxleGroup } from "../../../types";
-// import Input from '@mui/material/Input';
-// import FilledInput from '@mui/material/FilledInput';
 import OutlinedInput from '@mui/material/OutlinedInput';
 
 /**
@@ -34,8 +31,6 @@ export const AxleGroupForm = ({
     const translationPrefix = 'vehicle.axle-group';
     const { 
         register,
-        handleSubmit,
-        formState: { errors }
     } = useFormContext();
 
     const boldTextStyle = {
@@ -112,12 +107,6 @@ export const AxleGroupForm = ({
                         defaultValue={axleGroup?.axleGroupNumber}
                     />
                 </FormControl>
-                {/* <TextField 
-                    label={t('vehicle.axle-group.axle-group-number')}
-                    variant="outlined"
-                    margin="normal" 
-                    inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }} 
-                /> */}
             </div>
             <div>
                 <FormControl margin="normal">
@@ -156,13 +145,6 @@ export const AxleGroupForm = ({
                         defaultValue={axleGroup?.interaxleSpreadRear}
                     />
                 </FormControl>
-
-                {/* <TextField
-                    label={t('vehicle.axle-group.interaxle-spread-rear')}
-                    variant="outlined"
-                    margin="normal"
-                    inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
-                /> */}
             </div>
             <div>
 
@@ -176,12 +158,6 @@ export const AxleGroupForm = ({
                         defaultValue={axleGroup?.numberOfTiresFront}
                     />
                 </FormControl>
-                {/* <TextField
-                    label={t('vehicle.axle-group.number-of-tires-front')}
-                    variant="outlined"
-                    margin="normal"
-                    inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
-                /> */}
             </div>
             <div>
                 <FormControl margin="normal">
@@ -194,12 +170,6 @@ export const AxleGroupForm = ({
                         defaultValue={axleGroup?.numberOfTiresRear}
                     />
                 </FormControl>
-                {/* <TextField
-                    label={t('vehicle.axle-group.number-of-tires-rear')}
-                    variant="outlined"
-                    margin="normal"
-                    inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
-                /> */}
             </div>
         </div>
     );
