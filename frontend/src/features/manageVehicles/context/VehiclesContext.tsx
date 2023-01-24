@@ -1,6 +1,6 @@
 import { useState, createContext, useEffect, useMemo } from "react";
 import { IPowerUnit, VehiclesContextType } from "../types/managevehicles";
-import { useVehiclesApi } from "../hooks/useVehiclesApi";
+import { getAllPowerUnits } from "../hooks/useVehiclesApi";
 
 /*
  *
@@ -27,12 +27,12 @@ export const ManageVehiclesProvider = ({
   const powerUnitData = useMemo<IPowerUnit[]>(() => powerUnits, [powerUnits]);
 
   // Custom hook to fetch the data from the API
-  const vehiclesApi = useVehiclesApi();
+  //const vehiclesApi = useVehiclesApi();
 
   // Fetch data from the API on initial render of Manage Vehicles
   useEffect(() => {
     const fetch = async () => {
-      const data = await vehiclesApi.getAllPowerUnits();
+      const data = await getAllPowerUnits();
       setPowerUnits(data);
     };
     fetch();
