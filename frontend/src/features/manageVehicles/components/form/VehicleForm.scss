@@ -98,3 +98,23 @@ mv - manage vehicles
   -webkit-appearance: none;
 }
 
+.bold-text {
+  font-weight: bold;
+}
+
+.add-vehicle-button-container {
+  width: 90%;
+  margin-left: 0px;
+  padding-left: 5%;
+  padding-right: 5%;
+  //height: 75px;
+  background-color: white;
+  position: fixed;
+  bottom: 1px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-top: 1px solid #B2B5B6;
+}
+
