@@ -69,13 +69,10 @@ jobs:
           ref: ${{ github.head_ref }}   # checkout the correct branch name
           fetch-depth: 0                # fetch the whole repo history
 
-      - uses: gittools/actions/gitversion/setup@v0.9.7
+      - name: Setup GitVersion
+        uses: gittools/actions/gitversion/setup@v0.9.7
         with:
           versionSpec: '5.x'
-      # gitversion/setup@v0.9.7 action omitted for brevity.
-      - name: Debug
-        run: |
-          ls -a
 
       - name: Determine SemVersion
         id:   gitversion
@@ -164,7 +161,9 @@ jobs:
   pre-release:
     name: Create Pre-Release
     runs-on: ubuntu-22.04
-    needs: GitVersion
+    needs: 
+      - GitVersion
+      - deploys-test
     steps:
       - uses: actions/create-release@v1
         env:
@@ -229,3 +228,19 @@ jobs:
           repository: ${{ github.repository }}/${{ matrix.component }}
           target: test
           tags: prod
+          
+  release:
+    name: Create Release
+    runs-on: ubuntu-22.04
+    needs: 
+      - GitVersion
+      - deploys-prod
+    steps:
+      - uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ needs.GitVersion.outputs.fullSemVer }}
+          release_name: Release ${{ needs.GitVersion.outputs.fullSemVer }}
+          draft: false
+          prerelease: false
