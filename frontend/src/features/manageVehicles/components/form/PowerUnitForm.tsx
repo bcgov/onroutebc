@@ -142,7 +142,7 @@ export const PowerUnitForm = ({
                   key="controller-powerunit-unitNumber"
                   name="unitNumber"
                   control={control}
-                  rules={{ required: true }}
+                  rules={{ required: true, maxLength: 10 }}
                   defaultValue={powerUnit?.unitNumber || ""}
                   render={({ fieldState: { invalid } }) => (
                     <>
@@ -158,13 +158,12 @@ export const PowerUnitForm = ({
                           defaultValue={powerUnit?.unitNumber}
                           {...register("unitNumber", {
                             required: true,
+                            maxLength: 10,
                           })}
                         />
                         {invalid && (
                           <FormHelperText error>
-                            {t("vehicle.power-unit.required", {
-                              fieldName: "Unit Number",
-                            })}
+                            {t("vehicle.power-unit.unit-number.required")}
                           </FormHelperText>
                         )}
                       </FormControl>
@@ -177,11 +176,11 @@ export const PowerUnitForm = ({
                   key="controller-powerunit-make"
                   name="make"
                   control={control}
-                  rules={{ required: true }}
+                  rules={{ required: false }}
                   defaultValue={powerUnit?.make || ""}
-                  render={({ fieldState: { invalid } }) => (
+                  render={() => (
                     <>
-                      <FormControl margin="normal" error={invalid}>
+                      <FormControl margin="normal">
                         <FormLabel
                           id="power-unit-make-label"
                           sx={formFieldStyle}
@@ -192,16 +191,9 @@ export const PowerUnitForm = ({
                           aria-labelledby="power-unit-make-label"
                           defaultValue={powerUnit?.make}
                           {...register("make", {
-                            required: true,
+                            required: false,
                           })}
                         />
-                        {invalid && (
-                          <FormHelperText error>
-                            {t("vehicle.power-unit.required", {
-                              fieldName: "Make",
-                            })}
-                          </FormHelperText>
-                        )}
                       </FormControl>
                     </>
                   )}
@@ -212,12 +204,12 @@ export const PowerUnitForm = ({
                   key="controller-powerunit-year"
                   name="year"
                   control={control}
-                  rules={{ required: true }}
+                  rules={{ required: false }}
                   defaultValue={powerUnit?.year || undefined}
-                  render={({ fieldState: { invalid } }) => {
+                  render={() => {
                     return (
                       <>
-                        <FormControl margin="normal" error={invalid}>
+                        <FormControl margin="normal">
                           <FormLabel
                             id="power-unit-year-label"
                             sx={formFieldStyle}
@@ -228,17 +220,10 @@ export const PowerUnitForm = ({
                             aria-labelledby="power-unit-year-label"
                             defaultValue={powerUnit?.year}
                             {...register("year", {
-                              required: true,
-                              valueAsNumber: true
+                              required: false,
+                              valueAsNumber: true,
                             })}
                           />
-                          {invalid && (
-                            <FormHelperText error>
-                              {t("vehicle.power-unit.required", {
-                                fieldName: "Year",
-                              })}
-                            </FormHelperText>
-                          )}
                         </FormControl>
                       </>
                     );
@@ -272,9 +257,7 @@ export const PowerUnitForm = ({
                         />
                         {invalid && (
                           <FormHelperText error>
-                            {t("vehicle.power-unit.required", {
-                              fieldName: "VIN",
-                            })}
+                            {t("vehicle.power-unit.vin.required")}
                           </FormHelperText>
                         )}
                       </FormControl>
@@ -287,7 +270,7 @@ export const PowerUnitForm = ({
                   key="controller-powerunit-plate"
                   name="plate"
                   control={control}
-                  rules={{ required: true }}
+                  rules={{ required: true, maxLength: 10 }}
                   defaultValue={powerUnit?.plate || ""}
                   render={({ fieldState: { invalid } }) => (
                     <>
@@ -302,13 +285,12 @@ export const PowerUnitForm = ({
                           aria-labelledby="power-unit-plate-label"
                           {...register("plate", {
                             required: true,
+                            maxLength: 10,
                           })}
                         />
                         {invalid && (
                           <FormHelperText error>
-                            {t("vehicle.power-unit.required", {
-                              fieldName: "Plate",
-                            })}
+                            {t("vehicle.power-unit.plate.required")}
                           </FormHelperText>
                         )}
                       </FormControl>
@@ -321,11 +303,11 @@ export const PowerUnitForm = ({
                   key="controller-powerunit-power-unit-type"
                   name="powerUnitTypeCode"
                   control={control}
-                  rules={{ required: true }}
+                  rules={{ required: false }}
                   defaultValue={powerUnit?.powerUnitTypeCode || ""}
-                  render={({ fieldState: { invalid } }) => (
+                  render={() => (
                     <>
-                      <FormControl margin="normal" error={invalid}>
+                      <FormControl margin="normal">
                         <FormLabel
                           id="power-unit-power-unit-type-label"
                           sx={formFieldStyle}
@@ -336,7 +318,7 @@ export const PowerUnitForm = ({
                           aria-labelledby="power-unit-power-unit-type-label"
                           defaultValue={""}
                           {...register("powerUnitTypeCode", {
-                            required: true,
+                            required: false,
                           })}
                         >
                           {powerUnitTypesQuery.data?.map(
@@ -350,13 +332,6 @@ export const PowerUnitForm = ({
                             )
                           )}
                         </Select>
-                        {invalid && (
-                          <FormHelperText error>
-                            {t("vehicle.power-unit.required", {
-                              fieldName: "Power Unit Type",
-                            })}
-                          </FormHelperText>
-                        )}
                       </FormControl>
                     </>
                   )}
@@ -379,11 +354,11 @@ export const PowerUnitForm = ({
                   key="controller-powerunit-licensed-gvw"
                   name="licensedGvw"
                   control={control}
-                  rules={{ required: true }}
+                  rules={{ required: false }}
                   defaultValue={powerUnit?.licensedGvw || undefined}
-                  render={({ fieldState: { invalid } }) => (
+                  render={() => (
                     <>
-                      <FormControl margin="normal" error={invalid}>
+                      <FormControl margin="normal">
                         <FormLabel
                           id="power-unit-licensed-gvw-label"
                           sx={formFieldStyle}
@@ -394,17 +369,10 @@ export const PowerUnitForm = ({
                           aria-labelledby="power-unit-licensed-gvw-label"
                           // defaultValue={axleGroup?.axleGroupNumber}
                           {...register("licensedGvw", {
-                            required: true,
-                            valueAsNumber: true
+                            required: false,
+                            valueAsNumber: true,
                           })}
                         />
-                        {invalid && (
-                          <FormHelperText error>
-                            {t("vehicle.power-unit.required", {
-                              fieldName: "Licensed GVW",
-                            })}
-                          </FormHelperText>
-                        )}
                       </FormControl>
                     </>
                   )}
@@ -415,11 +383,11 @@ export const PowerUnitForm = ({
                   key="controller-powerunit-steer-axle-tire-size"
                   name="steerAxleTireSize"
                   control={control}
-                  rules={{ required: true }}
+                  rules={{ required: false }}
                   defaultValue={powerUnit?.steerAxleTireSize || undefined}
-                  render={({ fieldState: { invalid } }) => (
+                  render={() => (
                     <>
-                      <FormControl margin="normal" error={invalid}>
+                      <FormControl margin="normal">
                         <FormLabel
                           id="power-unit-steer-axle-tire-size-label"
                           sx={formFieldStyle}
@@ -430,17 +398,10 @@ export const PowerUnitForm = ({
                           aria-labelledby="power-unit-steer-axle-tire-size-label"
                           // defaultValue={axleGroup?.axleGroupNumber}
                           {...register("steerAxleTireSize", {
-                            required: true,
-                            valueAsNumber: true
+                            required: false,
+                            valueAsNumber: true,
                           })}
                         />
-                        {invalid && (
-                          <FormHelperText error>
-                            {t("vehicle.power-unit.required", {
-                              fieldName: "Steer Axle Tire Size",
-                            })}
-                          </FormHelperText>
-                        )}
                       </FormControl>
                     </>
                   )}

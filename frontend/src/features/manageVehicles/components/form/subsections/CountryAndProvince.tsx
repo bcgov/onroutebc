@@ -1,7 +1,6 @@
 import { useFormContext, Controller } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import ".././VehicleForm.scss";
-import FormHelperText from "@mui/material/FormHelperText";
 import { useCallback, useState } from "react";
 import FormControl from "@mui/material/FormControl";
 import FormLabel from "@mui/material/FormLabel";
@@ -121,11 +120,11 @@ export const CountryAndProvince = ({
           key="controller-powerunit-country"
           name="country"
           control={control}
-          rules={{ required: true }}
+          rules={{ required: false }}
           defaultValue={country || ""}
-          render={({ fieldState: { invalid } }) => (
+          render={() => (
             <>
-              <FormControl margin="normal" error={invalid}>
+              <FormControl margin="normal">
                 <FormLabel id="power-unit-country-label" sx={formFieldStyle}>
                   {t("vehicle.power-unit.country")}
                 </FormLabel>
@@ -133,7 +132,7 @@ export const CountryAndProvince = ({
                   aria-labelledby="power-unit-country-label"
                   defaultValue={country || ""}
                   {...register("country", {
-                    required: true,
+                    required: false,
                     onChange: onChangeCountry,
                   })}
                 >
@@ -146,11 +145,6 @@ export const CountryAndProvince = ({
                     </MenuItem>
                   ))}
                 </Select>
-                {invalid && (
-                  <FormHelperText error>
-                    {t("vehicle.power-unit.required", { fieldName: "Country" })}
-                  </FormHelperText>
-                )}
               </FormControl>
             </>
           )}
@@ -159,15 +153,14 @@ export const CountryAndProvince = ({
       {shouldDisplayProvince && (
         <div>
           <Controller
-            key=""
-            name=""
-            rules={{ required: shouldDisplayProvince }}
-            defaultValue={country || ""}
-            render={({ fieldState: { invalid } }) => (
+            key="controller-powerunit-province"
+            name="province"
+            rules={{ required: false }}
+            defaultValue={province || ""}
+            render={() => (
               <>
                 <FormControl
                   margin="normal"
-                  error={invalid}
                 >
                   <FormLabel id="power-unit-province-label" sx={formFieldStyle}>
                     {t("vehicle.power-unit.province")}
@@ -176,7 +169,7 @@ export const CountryAndProvince = ({
                     aria-labelledby="power-unit-province-label"
                     defaultValue={province || ""}
                     {...register("province", {
-                      required: shouldDisplayProvince,
+                      required: false,
                       onChange: onChangeProvince,
                     })}
                     value={selectedProvince}
@@ -190,13 +183,6 @@ export const CountryAndProvince = ({
                       </MenuItem>
                     ))}
                   </Select>
-                  {invalid && (
-                    <FormHelperText error>
-                      {t("vehicle.power-unit.required", {
-                        fieldName: "Province/State",
-                      })}
-                    </FormHelperText>
-                  )}
                 </FormControl>
               </>
             )}
