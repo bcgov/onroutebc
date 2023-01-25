@@ -1,7 +1,6 @@
 import {
   memo,
   useCallback,
-  useContext,
   useEffect,
   useMemo,
   useState,
@@ -14,14 +13,16 @@ import MaterialReactTable, {
 } from "material-react-table";
 import "./List.scss";
 import { Box, IconButton, Tooltip } from "@mui/material";
-import { IPowerUnit, VehiclesContextType } from "../../types/managevehicles";
-import { VehiclesContext } from "../../context/VehiclesContext";
+import { IPowerUnit } from "../../types/managevehicles";
 import { PowerUnit_ColumnDef } from "./Columns";
 import { Filter } from "../options/Filter";
 import { Trash } from "../options/Trash";
 import { CSVOptions } from "../options/CSVOptions";
 import { Delete, Edit, ContentCopy } from "@mui/icons-material";
 import { BC_BACKGROUND_LIGHT } from "../../../../constants/bcGovStyles";
+import { useQuery } from "@tanstack/react-query";
+import { getAllPowerUnits } from "../../hooks/useVehiclesApi";
+import { ErrorSnackbar } from "../snackbars/ErrorSnackbar";
 
 /*
  *
@@ -34,39 +35,25 @@ import { BC_BACKGROUND_LIGHT } from "../../../../constants/bcGovStyles";
 
 export const List = memo(() => {
   // Data, fetched from backend API
-  const { powerUnitData } = useContext(VehiclesContext) as VehiclesContextType;
-
-  // Table state
-  const [isError, setIsError] = useState(false);
-  const [isLoading, setIsLoading] = useState(false); // blurs content
-  const [isRefetching, setIsRefetching] = useState(false); // used for progress bar
-  const [rowCount, setRowCount] = useState(0);
+  const {
+    data: powerUnitData,
+    isError,
+    isFetching,
+    isLoading,
+    error,
+    //refetch,
+  } = useQuery({
+    queryKey: ["powerUnits"],
+    queryFn: getAllPowerUnits,
+    keepPreviousData: true,
+    staleTime: 5000,
+  });
 
   // Column definitions for the table
   const columnsPowerUnit = useMemo<MRT_ColumnDef<IPowerUnit>[]>(
     () => PowerUnit_ColumnDef,
     []
   );
-
-  // Needs a Refactor. The original code from MRT set the table state in a
-  // try/catch block during the fetching of data
-  // See https://www.material-react-table.com/docs/examples/remote
-  useEffect(() => {
-    if (!powerUnitData.length) {
-      setIsLoading(true);
-    } else {
-      setIsRefetching(true);
-    }
-
-    if (powerUnitData) {
-      setRowCount(powerUnitData.length);
-      setIsError(false);
-      setIsLoading(false);
-      setIsRefetching(false);
-    } else {
-      setIsError(true);
-    }
-  }, [powerUnitData]);
 
   const handleDeleteRow = useCallback((row: MRT_Row<IPowerUnit>) => {
     if (
@@ -77,18 +64,37 @@ export const List = memo(() => {
     //send api delete request here, then refetch or update local table data for re-render
   }, []);
 
+  // Start snackbar code for error handling
+  const [showErrorSnackbar, setShowErrorSnackbar] = useState(false);
+  // Display error message from API call. If error is an unexpected type (not a string),
+  // then display generic error message
+  const errorMessage: string =
+    typeof error === "string" ? error : "An unexpected error occured";
+
+  useEffect(() => {
+    if (isError) setShowErrorSnackbar(true);
+  }, [isError]);
+  // End snackbar code for error handling
+
   return (
     <div className="table-container">
+      
+      <ErrorSnackbar
+        showErrorSnackbar={showErrorSnackbar}
+        setShowErrorSnackbar={setShowErrorSnackbar}
+        errorMessage={errorMessage}
+      />
+
       <MaterialReactTable
         // Required Props
-        data={powerUnitData}
+        data={powerUnitData ?? []}
         columns={columnsPowerUnit}
         // State variables and actions
-        rowCount={rowCount}
+        //rowCount={rowCount}
         state={{
           isLoading,
           showAlertBanner: isError,
-          showProgressBars: isRefetching,
+          showProgressBars: isFetching,
         }}
         // Disable the default column actions so that we can use our custom actions
         enableColumnActions={false}
@@ -102,43 +108,55 @@ export const List = memo(() => {
             header: "",
           },
         }}
-        renderRowActions={useCallback(({table, row} : {table: MRT_TableInstance<IPowerUnit>, row: MRT_Row<IPowerUnit>}) => (
-          <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-            <Tooltip arrow placement="left" title="Edit">
-              {/*tslint:disable-next-line*/}
-              <IconButton onClick={() => table.setEditingRow(row)}>
-                <Edit />
-              </IconButton>
-            </Tooltip>
-            <Tooltip arrow placement="top" title="Copy">
-              {/*tslint:disable-next-line*/}
-              <IconButton onClick={() => table.setEditingRow(row)}>
-                <ContentCopy />
-              </IconButton>
-            </Tooltip>
-            <Tooltip arrow placement="top" title="Delete">
-              {/*tslint:disable-next-line*/}
-              <IconButton color="error" onClick={() => handleDeleteRow(row)}>
-                <Delete />
-              </IconButton>
-            </Tooltip>
-          </Box>
-        ), [])}
+        renderRowActions={useCallback(
+          ({
+            table,
+            row,
+          }: {
+            table: MRT_TableInstance<IPowerUnit>;
+            row: MRT_Row<IPowerUnit>;
+          }) => (
+            <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+              <Tooltip arrow placement="left" title="Edit">
+                {/*tslint:disable-next-line*/}
+                <IconButton onClick={() => table.setEditingRow(row)}>
+                  <Edit />
+                </IconButton>
+              </Tooltip>
+              <Tooltip arrow placement="top" title="Copy">
+                {/*tslint:disable-next-line*/}
+                <IconButton onClick={() => table.setEditingRow(row)}>
+                  <ContentCopy />
+                </IconButton>
+              </Tooltip>
+              <Tooltip arrow placement="top" title="Delete">
+                {/*tslint:disable-next-line*/}
+                <IconButton color="error" onClick={() => handleDeleteRow(row)}>
+                  <Delete />
+                </IconButton>
+              </Tooltip>
+            </Box>
+          ),
+          []
+        )}
         // Render a custom options Bar (inclues search, filter, trash, and csv options)
-        renderTopToolbar={useCallback(({ table } : { table : MRT_TableInstance<IPowerUnit>}) => (
-          <Box
-            sx={{
-              display: "flex",
-              padding: "10px 0px",
-              backgroundColor: "white",
-            }}
-          >
-            <MRT_GlobalFilterTextField table={table} />
-            <Filter />
-            <Trash />
-            <CSVOptions />
-          </Box>
-        ),[])}
+        renderTopToolbar={useCallback(
+          ({ table }: { table: MRT_TableInstance<IPowerUnit> }) => (
+            <Box
+              sx={{
+                display: "flex",
+                padding: "10px 0px",
+                backgroundColor: "white",
+              }}
+            >
+              <MRT_GlobalFilterTextField table={table} />
+              <Filter />
+              <Trash />
+              <CSVOptions />
+            </Box>
+          ),
+          []
+        )}
         /*
          *
          * STYLES
