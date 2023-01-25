@@ -16,6 +16,7 @@
     "make-badges": "istanbul-badges-readme --logo=jest --exitCode=1",
     "make-badges:ci": "npm run make-badges -- --ci",
     "test": "jest",
+    "test:clear_jest": "jest --clearCache",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
@@ -98,6 +99,12 @@
       "ts"
     ],
     "rootDir": "src",
+    "modulePaths": [
+      "<rootDir>"
+    ],
+   "moduleNameMapper": {
+      "^src/(.*)$": "<rootDir>/$1"
+    },
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
@@ -110,7 +117,7 @@
     "coveragePathIgnorePatterns": [
       "/node_modules/",
       "/test/"
-    ],
+    ], 
     "coverageReporters": [
       "text",
       "lcov",

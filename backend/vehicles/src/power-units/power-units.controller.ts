@@ -44,8 +44,8 @@ export class PowerUnitsController {
     type: ReadPowerUnitDto,
   })
   @Post()
-  create(@Body() createPowerUnitDto: CreatePowerUnitDto) {
-    return this.powerUnitsService.create(createPowerUnitDto);
+  async create(@Body() createPowerUnitDto: CreatePowerUnitDto) {
+    return await this.powerUnitsService.create(createPowerUnitDto);
   }
 
   @ApiOkResponse({
@@ -95,10 +95,9 @@ export class PowerUnitsController {
   @Delete(':powerUnitId')
   async remove(@Param('powerUnitId') powerUnitId: string) {
     const deleteResult = await this.powerUnitsService.remove(powerUnitId);
-    if (deleteResult.affected > 0) {
-      return { deleted: true };
-    } else {
+    if (deleteResult.affected === 0) {
       throw new DataNotFoundException();
     }
+    return { deleted: true };
   }
 }

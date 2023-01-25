@@ -66,4 +66,26 @@ export class CreatePowerUnitDto {
     example: '32',
   })
   steerAxleTireSize: number;
+
+  constructor(
+    unitNumber: string,
+    plate: string,
+    provinceId: string,
+    year: number,
+    make: string,
+    vin: string,
+    powerUnitTypeCode: string,
+    licensedGvw: number,
+    steerAxleTireSize: number,
+  ) {
+    this.unitNumber = unitNumber;
+    this.plate = plate;
+    this.provinceId = provinceId;
+    this.year = year;
+    this.make = make;
+    this.vin = vin;
+    this.powerUnitTypeCode = powerUnitTypeCode;
+    this.licensedGvw = licensedGvw;
+    this.steerAxleTireSize = steerAxleTireSize;
+  }
 }
