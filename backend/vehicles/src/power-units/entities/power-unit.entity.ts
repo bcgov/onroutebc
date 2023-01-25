@@ -9,45 +9,67 @@ import {
 import { PowerUnitType } from '../../power-unit-types/entities/power-unit-type.entity';
 import { Province } from '../../common/entities/province.entity';
 import { Base } from '../../common/entities/base.entity';
+import { AutoMap } from '@automapper/classes';
 
 @Entity({ name: 'ORBC_POWER_UNIT' })
 export class PowerUnit extends Base {
+  @AutoMap()
   @ApiProperty({
     example: '1',
-    description: 'The Power Unit ID',
+    description:
+      'Unique identifier for this vehicle record in a company inventory.',
   })
   @PrimaryGeneratedColumn({ type: 'bigint', name: 'POWER_UNIT_ID' })
   powerUnitId: string;
 
-  @ApiProperty({ example: '10', description: 'Unit Number' })
+  @AutoMap()
+  @ApiProperty({
+    example: '10',
+    description:
+      'Number or code that the company uses to refer to the vehicle.',
+  })
   @Column({ length: 10, name: 'UNIT_NUMBER', nullable: true })
   unitNumber: string;
 
-  @ApiProperty({ example: 'CWJR 897665', description: 'Plate Number' })
+  @AutoMap()
+  @ApiProperty({ example: 'CWJR 897665', description: 'License plate.' })
   @Column({ length: 10, name: 'PLATE', nullable: false })
-  plateNumber: string;
+  plate: string;
 
-  @ApiProperty({
-    example: 'BC',
-    description: 'The Prov where the vehicle was registered',
-  })
+  @AutoMap(() => Province)
   @ManyToOne(() => Province, (Province) => Province.powerUnits)
   @JoinColumn({ name: 'PROVINCE_ID' })
   province: Province;
 
-  @ApiProperty({ example: '2022', description: 'The year of Manufacture' })
+  @AutoMap()
+  @ApiProperty({
+    example: '2022',
+    description: 'Year of manufacture of the vehicle.',
+  })
   @Column({ type: 'smallint', width: 4, name: 'YEAR', nullable: false })
   year: number;
 
-  @ApiProperty({ example: 'Kenworth', description: 'Make of the vehicle' })
+  @AutoMap()
+  @ApiProperty({
+    example: 'Kenworth',
+    description: 'Make (manufacturer) of the vehicle.',
+  })
   @Column({ length: 50, name: 'MAKE', nullable: false })
   make: string;
 
-  @ApiProperty({ example: '1ZVFT80N475211367', description: 'VIN' })
+  @AutoMap()
+  @ApiProperty({
+    example: '1ZVFT80N475211367',
+    description: 'Vehicle identification number for the power unit.',
+  })
   @Column({ length: 17, name: 'VIN', nullable: false })
   vin: string;
 
-  @ApiProperty({ example: '63500', description: 'Licensed GVW' })
+  @AutoMap()
+  @ApiProperty({
+    example: '63500',
+    description: 'Licensed gross vehicle weight of the power unit.',
+  })
   @Column({
     type: 'decimal',
     precision: 18,
@@ -57,12 +79,16 @@ export class PowerUnit extends Base {
   })
   licensedGvw: number;
 
-  @ApiProperty({ example: '1', description: 'Power Unit Type Id' })
+  @AutoMap(() => PowerUnitType)
   @ManyToOne(() => PowerUnitType, (powerUnitType) => powerUnitType.powerUnits)
-  @JoinColumn({ name: 'POWER_UNIT_TYPE_ID' })
+  @JoinColumn({ name: 'POWER_UNIT_TYPE_CODE' })
   powerUnitType: PowerUnitType;
 
-  @ApiProperty({ example: '12', description: 'Steer Axle Tire Size' })
+  @AutoMap()
+  @ApiProperty({
+    example: '12',
+    description: 'Size of the steer axle tires (width).',
+  })
   @Column({ type: 'integer', name: 'STEER_AXLE_TIRE_SIZE', nullable: true })
   steerAxleTireSize: number;
 }

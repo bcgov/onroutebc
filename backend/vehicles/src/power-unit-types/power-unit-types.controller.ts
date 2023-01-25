@@ -8,40 +8,97 @@ import {
   Put,
 } from '@nestjs/common';
 import { PowerUnitTypesService } from './power-unit-types.service';
-import { CreatePowerUnitTypeDto } from './dto/create-power-unit-type.dto';
-import { UpdatePowerUnitTypeDto } from './dto/update-power-unit-type.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { CreatePowerUnitTypeDto } from './dto/request/create-power-unit-type.dto';
+import { UpdatePowerUnitTypeDto } from './dto/request/update-power-unit-type.dto';
+import {
+  ApiCreatedResponse,
+  ApiInternalServerErrorResponse,
+  ApiMethodNotAllowedResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiTags,
+} from '@nestjs/swagger';
+import { DataNotFoundException } from 'src/common/exception/data-not-found.exception';
+import { ReadPowerUnitTypeDto } from './dto/response/read-power-unit-type.dto';
+import { ExceptionDto } from 'src/common/dto/exception.dto';
 
 @ApiTags('Power Unit Types')
+@ApiNotFoundResponse({
+  description: 'The Power Unit Type Api Not Found Response',
+  type: ExceptionDto,
+})
+@ApiMethodNotAllowedResponse({
+  description: 'The Power Unit Type Api Method Not Allowed Response',
+  type: ExceptionDto,
+})
+@ApiInternalServerErrorResponse({
+  description: 'The Power Unit Type Api Internal Server Error Response',
+  type: ExceptionDto,
+})
 @Controller('vehicles/power-unit-types')
 export class PowerUnitTypesController {
   constructor(private readonly powerUnitTypesService: PowerUnitTypesService) {}
 
+  @ApiCreatedResponse({
+    description: 'The Power Unit Type Resource',
+    type: ReadPowerUnitTypeDto,
+  })
   @Post()
   create(@Body() createPowerUnitTypeDto: CreatePowerUnitTypeDto) {
     return this.powerUnitTypesService.create(createPowerUnitTypeDto);
   }
 
+  @ApiOkResponse({
+    description: 'The Power Unit Type Resource',
+    type: ReadPowerUnitTypeDto,
+    isArray: true,
+  })
   @Get()
-  findAll() {
-    return this.powerUnitTypesService.findAll();
+  async findAll(): Promise<ReadPowerUnitTypeDto[]> {
+    return await this.powerUnitTypesService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.powerUnitTypesService.findOne(+id);
+  @ApiOkResponse({
+    description: 'The Power Unit Type Resource',
+    type: ReadPowerUnitTypeDto,
+  })
+  @Get(':typeCode')
+  async findOne(
+    @Param('typeCode') typeCode: string,
+  ): Promise<ReadPowerUnitTypeDto> {
+    const powerUnitType = await this.powerUnitTypesService.findOne(typeCode);
+    if (!powerUnitType) {
+      throw new DataNotFoundException();
+    }
+    return powerUnitType;
   }
 
-  @Put(':id')
-  update(
-    @Param('id') id: string,
+  @ApiOkResponse({
+    description: 'The Power Unit Type Resource',
+    type: ReadPowerUnitTypeDto,
+  })
+  @Put(':typeCode')
+  async update(
+    @Param('typeCode') typeCode: string,
     @Body() updatePowerUnitTypeDto: UpdatePowerUnitTypeDto,
-  ) {
-    return this.powerUnitTypesService.update(+id, updatePowerUnitTypeDto);
+  ): Promise<ReadPowerUnitTypeDto> {
+    const powerUnitType = await this.powerUnitTypesService.update(
+      typeCode,
+      updatePowerUnitTypeDto,
+    );
+    if (!powerUnitType) {
+      throw new DataNotFoundException();
+    }
+    return powerUnitType;
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.powerUnitTypesService.remove(+id);
+  @Delete(':typeCode')
+  async remove(@Param('typeCode') typeCode: string) {
+    const deleteResult = await this.powerUnitTypesService.remove(typeCode);
+    if (deleteResult.affected > 0) {
+      return { deleted: true };
+    } else {
+      throw new DataNotFoundException();
+    }
   }
 }

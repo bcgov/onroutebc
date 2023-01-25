@@ -1,6 +1,8 @@
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
+import { HttpExceptionFilter } from './common/filters/http.filter';
+import { FallbackExceptionFilter } from './common/filters/fallback.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -19,6 +21,11 @@ async function bootstrap() {
       operationsSorter: 'alpha',
     },
   });
+
+  app.useGlobalFilters(
+    new FallbackExceptionFilter(),
+    new HttpExceptionFilter(),
+  );
 
   await app.listen(5000);
 }

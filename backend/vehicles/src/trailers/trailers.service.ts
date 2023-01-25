@@ -1,8 +1,11 @@
+import { Mapper } from '@automapper/core';
+import { InjectMapper } from '@automapper/nestjs';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { CreateTrailerDto } from './dto/create-trailer.dto';
-import { UpdateTrailerDto } from './dto/update-trailer.dto';
+import { DeleteResult, Repository } from 'typeorm';
+import { CreateTrailerDto } from './dto/request/create-trailer.dto';
+import { ReadTrailerDto } from './dto/response/read-trailer.dto';
+import { UpdateTrailerDto } from './dto/request/update-trailer.dto';
 import { Trailer } from './entities/trailer.entity';
 
 @Injectable()
@@ -10,43 +13,60 @@ export class TrailersService {
   constructor(
     @InjectRepository(Trailer)
     private trailerRepository: Repository<Trailer>,
+    @InjectMapper() private readonly classMapper: Mapper,
   ) {}
 
-  async create(trailer: CreateTrailerDto): Promise<Trailer> {
-    const newTrailer = this.trailerRepository.create(trailer);
-    await this.trailerRepository.save(newTrailer);
-    return newTrailer;
+  async create(trailer: CreateTrailerDto): Promise<ReadTrailerDto> {
+    const newTrailer = this.classMapper.map(trailer, CreateTrailerDto, Trailer);
+    return this.classMapper.mapAsync(
+      await this.trailerRepository.save(newTrailer),
+      Trailer,
+      ReadTrailerDto,
+    );
   }
 
-  async findAll(): Promise<Trailer[]> {
-    return this.trailerRepository.find({
-      relations: {
-        trailerType: true,
-        province: true,
-      },
-    });
+  async findAll(): Promise<ReadTrailerDto[]> {
+    return this.classMapper.mapArrayAsync(
+      await this.trailerRepository.find({
+        relations: {
+          trailerType: true,
+          province: true,
+        },
+      }),
+      Trailer,
+      ReadTrailerDto,
+    );
   }
 
-  async findOne(trailerId: string): Promise<Trailer> {
-    return this.trailerRepository.findOneOrFail({ where: { trailerId } });
+  async findOne(trailerId: string): Promise<ReadTrailerDto> {
+    return this.classMapper.mapAsync(
+      await this.trailerRepository.findOne({
+        where: { trailerId },
+        relations: {
+          trailerType: true,
+          province: true,
+        },
+      }),
+      Trailer,
+      ReadTrailerDto,
+    );
   }
 
   async update(
     trailerId: string,
     updateTrailerDto: UpdateTrailerDto,
-  ): Promise<Trailer> {
-    await this.trailerRepository.update({ trailerId }, updateTrailerDto);
+  ): Promise<ReadTrailerDto> {
+    const newTrailer = this.classMapper.map(
+      updateTrailerDto,
+      UpdateTrailerDto,
+      Trailer,
+    );
+
+    await this.trailerRepository.update({ trailerId }, newTrailer);
     return this.findOne(trailerId);
   }
 
-  async remove(
-    trailerId: string,
-  ): Promise<{ deleted: boolean; message?: string }> {
-    try {
-      await this.trailerRepository.delete(trailerId);
-      return { deleted: true };
-    } catch (err) {
-      return { deleted: false, message: err.message };
-    }
+  async remove(trailerId: number): Promise<DeleteResult> {
+    return await this.trailerRepository.delete(trailerId);
   }
 }

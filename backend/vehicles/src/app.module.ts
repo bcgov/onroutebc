@@ -10,6 +10,8 @@ import { TrailerTypesModule } from './trailer-types/trailer-types.module';
 import { CommonModule } from './common/common.module';
 import * as path from 'path';
 import { AppController } from './app.controller';
+import { AutomapperModule } from '@automapper/nestjs';
+import { classes } from '@automapper/classes';
 
 const envPath = path.resolve(process.cwd() + '/../../');
 
@@ -42,6 +44,10 @@ const envPath = path.resolve(process.cwd() + '/../../');
       // entities: [User],
       autoLoadEntities: true, // Auto load all entities regiestered by typeorm forFeature method.
       synchronize: false, // This changes the DB schema to match changes to entities, which we might not want.
+      logging: false,
+    }),
+    AutomapperModule.forRoot({
+      strategyInitializer: classes(),
     }),
     PowerUnitsModule,
     TrailersModule,
