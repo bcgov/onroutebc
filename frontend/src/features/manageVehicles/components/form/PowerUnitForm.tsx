@@ -222,9 +222,12 @@ export const PowerUnitForm = ({
                           <OutlinedInput
                             aria-labelledby="power-unit-year-label"
                             defaultValue={powerUnit?.year}
+                            inputProps={{ maxLength: 4, minLength: 4 }}
                             {...register("year", {
                               required: true,
                               valueAsNumber: true,
+                              maxLength: 4,
+                              minLength: 4,
                             })}
                           />
                           {invalid && (
