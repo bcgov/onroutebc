@@ -155,6 +155,7 @@ export const PowerUnitForm = ({
                         </FormLabel>
                         <OutlinedInput
                           aria-labelledby="power-unit-unit-number-label"
+                          inputProps={{ maxLength: 10 }}
                           defaultValue={powerUnit?.unitNumber}
                           {...register("unitNumber", {
                             required: false,
@@ -294,6 +295,7 @@ export const PowerUnitForm = ({
                         </FormLabel>
                         <OutlinedInput
                           aria-labelledby="power-unit-plate-label"
+                          inputProps={{ maxLength: 10}}
                           {...register("plate", {
                             required: true,
                             maxLength: 10,
