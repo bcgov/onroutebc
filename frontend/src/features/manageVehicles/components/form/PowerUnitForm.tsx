@@ -142,11 +142,11 @@ export const PowerUnitForm = ({
                   key="controller-powerunit-unitNumber"
                   name="unitNumber"
                   control={control}
-                  rules={{ required: true }}
+                  rules={{ required: false, maxLength: 10 }}
                   defaultValue={powerUnit?.unitNumber || ""}
-                  render={({ fieldState: { invalid } }) => (
+                  render={() => (
                     <>
-                      <FormControl margin="normal" error={invalid}>
+                      <FormControl margin="normal">
                         <FormLabel
                           id="power-unit-unit-number-label"
                           sx={formFieldStyle}
@@ -157,16 +157,10 @@ export const PowerUnitForm = ({
                           aria-labelledby="power-unit-unit-number-label"
                           defaultValue={powerUnit?.unitNumber}
                           {...register("unitNumber", {
-                            required: true,
+                            required: false,
+                            maxLength: 10
                           })}
                         />
-                        {invalid && (
-                          <FormHelperText error>
-                            {t("vehicle.power-unit.required", {
-                              fieldName: "Unit Number",
-                            })}
-                          </FormHelperText>
-                        )}
                       </FormControl>
                     </>
                   )}
@@ -392,7 +386,6 @@ export const PowerUnitForm = ({
                         </FormLabel>
                         <OutlinedInput
                           aria-labelledby="power-unit-licensed-gvw-label"
-                          // defaultValue={axleGroup?.axleGroupNumber}
                           {...register("licensedGvw", {
                             required: true,
                             valueAsNumber: true
@@ -415,11 +408,11 @@ export const PowerUnitForm = ({
                   key="controller-powerunit-steer-axle-tire-size"
                   name="steerAxleTireSize"
                   control={control}
-                  rules={{ required: true }}
+                  rules={{ required: false }}
                   defaultValue={powerUnit?.steerAxleTireSize || undefined}
-                  render={({ fieldState: { invalid } }) => (
+                  render={() => (
                     <>
-                      <FormControl margin="normal" error={invalid}>
+                      <FormControl margin="normal">
                         <FormLabel
                           id="power-unit-steer-axle-tire-size-label"
                           sx={formFieldStyle}
@@ -428,19 +421,11 @@ export const PowerUnitForm = ({
                         </FormLabel>
                         <OutlinedInput
                           aria-labelledby="power-unit-steer-axle-tire-size-label"
-                          // defaultValue={axleGroup?.axleGroupNumber}
                           {...register("steerAxleTireSize", {
-                            required: true,
+                            required: false,
                             valueAsNumber: true
                           })}
                         />
-                        {invalid && (
-                          <FormHelperText error>
-                            {t("vehicle.power-unit.required", {
-                              fieldName: "Steer Axle Tire Size",
-                            })}
-                          </FormHelperText>
-                        )}
                       </FormControl>
                     </>
                   )}

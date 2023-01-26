@@ -35,6 +35,6 @@ beforeEach(() => {
 test("Should render Header/Nav without breaking", () => {
   mockMatchMedia();
   renderHeader();
-  expect(screen.getByText("onRouteBc")).toBeInTheDocument();
+  expect(screen.getByText("onRouteBC")).toBeInTheDocument();
 });
 

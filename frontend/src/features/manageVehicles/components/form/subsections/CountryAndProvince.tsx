@@ -159,8 +159,8 @@ export const CountryAndProvince = ({
       {shouldDisplayProvince && (
         <div>
           <Controller
-            key=""
-            name=""
+            key="controller-powerunit-province"
+            name="province"
             rules={{ required: shouldDisplayProvince }}
             defaultValue={country || ""}
             render={({ fieldState: { invalid } }) => (
