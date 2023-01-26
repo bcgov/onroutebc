@@ -158,7 +158,7 @@ export const PowerUnitForm = ({
                           defaultValue={powerUnit?.unitNumber}
                           {...register("unitNumber", {
                             required: false,
-                            maxLength: 10
+                            maxLength: 10,
                           })}
                         />
                       </FormControl>
@@ -223,7 +223,7 @@ export const PowerUnitForm = ({
                             defaultValue={powerUnit?.year}
                             {...register("year", {
                               required: true,
-                              valueAsNumber: true
+                              valueAsNumber: true,
                             })}
                           />
                           {invalid && (
@@ -281,7 +281,7 @@ export const PowerUnitForm = ({
                   key="controller-powerunit-plate"
                   name="plate"
                   control={control}
-                  rules={{ required: true }}
+                  rules={{ required: true, maxLength: 10 }}
                   defaultValue={powerUnit?.plate || ""}
                   render={({ fieldState: { invalid } }) => (
                     <>
@@ -296,6 +296,7 @@ export const PowerUnitForm = ({
                           aria-labelledby="power-unit-plate-label"
                           {...register("plate", {
                             required: true,
+                            maxLength: 10,
                           })}
                         />
                         {invalid && (
@@ -388,7 +389,7 @@ export const PowerUnitForm = ({
                           aria-labelledby="power-unit-licensed-gvw-label"
                           {...register("licensedGvw", {
                             required: true,
-                            valueAsNumber: true
+                            valueAsNumber: true,
                           })}
                         />
                         {invalid && (
@@ -423,7 +424,7 @@ export const PowerUnitForm = ({
                           aria-labelledby="power-unit-steer-axle-tire-size-label"
                           {...register("steerAxleTireSize", {
                             required: false,
-                            valueAsNumber: true
+                            valueAsNumber: true,
                           })}
                         />
                       </FormControl>
