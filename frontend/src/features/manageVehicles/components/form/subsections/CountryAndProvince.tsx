@@ -193,7 +193,10 @@ export const CountryAndProvince = ({
                   {invalid && (
                     <FormHelperText error>
                       {t("vehicle.power-unit.required", {
-                        fieldName: "Province/State",
+                        fieldName: "Province / State",
+                        interpolation: {
+                          escapeValue: false,
+                        }
                       })}
                     </FormHelperText>
                   )}
