@@ -172,7 +172,7 @@ export const PowerUnitForm = ({
                   key="controller-powerunit-make"
                   name="make"
                   control={control}
-                  rules={{ required: true }}
+                  rules={{ required: true, maxLength: 20 }}
                   defaultValue={powerUnit?.make || ""}
                   render={({ fieldState: { invalid } }) => (
                     <>
@@ -185,9 +185,11 @@ export const PowerUnitForm = ({
                         </FormLabel>
                         <OutlinedInput
                           aria-labelledby="power-unit-make-label"
+                          inputProps={{ maxLength: 20 }}
                           defaultValue={powerUnit?.make}
                           {...register("make", {
                             required: true,
+                            maxLength: 20,
                           })}
                         />
                         {invalid && (
@@ -298,7 +300,7 @@ export const PowerUnitForm = ({
                         </FormLabel>
                         <OutlinedInput
                           aria-labelledby="power-unit-plate-label"
-                          inputProps={{ maxLength: 10}}
+                          inputProps={{ maxLength: 10 }}
                           {...register("plate", {
                             required: true,
                             maxLength: 10,
