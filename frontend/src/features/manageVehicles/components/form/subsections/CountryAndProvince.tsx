@@ -63,8 +63,13 @@ export const CountryAndProvince = ({
    */
   const formFieldStyle = {
     fontWeight: "bold",
-    width: "300px",
+    width: "490px",
+    marginLeft: "8px",
   };
+
+  const inputHeight = {
+    height: "48px",
+  }
 
   /**
    * Function to handle changes on selecting a country.
@@ -132,6 +137,7 @@ export const CountryAndProvince = ({
                 <Select
                   aria-labelledby="power-unit-country-label"
                   defaultValue={country || ""}
+                  sx={inputHeight}
                   {...register("country", {
                     required: true,
                     onChange: onChangeCountry,
@@ -175,6 +181,7 @@ export const CountryAndProvince = ({
                   <Select
                     aria-labelledby="power-unit-province-label"
                     defaultValue={province || ""}
+                    sx={inputHeight}
                     {...register("province", {
                       required: shouldDisplayProvince,
                       onChange: onChangeProvince,

@@ -109,9 +109,13 @@ export const PowerUnitForm = ({
    */
   const formFieldStyle = {
     fontWeight: "bold",
-    width: "300px",
+    width: "490px",
     marginLeft: "8px",
   };
+
+  const inputHeight = {
+    height: "48px",
+  }
 
   /**
    * Adds a vehicle.
@@ -156,6 +160,7 @@ export const PowerUnitForm = ({
                         <OutlinedInput
                           aria-labelledby="power-unit-unit-number-label"
                           inputProps={{ maxLength: 10 }}
+                          sx={inputHeight}
                           defaultValue={powerUnit?.unitNumber}
                           {...register("unitNumber", {
                             required: false,
@@ -187,6 +192,8 @@ export const PowerUnitForm = ({
                           aria-labelledby="power-unit-make-label"
                           inputProps={{ maxLength: 20 }}
                           defaultValue={powerUnit?.make}
+                          sx={inputHeight}
+                          className="height"
                           {...register("make", {
                             required: true,
                             maxLength: 20,
@@ -224,6 +231,7 @@ export const PowerUnitForm = ({
                           <OutlinedInput
                             aria-labelledby="power-unit-year-label"
                             defaultValue={powerUnit?.year}
+                            sx={inputHeight}
                             inputProps={{ maxLength: 4, minLength: 4 }}
                             {...register("year", {
                               required: true,
@@ -263,6 +271,7 @@ export const PowerUnitForm = ({
                         </FormLabel>
                         <OutlinedInput
                           inputProps={{ maxLength: 17 }}
+                          sx={inputHeight}
                           aria-labelledby="power-unit-vin-label"
                           {...register("vin", {
                             required: true,
@@ -301,6 +310,7 @@ export const PowerUnitForm = ({
                         <OutlinedInput
                           aria-labelledby="power-unit-plate-label"
                           inputProps={{ maxLength: 10 }}
+                          sx={inputHeight}
                           {...register("plate", {
                             required: true,
                             maxLength: 10,
@@ -337,6 +347,7 @@ export const PowerUnitForm = ({
                         <Select
                           aria-labelledby="power-unit-power-unit-type-label"
                           defaultValue={""}
+                          sx={inputHeight}
                           {...register("powerUnitTypeCode", {
                             required: true,
                           })}
@@ -394,6 +405,7 @@ export const PowerUnitForm = ({
                         </FormLabel>
                         <OutlinedInput
                           aria-labelledby="power-unit-licensed-gvw-label"
+                          sx={inputHeight}
                           {...register("licensedGvw", {
                             required: true,
                             valueAsNumber: true,
@@ -429,6 +441,7 @@ export const PowerUnitForm = ({
                         </FormLabel>
                         <OutlinedInput
                           aria-labelledby="power-unit-steer-axle-tire-size-label"
+                          sx={inputHeight}
                           {...register("steerAxleTireSize", {
                             required: false,
                             valueAsNumber: true,
