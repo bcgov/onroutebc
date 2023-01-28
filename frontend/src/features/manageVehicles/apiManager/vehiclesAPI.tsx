@@ -7,11 +7,7 @@ import {
   ApiErrorResponse,
 } from "../types/managevehicles";
 
-/*
- *
- * API Manager for the Manage Vehicles feature
- *
- */
+//const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 /**
  * Fetch*

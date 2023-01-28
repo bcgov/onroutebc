@@ -18,11 +18,11 @@ import { CreatePowerUnit, PowerUnitType } from "../../types/managevehicles";
 import FormControl from "@mui/material/FormControl";
 import FormLabel from "@mui/material/FormLabel";
 import OutlinedInput from "@mui/material/OutlinedInput";
-import { addPowerUnit, getPowerUnitTypes } from "../../hooks/useVehiclesApi";
-import { DisplaySnackBarOptions } from "../dashboard/Dashboard";
+import { addPowerUnit, getPowerUnitTypes } from "../../apiManager/vehiclesAPI";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import { CountryAndProvince } from "./subsections/CountryAndProvince";
+import { DisplaySnackBarOptions } from "../../../../common/components/snackbar/CustomSnackbar2";
 
 /**
  * Props used by the power unit form.
@@ -229,7 +229,7 @@ export const PowerUnitForm = ({
                             defaultValue={powerUnit?.year}
                             {...register("year", {
                               required: true,
-                              valueAsNumber: true
+                              valueAsNumber: true,
                             })}
                           />
                           {invalid && (
@@ -395,7 +395,7 @@ export const PowerUnitForm = ({
                           // defaultValue={axleGroup?.axleGroupNumber}
                           {...register("licensedGvw", {
                             required: true,
-                            valueAsNumber: true
+                            valueAsNumber: true,
                           })}
                         />
                         {invalid && (
@@ -431,7 +431,7 @@ export const PowerUnitForm = ({
                           // defaultValue={axleGroup?.axleGroupNumber}
                           {...register("steerAxleTireSize", {
                             required: true,
-                            valueAsNumber: true
+                            valueAsNumber: true,
                           })}
                         />
                         {invalid && (

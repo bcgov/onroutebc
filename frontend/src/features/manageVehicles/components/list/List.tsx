@@ -15,7 +15,7 @@ import { CSVOptions } from "../options/CSVOptions";
 import { Delete, Edit, ContentCopy } from "@mui/icons-material";
 import { BC_BACKGROUND_LIGHT } from "../../../../constants/bcGovStyles";
 import { useQuery } from "@tanstack/react-query";
-import { getAllPowerUnits } from "../../hooks/useVehiclesApi";
+import { getAllPowerUnits } from "../../apiManager/vehiclesAPI";
 import { CustomSnackbar } from "../../../../common/components/snackbar/CustomSnackBar";
 
 /*

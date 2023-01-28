@@ -1,6 +1,13 @@
 import { useState, createContext, useEffect, useMemo } from "react";
 import { IPowerUnit, VehiclesContextType } from "../types/managevehicles";
-import { getAllPowerUnits } from "../hooks/useVehiclesApi";
+import { getAllPowerUnits } from "../apiManager/vehiclesAPI";
+
+/*
+ *
+ * THIS CONTEXT IS CURRENTLY NOT IN USE.
+ * IT IS REPLACED BY TANSTACK REACT QUERY
+ *
+ */
 
 /*
  *
@@ -8,7 +15,6 @@ import { getAllPowerUnits } from "../hooks/useVehiclesApi";
  * for all of the Manage Vehicles components
  *
  */
-
 export const VehiclesContext = createContext<VehiclesContextType>({
   powerUnitData: [],
   trailerData: [],
@@ -25,9 +31,6 @@ export const ManageVehiclesProvider = ({
   // React Context Provider values should not have non-stable identities
   // Wrapping the value in a useMemo hook will avoid additional render passes.
   const powerUnitData = useMemo<IPowerUnit[]>(() => powerUnits, [powerUnits]);
-
-  // Custom hook to fetch the data from the API
-  //const vehiclesApi = useVehiclesApi();
 
   // Fetch data from the API on initial render of Manage Vehicles
   useEffect(() => {
