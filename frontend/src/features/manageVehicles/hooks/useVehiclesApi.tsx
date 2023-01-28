@@ -4,7 +4,7 @@ import {
   CreatePowerUnit,
   UpdatePowerUnit,
   PowerUnitType,
-  ApiErrorResponse
+  ApiErrorResponse,
 } from "../types/managevehicles";
 
 /*
@@ -54,8 +54,8 @@ export const getAllPowerUnits = async (): Promise<IPowerUnit[]> => {
  */
 export const getPowerUnitTypes = async (): Promise<Array<PowerUnitType>> => {
   return fetch(`${VEHICLES_API.POWER_UNIT_TYPES}`).then((response) =>
-     response.json()
-   );
+    response.json()
+  );
 };
 
 /**

@@ -1,10 +1,4 @@
-import {
-  memo,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import MaterialReactTable, {
   MRT_ColumnDef,
   MRT_GlobalFilterTextField,
@@ -22,7 +16,7 @@ import { Delete, Edit, ContentCopy } from "@mui/icons-material";
 import { BC_BACKGROUND_LIGHT } from "../../../../constants/bcGovStyles";
 import { useQuery } from "@tanstack/react-query";
 import { getAllPowerUnits } from "../../hooks/useVehiclesApi";
-import { ErrorSnackbar } from "../snackbars/ErrorSnackbar";
+import { CustomSnackbar } from "../../../../common/components/snackbar/CustomSnackBar";
 
 /*
  *
@@ -32,7 +26,6 @@ import { ErrorSnackbar } from "../snackbars/ErrorSnackbar";
  *
  *
  */
-
 export const List = memo(() => {
   // Data, fetched from backend API
   const {
@@ -78,11 +71,11 @@ export const List = memo(() => {
 
   return (
     <div className="table-container">
-      
-      <ErrorSnackbar
-        showErrorSnackbar={showErrorSnackbar}
-        setShowErrorSnackbar={setShowErrorSnackbar}
-        errorMessage={errorMessage}
+      <CustomSnackbar
+        showSnackbar={showErrorSnackbar}
+        setShowSnackbar={setShowErrorSnackbar}
+        message={errorMessage}
+        isError={isError}
       />
 
       <MaterialReactTable

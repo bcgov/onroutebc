@@ -89,7 +89,12 @@ export const Header = () => {
           </li>
           <li>
             <NavLink to={routes.MANAGE_VEHICLES} onClick={menuToggleHandler}>
-              Manage Vehicles
+              Vehicle Inventory
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to={routes.MANAGE_PROFILES} onClick={menuToggleHandler}>
+              Profile
             </NavLink>
           </li>
         </ul>

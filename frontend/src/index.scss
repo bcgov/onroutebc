@@ -1,17 +1,10 @@
 body {
   margin: 0;
   /* Fonts from  https://developer.gov.bc.ca/Design-System/Typography */
-  font-family: 'BCSans', 'Noto Sans', Verdana, Arial, sans-serif;
+  font-family: "BCSans", "Noto Sans", Verdana, Arial, sans-serif;
   display: flex;
   flex-flow: column;
-  background-color: #F2F2F2;
-
-}
-
-.feature-container {
-  //padding: 10px 60px 10px 60px;
-  min-height: 100vh;
-  overflow: hidden;
+  background-color: #f2f2f2;
 }
 
 :focus {
@@ -20,9 +13,7 @@ body {
 }
 
 @media screen and (max-width: 768px) {
-
   .feature-container {
     padding: 10px;
   }
-
 }

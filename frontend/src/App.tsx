@@ -7,16 +7,15 @@ import { ThemeProvider } from "@mui/material";
 import { bcGovTheme } from "./themes/bcGovTheme";
 
 const App = () => {
-  
   return (
     <ThemeProvider theme={bcGovTheme}>
       <Router>
-        <Header/>
-        <AppRoutes/>
+        <Header />
+        <AppRoutes />
       </Router>
-      <Footer/>
+      <Footer />
     </ThemeProvider>
   );
-}
+};
 
 export default App;

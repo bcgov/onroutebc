@@ -1,0 +1,17 @@
+.company-banner {
+  h2,
+  p {
+    margin: 0px;
+    padding: 0px;
+  }
+}
+
+.company-header {
+  margin: 20px 0px 0px 0px;
+}
+
+.display-info-container {
+  display: flex;
+  justify-content: space-between;
+  //align-items: center;
+}
