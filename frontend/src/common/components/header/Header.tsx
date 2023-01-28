@@ -8,7 +8,7 @@ import { BC_PRIMARY_BLUE } from "../../../constants/bcGovStyles";
 /*
  * The Header component includes the BC Gov banner and Navigation bar
  * and is responsive for mobile
- * 
+ *
  * The banner colour changes based on the Openshift Environment
  * (Dev, Test, UAT, and Prod)
  *
@@ -19,7 +19,9 @@ export const Header = () => {
   const [menuOpen, setMenuOpen] = useState(!mediaQueryList.matches);
 
   let headerColor: string;
-  const env = import.meta.env.VITE_DEPLOY_ENVIRONMENT || envConfig.VITE_DEPLOY_ENVIRONMENT;
+  const env =
+    import.meta.env.VITE_DEPLOY_ENVIRONMENT ||
+    envConfig.VITE_DEPLOY_ENVIRONMENT;
   switch (!isNaN(Number(env)) || env) {
     case "test":
       headerColor = "orange";
@@ -59,11 +61,11 @@ export const Header = () => {
       <a href={routes.HOME}>
         <img
           src="https://developer.gov.bc.ca/static/BCID_H_rgb_rev-20eebe74aef7d92e02732a18b6aa6bbb.svg"
-          alt="Go to the onRouteBc Home Page"
+          alt="Go to the onRouteBC Home Page"
           height="50px"
         />
       </a>
-      <h1>onRouteBc</h1>
+      <h1>onRouteBC</h1>
     </div>
   );
 
