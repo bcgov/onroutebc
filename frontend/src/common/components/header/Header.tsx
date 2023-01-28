@@ -3,7 +3,7 @@ import { NavLink } from "react-router-dom";
 
 import "./Header.scss";
 import * as routes from "../../../constants/routes";
-import { BC_PRIMARY_BLUE } from "../../../constants/bcGovStyles";
+import { BC_PRIMARY_BLUE } from "../../../themes/bcGovStyles";
 
 /*
  * The Header component includes the BC Gov banner and Navigation bar
@@ -71,9 +71,9 @@ export const Header = () => {
 
   const NavButton = () => (
     <div className="other">
-      <button className="nav-btn" onClick={menuToggleHandler}>
-        <i className="fa fa-bars"></i>
-      </button>
+      <a className="nav-btn" onClick={menuToggleHandler}>
+        <i className="fas fa-bars" id="menu"></i>
+      </a>
     </div>
   );
 

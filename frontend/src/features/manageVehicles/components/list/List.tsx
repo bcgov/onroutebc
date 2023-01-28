@@ -13,7 +13,7 @@ import { Filter } from "../options/Filter";
 import { Trash } from "../options/Trash";
 import { CSVOptions } from "../options/CSVOptions";
 import { Delete, Edit, ContentCopy } from "@mui/icons-material";
-import { BC_BACKGROUND_LIGHT } from "../../../../constants/bcGovStyles";
+import { BC_BACKGROUND_LIGHT } from "../../../../themes/bcGovStyles";
 import { useQuery } from "@tanstack/react-query";
 import { getAllPowerUnits } from "../../apiManager/vehiclesAPI";
 import { CustomSnackbar } from "../../../../common/components/snackbar/CustomSnackBar";

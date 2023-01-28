@@ -1,6 +1,7 @@
 import { Box } from "@mui/material";
 import { memo, useState } from "react";
-import { BC_PRIMARY_BLUE } from "../../../../constants/bcGovStyles";
+import { InfoBcGovBanner } from "../../../../common/components/alertBanners/AlertBanners";
+import { BC_PRIMARY_BLUE } from "../../../../themes/bcGovStyles";
 import { CompanyInfoForm } from "../forms/CompanyInfoForm";
 
 import "./CompanyInfoPage.scss";
@@ -44,7 +45,10 @@ export const CompanyInfoPage = memo(() => {
       {isEditting ? <Header /> : null}
       <CompanyBanner />
       {isEditting ? (
-        <CompanyInfoForm />
+        <>
+          <InfoBcGovBanner description="Please note, unless stated otherwise, all fields are mandatory." />
+          <CompanyInfoForm />
+        </>
       ) : (
         <DisplayInfo setIsEditting={setIsEditting} />
       )}

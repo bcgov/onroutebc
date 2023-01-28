@@ -1,5 +1,5 @@
 import { createTheme } from "@mui/material/styles";
-import { BC_PRIMARY_BLUE, BC_BACKGROUND_LIGHT } from "../constants/bcGovStyles";
+import { BC_PRIMARY_BLUE, BC_BACKGROUND_LIGHT } from "./bcGovStyles";
 
 /*
  *
@@ -8,7 +8,6 @@ import { BC_PRIMARY_BLUE, BC_BACKGROUND_LIGHT } from "../constants/bcGovStyles";
  * https://mui.com/material-ui/customization/theming/
  *
  */
-
 export const bcGovTheme = createTheme({
   palette: {
     primary: {
