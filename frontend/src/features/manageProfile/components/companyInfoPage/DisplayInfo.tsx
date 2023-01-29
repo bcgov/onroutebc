@@ -1,4 +1,4 @@
-import { Button } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 import { memo } from "react";
 
 import "./CompanyInfoPage.scss";
@@ -11,19 +11,18 @@ export const DisplayInfo = memo(
   }) => {
     return (
       <div className="display-info-container">
-        <div>
+        <Box>
           <h2>Company Address</h2>
-          <p>402 Robson Street</p>
-          <p>Canada</p>
-          <p>BC</p>
-          <p>Vancouver V6B 3K9</p>
-
+          <Typography>402 Robson Street</Typography>
+          <Typography>Canada</Typography>
+          <Typography>BC</Typography>
+          <Typography>Vancouver V6B 3K9</Typography>
           <h2>Mailing Address</h2>
-          <p>402 Robson Street</p>
-          <p>Canada</p>
-          <p>BC</p>
-          <p>Vancouver V6B 3K9</p>
-        </div>
+          <Typography>402 Robson Street</Typography>
+          <Typography>Canada</Typography>
+          <Typography>BC</Typography>
+          <Typography>Vancouver V6B 3K9</Typography>
+        </Box>
         <div>
           <Button
             variant="contained"

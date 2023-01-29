@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from "react";
-import { Box, Tabs, Tab } from "@mui/material";
+import { Box, Tabs, Tab, useMediaQuery } from "@mui/material";
 
 import "./TabLayout.scss";
 
@@ -22,10 +22,11 @@ interface DashboardProps {
 
 const TabPanel = (props: TabPanelProps) => {
   const { children, value, index, ...other } = props;
+  const isMobile = useMediaQuery("(max-width:768px)");
 
   return (
     <div
-      className="tabpanel-container"
+      className={isMobile ? "tabpanel-container-mobile" : "tabpanel-container"}
       role="tabpanel"
       hidden={value !== index}
       id={`dash-tabpanel-${index}`}
@@ -59,6 +60,7 @@ const TabProps = (index: number) => {
 export const TabLayout = React.memo(
   ({ bannerText, bannerButton, componentList }: DashboardProps) => {
     const [value, setValue] = useState(0);
+    const isMobile = useMediaQuery("(max-width:768px)");
 
     const handleChange = useCallback(
       (event: React.SyntheticEvent, newValue: number) => {
@@ -75,7 +77,7 @@ export const TabLayout = React.memo(
               key={index}
               label={label}
               {...TabProps(index)}
-              sx={{ px: 0, marginRight: "40px" }}
+              sx={{ px: 0, marginRight: "40px", fontWeight: 700 }}
             />
           );
         })}
@@ -104,10 +106,11 @@ export const TabLayout = React.memo(
     return (
       <>
         <Box
+          className="dash-box"
           sx={{
             borderBottom: 1,
             borderColor: "divider",
-            padding: "10px 60px 0px 60px",
+            padding: isMobile ? "10px 10px 0px 10px" : "10px 60px 0px 60px",
           }}
         >
           <DisplayBanner />

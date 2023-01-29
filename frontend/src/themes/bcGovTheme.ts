@@ -1,5 +1,5 @@
 import { createTheme } from "@mui/material/styles";
-import { BC_PRIMARY_BLUE, BC_BACKGROUND_LIGHT } from "./bcGovStyles";
+import { BC_PRIMARY_BLUE, BC_BACKGROUND_LIGHT, BC_TEXT } from "./bcGovStyles";
 
 /*
  *
@@ -33,6 +33,14 @@ export const bcGovTheme = createTheme({
     fontFamily: ["BCSans", "Noto Sans", "Verdana", "Arial", "sans-serif"].join(
       ","
     ),
+    fontSize: 16,
+    // From https://developer.gov.bc.ca/Design-System/Typography#paragraphs
+    body1: {
+      fontSize: 16,
+      lineHeight: 1.6,
+      marginBottom: 2,
+      color: BC_TEXT,
+    },
   },
   breakpoints: {
     values: {
@@ -48,6 +56,15 @@ export const bcGovTheme = createTheme({
       styleOverrides: {
         tooltip: {
           fontSize: 14,
+        },
+      },
+    },
+    MuiButton: {
+      styleOverrides: {
+        // Name of the slot
+        root: {
+          // Some CSS
+          //height: "48px",
         },
       },
     },
