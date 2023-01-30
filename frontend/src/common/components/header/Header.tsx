@@ -59,11 +59,11 @@ export const Header = () => {
       <a href={routes.HOME}>
         <img
           src="https://developer.gov.bc.ca/static/BCID_H_rgb_rev-20eebe74aef7d92e02732a18b6aa6bbb.svg"
-          alt="Go to the onRouteBc Home Page"
+          alt="Go to the onRouteBC Home Page"
           height="50px"
         />
       </a>
-      <h1>onRouteBc</h1>
+      <h1>onRouteBC</h1>
     </div>
   );
 

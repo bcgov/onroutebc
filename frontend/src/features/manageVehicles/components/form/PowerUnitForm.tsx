@@ -109,9 +109,13 @@ export const PowerUnitForm = ({
    */
   const formFieldStyle = {
     fontWeight: "bold",
-    width: "300px",
+    width: "490px",
     marginLeft: "8px",
   };
+
+  const inputHeight = {
+    height: "48px",
+  }
 
   /**
    * Adds a vehicle.
@@ -142,11 +146,11 @@ export const PowerUnitForm = ({
                   key="controller-powerunit-unitNumber"
                   name="unitNumber"
                   control={control}
-                  rules={{ required: true }}
+                  rules={{ required: false, maxLength: 10 }}
                   defaultValue={powerUnit?.unitNumber || ""}
-                  render={({ fieldState: { invalid } }) => (
+                  render={() => (
                     <>
-                      <FormControl margin="normal" error={invalid}>
+                      <FormControl margin="normal">
                         <FormLabel
                           id="power-unit-unit-number-label"
                           sx={formFieldStyle}
@@ -155,18 +159,14 @@ export const PowerUnitForm = ({
                         </FormLabel>
                         <OutlinedInput
                           aria-labelledby="power-unit-unit-number-label"
+                          inputProps={{ maxLength: 10 }}
+                          sx={inputHeight}
                           defaultValue={powerUnit?.unitNumber}
                           {...register("unitNumber", {
-                            required: true,
+                            required: false,
+                            maxLength: 10,
                           })}
                         />
-                        {invalid && (
-                          <FormHelperText error>
-                            {t("vehicle.power-unit.required", {
-                              fieldName: "Unit Number",
-                            })}
-                          </FormHelperText>
-                        )}
                       </FormControl>
                     </>
                   )}
@@ -177,7 +177,7 @@ export const PowerUnitForm = ({
                   key="controller-powerunit-make"
                   name="make"
                   control={control}
-                  rules={{ required: true }}
+                  rules={{ required: true, maxLength: 20 }}
                   defaultValue={powerUnit?.make || ""}
                   render={({ fieldState: { invalid } }) => (
                     <>
@@ -190,9 +190,13 @@ export const PowerUnitForm = ({
                         </FormLabel>
                         <OutlinedInput
                           aria-labelledby="power-unit-make-label"
+                          inputProps={{ maxLength: 20 }}
                           defaultValue={powerUnit?.make}
+                          sx={inputHeight}
+                          className="height"
                           {...register("make", {
                             required: true,
+                            maxLength: 20,
                           })}
                         />
                         {invalid && (
@@ -227,9 +231,13 @@ export const PowerUnitForm = ({
                           <OutlinedInput
                             aria-labelledby="power-unit-year-label"
                             defaultValue={powerUnit?.year}
+                            sx={inputHeight}
+                            inputProps={{ maxLength: 4, minLength: 4 }}
                             {...register("year", {
                               required: true,
-                              valueAsNumber: true
+                              valueAsNumber: true,
+                              maxLength: 4,
+                              minLength: 4,
                             })}
                           />
                           {invalid && (
@@ -263,6 +271,7 @@ export const PowerUnitForm = ({
                         </FormLabel>
                         <OutlinedInput
                           inputProps={{ maxLength: 17 }}
+                          sx={inputHeight}
                           aria-labelledby="power-unit-vin-label"
                           {...register("vin", {
                             required: true,
@@ -287,7 +296,7 @@ export const PowerUnitForm = ({
                   key="controller-powerunit-plate"
                   name="plate"
                   control={control}
-                  rules={{ required: true }}
+                  rules={{ required: true, maxLength: 10 }}
                   defaultValue={powerUnit?.plate || ""}
                   render={({ fieldState: { invalid } }) => (
                     <>
@@ -300,8 +309,11 @@ export const PowerUnitForm = ({
                         </FormLabel>
                         <OutlinedInput
                           aria-labelledby="power-unit-plate-label"
+                          inputProps={{ maxLength: 10 }}
+                          sx={inputHeight}
                           {...register("plate", {
                             required: true,
+                            maxLength: 10,
                           })}
                         />
                         {invalid && (
@@ -335,6 +347,7 @@ export const PowerUnitForm = ({
                         <Select
                           aria-labelledby="power-unit-power-unit-type-label"
                           defaultValue={""}
+                          sx={inputHeight}
                           {...register("powerUnitTypeCode", {
                             required: true,
                           })}
@@ -392,10 +405,10 @@ export const PowerUnitForm = ({
                         </FormLabel>
                         <OutlinedInput
                           aria-labelledby="power-unit-licensed-gvw-label"
-                          // defaultValue={axleGroup?.axleGroupNumber}
+                          sx={inputHeight}
                           {...register("licensedGvw", {
                             required: true,
-                            valueAsNumber: true
+                            valueAsNumber: true,
                           })}
                         />
                         {invalid && (
@@ -415,11 +428,11 @@ export const PowerUnitForm = ({
                   key="controller-powerunit-steer-axle-tire-size"
                   name="steerAxleTireSize"
                   control={control}
-                  rules={{ required: true }}
+                  rules={{ required: false }}
                   defaultValue={powerUnit?.steerAxleTireSize || undefined}
-                  render={({ fieldState: { invalid } }) => (
+                  render={() => (
                     <>
-                      <FormControl margin="normal" error={invalid}>
+                      <FormControl margin="normal">
                         <FormLabel
                           id="power-unit-steer-axle-tire-size-label"
                           sx={formFieldStyle}
@@ -428,19 +441,12 @@ export const PowerUnitForm = ({
                         </FormLabel>
                         <OutlinedInput
                           aria-labelledby="power-unit-steer-axle-tire-size-label"
-                          // defaultValue={axleGroup?.axleGroupNumber}
+                          sx={inputHeight}
                           {...register("steerAxleTireSize", {
-                            required: true,
-                            valueAsNumber: true
+                            required: false,
+                            valueAsNumber: true,
                           })}
                         />
-                        {invalid && (
-                          <FormHelperText error>
-                            {t("vehicle.power-unit.required", {
-                              fieldName: "Steer Axle Tire Size",
-                            })}
-                          </FormHelperText>
-                        )}
                       </FormControl>
                     </>
                   )}
