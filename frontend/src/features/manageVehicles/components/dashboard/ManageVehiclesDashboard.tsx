@@ -26,11 +26,15 @@ export const ManageVehiclesDashboard = React.memo(() => {
 
   const tabs = [
     {
-      label: "Power Units",
+      label: "Power Unit",
       component: <List />,
     },
     {
-      label: "Trailers",
+      label: "Trailer",
+      component: <>TODO</>,
+    },
+    {
+      label: "Vehicle Configuration",
       component: <>TODO</>,
     },
   ];

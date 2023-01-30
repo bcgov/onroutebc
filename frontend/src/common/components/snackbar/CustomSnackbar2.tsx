@@ -27,7 +27,7 @@ export const CustomSnackbar2 = ({
   >;
 }) => {
   const vertical = "top";
-  const horizontal = "right";
+  const horizontal = "center";
 
   /**
    * Clears the state of snackbar and closes it.
@@ -45,6 +45,7 @@ export const CustomSnackbar2 = ({
   return (
     <Snackbar
       anchorOrigin={{ vertical: vertical, horizontal: horizontal }}
+      autoHideDuration={6000}
       open={snackBarStatus.display}
       onClose={closeSnackBar}
       action={

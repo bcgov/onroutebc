@@ -12,6 +12,14 @@ export const ManageProfilesDashboard = React.memo(() => {
       label: "My Information",
       component: <>TODO</>,
     },
+    {
+      label: "User Management",
+      component: <>TODO</>,
+    },
+    {
+      label: "Payment Information",
+      component: <>TODO</>,
+    },
   ];
 
   return <TabLayout bannerText="Profile" componentList={tabs} />;

@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from "react";
-import { Box, Tabs, Tab, useMediaQuery } from "@mui/material";
+import { Box, Tabs, Tab } from "@mui/material";
 
 import "./TabLayout.scss";
 
@@ -14,7 +14,7 @@ interface ComponentProps {
   component: JSX.Element;
 }
 
-interface DashboardProps {
+interface TabLayoutProps {
   bannerText: string;
   bannerButton?: JSX.Element;
   componentList: ComponentProps[];
@@ -22,15 +22,14 @@ interface DashboardProps {
 
 const TabPanel = (props: TabPanelProps) => {
   const { children, value, index, ...other } = props;
-  const isMobile = useMediaQuery("(max-width:768px)");
 
   return (
     <div
-      className={isMobile ? "tabpanel-container-mobile" : "tabpanel-container"}
+      className="tabpanel-container"
       role="tabpanel"
       hidden={value !== index}
-      id={`dash-tabpanel-${index}`}
-      aria-labelledby={`dash-tab-${index}`}
+      id={`layout-tabpanel-${index}`}
+      aria-labelledby={`layout-tab-${index}`}
       {...other}
     >
       {value === index && children}
@@ -40,13 +39,13 @@ const TabPanel = (props: TabPanelProps) => {
 
 const TabProps = (index: number) => {
   return {
-    id: `dash-tab-${index}`,
-    "aria-controls": `dash-tabpanel-${index}`,
+    id: `layout-tab-${index}`,
+    "aria-controls": `layout-tabpanel-${index}`,
   };
 };
 
 /**
- * The Dashboard component as a common component that includes a Banner, Tabs, and TabPanels.
+ * The TabLayout component is a common component that includes a Banner, Tabs, and TabPanels.
  *
  * Code for the Tabs is based on the example from MUI Tabs
  * See the 'basic tabs' typescript example here:
@@ -55,12 +54,11 @@ const TabProps = (index: number) => {
  * @param bannerText - string to display on the banner. (Example: "Profile")
  * @param bannerButton - string to display on the banner. (Example: "Profile")
  * @param componentList - Array of ComponentProps that contain labels (string) and components (JSX.Element)
- * @returns React component containing a dashboard with a Banner, Tabs, and TabPanels.
+ * @returns React component containing a layout for a Banner, Tabs, and TabPanels.
  */
 export const TabLayout = React.memo(
-  ({ bannerText, bannerButton, componentList }: DashboardProps) => {
+  ({ bannerText, bannerButton, componentList }: TabLayoutProps) => {
     const [value, setValue] = useState(0);
-    const isMobile = useMediaQuery("(max-width:768px)");
 
     const handleChange = useCallback(
       (event: React.SyntheticEvent, newValue: number) => {
@@ -70,7 +68,13 @@ export const TabLayout = React.memo(
     );
 
     const DisplayTabs = () => (
-      <Tabs value={value} onChange={handleChange} aria-label="profile tabs">
+      <Tabs
+        value={value}
+        onChange={handleChange}
+        variant="scrollable"
+        scrollButtons="auto"
+        aria-label="scrollable profile tabs"
+      >
         {componentList.map(({ label }, index) => {
           return (
             <Tab
@@ -97,7 +101,7 @@ export const TabLayout = React.memo(
     );
 
     const DisplayBanner = () => (
-      <div className="dash-banner">
+      <div className="layout-banner">
         <h2>{bannerText}</h2>
         {bannerButton ? bannerButton : null}
       </div>
@@ -106,11 +110,10 @@ export const TabLayout = React.memo(
     return (
       <>
         <Box
-          className="dash-box"
+          className="layout-box"
           sx={{
             borderBottom: 1,
             borderColor: "divider",
-            padding: isMobile ? "10px 10px 0px 10px" : "10px 60px 0px 60px",
           }}
         >
           <DisplayBanner />

@@ -95,6 +95,7 @@ export const List = memo(() => {
         enableRowSelection={true}
         // Row copy, delete, and edit options
         enableRowActions={true}
+        enableStickyHeader
         positionActionsColumn="last"
         displayColumnDefOptions={{
           "mrt-row-actions": {
@@ -138,7 +139,7 @@ export const List = memo(() => {
             <Box
               sx={{
                 display: "flex",
-                padding: "10px 0px",
+                padding: "20px 0px",
                 backgroundColor: "white",
               }}
             >
@@ -173,7 +174,7 @@ export const List = memo(() => {
         muiTableContainerProps={{
           sx: {
             outline: "1px solid #DBDCDC",
-            height: "60vh",
+            height: "calc(100vh - 160px)",
           },
         }}
         // Pagination

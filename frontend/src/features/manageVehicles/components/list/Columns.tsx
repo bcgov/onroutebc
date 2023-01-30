@@ -6,12 +6,11 @@ import { IPowerUnit } from "../../types/managevehicles";
  * The Columns Options are from Material React Table.
  * For a list of options, see here:
  * https://www.material-react-table.com/docs/api/column-options
- * 
- * 
+ *
+ *
  */
 
-export const PowerUnit_ColumnDef : MRT_ColumnDef<IPowerUnit>[] = 
-[
+export const PowerUnit_ColumnDef: MRT_ColumnDef<IPowerUnit>[] = [
   {
     accessorKey: "unitNumber",
     header: "Unit #",
@@ -27,14 +26,14 @@ export const PowerUnit_ColumnDef : MRT_ColumnDef<IPowerUnit>[] =
   {
     accessorKey: "plate",
     header: "Plate",
-    filterVariant: 'multi-select',
+    filterVariant: "multi-select",
   },
   {
-    accessorKey: "licensedGvw",
-    header: "GVW",
+    accessorKey: "powerUnitTypeCode",
+    header: "Vehicle Type",
   },
   {
     accessorKey: "createdDateTime",
     header: "Date Created",
   },
-]
+];
