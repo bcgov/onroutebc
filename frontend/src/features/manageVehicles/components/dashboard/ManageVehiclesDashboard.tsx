@@ -97,7 +97,7 @@ export const ManageVehiclesDashboard = React.memo(() => {
         isOpen={showForm}
         onRequestClose={closeSlidePanel}
         from="right"
-        width="28%"
+        width="538px"
         title={
           addVehicleMode === VEHICLE_TYPES_ENUM.POWER_UNIT
             ? t("vehicle.add-vehicle.power-unit")
