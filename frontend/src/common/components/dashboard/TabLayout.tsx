@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useState } from "react";
 import { Box, Tabs, Tab } from "@mui/material";
 
 import "./TabLayout.scss";
@@ -44,6 +44,66 @@ const TabProps = (index: number) => {
   };
 };
 
+const DisplayTabs = ({
+  value,
+  handleChange,
+  componentList,
+}: {
+  value: number;
+  handleChange: (event: React.SyntheticEvent, newValue: number) => void;
+  componentList: ComponentProps[];
+}) => (
+  <Tabs
+    value={value}
+    onChange={handleChange}
+    variant="scrollable"
+    scrollButtons="auto"
+    aria-label="scrollable profile tabs"
+  >
+    {componentList.map(({ label }, index) => {
+      return (
+        <Tab
+          key={label}
+          label={label}
+          {...TabProps(index)}
+          sx={{ px: 0, marginRight: "40px", fontWeight: 700 }}
+        />
+      );
+    })}
+  </Tabs>
+);
+
+const DisplayTabPanels = ({
+  value,
+  componentList,
+}: {
+  value: number;
+  componentList: ComponentProps[];
+}) => (
+  <>
+    {componentList.map(({ label, component }, index) => {
+      return (
+        <TabPanel key={label} value={value} index={index}>
+          {component}
+        </TabPanel>
+      );
+    })}
+  </>
+);
+
+const DisplayBanner = ({
+  bannerText,
+  bannerButton,
+}: {
+  bannerText: string;
+  bannerButton?: JSX.Element;
+}) => (
+  <div className="layout-banner">
+    <h2>{bannerText}</h2>
+    {bannerButton ? bannerButton : null}
+  </div>
+);
+
 /**
  * The TabLayout component is a common component that includes a Banner, Tabs, and TabPanels.
  *
@@ -60,52 +120,9 @@ export const TabLayout = React.memo(
   ({ bannerText, bannerButton, componentList }: TabLayoutProps) => {
     const [value, setValue] = useState(0);
 
-    const handleChange = useCallback(
-      (event: React.SyntheticEvent, newValue: number) => {
-        setValue(newValue);
-      },
-      []
-    );
-
-    const DisplayTabs = () => (
-      <Tabs
-        value={value}
-        onChange={handleChange}
-        variant="scrollable"
-        scrollButtons="auto"
-        aria-label="scrollable profile tabs"
-      >
-        {componentList.map(({ label }, index) => {
-          return (
-            <Tab
-              key={index}
-              label={label}
-              {...TabProps(index)}
-              sx={{ px: 0, marginRight: "40px", fontWeight: 700 }}
-            />
-          );
-        })}
-      </Tabs>
-    );
-
-    const DisplayTabPanels = () => (
-      <>
-        {componentList.map(({ component }, index) => {
-          return (
-            <TabPanel key={index} value={value} index={index}>
-              {component}
-            </TabPanel>
-          );
-        })}
-      </>
-    );
-
-    const DisplayBanner = () => (
-      <div className="layout-banner">
-        <h2>{bannerText}</h2>
-        {bannerButton ? bannerButton : null}
-      </div>
-    );
+    const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+      setValue(newValue);
+    };
 
     return (
       <>
@@ -116,10 +133,14 @@ export const TabLayout = React.memo(
             borderColor: "divider",
           }}
         >
-          <DisplayBanner />
-          <DisplayTabs />
+          <DisplayBanner bannerText={bannerText} bannerButton={bannerButton} />
+          <DisplayTabs
+            value={value}
+            handleChange={handleChange}
+            componentList={componentList}
+          />
         </Box>
-        <DisplayTabPanels />
+        <DisplayTabPanels value={value} componentList={componentList} />
       </>
     );
   }

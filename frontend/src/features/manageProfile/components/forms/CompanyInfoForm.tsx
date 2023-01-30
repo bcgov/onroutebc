@@ -26,48 +26,48 @@ export const CompanyInfoForm = memo(() => {
     marginLeft: "8px",
   };
 
-  const { register, handleSubmit, control } = formMethods;
+  const { register, control } = formMethods;
 
   return (
     <div>
       <FormProvider {...formMethods}>
-            <div id="power-unit-form">
-              <div>
-                <Controller
-                  key="controller-powerunit-unitNumber"
-                  name="unitNumber"
-                  control={control}
-                  rules={{ required: true }}
-                  defaultValue={""}
-                  render={({ fieldState: { invalid } }) => (
-                    <>
-                      <FormControl margin="normal" error={invalid}>
-                        <FormLabel
-                          id="power-unit-unit-number-label"
-                          sx={formFieldStyle}
-                        >
-                          {t("vehicle.power-unit.unit-number")}
-                        </FormLabel>
-                        <OutlinedInput
-                          aria-labelledby="power-unit-unit-number-label"
-                          defaultValue={"Test"}
-                          {...register("unitNumber", {
-                            required: true,
-                          })}
-                        />
-                        {invalid && (
-                          <FormHelperText error>
-                            {t("vehicle.power-unit.required", {
-                              fieldName: "Unit Number",
-                            })}
-                          </FormHelperText>
-                        )}
-                      </FormControl>
-                    </>
-                  )}
-                />
-              </div>
-            </div>
+        <div id="power-unit-form">
+          <div>
+            <Controller
+              key="controller-powerunit-unitNumber"
+              name="unitNumber"
+              control={control}
+              rules={{ required: true }}
+              defaultValue={""}
+              render={({ fieldState: { invalid } }) => (
+                <>
+                  <FormControl margin="normal" error={invalid}>
+                    <FormLabel
+                      id="power-unit-unit-number-label"
+                      sx={formFieldStyle}
+                    >
+                      {t("vehicle.power-unit.unit-number")}
+                    </FormLabel>
+                    <OutlinedInput
+                      aria-labelledby="power-unit-unit-number-label"
+                      defaultValue={"Test"}
+                      {...register("unitNumber", {
+                        required: true,
+                      })}
+                    />
+                    {invalid && (
+                      <FormHelperText error>
+                        {t("vehicle.power-unit.required", {
+                          fieldName: "Unit Number",
+                        })}
+                      </FormHelperText>
+                    )}
+                  </FormControl>
+                </>
+              )}
+            />
+          </div>
+        </div>
       </FormProvider>
     </div>
   );
