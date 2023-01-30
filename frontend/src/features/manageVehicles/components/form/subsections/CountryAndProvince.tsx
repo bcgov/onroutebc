@@ -63,8 +63,13 @@ export const CountryAndProvince = ({
    */
   const formFieldStyle = {
     fontWeight: "bold",
-    width: "300px",
+    width: "490px",
+    marginLeft: "8px",
   };
+
+  const inputHeight = {
+    height: "48px",
+  }
 
   /**
    * Function to handle changes on selecting a country.
@@ -132,6 +137,7 @@ export const CountryAndProvince = ({
                 <Select
                   aria-labelledby="power-unit-country-label"
                   defaultValue={country || ""}
+                  sx={inputHeight}
                   {...register("country", {
                     required: true,
                     onChange: onChangeCountry,
@@ -159,10 +165,10 @@ export const CountryAndProvince = ({
       {shouldDisplayProvince && (
         <div>
           <Controller
-            key=""
-            name=""
+            key="controller-powerunit-province"
+            name="province"
             rules={{ required: shouldDisplayProvince }}
-            defaultValue={country || ""}
+            defaultValue={province || ""}
             render={({ fieldState: { invalid } }) => (
               <>
                 <FormControl
@@ -175,6 +181,7 @@ export const CountryAndProvince = ({
                   <Select
                     aria-labelledby="power-unit-province-label"
                     defaultValue={province || ""}
+                    sx={inputHeight}
                     {...register("province", {
                       required: shouldDisplayProvince,
                       onChange: onChangeProvince,
@@ -193,7 +200,10 @@ export const CountryAndProvince = ({
                   {invalid && (
                     <FormHelperText error>
                       {t("vehicle.power-unit.required", {
-                        fieldName: "Province/State",
+                        fieldName: "Province / State",
+                        interpolation: {
+                          escapeValue: false,
+                        }
                       })}
                     </FormHelperText>
                   )}
