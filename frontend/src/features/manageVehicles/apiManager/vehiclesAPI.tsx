@@ -4,14 +4,10 @@ import {
   CreatePowerUnit,
   UpdatePowerUnit,
   PowerUnitType,
-  ApiErrorResponse
+  ApiErrorResponse,
 } from "../types/managevehicles";
 
-/*
- *
- * API Manager for the Manage Vehicles feature
- *
- */
+//const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 /**
  * Fetch*
@@ -54,8 +50,8 @@ export const getAllPowerUnits = async (): Promise<IPowerUnit[]> => {
  */
 export const getPowerUnitTypes = async (): Promise<Array<PowerUnitType>> => {
   return fetch(`${VEHICLES_API.POWER_UNIT_TYPES}`).then((response) =>
-     response.json()
-   );
+    response.json()
+  );
 };
 
 /**

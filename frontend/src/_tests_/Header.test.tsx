@@ -1,10 +1,10 @@
 import { render, screen } from "@testing-library/react";
 import { Header } from "../common/components/header/Header";
 import { BrowserRouter as Router } from "react-router-dom";
-import { vi } from 'vitest';
+import { vi } from "vitest";
 
 const mockMatchMedia = () => {
-  Object.defineProperty(window, 'envConfig', {
+  Object.defineProperty(window, "envConfig", {
     value: {
       VITE_DEPLOY_ENVIRONMENT: "docker",
       VITE_API_VEHICLE_URL: "http://localhost:5000",
@@ -37,4 +37,3 @@ test("Should render Header/Nav without breaking", () => {
   renderHeader();
   expect(screen.getByText("onRouteBC")).toBeInTheDocument();
 });
-
