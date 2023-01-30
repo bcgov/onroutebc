@@ -8,7 +8,7 @@ import { t } from "i18next";
 import { memo } from "react";
 import { FormProvider, Controller, useForm } from "react-hook-form";
 
-import "./CompanyInfoForms.scss";
+//import "./CompanyInfoForms.scss";
 
 export const CompanyInfoForm = memo(() => {
   const formMethods = useForm({
