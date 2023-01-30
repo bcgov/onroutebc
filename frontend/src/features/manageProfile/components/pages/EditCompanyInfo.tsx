@@ -4,8 +4,8 @@ import { InfoBcGovBanner } from "../../../../common/components/alertBanners/Aler
 import { BC_PRIMARY_BLUE } from "../../../../themes/bcGovStyles";
 import { CompanyInfoForm } from "../forms/CompanyInfoForm";
 
-import "./CompanyInfoPage.scss";
-import { DisplayInfo } from "./DisplayInfo";
+import "./ManageProfilePages.scss";
+import { DisplayInfo } from "./DisplayCompanyInfo";
 
 const Header = () => {
   return <h2 className="company-header">Edit Company Information</h2>;
@@ -37,7 +37,7 @@ const CompanyBanner = () => {
   );
 };
 
-export const CompanyInfoPage = memo(() => {
+export const EditCompanyInfo = memo(() => {
   const [isEditting, setIsEditting] = useState(false);
 
   return (
@@ -56,4 +56,4 @@ export const CompanyInfoPage = memo(() => {
   );
 });
 
-CompanyInfoPage.displayName = "CompanyInfoPage";
+EditCompanyInfo.displayName = "EditCompanyInfo";

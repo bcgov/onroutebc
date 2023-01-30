@@ -1,7 +1,7 @@
 import { Box, Button, Typography } from "@mui/material";
 import { memo } from "react";
 
-import "./CompanyInfoPage.scss";
+import "./ManageProfilePages.scss";
 
 export const DisplayInfo = memo(
   ({
