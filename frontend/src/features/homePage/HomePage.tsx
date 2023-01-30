@@ -7,7 +7,7 @@ export const HomePage = React.memo(() => {
 
   return (
     <div style={{ padding: "0px 60px", height: "100vh" }}>
-      <p>OnRouteBC Home -{DEPLOY_ENV}-</p>
+      <p>OnRouteBC Home -{DEPLOY_ENV}- Environment</p>
     </div>
   );
 });
