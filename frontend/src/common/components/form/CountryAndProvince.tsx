@@ -63,7 +63,6 @@ export const CountryAndProvince = ({
   const formFieldStyle = {
     fontWeight: "bold",
     width: { width },
-    //marginLeft: "8px",
   };
 
   const inputHeight = {

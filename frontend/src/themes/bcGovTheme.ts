@@ -1,5 +1,10 @@
 import { createTheme } from "@mui/material/styles";
-import { BC_PRIMARY_BLUE, BC_BACKGROUND_LIGHT, BC_TEXT } from "./bcGovStyles";
+import {
+  BC_PRIMARY_BLUE,
+  BC_BACKGROUND_LIGHT,
+  BC_TEXT,
+  BC_TEXT_BOX_BORDER_GREY,
+} from "./bcGovStyles";
 
 /*
  *
@@ -40,6 +45,16 @@ export const bcGovTheme = createTheme({
       lineHeight: 1.6,
       marginBottom: 2,
       color: BC_TEXT,
+    },
+    h2: {
+      color: BC_TEXT,
+      fontWeight: "bold",
+      fontSize: "24px",
+      paddingTop: "40px",
+      paddingBottom: "24px",
+      borderBottom: `1px solid ${BC_TEXT_BOX_BORDER_GREY}`,
+      display: "inline-block",
+      letterSpacing: "-0.48px",
     },
   },
   breakpoints: {

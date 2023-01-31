@@ -36,7 +36,7 @@ const CompanyBanner = () => {
   );
 };
 
-export const EditCompanyInfo = memo(() => {
+export const CompanyInfo = () => {
   const [isEditting, setIsEditting] = useState(false);
 
   return (
@@ -44,14 +44,12 @@ export const EditCompanyInfo = memo(() => {
       {isEditting ? <Header /> : null}
       <CompanyBanner />
       {isEditting ? (
-        <>
-          <CompanyInfoForm />
-        </>
+        <CompanyInfoForm setIsEditting={setIsEditting} />
       ) : (
         <DisplayInfo setIsEditting={setIsEditting} />
       )}
     </>
   );
-});
+};
 
-EditCompanyInfo.displayName = "EditCompanyInfo";
+CompanyInfo.displayName = "CompanyInfo";

@@ -1,6 +1,12 @@
-import { Button } from "@mui/material";
+import {
+  Button,
+  Checkbox,
+  FormControlLabel,
+  FormGroup,
+  Typography,
+} from "@mui/material";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { memo } from "react";
+import { memo, useState } from "react";
 import { FormProvider, useForm, FieldValues } from "react-hook-form";
 import { CountryAndProvince } from "../../../../common/components/form/CountryAndProvince";
 import {
@@ -10,9 +16,8 @@ import {
 } from "../../apiManager/manageProfileAPI";
 import { CustomOutlinedInput } from "../../../../common/components/form/CustomFormComponents";
 import { InfoBcGovBanner } from "../../../../common/components/alertBanners/AlertBanners";
-import { BC_TEXT_BOX_BORDER_GREY } from "../../../../themes/bcGovStyles";
 
-//import "./CompanyInfoForms.scss";
+import "./CompanyInfoForms.scss";
 
 export interface CompanyInfoFormValues {
   address1: string;
@@ -33,10 +38,23 @@ export interface CompanyInfoFormValues {
   primaryCountry: string;
   primaryProvince: string;
   primaryCity: string;
+
+  mail_address1: string;
+  mail_address2: string;
+  mail_country: string;
+  mail_province: string;
+  mail_city: string;
+  mail_postalCode: string;
 }
 
 export const CompanyInfoForm = memo(
-  ({ companyInfo }: { companyInfo?: ICompanyInfo }) => {
+  ({
+    companyInfo,
+    setIsEditting,
+  }: {
+    companyInfo?: ICompanyInfo;
+    setIsEditting: React.Dispatch<React.SetStateAction<boolean>>;
+  }) => {
     const formMethods = useForm<CompanyInfoFormValues>({
       defaultValues: {
         address1: "",
@@ -57,6 +75,12 @@ export const CompanyInfoForm = memo(
         primaryCountry: "",
         primaryProvince: "",
         primaryCity: "",
+        mail_address1: "",
+        mail_address2: "",
+        mail_country: "",
+        mail_province: "",
+        mail_city: "",
+        mail_postalCode: "",
       },
     });
 
@@ -89,15 +113,10 @@ export const CompanyInfoForm = memo(
 
     const { register, handleSubmit, control } = formMethods;
 
+    const [showMailingAddress, setShowMailingAddress] = useState(false);
+
     return (
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          width: "1056px",
-          marginTop: "10px",
-        }}
-      >
+      <div className="mp-form-container">
         <FormProvider {...formMethods}>
           <CustomOutlinedInput
             control={control}
@@ -129,7 +148,7 @@ export const CompanyInfoForm = memo(
             rules={{ required: true }}
             label={"City"}
             feature={"profile"}
-            inValidMessage={""}
+            inValidMessage={"City is required"}
           />
           <CustomOutlinedInput
             control={control}
@@ -138,26 +157,83 @@ export const CompanyInfoForm = memo(
             rules={{ required: true }}
             label={"Postal / Zip Code"}
             feature={"profile"}
-            inValidMessage={""}
+            inValidMessage={"Postal / Zip Code is required"}
           />
 
-          <h2
-            style={{
-              paddingTop: "40px",
-              paddingBottom: "24px",
-              borderBottom: `1px solid ${BC_TEXT_BOX_BORDER_GREY}`,
-              display: "inline-block",
-            }}
-          >
+          <FormGroup>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  onChange={() => setShowMailingAddress(!showMailingAddress)}
+                  inputProps={{
+                    "aria-label": "Mailing Address Checkbox",
+                  }}
+                />
+              }
+              label="Mailing address is the same as company address"
+            />
+          </FormGroup>
+
+          {showMailingAddress ? (
+            <>
+              <Typography variant="h2" gutterBottom>
+                Company Mailing Address
+              </Typography>
+
+              <CustomOutlinedInput
+                control={control}
+                register={register}
+                name={"mail_address1"}
+                rules={{ required: true }}
+                label={"Address (Line 1)"}
+                feature={"profile"}
+                inValidMessage={"Address is required"}
+              />
+              <CustomOutlinedInput
+                control={control}
+                register={register}
+                name={"mail_address2"}
+                rules={{ required: false }}
+                label={"Address (Line 2)"}
+                feature={"profile"}
+                inValidMessage={""}
+              />
+              <CountryAndProvince
+                country={companyInfo?.country ? companyInfo.country : ""}
+                province={companyInfo?.province ? companyInfo.province : ""}
+                width="528px"
+              />
+              <CustomOutlinedInput
+                control={control}
+                register={register}
+                name={"mail_city"}
+                rules={{ required: true }}
+                label={"City"}
+                feature={"profile"}
+                inValidMessage={"City is required"}
+              />
+              <CustomOutlinedInput
+                control={control}
+                register={register}
+                name={"mail_postalCode"}
+                rules={{ required: true }}
+                label={"Postal / Zip Code"}
+                feature={"profile"}
+                inValidMessage={"Postal / Zip Code is required"}
+              />
+            </>
+          ) : null}
+
+          <Typography variant="h2" gutterBottom>
             Company Contact Details
-          </h2>
+          </Typography>
 
           <CustomOutlinedInput
             control={control}
             register={register}
             name={"email"}
             rules={{ required: false }}
-            label={"Email (optional)"}
+            label={"Email"}
             feature={"profile"}
             inValidMessage={""}
           />
@@ -168,7 +244,7 @@ export const CompanyInfoForm = memo(
             rules={{ required: true }}
             label={"Phone Number"}
             feature={"profile"}
-            inValidMessage={""}
+            inValidMessage={"Phone Number is required"}
           />
           <CustomOutlinedInput
             control={control}
@@ -180,16 +256,9 @@ export const CompanyInfoForm = memo(
             inValidMessage={""}
           />
 
-          <h2
-            style={{
-              paddingTop: "40px",
-              paddingBottom: "24px",
-              borderBottom: `1px solid ${BC_TEXT_BOX_BORDER_GREY}`,
-              display: "inline-block",
-            }}
-          >
+          <Typography variant="h2" gutterBottom>
             Company Primary Contact
-          </h2>
+          </Typography>
 
           <InfoBcGovBanner description="The Company Primary Contact will be contacted for all onRouteBC client profile queries." />
 
@@ -200,7 +269,7 @@ export const CompanyInfoForm = memo(
             rules={{ required: true }}
             label={"First Name"}
             feature={"profile"}
-            inValidMessage={""}
+            inValidMessage={"First Name is required"}
           />
           <CustomOutlinedInput
             control={control}
@@ -209,7 +278,7 @@ export const CompanyInfoForm = memo(
             rules={{ required: true }}
             label={"Last Name"}
             feature={"profile"}
-            inValidMessage={""}
+            inValidMessage={"Last Name is required"}
           />
           <CustomOutlinedInput
             control={control}
@@ -218,7 +287,7 @@ export const CompanyInfoForm = memo(
             rules={{ required: true }}
             label={"Email"}
             feature={"profile"}
-            inValidMessage={""}
+            inValidMessage={"Email is required"}
           />
           <CustomOutlinedInput
             control={control}
@@ -227,14 +296,14 @@ export const CompanyInfoForm = memo(
             rules={{ required: true }}
             label={"Primary Phone"}
             feature={"profile"}
-            inValidMessage={""}
+            inValidMessage={"Primary Phone is required"}
           />
           <CustomOutlinedInput
             control={control}
             register={register}
             name={"alternatePhone"}
             rules={{ required: false }}
-            label={"Alternate Phone (optional)"}
+            label={"Alternate Phone"}
             feature={"profile"}
             inValidMessage={""}
           />
@@ -254,23 +323,17 @@ export const CompanyInfoForm = memo(
             rules={{ required: true }}
             label={"City"}
             feature={"profile"}
-            inValidMessage={""}
+            inValidMessage={"City is required"}
           />
         </FormProvider>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "flex-end",
-            margin: "30px 0px",
-            width: "528px",
-          }}
-        >
+        <div className="mp-form-submit-container">
           <Button
             key="update-company-info-button"
             aria-label="Update Company Info"
             variant="contained"
             color="secondary"
             sx={{ marginRight: "40px" }}
+            onClick={() => setIsEditting(false)}
           >
             Cancel
           </Button>

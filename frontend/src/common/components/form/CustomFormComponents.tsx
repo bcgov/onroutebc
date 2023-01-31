@@ -74,12 +74,15 @@ export const CustomOutlinedInput = <
       key={`controller-${feature}-${name}`}
       name={name}
       control={control}
-      rules={{ required: true }}
+      rules={rules}
       render={({ fieldState: { invalid } }) => (
         <>
           <FormControl margin="normal" error={invalid}>
             <FormLabel id={`${feature}-${name}-label`} sx={labelStyle}>
               {label_i18 ? t(label_i18) : label}
+              {!rules.required && (
+                <span style={{ fontWeight: "normal" }}> (optional)</span>
+              )}
             </FormLabel>
             <OutlinedInput
               aria-labelledby={`${feature}-${name}-label`}
