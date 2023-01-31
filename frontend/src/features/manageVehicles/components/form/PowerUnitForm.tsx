@@ -152,8 +152,6 @@ export const PowerUnitForm = ({
                 feature={"power-unit"}
                 inValidMessage={""}
                 inputProps={{ maxLength: 10 }}
-                labelStyle={formFieldStyle}
-                inputStyle={inputHeight}
               />
               <CustomOutlinedInput
                 control={control}
@@ -167,8 +165,6 @@ export const PowerUnitForm = ({
                 inValidMessage_i18={"vehicle.power-unit.required"}
                 inValidMessage_fieldName_i18={"Make"}
                 inputProps={{ maxLength: 10 }}
-                labelStyle={formFieldStyle}
-                inputStyle={inputHeight}
               />
               <CustomOutlinedInput
                 control={control}
@@ -182,8 +178,6 @@ export const PowerUnitForm = ({
                 inValidMessage_i18={"vehicle.power-unit.required"}
                 inValidMessage_fieldName_i18={"Year"}
                 inputProps={{ maxLength: 4, minLength: 4 }}
-                labelStyle={formFieldStyle}
-                inputStyle={inputHeight}
               />
               {/* <div>
                 <Controller
