@@ -119,8 +119,3 @@ export interface CreateTrailer extends Vehicle {
  * It is identical to CreateTrailer.
  */
 export type UpdateTrailer = CreateTrailer;
-
-interface ApiErrorResponse {
-  status: number;
-  errorMessage: string; // array?
-}

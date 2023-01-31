@@ -1,15 +1,14 @@
 import { useFormContext, Controller } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import ".././VehicleForm.scss";
 import FormHelperText from "@mui/material/FormHelperText";
 import { useCallback, useState } from "react";
 import FormControl from "@mui/material/FormControl";
 import FormLabel from "@mui/material/FormLabel";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
-import { COUNTRIES_THAT_SUPPORT_PROVINCE } from "../../../../../constants/countries";
+import { COUNTRIES_THAT_SUPPORT_PROVINCE } from "../../../constants/countries";
 
-import CountriesAndStates from "../../../../../constants/countries_and_states.json";
+import CountriesAndStates from "../../../constants/countries_and_states.json";
 
 /**
  * The props that can be passed to the country and provinces subsection of a form.
@@ -26,6 +25,11 @@ interface CountryAndProvinceProps {
    * Default value is ''
    */
   province?: string | null;
+
+  /**
+   * The value for the width of the select box
+   */
+  width?: string | null;
 }
 
 /**
@@ -38,15 +42,10 @@ interface CountryAndProvinceProps {
 export const CountryAndProvince = ({
   country,
   province,
+  width = "",
 }: CountryAndProvinceProps) => {
-  const {
-    register,
-    resetField,
-    watch,
-    setValue,
-    getValues,
-    control,
-  } = useFormContext();
+  const { register, resetField, watch, setValue, getValues, control } =
+    useFormContext();
 
   /**
    * State for displaying selected province
@@ -63,13 +62,13 @@ export const CountryAndProvince = ({
    */
   const formFieldStyle = {
     fontWeight: "bold",
-    width: "490px",
-    marginLeft: "8px",
+    width: { width },
+    //marginLeft: "8px",
   };
 
   const inputHeight = {
     height: "48px",
-  }
+  };
 
   /**
    * Function to handle changes on selecting a country.
@@ -171,10 +170,7 @@ export const CountryAndProvince = ({
             defaultValue={province || ""}
             render={({ fieldState: { invalid } }) => (
               <>
-                <FormControl
-                  margin="normal"
-                  error={invalid}
-                >
+                <FormControl margin="normal" error={invalid}>
                   <FormLabel id="power-unit-province-label" sx={formFieldStyle}>
                     {t("vehicle.power-unit.province")}
                   </FormLabel>
@@ -203,7 +199,7 @@ export const CountryAndProvince = ({
                         fieldName: "Province / State",
                         interpolation: {
                           escapeValue: false,
-                        }
+                        },
                       })}
                     </FormHelperText>
                   )}

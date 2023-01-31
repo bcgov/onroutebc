@@ -1,6 +1,5 @@
 import { Box } from "@mui/material";
 import { memo, useState } from "react";
-import { InfoBcGovBanner } from "../../../../common/components/alertBanners/AlertBanners";
 import { BC_PRIMARY_BLUE } from "../../../../themes/bcGovStyles";
 import { CompanyInfoForm } from "../forms/CompanyInfoForm";
 
@@ -46,7 +45,6 @@ export const EditCompanyInfo = memo(() => {
       <CompanyBanner />
       {isEditting ? (
         <>
-          <InfoBcGovBanner description="Please note, unless stated otherwise, all fields are mandatory." />
           <CompanyInfoForm />
         </>
       ) : (

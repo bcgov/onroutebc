@@ -21,7 +21,7 @@ import OutlinedInput from "@mui/material/OutlinedInput";
 import { addPowerUnit, getPowerUnitTypes } from "../../apiManager/vehiclesAPI";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
-import { CountryAndProvince } from "./subsections/CountryAndProvince";
+import { CountryAndProvince } from "../../../../common/components/form/CountryAndProvince";
 import { DisplaySnackBarOptions } from "../../../../common/components/snackbar/CustomSnackbar2";
 
 /**
@@ -386,6 +386,7 @@ export const PowerUnitForm = ({
                     ? powerUnit?.provinceId?.split("-")[1]
                     : ""
                 }
+                width={"498px"}
               />
               <div>
                 <Controller
