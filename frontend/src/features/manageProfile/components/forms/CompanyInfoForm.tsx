@@ -125,26 +125,30 @@ export const CompanyInfoForm = memo(
     const PHONE_WIDTH = "344px";
     const EXT_WIDTH = "144px";
 
+    const commonFormProps = {
+      control: control,
+      register: register,
+      feature: "profile",
+    };
+
     return (
       <div className="mp-form-container">
         <FormProvider {...formMethods}>
           <CustomOutlinedInput
-            control={control}
-            register={register}
+            common={commonFormProps}
             name={"address1"}
             rules={{ required: true }}
             label={"Address (Line 1)"}
-            feature={"profile"}
             inValidMessage={"Address is required"}
+            options={{}}
           />
           <CustomOutlinedInput
-            control={control}
-            register={register}
+            common={commonFormProps}
             name={"address2"}
             rules={{ required: false }}
             label={"Address (Line 2)"}
-            feature={"profile"}
             inValidMessage={""}
+            options={{}}
           />
           <CountryAndProvince
             country={companyInfo?.country ? companyInfo.country : ""}
@@ -154,24 +158,20 @@ export const CompanyInfoForm = memo(
 
           <div className="mp-side-by-side-container">
             <CustomOutlinedInput
-              control={control}
-              register={register}
+              common={commonFormProps}
               name={"city"}
               rules={{ required: true }}
               label={"City"}
-              feature={"profile"}
               inValidMessage={"City is required"}
-              width={CITY_WIDTH}
+              options={{ width: CITY_WIDTH }}
             />
             <CustomOutlinedInput
-              control={control}
-              register={register}
+              common={commonFormProps}
               name={"postalCode"}
               rules={{ required: true }}
               label={"Postal / Zip Code"}
-              feature={"profile"}
               inValidMessage={"Postal / Zip Code is required"}
-              width={POSTAL_WIDTH}
+              options={{ width: POSTAL_WIDTH }}
             />
           </div>
 
@@ -197,22 +197,20 @@ export const CompanyInfoForm = memo(
               </Typography>
 
               <CustomOutlinedInput
-                control={control}
-                register={register}
+                common={commonFormProps}
                 name={"mail_address1"}
                 rules={{ required: true }}
                 label={"Address (Line 1)"}
-                feature={"profile"}
                 inValidMessage={"Address is required"}
+                options={{}}
               />
               <CustomOutlinedInput
-                control={control}
-                register={register}
+                common={commonFormProps}
                 name={"mail_address2"}
                 rules={{ required: false }}
                 label={"Address (Line 2)"}
-                feature={"profile"}
                 inValidMessage={""}
+                options={{}}
               />
               <CountryAndProvince
                 country={companyInfo?.country ? companyInfo.country : ""}
@@ -221,24 +219,20 @@ export const CompanyInfoForm = memo(
               />
               <div className="mp-side-by-side-container">
                 <CustomOutlinedInput
-                  control={control}
-                  register={register}
+                  common={commonFormProps}
                   name={"mail_city"}
                   rules={{ required: true }}
                   label={"City"}
-                  feature={"profile"}
                   inValidMessage={"City is required"}
-                  width={CITY_WIDTH}
+                  options={{ width: CITY_WIDTH }}
                 />
                 <CustomOutlinedInput
-                  control={control}
-                  register={register}
+                  common={commonFormProps}
                   name={"mail_postalCode"}
                   rules={{ required: true }}
                   label={"Postal / Zip Code"}
-                  feature={"profile"}
                   inValidMessage={"Postal / Zip Code is required"}
-                  width={POSTAL_WIDTH}
+                  options={{ width: POSTAL_WIDTH }}
                 />
               </div>
             </>
@@ -249,45 +243,38 @@ export const CompanyInfoForm = memo(
           </Typography>
 
           <CustomOutlinedInput
-            control={control}
-            register={register}
+            common={commonFormProps}
             name={"email"}
             rules={{ required: false }}
             label={"Email"}
-            feature={"profile"}
             inValidMessage={""}
+            options={{}}
           />
           <div className="mp-side-by-side-container">
             <CustomOutlinedInput
-              control={control}
-              register={register}
+              common={commonFormProps}
               name={"phone"}
               rules={{ required: true }}
               label={"Phone Number"}
-              feature={"profile"}
               inValidMessage={"Phone Number is required"}
-              width={PHONE_WIDTH}
+              options={{ width: PHONE_WIDTH }}
             />
             <CustomOutlinedInput
-              control={control}
-              register={register}
+              common={commonFormProps}
               name={"ext"}
               rules={{ required: false }}
               label={"Ext"}
-              feature={"profile"}
               inValidMessage={""}
-              width={EXT_WIDTH}
+              options={{ width: EXT_WIDTH }}
             />
           </div>
           <CustomOutlinedInput
-            control={control}
-            register={register}
+            common={commonFormProps}
             name={"fax"}
             rules={{ required: false }}
             label={"Fax"}
-            feature={"profile"}
             inValidMessage={""}
-            width={PHONE_WIDTH}
+            options={{ width: PHONE_WIDTH }}
           />
 
           <Typography variant="h2" gutterBottom>
@@ -297,74 +284,63 @@ export const CompanyInfoForm = memo(
           <InfoBcGovBanner description="The Company Primary Contact will be contacted for all onRouteBC client profile queries." />
 
           <CustomOutlinedInput
-            control={control}
-            register={register}
+            common={commonFormProps}
             name={"firstName"}
             rules={{ required: true }}
             label={"First Name"}
-            feature={"profile"}
             inValidMessage={"First Name is required"}
+            options={{}}
           />
           <CustomOutlinedInput
-            control={control}
-            register={register}
+            common={commonFormProps}
             name={"lastName"}
             rules={{ required: true }}
             label={"Last Name"}
-            feature={"profile"}
             inValidMessage={"Last Name is required"}
+            options={{}}
           />
           <CustomOutlinedInput
-            control={control}
-            register={register}
+            common={commonFormProps}
             name={"primaryEmail"}
             rules={{ required: true }}
             label={"Email"}
-            feature={"profile"}
             inValidMessage={"Email is required"}
+            options={{}}
           />
           <div className="mp-side-by-side-container">
             <CustomOutlinedInput
-              control={control}
-              register={register}
+              common={commonFormProps}
               name={"primaryPhone"}
               rules={{ required: true }}
               label={"Primary Phone"}
-              feature={"profile"}
               inValidMessage={"Primary Phone is required"}
-              width={PHONE_WIDTH}
+              options={{ width: PHONE_WIDTH }}
             />
             <CustomOutlinedInput
-              control={control}
-              register={register}
+              common={commonFormProps}
               name={"primaryPhoneExt"}
               rules={{ required: false }}
               label={"Ext"}
-              feature={"profile"}
               inValidMessage={""}
-              width={EXT_WIDTH}
+              options={{ width: EXT_WIDTH }}
             />
           </div>
           <div className="mp-side-by-side-container">
             <CustomOutlinedInput
-              control={control}
-              register={register}
+              common={commonFormProps}
               name={"alternatePhone"}
               rules={{ required: false }}
               label={"Alternate Phone"}
-              feature={"profile"}
               inValidMessage={""}
-              width={PHONE_WIDTH}
+              options={{ width: PHONE_WIDTH }}
             />
             <CustomOutlinedInput
-              control={control}
-              register={register}
+              common={commonFormProps}
               name={"alternatePhoneExt"}
               rules={{ required: false }}
               label={"Ext"}
-              feature={"profile"}
               inValidMessage={""}
-              width={EXT_WIDTH}
+              options={{ width: EXT_WIDTH }}
             />
           </div>
 
@@ -379,19 +355,18 @@ export const CompanyInfoForm = memo(
             rules={{ required: false }}
           />
           <CustomOutlinedInput
-            control={control}
-            register={register}
+            common={commonFormProps}
             name={"primaryCity"}
             rules={{ required: true }}
             label={"City"}
-            feature={"profile"}
             inValidMessage={"City is required"}
+            options={{}}
           />
         </FormProvider>
         <div className="mp-form-submit-container">
           <Button
             key="update-company-info-cancel-button"
-            aria-label="Update Company Info"
+            aria-label="Cancel Update"
             variant="contained"
             color="secondary"
             sx={{ marginRight: "40px" }}

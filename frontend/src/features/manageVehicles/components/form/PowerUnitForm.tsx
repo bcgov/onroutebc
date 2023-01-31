@@ -128,6 +128,13 @@ export const PowerUnitForm = ({
 
   const ADD_VEHICLE_BTN_HEIGHT = "75px";
   const { t } = useTranslation();
+
+  const commonFormProps = {
+    control: control,
+    register: register,
+    feature: "power-unit",
+  };
+
   return (
     <div>
       <FormProvider {...formMethods}>
@@ -143,41 +150,41 @@ export const PowerUnitForm = ({
           <AccordionDetails style={{ paddingBottom: ADD_VEHICLE_BTN_HEIGHT }}>
             <div id="power-unit-form">
               <CustomOutlinedInput
-                control={control}
-                register={register}
+                common={commonFormProps}
                 name={"unitNumber"}
                 rules={{ required: false, maxLength: 10 }}
                 label={"Unit #"}
-                label_i18={"vehicle.power-unit.unit-number"}
-                feature={"power-unit"}
                 inValidMessage={""}
-                inputProps={{ maxLength: 10 }}
+                options={{
+                  inputProps: { maxLength: 10 },
+                  label_i18: "vehicle.power-unit.unit-number",
+                }}
               />
               <CustomOutlinedInput
-                control={control}
-                register={register}
+                common={commonFormProps}
                 name={"make"}
                 rules={{ required: true, maxLength: 20 }}
                 label={"make"}
-                label_i18={"vehicle.power-unit.make"}
-                feature={"power-unit"}
                 inValidMessage={""}
-                inValidMessage_i18={"vehicle.power-unit.required"}
-                inValidMessage_fieldName_i18={"Make"}
-                inputProps={{ maxLength: 10 }}
+                options={{
+                  inputProps: { maxLength: 10 },
+                  label_i18: "vehicle.power-unit.make",
+                  inValidMessage_i18: "vehicle.power-unit.required",
+                  inValidMessage_fieldName_i18: "Make",
+                }}
               />
               <CustomOutlinedInput
-                control={control}
-                register={register}
+                common={commonFormProps}
                 name={"year"}
                 rules={{ required: true, maxLength: 20 }}
                 label={"year"}
-                label_i18={"vehicle.power-unit.year"}
-                feature={"power-unit"}
                 inValidMessage={""}
-                inValidMessage_i18={"vehicle.power-unit.required"}
-                inValidMessage_fieldName_i18={"Year"}
-                inputProps={{ maxLength: 4, minLength: 4 }}
+                options={{
+                  inputProps: { maxLength: 4, minLength: 4 },
+                  label_i18: "vehicle.power-unit.year",
+                  inValidMessage_i18: "vehicle.power-unit.required",
+                  inValidMessage_fieldName_i18: "Year",
+                }}
               />
               {/* <div>
                 <Controller

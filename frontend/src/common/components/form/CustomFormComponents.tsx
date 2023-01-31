@@ -18,35 +18,39 @@ import { CompanyInfoFormValues } from "../../../features/manageProfile/component
 import { CreatePowerUnit } from "../../../features/manageVehicles/types/managevehicles";
 
 export interface CustomOutLinedInputProps<T extends FieldValues> {
-  control: Control<T>;
-  register: UseFormRegister<T>;
+  common: {
+    control: Control<T>;
+    register: UseFormRegister<T>;
+    feature: string;
+  };
   name: FieldPath<T>;
   rules: RegisterOptions;
   label: string;
-  label_i18?: string;
-  feature: string;
   inValidMessage: string;
-  inValidMessage_i18?: string;
-  inValidMessage_fieldName_i18?: string;
-  inputProps?: RegisterOptions;
-  width?: string;
+  options: {
+    label_i18?: string;
+    inValidMessage_i18?: string;
+    inValidMessage_fieldName_i18?: string;
+    inputProps?: RegisterOptions;
+    width?: string;
+  };
 }
 
 export const CustomOutlinedInput = <
   T extends CompanyInfoFormValues | CreatePowerUnit
 >({
-  control,
-  register,
+  common: { control, register, feature },
   name,
   rules,
   label,
-  label_i18,
-  feature,
   inValidMessage,
-  inValidMessage_i18,
-  inValidMessage_fieldName_i18,
-  inputProps,
-  width = "528px",
+  options: {
+    label_i18,
+    inValidMessage_i18,
+    inValidMessage_fieldName_i18,
+    inputProps,
+    width = "528px",
+  },
 }: CustomOutLinedInputProps<T>): JSX.Element => {
   const { t } = useTranslation();
   return (
