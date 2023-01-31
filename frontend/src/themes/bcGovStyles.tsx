@@ -13,3 +13,5 @@ export const BC_SEM_ERROR = "#D8292F"; // Semantic Colours. Used for error messa
 export const BC_SEM_GREEN = "#2E8540"; // Semantic Colours. Used for success messages and indicators
 export const BC_BACKGROUND_BLUE = "#38598A";
 export const BC_BACKGROUND_LIGHT = "#F2F2F2";
+
+export const BANNER_GREY = "#EBEEF3";
