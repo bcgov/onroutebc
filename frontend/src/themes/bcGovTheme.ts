@@ -50,7 +50,7 @@ export const bcGovTheme = createTheme({
       color: BC_TEXT,
       fontWeight: "bold",
       fontSize: "24px",
-      paddingTop: "40px",
+      paddingTop: "60px",
       paddingBottom: "24px",
       borderBottom: `1px solid ${BC_TEXT_BOX_BORDER_GREY}`,
       display: "inline-block",

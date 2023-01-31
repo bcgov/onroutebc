@@ -375,7 +375,8 @@ export const CompanyInfoForm = memo(
             province={
               companyInfo?.primaryProvince ? companyInfo.primaryProvince : ""
             }
-            width="528px"
+            width={DEFAULT_WIDTH}
+            rules={{ required: false }}
           />
           <CustomOutlinedInput
             control={control}
