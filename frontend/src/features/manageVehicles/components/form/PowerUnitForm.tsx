@@ -23,6 +23,7 @@ import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import { CountryAndProvince } from "../../../../common/components/form/CountryAndProvince";
 import { DisplaySnackBarOptions } from "../../../../common/components/snackbar/CustomSnackbar2";
+import { CustomOutlinedInput } from "../../../../common/components/form/CustomFormComponents";
 
 /**
  * Props used by the power unit form.
@@ -141,77 +142,50 @@ export const PowerUnitForm = ({
           </AccordionSummary>
           <AccordionDetails style={{ paddingBottom: ADD_VEHICLE_BTN_HEIGHT }}>
             <div id="power-unit-form">
-              <div>
-                <Controller
-                  key="controller-powerunit-unitNumber"
-                  name="unitNumber"
-                  control={control}
-                  rules={{ required: false, maxLength: 10 }}
-                  defaultValue={powerUnit?.unitNumber || ""}
-                  render={() => (
-                    <>
-                      <FormControl margin="normal">
-                        <FormLabel
-                          id="power-unit-unit-number-label"
-                          sx={formFieldStyle}
-                        >
-                          {t("vehicle.power-unit.unit-number")}
-                        </FormLabel>
-                        <OutlinedInput
-                          aria-labelledby="power-unit-unit-number-label"
-                          inputProps={{ maxLength: 10 }}
-                          sx={inputHeight}
-                          defaultValue={powerUnit?.unitNumber}
-                          {...register("unitNumber", {
-                            required: false,
-                            maxLength: 10,
-                          })}
-                        />
-                      </FormControl>
-                    </>
-                  )}
-                />
-              </div>
-              <div>
-                <Controller
-                  key="controller-powerunit-make"
-                  name="make"
-                  control={control}
-                  rules={{ required: true, maxLength: 20 }}
-                  defaultValue={powerUnit?.make || ""}
-                  render={({ fieldState: { invalid } }) => (
-                    <>
-                      <FormControl margin="normal" error={invalid}>
-                        <FormLabel
-                          id="power-unit-make-label"
-                          sx={formFieldStyle}
-                        >
-                          {t("vehicle.power-unit.make")}
-                        </FormLabel>
-                        <OutlinedInput
-                          aria-labelledby="power-unit-make-label"
-                          inputProps={{ maxLength: 20 }}
-                          defaultValue={powerUnit?.make}
-                          sx={inputHeight}
-                          className="height"
-                          {...register("make", {
-                            required: true,
-                            maxLength: 20,
-                          })}
-                        />
-                        {invalid && (
-                          <FormHelperText error>
-                            {t("vehicle.power-unit.required", {
-                              fieldName: "Make",
-                            })}
-                          </FormHelperText>
-                        )}
-                      </FormControl>
-                    </>
-                  )}
-                />
-              </div>
-              <div>
+              <CustomOutlinedInput
+                control={control}
+                register={register}
+                name={"unitNumber"}
+                rules={{ required: false, maxLength: 10 }}
+                label={"Unit #"}
+                label_i18={"vehicle.power-unit.unit-number"}
+                feature={"power-unit"}
+                inValidMessage={""}
+                inputProps={{ maxLength: 10 }}
+                labelStyle={formFieldStyle}
+                inputStyle={inputHeight}
+              />
+              <CustomOutlinedInput
+                control={control}
+                register={register}
+                name={"make"}
+                rules={{ required: true, maxLength: 20 }}
+                label={"make"}
+                label_i18={"vehicle.power-unit.make"}
+                feature={"power-unit"}
+                inValidMessage={""}
+                inValidMessage_i18={"vehicle.power-unit.required"}
+                inValidMessage_fieldName_i18={"Make"}
+                inputProps={{ maxLength: 10 }}
+                labelStyle={formFieldStyle}
+                inputStyle={inputHeight}
+              />
+              <CustomOutlinedInput
+                control={control}
+                register={register}
+                name={"year"}
+                rules={{ required: true, maxLength: 20 }}
+                label={"year"}
+                label_i18={"vehicle.power-unit.year"}
+                feature={"power-unit"}
+                inValidMessage={""}
+                inValidMessage_i18={"vehicle.power-unit.required"}
+                inValidMessage_fieldName_i18={"Year"}
+                inputProps={{ maxLength: 4, minLength: 4 }}
+                labelStyle={formFieldStyle}
+                inputStyle={inputHeight}
+              />
+              {/* <div>
                 <Controller
                   key="controller-powerunit-year"
                   name="year"
@@ -252,7 +226,7 @@ export const PowerUnitForm = ({
                     );
                   }}
                 />
-              </div>
+              </div> */}
               <div>
                 <Controller
                   key="controller-powerunit-vin"

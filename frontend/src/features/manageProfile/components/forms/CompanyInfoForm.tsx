@@ -37,7 +37,7 @@ export interface CompanyInfoFormValues {
 
 export const CompanyInfoForm = memo(
   ({ companyInfo }: { companyInfo?: ICompanyInfo }) => {
-    const formMethods = useForm({
+    const formMethods = useForm<CompanyInfoFormValues>({
       defaultValues: {
         address1: "",
         address2: "",
