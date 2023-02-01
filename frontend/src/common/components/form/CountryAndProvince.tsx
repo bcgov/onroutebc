@@ -1,11 +1,4 @@
-import {
-  useFormContext,
-  Controller,
-  RegisterOptions,
-  Control,
-  UseFormRegister,
-  FieldValues,
-} from "react-hook-form";
+import { useFormContext, Controller, RegisterOptions } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import FormHelperText from "@mui/material/FormHelperText";
 import { useCallback, useState } from "react";
@@ -16,13 +9,11 @@ import MenuItem from "@mui/material/MenuItem";
 import { COUNTRIES_THAT_SUPPORT_PROVINCE } from "../../../constants/countries";
 
 import CountriesAndStates from "../../../constants/countries_and_states.json";
-import { CompanyInfoFormValues } from "../../../features/manageProfile/components/forms/CompanyInfoForm";
-import { CreatePowerUnit } from "../../../features/manageVehicles/types/managevehicles";
 
 /**
  * The props that can be passed to the country and provinces subsection of a form.
  */
-interface CountryAndProvinceProps<T extends FieldValues> {
+interface CountryAndProvinceProps {
   /**
    * The value for the country field.
    * Default value is ''
@@ -42,6 +33,7 @@ interface CountryAndProvinceProps<T extends FieldValues> {
   rules?: RegisterOptions;
   countryField?: string;
   provinceField?: string;
+  feature?: string;
 }
 
 /**
@@ -51,16 +43,15 @@ interface CountryAndProvinceProps<T extends FieldValues> {
  *
  * @returns A react component with the country and province fields.
  */
-export const CountryAndProvince = <
-  T extends CompanyInfoFormValues | CreatePowerUnit
->({
+export const CountryAndProvince = ({
   country,
   province,
   width = "",
   rules = { required: true },
   countryField = "country",
   provinceField = "province",
-}: CountryAndProvinceProps<T>) => {
+  feature = "power-unit",
+}: CountryAndProvinceProps) => {
   const { register, resetField, watch, setValue, getValues, control } =
     useFormContext();
 
@@ -138,7 +129,7 @@ export const CountryAndProvince = <
     <div>
       <div>
         <Controller
-          key="controller-powerunit-country"
+          key={`controller-${feature}-country`}
           name={countryField}
           control={control}
           rules={rules}
@@ -146,14 +137,14 @@ export const CountryAndProvince = <
           render={({ fieldState: { invalid } }) => (
             <>
               <FormControl margin="normal" error={invalid}>
-                <FormLabel id="power-unit-country-label" sx={formFieldStyle}>
+                <FormLabel id={`${feature}-country-label`} sx={formFieldStyle}>
                   {t("vehicle.power-unit.country")}
                   {!rules.required && (
                     <span style={{ fontWeight: "normal" }}> (optional)</span>
                   )}
                 </FormLabel>
                 <Select
-                  aria-labelledby="power-unit-country-label"
+                  aria-labelledby={`${feature}-country-label`}
                   defaultValue={country || ""}
                   sx={inputHeight}
                   {...register(countryField, {
@@ -183,21 +174,24 @@ export const CountryAndProvince = <
       {shouldDisplayProvince && (
         <div>
           <Controller
-            key="controller-powerunit-province"
+            key={`controller-${feature}-province`}
             name={provinceField}
             rules={{ required: shouldDisplayProvince && rules.required }}
             defaultValue={province || ""}
             render={({ fieldState: { invalid } }) => (
               <>
                 <FormControl margin="normal" error={invalid}>
-                  <FormLabel id="power-unit-province-label" sx={formFieldStyle}>
+                  <FormLabel
+                    id={`${feature}-province-label`}
+                    sx={formFieldStyle}
+                  >
                     {t("vehicle.power-unit.province")}
                     {!rules.required && (
                       <span style={{ fontWeight: "normal" }}> (optional)</span>
                     )}
                   </FormLabel>
                   <Select
-                    aria-labelledby="power-unit-province-label"
+                    aria-labelledby={`${feature}-province-label`}
                     defaultValue={province || ""}
                     sx={inputHeight}
                     {...register(provinceField, {
