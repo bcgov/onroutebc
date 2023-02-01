@@ -1,30 +1,43 @@
 export interface ICompanyInfo {
-  address: string;
+  address1: string;
+  address2?: string;
   country: string;
   province: string;
   city: string;
   postalCode: string;
-  email: string;
+
+  mail_address1?: string;
+  mail_address2?: string;
+  mail_country?: string;
+  mail_province?: string;
+  mail_city?: string;
+  mail_postalCode?: string;
+
+  email?: string;
   phone: string;
-  fax: string;
+  ext?: string;
+  fax?: string;
+
   firstName: string;
   lastName: string;
   primaryEmail: string;
   primaryPhone: string;
-  alternatePhone: string;
-  primaryCountry: string;
-  primaryProvince: string;
+  primaryPhoneExt?: string;
+  alternatePhone?: string;
+  alternatePhoneExt?: string;
+  primaryCountry?: string;
+  primaryProvince?: string;
   primaryCity: string;
-  secondaryCountry: string;
-  secondaryProvince: string;
 }
 
 const TEST_DATA: ICompanyInfo = {
-  address: "4042 Robson Street",
+  address1: "4042 Robson Street",
   country: "Canada",
   province: "British Columbia",
   city: "Vancouver",
   postalCode: "V8R 3V6",
+  mail_country: "",
+  mail_province: "",
   email: "test@test.ca",
   phone: "1 (778) 798 2367",
   fax: "",
@@ -36,11 +49,9 @@ const TEST_DATA: ICompanyInfo = {
   primaryCountry: "Canada",
   primaryProvince: "Alberta",
   primaryCity: "Calgary",
-  secondaryCountry: "",
-  secondaryProvince: "",
 };
 
-interface TEST {
+interface TEST_RESPONSE {
   status: number;
 }
 
@@ -50,6 +61,6 @@ export const getCompanyInfo = async (): Promise<ICompanyInfo> => {
 
 export const updateCompanyInfo = async (
   powerUnit: ICompanyInfo
-): Promise<TEST> => {
+): Promise<TEST_RESPONSE> => {
   return { status: 200 };
 };

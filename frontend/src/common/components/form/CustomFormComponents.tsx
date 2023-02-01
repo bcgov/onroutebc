@@ -14,15 +14,17 @@ import {
   UseFormRegister,
 } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { CompanyInfoFormValues } from "../../../features/manageProfile/components/forms/CompanyInfoForm";
+import { ICompanyInfo } from "../../../features/manageProfile/apiManager/manageProfileAPI";
 import { CreatePowerUnit } from "../../../features/manageVehicles/types/managevehicles";
 
+export interface CommonFormPropsType<T extends FieldValues> {
+  control: Control<T>;
+  register: UseFormRegister<T>;
+  feature: string;
+}
+
 export interface CustomOutLinedInputProps<T extends FieldValues> {
-  common: {
-    control: Control<T>;
-    register: UseFormRegister<T>;
-    feature: string;
-  };
+  common: CommonFormPropsType<T>;
   name: FieldPath<T>;
   rules: RegisterOptions;
   label: string;
@@ -36,9 +38,7 @@ export interface CustomOutLinedInputProps<T extends FieldValues> {
   };
 }
 
-export const CustomOutlinedInput = <
-  T extends CompanyInfoFormValues | CreatePowerUnit
->({
+export const CustomOutlinedInput = <T extends ICompanyInfo | CreatePowerUnit>({
   common: { control, register, feature },
   name,
   rules,
