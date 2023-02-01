@@ -51,7 +51,7 @@ const TEST_DATA: ICompanyInfo = {
   primaryCity: "Calgary",
 };
 
-interface TEST_RESPONSE {
+interface TestResponse {
   status: number;
 }
 
@@ -60,7 +60,8 @@ export const getCompanyInfo = async (): Promise<ICompanyInfo> => {
 };
 
 export const updateCompanyInfo = async (
-  powerUnit: ICompanyInfo
-): Promise<TEST_RESPONSE> => {
+  test: ICompanyInfo
+): Promise<TestResponse> => {
+  console.log(test);
   return { status: 200 };
 };

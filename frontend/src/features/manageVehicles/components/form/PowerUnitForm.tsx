@@ -158,6 +158,7 @@ export const PowerUnitForm = ({
                 options={{
                   inputProps: { maxLength: 10 },
                   label_i18: "vehicle.power-unit.unit-number",
+                  width: formFieldStyle.width,
                 }}
               />
               <CustomOutlinedInput
@@ -171,6 +172,7 @@ export const PowerUnitForm = ({
                   label_i18: "vehicle.power-unit.make",
                   inValidMessage_i18: "vehicle.power-unit.required",
                   inValidMessage_fieldName_i18: "Make",
+                  width: formFieldStyle.width,
                 }}
               />
               <CustomOutlinedInput
@@ -184,6 +186,7 @@ export const PowerUnitForm = ({
                   label_i18: "vehicle.power-unit.year",
                   inValidMessage_i18: "vehicle.power-unit.required",
                   inValidMessage_fieldName_i18: "Year",
+                  width: formFieldStyle.width,
                 }}
               />
 
