@@ -1,4 +1,11 @@
-import { useFormContext, Controller, RegisterOptions } from "react-hook-form";
+import {
+  useFormContext,
+  Controller,
+  RegisterOptions,
+  Control,
+  UseFormRegister,
+  FieldValues,
+} from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import FormHelperText from "@mui/material/FormHelperText";
 import { useCallback, useState } from "react";
@@ -9,11 +16,13 @@ import MenuItem from "@mui/material/MenuItem";
 import { COUNTRIES_THAT_SUPPORT_PROVINCE } from "../../../constants/countries";
 
 import CountriesAndStates from "../../../constants/countries_and_states.json";
+import { CompanyInfoFormValues } from "../../../features/manageProfile/components/forms/CompanyInfoForm";
+import { CreatePowerUnit } from "../../../features/manageVehicles/types/managevehicles";
 
 /**
  * The props that can be passed to the country and provinces subsection of a form.
  */
-interface CountryAndProvinceProps {
+interface CountryAndProvinceProps<T extends FieldValues> {
   /**
    * The value for the country field.
    * Default value is ''
@@ -31,6 +40,8 @@ interface CountryAndProvinceProps {
    */
   width?: string | null;
   rules?: RegisterOptions;
+  countryField?: string;
+  provinceField?: string;
 }
 
 /**
@@ -40,12 +51,16 @@ interface CountryAndProvinceProps {
  *
  * @returns A react component with the country and province fields.
  */
-export const CountryAndProvince = ({
+export const CountryAndProvince = <
+  T extends CompanyInfoFormValues | CreatePowerUnit
+>({
   country,
   province,
   width = "",
   rules = { required: true },
-}: CountryAndProvinceProps) => {
+  countryField = "country",
+  provinceField = "province",
+}: CountryAndProvinceProps<T>) => {
   const { register, resetField, watch, setValue, getValues, control } =
     useFormContext();
 
@@ -58,7 +73,7 @@ export const CountryAndProvince = ({
   const [shouldDisplayProvince, setShouldDisplayProvince] =
     useState<boolean>(true);
 
-  const countrySelected = watch("country");
+  const countrySelected = watch(countryField);
   /**
    * Custom css overrides for the form fields
    */
@@ -79,7 +94,7 @@ export const CountryAndProvince = ({
    */
   const onChangeCountry = useCallback(function (event: SelectChangeEvent) {
     const country: string = event.target.value as string;
-    resetField("province", { defaultValue: "" });
+    resetField(provinceField, { defaultValue: "" });
     setSelectedProvince(() => "");
     if (
       !COUNTRIES_THAT_SUPPORT_PROVINCE.find(
@@ -89,7 +104,7 @@ export const CountryAndProvince = ({
       // If country does not support province, as per API spec, set country to province too
       // even though the field is hidden.
       setShouldDisplayProvince(() => false);
-      setValue("province", country);
+      setValue(provinceField, country);
       setValue("provinceId", country + "-" + country);
     } else {
       setShouldDisplayProvince(() => true);
@@ -105,7 +120,7 @@ export const CountryAndProvince = ({
     const provinceSelected: string = event.target.value;
     setSelectedProvince(() => event.target.value as string);
 
-    setValue("provinceId", getValues("country") + "-" + provinceSelected);
+    setValue("provinceId", getValues(countryField) + "-" + provinceSelected);
   }, []);
 
   /**
@@ -124,7 +139,7 @@ export const CountryAndProvince = ({
       <div>
         <Controller
           key="controller-powerunit-country"
-          name="country"
+          name={countryField}
           control={control}
           rules={rules}
           defaultValue={country || ""}
@@ -141,7 +156,7 @@ export const CountryAndProvince = ({
                   aria-labelledby="power-unit-country-label"
                   defaultValue={country || ""}
                   sx={inputHeight}
-                  {...register("country", {
+                  {...register(countryField, {
                     required: rules.required,
                     onChange: onChangeCountry,
                   })}
@@ -169,7 +184,7 @@ export const CountryAndProvince = ({
         <div>
           <Controller
             key="controller-powerunit-province"
-            name="province"
+            name={provinceField}
             rules={{ required: shouldDisplayProvince && rules.required }}
             defaultValue={province || ""}
             render={({ fieldState: { invalid } }) => (
@@ -185,7 +200,7 @@ export const CountryAndProvince = ({
                     aria-labelledby="power-unit-province-label"
                     defaultValue={province || ""}
                     sx={inputHeight}
-                    {...register("province", {
+                    {...register(provinceField, {
                       required: shouldDisplayProvince && rules.required,
                       onChange: onChangeProvince,
                     })}

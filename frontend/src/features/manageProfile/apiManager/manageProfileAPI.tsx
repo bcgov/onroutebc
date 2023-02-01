@@ -18,6 +18,8 @@ export interface ICompanyInfo {
   primaryCountry: string;
   primaryProvince: string;
   primaryCity: string;
+  secondaryCountry: string;
+  secondaryProvince: string;
 }
 
 const TEST_DATA: ICompanyInfo = {
@@ -37,6 +39,8 @@ const TEST_DATA: ICompanyInfo = {
   primaryCountry: "Canada",
   primaryProvince: "Alberta",
   primaryCity: "Calgary",
+  secondaryCountry: "",
+  secondaryProvince: "",
 };
 
 interface TEST {

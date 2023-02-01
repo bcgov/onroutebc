@@ -151,9 +151,11 @@ export const CompanyInfoForm = memo(
             options={{}}
           />
           <CountryAndProvince
-            country={companyInfo?.country ? companyInfo.country : ""}
-            province={companyInfo?.province ? companyInfo.province : ""}
+            country={""}
+            province={""}
             width={DEFAULT_WIDTH}
+            countryField={"primaryCountry"}
+            provinceField={"primaryProvince"}
           />
 
           <div className="mp-side-by-side-container">
@@ -346,12 +348,16 @@ export const CompanyInfoForm = memo(
 
           <CountryAndProvince
             country={
-              companyInfo?.primaryCountry ? companyInfo.primaryCountry : ""
+              companyInfo?.secondaryCountry ? companyInfo.secondaryCountry : ""
             }
             province={
-              companyInfo?.primaryProvince ? companyInfo.primaryProvince : ""
+              companyInfo?.secondaryProvince
+                ? companyInfo.secondaryProvince
+                : ""
             }
             width={DEFAULT_WIDTH}
+            countryField={"secondaryCountry"}
+            provinceField={"secondaryProvince"}
             rules={{ required: false }}
           />
           <CustomOutlinedInput
