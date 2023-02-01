@@ -90,11 +90,13 @@ export const CompanyInfoForm = memo(
 
     const queryClient = useQueryClient();
 
+    /*
     const companyInfoQuery = useQuery({
       queryKey: ["companyInfo"],
       queryFn: getCompanyInfo,
       retry: false,
     });
+    */
 
     const addCompanyInfoQuery = useMutation({
       mutationFn: updateCompanyInfo,

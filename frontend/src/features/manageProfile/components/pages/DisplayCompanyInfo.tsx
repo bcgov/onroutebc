@@ -13,15 +13,8 @@ export const DisplayInfo = memo(
       <div className="display-info-container">
         <Box>
           <h2>Company Address</h2>
-          <Typography>402 Robson Street</Typography>
-          <Typography>Canada</Typography>
-          <Typography>BC</Typography>
-          <Typography>Vancouver V6B 3K9</Typography>
-          <h2>Mailing Address</h2>
-          <Typography>402 Robson Street</Typography>
-          <Typography>Canada</Typography>
-          <Typography>BC</Typography>
-          <Typography>Vancouver V6B 3K9</Typography>
+          <Typography>TODO - Display Data</Typography>
+          <Typography>Click Edit to test form</Typography>
         </Box>
         <div>
           <Button

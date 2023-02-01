@@ -88,6 +88,7 @@ export const List = memo(() => {
           isLoading,
           showAlertBanner: isError,
           showProgressBars: isFetching,
+          sorting: [{ id: "createdDateTime", desc: true }],
         }}
         // Disable the default column actions so that we can use our custom actions
         enableColumnActions={false}
