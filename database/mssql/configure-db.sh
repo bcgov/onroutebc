@@ -67,3 +67,12 @@ while test -f "/usr/config/versions/v_${NEXTVER}_ddl.sql"; do
     ((NEXTVER=NEXTVER+1))
     echo "Next migration file to check: /usr/config/versions/v_${NEXTVER}_ddl.sql"
 done
+
+# Load sample data (TODO: put an env variable guard around this)
+/opt/mssql-tools/bin/sqlcmd -U $MSSQL_SA_USER -P $MSSQL_SA_PASSWORD -i /usr/config/sampledata/dbo.ORBC_ADDRESS.Table.sql
+/opt/mssql-tools/bin/sqlcmd -U $MSSQL_SA_USER -P $MSSQL_SA_PASSWORD -i /usr/config/sampledata/dbo.ORBC_CONTACT.Table.sql
+/opt/mssql-tools/bin/sqlcmd -U $MSSQL_SA_USER -P $MSSQL_SA_PASSWORD -i /usr/config/sampledata/dbo.ORBC_COMPANY.Table.sql
+/opt/mssql-tools/bin/sqlcmd -U $MSSQL_SA_USER -P $MSSQL_SA_PASSWORD -i /usr/config/sampledata/dbo.ORBC_USER.Table.sql
+/opt/mssql-tools/bin/sqlcmd -U $MSSQL_SA_USER -P $MSSQL_SA_PASSWORD -i /usr/config/sampledata/dbo.ORBC_COMPANY_USER.Table.sql
+/opt/mssql-tools/bin/sqlcmd -U $MSSQL_SA_USER -P $MSSQL_SA_PASSWORD -i /usr/config/sampledata/dbo.ORBC_POWER_UNIT.Table.sql
+/opt/mssql-tools/bin/sqlcmd -U $MSSQL_SA_USER -P $MSSQL_SA_PASSWORD -i /usr/config/sampledata/dbo.ORBC_TRAILER.Table.sql
