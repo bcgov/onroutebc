@@ -186,48 +186,7 @@ export const PowerUnitForm = ({
                   inValidMessage_fieldName_i18: "Year",
                 }}
               />
-              {/* <div>
-                <Controller
-                  key="controller-powerunit-year"
-                  name="year"
-                  control={control}
-                  rules={{ required: true }}
-                  defaultValue={powerUnit?.year || undefined}
-                  render={({ fieldState: { invalid } }) => {
-                    return (
-                      <>
-                        <FormControl margin="normal" error={invalid}>
-                          <FormLabel
-                            id="power-unit-year-label"
-                            sx={formFieldStyle}
-                          >
-                            {t("vehicle.power-unit.year")}
-                          </FormLabel>
-                          <OutlinedInput
-                            aria-labelledby="power-unit-year-label"
-                            defaultValue={powerUnit?.year}
-                            sx={inputHeight}
-                            inputProps={{ maxLength: 4, minLength: 4 }}
-                            {...register("year", {
-                              required: true,
-                              valueAsNumber: true,
-                              maxLength: 4,
-                              minLength: 4,
-                            })}
-                          />
-                          {invalid && (
-                            <FormHelperText error>
-                              {t("vehicle.power-unit.required", {
-                                fieldName: "Year",
-                              })}
-                            </FormHelperText>
-                          )}
-                        </FormControl>
-                      </>
-                    );
-                  }}
-                />
-              </div> */}
+
               <div>
                 <Controller
                   key="controller-powerunit-vin"

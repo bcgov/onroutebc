@@ -5,12 +5,11 @@ import {
   FormGroup,
   Typography,
 } from "@mui/material";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { memo, useState } from "react";
 import { FormProvider, useForm, FieldValues } from "react-hook-form";
 import { CountryAndProvince } from "../../../../common/components/form/CountryAndProvince";
 import {
-  getCompanyInfo,
   ICompanyInfo,
   updateCompanyInfo,
 } from "../../apiManager/manageProfileAPI";
@@ -89,14 +88,6 @@ export const CompanyInfoForm = memo(
     });
 
     const queryClient = useQueryClient();
-
-    /*
-    const companyInfoQuery = useQuery({
-      queryKey: ["companyInfo"],
-      queryFn: getCompanyInfo,
-      retry: false,
-    });
-    */
 
     const addCompanyInfoQuery = useMutation({
       mutationFn: updateCompanyInfo,
@@ -264,6 +255,7 @@ export const CompanyInfoForm = memo(
               inValidMessage={"Phone Number is required"}
               options={{ width: PHONE_WIDTH }}
             />
+
             <CustomOutlinedInput
               common={commonFormProps}
               name={"ext"}

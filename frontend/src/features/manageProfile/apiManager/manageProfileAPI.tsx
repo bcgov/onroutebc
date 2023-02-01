@@ -1,6 +1,3 @@
-//import { ApiErrorResponse } from "../../../types/common";
-//import { MANAGE_PROFILE_API } from "./endpoints/endpoints";
-
 export interface ICompanyInfo {
   address: string;
   country: string;
