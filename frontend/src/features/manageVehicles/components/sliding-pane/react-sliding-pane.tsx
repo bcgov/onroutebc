@@ -1,5 +1,8 @@
 /* eslint-disable react/require-default-props */
 /* eslint-disable no-use-before-define */
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Tooltip } from "@mui/material";
 import React, { useEffect, useRef, useState } from "react";
 import Modal from "react-modal";
 
@@ -16,7 +19,6 @@ type ReactSlidingPaneProps = {
   className?: string;
   overlayClassName?: string;
   width?: string; // CSS string for width
-  closeIcon?: React.ReactNode;
   shouldCloseOnEsc?: boolean;
   hideHeader?: boolean;
   onRequestClose: () => void;
@@ -58,7 +60,6 @@ export function ReactSlidingPane({
   children,
   className,
   overlayClassName,
-  closeIcon,
   from = "right",
   width,
   shouldCloseOnEsc,
@@ -122,7 +123,9 @@ export function ReactSlidingPane({
             role="button"
             tabIndex={0}
           >
-            {closeIcon}
+            <Tooltip title="Close" placement="left" arrow>
+              <FontAwesomeIcon icon={faXmark} size="lg" />
+            </Tooltip>
           </div>
         </div>
       )}

@@ -3,7 +3,7 @@ import { NavLink } from "react-router-dom";
 
 import "./Header.scss";
 import * as routes from "../../../constants/routes";
-import { BC_PRIMARY_BLUE } from "../../../themes/bcGovStyles";
+import { BC_COLOURS } from "../../../themes/bcGovStyles";
 
 /*
  * The Header component includes the BC Gov banner and Navigation bar
@@ -36,7 +36,7 @@ export const Header = () => {
     case "prod":
     case "localhost":
     default:
-      headerColor = BC_PRIMARY_BLUE;
+      headerColor = BC_COLOURS.bc_primary_blue;
       break;
   }
 

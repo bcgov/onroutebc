@@ -66,7 +66,7 @@ const DisplayTabs = ({
           key={label}
           label={label}
           {...TabProps(index)}
-          sx={{ px: 0, marginRight: "40px", fontWeight: 700 }}
+          //sx={{ px: 0, marginRight: "40px", fontWeight: 700 }}
         />
       );
     })}

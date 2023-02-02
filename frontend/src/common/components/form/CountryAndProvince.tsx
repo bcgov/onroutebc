@@ -1,15 +1,15 @@
-import { useFormContext, Controller } from "react-hook-form";
+import { useFormContext, Controller, RegisterOptions } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import ".././VehicleForm.scss";
 import FormHelperText from "@mui/material/FormHelperText";
 import { useCallback, useState } from "react";
 import FormControl from "@mui/material/FormControl";
 import FormLabel from "@mui/material/FormLabel";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
-import { COUNTRIES_THAT_SUPPORT_PROVINCE } from "../../../../../constants/countries";
+import { COUNTRIES_THAT_SUPPORT_PROVINCE } from "../../../constants/countries";
 
-import CountriesAndStates from "../../../../../constants/countries_and_states.json";
+import CountriesAndStates from "../../../constants/countries_and_states.json";
+import { Box } from "@mui/material";
 
 /**
  * The props that can be passed to the country and provinces subsection of a form.
@@ -26,6 +26,15 @@ interface CountryAndProvinceProps {
    * Default value is ''
    */
   province?: string | null;
+
+  /**
+   * The value for the width of the select box
+   */
+  width?: string | null;
+  rules?: RegisterOptions;
+  countryField?: string;
+  provinceField?: string;
+  feature?: string;
 }
 
 /**
@@ -38,15 +47,14 @@ interface CountryAndProvinceProps {
 export const CountryAndProvince = ({
   country,
   province,
+  width = "",
+  rules = { required: true },
+  countryField = "country",
+  provinceField = "province",
+  feature = "power-unit",
 }: CountryAndProvinceProps) => {
-  const {
-    register,
-    resetField,
-    watch,
-    setValue,
-    getValues,
-    control,
-  } = useFormContext();
+  const { register, resetField, watch, setValue, getValues, control } =
+    useFormContext();
 
   /**
    * State for displaying selected province
@@ -57,19 +65,17 @@ export const CountryAndProvince = ({
   const [shouldDisplayProvince, setShouldDisplayProvince] =
     useState<boolean>(true);
 
-  const countrySelected = watch("country");
+  const countrySelected = watch(countryField);
   /**
    * Custom css overrides for the form fields
    */
   const formFieldStyle = {
     fontWeight: "bold",
-    width: "490px",
-    marginLeft: "8px",
   };
 
   const inputHeight = {
     height: "48px",
-  }
+  };
 
   /**
    * Function to handle changes on selecting a country.
@@ -79,7 +85,7 @@ export const CountryAndProvince = ({
    */
   const onChangeCountry = useCallback(function (event: SelectChangeEvent) {
     const country: string = event.target.value as string;
-    resetField("province", { defaultValue: "" });
+    resetField(provinceField, { defaultValue: "" });
     setSelectedProvince(() => "");
     if (
       !COUNTRIES_THAT_SUPPORT_PROVINCE.find(
@@ -89,7 +95,7 @@ export const CountryAndProvince = ({
       // If country does not support province, as per API spec, set country to province too
       // even though the field is hidden.
       setShouldDisplayProvince(() => false);
-      setValue("province", country);
+      setValue(provinceField, country);
       setValue("provinceId", country + "-" + country);
     } else {
       setShouldDisplayProvince(() => true);
@@ -105,7 +111,7 @@ export const CountryAndProvince = ({
     const provinceSelected: string = event.target.value;
     setSelectedProvince(() => event.target.value as string);
 
-    setValue("provinceId", getValues("country") + "-" + provinceSelected);
+    setValue("provinceId", getValues(countryField) + "-" + provinceSelected);
   }, []);
 
   /**
@@ -120,26 +126,33 @@ export const CountryAndProvince = ({
 
   const { t } = useTranslation();
   return (
-    <div>
+    <Box sx={{ width: width }}>
       <div>
         <Controller
-          key="controller-powerunit-country"
-          name="country"
+          key={`controller-${feature}-country`}
+          name={countryField}
           control={control}
-          rules={{ required: true }}
+          rules={rules}
           defaultValue={country || ""}
           render={({ fieldState: { invalid } }) => (
             <>
-              <FormControl margin="normal" error={invalid}>
-                <FormLabel id="power-unit-country-label" sx={formFieldStyle}>
+              <FormControl
+                margin="normal"
+                error={invalid}
+                sx={{ width: "100%" }}
+              >
+                <FormLabel id={`${feature}-country-label`} sx={formFieldStyle}>
                   {t("vehicle.power-unit.country")}
+                  {!rules.required && (
+                    <span style={{ fontWeight: "normal" }}> (optional)</span>
+                  )}
                 </FormLabel>
                 <Select
-                  aria-labelledby="power-unit-country-label"
+                  aria-labelledby={`${feature}-country-label`}
                   defaultValue={country || ""}
                   sx={inputHeight}
-                  {...register("country", {
-                    required: true,
+                  {...register(countryField, {
+                    required: rules.required,
                     onChange: onChangeCountry,
                   })}
                 >
@@ -165,25 +178,32 @@ export const CountryAndProvince = ({
       {shouldDisplayProvince && (
         <div>
           <Controller
-            key="controller-powerunit-province"
-            name="province"
-            rules={{ required: shouldDisplayProvince }}
+            key={`controller-${feature}-province`}
+            name={provinceField}
+            rules={{ required: shouldDisplayProvince && rules.required }}
             defaultValue={province || ""}
             render={({ fieldState: { invalid } }) => (
               <>
                 <FormControl
                   margin="normal"
                   error={invalid}
+                  sx={{ width: "100%" }}
                 >
-                  <FormLabel id="power-unit-province-label" sx={formFieldStyle}>
+                  <FormLabel
+                    id={`${feature}-province-label`}
+                    sx={formFieldStyle}
+                  >
                     {t("vehicle.power-unit.province")}
+                    {!rules.required && (
+                      <span style={{ fontWeight: "normal" }}> (optional)</span>
+                    )}
                   </FormLabel>
                   <Select
-                    aria-labelledby="power-unit-province-label"
+                    aria-labelledby={`${feature}-province-label`}
                     defaultValue={province || ""}
                     sx={inputHeight}
-                    {...register("province", {
-                      required: shouldDisplayProvince,
+                    {...register(provinceField, {
+                      required: shouldDisplayProvince && rules.required,
                       onChange: onChangeProvince,
                     })}
                     value={selectedProvince}
@@ -203,7 +223,7 @@ export const CountryAndProvince = ({
                         fieldName: "Province / State",
                         interpolation: {
                           escapeValue: false,
-                        }
+                        },
                       })}
                     </FormHelperText>
                   )}
@@ -213,6 +233,6 @@ export const CountryAndProvince = ({
           />
         </div>
       )}
-    </div>
+    </Box>
   );
 };
