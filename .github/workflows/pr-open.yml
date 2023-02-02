@@ -60,7 +60,6 @@ jobs:
     name: Deploys
     needs:
       - builds
-      - secrets
     runs-on: ubuntu-22.04
     environment: dev
     strategy:
