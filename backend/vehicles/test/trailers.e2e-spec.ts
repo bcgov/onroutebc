@@ -1,18 +1,18 @@
 import * as request from 'supertest';
 import { Test } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
-import { TrailersModule } from 'src/trailers/trailers.module';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { classes } from '@automapper/classes';
 import { AutomapperModule } from '@automapper/nestjs';
-import { Trailer } from 'src/trailers/entities/trailer.entity';
-import { Province } from 'src/common/entities/province.entity';
-import { TrailerType } from 'src/trailer-types/entities/trailer-type.entity';
-import { CreateTrailerDto } from 'src/trailers/dto/request/create-trailer.dto';
-import { UpdateTrailerDto } from 'src/trailers/dto/request/update-trailer.dto';
 import { createMock } from '@golevelup/ts-jest';
 import { Repository } from 'typeorm';
-import { ReadTrailerDto } from 'src/trailers/dto/response/read-trailer.dto';
+import { Province } from '../src/common/entities/province.entity';
+import { TrailerType } from '../src/trailer-types/entities/trailer-type.entity';
+import { CreateTrailerDto } from '../src/trailers/dto/request/create-trailer.dto';
+import { UpdateTrailerDto } from '../src/trailers/dto/request/update-trailer.dto';
+import { ReadTrailerDto } from '../src/trailers/dto/response/read-trailer.dto';
+import { Trailer } from '../src/trailers/entities/trailer.entity';
+import { TrailersModule } from '../src/trailers/trailers.module';
 
 const trailerId = '1';
 const unitNumber = 'KEN1';

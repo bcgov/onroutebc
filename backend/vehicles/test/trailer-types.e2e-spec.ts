@@ -1,16 +1,18 @@
 import * as request from 'supertest';
 import { Test } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
-import { TrailerTypesModule } from 'src/trailer-types/trailer-types.module';
+
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { classes } from '@automapper/classes';
 import { AutomapperModule } from '@automapper/nestjs';
-import { TrailerType } from 'src/trailer-types/entities/trailer-type.entity';
-import { CreateTrailerTypeDto } from 'src/trailer-types/dto/request/create-trailer-type.dto';
-import { UpdateTrailerTypeDto } from 'src/trailer-types/dto/request/update-trailer-type.dto';
+
 import { createMock } from '@golevelup/ts-jest';
 import { Repository } from 'typeorm';
-import { ReadTrailerTypeDto } from 'src/trailer-types/dto/response/read-trailer-type.dto';
+import { CreateTrailerTypeDto } from '../src/trailer-types/dto/request/create-trailer-type.dto';
+import { UpdateTrailerTypeDto } from '../src/trailer-types/dto/request/update-trailer-type.dto';
+import { ReadTrailerTypeDto } from '../src/trailer-types/dto/response/read-trailer-type.dto';
+import { TrailerType } from '../src/trailer-types/entities/trailer-type.entity';
+import { TrailerTypesModule } from '../src/trailer-types/trailer-types.module';
 
 const typeCode = 'BOOSTER';
 const type = 'Boosters';

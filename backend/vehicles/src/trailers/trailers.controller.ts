@@ -18,9 +18,10 @@ import {
   ApiOkResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { DataNotFoundException } from 'src/common/exception/data-not-found.exception';
+
 import { ReadTrailerDto } from './dto/response/read-trailer.dto';
-import { ExceptionDto } from 'src/common/dto/exception.dto';
+import { ExceptionDto } from '../common/dto/exception.dto';
+import { DataNotFoundException } from '../common/exception/data-not-found.exception';
 
 @ApiTags('Trailers')
 @ApiNotFoundResponse({

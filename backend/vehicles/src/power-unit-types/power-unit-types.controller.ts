@@ -18,9 +18,9 @@ import {
   ApiOkResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { DataNotFoundException } from 'src/common/exception/data-not-found.exception';
 import { ReadPowerUnitTypeDto } from './dto/response/read-power-unit-type.dto';
-import { ExceptionDto } from 'src/common/dto/exception.dto';
+import { DataNotFoundException } from '../common/exception/data-not-found.exception';
+import { ExceptionDto } from '../common/dto/exception.dto';
 
 @ApiTags('Power Unit Types')
 @ApiNotFoundResponse({
