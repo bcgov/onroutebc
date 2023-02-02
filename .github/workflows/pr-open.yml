@@ -76,12 +76,12 @@ jobs:
             c28f0c-nonprod/data/database DATABASE_NAME     | VAULT_DATABASE_NAME;
             c28f0c-nonprod/data/database DATABASE_PASSWORD | VAULT_DATABASE_PASSWORD;
             c28f0c-nonprod/data/database DATABASE_PORT     | VAULT_DATABASE_PORT;
-        outputs:
-          VAULT_DATABASE_HOST: ${{steps.secrets.outputs.VAULT_DATABASE_HOST}}
-          VAULT_DATABASE_USER: ${{steps.secrets.outputs.VAULT_DATABASE_USER}}
-          VAULT_DATABASE_NAME: ${{steps.secrets.outputs.VAULT_DATABASE_NAME}}
-          VAULT_DATABASE_PASSWORD: ${{steps.secrets.outputs.VAULT_DATABASE_PASSWORD}}
-          VAULT_DATABASE_PORT: ${{steps.secrets.outputs.VAULT_DATABASE_PORT}}
+    outputs:
+      VAULT_DATABASE_HOST: ${{steps.secrets.outputs.VAULT_DATABASE_HOST}}
+      VAULT_DATABASE_USER: ${{steps.secrets.outputs.VAULT_DATABASE_USER}}
+      VAULT_DATABASE_NAME: ${{steps.secrets.outputs.VAULT_DATABASE_NAME}}
+      VAULT_DATABASE_PASSWORD: ${{steps.secrets.outputs.VAULT_DATABASE_PASSWORD}}
+      VAULT_DATABASE_PORT: ${{steps.secrets.outputs.VAULT_DATABASE_PORT}}
 
   deploys:
     name: Deploys
