@@ -84,15 +84,15 @@ jobs:
         id: secrets
         uses: hashicorp/vault-action@v2
         with:
-          url: https://vault-iit.apps.silver.devops.gov.bc.ca
+          url: https://vault.developer.gov.bc.ca
           token: ${{ secrets.VAULT_TOKEN }}
           exportEnv: 'false'
           secrets: |
-            /apps/data/database DATABASE_HOST     | VAULT_DATABASE_HOST;
-            /apps/data/database DATABASE_USER     | VAULT_DATABASE_USER;
-            /apps/data/database DATABASE_NAME     | VAULT_DATABASE_NAME;
-            /apps/data/database DATABASE_PASSWORD | VAULT_DATABASE_PASSWORD;
-            /apps/data/database DATABASE_PORT     | VAULT_DATABASE_PORT;
+            c28f0c-nonprod/database DATABASE_HOST     | VAULT_DATABASE_HOST;
+            c28f0c-nonprod/database DATABASE_USER     | VAULT_DATABASE_USER;
+            c28f0c-nonprod/database DATABASE_NAME     | VAULT_DATABASE_NAME;
+            c28f0c-nonprod/database DATABASE_PASSWORD | VAULT_DATABASE_PASSWORD;
+            c28f0c-nonprod/database DATABASE_PORT     | VAULT_DATABASE_PORT;
 
       - name: Deploy Application
         uses: bcgov-nr/action-deployer-openshift@v1.0.1
