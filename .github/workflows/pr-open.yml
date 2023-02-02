@@ -32,24 +32,6 @@ jobs:
 
             Once merged, code will be promoted and handed off to following workflow run.
             [Main Merge Workflow](https://github.com/${{ github.repository }}/actions/workflows/merge-main.yml)
-  secrets:
-    name: Secrets
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Import Secrets
-        id: secrets
-        uses: hashicorp/vault-action@v2
-        with:
-          url: https://vault.developer.gov.bc.ca
-          token: ${{ secrets.VAULT_TOKEN }}
-          exportEnv: 'false'
-          namespace: platform-services
-          secrets: |
-            c28f0c-nonprod/data/database DATABASE_HOST     | VAULT_DATABASE_HOST;
-            c28f0c-nonprod/data/database DATABASE_USER     | VAULT_DATABASE_USER;
-            c28f0c-nonprod/data/database DATABASE_NAME     | VAULT_DATABASE_NAME;
-            c28f0c-nonprod/data/database DATABASE_PASSWORD | VAULT_DATABASE_PASSWORD;
-            c28f0c-nonprod/data/database DATABASE_PORT     | VAULT_DATABASE_PORT;
 
   builds:
     name: Builds
@@ -98,6 +80,21 @@ jobs:
             file: common/openshift.init.yml
             overwrite: false
     steps:
+      - name: Import Secrets
+        id: secrets
+        uses: hashicorp/vault-action@v2
+        with:
+          url: https://vault.developer.gov.bc.ca
+          token: ${{ secrets.VAULT_TOKEN }}
+          exportEnv: 'false'
+          namespace: platform-services
+          secrets: |
+            c28f0c-nonprod/data/database DATABASE_HOST     | VAULT_DATABASE_HOST;
+            c28f0c-nonprod/data/database DATABASE_USER     | VAULT_DATABASE_USER;
+            c28f0c-nonprod/data/database DATABASE_NAME     | VAULT_DATABASE_NAME;
+            c28f0c-nonprod/data/database DATABASE_PASSWORD | VAULT_DATABASE_PASSWORD;
+            c28f0c-nonprod/data/database DATABASE_PORT     | VAULT_DATABASE_PORT;
+
       - name: Deploy Application
         uses: bcgov-nr/action-deployer-openshift@v1.0.1
         with:
