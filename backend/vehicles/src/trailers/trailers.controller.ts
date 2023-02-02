@@ -95,10 +95,9 @@ export class TrailersController {
   @Delete(':trailerId')
   async remove(@Param('trailerId') trailerId: string) {
     const deleteResult = await this.trailersService.remove(trailerId);
-    if (deleteResult.affected > 0) {
-      return { deleted: true };
-    } else {
+    if (deleteResult.affected === 0) {
       throw new DataNotFoundException();
     }
+    return { deleted: true };
   }
 }

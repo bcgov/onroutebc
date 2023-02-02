@@ -95,10 +95,9 @@ export class PowerUnitTypesController {
   @Delete(':typeCode')
   async remove(@Param('typeCode') typeCode: string) {
     const deleteResult = await this.powerUnitTypesService.remove(typeCode);
-    if (deleteResult.affected > 0) {
-      return { deleted: true };
-    } else {
+    if (deleteResult.affected === 0) {
       throw new DataNotFoundException();
     }
+    return { deleted: true };
   }
 }

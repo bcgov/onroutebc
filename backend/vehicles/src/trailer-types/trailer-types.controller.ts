@@ -95,10 +95,9 @@ export class TrailerTypesController {
   @Delete(':typeCode')
   async remove(@Param('typeCode') typeCode: string) {
     const deleteResult = await this.trailerTypesService.remove(typeCode);
-    if (deleteResult.affected) {
-      return { deleted: true };
-    } else {
+    if (deleteResult.affected === 0) {
       throw new DataNotFoundException();
     }
+    return { deleted: true };
   }
 }

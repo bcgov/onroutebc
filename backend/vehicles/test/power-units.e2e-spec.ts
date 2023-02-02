@@ -68,13 +68,13 @@ const createPowerUnitDto: CreatePowerUnitDto = {
 
 const updatePowerUnitDto: UpdatePowerUnitDto = {
   ...createPowerUnitDto,
-  unitNumber: 'KEN2'
+  unitNumber: 'KEN2',
 };
 
 const readPowerUnitDto: ReadPowerUnitDto = {
   ...createPowerUnitDto,
   powerUnitId: '1',
-  createdDateTime: date.toISOString()
+  createdDateTime: date.toISOString(),
 };
 
 const powerUnit: PowerUnit = {
@@ -123,48 +123,47 @@ describe('Power Units (e2e)', () => {
     });
   });
 
-    describe('/vehicles/powerUnits GETALL', () => {
-      it('should return an array of power units', () => {
-        repo.find.mockResolvedValue([powerUnit]);
-        return request(app.getHttpServer())
-          .get('/vehicles/powerUnits')
-          .expect(200)
-          .expect([readPowerUnitDto]);
-      });
+  describe('/vehicles/powerUnits GETALL', () => {
+    it('should return an array of power units', () => {
+      repo.find.mockResolvedValue([powerUnit]);
+      return request(app.getHttpServer())
+        .get('/vehicles/powerUnits')
+        .expect(200)
+        .expect([readPowerUnitDto]);
     });
+  });
 
-    describe('/vehicles/powerUnits/1 GET', () => {
-      it('should return a power unit with powerUnitId as 1.', () => {
-        repo.findOne.mockResolvedValue(powerUnit);
-        return request(app.getHttpServer())
-          .get('/vehicles/powerUnits/1')
-          .expect(200)
-          .expect(readPowerUnitDto);
-      });
+  describe('/vehicles/powerUnits/1 GET', () => {
+    it('should return a power unit with powerUnitId as 1.', () => {
+      repo.findOne.mockResolvedValue(powerUnit);
+      return request(app.getHttpServer())
+        .get('/vehicles/powerUnits/1')
+        .expect(200)
+        .expect(readPowerUnitDto);
     });
+  });
 
-    describe('/vehicles/powerUnits/1 UPDATE', () => {
-      it('should update the power unit.', () => {
-        repo.findOne.mockResolvedValue({ ...powerUnit, unitNumber: 'KEN2' });
-        return request(app.getHttpServer())
-          .put('/vehicles/powerUnits/1')
-          .send(updatePowerUnitDto)
-          .expect(200)
-          .expect({...readPowerUnitDto,unitNumber: 'KEN2'});
-      });
+  describe('/vehicles/powerUnits/1 UPDATE', () => {
+    it('should update the power unit.', () => {
+      repo.findOne.mockResolvedValue({ ...powerUnit, unitNumber: 'KEN2' });
+      return request(app.getHttpServer())
+        .put('/vehicles/powerUnits/1')
+        .send(updatePowerUnitDto)
+        .expect(200)
+        .expect({ ...readPowerUnitDto, unitNumber: 'KEN2' });
     });
+  });
 
+  describe('/vehicles/powerUnits/1 DELETE', () => {
+    it('should delete the power unit.', () => {
+      return request(app.getHttpServer())
+        .delete('/vehicles/powerUnits/1')
+        .expect(200)
+        .expect({ deleted: true });
+    });
+  });
 
-    describe('/vehicles/powerUnits/1 DELETE', () => {
-      it('should delete the power unit.', () => {
-        return request(app.getHttpServer())
-          .delete('/vehicles/powerUnits/1')
-          .expect(200)
-          .expect({ deleted: true });
-      });
-    });
-    
-    afterAll(async () => {
-      await app.close();
-    });
+  afterAll(async () => {
+    await app.close();
+  });
 });
