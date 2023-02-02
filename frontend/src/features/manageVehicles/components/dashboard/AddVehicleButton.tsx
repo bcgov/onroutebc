@@ -91,7 +91,6 @@ export const AddVehicleButton = ({
           ref={anchorRef}
           id="composition-button"
           variant="contained"
-          sx={{ width: "186px" }}
           aria-controls={isMenuOpen ? "composition-menu" : undefined}
           aria-expanded={isMenuOpen ? "true" : undefined}
           aria-haspopup="true"

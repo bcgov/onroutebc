@@ -9,6 +9,7 @@ import MenuItem from "@mui/material/MenuItem";
 import { COUNTRIES_THAT_SUPPORT_PROVINCE } from "../../../constants/countries";
 
 import CountriesAndStates from "../../../constants/countries_and_states.json";
+import { Box } from "@mui/material";
 
 /**
  * The props that can be passed to the country and provinces subsection of a form.
@@ -70,7 +71,6 @@ export const CountryAndProvince = ({
    */
   const formFieldStyle = {
     fontWeight: "bold",
-    width: { width },
   };
 
   const inputHeight = {
@@ -126,7 +126,7 @@ export const CountryAndProvince = ({
 
   const { t } = useTranslation();
   return (
-    <div>
+    <Box sx={{ width: width }}>
       <div>
         <Controller
           key={`controller-${feature}-country`}
@@ -136,7 +136,11 @@ export const CountryAndProvince = ({
           defaultValue={country || ""}
           render={({ fieldState: { invalid } }) => (
             <>
-              <FormControl margin="normal" error={invalid}>
+              <FormControl
+                margin="normal"
+                error={invalid}
+                sx={{ width: "100%" }}
+              >
                 <FormLabel id={`${feature}-country-label`} sx={formFieldStyle}>
                   {t("vehicle.power-unit.country")}
                   {!rules.required && (
@@ -180,7 +184,11 @@ export const CountryAndProvince = ({
             defaultValue={province || ""}
             render={({ fieldState: { invalid } }) => (
               <>
-                <FormControl margin="normal" error={invalid}>
+                <FormControl
+                  margin="normal"
+                  error={invalid}
+                  sx={{ width: "100%" }}
+                >
                   <FormLabel
                     id={`${feature}-province-label`}
                     sx={formFieldStyle}
@@ -225,6 +233,6 @@ export const CountryAndProvince = ({
           />
         </div>
       )}
-    </div>
+    </Box>
   );
 };

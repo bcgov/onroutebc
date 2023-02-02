@@ -1,6 +1,6 @@
 import { Box } from "@mui/material";
 import { useState } from "react";
-import { BANNER_GREY, BC_PRIMARY_BLUE } from "../../../../themes/bcGovStyles";
+import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { CompanyInfoForm } from "../forms/CompanyInfoForm";
 
 import "./ManageProfilePages.scss";
@@ -15,8 +15,8 @@ const CompanyBanner = () => {
     <Box
       sx={{
         height: 100,
-        backgroundColor: BANNER_GREY,
-        color: BC_PRIMARY_BLUE,
+        backgroundColor: BC_COLOURS.banner_grey,
+        color: BC_COLOURS.bc_primary_blue,
         marginTop: "20px",
         px: 3,
         display: "flex",
