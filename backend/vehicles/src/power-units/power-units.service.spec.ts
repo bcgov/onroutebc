@@ -53,7 +53,7 @@ const powerUnitType: PowerUnitType = {
 };
 
 const createPowerUnitDto: CreatePowerUnitDto = {
-  provinceId: province.provinceCode,
+  provinceId: province.provinceId,
   powerUnitTypeCode: powerUnitType.typeCode,
   unitNumber: unitNumber,
   plate: plate,

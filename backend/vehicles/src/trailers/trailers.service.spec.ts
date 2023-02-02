@@ -51,7 +51,7 @@ const trailerType: TrailerType = {
 };
 
 const createTrailerDto: CreateTrailerDto = {
-  provinceId: province.provinceCode,
+  provinceId: province.provinceId,
   trailerTypeCode: trailerType.typeCode,
   unitNumber: unitNumber,
   plate: plate,
