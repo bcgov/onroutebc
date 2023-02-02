@@ -80,7 +80,22 @@ jobs:
             file: common/openshift.init.yml
             overwrite: false
     steps:
-      - uses: bcgov-nr/action-deployer-openshift@v1.0.1
+      - name: Import Secrets
+        id: secrets
+        uses: hashicorp/vault-action@v2
+        with:
+          url: https://vault.developer.gov.bc.ca
+          token: ${{ secrets.VAULT_TOKEN }}
+          exportEnv: 'false'
+          secrets: |
+            c28f0c-nonprod/database DATABASE_HOST     | VAULT_DATABASE_HOST;
+            c28f0c-nonprod/database DATABASE_USER     | VAULT_DATABASE_USER;
+            c28f0c-nonprod/database DATABASE_NAME     | VAULT_DATABASE_NAME;
+            c28f0c-nonprod/database DATABASE_PASSWORD | VAULT_DATABASE_PASSWORD;
+            c28f0c-nonprod/database DATABASE_PORT     | VAULT_DATABASE_PORT;
+
+      - name: Deploy Application
+        uses: bcgov-nr/action-deployer-openshift@v1.0.1
         with:
           file: ${{ matrix.file }}
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
@@ -92,8 +107,8 @@ jobs:
             -p ZONE=${{ github.event.number }}
             -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/${{ matrix.name }}:${{ github.event.number }} 
-            -p DATABASE_NAME=${{secrets.OC_DATABASE_NAME}}
-            -p DATABASE_USER=${{secrets.OC_DATABASE_USER}}
-            -p DATABASE_PASSWORD=${{secrets.OC_DATABASE_PASSWORD}}
-            -p DATABASE_HOST=${{secrets.OC_DATABASE_HOST}}
+            -p DATABASE_NAME=${{steps.secrets.outputs.VAULT_DATABASE_NAME}}
+            -p DATABASE_USER=${{steps.secrets.outputs.VAULT_DATABASE_USER}}
+            -p DATABASE_PASSWORD=${{steps.secrets.outputs.VAULT_DATABASE_PASSWORD}}
+            -p DATABASE_HOST=${{steps.secrets.outputs.VAULT_DATABASE_HOST}}
             ${{ matrix.parameters }}
