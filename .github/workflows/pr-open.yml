@@ -33,6 +33,8 @@ jobs:
             Once merged, code will be promoted and handed off to following workflow run.
             [Main Merge Workflow](https://github.com/${{ github.repository }}/actions/workflows/merge-main.yml)
   secrets:
+    name: Secrets
+    runs-on: ubuntu-22.04
     steps:
       - name: Import Secrets
         id: secrets
