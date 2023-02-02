@@ -9,6 +9,15 @@ concurrency:
 
 jobs:
   secrets:
+
+  pr-greeting:
+    name: PR Greeting
+    env:
+      DOMAIN: apps.silver.devops.gov.bc.ca
+      PREFIX: ${{ github.event.repository.name }}-${{ github.event.number }}
+    runs-on: ubuntu-22.04
+    permissions:
+      pull-requests: write
     steps:
       - name: Import Secrets
         id: secrets
@@ -25,16 +34,6 @@ jobs:
             c28f0c-nonprod/database DATABASE_NAME     | VAULT_DATABASE_NAME;
             c28f0c-nonprod/database DATABASE_PASSWORD | VAULT_DATABASE_PASSWORD;
             c28f0c-nonprod/database DATABASE_PORT     | VAULT_DATABASE_PORT;
-
-  pr-greeting:
-    name: PR Greeting
-    env:
-      DOMAIN: apps.silver.devops.gov.bc.ca
-      PREFIX: ${{ github.event.repository.name }}-${{ github.event.number }}
-    runs-on: ubuntu-22.04
-    permissions:
-      pull-requests: write
-    steps:
       - name: PR Greeting
         uses: bcgov-nr/action-pr-description-add@v0.0.2
         with:
@@ -97,7 +96,7 @@ jobs:
           - name: init
             file: common/openshift.init.yml
             overwrite: false
-
+    steps:
       - name: Deploy Application
         uses: bcgov-nr/action-deployer-openshift@v1.0.1
         with:
