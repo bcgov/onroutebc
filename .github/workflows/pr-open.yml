@@ -45,11 +45,11 @@ jobs:
           exportEnv: 'false'
           namespace: platform-services
           secrets: |
-            c28f0c-nonprod/database DATABASE_HOST     | VAULT_DATABASE_HOST;
-            c28f0c-nonprod/database DATABASE_USER     | VAULT_DATABASE_USER;
-            c28f0c-nonprod/database DATABASE_NAME     | VAULT_DATABASE_NAME;
-            c28f0c-nonprod/database DATABASE_PASSWORD | VAULT_DATABASE_PASSWORD;
-            c28f0c-nonprod/database DATABASE_PORT     | VAULT_DATABASE_PORT;
+            apps/data/c28f0c-nonprod/database DATABASE_HOST     | VAULT_DATABASE_HOST;
+            apps/data/c28f0c-nonprod/database DATABASE_USER     | VAULT_DATABASE_USER;
+            apps/data/c28f0c-nonprod/database DATABASE_NAME     | VAULT_DATABASE_NAME;
+            apps/data/c28f0c-nonprod/database DATABASE_PASSWORD | VAULT_DATABASE_PASSWORD;
+            apps/data/c28f0c-nonprod/database DATABASE_PORT     | VAULT_DATABASE_PORT;
 
   builds:
     name: Builds
