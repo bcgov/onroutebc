@@ -2,7 +2,7 @@
 /* eslint-disable no-use-before-define */
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { IconButton, Tooltip } from "@mui/material";
+import { Tooltip } from "@mui/material";
 import React, { useEffect, useRef, useState } from "react";
 import Modal from "react-modal";
 
