@@ -13,7 +13,7 @@ import { Filter } from "../options/Filter";
 import { Trash } from "../options/Trash";
 import { CSVOptions } from "../options/CSVOptions";
 import { Delete, Edit, ContentCopy } from "@mui/icons-material";
-import { BC_BACKGROUND_LIGHT } from "../../../../themes/bcGovStyles";
+import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { useQuery } from "@tanstack/react-query";
 import { getAllPowerUnits } from "../../apiManager/vehiclesAPI";
 import { CustomSnackbar } from "../../../../common/components/snackbar/CustomSnackBar";
@@ -88,6 +88,7 @@ export const List = memo(() => {
           isLoading,
           showAlertBanner: isError,
           showProgressBars: isFetching,
+          sorting: [{ id: "createdDateTime", desc: true }],
         }}
         // Disable the default column actions so that we can use our custom actions
         enableColumnActions={false}
@@ -181,7 +182,7 @@ export const List = memo(() => {
         muiBottomToolbarProps={{
           sx: {
             zIndex: 0, // resolve z-index conflict with sliding panel
-            backgroundColor: BC_BACKGROUND_LIGHT,
+            backgroundColor: BC_COLOURS.bc_background_light_grey,
           },
         }}
         // Top toolbar
@@ -213,7 +214,7 @@ export const List = memo(() => {
         }}
         // Row Header
         muiTableHeadRowProps={{
-          sx: { backgroundColor: BC_BACKGROUND_LIGHT },
+          sx: { backgroundColor: BC_COLOURS.bc_background_light_grey },
         }}
       />
     </div>

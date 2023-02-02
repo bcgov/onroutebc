@@ -4,9 +4,11 @@
   background: #fff;
   min-width: 100px;
   height: 100%;
+  /* height: calc(100% - 107px); */
   box-shadow: 0 8px 8px rgba(0, 0, 0, 0.5);
   transition: transform 0.5s;
   will-change: transform;
+  /* margin-top: 107px; */
 }
 .slide-pane:focus {
   outline-style: none;
@@ -60,21 +62,21 @@
 }
 .slide-pane__header {
   display: flex;
-  flex: 0 0 64px;
+  flex: 0 0 96px;
   align-items: center;
   background: #ebebeb;
-  height: 64px;
+  height: 96px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
 .slide-pane__title-wrapper {
   display: flex;
   flex: 1;
   flex-direction: column;
-  margin-left: 32px;
+  margin-left: 24px;
   min-width: 0;
 }
 .slide-pane .slide-pane__title {
-  font-size: 18px;
+  font-size: 24px;
   font-weight: normal;
   max-width: 80%;
   white-space: nowrap;
@@ -84,7 +86,7 @@
   padding: 0;
 }
 .slide-pane__close {
-  margin-left: 24px;
+  margin-right: 20px;
   padding: 16px;
   opacity: 0.7;
   cursor: pointer;

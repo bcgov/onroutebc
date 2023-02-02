@@ -121,6 +121,11 @@ header .nav-btn {
   color: #38598a;
 }
 
+.nav-container :focus {
+  outline: 2px solid #3b99fc;
+  outline-offset: -12px;
+}
+
 /*
   These are sample media queries only. Media queries are quite subjective
   but, in general, should be made for the three different classes of screen

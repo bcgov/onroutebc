@@ -1,11 +1,10 @@
 import { Box } from "@mui/material";
-import { memo, useState } from "react";
-import { InfoBcGovBanner } from "../../../../common/components/alertBanners/AlertBanners";
-import { BC_PRIMARY_BLUE } from "../../../../themes/bcGovStyles";
+import { useState } from "react";
+import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { CompanyInfoForm } from "../forms/CompanyInfoForm";
 
-import "./CompanyInfoPage.scss";
-import { DisplayInfo } from "./DisplayInfo";
+import "./ManageProfilePages.scss";
+import { DisplayInfo } from "./DisplayCompanyInfo";
 
 const Header = () => {
   return <h2 className="company-header">Edit Company Information</h2>;
@@ -16,8 +15,8 @@ const CompanyBanner = () => {
     <Box
       sx={{
         height: 100,
-        backgroundColor: "#EBEEF3",
-        color: BC_PRIMARY_BLUE,
+        backgroundColor: BC_COLOURS.banner_grey,
+        color: BC_COLOURS.bc_primary_blue,
         marginTop: "20px",
         px: 3,
         display: "flex",
@@ -37,7 +36,7 @@ const CompanyBanner = () => {
   );
 };
 
-export const CompanyInfoPage = memo(() => {
+export const CompanyInfo = () => {
   const [isEditting, setIsEditting] = useState(false);
 
   return (
@@ -45,15 +44,12 @@ export const CompanyInfoPage = memo(() => {
       {isEditting ? <Header /> : null}
       <CompanyBanner />
       {isEditting ? (
-        <>
-          <InfoBcGovBanner description="Please note, unless stated otherwise, all fields are mandatory." />
-          <CompanyInfoForm />
-        </>
+        <CompanyInfoForm setIsEditting={setIsEditting} />
       ) : (
         <DisplayInfo setIsEditting={setIsEditting} />
       )}
     </>
   );
-});
+};
 
-CompanyInfoPage.displayName = "CompanyInfoPage";
+CompanyInfo.displayName = "CompanyInfo";

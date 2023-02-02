@@ -4,8 +4,9 @@ import {
   CreatePowerUnit,
   UpdatePowerUnit,
   PowerUnitType,
-  ApiErrorResponse,
 } from "../types/managevehicles";
+
+import { ApiErrorResponse } from "../../../types/common";
 
 //const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 

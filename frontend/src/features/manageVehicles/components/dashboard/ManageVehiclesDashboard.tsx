@@ -107,7 +107,6 @@ export const ManageVehiclesDashboard = React.memo(() => {
             ? t("vehicle.add-vehicle.power-unit")
             : t("vehicle.add-vehicle.trailer")
         }
-        closeIcon="X"
       >
         {addVehicleMode === VEHICLE_TYPES_ENUM.POWER_UNIT && (
           <PowerUnitForm
