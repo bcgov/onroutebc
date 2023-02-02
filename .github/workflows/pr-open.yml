@@ -32,15 +32,16 @@ jobs:
 
             Once merged, code will be promoted and handed off to following workflow run.
             [Main Merge Workflow](https://github.com/${{ github.repository }}/actions/workflows/merge-main.yml)
+  secrets:
+    steps:
       - name: Import Secrets
         id: secrets
         uses: hashicorp/vault-action@v2
         with:
-          url: https://vault-iit.apps.silver.devops.gov.bc.ca
-          #url: https://vault.developer.gov.bc.ca
+          url: https://vault.developer.gov.bc.ca
           token: ${{ secrets.VAULT_TOKEN }}
           exportEnv: 'false'
-          #namespace: platform-services
+          namespace: platform-services
           secrets: |
             c28f0c-nonprod/database DATABASE_HOST     | VAULT_DATABASE_HOST;
             c28f0c-nonprod/database DATABASE_USER     | VAULT_DATABASE_USER;
