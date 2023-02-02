@@ -55,11 +55,39 @@ jobs:
           tag_fallback: test
           token: ${{ secrets.GITHUB_TOKEN }}
           triggers: ${{ matrix.triggers }}
+  secrets:
+    name: Get Secrets 
+    needs:
+      - builds
+    runs-on: ubuntu-22.04
+    environment: dev
+    steps:
+      - name: Import Secrets
+        id: secrets
+        uses: hashicorp/vault-action@v2
+        with:
+          url: https://vault.developer.gov.bc.ca
+          token: ${{ secrets.VAULT_TOKEN }}
+          exportEnv: 'false'
+          namespace: platform-services
+          secrets: |
+            c28f0c-nonprod/data/database DATABASE_HOST     | VAULT_DATABASE_HOST;
+            c28f0c-nonprod/data/database DATABASE_USER     | VAULT_DATABASE_USER;
+            c28f0c-nonprod/data/database DATABASE_NAME     | VAULT_DATABASE_NAME;
+            c28f0c-nonprod/data/database DATABASE_PASSWORD | VAULT_DATABASE_PASSWORD;
+            c28f0c-nonprod/data/database DATABASE_PORT     | VAULT_DATABASE_PORT;
+        outputs:
+          VAULT_DATABASE_HOST: ${{steps.secrets.outputs.VAULT_DATABASE_HOST}}
+          VAULT_DATABASE_USER: ${{steps.secrets.outputs.VAULT_DATABASE_USER}}
+          VAULT_DATABASE_NAME: ${{steps.secrets.outputs.VAULT_DATABASE_NAME}}
+          VAULT_DATABASE_PASSWORD: ${{steps.secrets.outputs.VAULT_DATABASE_PASSWORD}}
+          VAULT_DATABASE_PORT: ${{steps.secrets.outputs.VAULT_DATABASE_PORT}}
 
   deploys:
     name: Deploys
     needs:
       - builds
+      - secrets
     runs-on: ubuntu-22.04
     environment: dev
     strategy:
@@ -80,21 +108,6 @@ jobs:
             file: common/openshift.init.yml
             overwrite: false
     steps:
-      - name: Import Secrets
-        id: secrets
-        uses: hashicorp/vault-action@v2
-        with:
-          url: https://vault.developer.gov.bc.ca
-          token: ${{ secrets.VAULT_TOKEN }}
-          exportEnv: 'false'
-          namespace: platform-services
-          secrets: |
-            c28f0c-nonprod/data/database DATABASE_HOST     | VAULT_DATABASE_HOST;
-            c28f0c-nonprod/data/database DATABASE_USER     | VAULT_DATABASE_USER;
-            c28f0c-nonprod/data/database DATABASE_NAME     | VAULT_DATABASE_NAME;
-            c28f0c-nonprod/data/database DATABASE_PASSWORD | VAULT_DATABASE_PASSWORD;
-            c28f0c-nonprod/data/database DATABASE_PORT     | VAULT_DATABASE_PORT;
-
       - name: Deploy Application
         uses: bcgov-nr/action-deployer-openshift@v1.0.1
         with:
@@ -108,8 +121,8 @@ jobs:
             -p ZONE=${{ github.event.number }}
             -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/${{ matrix.name }}:${{ github.event.number }} 
-            -p DATABASE_NAME=${{steps.secrets.outputs.VAULT_DATABASE_NAME}}
-            -p DATABASE_USER=${{steps.secrets.outputs.VAULT_DATABASE_USER}}
-            -p DATABASE_PASSWORD=${{steps.secrets.outputs.VAULT_DATABASE_PASSWORD}}
-            -p DATABASE_HOST=${{steps.secrets.outputs.VAULT_DATABASE_HOST}}
+            -p DATABASE_NAME=${{needs.secrets.outputs.VAULT_DATABASE_NAME}}
+            -p DATABASE_USER=${{needs.secrets.outputs.VAULT_DATABASE_USER}}
+            -p DATABASE_PASSWORD=${{needs.secrets.outputs.VAULT_DATABASE_PASSWORD}}
+            -p DATABASE_HOST=${{needs.secrets.outputs.VAULT_DATABASE_HOST}}
             ${{ matrix.parameters }}
