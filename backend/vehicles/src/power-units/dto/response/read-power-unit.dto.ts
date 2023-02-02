@@ -80,30 +80,4 @@ export class ReadPowerUnitDto {
     description: 'Created Date and Time',
   })
   createdDateTime: string;
-
-  constructor(
-    powerUnitId: string,
-    unitNumber: string,
-    plate: string,
-    provinceId: string,
-    year: number,
-    make: string,
-    vin: string,
-    powerUnitTypeCode: string,
-    licensedGvw: number,
-    steerAxleTireSize: number,
-    createdDateTime: string,
-  ) {
-    this.powerUnitId = powerUnitId;
-    this.unitNumber = unitNumber;
-    this.plate = plate;
-    this.provinceId = provinceId;
-    this.year = year;
-    this.make = make;
-    this.vin = vin;
-    this.licensedGvw = licensedGvw;
-    this.powerUnitTypeCode = powerUnitTypeCode;
-    this.steerAxleTireSize = steerAxleTireSize;
-    this.createdDateTime = createdDateTime;
-  }
 }

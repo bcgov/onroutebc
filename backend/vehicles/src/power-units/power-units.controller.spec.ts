@@ -8,58 +8,42 @@ import { PowerUnitsController } from './power-units.controller';
 import { PowerUnitsService } from './power-units.service';
 import { DataNotFoundException } from 'src/common/exception/data-not-found.exception';
 
+const powerUnitId = '1';
+const unitNumber = 'KEN1';
+const plate = 'AS 5895';
+const year = 2010;
+const make = 'Kenworth';
+const vin = '1ZVFT80N475211367';
+const licensedGvw = 35600;
+const steerAxleTireSize = 32;
+const provinceId = 'CA-BC';
+const powerUnitTypeCode = 'CONCRET';
+
+const createPowerUnitDto: CreatePowerUnitDto = {
+  provinceId: provinceId,
+  powerUnitTypeCode: powerUnitTypeCode,
+  unitNumber: unitNumber,
+  plate: plate,
+  year: year,
+  make: make,
+  vin: vin,
+  licensedGvw: licensedGvw,
+  steerAxleTireSize: steerAxleTireSize,
+};
+
+const updatePowerUnitDto: UpdatePowerUnitDto = {
+  ...createPowerUnitDto,
+  unitNumber: 'KEN2',
+};
+
+const readPowerUnitDto: ReadPowerUnitDto = {
+  powerUnitId: powerUnitId,
+  createdDateTime: Date.now.toString(),
+  ...createPowerUnitDto,
+};
+
 describe('PowerUnitsController', () => {
   let controller: PowerUnitsController;
-
-  const powerUnitDto = {
-    unitNumber: 'KEN1',
-    plate: 'AS 5895',
-    provinceId: 'CA-BC',
-    year: 2010,
-    make: 'Kenworth',
-    vin: '1ZVFT80N475211367',
-    licensedGvw: 35600,
-    powerUnitTypeCode: 'CONCRET',
-    steerAxleTireSize: 32,
-  };
-
-  const createPowerUnitDto = new CreatePowerUnitDto(
-    powerUnitDto.unitNumber,
-    powerUnitDto.plate,
-    powerUnitDto.provinceId,
-    powerUnitDto.year,
-    powerUnitDto.make,
-    powerUnitDto.vin,
-    powerUnitDto.powerUnitTypeCode,
-    powerUnitDto.licensedGvw,
-    powerUnitDto.steerAxleTireSize,
-  );
-
-  const readPowerUnitDto = new ReadPowerUnitDto(
-    '1',
-    powerUnitDto.unitNumber,
-    powerUnitDto.plate,
-    powerUnitDto.provinceId,
-    powerUnitDto.year,
-    powerUnitDto.make,
-    powerUnitDto.vin,
-    powerUnitDto.powerUnitTypeCode,
-    powerUnitDto.licensedGvw,
-    powerUnitDto.steerAxleTireSize,
-    Date.now.toString(),
-  );
-
-  const updatePowerUnitDto = new UpdatePowerUnitDto(
-    'KEN2',
-    powerUnitDto.plate,
-    powerUnitDto.provinceId,
-    powerUnitDto.year,
-    powerUnitDto.make,
-    powerUnitDto.vin,
-    powerUnitDto.powerUnitTypeCode,
-    powerUnitDto.licensedGvw,
-    powerUnitDto.steerAxleTireSize,
-  );
 
   const mockPowerUnitsService = {
     create: jest.fn().mockResolvedValue(readPowerUnitDto),
@@ -101,7 +85,7 @@ describe('PowerUnitsController', () => {
     controller = module.get<PowerUnitsController>(PowerUnitsController);
   });
 
-  it('Power Unit Controller should be defined.', () => {
+  it('Power unit Controller should be defined.', () => {
     expect(controller).toBeDefined();
   });
 
@@ -141,7 +125,7 @@ describe('PowerUnitsController', () => {
   });
 
   describe('Power unit controller update function.', () => {
-    it('Should update the Power Unit.', async () => {
+    it('Should update the power unit.', async () => {
       const retPowerUnit = await controller.update('1', updatePowerUnitDto);
       expect(typeof retPowerUnit).toBe('object');
       expect(retPowerUnit.powerUnitId).toBe('1');
@@ -152,7 +136,7 @@ describe('PowerUnitsController', () => {
       );
     });
 
-    it('Should thrown an exception if the Power Unit is not found for update.', async () => {
+    it('Should thrown an exception if the power unit is not found for update.', async () => {
       await expect(async () => {
         await controller.update('2', updatePowerUnitDto);
       }).rejects.toThrow(DataNotFoundException);
@@ -160,14 +144,14 @@ describe('PowerUnitsController', () => {
   });
 
   describe('Power unit controller remove function.', () => {
-    it('Should delete the Power Unit', async () => {
+    it('Should delete the power unit', async () => {
       const deleteResult = await controller.remove('1');
       expect(typeof deleteResult).toBe('object');
       expect(deleteResult.deleted).toBeTruthy();
       expect(mockPowerUnitsService.remove).toHaveBeenCalledWith('1');
     });
 
-    it('Should thrown an exception if the given Power Unit is not found for deletion.', async () => {
+    it('Should thrown an exception if the given power unit is not found for deletion.', async () => {
       await expect(async () => {
         await controller.remove('2');
       }).rejects.toThrow(DataNotFoundException);

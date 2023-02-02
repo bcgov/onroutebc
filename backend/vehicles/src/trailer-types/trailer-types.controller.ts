@@ -67,7 +67,7 @@ export class TrailerTypesController {
     @Param('typeCode') typeCode: string,
   ): Promise<ReadTrailerTypeDto> {
     const trailerType = await this.trailerTypesService.findOne(typeCode);
-    if (trailerType) {
+    if (!trailerType) {
       throw new DataNotFoundException();
     }
     return trailerType;
