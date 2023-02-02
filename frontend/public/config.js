@@ -11,12 +11,13 @@
  * https://javaadpatel.com/building-and-deploying-react-containers/
  *
  * TODO: How to make env variable work in docker compose
- * Currently, the default values shown below are used 
+ * Currently, the default values shown below are used
  * in the docker compose environment
  */
 const envConfig = (() => {
   return {
     VITE_DEPLOY_ENVIRONMENT: "docker",
     VITE_API_VEHICLE_URL: "http://localhost:5000",
+    VITE_API_MANAGE_PROFILE_URL: "http://localhost:5000",
   };
 })();

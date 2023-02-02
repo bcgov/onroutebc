@@ -1,9 +1,4 @@
-import {
-  useForm,
-  FormProvider,
-  FieldValues,
-  Controller,
-} from "react-hook-form";
+import { useForm, FormProvider, FieldValues } from "react-hook-form";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { Button } from "@mui/material";
@@ -12,17 +7,17 @@ import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import FormHelperText from "@mui/material/FormHelperText";
 // import { AxleGroupForm } from "./AxleGroupForm";
-import { CreatePowerUnit, PowerUnitType } from "../../types/managevehicles";
-import FormControl from "@mui/material/FormControl";
-import FormLabel from "@mui/material/FormLabel";
-import OutlinedInput from "@mui/material/OutlinedInput";
+import { CreatePowerUnit } from "../../types/managevehicles";
 import { addPowerUnit, getPowerUnitTypes } from "../../apiManager/vehiclesAPI";
-import MenuItem from "@mui/material/MenuItem";
-import Select from "@mui/material/Select";
-import { CountryAndProvince } from "./subsections/CountryAndProvince";
+import { CountryAndProvince } from "../../../../common/components/form/CountryAndProvince";
 import { DisplaySnackBarOptions } from "../../../../common/components/snackbar/CustomSnackbar2";
+import {
+  CustomOutlinedInput,
+  CustomSelect,
+} from "../../../../common/components/form/CustomFormComponents";
+import { useState } from "react";
+import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 
 /**
  * Props used by the power unit form.
@@ -113,10 +108,6 @@ export const PowerUnitForm = ({
     marginLeft: "8px",
   };
 
-  const inputHeight = {
-    height: "48px",
-  };
-
   /**
    * Adds a vehicle.
    */
@@ -127,254 +118,133 @@ export const PowerUnitForm = ({
 
   const ADD_VEHICLE_BTN_HEIGHT = "75px";
   const { t } = useTranslation();
+
+  const commonFormProps = {
+    control: control,
+    register: register,
+    feature: "power-unit",
+  };
+
+  // Used to change the background colour of the accordion summary when expanded
+  // Future proof for when more accordions are added, such as axle group
+  // https://mui.com/material-ui/react-accordion/#customization
+  const powerUnitPanel = "powerunit-panel";
+  const [expanded, setExpanded] = useState<string | false>(powerUnitPanel);
+  const handleChange =
+    (panel: string) => (event: React.SyntheticEvent, newExpanded: boolean) => {
+      setExpanded(newExpanded ? panel : false);
+    };
+
   return (
     <div>
       <FormProvider {...formMethods}>
-        <Accordion>
+        <Accordion
+          expanded={expanded === powerUnitPanel}
+          onChange={handleChange(powerUnitPanel)}
+        >
           <AccordionSummary
             expandIcon={<ExpandMoreIcon />}
             aria-controls="add-power-unit-content"
             id="add-power-unit-accordion-summary"
             className="bold-text"
+            sx={{
+              backgroundColor: expanded
+                ? BC_COLOURS.bc_background_light_grey
+                : "",
+              padding: "0px 28px",
+              height: "75px",
+            }}
           >
             {t("vehicle.power-unit-details")}
           </AccordionSummary>
-          <AccordionDetails style={{ paddingBottom: ADD_VEHICLE_BTN_HEIGHT }}>
+          <AccordionDetails
+            style={{ padding: `8px 24px ${ADD_VEHICLE_BTN_HEIGHT} 24px ` }}
+          >
             <div id="power-unit-form">
-              <div>
-                <Controller
-                  key="controller-powerunit-unitNumber"
-                  name="unitNumber"
-                  control={control}
-                  rules={{ required: false, maxLength: 10 }}
-                  defaultValue={powerUnit?.unitNumber || ""}
-                  render={() => (
-                    <>
-                      <FormControl margin="normal">
-                        <FormLabel
-                          id="power-unit-unit-number-label"
-                          sx={formFieldStyle}
-                        >
-                          {t("vehicle.power-unit.unit-number")}
-                        </FormLabel>
-                        <OutlinedInput
-                          aria-labelledby="power-unit-unit-number-label"
-                          inputProps={{ maxLength: 10 }}
-                          sx={inputHeight}
-                          defaultValue={powerUnit?.unitNumber}
-                          {...register("unitNumber", {
-                            required: false,
-                            maxLength: 10,
-                          })}
-                        />
-                      </FormControl>
-                    </>
-                  )}
-                />
-              </div>
-              <div>
-                <Controller
-                  key="controller-powerunit-make"
-                  name="make"
-                  control={control}
-                  rules={{ required: true, maxLength: 20 }}
-                  defaultValue={powerUnit?.make || ""}
-                  render={({ fieldState: { invalid } }) => (
-                    <>
-                      <FormControl margin="normal" error={invalid}>
-                        <FormLabel
-                          id="power-unit-make-label"
-                          sx={formFieldStyle}
-                        >
-                          {t("vehicle.power-unit.make")}
-                        </FormLabel>
-                        <OutlinedInput
-                          aria-labelledby="power-unit-make-label"
-                          inputProps={{ maxLength: 20 }}
-                          defaultValue={powerUnit?.make}
-                          sx={inputHeight}
-                          className="height"
-                          {...register("make", {
-                            required: true,
-                            maxLength: 20,
-                          })}
-                        />
-                        {invalid && (
-                          <FormHelperText error>
-                            {t("vehicle.power-unit.required", {
-                              fieldName: "Make",
-                            })}
-                          </FormHelperText>
-                        )}
-                      </FormControl>
-                    </>
-                  )}
-                />
-              </div>
-              <div>
-                <Controller
-                  key="controller-powerunit-year"
-                  name="year"
-                  control={control}
-                  rules={{ required: true }}
-                  defaultValue={powerUnit?.year || undefined}
-                  render={({ fieldState: { invalid } }) => {
-                    return (
-                      <>
-                        <FormControl margin="normal" error={invalid}>
-                          <FormLabel
-                            id="power-unit-year-label"
-                            sx={formFieldStyle}
-                          >
-                            {t("vehicle.power-unit.year")}
-                          </FormLabel>
-                          <OutlinedInput
-                            aria-labelledby="power-unit-year-label"
-                            defaultValue={powerUnit?.year}
-                            sx={inputHeight}
-                            inputProps={{ maxLength: 4, minLength: 4 }}
-                            {...register("year", {
-                              required: true,
-                              valueAsNumber: true,
-                              maxLength: 4,
-                              minLength: 4,
-                            })}
-                          />
-                          {invalid && (
-                            <FormHelperText error>
-                              {t("vehicle.power-unit.required", {
-                                fieldName: "Year",
-                              })}
-                            </FormHelperText>
-                          )}
-                        </FormControl>
-                      </>
-                    );
-                  }}
-                />
-              </div>
-              <div>
-                <Controller
-                  key="controller-powerunit-vin"
-                  name="vin"
-                  control={control}
-                  rules={{ required: true }}
-                  defaultValue={powerUnit?.vin || ""}
-                  render={({ fieldState: { invalid } }) => (
-                    <>
-                      <FormControl margin="normal" error={invalid}>
-                        <FormLabel
-                          id="power-unit-vin-label"
-                          sx={formFieldStyle}
-                        >
-                          {t("vehicle.power-unit.vin")}
-                        </FormLabel>
-                        <OutlinedInput
-                          inputProps={{ maxLength: 17 }}
-                          sx={inputHeight}
-                          aria-labelledby="power-unit-vin-label"
-                          {...register("vin", {
-                            required: true,
-                            minLength: 17,
-                            maxLength: 17,
-                          })}
-                        />
-                        {invalid && (
-                          <FormHelperText error>
-                            {t("vehicle.power-unit.required", {
-                              fieldName: "VIN",
-                            })}
-                          </FormHelperText>
-                        )}
-                      </FormControl>
-                    </>
-                  )}
-                />
-              </div>
-              <div>
-                <Controller
-                  key="controller-powerunit-plate"
-                  name="plate"
-                  control={control}
-                  rules={{ required: true, maxLength: 10 }}
-                  defaultValue={powerUnit?.plate || ""}
-                  render={({ fieldState: { invalid } }) => (
-                    <>
-                      <FormControl margin="normal" error={invalid}>
-                        <FormLabel
-                          id="power-unit-plate-label"
-                          sx={formFieldStyle}
-                        >
-                          {t("vehicle.power-unit.plate")}
-                        </FormLabel>
-                        <OutlinedInput
-                          aria-labelledby="power-unit-plate-label"
-                          inputProps={{ maxLength: 10 }}
-                          sx={inputHeight}
-                          {...register("plate", {
-                            required: true,
-                            maxLength: 10,
-                          })}
-                        />
-                        {invalid && (
-                          <FormHelperText error>
-                            {t("vehicle.power-unit.required", {
-                              fieldName: "Plate",
-                            })}
-                          </FormHelperText>
-                        )}
-                      </FormControl>
-                    </>
-                  )}
-                />
-              </div>
-              <div>
-                <Controller
-                  key="controller-powerunit-power-unit-type"
-                  name="powerUnitTypeCode"
-                  control={control}
-                  rules={{ required: true }}
-                  defaultValue={powerUnit?.powerUnitTypeCode || ""}
-                  render={({ fieldState: { invalid } }) => (
-                    <>
-                      <FormControl margin="normal" error={invalid}>
-                        <FormLabel
-                          id="power-unit-power-unit-type-label"
-                          sx={formFieldStyle}
-                        >
-                          {t("vehicle.power-unit.power-unit-type")}
-                        </FormLabel>
-                        <Select
-                          aria-labelledby="power-unit-power-unit-type-label"
-                          defaultValue={""}
-                          sx={inputHeight}
-                          {...register("powerUnitTypeCode", {
-                            required: true,
-                          })}
-                        >
-                          {powerUnitTypesQuery.data?.map(
-                            (powerUnitType: PowerUnitType) => (
-                              <MenuItem
-                                key={`powerUnitType-${powerUnitType.typeCode}`}
-                                value={powerUnitType.typeCode}
-                              >
-                                {powerUnitType.type}
-                              </MenuItem>
-                            )
-                          )}
-                        </Select>
-                        {invalid && (
-                          <FormHelperText error>
-                            {t("vehicle.power-unit.required", {
-                              fieldName: "Power Unit Type",
-                            })}
-                          </FormHelperText>
-                        )}
-                      </FormControl>
-                    </>
-                  )}
-                />
-              </div>
+              <CustomOutlinedInput
+                common={commonFormProps}
+                name={"unitNumber"}
+                rules={{ required: false, maxLength: 10 }}
+                label={"Unit #"}
+                inValidMessage={""}
+                options={{
+                  inputProps: { maxLength: 10 },
+                  label_i18: "vehicle.power-unit.unit-number",
+                  width: formFieldStyle.width,
+                }}
+              />
+              <CustomOutlinedInput
+                common={commonFormProps}
+                name={"make"}
+                rules={{ required: true, maxLength: 20 }}
+                label={"make"}
+                inValidMessage={""}
+                options={{
+                  inputProps: { maxLength: 10 },
+                  label_i18: "vehicle.power-unit.make",
+                  inValidMessage_i18: "vehicle.power-unit.required",
+                  inValidMessage_fieldName_i18: "Make",
+                  width: formFieldStyle.width,
+                }}
+              />
+              <CustomOutlinedInput
+                common={commonFormProps}
+                name={"year"}
+                rules={{ required: true, maxLength: 20 }}
+                label={"year"}
+                inValidMessage={""}
+                options={{
+                  inputProps: { maxLength: 4, minLength: 4 },
+                  label_i18: "vehicle.power-unit.year",
+                  inValidMessage_i18: "vehicle.power-unit.required",
+                  inValidMessage_fieldName_i18: "Year",
+                  width: formFieldStyle.width,
+                }}
+              />
+              <CustomOutlinedInput
+                common={commonFormProps}
+                name={"vin"}
+                rules={{ required: true, minLength: 17, maxLength: 17 }}
+                label={"vin"}
+                inValidMessage={"VIN is required."}
+                options={{
+                  inputProps: { required: true, maxLength: 17 },
+                  label_i18: "vehicle.power-unit.vin",
+                  inValidMessage_i18: "vehicle.power-unit.required",
+                  inValidMessage_fieldName_i18: "VIN",
+                  width: formFieldStyle.width,
+                }}
+              />
+              <CustomOutlinedInput
+                common={commonFormProps}
+                name={"plate"}
+                rules={{ required: true, maxLength: 10 }}
+                label={"plate"}
+                inValidMessage={"Plate is required."}
+                options={{
+                  inputProps: { required: true, maxLength: 10 },
+                  label_i18: "vehicle.power-unit.plate",
+                  inValidMessage_i18: "vehicle.power-unit.required",
+                  inValidMessage_fieldName_i18: "Plate",
+                  width: formFieldStyle.width,
+                }}
+              />
+
+              <CustomSelect
+                common={commonFormProps}
+                name={"powerUnitTypeCode"}
+                rules={{ required: true }}
+                label={"powerUnitTypeCode"}
+                inValidMessage={"Power Unit Type is required."}
+                options={{
+                  label_i18: "vehicle.power-unit.power-unit-type",
+                  inValidMessage_i18: "vehicle.power-unit.required",
+                  inValidMessage_fieldName_i18: "Plate",
+                  width: formFieldStyle.width,
+                }}
+                powerUnitTypesQuery={powerUnitTypesQuery}
+              />
+
               <CountryAndProvince
                 country={
                   powerUnit?.provinceId
@@ -386,87 +256,43 @@ export const PowerUnitForm = ({
                     ? powerUnit?.provinceId?.split("-")[1]
                     : ""
                 }
+                width={"490px"}
               />
-              <div>
-                <Controller
-                  key="controller-powerunit-licensed-gvw"
-                  name="licensedGvw"
-                  control={control}
-                  rules={{ required: true }}
-                  defaultValue={powerUnit?.licensedGvw || undefined}
-                  render={({ fieldState: { invalid } }) => (
-                    <>
-                      <FormControl margin="normal" error={invalid}>
-                        <FormLabel
-                          id="power-unit-licensed-gvw-label"
-                          sx={formFieldStyle}
-                        >
-                          {t("vehicle.power-unit.licensed-gvw")}
-                        </FormLabel>
-                        <OutlinedInput
-                          aria-labelledby="power-unit-licensed-gvw-label"
-                          sx={inputHeight}
-                          {...register("licensedGvw", {
-                            required: true,
-                            valueAsNumber: true,
-                          })}
-                        />
-                        {invalid && (
-                          <FormHelperText error>
-                            {t("vehicle.power-unit.required", {
-                              fieldName: "Licensed GVW",
-                            })}
-                          </FormHelperText>
-                        )}
-                      </FormControl>
-                    </>
-                  )}
-                />
-              </div>
-              <div>
-                <Controller
-                  key="controller-powerunit-steer-axle-tire-size"
-                  name="steerAxleTireSize"
-                  control={control}
-                  rules={{ required: false }}
-                  defaultValue={powerUnit?.steerAxleTireSize || undefined}
-                  render={() => (
-                    <>
-                      <FormControl margin="normal">
-                        <FormLabel
-                          id="power-unit-steer-axle-tire-size-label"
-                          sx={formFieldStyle}
-                        >
-                          {t("vehicle.power-unit.steer-axle-tire-size")}
-                        </FormLabel>
-                        <OutlinedInput
-                          aria-labelledby="power-unit-steer-axle-tire-size-label"
-                          sx={inputHeight}
-                          {...register("steerAxleTireSize", {
-                            required: false,
-                            valueAsNumber: true,
-                          })}
-                        />
-                      </FormControl>
-                    </>
-                  )}
-                />
-              </div>
+
+              <CustomOutlinedInput
+                common={commonFormProps}
+                name={"licensedGvw"}
+                rules={{ required: true, valueAsNumber: true }}
+                label={"licensedGvw"}
+                inValidMessage={"Licensed GVW is required."}
+                options={{
+                  inputProps: { required: true, valueAsNumber: true },
+                  label_i18: "vehicle.power-unit.licensed-gvw",
+                  inValidMessage_i18: "vehicle.power-unit.required",
+                  inValidMessage_fieldName_i18: "Licensed GVW",
+                  width: formFieldStyle.width,
+                }}
+              />
+
+              <CustomOutlinedInput
+                common={commonFormProps}
+                name={"steerAxleTireSize"}
+                rules={{ required: false, valueAsNumber: true }}
+                label={"steerAxleTireSize"}
+                inValidMessage={""}
+                options={{
+                  inputProps: { required: true, valueAsNumber: true },
+                  label_i18: "vehicle.power-unit.steer-axle-tire-size",
+                  inValidMessage_i18: "vehicle.power-unit.required",
+                  inValidMessage_fieldName_i18: "",
+                  width: formFieldStyle.width,
+                }}
+              />
             </div>
           </AccordionDetails>
         </Accordion>
         {/* {getAxleGroupForms()} */}
       </FormProvider>
-      {/* <div>
-        <Button
-          color={"BC-Gov-PrimaryButton"}
-          key="add-axle-group-button"
-          className={"mt-5"}
-          onClick={addAxleGroup}
-        >
-          {t("vehicle.form.add-axle-group")}
-        </Button>
-      </div> */}
       <div
         className="add-vehicle-button-container"
         style={{ height: ADD_VEHICLE_BTN_HEIGHT }}
