@@ -8,8 +8,6 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  secrets:
-
   pr-greeting:
     name: PR Greeting
     env:
@@ -19,21 +17,6 @@ jobs:
     permissions:
       pull-requests: write
     steps:
-      - name: Import Secrets
-        id: secrets
-        uses: hashicorp/vault-action@v2
-        with:
-          url: https://vault-iit.apps.silver.devops.gov.bc.ca
-          #url: https://vault.developer.gov.bc.ca
-          token: ${{ secrets.VAULT_TOKEN }}
-          exportEnv: 'false'
-          namespace: platform-services
-          secrets: |
-            c28f0c-nonprod/database DATABASE_HOST     | VAULT_DATABASE_HOST;
-            c28f0c-nonprod/database DATABASE_USER     | VAULT_DATABASE_USER;
-            c28f0c-nonprod/database DATABASE_NAME     | VAULT_DATABASE_NAME;
-            c28f0c-nonprod/database DATABASE_PASSWORD | VAULT_DATABASE_PASSWORD;
-            c28f0c-nonprod/database DATABASE_PORT     | VAULT_DATABASE_PORT;
       - name: PR Greeting
         uses: bcgov-nr/action-pr-description-add@v0.0.2
         with:
@@ -49,6 +32,21 @@ jobs:
 
             Once merged, code will be promoted and handed off to following workflow run.
             [Main Merge Workflow](https://github.com/${{ github.repository }}/actions/workflows/merge-main.yml)
+      - name: Import Secrets
+        id: secrets
+        uses: hashicorp/vault-action@v2
+        with:
+          url: https://vault-iit.apps.silver.devops.gov.bc.ca
+          #url: https://vault.developer.gov.bc.ca
+          token: ${{ secrets.VAULT_TOKEN }}
+          exportEnv: 'false'
+          namespace: platform-services
+          secrets: |
+            c28f0c-nonprod/database DATABASE_HOST     | VAULT_DATABASE_HOST;
+            c28f0c-nonprod/database DATABASE_USER     | VAULT_DATABASE_USER;
+            c28f0c-nonprod/database DATABASE_NAME     | VAULT_DATABASE_NAME;
+            c28f0c-nonprod/database DATABASE_PASSWORD | VAULT_DATABASE_PASSWORD;
+            c28f0c-nonprod/database DATABASE_PORT     | VAULT_DATABASE_PORT;
 
   builds:
     name: Builds
