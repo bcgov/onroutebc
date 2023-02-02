@@ -1,20 +1,23 @@
 header {
   background-color: #036;
   border-bottom: 2px solid #fcba19;
-  //padding: 0 30px 0 30px;
+  padding: 0 30px 0 30px;
   color: #fff;
-  display: flex !important;
+  display: flex;
   height: 65px;
   top: 0;
-  width: 100%;
-  //-webkit-box-shadow: 0 6px 8px -4px #b3b1b3;
-  //-moz-box-shadow: 0 6px 8px -4px #b3b1b3;
-  //box-shadow: 0 6px 8px -4px #b3b1b3;
+  //position: sticky;
+  //width: 100%;
+  -webkit-box-shadow: 0 6px 8px -4px #b3b1b3;
+  -moz-box-shadow: 0 6px 8px -4px #b3b1b3;
+  box-shadow: 0 6px 8px -4px #b3b1b3;
 }
 
 header h1 {
-  font-weight: normal;  /* 400 */
-  visibility: visible;
+  //font-family: ‘BCSans’, ‘Noto Sans’, Verdana, Arial, sans-serif;
+  font-weight: normal; /* 400 */
+  margin: 5px 5px 0 18px;
+  visibility: hidden;
 }
 
 header .banner {
@@ -22,13 +25,21 @@ header .banner {
   justify-content: flex-start;
   align-items: center;
   margin: 0 10px 0 0;
-  padding-left: 60px;
+  padding-left: 30px;
+  width: 200px;
+  /* border-style: dotted;
+  border-width: 1px;
+  border-color: lightgrey; */
 }
 
 header .other {
   display: flex;
+  justify-content: end;
   align-items: center;
   flex-grow: 1;
+  /* border-style: dotted;
+  border-width: 1px;
+  border-color: lightgrey; */
 }
 
 header a [class^="fas fa-"] {
@@ -36,6 +47,9 @@ header a [class^="fas fa-"] {
   font-size: 1.4em;
   font-style: bold;
   line-height: 1;
+  /* border-style: solid;
+  border-width: 1px;
+  border-color: #fcba19; */
   padding: 5px;
   -webkit-font-smoothing: antialiased;
 }
@@ -43,7 +57,8 @@ header a [class^="fas fa-"] {
 header .nav-btn {
   display: block;
   width: auto;
-  margin: 0 50px 0 auto;
+  //padding-right: 60px;
+  margin-right: 20px;
   cursor: pointer;
 }
 
@@ -54,14 +69,14 @@ header .nav-btn {
   color: #fcba19;
   background-color: #38598a;
   width: 100%;
-  //-webkit-box-shadow: 0 6px 8px -4px #b3b1b3;
-  //-moz-box-shadow: 0 6px 8px -4px #b3b1b3;
-  //box-shadow: 0 6px 8px -4px #b3b1b3;
+  // -webkit-box-shadow: 0 6px 8px -4px #b3b1b3;
+  // -moz-box-shadow: 0 6px 8px -4px #b3b1b3;
+  // box-shadow: 0 6px 8px -4px #b3b1b3;
 }
 
 .navigation-main .list-container {
-  //padding: 10px 0 10px 0;
-  height: 40px;
+  margin-right: 60px;
+  padding: 10px 0 10px 0;
 }
 
 .navigation-main .list-container ul {
@@ -70,19 +85,29 @@ header .nav-btn {
   margin: 0;
   color: #fff;
   list-style: none;
-  height: 100%;
   padding-left: 60px;
+  //margin-left: -25px;
+  /* border-style: dotted;
+  border-width: 1px;
+  border-color: red; */
+}
+
+.navigation-main .list-container ul li {
+  margin: 5px 0;
+  height: 100%;
 }
 
 .navigation-main .list-container ul li a {
   display: flex;
   font-size: 0.813em;
-  font-weight: normal;  /* 400 */
+  font-weight: normal; /* 400 */
   color: #fff;
   padding: 0 15px 0 15px;
   text-decoration: none;
-  height: 100%;
-  align-items: center;
+
+  /* border-style: dotted;
+  border-width: 1px;
+  border-color: green; */
 }
 
 .navigation-main .list-container ul li a:hover {
@@ -92,12 +117,8 @@ header .nav-btn {
 .navigation-main .list-container ul .active {
   //text-decoration: underline;
   font-weight: bold;
-  background-color: #F2F2F2;
-  color: #38598A;
-}
-
-.banner a {
-  display: none;
+  background-color: #f2f2f2;
+  color: #38598a;
 }
 
 /*
@@ -111,20 +132,24 @@ header .nav-btn {
     display: block;
   }
 
+  .navigation-main .list-container {
+    padding: 0px 0 0px 0;
+    height: 40px;
+  }
+
   .navigation-main .list-container ul {
     flex-direction: row;
+    height: 100%;
   }
 
   .navigation-main .list-container ul li {
     margin: 0;
   }
-  
+
   .navigation-main .list-container ul li a {
     border-right: 1px solid #9b9b9b;
-  }
-
-  .banner a {
-    display: block;
+    height: 100%;
+    align-items: center;
   }
 
   header .nav-btn {
@@ -133,25 +158,18 @@ header .nav-btn {
     margin: 0 0 0 auto;
     cursor: pointer;
   }
-
-  header h1 {
-    margin: 5px 5px 0 0px;
-  }
-
 }
 
 @media screen and (min-width: 768px) and (max-width: 899px) {
   header h1 {
     font-size: calc(7px + 2.2vw);
-    margin: 5px 5px 0 18px;
+    visibility: visible;
   }
-
 }
 
 @media screen and (min-width: 900px) {
   header h1 {
-    font-size: 2.0em;
-    margin: 5px 5px 0 18px;
+    font-size: 2em;
+    visibility: visible;
   }
-
 }

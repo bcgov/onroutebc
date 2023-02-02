@@ -3,12 +3,12 @@ import { NavLink } from "react-router-dom";
 
 import "./Header.scss";
 import * as routes from "../../../constants/routes";
-import { BC_PRIMARY_BLUE } from "../../../constants/bcGovStyles";
+import { BC_PRIMARY_BLUE } from "../../../themes/bcGovStyles";
 
 /*
  * The Header component includes the BC Gov banner and Navigation bar
  * and is responsive for mobile
- * 
+ *
  * The banner colour changes based on the Openshift Environment
  * (Dev, Test, UAT, and Prod)
  *
@@ -19,7 +19,9 @@ export const Header = () => {
   const [menuOpen, setMenuOpen] = useState(!mediaQueryList.matches);
 
   let headerColor: string;
-  const env = import.meta.env.VITE_DEPLOY_ENVIRONMENT || envConfig.VITE_DEPLOY_ENVIRONMENT;
+  const env =
+    import.meta.env.VITE_DEPLOY_ENVIRONMENT ||
+    envConfig.VITE_DEPLOY_ENVIRONMENT;
   switch (!isNaN(Number(env)) || env) {
     case "test":
       headerColor = "orange";
@@ -59,19 +61,19 @@ export const Header = () => {
       <a href={routes.HOME}>
         <img
           src="https://developer.gov.bc.ca/static/BCID_H_rgb_rev-20eebe74aef7d92e02732a18b6aa6bbb.svg"
-          alt="Go to the onRouteBc Home Page"
+          alt="Go to the onRouteBC Home Page"
           height="50px"
         />
       </a>
-      <h1>onRouteBc</h1>
+      <h1>onRouteBC</h1>
     </div>
   );
 
   const NavButton = () => (
     <div className="other">
-      <button className="nav-btn" onClick={menuToggleHandler}>
-        <i className="fa fa-bars"></i>
-      </button>
+      <a className="nav-btn" onClick={menuToggleHandler}>
+        <i className="fas fa-bars" id="menu"></i>
+      </a>
     </div>
   );
 
@@ -89,7 +91,12 @@ export const Header = () => {
           </li>
           <li>
             <NavLink to={routes.MANAGE_VEHICLES} onClick={menuToggleHandler}>
-              Manage Vehicles
+              Vehicle Inventory
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to={routes.MANAGE_PROFILES} onClick={menuToggleHandler}>
+              Profile
             </NavLink>
           </li>
         </ul>

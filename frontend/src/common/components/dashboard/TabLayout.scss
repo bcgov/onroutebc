@@ -1,0 +1,28 @@
+.tabpanel-container {
+  padding: 0px 60px;
+  overflow: hidden;
+  background-color: white;
+  height: 100vh;
+}
+
+.layout-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 25px;
+  padding-bottom: 5px;
+}
+
+.layout-box {
+  padding: 0px 60px 0px 60px;
+}
+
+@media screen and (max-width: 768px) {
+  .tabpanel-container {
+    padding: 0px 20px;
+  }
+
+  .layout-box {
+    padding: 0px 20px;
+  }
+}

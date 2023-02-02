@@ -1,17 +1,18 @@
 export interface IPowerUnit {
-  concurrencyControlNumber: null,
-  createdUser: null,
-  createdDateTime: string | null,
-  updatedUser: null,
-  updatedDateTime: null,
-  powerUnitId: string,
-  unitNumber: string,
-  plate: string,
-  year: number,
-  make: string,
-  vin: string,
-  licensedGvw: number,
-  steerAxleTireSize: number
+  concurrencyControlNumber: null;
+  createdUser: null;
+  createdDateTime: string | null;
+  updatedUser: null;
+  updatedDateTime: null;
+  powerUnitId: string;
+  unitNumber: string;
+  plate: string;
+  year: number;
+  make: string;
+  vin: string;
+  licensedGvw: number;
+  steerAxleTireSize: number;
+  powerUnitTypeCode: string;
 }
 
 export interface ITrailer {
@@ -37,7 +38,7 @@ export interface VehiclesContextType {
  * A base vehicle type. This is an incomplete object and meant to be extended for use.
  * Extended by: CreatePowerUnit, CreateTrailer
  */
- interface Vehicle {
+interface Vehicle {
   unitNumber: string;
   make: string;
   year: number;
@@ -117,8 +118,7 @@ export interface CreateTrailer extends Vehicle {
  * Object type for updating a trailer.
  * It is identical to CreateTrailer.
  */
- export type UpdateTrailer = CreateTrailer;
-
+export type UpdateTrailer = CreateTrailer;
 
 interface ApiErrorResponse {
   status: number;

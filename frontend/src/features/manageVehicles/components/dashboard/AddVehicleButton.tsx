@@ -58,7 +58,7 @@ export const AddVehicleButton = ({
   const handleMenuItemClick = (
     _event: React.MouseEvent<HTMLLIElement, MouseEvent>,
     _index: number,
-    vehicleMode: VEHICLE_TYPES_ENUM,
+    vehicleMode: VEHICLE_TYPES_ENUM
   ) => {
     openSlidePanel(vehicleMode);
     setIsMenuOpen(false);
@@ -91,6 +91,7 @@ export const AddVehicleButton = ({
           ref={anchorRef}
           id="composition-button"
           variant="contained"
+          sx={{ width: "186px" }}
           aria-controls={isMenuOpen ? "composition-menu" : undefined}
           aria-expanded={isMenuOpen ? "true" : undefined}
           aria-haspopup="true"
@@ -102,7 +103,7 @@ export const AddVehicleButton = ({
           open={isMenuOpen}
           anchorEl={anchorRef.current}
           role={undefined}
-          placement="bottom-start"
+          placement="bottom-end"
           transition
           disablePortal
           sx={{ zIndex: 5 }} // Show above all other elements
