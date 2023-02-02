@@ -84,7 +84,7 @@ jobs:
         id: secrets
         uses: hashicorp/vault-action@v2
         with:
-          url: https://vault.developer.gov.bc.ca
+          url: https://vault-iit.apps.silver.devops.gov.bc.ca
           token: ${{ secrets.VAULT_TOKEN }}
           exportEnv: 'false'
           secrets: |
