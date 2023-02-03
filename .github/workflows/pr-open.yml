@@ -80,6 +80,10 @@ jobs:
             file: common/openshift.init.yml
             overwrite: false
     steps:
+			- name: Get Vault Environment
+				id: get-vault-env
+				uses: actions/github-scr`ipt@0.9.0
+				run: echo "OC_LICENSE_PLATE=${{secrets.OC_NAMESPACE}} | cut -d- -f1 | tee $GITHUB_ENV"
       - name: Import Secrets
         id: secrets
         uses: hashicorp/vault-action@v2
@@ -89,11 +93,11 @@ jobs:
           exportEnv: 'false'
           namespace: platform-services
           secrets: |
-            c28f0c-nonprod/data/database DATABASE_HOST     | VAULT_DATABASE_HOST;
-            c28f0c-nonprod/data/database DATABASE_USER     | VAULT_DATABASE_USER;
-            c28f0c-nonprod/data/database DATABASE_NAME     | VAULT_DATABASE_NAME;
-            c28f0c-nonprod/data/database DATABASE_PASSWORD | VAULT_DATABASE_PASSWORD;
-            c28f0c-nonprod/data/database DATABASE_PORT     | VAULT_DATABASE_PORT
+            ${{env.OC_LICENSE_PLATE}}/data/database 				DATABASE_HOST     | VAULT_DATABASE_HOST;
+            ${{env.OC_LICENSE_PLATE}}-nonprod/data/database DATABASE_USER     | VAULT_DATABASE_USER;
+            ${{env.OC_LICENSE_PLATE}}-nonprod/data/database DATABASE_NAME     | VAULT_DATABASE_NAME;
+            ${{env.OC_LICENSE_PLATE}}-nonprod/data/database DATABASE_PASSWORD | VAULT_DATABASE_PASSWORD;
+            ${{env.OC_LICENSE_PLATE}}-nonprod/data/database DATABASE_PORT     | VAULT_DATABASE_PORT
       - name: Deploy Application
         uses: bcgov-nr/action-deployer-openshift@v1.0.1
         with:
