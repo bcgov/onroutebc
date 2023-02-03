@@ -82,7 +82,7 @@ jobs:
     steps:
 			- name: Get Vault Environment
 				id: get-vault-env
-				uses: actions/github-scr`ipt@0.9.0
+				uses: actions/github-script@0.9.0
 				run: echo "OC_LICENSE_PLATE=${{secrets.OC_NAMESPACE}} | cut -d- -f1 | tee $GITHUB_ENV"
       - name: Import Secrets
         id: secrets
