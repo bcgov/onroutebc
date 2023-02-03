@@ -86,18 +86,19 @@ export const bcGovTheme = createTheme({
         },
       },
     },
+    // Also see CustomFormComponents.tsx for border colour
+    // override based on error/invalid input
     MuiOutlinedInput: {
       styleOverrides: {
         root: {
+          height: "48px",
           "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
             border: "2px solid",
-            borderColor: BC_COLOURS.focus_blue,
+            boxShadow: `0px 4px 8px ${BC_COLOURS.shadow_colour}`,
           },
           ".MuiOutlinedInput-notchedOutline": {
             borderColor: BC_COLOURS.bc_text_box_border_grey,
           },
-          //minWidth: "384px",
-          //maxWidth: "544px",
         },
       },
     },
@@ -120,6 +121,8 @@ export const bcGovTheme = createTheme({
 
 /**
  * https://stackoverflow.com/questions/50069724/how-to-add-custom-mui-palette-colors
+ *
+ * Used for onRouteBC tertirary button style
  *
  * Update the TypeScript definition, so it can recognize custom properties
  * when referencing the Palette and PaletteOption objects
