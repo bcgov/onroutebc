@@ -7,54 +7,14 @@ import { classes } from '@automapper/classes';
 import { AutomapperModule } from '@automapper/nestjs';
 import { createMock } from '@golevelup/ts-jest';
 import { Repository } from 'typeorm';
-import { CreatePowerUnitTypeDto } from '../src/modules/power-unit-types/dto/request/create-power-unit-type.dto';
-import { UpdatePowerUnitTypeDto } from '../src/modules/power-unit-types/dto/request/update-power-unit-type.dto';
-import { ReadPowerUnitTypeDto } from '../src/modules/power-unit-types/dto/response/read-power-unit-type.dto';
-import { PowerUnitType } from '../src/modules/power-unit-types/entities/power-unit-type.entity';
-import { PowerUnitTypesModule } from '../src/modules/power-unit-types/power-unit-types.module';
-
-const typeCode = 'CONCRET';
-const type = 'Concrete Pumper Trucks';
-const description =
-  'Concrete Pumper Trucks are used to pump concrete from a cement mixer truck to where the concrete is actually needed. They travel on the highway at their equipped weight with no load.';
-const sortOrder = '1';
-const isActive = '1';
-
-const base = {
-  concurrencyControlNumber: 1,
-  createdUser: 'user1',
-  createdDateTime: new Date(),
-  updatedUser: 'user1',
-  updatedDateTime: new Date(),
-};
-
-const powerUnitType: PowerUnitType = {
-  typeCode: typeCode,
-  type: type,
-  description: description,
-  sortOrder: sortOrder,
-  isActive: isActive,
-  powerUnits: null,
-  ...base,
-};
-
-const createPowerUnitTypeDto: CreatePowerUnitTypeDto = {
-  typeCode: typeCode,
-  type: type,
-  description: description,
-  sortOrder: sortOrder,
-};
-
-const updatePowerUnitTypeDto: UpdatePowerUnitTypeDto = {
-  ...createPowerUnitTypeDto,
-  description: 'updated',
-};
-
-const readPowerUnitTypeDto: ReadPowerUnitTypeDto = {
-  typeCode: typeCode,
-  type: type,
-  description: description,
-};
+import { PowerUnitType } from '../../src/modules/power-unit-types/entities/power-unit-type.entity';
+import { PowerUnitTypesModule } from '../../src/modules/power-unit-types/power-unit-types.module';
+import {
+  createPowerUnitTypeDtoMock,
+  powerUnitTypeEntityMock,
+  readPowerUnitTypeDtoMock,
+  updatePowerUnitTypeDtoMock,
+} from '../util/mocks/data/power-unit-type.mock';
 
 describe('Power Unit Types (e2e)', () => {
   let app: INestApplication;
@@ -79,46 +39,46 @@ describe('Power Unit Types (e2e)', () => {
 
   describe('/vehicles/power-unit-types CREATE', () => {
     it('should create a new power unit type.', () => {
-      repo.findOne.mockResolvedValue(powerUnitType);
+      repo.findOne.mockResolvedValue(powerUnitTypeEntityMock);
       return request(app.getHttpServer())
         .post('/vehicles/power-unit-types')
-        .send(createPowerUnitTypeDto)
+        .send(createPowerUnitTypeDtoMock)
         .expect(201)
-        .expect(readPowerUnitTypeDto);
+        .expect(readPowerUnitTypeDtoMock);
     });
   });
 
   describe('/vehicles/power-unit-types GETALL', () => {
     it('should return an array of power unit types', () => {
-      repo.find.mockResolvedValue([powerUnitType]);
+      repo.find.mockResolvedValue([powerUnitTypeEntityMock]);
       return request(app.getHttpServer())
         .get('/vehicles/power-unit-types')
         .expect(200)
-        .expect([readPowerUnitTypeDto]);
+        .expect([readPowerUnitTypeDtoMock]);
     });
   });
 
   describe('/vehicles/power-unit-types/CONCRET GET', () => {
     it('should return a power unit type with powerUnitId as 1.', () => {
-      repo.findOne.mockResolvedValue(powerUnitType);
+      repo.findOne.mockResolvedValue(powerUnitTypeEntityMock);
       return request(app.getHttpServer())
         .get('/vehicles/power-unit-types/CONCRET')
         .expect(200)
-        .expect(readPowerUnitTypeDto);
+        .expect(readPowerUnitTypeDtoMock);
     });
   });
 
   describe('/vehicles/power-unit-types/CONCRET UPDATE', () => {
     it('should update the power unit type.', () => {
       repo.findOne.mockResolvedValue({
-        ...powerUnitType,
+        ...powerUnitTypeEntityMock,
         description: 'updated',
       });
       return request(app.getHttpServer())
         .put('/vehicles/power-unit-types/CONCRET')
-        .send(updatePowerUnitTypeDto)
+        .send(updatePowerUnitTypeDtoMock)
         .expect(200)
-        .expect({ ...readPowerUnitTypeDto, description: 'updated' });
+        .expect({ ...readPowerUnitTypeDtoMock, description: 'updated' });
     });
   });
 

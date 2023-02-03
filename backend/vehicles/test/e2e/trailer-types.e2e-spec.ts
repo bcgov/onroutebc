@@ -8,54 +8,14 @@ import { AutomapperModule } from '@automapper/nestjs';
 
 import { createMock } from '@golevelup/ts-jest';
 import { Repository } from 'typeorm';
-import { CreateTrailerTypeDto } from '../src/modules/trailer-types/dto/request/create-trailer-type.dto';
-import { UpdateTrailerTypeDto } from '../src/modules/trailer-types/dto/request/update-trailer-type.dto';
-import { ReadTrailerTypeDto } from '../src/modules/trailer-types/dto/response/read-trailer-type.dto';
-import { TrailerType } from '../src/modules/trailer-types/entities/trailer-type.entity';
-import { TrailerTypesModule } from '../src/modules/trailer-types/trailer-types.module';
-
-const typeCode = 'BOOSTER';
-const type = 'Boosters';
-const description =
-  'A Booster is similar to a jeep, but it is used behind a load.';
-const sortOrder = '1';
-const isActive = '1';
-
-const base = {
-  concurrencyControlNumber: 1,
-  createdUser: 'user1',
-  createdDateTime: new Date(),
-  updatedUser: 'user1',
-  updatedDateTime: new Date(),
-};
-
-const trailerType: TrailerType = {
-  typeCode: typeCode,
-  type: type,
-  description: description,
-  sortOrder: sortOrder,
-  isActive: isActive,
-  trailers: null,
-  ...base,
-};
-
-const createTrailerTypeDto: CreateTrailerTypeDto = {
-  typeCode: typeCode,
-  type: type,
-  description: description,
-  sortOrder: sortOrder,
-};
-
-const updateTrailerTypeDto: UpdateTrailerTypeDto = {
-  ...createTrailerTypeDto,
-  description: 'updated',
-};
-
-const readTrailerTypeDto: ReadTrailerTypeDto = {
-  typeCode: typeCode,
-  type: type,
-  description: description,
-};
+import { TrailerType } from '../../src/modules/trailer-types/entities/trailer-type.entity';
+import { TrailerTypesModule } from '../../src/modules/trailer-types/trailer-types.module';
+import {
+  createTrailerTypeDtoMock,
+  readTrailerTypeDtoMock,
+  trailerTypeEntityMock,
+  updateTrailerTypeDtoMock,
+} from '../util/mocks/data/trailer-type.mock';
 
 describe('Trailer Types (e2e)', () => {
   let app: INestApplication;
@@ -80,46 +40,46 @@ describe('Trailer Types (e2e)', () => {
 
   describe('/vehicles/trailer-types CREATE', () => {
     it('should create a new trailer type.', () => {
-      repo.findOne.mockResolvedValue(trailerType);
+      repo.findOne.mockResolvedValue(trailerTypeEntityMock);
       return request(app.getHttpServer())
         .post('/vehicles/trailer-types')
-        .send(createTrailerTypeDto)
+        .send(createTrailerTypeDtoMock)
         .expect(201)
-        .expect(readTrailerTypeDto);
+        .expect(readTrailerTypeDtoMock);
     });
   });
 
   describe('/vehicles/trailer-types GETALL', () => {
     it('should return an array of trailer types', () => {
-      repo.find.mockResolvedValue([trailerType]);
+      repo.find.mockResolvedValue([trailerTypeEntityMock]);
       return request(app.getHttpServer())
         .get('/vehicles/trailer-types')
         .expect(200)
-        .expect([readTrailerTypeDto]);
+        .expect([readTrailerTypeDtoMock]);
     });
   });
 
   describe('/vehicles/trailer-types/CONCRET GET', () => {
     it('should return a trailer type with trailerId as 1.', () => {
-      repo.findOne.mockResolvedValue(trailerType);
+      repo.findOne.mockResolvedValue(trailerTypeEntityMock);
       return request(app.getHttpServer())
         .get('/vehicles/trailer-types/CONCRET')
         .expect(200)
-        .expect(readTrailerTypeDto);
+        .expect(readTrailerTypeDtoMock);
     });
   });
 
   describe('/vehicles/trailer-types/CONCRET UPDATE', () => {
     it('should update the trailer type.', () => {
       repo.findOne.mockResolvedValue({
-        ...trailerType,
+        ...trailerTypeEntityMock,
         description: 'updated',
       });
       return request(app.getHttpServer())
         .put('/vehicles/trailer-types/CONCRET')
-        .send(updateTrailerTypeDto)
+        .send(updateTrailerTypeDtoMock)
         .expect(200)
-        .expect({ ...readTrailerTypeDto, description: 'updated' });
+        .expect({ ...readTrailerTypeDtoMock, description: 'updated' });
     });
   });
 

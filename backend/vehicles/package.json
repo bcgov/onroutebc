@@ -20,7 +20,7 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json --detectOpenHandles"
+    "test:e2e": "jest --config ./test/e2e/jest-e2e.json"
   },
   "repository": {
     "type": "git",
@@ -99,12 +99,14 @@
       "json",
       "ts"
     ],
-    "rootDir": "src",
-    "modulePaths": [
-      "<rootDir>"
+    "rootDir": ".",
+    "roots": [
+      "<rootDir>/src",
+      "<rootDir>/test"
     ],
     "moduleNameMapper": {
-      "^src/(.*)$": "<rootDir>/$1"
+      "^src/(.*)$": "<rootDir>/src/$1",
+      "^test/(.*)$": "<rootDir>/test/$1"
     },
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {
@@ -119,7 +121,7 @@
       "/node_modules/",
       "/test/",
       ".module.ts",
-      "<rootDir>/main.ts"
+      "<rootDir>/src/main.ts"
     ],
     "coverageReporters": [
       "text",
