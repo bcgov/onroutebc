@@ -15,7 +15,7 @@ import {
 } from "../../apiManager/manageProfileAPI";
 import {
   CommonFormPropsType,
-  CustomOutlinedInput,
+  CustomFormComponent,
 } from "../../../../common/components/form/CustomFormComponents";
 import { InfoBcGovBanner } from "../../../../common/components/alertBanners/AlertBanners";
 
@@ -35,22 +35,27 @@ const CompanyInfoGeneralForm = ({
   companyInfo?: ICompanyInfo;
 }) => (
   <>
-    <CustomOutlinedInput
-      common={commonFormProps}
-      name={"address1"}
-      rules={{ required: true }}
-      label={"Address (Line 1)"}
-      inValidMessage={"Address is required"}
-      options={{}}
+    <CustomFormComponent
+      type="input"
+      commonFormProps={commonFormProps}
+      options={{
+        name: "address1",
+        rules: { required: true },
+        label: "Address (Line 1)",
+        inValidMessage: "Address is required",
+      }}
     />
-    <CustomOutlinedInput
-      common={commonFormProps}
-      name={"address2"}
-      rules={{ required: false }}
-      label={"Address (Line 2)"}
-      inValidMessage={""}
-      options={{}}
+
+    <CustomFormComponent
+      type="input"
+      commonFormProps={commonFormProps}
+      options={{
+        name: "address2",
+        rules: { required: false },
+        label: "Address (Line 2)",
+      }}
     />
+
     <CountryAndProvince
       country={companyInfo?.country ? companyInfo.country : ""}
       province={companyInfo?.province ? companyInfo.province : ""}
@@ -60,21 +65,27 @@ const CompanyInfoGeneralForm = ({
     />
 
     <div className="mp-side-by-side-container">
-      <CustomOutlinedInput
-        common={commonFormProps}
-        name={"city"}
-        rules={{ required: true }}
-        label={"City"}
-        inValidMessage={"City is required"}
-        options={{ width: CITY_WIDTH }}
+      <CustomFormComponent
+        type="input"
+        commonFormProps={commonFormProps}
+        options={{
+          name: "city",
+          rules: { required: true },
+          label: "City",
+          inValidMessage: "City is required",
+          width: CITY_WIDTH,
+        }}
       />
-      <CustomOutlinedInput
-        common={commonFormProps}
-        name={"postalCode"}
-        rules={{ required: true }}
-        label={"Postal / Zip Code"}
-        inValidMessage={"Postal / Zip Code is required"}
-        options={{ width: POSTAL_WIDTH }}
+      <CustomFormComponent
+        type="input"
+        commonFormProps={commonFormProps}
+        options={{
+          name: "postalCode",
+          rules: { required: true },
+          label: "Postal / Zip Code",
+          inValidMessage: "Postal / Zip Code is required",
+          width: POSTAL_WIDTH,
+        }}
       />
     </div>
   </>
@@ -86,40 +97,47 @@ const CompanyContactDetailsForm = ({
   commonFormProps: CommonFormPropsType<ICompanyInfo>;
 }) => (
   <>
-    <CustomOutlinedInput
-      common={commonFormProps}
-      name={"email"}
-      rules={{ required: false }}
-      label={"Email"}
-      inValidMessage={""}
-      options={{}}
+    <CustomFormComponent
+      type="input"
+      commonFormProps={commonFormProps}
+      options={{
+        name: "email",
+        rules: { required: false },
+        label: "Email",
+      }}
     />
     <div className="mp-side-by-side-container">
-      <CustomOutlinedInput
-        common={commonFormProps}
-        name={"phone"}
-        rules={{ required: true }}
-        label={"Phone Number"}
-        inValidMessage={"Phone Number is required"}
-        options={{ width: PHONE_WIDTH }}
+      <CustomFormComponent
+        type="input"
+        commonFormProps={commonFormProps}
+        options={{
+          name: "phone",
+          rules: { required: true },
+          label: "Phone Number",
+          inValidMessage: "Phone Number is required",
+          width: PHONE_WIDTH,
+        }}
       />
-
-      <CustomOutlinedInput
-        common={commonFormProps}
-        name={"ext"}
-        rules={{ required: false }}
-        label={"Ext"}
-        inValidMessage={""}
-        options={{ width: EXT_WIDTH }}
+      <CustomFormComponent
+        type="input"
+        commonFormProps={commonFormProps}
+        options={{
+          name: "ext",
+          rules: { required: false },
+          label: "Ext",
+          width: EXT_WIDTH,
+        }}
       />
     </div>
-    <CustomOutlinedInput
-      common={commonFormProps}
-      name={"fax"}
-      rules={{ required: false }}
-      label={"Fax"}
-      inValidMessage={""}
-      options={{ width: PHONE_WIDTH }}
+    <CustomFormComponent
+      type="input"
+      commonFormProps={commonFormProps}
+      options={{
+        name: "fax",
+        rules: { required: false },
+        label: "Fax",
+        width: PHONE_WIDTH,
+      }}
     />
   </>
 );
@@ -155,21 +173,24 @@ const CompanyMailingAddressForm = ({
             Company Mailing Address
           </Typography>
 
-          <CustomOutlinedInput
-            common={commonFormProps}
-            name={"mail_address1"}
-            rules={{ required: true }}
-            label={"Address (Line 1)"}
-            inValidMessage={"Address is required"}
-            options={{}}
+          <CustomFormComponent
+            type="input"
+            commonFormProps={commonFormProps}
+            options={{
+              name: "mail_address1",
+              rules: { required: true },
+              label: "Address (Line 1)",
+              inValidMessage: "Address is required",
+            }}
           />
-          <CustomOutlinedInput
-            common={commonFormProps}
-            name={"mail_address2"}
-            rules={{ required: false }}
-            label={"Address (Line 2)"}
-            inValidMessage={""}
-            options={{}}
+          <CustomFormComponent
+            type="input"
+            commonFormProps={commonFormProps}
+            options={{
+              name: "mail_address2",
+              rules: { required: false },
+              label: "Address (Line 2)",
+            }}
           />
           <CountryAndProvince
             country={companyInfo?.mail_country ? companyInfo.mail_country : ""}
@@ -180,21 +201,27 @@ const CompanyMailingAddressForm = ({
             width={DEFAULT_WIDTH}
           />
           <div className="mp-side-by-side-container">
-            <CustomOutlinedInput
-              common={commonFormProps}
-              name={"mail_city"}
-              rules={{ required: true }}
-              label={"City"}
-              inValidMessage={"City is required"}
-              options={{ width: CITY_WIDTH }}
+            <CustomFormComponent
+              type="input"
+              commonFormProps={commonFormProps}
+              options={{
+                name: "mail_city",
+                rules: { required: true },
+                label: "City",
+                inValidMessage: "City is required",
+                width: CITY_WIDTH,
+              }}
             />
-            <CustomOutlinedInput
-              common={commonFormProps}
-              name={"mail_postalCode"}
-              rules={{ required: true }}
-              label={"Postal / Zip Code"}
-              inValidMessage={"Postal / Zip Code is required"}
-              options={{ width: POSTAL_WIDTH }}
+            <CustomFormComponent
+              type="input"
+              commonFormProps={commonFormProps}
+              options={{
+                name: "mail_postalCode",
+                rules: { required: true },
+                label: "Postal / Zip Code",
+                inValidMessage: "Postal / Zip Code is required",
+                width: POSTAL_WIDTH,
+              }}
             />
           </div>
         </>
@@ -211,64 +238,80 @@ const CompanyPrimaryContactForm = ({
   commonFormProps: CommonFormPropsType<ICompanyInfo>;
 }) => (
   <>
-    <CustomOutlinedInput
-      common={commonFormProps}
-      name={"firstName"}
-      rules={{ required: true }}
-      label={"First Name"}
-      inValidMessage={"First Name is required"}
-      options={{}}
+    <CustomFormComponent
+      type="input"
+      commonFormProps={commonFormProps}
+      options={{
+        name: "firstName",
+        rules: { required: true },
+        label: "First Name",
+        inValidMessage: "First Name is required",
+      }}
     />
-    <CustomOutlinedInput
-      common={commonFormProps}
-      name={"lastName"}
-      rules={{ required: true }}
-      label={"Last Name"}
-      inValidMessage={"Last Name is required"}
-      options={{}}
+    <CustomFormComponent
+      type="input"
+      commonFormProps={commonFormProps}
+      options={{
+        name: "lastName",
+        rules: { required: true },
+        label: "Last Name",
+        inValidMessage: "Last Name is required",
+      }}
     />
-    <CustomOutlinedInput
-      common={commonFormProps}
-      name={"primaryEmail"}
-      rules={{ required: true }}
-      label={"Email"}
-      inValidMessage={"Email is required"}
-      options={{}}
+    <CustomFormComponent
+      type="input"
+      commonFormProps={commonFormProps}
+      options={{
+        name: "primaryEmail",
+        rules: { required: true },
+        label: "Email",
+        inValidMessage: "Email is required",
+      }}
     />
+
     <div className="mp-side-by-side-container">
-      <CustomOutlinedInput
-        common={commonFormProps}
-        name={"primaryPhone"}
-        rules={{ required: true }}
-        label={"Primary Phone"}
-        inValidMessage={"Primary Phone is required"}
-        options={{ width: PHONE_WIDTH }}
+      <CustomFormComponent
+        type="input"
+        commonFormProps={commonFormProps}
+        options={{
+          name: "primaryPhone",
+          rules: { required: true },
+          label: "Phone Number",
+          inValidMessage: "Phone Number is required",
+          width: PHONE_WIDTH,
+        }}
       />
-      <CustomOutlinedInput
-        common={commonFormProps}
-        name={"primaryPhoneExt"}
-        rules={{ required: false }}
-        label={"Ext"}
-        inValidMessage={""}
-        options={{ width: EXT_WIDTH }}
+      <CustomFormComponent
+        type="input"
+        commonFormProps={commonFormProps}
+        options={{
+          name: "primaryPhoneExt",
+          rules: { required: false },
+          label: "Ext",
+          width: EXT_WIDTH,
+        }}
       />
     </div>
     <div className="mp-side-by-side-container">
-      <CustomOutlinedInput
-        common={commonFormProps}
-        name={"alternatePhone"}
-        rules={{ required: false }}
-        label={"Alternate Phone"}
-        inValidMessage={""}
-        options={{ width: PHONE_WIDTH }}
+      <CustomFormComponent
+        type="input"
+        commonFormProps={commonFormProps}
+        options={{
+          name: "alternatePhone",
+          rules: { required: false },
+          label: "Alternate Number",
+          width: PHONE_WIDTH,
+        }}
       />
-      <CustomOutlinedInput
-        common={commonFormProps}
-        name={"alternatePhoneExt"}
-        rules={{ required: false }}
-        label={"Ext"}
-        inValidMessage={""}
-        options={{ width: EXT_WIDTH }}
+      <CustomFormComponent
+        type="input"
+        commonFormProps={commonFormProps}
+        options={{
+          name: "alternatePhoneExt",
+          rules: { required: false },
+          label: "Ext",
+          width: EXT_WIDTH,
+        }}
       />
     </div>
 
@@ -281,13 +324,16 @@ const CompanyPrimaryContactForm = ({
       feature={"profile"}
       rules={{ required: false }}
     />
-    <CustomOutlinedInput
-      common={commonFormProps}
-      name={"primaryCity"}
-      rules={{ required: true }}
-      label={"City"}
-      inValidMessage={"City is required"}
-      options={{}}
+    <CustomFormComponent
+      type="input"
+      commonFormProps={commonFormProps}
+      options={{
+        name: "primaryCity",
+        rules: { required: true },
+        label: "City",
+        inValidMessage: "City is required",
+        width: CITY_WIDTH,
+      }}
     />
   </>
 );
