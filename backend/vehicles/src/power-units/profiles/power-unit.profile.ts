@@ -13,7 +13,7 @@ export class PowerUnitsProfile extends AutomapperProfile {
   }
 
   override get profile() {
-    return (mapper) => {
+    return (mapper: Mapper) => {
       createMap(
         mapper,
         PowerUnit,

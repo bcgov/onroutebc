@@ -13,7 +13,7 @@ export class TrailersProfile extends AutomapperProfile {
   }
 
   override get profile() {
-    return (mapper) => {
+    return (mapper: Mapper) => {
       createMap(
         mapper,
         Trailer,

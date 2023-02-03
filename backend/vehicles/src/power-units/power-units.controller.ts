@@ -18,9 +18,10 @@ import {
   ApiOkResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { DataNotFoundException } from 'src/common/exception/data-not-found.exception';
+
 import { ReadPowerUnitDto } from './dto/response/read-power-unit.dto';
-import { ExceptionDto } from 'src/common/dto/exception.dto';
+import { ExceptionDto } from '../common/dto/exception.dto';
+import { DataNotFoundException } from '../common/exception/data-not-found.exception';
 
 @ApiTags('Power Units')
 @ApiNotFoundResponse({
@@ -44,8 +45,8 @@ export class PowerUnitsController {
     type: ReadPowerUnitDto,
   })
   @Post()
-  create(@Body() createPowerUnitDto: CreatePowerUnitDto) {
-    return this.powerUnitsService.create(createPowerUnitDto);
+  async create(@Body() createPowerUnitDto: CreatePowerUnitDto) {
+    return await this.powerUnitsService.create(createPowerUnitDto);
   }
 
   @ApiOkResponse({
@@ -95,10 +96,9 @@ export class PowerUnitsController {
   @Delete(':powerUnitId')
   async remove(@Param('powerUnitId') powerUnitId: string) {
     const deleteResult = await this.powerUnitsService.remove(powerUnitId);
-    if (deleteResult.affected > 0) {
-      return { deleted: true };
-    } else {
+    if (deleteResult.affected === 0) {
       throw new DataNotFoundException();
     }
+    return { deleted: true };
   }
 }

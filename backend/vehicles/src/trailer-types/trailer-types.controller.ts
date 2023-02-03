@@ -19,8 +19,8 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { ReadTrailerTypeDto } from './dto/response/read-trailer-type.dto';
-import { DataNotFoundException } from 'src/common/exception/data-not-found.exception';
-import { ExceptionDto } from 'src/common/dto/exception.dto';
+import { ExceptionDto } from '../common/dto/exception.dto';
+import { DataNotFoundException } from '../common/exception/data-not-found.exception';
 
 @ApiTags('Trailer Types')
 @ApiNotFoundResponse({
@@ -67,7 +67,7 @@ export class TrailerTypesController {
     @Param('typeCode') typeCode: string,
   ): Promise<ReadTrailerTypeDto> {
     const trailerType = await this.trailerTypesService.findOne(typeCode);
-    if (trailerType) {
+    if (!trailerType) {
       throw new DataNotFoundException();
     }
     return trailerType;
@@ -95,10 +95,9 @@ export class TrailerTypesController {
   @Delete(':typeCode')
   async remove(@Param('typeCode') typeCode: string) {
     const deleteResult = await this.trailerTypesService.remove(typeCode);
-    if (deleteResult.affected) {
-      return { deleted: true };
-    } else {
+    if (deleteResult.affected === 0) {
       throw new DataNotFoundException();
     }
+    return { deleted: true };
   }
 }
