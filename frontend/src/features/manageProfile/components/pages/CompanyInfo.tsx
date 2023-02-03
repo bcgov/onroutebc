@@ -6,13 +6,16 @@ import { CompanyInfoForm } from "../forms/CompanyInfoForm";
 import "./ManageProfilePages.scss";
 import { DisplayInfo } from "./DisplayCompanyInfo";
 import { useQuery } from "@tanstack/react-query";
-import { getCompanyInfo } from "../../apiManager/manageProfileAPI";
+import {
+  CompanyProfile,
+  getCompanyInfo,
+} from "../../apiManager/manageProfileAPI";
 
 const Header = () => {
   return <h2 className="company-header">Edit Company Information</h2>;
 };
 
-const CompanyBanner = () => {
+const CompanyBanner = ({ companyInfo }: { companyInfo?: CompanyProfile }) => {
   return (
     <Box
       sx={{
@@ -28,11 +31,11 @@ const CompanyBanner = () => {
     >
       <div className="company-banner">
         <p>COMPANY NAME</p>
-        <h2>Bandstra Transportation Systems Ltd.</h2>
+        <h2>{companyInfo?.companyLegalName}</h2>
       </div>
       <div className="company-banner">
         <p>onRouteBC CLIENT NUMBER</p>
-        <h2>2023-87456</h2>
+        <h2>{companyInfo?.clientNumber}</h2>
       </div>
     </Box>
   );
@@ -54,7 +57,7 @@ export const CompanyInfo = () => {
   return (
     <>
       {isEditting ? <Header /> : null}
-      <CompanyBanner />
+      <CompanyBanner companyInfo={companyInfoData} />
       {isEditting ? (
         <CompanyInfoForm
           companyInfo={companyInfoData}
