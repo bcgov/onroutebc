@@ -82,7 +82,7 @@ jobs:
     steps:
       - name: Get Vault Environment
         shell: bash
-        run: echo VAULT_ENV=$OC_NAMESPACE | awk -F '-' '{ print ($2  != "prod") ? $1"-nonprod" : $1"-prod"}' | tee $GITHUB_ENV
+        run: echo VAULT_ENV=${{secrets.OC_NAMESPACE}} | awk -F '-' '{ print ($2  != "prod") ? $1"-nonprod" : $1"-prod"}' | tee $GITHUB_ENV
       - name: Import Secrets
         id: secrets
         uses: hashicorp/vault-action@v2
