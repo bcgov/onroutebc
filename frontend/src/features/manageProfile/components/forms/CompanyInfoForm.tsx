@@ -69,7 +69,8 @@ const CompanyInfoGeneralForm = ({
       }
       width={DEFAULT_WIDTH}
       countryField={"companyAddress.country"}
-      provinceField={"primaryProvince"}
+      provinceField={"companyAddress.province"}
+      feature="profile"
     />
 
     <div className="mp-side-by-side-container">

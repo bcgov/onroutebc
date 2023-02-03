@@ -39,8 +39,8 @@ export const TEST_DATA: CompanyProfile = {
   companyAddress: {
     addressLine1: "4042 Robson Street",
     city: "Vancouver",
-    province: "British Columbia",
-    country: "Canada",
+    province: "BC",
+    country: "CA",
     postalCode: "V8R 3V6",
   },
   companyAddressSameAsMailingAddress: true,
@@ -52,8 +52,8 @@ export const TEST_DATA: CompanyProfile = {
     phone1: "1 (403) 456 7890",
     email: "elias@flames.ca",
     city: "Calgary",
-    province: "Alberta",
-    country: "Canada",
+    province: "AB",
+    country: "CA",
   },
 };
 
