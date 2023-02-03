@@ -19,8 +19,8 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { ReadTrailerTypeDto } from './dto/response/read-trailer-type.dto';
-import { ExceptionDto } from '../common/dto/exception.dto';
-import { DataNotFoundException } from '../common/exception/data-not-found.exception';
+import { ExceptionDto } from '../../common/dto/exception.dto';
+import { DataNotFoundException } from '../../common/exception/data-not-found.exception';
 
 @ApiTags('Trailer Types')
 @ApiNotFoundResponse({

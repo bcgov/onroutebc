@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/require-await */
 import { Test, TestingModule } from '@nestjs/testing';
-import { DataNotFoundException } from './../common/exception/data-not-found.exception';
+import { DataNotFoundException } from '../../common/exception/data-not-found.exception';
 import { CreatePowerUnitTypeDto } from './dto/request/create-power-unit-type.dto';
 import { UpdatePowerUnitTypeDto } from './dto/request/update-power-unit-type.dto';
 import { ReadPowerUnitTypeDto } from './dto/response/read-power-unit-type.dto';

@@ -3,15 +3,15 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { AppService } from './app.service';
-import { PowerUnitsModule } from './power-units/power-units.module';
-import { TrailersModule } from './trailers/trailers.module';
-import { PowerUnitTypesModule } from './power-unit-types/power-unit-types.module';
-import { TrailerTypesModule } from './trailer-types/trailer-types.module';
 import { CommonModule } from './common/common.module';
 import * as path from 'path';
 import { AppController } from './app.controller';
 import { AutomapperModule } from '@automapper/nestjs';
 import { classes } from '@automapper/classes';
+import { PowerUnitTypesModule } from './modules/power-unit-types/power-unit-types.module';
+import { PowerUnitsModule } from './modules/power-units/power-units.module';
+import { TrailerTypesModule } from './modules/trailer-types/trailer-types.module';
+import { TrailersModule } from './modules/trailers/trailers.module';
 
 const envPath = path.resolve(process.cwd() + '/../../');
 

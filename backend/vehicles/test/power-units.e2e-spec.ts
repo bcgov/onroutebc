@@ -8,12 +8,12 @@ import { AutomapperModule } from '@automapper/nestjs';
 import { createMock } from '@golevelup/ts-jest';
 import { Repository } from 'typeorm';
 import { Province } from '../src/common/entities/province.entity';
-import { PowerUnitType } from '../src/power-unit-types/entities/power-unit-type.entity';
-import { CreatePowerUnitDto } from '../src/power-units/dto/request/create-power-unit.dto';
-import { UpdatePowerUnitDto } from '../src/power-units/dto/request/update-power-unit.dto';
-import { ReadPowerUnitDto } from '../src/power-units/dto/response/read-power-unit.dto';
-import { PowerUnit } from '../src/power-units/entities/power-unit.entity';
-import { PowerUnitsModule } from '../src/power-units/power-units.module';
+import { PowerUnitType } from '../src/modules/power-unit-types/entities/power-unit-type.entity';
+import { CreatePowerUnitDto } from '../src/modules/power-units/dto/request/create-power-unit.dto';
+import { UpdatePowerUnitDto } from '../src/modules/power-units/dto/request/update-power-unit.dto';
+import { ReadPowerUnitDto } from '../src/modules/power-units/dto/response/read-power-unit.dto';
+import { PowerUnit } from '../src/modules/power-units/entities/power-unit.entity';
+import { PowerUnitsModule } from '../src/modules/power-units/power-units.module';
 
 const powerUnitId = '1';
 const unitNumber = 'KEN1';

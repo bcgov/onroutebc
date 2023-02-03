@@ -7,12 +7,12 @@ import { AutomapperModule } from '@automapper/nestjs';
 import { createMock } from '@golevelup/ts-jest';
 import { Repository } from 'typeorm';
 import { Province } from '../src/common/entities/province.entity';
-import { TrailerType } from '../src/trailer-types/entities/trailer-type.entity';
-import { CreateTrailerDto } from '../src/trailers/dto/request/create-trailer.dto';
-import { UpdateTrailerDto } from '../src/trailers/dto/request/update-trailer.dto';
-import { ReadTrailerDto } from '../src/trailers/dto/response/read-trailer.dto';
-import { Trailer } from '../src/trailers/entities/trailer.entity';
-import { TrailersModule } from '../src/trailers/trailers.module';
+import { TrailerType } from '../src/modules/trailer-types/entities/trailer-type.entity';
+import { CreateTrailerDto } from '../src/modules/trailers/dto/request/create-trailer.dto';
+import { UpdateTrailerDto } from '../src/modules/trailers/dto/request/update-trailer.dto';
+import { ReadTrailerDto } from '../src/modules/trailers/dto/response/read-trailer.dto';
+import { Trailer } from '../src/modules/trailers/entities/trailer.entity';
+import { TrailersModule } from '../src/modules/trailers/trailers.module';
 
 const trailerId = '1';
 const unitNumber = 'KEN1';

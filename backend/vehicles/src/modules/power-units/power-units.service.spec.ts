@@ -10,8 +10,9 @@ import { PowerUnitsService } from './power-units.service';
 import { PowerUnit } from './entities/power-unit.entity';
 import { Repository } from 'typeorm';
 import { createMapper } from '@automapper/core';
-import { Province } from '../common/entities/province.entity';
+
 import { PowerUnitType } from '../power-unit-types/entities/power-unit-type.entity';
+import { Province } from '../../common/entities/province.entity';
 
 const powerUnitId = '1';
 const unitNumber = 'KEN1';

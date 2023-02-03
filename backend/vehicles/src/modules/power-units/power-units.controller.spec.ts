@@ -5,7 +5,7 @@ import { CreatePowerUnitDto } from './dto/request/create-power-unit.dto';
 import { UpdatePowerUnitDto } from './dto/request/update-power-unit.dto';
 import { PowerUnitsController } from './power-units.controller';
 import { PowerUnitsService } from './power-units.service';
-import { DataNotFoundException } from '../common/exception/data-not-found.exception';
+import { DataNotFoundException } from '../../common/exception/data-not-found.exception';
 
 const powerUnitId = '1';
 const unitNumber = 'KEN1';

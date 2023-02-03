@@ -9,9 +9,9 @@ import {
 } from 'typeorm';
 import { Base } from './base.entity';
 import { Country } from './country.entity';
-import { PowerUnit } from '../../power-units/entities/power-unit.entity';
-import { Trailer } from '../../trailers/entities/trailer.entity';
 import { AutoMap } from '@automapper/classes';
+import { PowerUnit } from '../../modules/power-units/entities/power-unit.entity';
+import { Trailer } from '../../modules/trailers/entities/trailer.entity';
 
 @Entity({ name: 'ORBC_VT_PROVINCE' })
 export class Province extends Base {

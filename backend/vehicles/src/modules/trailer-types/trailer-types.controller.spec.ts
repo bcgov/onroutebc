@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/require-await */
 import { Test, TestingModule } from '@nestjs/testing';
-import { DataNotFoundException } from '../common/exception/data-not-found.exception';
+import { DataNotFoundException } from '../../common/exception/data-not-found.exception';
 import { CreateTrailerTypeDto } from './dto/request/create-trailer-type.dto';
 import { UpdateTrailerTypeDto } from './dto/request/update-trailer-type.dto';
 import { ReadTrailerTypeDto } from './dto/response/read-trailer-type.dto';

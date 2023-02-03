@@ -5,7 +5,7 @@ import { createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Province } from '../common/entities/province.entity';
+import { Province } from '../../common/entities/province.entity';
 import { TrailerType } from '../trailer-types/entities/trailer-type.entity';
 import { CreateTrailerDto } from './dto/request/create-trailer.dto';
 import { UpdateTrailerDto } from './dto/request/update-trailer.dto';

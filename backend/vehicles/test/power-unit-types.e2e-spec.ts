@@ -7,11 +7,11 @@ import { classes } from '@automapper/classes';
 import { AutomapperModule } from '@automapper/nestjs';
 import { createMock } from '@golevelup/ts-jest';
 import { Repository } from 'typeorm';
-import { CreatePowerUnitTypeDto } from '../src/power-unit-types/dto/request/create-power-unit-type.dto';
-import { UpdatePowerUnitTypeDto } from '../src/power-unit-types/dto/request/update-power-unit-type.dto';
-import { ReadPowerUnitTypeDto } from '../src/power-unit-types/dto/response/read-power-unit-type.dto';
-import { PowerUnitType } from '../src/power-unit-types/entities/power-unit-type.entity';
-import { PowerUnitTypesModule } from '../src/power-unit-types/power-unit-types.module';
+import { CreatePowerUnitTypeDto } from '../src/modules/power-unit-types/dto/request/create-power-unit-type.dto';
+import { UpdatePowerUnitTypeDto } from '../src/modules/power-unit-types/dto/request/update-power-unit-type.dto';
+import { ReadPowerUnitTypeDto } from '../src/modules/power-unit-types/dto/response/read-power-unit-type.dto';
+import { PowerUnitType } from '../src/modules/power-unit-types/entities/power-unit-type.entity';
+import { PowerUnitTypesModule } from '../src/modules/power-unit-types/power-unit-types.module';
 
 const typeCode = 'CONCRET';
 const type = 'Concrete Pumper Trucks';
