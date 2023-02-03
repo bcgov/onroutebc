@@ -10,7 +10,7 @@ import { memo, useState } from "react";
 import { FormProvider, useForm, FieldValues } from "react-hook-form";
 import { CountryAndProvince } from "../../../../common/components/form/CountryAndProvince";
 import {
-  ICompanyInfo,
+  CompanyProfile,
   updateCompanyInfo,
 } from "../../apiManager/manageProfileAPI";
 import {
@@ -31,15 +31,15 @@ const CompanyInfoGeneralForm = ({
   commonFormProps,
   companyInfo,
 }: {
-  commonFormProps: CommonFormPropsType<ICompanyInfo>;
-  companyInfo?: ICompanyInfo;
+  commonFormProps: CommonFormPropsType<CompanyProfile>;
+  companyInfo?: CompanyProfile;
 }) => (
   <>
     <CustomFormComponent
       type="input"
       commonFormProps={commonFormProps}
       options={{
-        name: "address1",
+        name: "companyAddress.addressLine1",
         rules: { required: true },
         label: "Address (Line 1)",
         inValidMessage: "Address is required",
@@ -50,17 +50,25 @@ const CompanyInfoGeneralForm = ({
       type="input"
       commonFormProps={commonFormProps}
       options={{
-        name: "address2",
+        name: "companyAddress.addressLine2",
         rules: { required: false },
         label: "Address (Line 2)",
       }}
     />
 
     <CountryAndProvince
-      country={companyInfo?.country ? companyInfo.country : ""}
-      province={companyInfo?.province ? companyInfo.province : ""}
+      country={
+        companyInfo?.companyAddress.country
+          ? companyInfo.companyAddress.country
+          : ""
+      }
+      province={
+        companyInfo?.companyAddress.province
+          ? companyInfo.companyAddress.province
+          : ""
+      }
       width={DEFAULT_WIDTH}
-      countryField={"primaryCountry"}
+      countryField={"companyAddress.country"}
       provinceField={"primaryProvince"}
     />
 
@@ -69,7 +77,7 @@ const CompanyInfoGeneralForm = ({
         type="input"
         commonFormProps={commonFormProps}
         options={{
-          name: "city",
+          name: "companyAddress.city",
           rules: { required: true },
           label: "City",
           inValidMessage: "City is required",
@@ -80,7 +88,7 @@ const CompanyInfoGeneralForm = ({
         type="input"
         commonFormProps={commonFormProps}
         options={{
-          name: "postalCode",
+          name: "companyAddress.postalCode",
           rules: { required: true },
           label: "Postal / Zip Code",
           inValidMessage: "Postal / Zip Code is required",
@@ -94,14 +102,14 @@ const CompanyInfoGeneralForm = ({
 const CompanyContactDetailsForm = ({
   commonFormProps,
 }: {
-  commonFormProps: CommonFormPropsType<ICompanyInfo>;
+  commonFormProps: CommonFormPropsType<CompanyProfile>;
 }) => (
   <>
     <CustomFormComponent
       type="input"
       commonFormProps={commonFormProps}
       options={{
-        name: "email",
+        name: "companyEmail",
         rules: { required: false },
         label: "Email",
       }}
@@ -111,7 +119,7 @@ const CompanyContactDetailsForm = ({
         type="input"
         commonFormProps={commonFormProps}
         options={{
-          name: "phone",
+          name: "companyPhone",
           rules: { required: true },
           label: "Phone Number",
           inValidMessage: "Phone Number is required",
@@ -122,7 +130,7 @@ const CompanyContactDetailsForm = ({
         type="input"
         commonFormProps={commonFormProps}
         options={{
-          name: "ext",
+          name: "companyExtensionNumber",
           rules: { required: false },
           label: "Ext",
           width: EXT_WIDTH,
@@ -133,7 +141,7 @@ const CompanyContactDetailsForm = ({
       type="input"
       commonFormProps={commonFormProps}
       options={{
-        name: "fax",
+        name: "companyFaxNumber",
         rules: { required: false },
         label: "Fax",
         width: PHONE_WIDTH,
@@ -146,8 +154,8 @@ const CompanyMailingAddressForm = ({
   commonFormProps,
   companyInfo,
 }: {
-  companyInfo?: ICompanyInfo;
-  commonFormProps: CommonFormPropsType<ICompanyInfo>;
+  companyInfo?: CompanyProfile;
+  commonFormProps: CommonFormPropsType<CompanyProfile>;
 }) => {
   const [showMailingAddress, setShowMailingAddress] = useState(false);
   return (
@@ -177,7 +185,7 @@ const CompanyMailingAddressForm = ({
             type="input"
             commonFormProps={commonFormProps}
             options={{
-              name: "mail_address1",
+              name: "mailingAddress.addressLine1",
               rules: { required: true },
               label: "Address (Line 1)",
               inValidMessage: "Address is required",
@@ -187,15 +195,21 @@ const CompanyMailingAddressForm = ({
             type="input"
             commonFormProps={commonFormProps}
             options={{
-              name: "mail_address2",
+              name: "mailingAddress.addressLine2",
               rules: { required: false },
               label: "Address (Line 2)",
             }}
           />
           <CountryAndProvince
-            country={companyInfo?.mail_country ? companyInfo.mail_country : ""}
+            country={
+              companyInfo?.mailingAddress?.country
+                ? companyInfo.mailingAddress.country
+                : ""
+            }
             province={
-              companyInfo?.mail_province ? companyInfo.mail_province : ""
+              companyInfo?.mailingAddress?.province
+                ? companyInfo.mailingAddress.province
+                : ""
             }
             feature={"profile"}
             width={DEFAULT_WIDTH}
@@ -205,7 +219,7 @@ const CompanyMailingAddressForm = ({
               type="input"
               commonFormProps={commonFormProps}
               options={{
-                name: "mail_city",
+                name: "mailingAddress.city",
                 rules: { required: true },
                 label: "City",
                 inValidMessage: "City is required",
@@ -216,7 +230,7 @@ const CompanyMailingAddressForm = ({
               type="input"
               commonFormProps={commonFormProps}
               options={{
-                name: "mail_postalCode",
+                name: "mailingAddress.postalCode",
                 rules: { required: true },
                 label: "Postal / Zip Code",
                 inValidMessage: "Postal / Zip Code is required",
@@ -234,15 +248,15 @@ const CompanyPrimaryContactForm = ({
   commonFormProps,
   companyInfo,
 }: {
-  companyInfo?: ICompanyInfo;
-  commonFormProps: CommonFormPropsType<ICompanyInfo>;
+  companyInfo?: CompanyProfile;
+  commonFormProps: CommonFormPropsType<CompanyProfile>;
 }) => (
   <>
     <CustomFormComponent
       type="input"
       commonFormProps={commonFormProps}
       options={{
-        name: "firstName",
+        name: "primaryContact.firstName",
         rules: { required: true },
         label: "First Name",
         inValidMessage: "First Name is required",
@@ -252,7 +266,7 @@ const CompanyPrimaryContactForm = ({
       type="input"
       commonFormProps={commonFormProps}
       options={{
-        name: "lastName",
+        name: "primaryContact.lastName",
         rules: { required: true },
         label: "Last Name",
         inValidMessage: "Last Name is required",
@@ -262,7 +276,7 @@ const CompanyPrimaryContactForm = ({
       type="input"
       commonFormProps={commonFormProps}
       options={{
-        name: "primaryEmail",
+        name: "primaryContact.email",
         rules: { required: true },
         label: "Email",
         inValidMessage: "Email is required",
@@ -274,7 +288,7 @@ const CompanyPrimaryContactForm = ({
         type="input"
         commonFormProps={commonFormProps}
         options={{
-          name: "primaryPhone",
+          name: "primaryContact.phone1",
           rules: { required: true },
           label: "Phone Number",
           inValidMessage: "Phone Number is required",
@@ -285,7 +299,7 @@ const CompanyPrimaryContactForm = ({
         type="input"
         commonFormProps={commonFormProps}
         options={{
-          name: "primaryPhoneExt",
+          name: "primaryContact.phone1Extension",
           rules: { required: false },
           label: "Ext",
           width: EXT_WIDTH,
@@ -297,7 +311,7 @@ const CompanyPrimaryContactForm = ({
         type="input"
         commonFormProps={commonFormProps}
         options={{
-          name: "alternatePhone",
+          name: "primaryContact.phone2",
           rules: { required: false },
           label: "Alternate Number",
           width: PHONE_WIDTH,
@@ -307,7 +321,7 @@ const CompanyPrimaryContactForm = ({
         type="input"
         commonFormProps={commonFormProps}
         options={{
-          name: "alternatePhoneExt",
+          name: "primaryContact.phone2Extension",
           rules: { required: false },
           label: "Ext",
           width: EXT_WIDTH,
@@ -316,11 +330,19 @@ const CompanyPrimaryContactForm = ({
     </div>
 
     <CountryAndProvince
-      country={companyInfo?.primaryCountry ? companyInfo.primaryCountry : ""}
-      province={companyInfo?.primaryProvince ? companyInfo.primaryProvince : ""}
+      country={
+        companyInfo?.primaryContact?.country
+          ? companyInfo.primaryContact.country
+          : ""
+      }
+      province={
+        companyInfo?.primaryContact?.province
+          ? companyInfo.primaryContact.province
+          : ""
+      }
       width={DEFAULT_WIDTH}
-      countryField={"secondaryCountry"}
-      provinceField={"secondaryProvince"}
+      countryField={"primaryContact.country"}
+      provinceField={"primaryContact.province"}
       feature={"profile"}
       rules={{ required: false }}
     />
@@ -328,7 +350,7 @@ const CompanyPrimaryContactForm = ({
       type="input"
       commonFormProps={commonFormProps}
       options={{
-        name: "primaryCity",
+        name: "primaryContact.city",
         rules: { required: true },
         label: "City",
         inValidMessage: "City is required",
@@ -343,16 +365,52 @@ export const CompanyInfoForm = memo(
     companyInfo,
     setIsEditting,
   }: {
-    companyInfo?: ICompanyInfo;
+    companyInfo?: CompanyProfile;
     setIsEditting: React.Dispatch<React.SetStateAction<boolean>>;
   }) => {
-    const formMethods = useForm<ICompanyInfo>({
-      defaultValues: {},
+    const queryClient = useQueryClient();
+
+    const formMethods = useForm<CompanyProfile>({
+      defaultValues: {
+        clientNumber: companyInfo?.clientNumber || "",
+        companyLegalName: companyInfo?.companyLegalName || "",
+        companyAddress: {
+          addressLine1: companyInfo?.companyAddress?.addressLine1 || "",
+          addressLine2: companyInfo?.companyAddress?.addressLine2 || "",
+          city: companyInfo?.companyAddress?.city || "",
+          province: companyInfo?.companyAddress?.province || "",
+          country: companyInfo?.companyAddress?.country || "",
+          postalCode: companyInfo?.companyAddress?.postalCode || "",
+        },
+        companyAddressSameAsMailingAddress: true,
+        mailingAddress: {
+          addressLine1: companyInfo?.mailingAddress?.addressLine1 || "",
+          addressLine2: companyInfo?.mailingAddress?.addressLine2 || "",
+          city: companyInfo?.mailingAddress?.city || "",
+          province: companyInfo?.mailingAddress?.province || "",
+          country: companyInfo?.mailingAddress?.country || "",
+          postalCode: companyInfo?.mailingAddress?.postalCode || "",
+        },
+        companyEmail: companyInfo?.companyEmail || "",
+        companyPhone: companyInfo?.companyPhone || "",
+        companyExtensionNumber: companyInfo?.companyExtensionNumber || "",
+        companyFaxNumber: companyInfo?.companyFaxNumber || "",
+        primaryContact: {
+          firstName: companyInfo?.primaryContact?.firstName || "",
+          lastName: companyInfo?.primaryContact?.lastName || "",
+          phone1: companyInfo?.primaryContact?.phone1 || "",
+          phone1Extension: companyInfo?.primaryContact?.phone1Extension || "",
+          phone2: companyInfo?.primaryContact?.phone2 || "",
+          phone2Extension: companyInfo?.primaryContact?.phone2Extension || "",
+          email: companyInfo?.primaryContact?.email || "",
+          city: companyInfo?.primaryContact?.city || "",
+          province: companyInfo?.primaryContact?.province || "",
+          country: companyInfo?.primaryContact?.country || "",
+        },
+      },
     });
 
     const { register, handleSubmit, control } = formMethods;
-
-    const queryClient = useQueryClient();
 
     const addCompanyInfoQuery = useMutation({
       mutationFn: updateCompanyInfo,
@@ -366,11 +424,11 @@ export const CompanyInfoForm = memo(
     });
 
     const onUpdateCompanyInfo = function (data: FieldValues) {
-      const companyInfoToBeUpdated = data as ICompanyInfo;
+      const companyInfoToBeUpdated = data as CompanyProfile;
       addCompanyInfoQuery.mutate(companyInfoToBeUpdated);
     };
 
-    const commonFormProps: CommonFormPropsType<ICompanyInfo> = {
+    const commonFormProps: CommonFormPropsType<CompanyProfile> = {
       control: control,
       register: register,
       feature: "profile",

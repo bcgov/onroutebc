@@ -17,7 +17,7 @@ import {
   UseFormRegister,
 } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { ICompanyInfo } from "../../../features/manageProfile/apiManager/manageProfileAPI";
+import { CompanyProfile } from "../../../features/manageProfile/apiManager/manageProfileAPI";
 import {
   CreatePowerUnit,
   PowerUnitType,
@@ -87,7 +87,9 @@ interface CustomFormOptionsProps<T extends FieldValues> {
  *
  * @returns An onRouteBc customized react form component
  */
-export const CustomFormComponent = <T extends ICompanyInfo | CreatePowerUnit>({
+export const CustomFormComponent = <
+  T extends CompanyProfile | CreatePowerUnit
+>({
   type,
   commonFormProps: { control, register, feature },
   options: {
@@ -172,7 +174,7 @@ interface CustomSelectComponentProps<T extends FieldValues> {
  * An onRouteBC customized MUI Select component
  * Based on https://mui.com/material-ui/react-select/
  */
-const CustomSelectComponent = <T extends ICompanyInfo | CreatePowerUnit>({
+const CustomSelectComponent = <T extends CompanyProfile | CreatePowerUnit>({
   register,
   feature,
   name,
@@ -214,7 +216,7 @@ interface CustomInputComponentProps<T extends FieldValues> {
  * An onRouteBC customized MUI OutlineInput component
  * Based on https://mui.com/material-ui/api/outlined-input/
  */
-const CustomInputComponent = <T extends ICompanyInfo | CreatePowerUnit>({
+const CustomInputComponent = <T extends CompanyProfile | CreatePowerUnit>({
   register,
   feature,
   name,

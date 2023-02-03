@@ -5,6 +5,8 @@ import { CompanyInfoForm } from "../forms/CompanyInfoForm";
 
 import "./ManageProfilePages.scss";
 import { DisplayInfo } from "./DisplayCompanyInfo";
+import { useQuery } from "@tanstack/react-query";
+import { getCompanyInfo } from "../../apiManager/manageProfileAPI";
 
 const Header = () => {
   return <h2 className="company-header">Edit Company Information</h2>;
@@ -39,14 +41,30 @@ const CompanyBanner = () => {
 export const CompanyInfo = () => {
   const [isEditting, setIsEditting] = useState(false);
 
+  const {
+    data: companyInfoData,
+    //refetch,
+  } = useQuery({
+    queryKey: ["companyInfo"],
+    queryFn: getCompanyInfo,
+    keepPreviousData: true,
+    staleTime: 5000,
+  });
+
   return (
     <>
       {isEditting ? <Header /> : null}
       <CompanyBanner />
       {isEditting ? (
-        <CompanyInfoForm setIsEditting={setIsEditting} />
+        <CompanyInfoForm
+          companyInfo={companyInfoData}
+          setIsEditting={setIsEditting}
+        />
       ) : (
-        <DisplayInfo setIsEditting={setIsEditting} />
+        <DisplayInfo
+          companyInfo={companyInfoData}
+          setIsEditting={setIsEditting}
+        />
       )}
     </>
   );
