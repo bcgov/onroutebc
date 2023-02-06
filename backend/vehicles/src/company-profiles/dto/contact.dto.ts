@@ -8,12 +8,10 @@ import { IsNotEmpty } from 'class-validator/types/decorator/common/IsNotEmpty';
  * JSON representation of a contact
  */
 export class ContactDto extends BaseDto {
-
   @AutoMap()
   @ApiProperty({
     example: '55542',
-    description:
-      'The contact id. Required for an update operation.',
+    description: 'The contact id. Required for an update operation.',
     required: false,
   })
   contactId: string;

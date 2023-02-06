@@ -9,24 +9,21 @@ import { ContactDto } from './contact.dto';
 export class ReadCompanyProfileDto {
   @AutoMap()
   @ApiProperty({
-    description:
-      'The BCeID client number.',
+    description: 'The BCeID client number.',
     example: '1234',
   })
   clientNumber: string;
 
   @AutoMap()
   @ApiProperty({
-    description:
-      'The legal name of the company.',
+    description: 'The legal name of the company.',
     example: 'ABC Carriers Inc.',
   })
   companyLegalName: string;
 
   @AutoMap()
   @ApiProperty({
-    description:
-      'The business GUID.',
+    description: 'The business GUID.',
     example: 'XYZ12345',
   })
   bizGUID: string;
@@ -49,7 +46,8 @@ export class ReadCompanyProfileDto {
 
   @AutoMap()
   @ApiProperty({
-    description: 'Boolean field indicating if the mailing address is same as company address.',
+    description:
+      'Boolean field indicating if the mailing address is same as company address.',
     required: true,
   })
   companyAddressSameAsMailingAddress: boolean;

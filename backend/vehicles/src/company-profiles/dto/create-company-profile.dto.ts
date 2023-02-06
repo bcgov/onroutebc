@@ -39,9 +39,10 @@ export class CreateCompanyProfileDto {
 
   @AutoMap()
   @ApiProperty({
-    description: 'Boolean field indicating if the mailing address is same as company address.'
-    + 'If true, the company address will be set as the mailing address and any value given'
-    + 'for mailingAddress will be ignored.',
+    description:
+      'Boolean field indicating if the mailing address is same as company address.' +
+      'If true, the company address will be set as the mailing address and any value given' +
+      'for mailingAddress will be ignored.',
     required: true,
   })
   companyAddressSameAsMailingAddress: boolean;

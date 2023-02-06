@@ -16,6 +16,8 @@ export const provinceEntityMock: Province = {
   country: { ...countryEntityMock },
   powerUnits: null,
   trailers: null,
+  contacts: null,
+  addresses: null,
   ...baseEntityMock,
 };
 

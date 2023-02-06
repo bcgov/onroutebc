@@ -6,12 +6,10 @@ import { BaseDto } from '../../common/dto/base.dto';
  * JSON representation of a physical address
  */
 export class AddressDto extends BaseDto {
-
   @AutoMap()
   @ApiProperty({
     example: '55542',
-    description:
-      'The address id. Required for an update operation.',
+    description: 'The address id. Required for an update operation.',
     required: false,
   })
   addressId: string;

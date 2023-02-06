@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/require-await */
 import { Mapper } from '@automapper/core';
 import { InjectMapper } from '@automapper/nestjs';
 import { Injectable } from '@nestjs/common';
@@ -21,36 +22,42 @@ export class CompanyProfileService {
   async create(
     powerUnitType: CreateCompanyProfileDto,
   ): Promise<ReadCompanyProfileDto> {
-    const newPowerUnitType = this.classMapper.map(
-      powerUnitType,
-      CreatePowerUnitTypeDto,
-      PowerUnitType,
-    );
-    await this.companyRepository.insert(newPowerUnitType);
-    return this.findOne(newPowerUnitType.typeCode);
+    // const newPowerUnitType = this.classMapper.map(
+    //   powerUnitType,
+      
+    //   PowerUnitType,
+    // );
+    // await this.companyRepository.insert(newPowerUnitType);
+    // return this.findOne(newPowerUnitType.typeCode);
+    return null;
   }
 
   async findOne(companyGUID: string): Promise<ReadCompanyProfileDto> {
-    return this.classMapper.mapAsync(
-      await this.companyRepository.findOne({
-        where: { companyGUID: companyGUID },
-      }),
-      PowerUnitType,
-      ReadPowerUnitTypeDto,
-    );
+    // return this.classMapper.mapAsync(
+    //   await this.companyRepository.findOne({
+    //     where: { companyGUID: companyGUID },
+    //   }),
+    //   PowerUnitType,
+    //   ReadPowerUnitTypeDto,
+    // );
+    return null;
   }
 
   async update(
     companyGUID: string,
     updateCompanyProfileDto: UpdateCompanyProfileDto,
   ): Promise<ReadCompanyProfileDto> {
-    const newPowerUnitType = this.classMapper.map(
-      updateCompanyProfileDto,
-      UpdateCompanyProfileDto,
-      Address,
-    );
+    // const newPowerUnitType = this.classMapper.map(
+    //   updateCompanyProfileDto,
+    //   UpdateCompanyProfileDto,
+    //   Address,
+    // );
 
-    await this.companyRepository.update({ companyGUID: companyGUID }, newPowerUnitType);
-    return this.findOne(companyGUID);
+    //await this.companyRepository.update(
+    //   { companyGUID: companyGUID },
+    //   newPowerUnitType,
+    // );
+    // return this.findOne(companyGUID);
+    return null;
   }
 }
