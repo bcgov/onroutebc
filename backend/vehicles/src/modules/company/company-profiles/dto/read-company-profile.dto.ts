@@ -26,7 +26,7 @@ export class ReadCompanyProfileDto {
     description: 'The business GUID.',
     example: 'XYZ12345',
   })
-  bizGUID: string;
+  companyGUID: string;
 
   @AutoMap()
   @ApiProperty({

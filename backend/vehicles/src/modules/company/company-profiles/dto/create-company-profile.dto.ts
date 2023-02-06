@@ -28,7 +28,7 @@ export class CreateCompanyProfileDto {
    */
   @AutoMap()
   @ApiHideProperty()
-  bizGUID: string;
+  companyGUID: string;
 
   @AutoMap()
   @ApiProperty({
