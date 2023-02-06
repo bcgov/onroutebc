@@ -63,7 +63,7 @@ export const DisplayInfo = memo(
         <div>
           <Button
             variant="contained"
-            color="secondary"
+            color="tertiary"
             sx={{ marginTop: "20px" }}
             onClick={() => setIsEditting(true)}
           >

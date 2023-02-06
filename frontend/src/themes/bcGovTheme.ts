@@ -76,6 +76,20 @@ export const bcGovTheme = createTheme({
           //transition: "0.5s all",
         },
       },
+      variants: [
+        {
+          props: { color: "tertiary" },
+          style: {
+            boxShadow: "none",
+            border: `2px solid ${BC_COLOURS.bc_text_box_border_grey}`,
+            "&:hover": {
+              backgroundColor: BC_COLOURS.bc_background_light_grey,
+              boxShadow: "none",
+            },
+            padding: "0 16px",
+          },
+        },
+      ],
     },
     MuiFormHelperText: {
       styleOverrides: {
