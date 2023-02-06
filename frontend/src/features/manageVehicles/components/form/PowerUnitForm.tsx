@@ -12,10 +12,7 @@ import { CreatePowerUnit } from "../../types/managevehicles";
 import { addPowerUnit, getPowerUnitTypes } from "../../apiManager/vehiclesAPI";
 import { CountryAndProvince } from "../../../../common/components/form/CountryAndProvince";
 import { DisplaySnackBarOptions } from "../../../../common/components/snackbar/CustomSnackbar2";
-import {
-  CustomOutlinedInput,
-  CustomSelect,
-} from "../../../../common/components/form/CustomFormComponents";
+import { CustomFormComponent } from "../../../../common/components/form/CustomFormComponents";
 import { useState } from "react";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 
@@ -161,88 +158,93 @@ export const PowerUnitForm = ({
             style={{ padding: `8px 24px ${ADD_VEHICLE_BTN_HEIGHT} 24px ` }}
           >
             <div id="power-unit-form">
-              <CustomOutlinedInput
-                common={commonFormProps}
-                name={"unitNumber"}
-                rules={{ required: false, maxLength: 10 }}
-                label={"Unit #"}
-                inValidMessage={""}
+              <CustomFormComponent
+                type="input"
+                commonFormProps={commonFormProps}
                 options={{
-                  inputProps: { maxLength: 10 },
-                  label_i18: "vehicle.power-unit.unit-number",
+                  name: "unitNumber",
+                  rules: { required: false, maxLength: 10 },
+                  label: "Unit #",
                   width: formFieldStyle.width,
                 }}
+                i18options={{
+                  label_i18: "vehicle.power-unit.unit-number",
+                }}
               />
-              <CustomOutlinedInput
-                common={commonFormProps}
-                name={"make"}
-                rules={{ required: true, maxLength: 20 }}
-                label={"make"}
-                inValidMessage={""}
+              <CustomFormComponent
+                type="input"
+                commonFormProps={commonFormProps}
                 options={{
-                  inputProps: { maxLength: 10 },
+                  name: "make",
+                  rules: { required: true, maxLength: 20 },
+                  label: "Make",
+                  width: formFieldStyle.width,
+                }}
+                i18options={{
                   label_i18: "vehicle.power-unit.make",
                   inValidMessage_i18: "vehicle.power-unit.required",
-                  inValidMessage_fieldName_i18: "Make",
-                  width: formFieldStyle.width,
-                }}
-              />
-              <CustomOutlinedInput
-                common={commonFormProps}
-                name={"year"}
-                rules={{ required: true, maxLength: 20 }}
-                label={"year"}
-                inValidMessage={""}
-                options={{
-                  inputProps: { maxLength: 4, minLength: 4 },
-                  label_i18: "vehicle.power-unit.year",
-                  inValidMessage_i18: "vehicle.power-unit.required",
-                  inValidMessage_fieldName_i18: "Year",
-                  width: formFieldStyle.width,
-                }}
-              />
-              <CustomOutlinedInput
-                common={commonFormProps}
-                name={"vin"}
-                rules={{ required: true, minLength: 17, maxLength: 17 }}
-                label={"vin"}
-                inValidMessage={"VIN is required."}
-                options={{
-                  inputProps: { required: true, maxLength: 17 },
-                  label_i18: "vehicle.power-unit.vin",
-                  inValidMessage_i18: "vehicle.power-unit.required",
-                  inValidMessage_fieldName_i18: "VIN",
-                  width: formFieldStyle.width,
-                }}
-              />
-              <CustomOutlinedInput
-                common={commonFormProps}
-                name={"plate"}
-                rules={{ required: true, maxLength: 10 }}
-                label={"plate"}
-                inValidMessage={"Plate is required."}
-                options={{
-                  inputProps: { required: true, maxLength: 10 },
-                  label_i18: "vehicle.power-unit.plate",
-                  inValidMessage_i18: "vehicle.power-unit.required",
-                  inValidMessage_fieldName_i18: "Plate",
-                  width: formFieldStyle.width,
                 }}
               />
 
-              <CustomSelect
-                common={commonFormProps}
-                name={"powerUnitTypeCode"}
-                rules={{ required: true }}
-                label={"powerUnitTypeCode"}
-                inValidMessage={"Power Unit Type is required."}
+              <CustomFormComponent
+                type="input"
+                commonFormProps={commonFormProps}
                 options={{
-                  label_i18: "vehicle.power-unit.power-unit-type",
-                  inValidMessage_i18: "vehicle.power-unit.required",
-                  inValidMessage_fieldName_i18: "Plate",
+                  name: "year",
+                  rules: { required: true, minLength: 4, maxLength: 4 },
+                  label: "Year",
                   width: formFieldStyle.width,
                 }}
-                powerUnitTypesQuery={powerUnitTypesQuery}
+                i18options={{
+                  label_i18: "vehicle.power-unit.year",
+                  inValidMessage_i18: "vehicle.power-unit.required",
+                }}
+              />
+
+              <CustomFormComponent
+                type="input"
+                commonFormProps={commonFormProps}
+                options={{
+                  name: "vin",
+                  rules: { required: true, minLength: 17, maxLength: 17 },
+                  label: "VIN",
+                  width: formFieldStyle.width,
+                }}
+                i18options={{
+                  label_i18: "vehicle.power-unit.vin",
+                  inValidMessage_i18: "vehicle.power-unit.required",
+                }}
+              />
+
+              <CustomFormComponent
+                type="input"
+                commonFormProps={commonFormProps}
+                options={{
+                  name: "plate",
+                  rules: { required: true, maxLength: 10 },
+                  label: "Plate",
+                  width: formFieldStyle.width,
+                }}
+                i18options={{
+                  label_i18: "vehicle.power-unit.plate",
+                  inValidMessage_i18: "vehicle.power-unit.required",
+                }}
+              />
+
+              <CustomFormComponent
+                type="select"
+                commonFormProps={commonFormProps}
+                options={{
+                  name: "powerUnitTypeCode",
+                  rules: { required: true },
+                  label: "Power Unit Type",
+                  width: formFieldStyle.width,
+                  query: powerUnitTypesQuery,
+                }}
+                i18options={{
+                  label_i18: "vehicle.power-unit.power-unit-type",
+                  inValidMessage_i18: "vehicle.power-unit.required",
+                }}
               />
 
               <CountryAndProvince
@@ -258,34 +260,32 @@ export const PowerUnitForm = ({
                 }
                 width={"490px"}
               />
-
-              <CustomOutlinedInput
-                common={commonFormProps}
-                name={"licensedGvw"}
-                rules={{ required: true, valueAsNumber: true }}
-                label={"licensedGvw"}
-                inValidMessage={"Licensed GVW is required."}
+              <CustomFormComponent
+                type="input"
+                commonFormProps={commonFormProps}
                 options={{
-                  inputProps: { required: true, valueAsNumber: true },
-                  label_i18: "vehicle.power-unit.licensed-gvw",
-                  inValidMessage_i18: "vehicle.power-unit.required",
-                  inValidMessage_fieldName_i18: "Licensed GVW",
+                  name: "licensedGvw",
+                  rules: { required: true },
+                  label: "Licensed GVW",
                   width: formFieldStyle.width,
                 }}
+                i18options={{
+                  label_i18: "vehicle.power-unit.licensed-gvw",
+                  inValidMessage_i18: "vehicle.power-unit.required",
+                }}
               />
-
-              <CustomOutlinedInput
-                common={commonFormProps}
-                name={"steerAxleTireSize"}
-                rules={{ required: false, valueAsNumber: true }}
-                label={"steerAxleTireSize"}
-                inValidMessage={""}
+              <CustomFormComponent
+                type="input"
+                commonFormProps={commonFormProps}
                 options={{
-                  inputProps: { required: true, valueAsNumber: true },
+                  name: "steerAxleTireSize",
+                  rules: { required: false },
+                  label: "Steer Axle Tire Size (mm)",
+                  width: formFieldStyle.width,
+                }}
+                i18options={{
                   label_i18: "vehicle.power-unit.steer-axle-tire-size",
                   inValidMessage_i18: "vehicle.power-unit.required",
-                  inValidMessage_fieldName_i18: "",
-                  width: formFieldStyle.width,
                 }}
               />
             </div>
