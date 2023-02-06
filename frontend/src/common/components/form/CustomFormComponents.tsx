@@ -185,8 +185,18 @@ const CustomSelectComponent = <T extends CompanyProfile | CreatePowerUnit>({
     <Select
       aria-labelledby={`${feature}-${name}-label`}
       defaultValue={""}
-      sx={{ height: "48px" }}
       {...register(name, rules)}
+      MenuProps={{
+        style: {
+          // Fix for aligning the width of menu to the dropdown
+          width: 100 % -10,
+        },
+      }}
+      sx={{
+        "&&.Mui-focused fieldset": {
+          border: `2px solid ${BC_COLOURS.focus_blue}`,
+        },
+      }}
     >
       {query?.data?.map((powerUnitType: PowerUnitType) => (
         <MenuItem

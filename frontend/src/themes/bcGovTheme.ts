@@ -24,7 +24,6 @@ export const bcGovTheme = createTheme({
       ","
     ),
     fontSize: 16,
-    // From https://developer.gov.bc.ca/Design-System/Typography#paragraphs
     body1: {
       fontSize: 16,
       lineHeight: 1.6,
@@ -55,7 +54,6 @@ export const bcGovTheme = createTheme({
     },
     MuiButtonBase: {
       defaultProps: {
-        // The props to apply
         disableRipple: true, // No more ripple, on the whole application
       },
     },
@@ -106,12 +104,22 @@ export const bcGovTheme = createTheme({
       styleOverrides: {
         root: {
           height: "48px",
-          "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+          "& .Mui-focused .MuiOutlinedInput-notchedOutline": {
             border: "2px solid",
             boxShadow: `0px 4px 8px ${BC_COLOURS.shadow_colour}`,
           },
           ".MuiOutlinedInput-notchedOutline": {
             borderColor: BC_COLOURS.bc_text_box_border_grey,
+          },
+        },
+      },
+    },
+    // Override Select dropdown styles
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          ".MuiList-root": {
+            maxHeight: "200px",
           },
         },
       },
@@ -153,7 +161,6 @@ declare module "@mui/material/styles" {
     };
   }
 }
-
 declare module "@mui/material/Button" {
   interface ButtonPropsColorOverrides {
     tertiary: true;

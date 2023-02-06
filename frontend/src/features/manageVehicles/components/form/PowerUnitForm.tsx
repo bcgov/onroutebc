@@ -258,7 +258,7 @@ export const PowerUnitForm = ({
                     ? powerUnit?.provinceId?.split("-")[1]
                     : ""
                 }
-                width={"490px"}
+                width={formFieldStyle.width}
               />
               <CustomFormComponent
                 type="input"
