@@ -1,6 +1,6 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
-import { BaseDto } from '../../common/dto/base.dto';
+import { BaseDto } from '../../../../common/dto/base.dto';
 
 /**
  * JSON representation of a physical address

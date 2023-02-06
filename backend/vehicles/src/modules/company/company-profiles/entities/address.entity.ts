@@ -6,8 +6,8 @@ import {
   PrimaryGeneratedColumn,
   OneToOne,
 } from 'typeorm';
-import { Province } from '../../common/entities/province.entity';
-import { Base } from '../../common/entities/base.entity';
+import { Province } from '../../../../common/entities/province.entity';
+import { Base } from '../../../../common/entities/base.entity';
 import { AutoMap } from '@automapper/classes';
 import { Company } from './company.entity';
 

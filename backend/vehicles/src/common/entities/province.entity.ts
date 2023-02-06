@@ -10,8 +10,8 @@ import {
 import { Base } from './base.entity';
 import { Country } from './country.entity';
 import { AutoMap } from '@automapper/classes';
-import { Address } from '../../company-profiles/entities/address.entity';
-import { Contact } from '../../company-profiles/entities/contact.entity';
+import { Address } from '../../modules/company/company-profiles/entities/address.entity';
+import { Contact } from '../../modules/company/company-profiles/entities/contact.entity';
 import { PowerUnit } from '../../modules/vehicles/power-units/entities/power-unit.entity';
 import { Trailer } from '../../modules/vehicles/trailers/entities/trailer.entity';
 

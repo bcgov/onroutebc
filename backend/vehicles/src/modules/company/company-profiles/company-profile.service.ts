@@ -4,12 +4,12 @@ import { InjectMapper } from '@automapper/nestjs';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Company } from '../entities/company.entity';
-import { ReadCompanyProfileDto } from '../dto/read-company-profile.dto';
-import { CreateCompanyProfileDto } from '../dto/create-company-profile.dto';
-import { UpdateCompanyProfileDto } from '../dto/update-company-profile.dto';
-import { Address } from '../entities/address.entity';
-import { Contact } from '../entities/contact.entity';
+import { Company } from './entities/company.entity';
+import { ReadCompanyProfileDto } from './dto/read-company-profile.dto';
+import { CreateCompanyProfileDto } from './dto/create-company-profile.dto';
+import { UpdateCompanyProfileDto } from './dto/update-company-profile.dto';
+import { Address } from './entities/address.entity';
+import { Contact } from './entities/contact.entity';
 
 @Injectable()
 export class CompanyProfileService {
@@ -24,7 +24,7 @@ export class CompanyProfileService {
   ): Promise<ReadCompanyProfileDto> {
     // const newPowerUnitType = this.classMapper.map(
     //   powerUnitType,
-      
+
     //   PowerUnitType,
     // );
     // await this.companyRepository.insert(newPowerUnitType);

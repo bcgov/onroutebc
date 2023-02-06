@@ -1,8 +1,7 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
-import { BaseDto } from '../../common/dto/base.dto';
+import { BaseDto } from '../../../../common/dto/base.dto';
 import { IsEmail } from 'class-validator';
-import { IsNotEmpty } from 'class-validator/types/decorator/common/IsNotEmpty';
 
 /**
  * JSON representation of a contact

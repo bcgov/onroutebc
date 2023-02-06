@@ -12,6 +12,7 @@ import { PowerUnitTypesModule } from './modules/vehicles/power-unit-types/power-
 import { PowerUnitsModule } from './modules/vehicles/power-units/power-units.module';
 import { TrailerTypesModule } from './modules/vehicles/trailer-types/trailer-types.module';
 import { TrailersModule } from './modules/vehicles/trailers/trailers.module';
+import { CompanyProfileModule } from './modules/company/company-profiles/company-profile.module';
 
 const envPath = path.resolve(process.cwd() + '/../../');
 
@@ -53,6 +54,7 @@ const envPath = path.resolve(process.cwd() + '/../../');
     TrailersModule,
     PowerUnitTypesModule,
     TrailerTypesModule,
+    CompanyProfileModule,
     CommonModule,
   ],
   controllers: [AppController],

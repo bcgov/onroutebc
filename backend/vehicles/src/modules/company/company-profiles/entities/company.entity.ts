@@ -1,5 +1,5 @@
-import { Entity, Column, JoinColumn, OneToOne } from 'typeorm';
-import { Base } from '../../common/entities/base.entity';
+import { Entity, Column, JoinColumn, OneToOne, PrimaryColumn } from 'typeorm';
+import { Base } from '../../../../common/entities/base.entity';
 import { AutoMap } from '@automapper/classes';
 import { Contact } from './contact.entity';
 import { Address } from './address.entity';
@@ -7,7 +7,7 @@ import { Address } from './address.entity';
 @Entity({ name: 'ORBC_COMPANY' })
 export class Company extends Base {
   @AutoMap()
-  @Column({ length: 32, name: 'COMPANY_GUID', nullable: false })
+  @PrimaryColumn({ length: 32, name: 'COMPANY_GUID', nullable: false })
   companyGUID: string;
 
   @AutoMap()
