@@ -6,21 +6,21 @@ import {
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
-import { TrailerType } from '../../trailer-types/entities/trailer-type.entity';
+import { PowerUnitType } from '../../power-unit-types/entities/power-unit-type.entity';
 import { AutoMap } from '@automapper/classes';
-import { Base } from '../../../common/entities/base.entity';
-import { Province } from '../../../common/entities/province.entity';
+import { Base } from '../../../../common/entities/base.entity';
+import { Province } from '../../../../common/entities/province.entity';
 
-@Entity({ name: 'ORBC_TRAILER' })
-export class Trailer extends Base {
+@Entity({ name: 'ORBC_POWER_UNIT' })
+export class PowerUnit extends Base {
   @AutoMap()
   @ApiProperty({
     example: '1',
     description:
       'Unique identifier for this vehicle record in a company inventory.',
   })
-  @PrimaryGeneratedColumn({ type: 'bigint', name: 'TRAILER_ID' })
-  trailerId: string;
+  @PrimaryGeneratedColumn({ type: 'bigint', name: 'POWER_UNIT_ID' })
+  powerUnitId: string;
 
   @AutoMap()
   @ApiProperty({
@@ -37,7 +37,7 @@ export class Trailer extends Base {
   plate: string;
 
   @AutoMap(() => Province)
-  @ManyToOne(() => Province)
+  @ManyToOne(() => Province, (Province) => Province.powerUnits)
   @JoinColumn({ name: 'PROVINCE_ID' })
   province: Province;
 
@@ -60,27 +60,35 @@ export class Trailer extends Base {
   @AutoMap()
   @ApiProperty({
     example: '1ZVFT80N475211367',
-    description: 'Vehicle identification number for the trailer.',
+    description: 'Vehicle identification number for the power unit.',
   })
   @Column({ length: 17, name: 'VIN', nullable: false })
   vin: string;
 
   @AutoMap()
   @ApiProperty({
-    example: '3.2',
-    description: 'Width in metres of the empty trailer.',
+    example: '63500',
+    description: 'Licensed gross vehicle weight of the power unit.',
   })
   @Column({
     type: 'decimal',
     precision: 18,
     scale: 2,
-    name: 'EMPTY_TRAILER_WIDTH',
+    name: 'LICENSED_GVW',
     nullable: false,
   })
-  emptyTrailerWidth: number;
+  licensedGvw: number;
 
-  @AutoMap(() => TrailerType)
-  @ManyToOne(() => TrailerType, (TrailerType) => TrailerType.trailers)
-  @JoinColumn({ name: 'TRAILER_TYPE_CODE' })
-  trailerType: TrailerType;
+  @AutoMap(() => PowerUnitType)
+  @ManyToOne(() => PowerUnitType, (powerUnitType) => powerUnitType.powerUnits)
+  @JoinColumn({ name: 'POWER_UNIT_TYPE_CODE' })
+  powerUnitType: PowerUnitType;
+
+  @AutoMap()
+  @ApiProperty({
+    example: '12',
+    description: 'Size of the steer axle tires (width).',
+  })
+  @Column({ type: 'integer', name: 'STEER_AXLE_TIRE_SIZE', nullable: true })
+  steerAxleTireSize: number;
 }

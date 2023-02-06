@@ -1,7 +1,7 @@
-import { CreatePowerUnitTypeDto } from '../../../../src/modules/power-unit-types/dto/request/create-power-unit-type.dto';
-import { UpdatePowerUnitTypeDto } from '../../../../src/modules/power-unit-types/dto/request/update-power-unit-type.dto';
-import { ReadPowerUnitTypeDto } from '../../../../src/modules/power-unit-types/dto/response/read-power-unit-type.dto';
-import { PowerUnitType } from '../../../../src/modules/power-unit-types/entities/power-unit-type.entity';
+import { CreatePowerUnitTypeDto } from '../../../../src/modules/vehicles/power-unit-types/dto/request/create-power-unit-type.dto';
+import { UpdatePowerUnitTypeDto } from '../../../../src/modules/vehicles/power-unit-types/dto/request/update-power-unit-type.dto';
+import { ReadPowerUnitTypeDto } from '../../../../src/modules/vehicles/power-unit-types/dto/response/read-power-unit-type.dto';
+import { PowerUnitType } from '../../../../src/modules/vehicles/power-unit-types/entities/power-unit-type.entity';
 import { baseEntityMock } from './base.mock';
 
 const TYPE_CODE = 'CONCRET';
