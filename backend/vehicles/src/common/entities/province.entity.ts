@@ -12,8 +12,8 @@ import { Country } from './country.entity';
 import { AutoMap } from '@automapper/classes';
 import { Address } from '../../company-profiles/entities/address.entity';
 import { Contact } from '../../company-profiles/entities/contact.entity';
-import { PowerUnit } from '../../modules/power-units/entities/power-unit.entity';
-import { Trailer } from '../../modules/trailers/entities/trailer.entity';
+import { PowerUnit } from '../../modules/vehicles/power-units/entities/power-unit.entity';
+import { Trailer } from '../../modules/vehicles/trailers/entities/trailer.entity';
 
 @Entity({ name: 'ORBC_VT_PROVINCE' })
 export class Province extends Base {

@@ -7,8 +7,8 @@ import { classes } from '@automapper/classes';
 import { AutomapperModule } from '@automapper/nestjs';
 import { createMock } from '@golevelup/ts-jest';
 import { Repository } from 'typeorm';
-import { PowerUnit } from '../../src/modules/power-units/entities/power-unit.entity';
-import { PowerUnitsModule } from '../../src/modules/power-units/power-units.module';
+import { PowerUnit } from '../../src/modules/vehicles/power-units/entities/power-unit.entity';
+import { PowerUnitsModule } from '../../src/modules/vehicles/power-units/power-units.module';
 import {
   createPowerUnitDtoMock,
   powerUnitEntityMock,

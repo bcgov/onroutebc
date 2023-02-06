@@ -5,9 +5,9 @@ import { createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { PowerUnitType } from '../../../src/modules/power-unit-types/entities/power-unit-type.entity';
-import { PowerUnitTypesService } from '../../../src/modules/power-unit-types/power-unit-types.service';
-import { PowerUnitTypesProfile } from '../../../src/modules/power-unit-types/profiles/power-unit-type.profile';
+import { PowerUnitType } from '../../../src/modules/vehicles/power-unit-types/entities/power-unit-type.entity';
+import { PowerUnitTypesService } from '../../../src/modules/vehicles/power-unit-types/power-unit-types.service';
+import { PowerUnitTypesProfile } from '../../../src/modules/vehicles/power-unit-types/profiles/power-unit-type.profile';
 import {
   createPowerUnitTypeDtoMock,
   powerUnitTypeEntityMock,

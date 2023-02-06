@@ -1,7 +1,7 @@
-import { CreateTrailerDto } from '../../../../src/modules/trailers/dto/request/create-trailer.dto';
-import { UpdateTrailerDto } from '../../../../src/modules/trailers/dto/request/update-trailer.dto';
-import { ReadTrailerDto } from '../../../../src/modules/trailers/dto/response/read-trailer.dto';
-import { Trailer } from '../../../../src/modules/trailers/entities/trailer.entity';
+import { CreateTrailerDto } from '../../../../src/modules/vehicles/trailers/dto/request/create-trailer.dto';
+import { UpdateTrailerDto } from '../../../../src/modules/vehicles/trailers/dto/request/update-trailer.dto';
+import { ReadTrailerDto } from '../../../../src/modules/vehicles/trailers/dto/response/read-trailer.dto';
+import { Trailer } from '../../../../src/modules/vehicles/trailers/entities/trailer.entity';
 import { baseDtoMock, baseEntityMock } from './base.mock';
 import { provinceEntityMock } from './province.mock';
 import { trailerTypeEntityMock } from './trailer-type.mock';
