@@ -68,6 +68,6 @@ export const getCompanyInfo = async (): Promise<CompanyProfile> => {
 export const updateCompanyInfo = async (
   test: CompanyProfile
 ): Promise<TestResponse> => {
-  console.log(test);
+  console.log("Updated Company Info! ", test);
   return { status: 200 };
 };

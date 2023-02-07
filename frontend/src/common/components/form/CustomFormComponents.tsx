@@ -90,7 +90,7 @@ interface CustomFormOptionsProps<T extends FieldValues> {
  * @param inValidMessage Red text shown on React Hook Form field invalidation
  * @param query TanStack React Query integration object (https://tanstack.com/query/v4/docs/react/reference/useQuery)
  * @param i18options Optional Internationalization integration using i18
- * @param displayAs Type of the data. Example: 'text', 'number', 'email'
+ * @param displayAs Type of the data to be formatted and displayed as to the user
  *
  * @returns An onRouteBc customized react form component
  */
@@ -250,24 +250,41 @@ const CustomInputComponent = <T extends CompanyProfile | CreatePowerUnit>({
   invalid,
   displayAs,
 }: CustomInputComponentProps<T>): JSX.Element => {
-  // Get the current/default value of the field from React Hook Form
-  const defaultVal: PathValue<T, Path<T>> = getValues(name);
-  // Set the value of the field in a useState variable,
-  // which is used to automatically format the users input
-  const [value, setValue] = useState<PathValue<T, Path<T>> | string>(
-    defaultVal
-  );
+  if (displayAs) {
+    // Get the current/default value of the field from React Hook Form
+    const defaultVal: PathValue<T, Path<T>> = getValues(name);
+    // Set the value of the field in a useState variable,
+    // which is used to automatically format the users input
+    const [value, setValue] = useState<PathValue<T, Path<T>> | string>(
+      defaultVal
+    );
 
-  // Everytime the user types, update the format of the users input
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let formattedValue = e.target.value;
+    // Everytime the user types, update the format of the users input
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      let formattedValue = e.target.value;
 
-    if (displayAs === "phone") {
-      formattedValue = formatPhoneNumber(e.target.value, value);
-    }
+      if (displayAs === "phone") {
+        formattedValue = formatPhoneNumber(e.target.value, value);
+      }
 
-    setValue(formattedValue);
-  };
+      setValue(formattedValue);
+    };
+
+    return (
+      <OutlinedInput
+        aria-labelledby={`${feature}-${name}-label`}
+        inputProps={inputProps}
+        sx={{
+          "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+            borderColor: invalid ? BC_COLOURS.bc_red : BC_COLOURS.focus_blue,
+          },
+        }}
+        {...register(name, rules)}
+        value={value}
+        onChange={handleChange}
+      />
+    );
+  }
 
   return (
     <OutlinedInput
@@ -279,8 +296,6 @@ const CustomInputComponent = <T extends CompanyProfile | CreatePowerUnit>({
         },
       }}
       {...register(name, rules)}
-      value={value}
-      onChange={handleChange}
     />
   );
 };
