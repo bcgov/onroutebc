@@ -1,8 +1,8 @@
 import { Entity, Column, JoinColumn, OneToOne, PrimaryColumn } from 'typeorm';
-import { Base } from '../../../../common/entities/base.entity';
+import { Base } from '../../../common/entities/base.entity';
 import { AutoMap } from '@automapper/classes';
-import { Contact } from './contact.entity';
-import { Address } from './address.entity';
+import { Address } from '../../../common/entities/address.entity';
+import { Contact } from '../../../common/entities/contact.entity';
 
 @Entity({ name: 'ORBC_COMPANY' })
 export class Company extends Base {
@@ -22,13 +22,11 @@ export class Company extends Base {
   @Column({ length: 10, name: 'COMPANY_DIRECTORY', nullable: false })
   companyDirectory: string;
 
-  @AutoMap(() => Address)
-  @OneToOne(() => Address, (Address) => Address.company)
+  @OneToOne(() => Address, (Address) => Address.company, { cascade: true })
   @JoinColumn({ name: 'PHYSICAL_ADDRESS_ID' })
   companyAddress: Address;
 
-  @AutoMap(() => Address)
-  @OneToOne(() => Address, (Address) => Address.company)
+  @OneToOne(() => Address, (Address) => Address.company, { cascade: true })
   @JoinColumn({ name: 'MAILING_ADDRESS_ID' })
   mailingAddress: Address;
 
@@ -49,7 +47,18 @@ export class Company extends Base {
   email: string;
 
   @AutoMap(() => Contact)
-  @OneToOne(() => Contact, (Contact) => Contact.company)
+  @OneToOne(() => Contact, (Contact) => Contact.company, { cascade: true })
   @JoinColumn({ name: 'PRIMARY_CONTACT_ID' })
   primaryContact: Contact;
+
+  public get mailingAddressSameAsCompanyAddress(): boolean {
+    return this.companyAddress.addressId === this.mailingAddress.addressId;
+  }
+  public setMailingAddressSameAsCompanyAddress(
+    mailingAddressSameAsCompanyAddress: boolean,
+  ) {
+    if (mailingAddressSameAsCompanyAddress) {
+      this.mailingAddress = this.companyAddress;
+    }
+  }
 }

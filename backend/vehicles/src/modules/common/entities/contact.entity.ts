@@ -6,16 +6,16 @@ import {
   PrimaryGeneratedColumn,
   OneToOne,
 } from 'typeorm';
-import { Province } from '../../../../common/entities/province.entity';
-import { Base } from '../../../../common/entities/base.entity';
+import { Province } from './province.entity';
+import { Base } from './base.entity';
 import { AutoMap } from '@automapper/classes';
-import { Company } from './company.entity';
+import { Company } from '../../company/company-profiles/entities/company.entity';
 
-@Entity({ name: 'ORBC_ADDRESS' })
-export class Address extends Base {
+@Entity({ name: 'ORBC_CONTACT' })
+export class Contact extends Base {
   @AutoMap()
-  @PrimaryGeneratedColumn({ type: 'bigint', name: 'ADDRESS_ID' })
-  addressId: string;
+  @PrimaryGeneratedColumn({ type: 'int', name: 'CONTACT_ID' })
+  contactId: number;
 
   @AutoMap()
   @Column({ length: 100, name: 'FIRST_NAME', nullable: false })
@@ -53,17 +53,12 @@ export class Address extends Base {
   @Column({ length: 100, name: 'CITY', nullable: false })
   city: string;
 
-  @AutoMap()
-  @Column({ length: 7, name: 'POSTAL_CODE', nullable: false })
-  postalCode: string;
-
   @AutoMap(() => Province)
-  @ManyToOne(() => Province, (Province) => Province.addresses)
+  @ManyToOne(() => Province, (Province) => Province.addresses, { eager: true })
   @JoinColumn({ name: 'PROVINCE_ID' })
   province: Province;
 
   @AutoMap(() => Company)
   @OneToOne(() => Company, (Company) => Company.companyAddress)
-  @JoinColumn({ name: 'ADDRESS_ID' })
   company: Company;
 }

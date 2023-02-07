@@ -1,12 +1,19 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
-import { AddressDto } from './address.dto';
-import { ContactDto } from './contact.dto';
+import { ReadAddressDto } from '../../../../common/dto/response/read-address.dto';
+import { ReadContactDto } from '../../../../common/dto/response/read-contact.dto';
 
 /**
  * JSON representation for request object to create a company profile.
  */
 export class ReadCompanyProfileDto {
+  @AutoMap()
+  @ApiProperty({
+    description: 'The business GUID.',
+    example: '6F9619FF8B86D011B42D00C04FC964FF',
+  })
+  companyGUID: string;
+
   @AutoMap()
   @ApiProperty({
     description: 'The BCeID client number.',
@@ -19,21 +26,22 @@ export class ReadCompanyProfileDto {
     description: 'The legal name of the company.',
     example: 'ABC Carriers Inc.',
   })
-  companyLegalName: string;
-
-  @AutoMap()
-  @ApiProperty({
-    description: 'The business GUID.',
-    example: 'XYZ12345',
-  })
-  companyGUID: string;
+  legalName: string;
 
   @AutoMap()
   @ApiProperty({
     description: 'The physical address of the company.',
     required: true,
   })
-  companyAddress: AddressDto;
+  companyAddress: ReadAddressDto;
+
+  @AutoMap()
+  @ApiProperty({
+    description:
+      'Boolean field indicating if the mailing address is same as company address.',
+    required: true,
+  })
+  mailingAddressSameAsCompanyAddress: boolean;
 
   @AutoMap()
   @ApiProperty({
@@ -42,22 +50,7 @@ export class ReadCompanyProfileDto {
       'If given, the object must adhere to the individual field rules',
     required: false,
   })
-  mailingAddress: AddressDto;
-
-  @AutoMap()
-  @ApiProperty({
-    description:
-      'Boolean field indicating if the mailing address is same as company address.',
-    required: true,
-  })
-  companyAddressSameAsMailingAddress: boolean;
-
-  @AutoMap()
-  @ApiProperty({
-    description: 'The email address of the company.',
-    required: true,
-  })
-  companyEmail: string;
+  mailingAddress: ReadAddressDto;
 
   @AutoMap()
   @ApiProperty({
@@ -65,16 +58,18 @@ export class ReadCompanyProfileDto {
     required: true,
     maxLength: 20,
     minLength: 10,
+    example: '9999999999',
   })
-  companyPhone: string;
+  phone: string;
 
   @AutoMap()
   @ApiProperty({
     description: 'The phone extension of the company (if there is one).',
     required: false,
     maxLength: 5,
+    example: '99999',
   })
-  companyExtensionNumber: string;
+  extension: string;
 
   @AutoMap()
   @ApiProperty({
@@ -82,14 +77,22 @@ export class ReadCompanyProfileDto {
     required: false,
     maxLength: 20,
     minLength: 10,
+    example: '9999999999',
   })
-  companyFaxNumber: string;
+  fax: string;
+
+  @AutoMap()
+  @ApiProperty({
+    description: 'The email address of the company.',
+    required: true,
+    example: 'test@test.gov.bc.ca',
+  })
+  email: string;
 
   @AutoMap()
   @ApiProperty({
     description: 'The primary contact of the company.',
     required: true,
-    type: ContactDto,
   })
-  primaryContact: ContactDto;
+  primaryContact: ReadContactDto;
 }

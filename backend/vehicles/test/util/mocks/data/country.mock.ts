@@ -1,5 +1,5 @@
-import { CountryDto } from '../../../../src/common/dto/country.dto';
-import { Country } from '../../../../src/common/entities/country.entity';
+import { CountryDto } from '../../../../src/modules/common/dto/country.dto';
+import { Country } from '../../../../src/modules/common/entities/country.entity';
 import { baseDtoMock, baseEntityMock } from './base.mock';
 
 const COUNTRY_CODE = 'CA';
