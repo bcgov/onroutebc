@@ -250,26 +250,26 @@ const CustomInputComponent = <T extends CompanyProfile | CreatePowerUnit>({
   invalid,
   displayAs,
 }: CustomInputComponentProps<T>): JSX.Element => {
+  // Get the current/default value of the field from React Hook Form
+  const defaultVal: PathValue<T, Path<T>> = getValues(name);
+  // Set the value of the field in a useState variable,
+  // which is used to automatically format the users input
+  const [value, setValue] = useState<PathValue<T, Path<T>> | string>(
+    defaultVal
+  );
+
+  // Everytime the user types, update the format of the users input
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let formattedValue = e.target.value;
+
+    if (displayAs === "phone") {
+      formattedValue = formatPhoneNumber(e.target.value, value);
+    }
+
+    setValue(formattedValue);
+  };
+
   if (displayAs) {
-    // Get the current/default value of the field from React Hook Form
-    const defaultVal: PathValue<T, Path<T>> = getValues(name);
-    // Set the value of the field in a useState variable,
-    // which is used to automatically format the users input
-    const [value, setValue] = useState<PathValue<T, Path<T>> | string>(
-      defaultVal
-    );
-
-    // Everytime the user types, update the format of the users input
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      let formattedValue = e.target.value;
-
-      if (displayAs === "phone") {
-        formattedValue = formatPhoneNumber(e.target.value, value);
-      }
-
-      setValue(formattedValue);
-    };
-
     return (
       <OutlinedInput
         aria-labelledby={`${feature}-${name}-label`}
