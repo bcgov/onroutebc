@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 import { AutomapperProfile, InjectMapper } from '@automapper/nestjs';
 import {
   createMap,
@@ -16,6 +17,7 @@ import { UpdateCompanyProfileDto } from '../dto/request/update-company-profile.d
 import { ReadCompanyProfileDto } from '../dto/response/read-company-profile.dto';
 import { ReadAddressDto } from '../../../common/dto/response/read-address.dto';
 import { UpdateAddressDto } from '../../../common/dto/request/update-address.dto';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class CompanyProfile extends AutomapperProfile {
@@ -29,6 +31,10 @@ export class CompanyProfile extends AutomapperProfile {
         mapper,
         CreateCompanyProfileDto,
         Company,
+        //TODO : Below Mapping to be removed once login has been implmented
+        forMember((d) => d.clientNumber, fromValue(tempClientNumber())),
+        //TODO : Below Mapping to be removed once login has been implmented
+        forMember((d) => d.companyGUID, fromValue(tempCompanyGuid())),
         forMember(
           (d) => d.companyAddress,
           mapWith(Address, CreateAddressDto, (s) => s.companyAddress),
@@ -86,3 +92,14 @@ export class CompanyProfile extends AutomapperProfile {
     };
   }
 }
+
+//TODO : Below Code to be removed once login has been implmented
+const tempClientNumber = () => {
+  return Math.floor(Math.random() * 1000000000).toString();
+};
+
+//TODO : Below Code to be removed once login has been implmented
+const tempCompanyGuid = () => {
+  const uuid: string = uuidv4() as string;
+  return uuid.replace(/-/gi, '').toUpperCase();
+};

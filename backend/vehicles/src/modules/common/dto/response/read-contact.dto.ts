@@ -101,7 +101,7 @@ export class ReadContactDto {
 
   @AutoMap()
   @ApiProperty({
-    example: 'V8W2E7',
+    example: 'CA',
     description: 'A 2-character string indicating the country',
     required: false,
   })

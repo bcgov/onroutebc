@@ -9,20 +9,6 @@ import { CreateContactDto } from '../../../../common/dto/request/create-contact.
 export class CreateCompanyProfileDto {
   @AutoMap()
   @ApiProperty({
-    description: 'The business Guid.',
-    example: '6F9619FF8B86D011B42D00C04FC964FF',
-  })
-  companyGUID: string;
-
-  @AutoMap()
-  @ApiProperty({
-    description: 'The BCeID client number.',
-    example: '1234',
-  })
-  clientNumber: string;
-
-  @AutoMap()
-  @ApiProperty({
     description: 'The legal name of the company.',
     example: 'ABC Carriers Inc.',
   })
