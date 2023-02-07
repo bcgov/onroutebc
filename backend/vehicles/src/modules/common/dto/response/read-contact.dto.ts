@@ -1,19 +1,18 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
-import { BaseDto } from '../../../../common/dto/base.dto';
 import { IsEmail } from 'class-validator';
 
 /**
  * JSON representation of a contact
  */
-export class ContactDto extends BaseDto {
+export class ReadContactDto {
   @AutoMap()
   @ApiProperty({
     example: '55542',
     description: 'The contact id. Required for an update operation.',
     required: false,
   })
-  contactId: string;
+  contactId: number;
 
   @AutoMap()
   @ApiProperty({
@@ -45,7 +44,7 @@ export class ContactDto extends BaseDto {
 
   @AutoMap()
   @ApiProperty({
-    example: '123',
+    example: '99999',
     description: 'The extension of the primary phone number (if one exists).',
     required: false,
     maxLength: 5,
@@ -66,7 +65,7 @@ export class ContactDto extends BaseDto {
 
   @AutoMap()
   @ApiProperty({
-    example: '123',
+    example: '99999',
     description: 'The extension of the secondary phone number (if one exists).',
     required: false,
     format: 'Numeric',
@@ -78,6 +77,7 @@ export class ContactDto extends BaseDto {
   @ApiProperty({
     description: 'The email address of the contact.',
     required: true,
+    example: 'test@test.gov.bc.ca',
   })
   @IsEmail()
   email: string;
@@ -97,13 +97,13 @@ export class ContactDto extends BaseDto {
     description: 'A 2-character string indicating the province/state',
     required: false,
   })
-  province: string;
+  provinceCode: string;
 
   @AutoMap()
   @ApiProperty({
-    example: 'CA',
+    example: 'V8W2E7',
     description: 'A 2-character string indicating the country',
     required: false,
   })
-  country: string;
+  countryCode: string;
 }

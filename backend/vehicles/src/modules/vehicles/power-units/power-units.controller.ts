@@ -20,7 +20,7 @@ import {
 } from '@nestjs/swagger';
 
 import { ReadPowerUnitDto } from './dto/response/read-power-unit.dto';
-import { ExceptionDto } from '../../../common/dto/exception.dto';
+import { ExceptionDto } from '../../common/dto/exception.dto';
 import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
 
 @ApiTags('Power Units')

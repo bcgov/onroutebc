@@ -3,12 +3,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { CompanyProfileService } from './company-profile.service';
 import { CompanyProfileController } from './company-profile.controller';
 import { Company } from './entities/company.entity';
-import { Contact } from './entities/contact.entity';
-import { Address } from './entities/address.entity';
+import { CompanyProfile } from './profiles/company-profile.profile';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Company, Address, Contact])],
+  imports: [TypeOrmModule.forFeature([Company])],
   controllers: [CompanyProfileController],
-  providers: [CompanyProfileService],
+  providers: [CompanyProfileService, CompanyProfile],
 })
 export class CompanyProfileModule {}

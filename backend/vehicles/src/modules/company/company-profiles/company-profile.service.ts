@@ -1,15 +1,12 @@
-/* eslint-disable @typescript-eslint/require-await */
 import { Mapper } from '@automapper/core';
 import { InjectMapper } from '@automapper/nestjs';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Company } from './entities/company.entity';
-import { ReadCompanyProfileDto } from './dto/read-company-profile.dto';
-import { CreateCompanyProfileDto } from './dto/create-company-profile.dto';
-import { UpdateCompanyProfileDto } from './dto/update-company-profile.dto';
-import { Address } from './entities/address.entity';
-import { Contact } from './entities/contact.entity';
+import { ReadCompanyProfileDto } from './dto/response/read-company-profile.dto';
+import { CreateCompanyProfileDto } from './dto/request/create-company-profile.dto';
+import { UpdateCompanyProfileDto } from './dto/request/update-company-profile.dto';
 
 @Injectable()
 export class CompanyProfileService {
@@ -20,44 +17,58 @@ export class CompanyProfileService {
   ) {}
 
   async create(
-    powerUnitType: CreateCompanyProfileDto,
+    createCompanyProfileDto: CreateCompanyProfileDto,
   ): Promise<ReadCompanyProfileDto> {
-    // const newPowerUnitType = this.classMapper.map(
-    //   powerUnitType,
+    const newCompanyProfile = this.classMapper.map(
+      createCompanyProfileDto,
+      CreateCompanyProfileDto,
+      Company,
+    );
 
-    //   PowerUnitType,
-    // );
-    // await this.companyRepository.insert(newPowerUnitType);
-    // return this.findOne(newPowerUnitType.typeCode);
-    return null;
+    newCompanyProfile.setMailingAddressSameAsCompanyAddress(
+      createCompanyProfileDto.mailingAddressSameAsCompanyAddress,
+    );
+
+    return this.classMapper.mapAsync(
+      await this.companyRepository.save(newCompanyProfile),
+      Company,
+      ReadCompanyProfileDto,
+    );
   }
 
   async findOne(companyGUID: string): Promise<ReadCompanyProfileDto> {
-    // return this.classMapper.mapAsync(
-    //   await this.companyRepository.findOne({
-    //     where: { companyGUID: companyGUID },
-    //   }),
-    //   PowerUnitType,
-    //   ReadPowerUnitTypeDto,
-    // );
-    return null;
+    return this.classMapper.mapAsync(
+      await this.companyRepository.findOne({
+        where: { companyGUID: companyGUID },
+        relations: {
+          mailingAddress: true,
+          primaryContact: true,
+          companyAddress: true,
+        },
+      }),
+      Company,
+      ReadCompanyProfileDto,
+    );
   }
 
   async update(
     companyGUID: string,
     updateCompanyProfileDto: UpdateCompanyProfileDto,
   ): Promise<ReadCompanyProfileDto> {
-    // const newPowerUnitType = this.classMapper.map(
-    //   updateCompanyProfileDto,
-    //   UpdateCompanyProfileDto,
-    //   Address,
-    // );
+    const companyProfile = this.classMapper.map(
+      updateCompanyProfileDto,
+      UpdateCompanyProfileDto,
+      Company,
+    );
 
-    //await this.companyRepository.update(
-    //   { companyGUID: companyGUID },
-    //   newPowerUnitType,
-    // );
-    // return this.findOne(companyGUID);
-    return null;
+    companyProfile.setMailingAddressSameAsCompanyAddress(
+      updateCompanyProfileDto.mailingAddressSameAsCompanyAddress,
+    );
+
+    await this.companyRepository.update(
+      { companyGUID: companyGUID },
+      companyProfile,
+    );
+    return this.findOne(companyGUID);
   }
 }

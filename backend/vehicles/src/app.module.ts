@@ -3,7 +3,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { AppService } from './app.service';
-import { CommonModule } from './common/common.module';
+import { CommonModule } from './modules/common/common.module';
 import * as path from 'path';
 import { AppController } from './app.controller';
 import { AutomapperModule } from '@automapper/nestjs';
@@ -45,7 +45,7 @@ const envPath = path.resolve(process.cwd() + '/../../');
       // entities: [User],
       autoLoadEntities: true, // Auto load all entities regiestered by typeorm forFeature method.
       synchronize: false, // This changes the DB schema to match changes to entities, which we might not want.
-      logging: false,
+      logging: true,
     }),
     AutomapperModule.forRoot({
       strategyInitializer: classes(),

@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Param, Put } from '@nestjs/common';
-import { CreateCompanyProfileDto } from './dto/create-company-profile.dto';
-import { UpdateCompanyProfileDto } from './dto/update-company-profile.dto';
+import { CreateCompanyProfileDto } from './dto/request/create-company-profile.dto';
+import { UpdateCompanyProfileDto } from './dto/request/update-company-profile.dto';
 import { CompanyProfileService } from './company-profile.service';
 import {
   ApiCreatedResponse,
@@ -11,8 +11,8 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
-import { ExceptionDto } from '../../../common/dto/exception.dto';
-import { ReadCompanyProfileDto } from './dto/read-company-profile.dto';
+import { ExceptionDto } from '../../common/dto/exception.dto';
+import { ReadCompanyProfileDto } from './dto/response/read-company-profile.dto';
 
 @ApiTags('Company Profile')
 @ApiNotFoundResponse({
