@@ -3,7 +3,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { AppService } from './app.service';
-import { CommonModule } from './common/common.module';
+import { CommonModule } from './modules/common/common.module';
 import * as path from 'path';
 import { AppController } from './app.controller';
 import { AutomapperModule } from '@automapper/nestjs';

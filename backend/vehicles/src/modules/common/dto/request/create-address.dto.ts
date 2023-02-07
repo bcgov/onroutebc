@@ -1,19 +1,10 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
-import { BaseDto } from '../../../../common/dto/base.dto';
 
 /**
  * JSON representation of a physical address
  */
-export class AddressDto extends BaseDto {
-  @AutoMap()
-  @ApiProperty({
-    example: '55542',
-    description: 'The address id. Required for an update operation.',
-    required: false,
-  })
-  addressId: string;
-
+export class CreateAddressDto {
   @AutoMap()
   @ApiProperty({
     example: '1234 Main St.',
@@ -48,7 +39,7 @@ export class AddressDto extends BaseDto {
     description: 'A 2-character string indicating the province',
     required: true,
   })
-  province: string;
+  provinceCode: string;
 
   @AutoMap()
   @ApiProperty({
@@ -56,11 +47,11 @@ export class AddressDto extends BaseDto {
     description: 'A 2-character string indicating the country',
     required: true,
   })
-  country: string;
+  countryCode: string;
 
   @AutoMap()
   @ApiProperty({
-    example: 'CA',
+    example: 'V8W2E7',
     description: 'Postal/zip code - 5 characters if US, 6 characters if CA.',
     required: true,
   })
