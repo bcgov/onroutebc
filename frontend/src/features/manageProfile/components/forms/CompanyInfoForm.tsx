@@ -125,6 +125,7 @@ const CompanyContactDetailsForm = ({
           label: "Phone Number",
           inValidMessage: "Phone Number is required",
           width: PHONE_WIDTH,
+          displayAs: "phone",
         }}
       />
       <CustomFormComponent
@@ -294,6 +295,7 @@ const CompanyPrimaryContactForm = ({
           label: "Phone Number",
           inValidMessage: "Phone Number is required",
           width: PHONE_WIDTH,
+          displayAs: "phone",
         }}
       />
       <CustomFormComponent
@@ -316,6 +318,7 @@ const CompanyPrimaryContactForm = ({
           rules: { required: false },
           label: "Alternate Number",
           width: PHONE_WIDTH,
+          displayAs: "phone",
         }}
       />
       <CustomFormComponent
@@ -411,7 +414,7 @@ export const CompanyInfoForm = memo(
       },
     });
 
-    const { register, handleSubmit, control } = formMethods;
+    const { register, handleSubmit, control, getValues } = formMethods;
 
     const addCompanyInfoQuery = useMutation({
       mutationFn: updateCompanyInfo,
@@ -433,6 +436,7 @@ export const CompanyInfoForm = memo(
       control: control,
       register: register,
       feature: "profile",
+      getValues: getValues,
     };
 
     return (
@@ -470,7 +474,7 @@ export const CompanyInfoForm = memo(
             key="update-company-info-cancel-button"
             aria-label="Cancel Update"
             variant="contained"
-            color="secondary"
+            color="tertiary"
             sx={{ marginRight: "40px" }}
             onClick={() => setIsEditting(false)}
           >
@@ -483,7 +487,7 @@ export const CompanyInfoForm = memo(
             color="primary"
             onClick={handleSubmit(onUpdateCompanyInfo)}
           >
-            Update
+            Save
           </Button>
         </div>
       </div>

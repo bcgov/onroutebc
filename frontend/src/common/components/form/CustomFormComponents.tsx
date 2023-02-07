@@ -8,12 +8,16 @@ import {
   MenuItem,
 } from "@mui/material";
 import { UseQueryResult } from "@tanstack/react-query";
+import { useState } from "react";
 import {
   Control,
   Controller,
   FieldPath,
   FieldValues,
+  Path,
+  PathValue,
   RegisterOptions,
+  UseFormGetValues,
   UseFormRegister,
 } from "react-hook-form";
 import { useTranslation } from "react-i18next";
@@ -46,6 +50,7 @@ export interface CommonFormPropsType<T extends FieldValues> {
   control: Control<T>;
   register: UseFormRegister<T>;
   feature: string;
+  getValues: UseFormGetValues<T>;
 }
 
 /**
@@ -59,6 +64,7 @@ interface CustomFormOptionsProps<T extends FieldValues> {
   width?: string;
   inValidMessage?: string;
   query?: UseQueryResult<PowerUnitType[], unknown>;
+  displayAs?: "phone";
 }
 
 /**
@@ -84,6 +90,7 @@ interface CustomFormOptionsProps<T extends FieldValues> {
  * @param inValidMessage Red text shown on React Hook Form field invalidation
  * @param query TanStack React Query integration object (https://tanstack.com/query/v4/docs/react/reference/useQuery)
  * @param i18options Optional Internationalization integration using i18
+ * @param displayAs Type of the data. Example: 'text', 'number', 'email'
  *
  * @returns An onRouteBc customized react form component
  */
@@ -91,7 +98,7 @@ export const CustomFormComponent = <
   T extends CompanyProfile | CreatePowerUnit
 >({
   type,
-  commonFormProps: { control, register, feature },
+  commonFormProps: { control, register, feature, getValues },
   options: {
     name,
     rules,
@@ -100,6 +107,7 @@ export const CustomFormComponent = <
     width = "528px",
     inValidMessage,
     query,
+    displayAs: displayAs,
   },
   i18options,
 }: CustomFormComponentProps<T>): JSX.Element => {
@@ -135,10 +143,12 @@ export const CustomFormComponent = <
                 <CustomInputComponent
                   register={register}
                   feature={feature}
+                  getValues={getValues}
                   name={name}
                   rules={rules}
                   inputProps={inputProps}
                   invalid={invalid}
+                  displayAs={displayAs}
                 />
               )}
 
@@ -216,24 +226,49 @@ const CustomSelectComponent = <T extends CompanyProfile | CreatePowerUnit>({
 interface CustomInputComponentProps<T extends FieldValues> {
   register: UseFormRegister<T>;
   feature: string;
+  getValues: UseFormGetValues<T>;
   name: FieldPath<T>;
   rules: RegisterOptions;
   inputProps: RegisterOptions;
   invalid: boolean;
+  displayAs?: string;
 }
 
 /**
  * An onRouteBC customized MUI OutlineInput component
  * Based on https://mui.com/material-ui/api/outlined-input/
+ *
+ * This component includes auto formatting of user input
  */
 const CustomInputComponent = <T extends CompanyProfile | CreatePowerUnit>({
   register,
+  getValues,
   feature,
   name,
   rules,
   inputProps,
   invalid,
+  displayAs,
 }: CustomInputComponentProps<T>): JSX.Element => {
+  // Get the current/default value of the field from React Hook Form
+  const defaultVal: PathValue<T, Path<T>> = getValues(name);
+  // Set the value of the field in a useState variable,
+  // which is used to automatically format the users input
+  const [value, setValue] = useState<PathValue<T, Path<T>> | string>(
+    defaultVal
+  );
+
+  // Everytime the user types, update the format of the users input
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let formattedValue = e.target.value;
+
+    if (displayAs === "phone") {
+      formattedValue = formatPhoneNumber(e.target.value, value);
+    }
+
+    setValue(formattedValue);
+  };
+
   return (
     <OutlinedInput
       aria-labelledby={`${feature}-${name}-label`}
@@ -244,6 +279,38 @@ const CustomInputComponent = <T extends CompanyProfile | CreatePowerUnit>({
         },
       }}
       {...register(name, rules)}
+      value={value}
+      onChange={handleChange}
     />
   );
+};
+
+/**
+ * Function to format the users input to be in the correct phone number format
+ * as the user types
+ */
+const formatPhoneNumber = (input: string, previousValue: any): string => {
+  // return nothing if no value
+  if (!input) return input;
+
+  // only allows 0-9 inputs
+  const currentValue = input.replace(/[^\d]/g, "");
+  const cvLength = currentValue.length;
+
+  if (!previousValue || input.length > previousValue.length) {
+    // returns: "x", "xx", "xxx"
+    if (cvLength < 4) return currentValue;
+
+    // returns: "(xxx)", "(xxx) x", "(xxx) xx", "(xxx) xxx",
+    if (cvLength < 7)
+      return `(${currentValue.slice(0, 3)}) ${currentValue.slice(3)}`;
+
+    // returns: "(xxx) xxx-", (xxx) xxx-x", "(xxx) xxx-xx", "(xxx) xxx-xxx", "(xxx) xxx-xxxx"
+    return `(${currentValue.slice(0, 3)}) ${currentValue.slice(
+      3,
+      6
+    )}-${currentValue.slice(6, 10)}`;
+  }
+
+  return "";
 };
