@@ -436,7 +436,7 @@ export const CompanyInfoForm = memo(
       control: control,
       register: register,
       feature: "profile",
-      getValues: getValues,
+      //getValues: getValues,
     };
 
     return (

@@ -8,16 +8,16 @@ import {
   MenuItem,
 } from "@mui/material";
 import { UseQueryResult } from "@tanstack/react-query";
-import { useState } from "react";
+//import { useState } from "react";
 import {
   Control,
   Controller,
   FieldPath,
   FieldValues,
-  Path,
-  PathValue,
+  //Path,
+  //PathValue,
   RegisterOptions,
-  UseFormGetValues,
+  //UseFormGetValues,
   UseFormRegister,
 } from "react-hook-form";
 import { useTranslation } from "react-i18next";
@@ -50,7 +50,7 @@ export interface CommonFormPropsType<T extends FieldValues> {
   control: Control<T>;
   register: UseFormRegister<T>;
   feature: string;
-  getValues: UseFormGetValues<T>;
+  //getValues: UseFormGetValues<T>;
 }
 
 /**
@@ -98,7 +98,7 @@ export const CustomFormComponent = <
   T extends CompanyProfile | CreatePowerUnit
 >({
   type,
-  commonFormProps: { control, register, feature, getValues },
+  commonFormProps: { control, register, feature },
   options: {
     name,
     rules,
@@ -143,7 +143,7 @@ export const CustomFormComponent = <
                 <CustomInputComponent
                   register={register}
                   feature={feature}
-                  getValues={getValues}
+                  //getValues={getValues}
                   name={name}
                   rules={rules}
                   inputProps={inputProps}
@@ -226,7 +226,7 @@ const CustomSelectComponent = <T extends CompanyProfile | CreatePowerUnit>({
 interface CustomInputComponentProps<T extends FieldValues> {
   register: UseFormRegister<T>;
   feature: string;
-  getValues: UseFormGetValues<T>;
+  //getValues: UseFormGetValues<T>;
   name: FieldPath<T>;
   rules: RegisterOptions;
   inputProps: RegisterOptions;
@@ -242,7 +242,7 @@ interface CustomInputComponentProps<T extends FieldValues> {
  */
 const CustomInputComponent = <T extends CompanyProfile | CreatePowerUnit>({
   register,
-  getValues,
+  //getValues,
   feature,
   name,
   rules,
@@ -250,41 +250,41 @@ const CustomInputComponent = <T extends CompanyProfile | CreatePowerUnit>({
   invalid,
   displayAs,
 }: CustomInputComponentProps<T>): JSX.Element => {
-  // Get the current/default value of the field from React Hook Form
-  const defaultVal: PathValue<T, Path<T>> = getValues(name);
-  // Set the value of the field in a useState variable,
-  // which is used to automatically format the users input
-  const [value, setValue] = useState<PathValue<T, Path<T>> | string>(
-    defaultVal
-  );
+  // // Get the current/default value of the field from React Hook Form
+  // const defaultVal: PathValue<T, Path<T>> = getValues<any>(name);
+  // // Set the value of the field in a useState variable,
+  // // which is used to automatically format the users input
+  // const [value, setValue] = useState<PathValue<T, Path<T>> | string>(
+  //   defaultVal
+  // );
 
-  // Everytime the user types, update the format of the users input
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let formattedValue = e.target.value;
+  // // Everytime the user types, update the format of the users input
+  // const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   let formattedValue = e.target.value;
 
-    if (displayAs === "phone") {
-      formattedValue = formatPhoneNumber(e.target.value, value);
-    }
+  //   if (displayAs === "phone") {
+  //     formattedValue = formatPhoneNumber(e.target.value, value);
+  //   }
 
-    setValue(formattedValue);
-  };
+  //   setValue(formattedValue);
+  // };
 
-  if (displayAs) {
-    return (
-      <OutlinedInput
-        aria-labelledby={`${feature}-${name}-label`}
-        inputProps={inputProps}
-        sx={{
-          "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-            borderColor: invalid ? BC_COLOURS.bc_red : BC_COLOURS.focus_blue,
-          },
-        }}
-        {...register(name, rules)}
-        value={value}
-        onChange={handleChange}
-      />
-    );
-  }
+  // if (displayAs) {
+  //   return (
+  //     <OutlinedInput
+  //       aria-labelledby={`${feature}-${name}-label`}
+  //       inputProps={inputProps}
+  //       sx={{
+  //         "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+  //           borderColor: invalid ? BC_COLOURS.bc_red : BC_COLOURS.focus_blue,
+  //         },
+  //       }}
+  //       {...register(name, rules)}
+  //       value={value}
+  //       onChange={handleChange}
+  //     />
+  //   );
+  // }
 
   return (
     <OutlinedInput
