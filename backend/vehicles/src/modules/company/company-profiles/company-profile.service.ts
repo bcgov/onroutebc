@@ -64,11 +64,10 @@ export class CompanyProfileService {
     companyProfile.setMailingAddressSameAsCompanyAddress(
       updateCompanyProfileDto.mailingAddressSameAsCompanyAddress,
     );
+    companyProfile.companyGUID = companyGUID;
 
-    await this.companyRepository.update(
-      { companyGUID: companyGUID },
-      companyProfile,
-    );
+    await this.companyRepository.save(companyProfile);
+
     return this.findOne(companyGUID);
   }
 }
