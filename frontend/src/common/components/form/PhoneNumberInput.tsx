@@ -60,10 +60,37 @@ const formatPhoneNumber = (input: string): string => {
   const currentValue = input.replace(/[^\d]/g, "");
   const cvLength = currentValue.length;
 
-  console.log("currentValue", currentValue);
-  console.log("cvLength", cvLength);
+  // Ignore formatting if the value length is greater than a standard Canada/US phone number
+  // (11 digits incl. country code)
+  if (cvLength > 11) {
+    return currentValue;
+  }
+  // returns: "x ",
+  if (cvLength < 1) return currentValue;
 
-  // Remove the '+' for country code if no value or
+  // returns: "x", "xx", "xxx"
+  if (cvLength < 4) return `${currentValue.slice(0, 3)}`;
+
+  // returns: "(xxx)", "(xxx) x", "(xxx) xx", "(xxx) xxx",
+  if (cvLength < 7)
+    return `(${currentValue.slice(0, 3)}) ${currentValue.slice(3)}`;
+
+  // returns: "(xxx) xxx-", "(xxx) xxx-x", "(xxx) xxx-xx", "(xxx) xxx-xxx", "(xxx) xxx-xxxx"
+  if (cvLength < 11)
+    return `(${currentValue.slice(0, 3)}) ${currentValue.slice(
+      3,
+      6
+    )}-${currentValue.slice(6, 10)}`;
+
+  // returns: "+x (xxx) xxx-xxxx"
+  return `+${currentValue.slice(0, 1)} (${currentValue.slice(
+    1,
+    4
+  )}) ${currentValue.slice(4, 7)}-${currentValue.slice(7, 11)}`;
+};
+
+/*
+// Remove the '+' for country code if no value or
   // if value length is greater than standard Canada/US phone number
   // (11 digits incl. country code)
   if (cvLength < 1 || cvLength > 11) {
@@ -72,20 +99,20 @@ const formatPhoneNumber = (input: string): string => {
   // returns: "+x ",
   if (cvLength < 2) return `+${currentValue}`;
 
-  // returns: "x", "xx", "xxx"
+  // returns: "+x x", "+x xx", "+x xxx"
   if (cvLength < 5)
     return `+${currentValue.slice(0, 1)} ${currentValue.slice(1, 4)}`;
 
-  // returns: "(xxx)", "(xxx) x", "(xxx) xx", "(xxx) xxx",
+  // returns: "+x (xxx)", "+x (xxx) x", "+x (xxx) xx", "+x (xxx) xxx",
   if (cvLength < 8)
     return `+${currentValue.slice(0, 1)} (${currentValue.slice(
       1,
       4
     )}) ${currentValue.slice(4)}`;
 
-  // returns: "(xxx) xxx-", (xxx) xxx-x", "(xxx) xxx-xx", "(xxx) xxx-xxx", "(xxx) xxx-xxxx"
+  // returns: "+x (xxx) xxx-", "+x (xxx) xxx-x", "+x (xxx) xxx-xx", "+x (xxx) xxx-xxx", "+x (xxx) xxx-xxxx"
   return `+${currentValue.slice(0, 1)} (${currentValue.slice(
     1,
     4
   )}) ${currentValue.slice(4, 7)}-${currentValue.slice(7, 11)}`;
-};
+  */
