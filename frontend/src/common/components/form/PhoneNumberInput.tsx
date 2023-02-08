@@ -14,6 +14,7 @@ export const PhoneNumberInput = <T extends CompanyProfile | CreatePowerUnit>(
   props: CustomInputComponentProps<T>
 ): JSX.Element => {
   // Get the current/default value of the field from React Hook Form
+  /* eslint-disable  @typescript-eslint/no-explicit-any */
   const defaultVal: PathValue<T, Path<T>> = props.getValues<any>(props.name);
   // Set the value of the field in a useState variable,
   // which is used to automatically format the users input

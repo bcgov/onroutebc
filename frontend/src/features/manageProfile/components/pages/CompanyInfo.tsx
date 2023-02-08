@@ -31,7 +31,7 @@ const CompanyBanner = ({ companyInfo }: { companyInfo?: CompanyProfile }) => {
     >
       <div className="company-banner">
         <p>COMPANY NAME</p>
-        <h2>{companyInfo?.companyLegalName}</h2>
+        <h2>{companyInfo?.legalName}</h2>
       </div>
       <div className="company-banner">
         <p>onRouteBC CLIENT NUMBER</p>
@@ -44,12 +44,14 @@ const CompanyBanner = ({ companyInfo }: { companyInfo?: CompanyProfile }) => {
 export const CompanyInfo = () => {
   const [isEditting, setIsEditting] = useState(false);
 
+  const TEST_COMPANY_GUID = "674B606FF2AF462990EE3F38FB8AAD7A";
+
   const {
     data: companyInfoData,
     //refetch,
   } = useQuery({
     queryKey: ["companyInfo"],
-    queryFn: getCompanyInfo,
+    queryFn: () => getCompanyInfo(TEST_COMPANY_GUID),
     keepPreviousData: true,
     staleTime: 5000,
   });

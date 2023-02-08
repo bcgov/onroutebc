@@ -58,18 +58,18 @@ const CompanyInfoGeneralForm = ({
 
     <CountryAndProvince
       country={
-        companyInfo?.companyAddress.country
-          ? companyInfo.companyAddress.country
+        companyInfo?.companyAddress.countryCode
+          ? companyInfo.companyAddress.countryCode
           : ""
       }
       province={
-        companyInfo?.companyAddress.province
-          ? companyInfo.companyAddress.province
+        companyInfo?.companyAddress.provinceCode
+          ? companyInfo.companyAddress.provinceCode
           : ""
       }
       width={DEFAULT_WIDTH}
-      countryField={"companyAddress.country"}
-      provinceField={"companyAddress.province"}
+      countryField={"companyAddress.countryCode"}
+      provinceField={"companyAddress.provinceCode"}
       feature="profile"
     />
 
@@ -110,7 +110,7 @@ const CompanyContactDetailsForm = ({
       type="input"
       commonFormProps={commonFormProps}
       options={{
-        name: "companyEmail",
+        name: "email",
         rules: { required: false },
         label: "Email",
       }}
@@ -120,7 +120,7 @@ const CompanyContactDetailsForm = ({
         type="input"
         commonFormProps={commonFormProps}
         options={{
-          name: "companyPhone",
+          name: "phone",
           rules: { required: true },
           label: "Phone Number",
           inValidMessage: "Phone Number is required",
@@ -133,7 +133,7 @@ const CompanyContactDetailsForm = ({
         type="input"
         commonFormProps={commonFormProps}
         options={{
-          name: "companyExtensionNumber",
+          name: "extension",
           rules: { required: false },
           label: "Ext",
           width: EXT_WIDTH,
@@ -144,7 +144,7 @@ const CompanyContactDetailsForm = ({
       type="input"
       commonFormProps={commonFormProps}
       options={{
-        name: "companyFaxNumber",
+        name: "fax",
         rules: { required: false },
         label: "Fax",
         width: PHONE_WIDTH,
@@ -205,13 +205,13 @@ const CompanyMailingAddressForm = ({
           />
           <CountryAndProvince
             country={
-              companyInfo?.mailingAddress?.country
-                ? companyInfo.mailingAddress.country
+              companyInfo?.mailingAddress?.countryCode
+                ? companyInfo.mailingAddress.countryCode
                 : ""
             }
             province={
-              companyInfo?.mailingAddress?.province
-                ? companyInfo.mailingAddress.province
+              companyInfo?.mailingAddress?.provinceCode
+                ? companyInfo.mailingAddress.provinceCode
                 : ""
             }
             feature={"profile"}
@@ -336,18 +336,18 @@ const CompanyPrimaryContactForm = ({
 
     <CountryAndProvince
       country={
-        companyInfo?.primaryContact?.country
-          ? companyInfo.primaryContact.country
+        companyInfo?.primaryContact?.countryCode
+          ? companyInfo.primaryContact.countryCode
           : ""
       }
       province={
-        companyInfo?.primaryContact?.province
-          ? companyInfo.primaryContact.province
+        companyInfo?.primaryContact?.provinceCode
+          ? companyInfo.primaryContact.provinceCode
           : ""
       }
       width={DEFAULT_WIDTH}
-      countryField={"primaryContact.country"}
-      provinceField={"primaryContact.province"}
+      countryField={"primaryContact.countryCode"}
+      provinceField={"primaryContact.provinceCode"}
       feature={"profile"}
       rules={{ required: false }}
     />
@@ -378,28 +378,28 @@ export const CompanyInfoForm = memo(
     const formMethods = useForm<CompanyProfile>({
       defaultValues: {
         clientNumber: companyInfo?.clientNumber || "",
-        companyLegalName: companyInfo?.companyLegalName || "",
+        legalName: companyInfo?.legalName || "",
         companyAddress: {
           addressLine1: companyInfo?.companyAddress?.addressLine1 || "",
           addressLine2: companyInfo?.companyAddress?.addressLine2 || "",
           city: companyInfo?.companyAddress?.city || "",
-          province: companyInfo?.companyAddress?.province || "",
-          country: companyInfo?.companyAddress?.country || "",
+          provinceCode: companyInfo?.companyAddress?.provinceCode || "",
+          countryCode: companyInfo?.companyAddress?.countryCode || "",
           postalCode: companyInfo?.companyAddress?.postalCode || "",
         },
-        companyAddressSameAsMailingAddress: true,
+        mailingAddressSameAsCompanyAddress: true,
         mailingAddress: {
           addressLine1: companyInfo?.mailingAddress?.addressLine1 || "",
           addressLine2: companyInfo?.mailingAddress?.addressLine2 || "",
           city: companyInfo?.mailingAddress?.city || "",
-          province: companyInfo?.mailingAddress?.province || "",
-          country: companyInfo?.mailingAddress?.country || "",
+          provinceCode: companyInfo?.mailingAddress?.provinceCode || "",
+          countryCode: companyInfo?.mailingAddress?.countryCode || "",
           postalCode: companyInfo?.mailingAddress?.postalCode || "",
         },
-        companyEmail: companyInfo?.companyEmail || "",
-        companyPhone: companyInfo?.companyPhone || "",
-        companyExtensionNumber: companyInfo?.companyExtensionNumber || "",
-        companyFaxNumber: companyInfo?.companyFaxNumber || "",
+        email: companyInfo?.email || "",
+        phone: companyInfo?.phone || "",
+        extension: companyInfo?.extension || "",
+        fax: companyInfo?.fax || "",
         primaryContact: {
           firstName: companyInfo?.primaryContact?.firstName || "",
           lastName: companyInfo?.primaryContact?.lastName || "",
@@ -409,8 +409,8 @@ export const CompanyInfoForm = memo(
           phone2Extension: companyInfo?.primaryContact?.phone2Extension || "",
           email: companyInfo?.primaryContact?.email || "",
           city: companyInfo?.primaryContact?.city || "",
-          province: companyInfo?.primaryContact?.province || "",
-          country: companyInfo?.primaryContact?.country || "",
+          provinceCode: companyInfo?.primaryContact?.provinceCode || "",
+          countryCode: companyInfo?.primaryContact?.countryCode || "",
         },
       },
     });

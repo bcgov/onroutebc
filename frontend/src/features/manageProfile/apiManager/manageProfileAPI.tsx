@@ -1,13 +1,18 @@
+import { ApiErrorResponse } from "../../../types/common";
+import { MANAGE_PROFILE_API } from "./endpoints/endpoints";
+
 interface Address {
+  addressId: number;
   addressLine1: string;
   addressLine2?: string;
   city: string;
-  province: string;
-  country: string;
+  provinceCode: string;
+  countryCode: string;
   postalCode: string;
 }
 
 interface Contact {
+  contactId: number;
   firstName: string;
   lastName: string;
   phone1: string;
@@ -16,53 +21,52 @@ interface Contact {
   phone2Extension?: string;
   email: string;
   city: string;
-  province: string;
-  country: string;
+  provinceCode: string;
+  countryCode: string;
 }
 
 export interface CompanyProfile {
+  companyGUID: string;
   clientNumber: string;
-  companyLegalName: string;
+  legalName: string;
   companyAddress: Address;
-  companyAddressSameAsMailingAddress: boolean;
+  mailingAddressSameAsCompanyAddress: boolean;
   mailingAddress?: Address;
-  companyEmail: string;
-  companyPhone: string;
-  companyExtensionNumber?: string;
-  companyFaxNumber?: string;
+  email: string;
+  phone: string;
+  extension?: string;
+  fax?: string;
   primaryContact: Contact;
 }
-
-export const TEST_DATA: CompanyProfile = {
-  clientNumber: "2023-87456",
-  companyLegalName: "Bandstra Transportation Systems Ltd.",
-  companyAddress: {
-    addressLine1: "4042 Robson Street",
-    city: "Vancouver",
-    province: "BC",
-    country: "CA",
-    postalCode: "V8R 3V6",
-  },
-  companyAddressSameAsMailingAddress: true,
-  companyEmail: "test@test.ca",
-  companyPhone: "1 (778) 798 2367",
-  primaryContact: {
-    firstName: "Elias",
-    lastName: "Lindholm",
-    phone1: "403 456 7890",
-    email: "elias@flames.ca",
-    city: "Calgary",
-    province: "AB",
-    country: "CA",
-  },
-};
 
 interface TestResponse {
   status: number;
 }
 
-export const getCompanyInfo = async (): Promise<CompanyProfile> => {
-  return TEST_DATA;
+export const getCompanyInfo = async (
+  companyGUID: string
+): Promise<CompanyProfile> => {
+  //return TEST_DATA;
+  const url = new URL(MANAGE_PROFILE_API.COMPANY_INFO);
+
+  try {
+    const response = await fetch(`${url.href}/${companyGUID}`);
+    const data = await response.json();
+
+    // Handle API errors created from the backend API
+    if (!response.ok) {
+      const err: ApiErrorResponse = data;
+      return Promise.reject(err.errorMessage);
+    }
+    console.log("data", data);
+    return data;
+    // eslint-disable-next-line  @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    // Handle network errors
+    // Error type has name and message
+    // eslint-disable-next-line  @typescript-eslint/no-explicit-any
+    return Promise.reject(error.message);
+  }
 };
 
 export const updateCompanyInfo = async (
