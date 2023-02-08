@@ -49,7 +49,7 @@ export class CompanyProfile extends AutomapperProfile {
             }
           }),
         ),
-        forMember((d) => d.companyDirectory, fromValue('bbceid')),
+        forMember((d) => d.companyDirectory, fromValue('BBCEID')),
       );
       createMap(
         mapper,
@@ -69,7 +69,7 @@ export class CompanyProfile extends AutomapperProfile {
             }
           }),
         ),
-        forMember((d) => d.companyDirectory, fromValue('bbceid')),
+        forMember((d) => d.companyDirectory, fromValue('BBCEID')),
       );
 
       createMap(
