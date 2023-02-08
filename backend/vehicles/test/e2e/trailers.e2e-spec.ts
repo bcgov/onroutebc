@@ -6,8 +6,8 @@ import { classes } from '@automapper/classes';
 import { AutomapperModule } from '@automapper/nestjs';
 import { createMock } from '@golevelup/ts-jest';
 import { Repository } from 'typeorm';
-import { Trailer } from '../../src/modules/trailers/entities/trailer.entity';
-import { TrailersModule } from '../../src/modules/trailers/trailers.module';
+import { Trailer } from '../../src/modules/vehicles/trailers/entities/trailer.entity';
+import { TrailersModule } from '../../src/modules/vehicles/trailers/trailers.module';
 import {
   createTrailerDtoMock,
   readTrailerDtoMock,

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/require-await */
-import { UpdatePowerUnitDto } from '../../../../src/modules/power-units/dto/request/update-power-unit.dto';
+import { UpdatePowerUnitDto } from '../../../../src/modules/vehicles/power-units/dto/request/update-power-unit.dto';
 import { readPowerUnitDtoMock } from '../data/power-unit.mock';
 
 const POWER_UNIT_ID_1 = '1';

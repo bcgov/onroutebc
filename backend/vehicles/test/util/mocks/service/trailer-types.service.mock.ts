@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/require-await */
-import { UpdateTrailerTypeDto } from '../../../../src/modules/trailer-types/dto/request/update-trailer-type.dto';
+import { UpdateTrailerTypeDto } from '../../../../src/modules/vehicles/trailer-types/dto/request/update-trailer-type.dto';
 import { readTrailerTypeDtoMock } from '../data/trailer-type.mock';
 
 const TYPE_CODE = 'BOOSTER';

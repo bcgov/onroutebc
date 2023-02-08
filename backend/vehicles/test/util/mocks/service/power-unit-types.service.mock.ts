@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/require-await */
-import { UpdatePowerUnitTypeDto } from '../../../../src/modules/power-unit-types/dto/request/update-power-unit-type.dto';
+import { UpdatePowerUnitTypeDto } from '../../../../src/modules/vehicles/power-unit-types/dto/request/update-power-unit-type.dto';
 import { readPowerUnitTypeDtoMock } from '../data/power-unit-type.mock';
 
 const TYPE_CODE = 'CONCRET';
