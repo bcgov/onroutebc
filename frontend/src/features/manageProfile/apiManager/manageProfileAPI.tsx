@@ -45,11 +45,11 @@ export const TEST_DATA: CompanyProfile = {
   },
   companyAddressSameAsMailingAddress: true,
   companyEmail: "test@test.ca",
-  companyPhone: "(778) 798 2367",
+  companyPhone: "1 (778) 798 2367",
   primaryContact: {
     firstName: "Elias",
     lastName: "Lindholm",
-    phone1: "(403) 456 7890",
+    phone1: "403 456 7890",
     email: "elias@flames.ca",
     city: "Calgary",
     province: "AB",

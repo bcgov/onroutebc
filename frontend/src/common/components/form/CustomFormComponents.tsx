@@ -8,16 +8,13 @@ import {
   MenuItem,
 } from "@mui/material";
 import { UseQueryResult } from "@tanstack/react-query";
-//import { useState } from "react";
 import {
   Control,
   Controller,
   FieldPath,
   FieldValues,
-  //Path,
-  //PathValue,
   RegisterOptions,
-  //UseFormGetValues,
+  UseFormGetValues,
   UseFormRegister,
 } from "react-hook-form";
 import { useTranslation } from "react-i18next";
@@ -27,6 +24,8 @@ import {
   PowerUnitType,
 } from "../../../features/manageVehicles/types/managevehicles";
 import { BC_COLOURS } from "../../../themes/bcGovStyles";
+
+import { PhoneNumberInput } from "./PhoneNumberInput";
 
 /**
  * Properties of onRouteBC custom form components
@@ -50,7 +49,7 @@ export interface CommonFormPropsType<T extends FieldValues> {
   control: Control<T>;
   register: UseFormRegister<T>;
   feature: string;
-  //getValues: UseFormGetValues<T>;
+  getValues: UseFormGetValues<T>;
 }
 
 /**
@@ -98,7 +97,7 @@ export const CustomFormComponent = <
   T extends CompanyProfile | CreatePowerUnit
 >({
   type,
-  commonFormProps: { control, register, feature },
+  commonFormProps: { control, register, feature, getValues },
   options: {
     name,
     rules,
@@ -143,7 +142,7 @@ export const CustomFormComponent = <
                 <CustomInputComponent
                   register={register}
                   feature={feature}
-                  //getValues={getValues}
+                  getValues={getValues}
                   name={name}
                   rules={rules}
                   inputProps={inputProps}
@@ -223,10 +222,10 @@ const CustomSelectComponent = <T extends CompanyProfile | CreatePowerUnit>({
 /**
  * Properties of the onrouteBC customized OutlineInput MUI component
  */
-interface CustomInputComponentProps<T extends FieldValues> {
+export interface CustomInputComponentProps<T extends FieldValues> {
   register: UseFormRegister<T>;
   feature: string;
-  //getValues: UseFormGetValues<T>;
+  getValues: UseFormGetValues<T>;
   name: FieldPath<T>;
   rules: RegisterOptions;
   inputProps: RegisterOptions;
@@ -238,94 +237,27 @@ interface CustomInputComponentProps<T extends FieldValues> {
  * An onRouteBC customized MUI OutlineInput component
  * Based on https://mui.com/material-ui/api/outlined-input/
  *
- * This component includes auto formatting of user input
  */
-const CustomInputComponent = <T extends CompanyProfile | CreatePowerUnit>({
-  register,
-  //getValues,
-  feature,
-  name,
-  rules,
-  inputProps,
-  invalid,
-  displayAs,
-}: CustomInputComponentProps<T>): JSX.Element => {
-  // // Get the current/default value of the field from React Hook Form
-  // const defaultVal: PathValue<T, Path<T>> = getValues<any>(name);
-  // // Set the value of the field in a useState variable,
-  // // which is used to automatically format the users input
-  // const [value, setValue] = useState<PathValue<T, Path<T>> | string>(
-  //   defaultVal
-  // );
-
-  // // Everytime the user types, update the format of the users input
-  // const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   let formattedValue = e.target.value;
-
-  //   if (displayAs === "phone") {
-  //     formattedValue = formatPhoneNumber(e.target.value, value);
-  //   }
-
-  //   setValue(formattedValue);
-  // };
-
-  // if (displayAs) {
-  //   return (
-  //     <OutlinedInput
-  //       aria-labelledby={`${feature}-${name}-label`}
-  //       inputProps={inputProps}
-  //       sx={{
-  //         "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-  //           borderColor: invalid ? BC_COLOURS.bc_red : BC_COLOURS.focus_blue,
-  //         },
-  //       }}
-  //       {...register(name, rules)}
-  //       value={value}
-  //       onChange={handleChange}
-  //     />
-  //   );
-  // }
+const CustomInputComponent = <T extends CompanyProfile | CreatePowerUnit>(
+  props: CustomInputComponentProps<T>
+): JSX.Element => {
+  // Use Custom Phone Number component
+  if (props.displayAs == "phone") {
+    return <PhoneNumberInput {...props} />;
+  }
 
   return (
     <OutlinedInput
-      aria-labelledby={`${feature}-${name}-label`}
-      inputProps={inputProps}
+      aria-labelledby={`${props.feature}-${props.name}-label`}
+      inputProps={props.inputProps}
       sx={{
         "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-          borderColor: invalid ? BC_COLOURS.bc_red : BC_COLOURS.focus_blue,
+          borderColor: props.invalid
+            ? BC_COLOURS.bc_red
+            : BC_COLOURS.focus_blue,
         },
       }}
-      {...register(name, rules)}
+      {...props.register(props.name, props.rules)}
     />
   );
-};
-
-/**
- * Function to format the users input to be in the correct phone number format
- * as the user types
- */
-const formatPhoneNumber = (input: string, previousValue: any): string => {
-  // return nothing if no value
-  if (!input) return input;
-
-  // only allows 0-9 inputs
-  const currentValue = input.replace(/[^\d]/g, "");
-  const cvLength = currentValue.length;
-
-  if (!previousValue || input.length > previousValue.length) {
-    // returns: "x", "xx", "xxx"
-    if (cvLength < 4) return currentValue;
-
-    // returns: "(xxx)", "(xxx) x", "(xxx) xx", "(xxx) xxx",
-    if (cvLength < 7)
-      return `(${currentValue.slice(0, 3)}) ${currentValue.slice(3)}`;
-
-    // returns: "(xxx) xxx-", (xxx) xxx-x", "(xxx) xxx-xx", "(xxx) xxx-xxx", "(xxx) xxx-xxxx"
-    return `(${currentValue.slice(0, 3)}) ${currentValue.slice(
-      3,
-      6
-    )}-${currentValue.slice(6, 10)}`;
-  }
-
-  return "";
 };

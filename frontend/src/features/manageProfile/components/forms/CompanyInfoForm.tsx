@@ -126,6 +126,7 @@ const CompanyContactDetailsForm = ({
           inValidMessage: "Phone Number is required",
           width: PHONE_WIDTH,
           displayAs: "phone",
+          inputProps: { maxLength: 20 },
         }}
       />
       <CustomFormComponent
@@ -436,7 +437,7 @@ export const CompanyInfoForm = memo(
       control: control,
       register: register,
       feature: "profile",
-      //getValues: getValues,
+      getValues: getValues,
     };
 
     return (
