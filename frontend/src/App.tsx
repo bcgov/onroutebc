@@ -8,18 +8,21 @@ import { bcGovTheme } from "./themes/bcGovTheme";
 import { AuthProvider } from "react-oidc-context";
 
 const oidcConfig = {
-  authority: "https://dev.loginproxy.gov.bc.ca/auth",
+  // https://dev.loginproxy.gov.bc.ca/auth/realms/standard/.well-known/openid-configuration
+  // https://dev.loginproxy.gov.bc.ca/auth/.well-known/openid-configuration
+  authority: "https://dev.loginproxy.gov.bc.ca/auth/realms/standard",
   realm: "standard",
   client_id: "on-route-bc-4452",
-  redirect_uri: "http://localhost:3000",
+  redirect_uri: "http://localhost:3000/oauth/callback",
   scope: "openid",
+  client_secret: "YM2f3sPiukt7HV33BoHjGfBgWFwGMmmm",
   automaticSilentRenew: true,
   revokeTokensOnSignout: true,
 };
 
 const App = () => {
   return (
-    // <AuthProvider {...oidcConfig}>
+    <AuthProvider {...oidcConfig}>
       <ThemeProvider theme={bcGovTheme}>
         <Router>
           <Header />
@@ -27,7 +30,7 @@ const App = () => {
         </Router>
         <Footer />
       </ThemeProvider>
-    // {/* </AuthProvider> */}
+    </AuthProvider>
   );
 };
 
