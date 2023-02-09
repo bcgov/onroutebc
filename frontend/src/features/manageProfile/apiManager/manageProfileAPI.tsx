@@ -39,10 +39,12 @@ export interface CompanyProfile {
   primaryContact: Contact;
 }
 
-//const TEST_COMPANY_GUID = "2245D2BF64CD4B00B5F511E598BB2555"; // for the DEV database
-//let TEST_COMPANY_GUID = "4C4D466376D74F97A0D1E44D2CF17CD7"; // for the local docker database
-let TEST_COMPANY_GUID = "2245D2BF64CD4B00B5F511E598BB2555";
+// I have hardcoded the companyGUID because for this sprint we have assumed
+// that the user has logged in with BCeID and has already completed the
+// Wizard to setup their initial company profile
+let TEST_COMPANY_GUID = "06D0D93CE18A43948979F255C7046B72";
 
+/* eslint-disable @typescript-eslint/no-unused-vars */
 export const getCompanyInfo = async (
   companyGUID: string
 ): Promise<CompanyProfile> => {
@@ -50,7 +52,6 @@ export const getCompanyInfo = async (
   const url = new URL(MANAGE_PROFILE_API.COMPANY_INFO);
 
   try {
-    //const response = await fetch(`${url.href}/${companyGUID}`);
     const response = await fetch(`${url.href}/${TEST_COMPANY_GUID}`);
     const data = await response.json();
 
@@ -69,6 +70,7 @@ export const getCompanyInfo = async (
   }
 };
 
+/* eslint-disable @typescript-eslint/no-unused-vars */
 export const updateCompanyInfo = async ({
   companyGUID,
   companyInfo,

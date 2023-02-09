@@ -89,31 +89,3 @@ export const formatPhoneNumber = (input: string): string => {
     4
   )}) ${currentValue.slice(4, 7)}-${currentValue.slice(7, 11)}`;
 };
-
-/*
-// Remove the '+' for country code if no value or
-  // if value length is greater than standard Canada/US phone number
-  // (11 digits incl. country code)
-  if (cvLength < 1 || cvLength > 11) {
-    return currentValue;
-  }
-  // returns: "+x ",
-  if (cvLength < 2) return `+${currentValue}`;
-
-  // returns: "+x x", "+x xx", "+x xxx"
-  if (cvLength < 5)
-    return `+${currentValue.slice(0, 1)} ${currentValue.slice(1, 4)}`;
-
-  // returns: "+x (xxx)", "+x (xxx) x", "+x (xxx) xx", "+x (xxx) xxx",
-  if (cvLength < 8)
-    return `+${currentValue.slice(0, 1)} (${currentValue.slice(
-      1,
-      4
-    )}) ${currentValue.slice(4)}`;
-
-  // returns: "+x (xxx) xxx-", "+x (xxx) xxx-x", "+x (xxx) xxx-xx", "+x (xxx) xxx-xxx", "+x (xxx) xxx-xxxx"
-  return `+${currentValue.slice(0, 1)} (${currentValue.slice(
-    1,
-    4
-  )}) ${currentValue.slice(4, 7)}-${currentValue.slice(7, 11)}`;
-  */
