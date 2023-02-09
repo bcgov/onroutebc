@@ -20,6 +20,7 @@ import {
 import { InfoBcGovBanner } from "../../../../common/components/alertBanners/AlertBanners";
 
 import "./CompanyInfoForms.scss";
+import { formatPhoneNumber } from "../../../../common/components/form/PhoneNumberInput";
 
 const DEFAULT_WIDTH = "528px";
 const CITY_WIDTH = "304px";
@@ -397,15 +398,19 @@ export const CompanyInfoForm = memo(
           postalCode: companyInfo?.mailingAddress?.postalCode || "",
         },
         email: companyInfo?.email || "",
-        phone: companyInfo?.phone || "",
+        phone: companyInfo?.phone ? formatPhoneNumber(companyInfo?.phone) : "",
         extension: companyInfo?.extension || "",
         fax: companyInfo?.fax || "",
         primaryContact: {
           firstName: companyInfo?.primaryContact?.firstName || "",
           lastName: companyInfo?.primaryContact?.lastName || "",
-          phone1: companyInfo?.primaryContact?.phone1 || "",
+          phone1: companyInfo?.primaryContact?.phone1
+            ? formatPhoneNumber(companyInfo?.primaryContact?.phone1)
+            : "",
           phone1Extension: companyInfo?.primaryContact?.phone1Extension || "",
-          phone2: companyInfo?.primaryContact?.phone2 || "",
+          phone2: companyInfo?.primaryContact?.phone2
+            ? formatPhoneNumber(companyInfo?.primaryContact?.phone2)
+            : "",
           phone2Extension: companyInfo?.primaryContact?.phone2Extension || "",
           email: companyInfo?.primaryContact?.email || "",
           city: companyInfo?.primaryContact?.city || "",
