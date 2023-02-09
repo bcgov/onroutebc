@@ -56,7 +56,7 @@ export const PhoneNumberInput = <T extends CompanyProfile | CreatePowerUnit>(
  * Function to format the users input to be in the correct phone number format
  * as the user types
  */
-const formatPhoneNumber = (input: string): string => {
+export const formatPhoneNumber = (input: string): string => {
   // only allows 0-9 inputs
   const currentValue = input.replace(/[^\d]/g, "");
   const cvLength = currentValue.length;

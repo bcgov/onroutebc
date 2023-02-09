@@ -1,5 +1,6 @@
 import { Box, Button, Typography } from "@mui/material";
 import { memo } from "react";
+import { formatPhoneNumber } from "../../../../common/components/form/PhoneNumberInput";
 import { CompanyProfile } from "../../apiManager/manageProfileAPI";
 
 import "./ManageProfilePages.scss";
@@ -12,6 +13,7 @@ export const DisplayInfo = memo(
     companyInfo?: CompanyProfile;
     setIsEditting: React.Dispatch<React.SetStateAction<boolean>>;
   }) => {
+    if (!companyInfo) return <></>;
     return (
       <div className="display-info-container">
         <Box>
@@ -41,11 +43,11 @@ export const DisplayInfo = memo(
 
           <h2>Company Contact Details</h2>
           <Typography>Email: {companyInfo?.email}</Typography>
-          <Typography>{`Phone: ${companyInfo?.phone} ${
+          <Typography>{`Phone: ${formatPhoneNumber(companyInfo?.phone)} ${
             companyInfo?.extension ? `Ext: ${companyInfo?.extension}` : ""
           }`}</Typography>
           {companyInfo?.fax ? (
-            <Typography>Fax: {companyInfo?.fax}</Typography>
+            <Typography>Fax: {formatPhoneNumber(companyInfo?.fax)}</Typography>
           ) : (
             ""
           )}
@@ -53,7 +55,9 @@ export const DisplayInfo = memo(
           <h2>Company Primary Contact</h2>
           <Typography>{`${companyInfo?.primaryContact.firstName} ${companyInfo?.primaryContact.lastName}`}</Typography>
           <Typography>Email: {companyInfo?.primaryContact.email}</Typography>
-          <Typography>{`Primary Phone: ${companyInfo?.primaryContact.phone1} ${
+          <Typography>{`Primary Phone: ${formatPhoneNumber(
+            companyInfo?.primaryContact.phone1
+          )} ${
             companyInfo?.primaryContact.phone1Extension
               ? `Ext: ${companyInfo?.primaryContact.phone1Extension}`
               : ""
