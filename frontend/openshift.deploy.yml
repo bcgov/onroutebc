@@ -78,7 +78,7 @@ objects:
         const envConfig = (() => {
           return {
             "VITE_DEPLOY_ENVIRONMENT":"${ZONE}",
-            "VITE_API_VEHICLE_URL":"https://${NAME}-${ZONE}-backend-vehicles.${DOMAIN}"
+            "VITE_API_VEHICLE_URL":"https://${NAME}-${ZONE}-backend-vehicles.${DOMAIN}",
             "VITE_API_MANAGE_PROFILE_URL":"https://${NAME}-${ZONE}-backend-vehicles.${DOMAIN}"
           };
         })();
