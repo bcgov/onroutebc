@@ -44,7 +44,8 @@ export const CompanyInfoForm = memo(
           countryCode: companyInfo?.companyAddress?.countryCode || "",
           postalCode: companyInfo?.companyAddress?.postalCode || "",
         },
-        mailingAddressSameAsCompanyAddress: true,
+        mailingAddressSameAsCompanyAddress:
+          companyInfo?.mailingAddressSameAsCompanyAddress,
         mailingAddress: {
           addressLine1: companyInfo?.mailingAddress?.addressLine1 || "",
           addressLine2: companyInfo?.mailingAddress?.addressLine2 || "",

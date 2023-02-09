@@ -33,6 +33,9 @@ const formatProvince = (countryCode: string, provinceCode: string) => {
   const provinceName = countries.filter(
     (province: any) => province.code === provinceCode
   );
+
+  if (!provinceName[0]) return "";
+
   return provinceName[0].name;
 };
 
@@ -81,12 +84,6 @@ export const DisplayInfo = memo(
                       companyInfo?.mailingAddress?.provinceCode
                     )
                   : ""}
-              </Typography>
-              <Typography>
-                {companyInfo?.mailingAddress?.countryCode}
-              </Typography>
-              <Typography>
-                {companyInfo?.mailingAddress?.provinceCode}
               </Typography>
               <Typography>{`${companyInfo?.mailingAddress?.city} ${companyInfo?.mailingAddress?.postalCode}`}</Typography>
             </>

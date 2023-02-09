@@ -1,13 +1,9 @@
-import {
-  FormGroup,
-  FormControlLabel,
-  Checkbox,
-  Typography,
-} from "@mui/material";
+import { Typography } from "@mui/material";
 import { useState } from "react";
 import { CountryAndProvince } from "../../../../../common/components/form/CountryAndProvince";
 import {
   CommonFormPropsType,
+  CustomCheckboxComponent,
   CustomFormComponent,
 } from "../../../../../common/components/form/CustomFormComponents";
 import {
@@ -24,23 +20,22 @@ export const CompanyMailingAddressForm = ({
   companyInfo?: CompanyProfile;
   commonFormProps: CommonFormPropsType<CompanyProfile>;
 }) => {
-  const [showMailingAddress, setShowMailingAddress] = useState(false);
+  const [showMailingAddress, setShowMailingAddress] = useState(
+    !companyInfo?.mailingAddressSameAsCompanyAddress
+  );
+
   return (
     <>
-      <FormGroup>
-        <FormControlLabel
-          control={
-            <Checkbox
-              defaultChecked
-              onChange={() => setShowMailingAddress(!showMailingAddress)}
-              inputProps={{
-                "aria-label": "Mailing Address Checkbox",
-              }}
-            />
-          }
-          label="Mailing address is the same as company address"
-        />
-      </FormGroup>
+      <CustomCheckboxComponent
+        commonFormProps={commonFormProps}
+        name="mailingAddressSameAsCompanyAddress"
+        label={"Mailing address is the same as company address"}
+        inputProps={{
+          "aria-label": "Mailing Address Checkbox",
+        }}
+        checked={!showMailingAddress}
+        handleOnChange={() => setShowMailingAddress(!showMailingAddress)}
+      />
 
       {showMailingAddress ? (
         <>
@@ -78,8 +73,11 @@ export const CompanyMailingAddressForm = ({
                 ? companyInfo.mailingAddress.provinceCode
                 : ""
             }
-            feature={"profile"}
             width={DEFAULT_WIDTH}
+            countryField={"mailingAddress.countryCode"}
+            provinceField={"mailingAddress.provinceCode"}
+            feature={"profile"}
+            rules={{ required: showMailingAddress }}
           />
           <div className="mp-side-by-side-container">
             <CustomFormComponent

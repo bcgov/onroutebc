@@ -6,8 +6,10 @@ import {
   Box,
   Select,
   MenuItem,
+  Checkbox,
 } from "@mui/material";
 import { UseQueryResult } from "@tanstack/react-query";
+import { ChangeEvent, InputHTMLAttributes } from "react";
 import {
   Control,
   Controller,
@@ -258,6 +260,55 @@ const CustomInputComponent = <T extends CompanyProfile | CreatePowerUnit>(
         },
       }}
       {...props.register(props.name, props.rules)}
+    />
+  );
+};
+
+/**
+ * Properties of the onrouteBC customized Checkbox MUI component
+ */
+export interface CustomCheckboxComponentProps<T extends FieldValues> {
+  commonFormProps: CommonFormPropsType<T>;
+  name: FieldPath<T>;
+  label: string;
+  inputProps?: InputHTMLAttributes<HTMLInputElement>;
+  checked: boolean;
+  handleOnChange: (
+    event: ChangeEvent<HTMLInputElement>,
+    checked: boolean
+  ) => void;
+}
+
+/**
+ * An onRouteBC customized MUI Checkbox component
+ *
+ */
+export const CustomCheckboxComponent = <
+  T extends CompanyProfile | CreatePowerUnit
+>(
+  props: CustomCheckboxComponentProps<T>
+): JSX.Element => {
+  return (
+    <Controller
+      key={`controller-${props.commonFormProps.feature}-${props.name}`}
+      name={props.name}
+      control={props.commonFormProps.control}
+      render={() => (
+        <>
+          <FormControl>
+            <div>
+              <Checkbox
+                {...props.commonFormProps.register(props.name)}
+                checked={props.checked}
+                onChange={props.handleOnChange}
+                inputProps={props.inputProps}
+                sx={{ marginLeft: "0px", paddingLeft: "0px" }}
+              />
+              <FormLabel>{props.label}</FormLabel>
+            </div>
+          </FormControl>
+        </>
+      )}
     />
   );
 };
