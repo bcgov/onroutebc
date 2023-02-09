@@ -1,4 +1,4 @@
-import { Box } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 import { useState } from "react";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { CompanyInfoForm } from "../forms/CompanyInfoForm";
@@ -8,6 +8,7 @@ import { DisplayInfo } from "./DisplayCompanyInfo";
 import { useQuery } from "@tanstack/react-query";
 import {
   CompanyProfile,
+  createCompanyInfo,
   getCompanyInfo,
 } from "../../apiManager/manageProfileAPI";
 
@@ -54,6 +55,30 @@ export const CompanyInfo = () => {
     staleTime: 5000,
   });
 
+  // For testing
+  if (!companyInfoData) {
+    return (
+      <div style={{ marginTop: "20px" }}>
+        <Typography>
+          For Testing: Click the button below to create a user
+        </Typography>
+        <Typography>
+          This button makes a post request with sample data, simulating logging
+          in with bceid and completing the wizard
+        </Typography>
+        <Button
+          key="update-company-info-button"
+          aria-label="Update Company Info"
+          variant="contained"
+          color="primary"
+          onClick={createCompanyInfo}
+          sx={{ marginTop: "20px" }}
+        >
+          TEST!
+        </Button>
+      </div>
+    );
+  }
   return (
     <>
       {isEditting ? <Header /> : null}

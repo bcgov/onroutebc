@@ -39,11 +39,9 @@ export interface CompanyProfile {
   primaryContact: Contact;
 }
 
-interface TestResponse {
-  status: number;
-}
-
-const TEST_COMPANY_GUID = "2245D2BF64CD4B00B5F511E598BB2555";
+//const TEST_COMPANY_GUID = "2245D2BF64CD4B00B5F511E598BB2555"; // for the DEV database
+//let TEST_COMPANY_GUID = "4C4D466376D74F97A0D1E44D2CF17CD7"; // for the local docker database
+let TEST_COMPANY_GUID = "";
 
 export const getCompanyInfo = async (
   companyGUID: string
@@ -86,4 +84,57 @@ export const updateCompanyInfo = async ({
     },
     body: JSON.stringify(companyInfo),
   });
+};
+
+const TEST_POST_DATA = {
+  legalName: "ABC Carriers Inc.",
+  companyAddress: {
+    addressLine1: "1234 Main St.",
+    addressLine2: "Unit 321",
+    city: "Vancouver",
+    provinceCode: "BC",
+    countryCode: "CA",
+    postalCode: "V8W2E7",
+  },
+  mailingAddressSameAsCompanyAddress: true,
+  mailingAddress: {
+    addressLine1: "1234 Main St.",
+    addressLine2: "Unit 321",
+    city: "Vancouver",
+    provinceCode: "BC",
+    countryCode: "CA",
+    postalCode: "V8W2E7",
+  },
+  phone: "9999999999",
+  extension: "99999",
+  fax: "9999999999",
+  email: "test@test.gov.bc.ca",
+  primaryContact: {
+    firstName: "Adam",
+    lastName: "Smith",
+    phone1: "9999999999",
+    phone1Extension: "99999",
+    phone2: "9999999999",
+    phone2Extension: "99999",
+    email: "test@test.gov.bc.ca",
+    city: "Vancouver",
+    provinceCode: "BC",
+    countryCode: "CA",
+  },
+};
+
+export const createCompanyInfo = async (): Promise<CompanyProfile> => {
+  const response = await fetch(`${MANAGE_PROFILE_API.COMPANY_INFO}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(TEST_POST_DATA),
+  });
+
+  const data = (await response.json()) as CompanyProfile;
+
+  TEST_COMPANY_GUID = data.companyGUID;
+
+  return data;
 };
