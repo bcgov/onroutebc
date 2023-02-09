@@ -41,7 +41,7 @@ export interface CompanyProfile {
 
 //const TEST_COMPANY_GUID = "2245D2BF64CD4B00B5F511E598BB2555"; // for the DEV database
 //let TEST_COMPANY_GUID = "4C4D466376D74F97A0D1E44D2CF17CD7"; // for the local docker database
-let TEST_COMPANY_GUID = "";
+let TEST_COMPANY_GUID = "2245D2BF64CD4B00B5F511E598BB2555";
 
 export const getCompanyInfo = async (
   companyGUID: string

@@ -56,29 +56,29 @@ export const CompanyInfo = () => {
   });
 
   // For testing
-  if (!companyInfoData) {
-    return (
-      <div style={{ marginTop: "20px" }}>
-        <Typography>
-          For Testing: Click the button below to create a user
-        </Typography>
-        <Typography>
-          This button makes a post request with sample data, simulating logging
-          in with bceid and completing the wizard
-        </Typography>
-        <Button
-          key="update-company-info-button"
-          aria-label="Update Company Info"
-          variant="contained"
-          color="primary"
-          onClick={createCompanyInfo}
-          sx={{ marginTop: "20px" }}
-        >
-          TEST!
-        </Button>
-      </div>
-    );
-  }
+  // if (!companyInfoData) {
+  //   return (
+  //     <div style={{ marginTop: "20px" }}>
+  //       <Typography>
+  //         For Testing: Click the button below to create a user
+  //       </Typography>
+  //       <Typography>
+  //         This button makes a post request with sample data, simulating logging
+  //         in with bceid and completing the wizard
+  //       </Typography>
+  //       <Button
+  //         key="update-company-info-button"
+  //         aria-label="Update Company Info"
+  //         variant="contained"
+  //         color="primary"
+  //         onClick={createCompanyInfo}
+  //         sx={{ marginTop: "20px" }}
+  //       >
+  //         TEST!
+  //       </Button>
+  //     </div>
+  //   );
+  // }
   return (
     <>
       {isEditting ? <Header /> : null}
