@@ -17,33 +17,35 @@ export const DisplayInfo = memo(
         <Box>
           <h2>Company Address</h2>
           <Typography>{companyInfo?.companyAddress.addressLine1}</Typography>
-          <Typography>{companyInfo?.companyAddress.country}</Typography>
-          <Typography>{companyInfo?.companyAddress.province}</Typography>
+          <Typography>{companyInfo?.companyAddress.countryCode}</Typography>
+          <Typography>{companyInfo?.companyAddress.provinceCode}</Typography>
           <Typography>{`${companyInfo?.companyAddress.city} ${companyInfo?.companyAddress.postalCode}`}</Typography>
 
           <h2>Mailing Address</h2>
-          {companyInfo?.companyAddressSameAsMailingAddress ? (
+          {companyInfo?.mailingAddressSameAsCompanyAddress ? (
             <Typography>Same as Company Address</Typography>
           ) : (
             <>
               <Typography>
                 {companyInfo?.mailingAddress?.addressLine1}
               </Typography>
-              <Typography>{companyInfo?.mailingAddress?.country}</Typography>
-              <Typography>{companyInfo?.mailingAddress?.province}</Typography>
+              <Typography>
+                {companyInfo?.mailingAddress?.countryCode}
+              </Typography>
+              <Typography>
+                {companyInfo?.mailingAddress?.provinceCode}
+              </Typography>
               <Typography>{`${companyInfo?.mailingAddress?.city} ${companyInfo?.mailingAddress?.postalCode}`}</Typography>
             </>
           )}
 
           <h2>Company Contact Details</h2>
-          <Typography>Email: {companyInfo?.companyEmail}</Typography>
-          <Typography>{`Phone: ${companyInfo?.companyPhone} ${
-            companyInfo?.companyExtensionNumber
-              ? `Ext: ${companyInfo?.companyExtensionNumber}`
-              : ""
+          <Typography>Email: {companyInfo?.email}</Typography>
+          <Typography>{`Phone: ${companyInfo?.phone} ${
+            companyInfo?.extension ? `Ext: ${companyInfo?.extension}` : ""
           }`}</Typography>
-          {companyInfo?.companyFaxNumber ? (
-            <Typography>Fax: {companyInfo?.companyFaxNumber}</Typography>
+          {companyInfo?.fax ? (
+            <Typography>Fax: {companyInfo?.fax}</Typography>
           ) : (
             ""
           )}
@@ -56,8 +58,8 @@ export const DisplayInfo = memo(
               ? `Ext: ${companyInfo?.primaryContact.phone1Extension}`
               : ""
           }`}</Typography>
-          <Typography>{companyInfo?.primaryContact.country}</Typography>
-          <Typography>{companyInfo?.primaryContact.province}</Typography>
+          <Typography>{companyInfo?.primaryContact.countryCode}</Typography>
+          <Typography>{companyInfo?.primaryContact.provinceCode}</Typography>
           <Typography>{companyInfo?.primaryContact.city}</Typography>
         </Box>
         <div>

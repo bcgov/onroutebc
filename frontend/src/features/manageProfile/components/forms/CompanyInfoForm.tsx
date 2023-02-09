@@ -420,8 +420,10 @@ export const CompanyInfoForm = memo(
     const addCompanyInfoQuery = useMutation({
       mutationFn: updateCompanyInfo,
       onSuccess: (response) => {
-        if (response.status === 201) {
+        console.log(response.status);
+        if (response.status === 200) {
           queryClient.invalidateQueries(["companyInfo"]);
+          setIsEditting(false);
         } else {
           // Display Error in the form.
         }
@@ -430,7 +432,10 @@ export const CompanyInfoForm = memo(
 
     const onUpdateCompanyInfo = function (data: FieldValues) {
       const companyInfoToBeUpdated = data as CompanyProfile;
-      addCompanyInfoQuery.mutate(companyInfoToBeUpdated);
+      addCompanyInfoQuery.mutate({
+        companyGUID: "TEST_changeme",
+        companyInfo: companyInfoToBeUpdated,
+      });
     };
 
     const commonFormProps: CommonFormPropsType<CompanyProfile> = {

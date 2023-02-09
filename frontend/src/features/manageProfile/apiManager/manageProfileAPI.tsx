@@ -43,6 +43,8 @@ interface TestResponse {
   status: number;
 }
 
+const TEST_COMPANY_GUID = "4C4D466376D74F97A0D1E44D2CF17CD7";
+
 export const getCompanyInfo = async (
   companyGUID: string
 ): Promise<CompanyProfile> => {
@@ -50,7 +52,8 @@ export const getCompanyInfo = async (
   const url = new URL(MANAGE_PROFILE_API.COMPANY_INFO);
 
   try {
-    const response = await fetch(`${url.href}/${companyGUID}`);
+    //const response = await fetch(`${url.href}/${companyGUID}`);
+    const response = await fetch(`${url.href}/${TEST_COMPANY_GUID}`);
     const data = await response.json();
 
     // Handle API errors created from the backend API
@@ -58,7 +61,6 @@ export const getCompanyInfo = async (
       const err: ApiErrorResponse = data;
       return Promise.reject(err.errorMessage);
     }
-    console.log("data", data);
     return data;
     // eslint-disable-next-line  @typescript-eslint/no-explicit-any
   } catch (error: any) {
@@ -69,9 +71,19 @@ export const getCompanyInfo = async (
   }
 };
 
-export const updateCompanyInfo = async (
-  test: CompanyProfile
-): Promise<TestResponse> => {
-  console.log("Updated Company Info! ", test);
-  return { status: 200 };
+export const updateCompanyInfo = async ({
+  companyGUID,
+  companyInfo,
+}: {
+  companyGUID: string;
+  companyInfo: CompanyProfile;
+}): Promise<Response> => {
+  //return fetch(`${MANAGE_PROFILE_API.COMPANY_INFO}/${companyGUID}`, {
+  return fetch(`${MANAGE_PROFILE_API.COMPANY_INFO}/${TEST_COMPANY_GUID}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(companyInfo),
+  });
 };

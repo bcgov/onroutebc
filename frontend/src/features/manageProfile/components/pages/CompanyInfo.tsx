@@ -44,14 +44,12 @@ const CompanyBanner = ({ companyInfo }: { companyInfo?: CompanyProfile }) => {
 export const CompanyInfo = () => {
   const [isEditting, setIsEditting] = useState(false);
 
-  const TEST_COMPANY_GUID = "674B606FF2AF462990EE3F38FB8AAD7A";
-
   const {
     data: companyInfoData,
     //refetch,
   } = useQuery({
     queryKey: ["companyInfo"],
-    queryFn: () => getCompanyInfo(TEST_COMPANY_GUID),
+    queryFn: () => getCompanyInfo("TEST_changeme"),
     keepPreviousData: true,
     staleTime: 5000,
   });
