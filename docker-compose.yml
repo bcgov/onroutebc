@@ -29,6 +29,10 @@ services:
       MSSQL_INIT_DDL_FILENAME: ${MSSQL_INIT_DDL_FILENAME}
       MSSQL_RUN_TESTS: ${MSSQL_RUN_TESTS}
       MSSQL_LOAD_SAMPLE_DATA: ${MSSQL_LOAD_SAMPLE_DATA}
+      MSSQL_MOTI_HOST: ${MSSQL_MOTI_HOST}
+      MSSQL_MOTI_DB: ${MSSQL_MOTI_DB}
+      MSSQL_MOTI_USER: ${MSSQL_MOTI_USER}
+      MSSQL_MOTI_PASSWORD: ${MSSQL_MOTI_PASSWORD}
     healthcheck:
       test: /opt/mssql-tools/bin/sqlcmd -S $$MSSQL_HOST -U $$MSSQL_SA_USER -P $$MSSQL_SA_PASSWORD -Q "USE $$MSSQL_DB" | grep "Changed database context to '$$MSSQL_DB'"
       interval: 20s
