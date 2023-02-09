@@ -39,7 +39,7 @@ parameters:
     description: Image (namespace/name:tag) to promote/import
     value: bcgov/onroutebc:prod-frontend
   - name: DATABASE_NAME
-    description: Name of Database to connect to 
+    description: Name of Database to connect to
     required: true
   - name: DATABASE_USER
     description: User connecting to database
@@ -79,6 +79,7 @@ objects:
           return {
             "VITE_DEPLOY_ENVIRONMENT":"${ZONE}",
             "VITE_API_VEHICLE_URL":"https://${NAME}-${ZONE}-backend-vehicles.${DOMAIN}"
+            "VITE_API_MANAGE_PROFILE_URL":"https://${NAME}-${ZONE}-backend-vehicles.${DOMAIN}"
           };
         })();
   - apiVersion: v1
