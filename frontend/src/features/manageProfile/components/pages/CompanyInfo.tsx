@@ -12,7 +12,14 @@ import {
 } from "../../apiManager/manageProfileAPI";
 
 const Header = () => {
-  return <h2 className="company-header">Edit Company Information</h2>;
+  return (
+    <Typography
+      variant="h4"
+      sx={{ color: BC_COLOURS.bc_black, marginTop: "20px" }}
+    >
+      Edit Company Information
+    </Typography>
+  );
 };
 
 const CompanyBanner = ({ companyInfo }: { companyInfo?: CompanyProfile }) => {
@@ -29,11 +36,11 @@ const CompanyBanner = ({ companyInfo }: { companyInfo?: CompanyProfile }) => {
         justifyContent: "space-between",
       }}
     >
-      <div className="company-banner">
+      <div>
         <Typography variant="body2">COMPANY NAME</Typography>
         <Typography variant="h4">{companyInfo?.legalName}</Typography>
       </div>
-      <div className="company-banner">
+      <div>
         <Typography variant="body2">onRouteBC CLIENT NUMBER</Typography>
         <Typography variant="h4">{companyInfo?.clientNumber}</Typography>
       </div>

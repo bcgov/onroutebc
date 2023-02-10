@@ -49,7 +49,13 @@ export const DisplayInfo = memo(
   }) => {
     if (!companyInfo) return <></>;
     return (
-      <div className="display-info-container">
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          marginBottom: "40px",
+        }}
+      >
         <Box>
           <Typography variant="h3">Company Address</Typography>
           <Typography>{companyInfo?.companyAddress.addressLine1}</Typography>
@@ -132,7 +138,7 @@ export const DisplayInfo = memo(
             Edit
           </Button>
         </div>
-      </div>
+      </Box>
     );
   }
 );
