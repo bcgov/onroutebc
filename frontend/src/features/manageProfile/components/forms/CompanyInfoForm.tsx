@@ -73,6 +73,7 @@ export const CompanyInfoForm = memo(
           city: companyInfo?.primaryContact?.city || "",
           provinceCode: companyInfo?.primaryContact?.provinceCode || "",
           countryCode: companyInfo?.primaryContact?.countryCode || "",
+          contactId: companyInfo?.primaryContact?.contactId,
         },
       },
     });

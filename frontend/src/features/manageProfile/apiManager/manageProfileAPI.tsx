@@ -78,6 +78,7 @@ export const updateCompanyInfo = async ({
   companyGUID: string;
   companyInfo: CompanyProfile;
 }): Promise<Response> => {
+  console.log("companyInfo", companyInfo);
   return fetch(`${MANAGE_PROFILE_API.COMPANY_INFO}/${TEST_COMPANY_GUID}`, {
     method: "PUT",
     headers: {
