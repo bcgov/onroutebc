@@ -36,11 +36,11 @@ const CompanyBanner = ({ companyInfo }: { companyInfo?: CompanyProfile }) => {
       }}
     >
       <div>
-        <Typography variant="body2">COMPANY NAME</Typography>
+        <Typography variant="h5">COMPANY NAME</Typography>
         <Typography variant="h4">{companyInfo?.legalName}</Typography>
       </div>
       <div>
-        <Typography variant="body2">onRouteBC CLIENT NUMBER</Typography>
+        <Typography variant="h5">onRouteBC CLIENT NUMBER</Typography>
         <Typography variant="h4">{companyInfo?.clientNumber}</Typography>
       </div>
     </Box>

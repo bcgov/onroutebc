@@ -30,12 +30,6 @@ export const bcGovTheme = createTheme({
       marginBottom: 2,
       color: BC_COLOURS.bc_black,
     },
-    body2: {
-      fontSize: 14,
-      color: BC_COLOURS.bc_primary_blue,
-      marginBottom: "4px",
-      letterSpacing: "1.4px",
-    },
     h2: {
       color: BC_COLOURS.bc_black,
       fontWeight: "bold",
@@ -61,6 +55,12 @@ export const bcGovTheme = createTheme({
       fontSize: "24px",
       display: "inline-block",
       letterSpacing: "-0.48px",
+    },
+    h5: {
+      fontSize: 14,
+      color: BC_COLOURS.bc_primary_blue,
+      marginBottom: "4px",
+      letterSpacing: "1.4px",
     },
   },
   components: {
