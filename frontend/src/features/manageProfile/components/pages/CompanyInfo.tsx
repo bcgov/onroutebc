@@ -1,4 +1,4 @@
-import { Box } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { useState } from "react";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { CompanyInfoForm } from "../forms/CompanyInfoForm";
@@ -30,12 +30,12 @@ const CompanyBanner = ({ companyInfo }: { companyInfo?: CompanyProfile }) => {
       }}
     >
       <div className="company-banner">
-        <p>COMPANY NAME</p>
-        <h2>{companyInfo?.legalName}</h2>
+        <Typography variant="body2">COMPANY NAME</Typography>
+        <Typography variant="h4">{companyInfo?.legalName}</Typography>
       </div>
       <div className="company-banner">
-        <p>onRouteBC CLIENT NUMBER</p>
-        <h2>{companyInfo?.clientNumber}</h2>
+        <Typography variant="body2">onRouteBC CLIENT NUMBER</Typography>
+        <Typography variant="h4">{companyInfo?.clientNumber}</Typography>
       </div>
     </Box>
   );

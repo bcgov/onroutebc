@@ -51,7 +51,7 @@ export const DisplayInfo = memo(
     return (
       <div className="display-info-container">
         <Box>
-          <h2>Company Address</h2>
+          <Typography variant="h3">Company Address</Typography>
           <Typography>{companyInfo?.companyAddress.addressLine1}</Typography>
           <Typography>
             {formatCountry(companyInfo?.companyAddress.countryCode)}
@@ -64,7 +64,7 @@ export const DisplayInfo = memo(
           </Typography>
           <Typography>{`${companyInfo?.companyAddress.city} ${companyInfo?.companyAddress.postalCode}`}</Typography>
 
-          <h2>Mailing Address</h2>
+          <Typography variant="h3">Mailing Address</Typography>
           {companyInfo?.mailingAddressSameAsCompanyAddress ? (
             <Typography>Same as Company Address</Typography>
           ) : (
@@ -89,7 +89,7 @@ export const DisplayInfo = memo(
             </>
           )}
 
-          <h2>Company Contact Details</h2>
+          <Typography variant="h3">Company Contact Details</Typography>
           <Typography>Email: {companyInfo?.email}</Typography>
           <Typography>{`Phone: ${formatPhoneNumber(companyInfo?.phone)} ${
             companyInfo?.extension ? `Ext: ${companyInfo?.extension}` : ""
@@ -100,7 +100,7 @@ export const DisplayInfo = memo(
             ""
           )}
 
-          <h2>Company Primary Contact</h2>
+          <Typography variant="h3">Company Primary Contact</Typography>
           <Typography>{`${companyInfo?.primaryContact.firstName} ${companyInfo?.primaryContact.lastName}`}</Typography>
           <Typography>Email: {companyInfo?.primaryContact.email}</Typography>
           <Typography>{`Primary Phone: ${formatPhoneNumber(
