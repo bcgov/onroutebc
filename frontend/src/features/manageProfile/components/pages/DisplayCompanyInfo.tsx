@@ -3,7 +3,6 @@ import { memo } from "react";
 import { formatPhoneNumber } from "../../../../common/components/form/PhoneNumberInput";
 import { CompanyProfile } from "../../apiManager/manageProfileAPI";
 import CountriesAndStates from "../../../../constants/countries_and_states.json";
-import "./ManageProfilePages.scss";
 // Disable any eslint for references to countries_and_states.json
 /* eslint-disable @typescript-eslint/no-explicit-any */
 

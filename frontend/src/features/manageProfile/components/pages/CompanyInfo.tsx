@@ -3,7 +3,6 @@ import { useState } from "react";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { CompanyInfoForm } from "../forms/CompanyInfoForm";
 
-import "./ManageProfilePages.scss";
 import { DisplayInfo } from "./DisplayCompanyInfo";
 import { useQuery } from "@tanstack/react-query";
 import {
