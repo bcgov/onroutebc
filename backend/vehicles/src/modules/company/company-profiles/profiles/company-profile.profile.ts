@@ -7,6 +7,7 @@ import {
   mapFrom,
   Mapper,
   mapWith,
+  preCondition,
 } from '@automapper/core';
 import { Injectable } from '@nestjs/common';
 import { Company } from '../entities/company.entity';
@@ -82,6 +83,7 @@ export class CompanyProfile extends AutomapperProfile {
         ),
         forMember(
           (d) => d.mailingAddress,
+          preCondition((s) => !s.mailingAddressSameAsCompanyAddress),
           mapWith(ReadAddressDto, Address, (s) => s.mailingAddress),
         ),
         forMember(
