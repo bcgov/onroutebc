@@ -12,10 +12,10 @@ const oidcConfig = {
   // https://dev.loginproxy.gov.bc.ca/auth/.well-known/openid-configuration
   authority: "https://dev.loginproxy.gov.bc.ca/auth/realms/standard",
   realm: "standard",
-  client_id: "on-route-bc-4452",
-  redirect_uri: "https://onroutebc-190-frontend.apps.silver.devops.gov.bc.ca",
+  client_id: "on-route-bc-direct-4598",
+  redirect_uri: "http://localhost:3000",
   scope: "openid",
-  client_secret: "YM2f3sPiukt7HV33BoHjGfBgWFwGMmmm",
+  // client_secret: "YM2f3sPiukt7HV33BoHjGfBgWFwGMmmm",
   automaticSilentRenew: true,
   revokeTokensOnSignout: true,
 };
