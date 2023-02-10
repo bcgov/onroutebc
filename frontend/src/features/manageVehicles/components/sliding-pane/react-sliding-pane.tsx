@@ -101,7 +101,9 @@ export function ReactSlidingPane({
         beforeClose: "content-before-close",
       }}
       style={{
-        content: { width: width || "80%" },
+        content: {
+          width: width || "80%",
+        },
       }}
       closeTimeoutMS={CLOSE_TIMEOUT}
       isOpen={isOpen ?? false}

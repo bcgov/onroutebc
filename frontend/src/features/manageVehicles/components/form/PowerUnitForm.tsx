@@ -69,7 +69,7 @@ export const PowerUnitForm = ({
       year: powerUnit?.year ? powerUnit?.year : undefined,
     },
   });
-  const { register, handleSubmit, control } = formMethods;
+  const { register, handleSubmit, control, getValues } = formMethods;
 
   const queryClient = useQueryClient();
 
@@ -120,6 +120,7 @@ export const PowerUnitForm = ({
     control: control,
     register: register,
     feature: "power-unit",
+    getValues: getValues,
   };
 
   // Used to change the background colour of the accordion summary when expanded
@@ -258,7 +259,7 @@ export const PowerUnitForm = ({
                     ? powerUnit?.provinceId?.split("-")[1]
                     : ""
                 }
-                width={"490px"}
+                width={formFieldStyle.width}
               />
               <CustomFormComponent
                 type="input"

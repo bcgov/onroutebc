@@ -6,23 +6,28 @@ import {
   Box,
   Select,
   MenuItem,
+  Checkbox,
 } from "@mui/material";
 import { UseQueryResult } from "@tanstack/react-query";
+import { ChangeEvent, InputHTMLAttributes } from "react";
 import {
   Control,
   Controller,
   FieldPath,
   FieldValues,
   RegisterOptions,
+  UseFormGetValues,
   UseFormRegister,
 } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { ICompanyInfo } from "../../../features/manageProfile/apiManager/manageProfileAPI";
+import { CompanyProfile } from "../../../features/manageProfile/apiManager/manageProfileAPI";
 import {
   CreatePowerUnit,
   PowerUnitType,
 } from "../../../features/manageVehicles/types/managevehicles";
 import { BC_COLOURS } from "../../../themes/bcGovStyles";
+
+import { PhoneNumberInput } from "./PhoneNumberInput";
 
 /**
  * Properties of onRouteBC custom form components
@@ -46,6 +51,7 @@ export interface CommonFormPropsType<T extends FieldValues> {
   control: Control<T>;
   register: UseFormRegister<T>;
   feature: string;
+  getValues: UseFormGetValues<T>;
 }
 
 /**
@@ -59,6 +65,7 @@ interface CustomFormOptionsProps<T extends FieldValues> {
   width?: string;
   inValidMessage?: string;
   query?: UseQueryResult<PowerUnitType[], unknown>;
+  displayAs?: "phone";
 }
 
 /**
@@ -84,12 +91,15 @@ interface CustomFormOptionsProps<T extends FieldValues> {
  * @param inValidMessage Red text shown on React Hook Form field invalidation
  * @param query TanStack React Query integration object (https://tanstack.com/query/v4/docs/react/reference/useQuery)
  * @param i18options Optional Internationalization integration using i18
+ * @param displayAs Type of the data to be formatted and displayed as to the user
  *
  * @returns An onRouteBc customized react form component
  */
-export const CustomFormComponent = <T extends ICompanyInfo | CreatePowerUnit>({
+export const CustomFormComponent = <
+  T extends CompanyProfile | CreatePowerUnit
+>({
   type,
-  commonFormProps: { control, register, feature },
+  commonFormProps: { control, register, feature, getValues },
   options: {
     name,
     rules,
@@ -98,6 +108,7 @@ export const CustomFormComponent = <T extends ICompanyInfo | CreatePowerUnit>({
     width = "528px",
     inValidMessage,
     query,
+    displayAs: displayAs,
   },
   i18options,
 }: CustomFormComponentProps<T>): JSX.Element => {
@@ -133,10 +144,12 @@ export const CustomFormComponent = <T extends ICompanyInfo | CreatePowerUnit>({
                 <CustomInputComponent
                   register={register}
                   feature={feature}
+                  getValues={getValues}
                   name={name}
                   rules={rules}
                   inputProps={inputProps}
                   invalid={invalid}
+                  displayAs={displayAs}
                 />
               )}
 
@@ -172,7 +185,7 @@ interface CustomSelectComponentProps<T extends FieldValues> {
  * An onRouteBC customized MUI Select component
  * Based on https://mui.com/material-ui/react-select/
  */
-const CustomSelectComponent = <T extends ICompanyInfo | CreatePowerUnit>({
+const CustomSelectComponent = <T extends CompanyProfile | CreatePowerUnit>({
   register,
   feature,
   name,
@@ -183,8 +196,18 @@ const CustomSelectComponent = <T extends ICompanyInfo | CreatePowerUnit>({
     <Select
       aria-labelledby={`${feature}-${name}-label`}
       defaultValue={""}
-      sx={{ height: "48px" }}
       {...register(name, rules)}
+      MenuProps={{
+        style: {
+          // Fix for aligning the width of menu to the dropdown
+          width: 100 % -10,
+        },
+      }}
+      sx={{
+        "&&.Mui-focused fieldset": {
+          border: `2px solid ${BC_COLOURS.focus_blue}`,
+        },
+      }}
     >
       {query?.data?.map((powerUnitType: PowerUnitType) => (
         <MenuItem
@@ -201,37 +224,91 @@ const CustomSelectComponent = <T extends ICompanyInfo | CreatePowerUnit>({
 /**
  * Properties of the onrouteBC customized OutlineInput MUI component
  */
-interface CustomInputComponentProps<T extends FieldValues> {
+export interface CustomInputComponentProps<T extends FieldValues> {
   register: UseFormRegister<T>;
   feature: string;
+  getValues: UseFormGetValues<T>;
   name: FieldPath<T>;
   rules: RegisterOptions;
   inputProps: RegisterOptions;
   invalid: boolean;
+  displayAs?: string;
 }
 
 /**
  * An onRouteBC customized MUI OutlineInput component
  * Based on https://mui.com/material-ui/api/outlined-input/
+ *
  */
-const CustomInputComponent = <T extends ICompanyInfo | CreatePowerUnit>({
-  register,
-  feature,
-  name,
-  rules,
-  inputProps,
-  invalid,
-}: CustomInputComponentProps<T>): JSX.Element => {
+const CustomInputComponent = <T extends CompanyProfile | CreatePowerUnit>(
+  props: CustomInputComponentProps<T>
+): JSX.Element => {
+  // Use Custom Phone Number component
+  if (props.displayAs == "phone") {
+    return <PhoneNumberInput {...props} />;
+  }
+
   return (
     <OutlinedInput
-      aria-labelledby={`${feature}-${name}-label`}
-      inputProps={inputProps}
+      aria-labelledby={`${props.feature}-${props.name}-label`}
+      inputProps={props.inputProps}
       sx={{
         "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-          borderColor: invalid ? BC_COLOURS.bc_red : BC_COLOURS.focus_blue,
+          borderColor: props.invalid
+            ? BC_COLOURS.bc_red
+            : BC_COLOURS.focus_blue,
         },
       }}
-      {...register(name, rules)}
+      {...props.register(props.name, props.rules)}
+    />
+  );
+};
+
+/**
+ * Properties of the onrouteBC customized Checkbox MUI component
+ */
+export interface CustomCheckboxComponentProps<T extends FieldValues> {
+  commonFormProps: CommonFormPropsType<T>;
+  name: FieldPath<T>;
+  label: string;
+  inputProps?: InputHTMLAttributes<HTMLInputElement>;
+  checked: boolean;
+  handleOnChange: (
+    event: ChangeEvent<HTMLInputElement>,
+    checked: boolean
+  ) => void;
+}
+
+/**
+ * An onRouteBC customized MUI Checkbox component
+ *
+ */
+export const CustomCheckboxComponent = <
+  T extends CompanyProfile | CreatePowerUnit
+>(
+  props: CustomCheckboxComponentProps<T>
+): JSX.Element => {
+  return (
+    <Controller
+      key={`controller-${props.commonFormProps.feature}-${props.name}`}
+      name={props.name}
+      control={props.commonFormProps.control}
+      render={() => (
+        <>
+          <FormControl>
+            <div>
+              <Checkbox
+                {...props.commonFormProps.register(props.name)}
+                checked={props.checked}
+                onChange={props.handleOnChange}
+                inputProps={props.inputProps}
+                sx={{ marginLeft: "0px", paddingLeft: "0px" }}
+              />
+              <FormLabel>{props.label}</FormLabel>
+            </div>
+          </FormControl>
+        </>
+      )}
     />
   );
 };
