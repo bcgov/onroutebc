@@ -1,364 +1,92 @@
-import {
-  Button,
-  Checkbox,
-  FormControlLabel,
-  FormGroup,
-  Typography,
-} from "@mui/material";
+import { Button, Typography } from "@mui/material";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { memo, useState } from "react";
+import { memo } from "react";
 import { FormProvider, useForm, FieldValues } from "react-hook-form";
-import { CountryAndProvince } from "../../../../common/components/form/CountryAndProvince";
 import {
-  ICompanyInfo,
+  CompanyProfile,
   updateCompanyInfo,
 } from "../../apiManager/manageProfileAPI";
-import {
-  CommonFormPropsType,
-  CustomFormComponent,
-} from "../../../../common/components/form/CustomFormComponents";
+import { CommonFormPropsType } from "../../../../common/components/form/CustomFormComponents";
 import { InfoBcGovBanner } from "../../../../common/components/alertBanners/AlertBanners";
 
 import "./CompanyInfoForms.scss";
+import { formatPhoneNumber } from "../../../../common/components/form/PhoneNumberInput";
+import { CompanyInfoGeneralForm } from "./subForms/CompanyInfoGeneralForm";
+import { CompanyContactDetailsForm } from "./subForms/CompanyContactDetailsForm";
+import { CompanyMailingAddressForm } from "./subForms/CompanyMailingAddressForm";
+import { CompanyPrimaryContactForm } from "./subForms/CompanyPrimaryContactForm";
 
-const DEFAULT_WIDTH = "528px";
-const CITY_WIDTH = "304px";
-const POSTAL_WIDTH = "184px";
-const PHONE_WIDTH = "344px";
-const EXT_WIDTH = "144px";
-
-const CompanyInfoGeneralForm = ({
-  commonFormProps,
-  companyInfo,
-}: {
-  commonFormProps: CommonFormPropsType<ICompanyInfo>;
-  companyInfo?: ICompanyInfo;
-}) => (
-  <>
-    <CustomFormComponent
-      type="input"
-      commonFormProps={commonFormProps}
-      options={{
-        name: "address1",
-        rules: { required: true },
-        label: "Address (Line 1)",
-        inValidMessage: "Address is required",
-      }}
-    />
-
-    <CustomFormComponent
-      type="input"
-      commonFormProps={commonFormProps}
-      options={{
-        name: "address2",
-        rules: { required: false },
-        label: "Address (Line 2)",
-      }}
-    />
-
-    <CountryAndProvince
-      country={companyInfo?.country ? companyInfo.country : ""}
-      province={companyInfo?.province ? companyInfo.province : ""}
-      width={DEFAULT_WIDTH}
-      countryField={"primaryCountry"}
-      provinceField={"primaryProvince"}
-    />
-
-    <div className="mp-side-by-side-container">
-      <CustomFormComponent
-        type="input"
-        commonFormProps={commonFormProps}
-        options={{
-          name: "city",
-          rules: { required: true },
-          label: "City",
-          inValidMessage: "City is required",
-          width: CITY_WIDTH,
-        }}
-      />
-      <CustomFormComponent
-        type="input"
-        commonFormProps={commonFormProps}
-        options={{
-          name: "postalCode",
-          rules: { required: true },
-          label: "Postal / Zip Code",
-          inValidMessage: "Postal / Zip Code is required",
-          width: POSTAL_WIDTH,
-        }}
-      />
-    </div>
-  </>
-);
-
-const CompanyContactDetailsForm = ({
-  commonFormProps,
-}: {
-  commonFormProps: CommonFormPropsType<ICompanyInfo>;
-}) => (
-  <>
-    <CustomFormComponent
-      type="input"
-      commonFormProps={commonFormProps}
-      options={{
-        name: "email",
-        rules: { required: false },
-        label: "Email",
-      }}
-    />
-    <div className="mp-side-by-side-container">
-      <CustomFormComponent
-        type="input"
-        commonFormProps={commonFormProps}
-        options={{
-          name: "phone",
-          rules: { required: true },
-          label: "Phone Number",
-          inValidMessage: "Phone Number is required",
-          width: PHONE_WIDTH,
-        }}
-      />
-      <CustomFormComponent
-        type="input"
-        commonFormProps={commonFormProps}
-        options={{
-          name: "ext",
-          rules: { required: false },
-          label: "Ext",
-          width: EXT_WIDTH,
-        }}
-      />
-    </div>
-    <CustomFormComponent
-      type="input"
-      commonFormProps={commonFormProps}
-      options={{
-        name: "fax",
-        rules: { required: false },
-        label: "Fax",
-        width: PHONE_WIDTH,
-      }}
-    />
-  </>
-);
-
-const CompanyMailingAddressForm = ({
-  commonFormProps,
-  companyInfo,
-}: {
-  companyInfo?: ICompanyInfo;
-  commonFormProps: CommonFormPropsType<ICompanyInfo>;
-}) => {
-  const [showMailingAddress, setShowMailingAddress] = useState(false);
-  return (
-    <>
-      <FormGroup>
-        <FormControlLabel
-          control={
-            <Checkbox
-              defaultChecked
-              onChange={() => setShowMailingAddress(!showMailingAddress)}
-              inputProps={{
-                "aria-label": "Mailing Address Checkbox",
-              }}
-            />
-          }
-          label="Mailing address is the same as company address"
-        />
-      </FormGroup>
-
-      {showMailingAddress ? (
-        <>
-          <Typography variant="h2" gutterBottom>
-            Company Mailing Address
-          </Typography>
-
-          <CustomFormComponent
-            type="input"
-            commonFormProps={commonFormProps}
-            options={{
-              name: "mail_address1",
-              rules: { required: true },
-              label: "Address (Line 1)",
-              inValidMessage: "Address is required",
-            }}
-          />
-          <CustomFormComponent
-            type="input"
-            commonFormProps={commonFormProps}
-            options={{
-              name: "mail_address2",
-              rules: { required: false },
-              label: "Address (Line 2)",
-            }}
-          />
-          <CountryAndProvince
-            country={companyInfo?.mail_country ? companyInfo.mail_country : ""}
-            province={
-              companyInfo?.mail_province ? companyInfo.mail_province : ""
-            }
-            feature={"profile"}
-            width={DEFAULT_WIDTH}
-          />
-          <div className="mp-side-by-side-container">
-            <CustomFormComponent
-              type="input"
-              commonFormProps={commonFormProps}
-              options={{
-                name: "mail_city",
-                rules: { required: true },
-                label: "City",
-                inValidMessage: "City is required",
-                width: CITY_WIDTH,
-              }}
-            />
-            <CustomFormComponent
-              type="input"
-              commonFormProps={commonFormProps}
-              options={{
-                name: "mail_postalCode",
-                rules: { required: true },
-                label: "Postal / Zip Code",
-                inValidMessage: "Postal / Zip Code is required",
-                width: POSTAL_WIDTH,
-              }}
-            />
-          </div>
-        </>
-      ) : null}
-    </>
-  );
-};
-
-const CompanyPrimaryContactForm = ({
-  commonFormProps,
-  companyInfo,
-}: {
-  companyInfo?: ICompanyInfo;
-  commonFormProps: CommonFormPropsType<ICompanyInfo>;
-}) => (
-  <>
-    <CustomFormComponent
-      type="input"
-      commonFormProps={commonFormProps}
-      options={{
-        name: "firstName",
-        rules: { required: true },
-        label: "First Name",
-        inValidMessage: "First Name is required",
-      }}
-    />
-    <CustomFormComponent
-      type="input"
-      commonFormProps={commonFormProps}
-      options={{
-        name: "lastName",
-        rules: { required: true },
-        label: "Last Name",
-        inValidMessage: "Last Name is required",
-      }}
-    />
-    <CustomFormComponent
-      type="input"
-      commonFormProps={commonFormProps}
-      options={{
-        name: "primaryEmail",
-        rules: { required: true },
-        label: "Email",
-        inValidMessage: "Email is required",
-      }}
-    />
-
-    <div className="mp-side-by-side-container">
-      <CustomFormComponent
-        type="input"
-        commonFormProps={commonFormProps}
-        options={{
-          name: "primaryPhone",
-          rules: { required: true },
-          label: "Phone Number",
-          inValidMessage: "Phone Number is required",
-          width: PHONE_WIDTH,
-        }}
-      />
-      <CustomFormComponent
-        type="input"
-        commonFormProps={commonFormProps}
-        options={{
-          name: "primaryPhoneExt",
-          rules: { required: false },
-          label: "Ext",
-          width: EXT_WIDTH,
-        }}
-      />
-    </div>
-    <div className="mp-side-by-side-container">
-      <CustomFormComponent
-        type="input"
-        commonFormProps={commonFormProps}
-        options={{
-          name: "alternatePhone",
-          rules: { required: false },
-          label: "Alternate Number",
-          width: PHONE_WIDTH,
-        }}
-      />
-      <CustomFormComponent
-        type="input"
-        commonFormProps={commonFormProps}
-        options={{
-          name: "alternatePhoneExt",
-          rules: { required: false },
-          label: "Ext",
-          width: EXT_WIDTH,
-        }}
-      />
-    </div>
-
-    <CountryAndProvince
-      country={companyInfo?.primaryCountry ? companyInfo.primaryCountry : ""}
-      province={companyInfo?.primaryProvince ? companyInfo.primaryProvince : ""}
-      width={DEFAULT_WIDTH}
-      countryField={"secondaryCountry"}
-      provinceField={"secondaryProvince"}
-      feature={"profile"}
-      rules={{ required: false }}
-    />
-    <CustomFormComponent
-      type="input"
-      commonFormProps={commonFormProps}
-      options={{
-        name: "primaryCity",
-        rules: { required: true },
-        label: "City",
-        inValidMessage: "City is required",
-        width: CITY_WIDTH,
-      }}
-    />
-  </>
-);
-
+/**
+ * The Company Information Form contains multiple subs forms including
+ * Company Info, Company Contact, Primary Contact, and Mailing Address Forms.
+ * This Component contains the logic for React Hook forms and React query
+ * for state management and API calls
+ */
 export const CompanyInfoForm = memo(
   ({
     companyInfo,
     setIsEditting,
   }: {
-    companyInfo?: ICompanyInfo;
+    companyInfo?: CompanyProfile;
     setIsEditting: React.Dispatch<React.SetStateAction<boolean>>;
   }) => {
-    const formMethods = useForm<ICompanyInfo>({
-      defaultValues: {},
+    const queryClient = useQueryClient();
+
+    const formMethods = useForm<CompanyProfile>({
+      defaultValues: {
+        clientNumber: companyInfo?.clientNumber || "",
+        legalName: companyInfo?.legalName || "",
+        companyAddress: {
+          addressLine1: companyInfo?.companyAddress?.addressLine1 || "",
+          addressLine2: companyInfo?.companyAddress?.addressLine2 || "",
+          city: companyInfo?.companyAddress?.city || "",
+          provinceCode: companyInfo?.companyAddress?.provinceCode || "",
+          countryCode: companyInfo?.companyAddress?.countryCode || "",
+          postalCode: companyInfo?.companyAddress?.postalCode || "",
+        },
+        mailingAddressSameAsCompanyAddress:
+          companyInfo?.mailingAddressSameAsCompanyAddress,
+        mailingAddress: {
+          addressLine1: companyInfo?.mailingAddress?.addressLine1 || "",
+          addressLine2: companyInfo?.mailingAddress?.addressLine2 || "",
+          city: companyInfo?.mailingAddress?.city || "",
+          provinceCode: companyInfo?.mailingAddress?.provinceCode || "",
+          countryCode: companyInfo?.mailingAddress?.countryCode || "",
+          postalCode: companyInfo?.mailingAddress?.postalCode || "",
+        },
+        email: companyInfo?.email || "",
+        phone: companyInfo?.phone ? formatPhoneNumber(companyInfo?.phone) : "",
+        extension: companyInfo?.extension || "",
+        fax: companyInfo?.fax || "",
+        primaryContact: {
+          firstName: companyInfo?.primaryContact?.firstName || "",
+          lastName: companyInfo?.primaryContact?.lastName || "",
+          phone1: companyInfo?.primaryContact?.phone1
+            ? formatPhoneNumber(companyInfo?.primaryContact?.phone1)
+            : "",
+          phone1Extension: companyInfo?.primaryContact?.phone1Extension || "",
+          phone2: companyInfo?.primaryContact?.phone2
+            ? formatPhoneNumber(companyInfo?.primaryContact?.phone2)
+            : "",
+          phone2Extension: companyInfo?.primaryContact?.phone2Extension || "",
+          email: companyInfo?.primaryContact?.email || "",
+          city: companyInfo?.primaryContact?.city || "",
+          provinceCode: companyInfo?.primaryContact?.provinceCode || "",
+          countryCode: companyInfo?.primaryContact?.countryCode || "",
+          contactId: companyInfo?.primaryContact?.contactId,
+        },
+      },
     });
 
-    const { register, handleSubmit, control } = formMethods;
-
-    const queryClient = useQueryClient();
+    const { register, handleSubmit, control, getValues } = formMethods;
 
     const addCompanyInfoQuery = useMutation({
       mutationFn: updateCompanyInfo,
       onSuccess: (response) => {
-        if (response.status === 201) {
+        console.log(response.status);
+        if (response.status === 200) {
           queryClient.invalidateQueries(["companyInfo"]);
+          setIsEditting(false);
         } else {
           // Display Error in the form.
         }
@@ -366,14 +94,18 @@ export const CompanyInfoForm = memo(
     });
 
     const onUpdateCompanyInfo = function (data: FieldValues) {
-      const companyInfoToBeUpdated = data as ICompanyInfo;
-      addCompanyInfoQuery.mutate(companyInfoToBeUpdated);
+      const companyInfoToBeUpdated = data as CompanyProfile;
+      addCompanyInfoQuery.mutate({
+        companyGUID: "TEST_changeme",
+        companyInfo: companyInfoToBeUpdated,
+      });
     };
 
-    const commonFormProps: CommonFormPropsType<ICompanyInfo> = {
+    const commonFormProps: CommonFormPropsType<CompanyProfile> = {
       control: control,
       register: register,
       feature: "profile",
+      getValues: getValues,
     };
 
     return (
@@ -411,7 +143,7 @@ export const CompanyInfoForm = memo(
             key="update-company-info-cancel-button"
             aria-label="Cancel Update"
             variant="contained"
-            color="secondary"
+            color="tertiary"
             sx={{ marginRight: "40px" }}
             onClick={() => setIsEditting(false)}
           >
@@ -424,7 +156,7 @@ export const CompanyInfoForm = memo(
             color="primary"
             onClick={handleSubmit(onUpdateCompanyInfo)}
           >
-            Update
+            Save
           </Button>
         </div>
       </div>
