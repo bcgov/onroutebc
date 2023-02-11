@@ -54,7 +54,7 @@ echo "ORBC DB Version: $ORBC_DB_VERSION"
 
 # DDL files are kept in the database/mssql/scripts/versions/ directory, and are copied
 # into the /usr/config/versions/ directory in the container when built.
-echo "Running migration scripts ..."
+echo "Running migration scripts..."
 ((NEXTVER=ORBC_DB_VERSION+1))
 echo "Initial migration file: /usr/config/versions/v_${NEXTVER}_ddl.sql"
 
