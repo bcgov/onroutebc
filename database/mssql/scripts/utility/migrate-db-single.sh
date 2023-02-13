@@ -5,7 +5,7 @@ source ${SCRIPT_DIR}/utility/getopt.sh
 USAGE="-v VERSION -u USER -p PASS -s SERVER -d DATABASE"
 parse_options "${USAGE}" ${@}
 
-# Executes a single version upgrade to the MOTI database. The version to
+# Executes a single version upgrade to the ORBC database. The version to
 # upgrade to must be supplied as a parameter to this script, as do the connection
 # details and credentials.
 # Example: 'migrate-db-single.sh -v 3 -u <user> -p <pass> -s <server> -d <database>'

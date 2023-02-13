@@ -5,13 +5,12 @@ source ${SCRIPT_DIR}/utility/getopt.sh
 USAGE="-u USER -p PASS -s SERVER -d DATABASE"
 parse_options "${USAGE}" ${@}
 
-# Migrates the database schema in the MOTI hosted database from the schema
-# DDL files in the versions directory.
+# Migrates the schema in the ORBC database using the schema DDL files in the
+# versions directory.
 
 # This is intended to be run from the local docker sql-server-db container, or
 # a similar linux environment with the requisite env variables and sqlcmd
-# installed in /opt/mssql-tools/bin/. Note you must be connected to the BC Gov
-# Citrix VPN in order for the connection to be established.
+# installed in /opt/mssql-tools/bin/.
 
 # Retrieve the version of the ORBC database from the version history table.
 # If the version history table does not exist then a value of zero (0) will

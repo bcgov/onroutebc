@@ -6,8 +6,7 @@ USAGE="-u USER -p PASS -s SERVER -d DATABASE"
 parse_options "${USAGE}" ${@}
 
 # All database tests for database version 2 are run from this shell script.
-
-TESTS_DIR=${SCRIPT_DIR}/test/versions
+# TESTS_DIR variable set by the calling test-runner script.
 
 # Test 1.1 - verify the version table exists
 TEST_1_1_RESULT=$(/opt/mssql-tools/bin/sqlcmd -U ${USER} -P "${PASS}" -S ${SERVER} -v DB_NAME=${DATABASE} -h -1 -i ${TESTS_DIR}/v_1_1_test.sql)

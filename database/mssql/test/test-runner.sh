@@ -8,7 +8,7 @@ echo "Executing unit tests"
 # The name of the unit test DB will be passed to the test scripts explicitly
 UNIT_TEST_DB_NAME=UNIT_TEST_DB
 
-TESTS_DIR=${SCRIPT_DIR}/test/versions
+export TESTS_DIR=${SCRIPT_DIR}/test/versions
 
 # Create the unit test DB
 echo "Creating ${UNIT_TEST_DB_NAME} database."
