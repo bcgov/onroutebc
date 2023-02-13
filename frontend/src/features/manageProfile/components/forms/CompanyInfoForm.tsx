@@ -37,6 +37,7 @@ export const CompanyInfoForm = memo(
         clientNumber: companyInfo?.clientNumber || "",
         legalName: companyInfo?.legalName || "",
         companyAddress: {
+          addressId: companyInfo?.companyAddress?.addressId || undefined,
           addressLine1: companyInfo?.companyAddress?.addressLine1 || "",
           addressLine2: companyInfo?.companyAddress?.addressLine2 || "",
           city: companyInfo?.companyAddress?.city || "",
@@ -47,6 +48,7 @@ export const CompanyInfoForm = memo(
         mailingAddressSameAsCompanyAddress:
           companyInfo?.mailingAddressSameAsCompanyAddress,
         mailingAddress: {
+          addressId: companyInfo?.mailingAddress?.addressId || undefined,
           addressLine1: companyInfo?.mailingAddress?.addressLine1 || "",
           addressLine2: companyInfo?.mailingAddress?.addressLine2 || "",
           city: companyInfo?.mailingAddress?.city || "",
