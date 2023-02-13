@@ -6,6 +6,18 @@
 # running the version schema files in sequence just like is done when the
 # docker sql server container starts up with local development.
 
+# This script relies on the following environment variables:
+#  MSSQL_MOTI_HOST
+#  MSSQL_MOTI_DB
+#  MSSQL_MOTI_USER
+#  MSSQL_MOTI_PASSWORD
+# These are all supplied to the docker container from your .env 'secrets' file
+# in the project root. See docker-compose.yml for more details.
+
+# Note that the variables can be overridden with TEST_MOTI_HOST, TEST_MOTI_DB,
+# TEST_MOTI_USER, and TEST_MOTI_PASSWORD respectively but this is only generally
+# used by the automated unit tests. 
+
 # Once the database has been refreshed, loads in the sample data.
 
 # This script should only be done in a non-production database because it will
@@ -16,8 +28,10 @@
 # installed in /opt/mssql-tools/bin/. Note you must be connected to the BC Gov
 # Citrix VPN in order for the connection to be established.
 
-/usr/config/utility/revert-moti-db-complete.sh
-/usr/config/utility/migrate-moti-db-to-current-version.sh
-/usr/config/utility/refresh-moti-sample-data.sh
+echo "Beginning reset of ORBC database..."
 
-echo "Finished refreshing database schema in MOTI ORBC database..."
+${SCRIPT_DIR}/utility/revert-db-complete.sh -u ${TEST_MOTI_USER:=$MSSQL_MOTI_USER} -p "${TEST_MOTI_PASSWORD:=$MSSQL_MOTI_PASSWORD}" -s ${TEST_MOTI_HOST:=$MSSQL_MOTI_HOST} -d ${TEST_MOTI_DB:=$MSSQL_MOTI_DB}
+${SCRIPT_DIR}/utility/migrate-db-current.sh -u ${TEST_MOTI_USER:=$MSSQL_MOTI_USER} -p "${TEST_MOTI_PASSWORD:=$MSSQL_MOTI_PASSWORD}" -s ${TEST_MOTI_HOST:=$MSSQL_MOTI_HOST} -d ${TEST_MOTI_DB:=$MSSQL_MOTI_DB}
+${SCRIPT_DIR}/utility/refresh-sample-data.sh -u ${TEST_MOTI_USER:=$MSSQL_MOTI_USER} -p "${TEST_MOTI_PASSWORD:=$MSSQL_MOTI_PASSWORD}" -s ${TEST_MOTI_HOST:=$MSSQL_MOTI_HOST} -d ${TEST_MOTI_DB:=$MSSQL_MOTI_DB}
+
+echo "Finished reset of ORBC database."
