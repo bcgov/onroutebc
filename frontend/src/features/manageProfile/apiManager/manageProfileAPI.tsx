@@ -79,6 +79,12 @@ export const updateCompanyInfo = async ({
   companyInfo: CompanyProfile;
 }): Promise<Response> => {
   console.log("companyInfo", companyInfo);
+  // If the mailing address is the same as the company address, then send an undefined mailing address
+  // The backend API will set the mailing address ID to match the company address ID
+  if (companyInfo.mailingAddressSameAsCompanyAddress) {
+    companyInfo.mailingAddress = undefined;
+  }
+
   return fetch(`${MANAGE_PROFILE_API.COMPANY_INFO}/${TEST_COMPANY_GUID}`, {
     method: "PUT",
     headers: {
