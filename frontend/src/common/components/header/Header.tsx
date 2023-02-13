@@ -1,9 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
+import { useAuth } from "react-oidc-context";
 import { NavLink } from "react-router-dom";
+import Grid from "@mui/material/Grid";
 
 import "./Header.scss";
 import * as routes from "../../../constants/routes";
 import { BC_COLOURS } from "../../../themes/bcGovStyles";
+import Button from "@mui/material/Button";
 
 /*
  * The Header component includes the BC Gov banner and Navigation bar
@@ -17,6 +20,8 @@ export const Header = () => {
   const mediaQuery = "(max-width: 768px)";
   const mediaQueryList: MediaQueryList = window.matchMedia(mediaQuery);
   const [menuOpen, setMenuOpen] = useState(!mediaQueryList.matches);
+
+  const { isAuthenticated, signoutRedirect, user } = useAuth();
 
   let headerColor: string;
   const env =
@@ -89,16 +94,20 @@ export const Header = () => {
               Home
             </NavLink>
           </li>
-          <li>
-            <NavLink to={routes.MANAGE_VEHICLES} onClick={menuToggleHandler}>
-              Vehicle Inventory
-            </NavLink>
-          </li>
-          <li>
-            <NavLink to={routes.MANAGE_PROFILES} onClick={menuToggleHandler}>
-              Profile
-            </NavLink>
-          </li>
+          {isAuthenticated && (
+            <li>
+              <NavLink to={routes.MANAGE_VEHICLES} onClick={menuToggleHandler}>
+                Vehicle Inventory
+              </NavLink>
+            </li>
+          )}
+          {isAuthenticated && (
+            <li>
+              <NavLink to={routes.MANAGE_PROFILES} onClick={menuToggleHandler}>
+                Profile
+              </NavLink>
+            </li>
+          )}
         </ul>
       </div>
     </nav>
@@ -110,8 +119,24 @@ export const Header = () => {
         style={{ backgroundColor: headerColor }}
         data-testid="header-background"
       >
-        <Brand />
-        <NavButton />
+        <Grid container>
+          <Grid item xs={11}>
+            <Brand />
+            <NavButton />
+          </Grid>
+          {isAuthenticated && <Grid item xs={1}>
+            <a onClick={() =>
+            void signoutRedirect({
+              extraQueryParams: {
+                redirect_uri: 'http://localhost:3000',
+                kc_idp_hint: user?.profile?.identity_provider as string,
+              },
+            })}>
+              Log Out
+              </a>
+          </Grid>}
+          
+        </Grid>
       </header>
       <Navigation />
     </div>

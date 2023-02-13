@@ -15,7 +15,6 @@ const oidcConfig = {
   client_id: "on-route-bc-direct-4598",
   redirect_uri: "http://localhost:3000",
   scope: "openid",
-  // client_secret: "YM2f3sPiukt7HV33BoHjGfBgWFwGMmmm",
   automaticSilentRenew: true,
   revokeTokensOnSignout: true,
 };
