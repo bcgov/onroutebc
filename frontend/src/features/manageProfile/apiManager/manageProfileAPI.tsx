@@ -42,7 +42,8 @@ export interface CompanyProfile {
 // I have hardcoded the companyGUID because for this sprint we have assumed
 // that the user has logged in with BCeID and has already completed the
 // Wizard to setup their initial company profile
-let TEST_COMPANY_GUID = "06D0D93CE18A43948979F255C7046B72";
+//let TEST_COMPANY_GUID = "06D0D93CE18A43948979F255C7046B72";
+let TEST_COMPANY_GUID = "C16A95599A264242A850BDDC21B739F4"; // Harry Ewing User
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 export const getCompanyInfo = async (
