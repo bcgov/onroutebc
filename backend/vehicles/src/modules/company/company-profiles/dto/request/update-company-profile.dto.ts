@@ -2,29 +2,78 @@ import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
 import { UpdateAddressDto } from '../../../../common/dto/request/update-address.dto';
 import { UpdateContactDto } from '../../../../common/dto/request/update-contact.dto';
-import { CreateCompanyProfileDto } from './create-company-profile.dto';
 
 /**
  * JSON representation for request object to update a company profile.
  */
-export class UpdateCompanyProfileDto extends CreateCompanyProfileDto {
+export class UpdateCompanyProfileDto {
+  @AutoMap()
+  @ApiProperty({
+    description: 'The legal name of the company.',
+    example: 'ABC Carriers Inc.',
+  })
+  legalName: string;
+
   @AutoMap()
   @ApiProperty({
     description: 'The physical address of the company.',
     required: true,
-    type: UpdateAddressDto,
   })
   companyAddress: UpdateAddressDto;
 
   @AutoMap()
   @ApiProperty({
     description:
+      'Boolean field indicating if the mailing address is same as company address.',
+    required: true,
+  })
+  mailingAddressSameAsCompanyAddress: boolean;
+
+  @AutoMap()
+  @ApiProperty({
+    description:
       'The mailing address of the company. ' +
-      'A value for this field will be taken into account only if companyAddressSameAsMailingAddress is false. ' +
       'If given, the object must adhere to the individual field rules',
     required: false,
   })
   mailingAddress: UpdateAddressDto;
+
+  @AutoMap()
+  @ApiProperty({
+    description: 'The phone number of the company.',
+    required: true,
+    maxLength: 20,
+    minLength: 10,
+    example: '9999999999',
+  })
+  phone: string;
+
+  @AutoMap()
+  @ApiProperty({
+    description: 'The phone extension of the company (if there is one).',
+    required: false,
+    maxLength: 5,
+    example: '99999',
+  })
+  extension: string;
+
+  @AutoMap()
+  @ApiProperty({
+    description: 'The fax number of the company (if there is one).',
+    required: false,
+    maxLength: 20,
+    minLength: 10,
+    example: '9999999999',
+  })
+  fax: string;
+
+  @AutoMap()
+  @ApiProperty({
+    description: 'The email address of the company.',
+    required: true,
+    example: 'test@test.gov.bc.ca',
+  })
+  email: string;
 
   @AutoMap()
   @ApiProperty({

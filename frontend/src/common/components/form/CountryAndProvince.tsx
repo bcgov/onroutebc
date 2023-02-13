@@ -10,6 +10,7 @@ import { COUNTRIES_THAT_SUPPORT_PROVINCE } from "../../../constants/countries";
 
 import CountriesAndStates from "../../../constants/countries_and_states.json";
 import { Box } from "@mui/material";
+import { BC_COLOURS } from "../../../themes/bcGovStyles";
 
 /**
  * The props that can be passed to the country and provinces subsection of a form.
@@ -71,10 +72,6 @@ export const CountryAndProvince = ({
    */
   const formFieldStyle = {
     fontWeight: "bold",
-  };
-
-  const inputHeight = {
-    height: "48px",
   };
 
   /**
@@ -150,11 +147,15 @@ export const CountryAndProvince = ({
                 <Select
                   aria-labelledby={`${feature}-country-label`}
                   defaultValue={country || ""}
-                  sx={inputHeight}
                   {...register(countryField, {
                     required: rules.required,
                     onChange: onChangeCountry,
                   })}
+                  sx={{
+                    "&&.Mui-focused fieldset": {
+                      border: `2px solid ${BC_COLOURS.focus_blue}`,
+                    },
+                  }}
                 >
                   {CountriesAndStates.map((country) => (
                     <MenuItem
@@ -201,12 +202,16 @@ export const CountryAndProvince = ({
                   <Select
                     aria-labelledby={`${feature}-province-label`}
                     defaultValue={province || ""}
-                    sx={inputHeight}
                     {...register(provinceField, {
                       required: shouldDisplayProvince && rules.required,
                       onChange: onChangeProvince,
                     })}
                     value={selectedProvince}
+                    sx={{
+                      "&&.Mui-focused fieldset": {
+                        border: `2px solid ${BC_COLOURS.focus_blue}`,
+                      },
+                    }}
                   >
                     {getProvinces(countrySelected).map((state) => (
                       <MenuItem
