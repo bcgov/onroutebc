@@ -13,7 +13,7 @@ const oidcConfig = {
   authority: "https://dev.loginproxy.gov.bc.ca/auth/realms/standard",
   realm: "standard",
   client_id: "on-route-bc-direct-4598",
-  redirect_uri: "http://localhost:3000",
+  redirect_uri: "https://onroutebc-202-frontend.apps.silver.devops.gov.bc.ca/",
   scope: "openid",
   automaticSilentRenew: true,
   revokeTokensOnSignout: true,

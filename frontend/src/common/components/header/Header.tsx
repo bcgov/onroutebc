@@ -128,7 +128,7 @@ export const Header = () => {
             <a onClick={() =>
             void signoutRedirect({
               extraQueryParams: {
-                redirect_uri: 'http://localhost:3000',
+                redirect_uri: 'https://onroutebc-202-frontend.apps.silver.devops.gov.bc.ca/',
                 kc_idp_hint: user?.profile?.identity_provider as string,
               },
             })}>
