@@ -55,6 +55,9 @@ export const CompanyInfo = () => {
 
   const {
     data: companyInfoData,
+    isLoading,
+    isError,
+    error,
     //refetch,
   } = useQuery({
     queryKey: ["companyInfo"],
@@ -62,6 +65,16 @@ export const CompanyInfo = () => {
     keepPreviousData: true,
     staleTime: 5000,
   });
+
+  if (isLoading) {
+    return <span>Loading...</span>;
+  }
+
+  if (isError) {
+    if (error instanceof Error) {
+      return <span>Error: {error.message}</span>;
+    }
+  }
 
   return (
     <>
