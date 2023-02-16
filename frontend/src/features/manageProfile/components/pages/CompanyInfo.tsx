@@ -9,6 +9,7 @@ import {
   CompanyProfile,
   getCompanyInfo,
 } from "../../apiManager/manageProfileAPI";
+import { useAuth } from "react-oidc-context";
 
 const Header = () => {
   return (
@@ -53,6 +54,11 @@ const CompanyBanner = ({ companyInfo }: { companyInfo?: CompanyProfile }) => {
 export const CompanyInfo = () => {
   const [isEditting, setIsEditting] = useState(false);
 
+  const auth = useAuth();
+  const companyGUID = auth.user?.profile?.bceid_business_guid
+    ? auth.user?.profile?.bceid_business_guid as string
+    : "C16A95599A264242A850BDDC21B739F4";
+
   const {
     data: companyInfoData,
     isLoading,
@@ -61,7 +67,8 @@ export const CompanyInfo = () => {
     //refetch,
   } = useQuery({
     queryKey: ["companyInfo"],
-    queryFn: () => getCompanyInfo("TEST_changeme"),
+    queryFn: () =>
+      getCompanyInfo(companyGUID, auth.user?.access_token as string),
     keepPreviousData: true,
     staleTime: 5000,
   });

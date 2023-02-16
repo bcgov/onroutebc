@@ -128,7 +128,8 @@ export const Header = () => {
             <a onClick={() =>
             void signoutRedirect({
               extraQueryParams: {
-                redirect_uri: 'https://onroutebc-202-frontend.apps.silver.devops.gov.bc.ca/',
+                // redirect_uri: 'https://onroutebc-202-frontend.apps.silver.devops.gov.bc.ca/',
+                redirect_uri: window.location.origin + "/",
                 kc_idp_hint: user?.profile?.identity_provider as string,
               },
             })}>

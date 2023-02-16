@@ -47,13 +47,17 @@ let TEST_COMPANY_GUID = "C16A95599A264242A850BDDC21B739F4"; // Harry Ewing User
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 export const getCompanyInfo = async (
-  companyGUID: string
+  companyGUID: string,
+  accessToken: string,
 ): Promise<CompanyProfile> => {
   //return TEST_DATA;
   const url = new URL(MANAGE_PROFILE_API.COMPANY_INFO);
-
+  // const auth = useAuth();
+  // console.log(auth?.user?.access_token);
   try {
-    const response = await fetch(`${url.href}/${TEST_COMPANY_GUID}`);
+    const response = await fetch(`${url.href}/${companyGUID}`, {
+      headers: new Headers({ Authorization: `Bearer ${accessToken}` }),
+    });
     const data = await response.json();
 
     // Handle API errors created from the backend API
