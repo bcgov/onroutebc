@@ -3,8 +3,6 @@
 
 ### Ministry-Hosted Databases
 
----
-
 Ministry of Transportation and Infrastructure (MOTI) hosts MS SQL Server instances on-premises for development, test, and production. The onRouteBC database names for dev, test, and prod in the hosted MOTI environment are, respectively:
 * ORBC_DEV
 * ORBC_TST
@@ -14,13 +12,9 @@ Dev, test, and prod databases are all accessed via their own DNS names from the 
 
 ### Development Database
 
----
-
 Local development uses a mssql Docker container which runs on each developer's machine. The local SQL Server database in Docker is rebuilt from scratch whenever the container starts up - there is no persistent disk storage. See the section below on the [Local Build Process](#local-build-process) for more details.
 
 ## Versioning Approach
-
----
 
 Changes to the database (such as those required by new application enhancements) are implemented using SQL DDL statements which are applied to the current database version. For example, adding a column to an existing table would require an `ALTER TABLE` statement. It is vital that database update statements do not impact the integrity of the existing data - this will be verified by the MOTI database team prior to executing the scripts against the production database.
 
@@ -28,13 +22,9 @@ DDL statements to update the database are grouped together into a single SQL fil
 
 ### Versions Table
 
----
-
 When a single DDL version (SQL file with one or more DDL statements) is executed against the database, a record is added to the ORBC_SYS_VERSION table. The record indicates the version number, a description of the change, the timestamp of when the DDL was executed, and the SHA-1 hash of the SQL file itself. The current version of the database can be retrieved by querying the ORBC_SYS_VERSION table for the version number corresponding to the most recent execution timestamp (i.e. the most recent DDL that was run).
 
 ### Reverting Versions
-
----
 
 For each version SQL file there is a corresponding SQL file containing DDL statements to revert all changes that the version SQL made to the database. For example, if a version SQL included a `CREATE TABLE` statement, the revert SQL would contain a corresponding `DROP TABLE` statement to revert the change.
 
@@ -45,8 +35,6 @@ When a revert SQL file is executed against the database, a new record is added t
 > The version SQL files and revert SQL files are intended to be run sequentially (in order) and only moving the database version up or down by a single version number at a time. For example, to migrate the database from version 5 to version 7 first execute the version 6 DDL file then execute the version 7 DDL file.
 
 ### Version SQL File Naming Convention
-
----
 
 SQL version files are located in the repository at `/database/mssql/scripts/versions/`, with the revert scripts located in a `/revert/` subdirectory of this. SQL upgrade scripts are named as follows:
 
@@ -59,8 +47,6 @@ The revert scripts are named as follows:
 For details of the content and structure of the SQL files and how to create your own version file, see [How To Create a New Version](#how-to-create-a-new-version) below.
 
 ## Local Build Process
-
----
 
 Local development uses a SQL Server Docker container. Refer to the `Dockerfile` in the `/database/` directory of the repository for the most up to date details of the source and files copied into the container.
 
@@ -77,8 +63,6 @@ The SQL DDL files are executed using the sqlcmd program in the SQL Server Docker
 The local build process requires a number of environment variables set in the Docker container host. These environment variables are automatically set in the host from a secret .env file in the developer's repository root. Refer to the `docker-compose.yml` file in the repository root and the `Dockerfile` in the `/database/` directory for the most up to date list of environment variables required for the sql-server-db container.
 
 ### Unit Tests
-
----
 
 When the SQL Server Docker container is built, a series of test scripts are executed, one per database version. This is managed by the `/database/mssql/test/test-runner.sh` script. The test runner does the following:
 * Creates a new test database in the SQL Server Docker instance
@@ -98,8 +82,6 @@ When the SQL Server Docker container is built, a series of test scripts are exec
 > Note 3: A unit test script file __must__ be present for each database version SQL file. If tests are not needed (or if there is no time to write one) for a particular database version, create an empty test script file with a single echo statement.
 
 ## How To Create a New Version
-
----
 
 1. Make a copy of the `/database/mssql/scripts/versions/sample-ddl.sql` file, and name it according to the pattern `v_<version>_ddl.sql` (match the naming convention of the other version SQL files in that same directory).  
 Ensure the new version is one higher than the most current highest version SQL file in the directory. It'll make sense when you look in the versions directory.
@@ -121,8 +103,6 @@ Depending on the nature of the database change you may be able to make the datab
 
 ## Updating the MOTI Hosted Database
 
----
-
 Once the onRouteBC application is deployed into OpenShift (dev, test, or prod) it points to the hosted MOTI database, not the local Docker instance. The hosted MOTI database is not automatically rebuilt when the application is deployed, so this step is manual.
 
 A script has been created which performs a complete database refresh (schema plus sample data); this is intended to be run against the MOTI hosted dev database whenever changes are made or whenever the data becomes corrupt or cluttered in dev. The script is:
@@ -137,15 +117,11 @@ For test and production, the database updates are expected to be individually ex
 
 ## Sample Data
 
----
-
 A small set of sample data (~100 records in each data table) is loaded into the local Docker SQL Server database when the container is built. The same set of sample data is loaded into the hosted MOTI database when the `reset-moti-db.sh` script is executed (see [above](#updating-the-moti-hosted-database)).
 
 The sample data was generated originally in [mockaroo](https://www.mockaroo.com) but is saved in the repository as DML insert statements in the `/database/mssql/scripts/sampledata/` directory. The DML insert statements were generated from SQL Server Management Studio.
 
 ### Adding New Sample Data
-
----
 
 The sample data is saved as multiple SQL files containing insert statements, one file per table. If you need to add sample data (for existing test users for example) and a file already exists in the sample data folder (such as ORBC_POWER_UNIT), the new sample data can simply be added to the existing SQL files and it will be inserted next time the SQL Docker container is built.
 
