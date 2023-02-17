@@ -1,5 +1,5 @@
-import { ProvinceDto } from '../../../../src/common/dto/province.dto';
-import { Province } from '../../../../src/common/entities/province.entity';
+import { ProvinceDto } from '../../../../src/modules/common/dto/province.dto';
+import { Province } from '../../../../src/modules/common/entities/province.entity';
 import { baseDtoMock, baseEntityMock } from './base.mock';
 import { countryDtoMock, countryEntityMock } from './country.mock';
 
@@ -16,6 +16,8 @@ export const provinceEntityMock: Province = {
   country: { ...countryEntityMock },
   powerUnits: null,
   trailers: null,
+  contacts: null,
+  addresses: null,
   ...baseEntityMock,
 };
 

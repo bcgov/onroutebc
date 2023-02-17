@@ -1,5 +1,5 @@
-import { BaseDto } from '../../../../src/common/dto/base.dto';
-import { Base } from '../../../../src/common/entities/base.entity';
+import { BaseDto } from '../../../../src/modules/common/dto/base.dto';
+import { Base } from '../../../../src/modules/common/entities/base.entity';
 
 const CURRENT_DATE = new Date();
 const CURRENT_DATE_ISO_STRING = CURRENT_DATE.toISOString();

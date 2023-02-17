@@ -5,9 +5,9 @@ import { createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { TrailerType } from '../../../src/modules/trailer-types/entities/trailer-type.entity';
-import { TrailerTypesProfile } from '../../../src/modules/trailer-types/profiles/trailer-type.profile';
-import { TrailerTypesService } from '../../../src/modules/trailer-types/trailer-types.service';
+import { TrailerType } from '../../../src/modules/vehicles/trailer-types/entities/trailer-type.entity';
+import { TrailerTypesProfile } from '../../../src/modules/vehicles/trailer-types/profiles/trailer-type.profile';
+import { TrailerTypesService } from '../../../src/modules/vehicles/trailer-types/trailer-types.service';
 import {
   createTrailerTypeDtoMock,
   trailerTypeEntityMock,

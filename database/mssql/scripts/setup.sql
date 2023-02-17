@@ -1,4 +1,0 @@
-USE [master]
-GO
-CREATE DATABASE $(MSSQL_DB)
-GO

@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { DataNotFoundException } from '../../../src/common/exception/data-not-found.exception';
-import { TrailerTypesController } from '../../../src/modules/trailer-types/trailer-types.controller';
-import { TrailerTypesService } from '../../../src/modules/trailer-types/trailer-types.service';
+import { TrailerTypesController } from '../../../src/modules/vehicles/trailer-types/trailer-types.controller';
+import { TrailerTypesService } from '../../../src/modules/vehicles/trailer-types/trailer-types.service';
 import {
   createTrailerTypeDtoMock,
   readTrailerTypeDtoMock,

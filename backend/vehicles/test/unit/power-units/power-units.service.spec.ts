@@ -3,9 +3,9 @@ import { classes } from '@automapper/classes';
 import { getMapperToken } from '@automapper/nestjs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { PowerUnitsProfile } from '../../../src/modules/power-units/profiles/power-unit.profile';
-import { PowerUnitsService } from '../../../src/modules/power-units/power-units.service';
-import { PowerUnit } from '../../../src/modules/power-units/entities/power-unit.entity';
+import { PowerUnitsProfile } from '../../../src/modules/vehicles/power-units/profiles/power-unit.profile';
+import { PowerUnitsService } from '../../../src/modules/vehicles/power-units/power-units.service';
+import { PowerUnit } from '../../../src/modules/vehicles/power-units/entities/power-unit.entity';
 import { Repository } from 'typeorm';
 import { createMapper } from '@automapper/core';
 import {

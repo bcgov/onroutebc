@@ -24,11 +24,20 @@ services:
       MSSQL_PORT: ${MSSQL_PORT}
       MSSQL_DB: ${MSSQL_DB}
       MSSQL_SA_USER: ${MSSQL_SA_USER}
+      # Ensure there are no dollar sign ($) characters in the password.
+      # Due to the nature of the docker-mssql and how we are loading the
+      # schema with bash and variable substitution any passwords with
+      # $ will not work and the database will not start.
       MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD}
       MSSQL_ENCRYPT: ${MSSQL_ENCRYPT}
-      MSSQL_INIT_DDL_FILENAME: ${MSSQL_INIT_DDL_FILENAME}
       MSSQL_RUN_TESTS: ${MSSQL_RUN_TESTS}
       MSSQL_LOAD_SAMPLE_DATA: ${MSSQL_LOAD_SAMPLE_DATA}
+      MSSQL_MOTI_HOST: ${MSSQL_MOTI_HOST}
+      MSSQL_MOTI_DB: ${MSSQL_MOTI_DB}
+      MSSQL_MOTI_USER: ${MSSQL_MOTI_USER}
+      # See note about dollar signs in passwords, above.
+      MSSQL_MOTI_PASSWORD: ${MSSQL_MOTI_PASSWORD}
+      SCRIPT_DIR: /usr/config
     healthcheck:
       test: /opt/mssql-tools/bin/sqlcmd -S $$MSSQL_HOST -U $$MSSQL_SA_USER -P $$MSSQL_SA_PASSWORD -Q "USE $$MSSQL_DB" | grep "Changed database context to '$$MSSQL_DB'"
       interval: 20s

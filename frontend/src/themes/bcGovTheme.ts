@@ -24,7 +24,6 @@ export const bcGovTheme = createTheme({
       ","
     ),
     fontSize: 16,
-    // From https://developer.gov.bc.ca/Design-System/Typography#paragraphs
     body1: {
       fontSize: 16,
       lineHeight: 1.6,
@@ -41,6 +40,28 @@ export const bcGovTheme = createTheme({
       display: "inline-block",
       letterSpacing: "-0.48px",
     },
+    h3: {
+      color: BC_COLOURS.bc_black,
+      fontWeight: "bold",
+      fontSize: "20px",
+      paddingTop: "24px",
+      paddingBottom: "8px",
+      display: "inline-block",
+      letterSpacing: "-0.4px",
+    },
+    h4: {
+      color: BC_COLOURS.bc_primary_blue,
+      fontWeight: "bold",
+      fontSize: "24px",
+      display: "inline-block",
+      letterSpacing: "-0.48px",
+    },
+    h5: {
+      fontSize: 14,
+      color: BC_COLOURS.bc_primary_blue,
+      marginBottom: "4px",
+      letterSpacing: "1.4px",
+    },
   },
   components: {
     MuiTooltip: {
@@ -55,7 +76,6 @@ export const bcGovTheme = createTheme({
     },
     MuiButtonBase: {
       defaultProps: {
-        // The props to apply
         disableRipple: true, // No more ripple, on the whole application
       },
     },
@@ -76,6 +96,20 @@ export const bcGovTheme = createTheme({
           //transition: "0.5s all",
         },
       },
+      variants: [
+        {
+          props: { color: "tertiary" },
+          style: {
+            boxShadow: "none",
+            border: `2px solid ${BC_COLOURS.bc_text_box_border_grey}`,
+            "&:hover": {
+              backgroundColor: BC_COLOURS.bc_background_light_grey,
+              boxShadow: "none",
+            },
+            padding: "0 16px",
+          },
+        },
+      ],
     },
     MuiFormHelperText: {
       styleOverrides: {
@@ -86,18 +120,29 @@ export const bcGovTheme = createTheme({
         },
       },
     },
+    // Also see CustomFormComponents.tsx for border colour
+    // override based on error/invalid input
     MuiOutlinedInput: {
       styleOverrides: {
         root: {
-          "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+          height: "48px",
+          "& .Mui-focused .MuiOutlinedInput-notchedOutline": {
             border: "2px solid",
-            borderColor: BC_COLOURS.focus_blue,
+            boxShadow: `0px 4px 8px ${BC_COLOURS.shadow_colour}`,
           },
           ".MuiOutlinedInput-notchedOutline": {
             borderColor: BC_COLOURS.bc_text_box_border_grey,
           },
-          //minWidth: "384px",
-          //maxWidth: "544px",
+        },
+      },
+    },
+    // Override Select dropdown styles
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          ".MuiList-root": {
+            maxHeight: "200px",
+          },
         },
       },
     },
@@ -121,6 +166,8 @@ export const bcGovTheme = createTheme({
 /**
  * https://stackoverflow.com/questions/50069724/how-to-add-custom-mui-palette-colors
  *
+ * Used for onRouteBC tertirary button style
+ *
  * Update the TypeScript definition, so it can recognize custom properties
  * when referencing the Palette and PaletteOption objects
  */
@@ -136,7 +183,6 @@ declare module "@mui/material/styles" {
     };
   }
 }
-
 declare module "@mui/material/Button" {
   interface ButtonPropsColorOverrides {
     tertiary: true;

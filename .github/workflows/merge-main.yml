@@ -45,7 +45,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Run Trivy vulnerability scanner in repo mode
-        uses: aquasecurity/trivy-action@0.8.0
+        uses: aquasecurity/trivy-action@0.9.1
         with:
           format: "sarif"
           output: "trivy-results.sarif"
@@ -94,11 +94,11 @@ jobs:
           exportEnv: 'false'
           namespace: platform-services
           secrets: |
-            ${{env.VAULT_ENV}}/data/database  DATABASE_HOST     | VAULT_DATABASE_HOST;
-            ${{env.VAULT_ENV}}/data/database  DATABASE_USER     | VAULT_DATABASE_USER;
-            ${{env.VAULT_ENV}}/data/database  DATABASE_NAME     | VAULT_DATABASE_NAME;
-            ${{env.VAULT_ENV}}/data/database  DATABASE_PASSWORD | VAULT_DATABASE_PASSWORD;
-            ${{env.VAULT_ENV}}/data/database  DATABASE_PORT     | VAULT_DATABASE_PORT
+            ${{env.VAULT_ENV}}/data/database-test  DATABASE_HOST     | VAULT_DATABASE_HOST;
+            ${{env.VAULT_ENV}}/data/database-test  DATABASE_USER     | VAULT_DATABASE_USER;
+            ${{env.VAULT_ENV}}/data/database-test  DATABASE_NAME     | VAULT_DATABASE_NAME;
+            ${{env.VAULT_ENV}}/data/database-test  DATABASE_PASSWORD | VAULT_DATABASE_PASSWORD;
+            ${{env.VAULT_ENV}}/data/database-test  DATABASE_PORT     | VAULT_DATABASE_PORT
       - uses: bcgov-nr/action-deployer-openshift@v1.0.1
         with:
           file: ${{ matrix.file }}
@@ -151,11 +151,11 @@ jobs:
           exportEnv: 'false'
           namespace: platform-services
           secrets: |
-            ${{env.VAULT_ENV}}/data/database  DATABASE_HOST     | VAULT_DATABASE_HOST;
-            ${{env.VAULT_ENV}}/data/database  DATABASE_USER     | VAULT_DATABASE_USER;
-            ${{env.VAULT_ENV}}/data/database  DATABASE_NAME     | VAULT_DATABASE_NAME;
-            ${{env.VAULT_ENV}}/data/database  DATABASE_PASSWORD | VAULT_DATABASE_PASSWORD;
-            ${{env.VAULT_ENV}}/data/database  DATABASE_PORT     | VAULT_DATABASE_PORT
+            ${{env.VAULT_ENV}}/data/database-prod  DATABASE_HOST     | VAULT_DATABASE_HOST;
+            ${{env.VAULT_ENV}}/data/database-prod  DATABASE_USER     | VAULT_DATABASE_USER;
+            ${{env.VAULT_ENV}}/data/database-prod  DATABASE_NAME     | VAULT_DATABASE_NAME;
+            ${{env.VAULT_ENV}}/data/database-prod  DATABASE_PASSWORD | VAULT_DATABASE_PASSWORD;
+            ${{env.VAULT_ENV}}/data/database-prod  DATABASE_PORT     | VAULT_DATABASE_PORT
       - uses: bcgov-nr/action-deployer-openshift@v1.0.1
         with:
           file: ${{ matrix.file }}
@@ -203,13 +203,13 @@ jobs:
           fetch-depth: 0                # fetch the whole repo history
 
       - name: Setup GitVersion
-        uses: gittools/actions/gitversion/setup@v0.9.7
+        uses: gittools/actions/gitversion/setup@v0.9.15
         with:
           versionSpec: '5.x'
 
       - name: Determine SemVersion
         id:   gitversion
-        uses: gittools/actions/gitversion/execute@v0.9.7
+        uses: gittools/actions/gitversion/execute@v0.9.15
         with:
           useConfigFile: true
           configFilePath: GitVersion.yaml

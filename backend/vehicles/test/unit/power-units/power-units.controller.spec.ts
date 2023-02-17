@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { PowerUnitsController } from '../../../src/modules/power-units/power-units.controller';
-import { PowerUnitsService } from '../../../src/modules/power-units/power-units.service';
+import { PowerUnitsController } from '../../../src/modules/vehicles/power-units/power-units.controller';
+import { PowerUnitsService } from '../../../src/modules/vehicles/power-units/power-units.service';
 import { DataNotFoundException } from '../../../src/common/exception/data-not-found.exception';
 import {
   createPowerUnitDtoMock,

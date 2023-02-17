@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/require-await */
-import { UpdateTrailerDto } from '../../../../src/modules/trailers/dto/request/update-trailer.dto';
+import { UpdateTrailerDto } from '../../../../src/modules/vehicles/trailers/dto/request/update-trailer.dto';
 import { readTrailerDtoMock } from '../data/trailer.mock';
 
 const TRAILER_ID_1 = '1';
