@@ -4,6 +4,7 @@ import {
   createMap,
   forMember,
   fromValue,
+  ignore,
   mapFrom,
   Mapper,
   mapWith,
@@ -11,14 +12,17 @@ import {
 } from '@automapper/core';
 import { Injectable } from '@nestjs/common';
 import { Company } from '../entities/company.entity';
-import { CreateCompanyProfileDto } from '../dto/request/create-company-profile.dto';
+
 import { CreateAddressDto } from '../../../common/dto/request/create-address.dto';
 import { Address } from '../../../common/entities/address.entity';
-import { UpdateCompanyProfileDto } from '../dto/request/update-company-profile.dto';
-import { ReadCompanyProfileDto } from '../dto/response/read-company-profile.dto';
+
 import { ReadAddressDto } from '../../../common/dto/response/read-address.dto';
 import { UpdateAddressDto } from '../../../common/dto/request/update-address.dto';
 import { v4 as uuidv4 } from 'uuid';
+import { CreateCompanyDto } from '../dto/request/create-company.dto';
+import { UpdateCompanyDto } from '../dto/request/update-company.dto';
+import { ReadCompanyDto } from '../dto/response/read-company.dto';
+import { ReadCompanyUserDto } from '../dto/response/read-company-user.dto';
 
 @Injectable()
 export class CompanyProfile extends AutomapperProfile {
@@ -30,12 +34,22 @@ export class CompanyProfile extends AutomapperProfile {
     return (mapper: Mapper) => {
       createMap(
         mapper,
-        CreateCompanyProfileDto,
+        CreateCompanyDto,
         Company,
         //TODO : Below Mapping to be removed once login has been implmented
-        forMember((d) => d.clientNumber, fromValue(tempClientNumber())),
+        forMember(
+          (d) => d.clientNumber,
+          mapFrom(() => {
+            return tempClientNumber();
+          }),
+        ),
         //TODO : Below Mapping to be removed once login has been implmented
-        forMember((d) => d.companyGUID, fromValue(tempCompanyGuid())),
+        forMember(
+          (d) => d.companyGUID,
+          mapFrom(() => {
+            return tempCompanyGuid();
+          }),
+        ),
         forMember(
           (d) => d.companyAddress,
           mapWith(Address, CreateAddressDto, (s) => s.companyAddress),
@@ -54,7 +68,7 @@ export class CompanyProfile extends AutomapperProfile {
       );
       createMap(
         mapper,
-        UpdateCompanyProfileDto,
+        UpdateCompanyDto,
         Company,
         forMember(
           (d) => d.companyAddress,
@@ -76,7 +90,7 @@ export class CompanyProfile extends AutomapperProfile {
       createMap(
         mapper,
         Company,
-        ReadCompanyProfileDto,
+        ReadCompanyDto,
         forMember(
           (d) => d.companyAddress,
           mapWith(ReadAddressDto, Address, (s) => s.companyAddress),
@@ -90,6 +104,26 @@ export class CompanyProfile extends AutomapperProfile {
           (d) => d.mailingAddressSameAsCompanyAddress,
           mapFrom((s) => s.mailingAddressSameAsCompanyAddress),
         ),
+      );
+
+      createMap(
+        mapper,
+        Company,
+        ReadCompanyUserDto,
+        forMember(
+          (d) => d.companyAddress,
+          mapWith(ReadAddressDto, Address, (s) => s.companyAddress),
+        ),
+        forMember(
+          (d) => d.mailingAddress,
+          preCondition((s) => !s.mailingAddressSameAsCompanyAddress),
+          mapWith(ReadAddressDto, Address, (s) => s.mailingAddress),
+        ),
+        forMember(
+          (d) => d.mailingAddressSameAsCompanyAddress,
+          mapFrom((s) => s.mailingAddressSameAsCompanyAddress),
+        ),
+        forMember((d) => d.adminUser, ignore()),
       );
     };
   }

@@ -1,12 +1,13 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
-import { UpdateAddressDto } from '../../../../common/dto/request/update-address.dto';
-import { UpdateContactDto } from '../../../../common/dto/request/update-contact.dto';
+import { CreateAddressDto } from '../../../../common/dto/request/create-address.dto';
+import { CreateContactDto } from '../../../../common/dto/request/create-contact.dto';
+import { CreateUserDto } from '../../../users/dto/request/create-user.dto';
 
 /**
- * JSON representation for request object to update a company profile.
+ * JSON representation for request object to create a company and admin user.
  */
-export class UpdateCompanyProfileDto {
+export class CreateCompanyDto {
   @AutoMap()
   @ApiProperty({
     description: 'The legal name of the company.',
@@ -19,7 +20,7 @@ export class UpdateCompanyProfileDto {
     description: 'The physical address of the company.',
     required: true,
   })
-  companyAddress: UpdateAddressDto;
+  companyAddress: CreateAddressDto;
 
   @AutoMap()
   @ApiProperty({
@@ -36,7 +37,7 @@ export class UpdateCompanyProfileDto {
       'If given, the object must adhere to the individual field rules',
     required: false,
   })
-  mailingAddress: UpdateAddressDto;
+  mailingAddress: CreateAddressDto;
 
   @AutoMap()
   @ApiProperty({
@@ -80,5 +81,12 @@ export class UpdateCompanyProfileDto {
     description: 'The primary contact of the company.',
     required: true,
   })
-  primaryContact: UpdateContactDto;
+  primaryContact: CreateContactDto;
+
+  @AutoMap()
+  @ApiProperty({
+    description: 'The admin user of the company.',
+    required: true,
+  })
+  adminUser: CreateUserDto;
 }

@@ -9,7 +9,7 @@ import {
 import { Province } from './province.entity';
 import { Base } from './base.entity';
 import { AutoMap } from '@automapper/classes';
-import { Company } from '../../company/company-profiles/entities/company.entity';
+import { Company } from '../../company-user-management/company/entities/company.entity';
 
 @Entity({ name: 'ORBC_CONTACT' })
 export class Contact extends Base {

@@ -33,6 +33,14 @@ export class ContactProfile extends AutomapperProfile {
             return province[0];
           }),
         ),
+        forMember(
+          (d) => d.phone1Extension,
+          mapFrom((s) => s.extension1),
+        ),
+        forMember(
+          (d) => d.phone2Extension,
+          mapFrom((s) => s.extension1),
+        ),
       );
       createMap(
         mapper,
@@ -42,6 +50,14 @@ export class ContactProfile extends AutomapperProfile {
           (d) => d.province.provinceId,
           mapFrom((s) => s.countryCode + '-' + s.provinceCode),
         ),
+        forMember(
+          (d) => d.extension1,
+          mapFrom((s) => s.phone1Extension),
+        ),
+        forMember(
+          (d) => d.extension2,
+          mapFrom((s) => s.phone2Extension),
+        ),
       );
       createMap(
         mapper,
@@ -50,6 +66,14 @@ export class ContactProfile extends AutomapperProfile {
         forMember(
           (d) => d.province.provinceId,
           mapFrom((s) => s.countryCode + '-' + s.provinceCode),
+        ),
+        forMember(
+          (d) => d.extension1,
+          mapFrom((s) => s.phone1Extension),
+        ),
+        forMember(
+          (d) => d.extension2,
+          mapFrom((s) => s.phone2Extension),
         ),
       );
     };

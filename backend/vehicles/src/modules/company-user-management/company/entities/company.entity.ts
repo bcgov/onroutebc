@@ -1,8 +1,16 @@
-import { Entity, Column, JoinColumn, OneToOne, PrimaryColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  JoinColumn,
+  OneToOne,
+  PrimaryColumn,
+  OneToMany,
+} from 'typeorm';
 import { Base } from '../../../common/entities/base.entity';
 import { AutoMap } from '@automapper/classes';
 import { Address } from '../../../common/entities/address.entity';
 import { Contact } from '../../../common/entities/contact.entity';
+import { CompanyUser } from '../../users/entities/company-user.entity';
 
 @Entity({ name: 'ORBC_COMPANY' })
 export class Company extends Base {
@@ -50,6 +58,10 @@ export class Company extends Base {
   @OneToOne(() => Contact, (Contact) => Contact.company, { cascade: true })
   @JoinColumn({ name: 'PRIMARY_CONTACT_ID' })
   primaryContact: Contact;
+
+  @AutoMap(() => [CompanyUser])
+  @OneToMany(() => CompanyUser, (CompanyUser) => CompanyUser.company)
+  companyUsers: CompanyUser[];
 
   public get mailingAddressSameAsCompanyAddress(): boolean {
     return this.companyAddress.addressId === this.mailingAddress.addressId;

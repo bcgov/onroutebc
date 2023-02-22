@@ -1,26 +1,12 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
-import { ReadAddressDto } from '../../../../common/dto/response/read-address.dto';
-import { ReadContactDto } from '../../../../common/dto/response/read-contact.dto';
+import { UpdateAddressDto } from '../../../../common/dto/request/update-address.dto';
+import { UpdateContactDto } from '../../../../common/dto/request/update-contact.dto';
 
 /**
- * JSON representation for request object to create a company profile.
+ * JSON representation for request object to update a company.
  */
-export class ReadCompanyProfileDto {
-  @AutoMap()
-  @ApiProperty({
-    description: 'The business GUID.',
-    example: '6F9619FF8B86D011B42D00C04FC964FF',
-  })
-  companyGUID: string;
-
-  @AutoMap()
-  @ApiProperty({
-    description: 'The BCeID client number.',
-    example: '1234',
-  })
-  clientNumber: string;
-
+export class UpdateCompanyDto {
   @AutoMap()
   @ApiProperty({
     description: 'The legal name of the company.',
@@ -33,7 +19,7 @@ export class ReadCompanyProfileDto {
     description: 'The physical address of the company.',
     required: true,
   })
-  companyAddress: ReadAddressDto;
+  companyAddress: UpdateAddressDto;
 
   @AutoMap()
   @ApiProperty({
@@ -50,7 +36,7 @@ export class ReadCompanyProfileDto {
       'If given, the object must adhere to the individual field rules',
     required: false,
   })
-  mailingAddress: ReadAddressDto;
+  mailingAddress: UpdateAddressDto;
 
   @AutoMap()
   @ApiProperty({
@@ -94,5 +80,5 @@ export class ReadCompanyProfileDto {
     description: 'The primary contact of the company.',
     required: true,
   })
-  primaryContact: ReadContactDto;
+  primaryContact: UpdateContactDto;
 }
