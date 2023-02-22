@@ -64,7 +64,7 @@ The local build process requires a number of environment variables set in the Do
 
 ### Unit Tests
 
-When the SQL Server Docker container is built, a series of test scripts are executed, one per database version. This is managed by the `/database/mssql/test/test-runner.sh` script. The test runner does the following:
+When the SQL Server Docker container is built, a series of test scripts are executed, one per database version. The test scripts will be executed only if an environment variable `MSSQL_RUN_TESTS=1` is present (typically this is set in the developer's `.env` file in the project root). Tests are managed by the `/database/mssql/test/test-runner.sh` script. The test runner does the following:
 * Creates a new test database in the SQL Server Docker instance.
 * Executes each version SQL that it finds in the `/database/mssql/scripts/versions/` directory in sequence, starting at version 1.
   * After each version SQL is executed, execute the corresponding version test file, found in the `/database/mssql/test/versions/` directory. The naming convention of the test scripts is `v_<version>_test.sh` (example: `v_1_test.sh`).
@@ -118,7 +118,7 @@ For test and production, the database updates are expected to be individually ex
 
 ## Sample Data
 
-A small set of sample data (~100 records in each data table) is loaded into the local Docker SQL Server database when the container is built. The same set of sample data is loaded into the hosted MOTI database when the `reset-moti-db.sh` script is executed (see [above](#updating-the-moti-hosted-database)).
+A small set of sample data (~100 records in each data table) is loaded into the local Docker SQL Server database when the container is built. The sample data will be loaded only if an environment variable `MSSQL_LOAD_SAMPLE_DATA=1` is present (typically this is set in the developer's `.env` file in the project root). The same set of sample data is loaded into the hosted MOTI database when the `reset-moti-db.sh` script is executed (see [above](#updating-the-moti-hosted-database)).
 
 The sample data was generated originally in [mockaroo](https://www.mockaroo.com) but is saved in the repository as DML insert statements in the `/database/mssql/scripts/sampledata/` directory. The DML insert statements were generated from SQL Server Management Studio.
 
