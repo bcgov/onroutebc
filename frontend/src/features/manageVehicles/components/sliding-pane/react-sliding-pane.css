@@ -109,3 +109,7 @@
   font-size: 12px;
   margin-top: 2px;
 }
+
+.ReactModal__Body--open {
+  overflow: unset !important;
+}

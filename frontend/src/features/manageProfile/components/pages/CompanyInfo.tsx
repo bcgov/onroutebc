@@ -1,16 +1,27 @@
-import { Box } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { useState } from "react";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { CompanyInfoForm } from "../forms/CompanyInfoForm";
 
-import "./ManageProfilePages.scss";
 import { DisplayInfo } from "./DisplayCompanyInfo";
+import { useQuery } from "@tanstack/react-query";
+import {
+  CompanyProfile,
+  getCompanyInfo,
+} from "../../apiManager/manageProfileAPI";
 
 const Header = () => {
-  return <h2 className="company-header">Edit Company Information</h2>;
+  return (
+    <Typography
+      variant="h4"
+      sx={{ color: BC_COLOURS.bc_black, marginTop: "20px" }}
+    >
+      Edit Company Information
+    </Typography>
+  );
 };
 
-const CompanyBanner = () => {
+const CompanyBanner = ({ companyInfo }: { companyInfo?: CompanyProfile }) => {
   return (
     <Box
       sx={{
@@ -24,29 +35,61 @@ const CompanyBanner = () => {
         justifyContent: "space-between",
       }}
     >
-      <div className="company-banner">
-        <p>COMPANY NAME</p>
-        <h2>Bandstra Transportation Systems Ltd.</h2>
+      <div>
+        <Typography variant="h5">COMPANY NAME</Typography>
+        <Typography variant="h4">{companyInfo?.legalName}</Typography>
       </div>
-      <div className="company-banner">
-        <p>onRouteBC CLIENT NUMBER</p>
-        <h2>2023-87456</h2>
+      <div>
+        <Typography variant="h5">onRouteBC CLIENT NUMBER</Typography>
+        <Typography variant="h4">{companyInfo?.clientNumber}</Typography>
       </div>
     </Box>
   );
 };
 
+/**
+ * Company Information page that includes includes React components for displaying and editting Company Information
+ */
 export const CompanyInfo = () => {
   const [isEditting, setIsEditting] = useState(false);
+
+  const {
+    data: companyInfoData,
+    isLoading,
+    isError,
+    error,
+    //refetch,
+  } = useQuery({
+    queryKey: ["companyInfo"],
+    queryFn: () => getCompanyInfo("TEST_changeme"),
+    keepPreviousData: true,
+    staleTime: 5000,
+  });
+
+  if (isLoading) {
+    return <span>Loading...</span>;
+  }
+
+  if (isError) {
+    if (error instanceof Error) {
+      return <span>Error: {error.message}</span>;
+    }
+  }
 
   return (
     <>
       {isEditting ? <Header /> : null}
-      <CompanyBanner />
+      <CompanyBanner companyInfo={companyInfoData} />
       {isEditting ? (
-        <CompanyInfoForm setIsEditting={setIsEditting} />
+        <CompanyInfoForm
+          companyInfo={companyInfoData}
+          setIsEditting={setIsEditting}
+        />
       ) : (
-        <DisplayInfo setIsEditting={setIsEditting} />
+        <DisplayInfo
+          companyInfo={companyInfoData}
+          setIsEditting={setIsEditting}
+        />
       )}
     </>
   );

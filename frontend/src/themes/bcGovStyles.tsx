@@ -37,3 +37,10 @@ export const BC_COLOURS = {
   button_hover: "#2D5992",
   banner_grey: "#EBEEF3",
 };
+
+// Styles currently being used in Company Info Forms
+export const DEFAULT_WIDTH = "528px";
+export const CITY_WIDTH = "304px";
+export const POSTAL_WIDTH = "184px";
+export const PHONE_WIDTH = "344px";
+export const EXT_WIDTH = "144px";
