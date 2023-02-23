@@ -110,7 +110,7 @@ export const Header = () => {
           {isAuthenticated && (
             <li>
               <NavLink
-                to="http://localhost:3000/form/63ed5578016f9cbe73115e56"
+                to="http://localhost:3000/form/"
                 onClick={menuToggleHandler}
                 target="_blank"
               >
