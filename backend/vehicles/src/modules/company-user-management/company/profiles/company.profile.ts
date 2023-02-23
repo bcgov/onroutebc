@@ -80,6 +80,12 @@ export class CompanyProfile extends AutomapperProfile {
           mapWith(Address, UpdateAddressDto, (s) => s.companyAddress),
         ),
         forMember(
+          (d) => d.companyAddress.addressId,
+          mapWithArguments((source, { companyAddressId }) => {
+            return companyAddressId;
+          }),
+        ),
+        forMember(
           (d) => d.mailingAddress,
           mapWith(Address, UpdateAddressDto, (s) => {
             if (s.mailingAddressSameAsCompanyAddress) {
@@ -90,9 +96,25 @@ export class CompanyProfile extends AutomapperProfile {
           }),
         ),
         forMember(
+          (d) => d.mailingAddress.addressId,
+          mapWithArguments((source, { companyAddressId, mailingAddressId }) => {
+            if (source.mailingAddressSameAsCompanyAddress) {
+              return companyAddressId;
+            } else {
+              return mailingAddressId;
+            }
+          }),
+        ),
+        forMember(
           (d) => d.companyDirectory,
           mapWithArguments((source, { companyDirectory }) => {
             return companyDirectory;
+          }),
+        ),
+        forMember(
+          (d) => d.primaryContact.contactId,
+          mapWithArguments((source, { contactId }) => {
+            return contactId;
           }),
         ),
       );

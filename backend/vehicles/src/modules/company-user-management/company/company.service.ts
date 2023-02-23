@@ -15,6 +15,7 @@ import { UpdateCompanyDto } from './dto/request/update-company.dto';
 import { ReadCompanyUserDto } from './dto/response/read-company-user.dto';
 import { ReadCompanyDto } from './dto/response/read-company.dto';
 import { Company } from './entities/company.entity';
+import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
 
 @Injectable()
 export class CompanyService {
@@ -101,12 +102,38 @@ export class CompanyService {
     updateCompanyDto: UpdateCompanyDto,
     companyDirectory: CompanyDirectory,
   ): Promise<ReadCompanyDto> {
+    const company = await this.companyRepository.findOne({
+      where: { companyGUID: companyGUID },
+      relations: {
+        mailingAddress: true,
+        primaryContact: true,
+        companyAddress: true,
+      },
+    });
+
+    if (!company) {
+      throw new DataNotFoundException();
+    }
+
+    const contactId = company.primaryContact.contactId;
+    const companyAddressId = company.companyAddress.addressId;
+    const mailingAddressId = company.mailingAddress.addressId;
+
     const companyProfile = this.classMapper.map(
       updateCompanyDto,
       UpdateCompanyDto,
       Company,
       {
-        extraArgs: () => ({ companyDirectory: companyDirectory }),
+        extraArgs: () => ({
+          companyDirectory: companyDirectory,
+          companyAddressId: companyAddressId,
+          mailingAddressId:
+            company.mailingAddressSameAsCompanyAddress !==
+            updateCompanyDto.mailingAddressSameAsCompanyAddress
+              ? null
+              : mailingAddressId,
+          contactId: contactId,
+        }),
       },
     );
 

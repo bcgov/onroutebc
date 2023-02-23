@@ -49,10 +49,6 @@ export class PendingUsersService {
   }
 
   async findAll(companyGUID: string): Promise<ReadPendingUserDto[]> {
-    console.log(
-      await this.pendingUserRepository.find({ where: { companyGUID } }),
-    );
-
     return this.classMapper.mapArrayAsync(
       await this.pendingUserRepository.find({ where: { companyGUID } }),
       PendingUser,
