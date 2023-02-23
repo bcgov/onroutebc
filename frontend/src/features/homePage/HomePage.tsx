@@ -9,8 +9,8 @@ export const HomePage = () => {
 
   return (
     <Authentication>
-      <div style={{ padding: "0px 60px", height: "100vh" }}>
-        <p>OnRouteBC Home -{DEPLOY_ENV}- Environment</p>
+      <div style={{ padding: "0px 60px" }}>
+        <p>Home -{DEPLOY_ENV}- Environment</p>
       </div>
     </Authentication>
   );

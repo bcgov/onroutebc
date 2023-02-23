@@ -22,7 +22,7 @@ export const getAllPowerUnits = async (): Promise<IPowerUnit[]> => {
     /*
       // Use for testing error response
       const response = await fetch(
-        "http://localhost:5000/vehicles/powerUnits/1111",
+        "http://localhost:5010/vehicles/powerUnits/1111",
         { method: "DELETE" }
       );
       */

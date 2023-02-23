@@ -25,7 +25,7 @@ RUN npm run build
 USER app
 
 # Expose Port
-EXPOSE 3000
+EXPOSE 3010
 
 # Have only the compiled app, ready for production with Nginx
 FROM nginx:1.23.3-alpine as production-stage

@@ -2,18 +2,6 @@
 version: "3.8"
 
 services:
-  postgres-db:
-    container_name: postgres-db
-    environment:
-      POSTGRES_USER: ${POSTGRESQL_USER}
-      POSTGRES_PASSWORD: ${POSTGRESQL_PASSWORD}
-      POSTGRES_DB: ${POSTGRESQL_DATABASE}
-    hostname: postgres-db
-    image: postgres:13
-    restart: always
-    volumes:
-      - /pgdata
-
   sql-server-db:
     container_name: sql-server-db
     build:
@@ -46,7 +34,7 @@ services:
       start_period: 10s
     hostname: sql-server-db
     ports:
-      - "1433:1433"
+      - "${MSSQL_PORT}:${MSSQL_PORT}"
     volumes:
       - /sql_data
 
@@ -58,10 +46,6 @@ services:
     environment:
       NODE_ENV: development
       DB_TYPE: ${DB_TYPE}
-      POSTGRESQL_HOST: postgres-db
-      POSTGRES_USER: ${POSTGRESQL_USER}
-      POSTGRES_PASSWORD: ${POSTGRESQL_PASSWORD}
-      POSTGRES_DB: ${POSTGRESQL_DATABASE}
       MSSQL_HOST: sql-server-db
       MSSQL_PORT: ${MSSQL_PORT}
       MSSQL_DB: ${MSSQL_DB}
@@ -69,7 +53,7 @@ services:
       MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD}
       MSSQL_ENCRYPT: ${MSSQL_ENCRYPT}
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5000/"]
+      test: ["CMD", "curl", "-f", "http://localhost:${MANAGE_PROFILE_PORT}/"]
       interval: 1m30s
       timeout: 10s
       retries: 3
@@ -80,9 +64,8 @@ services:
     hostname: vehicles-api
     links:
       - sql-server-db
-      - postgres-db
     ports:
-      - "5000:5000"
+      - "${MANAGE_PROFILE_PORT}:${MANAGE_PROFILE_PORT}"
 
   frontend:
     container_name: frontend
@@ -93,7 +76,7 @@ services:
       VITE_DEPLOY_ENVIRONMENT: ${VITE_DEPLOY_ENVIRONMENT}
       VITE_API_VEHICLE_URL: ${VITE_API_VEHICLE_URL}
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      test: ["CMD", "curl", "-f", "http://localhost:${VITE_PORT}"]
       interval: 1m30s
       timeout: 10s
       retries: 3
@@ -102,7 +85,7 @@ services:
     links:
       - vehicles-api
     ports:
-      - "3000:3000"
+      - "${VITE_PORT}:${VITE_PORT}"
     volumes:
       - ./frontend:/app:z
       - /app/node_modules

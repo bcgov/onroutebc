@@ -1,6 +1,6 @@
 /// <reference types="vitest" />
 
-import { defineConfig } from "vite";
+import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import viteTsconfigPaths from "vite-tsconfig-paths";
 import svgrPlugin from "vite-plugin-svgr";
@@ -11,7 +11,7 @@ import path from "path";
 export default defineConfig({
   envDir: path.resolve(process.cwd() + "/../"),
   server: {
-    port: 3000,
+    port: 3010,
     open: true,
   },
   plugins: [eslint(), react(), viteTsconfigPaths(), svgrPlugin()],

@@ -108,6 +108,17 @@ export const Header = () => {
               </NavLink>
             </li>
           )}
+          {isAuthenticated && (
+            <li>
+              <NavLink
+                to="http://localhost:3000/form/63ed5578016f9cbe73115e56"
+                onClick={menuToggleHandler}
+                target="_blank"
+              >
+                Permit
+              </NavLink>
+            </li>
+          )}
         </ul>
       </div>
     </nav>
@@ -124,19 +135,23 @@ export const Header = () => {
             <Brand />
             <NavButton />
           </Grid>
-          {isAuthenticated && <Grid item xs={1}>
-            <a onClick={() =>
-            void signoutRedirect({
-              extraQueryParams: {
-                // redirect_uri: 'https://onroutebc-202-frontend.apps.silver.devops.gov.bc.ca/',
-                redirect_uri: window.location.origin + "/",
-                kc_idp_hint: user?.profile?.identity_provider as string,
-              },
-            })}>
-              Log Out
+          {isAuthenticated && (
+            <Grid item xs={1} sx={{ display: "flex", alignItems: "center" }}>
+              <a
+                onClick={() =>
+                  void signoutRedirect({
+                    extraQueryParams: {
+                      // redirect_uri: 'https://onroutebc-202-frontend.apps.silver.devops.gov.bc.ca/',
+                      redirect_uri: window.location.origin + "/",
+                      kc_idp_hint: user?.profile?.identity_provider as string,
+                    },
+                  })
+                }
+              >
+                Log Out
               </a>
-          </Grid>}
-          
+            </Grid>
+          )}
         </Grid>
       </header>
       <Navigation />

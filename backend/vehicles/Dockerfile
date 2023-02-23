@@ -42,6 +42,8 @@ ENV MSSQL_DB ${MSSQL_DB}
 ENV MSSQL_SA_USER ${MSSQL_SA_USER}
 ENV MSSQL_SA_PASSWORD ${MSSQL_SA_PASSWORD}
 ENV MSSQL_ENCRYPT ${MSSQL_ENCRYPT}
+ENV MANAGE_PROFILE_PORT ${MANAGE_PROFILE_PORT}
+
 
 # Copy production files from build
 COPY --from=builder /app/package*.json ./
@@ -49,7 +51,7 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
 
 # Expose Port
-EXPOSE 5000
+EXPOSE ${MANAGE_PROFILE_PORT}
 
 # Start the app
 CMD ["npm", "run", "start:prod"]
