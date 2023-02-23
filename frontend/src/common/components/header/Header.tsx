@@ -6,7 +6,6 @@ import Grid from "@mui/material/Grid";
 import "./Header.scss";
 import * as routes from "../../../constants/routes";
 import { BC_COLOURS } from "../../../themes/bcGovStyles";
-import Button from "@mui/material/Button";
 
 /*
  * The Header component includes the BC Gov banner and Navigation bar

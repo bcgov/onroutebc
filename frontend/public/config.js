@@ -19,5 +19,8 @@ const envConfig = (() => {
     VITE_DEPLOY_ENVIRONMENT: "docker",
     VITE_API_VEHICLE_URL: "http://localhost:5010",
     VITE_API_MANAGE_PROFILE_URL: "http://localhost:5010",
+    VITE_KEYCLOAK_AUTHORITY: "http://localhost:8080/auth/realms/forms-flow-ai",
+    VITE_KEYCLOAK_REALM: "forms-flow-ai",
+    VITE_KEYCLOAK_CLIENT_ID: "forms-flow-web",
   };
 })();

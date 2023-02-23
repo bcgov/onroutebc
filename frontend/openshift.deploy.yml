@@ -79,7 +79,10 @@ objects:
           return {
             "VITE_DEPLOY_ENVIRONMENT":"${ZONE}",
             "VITE_API_VEHICLE_URL":"https://${NAME}-${ZONE}-backend-vehicles.${DOMAIN}",
-            "VITE_API_MANAGE_PROFILE_URL":"https://${NAME}-${ZONE}-backend-vehicles.${DOMAIN}"
+            "VITE_API_MANAGE_PROFILE_URL":"https://${NAME}-${ZONE}-backend-vehicles.${DOMAIN}",
+            "VITE_KEYCLOAK_AUTHORITY":"http://localhost:8080/auth/realms/forms-flow-ai",
+            "VITE_KEYCLOAK_REALM":"forms-flow-ai",
+            "VITE_KEYCLOAK_CLIENT_ID":"forms-flow-web"
           };
         })();
   - apiVersion: v1

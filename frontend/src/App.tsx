@@ -20,11 +20,18 @@ import { AuthProvider } from "react-oidc-context";
 //   revokeTokensOnSignout: true,
 // };
 
+const AUTHORITY =
+  import.meta.env.VITE_KEYCLOAK_AUTHORITY || envConfig.VITE_KEYCLOAK_AUTHORITY;
+const REALM =
+  import.meta.env.VITE_KEYCLOAK_REALM || envConfig.VITE_KEYCLOAK_REALM;
+const CLIENT_ID =
+  import.meta.env.VITE_KEYCLOAK_CLIENT_ID || envConfig.VITE_KEYCLOAK_CLIENT_ID;
+
 // Local Keycloak instance
 const oidcConfig = {
-  authority: "http://localhost:8080/auth/realms/forms-flow-ai",
-  realm: "forms-flow-ai",
-  client_id: "forms-flow-web",
+  authority: AUTHORITY,
+  realm: REALM,
+  client_id: CLIENT_ID,
   redirect_uri: window.location.origin + "/",
   scope: "openid",
   automaticSilentRenew: true,
