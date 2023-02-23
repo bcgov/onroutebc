@@ -29,6 +29,7 @@ export class CompanyService {
   async create(
     createCompanyDto: CreateCompanyDto,
     companyDirectory: CompanyDirectory,
+    userName: string,
     userDirectory: UserDirectory,
   ): Promise<ReadCompanyDto> {
     let newCompany = this.classMapper.map(
@@ -52,8 +53,9 @@ export class CompanyService {
     try {
       newCompany = await queryRunner.manager.save(newCompany);
       newUser = await this.userService.createUser(
-        createCompanyDto.adminUser,
         newCompany.companyGUID,
+        createCompanyDto.adminUser,
+        userName,
         userDirectory,
         UserAuthGroup.ADMIN,
         queryRunner,

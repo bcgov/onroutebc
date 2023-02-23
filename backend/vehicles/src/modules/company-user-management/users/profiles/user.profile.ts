@@ -37,7 +37,9 @@ export class UsersProfile extends AutomapperProfile {
         ),
         forMember(
           (d) => d.userName,
-          mapFrom((s) => s.firstName + ' ' + s.lastName),
+          mapWithArguments((source, { userName }) => {
+            return userName;
+          }),
         ),
         forMember(
           (d) => d.userDirectory,
@@ -66,7 +68,9 @@ export class UsersProfile extends AutomapperProfile {
         ),
         forMember(
           (d) => d.userName,
-          mapFrom((s) => s.firstName + ' ' + s.lastName),
+          mapWithArguments((source, { userName }) => {
+            return userName;
+          }),
         ),
         forMember(
           (d) => d.userDirectory,

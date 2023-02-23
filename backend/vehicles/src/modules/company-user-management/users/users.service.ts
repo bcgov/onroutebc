@@ -14,6 +14,7 @@ import { CompanyUser } from './entities/company-user.entity';
 import { UserStatus } from '../../../common/enum/user-status.enum';
 import { UserAuthGroup } from '../../../common/enum/user-auth-group.enum';
 import { UserDirectory } from '../../../common/enum/directory.enum';
+import { PendingUser } from '../pending-users/entities/pending-user.entity';
 
 @Injectable()
 export class UsersService {
@@ -27,6 +28,7 @@ export class UsersService {
   async create(
     createUserDto: CreateUserDto,
     companyGUID: string,
+    userName: string,
     userDirectory: UserDirectory,
   ): Promise<ReadUserDto> {
     let newUser: ReadUserDto;
@@ -35,12 +37,18 @@ export class UsersService {
     await queryRunner.startTransaction();
     try {
       newUser = await this.createUser(
-        createUserDto,
         companyGUID,
+        createUserDto,
+        userName,
         userDirectory,
         createUserDto.userAuthGroup,
         queryRunner,
       );
+
+      await queryRunner.manager.delete(PendingUser, {
+        companyGUID: companyGUID,
+        userName: userName,
+      });
 
       await queryRunner.commitTransaction();
     } catch (err) {
@@ -54,14 +62,15 @@ export class UsersService {
   }
 
   async createUser(
-    createUserDto: CreateUserDto,
     companyGUID: string,
+    createUserDto: CreateUserDto,
+    userName: string,
     userDirectory: UserDirectory,
     userAuthGroup: UserAuthGroup,
     queryRunner: QueryRunner,
   ): Promise<ReadUserDto> {
     let user = this.classMapper.map(createUserDto, CreateUserDto, User, {
-      extraArgs: () => ({ userDirectory: userDirectory }),
+      extraArgs: () => ({ userName: userName, userDirectory: userDirectory }),
     });
 
     const newCompanyUser = this.createCompanyUserUtil(
@@ -108,7 +117,6 @@ export class UsersService {
 
   async findOne(companyGUID: string, userGUID: string): Promise<ReadUserDto> {
     const user = await this.findOneUserEntity(userGUID, companyGUID);
-
     const readUserDto = await this.mapUserEntitytoReadUserDto(user);
     return readUserDto;
   }
@@ -151,6 +159,7 @@ export class UsersService {
   async update(
     companyGUID: string,
     userGUID: string,
+    userName: string,
     userDirectory: UserDirectory,
     updateUserDto: UpdateUserDto,
   ): Promise<ReadUserDto> {
@@ -158,8 +167,9 @@ export class UsersService {
 
     const user = this.classMapper.map(updateUserDto, UpdateUserDto, User, {
       extraArgs: () => ({
-        userGUID: userGUID,
         companyGUID: companyGUID,
+        userGUID: userGUID,
+        userName: userName,
         userDirectory: userDirectory,
       }),
     });

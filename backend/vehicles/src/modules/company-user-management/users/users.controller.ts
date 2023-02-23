@@ -52,6 +52,7 @@ export class UsersController {
     return await this.userService.create(
       createUserDto,
       companyGUID,
+      'ASMITH', //TODO : Grab from access token
       UserDirectory.BBCEID,
     );
   }
@@ -113,6 +114,7 @@ export class UsersController {
     const user = await this.userService.update(
       companyGUID,
       userGUID,
+      'ASMITH', //TODO : Grab from access token
       UserDirectory.BBCEID,
       updateUserDto,
     );

@@ -22,7 +22,7 @@ import { ReadPowerUnitTypeDto } from './dto/response/read-power-unit-type.dto';
 import { ExceptionDto } from '../../common/dto/exception.dto';
 import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
 
-@ApiTags('Power Unit Types')
+@ApiTags('Vehicles - Power Unit Types')
 @ApiNotFoundResponse({
   description: 'The Power Unit Type Api Not Found Response',
   type: ExceptionDto,

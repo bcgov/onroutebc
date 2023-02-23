@@ -9,7 +9,7 @@ export class CreatePendingUserDto extends UpdatePendingUserDto {
   @AutoMap()
   @ApiProperty({
     description: 'The username of the user.',
-    example: 'JSMITH',
+    example: 'ASMITH',
   })
   userName: string;
 }

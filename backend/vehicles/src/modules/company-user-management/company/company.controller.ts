@@ -51,6 +51,7 @@ export class CompanyController {
     return await this.companyService.create(
       createCompanyDto,
       CompanyDirectory.BBCEID,
+      'ASMITH', //TODO : Grab from access token
       UserDirectory.BBCEID,
     );
   }
