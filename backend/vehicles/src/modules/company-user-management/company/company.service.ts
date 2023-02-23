@@ -3,6 +3,11 @@ import { InjectMapper } from '@automapper/nestjs';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
+import { UserAuthGroup } from '../../../common/enum/user-auth-group.enum';
+import {
+  CompanyDirectory,
+  UserDirectory,
+} from '../../../common/enum/directory.enum';
 import { ReadUserDto } from '../users/dto/response/read-user.dto';
 import { UsersService } from '../users/users.service';
 import { CreateCompanyDto } from './dto/request/create-company.dto';
@@ -21,11 +26,18 @@ export class CompanyService {
     private dataSource: DataSource,
   ) {}
 
-  async create(createCompanyDto: CreateCompanyDto): Promise<ReadCompanyDto> {
+  async create(
+    createCompanyDto: CreateCompanyDto,
+    companyDirectory: CompanyDirectory,
+    userDirectory: UserDirectory,
+  ): Promise<ReadCompanyDto> {
     let newCompany = this.classMapper.map(
       createCompanyDto,
       CreateCompanyDto,
       Company,
+      {
+        extraArgs: () => ({ companyDirectory: companyDirectory }),
+      },
     );
 
     newCompany.setMailingAddressSameAsCompanyAddress(
@@ -42,7 +54,8 @@ export class CompanyService {
       newUser = await this.userService.createUser(
         createCompanyDto.adminUser,
         newCompany.companyGUID,
-        'ADMIN',
+        userDirectory,
+        UserAuthGroup.ADMIN,
         queryRunner,
       );
 
@@ -84,11 +97,15 @@ export class CompanyService {
   async update(
     companyGUID: string,
     updateCompanyDto: UpdateCompanyDto,
+    companyDirectory: CompanyDirectory,
   ): Promise<ReadCompanyDto> {
     const companyProfile = this.classMapper.map(
       updateCompanyDto,
       UpdateCompanyDto,
       Company,
+      {
+        extraArgs: () => ({ companyDirectory: companyDirectory }),
+      },
     );
 
     companyProfile.setMailingAddressSameAsCompanyAddress(

@@ -3,11 +3,11 @@ import { AutomapperProfile, InjectMapper } from '@automapper/nestjs';
 import {
   createMap,
   forMember,
-  fromValue,
   ignore,
   mapFrom,
   Mapper,
   mapWith,
+  mapWithArguments,
   preCondition,
 } from '@automapper/core';
 import { Injectable } from '@nestjs/common';
@@ -64,7 +64,12 @@ export class CompanyProfile extends AutomapperProfile {
             }
           }),
         ),
-        forMember((d) => d.companyDirectory, fromValue('BBCEID')),
+        forMember(
+          (d) => d.companyDirectory,
+          mapWithArguments((source, { companyDirectory }) => {
+            return companyDirectory;
+          }),
+        ),
       );
       createMap(
         mapper,
@@ -84,7 +89,12 @@ export class CompanyProfile extends AutomapperProfile {
             }
           }),
         ),
-        forMember((d) => d.companyDirectory, fromValue('BBCEID')),
+        forMember(
+          (d) => d.companyDirectory,
+          mapWithArguments((source, { companyDirectory }) => {
+            return companyDirectory;
+          }),
+        ),
       );
 
       createMap(

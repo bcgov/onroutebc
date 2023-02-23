@@ -9,6 +9,7 @@ import { Base } from '../../../common/entities/base.entity';
 import { AutoMap } from '@automapper/classes';
 import { Company } from '../../company/entities/company.entity';
 import { User } from './user.entity';
+import { UserAuthGroup } from '../../../../common/enum/user-auth-group.enum';
 
 @Entity({ name: 'ORBC_COMPANY_USER' })
 export class CompanyUser extends Base {
@@ -17,8 +18,14 @@ export class CompanyUser extends Base {
   companyUserId: number;
 
   @AutoMap()
-  @Column({ length: 10, name: 'USER_AUTH_GROUP_ID', nullable: false })
-  userAuthGroup: string;
+  @Column({
+    type: 'simple-enum',
+    enum: UserAuthGroup,
+    length: 10,
+    name: 'USER_AUTH_GROUP_ID',
+    nullable: false,
+  })
+  userAuthGroup: UserAuthGroup;
 
   @AutoMap(() => Company)
   @ManyToOne(() => Company, (company) => company.companyUsers)

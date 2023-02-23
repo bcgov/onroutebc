@@ -11,6 +11,7 @@ import { AutoMap } from '@automapper/classes';
 import { Address } from '../../../common/entities/address.entity';
 import { Contact } from '../../../common/entities/contact.entity';
 import { CompanyUser } from '../../users/entities/company-user.entity';
+import { CompanyDirectory } from '../../../../common/enum/directory.enum';
 
 @Entity({ name: 'ORBC_COMPANY' })
 export class Company extends Base {
@@ -27,8 +28,14 @@ export class Company extends Base {
   legalName: string;
 
   @AutoMap()
-  @Column({ length: 10, name: 'COMPANY_DIRECTORY', nullable: false })
-  companyDirectory: string;
+  @Column({
+    type: 'simple-enum',
+    enum: CompanyDirectory,
+    length: 10,
+    name: 'COMPANY_DIRECTORY',
+    nullable: false,
+  })
+  companyDirectory: CompanyDirectory;
 
   @OneToOne(() => Address, (Address) => Address.company, { cascade: true })
   @JoinColumn({ name: 'PHYSICAL_ADDRESS_ID' })

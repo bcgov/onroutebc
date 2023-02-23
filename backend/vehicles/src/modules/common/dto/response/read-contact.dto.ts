@@ -8,14 +8,6 @@ import { IsEmail } from 'class-validator';
 export class ReadContactDto {
   @AutoMap()
   @ApiProperty({
-    example: '55542',
-    description: 'The contact id. Required for an update operation.',
-    required: false,
-  })
-  contactId: number;
-
-  @AutoMap()
-  @ApiProperty({
     example: 'Adam',
     description: 'The first name of the contact.',
     required: true,

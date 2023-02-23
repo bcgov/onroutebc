@@ -1,5 +1,6 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
+import { UserAuthGroup } from '../../../../../common/enum/user-auth-group.enum';
 import { CreateContactDto } from '../../../../common/dto/request/create-contact.dto';
 
 /**
@@ -8,8 +9,9 @@ import { CreateContactDto } from '../../../../common/dto/request/create-contact.
 export class CreateUserDto extends CreateContactDto {
   @AutoMap()
   @ApiProperty({
+    enum: UserAuthGroup,
     description: 'The user auth group.',
-    example: 'ADMIN',
+    example: UserAuthGroup.ADMIN,
   })
-  userAuthGroup: string;
+  userAuthGroup: UserAuthGroup;
 }

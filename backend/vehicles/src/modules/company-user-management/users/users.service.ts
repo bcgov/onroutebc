@@ -2,7 +2,7 @@ import { Mapper } from '@automapper/core';
 import { InjectMapper } from '@automapper/nestjs';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, QueryRunner, Repository } from 'typeorm';
+import { DataSource, QueryRunner, Repository, UpdateResult } from 'typeorm';
 import { User } from './entities/user.entity';
 import { ReadUserDto } from './dto/response/read-user.dto';
 import { CreateUserDto } from './dto/request/create-user.dto';
@@ -11,6 +11,9 @@ import { Contact } from '../../common/entities/contact.entity';
 import { ReadContactDto } from '../../common/dto/response/read-contact.dto';
 import { Company } from '../company/entities/company.entity';
 import { CompanyUser } from './entities/company-user.entity';
+import { UserStatus } from '../../../common/enum/user-status.enum';
+import { UserAuthGroup } from '../../../common/enum/user-auth-group.enum';
+import { UserDirectory } from '../../../common/enum/directory.enum';
 
 @Injectable()
 export class UsersService {
@@ -24,6 +27,7 @@ export class UsersService {
   async create(
     createUserDto: CreateUserDto,
     companyGUID: string,
+    userDirectory: UserDirectory,
   ): Promise<ReadUserDto> {
     let newUser: ReadUserDto;
     const queryRunner = this.dataSource.createQueryRunner();
@@ -33,6 +37,7 @@ export class UsersService {
       newUser = await this.createUser(
         createUserDto,
         companyGUID,
+        userDirectory,
         createUserDto.userAuthGroup,
         queryRunner,
       );
@@ -51,10 +56,13 @@ export class UsersService {
   async createUser(
     createUserDto: CreateUserDto,
     companyGUID: string,
-    userAuthGroup: string,
+    userDirectory: UserDirectory,
+    userAuthGroup: UserAuthGroup,
     queryRunner: QueryRunner,
   ): Promise<ReadUserDto> {
-    let user = this.classMapper.map(createUserDto, CreateUserDto, User);
+    let user = this.classMapper.map(createUserDto, CreateUserDto, User, {
+      extraArgs: () => ({ userDirectory: userDirectory }),
+    });
 
     const newCompanyUser = this.createCompanyUserUtil(
       companyGUID,
@@ -81,7 +89,6 @@ export class UsersService {
       Contact,
       ReadContactDto,
     );
-    readContactDto.contactId = undefined;
     Object.assign(readUserDto, readContactDto);
     return readUserDto;
   }
@@ -89,7 +96,7 @@ export class UsersService {
   private createCompanyUserUtil(
     companyGUID: string,
     newUser: User,
-    userAuthGroup: string,
+    userAuthGroup: UserAuthGroup,
   ): CompanyUser {
     const newCompanyUser = new CompanyUser();
     newCompanyUser.company = new Company();
@@ -144,15 +151,31 @@ export class UsersService {
   async update(
     companyGUID: string,
     userGUID: string,
+    userDirectory: UserDirectory,
     updateUserDto: UpdateUserDto,
   ): Promise<ReadUserDto> {
     const userDetails = await this.findOneUserEntity(userGUID, companyGUID);
 
     const user = this.classMapper.map(updateUserDto, UpdateUserDto, User, {
-      extraArgs: () => ({ userGUID: userGUID, companyGUID: companyGUID }),
+      extraArgs: () => ({
+        userGUID: userGUID,
+        companyGUID: companyGUID,
+        userDirectory: userDirectory,
+      }),
     });
     user.userContact.contactId = userDetails.userContact.contactId;
     await this.userRepository.update({ userGUID }, user);
     return this.findOne(companyGUID, userGUID);
+  }
+
+  async updateStatus(
+    companyGUID: string,
+    userGUID: string,
+    statusCode: UserStatus,
+  ): Promise<UpdateResult> {
+    const user = new User();
+    user.userGUID = userGUID;
+    user.statusCode = statusCode;
+    return await this.userRepository.update({ userGUID }, user);
   }
 }

@@ -6,8 +6,11 @@ import {
   ApiMethodNotAllowedResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
+  ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
+import { UserDirectory } from '../../../common/enum/directory.enum';
+import { UserStatus } from '../../../common/enum/user-status.enum';
 import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
 import { ExceptionDto } from '../../common/dto/exception.dto';
 import { CreateUserDto } from './dto/request/create-user.dto';
@@ -15,7 +18,7 @@ import { UpdateUserDto } from './dto/request/update-user.dto';
 import { ReadUserDto } from './dto/response/read-user.dto';
 import { UsersService } from './users.service';
 
-@ApiTags('Company and User Management')
+@ApiTags('Company and User Management - User')
 @ApiNotFoundResponse({
   description: 'The User Api Not Found Response',
   type: ExceptionDto,
@@ -46,7 +49,11 @@ export class UsersController {
     @Param('companyGUID') companyGUID: string,
     @Body() createUserDto: CreateUserDto,
   ) {
-    return await this.userService.create(createUserDto, companyGUID);
+    return await this.userService.create(
+      createUserDto,
+      companyGUID,
+      UserDirectory.BBCEID,
+    );
   }
 
   /**
@@ -73,6 +80,11 @@ export class UsersController {
     return companyUser;
   }
 
+  @ApiOkResponse({
+    description: 'The User Resource List',
+    type: ReadUserDto,
+    isArray: true,
+  })
   @Get()
   async findAll(
     @Param('companyGUID') companyGUID: string,
@@ -98,16 +110,36 @@ export class UsersController {
     @Param('userGUID') userGUID: string,
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<ReadUserDto> {
-    // Get current user from the access api ?
-
     const user = await this.userService.update(
       companyGUID,
       userGUID,
+      UserDirectory.BBCEID,
       updateUserDto,
     );
     if (!user) {
       throw new DataNotFoundException();
     }
     return user;
+  }
+
+  @ApiOkResponse({
+    description: '{statusUpdated : true}',
+  })
+  @ApiParam({ name: 'statusCode', enum: UserStatus })
+  @Put(':userGUID/status/:statusCode')
+  async updateStatus(
+    @Param('companyGUID') companyGUID: string,
+    @Param('userGUID') userGUID: string,
+    @Param('statusCode') statusCode: UserStatus,
+  ): Promise<object> {
+    const updateResult = await this.userService.updateStatus(
+      companyGUID,
+      userGUID,
+      statusCode,
+    );
+    if (updateResult.affected === 0) {
+      throw new DataNotFoundException();
+    }
+    return { statusUpdated: true };
   }
 }

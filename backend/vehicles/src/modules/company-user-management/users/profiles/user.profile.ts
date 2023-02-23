@@ -3,7 +3,6 @@ import { AutomapperProfile, InjectMapper } from '@automapper/nestjs';
 import {
   createMap,
   forMember,
-  fromValue,
   mapFrom,
   Mapper,
   mapWithArguments,
@@ -40,7 +39,12 @@ export class UsersProfile extends AutomapperProfile {
           (d) => d.userName,
           mapFrom((s) => s.firstName + ' ' + s.lastName),
         ),
-        forMember((d) => d.userDirectory, fromValue('BBCEID')),
+        forMember(
+          (d) => d.userDirectory,
+          mapWithArguments((source, { userDirectory }) => {
+            return userDirectory;
+          }),
+        ),
         forMember(
           (d) => d.userContact,
           mapFrom((s) => {
@@ -64,7 +68,12 @@ export class UsersProfile extends AutomapperProfile {
           (d) => d.userName,
           mapFrom((s) => s.firstName + ' ' + s.lastName),
         ),
-        forMember((d) => d.userDirectory, fromValue('BBCEID')),
+        forMember(
+          (d) => d.userDirectory,
+          mapWithArguments((source, { userDirectory }) => {
+            return userDirectory;
+          }),
+        ),
         forMember(
           (d) => d.userContact,
           mapFrom((s) => {

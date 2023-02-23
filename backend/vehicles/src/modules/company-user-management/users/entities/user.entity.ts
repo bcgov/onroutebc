@@ -10,6 +10,8 @@ import { Base } from '../../../common/entities/base.entity';
 import { AutoMap } from '@automapper/classes';
 import { Contact } from '../../../common/entities/contact.entity';
 import { CompanyUser } from './company-user.entity';
+import { UserDirectory } from '../../../../common/enum/directory.enum';
+import { UserStatus } from '../../../../common/enum/user-status.enum';
 
 @Entity({ name: 'ORBC_USER' })
 export class User extends Base {
@@ -22,17 +24,25 @@ export class User extends Base {
   userName: string;
 
   @AutoMap()
-  @Column({ length: 10, name: 'USER_DIRECTORY', nullable: false })
-  userDirectory: string;
+  @Column({
+    type: 'simple-enum',
+    enum: UserDirectory,
+    length: 10,
+    name: 'USER_DIRECTORY',
+    nullable: false,
+  })
+  userDirectory: UserDirectory;
 
   @AutoMap()
   @Column({
+    type: 'simple-enum',
+    enum: UserStatus,
     length: 10,
     name: 'STATUS_CODE',
     default: 'ACTIVE',
     nullable: false,
   })
-  statusCode: string;
+  statusCode: UserStatus;
 
   @AutoMap(() => Contact)
   @OneToOne(() => Contact, (Contact) => Contact.company, { cascade: true })

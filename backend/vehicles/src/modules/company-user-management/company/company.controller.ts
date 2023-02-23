@@ -15,8 +15,12 @@ import { CreateCompanyDto } from './dto/request/create-company.dto';
 import { UpdateCompanyDto } from './dto/request/update-company.dto';
 import { ReadCompanyDto } from './dto/response/read-company.dto';
 import { ReadCompanyUserDto } from './dto/response/read-company-user.dto';
+import {
+  CompanyDirectory,
+  UserDirectory,
+} from '../../../common/enum/directory.enum';
 
-@ApiTags('Company and User Management')
+@ApiTags('Company and User Management - Company')
 @ApiNotFoundResponse({
   description: 'The Company Api Not Found Response',
   type: ExceptionDto,
@@ -44,7 +48,11 @@ export class CompanyController {
   })
   @Post()
   async create(@Body() createCompanyDto: CreateCompanyDto) {
-    return await this.companyService.create(createCompanyDto);
+    return await this.companyService.create(
+      createCompanyDto,
+      CompanyDirectory.BBCEID,
+      UserDirectory.BBCEID,
+    );
   }
 
   /**
@@ -88,6 +96,7 @@ export class CompanyController {
     const powerUnitType = await this.companyService.update(
       companyGUID,
       updateCompanyDto,
+      CompanyDirectory.BBCEID,
     );
     if (!powerUnitType) {
       throw new DataNotFoundException();
