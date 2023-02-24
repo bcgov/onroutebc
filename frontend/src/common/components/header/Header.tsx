@@ -22,6 +22,10 @@ export const Header = () => {
 
   const { isAuthenticated, signoutRedirect, user } = useAuth();
 
+  const FORMSFLOW_WEB =
+    import.meta.env.VITE_FORMS_FLOW_WEB_URL ||
+    envConfig.VITE_FORMS_FLOW_WEB_URL;
+
   let headerColor: string;
   const env =
     import.meta.env.VITE_DEPLOY_ENVIRONMENT ||
@@ -110,7 +114,7 @@ export const Header = () => {
           {isAuthenticated && (
             <li>
               <NavLink
-                to="http://localhost:3000/form/"
+                to={FORMSFLOW_WEB}
                 onClick={menuToggleHandler}
                 target="_blank"
               >

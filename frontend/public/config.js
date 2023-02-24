@@ -22,5 +22,6 @@ const envConfig = (() => {
     VITE_KEYCLOAK_AUTHORITY: "http://localhost:8080/auth/realms/forms-flow-ai",
     VITE_KEYCLOAK_REALM: "forms-flow-ai",
     VITE_KEYCLOAK_CLIENT_ID: "forms-flow-web",
+    VITE_FORMS_FLOW_WEB_URL: "http://localhost:3000",
   };
 })();
