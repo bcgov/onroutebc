@@ -7,14 +7,6 @@ import { ApiProperty } from '@nestjs/swagger';
 export class ReadAddressDto {
   @AutoMap()
   @ApiProperty({
-    example: '55542',
-    description: 'The address id. Required for an update operation.',
-    required: false,
-  })
-  addressId: number;
-
-  @AutoMap()
-  @ApiProperty({
     example: '1234 Main St.',
     description:
       'The first segment of the address (commonly known as Address Line 1)',

@@ -4,9 +4,9 @@ import { UpdateAddressDto } from '../../../../common/dto/request/update-address.
 import { UpdateContactDto } from '../../../../common/dto/request/update-contact.dto';
 
 /**
- * JSON representation for request object to update a company profile.
+ * JSON representation of request object for updating a company.
  */
-export class UpdateCompanyProfileDto {
+export class UpdateCompanyDto {
   @AutoMap()
   @ApiProperty({
     description: 'The legal name of the company.',
@@ -24,7 +24,7 @@ export class UpdateCompanyProfileDto {
   @AutoMap()
   @ApiProperty({
     description:
-      'Boolean field indicating if the mailing address is same as company address.',
+      'A boolean field that indicates whether the mailing address of the company is the same as the physical address of the company.',
     required: true,
   })
   mailingAddressSameAsCompanyAddress: boolean;

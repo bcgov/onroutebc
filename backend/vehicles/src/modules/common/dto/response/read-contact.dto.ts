@@ -8,14 +8,6 @@ import { IsEmail } from 'class-validator';
 export class ReadContactDto {
   @AutoMap()
   @ApiProperty({
-    example: '55542',
-    description: 'The contact id. Required for an update operation.',
-    required: false,
-  })
-  contactId: number;
-
-  @AutoMap()
-  @ApiProperty({
     example: 'Adam',
     description: 'The first name of the contact.',
     required: true,
@@ -72,6 +64,16 @@ export class ReadContactDto {
     maxLength: 5,
   })
   phone2Extension: string;
+
+  @AutoMap()
+  @ApiProperty({
+    description: 'The fax number of the contact (if there is one).',
+    required: false,
+    maxLength: 20,
+    minLength: 10,
+    example: '9999999999',
+  })
+  fax?: string;
 
   @AutoMap()
   @ApiProperty({
