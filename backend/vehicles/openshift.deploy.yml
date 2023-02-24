@@ -33,13 +33,13 @@ parameters:
     description: The maximum amount of replicas for the horizontal pod autoscaler.
     value: "5"
   - name: REGISTRY
-    description: Container registry to import from (internal is image-registry.openshift-image-registry.svc:5000)
+    description: Container registry to import from (internal is image-registry.openshift-image-registry.svc:5010)
     value: ghcr.io
   - name: PROMOTE
     description: Image (namespace/name:tag) to promote/import
     value: bcgov/onroutebc:prod-backend-vehicles
   - name: DATABASE_NAME
-    description: Name of Database to connect to 
+    description: Name of Database to connect to
     required: true
   - name: DATABASE_USER
     description: User connecting to database
@@ -157,7 +157,7 @@ objects:
                       name: ${NAME}-${ZONE}-${COMPONENT}
                       key: database-user
               ports:
-                - containerPort: 5000
+                - containerPort: 5010
                   protocol: TCP
               resources:
                 requests:
@@ -169,7 +169,7 @@ objects:
               readinessProbe:
                 httpGet:
                   path: /
-                  port: 5000
+                  port: 5010
                   scheme: HTTP
                 initialDelaySeconds: 60
                 periodSeconds: 15
@@ -179,7 +179,7 @@ objects:
                 failureThreshold: 3
                 httpGet:
                   path: /
-                  port: 5000
+                  port: 5010
                   scheme: HTTP
                 initialDelaySeconds: 60
                 periodSeconds: 30
@@ -192,10 +192,10 @@ objects:
       name: ${NAME}-${ZONE}-${COMPONENT}
     spec:
       ports:
-        - name: 5000-tcp
+        - name: 5010-tcp
           protocol: TCP
           port: 80
-          targetPort: 5000
+          targetPort: 5010
       selector:
         deploymentconfig: ${NAME}-${ZONE}-${COMPONENT}
   - apiVersion: route.openshift.io/v1
@@ -207,7 +207,7 @@ objects:
     spec:
       host: ${NAME}-${ZONE}-${COMPONENT}.${DOMAIN}
       port:
-        targetPort: 5000-tcp
+        targetPort: 5010-tcp
       to:
         kind: Service
         name: ${NAME}-${ZONE}-${COMPONENT}
