@@ -8,10 +8,9 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableCors();
   const config = new DocumentBuilder()
-    .setTitle("Vehicles API")
-    .setDescription("The vehicles API description")
-    .setVersion("1.0")
-    .addTag("Vehicles")
+    .setTitle('Vehicles API')
+    .setDescription('The vehicles API description')
+    .setVersion('1.0')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

@@ -22,7 +22,7 @@ import { ReadTrailerTypeDto } from './dto/response/read-trailer-type.dto';
 import { ExceptionDto } from '../../common/dto/exception.dto';
 import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
 
-@ApiTags('Trailer Types')
+@ApiTags('Vehicles - Trailer Types')
 @ApiNotFoundResponse({
   description: 'The Trailer Type Api Not Found Response',
   type: ExceptionDto,

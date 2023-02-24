@@ -12,7 +12,9 @@ import { PowerUnitTypesModule } from './modules/vehicles/power-unit-types/power-
 import { PowerUnitsModule } from './modules/vehicles/power-units/power-units.module';
 import { TrailerTypesModule } from './modules/vehicles/trailer-types/trailer-types.module';
 import { TrailersModule } from './modules/vehicles/trailers/trailers.module';
-import { CompanyProfileModule } from './modules/company/company-profiles/company-profile.module';
+import { UsersModule } from './modules/company-user-management/users/users.module';
+import { CompanyModule } from './modules/company-user-management/company/company.module';
+import { PendingUsersModule } from './modules/company-user-management/pending-users/pending-users.module';
 
 const envPath = path.resolve(process.cwd() + '/../../');
 
@@ -54,8 +56,10 @@ const envPath = path.resolve(process.cwd() + '/../../');
     TrailersModule,
     PowerUnitTypesModule,
     TrailerTypesModule,
-    CompanyProfileModule,
+    CompanyModule,
+    UsersModule,
     CommonModule,
+    PendingUsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],
