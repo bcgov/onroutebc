@@ -80,9 +80,9 @@ objects:
             "VITE_DEPLOY_ENVIRONMENT":"${ZONE}",
             "VITE_API_VEHICLE_URL":"https://${NAME}-${ZONE}-backend-vehicles.${DOMAIN}",
             "VITE_API_MANAGE_PROFILE_URL":"https://${NAME}-${ZONE}-backend-vehicles.${DOMAIN}",
-            "VITE_KEYCLOAK_AUTHORITY":"http://localhost:8080/auth/realms/forms-flow-ai",
-            "VITE_KEYCLOAK_REALM":"forms-flow-ai",
-            "VITE_KEYCLOAK_CLIENT_ID":"forms-flow-web"
+            "VITE_KEYCLOAK_AUTHORITY":"https://forms-flow-idm-sso.apps.bronze.aot-technologies.com/auth/realms/onRouteBc",
+            "VITE_KEYCLOAK_REALM":"onRouteBc",
+            "VITE_KEYCLOAK_CLIENT_ID":"orbc-forms-flow-web"
           };
         })();
   - apiVersion: v1
@@ -118,7 +118,7 @@ objects:
               imagePullPolicy: Always
               name: ${NAME}
               ports:
-                - containerPort: 3000
+                - containerPort: 3010
                   protocol: TCP
               resources:
                 requests:
@@ -130,7 +130,7 @@ objects:
               readinessProbe:
                 httpGet:
                   path: /
-                  port: 3000
+                  port: 3010
                   scheme: HTTP
                 initialDelaySeconds: 15
                 periodSeconds: 30
@@ -140,7 +140,7 @@ objects:
                 failureThreshold: 3
                 httpGet:
                   path: /
-                  port: 3000
+                  port: 3010
                   scheme: HTTP
                 initialDelaySeconds: 15
                 periodSeconds: 30
@@ -162,10 +162,10 @@ objects:
       name: ${NAME}-${ZONE}-${COMPONENT}
     spec:
       ports:
-        - name: 3000-tcp
+        - name: 3010-tcp
           protocol: TCP
           port: 80
-          targetPort: 3000
+          targetPort: 3010
       selector:
         deploymentconfig: ${NAME}-${ZONE}-${COMPONENT}
   - apiVersion: route.openshift.io/v1
@@ -177,7 +177,7 @@ objects:
     spec:
       host: ${NAME}-${ZONE}-${COMPONENT}.${DOMAIN}
       port:
-        targetPort: 3000-tcp
+        targetPort: 3010-tcp
       to:
         kind: Service
         name: ${NAME}-${ZONE}-${COMPONENT}

@@ -1,5 +1,3 @@
-import React from "react";
-import { useAuth } from "react-oidc-context";
 import { Authentication } from "../../common/components/authentication/Authentication";
 
 export const HomePage = () => {
