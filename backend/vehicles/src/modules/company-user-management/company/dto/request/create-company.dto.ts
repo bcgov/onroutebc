@@ -2,11 +2,13 @@ import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
 import { CreateAddressDto } from '../../../../common/dto/request/create-address.dto';
 import { CreateContactDto } from '../../../../common/dto/request/create-contact.dto';
+import { CreateUserDto } from '../../../users/dto/request/create-user.dto';
 
 /**
- * JSON representation for request object to create a company profile.
+ * JSON representation of the request object for creating a new company and
+ * admin user.
  */
-export class CreateCompanyProfileDto {
+export class CreateCompanyDto {
   @AutoMap()
   @ApiProperty({
     description: 'The legal name of the company.',
@@ -24,7 +26,7 @@ export class CreateCompanyProfileDto {
   @AutoMap()
   @ApiProperty({
     description:
-      'Boolean field indicating if the mailing address is same as company address.',
+      'A boolean field that indicates whether the mailing address of the company is the same as the physical address of the company.',
     required: true,
   })
   mailingAddressSameAsCompanyAddress: boolean;
@@ -81,4 +83,11 @@ export class CreateCompanyProfileDto {
     required: true,
   })
   primaryContact: CreateContactDto;
+
+  @AutoMap()
+  @ApiProperty({
+    description: 'The admin user of the company.',
+    required: true,
+  })
+  adminUser: CreateUserDto;
 }
