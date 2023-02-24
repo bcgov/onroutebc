@@ -3,7 +3,8 @@ import { ApiProperty } from '@nestjs/swagger';
 import { UpdatePendingUserDto } from './update-pending-user.dto';
 
 /**
- * JSON representation for request object to create a pending user.
+ * JSON representation of the request object for adding a new user to the
+ * company.
  */
 export class CreatePendingUserDto extends UpdatePendingUserDto {
   @AutoMap()

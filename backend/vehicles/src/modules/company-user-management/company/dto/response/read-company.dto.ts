@@ -4,19 +4,19 @@ import { ReadAddressDto } from '../../../../common/dto/response/read-address.dto
 import { ReadContactDto } from '../../../../common/dto/response/read-contact.dto';
 
 /**
- * JSON representation of company response object .
+ * JSON representation of response object when retrieving a company.
  */
 export class ReadCompanyDto {
   @AutoMap()
   @ApiProperty({
-    description: 'The business GUID.',
+    description: 'The company GUID.',
     example: '6F9619FF8B86D011B42D00C04FC964FF',
   })
   companyGUID: string;
 
   @AutoMap()
   @ApiProperty({
-    description: 'The BCeID client number.',
+    description: 'The ORBC client number.',
     example: '1234',
   })
   clientNumber: string;
@@ -38,7 +38,7 @@ export class ReadCompanyDto {
   @AutoMap()
   @ApiProperty({
     description:
-      'Boolean field indicating if the mailing address is same as company address.',
+      'A boolean field that indicates whether the mailing address of the company is the same as the physical address of the company.',
     required: true,
   })
   mailingAddressSameAsCompanyAddress: boolean;

@@ -5,7 +5,8 @@ import { CreateContactDto } from '../../../../common/dto/request/create-contact.
 import { CreateUserDto } from '../../../users/dto/request/create-user.dto';
 
 /**
- * JSON representation for request object to create a company and admin user.
+ * JSON representation of the request object for creating a new company and
+ * admin user.
  */
 export class CreateCompanyDto {
   @AutoMap()
@@ -25,7 +26,7 @@ export class CreateCompanyDto {
   @AutoMap()
   @ApiProperty({
     description:
-      'Boolean field indicating if the mailing address is same as company address.',
+      'A boolean field that indicates whether the mailing address of the company is the same as the physical address of the company.',
     required: true,
   })
   mailingAddressSameAsCompanyAddress: boolean;

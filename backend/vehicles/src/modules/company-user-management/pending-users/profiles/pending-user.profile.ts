@@ -19,6 +19,12 @@ export class PendingUsersProfile extends AutomapperProfile {
 
   override get profile() {
     return (mapper: Mapper) => {
+      /**
+       * Mapping from CreatePendingUserDto to PendingUser entity, with a custom
+       * mapping for the companyGUID property using the forMember function and
+       * mapWithArguments method to extract the companyGUID argument from the
+       * source object and map it to the destination property.
+       */
       createMap(
         mapper,
         CreatePendingUserDto,
@@ -30,6 +36,12 @@ export class PendingUsersProfile extends AutomapperProfile {
           }),
         ),
       );
+
+      /**
+       * Mapping from UpdatePendingUserDto to PendingUser entity, with custom
+       * mappings for the companyGUID and userName properties using forMember
+       * and mapWithArguments.
+       */
       createMap(
         mapper,
         UpdatePendingUserDto,
@@ -48,6 +60,9 @@ export class PendingUsersProfile extends AutomapperProfile {
         ),
       );
 
+     /**
+     * Mapping from PendingUser entity to ReadPendingUserDto response DTO.
+     */
       createMap(mapper, PendingUser, ReadPendingUserDto);
     };
   }

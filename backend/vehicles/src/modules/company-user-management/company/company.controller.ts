@@ -1,5 +1,4 @@
 import { Controller, Get, Post, Body, Param, Put } from '@nestjs/common';
-
 import { CompanyService } from './company.service';
 import {
   ApiCreatedResponse,
@@ -38,9 +37,17 @@ export class CompanyController {
   constructor(private readonly companyService: CompanyService) {}
 
   /**
-   * Creates a Company and Admin User.
-   * @param createCompanyDto The http request object containing the company details.
-   * @returns 201
+   * A POST method defined with the @Post() decorator and a route of /company
+   * that creates a new company and its admin user.
+   * TODO: Validations on {@link CreateCompanyDto}.
+   * TODO: Secure endpoints once login is implemented.
+   * TODO: Grab user name from the access token and remove the hard coded value 'ASMITH'.
+   *
+   * @param createCompanyDto The http request object containing the company and
+   * admin user details.
+   *
+   * @returns The details of the new company and its associated admin user with
+   * response object {@link ReadCompanyUserDto}
    */
   @ApiCreatedResponse({
     description: 'The Company-User Resource',
@@ -51,16 +58,21 @@ export class CompanyController {
     return await this.companyService.create(
       createCompanyDto,
       CompanyDirectory.BBCEID,
-      'ASMITH', //TODO : Grab from access token
+      'ASMITH', //! Hardcoded value to be replaced by user name from access token
       UserDirectory.BBCEID,
     );
   }
 
   /**
-   * Retrieves the company corresponding to the user.
-   * @param companyGUID A temporary placeholder parameter to get the company by Id.
-   *        Will be removed once login system is implemented.
-   * @returns {@link ReadCompanyDto} upon finding the right one.
+   * A GET method defined with the @Get(':companyGUID') decorator and a route of
+   * /company/:companyGUID that retrieves a company by its GUID (global unique
+   * identifier).
+   * TODO: Secure endpoints once login is implemented.
+   *
+   * @param companyGUID A temporary placeholder parameter to get the company by
+   *        its GUID. Will be removed once login system is implemented.
+   *
+   * @returns The company details with response object {@link ReadCompanyDto}.
    */
   @ApiOkResponse({
     description: 'The Company Resource',
@@ -78,10 +90,16 @@ export class CompanyController {
   }
 
   /**
-   * Retrieves the company corresponding to the user.
-   * @param companyGUID A temporary placeholder parameter to get the company by Id.
-   *        Will be removed once login system is implemented.
-   * @returns {@link ReadCompanyDto} upon successfully updating.
+   * A PUT method defined with the @Put(':companyGUID') decorator and a route of
+   * /company/:companyGUID that updates a company by its GUID.
+   * TODO: Validations on {@link UpdateCompanyDto}.
+   * TODO: Validations on {@link UpdateCompanyDto}.
+   * TODO: Secure endpoints once login is implemented.
+   *
+   * @param companyGUID A temporary placeholder parameter to get the company by
+   *        its GUID. Will be removed once login system is implemented.
+   *
+   * @returns The updated company deails with response object {@link ReadCompanyDto}.
    */
   @ApiOkResponse({
     description: 'The Company  Resource',
@@ -92,8 +110,6 @@ export class CompanyController {
     @Param('companyGUID') companyGUID: string,
     @Body() updateCompanyDto: UpdateCompanyDto,
   ): Promise<ReadCompanyDto> {
-    // Get current company  from the access api ?
-
     const powerUnitType = await this.companyService.update(
       companyGUID,
       updateCompanyDto,

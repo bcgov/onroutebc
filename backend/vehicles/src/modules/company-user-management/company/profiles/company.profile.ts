@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
 import { AutomapperProfile, InjectMapper } from '@automapper/nestjs';
 import {
   createMap,
@@ -32,18 +31,27 @@ export class CompanyProfile extends AutomapperProfile {
 
   override get profile() {
     return (mapper: Mapper) => {
+      /**
+       * The mapping between CreateCompanyDto and Company. It maps the
+       * companyAddress and mailingAddress properties of CreateCompanyDto to
+       * instances of the Address entity using the mapWith function. The
+       * companyDirectory property is mapped to a value provided as an argument
+       * to the mapping function using the mapWithArguments function.
+       * TODO: Implement client number generation and change the mapping.
+       * TODO: Change companyGUID mapping once the login is implemented.
+       */
       createMap(
         mapper,
         CreateCompanyDto,
         Company,
-        //TODO : Below Mapping to be removed once login has been implmented
+        //! Below Mapping to be changed once client number generation is implemented.
         forMember(
           (d) => d.clientNumber,
           mapFrom(() => {
             return tempClientNumber();
           }),
         ),
-        //TODO : Below Mapping to be removed once login has been implmented
+        //! Below Mapping to be removed once the login is implemented.
         forMember(
           (d) => d.companyGUID,
           mapFrom(() => {
@@ -71,6 +79,18 @@ export class CompanyProfile extends AutomapperProfile {
           }),
         ),
       );
+
+      /**
+       * The mapping between UpdateCompanyDto and Company. It
+       * maps the companyAddress and mailingAddress properties of
+       * UpdateCompanyDto to instances of the Address entity using the mapWith
+       * function. It also maps the companyAddress.addressId and
+       * mailingAddress.addressId properties to values provided as arguments to
+       * the mapping function using the mapWithArguments function. The
+       * companyDirectory and primaryContact.contactId properties are also
+       * mapped to values provided as arguments using the mapWithArguments
+       * function.
+       */
       createMap(
         mapper,
         UpdateCompanyDto,
@@ -119,6 +139,13 @@ export class CompanyProfile extends AutomapperProfile {
         ),
       );
 
+      /**
+       * The mapping is between Company and ReadCompanyDto. It maps the
+       * companyAddress and mailingAddress properties of Company to instances of the
+       * ReadAddressDto DTO using the mapWith function. The
+       * mailingAddressSameAsCompanyAddress property is mapped directly using the
+       * mapFrom function.
+       */
       createMap(
         mapper,
         Company,
@@ -138,6 +165,12 @@ export class CompanyProfile extends AutomapperProfile {
         ),
       );
 
+      /**The mapping is between Company and ReadCompanyUserDto. It maps
+       * the companyAddress and mailingAddress properties of Company to instances of
+       * the ReadAddressDto DTO using the mapWith function. The
+       * mailingAddressSameAsCompanyAddress property is mapped directly using the
+       * mapFrom function. The adminUser property of ReadCompanyUserDto is ignored
+       * using the ignore function. */
       createMap(
         mapper,
         Company,
@@ -161,13 +194,24 @@ export class CompanyProfile extends AutomapperProfile {
   }
 }
 
-//TODO : Below Code to be removed once login has been implmented
+/**
+ * A temporary function to generate random client number for the time being.
+ * TODO: Below function to be removed once client number generation is implemented.
+ * ! Known security risk with Math.random().
+ *
+ * @returns A random generated client number.
+ */
 const tempClientNumber = () => {
   return Math.floor(Math.random() * 1000000000).toString();
 };
 
-//TODO : Below Code to be removed once login has been implmented
+/**
+ * A temporary function to generate company guid for the time being.
+ * TODO: Below function to be removed once login is implemented.
+ * @returns A guid without '-'.
+ */
 const tempCompanyGuid = () => {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   const uuid: string = uuidv4() as string;
   return uuid.replace(/-/gi, '').toUpperCase();
 };

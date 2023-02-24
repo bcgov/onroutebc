@@ -15,18 +15,33 @@ import { CompanyDirectory } from '../../../../common/enum/directory.enum';
 
 @Entity({ name: 'ORBC_COMPANY' })
 export class Company extends Base {
+  /**
+   * A string property with a length of 32, representing the company's GUID.
+   */
   @AutoMap()
   @PrimaryColumn({ length: 32, name: 'COMPANY_GUID', nullable: false })
   companyGUID: string;
 
+  /**
+   * A string property with a length of 10, representing the ORBC client number
+   * of the company.
+   */
   @AutoMap()
   @Column({ length: 10, name: 'CLIENT_NUMBER', nullable: false })
   clientNumber: string;
 
+  /**
+   * A string property with a length of 100, representing the company's legal
+   * name.
+   */
   @AutoMap()
   @Column({ length: 100, name: 'LEGAL_NAME', nullable: false })
   legalName: string;
 
+  /**
+   * A property that represents the company's directory, which is an enum of
+   * type {@link CompanyDirectory}.
+   */
   @AutoMap()
   @Column({
     type: 'simple-enum',
@@ -37,42 +52,86 @@ export class Company extends Base {
   })
   companyDirectory: CompanyDirectory;
 
+  /**
+   * A one-to-one relationship with the {@link Address} entity, representing the
+   * company's physical address
+   */
   @OneToOne(() => Address, (Address) => Address.company, { cascade: true })
   @JoinColumn({ name: 'PHYSICAL_ADDRESS_ID' })
   companyAddress: Address;
 
+  /**
+   * A one-to-one relationship with the {@link Address} entity, representing the
+   * company's mailing address.
+   */
   @OneToOne(() => Address, (Address) => Address.company, { cascade: true })
   @JoinColumn({ name: 'MAILING_ADDRESS_ID' })
   mailingAddress: Address;
 
+  /**
+   * A string property with a length of 20, representing the company's phone
+   * number.
+   */
   @AutoMap()
   @Column({ length: 20, name: 'PHONE', nullable: false })
   phone: string;
 
+  /**
+   * A string property with a length of 5, representing the company's phone
+   * extension.
+   */
   @AutoMap()
   @Column({ length: 5, name: 'EXTENSION', nullable: false })
   extension: string;
 
+  /**
+   * A string property with a length of 20, representing the company's fax
+   * number.
+   */
   @AutoMap()
   @Column({ length: 20, name: 'FAX', nullable: false })
   fax: string;
 
+  /**
+   * A string property with a length of 100, representing the company's email
+   * address.
+   */
   @AutoMap()
   @Column({ length: 100, name: 'EMAIL', nullable: false })
   email: string;
 
+  /**
+   * A one-to-one relationship with the Contact entity, representing the
+   * company's primary contact.
+   */
   @AutoMap(() => Contact)
   @OneToOne(() => Contact, (Contact) => Contact.company, { cascade: true })
   @JoinColumn({ name: 'PRIMARY_CONTACT_ID' })
   primaryContact: Contact;
 
+  /**
+   * A one-to-many relationship with the {@link CompanyUser} entity, representing the
+   * users who belong to the company.
+   */
   @AutoMap(() => [CompanyUser])
   @OneToMany(() => CompanyUser, (CompanyUser) => CompanyUser.company)
   companyUsers: CompanyUser[];
 
+  /**
+   * The mailingAddressSameAsCompanyAddress property is a getter that returns a
+   * boolean value indicating whether the mailing address is the same as the
+   * company address.
+   */
   public get mailingAddressSameAsCompanyAddress(): boolean {
     return this.companyAddress.addressId === this.mailingAddress.addressId;
   }
+
+  /**
+   * setMailingAddressSameAsCompanyAddress() method sets the mailing address to
+   * the company address if the parameter is true.
+   * @param mailingAddressSameAsCompanyAddress sets the mailing address to the
+   * company address if the parameter is true.
+   */
   public setMailingAddressSameAsCompanyAddress(
     mailingAddressSameAsCompanyAddress: boolean,
   ) {

@@ -27,12 +27,28 @@ export class CompanyService {
     private dataSource: DataSource,
   ) {}
 
+  /**
+   * The create() method creates a new Company and an admin user associated with
+   * the company.These operations are wrapped in a TypeORM transaction to ensure
+   * data consistency. Finally, the newly created company and user are returned
+   * in a DTO object.
+   * ? Company Directory might not be required once scope of login is finizalied.
+   *
+   * @param createCompanyDto Request object of type {@link CreateCompanyDto} for
+   * creating a new company and admin user.
+   * @param companyDirectory Company Directory from the access token.
+   * @param userName User name from the access token.
+   * @param userDirectory User Directory from the access token.
+   *
+   * @returns The company and admin user details as a promise of type
+   * {@link ReadCompanyUserDto}
+   */
   async create(
     createCompanyDto: CreateCompanyDto,
     companyDirectory: CompanyDirectory,
     userName: string,
     userDirectory: UserDirectory,
-  ): Promise<ReadCompanyDto> {
+  ): Promise<ReadCompanyUserDto> {
     let newCompany = this.classMapper.map(
       createCompanyDto,
       CreateCompanyDto,
@@ -64,10 +80,8 @@ export class CompanyService {
 
       await queryRunner.commitTransaction();
     } catch (err) {
-      // since we have errors lets rollback the changes we made
       await queryRunner.rollbackTransaction();
     } finally {
-      // you need to release a queryRunner which was manually instantiated
       await queryRunner.release();
     }
 
@@ -82,6 +96,15 @@ export class CompanyService {
     return readCompanyUserDto;
   }
 
+  /**
+   * The findOne() method returns a ReadCompanyDto object corresponding to the
+   * company with that GUID. It retrieves the entity from the database using the
+   * Repository, maps it to a DTO object using the Mapper, and returns it.
+   *
+   * @param companyGUID The company GUID
+   *
+   * @returns The company details as a promise of type {@link ReadCompanyDto}
+   */
   async findOne(companyGUID: string): Promise<ReadCompanyDto> {
     return this.classMapper.mapAsync(
       await this.companyRepository.findOne({
@@ -97,6 +120,22 @@ export class CompanyService {
     );
   }
 
+  /**
+   * The update() method retrieves the entity from the database using the
+   * Repository, maps the DTO object to the entity using the Mapper, sets some
+   * additional properties on the entity, and saves it back to the database
+   * using the Repository. It then retrieves the updated entity and returns it
+   * in a DTO object.
+   *
+   * ? Company Directory might not be required once scope of login is finizalied.
+   *
+   * @param companyGUID The company GUID
+   * @param updateCompanyDto Request object of type {@link UpdateCompanyDto} for
+   * updating a company.
+   * @param companyDirectory Company Directory from the access token.
+   *
+   * @returns The company details as a promise of type {@link ReadCompanyDto}
+   */
   async update(
     companyGUID: string,
     updateCompanyDto: UpdateCompanyDto,
@@ -119,7 +158,7 @@ export class CompanyService {
     const companyAddressId = company.companyAddress.addressId;
     const mailingAddressId = company.mailingAddress.addressId;
 
-    const companyProfile = this.classMapper.map(
+    const newCompany = this.classMapper.map(
       updateCompanyDto,
       UpdateCompanyDto,
       Company,
@@ -137,12 +176,12 @@ export class CompanyService {
       },
     );
 
-    companyProfile.setMailingAddressSameAsCompanyAddress(
+    newCompany.setMailingAddressSameAsCompanyAddress(
       updateCompanyDto.mailingAddressSameAsCompanyAddress,
     );
-    companyProfile.companyGUID = companyGUID;
+    newCompany.companyGUID = companyGUID;
 
-    await this.companyRepository.save(companyProfile);
+    await this.companyRepository.save(newCompany);
 
     return this.findOne(companyGUID);
   }

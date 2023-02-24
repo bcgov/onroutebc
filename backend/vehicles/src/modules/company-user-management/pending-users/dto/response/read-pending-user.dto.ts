@@ -3,7 +3,8 @@ import { ApiProperty } from '@nestjs/swagger';
 import { CreatePendingUserDto } from '../request/create-pending-user.dto';
 
 /**
- * JSON representation for response object to create a pending user.
+ * JSON representation of response object when retrieving the details of a new
+ * user from the server.
  */
 export class ReadPendingUserDto extends CreatePendingUserDto {
   @AutoMap()

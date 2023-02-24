@@ -41,9 +41,18 @@ export class PendingUsersController {
   constructor(private readonly pendingUserService: PendingUsersService) {}
 
   /**
-   * Creates a pending user.
-   * @param createPendingUserDto The http request object containing the user details.
-   * @returns 201
+   * A POST method defined with the @Post() decorator and a route of
+   * company/:companyGUID/pending-user that creates a new pending user
+   * associated with the company.
+   * TODO: Validations on {@link CreatePendingUserDto}.
+   * TODO: Secure endpoints once login is implemented.
+   *
+   * @param companyGUID The company GUID.
+   * @param createPendingUserDto The http request object containing the pending user
+   * details.
+   *
+   * @returns The details of the pending user with response object
+   * {@link ReadCompanyUserDto}
    */
   @ApiCreatedResponse({
     description: 'The Pending User Resource',
@@ -57,12 +66,24 @@ export class PendingUsersController {
     return await this.pendingUserService.create(companyGUID, createUserDto);
   }
 
+  /**
+   * A GET method defined with the @Get() decorator and a route of
+   * company/:companyGUID/pending-user that retrieves a list of pending users
+   * associated with the company
+   *
+   * TODO: Secure endpoints once login is implemented.
+   *
+   * @param companyGUID The company GUID.
+   *
+   * @returns The list of pending users with response object as an array of
+   * {@link ReadPendingUserDto}.
+   */
   @ApiOkResponse({
     description: 'The Pending User Resource List',
     type: ReadPendingUserDto,
     isArray: true,
   })
-  @Get('')
+  @Get()
   async findAll(
     @Param('companyGUID') companyGUID: string,
   ): Promise<ReadPendingUserDto[]> {
@@ -70,15 +91,19 @@ export class PendingUsersController {
   }
 
   /**
-   * Retrieves the user corresponding to the company.
-   * @param companyGUID A temporary placeholder parameter to get the company by Id.
-   *        Will be removed once login system is implemented.
-   * @param userGUID A temporary placeholder parameter to get the user by Id.
-   *        Will be removed once login system is implemented.
-   * @returns {@link ReadPendingUserDto} upon finding the right one.
+   * A GET method defined with the @Get(:userName) decorator and a route of
+   * company/:companyGUID/pending-user/:userName that retrieves the pending user
+   * associated with the company by user name
+   *
+   * TODO: Secure endpoints once login is implemented.
+   *
+   * @param companyGUID The company GUID.
+   * @param userName The userName of the pending user.
+   *
+   * @returns The pending user with response object {@link ReadPendingUserDto}.
    */
   @ApiOkResponse({
-    description: 'The User Resource',
+    description: 'The Pending User Resource',
     type: ReadPendingUserDto,
   })
   @Get(':userName')
@@ -97,15 +122,22 @@ export class PendingUsersController {
   }
 
   /**
-   * Updates the user corresponding to the company.
-   * @param companyGUID A temporary placeholder parameter to get the company by Id.
-   *        Will be removed once login system is implemented.
-   * @param userGUID A temporary placeholder parameter to get the user by Id.
-   *        Will be removed once login system is implemented.
-   * @returns {@link ReadPendingUserDto} upon successfully updating.
+   * A PUT method defined with the @Put(':userName') decorator and a route of
+   * company/:companyGUID/pending-user/:userName that updates a pending user by
+   * user name.
+   * TODO: Validations on {@link UpdateCompanyDto}.
+   * TODO: Validations on {@link UpdateCompanyDto}.
+   * TODO: Secure endpoints once login is implemented.
+   *
+   * @param companyGUID The company GUID.
+   * @param userName The user name of the pending user.
+   * @param updatePendingUserDto The http request object of type {@link UpdatePendingUserDto}
+   * containing the pending user details.
+   *
+   * @returns The pending user with response object {@link ReadPendingUserDto}.
    */
   @ApiOkResponse({
-    description: 'The User Resource',
+    description: 'The Pending User Resource',
     type: ReadPendingUserDto,
   })
   @Put(':userName')
@@ -125,6 +157,14 @@ export class PendingUsersController {
     return pendingUser;
   }
 
+  /**
+   * A DELETE method defined with the @Delete(':userName') decorator and a route of
+   * company/:companyGUID/pending-user/:userName that deletes a pending user by
+   * user name.
+   * @param companyGUID The company GUID.
+   * @param userName The user name of the pending user.
+   * @returns true upon successful deletion.
+   */
   @Delete(':userName')
   async remove(
     @Param('companyGUID') companyGUID: string,

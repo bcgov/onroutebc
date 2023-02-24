@@ -16,6 +16,16 @@ export class PendingUsersService {
     @InjectMapper() private readonly classMapper: Mapper,
   ) {}
 
+  /**
+   * Creates a new pending user in the database.
+   *
+   * @param companyGUID The company GUID.
+   * @param createPendingUserDto Request object of type
+   * {@link CreatePendingUserDto} for creating a pending user.
+   *
+   * @returns The pending user details as a promise of type
+   * {@link ReadPendingUserDto}
+   */
   async create(
     companyGUID: string,
     createPendingUserDto: CreatePendingUserDto,
@@ -35,6 +45,16 @@ export class PendingUsersService {
     );
   }
 
+  /**
+   * Finds a pending user in the database based on the companyGUID and userName
+   * parameters.
+   *
+   * @param companyGUID The company GUID.
+   * @param userName The userName of the pending user.
+   *
+   * @returns The pending user details as a promise of type
+   * {@link ReadPendingUserDto}
+   */
   async findOne(
     companyGUID: string,
     userName: string,
@@ -48,6 +68,14 @@ export class PendingUsersService {
     );
   }
 
+  /**
+   * Finds all pending users in the database for a given companyGUID.
+   *
+   * @param companyGUID The company GUID.
+   *
+   * @returns The pending user details as a promise of type
+   * {@link ReadPendingUserDto}.
+   */
   async findAll(companyGUID: string): Promise<ReadPendingUserDto[]> {
     return this.classMapper.mapArrayAsync(
       await this.pendingUserRepository.find({ where: { companyGUID } }),
@@ -56,6 +84,18 @@ export class PendingUsersService {
     );
   }
 
+  /**
+   * Updates a pending user in the database based on the companyGUID and
+   * userName parameters.
+   *
+   * @param companyGUID The company GUID.
+   * @param userName The userName of the pending user.
+   * @param updatePendingUserDto Request object of type
+   * {@link UpdatePendingUserDto} for creating a pending company.
+   *
+   * @returns The pending user details as a promise of type
+   * {@link ReadPendingUserDto}.
+   */
   async update(
     companyGUID: string,
     userName: string,
@@ -77,6 +117,13 @@ export class PendingUsersService {
     return this.findOne(companyGUID, userName);
   }
 
+  /**
+   * Deletes a pending user from the database based on the companyGUID and
+   * userName parameters.
+   * @param companyGUID The company GUID.
+   * @param userName The userName of the pending user.
+   * @returns The Result object returned by DeleteQueryBuilder execution.
+   */
   async remove(companyGUID: string, userName: string): Promise<DeleteResult> {
     return await this.pendingUserRepository.delete({ companyGUID, userName });
   }

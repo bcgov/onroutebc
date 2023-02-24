@@ -4,7 +4,8 @@ import { ReadUserDto } from '../../../users/dto/response/read-user.dto';
 import { ReadCompanyDto } from './read-company.dto';
 
 /**
- * JSON representation of company user response object.
+ * JSON representation of response object when retrieving a company and its
+ * associated admin user from the server.
  */
 export class ReadCompanyUserDto extends ReadCompanyDto {
   @AutoMap()
