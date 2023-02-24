@@ -36,9 +36,16 @@ export class UsersController {
   constructor(private readonly userService: UsersService) {}
 
   /**
-   * Creates a user.
+   * A POST method defined with the @Post() decorator and a route of
+   * company/:companyGUID/user that creates a new user associated to a company.
+   * TODO: Validations on {@link CreateUserDto}.
+   * TODO: Secure endpoints once login is implemented.
+   * TODO: Grab user name from the access token and remove the hard coded value 'ASMITH'.
+   *
    * @param createUserDto The http request object containing the user details.
-   * @returns 201
+   *
+   * @returns The details of the new user with response object
+   * {@link ReadUserDto}
    */
   @ApiCreatedResponse({
     description: 'The User Resource',
@@ -52,18 +59,23 @@ export class UsersController {
     return await this.userService.create(
       createUserDto,
       companyGUID,
-      'ASMITH', //TODO : Grab from access token
+      'ASMITH', //! Hardcoded value to be replaced by user name from access token
       UserDirectory.BBCEID,
     );
   }
 
   /**
-   * Retrieves the user corresponding to the company.
-   * @param companyGUID A temporary placeholder parameter to get the company by Id.
+   * A GET method defined with the @Get(':userGUID') decorator and a route of
+   * company/:companyGUID/user/:userGUID  that retrieves a user by its GUID
+   * (global unique identifier).
+   * TODO: Secure endpoints once login is implemented.
+   *
+   * @param companyGUID The company GUID.
+   *
+   * @param userGUID A temporary placeholder parameter to get the user by GUID.
    *        Will be removed once login system is implemented.
-   * @param userGUID A temporary placeholder parameter to get the user by Id.
-   *        Will be removed once login system is implemented.
-   * @returns {@link ReadUserDto} upon finding the right one.
+   *
+   * @returns The user details with response object {@link ReadUserDto}.
    */
   @ApiOkResponse({
     description: 'The User Resource',
@@ -81,6 +93,16 @@ export class UsersController {
     return companyUser;
   }
 
+  /**
+   * A GET method defined with the @Get() decorator and a route of
+   * company/:companyGUID/user that retrieves a list of users associated with
+   * the company GUID (global unique identifier).
+   * TODO: Secure endpoints once login is implemented.
+   *
+   * @param companyGUID The company GUID.
+   *
+   * @returns The user list with response object {@link ReadUserDto}.
+   */
   @ApiOkResponse({
     description: 'The User Resource List',
     type: ReadUserDto,
@@ -94,12 +116,18 @@ export class UsersController {
   }
 
   /**
-   * Updates the user corresponding to the company.
-   * @param companyGUID A temporary placeholder parameter to get the company by Id.
-   *        Will be removed once login system is implemented.
+   * A PUT method defined with the @Put(':userGUID') decorator and a route of
+   * company/:companyGUID/user/:userGUID that updates a user details by its
+   * GUID.
+   * TODO: Secure endpoints once login is implemented.
+   * TODO: Grab user name from the access token and remove the hard coded value 'ASMITH'.
+   * TODO: Grab user directory from the access token and remove the hard coded value UserDirectory.BBCEID.
+   *
+   * @param companyGUID The company GUID.
    * @param userGUID A temporary placeholder parameter to get the user by Id.
    *        Will be removed once login system is implemented.
-   * @returns {@link ReadUserDto} upon successfully updating.
+   *
+   * @returns The updated user deails with response object {@link ReadUserDto}.
    */
   @ApiOkResponse({
     description: 'The User Resource',
@@ -114,8 +142,8 @@ export class UsersController {
     const user = await this.userService.update(
       companyGUID,
       userGUID,
-      'ASMITH', //TODO : Grab from access token
-      UserDirectory.BBCEID,
+      'ASMITH', //! Hardcoded value to be replaced by user name from access token
+      UserDirectory.BBCEID, //! Hardcoded value to be replaced by user directory from access token
       updateUserDto,
     );
     if (!user) {
@@ -124,6 +152,21 @@ export class UsersController {
     return user;
   }
 
+  /**
+   * A PUT method defined with the @Put(':userGUID/status/:statusCode')
+   * decorator and a route of
+   * company/:companyGUID/user/:userGUID/status/:statusCode that updates the
+   * user status by its GUID.
+   * ? This end point maybe merged with user update endpoint. TBD.
+   * TODO: Secure endpoints once login is implemented.
+   *
+   * @param companyGUID The company GUID.
+   * @param userGUID A temporary placeholder parameter to get the user by Id.
+   *        Will be removed once login system is implemented.
+   * @param statusCode The status Code of the user of type {@link UserStatus}
+   *
+   * @returns True on successfull operation.
+   */
   @ApiOkResponse({
     description: '{statusUpdated : true}',
   })

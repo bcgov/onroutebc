@@ -5,7 +5,7 @@ import { UserStatus } from '../../../../../common/enum/user-status.enum';
 import { ReadContactDto } from '../../../../common/dto/response/read-contact.dto';
 
 /**
- * JSON representation for response object to create a user.
+ * JSON representation of response object when retrieving user information from the server.
  */
 export class ReadUserDto extends ReadContactDto {
   @AutoMap()

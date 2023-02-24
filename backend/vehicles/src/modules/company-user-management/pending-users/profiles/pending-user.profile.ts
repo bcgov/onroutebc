@@ -60,9 +60,9 @@ export class PendingUsersProfile extends AutomapperProfile {
         ),
       );
 
-     /**
-     * Mapping from PendingUser entity to ReadPendingUserDto response DTO.
-     */
+      /**
+       * Mapping from PendingUser entity to ReadPendingUserDto response DTO.
+       */
       createMap(mapper, PendingUser, ReadPendingUserDto);
     };
   }

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
 import { AutomapperProfile, InjectMapper } from '@automapper/nestjs';
 import {
   createMap,
@@ -24,11 +23,21 @@ export class UsersProfile extends AutomapperProfile {
 
   override get profile() {
     return (mapper: Mapper) => {
+      /**
+       * The mapping is between CreateUserDto to User mapping. In the mapping,
+       * there are four forMember calls. The first one maps the userGUID
+       * property of the destination object to a generated UUID using the
+       * tempUserGuid function (which will be removed once login has been
+       * implemented). The remaining forMember calls map the userName,
+       * userDirectory, and userContact properties of the destination object to
+       * properties of the source object using mapWithArguments or mapFrom.
+       * TODO: Change userGUID mapping once the login is implemented.
+       */
       createMap(
         mapper,
         CreateUserDto,
         User,
-        //TODO : Below Mapping to be removed once login has been implmented
+        //! Below Mapping to be removed once the login is implemented.
         forMember(
           (d) => d.userGUID,
           mapFrom(() => {
@@ -54,12 +63,18 @@ export class UsersProfile extends AutomapperProfile {
           }),
         ),
       );
+
+      /**
+       * The mapping is between UpdateUserDto to User mapping. In the mapping,
+       * there are also four forMember calls. The first one maps the userGUID
+       * property of the destination object to the userGUID property of the
+       * source object using mapWithArguments. The remaining forMember calls are
+       * similar to those in the CreateUserDto to User mapping.
+       */
       createMap(
         mapper,
         UpdateUserDto,
         User,
-        //TODO : Below Mapping to be removed once login has been implmented
-        //forMember((d) => d.userGUID, mapFrom((s)=>{return tempUserGuid();})),
         forMember(
           (d) => d.userGUID,
           mapWithArguments((source, { userGUID }) => {
@@ -86,6 +101,12 @@ export class UsersProfile extends AutomapperProfile {
         ),
       );
 
+      /**
+       * The mapping is between User to ReadUserDto mapping. In the mapping
+       * there are three forMember calls. These map the userGUID, userName, and
+       * userAuthGroup properties of the source object to properties of the
+       * destination object using mapFrom.
+       */
       createMap(
         mapper,
         User,
@@ -107,8 +128,13 @@ export class UsersProfile extends AutomapperProfile {
   }
 }
 
-//TODO : Below Code to be removed once login has been implmented
+/**
+ * A temporary function to generate user guid for the time being.
+ * TODO: Below function to be removed once login is implemented.
+ * @returns A guid without '-'.
+ */
 const tempUserGuid = () => {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   const uuid: string = uuidv4() as string;
   return uuid.replace(/-/gi, '').toUpperCase();
 };

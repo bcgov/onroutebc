@@ -15,6 +15,12 @@ export class AddressProfile extends AutomapperProfile {
 
   override get profile() {
     return (mapper: Mapper) => {
+      /**
+       * Mapping from Address entity to ReadAddressDto DTO, with additional
+       * configuration using forMember and mapFrom methods to set the
+       * provinceCode and countryCode properties of the DTO by extracting them
+       * from the province.provinceId property of the entity.
+       */
       createMap(
         mapper,
         Address,
@@ -34,6 +40,12 @@ export class AddressProfile extends AutomapperProfile {
           }),
         ),
       );
+
+      /**
+       * Mapping from CreateAddressDto DTO to Address entity, with additional
+       * configuration to set the province.provinceId property of the entity by
+       * concatenating the countryCode and provinceCode properties of the DTO.
+       */
       createMap(
         mapper,
         CreateAddressDto,
@@ -43,6 +55,12 @@ export class AddressProfile extends AutomapperProfile {
           mapFrom((s) => s.countryCode + '-' + s.provinceCode),
         ),
       );
+
+      /**
+       * Mapping from UpdateAddressDto DTO to Address entity, with additional
+       * configuration to set the province.provinceId property of the entity by
+       * concatenating the countryCode and provinceCode properties of the DTO.
+       */
       createMap(
         mapper,
         UpdateAddressDto,

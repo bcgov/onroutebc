@@ -4,7 +4,7 @@ import { UserAuthGroup } from '../../../../../common/enum/user-auth-group.enum';
 import { UpdateContactDto } from '../../../../common/dto/request/update-contact.dto';
 
 /**
- * JSON representation for request object to update a user.
+ * JSON representation of request object for updating user information.
  */
 export class UpdateUserDto extends UpdateContactDto {
   @AutoMap()

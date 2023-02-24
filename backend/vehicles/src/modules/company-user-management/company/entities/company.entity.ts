@@ -16,23 +16,21 @@ import { CompanyDirectory } from '../../../../common/enum/directory.enum';
 @Entity({ name: 'ORBC_COMPANY' })
 export class Company extends Base {
   /**
-   * A string property with a length of 32, representing the company's GUID.
+   * The company's GUID.
    */
   @AutoMap()
   @PrimaryColumn({ length: 32, name: 'COMPANY_GUID', nullable: false })
   companyGUID: string;
 
   /**
-   * A string property with a length of 10, representing the ORBC client number
-   * of the company.
+   * The ORBC client number of the company.
    */
   @AutoMap()
   @Column({ length: 10, name: 'CLIENT_NUMBER', nullable: false })
   clientNumber: string;
 
   /**
-   * A string property with a length of 100, representing the company's legal
-   * name.
+   * The company's legal name.
    */
   @AutoMap()
   @Column({ length: 100, name: 'LEGAL_NAME', nullable: false })
@@ -69,40 +67,35 @@ export class Company extends Base {
   mailingAddress: Address;
 
   /**
-   * A string property with a length of 20, representing the company's phone
-   * number.
+   * The company's phone number.
    */
   @AutoMap()
   @Column({ length: 20, name: 'PHONE', nullable: false })
   phone: string;
 
   /**
-   * A string property with a length of 5, representing the company's phone
-   * extension.
+   * The company's phone extension.
    */
   @AutoMap()
   @Column({ length: 5, name: 'EXTENSION', nullable: false })
   extension: string;
 
   /**
-   * A string property with a length of 20, representing the company's fax
-   * number.
+   * The company's fax number.
    */
   @AutoMap()
   @Column({ length: 20, name: 'FAX', nullable: false })
   fax: string;
 
   /**
-   * A string property with a length of 100, representing the company's email
-   * address.
+   * The company's email address.
    */
   @AutoMap()
   @Column({ length: 100, name: 'EMAIL', nullable: false })
   email: string;
 
   /**
-   * A one-to-one relationship with the Contact entity, representing the
-   * company's primary contact.
+   * The company's primary contact.
    */
   @AutoMap(() => Contact)
   @OneToOne(() => Contact, (Contact) => Contact.company, { cascade: true })

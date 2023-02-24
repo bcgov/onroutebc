@@ -15,14 +15,24 @@ import { UserStatus } from '../../../../common/enum/user-status.enum';
 
 @Entity({ name: 'ORBC_USER' })
 export class User extends Base {
+  /**
+   *  A primary column representing the unique identifier for the user in ORBC.
+   */
   @AutoMap()
   @PrimaryColumn({ length: 32, name: 'USER_GUID', nullable: false })
   userGUID: string;
 
+  /**
+   * The username of the user
+   */
   @AutoMap()
   @Column({ length: 50, name: 'USERNAME', nullable: false })
   userName: string;
 
+  /**
+   * The type of directory the user belongs to in the system. It is an enum of
+   * UserDirectory type.
+   */
   @AutoMap()
   @Column({
     type: 'simple-enum',
@@ -33,6 +43,10 @@ export class User extends Base {
   })
   userDirectory: UserDirectory;
 
+  /**
+   * The status of the user in the system. It is an enum of UserStatus type and
+   * has a default value of 'ACTIVE'.
+   */
   @AutoMap()
   @Column({
     type: 'simple-enum',
@@ -44,11 +58,19 @@ export class User extends Base {
   })
   statusCode: UserStatus;
 
+  /**
+   * A one-to-one relationship with the Contact entity, representing the contact
+   * details of the user. It cascades on update or delete.
+   */
   @AutoMap(() => Contact)
   @OneToOne(() => Contact, (Contact) => Contact.company, { cascade: true })
   @JoinColumn({ name: 'CONTACT_ID' })
   userContact: Contact;
 
+  /**
+   * A one-to-many relationship with the CompanyUser entity, representing the
+   * list of companies the user belongs to. It cascades on update or delete.
+   */
   @AutoMap(() => [CompanyUser])
   @OneToMany(() => CompanyUser, (CompanyUser) => CompanyUser.user, {
     cascade: true,

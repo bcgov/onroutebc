@@ -93,7 +93,6 @@ export class CompanyController {
    * A PUT method defined with the @Put(':companyGUID') decorator and a route of
    * /company/:companyGUID that updates a company by its GUID.
    * TODO: Validations on {@link UpdateCompanyDto}.
-   * TODO: Validations on {@link UpdateCompanyDto}.
    * TODO: Secure endpoints once login is implemented.
    *
    * @param companyGUID A temporary placeholder parameter to get the company by
