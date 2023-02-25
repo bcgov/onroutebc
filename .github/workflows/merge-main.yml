@@ -99,7 +99,7 @@ jobs:
             ${{env.VAULT_ENV}}/data/database-test  DATABASE_NAME     | VAULT_DATABASE_NAME;
             ${{env.VAULT_ENV}}/data/database-test  DATABASE_PASSWORD | VAULT_DATABASE_PASSWORD;
             ${{env.VAULT_ENV}}/data/database-test  DATABASE_PORT     | VAULT_DATABASE_PORT
-      - uses: bcgov-nr/action-deployer-openshift@v1.0.1
+      - uses: bcgov-nr/action-deployer-openshift@v1.0.2
         with:
           file: ${{ matrix.file }}
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
@@ -156,7 +156,7 @@ jobs:
             ${{env.VAULT_ENV}}/data/database-prod  DATABASE_NAME     | VAULT_DATABASE_NAME;
             ${{env.VAULT_ENV}}/data/database-prod  DATABASE_PASSWORD | VAULT_DATABASE_PASSWORD;
             ${{env.VAULT_ENV}}/data/database-prod  DATABASE_PORT     | VAULT_DATABASE_PORT
-      - uses: bcgov-nr/action-deployer-openshift@v1.0.1
+      - uses: bcgov-nr/action-deployer-openshift@v1.0.2
         with:
           file: ${{ matrix.file }}
           oc_namespace: ${{ secrets.OC_NAMESPACE }}

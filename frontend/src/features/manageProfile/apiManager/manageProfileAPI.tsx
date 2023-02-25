@@ -2,7 +2,6 @@ import { ApiErrorResponse } from "../../../types/common";
 import { MANAGE_PROFILE_API } from "./endpoints/endpoints";
 
 interface Address {
-  addressId: number;
   addressLine1: string;
   addressLine2?: string;
   city: string;
@@ -12,7 +11,6 @@ interface Address {
 }
 
 interface Contact {
-  contactId: number;
   firstName: string;
   lastName: string;
   phone1: string;
