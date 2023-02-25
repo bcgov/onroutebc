@@ -80,8 +80,8 @@ objects:
             "VITE_DEPLOY_ENVIRONMENT":"${ZONE}",
             "VITE_API_VEHICLE_URL":"https://${NAME}-${ZONE}-backend-vehicles.${DOMAIN}",
             "VITE_API_MANAGE_PROFILE_URL":"https://${NAME}-${ZONE}-backend-vehicles.${DOMAIN}",
-            "VITE_KEYCLOAK_AUTHORITY":"https://forms-flow-idm-sso.apps.bronze.aot-technologies.com/auth/realms/onRouteBc",
-            "VITE_KEYCLOAK_REALM":"onRouteBc",
+            "VITE_KEYCLOAK_AUTHORITY":"https://forms-flow-idm-sso.apps.bronze.aot-technologies.com/auth/realms/onRouteBC",
+            "VITE_KEYCLOAK_REALM":"onRouteBC",
             "VITE_KEYCLOAK_CLIENT_ID":"orbc-forms-flow-web",
             "VITE_FORMS_FLOW_WEB_URL":"https://forms-flow-web-c28f0c-dev.apps.silver.devops.gov.bc.ca"
           };
