@@ -11,6 +11,7 @@ export const Filter = () => {
         aria-haspopup="true"
         startIcon={<i className="fa fa-filter"></i>}
         sx={{ padding: "0px 16px", margin: "0px 20px" }}
+        disabled={true}
       >
         Filter
       </Button>

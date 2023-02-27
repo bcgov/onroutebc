@@ -1,15 +1,12 @@
-import * as React from 'react';
-import IconButton from '@mui/material/IconButton';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
+import * as React from "react";
+import IconButton from "@mui/material/IconButton";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 import "./Options.scss";
-import { useCallback } from 'react';
+import { useCallback } from "react";
 
-const options = [
-  'Import CSV',
-  'Export CSV',
-];
+const options = ["Import CSV", "Export CSV"];
 
 const ITEM_HEIGHT = 48;
 
@@ -28,8 +25,8 @@ export const CSVOptions = () => {
       <IconButton
         aria-label="more"
         id="long-button"
-        aria-controls={open ? 'long-menu' : undefined}
-        aria-expanded={open ? 'true' : undefined}
+        aria-controls={open ? "long-menu" : undefined}
+        aria-expanded={open ? "true" : undefined}
         aria-haspopup="true"
         onClick={handleClick}
       >
@@ -38,7 +35,7 @@ export const CSVOptions = () => {
       <Menu
         id="long-menu"
         MenuListProps={{
-          'aria-labelledby': 'long-button',
+          "aria-labelledby": "long-button",
         }}
         anchorEl={anchorEl}
         open={open}
@@ -46,16 +43,21 @@ export const CSVOptions = () => {
         PaperProps={{
           style: {
             maxHeight: ITEM_HEIGHT * 4.5,
-            width: '20ch',
+            width: "20ch",
           },
         }}
       >
         {options.map((option) => (
-          <MenuItem key={option} selected={option === 'Pyxis'} onClick={handleClose}>
+          <MenuItem
+            key={option}
+            selected={option === "Pyxis"}
+            onClick={handleClose}
+            disabled={true}
+          >
             {option}
           </MenuItem>
         ))}
       </Menu>
     </div>
   );
-}
+};
