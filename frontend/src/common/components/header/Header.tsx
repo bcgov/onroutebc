@@ -141,15 +141,18 @@ export const Header = () => {
           {isAuthenticated && (
             <Grid item xs={1} sx={{ display: "flex", alignItems: "center" }}>
               <a
-                onClick={() =>
+                onClick={() => {
+                  localStorage.clear();
+                  sessionStorage.clear();
                   void signoutRedirect({
                     extraQueryParams: {
                       // redirect_uri: 'https://onroutebc-202-frontend.apps.silver.devops.gov.bc.ca/',
+                      //redirect_uri: window.location.origin + "/",
                       redirect_uri: window.location.origin + "/",
                       kc_idp_hint: user?.profile?.identity_provider as string,
                     },
-                  })
-                }
+                  });
+                }}
               >
                 Log Out
               </a>

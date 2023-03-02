@@ -23,13 +23,27 @@ const UserDetails = ({ auth, children }: any) => {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const LoginOptions = ({ auth }: any) => (
   <>
-    <Box sx={{ margin: "8px" }}>
+    {/* <Box sx={{ margin: "8px" }}>
       <Button
         id="login-bceid"
         variant="contained"
         onClick={() =>
           void auth.signinRedirect({
             extraQueryParams: { kc_idp_hint: "bceidboth" },
+          })
+        }
+        sx={{ width: "200px" }}
+      >
+        Log in with BCeID
+      </Button>
+    </Box> */}
+    <Box sx={{ margin: "8px" }}>
+      <Button
+        id="login-bceid"
+        variant="contained"
+        onClick={() =>
+          void auth.signinRedirect({
+            extraQueryParams: { kc_idp_hint: "BCeID_ORBC" },
           })
         }
         sx={{ width: "200px" }}
