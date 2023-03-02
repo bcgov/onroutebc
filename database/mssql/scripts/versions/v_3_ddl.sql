@@ -14,14 +14,6 @@ CREATE TABLE [dbo].[ORBC_ADDRESS](
 	[PROVINCE_ID] [char](5) NOT NULL,
 	[POSTAL_CODE] [varchar](7) NOT NULL,
 	[CONCURRENCY_CONTROL_NUMBER] [int] NULL,
-	[APP_CREATE_USERID] [varchar](30) NULL,
-	[APP_CREATE_TIMESTAMP] [datetime2](7) NULL,
-	[APP_CREATE_USER_GUID] [uniqueidentifier] NULL,
-	[APP_CREATE_USER_DIRECTORY] [varchar](30) NULL,
-	[APP_LAST_UPDATE_USERID] [varchar](30) NULL,
-	[APP_LAST_UPDATE_TIMESTAMP] [datetime2](7) NULL,
-	[APP_LAST_UPDATE_USER_GUID] [uniqueidentifier] NULL,
-	[APP_LAST_UPDATE_USER_DIRECTORY] [varchar](30) NULL,
 	[DB_CREATE_USERID] [varchar](63) NOT NULL,
 	[DB_CREATE_TIMESTAMP] [datetime2](7) NOT NULL,
 	[DB_LAST_UPDATE_USERID] [varchar](63) NOT NULL,
@@ -49,14 +41,6 @@ CREATE TABLE [dbo].[ORBC_COMPANY](
 	[EMAIL] [varchar](50) NULL,
 	[PRIMARY_CONTACT_ID] [int] NULL,
 	[CONCURRENCY_CONTROL_NUMBER] [int] NULL,
-	[APP_CREATE_USERID] [varchar](30) NULL,
-	[APP_CREATE_TIMESTAMP] [datetime2](7) NULL,
-	[APP_CREATE_USER_GUID] [uniqueidentifier] NULL,
-	[APP_CREATE_USER_DIRECTORY] [varchar](30) NULL,
-	[APP_LAST_UPDATE_USERID] [varchar](30) NULL,
-	[APP_LAST_UPDATE_TIMESTAMP] [datetime2](7) NULL,
-	[APP_LAST_UPDATE_USER_GUID] [uniqueidentifier] NULL,
-	[APP_LAST_UPDATE_USER_DIRECTORY] [varchar](30) NULL,
 	[DB_CREATE_USERID] [varchar](63) NOT NULL,
 	[DB_CREATE_TIMESTAMP] [datetime2](7) NOT NULL,
 	[DB_LAST_UPDATE_USERID] [varchar](63) NOT NULL,
@@ -77,14 +61,6 @@ CREATE TABLE [dbo].[ORBC_COMPANY_USER](
 	[USER_GUID] [char](32) NOT NULL,
 	[USER_AUTH_GROUP_ID] [varchar](10) NOT NULL,
 	[CONCURRENCY_CONTROL_NUMBER] [int] NULL,
-	[APP_CREATE_USERID] [varchar](30) NULL,
-	[APP_CREATE_TIMESTAMP] [datetime2](7) NULL,
-	[APP_CREATE_USER_GUID] [uniqueidentifier] NULL,
-	[APP_CREATE_USER_DIRECTORY] [varchar](30) NULL,
-	[APP_LAST_UPDATE_USERID] [varchar](30) NULL,
-	[APP_LAST_UPDATE_TIMESTAMP] [datetime2](7) NULL,
-	[APP_LAST_UPDATE_USER_GUID] [uniqueidentifier] NULL,
-	[APP_LAST_UPDATE_USER_DIRECTORY] [varchar](30) NULL,
 	[DB_CREATE_USERID] [varchar](63) NOT NULL,
 	[DB_CREATE_TIMESTAMP] [datetime2](7) NOT NULL,
 	[DB_LAST_UPDATE_USERID] [varchar](63) NOT NULL,
@@ -112,14 +88,6 @@ CREATE TABLE [dbo].[ORBC_CONTACT](
 	[CITY] [nvarchar](100) NOT NULL,
 	[PROVINCE_ID] [char](5) NULL,
 	[CONCURRENCY_CONTROL_NUMBER] [int] NULL,
-	[APP_CREATE_USERID] [varchar](30) NULL,
-	[APP_CREATE_TIMESTAMP] [datetime2](7) NULL,
-	[APP_CREATE_USER_GUID] [uniqueidentifier] NULL,
-	[APP_CREATE_USER_DIRECTORY] [varchar](30) NULL,
-	[APP_LAST_UPDATE_USERID] [varchar](30) NULL,
-	[APP_LAST_UPDATE_TIMESTAMP] [datetime2](7) NULL,
-	[APP_LAST_UPDATE_USER_GUID] [uniqueidentifier] NULL,
-	[APP_LAST_UPDATE_USER_DIRECTORY] [varchar](30) NULL,
 	[DB_CREATE_USERID] [varchar](63) NOT NULL,
 	[DB_CREATE_TIMESTAMP] [datetime2](7) NOT NULL,
 	[DB_LAST_UPDATE_USERID] [varchar](63) NOT NULL,
@@ -139,14 +107,6 @@ CREATE TABLE [dbo].[ORBC_PENDING_USER](
 	[USERNAME] [varchar](50) NOT NULL,
 	[USER_AUTH_GROUP_ID] [varchar](10) NULL,
 	[CONCURRENCY_CONTROL_NUMBER] [int] NULL,
-	[APP_CREATE_USERID] [varchar](30) NULL,
-	[APP_CREATE_TIMESTAMP] [datetime2](7) NULL,
-	[APP_CREATE_USER_GUID] [uniqueidentifier] NULL,
-	[APP_CREATE_USER_DIRECTORY] [varchar](30) NULL,
-	[APP_LAST_UPDATE_USERID] [varchar](30) NULL,
-	[APP_LAST_UPDATE_TIMESTAMP] [datetime2](7) NULL,
-	[APP_LAST_UPDATE_USER_GUID] [uniqueidentifier] NULL,
-	[APP_LAST_UPDATE_USER_DIRECTORY] [varchar](30) NULL,
 	[DB_CREATE_USERID] [varchar](63) NOT NULL,
 	[DB_CREATE_TIMESTAMP] [datetime2](7) NOT NULL,
 	[DB_LAST_UPDATE_USERID] [varchar](63) NOT NULL,
@@ -169,14 +129,6 @@ CREATE TABLE [dbo].[ORBC_USER](
 	[STATUS_CODE] [varchar](10) NOT NULL,
 	[CONTACT_ID] [int] NOT NULL,
 	[CONCURRENCY_CONTROL_NUMBER] [int] NULL,
-	[APP_CREATE_USERID] [varchar](30) NULL,
-	[APP_CREATE_TIMESTAMP] [datetime2](7) NULL,
-	[APP_CREATE_USER_GUID] [uniqueidentifier] NULL,
-	[APP_CREATE_USER_DIRECTORY] [varchar](30) NULL,
-	[APP_LAST_UPDATE_USERID] [varchar](30) NULL,
-	[APP_LAST_UPDATE_TIMESTAMP] [datetime2](7) NULL,
-	[APP_LAST_UPDATE_USER_GUID] [uniqueidentifier] NULL,
-	[APP_LAST_UPDATE_USER_DIRECTORY] [varchar](30) NULL,
 	[DB_CREATE_USERID] [varchar](63) NOT NULL,
 	[DB_CREATE_TIMESTAMP] [datetime2](7) NOT NULL,
 	[DB_LAST_UPDATE_USERID] [varchar](63) NOT NULL,
@@ -195,14 +147,6 @@ CREATE TABLE [dbo].[ORBC_VT_DIRECTORY](
 	[DIRECTORY_CODE] [varchar](10) NOT NULL,
 	[DIRECTORY_NAME] [varchar](20) NULL,
 	[CONCURRENCY_CONTROL_NUMBER] [int] NULL,
-	[APP_CREATE_USERID] [varchar](30) NULL,
-	[APP_CREATE_TIMESTAMP] [datetime2](7) NULL,
-	[APP_CREATE_USER_GUID] [uniqueidentifier] NULL,
-	[APP_CREATE_USER_DIRECTORY] [varchar](30) NULL,
-	[APP_LAST_UPDATE_USERID] [varchar](30) NULL,
-	[APP_LAST_UPDATE_TIMESTAMP] [datetime2](7) NULL,
-	[APP_LAST_UPDATE_USER_GUID] [uniqueidentifier] NULL,
-	[APP_LAST_UPDATE_USER_DIRECTORY] [varchar](30) NULL,
 	[DB_CREATE_USERID] [varchar](63) NOT NULL,
 	[DB_CREATE_TIMESTAMP] [datetime2](7) NOT NULL,
 	[DB_LAST_UPDATE_USERID] [varchar](63) NOT NULL,
@@ -222,14 +166,6 @@ CREATE TABLE [dbo].[ORBC_VT_USER_AUTH_GROUP](
 	[DISPLAY_NAME] [varchar](25) NULL,
 	[DESCRIPTION] [varchar](100) NULL,
 	[CONCURRENCY_CONTROL_NUMBER] [int] NULL,
-	[APP_CREATE_USERID] [varchar](30) NULL,
-	[APP_CREATE_TIMESTAMP] [datetime2](7) NULL,
-	[APP_CREATE_USER_GUID] [uniqueidentifier] NULL,
-	[APP_CREATE_USER_DIRECTORY] [varchar](30) NULL,
-	[APP_LAST_UPDATE_USERID] [varchar](30) NULL,
-	[APP_LAST_UPDATE_TIMESTAMP] [datetime2](7) NULL,
-	[APP_LAST_UPDATE_USER_GUID] [uniqueidentifier] NULL,
-	[APP_LAST_UPDATE_USER_DIRECTORY] [varchar](30) NULL,
 	[DB_CREATE_USERID] [varchar](63) NOT NULL,
 	[DB_CREATE_TIMESTAMP] [datetime2](7) NOT NULL,
 	[DB_LAST_UPDATE_USERID] [varchar](63) NOT NULL,
@@ -249,14 +185,6 @@ CREATE TABLE [dbo].[ORBC_VT_USER_STATUS](
 	[DISPLAY_NAME] [varchar](10) NULL,
 	[DESCRIPTION] [varchar](100) NULL,
 	[CONCURRENCY_CONTROL_NUMBER] [int] NULL,
-	[APP_CREATE_USERID] [varchar](30) NULL,
-	[APP_CREATE_TIMESTAMP] [datetime2](7) NULL,
-	[APP_CREATE_USER_GUID] [uniqueidentifier] NULL,
-	[APP_CREATE_USER_DIRECTORY] [varchar](30) NULL,
-	[APP_LAST_UPDATE_USERID] [varchar](30) NULL,
-	[APP_LAST_UPDATE_TIMESTAMP] [datetime2](7) NULL,
-	[APP_LAST_UPDATE_USER_GUID] [uniqueidentifier] NULL,
-	[APP_LAST_UPDATE_USER_DIRECTORY] [varchar](30) NULL,
 	[DB_CREATE_USERID] [varchar](63) NOT NULL,
 	[DB_CREATE_TIMESTAMP] [datetime2](7) NOT NULL,
 	[DB_LAST_UPDATE_USERID] [varchar](63) NOT NULL,
@@ -267,27 +195,17 @@ CREATE TABLE [dbo].[ORBC_VT_USER_STATUS](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-INSERT [dbo].[ORBC_VT_DIRECTORY] ([DIRECTORY_CODE], [DIRECTORY_NAME], [CONCURRENCY_CONTROL_NUMBER], [APP_CREATE_USERID], [APP_CREATE_TIMESTAMP], [APP_CREATE_USER_GUID], [APP_CREATE_USER_DIRECTORY], [APP_LAST_UPDATE_USERID], [APP_LAST_UPDATE_TIMESTAMP], [APP_LAST_UPDATE_USER_GUID], [APP_LAST_UPDATE_USER_DIRECTORY], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'BBCEID', N'Business BCeID', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, N'dbo', CAST(N'2023-01-12T00:13:58.2200000' AS DateTime2), N'dbo', CAST(N'2023-01-12T00:13:58.2200000' AS DateTime2))
+INSERT [dbo].[ORBC_VT_DIRECTORY] ([DIRECTORY_CODE], [DIRECTORY_NAME], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'BBCEID', N'Business BCeID', NULL, N'dbo', CAST(N'2023-01-12T00:13:58.2200000' AS DateTime2), N'dbo', CAST(N'2023-01-12T00:13:58.2200000' AS DateTime2))
+INSERT [dbo].[ORBC_VT_DIRECTORY] ([DIRECTORY_CODE], [DIRECTORY_NAME], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'BCEID', N'BCeID', NULL, N'dbo', CAST(N'2023-01-12T00:13:58.2366667' AS DateTime2), N'dbo', CAST(N'2023-01-12T00:13:58.2366667' AS DateTime2))
+INSERT [dbo].[ORBC_VT_DIRECTORY] ([DIRECTORY_CODE], [DIRECTORY_NAME], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'BCSC', N'BC Services Card', NULL, N'dbo', CAST(N'2023-01-12T00:13:58.2466667' AS DateTime2), N'dbo', CAST(N'2023-01-12T00:13:58.2466667' AS DateTime2))
+INSERT [dbo].[ORBC_VT_DIRECTORY] ([DIRECTORY_CODE], [DIRECTORY_NAME], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'ORBC', N'onRouteBC', NULL, N'dbo', CAST(N'2023-01-12T00:13:58.2566667' AS DateTime2), N'dbo', CAST(N'2023-01-12T00:13:58.2566667' AS DateTime2))
 GO
-INSERT [dbo].[ORBC_VT_DIRECTORY] ([DIRECTORY_CODE], [DIRECTORY_NAME], [CONCURRENCY_CONTROL_NUMBER], [APP_CREATE_USERID], [APP_CREATE_TIMESTAMP], [APP_CREATE_USER_GUID], [APP_CREATE_USER_DIRECTORY], [APP_LAST_UPDATE_USERID], [APP_LAST_UPDATE_TIMESTAMP], [APP_LAST_UPDATE_USER_GUID], [APP_LAST_UPDATE_USER_DIRECTORY], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'BCEID', N'BCeID', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, N'dbo', CAST(N'2023-01-12T00:13:58.2366667' AS DateTime2), N'dbo', CAST(N'2023-01-12T00:13:58.2366667' AS DateTime2))
+INSERT [dbo].[ORBC_VT_USER_AUTH_GROUP] ([GROUP_ID], [DISPLAY_NAME], [DESCRIPTION], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'ADMIN', N'Administrator', N'Administrator of the onRouteBC company', NULL, N'dbo', CAST(N'2023-01-18T19:31:29.3766667' AS DateTime2), N'dbo', CAST(N'2023-01-18T19:31:29.3766667' AS DateTime2))
+INSERT [dbo].[ORBC_VT_USER_AUTH_GROUP] ([GROUP_ID], [DISPLAY_NAME], [DESCRIPTION], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'CVCLIENT', N'CV Client', N'Commercial Vehicle client allowed to apply for permits', NULL, N'dbo', CAST(N'2023-01-18T19:31:29.3933333' AS DateTime2), N'dbo', CAST(N'2023-01-18T19:31:29.3933333' AS DateTime2))
 GO
-INSERT [dbo].[ORBC_VT_DIRECTORY] ([DIRECTORY_CODE], [DIRECTORY_NAME], [CONCURRENCY_CONTROL_NUMBER], [APP_CREATE_USERID], [APP_CREATE_TIMESTAMP], [APP_CREATE_USER_GUID], [APP_CREATE_USER_DIRECTORY], [APP_LAST_UPDATE_USERID], [APP_LAST_UPDATE_TIMESTAMP], [APP_LAST_UPDATE_USER_GUID], [APP_LAST_UPDATE_USER_DIRECTORY], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'BCSC', N'BC Services Card', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, N'dbo', CAST(N'2023-01-12T00:13:58.2466667' AS DateTime2), N'dbo', CAST(N'2023-01-12T00:13:58.2466667' AS DateTime2))
-GO
-INSERT [dbo].[ORBC_VT_DIRECTORY] ([DIRECTORY_CODE], [DIRECTORY_NAME], [CONCURRENCY_CONTROL_NUMBER], [APP_CREATE_USERID], [APP_CREATE_TIMESTAMP], [APP_CREATE_USER_GUID], [APP_CREATE_USER_DIRECTORY], [APP_LAST_UPDATE_USERID], [APP_LAST_UPDATE_TIMESTAMP], [APP_LAST_UPDATE_USER_GUID], [APP_LAST_UPDATE_USER_DIRECTORY], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'ORBC', N'onRouteBC', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, N'dbo', CAST(N'2023-01-12T00:13:58.2566667' AS DateTime2), N'dbo', CAST(N'2023-01-12T00:13:58.2566667' AS DateTime2))
-GO
-INSERT [dbo].[ORBC_VT_USER_AUTH_GROUP] ([GROUP_ID], [DISPLAY_NAME], [DESCRIPTION], [CONCURRENCY_CONTROL_NUMBER], [APP_CREATE_USERID], [APP_CREATE_TIMESTAMP], [APP_CREATE_USER_GUID], [APP_CREATE_USER_DIRECTORY], [APP_LAST_UPDATE_USERID], [APP_LAST_UPDATE_TIMESTAMP], [APP_LAST_UPDATE_USER_GUID], [APP_LAST_UPDATE_USER_DIRECTORY], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'ADMIN', N'Administrator', N'Administrator of the onRouteBC company', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, N'dbo', CAST(N'2023-01-18T19:31:29.3766667' AS DateTime2), N'dbo', CAST(N'2023-01-18T19:31:29.3766667' AS DateTime2))
-GO
-INSERT [dbo].[ORBC_VT_USER_AUTH_GROUP] ([GROUP_ID], [DISPLAY_NAME], [DESCRIPTION], [CONCURRENCY_CONTROL_NUMBER], [APP_CREATE_USERID], [APP_CREATE_TIMESTAMP], [APP_CREATE_USER_GUID], [APP_CREATE_USER_DIRECTORY], [APP_LAST_UPDATE_USERID], [APP_LAST_UPDATE_TIMESTAMP], [APP_LAST_UPDATE_USER_GUID], [APP_LAST_UPDATE_USER_DIRECTORY], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'CVCLIENT', N'CV Client', N'Commercial Vehicle client allowed to apply for permits', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, N'dbo', CAST(N'2023-01-18T19:31:29.3933333' AS DateTime2), N'dbo', CAST(N'2023-01-18T19:31:29.3933333' AS DateTime2))
-GO
-INSERT [dbo].[ORBC_VT_USER_STATUS] ([STATUS_CODE], [DISPLAY_NAME], [DESCRIPTION], [CONCURRENCY_CONTROL_NUMBER], [APP_CREATE_USERID], [APP_CREATE_TIMESTAMP], [APP_CREATE_USER_GUID], [APP_CREATE_USER_DIRECTORY], [APP_LAST_UPDATE_USERID], [APP_LAST_UPDATE_TIMESTAMP], [APP_LAST_UPDATE_USER_GUID], [APP_LAST_UPDATE_USER_DIRECTORY], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'ACTIVE', N'Active', N'User is active in the onRouteBC system and can log in', NULL, NULL, CAST(N'2023-01-19T19:46:33.3400000' AS DateTime2), NULL, NULL, NULL, CAST(N'2023-01-19T19:46:33.3400000' AS DateTime2), NULL, NULL, N'dbo', CAST(N'2023-01-19T19:46:33.3400000' AS DateTime2), N'dbo', CAST(N'2023-01-19T19:46:33.3400000' AS DateTime2))
-GO
-INSERT [dbo].[ORBC_VT_USER_STATUS] ([STATUS_CODE], [DISPLAY_NAME], [DESCRIPTION], [CONCURRENCY_CONTROL_NUMBER], [APP_CREATE_USERID], [APP_CREATE_TIMESTAMP], [APP_CREATE_USER_GUID], [APP_CREATE_USER_DIRECTORY], [APP_LAST_UPDATE_USERID], [APP_LAST_UPDATE_TIMESTAMP], [APP_LAST_UPDATE_USER_GUID], [APP_LAST_UPDATE_USER_DIRECTORY], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'DELETED', N'Deleted', N'User has been deleted from onRouteBC and cannot be viewed by the administrator', NULL, NULL, CAST(N'2023-01-19T19:46:33.3700000' AS DateTime2), NULL, NULL, NULL, CAST(N'2023-01-19T19:46:33.3700000' AS DateTime2), NULL, NULL, N'dbo', CAST(N'2023-01-19T19:46:33.3700000' AS DateTime2), N'dbo', CAST(N'2023-01-19T19:46:33.3700000' AS DateTime2))
-GO
-INSERT [dbo].[ORBC_VT_USER_STATUS] ([STATUS_CODE], [DISPLAY_NAME], [DESCRIPTION], [CONCURRENCY_CONTROL_NUMBER], [APP_CREATE_USERID], [APP_CREATE_TIMESTAMP], [APP_CREATE_USER_GUID], [APP_CREATE_USER_DIRECTORY], [APP_LAST_UPDATE_USERID], [APP_LAST_UPDATE_TIMESTAMP], [APP_LAST_UPDATE_USER_GUID], [APP_LAST_UPDATE_USER_DIRECTORY], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'DISABLED', N'Disabled', N'User is temporarily disabled in onRouteBC - on leave or other reason', NULL, NULL, CAST(N'2023-01-19T19:46:33.3900000' AS DateTime2), NULL, NULL, NULL, CAST(N'2023-01-19T19:46:33.3900000' AS DateTime2), NULL, NULL, N'dbo', CAST(N'2023-01-19T19:46:33.3900000' AS DateTime2), N'dbo', CAST(N'2023-01-19T19:46:33.3900000' AS DateTime2))
-GO
-ALTER TABLE [dbo].[ORBC_ADDRESS] ADD  CONSTRAINT [DF_ORBC_ADDRESS_APP_CREATE_TIMESTAMP]  DEFAULT (getdate()) FOR [APP_CREATE_TIMESTAMP]
-GO
-ALTER TABLE [dbo].[ORBC_ADDRESS] ADD  CONSTRAINT [DF_ORBC_ADDRESS_APP_LAST_UPDATE_TIMESTAMP]  DEFAULT (getdate()) FOR [APP_LAST_UPDATE_TIMESTAMP]
+INSERT [dbo].[ORBC_VT_USER_STATUS] ([STATUS_CODE], [DISPLAY_NAME], [DESCRIPTION], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'ACTIVE', N'Active', N'User is active in the onRouteBC system and can log in', NULL, N'dbo', CAST(N'2023-01-19T19:46:33.3400000' AS DateTime2), N'dbo', CAST(N'2023-01-19T19:46:33.3400000' AS DateTime2))
+INSERT [dbo].[ORBC_VT_USER_STATUS] ([STATUS_CODE], [DISPLAY_NAME], [DESCRIPTION], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'DELETED', N'Deleted', N'User has been deleted from onRouteBC and cannot be viewed by the administrator', NULL, N'dbo', CAST(N'2023-01-19T19:46:33.3700000' AS DateTime2), N'dbo', CAST(N'2023-01-19T19:46:33.3700000' AS DateTime2))
+INSERT [dbo].[ORBC_VT_USER_STATUS] ([STATUS_CODE], [DISPLAY_NAME], [DESCRIPTION], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'DISABLED', N'Disabled', N'User is temporarily disabled in onRouteBC - on leave or other reason', NULL, N'dbo', CAST(N'2023-01-19T19:46:33.3900000' AS DateTime2), N'dbo', CAST(N'2023-01-19T19:46:33.3900000' AS DateTime2))
 GO
 ALTER TABLE [dbo].[ORBC_ADDRESS] ADD  CONSTRAINT [DF_ORBC_ADDRESS_DB_CREATE_USERID]  DEFAULT (user_name()) FOR [DB_CREATE_USERID]
 GO
@@ -297,10 +215,6 @@ ALTER TABLE [dbo].[ORBC_ADDRESS] ADD  CONSTRAINT [DF_ORBC_ADDRESS_DB_LAST_UPDATE
 GO
 ALTER TABLE [dbo].[ORBC_ADDRESS] ADD  CONSTRAINT [DF_ORBC_ADDRESS_DB_LAST_UPDATE_TIMESTAMP]  DEFAULT (getdate()) FOR [DB_LAST_UPDATE_TIMESTAMP]
 GO
-ALTER TABLE [dbo].[ORBC_COMPANY] ADD  CONSTRAINT [DF_ORBC_COMPANY_APP_CREATE_TIMESTAMP]  DEFAULT (getdate()) FOR [APP_CREATE_TIMESTAMP]
-GO
-ALTER TABLE [dbo].[ORBC_COMPANY] ADD  CONSTRAINT [DF_ORBC_COMPANY_APP_LAST_UPDATE_TIMESTAMP]  DEFAULT (getdate()) FOR [APP_LAST_UPDATE_TIMESTAMP]
-GO
 ALTER TABLE [dbo].[ORBC_COMPANY] ADD  CONSTRAINT [DF_ORBC_COMPANY_DB_CREATE_USERID]  DEFAULT (user_name()) FOR [DB_CREATE_USERID]
 GO
 ALTER TABLE [dbo].[ORBC_COMPANY] ADD  CONSTRAINT [DF_ORBC_COMPANY_DB_CREATE_TIMESTAMP]  DEFAULT (getdate()) FOR [DB_CREATE_TIMESTAMP]
@@ -308,10 +222,6 @@ GO
 ALTER TABLE [dbo].[ORBC_COMPANY] ADD  CONSTRAINT [DF_ORBC_COMPANY_DB_LAST_UPDATE_USERID]  DEFAULT (user_name()) FOR [DB_LAST_UPDATE_USERID]
 GO
 ALTER TABLE [dbo].[ORBC_COMPANY] ADD  CONSTRAINT [DF_ORBC_COMPANY_DB_LAST_UPDATE_TIMESTAMP]  DEFAULT (getdate()) FOR [DB_LAST_UPDATE_TIMESTAMP]
-GO
-ALTER TABLE [dbo].[ORBC_COMPANY_USER] ADD  CONSTRAINT [DF_ORBC_COMPANY_USER_APP_CREATE_TIMESTAMP]  DEFAULT (getdate()) FOR [APP_CREATE_TIMESTAMP]
-GO
-ALTER TABLE [dbo].[ORBC_COMPANY_USER] ADD  CONSTRAINT [DF_ORBC_COMPANY_USER_APP_LAST_UPDATE_TIMESTAMP]  DEFAULT (getdate()) FOR [APP_LAST_UPDATE_TIMESTAMP]
 GO
 ALTER TABLE [dbo].[ORBC_COMPANY_USER] ADD  CONSTRAINT [DF_ORBC_MM_COMPANY_USER_DB_CREATE_USERID]  DEFAULT (user_name()) FOR [DB_CREATE_USERID]
 GO
@@ -321,10 +231,6 @@ ALTER TABLE [dbo].[ORBC_COMPANY_USER] ADD  CONSTRAINT [DF_ORBC_MM_COMPANY_USER_D
 GO
 ALTER TABLE [dbo].[ORBC_COMPANY_USER] ADD  CONSTRAINT [DF_ORBC_MM_COMPANY_USER_DB_LAST_UPDATE_TIMESTAMP]  DEFAULT (getdate()) FOR [DB_LAST_UPDATE_TIMESTAMP]
 GO
-ALTER TABLE [dbo].[ORBC_CONTACT] ADD  CONSTRAINT [DF_ORBC_CONTACT_APP_CREATE_TIMESTAMP]  DEFAULT (getdate()) FOR [APP_CREATE_TIMESTAMP]
-GO
-ALTER TABLE [dbo].[ORBC_CONTACT] ADD  CONSTRAINT [DF_ORBC_CONTACT_APP_LAST_UPDATE_TIMESTAMP]  DEFAULT (getdate()) FOR [APP_LAST_UPDATE_TIMESTAMP]
-GO
 ALTER TABLE [dbo].[ORBC_CONTACT] ADD  CONSTRAINT [DF_ORBC_CONTACT_DB_CREATE_USERID]  DEFAULT (user_name()) FOR [DB_CREATE_USERID]
 GO
 ALTER TABLE [dbo].[ORBC_CONTACT] ADD  CONSTRAINT [DF_ORBC_CONTACT_DB_CREATE_TIMESTAMP]  DEFAULT (getdate()) FOR [DB_CREATE_TIMESTAMP]
@@ -332,10 +238,6 @@ GO
 ALTER TABLE [dbo].[ORBC_CONTACT] ADD  CONSTRAINT [DF_ORBC_CONTACT_DB_LAST_UPDATE_USERID]  DEFAULT (user_name()) FOR [DB_LAST_UPDATE_USERID]
 GO
 ALTER TABLE [dbo].[ORBC_CONTACT] ADD  CONSTRAINT [DF_ORBC_CONTACT_DB_LAST_UPDATE_TIMESTAMP]  DEFAULT (getdate()) FOR [DB_LAST_UPDATE_TIMESTAMP]
-GO
-ALTER TABLE [dbo].[ORBC_PENDING_USER] ADD  CONSTRAINT [DF_ORBC_PENDING_USER_APP_CREATE_TIMESTAMP]  DEFAULT (getdate()) FOR [APP_CREATE_TIMESTAMP]
-GO
-ALTER TABLE [dbo].[ORBC_PENDING_USER] ADD  CONSTRAINT [DF_ORBC_PENDING_USER_APP_LAST_UPDATE_TIMESTAMP]  DEFAULT (getdate()) FOR [APP_LAST_UPDATE_TIMESTAMP]
 GO
 ALTER TABLE [dbo].[ORBC_PENDING_USER] ADD  CONSTRAINT [DF_ORBC_PENDING_USER_DB_CREATE_USERID]  DEFAULT (user_name()) FOR [DB_CREATE_USERID]
 GO
@@ -347,10 +249,6 @@ ALTER TABLE [dbo].[ORBC_PENDING_USER] ADD  CONSTRAINT [DF_ORBC_PENDING_USER_DB_L
 GO
 ALTER TABLE [dbo].[ORBC_USER] ADD  CONSTRAINT [DF_ORBC_USER_STATUS_CODE]  DEFAULT ('ACTIVE') FOR [STATUS_CODE]
 GO
-ALTER TABLE [dbo].[ORBC_USER] ADD  CONSTRAINT [DF_ORBC_USER_APP_CREATE_TIMESTAMP]  DEFAULT (getdate()) FOR [APP_CREATE_TIMESTAMP]
-GO
-ALTER TABLE [dbo].[ORBC_USER] ADD  CONSTRAINT [DF_ORBC_USER_APP_LAST_UPDATE_TIMESTAMP]  DEFAULT (getdate()) FOR [APP_LAST_UPDATE_TIMESTAMP]
-GO
 ALTER TABLE [dbo].[ORBC_USER] ADD  CONSTRAINT [DF_ORBC_USER_DB_CREATE_USERID]  DEFAULT (user_name()) FOR [DB_CREATE_USERID]
 GO
 ALTER TABLE [dbo].[ORBC_USER] ADD  CONSTRAINT [DF_ORBC_USER_DB_CREATE_TIMESTAMP]  DEFAULT (getdate()) FOR [DB_CREATE_TIMESTAMP]
@@ -358,10 +256,6 @@ GO
 ALTER TABLE [dbo].[ORBC_USER] ADD  CONSTRAINT [DF_ORBC_USER_DB_LAST_UPDATE_USERID]  DEFAULT (user_name()) FOR [DB_LAST_UPDATE_USERID]
 GO
 ALTER TABLE [dbo].[ORBC_USER] ADD  CONSTRAINT [DF_ORBC_USER_DB_LAST_UPDATE_TIMESTAMP]  DEFAULT (getdate()) FOR [DB_LAST_UPDATE_TIMESTAMP]
-GO
-ALTER TABLE [dbo].[ORBC_VT_DIRECTORY] ADD  CONSTRAINT [DF_ORBC_VT_DIRECTORY_APP_CREATE_TIMESTAMP]  DEFAULT (getdate()) FOR [APP_CREATE_TIMESTAMP]
-GO
-ALTER TABLE [dbo].[ORBC_VT_DIRECTORY] ADD  CONSTRAINT [DF_ORBC_VT_DIRECTORY_APP_LAST_UPDATE_TIMESTAMP]  DEFAULT (getdate()) FOR [APP_LAST_UPDATE_TIMESTAMP]
 GO
 ALTER TABLE [dbo].[ORBC_VT_DIRECTORY] ADD  CONSTRAINT [DF_ORBC_VT_DIRECTORY_DB_CREATE_USERID]  DEFAULT (user_name()) FOR [DB_CREATE_USERID]
 GO
@@ -371,10 +265,6 @@ ALTER TABLE [dbo].[ORBC_VT_DIRECTORY] ADD  CONSTRAINT [DF_ORBC_VT_DIRECTORY_DB_L
 GO
 ALTER TABLE [dbo].[ORBC_VT_DIRECTORY] ADD  CONSTRAINT [DF_ORBC_VT_DIRECTORY_DB_LAST_UPDATE_TIMESTAMP]  DEFAULT (getdate()) FOR [DB_LAST_UPDATE_TIMESTAMP]
 GO
-ALTER TABLE [dbo].[ORBC_VT_USER_AUTH_GROUP] ADD  CONSTRAINT [DF_ORBC_VT_USER_AUTH_GROUP_APP_CREATE_TIMESTAMP]  DEFAULT (getdate()) FOR [APP_CREATE_TIMESTAMP]
-GO
-ALTER TABLE [dbo].[ORBC_VT_USER_AUTH_GROUP] ADD  CONSTRAINT [DF_ORBC_VT_USER_AUTH_GROUP_APP_LAST_UPDATE_TIMESTAMP]  DEFAULT (getdate()) FOR [APP_LAST_UPDATE_TIMESTAMP]
-GO
 ALTER TABLE [dbo].[ORBC_VT_USER_AUTH_GROUP] ADD  CONSTRAINT [DF_ORBC_USER_AUTH_GROUP_DB_CREATE_USERID]  DEFAULT (user_name()) FOR [DB_CREATE_USERID]
 GO
 ALTER TABLE [dbo].[ORBC_VT_USER_AUTH_GROUP] ADD  CONSTRAINT [DF_ORBC_USER_AUTH_GROUP_DB_CREATE_TIMESTAMP]  DEFAULT (getdate()) FOR [DB_CREATE_TIMESTAMP]
@@ -382,10 +272,6 @@ GO
 ALTER TABLE [dbo].[ORBC_VT_USER_AUTH_GROUP] ADD  CONSTRAINT [DF_ORBC_USER_AUTH_GROUP_DB_LAST_UPDATE_USERID]  DEFAULT (user_name()) FOR [DB_LAST_UPDATE_USERID]
 GO
 ALTER TABLE [dbo].[ORBC_VT_USER_AUTH_GROUP] ADD  CONSTRAINT [DF_ORBC_USER_AUTH_GROUP_DB_LAST_UPDATE_TIMESTAMP]  DEFAULT (getdate()) FOR [DB_LAST_UPDATE_TIMESTAMP]
-GO
-ALTER TABLE [dbo].[ORBC_VT_USER_STATUS] ADD  CONSTRAINT [DF_ORBC_VT_USER_STATUS_APP_CREATE_TIMESTAMP]  DEFAULT (getdate()) FOR [APP_CREATE_TIMESTAMP]
-GO
-ALTER TABLE [dbo].[ORBC_VT_USER_STATUS] ADD  CONSTRAINT [DF_ORBC_VT_USER_STATUS_APP_LAST_UPDATE_TIMESTAMP]  DEFAULT (getdate()) FOR [APP_LAST_UPDATE_TIMESTAMP]
 GO
 ALTER TABLE [dbo].[ORBC_VT_USER_STATUS] ADD  CONSTRAINT [DF_ORBC_VT_USER_STATUS_DB_CREATE_USERID]  DEFAULT (user_name()) FOR [DB_CREATE_USERID]
 GO
@@ -465,23 +351,19 @@ REFERENCES [dbo].[ORBC_VT_USER_STATUS] ([STATUS_CODE])
 GO
 ALTER TABLE [dbo].[ORBC_USER] CHECK CONSTRAINT [FK_ORBC_USER_USER_STATUS]
 GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Unique auto-generated surrogate primary key' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_ADDRESS', @level2type=N'COLUMN',@level2name=N'ADDRESS_ID'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'First line of the address' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_ADDRESS', @level2type=N'COLUMN',@level2name=N'ADDRESS_LINE_1'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Second line of the address (e.g. unit number, floor number, etc)' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_ADDRESS', @level2type=N'COLUMN',@level2name=N'ADDRESS_LINE_2'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'City portion of the address' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_ADDRESS', @level2type=N'COLUMN',@level2name=N'CITY'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID of the province or US state of the address, foreign key into the province table' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_ADDRESS', @level2type=N'COLUMN',@level2name=N'PROVINCE_ID'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Postal code, zip code, or other (depending on country)' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_ADDRESS', @level2type=N'COLUMN',@level2name=N'POSTAL_CODE'
+GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Application code is responsible for retrieving the row and then incrementing the value of the CONCURRENCY_CONTROL_NUMBER column by one prior to issuing an update. If this is done then the update will succeed, provided that the row was not updated by any other transactions in the period between the read and the update operations.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_ADDRESS', @level2type=N'COLUMN',@level2name=N'CONCURRENCY_CONTROL_NUMBER'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user account name of the application user who performed the action that created the record (e.g. ''JSMITH''). This value is not preceded by the directory name.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_ADDRESS', @level2type=N'COLUMN',@level2name=N'APP_CREATE_USERID'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time of the application action that created the record.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_ADDRESS', @level2type=N'COLUMN',@level2name=N'APP_CREATE_TIMESTAMP'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The Globally Unique Identifier of the application user who performed the action that created the record.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_ADDRESS', @level2type=N'COLUMN',@level2name=N'APP_CREATE_USER_GUID'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The directory in which APP_CREATE_USERID is defined.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_ADDRESS', @level2type=N'COLUMN',@level2name=N'APP_CREATE_USER_DIRECTORY'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user account name of the application user who performed the action that created or last updated the record (e.g. ''JSMITH''). This value is not preceded by the directory name.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_ADDRESS', @level2type=N'COLUMN',@level2name=N'APP_LAST_UPDATE_USERID'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time of the application action that created or last updated the record.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_ADDRESS', @level2type=N'COLUMN',@level2name=N'APP_LAST_UPDATE_TIMESTAMP'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The Globally Unique Identifier of the application user who performed the action that created or last updated the record.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_ADDRESS', @level2type=N'COLUMN',@level2name=N'APP_LAST_UPDATE_USER_GUID'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The directory in which APP_LAST_UPDATE_USERID is defined.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_ADDRESS', @level2type=N'COLUMN',@level2name=N'APP_LAST_UPDATE_USER_DIRECTORY'
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user or proxy account that created the record.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_ADDRESS', @level2type=N'COLUMN',@level2name=N'DB_CREATE_USERID'
 GO
@@ -491,23 +373,31 @@ EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user or pr
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time the record was created or last updated.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_ADDRESS', @level2type=N'COLUMN',@level2name=N'DB_LAST_UPDATE_TIMESTAMP'
 GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Represents the physical or mailing address of an entity, whether a company, user, or other.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_ADDRESS'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'GUID of the company record, which typically comes from Business BCeID' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_COMPANY', @level2type=N'COLUMN',@level2name=N'COMPANY_GUID'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Unique client-facing client number' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_COMPANY', @level2type=N'COLUMN',@level2name=N'CLIENT_NUMBER'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Legal name of the company' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_COMPANY', @level2type=N'COLUMN',@level2name=N'LEGAL_NAME'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The source of the company record - this can be Business BCeID or onRouteBC for clients without a Business BCeID. FK into directory table.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_COMPANY', @level2type=N'COLUMN',@level2name=N'COMPANY_DIRECTORY'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID of the physical address of the company (FK into address table)' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_COMPANY', @level2type=N'COLUMN',@level2name=N'PHYSICAL_ADDRESS_ID'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID of the mailing address of the company (FK into address table)' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_COMPANY', @level2type=N'COLUMN',@level2name=N'MAILING_ADDRESS_ID'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'General phone number of the company' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_COMPANY', @level2type=N'COLUMN',@level2name=N'PHONE'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Optional phone extension for the general company number (e.g. to reach the department responsible for vehicle permitting)' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_COMPANY', @level2type=N'COLUMN',@level2name=N'EXTENSION'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Fax number of the company' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_COMPANY', @level2type=N'COLUMN',@level2name=N'FAX'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'General email of the company related to permitting.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_COMPANY', @level2type=N'COLUMN',@level2name=N'EMAIL'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID of the primary contact for permitting at the company (FK into the contact table)' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_COMPANY', @level2type=N'COLUMN',@level2name=N'PRIMARY_CONTACT_ID'
+GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Application code is responsible for retrieving the row and then incrementing the value of the CONCURRENCY_CONTROL_NUMBER column by one prior to issuing an update. If this is done then the update will succeed, provided that the row was not updated by any other transactions in the period between the read and the update operations.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_COMPANY', @level2type=N'COLUMN',@level2name=N'CONCURRENCY_CONTROL_NUMBER'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user account name of the application user who performed the action that created the record (e.g. ''JSMITH''). This value is not preceded by the directory name.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_COMPANY', @level2type=N'COLUMN',@level2name=N'APP_CREATE_USERID'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time of the application action that created the record.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_COMPANY', @level2type=N'COLUMN',@level2name=N'APP_CREATE_TIMESTAMP'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The Globally Unique Identifier of the application user who performed the action that created the record.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_COMPANY', @level2type=N'COLUMN',@level2name=N'APP_CREATE_USER_GUID'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The directory in which APP_CREATE_USERID is defined.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_COMPANY', @level2type=N'COLUMN',@level2name=N'APP_CREATE_USER_DIRECTORY'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user account name of the application user who performed the action that created or last updated the record (e.g. ''JSMITH''). This value is not preceded by the directory name.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_COMPANY', @level2type=N'COLUMN',@level2name=N'APP_LAST_UPDATE_USERID'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time of the application action that created or last updated the record.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_COMPANY', @level2type=N'COLUMN',@level2name=N'APP_LAST_UPDATE_TIMESTAMP'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The Globally Unique Identifier of the application user who performed the action that created or last updated the record.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_COMPANY', @level2type=N'COLUMN',@level2name=N'APP_LAST_UPDATE_USER_GUID'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The directory in which APP_LAST_UPDATE_USERID is defined.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_COMPANY', @level2type=N'COLUMN',@level2name=N'APP_LAST_UPDATE_USER_DIRECTORY'
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user or proxy account that created the record.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_COMPANY', @level2type=N'COLUMN',@level2name=N'DB_CREATE_USERID'
 GO
@@ -517,23 +407,17 @@ EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user or pr
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time the record was created or last updated.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_COMPANY', @level2type=N'COLUMN',@level2name=N'DB_LAST_UPDATE_TIMESTAMP'
 GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'A company entity in onRouteBC. May be directly related to a company record in Business BCeID or may be managed entirely within onRouteBC.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_COMPANY'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Unique surrogate primary key' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_COMPANY_USER', @level2type=N'COLUMN',@level2name=N'COMPANY_USER_ID'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'GUID of the company' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_COMPANY_USER', @level2type=N'COLUMN',@level2name=N'COMPANY_GUID'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'GUID of the user' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_COMPANY_USER', @level2type=N'COLUMN',@level2name=N'USER_GUID'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID of the authorization group the user belongs to for the company' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_COMPANY_USER', @level2type=N'COLUMN',@level2name=N'USER_AUTH_GROUP_ID'
+GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Application code is responsible for retrieving the row and then incrementing the value of the CONCURRENCY_CONTROL_NUMBER column by one prior to issuing an update. If this is done then the update will succeed, provided that the row was not updated by any other transactions in the period between the read and the update operations.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_COMPANY_USER', @level2type=N'COLUMN',@level2name=N'CONCURRENCY_CONTROL_NUMBER'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user account name of the application user who performed the action that created the record (e.g. ''JSMITH''). This value is not preceded by the directory name.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_COMPANY_USER', @level2type=N'COLUMN',@level2name=N'APP_CREATE_USERID'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time of the application action that created the record.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_COMPANY_USER', @level2type=N'COLUMN',@level2name=N'APP_CREATE_TIMESTAMP'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The Globally Unique Identifier of the application user who performed the action that created the record.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_COMPANY_USER', @level2type=N'COLUMN',@level2name=N'APP_CREATE_USER_GUID'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The directory in which APP_CREATE_USERID is defined.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_COMPANY_USER', @level2type=N'COLUMN',@level2name=N'APP_CREATE_USER_DIRECTORY'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user account name of the application user who performed the action that created or last updated the record (e.g. ''JSMITH''). This value is not preceded by the directory name.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_COMPANY_USER', @level2type=N'COLUMN',@level2name=N'APP_LAST_UPDATE_USERID'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time of the application action that created or last updated the record.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_COMPANY_USER', @level2type=N'COLUMN',@level2name=N'APP_LAST_UPDATE_TIMESTAMP'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The Globally Unique Identifier of the application user who performed the action that created or last updated the record.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_COMPANY_USER', @level2type=N'COLUMN',@level2name=N'APP_LAST_UPDATE_USER_GUID'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The directory in which APP_LAST_UPDATE_USERID is defined.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_COMPANY_USER', @level2type=N'COLUMN',@level2name=N'APP_LAST_UPDATE_USER_DIRECTORY'
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user or proxy account that created the record.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_COMPANY_USER', @level2type=N'COLUMN',@level2name=N'DB_CREATE_USERID'
 GO
@@ -543,23 +427,31 @@ EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user or pr
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time the record was created or last updated.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_COMPANY_USER', @level2type=N'COLUMN',@level2name=N'DB_LAST_UPDATE_TIMESTAMP'
 GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Table resolving a many to many relationship between users and companies.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_COMPANY_USER'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Unique surrogate primary key for the contact' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_CONTACT', @level2type=N'COLUMN',@level2name=N'CONTACT_ID'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'First (given) name of the contact' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_CONTACT', @level2type=N'COLUMN',@level2name=N'FIRST_NAME'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Last (family) name of the contact' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_CONTACT', @level2type=N'COLUMN',@level2name=N'LAST_NAME'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Email of the contact' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_CONTACT', @level2type=N'COLUMN',@level2name=N'EMAIL'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Primary phone number of the contact' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_CONTACT', @level2type=N'COLUMN',@level2name=N'PHONE_1'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Optional extension for the primary phone number for the contact' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_CONTACT', @level2type=N'COLUMN',@level2name=N'EXTENSION_1'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Secondary phone number of the contact' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_CONTACT', @level2type=N'COLUMN',@level2name=N'PHONE_2'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Optional extension for the secondary phone number for the contact' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_CONTACT', @level2type=N'COLUMN',@level2name=N'EXTENSION_2'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Fax number of the contact' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_CONTACT', @level2type=N'COLUMN',@level2name=N'FAX'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'City in which the contact resides' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_CONTACT', @level2type=N'COLUMN',@level2name=N'CITY'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID of the province or state in which the contact resides (FK into province table)' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_CONTACT', @level2type=N'COLUMN',@level2name=N'PROVINCE_ID'
+GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Application code is responsible for retrieving the row and then incrementing the value of the CONCURRENCY_CONTROL_NUMBER column by one prior to issuing an update. If this is done then the update will succeed, provided that the row was not updated by any other transactions in the period between the read and the update operations.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_CONTACT', @level2type=N'COLUMN',@level2name=N'CONCURRENCY_CONTROL_NUMBER'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user account name of the application user who performed the action that created the record (e.g. ''JSMITH''). This value is not preceded by the directory name.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_CONTACT', @level2type=N'COLUMN',@level2name=N'APP_CREATE_USERID'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time of the application action that created the record.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_CONTACT', @level2type=N'COLUMN',@level2name=N'APP_CREATE_TIMESTAMP'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The Globally Unique Identifier of the application user who performed the action that created the record.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_CONTACT', @level2type=N'COLUMN',@level2name=N'APP_CREATE_USER_GUID'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The directory in which APP_CREATE_USERID is defined.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_CONTACT', @level2type=N'COLUMN',@level2name=N'APP_CREATE_USER_DIRECTORY'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user account name of the application user who performed the action that created or last updated the record (e.g. ''JSMITH''). This value is not preceded by the directory name.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_CONTACT', @level2type=N'COLUMN',@level2name=N'APP_LAST_UPDATE_USERID'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time of the application action that created or last updated the record.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_CONTACT', @level2type=N'COLUMN',@level2name=N'APP_LAST_UPDATE_TIMESTAMP'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The Globally Unique Identifier of the application user who performed the action that created or last updated the record.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_CONTACT', @level2type=N'COLUMN',@level2name=N'APP_LAST_UPDATE_USER_GUID'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The directory in which APP_LAST_UPDATE_USERID is defined.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_CONTACT', @level2type=N'COLUMN',@level2name=N'APP_LAST_UPDATE_USER_DIRECTORY'
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user or proxy account that created the record.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_CONTACT', @level2type=N'COLUMN',@level2name=N'DB_CREATE_USERID'
 GO
@@ -569,23 +461,9 @@ EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user or pr
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time the record was created or last updated.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_CONTACT', @level2type=N'COLUMN',@level2name=N'DB_LAST_UPDATE_TIMESTAMP'
 GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Contains the details for a person in onRouteBC, whether an application user or other (primary contact, permit applicant) who is not an application user.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_CONTACT'
+GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Application code is responsible for retrieving the row and then incrementing the value of the CONCURRENCY_CONTROL_NUMBER column by one prior to issuing an update. If this is done then the update will succeed, provided that the row was not updated by any other transactions in the period between the read and the update operations.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_PENDING_USER', @level2type=N'COLUMN',@level2name=N'CONCURRENCY_CONTROL_NUMBER'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user account name of the application user who performed the action that created the record (e.g. ''JSMITH''). This value is not preceded by the directory name.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_PENDING_USER', @level2type=N'COLUMN',@level2name=N'APP_CREATE_USERID'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time of the application action that created the record.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_PENDING_USER', @level2type=N'COLUMN',@level2name=N'APP_CREATE_TIMESTAMP'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The Globally Unique Identifier of the application user who performed the action that created the record.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_PENDING_USER', @level2type=N'COLUMN',@level2name=N'APP_CREATE_USER_GUID'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The directory in which APP_CREATE_USERID is defined.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_PENDING_USER', @level2type=N'COLUMN',@level2name=N'APP_CREATE_USER_DIRECTORY'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user account name of the application user who performed the action that created or last updated the record (e.g. ''JSMITH''). This value is not preceded by the directory name.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_PENDING_USER', @level2type=N'COLUMN',@level2name=N'APP_LAST_UPDATE_USERID'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time of the application action that created or last updated the record.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_PENDING_USER', @level2type=N'COLUMN',@level2name=N'APP_LAST_UPDATE_TIMESTAMP'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The Globally Unique Identifier of the application user who performed the action that created or last updated the record.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_PENDING_USER', @level2type=N'COLUMN',@level2name=N'APP_LAST_UPDATE_USER_GUID'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The directory in which APP_LAST_UPDATE_USERID is defined.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_PENDING_USER', @level2type=N'COLUMN',@level2name=N'APP_LAST_UPDATE_USER_DIRECTORY'
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user or proxy account that created the record.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_PENDING_USER', @level2type=N'COLUMN',@level2name=N'DB_CREATE_USERID'
 GO
@@ -595,23 +473,19 @@ EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user or pr
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time the record was created or last updated.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_PENDING_USER', @level2type=N'COLUMN',@level2name=N'DB_LAST_UPDATE_TIMESTAMP'
 GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'A user who has been added to onRouteBC by an administrator but who has not yet logged in.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_PENDING_USER'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'GUID of the user, coming from bceid or bcsc' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_USER', @level2type=N'COLUMN',@level2name=N'USER_GUID'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'User''s username as set in bceid or bcsc' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_USER', @level2type=N'COLUMN',@level2name=N'USERNAME'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Origin of the user, whether bceid, business bceid, or bcsc (FK to directory table)' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_USER', @level2type=N'COLUMN',@level2name=N'USER_DIRECTORY'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'User''s current status in the onRouteBC system, FK into the user status table' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_USER', @level2type=N'COLUMN',@level2name=N'STATUS_CODE'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID of the contact record associated with this user (FK to the contact table)' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_USER', @level2type=N'COLUMN',@level2name=N'CONTACT_ID'
+GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Application code is responsible for retrieving the row and then incrementing the value of the CONCURRENCY_CONTROL_NUMBER column by one prior to issuing an update. If this is done then the update will succeed, provided that the row was not updated by any other transactions in the period between the read and the update operations.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_USER', @level2type=N'COLUMN',@level2name=N'CONCURRENCY_CONTROL_NUMBER'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user account name of the application user who performed the action that created the record (e.g. ''JSMITH''). This value is not preceded by the directory name.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_USER', @level2type=N'COLUMN',@level2name=N'APP_CREATE_USERID'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time of the application action that created the record.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_USER', @level2type=N'COLUMN',@level2name=N'APP_CREATE_TIMESTAMP'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The Globally Unique Identifier of the application user who performed the action that created the record.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_USER', @level2type=N'COLUMN',@level2name=N'APP_CREATE_USER_GUID'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The directory in which APP_CREATE_USERID is defined.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_USER', @level2type=N'COLUMN',@level2name=N'APP_CREATE_USER_DIRECTORY'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user account name of the application user who performed the action that created or last updated the record (e.g. ''JSMITH''). This value is not preceded by the directory name.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_USER', @level2type=N'COLUMN',@level2name=N'APP_LAST_UPDATE_USERID'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time of the application action that created or last updated the record.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_USER', @level2type=N'COLUMN',@level2name=N'APP_LAST_UPDATE_TIMESTAMP'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The Globally Unique Identifier of the application user who performed the action that created or last updated the record.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_USER', @level2type=N'COLUMN',@level2name=N'APP_LAST_UPDATE_USER_GUID'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The directory in which APP_LAST_UPDATE_USERID is defined.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_USER', @level2type=N'COLUMN',@level2name=N'APP_LAST_UPDATE_USER_DIRECTORY'
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user or proxy account that created the record.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_USER', @level2type=N'COLUMN',@level2name=N'DB_CREATE_USERID'
 GO
@@ -621,23 +495,13 @@ EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user or pr
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time the record was created or last updated.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_USER', @level2type=N'COLUMN',@level2name=N'DB_LAST_UPDATE_TIMESTAMP'
 GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'A user who has access to log in to the ORBC application.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_USER'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Short code representing the directory' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_DIRECTORY', @level2type=N'COLUMN',@level2name=N'DIRECTORY_CODE'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Common user-friendly name of the directory' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_DIRECTORY', @level2type=N'COLUMN',@level2name=N'DIRECTORY_NAME'
+GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Application code is responsible for retrieving the row and then incrementing the value of the CONCURRENCY_CONTROL_NUMBER column by one prior to issuing an update. If this is done then the update will succeed, provided that the row was not updated by any other transactions in the period between the read and the update operations.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_DIRECTORY', @level2type=N'COLUMN',@level2name=N'CONCURRENCY_CONTROL_NUMBER'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user account name of the application user who performed the action that created the record (e.g. ''JSMITH''). This value is not preceded by the directory name.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_DIRECTORY', @level2type=N'COLUMN',@level2name=N'APP_CREATE_USERID'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time of the application action that created the record.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_DIRECTORY', @level2type=N'COLUMN',@level2name=N'APP_CREATE_TIMESTAMP'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The Globally Unique Identifier of the application user who performed the action that created the record.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_DIRECTORY', @level2type=N'COLUMN',@level2name=N'APP_CREATE_USER_GUID'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The directory in which APP_CREATE_USERID is defined.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_DIRECTORY', @level2type=N'COLUMN',@level2name=N'APP_CREATE_USER_DIRECTORY'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user account name of the application user who performed the action that created or last updated the record (e.g. ''JSMITH''). This value is not preceded by the directory name.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_DIRECTORY', @level2type=N'COLUMN',@level2name=N'APP_LAST_UPDATE_USERID'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time of the application action that created or last updated the record.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_DIRECTORY', @level2type=N'COLUMN',@level2name=N'APP_LAST_UPDATE_TIMESTAMP'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The Globally Unique Identifier of the application user who performed the action that created or last updated the record.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_DIRECTORY', @level2type=N'COLUMN',@level2name=N'APP_LAST_UPDATE_USER_GUID'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The directory in which APP_LAST_UPDATE_USERID is defined.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_DIRECTORY', @level2type=N'COLUMN',@level2name=N'APP_LAST_UPDATE_USER_DIRECTORY'
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user or proxy account that created the record.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_DIRECTORY', @level2type=N'COLUMN',@level2name=N'DB_CREATE_USERID'
 GO
@@ -647,23 +511,15 @@ EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user or pr
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time the record was created or last updated.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_DIRECTORY', @level2type=N'COLUMN',@level2name=N'DB_LAST_UPDATE_TIMESTAMP'
 GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Lookup table containing directories where users and companies can be registered externally (e.g. bceid, business bceid)' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_DIRECTORY'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Unique short code representing the authorization group' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_USER_AUTH_GROUP', @level2type=N'COLUMN',@level2name=N'GROUP_ID'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Common user-friendly display name of the authorization group' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_USER_AUTH_GROUP', @level2type=N'COLUMN',@level2name=N'DISPLAY_NAME'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Description of the authorization group' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_USER_AUTH_GROUP', @level2type=N'COLUMN',@level2name=N'DESCRIPTION'
+GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Application code is responsible for retrieving the row and then incrementing the value of the CONCURRENCY_CONTROL_NUMBER column by one prior to issuing an update. If this is done then the update will succeed, provided that the row was not updated by any other transactions in the period between the read and the update operations.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_USER_AUTH_GROUP', @level2type=N'COLUMN',@level2name=N'CONCURRENCY_CONTROL_NUMBER'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user account name of the application user who performed the action that created the record (e.g. ''JSMITH''). This value is not preceded by the directory name.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_USER_AUTH_GROUP', @level2type=N'COLUMN',@level2name=N'APP_CREATE_USERID'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time of the application action that created the record.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_USER_AUTH_GROUP', @level2type=N'COLUMN',@level2name=N'APP_CREATE_TIMESTAMP'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The Globally Unique Identifier of the application user who performed the action that created the record.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_USER_AUTH_GROUP', @level2type=N'COLUMN',@level2name=N'APP_CREATE_USER_GUID'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The directory in which APP_CREATE_USERID is defined.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_USER_AUTH_GROUP', @level2type=N'COLUMN',@level2name=N'APP_CREATE_USER_DIRECTORY'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user account name of the application user who performed the action that created or last updated the record (e.g. ''JSMITH''). This value is not preceded by the directory name.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_USER_AUTH_GROUP', @level2type=N'COLUMN',@level2name=N'APP_LAST_UPDATE_USERID'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time of the application action that created or last updated the record.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_USER_AUTH_GROUP', @level2type=N'COLUMN',@level2name=N'APP_LAST_UPDATE_TIMESTAMP'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The Globally Unique Identifier of the application user who performed the action that created or last updated the record.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_USER_AUTH_GROUP', @level2type=N'COLUMN',@level2name=N'APP_LAST_UPDATE_USER_GUID'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The directory in which APP_LAST_UPDATE_USERID is defined.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_USER_AUTH_GROUP', @level2type=N'COLUMN',@level2name=N'APP_LAST_UPDATE_USER_DIRECTORY'
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user or proxy account that created the record.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_USER_AUTH_GROUP', @level2type=N'COLUMN',@level2name=N'DB_CREATE_USERID'
 GO
@@ -673,23 +529,15 @@ EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user or pr
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time the record was created or last updated.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_USER_AUTH_GROUP', @level2type=N'COLUMN',@level2name=N'DB_LAST_UPDATE_TIMESTAMP'
 GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Lookup table containing all valid user authorization groups in the ORBC application.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_USER_AUTH_GROUP'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Unique short code PK of the user status' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_USER_STATUS', @level2type=N'COLUMN',@level2name=N'STATUS_CODE'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'User-friendly display name of the user status' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_USER_STATUS', @level2type=N'COLUMN',@level2name=N'DISPLAY_NAME'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Description of the user status' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_USER_STATUS', @level2type=N'COLUMN',@level2name=N'DESCRIPTION'
+GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Application code is responsible for retrieving the row and then incrementing the value of the CONCURRENCY_CONTROL_NUMBER column by one prior to issuing an update. If this is done then the update will succeed, provided that the row was not updated by any other transactions in the period between the read and the update operations.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_USER_STATUS', @level2type=N'COLUMN',@level2name=N'CONCURRENCY_CONTROL_NUMBER'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user account name of the application user who performed the action that created the record (e.g. ''JSMITH''). This value is not preceded by the directory name.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_USER_STATUS', @level2type=N'COLUMN',@level2name=N'APP_CREATE_USERID'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time of the application action that created the record.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_USER_STATUS', @level2type=N'COLUMN',@level2name=N'APP_CREATE_TIMESTAMP'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The Globally Unique Identifier of the application user who performed the action that created the record.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_USER_STATUS', @level2type=N'COLUMN',@level2name=N'APP_CREATE_USER_GUID'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The directory in which APP_CREATE_USERID is defined.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_USER_STATUS', @level2type=N'COLUMN',@level2name=N'APP_CREATE_USER_DIRECTORY'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user account name of the application user who performed the action that created or last updated the record (e.g. ''JSMITH''). This value is not preceded by the directory name.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_USER_STATUS', @level2type=N'COLUMN',@level2name=N'APP_LAST_UPDATE_USERID'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time of the application action that created or last updated the record.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_USER_STATUS', @level2type=N'COLUMN',@level2name=N'APP_LAST_UPDATE_TIMESTAMP'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The Globally Unique Identifier of the application user who performed the action that created or last updated the record.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_USER_STATUS', @level2type=N'COLUMN',@level2name=N'APP_LAST_UPDATE_USER_GUID'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The directory in which APP_LAST_UPDATE_USERID is defined.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_USER_STATUS', @level2type=N'COLUMN',@level2name=N'APP_LAST_UPDATE_USER_DIRECTORY'
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user or proxy account that created the record.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_USER_STATUS', @level2type=N'COLUMN',@level2name=N'DB_CREATE_USERID'
 GO
@@ -698,6 +546,8 @@ GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user or proxy account that created or last updated the record.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_USER_STATUS', @level2type=N'COLUMN',@level2name=N'DB_LAST_UPDATE_USERID'
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time the record was created or last updated.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_USER_STATUS', @level2type=N'COLUMN',@level2name=N'DB_LAST_UPDATE_TIMESTAMP'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Lookup table for all possible user status values in ORBC' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_USER_STATUS'
 GO
 
 DECLARE @VersionDescription VARCHAR(255)
