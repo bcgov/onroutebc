@@ -96,7 +96,7 @@ jobs:
             ${{env.VAULT_ENV}}/data/database-dev  DATABASE_USER      | VAULT_DATABASE_USER;
             ${{env.VAULT_ENV}}/data/database-dev  DATABASE_NAME      | VAULT_DATABASE_NAME;
             ${{env.VAULT_ENV}}/data/database-dev  DATABASE_PASSWORD  | VAULT_DATABASE_PASSWORD;
-            ${{env.VAULT_ENV}}/data/database-dev  DATABASE_PORT      | VAULT_DATABASE_PORT
+            ${{env.VAULT_ENV}}/data/database-dev  DATABASE_PORT      | VAULT_DATABASE_PORT;
             ${{env.VAULT_ENV}}/data/ches-dev      CHES_CLIENT_ID     | VAULT_CHES_CLIENT_ID;
             ${{env.VAULT_ENV}}/data/ches-dev      CHES_CLIENT_SECRET | VAULT_CHES_CLIENT_SECRET;
       - name: Deploy Application
