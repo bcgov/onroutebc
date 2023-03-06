@@ -108,5 +108,4 @@ export class Contact extends Base {
   @AutoMap(() => User)
   @OneToOne(() => User, (User) => User.userContact)
   user: User;
-
 }

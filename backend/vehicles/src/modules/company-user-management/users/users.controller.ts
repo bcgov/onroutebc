@@ -5,6 +5,7 @@ import {
   ApiMethodNotAllowedResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
+  ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
 import { ExceptionDto } from '../../common/dto/exception.dto';
@@ -33,10 +34,13 @@ export class UsersController {
    * /user/:userGUID that verifies if the user exists in ORBC and retrieves
    * the user by its GUID (global unique identifier) and associated company, if any.
    * TODO: Secure endpoints once login is implemented.
+   * TODO: Remove temporary placeholder
    *
    * @param userGUID A temporary placeholder parameter to get the user by GUID.
    *        Will be removed once login system is implemented.
    * @param userName A temporary placeholder parameter to get the userName.
+   *        Will be removed once login system is implemented.
+   * @param companyGUID A temporary placeholder parameter to get the company GUID.
    *        Will be removed once login system is implemented.
    *
    * @returns The user details with response object {@link ReadUserDto}.
@@ -45,11 +49,12 @@ export class UsersController {
     description: 'The User Exists Resource',
     type: ReadUserExistsDto,
   })
+  @ApiQuery({ name: 'companyGUID', required: false })
   @Get(':userGUID')
   async find(
     @Param('userGUID') userGUID: string,
     @Query('userName') userName: string,
-    @Query('companyGUID') companyGUID: string,
+    @Query('companyGUID') companyGUID?: string,
   ): Promise<ReadUserExistsDto> {
     const userExists = await this.userService.findORBCUser(
       userGUID,

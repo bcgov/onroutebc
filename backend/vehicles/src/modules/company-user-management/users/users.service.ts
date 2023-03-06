@@ -390,13 +390,15 @@ export class UsersService {
         );
         return userExistsDto;
       } else {
-        const company = await this.companyService.findOneByCompanyGuid(
-          companyGUID,
-        );
-        if (company) {
-          userExistsDto.companyExists = true;
-          userExistsDto.company.push(company);
-          return userExistsDto;
+        if (companyGUID) {
+          const company = await this.companyService.findOneByCompanyGuid(
+            companyGUID,
+          );
+          if (company) {
+            userExistsDto.companyExists = true;
+            userExistsDto.company.push(company);
+            return userExistsDto;
+          }
         }
 
         return userExistsDto;
