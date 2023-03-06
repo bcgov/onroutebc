@@ -1,7 +1,6 @@
 import { Controller } from '@nestjs/common';
 
 import {
-
   ApiInternalServerErrorResponse,
   ApiMethodNotAllowedResponse,
   ApiNotFoundResponse,
@@ -9,7 +8,6 @@ import {
 } from '@nestjs/swagger';
 import { ExceptionDto } from '../../common/dto/exception.dto';
 import { UsersService } from './users.service';
-
 
 @ApiTags('Company and User Management - User')
 @ApiNotFoundResponse({
@@ -27,5 +25,4 @@ import { UsersService } from './users.service';
 @Controller('user')
 export class UsersController {
   constructor(private readonly userService: UsersService) {}
-
 }

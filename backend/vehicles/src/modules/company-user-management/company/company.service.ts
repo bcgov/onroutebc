@@ -70,7 +70,7 @@ export class CompanyService {
     try {
       newCompany = await queryRunner.manager.save(newCompany);
       newUser = await this.userService.createUser(
-        newCompany.companyGUID,
+        newCompany.companyId,
         createCompanyDto.adminUser,
         userName,
         userDirectory,
@@ -98,17 +98,17 @@ export class CompanyService {
 
   /**
    * The findOne() method returns a ReadCompanyDto object corresponding to the
-   * company with that GUID. It retrieves the entity from the database using the
+   * company with that Id. It retrieves the entity from the database using the
    * Repository, maps it to a DTO object using the Mapper, and returns it.
    *
-   * @param companyGUID The company GUID
+   * @param companyId The company Id.
    *
    * @returns The company details as a promise of type {@link ReadCompanyDto}
    */
-  async findOne(companyGUID: string): Promise<ReadCompanyDto> {
+  async findOne(companyId: number): Promise<ReadCompanyDto> {
     return this.classMapper.mapAsync(
       await this.companyRepository.findOne({
-        where: { companyGUID: companyGUID },
+        where: { companyId: companyId },
         relations: {
           mailingAddress: true,
           primaryContact: true,
@@ -128,8 +128,9 @@ export class CompanyService {
    * in a DTO object.
    *
    * ? Company Directory might not be required once scope of login is finizalied.
+   * ? Should we be able to update company guid?
    *
-   * @param companyGUID The company GUID
+   * @param companyId The company Id.
    * @param updateCompanyDto Request object of type {@link UpdateCompanyDto} for
    * updating a company.
    * @param companyDirectory Company Directory from the access token.
@@ -137,12 +138,12 @@ export class CompanyService {
    * @returns The company details as a promise of type {@link ReadCompanyDto}
    */
   async update(
-    companyGUID: string,
+    companyId: number,
     updateCompanyDto: UpdateCompanyDto,
     companyDirectory: CompanyDirectory,
   ): Promise<ReadCompanyDto> {
     const company = await this.companyRepository.findOne({
-      where: { companyGUID: companyGUID },
+      where: { companyId: companyId },
       relations: {
         mailingAddress: true,
         primaryContact: true,
@@ -157,6 +158,7 @@ export class CompanyService {
     const contactId = company.primaryContact.contactId;
     const companyAddressId = company.companyAddress.addressId;
     const mailingAddressId = company.mailingAddress.addressId;
+    const clientNumber = company.clientNumber;
 
     const newCompany = this.classMapper.map(
       updateCompanyDto,
@@ -164,6 +166,8 @@ export class CompanyService {
       Company,
       {
         extraArgs: () => ({
+          companyId : company.companyId,
+          clientNumber : clientNumber,
           companyDirectory: companyDirectory,
           companyAddressId: companyAddressId,
           mailingAddressId:
@@ -179,10 +183,10 @@ export class CompanyService {
     newCompany.setMailingAddressSameAsCompanyAddress(
       updateCompanyDto.mailingAddressSameAsCompanyAddress,
     );
-    newCompany.companyGUID = companyGUID;
+    
 
-    await this.companyRepository.save(newCompany);
+   const updatedCompany = await this.companyRepository.save(newCompany);
 
-    return this.findOne(companyGUID);
+    return this.findOne(updatedCompany.companyId);
   }
 }

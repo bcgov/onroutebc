@@ -15,6 +15,7 @@ import { UserStatus } from '../../../common/enum/user-status.enum';
 import { UserAuthGroup } from '../../../common/enum/user-auth-group.enum';
 import { UserDirectory } from '../../../common/enum/directory.enum';
 import { PendingUser } from '../pending-users/entities/pending-user.entity';
+import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
 
 @Injectable()
 export class UsersService {
@@ -27,14 +28,15 @@ export class UsersService {
 
   /**
    * The create() method creates a new user entity with the
-   * {@link CreateUserDto} object, companyGUID, userName, and
+   * {@link CreateUserDto} object, companyId, userName, and
    * {@link UserDirectory} parameters. It also deletes the corresponding
    * PendingUser entity and commits the transaction if successful. If an error
    * is thrown, it rolls back the transaction and returns the error.
+   * TODO verify the role with PENDING_USER and throw exception on mismatch
    *
    * @param createUserDto Request object of type {@link CreateUserDto} for
    * creating a new user.
-   * @param companyGUID The company GUID.
+   * @param companyId The company Id.
    * @param userName User name from the access token.
    * @param userDirectory User Directory from the access token.
    *
@@ -42,7 +44,7 @@ export class UsersService {
    */
   async create(
     createUserDto: CreateUserDto,
-    companyGUID: string,
+    companyId: number,
     userName: string,
     userDirectory: UserDirectory,
   ): Promise<ReadUserDto> {
@@ -52,7 +54,7 @@ export class UsersService {
     await queryRunner.startTransaction();
     try {
       newUser = await this.createUser(
-        companyGUID,
+        companyId,
         createUserDto,
         userName,
         userDirectory,
@@ -61,7 +63,7 @@ export class UsersService {
       );
 
       await queryRunner.manager.delete(PendingUser, {
-        companyGUID: companyGUID,
+        companyId: companyId,
         userName: userName,
       });
 
@@ -75,12 +77,12 @@ export class UsersService {
   }
 
   /**
-   * The createUser() method creates a new user with createUserDto, companyGUID,
+   * The createUser() method creates a new user with createUserDto, companyId,
    * userName, userDirectory, and userAuthGroup parameters, creates a
    * CompanyUser entity, associates it with the new user, and returns a
    * ReadUserDto object.
    *
-   * @param companyGUID The company GUID.
+   * @param companyId The company Id.
    * @param createUserDto Request object of type {@link CreateUserDto} for
    * creating a new user.
    * @param userName User name from the access token.
@@ -91,7 +93,7 @@ export class UsersService {
    * @returns The user details as a promise of type {@link ReadUserDto}
    */
   async createUser(
-    companyGUID: string,
+    companyId: number,
     createUserDto: CreateUserDto,
     userName: string,
     userDirectory: UserDirectory,
@@ -103,7 +105,7 @@ export class UsersService {
     });
 
     const newCompanyUser = this.createCompanyUserUtil(
-      companyGUID,
+      companyId,
       user,
       userAuthGroup,
     );
@@ -141,23 +143,23 @@ export class UsersService {
 
   /**
    * The createCompanyUserUtil() is a helper method creates a
-   * {@link CompanyUser} entity with the companyGUID, newUser, and userAuthGroup
+   * {@link CompanyUser} entity with the companyId, newUser, and userAuthGroup
    * parameters and returns it.
    *
-   * @param companyGUID The company GUID.
+   * @param companyId The company Id.
    * @param newUser The new user entity to be associated with the company.
    * @param userAuthGroup User auth group.
    *
    * @returns The {@link CompanyUser}.
    */
   private createCompanyUserUtil(
-    companyGUID: string,
+    companyId: number,
     newUser: User,
     userAuthGroup: UserAuthGroup,
   ): CompanyUser {
     const newCompanyUser = new CompanyUser();
     newCompanyUser.company = new Company();
-    newCompanyUser.company.companyGUID = companyGUID;
+    newCompanyUser.company.companyId = companyId;
     newCompanyUser.user = newUser;
     newCompanyUser.userAuthGroup = userAuthGroup;
     return newCompanyUser;
@@ -165,29 +167,29 @@ export class UsersService {
 
   /**
    * The findOne() method finds and returns a {@link ReadUserDto} object for a
-   * user with a specific userGUID and companyGUID parameters.
+   * user with a specific userGUID and companyId parameters.
    *
-   * @param companyGUID The company GUID.
+   * @param companyId The company Id.
    * @param userGUID The user GUID.
    *
    * @returns The user details as a promise of type {@link ReadUserDto}
    */
-  async findOne(companyGUID: string, userGUID: string): Promise<ReadUserDto> {
-    const user = await this.findOneUserEntity(companyGUID, userGUID);
+  async findOne(companyId: number, userGUID: string): Promise<ReadUserDto> {
+    const user = await this.findOneUserEntity(companyId, userGUID);
     const readUserDto = await this.mapUserEntitytoReadUserDto(user);
     return readUserDto;
   }
 
   /**
    * The findOneUserEntity() helper method finds and returns a User entity for a
-   * user with a specific userGUID and companyGUID parameters.
+   * user with a specific userGUID and companyId parameters.
    *
-   * @param companyGUID The company GUID.
+   * @param companyId The company Id.
    * @param userGUID The user GUID.
    *
    * @returns The {@link User} entity.
    */
-  private async findOneUserEntity(companyGUID: string, userGUID: string) {
+  private async findOneUserEntity(companyId: number, userGUID: string) {
     return await this.userRepository
       .createQueryBuilder('user')
       .innerJoinAndSelect('user.userContact', 'userContact')
@@ -195,29 +197,29 @@ export class UsersService {
       .innerJoinAndSelect('user.companyUsers', 'companyUser')
       .innerJoin('companyUser.company', 'company')
       .where('user.userGUID = :userGUID', { userGUID: userGUID })
-      .andWhere('company.companyGUID= :companyGUID', {
-        companyGUID: companyGUID,
+      .andWhere('company.companyId= :companyId', {
+        companyId: companyId,
       })
       .getOne();
   }
 
   /**
    * The findAll() method finds and returns an array of ReadUserDto objects for
-   * all users with a specific companyGUID.
+   * all users with a specific companyId.
    *
-   * @param companyGUID The company GUID.
+   * @param companyId The company Id.
    *
    * @returns The list of users as an array of type {@link ReadUserDto}
    */
-  async findAll(companyGUID: string): Promise<ReadUserDto[]> {
+  async findAll(companyId: number): Promise<ReadUserDto[]> {
     const users = await this.userRepository
       .createQueryBuilder('user')
       .innerJoinAndSelect('user.userContact', 'userContact')
       .innerJoinAndSelect('userContact.province', 'province')
       .innerJoinAndSelect('user.companyUsers', 'companyUser')
       .innerJoin('companyUser.company', 'company')
-      .andWhere('company.companyGUID= :companyGUID', {
-        companyGUID: companyGUID,
+      .andWhere('company.companyId= :companyId', {
+        companyId: companyId,
       })
       .getMany();
 
@@ -232,11 +234,11 @@ export class UsersService {
 
   /**
    * The update() method updates a user with the {@link updateUserDto} object,
-   * companyGUID, userGUID, userName, and {@link UserDirectory} parameters, and returns
+   * companyId, userGUID, userName, and {@link UserDirectory} parameters, and returns
    * the updated user as a ReadUserDto object. If the user is not found, it
    * throws an error.
    *
-   * @param companyGUID The company GUID.
+   * @param companyId The company Id.
    * @param userGUID The user GUID.
    * @param userName User name from the access token.
    * @param userDirectory User directory from the access token.
@@ -246,39 +248,43 @@ export class UsersService {
    * @returns The updated user details as a promise of type {@link ReadUserDto}.
    */
   async update(
-    companyGUID: string,
+    companyId: number,
     userGUID: string,
     userName: string,
     userDirectory: UserDirectory,
     updateUserDto: UpdateUserDto,
   ): Promise<ReadUserDto> {
-    const userDetails = await this.findOneUserEntity(companyGUID, userGUID);
+    const userDetails = await this.findOneUserEntity(companyId, userGUID);
+
+    if (!userDetails) {
+      throw new DataNotFoundException();
+    }
 
     const user = this.classMapper.map(updateUserDto, UpdateUserDto, User, {
       extraArgs: () => ({
-        companyGUID: companyGUID,
+        companyId: companyId,
         userGUID: userGUID,
         userName: userName,
         userDirectory: userDirectory,
       }),
     });
     user.userContact.contactId = userDetails.userContact.contactId;
-    await this.userRepository.update({ userGUID }, user);
-    return this.findOne(companyGUID, userGUID);
+    await this.userRepository.save(user);
+    return this.findOne(companyId, user.userGUID);
   }
 
   /**
    * The updateStatus() method updates the statusCode of the user with
-   * companyGUID, userGUID and {@link UserStatus} parameters.
+   * companyId, userGUID and {@link UserStatus} parameters.
    *
-   * @param companyGUID The company GUID.
+   * @param companyId The company Id.
    * @param userGUID The user GUID.
    * @param statusCode The User status code of type {@link UserStatus}
    *
    * @returns The UpdateResult of the operation
    */
   async updateStatus(
-    companyGUID: string,
+    companyId: number,
     userGUID: string,
     statusCode: UserStatus,
   ): Promise<UpdateResult> {

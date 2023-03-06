@@ -9,6 +9,13 @@ import { ReadContactDto } from '../../../../common/dto/response/read-contact.dto
 export class ReadCompanyDto {
   @AutoMap()
   @ApiProperty({
+    description: 'The company ID.',
+    example: '1',
+  })
+  companyId: string;
+
+  @AutoMap()
+  @ApiProperty({
     description: 'The company GUID.',
     example: '6F9619FF8B86D011B42D00C04FC964FF',
   })

@@ -96,6 +96,12 @@ export class CompanyProfile extends AutomapperProfile {
         UpdateCompanyDto,
         Company,
         forMember(
+          (d) => d.companyId,
+          mapWithArguments((source, { companyId }) => {
+            return companyId;
+          }),
+        ),
+        forMember(
           (d) => d.companyAddress,
           mapWith(Address, UpdateAddressDto, (s) => s.companyAddress),
         ),
@@ -129,6 +135,12 @@ export class CompanyProfile extends AutomapperProfile {
           (d) => d.companyDirectory,
           mapWithArguments((source, { companyDirectory }) => {
             return companyDirectory;
+          }),
+        ),
+        forMember(
+          (d) => d.clientNumber,
+          mapWithArguments((source, { clientNumber }) => {
+            return clientNumber;
           }),
         ),
         forMember(

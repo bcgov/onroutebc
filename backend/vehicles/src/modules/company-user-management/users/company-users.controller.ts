@@ -1,4 +1,5 @@
 import { Controller, Get, Post, Body, Param, Put } from '@nestjs/common';
+import { Query } from '@nestjs/common/decorators';
 
 import {
   ApiCreatedResponse,
@@ -7,6 +8,7 @@ import {
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiParam,
+  ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
 import { UserDirectory } from '../../../common/enum/directory.enum';
@@ -31,13 +33,13 @@ import { UsersService } from './users.service';
   description: 'The User Api Internal Server Error Response',
   type: ExceptionDto,
 })
-@Controller('company/:companyGUID/user')
+@Controller('company/:companyId/user')
 export class CompanyUsersController {
   constructor(private readonly userService: UsersService) {}
 
   /**
    * A POST method defined with the @Post() decorator and a route of
-   * company/:companyGUID/user that creates a new user associated to a company.
+   * company/:companyId/user that creates a new user associated to a company.
    * TODO: Validations on {@link CreateUserDto}.
    * TODO: Secure endpoints once login is implemented.
    * TODO: Grab user name from the access token and remove the hard coded value 'ASMITH'.
@@ -53,12 +55,12 @@ export class CompanyUsersController {
   })
   @Post()
   async create(
-    @Param('companyGUID') companyGUID: string,
+    @Param('companyId') companyId: number,
     @Body() createUserDto: CreateUserDto,
   ) {
     return await this.userService.create(
       createUserDto,
-      companyGUID,
+      companyId,
       'ASMITH', //! Hardcoded value to be replaced by user name from access token
       UserDirectory.BBCEID,
     );
@@ -66,11 +68,11 @@ export class CompanyUsersController {
 
   /**
    * A GET method defined with the @Get(':userGUID') decorator and a route of
-   * company/:companyGUID/user/:userGUID  that retrieves a user by its GUID
+   * company/:companyId/user/:userGUID  that retrieves a user by its GUID
    * (global unique identifier).
    * TODO: Secure endpoints once login is implemented.
    *
-   * @param companyGUID The company GUID.
+   * @param companyId The company Id.
    *
    * @param userGUID A temporary placeholder parameter to get the user by GUID.
    *        Will be removed once login system is implemented.
@@ -83,10 +85,10 @@ export class CompanyUsersController {
   })
   @Get(':userGUID')
   async find(
-    @Param('companyGUID') companyGUID: string,
+    @Param('companyId') companyId: number,
     @Param('userGUID') userGUID: string,
   ): Promise<ReadUserDto> {
-    const companyUser = await this.userService.findOne(companyGUID, userGUID);
+    const companyUser = await this.userService.findOne(companyId, userGUID);
     if (!companyUser) {
       throw new DataNotFoundException();
     }
@@ -95,11 +97,11 @@ export class CompanyUsersController {
 
   /**
    * A GET method defined with the @Get() decorator and a route of
-   * company/:companyGUID/user that retrieves a list of users associated with
+   * company/:companyId/user that retrieves a list of users associated with
    * the company GUID (global unique identifier).
    * TODO: Secure endpoints once login is implemented.
    *
-   * @param companyGUID The company GUID.
+   * @param companyId The company Id.
    *
    * @returns The user list with response object {@link ReadUserDto}.
    */
@@ -109,21 +111,19 @@ export class CompanyUsersController {
     isArray: true,
   })
   @Get()
-  async findAll(
-    @Param('companyGUID') companyGUID: string,
-  ): Promise<ReadUserDto[]> {
-    return await this.userService.findAll(companyGUID);
+  async findAll(@Param('companyId') companyId: number): Promise<ReadUserDto[]> {
+    return await this.userService.findAll(companyId);
   }
 
   /**
    * A PUT method defined with the @Put(':userGUID') decorator and a route of
-   * company/:companyGUID/user/:userGUID that updates a user details by its
+   * company/:companyId/user/:userGUID that updates a user details by its
    * GUID.
    * TODO: Secure endpoints once login is implemented.
    * TODO: Grab user name from the access token and remove the hard coded value 'ASMITH'.
    * TODO: Grab user directory from the access token and remove the hard coded value UserDirectory.BBCEID.
    *
-   * @param companyGUID The company GUID.
+   * @param companyId The company Id.
    * @param userGUID A temporary placeholder parameter to get the user by Id.
    *        Will be removed once login system is implemented.
    *
@@ -135,12 +135,12 @@ export class CompanyUsersController {
   })
   @Put(':userGUID')
   async update(
-    @Param('companyGUID') companyGUID: string,
+    @Param('companyId') companyId: number,
     @Param('userGUID') userGUID: string,
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<ReadUserDto> {
     const user = await this.userService.update(
-      companyGUID,
+      companyId,
       userGUID,
       'ASMITH', //! Hardcoded value to be replaced by user name from access token
       UserDirectory.BBCEID, //! Hardcoded value to be replaced by user directory from access token
@@ -155,12 +155,12 @@ export class CompanyUsersController {
   /**
    * A PUT method defined with the @Put(':userGUID/status/:statusCode')
    * decorator and a route of
-   * company/:companyGUID/user/:userGUID/status/:statusCode that updates the
+   * company/:companyId/user/:userGUID/status/:statusCode that updates the
    * user status by its GUID.
    * ? This end point maybe merged with user update endpoint. TBD.
    * TODO: Secure endpoints once login is implemented.
    *
-   * @param companyGUID The company GUID.
+   * @param companyId The company Id.
    * @param userGUID A temporary placeholder parameter to get the user by Id.
    *        Will be removed once login system is implemented.
    * @param statusCode The status Code of the user of type {@link UserStatus}
@@ -170,15 +170,15 @@ export class CompanyUsersController {
   @ApiOkResponse({
     description: '{statusUpdated : true}',
   })
-  @ApiParam({ name: 'statusCode', enum: UserStatus })
-  @Put(':userGUID/status/:statusCode')
+  @ApiQuery({ name: 'code', enum: UserStatus })
+  @Put(':userGUID/status')
   async updateStatus(
-    @Param('companyGUID') companyGUID: string,
+    @Param('companyId') companyId: number,
     @Param('userGUID') userGUID: string,
-    @Param('statusCode') statusCode: UserStatus,
+    @Query('code') statusCode: UserStatus,
   ): Promise<object> {
     const updateResult = await this.userService.updateStatus(
-      companyGUID,
+      companyId,
       userGUID,
       statusCode,
     );

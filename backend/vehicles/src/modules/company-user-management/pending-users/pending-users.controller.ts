@@ -36,18 +36,18 @@ import { PendingUsersService } from './pending-users.service';
   description: 'The Pending User Api Internal Server Error Response',
   type: ExceptionDto,
 })
-@Controller('company/:companyGUID/pending-user')
+@Controller('company/:companyId/pending-user')
 export class PendingUsersController {
   constructor(private readonly pendingUserService: PendingUsersService) {}
 
   /**
    * A POST method defined with the @Post() decorator and a route of
-   * company/:companyGUID/pending-user that creates a new pending user
+   * company/:companyId/pending-user that creates a new pending user
    * associated with the company.
    * TODO: Validations on {@link CreatePendingUserDto}.
    * TODO: Secure endpoints once login is implemented.
    *
-   * @param companyGUID The company GUID.
+   * @param companyId The company Id.
    * @param createPendingUserDto The http request object containing the pending user
    * details.
    *
@@ -60,20 +60,20 @@ export class PendingUsersController {
   })
   @Post()
   async create(
-    @Param('companyGUID') companyGUID: string,
+    @Param('companyId') companyId: number,
     @Body() createUserDto: CreatePendingUserDto,
   ) {
-    return await this.pendingUserService.create(companyGUID, createUserDto);
+    return await this.pendingUserService.create(companyId, createUserDto);
   }
 
   /**
    * A GET method defined with the @Get() decorator and a route of
-   * company/:companyGUID/pending-user that retrieves a list of pending users
+   * company/:companyId/pending-user that retrieves a list of pending users
    * associated with the company
    *
    * TODO: Secure endpoints once login is implemented.
    *
-   * @param companyGUID The company GUID.
+   * @param companyId The company Id.
    *
    * @returns The list of pending users with response object as an array of
    * {@link ReadPendingUserDto}.
@@ -85,19 +85,19 @@ export class PendingUsersController {
   })
   @Get()
   async findAll(
-    @Param('companyGUID') companyGUID: string,
+    @Param('companyId') companyId: number,
   ): Promise<ReadPendingUserDto[]> {
-    return await this.pendingUserService.findAll(companyGUID);
+    return await this.pendingUserService.findAll(companyId);
   }
 
   /**
    * A GET method defined with the @Get(:userName) decorator and a route of
-   * company/:companyGUID/pending-user/:userName that retrieves the pending user
+   * company/:companyId/pending-user/:userName that retrieves the pending user
    * associated with the company by user name
    *
    * TODO: Secure endpoints once login is implemented.
    *
-   * @param companyGUID The company GUID.
+   * @param companyId The company Id.
    * @param userName The userName of the pending user.
    *
    * @returns The pending user with response object {@link ReadPendingUserDto}.
@@ -108,11 +108,11 @@ export class PendingUsersController {
   })
   @Get(':userName')
   async find(
-    @Param('companyGUID') companyGUID: string,
+    @Param('companyId') companyId: number,
     @Param('userName') userName: string,
   ): Promise<ReadPendingUserDto> {
     const pendingUser = await this.pendingUserService.findOne(
-      companyGUID,
+      companyId,
       userName,
     );
     if (!pendingUser) {
@@ -123,13 +123,13 @@ export class PendingUsersController {
 
   /**
    * A PUT method defined with the @Put(':userName') decorator and a route of
-   * company/:companyGUID/pending-user/:userName that updates a pending user by
+   * company/:companyId/pending-user/:userName that updates a pending user by
    * user name.
    * TODO: Validations on {@link UpdateCompanyDto}.
    * TODO: Validations on {@link UpdateCompanyDto}.
    * TODO: Secure endpoints once login is implemented.
    *
-   * @param companyGUID The company GUID.
+   * @param companyId The company Id.
    * @param userName The user name of the pending user.
    * @param updatePendingUserDto The http request object of type {@link UpdatePendingUserDto}
    * containing the pending user details.
@@ -142,12 +142,12 @@ export class PendingUsersController {
   })
   @Put(':userName')
   async update(
-    @Param('companyGUID') companyGUID: string,
+    @Param('companyId') companyId: number,
     @Param('userName') userName: string,
     @Body() updatePendingUserDto: UpdatePendingUserDto,
   ): Promise<ReadPendingUserDto> {
     const pendingUser = await this.pendingUserService.update(
-      companyGUID,
+      companyId,
       userName,
       updatePendingUserDto,
     );
@@ -159,19 +159,19 @@ export class PendingUsersController {
 
   /**
    * A DELETE method defined with the @Delete(':userName') decorator and a route of
-   * company/:companyGUID/pending-user/:userName that deletes a pending user by
+   * company/:companyId/pending-user/:userName that deletes a pending user by
    * user name.
-   * @param companyGUID The company GUID.
+   * @param companyId The company Id.
    * @param userName The user name of the pending user.
    * @returns true upon successful deletion.
    */
   @Delete(':userName')
   async remove(
-    @Param('companyGUID') companyGUID: string,
+    @Param('companyId') companyId: number,
     @Param('userName') userName: string,
   ) {
     const deleteResult = await this.pendingUserService.remove(
-      companyGUID,
+      companyId,
       userName,
     );
     if (deleteResult.affected === 0) {
