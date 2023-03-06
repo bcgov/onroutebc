@@ -365,7 +365,7 @@ export class UsersService {
     companyGUID: string,
   ): Promise<ReadUserExistsDto> {
     const userExistsDto = new ReadUserExistsDto();
-    userExistsDto.pendingUser = false;
+    userExistsDto.isPendingUser = false;
     userExistsDto.userExists = false;
     userExistsDto.companyExists = false;
     userExistsDto.company = [];
@@ -383,7 +383,7 @@ export class UsersService {
         userName,
       );
       if (pendingUser) {
-        userExistsDto.pendingUser = true;
+        userExistsDto.isPendingUser = true;
         userExistsDto.companyExists = true;
         userExistsDto.company.push(
           await this.companyService.findOne(pendingUser.companyId),

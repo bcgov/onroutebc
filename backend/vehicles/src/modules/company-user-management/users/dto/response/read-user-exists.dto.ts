@@ -14,7 +14,7 @@ export class ReadUserExistsDto {
       'A boolean value which is set to true if the user has been added to a company in ORBC by the company Admin.',
     example: 'true',
   })
-  pendingUser: boolean;
+  isPendingUser: boolean;
 
   @AutoMap()
   @ApiProperty({
