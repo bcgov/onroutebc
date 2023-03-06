@@ -1,5 +1,7 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { CompanyModule } from '../company/company.module';
+import { PendingUsersModule } from '../pending-users/pending-users.module';
 import { CompanyUsersController } from './company-users.controller';
 import { CompanyUser } from './entities/company-user.entity';
 import { User } from './entities/user.entity';
@@ -8,7 +10,11 @@ import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, CompanyUser])],
+  imports: [
+    TypeOrmModule.forFeature([User, CompanyUser]),
+    PendingUsersModule,
+    forwardRef(() => CompanyModule),
+  ],
   controllers: [UsersController, CompanyUsersController],
   providers: [UsersService, UsersProfile],
   exports: [UsersService],

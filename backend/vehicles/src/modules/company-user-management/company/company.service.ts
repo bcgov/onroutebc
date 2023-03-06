@@ -121,6 +121,30 @@ export class CompanyService {
   }
 
   /**
+   * The findOneByCompanyGuid() method returns a ReadCompanyDto object corresponding to the
+   * company with that company GUID. It retrieves the entity from the database using the
+   * Repository, maps it to a DTO object using the Mapper, and returns it.
+   *
+   * @param companyGUID The company Id.
+   *
+   * @returns The company details as a promise of type {@link ReadCompanyDto}
+   */
+  async findOneByCompanyGuid(companyGUID: string): Promise<ReadCompanyDto> {
+    return this.classMapper.mapAsync(
+      await this.companyRepository.findOne({
+        where: { companyGUID: companyGUID },
+        relations: {
+          mailingAddress: true,
+          primaryContact: true,
+          companyAddress: true,
+        },
+      }),
+      Company,
+      ReadCompanyDto,
+    );
+  }
+
+  /**
    * The update() method retrieves the entity from the database using the
    * Repository, maps the DTO object to the entity using the Mapper, sets some
    * additional properties on the entity, and saves it back to the database
@@ -166,8 +190,8 @@ export class CompanyService {
       Company,
       {
         extraArgs: () => ({
-          companyId : company.companyId,
-          clientNumber : clientNumber,
+          companyId: company.companyId,
+          clientNumber: clientNumber,
           companyDirectory: companyDirectory,
           companyAddressId: companyAddressId,
           mailingAddressId:
@@ -183,9 +207,8 @@ export class CompanyService {
     newCompany.setMailingAddressSameAsCompanyAddress(
       updateCompanyDto.mailingAddressSameAsCompanyAddress,
     );
-    
 
-   const updatedCompany = await this.companyRepository.save(newCompany);
+    const updatedCompany = await this.companyRepository.save(newCompany);
 
     return this.findOne(updatedCompany.companyId);
   }

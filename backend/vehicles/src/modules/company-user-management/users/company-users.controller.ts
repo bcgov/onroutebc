@@ -7,7 +7,6 @@ import {
   ApiMethodNotAllowedResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
-  ApiParam,
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
@@ -112,7 +111,7 @@ export class CompanyUsersController {
   })
   @Get()
   async findAll(@Param('companyId') companyId: number): Promise<ReadUserDto[]> {
-    return await this.userService.findAll(companyId);
+    return await this.userService.findAllUsers(companyId);
   }
 
   /**

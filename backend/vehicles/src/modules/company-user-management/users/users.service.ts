@@ -1,6 +1,6 @@
 import { Mapper } from '@automapper/core';
 import { InjectMapper } from '@automapper/nestjs';
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, QueryRunner, Repository, UpdateResult } from 'typeorm';
 import { User } from './entities/user.entity';
@@ -16,14 +16,23 @@ import { UserAuthGroup } from '../../../common/enum/user-auth-group.enum';
 import { UserDirectory } from '../../../common/enum/directory.enum';
 import { PendingUser } from '../pending-users/entities/pending-user.entity';
 import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
+import { ReadUserExistsDto } from './dto/response/read-user-exists.dto';
+import { PendingUsersService } from '../pending-users/pending-users.service';
+import { CompanyService } from '../company/company.service';
+import { ReadCompanyDto } from '../company/dto/response/read-company.dto';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
+    @InjectRepository(CompanyUser)
+    private companyUserRepository: Repository<CompanyUser>,
     @InjectMapper() private readonly classMapper: Mapper,
     private dataSource: DataSource,
+    private readonly pendingUsersService: PendingUsersService,
+    @Inject(forwardRef(() => CompanyService))
+    private readonly companyService: CompanyService,
   ) {}
 
   /**
@@ -182,6 +191,25 @@ export class UsersService {
 
   /**
    * The findOneUserEntity() helper method finds and returns a User entity for a
+   * user with a specific userGUID parameters.
+   *
+   * @param userGUID The user GUID.
+   *
+   * @returns The {@link User} entity.
+   */
+  private async findUserbyUserGUID(userGUID: string) {
+    return await this.userRepository
+      .createQueryBuilder('user')
+      .innerJoinAndSelect('user.userContact', 'userContact')
+      .innerJoinAndSelect('userContact.province', 'province')
+      .innerJoinAndSelect('user.companyUsers', 'companyUser')
+      .innerJoin('companyUser.company', 'company')
+      .where('user.userGUID = :userGUID', { userGUID: userGUID })
+      .getOne();
+  }
+
+  /**
+   * The findOneUserEntity() helper method finds and returns a User entity for a
    * user with a specific userGUID and companyId parameters.
    *
    * @param companyId The company Id.
@@ -211,7 +239,7 @@ export class UsersService {
    *
    * @returns The list of users as an array of type {@link ReadUserDto}
    */
-  async findAll(companyId: number): Promise<ReadUserDto[]> {
+  async findAllUsers(companyId: number): Promise<ReadUserDto[]> {
     const users = await this.userRepository
       .createQueryBuilder('user')
       .innerJoinAndSelect('user.userContact', 'userContact')
@@ -292,5 +320,106 @@ export class UsersService {
     user.userGUID = userGUID;
     user.statusCode = statusCode;
     return await this.userRepository.update({ userGUID }, user);
+  }
+
+  /**
+   * The findAllCompanyUsersByUserGuid() helper method finds and returns an
+   * array of CompanyUser objects for a specific userGUID.
+   *
+   * @param userGUID The user GUID.
+   *
+   * @returns The list of users as an array of type {@link ReadUserDto}
+   */
+  private async findAllCompanyUsersByUserGuid(
+    userGUID: string,
+  ): Promise<CompanyUser[]> {
+    const companyUsers = await this.companyUserRepository
+      .createQueryBuilder('companyUser')
+      .leftJoinAndSelect('companyUser.company', 'company')
+      .leftJoinAndSelect('company.companyAddress', 'companyAddress')
+      .innerJoinAndSelect('companyAddress.province', 'companyAddressProvince')
+      .leftJoinAndSelect('company.mailingAddress', 'mailingAddress')
+      .innerJoinAndSelect('mailingAddress.province', 'mailingAddressProvince')
+      .leftJoinAndSelect('companyUser.user', 'user')
+      .where('user.userGUID= :userGUID', {
+        userGUID: userGUID,
+      })
+      .getMany();
+
+    return companyUsers;
+  }
+
+  /**
+   * The findORBCUser() method searches ORBC if the user exists by its GUID and
+   * returns a DTO with user details and its associated companies.
+   *
+   * @param userGUID The user GUID.
+   * @param userName The user Name.
+   * @param companyGUID The company GUID.
+   *
+   * @returns The {@link ReadUserExistsDto} entity.
+   */
+  async findORBCUser(
+    userGUID: string,
+    userName: string,
+    companyGUID: string,
+  ): Promise<ReadUserExistsDto> {
+    const userExistsDto = new ReadUserExistsDto();
+    userExistsDto.pendingUser = false;
+    userExistsDto.userExists = false;
+    userExistsDto.companyExists = false;
+    userExistsDto.company = [];
+
+    const user = await this.userRepository.findOne({
+      where: { userGUID: userGUID },
+      relations: {
+        userContact: true,
+        companyUsers: true,
+      },
+    });
+
+    if (!user) {
+      const pendingUser = await this.pendingUsersService.findOneByUserName(
+        userName,
+      );
+      if (pendingUser) {
+        userExistsDto.pendingUser = true;
+        userExistsDto.companyExists = true;
+        userExistsDto.company.push(
+          await this.companyService.findOne(pendingUser.companyId),
+        );
+        return userExistsDto;
+      } else {
+        const company = await this.companyService.findOneByCompanyGuid(
+          companyGUID,
+        );
+        if (company) {
+          userExistsDto.companyExists = true;
+          userExistsDto.company.push(company);
+          return userExistsDto;
+        }
+
+        return userExistsDto;
+      }
+    } else {
+      const companyUsers = await this.findAllCompanyUsersByUserGuid(userGUID);
+      const readCompanyDto: ReadCompanyDto[] = [];
+      for (const companyUser of companyUsers) {
+        readCompanyDto.push(
+          await this.classMapper.mapAsync(
+            companyUser.company,
+            Company,
+            ReadCompanyDto,
+          ),
+        );
+      }
+
+      userExistsDto.userExists = true;
+      userExistsDto.user = await this.mapUserEntitytoReadUserDto(user);
+      userExistsDto.company = readCompanyDto;
+      userExistsDto.companyExists = true;
+
+      return userExistsDto;
+    }
   }
 }
