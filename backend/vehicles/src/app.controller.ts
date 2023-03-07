@@ -16,8 +16,8 @@ export class AppController {
     return this.appService.getHello();
   }
 
-  @Post()
-  async sendMessage() {
-    return await this.emailService.sendEmailMessage();
-  }
+  // @Post()
+  // async sendMessage() {
+  //   return await this.emailService.sendEmailMessage();
+  // }
 }
