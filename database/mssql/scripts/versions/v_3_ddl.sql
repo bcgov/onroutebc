@@ -52,6 +52,26 @@ CREATE TABLE [dbo].[ORBC_COMPANY](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/* Add company ID columns and relationships to power unit and trailer tables */
+ALTER TABLE [dbo].[ORBC_POWER_UNIT] ADD [COMPANY_ID] [int] NULL
+GO
+ALTER TABLE [dbo].[ORBC_POWER_UNIT]  WITH CHECK ADD  CONSTRAINT [FK_ORBC_POWER_UNIT_COMPANY] FOREIGN KEY([COMPANY_ID])
+REFERENCES [dbo].[ORBC_COMPANY] ([COMPANY_ID])
+GO
+ALTER TABLE [dbo].[ORBC_POWER_UNIT] CHECK CONSTRAINT [FK_ORBC_POWER_UNIT_COMPANY]
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID of the company that owns this vehicle in their vehicle inventory' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_POWER_UNIT', @level2type=N'COLUMN',@level2name=N'COMPANY_ID'
+GO
+ALTER TABLE [dbo].[ORBC_TRAILER] ADD [COMPANY_ID] [int] NULL
+GO
+ALTER TABLE [dbo].[ORBC_TRAILER]  WITH CHECK ADD  CONSTRAINT [FK_ORBC_TRAILER_COMPANY] FOREIGN KEY([COMPANY_ID])
+REFERENCES [dbo].[ORBC_COMPANY] ([COMPANY_ID])
+GO
+ALTER TABLE [dbo].[ORBC_TRAILER] CHECK CONSTRAINT [FK_ORBC_TRAILER_COMPANY]
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID of the company that owns this vehicle in their vehicle inventory' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_TRAILER', @level2type=N'COLUMN',@level2name=N'COMPANY_ID'
+GO
+/* End add company ID columns and relationships to power unit and trailer tables */
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
