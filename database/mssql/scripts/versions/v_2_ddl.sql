@@ -13,7 +13,7 @@ CREATE TABLE [dbo].[ORBC_POWER_UNIT](
 	[PROVINCE_ID] [char](5) NOT NULL,
 	[YEAR] [smallint] NOT NULL,
 	[MAKE] [nvarchar](50) NOT NULL,
-	[VIN] [nvarchar](17) NOT NULL,
+	[VIN] [char](6) NOT NULL,
 	[LICENSED_GVW] [numeric](18, 2) NOT NULL,
 	[POWER_UNIT_TYPE_CODE] [char](7) NOT NULL,
 	[STEER_AXLE_TIRE_SIZE] [int] NULL,
@@ -39,7 +39,7 @@ CREATE TABLE [dbo].[ORBC_TRAILER](
 	[PROVINCE_ID] [char](5) NOT NULL,
 	[YEAR] [smallint] NOT NULL,
 	[MAKE] [nvarchar](50) NOT NULL,
-	[VIN] [varchar](17) NOT NULL,
+	[VIN] [char](6) NOT NULL,
 	[TRAILER_TYPE_CODE] [char](7) NOT NULL,
 	[EMPTY_TRAILER_WIDTH] [numeric](18, 2) NULL,
 	[CONCURRENCY_CONTROL_NUMBER] [int] NULL,
@@ -721,7 +721,7 @@ EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Year of manufa
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Make (manufacturer) of the vehicle.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_POWER_UNIT', @level2type=N'COLUMN',@level2name=N'MAKE'
 GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Vehicle identification number for the power unit.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_POWER_UNIT', @level2type=N'COLUMN',@level2name=N'VIN'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Short vehicle identification number (last 6 characters) for the power unit.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_POWER_UNIT', @level2type=N'COLUMN',@level2name=N'VIN'
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Licensed gross vehicle weight of the power unit.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_POWER_UNIT', @level2type=N'COLUMN',@level2name=N'LICENSED_GVW'
 GO
@@ -753,7 +753,7 @@ EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Year of manufa
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Make (manufacturer) of the vehicle.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_TRAILER', @level2type=N'COLUMN',@level2name=N'MAKE'
 GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Vehicle identification number for the trailer.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_TRAILER', @level2type=N'COLUMN',@level2name=N'VIN'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Short vehicle identification number (last 6 characters) for the trailer.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_TRAILER', @level2type=N'COLUMN',@level2name=N'VIN'
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Type of the trailer.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_TRAILER', @level2type=N'COLUMN',@level2name=N'TRAILER_TYPE_CODE'
 GO
