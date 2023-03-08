@@ -19,7 +19,7 @@ export class PendingUsersService {
   /**
    * Creates a new pending user in the database.
    *
-   * @param companyGUID The company GUID.
+   * @param companyId The company Id.
    * @param createPendingUserDto Request object of type
    * {@link CreatePendingUserDto} for creating a pending user.
    *
@@ -27,7 +27,7 @@ export class PendingUsersService {
    * {@link ReadPendingUserDto}
    */
   async create(
-    companyGUID: string,
+    companyId: number,
     createPendingUserDto: CreatePendingUserDto,
   ): Promise<ReadPendingUserDto> {
     const newPendingUserDto = this.classMapper.map(
@@ -35,33 +35,33 @@ export class PendingUsersService {
       CreatePendingUserDto,
       PendingUser,
       {
-        extraArgs: () => ({ companyGUID: companyGUID }),
+        extraArgs: () => ({ companyId: companyId }),
       },
     );
     await this.pendingUserRepository.insert(newPendingUserDto);
     return this.findOne(
-      newPendingUserDto.companyGUID,
+      newPendingUserDto.companyId,
       newPendingUserDto.userName,
     );
   }
 
   /**
-   * Finds a pending user in the database based on the companyGUID and userName
+   * Finds a pending user in the database based on the companyId and userName
    * parameters.
    *
-   * @param companyGUID The company GUID.
+   * @param companyId The company Id.
    * @param userName The userName of the pending user.
    *
    * @returns The pending user details as a promise of type
    * {@link ReadPendingUserDto}
    */
   async findOne(
-    companyGUID: string,
+    companyId: number,
     userName: string,
   ): Promise<ReadPendingUserDto> {
     return this.classMapper.mapAsync(
       await this.pendingUserRepository.findOne({
-        where: { companyGUID, userName },
+        where: { companyId, userName },
       }),
       PendingUser,
       ReadPendingUserDto,
@@ -69,26 +69,44 @@ export class PendingUsersService {
   }
 
   /**
-   * Finds all pending users in the database for a given companyGUID.
+   * Finds a pending user in the database based on userName.
    *
-   * @param companyGUID The company GUID.
+   * @param userName The userName of the pending user.
    *
    * @returns The pending user details as a promise of type
-   * {@link ReadPendingUserDto}.
+   * {@link ReadPendingUserDto}
    */
-  async findAll(companyGUID: string): Promise<ReadPendingUserDto[]> {
-    return this.classMapper.mapArrayAsync(
-      await this.pendingUserRepository.find({ where: { companyGUID } }),
+  async findOneByUserName(userName: string): Promise<ReadPendingUserDto> {
+    return this.classMapper.mapAsync(
+      await this.pendingUserRepository.findOne({
+        where: { userName },
+      }),
       PendingUser,
       ReadPendingUserDto,
     );
   }
 
   /**
-   * Updates a pending user in the database based on the companyGUID and
+   * Finds all pending users in the database for a given companyId.
+   *
+   * @param companyId The company Id.
+   *
+   * @returns The pending user details as a promise of type
+   * {@link ReadPendingUserDto}.
+   */
+  async findAll(companyId: number): Promise<ReadPendingUserDto[]> {
+    return this.classMapper.mapArrayAsync(
+      await this.pendingUserRepository.find({ where: { companyId } }),
+      PendingUser,
+      ReadPendingUserDto,
+    );
+  }
+
+  /**
+   * Updates a pending user in the database based on the companyId and
    * userName parameters.
    *
-   * @param companyGUID The company GUID.
+   * @param companyId The company Id.
    * @param userName The userName of the pending user.
    * @param updatePendingUserDto Request object of type
    * {@link UpdatePendingUserDto} for creating a pending company.
@@ -97,7 +115,7 @@ export class PendingUsersService {
    * {@link ReadPendingUserDto}.
    */
   async update(
-    companyGUID: string,
+    companyId: number,
     userName: string,
     updatePendingUserDto: UpdatePendingUserDto,
   ): Promise<ReadPendingUserDto> {
@@ -106,25 +124,25 @@ export class PendingUsersService {
       UpdatePendingUserDto,
       PendingUser,
       {
-        extraArgs: () => ({ companyGUID: companyGUID, userName: userName }),
+        extraArgs: () => ({ companyId: companyId, userName: userName }),
       },
     );
 
     await this.pendingUserRepository.update(
-      { companyGUID, userName },
+      { companyId, userName },
       updatePendingUser,
     );
-    return this.findOne(companyGUID, userName);
+    return this.findOne(companyId, userName);
   }
 
   /**
-   * Deletes a pending user from the database based on the companyGUID and
+   * Deletes a pending user from the database based on the companyId and
    * userName parameters.
-   * @param companyGUID The company GUID.
+   * @param companyId The company Id.
    * @param userName The userName of the pending user.
    * @returns The Result object returned by DeleteQueryBuilder execution.
    */
-  async remove(companyGUID: string, userName: string): Promise<DeleteResult> {
-    return await this.pendingUserRepository.delete({ companyGUID, userName });
+  async remove(companyId: number, userName: string): Promise<DeleteResult> {
+    return await this.pendingUserRepository.delete({ companyId, userName });
   }
 }

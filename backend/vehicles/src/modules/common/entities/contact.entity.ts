@@ -10,6 +10,7 @@ import { Province } from './province.entity';
 import { Base } from './base.entity';
 import { AutoMap } from '@automapper/classes';
 import { Company } from '../../company-user-management/company/entities/company.entity';
+import { User } from '../../company-user-management/users/entities/user.entity';
 
 @Entity({ name: 'ORBC_CONTACT' })
 export class Contact extends Base {
@@ -99,4 +100,12 @@ export class Contact extends Base {
   @AutoMap(() => Company)
   @OneToOne(() => Company, (Company) => Company.companyAddress)
   company: Company;
+
+  /**
+   * Relationship with Company entity, one-to-one mapping. This refers to the
+   * user associated with the contact person.
+   */
+  @AutoMap(() => User)
+  @OneToOne(() => User, (User) => User.userContact)
+  user: User;
 }

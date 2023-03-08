@@ -3,8 +3,8 @@ import {
   Column,
   JoinColumn,
   OneToOne,
-  PrimaryColumn,
   OneToMany,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Base } from '../../../common/entities/base.entity';
 import { AutoMap } from '@automapper/classes';
@@ -16,17 +16,24 @@ import { CompanyDirectory } from '../../../../common/enum/directory.enum';
 @Entity({ name: 'ORBC_COMPANY' })
 export class Company extends Base {
   /**
+   * An auto-generated unique identifier for the company.
+   */
+  @AutoMap()
+  @PrimaryGeneratedColumn({ type: 'int', name: 'COMPANY_ID' })
+  companyId: number;
+
+  /**
    * The company's GUID.
    */
   @AutoMap()
-  @PrimaryColumn({ length: 32, name: 'COMPANY_GUID', nullable: false })
+  @Column({ length: 32, name: 'COMPANY_GUID', nullable: true })
   companyGUID: string;
 
   /**
    * The ORBC client number of the company.
    */
   @AutoMap()
-  @Column({ length: 10, name: 'CLIENT_NUMBER', nullable: false })
+  @Column({ length: 13, name: 'CLIENT_NUMBER', nullable: false })
   clientNumber: string;
 
   /**

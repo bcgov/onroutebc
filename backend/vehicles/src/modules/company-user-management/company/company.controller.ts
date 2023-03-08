@@ -64,13 +64,11 @@ export class CompanyController {
   }
 
   /**
-   * A GET method defined with the @Get(':companyGUID') decorator and a route of
-   * /company/:companyGUID that retrieves a company by its GUID (global unique
-   * identifier).
+   * A GET method defined with the @Get(':companyId') decorator and a route of
+   * /company/:companyId that retrieves a company by its id.
    * TODO: Secure endpoints once login is implemented.
    *
-   * @param companyGUID A temporary placeholder parameter to get the company by
-   *        its GUID. Will be removed once login system is implemented.
+   * @param companyId The company Id.
    *
    * @returns The company details with response object {@link ReadCompanyDto}.
    */
@@ -78,11 +76,9 @@ export class CompanyController {
     description: 'The Company Resource',
     type: ReadCompanyDto,
   })
-  @Get(':companyGUID')
-  async get(
-    @Param('companyGUID') companyGUID: string,
-  ): Promise<ReadCompanyDto> {
-    const company = await this.companyService.findOne(companyGUID);
+  @Get(':companyId')
+  async get(@Param('companyId') companyId: number): Promise<ReadCompanyDto> {
+    const company = await this.companyService.findOne(companyId);
     if (!company) {
       throw new DataNotFoundException();
     }
@@ -90,13 +86,12 @@ export class CompanyController {
   }
 
   /**
-   * A PUT method defined with the @Put(':companyGUID') decorator and a route of
-   * /company/:companyGUID that updates a company by its GUID.
+   * A PUT method defined with the @Put(':companyId') decorator and a route of
+   * /company/:companyId that updates a company by its ID.
    * TODO: Validations on {@link UpdateCompanyDto}.
    * TODO: Secure endpoints once login is implemented.
    *
-   * @param companyGUID A temporary placeholder parameter to get the company by
-   *        its GUID. Will be removed once login system is implemented.
+   * @param companyId The company Id.
    *
    * @returns The updated company deails with response object {@link ReadCompanyDto}.
    */
@@ -104,13 +99,13 @@ export class CompanyController {
     description: 'The Company  Resource',
     type: ReadCompanyDto,
   })
-  @Put(':companyGUID')
+  @Put(':companyId')
   async update(
-    @Param('companyGUID') companyGUID: string,
+    @Param('companyId') companyId: number,
     @Body() updateCompanyDto: UpdateCompanyDto,
   ): Promise<ReadCompanyDto> {
     const powerUnitType = await this.companyService.update(
-      companyGUID,
+      companyId,
       updateCompanyDto,
       CompanyDirectory.BBCEID,
     );

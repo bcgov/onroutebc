@@ -29,7 +29,8 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[ORBC_COMPANY](
-	[COMPANY_GUID] [char](32) NOT NULL,
+	[COMPANY_ID] [int] IDENTITY(1,1) NOT NULL,
+	[COMPANY_GUID] [char](32) NULL,
 	[CLIENT_NUMBER] [char](13) NOT NULL,
 	[LEGAL_NAME] [nvarchar](100) NOT NULL,
 	[COMPANY_DIRECTORY] [varchar](10) NOT NULL,
@@ -47,7 +48,7 @@ CREATE TABLE [dbo].[ORBC_COMPANY](
 	[DB_LAST_UPDATE_TIMESTAMP] [datetime2](7) NOT NULL,
  CONSTRAINT [PK_ORBC_COMPANY] PRIMARY KEY CLUSTERED 
 (
-	[COMPANY_GUID] ASC
+	[COMPANY_ID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
@@ -57,7 +58,7 @@ SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[ORBC_COMPANY_USER](
 	[COMPANY_USER_ID] [int] IDENTITY(1,1) NOT NULL,
-	[COMPANY_GUID] [char](32) NOT NULL,
+	[COMPANY_ID] [int] NOT NULL,
 	[USER_GUID] [char](32) NOT NULL,
 	[USER_AUTH_GROUP_ID] [varchar](10) NOT NULL,
 	[CONCURRENCY_CONTROL_NUMBER] [int] NULL,
@@ -103,7 +104,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[ORBC_PENDING_USER](
-	[COMPANY_GUID] [char](32) NOT NULL,
+	[COMPANY_ID] [int] NOT NULL,
 	[USERNAME] [varchar](50) NOT NULL,
 	[USER_AUTH_GROUP_ID] [varchar](10) NULL,
 	[CONCURRENCY_CONTROL_NUMBER] [int] NULL,
@@ -113,7 +114,7 @@ CREATE TABLE [dbo].[ORBC_PENDING_USER](
 	[DB_LAST_UPDATE_TIMESTAMP] [datetime2](7) NOT NULL,
  CONSTRAINT [PK_ORBC_PENDING_USER] PRIMARY KEY CLUSTERED 
 (
-	[COMPANY_GUID] ASC,
+	[COMPANY_ID] ASC,
 	[USERNAME] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
@@ -306,8 +307,8 @@ REFERENCES [dbo].[ORBC_CONTACT] ([CONTACT_ID])
 GO
 ALTER TABLE [dbo].[ORBC_COMPANY] CHECK CONSTRAINT [FK_ORBC_COMPANY_PRIMARY_CONTACT]
 GO
-ALTER TABLE [dbo].[ORBC_COMPANY_USER]  WITH CHECK ADD  CONSTRAINT [FK_ORBC_COMPANY_USER_COMPANY] FOREIGN KEY([COMPANY_GUID])
-REFERENCES [dbo].[ORBC_COMPANY] ([COMPANY_GUID])
+ALTER TABLE [dbo].[ORBC_COMPANY_USER]  WITH CHECK ADD  CONSTRAINT [FK_ORBC_COMPANY_USER_COMPANY] FOREIGN KEY([COMPANY_ID])
+REFERENCES [dbo].[ORBC_COMPANY] ([COMPANY_ID])
 GO
 ALTER TABLE [dbo].[ORBC_COMPANY_USER] CHECK CONSTRAINT [FK_ORBC_COMPANY_USER_COMPANY]
 GO
@@ -331,8 +332,8 @@ REFERENCES [dbo].[ORBC_VT_USER_AUTH_GROUP] ([GROUP_ID])
 GO
 ALTER TABLE [dbo].[ORBC_PENDING_USER] CHECK CONSTRAINT [FK_ORBC_PENDING_USER_AUTH_GROUP]
 GO
-ALTER TABLE [dbo].[ORBC_PENDING_USER]  WITH CHECK ADD  CONSTRAINT [FK_ORBC_PENDING_USER_COMPANY] FOREIGN KEY([COMPANY_GUID])
-REFERENCES [dbo].[ORBC_COMPANY] ([COMPANY_GUID])
+ALTER TABLE [dbo].[ORBC_PENDING_USER]  WITH CHECK ADD  CONSTRAINT [FK_ORBC_PENDING_USER_COMPANY] FOREIGN KEY([COMPANY_ID])
+REFERENCES [dbo].[ORBC_COMPANY] ([COMPANY_ID])
 GO
 ALTER TABLE [dbo].[ORBC_PENDING_USER] CHECK CONSTRAINT [FK_ORBC_PENDING_USER_COMPANY]
 GO
@@ -375,6 +376,8 @@ EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and t
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Represents the physical or mailing address of an entity, whether a company, user, or other.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_ADDRESS'
 GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Unique auto-generated surrogate primary key' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_COMPANY', @level2type=N'COLUMN',@level2name=N'COMPANY_ID'
+GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'GUID of the company record, which typically comes from Business BCeID' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_COMPANY', @level2type=N'COLUMN',@level2name=N'COMPANY_GUID'
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Unique client-facing client number' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_COMPANY', @level2type=N'COLUMN',@level2name=N'CLIENT_NUMBER'
@@ -411,7 +414,7 @@ EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'A company enti
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Unique surrogate primary key' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_COMPANY_USER', @level2type=N'COLUMN',@level2name=N'COMPANY_USER_ID'
 GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'GUID of the company' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_COMPANY_USER', @level2type=N'COLUMN',@level2name=N'COMPANY_GUID'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID of the company' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_COMPANY_USER', @level2type=N'COLUMN',@level2name=N'COMPANY_ID'
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'GUID of the user' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_COMPANY_USER', @level2type=N'COLUMN',@level2name=N'USER_GUID'
 GO
