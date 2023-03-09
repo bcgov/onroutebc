@@ -573,6 +573,18 @@ GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Lookup table for all possible user status values in ORBC' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_USER_STATUS'
 GO
 
+/* Create function to generate a new client number */
+/* TODO: remove 'OR ALTER' bit prior to merging into main */
+CREATE OR ALTER FUNCTION [dbo].[GenerateClientNumber] (@REGION char(1), @SOURCE char(1), @SEQ int)
+RETURNS char(15)
+AS
+BEGIN
+	DECLARE @ClientNumber char(15);
+	SET @ClientNumber = 'AA-AAAAA-AAAAA';
+	RETURN(@ClientNumber);
+END;
+GO
+
 DECLARE @VersionDescription VARCHAR(255)
 SET @VersionDescription = 'Initial creation of schema entities for manage profile feature'
 
