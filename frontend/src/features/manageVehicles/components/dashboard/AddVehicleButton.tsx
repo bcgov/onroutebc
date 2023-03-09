@@ -16,13 +16,17 @@ import { VEHICLE_TYPES_ENUM } from "../form/constants";
  * Code taken largely from MUI MenuList Composition
  * https://mui.com/material-ui/react-menu/#menulist-composition
  *
- * Currently only implements the showForm variable for PowerUnits (Trailer form is TBD)
  *
  */
 export const AddVehicleButton = ({
-  openSlidePanel,
+  setShowAddVehicle,
 }: {
-  openSlidePanel: (vehicleMode: VEHICLE_TYPES_ENUM) => void;
+  setShowAddVehicle: React.Dispatch<
+    React.SetStateAction<{
+      showAddVehicle: boolean;
+      vehicleType: VEHICLE_TYPES_ENUM;
+    }>
+  >;
 }) => {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const anchorRef = React.useRef<HTMLButtonElement>(null);
@@ -60,7 +64,7 @@ export const AddVehicleButton = ({
     _index: number,
     vehicleMode: VEHICLE_TYPES_ENUM
   ) => {
-    openSlidePanel(vehicleMode);
+    setShowAddVehicle({ showAddVehicle: true, vehicleType: vehicleMode });
     setIsMenuOpen(false);
   };
 
