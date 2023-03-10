@@ -6,15 +6,15 @@ import "./VehicleForm.scss";
 import { CreatePowerUnit } from "../../types/managevehicles";
 import { addPowerUnit, getPowerUnitTypes } from "../../apiManager/vehiclesAPI";
 import { CountryAndProvince } from "../../../../common/components/form/CountryAndProvince";
-import { DisplaySnackBarOptions } from "../../../../common/components/snackbar/CustomSnackbar2";
 import { CustomFormComponent } from "../../../../common/components/form/CustomFormComponents";
 import { VEHICLE_TYPES_ENUM } from "./constants";
+import { useContext } from "react";
+import { SnackBarContext } from "../../../../App";
 
 /**
  * Props used by the power unit form.
  */
 interface PowerUnitFormProps {
-  displaySnackBar: (options: DisplaySnackBarOptions) => void;
   /**
    * The power unit details to be displayed if in edit mode.
    * @deprecated This prop is only temporarily supported and scheduled to be removed.
@@ -39,7 +39,6 @@ interface PowerUnitFormProps {
  * @returns React component containing the form for adding or editing a power unit.
  */
 export const PowerUnitForm = ({
-  displaySnackBar,
   powerUnit,
   setShowAddVehicle,
 }: PowerUnitFormProps) => {
@@ -74,16 +73,19 @@ export const PowerUnitForm = ({
     retry: false,
   });
 
+  const snackBar = useContext(SnackBarContext);
+
   const addVehicleQuery = useMutation({
     mutationFn: addPowerUnit,
     onSuccess: (response) => {
       if (response.status === 201) {
         queryClient.invalidateQueries(["powerUnits"]);
 
-        displaySnackBar({
-          display: true,
+        snackBar.setSnackBar({
+          showSnackbar: true,
+          setShowSnackbar: () => true,
+          message: "Power unit has been added successfully",
           isError: false,
-          messageI18NKey: "vehicle.add-vehicle.add-power-unit-success",
         });
 
         setShowAddVehicle({
@@ -179,7 +181,7 @@ export const PowerUnitForm = ({
             commonFormProps={commonFormProps}
             options={{
               name: "vin",
-              rules: { required: true, minLength: 17, maxLength: 17 },
+              rules: { required: true, minLength: 6, maxLength: 6 },
               label: "VIN",
               width: formFieldStyle.width,
             }}

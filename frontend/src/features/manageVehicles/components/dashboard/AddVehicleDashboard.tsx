@@ -1,12 +1,8 @@
-import React, { useCallback, useState } from "react";
+import React from "react";
 import { VEHICLE_TYPES_ENUM } from "../form/constants";
 import { PowerUnitForm } from "../form/PowerUnitForm";
 import { TrailerForm } from "../form/TrailerForm";
 
-import {
-  CustomSnackbar2,
-  DisplaySnackBarOptions,
-} from "../../../../common/components/snackbar/CustomSnackbar2";
 import { Box, Typography } from "@mui/material";
 
 import "../../../../common/components/dashboard/Dashboard.scss";
@@ -26,33 +22,6 @@ export const AddVehicleDashboard = React.memo(
       }>
     >;
   }) => {
-    const [snackBarStatus, setSnackBarStatus] =
-      useState<DisplaySnackBarOptions>({
-        display: false,
-        messageI18NKey: "",
-        isError: false,
-      });
-
-    /**
-     * Displays a snackbar.
-     * @param display - boolean indicating if the snackbar should be displayed.
-     * @param isError - boolean indicating if the snackbar expresses an error.
-     * @param messageI18NKey - string containing the i8n message key.
-     */
-    const displaySnackBar = useCallback(
-      function (options: DisplaySnackBarOptions) {
-        const { messageI18NKey: message, isError, display } = options;
-        setSnackBarStatus(() => {
-          return {
-            messageI18NKey: message,
-            isError: isError,
-            display: display,
-          };
-        });
-      },
-      [snackBarStatus]
-    );
-
     const handleShowAddVehicle = () => {
       setShowAddVehicle({
         showAddVehicle: false,
@@ -62,10 +31,6 @@ export const AddVehicleDashboard = React.memo(
 
     return (
       <>
-        <CustomSnackbar2
-          snackBarStatus={snackBarStatus}
-          setSnackBarStatus={setSnackBarStatus}
-        />
         <Box
           className="layout-box"
           sx={{
@@ -147,10 +112,7 @@ export const AddVehicleDashboard = React.memo(
             {addVehicleMode === VEHICLE_TYPES_ENUM.TRAILER && "Trailer Details"}
           </Typography>
           {addVehicleMode === VEHICLE_TYPES_ENUM.POWER_UNIT && (
-            <PowerUnitForm
-              displaySnackBar={displaySnackBar}
-              setShowAddVehicle={setShowAddVehicle}
-            />
+            <PowerUnitForm setShowAddVehicle={setShowAddVehicle} />
           )}
           {addVehicleMode === VEHICLE_TYPES_ENUM.TRAILER && <TrailerForm />}
         </Box>
