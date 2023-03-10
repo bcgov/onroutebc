@@ -31,7 +31,7 @@ GO
 CREATE TABLE [dbo].[ORBC_COMPANY](
 	[COMPANY_ID] [int] IDENTITY(1,1) NOT NULL,
 	[COMPANY_GUID] [char](32) NULL,
-	[CLIENT_NUMBER] [char](13) NOT NULL,
+	[CLIENT_NUMBER] [char](15) NULL,
 	[LEGAL_NAME] [nvarchar](100) NOT NULL,
 	[COMPANY_DIRECTORY] [varchar](10) NOT NULL,
 	[PHYSICAL_ADDRESS_ID] [int] NOT NULL,
@@ -41,6 +41,8 @@ CREATE TABLE [dbo].[ORBC_COMPANY](
 	[FAX] [varchar](20) NULL,
 	[EMAIL] [varchar](50) NULL,
 	[PRIMARY_CONTACT_ID] [int] NULL,
+	[ACCOUNT_REGION] [char](1) NULL,
+	[ACCOUNT_SOURCE] [char](1) NULL,
 	[CONCURRENCY_CONTROL_NUMBER] [int] NULL,
 	[DB_CREATE_USERID] [varchar](63) NOT NULL,
 	[DB_CREATE_TIMESTAMP] [datetime2](7) NOT NULL,
@@ -244,6 +246,10 @@ ALTER TABLE [dbo].[ORBC_COMPANY] ADD  CONSTRAINT [DF_ORBC_COMPANY_DB_LAST_UPDATE
 GO
 ALTER TABLE [dbo].[ORBC_COMPANY] ADD  CONSTRAINT [DF_ORBC_COMPANY_DB_LAST_UPDATE_TIMESTAMP]  DEFAULT (getdate()) FOR [DB_LAST_UPDATE_TIMESTAMP]
 GO
+ALTER TABLE [dbo].[ORBC_COMPANY] ADD  CONSTRAINT [DF_ORBC_COMPANY_ACCOUNT_REGION]  DEFAULT ('B') FOR [ACCOUNT_REGION]
+GO
+ALTER TABLE [dbo].[ORBC_COMPANY] ADD  CONSTRAINT [DF_ORBC_COMPANY_ACCOUNT_SOURCE]  DEFAULT ('3') FOR [ACCOUNT_SOURCE]
+GO
 ALTER TABLE [dbo].[ORBC_COMPANY_USER] ADD  CONSTRAINT [DF_ORBC_MM_COMPANY_USER_DB_CREATE_USERID]  DEFAULT (user_name()) FOR [DB_CREATE_USERID]
 GO
 ALTER TABLE [dbo].[ORBC_COMPANY_USER] ADD  CONSTRAINT [DF_ORBC_MM_COMPANY_USER_DB_CREATE_TIMESTAMP]  DEFAULT (getdate()) FOR [DB_CREATE_TIMESTAMP]
@@ -420,6 +426,10 @@ EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'General email 
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID of the primary contact for permitting at the company (FK into the contact table)' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_COMPANY', @level2type=N'COLUMN',@level2name=N'PRIMARY_CONTACT_ID'
 GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Region of account: ''B'' is British Columbia, ''E'' is Extra-provincial (out of province, out of country), and ''R'' is Government Agency, Military, or other special case (generally no-cost permits)' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_COMPANY', @level2type=N'COLUMN',@level2name=N'ACCOUNT_REGION'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Account creation source: ''1'' is Account imported from TPS, ''2'' is Account created by PPC staff, ''3'' is Account created online using BCeID)' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_COMPANY', @level2type=N'COLUMN',@level2name=N'ACCOUNT_SOURCE'
+GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Application code is responsible for retrieving the row and then incrementing the value of the CONCURRENCY_CONTROL_NUMBER column by one prior to issuing an update. If this is done then the update will succeed, provided that the row was not updated by any other transactions in the period between the read and the update operations.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_COMPANY', @level2type=N'COLUMN',@level2name=N'CONCURRENCY_CONTROL_NUMBER'
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user or proxy account that created the record.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_COMPANY', @level2type=N'COLUMN',@level2name=N'DB_CREATE_USERID'
@@ -573,17 +583,53 @@ GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Lookup table for all possible user status values in ORBC' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_USER_STATUS'
 GO
 
-/* Create function to generate a new client number */
-/* TODO: remove 'OR ALTER' bit prior to merging into main */
-CREATE OR ALTER FUNCTION [dbo].[GenerateClientNumber] (@REGION char(1), @SOURCE char(1), @SEQ int)
+CREATE FUNCTION [dbo].[ORBC_GENERATE_CLIENT_NUMBER_FN] (@REGION char(1), @SOURCE char(1), @SEQ int)
 RETURNS char(15)
 AS
 BEGIN
 	DECLARE @ClientNumber char(15);
-	SET @ClientNumber = 'AA-AAAAA-AAAAA';
+	DECLARE @Now datetime2(7) = getdate()
+	-- We are using current time milliseconds as a substitute for random 3-digit number
+	-- Sufficient for our purposes and avoids problems with inability to use RAND from
+	-- within a user-defined function.
+	DECLARE @Milli char(3);
+	SET @Milli = FORMAT(@Now, 'fff');
+	-- Final 2 characters of the client number is the last 2 digits of the year, to
+	-- be extra sure that we won't get collisions even if we run out of sequence.
+	DECLARE @Year char(2);
+	SET @Year = FORMAT(@Now, 'yy');
+
+	SET @ClientNumber = CONCAT(@REGION, @SOURCE, '-', FORMAT(@SEQ, '000000'), '-', @Milli, @Year);
 	RETURN(@ClientNumber);
 END;
 GO
+
+CREATE OR ALTER TRIGGER [dbo].[ORBC_COMPANY_CLIENT_NUMBER_TRG] 
+   ON  [dbo].[ORBC_COMPANY] 
+   AFTER INSERT
+AS 
+BEGIN
+	SET NOCOUNT ON;
+	DECLARE @ClientNumber char(15), @Rgn char(1), @Src char(1), @SeqVal int
+	SELECT @ClientNumber = CLIENT_NUMBER FROM INSERTED
+
+	IF @ClientNumber IS NULL
+		BEGIN
+			SELECT @Rgn = ACCOUNT_REGION FROM INSERTED
+			SELECT @Src = ACCOUNT_SOURCE FROM INSERTED
+			SELECT @SeqVal = COMPANY_ID FROM INSERTED
+			DECLARE @NewClientNumber char(15)
+			SET @NewClientNumber = [dbo].[ORBC_GENERATE_CLIENT_NUMBER_FN](@Rgn, @Src, @SeqVal);
+			UPDATE [dbo].[ORBC_COMPANY] SET CLIENT_NUMBER = @NewClientNumber  WHERE COMPANY_ID = @SeqVal
+		END
+END
+GO
+
+ALTER TABLE [dbo].[ORBC_COMPANY] ENABLE TRIGGER [ORBC_COMPANY_CLIENT_NUMBER_TRG]
+GO
+
+/* Set this trigger to run first so we have the correct client number for any other triggers */
+sp_settriggerorder @triggername = 'dbo.ORBC_COMPANY_CLIENT_NUMBER_TRG', @order = 'FIRST', @stmttype = 'INSERT'
 
 DECLARE @VersionDescription VARCHAR(255)
 SET @VersionDescription = 'Initial creation of schema entities for manage profile feature'
