@@ -41,7 +41,8 @@ export class CreateTrailerDto {
 
   @AutoMap()
   @ApiProperty({
-    description: 'Short vehicle identification number (last 6 characters) for the trailer.',
+    description:
+      'Short vehicle identification number (last 6 characters) for the trailer.',
     example: '1ZVFT8',
   })
   vin: string;

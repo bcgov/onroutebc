@@ -60,7 +60,8 @@ export class Trailer extends Base {
   @AutoMap()
   @ApiProperty({
     example: '1ZVFT8',
-    description: 'Short vehicle identification number (last 6 characters) for the trailer.',
+    description:
+      'Short vehicle identification number (last 6 characters) for the trailer.',
   })
   @Column({ length: 6, name: 'VIN', nullable: false })
   vin: string;
