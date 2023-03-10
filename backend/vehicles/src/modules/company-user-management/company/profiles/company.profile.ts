@@ -45,13 +45,6 @@ export class CompanyProfile extends AutomapperProfile {
         mapper,
         CreateCompanyDto,
         Company,
-        //! Below Mapping to be changed once client number generation is implemented.
-        forMember(
-          (d) => d.clientNumber,
-          mapFrom(() => {
-            return tempClientNumber();
-          }),
-        ),
         //! Below Mapping to be removed once the login is implemented.
         forMember(
           (d) => d.companyGUID,
@@ -194,45 +187,13 @@ export class CompanyProfile extends AutomapperProfile {
         ),
       );
 
-      /**The mapping is between Company and ReadCompanyUserDto. It maps
-       * the companyAddress and mailingAddress properties of Company to instances of
-       * the ReadAddressDto DTO using the mapWith function. The
-       * mailingAddressSameAsCompanyAddress property is mapped directly using the
-       * mapFrom function. The adminUser property of ReadCompanyUserDto is ignored
-       * using the ignore function. */
-      createMap(
-        mapper,
-        Company,
-        ReadCompanyUserDto,
-        forMember(
-          (d) => d.companyAddress,
-          mapWith(ReadAddressDto, Address, (s) => s.companyAddress),
-        ),
-        forMember(
-          (d) => d.mailingAddress,
-          preCondition((s) => !s.mailingAddressSameAsCompanyAddress),
-          mapWith(ReadAddressDto, Address, (s) => s.mailingAddress),
-        ),
-        forMember(
-          (d) => d.mailingAddressSameAsCompanyAddress,
-          mapFrom((s) => s.mailingAddressSameAsCompanyAddress),
-        ),
-        forMember((d) => d.adminUser, ignore()),
-      );
+      /**
+       * The mapping is between ReadCompanyDto and ReadCompanyUserDto.
+       */
+      createMap(mapper, ReadCompanyDto, ReadCompanyUserDto);
     };
   }
 }
-
-/**
- * A temporary function to generate random client number for the time being.
- * TODO: Below function to be removed once client number generation is implemented.
- * ! Known security risk with Math.random().
- *
- * @returns A random generated client number.
- */
-const tempClientNumber = () => {
-  return Math.floor(Math.random() * 1000000000).toString();
-};
 
 /**
  * A temporary function to generate company guid for the time being.
