@@ -13,6 +13,7 @@ import { Contact } from '../../../common/entities/contact.entity';
 import { CompanyUser } from '../../users/entities/company-user.entity';
 import { CompanyDirectory } from '../../../../common/enum/directory.enum';
 import { AccountRegion } from '../../../../common/enum/account-region.enum';
+import { AccountSource } from '../../../../common/enum/account-source.enum';
 
 @Entity({ name: 'ORBC_COMPANY' })
 export class Company extends Base {
@@ -121,7 +122,7 @@ export class Company extends Base {
     enum: AccountRegion,
     length: 1,
     name: 'ACCOUNT_REGION',
-    default: 'B',
+    default: AccountRegion.BritishColumbia,
     nullable: false,
   })
   accountRegion: AccountRegion;
@@ -131,8 +132,15 @@ export class Company extends Base {
    * created by PPC staff, 3 is Account created online using BCeID).
    */
   @AutoMap()
-  @Column({ length: 1, name: 'ACCOUNT_SOURCE', default: '3', nullable: false })
-  accountSource: string;
+  @Column({
+    type: 'simple-enum',
+    enum: AccountSource,
+    length: 1,
+    name: 'ACCOUNT_SOURCE',
+    default: AccountSource.BCeID,
+    nullable: false,
+  })
+  accountSource: AccountSource;
 
   /**
    * A one-to-many relationship with the {@link CompanyUser} entity, representing the
