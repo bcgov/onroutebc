@@ -110,6 +110,23 @@ export class Company extends Base {
   primaryContact: Contact;
 
   /**
+   * Region of account: B is British Columbia, E is Extra-provincial (out of 
+   * province, out of country), and R is Government Agency, Military, or other 
+   * special case (generally no-cost permits).
+   */
+  @AutoMap()
+  @Column({ length: 1, name: 'ACCOUNT_REGION', default: 'B', nullable: false })
+  accountRegion: string;
+
+  /**
+   * Account creation source: 1 is Account imported from TPS, 2 is Account 
+   * created by PPC staff, 3 is Account created online using BCeID).
+   */
+  @AutoMap()
+  @Column({ length: 1, name: 'ACCOUNT_SOURCE', default: '3', nullable: false })
+  accountSource: string;
+
+  /**
    * A one-to-many relationship with the {@link CompanyUser} entity, representing the
    * users who belong to the company.
    */
