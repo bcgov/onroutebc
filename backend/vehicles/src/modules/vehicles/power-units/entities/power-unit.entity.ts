@@ -60,7 +60,8 @@ export class PowerUnit extends Base {
   @AutoMap()
   @ApiProperty({
     example: '1ZVFT8',
-    description: 'Short vehicle identification number (last 6 characters) for the power unit.',
+    description:
+      'Short vehicle identification number (last 6 characters) for the power unit.',
   })
   @Column({ length: 6, name: 'VIN', nullable: false })
   vin: string;
