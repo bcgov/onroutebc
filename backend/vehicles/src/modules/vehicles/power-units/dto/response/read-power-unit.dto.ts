@@ -49,7 +49,8 @@ export class ReadPowerUnitDto {
 
   @AutoMap()
   @ApiProperty({
-    description: 'Short vehicle identification number (last 6 characters) for the power unit.',
+    description:
+      'Short vehicle identification number (last 6 characters) for the power unit.',
     example: '1ZVFT8',
   })
   vin: string;
