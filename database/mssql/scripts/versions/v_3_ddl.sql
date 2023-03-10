@@ -816,8 +816,27 @@ GO
 ALTER TABLE [dbo].[ORBC_COMPANY] ENABLE TRIGGER [ORBC_COMPANY_CLIENT_NUMBER_TRG]
 GO
 
-/* Set this trigger to run first so we have the correct client number for any other triggers */
+-- Set this trigger to run first so we have the correct client number for any other triggers
 sp_settriggerorder @triggername = 'dbo.ORBC_COMPANY_CLIENT_NUMBER_TRG', @order = 'FIRST', @stmttype = 'INSERT'
+GO
+
+-- Create a function to return the full set of roles a user has in the system
+-- for a given company. Can accept DEFAULT as the companyId parameter if no
+-- company context is needed - this gives just the global roles in return.
+CREATE FUNCTION [access].[ORBC_GET_ROLES_FOR_USER_FN] (@userGuid char(32), @companyId int = 0)
+RETURNS TABLE 
+AS 
+RETURN 
+(
+	-- Union the global roles and the company-specific roles
+	SELECT DISTINCT ROLE_ID FROM ORBC_GROUP_ROLE WHERE USER_AUTH_GROUP_ID IN (
+		SELECT USER_AUTH_GROUP_ID FROM ORBC_USER WHERE ORBC_USER.USER_GUID = @userGuid
+		UNION
+		SELECT USER_AUTH_GROUP_ID FROM ORBC_COMPANY_USER WHERE ORBC_COMPANY_USER.USER_GUID = @userGuid
+		AND ORBC_COMPANY_USER.COMPANY_ID = @companyId
+	)
+)
+GO
 
 DECLARE @VersionDescription VARCHAR(255)
 SET @VersionDescription = 'Initial creation of schema entities for manage profile feature'
