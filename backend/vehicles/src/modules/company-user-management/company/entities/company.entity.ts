@@ -12,6 +12,8 @@ import { Address } from '../../../common/entities/address.entity';
 import { Contact } from '../../../common/entities/contact.entity';
 import { CompanyUser } from '../../users/entities/company-user.entity';
 import { CompanyDirectory } from '../../../../common/enum/directory.enum';
+import { AccountRegion } from '../../../../common/enum/account-region.enum';
+import { AccountSource } from '../../../../common/enum/account-source.enum';
 
 @Entity({ name: 'ORBC_COMPANY' })
 export class Company extends Base {
@@ -33,7 +35,7 @@ export class Company extends Base {
    * The ORBC client number of the company.
    */
   @AutoMap()
-  @Column({ length: 13, name: 'CLIENT_NUMBER', nullable: false })
+  @Column({ length: 15, name: 'CLIENT_NUMBER', nullable: true })
   clientNumber: string;
 
   /**
@@ -108,6 +110,37 @@ export class Company extends Base {
   @OneToOne(() => Contact, (Contact) => Contact.company, { cascade: true })
   @JoinColumn({ name: 'PRIMARY_CONTACT_ID' })
   primaryContact: Contact;
+
+  /**
+   * Region of account: B is British Columbia, E is Extra-provincial (out of
+   * province, out of country), and R is Government Agency, Military, or other
+   * special case (generally no-cost permits).
+   */
+  @AutoMap()
+  @Column({
+    type: 'simple-enum',
+    enum: AccountRegion,
+    length: 1,
+    name: 'ACCOUNT_REGION',
+    default: AccountRegion.BritishColumbia,
+    nullable: false,
+  })
+  accountRegion: AccountRegion;
+
+  /**
+   * Account creation source: 1 is Account imported from TPS, 2 is Account
+   * created by PPC staff, 3 is Account created online using BCeID).
+   */
+  @AutoMap()
+  @Column({
+    type: 'simple-enum',
+    enum: AccountSource,
+    length: 1,
+    name: 'ACCOUNT_SOURCE',
+    default: AccountSource.BCeID,
+    nullable: false,
+  })
+  accountSource: AccountSource;
 
   /**
    * A one-to-many relationship with the {@link CompanyUser} entity, representing the

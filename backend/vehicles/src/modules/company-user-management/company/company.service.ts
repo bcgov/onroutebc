@@ -86,8 +86,8 @@ export class CompanyService {
     }
 
     const readCompanyUserDto = await this.classMapper.mapAsync(
-      newCompany,
-      Company,
+      await this.findOne(newCompany.companyId),
+      ReadCompanyDto,
       ReadCompanyUserDto,
     );
 
