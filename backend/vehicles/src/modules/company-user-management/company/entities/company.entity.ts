@@ -12,6 +12,7 @@ import { Address } from '../../../common/entities/address.entity';
 import { Contact } from '../../../common/entities/contact.entity';
 import { CompanyUser } from '../../users/entities/company-user.entity';
 import { CompanyDirectory } from '../../../../common/enum/directory.enum';
+import { AccountRegion } from '../../../../common/enum/account-region.enum';
 
 @Entity({ name: 'ORBC_COMPANY' })
 export class Company extends Base {
@@ -110,16 +111,23 @@ export class Company extends Base {
   primaryContact: Contact;
 
   /**
-   * Region of account: B is British Columbia, E is Extra-provincial (out of 
-   * province, out of country), and R is Government Agency, Military, or other 
+   * Region of account: B is British Columbia, E is Extra-provincial (out of
+   * province, out of country), and R is Government Agency, Military, or other
    * special case (generally no-cost permits).
    */
   @AutoMap()
-  @Column({ length: 1, name: 'ACCOUNT_REGION', default: 'B', nullable: false })
-  accountRegion: string;
+  @Column({
+    type: 'simple-enum',
+    enum: AccountRegion,
+    length: 1,
+    name: 'ACCOUNT_REGION',
+    default: 'B',
+    nullable: false,
+  })
+  accountRegion: AccountRegion;
 
   /**
-   * Account creation source: 1 is Account imported from TPS, 2 is Account 
+   * Account creation source: 1 is Account imported from TPS, 2 is Account
    * created by PPC staff, 3 is Account created online using BCeID).
    */
   @AutoMap()

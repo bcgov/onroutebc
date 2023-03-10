@@ -22,6 +22,7 @@ import { CreateCompanyDto } from '../dto/request/create-company.dto';
 import { UpdateCompanyDto } from '../dto/request/update-company.dto';
 import { ReadCompanyDto } from '../dto/response/read-company.dto';
 import { ReadCompanyUserDto } from '../dto/response/read-company-user.dto';
+import { AccountRegion } from '../../../../common/enum/account-region.enum';
 
 @Injectable()
 export class CompanyProfile extends AutomapperProfile {
@@ -76,6 +77,14 @@ export class CompanyProfile extends AutomapperProfile {
           (d) => d.companyDirectory,
           mapWithArguments((source, { companyDirectory }) => {
             return companyDirectory;
+          }),
+        ),
+        forMember(
+          (d) => d.accountRegion,
+          mapFrom((s) => {
+            return s.companyAddress.provinceCode === 'BC-CA'
+              ? AccountRegion.BritishColumbia
+              : AccountRegion.ExtraProvincial;
           }),
         ),
       );
@@ -147,6 +156,14 @@ export class CompanyProfile extends AutomapperProfile {
           (d) => d.primaryContact.contactId,
           mapWithArguments((source, { contactId }) => {
             return contactId;
+          }),
+        ),
+        forMember(
+          (d) => d.accountRegion,
+          mapFrom((s) => {
+            return s.companyAddress.provinceCode === 'BC-CA'
+              ? AccountRegion.BritishColumbia
+              : AccountRegion.ExtraProvincial;
           }),
         ),
       );
