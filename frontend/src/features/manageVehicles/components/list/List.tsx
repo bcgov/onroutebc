@@ -114,19 +114,29 @@ export const List = memo(() => {
             <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
               <Tooltip arrow placement="left" title="Edit">
                 {/*tslint:disable-next-line*/}
-                <IconButton onClick={() => table.setEditingRow(row)}>
+                <IconButton
+                  onClick={() => table.setEditingRow(row)}
+                  disabled={true}
+                >
                   <Edit />
                 </IconButton>
               </Tooltip>
               <Tooltip arrow placement="top" title="Copy">
                 {/*tslint:disable-next-line*/}
-                <IconButton onClick={() => table.setEditingRow(row)}>
+                <IconButton
+                  onClick={() => table.setEditingRow(row)}
+                  disabled={true}
+                >
                   <ContentCopy />
                 </IconButton>
               </Tooltip>
               <Tooltip arrow placement="top" title="Delete">
                 {/*tslint:disable-next-line*/}
-                <IconButton color="error" onClick={() => handleDeleteRow(row)}>
+                <IconButton
+                  color="error"
+                  onClick={() => handleDeleteRow(row)}
+                  disabled={true}
+                >
                   <Delete />
                 </IconButton>
               </Tooltip>
