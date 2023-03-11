@@ -8,6 +8,7 @@ import { Box, Typography } from "@mui/material";
 import "../../../../common/components/dashboard/Dashboard.scss";
 import { Banner } from "../../../../common/components/dashboard/Banner";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
+import { InfoBcGovBanner } from "../../../../common/components/alertBanners/AlertBanners";
 
 export const AddVehicleDashboard = React.memo(
   ({
@@ -95,14 +96,28 @@ export const AddVehicleDashboard = React.memo(
           className="layout-box"
           sx={{
             display: "flex",
-            paddingTop: "4px",
+            alignItems: "center",
+            backgroundColor: BC_COLOURS.white,
+          }}
+        >
+          <InfoBcGovBanner
+            width="880px"
+            description="Please note, unless stated otherwise, all fields are mandatory."
+          />
+        </Box>
+
+        <Box
+          className="layout-box"
+          sx={{
+            display: "flex",
+            paddingTop: "24px",
             backgroundColor: BC_COLOURS.white,
           }}
         >
           <Typography
             variant={"h2"}
             sx={{
-              marginRight: "162px",
+              marginRight: "200px",
               marginTop: "0px",
               paddingTop: "0px",
             }}

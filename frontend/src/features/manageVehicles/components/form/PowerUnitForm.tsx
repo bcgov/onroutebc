@@ -184,6 +184,7 @@ export const PowerUnitForm = ({
               rules: { required: true, minLength: 6, maxLength: 6 },
               label: "VIN",
               width: formFieldStyle.width,
+              customHelperText: "last 6 digits",
             }}
             i18options={{
               label_i18: "vehicle.power-unit.vin",

@@ -66,6 +66,7 @@ interface CustomFormOptionsProps<T extends FieldValues> {
   inValidMessage?: string;
   query?: UseQueryResult<PowerUnitType[], unknown>;
   displayAs?: "phone";
+  customHelperText?: string;
 }
 
 /**
@@ -92,6 +93,7 @@ interface CustomFormOptionsProps<T extends FieldValues> {
  * @param query TanStack React Query integration object (https://tanstack.com/query/v4/docs/react/reference/useQuery)
  * @param i18options Optional Internationalization integration using i18
  * @param displayAs Type of the data to be formatted and displayed as to the user
+ * @param customHelperText Non-bold text to appear in parenthesis beside the label
  *
  * @returns An onRouteBc customized react form component
  */
@@ -109,6 +111,7 @@ export const CustomFormComponent = <
     inValidMessage,
     query,
     displayAs: displayAs,
+    customHelperText,
   },
   i18options,
 }: CustomFormComponentProps<T>): JSX.Element => {
@@ -130,6 +133,11 @@ export const CustomFormComponent = <
                 {i18options?.label_i18 ? t(i18options?.label_i18) : label}
                 {!rules.required && (
                   <span style={{ fontWeight: "normal" }}> (optional)</span>
+                )}
+                {customHelperText && (
+                  <span style={{ fontWeight: "normal" }}>
+                    {` (${customHelperText})`}
+                  </span>
                 )}
               </FormLabel>
               {type === "select" ? (
