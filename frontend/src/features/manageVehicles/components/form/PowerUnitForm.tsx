@@ -213,7 +213,7 @@ export const PowerUnitForm = ({
             options={{
               name: "powerUnitTypeCode",
               rules: { required: true },
-              label: "Power Unit Type",
+              label: "Vehicle Sub-type",
               width: formFieldStyle.width,
               query: powerUnitTypesQuery,
             }}
