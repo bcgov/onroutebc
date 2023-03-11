@@ -35,7 +35,7 @@ export class Company extends Base {
    * The ORBC client number of the company.
    */
   @AutoMap()
-  @Column({ length: 15, name: 'CLIENT_NUMBER', nullable: true })
+  @Column({ length: 13, name: 'CLIENT_NUMBER', nullable: true })
   clientNumber: string;
 
   /**
