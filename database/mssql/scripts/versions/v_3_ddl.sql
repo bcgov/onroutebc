@@ -31,7 +31,7 @@ GO
 CREATE TABLE [dbo].[ORBC_COMPANY](
 	[COMPANY_ID] [int] IDENTITY(1,1) NOT NULL,
 	[COMPANY_GUID] [char](32) NULL,
-	[CLIENT_NUMBER] [char](15) NULL,
+	[CLIENT_NUMBER] [char](13) NULL,
 	[LEGAL_NAME] [nvarchar](100) NOT NULL,
 	[COMPANY_DIRECTORY] [varchar](10) NOT NULL,
 	[PHYSICAL_ADDRESS_ID] [int] NOT NULL,
@@ -584,22 +584,19 @@ EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Lookup table f
 GO
 
 CREATE FUNCTION [dbo].[ORBC_GENERATE_CLIENT_NUMBER_FN] (@REGION char(1), @SOURCE char(1), @SEQ int)
-RETURNS char(15)
+RETURNS char(13)
 AS
 BEGIN
-	DECLARE @ClientNumber char(15);
+	DECLARE @ClientNumber char(13);
 	DECLARE @Now datetime2(7) = getdate()
 	-- We are using current time milliseconds as a substitute for random 3-digit number
 	-- Sufficient for our purposes and avoids problems with inability to use RAND from
 	-- within a user-defined function.
 	DECLARE @Milli char(3);
 	SET @Milli = FORMAT(@Now, 'fff');
-	-- Final 2 characters of the client number is the last 2 digits of the year, to
-	-- be extra sure that we won't get collisions even if we run out of sequence.
-	DECLARE @Year char(2);
-	SET @Year = FORMAT(@Now, 'yy');
 
-	SET @ClientNumber = CONCAT(@REGION, @SOURCE, '-', FORMAT(@SEQ, '000000'), '-', @Milli, @Year);
+
+	SET @ClientNumber = CONCAT(@REGION, @SOURCE, '-', FORMAT(@SEQ, '000000'), '-', @Milli);
 	RETURN(@ClientNumber);
 END;
 GO
@@ -610,7 +607,7 @@ CREATE OR ALTER TRIGGER [dbo].[ORBC_COMPANY_CLIENT_NUMBER_TRG]
 AS 
 BEGIN
 	SET NOCOUNT ON;
-	DECLARE @ClientNumber char(15), @Rgn char(1), @Src char(1), @SeqVal int
+	DECLARE @ClientNumber char(13), @Rgn char(1), @Src char(1), @SeqVal int
 	SELECT @ClientNumber = CLIENT_NUMBER FROM INSERTED
 
 	IF @ClientNumber IS NULL
@@ -618,7 +615,7 @@ BEGIN
 			SELECT @Rgn = ACCOUNT_REGION FROM INSERTED
 			SELECT @Src = ACCOUNT_SOURCE FROM INSERTED
 			SELECT @SeqVal = COMPANY_ID FROM INSERTED
-			DECLARE @NewClientNumber char(15)
+			DECLARE @NewClientNumber char(13)
 			SET @NewClientNumber = [dbo].[ORBC_GENERATE_CLIENT_NUMBER_FN](@Rgn, @Src, @SeqVal);
 			UPDATE [dbo].[ORBC_COMPANY] SET CLIENT_NUMBER = @NewClientNumber  WHERE COMPANY_ID = @SeqVal
 		END
