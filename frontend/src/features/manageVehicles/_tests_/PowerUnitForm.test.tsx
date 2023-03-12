@@ -7,15 +7,7 @@ import { PowerUnitForm } from "../components/form/PowerUnitForm";
 const setStateMock = vi.fn();
 const manageVehicleQueryClient = new QueryClient();
 
-const mockConfig = () => {
-  Object.defineProperty(window, "envConfig", {
-    value: {
-      VITE_DEPLOY_ENVIRONMENT: "docker",
-      VITE_API_VEHICLE_URL: "http://localhost:5000",
-      VITE_API_MANAGE_PROFILE_URL: "http://localhost:5000",
-    },
-  });
-};
+const envConfig = vi.fn();
 
 vi.mock("react-i18next", () => ({
   // this mock makes sure any components using the translate hook can use it without a warning being shown
@@ -47,27 +39,21 @@ const sleep = (ms: number) => {
 
 beforeEach(() => {
   vi.resetModules();
+  renderComponent();
 });
 
 test("Should render Power Unit Form without breaking", () => {
-  mockConfig();
-  renderComponent();
   expect(
     screen.getByText("vehicle.power-unit.unit-number")
   ).toBeInTheDocument();
 });
 
 test("Should show error when submitting empty VIN field", async () => {
-  mockConfig();
-  renderComponent();
   clickSubmit();
   expect(await screen.findByTestId("alert-vin")).toBeInTheDocument();
 });
 
 test("Should show error when submitting VIN with 5 characters", async () => {
-  mockConfig();
-  renderComponent();
-
   const vinTextField = screen.getByRole("textbox", {
     name: /vin/i,
   });
@@ -86,9 +72,6 @@ test("Should show error when submitting VIN with 5 characters", async () => {
 });
 
 test("Should NOT show error when submitting VIN with 6 characters", async () => {
-  mockConfig();
-  renderComponent();
-
   const vinTextField = screen.getByRole("textbox", {
     name: /vin/i,
   });
