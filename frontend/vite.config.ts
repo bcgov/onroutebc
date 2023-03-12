@@ -16,7 +16,7 @@ export default defineConfig({
   },
   plugins: [eslint(), react(), viteTsconfigPaths(), svgrPlugin()],
   test: {
-    globals: true,
+    globals: false,
     environment: "jsdom",
     setupFiles: "./src/setupTests.ts",
     coverage: {
