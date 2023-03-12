@@ -11,6 +11,11 @@ const manageVehicleQueryClient = new QueryClient();
 vi.mock("../apiManager/endpoints/endpoints");
 vi.mock("../apiManager/vehiclesAPI");
 
+vi.mock("../apiManager/endpoints/endpoints", () => ({
+  envConfig: jest.fn(),
+  VEHICLE_URL: jest.fn(),
+}));
+
 // const mock = () => {
 //   vi.mock("../apiManager/endpoints/endpoints", () => {
 //     const envConfig = vi.fn();
