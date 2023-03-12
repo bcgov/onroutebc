@@ -185,10 +185,7 @@ export const PowerUnitForm = ({
               label: "VIN",
               width: formFieldStyle.width,
               customHelperText: "last 6 digits",
-            }}
-            i18options={{
-              label_i18: "vehicle.power-unit.vin",
-              inValidMessage_i18: "vehicle.power-unit.required",
+              inValidMessage: "VIN is required.",
             }}
           />
 
@@ -277,12 +274,12 @@ export const PowerUnitForm = ({
         </Button>
         <Button
           key="add-vehicle-button"
-          aria-label="Add Vehicle"
+          aria-label="Add To Inventory"
           variant="contained"
           color="primary"
           onClick={handleSubmit(onAddVehicle)}
         >
-          Add to Inventory
+          Add To Inventory
         </Button>
       </Box>
     </div>

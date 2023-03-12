@@ -32,9 +32,23 @@ interface CountryAndProvinceProps {
    * The value for the width of the select box
    */
   width?: string | null;
+
+  /**
+   * React Hook Form rules. Example: rules={{ required: false }}
+   */
   rules?: RegisterOptions;
+
+  /**
+   * Name used for the API call. Example: countryField={"primaryContact.countryCode"}
+   */
   countryField?: string;
   provinceField?: string;
+
+  /**
+   * Name of the feature that the field belongs to.
+   * This name is used for Id's and keys.
+   * Example: feature={"profile"}
+   */
   feature?: string;
 }
 

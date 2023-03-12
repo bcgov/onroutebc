@@ -7,6 +7,7 @@ import {
   Select,
   MenuItem,
   Checkbox,
+  TextField,
 } from "@mui/material";
 import { UseQueryResult } from "@tanstack/react-query";
 import { ChangeEvent, InputHTMLAttributes } from "react";
@@ -162,7 +163,7 @@ export const CustomFormComponent = <
               )}
 
               {invalid && (
-                <FormHelperText error>
+                <FormHelperText data-testid={`alert-${name}`} error>
                   {i18options?.inValidMessage_i18
                     ? t(i18options?.inValidMessage_i18, {
                         fieldName: label,
@@ -256,10 +257,13 @@ const CustomInputComponent = <T extends CompanyProfile | CreatePowerUnit>(
     return <PhoneNumberInput {...props} />;
   }
 
+  // Add aria-label to input prop for Jest testing purposes
+  const updatedInputProps: any = props.inputProps;
+  updatedInputProps["aria-label"] = props.name;
+
   return (
     <OutlinedInput
-      aria-labelledby={`${props.feature}-${props.name}-label`}
-      inputProps={props.inputProps}
+      inputProps={updatedInputProps}
       sx={{
         "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
           borderColor: props.invalid
