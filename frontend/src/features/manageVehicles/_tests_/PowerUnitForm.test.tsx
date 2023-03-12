@@ -7,6 +7,13 @@ import { PowerUnitForm } from "../components/form/PowerUnitForm";
 const setStateMock = vi.fn();
 const manageVehicleQueryClient = new QueryClient();
 
+Object.defineProperty(window, "envConfig", {
+  value: {
+    VITE_DEPLOY_ENVIRONMENT: "docker",
+    VITE_API_VEHICLE_URL: "http://localhost:5000",
+  },
+});
+
 vi.mock("react-i18next", () => ({
   // this mock makes sure any components using the translate hook can use it without a warning being shown
   useTranslation: () => {
