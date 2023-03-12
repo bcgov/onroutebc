@@ -2,10 +2,22 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import user from "@testing-library/user-event";
 import { vi } from "vitest";
+import { VEHICLES_API } from "../apiManager/endpoints/endpoints";
 import { PowerUnitForm } from "../components/form/PowerUnitForm";
 
 const setStateMock = vi.fn();
 const manageVehicleQueryClient = new QueryClient();
+
+vi.mock("../apiManager/endpoints/endpoints");
+vi.mock("../apiManager/vehiclesAPI");
+
+// const mock = () => {
+//   vi.mock("../apiManager/endpoints/endpoints", () => {
+//     const envConfig = vi.fn();
+//     const VEHICLE_URL = vi.fn();
+//     return { VEHICLE_URL, envConfig };
+//   });
+// }
 
 vi.mock("react-i18next", () => ({
   // this mock makes sure any components using the translate hook can use it without a warning being shown
