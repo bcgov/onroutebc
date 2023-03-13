@@ -4,7 +4,15 @@
 // learn more: https://github.com/testing-library/jest-dom
 import "@testing-library/jest-dom";
 
-import { afterAll, beforeAll } from "vitest";
+(global as any).envConfig = (() => {
+  return {
+    VITE_DEPLOY_ENVIRONMENT: "docker",
+    VITE_API_VEHICLE_URL: "http://localhost:5000",
+    VITE_API_MANAGE_PROFILE_URL: "http://localhost:5000",
+  };
+})();
+
+// import { afterAll, beforeAll } from "vitest";
 
 // declare global {
 //   namespace NodeJS {
@@ -16,7 +24,11 @@ import { afterAll, beforeAll } from "vitest";
 //   }
 // }
 
-// const globalAny = global;
+// const globalAny : any = global;
+
+// globalAny.window.jsdata = {
+//   read_only: false
+// }
 
 // beforeAll(() => {
 //   global.window.exports = (() => {
