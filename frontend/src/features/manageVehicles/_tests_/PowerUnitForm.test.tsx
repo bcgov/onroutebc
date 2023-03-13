@@ -3,30 +3,25 @@ import { act, fireEvent, render, screen } from "@testing-library/react";
 import user from "@testing-library/user-event";
 import { vi } from "vitest";
 
-vi.mock("../apiManager/endpoints/endpoints", () => ({
-  VEHICLE_URL: "test",
-  VEHICLES_API: "test",
-}));
+// vi.mock("../apiManager/endpoints/endpoints", () => ({
+//   VEHICLE_URL: "test",
+//   VEHICLES_API: "test",
+// }));
 
-vi.mock("../apiManager/vehiclesAPI", () => ({
-  getAllPowerUnits: vi.fn(),
-  getPowerUnitTypes: vi.fn(),
-  addPowerUnit: vi.fn(),
-  updatePowerUnit: vi.fn(),
-}));
+// vi.mock("../apiManager/vehiclesAPI", () => ({
+//   getAllPowerUnits: vi.fn(),
+//   getPowerUnitTypes: vi.fn(),
+//   addPowerUnit: vi.fn(),
+//   updatePowerUnit: vi.fn(),
+// }));
 
-const globalAny: any = global;
+// import * as endpoints from "../apiManager/endpoints/endpoints";
+// import * as vehiclesAPI from "../apiManager/vehiclesAPI";
 
-import * as endpoints from "../apiManager/endpoints/endpoints";
-import * as vehiclesAPI from "../apiManager/vehiclesAPI";
-
-console.log("endpoints", endpoints);
-console.log("vehiclesAPI", vehiclesAPI);
-
-test("direct global variable", () => {
-  expect(endpoints.VEHICLE_URL).toBe("test");
-  expect(endpoints.VEHICLES_API).toBe("test");
-});
+// test("direct global variable", () => {
+//   expect(endpoints.VEHICLE_URL).toBe("test");
+//   expect(endpoints.VEHICLES_API).toBe("test");
+// });
 
 import { PowerUnitForm } from "../components/form/PowerUnitForm";
 
@@ -72,45 +67,45 @@ test("Should render Power Unit Form without breaking", () => {
   ).toBeInTheDocument();
 });
 
-// test("Should show error when submitting empty VIN field", async () => {
-//   clickSubmit();
-//   expect(await screen.findByTestId("alert-vin")).toBeInTheDocument();
-// });
+test("Should show error when submitting empty VIN field", async () => {
+  clickSubmit();
+  expect(await screen.findByTestId("alert-vin")).toBeInTheDocument();
+});
 
-// test("Should show error when submitting VIN with 5 characters", async () => {
-//   const vinTextField = screen.getByRole("textbox", {
-//     name: /vin/i,
-//   });
+test("Should show error when submitting VIN with 5 characters", async () => {
+  const vinTextField = screen.getByRole("textbox", {
+    name: /vin/i,
+  });
 
-//   await act(async () => {
-//     fireEvent.change(vinTextField, { target: { value: "12345" } });
-//   });
+  await act(async () => {
+    fireEvent.change(vinTextField, { target: { value: "12345" } });
+  });
 
-//   expect(vinTextField).toHaveValue("12345");
+  expect(vinTextField).toHaveValue("12345");
 
-//   clickSubmit();
+  clickSubmit();
 
-//   expect(await screen.findByTestId("alert-vin")).toHaveTextContent(
-//     "VIN is required."
-//   );
-// });
+  expect(await screen.findByTestId("alert-vin")).toHaveTextContent(
+    "VIN is required."
+  );
+});
 
-// test("Should NOT show error when submitting VIN with 6 characters", async () => {
-//   const vinTextField = screen.getByRole("textbox", {
-//     name: /vin/i,
-//   });
+test("Should NOT show error when submitting VIN with 6 characters", async () => {
+  const vinTextField = screen.getByRole("textbox", {
+    name: /vin/i,
+  });
 
-//   await act(async () => {
-//     fireEvent.change(vinTextField, { target: { value: "123456" } });
-//   });
+  await act(async () => {
+    fireEvent.change(vinTextField, { target: { value: "123456" } });
+  });
 
-//   expect(vinTextField).toHaveValue("123456");
+  expect(vinTextField).toHaveValue("123456");
 
-//   clickSubmit();
+  clickSubmit();
 
-//   await act(async () => {
-//     await sleep(1000);
-//   });
+  await act(async () => {
+    await sleep(1000);
+  });
 
-//   expect(screen.queryByTestId("alert-vin")).toBeNull();
-// });
+  expect(screen.queryByTestId("alert-vin")).toBeNull();
+});
