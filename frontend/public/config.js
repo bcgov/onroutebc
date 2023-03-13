@@ -14,7 +14,7 @@
  * Currently, the default values shown below are used
  * in the docker compose environment
  */
-const envConfig = (() => {
+export const envConfig = (() => {
   return {
     VITE_DEPLOY_ENVIRONMENT: "docker",
     VITE_API_VEHICLE_URL: "http://localhost:5000",

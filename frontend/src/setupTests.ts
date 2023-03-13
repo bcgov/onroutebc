@@ -4,20 +4,30 @@
 // learn more: https://github.com/testing-library/jest-dom
 import "@testing-library/jest-dom";
 
-const globalAny: any = global;
-
-// setup-teardown-hook.js
 import { afterAll, beforeAll } from "vitest";
-beforeAll(() => {
-  globalAny.window.envConfig = (() => {
-    return {
-      VITE_DEPLOY_ENVIRONMENT: "docker",
-      VITE_API_VEHICLE_URL: "http://localhost:5000",
-      VITE_API_MANAGE_PROFILE_URL: "http://localhost:5000",
-    };
-  })();
-});
 
-afterAll(() => {
-  delete globalAny.window.envConfig;
-});
+// declare global {
+//   namespace NodeJS {
+//     interface Global {
+//        document: Document;
+//        window: Window;
+//        navigator: Navigator;
+//     }
+//   }
+// }
+
+// const globalAny = global;
+
+// beforeAll(() => {
+//   global.window.exports = (() => {
+//     return {
+//       VITE_DEPLOY_ENVIRONMENT: "docker",
+//       VITE_API_VEHICLE_URL: "http://localhost:5000",
+//       VITE_API_MANAGE_PROFILE_URL: "http://localhost:5000",
+//     };
+//   })();
+// });
+
+// afterAll(() => {
+//   delete globalAny.envConfig;
+// });
