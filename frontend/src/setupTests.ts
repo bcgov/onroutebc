@@ -4,14 +4,12 @@
 // learn more: https://github.com/testing-library/jest-dom
 import "@testing-library/jest-dom";
 
-import "dotenv/config";
-
 const globalAny: any = global;
 
 // setup-teardown-hook.js
 import { afterAll, beforeAll } from "vitest";
 beforeAll(() => {
-  globalAny.envConfig = (() => {
+  globalAny.window.envConfig = (() => {
     return {
       VITE_DEPLOY_ENVIRONMENT: "docker",
       VITE_API_VEHICLE_URL: "http://localhost:5000",
@@ -21,5 +19,5 @@ beforeAll(() => {
 });
 
 afterAll(() => {
-  delete globalAny.envConfig;
+  delete globalAny.window.envConfig;
 });
