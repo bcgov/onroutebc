@@ -203,6 +203,9 @@ const CustomSelectComponent = <T extends CompanyProfile | CreatePowerUnit>({
   return (
     <Select
       aria-labelledby={`${feature}-${name}-label`}
+      inputProps={{
+        "aria-label": name,
+      }}
       defaultValue={""}
       {...register(name, rules)}
       MenuProps={{

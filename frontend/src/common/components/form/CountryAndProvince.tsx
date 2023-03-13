@@ -160,6 +160,9 @@ export const CountryAndProvince = ({
                 </FormLabel>
                 <Select
                   aria-labelledby={`${feature}-country-label`}
+                  inputProps={{
+                    "aria-label": "country",
+                  }}
                   defaultValue={country || ""}
                   {...register(countryField, {
                     required: rules.required,
@@ -215,6 +218,9 @@ export const CountryAndProvince = ({
                   </FormLabel>
                   <Select
                     aria-labelledby={`${feature}-province-label`}
+                    inputProps={{
+                      "aria-label": provinceField,
+                    }}
                     defaultValue={province || ""}
                     {...register(provinceField, {
                       required: shouldDisplayProvince && rules.required,
