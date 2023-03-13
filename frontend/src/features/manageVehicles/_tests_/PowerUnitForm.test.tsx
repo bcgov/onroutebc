@@ -1,18 +1,32 @@
+vi.mock("../../../../public/config", () => ({
+  envConfig: vi.fn(),
+}));
+
+vi.mock("../apiManager/endpoints/endpoints", () => {
+  return {
+    VEHICLE_URL: "http://localhost:5000",
+    VEHICLES_API: vi.fn(),
+  };
+});
+
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import user from "@testing-library/user-event";
 import { vi } from "vitest";
 import { PowerUnitForm } from "../components/form/PowerUnitForm";
 
-import * as API from "../apiManager/endpoints/endpoints";
+import * as endpoints from "../apiManager/endpoints/endpoints";
+import * as vehiclesAPI from "../apiManager/vehiclesAPI";
+import { envConfig } from "../../../../public/config";
 
 const setStateMock = vi.fn();
-
 const queryClient = new QueryClient();
 
-vi.spyOn(API, "VEHICLE_URL").mockReturnValue("http://localhost:5000");
+vi.mock("../apiManager/endpoints/endpoints", () => ({
+  envConfig: vi.fn(),
+}));
 
-vi.mock("../apiManager/vehiclesAPI.tsx", () => ({
+vi.mock("../apiManager/vehiclesAPI", () => ({
   getAllPowerUnits: vi.fn(),
   getPowerUnitTypes: vi.fn(),
   addPowerUnit: vi.fn(),
@@ -31,6 +45,11 @@ vi.mock("react-i18next", () => ({
   },
 }));
 
+beforeEach(() => {
+  vi.resetModules();
+  renderComponent();
+});
+
 const renderComponent = () => {
   render(
     <QueryClientProvider client={queryClient}>
@@ -46,11 +65,6 @@ const clickSubmit = () => {
 const sleep = (ms: number) => {
   return new Promise((resolve) => setTimeout(resolve, ms));
 };
-
-beforeEach(() => {
-  vi.resetModules();
-  renderComponent();
-});
 
 test("Should render Power Unit Form without breaking", () => {
   expect(
