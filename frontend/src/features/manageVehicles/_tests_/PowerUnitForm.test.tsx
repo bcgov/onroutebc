@@ -17,7 +17,9 @@ import { PowerUnitForm } from "../components/form/PowerUnitForm";
 
 import * as endpoints from "../apiManager/endpoints/endpoints";
 import * as vehiclesAPI from "../apiManager/vehiclesAPI";
-import { envConfig } from "../../../../public/config";
+
+console.log("endpoints", endpoints);
+console.log("vehiclesAPI", vehiclesAPI);
 
 const setStateMock = vi.fn();
 const queryClient = new QueryClient();
