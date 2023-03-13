@@ -2,14 +2,17 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import user from "@testing-library/user-event";
 import { vi } from "vitest";
-import { VEHICLES_API } from "../apiManager/endpoints/endpoints";
 import { PowerUnitForm } from "../components/form/PowerUnitForm";
 
 const setStateMock = vi.fn();
-const manageVehicleQueryClient = new QueryClient();
 
-vi.mock("@tanstack/react-query", () => ({
-  useQuery: vi.fn(),
+const queryClient = new QueryClient();
+
+vi.mock("../apiManager/vehiclesAPI", () => ({
+  getAllPowerUnits: vi.fn(),
+  getPowerUnitTypes: vi.fn(),
+  addPowerUnit: vi.fn(),
+  updatePowerUnit: vi.fn(),
 }));
 
 vi.mock("react-i18next", () => ({
@@ -26,7 +29,7 @@ vi.mock("react-i18next", () => ({
 
 const renderComponent = () => {
   render(
-    <QueryClientProvider client={manageVehicleQueryClient}>
+    <QueryClientProvider client={queryClient}>
       <PowerUnitForm setShowAddVehicle={setStateMock} />
     </QueryClientProvider>
   );
