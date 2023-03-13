@@ -4,11 +4,15 @@ import user from "@testing-library/user-event";
 import { vi } from "vitest";
 import { PowerUnitForm } from "../components/form/PowerUnitForm";
 
+import * as API from "../apiManager/endpoints/endpoints";
+
 const setStateMock = vi.fn();
 
 const queryClient = new QueryClient();
 
-vi.mock("../apiManager/vehiclesAPI", () => ({
+vi.spyOn(API, "VEHICLE_URL").mockReturnValue("http://localhost:5000");
+
+vi.mock("../apiManager/vehiclesAPI.tsx", () => ({
   getAllPowerUnits: vi.fn(),
   getPowerUnitTypes: vi.fn(),
   addPowerUnit: vi.fn(),
