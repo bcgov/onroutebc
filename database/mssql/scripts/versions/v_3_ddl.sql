@@ -1,3 +1,6 @@
+CREATE SCHEMA [access]
+GO
+
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -31,7 +34,7 @@ GO
 CREATE TABLE [dbo].[ORBC_COMPANY](
 	[COMPANY_ID] [int] IDENTITY(1,1) NOT NULL,
 	[COMPANY_GUID] [char](32) NULL,
-	[CLIENT_NUMBER] [char](15) NULL,
+	[CLIENT_NUMBER] [char](13) NULL,
 	[LEGAL_NAME] [nvarchar](100) NOT NULL,
 	[COMPANY_DIRECTORY] [varchar](10) NOT NULL,
 	[PHYSICAL_ADDRESS_ID] [int] NOT NULL,
@@ -125,6 +128,25 @@ SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
+CREATE TABLE [access].[ORBC_GROUP_ROLE](
+	[GROUP_ROLE_ID] [int] IDENTITY(1,1) NOT NULL,
+	[USER_AUTH_GROUP_ID] [varchar](10) NOT NULL,
+	[ROLE_ID] [varchar](50) NOT NULL,
+	[CONCURRENCY_CONTROL_NUMBER] [int] NULL,
+	[DB_CREATE_USERID] [varchar](63) NOT NULL,
+	[DB_CREATE_TIMESTAMP] [datetime2](7) NOT NULL,
+	[DB_LAST_UPDATE_USERID] [varchar](63) NOT NULL,
+	[DB_LAST_UPDATE_TIMESTAMP] [datetime2](7) NOT NULL,
+ CONSTRAINT [PK_ORBC_GROUP_ROLE] PRIMARY KEY CLUSTERED 
+(
+	[GROUP_ROLE_ID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
 CREATE TABLE [dbo].[ORBC_PENDING_USER](
 	[COMPANY_ID] [int] NOT NULL,
 	[USERNAME] [varchar](50) NOT NULL,
@@ -151,6 +173,7 @@ CREATE TABLE [dbo].[ORBC_USER](
 	[USER_DIRECTORY] [varchar](10) NOT NULL,
 	[STATUS_CODE] [varchar](10) NOT NULL,
 	[CONTACT_ID] [int] NOT NULL,
+	[USER_AUTH_GROUP_ID] [varchar](10) NULL,
 	[CONCURRENCY_CONTROL_NUMBER] [int] NULL,
 	[DB_CREATE_USERID] [varchar](63) NOT NULL,
 	[DB_CREATE_TIMESTAMP] [datetime2](7) NOT NULL,
@@ -184,7 +207,25 @@ SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[ORBC_VT_USER_AUTH_GROUP](
+CREATE TABLE [access].[ORBC_VT_ROLE](
+	[ROLE_ID] [varchar](50) NOT NULL,
+	[ROLE_DESCRIPTION] [varchar](200) NULL,
+	[CONCURRENCY_CONTROL_NUMBER] [int] NULL,
+	[DB_CREATE_USERID] [varchar](63) NOT NULL,
+	[DB_CREATE_TIMESTAMP] [datetime2](7) NOT NULL,
+	[DB_LAST_UPDATE_USERID] [varchar](63) NOT NULL,
+	[DB_LAST_UPDATE_TIMESTAMP] [datetime2](7) NOT NULL,
+ CONSTRAINT [PK_ORBC_VT_ROLE] PRIMARY KEY CLUSTERED 
+(
+	[ROLE_ID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [access].[ORBC_VT_USER_AUTH_GROUP](
 	[GROUP_ID] [varchar](10) NOT NULL,
 	[DISPLAY_NAME] [varchar](25) NULL,
 	[DESCRIPTION] [varchar](100) NULL,
@@ -217,18 +258,6 @@ CREATE TABLE [dbo].[ORBC_VT_USER_STATUS](
 	[STATUS_CODE] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
-GO
-INSERT [dbo].[ORBC_VT_DIRECTORY] ([DIRECTORY_CODE], [DIRECTORY_NAME], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'BBCEID', N'Business BCeID', NULL, N'dbo', CAST(N'2023-01-12T00:13:58.2200000' AS DateTime2), N'dbo', CAST(N'2023-01-12T00:13:58.2200000' AS DateTime2))
-INSERT [dbo].[ORBC_VT_DIRECTORY] ([DIRECTORY_CODE], [DIRECTORY_NAME], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'BCEID', N'BCeID', NULL, N'dbo', CAST(N'2023-01-12T00:13:58.2366667' AS DateTime2), N'dbo', CAST(N'2023-01-12T00:13:58.2366667' AS DateTime2))
-INSERT [dbo].[ORBC_VT_DIRECTORY] ([DIRECTORY_CODE], [DIRECTORY_NAME], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'BCSC', N'BC Services Card', NULL, N'dbo', CAST(N'2023-01-12T00:13:58.2466667' AS DateTime2), N'dbo', CAST(N'2023-01-12T00:13:58.2466667' AS DateTime2))
-INSERT [dbo].[ORBC_VT_DIRECTORY] ([DIRECTORY_CODE], [DIRECTORY_NAME], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'ORBC', N'onRouteBC', NULL, N'dbo', CAST(N'2023-01-12T00:13:58.2566667' AS DateTime2), N'dbo', CAST(N'2023-01-12T00:13:58.2566667' AS DateTime2))
-GO
-INSERT [dbo].[ORBC_VT_USER_AUTH_GROUP] ([GROUP_ID], [DISPLAY_NAME], [DESCRIPTION], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'ADMIN', N'Administrator', N'Administrator of the onRouteBC company', NULL, N'dbo', CAST(N'2023-01-18T19:31:29.3766667' AS DateTime2), N'dbo', CAST(N'2023-01-18T19:31:29.3766667' AS DateTime2))
-INSERT [dbo].[ORBC_VT_USER_AUTH_GROUP] ([GROUP_ID], [DISPLAY_NAME], [DESCRIPTION], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'CVCLIENT', N'CV Client', N'Commercial Vehicle client allowed to apply for permits', NULL, N'dbo', CAST(N'2023-01-18T19:31:29.3933333' AS DateTime2), N'dbo', CAST(N'2023-01-18T19:31:29.3933333' AS DateTime2))
-GO
-INSERT [dbo].[ORBC_VT_USER_STATUS] ([STATUS_CODE], [DISPLAY_NAME], [DESCRIPTION], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'ACTIVE', N'Active', N'User is active in the onRouteBC system and can log in', NULL, N'dbo', CAST(N'2023-01-19T19:46:33.3400000' AS DateTime2), N'dbo', CAST(N'2023-01-19T19:46:33.3400000' AS DateTime2))
-INSERT [dbo].[ORBC_VT_USER_STATUS] ([STATUS_CODE], [DISPLAY_NAME], [DESCRIPTION], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'DELETED', N'Deleted', N'User has been deleted from onRouteBC and cannot be viewed by the administrator', NULL, N'dbo', CAST(N'2023-01-19T19:46:33.3700000' AS DateTime2), N'dbo', CAST(N'2023-01-19T19:46:33.3700000' AS DateTime2))
-INSERT [dbo].[ORBC_VT_USER_STATUS] ([STATUS_CODE], [DISPLAY_NAME], [DESCRIPTION], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'DISABLED', N'Disabled', N'User is temporarily disabled in onRouteBC - on leave or other reason', NULL, N'dbo', CAST(N'2023-01-19T19:46:33.3900000' AS DateTime2), N'dbo', CAST(N'2023-01-19T19:46:33.3900000' AS DateTime2))
 GO
 ALTER TABLE [dbo].[ORBC_ADDRESS] ADD  CONSTRAINT [DF_ORBC_ADDRESS_DB_CREATE_USERID]  DEFAULT (user_name()) FOR [DB_CREATE_USERID]
 GO
@@ -266,6 +295,14 @@ ALTER TABLE [dbo].[ORBC_CONTACT] ADD  CONSTRAINT [DF_ORBC_CONTACT_DB_LAST_UPDATE
 GO
 ALTER TABLE [dbo].[ORBC_CONTACT] ADD  CONSTRAINT [DF_ORBC_CONTACT_DB_LAST_UPDATE_TIMESTAMP]  DEFAULT (getdate()) FOR [DB_LAST_UPDATE_TIMESTAMP]
 GO
+ALTER TABLE [access].[ORBC_GROUP_ROLE] ADD  CONSTRAINT [DF_ORBC_GROUP_ROLE_DB_CREATE_USERID]  DEFAULT (user_name()) FOR [DB_CREATE_USERID]
+GO
+ALTER TABLE [access].[ORBC_GROUP_ROLE] ADD  CONSTRAINT [DF_ORBC_GROUP_ROLE_DB_CREATE_TIMESTAMP]  DEFAULT (getdate()) FOR [DB_CREATE_TIMESTAMP]
+GO
+ALTER TABLE [access].[ORBC_GROUP_ROLE] ADD  CONSTRAINT [DF_ORBC_GROUP_ROLE_DB_LAST_UPDATE_USERID]  DEFAULT (user_name()) FOR [DB_LAST_UPDATE_USERID]
+GO
+ALTER TABLE [access].[ORBC_GROUP_ROLE] ADD  CONSTRAINT [DF_ORBC_GROUP_ROLE_DB_LAST_UPDATE_TIMESTAMP]  DEFAULT (getdate()) FOR [DB_LAST_UPDATE_TIMESTAMP]
+GO
 ALTER TABLE [dbo].[ORBC_PENDING_USER] ADD  CONSTRAINT [DF_ORBC_PENDING_USER_DB_CREATE_USERID]  DEFAULT (user_name()) FOR [DB_CREATE_USERID]
 GO
 ALTER TABLE [dbo].[ORBC_PENDING_USER] ADD  CONSTRAINT [DF_ORBC_PENDING_USER_DB_CREATE_TIMESTAMP]  DEFAULT (getdate()) FOR [DB_CREATE_TIMESTAMP]
@@ -292,13 +329,21 @@ ALTER TABLE [dbo].[ORBC_VT_DIRECTORY] ADD  CONSTRAINT [DF_ORBC_VT_DIRECTORY_DB_L
 GO
 ALTER TABLE [dbo].[ORBC_VT_DIRECTORY] ADD  CONSTRAINT [DF_ORBC_VT_DIRECTORY_DB_LAST_UPDATE_TIMESTAMP]  DEFAULT (getdate()) FOR [DB_LAST_UPDATE_TIMESTAMP]
 GO
-ALTER TABLE [dbo].[ORBC_VT_USER_AUTH_GROUP] ADD  CONSTRAINT [DF_ORBC_USER_AUTH_GROUP_DB_CREATE_USERID]  DEFAULT (user_name()) FOR [DB_CREATE_USERID]
+ALTER TABLE [access].[ORBC_VT_ROLE] ADD  CONSTRAINT [DF_ORBC_VT_ROLE_DB_CREATE_USERID]  DEFAULT (user_name()) FOR [DB_CREATE_USERID]
 GO
-ALTER TABLE [dbo].[ORBC_VT_USER_AUTH_GROUP] ADD  CONSTRAINT [DF_ORBC_USER_AUTH_GROUP_DB_CREATE_TIMESTAMP]  DEFAULT (getdate()) FOR [DB_CREATE_TIMESTAMP]
+ALTER TABLE [access].[ORBC_VT_ROLE] ADD  CONSTRAINT [DF_ORBC_VT_ROLE_DB_CREATE_TIMESTAMP]  DEFAULT (getdate()) FOR [DB_CREATE_TIMESTAMP]
 GO
-ALTER TABLE [dbo].[ORBC_VT_USER_AUTH_GROUP] ADD  CONSTRAINT [DF_ORBC_USER_AUTH_GROUP_DB_LAST_UPDATE_USERID]  DEFAULT (user_name()) FOR [DB_LAST_UPDATE_USERID]
+ALTER TABLE [access].[ORBC_VT_ROLE] ADD  CONSTRAINT [DF_ORBC_VT_ROLE_DB_LAST_UPDATE_USERID]  DEFAULT (user_name()) FOR [DB_LAST_UPDATE_USERID]
 GO
-ALTER TABLE [dbo].[ORBC_VT_USER_AUTH_GROUP] ADD  CONSTRAINT [DF_ORBC_USER_AUTH_GROUP_DB_LAST_UPDATE_TIMESTAMP]  DEFAULT (getdate()) FOR [DB_LAST_UPDATE_TIMESTAMP]
+ALTER TABLE [access].[ORBC_VT_ROLE] ADD  CONSTRAINT [DF_ORBC_VT_ROLE_DB_LAST_UPDATE_TIMESTAMP]  DEFAULT (getdate()) FOR [DB_LAST_UPDATE_TIMESTAMP]
+GO
+ALTER TABLE [access].[ORBC_VT_USER_AUTH_GROUP] ADD  CONSTRAINT [DF_ORBC_USER_AUTH_GROUP_DB_CREATE_USERID]  DEFAULT (user_name()) FOR [DB_CREATE_USERID]
+GO
+ALTER TABLE [access].[ORBC_VT_USER_AUTH_GROUP] ADD  CONSTRAINT [DF_ORBC_USER_AUTH_GROUP_DB_CREATE_TIMESTAMP]  DEFAULT (getdate()) FOR [DB_CREATE_TIMESTAMP]
+GO
+ALTER TABLE [access].[ORBC_VT_USER_AUTH_GROUP] ADD  CONSTRAINT [DF_ORBC_USER_AUTH_GROUP_DB_LAST_UPDATE_USERID]  DEFAULT (user_name()) FOR [DB_LAST_UPDATE_USERID]
+GO
+ALTER TABLE [access].[ORBC_VT_USER_AUTH_GROUP] ADD  CONSTRAINT [DF_ORBC_USER_AUTH_GROUP_DB_LAST_UPDATE_TIMESTAMP]  DEFAULT (getdate()) FOR [DB_LAST_UPDATE_TIMESTAMP]
 GO
 ALTER TABLE [dbo].[ORBC_VT_USER_STATUS] ADD  CONSTRAINT [DF_ORBC_VT_USER_STATUS_DB_CREATE_USERID]  DEFAULT (user_name()) FOR [DB_CREATE_USERID]
 GO
@@ -344,7 +389,7 @@ GO
 ALTER TABLE [dbo].[ORBC_COMPANY_USER] CHECK CONSTRAINT [FK_ORBC_COMPANY_USER_USER]
 GO
 ALTER TABLE [dbo].[ORBC_COMPANY_USER]  WITH CHECK ADD  CONSTRAINT [FK_ORBC_COMPANY_USER_USER_AUTH_GROUP] FOREIGN KEY([USER_AUTH_GROUP_ID])
-REFERENCES [dbo].[ORBC_VT_USER_AUTH_GROUP] ([GROUP_ID])
+REFERENCES [access].[ORBC_VT_USER_AUTH_GROUP] ([GROUP_ID])
 GO
 ALTER TABLE [dbo].[ORBC_COMPANY_USER] CHECK CONSTRAINT [FK_ORBC_COMPANY_USER_USER_AUTH_GROUP]
 GO
@@ -353,8 +398,18 @@ REFERENCES [dbo].[ORBC_VT_PROVINCE] ([PROVINCE_ID])
 GO
 ALTER TABLE [dbo].[ORBC_CONTACT] CHECK CONSTRAINT [FK_ORBC_CONTACT_PROVINCE]
 GO
+ALTER TABLE [access].[ORBC_GROUP_ROLE]  WITH CHECK ADD  CONSTRAINT [FK_ORBC_GROUP_ROLE_ROLE] FOREIGN KEY([ROLE_ID])
+REFERENCES [access].[ORBC_VT_ROLE] ([ROLE_ID])
+GO
+ALTER TABLE [access].[ORBC_GROUP_ROLE] CHECK CONSTRAINT [FK_ORBC_GROUP_ROLE_ROLE]
+GO
+ALTER TABLE [access].[ORBC_GROUP_ROLE]  WITH CHECK ADD  CONSTRAINT [FK_ORBC_GROUP_ROLE_USER_AUTH_GROUP] FOREIGN KEY([USER_AUTH_GROUP_ID])
+REFERENCES [access].[ORBC_VT_USER_AUTH_GROUP] ([GROUP_ID])
+GO
+ALTER TABLE [access].[ORBC_GROUP_ROLE] CHECK CONSTRAINT [FK_ORBC_GROUP_ROLE_USER_AUTH_GROUP]
+GO
 ALTER TABLE [dbo].[ORBC_PENDING_USER]  WITH CHECK ADD  CONSTRAINT [FK_ORBC_PENDING_USER_AUTH_GROUP] FOREIGN KEY([USER_AUTH_GROUP_ID])
-REFERENCES [dbo].[ORBC_VT_USER_AUTH_GROUP] ([GROUP_ID])
+REFERENCES [access].[ORBC_VT_USER_AUTH_GROUP] ([GROUP_ID])
 GO
 ALTER TABLE [dbo].[ORBC_PENDING_USER] CHECK CONSTRAINT [FK_ORBC_PENDING_USER_AUTH_GROUP]
 GO
@@ -376,7 +431,104 @@ GO
 ALTER TABLE [dbo].[ORBC_USER]  WITH CHECK ADD  CONSTRAINT [FK_ORBC_USER_USER_STATUS] FOREIGN KEY([STATUS_CODE])
 REFERENCES [dbo].[ORBC_VT_USER_STATUS] ([STATUS_CODE])
 GO
+ALTER TABLE [dbo].[ORBC_USER]  WITH CHECK ADD  CONSTRAINT [FK_ORBC_USER_USER_AUTH_GROUP] FOREIGN KEY([USER_AUTH_GROUP_ID])
+REFERENCES [access].[ORBC_VT_USER_AUTH_GROUP] ([GROUP_ID])
+GO
+ALTER TABLE [dbo].[ORBC_USER] CHECK CONSTRAINT [FK_ORBC_USER_USER_AUTH_GROUP]
+GO
 ALTER TABLE [dbo].[ORBC_USER] CHECK CONSTRAINT [FK_ORBC_USER_USER_STATUS]
+GO
+INSERT [access].[ORBC_VT_USER_AUTH_GROUP] ([GROUP_ID], [DISPLAY_NAME], [DESCRIPTION], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'ANONYMOUS', N'Anonymous', N'Anonymous (not logged in) user', NULL, N'dbo', CAST(N'2023-03-09T20:26:03.4533333' AS DateTime2), N'dbo', CAST(N'2023-03-09T20:26:03.4533333' AS DateTime2))
+INSERT [access].[ORBC_VT_USER_AUTH_GROUP] ([GROUP_ID], [DISPLAY_NAME], [DESCRIPTION], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'CVCLIENT', N'CV Client', N'Commercial Vehicle client allowed to apply for permits', NULL, N'dbo', CAST(N'2023-01-18T19:31:29.3933333' AS DateTime2), N'dbo', CAST(N'2023-01-18T19:31:29.3933333' AS DateTime2))
+INSERT [access].[ORBC_VT_USER_AUTH_GROUP] ([GROUP_ID], [DISPLAY_NAME], [DESCRIPTION], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'IDIRBASIC', N'IDIR Basic User', N'Internal basic IDIR user without other special roles in the system', NULL, N'dbo', CAST(N'2023-03-09T20:19:25.5900000' AS DateTime2), N'dbo', CAST(N'2023-03-09T20:19:25.5900000' AS DateTime2))
+INSERT [access].[ORBC_VT_USER_AUTH_GROUP] ([GROUP_ID], [DISPLAY_NAME], [DESCRIPTION], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'ORGADMIN', N'Company Administrator', N'Administrator of the onRouteBC company', NULL, N'dbo', CAST(N'2023-03-09T20:16:52.5700000' AS DateTime2), N'dbo', CAST(N'2023-03-09T20:16:52.5700000' AS DateTime2))
+INSERT [access].[ORBC_VT_USER_AUTH_GROUP] ([GROUP_ID], [DISPLAY_NAME], [DESCRIPTION], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'PPCCLERK', N'PPC Clerk', N'Internal PPC staff member', NULL, N'dbo', CAST(N'2023-03-09T20:18:41.9833333' AS DateTime2), N'dbo', CAST(N'2023-03-09T20:18:41.9833333' AS DateTime2))
+INSERT [access].[ORBC_VT_USER_AUTH_GROUP] ([GROUP_ID], [DISPLAY_NAME], [DESCRIPTION], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'PUBLIC', N'Public Verified', N'A public user logged in to onRouteBC', NULL, N'dbo', CAST(N'2023-03-09T20:26:28.4466667' AS DateTime2), N'dbo', CAST(N'2023-03-09T20:26:28.4466667' AS DateTime2))
+INSERT [access].[ORBC_VT_USER_AUTH_GROUP] ([GROUP_ID], [DISPLAY_NAME], [DESCRIPTION], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'SYSADMIN', N'System Administrator', N'Internal administrator for the onRouteBC system', NULL, N'dbo', CAST(N'2023-03-09T20:17:23.1466667' AS DateTime2), N'dbo', CAST(N'2023-03-09T20:17:23.1466667' AS DateTime2))
+GO
+INSERT [access].[ORBC_VT_ROLE] ([ROLE_ID], [ROLE_DESCRIPTION]) VALUES (N'ORBC-PUBLIC-AGENT', NULL)
+INSERT [access].[ORBC_VT_ROLE] ([ROLE_ID], [ROLE_DESCRIPTION]) VALUES (N'ORBC-PUBLIC-ORG-ADMIN', NULL)
+INSERT [access].[ORBC_VT_ROLE] ([ROLE_ID], [ROLE_DESCRIPTION]) VALUES (N'ORBC-PUBLIC-USER-ADMIN', NULL)
+INSERT [access].[ORBC_VT_ROLE] ([ROLE_ID], [ROLE_DESCRIPTION]) VALUES (N'ORBC-PUBLIC-VEHICLE-ADMIN', NULL)
+INSERT [access].[ORBC_VT_ROLE] ([ROLE_ID], [ROLE_DESCRIPTION]) VALUES (N'ORBC-PUBLIC-VERIFIED', NULL)
+INSERT [access].[ORBC_VT_ROLE] ([ROLE_ID], [ROLE_DESCRIPTION]) VALUES (N'ORBC-READ-BILLING', NULL)
+INSERT [access].[ORBC_VT_ROLE] ([ROLE_ID], [ROLE_DESCRIPTION]) VALUES (N'ORBC-READ-ORG', NULL)
+INSERT [access].[ORBC_VT_ROLE] ([ROLE_ID], [ROLE_DESCRIPTION]) VALUES (N'ORBC-READ-PERMIT', NULL)
+INSERT [access].[ORBC_VT_ROLE] ([ROLE_ID], [ROLE_DESCRIPTION]) VALUES (N'ORBC-READ-SELF', NULL)
+INSERT [access].[ORBC_VT_ROLE] ([ROLE_ID], [ROLE_DESCRIPTION]) VALUES (N'ORBC-READ-USER', NULL)
+INSERT [access].[ORBC_VT_ROLE] ([ROLE_ID], [ROLE_DESCRIPTION]) VALUES (N'ORBC-READ-VEHICLE', NULL)
+INSERT [access].[ORBC_VT_ROLE] ([ROLE_ID], [ROLE_DESCRIPTION]) VALUES (N'ORBC-STAFF', NULL)
+INSERT [access].[ORBC_VT_ROLE] ([ROLE_ID], [ROLE_DESCRIPTION]) VALUES (N'ORBC-STAFF-ADMIN', NULL)
+INSERT [access].[ORBC_VT_ROLE] ([ROLE_ID], [ROLE_DESCRIPTION]) VALUES (N'ORBC-STAFF-PERMIT-ISSUER', NULL)
+INSERT [access].[ORBC_VT_ROLE] ([ROLE_ID], [ROLE_DESCRIPTION]) VALUES (N'ORBC-WRITE-BILLING', NULL)
+INSERT [access].[ORBC_VT_ROLE] ([ROLE_ID], [ROLE_DESCRIPTION]) VALUES (N'ORBC-WRITE-ORG', NULL)
+INSERT [access].[ORBC_VT_ROLE] ([ROLE_ID], [ROLE_DESCRIPTION]) VALUES (N'ORBC-WRITE-PERMIT', NULL)
+INSERT [access].[ORBC_VT_ROLE] ([ROLE_ID], [ROLE_DESCRIPTION]) VALUES (N'ORBC-WRITE-SELF', NULL)
+INSERT [access].[ORBC_VT_ROLE] ([ROLE_ID], [ROLE_DESCRIPTION]) VALUES (N'ORBC-WRITE-USER', NULL)
+INSERT [access].[ORBC_VT_ROLE] ([ROLE_ID], [ROLE_DESCRIPTION]) VALUES (N'ORBC-WRITE-VEHICLE', NULL)
+GO
+SET IDENTITY_INSERT [access].[ORBC_GROUP_ROLE] ON 
+
+INSERT [access].[ORBC_GROUP_ROLE] ([GROUP_ROLE_ID], [USER_AUTH_GROUP_ID], [ROLE_ID]) VALUES (1, N'ANONYMOUS', N'ORBC-WRITE-PERMIT')
+INSERT [access].[ORBC_GROUP_ROLE] ([GROUP_ROLE_ID], [USER_AUTH_GROUP_ID], [ROLE_ID]) VALUES (2, N'PUBLIC', N'ORBC-READ-SELF')
+INSERT [access].[ORBC_GROUP_ROLE] ([GROUP_ROLE_ID], [USER_AUTH_GROUP_ID], [ROLE_ID]) VALUES (3, N'PUBLIC', N'ORBC-WRITE-SELF')
+INSERT [access].[ORBC_GROUP_ROLE] ([GROUP_ROLE_ID], [USER_AUTH_GROUP_ID], [ROLE_ID]) VALUES (4, N'CVCLIENT', N'ORBC-READ-ORG')
+INSERT [access].[ORBC_GROUP_ROLE] ([GROUP_ROLE_ID], [USER_AUTH_GROUP_ID], [ROLE_ID]) VALUES (5, N'CVCLIENT', N'ORBC-READ-VEHICLE')
+INSERT [access].[ORBC_GROUP_ROLE] ([GROUP_ROLE_ID], [USER_AUTH_GROUP_ID], [ROLE_ID]) VALUES (6, N'CVCLIENT', N'ORBC-WRITE-SELF')
+INSERT [access].[ORBC_GROUP_ROLE] ([GROUP_ROLE_ID], [USER_AUTH_GROUP_ID], [ROLE_ID]) VALUES (7, N'CVCLIENT', N'ORBC-READ-SELF')
+INSERT [access].[ORBC_GROUP_ROLE] ([GROUP_ROLE_ID], [USER_AUTH_GROUP_ID], [ROLE_ID]) VALUES (8, N'CVCLIENT', N'ORBC-READ-BILLING')
+INSERT [access].[ORBC_GROUP_ROLE] ([GROUP_ROLE_ID], [USER_AUTH_GROUP_ID], [ROLE_ID]) VALUES (9, N'CVCLIENT', N'ORBC-READ-PERMIT')
+INSERT [access].[ORBC_GROUP_ROLE] ([GROUP_ROLE_ID], [USER_AUTH_GROUP_ID], [ROLE_ID]) VALUES (10, N'CVCLIENT', N'ORBC-WRITE-PERMIT')
+INSERT [access].[ORBC_GROUP_ROLE] ([GROUP_ROLE_ID], [USER_AUTH_GROUP_ID], [ROLE_ID]) VALUES (11, N'CVCLIENT', N'ORBC-WRITE-BILLING')
+INSERT [access].[ORBC_GROUP_ROLE] ([GROUP_ROLE_ID], [USER_AUTH_GROUP_ID], [ROLE_ID]) VALUES (12, N'ORGADMIN', N'ORBC-READ-ORG')
+INSERT [access].[ORBC_GROUP_ROLE] ([GROUP_ROLE_ID], [USER_AUTH_GROUP_ID], [ROLE_ID]) VALUES (13, N'ORGADMIN', N'ORBC-WRITE-ORG')
+INSERT [access].[ORBC_GROUP_ROLE] ([GROUP_ROLE_ID], [USER_AUTH_GROUP_ID], [ROLE_ID]) VALUES (14, N'ORGADMIN', N'ORBC-READ-USER')
+INSERT [access].[ORBC_GROUP_ROLE] ([GROUP_ROLE_ID], [USER_AUTH_GROUP_ID], [ROLE_ID]) VALUES (15, N'ORGADMIN', N'ORBC-WRITE-USER')
+INSERT [access].[ORBC_GROUP_ROLE] ([GROUP_ROLE_ID], [USER_AUTH_GROUP_ID], [ROLE_ID]) VALUES (16, N'ORGADMIN', N'ORBC-READ-VEHICLE')
+INSERT [access].[ORBC_GROUP_ROLE] ([GROUP_ROLE_ID], [USER_AUTH_GROUP_ID], [ROLE_ID]) VALUES (17, N'ORGADMIN', N'ORBC-WRITE-VEHICLE')
+INSERT [access].[ORBC_GROUP_ROLE] ([GROUP_ROLE_ID], [USER_AUTH_GROUP_ID], [ROLE_ID]) VALUES (18, N'ORGADMIN', N'ORBC-READ-PERMIT')
+INSERT [access].[ORBC_GROUP_ROLE] ([GROUP_ROLE_ID], [USER_AUTH_GROUP_ID], [ROLE_ID]) VALUES (19, N'ORGADMIN', N'ORBC-WRITE-PERMIT')
+INSERT [access].[ORBC_GROUP_ROLE] ([GROUP_ROLE_ID], [USER_AUTH_GROUP_ID], [ROLE_ID]) VALUES (20, N'ORGADMIN', N'ORBC-READ-BILLING')
+INSERT [access].[ORBC_GROUP_ROLE] ([GROUP_ROLE_ID], [USER_AUTH_GROUP_ID], [ROLE_ID]) VALUES (21, N'ORGADMIN', N'ORBC-WRITE-BILLING')
+INSERT [access].[ORBC_GROUP_ROLE] ([GROUP_ROLE_ID], [USER_AUTH_GROUP_ID], [ROLE_ID]) VALUES (22, N'ORGADMIN', N'ORBC-READ-SELF')
+INSERT [access].[ORBC_GROUP_ROLE] ([GROUP_ROLE_ID], [USER_AUTH_GROUP_ID], [ROLE_ID]) VALUES (23, N'ORGADMIN', N'ORBC-WRITE-SELF')
+INSERT [access].[ORBC_GROUP_ROLE] ([GROUP_ROLE_ID], [USER_AUTH_GROUP_ID], [ROLE_ID]) VALUES (24, N'ORGADMIN', N'ORBC-PUBLIC-VERIFIED')
+INSERT [access].[ORBC_GROUP_ROLE] ([GROUP_ROLE_ID], [USER_AUTH_GROUP_ID], [ROLE_ID]) VALUES (25, N'CVCLIENT', N'ORBC-PUBLIC-VERIFIED')
+INSERT [access].[ORBC_GROUP_ROLE] ([GROUP_ROLE_ID], [USER_AUTH_GROUP_ID], [ROLE_ID]) VALUES (26, N'ORGADMIN', N'ORBC-PUBLIC-ORG-ADMIN')
+INSERT [access].[ORBC_GROUP_ROLE] ([GROUP_ROLE_ID], [USER_AUTH_GROUP_ID], [ROLE_ID]) VALUES (27, N'ORGADMIN', N'ORBC-PUBLIC-USER-ADMIN')
+INSERT [access].[ORBC_GROUP_ROLE] ([GROUP_ROLE_ID], [USER_AUTH_GROUP_ID], [ROLE_ID]) VALUES (28, N'ORGADMIN', N'ORBC-PUBLIC-VEHICLE-ADMIN')
+INSERT [access].[ORBC_GROUP_ROLE] ([GROUP_ROLE_ID], [USER_AUTH_GROUP_ID], [ROLE_ID]) VALUES (29, N'CVCLIENT', N'ORBC-PUBLIC-AGENT')
+INSERT [access].[ORBC_GROUP_ROLE] ([GROUP_ROLE_ID], [USER_AUTH_GROUP_ID], [ROLE_ID]) VALUES (30, N'ORGADMIN', N'ORBC-PUBLIC-AGENT')
+INSERT [access].[ORBC_GROUP_ROLE] ([GROUP_ROLE_ID], [USER_AUTH_GROUP_ID], [ROLE_ID]) VALUES (31, N'SYSADMIN', N'ORBC-STAFF-ADMIN')
+INSERT [access].[ORBC_GROUP_ROLE] ([GROUP_ROLE_ID], [USER_AUTH_GROUP_ID], [ROLE_ID]) VALUES (32, N'SYSADMIN', N'ORBC-STAFF')
+INSERT [access].[ORBC_GROUP_ROLE] ([GROUP_ROLE_ID], [USER_AUTH_GROUP_ID], [ROLE_ID]) VALUES (33, N'SYSADMIN', N'ORBC-STAFF-PERMIT-ISSUER')
+INSERT [access].[ORBC_GROUP_ROLE] ([GROUP_ROLE_ID], [USER_AUTH_GROUP_ID], [ROLE_ID]) VALUES (34, N'SYSADMIN', N'ORBC-WRITE-ORG')
+INSERT [access].[ORBC_GROUP_ROLE] ([GROUP_ROLE_ID], [USER_AUTH_GROUP_ID], [ROLE_ID]) VALUES (35, N'SYSADMIN', N'ORBC-READ-ORG')
+INSERT [access].[ORBC_GROUP_ROLE] ([GROUP_ROLE_ID], [USER_AUTH_GROUP_ID], [ROLE_ID]) VALUES (36, N'SYSADMIN', N'ORBC-WRITE-USER')
+INSERT [access].[ORBC_GROUP_ROLE] ([GROUP_ROLE_ID], [USER_AUTH_GROUP_ID], [ROLE_ID]) VALUES (37, N'SYSADMIN', N'ORBC-READ-USER')
+INSERT [access].[ORBC_GROUP_ROLE] ([GROUP_ROLE_ID], [USER_AUTH_GROUP_ID], [ROLE_ID]) VALUES (38, N'SYSADMIN', N'ORBC-WRITE-VEHICLE')
+INSERT [access].[ORBC_GROUP_ROLE] ([GROUP_ROLE_ID], [USER_AUTH_GROUP_ID], [ROLE_ID]) VALUES (39, N'SYSADMIN', N'ORBC-READ-VEHICLE')
+INSERT [access].[ORBC_GROUP_ROLE] ([GROUP_ROLE_ID], [USER_AUTH_GROUP_ID], [ROLE_ID]) VALUES (40, N'SYSADMIN', N'ORBC-WRITE-PERMIT')
+INSERT [access].[ORBC_GROUP_ROLE] ([GROUP_ROLE_ID], [USER_AUTH_GROUP_ID], [ROLE_ID]) VALUES (41, N'SYSADMIN', N'ORBC-READ-PERMIT')
+INSERT [access].[ORBC_GROUP_ROLE] ([GROUP_ROLE_ID], [USER_AUTH_GROUP_ID], [ROLE_ID]) VALUES (42, N'SYSADMIN', N'ORBC-WRITE-BILLING')
+INSERT [access].[ORBC_GROUP_ROLE] ([GROUP_ROLE_ID], [USER_AUTH_GROUP_ID], [ROLE_ID]) VALUES (43, N'SYSADMIN', N'ORBC-READ-BILLING')
+INSERT [access].[ORBC_GROUP_ROLE] ([GROUP_ROLE_ID], [USER_AUTH_GROUP_ID], [ROLE_ID]) VALUES (44, N'PPCCLERK', N'ORBC-STAFF-PERMIT-ISSUER')
+INSERT [access].[ORBC_GROUP_ROLE] ([GROUP_ROLE_ID], [USER_AUTH_GROUP_ID], [ROLE_ID]) VALUES (45, N'PPCCLERK', N'ORBC-READ-USER')
+INSERT [access].[ORBC_GROUP_ROLE] ([GROUP_ROLE_ID], [USER_AUTH_GROUP_ID], [ROLE_ID]) VALUES (46, N'PPCCLERK', N'ORBC-READ-VEHICLE')
+INSERT [access].[ORBC_GROUP_ROLE] ([GROUP_ROLE_ID], [USER_AUTH_GROUP_ID], [ROLE_ID]) VALUES (47, N'PPCCLERK', N'ORBC-WRITE-PERMIT')
+INSERT [access].[ORBC_GROUP_ROLE] ([GROUP_ROLE_ID], [USER_AUTH_GROUP_ID], [ROLE_ID]) VALUES (48, N'PPCCLERK', N'ORBC-READ-PERMIT')
+INSERT [access].[ORBC_GROUP_ROLE] ([GROUP_ROLE_ID], [USER_AUTH_GROUP_ID], [ROLE_ID]) VALUES (49, N'PPCCLERK', N'ORBC-WRITE-BILLING')
+INSERT [access].[ORBC_GROUP_ROLE] ([GROUP_ROLE_ID], [USER_AUTH_GROUP_ID], [ROLE_ID]) VALUES (50, N'PPCCLERK', N'ORBC-READ-BILLING')
+SET IDENTITY_INSERT [access].[ORBC_GROUP_ROLE] OFF
+GO
+INSERT [dbo].[ORBC_VT_DIRECTORY] ([DIRECTORY_CODE], [DIRECTORY_NAME], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'BBCEID', N'Business BCeID', NULL, N'dbo', CAST(N'2023-01-12T00:13:58.2200000' AS DateTime2), N'dbo', CAST(N'2023-01-12T00:13:58.2200000' AS DateTime2))
+INSERT [dbo].[ORBC_VT_DIRECTORY] ([DIRECTORY_CODE], [DIRECTORY_NAME], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'BCEID', N'BCeID', NULL, N'dbo', CAST(N'2023-01-12T00:13:58.2366667' AS DateTime2), N'dbo', CAST(N'2023-01-12T00:13:58.2366667' AS DateTime2))
+INSERT [dbo].[ORBC_VT_DIRECTORY] ([DIRECTORY_CODE], [DIRECTORY_NAME], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'BCSC', N'BC Services Card', NULL, N'dbo', CAST(N'2023-01-12T00:13:58.2466667' AS DateTime2), N'dbo', CAST(N'2023-01-12T00:13:58.2466667' AS DateTime2))
+INSERT [dbo].[ORBC_VT_DIRECTORY] ([DIRECTORY_CODE], [DIRECTORY_NAME], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'ORBC', N'onRouteBC', NULL, N'dbo', CAST(N'2023-01-12T00:13:58.2566667' AS DateTime2), N'dbo', CAST(N'2023-01-12T00:13:58.2566667' AS DateTime2))
+GO
+INSERT [dbo].[ORBC_VT_USER_STATUS] ([STATUS_CODE], [DISPLAY_NAME], [DESCRIPTION], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'ACTIVE', N'Active', N'User is active in the onRouteBC system and can log in', NULL, N'dbo', CAST(N'2023-01-19T19:46:33.3400000' AS DateTime2), N'dbo', CAST(N'2023-01-19T19:46:33.3400000' AS DateTime2))
+INSERT [dbo].[ORBC_VT_USER_STATUS] ([STATUS_CODE], [DISPLAY_NAME], [DESCRIPTION], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'DELETED', N'Deleted', N'User has been deleted from onRouteBC and cannot be viewed by the administrator', NULL, N'dbo', CAST(N'2023-01-19T19:46:33.3700000' AS DateTime2), N'dbo', CAST(N'2023-01-19T19:46:33.3700000' AS DateTime2))
+INSERT [dbo].[ORBC_VT_USER_STATUS] ([STATUS_CODE], [DISPLAY_NAME], [DESCRIPTION], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'DISABLED', N'Disabled', N'User is temporarily disabled in onRouteBC - on leave or other reason', NULL, N'dbo', CAST(N'2023-01-19T19:46:33.3900000' AS DateTime2), N'dbo', CAST(N'2023-01-19T19:46:33.3900000' AS DateTime2))
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Unique auto-generated surrogate primary key' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_ADDRESS', @level2type=N'COLUMN',@level2name=N'ADDRESS_ID'
 GO
@@ -496,6 +648,24 @@ EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and t
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Contains the details for a person in onRouteBC, whether an application user or other (primary contact, permit applicant) who is not an application user.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_CONTACT'
 GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Surrogate primary key for the group-role mapping table' , @level0type=N'SCHEMA',@level0name=N'access', @level1type=N'TABLE',@level1name=N'ORBC_GROUP_ROLE', @level2type=N'COLUMN',@level2name=N'GROUP_ROLE_ID'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID of the user authorization group' , @level0type=N'SCHEMA',@level0name=N'access', @level1type=N'TABLE',@level1name=N'ORBC_GROUP_ROLE', @level2type=N'COLUMN',@level2name=N'USER_AUTH_GROUP_ID'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID of the role assigned to the corresponding user auth group' , @level0type=N'SCHEMA',@level0name=N'access', @level1type=N'TABLE',@level1name=N'ORBC_GROUP_ROLE', @level2type=N'COLUMN',@level2name=N'ROLE_ID'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Application code is responsible for retrieving the row and then incrementing the value of the CONCURRENCY_CONTROL_NUMBER column by one prior to issuing an update. If this is done then the update will succeed, provided that the row was not updated by any other transactions in the period between the read and the update operations.' , @level0type=N'SCHEMA',@level0name=N'access', @level1type=N'TABLE',@level1name=N'ORBC_GROUP_ROLE', @level2type=N'COLUMN',@level2name=N'CONCURRENCY_CONTROL_NUMBER'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user or proxy account that created the record.' , @level0type=N'SCHEMA',@level0name=N'access', @level1type=N'TABLE',@level1name=N'ORBC_GROUP_ROLE', @level2type=N'COLUMN',@level2name=N'DB_CREATE_USERID'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time the record was created.' , @level0type=N'SCHEMA',@level0name=N'access', @level1type=N'TABLE',@level1name=N'ORBC_GROUP_ROLE', @level2type=N'COLUMN',@level2name=N'DB_CREATE_TIMESTAMP'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user or proxy account that created or last updated the record.' , @level0type=N'SCHEMA',@level0name=N'access', @level1type=N'TABLE',@level1name=N'ORBC_GROUP_ROLE', @level2type=N'COLUMN',@level2name=N'DB_LAST_UPDATE_USERID'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time the record was created or last updated.' , @level0type=N'SCHEMA',@level0name=N'access', @level1type=N'TABLE',@level1name=N'ORBC_GROUP_ROLE', @level2type=N'COLUMN',@level2name=N'DB_LAST_UPDATE_TIMESTAMP'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Table resolving many to many relationship between user auth groups and roles (permissions in the application)' , @level0type=N'SCHEMA',@level0name=N'access', @level1type=N'TABLE',@level1name=N'ORBC_GROUP_ROLE'
+GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Application code is responsible for retrieving the row and then incrementing the value of the CONCURRENCY_CONTROL_NUMBER column by one prior to issuing an update. If this is done then the update will succeed, provided that the row was not updated by any other transactions in the period between the read and the update operations.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_PENDING_USER', @level2type=N'COLUMN',@level2name=N'CONCURRENCY_CONTROL_NUMBER'
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user or proxy account that created the record.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_PENDING_USER', @level2type=N'COLUMN',@level2name=N'DB_CREATE_USERID'
@@ -517,6 +687,8 @@ GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'User''s current status in the onRouteBC system, FK into the user status table' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_USER', @level2type=N'COLUMN',@level2name=N'STATUS_CODE'
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID of the contact record associated with this user (FK to the contact table)' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_USER', @level2type=N'COLUMN',@level2name=N'CONTACT_ID'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Authorization group of the user outside the context of a company. For public users this will be a limited group, for internal (IDIR) staff users this could grant more privileges, e.g. for all companies.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_USER', @level2type=N'COLUMN',@level2name=N'USER_AUTH_GROUP_ID'
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Application code is responsible for retrieving the row and then incrementing the value of the CONCURRENCY_CONTROL_NUMBER column by one prior to issuing an update. If this is done then the update will succeed, provided that the row was not updated by any other transactions in the period between the read and the update operations.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_USER', @level2type=N'COLUMN',@level2name=N'CONCURRENCY_CONTROL_NUMBER'
 GO
@@ -546,23 +718,39 @@ EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and t
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Lookup table containing directories where users and companies can be registered externally (e.g. bceid, business bceid)' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_DIRECTORY'
 GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Unique short code representing the authorization group' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_USER_AUTH_GROUP', @level2type=N'COLUMN',@level2name=N'GROUP_ID'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID of the role' , @level0type=N'SCHEMA',@level0name=N'access', @level1type=N'TABLE',@level1name=N'ORBC_VT_ROLE', @level2type=N'COLUMN',@level2name=N'ROLE_ID'
 GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Common user-friendly display name of the authorization group' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_USER_AUTH_GROUP', @level2type=N'COLUMN',@level2name=N'DISPLAY_NAME'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Description of the role providing optional details of what the role is intended to allow access to' , @level0type=N'SCHEMA',@level0name=N'access', @level1type=N'TABLE',@level1name=N'ORBC_VT_ROLE', @level2type=N'COLUMN',@level2name=N'ROLE_DESCRIPTION'
 GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Description of the authorization group' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_USER_AUTH_GROUP', @level2type=N'COLUMN',@level2name=N'DESCRIPTION'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Application code is responsible for retrieving the row and then incrementing the value of the CONCURRENCY_CONTROL_NUMBER column by one prior to issuing an update. If this is done then the update will succeed, provided that the row was not updated by any other transactions in the period between the read and the update operations.' , @level0type=N'SCHEMA',@level0name=N'access', @level1type=N'TABLE',@level1name=N'ORBC_VT_ROLE', @level2type=N'COLUMN',@level2name=N'CONCURRENCY_CONTROL_NUMBER'
 GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Application code is responsible for retrieving the row and then incrementing the value of the CONCURRENCY_CONTROL_NUMBER column by one prior to issuing an update. If this is done then the update will succeed, provided that the row was not updated by any other transactions in the period between the read and the update operations.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_USER_AUTH_GROUP', @level2type=N'COLUMN',@level2name=N'CONCURRENCY_CONTROL_NUMBER'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user or proxy account that created the record.' , @level0type=N'SCHEMA',@level0name=N'access', @level1type=N'TABLE',@level1name=N'ORBC_VT_ROLE', @level2type=N'COLUMN',@level2name=N'DB_CREATE_USERID'
 GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user or proxy account that created the record.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_USER_AUTH_GROUP', @level2type=N'COLUMN',@level2name=N'DB_CREATE_USERID'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time the record was created.' , @level0type=N'SCHEMA',@level0name=N'access', @level1type=N'TABLE',@level1name=N'ORBC_VT_ROLE', @level2type=N'COLUMN',@level2name=N'DB_CREATE_TIMESTAMP'
 GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time the record was created.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_USER_AUTH_GROUP', @level2type=N'COLUMN',@level2name=N'DB_CREATE_TIMESTAMP'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user or proxy account that created or last updated the record.' , @level0type=N'SCHEMA',@level0name=N'access', @level1type=N'TABLE',@level1name=N'ORBC_VT_ROLE', @level2type=N'COLUMN',@level2name=N'DB_LAST_UPDATE_USERID'
 GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user or proxy account that created or last updated the record.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_USER_AUTH_GROUP', @level2type=N'COLUMN',@level2name=N'DB_LAST_UPDATE_USERID'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time the record was created or last updated.' , @level0type=N'SCHEMA',@level0name=N'access', @level1type=N'TABLE',@level1name=N'ORBC_VT_ROLE', @level2type=N'COLUMN',@level2name=N'DB_LAST_UPDATE_TIMESTAMP'
 GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time the record was created or last updated.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_USER_AUTH_GROUP', @level2type=N'COLUMN',@level2name=N'DB_LAST_UPDATE_TIMESTAMP'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Lookup table containing all possible roles granting permissions in the application' , @level0type=N'SCHEMA',@level0name=N'access', @level1type=N'TABLE',@level1name=N'ORBC_VT_ROLE'
 GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Lookup table containing all valid user authorization groups in the ORBC application.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_USER_AUTH_GROUP'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Unique short code representing the authorization group' , @level0type=N'SCHEMA',@level0name=N'access', @level1type=N'TABLE',@level1name=N'ORBC_VT_USER_AUTH_GROUP', @level2type=N'COLUMN',@level2name=N'GROUP_ID'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Common user-friendly display name of the authorization group' , @level0type=N'SCHEMA',@level0name=N'access', @level1type=N'TABLE',@level1name=N'ORBC_VT_USER_AUTH_GROUP', @level2type=N'COLUMN',@level2name=N'DISPLAY_NAME'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Description of the authorization group' , @level0type=N'SCHEMA',@level0name=N'access', @level1type=N'TABLE',@level1name=N'ORBC_VT_USER_AUTH_GROUP', @level2type=N'COLUMN',@level2name=N'DESCRIPTION'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Application code is responsible for retrieving the row and then incrementing the value of the CONCURRENCY_CONTROL_NUMBER column by one prior to issuing an update. If this is done then the update will succeed, provided that the row was not updated by any other transactions in the period between the read and the update operations.' , @level0type=N'SCHEMA',@level0name=N'access', @level1type=N'TABLE',@level1name=N'ORBC_VT_USER_AUTH_GROUP', @level2type=N'COLUMN',@level2name=N'CONCURRENCY_CONTROL_NUMBER'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user or proxy account that created the record.' , @level0type=N'SCHEMA',@level0name=N'access', @level1type=N'TABLE',@level1name=N'ORBC_VT_USER_AUTH_GROUP', @level2type=N'COLUMN',@level2name=N'DB_CREATE_USERID'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time the record was created.' , @level0type=N'SCHEMA',@level0name=N'access', @level1type=N'TABLE',@level1name=N'ORBC_VT_USER_AUTH_GROUP', @level2type=N'COLUMN',@level2name=N'DB_CREATE_TIMESTAMP'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user or proxy account that created or last updated the record.' , @level0type=N'SCHEMA',@level0name=N'access', @level1type=N'TABLE',@level1name=N'ORBC_VT_USER_AUTH_GROUP', @level2type=N'COLUMN',@level2name=N'DB_LAST_UPDATE_USERID'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time the record was created or last updated.' , @level0type=N'SCHEMA',@level0name=N'access', @level1type=N'TABLE',@level1name=N'ORBC_VT_USER_AUTH_GROUP', @level2type=N'COLUMN',@level2name=N'DB_LAST_UPDATE_TIMESTAMP'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Lookup table containing all valid user authorization groups in the ORBC application.' , @level0type=N'SCHEMA',@level0name=N'access', @level1type=N'TABLE',@level1name=N'ORBC_VT_USER_AUTH_GROUP'
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Unique short code PK of the user status' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_USER_STATUS', @level2type=N'COLUMN',@level2name=N'STATUS_CODE'
 GO
@@ -584,22 +772,19 @@ EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Lookup table f
 GO
 
 CREATE FUNCTION [dbo].[ORBC_GENERATE_CLIENT_NUMBER_FN] (@REGION char(1), @SOURCE char(1), @SEQ int)
-RETURNS char(15)
+RETURNS char(13)
 AS
 BEGIN
-	DECLARE @ClientNumber char(15);
+	DECLARE @ClientNumber char(13);
 	DECLARE @Now datetime2(7) = getdate()
 	-- We are using current time milliseconds as a substitute for random 3-digit number
 	-- Sufficient for our purposes and avoids problems with inability to use RAND from
 	-- within a user-defined function.
 	DECLARE @Milli char(3);
 	SET @Milli = FORMAT(@Now, 'fff');
-	-- Final 2 characters of the client number is the last 2 digits of the year, to
-	-- be extra sure that we won't get collisions even if we run out of sequence.
-	DECLARE @Year char(2);
-	SET @Year = FORMAT(@Now, 'yy');
 
-	SET @ClientNumber = CONCAT(@REGION, @SOURCE, '-', FORMAT(@SEQ, '000000'), '-', @Milli, @Year);
+
+	SET @ClientNumber = CONCAT(@REGION, @SOURCE, '-', FORMAT(@SEQ, '000000'), '-', @Milli);
 	RETURN(@ClientNumber);
 END;
 GO
@@ -610,7 +795,7 @@ CREATE OR ALTER TRIGGER [dbo].[ORBC_COMPANY_CLIENT_NUMBER_TRG]
 AS 
 BEGIN
 	SET NOCOUNT ON;
-	DECLARE @ClientNumber char(15), @Rgn char(1), @Src char(1), @SeqVal int
+	DECLARE @ClientNumber char(13), @Rgn char(1), @Src char(1), @SeqVal int
 	SELECT @ClientNumber = CLIENT_NUMBER FROM INSERTED
 
 	IF @ClientNumber IS NULL
@@ -618,7 +803,7 @@ BEGIN
 			SELECT @Rgn = ACCOUNT_REGION FROM INSERTED
 			SELECT @Src = ACCOUNT_SOURCE FROM INSERTED
 			SELECT @SeqVal = COMPANY_ID FROM INSERTED
-			DECLARE @NewClientNumber char(15)
+			DECLARE @NewClientNumber char(13)
 			SET @NewClientNumber = [dbo].[ORBC_GENERATE_CLIENT_NUMBER_FN](@Rgn, @Src, @SeqVal);
 			UPDATE [dbo].[ORBC_COMPANY] SET CLIENT_NUMBER = @NewClientNumber  WHERE COMPANY_ID = @SeqVal
 		END
@@ -628,8 +813,27 @@ GO
 ALTER TABLE [dbo].[ORBC_COMPANY] ENABLE TRIGGER [ORBC_COMPANY_CLIENT_NUMBER_TRG]
 GO
 
-/* Set this trigger to run first so we have the correct client number for any other triggers */
+-- Set this trigger to run first so we have the correct client number for any other triggers
 sp_settriggerorder @triggername = 'dbo.ORBC_COMPANY_CLIENT_NUMBER_TRG', @order = 'FIRST', @stmttype = 'INSERT'
+GO
+
+-- Create a function to return the full set of roles a user has in the system
+-- for a given company. Can accept DEFAULT as the companyId parameter if no
+-- company context is needed - this gives just the global roles in return.
+CREATE FUNCTION [access].[ORBC_GET_ROLES_FOR_USER_FN] (@userGuid char(32), @companyId int = 0)
+RETURNS TABLE 
+AS 
+RETURN 
+(
+	-- Union the global roles and the company-specific roles
+	SELECT DISTINCT ROLE_ID FROM ORBC_GROUP_ROLE WHERE USER_AUTH_GROUP_ID IN (
+		SELECT USER_AUTH_GROUP_ID FROM ORBC_USER WHERE ORBC_USER.USER_GUID = @userGuid
+		UNION
+		SELECT USER_AUTH_GROUP_ID FROM ORBC_COMPANY_USER WHERE ORBC_COMPANY_USER.USER_GUID = @userGuid
+		AND ORBC_COMPANY_USER.COMPANY_ID = @companyId
+	)
+)
+GO
 
 DECLARE @VersionDescription VARCHAR(255)
 SET @VersionDescription = 'Initial creation of schema entities for manage profile feature'
