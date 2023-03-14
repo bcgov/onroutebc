@@ -42,28 +42,35 @@ export const PowerUnitForm = ({
   powerUnit,
   setShowAddVehicle,
 }: PowerUnitFormProps) => {
+  const powerUnitDefaultValues = {
+    country: powerUnit?.provinceId ? powerUnit?.provinceId?.split("-")[0] : "",
+    province: powerUnit?.provinceId ? powerUnit?.provinceId?.split("-")[1] : "",
+    unitNumber: powerUnit?.unitNumber || "",
+    licensedGvw: (powerUnit?.licensedGvw as number) || undefined,
+    make: powerUnit?.make || "",
+    plate: powerUnit?.plate || "",
+    powerUnitTypeCode: powerUnit?.powerUnitTypeCode || "",
+    provinceId: powerUnit?.provinceId ? powerUnit?.provinceId : "",
+    steerAxleTireSize: powerUnit?.steerAxleTireSize
+      ? powerUnit?.steerAxleTireSize
+      : undefined,
+    vin: powerUnit?.vin ? powerUnit?.vin : "",
+    year: powerUnit?.year ? powerUnit?.year : undefined,
+  };
+
   const formMethods = useForm<CreatePowerUnit>({
-    defaultValues: {
-      country: powerUnit?.provinceId
-        ? powerUnit?.provinceId?.split("-")[0]
-        : "",
-      province: powerUnit?.provinceId
-        ? powerUnit?.provinceId?.split("-")[1]
-        : "",
-      unitNumber: powerUnit?.unitNumber || "",
-      licensedGvw: (powerUnit?.licensedGvw as number) || undefined,
-      make: powerUnit?.make || "",
-      plate: powerUnit?.plate || "",
-      powerUnitTypeCode: powerUnit?.powerUnitTypeCode || "",
-      provinceId: powerUnit?.provinceId ? powerUnit?.provinceId : "",
-      steerAxleTireSize: powerUnit?.steerAxleTireSize
-        ? powerUnit?.steerAxleTireSize
-        : undefined,
-      vin: powerUnit?.vin ? powerUnit?.vin : "",
-      year: powerUnit?.year ? powerUnit?.year : undefined,
-    },
+    defaultValues: powerUnitDefaultValues,
+    reValidateMode: "onBlur",
   });
-  const { register, handleSubmit, control, getValues } = formMethods;
+
+  const {
+    register,
+    handleSubmit,
+    control,
+    getValues,
+    trigger,
+    formState: { errors },
+  } = formMethods;
 
   const queryClient = useQueryClient();
 
@@ -127,6 +134,7 @@ export const PowerUnitForm = ({
     register: register,
     feature: "power-unit",
     getValues: getValues,
+    trigger: trigger,
   };
 
   return (
@@ -146,6 +154,7 @@ export const PowerUnitForm = ({
               label_i18: "vehicle.power-unit.unit-number",
             }}
           />
+
           <CustomFormComponent
             type="input"
             commonFormProps={commonFormProps}
@@ -166,13 +175,18 @@ export const PowerUnitForm = ({
             commonFormProps={commonFormProps}
             options={{
               name: "year",
-              rules: { required: true, minLength: 4, maxLength: 4 },
+              rules: {
+                required: { value: true, message: "Year is required." },
+                pattern: {
+                  value: /^[0-9]+$/,
+                  message: "Please enter a number",
+                },
+                minLength: { value: 4, message: "Min length is 4" },
+                maxLength: 4,
+              },
               label: "Year",
               width: formFieldStyle.width,
-            }}
-            i18options={{
-              label_i18: "vehicle.power-unit.year",
-              inValidMessage_i18: "vehicle.power-unit.required",
+              inValidMessage: errors?.year?.message,
             }}
           />
 
@@ -181,11 +195,15 @@ export const PowerUnitForm = ({
             commonFormProps={commonFormProps}
             options={{
               name: "vin",
-              rules: { required: true, minLength: 6, maxLength: 6 },
+              rules: {
+                required: { value: true, message: "VIN is required." },
+                minLength: { value: 6, message: "Length must be 6" },
+                maxLength: 6,
+              },
               label: "VIN",
               width: formFieldStyle.width,
               customHelperText: "last 6 digits",
-              inValidMessage: "VIN is required.",
+              inValidMessage: errors?.vin?.message,
             }}
           />
 
@@ -209,7 +227,9 @@ export const PowerUnitForm = ({
             commonFormProps={commonFormProps}
             options={{
               name: "powerUnitTypeCode",
-              rules: { required: true },
+              rules: {
+                required: true,
+              },
               label: "Vehicle Sub-type",
               width: formFieldStyle.width,
               query: powerUnitTypesQuery,
@@ -234,13 +254,16 @@ export const PowerUnitForm = ({
             commonFormProps={commonFormProps}
             options={{
               name: "licensedGvw",
-              rules: { required: true },
+              rules: {
+                required: { value: true, message: "Licensed GVW is required." },
+                pattern: {
+                  value: /^[0-9]+$/,
+                  message: "Please enter a number",
+                },
+              },
               label: "Licensed GVW",
               width: formFieldStyle.width,
-            }}
-            i18options={{
-              label_i18: "vehicle.power-unit.licensed-gvw",
-              inValidMessage_i18: "vehicle.power-unit.required",
+              inValidMessage: errors?.licensedGvw?.message,
             }}
           />
           <CustomFormComponent
@@ -248,13 +271,16 @@ export const PowerUnitForm = ({
             commonFormProps={commonFormProps}
             options={{
               name: "steerAxleTireSize",
-              rules: { required: false },
+              rules: {
+                required: false,
+                pattern: {
+                  value: /^[0-9]+$/,
+                  message: "Please enter a number",
+                },
+              },
               label: "Steer Axle Tire Size (mm)",
               width: formFieldStyle.width,
-            }}
-            i18options={{
-              label_i18: "vehicle.power-unit.steer-axle-tire-size",
-              inValidMessage_i18: "vehicle.power-unit.required",
+              inValidMessage: errors?.steerAxleTireSize?.message,
             }}
           />
         </div>

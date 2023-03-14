@@ -18,6 +18,8 @@ import {
   RegisterOptions,
   UseFormGetValues,
   UseFormRegister,
+  UseFormSetValue,
+  UseFormTrigger,
 } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { CompanyProfile } from "../../../features/manageProfile/apiManager/manageProfileAPI";
@@ -52,6 +54,7 @@ export interface CommonFormPropsType<T extends FieldValues> {
   register: UseFormRegister<T>;
   feature: string;
   getValues: UseFormGetValues<T>;
+  trigger: UseFormTrigger<T>;
 }
 
 /**
@@ -101,7 +104,7 @@ export const CustomFormComponent = <
   T extends CompanyProfile | CreatePowerUnit
 >({
   type,
-  commonFormProps: { control, register, feature, getValues },
+  commonFormProps: { control, register, feature, getValues, trigger },
   options: {
     name,
     rules,
@@ -147,6 +150,7 @@ export const CustomFormComponent = <
                   name={name}
                   rules={rules}
                   query={query}
+                  trigger={trigger}
                 />
               ) : (
                 <CustomInputComponent
@@ -187,6 +191,7 @@ interface CustomSelectComponentProps<T extends FieldValues> {
   name: FieldPath<T>;
   rules: RegisterOptions;
   query?: UseQueryResult<PowerUnitType[], unknown>;
+  trigger: UseFormTrigger<T>;
 }
 
 /**
@@ -199,6 +204,7 @@ const CustomSelectComponent = <T extends CompanyProfile | CreatePowerUnit>({
   name,
   rules,
   query,
+  trigger,
 }: CustomSelectComponentProps<T>): JSX.Element => {
   return (
     <Select
@@ -218,6 +224,11 @@ const CustomSelectComponent = <T extends CompanyProfile | CreatePowerUnit>({
         "&&.Mui-focused fieldset": {
           border: `2px solid ${BC_COLOURS.focus_blue}`,
         },
+      }}
+      // Used onclick to manually trigger validation to
+      // fix issue with Select not re-validating once clicking on valid value
+      onClick={async () => {
+        await trigger(name, { shouldFocus: true });
       }}
     >
       {query?.data?.map((powerUnitType: PowerUnitType) => (
