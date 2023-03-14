@@ -9,9 +9,9 @@ import { PowerUnitForm } from "../components/form/PowerUnitForm";
 vi.mock("../apiManager/endpoints/endpoints", () => ({
   VEHICLE_URL: "test",
   VEHICLES_API: {
-    GET_ALL_POWER_UNITS: `test`,
-    POWER_UNIT: `test`,
-    POWER_UNIT_TYPES: `test`,
+    GET_ALL_POWER_UNITS: "test",
+    POWER_UNIT: "test",
+    POWER_UNIT_TYPES: "test",
   },
 }));
 
