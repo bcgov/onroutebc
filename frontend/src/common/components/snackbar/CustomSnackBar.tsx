@@ -1,6 +1,16 @@
 import { Alert, Snackbar } from "@mui/material";
 
 /**
+ * Type for displaying snackbar (aka toast message) after an operation.
+ */
+export interface SnackBarOptions {
+  showSnackbar: boolean;
+  setShowSnackbar: React.Dispatch<React.SetStateAction<boolean>>;
+  message: string;
+  isError: boolean;
+}
+
+/**
  * Displays a snackbar.
  * @param showSnackbar - boolean indicating if the snackbar should be displayed.
  * @param setShowSnackbar - setState variable to set if the snackbar should be displayed.
@@ -12,12 +22,7 @@ export const CustomSnackbar = ({
   setShowSnackbar,
   message,
   isError,
-}: {
-  showSnackbar: boolean;
-  setShowSnackbar: React.Dispatch<React.SetStateAction<boolean>>;
-  message: string;
-  isError: boolean;
-}) => {
+}: SnackBarOptions) => {
   const vertical = "top";
   const horizontal = "right";
 

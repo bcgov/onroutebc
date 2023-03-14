@@ -1,26 +1,20 @@
 import { useForm, FormProvider, FieldValues } from "react-hook-form";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useTranslation } from "react-i18next";
-import { Button } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import "./VehicleForm.scss";
-import Accordion from "@mui/material/Accordion";
-import AccordionSummary from "@mui/material/AccordionSummary";
-import AccordionDetails from "@mui/material/AccordionDetails";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 // import { AxleGroupForm } from "./AxleGroupForm";
 import { CreatePowerUnit } from "../../types/managevehicles";
 import { addPowerUnit, getPowerUnitTypes } from "../../apiManager/vehiclesAPI";
 import { CountryAndProvince } from "../../../../common/components/form/CountryAndProvince";
-import { DisplaySnackBarOptions } from "../../../../common/components/snackbar/CustomSnackbar2";
 import { CustomFormComponent } from "../../../../common/components/form/CustomFormComponents";
-import { useState } from "react";
-import { BC_COLOURS } from "../../../../themes/bcGovStyles";
+import { VEHICLE_TYPES_ENUM } from "./constants";
+import { useContext } from "react";
+import { SnackBarContext } from "../../../../App";
 
 /**
  * Props used by the power unit form.
  */
 interface PowerUnitFormProps {
-  displaySnackBar: (options: DisplaySnackBarOptions) => void;
   /**
    * The power unit details to be displayed if in edit mode.
    * @deprecated This prop is only temporarily supported and scheduled to be removed.
@@ -33,20 +27,20 @@ interface PowerUnitFormProps {
    */
   powerUnitId?: string;
 
-  /**
-   * Function to close the slide panel.
-   */
-  closeSlidePanel: () => void;
+  setShowAddVehicle: React.Dispatch<
+    React.SetStateAction<{
+      showAddVehicle: boolean;
+      vehicleType: VEHICLE_TYPES_ENUM;
+    }>
+  >;
 }
 
 /**
  * @returns React component containing the form for adding or editing a power unit.
  */
 export const PowerUnitForm = ({
-  displaySnackBar,
   powerUnit,
-  //powerUnitId,
-  closeSlidePanel,
+  setShowAddVehicle,
 }: PowerUnitFormProps) => {
   const formMethods = useForm<CreatePowerUnit>({
     defaultValues: {
@@ -79,16 +73,24 @@ export const PowerUnitForm = ({
     retry: false,
   });
 
+  const snackBar = useContext(SnackBarContext);
+
   const addVehicleQuery = useMutation({
     mutationFn: addPowerUnit,
     onSuccess: (response) => {
       if (response.status === 201) {
         queryClient.invalidateQueries(["powerUnits"]);
-        closeSlidePanel();
-        displaySnackBar({
-          display: true,
+
+        snackBar.setSnackBar({
+          showSnackbar: true,
+          setShowSnackbar: () => true,
+          message: "Power unit has been added successfully",
           isError: false,
-          messageI18NKey: "vehicle.add-vehicle.add-power-unit-success",
+        });
+
+        setShowAddVehicle({
+          showAddVehicle: false,
+          vehicleType: VEHICLE_TYPES_ENUM.NONE,
         });
       } else {
         // Display Error in the form.
@@ -113,8 +115,12 @@ export const PowerUnitForm = ({
     addVehicleQuery.mutate(powerUnitToBeAdded);
   };
 
-  const ADD_VEHICLE_BTN_HEIGHT = "75px";
-  const { t } = useTranslation();
+  const handleClose = () => {
+    setShowAddVehicle({
+      showAddVehicle: false,
+      vehicleType: VEHICLE_TYPES_ENUM.NONE,
+    });
+  };
 
   const commonFormProps = {
     control: control,
@@ -123,194 +129,159 @@ export const PowerUnitForm = ({
     getValues: getValues,
   };
 
-  // Used to change the background colour of the accordion summary when expanded
-  // Future proof for when more accordions are added, such as axle group
-  // https://mui.com/material-ui/react-accordion/#customization
-  const powerUnitPanel = "powerunit-panel";
-  const [expanded, setExpanded] = useState<string | false>(powerUnitPanel);
-  const handleChange =
-    (panel: string) => (event: React.SyntheticEvent, newExpanded: boolean) => {
-      setExpanded(newExpanded ? panel : false);
-    };
-
   return (
     <div>
       <FormProvider {...formMethods}>
-        <Accordion
-          expanded={expanded === powerUnitPanel}
-          onChange={handleChange(powerUnitPanel)}
-        >
-          <AccordionSummary
-            expandIcon={<ExpandMoreIcon />}
-            aria-controls="add-power-unit-content"
-            id="add-power-unit-accordion-summary"
-            className="bold-text"
-            sx={{
-              backgroundColor: expanded
-                ? BC_COLOURS.bc_background_light_grey
-                : "",
-              padding: "0px 28px",
-              height: "75px",
+        <div id="power-unit-form">
+          <CustomFormComponent
+            type="input"
+            commonFormProps={commonFormProps}
+            options={{
+              name: "unitNumber",
+              rules: { required: false, maxLength: 10 },
+              label: "Unit #",
+              width: formFieldStyle.width,
             }}
-          >
-            {t("vehicle.power-unit-details")}
-          </AccordionSummary>
-          <AccordionDetails
-            style={{ padding: `8px 24px ${ADD_VEHICLE_BTN_HEIGHT} 24px ` }}
-          >
-            <div id="power-unit-form">
-              <CustomFormComponent
-                type="input"
-                commonFormProps={commonFormProps}
-                options={{
-                  name: "unitNumber",
-                  rules: { required: false, maxLength: 10 },
-                  label: "Unit #",
-                  width: formFieldStyle.width,
-                }}
-                i18options={{
-                  label_i18: "vehicle.power-unit.unit-number",
-                }}
-              />
-              <CustomFormComponent
-                type="input"
-                commonFormProps={commonFormProps}
-                options={{
-                  name: "make",
-                  rules: { required: true, maxLength: 20 },
-                  label: "Make",
-                  width: formFieldStyle.width,
-                }}
-                i18options={{
-                  label_i18: "vehicle.power-unit.make",
-                  inValidMessage_i18: "vehicle.power-unit.required",
-                }}
-              />
+            i18options={{
+              label_i18: "vehicle.power-unit.unit-number",
+            }}
+          />
+          <CustomFormComponent
+            type="input"
+            commonFormProps={commonFormProps}
+            options={{
+              name: "make",
+              rules: { required: true, maxLength: 20 },
+              label: "Make",
+              width: formFieldStyle.width,
+            }}
+            i18options={{
+              label_i18: "vehicle.power-unit.make",
+              inValidMessage_i18: "vehicle.power-unit.required",
+            }}
+          />
 
-              <CustomFormComponent
-                type="input"
-                commonFormProps={commonFormProps}
-                options={{
-                  name: "year",
-                  rules: { required: true, minLength: 4, maxLength: 4 },
-                  label: "Year",
-                  width: formFieldStyle.width,
-                }}
-                i18options={{
-                  label_i18: "vehicle.power-unit.year",
-                  inValidMessage_i18: "vehicle.power-unit.required",
-                }}
-              />
+          <CustomFormComponent
+            type="input"
+            commonFormProps={commonFormProps}
+            options={{
+              name: "year",
+              rules: { required: true, minLength: 4, maxLength: 4 },
+              label: "Year",
+              width: formFieldStyle.width,
+            }}
+            i18options={{
+              label_i18: "vehicle.power-unit.year",
+              inValidMessage_i18: "vehicle.power-unit.required",
+            }}
+          />
 
-              <CustomFormComponent
-                type="input"
-                commonFormProps={commonFormProps}
-                options={{
-                  name: "vin",
-                  rules: { required: true, minLength: 17, maxLength: 17 },
-                  label: "VIN",
-                  width: formFieldStyle.width,
-                }}
-                i18options={{
-                  label_i18: "vehicle.power-unit.vin",
-                  inValidMessage_i18: "vehicle.power-unit.required",
-                }}
-              />
+          <CustomFormComponent
+            type="input"
+            commonFormProps={commonFormProps}
+            options={{
+              name: "vin",
+              rules: { required: true, minLength: 6, maxLength: 6 },
+              label: "VIN",
+              width: formFieldStyle.width,
+              customHelperText: "last 6 digits",
+              inValidMessage: "VIN is required.",
+            }}
+          />
 
-              <CustomFormComponent
-                type="input"
-                commonFormProps={commonFormProps}
-                options={{
-                  name: "plate",
-                  rules: { required: true, maxLength: 10 },
-                  label: "Plate",
-                  width: formFieldStyle.width,
-                }}
-                i18options={{
-                  label_i18: "vehicle.power-unit.plate",
-                  inValidMessage_i18: "vehicle.power-unit.required",
-                }}
-              />
+          <CustomFormComponent
+            type="input"
+            commonFormProps={commonFormProps}
+            options={{
+              name: "plate",
+              rules: { required: true, maxLength: 10 },
+              label: "Plate",
+              width: formFieldStyle.width,
+            }}
+            i18options={{
+              label_i18: "vehicle.power-unit.plate",
+              inValidMessage_i18: "vehicle.power-unit.required",
+            }}
+          />
 
-              <CustomFormComponent
-                type="select"
-                commonFormProps={commonFormProps}
-                options={{
-                  name: "powerUnitTypeCode",
-                  rules: { required: true },
-                  label: "Power Unit Type",
-                  width: formFieldStyle.width,
-                  query: powerUnitTypesQuery,
-                }}
-                i18options={{
-                  label_i18: "vehicle.power-unit.power-unit-type",
-                  inValidMessage_i18: "vehicle.power-unit.required",
-                }}
-              />
+          <CustomFormComponent
+            type="select"
+            commonFormProps={commonFormProps}
+            options={{
+              name: "powerUnitTypeCode",
+              rules: { required: true },
+              label: "Vehicle Sub-type",
+              width: formFieldStyle.width,
+              query: powerUnitTypesQuery,
+            }}
+            i18options={{
+              label_i18: "vehicle.power-unit.power-unit-type",
+              inValidMessage_i18: "vehicle.power-unit.required",
+            }}
+          />
 
-              <CountryAndProvince
-                country={
-                  powerUnit?.provinceId
-                    ? powerUnit?.provinceId?.split("-")[0]
-                    : ""
-                }
-                province={
-                  powerUnit?.provinceId
-                    ? powerUnit?.provinceId?.split("-")[1]
-                    : ""
-                }
-                width={formFieldStyle.width}
-              />
-              <CustomFormComponent
-                type="input"
-                commonFormProps={commonFormProps}
-                options={{
-                  name: "licensedGvw",
-                  rules: { required: true },
-                  label: "Licensed GVW",
-                  width: formFieldStyle.width,
-                }}
-                i18options={{
-                  label_i18: "vehicle.power-unit.licensed-gvw",
-                  inValidMessage_i18: "vehicle.power-unit.required",
-                }}
-              />
-              <CustomFormComponent
-                type="input"
-                commonFormProps={commonFormProps}
-                options={{
-                  name: "steerAxleTireSize",
-                  rules: { required: false },
-                  label: "Steer Axle Tire Size (mm)",
-                  width: formFieldStyle.width,
-                }}
-                i18options={{
-                  label_i18: "vehicle.power-unit.steer-axle-tire-size",
-                  inValidMessage_i18: "vehicle.power-unit.required",
-                }}
-              />
-            </div>
-          </AccordionDetails>
-        </Accordion>
+          <CountryAndProvince
+            country={
+              powerUnit?.provinceId ? powerUnit?.provinceId?.split("-")[0] : ""
+            }
+            province={
+              powerUnit?.provinceId ? powerUnit?.provinceId?.split("-")[1] : ""
+            }
+            width={formFieldStyle.width}
+          />
+          <CustomFormComponent
+            type="input"
+            commonFormProps={commonFormProps}
+            options={{
+              name: "licensedGvw",
+              rules: { required: true },
+              label: "Licensed GVW",
+              width: formFieldStyle.width,
+            }}
+            i18options={{
+              label_i18: "vehicle.power-unit.licensed-gvw",
+              inValidMessage_i18: "vehicle.power-unit.required",
+            }}
+          />
+          <CustomFormComponent
+            type="input"
+            commonFormProps={commonFormProps}
+            options={{
+              name: "steerAxleTireSize",
+              rules: { required: false },
+              label: "Steer Axle Tire Size (mm)",
+              width: formFieldStyle.width,
+            }}
+            i18options={{
+              label_i18: "vehicle.power-unit.steer-axle-tire-size",
+              inValidMessage_i18: "vehicle.power-unit.required",
+            }}
+          />
+        </div>
         {/* {getAxleGroupForms()} */}
       </FormProvider>
-      <div
-        className="add-vehicle-button-container"
-        style={{ height: ADD_VEHICLE_BTN_HEIGHT }}
-      >
+
+      <Box sx={{ margin: "32px 0px" }}>
+        <Button
+          key="cancel-add-vehicle-button"
+          aria-label="Cancel Add Vehicle"
+          variant="contained"
+          color="secondary"
+          onClick={handleClose}
+          sx={{ marginRight: "32px" }}
+        >
+          Cancel
+        </Button>
         <Button
           key="add-vehicle-button"
-          aria-label="Add Vehicle"
+          aria-label="Add To Inventory"
           variant="contained"
           color="primary"
-          sx={{
-            width: "100%",
-          }}
           onClick={handleSubmit(onAddVehicle)}
         >
-          {t("vehicle.form.submit")}
+          Add To Inventory
         </Button>
-      </div>
+      </Box>
     </div>
   );
 };

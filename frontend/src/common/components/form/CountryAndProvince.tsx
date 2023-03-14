@@ -32,9 +32,23 @@ interface CountryAndProvinceProps {
    * The value for the width of the select box
    */
   width?: string | null;
+
+  /**
+   * React Hook Form rules. Example: rules={{ required: false }}
+   */
   rules?: RegisterOptions;
+
+  /**
+   * Name used for the API call. Example: countryField={"primaryContact.countryCode"}
+   */
   countryField?: string;
   provinceField?: string;
+
+  /**
+   * Name of the feature that the field belongs to.
+   * This name is used for Id's and keys.
+   * Example: feature={"profile"}
+   */
   feature?: string;
 }
 
@@ -146,6 +160,9 @@ export const CountryAndProvince = ({
                 </FormLabel>
                 <Select
                   aria-labelledby={`${feature}-country-label`}
+                  inputProps={{
+                    "aria-label": "country",
+                  }}
                   defaultValue={country || ""}
                   {...register(countryField, {
                     required: rules.required,
@@ -201,6 +218,9 @@ export const CountryAndProvince = ({
                   </FormLabel>
                   <Select
                     aria-labelledby={`${feature}-province-label`}
+                    inputProps={{
+                      "aria-label": provinceField,
+                    }}
                     defaultValue={province || ""}
                     {...register(provinceField, {
                       required: shouldDisplayProvince && rules.required,
