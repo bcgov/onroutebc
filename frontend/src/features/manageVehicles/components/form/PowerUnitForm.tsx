@@ -1,15 +1,15 @@
 import { useForm, FormProvider, FieldValues } from "react-hook-form";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Box, Button, MenuItem } from "@mui/material";
 import "./VehicleForm.scss";
 // import { AxleGroupForm } from "./AxleGroupForm";
 import { CreatePowerUnit, PowerUnitType } from "../../types/managevehicles";
-import { addPowerUnit, getPowerUnitTypes } from "../../apiManager/vehiclesAPI";
 import { CountryAndProvince } from "../../../../common/components/form/CountryAndProvince";
 import { CustomFormComponent } from "../../../../common/components/form/CustomFormComponents";
-import { VEHICLE_TYPES_ENUM } from "./constants";
-import { useContext } from "react";
-import { SnackBarContext } from "../../../../App";
+import {
+  useAddPowerUnitMutation,
+  usePowerUnitTypesQuery,
+} from "../../apiManager/hooks";
+import { useNavigate } from "react-router-dom";
 
 /**
  * Props used by the power unit form.
@@ -26,25 +26,12 @@ interface PowerUnitFormProps {
    * If valid and available, the form will be in an editable state.
    */
   powerUnitId?: string;
-
-  /**
-   * Setter to show/hide the Add Vehicle dashboard, which includes either the Add Power Unit or Add Trailer form
-   */
-  setShowAddVehicle: React.Dispatch<
-    React.SetStateAction<{
-      showAddVehicle: boolean;
-      vehicleType: VEHICLE_TYPES_ENUM;
-    }>
-  >;
 }
 
 /**
  * @returns React component containing the form for adding or editing a power unit.
  */
-export const PowerUnitForm = ({
-  powerUnit,
-  setShowAddVehicle,
-}: PowerUnitFormProps) => {
+export const PowerUnitForm = ({ powerUnit }: PowerUnitFormProps) => {
   // Default values to register with React Hook Forms
   // If data was passed to this component, then use that data, otherwise use empty or undefined values
   const powerUnitDefaultValues = {
@@ -73,38 +60,9 @@ export const PowerUnitForm = ({
     formState: { errors },
   } = formMethods;
 
-  const queryClient = useQueryClient();
-
-  const powerUnitTypesQuery = useQuery({
-    queryKey: ["powerUnitTypes"],
-    queryFn: getPowerUnitTypes,
-    retry: false,
-  });
-
-  const snackBar = useContext(SnackBarContext);
-
-  const addVehicleQuery = useMutation({
-    mutationFn: addPowerUnit,
-    onSuccess: (response) => {
-      if (response.status === 201) {
-        queryClient.invalidateQueries(["powerUnits"]);
-
-        snackBar.setSnackBar({
-          showSnackbar: true,
-          setShowSnackbar: () => true,
-          message: "Power unit has been added successfully",
-          isError: false,
-        });
-
-        setShowAddVehicle({
-          showAddVehicle: false,
-          vehicleType: VEHICLE_TYPES_ENUM.NONE,
-        });
-      } else {
-        // Display Error in the form.
-      }
-    },
-  });
+  const powerUnitTypesQuery = usePowerUnitTypesQuery();
+  const addVehicleQuery = useAddPowerUnitMutation();
+  const navigate = useNavigate();
 
   /**
    * Custom css overrides for the form fields
@@ -127,10 +85,7 @@ export const PowerUnitForm = ({
    * Changed view to the main Vehicle Inventory page
    */
   const handleClose = () => {
-    setShowAddVehicle({
-      showAddVehicle: false,
-      vehicleType: VEHICLE_TYPES_ENUM.NONE,
-    });
+    navigate("../");
   };
 
   /**

@@ -23,7 +23,13 @@ vi.mock("../apiManager/vehiclesAPI", () => ({
 }));
 
 const setStateMock = vi.fn();
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+    },
+  },
+});
 
 beforeEach(() => {
   vi.resetModules();
@@ -33,7 +39,7 @@ beforeEach(() => {
 const renderComponent = () => {
   render(
     <QueryClientProvider client={queryClient}>
-      <PowerUnitForm setShowAddVehicle={setStateMock} />
+      <PowerUnitForm />
     </QueryClientProvider>
   );
 };
