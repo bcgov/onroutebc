@@ -15,7 +15,6 @@ import { PhoneNumberInput } from "./subFormComponents/PhoneNumberInput";
 
 /**
  * Properties of onRouteBC custom form components
- * Types that are supported include MUI OutlinedInput and Select components
  */
 export interface CustomFormComponentProps<T extends FieldValues> {
   type: "input" | "select" | "phone";
@@ -38,6 +37,9 @@ interface CustomFormOptionsProps<T extends FieldValues> {
   customHelperText?: string;
 }
 
+/**
+ * Optional Internationalization properties
+ */
 interface i18optionsProps {
   label_i18?: string;
   inValidMessage_i18?: string;

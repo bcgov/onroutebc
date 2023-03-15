@@ -27,6 +27,9 @@ interface PowerUnitFormProps {
    */
   powerUnitId?: string;
 
+  /**
+   * Setter to show/hide the Add Vehicle dashboard, which includes either the Add Power Unit or Add Trailer form
+   */
   setShowAddVehicle: React.Dispatch<
     React.SetStateAction<{
       showAddVehicle: boolean;
@@ -42,6 +45,8 @@ export const PowerUnitForm = ({
   powerUnit,
   setShowAddVehicle,
 }: PowerUnitFormProps) => {
+  // Default values to register with React Hook Forms
+  // If data was passed to this component, then use that data, otherwise use empty or undefined values
   const powerUnitDefaultValues = {
     country: powerUnit?.provinceId ? powerUnit?.provinceId?.split("-")[0] : "",
     province: powerUnit?.provinceId ? powerUnit?.provinceId?.split("-")[1] : "",
@@ -118,6 +123,9 @@ export const PowerUnitForm = ({
     addVehicleQuery.mutate(powerUnitToBeAdded);
   };
 
+  /**
+   * Changed view to the main Vehicle Inventory page
+   */
   const handleClose = () => {
     setShowAddVehicle({
       showAddVehicle: false,
@@ -125,6 +133,9 @@ export const PowerUnitForm = ({
     });
   };
 
+  /**
+   * The name of this feature that is used for id's, keys, and associating form components
+   */
   const FEATURE = "power-unit";
 
   return (
