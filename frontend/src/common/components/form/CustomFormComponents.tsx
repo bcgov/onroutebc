@@ -20,7 +20,7 @@ export interface CustomFormComponentProps<T extends FieldValues> {
   type: "input" | "select" | "phone";
   feature: string;
   options: CustomFormOptionsProps<T>;
-  i18options?: i18optionsProps;
+  i18options?: internationalOptionsProps;
   menuOptions?: JSX.Element[];
 }
 
@@ -40,7 +40,7 @@ interface CustomFormOptionsProps<T extends FieldValues> {
 /**
  * Optional Internationalization properties
  */
-interface i18optionsProps {
+interface internationalOptionsProps {
   label_i18?: string;
   inValidMessage_i18?: string;
   inValidMessage_fieldName_i18?: string;
@@ -87,6 +87,42 @@ export const CustomFormComponent = <
 }: CustomFormComponentProps<T>): JSX.Element => {
   const { control } = useFormContext();
   const { t } = useTranslation();
+
+  const renderSubFormComponent = (invalid: boolean) => {
+    switch (type) {
+      case "select":
+        return (
+          <CustomSelect
+            feature={feature}
+            name={name}
+            rules={rules}
+            menuOptions={menuOptions}
+          />
+        );
+      case "phone":
+        return (
+          <PhoneNumberInput
+            feature={feature}
+            name={name}
+            rules={rules}
+            inputProps={inputProps}
+            invalid={invalid}
+          />
+        );
+      case "input":
+        return (
+          <CustomOutlinedInput
+            feature={feature}
+            name={name}
+            rules={rules}
+            inputProps={inputProps}
+            invalid={invalid}
+          />
+        );
+      default:
+        return null;
+    }
+  };
   return (
     <Box sx={{ width: width }}>
       <Controller
@@ -111,31 +147,7 @@ export const CustomFormComponent = <
                   </span>
                 )}
               </FormLabel>
-              {type === "select" ? (
-                <CustomSelect
-                  feature={feature}
-                  name={name}
-                  rules={rules}
-                  menuOptions={menuOptions}
-                />
-              ) : type === "phone" ? (
-                <PhoneNumberInput
-                  feature={feature}
-                  name={name}
-                  rules={rules}
-                  inputProps={inputProps}
-                  invalid={invalid}
-                />
-              ) : (
-                <CustomOutlinedInput
-                  feature={feature}
-                  name={name}
-                  rules={rules}
-                  inputProps={inputProps}
-                  invalid={invalid}
-                />
-              )}
-
+              {renderSubFormComponent(invalid)}
               {invalid && (
                 <FormHelperText data-testid={`alert-${name}`} error>
                   {i18options?.inValidMessage_i18

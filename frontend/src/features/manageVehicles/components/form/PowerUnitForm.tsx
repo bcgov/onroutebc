@@ -134,7 +134,7 @@ export const PowerUnitForm = ({ powerUnit }: PowerUnitFormProps) => {
               rules: {
                 required: { value: true, message: "Year is required." },
                 pattern: {
-                  value: /^[0-9]+$/,
+                  value: /^\d+$/,
                   message: "Please enter a number",
                 },
                 minLength: { value: 4, message: "Min length is 4" },
@@ -219,7 +219,7 @@ export const PowerUnitForm = ({ powerUnit }: PowerUnitFormProps) => {
               rules: {
                 required: { value: true, message: "Licensed GVW is required." },
                 pattern: {
-                  value: /^[0-9]+$/,
+                  value: /^\d+$/,
                   message: "Please enter a number",
                 },
               },
@@ -236,7 +236,7 @@ export const PowerUnitForm = ({ powerUnit }: PowerUnitFormProps) => {
               rules: {
                 required: false,
                 pattern: {
-                  value: /^[0-9]+$/,
+                  value: /^\d+$/,
                   message: "Please enter a number",
                 },
               },
