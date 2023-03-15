@@ -2,10 +2,7 @@ import { Typography } from "@mui/material";
 import { useState } from "react";
 import { CountryAndProvince } from "../../../../../common/components/form/CountryAndProvince";
 import { CustomCheckbox } from "../../../../../common/components/form/CustomCheckbox";
-import {
-  CommonFormPropsType,
-  CustomFormComponent,
-} from "../../../../../common/components/form/CustomFormComponents";
+import { CustomFormComponent } from "../../../../../common/components/form/CustomFormComponents";
 import {
   DEFAULT_WIDTH,
   CITY_WIDTH,
@@ -14,11 +11,11 @@ import {
 import { CompanyProfile } from "../../../apiManager/manageProfileAPI";
 
 export const CompanyMailingAddressForm = ({
-  commonFormProps,
+  feature,
   companyInfo,
 }: {
+  feature: string;
   companyInfo?: CompanyProfile;
-  commonFormProps: CommonFormPropsType<CompanyProfile>;
 }) => {
   const [showMailingAddress, setShowMailingAddress] = useState(
     !companyInfo?.mailingAddressSameAsCompanyAddress
@@ -27,7 +24,7 @@ export const CompanyMailingAddressForm = ({
   return (
     <>
       <CustomCheckbox
-        commonFormProps={commonFormProps}
+        feature={feature}
         name="mailingAddressSameAsCompanyAddress"
         label={"Mailing address is the same as company address"}
         inputProps={{
@@ -45,7 +42,7 @@ export const CompanyMailingAddressForm = ({
 
           <CustomFormComponent
             type="input"
-            commonFormProps={commonFormProps}
+            feature={feature}
             options={{
               name: "mailingAddress.addressLine1",
               rules: { required: true },
@@ -55,7 +52,7 @@ export const CompanyMailingAddressForm = ({
           />
           <CustomFormComponent
             type="input"
-            commonFormProps={commonFormProps}
+            feature={feature}
             options={{
               name: "mailingAddress.addressLine2",
               rules: { required: false },
@@ -76,13 +73,13 @@ export const CompanyMailingAddressForm = ({
             width={DEFAULT_WIDTH}
             countryField={"mailingAddress.countryCode"}
             provinceField={"mailingAddress.provinceCode"}
-            feature={"profile"}
+            feature={feature}
             rules={{ required: showMailingAddress }}
           />
           <div className="mp-side-by-side-container">
             <CustomFormComponent
               type="input"
-              commonFormProps={commonFormProps}
+              feature={feature}
               options={{
                 name: "mailingAddress.city",
                 rules: { required: true },
@@ -93,7 +90,7 @@ export const CompanyMailingAddressForm = ({
             />
             <CustomFormComponent
               type="input"
-              commonFormProps={commonFormProps}
+              feature={feature}
               options={{
                 name: "mailingAddress.postalCode",
                 rules: { required: true },

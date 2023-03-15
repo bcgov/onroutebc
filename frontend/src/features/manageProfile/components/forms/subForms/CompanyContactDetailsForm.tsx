@@ -1,19 +1,11 @@
-import {
-  CommonFormPropsType,
-  CustomFormComponent,
-} from "../../../../../common/components/form/CustomFormComponents";
+import { CustomFormComponent } from "../../../../../common/components/form/CustomFormComponents";
 import { PHONE_WIDTH, EXT_WIDTH } from "../../../../../themes/bcGovStyles";
-import { CompanyProfile } from "../../../apiManager/manageProfileAPI";
 
-export const CompanyContactDetailsForm = ({
-  commonFormProps,
-}: {
-  commonFormProps: CommonFormPropsType<CompanyProfile>;
-}) => (
+export const CompanyContactDetailsForm = ({ feature }: { feature: string }) => (
   <>
     <CustomFormComponent
       type="input"
-      commonFormProps={commonFormProps}
+      feature={feature}
       options={{
         name: "email",
         rules: { required: false },
@@ -22,21 +14,20 @@ export const CompanyContactDetailsForm = ({
     />
     <div className="mp-side-by-side-container">
       <CustomFormComponent
-        type="input"
-        commonFormProps={commonFormProps}
+        type="phone"
+        feature={feature}
         options={{
           name: "phone",
           rules: { required: true },
           label: "Phone Number",
           inValidMessage: "Phone Number is required",
           width: PHONE_WIDTH,
-          displayAs: "phone",
           inputProps: { maxLength: 20 },
         }}
       />
       <CustomFormComponent
         type="input"
-        commonFormProps={commonFormProps}
+        feature={feature}
         options={{
           name: "extension",
           rules: { required: false },
@@ -47,7 +38,7 @@ export const CompanyContactDetailsForm = ({
     </div>
     <CustomFormComponent
       type="input"
-      commonFormProps={commonFormProps}
+      feature={feature}
       options={{
         name: "fax",
         rules: { required: false },

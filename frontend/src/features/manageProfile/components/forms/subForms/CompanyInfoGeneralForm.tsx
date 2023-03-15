@@ -1,8 +1,5 @@
 import { CountryAndProvince } from "../../../../../common/components/form/CountryAndProvince";
-import {
-  CommonFormPropsType,
-  CustomFormComponent,
-} from "../../../../../common/components/form/CustomFormComponents";
+import { CustomFormComponent } from "../../../../../common/components/form/CustomFormComponents";
 import {
   DEFAULT_WIDTH,
   CITY_WIDTH,
@@ -11,16 +8,16 @@ import {
 import { CompanyProfile } from "../../../apiManager/manageProfileAPI";
 
 export const CompanyInfoGeneralForm = ({
-  commonFormProps,
+  feature,
   companyInfo,
 }: {
-  commonFormProps: CommonFormPropsType<CompanyProfile>;
+  feature: string;
   companyInfo?: CompanyProfile;
 }) => (
   <>
     <CustomFormComponent
       type="input"
-      commonFormProps={commonFormProps}
+      feature={feature}
       options={{
         name: "companyAddress.addressLine1",
         rules: { required: true },
@@ -31,7 +28,7 @@ export const CompanyInfoGeneralForm = ({
 
     <CustomFormComponent
       type="input"
-      commonFormProps={commonFormProps}
+      feature={feature}
       options={{
         name: "companyAddress.addressLine2",
         rules: { required: false },
@@ -53,13 +50,13 @@ export const CompanyInfoGeneralForm = ({
       width={DEFAULT_WIDTH}
       countryField={"companyAddress.countryCode"}
       provinceField={"companyAddress.provinceCode"}
-      feature="profile"
+      feature={feature}
     />
 
     <div className="mp-side-by-side-container">
       <CustomFormComponent
         type="input"
-        commonFormProps={commonFormProps}
+        feature={feature}
         options={{
           name: "companyAddress.city",
           rules: { required: true },
@@ -70,7 +67,7 @@ export const CompanyInfoGeneralForm = ({
       />
       <CustomFormComponent
         type="input"
-        commonFormProps={commonFormProps}
+        feature={feature}
         options={{
           name: "companyAddress.postalCode",
           rules: { required: true },

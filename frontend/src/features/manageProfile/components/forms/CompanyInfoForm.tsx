@@ -6,7 +6,6 @@ import {
   CompanyProfile,
   updateCompanyInfo,
 } from "../../apiManager/manageProfileAPI";
-import { CommonFormPropsType } from "../../../../common/components/form/CustomFormComponents";
 import { InfoBcGovBanner } from "../../../../common/components/alertBanners/AlertBanners";
 
 import "./CompanyInfoForms.scss";
@@ -77,7 +76,7 @@ export const CompanyInfoForm = memo(
       },
     });
 
-    const { register, handleSubmit, control, getValues } = formMethods;
+    const { handleSubmit } = formMethods;
 
     const addCompanyInfoQuery = useMutation({
       mutationFn: updateCompanyInfo,
@@ -100,23 +99,15 @@ export const CompanyInfoForm = memo(
       });
     };
 
-    const commonFormProps: CommonFormPropsType<CompanyProfile> = {
-      control: control,
-      register: register,
-      feature: "profile",
-      getValues: getValues,
-    };
+    const FEATURE = "company-profile";
 
     return (
       <div className="mp-form-container">
         <FormProvider {...formMethods}>
-          <CompanyInfoGeneralForm
-            commonFormProps={commonFormProps}
-            companyInfo={companyInfo}
-          />
+          <CompanyInfoGeneralForm feature={FEATURE} companyInfo={companyInfo} />
 
           <CompanyMailingAddressForm
-            commonFormProps={commonFormProps}
+            feature={FEATURE}
             companyInfo={companyInfo}
           />
 
@@ -124,7 +115,7 @@ export const CompanyInfoForm = memo(
             Company Contact Details
           </Typography>
 
-          <CompanyContactDetailsForm commonFormProps={commonFormProps} />
+          <CompanyContactDetailsForm feature={FEATURE} />
 
           <Typography variant="h2" gutterBottom>
             Company Primary Contact
@@ -133,7 +124,7 @@ export const CompanyInfoForm = memo(
           <InfoBcGovBanner description="The Company Primary Contact will be contacted for all onRouteBC client profile queries." />
 
           <CompanyPrimaryContactForm
-            commonFormProps={commonFormProps}
+            feature={FEATURE}
             companyInfo={companyInfo}
           />
         </FormProvider>

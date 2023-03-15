@@ -11,8 +11,6 @@ import { VEHICLE_TYPES_ENUM } from "./constants";
 import { useContext } from "react";
 import { SnackBarContext } from "../../../../App";
 
-import { DevTool } from "@hookform/devtools";
-
 /**
  * Props used by the power unit form.
  */
@@ -67,7 +65,6 @@ export const PowerUnitForm = ({
 
   const {
     handleSubmit,
-    control,
     formState: { errors },
   } = formMethods;
 
@@ -132,7 +129,6 @@ export const PowerUnitForm = ({
 
   return (
     <div>
-      <DevTool control={control} />
       <FormProvider {...formMethods}>
         <div id="power-unit-form">
           <CustomFormComponent
