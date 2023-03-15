@@ -20,7 +20,7 @@ export interface CustomFormComponentProps<T extends FieldValues> {
   type: "input" | "select" | "phone";
   feature: string;
   options: CustomFormOptionsProps<T>;
-  i18options?: internationalOptionsProps;
+  i18options?: InternationalOptionsProps;
   menuOptions?: JSX.Element[];
 }
 
@@ -40,7 +40,7 @@ interface CustomFormOptionsProps<T extends FieldValues> {
 /**
  * Optional Internationalization properties
  */
-interface internationalOptionsProps {
+interface InternationalOptionsProps {
   label_i18?: string;
   inValidMessage_i18?: string;
   inValidMessage_fieldName_i18?: string;
