@@ -31,6 +31,7 @@ export const CustomOutlinedInput = <T extends CompanyProfile | CreatePowerUnit>(
   const { register } = useFormContext();
 
   // Add aria-label to input prop for Jest testing purposes
+  // eslint-disable-next-line  @typescript-eslint/no-explicit-any
   const updatedInputProps: any = props.inputProps;
   updatedInputProps["aria-label"] = props.name;
 

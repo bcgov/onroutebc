@@ -15,7 +15,7 @@ export const PhoneNumberInput = <T extends CompanyProfile | CreatePowerUnit>(
 ): JSX.Element => {
   const { register, getValues } = useFormContext();
   // Get the value of the field from React Hook Form
-  /* eslint-disable  @typescript-eslint/no-explicit-any */
+  // eslint-disable-next-line  @typescript-eslint/no-explicit-any
   const defaultVal: PathValue<T, Path<T>> = getValues<any>(props.name);
   // Set the value of the field in a useState variable,
   // which is used to automatically format the users input

@@ -29,7 +29,7 @@ export const CustomSelect = <T extends CompanyProfile | CreatePowerUnit>({
   rules,
   menuOptions,
 }: CustomSelectProps<T>): JSX.Element => {
-  const { register } = useFormContext();
+  const { register, trigger } = useFormContext();
 
   return (
     <Select
@@ -49,6 +49,15 @@ export const CustomSelect = <T extends CompanyProfile | CreatePowerUnit>({
         "&&.Mui-focused fieldset": {
           border: `2px solid ${BC_COLOURS.focus_blue}`,
         },
+      }}
+      // This onClose function fixes a bug where the Select component does not immediately
+      // revalidate when selecting an option after an invalid form submission.
+      // The validation needed to be triggered again manually
+      onClose={async () => {
+        const output = await trigger(name);
+        if (!output) {
+          trigger(name);
+        }
       }}
     >
       {menuOptions}
