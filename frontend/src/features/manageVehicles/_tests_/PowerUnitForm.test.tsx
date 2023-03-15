@@ -1,73 +1,15 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, screen } from "@testing-library/react";
 import user from "@testing-library/user-event";
-import { BrowserRouter as Router } from "react-router-dom";
+
 import { vi } from "vitest";
 
 import { PowerUnitForm } from "../components/form/PowerUnitForm";
-
-// Mock Browser Router
-const mockedUsedNavigate = vi.fn();
-vi.mock("react-router-dom", async () => {
-  const mod = await vi.importActual<typeof import("react-router-dom")>(
-    "react-router-dom"
-  );
-  return {
-    ...mod,
-    useNavigate: () => mockedUsedNavigate,
-  };
-});
-
-// API Mocks - API Tests not yet implemented
-
-vi.mock("../apiManager/endpoints/endpoints", () => ({
-  VEHICLE_URL: "test",
-  VEHICLES_API: {
-    GET_ALL_POWER_UNITS: "test",
-    POWER_UNIT: "test",
-    POWER_UNIT_TYPES: "test",
-  },
-}));
-
-vi.mock("../apiManager/vehiclesAPI", () => ({
-  getAllPowerUnits: vi.fn(),
-  getPowerUnitTypes: vi.fn(),
-  addPowerUnit: vi.fn(),
-  updatePowerUnit: vi.fn(),
-}));
-
-vi.mock("../apiManager/hooks", () => ({
-  usePowerUnitTypesQuery: vi.fn(),
-  useAddPowerUnitMutation: vi.fn(),
-}));
-
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: false,
-    },
-  },
-  logger: {
-    log: console.log,
-    warn: console.warn,
-    error: () => undefined,
-  },
-});
+import { renderWithClient } from "./utils";
 
 beforeEach(() => {
   vi.resetModules();
-  renderComponent();
+  renderWithClient(<PowerUnitForm />);
 });
-
-const renderComponent = () => {
-  render(
-    <QueryClientProvider client={queryClient}>
-      <Router>
-        <PowerUnitForm />
-      </Router>
-    </QueryClientProvider>
-  );
-};
 
 describe("All Power Unit Form Fields", () => {
   it("Should render all key form elements", () => {
@@ -182,11 +124,17 @@ describe("Power Unit Form Submission", () => {
 
     // Still need to test the API
     // Still need to figure out how to test MUI Select dropdowns
-
     expect(
       await screen.findByTestId("alert-powerUnitTypeCode")
     ).toHaveTextContent("Vehicle Sub-type is required.");
+
+    expect(unitNumber).toHaveValue("Ken10");
+    expect(make).toHaveValue("Kenworth");
+    expect(year).toHaveValue("2020");
+    expect(vin).toHaveValue("123456");
+    expect(plate).toHaveValue("ABC123");
     expect(licensedGvw).toHaveValue("85000");
+    expect(steerAxleTireSize).toHaveValue("300");
   });
 });
 
