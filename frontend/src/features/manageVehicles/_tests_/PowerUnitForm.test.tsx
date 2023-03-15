@@ -1,11 +1,25 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import user from "@testing-library/user-event";
+import { BrowserRouter as Router } from "react-router-dom";
 import { vi } from "vitest";
 
 import { PowerUnitForm } from "../components/form/PowerUnitForm";
 
+// Mock Browser Router
+const mockedUsedNavigate = vi.fn();
+vi.mock("react-router-dom", async () => {
+  const mod = await vi.importActual<typeof import("react-router-dom")>(
+    "react-router-dom"
+  );
+  return {
+    ...mod,
+    useNavigate: () => mockedUsedNavigate,
+  };
+});
+
 // API Mocks - API Tests not yet implemented
+
 vi.mock("../apiManager/endpoints/endpoints", () => ({
   VEHICLE_URL: "test",
   VEHICLES_API: {
@@ -22,12 +36,21 @@ vi.mock("../apiManager/vehiclesAPI", () => ({
   updatePowerUnit: vi.fn(),
 }));
 
-const setStateMock = vi.fn();
+vi.mock("../apiManager/hooks", () => ({
+  usePowerUnitTypesQuery: vi.fn(),
+  useAddPowerUnitMutation: vi.fn(),
+}));
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: false,
     },
+  },
+  logger: {
+    log: console.log,
+    warn: console.warn,
+    error: () => undefined,
   },
 });
 
@@ -39,7 +62,9 @@ beforeEach(() => {
 const renderComponent = () => {
   render(
     <QueryClientProvider client={queryClient}>
-      <PowerUnitForm />
+      <Router>
+        <PowerUnitForm />
+      </Router>
     </QueryClientProvider>
   );
 };
