@@ -4,6 +4,7 @@ import { CompanyModule } from '../company/company.module';
 import { PendingUsersModule } from '../pending-users/pending-users.module';
 import { CompanyUsersController } from './company-users.controller';
 import { CompanyUser } from './entities/company-user.entity';
+import { Role } from './entities/role.entity';
 import { User } from './entities/user.entity';
 import { UsersProfile } from './profiles/user.profile';
 import { UsersController } from './users.controller';
@@ -11,7 +12,7 @@ import { UsersService } from './users.service';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, CompanyUser]),
+    TypeOrmModule.forFeature([User, CompanyUser, Role]),
     PendingUsersModule,
     forwardRef(() => CompanyModule),
   ],

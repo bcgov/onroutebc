@@ -64,4 +64,11 @@ const envPath = path.resolve(process.cwd() + '/../../');
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule {
+  // configure(consumer: MiddlewareConsumer) {
+  //   consumer.apply(AuthMiddleware).forRoutes({
+  //     path: '*',
+  //    method: RequestMethod.ALL,
+  //   });
+  // }
+}

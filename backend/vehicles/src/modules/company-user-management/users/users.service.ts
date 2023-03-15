@@ -20,6 +20,7 @@ import { ReadUserExistsDto } from './dto/response/read-user-exists.dto';
 import { PendingUsersService } from '../pending-users/pending-users.service';
 import { CompanyService } from '../company/company.service';
 import { ReadCompanyDto } from '../company/dto/response/read-company.dto';
+import { CompanyUserRoleDto } from 'src/modules/common/dto/response/company-user-role.dto';
 
 @Injectable()
 export class UsersService {
@@ -423,5 +424,52 @@ export class UsersService {
 
       return userExistsDto;
     }
+  }
+
+  async findUserDetailsWithCompanyId(
+    userGUID: string,
+    companyId: number,
+  ): Promise<CompanyUserRoleDto[]> {
+    const users = await this.companyUserRepository
+      .createQueryBuilder('companyUser')
+      .innerJoinAndSelect('companyUser.user', 'user')
+      .innerJoinAndSelect('companyUser.company', 'company')
+      .where('companyUser.user.userGUID= :userGUID', { userGUID: userGUID })
+      .andWhere('companyUser.company.companyId= :companyId', {
+        companyId: companyId,
+      })
+      .getMany();
+    const userList: CompanyUserRoleDto[] = [];
+
+    for (const user of users) {
+      //const companyUserRoleDto =
+      // this.mapCompanyUserEntitytoCompanyUserRoleDto(user);
+      //userList.push(companyUserRoleDto);
+      userList.push(user);
+    }
+    return userList;
+  }
+
+  async findUserDetailsForAllCompanies(
+    userGUID: string,
+  ): Promise<CompanyUserRoleDto[]> {
+    const users = await this.companyUserRepository
+      .createQueryBuilder('companyUser')
+      .innerJoinAndSelect('companyUser.user', 'user')
+      .innerJoinAndSelect('companyUser.company', 'company')
+      .where('companyUser.user.userGUID= :userGUID', {
+        userGUID: userGUID,
+      })
+      .getMany();
+
+    const userList: CompanyUserRoleDto[] = [];
+
+    for (const user of users) {
+      // const companyUserRoleDto =
+      //  this.mapCompanyUserEntitytoCompanyUserRoleDto(user);
+      // userList.push(companyUserRoleDto);
+      userList.push(user);
+    }
+    return userList;
   }
 }
