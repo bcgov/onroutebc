@@ -84,7 +84,7 @@ describe("Power Unit Form: Test VIN field", () => {
     clickSubmit();
 
     expect(await screen.findByTestId("alert-vin")).toHaveTextContent(
-      "VIN is required."
+      "Length must be 6"
     );
   });
 
@@ -154,7 +154,7 @@ describe("Power Unit Form Submission", () => {
 
     expect(
       await screen.findByTestId("alert-powerUnitTypeCode")
-    ).toHaveTextContent("vehicle.power-unit.required");
+    ).toHaveTextContent("Vehicle Sub-type is required.");
     expect(licensedGvw).toHaveValue("85000");
   });
 });
