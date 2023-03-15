@@ -1,7 +1,7 @@
 import { Typography } from "@mui/material";
 import { useState } from "react";
 import { CountryAndProvince } from "../../../../../common/components/form/CountryAndProvince";
-import { CustomCheckbox } from "../../../../../common/components/form/CustomCheckbox";
+import { CustomCheckbox } from "../../../../../common/components/form/subFormComponents/CustomCheckbox";
 import { CustomFormComponent } from "../../../../../common/components/form/CustomFormComponents";
 import {
   DEFAULT_WIDTH,

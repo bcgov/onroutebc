@@ -9,10 +9,9 @@ import {
 import { useTranslation } from "react-i18next";
 import { CompanyProfile } from "../../../features/manageProfile/apiManager/manageProfileAPI";
 import { CreatePowerUnit } from "../../../features/manageVehicles/types/managevehicles";
-import { CustomOutlinedInput } from "./CustomOutlinedInput";
-import { CustomSelect } from "./CustomSelect";
-
-import { PhoneNumberInput } from "./PhoneNumberInput";
+import { CustomOutlinedInput } from "./subFormComponents/CustomOutlinedInput";
+import { CustomSelect } from "./subFormComponents/CustomSelect";
+import { PhoneNumberInput } from "./subFormComponents/PhoneNumberInput";
 
 /**
  * Properties of onRouteBC custom form components

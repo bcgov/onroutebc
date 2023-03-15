@@ -1,9 +1,9 @@
 import { OutlinedInput } from "@mui/material";
 import { useState } from "react";
 import { PathValue, Path, useFormContext } from "react-hook-form";
-import { CompanyProfile } from "../../../features/manageProfile/apiManager/manageProfileAPI";
-import { CreatePowerUnit } from "../../../features/manageVehicles/types/managevehicles";
-import { BC_COLOURS } from "../../../themes/bcGovStyles";
+import { CompanyProfile } from "../../../../features/manageProfile/apiManager/manageProfileAPI";
+import { CreatePowerUnit } from "../../../../features/manageVehicles/types/managevehicles";
+import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { CustomOutlinedInputProps } from "./CustomOutlinedInput";
 
 /**

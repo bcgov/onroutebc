@@ -6,8 +6,8 @@ import {
   Controller,
   useFormContext,
 } from "react-hook-form";
-import { CompanyProfile } from "../../../features/manageProfile/apiManager/manageProfileAPI";
-import { CreatePowerUnit } from "../../../features/manageVehicles/types/managevehicles";
+import { CompanyProfile } from "../../../../features/manageProfile/apiManager/manageProfileAPI";
+import { CreatePowerUnit } from "../../../../features/manageVehicles/types/managevehicles";
 
 /**
  * Properties of the onrouteBC customized Checkbox MUI component

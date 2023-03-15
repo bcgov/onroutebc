@@ -9,11 +9,11 @@ import {
 import { InfoBcGovBanner } from "../../../../common/components/alertBanners/AlertBanners";
 
 import "./CompanyInfoForms.scss";
-import { formatPhoneNumber } from "../../../../common/components/form/PhoneNumberInput";
 import { CompanyInfoGeneralForm } from "./subForms/CompanyInfoGeneralForm";
 import { CompanyContactDetailsForm } from "./subForms/CompanyContactDetailsForm";
 import { CompanyMailingAddressForm } from "./subForms/CompanyMailingAddressForm";
 import { CompanyPrimaryContactForm } from "./subForms/CompanyPrimaryContactForm";
+import { formatPhoneNumber } from "../../../../common/components/form/subFormComponents/PhoneNumberInput";
 
 /**
  * The Company Information Form contains multiple subs forms including

@@ -68,7 +68,7 @@ export const CountryAndProvince = ({
   provinceField = "province",
   feature = "power-unit",
 }: CountryAndProvinceProps) => {
-  const { register, resetField, watch, setValue, getValues, control, trigger } =
+  const { register, resetField, watch, setValue, getValues, control } =
     useFormContext();
 
   /**
@@ -172,11 +172,6 @@ export const CountryAndProvince = ({
                     "&&.Mui-focused fieldset": {
                       border: `2px solid ${BC_COLOURS.focus_blue}`,
                     },
-                  }}
-                  // Used onclick to manually trigger validation to
-                  // fix issue with Select not re-validating once clicking on valid value
-                  onClick={async () => {
-                    await trigger(countryField, { shouldFocus: true });
                   }}
                 >
                   {CountriesAndStates.map((country) => (
