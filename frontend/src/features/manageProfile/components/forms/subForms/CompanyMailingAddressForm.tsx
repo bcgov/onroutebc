@@ -1,9 +1,9 @@
 import { Typography } from "@mui/material";
 import { useState } from "react";
 import { CountryAndProvince } from "../../../../../common/components/form/CountryAndProvince";
+import { CustomCheckbox } from "../../../../../common/components/form/CustomCheckbox";
 import {
   CommonFormPropsType,
-  CustomCheckboxComponent,
   CustomFormComponent,
 } from "../../../../../common/components/form/CustomFormComponents";
 import {
@@ -26,7 +26,7 @@ export const CompanyMailingAddressForm = ({
 
   return (
     <>
-      <CustomCheckboxComponent
+      <CustomCheckbox
         commonFormProps={commonFormProps}
         name="mailingAddressSameAsCompanyAddress"
         label={"Mailing address is the same as company address"}

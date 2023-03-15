@@ -1,15 +1,17 @@
 import { useForm, FormProvider, FieldValues } from "react-hook-form";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Box, Button } from "@mui/material";
+import { Box, Button, MenuItem } from "@mui/material";
 import "./VehicleForm.scss";
 // import { AxleGroupForm } from "./AxleGroupForm";
-import { CreatePowerUnit } from "../../types/managevehicles";
+import { CreatePowerUnit, PowerUnitType } from "../../types/managevehicles";
 import { addPowerUnit, getPowerUnitTypes } from "../../apiManager/vehiclesAPI";
 import { CountryAndProvince } from "../../../../common/components/form/CountryAndProvince";
 import { CustomFormComponent } from "../../../../common/components/form/CustomFormComponents";
 import { VEHICLE_TYPES_ENUM } from "./constants";
 import { useContext } from "react";
 import { SnackBarContext } from "../../../../App";
+
+import { DevTool } from "@hookform/devtools";
 
 /**
  * Props used by the power unit form.
@@ -64,11 +66,8 @@ export const PowerUnitForm = ({
   });
 
   const {
-    register,
     handleSubmit,
     control,
-    getValues,
-    trigger,
     formState: { errors },
   } = formMethods;
 
@@ -129,21 +128,16 @@ export const PowerUnitForm = ({
     });
   };
 
-  const commonFormProps = {
-    control: control,
-    register: register,
-    feature: "power-unit",
-    getValues: getValues,
-    trigger: trigger,
-  };
+  const FEATURE = "power-unit";
 
   return (
     <div>
+      <DevTool control={control} />
       <FormProvider {...formMethods}>
         <div id="power-unit-form">
           <CustomFormComponent
             type="input"
-            commonFormProps={commonFormProps}
+            feature={FEATURE}
             options={{
               name: "unitNumber",
               rules: { required: false, maxLength: 10 },
@@ -157,7 +151,7 @@ export const PowerUnitForm = ({
 
           <CustomFormComponent
             type="input"
-            commonFormProps={commonFormProps}
+            feature={FEATURE}
             options={{
               name: "make",
               rules: { required: true, maxLength: 20 },
@@ -172,7 +166,7 @@ export const PowerUnitForm = ({
 
           <CustomFormComponent
             type="input"
-            commonFormProps={commonFormProps}
+            feature={FEATURE}
             options={{
               name: "year",
               rules: {
@@ -192,7 +186,7 @@ export const PowerUnitForm = ({
 
           <CustomFormComponent
             type="input"
-            commonFormProps={commonFormProps}
+            feature={FEATURE}
             options={{
               name: "vin",
               rules: {
@@ -209,7 +203,7 @@ export const PowerUnitForm = ({
 
           <CustomFormComponent
             type="input"
-            commonFormProps={commonFormProps}
+            feature={FEATURE}
             options={{
               name: "plate",
               rules: { required: true, maxLength: 10 },
@@ -224,20 +218,26 @@ export const PowerUnitForm = ({
 
           <CustomFormComponent
             type="select"
-            commonFormProps={commonFormProps}
+            feature={FEATURE}
             options={{
               name: "powerUnitTypeCode",
               rules: {
-                required: true,
+                required: {
+                  value: true,
+                  message: "Vehicle Sub-type is required.",
+                },
               },
               label: "Vehicle Sub-type",
               width: formFieldStyle.width,
-              query: powerUnitTypesQuery,
+              inValidMessage: errors?.powerUnitTypeCode?.message,
             }}
-            i18options={{
-              label_i18: "vehicle.power-unit.power-unit-type",
-              inValidMessage_i18: "vehicle.power-unit.required",
-            }}
+            menuOptions={powerUnitTypesQuery?.data?.map(
+              (data: PowerUnitType) => (
+                <MenuItem key={data.typeCode} value={data.typeCode}>
+                  {data.type}
+                </MenuItem>
+              )
+            )}
           />
 
           <CountryAndProvince
@@ -251,7 +251,7 @@ export const PowerUnitForm = ({
           />
           <CustomFormComponent
             type="input"
-            commonFormProps={commonFormProps}
+            feature={FEATURE}
             options={{
               name: "licensedGvw",
               rules: {
@@ -268,7 +268,7 @@ export const PowerUnitForm = ({
           />
           <CustomFormComponent
             type="input"
-            commonFormProps={commonFormProps}
+            feature={FEATURE}
             options={{
               name: "steerAxleTireSize",
               rules: {
