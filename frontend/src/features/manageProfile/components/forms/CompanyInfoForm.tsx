@@ -104,7 +104,7 @@ export const CompanyInfoForm = memo(
     return (
       <div className="mp-form-container">
         <FormProvider {...formMethods}>
-          <CompanyInfoGeneralForm feature={FEATURE} companyInfo={companyInfo} />
+          <CompanyInfoGeneralForm feature={FEATURE} />
 
           <CompanyMailingAddressForm
             feature={FEATURE}
@@ -123,10 +123,7 @@ export const CompanyInfoForm = memo(
 
           <InfoBcGovBanner description="The Company Primary Contact will be contacted for all onRouteBC client profile queries." />
 
-          <CompanyPrimaryContactForm
-            feature={FEATURE}
-            companyInfo={companyInfo}
-          />
+          <CompanyPrimaryContactForm feature={FEATURE} />
         </FormProvider>
         <div className="mp-form-submit-container">
           <Button
