@@ -33,7 +33,6 @@ interface CustomFormOptionsProps<T extends FieldValues> {
   label?: string;
   inputProps?: RegisterOptions;
   width?: string;
-  inValidMessage?: string;
   customHelperText?: string;
 }
 
@@ -61,7 +60,6 @@ interface InternationalOptionsProps {
  * @param label Text to label the field. Must be identical to the value in i18/translations/en.json if integrating with i18
  * @param inputProps MUI component attributes applied to the html input element.
  * @param width Width of the MUI Box container that contains all of the code for the form component. Defaults t0 520px
- * @param inValidMessage Red text shown on React Hook Form field invalidation
  * @param i18options Optional Internationalization integration using i18
  * @param customHelperText Non-bold text to appear in parenthesis beside the label
  * @param menuOptions Menu items array for MUI Select component
@@ -79,14 +77,44 @@ export const CustomFormComponent = <
     label,
     inputProps = rules,
     width = "528px",
-    inValidMessage,
     customHelperText,
   },
   i18options,
   menuOptions,
 }: CustomFormComponentProps<T>): JSX.Element => {
-  const { control } = useFormContext();
+  const {
+    control,
+    formState: { errors },
+  } = useFormContext();
   const { t } = useTranslation();
+
+  /**
+   * Recursive method to dynamically get the error message of a fieldname that has nested json
+   * Example: Field name of primaryContact.provinceCode
+   * @param errors The "errors" object from formState: { errors } in useFormContext (See top of this file)
+   * @param fieldPath The field name variable. Either provinceField or countryField
+   * @returns Error message as a string
+   */
+  // eslint-disable-next-line  @typescript-eslint/no-explicit-any
+  const getErrorMessage = (errors: any, fieldPath: string): string => {
+    const parts = fieldPath.split(".");
+    if (parts.length > 1 && typeof errors[parts[0]] === "object") {
+      return getErrorMessage(errors[parts[0]], parts.splice(1).join("."));
+    } else {
+      return errors[parts[0]]?.message;
+    }
+  };
+
+  /**
+   * Function to check the rules object for either required or required: { value: true}
+   * @returns true/false depending on field rule object
+   */
+  const isRequired = () => {
+    if (rules.required === true) return true;
+    // eslint-disable-next-line  @typescript-eslint/no-explicit-any
+    if ((rules.required as any).value === true) return true;
+    return false;
+  };
 
   const renderSubFormComponent = (invalid: boolean) => {
     switch (type) {
@@ -138,8 +166,7 @@ export const CustomFormComponent = <
                 sx={{ fontWeight: "bold", marginBottom: "8px" }}
               >
                 {i18options?.label_i18 ? t(i18options?.label_i18) : label}
-                {/* eslint-disable-next-line  @typescript-eslint/no-explicit-any */}
-                {(!rules.required || !(rules.required as any).value) && (
+                {!isRequired() && (
                   <span style={{ fontWeight: "normal" }}> (optional)</span>
                 )}
                 {customHelperText && (
@@ -155,7 +182,7 @@ export const CustomFormComponent = <
                     ? t(i18options?.inValidMessage_i18, {
                         fieldName: label,
                       })
-                    : inValidMessage}
+                    : getErrorMessage(errors, name)}
                 </FormHelperText>
               )}
             </FormControl>

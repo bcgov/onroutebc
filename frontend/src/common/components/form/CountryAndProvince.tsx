@@ -57,13 +57,7 @@ export const CountryAndProvince = <T extends CompanyProfile | CreatePowerUnit>({
   isProvinceRequired = true,
   provinceIdField = "",
 }: CountryAndProvinceProps): JSX.Element => {
-  const {
-    resetField,
-    watch,
-    setValue,
-    getValues,
-    formState: { errors },
-  } = useFormContext();
+  const { resetField, watch, setValue, getValues } = useFormContext();
 
   const [shouldDisplayProvince, setShouldDisplayProvince] =
     useState<boolean>(true);
@@ -130,23 +124,6 @@ export const CountryAndProvince = <T extends CompanyProfile | CreatePowerUnit>({
     onChange: onChangeProvince,
   };
 
-  /**
-   * Recursive method to dynamically get the error message of a fieldname that has nested json
-   * Example: Field name of primaryContact.provinceCode
-   * @param errors The "errors" object from formState: { errors } in useFormContext (See top of this file)
-   * @param fieldPath The field name variable. Either provinceField or countryField
-   * @returns Error message as a string
-   */
-  // eslint-disable-next-line  @typescript-eslint/no-explicit-any
-  const getErrorMessage = (errors: any, fieldPath: string): string => {
-    const parts = fieldPath.split(".");
-    if (parts.length > 1 && typeof errors[parts[0]] === "object") {
-      return getErrorMessage(errors[parts[0]], parts.splice(1).join("."));
-    } else {
-      return errors[parts[0]]?.message;
-    }
-  };
-
   return (
     <>
       <CustomFormComponent
@@ -157,7 +134,6 @@ export const CountryAndProvince = <T extends CompanyProfile | CreatePowerUnit>({
           rules: updatedCountryRules,
           label: "Country",
           width: width,
-          inValidMessage: getErrorMessage(errors, countryField),
         }}
         menuOptions={CountriesAndStates.map((country) => (
           <MenuItem key={`country-${country.name}`} value={country.code}>
@@ -174,7 +150,6 @@ export const CountryAndProvince = <T extends CompanyProfile | CreatePowerUnit>({
             rules: updatedProvinceRules,
             label: "Province / State",
             width: width,
-            inValidMessage: getErrorMessage(errors, provinceField),
           }}
           menuOptions={getProvinces(countrySelected).map((state) => (
             <MenuItem key={`state-${state?.code}`} value={state?.code}>

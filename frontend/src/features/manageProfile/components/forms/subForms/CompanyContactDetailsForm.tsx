@@ -18,9 +18,10 @@ export const CompanyContactDetailsForm = ({ feature }: { feature: string }) => (
         feature={feature}
         options={{
           name: "phone",
-          rules: { required: true },
+          rules: {
+            required: { value: true, message: "Phone Number is required" },
+          },
           label: "Phone Number",
-          inValidMessage: "Phone Number is required",
           width: PHONE_WIDTH,
           inputProps: { maxLength: 20 },
         }}

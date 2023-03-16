@@ -9,9 +9,10 @@ export const CompanyInfoGeneralForm = ({ feature }: { feature: string }) => (
       feature={feature}
       options={{
         name: "companyAddress.addressLine1",
-        rules: { required: true },
+        rules: {
+          required: { value: true, message: "Address is required" },
+        },
         label: "Address (Line 1)",
-        inValidMessage: "Address is required",
       }}
     />
 
@@ -37,9 +38,10 @@ export const CompanyInfoGeneralForm = ({ feature }: { feature: string }) => (
         feature={feature}
         options={{
           name: "companyAddress.city",
-          rules: { required: true },
+          rules: {
+            required: { value: true, message: "City is required" },
+          },
           label: "City",
-          inValidMessage: "City is required",
           width: CITY_WIDTH,
         }}
       />
@@ -50,7 +52,6 @@ export const CompanyInfoGeneralForm = ({ feature }: { feature: string }) => (
           name: "companyAddress.postalCode",
           rules: { required: true },
           label: "Postal / Zip Code",
-          inValidMessage: "Postal / Zip Code is required",
           width: POSTAL_WIDTH,
         }}
       />

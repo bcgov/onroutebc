@@ -55,10 +55,7 @@ export const PowerUnitForm = ({ powerUnit }: PowerUnitFormProps) => {
     reValidateMode: "onBlur",
   });
 
-  const {
-    handleSubmit,
-    formState: { errors },
-  } = formMethods;
+  const { handleSubmit } = formMethods;
 
   const powerUnitTypesQuery = usePowerUnitTypesQuery();
   const addVehicleQuery = useAddPowerUnitMutation();
@@ -142,7 +139,6 @@ export const PowerUnitForm = ({ powerUnit }: PowerUnitFormProps) => {
               },
               label: "Year",
               width: formFieldStyle.width,
-              inValidMessage: errors?.year?.message,
             }}
           />
 
@@ -159,7 +155,6 @@ export const PowerUnitForm = ({ powerUnit }: PowerUnitFormProps) => {
               label: "VIN",
               width: formFieldStyle.width,
               customHelperText: "last 6 digits",
-              inValidMessage: errors?.vin?.message,
             }}
           />
 
@@ -191,7 +186,6 @@ export const PowerUnitForm = ({ powerUnit }: PowerUnitFormProps) => {
               },
               label: "Vehicle Sub-type",
               width: formFieldStyle.width,
-              inValidMessage: errors?.powerUnitTypeCode?.message,
             }}
             menuOptions={powerUnitTypesQuery?.data?.map(
               (data: PowerUnitType) => (
@@ -223,7 +217,6 @@ export const PowerUnitForm = ({ powerUnit }: PowerUnitFormProps) => {
               },
               label: "Licensed GVW",
               width: formFieldStyle.width,
-              inValidMessage: errors?.licensedGvw?.message,
             }}
           />
           <CustomFormComponent
@@ -240,7 +233,6 @@ export const PowerUnitForm = ({ powerUnit }: PowerUnitFormProps) => {
               },
               label: "Steer Axle Tire Size (mm)",
               width: formFieldStyle.width,
-              inValidMessage: errors?.steerAxleTireSize?.message,
             }}
           />
         </div>
