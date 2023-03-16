@@ -205,6 +205,7 @@ export const PowerUnitForm = ({ powerUnit }: PowerUnitFormProps) => {
             feature={FEATURE}
             countryField="country"
             provinceField="province"
+            isProvinceRequired={false}
             provinceIdField="provinceId"
             width={formFieldStyle.width}
           />

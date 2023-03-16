@@ -138,7 +138,8 @@ export const CustomFormComponent = <
                 sx={{ fontWeight: "bold", marginBottom: "8px" }}
               >
                 {i18options?.label_i18 ? t(i18options?.label_i18) : label}
-                {!rules.required && (
+                {/* eslint-disable-next-line  @typescript-eslint/no-explicit-any */}
+                {(!rules.required || !(rules.required as any).value) && (
                   <span style={{ fontWeight: "normal" }}> (optional)</span>
                 )}
                 {customHelperText && (
