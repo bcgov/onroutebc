@@ -1,55 +1,44 @@
-import { useFormContext, Controller, RegisterOptions } from "react-hook-form";
-import { useTranslation } from "react-i18next";
-import FormHelperText from "@mui/material/FormHelperText";
+import { useFormContext, FieldPath } from "react-hook-form";
 import { useCallback, useState } from "react";
-import FormControl from "@mui/material/FormControl";
-import FormLabel from "@mui/material/FormLabel";
-import Select, { SelectChangeEvent } from "@mui/material/Select";
+import { SelectChangeEvent } from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import { COUNTRIES_THAT_SUPPORT_PROVINCE } from "../../../constants/countries";
 
 import CountriesAndStates from "../../../constants/countries_and_states.json";
-import { Box } from "@mui/material";
-import { BC_COLOURS } from "../../../themes/bcGovStyles";
+import { CompanyProfile } from "../../../features/manageProfile/apiManager/manageProfileAPI";
+import { CreatePowerUnit } from "../../../features/manageVehicles/types/managevehicles";
+import { DEFAULT_WIDTH } from "../../../themes/bcGovStyles";
+import { CustomFormComponent } from "./CustomFormComponents";
 
 /**
  * The props that can be passed to the country and provinces subsection of a form.
  */
 interface CountryAndProvinceProps {
   /**
-   * The value for the country field.
-   * Default value is ''
-   */
-  country?: string | null;
-
-  /**
-   * The value for the province field.
-   * Default value is ''
-   */
-  province?: string | null;
-
-  /**
-   * The value for the width of the select box
-   */
-  width?: string | null;
-
-  /**
-   * React Hook Form rules. Example: rules={{ required: false }}
-   */
-  rules?: RegisterOptions;
-
-  /**
-   * Name used for the API call. Example: countryField={"primaryContact.countryCode"}
-   */
-  countryField?: string;
-  provinceField?: string;
-
-  /**
    * Name of the feature that the field belongs to.
    * This name is used for Id's and keys.
    * Example: feature={"profile"}
    */
-  feature?: string;
+  feature: string;
+
+  /**
+   * The value for the width of the select box
+   */
+  width?: string;
+
+  /**
+   * Name used for the API call. Example: countryField="primaryContact.countryCode"
+   */
+  countryField: string;
+  provinceField: string;
+  provinceIdField?: string;
+
+  /**
+   * Boolean for react hook form rules. Example-> rules: { required: isCountryRequired }
+   * Should default to true
+   */
+  isCountryRequired?: boolean;
+  isProvinceRequired?: boolean;
 }
 
 /**
@@ -59,34 +48,27 @@ interface CountryAndProvinceProps {
  *
  * @returns A react component with the country and province fields.
  */
-export const CountryAndProvince = ({
-  country,
-  province,
-  width = "",
-  rules = { required: true },
-  countryField = "country",
-  provinceField = "province",
-  feature = "power-unit",
-}: CountryAndProvinceProps) => {
-  const { register, resetField, watch, setValue, getValues, control } =
-    useFormContext();
+export const CountryAndProvince = <T extends CompanyProfile | CreatePowerUnit>({
+  feature,
+  width = DEFAULT_WIDTH,
+  countryField,
+  isCountryRequired = true,
+  provinceField,
+  isProvinceRequired = true,
+  provinceIdField = "",
+}: CountryAndProvinceProps): JSX.Element => {
+  const {
+    resetField,
+    watch,
+    setValue,
+    getValues,
+    formState: { errors },
+  } = useFormContext();
 
-  /**
-   * State for displaying selected province
-   */
-  const [selectedProvince, setSelectedProvince] = useState<string>(
-    province || ""
-  );
   const [shouldDisplayProvince, setShouldDisplayProvince] =
     useState<boolean>(true);
 
   const countrySelected = watch(countryField);
-  /**
-   * Custom css overrides for the form fields
-   */
-  const formFieldStyle = {
-    fontWeight: "bold",
-  };
 
   /**
    * Function to handle changes on selecting a country.
@@ -97,7 +79,6 @@ export const CountryAndProvince = ({
   const onChangeCountry = useCallback(function (event: SelectChangeEvent) {
     const country: string = event.target.value as string;
     resetField(provinceField, { defaultValue: "" });
-    setSelectedProvince(() => "");
     if (
       !COUNTRIES_THAT_SUPPORT_PROVINCE.find(
         (supportedCountry) => supportedCountry === country
@@ -107,7 +88,7 @@ export const CountryAndProvince = ({
       // even though the field is hidden.
       setShouldDisplayProvince(() => false);
       setValue(provinceField, country);
-      setValue("provinceId", country + "-" + country);
+      setValue(provinceIdField, country + "-" + country);
     } else {
       setShouldDisplayProvince(() => true);
     }
@@ -118,11 +99,9 @@ export const CountryAndProvince = ({
    * @param event the select event
    */
   const onChangeProvince = useCallback(function (event: SelectChangeEvent) {
-    resetField("provinceId", { defaultValue: "" });
+    resetField(provinceIdField, { defaultValue: "" });
     const provinceSelected: string = event.target.value;
-    setSelectedProvince(() => event.target.value as string);
-
-    setValue("provinceId", getValues(countryField) + "-" + provinceSelected);
+    setValue(provinceIdField, getValues(countryField) + "-" + provinceSelected);
   }, []);
 
   /**
@@ -135,129 +114,75 @@ export const CountryAndProvince = ({
     ).flatMap((country) => country.states);
   }, []);
 
-  const { t } = useTranslation();
+  const updatedCountryRules = {
+    required: {
+      value: isCountryRequired,
+      message: "Country is required.",
+    },
+    onChange: onChangeCountry,
+  };
+
+  const updatedProvinceRules = {
+    required: {
+      value: shouldDisplayProvince && isProvinceRequired,
+      message: "Province / State is required.",
+    },
+    onChange: onChangeProvince,
+  };
+
+  /**
+   * Recursive method to dynamically get the error message of a fieldname that has nested json
+   * Example: Field name of primaryContact.provinceCode
+   * @param errors The "errors" object from formState: { errors } in useFormContext (See top of this file)
+   * @param fieldPath The field name variable. Either provinceField or countryField
+   * @returns Error message as a string
+   */
+  // eslint-disable-next-line  @typescript-eslint/no-explicit-any
+  const getErrorMessage = (errors: any, fieldPath: string): string => {
+    const parts = fieldPath.split(".");
+    if (parts.length > 1 && typeof errors[parts[0]] === "object") {
+      return getErrorMessage(errors[parts[0]], parts.splice(1).join("."));
+    } else {
+      return errors[parts[0]]?.message;
+    }
+  };
+
   return (
-    <Box sx={{ width: width }}>
-      <div>
-        <Controller
-          key={`controller-${feature}-country`}
-          name={countryField}
-          control={control}
-          rules={rules}
-          defaultValue={country || ""}
-          render={({ fieldState: { invalid } }) => (
-            <>
-              <FormControl
-                margin="normal"
-                error={invalid}
-                sx={{ width: "100%" }}
-              >
-                <FormLabel id={`${feature}-country-label`} sx={formFieldStyle}>
-                  {t("vehicle.power-unit.country")}
-                  {!rules.required && (
-                    <span style={{ fontWeight: "normal" }}> (optional)</span>
-                  )}
-                </FormLabel>
-                <Select
-                  aria-labelledby={`${feature}-country-label`}
-                  inputProps={{
-                    "aria-label": "country",
-                  }}
-                  defaultValue={country || ""}
-                  {...register(countryField, {
-                    required: rules.required,
-                    onChange: onChangeCountry,
-                  })}
-                  sx={{
-                    "&&.Mui-focused fieldset": {
-                      border: `2px solid ${BC_COLOURS.focus_blue}`,
-                    },
-                  }}
-                >
-                  {CountriesAndStates.map((country) => (
-                    <MenuItem
-                      key={`country-${country.name}`}
-                      value={country.code}
-                    >
-                      {country.name}
-                    </MenuItem>
-                  ))}
-                </Select>
-                {invalid && (
-                  <FormHelperText error>
-                    {t("vehicle.power-unit.required", { fieldName: "Country" })}
-                  </FormHelperText>
-                )}
-              </FormControl>
-            </>
-          )}
-        />
-      </div>
+    <>
+      <CustomFormComponent
+        type="select"
+        feature={feature}
+        options={{
+          name: countryField as FieldPath<T>,
+          rules: updatedCountryRules,
+          label: "Country",
+          width: width,
+          inValidMessage: getErrorMessage(errors, countryField),
+        }}
+        menuOptions={CountriesAndStates.map((country) => (
+          <MenuItem key={`country-${country.name}`} value={country.code}>
+            {country.name}
+          </MenuItem>
+        ))}
+      />
       {shouldDisplayProvince && (
-        <div>
-          <Controller
-            key={`controller-${feature}-province`}
-            name={provinceField}
-            rules={{ required: shouldDisplayProvince && rules.required }}
-            defaultValue={province || ""}
-            render={({ fieldState: { invalid } }) => (
-              <>
-                <FormControl
-                  margin="normal"
-                  error={invalid}
-                  sx={{ width: "100%" }}
-                >
-                  <FormLabel
-                    id={`${feature}-province-label`}
-                    sx={formFieldStyle}
-                  >
-                    {t("vehicle.power-unit.province")}
-                    {!rules.required && (
-                      <span style={{ fontWeight: "normal" }}> (optional)</span>
-                    )}
-                  </FormLabel>
-                  <Select
-                    aria-labelledby={`${feature}-province-label`}
-                    inputProps={{
-                      "aria-label": provinceField,
-                    }}
-                    defaultValue={province || ""}
-                    {...register(provinceField, {
-                      required: shouldDisplayProvince && rules.required,
-                      onChange: onChangeProvince,
-                    })}
-                    value={selectedProvince}
-                    sx={{
-                      "&&.Mui-focused fieldset": {
-                        border: `2px solid ${BC_COLOURS.focus_blue}`,
-                      },
-                    }}
-                  >
-                    {getProvinces(countrySelected).map((state) => (
-                      <MenuItem
-                        key={`state-${state?.code}`}
-                        value={state?.code}
-                      >
-                        {state?.name}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                  {invalid && (
-                    <FormHelperText error>
-                      {t("vehicle.power-unit.required", {
-                        fieldName: "Province / State",
-                        interpolation: {
-                          escapeValue: false,
-                        },
-                      })}
-                    </FormHelperText>
-                  )}
-                </FormControl>
-              </>
-            )}
-          />
-        </div>
+        <CustomFormComponent
+          type="select"
+          feature={feature}
+          options={{
+            name: provinceField as FieldPath<T>,
+            rules: updatedProvinceRules,
+            label: "Province / State",
+            width: width,
+            inValidMessage: getErrorMessage(errors, provinceField),
+          }}
+          menuOptions={getProvinces(countrySelected).map((state) => (
+            <MenuItem key={`state-${state?.code}`} value={state?.code}>
+              {state?.name}
+            </MenuItem>
+          ))}
+        />
       )}
-    </Box>
+    </>
   );
 };

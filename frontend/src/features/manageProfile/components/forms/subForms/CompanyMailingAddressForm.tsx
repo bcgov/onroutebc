@@ -3,11 +3,7 @@ import { useState } from "react";
 import { CountryAndProvince } from "../../../../../common/components/form/CountryAndProvince";
 import { CustomCheckbox } from "../../../../../common/components/form/subFormComponents/CustomCheckbox";
 import { CustomFormComponent } from "../../../../../common/components/form/CustomFormComponents";
-import {
-  DEFAULT_WIDTH,
-  CITY_WIDTH,
-  POSTAL_WIDTH,
-} from "../../../../../themes/bcGovStyles";
+import { CITY_WIDTH, POSTAL_WIDTH } from "../../../../../themes/bcGovStyles";
 import { CompanyProfile } from "../../../apiManager/manageProfileAPI";
 
 export const CompanyMailingAddressForm = ({
@@ -60,21 +56,11 @@ export const CompanyMailingAddressForm = ({
             }}
           />
           <CountryAndProvince
-            country={
-              companyInfo?.mailingAddress?.countryCode
-                ? companyInfo.mailingAddress.countryCode
-                : ""
-            }
-            province={
-              companyInfo?.mailingAddress?.provinceCode
-                ? companyInfo.mailingAddress.provinceCode
-                : ""
-            }
-            width={DEFAULT_WIDTH}
-            countryField={"mailingAddress.countryCode"}
-            provinceField={"mailingAddress.provinceCode"}
             feature={feature}
-            rules={{ required: showMailingAddress }}
+            countryField="mailingAddress.countryCode"
+            isCountryRequired={showMailingAddress}
+            provinceField="mailingAddress.provinceCode"
+            isProvinceRequired={showMailingAddress}
           />
           <div className="mp-side-by-side-container">
             <CustomFormComponent

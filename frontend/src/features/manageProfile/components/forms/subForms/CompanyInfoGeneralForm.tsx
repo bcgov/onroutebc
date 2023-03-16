@@ -1,19 +1,8 @@
 import { CountryAndProvince } from "../../../../../common/components/form/CountryAndProvince";
 import { CustomFormComponent } from "../../../../../common/components/form/CustomFormComponents";
-import {
-  DEFAULT_WIDTH,
-  CITY_WIDTH,
-  POSTAL_WIDTH,
-} from "../../../../../themes/bcGovStyles";
-import { CompanyProfile } from "../../../apiManager/manageProfileAPI";
+import { CITY_WIDTH, POSTAL_WIDTH } from "../../../../../themes/bcGovStyles";
 
-export const CompanyInfoGeneralForm = ({
-  feature,
-  companyInfo,
-}: {
-  feature: string;
-  companyInfo?: CompanyProfile;
-}) => (
+export const CompanyInfoGeneralForm = ({ feature }: { feature: string }) => (
   <>
     <CustomFormComponent
       type="input"
@@ -37,20 +26,9 @@ export const CompanyInfoGeneralForm = ({
     />
 
     <CountryAndProvince
-      country={
-        companyInfo?.companyAddress.countryCode
-          ? companyInfo.companyAddress.countryCode
-          : ""
-      }
-      province={
-        companyInfo?.companyAddress.provinceCode
-          ? companyInfo.companyAddress.provinceCode
-          : ""
-      }
-      width={DEFAULT_WIDTH}
-      countryField={"companyAddress.countryCode"}
-      provinceField={"companyAddress.provinceCode"}
       feature={feature}
+      countryField="companyAddress.countryCode"
+      provinceField="companyAddress.provinceCode"
     />
 
     <div className="mp-side-by-side-container">

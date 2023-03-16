@@ -29,15 +29,15 @@ export const CustomSelect = <T extends CompanyProfile | CreatePowerUnit>({
   rules,
   menuOptions,
 }: CustomSelectProps<T>): JSX.Element => {
-  const { register, trigger } = useFormContext();
-
+  const { register, trigger, watch } = useFormContext();
+  const value = watch(name);
   return (
     <Select
       aria-labelledby={`${feature}-${name}-label`}
       inputProps={{
         "aria-label": name,
       }}
-      defaultValue={""}
+      value={value ?? ""}
       {...register(name, rules)}
       MenuProps={{
         style: {

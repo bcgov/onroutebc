@@ -3,18 +3,10 @@ import { CustomFormComponent } from "../../../../../common/components/form/Custo
 import {
   PHONE_WIDTH,
   EXT_WIDTH,
-  DEFAULT_WIDTH,
   CITY_WIDTH,
 } from "../../../../../themes/bcGovStyles";
-import { CompanyProfile } from "../../../apiManager/manageProfileAPI";
 
-export const CompanyPrimaryContactForm = ({
-  feature,
-  companyInfo,
-}: {
-  feature: string;
-  companyInfo?: CompanyProfile;
-}) => (
+export const CompanyPrimaryContactForm = ({ feature }: { feature: string }) => (
   <>
     <CustomFormComponent
       type="input"
@@ -94,21 +86,11 @@ export const CompanyPrimaryContactForm = ({
     </div>
 
     <CountryAndProvince
-      country={
-        companyInfo?.primaryContact?.countryCode
-          ? companyInfo.primaryContact.countryCode
-          : ""
-      }
-      province={
-        companyInfo?.primaryContact?.provinceCode
-          ? companyInfo.primaryContact.provinceCode
-          : ""
-      }
-      width={DEFAULT_WIDTH}
-      countryField={"primaryContact.countryCode"}
-      provinceField={"primaryContact.provinceCode"}
       feature={feature}
-      rules={{ required: false }}
+      countryField="primaryContact.countryCode"
+      isCountryRequired={false}
+      provinceField="primaryContact.provinceCode"
+      isProvinceRequired={false}
     />
     <CustomFormComponent
       type="input"

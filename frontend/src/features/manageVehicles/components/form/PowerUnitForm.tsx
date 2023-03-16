@@ -201,14 +201,11 @@ export const PowerUnitForm = ({ powerUnit }: PowerUnitFormProps) => {
               )
             )}
           />
-
           <CountryAndProvince
-            country={
-              powerUnit?.provinceId ? powerUnit?.provinceId?.split("-")[0] : ""
-            }
-            province={
-              powerUnit?.provinceId ? powerUnit?.provinceId?.split("-")[1] : ""
-            }
+            feature={FEATURE}
+            countryField="country"
+            provinceField="province"
+            provinceIdField="provinceId"
             width={formFieldStyle.width}
           />
           <CustomFormComponent
