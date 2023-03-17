@@ -75,7 +75,7 @@ export class CompanyProfile extends AutomapperProfile {
         forMember(
           (d) => d.accountRegion,
           mapFrom((s) => {
-            return s.companyAddress.provinceCode === 'BC-CA'
+            return s.companyAddress.provinceId === 'BC-CA'
               ? AccountRegion.BritishColumbia
               : AccountRegion.ExtraProvincial;
           }),
@@ -154,7 +154,7 @@ export class CompanyProfile extends AutomapperProfile {
         forMember(
           (d) => d.accountRegion,
           mapFrom((s) => {
-            return s.companyAddress.provinceCode === 'BC-CA'
+            return s.companyAddress.provinceId === 'BC-CA'
               ? AccountRegion.BritishColumbia
               : AccountRegion.ExtraProvincial;
           }),
