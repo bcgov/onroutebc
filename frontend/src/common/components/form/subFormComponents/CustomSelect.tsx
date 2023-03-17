@@ -29,7 +29,12 @@ export const CustomSelect = <T extends CompanyProfile | CreatePowerUnit>({
   rules,
   menuOptions,
 }: CustomSelectProps<T>): JSX.Element => {
-  const { register, trigger, watch } = useFormContext();
+  const {
+    register,
+    trigger,
+    watch,
+    formState: { isSubmitted },
+  } = useFormContext();
   const value = watch(name);
   return (
     <Select
@@ -54,9 +59,11 @@ export const CustomSelect = <T extends CompanyProfile | CreatePowerUnit>({
       // revalidate when selecting an option after an invalid form submission.
       // The validation needed to be triggered again manually
       onClose={async () => {
-        const output = await trigger(name);
-        if (!output) {
-          trigger(name);
+        if (isSubmitted) {
+          const output = await trigger(name);
+          if (!output) {
+            trigger(name);
+          }
         }
       }}
     >
