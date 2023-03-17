@@ -44,20 +44,19 @@ export class User extends Base {
   })
   userDirectory: UserDirectory;
 
-
-    /**
+  /**
    * A property that represents the user's auth group in ORBC, which is an enum of type
    * {@link UserAuthGroup}.
    */
-    @AutoMap()
-    @Column({
-      type: 'simple-enum',
-      enum: UserAuthGroup,
-      length: 10,
-      name: 'USER_AUTH_GROUP_ID',
-      nullable: true,
-    })
-    userAuthGroup: UserAuthGroup;
+  @AutoMap()
+  @Column({
+    type: 'simple-enum',
+    enum: UserAuthGroup,
+    length: 10,
+    name: 'USER_AUTH_GROUP_ID',
+    nullable: true,
+  })
+  userAuthGroup: UserAuthGroup;
 
   /**
    * The status of the user in the system. It is an enum of UserStatus type and

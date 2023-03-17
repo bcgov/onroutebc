@@ -17,34 +17,24 @@ export class AddressProfile extends AutomapperProfile {
     return (mapper: Mapper) => {
       /**
        * Mapping from Address entity to ReadAddressDto DTO, with additional
-       * configuration using forMember and mapFrom methods to set the
-       * provinceCode and countryCode properties of the DTO by extracting them
-       * from the province.provinceId property of the entity.
+       * configuration using forMember and mapFrom methods to set the provinceId
+       * property of the DTO by extracting them from the province.provinceId
+       * property of the entity.
        */
       createMap(
         mapper,
         Address,
         ReadAddressDto,
         forMember(
-          (d) => d.provinceCode,
-          mapFrom((s) => {
-            const province = s.province.provinceId.split('-');
-            return province[1];
-          }),
-        ),
-        forMember(
-          (d) => d.countryCode,
-          mapFrom((s) => {
-            const province = s.province.provinceId.split('-');
-            return province[0];
-          }),
+          (d) => d.provinceId,
+          mapFrom((s) => s.province.provinceId),
         ),
       );
 
       /**
        * Mapping from CreateAddressDto DTO to Address entity, with additional
-       * configuration to set the province.provinceId property of the entity by
-       * concatenating the countryCode and provinceCode properties of the DTO.
+       * configuration to set the province.provinceId property of the entity
+       * from provinceId property of the DTO.
        */
       createMap(
         mapper,
@@ -52,14 +42,14 @@ export class AddressProfile extends AutomapperProfile {
         Address,
         forMember(
           (d) => d.province.provinceId,
-          mapFrom((s) => s.countryCode + '-' + s.provinceCode),
+          mapFrom((s) => s.provinceId),
         ),
       );
 
       /**
        * Mapping from UpdateAddressDto DTO to Address entity, with additional
-       * configuration to set the province.provinceId property of the entity by
-       * concatenating the countryCode and provinceCode properties of the DTO.
+       * configuration to set the province.provinceId property of the entity
+       * from provinceId property of the DTO..
        */
       createMap(
         mapper,
@@ -67,7 +57,7 @@ export class AddressProfile extends AutomapperProfile {
         Address,
         forMember(
           (d) => d.province.provinceId,
-          mapFrom((s) => s.countryCode + '-' + s.provinceCode),
+          mapFrom((s) => s.provinceId),
         ),
       );
     };
