@@ -92,9 +92,9 @@ export const CompanyPrimaryContactForm = ({ feature }: { feature: string }) => (
     <CountryAndProvince
       feature={feature}
       countryField="primaryContact.countryCode"
-      isCountryRequired={false}
+      isCountryRequired={true}
       provinceField="primaryContact.provinceCode"
-      isProvinceRequired={false}
+      isProvinceRequired={true}
     />
     <CustomFormComponent
       type="input"
