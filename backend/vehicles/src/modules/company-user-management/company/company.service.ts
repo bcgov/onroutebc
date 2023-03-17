@@ -74,7 +74,7 @@ export class CompanyService {
         createCompanyDto.adminUser,
         userName,
         userDirectory,
-        UserAuthGroup.ADMIN,
+        UserAuthGroup.COMPANY_ADMINISTRATOR,
         queryRunner,
       );
 
