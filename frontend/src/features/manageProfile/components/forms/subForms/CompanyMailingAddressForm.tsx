@@ -41,9 +41,10 @@ export const CompanyMailingAddressForm = ({
             feature={feature}
             options={{
               name: "mailingAddress.addressLine1",
-              rules: { required: true },
+              rules: {
+                required: { value: true, message: "Address is required" },
+              },
               label: "Address (Line 1)",
-              inValidMessage: "Address is required",
             }}
           />
           <CustomFormComponent
@@ -68,9 +69,10 @@ export const CompanyMailingAddressForm = ({
               feature={feature}
               options={{
                 name: "mailingAddress.city",
-                rules: { required: true },
+                rules: {
+                  required: { value: true, message: "City is required" },
+                },
                 label: "City",
-                inValidMessage: "City is required",
                 width: CITY_WIDTH,
               }}
             />
@@ -79,9 +81,13 @@ export const CompanyMailingAddressForm = ({
               feature={feature}
               options={{
                 name: "mailingAddress.postalCode",
-                rules: { required: true },
+                rules: {
+                  required: {
+                    value: true,
+                    message: "Postal / Zip Code is required",
+                  },
+                },
                 label: "Postal / Zip Code",
-                inValidMessage: "Postal / Zip Code is required",
                 width: POSTAL_WIDTH,
               }}
             />

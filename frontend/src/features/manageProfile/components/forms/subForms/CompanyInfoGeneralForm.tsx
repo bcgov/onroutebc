@@ -50,7 +50,9 @@ export const CompanyInfoGeneralForm = ({ feature }: { feature: string }) => (
         feature={feature}
         options={{
           name: "companyAddress.postalCode",
-          rules: { required: true },
+          rules: {
+            required: { value: true, message: "Postal / Zip Code is required" },
+          },
           label: "Postal / Zip Code",
           width: POSTAL_WIDTH,
         }}

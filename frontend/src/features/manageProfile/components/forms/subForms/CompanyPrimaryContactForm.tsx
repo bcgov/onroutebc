@@ -13,9 +13,10 @@ export const CompanyPrimaryContactForm = ({ feature }: { feature: string }) => (
       feature={feature}
       options={{
         name: "primaryContact.firstName",
-        rules: { required: true },
+        rules: {
+          required: { value: true, message: "First Name is required" },
+        },
         label: "First Name",
-        inValidMessage: "First Name is required",
       }}
     />
     <CustomFormComponent
@@ -23,9 +24,10 @@ export const CompanyPrimaryContactForm = ({ feature }: { feature: string }) => (
       feature={feature}
       options={{
         name: "primaryContact.lastName",
-        rules: { required: true },
+        rules: {
+          required: { value: true, message: "Last Name is required" },
+        },
         label: "Last Name",
-        inValidMessage: "Last Name is required",
       }}
     />
     <CustomFormComponent
@@ -33,9 +35,10 @@ export const CompanyPrimaryContactForm = ({ feature }: { feature: string }) => (
       feature={feature}
       options={{
         name: "primaryContact.email",
-        rules: { required: true },
+        rules: {
+          required: { value: true, message: "Email is required" },
+        },
         label: "Email",
-        inValidMessage: "Email is required",
       }}
     />
 
@@ -45,9 +48,10 @@ export const CompanyPrimaryContactForm = ({ feature }: { feature: string }) => (
         feature={feature}
         options={{
           name: "primaryContact.phone1",
-          rules: { required: true },
+          rules: {
+            required: { value: true, message: "Phone Number is required" },
+          },
           label: "Phone Number",
-          inValidMessage: "Phone Number is required",
           width: PHONE_WIDTH,
         }}
       />
@@ -97,9 +101,10 @@ export const CompanyPrimaryContactForm = ({ feature }: { feature: string }) => (
       feature={feature}
       options={{
         name: "primaryContact.city",
-        rules: { required: true },
+        rules: {
+          required: { value: true, message: "City is required" },
+        },
         label: "City",
-        inValidMessage: "City is required",
         width: CITY_WIDTH,
       }}
     />
