@@ -1,8 +1,8 @@
 import { Box, Button, Typography } from "@mui/material";
 import { memo } from "react";
-import { formatPhoneNumber } from "../../../../common/components/form/PhoneNumberInput";
 import { CompanyProfile } from "../../apiManager/manageProfileAPI";
 import CountriesAndStates from "../../../../constants/countries_and_states.json";
+import { formatPhoneNumber } from "../../../../common/components/form/subFormComponents/PhoneNumberInput";
 // Disable any eslint for references to countries_and_states.json
 /* eslint-disable @typescript-eslint/no-explicit-any */
 

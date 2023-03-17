@@ -9,25 +9,14 @@ import "../../../../common/components/dashboard/Dashboard.scss";
 import { Banner } from "../../../../common/components/dashboard/Banner";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { InfoBcGovBanner } from "../../../../common/components/alertBanners/AlertBanners";
+import { useNavigate } from "react-router-dom";
 
 export const AddVehicleDashboard = React.memo(
-  ({
-    addVehicleMode,
-    setShowAddVehicle,
-  }: {
-    addVehicleMode: VEHICLE_TYPES_ENUM;
-    setShowAddVehicle: React.Dispatch<
-      React.SetStateAction<{
-        showAddVehicle: boolean;
-        vehicleType: VEHICLE_TYPES_ENUM;
-      }>
-    >;
-  }) => {
+  ({ addVehicleMode }: { addVehicleMode: VEHICLE_TYPES_ENUM }) => {
+    const navigate = useNavigate();
+
     const handleShowAddVehicle = () => {
-      setShowAddVehicle({
-        showAddVehicle: false,
-        vehicleType: VEHICLE_TYPES_ENUM.NONE,
-      });
+      navigate("../");
     };
 
     return (
@@ -127,7 +116,7 @@ export const AddVehicleDashboard = React.memo(
             {addVehicleMode === VEHICLE_TYPES_ENUM.TRAILER && "Trailer Details"}
           </Typography>
           {addVehicleMode === VEHICLE_TYPES_ENUM.POWER_UNIT && (
-            <PowerUnitForm setShowAddVehicle={setShowAddVehicle} />
+            <PowerUnitForm />
           )}
           {addVehicleMode === VEHICLE_TYPES_ENUM.TRAILER && <TrailerForm />}
         </Box>

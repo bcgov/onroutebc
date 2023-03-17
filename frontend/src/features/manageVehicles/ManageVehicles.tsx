@@ -1,17 +1,11 @@
 import React from "react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ManageVehiclesDashboard } from "./components/dashboard/ManageVehiclesDashboard";
 
 /**
  * React component to render the vehicle inventory
  */
 export const ManageVehicles = React.memo(() => {
-  const manageVehicleQueryClient = new QueryClient();
-  return (
-    <QueryClientProvider client={manageVehicleQueryClient}>
-      <ManageVehiclesDashboard />
-    </QueryClientProvider>
-  );
+  return <ManageVehiclesDashboard />;
 });
 
 ManageVehicles.displayName = "ManageVehicles";

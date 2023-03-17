@@ -1,15 +1,15 @@
 import { useForm, FormProvider, FieldValues } from "react-hook-form";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Box, Button } from "@mui/material";
+import { Box, Button, MenuItem } from "@mui/material";
 import "./VehicleForm.scss";
 // import { AxleGroupForm } from "./AxleGroupForm";
-import { CreatePowerUnit } from "../../types/managevehicles";
-import { addPowerUnit, getPowerUnitTypes } from "../../apiManager/vehiclesAPI";
+import { CreatePowerUnit, PowerUnitType } from "../../types/managevehicles";
 import { CountryAndProvince } from "../../../../common/components/form/CountryAndProvince";
 import { CustomFormComponent } from "../../../../common/components/form/CustomFormComponents";
-import { VEHICLE_TYPES_ENUM } from "./constants";
-import { useContext } from "react";
-import { SnackBarContext } from "../../../../App";
+import {
+  useAddPowerUnitMutation,
+  usePowerUnitTypesQuery,
+} from "../../apiManager/hooks";
+import { useNavigate } from "react-router-dom";
 
 /**
  * Props used by the power unit form.
@@ -26,77 +26,40 @@ interface PowerUnitFormProps {
    * If valid and available, the form will be in an editable state.
    */
   powerUnitId?: string;
-
-  setShowAddVehicle: React.Dispatch<
-    React.SetStateAction<{
-      showAddVehicle: boolean;
-      vehicleType: VEHICLE_TYPES_ENUM;
-    }>
-  >;
 }
 
 /**
  * @returns React component containing the form for adding or editing a power unit.
  */
-export const PowerUnitForm = ({
-  powerUnit,
-  setShowAddVehicle,
-}: PowerUnitFormProps) => {
+export const PowerUnitForm = ({ powerUnit }: PowerUnitFormProps) => {
+  // Default values to register with React Hook Forms
+  // If data was passed to this component, then use that data, otherwise use empty or undefined values
+  const powerUnitDefaultValues = {
+    country: powerUnit?.provinceId ? powerUnit?.provinceId?.split("-")[0] : "",
+    province: powerUnit?.provinceId ? powerUnit?.provinceId?.split("-")[1] : "",
+    unitNumber: powerUnit?.unitNumber || "",
+    licensedGvw: (powerUnit?.licensedGvw as number) || undefined,
+    make: powerUnit?.make || "",
+    plate: powerUnit?.plate || "",
+    powerUnitTypeCode: powerUnit?.powerUnitTypeCode || "",
+    provinceId: powerUnit?.provinceId ? powerUnit?.provinceId : "",
+    steerAxleTireSize: powerUnit?.steerAxleTireSize
+      ? powerUnit?.steerAxleTireSize
+      : undefined,
+    vin: powerUnit?.vin ? powerUnit?.vin : "",
+    year: powerUnit?.year ? powerUnit?.year : undefined,
+  };
+
   const formMethods = useForm<CreatePowerUnit>({
-    defaultValues: {
-      country: powerUnit?.provinceId
-        ? powerUnit?.provinceId?.split("-")[0]
-        : "",
-      province: powerUnit?.provinceId
-        ? powerUnit?.provinceId?.split("-")[1]
-        : "",
-      unitNumber: powerUnit?.unitNumber || "",
-      licensedGvw: (powerUnit?.licensedGvw as number) || undefined,
-      make: powerUnit?.make || "",
-      plate: powerUnit?.plate || "",
-      powerUnitTypeCode: powerUnit?.powerUnitTypeCode || "",
-      provinceId: powerUnit?.provinceId ? powerUnit?.provinceId : "",
-      steerAxleTireSize: powerUnit?.steerAxleTireSize
-        ? powerUnit?.steerAxleTireSize
-        : undefined,
-      vin: powerUnit?.vin ? powerUnit?.vin : "",
-      year: powerUnit?.year ? powerUnit?.year : undefined,
-    },
-  });
-  const { register, handleSubmit, control, getValues } = formMethods;
-
-  const queryClient = useQueryClient();
-
-  const powerUnitTypesQuery = useQuery({
-    queryKey: ["powerUnitTypes"],
-    queryFn: getPowerUnitTypes,
-    retry: false,
+    defaultValues: powerUnitDefaultValues,
+    reValidateMode: "onBlur",
   });
 
-  const snackBar = useContext(SnackBarContext);
+  const { handleSubmit } = formMethods;
 
-  const addVehicleQuery = useMutation({
-    mutationFn: addPowerUnit,
-    onSuccess: (response) => {
-      if (response.status === 201) {
-        queryClient.invalidateQueries(["powerUnits"]);
-
-        snackBar.setSnackBar({
-          showSnackbar: true,
-          setShowSnackbar: () => true,
-          message: "Power unit has been added successfully",
-          isError: false,
-        });
-
-        setShowAddVehicle({
-          showAddVehicle: false,
-          vehicleType: VEHICLE_TYPES_ENUM.NONE,
-        });
-      } else {
-        // Display Error in the form.
-      }
-    },
-  });
+  const powerUnitTypesQuery = usePowerUnitTypesQuery();
+  const addVehicleQuery = useAddPowerUnitMutation();
+  const navigate = useNavigate();
 
   /**
    * Custom css overrides for the form fields
@@ -115,19 +78,17 @@ export const PowerUnitForm = ({
     addVehicleQuery.mutate(powerUnitToBeAdded);
   };
 
+  /**
+   * Changed view to the main Vehicle Inventory page
+   */
   const handleClose = () => {
-    setShowAddVehicle({
-      showAddVehicle: false,
-      vehicleType: VEHICLE_TYPES_ENUM.NONE,
-    });
+    navigate("../");
   };
 
-  const commonFormProps = {
-    control: control,
-    register: register,
-    feature: "power-unit",
-    getValues: getValues,
-  };
+  /**
+   * The name of this feature that is used for id's, keys, and associating form components
+   */
+  const FEATURE = "power-unit";
 
   return (
     <div>
@@ -135,7 +96,7 @@ export const PowerUnitForm = ({
         <div id="power-unit-form">
           <CustomFormComponent
             type="input"
-            commonFormProps={commonFormProps}
+            feature={FEATURE}
             options={{
               name: "unitNumber",
               rules: { required: false, maxLength: 10 },
@@ -146,9 +107,10 @@ export const PowerUnitForm = ({
               label_i18: "vehicle.power-unit.unit-number",
             }}
           />
+
           <CustomFormComponent
             type="input"
-            commonFormProps={commonFormProps}
+            feature={FEATURE}
             options={{
               name: "make",
               rules: { required: true, maxLength: 20 },
@@ -163,35 +125,42 @@ export const PowerUnitForm = ({
 
           <CustomFormComponent
             type="input"
-            commonFormProps={commonFormProps}
+            feature={FEATURE}
             options={{
               name: "year",
-              rules: { required: true, minLength: 4, maxLength: 4 },
+              rules: {
+                required: { value: true, message: "Year is required." },
+                pattern: {
+                  value: /^\d+$/,
+                  message: "Please enter a number",
+                },
+                minLength: { value: 4, message: "Min length is 4" },
+                maxLength: 4,
+              },
               label: "Year",
               width: formFieldStyle.width,
             }}
-            i18options={{
-              label_i18: "vehicle.power-unit.year",
-              inValidMessage_i18: "vehicle.power-unit.required",
-            }}
           />
 
           <CustomFormComponent
             type="input"
-            commonFormProps={commonFormProps}
+            feature={FEATURE}
             options={{
               name: "vin",
-              rules: { required: true, minLength: 6, maxLength: 6 },
+              rules: {
+                required: { value: true, message: "VIN is required." },
+                minLength: { value: 6, message: "Length must be 6" },
+                maxLength: 6,
+              },
               label: "VIN",
               width: formFieldStyle.width,
               customHelperText: "last 6 digits",
-              inValidMessage: "VIN is required.",
             }}
           />
 
           <CustomFormComponent
             type="input"
-            commonFormProps={commonFormProps}
+            feature={FEATURE}
             options={{
               name: "plate",
               rules: { required: true, maxLength: 10 },
@@ -206,55 +175,64 @@ export const PowerUnitForm = ({
 
           <CustomFormComponent
             type="select"
-            commonFormProps={commonFormProps}
+            feature={FEATURE}
             options={{
               name: "powerUnitTypeCode",
-              rules: { required: true },
+              rules: {
+                required: {
+                  value: true,
+                  message: "Vehicle Sub-type is required.",
+                },
+              },
               label: "Vehicle Sub-type",
               width: formFieldStyle.width,
-              query: powerUnitTypesQuery,
             }}
-            i18options={{
-              label_i18: "vehicle.power-unit.power-unit-type",
-              inValidMessage_i18: "vehicle.power-unit.required",
-            }}
+            menuOptions={powerUnitTypesQuery?.data?.map(
+              (data: PowerUnitType) => (
+                <MenuItem key={data.typeCode} value={data.typeCode}>
+                  {data.type}
+                </MenuItem>
+              )
+            )}
           />
-
           <CountryAndProvince
-            country={
-              powerUnit?.provinceId ? powerUnit?.provinceId?.split("-")[0] : ""
-            }
-            province={
-              powerUnit?.provinceId ? powerUnit?.provinceId?.split("-")[1] : ""
-            }
+            feature={FEATURE}
+            countryField="country"
+            provinceField="province"
+            isProvinceRequired={false}
+            provinceIdField="provinceId"
             width={formFieldStyle.width}
           />
           <CustomFormComponent
             type="input"
-            commonFormProps={commonFormProps}
+            feature={FEATURE}
             options={{
               name: "licensedGvw",
-              rules: { required: true },
+              rules: {
+                required: { value: true, message: "Licensed GVW is required." },
+                pattern: {
+                  value: /^\d+$/,
+                  message: "Please enter a number",
+                },
+              },
               label: "Licensed GVW",
               width: formFieldStyle.width,
-            }}
-            i18options={{
-              label_i18: "vehicle.power-unit.licensed-gvw",
-              inValidMessage_i18: "vehicle.power-unit.required",
             }}
           />
           <CustomFormComponent
             type="input"
-            commonFormProps={commonFormProps}
+            feature={FEATURE}
             options={{
               name: "steerAxleTireSize",
-              rules: { required: false },
+              rules: {
+                required: false,
+                pattern: {
+                  value: /^\d+$/,
+                  message: "Please enter a number",
+                },
+              },
               label: "Steer Axle Tire Size (mm)",
               width: formFieldStyle.width,
-            }}
-            i18options={{
-              label_i18: "vehicle.power-unit.steer-axle-tire-size",
-              inValidMessage_i18: "vehicle.power-unit.required",
             }}
           />
         </div>

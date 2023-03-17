@@ -1,42 +1,15 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, screen } from "@testing-library/react";
 import user from "@testing-library/user-event";
+
 import { vi } from "vitest";
 
 import { PowerUnitForm } from "../components/form/PowerUnitForm";
-
-// API Mocks - API Tests not yet implemented
-vi.mock("../apiManager/endpoints/endpoints", () => ({
-  VEHICLE_URL: "test",
-  VEHICLES_API: {
-    GET_ALL_POWER_UNITS: "test",
-    POWER_UNIT: "test",
-    POWER_UNIT_TYPES: "test",
-  },
-}));
-
-vi.mock("../apiManager/vehiclesAPI", () => ({
-  getAllPowerUnits: vi.fn(),
-  getPowerUnitTypes: vi.fn(),
-  addPowerUnit: vi.fn(),
-  updatePowerUnit: vi.fn(),
-}));
-
-const setStateMock = vi.fn();
-const queryClient = new QueryClient();
+import { renderWithClient } from "./utils";
 
 beforeEach(() => {
   vi.resetModules();
-  renderComponent();
+  renderWithClient(<PowerUnitForm />);
 });
-
-const renderComponent = () => {
-  render(
-    <QueryClientProvider client={queryClient}>
-      <PowerUnitForm setShowAddVehicle={setStateMock} />
-    </QueryClientProvider>
-  );
-};
 
 describe("All Power Unit Form Fields", () => {
   it("Should render all key form elements", () => {
@@ -84,7 +57,7 @@ describe("Power Unit Form: Test VIN field", () => {
     clickSubmit();
 
     expect(await screen.findByTestId("alert-vin")).toHaveTextContent(
-      "VIN is required."
+      "Length must be 6"
     );
   });
 
@@ -151,11 +124,17 @@ describe("Power Unit Form Submission", () => {
 
     // Still need to test the API
     // Still need to figure out how to test MUI Select dropdowns
-
     expect(
       await screen.findByTestId("alert-powerUnitTypeCode")
-    ).toHaveTextContent("vehicle.power-unit.required");
+    ).toHaveTextContent("Vehicle Sub-type is required.");
+
+    expect(unitNumber).toHaveValue("Ken10");
+    expect(make).toHaveValue("Kenworth");
+    expect(year).toHaveValue("2020");
+    expect(vin).toHaveValue("123456");
+    expect(plate).toHaveValue("ABC123");
     expect(licensedGvw).toHaveValue("85000");
+    expect(steerAxleTireSize).toHaveValue("300");
   });
 });
 

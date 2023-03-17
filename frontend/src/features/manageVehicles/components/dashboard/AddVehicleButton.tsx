@@ -10,6 +10,12 @@ import Stack from "@mui/material/Stack";
 import { useTranslation } from "react-i18next";
 
 import { VEHICLE_TYPES_ENUM } from "../form/constants";
+import { useNavigate } from "react-router-dom";
+import {
+  ADD_POWER_UNIT,
+  ADD_TRAILER,
+  MANAGE_VEHICLES,
+} from "../../../../constants/routes";
 
 /**
  *
@@ -18,16 +24,7 @@ import { VEHICLE_TYPES_ENUM } from "../form/constants";
  *
  *
  */
-export const AddVehicleButton = ({
-  setShowAddVehicle,
-}: {
-  setShowAddVehicle: React.Dispatch<
-    React.SetStateAction<{
-      showAddVehicle: boolean;
-      vehicleType: VEHICLE_TYPES_ENUM;
-    }>
-  >;
-}) => {
+export const AddVehicleButton = () => {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const anchorRef = React.useRef<HTMLButtonElement>(null);
 
@@ -58,13 +55,19 @@ export const AddVehicleButton = ({
 
     setIsMenuOpen(false);
   };
+  const navigate = useNavigate();
 
   const handleMenuItemClick = (
     _event: React.MouseEvent<HTMLLIElement, MouseEvent>,
     _index: number,
     vehicleMode: VEHICLE_TYPES_ENUM
   ) => {
-    setShowAddVehicle({ showAddVehicle: true, vehicleType: vehicleMode });
+    if (vehicleMode === VEHICLE_TYPES_ENUM.POWER_UNIT) {
+      navigate(`/${MANAGE_VEHICLES}/${ADD_POWER_UNIT}`);
+    } else if (vehicleMode === VEHICLE_TYPES_ENUM.TRAILER) {
+      navigate(`/${MANAGE_VEHICLES}/${ADD_TRAILER}`);
+    }
+
     setIsMenuOpen(false);
   };
 

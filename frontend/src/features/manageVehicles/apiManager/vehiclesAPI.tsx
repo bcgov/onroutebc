@@ -61,6 +61,7 @@ export const getPowerUnitTypes = async (): Promise<Array<PowerUnitType>> => {
  * @returns Promise containing the response from the create powerUnit API.
  */
 export const addPowerUnit = (powerUnit: CreatePowerUnit): Promise<Response> => {
+  console.log("powerUnit", powerUnit);
   return fetch(`${VEHICLES_API.POWER_UNIT}`, {
     method: "POST",
     headers: {

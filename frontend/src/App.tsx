@@ -10,12 +10,15 @@ import {
   CustomSnackbar,
   SnackBarOptions,
 } from "./common/components/snackbar/CustomSnackBar";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 export const SnackBarContext = createContext({
   setSnackBar: (() => undefined) as Dispatch<SnackBarOptions>,
 });
 
 const App = () => {
+  const queryClient = new QueryClient();
+
   // Globally used SnackBar component
   const [snackBar, setSnackBar] = useState<SnackBarOptions>({
     showSnackbar: false,
@@ -30,21 +33,23 @@ const App = () => {
   }, [snackBar]);
 
   return (
-    <SnackBarContext.Provider value={{ setSnackBar: setSnackBar }}>
-      <CustomSnackbar
-        showSnackbar={displaySnackBar}
-        setShowSnackbar={setDisplaySnackBar}
-        message={snackBar.message}
-        isError={snackBar.isError}
-      />
-      <ThemeProvider theme={bcGovTheme}>
-        <Router>
-          <Header />
-          <AppRoutes />
-        </Router>
-        <Footer />
-      </ThemeProvider>
-    </SnackBarContext.Provider>
+    <ThemeProvider theme={bcGovTheme}>
+      <QueryClientProvider client={queryClient}>
+        <SnackBarContext.Provider value={{ setSnackBar: setSnackBar }}>
+          <CustomSnackbar
+            showSnackbar={displaySnackBar}
+            setShowSnackbar={setDisplaySnackBar}
+            message={snackBar.message}
+            isError={snackBar.isError}
+          />
+          <Router>
+            <Header />
+            <AppRoutes />
+          </Router>
+          <Footer />
+        </SnackBarContext.Provider>
+      </QueryClientProvider>
+    </ThemeProvider>
   );
 };
 

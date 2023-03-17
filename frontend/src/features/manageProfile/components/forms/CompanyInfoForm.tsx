@@ -6,15 +6,14 @@ import {
   CompanyProfile,
   updateCompanyInfo,
 } from "../../apiManager/manageProfileAPI";
-import { CommonFormPropsType } from "../../../../common/components/form/CustomFormComponents";
 import { InfoBcGovBanner } from "../../../../common/components/alertBanners/AlertBanners";
 
 import "./CompanyInfoForms.scss";
-import { formatPhoneNumber } from "../../../../common/components/form/PhoneNumberInput";
 import { CompanyInfoGeneralForm } from "./subForms/CompanyInfoGeneralForm";
 import { CompanyContactDetailsForm } from "./subForms/CompanyContactDetailsForm";
 import { CompanyMailingAddressForm } from "./subForms/CompanyMailingAddressForm";
 import { CompanyPrimaryContactForm } from "./subForms/CompanyPrimaryContactForm";
+import { formatPhoneNumber } from "../../../../common/components/form/subFormComponents/PhoneNumberInput";
 
 /**
  * The Company Information Form contains multiple subs forms including
@@ -77,7 +76,7 @@ export const CompanyInfoForm = memo(
       },
     });
 
-    const { register, handleSubmit, control, getValues } = formMethods;
+    const { handleSubmit } = formMethods;
 
     const addCompanyInfoQuery = useMutation({
       mutationFn: updateCompanyInfo,
@@ -100,23 +99,15 @@ export const CompanyInfoForm = memo(
       });
     };
 
-    const commonFormProps: CommonFormPropsType<CompanyProfile> = {
-      control: control,
-      register: register,
-      feature: "profile",
-      getValues: getValues,
-    };
+    const FEATURE = "company-profile";
 
     return (
       <div className="mp-form-container">
         <FormProvider {...formMethods}>
-          <CompanyInfoGeneralForm
-            commonFormProps={commonFormProps}
-            companyInfo={companyInfo}
-          />
+          <CompanyInfoGeneralForm feature={FEATURE} />
 
           <CompanyMailingAddressForm
-            commonFormProps={commonFormProps}
+            feature={FEATURE}
             companyInfo={companyInfo}
           />
 
@@ -124,7 +115,7 @@ export const CompanyInfoForm = memo(
             Company Contact Details
           </Typography>
 
-          <CompanyContactDetailsForm commonFormProps={commonFormProps} />
+          <CompanyContactDetailsForm feature={FEATURE} />
 
           <Typography variant="h2" gutterBottom>
             Company Primary Contact
@@ -132,10 +123,7 @@ export const CompanyInfoForm = memo(
 
           <InfoBcGovBanner description="The Company Primary Contact will be contacted for all onRouteBC client profile queries." />
 
-          <CompanyPrimaryContactForm
-            commonFormProps={commonFormProps}
-            companyInfo={companyInfo}
-          />
+          <CompanyPrimaryContactForm feature={FEATURE} />
         </FormProvider>
         <div className="mp-form-submit-container">
           <Button
