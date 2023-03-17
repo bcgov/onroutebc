@@ -91,7 +91,7 @@ export const CustomFormComponent = <
   /**
    * Recursive method to dynamically get the error message of a fieldname that has nested json
    * Example: Field name of primaryContact.provinceCode
-   * @param errors The "errors" object from formState: { errors } in useFormContext (See top of this file)
+   * @param errors The "errors" object from formState: { errors } in useFormContext (See top of this file). Passed by value since recursive.
    * @param fieldPath The field name variable. Either provinceField or countryField
    * @returns Error message as a string
    */
