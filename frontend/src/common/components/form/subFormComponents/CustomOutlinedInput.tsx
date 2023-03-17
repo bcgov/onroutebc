@@ -5,9 +5,8 @@ import {
   RegisterOptions,
   useFormContext,
 } from "react-hook-form";
-import { CompanyProfile } from "../../../../features/manageProfile/apiManager/manageProfileAPI";
-import { CreatePowerUnit } from "../../../../features/manageVehicles/types/managevehicles";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
+import { ORBC_FormTypes } from "../../../../types/common";
 
 /**
  * Properties of the onrouteBC customized OutlineInput MUI component
@@ -25,7 +24,7 @@ export interface CustomOutlinedInputProps<T extends FieldValues> {
  * Based on https://mui.com/material-ui/api/outlined-input/
  *
  */
-export const CustomOutlinedInput = <T extends CompanyProfile | CreatePowerUnit>(
+export const CustomOutlinedInput = <T extends ORBC_FormTypes>(
   props: CustomOutlinedInputProps<T>
 ): JSX.Element => {
   const { register } = useFormContext();

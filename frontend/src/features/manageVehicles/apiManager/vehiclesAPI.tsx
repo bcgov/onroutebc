@@ -1,74 +1,58 @@
 import { VEHICLES_API } from "./endpoints/endpoints";
 import {
-  IPowerUnit,
-  CreatePowerUnit,
+  PowerUnit,
   UpdatePowerUnit,
-  PowerUnitType,
+  VehicleType,
+  Trailer,
 } from "../types/managevehicles";
 
-import { ApiErrorResponse } from "../../../types/common";
+import {
+  httpGETRequest,
+  httpPOSTRequest,
+  httpPUTRequest,
+} from "../../../common/apiManager/httpRequestHandler";
 
-//const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+/**
+ * Creates the provinceID object within the API request body
+ * If the province field is optional, then assign the provinceCode to be the same as the countryCode
+ * Example: Country code is Canada, but the Province field is optional and set as "" then provinceId will be CA-CA
+ * @param data Request data that is either PowerUnit or Trailer type
+ * @returns provinceID as a string
+ */
+const createProvinceID = (data: PowerUnit | Trailer) => {
+  if (!data.province) {
+    data.province = data.country;
+  }
+  return `${data.country}-${data.province}`;
+};
 
 /**
  * Fetch*
  * All Power Unit Data
  * @return {*}  {Promise<void>}
  */
-export const getAllPowerUnits = async (): Promise<IPowerUnit[]> => {
+export const getAllPowerUnits = async (): Promise<PowerUnit[]> => {
   const url = new URL(VEHICLES_API.GET_ALL_POWER_UNITS);
-
-  try {
-    /*
-      // Use for testing error response
-      const response = await fetch(
-        "http://localhost:5000/vehicles/powerUnits/1111",
-        { method: "DELETE" }
-      );
-      */
-
-    const response = await fetch(url.href);
-    const data = await response.json();
-
-    // Handle API errors created from the backend API
-    if (!response.ok) {
-      const err: ApiErrorResponse = data;
-      return Promise.reject(err.errorMessage);
-    }
-    return data;
-    // eslint-disable-next-line  @typescript-eslint/no-explicit-any
-  } catch (error: any) {
-    // Handle network errors
-    // Error type has name and message
-    // eslint-disable-next-line  @typescript-eslint/no-explicit-any
-    return Promise.reject(error.message);
-  }
+  return httpGETRequest(url);
 };
 
 /**
  * Gets the power unit types.
  * @returns Array<PowerUnitType>
  */
-export const getPowerUnitTypes = async (): Promise<Array<PowerUnitType>> => {
-  return fetch(`${VEHICLES_API.POWER_UNIT_TYPES}`).then((response) =>
-    response.json()
-  );
+export const getPowerUnitTypes = async (): Promise<Array<VehicleType>> => {
+  const url = new URL(VEHICLES_API.POWER_UNIT_TYPES);
+  return httpGETRequest(url);
 };
 
 /**
  * Adds a power unit.
- * @param {CreatePowerUnit} powerUnit The power unit to be added
+ * @param {PowerUnit} powerUnit The power unit to be added
  * @returns Promise containing the response from the create powerUnit API.
  */
-export const addPowerUnit = (powerUnit: CreatePowerUnit): Promise<Response> => {
-  console.log("powerUnit", powerUnit);
-  return fetch(`${VEHICLES_API.POWER_UNIT}`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(powerUnit),
-  });
+export const addPowerUnit = (powerUnit: PowerUnit): Promise<Response> => {
+  powerUnit.provinceId = createProvinceID(powerUnit);
+  return httpPOSTRequest(VEHICLES_API.POWER_UNIT, powerUnit);
 };
 
 /**
@@ -79,11 +63,34 @@ export const addPowerUnit = (powerUnit: CreatePowerUnit): Promise<Response> => {
 export const updatePowerUnit = (
   powerUnit: UpdatePowerUnit
 ): Promise<Response> => {
-  return fetch(`${VEHICLES_API.POWER_UNIT}`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(powerUnit),
-  });
+  return httpPUTRequest(VEHICLES_API.POWER_UNIT, powerUnit);
+};
+
+/**
+ * Fetch*
+ * All Trailer Data
+ * @return {*}  {Promise<void>}
+ */
+export const getAllTrailers = async (): Promise<Trailer[]> => {
+  const url = new URL(VEHICLES_API.GET_ALL_TRAILERS);
+  return httpGETRequest(url);
+};
+
+/**
+ * Gets the trailer types.
+ * @returns Array<VehicleType>
+ */
+export const getTrailerTypes = async (): Promise<Array<VehicleType>> => {
+  const url = new URL(VEHICLES_API.TRAILER_TYPES);
+  return httpGETRequest(url);
+};
+
+/**
+ * Adds a trailer.
+ * @param {Trailer} trailer The trailer to be added
+ * @returns Promise containing the response from the create trailer API.
+ */
+export const addTrailer = (trailer: Trailer): Promise<Response> => {
+  trailer.provinceId = createProvinceID(trailer);
+  return httpPOSTRequest(VEHICLES_API.TRAILER, trailer);
 };

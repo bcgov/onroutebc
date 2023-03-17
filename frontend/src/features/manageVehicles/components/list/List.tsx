@@ -7,16 +7,60 @@ import MaterialReactTable, {
 } from "material-react-table";
 import "./List.scss";
 import { Box, IconButton, Tooltip } from "@mui/material";
-import { IPowerUnit } from "../../types/managevehicles";
-import { PowerUnit_ColumnDef } from "./Columns";
+import { VehicleTypes, VehicleTypesAsString } from "../../types/managevehicles";
+
 import { Filter } from "../options/Filter";
 import { Trash } from "../options/Trash";
 import { CSVOptions } from "../options/CSVOptions";
 import { Delete, Edit, ContentCopy } from "@mui/icons-material";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { useQuery } from "@tanstack/react-query";
-import { getAllPowerUnits } from "../../apiManager/vehiclesAPI";
+import { getAllPowerUnits, getAllTrailers } from "../../apiManager/vehiclesAPI";
 import { CustomSnackbar } from "../../../../common/components/snackbar/CustomSnackBar";
+import { PowerUnitColumnDefinition, TrailerColumnDefinition } from "./Columns";
+
+/**
+ * Creates a useQuery object based on the vehicle type
+ * For customization see:
+ * https://react-query-v3.tanstack.com/reference/useQuery
+ * @param vehicleType Either "powerUnit" | "trailer"
+ * @returns useQuery object
+ */
+const createVehicleQuery = (vehicleType: string) => {
+  let query;
+  const keepPreviousData = true;
+  const staleTime = 5000;
+
+  if (vehicleType === "powerUnit")
+    query = useQuery({
+      queryKey: ["powerUnits"],
+      queryFn: getAllPowerUnits,
+      keepPreviousData: keepPreviousData,
+      staleTime: staleTime,
+    });
+  else {
+    query = useQuery({
+      queryKey: ["trailers"],
+      queryFn: getAllTrailers,
+      keepPreviousData: keepPreviousData,
+      staleTime: staleTime,
+    });
+  }
+
+  return query;
+};
+
+/**
+ * Dynamically set the column based on vehicle type
+ * @param vehicleType Either "powerUnit" | "trailer"
+ * @returns An array of column headers/accessor keys ofr Material React Table
+ */
+const getColumns = (vehicleType: string): MRT_ColumnDef<VehicleTypes>[] => {
+  if (vehicleType === "powerUnit") {
+    return PowerUnitColumnDefinition;
+  }
+  return TrailerColumnDefinition;
+};
 
 /*
  *
@@ -26,29 +70,25 @@ import { CustomSnackbar } from "../../../../common/components/snackbar/CustomSna
  *
  *
  */
-export const List = memo(() => {
+/* eslint-disable react/prop-types */
+export const List = memo(({ vehicleType }: VehicleTypesAsString) => {
   // Data, fetched from backend API
   const {
-    data: powerUnitData,
+    data,
     isError,
     isFetching,
     isLoading,
     error,
     //refetch,
-  } = useQuery({
-    queryKey: ["powerUnits"],
-    queryFn: getAllPowerUnits,
-    keepPreviousData: true,
-    staleTime: 5000,
-  });
+  } = createVehicleQuery(vehicleType);
 
   // Column definitions for the table
-  const columnsPowerUnit = useMemo<MRT_ColumnDef<IPowerUnit>[]>(
-    () => PowerUnit_ColumnDef,
+  const columns = useMemo<MRT_ColumnDef<VehicleTypes>[]>(
+    () => getColumns(vehicleType),
     []
   );
 
-  const handleDeleteRow = useCallback((row: MRT_Row<IPowerUnit>) => {
+  const handleDeleteRow = useCallback((row: MRT_Row<VehicleTypes>) => {
     if (
       !confirm(`Are you sure you want to delete ${row.getValue("unitNumber")}`)
     ) {
@@ -80,8 +120,8 @@ export const List = memo(() => {
 
       <MaterialReactTable
         // Required Props
-        data={powerUnitData ?? []}
-        columns={columnsPowerUnit}
+        data={data ?? []}
+        columns={columns}
         // State variables and actions
         //rowCount={rowCount}
         state={{
@@ -108,8 +148,8 @@ export const List = memo(() => {
             table,
             row,
           }: {
-            table: MRT_TableInstance<IPowerUnit>;
-            row: MRT_Row<IPowerUnit>;
+            table: MRT_TableInstance<VehicleTypes>;
+            row: MRT_Row<VehicleTypes>;
           }) => (
             <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
               <Tooltip arrow placement="left" title="Edit">
@@ -146,7 +186,7 @@ export const List = memo(() => {
         )}
         // Render a custom options Bar (inclues search, filter, trash, and csv options)
         renderTopToolbar={useCallback(
-          ({ table }: { table: MRT_TableInstance<IPowerUnit> }) => (
+          ({ table }: { table: MRT_TableInstance<VehicleTypes> }) => (
             <Box
               sx={{
                 display: "flex",

@@ -5,10 +5,9 @@ import MenuItem from "@mui/material/MenuItem";
 import { COUNTRIES_THAT_SUPPORT_PROVINCE } from "../../../constants/countries";
 
 import CountriesAndStates from "../../../constants/countries_and_states.json";
-import { CompanyProfile } from "../../../features/manageProfile/apiManager/manageProfileAPI";
-import { CreatePowerUnit } from "../../../features/manageVehicles/types/managevehicles";
 import { DEFAULT_WIDTH } from "../../../themes/bcGovStyles";
 import { CustomFormComponent } from "./CustomFormComponents";
+import { ORBC_FormTypes } from "../../../types/common";
 
 /**
  * The props that can be passed to the country and provinces subsection of a form.
@@ -48,7 +47,7 @@ interface CountryAndProvinceProps {
  *
  * @returns A react component with the country and province fields.
  */
-export const CountryAndProvince = <T extends CompanyProfile | CreatePowerUnit>({
+export const CountryAndProvince = <T extends ORBC_FormTypes>({
   feature,
   width = DEFAULT_WIDTH,
   countryField,

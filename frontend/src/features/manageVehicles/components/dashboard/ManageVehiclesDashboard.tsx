@@ -13,11 +13,11 @@ export const ManageVehiclesDashboard = memo(() => {
   const tabs = [
     {
       label: "Power Unit",
-      component: <List />,
+      component: <List vehicleType="powerUnit" />,
     },
     {
       label: "Trailer",
-      component: <>TODO</>,
+      component: <List vehicleType="trailer" />,
     },
     {
       label: "Vehicle Configuration",

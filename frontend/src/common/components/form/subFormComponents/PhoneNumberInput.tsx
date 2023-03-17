@@ -1,16 +1,15 @@
 import { OutlinedInput } from "@mui/material";
 import { useState } from "react";
 import { PathValue, Path, useFormContext } from "react-hook-form";
-import { CompanyProfile } from "../../../../features/manageProfile/apiManager/manageProfileAPI";
-import { CreatePowerUnit } from "../../../../features/manageVehicles/types/managevehicles";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
+import { ORBC_FormTypes } from "../../../../types/common";
 import { CustomOutlinedInputProps } from "./CustomOutlinedInput";
 
 /**
  * An onRouteBC customized MUI OutlineInput component
  * that automatically changes the format of the phone number as the user types
  */
-export const PhoneNumberInput = <T extends CompanyProfile | CreatePowerUnit>(
+export const PhoneNumberInput = <T extends ORBC_FormTypes>(
   props: CustomOutlinedInputProps<T>
 ): JSX.Element => {
   const { register, getValues } = useFormContext();

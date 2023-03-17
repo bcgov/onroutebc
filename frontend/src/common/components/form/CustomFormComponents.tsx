@@ -7,8 +7,7 @@ import {
   useFormContext,
 } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { CompanyProfile } from "../../../features/manageProfile/apiManager/manageProfileAPI";
-import { CreatePowerUnit } from "../../../features/manageVehicles/types/managevehicles";
+import { ORBC_FormTypes } from "../../../types/common";
 import { CustomOutlinedInput } from "./subFormComponents/CustomOutlinedInput";
 import { CustomSelect } from "./subFormComponents/CustomSelect";
 import { PhoneNumberInput } from "./subFormComponents/PhoneNumberInput";
@@ -66,9 +65,7 @@ interface InternationalOptionsProps {
  *
  * @returns An onRouteBc customized react form component
  */
-export const CustomFormComponent = <
-  T extends CompanyProfile | CreatePowerUnit
->({
+export const CustomFormComponent = <T extends ORBC_FormTypes>({
   type,
   feature,
   options: {

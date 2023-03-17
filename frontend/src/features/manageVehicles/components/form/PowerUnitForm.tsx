@@ -2,7 +2,7 @@ import { useForm, FormProvider, FieldValues } from "react-hook-form";
 import { Box, Button, MenuItem } from "@mui/material";
 import "./VehicleForm.scss";
 // import { AxleGroupForm } from "./AxleGroupForm";
-import { CreatePowerUnit, PowerUnitType } from "../../types/managevehicles";
+import { PowerUnit, VehicleType } from "../../types/managevehicles";
 import { CountryAndProvince } from "../../../../common/components/form/CountryAndProvince";
 import { CustomFormComponent } from "../../../../common/components/form/CustomFormComponents";
 import {
@@ -19,7 +19,7 @@ interface PowerUnitFormProps {
    * The power unit details to be displayed if in edit mode.
    * @deprecated This prop is only temporarily supported and scheduled to be removed.
    */
-  powerUnit?: CreatePowerUnit;
+  powerUnit?: PowerUnit;
 
   /**
    * The power unit id to be retrieved.
@@ -50,7 +50,7 @@ export const PowerUnitForm = ({ powerUnit }: PowerUnitFormProps) => {
     year: powerUnit?.year ? powerUnit?.year : undefined,
   };
 
-  const formMethods = useForm<CreatePowerUnit>({
+  const formMethods = useForm<PowerUnit>({
     defaultValues: powerUnitDefaultValues,
     reValidateMode: "onBlur",
   });
@@ -74,7 +74,7 @@ export const PowerUnitForm = ({ powerUnit }: PowerUnitFormProps) => {
    * Adds a vehicle.
    */
   const onAddVehicle = function (data: FieldValues) {
-    const powerUnitToBeAdded = data as CreatePowerUnit;
+    const powerUnitToBeAdded = data as PowerUnit;
     addVehicleQuery.mutate(powerUnitToBeAdded);
   };
 
@@ -187,13 +187,11 @@ export const PowerUnitForm = ({ powerUnit }: PowerUnitFormProps) => {
               label: "Vehicle Sub-type",
               width: formFieldStyle.width,
             }}
-            menuOptions={powerUnitTypesQuery?.data?.map(
-              (data: PowerUnitType) => (
-                <MenuItem key={data.typeCode} value={data.typeCode}>
-                  {data.type}
-                </MenuItem>
-              )
-            )}
+            menuOptions={powerUnitTypesQuery?.data?.map((data: VehicleType) => (
+              <MenuItem key={data.typeCode} value={data.typeCode}>
+                {data.type}
+              </MenuItem>
+            ))}
           />
           <CountryAndProvince
             feature={FEATURE}
