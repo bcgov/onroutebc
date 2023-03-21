@@ -30,7 +30,6 @@ interface CountryAndProvinceProps {
    */
   countryField: string;
   provinceField: string;
-  provinceIdField?: string;
 
   /**
    * Boolean for react hook form rules. Example-> rules: { required: isCountryRequired }
@@ -54,9 +53,8 @@ export const CountryAndProvince = <T extends ORBC_FormTypes>({
   isCountryRequired = true,
   provinceField,
   isProvinceRequired = true,
-  provinceIdField = "",
 }: CountryAndProvinceProps): JSX.Element => {
-  const { resetField, watch, setValue, getValues } = useFormContext();
+  const { resetField, watch, setValue } = useFormContext();
 
   const [shouldDisplayProvince, setShouldDisplayProvince] =
     useState<boolean>(true);
@@ -80,8 +78,7 @@ export const CountryAndProvince = <T extends ORBC_FormTypes>({
       // If country does not support province, as per API spec, set country to province too
       // even though the field is hidden.
       setShouldDisplayProvince(() => false);
-      setValue(provinceField, country);
-      setValue(provinceIdField, country + "-" + country);
+      //setValue(provinceField, country);
     } else {
       setShouldDisplayProvince(() => true);
     }
@@ -92,9 +89,9 @@ export const CountryAndProvince = <T extends ORBC_FormTypes>({
    * @param event the select event
    */
   const onChangeProvince = useCallback(function (event: SelectChangeEvent) {
-    resetField(provinceIdField, { defaultValue: "" });
+    resetField(provinceField, { defaultValue: "" });
     const provinceSelected: string = event.target.value;
-    setValue(provinceIdField, getValues(countryField) + "-" + provinceSelected);
+    setValue(provinceField, provinceSelected);
   }, []);
 
   /**

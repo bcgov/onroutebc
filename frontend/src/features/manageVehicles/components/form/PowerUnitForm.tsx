@@ -35,14 +35,13 @@ export const PowerUnitForm = ({ powerUnit }: PowerUnitFormProps) => {
   // Default values to register with React Hook Forms
   // If data was passed to this component, then use that data, otherwise use empty or undefined values
   const powerUnitDefaultValues = {
-    country: powerUnit?.provinceId ? powerUnit?.provinceId?.split("-")[0] : "",
-    province: powerUnit?.provinceId ? powerUnit?.provinceId?.split("-")[1] : "",
+    provinceCode: powerUnit?.provinceCode || "",
+    countryCode: powerUnit?.countryCode || "",
     unitNumber: powerUnit?.unitNumber || "",
     licensedGvw: (powerUnit?.licensedGvw as number) || undefined,
     make: powerUnit?.make || "",
     plate: powerUnit?.plate || "",
     powerUnitTypeCode: powerUnit?.powerUnitTypeCode || "",
-    provinceId: powerUnit?.provinceId ? powerUnit?.provinceId : "",
     steerAxleTireSize: powerUnit?.steerAxleTireSize
       ? powerUnit?.steerAxleTireSize
       : undefined,
@@ -195,10 +194,9 @@ export const PowerUnitForm = ({ powerUnit }: PowerUnitFormProps) => {
           />
           <CountryAndProvince
             feature={FEATURE}
-            countryField="country"
-            provinceField="province"
+            countryField="countryCode"
+            provinceField="provinceCode"
             isProvinceRequired={true}
-            provinceIdField="provinceId"
             width={formFieldStyle.width}
           />
           <CustomFormComponent

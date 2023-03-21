@@ -7,9 +7,8 @@ export type VehicleTypesAsString = "powerUnit" | "trailer";
 interface Vehicle {
   unitNumber: string;
   plate: string;
-  country?: string;
-  province?: string;
-  provinceId: string;
+  provinceCode: string;
+  countryCode: string;
   make: string;
   vin: string;
   year: number;

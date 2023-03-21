@@ -5,7 +5,6 @@ interface Address {
   addressLine1: string;
   addressLine2?: string;
   city: string;
-  provinceId: string;
   provinceCode: string;
   countryCode: string;
   postalCode: string;
@@ -20,7 +19,6 @@ interface Contact {
   phone2Extension?: string;
   email: string;
   city: string;
-  provinceId: string;
   provinceCode: string;
   countryCode: string;
 }
@@ -47,66 +45,6 @@ export interface CompanyProfile {
 //let TEST_COMPANY_GUID = "C16A95599A264242A850BDDC21B739F4"; // Harry Ewing User
 let TEST_COMPANY_ID = "1";
 
-/**
- * TEMPORARY SOLUTION FOR FIXING PROVINCEID FOR COMPANY PROFILE
- * @param data
- * @returns
- */
-const addProvinceIDs = (data: CompanyProfile) => {
-  // Company Address
-  if (!data.companyAddress.provinceCode) {
-    data.companyAddress.provinceCode = data.companyAddress.countryCode;
-  }
-  data.companyAddress.provinceId = `${data.companyAddress.countryCode}-${data.companyAddress.provinceCode}`;
-
-  // Mailing Address
-  if (data.mailingAddress) {
-    if (!data.mailingAddress.provinceCode) {
-      data.mailingAddress.provinceCode = data.mailingAddress.countryCode;
-    }
-    data.mailingAddress.provinceId = `${data.mailingAddress.countryCode}-${data.mailingAddress.provinceCode}`;
-  }
-
-  // Primary Contact
-  if (!data.primaryContact.provinceCode) {
-    data.primaryContact.provinceCode = data.primaryContact.countryCode;
-  }
-  data.primaryContact.provinceId = `${data.primaryContact.countryCode}-${data.primaryContact.provinceCode}`;
-
-  return data;
-};
-
-/**
- * TEMPORARY SOLUTION FOR FIXING PROVINCEID FOR COMPANY PROFILE
- * @param data
- * @returns
- */
-const addProvinceCountryCodes = (data: CompanyProfile) => {
-  // Company Address
-  data.companyAddress.provinceCode =
-    data.companyAddress.provinceId?.split("-")[1];
-  data.companyAddress.countryCode =
-    data.companyAddress.provinceId?.split("-")[0];
-
-  data.companyAddress.provinceId = `${data.companyAddress.countryCode}-${data.companyAddress.provinceCode}`;
-
-  // Mailing Address
-  if (data.mailingAddress) {
-    data.mailingAddress.provinceCode =
-      data.mailingAddress.provinceId?.split("-")[1];
-    data.mailingAddress.countryCode =
-      data.mailingAddress.provinceId?.split("-")[0];
-  }
-
-  // Primary Contact
-  data.primaryContact.provinceCode =
-    data.primaryContact.provinceId?.split("-")[1];
-  data.primaryContact.countryCode =
-    data.primaryContact.provinceId?.split("-")[0];
-
-  return data;
-};
-
 /* eslint-disable @typescript-eslint/no-unused-vars */
 export const getCompanyInfo = async (
   companyGUID: string
@@ -124,7 +62,7 @@ export const getCompanyInfo = async (
       return Promise.reject(err.errorMessage);
     }
 
-    return addProvinceCountryCodes(data);
+    return data;
     // eslint-disable-next-line  @typescript-eslint/no-explicit-any
   } catch (error: any) {
     // Handle network errors
@@ -148,8 +86,6 @@ export const updateCompanyInfo = async ({
   if (companyInfo.mailingAddressSameAsCompanyAddress) {
     companyInfo.mailingAddress = undefined;
   }
-
-  companyInfo = addProvinceIDs(companyInfo);
 
   return fetch(`${MANAGE_PROFILE_API.COMPANY_INFO}/${TEST_COMPANY_ID}`, {
     method: "PUT",
@@ -210,5 +146,5 @@ export const createCompanyInfo = async (): Promise<CompanyProfile> => {
 
   TEST_COMPANY_ID = data.companyId;
 
-  return addProvinceIDs(data);
+  return data;
 };

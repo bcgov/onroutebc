@@ -13,20 +13,6 @@ import {
 } from "../../../common/apiManager/httpRequestHandler";
 
 /**
- * Creates the provinceID object within the API request body
- * If the province field is optional, then assign the provinceCode to be the same as the countryCode
- * Example: Country code is Canada, but the Province field is optional and set as "" then provinceId will be CA-CA
- * @param data Request data that is either PowerUnit or Trailer type
- * @returns provinceID as a string
- */
-const createProvinceID = (data: PowerUnit | Trailer) => {
-  if (!data.province) {
-    data.province = data.country;
-  }
-  return `${data.country}-${data.province}`;
-};
-
-/**
  * Fetch*
  * All Power Unit Data
  * @return {*}  {Promise<void>}
@@ -51,7 +37,6 @@ export const getPowerUnitTypes = async (): Promise<Array<VehicleType>> => {
  * @returns Promise containing the response from the create powerUnit API.
  */
 export const addPowerUnit = (powerUnit: PowerUnit): Promise<Response> => {
-  powerUnit.provinceId = createProvinceID(powerUnit);
   return httpPOSTRequest(VEHICLES_API.POWER_UNIT, powerUnit);
 };
 
@@ -91,6 +76,5 @@ export const getTrailerTypes = async (): Promise<Array<VehicleType>> => {
  * @returns Promise containing the response from the create trailer API.
  */
 export const addTrailer = (trailer: Trailer): Promise<Response> => {
-  trailer.provinceId = createProvinceID(trailer);
   return httpPOSTRequest(VEHICLES_API.TRAILER, trailer);
 };

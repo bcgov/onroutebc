@@ -31,13 +31,12 @@ export const TrailerForm = ({ trailer }: TrailerFormProps) => {
   // Default values to register with React Hook Forms
   // If data was passed to this component, then use that data, otherwise use empty or undefined values
   const trailerDefaultValues = {
-    country: trailer?.provinceId ? trailer?.provinceId?.split("-")[0] : "",
-    province: trailer?.provinceId ? trailer?.provinceId?.split("-")[1] : "",
+    provinceCode: trailer?.provinceCode || "",
+    countryCode: trailer?.countryCode || "",
     unitNumber: trailer?.unitNumber || "",
     make: trailer?.make || "",
     plate: trailer?.plate || "",
     trailerTypeCode: trailer?.trailerTypeCode || "",
-    provinceId: trailer?.provinceId ? trailer?.provinceId : "",
     vin: trailer?.vin ? trailer?.vin : "",
     year: trailer?.year ? trailer?.year : undefined,
     emptyTrailerWidth: trailer?.emptyTrailerWidth
@@ -197,10 +196,9 @@ export const TrailerForm = ({ trailer }: TrailerFormProps) => {
 
           <CountryAndProvince
             feature={FEATURE}
-            countryField="country"
-            provinceField="province"
+            countryField="countryCode"
+            provinceField="provinceCode"
             isProvinceRequired={true}
-            provinceIdField="provinceId"
             width={formFieldStyle.width}
           />
         </div>
