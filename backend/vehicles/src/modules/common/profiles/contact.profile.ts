@@ -17,19 +17,30 @@ export class ContactProfile extends AutomapperProfile {
     return (mapper: Mapper) => {
       /**
        * The mapping between Contact Entity and ReadContactDto DTO.It defines
-       * one custom mapping using the forMember() function that map the
-       * provinceId the DTO based on the province.provinceId property of the
-       * entity. Additionally, it maps the extension1 and extension2 properties
-       * of the entity to the phone1Extension and phone2Extension properties of
-       * the DTO, respectively.
+       * two custom mappings using the forMember() function that map the
+       * provinceCode and countryCode properties of the DTO based on the
+       * province.provinceId property of the entity. Additionally, it maps the
+       * extension1 and extension2 properties of the entity to the
+       * phone1Extension and phone2Extension properties of the DTO,
+       * respectively.
        */
       createMap(
         mapper,
         Contact,
         ReadContactDto,
         forMember(
-          (d) => d.provinceId,
-          mapFrom((s) => s.province.provinceId),
+          (d) => d.provinceCode,
+          mapFrom((s) => {
+            const province = s.province.provinceId.split('-');
+            return province[1] === 'XX' ? null : province[1];
+          }),
+        ),
+        forMember(
+          (d) => d.countryCode,
+          mapFrom((s) => {
+            const province = s.province.provinceId.split('-');
+            return province[0];
+          }),
         ),
         forMember(
           (d) => d.phone1Extension,
@@ -43,10 +54,11 @@ export class ContactProfile extends AutomapperProfile {
 
       /**
        * The mapping between CreateContactDto DTO and Contact Entity.The mapping
-       * uses the forMember() function to map the provinceId property of the DTO
-       * to the province.provinceId propertyof the entity, and to map the
-       * extension1 and extension2 properties of the DTO to the phone1Extension
-       * and phone2Extension properties of the entity, respectively.
+       * uses the forMember() function to map the province.provinceId property
+       * of the entity based on the countryCode and provinceCode properties of
+       * the DTO, and to map the extension1 and extension2 properties of the DTO
+       * to the phone1Extension and phone2Extension properties of the entity,
+       * respectively.
        */
       createMap(
         mapper,
@@ -54,7 +66,12 @@ export class ContactProfile extends AutomapperProfile {
         Contact,
         forMember(
           (d) => d.province.provinceId,
-          mapFrom((s) => s.provinceId),
+          mapFrom(
+            (s) =>
+              s.countryCode +
+              '-' +
+              (s.countryCode === 'XX' ? 'XX' : s.provinceCode),
+          ),
         ),
         forMember(
           (d) => d.extension1,
@@ -68,10 +85,11 @@ export class ContactProfile extends AutomapperProfile {
 
       /**
        * The mapping between UpdateContactDto DTO and Contact Entity.The mapping
-       * uses the forMember() function to map the provinceId property of the DTO
-       * to the province.provinceId propertyof the entity, and to map the
-       * extension1 and extension2 properties of the DTO to the phone1Extension
-       * and phone2Extension properties of the entity, respectively.
+       * uses the forMember() function to map the province.provinceId property
+       * of the entity based on the countryCode and provinceCode properties of
+       * the DTO, and to map the extension1 and extension2 properties of the DTO
+       * to the phone1Extension and phone2Extension properties of the entity,
+       * respectively.
        */
       createMap(
         mapper,
@@ -79,7 +97,12 @@ export class ContactProfile extends AutomapperProfile {
         Contact,
         forMember(
           (d) => d.province.provinceId,
-          mapFrom((s) => s.provinceId),
+          mapFrom(
+            (s) =>
+              s.countryCode +
+              '-' +
+              (s.countryCode === 'XX' ? 'XX' : s.provinceCode),
+          ),
         ),
         forMember(
           (d) => d.extension1,
