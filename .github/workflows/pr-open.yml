@@ -55,6 +55,23 @@ jobs:
           tag_fallback: test
           token: ${{ secrets.GITHUB_TOKEN }}
           triggers: ${{ matrix.triggers }}
+    
+      - name: Get package.json version
+        shell: bash
+      - name: Check if build image already exists
+        shell: | 
+          TOKEN=$(curl -s https://ghcr.io/token\?scope\="repository:${{ inputs.repository }}/${{ inputs.package }}:pull" | jq -r .token);
+          URL="https://ghcr.io/v2/${{ inputs.repository }}/${{ inputs.package }}/manifests/${{ inputs.tag_fallback }}";
+          if [ $(curl -ILso /dev/null -w "%{http_code}" -H "Authorization: Bearer ${TOKEN}" "${URL}") -ne 200 ];
+
+        run: echo PACKAGE_VERSION=grep \"version\": frontend/package.json | awk -F ':' '{print($2)}' | awk -F ',' '{print($1)}' | tee $GITHUB_ENV
+      - name: Tag Images with package.json version 
+        uses: shrink/actions-docker-registry-tag@v3
+        with:
+          registry: ghcr.io
+          repository: ${{ github.repository }}/${{ matrix.component }}
+          target: test
+          tags: #TODO extract package.json version 
 
   deploys:
     name: Deploys
