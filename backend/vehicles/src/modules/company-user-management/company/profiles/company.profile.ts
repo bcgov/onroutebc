@@ -2,7 +2,6 @@ import { AutomapperProfile, InjectMapper } from '@automapper/nestjs';
 import {
   createMap,
   forMember,
-  ignore,
   mapFrom,
   Mapper,
   mapWith,
@@ -75,7 +74,8 @@ export class CompanyProfile extends AutomapperProfile {
         forMember(
           (d) => d.accountRegion,
           mapFrom((s) => {
-            return s.companyAddress.provinceId === 'CA-BC'
+            return s.companyAddress.countryCode === 'CA' &&
+              s.companyAddress.provinceCode === 'BC'
               ? AccountRegion.BritishColumbia
               : AccountRegion.ExtraProvincial;
           }),
@@ -154,7 +154,8 @@ export class CompanyProfile extends AutomapperProfile {
         forMember(
           (d) => d.accountRegion,
           mapFrom((s) => {
-            return s.companyAddress.provinceId === 'CA-BC'
+            return s.companyAddress.countryCode === 'CA' &&
+              s.companyAddress.provinceCode === 'BC'
               ? AccountRegion.BritishColumbia
               : AccountRegion.ExtraProvincial;
           }),

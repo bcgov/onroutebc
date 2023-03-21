@@ -95,11 +95,19 @@ export class CreateContactDto {
 
   @AutoMap()
   @ApiProperty({
+    example: 'BC',
     description:
-      'A 5-character string indicating the province/state.' +
-      'It is a combination of CountryCode and ProvinceCode joined with a hyphen, eg CA-BC',
-    example: 'CA-BC',
-    required: true,
+      'A 2-character string indicating the province/state. ' +
+      'Required if the country is not selected as Others(XX).',
+    required: false,
   })
-  provinceId: string;
+  provinceCode: string;
+
+  @AutoMap()
+  @ApiProperty({
+    example: 'CA',
+    description: 'A 2-character string indicating the country.',
+    required: false,
+  })
+  countryCode: string;
 }
