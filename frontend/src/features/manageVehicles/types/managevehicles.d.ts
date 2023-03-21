@@ -1,7 +1,5 @@
 export type VehicleTypes = PowerUnit | Trailer;
-export type VehicleTypesAsString = {
-  vehicleType: "powerUnit" | "trailer";
-};
+export type VehicleTypesAsString = "powerUnit" | "trailer";
 
 /**
  * A base vehicle type. This is an incomplete object and meant to be extended for use.
