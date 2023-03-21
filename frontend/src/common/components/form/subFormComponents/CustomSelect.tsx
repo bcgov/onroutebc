@@ -40,6 +40,7 @@ export const CustomSelect = <T extends ORBC_FormTypes>({
       aria-labelledby={`${feature}-${name}-label`}
       inputProps={{
         "aria-label": name,
+        "data-testid": `select-${name}`,
       }}
       value={value ?? ""}
       {...register(name, rules)}
