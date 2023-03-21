@@ -60,7 +60,7 @@ jobs:
       - name: Get package.json version
         shell: bash
         run: |
-          echo PACKAGE_VERSION=grep "version": frontend/package.json | awk -F ':' '{print($2)}' | awk -F ',' '{print($1)}' | tee $GITHUB_ENV
+          echo PACKAGE_VERSION=grep "version": package.json | awk -F ':' '{print($2)}' | awk -F ',' '{print($1)}' | tee $GITHUB_ENV
 
       - name: Check if build image already exists
         shell: bash
