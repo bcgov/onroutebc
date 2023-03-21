@@ -19,8 +19,18 @@ export class PowerUnitsProfile extends AutomapperProfile {
         PowerUnit,
         ReadPowerUnitDto,
         forMember(
-          (d) => d.provinceId,
-          mapFrom((s) => s.province.provinceId),
+          (d) => d.provinceCode,
+          mapFrom((s) => {
+            const province = s.province.provinceId.split('-');
+            return province[1] === 'XX' ? null : province[1];
+          }),
+        ),
+        forMember(
+          (d) => d.countryCode,
+          mapFrom((s) => {
+            const province = s.province.provinceId.split('-');
+            return province[0];
+          }),
         ),
         forMember(
           (d) => d.powerUnitTypeCode,
@@ -33,7 +43,12 @@ export class PowerUnitsProfile extends AutomapperProfile {
         PowerUnit,
         forMember(
           (d) => d.province.provinceId,
-          mapFrom((s) => s.provinceId),
+          mapFrom(
+            (s) =>
+              s.countryCode +
+              '-' +
+              (s.countryCode === 'XX' ? 'XX' : s.provinceCode),
+          ),
         ),
         forMember(
           (d) => d.powerUnitType.typeCode,
@@ -46,7 +61,12 @@ export class PowerUnitsProfile extends AutomapperProfile {
         PowerUnit,
         forMember(
           (d) => d.province.provinceId,
-          mapFrom((s) => s.provinceId),
+          mapFrom(
+            (s) =>
+              s.countryCode +
+              '-' +
+              (s.countryCode === 'XX' ? 'XX' : s.provinceCode),
+          ),
         ),
         forMember(
           (d) => d.powerUnitType.typeCode,
