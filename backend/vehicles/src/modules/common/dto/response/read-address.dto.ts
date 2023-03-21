@@ -35,13 +35,19 @@ export class ReadAddressDto {
 
   @AutoMap()
   @ApiProperty({
-    description:
-      'A 5-character string indicating the province/state.' +
-      'It is a combination of CountryCode and ProvinceCode joined with a hyphen, eg CA-BC',
-    example: 'CA-BC',
+    example: 'BC',
+    description: 'A 2-character string indicating the province',
     required: true,
   })
-  provinceId: string;
+  provinceCode: string;
+
+  @AutoMap()
+  @ApiProperty({
+    example: 'CA',
+    description: 'A 2-character string indicating the country',
+    required: true,
+  })
+  countryCode: string;
 
   @AutoMap()
   @ApiProperty({
