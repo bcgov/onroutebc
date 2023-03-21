@@ -19,11 +19,22 @@ export class CreateTrailerDto {
 
   @AutoMap()
   @ApiProperty({
+    example: 'BC',
     description:
-      'Canadian province or US state of registration of the vehicle.',
-    example: 'CA-BC',
+      'A 2-character string indicating the Canadian province or US state of registration of the vehicle. ' +
+      'Required if the country is not selected as Others(XX).',
+    required: false,
   })
-  provinceId: string;
+  provinceCode: string;
+
+  @AutoMap()
+  @ApiProperty({
+    example: 'CA',
+    description:
+      'A 2-character string indicating the country of registration of the vehicle.',
+    required: true,
+  })
+  countryCode: string;
 
   @AutoMap()
   @ApiProperty({
