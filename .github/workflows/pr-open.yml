@@ -48,6 +48,7 @@ jobs:
             triggers: ('frontend/')
     steps:
       - uses: actions/checkout@v3
+
       - uses: bcgov-nr/action-builder-ghcr@v1.1.0
         with:
           package: ${{ matrix.package }}
@@ -58,13 +59,18 @@ jobs:
     
       - name: Get package.json version
         shell: bash
-      - name: Check if build image already exists
-        shell: | 
-          TOKEN=$(curl -s https://ghcr.io/token\?scope\="repository:${{ inputs.repository }}/${{ inputs.package }}:pull" | jq -r .token);
-          URL="https://ghcr.io/v2/${{ inputs.repository }}/${{ inputs.package }}/manifests/${{ inputs.tag_fallback }}";
-          if [ $(curl -ILso /dev/null -w "%{http_code}" -H "Authorization: Bearer ${TOKEN}" "${URL}") -ne 200 ];
-
         run: echo PACKAGE_VERSION=grep \"version\": frontend/package.json | awk -F ':' '{print($2)}' | awk -F ',' '{print($1)}' | tee $GITHUB_ENV
+
+      - name: Check if build image already exists
+        shell: bash
+        run: |
+          TOKEN=$(curl -s https://ghcr.io/token\?scope\="repository:${{ github.repository }}/${{ matrix.component }}:pull" | jq -r .token)
+          URL="https://ghcr.io/v2/${{ github.repository }}/${{ matrix.component }}/manifests/${{env.PACKAGE_VERSION}}"
+          if [ $(curl -ILso /dev/null -w "%{http_code}" -H "Authorization: Bearer ${TOKEN}" "${URL}") -ne 200 ] 
+          then
+            exit 1
+          fi
+
       - name: Tag Images with package.json version 
         uses: shrink/actions-docker-registry-tag@v3
         with:
