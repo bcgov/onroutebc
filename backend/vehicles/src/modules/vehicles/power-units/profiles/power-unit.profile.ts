@@ -5,6 +5,11 @@ import { ReadPowerUnitDto } from '../dto/response/read-power-unit.dto';
 import { PowerUnit } from '../entities/power-unit.entity';
 import { CreatePowerUnitDto } from '../dto/request/create-power-unit.dto';
 import { UpdatePowerUnitDto } from '../dto/request/update-power-unit.dto';
+import {
+  getCountryCode,
+  getProvinceCode,
+  getProvinceId,
+} from '../../../../common/helper/province-country.helper';
 
 @Injectable()
 export class PowerUnitsProfile extends AutomapperProfile {
@@ -20,17 +25,11 @@ export class PowerUnitsProfile extends AutomapperProfile {
         ReadPowerUnitDto,
         forMember(
           (d) => d.provinceCode,
-          mapFrom((s) => {
-            const province = s.province.provinceId.split('-');
-            return province[1] === 'XX' ? null : province[1];
-          }),
+          mapFrom((s) => getProvinceCode(s.province.provinceId)),
         ),
         forMember(
           (d) => d.countryCode,
-          mapFrom((s) => {
-            const province = s.province.provinceId.split('-');
-            return province[0];
-          }),
+          mapFrom((s) => getCountryCode(s.province.provinceId)),
         ),
         forMember(
           (d) => d.powerUnitTypeCode,
@@ -43,12 +42,7 @@ export class PowerUnitsProfile extends AutomapperProfile {
         PowerUnit,
         forMember(
           (d) => d.province.provinceId,
-          mapFrom(
-            (s) =>
-              s.countryCode +
-              '-' +
-              (s.countryCode === 'XX' ? 'XX' : s.provinceCode),
-          ),
+          mapFrom((s) => getProvinceId(s.countryCode, s.provinceCode)),
         ),
         forMember(
           (d) => d.powerUnitType.typeCode,
@@ -61,12 +55,7 @@ export class PowerUnitsProfile extends AutomapperProfile {
         PowerUnit,
         forMember(
           (d) => d.province.provinceId,
-          mapFrom(
-            (s) =>
-              s.countryCode +
-              '-' +
-              (s.countryCode === 'XX' ? 'XX' : s.provinceCode),
-          ),
+          mapFrom((s) => getProvinceId(s.countryCode, s.provinceCode)),
         ),
         forMember(
           (d) => d.powerUnitType.typeCode,

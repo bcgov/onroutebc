@@ -6,6 +6,11 @@ import { CreateContactDto } from '../dto/request/create-contact.dto';
 import { UpdateContactDto } from '../dto/request/update-contact.dto';
 import { ReadContactDto } from '../dto/response/read-contact.dto';
 import { Contact } from '../entities/contact.entity';
+import {
+  getCountryCode,
+  getProvinceCode,
+  getProvinceId,
+} from '../../../common/helper/province-country.helper';
 
 @Injectable()
 export class ContactProfile extends AutomapperProfile {
@@ -30,17 +35,11 @@ export class ContactProfile extends AutomapperProfile {
         ReadContactDto,
         forMember(
           (d) => d.provinceCode,
-          mapFrom((s) => {
-            const province = s.province.provinceId.split('-');
-            return province[1] === 'XX' ? null : province[1];
-          }),
+          mapFrom((s) => getProvinceCode(s.province.provinceId)),
         ),
         forMember(
           (d) => d.countryCode,
-          mapFrom((s) => {
-            const province = s.province.provinceId.split('-');
-            return province[0];
-          }),
+          mapFrom((s) => getCountryCode(s.province.provinceId)),
         ),
         forMember(
           (d) => d.phone1Extension,
@@ -66,12 +65,7 @@ export class ContactProfile extends AutomapperProfile {
         Contact,
         forMember(
           (d) => d.province.provinceId,
-          mapFrom(
-            (s) =>
-              s.countryCode +
-              '-' +
-              (s.countryCode === 'XX' ? 'XX' : s.provinceCode),
-          ),
+          mapFrom((s) => getProvinceId(s.countryCode, s.provinceCode)),
         ),
         forMember(
           (d) => d.extension1,
@@ -97,12 +91,7 @@ export class ContactProfile extends AutomapperProfile {
         Contact,
         forMember(
           (d) => d.province.provinceId,
-          mapFrom(
-            (s) =>
-              s.countryCode +
-              '-' +
-              (s.countryCode === 'XX' ? 'XX' : s.provinceCode),
-          ),
+          mapFrom((s) => getProvinceId(s.countryCode, s.provinceCode)),
         ),
         forMember(
           (d) => d.extension1,
