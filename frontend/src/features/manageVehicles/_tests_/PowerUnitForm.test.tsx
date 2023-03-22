@@ -176,13 +176,13 @@ describe("Power Unit Form Submission", () => {
       });
 
       // Country
-      const countrySelectMenu = screen.getByTestId("select-country");
+      const countrySelectMenu = screen.getByTestId("select-countryCode");
       fireEvent.change(countrySelectMenu, {
         target: { value: "CA" },
       });
 
       // Province
-      const provinceSelectMenu = screen.getByTestId("select-province");
+      const provinceSelectMenu = screen.getByTestId("select-provinceCode");
       fireEvent.change(provinceSelectMenu, {
         target: { value: "AB" },
       });
@@ -212,9 +212,9 @@ const clickSubmit = () => {
   user.click(screen.getByRole("button", { name: /Add To Inventory/i }));
 };
 
-// const sleep = (ms: number) => {
-//   return new Promise((resolve) => setTimeout(resolve, ms));
-// };
+const sleep = (ms: number) => {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+};
 
 // HELPERS: Get Fields
 const getUnitNumber = () => {
@@ -255,13 +255,13 @@ const getVehicleSubType = () => {
 
 const getCountry = () => {
   return screen.getByRole("button", {
-    name: /country/i,
+    name: /countryCode/i,
   });
 };
 
 const getProvince = () => {
   return screen.getByRole("button", {
-    name: /province/i,
+    name: /provinceCode/i,
   });
 };
 

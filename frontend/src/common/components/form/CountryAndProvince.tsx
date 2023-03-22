@@ -78,20 +78,9 @@ export const CountryAndProvince = <T extends ORBC_FormTypes>({
       // If country does not support province, as per API spec, set country to province too
       // even though the field is hidden.
       setShouldDisplayProvince(() => false);
-      //setValue(provinceField, country);
     } else {
       setShouldDisplayProvince(() => true);
     }
-  }, []);
-
-  /**
-   * Function to handle changes on selecting a province/state.
-   * @param event the select event
-   */
-  const onChangeProvince = useCallback(function (event: SelectChangeEvent) {
-    resetField(provinceField, { defaultValue: "" });
-    const provinceSelected: string = event.target.value;
-    setValue(provinceField, provinceSelected);
   }, []);
 
   /**
@@ -117,7 +106,6 @@ export const CountryAndProvince = <T extends ORBC_FormTypes>({
       value: shouldDisplayProvince && isProvinceRequired,
       message: "Province / State is required.",
     },
-    onChange: onChangeProvince,
   };
 
   return (
