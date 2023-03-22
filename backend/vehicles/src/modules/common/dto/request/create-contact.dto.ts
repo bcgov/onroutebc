@@ -98,7 +98,7 @@ export class CreateContactDto {
     example: 'BC',
     description:
       'A 2-character string indicating the province/state. ' +
-      'Required if the country is not selected as Others(XX).',
+      'Required if the countryCode is either CA or US.',
     required: false,
   })
   provinceCode: string;

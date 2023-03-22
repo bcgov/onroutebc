@@ -6,6 +6,11 @@ import { ReadAddressDto } from '../dto/response/read-address.dto';
 import { CreateAddressDto } from '../dto/request/create-address.dto';
 import { UpdateAddressDto } from '../dto/request/update-address.dto';
 import { Address } from '../entities/address.entity';
+import {
+  getCountryCode,
+  getProvinceCode,
+  getProvinceId,
+} from '../../../common/helper/province-country.helper';
 
 @Injectable()
 export class AddressProfile extends AutomapperProfile {
@@ -27,17 +32,11 @@ export class AddressProfile extends AutomapperProfile {
         ReadAddressDto,
         forMember(
           (d) => d.provinceCode,
-          mapFrom((s) => {
-            const province = s.province.provinceId.split('-');
-            return province[1] === 'XX' ? null : province[1];
-          }),
+          mapFrom((s) => getProvinceCode(s.province.provinceId)),
         ),
         forMember(
           (d) => d.countryCode,
-          mapFrom((s) => {
-            const province = s.province.provinceId.split('-');
-            return province[0];
-          }),
+          mapFrom((s) => getCountryCode(s.province.provinceId)),
         ),
       );
 
@@ -52,12 +51,7 @@ export class AddressProfile extends AutomapperProfile {
         Address,
         forMember(
           (d) => d.province.provinceId,
-          mapFrom(
-            (s) =>
-              s.countryCode +
-              '-' +
-              (s.countryCode === 'XX' ? 'XX' : s.provinceCode),
-          ),
+          mapFrom((s) => getProvinceId(s.countryCode, s.provinceCode)),
         ),
       );
 
@@ -72,12 +66,7 @@ export class AddressProfile extends AutomapperProfile {
         Address,
         forMember(
           (d) => d.province.provinceId,
-          mapFrom(
-            (s) =>
-              s.countryCode +
-              '-' +
-              (s.countryCode === 'XX' ? 'XX' : s.provinceCode),
-          ),
+          mapFrom((s) => getProvinceId(s.countryCode, s.provinceCode)),
         ),
       );
     };
