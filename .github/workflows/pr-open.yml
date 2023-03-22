@@ -66,7 +66,7 @@ jobs:
         run: | 
           TOKEN=$(curl -s https://ghcr.io/token\?scope\="repository:${{ github.repository }}/${{ matrix.package }}:pull" | jq -r .token)
           URL="https://ghcr.io/v2/${{ github.repository }}/${{ matrix.package }}/manifests/${{ env.PACKAGE_VERSION }}"
-          if [ $(curl -ILso /dev/null -w "%{http_code}" -H "Authorization: Bearer ${TOKEN}" "${URL}") -e 200 ] 
+          if [ $(curl -ILso /dev/null -w "%{http_code}" -H "Authorization: Bearer ${TOKEN}" "${URL}") -eq 200 ] 
           then
             exit 1
           fi
@@ -75,7 +75,7 @@ jobs:
         uses: shrink/actions-docker-registry-tag@v3
         with:
           registry: ghcr.io
-          repository: ${{ github.repository }}/${{ matrix.component }}
+          repository: ${{ github.repository }}/${{ matrix.package }}
           target: test
           tags: ${{ env.PACKAGE_VERSION }} 
 
