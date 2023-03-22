@@ -100,8 +100,6 @@ jobs:
           echo "CommitsSinceVersionSourcePadded: ${{ steps.gitversion.outputs.commitsSinceVersionSourcePadded }}"
           echo "UncommittedChanges: ${{ steps.gitversion.outputs.uncommittedChanges }}"
           echo "CommitDate: ${{ steps.gitversion.outputs.commitDate }}"
-    outputs:
-      fullSemVer: ${{ steps.gitversion.outputs.fullSemVer}}
 
       - uses: bcgov-nr/action-builder-ghcr@v1.1.0
         with:
