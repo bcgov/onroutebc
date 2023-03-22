@@ -61,6 +61,7 @@ export const getCompanyInfo = async (
       const err: ApiErrorResponse = data;
       return Promise.reject(err.errorMessage);
     }
+
     return data;
     // eslint-disable-next-line  @typescript-eslint/no-explicit-any
   } catch (error: any) {

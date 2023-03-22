@@ -5,10 +5,9 @@ import MenuItem from "@mui/material/MenuItem";
 import { COUNTRIES_THAT_SUPPORT_PROVINCE } from "../../../constants/countries";
 
 import CountriesAndStates from "../../../constants/countries_and_states.json";
-import { CompanyProfile } from "../../../features/manageProfile/apiManager/manageProfileAPI";
-import { CreatePowerUnit } from "../../../features/manageVehicles/types/managevehicles";
 import { DEFAULT_WIDTH } from "../../../themes/bcGovStyles";
 import { CustomFormComponent } from "./CustomFormComponents";
+import { ORBC_FormTypes } from "../../../types/common";
 
 /**
  * The props that can be passed to the country and provinces subsection of a form.
@@ -31,7 +30,6 @@ interface CountryAndProvinceProps {
    */
   countryField: string;
   provinceField: string;
-  provinceIdField?: string;
 
   /**
    * Boolean for react hook form rules. Example-> rules: { required: isCountryRequired }
@@ -48,16 +46,15 @@ interface CountryAndProvinceProps {
  *
  * @returns A react component with the country and province fields.
  */
-export const CountryAndProvince = <T extends CompanyProfile | CreatePowerUnit>({
+export const CountryAndProvince = <T extends ORBC_FormTypes>({
   feature,
   width = DEFAULT_WIDTH,
   countryField,
   isCountryRequired = true,
   provinceField,
   isProvinceRequired = true,
-  provinceIdField = "",
 }: CountryAndProvinceProps): JSX.Element => {
-  const { resetField, watch, setValue, getValues } = useFormContext();
+  const { resetField, watch, setValue } = useFormContext();
 
   const [shouldDisplayProvince, setShouldDisplayProvince] =
     useState<boolean>(true);
@@ -81,21 +78,9 @@ export const CountryAndProvince = <T extends CompanyProfile | CreatePowerUnit>({
       // If country does not support province, as per API spec, set country to province too
       // even though the field is hidden.
       setShouldDisplayProvince(() => false);
-      setValue(provinceField, country);
-      setValue(provinceIdField, country + "-" + country);
     } else {
       setShouldDisplayProvince(() => true);
     }
-  }, []);
-
-  /**
-   * Function to handle changes on selecting a province/state.
-   * @param event the select event
-   */
-  const onChangeProvince = useCallback(function (event: SelectChangeEvent) {
-    resetField(provinceIdField, { defaultValue: "" });
-    const provinceSelected: string = event.target.value;
-    setValue(provinceIdField, getValues(countryField) + "-" + provinceSelected);
   }, []);
 
   /**
@@ -121,7 +106,6 @@ export const CountryAndProvince = <T extends CompanyProfile | CreatePowerUnit>({
       value: shouldDisplayProvince && isProvinceRequired,
       message: "Province / State is required.",
     },
-    onChange: onChangeProvince,
   };
 
   return (

@@ -6,8 +6,7 @@ import {
   Controller,
   useFormContext,
 } from "react-hook-form";
-import { CompanyProfile } from "../../../../features/manageProfile/apiManager/manageProfileAPI";
-import { CreatePowerUnit } from "../../../../features/manageVehicles/types/managevehicles";
+import { ORBC_FormTypes } from "../../../../types/common";
 
 /**
  * Properties of the onrouteBC customized Checkbox MUI component
@@ -28,7 +27,7 @@ export interface CustomCheckboxProps<T extends FieldValues> {
  * An onRouteBC customized MUI Checkbox component
  *
  */
-export const CustomCheckbox = <T extends CompanyProfile | CreatePowerUnit>(
+export const CustomCheckbox = <T extends ORBC_FormTypes>(
   props: CustomCheckboxProps<T>
 ): JSX.Element => {
   const { control, register } = useFormContext();

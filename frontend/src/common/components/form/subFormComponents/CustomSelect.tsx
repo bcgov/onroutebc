@@ -5,9 +5,8 @@ import {
   RegisterOptions,
   useFormContext,
 } from "react-hook-form";
-import { CompanyProfile } from "../../../../features/manageProfile/apiManager/manageProfileAPI";
-import { CreatePowerUnit } from "../../../../features/manageVehicles/types/managevehicles";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
+import { ORBC_FormTypes } from "../../../../types/common";
 
 /**
  * Properties of the onrouteBC customized Select MUI component
@@ -23,7 +22,7 @@ interface CustomSelectProps<T extends FieldValues> {
  * An onRouteBC customized MUI Select component
  * Based on https://mui.com/material-ui/react-select/
  */
-export const CustomSelect = <T extends CompanyProfile | CreatePowerUnit>({
+export const CustomSelect = <T extends ORBC_FormTypes>({
   feature,
   name,
   rules,
@@ -41,6 +40,7 @@ export const CustomSelect = <T extends CompanyProfile | CreatePowerUnit>({
       aria-labelledby={`${feature}-${name}-label`}
       inputProps={{
         "aria-label": name,
+        "data-testid": `select-${name}`,
       }}
       value={value ?? ""}
       {...register(name, rules)}
