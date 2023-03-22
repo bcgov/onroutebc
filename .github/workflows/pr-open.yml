@@ -50,7 +50,6 @@ jobs:
       - uses: snow-actions/sparse-checkout@v1.2.0
         with:
           ref: ${{ github.head_ref }}   # checkout the correct branch name
-          fetch-depth: 0                # fetch the whole repo history
           patterns: |
             ${{matrix.package}}
       
