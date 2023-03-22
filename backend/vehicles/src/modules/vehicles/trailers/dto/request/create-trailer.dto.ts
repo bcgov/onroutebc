@@ -22,7 +22,7 @@ export class CreateTrailerDto {
     example: 'BC',
     description:
       'A 2-character string indicating the Canadian province or US state of registration of the vehicle. ' +
-      'Required if the country is not selected as Others(XX).',
+      'Required if the countryCode is either CA or US.',
     required: false,
   })
   provinceCode: string;
