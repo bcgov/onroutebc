@@ -68,7 +68,7 @@ jobs:
         with:
           useConfigFile: true
           configFilePath: ${{matrix.package}}/GitVersion.yaml
-          additionalArguments: '/c ${{PACKAGE_COMMIT_HASH}}'   
+          additionalArguments: '/c ${{env.PACKAGE_COMMIT_HASH}}'   
 
       - name: Display GitVersion outputs
         run: |
