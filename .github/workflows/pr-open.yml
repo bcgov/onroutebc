@@ -47,15 +47,16 @@ jobs:
           - package: frontend
             triggers: ('frontend/')
     steps:
-      - name: Get package commit hash 
-        shell: bash
-        run: echo PACKAGE_COMMIT_HASH=$(git log -n 1 --format="%H" -- ${{matrix.package}}) | tee $GITHUB_ENV
 
       - name: Checkout Code
         uses: actions/checkout@v3
         with:
           ref: ${{ github.head_ref }}   # checkout the correct branch name
           fetch-depth: 0                # fetch the whole repo history
+      
+      - name: Get package commit hash 
+        shell: bash
+        run: echo PACKAGE_COMMIT_HASH=$(git log -n 1 --format="%H" -- ${{matrix.package}}) | tee $GITHUB_ENV
       
       - name: Setup GitVersion
         uses: gittools/actions/gitversion/setup@v0.10.2
