@@ -55,7 +55,6 @@ jobs:
           fetch-depth: 0                # fetch the whole repo history
       
       - name: Get package commit hash 
-        shell: bash
         run: echo PACKAGE_COMMIT_HASH=$(git log -n 1 --format="%H" -- ${{matrix.package}}) | tee $GITHUB_ENV
       
       - name: Setup GitVersion
@@ -115,17 +114,17 @@ jobs:
           triggers: ${{ matrix.triggers }}
     
       - name: Get package.json version
-        shell: bash
         run: echo PACKAGE_VERSION=$(curl https://raw.githubusercontent.com/bcgov/onroutebc/main/${{matrix.package}}/package.json | grep \"version\" | awk -F ':' '{print($2)}' | awk -F ',' '{print($1)}' | awk -F '"' '{print($2)}') | tee $GITHUB_ENV
 
       - name: Check if build image already exists
-        shell: bash
-        run: | 
+        run: |
           TOKEN=$(curl -s https://ghcr.io/token\?scope\="repository:${{ github.repository }}/${{ matrix.package }}:pull" | jq -r .token)
           URL="https://ghcr.io/v2/${{ github.repository }}/${{ matrix.package }}/manifests/${{ env.PACKAGE_VERSION }}"
           if [ $(curl -ILso /dev/null -w "%{http_code}" -H "Authorization: Bearer ${TOKEN}" "${URL}") -eq 200 ] 
           then
             exit 1
+          else
+            echo ${URL}
           fi
 
       - name: Tag Images with package.json version 
@@ -161,7 +160,6 @@ jobs:
             overwrite: false
     steps:
       - name: Get Vault Environment
-        shell: bash
         run: echo VAULT_ENV=${{secrets.OC_NAMESPACE}} | awk -F '-' '{print($2!="prod")?$1"-nonprod":$1"-prod"}' | tee $GITHUB_ENV
       - name: Import Secrets
         id: secrets
