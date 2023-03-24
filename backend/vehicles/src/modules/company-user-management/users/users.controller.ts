@@ -31,7 +31,7 @@ export class UsersController {
 
   /**
    * A GET method defined with the @Get(':userGUID') decorator and a route of
-   * /user/:userGUID that verifies if the user exists in ORBC and retrieves
+   * /user-company/:userGUID that verifies if the user exists in ORBC and retrieves
    * the user by its GUID (global unique identifier) and associated company, if any.
    * TODO: Secure endpoints once login is implemented.
    * TODO: Remove temporary placeholder
@@ -50,7 +50,7 @@ export class UsersController {
     type: ReadUserOrbcStatusDto,
   })
   @ApiQuery({ name: 'companyGUID', required: false })
-  @Get('user-status/:userGUID')
+  @Get('user-company/:userGUID')
   async find(
     @Param('userGUID') userGUID: string,
     @Query('userName') userName: string,
