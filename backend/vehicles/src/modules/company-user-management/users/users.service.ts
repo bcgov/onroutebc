@@ -16,10 +16,10 @@ import { UserAuthGroup } from '../../../common/enum/user-auth-group.enum';
 import { UserDirectory } from '../../../common/enum/directory.enum';
 import { PendingUser } from '../pending-users/entities/pending-user.entity';
 import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
-import { ReadUserExistsDto } from './dto/response/read-user-exists.dto';
+import { ReadUserOrbcStatusDto } from './dto/response/read-user-orbc-status.dto';
 import { PendingUsersService } from '../pending-users/pending-users.service';
 import { CompanyService } from '../company/company.service';
-import { ReadCompanyDto } from '../company/dto/response/read-company.dto';
+import { ReadCompanyMetadataDto } from '../company/dto/response/read-company-metadata.dto';
 
 @Injectable()
 export class UsersService {
@@ -357,18 +357,16 @@ export class UsersService {
    * @param userName The user Name.
    * @param companyGUID The company GUID.
    *
-   * @returns The {@link ReadUserExistsDto} entity.
+   * @returns The {@link ReadUserOrbcStatusDto} entity.
    */
   async findORBCUser(
     userGUID: string,
     userName: string,
     companyGUID: string,
-  ): Promise<ReadUserExistsDto> {
-    const userExistsDto = new ReadUserExistsDto();
-    userExistsDto.isPendingUser = false;
-    userExistsDto.userExists = false;
-    userExistsDto.companyExists = false;
-    userExistsDto.company = [];
+  ): Promise<ReadUserOrbcStatusDto> {
+    const userExistsDto = new ReadUserOrbcStatusDto();
+    userExistsDto.associatedCompanies = [];
+    userExistsDto.pendingCompanies = [];
 
     const user = await this.userRepository.findOne({
       where: { userGUID: userGUID },
@@ -378,50 +376,45 @@ export class UsersService {
       },
     });
 
-    if (!user) {
-      const pendingUser = await this.pendingUsersService.findOneByUserName(
-        userName,
-      );
-      if (pendingUser) {
-        userExistsDto.isPendingUser = true;
-        userExistsDto.companyExists = true;
-        userExistsDto.company.push(
-          await this.companyService.findOne(pendingUser.companyId),
-        );
-        return userExistsDto;
-      } else {
-        if (companyGUID) {
-          const company = await this.companyService.findOneByCompanyGuid(
-            companyGUID,
-          );
-          if (company) {
-            userExistsDto.companyExists = true;
-            userExistsDto.company.push(company);
-            return userExistsDto;
-          }
-        }
-
-        return userExistsDto;
-      }
-    } else {
-      const companyUsers = await this.findAllCompanyUsersByUserGuid(userGUID);
-      const readCompanyDto: ReadCompanyDto[] = [];
-      for (const companyUser of companyUsers) {
-        readCompanyDto.push(
-          await this.classMapper.mapAsync(
-            companyUser.company,
-            Company,
-            ReadCompanyDto,
+    const pendingCompanies = await this.pendingUsersService.findAllbyUserName(
+      userName,
+    );
+    if (pendingCompanies) {
+      for (const pendingCompany of pendingCompanies) {
+        userExistsDto.pendingCompanies.push(
+          await this.companyService.findCompanyMetadata(
+            pendingCompany.companyId,
           ),
         );
       }
-
-      userExistsDto.userExists = true;
-      userExistsDto.user = await this.mapUserEntitytoReadUserDto(user);
-      userExistsDto.company = readCompanyDto;
-      userExistsDto.companyExists = true;
-
-      return userExistsDto;
     }
+
+    if (!user) {
+      if (companyGUID) {
+        const company = await this.companyService.findOneByCompanyGuid(
+          companyGUID,
+        );
+        if (company) {
+          userExistsDto.associatedCompanies.push(company);
+          return userExistsDto;
+        }
+      }
+    } else {
+      const companyUsers = await this.findAllCompanyUsersByUserGuid(userGUID);
+      const readCompanyMetadataDto: ReadCompanyMetadataDto[] = [];
+      for (const companyUser of companyUsers) {
+        readCompanyMetadataDto.push(
+          await this.classMapper.mapAsync(
+            companyUser.company,
+            Company,
+            ReadCompanyMetadataDto,
+          ),
+        );
+      }
+      userExistsDto.user = await this.mapUserEntitytoReadUserDto(user);
+      userExistsDto.associatedCompanies = readCompanyMetadataDto;
+    }
+
+    return userExistsDto;
   }
 }
