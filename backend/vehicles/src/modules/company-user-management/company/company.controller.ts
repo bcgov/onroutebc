@@ -32,7 +32,7 @@ import {
   description: 'The Company Api Internal Server Error Response',
   type: ExceptionDto,
 })
-@Controller('company')
+@Controller('companies')
 export class CompanyController {
   constructor(private readonly companyService: CompanyService) {}
 

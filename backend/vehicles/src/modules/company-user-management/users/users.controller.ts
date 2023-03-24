@@ -9,7 +9,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { ExceptionDto } from '../../common/dto/exception.dto';
-import { ReadUserExistsDto } from './dto/response/read-user-exists.dto';
+import { ReadUserOrbcStatusDto } from './dto/response/read-user-orbc-status.dto';
 import { UsersService } from './users.service';
 
 @ApiTags('Company and User Management - User')
@@ -43,19 +43,19 @@ export class UsersController {
    * @param companyGUID A temporary placeholder parameter to get the company GUID.
    *        Will be removed once login system is implemented.
    *
-   * @returns The user details with response object {@link ReadUserDto}.
+   * @returns The user details with response object {@link ReadUserOrbcStatusDto}.
    */
   @ApiOkResponse({
-    description: 'The User Exists Resource',
-    type: ReadUserExistsDto,
+    description: 'The User Orbc Status Exists Resource',
+    type: ReadUserOrbcStatusDto,
   })
   @ApiQuery({ name: 'companyGUID', required: false })
-  @Get(':userGUID')
+  @Get('user-status/:userGUID')
   async find(
     @Param('userGUID') userGUID: string,
     @Query('userName') userName: string,
     @Query('companyGUID') companyGUID?: string,
-  ): Promise<ReadUserExistsDto> {
+  ): Promise<ReadUserOrbcStatusDto> {
     const userExists = await this.userService.findORBCUser(
       userGUID,
       userName,
