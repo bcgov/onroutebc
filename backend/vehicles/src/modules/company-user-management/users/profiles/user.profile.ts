@@ -119,10 +119,6 @@ export class UsersProfile extends AutomapperProfile {
           (d) => d.userName,
           mapFrom((s) => s.userName),
         ),
-        forMember(
-          (d) => d.userAuthGroup,
-          mapFrom((s) => s.companyUsers[0].userAuthGroup),
-        ),
       );
     };
   }

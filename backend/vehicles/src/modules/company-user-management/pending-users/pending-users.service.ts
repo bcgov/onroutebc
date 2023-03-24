@@ -87,6 +87,22 @@ export class PendingUsersService {
   }
 
   /**
+   * Finds all pending users details in the database for a given user name.
+   *
+   * @param userName The user name.
+   *
+   * @returns The list of pending user details as a promise of type
+   * {@link ReadPendingUserDto}.
+   */
+  async findAllbyUserName(userName: string): Promise<ReadPendingUserDto[]> {
+    return this.classMapper.mapArrayAsync(
+      await this.pendingUserRepository.find({ where: { userName: userName } }),
+      PendingUser,
+      ReadPendingUserDto,
+    );
+  }
+
+  /**
    * Finds all pending users in the database for a given companyId.
    *
    * @param companyId The company Id.
