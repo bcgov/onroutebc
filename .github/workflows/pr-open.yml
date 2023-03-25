@@ -60,7 +60,7 @@ jobs:
           triggers: ${{ matrix.triggers }}
     
       - name: Get package.json version
-        run: echo PACKAGE_VERSION=$(curl https://raw.githubusercontent.com/bcgov/onroutebc/main/${{matrix.package}}/package.json | grep \"version\" | awk -F ':' '{print($2)}' | awk -F ',' '{print($1)}' | awk -F '"' '{print($2)}') | tee $GITHUB_ENV
+        run: echo PACKAGE_VERSION=$(cat {{matrix.package}}/package.json | grep \"version\" | awk -F ':' '{print($2)}' | awk -F ',' '{print($1)}' | awk -F '"' '{print($2)}') | tee $GITHUB_ENV
 
       - name: Check if build image already exists
         run: |
