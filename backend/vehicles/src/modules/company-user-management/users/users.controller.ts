@@ -95,6 +95,29 @@ export class UsersController {
   }
 
   /**
+   * A GET method defined with the @Get() decorator and a route of
+   * /user/list that retrieves a list of users associated with
+   * the company ID
+   * TODO: Secure endpoints once login is implemented.
+   *
+   * @param companyId The company Id.
+   *
+   * @returns The user list with response object {@link ReadUserDto}.
+   */
+  @ApiOkResponse({
+    description: 'The User Resource List',
+    type: ReadUserDto,
+    isArray: true,
+  })
+  @ApiQuery({ name: 'companyId', required: false })
+  @Get('/list')
+  async findAll(
+    @Query('companyId') companyId?: number,
+  ): Promise<ReadUserDto[]> {
+    return await this.userService.findAllUsers(companyId);
+  }
+
+  /**
    * A PUT method defined with the @Put(':userGUID') decorator and a route of
    * user/:userGUID that updates a user details by its GUID.
    * TODO: Secure endpoints once login is implemented.

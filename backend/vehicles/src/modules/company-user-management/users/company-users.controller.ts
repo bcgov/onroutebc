@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Put } from '@nestjs/common';
+import { Controller, Post, Body, Param, Put } from '@nestjs/common';
 import { Query } from '@nestjs/common/decorators';
 
 import {
@@ -62,26 +62,6 @@ export class CompanyUsersController {
       'ASMITH', //! Hardcoded value to be replaced by user name from access token
       UserDirectory.BBCEID,
     );
-  }
-
-  /**
-   * A GET method defined with the @Get() decorator and a route of
-   * company/:companyId/user that retrieves a list of users associated with
-   * the company GUID (global unique identifier).
-   * TODO: Secure endpoints once login is implemented.
-   *
-   * @param companyId The company Id.
-   *
-   * @returns The user list with response object {@link ReadUserDto}.
-   */
-  @ApiOkResponse({
-    description: 'The User Resource List',
-    type: ReadUserDto,
-    isArray: true,
-  })
-  @Get()
-  async findAll(@Param('companyId') companyId: number): Promise<ReadUserDto[]> {
-    return await this.userService.findAllUsers(companyId);
   }
 
   /**

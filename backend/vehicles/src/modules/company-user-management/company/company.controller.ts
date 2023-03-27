@@ -102,7 +102,7 @@ export class CompanyController {
     isArray: true,
   })
   @ApiQuery({ name: 'userGUID', required: false })
-  @Get()
+  @Get('/metadata')
   async getCompanyMetadata(
     @Query('userGUID') userGUID?: string,
   ): Promise<ReadCompanyMetadataDto[]> {
@@ -126,7 +126,7 @@ export class CompanyController {
    * @returns The updated company deails with response object {@link ReadCompanyDto}.
    */
   @ApiOkResponse({
-    description: 'The Company  Resource',
+    description: 'The Company Resource',
     type: ReadCompanyDto,
   })
   @Put(':companyId')
