@@ -42,6 +42,22 @@ export interface UserInformation extends Contact {
   fax?: string;
 }
 
+export interface CompanyAndUserRequest {
+  companyId: string;
+  companyGUID: string;
+  clientNumber: string;
+  legalName: string;
+  companyAddress: Address;
+  mailingAddressSameAsCompanyAddress: boolean;
+  mailingAddress?: Address;
+  email: string;
+  phone: string;
+  extension?: string;
+  fax?: string;
+  primaryContact: Contact,
+  adminUser: UserInformation;
+}
+
 // I have hardcoded the companyGUID because for this sprint we have assumed
 // that the user has logged in with BCeID and has already completed the
 // Wizard to setup their initial company profile

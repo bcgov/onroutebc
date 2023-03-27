@@ -2,7 +2,7 @@ import { Button, Typography } from "@mui/material";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { memo } from "react";
 import { FormProvider, useForm, FieldValues } from "react-hook-form";
-import { CompanyProfile, addUserInfo } from "../../apiManager/manageProfileAPI";
+import { CompanyProfile, updateCompanyInfo } from "../../apiManager/manageProfileAPI";
 import { InfoBcGovBanner } from "../../../../common/components/alertBanners/AlertBanners";
 
 import "./CompanyInfoForms.scss";
@@ -76,7 +76,7 @@ export const CompanyInfoForm = memo(
     const { handleSubmit } = formMethods;
 
     const addCompanyInfoQuery = useMutation({
-      mutationFn: addUserInfo,
+      mutationFn: updateCompanyInfo,
       onSuccess: (response) => {
         console.log(response.status);
         if (response.status === 200) {

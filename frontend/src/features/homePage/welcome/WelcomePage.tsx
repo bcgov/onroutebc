@@ -41,7 +41,7 @@ export const WelcomePage = React.memo(() => {
             </Grid>
             <Grid xs={4} justifyContent="center" item={true}>
               <Card className="welcome-cards" elevation={12}>
-                <CardActionArea onClick={() => navigate("/manage-profiles")}>
+                <CardActionArea onClick={() => navigate("/create-profile")}>
                   <Grid container>
                     <Grid xs={4}></Grid>
                     <Grid xs={1}>

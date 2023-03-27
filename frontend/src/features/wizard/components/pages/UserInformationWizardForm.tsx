@@ -1,15 +1,5 @@
-import { Button, Typography } from "@mui/material";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { memo } from "react";
-import { FormProvider, useForm, FieldValues } from "react-hook-form";
-import {
-  addUserInfo,
-  UserInformation,
-} from "../../../manageProfile/apiManager/manageProfileAPI";
-import { InfoBcGovBanner } from "../../../../common/components/alertBanners/AlertBanners";
-
-import "../forms/CompanyInfoForms.scss";
-import { formatPhoneNumber } from "../../../../common/components/form/subFormComponents/PhoneNumberInput";
+import "../../../manageProfile/components/forms/CompanyInfoForms.scss";
 import { CustomFormComponent } from "../../../../common/components/form/CustomFormComponents";
 import { CountryAndProvince } from "../../../../common/components/form/CountryAndProvince";
 import {
@@ -23,66 +13,19 @@ import {
  * This Component contains the logic for React Hook forms and React query
  * for state management and API calls
  */
-export const UserInformationForm = memo(
-  ({
-    userInfo,
-    setIsEditing,
-  }: {
-    userInfo?: UserInformation;
-    setIsEditing?: React.Dispatch<React.SetStateAction<boolean>>;
-  }) => {
-    const queryClient = useQueryClient();
+export const UserInformationWizardForm = memo(
+  () => {
 
-    const formMethods = useForm<UserInformation>({
-      defaultValues: {
-        firstName: userInfo?.firstName || "",
-        lastName: userInfo?.lastName || "",
-        phone1: userInfo?.phone1 ? formatPhoneNumber(userInfo?.phone1) : "",
-        phone1Extension: userInfo?.phone1Extension || "",
-        phone2: userInfo?.phone2 ? formatPhoneNumber(userInfo?.phone2) : "",
-        phone2Extension: userInfo?.phone2Extension || "",
-        email: userInfo?.email || "",
-        city: userInfo?.city || "",
-        provinceCode: userInfo?.provinceCode || "",
-        countryCode: userInfo?.countryCode || "",
-        fax: userInfo?.fax || "",
-      },
-    });
-
-    const { handleSubmit } = formMethods;
-
-    const addUserInfoQuery = useMutation({
-      mutationFn: addUserInfo,
-      onSuccess: (response) => {
-        console.log(response.status);
-        if (response.status === 200) {
-          queryClient.invalidateQueries(["companyInfo"]);
-          setIsEditing && setIsEditing(false);
-        } else {
-          // Display Error in the form.
-        }
-      },
-    });
-
-    const onUpdateUserInfo = function (data: FieldValues) {
-      const userInfoToBeUpdated = data as UserInformation;
-      addUserInfoQuery.mutate({
-        companyGUID: "TEST_changeme",
-        userInfo: userInfoToBeUpdated,
-      });
-    };
-
-    const FEATURE = "user-profile";
+    const FEATURE = "wizard";
 
     return (
       <div className="mp-form-container">
-        <FormProvider {...formMethods}>
           <>
             <CustomFormComponent
               type="input"
               feature={FEATURE}
               options={{
-                name: "firstName",
+                name: "adminUser.firstName",
                 rules: {
                   required: { value: true, message: "First Name is required" },
                 },
@@ -93,7 +36,7 @@ export const UserInformationForm = memo(
               type="input"
               feature={FEATURE}
               options={{
-                name: "lastName",
+                name: "adminUser.lastName",
                 rules: {
                   required: { value: true, message: "Last Name is required" },
                 },
@@ -104,7 +47,7 @@ export const UserInformationForm = memo(
               type="input"
               feature={FEATURE}
               options={{
-                name: "email",
+                name: "adminUser.email",
                 rules: {
                   required: { value: true, message: "Email is required" },
                 },
@@ -117,7 +60,7 @@ export const UserInformationForm = memo(
                 type="phone"
                 feature={FEATURE}
                 options={{
-                  name: "phone1",
+                  name: "adminUser.phone1",
                   rules: {
                     required: {
                       value: true,
@@ -132,7 +75,7 @@ export const UserInformationForm = memo(
                 type="input"
                 feature={FEATURE}
                 options={{
-                  name: "phone1Extension",
+                  name: "adminUser.phone1Extension",
                   rules: { required: false },
                   label: "Ext",
                   width: EXT_WIDTH,
@@ -144,7 +87,7 @@ export const UserInformationForm = memo(
                 type="phone"
                 feature={FEATURE}
                 options={{
-                  name: "phone2",
+                  name: "adminUser.phone2",
                   rules: { required: false },
                   label: "Alternate Phone",
                   width: PHONE_WIDTH,
@@ -154,7 +97,7 @@ export const UserInformationForm = memo(
                 type="input"
                 feature={FEATURE}
                 options={{
-                  name: "phone2Extension",
+                  name: "adminUser.phone2Extension",
                   rules: { required: false },
                   label: "Ext",
                   width: EXT_WIDTH,
@@ -165,7 +108,7 @@ export const UserInformationForm = memo(
               type="input"
               feature={FEATURE}
               options={{
-                name: "fax",
+                name: "adminUser.fax",
                 rules: { required: false },
                 label: "Fax",
                 width: PHONE_WIDTH,
@@ -173,16 +116,16 @@ export const UserInformationForm = memo(
             />
             <CountryAndProvince
               feature={FEATURE}
-              countryField="countryCode"
+              countryField="adminUser.countryCode"
               isCountryRequired={true}
-              provinceField="provinceCode"
+              provinceField="adminUser.provinceCode"
               isProvinceRequired={true}
             />
             <CustomFormComponent
               type="input"
               feature={FEATURE}
               options={{
-                name: "city",
+                name: "adminUser.city",
                 rules: {
                   required: { value: true, message: "City is required" },
                 },
@@ -190,31 +133,9 @@ export const UserInformationForm = memo(
               }}
             />
           </>
-        </FormProvider>
-        {/* <div className="mp-form-submit-container">
-          <Button
-            key="update-company-info-cancel-button"
-            aria-label="Cancel Update"
-            variant="contained"
-            color="tertiary"
-            sx={{ marginRight: "40px" }}
-            onClick={() => setIsEditing && setIsEditing(false)}
-          >
-            Cancel
-          </Button>
-          <Button
-            key="update-company-info-button"
-            aria-label="Update Company Info"
-            variant="contained"
-            color="primary"
-            onClick={handleSubmit(onUpdateUserInfo)}
-          >
-            Save
-          </Button>
-        </div> */}
       </div>
     );
   }
 );
 
-UserInformationForm.displayName = "UserInformationForm";
+UserInformationWizardForm.displayName = "UserInformationWizardForm";
