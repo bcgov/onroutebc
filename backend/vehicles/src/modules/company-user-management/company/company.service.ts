@@ -16,6 +16,7 @@ import { ReadCompanyUserDto } from './dto/response/read-company-user.dto';
 import { ReadCompanyDto } from './dto/response/read-company.dto';
 import { Company } from './entities/company.entity';
 import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
+import { ReadCompanyMetadataDto } from './dto/response/read-company-metadata.dto';
 
 @Injectable()
 export class CompanyService {
@@ -117,6 +118,56 @@ export class CompanyService {
       }),
       Company,
       ReadCompanyDto,
+    );
+  }
+
+  /**
+   * The findOne() method returns a ReadCompanyMetadataDto object corresponding to the given
+   * user guid. It retrieves the entity from the database using the
+   * Repository, maps it to a DTO object using the Mapper, and returns it.
+   *
+   * @param userGUID The company Id.
+   *
+   * @returns The company details list as a promise of type {@link ReadCompanyMetadataDto}
+   */
+  async findCompanyMetadataByUserGuid(
+    userGUID: string,
+  ): Promise<ReadCompanyMetadataDto[]> {
+    const companyUsers = await this.userService.findAllCompanyUsersByUserGuid(
+      userGUID,
+    );
+
+    const companyMetadata: ReadCompanyMetadataDto[] = [];
+    for (const companyUser of companyUsers) {
+      companyMetadata.push(
+        await this.classMapper.mapAsync(
+          companyUser.company,
+          Company,
+          ReadCompanyMetadataDto,
+        ),
+      );
+    }
+    return companyMetadata;
+  }
+
+  /**
+   * The findOne() method returns a ReadCompanyMetadataDto object corresponding to the
+   * company with that Id. It retrieves the entity from the database using the
+   * Repository, maps it to a DTO object using the Mapper, and returns it.
+   *
+   * @param companyId The company Id.
+   *
+   * @returns The company details as a promise of type {@link ReadCompanyMetadataDto}
+   */
+  async findCompanyMetadata(
+    companyId: number,
+  ): Promise<ReadCompanyMetadataDto> {
+    return this.classMapper.mapAsync(
+      await this.companyRepository.findOne({
+        where: { companyId: companyId },
+      }),
+      Company,
+      ReadCompanyMetadataDto,
     );
   }
 
