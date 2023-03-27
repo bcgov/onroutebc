@@ -38,6 +38,10 @@ export interface CompanyProfile {
   primaryContact: Contact;
 }
 
+export interface UserInformation extends Contact {
+  fax?: string;
+}
+
 // I have hardcoded the companyGUID because for this sprint we have assumed
 // that the user has logged in with BCeID and has already completed the
 // Wizard to setup their initial company profile
@@ -93,6 +97,27 @@ export const updateCompanyInfo = async ({
       "Content-Type": "application/json",
     },
     body: JSON.stringify(companyInfo),
+  });
+};
+
+/**
+ * 
+ * @param param0 
+ * @returns 
+ */
+export const addUserInfo = async ({
+  companyGUID,
+  userInfo,
+}: {
+  companyGUID: string;
+  userInfo: UserInformation;
+}): Promise<Response> => {
+  return fetch(`${MANAGE_PROFILE_API.COMPANY_INFO}/${TEST_COMPANY_ID}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(userInfo),
   });
 };
 
