@@ -7,3 +7,4 @@ export const ADD_TRAILER = "add-trailer";
 
 //Manage Profile
 export const MANAGE_PROFILES = "manage-profiles";
+export const CREATE_PROFILE = "create-profile";

@@ -1,0 +1,45 @@
+.welcome-graphic {
+  /* Layout Properties */
+  //   top: 191px;
+  //   left: 871px;
+  width: 178px;
+  height: 160px;
+  /* UI Properties */
+  background: transparent url("./Welcome_Graphic.svg") 0% 0% no-repeat
+    padding-box;
+  opacity: 1;
+}
+
+.welcome-text {
+  /* Layout Properties */
+  top: 367px;
+  left: 720px;
+  width: 480px;
+  height: 43px;
+  /* UI Properties */
+  font: var(--unnamed-font-style-normal) normal var(--unnamed-font-weight-bold)
+    var(--unnamed-font-size-32) / var(--unnamed-line-spacing-42)
+    var(--unnamed-font-family-bc-sans);
+  letter-spacing: var(--unnamed-character-spacing--0-64);
+  color: var(--bc-black);
+  text-align: center;
+  font: normal normal bold 32px/42px;
+  letter-spacing: -0.64px;
+  color: #313132;
+  opacity: 1;
+}
+
+.welcome-cards {
+  width: 220px;
+  height: 217px;
+  background: var(--white) 0% 0% no-repeat padding-box;
+  border: 1px solid var(--bc-text-box-border-grey);
+  background: #ffffff 0% 0% no-repeat padding-box;
+  border: 1px solid #b2b5b6;
+  border-radius: 8px;
+  opacity: 1;
+}
+
+.welcome-account-graphics {
+    padding-top: 32px;
+}
