@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Put } from '@nestjs/common';
+import { Controller, Post, Body, Param, Put } from '@nestjs/common';
 import { Query } from '@nestjs/common/decorators';
 
 import {
@@ -15,7 +15,6 @@ import { UserStatus } from '../../../common/enum/user-status.enum';
 import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
 import { ExceptionDto } from '../../common/dto/exception.dto';
 import { CreateUserDto } from './dto/request/create-user.dto';
-import { UpdateUserDto } from './dto/request/update-user.dto';
 import { ReadUserDto } from './dto/response/read-user.dto';
 import { UsersService } from './users.service';
 
@@ -63,92 +62,6 @@ export class CompanyUsersController {
       'ASMITH', //! Hardcoded value to be replaced by user name from access token
       UserDirectory.BBCEID,
     );
-  }
-
-  /**
-   * A GET method defined with the @Get(':userGUID') decorator and a route of
-   * company/:companyId/user/:userGUID  that retrieves a user by its GUID
-   * (global unique identifier).
-   * TODO: Secure endpoints once login is implemented.
-   *
-   * @param companyId The company Id.
-   *
-   * @param userGUID A temporary placeholder parameter to get the user by GUID.
-   *        Will be removed once login system is implemented.
-   *
-   * @returns The user details with response object {@link ReadUserDto}.
-   */
-  @ApiOkResponse({
-    description: 'The User Resource',
-    type: ReadUserDto,
-  })
-  @Get(':userGUID')
-  async find(
-    @Param('companyId') companyId: number,
-    @Param('userGUID') userGUID: string,
-  ): Promise<ReadUserDto> {
-    const companyUser = await this.userService.findOne(companyId, userGUID);
-    if (!companyUser) {
-      throw new DataNotFoundException();
-    }
-    return companyUser;
-  }
-
-  /**
-   * A GET method defined with the @Get() decorator and a route of
-   * company/:companyId/user that retrieves a list of users associated with
-   * the company GUID (global unique identifier).
-   * TODO: Secure endpoints once login is implemented.
-   *
-   * @param companyId The company Id.
-   *
-   * @returns The user list with response object {@link ReadUserDto}.
-   */
-  @ApiOkResponse({
-    description: 'The User Resource List',
-    type: ReadUserDto,
-    isArray: true,
-  })
-  @Get()
-  async findAll(@Param('companyId') companyId: number): Promise<ReadUserDto[]> {
-    return await this.userService.findAllUsers(companyId);
-  }
-
-  /**
-   * A PUT method defined with the @Put(':userGUID') decorator and a route of
-   * company/:companyId/user/:userGUID that updates a user details by its
-   * GUID.
-   * TODO: Secure endpoints once login is implemented.
-   * TODO: Grab user name from the access token and remove the hard coded value 'ASMITH'.
-   * TODO: Grab user directory from the access token and remove the hard coded value UserDirectory.BBCEID.
-   *
-   * @param companyId The company Id.
-   * @param userGUID A temporary placeholder parameter to get the user by Id.
-   *        Will be removed once login system is implemented.
-   *
-   * @returns The updated user deails with response object {@link ReadUserDto}.
-   */
-  @ApiOkResponse({
-    description: 'The User Resource',
-    type: ReadUserDto,
-  })
-  @Put(':userGUID')
-  async update(
-    @Param('companyId') companyId: number,
-    @Param('userGUID') userGUID: string,
-    @Body() updateUserDto: UpdateUserDto,
-  ): Promise<ReadUserDto> {
-    const user = await this.userService.update(
-      companyId,
-      userGUID,
-      'ASMITH', //! Hardcoded value to be replaced by user name from access token
-      UserDirectory.BBCEID, //! Hardcoded value to be replaced by user directory from access token
-      updateUserDto,
-    );
-    if (!user) {
-      throw new DataNotFoundException();
-    }
-    return user;
   }
 
   /**
