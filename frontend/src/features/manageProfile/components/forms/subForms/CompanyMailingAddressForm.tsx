@@ -1,24 +1,17 @@
 import { Typography } from "@mui/material";
 import { useState } from "react";
 import { CountryAndProvince } from "../../../../../common/components/form/CountryAndProvince";
-import {
-  CommonFormPropsType,
-  CustomCheckboxComponent,
-  CustomFormComponent,
-} from "../../../../../common/components/form/CustomFormComponents";
-import {
-  DEFAULT_WIDTH,
-  CITY_WIDTH,
-  POSTAL_WIDTH,
-} from "../../../../../themes/bcGovStyles";
+import { CustomCheckbox } from "../../../../../common/components/form/subFormComponents/CustomCheckbox";
+import { CustomFormComponent } from "../../../../../common/components/form/CustomFormComponents";
+import { CITY_WIDTH, POSTAL_WIDTH } from "../../../../../themes/bcGovStyles";
 import { CompanyProfile } from "../../../apiManager/manageProfileAPI";
 
 export const CompanyMailingAddressForm = ({
-  commonFormProps,
+  feature,
   companyInfo,
 }: {
+  feature: string;
   companyInfo?: CompanyProfile;
-  commonFormProps: CommonFormPropsType<CompanyProfile>;
 }) => {
   const [showMailingAddress, setShowMailingAddress] = useState(
     !companyInfo?.mailingAddressSameAsCompanyAddress
@@ -26,8 +19,8 @@ export const CompanyMailingAddressForm = ({
 
   return (
     <>
-      <CustomCheckboxComponent
-        commonFormProps={commonFormProps}
+      <CustomCheckbox
+        feature={feature}
         name="mailingAddressSameAsCompanyAddress"
         label={"Mailing address is the same as company address"}
         inputProps={{
@@ -45,17 +38,18 @@ export const CompanyMailingAddressForm = ({
 
           <CustomFormComponent
             type="input"
-            commonFormProps={commonFormProps}
+            feature={feature}
             options={{
               name: "mailingAddress.addressLine1",
-              rules: { required: true },
+              rules: {
+                required: { value: true, message: "Address is required" },
+              },
               label: "Address (Line 1)",
-              inValidMessage: "Address is required",
             }}
           />
           <CustomFormComponent
             type="input"
-            commonFormProps={commonFormProps}
+            feature={feature}
             options={{
               name: "mailingAddress.addressLine2",
               rules: { required: false },
@@ -63,42 +57,37 @@ export const CompanyMailingAddressForm = ({
             }}
           />
           <CountryAndProvince
-            country={
-              companyInfo?.mailingAddress?.countryCode
-                ? companyInfo.mailingAddress.countryCode
-                : ""
-            }
-            province={
-              companyInfo?.mailingAddress?.provinceCode
-                ? companyInfo.mailingAddress.provinceCode
-                : ""
-            }
-            width={DEFAULT_WIDTH}
-            countryField={"mailingAddress.countryCode"}
-            provinceField={"mailingAddress.provinceCode"}
-            feature={"profile"}
-            rules={{ required: showMailingAddress }}
+            feature={feature}
+            countryField="mailingAddress.countryCode"
+            isCountryRequired={showMailingAddress}
+            provinceField="mailingAddress.provinceCode"
+            isProvinceRequired={showMailingAddress}
           />
           <div className="mp-side-by-side-container">
             <CustomFormComponent
               type="input"
-              commonFormProps={commonFormProps}
+              feature={feature}
               options={{
                 name: "mailingAddress.city",
-                rules: { required: true },
+                rules: {
+                  required: { value: true, message: "City is required" },
+                },
                 label: "City",
-                inValidMessage: "City is required",
                 width: CITY_WIDTH,
               }}
             />
             <CustomFormComponent
               type="input"
-              commonFormProps={commonFormProps}
+              feature={feature}
               options={{
                 name: "mailingAddress.postalCode",
-                rules: { required: true },
+                rules: {
+                  required: {
+                    value: true,
+                    message: "Postal / Zip Code is required",
+                  },
+                },
                 label: "Postal / Zip Code",
-                inValidMessage: "Postal / Zip Code is required",
                 width: POSTAL_WIDTH,
               }}
             />

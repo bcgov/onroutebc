@@ -1,37 +1,42 @@
-import React, { useCallback, useState } from "react";
 import { TabLayout } from "../../../../common/components/dashboard/TabLayout";
-import { VEHICLE_TYPES_ENUM } from "../form/constants";
-import { PowerUnitForm } from "../form/PowerUnitForm";
-import { TrailerForm } from "../form/TrailerForm";
 import { AddVehicleButton } from "./AddVehicleButton";
 
-import SlidingPane from "../sliding-pane/react-sliding-pane";
-import "../sliding-pane/react-sliding-pane.css";
 import { List } from "../list/List";
 
 import "./ManageVehiclesDashboard.scss";
-import { t } from "i18next";
-import {
-  CustomSnackbar2,
-  DisplaySnackBarOptions,
-} from "../../../../common/components/snackbar/CustomSnackbar2";
+import { memo } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { getAllPowerUnits, getAllTrailers } from "../../apiManager/vehiclesAPI";
 
 /**
  * React component to render the vehicle inventory
  */
-export const ManageVehiclesDashboard = React.memo(() => {
-  const [showForm, setShowForm] = useState<boolean>(false);
-  const [addVehicleMode, setAddVehicleMode] =
-    useState<VEHICLE_TYPES_ENUM | null>(null);
+export const ManageVehiclesDashboard = memo(() => {
+  const keepPreviousData = true;
+  const staleTime = 5000;
+
+  const powerUnitQuery = useQuery({
+    queryKey: ["powerUnits"],
+    queryFn: getAllPowerUnits,
+    keepPreviousData: keepPreviousData,
+    staleTime: staleTime,
+  });
+
+  const trailerQuery = useQuery({
+    queryKey: ["trailers"],
+    queryFn: getAllTrailers,
+    keepPreviousData: keepPreviousData,
+    staleTime: staleTime,
+  });
 
   const tabs = [
     {
       label: "Power Unit",
-      component: <List />,
+      component: <List vehicleType="powerUnit" query={powerUnitQuery} />,
     },
     {
       label: "Trailer",
-      component: <>TODO</>,
+      component: <List vehicleType="trailer" query={trailerQuery} />,
     },
     {
       label: "Vehicle Configuration",
@@ -39,84 +44,12 @@ export const ManageVehiclesDashboard = React.memo(() => {
     },
   ];
 
-  const [snackBarStatus, setSnackBarStatus] = useState<DisplaySnackBarOptions>({
-    display: false,
-    messageI18NKey: "",
-    isError: false,
-  });
-
-  /**
-   * Displays a snackbar.
-   * @param display - boolean indicating if the snackbar should be displayed.
-   * @param isError - boolean indicating if the snackbar expresses an error.
-   * @param messageI18NKey - string containing the i8n message key.
-   */
-  const displaySnackBar = useCallback(function (
-    options: DisplaySnackBarOptions
-  ) {
-    const { messageI18NKey: message, isError, display } = options;
-    setSnackBarStatus(() => {
-      return {
-        messageI18NKey: message,
-        isError: isError,
-        display: display,
-      };
-    });
-  },
-  []);
-
-  /**
-   * Closes the slide panel
-   */
-  const closeSlidePanel = useCallback(function () {
-    setShowForm(false);
-    setAddVehicleMode(null);
-  }, []);
-
-  /**
-   * Opens the slide panel
-   */
-  const openSlidePanel = useCallback(function (
-    vehicleMode: VEHICLE_TYPES_ENUM
-  ) {
-    setShowForm(true);
-    setAddVehicleMode(vehicleMode);
-  },
-  []);
-
   return (
-    <>
-      <TabLayout
-        bannerText="Vehicle Inventory"
-        bannerButton={<AddVehicleButton openSlidePanel={openSlidePanel} />}
-        componentList={tabs}
-      />
-
-      <CustomSnackbar2
-        snackBarStatus={snackBarStatus}
-        setSnackBarStatus={setSnackBarStatus}
-      />
-
-      <SlidingPane
-        isOpen={showForm}
-        onRequestClose={closeSlidePanel}
-        from="right"
-        width="538px"
-        title={
-          addVehicleMode === VEHICLE_TYPES_ENUM.POWER_UNIT
-            ? t("vehicle.add-vehicle.power-unit")
-            : t("vehicle.add-vehicle.trailer")
-        }
-      >
-        {addVehicleMode === VEHICLE_TYPES_ENUM.POWER_UNIT && (
-          <PowerUnitForm
-            displaySnackBar={displaySnackBar}
-            closeSlidePanel={closeSlidePanel}
-          />
-        )}
-        {addVehicleMode === VEHICLE_TYPES_ENUM.TRAILER && <TrailerForm />}
-      </SlidingPane>
-    </>
+    <TabLayout
+      bannerText="Vehicle Inventory"
+      bannerButton={<AddVehicleButton />}
+      componentList={tabs}
+    />
   );
 });
 

@@ -6,11 +6,11 @@ import { UserAuthGroup } from '../../../../common/enum/user-auth-group.enum';
 @Entity({ name: 'ORBC_PENDING_USER' })
 export class PendingUser extends Base {
   /**
-   * A string property with a length of 32, representing the company's GUID.
+   * A number property, representing the company's ID.
    */
   @AutoMap()
-  @PrimaryColumn({ length: 32, name: 'COMPANY_GUID', nullable: false })
-  companyGUID: string;
+  @PrimaryColumn({ type: 'int', name: 'COMPANY_ID', nullable: false })
+  companyId: number;
 
   /**
    * A string property with a length of 50, representing the user name.

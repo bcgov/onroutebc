@@ -12,6 +12,7 @@ import { Contact } from '../../../common/entities/contact.entity';
 import { CompanyUser } from './company-user.entity';
 import { UserDirectory } from '../../../../common/enum/directory.enum';
 import { UserStatus } from '../../../../common/enum/user-status.enum';
+import { UserAuthGroup } from '../../../../common/enum/user-auth-group.enum';
 
 @Entity({ name: 'ORBC_USER' })
 export class User extends Base {
@@ -42,6 +43,20 @@ export class User extends Base {
     nullable: false,
   })
   userDirectory: UserDirectory;
+
+  /**
+   * A property that represents the user's auth group in ORBC, which is an enum of type
+   * {@link UserAuthGroup}.
+   */
+  @AutoMap()
+  @Column({
+    type: 'simple-enum',
+    enum: UserAuthGroup,
+    length: 10,
+    name: 'USER_AUTH_GROUP_ID',
+    nullable: true,
+  })
+  userAuthGroup: UserAuthGroup;
 
   /**
    * The status of the user in the system. It is an enum of UserStatus type and

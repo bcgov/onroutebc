@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Query } from '@nestjs/common';
 import { CompanyService } from './company.service';
 import {
   ApiCreatedResponse,
@@ -6,6 +6,7 @@ import {
   ApiMethodNotAllowedResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
+  ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
 import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
@@ -18,6 +19,7 @@ import {
   CompanyDirectory,
   UserDirectory,
 } from '../../../common/enum/directory.enum';
+import { ReadCompanyMetadataDto } from './dto/response/read-company-metadata.dto';
 
 @ApiTags('Company and User Management - Company')
 @ApiNotFoundResponse({
@@ -32,7 +34,7 @@ import {
   description: 'The Company Api Internal Server Error Response',
   type: ExceptionDto,
 })
-@Controller('company')
+@Controller('companies')
 export class CompanyController {
   constructor(private readonly companyService: CompanyService) {}
 
@@ -64,13 +66,11 @@ export class CompanyController {
   }
 
   /**
-   * A GET method defined with the @Get(':companyGUID') decorator and a route of
-   * /company/:companyGUID that retrieves a company by its GUID (global unique
-   * identifier).
+   * A GET method defined with the @Get(':companyId') decorator and a route of
+   * /company/:companyId that retrieves a company by its id.
    * TODO: Secure endpoints once login is implemented.
    *
-   * @param companyGUID A temporary placeholder parameter to get the company by
-   *        its GUID. Will be removed once login system is implemented.
+   * @param companyId The company Id.
    *
    * @returns The company details with response object {@link ReadCompanyDto}.
    */
@@ -78,11 +78,9 @@ export class CompanyController {
     description: 'The Company Resource',
     type: ReadCompanyDto,
   })
-  @Get(':companyGUID')
-  async get(
-    @Param('companyGUID') companyGUID: string,
-  ): Promise<ReadCompanyDto> {
-    const company = await this.companyService.findOne(companyGUID);
+  @Get(':companyId')
+  async get(@Param('companyId') companyId: number): Promise<ReadCompanyDto> {
+    const company = await this.companyService.findOne(companyId);
     if (!company) {
       throw new DataNotFoundException();
     }
@@ -90,27 +88,54 @@ export class CompanyController {
   }
 
   /**
-   * A PUT method defined with the @Put(':companyGUID') decorator and a route of
-   * /company/:companyGUID that updates a company by its GUID.
+   * A GET method defined with the @Get() decorator and a route of
+   * /companies that retrieves a company metadata by userGuid.
+   * TODO: Secure endpoints once login is implemented.
+   *
+   * @param userGUID The user Guid.
+   *
+   * @returns The company details with response object {@link ReadCompanyMetadataDto}.
+   */
+  @ApiOkResponse({
+    description: 'The Company Metadata Resource',
+    type: ReadCompanyMetadataDto,
+    isArray: true,
+  })
+  @ApiQuery({ name: 'userGUID', required: false })
+  @Get()
+  async getCompanyMetadata(
+    @Query('userGUID') userGUID?: string,
+  ): Promise<ReadCompanyMetadataDto[]> {
+    const company = await this.companyService.findCompanyMetadataByUserGuid(
+      userGUID,
+    );
+    if (!company) {
+      throw new DataNotFoundException();
+    }
+    return company;
+  }
+
+  /**
+   * A PUT method defined with the @Put(':companyId') decorator and a route of
+   * /company/:companyId that updates a company by its ID.
    * TODO: Validations on {@link UpdateCompanyDto}.
    * TODO: Secure endpoints once login is implemented.
    *
-   * @param companyGUID A temporary placeholder parameter to get the company by
-   *        its GUID. Will be removed once login system is implemented.
+   * @param companyId The company Id.
    *
    * @returns The updated company deails with response object {@link ReadCompanyDto}.
    */
   @ApiOkResponse({
-    description: 'The Company  Resource',
+    description: 'The Company Resource',
     type: ReadCompanyDto,
   })
-  @Put(':companyGUID')
+  @Put(':companyId')
   async update(
-    @Param('companyGUID') companyGUID: string,
+    @Param('companyId') companyId: number,
     @Body() updateCompanyDto: UpdateCompanyDto,
   ): Promise<ReadCompanyDto> {
     const powerUnitType = await this.companyService.update(
-      companyGUID,
+      companyId,
       updateCompanyDto,
       CompanyDirectory.BBCEID,
     );

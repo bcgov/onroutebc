@@ -36,12 +36,19 @@ export const WarningBcGovBanner = ({
   </div>
 );
 
-export const InfoBcGovBanner = ({ description }: { description: string }) => (
+export const InfoBcGovBanner = ({
+  description,
+  width,
+}: {
+  description: string;
+  width?: string;
+}) => (
   <div
     className="bc-gov-alertbanner bc-gov-alertbanner-info"
     role="alert"
     aria-labelledby="info"
     aria-describedby="info-desc"
+    style={{ width: width }}
   >
     <p id="info-desc">{description}</p>
   </div>

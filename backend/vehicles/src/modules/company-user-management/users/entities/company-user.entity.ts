@@ -40,7 +40,7 @@ export class CompanyUser extends Base {
    */
   @AutoMap(() => Company)
   @ManyToOne(() => Company, (company) => company.companyUsers)
-  @JoinColumn({ name: 'COMPANY_GUID' })
+  @JoinColumn({ name: 'COMPANY_ID' })
   public company: Company;
 
   /**

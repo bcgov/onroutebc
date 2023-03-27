@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { Box, Tabs, Tab } from "@mui/material";
 
-import "./TabLayout.scss";
+import "./Dashboard.scss";
+import { Banner } from "./Banner";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -91,19 +92,6 @@ const DisplayTabPanels = ({
   </>
 );
 
-const DisplayBanner = ({
-  bannerText,
-  bannerButton,
-}: {
-  bannerText: string;
-  bannerButton?: JSX.Element;
-}) => (
-  <div className="layout-banner">
-    <h2>{bannerText}</h2>
-    {bannerButton ? bannerButton : null}
-  </div>
-);
-
 /**
  * The TabLayout component is a common component that includes a Banner, Tabs, and TabPanels.
  *
@@ -133,7 +121,7 @@ export const TabLayout = React.memo(
             borderColor: "divider",
           }}
         >
-          <DisplayBanner bannerText={bannerText} bannerButton={bannerButton} />
+          <Banner bannerText={bannerText} bannerButton={bannerButton} />
           <DisplayTabs
             value={value}
             handleChange={handleChange}

@@ -5,6 +5,11 @@ import { Trailer } from '../entities/trailer.entity';
 import { ReadTrailerDto } from '../dto/response/read-trailer.dto';
 import { UpdateTrailerDto } from '../dto/request/update-trailer.dto';
 import { CreateTrailerDto } from '../dto/request/create-trailer.dto';
+import {
+  getCountryCode,
+  getProvinceCode,
+  getProvinceId,
+} from '../../../../common/helper/province-country.helper';
 
 @Injectable()
 export class TrailersProfile extends AutomapperProfile {
@@ -19,8 +24,12 @@ export class TrailersProfile extends AutomapperProfile {
         Trailer,
         ReadTrailerDto,
         forMember(
-          (d) => d.provinceId,
-          mapFrom((s) => s.province.provinceId),
+          (d) => d.provinceCode,
+          mapFrom((s) => getProvinceCode(s.province.provinceId)),
+        ),
+        forMember(
+          (d) => d.countryCode,
+          mapFrom((s) => getCountryCode(s.province.provinceId)),
         ),
         forMember(
           (d) => d.trailerTypeCode,
@@ -33,7 +42,7 @@ export class TrailersProfile extends AutomapperProfile {
         Trailer,
         forMember(
           (d) => d.province.provinceId,
-          mapFrom((s) => s.provinceId),
+          mapFrom((s) => getProvinceId(s.countryCode, s.provinceCode)),
         ),
         forMember(
           (d) => d.trailerType.typeCode,
@@ -46,7 +55,7 @@ export class TrailersProfile extends AutomapperProfile {
         Trailer,
         forMember(
           (d) => d.province.provinceId,
-          mapFrom((s) => s.provinceId),
+          mapFrom((s) => getProvinceId(s.countryCode, s.provinceCode)),
         ),
         forMember(
           (d) => d.trailerType.typeCode,

@@ -21,8 +21,8 @@ export class PendingUsersProfile extends AutomapperProfile {
     return (mapper: Mapper) => {
       /**
        * Mapping from CreatePendingUserDto to PendingUser entity, with a custom
-       * mapping for the companyGUID property using the forMember function and
-       * mapWithArguments method to extract the companyGUID argument from the
+       * mapping for the companyId property using the forMember function and
+       * mapWithArguments method to extract the companyId argument from the
        * source object and map it to the destination property.
        */
       createMap(
@@ -30,16 +30,16 @@ export class PendingUsersProfile extends AutomapperProfile {
         CreatePendingUserDto,
         PendingUser,
         forMember(
-          (d) => d.companyGUID,
-          mapWithArguments((source, { companyGUID }) => {
-            return companyGUID;
+          (d) => d.companyId,
+          mapWithArguments((source, { companyId }) => {
+            return companyId;
           }),
         ),
       );
 
       /**
        * Mapping from UpdatePendingUserDto to PendingUser entity, with custom
-       * mappings for the companyGUID and userName properties using forMember
+       * mappings for the companyId and userName properties using forMember
        * and mapWithArguments.
        */
       createMap(
@@ -47,9 +47,9 @@ export class PendingUsersProfile extends AutomapperProfile {
         UpdatePendingUserDto,
         PendingUser,
         forMember(
-          (d) => d.companyGUID,
-          mapWithArguments((source, { companyGUID }) => {
-            return companyGUID;
+          (d) => d.companyId,
+          mapWithArguments((source, { companyId }) => {
+            return companyId;
           }),
         ),
         forMember(

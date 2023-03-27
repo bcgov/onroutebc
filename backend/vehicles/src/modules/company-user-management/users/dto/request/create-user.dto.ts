@@ -11,7 +11,7 @@ export class CreateUserDto extends CreateContactDto {
   @ApiProperty({
     enum: UserAuthGroup,
     description: 'The user auth group.',
-    example: UserAuthGroup.ADMIN,
+    example: UserAuthGroup.COMPANY_ADMINISTRATOR,
   })
   userAuthGroup: UserAuthGroup;
 }

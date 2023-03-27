@@ -24,6 +24,7 @@ interface Contact {
 }
 
 export interface CompanyProfile {
+  companyId: string;
   companyGUID: string;
   clientNumber: string;
   legalName: string;
@@ -41,7 +42,8 @@ export interface CompanyProfile {
 // that the user has logged in with BCeID and has already completed the
 // Wizard to setup their initial company profile
 //let TEST_COMPANY_GUID = "06D0D93CE18A43948979F255C7046B72";
-let TEST_COMPANY_GUID = "C16A95599A264242A850BDDC21B739F4"; // Harry Ewing User
+//let TEST_COMPANY_GUID = "C16A95599A264242A850BDDC21B739F4"; // Harry Ewing User
+let TEST_COMPANY_ID = "1";
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 export const getCompanyInfo = async (
@@ -51,7 +53,7 @@ export const getCompanyInfo = async (
   const url = new URL(MANAGE_PROFILE_API.COMPANY_INFO);
 
   try {
-    const response = await fetch(`${url.href}/${TEST_COMPANY_GUID}`);
+    const response = await fetch(`${url.href}/${TEST_COMPANY_ID}`);
     const data = await response.json();
 
     // Handle API errors created from the backend API
@@ -59,6 +61,7 @@ export const getCompanyInfo = async (
       const err: ApiErrorResponse = data;
       return Promise.reject(err.errorMessage);
     }
+
     return data;
     // eslint-disable-next-line  @typescript-eslint/no-explicit-any
   } catch (error: any) {
@@ -84,7 +87,7 @@ export const updateCompanyInfo = async ({
     companyInfo.mailingAddress = undefined;
   }
 
-  return fetch(`${MANAGE_PROFILE_API.COMPANY_INFO}/${TEST_COMPANY_GUID}`, {
+  return fetch(`${MANAGE_PROFILE_API.COMPANY_INFO}/${TEST_COMPANY_ID}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -141,7 +144,7 @@ export const createCompanyInfo = async (): Promise<CompanyProfile> => {
 
   const data = (await response.json()) as CompanyProfile;
 
-  TEST_COMPANY_GUID = data.companyGUID;
+  TEST_COMPANY_ID = data.companyId;
 
   return data;
 };

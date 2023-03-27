@@ -17,6 +17,7 @@ import { ReadCompanyDto } from './dto/response/read-company.dto';
 import { Company } from './entities/company.entity';
 import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
 import { EmailService } from '../../common/email.service';
+import { ReadCompanyMetadataDto } from './dto/response/read-company-metadata.dto';
 
 @Injectable()
 export class CompanyService {
@@ -72,11 +73,11 @@ export class CompanyService {
     try {
       newCompany = await queryRunner.manager.save(newCompany);
       newUser = await this.userService.createUser(
-        newCompany.companyGUID,
+        newCompany.companyId,
         createCompanyDto.adminUser,
         userName,
         userDirectory,
-        UserAuthGroup.ADMIN,
+        UserAuthGroup.COMPANY_ADMINISTRATOR,
         queryRunner,
       );
 
@@ -88,8 +89,8 @@ export class CompanyService {
     }
 
     const readCompanyUserDto = await this.classMapper.mapAsync(
-      newCompany,
-      Company,
+      await this.findOne(newCompany.companyId),
+      ReadCompanyDto,
       ReadCompanyUserDto,
     );
 
@@ -129,14 +130,88 @@ export class CompanyService {
 
   /**
    * The findOne() method returns a ReadCompanyDto object corresponding to the
-   * company with that GUID. It retrieves the entity from the database using the
+   * company with that Id. It retrieves the entity from the database using the
    * Repository, maps it to a DTO object using the Mapper, and returns it.
    *
-   * @param companyGUID The company GUID
+   * @param companyId The company Id.
    *
    * @returns The company details as a promise of type {@link ReadCompanyDto}
    */
-  async findOne(companyGUID: string): Promise<ReadCompanyDto> {
+  async findOne(companyId: number): Promise<ReadCompanyDto> {
+    return this.classMapper.mapAsync(
+      await this.companyRepository.findOne({
+        where: { companyId: companyId },
+        relations: {
+          mailingAddress: true,
+          primaryContact: true,
+          companyAddress: true,
+        },
+      }),
+      Company,
+      ReadCompanyDto,
+    );
+  }
+
+  /**
+   * The findOne() method returns a ReadCompanyMetadataDto object corresponding to the given
+   * user guid. It retrieves the entity from the database using the
+   * Repository, maps it to a DTO object using the Mapper, and returns it.
+   *
+   * @param userGUID The company Id.
+   *
+   * @returns The company details list as a promise of type {@link ReadCompanyMetadataDto}
+   */
+  async findCompanyMetadataByUserGuid(
+    userGUID: string,
+  ): Promise<ReadCompanyMetadataDto[]> {
+    const companyUsers = await this.userService.findAllCompanyUsersByUserGuid(
+      userGUID,
+    );
+
+    const companyMetadata: ReadCompanyMetadataDto[] = [];
+    for (const companyUser of companyUsers) {
+      companyMetadata.push(
+        await this.classMapper.mapAsync(
+          companyUser.company,
+          Company,
+          ReadCompanyMetadataDto,
+        ),
+      );
+    }
+    return companyMetadata;
+  }
+
+  /**
+   * The findOne() method returns a ReadCompanyMetadataDto object corresponding to the
+   * company with that Id. It retrieves the entity from the database using the
+   * Repository, maps it to a DTO object using the Mapper, and returns it.
+   *
+   * @param companyId The company Id.
+   *
+   * @returns The company details as a promise of type {@link ReadCompanyMetadataDto}
+   */
+  async findCompanyMetadata(
+    companyId: number,
+  ): Promise<ReadCompanyMetadataDto> {
+    return this.classMapper.mapAsync(
+      await this.companyRepository.findOne({
+        where: { companyId: companyId },
+      }),
+      Company,
+      ReadCompanyMetadataDto,
+    );
+  }
+
+  /**
+   * The findOneByCompanyGuid() method returns a ReadCompanyDto object corresponding to the
+   * company with that company GUID. It retrieves the entity from the database using the
+   * Repository, maps it to a DTO object using the Mapper, and returns it.
+   *
+   * @param companyGUID The company Id.
+   *
+   * @returns The company details as a promise of type {@link ReadCompanyDto}
+   */
+  async findOneByCompanyGuid(companyGUID: string): Promise<ReadCompanyDto> {
     return this.classMapper.mapAsync(
       await this.companyRepository.findOne({
         where: { companyGUID: companyGUID },
@@ -159,8 +234,9 @@ export class CompanyService {
    * in a DTO object.
    *
    * ? Company Directory might not be required once scope of login is finizalied.
+   * ? Should we be able to update company guid?
    *
-   * @param companyGUID The company GUID
+   * @param companyId The company Id.
    * @param updateCompanyDto Request object of type {@link UpdateCompanyDto} for
    * updating a company.
    * @param companyDirectory Company Directory from the access token.
@@ -168,12 +244,12 @@ export class CompanyService {
    * @returns The company details as a promise of type {@link ReadCompanyDto}
    */
   async update(
-    companyGUID: string,
+    companyId: number,
     updateCompanyDto: UpdateCompanyDto,
     companyDirectory: CompanyDirectory,
   ): Promise<ReadCompanyDto> {
     const company = await this.companyRepository.findOne({
-      where: { companyGUID: companyGUID },
+      where: { companyId: companyId },
       relations: {
         mailingAddress: true,
         primaryContact: true,
@@ -188,6 +264,7 @@ export class CompanyService {
     const contactId = company.primaryContact.contactId;
     const companyAddressId = company.companyAddress.addressId;
     const mailingAddressId = company.mailingAddress.addressId;
+    const clientNumber = company.clientNumber;
 
     const newCompany = this.classMapper.map(
       updateCompanyDto,
@@ -195,6 +272,8 @@ export class CompanyService {
       Company,
       {
         extraArgs: () => ({
+          companyId: company.companyId,
+          clientNumber: clientNumber,
           companyDirectory: companyDirectory,
           companyAddressId: companyAddressId,
           mailingAddressId:
@@ -210,11 +289,10 @@ export class CompanyService {
     newCompany.setMailingAddressSameAsCompanyAddress(
       updateCompanyDto.mailingAddressSameAsCompanyAddress,
     );
-    newCompany.companyGUID = companyGUID;
 
-    await this.companyRepository.save(newCompany);
+    const updatedCompany = await this.companyRepository.save(newCompany);
 
-    return this.findOne(companyGUID);
+    return this.findOne(updatedCompany.companyId);
   }
 
   private messageBodyUtil(

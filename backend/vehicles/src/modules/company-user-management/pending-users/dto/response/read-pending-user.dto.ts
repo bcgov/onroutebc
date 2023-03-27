@@ -9,8 +9,8 @@ import { CreatePendingUserDto } from '../request/create-pending-user.dto';
 export class ReadPendingUserDto extends CreatePendingUserDto {
   @AutoMap()
   @ApiProperty({
-    description: 'The company GUID of the Administrator.',
-    example: 'EA214B3225FB4EDBBD7B34CB03EDD97D',
+    description: 'The company Id of the Administrator.',
+    example: '1',
   })
-  companyGUID: string;
+  companyId: number;
 }

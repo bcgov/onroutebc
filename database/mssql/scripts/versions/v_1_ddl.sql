@@ -47,6 +47,8 @@ EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user or pr
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time the record was created or last updated.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_SYS_VERSION', @level2type=N'COLUMN',@level2name=N'DB_LAST_UPDATE_TIMESTAMP'
 GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Table tracking the ORBC database schema version history' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_SYS_VERSION'
+GO
 
 DECLARE @VersionDescription VARCHAR(255)
 SET @VersionDescription = 'Initialize versions system table'

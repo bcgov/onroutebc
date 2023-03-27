@@ -36,15 +36,17 @@ export class CreateAddressDto {
   @AutoMap()
   @ApiProperty({
     example: 'BC',
-    description: 'A 2-character string indicating the province',
-    required: true,
+    description:
+      'A 2-character string indicating the province. ' +
+      'Required if the countryCode is either CA or US.',
+    required: false,
   })
   provinceCode: string;
 
   @AutoMap()
   @ApiProperty({
     example: 'CA',
-    description: 'A 2-character string indicating the country',
+    description: 'A 2-character string indicating the country.',
     required: true,
   })
   countryCode: string;

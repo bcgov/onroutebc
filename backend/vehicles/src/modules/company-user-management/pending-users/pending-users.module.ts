@@ -9,5 +9,6 @@ import { PendingUsersProfile } from './profiles/pending-user.profile';
   imports: [TypeOrmModule.forFeature([PendingUser])],
   controllers: [PendingUsersController],
   providers: [PendingUsersService, PendingUsersProfile],
+  exports: [PendingUsersService],
 })
 export class PendingUsersModule {}

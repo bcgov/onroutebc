@@ -1,21 +1,21 @@
 import { OutlinedInput } from "@mui/material";
 import { useState } from "react";
-import { PathValue, Path } from "react-hook-form";
-import { CompanyProfile } from "../../../features/manageProfile/apiManager/manageProfileAPI";
-import { CreatePowerUnit } from "../../../features/manageVehicles/types/managevehicles";
-import { BC_COLOURS } from "../../../themes/bcGovStyles";
-import { CustomInputComponentProps } from "./CustomFormComponents.js";
+import { PathValue, Path, useFormContext } from "react-hook-form";
+import { BC_COLOURS } from "../../../../themes/bcGovStyles";
+import { ORBC_FormTypes } from "../../../../types/common";
+import { CustomOutlinedInputProps } from "./CustomOutlinedInput";
 
 /**
  * An onRouteBC customized MUI OutlineInput component
  * that automatically changes the format of the phone number as the user types
  */
-export const PhoneNumberInput = <T extends CompanyProfile | CreatePowerUnit>(
-  props: CustomInputComponentProps<T>
+export const PhoneNumberInput = <T extends ORBC_FormTypes>(
+  props: CustomOutlinedInputProps<T>
 ): JSX.Element => {
-  // Get the current/default value of the field from React Hook Form
-  /* eslint-disable  @typescript-eslint/no-explicit-any */
-  const defaultVal: PathValue<T, Path<T>> = props.getValues<any>(props.name);
+  const { register, getValues } = useFormContext();
+  // Get the value of the field from React Hook Form
+  // eslint-disable-next-line  @typescript-eslint/no-explicit-any
+  const defaultVal: PathValue<T, Path<T>> = getValues<any>(props.name);
   // Set the value of the field in a useState variable,
   // which is used to automatically format the users input
   const [value, setValue] = useState<PathValue<T, Path<T>> | string>(
@@ -24,12 +24,7 @@ export const PhoneNumberInput = <T extends CompanyProfile | CreatePowerUnit>(
 
   // Everytime the user types, update the format of the users input
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let formattedValue = e.target.value;
-
-    if (props.displayAs === "phone") {
-      formattedValue = formatPhoneNumber(e.target.value);
-    }
-
+    const formattedValue = formatPhoneNumber(e.target.value);
     setValue(formattedValue);
   };
 
@@ -44,7 +39,7 @@ export const PhoneNumberInput = <T extends CompanyProfile | CreatePowerUnit>(
             : BC_COLOURS.focus_blue,
         },
       }}
-      {...props.register(props.name, props.rules)}
+      {...register(props.name, props.rules)}
       value={value}
       onChange={handleChange}
       autoComplete="tel"

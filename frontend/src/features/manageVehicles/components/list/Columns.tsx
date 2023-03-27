@@ -1,5 +1,5 @@
 import { MRT_ColumnDef } from "material-react-table";
-import { IPowerUnit } from "../../types/managevehicles";
+import { VehicleTypes } from "../../types/managevehicles";
 
 /*
  *
@@ -10,7 +10,7 @@ import { IPowerUnit } from "../../types/managevehicles";
  *
  */
 
-export const PowerUnit_ColumnDef: MRT_ColumnDef<IPowerUnit>[] = [
+export const PowerUnitColumnDefinition: MRT_ColumnDef<VehicleTypes>[] = [
   {
     accessorKey: "unitNumber",
     header: "Unit #",
@@ -30,6 +30,34 @@ export const PowerUnit_ColumnDef: MRT_ColumnDef<IPowerUnit>[] = [
   },
   {
     accessorKey: "powerUnitTypeCode",
+    header: "Vehicle Type",
+  },
+  {
+    accessorKey: "createdDateTime",
+    header: "Date Created",
+  },
+];
+
+export const TrailerColumnDefinition: MRT_ColumnDef<VehicleTypes>[] = [
+  {
+    accessorKey: "unitNumber",
+    header: "Unit #",
+  },
+  {
+    accessorKey: "make",
+    header: "Make",
+  },
+  {
+    accessorKey: "vin",
+    header: "VIN",
+  },
+  {
+    accessorKey: "plate",
+    header: "Plate",
+    filterVariant: "multi-select",
+  },
+  {
+    accessorKey: "trailerTypeCode",
     header: "Vehicle Type",
   },
   {
