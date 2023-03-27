@@ -218,7 +218,9 @@ export class UsersService {
    * @returns The {@link User} entity.
    */
   private async findOneUserEntity(companyId: number, userGUID: string) {
-    return await this.userRepository
+    let user:User;
+    if(companyId != null)
+    {user = await this.userRepository
       .createQueryBuilder('user')
       .innerJoinAndSelect('user.userContact', 'userContact')
       .innerJoinAndSelect('userContact.province', 'province')
@@ -229,7 +231,19 @@ export class UsersService {
         companyId: companyId,
       })
       .getOne();
-  }
+    }
+    else{
+      user = await this.userRepository
+      .createQueryBuilder('user')
+      .innerJoinAndSelect('user.userContact', 'userContact')
+      .innerJoinAndSelect('userContact.province', 'province')
+      .innerJoinAndSelect('user.companyUsers', 'companyUser')
+      .innerJoin('companyUser.company', 'company')
+      .where('user.userGUID = :userGUID', { userGUID: userGUID })     
+      .getOne();
+    }
+      return user;
+    }
 
   /**
    * The findAll() method finds and returns an array of ReadUserDto objects for
@@ -330,7 +344,7 @@ export class UsersService {
    *
    * @returns The list of users as an array of type {@link ReadUserDto}
    */
-  private async findAllCompanyUsersByUserGuid(
+  async findAllCompanyUsersByUserGuid(
     userGUID: string,
   ): Promise<CompanyUser[]> {
     const companyUsers = await this.companyUserRepository

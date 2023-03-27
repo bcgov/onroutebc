@@ -8,8 +8,10 @@ import {
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
+import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
 import { ExceptionDto } from '../../common/dto/exception.dto';
 import { ReadUserOrbcStatusDto } from './dto/response/read-user-orbc-status.dto';
+import { ReadUserDto } from './dto/response/read-user.dto';
 import { UsersService } from './users.service';
 
 @ApiTags('Company and User Management - User')
@@ -63,4 +65,30 @@ export class UsersController {
     );
     return userExists;
   }
+
+/**
+   * A GET method defined with the @Get() decorator and a route of
+   * /users/  that retrieves a user by its GUID
+   * (global unique identifier).
+   * TODO: Secure endpoints once login is implemented.
+   *
+   * @param userGUID  The optional user GUID. If unavailable, the userGUID from the token will be used.
+   *
+   * @returns The user details with response object {@link ReadUserDto}.
+   */
+@ApiOkResponse({
+  description: 'The User Resource',
+  type: ReadUserDto,
+})
+@ApiQuery({ name: 'userGUID', required: false })
+@Get()
+async findUserDetails(
+  @Query('userGUID') userGUID: string,
+): Promise<ReadUserDto> {
+  const companyUser = await this.userService.findOne(null,userGUID);
+  if (!companyUser) {
+    throw new DataNotFoundException();
+  }
+  return companyUser;
+}  
 }

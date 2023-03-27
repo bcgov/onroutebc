@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Query } from '@nestjs/common';
 import { CompanyService } from './company.service';
 import {
   ApiCreatedResponse,
@@ -6,6 +6,7 @@ import {
   ApiMethodNotAllowedResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
+  ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
 import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
@@ -18,6 +19,7 @@ import {
   CompanyDirectory,
   UserDirectory,
 } from '../../../common/enum/directory.enum';
+import { ReadCompanyMetadataDto } from './dto/response/read-company-metadata.dto';
 
 @ApiTags('Company and User Management - Company')
 @ApiNotFoundResponse({
@@ -84,6 +86,30 @@ export class CompanyController {
     }
     return company;
   }
+
+    /**
+   * A GET method defined with the @Get() decorator and a route of
+   * /companies that retrieves a company metadata by userGuid.
+   * TODO: Secure endpoints once login is implemented.
+   *
+   * @param userGUID The user Guid.
+   *
+   * @returns The company details with response object {@link ReadCompanyMetadataDto}.
+   */
+    @ApiOkResponse({
+      description: 'The Company Metadata Resource',
+      type: ReadCompanyMetadataDto,
+      isArray: true,
+    })
+    @ApiQuery({ name: 'userGUID', required: false })
+    @Get()
+    async getCompanyMetadata(@Query('userGUID') userGUID?: string): Promise<ReadCompanyMetadataDto[]> {
+      const company = await this.companyService.findCompanyMetadataByUserGuid(userGUID);
+      if (!company) {
+        throw new DataNotFoundException();
+      }
+      return company;
+    }
 
   /**
    * A PUT method defined with the @Put(':companyId') decorator and a route of
