@@ -43,6 +43,13 @@ export class User extends Base {
   })
   userDirectory: UserDirectory;
 
+  @AutoMap()
+  @Column({
+    length: 10,
+    name: 'USER_AUTH_GROUP_ID',
+    nullable: false,
+  })
+  userAuthGroup: string;
   /**
    * The status of the user in the system. It is an enum of UserStatus type and
    * has a default value of 'ACTIVE'.

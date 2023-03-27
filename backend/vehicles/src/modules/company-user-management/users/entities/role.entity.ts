@@ -1,7 +1,7 @@
 import { AutoMap } from '@automapper/classes';
 import { Column, Entity, PrimaryColumn } from 'typeorm';
 
-@Entity({ name: 'ORBC_GROUP_ROLE' })
+@Entity({ name: 'ACCESS.ORBC_GROUP_ROLE' })
 export class Role {
   @AutoMap()
   @PrimaryColumn({ type: 'int', name: 'GROUP_ROLE_ID', nullable: false })

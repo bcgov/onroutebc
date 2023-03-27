@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Query, Request } from '@nestjs/common';
 import { CompanyService } from './company.service';
 import {
   ApiCreatedResponse,
@@ -18,6 +18,8 @@ import {
   CompanyDirectory,
   UserDirectory,
 } from '../../../common/enum/directory.enum';
+import { UserDetailsDto } from 'src/modules/common/dto/response/user-details.dto';
+import { ReadUsercompanyDetailsDto } from './dto/response/read-user-company-details.dto';
 
 @ApiTags('Company and User Management - Company')
 @ApiNotFoundResponse({
@@ -62,6 +64,30 @@ export class CompanyController {
       UserDirectory.BBCEID,
     );
   }
+
+  @Get()
+  @ApiOkResponse({
+    description: 'The Company Resource',
+    type: ReadCompanyDto,
+  })
+   async getCompany(@Request() req,@Query('userGUID') userGUID: string): Promise<ReadUsercompanyDetailsDto> {
+
+    console.log('Inside company contrller'); 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+    const userDetails: UserDetailsDto = req.userDetails;
+    console.log('Logged in user ',userDetails);
+    let userCompanyDetail = new ReadUsercompanyDetailsDto();
+    if(userGUID)
+    {
+       userCompanyDetail = await this.companyService.findAll(userGUID)
+    }
+    else{
+  userCompanyDetail = await this.companyService.findAll(userDetails.userGUID)
+    }
+   
+    return userCompanyDetail;
+  }
+
 
   /**
    * A GET method defined with the @Get(':companyId') decorator and a route of

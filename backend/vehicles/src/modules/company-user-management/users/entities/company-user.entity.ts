@@ -10,6 +10,9 @@ import { AutoMap } from '@automapper/classes';
 import { Company } from '../../company/entities/company.entity';
 import { User } from './user.entity';
 import { UserAuthGroup } from '../../../../common/enum/user-auth-group.enum';
+import { UserInfo } from 'os';
+import { UserRoleDto } from 'src/modules/common/dto/response/user-role.dto';
+import { Role } from './role.entity';
 
 @Entity({ name: 'ORBC_COMPANY_USER' })
 export class CompanyUser extends Base {
@@ -33,6 +36,9 @@ export class CompanyUser extends Base {
     nullable: false,
   })
   userAuthGroup: UserAuthGroup;
+
+  @AutoMap(() => Role)
+  public userRoles: Role[];
 
   /**
    * A many-to-one relationship with the Company entity, which represents the

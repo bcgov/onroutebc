@@ -16,6 +16,11 @@ import { ReadCompanyUserDto } from './dto/response/read-company-user.dto';
 import { ReadCompanyDto } from './dto/response/read-company.dto';
 import { Company } from './entities/company.entity';
 import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
+import { CompanyUser } from '../users/entities/company-user.entity';
+import { CompanyUserRoleDto } from 'src/modules/common/dto/response/company-user-role.dto';
+import { UserDetailsDto } from 'src/modules/common/dto/response/user-details.dto';
+import { UserCompanyRoleDto } from 'src/modules/common/dto/request/user-company-role.dto';
+import { ReadUsercompanyDetailsDto } from './dto/response/read-user-company-details.dto';
 
 @Injectable()
 export class CompanyService {
@@ -23,6 +28,8 @@ export class CompanyService {
     private readonly userService: UsersService,
     @InjectRepository(Company)
     private companyRepository: Repository<Company>,
+    @InjectRepository(CompanyUser)
+    private companyUserRepository: Repository<CompanyUser>,
     @InjectMapper() private readonly classMapper: Mapper,
     private dataSource: DataSource,
   ) {}
@@ -120,6 +127,34 @@ export class CompanyService {
     );
   }
 
+
+
+  async findAll(userGUID: string): Promise<ReadUsercompanyDetailsDto> {
+    const users = await this.companyUserRepository
+    .createQueryBuilder('companyUser')
+    .innerJoinAndSelect('companyUser.user', 'user')
+    .innerJoinAndSelect('companyUser.company', 'company')
+    .where('companyUser.user.userGUID= :userGUID', { userGUID: userGUID })
+    .getMany();
+    
+
+    const readUserCompanyDetailsDto: ReadUsercompanyDetailsDto = new ReadUsercompanyDetailsDto();
+    readUserCompanyDetailsDto.company = [];
+       for (const user of users) {
+        readUserCompanyDetailsDto.user = new ReadUserDto();
+        readUserCompanyDetailsDto.user.userGUID = user.user.userGUID;
+        readUserCompanyDetailsDto.user.statusCode = user.user.statusCode;
+        readUserCompanyDetailsDto.user.userName = user.user.userName;
+        const company: ReadCompanyDto = new ReadCompanyDto();
+        company.companyId = user.company.companyId;
+        company.companyGUID = user.company.companyGUID;
+        company.legalName = user.company.legalName;
+        company.clientNumber = user.company.clientNumber;
+        readUserCompanyDetailsDto.company.push(company);
+    }
+    return readUserCompanyDetailsDto;
+  }
+
   /**
    * The findOneByCompanyGuid() method returns a ReadCompanyDto object corresponding to the
    * company with that company GUID. It retrieves the entity from the database using the
@@ -129,10 +164,10 @@ export class CompanyService {
    *
    * @returns The company details as a promise of type {@link ReadCompanyDto}
    */
-  async findOneByCompanyGuid(companyGUID: string): Promise<ReadCompanyDto> {
+  async findOneByCompanyId(companyId: number): Promise<ReadCompanyDto> {
     return this.classMapper.mapAsync(
       await this.companyRepository.findOne({
-        where: { companyGUID: companyGUID },
+        where: { companyId: companyId },
         relations: {
           mailingAddress: true,
           primaryContact: true,

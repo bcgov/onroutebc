@@ -21,12 +21,16 @@ import { PendingUsersService } from '../pending-users/pending-users.service';
 import { CompanyService } from '../company/company.service';
 import { ReadCompanyDto } from '../company/dto/response/read-company.dto';
 import { CompanyUserRoleDto } from 'src/modules/common/dto/response/company-user-role.dto';
+import { Role } from './entities/role.entity';
+import { UserRoleDto } from 'src/modules/common/dto/response/user-role.dto';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
+    @InjectRepository(Role)
+    private roleRepository: Repository<Role>,
     @InjectRepository(CompanyUser)
     private companyUserRepository: Repository<CompanyUser>,
     @InjectMapper() private readonly classMapper: Mapper,
@@ -363,7 +367,7 @@ export class UsersService {
   async findORBCUser(
     userGUID: string,
     userName: string,
-    companyGUID: string,
+    companyId: number,
   ): Promise<ReadUserExistsDto> {
     const userExistsDto = new ReadUserExistsDto();
     userExistsDto.isPendingUser = false;
@@ -391,9 +395,9 @@ export class UsersService {
         );
         return userExistsDto;
       } else {
-        if (companyGUID) {
-          const company = await this.companyService.findOneByCompanyGuid(
-            companyGUID,
+        if (companyId) {
+          const company = await this.companyService.findOneByCompanyId(
+            companyId,
           );
           if (company) {
             userExistsDto.companyExists = true;
@@ -440,11 +444,20 @@ export class UsersService {
       })
       .getMany();
     const userList: CompanyUserRoleDto[] = [];
-
+    let roles: UserRoleDto[] = [] as UserRoleDto[];
     for (const user of users) {
       //const companyUserRoleDto =
       // this.mapCompanyUserEntitytoCompanyUserRoleDto(user);
       //userList.push(companyUserRoleDto);
+
+      roles = await this.roleRepository
+        .createQueryBuilder('role')
+        .where('role.userAuthGroupId = :userAuthGroup', {
+          userAuthGroup: user.userAuthGroup,
+        })
+        .getMany();
+      user.userRoles = roles;
+
       userList.push(user);
     }
     return userList;
@@ -457,19 +470,53 @@ export class UsersService {
       .createQueryBuilder('companyUser')
       .innerJoinAndSelect('companyUser.user', 'user')
       .innerJoinAndSelect('companyUser.company', 'company')
-      .where('companyUser.user.userGUID= :userGUID', {
-        userGUID: userGUID,
-      })
+      .where('companyUser.user.userGUID= :userGUID', { userGUID: userGUID })
       .getMany();
-
     const userList: CompanyUserRoleDto[] = [];
-
+    let roles: UserRoleDto[] = [] as UserRoleDto[];
     for (const user of users) {
-      // const companyUserRoleDto =
-      //  this.mapCompanyUserEntitytoCompanyUserRoleDto(user);
-      // userList.push(companyUserRoleDto);
+      //const companyUserRoleDto =
+      // this.mapCompanyUserEntitytoCompanyUserRoleDto(user);
+      //userList.push(companyUserRoleDto);
+      roles = await this.roleRepository
+        .createQueryBuilder('role')
+        .where('role.userAuthGroupId = :userAuthGroup', {
+          userAuthGroup: user.userAuthGroup,
+        })
+        .getMany();
+      user.userRoles = roles;
       userList.push(user);
     }
     return userList;
+  }
+
+  async findUserRoleDetails(userGUID: string): Promise<CompanyUserRoleDto[]> {
+    console.log('Inside findUserRoleDetails');
+    console.log('User GUID is ',userGUID);
+    const users = await this.userRepository
+      .createQueryBuilder('User')
+      .where('User.userGUID= :userGUID', {
+        userGUID: userGUID,
+      })
+      .getOne();
+      console.log('Users from user service',users);
+      console.log('users.userAuthGroup ',users.userAuthGroup);
+
+    const userlist: CompanyUserRoleDto[] = new Array<CompanyUserRoleDto>();
+    const user: CompanyUserRoleDto = new CompanyUserRoleDto();
+    let roles: UserRoleDto[] = [] as UserRoleDto[];
+    roles = await this.roleRepository
+      .createQueryBuilder('role')
+      .where('role.userAuthGroupId = :userAuthGroup', {
+        userAuthGroup: users.userAuthGroup,
+      })
+      .getMany();
+      console.log('roles ',roles)
+    user.user = users;
+    user.userRoles = roles;
+    userlist.push(user);
+    console.log('Userist ',userlist);
+
+    return userlist;
   }
 }

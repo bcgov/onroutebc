@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { AppService } from './app.service';
@@ -15,6 +15,8 @@ import { TrailersModule } from './modules/vehicles/trailers/trailers.module';
 import { UsersModule } from './modules/company-user-management/users/users.module';
 import { CompanyModule } from './modules/company-user-management/company/company.module';
 import { PendingUsersModule } from './modules/company-user-management/pending-users/pending-users.module';
+import { AuthMiddleware } from './common/middleware/auth.middleware';
+import { AbilityModule } from './ability/ability.module';
 
 const envPath = path.resolve(process.cwd() + '/../../');
 
@@ -60,15 +62,16 @@ const envPath = path.resolve(process.cwd() + '/../../');
     UsersModule,
     CommonModule,
     PendingUsersModule,
+    AbilityModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {
-  // configure(consumer: MiddlewareConsumer) {
-  //   consumer.apply(AuthMiddleware).forRoutes({
-  //     path: '*',
-  //    method: RequestMethod.ALL,
-  //   });
-  // }
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(AuthMiddleware).forRoutes({
+      path: '*',
+      method: RequestMethod.ALL,
+    });
+  }
 }

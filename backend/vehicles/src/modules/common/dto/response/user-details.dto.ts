@@ -3,8 +3,9 @@ import { ApiProperty } from '@nestjs/swagger';
 import { UserDirectory } from 'src/common/enum/directory.enum';
 import { UserAuthGroup } from 'src/common/enum/user-auth-group.enum';
 import { UserStatus } from 'src/common/enum/user-status.enum';
+import { UserCompanyRoleDto } from '../request/user-company-role.dto';
 
-export class UserDto {
+export class UserDetailsDto {
   @AutoMap()
   @ApiProperty({
     description: 'The user GUID.',
@@ -23,9 +24,17 @@ export class UserDto {
   @ApiProperty({
     enum: UserDirectory,
     description: 'The user directory.',
-    example: UserDirectory.BBCEID,
+    example: 'BCEID',
   })
   userDirectory: UserDirectory;
+
+  @AutoMap()
+  @ApiProperty({
+    enum: UserDirectory,
+    description: 'The user directory.',
+    example: 'ADMIN',
+  })
+  userAuthGroup: string;
 
   @AutoMap()
   @ApiProperty({
@@ -35,11 +44,9 @@ export class UserDto {
   })
   statusCode: UserStatus;
 
+  @AutoMap()
+  userCompany: UserCompanyRoleDto;
 
   @AutoMap()
-  @ApiProperty({
-    description: 'The auth group of the user.',
-    example: 'PUBLIC',
-  })
-  userAuthGroup: string;
+  roles: string[];
 }

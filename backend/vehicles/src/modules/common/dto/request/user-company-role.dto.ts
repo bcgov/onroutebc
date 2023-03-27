@@ -1,7 +1,6 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
-
-export class UserCompanyDto {
+export class UserCompanyRoleDto {
   @AutoMap()
   @ApiProperty({
     description: 'The company GUID.',
@@ -11,14 +10,14 @@ export class UserCompanyDto {
 
   @AutoMap()
   @ApiProperty({
-    description: 'The company number.',
+    description: 'The company ID.',
     example: '123',
   })
   companyId: number;
 
   @AutoMap()
   @ApiProperty({
-    description: 'Client Number',
+    description: 'The company client numer.',
     example: 'R2-000080-380',
   })
   clientNumber: string;
@@ -29,4 +28,14 @@ export class UserCompanyDto {
     example: 'ABC Carriers Inc.',
   })
   legalName: string;
+
+  @AutoMap()
+  @ApiProperty({
+    description: 'The legal name of the company.',
+    example: 'ABC Carriers Inc.',
+  })
+  userAuthGroup: string[];
+
+  @AutoMap()
+  public userRoles: string[];
 }
