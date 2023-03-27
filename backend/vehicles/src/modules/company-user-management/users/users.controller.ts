@@ -29,7 +29,7 @@ import { UsersService } from './users.service';
   description: 'The User Api Internal Server Error Response',
   type: ExceptionDto,
 })
-@Controller('user')
+@Controller('users')
 export class UsersController {
   constructor(private readonly userService: UsersService) {}
 

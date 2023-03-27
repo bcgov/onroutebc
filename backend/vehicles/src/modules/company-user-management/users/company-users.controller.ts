@@ -15,7 +15,6 @@ import { UserStatus } from '../../../common/enum/user-status.enum';
 import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
 import { ExceptionDto } from '../../common/dto/exception.dto';
 import { CreateUserDto } from './dto/request/create-user.dto';
-import { UpdateUserDto } from './dto/request/update-user.dto';
 import { ReadUserDto } from './dto/response/read-user.dto';
 import { UsersService } from './users.service';
 
@@ -85,7 +84,6 @@ export class CompanyUsersController {
     return await this.userService.findAllUsers(companyId);
   }
 
-  
   /**
    * A PUT method defined with the @Put(':userGUID/status/:statusCode')
    * decorator and a route of
