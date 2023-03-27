@@ -87,7 +87,7 @@ export class CompanyController {
     return company;
   }
 
-    /**
+  /**
    * A GET method defined with the @Get() decorator and a route of
    * /companies that retrieves a company metadata by userGuid.
    * TODO: Secure endpoints once login is implemented.
@@ -96,20 +96,24 @@ export class CompanyController {
    *
    * @returns The company details with response object {@link ReadCompanyMetadataDto}.
    */
-    @ApiOkResponse({
-      description: 'The Company Metadata Resource',
-      type: ReadCompanyMetadataDto,
-      isArray: true,
-    })
-    @ApiQuery({ name: 'userGUID', required: false })
-    @Get()
-    async getCompanyMetadata(@Query('userGUID') userGUID?: string): Promise<ReadCompanyMetadataDto[]> {
-      const company = await this.companyService.findCompanyMetadataByUserGuid(userGUID);
-      if (!company) {
-        throw new DataNotFoundException();
-      }
-      return company;
+  @ApiOkResponse({
+    description: 'The Company Metadata Resource',
+    type: ReadCompanyMetadataDto,
+    isArray: true,
+  })
+  @ApiQuery({ name: 'userGUID', required: false })
+  @Get()
+  async getCompanyMetadata(
+    @Query('userGUID') userGUID?: string,
+  ): Promise<ReadCompanyMetadataDto[]> {
+    const company = await this.companyService.findCompanyMetadataByUserGuid(
+      userGUID,
+    );
+    if (!company) {
+      throw new DataNotFoundException();
     }
+    return company;
+  }
 
   /**
    * A PUT method defined with the @Put(':companyId') decorator and a route of

@@ -66,35 +66,6 @@ export class CompanyUsersController {
   }
 
   /**
-   * A GET method defined with the @Get(':userGUID') decorator and a route of
-   * company/:companyId/user/:userGUID  that retrieves a user by its GUID
-   * (global unique identifier).
-   * TODO: Secure endpoints once login is implemented.
-   *
-   * @param companyId The company Id.
-   *
-   * @param userGUID A temporary placeholder parameter to get the user by GUID.
-   *        Will be removed once login system is implemented.
-   *
-   * @returns The user details with response object {@link ReadUserDto}.
-   */
-  @ApiOkResponse({
-    description: 'The User Resource',
-    type: ReadUserDto,
-  })
-  @Get(':userGUID')
-  async find(
-    @Param('companyId') companyId: number,
-    @Param('userGUID') userGUID: string,
-  ): Promise<ReadUserDto> {
-    const companyUser = await this.userService.findOne(companyId, userGUID);
-    if (!companyUser) {
-      throw new DataNotFoundException();
-    }
-    return companyUser;
-  }
-
-  /**
    * A GET method defined with the @Get() decorator and a route of
    * company/:companyId/user that retrieves a list of users associated with
    * the company GUID (global unique identifier).

@@ -66,7 +66,7 @@ export class UsersController {
     return userExists;
   }
 
-/**
+  /**
    * A GET method defined with the @Get() decorator and a route of
    * /users/  that retrieves a user by its GUID
    * (global unique identifier).
@@ -76,19 +76,19 @@ export class UsersController {
    *
    * @returns The user details with response object {@link ReadUserDto}.
    */
-@ApiOkResponse({
-  description: 'The User Resource',
-  type: ReadUserDto,
-})
-@ApiQuery({ name: 'userGUID', required: false })
-@Get()
-async findUserDetails(
-  @Query('userGUID') userGUID: string,
-): Promise<ReadUserDto> {
-  const companyUser = await this.userService.findOne(null,userGUID);
-  if (!companyUser) {
-    throw new DataNotFoundException();
+  @ApiOkResponse({
+    description: 'The User Resource',
+    type: ReadUserDto,
+  })
+  @ApiQuery({ name: 'userGUID', required: false })
+  @Get()
+  async findUserDetails(
+    @Query('userGUID') userGUID: string,
+  ): Promise<ReadUserDto> {
+    const companyUser = await this.userService.findUserbyUserGUID(userGUID);
+    if (!companyUser) {
+      throw new DataNotFoundException();
+    }
+    return companyUser;
   }
-  return companyUser;
-}  
 }

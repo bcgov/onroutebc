@@ -190,27 +190,39 @@ export class UsersService {
   }
 
   /**
-   * The findOneUserEntity() helper method finds and returns a User entity for a
+   * The findUserbyUserGUID() method finds and returns a {@link ReadUserDto} object for a
+   * user with a specific userGUID parameters.
+   *
+   * @param userGUID The user GUID.
+   *
+   * @returns The user details as a promise of type {@link ReadUserDto}
+   */
+  async findUserbyUserGUID(userGUID: string): Promise<ReadUserDto> {
+    const user = await this.findUserEntitybyUserGUID(userGUID);
+    const readUserDto = await this.mapUserEntitytoReadUserDto(user);
+    return readUserDto;
+  }
+
+  /**
+   * The findUserEntitybyUserGUID() helper method finds and returns a User entity for a
    * user with a specific userGUID parameters.
    *
    * @param userGUID The user GUID.
    *
    * @returns The {@link User} entity.
    */
-  private async findUserbyUserGUID(userGUID: string) {
+  private async findUserEntitybyUserGUID(userGUID: string) {
     return await this.userRepository
       .createQueryBuilder('user')
       .innerJoinAndSelect('user.userContact', 'userContact')
       .innerJoinAndSelect('userContact.province', 'province')
-      .innerJoinAndSelect('user.companyUsers', 'companyUser')
-      .innerJoin('companyUser.company', 'company')
       .where('user.userGUID = :userGUID', { userGUID: userGUID })
       .getOne();
   }
 
   /**
-   * The findOneUserEntity() helper method finds and returns a User entity for a
-   * user with a specific userGUID and companyId parameters.
+   * The findOneUserEntity() helper method finds and returns a User entity and company details
+   * for a user with a specific userGUID and companyId parameters.
    *
    * @param companyId The company Id.
    * @param userGUID The user GUID.
@@ -218,9 +230,7 @@ export class UsersService {
    * @returns The {@link User} entity.
    */
   private async findOneUserEntity(companyId: number, userGUID: string) {
-    let user:User;
-    if(companyId != null)
-    {user = await this.userRepository
+    return await this.userRepository
       .createQueryBuilder('user')
       .innerJoinAndSelect('user.userContact', 'userContact')
       .innerJoinAndSelect('userContact.province', 'province')
@@ -231,19 +241,7 @@ export class UsersService {
         companyId: companyId,
       })
       .getOne();
-    }
-    else{
-      user = await this.userRepository
-      .createQueryBuilder('user')
-      .innerJoinAndSelect('user.userContact', 'userContact')
-      .innerJoinAndSelect('userContact.province', 'province')
-      .innerJoinAndSelect('user.companyUsers', 'companyUser')
-      .innerJoin('companyUser.company', 'company')
-      .where('user.userGUID = :userGUID', { userGUID: userGUID })     
-      .getOne();
-    }
-      return user;
-    }
+  }
 
   /**
    * The findAll() method finds and returns an array of ReadUserDto objects for

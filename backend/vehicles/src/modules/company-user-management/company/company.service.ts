@@ -121,8 +121,8 @@ export class CompanyService {
     );
   }
 
- /**
-   * The findOne() method returns a ReadCompanyMetadataDto object corresponding to the given 
+  /**
+   * The findOne() method returns a ReadCompanyMetadataDto object corresponding to the given
    * user guid. It retrieves the entity from the database using the
    * Repository, maps it to a DTO object using the Mapper, and returns it.
    *
@@ -130,26 +130,25 @@ export class CompanyService {
    *
    * @returns The company details list as a promise of type {@link ReadCompanyMetadataDto}
    */
- async findCompanyMetadataByUserGuid(
-  userGUID: string,
-): Promise<ReadCompanyMetadataDto[]> {
-   const companyUsers = await this.userService.findAllCompanyUsersByUserGuid(userGUID);
-  
-   const companyMetadata: ReadCompanyMetadataDto[] = [];
-   for (const companyUser of companyUsers) 
-   {
-    companyMetadata.push(await this.classMapper.mapAsync(
-    companyUser.company,
-    Company,
-    ReadCompanyMetadataDto,
-  ));
+  async findCompanyMetadataByUserGuid(
+    userGUID: string,
+  ): Promise<ReadCompanyMetadataDto[]> {
+    const companyUsers = await this.userService.findAllCompanyUsersByUserGuid(
+      userGUID,
+    );
 
-   }
-   return companyMetadata;
-
-}
-
-
+    const companyMetadata: ReadCompanyMetadataDto[] = [];
+    for (const companyUser of companyUsers) {
+      companyMetadata.push(
+        await this.classMapper.mapAsync(
+          companyUser.company,
+          Company,
+          ReadCompanyMetadataDto,
+        ),
+      );
+    }
+    return companyMetadata;
+  }
 
   /**
    * The findOne() method returns a ReadCompanyMetadataDto object corresponding to the
