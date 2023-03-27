@@ -85,43 +85,7 @@ export class CompanyUsersController {
     return await this.userService.findAllUsers(companyId);
   }
 
-  /**
-   * A PUT method defined with the @Put(':userGUID') decorator and a route of
-   * company/:companyId/user/:userGUID that updates a user details by its
-   * GUID.
-   * TODO: Secure endpoints once login is implemented.
-   * TODO: Grab user name from the access token and remove the hard coded value 'ASMITH'.
-   * TODO: Grab user directory from the access token and remove the hard coded value UserDirectory.BBCEID.
-   *
-   * @param companyId The company Id.
-   * @param userGUID A temporary placeholder parameter to get the user by Id.
-   *        Will be removed once login system is implemented.
-   *
-   * @returns The updated user deails with response object {@link ReadUserDto}.
-   */
-  @ApiOkResponse({
-    description: 'The User Resource',
-    type: ReadUserDto,
-  })
-  @Put(':userGUID')
-  async update(
-    @Param('companyId') companyId: number,
-    @Param('userGUID') userGUID: string,
-    @Body() updateUserDto: UpdateUserDto,
-  ): Promise<ReadUserDto> {
-    const user = await this.userService.update(
-      companyId,
-      userGUID,
-      'ASMITH', //! Hardcoded value to be replaced by user name from access token
-      UserDirectory.BBCEID, //! Hardcoded value to be replaced by user directory from access token
-      updateUserDto,
-    );
-    if (!user) {
-      throw new DataNotFoundException();
-    }
-    return user;
-  }
-
+  
   /**
    * A PUT method defined with the @Put(':userGUID/status/:statusCode')
    * decorator and a route of

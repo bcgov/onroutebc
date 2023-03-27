@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Put, Query } from '@nestjs/common';
 
 import {
   ApiInternalServerErrorResponse,
@@ -8,8 +8,10 @@ import {
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
+import { UserDirectory } from '../../../common/enum/directory.enum';
 import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
 import { ExceptionDto } from '../../common/dto/exception.dto';
+import { UpdateUserDto } from './dto/request/update-user.dto';
 import { ReadUserOrbcStatusDto } from './dto/response/read-user-orbc-status.dto';
 import { ReadUserDto } from './dto/response/read-user.dto';
 import { UsersService } from './users.service';
@@ -90,5 +92,38 @@ export class UsersController {
       throw new DataNotFoundException();
     }
     return companyUser;
+  }
+
+  /**
+   * A PUT method defined with the @Put(':userGUID') decorator and a route of
+   * user/:userGUID that updates a user details by its GUID.
+   * TODO: Secure endpoints once login is implemented.
+   * TODO: Grab user name from the access token and remove the hard coded value 'ASMITH'.
+   * TODO: Grab user directory from the access token and remove the hard coded value UserDirectory.BBCEID.
+   *
+   * @param userGUID A temporary placeholder parameter to get the user by Id.
+   *        Will be removed once login system is implemented.
+   *
+   * @returns The updated user deails with response object {@link ReadUserDto}.
+   */
+  @ApiOkResponse({
+    description: 'The User Resource',
+    type: ReadUserDto,
+  })
+  @Put(':userGUID')
+  async update(
+    @Param('userGUID') userGUID: string,
+    @Body() updateUserDto: UpdateUserDto,
+  ): Promise<ReadUserDto> {
+    const user = await this.userService.update(
+      userGUID,
+      'ASMITH', //! Hardcoded value to be replaced by user name from access token
+      UserDirectory.BBCEID, //! Hardcoded value to be replaced by user directory from access token
+      updateUserDto,
+    );
+    if (!user) {
+      throw new DataNotFoundException();
+    }
+    return user;
   }
 }

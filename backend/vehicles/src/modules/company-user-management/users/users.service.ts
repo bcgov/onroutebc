@@ -274,11 +274,10 @@ export class UsersService {
 
   /**
    * The update() method updates a user with the {@link updateUserDto} object,
-   * companyId, userGUID, userName, and {@link UserDirectory} parameters, and returns
+   * userGUID, userName, and {@link UserDirectory} parameters, and returns
    * the updated user as a ReadUserDto object. If the user is not found, it
    * throws an error.
    *
-   * @param companyId The company Id.
    * @param userGUID The user GUID.
    * @param userName User name from the access token.
    * @param userDirectory User directory from the access token.
@@ -288,13 +287,12 @@ export class UsersService {
    * @returns The updated user details as a promise of type {@link ReadUserDto}.
    */
   async update(
-    companyId: number,
     userGUID: string,
     userName: string,
     userDirectory: UserDirectory,
     updateUserDto: UpdateUserDto,
   ): Promise<ReadUserDto> {
-    const userDetails = await this.findOneUserEntity(companyId, userGUID);
+    const userDetails = await this.findUserEntitybyUserGUID(userGUID);
 
     if (!userDetails) {
       throw new DataNotFoundException();
@@ -302,7 +300,6 @@ export class UsersService {
 
     const user = this.classMapper.map(updateUserDto, UpdateUserDto, User, {
       extraArgs: () => ({
-        companyId: companyId,
         userGUID: userGUID,
         userName: userName,
         userDirectory: userDirectory,
@@ -310,7 +307,7 @@ export class UsersService {
     });
     user.userContact.contactId = userDetails.userContact.contactId;
     await this.userRepository.save(user);
-    return this.findOne(companyId, user.userGUID);
+    return this.findUserbyUserGUID(user.userGUID);
   }
 
   /**
