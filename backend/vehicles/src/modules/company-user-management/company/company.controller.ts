@@ -102,7 +102,7 @@ export class CompanyController {
     isArray: true,
   })
   @ApiQuery({ name: 'userGUID', required: false })
-  @Get('/metadata')
+  @Get()
   async getCompanyMetadata(
     @Query('userGUID') userGUID?: string,
   ): Promise<ReadCompanyMetadataDto[]> {
