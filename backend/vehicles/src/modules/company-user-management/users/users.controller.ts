@@ -168,6 +168,57 @@ export class UsersController {
     return user;
   }
 
+  mapCompanyRolesForUser(
+    userDetails: UserDetailsDto,
+    userRoles: CompanyUserRoleDto[],
+    companyRoleUser: CompanyUserRoleDto[],
+  ): UserDetailsDto {
+    for (const userRole of userRoles) {
+      console.log('Auth group ', userRole.user.userAuthGroup);
+      userDetails.userAuthGroup = userRole.userAuthGroup;
+      for (const role of userRole.userRoles) {
+        userDetails.roles.push(role.roleId);
+      }
+    }
+
+    for (const companyUserRole of companyRoleUser) {
+      userDetails.statusCode = companyUserRole.user.statusCode;
+      console.log('Status Code ', userDetails.statusCode);
+      userDetails.userGUID = companyUserRole.user.userGUID;
+      userDetails.userName = companyUserRole.user.userName;
+      userDetails.userDirectory = companyUserRole.user.userDirectory;
+      userDetails.userCompany.clientNumber =
+        companyUserRole.company.clientNumber;
+      userDetails.userCompany.companyGUID = companyUserRole.company.companyGUID;
+      userDetails.userCompany.companyId = companyUserRole.company.companyId;
+      userDetails.userCompany.legalName = companyUserRole.company.legalName;
+      console.log('company legal name ', userDetails.userCompany.legalName);
+      userDetails.userCompany.userAuthGroup.push(companyUserRole.userAuthGroup);
+      console.log('user Auth group', userDetails.userCompany.userAuthGroup);
+      for (const roles of companyUserRole.userRoles) {
+        userDetails.userCompany.userRoles.push(roles.roleId);
+      }
+    }
+    return userDetails;
+  }
+
+  mapRolesForUser(
+    userDetailsDto: UserDetailsDto,
+    userRoles: CompanyUserRoleDto[],
+  ): UserDetailsDto {
+    for (const userRole of userRoles) {
+      userDetailsDto.userAuthGroup = userRole.user.userAuthGroup;
+      userDetailsDto.userGUID = userRole.user.userGUID;
+      userDetailsDto.userName = userRole.user.userName;
+      userDetailsDto.userDirectory = userRole.user.userDirectory;
+      userDetailsDto.statusCode = userRole.user.statusCode;
+      for (const role of userRole.userRoles) {
+        userDetailsDto.roles.push(role.roleId);
+      }
+    }
+    return userDetailsDto;
+  }
+
   /**
    * A GET method defined with the @Get('/roles') decorator and a route of
    * /users/roles it retrieves the user and roles by
@@ -180,7 +231,7 @@ export class UsersController {
    * Logged in user is retrieved from req.userDetails object
    * @Query companyId If company id is present then user roles
    * as well as the company role for that user(logged user or requested user)
-   * will be returned. 
+   * will be returned.
    * TODO: Authorization,(to check if logged in user has
    * privilege to read company roles for the user related to provided userGUID)
    * @returns The user details with response object {@link CompanyUserRoleDto}.
@@ -196,8 +247,8 @@ export class UsersController {
 
     let companyRoleLoginUser: CompanyUserRoleDto[] = null;
     let companyRoleRequestedUser: CompanyUserRoleDto[] = null;
-    const loginUserDetailsDto: UserDetailsDto = new UserDetailsDto();
-    const requestedUserDetailsDto: UserDetailsDto = new UserDetailsDto();
+    let loginUserDetailsDto: UserDetailsDto = new UserDetailsDto();
+    let requestedUserDetailsDto: UserDetailsDto = new UserDetailsDto();
     loginUserDetailsDto.roles = [];
     loginUserDetailsDto.userCompany = new UserCompanyRoleDto();
     loginUserDetailsDto.userCompany.userAuthGroup = [];
@@ -245,44 +296,11 @@ export class UsersController {
         throw new DataNotFoundException();
       }
       console.log('Loginuser roles ', loginUserRoles);
-      for (const userRole of loginUserRoles) {
-        console.log('Auth group ', userRole.user.userAuthGroup);
-        loginUserDetailsDto.userAuthGroup = userRole.userAuthGroup;
-        for (const role of userRole.userRoles) {
-          loginUserDetailsDto.roles.push(role.roleId);
-        }
-      }
-
-      for (const companyUserRole of companyRoleLoginUser) {
-        loginUserDetailsDto.statusCode = companyUserRole.user.statusCode;
-        console.log('Status Code ', loginUserDetailsDto.statusCode);
-        loginUserDetailsDto.userGUID = companyUserRole.user.userGUID;
-        loginUserDetailsDto.userName = companyUserRole.user.userName;
-        loginUserDetailsDto.userDirectory = companyUserRole.user.userDirectory;
-        loginUserDetailsDto.userCompany.clientNumber =
-          companyUserRole.company.clientNumber;
-        loginUserDetailsDto.userCompany.companyGUID =
-          companyUserRole.company.companyGUID;
-        loginUserDetailsDto.userCompany.companyId =
-          companyUserRole.company.companyId;
-        loginUserDetailsDto.userCompany.legalName =
-          companyUserRole.company.legalName;
-        console.log(
-          'company legal name ',
-          loginUserDetailsDto.userCompany.legalName,
-        );
-        loginUserDetailsDto.userCompany.userAuthGroup.push(
-          companyUserRole.userAuthGroup,
-        );
-        console.log(
-          'user Auth group',
-          loginUserDetailsDto.userCompany.userAuthGroup,
-        );
-        for (const roles of companyUserRole.userRoles) {
-          loginUserDetailsDto.userCompany.userRoles.push(roles.roleId);
-        }
-      }
-
+      loginUserDetailsDto = this.mapCompanyRolesForUser(
+        loginUserDetailsDto,
+        loginUserRoles,
+        companyRoleLoginUser,
+      );
       console.log('LoginUserdetailsDTO in controller ', loginUserDetailsDto);
 
       //if logged in user is trying to get someone else's roles
@@ -305,44 +323,12 @@ export class UsersController {
           throw new DataNotFoundException();
         }
         console.log('userRoles ', userRoles);
-        for (const userRole of userRoles) {
-          requestedUserDetailsDto.userAuthGroup = userRole.userAuthGroup;
-          for (const role of userRole.userRoles) {
-            requestedUserDetailsDto.roles.push(role.roleId);
-          }
-        }
 
-        for (const companyUserRole of companyRoleRequestedUser) {
-          requestedUserDetailsDto.statusCode = companyUserRole.user.statusCode;
-          console.log('Status Code ', requestedUserDetailsDto.statusCode);
-          requestedUserDetailsDto.userGUID = companyUserRole.user.userGUID;
-          requestedUserDetailsDto.userName = companyUserRole.user.userName;
-          requestedUserDetailsDto.userDirectory =
-            companyUserRole.user.userDirectory;
-          requestedUserDetailsDto.userCompany.clientNumber =
-            companyUserRole.company.clientNumber;
-          requestedUserDetailsDto.userCompany.companyGUID =
-            companyUserRole.company.companyGUID;
-          requestedUserDetailsDto.userCompany.companyId =
-            companyUserRole.company.companyId;
-          requestedUserDetailsDto.userCompany.legalName =
-            companyUserRole.company.legalName;
-          console.log(
-            'company legal name ',
-            requestedUserDetailsDto.userCompany.legalName,
-          );
-          requestedUserDetailsDto.userCompany.userAuthGroup.push(
-            companyUserRole.userAuthGroup,
-          );
-          console.log(
-            'user Auth group',
-            requestedUserDetailsDto.userCompany.userAuthGroup,
-          );
-          for (const roles of companyUserRole.userRoles) {
-            requestedUserDetailsDto.userCompany.userRoles.push(roles.roleId);
-          }
-        }
-
+        requestedUserDetailsDto = this.mapCompanyRolesForUser(
+          requestedUserDetailsDto,
+          userRoles,
+          companyRoleRequestedUser,
+        );
         console.log(
           'RequestedUserDetailsDto in controller ',
           requestedUserDetailsDto,
@@ -358,17 +344,11 @@ export class UsersController {
         if (!requestedUserRoles) {
           throw new DataNotFoundException();
         }
-
-        for (const userRole of requestedUserRoles) {
-          requestedUserDetailsDto.userAuthGroup = userRole.user.userAuthGroup;
-          requestedUserDetailsDto.userGUID = userRole.user.userGUID;
-          requestedUserDetailsDto.userName = userRole.user.userName;
-          requestedUserDetailsDto.userDirectory = userRole.user.userDirectory;
-          requestedUserDetailsDto.statusCode = userRole.user.statusCode;
-          for (const role of userRole.userRoles) {
-            requestedUserDetailsDto.roles.push(role.roleId);
-          }
-        }
+        requestedUserDetailsDto = this.mapRolesForUser(
+          requestedUserDetailsDto,
+          requestedUserRoles,
+        );
+        /**/
       }
       console.log(
         'userDetails.userGUID from controller ',
@@ -380,16 +360,11 @@ export class UsersController {
         throw new DataNotFoundException();
       }
 
-      for (const userRole of loginUserRoles) {
-        loginUserDetailsDto.userAuthGroup = userRole.user.userAuthGroup;
-        loginUserDetailsDto.userGUID = userRole.user.userGUID;
-        loginUserDetailsDto.userName = userRole.user.userName;
-        loginUserDetailsDto.userDirectory = userRole.user.userDirectory;
-        loginUserDetailsDto.statusCode = userRole.user.statusCode;
-        for (const role of userRole.userRoles) {
-          loginUserDetailsDto.roles.push(role.roleId);
-        }
-      }
+      loginUserDetailsDto = this.mapRolesForUser(
+        loginUserDetailsDto,
+        loginUserRoles,
+      );
+
       if (userGUID) {
         return requestedUserDetailsDto;
       }
