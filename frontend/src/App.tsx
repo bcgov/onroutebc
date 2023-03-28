@@ -21,7 +21,7 @@ const oidcConfig = {
   realm: "standard",
   client_id: "on-route-bc-direct-4598",
   // redirect_uri: "https://onroutebc-202-frontend.apps.silver.devops.gov.bc.ca/",
-  redirect_uri: window.location.origin + "/",
+  redirect_uri: window.location.origin + "/welcome",
   scope: "openid",
   automaticSilentRenew: true,
   revokeTokensOnSignout: true,
@@ -31,11 +31,11 @@ export const SnackBarContext = createContext({
   setSnackBar: (() => undefined) as Dispatch<SnackBarOptions>,
 });
 
-const UserCompanyContext = createContext({
-  setCompanyMetadata: (() => undefined) as Dispatch<CompanyMetadata>,
-});
+// export const UserCompanyContext = createContext({
+//   setCompanyMetadata: (() => undefined) as Dispatch<CompanyMetadata>,
+// });
 
-const [companyMetadata, setCompanyMetadata] = useState<CompanyMetadata | null>(null);
+// const [companyMetadata, setCompanyMetadata] = useState<CompanyMetadata | null>(null);
 
 
 const App = () => {
@@ -53,17 +53,17 @@ const App = () => {
   useEffect(() => {
     setDisplaySnackBar(snackBar.showSnackbar);
   }, [snackBar]);
-  setCompanyMetadata(() => {
-    return {
-      clientNumber: "xyz",
-      legalName: "Xyz",
-      companyId: "zuz"
-    }
-  })
+  // setCompanyMetadata(() => {
+  //   return {
+  //     clientNumber: "xyz",
+  //     legalName: "Xyz",
+  //     companyId: "zuz"
+  //   }
+  // })
 
   return (
     <AuthProvider {...oidcConfig}>
-      <UserCompanyContext.Provider value={{ setCompanyMetadata }}>
+      {/* <UserCompanyContext.Provider value={{ setCompanyMetadata }}> */}
         <ThemeProvider theme={bcGovTheme}>
           <QueryClientProvider client={queryClient}>
             <SnackBarContext.Provider value={{ setSnackBar: setSnackBar }}>
@@ -81,7 +81,7 @@ const App = () => {
             </SnackBarContext.Provider>
           </QueryClientProvider>
         </ThemeProvider>
-      </UserCompanyContext.Provider>
+      {/* </UserCompanyContext.Provider> */}
     </AuthProvider>
   );
 };

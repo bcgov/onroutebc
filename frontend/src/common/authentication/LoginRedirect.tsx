@@ -17,7 +17,7 @@ export const LoginRedirect = () => {
     //   retry: false,
     // });
   
-    const user = true;
+    const user = false;
     const company = false;
     const pendingUser = false;
   

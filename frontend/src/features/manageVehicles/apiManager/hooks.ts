@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { UserCompanyContext } from "../../../App";
+import { SnackBarContext } from "../../../App";
 import {
   addPowerUnit,
   addTrailer,
@@ -19,7 +19,7 @@ export const usePowerUnitTypesQuery = () => {
 
 export const useAddPowerUnitMutation = () => {
   const queryClient = useQueryClient();
-  const snackBar = useContext(UserCompanyContext);
+  const snackBar = useContext(SnackBarContext);
   const navigate = useNavigate();
 
   return useMutation({
@@ -53,7 +53,7 @@ export const useTrailerTypesQuery = () => {
 
 export const useAddTrailerMutation = () => {
   const queryClient = useQueryClient();
-  const snackBar = useContext(UserCompanyContext);
+  const snackBar = useContext(SnackBarContext);
   const navigate = useNavigate();
 
   return useMutation({

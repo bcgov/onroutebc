@@ -26,7 +26,7 @@ export const Authentication = ({ children }: AuthProps) => {
   if (auth.isAuthenticated) {
     console.log(auth.user);
     return (<>
-        <LoginRedirect></LoginRedirect>
+        {/* <LoginRedirect></LoginRedirect> */}
         {children}
     </>)
     // return (
