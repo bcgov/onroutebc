@@ -45,7 +45,6 @@ export interface UserInformation extends Contact {
 export interface CompanyAndUserRequest {
   companyId: string;
   companyGUID: string;
-  clientNumber: string;
   legalName: string;
   companyAddress: Address;
   mailingAddressSameAsCompanyAddress: boolean;
@@ -54,7 +53,7 @@ export interface CompanyAndUserRequest {
   phone: string;
   extension?: string;
   fax?: string;
-  primaryContact: Contact,
+  primaryContact: Contact;
   adminUser: UserInformation;
 }
 
@@ -63,7 +62,7 @@ export interface CompanyAndUserRequest {
 // Wizard to setup their initial company profile
 //let TEST_COMPANY_GUID = "06D0D93CE18A43948979F255C7046B72";
 //let TEST_COMPANY_GUID = "C16A95599A264242A850BDDC21B739F4"; // Harry Ewing User
-let TEST_COMPANY_ID = "1";
+const TEST_COMPANY_ID = "1";
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 export const getCompanyInfo = async (
@@ -117,9 +116,39 @@ export const updateCompanyInfo = async ({
 };
 
 /**
- * 
- * @param param0 
- * @returns 
+ * Creates an onRouteBC profile.
+ * @param onRouteBCProfileRequestObject The request object containing the profile details
+ * @returns A Promise containing the response from the API.
+ */
+export const createOnRouteBCProfile = async (
+  onRouteBCProfileRequestObject: CompanyAndUserRequest
+): Promise<Response> => {
+  return fetch(`${MANAGE_PROFILE_API.COMPANY_INFO}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(onRouteBCProfileRequestObject),
+  });
+  // const response = await fetch(`${MANAGE_PROFILE_API.COMPANY_INFO}`, {
+  //   method: "POST",
+  //   headers: {
+  //     "Content-Type": "application/json",
+  //   },
+  //   body: JSON.stringify(TEST_POST_DATA),
+  // });
+
+  // const data = (await response.json()) as CompanyProfile;
+
+  // TEST_COMPANY_ID = data.companyId;
+
+  // return data;
+};
+
+/**
+ *
+ * @param param0
+ * @returns
  */
 export const addUserInfo = async ({
   companyGUID,
@@ -172,20 +201,4 @@ const TEST_POST_DATA = {
     provinceCode: "BC",
     countryCode: "CA",
   },
-};
-
-export const createCompanyInfo = async (): Promise<CompanyProfile> => {
-  const response = await fetch(`${MANAGE_PROFILE_API.COMPANY_INFO}`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(TEST_POST_DATA),
-  });
-
-  const data = (await response.json()) as CompanyProfile;
-
-  TEST_COMPANY_ID = data.companyId;
-
-  return data;
 };

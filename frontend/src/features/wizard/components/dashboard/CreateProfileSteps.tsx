@@ -13,21 +13,39 @@ import { Banner } from "../../../../common/components/dashboard/Banner";
 import "../../../../common/components/dashboard/Dashboard.scss";
 import { UserInformationForm } from "../pages/UserInformationForm";
 import { FormProvider, useForm, FieldValues } from "react-hook-form";
-import { CompanyAndUserRequest } from "../../../manageProfile/apiManager/manageProfileAPI";
+import {
+  CompanyAndUserRequest,
+  createOnRouteBCProfile,
+} from "../../../manageProfile/apiManager/manageProfileAPI";
 import { UserInformationWizardForm } from "../pages/UserInformationWizardForm";
 import { CompanyInformationWizardForm } from "../pages/CompanyInformationWizardForm";
-import { useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { OnRouteBCProfileCreated } from "../pages/OnRouteBCProfileCreated";
 
 export const CreateProfileSteps = React.memo(() => {
   const steps = ["Company Information", "My Information"];
 
   const [activeStep, setActiveStep] = React.useState(0);
+  const [clientNumber, setClientNumber] = React.useState(null);
+  // const [clientNumber, setClientNumber] = React.useState("123443444");
   const [completed, setCompleted] = React.useState<{
     [k: number]: boolean;
   }>({});
 
   const formMethods = useForm<CompanyAndUserRequest>();
   const queryClient = useQueryClient();
+
+  const addVehicleQuery = useMutation({
+    mutationFn: createOnRouteBCProfile,
+    onSuccess: async (response) => {
+      if (response.status === 201) {
+        const responseBody = await response.json();
+        setClientNumber(() => responseBody["clientNumber"]);
+      } else {
+        // Display Error in the form.
+      }
+    },
+  });
 
   const completedSteps = () => {
     return Object.keys(completed).length;
@@ -59,6 +77,13 @@ export const CreateProfileSteps = React.memo(() => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
+  if (clientNumber) {
+    return (
+      <>
+        <OnRouteBCProfileCreated onRouteBCClientNumber={clientNumber} />
+      </>
+    );
+  }
   return (
     <>
       <FormProvider {...formMethods}>
