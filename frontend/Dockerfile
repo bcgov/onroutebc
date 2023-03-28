@@ -13,6 +13,7 @@ COPY ./package*.json ./
 RUN mkdir /.npm && chmod 777 /.npm
 
 RUN npm install -D semantic-release semantic-release-monorepo
+RUN npm run semantic-release -e semantic-release-monorepo
 # Install dependencies (npm ci makes sure the exact versions in the lockfile gets installed)
 RUN npm ci
 
