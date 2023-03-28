@@ -6,10 +6,15 @@ import { Contact } from './entities/contact.entity';
 import { Address } from './entities/address.entity';
 import { AddressProfile } from './profiles/address.profile';
 import { ContactProfile } from './profiles/contact.profile';
+import { EmailService } from './email.service';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Country, Province, Address, Contact])],
-  providers: [AddressProfile, ContactProfile],
-  exports: [TypeOrmModule, AddressProfile, ContactProfile],
+  imports: [
+    TypeOrmModule.forFeature([Country, Province, Address, Contact]),
+    HttpModule,
+  ],
+  providers: [AddressProfile, ContactProfile, EmailService],
+  exports: [TypeOrmModule, AddressProfile, ContactProfile, EmailService],
 })
 export class CommonModule {}

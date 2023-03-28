@@ -21,6 +21,12 @@ parameters:
   - name: DATABASE_HOST
     description: Host url/service of database connection
     required: true
+  - name: CHES_CLIENT_ID
+    description: Client Id to request the access token for connecting to CHES
+    required: true
+  - name: CHES_CLIENT_SECRET
+    description: Client Secret to request the access token for connecting to CHES
+    required: true
 objects:
   - apiVersion: networking.k8s.io/v1
     kind: NetworkPolicy
