@@ -12,7 +12,7 @@ RUN mkdir /.npm && chmod 777 /.npm
 
 # Install packages, build and keep only prod packages
 RUN npm install -D semantic-release semantic-release-monorepo
-RUN npm run semantic-release -e semantic-release-monorepo
+RUN npm run semantic-release -e semantic-release-monorepo -r https://github.com/bcgov/onroutebc.git --branches main
 RUN npm ci
 RUN npm run build
 RUN npm prune --production
