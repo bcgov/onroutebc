@@ -11,9 +11,10 @@ const UNIT_NUMBER = 'KEN1';
 const PLATE = 'AS 5895';
 const YEAR = 2010;
 const MAKE = 'Kenworth';
-const VIN = '1ZVFT80N475211367';
+const VIN = '1ZVFT8';
 const EMPTY_TRAILER_WIDTH = 3.2;
-const PROVINCE_ID = 'CA-BC';
+const PROVINCE_CODE = 'BC';
+const COUNTRY_CODE = 'CA';
 const TRAILER_TYPE_CODE = 'BOOSTER';
 
 export const trailerEntityMock: Trailer = {
@@ -35,7 +36,8 @@ export const createTrailerDtoMock: CreateTrailerDto = {
   year: YEAR,
   make: MAKE,
   vin: VIN,
-  provinceId: PROVINCE_ID,
+  provinceCode: PROVINCE_CODE,
+  countryCode: COUNTRY_CODE,
   trailerTypeCode: TRAILER_TYPE_CODE,
   emptyTrailerWidth: EMPTY_TRAILER_WIDTH,
 };

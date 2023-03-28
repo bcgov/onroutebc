@@ -1,37 +1,24 @@
 import { CountryAndProvince } from "../../../../../common/components/form/CountryAndProvince";
-import {
-  CommonFormPropsType,
-  CustomFormComponent,
-} from "../../../../../common/components/form/CustomFormComponents";
-import {
-  DEFAULT_WIDTH,
-  CITY_WIDTH,
-  POSTAL_WIDTH,
-} from "../../../../../themes/bcGovStyles";
-import { CompanyProfile } from "../../../apiManager/manageProfileAPI";
+import { CustomFormComponent } from "../../../../../common/components/form/CustomFormComponents";
+import { CITY_WIDTH, POSTAL_WIDTH } from "../../../../../themes/bcGovStyles";
 
-export const CompanyInfoGeneralForm = ({
-  commonFormProps,
-  companyInfo,
-}: {
-  commonFormProps: CommonFormPropsType<CompanyProfile>;
-  companyInfo?: CompanyProfile;
-}) => (
+export const CompanyInfoGeneralForm = ({ feature }: { feature: string }) => (
   <>
     <CustomFormComponent
       type="input"
-      commonFormProps={commonFormProps}
+      feature={feature}
       options={{
         name: "companyAddress.addressLine1",
-        rules: { required: true },
+        rules: {
+          required: { value: true, message: "Address is required" },
+        },
         label: "Address (Line 1)",
-        inValidMessage: "Address is required",
       }}
     />
 
     <CustomFormComponent
       type="input"
-      commonFormProps={commonFormProps}
+      feature={feature}
       options={{
         name: "companyAddress.addressLine2",
         rules: { required: false },
@@ -40,42 +27,33 @@ export const CompanyInfoGeneralForm = ({
     />
 
     <CountryAndProvince
-      country={
-        companyInfo?.companyAddress.countryCode
-          ? companyInfo.companyAddress.countryCode
-          : ""
-      }
-      province={
-        companyInfo?.companyAddress.provinceCode
-          ? companyInfo.companyAddress.provinceCode
-          : ""
-      }
-      width={DEFAULT_WIDTH}
-      countryField={"companyAddress.countryCode"}
-      provinceField={"companyAddress.provinceCode"}
-      feature="profile"
+      feature={feature}
+      countryField="companyAddress.countryCode"
+      provinceField="companyAddress.provinceCode"
     />
 
     <div className="mp-side-by-side-container">
       <CustomFormComponent
         type="input"
-        commonFormProps={commonFormProps}
+        feature={feature}
         options={{
           name: "companyAddress.city",
-          rules: { required: true },
+          rules: {
+            required: { value: true, message: "City is required" },
+          },
           label: "City",
-          inValidMessage: "City is required",
           width: CITY_WIDTH,
         }}
       />
       <CustomFormComponent
         type="input"
-        commonFormProps={commonFormProps}
+        feature={feature}
         options={{
           name: "companyAddress.postalCode",
-          rules: { required: true },
+          rules: {
+            required: { value: true, message: "Postal / Zip Code is required" },
+          },
           label: "Postal / Zip Code",
-          inValidMessage: "Postal / Zip Code is required",
           width: POSTAL_WIDTH,
         }}
       />

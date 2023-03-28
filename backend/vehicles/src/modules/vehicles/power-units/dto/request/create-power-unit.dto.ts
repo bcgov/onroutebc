@@ -19,11 +19,22 @@ export class CreatePowerUnitDto {
 
   @AutoMap()
   @ApiProperty({
+    example: 'BC',
     description:
-      'Canadian province or US state of registration of the vehicle.',
-    example: 'CA-BC',
+      'A 2-character string indicating the Canadian province or US state of registration of the vehicle. ' +
+      'Required if the countryCode is either CA or US.',
+    required: false,
   })
-  provinceId: string;
+  provinceCode: string;
+
+  @AutoMap()
+  @ApiProperty({
+    example: 'CA',
+    description:
+      'A 2-character string indicating the country of registration of the vehicle.',
+    required: true,
+  })
+  countryCode: string;
 
   @AutoMap()
   @ApiProperty({
@@ -41,8 +52,9 @@ export class CreatePowerUnitDto {
 
   @AutoMap()
   @ApiProperty({
-    description: 'Vehicle identification number for the power unit.',
-    example: '1ZVFT80N475211367',
+    description:
+      'Short vehicle identification number (last 6 characters) for the power unit.',
+    example: '1ZVFT8',
   })
   vin: string;
 

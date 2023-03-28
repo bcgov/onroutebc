@@ -11,10 +11,11 @@ const UNIT_NUMBER = 'KEN1';
 const PLATE = 'AS 5895';
 const YEAR = 2010;
 const MAKE = 'Kenworth';
-const VIN = '1ZVFT80N475211367';
+const VIN = '1ZVFT8';
 const LICENSED_GVW = 35600;
 const STEER_AXLE_TIRE_SIZE = 32;
-const PROVINCE_ID = 'CA-BC';
+const PROVINCE_CODE = 'BC';
+const COUNTRY_CODE = 'CA';
 const POWER_UNIT_TYPE_CODE = 'CONCRET';
 
 export const powerUnitEntityMock: PowerUnit = {
@@ -37,7 +38,8 @@ export const createPowerUnitDtoMock: CreatePowerUnitDto = {
   year: YEAR,
   make: MAKE,
   vin: VIN,
-  provinceId: PROVINCE_ID,
+  provinceCode: PROVINCE_CODE,
+  countryCode: COUNTRY_CODE,
   powerUnitTypeCode: POWER_UNIT_TYPE_CODE,
   licensedGvw: LICENSED_GVW,
   steerAxleTireSize: STEER_AXLE_TIRE_SIZE,

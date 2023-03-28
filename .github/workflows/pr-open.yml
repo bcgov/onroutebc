@@ -48,7 +48,7 @@ jobs:
             triggers: ('frontend/')
     steps:
       - uses: actions/checkout@v3
-      - uses: bcgov-nr/action-builder-ghcr@v1.0.0
+      - uses: bcgov-nr/action-builder-ghcr@v1.1.0
         with:
           package: ${{ matrix.package }}
           tag: ${{ github.event.number }}
@@ -98,7 +98,7 @@ jobs:
             ${{env.VAULT_ENV}}/data/database-dev  DATABASE_PASSWORD | VAULT_DATABASE_PASSWORD;
             ${{env.VAULT_ENV}}/data/database-dev  DATABASE_PORT     | VAULT_DATABASE_PORT
       - name: Deploy Application
-        uses: bcgov-nr/action-deployer-openshift@v1.0.1
+        uses: bcgov-nr/action-deployer-openshift@v1.0.3
         with:
           file: ${{ matrix.file }}
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
