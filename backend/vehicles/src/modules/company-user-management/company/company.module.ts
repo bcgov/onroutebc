@@ -8,7 +8,10 @@ import { Company } from './entities/company.entity';
 import { CompanyProfile } from './profiles/company.profile';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Company,CompanyUser]), forwardRef(() => UsersModule)],
+  imports: [
+    TypeOrmModule.forFeature([Company, CompanyUser]),
+    forwardRef(() => UsersModule),
+  ],
   controllers: [CompanyController],
   providers: [CompanyService, CompanyProfile],
   exports: [CompanyService],

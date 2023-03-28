@@ -43,14 +43,6 @@ export class User extends Base {
     nullable: false,
   })
   userDirectory: UserDirectory;
-
-  @AutoMap()
-  @Column({
-    length: 10,
-    name: 'USER_AUTH_GROUP_ID',
-    nullable: false,
-  })
-  userAuthGroup: string;
   /**
    * A property that represents the user's auth group in ORBC, which is an enum of type
    * {@link UserAuthGroup}.

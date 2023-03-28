@@ -5,6 +5,8 @@ import {
   Query,
   Response,
   Request,
+  Put,
+  Body,
   ForbiddenException,
 } from '@nestjs/common';
 
@@ -34,6 +36,7 @@ import { Roles } from 'src/common/decorator/roles.decoratos';
 import { Role } from 'src/common/enum/role.enum';
 import { UserDetailsDto } from 'src/modules/common/dto/response/user-details.dto';
 import { UserCompanyRoleDto } from 'src/modules/common/dto/request/user-company-role.dto';
+import { UserDirectory } from 'src/common/enum/directory.enum';
 
 @ApiTags('Company and User Management - User')
 @ApiNotFoundResponse({
@@ -170,9 +173,9 @@ export class UsersController {
       throw new DataNotFoundException();
     }
     return user;
-    }
-    
-     /**
+  }
+
+  /**
    * A GET method defined with the @Get(':userGUID/roles') decorator and a route of
    * /user/:userGUID/roles it retrieves the user and roles by
    * its GUID (global unique identifier) and associated companies, if any.
@@ -193,23 +196,23 @@ export class UsersController {
     @Query('companyId') companyId?: number,
   ): Promise<UserDetailsDto> {
     console.log('Inside controller user/roles endpoint');
-    console.log('userGUID ',userGUID);
-    
+    console.log('userGUID ', userGUID);
+
     let companyRoleLoginUser: CompanyUserRoleDto[] = null;
     let companyRoleRequestedUser: CompanyUserRoleDto[] = null;
     const loginUserDetailsDto: UserDetailsDto = new UserDetailsDto();
     const requestedUserDetailsDto: UserDetailsDto = new UserDetailsDto();
-    loginUserDetailsDto.roles=[];
+    loginUserDetailsDto.roles = [];
     loginUserDetailsDto.userCompany = new UserCompanyRoleDto();
     loginUserDetailsDto.userCompany.userAuthGroup = [];
     loginUserDetailsDto.userCompany.userRoles = [];
-    requestedUserDetailsDto.roles=[];
+    requestedUserDetailsDto.roles = [];
     requestedUserDetailsDto.userCompany = new UserCompanyRoleDto();
     requestedUserDetailsDto.userCompany.userAuthGroup = [];
     requestedUserDetailsDto.userCompany.userRoles = [];
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
     const userDetails: UserDetailsDto = req.userDetails;
-    console.log('req.userDetails.userGUID ',userDetails.userGUID);
+    console.log('req.userDetails.userGUID ', userDetails.userGUID);
     //const res = response.locals.loginUser;
     // const loggedInUser: LoginUserDto = req.loginUser;
     //const ability = this.abilityFactory.defineAbility(
@@ -246,13 +249,11 @@ export class UsersController {
       if (!loginUserRoles) {
         throw new DataNotFoundException();
       }
-console.log('Loginuser roles ',loginUserRoles);
+      console.log('Loginuser roles ', loginUserRoles);
       for (const userRole of loginUserRoles) {
-        console.log('Auth group ',userRole.user.userAuthGroup)
+        console.log('Auth group ', userRole.user.userAuthGroup);
         loginUserDetailsDto.userAuthGroup = userRole.userAuthGroup;
         for (const role of userRole.userRoles) {
-          
-          
           loginUserDetailsDto.roles.push(role.roleId);
         }
       }
@@ -303,14 +304,14 @@ console.log('Loginuser roles ',loginUserRoles);
           throw new DataNotFoundException();
         }
 
-        console.log('companyRoleRequestedUser ',companyRoleRequestedUser);
+        console.log('companyRoleRequestedUser ', companyRoleRequestedUser);
 
         const userRoles: CompanyUserRoleDto[] =
           await this.userService.findUserRoleDetails(userGUID);
         if (!userRoles) {
           throw new DataNotFoundException();
         }
-        console.log('userRoles ',userRoles);
+        console.log('userRoles ', userRoles);
         for (const userRole of userRoles) {
           requestedUserDetailsDto.userAuthGroup = userRole.userAuthGroup;
           for (const role of userRole.userRoles) {
@@ -360,7 +361,7 @@ console.log('Loginuser roles ',loginUserRoles);
       return loginUserDetailsDto;
     } else {
       if (userGUID) {
-        console.log('userGUID from controller ',userGUID);
+        console.log('userGUID from controller ', userGUID);
         const requestedUserRoles: CompanyUserRoleDto[] =
           await this.userService.findUserRoleDetails(userGUID);
         if (!requestedUserRoles) {
@@ -370,7 +371,7 @@ console.log('Loginuser roles ',loginUserRoles);
         for (const userRole of requestedUserRoles) {
           requestedUserDetailsDto.userAuthGroup = userRole.user.userAuthGroup;
           requestedUserDetailsDto.userGUID = userRole.user.userGUID;
-          requestedUserDetailsDto.userName = userRole.user.userName
+          requestedUserDetailsDto.userName = userRole.user.userName;
           requestedUserDetailsDto.userDirectory = userRole.user.userDirectory;
           requestedUserDetailsDto.statusCode = userRole.user.statusCode;
           for (const role of userRole.userRoles) {
@@ -378,7 +379,10 @@ console.log('Loginuser roles ',loginUserRoles);
           }
         }
       }
-      console.log('userDetails.userGUID from controller ',userDetails.userGUID);
+      console.log(
+        'userDetails.userGUID from controller ',
+        userDetails.userGUID,
+      );
       const loginUserRoles: CompanyUserRoleDto[] =
         await this.userService.findUserRoleDetails(userDetails.userGUID);
       if (!loginUserRoles) {
@@ -388,7 +392,7 @@ console.log('Loginuser roles ',loginUserRoles);
       for (const userRole of loginUserRoles) {
         loginUserDetailsDto.userAuthGroup = userRole.user.userAuthGroup;
         loginUserDetailsDto.userGUID = userRole.user.userGUID;
-        loginUserDetailsDto.userName = userRole.user.userName
+        loginUserDetailsDto.userName = userRole.user.userName;
         loginUserDetailsDto.userDirectory = userRole.user.userDirectory;
         loginUserDetailsDto.statusCode = userRole.user.statusCode;
         for (const role of userRole.userRoles) {
@@ -400,8 +404,6 @@ console.log('Loginuser roles ',loginUserRoles);
       }
       return loginUserDetailsDto;
     }
-
-    
   }
 
   @Roles(Role.READ_SELF)

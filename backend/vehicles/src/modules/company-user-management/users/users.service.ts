@@ -178,7 +178,7 @@ export class UsersService {
     newCompanyUser.userAuthGroup = userAuthGroup;
     return newCompanyUser;
   }
-  
+
   /**
    * The findOne() method finds and returns a {@link ReadUserDto} object for a
    * user with a specific userGUID and companyId parameters.
@@ -192,25 +192,6 @@ export class UsersService {
     const user = await this.findOneUserEntity(companyId, userGUID);
     const readUserDto = await this.mapUserEntitytoReadUserDto(user);
     return readUserDto;
-  }
-
-  /**
-   * The findOneUserEntity() helper method finds and returns a User entity for a
-   * user with a specific userGUID parameters.
-   *
-   * @param userGUID The user GUID.
-   *
-   * @returns The {@link User} entity.
-   */
-  private async findUserbyUserGUID(userGUID: string) {
-    return await this.userRepository
-      .createQueryBuilder('user')
-      .innerJoinAndSelect('user.userContact', 'userContact')
-      .innerJoinAndSelect('userContact.province', 'province')
-      .innerJoinAndSelect('user.companyUsers', 'companyUser')
-      .innerJoin('companyUser.company', 'company')
-      .where('user.userGUID = :userGUID', { userGUID: userGUID })
-      .getOne();
   }
 
   /**
@@ -235,7 +216,6 @@ export class UsersService {
       })
       .getOne();
   }
-
 
   /**
    * The findUserbyUserGUID() method finds and returns a {@link ReadUserDto} object for a
@@ -452,7 +432,6 @@ export class UsersService {
     return userExistsDto;
   }
 
-
   async findUserDetailsWithCompanyId(
     userGUID: string,
     companyId: number,
@@ -515,15 +494,15 @@ export class UsersService {
 
   async findUserRoleDetails(userGUID: string): Promise<CompanyUserRoleDto[]> {
     console.log('Inside findUserRoleDetails');
-    console.log('User GUID is ',userGUID);
+    console.log('User GUID is ', userGUID);
     const users = await this.userRepository
       .createQueryBuilder('User')
       .where('User.userGUID= :userGUID', {
         userGUID: userGUID,
       })
       .getOne();
-      console.log('Users from user service',users);
-      console.log('users.userAuthGroup ',users.userAuthGroup);
+    console.log('Users from user service', users);
+    console.log('users.userAuthGroup ', users.userAuthGroup);
 
     const userlist: CompanyUserRoleDto[] = new Array<CompanyUserRoleDto>();
     const user: CompanyUserRoleDto = new CompanyUserRoleDto();
@@ -534,12 +513,12 @@ export class UsersService {
         userAuthGroup: users.userAuthGroup,
       })
       .getMany();
-      console.log('roles ',roles)
+    console.log('roles ', roles);
     user.user = users;
     user.userRoles = roles;
     userlist.push(user);
-    console.log('Userist ',userlist);
+    console.log('Userist ', userlist);
 
     return userlist;
-}
+  }
 }

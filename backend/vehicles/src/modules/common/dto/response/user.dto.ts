@@ -35,7 +35,6 @@ export class UserDto {
   })
   statusCode: UserStatus;
 
-
   @AutoMap()
   @ApiProperty({
     description: 'The auth group of the user.',
