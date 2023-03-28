@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Put, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Query, Request } from '@nestjs/common';
 import { CompanyService } from './company.service';
 import {
   ApiCreatedResponse,
@@ -20,7 +20,7 @@ import {
   UserDirectory,
 } from '../../../common/enum/directory.enum';
 import { ReadCompanyMetadataDto } from './dto/response/read-company-metadata.dto';
-import { ReadUsercompanyDetailsDto } from './dto/response/read-user-company-details.dto';
+import { UserDetailsDto } from 'src/modules/common/dto/response/user-details.dto';
 
 @ApiTags('Company and User Management - Company')
 @ApiNotFoundResponse({
@@ -105,11 +105,21 @@ export class CompanyController {
   @ApiQuery({ name: 'userGUID', required: false })
   @Get()
   async getCompanyMetadata(
+    @Request() req,
     @Query('userGUID') userGUID?: string,
   ): Promise<ReadCompanyMetadataDto[]> {
-    const company = await this.companyService.findCompanyMetadataByUserGuid(
-      userGUID,
-    );
+    let company: ReadCompanyMetadataDto[] = [] as ReadCompanyMetadataDto[];
+    const userDetails: UserDetailsDto = req.userDetails;
+    if (userGUID) {
+      company = await this.companyService.findCompanyMetadataByUserGuid(
+        userGUID,
+      );
+    } else {
+      company = await this.companyService.findCompanyMetadataByUserGuid(
+        userDetails.userGUID,
+      );
+    }
+
     if (!company) {
       throw new DataNotFoundException();
     }

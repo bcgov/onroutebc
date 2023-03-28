@@ -176,17 +176,18 @@ export class UsersController {
   }
 
   /**
-   * A GET method defined with the @Get(':userGUID/roles') decorator and a route of
-   * /user/:userGUID/roles it retrieves the user and roles by
-   * its GUID (global unique identifier) and associated companies, if any.
-   * TODO: Secure endpoints once login is implemented.
-   * TODO: Remove temporary placeholder
+   * A GET method defined with the @Get('/roles') decorator and a route of
+   * /users/roles it retrieves the user and roles by
    *
-   * @param userGUID A temporary placeholder parameter to get the user by GUID.
-   *        Will be removed once login system is implemented.
-   * @Query companyId A temporary placeholder parameter to get the company Id.
-   *        Will be removed once login system is implemented.
-   *
+   * @param userGUID if userGUID will be present then the logged in user will get roles for 
+   * the user related to this userGUID.(TODO: Authorization, to check if logged in user has 
+   * privilege to read role for the user related to provided userGUID).
+   * IF userGUID is not present the logged in user's roles will be returned.
+   * Logged in user is retrieved from req.userDetails object
+   * @Query companyId If company id is present then user roles 
+   * as well as the company role for that user(logged user or requested user) 
+   * will be returned. (TODO: Authorization, to check if logged in user has 
+   * privilege to read company roles for the user related to provided userGUID)
    * @returns The user details with response object {@link CompanyUserRoleDto}.
    */
   @Get('/roles')
@@ -210,30 +211,29 @@ export class UsersController {
     requestedUserDetailsDto.userCompany = new UserCompanyRoleDto();
     requestedUserDetailsDto.userCompany.userAuthGroup = [];
     requestedUserDetailsDto.userCompany.userRoles = [];
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
     const userDetails: UserDetailsDto = req.userDetails;
     console.log('req.userDetails.userGUID ', userDetails.userGUID);
-    //const res = response.locals.loginUser;
-    // const loggedInUser: LoginUserDto = req.loginUser;
-    //const ability = this.abilityFactory.defineAbility(
-    //  userGUID,
-    //  companyId,
-    // loggedInUser.bceid_user_guid,
-    // );
-    //  try {
-    //   ForbiddenError.from(ability)
-    //   .setMessage('Admin Only!!')
-    //   .throwUnlessCan(Action.Read, CompanyUser);
-    //  } catch (error) {
-    //    if (error instanceof ForbiddenError) {
-    //    throw new ForbiddenException('You Can only read your own User details');// //   }
-    //    }
-    //  console.log(loggedInUser.bceid_username);
+    /*Commenting Authorization code for now
+    const res = response.locals.loginUser;
+     const loggedInUser: LoginUserDto = req.loginUser;
+    const ability = this.abilityFactory.defineAbility(
+      userGUID,
+      companyId,
+     loggedInUser.bceid_user_guid,
+     );
+      try {
+       ForbiddenError.from(ability)
+       .setMessage('Admin Only!!')
+       .throwUnlessCan(Action.Read, CompanyUser);
+     } catch (error) {
+        if (error instanceof ForbiddenError) {
+        throw new ForbiddenException('You Can only read your own User details');// //   }
+        }
+      console.log(loggedInUser.bceid_username);*/
     if (companyId) {
-      //if logged in user is trying to get their own roles
-
-      //get companies of logged in user
-      //get companies of requested user
+      //Get company roles for logged in user  ToDo: To check if in case of logged in user 
+      //we need to consider the logged in user's company
+      // along with the input companyId    
       companyRoleLoginUser =
         await this.userService.findUserDetailsWithCompanyId(
           userDetails.userGUID,
@@ -259,8 +259,6 @@ export class UsersController {
       }
 
       for (const companyUserRole of companyRoleLoginUser) {
-        //userDetailsdto.userCompany.userRoles = [];
-
         loginUserDetailsDto.statusCode = companyUserRole.user.statusCode;
         console.log('Status Code ', loginUserDetailsDto.statusCode);
         loginUserDetailsDto.userGUID = companyUserRole.user.userGUID;
@@ -293,8 +291,8 @@ export class UsersController {
       console.log('LoginUserdetailsDTO in controller ', loginUserDetailsDto);
 
       //if logged in user is trying to get someone else's roles
+      //get companies of requested user
       if (userGUID) {
-        //check if user is allowed to red user for the given company
         companyRoleRequestedUser =
           await this.userService.findUserDetailsWithCompanyId(
             userGUID,
@@ -320,8 +318,6 @@ export class UsersController {
         }
 
         for (const companyUserRole of companyRoleRequestedUser) {
-          //userDetailsdto.userCompany.userRoles = [];
-
           requestedUserDetailsDto.statusCode = companyUserRole.user.statusCode;
           console.log('Status Code ', requestedUserDetailsDto.statusCode);
           requestedUserDetailsDto.userGUID = companyUserRole.user.userGUID;
@@ -413,7 +409,6 @@ export class UsersController {
     @Request() req,
     @Query('companyId') companyId?: number,
   ): Promise<CompanyUserRoleDto[]> {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
     const loggedInUser: UserDetailsDto = req.userDetails;
     console.log('Login User 2 GUID ', loggedInUser.userGUID);
     const userGUID = loggedInUser.userGUID;

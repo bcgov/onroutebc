@@ -432,6 +432,16 @@ export class UsersService {
     return userExistsDto;
   }
 
+
+  /**
+   * The findUserDetailsWithCompanyId() method searches ORBC if the user exists by its GUID and
+   * returns a DTO with user details and its associated companies.
+   *
+   * @param userGUID The user GUID.
+   * @param companyId The company ID.
+   *
+   * @returns The {@link CompanyUserRoleDto[]} entity.
+   */
   async findUserDetailsWithCompanyId(
     userGUID: string,
     companyId: number,
@@ -465,6 +475,14 @@ export class UsersService {
     return userList;
   }
 
+  /**
+   * The findUserDetailsWithCompanyId() method searches ORBC if the user exists by its GUID and
+   * returns a DTO with user company and company roles details
+   *
+   * @param userGUID The user GUID.
+   *
+   * @returns The {@link CompanyUserRoleDto[]} entity.
+   */
   async findUserDetailsForAllCompanies(
     userGUID: string,
   ): Promise<CompanyUserRoleDto[]> {
@@ -492,6 +510,14 @@ export class UsersService {
     return userList;
   }
 
+   /**
+   * The findUserRoleDetails() method searches ORBC if the user exists by its GUID and
+   * returns a DTO with user roles details.
+   *
+   * @param userGUID The user GUID.
+   *
+   * @returns The {@link CompanyUserRoleDto[]} entity.
+   */
   async findUserRoleDetails(userGUID: string): Promise<CompanyUserRoleDto[]> {
     console.log('Inside findUserRoleDetails');
     console.log('User GUID is ', userGUID);
