@@ -21,9 +21,36 @@ import { UserInformationWizardForm } from "../pages/UserInformationWizardForm";
 import { CompanyInformationWizardForm } from "../pages/CompanyInformationWizardForm";
 import { useMutation } from "@tanstack/react-query";
 import { OnRouteBCProfileCreated } from "../pages/OnRouteBCProfileCreated";
+import { BC_COLOURS } from "../../../../themes/bcGovStyles";
+import { useAuth } from "react-oidc-context";
+
+const CompanyBanner = ({ legalName }: { legalName: string }) => {
+  return (
+    <Box
+      sx={{
+        height: 100,
+        backgroundColor: BC_COLOURS.banner_grey,
+        color: BC_COLOURS.bc_primary_blue,
+        marginTop: "20px",
+        px: 3,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+      }}
+    >
+      <div>
+        <Typography variant="h5">COMPANY NAME</Typography>
+        <Typography variant="h4">{legalName}</Typography>
+      </div>
+    </Box>
+  );
+};
 
 export const CreateProfileSteps = React.memo(() => {
   const steps = ["Company Information", "My Information"];
+
+  const { user } = useAuth();
+  console.log(user?.profile?.bceid_business_name);
 
   const [activeStep, setActiveStep] = React.useState(0);
   const [clientNumber, setClientNumber] = React.useState(null);
@@ -32,8 +59,14 @@ export const CreateProfileSteps = React.memo(() => {
     [k: number]: boolean;
   }>({});
 
-  const formMethods = useForm<CompanyAndUserRequest>();
-  const { handleSubmit } = formMethods;
+  const formMethods = useForm<CompanyAndUserRequest>({
+    defaultValues: {
+      legalName:
+        (user?.profile?.bceid_business_name as string) ||
+        "Bandstra Transportation Systems Ltd.",
+    },
+  });
+  const { handleSubmit, register } = formMethods;
 
   const createProfileQuery = useMutation({
     mutationFn: createOnRouteBCProfile,
@@ -54,6 +87,7 @@ export const CreateProfileSteps = React.memo(() => {
    */
   const onClickFinish = function (data: FieldValues) {
     const profileToBeCreated = data as CompanyAndUserRequest;
+    console.log(profileToBeCreated);
     createProfileQuery.mutate(profileToBeCreated);
   };
 
@@ -97,6 +131,7 @@ export const CreateProfileSteps = React.memo(() => {
   return (
     <>
       <FormProvider {...formMethods}>
+        <input type="hidden" {...register("legalName")}/>
         <Box
           className="layout-box"
           sx={{
@@ -180,6 +215,10 @@ export const CreateProfileSteps = React.memo(() => {
                     <div>
                       <h2>Company Mailing Address</h2>
                       <hr></hr>
+                      <CompanyBanner legalName="Bandstra Transportation Systems Ltd." />
+                      {/* <CompanyBanner
+                        legalName={user?.profile?.bceid_business_name as string}
+                      /> */}
                       <CompanyInformationWizardForm />
                     </div>
                   )}
@@ -221,7 +260,10 @@ export const CreateProfileSteps = React.memo(() => {
                     </Button>
                   </Grid>
                   <Grid item>
-                    <Button onClick={handleSubmit(onClickFinish)} variant="contained">
+                    <Button
+                      onClick={handleSubmit(onClickFinish)}
+                      variant="contained"
+                    >
                       Finish
                     </Button>
                   </Grid>
