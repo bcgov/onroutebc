@@ -12,7 +12,8 @@ COPY ./package*.json ./
 # Assign permissions to npm folder
 RUN mkdir /.npm && chmod 777 /.npm
 
-RUN npm install -D semantic-release semantic-release-monorepo
+RUN npm install -D semantic-release
+RUN npm install -D semantic-release-monorepo
 RUN npx semantic-release -e semantic-release-monorepo -r https://github.com/bcgov/onroutebc.git --branches main
 # Install dependencies (npm ci makes sure the exact versions in the lockfile gets installed)
 RUN npm ci
