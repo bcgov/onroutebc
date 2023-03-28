@@ -1,5 +1,7 @@
 FROM node:18.12.1-alpine as builder
 
+RUN apk add git
+
 # Set the working directory to /app inside the container
 WORKDIR /app
 
@@ -14,7 +16,7 @@ RUN mkdir /.npm && chmod 777 /.npm
 
 RUN npm install -D semantic-release
 RUN npm install -D semantic-release-monorepo
-RUN npx semantic-release -e semantic-release-monorepo --branches main
+RUN npx semantic-release -e semantic-release-monorepo -r https://github.com/semantic-release/semantic-release.git --branches main
 # Install dependencies (npm ci makes sure the exact versions in the lockfile gets installed)
 RUN npm ci
 
