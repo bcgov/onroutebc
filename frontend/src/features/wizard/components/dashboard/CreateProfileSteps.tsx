@@ -19,7 +19,7 @@ import {
 } from "../../../manageProfile/apiManager/manageProfileAPI";
 import { UserInformationWizardForm } from "../pages/UserInformationWizardForm";
 import { CompanyInformationWizardForm } from "../pages/CompanyInformationWizardForm";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { OnRouteBCProfileCreated } from "../pages/OnRouteBCProfileCreated";
 
 export const CreateProfileSteps = React.memo(() => {
@@ -33,19 +33,29 @@ export const CreateProfileSteps = React.memo(() => {
   }>({});
 
   const formMethods = useForm<CompanyAndUserRequest>();
-  const queryClient = useQueryClient();
+  const { handleSubmit } = formMethods;
 
-  const addVehicleQuery = useMutation({
+  const createProfileQuery = useMutation({
     mutationFn: createOnRouteBCProfile,
     onSuccess: async (response) => {
-      if (response.status === 201) {
+      if (response.status === 201 || response.status === 200) {
         const responseBody = await response.json();
         setClientNumber(() => responseBody["clientNumber"]);
       } else {
-        // Display Error in the form.
+        // Display Error
       }
     },
   });
+
+  /**
+   * On Click function for the Finish button
+   * Validates and submits the form data to the API
+   * @param data The form data.
+   */
+  const onClickFinish = function (data: FieldValues) {
+    const profileToBeCreated = data as CompanyAndUserRequest;
+    createProfileQuery.mutate(profileToBeCreated);
+  };
 
   const completedSteps = () => {
     return Object.keys(completed).length;
@@ -211,7 +221,7 @@ export const CreateProfileSteps = React.memo(() => {
                     </Button>
                   </Grid>
                   <Grid item>
-                    <Button onClick={handleNext} variant="contained">
+                    <Button onClick={handleSubmit(onClickFinish)} variant="contained">
                       Finish
                     </Button>
                   </Grid>
@@ -226,4 +236,4 @@ export const CreateProfileSteps = React.memo(() => {
   );
 });
 
-CreateProfileSteps.displayName = "ManageProfilesDashboard";
+CreateProfileSteps.displayName = "CreateProfileSteps";

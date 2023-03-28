@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
+import { useAuth } from "react-oidc-context";
 
 import "./Header.scss";
 import * as routes from "../../../constants/routes";
@@ -17,6 +18,7 @@ export const Header = () => {
   const mediaQuery = "(max-width: 768px)";
   const mediaQueryList: MediaQueryList = window.matchMedia(mediaQuery);
   const [menuOpen, setMenuOpen] = useState(!mediaQueryList.matches);
+  const { isAuthenticated, signoutRedirect, user } = useAuth();
 
   let headerColor: string;
   const env =
@@ -89,16 +91,20 @@ export const Header = () => {
               Home
             </NavLink>
           </li>
-          <li>
-            <NavLink to={routes.MANAGE_VEHICLES} onClick={menuToggleHandler}>
-              Vehicle Inventory
-            </NavLink>
-          </li>
-          <li>
-            <NavLink to={routes.MANAGE_PROFILES} onClick={menuToggleHandler}>
-              Profile
-            </NavLink>
-          </li>
+          {isAuthenticated && (
+            <li>
+              <NavLink to={routes.MANAGE_VEHICLES} onClick={menuToggleHandler}>
+                Vehicle Inventory
+              </NavLink>
+            </li>
+          )}
+          {isAuthenticated && (
+            <li>
+              <NavLink to={routes.MANAGE_PROFILES} onClick={menuToggleHandler}>
+                Profile
+              </NavLink>
+            </li>
+          )}
         </ul>
       </div>
     </nav>
