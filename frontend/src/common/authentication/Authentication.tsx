@@ -2,6 +2,7 @@ import { useAuth } from "react-oidc-context";
 import { ReactNode } from "react";
 import Button from "@mui/material/Button";
 import Grid from "@mui/material/Grid";
+import { LoginRedirect } from "./LoginRedirect";
 
 interface AuthProps {
   children: ReactNode;
@@ -24,12 +25,16 @@ export const Authentication = ({ children }: AuthProps) => {
 
   if (auth.isAuthenticated) {
     console.log(auth.user);
-    return (
-      <div className="Xyz">
-        <div>{`Hello ${auth.user?.profile?.display_name}`}</div>
-        <div>{children}</div>
-      </div>
-    );
+    return (<>
+        <LoginRedirect></LoginRedirect>
+        {children}
+    </>)
+    // return (
+    //   <div className="Xyz">
+    //     <div>{`Hello ${auth.user?.profile?.display_name}`}</div>
+    //     <div>{children}</div>
+    //   </div>
+    // );
   }
 
   return (

@@ -1,5 +1,7 @@
 import React from "react";
+import { useAuth } from "react-oidc-context";
 import { Authentication } from "../../common/authentication/Authentication";
+import { HomePage2 } from "./HomePage2";
 
 export const HomePage = React.memo(() => {
   const DEPLOY_ENV =
@@ -9,7 +11,8 @@ export const HomePage = React.memo(() => {
   return (
     <Authentication>
       <div style={{ padding: "0px 60px", height: "100vh" }}>
-        <p>OnRouteBC Home -{DEPLOY_ENV}- Environment</p>
+        <br></br>
+        <HomePage2></HomePage2>
       </div>
     </Authentication>
   );

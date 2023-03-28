@@ -12,6 +12,7 @@ import {
 } from "./common/components/snackbar/CustomSnackBar";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider } from "react-oidc-context";
+import { CompanyMetadata, CompanyMetadataContextType } from "./common/authentication/types";
 
 const oidcConfig = {
   // https://dev.loginproxy.gov.bc.ca/auth/realms/standard/.well-known/openid-configuration
@@ -20,7 +21,7 @@ const oidcConfig = {
   realm: "standard",
   client_id: "on-route-bc-direct-4598",
   // redirect_uri: "https://onroutebc-202-frontend.apps.silver.devops.gov.bc.ca/",
-  redirect_uri: window.location.origin + "/welcome",
+  redirect_uri: window.location.origin + "/",
   scope: "openid",
   automaticSilentRenew: true,
   revokeTokensOnSignout: true,
@@ -29,6 +30,13 @@ const oidcConfig = {
 export const SnackBarContext = createContext({
   setSnackBar: (() => undefined) as Dispatch<SnackBarOptions>,
 });
+
+const UserCompanyContext = createContext({
+  setCompanyMetadata: (() => undefined) as Dispatch<CompanyMetadata>,
+});
+
+const [companyMetadata, setCompanyMetadata] = useState<CompanyMetadata | null>(null);
+
 
 const App = () => {
   const queryClient = new QueryClient();
@@ -45,26 +53,35 @@ const App = () => {
   useEffect(() => {
     setDisplaySnackBar(snackBar.showSnackbar);
   }, [snackBar]);
+  setCompanyMetadata(() => {
+    return {
+      clientNumber: "xyz",
+      legalName: "Xyz",
+      companyId: "zuz"
+    }
+  })
 
   return (
     <AuthProvider {...oidcConfig}>
-      <ThemeProvider theme={bcGovTheme}>
-        <QueryClientProvider client={queryClient}>
-          <SnackBarContext.Provider value={{ setSnackBar: setSnackBar }}>
-            <CustomSnackbar
-              showSnackbar={displaySnackBar}
-              setShowSnackbar={setDisplaySnackBar}
-              message={snackBar.message}
-              isError={snackBar.isError}
-            />
-            <Router>
-              <Header />
-              <AppRoutes />
-            </Router>
-            <Footer />
-          </SnackBarContext.Provider>
-        </QueryClientProvider>
-      </ThemeProvider>
+      <UserCompanyContext.Provider value={{ setCompanyMetadata }}>
+        <ThemeProvider theme={bcGovTheme}>
+          <QueryClientProvider client={queryClient}>
+            <SnackBarContext.Provider value={{ setSnackBar: setSnackBar }}>
+              <CustomSnackbar
+                showSnackbar={displaySnackBar}
+                setShowSnackbar={setDisplaySnackBar}
+                message={snackBar.message}
+                isError={snackBar.isError}
+              />
+              <Router>
+                <Header />
+                <AppRoutes />
+              </Router>
+              <Footer />
+            </SnackBarContext.Provider>
+          </QueryClientProvider>
+        </ThemeProvider>
+      </UserCompanyContext.Provider>
     </AuthProvider>
   );
 };
