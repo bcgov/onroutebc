@@ -311,17 +311,14 @@ export class UsersController {
             userGUID,
             companyId,
           );
-        if (!companyRoleRequestedUser) {
-          throw new DataNotFoundException();
-        }
+        if (!companyRoleRequestedUser) throw new DataNotFoundException();
 
         console.log('companyRoleRequestedUser ', companyRoleRequestedUser);
 
         const userRoles: CompanyUserRoleDto[] =
           await this.userService.findUserRoleDetails(userGUID);
-        if (!userRoles) {
-          throw new DataNotFoundException();
-        }
+        if (!userRoles) throw new DataNotFoundException();
+
         console.log('userRoles ', userRoles);
 
         requestedUserDetailsDto = this.mapCompanyRolesForUser(
@@ -341,9 +338,8 @@ export class UsersController {
         console.log('userGUID from controller ', userGUID);
         const requestedUserRoles: CompanyUserRoleDto[] =
           await this.userService.findUserRoleDetails(userGUID);
-        if (!requestedUserRoles) {
-          throw new DataNotFoundException();
-        }
+        if (!requestedUserRoles) throw new DataNotFoundException();
+
         requestedUserDetailsDto = this.mapRolesForUser(
           requestedUserDetailsDto,
           requestedUserRoles,
@@ -356,18 +352,15 @@ export class UsersController {
       );
       const loginUserRoles: CompanyUserRoleDto[] =
         await this.userService.findUserRoleDetails(userDetails.userGUID);
-      if (!loginUserRoles) {
-        throw new DataNotFoundException();
-      }
+      if (!loginUserRoles) throw new DataNotFoundException();
 
       loginUserDetailsDto = this.mapRolesForUser(
         loginUserDetailsDto,
         loginUserRoles,
       );
 
-      if (userGUID) {
-        return requestedUserDetailsDto;
-      }
+      if (userGUID) return requestedUserDetailsDto;
+
       return loginUserDetailsDto;
     }
   }
