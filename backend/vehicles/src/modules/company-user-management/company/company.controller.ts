@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Put, Query, Request } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Query } from '@nestjs/common';
 import { CompanyService } from './company.service';
 import {
   ApiCreatedResponse,
@@ -6,6 +6,7 @@ import {
   ApiMethodNotAllowedResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
+  ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
 import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
@@ -18,7 +19,7 @@ import {
   CompanyDirectory,
   UserDirectory,
 } from '../../../common/enum/directory.enum';
-import { UserDetailsDto } from 'src/modules/common/dto/response/user-details.dto';
+import { ReadCompanyMetadataDto } from './dto/response/read-company-metadata.dto';
 import { ReadUsercompanyDetailsDto } from './dto/response/read-user-company-details.dto';
 
 @ApiTags('Company and User Management - Company')
@@ -34,7 +35,7 @@ import { ReadUsercompanyDetailsDto } from './dto/response/read-user-company-deta
   description: 'The Company Api Internal Server Error Response',
   type: ExceptionDto,
 })
-@Controller('company')
+@Controller('companies')
 export class CompanyController {
   constructor(private readonly companyService: CompanyService) {}
 
@@ -65,30 +66,6 @@ export class CompanyController {
     );
   }
 
-  @Get()
-  @ApiOkResponse({
-    description: 'The Company Resource',
-    type: ReadCompanyDto,
-  })
-   async getCompany(@Request() req,@Query('userGUID') userGUID: string): Promise<ReadUsercompanyDetailsDto> {
-
-    console.log('Inside company contrller'); 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-    const userDetails: UserDetailsDto = req.userDetails;
-    console.log('Logged in user ',userDetails);
-    let userCompanyDetail = new ReadUsercompanyDetailsDto();
-    if(userGUID)
-    {
-       userCompanyDetail = await this.companyService.findAll(userGUID)
-    }
-    else{
-  userCompanyDetail = await this.companyService.findAll(userDetails.userGUID)
-    }
-   
-    return userCompanyDetail;
-  }
-
-
   /**
    * A GET method defined with the @Get(':companyId') decorator and a route of
    * /company/:companyId that retrieves a company by its id.
@@ -112,6 +89,34 @@ export class CompanyController {
   }
 
   /**
+   * A GET method defined with the @Get() decorator and a route of
+   * /companies that retrieves a company metadata by userGuid.
+   * TODO: Secure endpoints once login is implemented.
+   *
+   * @param userGUID The user Guid.
+   *
+   * @returns The company details with response object {@link ReadCompanyMetadataDto}.
+   */
+  @ApiOkResponse({
+    description: 'The Company Metadata Resource',
+    type: ReadCompanyMetadataDto,
+    isArray: true,
+  })
+  @ApiQuery({ name: 'userGUID', required: false })
+  @Get()
+  async getCompanyMetadata(
+    @Query('userGUID') userGUID?: string,
+  ): Promise<ReadCompanyMetadataDto[]> {
+    const company = await this.companyService.findCompanyMetadataByUserGuid(
+      userGUID,
+    );
+    if (!company) {
+      throw new DataNotFoundException();
+    }
+    return company;
+  }
+
+  /**
    * A PUT method defined with the @Put(':companyId') decorator and a route of
    * /company/:companyId that updates a company by its ID.
    * TODO: Validations on {@link UpdateCompanyDto}.
@@ -122,7 +127,7 @@ export class CompanyController {
    * @returns The updated company deails with response object {@link ReadCompanyDto}.
    */
   @ApiOkResponse({
-    description: 'The Company  Resource',
+    description: 'The Company Resource',
     type: ReadCompanyDto,
   })
   @Put(':companyId')

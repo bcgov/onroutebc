@@ -1,71 +1,63 @@
 import { CountryAndProvince } from "../../../../../common/components/form/CountryAndProvince";
-import {
-  CommonFormPropsType,
-  CustomFormComponent,
-} from "../../../../../common/components/form/CustomFormComponents";
+import { CustomFormComponent } from "../../../../../common/components/form/CustomFormComponents";
 import {
   PHONE_WIDTH,
   EXT_WIDTH,
-  DEFAULT_WIDTH,
   CITY_WIDTH,
 } from "../../../../../themes/bcGovStyles";
-import { CompanyProfile } from "../../../apiManager/manageProfileAPI";
 
-export const CompanyPrimaryContactForm = ({
-  commonFormProps,
-  companyInfo,
-}: {
-  companyInfo?: CompanyProfile;
-  commonFormProps: CommonFormPropsType<CompanyProfile>;
-}) => (
+export const CompanyPrimaryContactForm = ({ feature }: { feature: string }) => (
   <>
     <CustomFormComponent
       type="input"
-      commonFormProps={commonFormProps}
+      feature={feature}
       options={{
         name: "primaryContact.firstName",
-        rules: { required: true },
+        rules: {
+          required: { value: true, message: "First Name is required" },
+        },
         label: "First Name",
-        inValidMessage: "First Name is required",
       }}
     />
     <CustomFormComponent
       type="input"
-      commonFormProps={commonFormProps}
+      feature={feature}
       options={{
         name: "primaryContact.lastName",
-        rules: { required: true },
+        rules: {
+          required: { value: true, message: "Last Name is required" },
+        },
         label: "Last Name",
-        inValidMessage: "Last Name is required",
       }}
     />
     <CustomFormComponent
       type="input"
-      commonFormProps={commonFormProps}
+      feature={feature}
       options={{
         name: "primaryContact.email",
-        rules: { required: true },
+        rules: {
+          required: { value: true, message: "Email is required" },
+        },
         label: "Email",
-        inValidMessage: "Email is required",
       }}
     />
 
     <div className="mp-side-by-side-container">
       <CustomFormComponent
-        type="input"
-        commonFormProps={commonFormProps}
+        type="phone"
+        feature={feature}
         options={{
           name: "primaryContact.phone1",
-          rules: { required: true },
+          rules: {
+            required: { value: true, message: "Phone Number is required" },
+          },
           label: "Phone Number",
-          inValidMessage: "Phone Number is required",
           width: PHONE_WIDTH,
-          displayAs: "phone",
         }}
       />
       <CustomFormComponent
         type="input"
-        commonFormProps={commonFormProps}
+        feature={feature}
         options={{
           name: "primaryContact.phone1Extension",
           rules: { required: false },
@@ -76,19 +68,18 @@ export const CompanyPrimaryContactForm = ({
     </div>
     <div className="mp-side-by-side-container">
       <CustomFormComponent
-        type="input"
-        commonFormProps={commonFormProps}
+        type="phone"
+        feature={feature}
         options={{
           name: "primaryContact.phone2",
           rules: { required: false },
           label: "Alternate Number",
           width: PHONE_WIDTH,
-          displayAs: "phone",
         }}
       />
       <CustomFormComponent
         type="input"
-        commonFormProps={commonFormProps}
+        feature={feature}
         options={{
           name: "primaryContact.phone2Extension",
           rules: { required: false },
@@ -99,30 +90,21 @@ export const CompanyPrimaryContactForm = ({
     </div>
 
     <CountryAndProvince
-      country={
-        companyInfo?.primaryContact?.countryCode
-          ? companyInfo.primaryContact.countryCode
-          : ""
-      }
-      province={
-        companyInfo?.primaryContact?.provinceCode
-          ? companyInfo.primaryContact.provinceCode
-          : ""
-      }
-      width={DEFAULT_WIDTH}
-      countryField={"primaryContact.countryCode"}
-      provinceField={"primaryContact.provinceCode"}
-      feature={"profile"}
-      rules={{ required: false }}
+      feature={feature}
+      countryField="primaryContact.countryCode"
+      isCountryRequired={true}
+      provinceField="primaryContact.provinceCode"
+      isProvinceRequired={true}
     />
     <CustomFormComponent
       type="input"
-      commonFormProps={commonFormProps}
+      feature={feature}
       options={{
         name: "primaryContact.city",
-        rules: { required: true },
+        rules: {
+          required: { value: true, message: "City is required" },
+        },
         label: "City",
-        inValidMessage: "City is required",
         width: CITY_WIDTH,
       }}
     />

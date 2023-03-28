@@ -16,20 +16,13 @@ import { ReadCompanyUserDto } from './dto/response/read-company-user.dto';
 import { ReadCompanyDto } from './dto/response/read-company.dto';
 import { Company } from './entities/company.entity';
 import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
-import { CompanyUser } from '../users/entities/company-user.entity';
-import { CompanyUserRoleDto } from 'src/modules/common/dto/response/company-user-role.dto';
-import { UserDetailsDto } from 'src/modules/common/dto/response/user-details.dto';
-import { UserCompanyRoleDto } from 'src/modules/common/dto/request/user-company-role.dto';
-import { ReadUsercompanyDetailsDto } from './dto/response/read-user-company-details.dto';
-
+import { ReadCompanyMetadataDto } from './dto/response/read-company-metadata.dto';
 @Injectable()
 export class CompanyService {
   constructor(
     private readonly userService: UsersService,
     @InjectRepository(Company)
     private companyRepository: Repository<Company>,
-    @InjectRepository(CompanyUser)
-    private companyUserRepository: Repository<CompanyUser>,
     @InjectMapper() private readonly classMapper: Mapper,
     private dataSource: DataSource,
   ) {}
@@ -81,7 +74,7 @@ export class CompanyService {
         createCompanyDto.adminUser,
         userName,
         userDirectory,
-        UserAuthGroup.ADMIN,
+        UserAuthGroup.COMPANY_ADMINISTRATOR,
         queryRunner,
       );
 
@@ -127,32 +120,54 @@ export class CompanyService {
     );
   }
 
+  /**
+   * The findOne() method returns a ReadCompanyMetadataDto object corresponding to the given
+   * user guid. It retrieves the entity from the database using the
+   * Repository, maps it to a DTO object using the Mapper, and returns it.
+   *
+   * @param userGUID The company Id.
+   *
+   * @returns The company details list as a promise of type {@link ReadCompanyMetadataDto}
+   */
+  async findCompanyMetadataByUserGuid(
+    userGUID: string,
+  ): Promise<ReadCompanyMetadataDto[]> {
+    const companyUsers = await this.userService.findAllCompanyUsersByUserGuid(
+      userGUID,
+    );
 
-
-  async findAll(userGUID: string): Promise<ReadUsercompanyDetailsDto> {
-    const users = await this.companyUserRepository
-    .createQueryBuilder('companyUser')
-    .innerJoinAndSelect('companyUser.user', 'user')
-    .innerJoinAndSelect('companyUser.company', 'company')
-    .where('companyUser.user.userGUID= :userGUID', { userGUID: userGUID })
-    .getMany();
-    
-
-    const readUserCompanyDetailsDto: ReadUsercompanyDetailsDto = new ReadUsercompanyDetailsDto();
-    readUserCompanyDetailsDto.company = [];
-       for (const user of users) {
-        readUserCompanyDetailsDto.user = new ReadUserDto();
-        readUserCompanyDetailsDto.user.userGUID = user.user.userGUID;
-        readUserCompanyDetailsDto.user.statusCode = user.user.statusCode;
-        readUserCompanyDetailsDto.user.userName = user.user.userName;
-        const company: ReadCompanyDto = new ReadCompanyDto();
-        company.companyId = user.company.companyId;
-        company.companyGUID = user.company.companyGUID;
-        company.legalName = user.company.legalName;
-        company.clientNumber = user.company.clientNumber;
-        readUserCompanyDetailsDto.company.push(company);
+    const companyMetadata: ReadCompanyMetadataDto[] = [];
+    for (const companyUser of companyUsers) {
+      companyMetadata.push(
+        await this.classMapper.mapAsync(
+          companyUser.company,
+          Company,
+          ReadCompanyMetadataDto,
+        ),
+      );
     }
-    return readUserCompanyDetailsDto;
+    return companyMetadata;
+  }
+
+  /**
+   * The findOne() method returns a ReadCompanyMetadataDto object corresponding to the
+   * company with that Id. It retrieves the entity from the database using the
+   * Repository, maps it to a DTO object using the Mapper, and returns it.
+   *
+   * @param companyId The company Id.
+   *
+   * @returns The company details as a promise of type {@link ReadCompanyMetadataDto}
+   */
+  async findCompanyMetadata(
+    companyId: number,
+  ): Promise<ReadCompanyMetadataDto> {
+    return this.classMapper.mapAsync(
+      await this.companyRepository.findOne({
+        where: { companyId: companyId },
+      }),
+      Company,
+      ReadCompanyMetadataDto,
+    );
   }
 
   /**
@@ -164,10 +179,10 @@ export class CompanyService {
    *
    * @returns The company details as a promise of type {@link ReadCompanyDto}
    */
-  async findOneByCompanyId(companyId: number): Promise<ReadCompanyDto> {
+  async findOneByCompanyGuid(companyGUID: string): Promise<ReadCompanyDto> {
     return this.classMapper.mapAsync(
       await this.companyRepository.findOne({
-        where: { companyId: companyId },
+        where: { companyGUID: companyGUID },
         relations: {
           mailingAddress: true,
           primaryContact: true,

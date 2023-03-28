@@ -4,22 +4,39 @@ import { AddVehicleButton } from "./AddVehicleButton";
 import { List } from "../list/List";
 
 import "./ManageVehiclesDashboard.scss";
-import { memo, useState } from "react";
-import { AddVehicleDashboard } from "./AddVehicleDashboard";
-import { VEHICLE_TYPES_ENUM } from "../form/constants";
+import { memo } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { getAllPowerUnits, getAllTrailers } from "../../apiManager/vehiclesAPI";
 
 /**
  * React component to render the vehicle inventory
  */
 export const ManageVehiclesDashboard = memo(() => {
+  const keepPreviousData = true;
+  const staleTime = 5000;
+
+  const powerUnitQuery = useQuery({
+    queryKey: ["powerUnits"],
+    queryFn: getAllPowerUnits,
+    keepPreviousData: keepPreviousData,
+    staleTime: staleTime,
+  });
+
+  const trailerQuery = useQuery({
+    queryKey: ["trailers"],
+    queryFn: getAllTrailers,
+    keepPreviousData: keepPreviousData,
+    staleTime: staleTime,
+  });
+
   const tabs = [
     {
       label: "Power Unit",
-      component: <List />,
+      component: <List vehicleType="powerUnit" query={powerUnitQuery} />,
     },
     {
       label: "Trailer",
-      component: <>TODO</>,
+      component: <List vehicleType="trailer" query={trailerQuery} />,
     },
     {
       label: "Vehicle Configuration",
@@ -27,28 +44,12 @@ export const ManageVehiclesDashboard = memo(() => {
     },
   ];
 
-  const [showAddVehicle, setShowAddVehicle] = useState({
-    showAddVehicle: false,
-    vehicleType: VEHICLE_TYPES_ENUM.NONE,
-  });
-
   return (
-    <>
-      {!showAddVehicle.showAddVehicle ? (
-        <TabLayout
-          bannerText="Vehicle Inventory"
-          bannerButton={
-            <AddVehicleButton setShowAddVehicle={setShowAddVehicle} />
-          }
-          componentList={tabs}
-        />
-      ) : (
-        <AddVehicleDashboard
-          addVehicleMode={showAddVehicle.vehicleType}
-          setShowAddVehicle={setShowAddVehicle}
-        />
-      )}
-    </>
+    <TabLayout
+      bannerText="Vehicle Inventory"
+      bannerButton={<AddVehicleButton />}
+      componentList={tabs}
+    />
   );
 });
 

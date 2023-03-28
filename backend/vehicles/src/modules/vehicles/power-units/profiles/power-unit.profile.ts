@@ -5,6 +5,11 @@ import { ReadPowerUnitDto } from '../dto/response/read-power-unit.dto';
 import { PowerUnit } from '../entities/power-unit.entity';
 import { CreatePowerUnitDto } from '../dto/request/create-power-unit.dto';
 import { UpdatePowerUnitDto } from '../dto/request/update-power-unit.dto';
+import {
+  getCountryCode,
+  getProvinceCode,
+  getProvinceId,
+} from '../../../../common/helper/province-country.helper';
 
 @Injectable()
 export class PowerUnitsProfile extends AutomapperProfile {
@@ -19,8 +24,12 @@ export class PowerUnitsProfile extends AutomapperProfile {
         PowerUnit,
         ReadPowerUnitDto,
         forMember(
-          (d) => d.provinceId,
-          mapFrom((s) => s.province.provinceId),
+          (d) => d.provinceCode,
+          mapFrom((s) => getProvinceCode(s.province.provinceId)),
+        ),
+        forMember(
+          (d) => d.countryCode,
+          mapFrom((s) => getCountryCode(s.province.provinceId)),
         ),
         forMember(
           (d) => d.powerUnitTypeCode,
@@ -33,7 +42,7 @@ export class PowerUnitsProfile extends AutomapperProfile {
         PowerUnit,
         forMember(
           (d) => d.province.provinceId,
-          mapFrom((s) => s.provinceId),
+          mapFrom((s) => getProvinceId(s.countryCode, s.provinceCode)),
         ),
         forMember(
           (d) => d.powerUnitType.typeCode,
@@ -46,7 +55,7 @@ export class PowerUnitsProfile extends AutomapperProfile {
         PowerUnit,
         forMember(
           (d) => d.province.provinceId,
-          mapFrom((s) => s.provinceId),
+          mapFrom((s) => getProvinceId(s.countryCode, s.provinceCode)),
         ),
         forMember(
           (d) => d.powerUnitType.typeCode,

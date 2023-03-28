@@ -2,7 +2,6 @@ import { AutomapperProfile, InjectMapper } from '@automapper/nestjs';
 import {
   createMap,
   forMember,
-  ignore,
   mapFrom,
   Mapper,
   mapWith,
@@ -23,6 +22,7 @@ import { UpdateCompanyDto } from '../dto/request/update-company.dto';
 import { ReadCompanyDto } from '../dto/response/read-company.dto';
 import { ReadCompanyUserDto } from '../dto/response/read-company-user.dto';
 import { AccountRegion } from '../../../../common/enum/account-region.enum';
+import { ReadCompanyMetadataDto } from '../dto/response/read-company-metadata.dto';
 
 @Injectable()
 export class CompanyProfile extends AutomapperProfile {
@@ -75,7 +75,8 @@ export class CompanyProfile extends AutomapperProfile {
         forMember(
           (d) => d.accountRegion,
           mapFrom((s) => {
-            return s.companyAddress.provinceCode === 'BC-CA'
+            return s.companyAddress.countryCode === 'CA' &&
+              s.companyAddress.provinceCode === 'BC'
               ? AccountRegion.BritishColumbia
               : AccountRegion.ExtraProvincial;
           }),
@@ -154,7 +155,8 @@ export class CompanyProfile extends AutomapperProfile {
         forMember(
           (d) => d.accountRegion,
           mapFrom((s) => {
-            return s.companyAddress.provinceCode === 'BC-CA'
+            return s.companyAddress.countryCode === 'CA' &&
+              s.companyAddress.provinceCode === 'BC'
               ? AccountRegion.BritishColumbia
               : AccountRegion.ExtraProvincial;
           }),
@@ -191,6 +193,11 @@ export class CompanyProfile extends AutomapperProfile {
        * The mapping is between ReadCompanyDto and ReadCompanyUserDto.
        */
       createMap(mapper, ReadCompanyDto, ReadCompanyUserDto);
+
+      /**
+       * The mapping is between Company and ReadCompanyMetadataDto.
+       */
+      createMap(mapper, Company, ReadCompanyMetadataDto);
     };
   }
 }

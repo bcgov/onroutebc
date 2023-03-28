@@ -96,7 +96,9 @@ export class CreateContactDto {
   @AutoMap()
   @ApiProperty({
     example: 'BC',
-    description: 'A 2-character string indicating the province/state',
+    description:
+      'A 2-character string indicating the province/state. ' +
+      'Required if the countryCode is either CA or US.',
     required: false,
   })
   provinceCode: string;
@@ -104,7 +106,7 @@ export class CreateContactDto {
   @AutoMap()
   @ApiProperty({
     example: 'CA',
-    description: 'A 2-character string indicating the country',
+    description: 'A 2-character string indicating the country.',
     required: false,
   })
   countryCode: string;

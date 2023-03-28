@@ -16,10 +16,10 @@ import { UserAuthGroup } from '../../../common/enum/user-auth-group.enum';
 import { UserDirectory } from '../../../common/enum/directory.enum';
 import { PendingUser } from '../pending-users/entities/pending-user.entity';
 import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
-import { ReadUserExistsDto } from './dto/response/read-user-exists.dto';
+import { ReadUserOrbcStatusDto } from './dto/response/read-user-orbc-status.dto';
 import { PendingUsersService } from '../pending-users/pending-users.service';
 import { CompanyService } from '../company/company.service';
-import { ReadCompanyDto } from '../company/dto/response/read-company.dto';
+import { ReadCompanyMetadataDto } from '../company/dto/response/read-company-metadata.dto';
 import { CompanyUserRoleDto } from 'src/modules/common/dto/response/company-user-role.dto';
 import { Role } from './entities/role.entity';
 import { UserRoleDto } from 'src/modules/common/dto/response/user-role.dto';
@@ -178,7 +178,7 @@ export class UsersService {
     newCompanyUser.userAuthGroup = userAuthGroup;
     return newCompanyUser;
   }
-
+  
   /**
    * The findOne() method finds and returns a {@link ReadUserDto} object for a
    * user with a specific userGUID and companyId parameters.
@@ -236,6 +236,38 @@ export class UsersService {
       .getOne();
   }
 
+
+  /**
+   * The findUserbyUserGUID() method finds and returns a {@link ReadUserDto} object for a
+   * user with a specific userGUID parameters.
+   *
+   * @param userGUID The user GUID.
+   *
+   * @returns The user details as a promise of type {@link ReadUserDto}
+   */
+  async findUserbyUserGUID(userGUID: string): Promise<ReadUserDto> {
+    const user = await this.findUserEntitybyUserGUID(userGUID);
+    const readUserDto = await this.mapUserEntitytoReadUserDto(user);
+    return readUserDto;
+  }
+
+  /**
+   * The findUserEntitybyUserGUID() helper method finds and returns a User entity for a
+   * user with a specific userGUID parameters.
+   *
+   * @param userGUID The user GUID.
+   *
+   * @returns The {@link User} entity.
+   */
+  private async findUserEntitybyUserGUID(userGUID: string) {
+    return await this.userRepository
+      .createQueryBuilder('user')
+      .innerJoinAndSelect('user.userContact', 'userContact')
+      .innerJoinAndSelect('userContact.province', 'province')
+      .where('user.userGUID = :userGUID', { userGUID: userGUID })
+      .getOne();
+  }
+
   /**
    * The findAll() method finds and returns an array of ReadUserDto objects for
    * all users with a specific companyId.
@@ -267,11 +299,10 @@ export class UsersService {
 
   /**
    * The update() method updates a user with the {@link updateUserDto} object,
-   * companyId, userGUID, userName, and {@link UserDirectory} parameters, and returns
+   * userGUID, userName, and {@link UserDirectory} parameters, and returns
    * the updated user as a ReadUserDto object. If the user is not found, it
    * throws an error.
    *
-   * @param companyId The company Id.
    * @param userGUID The user GUID.
    * @param userName User name from the access token.
    * @param userDirectory User directory from the access token.
@@ -281,13 +312,12 @@ export class UsersService {
    * @returns The updated user details as a promise of type {@link ReadUserDto}.
    */
   async update(
-    companyId: number,
     userGUID: string,
     userName: string,
     userDirectory: UserDirectory,
     updateUserDto: UpdateUserDto,
   ): Promise<ReadUserDto> {
-    const userDetails = await this.findOneUserEntity(companyId, userGUID);
+    const userDetails = await this.findUserEntitybyUserGUID(userGUID);
 
     if (!userDetails) {
       throw new DataNotFoundException();
@@ -295,7 +325,6 @@ export class UsersService {
 
     const user = this.classMapper.map(updateUserDto, UpdateUserDto, User, {
       extraArgs: () => ({
-        companyId: companyId,
         userGUID: userGUID,
         userName: userName,
         userDirectory: userDirectory,
@@ -303,7 +332,7 @@ export class UsersService {
     });
     user.userContact.contactId = userDetails.userContact.contactId;
     await this.userRepository.save(user);
-    return this.findOne(companyId, user.userGUID);
+    return this.findUserbyUserGUID(user.userGUID);
   }
 
   /**
@@ -335,7 +364,7 @@ export class UsersService {
    *
    * @returns The list of users as an array of type {@link ReadUserDto}
    */
-  private async findAllCompanyUsersByUserGuid(
+  async findAllCompanyUsersByUserGuid(
     userGUID: string,
   ): Promise<CompanyUser[]> {
     const companyUsers = await this.companyUserRepository
@@ -362,18 +391,16 @@ export class UsersService {
    * @param userName The user Name.
    * @param companyGUID The company GUID.
    *
-   * @returns The {@link ReadUserExistsDto} entity.
+   * @returns The {@link ReadUserOrbcStatusDto} entity.
    */
   async findORBCUser(
     userGUID: string,
     userName: string,
-    companyId: number,
-  ): Promise<ReadUserExistsDto> {
-    const userExistsDto = new ReadUserExistsDto();
-    userExistsDto.isPendingUser = false;
-    userExistsDto.userExists = false;
-    userExistsDto.companyExists = false;
-    userExistsDto.company = [];
+    companyGUID: string,
+  ): Promise<ReadUserOrbcStatusDto> {
+    const userExistsDto = new ReadUserOrbcStatusDto();
+    userExistsDto.associatedCompanies = [];
+    userExistsDto.pendingCompanies = [];
 
     const user = await this.userRepository.findOne({
       where: { userGUID: userGUID },
@@ -383,52 +410,48 @@ export class UsersService {
       },
     });
 
-    if (!user) {
-      const pendingUser = await this.pendingUsersService.findOneByUserName(
-        userName,
-      );
-      if (pendingUser) {
-        userExistsDto.isPendingUser = true;
-        userExistsDto.companyExists = true;
-        userExistsDto.company.push(
-          await this.companyService.findOne(pendingUser.companyId),
-        );
-        return userExistsDto;
-      } else {
-        if (companyId) {
-          const company = await this.companyService.findOneByCompanyId(
-            companyId,
-          );
-          if (company) {
-            userExistsDto.companyExists = true;
-            userExistsDto.company.push(company);
-            return userExistsDto;
-          }
-        }
-
-        return userExistsDto;
-      }
-    } else {
-      const companyUsers = await this.findAllCompanyUsersByUserGuid(userGUID);
-      const readCompanyDto: ReadCompanyDto[] = [];
-      for (const companyUser of companyUsers) {
-        readCompanyDto.push(
-          await this.classMapper.mapAsync(
-            companyUser.company,
-            Company,
-            ReadCompanyDto,
+    const pendingCompanies = await this.pendingUsersService.findAllbyUserName(
+      userName,
+    );
+    if (pendingCompanies) {
+      for (const pendingCompany of pendingCompanies) {
+        userExistsDto.pendingCompanies.push(
+          await this.companyService.findCompanyMetadata(
+            pendingCompany.companyId,
           ),
         );
       }
-
-      userExistsDto.userExists = true;
-      userExistsDto.user = await this.mapUserEntitytoReadUserDto(user);
-      userExistsDto.company = readCompanyDto;
-      userExistsDto.companyExists = true;
-
-      return userExistsDto;
     }
+
+    if (!user) {
+      if (companyGUID) {
+        const company = await this.companyService.findOneByCompanyGuid(
+          companyGUID,
+        );
+        if (company) {
+          userExistsDto.associatedCompanies.push(company);
+          return userExistsDto;
+        }
+      }
+    } else {
+      const companyUsers = await this.findAllCompanyUsersByUserGuid(userGUID);
+      const readCompanyMetadataDto: ReadCompanyMetadataDto[] = [];
+      for (const companyUser of companyUsers) {
+        readCompanyMetadataDto.push(
+          await this.classMapper.mapAsync(
+            companyUser.company,
+            Company,
+            ReadCompanyMetadataDto,
+          ),
+        );
+      }
+      userExistsDto.user = await this.mapUserEntitytoReadUserDto(user);
+      userExistsDto.associatedCompanies = readCompanyMetadataDto;
+    }
+
+    return userExistsDto;
   }
+
 
   async findUserDetailsWithCompanyId(
     userGUID: string,
@@ -518,5 +541,5 @@ export class UsersService {
     console.log('Userist ',userlist);
 
     return userlist;
-  }
+}
 }
