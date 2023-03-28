@@ -64,6 +64,9 @@ export const CreateProfileSteps = React.memo(() => {
       legalName:
         (user?.profile?.bceid_business_name as string) ||
         "Bandstra Transportation Systems Ltd.",
+      adminUser: {
+        userAuthGroup: "ORGADMIN",
+      },
     },
   });
   const { handleSubmit, register } = formMethods;
@@ -131,7 +134,8 @@ export const CreateProfileSteps = React.memo(() => {
   return (
     <>
       <FormProvider {...formMethods}>
-        <input type="hidden" {...register("legalName")}/>
+        <input type="hidden" {...register("legalName")} />
+        <input type="hidden" {...register("adminUser.userAuthGroup")} />
         <Box
           className="layout-box"
           sx={{

@@ -40,6 +40,7 @@ export interface CompanyProfile {
 
 export interface UserInformation extends Contact {
   fax?: string;
+  userAuthGroup: string;
 }
 
 export interface CompanyAndUserRequest {
