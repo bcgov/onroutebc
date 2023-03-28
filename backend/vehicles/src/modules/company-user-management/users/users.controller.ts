@@ -7,7 +7,6 @@ import {
   Request,
   Put,
   Body,
-  ForbiddenException,
 } from '@nestjs/common';
 
 import {
@@ -18,20 +17,14 @@ import {
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
-import {
-  AbilityFactory,
-  Action,
-} from 'src/ability/ability.factory/ability.factory';
+import { AbilityFactory } from 'src/ability/ability.factory/ability.factory';
 import { DataNotFoundException } from 'src/common/exception/data-not-found.exception';
-import { LoginUserDto } from 'src/modules/common/dto/request/login-user.dto';
 import { CompanyUserRoleDto } from 'src/modules/common/dto/response/company-user-role.dto';
 import { ExceptionDto } from '../../common/dto/exception.dto';
 import { UpdateUserDto } from './dto/request/update-user.dto';
 import { ReadUserOrbcStatusDto } from './dto/response/read-user-orbc-status.dto';
 import { ReadUserDto } from './dto/response/read-user.dto';
 import { UsersService } from './users.service';
-import { ForbiddenError } from '@casl/ability';
-import { CompanyUser } from './entities/company-user.entity';
 import { Roles } from 'src/common/decorator/roles.decoratos';
 import { Role } from 'src/common/enum/role.enum';
 import { UserDetailsDto } from 'src/modules/common/dto/response/user-details.dto';
@@ -179,14 +172,14 @@ export class UsersController {
    * A GET method defined with the @Get('/roles') decorator and a route of
    * /users/roles it retrieves the user and roles by
    *
-   * @param userGUID if userGUID will be present then the logged in user will get roles for 
-   * the user related to this userGUID.(TODO: Authorization, to check if logged in user has 
+   * @param userGUID if userGUID will be present then the logged in user will get roles for
+   * the user related to this userGUID.(TODO: Authorization, to check if logged in user has
    * privilege to read role for the user related to provided userGUID).
    * IF userGUID is not present the logged in user's roles will be returned.
    * Logged in user is retrieved from req.userDetails object
-   * @Query companyId If company id is present then user roles 
-   * as well as the company role for that user(logged user or requested user) 
-   * will be returned. (TODO: Authorization, to check if logged in user has 
+   * @Query companyId If company id is present then user roles
+   * as well as the company role for that user(logged user or requested user)
+   * will be returned. (TODO: Authorization, to check if logged in user has
    * privilege to read company roles for the user related to provided userGUID)
    * @returns The user details with response object {@link CompanyUserRoleDto}.
    */
@@ -231,9 +224,9 @@ export class UsersController {
         }
       console.log(loggedInUser.bceid_username);*/
     if (companyId) {
-      //Get company roles for logged in user  ToDo: To check if in case of logged in user 
+      //Get company roles for logged in user  ToDo: To check if in case of logged in user
       //we need to consider the logged in user's company
-      // along with the input companyId    
+      // along with the input companyId
       companyRoleLoginUser =
         await this.userService.findUserDetailsWithCompanyId(
           userDetails.userGUID,

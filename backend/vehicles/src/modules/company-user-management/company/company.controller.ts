@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Param, Put, Query, Request } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Put,
+  Query,
+  Request,
+} from '@nestjs/common';
 import { CompanyService } from './company.service';
 import {
   ApiCreatedResponse,

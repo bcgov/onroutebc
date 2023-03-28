@@ -3,7 +3,6 @@ import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
 import { ROLES_KEY } from 'src/common/decorator/roles.decoratos';
 import { Role } from 'src/common/enum/role.enum';
-import { LoginUserDto } from 'src/modules/common/dto/request/login-user.dto';
 import { UserDetailsDto } from 'src/modules/common/dto/response/user-details.dto';
 
 @Injectable()

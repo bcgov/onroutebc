@@ -10,8 +10,6 @@ import { AutoMap } from '@automapper/classes';
 import { Company } from '../../company/entities/company.entity';
 import { User } from './user.entity';
 import { UserAuthGroup } from '../../../../common/enum/user-auth-group.enum';
-import { UserInfo } from 'os';
-import { UserRoleDto } from 'src/modules/common/dto/response/user-role.dto';
 import { Role } from './role.entity';
 
 @Entity({ name: 'ORBC_COMPANY_USER' })

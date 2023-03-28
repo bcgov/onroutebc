@@ -432,7 +432,6 @@ export class UsersService {
     return userExistsDto;
   }
 
-
   /**
    * The findUserDetailsWithCompanyId() method searches ORBC if the user exists by its GUID and
    * returns a DTO with user details and its associated companies.
@@ -458,10 +457,6 @@ export class UsersService {
     const userList: CompanyUserRoleDto[] = [];
     let roles: UserRoleDto[] = [] as UserRoleDto[];
     for (const user of users) {
-      //const companyUserRoleDto =
-      // this.mapCompanyUserEntitytoCompanyUserRoleDto(user);
-      //userList.push(companyUserRoleDto);
-
       roles = await this.roleRepository
         .createQueryBuilder('role')
         .where('role.userAuthGroupId = :userAuthGroup', {
@@ -495,9 +490,6 @@ export class UsersService {
     const userList: CompanyUserRoleDto[] = [];
     let roles: UserRoleDto[] = [] as UserRoleDto[];
     for (const user of users) {
-      //const companyUserRoleDto =
-      // this.mapCompanyUserEntitytoCompanyUserRoleDto(user);
-      //userList.push(companyUserRoleDto);
       roles = await this.roleRepository
         .createQueryBuilder('role')
         .where('role.userAuthGroupId = :userAuthGroup', {
@@ -510,7 +502,7 @@ export class UsersService {
     return userList;
   }
 
-   /**
+  /**
    * The findUserRoleDetails() method searches ORBC if the user exists by its GUID and
    * returns a DTO with user roles details.
    *

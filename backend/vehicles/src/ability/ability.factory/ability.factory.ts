@@ -6,7 +6,6 @@ import {
   ExtractSubjectType,
 } from '@casl/ability';
 import { Injectable } from '@nestjs/common';
-import { LoginUserDto } from 'src/modules/common/dto/request/login-user.dto';
 import { CompanyUserRoleDto } from 'src/modules/common/dto/response/company-user-role.dto';
 import { Company } from 'src/modules/company-user-management/company/entities/company.entity';
 import { CompanyUser } from 'src/modules/company-user-management/users/entities/company-user.entity';

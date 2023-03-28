@@ -1,7 +1,6 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
 import { UserDirectory } from 'src/common/enum/directory.enum';
-import { UserAuthGroup } from 'src/common/enum/user-auth-group.enum';
 import { UserStatus } from 'src/common/enum/user-status.enum';
 import { UserCompanyRoleDto } from '../request/user-company-role.dto';
 
