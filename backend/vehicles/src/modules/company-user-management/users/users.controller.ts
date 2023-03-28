@@ -173,13 +173,15 @@ export class UsersController {
    * /users/roles it retrieves the user and roles by
    *
    * @param userGUID if userGUID will be present then the logged in user will get roles for
-   * the user related to this userGUID.(TODO: Authorization, to check if logged in user has
+   * the user related to this userGUID.
+   * TODO: Authorization, (to check if logged in user has
    * privilege to read role for the user related to provided userGUID).
    * IF userGUID is not present the logged in user's roles will be returned.
    * Logged in user is retrieved from req.userDetails object
    * @Query companyId If company id is present then user roles
    * as well as the company role for that user(logged user or requested user)
-   * will be returned. (TODO: Authorization, to check if logged in user has
+   * will be returned. 
+   * TODO: Authorization,(to check if logged in user has
    * privilege to read company roles for the user related to provided userGUID)
    * @returns The user details with response object {@link CompanyUserRoleDto}.
    */

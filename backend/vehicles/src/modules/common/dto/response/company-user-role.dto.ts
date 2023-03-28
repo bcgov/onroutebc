@@ -3,7 +3,6 @@ import { ApiProperty } from '@nestjs/swagger';
 import { UserAuthGroup } from 'src/common/enum/user-auth-group.enum';
 import { UserCompanyDto } from './user-company.dto';
 import { UserRoleDto } from './user-role.dto';
-//import { UserRoleDto } from './user-role.dto';
 import { UserDto } from './user.dto';
 
 export class CompanyUserRoleDto {
