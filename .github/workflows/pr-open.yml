@@ -62,25 +62,6 @@ jobs:
       - name: Get package.json version
         run: echo PACKAGE_VERSION=$(cat ${{matrix.package}}/package.json | grep \"version\" | awk -F ':' '{print($2)}' | awk -F ',' '{print($1)}' | awk -F '"' '{print($2)}') | tee $GITHUB_ENV
 
-      - name: Check if build image already exists
-        run: |
-          TOKEN=$(curl -s https://ghcr.io/token\?scope\="repository:${{ github.repository }}/${{ matrix.package }}:pull" | jq -r .token)
-          URL="https://ghcr.io/v2/${{ github.repository }}/${{ matrix.package }}/manifests/${{ env.PACKAGE_VERSION }}"
-          if [ $(curl -ILso /dev/null -w "%{http_code}" -H "Authorization: Bearer ${TOKEN}" "${URL}") -eq 200 ] 
-          then
-            exit 1
-          else
-            echo ${URL}
-          fi
-
-      - name: Tag Images with package.json version 
-        uses: shrink/actions-docker-registry-tag@v3
-        with:
-          registry: ghcr.io
-          repository: ${{ github.repository }}/${{ matrix.package }}
-          target: test
-          tags: ${{ env.PACKAGE_VERSION }} 
-
   deploys:
     name: Deploys
     needs:
