@@ -13,11 +13,11 @@ COPY . ./
 RUN mkdir /.npm && chmod 777 /.npm
 
 # Install packages, build and keep only prod packages
+RUN npm ci
+RUN npm run build
 RUN npm install -D semantic-release
 RUN npm install -D semantic-release-monorepo
 RUN npx semantic-release -e semantic-release-monorepo -r https://github.com/semantic-release/semantic-release.git --branches main
-RUN npm ci
-RUN npm run build
 RUN npm prune --production
 
 
