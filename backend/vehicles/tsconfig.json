@@ -12,7 +12,7 @@
     "baseUrl": "./",
     "incremental": true,
     "typeRoots": [
-      "@types",
+      "./common/@types",
       "./node_modules/@types",
     ],
     "skipLibCheck": true

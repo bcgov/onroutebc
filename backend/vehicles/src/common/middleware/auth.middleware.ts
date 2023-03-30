@@ -25,7 +25,6 @@ export class AuthMiddleware implements NestMiddleware {
 
       this.getRoles(req, loginUserDto)
         .then((value) => {
-          console.log('value', value);
           req.userDetails = value;
           next();
         })
@@ -36,8 +35,6 @@ export class AuthMiddleware implements NestMiddleware {
           req.userDetails = userDetails;
           next();
         });
-
-      console.log('Request loginuser ', req.userDetails);
     } catch (err) {
       return res.status(403).json(err);
     }
@@ -57,7 +54,6 @@ export class AuthMiddleware implements NestMiddleware {
     const dateNow = new Date();
     if (exp < dateNow.getTime() / 1000) {
       isTokenExpired = true;
-      console.log('Token Expired');
     }
     return isTokenExpired;
   }
@@ -70,21 +66,15 @@ export class AuthMiddleware implements NestMiddleware {
     userDetailsdto.userCompany = new UserCompanyRoleDto();
     userDetailsdto.userCompany.userAuthGroup = [];
     userDetailsdto.userCompany.userRoles = [];
-    console.log('Entered GetRoles Method ', loginUser);
-
-    console.log('After assigning i');
     if (req.query.companyId) {
-      console.log('before calling findUserDetailsWithCompanyId');
       const companyUserRoles =
         await this.userService.findUserDetailsWithCompanyId(
           loginUser.bceid_user_guid,
           +req.query.companyId,
         );
-      console.log('After calling findUserDetailsWithCompanyId');
       //  loginUser.userCompany = [] as UsercompanyRoleDto[];
       for (const companyUserRole of companyUserRoles) {
         userDetailsdto.statusCode = companyUserRole.user.statusCode;
-        console.log('Status Code ', userDetailsdto.statusCode);
         userDetailsdto.userGUID = companyUserRole.user.userGUID;
         userDetailsdto.userName = companyUserRole.user.userName;
         userDetailsdto.userDirectory = companyUserRole.user.userDirectory;
@@ -96,34 +86,17 @@ export class AuthMiddleware implements NestMiddleware {
           companyUserRole.company.companyId;
         userDetailsdto.userCompany.legalName =
           companyUserRole.company.legalName;
-        console.log(
-          'company legal name ',
-          userDetailsdto.userCompany.legalName,
-        );
         userDetailsdto.userCompany.userAuthGroup.push(
           companyUserRole.userAuthGroup,
-        );
-        console.log(
-          'user Auth group',
-          userDetailsdto.userCompany.userAuthGroup,
         );
         for (const roles of companyUserRole.userRoles) {
           userDetailsdto.userCompany.userRoles.push(roles.roleId);
         }
       }
     }
-    console.log('get user roles with user guid');
-
     const userRoles = await this.userService.findUserRoleDetails(
       loginUser.bceid_user_guid,
     );
-
-    console.log(
-      'Database user user auth group',
-      userRoles[0].user.userAuthGroup,
-    );
-
-    console.log('Login user 2 ', userDetailsdto);
     userDetailsdto.roles = [];
 
     for (const userRole of userRoles) {
@@ -134,7 +107,6 @@ export class AuthMiddleware implements NestMiddleware {
       }
     }
 
-    console.log('Login user 2 again', userDetailsdto);
     return userDetailsdto;
   }
 }

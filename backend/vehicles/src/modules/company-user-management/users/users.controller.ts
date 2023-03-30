@@ -174,7 +174,6 @@ export class UsersController {
     companyRoleUser: CompanyUserRoleDto[],
   ): UserDetailsDto {
     for (const userRole of userRoles) {
-      console.log('Auth group ', userRole.user.userAuthGroup);
       userDetails.userAuthGroup = userRole.userAuthGroup;
       for (const role of userRole.userRoles) {
         userDetails.roles.push(role.roleId);
@@ -183,7 +182,6 @@ export class UsersController {
 
     for (const companyUserRole of companyRoleUser) {
       userDetails.statusCode = companyUserRole.user.statusCode;
-      console.log('Status Code ', userDetails.statusCode);
       userDetails.userGUID = companyUserRole.user.userGUID;
       userDetails.userName = companyUserRole.user.userName;
       userDetails.userDirectory = companyUserRole.user.userDirectory;
@@ -192,9 +190,7 @@ export class UsersController {
       userDetails.userCompany.companyGUID = companyUserRole.company.companyGUID;
       userDetails.userCompany.companyId = companyUserRole.company.companyId;
       userDetails.userCompany.legalName = companyUserRole.company.legalName;
-      console.log('company legal name ', userDetails.userCompany.legalName);
       userDetails.userCompany.userAuthGroup.push(companyUserRole.userAuthGroup);
-      console.log('user Auth group', userDetails.userCompany.userAuthGroup);
       for (const roles of companyUserRole.userRoles) {
         userDetails.userCompany.userRoles.push(roles.roleId);
       }
@@ -242,23 +238,13 @@ export class UsersController {
     @Query('userGUID') userGUID: string,
     @Query('companyId') companyId?: number,
   ): Promise<UserDetailsDto> {
-    console.log('Inside controller user/roles endpoint');
-    console.log('userGUID ', userGUID);
-
-    let companyRoleLoginUser: CompanyUserRoleDto[] = null;
     let companyRoleRequestedUser: CompanyUserRoleDto[] = null;
-    let loginUserDetailsDto: UserDetailsDto = new UserDetailsDto();
     let requestedUserDetailsDto: UserDetailsDto = new UserDetailsDto();
-    loginUserDetailsDto.roles = [];
-    loginUserDetailsDto.userCompany = new UserCompanyRoleDto();
-    loginUserDetailsDto.userCompany.userAuthGroup = [];
-    loginUserDetailsDto.userCompany.userRoles = [];
     requestedUserDetailsDto.roles = [];
     requestedUserDetailsDto.userCompany = new UserCompanyRoleDto();
     requestedUserDetailsDto.userCompany.userAuthGroup = [];
     requestedUserDetailsDto.userCompany.userRoles = [];
     const userDetails: UserDetailsDto = req.userDetails;
-    console.log('req.userDetails.userGUID ', userDetails.userGUID);
     /*Commenting Authorization code for now
     const res = response.locals.loginUser;
      const loggedInUser: LoginUserDto = req.loginUser;
@@ -275,34 +261,8 @@ export class UsersController {
         if (error instanceof ForbiddenError) {
         throw new ForbiddenException('You Can only read your own User details');// //   }
         }
-      console.log(loggedInUser.bceid_username);*/
+     */
     if (companyId) {
-      //Get company roles for logged in user  ToDo: To check if in case of logged in user
-      //we need to consider the logged in user's company
-      // along with the input companyId
-      companyRoleLoginUser =
-        await this.userService.findUserDetailsWithCompanyId(
-          userDetails.userGUID,
-          companyId,
-        );
-      if (!companyRoleLoginUser) {
-        throw new DataNotFoundException();
-      }
-      console.log('with company id', companyRoleLoginUser);
-
-      const loginUserRoles: CompanyUserRoleDto[] =
-        await this.userService.findUserRoleDetails(userDetails.userGUID);
-      if (!loginUserRoles) {
-        throw new DataNotFoundException();
-      }
-      console.log('Loginuser roles ', loginUserRoles);
-      loginUserDetailsDto = this.mapCompanyRolesForUser(
-        loginUserDetailsDto,
-        loginUserRoles,
-        companyRoleLoginUser,
-      );
-      console.log('LoginUserdetailsDTO in controller ', loginUserDetailsDto);
-
       //if logged in user is trying to get someone else's roles
       //get companies of requested user
       if (userGUID) {
@@ -312,30 +272,19 @@ export class UsersController {
             companyId,
           );
         if (!companyRoleRequestedUser) throw new DataNotFoundException();
-
-        console.log('companyRoleRequestedUser ', companyRoleRequestedUser);
-
         const userRoles: CompanyUserRoleDto[] =
           await this.userService.findUserRoleDetails(userGUID);
         if (!userRoles) throw new DataNotFoundException();
-
-        console.log('userRoles ', userRoles);
-
         requestedUserDetailsDto = this.mapCompanyRolesForUser(
           requestedUserDetailsDto,
           userRoles,
           companyRoleRequestedUser,
         );
-        console.log(
-          'RequestedUserDetailsDto in controller ',
-          requestedUserDetailsDto,
-        );
         return requestedUserDetailsDto;
       }
-      return loginUserDetailsDto;
+      return userDetails;
     } else {
       if (userGUID) {
-        console.log('userGUID from controller ', userGUID);
         const requestedUserRoles: CompanyUserRoleDto[] =
           await this.userService.findUserRoleDetails(userGUID);
         if (!requestedUserRoles) throw new DataNotFoundException();
@@ -344,24 +293,9 @@ export class UsersController {
           requestedUserDetailsDto,
           requestedUserRoles,
         );
-        /**/
       }
-      console.log(
-        'userDetails.userGUID from controller ',
-        userDetails.userGUID,
-      );
-      const loginUserRoles: CompanyUserRoleDto[] =
-        await this.userService.findUserRoleDetails(userDetails.userGUID);
-      if (!loginUserRoles) throw new DataNotFoundException();
-
-      loginUserDetailsDto = this.mapRolesForUser(
-        loginUserDetailsDto,
-        loginUserRoles,
-      );
-
       if (userGUID) return requestedUserDetailsDto;
-
-      return loginUserDetailsDto;
+      return userDetails;
     }
   }
 
@@ -373,7 +307,6 @@ export class UsersController {
     @Query('companyId') companyId?: number,
   ): Promise<CompanyUserRoleDto[]> {
     const loggedInUser: UserDetailsDto = req.userDetails;
-    console.log('Login User 2 GUID ', loggedInUser.userGUID);
     const userGUID = loggedInUser.userGUID;
     let companyUserRole: CompanyUserRoleDto[] = null;
     if (companyId) {
@@ -384,7 +317,6 @@ export class UsersController {
       if (!companyUserRole) {
         throw new DataNotFoundException();
       }
-      console.log('with company id', companyUserRole);
       return companyUserRole;
     } else {
       const userRole = await this.userService.findUserRoleDetails(userGUID);

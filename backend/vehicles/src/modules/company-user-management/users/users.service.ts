@@ -511,17 +511,12 @@ export class UsersService {
    * @returns The {@link CompanyUserRoleDto[]} entity.
    */
   async findUserRoleDetails(userGUID: string): Promise<CompanyUserRoleDto[]> {
-    console.log('Inside findUserRoleDetails');
-    console.log('User GUID is ', userGUID);
     const users = await this.userRepository
       .createQueryBuilder('User')
       .where('User.userGUID= :userGUID', {
         userGUID: userGUID,
       })
       .getOne();
-    console.log('Users from user service', users);
-    console.log('users.userAuthGroup ', users.userAuthGroup);
-
     const userlist: CompanyUserRoleDto[] = new Array<CompanyUserRoleDto>();
     const user: CompanyUserRoleDto = new CompanyUserRoleDto();
     let roles: UserRoleDto[] = [] as UserRoleDto[];
@@ -531,12 +526,9 @@ export class UsersService {
         userAuthGroup: users.userAuthGroup,
       })
       .getMany();
-    console.log('roles ', roles);
     user.user = users;
     user.userRoles = roles;
     userlist.push(user);
-    console.log('Userist ', userlist);
-
     return userlist;
   }
 }
