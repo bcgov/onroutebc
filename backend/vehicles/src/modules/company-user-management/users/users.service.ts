@@ -175,59 +175,33 @@ export class UsersService {
   }
 
   /**
-   * The findOne() method finds and returns a {@link ReadUserDto} object for a
-   * user with a specific userGUID and companyId parameters.
+   * The findUserbyUserGUID() method finds and returns a {@link ReadUserDto} object for a
+   * user with a specific userGUID parameters.
    *
-   * @param companyId The company Id.
    * @param userGUID The user GUID.
    *
    * @returns The user details as a promise of type {@link ReadUserDto}
    */
-  async findOne(companyId: number, userGUID: string): Promise<ReadUserDto> {
-    const user = await this.findOneUserEntity(companyId, userGUID);
+  async findUserbyUserGUID(userGUID: string): Promise<ReadUserDto> {
+    const user = await this.findUserEntitybyUserGUID(userGUID);
     const readUserDto = await this.mapUserEntitytoReadUserDto(user);
     return readUserDto;
   }
 
   /**
-   * The findOneUserEntity() helper method finds and returns a User entity for a
+   * The findUserEntitybyUserGUID() helper method finds and returns a User entity for a
    * user with a specific userGUID parameters.
    *
    * @param userGUID The user GUID.
    *
    * @returns The {@link User} entity.
    */
-  private async findUserbyUserGUID(userGUID: string) {
+  private async findUserEntitybyUserGUID(userGUID: string) {
     return await this.userRepository
       .createQueryBuilder('user')
       .innerJoinAndSelect('user.userContact', 'userContact')
       .innerJoinAndSelect('userContact.province', 'province')
-      .innerJoinAndSelect('user.companyUsers', 'companyUser')
-      .innerJoin('companyUser.company', 'company')
       .where('user.userGUID = :userGUID', { userGUID: userGUID })
-      .getOne();
-  }
-
-  /**
-   * The findOneUserEntity() helper method finds and returns a User entity for a
-   * user with a specific userGUID and companyId parameters.
-   *
-   * @param companyId The company Id.
-   * @param userGUID The user GUID.
-   *
-   * @returns The {@link User} entity.
-   */
-  private async findOneUserEntity(companyId: number, userGUID: string) {
-    return await this.userRepository
-      .createQueryBuilder('user')
-      .innerJoinAndSelect('user.userContact', 'userContact')
-      .innerJoinAndSelect('userContact.province', 'province')
-      .innerJoinAndSelect('user.companyUsers', 'companyUser')
-      .innerJoin('companyUser.company', 'company')
-      .where('user.userGUID = :userGUID', { userGUID: userGUID })
-      .andWhere('company.companyId= :companyId', {
-        companyId: companyId,
-      })
       .getOne();
   }
 
@@ -262,11 +236,10 @@ export class UsersService {
 
   /**
    * The update() method updates a user with the {@link updateUserDto} object,
-   * companyId, userGUID, userName, and {@link UserDirectory} parameters, and returns
+   * userGUID, userName, and {@link UserDirectory} parameters, and returns
    * the updated user as a ReadUserDto object. If the user is not found, it
    * throws an error.
    *
-   * @param companyId The company Id.
    * @param userGUID The user GUID.
    * @param userName User name from the access token.
    * @param userDirectory User directory from the access token.
@@ -276,13 +249,12 @@ export class UsersService {
    * @returns The updated user details as a promise of type {@link ReadUserDto}.
    */
   async update(
-    companyId: number,
     userGUID: string,
     userName: string,
     userDirectory: UserDirectory,
     updateUserDto: UpdateUserDto,
   ): Promise<ReadUserDto> {
-    const userDetails = await this.findOneUserEntity(companyId, userGUID);
+    const userDetails = await this.findUserEntitybyUserGUID(userGUID);
 
     if (!userDetails) {
       throw new DataNotFoundException();
@@ -290,7 +262,6 @@ export class UsersService {
 
     const user = this.classMapper.map(updateUserDto, UpdateUserDto, User, {
       extraArgs: () => ({
-        companyId: companyId,
         userGUID: userGUID,
         userName: userName,
         userDirectory: userDirectory,
@@ -298,7 +269,7 @@ export class UsersService {
     });
     user.userContact.contactId = userDetails.userContact.contactId;
     await this.userRepository.save(user);
-    return this.findOne(companyId, user.userGUID);
+    return this.findUserbyUserGUID(user.userGUID);
   }
 
   /**
@@ -330,7 +301,7 @@ export class UsersService {
    *
    * @returns The list of users as an array of type {@link ReadUserDto}
    */
-  private async findAllCompanyUsersByUserGuid(
+  async findAllCompanyUsersByUserGuid(
     userGUID: string,
   ): Promise<CompanyUser[]> {
     const companyUsers = await this.companyUserRepository

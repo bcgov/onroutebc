@@ -1,16 +1,15 @@
 import { act, fireEvent, screen, within } from "@testing-library/react";
 import { vi } from "vitest";
-import { PowerUnitForm } from "../components/form/PowerUnitForm";
+import { TrailerForm } from "../components/form/TrailerForm";
 import {
   clickSubmit,
   getCountry,
-  getLicensedGvw,
+  getEmptyTrailerWidth,
   getMake,
   getPlate,
   getProvince,
-  getSteerAxleTireSize,
   getUnitNumber,
-  getPowerUnitTypeCode,
+  getTrailerTypeCode,
   getVIN,
   getYear,
   renderWithClient,
@@ -19,7 +18,7 @@ import {
 beforeEach(async () => {
   vi.resetModules();
 
-  // Temp solution for mocking React Query to test the getPowerUnitTypes API call
+  // Temp solution for mocking React Query to test the gettrailerTypes API call
   vi.mock("@tanstack/react-query", async () => {
     const actual: any = await vi.importActual("@tanstack/react-query");
     return {
@@ -27,10 +26,10 @@ beforeEach(async () => {
       useQuery: vi.fn().mockReturnValue({
         data: [
           {
-            typeCode: "CONCRET",
-            type: "Concrete Pumper Trucks",
+            typeCode: "BOOSTER",
+            type: "Boosters",
             description:
-              "Concrete Pumper Trucks are used to pump concrete from a cement mixer truck to where the concrete is actually needed. They travel on the highway at their equipped weight with no load.",
+              "A Booster is similar to a jeep, but it is used behind a load.",
           },
         ],
         isLoading: false,
@@ -39,32 +38,30 @@ beforeEach(async () => {
     };
   });
 
-  renderWithClient(<PowerUnitForm />);
+  renderWithClient(<TrailerForm />);
 });
 
-describe("All Power Unit Form Fields", () => {
+describe("All Trailer Form Fields", () => {
   it("should render all form fields", async () => {
     const unitNumber = getUnitNumber();
     const make = getMake();
     const year = getYear();
     const vin = getVIN();
     const plate = getPlate();
-    const powerUnitTypeCode = getPowerUnitTypeCode();
+    const subtype = getTrailerTypeCode();
     const country = getCountry();
     const province = getProvince();
-    const licensedGvw = getLicensedGvw();
-    const steerAxleTireSize = getSteerAxleTireSize();
+    const emptyTrailerWidth = getEmptyTrailerWidth();
 
     expect(unitNumber).toBeInTheDocument();
     expect(make).toBeInTheDocument();
     expect(year).toBeInTheDocument();
     expect(vin).toBeInTheDocument();
     expect(plate).toBeInTheDocument();
-    expect(powerUnitTypeCode).toBeInTheDocument();
+    expect(subtype).toBeInTheDocument();
     expect(country).toBeInTheDocument();
     expect(province).toBeInTheDocument();
-    expect(licensedGvw).toBeInTheDocument();
-    expect(steerAxleTireSize).toBeInTheDocument();
+    expect(emptyTrailerWidth).toBeInTheDocument();
 
     clickSubmit();
 
@@ -73,60 +70,23 @@ describe("All Power Unit Form Fields", () => {
     expect(selectFields).toHaveLength(5);
     // Check for number of input fields
     const inputFields = await screen.findAllByRole("textbox");
-    expect(inputFields).toHaveLength(7);
+    expect(inputFields).toHaveLength(6);
   });
 });
 
-describe("Power Unit Form: Test VIN field validation", () => {
-  it("should show error when submitting empty VIN field", async () => {
-    clickSubmit();
-    expect(await screen.findByTestId("alert-vin")).toBeInTheDocument();
-  });
-
-  it("should show error when submitting VIN with 5 characters", async () => {
-    const vinTextField = getVIN();
-
-    await act(async () => {
-      fireEvent.change(vinTextField, { target: { value: "12345" } });
-    });
-
-    expect(vinTextField).toHaveValue("12345");
-
-    clickSubmit();
-
-    expect(await screen.findByTestId("alert-vin")).toHaveTextContent(
-      "Length must be 6"
-    );
-  });
-
-  it("should NOT show error when submitting VIN with 6 characters", async () => {
-    const vinTextField = getVIN();
-
-    await act(async () => {
-      fireEvent.change(vinTextField, { target: { value: "123456" } });
-    });
-
-    expect(vinTextField).toHaveValue("123456");
-
-    clickSubmit();
-
-    expect(screen.queryByTestId("alert-vin")).toBeNull();
-  });
-});
-
-describe("Power Unit Form Submission", () => {
-  it("should return a list of power unit types", async () => {
+describe("Trailer Form Submission", () => {
+  it("should return a list of trailer types", async () => {
     const subtype = screen.getByRole("button", {
-      name: /powerUnitTypeCode/i,
+      name: /trailerTypeCode/i,
     });
 
     fireEvent.mouseDown(subtype);
 
     const listbox = within(screen.getByRole("listbox"));
 
-    fireEvent.click(listbox.getByText(/Concrete Pumper Trucks/i));
+    fireEvent.click(listbox.getByText(/Boosters/i));
 
-    expect(subtype).toHaveTextContent(/Concrete Pumper Trucks/i);
+    expect(subtype).toHaveTextContent(/Boosters/i);
   });
 
   it("should successfully submit form without errors shown on ui", async () => {
@@ -135,11 +95,9 @@ describe("Power Unit Form Submission", () => {
     const year = getYear();
     const vin = getVIN();
     const plate = getPlate();
-    const subtype = getPowerUnitTypeCode();
+    const subtype = getTrailerTypeCode();
     const country = getCountry();
     const province = getProvince();
-    const licensedGvw = getLicensedGvw();
-    const steerAxleTireSize = getSteerAxleTireSize();
 
     await act(async () => {
       fireEvent.input(unitNumber, { target: { value: "Ken10" } });
@@ -147,15 +105,13 @@ describe("Power Unit Form Submission", () => {
       fireEvent.input(year, { target: { value: "2020" } });
       fireEvent.input(vin, { target: { value: "123456" } });
       fireEvent.input(plate, { target: { value: "ABC123" } });
-      fireEvent.input(licensedGvw, { target: { value: "85000" } });
-      fireEvent.input(steerAxleTireSize, { target: { value: "300" } });
 
       // Vehicle Sub type
-      const powerUnitTypeSelectMenu = screen.getByTestId(
-        "select-powerUnitTypeCode"
+      const trailerTypeSelectMenu = screen.getByTestId(
+        "select-trailerTypeCode"
       );
-      fireEvent.change(powerUnitTypeSelectMenu, {
-        target: { value: "CONCRET" },
+      fireEvent.change(trailerTypeSelectMenu, {
+        target: { value: "BOOSTER" },
       });
 
       // Country
@@ -179,11 +135,9 @@ describe("Power Unit Form Submission", () => {
     expect(year).toHaveValue("2020");
     expect(vin).toHaveValue("123456");
     expect(plate).toHaveValue("ABC123");
-    expect(subtype).toHaveTextContent(/Concrete Pumper Trucks/i);
+    expect(subtype).toHaveTextContent(/Boosters/i);
     expect(country).toHaveTextContent(/Canada/i);
     expect(province).toHaveTextContent(/Alberta/i);
-    expect(licensedGvw).toHaveValue("85000");
-    expect(steerAxleTireSize).toHaveValue("300");
 
     // check that there are no errors shown after submission
     expect(screen.queryByTestId("alert", { exact: false })).toBeNull();
