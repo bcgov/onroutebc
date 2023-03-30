@@ -6,6 +6,7 @@ import { ManageProfiles } from "../features/manageProfile/ManageProfiles";
 import { AddVehicleDashboard } from "../features/manageVehicles/components/dashboard/AddVehicleDashboard";
 import { VEHICLE_TYPES_ENUM } from "../features/manageVehicles/components/form/constants";
 import { ManageVehicles } from "../features/manageVehicles/ManageVehicles";
+import { PermitApplicationDashboard } from "../features/permits/components/dashboard/PermitApplicationDashboard";
 
 export const AppRoutes = () => {
   return (
@@ -29,6 +30,7 @@ export const AppRoutes = () => {
         />
       </Route>
       <Route path={routes.MANAGE_PROFILES} element={<ManageProfiles />} />
+      <Route path={routes.PERMITS} element={<PermitApplicationDashboard />} />
     </Routes>
   );
 };

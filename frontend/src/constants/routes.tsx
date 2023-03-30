@@ -7,3 +7,6 @@ export const ADD_TRAILER = "add-trailer";
 
 //Manage Profile
 export const MANAGE_PROFILES = "manage-profiles";
+
+//Permits
+export const PERMITS = "permits";

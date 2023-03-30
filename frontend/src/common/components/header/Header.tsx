@@ -99,6 +99,11 @@ export const Header = () => {
               Profile
             </NavLink>
           </li>
+          <li>
+            <NavLink to={routes.PERMITS} onClick={menuToggleHandler}>
+              Permits
+            </NavLink>
+          </li>
         </ul>
       </div>
     </nav>
