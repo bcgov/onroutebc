@@ -29,7 +29,7 @@ import {
   UserDirectory,
 } from '../../../common/enum/directory.enum';
 import { ReadCompanyMetadataDto } from './dto/response/read-company-metadata.dto';
-import { UserDetailsDto } from 'src/modules/common/dto/response/user-details.dto';
+import { UserModel } from 'src/modules/common/model/user.model';
 
 @ApiTags('Company and User Management - Company')
 @ApiNotFoundResponse({
@@ -118,14 +118,14 @@ export class CompanyController {
     @Query('userGUID') userGUID?: string,
   ): Promise<ReadCompanyMetadataDto[]> {
     let company: ReadCompanyMetadataDto[] = [] as ReadCompanyMetadataDto[];
-    const userDetails: UserDetailsDto = req.userDetails;
+    const userModel: UserModel = req.userModel;
     if (userGUID) {
       company = await this.companyService.findCompanyMetadataByUserGuid(
         userGUID,
       );
     } else {
       company = await this.companyService.findCompanyMetadataByUserGuid(
-        userDetails.userGUID,
+        userModel.userGUID,
       );
     }
 

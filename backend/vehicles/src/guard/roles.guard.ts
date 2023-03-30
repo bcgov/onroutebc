@@ -3,7 +3,7 @@ import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
 import { ROLES_KEY } from 'src/common/decorator/roles.decoratos';
 import { Role } from 'src/common/enum/role.enum';
-import { UserDetailsDto } from 'src/modules/common/dto/response/user-details.dto';
+import { UserModel } from 'src/modules/common/model/user.model';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -18,7 +18,7 @@ export class RolesGuard implements CanActivate {
       return true;
     }
     const req: Request = context.switchToHttp().getRequest();
-    const user: UserDetailsDto = req.userDetails;
+    const user: UserModel = req.userModel;
     return (
       requiredRoles.some((role) =>
         user.userCompany.userRoles?.includes(role),

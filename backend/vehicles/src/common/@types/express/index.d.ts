@@ -1,9 +1,9 @@
-import { UserDetailsDto } from 'src/modules/common/dto/response/user-details.dto';
+import { UserModel } from 'src/modules/common/model/user.model';
 
 declare global {
   namespace Express {
     interface Request {
-      userDetails: UserDetailsDto;
+      userModel: UserModel;
     }
   }
 }

@@ -27,8 +27,8 @@ import { ReadUserDto } from './dto/response/read-user.dto';
 import { UsersService } from './users.service';
 import { Roles } from 'src/common/decorator/roles.decoratos';
 import { Role } from 'src/common/enum/role.enum';
-import { UserDetailsDto } from 'src/modules/common/dto/response/user-details.dto';
-import { UserCompanyRoleDto } from 'src/modules/common/dto/request/user-company-role.dto';
+import { UserDetailModel } from 'src/modules/common/model/user-detail.model';
+import { UserModel } from 'src/modules/common/model/user.model';
 import { UserDirectory } from 'src/common/enum/directory.enum';
 
 @ApiTags('Company and User Management - User')
@@ -169,50 +169,49 @@ export class UsersController {
   }
 
   mapCompanyRolesForUser(
-    userDetails: UserDetailsDto,
+    userModel: UserModel,
     userRoles: CompanyUserRoleDto[],
     companyRoleUser: CompanyUserRoleDto[],
-  ): UserDetailsDto {
+  ): UserModel {
     for (const userRole of userRoles) {
-      userDetails.userAuthGroup = userRole.userAuthGroup;
+      userModel.userAuthGroup = userRole.userAuthGroup;
       for (const role of userRole.userRoles) {
-        userDetails.roles.push(role.roleId);
+        userModel.roles.push(role.roleId);
       }
     }
 
     for (const companyUserRole of companyRoleUser) {
-      userDetails.statusCode = companyUserRole.user.statusCode;
-      userDetails.userGUID = companyUserRole.user.userGUID;
-      userDetails.userName = companyUserRole.user.userName;
-      userDetails.userDirectory = companyUserRole.user.userDirectory;
-      userDetails.userCompany.clientNumber =
-        companyUserRole.company.clientNumber;
-      userDetails.userCompany.companyGUID = companyUserRole.company.companyGUID;
-      userDetails.userCompany.companyId = companyUserRole.company.companyId;
-      userDetails.userCompany.legalName = companyUserRole.company.legalName;
-      userDetails.userCompany.userAuthGroup.push(companyUserRole.userAuthGroup);
+      userModel.statusCode = companyUserRole.user.statusCode;
+      userModel.userGUID = companyUserRole.user.userGUID;
+      userModel.userName = companyUserRole.user.userName;
+      userModel.userDirectory = companyUserRole.user.userDirectory;
+      userModel.userCompany.clientNumber = companyUserRole.company.clientNumber;
+      userModel.userCompany.companyGUID = companyUserRole.company.companyGUID;
+      userModel.userCompany.companyId = companyUserRole.company.companyId;
+      userModel.userCompany.legalName = companyUserRole.company.legalName;
+      userModel.userCompany.userAuthGroup.push(companyUserRole.userAuthGroup);
       for (const roles of companyUserRole.userRoles) {
-        userDetails.userCompany.userRoles.push(roles.roleId);
+        userModel.userCompany.userRoles.push(roles.roleId);
       }
     }
-    return userDetails;
+    return userModel;
   }
 
   mapRolesForUser(
-    userDetailsDto: UserDetailsDto,
+    userModel: UserModel,
     userRoles: CompanyUserRoleDto[],
-  ): UserDetailsDto {
+  ): UserModel {
     for (const userRole of userRoles) {
-      userDetailsDto.userAuthGroup = userRole.user.userAuthGroup;
-      userDetailsDto.userGUID = userRole.user.userGUID;
-      userDetailsDto.userName = userRole.user.userName;
-      userDetailsDto.userDirectory = userRole.user.userDirectory;
-      userDetailsDto.statusCode = userRole.user.statusCode;
+      userModel.userAuthGroup = userRole.user.userAuthGroup;
+      userModel.userGUID = userRole.user.userGUID;
+      userModel.userName = userRole.user.userName;
+      userModel.userDirectory = userRole.user.userDirectory;
+      userModel.statusCode = userRole.user.statusCode;
       for (const role of userRole.userRoles) {
-        userDetailsDto.roles.push(role.roleId);
+        userModel.roles.push(role.roleId);
       }
     }
-    return userDetailsDto;
+    return userModel;
   }
 
   /**
@@ -224,7 +223,7 @@ export class UsersController {
    * TODO: Authorization, (to check if logged in user has
    * privilege to read role for the user related to provided userGUID).
    * IF userGUID is not present the logged in user's roles will be returned.
-   * Logged in user is retrieved from req.userDetails object
+   * Logged in user is retrieved from req.userModel object
    * @Query companyId If company id is present then user roles
    * as well as the company role for that user(logged user or requested user)
    * will be returned.
@@ -237,17 +236,17 @@ export class UsersController {
     @Request() req,
     @Query('userGUID') userGUID: string,
     @Query('companyId') companyId?: number,
-  ): Promise<UserDetailsDto> {
+  ): Promise<UserModel> {
     let companyRoleRequestedUser: CompanyUserRoleDto[] = null;
-    let requestedUserDetailsDto: UserDetailsDto = new UserDetailsDto();
-    requestedUserDetailsDto.roles = [];
-    requestedUserDetailsDto.userCompany = new UserCompanyRoleDto();
-    requestedUserDetailsDto.userCompany.userAuthGroup = [];
-    requestedUserDetailsDto.userCompany.userRoles = [];
-    const userDetails: UserDetailsDto = req.userDetails;
+    let requestedUserModel: UserModel = new UserModel();
+    requestedUserModel.roles = [];
+    requestedUserModel.userCompany = new UserDetailModel();
+    requestedUserModel.userCompany.userAuthGroup = [];
+    requestedUserModel.userCompany.userRoles = [];
+    const loginUserModel: UserModel = req.userModel;
     /*Commenting Authorization code for now
     const res = response.locals.loginUser;
-     const loggedInUser: LoginUserDto = req.loginUser;
+     const loggedInUser: LoginUserDto = req.Model;
     const ability = this.abilityFactory.defineAbility(
       userGUID,
       companyId,
@@ -275,27 +274,27 @@ export class UsersController {
         const userRoles: CompanyUserRoleDto[] =
           await this.userService.findUserRoleDetails(userGUID);
         if (!userRoles) throw new DataNotFoundException();
-        requestedUserDetailsDto = this.mapCompanyRolesForUser(
-          requestedUserDetailsDto,
+        requestedUserModel = this.mapCompanyRolesForUser(
+          requestedUserModel,
           userRoles,
           companyRoleRequestedUser,
         );
-        return requestedUserDetailsDto;
+        return requestedUserModel;
       }
-      return userDetails;
+      return loginUserModel;
     } else {
       if (userGUID) {
         const requestedUserRoles: CompanyUserRoleDto[] =
           await this.userService.findUserRoleDetails(userGUID);
         if (!requestedUserRoles) throw new DataNotFoundException();
 
-        requestedUserDetailsDto = this.mapRolesForUser(
-          requestedUserDetailsDto,
+        requestedUserModel = this.mapRolesForUser(
+          requestedUserModel,
           requestedUserRoles,
         );
       }
-      if (userGUID) return requestedUserDetailsDto;
-      return userDetails;
+      if (userGUID) return requestedUserModel;
+      return loginUserModel;
     }
   }
 
@@ -306,7 +305,7 @@ export class UsersController {
     @Request() req,
     @Query('companyId') companyId?: number,
   ): Promise<CompanyUserRoleDto[]> {
-    const loggedInUser: UserDetailsDto = req.userDetails;
+    const loggedInUser: UserModel = req.userModel;
     const userGUID = loggedInUser.userGUID;
     let companyUserRole: CompanyUserRoleDto[] = null;
     if (companyId) {

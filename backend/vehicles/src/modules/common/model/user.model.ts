@@ -2,9 +2,9 @@ import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
 import { UserDirectory } from 'src/common/enum/directory.enum';
 import { UserStatus } from 'src/common/enum/user-status.enum';
-import { UserCompanyRoleDto } from '../request/user-company-role.dto';
+import { UserDetailModel } from './user-detail.model';
 
-export class UserDetailsDto {
+export class UserModel {
   @AutoMap()
   @ApiProperty({
     description: 'The user GUID.',
@@ -44,7 +44,7 @@ export class UserDetailsDto {
   statusCode: UserStatus;
 
   @AutoMap()
-  userCompany: UserCompanyRoleDto;
+  userCompany: UserDetailModel;
 
   @AutoMap()
   roles: string[];
