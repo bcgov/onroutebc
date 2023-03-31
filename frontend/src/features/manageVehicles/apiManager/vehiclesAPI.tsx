@@ -82,24 +82,6 @@ export const addTrailer = (trailer: Trailer): Promise<Response> => {
 };
 
 /**
- * Deletes a Power Unit.
- * @param powerUnitId The Power unit to be deleted.
- * @returns A Promise with the API response.
- */
-export const deletePowerUnit = (powerUnitId: string): Promise<Response> => {
-  return httpDELETERequest(`${VEHICLES_API.POWER_UNIT}/${powerUnitId}`);
-}
-
-/**
- * Deletes a trailer.
- * @param trailerId The trailer to be deleted.
- * @returns A Promise with the API response.
- */
-export const deleteTrailer = (trailerId: string): Promise<Response> => {
-  return httpDELETERequest(`${VEHICLES_API.TRAILER}/${trailerId}`);
-}
-
-/**
  * Deletes a vehicle.
  * @param vehicleId The vehicle to be deleted.
  * @returns A Promise with the API response.
