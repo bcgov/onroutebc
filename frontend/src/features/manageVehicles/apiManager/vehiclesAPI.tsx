@@ -4,9 +4,11 @@ import {
   UpdatePowerUnit,
   VehicleType,
   Trailer,
+  VehicleTypesAsString,
 } from "../types/managevehicles";
 
 import {
+  httpDELETERequest,
   httpGETRequest,
   httpPOSTRequest,
   httpPUTRequest,
@@ -78,3 +80,36 @@ export const getTrailerTypes = async (): Promise<Array<VehicleType>> => {
 export const addTrailer = (trailer: Trailer): Promise<Response> => {
   return httpPOSTRequest(VEHICLES_API.TRAILER, trailer);
 };
+
+/**
+ * Deletes a Power Unit.
+ * @param powerUnitId The Power unit to be deleted.
+ * @returns A Promise with the API response.
+ */
+export const deletePowerUnit = (powerUnitId: string): Promise<Response> => {
+  return httpDELETERequest(`${VEHICLES_API.POWER_UNIT}/${powerUnitId}`);
+}
+
+/**
+ * Deletes a trailer.
+ * @param trailerId The trailer to be deleted.
+ * @returns A Promise with the API response.
+ */
+export const deleteTrailer = (trailerId: string): Promise<Response> => {
+  return httpDELETERequest(`${VEHICLES_API.TRAILER}/${trailerId}`);
+}
+
+/**
+ * Deletes a vehicle.
+ * @param vehicleId The vehicle to be deleted.
+ * @returns A Promise with the API response.
+ */
+export const deleteVehicle = (vehicleId: string, vehicleType: VehicleTypesAsString): Promise<Response> => {
+  let url: string | null = null;
+  if (vehicleType === "powerUnit") {
+    url = VEHICLES_API.POWER_UNIT;
+  } else {
+    url = VEHICLES_API.TRAILER;
+  }
+  return httpDELETERequest(`${url}/${vehicleId}`);
+}

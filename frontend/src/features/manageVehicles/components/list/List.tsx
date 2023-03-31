@@ -17,6 +17,7 @@ import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { UseQueryResult } from "@tanstack/react-query";
 import { CustomSnackbar } from "../../../../common/components/snackbar/CustomSnackBar";
 import { PowerUnitColumnDefinition, TrailerColumnDefinition } from "./Columns";
+import { deleteVehicle } from "../../apiManager/vehiclesAPI";
 
 /**
  * Dynamically set the column based on vehicle type
@@ -65,15 +66,21 @@ export const List = memo(
       []
     );
 
-    const handleDeleteRow = useCallback((row: MRT_Row<VehicleTypes>) => {
-      if (
-        !confirm(
-          `Are you sure you want to delete ${row.getValue("unitNumber")}`
-        )
-      ) {
-        return;
-      }
-      //send api delete request here, then refetch or update local table data for re-render
+    /**
+     * Deletes a selected Vehicle.
+     */
+    const onDeleteRow = useCallback((row: MRT_Row<VehicleTypes>) => {
+      const vehicleId: string = row.getValue(`${vehicleType}Id`);
+        if (!confirm(`Are you sure you want to delete ${vehicleId}`)) {
+          return;
+        }
+        deleteVehicle(vehicleId, vehicleType).then((response) => {
+          if (response.status === 200) {
+            query.refetch();
+          } else {
+            setShowErrorSnackbar(() => true);
+          }
+        });
     }, []);
 
     // Start snackbar code for error handling
@@ -108,6 +115,7 @@ export const List = memo(
             showAlertBanner: isError,
             showProgressBars: isFetching,
             sorting: [{ id: "createdDateTime", desc: true }],
+            columnVisibility: { powerUnitId: false, trailerId: false },
           }}
           // Disable the default column actions so that we can use our custom actions
           enableColumnActions={false}
@@ -153,8 +161,8 @@ export const List = memo(
                   {/*tslint:disable-next-line*/}
                   <IconButton
                     color="error"
-                    onClick={() => handleDeleteRow(row)}
-                    disabled={true}
+                    onClick={() => onDeleteRow(row)}
+                    disabled={false}
                   >
                     <Delete />
                   </IconButton>

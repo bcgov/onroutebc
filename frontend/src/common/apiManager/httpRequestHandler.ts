@@ -38,3 +38,14 @@ export const httpPUTRequest = (url: string, data: any) => {
     body: JSON.stringify(data),
   });
 };
+
+/**
+ * HTTP Delete Request
+ * @param url The URL containing the resource id to be deleted.
+ * @returns A Promise.
+ */
+export const httpDELETERequest = (url: string) => {
+  return fetch(url, {
+    method: "DELETE",
+  });
+};

@@ -12,6 +12,10 @@ import { VehicleTypes } from "../../types/managevehicles";
 
 export const PowerUnitColumnDefinition: MRT_ColumnDef<VehicleTypes>[] = [
   {
+    accessorKey: "powerUnitId",
+    header: "Power unit Id",
+  },
+  {
     accessorKey: "unitNumber",
     header: "Unit #",
   },
@@ -39,6 +43,10 @@ export const PowerUnitColumnDefinition: MRT_ColumnDef<VehicleTypes>[] = [
 ];
 
 export const TrailerColumnDefinition: MRT_ColumnDef<VehicleTypes>[] = [
+  {
+    accessorKey: "trailerId",
+    header: "Trailer Id",
+  },
   {
     accessorKey: "unitNumber",
     header: "Unit #",
