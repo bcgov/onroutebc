@@ -8,7 +8,6 @@ import MaterialReactTable, {
 import "./List.scss";
 import { Box, IconButton, Tooltip } from "@mui/material";
 import { VehicleTypes, VehicleTypesAsString } from "../../types/managevehicles";
-
 import { Filter } from "../options/Filter";
 import { Trash } from "../options/Trash";
 import { CSVOptions } from "../options/CSVOptions";
@@ -18,6 +17,7 @@ import { UseQueryResult } from "@tanstack/react-query";
 import { CustomSnackbar } from "../../../../common/components/snackbar/CustomSnackBar";
 import { PowerUnitColumnDefinition, TrailerColumnDefinition } from "./Columns";
 import { deleteVehicle } from "../../apiManager/vehiclesAPI";
+import ConfirmationDialog from "./ConfirmationDialog";
 
 /**
  * Dynamically set the column based on vehicle type
@@ -254,6 +254,10 @@ export const List = memo(
             sx: { backgroundColor: BC_COLOURS.bc_background_light_grey },
           }}
         />
+        {/* <Dialog open={true}>
+
+        </Dialog> */}
+        <ConfirmationDialog vehicleId="99" isOpen={true}/>
       </div>
     );
   }
