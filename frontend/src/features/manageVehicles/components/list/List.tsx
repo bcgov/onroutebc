@@ -71,16 +71,16 @@ export const List = memo(
      */
     const onDeleteRow = useCallback((row: MRT_Row<VehicleTypes>) => {
       const vehicleId: string = row.getValue(`${vehicleType}Id`);
-        if (!confirm(`Are you sure you want to delete ${vehicleId}`)) {
-          return;
+      if (!confirm(`Are you sure you want to delete ${vehicleId}`)) {
+        return;
+      }
+      deleteVehicle(vehicleId, vehicleType).then((response) => {
+        if (response.status === 200) {
+          query.refetch();
+        } else {
+          setShowErrorSnackbar(() => true);
         }
-        deleteVehicle(vehicleId, vehicleType).then((response) => {
-          if (response.status === 200) {
-            query.refetch();
-          } else {
-            setShowErrorSnackbar(() => true);
-          }
-        });
+      });
     }, []);
 
     // Start snackbar code for error handling
@@ -254,10 +254,7 @@ export const List = memo(
             sx: { backgroundColor: BC_COLOURS.bc_background_light_grey },
           }}
         />
-        {/* <Dialog open={true}>
-
-        </Dialog> */}
-        <ConfirmationDialog vehicleId="99" isOpen={true}/>
+        <ConfirmationDialog vehicleId="99" isOpen={true} />
       </div>
     );
   }

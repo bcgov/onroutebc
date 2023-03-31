@@ -20,7 +20,7 @@ export default function ConfirmationDialog({
   const [open, setOpen] = React.useState(true);
 
   const handleClose = () => {
-    setOpen(false);
+    setOpen(() => false);
   };
 
   return (
