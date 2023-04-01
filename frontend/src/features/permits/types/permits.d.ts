@@ -1,15 +1,26 @@
 import { CompanyProfile } from "../../manageProfile/apiManager/manageProfileAPI";
 import { PowerUnit, Trailer } from "../../manageVehicles/types/managevehicles";
 
+/**
+ * A base permit type. This is an incomplete object and meant to be extended for use.
+ */
+interface Permit {
+  applicationId: number;
+  dateCreated: string;
+  lastUpdated: string;
+}
+
 interface TermOversizePermitDetails {
-  startDate: string;
+  startDate: Dayjs;
   endDate: string;
   permitDuration: number; //days
   commodities: string[];
 }
 
-export interface TermOversizePermit {
+export interface TermOversizePermit extends Permit {
   contactDetails: CompanyProfile;
   permitDetails: TermOversizePermitDetails;
   vehicleDetails: PowerUnit | Trailer;
+  selectedVehicle: string;
+  vehicleType: string;
 }

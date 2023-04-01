@@ -14,6 +14,23 @@ import {
 
 /**
  * Fetch*
+ * All Power Unit and Trailer Data
+ * @return An array of combined PowerUnit and Trailers
+ */
+export const getAllVehicles = async (): Promise<(PowerUnit | Trailer)[]> => {
+  const urlPowerUnits = new URL(VEHICLES_API.GET_ALL_POWER_UNITS);
+  const urlTrailers = new URL(VEHICLES_API.GET_ALL_TRAILERS);
+
+  const powerUnits = await httpGETRequest(urlPowerUnits);
+  const trailers = await httpGETRequest(urlTrailers);
+
+  const allVehicles: (PowerUnit | Trailer)[] = [...powerUnits, ...trailers];
+
+  return allVehicles;
+};
+
+/**
+ * Fetch*
  * All Power Unit Data
  * @return {*}  {Promise<void>}
  */

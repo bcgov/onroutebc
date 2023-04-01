@@ -5,9 +5,22 @@ import { SnackBarContext } from "../../../App";
 import {
   addPowerUnit,
   addTrailer,
+  getAllVehicles,
   getPowerUnitTypes,
   getTrailerTypes,
 } from "./vehiclesAPI";
+
+/**
+ *
+ * @returns An array of Powerunits and Trailers
+ */
+export const useVehiclesQuery = () => {
+  return useQuery({
+    queryKey: ["vehicles"],
+    queryFn: getAllVehicles,
+    retry: false,
+  });
+};
 
 export const usePowerUnitTypesQuery = () => {
   return useQuery({

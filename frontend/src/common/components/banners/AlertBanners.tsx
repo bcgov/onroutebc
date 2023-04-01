@@ -38,9 +38,11 @@ export const WarningBcGovBanner = ({
 
 export const InfoBcGovBanner = ({
   description,
+  htmlDescription,
   width,
 }: {
   description: string;
+  htmlDescription?: JSX.Element;
   width?: string;
 }) => (
   <div
@@ -51,6 +53,7 @@ export const InfoBcGovBanner = ({
     style={{ width: width }}
   >
     <p id="info-desc">{description}</p>
+    <>{htmlDescription}</>
   </div>
 );
 

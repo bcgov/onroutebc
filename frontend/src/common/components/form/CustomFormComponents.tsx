@@ -8,6 +8,7 @@ import {
 } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { ORBC_FormTypes } from "../../../types/common";
+import { CustomDatePicker } from "./subFormComponents/CustomDatePicker";
 import { CustomOutlinedInput } from "./subFormComponents/CustomOutlinedInput";
 import { CustomSelect } from "./subFormComponents/CustomSelect";
 import { PhoneNumberInput } from "./subFormComponents/PhoneNumberInput";
@@ -16,7 +17,7 @@ import { PhoneNumberInput } from "./subFormComponents/PhoneNumberInput";
  * Properties of onRouteBC custom form components
  */
 export interface CustomFormComponentProps<T extends FieldValues> {
-  type: "input" | "select" | "phone";
+  type: "input" | "select" | "phone" | "datePicker";
   feature: string;
   options: CustomFormOptionsProps<T>;
   i18options?: InternationalOptionsProps;
@@ -137,6 +138,16 @@ export const CustomFormComponent = <T extends ORBC_FormTypes>({
       case "input":
         return (
           <CustomOutlinedInput
+            feature={feature}
+            name={name}
+            rules={rules}
+            inputProps={inputProps}
+            invalid={invalid}
+          />
+        );
+      case "datePicker":
+        return (
+          <CustomDatePicker
             feature={feature}
             name={name}
             rules={rules}

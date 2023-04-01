@@ -6,7 +6,7 @@ import {
   CompanyProfile,
   updateCompanyInfo,
 } from "../../apiManager/manageProfileAPI";
-import { InfoBcGovBanner } from "../../../../common/components/alertBanners/AlertBanners";
+import { InfoBcGovBanner } from "../../../../common/components/banners/AlertBanners";
 
 import "./CompanyInfoForms.scss";
 import { CompanyInfoGeneralForm } from "./subForms/CompanyInfoGeneralForm";

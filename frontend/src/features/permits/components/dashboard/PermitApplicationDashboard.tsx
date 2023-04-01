@@ -4,7 +4,7 @@ import "../../../../common/components/dashboard/Dashboard.scss";
 import { Banner } from "../../../../common/components/dashboard/Banner";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { useNavigate } from "react-router-dom";
-import { TermOversizeForm } from "../form/TermOversizeForm";
+import { TermOversizeForm } from "../form/TermOversizePermit/TermOversizeForm";
 
 export const PermitApplicationDashboard = () => {
   const navigate = useNavigate();
