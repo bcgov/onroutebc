@@ -18,6 +18,7 @@ interface Contact {
   phone2?: string;
   phone2Extension?: string;
   email: string;
+  fax?: string;
   city: string;
   provinceCode: string;
   countryCode: string;

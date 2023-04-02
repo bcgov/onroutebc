@@ -34,7 +34,7 @@ import {
 import { useFormContext } from "react-hook-form";
 
 export const VehicleDetails = ({ feature }: { feature: string }) => {
-  const { register, setValue } = useFormContext();
+  const { register, setValue, resetField } = useFormContext();
 
   const formFieldStyle = {
     fontWeight: "bold",
@@ -74,6 +74,8 @@ export const VehicleDetails = ({ feature }: { feature: string }) => {
       });
 
     if (!vehicle) return;
+
+    resetField("vehicleDetails");
 
     setValue("vehicleDetails", {
       vin: vehicle[0].vin,

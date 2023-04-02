@@ -109,7 +109,7 @@ export const ContactDetails = ({ feature }: { feature: string }) => (
         type="input"
         feature={feature}
         options={{
-          name: "fax",
+          name: "contactDetails.primaryContact.fax",
           rules: { required: false },
           label: "Fax",
           width: PHONE_WIDTH,
