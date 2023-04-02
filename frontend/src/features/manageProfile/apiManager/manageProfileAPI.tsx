@@ -29,7 +29,7 @@ export interface CompanyProfile {
   clientNumber: string;
   legalName: string;
   companyAddress: Address;
-  mailingAddressSameAsCompanyAddress: boolean;
+  mailingAddressSameAsCompanyAddress?: boolean;
   mailingAddress?: Address;
   email: string;
   phone: string;

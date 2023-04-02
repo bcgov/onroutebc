@@ -51,7 +51,8 @@ export const PhoneNumberInput = <T extends ORBC_FormTypes>(
  * Function to format the users input to be in the correct phone number format
  * as the user types
  */
-export const formatPhoneNumber = (input: string): string => {
+export const formatPhoneNumber = (input?: string): string => {
+  if (!input) return "";
   // only allows 0-9 inputs
   const currentValue = input.replace(/[^\d]/g, "");
   const cvLength = currentValue.length;

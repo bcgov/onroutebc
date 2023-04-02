@@ -9,6 +9,8 @@ import { PermitDetails } from "./PermitDetails";
 import { VehicleDetails } from "../VehicleDetails";
 import dayjs from "dayjs";
 import { useCompanyInfoQuery } from "../../../../manageProfile/apiManager/hooks";
+import { formatPhoneNumber } from "../../../../../common/components/form/subFormComponents/PhoneNumberInput";
+import { useEffect } from "react";
 
 export const TermOversizeForm = ({
   termOversizePermit,
@@ -16,6 +18,7 @@ export const TermOversizeForm = ({
   termOversizePermit?: TermOversizePermit;
 }) => {
   const submitTermOversizeQuery = useSubmitTermOversizeMutation();
+  const contactDetails = useCompanyInfoQuery();
 
   // Default values to register with React Hook Forms
   // If data was passed to this component, then use that data, otherwise use empty or undefined values
@@ -35,6 +38,66 @@ export const TermOversizeForm = ({
     defaultValues: termOversizeDefaultValues,
     reValidateMode: "onBlur",
   });
+
+  /**
+   * Set default values for Contact Details
+   * If the user has entered a value, use that value
+   * Else, use the value from the CompanyInfo query
+   */
+  useEffect(() => {
+    if (contactDetails) {
+      formMethods.setValue("contactDetails.primaryContact", {
+        firstName:
+          formMethods.getValues("contactDetails.primaryContact.firstName") ||
+          contactDetails?.data?.primaryContact.firstName ||
+          "",
+        lastName:
+          formMethods.getValues("contactDetails.primaryContact.lastName") ||
+          contactDetails?.data?.primaryContact.lastName ||
+          "",
+        phone1:
+          formatPhoneNumber(
+            formMethods.getValues("contactDetails.primaryContact.phone1")
+          ) ||
+          formatPhoneNumber(contactDetails?.data?.primaryContact?.phone1) ||
+          "",
+        phone1Extension:
+          formMethods.getValues(
+            "contactDetails.primaryContact.phone1Extension"
+          ) ||
+          contactDetails?.data?.primaryContact?.phone1Extension ||
+          "",
+        phone2:
+          formatPhoneNumber(
+            formMethods.getValues("contactDetails.primaryContact.phone2")
+          ) ||
+          formatPhoneNumber(contactDetails?.data?.primaryContact?.phone2) ||
+          "",
+        phone2Extension:
+          formMethods.getValues(
+            "contactDetails.primaryContact.phone2Extension"
+          ) ||
+          contactDetails?.data?.primaryContact?.phone2Extension ||
+          "",
+        email:
+          formMethods.getValues("contactDetails.primaryContact.email") ||
+          contactDetails?.data?.primaryContact?.email ||
+          "",
+        city:
+          formMethods.getValues("contactDetails.primaryContact.city") ||
+          contactDetails?.data?.primaryContact?.city ||
+          "",
+        provinceCode:
+          formMethods.getValues("contactDetails.primaryContact.provinceCode") ||
+          contactDetails?.data?.primaryContact?.provinceCode ||
+          "",
+        countryCode:
+          formMethods.getValues("contactDetails.primaryContact.countryCode") ||
+          contactDetails?.data?.primaryContact?.countryCode ||
+          "",
+      });
+    }
+  }, [contactDetails]);
 
   const { handleSubmit } = formMethods;
 

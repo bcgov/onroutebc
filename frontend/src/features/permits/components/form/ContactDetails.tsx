@@ -22,7 +22,7 @@ export const ContactDetails = ({ feature }: { feature: string }) => (
         type="input"
         feature={feature}
         options={{
-          name: "primaryContact.firstName",
+          name: "contactDetails.primaryContact.firstName",
           rules: {
             required: { value: true, message: "First Name is required" },
           },
@@ -33,7 +33,7 @@ export const ContactDetails = ({ feature }: { feature: string }) => (
         type="input"
         feature={feature}
         options={{
-          name: "primaryContact.lastName",
+          name: "contactDetails.primaryContact.lastName",
           rules: {
             required: { value: true, message: "Last Name is required" },
           },
@@ -46,7 +46,7 @@ export const ContactDetails = ({ feature }: { feature: string }) => (
           type="phone"
           feature={feature}
           options={{
-            name: "primaryContact.phone1",
+            name: "contactDetails.primaryContact.phone1",
             rules: {
               required: { value: true, message: "Phone Number is required" },
             },
@@ -58,7 +58,7 @@ export const ContactDetails = ({ feature }: { feature: string }) => (
           type="input"
           feature={feature}
           options={{
-            name: "primaryContact.phone1Extension",
+            name: "contactDetails.primaryContact.phone1Extension",
             rules: { required: false },
             label: "Ext",
             width: EXT_WIDTH,
@@ -70,7 +70,7 @@ export const ContactDetails = ({ feature }: { feature: string }) => (
           type="phone"
           feature={feature}
           options={{
-            name: "primaryContact.phone2",
+            name: "contactDetails.primaryContact.phone2",
             rules: { required: false },
             label: "Alternate Number",
             width: PHONE_WIDTH,
@@ -80,7 +80,7 @@ export const ContactDetails = ({ feature }: { feature: string }) => (
           type="input"
           feature={feature}
           options={{
-            name: "primaryContact.phone2Extension",
+            name: "contactDetails.primaryContact.phone2Extension",
             rules: { required: false },
             label: "Ext",
             width: EXT_WIDTH,
@@ -97,7 +97,7 @@ export const ContactDetails = ({ feature }: { feature: string }) => (
         type="input"
         feature={feature}
         options={{
-          name: "primaryContact.email",
+          name: "contactDetails.primaryContact.email",
           rules: {
             required: { value: true, message: "Email is required" },
           },
