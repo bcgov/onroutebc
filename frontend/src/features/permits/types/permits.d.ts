@@ -6,8 +6,8 @@ import { PowerUnit, Trailer } from "../../manageVehicles/types/managevehicles";
  */
 interface Permit {
   applicationId: number;
-  dateCreated: string;
-  lastUpdated: string;
+  dateCreated: Dayjs;
+  lastUpdated: Dayjs;
 }
 
 interface TermOversizePermitDetails {
@@ -18,9 +18,9 @@ interface TermOversizePermitDetails {
 }
 
 export interface TermOversizePermit extends Permit {
-  contactDetails: CompanyProfile;
+  contactDetails?: CompanyProfile;
   permitDetails: TermOversizePermitDetails;
-  vehicleDetails: PowerUnit | Trailer;
-  selectedVehicle: string;
-  vehicleType: string;
+  vehicleDetails?: PowerUnit | Trailer;
+  selectedVehicle?: string;
+  vehicleType?: string;
 }
