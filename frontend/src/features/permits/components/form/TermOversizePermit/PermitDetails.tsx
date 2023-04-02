@@ -96,7 +96,7 @@ export const PermitDetails = ({ feature }: { feature: string }) => {
               </p>
             }
           />
-          <ConditionsTable />
+          <ConditionsTable feature={feature} />
         </Box>
       </Box>
     </Box>
