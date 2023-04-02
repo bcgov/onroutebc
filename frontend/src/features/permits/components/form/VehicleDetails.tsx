@@ -24,7 +24,7 @@ import {
   useVehiclesQuery,
 } from "../../../manageVehicles/apiManager/hooks";
 import { InfoBcGovBanner } from "../../../../common/components/banners/AlertBanners";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   PERMIT_MAIN_BOX_STYLE,
   PERMIT_LEFT_BOX_STYLE,
@@ -34,7 +34,7 @@ import {
 import { useFormContext } from "react-hook-form";
 
 export const VehicleDetails = ({ feature }: { feature: string }) => {
-  const { register } = useFormContext();
+  const { register, setValue } = useFormContext();
 
   const formFieldStyle = {
     fontWeight: "bold",
@@ -57,12 +57,56 @@ export const VehicleDetails = ({ feature }: { feature: string }) => {
   ];
 
   const [chooseFrom, setChooseFrom] = useState("");
-  const [vehicleType, setVehicleType] = useState("powerUnit");
+  const [selectedVehicle, setSelectedVehicle] = useState("");
+  const [vehicleType, setVehicleType] = useState("");
+
+  /**
+   * Set default values for Contact Details
+   * If the user has entered a value, use that value
+   * Else, use the value from the CompanyInfo query
+   */
+  useEffect(() => {
+    if (!selectedVehicle) return;
+
+    const vehicle: (PowerUnit | Trailer)[] | undefined =
+      allVehiclesQuery.data?.filter((item) => {
+        return item.plate === selectedVehicle;
+      });
+
+    if (!vehicle) return;
+
+    setValue("vehicleDetails", {
+      vin: vehicle[0].vin,
+      plate: vehicle[0].plate,
+      make: vehicle[0].make,
+      year: vehicle[0].year,
+      countryCode: vehicle[0].countryCode,
+      provinceCode: vehicle[0].provinceCode,
+    });
+
+    const powerUnit = vehicle[0] as PowerUnit;
+    if (powerUnit.powerUnitTypeCode) {
+      setVehicleType("powerUnit");
+      setValue("vehicleType", "powerUnit");
+      setValue("vehicleDetails.powerUnitTypeCode", powerUnit.powerUnitTypeCode);
+    }
+
+    const trailer = vehicle[0] as Trailer;
+    if (trailer.trailerTypeCode) {
+      setVehicleType("trailer");
+      setValue("vehicleType", "trailer");
+      setValue("vehicleDetails.trailerTypeCode", trailer.trailerTypeCode);
+    }
+  }, [selectedVehicle]);
 
   const displayVehicleMenuItems = () => {
     if (chooseFrom) {
       return allVehiclesQuery?.data?.map((data: PowerUnit | Trailer) => (
-        <MenuItem key={data.plate} value={data.plate}>
+        <MenuItem
+          key={data.plate}
+          value={data.plate}
+          onClick={() => setSelectedVehicle(data.plate)}
+        >
           {chooseFrom == "plate" ? data.plate : data.unitNumber}
         </MenuItem>
       ));
@@ -175,7 +219,7 @@ export const VehicleDetails = ({ feature }: { feature: string }) => {
           type="input"
           feature={feature}
           options={{
-            name: "vin",
+            name: "vehicleDetails.vin",
             rules: {
               required: { value: true, message: "VIN is required." },
               minLength: { value: 6, message: "Length must be 6" },
@@ -191,7 +235,7 @@ export const VehicleDetails = ({ feature }: { feature: string }) => {
           type="input"
           feature={feature}
           options={{
-            name: "plate",
+            name: "vehicleDetails.plate",
             rules: { required: true, maxLength: 10 },
             label: "Plate",
             width: formFieldStyle.width,
@@ -206,7 +250,7 @@ export const VehicleDetails = ({ feature }: { feature: string }) => {
           type="input"
           feature={feature}
           options={{
-            name: "make",
+            name: "vehicleDetails.make",
             rules: { required: true, maxLength: 20 },
             label: "Make",
             width: formFieldStyle.width,
@@ -221,7 +265,7 @@ export const VehicleDetails = ({ feature }: { feature: string }) => {
           type="input"
           feature={feature}
           options={{
-            name: "year",
+            name: "vehicleDetails.year",
             rules: {
               required: { value: true, message: "Year is required." },
               pattern: {
@@ -238,8 +282,8 @@ export const VehicleDetails = ({ feature }: { feature: string }) => {
 
         <CountryAndProvince
           feature={feature}
-          countryField="countryCode"
-          provinceField="provinceCode"
+          countryField="vehicleDetails.countryCode"
+          provinceField="vehicleDetails.provinceCode"
           isProvinceRequired={true}
           width={formFieldStyle.width}
         />
@@ -249,9 +293,9 @@ export const VehicleDetails = ({ feature }: { feature: string }) => {
             Vehicle Type
           </FormLabel>
           <Select
-            //value={vehicleType}
+            value={vehicleType}
             //onChange={handleVehicleType}
-            defaultValue={"powerUnit"}
+            //defaultValue={"powerUnit"}
             MenuProps={{
               style: {
                 // Fix for aligning the width of menu to the dropdown
@@ -284,8 +328,8 @@ export const VehicleDetails = ({ feature }: { feature: string }) => {
           options={{
             name:
               vehicleType === "powerUnit"
-                ? "powerUnitTypeCode"
-                : "trailerTypeCode",
+                ? "vehicleDetails.powerUnitTypeCode"
+                : "vehicleDetails.trailerTypeCode",
             rules: {
               required: {
                 value: true,
