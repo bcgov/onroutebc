@@ -8,7 +8,7 @@ export const PHONE_WIDTH = "344px";
 export const EXT_WIDTH = "144px";
 
 // Styles currently being used in Permit Forms
-const PERMIT_LEFT_COLUMN_WIDTH = "400px";
+export const PERMIT_LEFT_COLUMN_WIDTH = "400px";
 export const PERMIT_MAIN_BOX_STYLE = {
   display: "flex",
   flexWrap: "wrap",

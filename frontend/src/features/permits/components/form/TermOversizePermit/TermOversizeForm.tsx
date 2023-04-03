@@ -1,5 +1,11 @@
 import { useForm, FormProvider, FieldValues } from "react-hook-form";
-import { Box, Button, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { TermOversizePermit } from "../../../types/permits";
 import { useSubmitTermOversizeMutation } from "../../../apiManager/hooks";
@@ -10,7 +16,9 @@ import { VehicleDetails } from "../VehicleDetails";
 import dayjs from "dayjs";
 import { useCompanyInfoQuery } from "../../../../manageProfile/apiManager/hooks";
 import { formatPhoneNumber } from "../../../../../common/components/form/subFormComponents/PhoneNumberInput";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { BC_COLOURS } from "../../../../../themes/bcGovStyles";
+import { PERMIT_LEFT_COLUMN_WIDTH } from "../../../../../themes/orbcStyles";
 
 export const TermOversizeForm = ({
   termOversizePermit,
@@ -120,47 +128,126 @@ export const TermOversizeForm = ({
    */
   const FEATURE = "term-oversize";
 
+  /**
+   * The following code is used to setyle the bottom ba that has the
+   * Leave Application, Save App, Continue, and To Top buttons
+   *
+   * Need to clean up this up
+   */
+  const theme = useTheme();
+  const matches = useMediaQuery(theme.breakpoints.down("lg"));
+  const [isVisible, setIsVisible] = useState(false);
+  const scrollToTop = () => {
+    window.scrollTo(0, 0);
+  };
+  const listenToScroll = () => {
+    const heightToHideFrom = 600;
+    const winScroll =
+      document.body.scrollTop || document.documentElement.scrollTop;
+
+    if (winScroll > heightToHideFrom) {
+      !isVisible && // to limit setting state only the first time
+        setIsVisible(true);
+    } else {
+      setIsVisible(false);
+    }
+  };
+  useEffect(() => {
+    window.addEventListener("scroll", listenToScroll);
+    return () => window.removeEventListener("scroll", listenToScroll);
+  }, []);
+
   return (
-    <div>
-      <Typography
-        variant={"h2"}
+    <>
+      <Box sx={{ paddingBottom: "80px" }}>
+        <Typography
+          variant={"h2"}
+          sx={{
+            marginRight: "200px",
+            marginTop: "0px",
+            paddingTop: "0px",
+            borderBottom: "none",
+          }}
+        >
+          Oversize: Term
+        </Typography>
+        <FormProvider {...formMethods}>
+          <ApplicationDetails />
+          <ContactDetails feature={FEATURE} />
+          <PermitDetails feature={FEATURE} />
+          <VehicleDetails feature={FEATURE} />
+        </FormProvider>
+      </Box>
+
+      <Box
         sx={{
-          marginRight: "200px",
-          marginTop: "0px",
-          paddingTop: "0px",
-          borderBottom: "none",
+          position: "fixed",
+          height: "100px",
+          top: "calc(100vh - 100px)",
+          backgroundColor: BC_COLOURS.white,
+          width: "100vw",
+          display: "flex",
+          alignItems: "center",
+          marginLeft: matches ? "-20px" : "-60px",
+          justifyContent: "space-between",
         }}
       >
-        Oversize: Term
-      </Typography>
-      <FormProvider {...formMethods}>
-        <ApplicationDetails />
-        <ContactDetails feature={FEATURE} />
-        <PermitDetails feature={FEATURE} />
-        <VehicleDetails feature={FEATURE} />
-      </FormProvider>
-
-      <Box sx={{ padding: "32px 0px" }}>
         <Button
-          key="cancel-TROS-button"
-          aria-label="Cancel"
+          key="leave-application-button"
+          aria-label="leave"
           variant="contained"
           color="secondary"
           onClick={handleClose}
-          sx={{ marginRight: "32px" }}
+          sx={{
+            marginLeft: matches
+              ? "20px"
+              : `calc(${PERMIT_LEFT_COLUMN_WIDTH} + 60px)`,
+          }}
         >
-          Cancel
+          Leave Application
         </Button>
-        <Button
-          key="submit-TROS-button"
-          aria-label="Submit"
-          variant="contained"
-          color="primary"
-          onClick={handleSubmit(onSubmitTermOversize)}
-        >
-          Submit
-        </Button>
+        <Box>
+          <Button
+            key="save-TROS-button"
+            aria-label="save"
+            variant="contained"
+            color="secondary"
+            sx={{ marginLeft: "-420px" }}
+          >
+            Save Application
+          </Button>
+          <Button
+            key="submit-TROS-button"
+            aria-label="Submit"
+            variant="contained"
+            color="primary"
+            onClick={handleSubmit(onSubmitTermOversize)}
+            sx={{ marginLeft: "20px" }}
+          >
+            Continue
+          </Button>
+          {isVisible && (
+            <Button
+              key="to-top-button"
+              aria-label="To Top"
+              variant="contained"
+              color="secondary"
+              onClick={scrollToTop}
+              sx={{
+                position: "fixed",
+                bottom: 120,
+                right: matches ? 20 : 60,
+                width: "20px",
+              }}
+            >
+              <i
+                className="fa fa-chevron-up"
+                style={{ marginLeft: "8px", marginRight: "8px" }}
+              ></i>
+            </Button>
+          )}
+        </Box>
       </Box>
-    </div>
+    </>
   );
 };

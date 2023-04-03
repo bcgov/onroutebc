@@ -69,7 +69,7 @@ export const ConditionsTable = () => {
   const [checkedValues, setCheckedValues] = useState(conditions);
   const { control, setValue } = useFormContext();
 
-  function handleSelect(checkedName: any) {
+  function handleSelect(checkedName: string) {
     const newNames = checkedValues?.map((item) => {
       if (item.description === checkedName) {
         item.checked = true;
