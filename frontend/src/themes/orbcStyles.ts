@@ -13,6 +13,8 @@ export const PERMIT_MAIN_BOX_STYLE = {
   display: "flex",
   flexWrap: "wrap",
   backgroundColor: BC_COLOURS.white,
+  borderBottom: `1px solid ${BC_COLOURS.bc_text_box_border_grey}`,
+  paddingBottom: "24px",
 };
 export const PERMIT_LEFT_HEADER_STYLE = {
   //marginTop: "0px",

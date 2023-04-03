@@ -30,6 +30,15 @@ export const bcGovTheme = createTheme({
       marginBottom: 2,
       color: BC_COLOURS.bc_black,
     },
+    h1: {
+      color: BC_COLOURS.bc_black,
+      fontWeight: "bold",
+      fontSize: "32px",
+      paddingTop: "60px",
+      paddingBottom: "24px",
+      display: "inline-block",
+      letterSpacing: "-0.64px",
+    },
     h2: {
       color: BC_COLOURS.bc_black,
       fontWeight: "bold",

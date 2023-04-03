@@ -161,7 +161,7 @@ export const TermOversizeForm = ({
     <>
       <Box sx={{ paddingBottom: "80px" }}>
         <Typography
-          variant={"h2"}
+          variant={"h1"}
           sx={{
             marginRight: "200px",
             marginTop: "0px",

@@ -61,13 +61,31 @@ export const ApplicationDetails = () => {
 
   return (
     <>
-      <Typography>Application #{applicationValues?.applicationId}</Typography>
+      <Typography
+        variant="h2"
+        sx={{
+          display: "block",
+          borderBottom: "none",
+          paddingBottom: "8px",
+          paddingTop: "8px",
+        }}
+      >
+        Application # {applicationValues?.applicationId}
+      </Typography>
       <Box sx={{ display: "flex" }}>
         <Typography sx={{ width: "327px" }}>
-          Date Created: {applicationValues?.dateCreated.format("LL")}
+          <Box component="span" fontWeight="bold">
+            Date Created:
+          </Box>
+          {"  "}
+          {applicationValues?.dateCreated.format("LLL")}
         </Typography>
         <Typography>
-          Last Updated: {applicationValues?.lastUpdated.format("LL")}
+          <Box component="span" fontWeight="bold">
+            Last Updated:
+          </Box>
+          {"  "}
+          {applicationValues?.lastUpdated.format("LLL")}
         </Typography>
       </Box>
       <CompanyBanner companyInfo={companyInfoQuery.data} />
