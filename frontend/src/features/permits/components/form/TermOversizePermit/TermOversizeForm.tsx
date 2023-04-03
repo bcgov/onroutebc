@@ -190,6 +190,7 @@ export const TermOversizeForm = ({
           alignItems: "center",
           marginLeft: matches ? "-20px" : "-60px",
           justifyContent: "space-between",
+          borderTop: `1px solid ${BC_COLOURS.bc_text_box_border_grey}`,
         }}
       >
         <Button

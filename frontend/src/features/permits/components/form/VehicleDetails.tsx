@@ -142,7 +142,7 @@ export const VehicleDetails = ({ feature }: { feature: string }) => {
   };
 
   return (
-    <Box sx={PERMIT_MAIN_BOX_STYLE}>
+    <Box sx={[PERMIT_MAIN_BOX_STYLE, { borderBottom: "none" }]}>
       <Box sx={PERMIT_LEFT_BOX_STYLE}>
         <Typography variant={"h3"} sx={PERMIT_LEFT_HEADER_STYLE}>
           Vehicle Details
