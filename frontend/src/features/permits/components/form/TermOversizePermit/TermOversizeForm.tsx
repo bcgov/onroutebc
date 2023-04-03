@@ -53,7 +53,7 @@ export const TermOversizeForm = ({
    * Else, use the value from the CompanyInfo query
    */
   useEffect(() => {
-    if (contactDetails) {
+    if (contactDetails && !formMethods.formState.isDirty) {
       formMethods.setValue("contactDetails.primaryContact", {
         firstName:
           formMethods.getValues("contactDetails.primaryContact.firstName") ||
