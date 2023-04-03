@@ -7,7 +7,7 @@ import {
   useTheme,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { TermOversizePermit } from "../../../types/permits";
+import { TermOversizeApplication } from "../../../types/application";
 import { useSubmitTermOversizeMutation } from "../../../apiManager/hooks";
 import { ContactDetails } from "../ContactDetails";
 import { ApplicationDetails } from "../ApplicationDetails";
@@ -21,87 +21,76 @@ import { BC_COLOURS } from "../../../../../themes/bcGovStyles";
 import { PERMIT_LEFT_COLUMN_WIDTH } from "../../../../../themes/orbcStyles";
 
 export const TermOversizeForm = ({
-  termOversizePermit,
+  termOversizeApplication,
 }: {
-  termOversizePermit?: TermOversizePermit;
+  termOversizeApplication?: TermOversizeApplication;
 }) => {
   const submitTermOversizeQuery = useSubmitTermOversizeMutation();
   const contactDetails = useCompanyInfoQuery();
 
   // Default values to register with React Hook Forms
   // If data was passed to this component, then use that data, otherwise use empty or undefined values
-  const termOversizeDefaultValues: TermOversizePermit = {
-    applicationId: termOversizePermit?.applicationId || 1234567,
-    dateCreated: termOversizePermit?.dateCreated || dayjs(),
-    lastUpdated: termOversizePermit?.lastUpdated || dayjs(),
-    permitDetails: {
-      startDate: termOversizePermit?.permitDetails?.startDate || dayjs(),
-      endDate: termOversizePermit?.permitDetails?.endDate || "",
-      permitDuration: termOversizePermit?.permitDetails?.permitDuration || 30,
-      commodities: termOversizePermit?.permitDetails?.commodities || [],
+  const termOversizeDefaultValues: TermOversizeApplication = {
+    applicationId: termOversizeApplication?.applicationId || 1234567,
+    dateCreated: termOversizeApplication?.dateCreated || dayjs(),
+    lastUpdated: termOversizeApplication?.lastUpdated || dayjs(),
+    application: {
+      startDate: termOversizeApplication?.application?.startDate || dayjs(),
+      permitDuration:
+        termOversizeApplication?.application?.permitDuration || 30,
+      expiryDate: termOversizeApplication?.application?.expiryDate || dayjs(),
+      commodities: termOversizeApplication?.application?.commodities || [],
     },
   };
 
-  const formMethods = useForm<TermOversizePermit>({
+  const formMethods = useForm<TermOversizeApplication>({
     defaultValues: termOversizeDefaultValues,
     reValidateMode: "onBlur",
   });
 
   /**
-   * Set default values for Contact Details
+   * Set default values for Contact Details asynchronously
    * If the user has entered a value, use that value
    * Else, use the value from the CompanyInfo query
    */
   useEffect(() => {
     if (contactDetails && !formMethods.formState.isDirty) {
-      formMethods.setValue("contactDetails.primaryContact", {
+      formMethods.setValue("application.contactDetails", {
         firstName:
-          formMethods.getValues("contactDetails.primaryContact.firstName") ||
+          formMethods.getValues("application.contactDetails.firstName") ||
           contactDetails?.data?.primaryContact.firstName ||
           "",
         lastName:
-          formMethods.getValues("contactDetails.primaryContact.lastName") ||
+          formMethods.getValues("application.contactDetails.lastName") ||
           contactDetails?.data?.primaryContact.lastName ||
           "",
         phone1:
           formatPhoneNumber(
-            formMethods.getValues("contactDetails.primaryContact.phone1")
+            formMethods.getValues("application.contactDetails.phone1")
           ) ||
           formatPhoneNumber(contactDetails?.data?.primaryContact?.phone1) ||
           "",
         phone1Extension:
-          formMethods.getValues(
-            "contactDetails.primaryContact.phone1Extension"
-          ) ||
+          formMethods.getValues("application.contactDetails.phone1Extension") ||
           contactDetails?.data?.primaryContact?.phone1Extension ||
           "",
         phone2:
           formatPhoneNumber(
-            formMethods.getValues("contactDetails.primaryContact.phone2")
+            formMethods.getValues("application.contactDetails.phone2")
           ) ||
           formatPhoneNumber(contactDetails?.data?.primaryContact?.phone2) ||
           "",
         phone2Extension:
-          formMethods.getValues(
-            "contactDetails.primaryContact.phone2Extension"
-          ) ||
+          formMethods.getValues("application.contactDetails.phone2Extension") ||
           contactDetails?.data?.primaryContact?.phone2Extension ||
           "",
         email:
-          formMethods.getValues("contactDetails.primaryContact.email") ||
+          formMethods.getValues("application.contactDetails.email") ||
           contactDetails?.data?.primaryContact?.email ||
           "",
         city:
-          formMethods.getValues("contactDetails.primaryContact.city") ||
+          formMethods.getValues("application.contactDetails.city") ||
           contactDetails?.data?.primaryContact?.city ||
-          "",
-        provinceCode:
-          formMethods.getValues("contactDetails.primaryContact.provinceCode") ||
-          contactDetails?.data?.primaryContact?.provinceCode ||
-          "",
-        countryCode:
-          formMethods.getValues("contactDetails.primaryContact.countryCode") ||
-          contactDetails?.data?.primaryContact?.countryCode ||
           "",
       });
     }
@@ -112,7 +101,7 @@ export const TermOversizeForm = ({
   const navigate = useNavigate();
 
   const onSubmitTermOversize = function (data: FieldValues) {
-    const termOverSizeToBeAdded = data as TermOversizePermit;
+    const termOverSizeToBeAdded = data as TermOversizeApplication;
     submitTermOversizeQuery.mutate(termOverSizeToBeAdded);
   };
 

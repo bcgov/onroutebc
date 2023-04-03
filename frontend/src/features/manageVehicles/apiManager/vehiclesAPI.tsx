@@ -24,6 +24,14 @@ export const getAllVehicles = async (): Promise<(PowerUnit | Trailer)[]> => {
   const powerUnits = await httpGETRequest(urlPowerUnits);
   const trailers = await httpGETRequest(urlTrailers);
 
+  powerUnits.map((p: PowerUnit) => {
+    p.vehicleType = "powerUnit";
+  });
+
+  trailers.map((t: Trailer) => {
+    t.vehicleType = "trailer";
+  });
+
   const allVehicles: (PowerUnit | Trailer)[] = [...powerUnits, ...trailers];
 
   return allVehicles;

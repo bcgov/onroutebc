@@ -6,11 +6,9 @@ import {
   MenuItem,
   Radio,
   RadioGroup,
-  Select,
   SelectChangeEvent,
   Typography,
 } from "@mui/material";
-import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { CountryAndProvince } from "../../../../common/components/form/CountryAndProvince";
 import { CustomFormComponent } from "../../../../common/components/form/CustomFormComponents";
 import {
@@ -32,9 +30,12 @@ import {
   PERMIT_RIGHT_BOX_STYLE,
 } from "../../../../themes/orbcStyles";
 import { useFormContext } from "react-hook-form";
+import { CustomSimpleSelect } from "../../../../common/components/form/subFormComponents/CustomSimpleSelect";
+import { CustomSimpleSelectWithRegister } from "../../../../common/components/form/subFormComponents/CustomSimpleSelectWithRegister";
+import { CustomSimpleAutoComplete } from "./TermOversizePermit/CustomSimpleAutoComplete";
 
 export const VehicleDetails = ({ feature }: { feature: string }) => {
-  const { register, setValue, resetField } = useFormContext();
+  const { setValue, resetField } = useFormContext();
 
   const formFieldStyle = {
     fontWeight: "bold",
@@ -75,9 +76,9 @@ export const VehicleDetails = ({ feature }: { feature: string }) => {
 
     if (!vehicle) return;
 
-    resetField("vehicleDetails");
+    resetField("application.vehicleDetails");
 
-    setValue("vehicleDetails", {
+    setValue("application.vehicleDetails", {
       vin: vehicle[0].vin,
       plate: vehicle[0].plate,
       make: vehicle[0].make,
@@ -89,32 +90,23 @@ export const VehicleDetails = ({ feature }: { feature: string }) => {
     const powerUnit = vehicle[0] as PowerUnit;
     if (powerUnit.powerUnitTypeCode) {
       setVehicleType("powerUnit");
-      setValue("vehicleType", "powerUnit");
-      setValue("vehicleDetails.powerUnitTypeCode", powerUnit.powerUnitTypeCode);
+      setValue("application.vehicleDetails.vehicleType", "powerUnit");
+      setValue(
+        "application.vehicleDetails.vehicleSubType",
+        powerUnit.powerUnitTypeCode
+      );
     }
 
     const trailer = vehicle[0] as Trailer;
     if (trailer.trailerTypeCode) {
       setVehicleType("trailer");
-      setValue("vehicleType", "trailer");
-      setValue("vehicleDetails.trailerTypeCode", trailer.trailerTypeCode);
+      setValue("application.vehicleDetails.vehicleType", "trailer");
+      setValue(
+        "application.vehicleDetails.vehicleSubType",
+        trailer.trailerTypeCode
+      );
     }
   }, [selectedVehicle]);
-
-  const displayVehicleMenuItems = () => {
-    if (chooseFrom) {
-      return allVehiclesQuery?.data?.map((data: PowerUnit | Trailer) => (
-        <MenuItem
-          key={data.plate}
-          value={data.plate}
-          onClick={() => setSelectedVehicle(data.plate)}
-        >
-          {chooseFrom == "plate" ? data.plate : data.unitNumber}
-        </MenuItem>
-      ));
-    }
-    return undefined;
-  };
 
   const displayVehicleSubTypeMenuItems = () => {
     if (vehicleType === "powerUnit") {
@@ -173,47 +165,23 @@ export const VehicleDetails = ({ feature }: { feature: string }) => {
           }
         />
         <Box sx={{ display: "flex", gap: "40px" }}>
-          <FormControl margin="normal">
-            <FormLabel sx={{ fontWeight: "bold", marginBottom: "8px" }}>
-              Choose from
-            </FormLabel>
-            <Select
-              value={chooseFrom}
-              //label="Choose from"
-              onChange={handleChooseFrom}
-              MenuProps={{
-                style: {
-                  // Fix for aligning the width of menu to the dropdown
-                  width: 100 % -10,
-                },
-              }}
-              sx={{
-                "&&.Mui-focused fieldset": {
-                  border: `2px solid ${BC_COLOURS.focus_blue}`,
-                },
-                width: "180px",
-              }}
-            >
-              {chooseFromOptions.map((data) => (
-                <MenuItem key={data.value} value={data.value}>
-                  {data.label}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-
-          <CustomFormComponent
-            type="select"
-            feature={feature}
-            options={{
-              name: "selectedVehicle",
-              rules: {
-                required: false,
-              },
-              label: "Select vehicle",
-              width: "268px",
-            }}
-            menuOptions={displayVehicleMenuItems()}
+          <CustomSimpleSelect
+            value={chooseFrom}
+            label={"Choose from"}
+            onChange={handleChooseFrom}
+            menuItems={chooseFromOptions.map((data) => (
+              <MenuItem key={data.value} value={data.value}>
+                {data.label}
+              </MenuItem>
+            ))}
+            width={"180px"}
+          />
+          <CustomSimpleAutoComplete
+            label={"Select vehicle"}
+            width={"268px"}
+            options={allVehiclesQuery?.data}
+            chooseFrom={chooseFrom}
+            setSelectedVehicle={setSelectedVehicle}
           />
         </Box>
 
@@ -221,7 +189,7 @@ export const VehicleDetails = ({ feature }: { feature: string }) => {
           type="input"
           feature={feature}
           options={{
-            name: "vehicleDetails.vin",
+            name: "application.vehicleDetails.vin",
             rules: {
               required: { value: true, message: "VIN is required." },
               minLength: { value: 6, message: "Length must be 6" },
@@ -237,7 +205,7 @@ export const VehicleDetails = ({ feature }: { feature: string }) => {
           type="input"
           feature={feature}
           options={{
-            name: "vehicleDetails.plate",
+            name: "application.vehicleDetails.plate",
             rules: { required: true, maxLength: 10 },
             label: "Plate",
             width: formFieldStyle.width,
@@ -252,7 +220,7 @@ export const VehicleDetails = ({ feature }: { feature: string }) => {
           type="input"
           feature={feature}
           options={{
-            name: "vehicleDetails.make",
+            name: "application.vehicleDetails.make",
             rules: { required: true, maxLength: 20 },
             label: "Make",
             width: formFieldStyle.width,
@@ -267,7 +235,7 @@ export const VehicleDetails = ({ feature }: { feature: string }) => {
           type="input"
           feature={feature}
           options={{
-            name: "vehicleDetails.year",
+            name: "application.vehicleDetails.year",
             rules: {
               required: { value: true, message: "Year is required." },
               pattern: {
@@ -284,54 +252,36 @@ export const VehicleDetails = ({ feature }: { feature: string }) => {
 
         <CountryAndProvince
           feature={feature}
-          countryField="vehicleDetails.countryCode"
-          provinceField="vehicleDetails.provinceCode"
+          countryField="application.vehicleDetails.countryCode"
+          provinceField="application.vehicleDetails.provinceCode"
           isProvinceRequired={true}
           width={formFieldStyle.width}
         />
 
-        <FormControl margin="normal">
-          <FormLabel sx={{ fontWeight: "bold", marginBottom: "8px" }}>
-            Vehicle Type
-          </FormLabel>
-          <Select
-            value={vehicleType}
-            //onChange={handleVehicleType}
-            //defaultValue={"powerUnit"}
-            MenuProps={{
-              style: {
-                // Fix for aligning the width of menu to the dropdown
-                width: 100 % -10,
-              },
-            }}
-            sx={{
-              "&&.Mui-focused fieldset": {
-                border: `2px solid ${BC_COLOURS.focus_blue}`,
-              },
-              width: formFieldStyle.width,
-            }}
-            {...register("vehicleType", {
+        <CustomSimpleSelectWithRegister
+          value={vehicleType}
+          label={"Vehicle Type"}
+          menuItems={vehicleTypes.map((data) => (
+            <MenuItem key={data.value} value={data.value}>
+              {data.label}
+            </MenuItem>
+          ))}
+          width={formFieldStyle.width}
+          registerOptions={{
+            name: "application.vehicleDetails.vehicleType",
+            options: {
               value: vehicleType,
               required: true,
               onChange: handleVehicleType,
-            })}
-          >
-            {vehicleTypes.map((data) => (
-              <MenuItem key={data.value} value={data.value}>
-                {data.label}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+            },
+          }}
+        />
 
         <CustomFormComponent
           type="select"
           feature={feature}
           options={{
-            name:
-              vehicleType === "powerUnit"
-                ? "vehicleDetails.powerUnitTypeCode"
-                : "vehicleDetails.trailerTypeCode",
+            name: "application.vehicleDetails.vehicleSubType",
             rules: {
               required: {
                 value: true,

@@ -22,18 +22,21 @@ export const PermitDetails = ({ feature }: { feature: string }) => {
     { value: 365, label: "1 Year" },
   ];
 
-  const { getValues, watch } = useFormContext();
+  const { getValues, watch, register, setValue } = useFormContext();
 
-  const startDate = watch("permitDetails.startDate");
-  const duration = getValues("permitDetails.permitDuration");
+  const startDate = watch("application.startDate");
+  const duration = getValues("application.permitDuration");
   const formatDate = () => {
     return startDate.add(duration, "day").format("LL");
   };
 
   const [expiryDate, setExpiryDate] = useState(formatDate());
 
+  register("application.expiryDate");
+
   useEffect(() => {
     setExpiryDate(formatDate());
+    setValue("application.expiryDate", startDate.add(duration, "day"));
   }, [startDate, duration]);
 
   return (
@@ -49,7 +52,7 @@ export const PermitDetails = ({ feature }: { feature: string }) => {
             type="datePicker"
             feature={feature}
             options={{
-              name: "permitDetails.startDate",
+              name: "application.startDate",
               rules: {
                 required: { value: true, message: "Start Date is required." },
               },
@@ -61,7 +64,7 @@ export const PermitDetails = ({ feature }: { feature: string }) => {
             type="select"
             feature={feature}
             options={{
-              name: "permitDetails.permitDuration",
+              name: "application.permitDuration",
               rules: {
                 required: { value: true, message: "Duration is required." },
               },

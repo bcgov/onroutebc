@@ -77,8 +77,12 @@ export const ConditionsTable = () => {
       return item;
     });
 
+    const checkedNames = checkedValues
+      .filter((x) => x.checked)
+      .map((y) => y.description);
+
     setCheckedValues(newNames);
-    setValue("permitDetails.commodities", newNames);
+    setValue("application.commodities", checkedNames);
 
     return newNames;
   }
@@ -104,7 +108,7 @@ export const ConditionsTable = () => {
                 <FormControlLabel
                   control={
                     <Controller
-                      name="permitDetails.commodities"
+                      name="application.commodities"
                       render={() => {
                         return (
                           <Checkbox

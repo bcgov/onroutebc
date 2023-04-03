@@ -23,7 +23,7 @@ export const ContactDetails = ({ feature }: { feature: string }) => {
           type="input"
           feature={feature}
           options={{
-            name: "contactDetails.primaryContact.firstName",
+            name: "application.contactDetails.firstName",
             rules: {
               required: { value: true, message: "First Name is required" },
             },
@@ -34,7 +34,7 @@ export const ContactDetails = ({ feature }: { feature: string }) => {
           type="input"
           feature={feature}
           options={{
-            name: "contactDetails.primaryContact.lastName",
+            name: "application.contactDetails.lastName",
             rules: {
               required: { value: true, message: "Last Name is required" },
             },
@@ -47,7 +47,7 @@ export const ContactDetails = ({ feature }: { feature: string }) => {
             type="phone"
             feature={feature}
             options={{
-              name: "contactDetails.primaryContact.phone1",
+              name: "application.contactDetails.phone1",
               rules: {
                 required: { value: true, message: "Phone Number is required" },
               },
@@ -59,7 +59,7 @@ export const ContactDetails = ({ feature }: { feature: string }) => {
             type="input"
             feature={feature}
             options={{
-              name: "contactDetails.primaryContact.phone1Extension",
+              name: "application.contactDetails.phone1Extension",
               rules: { required: false },
               label: "Ext",
               width: EXT_WIDTH,
@@ -71,7 +71,7 @@ export const ContactDetails = ({ feature }: { feature: string }) => {
             type="phone"
             feature={feature}
             options={{
-              name: "contactDetails.primaryContact.phone2",
+              name: "application.contactDetails.phone2",
               rules: { required: false },
               label: "Alternate Number",
               width: PHONE_WIDTH,
@@ -81,7 +81,7 @@ export const ContactDetails = ({ feature }: { feature: string }) => {
             type="input"
             feature={feature}
             options={{
-              name: "contactDetails.primaryContact.phone2Extension",
+              name: "application.contactDetails.phone2Extension",
               rules: { required: false },
               label: "Ext",
               width: EXT_WIDTH,
@@ -98,7 +98,7 @@ export const ContactDetails = ({ feature }: { feature: string }) => {
           type="input"
           feature={feature}
           options={{
-            name: "contactDetails.primaryContact.email",
+            name: "application.contactDetails.email",
             rules: {
               required: { value: true, message: "Email is required" },
             },
@@ -110,7 +110,7 @@ export const ContactDetails = ({ feature }: { feature: string }) => {
           type="input"
           feature={feature}
           options={{
-            name: "contactDetails.primaryContact.fax",
+            name: "application.contactDetails.fax",
             rules: { required: false },
             label: "Fax",
             width: PHONE_WIDTH,

@@ -6,7 +6,7 @@ import {
   PERMIT_LEFT_HEADER_STYLE,
   PERMIT_RIGHT_BOX_STYLE,
 } from "../../../../themes/orbcStyles";
-import { Permit } from "../../types/permits";
+import { Application } from "../../types/application";
 import { useFormContext } from "react-hook-form";
 import { useCompanyInfoQuery } from "../../../manageProfile/apiManager/hooks";
 import { CompanyProfile } from "../../../manageProfile/apiManager/manageProfileAPI";
@@ -56,7 +56,7 @@ const CompanyInformation = ({
 
 export const ApplicationDetails = () => {
   const companyInfoQuery = useCompanyInfoQuery();
-  const { getValues } = useFormContext<Permit>();
+  const { getValues } = useFormContext<Application>();
   const applicationValues = getValues();
 
   return (

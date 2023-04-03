@@ -30,3 +30,18 @@ export const PERMIT_RIGHT_BOX_STYLE = {
   maxWidth: `calc(100% - ${PERMIT_LEFT_COLUMN_WIDTH})`,
   minWidth: "600px",
 };
+
+// Custom styling for MUI Select fields
+export const SELECT_FIELD_STYLE = {
+  FORM_LABEL: { fontWeight: "bold", marginBottom: "8px" },
+  MENU_PROPS: {
+    style: {
+      width: 100 % -10,
+    },
+  },
+  SELECT_FIELDSET: {
+    "&&.Mui-focused fieldset": {
+      border: `2px solid ${BC_COLOURS.focus_blue}`,
+    },
+  },
+};

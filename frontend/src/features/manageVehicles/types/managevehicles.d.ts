@@ -13,6 +13,7 @@ interface Vehicle {
   vin: string;
   year: number;
   createdDateTime: string | null;
+  vehicleType?: "powerUnit" | "trailer";
 }
 
 export interface PowerUnit extends Vehicle {
