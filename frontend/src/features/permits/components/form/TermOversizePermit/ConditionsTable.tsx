@@ -72,7 +72,7 @@ export const ConditionsTable = () => {
   function handleSelect(checkedName: string) {
     const newNames = checkedValues?.map((item) => {
       if (item.description === checkedName) {
-        item.checked = true;
+        item.checked = !item.checked;
       }
       return item;
     });
