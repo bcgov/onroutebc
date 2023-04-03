@@ -11,3 +11,7 @@ import "@testing-library/jest-dom";
     VITE_API_MANAGE_PROFILE_URL: "http://localhost:5000",
   };
 })();
+
+vi.mock("react-i18next", () => ({
+  useTranslation: () => ({ t: (key: any) => key }),
+}));
