@@ -122,7 +122,6 @@ jobs:
       max-parallel: 1
       fail-fast: true
     steps:
-      - run: echo ${{ secrets.OC_NAMESPACE }}-${{secrets.VAULT_ENV}}
       - name: Import Secrets
         id: secrets
         uses: hashicorp/vault-action@v2
@@ -139,6 +138,9 @@ jobs:
             ${{secrets.VAULT_ENV}}/data/coms-dev  OBJECTSTORAGE_ENDPOINT          | VAULT_OBJECTSTORAGE_ENDPOINT;
             ${{secrets.VAULT_ENV}}/data/coms-dev  OBJECTSTORAGE_KEY               | VAULT_OBJECTSTORAGE_KEY;
             ${{secrets.VAULT_ENV}}/data/coms-dev  OBJECTSTORAGE_SECRETACCESSKEY   | VAULT_OBJECTSTORAGE_SECRETACCESSKEY
+      # Login to OpenShift (NOTE: project command is a safeguard)
+      - run: oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
+      - run: oc project ${{ secrets.OC_NAMESPACE }}
       - name: Helm Deploy 
         uses: vimeda/helm@v1.6.8 
         with:
