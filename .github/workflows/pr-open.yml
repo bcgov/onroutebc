@@ -80,6 +80,7 @@ jobs:
             file: common/openshift.init.yml
             overwrite: false
     steps:
+      - run: echo ${{ secrets.OC_NAMESPACE }}-${{secrets.VAULT_ENV}}
       - name: Import Secrets
         id: secrets
         uses: hashicorp/vault-action@v2
@@ -122,6 +123,7 @@ jobs:
       max-parallel: 1
       fail-fast: true
     steps:
+      - run: echo ${{ secrets.OC_NAMESPACE }}-${{secrets.VAULT_ENV}}
       - name: Import Secrets
         id: secrets
         uses: hashicorp/vault-action@v2
