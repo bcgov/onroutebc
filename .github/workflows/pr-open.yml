@@ -123,15 +123,6 @@ jobs:
             -p DATABASE_HOST=${{steps.secrets.outputs.VAULT_DATABASE_HOST}}
             ${{ matrix.parameters }}
     
-      - name: Import COMS Secrets
-        id: secrets
-        uses: hashicorp/vault-action@v2
-        with:
-          url: https://vault.developer.gov.bc.ca
-          token: ${{ secrets.VAULT_TOKEN }}
-          exportEnv: 'false'
-          namespace: platform-services
-          secrets: |
       - name: Deploy COMS 
         uses: 'deliverybot/helm@v1'
         with:
