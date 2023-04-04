@@ -80,7 +80,7 @@ jobs:
             file: common/openshift.init.yml
             overwrite: false
     steps:
-      - name: Import Vault Secrets
+      - name: Import Secrets
         id: secrets
         uses: hashicorp/vault-action@v2
         with:
@@ -94,13 +94,6 @@ jobs:
             ${{secrets.VAULT_ENV}}/data/database-dev  DATABASE_NAME               | VAULT_DATABASE_NAME;
             ${{secrets.VAULT_ENV}}/data/database-dev  DATABASE_PASSWORD           | VAULT_DATABASE_PASSWORD;
             ${{secrets.VAULT_ENV}}/data/database-dev  DATABASE_PORT               | VAULT_DATABASE_PORT;
-            ${{secrets.VAULT_ENV}}/data/coms-dev  BASICAUTH_PASSWORD              | VAULT_BASICAUTH_PASSWORD;
-            ${{secrets.VAULT_ENV}}/data/coms-dev  BASICAUTH_USERNAME              | VAULT_BASICAUTH_USERNAME;
-            ${{secrets.VAULT_ENV}}/data/coms-dev  OBJECTSTORAGE_ACCESSKEYID       | VAULT_OBJECTSTORAGE_ACCESSKEYID;
-            ${{secrets.VAULT_ENV}}/data/coms-dev  OBJECTSTORAGE_BUCKET            | VAULT_OBJECTSTORAGE_BUCKET;
-            ${{secrets.VAULT_ENV}}/data/coms-dev  OBJECTSTORAGE_ENDPOINT          | VAULT_OBJECTSTORAGE_ENDPOINT;
-            ${{secrets.VAULT_ENV}}/data/coms-dev  OBJECTSTORAGE_KEY               | VAULT_OBJECTSTORAGE_KEY;
-            ${{secrets.VAULT_ENV}}/data/coms-dev  OBJECTSTORAGE_SECRETACCESSKEY   | VAULT_OBJECTSTORAGE_SECRETACCESSKEY
       - name: Deploy Application
         uses: bcgov-nr/action-deployer-openshift@v1.0.3
         with:
@@ -129,7 +122,7 @@ jobs:
       max-parallel: 1
       fail-fast: true
     steps:
-      - name: Import Vault Secrets
+      - name: Import Secrets
         id: secrets
         uses: hashicorp/vault-action@v2
         with:
@@ -145,8 +138,8 @@ jobs:
             ${{secrets.VAULT_ENV}}/data/coms-dev  OBJECTSTORAGE_ENDPOINT          | VAULT_OBJECTSTORAGE_ENDPOINT;
             ${{secrets.VAULT_ENV}}/data/coms-dev  OBJECTSTORAGE_KEY               | VAULT_OBJECTSTORAGE_KEY;
             ${{secrets.VAULT_ENV}}/data/coms-dev  OBJECTSTORAGE_SECRETACCESSKEY   | VAULT_OBJECTSTORAGE_SECRETACCESSKEY
-      - name: Deploy COMS 
-        uses: 'deliverybot/helm@v1.5.0'
+      - name: Helm Deploy 
+        uses: vimeda/helm@v1.6.8 
         with:
          release: ${{ github.event.repository.name }}-${{ github.event.number }}-coms
          namespace: $
