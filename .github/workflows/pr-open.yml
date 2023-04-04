@@ -142,10 +142,11 @@ jobs:
       - name: Helm Deploy 
         uses: vimeda/helm@v1.6.8 
         with:
-         release: ${{ github.event.repository.name }}-${{ github.event.number }}-coms
-         namespace: $
-         chart: 'app'
-         token: '${{ github.token }}'
+         release: ${{ github.event.repository.name }}-${{ github.event.number }}-common-object-management-service
+         namespace: ${{secrets.OC_NAMESPACE}}
+         chart: common-object-management-service
+         repo: https://bcgov.github.io/common-object-management-service 
+         token: '${{ secrets.OC_TOKEN }}'
          values: |
            fullNameOverride=${{ github.event.repository.name }}-${{ github.event.number }}-coms
            route.host=${{ github.event.repository.name }}-${{ github.event.number }}-coms.apps.silver.devops.gov.bc.ca
