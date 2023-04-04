@@ -122,9 +122,18 @@ jobs:
             -p DATABASE_PASSWORD=${{steps.secrets.outputs.VAULT_DATABASE_PASSWORD}}
             -p DATABASE_HOST=${{steps.secrets.outputs.VAULT_DATABASE_HOST}}
             ${{ matrix.parameters }}
-    
+  coms:  
+    name: Deploy COMS
+    needs:
+      - builds
+    runs-on: ubuntu-22.04
+    environment: dev
+    strategy:
+      max-parallel: 1
+      fail-fast: true
+    steps:
       - name: Deploy COMS 
-        uses: 'deliverybot/helm@v1'
+        uses: 'deliverybot/helm@v1.5.0'
         with:
          release: 'COMS'
          namespace: $
