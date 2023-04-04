@@ -7,8 +7,8 @@ import {
   lighten,
   styled,
 } from "@mui/material";
-import { SELECT_FIELD_STYLE } from "../../../../../themes/orbcStyles";
-import { Vehicle } from "../../../../manageVehicles/types/managevehicles";
+import { SELECT_FIELD_STYLE } from "../../../../../../themes/orbcStyles";
+import { Vehicle } from "../../../../../manageVehicles/types/managevehicles";
 import { useFormContext } from "react-hook-form";
 
 const GroupHeader = styled("div")(({ theme }) => ({
@@ -27,10 +27,33 @@ const GroupItems = styled("ul")({
 });
 
 /**
- * This simple MUI auto complete component without
- * integration with React Hook Forms
+ * Sort Plates and Unit Number alphabetically
+ * @param vehicleType string, either plate or unitNumber
+ * @param options array of Vehicles (Power Units and Trailers)
+ * @returns an array of sorted vehicles alphabetically
  */
-export const CustomSimpleAutoComplete = ({
+const sortVehicles = (chooseFrom: string, options: Vehicle[] | undefined) => {
+  if (!chooseFrom || !options) return [];
+  return options?.sort((a, b) => {
+    if (a.vehicleType?.toLowerCase() === b.vehicleType?.toLowerCase()) {
+      if (chooseFrom === "plate") {
+        return a.plate > b.plate ? 1 : -1;
+      }
+      return a.unitNumber > b.unitNumber ? 1 : -1;
+    }
+    if (a.vehicleType && b.vehicleType)
+      return a.vehicleType > b.vehicleType ? 1 : -1;
+    return 0;
+  });
+};
+
+/**
+ * This simple MUI auto complete component with grouped data and without
+ * integration with React Hook Forms
+ *
+ * From https://mui.com/material-ui/react-autocomplete/#grouped
+ */
+export const SelectVehicleDropdown = ({
   options,
   chooseFrom,
   label,
@@ -43,23 +66,8 @@ export const CustomSimpleAutoComplete = ({
   width: string;
   setSelectedVehicle: any;
 }) => {
-  let sortedVehicles: Vehicle[];
-
-  if (!chooseFrom || !options) {
-    sortedVehicles = [];
-  } else {
-    sortedVehicles = options?.sort((a, b) => {
-      if (a.vehicleType?.toLowerCase() === b.vehicleType?.toLowerCase()) {
-        if (chooseFrom === "plate") {
-          return a.plate > b.plate ? 1 : -1;
-        }
-        return a.unitNumber > b.unitNumber ? 1 : -1;
-      }
-      if (a.vehicleType && b.vehicleType)
-        return a.vehicleType > b.vehicleType ? 1 : -1;
-      return 0;
-    });
-  }
+  // Sort vehicles alphabetically
+  const sortedVehicles = sortVehicles(chooseFrom, options);
 
   const { resetField, setValue } = useFormContext();
 
@@ -88,7 +96,7 @@ export const CustomSimpleAutoComplete = ({
         options={sortedVehicles}
         groupBy={(option) => option.vehicleType || ""}
         getOptionLabel={(option) => {
-          if (!option.unitNumber) option.unitNumber = "";
+          if (!option.unitNumber) option.unitNumber = "-";
           return chooseFrom == "plate" ? option.plate : option.unitNumber;
         }}
         sx={[

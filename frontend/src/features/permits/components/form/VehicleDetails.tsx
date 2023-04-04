@@ -14,7 +14,6 @@ import { CustomFormComponent } from "../../../../common/components/form/CustomFo
 import {
   PowerUnit,
   Trailer,
-  VehicleType,
 } from "../../../manageVehicles/types/managevehicles";
 import {
   usePowerUnitTypesQuery,
@@ -32,7 +31,8 @@ import {
 import { useFormContext } from "react-hook-form";
 import { CustomSimpleSelect } from "../../../../common/components/form/subFormComponents/CustomSimpleSelect";
 import { CustomSimpleSelectWithRegister } from "../../../../common/components/form/subFormComponents/CustomSimpleSelectWithRegister";
-import { CustomSimpleAutoComplete } from "./TermOversizePermit/CustomSimpleAutoComplete";
+import { SelectVehicleDropdown } from "./TermOversizePermit/customFields/SelectVehicleDropdown";
+import { SelectVehicleSubTypeDropdown } from "./TermOversizePermit/customFields/SelectVehicleSubTypeDropdown";
 
 export const VehicleDetails = ({ feature }: { feature: string }) => {
   const { setValue, resetField } = useFormContext();
@@ -58,6 +58,7 @@ export const VehicleDetails = ({ feature }: { feature: string }) => {
   ];
 
   const [chooseFrom, setChooseFrom] = useState("");
+  // Selected vehicle is the selected vehicles plate number
   const [selectedVehicle, setSelectedVehicle] = useState("");
   const [vehicleType, setVehicleType] = useState("");
 
@@ -69,6 +70,7 @@ export const VehicleDetails = ({ feature }: { feature: string }) => {
   useEffect(() => {
     if (!selectedVehicle) return;
 
+    // Get the selected vehicle object from the plate number
     const vehicle: (PowerUnit | Trailer)[] | undefined =
       allVehiclesQuery.data?.filter((item) => {
         return item.plate === selectedVehicle;
@@ -76,8 +78,8 @@ export const VehicleDetails = ({ feature }: { feature: string }) => {
 
     if (!vehicle) return;
 
+    // Populate the vehicle form fields with the selected vehicle information
     resetField("application.vehicleDetails");
-
     setValue("application.vehicleDetails", {
       vin: vehicle[0].vin,
       plate: vehicle[0].plate,
@@ -87,6 +89,7 @@ export const VehicleDetails = ({ feature }: { feature: string }) => {
       provinceCode: vehicle[0].provinceCode,
     });
 
+    // Populate the 'Vehicle Type' and 'Vehicle Sub Type' form fields with the selected vehicle information
     const powerUnit = vehicle[0] as PowerUnit;
     if (powerUnit.powerUnitTypeCode) {
       setVehicleType("powerUnit");
@@ -96,7 +99,6 @@ export const VehicleDetails = ({ feature }: { feature: string }) => {
         powerUnit.powerUnitTypeCode
       );
     }
-
     const trailer = vehicle[0] as Trailer;
     if (trailer.trailerTypeCode) {
       setVehicleType("trailer");
@@ -108,19 +110,11 @@ export const VehicleDetails = ({ feature }: { feature: string }) => {
     }
   }, [selectedVehicle]);
 
-  const displayVehicleSubTypeMenuItems = () => {
+  const setVehicleSubTypeOptions = () => {
     if (vehicleType === "powerUnit") {
-      return powerUnitTypesQuery?.data?.map((data: VehicleType) => (
-        <MenuItem key={data.typeCode} value={data.typeCode}>
-          {data.type}
-        </MenuItem>
-      ));
+      return powerUnitTypesQuery?.data;
     } else if (vehicleType === "trailer") {
-      return trailerTypesQuery?.data?.map((data: VehicleType) => (
-        <MenuItem key={data.typeCode} value={data.typeCode}>
-          {data.type}
-        </MenuItem>
-      ));
+      return trailerTypesQuery?.data;
     }
     return undefined;
   };
@@ -131,6 +125,7 @@ export const VehicleDetails = ({ feature }: { feature: string }) => {
 
   const handleVehicleType = (event: SelectChangeEvent) => {
     setVehicleType(event.target.value as string);
+    resetField("application.vehicleDetails.vehicleSubType");
   };
 
   return (
@@ -176,7 +171,7 @@ export const VehicleDetails = ({ feature }: { feature: string }) => {
             ))}
             width={"180px"}
           />
-          <CustomSimpleAutoComplete
+          <SelectVehicleDropdown
             label={"Select vehicle"}
             width={"268px"}
             options={allVehiclesQuery?.data}
@@ -277,21 +272,17 @@ export const VehicleDetails = ({ feature }: { feature: string }) => {
           }}
         />
 
-        <CustomFormComponent
-          type="select"
-          feature={feature}
-          options={{
-            name: "application.vehicleDetails.vehicleSubType",
-            rules: {
-              required: {
-                value: true,
-                message: "Vehicle Sub-type is required.",
-              },
-            },
-            label: "Vehicle Sub-type",
-            width: formFieldStyle.width,
+        <SelectVehicleSubTypeDropdown
+          label={"Vehicle Sub-type"}
+          vehicleType={vehicleType}
+          options={setVehicleSubTypeOptions()}
+          width={formFieldStyle.width}
+          name="application.vehicleDetails.vehicleSubType"
+          rules={{
+            required: { value: true, message: "Vehicle Sub-type is required." },
           }}
-          menuOptions={displayVehicleSubTypeMenuItems()}
+          powerUnitTypes={powerUnitTypesQuery?.data}
+          trailerTypes={trailerTypesQuery?.data}
         />
 
         <FormControl>
