@@ -83,7 +83,7 @@ jobs:
       - name: Get Vault Environment
         shell: bash
         run: echo VAULT_ENV=${{secrets.OC_NAMESPACE}} | awk -F '-' '{print($2!="prod")?$1"-nonprod":$1"-prod"}' | tee $GITHUB_ENV
-      - name: Import Secrets
+      - name: Import Database Secrets
         id: secrets
         uses: hashicorp/vault-action@v2
         with:
@@ -115,3 +115,42 @@ jobs:
             -p DATABASE_PASSWORD=${{steps.secrets.outputs.VAULT_DATABASE_PASSWORD}}
             -p DATABASE_HOST=${{steps.secrets.outputs.VAULT_DATABASE_HOST}}
             ${{ matrix.parameters }}
+    
+      - name: Import COMS Secrets
+        id: secrets
+        uses: hashicorp/vault-action@v2
+        with:
+          url: https://vault.developer.gov.bc.ca
+          token: ${{ secrets.VAULT_TOKEN }}
+          exportEnv: 'false'
+          namespace: platform-services
+          secrets: |
+            ${{env.VAULT_ENV}}/data/coms-dev  BASICAUTH_PASSWORD              | VAULT_BASICAUTH_PASSWORD;
+            ${{env.VAULT_ENV}}/data/coms-dev  BASICAUTH_USERNAME              | VAULT_BASICAUTH_USERNAME;
+            ${{env.VAULT_ENV}}/data/coms-dev  OBJECTSTORAGE_ACCESSKEYID       | VAULT_OBJECTSTORAGE_ACCESSKEYID;
+            ${{env.VAULT_ENV}}/data/coms-dev  OBJECTSTORAGE_BUCKET            | VAULT_OBJECTSTORAGE_BUCKET;
+            ${{env.VAULT_ENV}}/data/coms-dev  OBJECTSTORAGE_ENDPOINT          | VAULT_OBJECTSTORAGE_ENDPOINT;
+            ${{env.VAULT_ENV}}/data/coms-dev  OBJECTSTORAGE_KEY               | VAULT_OBJECTSTORAGE_KEY;
+            ${{env.VAULT_ENV}}/data/coms-dev  OBJECTSTORAGE_SECRETACCESSKEY   | VAULT_OBJECTSTORAGE_SECRETACCESSKEY;
+      - name: Deploy COMS 
+        uses: 'deliverybot/helm@v1'
+        with:
+         release: 'COMS'
+         namespace: $
+         chart: 'app'
+         token: '${{ github.token }}'
+        values: |
+          route.host=${{ github.event.repository.name }}-${{ github.event.number }}.apps.silver.devops.gov.bc.ca
+          basicAuthSecretOverride.username=${{steps.secrets.outputs.BASICAUTH_USERNAME}}
+          objectStorageSecretOverride.username=${{steps.secrets.outputs.OBJECTSTORAGE_ACCESSKEYID}}
+          objectStorageSecretOverride.password=${{steps.secrets.outputs.OBJECTSTORAGE_SECRETACCESSKEY}}
+          features.oidcAuth=false
+          config.enabled=true
+          config.releaseScoped=true
+          config.configMap.KC_IDENTITYKEY=null
+          config.configMap.KC_PUBLICKEY=null
+          config.configMap.KC_REALM=null
+          config.configMap.KC_SERVERURL=null
+          config.configMap.OBJECTSTORAGE_BUCKET=tran_api_orbc_docs_dev
+          config.configMap.OBJECTSTORAGE_ENDPOINT=https://moti-int.objectstore.gov.bc.ca
+          config.configMap.OBJECTSTORAGE_KEY=tran_api_orbc_docs_dev@moti-int.objectstore.gov.bc.ca
