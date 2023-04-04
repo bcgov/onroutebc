@@ -141,6 +141,7 @@ jobs:
       # Login to OpenShift (NOTE: project command is a safeguard)
       - run: oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
       - run: oc project ${{ secrets.OC_NAMESPACE }}
+      - run: cat ~/.kube/config 
       - name: Helm Deploy 
         uses: vimeda/helm@v1.6.8 
         with:
@@ -166,3 +167,5 @@ jobs:
            config.configMap.OBJECTSTORAGE_BUCKET=${{steps.secrets.outputs.OBJECTSTORAGE_BUCKET}}
            config.configMap.OBJECTSTORAGE_ENDPOINT=${{steps.secrets.outputs.OBJECTSTORAGE_ENDPOINT}}
            config.configMap.OBJECTSTORAGE_KEY=${{steps.secrets.outputs.OBJECTSTORAGE_KEY}}
+         env:
+           KUBECONFIG_FILE=
