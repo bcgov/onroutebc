@@ -80,10 +80,7 @@ jobs:
             file: common/openshift.init.yml
             overwrite: false
     steps:
-      - name: Get Vault Environment
-        shell: bash
-        run: echo VAULT_ENV=${{secrets.OC_NAMESPACE}} | awk -F '-' '{print($2!="prod")?$1"-nonprod":$1"-prod"}' | tee $GITHUB_ENV
-      - name: Import Database Secrets
+      - name: Import Vault Secrets
         id: secrets
         uses: hashicorp/vault-action@v2
         with:
@@ -92,18 +89,18 @@ jobs:
           exportEnv: 'false'
           namespace: platform-services
           secrets: |
-            ${{env.VAULT_ENV}}/data/database-dev  DATABASE_HOST               | VAULT_DATABASE_HOST;
-            ${{env.VAULT_ENV}}/data/database-dev  DATABASE_USER               | VAULT_DATABASE_USER;
-            ${{env.VAULT_ENV}}/data/database-dev  DATABASE_NAME               | VAULT_DATABASE_NAME;
-            ${{env.VAULT_ENV}}/data/database-dev  DATABASE_PASSWORD           | VAULT_DATABASE_PASSWORD;
-            ${{env.VAULT_ENV}}/data/database-dev  DATABASE_PORT               | VAULT_DATABASE_PORT;
-            ${{env.VAULT_ENV}}/data/coms-dev  BASICAUTH_PASSWORD              | VAULT_BASICAUTH_PASSWORD;
-            ${{env.VAULT_ENV}}/data/coms-dev  BASICAUTH_USERNAME              | VAULT_BASICAUTH_USERNAME;
-            ${{env.VAULT_ENV}}/data/coms-dev  OBJECTSTORAGE_ACCESSKEYID       | VAULT_OBJECTSTORAGE_ACCESSKEYID;
-            ${{env.VAULT_ENV}}/data/coms-dev  OBJECTSTORAGE_BUCKET            | VAULT_OBJECTSTORAGE_BUCKET;
-            ${{env.VAULT_ENV}}/data/coms-dev  OBJECTSTORAGE_ENDPOINT          | VAULT_OBJECTSTORAGE_ENDPOINT;
-            ${{env.VAULT_ENV}}/data/coms-dev  OBJECTSTORAGE_KEY               | VAULT_OBJECTSTORAGE_KEY;
-            ${{env.VAULT_ENV}}/data/coms-dev  OBJECTSTORAGE_SECRETACCESSKEY   | VAULT_OBJECTSTORAGE_SECRETACCESSKEY
+            ${{secrets.VAULT_ENV}}/data/database-dev  DATABASE_HOST               | VAULT_DATABASE_HOST;
+            ${{secrets.VAULT_ENV}}/data/database-dev  DATABASE_USER               | VAULT_DATABASE_USER;
+            ${{secrets.VAULT_ENV}}/data/database-dev  DATABASE_NAME               | VAULT_DATABASE_NAME;
+            ${{secrets.VAULT_ENV}}/data/database-dev  DATABASE_PASSWORD           | VAULT_DATABASE_PASSWORD;
+            ${{secrets.VAULT_ENV}}/data/database-dev  DATABASE_PORT               | VAULT_DATABASE_PORT;
+            ${{secrets.VAULT_ENV}}/data/coms-dev  BASICAUTH_PASSWORD              | VAULT_BASICAUTH_PASSWORD;
+            ${{secrets.VAULT_ENV}}/data/coms-dev  BASICAUTH_USERNAME              | VAULT_BASICAUTH_USERNAME;
+            ${{secrets.VAULT_ENV}}/data/coms-dev  OBJECTSTORAGE_ACCESSKEYID       | VAULT_OBJECTSTORAGE_ACCESSKEYID;
+            ${{secrets.VAULT_ENV}}/data/coms-dev  OBJECTSTORAGE_BUCKET            | VAULT_OBJECTSTORAGE_BUCKET;
+            ${{secrets.VAULT_ENV}}/data/coms-dev  OBJECTSTORAGE_ENDPOINT          | VAULT_OBJECTSTORAGE_ENDPOINT;
+            ${{secrets.VAULT_ENV}}/data/coms-dev  OBJECTSTORAGE_KEY               | VAULT_OBJECTSTORAGE_KEY;
+            ${{secrets.VAULT_ENV}}/data/coms-dev  OBJECTSTORAGE_SECRETACCESSKEY   | VAULT_OBJECTSTORAGE_SECRETACCESSKEY
       - name: Deploy Application
         uses: bcgov-nr/action-deployer-openshift@v1.0.3
         with:
@@ -132,15 +129,32 @@ jobs:
       max-parallel: 1
       fail-fast: true
     steps:
+      - name: Import Vault Secrets
+        id: secrets
+        uses: hashicorp/vault-action@v2
+        with:
+          url: https://vault.developer.gov.bc.ca
+          token: ${{ secrets.VAULT_TOKEN }}
+          exportEnv: 'false'
+          namespace: platform-services
+          secrets: |
+            ${{secrets.VAULT_ENV}}/data/coms-dev  BASICAUTH_PASSWORD              | VAULT_BASICAUTH_PASSWORD;
+            ${{secrets.VAULT_ENV}}/data/coms-dev  BASICAUTH_USERNAME              | VAULT_BASICAUTH_USERNAME;
+            ${{secrets.VAULT_ENV}}/data/coms-dev  OBJECTSTORAGE_ACCESSKEYID       | VAULT_OBJECTSTORAGE_ACCESSKEYID;
+            ${{secrets.VAULT_ENV}}/data/coms-dev  OBJECTSTORAGE_BUCKET            | VAULT_OBJECTSTORAGE_BUCKET;
+            ${{secrets.VAULT_ENV}}/data/coms-dev  OBJECTSTORAGE_ENDPOINT          | VAULT_OBJECTSTORAGE_ENDPOINT;
+            ${{secrets.VAULT_ENV}}/data/coms-dev  OBJECTSTORAGE_KEY               | VAULT_OBJECTSTORAGE_KEY;
+            ${{secrets.VAULT_ENV}}/data/coms-dev  OBJECTSTORAGE_SECRETACCESSKEY   | VAULT_OBJECTSTORAGE_SECRETACCESSKEY
       - name: Deploy COMS 
         uses: 'deliverybot/helm@v1.5.0'
         with:
-         release: 'COMS'
+         release: ${{ github.event.repository.name }}-${{ github.event.number }}-coms
          namespace: $
          chart: 'app'
          token: '${{ github.token }}'
          values: |
-           route.host=${{ github.event.repository.name }}-${{ github.event.number }}.apps.silver.devops.gov.bc.ca
+           fullNameOverride=${{ github.event.repository.name }}-${{ github.event.number }}-coms
+           route.host=${{ github.event.repository.name }}-${{ github.event.number }}-coms.apps.silver.devops.gov.bc.ca
            basicAuthSecretOverride.username=${{steps.secrets.outputs.BASICAUTH_USERNAME}}
            objectStorageSecretOverride.username=${{steps.secrets.outputs.OBJECTSTORAGE_ACCESSKEYID}}
            objectStorageSecretOverride.password=${{steps.secrets.outputs.OBJECTSTORAGE_SECRETACCESSKEY}}
@@ -151,6 +165,6 @@ jobs:
            config.configMap.KC_PUBLICKEY=null
            config.configMap.KC_REALM=null
            config.configMap.KC_SERVERURL=null
-           config.configMap.OBJECTSTORAGE_BUCKET=tran_api_orbc_docs_dev
-           config.configMap.OBJECTSTORAGE_ENDPOINT=https://moti-int.objectstore.gov.bc.ca
-           config.configMap.OBJECTSTORAGE_KEY=tran_api_orbc_docs_dev@moti-int.objectstore.gov.bc.ca
+           config.configMap.OBJECTSTORAGE_BUCKET=${{steps.secrets.outputs.OBJECTSTORAGE_BUCKET}}
+           config.configMap.OBJECTSTORAGE_ENDPOINT=${{steps.secrets.outputs.OBJECTSTORAGE_ENDPOINT}}
+           config.configMap.OBJECTSTORAGE_KEY=${{steps.secrets.outputs.OBJECTSTORAGE_KEY}}
