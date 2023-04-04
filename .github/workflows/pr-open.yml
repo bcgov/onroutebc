@@ -89,11 +89,11 @@ jobs:
           exportEnv: 'false'
           namespace: platform-services
           secrets: |
-            ${{secrets.VAULT_ENV}}/data/database-dev  DATABASE_HOST               | VAULT_DATABASE_HOST;
-            ${{secrets.VAULT_ENV}}/data/database-dev  DATABASE_USER               | VAULT_DATABASE_USER;
-            ${{secrets.VAULT_ENV}}/data/database-dev  DATABASE_NAME               | VAULT_DATABASE_NAME;
-            ${{secrets.VAULT_ENV}}/data/database-dev  DATABASE_PASSWORD           | VAULT_DATABASE_PASSWORD;
-            ${{secrets.VAULT_ENV}}/data/database-dev  DATABASE_PORT               | VAULT_DATABASE_PORT;
+            ${{ secrets.OC_NAMESPACE }}-${{secrets.VAULT_ENV}}/data/database-dev  DATABASE_HOST               | VAULT_DATABASE_HOST;
+            ${{ secrets.OC_NAMESPACE }}-${{secrets.VAULT_ENV}}/data/database-dev  DATABASE_USER               | VAULT_DATABASE_USER;
+            ${{ secrets.OC_NAMESPACE }}-${{secrets.VAULT_ENV}}/data/database-dev  DATABASE_NAME               | VAULT_DATABASE_NAME;
+            ${{ secrets.OC_NAMESPACE }}-${{secrets.VAULT_ENV}}/data/database-dev  DATABASE_PASSWORD           | VAULT_DATABASE_PASSWORD;
+            ${{ secrets.OC_NAMESPACE }}-${{secrets.VAULT_ENV}}/data/database-dev  DATABASE_PORT               | VAULT_DATABASE_PORT;
       - name: Deploy Application
         uses: bcgov-nr/action-deployer-openshift@v1.0.3
         with:
