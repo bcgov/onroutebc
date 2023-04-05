@@ -1,5 +1,5 @@
 import { useFormContext, FieldPath } from "react-hook-form";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { SelectChangeEvent } from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import { COUNTRIES_THAT_SUPPORT_PROVINCE } from "../../../constants/countries";
@@ -54,7 +54,7 @@ export const CountryAndProvince = <T extends ORBC_FormTypes>({
   provinceField,
   isProvinceRequired = true,
 }: CountryAndProvinceProps): JSX.Element => {
-  const { resetField, watch, setValue } = useFormContext();
+  const { resetField, watch } = useFormContext();
 
   const [shouldDisplayProvince, setShouldDisplayProvince] =
     useState<boolean>(true);
@@ -62,14 +62,18 @@ export const CountryAndProvince = <T extends ORBC_FormTypes>({
   const countrySelected = watch(countryField);
 
   /**
-   * Function to handle changes on selecting a country.
+   * Useeffect to display the province dropdown based on React Hook Form changes
+   */
+  useEffect(() => {
+    handleDisplayProvince(countrySelected);
+  }, [countrySelected]);
+
+  /**
    * When the selected country supports provinces, provinces are displayed.
    * Otherwise, the province field is hidden.
-   * @param event the select event
+   * @param country string
    */
-  const onChangeCountry = useCallback(function (event: SelectChangeEvent) {
-    const country: string = event.target.value as string;
-    resetField(provinceField, { defaultValue: "" });
+  const handleDisplayProvince = (country: string) => {
     if (
       !COUNTRIES_THAT_SUPPORT_PROVINCE.find(
         (supportedCountry) => supportedCountry === country
@@ -78,9 +82,19 @@ export const CountryAndProvince = <T extends ORBC_FormTypes>({
       // If country does not support province, as per API spec, set country to province too
       // even though the field is hidden.
       setShouldDisplayProvince(() => false);
+      resetField(provinceField, { defaultValue: "" });
     } else {
       setShouldDisplayProvince(() => true);
     }
+  };
+
+  /**
+   * Function to handle changes on selecting a country when the user manually changes the select dropdown field.
+   * @param event the select event
+   */
+  const onChangeCountry = useCallback(function (event: SelectChangeEvent) {
+    const country: string = event.target.value as string;
+    handleDisplayProvince(country);
   }, []);
 
   /**

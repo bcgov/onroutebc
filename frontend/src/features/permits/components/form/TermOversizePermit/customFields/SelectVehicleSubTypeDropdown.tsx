@@ -103,7 +103,7 @@ export const SelectVehicleSubTypeDropdown = ({
             SELECT_FIELD_STYLE.SELECT_FIELDSET,
             {
               ".MuiOutlinedInput-root .MuiAutocomplete-input": {
-                padding: 0,
+                padding: "0px 0px 0px 4px ",
               },
               width: { width },
             },
