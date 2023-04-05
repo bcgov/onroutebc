@@ -147,7 +147,7 @@ jobs:
           repo: https://bcgov.github.io/common-object-management-service
           repo-alias: common-object-management-service
           env:
-            KUBECONFIG_FILE: |
+            KUBECONFIG_FILE: 
               ${{secrets.KUBECONFIG_FILE}}
           values: |
             fullNameOverride: ${{ github.event.repository.name }}-${{ github.event.number }}-common-object-management-service
