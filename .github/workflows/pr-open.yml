@@ -61,7 +61,7 @@ jobs:
             ${{secrets.VAULT_ENV}}/data/coms-dev  OBJECTSTORAGE_BUCKET            | VAULT_OBJECTSTORAGE_BUCKET;
             ${{secrets.VAULT_ENV}}/data/coms-dev  OBJECTSTORAGE_ENDPOINT          | VAULT_OBJECTSTORAGE_ENDPOINT;
             ${{secrets.VAULT_ENV}}/data/coms-dev  OBJECTSTORAGE_KEY               | VAULT_OBJECTSTORAGE_KEY;
-            ${{secrets.VAULT_ENV}}/data/coms-dev  OBJECTSTORAGE_SECRETACCESSKEY   | VAULT_OBJECTSTORAGE_SECRETACCESSKEY
+            ${{secrets.VAULT_ENV}}/data/coms-dev  OBJECTSTORAGE_SECRETACCESSKEY   | VAULT_OBJECTSTORAGE_SECRETACCESSKEY;
   builds:
     name: Builds
     runs-on: ubuntu-22.04
@@ -140,7 +140,8 @@ jobs:
       max-parallel: 1
       fail-fast: true
       matrix:
-        name: [common-object-storage-managment]
+      env: ${{env}}
+        name: [common-object-management-service]
         include:
           - release: ${{ github.event.repository.name }}-${{ github.event.number }}-common-object-management-service
             chart: common-object-management-service
