@@ -112,8 +112,8 @@ jobs:
             -p DATABASE_PASSWORD=${{steps.secrets.outputs.VAULT_DATABASE_PASSWORD}}
             -p DATABASE_HOST=${{steps.secrets.outputs.VAULT_DATABASE_HOST}}
             ${{ matrix.parameters }}
-  coms:
-    name: Deploy COMS
+  helm-deploys:
+    name: Helm Deploys
     needs:
       - builds
     runs-on: ubuntu-22.04
@@ -121,10 +121,33 @@ jobs:
     strategy:
       max-parallel: 1
       fail-fast: true
+      matrix:
+        name: [common-object-storage-managment]
+        include:
+          - release: ${{ github.event.repository.name }}-${{ github.event.number }}-common-object-management-service
+            chart: common-object-management-service
+            repo: https://bcgov.github.io/common-object-management-service
+            repo-alias: common-object-management-service
+            values: |
+              fullNameOverride: ${{ github.event.repository.name }}-${{ github.event.number }}-common-object-management-service
+              route.host: ${{ github.event.repository.name }}-${{ github.event.number }}-coms.apps.silver.devops.gov.bc.ca
+              basicAuthSecretOverride.username: ${{steps.secrets.outputs.BASICAUTH_USERNAME}}
+              objectStorageSecretOverride.username: ${{steps.secrets.outputs.OBJECTSTORAGE_ACCESSKEYID}}
+              objectStorageSecretOverride.password: ${{steps.secrets.outputs.OBJECTSTORAGE_SECRETACCESSKEY}}
+              features.oidcAuth: false
+              config.enabled: true
+              config.releaseScoped: true
+              config.configMap.KC_IDENTITYKEY: null
+              config.configMap.KC_PUBLICKEY: null
+              config.configMap.KC_REALM: null
+              config.configMap.KC_SERVERURL: null
+              config.configMap.OBJECTSTORAGE_BUCKET: ${{steps.secrets.outputs.OBJECTSTORAGE_BUCKET}}
+              config.configMap.OBJECTSTORAGE_ENDPOINT: ${{steps.secrets.outputs.OBJECTSTORAGE_ENDPOINT}}
+              config.configMap.OBJECTSTORAGE_KEY: ${{steps.secrets.outputs.OBJECTSTORAGE_KEY}}
     steps:
       - name: Import Secrets
         id: secrets
-        uses: hashicorp/vault-action@v2
+        uses: hashicorp/vault-action@v2 
         with:
           url: https://vault.developer.gov.bc.ca
           token: ${{ secrets.VAULT_TOKEN }}
@@ -139,26 +162,14 @@ jobs:
             ${{secrets.VAULT_ENV}}/data/coms-dev  OBJECTSTORAGE_KEY               | VAULT_OBJECTSTORAGE_KEY;
             ${{secrets.VAULT_ENV}}/data/coms-dev  OBJECTSTORAGE_SECRETACCESSKEY   | VAULT_OBJECTSTORAGE_SECRETACCESSKEY
       - name: Helm Deploy
-        run: |
-          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
-          oc project ${{ secrets.OC_NAMESPACE }}
-          curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
-          chmod 700 get_helm.sh
-          ./get_helm.sh
-          helm repo add common-object-management-service https://bcgov.github.io/common-object-management-service 
-          helm install common-object-management-service common-object-management-service/common-object-management-service \
-          --set fullNameOverride=${{ github.event.repository.name }}-${{ github.event.number }}-coms \
-          --set route.host=${{ github.event.repository.name }}-${{ github.event.number }}-coms.apps.silver.devops.gov.bc.ca \
-          --set basicAuthSecretOverride.username=${{steps.secrets.outputs.BASICAUTH_USERNAME}} \
-          --set objectStorageSecretOverride.username=${{steps.secrets.outputs.OBJECTSTORAGE_ACCESSKEYID}} \
-          --set objectStorageSecretOverride.password=${{steps.secrets.outputs.OBJECTSTORAGE_SECRETACCESSKEY}} \
-          --set features.oidcAuth=false \
-          --set config.enabled=true \
-          --set config.releaseScoped=true \
-          --set config.configMap.KC_IDENTITYKEY=null \
-          --set config.configMap.KC_PUBLICKEY=null \
-          --set config.configMap.KC_REALM=null \
-          --set config.configMap.KC_SERVERURL=null \
-          --set config.configMap.OBJECTSTORAGE_BUCKET=${{steps.secrets.outputs.OBJECTSTORAGE_BUCKET}} \
-          --set config.configMap.OBJECTSTORAGE_ENDPOINT=${{steps.secrets.outputs.OBJECTSTORAGE_ENDPOINT}} \
-          --set config.configMap.OBJECTSTORAGE_KEY=${{steps.secrets.outputs.OBJECTSTORAGE_KEY}} 
+        uses: vimeda/helm@v1.6.8
+        with:
+          namespace: ${{ secrets.OC_NAMESPACE}}
+          release: ${{matrix.release}}
+          chart: ${{ matrix.chart }}
+          token: ${{ secrets.OC_TOKEN }}
+          repo: ${{matrix.repo}}
+          repo-alias: ${{matrix.repo-alias}}
+          values: ${{ matrix.values }}
+            env:
+              KUBECONFIG_FILE: ${{secrets.KUBECONFIG_FILE}}
