@@ -118,7 +118,7 @@ export const TermOversizeForm = ({
   const FEATURE = "term-oversize";
 
   /**
-   * The following code is used to setyle the bottom ba that has the
+   * The following code is used to style the bottom banner that has the
    * Leave Application, Save App, Continue, and To Top buttons
    *
    * Need to clean up this up
@@ -177,7 +177,9 @@ export const TermOversizeForm = ({
           width: "100vw",
           display: "flex",
           alignItems: "center",
-          marginLeft: matches ? "-20px" : "-60px",
+          marginLeft: "-60px",
+          marginRight: matches ? "80px" : "60px",
+          paddingRight: "30px",
           justifyContent: "space-between",
           borderTop: `1px solid ${BC_COLOURS.bc_text_box_border_grey}`,
         }}
