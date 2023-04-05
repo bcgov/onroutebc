@@ -32,15 +32,6 @@ jobs:
 
             Once merged, code will be promoted and handed off to following workflow run.
             [Main Merge Workflow](https://github.com/${{ github.repository }}/actions/workflows/merge-main.yml)
-
-  secrets:
-    name: Get Secrets
-    runs-on: ubuntu-22.04
-    environment: dev
-    strategy:
-      max-parallel: 1
-      fail-fast: true
-    steps:
   builds:
     name: Builds
     runs-on: ubuntu-22.04
