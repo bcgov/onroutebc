@@ -26,7 +26,22 @@ export const TermOversizeForm = ({
   termOversizeApplication?: TermOversizeApplication;
 }) => {
   const submitTermOversizeQuery = useSubmitTermOversizeMutation();
-  const contactDetails = useCompanyInfoQuery();
+  const {
+    data: contactDetails,
+    isLoading,
+    isError,
+    error,
+  } = useCompanyInfoQuery();
+
+  // if (isLoading) {
+  //   return <span>Loading...</span>;
+  // }
+
+  // if (isError) {
+  //   if (error instanceof Error) {
+  //     return <span>Error: {error.message}</span>;
+  //   }
+  // }
 
   // Default values to register with React Hook Forms
   // If data was passed to this component, then use that data, otherwise use empty or undefined values
@@ -57,40 +72,40 @@ export const TermOversizeForm = ({
     if (contactDetails && !formMethods.formState.isDirty) {
       formMethods.setValue("application.contactDetails", {
         firstName:
-          contactDetails?.data?.primaryContact.firstName ||
+          contactDetails?.primaryContact.firstName ||
           formMethods.getValues("application.contactDetails.firstName") ||
           "",
         lastName:
           formMethods.getValues("application.contactDetails.lastName") ||
-          contactDetails?.data?.primaryContact.lastName ||
+          contactDetails?.primaryContact.lastName ||
           "",
         phone1:
           formatPhoneNumber(
             formMethods.getValues("application.contactDetails.phone1")
           ) ||
-          formatPhoneNumber(contactDetails?.data?.primaryContact?.phone1) ||
+          formatPhoneNumber(contactDetails?.primaryContact?.phone1) ||
           "",
         phone1Extension:
           formMethods.getValues("application.contactDetails.phone1Extension") ||
-          contactDetails?.data?.primaryContact?.phone1Extension ||
+          contactDetails?.primaryContact?.phone1Extension ||
           "",
         phone2:
           formatPhoneNumber(
             formMethods.getValues("application.contactDetails.phone2")
           ) ||
-          formatPhoneNumber(contactDetails?.data?.primaryContact?.phone2) ||
+          formatPhoneNumber(contactDetails?.primaryContact?.phone2) ||
           "",
         phone2Extension:
           formMethods.getValues("application.contactDetails.phone2Extension") ||
-          contactDetails?.data?.primaryContact?.phone2Extension ||
+          contactDetails?.primaryContact?.phone2Extension ||
           "",
         email:
           formMethods.getValues("application.contactDetails.email") ||
-          contactDetails?.data?.primaryContact?.email ||
+          contactDetails?.primaryContact?.email ||
           "",
         city:
           formMethods.getValues("application.contactDetails.city") ||
-          contactDetails?.data?.primaryContact?.city ||
+          contactDetails?.primaryContact?.city ||
           "",
       });
     }
@@ -145,6 +160,21 @@ export const TermOversizeForm = ({
     window.addEventListener("scroll", listenToScroll);
     return () => window.removeEventListener("scroll", listenToScroll);
   }, []);
+
+  if (isLoading)
+    return (
+      <Box sx={{ paddingBottom: "80px", height: "100vh" }}>Loading...</Box>
+    );
+
+  if (isError) {
+    if (error instanceof Error) {
+      return (
+        <Box sx={{ paddingBottom: "80px", height: "100vh" }}>
+          <Typography>Error: {error.message}</Typography>
+        </Box>
+      );
+    }
+  }
 
   return (
     <>

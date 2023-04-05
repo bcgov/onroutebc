@@ -11,7 +11,7 @@ import {
 } from "react-hook-form";
 import { ORBC_FormTypes } from "../../../../types/common";
 import { DatePicker, DateValidationError } from "@mui/x-date-pickers";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 
 /**
  * Properties of the onrouteBC customized Date Picker MUI component
@@ -59,20 +59,25 @@ export const CustomDatePicker = <T extends ORBC_FormTypes>(
    */
   const { setError, clearErrors } = useFormContext();
   const [MUIerror, setMUIError] = useState<DateValidationError | null>(null);
-  const errorMessage = useMemo(() => {
+  const [errorMessage, setErrorMessage] = useState("");
+
+  useEffect(() => {
     switch (MUIerror) {
       case "minDate":
       case "disablePast": {
         setError(name, { type: "focus" }, { shouldFocus: true });
-        return "Start Date cannot be in the past.";
+        setErrorMessage("Start Date cannot be in the past.");
+        break;
       }
       case "invalidDate": {
         setError(name, { type: "focus" }, { shouldFocus: true });
-        return "Your date is not valid";
+        setErrorMessage("Your date is not valid");
+        break;
       }
       default: {
         clearErrors(name);
-        return "";
+        setErrorMessage("");
+        break;
       }
     }
   }, [MUIerror]);
