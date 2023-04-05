@@ -162,10 +162,5 @@ jobs:
             config.configMap.OBJECTSTORAGE_BUCKET: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_BUCKET}}
             config.configMap.OBJECTSTORAGE_ENDPOINT: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_ENDPOINT}}
             config.configMap.OBJECTSTORAGE_KEY: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_KEY}}
-            release: ${{matrix.release}}
-            chart: ${{ matrix.chart }}
-            repo: ${{matrix.repo}}
-            repo-alias: ${{matrix.repo-alias}}
-            values: ${{ matrix.values }}
           env:
             KUBECONFIG_FILE: ${{secrets.KUBECONFIG_FILE}}
