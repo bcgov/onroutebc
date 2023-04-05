@@ -23,13 +23,14 @@ const sortVehicleSubTypes = (
   options: VehicleType[] | undefined
 ) => {
   if (!vehicleType || !options) return [];
-  return options?.sort((a, b) => {
+  const sorted = options?.sort((a, b) => {
     if (a.type?.toLowerCase() === b.type?.toLowerCase()) {
       return a.typeCode > b.typeCode ? 1 : -1;
     }
     if (a.type && b.type) return a.type > b.type ? 1 : -1;
     return 0;
   });
+  return sorted;
 };
 
 /**

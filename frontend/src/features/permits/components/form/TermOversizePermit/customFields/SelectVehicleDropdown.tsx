@@ -35,17 +35,30 @@ const GroupItems = styled("ul")({
  */
 const sortVehicles = (chooseFrom: string, options: Vehicle[] | undefined) => {
   if (!chooseFrom || !options) return [];
-  return options?.sort((a, b) => {
-    if (a.vehicleType?.toLowerCase() === b.vehicleType?.toLowerCase()) {
-      if (chooseFrom === "plate") {
-        return a.plate > b.plate ? 1 : -1;
-      }
-      return a.unitNumber > b.unitNumber ? 1 : -1;
+
+  const sortByPlateOrUnitNumber = (a: Vehicle, b: Vehicle) => {
+    if (chooseFrom === "plate") {
+      return a.plate > b.plate ? 1 : -1;
     }
-    if (a.vehicleType && b.vehicleType)
+    return a.unitNumber > b.unitNumber ? 1 : -1;
+  };
+
+  const sortByVehicleType = (a: Vehicle, b: Vehicle) => {
+    if (a.vehicleType && b.vehicleType) {
       return a.vehicleType > b.vehicleType ? 1 : -1;
+    }
     return 0;
+  };
+
+  const sorted = options?.sort((a, b) => {
+    // If the vehicle types (powerUnit | trailer) are the same, sort by plate or unitnumber
+    if (a.vehicleType?.toLowerCase() === b.vehicleType?.toLowerCase()) {
+      return sortByPlateOrUnitNumber(a, b);
+    }
+    // else sort by vehicle type
+    return sortByVehicleType(a, b);
   });
+  return sorted;
 };
 
 /**
@@ -89,7 +102,6 @@ export const SelectVehicleDropdown = ({
               countryCode: "",
               provinceCode: "",
             });
-            return;
           } else {
             setSelectedVehicle(values.plate);
           }
