@@ -10,6 +10,7 @@ import {
 import { SELECT_FIELD_STYLE } from "../../../../../../themes/orbcStyles";
 import { Vehicle } from "../../../../../manageVehicles/types/managevehicles";
 import { useFormContext } from "react-hook-form";
+import "../TermOversizePermit.scss";
 
 const GroupHeader = styled("div")(({ theme }) => ({
   position: "sticky",
@@ -73,7 +74,7 @@ export const SelectVehicleDropdown = ({
 
   return (
     <FormControl margin="normal">
-      <FormLabel sx={SELECT_FIELD_STYLE.FORM_LABEL}>{label}</FormLabel>
+      <FormLabel className="select-field-form-label">{label}</FormLabel>
       <Autocomplete
         id="grouped-demo"
         onChange={(event: any, values: any, reason) => {

@@ -1,0 +1,29 @@
+@import "../../../../../themes/orbcStyles";
+
+//TODO: not yet implemented
+
+.tros-main-box {
+  display: flex;
+  flex-wrap: wrap;
+  background-color: $bc-white;
+  border-bottom: 1px solid $bc-text-box-border-grey;
+  padding-bottom: 24px;
+}
+
+.tros-left-box {
+  padding-top: 24px;
+  min-width: 400px;
+  max-width: $tros-left-column-width;
+}
+
+.tros-right-box {
+  padding-top: 24px;
+  min-width: calc(100% - $tros-left-column-width);
+  max-width: $tros-left-column-width;
+}
+
+// Custom styling for MUI Select fields
+.select-field-form-label {
+  font-weight: bold !important;
+  margin-bottom: 8px !important;
+}

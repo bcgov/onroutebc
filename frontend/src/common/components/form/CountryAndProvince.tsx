@@ -54,7 +54,11 @@ export const CountryAndProvince = <T extends ORBC_FormTypes>({
   provinceField,
   isProvinceRequired = true,
 }: CountryAndProvinceProps): JSX.Element => {
-  const { resetField, watch } = useFormContext();
+  const {
+    resetField,
+    watch,
+    formState: { isDirty },
+  } = useFormContext();
 
   const [shouldDisplayProvince, setShouldDisplayProvince] =
     useState<boolean>(true);
@@ -65,7 +69,11 @@ export const CountryAndProvince = <T extends ORBC_FormTypes>({
    * Useeffect to display the province dropdown based on React Hook Form changes
    */
   useEffect(() => {
-    handleDisplayProvince(countrySelected);
+    // Only update if there have been changes to the form
+    // Fixes bug with loading in default values with the TROS Contact Info form fields
+    if (isDirty) {
+      handleDisplayProvince(countrySelected);
+    }
   }, [countrySelected]);
 
   /**

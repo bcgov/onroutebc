@@ -10,6 +10,7 @@ import { RegisterOptions, useFormContext } from "react-hook-form";
 import { useEffect, useState } from "react";
 import { SELECT_FIELD_STYLE } from "../../../../../../themes/orbcStyles";
 import { VehicleType } from "../../../../../manageVehicles/types/managevehicles";
+import "../TermOversizePermit.scss";
 
 /**
  * Sort Power Unit or Trailer Types alphabetically
@@ -86,7 +87,7 @@ export const SelectVehicleSubTypeDropdown = ({
   return (
     <Box sx={{ width: width }}>
       <FormControl margin="normal">
-        <FormLabel sx={SELECT_FIELD_STYLE.FORM_LABEL}>{label}</FormLabel>
+        <FormLabel className="select-field-form-label">{label}</FormLabel>
         <Autocomplete
           id="vehicle-subtype-autocomplete"
           options={sortedVehicles || []}

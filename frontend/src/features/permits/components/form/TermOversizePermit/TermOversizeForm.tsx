@@ -57,8 +57,8 @@ export const TermOversizeForm = ({
     if (contactDetails && !formMethods.formState.isDirty) {
       formMethods.setValue("application.contactDetails", {
         firstName:
-          formMethods.getValues("application.contactDetails.firstName") ||
           contactDetails?.data?.primaryContact.firstName ||
+          formMethods.getValues("application.contactDetails.firstName") ||
           "",
         lastName:
           formMethods.getValues("application.contactDetails.lastName") ||
