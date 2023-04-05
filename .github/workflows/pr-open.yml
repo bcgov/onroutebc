@@ -149,9 +149,9 @@ jobs:
             values: |
               fullNameOverride: ${{ github.event.repository.name }}-${{ github.event.number }}-common-object-management-service
               route.host: ${{ github.event.repository.name }}-${{ github.event.number }}-coms.apps.silver.devops.gov.bc.ca
-              basicAuthSecretOverride.username: ${{env.BASICAUTH_USERNAME}}
-              objectStorageSecretOverride.username: ${{env.OBJECTSTORAGE_ACCESSKEYID}}
-              objectStorageSecretOverride.password: ${{env.OBJECTSTORAGE_SECRETACCESSKEY}}
+              basicAuthSecretOverride.username: ${{env.VAULT_BASICAUTH_USERNAME}}
+              objectStorageSecretOverride.username: ${{env.VAULT_OBJECTSTORAGE_ACCESSKEYID}}
+              objectStorageSecretOverride.password: ${{env.VAULT_OBJECTSTORAGE_SECRETACCESSKEY}}
               features.oidcAuth: false
               config.enabled: true
               config.releaseScoped: true
@@ -159,9 +159,9 @@ jobs:
               config.configMap.KC_PUBLICKEY: null
               config.configMap.KC_REALM: null
               config.configMap.KC_SERVERURL: null
-              config.configMap.OBJECTSTORAGE_BUCKET: ${{env.OBJECTSTORAGE_BUCKET}}
-              config.configMap.OBJECTSTORAGE_ENDPOINT: ${{env.OBJECTSTORAGE_ENDPOINT}}
-              config.configMap.OBJECTSTORAGE_KEY: ${{env.OBJECTSTORAGE_KEY}}
+              config.configMap.OBJECTSTORAGE_BUCKET: ${{env.VAULT_OBJECTSTORAGE_BUCKET}}
+              config.configMap.OBJECTSTORAGE_ENDPOINT: ${{env.VAULT_OBJECTSTORAGE_ENDPOINT}}
+              config.configMap.OBJECTSTORAGE_KEY: ${{env.VAULT_OBJECTSTORAGE_KEY}}
     steps:
       - name: Helm Deploy
         uses: vimeda/helm@v1.6.8
