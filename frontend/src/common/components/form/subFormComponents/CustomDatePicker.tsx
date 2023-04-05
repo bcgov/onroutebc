@@ -11,7 +11,7 @@ import {
 } from "react-hook-form";
 import { ORBC_FormTypes } from "../../../../types/common";
 import { DatePicker, DateValidationError } from "@mui/x-date-pickers";
-import { useState, useMemo, useEffect } from "react";
+import { useState, useEffect } from "react";
 
 /**
  * Properties of the onrouteBC customized Date Picker MUI component

@@ -33,16 +33,6 @@ export const TermOversizeForm = ({
     error,
   } = useCompanyInfoQuery();
 
-  // if (isLoading) {
-  //   return <span>Loading...</span>;
-  // }
-
-  // if (isError) {
-  //   if (error instanceof Error) {
-  //     return <span>Error: {error.message}</span>;
-  //   }
-  // }
-
   // Default values to register with React Hook Forms
   // If data was passed to this component, then use that data, otherwise use empty or undefined values
   const termOversizeDefaultValues: TermOversizeApplication = {

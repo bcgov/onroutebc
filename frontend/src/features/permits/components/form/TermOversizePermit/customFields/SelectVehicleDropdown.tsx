@@ -50,7 +50,7 @@ const sortVehicles = (chooseFrom: string, options: Vehicle[] | undefined) => {
     return 0;
   };
 
-  const sorted = options?.sort((a, b) => {
+  options?.sort((a, b) => {
     // If the vehicle types (powerUnit | trailer) are the same, sort by plate or unitnumber
     if (a.vehicleType?.toLowerCase() === b.vehicleType?.toLowerCase()) {
       return sortByPlateOrUnitNumber(a, b);
@@ -58,7 +58,8 @@ const sortVehicles = (chooseFrom: string, options: Vehicle[] | undefined) => {
     // else sort by vehicle type
     return sortByVehicleType(a, b);
   });
-  return sorted;
+
+  return options;
 };
 
 /**
