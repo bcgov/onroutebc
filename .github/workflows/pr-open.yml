@@ -140,7 +140,7 @@ jobs:
       max-parallel: 1
       fail-fast: true
       matrix:
-      env: ${{env}}
+        env: ${{env}}
         name: [common-object-management-service]
         include:
           - release: ${{ github.event.repository.name }}-${{ github.event.number }}-common-object-management-service
