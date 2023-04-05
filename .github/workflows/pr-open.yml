@@ -146,6 +146,8 @@ jobs:
           chart: common-object-management-service
           repo: https://bcgov.github.io/common-object-management-service
           repo-alias: common-object-management-service
+          env:
+            KUBECONFIG_FILE: ${{KUBECONFIG_FILE}}
           values: |
             fullNameOverride: ${{ github.event.repository.name }}-${{ github.event.number }}-common-object-management-service
             route.host: ${{ github.event.repository.name }}-${{ github.event.number }}-common-object-management-service.apps.silver.devops.gov.bc.ca
@@ -162,5 +164,3 @@ jobs:
             config.configMap.OBJECTSTORAGE_BUCKET: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_BUCKET}}
             config.configMap.OBJECTSTORAGE_ENDPOINT: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_ENDPOINT}}
             config.configMap.OBJECTSTORAGE_KEY: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_KEY}}
-          env:
-            KUBECONFIG_FILE: ${{KUBECONFIG_FILE}}
