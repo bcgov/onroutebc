@@ -121,29 +121,6 @@ jobs:
     strategy:
       max-parallel: 1
       fail-fast: true
-      matrix:
-        name: [common-object-management-service]
-        include:
-          - release: ${{ github.event.repository.name }}-${{ github.event.number }}-common-object-management-service
-            chart: common-object-management-service
-            repo: https://bcgov.github.io/common-object-management-service
-            repo-alias: common-object-management-service
-            values: |
-              fullNameOverride: ${{ github.event.repository.name }}-${{ github.event.number }}-common-object-management-service
-              route.host: ${{ github.event.repository.name }}-${{ github.event.number }}-common-object-management-service.apps.silver.devops.gov.bc.ca
-              basicAuthSecretOverride.username: ${{steps.secrets.outputs.VAULT_BASICAUTH_USERNAME}}
-              objectStorageSecretOverride.username: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_ACCESSKEYID}}
-              objectStorageSecretOverride.password: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_SECRETACCESSKEY}}
-              features.oidcAuth: false
-              config.enabled: true
-              config.releaseScoped: true
-              config.configMap.KC_IDENTITYKEY: null
-              config.configMap.KC_PUBLICKEY: null
-              config.configMap.KC_REALM: null
-              config.configMap.KC_SERVERURL: null
-              config.configMap.OBJECTSTORAGE_BUCKET: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_BUCKET}}
-              config.configMap.OBJECTSTORAGE_ENDPOINT: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_ENDPOINT}}
-              config.configMap.OBJECTSTORAGE_KEY: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_KEY}}
     steps:
       - name: Import Secrets
         id: secrets
@@ -165,11 +142,30 @@ jobs:
         uses: vimeda/helm@v1.6.8
         with:
           namespace: ${{ secrets.OC_NAMESPACE}}
-          token: ${{ secrets.OC_TOKEN }}
-          release: ${{matrix.release}}
-          chart: ${{ matrix.chart }}
-          repo: ${{matrix.repo}}
-          repo-alias: ${{matrix.repo-alias}}
-          values: ${{ matrix.values }}
+          release: ${{ github.event.repository.name }}-${{ github.event.number }}-common-object-management-service
+          chart: common-object-management-service
+          repo: https://bcgov.github.io/common-object-management-service
+          repo-alias: common-object-management-service
+          values: |
+            fullNameOverride: ${{ github.event.repository.name }}-${{ github.event.number }}-common-object-management-service
+            route.host: ${{ github.event.repository.name }}-${{ github.event.number }}-common-object-management-service.apps.silver.devops.gov.bc.ca
+            basicAuthSecretOverride.username: ${{steps.secrets.outputs.VAULT_BASICAUTH_USERNAME}}
+            objectStorageSecretOverride.username: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_ACCESSKEYID}}
+            objectStorageSecretOverride.password: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_SECRETACCESSKEY}}
+            features.oidcAuth: false
+            config.enabled: true
+            config.releaseScoped: true
+            config.configMap.KC_IDENTITYKEY: null
+            config.configMap.KC_PUBLICKEY: null
+            config.configMap.KC_REALM: null
+            config.configMap.KC_SERVERURL: null
+            config.configMap.OBJECTSTORAGE_BUCKET: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_BUCKET}}
+            config.configMap.OBJECTSTORAGE_ENDPOINT: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_ENDPOINT}}
+            config.configMap.OBJECTSTORAGE_KEY: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_KEY}}
+            release: ${{matrix.release}}
+            chart: ${{ matrix.chart }}
+            repo: ${{matrix.repo}}
+            repo-alias: ${{matrix.repo-alias}}
+            values: ${{ matrix.values }}
           env:
             KUBECONFIG_FILE: ${{secrets.KUBECONFIG_FILE}}
