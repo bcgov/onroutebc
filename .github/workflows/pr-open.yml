@@ -139,7 +139,7 @@ jobs:
             ${{secrets.VAULT_ENV}}/data/coms-dev  OBJECTSTORAGE_KEY               | VAULT_OBJECTSTORAGE_KEY;
             ${{secrets.VAULT_ENV}}/data/coms-dev  OBJECTSTORAGE_SECRETACCESSKEY   | VAULT_OBJECTSTORAGE_SECRETACCESSKEY;
       - name: Helm Deploy
-        uses: vimeda/helm@v1.6.8
+        uses: deliverybot/helm@v1.5.0
         with:
           namespace: ${{ secrets.OC_NAMESPACE}}
           release: ${{ github.event.repository.name }}-${{ github.event.number }}-common-object-management-service
