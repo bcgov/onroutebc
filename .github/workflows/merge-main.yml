@@ -98,7 +98,9 @@ jobs:
             ${{env.VAULT_ENV}}/data/database-test  DATABASE_USER     | VAULT_DATABASE_USER;
             ${{env.VAULT_ENV}}/data/database-test  DATABASE_NAME     | VAULT_DATABASE_NAME;
             ${{env.VAULT_ENV}}/data/database-test  DATABASE_PASSWORD | VAULT_DATABASE_PASSWORD;
-            ${{env.VAULT_ENV}}/data/database-test  DATABASE_PORT     | VAULT_DATABASE_PORT
+            ${{env.VAULT_ENV}}/data/database-test  DATABASE_PORT     | VAULT_DATABASE_PORT;
+            ${{env.VAULT_ENV}}/data/auth0-dev      AUTH0_ISSUER_URL  | VAULT_AUTH0_ISSUER_URL;
+            ${{env.VAULT_ENV}}/data/auth0-dev      AUTH0_AUDIENCE    | VAULT_AUTH0_AUDIENCE          
       - uses: bcgov-nr/action-deployer-openshift@v1.0.3
         with:
           file: ${{ matrix.file }}
@@ -113,6 +115,8 @@ jobs:
             -p DATABASE_USER=${{steps.secrets.outputs.VAULT_DATABASE_USER}}
             -p DATABASE_PASSWORD=${{steps.secrets.outputs.VAULT_DATABASE_PASSWORD}}
             -p DATABASE_HOST=${{steps.secrets.outputs.VAULT_DATABASE_HOST}}
+            -p AUTH0_ISSUER_URL=${{steps.secrets.outputs.VAULT_AUTH0_ISSUER_URL}}
+            -p AUTH0_AUDIENCE=${{steps.secrets.outputs.VAULT_AUTH0_AUDIENCE}}            
             ${{ matrix.parameters }}
           penetration_test: true
 
@@ -154,7 +158,9 @@ jobs:
             ${{env.VAULT_ENV}}/data/database-prod  DATABASE_USER     | VAULT_DATABASE_USER;
             ${{env.VAULT_ENV}}/data/database-prod  DATABASE_NAME     | VAULT_DATABASE_NAME;
             ${{env.VAULT_ENV}}/data/database-prod  DATABASE_PASSWORD | VAULT_DATABASE_PASSWORD;
-            ${{env.VAULT_ENV}}/data/database-prod  DATABASE_PORT     | VAULT_DATABASE_PORT
+            ${{env.VAULT_ENV}}/data/database-prod  DATABASE_PORT     | VAULT_DATABASE_PORT;
+            ${{env.VAULT_ENV}}/data/auth0-prod     AUTH0_ISSUER_URL  | VAULT_AUTH0_ISSUER_URL;
+            ${{env.VAULT_ENV}}/data/auth0-prod     AUTH0_AUDIENCE    | VAULT_AUTH0_AUDIENCE
       - uses: bcgov-nr/action-deployer-openshift@v1.0.3
         with:
           file: ${{ matrix.file }}
@@ -169,6 +175,8 @@ jobs:
             -p DATABASE_USER=${{steps.secrets.outputs.VAULT_DATABASE_USER}}
             -p DATABASE_PASSWORD=${{steps.secrets.outputs.VAULT_DATABASE_PASSWORD}}
             -p DATABASE_HOST=${{steps.secrets.outputs.VAULT_DATABASE_HOST}}
+            -p AUTH0_ISSUER_URL=${{steps.secrets.outputs.VAULT_AUTH0_ISSUER_URL}}
+            -p AUTH0_AUDIENCE=${{steps.secrets.outputs.VAULT_AUTH0_AUDIENCE}}            
             ${{ matrix.parameters }}
           penetration_test: false
 

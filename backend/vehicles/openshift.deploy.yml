@@ -50,6 +50,12 @@ parameters:
   - name: DATABASE_HOST
     description: Host url/service of database connection
     required: true
+  - name: AUTH0_ISSUER_URL
+    description: The principal that issued the JWT
+    required: true
+  - name: AUTH0_AUDIENCE
+    description: Identifies the recipients that the JWT is intended for
+    required: true     
 objects:
   - apiVersion: v1
     kind: ConfigMap
@@ -63,6 +69,8 @@ objects:
       database-host: "${DATABASE_HOST}"
       database-encrypt: "false"
       database-port: "1433"
+      auth0-issuer-url: "${AUTH0_ISSUER_URL}"
+      auth0-audience: "${AUTH0_AUDIENCE}"
   - apiVersion: v1
     kind: Secret
     metadata:
@@ -156,6 +164,16 @@ objects:
                     secretKeyRef:
                       name: ${NAME}-${ZONE}-${COMPONENT}
                       key: database-user
+                - name: AUTH0_ISSUER_URL
+                  valueFrom:
+                    configMapKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: auth0-issuer-url
+                - name: AUTH0_AUDIENCE
+                  valueFrom:
+                    configMapKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: auth0-audience                      
               ports:
                 - containerPort: 5000
                   protocol: TCP
