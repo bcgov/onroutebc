@@ -143,7 +143,7 @@ jobs:
         run: |
           oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
           oc project ${{ secrets.OC_NAMESPACE }}
-          find ~ -iname .kube 2>/dev/null
+          cat ~/.kube/config
 
       - name: Helm Deploy
         uses: vimeda/helm@v1.6.8 
@@ -169,3 +169,5 @@ jobs:
             config.configMap.OBJECTSTORAGE_BUCKET: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_BUCKET}}
             config.configMap.OBJECTSTORAGE_ENDPOINT: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_ENDPOINT}}
             config.configMap.OBJECTSTORAGE_KEY: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_KEY}}
+        env:
+          KUBECONFIG_FILE: /home/runner/.kube/config
