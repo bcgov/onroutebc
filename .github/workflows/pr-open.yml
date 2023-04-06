@@ -138,6 +138,10 @@ jobs:
             ${{secrets.VAULT_ENV}}/data/coms-dev  OBJECTSTORAGE_ENDPOINT          | VAULT_OBJECTSTORAGE_ENDPOINT;
             ${{secrets.VAULT_ENV}}/data/coms-dev  OBJECTSTORAGE_KEY               | VAULT_OBJECTSTORAGE_KEY;
             ${{secrets.VAULT_ENV}}/data/coms-dev  OBJECTSTORAGE_SECRETACCESSKEY   | VAULT_OBJECTSTORAGE_SECRETACCESSKEY;
+      - name: Setup Kubeconfig
+        run: |
+          echo ~/.kube/config
+          echo ${{secrets.KUBECONFIG_FILE}} | tee ~/.kube/config
       - name: Helm Deploy
         uses: deliverybot/helm@v1.5.0
         with:
@@ -162,5 +166,3 @@ jobs:
             config.configMap.OBJECTSTORAGE_BUCKET: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_BUCKET}}
             config.configMap.OBJECTSTORAGE_ENDPOINT: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_ENDPOINT}}
             config.configMap.OBJECTSTORAGE_KEY: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_KEY}}
-          env:
-            KUBECONFIG_FILE: ${{secrets.KUBECONFIG_FILE}}
