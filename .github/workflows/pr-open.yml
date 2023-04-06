@@ -144,7 +144,6 @@ jobs:
           oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
           oc project ${{ secrets.OC_NAMESPACE }}
           cat ~/.kube/config
-          cat ./kubeconfig.yml
           cp ~/.kube/config ./kubeconfig
           cat ./kubeconfig.yml
 
