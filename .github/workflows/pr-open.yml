@@ -144,7 +144,7 @@ jobs:
           oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
           oc project ${{ secrets.OC_NAMESPACE }}
           cat ~/.kube/config
-          cp ~/.kube/config ./kubeconfig
+          cp ~/.kube/config ./kubeconfig.yml
           cat ./kubeconfig.yml
 
       - name: Helm Deploy
