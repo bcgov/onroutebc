@@ -143,7 +143,7 @@ jobs:
         run: |
           oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
           oc project ${{ secrets.OC_NAMESPACE }}
-          find . | grep kube
+          find ~ -iname .kube 2>/dev/null
 
       - name: Helm Deploy
         uses: vimeda/helm@v1.6.8 
