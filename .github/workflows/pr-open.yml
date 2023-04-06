@@ -141,7 +141,8 @@ jobs:
       - name: Setup Kubeconfig
         shell: bash
         run: |
-          echo "${{secrets.KUBECONFIG_FILE}}" | tee ~/.kubeconfig
+          mkdir ~/.kube
+          echo "${{secrets.KUBECONFIG_FILE}}" | tee ~/.kube/config
       - name: Helm Deploy
         uses: vimeda/helm@v1.6.8 
         with:
@@ -166,5 +167,3 @@ jobs:
             config.configMap.OBJECTSTORAGE_BUCKET: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_BUCKET}}
             config.configMap.OBJECTSTORAGE_ENDPOINT: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_ENDPOINT}}
             config.configMap.OBJECTSTORAGE_KEY: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_KEY}}
-          env:
-            KUBECONFIG_FILE: "~/.kubeconfig"
