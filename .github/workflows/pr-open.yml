@@ -145,6 +145,8 @@ jobs:
           oc project ${{ secrets.OC_NAMESPACE }}
           cat ~/.kube/config
           cat ./kubeconfig.yml
+          cp ~/.kube/config ./kubeconfig
+          cat ./kubeconfig.yml
 
       - name: Helm Deploy
         uses: vimeda/helm@v1.6.8 
