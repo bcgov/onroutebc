@@ -143,7 +143,7 @@ jobs:
           echo ~/.kube/config
           echo ${{secrets.KUBECONFIG_FILE}} | tee ~/.kube/config
       - name: Helm Deploy
-        uses: deliverybot/helm@v1.5.0
+        uses: vimeda/helm@v1.6.8 
         with:
           namespace: ${{ secrets.OC_NAMESPACE}}
           release: ${{ github.event.repository.name }}-${{ github.event.number }}-common-object-management-service
