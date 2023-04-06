@@ -141,9 +141,10 @@ jobs:
       - name: Setup Kubeconfig
         shell: bash
         run: |
-          mkdir ~/.kube
-          export KUBECONFIG=~/.kube/config
-          echo "${{secrets.KUBECONFIG_FILE}}" | tee ~/.kube/config
+          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
+          oc project ${{ secrets.OC_NAMESPACE }}
+          kubectl config view
+
       - name: Helm Deploy
         uses: vimeda/helm@v1.6.8 
         with:
