@@ -142,6 +142,7 @@ jobs:
         shell: bash
         run: |
           mkdir ~/.kube
+          export KUBECONFIG=~/.kube/config
           echo "${{secrets.KUBECONFIG_FILE}}" | tee ~/.kube/config
       - name: Helm Deploy
         uses: vimeda/helm@v1.6.8 
