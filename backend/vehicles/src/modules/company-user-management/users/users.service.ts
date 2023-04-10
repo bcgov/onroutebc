@@ -20,6 +20,7 @@ import { ReadUserOrbcStatusDto } from './dto/response/read-user-orbc-status.dto'
 import { PendingUsersService } from '../pending-users/pending-users.service';
 import { CompanyService } from '../company/company.service';
 import { ReadCompanyMetadataDto } from '../company/dto/response/read-company-metadata.dto';
+import { Role } from '../../../common/enum/roles.enum';
 
 @Injectable()
 export class UsersService {
@@ -186,6 +187,56 @@ export class UsersService {
     const user = await this.findUserEntitybyUserGUID(userGUID);
     const readUserDto = await this.mapUserEntitytoReadUserDto(user);
     return readUserDto;
+  }
+
+  /**
+   * The findUserbyUserGUIDandCompanyId() method finds and returns a {@link ReadUserDto} object for a
+   * user with a specific userGUID and companyId parameters.
+   *
+   * @param userGUID The user GUID.
+   * @param companyId The company Id.
+   *
+   * @returns The user details as a promise of type {@link ReadUserDto}
+   */
+  async findUserbyUserGUIDandCompanyId(
+    userGUID: string,
+    companyId: number,
+  ): Promise<ReadUserDto> {
+    const user = await this.findUserEntitybyUserGUIDandCompanyId(
+      userGUID,
+      companyId,
+    );
+
+    if (user) {
+      const readUserDto = await this.mapUserEntitytoReadUserDto(user);
+      return readUserDto;
+    }
+  }
+
+  /**
+   * The findUserEntitybyUserGUIDandCompanyId() helper method finds and returns a User entity for a
+   * user with a specific userGUID parameters.
+   *
+   * @param userGUID The user GUID.
+   * @param companyId The company Id.
+   *
+   * @returns The {@link User} entity.
+   */
+  private async findUserEntitybyUserGUIDandCompanyId(
+    userGUID: string,
+    companyId: number,
+  ) {
+    return await this.userRepository
+      .createQueryBuilder('user')
+      .innerJoinAndSelect('user.userContact', 'userContact')
+      .innerJoinAndSelect('userContact.province', 'province')
+      .innerJoinAndSelect('user.companyUsers', 'companyUser')
+      .innerJoin('companyUser.company', 'company')
+      .where('user.userGUID = :userGUID', { userGUID: userGUID })
+      .andWhere('company.companyId= :companyId', {
+        companyId: companyId,
+      })
+      .getOne();
   }
 
   /**
@@ -387,5 +438,26 @@ export class UsersService {
     }
 
     return userExistsDto;
+  }
+
+  /**
+   * The getRolesForUser() method finds and returns a {@link Role} object
+   * for a user with a specific userGUID and companyId parameters. CompanyId is
+   * optional and defaults to 0
+   *
+   * @param userGUID The user GUID.
+   * @param companyId The company Id. Optional - Defaults to 0
+   *
+   * @returns The Roles as a promise of type {@link Role}
+   */
+  async getRolesForUser(userGUID: string, companyId = 0): Promise<Role[]> {
+    const queryResult = (await this.userRepository.query(
+      'SELECT ROLE_ID FROM access.ORBC_GET_ROLES_FOR_USER_FN(@0,@1)',
+      [userGUID, companyId],
+    )) as [{ ROLE_ID: Role }];
+
+    const roles = queryResult.map((r) => r.ROLE_ID);
+
+    return roles;
   }
 }

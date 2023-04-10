@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Param, Put, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Put,
+  Query,
+  Req,
+} from '@nestjs/common';
 import { CompanyService } from './company.service';
 import {
   ApiCreatedResponse,
@@ -20,6 +29,9 @@ import {
   UserDirectory,
 } from '../../../common/enum/directory.enum';
 import { ReadCompanyMetadataDto } from './dto/response/read-company-metadata.dto';
+import { Request } from 'express';
+import { Roles } from '../../../common/decorator/roles.decorator';
+import { Role } from '../../../common/enum/roles.enum';
 
 @ApiTags('Company and User Management - Company')
 @ApiNotFoundResponse({
@@ -78,8 +90,13 @@ export class CompanyController {
     description: 'The Company Resource',
     type: ReadCompanyDto,
   })
+  @Roles(Role.READ_ORG)
   @Get(':companyId')
-  async get(@Param('companyId') companyId: number): Promise<ReadCompanyDto> {
+  async get(
+    @Req() request: Request,
+    @Param('companyId') companyId: number,
+  ): Promise<ReadCompanyDto> {
+    const currentUser = request.user;
     const company = await this.companyService.findOne(companyId);
     if (!company) {
       throw new DataNotFoundException();
