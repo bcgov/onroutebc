@@ -14,37 +14,74 @@ import { ApplicationDetails } from "../ApplicationDetails";
 import { PermitDetails } from "./PermitDetails";
 import { VehicleDetails } from "../VehicleDetails";
 import dayjs from "dayjs";
-import { useCompanyInfoQuery } from "../../../../manageProfile/apiManager/hooks";
-import { formatPhoneNumber } from "../../../../../common/components/form/subFormComponents/PhoneNumberInput";
-import { useEffect, useState } from "react";
+import { useContext } from "react";
 import { BC_COLOURS } from "../../../../../themes/bcGovStyles";
 import { PERMIT_LEFT_COLUMN_WIDTH } from "../../../../../themes/orbcStyles";
+import { ApplicationContext } from "../../../context/ApplicationContext";
 
-export const TermOversizeForm = ({
-  termOversizeApplication,
-}: {
-  termOversizeApplication?: TermOversizeApplication;
-}) => {
+export const TermOversizeForm = () => {
+  const applicationContext = useContext(ApplicationContext);
   const submitTermOversizeQuery = useSubmitTermOversizeMutation();
-  const {
-    data: contactDetails,
-    isLoading,
-    isError,
-    error,
-  } = useCompanyInfoQuery();
 
   // Default values to register with React Hook Forms
   // If data was passed to this component, then use that data, otherwise use empty or undefined values
   const termOversizeDefaultValues: TermOversizeApplication = {
-    applicationId: termOversizeApplication?.applicationId || 1234567,
-    dateCreated: termOversizeApplication?.dateCreated || dayjs(),
-    lastUpdated: termOversizeApplication?.lastUpdated || dayjs(),
+    applicationId:
+      applicationContext?.applicationData?.applicationId || 1234567,
+    dateCreated: applicationContext?.applicationData?.dateCreated || dayjs(),
+    lastUpdated: applicationContext?.applicationData?.lastUpdated || dayjs(),
     application: {
-      startDate: termOversizeApplication?.application?.startDate || dayjs(),
+      startDate:
+        applicationContext?.applicationData?.application?.startDate || dayjs(),
       permitDuration:
-        termOversizeApplication?.application?.permitDuration || 30,
-      expiryDate: termOversizeApplication?.application?.expiryDate || dayjs(),
-      commodities: termOversizeApplication?.application?.commodities || [],
+        applicationContext?.applicationData?.application?.permitDuration || 30,
+      expiryDate:
+        applicationContext?.applicationData?.application?.expiryDate || dayjs(),
+      commodities:
+        applicationContext?.applicationData?.application?.commodities || [],
+      contactDetails: {
+        firstName:
+          applicationContext?.applicationData?.application?.contactDetails
+            ?.firstName || "",
+        lastName:
+          applicationContext?.applicationData?.application?.contactDetails
+            ?.lastName || "",
+        phone1:
+          applicationContext?.applicationData?.application?.contactDetails
+            ?.phone1 || "",
+        email:
+          applicationContext?.applicationData?.application?.contactDetails
+            ?.email || "",
+        city:
+          applicationContext?.applicationData?.application?.contactDetails
+            ?.city || "",
+      },
+      vehicleDetails: {
+        vin:
+          applicationContext?.applicationData?.application?.vehicleDetails
+            ?.vin || "",
+        plate:
+          applicationContext?.applicationData?.application?.vehicleDetails
+            ?.plate || "",
+        make:
+          applicationContext?.applicationData?.application?.vehicleDetails
+            ?.make || "",
+        year:
+          applicationContext?.applicationData?.application?.vehicleDetails
+            ?.year || "",
+        countryCode:
+          applicationContext?.applicationData?.application?.vehicleDetails
+            ?.countryCode || "",
+        provinceCode:
+          applicationContext?.applicationData?.application?.vehicleDetails
+            ?.provinceCode || "",
+        vehicleType:
+          applicationContext?.applicationData?.application?.vehicleDetails
+            ?.vehicleType || "",
+        vehicleSubType:
+          applicationContext?.applicationData?.application?.vehicleDetails
+            ?.vehicleSubType || "",
+      },
     },
   };
 
@@ -53,57 +90,16 @@ export const TermOversizeForm = ({
     reValidateMode: "onBlur",
   });
 
-  /**
-   * Set default values for Contact Details asynchronously
-   * If the user has entered a value, use that value
-   * Else, use the value from the CompanyInfo query
-   */
-  useEffect(() => {
-    if (contactDetails && !formMethods.formState.isDirty) {
-      formMethods.setValue("application.contactDetails", {
-        firstName:
-          contactDetails?.primaryContact.firstName ||
-          formMethods.getValues("application.contactDetails.firstName") ||
-          "",
-        lastName:
-          formMethods.getValues("application.contactDetails.lastName") ||
-          contactDetails?.primaryContact.lastName ||
-          "",
-        phone1:
-          formatPhoneNumber(
-            formMethods.getValues("application.contactDetails.phone1")
-          ) ||
-          formatPhoneNumber(contactDetails?.primaryContact?.phone1) ||
-          "",
-        phone1Extension:
-          formMethods.getValues("application.contactDetails.phone1Extension") ||
-          contactDetails?.primaryContact?.phone1Extension ||
-          "",
-        phone2:
-          formatPhoneNumber(
-            formMethods.getValues("application.contactDetails.phone2")
-          ) ||
-          formatPhoneNumber(contactDetails?.primaryContact?.phone2) ||
-          "",
-        phone2Extension:
-          formMethods.getValues("application.contactDetails.phone2Extension") ||
-          contactDetails?.primaryContact?.phone2Extension ||
-          "",
-        email:
-          formMethods.getValues("application.contactDetails.email") ||
-          contactDetails?.primaryContact?.email ||
-          "",
-        city:
-          formMethods.getValues("application.contactDetails.city") ||
-          contactDetails?.primaryContact?.city ||
-          "",
-      });
-    }
-  }, [contactDetails]);
-
   const { handleSubmit } = formMethods;
 
   const navigate = useNavigate();
+
+  const onContinue = function (data: FieldValues) {
+    const termOverSizeToBeAdded = data as TermOversizeApplication;
+    applicationContext?.setApplicationData(termOverSizeToBeAdded);
+    applicationContext?.next();
+    //submitTermOversizeQuery.mutate(termOverSizeToBeAdded);
+  };
 
   const onSubmitTermOversize = function (data: FieldValues) {
     const termOverSizeToBeAdded = data as TermOversizeApplication;
@@ -130,134 +126,117 @@ export const TermOversizeForm = ({
    */
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down("lg"));
-  const [isVisible, setIsVisible] = useState(false);
-  const scrollToTop = () => {
-    window.scrollTo(0, 0);
+
+  const handleNavigateBack = () => {
+    navigate("../");
   };
-  const listenToScroll = () => {
-    const heightToHideFrom = 600;
-    const winScroll =
-      document.body.scrollTop || document.documentElement.scrollTop;
-
-    if (winScroll > heightToHideFrom) {
-      !isVisible && // to limit setting state only the first time
-        setIsVisible(true);
-    } else {
-      setIsVisible(false);
-    }
-  };
-  useEffect(() => {
-    window.addEventListener("scroll", listenToScroll);
-    return () => window.removeEventListener("scroll", listenToScroll);
-  }, []);
-
-  if (isLoading)
-    return (
-      <Box sx={{ paddingBottom: "80px", height: "100vh" }}>Loading...</Box>
-    );
-
-  if (isError) {
-    if (error instanceof Error) {
-      return (
-        <Box sx={{ paddingBottom: "80px", height: "100vh" }}>
-          <Typography>Error: {error.message}</Typography>
-        </Box>
-      );
-    }
-  }
 
   return (
     <>
-      <Box sx={{ paddingBottom: "80px" }}>
-        <Typography
-          variant={"h1"}
-          sx={{
-            marginRight: "200px",
-            marginTop: "0px",
-            paddingTop: "0px",
-            borderBottom: "none",
-          }}
-        >
-          Oversize: Term
-        </Typography>
-        <FormProvider {...formMethods}>
-          <ApplicationDetails />
-          <ContactDetails feature={FEATURE} />
-          <PermitDetails feature={FEATURE} />
-          <VehicleDetails feature={FEATURE} />
-        </FormProvider>
-      </Box>
-
       <Box
+        className="layout-box"
         sx={{
-          position: "fixed",
-          height: "100px",
-          top: "calc(100vh - 100px)",
-          backgroundColor: BC_COLOURS.white,
-          width: "100vw",
           display: "flex",
+          height: "60px",
           alignItems: "center",
-          marginLeft: "-60px",
-          marginRight: matches ? "80px" : "60px",
-          paddingRight: "30px",
-          justifyContent: "space-between",
-          borderTop: `1px solid ${BC_COLOURS.bc_text_box_border_grey}`,
+          backgroundColor: BC_COLOURS.white,
         }}
       >
-        <Button
-          key="leave-application-button"
-          aria-label="leave"
-          variant="contained"
-          color="secondary"
-          onClick={handleClose}
+        <Typography
+          onClick={handleNavigateBack}
           sx={{
-            marginLeft: matches
-              ? "20px"
-              : `calc(${PERMIT_LEFT_COLUMN_WIDTH} + 60px)`,
+            color: BC_COLOURS.bc_text_links_blue,
+            cursor: "pointer",
+            marginRight: "8px",
+            textDecoration: "underline",
           }}
         >
-          Leave Application
-        </Button>
-        <Box>
+          Permits
+        </Typography>
+        <i
+          className="fa fa-chevron-right"
+          style={{ marginLeft: "8px", marginRight: "8px" }}
+        ></i>
+        <Typography>Permit Application</Typography>
+      </Box>
+      <Box
+        className="layout-box"
+        sx={{
+          paddingTop: "24px",
+          backgroundColor: BC_COLOURS.white,
+        }}
+      >
+        <Box sx={{ paddingBottom: "80px" }}>
+          <Typography
+            variant={"h1"}
+            sx={{
+              marginRight: "200px",
+              marginTop: "0px",
+              paddingTop: "0px",
+              borderBottom: "none",
+            }}
+          >
+            Oversize: Term
+          </Typography>
+          <FormProvider {...formMethods}>
+            <ApplicationDetails />
+            <ContactDetails feature={FEATURE} />
+            <PermitDetails feature={FEATURE} />
+            <VehicleDetails feature={FEATURE} />
+          </FormProvider>
+        </Box>
+
+        <Box
+          sx={{
+            position: "fixed",
+            height: "100px",
+            top: "calc(100vh - 100px)",
+            backgroundColor: BC_COLOURS.white,
+            width: "100vw",
+            display: "flex",
+            alignItems: "center",
+            marginLeft: "-60px",
+            marginRight: matches ? "80px" : "60px",
+            paddingRight: "30px",
+            justifyContent: "space-between",
+            borderTop: `1px solid ${BC_COLOURS.bc_text_box_border_grey}`,
+          }}
+        >
           <Button
-            key="save-TROS-button"
-            aria-label="save"
+            key="leave-application-button"
+            aria-label="leave"
             variant="contained"
             color="secondary"
-            sx={{ marginLeft: "-420px" }}
+            onClick={handleClose}
+            sx={{
+              marginLeft: matches
+                ? "20px"
+                : `calc(${PERMIT_LEFT_COLUMN_WIDTH} + 60px)`,
+            }}
           >
-            Save Application
+            Leave Application
           </Button>
-          <Button
-            key="submit-TROS-button"
-            aria-label="Submit"
-            variant="contained"
-            color="primary"
-            onClick={handleSubmit(onSubmitTermOversize)}
-            sx={{ marginLeft: "20px" }}
-          >
-            Continue
-          </Button>
-          {isVisible && (
+          <Box>
             <Button
-              key="to-top-button"
-              aria-label="To Top"
+              key="save-TROS-button"
+              aria-label="save"
               variant="contained"
               color="secondary"
-              onClick={scrollToTop}
-              sx={{
-                position: "fixed",
-                bottom: 120,
-                right: matches ? 20 : 60,
-                width: "20px",
-              }}
+              sx={{ marginLeft: "-420px" }}
             >
-              <i
-                className="fa fa-chevron-up"
-                style={{ marginLeft: "8px", marginRight: "8px" }}
-              ></i>
+              Save Application
             </Button>
-          )}
+            <Button
+              key="submit-TROS-button"
+              aria-label="Submit"
+              variant="contained"
+              color="primary"
+              onClick={handleSubmit(onContinue)}
+              sx={{ marginLeft: "20px" }}
+            >
+              Continue
+            </Button>
+          </Box>
         </Box>
       </Box>
     </>

@@ -46,6 +46,23 @@ interface InternationalOptionsProps {
 }
 
 /**
+ * Recursive method to dynamically get the error message of a fieldname that has nested json
+ * Example: Field name of primaryContact.provinceCode
+ * @param errors The "errors" object from formState: { errors } in useFormContext (See top of this file). Passed by value since recursive.
+ * @param fieldPath The field name variable. Either provinceField or countryField
+ * @returns Error message as a string
+ */
+// eslint-disable-next-line  @typescript-eslint/no-explicit-any
+export const getErrorMessage = (errors: any, fieldPath: string): string => {
+  const parts = fieldPath.split(".");
+  if (parts.length > 1 && typeof errors[parts[0]] === "object") {
+    return getErrorMessage(errors[parts[0]], parts.splice(1).join("."));
+  } else {
+    return errors[parts[0]]?.message;
+  }
+};
+
+/**
  * This onRouteBC Custom Form component abstracts the MUI / React Hook form code to allow for simple reusable form components.
  *
  * Default values should be provided in the parent component using the useForm() method of react-hook-form
@@ -85,23 +102,6 @@ export const CustomFormComponent = <T extends ORBC_FormTypes>({
     formState: { errors },
   } = useFormContext();
   const { t } = useTranslation();
-
-  /**
-   * Recursive method to dynamically get the error message of a fieldname that has nested json
-   * Example: Field name of primaryContact.provinceCode
-   * @param errors The "errors" object from formState: { errors } in useFormContext (See top of this file). Passed by value since recursive.
-   * @param fieldPath The field name variable. Either provinceField or countryField
-   * @returns Error message as a string
-   */
-  // eslint-disable-next-line  @typescript-eslint/no-explicit-any
-  const getErrorMessage = (errors: any, fieldPath: string): string => {
-    const parts = fieldPath.split(".");
-    if (parts.length > 1 && typeof errors[parts[0]] === "object") {
-      return getErrorMessage(errors[parts[0]], parts.splice(1).join("."));
-    } else {
-      return errors[parts[0]]?.message;
-    }
-  };
 
   /**
    * Function to check the rules object for either required or required: { value: true}

@@ -21,7 +21,7 @@ import {
   useVehiclesQuery,
 } from "../../../manageVehicles/apiManager/hooks";
 import { InfoBcGovBanner } from "../../../../common/components/banners/AlertBanners";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import {
   PERMIT_MAIN_BOX_STYLE,
   PERMIT_LEFT_BOX_STYLE,
@@ -33,6 +33,7 @@ import { CustomSimpleSelect } from "../../../../common/components/form/subFormCo
 import { CustomSimpleSelectWithRegister } from "../../../../common/components/form/subFormComponents/CustomSimpleSelectWithRegister";
 import { SelectVehicleDropdown } from "./TermOversizePermit/customFields/SelectVehicleDropdown";
 import { SelectVehicleSubTypeDropdown } from "./TermOversizePermit/customFields/SelectVehicleSubTypeDropdown";
+import { ApplicationContext } from "../../context/ApplicationContext";
 
 export const VehicleDetails = ({ feature }: { feature: string }) => {
   const { setValue, resetField } = useFormContext();
@@ -46,6 +47,7 @@ export const VehicleDetails = ({ feature }: { feature: string }) => {
   const powerUnitTypesQuery = usePowerUnitTypesQuery();
   const trailerTypesQuery = useTrailerTypesQuery();
   const allVehiclesQuery = useVehiclesQuery();
+  const appContext = useContext(ApplicationContext);
 
   const chooseFromOptions = [
     { value: "unitNumber", label: "Unit Number" },
@@ -61,6 +63,39 @@ export const VehicleDetails = ({ feature }: { feature: string }) => {
   // Selected vehicle is the selected vehicles plate number
   const [selectedVehicle, setSelectedVehicle] = useState("");
   const [vehicleType, setVehicleType] = useState("");
+
+  useEffect(() => {
+    if (appContext?.applicationData) {
+      setSelectedVehicle(
+        appContext?.applicationData?.application.vehicleDetails?.plate || ""
+      );
+    }
+
+    // Populate the 'Vehicle Type' and 'Vehicle Sub Type' form fields with the selected vehicle information
+
+    if (
+      appContext?.applicationData?.application.vehicleDetails?.vehicleType ===
+      "powerUnit"
+    ) {
+      setVehicleType("powerUnit");
+      setValue("application.vehicleDetails.vehicleType", "powerUnit");
+      setValue(
+        "application.vehicleDetails.vehicleSubType",
+        appContext?.applicationData?.application.vehicleDetails?.vehicleSubType
+      );
+    }
+    if (
+      appContext?.applicationData?.application.vehicleDetails?.vehicleType ===
+      "trailer"
+    ) {
+      setVehicleType("trailer");
+      setValue("application.vehicleDetails.vehicleType", "trailer");
+      setValue(
+        "application.vehicleDetails.vehicleSubType",
+        appContext?.applicationData?.application.vehicleDetails?.vehicleSubType
+      );
+    }
+  }, [appContext?.applicationData]);
 
   /**
    * Set default values for Contact Details
@@ -125,7 +160,13 @@ export const VehicleDetails = ({ feature }: { feature: string }) => {
 
   const handleVehicleType = (event: SelectChangeEvent) => {
     setVehicleType(event.target.value as string);
+    const updated = appContext?.applicationData;
+    if (updated && updated.application.vehicleDetails) {
+      updated.application.vehicleDetails.vehicleSubType = "";
+      appContext.setApplicationData(updated);
+    }
     resetField("application.vehicleDetails.vehicleSubType");
+    setValue("application.vehicleDetails.vehicleSubType", "");
   };
 
   return (

@@ -1,20 +1,32 @@
-import { Box, Typography } from "@mui/material";
-
+import { Box } from "@mui/material";
 import "../../../../common/components/dashboard/Dashboard.scss";
 import { Banner } from "../../../../common/components/dashboard/Banner";
-import { BC_COLOURS } from "../../../../themes/bcGovStyles";
-import { useNavigate } from "react-router-dom";
 import { TermOversizeForm } from "../form/TermOversizePermit/TermOversizeForm";
+import { ApplicationContext } from "../../context/ApplicationContext";
+import { useState } from "react";
+import { TermOversizeApplication } from "../../types/application";
+import { TermOversizeReview } from "../form/TermOversizePermit/TermOversizeReview";
+import { useMultiStepForm } from "../../apiManager/hooks";
 
 export const PermitApplicationDashboard = () => {
-  const navigate = useNavigate();
+  const [applicationData, setApplicationData] =
+    useState<TermOversizeApplication>();
 
-  const handleNavigateBack = () => {
-    navigate("../");
-  };
+  const { steps, currentStepIndex, step, isFirstStep, isLastStep, back, next } =
+    useMultiStepForm([
+      <TermOversizeForm key={1} />,
+      <TermOversizeReview key={2} />,
+    ]);
 
   return (
-    <>
+    <ApplicationContext.Provider
+      value={{
+        applicationData: applicationData,
+        setApplicationData: setApplicationData,
+        next,
+        back,
+      }}
+    >
       <Box
         className="layout-box"
         sx={{
@@ -24,42 +36,8 @@ export const PermitApplicationDashboard = () => {
       >
         <Banner bannerText={"Permit Application"} extendHeight={true} />
       </Box>
-      <Box
-        className="layout-box"
-        sx={{
-          display: "flex",
-          height: "60px",
-          alignItems: "center",
-          backgroundColor: BC_COLOURS.white,
-        }}
-      >
-        <Typography
-          onClick={handleNavigateBack}
-          sx={{
-            color: BC_COLOURS.bc_text_links_blue,
-            cursor: "pointer",
-            marginRight: "8px",
-            textDecoration: "underline",
-          }}
-        >
-          Permits
-        </Typography>
-        <i
-          className="fa fa-chevron-right"
-          style={{ marginLeft: "8px", marginRight: "8px" }}
-        ></i>
-        <Typography>Permit Application</Typography>
-      </Box>
 
-      <Box
-        className="layout-box"
-        sx={{
-          paddingTop: "24px",
-          backgroundColor: BC_COLOURS.white,
-        }}
-      >
-        <TermOversizeForm />
-      </Box>
-    </>
+      {step}
+    </ApplicationContext.Provider>
   );
 };
