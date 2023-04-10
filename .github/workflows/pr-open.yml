@@ -139,6 +139,8 @@ jobs:
             ${{secrets.VAULT_ENV}}/data/coms-dev  OBJECTSTORAGE_KEY               | VAULT_OBJECTSTORAGE_KEY;
             ${{secrets.VAULT_ENV}}/data/coms-dev  OBJECTSTORAGE_SECRETACCESSKEY   | VAULT_OBJECTSTORAGE_SECRETACCESSKEY;
 
+      - uses: actions/checkout@v3
+      - uses: bcgov-nr/action-builder-ghcr@v1.1.0
       - name: Helm Deploy
         uses: ./.github/action-deployer-helm
         with:
