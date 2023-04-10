@@ -139,15 +139,17 @@ jobs:
             ${{secrets.VAULT_ENV}}/data/coms-dev  OBJECTSTORAGE_KEY               | VAULT_OBJECTSTORAGE_KEY;
             ${{secrets.VAULT_ENV}}/data/coms-dev  OBJECTSTORAGE_SECRETACCESSKEY   | VAULT_OBJECTSTORAGE_SECRETACCESSKEY;
 
+      - run: |
+          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
+          oc project ${{ secrets.OC_NAMESPACE }}
+
       - name: Helm Deploy
-        uses: Aot-Technologies/action-deployer-helm@v0.0.14
+        uses: vimeda/helm@v1.6.8
         with:
           chart: common-object-management-service
           release: ${{ github.event.repository.name }}-${{ github.event.number }}-common-object-management-service
-          repository: https://bcgov.github.io/common-object-management-service
-          oc_namespace: ${{ secrets.OC_NAMESPACE}}
-          oc_server: ${{ secrets.OC_SERVER}}
-          oc_token: ${{ secrets.OC_TOKEN}}
+          repo: https://bcgov.github.io/common-object-management-service
+          repo-alias: ${{ common-object-management-service }}
           values: |
             fullNameOverride: ${{ github.event.repository.name }}-${{ github.event.number }}-common-object-management-service
             route.host: ${{ github.event.repository.name }}-${{ github.event.number }}-common-object-management-service.apps.silver.devops.gov.bc.ca
@@ -164,3 +166,5 @@ jobs:
             config.configMap.OBJECTSTORAGE_BUCKET: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_BUCKET}}
             config.configMap.OBJECTSTORAGE_ENDPOINT: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_ENDPOINT}}
             config.configMap.OBJECTSTORAGE_KEY: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_KEY}}
+          env:
+            KUBECONFIG_FILE: /home/runner/.kube/config
