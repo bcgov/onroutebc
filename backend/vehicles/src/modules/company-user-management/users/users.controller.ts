@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Put, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Put, Query, Req } from '@nestjs/common';
 
 import {
   ApiInternalServerErrorResponse,
@@ -15,6 +15,10 @@ import { UpdateUserDto } from './dto/request/update-user.dto';
 import { ReadUserOrbcStatusDto } from './dto/response/read-user-orbc-status.dto';
 import { ReadUserDto } from './dto/response/read-user.dto';
 import { UsersService } from './users.service';
+import { Role } from '../../../common/enum/roles.enum';
+import { Request } from 'express';
+import { IUserJWT } from '../../../common/interface/user-jwt.interface';
+import { Roles } from '../../../common/decorator/roles.decorator';
 
 @ApiTags('Company and User Management - User')
 @ApiNotFoundResponse({
@@ -116,6 +120,35 @@ export class UsersController {
   ): Promise<ReadUserDto[]> {
     return await this.userService.findAllUsers(companyId);
   }
+
+
+  /**
+   * A GET method defined with the @Get() decorator and a route of
+   * /user/list that retrieves a list of users associated with
+   * the company ID
+   * TODO: Secure endpoints once login is implemented.
+   *
+   * @param companyId The company Id.
+   *
+   * @returns The user list with response object {@link ReadUserDto}.
+   */
+  @ApiOkResponse({
+    description: 'The list of User\'s Roles',
+    type: Role.READ_SELF,
+    isArray: true,    
+  })
+  @ApiQuery({ name: 'companyId', required: false })
+  @Roles(Role.READ_SELF)
+  @Get('/roles')
+  async getRolesForUsers(
+    @Req() request: Request,
+    @Query('companyId') companyId?: number,
+  ): Promise<Role[]> {
+    const currentUser = request.user as IUserJWT;
+    const roles = await this.userService.getRolesForUser(currentUser.userGUID,companyId);
+    console.log('roles')
+    return roles;
+  }  
 
   /**
    * A PUT method defined with the @Put(':userGUID') decorator and a route of

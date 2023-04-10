@@ -32,6 +32,7 @@ import { ReadCompanyMetadataDto } from './dto/response/read-company-metadata.dto
 import { Request } from 'express';
 import { Roles } from '../../../common/decorator/roles.decorator';
 import { Role } from '../../../common/enum/roles.enum';
+import { IUserJWT } from '../../../common/interface/user-jwt.interface';
 
 @ApiTags('Company and User Management - Company')
 @ApiNotFoundResponse({
@@ -96,7 +97,7 @@ export class CompanyController {
     @Req() request: Request,
     @Param('companyId') companyId: number,
   ): Promise<ReadCompanyDto> {
-    const currentUser = request.user;
+    const currentUser = request.user as IUserJWT;
     const company = await this.companyService.findOne(companyId);
     if (!company) {
       throw new DataNotFoundException();
