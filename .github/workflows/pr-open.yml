@@ -140,7 +140,7 @@ jobs:
             ${{secrets.VAULT_ENV}}/data/coms-dev  OBJECTSTORAGE_SECRETACCESSKEY   | VAULT_OBJECTSTORAGE_SECRETACCESSKEY;
 
       - name: Helm Deploy
-        uses: Aot-Technologies/action-deployer-helm@latest
+        uses: Aot-Technologies/action-deployer-helm@v0.0.3
         with:
           chart: common-object-management-service
           release: ${{ github.event.repository.name }}-${{ github.event.number }}-common-object-management-service
