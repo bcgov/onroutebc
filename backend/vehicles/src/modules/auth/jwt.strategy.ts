@@ -18,7 +18,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       }),
 
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      ignoreExpiration: process.env.AUTH0_IGNORE_EXP==='true'?true:false,
+      ignoreExpiration: process.env.AUTH0_IGNORE_EXP === 'true' ? true : false,
       audience: process.env.AUTH0_AUDIENCE,
       issuer: `${process.env.AUTH0_ISSUER_URL}`,
       algorithms: ['RS256'],

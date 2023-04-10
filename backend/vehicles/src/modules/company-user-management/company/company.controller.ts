@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common';
 import { CompanyService } from './company.service';
 import {
+  ApiBearerAuth,
   ApiCreatedResponse,
   ApiInternalServerErrorResponse,
   ApiMethodNotAllowedResponse,
@@ -47,6 +48,7 @@ import { IUserJWT } from '../../../common/interface/user-jwt.interface';
   description: 'The Company Api Internal Server Error Response',
   type: ExceptionDto,
 })
+@ApiBearerAuth()
 @Controller('companies')
 export class CompanyController {
   constructor(private readonly companyService: CompanyService) {}

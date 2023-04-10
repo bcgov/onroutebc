@@ -1,6 +1,7 @@
 import { Body, Controller, Get, Param, Put, Query, Req } from '@nestjs/common';
 
 import {
+  ApiBearerAuth,
   ApiInternalServerErrorResponse,
   ApiMethodNotAllowedResponse,
   ApiNotFoundResponse,
@@ -33,6 +34,7 @@ import { Roles } from '../../../common/decorator/roles.decorator';
   description: 'The User Api Internal Server Error Response',
   type: ExceptionDto,
 })
+@ApiBearerAuth()
 @Controller('users')
 export class UsersController {
   constructor(private readonly userService: UsersService) {}
@@ -121,7 +123,6 @@ export class UsersController {
     return await this.userService.findAllUsers(companyId);
   }
 
-
   /**
    * A GET method defined with the @Get() decorator and a route of
    * /user/list that retrieves a list of users associated with
@@ -133,9 +134,9 @@ export class UsersController {
    * @returns The user list with response object {@link ReadUserDto}.
    */
   @ApiOkResponse({
-    description: 'The list of User\'s Roles',
+    description: "The list of User's Roles",
     type: Role.READ_SELF,
-    isArray: true,    
+    isArray: true,
   })
   @ApiQuery({ name: 'companyId', required: false })
   @Roles(Role.READ_SELF)
@@ -145,10 +146,12 @@ export class UsersController {
     @Query('companyId') companyId?: number,
   ): Promise<Role[]> {
     const currentUser = request.user as IUserJWT;
-    const roles = await this.userService.getRolesForUser(currentUser.userGUID,companyId);
-    console.log('roles')
+    const roles = await this.userService.getRolesForUser(
+      currentUser.userGUID,
+      companyId,
+    );
     return roles;
-  }  
+  }
 
   /**
    * A PUT method defined with the @Put(':userGUID') decorator and a route of

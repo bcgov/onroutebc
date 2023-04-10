@@ -11,6 +11,7 @@ import { PowerUnitsService } from './power-units.service';
 import { CreatePowerUnitDto } from './dto/request/create-power-unit.dto';
 import { UpdatePowerUnitDto } from './dto/request/update-power-unit.dto';
 import {
+  ApiBearerAuth,
   ApiCreatedResponse,
   ApiInternalServerErrorResponse,
   ApiMethodNotAllowedResponse,
@@ -36,6 +37,7 @@ import { DataNotFoundException } from '../../../common/exception/data-not-found.
   description: 'The Power Unit Api Internal Server Error Response',
   type: ExceptionDto,
 })
+@ApiBearerAuth()
 @Controller('vehicles/powerUnits')
 export class PowerUnitsController {
   constructor(private readonly powerUnitsService: PowerUnitsService) {}
