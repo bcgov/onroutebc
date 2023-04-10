@@ -26,7 +26,10 @@ parameters:
     required: true
   - name: AUTH0_AUDIENCE
     description: Identifies the recipients that the JWT is intended for
-    required: true           
+    required: true
+  - name: AUTH0_IGNORE_EXP
+    description: The boolean flag to ignore the JWT expiration
+    required: true    
 objects:
   - apiVersion: networking.k8s.io/v1
     kind: NetworkPolicy

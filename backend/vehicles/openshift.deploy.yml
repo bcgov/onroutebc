@@ -55,7 +55,10 @@ parameters:
     required: true
   - name: AUTH0_AUDIENCE
     description: Identifies the recipients that the JWT is intended for
-    required: true     
+    required: true
+  - name: AUTH0_IGNORE_EXP
+    description: The boolean flag to ignore the JWT expiration
+    required: true
 objects:
   - apiVersion: v1
     kind: ConfigMap
@@ -71,6 +74,7 @@ objects:
       database-port: "1433"
       auth0-issuer-url: "${AUTH0_ISSUER_URL}"
       auth0-audience: "${AUTH0_AUDIENCE}"
+      auth0-ignore-exp: "${AUTH0_IGNORE_EXP}"
   - apiVersion: v1
     kind: Secret
     metadata:
@@ -173,7 +177,12 @@ objects:
                   valueFrom:
                     configMapKeyRef:
                       name: ${NAME}-${ZONE}-${COMPONENT}
-                      key: auth0-audience                      
+                      key: auth0-audience   
+                - name: AUTH0_IGNORE_EXP
+                  valueFrom:
+                    configMapKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: auth0-ignore-exp                                         
               ports:
                 - containerPort: 5000
                   protocol: TCP
