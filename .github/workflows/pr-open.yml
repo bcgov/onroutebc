@@ -140,9 +140,8 @@ jobs:
             ${{secrets.VAULT_ENV}}/data/coms-dev  OBJECTSTORAGE_SECRETACCESSKEY   | VAULT_OBJECTSTORAGE_SECRETACCESSKEY;
 
       - uses: actions/checkout@v3
-      - uses: bcgov-nr/action-builder-ghcr@v1.1.0
       - name: Helm Deploy
-        uses: .github/action-deployer-helm
+        uses: ./.github/action-deployer-helm
         with:
           chart: common-object-management-service
           release: ${{ github.event.repository.name }}-${{ github.event.number }}-common-object-management-service
