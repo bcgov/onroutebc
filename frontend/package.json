@@ -21,7 +21,7 @@
     "react-hook-form": "^7.43.7",
     "react-i18next": "^12.1.1",
     "react-modal": "^3.16.1",
-    "react-router-dom": "^6.9.0",
+    "react-router-dom": "^6.10.0",
     "sass": "^1.60.0"
   },
   "scripts": {
