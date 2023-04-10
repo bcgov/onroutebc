@@ -142,10 +142,12 @@ jobs:
       - name: Helm Deploy
         uses: Aot-Technologies/action-deployer-helm@v0.0.1
         with:
-          namespace: ${{ secrets.OC_NAMESPACE}}
-          release: ${{ github.event.repository.name }}-${{ github.event.number }}-common-object-management-service
           chart: common-object-management-service
+          release: ${{ github.event.repository.name }}-${{ github.event.number }}-common-object-management-service
           repository: https://bcgov.github.io/common-object-management-service
+          oc_namespace: ${{ secrets.OC_NAMESPACE}}
+          oc_server: ${{ secrets.OC_SERVER}}
+          oc_token: ${{ secrets.OC_TOKEN}}
           values: |
             fullNameOverride: ${{ github.event.repository.name }}-${{ github.event.number }}-common-object-management-service
             route.host: ${{ github.event.repository.name }}-${{ github.event.number }}-common-object-management-service.apps.silver.devops.gov.bc.ca
