@@ -25,6 +25,8 @@ import { ReadPowerUnitDto } from './dto/response/read-power-unit.dto';
 import { ExceptionDto } from '../../common/dto/exception.dto';
 import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
 import { Request } from 'express';
+import { Roles } from '../../../common/decorator/roles.decorator';
+import { Role } from '../../../common/enum/roles.enum';
 
 @ApiTags('Vehicles - Power Units')
 @ApiNotFoundResponse({
@@ -63,9 +65,9 @@ export class PowerUnitsController {
     type: ReadPowerUnitDto,
     isArray: true,
   })
+  @Roles(Role.READ_VEHICLE)
   @Get()
   async findAll(
-    @Req() request: Request,
     @Param('companyId') companyId: number,
   ): Promise<ReadPowerUnitDto[]> {
     return await this.powerUnitsService.findAll();
@@ -75,6 +77,7 @@ export class PowerUnitsController {
     description: 'The Power Unit Resource',
     type: ReadPowerUnitDto,
   })
+  @Roles(Role.READ_VEHICLE)
   @Get(':powerUnitId')
   async findOne(
     @Req() request: Request,
@@ -92,6 +95,7 @@ export class PowerUnitsController {
     description: 'The Power Unit Resource',
     type: ReadPowerUnitDto,
   })
+  @Roles(Role.WRITE_VEHICLE)
   @Put(':powerUnitId')
   async update(
     @Req() request: Request,
@@ -110,6 +114,7 @@ export class PowerUnitsController {
     return powerUnit;
   }
 
+  @Roles(Role.WRITE_VEHICLE)
   @Delete(':powerUnitId')
   async remove(
     @Req() request: Request,
