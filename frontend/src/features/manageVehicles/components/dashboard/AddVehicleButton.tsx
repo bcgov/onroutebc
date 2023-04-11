@@ -3,7 +3,7 @@ import Button from "@mui/material/Button";
 import ClickAwayListener from "@mui/material/ClickAwayListener";
 import Grow from "@mui/material/Grow";
 import Paper from "@mui/material/Paper";
-import Popper from "@mui/material/Popper";
+// import Popper from "@mui/material/Popper";
 import MenuItem from "@mui/material/MenuItem";
 import MenuList from "@mui/material/MenuList";
 import Stack from "@mui/material/Stack";
@@ -105,7 +105,7 @@ export const AddVehicleButton = () => {
         >
           Add Vehicle <i className="fa fa-chevron-down dash-downarrow"></i>
         </Button>
-        <Popper
+        {/* <Popper
           open={isMenuOpen}
           anchorEl={anchorRef.current}
           role={undefined}
@@ -148,7 +148,7 @@ export const AddVehicleButton = () => {
               </Paper>
             </Grow>
           )}
-        </Popper>
+        </Popper> */}
       </div>
     </Stack>
   );

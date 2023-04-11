@@ -1,4 +1,3 @@
-import * as React from "react";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
@@ -8,27 +7,35 @@ import Typography from "@mui/material/Typography";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 
 /**
- *  Confirmation Dialog box for Delete Operations.
+ *  A stateless confirmation dialog box for Delete Operations.
  */
-export default function ConfirmationDialog({
-  vehicleId,
+export default function DeleteConfirmationDialog({
   isOpen,
+  onClickDelete,
+  onClickCancel,
 }: {
-  vehicleId: string;
+  /**
+   * Boolean to control the open and close state of Dialog box.
+   */
   isOpen: boolean;
+  /**
+   * A callback function on clicking delete button.
+   * @returns void
+   */
+  onClickDelete: () => void;
+
+  /**
+   * A callback function on clicking cancel button.
+   * @returns void
+   */
+  onClickCancel: () => void;
 }) {
-  const [open, setOpen] = React.useState(true);
-
-  const handleClose = () => {
-    setOpen(() => false);
-  };
-
   return (
     <div>
       <Dialog
-        onClose={handleClose}
-        aria-labelledby="vehicle-confirmation-dialog-title"
-        open={open}
+        onClose={onClickCancel}
+        aria-labelledby="confirmation-dialog-title"
+        open={isOpen}
       >
         <DialogTitle
           sx={{
@@ -45,10 +52,10 @@ export default function ConfirmationDialog({
           </Typography>
         </DialogContent>
         <DialogActions>
-          <Button variant="contained" color="secondary" onClick={handleClose}>
+          <Button variant="contained" color="secondary" onClick={onClickCancel}>
             Cancel
           </Button>
-          <Button variant="contained" color="error" onClick={handleClose}>
+          <Button variant="contained" color="error" onClick={onClickDelete}>
             Delete
           </Button>
         </DialogActions>

@@ -17,7 +17,7 @@ import { UseQueryResult } from "@tanstack/react-query";
 import { CustomSnackbar } from "../../../../common/components/snackbar/CustomSnackBar";
 import { PowerUnitColumnDefinition, TrailerColumnDefinition } from "./Columns";
 import { deleteVehicle } from "../../apiManager/vehiclesAPI";
-import ConfirmationDialog from "./ConfirmationDialog";
+import DeleteConfirmationDialog from "./ConfirmationDialog";
 
 /**
  * Dynamically set the column based on vehicle type
@@ -66,15 +66,38 @@ export const List = memo(
       []
     );
 
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+    const [rowsToDelete, setRowsToDelete] = useState<
+      Array<MRT_Row<VehicleTypes>>
+    >([]);
+
     /**
      * Deletes a selected Vehicle.
      */
     const onDeleteRow = useCallback((row: MRT_Row<VehicleTypes>) => {
+      setIsDeleteDialogOpen(() => false);
       const vehicleId: string = row.getValue(`${vehicleType}Id`);
-      if (!confirm(`Are you sure you want to delete ${vehicleId}`)) {
-        return;
-      }
+      // if (!confirm(`Are you sure you want to delete ${vehicleId}`)) {
+      //   return;
+      // }
+      // deleteVehicle(vehicleId, vehicleType).then((response) => {
+      //   if (response.status === 200) {
+      //     query.refetch();
+      //   } else {
+      //     setShowErrorSnackbar(() => true);
+      //   }
+      // });
+    }, []);
+
+    /**
+     * Function that deletes a vehicle once the user confirms the delete action
+     * in the confirmation dialog.
+     */
+    const onConfirmDelete = useCallback(() => {
+      const vehicleId: string = rowsToDelete[0].getValue(`${vehicleType}Id`);
       deleteVehicle(vehicleId, vehicleType).then((response) => {
+        setIsDeleteDialogOpen(() => false);
+        setRowsToDelete(() => []);
         if (response.status === 200) {
           query.refetch();
         } else {
@@ -82,6 +105,16 @@ export const List = memo(
         }
       });
     }, []);
+
+    /**
+     * Function that clears the delete related states when the user clicks on cancel.
+     */
+    const onCancelDelete = useCallback(() => {
+      setIsDeleteDialogOpen(() => false);
+      setRowsToDelete(() => []);
+    }, []);
+
+    console.log("Rows to delete::", rowsToDelete);
 
     // Start snackbar code for error handling
     const [showErrorSnackbar, setShowErrorSnackbar] = useState(false);
@@ -161,7 +194,15 @@ export const List = memo(
                   {/*tslint:disable-next-line*/}
                   <IconButton
                     color="error"
-                    onClick={() => onDeleteRow(row)}
+                    onClick={() => {
+                      setIsDeleteDialogOpen(() => true);
+                      setRowsToDelete(
+                        (currentArray: Array<MRT_Row<VehicleTypes>>) =>
+                          [row].concat(currentArray)
+                      );
+
+                      // onDeleteRow(row);
+                    }}
                     disabled={false}
                   >
                     <Delete />
@@ -254,7 +295,11 @@ export const List = memo(
             sx: { backgroundColor: BC_COLOURS.bc_background_light_grey },
           }}
         />
-        <ConfirmationDialog vehicleId="99" isOpen={true} />
+        <DeleteConfirmationDialog
+          onClickDelete={onConfirmDelete}
+          isOpen={isDeleteDialogOpen}
+          onClickCancel={onCancelDelete}
+        />
       </div>
     );
   }

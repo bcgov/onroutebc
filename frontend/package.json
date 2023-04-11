@@ -25,7 +25,7 @@
     "sass": "^1.60.0"
   },
   "scripts": {
-    "start": "vite",
+    "start": "vite --force",
     "build": "tsc && vite build",
     "serve-vite": "vite preview",
     "test": "vitest watch --reporter verbose",
