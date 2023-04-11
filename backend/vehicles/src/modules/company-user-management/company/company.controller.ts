@@ -7,6 +7,7 @@ import {
   Put,
   Query,
   Req,
+  ForbiddenException,
 } from '@nestjs/common';
 import { CompanyService } from './company.service';
 import {
@@ -32,7 +33,8 @@ import { Roles } from '../../../common/decorator/roles.decorator';
 import { Role } from '../../../common/enum/roles.enum';
 import { IUserJWT } from '../../../common/interface/user-jwt.interface';
 import { AuthOnly } from '../../../common/decorator/auth-only.decorator';
-import { getDirectory } from '../../../common/helper/auth.helper';
+import { getDirectory, matchRoles } from '../../../common/helper/auth.helper';
+import { IDP } from '../../../common/enum/idp.enum';
 
 @ApiTags('Company and User Management - Company')
 @ApiNotFoundResponse({
@@ -132,6 +134,18 @@ export class CompanyController {
     @Query('userGUID') userGUID?: string,
   ): Promise<ReadCompanyMetadataDto[]> {
     const currentUser = request.user as IUserJWT;
+    const rolesExists = matchRoles([Role.READ_ORG], currentUser.roles);
+
+    if (!rolesExists && userGUID) {
+      throw new ForbiddenException();
+    } else if (
+      rolesExists &&
+      userGUID &&
+      currentUser.identity_provider !== IDP.IDIR
+    ) {
+      throw new ForbiddenException();
+    }
+
     userGUID = userGUID ? userGUID : currentUser.userGUID;
     const company = await this.companyService.findCompanyMetadataByUserGuid(
       userGUID,
@@ -147,6 +161,7 @@ export class CompanyController {
    * /company/:companyId that updates a company by its ID.
    * TODO: Validations on {@link UpdateCompanyDto}.
    * TODO: Secure endpoints once login is implemented.
+   * ? Should the company Directory be updated
    *
    * @param companyId The company Id.
    *
@@ -156,6 +171,7 @@ export class CompanyController {
     description: 'The Company Resource',
     type: ReadCompanyDto,
   })
+  @Roles(Role.WRITE_ORG)
   @Put(':companyId')
   async update(
     @Param('companyId') companyId: number,

@@ -1,5 +1,12 @@
-import { Controller, Post, Body, Param, Put } from '@nestjs/common';
-import { Query } from '@nestjs/common/decorators';
+import {
+  Controller,
+  Post,
+  Body,
+  Param,
+  Put,
+  ForbiddenException,
+} from '@nestjs/common';
+import { Query, Req } from '@nestjs/common/decorators';
 
 import {
   ApiBearerAuth,
@@ -11,7 +18,6 @@ import {
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
-import { Directory } from '../../../common/enum/directory.enum';
 import { UserStatus } from '../../../common/enum/user-status.enum';
 import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
 import { ExceptionDto } from '../../common/dto/exception.dto';
@@ -19,6 +25,17 @@ import { CreateUserDto } from './dto/request/create-user.dto';
 import { ReadUserDto } from './dto/response/read-user.dto';
 import { UsersService } from './users.service';
 import { AuthOnly } from '../../../common/decorator/auth-only.decorator';
+import {
+  checkAssociatedCompanies,
+  checkUserCompaniesContext,
+  getDirectory,
+  matchRoles,
+} from '../../../common/helper/auth.helper';
+import { IUserJWT } from '../../../common/interface/user-jwt.interface';
+import { Request } from 'express';
+import { Roles } from '../../../common/decorator/roles.decorator';
+import { Role } from '../../../common/enum/roles.enum';
+import { IDP } from '../../../common/enum/idp.enum';
 
 @ApiTags('Company and User Management - Company User')
 @ApiNotFoundResponse({
@@ -57,14 +74,18 @@ export class CompanyUsersController {
   @AuthOnly()
   @Post()
   async create(
+    @Req() request: Request,
     @Param('companyId') companyId: number,
     @Body() createUserDto: CreateUserDto,
   ) {
+    const currentUser = request.user as IUserJWT;
+    const directory = getDirectory(currentUser);
+
     return await this.userService.create(
       createUserDto,
       companyId,
-      'ASMITH', //! Hardcoded value to be replaced by user name from access token
-      Directory.BBCEID,
+      currentUser.userName,
+      directory,
     );
   }
 
@@ -87,12 +108,28 @@ export class CompanyUsersController {
     description: '{statusUpdated : true}',
   })
   @ApiQuery({ name: 'code', enum: UserStatus })
+  @ApiQuery({ name: 'userGUID', required: false })
+  @Roles(Role.WRITE_SELF, Role.WRITE_USER)
   @Put(':userGUID/status')
   async updateStatus(
+    @Req() request: Request,
     @Param('companyId') companyId: number,
-    @Param('userGUID') userGUID: string,
     @Query('code') statusCode: UserStatus,
+    @Query('userGUID') userGUID?: string,
   ): Promise<object> {
+    const currentUser = request.user as IUserJWT;
+    const rolesExists = matchRoles([Role.READ_ORG], currentUser.roles);
+    if (!rolesExists && userGUID) {
+      throw new ForbiddenException();
+    } else if (
+      rolesExists &&
+      checkUserCompaniesContext(userGUID, currentUser)
+    ) {
+      throw new ForbiddenException();
+    }
+
+    userGUID = userGUID ? userGUID : currentUser.userGUID;
+
     const updateResult = await this.userService.updateStatus(
       companyId,
       userGUID,

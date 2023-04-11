@@ -29,7 +29,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(req: Request, payload: IUserJWT): Promise<IUserJWT> {
-    let userGUID: string, userName: string, roles: Role[];
+    let userGUID: string,
+      userName: string,
+      roles: Role[],
+      associatedCompanies: number[];
 
     const companyId = req.params['companyId']
       ? +req.params['companyId']
@@ -54,6 +57,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         throw new UnauthorizedException();
       }
       roles = await this.authService.getRolesForUser(userGUID, companyId);
+      associatedCompanies = await this.authService.getCompaniesForUser(
+        userGUID,
+      );
     }
 
     const currentUser = {
@@ -61,6 +67,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       userGUID,
       roles,
       companyId,
+      associatedCompanies,
     };
 
     Object.assign(payload, currentUser);

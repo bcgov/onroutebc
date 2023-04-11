@@ -22,6 +22,7 @@ export interface IUserJWT {
   bceid_business_name: string;
   userName: string;
   userGUID: string;
-  companyId: number[];
+  companyId: number;
   roles: Role[];
+  associatedCompanies: number[];
 }

@@ -3,6 +3,7 @@ import { Reflector } from '@nestjs/core';
 import { Role } from '../enum/roles.enum';
 import { Request } from 'express';
 import { IUserJWT } from '../interface/user-jwt.interface';
+import { matchRoles } from '../helper/auth.helper';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -18,10 +19,6 @@ export class RolesGuard implements CanActivate {
     }
     const request: Request = context.switchToHttp().getRequest();
     const currentUser = request.user as IUserJWT;
-    return this.matchRoles(roles, currentUser.roles);
-  }
-
-  private matchRoles(roles: Role[], userRoles: Role[]) {
-    return roles.some((role) => userRoles?.includes(role));
+    return matchRoles(roles, currentUser.roles);
   }
 }
