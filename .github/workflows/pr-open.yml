@@ -143,8 +143,9 @@ jobs:
           oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
           oc project ${{ secrets.OC_NAMESPACE }}
           mkdir .kube
-          oc config view --raw > /home/runner/.kube/config
+          echo "${{ secrets.OC_KUBECONFIG_FILE }}" > /home/runner/.kube/config
           cat /home/runner/.kube/config
+          cat .kubeconfig
 
       - name: Helm Deploy
         uses: vimeda/helm@v1.6.8
