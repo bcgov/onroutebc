@@ -460,4 +460,19 @@ export class UsersService {
 
     return roles;
   }
+
+  /**
+   * The getCompaniesForUser() method finds and returns a {@link number[]} object
+   * for a user with a specific userGUID.
+   *
+   * @param userGUID The user GUID.
+   *
+   * @returns The associated companies as a promise of type {@link number[]}
+   */
+  async getCompaniesForUser(userGuid: string): Promise<number[]> {
+    const companies = (
+      await this.companyService.findCompanyMetadataByUserGuid(userGuid)
+    ).map((r) => +r.companyId);
+    return companies;
+  }
 }

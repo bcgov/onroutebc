@@ -24,19 +24,40 @@ export const matchRoles = (roles: Role[], userRoles: Role[]) => {
 
 export const checkAssociatedCompanies = (
   companyId: number,
-  associatedCompanies: number[],
+  userCompanies: number[],
 ) => {
-  return associatedCompanies?.includes(companyId);
+  return userCompanies?.includes(companyId);
 };
 
-export const checkUserCompaniesContext = (userGuid: string, user: IUserJWT) => {
+export const checkUserCompaniesContext = (
+  userCompanies: number[],
+  user: IUserJWT,
+) => {
   if (
-    userGuid &&
-    user.identity_provider !== IDP.IDIR &&   
-    !checkAssociatedCompanies(user.companyId, user.associatedCompanies)
+    user.identity_provider !== IDP.IDIR &&
+    !checkAssociatedCompanies(user.companyId, userCompanies)
   ) {
     throw new ForbiddenException();
   }
 
   return true;
+};
+
+export const validateUserCompanyAndRoleForUserGuidQueryParam = (
+  roles: Role[],
+  userGUID: string,
+  userCompanies: number[],
+  currentUser: IUserJWT,
+) => {
+  const rolesExists = matchRoles(roles, currentUser.roles);
+  if (!rolesExists && userGUID) {
+    throw new ForbiddenException();
+  }
+  if (
+    rolesExists &&
+    userGUID &&
+    !checkUserCompaniesContext(userCompanies, currentUser)
+  ) {
+    throw new ForbiddenException();
+  }
 };

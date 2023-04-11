@@ -36,6 +36,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
     const companyId = req.params['companyId']
       ? +req.params['companyId']
+      : req.query['companyId']
+      ? +req.query['companyId']
       : undefined;
 
     if (payload.identity_provider === IDP.IDIR) {

@@ -7,14 +7,12 @@ import { JwtAuthGuard } from '../../common/guard/auth.guard';
 import { UsersModule } from '../company-user-management/users/users.module';
 import { PendingUsersModule } from '../company-user-management/pending-users/pending-users.module';
 import { RolesGuard } from '../../common/guard/roles.guard';
-import { CompanyModule } from '../company-user-management/company/company.module';
 
 @Module({
   imports: [
     PassportModule.register({ defaultStrategy: 'jwt' }),
     UsersModule,
     PendingUsersModule,
-    CompanyModule,
   ],
   providers: [
     AuthService,

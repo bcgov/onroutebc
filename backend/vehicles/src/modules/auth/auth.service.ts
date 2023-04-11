@@ -4,14 +4,12 @@ import { ReadUserDto } from '../company-user-management/users/dto/response/read-
 import { PendingUsersService } from '../company-user-management/pending-users/pending-users.service';
 import { Role } from '../../common/enum/roles.enum';
 import { IDP } from '../../common/enum/idp.enum';
-import { CompanyService } from '../company-user-management/company/company.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly usersService: UsersService,
     private readonly pendingUserService: PendingUsersService,
-    private readonly companyService: CompanyService,
   ) {}
 
   async validateUser(
@@ -66,9 +64,7 @@ export class AuthService {
    * @returns The associated companies as a promise of type {@link number[]}
    */
   async getCompaniesForUser(userGuid: string): Promise<number[]> {
-    const companies = (
-      await this.companyService.findCompanyMetadataByUserGuid(userGuid)
-    ).map((r) => +r.companyId);
+    const companies = await this.usersService.getCompaniesForUser(userGuid);
     return companies;
   }
 }
