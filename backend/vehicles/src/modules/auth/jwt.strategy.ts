@@ -6,6 +6,7 @@ import { AuthService } from './auth.service';
 import { IUserJWT } from '../../common/interface/user-jwt.interface';
 import { Request } from 'express';
 import { Role } from '../../common/enum/roles.enum';
+import { IDP } from '../../common/enum/idp.enum';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -34,10 +35,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       ? +req.params['companyId']
       : undefined;
 
-    if (payload.identity_provider === 'idir') {
+    if (payload.identity_provider === IDP.IDIR) {
       userGUID = payload.idir_user_guid;
       userName = payload.idir_username;
-    } else if (payload.identity_provider === 'bceidboth') {
+    } else if (payload.identity_provider === IDP.BCEID) {
       userGUID = payload.bceid_user_guid;
       userName = payload.bceid_username;
     }

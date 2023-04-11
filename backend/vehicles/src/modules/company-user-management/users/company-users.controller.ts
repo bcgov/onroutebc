@@ -11,7 +11,7 @@ import {
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
-import { UserDirectory } from '../../../common/enum/directory.enum';
+import { Directory } from '../../../common/enum/directory.enum';
 import { UserStatus } from '../../../common/enum/user-status.enum';
 import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
 import { ExceptionDto } from '../../common/dto/exception.dto';
@@ -64,7 +64,7 @@ export class CompanyUsersController {
       createUserDto,
       companyId,
       'ASMITH', //! Hardcoded value to be replaced by user name from access token
-      UserDirectory.BBCEID,
+      Directory.BBCEID,
     );
   }
 

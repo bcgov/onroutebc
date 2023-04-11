@@ -29,7 +29,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     );
 
     const request: Request = context.switchToHttp().getRequest();
-    
+
     if (isAuthOnly) {
       request.headers['AuthOnly'] = 'true';
     } else {

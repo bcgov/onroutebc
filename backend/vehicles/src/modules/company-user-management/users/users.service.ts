@@ -13,7 +13,7 @@ import { Company } from '../company/entities/company.entity';
 import { CompanyUser } from './entities/company-user.entity';
 import { UserStatus } from '../../../common/enum/user-status.enum';
 import { UserAuthGroup } from '../../../common/enum/user-auth-group.enum';
-import { UserDirectory } from '../../../common/enum/directory.enum';
+import { Directory } from '../../../common/enum/directory.enum';
 import { PendingUser } from '../pending-users/entities/pending-user.entity';
 import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
 import { ReadUserOrbcStatusDto } from './dto/response/read-user-orbc-status.dto';
@@ -39,7 +39,7 @@ export class UsersService {
   /**
    * The create() method creates a new user entity with the
    * {@link CreateUserDto} object, companyId, userName, and
-   * {@link UserDirectory} parameters. It also deletes the corresponding
+   * {@link Directory} parameters. It also deletes the corresponding
    * PendingUser entity and commits the transaction if successful. If an error
    * is thrown, it rolls back the transaction and returns the error.
    * TODO verify the role with PENDING_USER and throw exception on mismatch
@@ -48,7 +48,7 @@ export class UsersService {
    * creating a new user.
    * @param companyId The company Id.
    * @param userName User name from the access token.
-   * @param userDirectory User Directory from the access token.
+   * @param Directory Directory dervied from the access token.
    *
    * @returns The user details as a promise of type {@link ReadUserDto}
    */
@@ -56,7 +56,7 @@ export class UsersService {
     createUserDto: CreateUserDto,
     companyId: number,
     userName: string,
-    userDirectory: UserDirectory,
+    directory: Directory,
   ): Promise<ReadUserDto> {
     let newUser: ReadUserDto;
     const queryRunner = this.dataSource.createQueryRunner();
@@ -67,7 +67,7 @@ export class UsersService {
         companyId,
         createUserDto,
         userName,
-        userDirectory,
+        directory,
         createUserDto.userAuthGroup,
         queryRunner,
       );
@@ -88,7 +88,7 @@ export class UsersService {
 
   /**
    * The createUser() method creates a new user with createUserDto, companyId,
-   * userName, userDirectory, and userAuthGroup parameters, creates a
+   * userName, directory, and userAuthGroup parameters, creates a
    * CompanyUser entity, associates it with the new user, and returns a
    * ReadUserDto object.
    *
@@ -96,7 +96,7 @@ export class UsersService {
    * @param createUserDto Request object of type {@link CreateUserDto} for
    * creating a new user.
    * @param userName User name from the access token.
-   * @param userDirectory User directory from the access token.
+   * @param directory Directory derived from the access token.
    * @param userAuthGroup User auth group from the access token.
    * @param queryRunner Query runner passed from calling function.
    *
@@ -106,12 +106,12 @@ export class UsersService {
     companyId: number,
     createUserDto: CreateUserDto,
     userName: string,
-    userDirectory: UserDirectory,
+    directory: Directory,
     userAuthGroup: UserAuthGroup,
     queryRunner: QueryRunner,
   ): Promise<ReadUserDto> {
     let user = this.classMapper.map(createUserDto, CreateUserDto, User, {
-      extraArgs: () => ({ userName: userName, userDirectory: userDirectory }),
+      extraArgs: () => ({ userName: userName, directory: directory }),
     });
 
     const newCompanyUser = this.createCompanyUserUtil(
@@ -287,13 +287,13 @@ export class UsersService {
 
   /**
    * The update() method updates a user with the {@link updateUserDto} object,
-   * userGUID, userName, and {@link UserDirectory} parameters, and returns
+   * userGUID, userName, and {@link Directory} parameters, and returns
    * the updated user as a ReadUserDto object. If the user is not found, it
    * throws an error.
    *
    * @param userGUID The user GUID.
    * @param userName User name from the access token.
-   * @param userDirectory User directory from the access token.
+   * @param directory Directory derived from the access token.
    * @param updateUserDto Request object of type {@link UpdateUserDto} for
    * updating a user.
    *
@@ -302,7 +302,7 @@ export class UsersService {
   async update(
     userGUID: string,
     userName: string,
-    userDirectory: UserDirectory,
+    directory: Directory,
     updateUserDto: UpdateUserDto,
   ): Promise<ReadUserDto> {
     const userDetails = await this.findUserEntitybyUserGUID(userGUID);
@@ -315,7 +315,7 @@ export class UsersService {
       extraArgs: () => ({
         userGUID: userGUID,
         userName: userName,
-        userDirectory: userDirectory,
+        directory: Directory,
       }),
     });
     user.userContact.contactId = userDetails.userContact.contactId;

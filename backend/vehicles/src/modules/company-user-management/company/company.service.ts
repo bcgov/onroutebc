@@ -5,8 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { UserAuthGroup } from '../../../common/enum/user-auth-group.enum';
 import {
-  CompanyDirectory,
-  UserDirectory,
+ Directory
 } from '../../../common/enum/directory.enum';
 import { ReadUserDto } from '../users/dto/response/read-user.dto';
 import { UsersService } from '../users/users.service';
@@ -36,26 +35,24 @@ export class CompanyService {
    * ? Company Directory might not be required once scope of login is finizalied.
    *
    * @param createCompanyDto Request object of type {@link CreateCompanyDto} for
-   * creating a new company and admin user.
-   * @param companyDirectory Company Directory from the access token.
+   * creating a new company and admin user.   
    * @param userName User name from the access token.
-   * @param userDirectory User Directory from the access token.
+   * @param directory Directory derived from the access token.
    *
    * @returns The company and admin user details as a promise of type
    * {@link ReadCompanyUserDto}
    */
   async create(
     createCompanyDto: CreateCompanyDto,
-    companyDirectory: CompanyDirectory,
     userName: string,
-    userDirectory: UserDirectory,
+    directory: Directory,
   ): Promise<ReadCompanyUserDto> {
     let newCompany = this.classMapper.map(
       createCompanyDto,
       CreateCompanyDto,
       Company,
       {
-        extraArgs: () => ({ companyDirectory: companyDirectory }),
+        extraArgs: () => ({ directory: directory }),
       },
     );
 
@@ -74,7 +71,7 @@ export class CompanyService {
         newCompany.companyId,
         createCompanyDto.adminUser,
         userName,
-        userDirectory,
+        directory,
         UserAuthGroup.COMPANY_ADMINISTRATOR,
         queryRunner,
       );
@@ -208,14 +205,14 @@ export class CompanyService {
    * @param companyId The company Id.
    * @param updateCompanyDto Request object of type {@link UpdateCompanyDto} for
    * updating a company.
-   * @param companyDirectory Company Directory from the access token.
+   * @param directory Directory derived from the access token.
    *
    * @returns The company details as a promise of type {@link ReadCompanyDto}
    */
   async update(
     companyId: number,
     updateCompanyDto: UpdateCompanyDto,
-    companyDirectory: CompanyDirectory,
+    directory: Directory,
   ): Promise<ReadCompanyDto> {
     const company = await this.companyRepository.findOne({
       where: { companyId: companyId },
@@ -243,7 +240,7 @@ export class CompanyService {
         extraArgs: () => ({
           companyId: company.companyId,
           clientNumber: clientNumber,
-          companyDirectory: companyDirectory,
+          directory: directory,
           companyAddressId: companyAddressId,
           mailingAddressId:
             company.mailingAddressSameAsCompanyAddress !==

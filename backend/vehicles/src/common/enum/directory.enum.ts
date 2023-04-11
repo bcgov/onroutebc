@@ -1,13 +1,7 @@
-export enum UserDirectory {
+export enum Directory {
   BBCEID = 'BBCEID',
   BCEID = 'BCEID',
   BCSC = 'BCSC',
   ORBC = 'ORBC',
-}
-
-export enum CompanyDirectory {
-  BBCEID = 'BBCEID',
-  BCEID = 'BCEID',
-  BCSC = 'BCSC',
-  ORBC = 'ORBC',
+  IDIR = 'IDIR',
 }

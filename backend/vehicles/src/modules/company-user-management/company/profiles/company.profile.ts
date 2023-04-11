@@ -36,7 +36,7 @@ export class CompanyProfile extends AutomapperProfile {
        * The mapping between CreateCompanyDto and Company. It maps the
        * companyAddress and mailingAddress properties of CreateCompanyDto to
        * instances of the Address entity using the mapWith function. The
-       * companyDirectory property is mapped to a value provided as an argument
+       * directory property is mapped to a value provided as an argument
        * to the mapping function using the mapWithArguments function.
        * TODO: Implement client number generation and change the mapping.
        * TODO: Change companyGUID mapping once the login is implemented.
@@ -67,9 +67,9 @@ export class CompanyProfile extends AutomapperProfile {
           }),
         ),
         forMember(
-          (d) => d.companyDirectory,
-          mapWithArguments((source, { companyDirectory }) => {
-            return companyDirectory;
+          (d) => d.directory,
+          mapWithArguments((source, {directory }) => {
+            return directory;
           }),
         ),
         forMember(
@@ -90,7 +90,7 @@ export class CompanyProfile extends AutomapperProfile {
        * function. It also maps the companyAddress.addressId and
        * mailingAddress.addressId properties to values provided as arguments to
        * the mapping function using the mapWithArguments function. The
-       * companyDirectory and primaryContact.contactId properties are also
+       * directory and primaryContact.contactId properties are also
        * mapped to values provided as arguments using the mapWithArguments
        * function.
        */
@@ -135,9 +135,9 @@ export class CompanyProfile extends AutomapperProfile {
           }),
         ),
         forMember(
-          (d) => d.companyDirectory,
-          mapWithArguments((source, { companyDirectory }) => {
-            return companyDirectory;
+          (d) => d.directory,
+          mapWithArguments((source, { directory }) => {
+            return directory;
           }),
         ),
         forMember(

@@ -26,8 +26,7 @@ import { UpdateCompanyDto } from './dto/request/update-company.dto';
 import { ReadCompanyDto } from './dto/response/read-company.dto';
 import { ReadCompanyUserDto } from './dto/response/read-company-user.dto';
 import {
-  CompanyDirectory,
-  UserDirectory,
+  Directory
 } from '../../../common/enum/directory.enum';
 import { ReadCompanyMetadataDto } from './dto/response/read-company-metadata.dto';
 import { Request } from 'express';
@@ -35,6 +34,7 @@ import { Roles } from '../../../common/decorator/roles.decorator';
 import { Role } from '../../../common/enum/roles.enum';
 import { IUserJWT } from '../../../common/interface/user-jwt.interface';
 import { AuthOnly } from '../../../common/decorator/auth-only.decorator';
+import { getDirectory } from '../../../common/helper/auth.helper';
 
 @ApiTags('Company and User Management - Company')
 @ApiNotFoundResponse({
@@ -73,19 +73,23 @@ export class CompanyController {
   })
   @AuthOnly()
   @Post()
-  async create(@Body() createCompanyDto: CreateCompanyDto) {
+  async create(
+    @Req() request: Request,
+    @Body() createCompanyDto: CreateCompanyDto,
+  ) {
+    const currentUser = request.user as IUserJWT;
+    const directory = getDirectory(currentUser);
+
     return await this.companyService.create(
-      createCompanyDto,
-      CompanyDirectory.BBCEID,
-      'ASMITH', //! Hardcoded value to be replaced by user name from access token
-      UserDirectory.BBCEID,
+      createCompanyDto,    
+      currentUser.userName,
+      directory,
     );
   }
 
   /**
    * A GET method defined with the @Get(':companyId') decorator and a route of
    * /company/:companyId that retrieves a company by its id.
-   * TODO: Secure endpoints once login is implemented.
    *
    * @param companyId The company Id.
    *
@@ -101,7 +105,6 @@ export class CompanyController {
     @Req() request: Request,
     @Param('companyId') companyId: number,
   ): Promise<ReadCompanyDto> {
-    const currentUser = request.user as IUserJWT;
     const company = await this.companyService.findOne(companyId);
     if (!company) {
       throw new DataNotFoundException();
@@ -110,9 +113,9 @@ export class CompanyController {
   }
 
   /**
-   * A GET method defined with the @Get() decorator and a route of
-   * /companies that retrieves a company metadata by userGuid.
-   * TODO: Secure endpoints once login is implemented.
+   * A GET method defined with the @Get() decorator and a route of /companies
+   * that retrieves a company metadata by userGuid. If userGUID is not provided,
+   * the guid will be grabbed from the token.
    *
    * @param userGUID The user Guid.
    *
@@ -124,10 +127,14 @@ export class CompanyController {
     isArray: true,
   })
   @ApiQuery({ name: 'userGUID', required: false })
+  @Roles(Role.READ_SELF, Role.READ_ORG)
   @Get()
   async getCompanyMetadata(
+    @Req() request: Request,
     @Query('userGUID') userGUID?: string,
   ): Promise<ReadCompanyMetadataDto[]> {
+    const currentUser = request.user as IUserJWT;
+    userGUID = userGUID ? userGUID : currentUser.userGUID;
     const company = await this.companyService.findCompanyMetadataByUserGuid(
       userGUID,
     );
@@ -159,7 +166,7 @@ export class CompanyController {
     const powerUnitType = await this.companyService.update(
       companyId,
       updateCompanyDto,
-      CompanyDirectory.BBCEID,
+      Directory.BBCEID,
     );
     if (!powerUnitType) {
       throw new DataNotFoundException();

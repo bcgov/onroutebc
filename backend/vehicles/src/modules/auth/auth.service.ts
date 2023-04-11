@@ -3,6 +3,7 @@ import { UsersService } from '../company-user-management/users/users.service';
 import { ReadUserDto } from '../company-user-management/users/dto/response/read-user.dto';
 import { PendingUsersService } from '../company-user-management/pending-users/pending-users.service';
 import { Role } from '../../common/enum/roles.enum';
+import { IDP } from '../../common/enum/idp.enum';
 
 @Injectable()
 export class AuthService {
@@ -19,7 +20,7 @@ export class AuthService {
   ): Promise<boolean> {
     let user: ReadUserDto;
     let pendingUser = false;
-    if (identity_provider === 'idir') {
+    if (identity_provider === IDP.IDIR) {
       user = await this.usersService.findUserbyUserGUID(userGuid);
     } else {
       if (!companyId) {

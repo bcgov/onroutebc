@@ -11,7 +11,7 @@ import { AutoMap } from '@automapper/classes';
 import { Address } from '../../../common/entities/address.entity';
 import { Contact } from '../../../common/entities/contact.entity';
 import { CompanyUser } from '../../users/entities/company-user.entity';
-import { CompanyDirectory } from '../../../../common/enum/directory.enum';
+import { Directory } from '../../../../common/enum/directory.enum';
 import { AccountRegion } from '../../../../common/enum/account-region.enum';
 import { AccountSource } from '../../../../common/enum/account-source.enum';
 
@@ -47,17 +47,17 @@ export class Company extends Base {
 
   /**
    * A property that represents the company's directory, which is an enum of
-   * type {@link CompanyDirectory}.
+   * type {@link Directory}.
    */
   @AutoMap()
   @Column({
     type: 'simple-enum',
-    enum: CompanyDirectory,
+    enum: Directory,
     length: 10,
     name: 'COMPANY_DIRECTORY',
     nullable: false,
   })
-  companyDirectory: CompanyDirectory;
+  directory: Directory;
 
   /**
    * A one-to-one relationship with the {@link Address} entity, representing the
