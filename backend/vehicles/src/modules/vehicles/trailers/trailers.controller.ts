@@ -6,6 +6,7 @@ import {
   Param,
   Delete,
   Put,
+  Req,
 } from '@nestjs/common';
 import { TrailersService } from './trailers.service';
 import { CreateTrailerDto } from './dto/request/create-trailer.dto';
@@ -23,6 +24,9 @@ import {
 import { ReadTrailerDto } from './dto/response/read-trailer.dto';
 import { ExceptionDto } from '../../common/dto/exception.dto';
 import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
+import { Request } from 'express';
+import { Roles } from '../../../common/decorator/roles.decorator';
+import { Role } from '../../../common/enum/roles.enum';
 
 @ApiTags('Vehicles - Trailers')
 @ApiNotFoundResponse({
@@ -38,7 +42,7 @@ import { DataNotFoundException } from '../../../common/exception/data-not-found.
   type: ExceptionDto,
 })
 @ApiBearerAuth()
-@Controller('vehicles/trailers')
+@Controller('companies/:companyId/vehicles/trailers')
 export class TrailersController {
   constructor(private readonly trailersService: TrailersService) {}
 
@@ -46,8 +50,13 @@ export class TrailersController {
     description: 'The Trailer Resource',
     type: ReadTrailerDto,
   })
+  @Roles(Role.WRITE_VEHICLE)
   @Post()
-  create(@Body() createTrailerDto: CreateTrailerDto) {
+  create(
+    @Req() request: Request,
+    @Param('companyId') companyId: number,
+    @Body() createTrailerDto: CreateTrailerDto,
+  ) {
     return this.trailersService.create(createTrailerDto);
   }
 
@@ -57,7 +66,10 @@ export class TrailersController {
     isArray: true,
   })
   @Get()
-  async findAll(): Promise<ReadTrailerDto[]> {
+  async findAll(
+    @Req() request: Request,
+    @Param('companyId') companyId: number,
+  ): Promise<ReadTrailerDto[]> {
     return await this.trailersService.findAll();
   }
 
@@ -67,6 +79,8 @@ export class TrailersController {
   })
   @Get(':trailerId')
   async findOne(
+    @Req() request: Request,
+    @Param('companyId') companyId: number,
     @Param('trailerId') trailerId: string,
   ): Promise<ReadTrailerDto> {
     const trailer = await this.trailersService.findOne(trailerId);
@@ -82,6 +96,8 @@ export class TrailersController {
   })
   @Put(':trailerId')
   async update(
+    @Req() request: Request,
+    @Param('companyId') companyId: number,
     @Param('trailerId') trailerId: string,
     @Body() updateTrailerDto: UpdateTrailerDto,
   ): Promise<ReadTrailerDto> {
@@ -96,7 +112,11 @@ export class TrailersController {
   }
 
   @Delete(':trailerId')
-  async remove(@Param('trailerId') trailerId: string) {
+  async remove(
+    @Req() request: Request,
+    @Param('companyId') companyId: number,
+    @Param('trailerId') trailerId: string,
+  ) {
     const deleteResult = await this.trailersService.remove(trailerId);
     if (deleteResult.affected === 0) {
       throw new DataNotFoundException();

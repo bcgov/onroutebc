@@ -11,6 +11,7 @@ import { powerUnitsServiceMock } from '../../util/mocks/service/power-units.serv
 
 const POWER_UNIT_ID_1 = '1';
 const POWER_UNIT_ID_2 = '2';
+const COMPANY_ID_1 = 1;
 
 describe('PowerUnitsController', () => {
   let controller: PowerUnitsController;
@@ -43,7 +44,7 @@ describe('PowerUnitsController', () => {
 
   describe('Power unit controller findAll function', () => {
     it('should return all the power units', async () => {
-      const retPowerUnits = await controller.findAll();
+      const retPowerUnits = await controller.findAll(null, COMPANY_ID_1);
       expect(typeof retPowerUnits).toBe('object');
       expect(retPowerUnits).toContainEqual(readPowerUnitDtoMock);
       expect(retPowerUnits.length).toBe(1);
@@ -52,7 +53,11 @@ describe('PowerUnitsController', () => {
 
   describe('Power unit controller findOne function', () => {
     it('should return the power unit', async () => {
-      const retPowerUnit = await controller.findOne(POWER_UNIT_ID_1);
+      const retPowerUnit = await controller.findOne(
+        null,
+        COMPANY_ID_1,
+        POWER_UNIT_ID_1,
+      );
       expect(typeof retPowerUnit).toBe('object');
       expect(retPowerUnit).toEqual(readPowerUnitDtoMock);
       expect(powerUnitsServiceMock.findOne).toHaveBeenCalledWith(
@@ -62,7 +67,7 @@ describe('PowerUnitsController', () => {
 
     it('should throw a DataNotFoundException if power unit is not found', async () => {
       await expect(async () => {
-        await controller.findOne(POWER_UNIT_ID_2);
+        await controller.findOne(null, COMPANY_ID_1, POWER_UNIT_ID_2);
       }).rejects.toThrow(DataNotFoundException);
     });
   });
@@ -70,6 +75,8 @@ describe('PowerUnitsController', () => {
   describe('Power unit controller update function', () => {
     it('should update the power unit', async () => {
       const retPowerUnit = await controller.update(
+        null,
+        COMPANY_ID_1,
         POWER_UNIT_ID_1,
         updatePowerUnitDtoMock,
       );
@@ -86,14 +93,23 @@ describe('PowerUnitsController', () => {
 
     it('should thrown a DataNotFoundException if the power unit does not exist', async () => {
       await expect(async () => {
-        await controller.update(POWER_UNIT_ID_2, updatePowerUnitDtoMock);
+        await controller.update(
+          null,
+          COMPANY_ID_1,
+          POWER_UNIT_ID_2,
+          updatePowerUnitDtoMock,
+        );
       }).rejects.toThrow(DataNotFoundException);
     });
   });
 
   describe('Power unit controller remove function.', () => {
     it('should delete the power unit', async () => {
-      const deleteResult = await controller.remove(POWER_UNIT_ID_1);
+      const deleteResult = await controller.remove(
+        null,
+        COMPANY_ID_1,
+        POWER_UNIT_ID_1,
+      );
       expect(typeof deleteResult).toBe('object');
       expect(deleteResult.deleted).toBeTruthy();
       expect(powerUnitsServiceMock.remove).toHaveBeenCalledWith(
@@ -103,7 +119,7 @@ describe('PowerUnitsController', () => {
 
     it('should thrown a DataNotFoundException if the power unit does not exist', async () => {
       await expect(async () => {
-        await controller.remove(POWER_UNIT_ID_2);
+        await controller.remove(null, COMPANY_ID_1, POWER_UNIT_ID_2);
       }).rejects.toThrow(DataNotFoundException);
     });
   });

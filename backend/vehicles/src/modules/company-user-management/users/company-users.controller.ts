@@ -1,5 +1,5 @@
 import { Controller, Post, Body, Param, Put } from '@nestjs/common';
-import { Get, Query, Req } from '@nestjs/common/decorators';
+import { Query, Req } from '@nestjs/common/decorators';
 
 import {
   ApiBearerAuth,
@@ -82,65 +82,6 @@ export class CompanyUsersController {
   }
 
   /**
-   * A GET method defined with the @Get() decorator and a route of
-   * /companies/:companyId/users that retrieves a list of users associated with
-   * the company ID
-   *
-   * @param companyId The company Id.
-   *
-   * @returns The user list with response object {@link ReadUserDto}.
-   */
-  @ApiOkResponse({
-    description: 'The User Resource List',
-    type: ReadUserDto,
-    isArray: true,
-  })
-  @Roles(Role.READ_USER)
-  @Get()
-  async findAll(
-    @Req() request: Request,
-    @Param('companyId') companyId: number,
-  ): Promise<ReadUserDto[]> {
-    return await this.userService.findAllUsers(companyId);
-  }
-
-  /**
-   * A GET method defined with the @Get() decorator and a route of
-   * /companies/:companyId/users/:userGuid that retrieves a user by its GUID
-   * (global unique identifier).
-   * TODO: Secure endpoints once login is implemented.
-   *
-   * @param companyId  The company Id.
-   * @param userGUID  The user GUID.
-   *
-   * @returns The user details with response object {@link ReadUserDto}.
-   */
-  @ApiOkResponse({
-    description: 'The User Resource',
-    type: ReadUserDto,
-  })
-  @Roles(Role.READ_SELF, Role.READ_USER)
-  @Get(':userGUID')
-  async findUserDetails(
-    @Req() request: Request,
-    @Param('companyId') companyId: number,
-    @Param('userGUID') userGUID: string,
-  ): Promise<ReadUserDto> {
-    const currentUser = request.user as IUserJWT;
-    userGUID = await this.validateUserCompanyAndRoleForUserGuidQueryParam(
-      currentUser,
-      userGUID,
-      [Role.READ_USER],
-    );
-
-    const companyUser = await this.userService.findUserbyUserGUID(userGUID);
-    if (!companyUser) {
-      throw new DataNotFoundException();
-    }
-    return companyUser;
-  }
-
-  /**
    * A PUT method defined with the @Put(':userGUID') decorator and a route of
    * /companies/:companyId/users/:userGUID that updates a user details by its GUID.
    * TODO: Secure endpoints once login is implemented.
@@ -162,7 +103,7 @@ export class CompanyUsersController {
     @Param('userGUID') userGUID: string,
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<ReadUserDto> {
-    const currentUser = request.user as IUserJWT;
+    //const currentUser = request.user as IUserJWT;
     const user = await this.userService.update(
       userGUID,
       'ASMITH', //! Hardcoded value to be replaced by user name from access token
@@ -224,27 +165,5 @@ export class CompanyUsersController {
       throw new DataNotFoundException();
     }
     return { statusUpdated: true };
-  }
-
-  private async validateUserCompanyAndRoleForUserGuidQueryParam(
-    currentUser: IUserJWT,
-    userGUID: string,
-    roles: Role[],
-  ) {
-    if (userGUID === currentUser.userGUID) {
-      return userGUID;
-    }
-    const userCompanies = userGUID
-      ? await this.userService.getCompaniesForUser(userGUID)
-      : undefined;
-
-    validateUserCompanyAndRoleForUserGuidQueryParam(
-      roles,
-      userGUID,
-      userCompanies,
-      currentUser,
-    );
-    userGUID = userGUID ? userGUID : currentUser.userGUID;
-    return userGUID;
   }
 }

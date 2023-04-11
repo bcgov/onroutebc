@@ -6,6 +6,7 @@ import {
   Param,
   Delete,
   Put,
+  Req,
 } from '@nestjs/common';
 import { PowerUnitsService } from './power-units.service';
 import { CreatePowerUnitDto } from './dto/request/create-power-unit.dto';
@@ -23,6 +24,7 @@ import {
 import { ReadPowerUnitDto } from './dto/response/read-power-unit.dto';
 import { ExceptionDto } from '../../common/dto/exception.dto';
 import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
+import { Request } from 'express';
 
 @ApiTags('Vehicles - Power Units')
 @ApiNotFoundResponse({
@@ -38,7 +40,7 @@ import { DataNotFoundException } from '../../../common/exception/data-not-found.
   type: ExceptionDto,
 })
 @ApiBearerAuth()
-@Controller('vehicles/powerUnits')
+@Controller('companies/:companyId/vehicles/powerUnits')
 export class PowerUnitsController {
   constructor(private readonly powerUnitsService: PowerUnitsService) {}
 
@@ -47,7 +49,12 @@ export class PowerUnitsController {
     type: ReadPowerUnitDto,
   })
   @Post()
-  async create(@Body() createPowerUnitDto: CreatePowerUnitDto) {
+  async create(
+    @Req() request: Request,
+    @Param('companyId') companyId: number,
+    @Body() createPowerUnitDto: CreatePowerUnitDto,
+  ) {
+    //const currentUser = request.user as IUserJWT;
     return await this.powerUnitsService.create(createPowerUnitDto);
   }
 
@@ -57,7 +64,10 @@ export class PowerUnitsController {
     isArray: true,
   })
   @Get()
-  async findAll(): Promise<ReadPowerUnitDto[]> {
+  async findAll(
+    @Req() request: Request,
+    @Param('companyId') companyId: number,
+  ): Promise<ReadPowerUnitDto[]> {
     return await this.powerUnitsService.findAll();
   }
 
@@ -67,6 +77,8 @@ export class PowerUnitsController {
   })
   @Get(':powerUnitId')
   async findOne(
+    @Req() request: Request,
+    @Param('companyId') companyId: number,
     @Param('powerUnitId') powerUnitId: string,
   ): Promise<ReadPowerUnitDto> {
     const powerUnit = await this.powerUnitsService.findOne(powerUnitId);
@@ -82,9 +94,12 @@ export class PowerUnitsController {
   })
   @Put(':powerUnitId')
   async update(
+    @Req() request: Request,
+    @Param('companyId') companyId: number,
     @Param('powerUnitId') powerUnitId: string,
     @Body() updatePowerUnitDto: UpdatePowerUnitDto,
   ): Promise<ReadPowerUnitDto> {
+    //const currentUser = request.user as IUserJWT;
     const powerUnit = await this.powerUnitsService.update(
       powerUnitId,
       updatePowerUnitDto,
@@ -96,7 +111,12 @@ export class PowerUnitsController {
   }
 
   @Delete(':powerUnitId')
-  async remove(@Param('powerUnitId') powerUnitId: string) {
+  async remove(
+    @Req() request: Request,
+    @Param('companyId') companyId: number,
+    @Param('powerUnitId') powerUnitId: string,
+  ) {
+    //const currentUser = request.user as IUserJWT;
     const deleteResult = await this.powerUnitsService.remove(powerUnitId);
     if (deleteResult.affected === 0) {
       throw new DataNotFoundException();
