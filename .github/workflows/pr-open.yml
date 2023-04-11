@@ -150,7 +150,7 @@ jobs:
           namespace: ${{ secrets.OC_NAMESPACE }}
           release: ${{ github.event.repository.name }}-${{ github.event.number }}-common-object-management-service
           repo: https://bcgov.github.io/common-object-management-service
-          repo-alias: ${{ common-object-management-service }}
+          repo-alias: common-object-management-service
           token: ${{secrets.OC_TOKEN}}
           values: |
             fullNameOverride: ${{ github.event.repository.name }}-${{ github.event.number }}-common-object-management-service
