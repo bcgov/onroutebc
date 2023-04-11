@@ -146,6 +146,13 @@ jobs:
           openshift_token: ${{ secrets.OC_TOKEN }}
           namespace: ${{ secrets.OC_NAMESPACE }}
 
+
+      - name: Base64 Secret Overries
+        run: |
+          echo VAULT_BASICAUTH_USERNAME64={{steps.secrets.outputs.VAULT_BASICAUTH_USERNAME | base64}} | tee $GITHUB_ENV
+          echo VAULT_OBJECTSTORAGE_ACCESSKEYID64=${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_ACCESSKEYID | base64}} | tee $GITHUB_ENV
+          echo $VAULT_OBJECTSTORAGE_SECRETACCESSKE64=Y{{steps.secrets.outputs.VAULT_OBJECTSTORAGE_SECRETACCESSKEY | base64}} | tee $GITHUB_ENV
+
       - name: Helm Deploy
         uses: vimeda/helm@v1.6.8
         with:
