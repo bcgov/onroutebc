@@ -168,10 +168,10 @@ jobs:
             route:
               host: ${{ github.event.repository.name }}-${{ github.event.number }}-common-object-management-service.apps.silver.devops.gov.bc.ca
             basicAuthSecretOverride:
-              username: ${{env.VAULT_BASICAUTH_USERNAME}}
+              username: ${{steps.secrets.outputs.VAULT_BASICAUTH_USERNAME}}
             objectStorageSecretOverride:
-              username: ${{env.VAULT_OBJECTSTORAGE_ACCESSKEYID}}
-              password: ${{env.VAULT_OBJECTSTORAGE_SECRETACCESSKEY}}
+              username: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_ACCESSKEYID}}
+              password: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_SECRETACCESSKEY}}
             features:
               oidcAuth: false
             config:
