@@ -150,7 +150,7 @@ jobs:
         uses: vimeda/helm@v1.6.8
         with:
           chart: 'app'
-          chart-version: 0.0.11
+          chart-version: 0.0.12
           namespace: ${{ secrets.OC_NAMESPACE }}
           release: ${{ github.event.repository.name }}-${{ github.event.number }}-common-object-management-service
           repo: https://bcgov.github.io/common-object-management-service
