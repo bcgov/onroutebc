@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 
 import {
+  ApiBearerAuth,
   ApiCreatedResponse,
   ApiInternalServerErrorResponse,
   ApiMethodNotAllowedResponse,
@@ -36,6 +37,7 @@ import { PendingUsersService } from './pending-users.service';
   description: 'The Pending User Api Internal Server Error Response',
   type: ExceptionDto,
 })
+@ApiBearerAuth()
 @Controller('companies/:companyId/pending-users')
 export class PendingUsersController {
   constructor(private readonly pendingUserService: PendingUsersService) {}

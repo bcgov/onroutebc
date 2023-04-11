@@ -13,13 +13,14 @@ import { Company } from '../company/entities/company.entity';
 import { CompanyUser } from './entities/company-user.entity';
 import { UserStatus } from '../../../common/enum/user-status.enum';
 import { UserAuthGroup } from '../../../common/enum/user-auth-group.enum';
-import { UserDirectory } from '../../../common/enum/directory.enum';
+import { Directory } from '../../../common/enum/directory.enum';
 import { PendingUser } from '../pending-users/entities/pending-user.entity';
 import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
 import { ReadUserOrbcStatusDto } from './dto/response/read-user-orbc-status.dto';
 import { PendingUsersService } from '../pending-users/pending-users.service';
 import { CompanyService } from '../company/company.service';
 import { ReadCompanyMetadataDto } from '../company/dto/response/read-company-metadata.dto';
+import { Role } from '../../../common/enum/roles.enum';
 
 @Injectable()
 export class UsersService {
@@ -38,7 +39,7 @@ export class UsersService {
   /**
    * The create() method creates a new user entity with the
    * {@link CreateUserDto} object, companyId, userName, and
-   * {@link UserDirectory} parameters. It also deletes the corresponding
+   * {@link Directory} parameters. It also deletes the corresponding
    * PendingUser entity and commits the transaction if successful. If an error
    * is thrown, it rolls back the transaction and returns the error.
    * TODO verify the role with PENDING_USER and throw exception on mismatch
@@ -47,7 +48,7 @@ export class UsersService {
    * creating a new user.
    * @param companyId The company Id.
    * @param userName User name from the access token.
-   * @param userDirectory User Directory from the access token.
+   * @param Directory Directory dervied from the access token.
    *
    * @returns The user details as a promise of type {@link ReadUserDto}
    */
@@ -55,7 +56,7 @@ export class UsersService {
     createUserDto: CreateUserDto,
     companyId: number,
     userName: string,
-    userDirectory: UserDirectory,
+    directory: Directory,
   ): Promise<ReadUserDto> {
     let newUser: ReadUserDto;
     const queryRunner = this.dataSource.createQueryRunner();
@@ -66,7 +67,7 @@ export class UsersService {
         companyId,
         createUserDto,
         userName,
-        userDirectory,
+        directory,
         createUserDto.userAuthGroup,
         queryRunner,
       );
@@ -87,7 +88,7 @@ export class UsersService {
 
   /**
    * The createUser() method creates a new user with createUserDto, companyId,
-   * userName, userDirectory, and userAuthGroup parameters, creates a
+   * userName, directory, and userAuthGroup parameters, creates a
    * CompanyUser entity, associates it with the new user, and returns a
    * ReadUserDto object.
    *
@@ -95,7 +96,7 @@ export class UsersService {
    * @param createUserDto Request object of type {@link CreateUserDto} for
    * creating a new user.
    * @param userName User name from the access token.
-   * @param userDirectory User directory from the access token.
+   * @param directory Directory derived from the access token.
    * @param userAuthGroup User auth group from the access token.
    * @param queryRunner Query runner passed from calling function.
    *
@@ -105,12 +106,12 @@ export class UsersService {
     companyId: number,
     createUserDto: CreateUserDto,
     userName: string,
-    userDirectory: UserDirectory,
+    directory: Directory,
     userAuthGroup: UserAuthGroup,
     queryRunner: QueryRunner,
   ): Promise<ReadUserDto> {
     let user = this.classMapper.map(createUserDto, CreateUserDto, User, {
-      extraArgs: () => ({ userName: userName, userDirectory: userDirectory }),
+      extraArgs: () => ({ userName: userName, directory: directory }),
     });
 
     const newCompanyUser = this.createCompanyUserUtil(
@@ -184,8 +185,61 @@ export class UsersService {
    */
   async findUserbyUserGUID(userGUID: string): Promise<ReadUserDto> {
     const user = await this.findUserEntitybyUserGUID(userGUID);
-    const readUserDto = await this.mapUserEntitytoReadUserDto(user);
+    let readUserDto: ReadUserDto;
+    if (user) {
+      readUserDto = await this.mapUserEntitytoReadUserDto(user);
+    }
     return readUserDto;
+  }
+
+  /**
+   * The findUserbyUserGUIDandCompanyId() method finds and returns a {@link ReadUserDto} object for a
+   * user with a specific userGUID and companyId parameters.
+   *
+   * @param userGUID The user GUID.
+   * @param companyId The company Id.
+   *
+   * @returns The user details as a promise of type {@link ReadUserDto}
+   */
+  async findUserbyUserGUIDandCompanyId(
+    userGUID: string,
+    companyId: number,
+  ): Promise<ReadUserDto> {
+    const user = await this.findUserEntitybyUserGUIDandCompanyId(
+      userGUID,
+      companyId,
+    );
+
+    if (user) {
+      const readUserDto = await this.mapUserEntitytoReadUserDto(user);
+      return readUserDto;
+    }
+  }
+
+  /**
+   * The findUserEntitybyUserGUIDandCompanyId() helper method finds and returns a User entity for a
+   * user with a specific userGUID parameters.
+   *
+   * @param userGUID The user GUID.
+   * @param companyId The company Id.
+   *
+   * @returns The {@link User} entity.
+   */
+  private async findUserEntitybyUserGUIDandCompanyId(
+    userGUID: string,
+    companyId: number,
+  ) {
+    return await this.userRepository
+      .createQueryBuilder('user')
+      .innerJoinAndSelect('user.userContact', 'userContact')
+      .innerJoinAndSelect('userContact.province', 'province')
+      .innerJoinAndSelect('user.companyUsers', 'companyUser')
+      .innerJoin('companyUser.company', 'company')
+      .where('user.userGUID = :userGUID', { userGUID: userGUID })
+      .andWhere('company.companyId= :companyId', {
+        companyId: companyId,
+      })
+      .getOne();
   }
 
   /**
@@ -236,13 +290,13 @@ export class UsersService {
 
   /**
    * The update() method updates a user with the {@link updateUserDto} object,
-   * userGUID, userName, and {@link UserDirectory} parameters, and returns
+   * userGUID, userName, and {@link Directory} parameters, and returns
    * the updated user as a ReadUserDto object. If the user is not found, it
    * throws an error.
    *
    * @param userGUID The user GUID.
    * @param userName User name from the access token.
-   * @param userDirectory User directory from the access token.
+   * @param directory Directory derived from the access token.
    * @param updateUserDto Request object of type {@link UpdateUserDto} for
    * updating a user.
    *
@@ -251,7 +305,7 @@ export class UsersService {
   async update(
     userGUID: string,
     userName: string,
-    userDirectory: UserDirectory,
+    directory: Directory,
     updateUserDto: UpdateUserDto,
   ): Promise<ReadUserDto> {
     const userDetails = await this.findUserEntitybyUserGUID(userGUID);
@@ -264,7 +318,7 @@ export class UsersService {
       extraArgs: () => ({
         userGUID: userGUID,
         userName: userName,
-        userDirectory: userDirectory,
+        directory: Directory,
       }),
     });
     user.userContact.contactId = userDetails.userContact.contactId;
@@ -387,5 +441,41 @@ export class UsersService {
     }
 
     return userExistsDto;
+  }
+
+  /**
+   * The getRolesForUser() method finds and returns a {@link Role} object
+   * for a user with a specific userGUID and companyId parameters. CompanyId is
+   * optional and defaults to 0
+   *
+   * @param userGUID The user GUID.
+   * @param companyId The company Id. Optional - Defaults to 0
+   *
+   * @returns The Roles as a promise of type {@link Role}
+   */
+  async getRolesForUser(userGUID: string, companyId = 0): Promise<Role[]> {
+    const queryResult = (await this.userRepository.query(
+      'SELECT ROLE_ID FROM access.ORBC_GET_ROLES_FOR_USER_FN(@0,@1)',
+      [userGUID, companyId],
+    )) as [{ ROLE_ID: Role }];
+
+    const roles = queryResult.map((r) => r.ROLE_ID);
+
+    return roles;
+  }
+
+  /**
+   * The getCompaniesForUser() method finds and returns a {@link number[]} object
+   * for a user with a specific userGUID.
+   *
+   * @param userGUID The user GUID.
+   *
+   * @returns The associated companies as a promise of type {@link number[]}
+   */
+  async getCompaniesForUser(userGuid: string): Promise<number[]> {
+    const companies = (
+      await this.companyService.findCompanyMetadataByUserGuid(userGuid)
+    ).map((r) => +r.companyId);
+    return companies;
   }
 }

@@ -11,6 +11,7 @@ import { PowerUnitTypesService } from './power-unit-types.service';
 import { CreatePowerUnitTypeDto } from './dto/request/create-power-unit-type.dto';
 import { UpdatePowerUnitTypeDto } from './dto/request/update-power-unit-type.dto';
 import {
+  ApiBearerAuth,
   ApiCreatedResponse,
   ApiInternalServerErrorResponse,
   ApiMethodNotAllowedResponse,
@@ -35,6 +36,7 @@ import { DataNotFoundException } from '../../../common/exception/data-not-found.
   description: 'The Power Unit Type Api Internal Server Error Response',
   type: ExceptionDto,
 })
+@ApiBearerAuth()
 @Controller('vehicles/power-unit-types')
 export class PowerUnitTypesController {
   constructor(private readonly powerUnitTypesService: PowerUnitTypesService) {}

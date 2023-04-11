@@ -29,7 +29,7 @@ export class UsersProfile extends AutomapperProfile {
        * property of the destination object to a generated UUID using the
        * tempUserGuid function (which will be removed once login has been
        * implemented). The remaining forMember calls map the userName,
-       * userDirectory, and userContact properties of the destination object to
+       * directory, and userContact properties of the destination object to
        * properties of the source object using mapWithArguments or mapFrom.
        * TODO: Change userGUID mapping once the login is implemented.
        */
@@ -51,9 +51,9 @@ export class UsersProfile extends AutomapperProfile {
           }),
         ),
         forMember(
-          (d) => d.userDirectory,
-          mapWithArguments((source, { userDirectory }) => {
-            return userDirectory;
+          (d) => d.directory,
+          mapWithArguments((source, { directory }) => {
+            return directory;
           }),
         ),
         forMember(
@@ -88,9 +88,9 @@ export class UsersProfile extends AutomapperProfile {
           }),
         ),
         forMember(
-          (d) => d.userDirectory,
-          mapWithArguments((source, { userDirectory }) => {
-            return userDirectory;
+          (d) => d.directory,
+          mapWithArguments((source, { directory }) => {
+            return directory;
           }),
         ),
         forMember(

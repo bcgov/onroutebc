@@ -10,7 +10,7 @@ import { Base } from '../../../common/entities/base.entity';
 import { AutoMap } from '@automapper/classes';
 import { Contact } from '../../../common/entities/contact.entity';
 import { CompanyUser } from './company-user.entity';
-import { UserDirectory } from '../../../../common/enum/directory.enum';
+import { Directory } from '../../../../common/enum/directory.enum';
 import { UserStatus } from '../../../../common/enum/user-status.enum';
 import { UserAuthGroup } from '../../../../common/enum/user-auth-group.enum';
 
@@ -32,17 +32,17 @@ export class User extends Base {
 
   /**
    * The type of directory the user belongs to in the system. It is an enum of
-   * UserDirectory type.
+   * Directory type.
    */
   @AutoMap()
   @Column({
     type: 'simple-enum',
-    enum: UserDirectory,
+    enum: Directory,
     length: 10,
     name: 'USER_DIRECTORY',
     nullable: false,
   })
-  userDirectory: UserDirectory;
+  directory: Directory;
 
   /**
    * A property that represents the user's auth group in ORBC, which is an enum of type
