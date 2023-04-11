@@ -146,13 +146,10 @@ jobs:
           openshift_token: ${{ secrets.OC_TOKEN }}
           namespace: ${{ secrets.OC_NAMESPACE }}
 
-      - run: |
-          oc config view
-
       - name: Helm Deploy
         uses: vimeda/helm@v1.6.8
         with:
-          chart: common-object-management-service
+          chart: 'app'
           namespace: ${{ secrets.OC_NAMESPACE }}
           release: ${{ github.event.repository.name }}-${{ github.event.number }}-common-object-management-service
           repo: https://bcgov.github.io/common-object-management-service
