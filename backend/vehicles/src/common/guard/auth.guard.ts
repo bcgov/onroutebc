@@ -6,6 +6,8 @@ import {
 import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
 import { IS_PUBLIC_KEY } from '../decorator/public.decorator';
+import { IS_AUTH_ONLY_KEY } from '../decorator/auth-only.decorator';
+import { Request } from 'express';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
@@ -20,6 +22,18 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     ]);
     if (isPublic) {
       return true;
+    }
+    const isAuthOnly = this.reflector.getAllAndOverride<boolean>(
+      IS_AUTH_ONLY_KEY,
+      [context.getHandler(), context.getClass()],
+    );
+
+    const request: Request = context.switchToHttp().getRequest();
+    
+    if (isAuthOnly) {
+      request.headers['AuthOnly'] = 'true';
+    } else {
+      request.headers['AuthOnly'] = 'false';
     }
     return super.canActivate(context);
   }

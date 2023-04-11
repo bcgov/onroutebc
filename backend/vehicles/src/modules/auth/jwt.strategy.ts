@@ -5,6 +5,7 @@ import { passportJwtSecret } from 'jwks-rsa';
 import { AuthService } from './auth.service';
 import { IUserJWT } from '../../common/interface/user-jwt.interface';
 import { Request } from 'express';
+import { Role } from '../../common/enum/roles.enum';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -27,10 +28,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(req: Request, payload: IUserJWT): Promise<IUserJWT> {
+    let userGUID: string, userName: string, roles: Role[];
+
     const companyId = req.params['companyId']
       ? +req.params['companyId']
       : undefined;
-    let userGUID: string, userName: string;
+
     if (payload.identity_provider === 'idir') {
       userGUID = payload.idir_user_guid;
       userName = payload.idir_username;
@@ -38,17 +41,19 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       userGUID = payload.bceid_user_guid;
       userName = payload.bceid_username;
     }
-    const user = await this.authService.validateUser(
-      companyId,
-      payload.identity_provider,
-      userGUID,
-      userName,
-    );
-    if (!user) {
-      throw new UnauthorizedException();
-    }
 
-    const roles = await this.authService.getRolesForUser(userGUID, companyId);
+    if (req.headers['AuthOnly'] === 'false') {
+      const user = await this.authService.validateUser(
+        companyId,
+        payload.identity_provider,
+        userGUID,
+        userName,
+      );
+      if (!user) {
+        throw new UnauthorizedException();
+      }
+      roles = await this.authService.getRolesForUser(userGUID, companyId);
+    }
 
     const currentUser = {
       userName,
@@ -58,7 +63,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     };
 
     Object.assign(payload, currentUser);
-
     return payload;
   }
 }

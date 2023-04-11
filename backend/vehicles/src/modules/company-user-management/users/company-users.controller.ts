@@ -18,6 +18,7 @@ import { ExceptionDto } from '../../common/dto/exception.dto';
 import { CreateUserDto } from './dto/request/create-user.dto';
 import { ReadUserDto } from './dto/response/read-user.dto';
 import { UsersService } from './users.service';
+import { AuthOnly } from '../../../common/decorator/auth-only.decorator';
 
 @ApiTags('Company and User Management - Company User')
 @ApiNotFoundResponse({
@@ -53,6 +54,7 @@ export class CompanyUsersController {
     description: 'The User Resource',
     type: ReadUserDto,
   })
+  @AuthOnly()
   @Post()
   async create(
     @Param('companyId') companyId: number,

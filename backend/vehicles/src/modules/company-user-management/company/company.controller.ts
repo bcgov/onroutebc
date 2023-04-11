@@ -34,6 +34,7 @@ import { Request } from 'express';
 import { Roles } from '../../../common/decorator/roles.decorator';
 import { Role } from '../../../common/enum/roles.enum';
 import { IUserJWT } from '../../../common/interface/user-jwt.interface';
+import { AuthOnly } from '../../../common/decorator/auth-only.decorator';
 
 @ApiTags('Company and User Management - Company')
 @ApiNotFoundResponse({
@@ -70,6 +71,7 @@ export class CompanyController {
     description: 'The Company-User Resource',
     type: ReadCompanyUserDto,
   })
+  @AuthOnly()
   @Post()
   async create(@Body() createCompanyDto: CreateCompanyDto) {
     return await this.companyService.create(

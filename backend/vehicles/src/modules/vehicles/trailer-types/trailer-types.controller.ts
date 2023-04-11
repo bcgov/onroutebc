@@ -11,6 +11,7 @@ import { TrailerTypesService } from './trailer-types.service';
 import { CreateTrailerTypeDto } from './dto/request/create-trailer-type.dto';
 import { UpdateTrailerTypeDto } from './dto/request/update-trailer-type.dto';
 import {
+  ApiBearerAuth,
   ApiCreatedResponse,
   ApiInternalServerErrorResponse,
   ApiMethodNotAllowedResponse,
@@ -35,6 +36,7 @@ import { DataNotFoundException } from '../../../common/exception/data-not-found.
   description: 'The Trailer Type Api Internal Server Error Response',
   type: ExceptionDto,
 })
+@ApiBearerAuth()
 @Controller('vehicles/trailer-types')
 export class TrailerTypesController {
   constructor(private readonly trailerTypesService: TrailerTypesService) {}
