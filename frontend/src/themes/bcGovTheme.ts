@@ -71,6 +71,11 @@ export const bcGovTheme = createTheme({
       marginBottom: "4px",
       letterSpacing: "1.4px",
     },
+    h6: {
+      fontSize: 16,
+      color: BC_COLOURS.bc_primary_blue,
+      letterSpacing: "0px",
+    },
   },
   components: {
     MuiTooltip: {

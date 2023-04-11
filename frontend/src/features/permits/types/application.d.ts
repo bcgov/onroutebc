@@ -9,6 +9,15 @@ export interface Application {
   lastUpdated: Dayjs;
 }
 
+interface MailingAddress {
+  addressLine1: string;
+  addressLine2?: string;
+  city: string;
+  provinceCode: string;
+  countryCode: string;
+  postalCode: string;
+}
+
 interface ContactDetails {
   firstName: string;
   lastName: string;
@@ -18,7 +27,6 @@ interface ContactDetails {
   phone2Extension?: string;
   email: string;
   fax?: string;
-  city: string;
 }
 
 interface VehicleDetails {
@@ -32,6 +40,13 @@ interface VehicleDetails {
   vehicleSubType: string;
 }
 
+export interface Commodities {
+  description: string;
+  condition: string;
+  conditionLink: string;
+  checked: boolean;
+}
+
 export interface TermOversizeApplication extends Application {
   application: {
     startDate: Dayjs;
@@ -39,6 +54,7 @@ export interface TermOversizeApplication extends Application {
     expiryDate: Dayjs;
     contactDetails?: ContactDetails;
     vehicleDetails?: VehicleDetails;
-    commodities: string[];
+    commodities: Commodities[];
+    mailingAddress: MailingAddress;
   };
 }

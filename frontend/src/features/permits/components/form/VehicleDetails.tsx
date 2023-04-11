@@ -167,17 +167,12 @@ export const VehicleDetails = ({ feature }: { feature: string }) => {
     setValue("application.vehicleDetails.vehicleType", updatedVehicleType);
     const updated = applicationData;
     if (updated && updated.application.vehicleDetails) {
-      console.log("if***");
       updated.application.vehicleDetails.vehicleType = updatedVehicleType;
       updated.application.vehicleDetails.vehicleSubType = "";
       setApplicationData(updated);
     }
     resetField("application.vehicleDetails.vehicleSubType");
     setValue("application.vehicleDetails.vehicleSubType", "");
-
-    console.log("updatedVehicleType", updatedVehicleType);
-    console.log("vehicleType", vehicleType);
-    console.log("updated", updated);
   };
 
   return (

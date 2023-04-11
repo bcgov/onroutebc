@@ -14,13 +14,16 @@ import { ApplicationDetails } from "../ApplicationDetails";
 import { PermitDetails } from "./PermitDetails";
 import { VehicleDetails } from "../VehicleDetails";
 import dayjs from "dayjs";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { BC_COLOURS } from "../../../../../themes/bcGovStyles";
 import { PERMIT_LEFT_COLUMN_WIDTH } from "../../../../../themes/orbcStyles";
 import { ApplicationContext } from "../../../context/ApplicationContext";
+import { TROSCommodities } from "./ConditionsTable";
+import { useCompanyInfoQuery } from "../../../../manageProfile/apiManager/hooks";
 
 export const TermOversizeForm = () => {
   const applicationContext = useContext(ApplicationContext);
+  const companyInfoQuery = useCompanyInfoQuery();
   const submitTermOversizeQuery = useSubmitTermOversizeMutation();
 
   // Default values to register with React Hook Forms
@@ -37,8 +40,8 @@ export const TermOversizeForm = () => {
         applicationContext?.applicationData?.application?.permitDuration || 30,
       expiryDate:
         applicationContext?.applicationData?.application?.expiryDate || dayjs(),
-      commodities:
-        applicationContext?.applicationData?.application?.commodities || [],
+      commodities: applicationContext?.applicationData?.application
+        ?.commodities || [TROSCommodities[0], TROSCommodities[1]],
       contactDetails: {
         firstName:
           applicationContext?.applicationData?.application?.contactDetails
@@ -52,9 +55,17 @@ export const TermOversizeForm = () => {
         email:
           applicationContext?.applicationData?.application?.contactDetails
             ?.email || "",
-        city:
-          applicationContext?.applicationData?.application?.contactDetails
-            ?.city || "",
+      },
+      mailingAddress: {
+        addressLine1:
+          companyInfoQuery?.data?.companyAddress?.addressLine1 || "",
+        addressLine2:
+          companyInfoQuery?.data?.companyAddress?.addressLine2 || "",
+        city: companyInfoQuery?.data?.companyAddress?.city || "",
+        provinceCode:
+          companyInfoQuery?.data?.companyAddress?.provinceCode || "",
+        countryCode: companyInfoQuery?.data?.companyAddress?.countryCode || "",
+        postalCode: companyInfoQuery?.data?.companyAddress?.postalCode || "",
       },
       vehicleDetails: {
         vin:
@@ -90,7 +101,21 @@ export const TermOversizeForm = () => {
     reValidateMode: "onBlur",
   });
 
-  const { handleSubmit } = formMethods;
+  const { handleSubmit, setValue } = formMethods;
+
+  /**
+   * UseEffect to get company mailing address, since companyInfo query is async
+   */
+  useEffect(() => {
+    setValue("application.mailingAddress", {
+      addressLine1: companyInfoQuery?.data?.companyAddress?.addressLine1 || "",
+      addressLine2: companyInfoQuery?.data?.companyAddress?.addressLine2 || "",
+      city: companyInfoQuery?.data?.companyAddress?.city || "",
+      provinceCode: companyInfoQuery?.data?.companyAddress?.provinceCode || "",
+      countryCode: companyInfoQuery?.data?.companyAddress?.countryCode || "",
+      postalCode: companyInfoQuery?.data?.companyAddress?.postalCode || "",
+    });
+  }, [companyInfoQuery]);
 
   const navigate = useNavigate();
 
@@ -179,7 +204,7 @@ export const TermOversizeForm = () => {
             Oversize: Term
           </Typography>
           <FormProvider {...formMethods}>
-            <ApplicationDetails />
+            <ApplicationDetails values={termOversizeDefaultValues} />
             <ContactDetails feature={FEATURE} />
             <PermitDetails feature={FEATURE} />
             <VehicleDetails feature={FEATURE} />

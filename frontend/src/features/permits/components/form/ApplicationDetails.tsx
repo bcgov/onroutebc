@@ -6,8 +6,7 @@ import {
   PERMIT_LEFT_HEADER_STYLE,
   PERMIT_RIGHT_BOX_STYLE,
 } from "../../../../themes/orbcStyles";
-import { Application } from "../../types/application";
-import { useFormContext } from "react-hook-form";
+import { TermOversizeApplication } from "../../types/application";
 import { useCompanyInfoQuery } from "../../../manageProfile/apiManager/hooks";
 import { CompanyProfile } from "../../../manageProfile/apiManager/manageProfileAPI";
 import {
@@ -54,10 +53,16 @@ const CompanyInformation = ({
   );
 };
 
-export const ApplicationDetails = () => {
+export const ApplicationDetails = ({
+  values,
+}: {
+  values: TermOversizeApplication | undefined;
+}) => {
   const companyInfoQuery = useCompanyInfoQuery();
-  const { getValues } = useFormContext<Application>();
-  const applicationValues = getValues();
+  //const { getValues } = useFormContext<Application>();
+  //const applicationValues = getValues();
+
+  if (!values) return <></>;
 
   return (
     <>
@@ -70,7 +75,7 @@ export const ApplicationDetails = () => {
           paddingTop: "8px",
         }}
       >
-        Application # {applicationValues?.applicationId}
+        Application # {values.applicationId}
       </Typography>
       <Box sx={{ display: "flex" }}>
         <Typography sx={{ width: "327px" }}>
@@ -78,14 +83,14 @@ export const ApplicationDetails = () => {
             Date Created:
           </Box>
           {"  "}
-          {applicationValues?.dateCreated.format("LLL")}
+          {values.dateCreated.format("LLL")}
         </Typography>
         <Typography>
           <Box component="span" fontWeight="bold">
             Last Updated:
           </Box>
           {"  "}
-          {applicationValues?.lastUpdated.format("LLL")}
+          {values.lastUpdated.format("LLL")}
         </Typography>
       </Box>
       <CompanyBanner companyInfo={companyInfoQuery.data} />

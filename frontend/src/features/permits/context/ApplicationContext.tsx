@@ -6,6 +6,7 @@ interface ApplicationContextType {
   setApplicationData: Dispatch<TermOversizeApplication>;
   next: () => void;
   back: () => void;
+  goTo: (index: number) => void;
 }
 
 export const ApplicationContext = createContext<ApplicationContextType>({
@@ -13,4 +14,5 @@ export const ApplicationContext = createContext<ApplicationContextType>({
   setApplicationData: (() => undefined) as Dispatch<TermOversizeApplication>,
   next: () => undefined,
   back: () => undefined,
+  goTo: () => undefined,
 });
