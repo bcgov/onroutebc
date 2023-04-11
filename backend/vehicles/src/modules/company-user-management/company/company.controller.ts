@@ -136,12 +136,10 @@ export class CompanyController {
     const currentUser = request.user as IUserJWT;
     const rolesExists = matchRoles([Role.READ_ORG], currentUser.roles);
 
-    if (!rolesExists && userGUID) {
-      throw new ForbiddenException();
-    } else if (
-      rolesExists &&
+    if (
       userGUID &&
-      currentUser.identity_provider !== IDP.IDIR
+      (!rolesExists ||
+        (rolesExists && currentUser.identity_provider !== IDP.IDIR))
     ) {
       throw new ForbiddenException();
     }
