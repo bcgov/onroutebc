@@ -167,4 +167,4 @@ jobs:
             config.configMap.OBJECTSTORAGE_ENDPOINT: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_ENDPOINT}}
             config.configMap.OBJECTSTORAGE_KEY: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_KEY}}
           env:
-            KUBECONFIG_FILE: /home/runner/.kube/config
+            KUBECONFIG_FILE: "/home/runner/.kube/config"
