@@ -145,7 +145,6 @@ jobs:
           mkdir .kube
           echo "${{ secrets.OC_KUBECONFIG_FILE }}" > /home/runner/.kube/config
           cat /home/runner/.kube/config
-          cat .kubeconfig
 
       - name: Helm Deploy
         uses: vimeda/helm@v1.6.8
