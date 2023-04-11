@@ -33,7 +33,11 @@ describe('PowerUnitsController', () => {
 
   describe('Power unit controller create function', () => {
     it('should create a power unit', async () => {
-      const retPowerUnit = await controller.create(createPowerUnitDtoMock);
+      const retPowerUnit = await controller.create(
+        null,
+        COMPANY_ID_1,
+        createPowerUnitDtoMock,
+      );
       expect(typeof retPowerUnit).toBe('object');
       expect(retPowerUnit).toEqual(readPowerUnitDtoMock);
       expect(powerUnitsServiceMock.create).toHaveBeenCalledWith(
@@ -44,7 +48,7 @@ describe('PowerUnitsController', () => {
 
   describe('Power unit controller findAll function', () => {
     it('should return all the power units', async () => {
-      const retPowerUnits = await controller.findAll(null, COMPANY_ID_1);
+      const retPowerUnits = await controller.findAll(COMPANY_ID_1);
       expect(typeof retPowerUnits).toBe('object');
       expect(retPowerUnits).toContainEqual(readPowerUnitDtoMock);
       expect(retPowerUnits.length).toBe(1);

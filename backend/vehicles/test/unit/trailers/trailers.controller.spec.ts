@@ -30,7 +30,11 @@ describe('TrailersController', () => {
   });
   describe('Trailer controller create function', () => {
     it('should create trailer', async () => {
-      const retTrailer = await controller.create(createTrailerDtoMock);
+      const retTrailer = await controller.create(
+        null,
+        COMPANY_ID_1,
+        createTrailerDtoMock,
+      );
       expect(typeof retTrailer).toBe('object');
       expect(retTrailer).toEqual(readTrailerDtoMock);
       expect(trailersServiceMock.create).toHaveBeenCalledWith(
@@ -41,7 +45,7 @@ describe('TrailersController', () => {
 
   describe('Trailer controller findAll function', () => {
     it('should return all the trailers', async () => {
-      const retTrailers = await controller.findAll(null, COMPANY_ID_1);
+      const retTrailers = await controller.findAll(COMPANY_ID_1);
       expect(typeof retTrailers).toBe('object');
       expect(retTrailers).toContain(readTrailerDtoMock);
       expect(retTrailers.length).toBe(1);

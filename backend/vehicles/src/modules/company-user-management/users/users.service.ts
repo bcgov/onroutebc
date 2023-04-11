@@ -185,7 +185,10 @@ export class UsersService {
    */
   async findUserbyUserGUID(userGUID: string): Promise<ReadUserDto> {
     const user = await this.findUserEntitybyUserGUID(userGUID);
-    const readUserDto = await this.mapUserEntitytoReadUserDto(user);
+    let readUserDto: ReadUserDto;
+    if (user) {
+      readUserDto = await this.mapUserEntitytoReadUserDto(user);
+    }
     return readUserDto;
   }
 

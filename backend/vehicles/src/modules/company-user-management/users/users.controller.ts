@@ -60,7 +60,7 @@ export class UsersController {
     type: ReadUserOrbcStatusDto,
   })
   @AuthOnly()
-  @Get('user-company/:userGUID')
+  @Get('user-company')
   async find(@Req() request: Request): Promise<ReadUserOrbcStatusDto> {
     const currentUser = request.user as IUserJWT;
     const userExists = await this.userService.findORBCUser(
@@ -83,7 +83,6 @@ export class UsersController {
    */
   @ApiOkResponse({
     description: "The list of User's Roles",
-    type: Role.READ_SELF,
     isArray: true,
   })
   @ApiQuery({ name: 'companyId', required: false })

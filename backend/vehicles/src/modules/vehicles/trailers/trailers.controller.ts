@@ -67,7 +67,6 @@ export class TrailersController {
   })
   @Get()
   async findAll(
-    @Req() request: Request,
     @Param('companyId') companyId: number,
   ): Promise<ReadTrailerDto[]> {
     return await this.trailersService.findAll();

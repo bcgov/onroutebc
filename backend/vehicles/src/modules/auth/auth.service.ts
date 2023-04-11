@@ -16,10 +16,9 @@ export class AuthService {
     companyId: number,
     identity_provider: string,
     userGuid: string,
-    userName: string,
   ): Promise<boolean> {
     let user: ReadUserDto;
-    let pendingUser = false;
+
     if (identity_provider === IDP.IDIR) {
       user = await this.usersService.findUserbyUserGUID(userGuid);
     } else {
@@ -31,13 +30,8 @@ export class AuthService {
           companyId,
         );
       }
-      if (!user) {
-        pendingUser = !!(await this.pendingUserService.findOneByUserName(
-          userName,
-        ));
-      }
     }
-    return user || pendingUser ? true : false;
+    return user ? true : false;
   }
 
   /**
