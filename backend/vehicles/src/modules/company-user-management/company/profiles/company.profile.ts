@@ -68,7 +68,7 @@ export class CompanyProfile extends AutomapperProfile {
         ),
         forMember(
           (d) => d.directory,
-          mapWithArguments((source, {directory }) => {
+          mapWithArguments((source, { directory }) => {
             return directory;
           }),
         ),

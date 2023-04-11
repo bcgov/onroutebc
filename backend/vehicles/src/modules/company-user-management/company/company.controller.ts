@@ -25,9 +25,7 @@ import { CreateCompanyDto } from './dto/request/create-company.dto';
 import { UpdateCompanyDto } from './dto/request/update-company.dto';
 import { ReadCompanyDto } from './dto/response/read-company.dto';
 import { ReadCompanyUserDto } from './dto/response/read-company-user.dto';
-import {
-  Directory
-} from '../../../common/enum/directory.enum';
+import { Directory } from '../../../common/enum/directory.enum';
 import { ReadCompanyMetadataDto } from './dto/response/read-company-metadata.dto';
 import { Request } from 'express';
 import { Roles } from '../../../common/decorator/roles.decorator';
@@ -81,7 +79,7 @@ export class CompanyController {
     const directory = getDirectory(currentUser);
 
     return await this.companyService.create(
-      createCompanyDto,    
+      createCompanyDto,
       currentUser.userName,
       directory,
     );

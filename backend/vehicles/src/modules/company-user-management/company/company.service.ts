@@ -4,9 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { UserAuthGroup } from '../../../common/enum/user-auth-group.enum';
-import {
- Directory
-} from '../../../common/enum/directory.enum';
+import { Directory } from '../../../common/enum/directory.enum';
 import { ReadUserDto } from '../users/dto/response/read-user.dto';
 import { UsersService } from '../users/users.service';
 import { CreateCompanyDto } from './dto/request/create-company.dto';
@@ -35,7 +33,7 @@ export class CompanyService {
    * ? Company Directory might not be required once scope of login is finizalied.
    *
    * @param createCompanyDto Request object of type {@link CreateCompanyDto} for
-   * creating a new company and admin user.   
+   * creating a new company and admin user.
    * @param userName User name from the access token.
    * @param directory Directory derived from the access token.
    *
