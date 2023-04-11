@@ -51,7 +51,7 @@ jobs:
           output: "trivy-results.sarif"
           ignore-unfixed: true
           scan-type: "fs"
-          security-checks: "vuln,secret,config"
+          scanners: "vuln,secret,config"
           severity: "CRITICAL,HIGH"
 
       - name: Upload Trivy scan results to GitHub Security tab
@@ -91,7 +91,7 @@ jobs:
         with:
           url: https://vault.developer.gov.bc.ca
           token: ${{ secrets.VAULT_TOKEN }}
-          exportEnv: 'false'
+          exportEnv: "false"
           namespace: platform-services
           secrets: |
             ${{env.VAULT_ENV}}/data/database-test  DATABASE_HOST      | VAULT_DATABASE_HOST;
@@ -108,8 +108,7 @@ jobs:
           oc_server: ${{ secrets.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
           overwrite: ${{ matrix.overwrite }}
-          parameters:
-            -p ZONE=test
+          parameters: -p ZONE=test
             -p NAME=${{ github.event.repository.name }} ${{ matrix.parameters }}
             -p PROMOTE=${{ github.repository }}/${{ matrix.name }}:test
             -p DATABASE_NAME=${{steps.secrets.outputs.VAULT_DATABASE_NAME}}
@@ -152,7 +151,7 @@ jobs:
         with:
           url: https://vault.developer.gov.bc.ca
           token: ${{ secrets.VAULT_TOKEN }}
-          exportEnv: 'false'
+          exportEnv: "false"
           namespace: platform-services
           secrets: |
             ${{env.VAULT_ENV}}/data/database-prod  DATABASE_HOST     | VAULT_DATABASE_HOST;
@@ -167,8 +166,7 @@ jobs:
           oc_server: ${{ secrets.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
           overwrite: ${{ matrix.overwrite }}
-          parameters:
-            -p ZONE=prod
+          parameters: -p ZONE=prod
             -p NAME=${{ github.event.repository.name }} ${{ matrix.parameters }}
             -p PROMOTE=${{ github.repository }}/${{ matrix.name }}:test
             -p DATABASE_NAME=${{steps.secrets.outputs.VAULT_DATABASE_NAME}}
@@ -193,26 +191,26 @@ jobs:
           repository: ${{ github.repository }}/${{ matrix.component }}
           target: test
           tags: prod
-  
+
   GitVersion:
     name: Mainline Versioning - GitVersion
-    needs: 
+    needs:
       - deploys-prod
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
         with:
-          ref: ${{ github.head_ref }}   # checkout the correct branch name
-          fetch-depth: 0                # fetch the whole repo history
+          ref: ${{ github.head_ref }} # checkout the correct branch name
+          fetch-depth: 0 # fetch the whole repo history
 
       - name: Setup GitVersion
         uses: gittools/actions/gitversion/setup@v0.10.2
         with:
-          versionSpec: '5.x'
+          versionSpec: "5.x"
 
       - name: Determine SemVersion
-        id:   gitversion
+        id: gitversion
         uses: gittools/actions/gitversion/execute@v0.10.2
         with:
           useConfigFile: true
@@ -254,11 +252,11 @@ jobs:
           echo "CommitDate: ${{ steps.gitversion.outputs.commitDate }}"
     outputs:
       fullSemVer: ${{ steps.gitversion.outputs.fullSemVer}}
-          
+
   release:
     name: Create Release
     runs-on: ubuntu-22.04
-    needs: 
+    needs:
       - GitVersion
     steps:
       - uses: actions/create-release@v1
