@@ -162,7 +162,7 @@ export const TermOversizeForm = () => {
 
       const powerUnit: PowerUnit = {
         powerUnitId: powerUnitId,
-        unitNumber: "", //TODO
+        unitNumber: "",
         vin: vehicle.vin,
         plate: vehicle.plate,
         make: vehicle.make,
@@ -170,7 +170,6 @@ export const TermOversizeForm = () => {
         countryCode: vehicle.countryCode,
         provinceCode: vehicle.provinceCode,
         powerUnitTypeCode: vehicle.vehicleSubType,
-        licensedGvw: 0, //TODO
       };
 
       if (powerUnitId) {
@@ -187,7 +186,7 @@ export const TermOversizeForm = () => {
 
       const trailer: Trailer = {
         trailerId: trailerId,
-        unitNumber: "", //TODO
+        unitNumber: "",
         vin: vehicle.vin,
         plate: vehicle.plate,
         make: vehicle.make,
