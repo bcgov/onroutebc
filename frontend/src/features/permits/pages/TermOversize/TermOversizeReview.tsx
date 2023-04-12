@@ -14,7 +14,8 @@ import { ReviewVehicleInfo } from "./review/ReviewVehicleInfo";
 import { ProgressBar } from "../../components/progressBar/ProgressBar";
 
 export const TermOversizeReview = () => {
-  const { applicationData, back, next } = useContext(ApplicationContext);
+  const { applicationData, setApplicationData, back, next } =
+    useContext(ApplicationContext);
   const methods = useForm<TermOversizeApplication>();
 
   // Send data to the backend API
@@ -26,6 +27,12 @@ export const TermOversizeReview = () => {
 
   useEffect(() => {
     window.scrollTo(0, 0);
+    // Reset the 'save vehicle' property
+    const updated = applicationData;
+    if (updated?.application?.vehicleDetails?.saveVehicle) {
+      updated.application.vehicleDetails.saveVehicle = false;
+      setApplicationData(updated);
+    }
   }, []);
 
   return (
