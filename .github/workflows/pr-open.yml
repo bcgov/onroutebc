@@ -92,13 +92,11 @@ jobs:
           exportEnv: 'false'
           namespace: platform-services
           secrets: |
-            ${{env.VAULT_ENV}}/data/database-dev  DATABASE_HOST      | VAULT_DATABASE_HOST;
-            ${{env.VAULT_ENV}}/data/database-dev  DATABASE_USER      | VAULT_DATABASE_USER;
-            ${{env.VAULT_ENV}}/data/database-dev  DATABASE_NAME      | VAULT_DATABASE_NAME;
-            ${{env.VAULT_ENV}}/data/database-dev  DATABASE_PASSWORD  | VAULT_DATABASE_PASSWORD;
-            ${{env.VAULT_ENV}}/data/database-dev  DATABASE_PORT      | VAULT_DATABASE_PORT;
-            ${{env.VAULT_ENV}}/data/ches-dev      CHES_CLIENT_ID     | VAULT_CHES_CLIENT_ID;
-            ${{env.VAULT_ENV}}/data/ches-dev      CHES_CLIENT_SECRET | VAULT_CHES_CLIENT_SECRET;
+            ${{env.VAULT_ENV}}/data/database-dev  DATABASE_HOST     | VAULT_DATABASE_HOST;
+            ${{env.VAULT_ENV}}/data/database-dev  DATABASE_USER     | VAULT_DATABASE_USER;
+            ${{env.VAULT_ENV}}/data/database-dev  DATABASE_NAME     | VAULT_DATABASE_NAME;
+            ${{env.VAULT_ENV}}/data/database-dev  DATABASE_PASSWORD | VAULT_DATABASE_PASSWORD;
+            ${{env.VAULT_ENV}}/data/database-dev  DATABASE_PORT     | VAULT_DATABASE_PORT
       - name: Deploy Application
         uses: bcgov-nr/action-deployer-openshift@v1.0.3
         with:
@@ -116,6 +114,4 @@ jobs:
             -p DATABASE_USER=${{steps.secrets.outputs.VAULT_DATABASE_USER}}
             -p DATABASE_PASSWORD=${{steps.secrets.outputs.VAULT_DATABASE_PASSWORD}}
             -p DATABASE_HOST=${{steps.secrets.outputs.VAULT_DATABASE_HOST}}
-            -p CHES_CLIENT_ID=${{steps.secrets.outputs.VAULT_CHES_CLIENT_ID}}
-            -p CHES_CLIENT_SECRET=${{steps.secrets.outputs.VAULT_CHES_CLIENT_SECRET}}
             ${{ matrix.parameters }}

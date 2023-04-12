@@ -50,12 +50,6 @@ parameters:
   - name: DATABASE_HOST
     description: Host url/service of database connection
     required: true
-  - name: CHES_CLIENT_ID
-    description: Client Id to request the access token for connecting to CHES
-    required: true
-  - name: CHES_CLIENT_SECRET
-    description: Client Secret to request the access token for connecting to CHES
-    required: true    
 objects:
   - apiVersion: v1
     kind: ConfigMap
@@ -78,8 +72,6 @@ objects:
     stringData:
       database-user: "${DATABASE_USER}"
       database-password: "${DATABASE_PASSWORD}"
-      ches-client-id: "${CHES_CLIENT_ID}"
-      ches-client-secret: "${CHES_CLIENT_SECRET}"
   - apiVersion: v1
     kind: ImageStream
     metadata:
@@ -164,17 +156,6 @@ objects:
                     secretKeyRef:
                       name: ${NAME}-${ZONE}-${COMPONENT}
                       key: database-user
-                - name: CHES_CLIENT_ID
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}-${ZONE}-${COMPONENT}
-                      key: ches-client-id
-                - name: CHES_CLIENT_SECRET
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}-${ZONE}-${COMPONENT}
-                      key: ches-client-secret                      
-                      
               ports:
                 - containerPort: 5000
                   protocol: TCP
