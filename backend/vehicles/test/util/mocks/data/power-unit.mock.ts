@@ -17,6 +17,7 @@ const STEER_AXLE_TIRE_SIZE = 32;
 const PROVINCE_CODE = 'BC';
 const COUNTRY_CODE = 'CA';
 const POWER_UNIT_TYPE_CODE = 'CONCRET';
+const COMPANY_ID = 1;
 
 export const powerUnitEntityMock: PowerUnit = {
   powerUnitId: POWER_UNIT_ID,
@@ -29,6 +30,8 @@ export const powerUnitEntityMock: PowerUnit = {
   vin: VIN,
   licensedGvw: LICENSED_GVW,
   steerAxleTireSize: STEER_AXLE_TIRE_SIZE,
+  companyId: COMPANY_ID,
+
   ...baseEntityMock,
 };
 

@@ -15,6 +15,8 @@ import {
 } from '../../util/mocks/data/power-unit.mock';
 
 const POWER_UNIT_ID_1 = '1';
+const POWER_UNIT_IDS_2 = ['2'];
+const COMPANY_ID_2 = 2;
 
 describe('PowerUnitsService', () => {
   let service: PowerUnitsService;
@@ -92,6 +94,14 @@ describe('PowerUnitsService', () => {
     it('should delete the power Unit', async () => {
       const deleteResult = await service.remove('1');
       expect(typeof deleteResult).toBe('object');
+    });
+  });
+
+  describe('Power unit service bulk delete function.', () => {
+    it('should delete the power units with the ids provided in request if they belong to the given company', async () => {
+      const deleteResult = await service.removeAll(POWER_UNIT_IDS_2, COMPANY_ID_2);
+      expect(typeof deleteResult).toBe('object');
+      // expect(deleteResult).toEqual(deleteDtoMock2);
     });
   });
 });

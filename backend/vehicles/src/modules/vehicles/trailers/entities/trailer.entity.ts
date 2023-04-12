@@ -84,4 +84,12 @@ export class Trailer extends Base {
   @ManyToOne(() => TrailerType, (TrailerType) => TrailerType.trailers)
   @JoinColumn({ name: 'TRAILER_TYPE_CODE' })
   trailerType: TrailerType;
+
+  @AutoMap()
+  @ApiProperty({
+    example: '1',
+    description: 'The Company Id to which the Trailer belongs',
+  })
+  @Column({ type: 'integer', name: 'COMPANY_ID', nullable: true })
+  companyId: number;
 }

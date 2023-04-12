@@ -7,6 +7,7 @@ import {
   Delete,
   Put,
   Req,
+  HttpCode,
 } from '@nestjs/common';
 import { PowerUnitsService } from './power-units.service';
 import { CreatePowerUnitDto } from './dto/request/create-power-unit.dto';
@@ -27,6 +28,7 @@ import { DataNotFoundException } from '../../../common/exception/data-not-found.
 import { Request } from 'express';
 import { Roles } from '../../../common/decorator/roles.decorator';
 import { Role } from '../../../common/enum/roles.enum';
+import { DeleteDto } from 'src/modules/common/dto/response/delete.dto';
 
 @ApiTags('Vehicles - Power Units')
 @ApiNotFoundResponse({
@@ -127,5 +129,21 @@ export class PowerUnitsController {
       throw new DataNotFoundException();
     }
     return { deleted: true };
+  }
+
+  @Post('delete-requests')
+  @HttpCode(200)
+  async deletePowerUnits(
+    @Body('powerUnits') powerUnits: string[],
+    @Param('companyId') companyId: number,
+  ): Promise<DeleteDto> {
+    const deleteResult = await this.powerUnitsService.removeAll(
+      powerUnits,
+      companyId,
+    );
+    if (deleteResult == null) {
+      throw new DataNotFoundException();
+    }
+    return deleteResult;
   }
 }

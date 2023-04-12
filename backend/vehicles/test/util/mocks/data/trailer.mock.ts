@@ -16,6 +16,7 @@ const EMPTY_TRAILER_WIDTH = 3.2;
 const PROVINCE_CODE = 'BC';
 const COUNTRY_CODE = 'CA';
 const TRAILER_TYPE_CODE = 'BOOSTER';
+const COMPANY_ID = 1;
 
 export const trailerEntityMock: Trailer = {
   trailerId: TRAILER_ID,
@@ -27,6 +28,7 @@ export const trailerEntityMock: Trailer = {
   make: MAKE,
   vin: VIN,
   emptyTrailerWidth: EMPTY_TRAILER_WIDTH,
+  companyId: COMPANY_ID,
   ...baseEntityMock,
 };
 

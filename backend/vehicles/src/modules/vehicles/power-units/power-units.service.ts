@@ -7,6 +7,7 @@ import { PowerUnit } from './entities/power-unit.entity';
 import { InjectMapper } from '@automapper/nestjs';
 import { Mapper } from '@automapper/core';
 import { ReadPowerUnitDto } from './dto/response/read-power-unit.dto';
+import { DeleteDto } from 'src/modules/common/dto/response/delete.dto';
 
 @Injectable()
 export class PowerUnitsService {
@@ -70,5 +71,64 @@ export class PowerUnitsService {
   }
   async remove(powerUnitId: string): Promise<DeleteResult> {
     return await this.powerUnitRepository.delete(powerUnitId);
+  }
+
+  async removeAll(
+    powerUnitIds: string[],
+    companyId: number,
+  ): Promise<DeleteDto> {
+    const idsPresentInDB = await this.powerUnitRepository
+      .createQueryBuilder('PowerUnit')
+      .select(['PowerUnit.powerUnitId'])
+      .where('PowerUnit.powerUnitId IN (:...id)', {
+        id: powerUnitIds,
+      })
+      .andWhere('PowerUnit.companyId = :companyId', {
+        companyId: companyId,
+      })
+      .getMany();
+    const idsFoundInDB: string[] = [];
+    const idsNotdeletedfromDB: string[] = [];
+    let i = 0;
+    for (const id of idsPresentInDB) {
+      idsFoundInDB[i] = id.powerUnitId;
+      i = i + 1;
+    }
+    i = 0;
+    await this.powerUnitRepository
+      .createQueryBuilder()
+      .delete()
+      .from(PowerUnit)
+      .where('powerUnitId IN (:...id)', {
+        id: powerUnitIds,
+      })
+      .andWhere('companyId = :companyId', {
+        companyId: companyId,
+      })
+      .execute();
+    const notDeletedIds = await this.powerUnitRepository
+      .createQueryBuilder('PowerUnit')
+      .select(['PowerUnit.powerUnitId'])
+      .where('PowerUnit.powerUnitId IN (:...id)', {
+        id: powerUnitIds,
+      })
+      .andWhere('PowerUnit.companyId = :companyId', {
+        companyId: companyId,
+      })
+      .getMany();
+    //Convert PowerUnitId to flat array
+    for (const id of notDeletedIds) {
+      idsNotdeletedfromDB[i] = id.powerUnitId;
+      i = i + 1;
+    }
+
+    const deleteDto: DeleteDto = new DeleteDto();
+    deleteDto.success = idsFoundInDB.filter(
+      (x) => !idsNotdeletedfromDB.includes(x),
+    );
+    deleteDto.failure = powerUnitIds.filter((x) => !idsFoundInDB.includes(x));
+    deleteDto.failure.concat(idsNotdeletedfromDB);
+
+    return deleteDto;
   }
 }
