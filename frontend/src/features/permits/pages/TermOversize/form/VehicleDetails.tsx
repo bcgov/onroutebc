@@ -72,10 +72,6 @@ export const VehicleDetails = ({ feature }: { feature: string }) => {
       );
     }
 
-    if (!applicationData?.application.vehicleDetails?.vehicleType) {
-      setVehicleType(vehicleType);
-    }
-
     // Populate the 'Vehicle Type' and 'Vehicle Sub Type' form fields with the selected vehicle information
 
     if (
@@ -157,7 +153,6 @@ export const VehicleDetails = ({ feature }: { feature: string }) => {
     const updatedVehicleType = event.target.value as string;
     setVehicleType(updatedVehicleType);
     setValue("application.vehicleDetails.vehicleType", updatedVehicleType);
-    console.log("updatedVehicleType", updatedVehicleType);
     const updated = applicationData;
     if (updated && updated.application.vehicleDetails) {
       updated.application.vehicleDetails.vehicleType = updatedVehicleType;
