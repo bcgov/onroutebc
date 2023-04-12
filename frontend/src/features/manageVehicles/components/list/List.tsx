@@ -68,30 +68,7 @@ export const List = memo(
     );
 
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-    const [selectedRows, setSelectedRows] = useState<
-      Array<MRT_Row<VehicleTypes>>
-    >([]);
-
     const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
-
-    /**
-     * Deletes a selected Vehicle.
-     */
-    const onDeleteRow = useCallback((row: MRT_Row<VehicleTypes>) => {
-      setIsDeleteDialogOpen(() => false);
-      const vehicleId: string = row.getValue(`${vehicleType}Id`);
-      // if (!confirm(`Are you sure you want to delete ${vehicleId}`)) {
-      //   return;
-      // }
-      // deleteVehicle(vehicleId, vehicleType).then((response) => {
-      //   if (response.status === 200) {
-      //     query.refetch();
-      //   } else {
-      //     setShowErrorSnackbar(() => true);
-      //   }
-      // });
-    }, []);
-
     /**
      * Callback function for clicking on the Trash icon above the Table.
      */
@@ -155,7 +132,6 @@ export const List = memo(
      */
     const onCancelDelete = useCallback(() => {
       setIsDeleteDialogOpen(() => false);
-      // setSelectedRows(() => []);
       setRowSelection(() => {
         return {};
       });
@@ -247,10 +223,6 @@ export const List = memo(
                     color="error"
                     onClick={() => {
                       setIsDeleteDialogOpen(() => true);
-                      setSelectedRows(
-                        (currentArray: Array<MRT_Row<VehicleTypes>>) =>
-                          [row].concat(currentArray)
-                      );
                       setRowSelection(() => {
                         const newObject: { [key: string]: boolean } = {};
                         newObject[row.getValue(`${vehicleType}Id`) as string] =
