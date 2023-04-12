@@ -19,10 +19,6 @@ export const Authentication = ({ children }: AuthProps) => {
     return <div>Loading...</div>;
   }
 
-  //   if (auth.error) {
-  //     return <div>Oops... {auth.error.message}</div>;
-  //   }
-
   if (auth.isAuthenticated) {
     console.log(auth.user);
     return <>{children}</>;
@@ -62,6 +58,4 @@ export const Authentication = ({ children }: AuthProps) => {
       </div>
     </div>
   );
-
-  // return <button onClick={() => void auth.signinRedirect()}>Log in</button>;
 };

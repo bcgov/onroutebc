@@ -1,5 +1,6 @@
 import {
   httpGETRequest,
+  httpGETRequestPromise,
   httpPOSTRequest,
   httpPUTRequest,
 } from "../../../common/apiManager/httpRequestHandler";
@@ -150,4 +151,11 @@ export const addUserInfo = async ({
     `${MANAGE_PROFILE_API.COMPANY_INFO}/${companyGUID}`,
     userInfo
   );
+};
+
+/**
+ * Retrieve the company and user details post login.
+ */
+export const getUserContext = (): Promise<Response> => {
+  return httpGETRequestPromise(`${MANAGE_PROFILE_API}/user-context`);
 };

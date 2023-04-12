@@ -14,15 +14,19 @@ const getAccessToken = () => {
   const parsedSessionObject = JSON.parse(
     sessionStorage.getItem(storageKey) as string
   );
-  return parsedSessionObject['token_type'] + " " + parsedSessionObject['access_token'];
+  return (
+    parsedSessionObject["token_type"] +
+    " " +
+    parsedSessionObject["access_token"]
+  );
 };
 
 export const httpGETRequest = async (url: URL) => {
   try {
     const response = await fetch(url.href, {
       headers: {
-        "Authorization": getAccessToken(),
-      }
+        Authorization: getAccessToken(),
+      },
     });
     const data = await response.json();
     // Handle API errors created from the backend API
@@ -41,6 +45,19 @@ export const httpGETRequest = async (url: URL) => {
 };
 
 /**
+ * A generic HTTP GET Request
+ * @param url The URL of the resource.
+ * @returns A Promise<Response> with the response from the API.
+ */
+export const httpGETRequestPromise = (url: string) => {
+  return fetch(url, {
+    headers: {
+      Authorization: getAccessToken(),
+    },
+  });
+};
+
+/**
  * A generic HTTP POST Request
  * @param url The URL of the resource.
  * @param data The request payload.
@@ -51,7 +68,7 @@ export const httpPOSTRequest = (url: string, data: any) => {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": getAccessToken(),
+      Authorization: getAccessToken(),
     },
     body: JSON.stringify(data),
   });
@@ -68,7 +85,7 @@ export const httpPUTRequest = (url: string, data: any) => {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": getAccessToken(),
+      Authorization: getAccessToken(),
     },
     body: JSON.stringify(data),
   });
