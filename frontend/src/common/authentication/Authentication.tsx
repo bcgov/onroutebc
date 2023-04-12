@@ -2,7 +2,7 @@ import { useAuth } from "react-oidc-context";
 import { ReactNode } from "react";
 import Button from "@mui/material/Button";
 import Grid from "@mui/material/Grid";
-import { LoginRedirect } from "./LoginRedirect";
+// import { LoginRedirect } from "./LoginRedirect";
 
 interface AuthProps {
   children: ReactNode;

@@ -9,7 +9,6 @@ import { AddVehicleDashboard } from "../features/manageVehicles/components/dashb
 import { VEHICLE_TYPES_ENUM } from "../features/manageVehicles/components/form/constants";
 import { ManageVehicles } from "../features/manageVehicles/ManageVehicles";
 import { CreateProfileWizard } from "../features/wizard/CreateProfileWizard";
-import { HomePage2 } from "../features/homePage/HomePage2";
 
 export const AppRoutes = () => {
   const { isAuthenticated } = useAuth();

@@ -12,13 +12,15 @@ import {
 } from "./common/components/snackbar/CustomSnackBar";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider } from "react-oidc-context";
-import { CompanyMetadata, CompanyMetadataContextType } from "./common/authentication/types";
+// import { CompanyMetadata, CompanyMetadataContextType } from "./common/authentication/types";
 
+/**
+ * The OIDC Configuration needed for authentication.
+ */
 const oidcConfig = {
   authority: "https://dev.loginproxy.gov.bc.ca/auth/realms/standard",
   realm: "standard",
   client_id: "on-route-bc-direct-4598",
-  // redirect_uri: "https://onroutebc-202-frontend.apps.silver.devops.gov.bc.ca/",
   redirect_uri: window.location.origin + "/welcome",
   scope: "openid",
   automaticSilentRenew: true,
