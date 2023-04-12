@@ -98,7 +98,7 @@ export const VehicleDetails = ({ feature }: { feature: string }) => {
         applicationData?.application.vehicleDetails?.vehicleSubType
       );
     }
-  }, [applicationData, vehicleType]);
+  }, [applicationData]);
 
   /**
    * Set default values for Contact Details
@@ -106,7 +106,10 @@ export const VehicleDetails = ({ feature }: { feature: string }) => {
    * Else, use the value from the CompanyInfo query
    */
   useEffect(() => {
-    if (!selectedVehicle) return;
+    if (!selectedVehicle) {
+      setVehicleType("");
+      return;
+    }
 
     // Get the selected vehicle object from the plate number
     const vehicle: (PowerUnit | Trailer)[] | undefined =
@@ -114,18 +117,7 @@ export const VehicleDetails = ({ feature }: { feature: string }) => {
         return item.plate === selectedVehicle;
       });
 
-    if (!vehicle) return;
-
-    // Populate the vehicle form fields with the selected vehicle information
-    resetField("application.vehicleDetails");
-    setValue("application.vehicleDetails", {
-      vin: vehicle[0].vin,
-      plate: vehicle[0].plate,
-      make: vehicle[0].make,
-      year: vehicle[0].year,
-      countryCode: vehicle[0].countryCode,
-      provinceCode: vehicle[0].provinceCode,
-    });
+    if (!vehicle || vehicle.length <= 0) return;
 
     // Populate the 'Vehicle Type' and 'Vehicle Sub Type' form fields with the selected vehicle information
     const powerUnit = vehicle[0] as PowerUnit;
@@ -165,6 +157,7 @@ export const VehicleDetails = ({ feature }: { feature: string }) => {
     const updatedVehicleType = event.target.value as string;
     setVehicleType(updatedVehicleType);
     setValue("application.vehicleDetails.vehicleType", updatedVehicleType);
+    console.log("updatedVehicleType", updatedVehicleType);
     const updated = applicationData;
     if (updated && updated.application.vehicleDetails) {
       updated.application.vehicleDetails.vehicleType = updatedVehicleType;

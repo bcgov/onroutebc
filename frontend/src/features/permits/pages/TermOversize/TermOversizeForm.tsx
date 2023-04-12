@@ -165,7 +165,7 @@ export const TermOversizeForm = () => {
         unitNumber: "", //TODO
         vin: vehicle.vin,
         plate: vehicle.plate,
-        make: vehicle.plate,
+        make: vehicle.make,
         year: vehicle.year,
         countryCode: vehicle.countryCode,
         provinceCode: vehicle.provinceCode,
@@ -190,7 +190,7 @@ export const TermOversizeForm = () => {
         unitNumber: "", //TODO
         vin: vehicle.vin,
         plate: vehicle.plate,
-        make: vehicle.plate,
+        make: vehicle.make,
         year: vehicle.year,
         countryCode: vehicle.countryCode,
         provinceCode: vehicle.provinceCode,

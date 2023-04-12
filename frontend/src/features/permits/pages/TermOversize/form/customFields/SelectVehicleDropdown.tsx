@@ -8,9 +8,14 @@ import {
   styled,
 } from "@mui/material";
 import { SELECT_FIELD_STYLE } from "../../../../../../themes/orbcStyles";
-import { Vehicle } from "../../../../../manageVehicles/types/managevehicles";
+import {
+  PowerUnit,
+  Trailer,
+  Vehicle,
+} from "../../../../../manageVehicles/types/managevehicles";
 import { useFormContext } from "react-hook-form";
 import "../../TermOversize.scss";
+import { useVehiclesQuery } from "../../../../../manageVehicles/apiManager/hooks";
 
 const GroupHeader = styled("div")(({ theme }) => ({
   position: "sticky",
@@ -87,6 +92,7 @@ export const SelectVehicleDropdown = ({
 }) => {
   // Sort vehicles alphabetically
   const sortedVehicles = sortVehicles(chooseFrom, options);
+  const allVehiclesQuery = useVehiclesQuery();
 
   const { resetField, setValue } = useFormContext();
 
@@ -107,8 +113,28 @@ export const SelectVehicleDropdown = ({
               countryCode: "",
               provinceCode: "",
             });
+            setValue("application.vehicleDetails.vehicleType", "");
+            setValue("application.vehicleDetails.vehicleSubType", "");
           } else {
             setSelectedVehicle(values.plate);
+
+            // Get the selected vehicle object from the plate number
+            const vehicle: (PowerUnit | Trailer)[] | undefined =
+              allVehiclesQuery.data?.filter((item) => {
+                return item.plate === values.plate;
+              });
+
+            if (!vehicle || vehicle.length <= 0) return;
+
+            resetField("application.vehicleDetails");
+            setValue("application.vehicleDetails", {
+              vin: vehicle[0].vin,
+              plate: vehicle[0].plate,
+              make: vehicle[0].make,
+              year: vehicle[0].year,
+              countryCode: vehicle[0].countryCode,
+              provinceCode: vehicle[0].provinceCode,
+            });
           }
         }}
         options={sortedVehicles}
