@@ -24,6 +24,7 @@ export const httpPOSTRequest = (url: string, data: any) => {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      // "Authorization": `Bearer ${Object.keys(sessionStorage)[0]}`,
     },
     body: JSON.stringify(data),
   });

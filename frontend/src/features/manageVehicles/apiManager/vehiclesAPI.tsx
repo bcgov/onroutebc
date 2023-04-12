@@ -84,9 +84,13 @@ export const addTrailer = (trailer: Trailer): Promise<Response> => {
 /**
  * Deletes a vehicle.
  * @param vehicleId The vehicle to be deleted.
+ * @param vehicleType The {@link VehicleTypesAsString} to be deleted.
  * @returns A Promise with the API response.
  */
-export const deleteVehicle = (vehicleId: string, vehicleType: VehicleTypesAsString): Promise<Response> => {
+export const deleteVehicle = (
+  vehicleId: string,
+  vehicleType: VehicleTypesAsString
+): Promise<Response> => {
   let url: string | null = null;
   if (vehicleType === "powerUnit") {
     url = VEHICLES_API.POWER_UNIT;
@@ -94,4 +98,28 @@ export const deleteVehicle = (vehicleId: string, vehicleType: VehicleTypesAsStri
     url = VEHICLES_API.TRAILER;
   }
   return httpDELETERequest(`${url}/${vehicleId}`);
-}
+};
+
+/**
+ * Delete one or more vehicles.
+ * @param vehicleIds Array of vehicle ids to be deleted.
+ * @param vehicleType The {@link VehicleTypesAsString} to be deleted.
+ * @param companyId The company id the vehicles are part of.
+ * @returns A Promise with the API response.
+ */
+export const deleteVehicles = (
+  vehicleIds: Array<string>,
+  vehicleType: VehicleTypesAsString,
+  companyId = "12" // Remove hardcoded value
+): Promise<Response> => {
+  let url: string | null = null;
+  let requestBody: { powerUnits: Array<string> } | { trailers: Array<string> };
+  if (vehicleType === "powerUnit") {
+    url = VEHICLES_API.POWER_UNIT;
+    requestBody = { powerUnits: vehicleIds };
+  } else {
+    url = VEHICLES_API.TRAILER;
+    requestBody = { trailers: vehicleIds };
+  }
+  return httpPOSTRequest(`${url}/delete-requests/${companyId}`, requestBody);
+};

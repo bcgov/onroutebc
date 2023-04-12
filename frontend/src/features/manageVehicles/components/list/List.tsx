@@ -5,6 +5,7 @@ import MaterialReactTable, {
   MRT_Row,
   MRT_TableInstance,
 } from "material-react-table";
+import { RowSelectionState } from "@tanstack/table-core";
 import "./List.scss";
 import { Box, IconButton, Tooltip } from "@mui/material";
 import { VehicleTypes, VehicleTypesAsString } from "../../types/managevehicles";
@@ -16,7 +17,7 @@ import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { UseQueryResult } from "@tanstack/react-query";
 import { CustomSnackbar } from "../../../../common/components/snackbar/CustomSnackBar";
 import { PowerUnitColumnDefinition, TrailerColumnDefinition } from "./Columns";
-import { deleteVehicle } from "../../apiManager/vehiclesAPI";
+import { deleteVehicle, deleteVehicles } from "../../apiManager/vehiclesAPI";
 import DeleteConfirmationDialog from "./ConfirmationDialog";
 
 /**
@@ -67,9 +68,11 @@ export const List = memo(
     );
 
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-    const [rowsToDelete, setRowsToDelete] = useState<
+    const [selectedRows, setSelectedRows] = useState<
       Array<MRT_Row<VehicleTypes>>
     >([]);
+
+    const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
 
     /**
      * Deletes a selected Vehicle.
@@ -90,31 +93,76 @@ export const List = memo(
     }, []);
 
     /**
+     * Callback function for clicking on the Trash icon above the Table.
+     */
+    const onClickTrashIcon = useCallback(() => {
+      setIsDeleteDialogOpen(() => true);
+    }, []);
+
+    /**
      * Function that deletes a vehicle once the user confirms the delete action
      * in the confirmation dialog.
      */
     const onConfirmDelete = useCallback(() => {
-      const vehicleId: string = rowsToDelete[0].getValue(`${vehicleType}Id`);
-      deleteVehicle(vehicleId, vehicleType).then((response) => {
+      const vehicleIds: string[] = Object.keys(rowSelection);
+      console.log("VehicleIds for deletion::", vehicleIds);
+      console.log("rowSelection deletion::", rowSelection);
+      // const vehicleId: string = selectedRows[0].getValue(`${vehicleType}Id`);
+
+      // deleteVehicles(vehicleIds, vehicleType, "12").then((response) => {
+      //   if (response.status === 200) {
+      //     response
+      //       .json()
+      //       .then((responseBody: { success: string[]; failure: string[] }) => {
+      //         if(responseBody.failure.length > 0) {
+      //           setShowErrorSnackbar(() => true);
+      //         }
+      //         query.refetch();
+      //       });
+      //   }
+      // });
+
+      const deleteVehiclePromises: Promise<Response>[] = vehicleIds.map(
+        (vehicleId) => deleteVehicle(vehicleId, vehicleType)
+      );
+
+      Promise.all(deleteVehiclePromises).then((responses) => {
+        responses.forEach((response) => {
+          if (response.status !== 200) {
+            setShowErrorSnackbar(() => true);
+          }
+        });
         setIsDeleteDialogOpen(() => false);
-        setRowsToDelete(() => []);
-        if (response.status === 200) {
-          query.refetch();
-        } else {
-          setShowErrorSnackbar(() => true);
-        }
+        setRowSelection(() => {
+          return {};
+        });
+        query.refetch();
       });
-    }, []);
+
+      // deleteVehicle(vehicleId, vehicleType).then((response) => {
+      //   setIsDeleteDialogOpen(() => false);
+      //   setSelectedRows(() => []);
+      //   if (response.status === 200) {
+      //     query.refetch();
+      //   } else {
+      //     setShowErrorSnackbar(() => true);
+      //   }
+      // });
+    }, [rowSelection]);
 
     /**
      * Function that clears the delete related states when the user clicks on cancel.
      */
     const onCancelDelete = useCallback(() => {
       setIsDeleteDialogOpen(() => false);
-      setRowsToDelete(() => []);
+      // setSelectedRows(() => []);
+      setRowSelection(() => {
+        return {};
+      });
     }, []);
 
-    console.log("Rows to delete::", rowsToDelete);
+    // console.log("Rows to delete::", selectedRows);
+    console.log("Rows selected::", rowSelection);
 
     // Start snackbar code for error handling
     const [showErrorSnackbar, setShowErrorSnackbar] = useState(false);
@@ -149,6 +197,7 @@ export const List = memo(
             showProgressBars: isFetching,
             sorting: [{ id: "createdDateTime", desc: true }],
             columnVisibility: { powerUnitId: false, trailerId: false },
+            rowSelection: rowSelection,
           }}
           // Disable the default column actions so that we can use our custom actions
           enableColumnActions={false}
@@ -156,6 +205,8 @@ export const List = memo(
           enableRowSelection={true}
           // Row copy, delete, and edit options
           enableRowActions={true}
+          selectAllMode="page"
+          onRowSelectionChange={setRowSelection}
           enableStickyHeader
           positionActionsColumn="last"
           displayColumnDefOptions={{
@@ -196,10 +247,16 @@ export const List = memo(
                     color="error"
                     onClick={() => {
                       setIsDeleteDialogOpen(() => true);
-                      setRowsToDelete(
+                      setSelectedRows(
                         (currentArray: Array<MRT_Row<VehicleTypes>>) =>
                           [row].concat(currentArray)
                       );
+                      setRowSelection(() => {
+                        const newObject: { [key: string]: boolean } = {};
+                        newObject[row.getValue(`${vehicleType}Id`) as string] =
+                          false;
+                        return newObject;
+                      });
 
                       // onDeleteRow(row);
                     }}
@@ -224,7 +281,7 @@ export const List = memo(
               >
                 <MRT_GlobalFilterTextField table={table} />
                 <Filter />
-                <Trash />
+                <Trash onClickTrash={onClickTrashIcon} />
                 <CSVOptions />
               </Box>
             ),
