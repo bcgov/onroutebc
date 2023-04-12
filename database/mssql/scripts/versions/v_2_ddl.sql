@@ -14,7 +14,7 @@ CREATE TABLE [dbo].[ORBC_POWER_UNIT](
 	[YEAR] [smallint] NOT NULL,
 	[MAKE] [nvarchar](50) NOT NULL,
 	[VIN] [char](6) NOT NULL,
-	[LICENSED_GVW] [numeric](18, 2) NOT NULL,
+	[LICENSED_GVW] [numeric](18, 2) NULL,
 	[POWER_UNIT_TYPE_CODE] [char](7) NOT NULL,
 	[STEER_AXLE_TIRE_SIZE] [int] NULL,
 	[CONCURRENCY_CONTROL_NUMBER] [int] NULL,
