@@ -56,6 +56,9 @@ parameters:
   - name: AUTH0_AUDIENCE
     description: Identifies the recipients that the JWT is intended for
     required: true
+  - name: AUTH0_IGNORE_EXP
+    description: The boolean flag to ignore the JWT expiration
+    required: true    
 objects:
   - apiVersion: v1
     kind: ImageStream
