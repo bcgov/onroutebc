@@ -15,6 +15,7 @@ import { TrailersModule } from './modules/vehicles/trailers/trailers.module';
 import { UsersModule } from './modules/company-user-management/users/users.module';
 import { CompanyModule } from './modules/company-user-management/company/company.module';
 import { PendingUsersModule } from './modules/company-user-management/pending-users/pending-users.module';
+import { AuthModule } from './modules/auth/auth.module';
 
 const envPath = path.resolve(process.cwd() + '/../../');
 
@@ -60,6 +61,7 @@ const envPath = path.resolve(process.cwd() + '/../../');
     UsersModule,
     CommonModule,
     PendingUsersModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

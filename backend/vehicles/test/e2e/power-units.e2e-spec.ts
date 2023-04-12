@@ -37,22 +37,22 @@ describe('Power Units (e2e)', () => {
     await app.init();
   });
 
-  describe('/vehicles/powerUnits CREATE', () => {
+  describe('/companies/1/vehicles/powerUnits CREATE', () => {
     it('should create a new power unit.', () => {
       repo.save.mockResolvedValue(powerUnitEntityMock);
       return request(app.getHttpServer())
-        .post('/vehicles/powerUnits')
+        .post('/companies/1/vehicles/powerUnits')
         .send(createPowerUnitDtoMock)
         .expect(201)
         .expect(readPowerUnitDtoMock);
     });
   });
 
-  describe('/vehicles/powerUnits GETALL', () => {
+  describe('/companies/1/vehicles/powerUnits GETALL', () => {
     it('should return an array of power units', () => {
       repo.find.mockResolvedValue([powerUnitEntityMock]);
       return request(app.getHttpServer())
-        .get('/vehicles/powerUnits')
+        .get('/companies/1/vehicles/powerUnits')
         .expect(200)
         .expect([readPowerUnitDtoMock]);
     });
@@ -62,20 +62,20 @@ describe('Power Units (e2e)', () => {
     it('should return a power unit with powerUnitId as 1.', () => {
       repo.findOne.mockResolvedValue(powerUnitEntityMock);
       return request(app.getHttpServer())
-        .get('/vehicles/powerUnits/1')
+        .get('/companies/1/vehicles/powerUnits/1')
         .expect(200)
         .expect(readPowerUnitDtoMock);
     });
   });
 
-  describe('/vehicles/powerUnits/1 UPDATE', () => {
+  describe('/companies/1/vehicles/powerUnits/1 UPDATE', () => {
     it('should update the power unit.', () => {
       repo.findOne.mockResolvedValue({
         ...powerUnitEntityMock,
         unitNumber: 'KEN2',
       });
       return request(app.getHttpServer())
-        .put('/vehicles/powerUnits/1')
+        .put('/companies/1/vehicles/powerUnits/1')
         .send(updatePowerUnitDtoMock)
         .expect(200)
         .expect({ ...readPowerUnitDtoMock, unitNumber: 'KEN2' });
@@ -85,7 +85,7 @@ describe('Power Units (e2e)', () => {
   describe('/vehicles/powerUnits/1 DELETE', () => {
     it('should delete the power unit.', () => {
       return request(app.getHttpServer())
-        .delete('/vehicles/powerUnits/1')
+        .delete('/companies/1/vehicles/powerUnits/1')
         .expect(200)
         .expect({ deleted: true });
     });

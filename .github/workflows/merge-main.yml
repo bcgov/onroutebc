@@ -51,7 +51,7 @@ jobs:
           output: "trivy-results.sarif"
           ignore-unfixed: true
           scan-type: "fs"
-          security-checks: "vuln,secret,config"
+          scanners: "vuln,secret,config"
           severity: "CRITICAL,HIGH"
 
       - name: Upload Trivy scan results to GitHub Security tab
@@ -91,14 +91,17 @@ jobs:
         with:
           url: https://vault.developer.gov.bc.ca
           token: ${{ secrets.VAULT_TOKEN }}
-          exportEnv: 'false'
+          exportEnv: "false"
           namespace: platform-services
           secrets: |
             ${{env.VAULT_ENV}}/data/database-test  DATABASE_HOST     | VAULT_DATABASE_HOST;
             ${{env.VAULT_ENV}}/data/database-test  DATABASE_USER     | VAULT_DATABASE_USER;
             ${{env.VAULT_ENV}}/data/database-test  DATABASE_NAME     | VAULT_DATABASE_NAME;
             ${{env.VAULT_ENV}}/data/database-test  DATABASE_PASSWORD | VAULT_DATABASE_PASSWORD;
-            ${{env.VAULT_ENV}}/data/database-test  DATABASE_PORT     | VAULT_DATABASE_PORT
+            ${{env.VAULT_ENV}}/data/database-test  DATABASE_PORT     | VAULT_DATABASE_PORT;
+            ${{env.VAULT_ENV}}/data/auth0-dev      AUTH0_ISSUER_URL  | VAULT_AUTH0_ISSUER_URL;
+            ${{env.VAULT_ENV}}/data/auth0-dev      AUTH0_AUDIENCE    | VAULT_AUTH0_AUDIENCE;
+            ${{env.VAULT_ENV}}/data/auth0-dev      AUTH0_IGNORE_EXP  | VAULT_AUTH0_IGNORE_EXP
       - uses: bcgov-nr/action-deployer-openshift@v1.0.3
         with:
           file: ${{ matrix.file }}
@@ -106,14 +109,16 @@ jobs:
           oc_server: ${{ secrets.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
           overwrite: ${{ matrix.overwrite }}
-          parameters:
-            -p ZONE=test
+          parameters: -p ZONE=test
             -p NAME=${{ github.event.repository.name }} ${{ matrix.parameters }}
             -p PROMOTE=${{ github.repository }}/${{ matrix.name }}:test
             -p DATABASE_NAME=${{steps.secrets.outputs.VAULT_DATABASE_NAME}}
             -p DATABASE_USER=${{steps.secrets.outputs.VAULT_DATABASE_USER}}
             -p DATABASE_PASSWORD=${{steps.secrets.outputs.VAULT_DATABASE_PASSWORD}}
             -p DATABASE_HOST=${{steps.secrets.outputs.VAULT_DATABASE_HOST}}
+            -p AUTH0_ISSUER_URL=${{steps.secrets.outputs.VAULT_AUTH0_ISSUER_URL}}
+            -p AUTH0_AUDIENCE=${{steps.secrets.outputs.VAULT_AUTH0_AUDIENCE}}
+            -p AUTH0_IGNORE_EXP=${{steps.secrets.outputs.VAULT_AUTH0_IGNORE_EXP}}
             ${{ matrix.parameters }}
           penetration_test: true
 
@@ -148,14 +153,17 @@ jobs:
         with:
           url: https://vault.developer.gov.bc.ca
           token: ${{ secrets.VAULT_TOKEN }}
-          exportEnv: 'false'
+          exportEnv: "false"
           namespace: platform-services
           secrets: |
             ${{env.VAULT_ENV}}/data/database-prod  DATABASE_HOST     | VAULT_DATABASE_HOST;
             ${{env.VAULT_ENV}}/data/database-prod  DATABASE_USER     | VAULT_DATABASE_USER;
             ${{env.VAULT_ENV}}/data/database-prod  DATABASE_NAME     | VAULT_DATABASE_NAME;
             ${{env.VAULT_ENV}}/data/database-prod  DATABASE_PASSWORD | VAULT_DATABASE_PASSWORD;
-            ${{env.VAULT_ENV}}/data/database-prod  DATABASE_PORT     | VAULT_DATABASE_PORT
+            ${{env.VAULT_ENV}}/data/database-prod  DATABASE_PORT     | VAULT_DATABASE_PORT;
+            ${{env.VAULT_ENV}}/data/auth0-prod     AUTH0_ISSUER_URL  | VAULT_AUTH0_ISSUER_URL;
+            ${{env.VAULT_ENV}}/data/auth0-prod     AUTH0_AUDIENCE    | VAULT_AUTH0_AUDIENCE;
+            ${{env.VAULT_ENV}}/data/auth0-prod     AUTH0_IGNORE_EXP  | VAULT_AUTH0_IGNORE_EXP
       - uses: bcgov-nr/action-deployer-openshift@v1.0.3
         with:
           file: ${{ matrix.file }}
@@ -163,14 +171,16 @@ jobs:
           oc_server: ${{ secrets.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
           overwrite: ${{ matrix.overwrite }}
-          parameters:
-            -p ZONE=prod
+          parameters: -p ZONE=prod
             -p NAME=${{ github.event.repository.name }} ${{ matrix.parameters }}
             -p PROMOTE=${{ github.repository }}/${{ matrix.name }}:test
             -p DATABASE_NAME=${{steps.secrets.outputs.VAULT_DATABASE_NAME}}
             -p DATABASE_USER=${{steps.secrets.outputs.VAULT_DATABASE_USER}}
             -p DATABASE_PASSWORD=${{steps.secrets.outputs.VAULT_DATABASE_PASSWORD}}
             -p DATABASE_HOST=${{steps.secrets.outputs.VAULT_DATABASE_HOST}}
+            -p AUTH0_ISSUER_URL=${{steps.secrets.outputs.VAULT_AUTH0_ISSUER_URL}}
+            -p AUTH0_AUDIENCE=${{steps.secrets.outputs.VAULT_AUTH0_AUDIENCE}}
+            -p AUTH0_IGNORE_EXP=${{steps.secrets.outputs.VAULT_AUTH0_IGNORE_EXP}}
             ${{ matrix.parameters }}
           penetration_test: false
 
@@ -189,26 +199,26 @@ jobs:
           repository: ${{ github.repository }}/${{ matrix.component }}
           target: test
           tags: prod
-  
+
   GitVersion:
     name: Mainline Versioning - GitVersion
-    needs: 
+    needs:
       - deploys-prod
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
         with:
-          ref: ${{ github.head_ref }}   # checkout the correct branch name
-          fetch-depth: 0                # fetch the whole repo history
+          ref: ${{ github.head_ref }} # checkout the correct branch name
+          fetch-depth: 0 # fetch the whole repo history
 
       - name: Setup GitVersion
         uses: gittools/actions/gitversion/setup@v0.10.2
         with:
-          versionSpec: '5.x'
+          versionSpec: "5.x"
 
       - name: Determine SemVersion
-        id:   gitversion
+        id: gitversion
         uses: gittools/actions/gitversion/execute@v0.10.2
         with:
           useConfigFile: true
@@ -250,11 +260,11 @@ jobs:
           echo "CommitDate: ${{ steps.gitversion.outputs.commitDate }}"
     outputs:
       fullSemVer: ${{ steps.gitversion.outputs.fullSemVer}}
-          
+
   release:
     name: Create Release
     runs-on: ubuntu-22.04
-    needs: 
+    needs:
       - GitVersion
     steps:
       - uses: actions/create-release@v1
