@@ -9,31 +9,31 @@ import {
   SelectChangeEvent,
   Typography,
 } from "@mui/material";
-import { CountryAndProvince } from "../../../../common/components/form/CountryAndProvince";
-import { CustomFormComponent } from "../../../../common/components/form/CustomFormComponents";
+import { CountryAndProvince } from "../../../../../common/components/form/CountryAndProvince";
+import { CustomFormComponent } from "../../../../../common/components/form/CustomFormComponents";
 import {
   PowerUnit,
   Trailer,
-} from "../../../manageVehicles/types/managevehicles";
+} from "../../../../manageVehicles/types/managevehicles";
 import {
   usePowerUnitTypesQuery,
   useTrailerTypesQuery,
   useVehiclesQuery,
-} from "../../../manageVehicles/apiManager/hooks";
-import { InfoBcGovBanner } from "../../../../common/components/banners/AlertBanners";
+} from "../../../../manageVehicles/apiManager/hooks";
+import { InfoBcGovBanner } from "../../../../../common/components/banners/AlertBanners";
 import { useContext, useEffect, useState } from "react";
 import {
   PERMIT_MAIN_BOX_STYLE,
   PERMIT_LEFT_BOX_STYLE,
   PERMIT_LEFT_HEADER_STYLE,
   PERMIT_RIGHT_BOX_STYLE,
-} from "../../../../themes/orbcStyles";
+} from "../../../../../themes/orbcStyles";
 import { useFormContext } from "react-hook-form";
-import { CustomSimpleSelect } from "../../../../common/components/form/subFormComponents/CustomSimpleSelect";
-import { CustomSimpleSelectWithRegister } from "../../../../common/components/form/subFormComponents/CustomSimpleSelectWithRegister";
-import { SelectVehicleDropdown } from "./TermOversizePermit/customFields/SelectVehicleDropdown";
-import { SelectVehicleSubTypeDropdown } from "./TermOversizePermit/customFields/SelectVehicleSubTypeDropdown";
-import { ApplicationContext } from "../../context/ApplicationContext";
+import { CustomSimpleSelect } from "../../../../../common/components/form/subFormComponents/CustomSimpleSelect";
+import { CustomSimpleSelectWithRegister } from "../../../../../common/components/form/subFormComponents/CustomSimpleSelectWithRegister";
+import { SelectVehicleDropdown } from "./customFields/SelectVehicleDropdown";
+import { SelectVehicleSubTypeDropdown } from "./customFields/SelectVehicleSubTypeDropdown";
+import { ApplicationContext } from "../../../context/ApplicationContext";
 
 export const VehicleDetails = ({ feature }: { feature: string }) => {
   const { setValue, resetField } = useFormContext();

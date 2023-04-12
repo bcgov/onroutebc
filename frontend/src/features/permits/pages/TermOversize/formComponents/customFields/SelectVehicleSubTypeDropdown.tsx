@@ -11,7 +11,7 @@ import { RegisterOptions, useFormContext } from "react-hook-form";
 import { useContext, useEffect, useState } from "react";
 import { SELECT_FIELD_STYLE } from "../../../../../../themes/orbcStyles";
 import { VehicleType } from "../../../../../manageVehicles/types/managevehicles";
-import "../TermOversizePermit.scss";
+import "../../TermOversize.scss";
 import { getErrorMessage } from "../../../../../../common/components/form/CustomFormComponents";
 import { BC_COLOURS } from "../../../../../../themes/bcGovStyles";
 import { ApplicationContext } from "../../../../context/ApplicationContext";

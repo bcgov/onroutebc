@@ -67,6 +67,17 @@ export const ApplicationDetails = ({
   return (
     <>
       <Typography
+        variant={"h1"}
+        sx={{
+          marginRight: "200px",
+          marginTop: "0px",
+          paddingTop: "0px",
+          borderBottom: "none",
+        }}
+      >
+        {values.applicationName}
+      </Typography>
+      <Typography
         variant="h2"
         sx={{
           display: "block",

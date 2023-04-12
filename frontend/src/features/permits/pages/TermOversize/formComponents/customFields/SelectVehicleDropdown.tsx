@@ -10,7 +10,7 @@ import {
 import { SELECT_FIELD_STYLE } from "../../../../../../themes/orbcStyles";
 import { Vehicle } from "../../../../../manageVehicles/types/managevehicles";
 import { useFormContext } from "react-hook-form";
-import "../TermOversizePermit.scss";
+import "../../TermOversize.scss";
 
 const GroupHeader = styled("div")(({ theme }) => ({
   position: "sticky",

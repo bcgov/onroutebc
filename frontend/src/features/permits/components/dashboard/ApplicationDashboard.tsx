@@ -1,13 +1,13 @@
 import { Box } from "@mui/material";
 import "../../../../common/components/dashboard/Dashboard.scss";
 import { Banner } from "../../../../common/components/dashboard/Banner";
-import { TermOversizeForm } from "../form/TermOversizePermit/TermOversizeForm";
+import { TermOversizeForm } from "../../pages/TermOversize/TermOversizeForm";
 import { ApplicationContext } from "../../context/ApplicationContext";
 import { useState } from "react";
 import { TermOversizeApplication } from "../../types/application";
-import { TermOversizeReview } from "../form/TermOversizePermit/TermOversizeReview";
-import { useMultiStepForm } from "../../apiManager/hooks";
-import { TermOversizePay } from "../form/TermOversizePermit/TermOversizePay";
+import { TermOversizePay } from "../../pages/TermOversize/TermOversizePay";
+import { TermOversizeReview } from "../../pages/TermOversize/TermOversizeReview";
+import { useMultiStepForm } from "../../hooks/useMultiStepForm";
 
 export enum ApplicationStep {
   Form = "Form",
@@ -15,16 +15,16 @@ export enum ApplicationStep {
   Pay = "Pay",
 }
 
-export const PermitApplicationDashboard = () => {
+export const ApplicationDashboard = () => {
   const [applicationData, setApplicationData] =
     useState<TermOversizeApplication>();
 
   const {
-    steps,
+    //steps,
     currentStepIndex,
     step,
-    isFirstStep,
-    isLastStep,
+    //isFirstStep,
+    //isLastStep,
     back,
     next,
     goTo,
@@ -32,10 +32,6 @@ export const PermitApplicationDashboard = () => {
     <TermOversizeForm key={ApplicationStep.Form} />,
     <TermOversizeReview key={ApplicationStep.Review} />,
     <TermOversizePay key={ApplicationStep.Pay} />,
-
-    // <TermOversizeReview key={ApplicationStep.Form} />,
-    // <TermOversizeForm key={ApplicationStep.Review} />,
-    // <TermOversizeReview key={ApplicationStep.Pay} />,
   ]);
 
   const displayHeaderText = () => {
@@ -59,6 +55,7 @@ export const PermitApplicationDashboard = () => {
         next,
         back,
         goTo,
+        currentStepIndex,
       }}
     >
       <Box

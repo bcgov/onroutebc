@@ -1,36 +1,36 @@
 import { useForm, FormProvider, FieldValues } from "react-hook-form";
-import {
-  Box,
-  Button,
-  Typography,
-  useMediaQuery,
-  useTheme,
-} from "@mui/material";
+import { Box, Button, useMediaQuery, useTheme } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { TermOversizeApplication } from "../../../types/application";
-import { useSubmitTermOversizeMutation } from "../../../apiManager/hooks";
-import { ContactDetails } from "../ContactDetails";
-import { ApplicationDetails } from "../ApplicationDetails";
-import { PermitDetails } from "./PermitDetails";
-import { VehicleDetails } from "../VehicleDetails";
+import { TermOversizeApplication } from "../../types/application";
+import { ContactDetails } from "../../components/form/ContactDetails";
+import { ApplicationDetails } from "../../components/form/ApplicationDetails";
+import { VehicleDetails } from "./formComponents/VehicleDetails";
 import dayjs from "dayjs";
 import { useContext, useEffect } from "react";
-import { BC_COLOURS } from "../../../../../themes/bcGovStyles";
-import { PERMIT_LEFT_COLUMN_WIDTH } from "../../../../../themes/orbcStyles";
-import { ApplicationContext } from "../../../context/ApplicationContext";
-import { TROSCommodities } from "./ConditionsTable";
-import { useCompanyInfoQuery } from "../../../../manageProfile/apiManager/hooks";
+import { BC_COLOURS } from "../../../../themes/bcGovStyles";
+import { PERMIT_LEFT_COLUMN_WIDTH } from "../../../../themes/orbcStyles";
+import { ApplicationContext } from "../../context/ApplicationContext";
+import { TROSCommodities } from "./formComponents/ConditionsTable";
+import { useCompanyInfoQuery } from "../../../manageProfile/apiManager/hooks";
+import { PermitDetails } from "./formComponents/PermitDetails";
+import { ProgressBar } from "../../components/progressBar/ProgressBar";
+import { ScrollButton } from "../../components/scrollButton/ScrollButton";
 
+/**
+ * The first step in creating and submitting a TROS Application.
+ * @returns A form for users to create a Term Oversize Application
+ */
 export const TermOversizeForm = () => {
   const applicationContext = useContext(ApplicationContext);
   const companyInfoQuery = useCompanyInfoQuery();
-  const submitTermOversizeQuery = useSubmitTermOversizeMutation();
 
   // Default values to register with React Hook Forms
   // If data was passed to this component, then use that data, otherwise use empty or undefined values
   const termOversizeDefaultValues: TermOversizeApplication = {
     applicationId:
       applicationContext?.applicationData?.applicationId || 1234567,
+    applicationName:
+      applicationContext?.applicationData?.applicationName || "Oversize: Term",
     dateCreated: applicationContext?.applicationData?.dateCreated || dayjs(),
     lastUpdated: applicationContext?.applicationData?.lastUpdated || dayjs(),
     application: {
@@ -126,11 +126,6 @@ export const TermOversizeForm = () => {
     //submitTermOversizeQuery.mutate(termOverSizeToBeAdded);
   };
 
-  const onSubmitTermOversize = function (data: FieldValues) {
-    const termOverSizeToBeAdded = data as TermOversizeApplication;
-    submitTermOversizeQuery.mutate(termOverSizeToBeAdded);
-  };
-
   /**
    * Changed view to the main Vehicle Inventory page
    */
@@ -152,38 +147,9 @@ export const TermOversizeForm = () => {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down("lg"));
 
-  const handleNavigateBack = () => {
-    navigate("../");
-  };
-
   return (
     <>
-      <Box
-        className="layout-box"
-        sx={{
-          display: "flex",
-          height: "60px",
-          alignItems: "center",
-          backgroundColor: BC_COLOURS.white,
-        }}
-      >
-        <Typography
-          onClick={handleNavigateBack}
-          sx={{
-            color: BC_COLOURS.bc_text_links_blue,
-            cursor: "pointer",
-            marginRight: "8px",
-            textDecoration: "underline",
-          }}
-        >
-          Permits
-        </Typography>
-        <i
-          className="fa fa-chevron-right"
-          style={{ marginLeft: "8px", marginRight: "8px" }}
-        ></i>
-        <Typography>Permit Application</Typography>
-      </Box>
+      <ProgressBar />
       <Box
         className="layout-box"
         sx={{
@@ -192,17 +158,6 @@ export const TermOversizeForm = () => {
         }}
       >
         <Box sx={{ paddingBottom: "80px" }}>
-          <Typography
-            variant={"h1"}
-            sx={{
-              marginRight: "200px",
-              marginTop: "0px",
-              paddingTop: "0px",
-              borderBottom: "none",
-            }}
-          >
-            Oversize: Term
-          </Typography>
           <FormProvider {...formMethods}>
             <ApplicationDetails values={termOversizeDefaultValues} />
             <ContactDetails feature={FEATURE} />
@@ -261,6 +216,7 @@ export const TermOversizeForm = () => {
             >
               Continue
             </Button>
+            <ScrollButton />
           </Box>
         </Box>
       </Box>

@@ -5,6 +5,7 @@ import { Dayjs } from "dayjs";
  */
 export interface Application {
   applicationId: number;
+  applicationName: string;
   dateCreated: Dayjs;
   lastUpdated: Dayjs;
 }
