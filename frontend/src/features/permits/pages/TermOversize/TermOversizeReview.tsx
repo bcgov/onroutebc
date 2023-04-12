@@ -7,10 +7,10 @@ import { ApplicationDetails } from "../../components/form/ApplicationDetails";
 import { ApplicationContext } from "../../context/ApplicationContext";
 import { TermOversizeApplication } from "../../types/application";
 import { useSubmitTermOversizeMutation } from "../../hooks/hooks";
-import { ReviewContactDetails } from "./displayComponents/ReviewContactDetails";
-import { ReviewFeeSummary } from "./displayComponents/ReviewFeeSummary";
-import { ReviewPermitDetails } from "./displayComponents/ReviewPermitDetails";
-import { ReviewVehicleInfo } from "./displayComponents/ReviewVehicleInfo";
+import { ReviewContactDetails } from "./review/ReviewContactDetails";
+import { ReviewFeeSummary } from "./review/ReviewFeeSummary";
+import { ReviewPermitDetails } from "./review/ReviewPermitDetails";
+import { ReviewVehicleInfo } from "./review/ReviewVehicleInfo";
 import { ProgressBar } from "../../components/progressBar/ProgressBar";
 
 export const TermOversizeReview = () => {

@@ -6,6 +6,7 @@ import {
   PERMIT_RIGHT_BOX_STYLE,
 } from "../../../../../themes/orbcStyles";
 import { TermOversizeApplication } from "../../../types/application";
+import { BC_COLOURS } from "../../../../../themes/bcGovStyles";
 
 export const ReviewVehicleInfo = ({
   values,
@@ -47,6 +48,11 @@ export const ReviewVehicleInfo = ({
           <Typography>
             {values?.application.vehicleDetails?.vehicleSubType}
           </Typography>
+          {values?.application.vehicleDetails?.saveVehicle && (
+            <Typography sx={{ color: BC_COLOURS.bc_green, fontWeight: "bold" }}>
+              This vehicle has been added/updated to your Vehicle Inventory.
+            </Typography>
+          )}
         </Box>
       </Box>
     </Box>

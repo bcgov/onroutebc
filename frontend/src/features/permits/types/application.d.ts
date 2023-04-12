@@ -34,11 +34,12 @@ interface VehicleDetails {
   vin: string;
   plate: string;
   make: string;
-  year: string;
+  year: number | null;
   countryCode: string;
   provinceCode: string;
   vehicleType: string;
   vehicleSubType: string;
+  saveVehicle?: boolean;
 }
 
 export interface Commodities {

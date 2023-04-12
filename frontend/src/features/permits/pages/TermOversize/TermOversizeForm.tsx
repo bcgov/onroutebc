@@ -4,17 +4,28 @@ import { useNavigate } from "react-router-dom";
 import { TermOversizeApplication } from "../../types/application";
 import { ContactDetails } from "../../components/form/ContactDetails";
 import { ApplicationDetails } from "../../components/form/ApplicationDetails";
-import { VehicleDetails } from "./formComponents/VehicleDetails";
+import { VehicleDetails } from "./form/VehicleDetails";
 import dayjs from "dayjs";
 import { useContext, useEffect } from "react";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { PERMIT_LEFT_COLUMN_WIDTH } from "../../../../themes/orbcStyles";
 import { ApplicationContext } from "../../context/ApplicationContext";
-import { TROSCommodities } from "./formComponents/ConditionsTable";
+import { TROSCommodities } from "./form/ConditionsTable";
 import { useCompanyInfoQuery } from "../../../manageProfile/apiManager/hooks";
-import { PermitDetails } from "./formComponents/PermitDetails";
+import { PermitDetails } from "./form/PermitDetails";
 import { ProgressBar } from "../../components/progressBar/ProgressBar";
 import { ScrollButton } from "../../components/scrollButton/ScrollButton";
+import {
+  useAddPowerUnitMutation,
+  useAddTrailerMutation,
+  useUpdatePowerUnitMutation,
+  useUpdateTrailerMutation,
+  useVehiclesQuery,
+} from "../../../manageVehicles/apiManager/hooks";
+import {
+  PowerUnit,
+  Trailer,
+} from "../../../manageVehicles/types/managevehicles";
 
 /**
  * The first step in creating and submitting a TROS Application.
@@ -23,6 +34,11 @@ import { ScrollButton } from "../../components/scrollButton/ScrollButton";
 export const TermOversizeForm = () => {
   const applicationContext = useContext(ApplicationContext);
   const companyInfoQuery = useCompanyInfoQuery();
+  const addPowerUnitQuery = useAddPowerUnitMutation();
+  const updatePowerUnitQuery = useUpdatePowerUnitMutation();
+  const addTrailerQuery = useAddTrailerMutation();
+  const updateTrailerQuery = useUpdateTrailerMutation();
+  const allVehiclesQuery = useVehiclesQuery();
 
   // Default values to register with React Hook Forms
   // If data was passed to this component, then use that data, otherwise use empty or undefined values
@@ -79,7 +95,7 @@ export const TermOversizeForm = () => {
             ?.make || "",
         year:
           applicationContext?.applicationData?.application?.vehicleDetails
-            ?.year || "",
+            ?.year || null,
         countryCode:
           applicationContext?.applicationData?.application?.vehicleDetails
             ?.countryCode || "",
@@ -92,6 +108,9 @@ export const TermOversizeForm = () => {
         vehicleSubType:
           applicationContext?.applicationData?.application?.vehicleDetails
             ?.vehicleSubType || "",
+        saveVehicle:
+          applicationContext?.applicationData?.application?.vehicleDetails
+            ?.saveVehicle || false,
       },
     },
   };
@@ -121,9 +140,69 @@ export const TermOversizeForm = () => {
 
   const onContinue = function (data: FieldValues) {
     const termOverSizeToBeAdded = data as TermOversizeApplication;
+    handleSaveVehicle(termOverSizeToBeAdded);
     applicationContext?.setApplicationData(termOverSizeToBeAdded);
     applicationContext?.next();
-    //submitTermOversizeQuery.mutate(termOverSizeToBeAdded);
+  };
+
+  const handleSaveVehicle = (data: TermOversizeApplication) => {
+    if (!data.application.vehicleDetails?.saveVehicle) return;
+
+    const vehicle = data.application.vehicleDetails;
+
+    const existingVehicle: (PowerUnit | Trailer)[] | undefined =
+      allVehiclesQuery.data?.filter((item) => {
+        return item.vin === vehicle.vin;
+      });
+
+    if (data.application.vehicleDetails.vehicleType === "powerUnit") {
+      const powerUnitId = existingVehicle
+        ? (existingVehicle[0] as PowerUnit).powerUnitId
+        : "";
+
+      const powerUnit: PowerUnit = {
+        powerUnitId: powerUnitId,
+        unitNumber: "", //TODO
+        vin: vehicle.vin,
+        plate: vehicle.plate,
+        make: vehicle.plate,
+        year: vehicle.year,
+        countryCode: vehicle.countryCode,
+        provinceCode: vehicle.provinceCode,
+        powerUnitTypeCode: vehicle.vehicleSubType,
+        licensedGvw: 0, //TODO
+      };
+
+      if (powerUnitId) {
+        updatePowerUnitQuery.mutate(powerUnit);
+      } else {
+        addPowerUnitQuery.mutate(powerUnit);
+      }
+    }
+
+    if (data.application.vehicleDetails.vehicleType === "trailer") {
+      const trailerId = existingVehicle
+        ? (existingVehicle[0] as Trailer).trailerId
+        : "";
+
+      const trailer: Trailer = {
+        trailerId: trailerId,
+        unitNumber: "", //TODO
+        vin: vehicle.vin,
+        plate: vehicle.plate,
+        make: vehicle.plate,
+        year: vehicle.year,
+        countryCode: vehicle.countryCode,
+        provinceCode: vehicle.provinceCode,
+        trailerTypeCode: vehicle.vehicleSubType,
+      };
+
+      if (trailerId) {
+        updateTrailerQuery.mutate(trailer);
+      } else {
+        addTrailerQuery.mutate(trailer);
+      }
+    }
   };
 
   /**

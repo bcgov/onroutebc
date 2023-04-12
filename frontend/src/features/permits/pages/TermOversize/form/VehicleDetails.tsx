@@ -36,7 +36,7 @@ import { SelectVehicleSubTypeDropdown } from "./customFields/SelectVehicleSubTyp
 import { ApplicationContext } from "../../../context/ApplicationContext";
 
 export const VehicleDetails = ({ feature }: { feature: string }) => {
-  const { setValue, resetField } = useFormContext();
+  const { setValue, resetField, register } = useFormContext();
 
   const formFieldStyle = {
     fontWeight: "bold",
@@ -341,12 +341,20 @@ export const VehicleDetails = ({ feature }: { feature: string }) => {
           </FormLabel>
           <RadioGroup
             aria-labelledby="radio-buttons-group-label"
-            defaultValue="no"
+            defaultValue={false}
             name="radio-buttons-group"
           >
             <Box sx={{ display: "flex" }}>
-              <FormControlLabel value="yes" control={<Radio />} label="Yes" />
-              <FormControlLabel value="no" control={<Radio />} label="No" />
+              <FormControlLabel
+                value={true}
+                control={
+                  <Radio
+                    {...register("application.vehicleDetails.saveVehicle")}
+                  />
+                }
+                label="Yes"
+              />
+              <FormControlLabel value={false} control={<Radio />} label="No" />
             </Box>
           </RadioGroup>
         </FormControl>

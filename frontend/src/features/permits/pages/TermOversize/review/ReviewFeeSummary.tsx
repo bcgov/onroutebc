@@ -5,7 +5,7 @@ import {
   PERMIT_LEFT_HEADER_STYLE,
   PERMIT_RIGHT_BOX_STYLE,
 } from "../../../../../themes/orbcStyles";
-import { ConfirmationCheckboxes } from "../formComponents/ConfirmationCheckboxes";
+import { ConfirmationCheckboxes } from "../form/ConfirmationCheckboxes";
 import { FeeSummaryBanner } from "./FeeSummaryBanner";
 
 export const ReviewFeeSummary = () => {

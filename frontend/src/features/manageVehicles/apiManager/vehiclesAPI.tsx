@@ -4,6 +4,7 @@ import {
   UpdatePowerUnit,
   VehicleType,
   Trailer,
+  UpdateTrailer,
 } from "../types/managevehicles";
 
 import {
@@ -73,7 +74,8 @@ export const addPowerUnit = (powerUnit: PowerUnit): Promise<Response> => {
 export const updatePowerUnit = (
   powerUnit: UpdatePowerUnit
 ): Promise<Response> => {
-  return httpPUTRequest(VEHICLES_API.POWER_UNIT, powerUnit);
+  const url = VEHICLES_API.POWER_UNIT + "/" + powerUnit.powerUnitId;
+  return httpPUTRequest(url, powerUnit);
 };
 
 /**
@@ -102,4 +104,9 @@ export const getTrailerTypes = async (): Promise<Array<VehicleType>> => {
  */
 export const addTrailer = (trailer: Trailer): Promise<Response> => {
   return httpPOSTRequest(VEHICLES_API.TRAILER, trailer);
+};
+
+export const updateTrailer = (trailer: UpdateTrailer): Promise<Response> => {
+  const url = VEHICLES_API.TRAILER + "/" + trailer.trailerId;
+  return httpPUTRequest(url, trailer);
 };
