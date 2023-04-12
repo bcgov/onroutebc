@@ -19,30 +19,19 @@ export const Authentication = ({ children }: AuthProps) => {
     return <div>Loading...</div>;
   }
 
-//   if (auth.error) {
-//     return <div>Oops... {auth.error.message}</div>;
-//   }
+  //   if (auth.error) {
+  //     return <div>Oops... {auth.error.message}</div>;
+  //   }
 
   if (auth.isAuthenticated) {
     console.log(auth.user);
-    return (<>
-        {/* <LoginRedirect></LoginRedirect> */}
-        {children}
-    </>)
-    // return (
-    //   <div className="Xyz">
-    //     <div>{`Hello ${auth.user?.profile?.display_name}`}</div>
-    //     <div>{children}</div>
-    //   </div>
-    // );
+    return <>{children}</>;
   }
 
   return (
     <div>
-        <Grid container>
-
-        </Grid>
-      <div style={{ marginTop: '10px'}}>
+      <Grid container></Grid>
+      <div style={{ marginTop: "10px" }}>
         <span>Use your BCeID</span>
         <Button
           id="login-bceid"

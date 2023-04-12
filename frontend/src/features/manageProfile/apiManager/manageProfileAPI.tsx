@@ -1,3 +1,8 @@
+import {
+  httpGETRequest,
+  httpPOSTRequest,
+  httpPUTRequest,
+} from "../../../common/apiManager/httpRequestHandler";
 import { ApiErrorResponse } from "../../../types/common";
 import { MANAGE_PROFILE_API } from "./endpoints/endpoints";
 
@@ -73,7 +78,9 @@ export const getCompanyInfo = async (
   const url = new URL(MANAGE_PROFILE_API.COMPANY_INFO);
 
   try {
-    const response = await fetch(`${url.href}/${TEST_COMPANY_ID}`);
+    const response = await httpGETRequest(
+      new URL(`${url.href}/${TEST_COMPANY_ID}`)
+    );
     const data = await response.json();
 
     // Handle API errors created from the backend API
@@ -107,13 +114,10 @@ export const updateCompanyInfo = async ({
     companyInfo.mailingAddress = undefined;
   }
 
-  return fetch(`${MANAGE_PROFILE_API.COMPANY_INFO}/${TEST_COMPANY_ID}`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(companyInfo),
-  });
+  return httpPUTRequest(
+    `${MANAGE_PROFILE_API.COMPANY_INFO}/${TEST_COMPANY_ID}`,
+    companyInfo
+  );
 };
 
 /**
@@ -124,26 +128,10 @@ export const updateCompanyInfo = async ({
 export const createOnRouteBCProfile = async (
   onRouteBCProfileRequestObject: CompanyAndUserRequest
 ): Promise<Response> => {
-  return fetch(`${MANAGE_PROFILE_API.COMPANY_INFO}`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(onRouteBCProfileRequestObject),
-  });
-  // const response = await fetch(`${MANAGE_PROFILE_API.COMPANY_INFO}`, {
-  //   method: "POST",
-  //   headers: {
-  //     "Content-Type": "application/json",
-  //   },
-  //   body: JSON.stringify(TEST_POST_DATA),
-  // });
-
-  // const data = (await response.json()) as CompanyProfile;
-
-  // TEST_COMPANY_ID = data.companyId;
-
-  // return data;
+  return httpPOSTRequest(
+    `${MANAGE_PROFILE_API.COMPANY_INFO}`,
+    onRouteBCProfileRequestObject
+  );
 };
 
 /**
@@ -158,48 +146,8 @@ export const addUserInfo = async ({
   companyGUID: string;
   userInfo: UserInformation;
 }): Promise<Response> => {
-  return fetch(`${MANAGE_PROFILE_API.COMPANY_INFO}/${TEST_COMPANY_ID}`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(userInfo),
-  });
-};
-
-const TEST_POST_DATA = {
-  legalName: "ABC Carriers Inc.",
-  companyAddress: {
-    addressLine1: "1234 Main St.",
-    addressLine2: "Unit 321",
-    city: "Vancouver",
-    provinceCode: "BC",
-    countryCode: "CA",
-    postalCode: "V8W2E7",
-  },
-  mailingAddressSameAsCompanyAddress: true,
-  mailingAddress: {
-    addressLine1: "1234 Main St.",
-    addressLine2: "Unit 321",
-    city: "Vancouver",
-    provinceCode: "BC",
-    countryCode: "CA",
-    postalCode: "V8W2E7",
-  },
-  phone: "9999999999",
-  extension: "99999",
-  fax: "9999999999",
-  email: "test@test.gov.bc.ca",
-  primaryContact: {
-    firstName: "Adam",
-    lastName: "Smith",
-    phone1: "9999999999",
-    phone1Extension: "99999",
-    phone2: "9999999999",
-    phone2Extension: "99999",
-    email: "test@test.gov.bc.ca",
-    city: "Vancouver",
-    provinceCode: "BC",
-    countryCode: "CA",
-  },
+  return httpPOSTRequest(
+    `${MANAGE_PROFILE_API.COMPANY_INFO}/${companyGUID}`,
+    userInfo
+  );
 };

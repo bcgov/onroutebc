@@ -50,6 +50,12 @@ parameters:
   - name: DATABASE_HOST
     description: Host url/service of database connection
     required: true
+  - name: AUTH0_ISSUER_URL
+    description: The principal that issued the JWT
+    required: true
+  - name: AUTH0_AUDIENCE
+    description: Identifies the recipients that the JWT is intended for
+    required: true
 objects:
   - apiVersion: v1
     kind: ImageStream

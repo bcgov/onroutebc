@@ -1,8 +1,29 @@
 import { ApiErrorResponse } from "../../types/common";
 
+/**
+ * Retrieves the access token from session.
+ * @returns A string containing the access token.
+ */
+const getAccessToken = () => {
+  // TODO - Add environment variables to get the full key.
+
+  // Full key: oidc.user:https://dev.loginproxy.gov.bc.ca/auth/realms/standard:on-route-bc-direct-4598
+  const storageKey: string = Object.keys(sessionStorage).find((key) =>
+    key.startsWith("oidc.user")
+  ) as string;
+  const parsedSessionObject = JSON.parse(
+    sessionStorage.getItem(storageKey) as string
+  );
+  return parsedSessionObject['token_type'] + " " + parsedSessionObject['access_token'];
+};
+
 export const httpGETRequest = async (url: URL) => {
   try {
-    const response = await fetch(url.href);
+    const response = await fetch(url.href, {
+      headers: {
+        "Authorization": getAccessToken(),
+      }
+    });
     const data = await response.json();
     // Handle API errors created from the backend API
     if (!response.ok) {
@@ -19,21 +40,35 @@ export const httpGETRequest = async (url: URL) => {
   }
 };
 
+/**
+ * A generic HTTP POST Request
+ * @param url The URL of the resource.
+ * @param data The request payload.
+ * @returns A Promise<Response> with the response from the API.
+ */
 export const httpPOSTRequest = (url: string, data: any) => {
   return fetch(url, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      "Authorization": getAccessToken(),
     },
     body: JSON.stringify(data),
   });
 };
 
+/**
+ * A generic HTTP PUT Request
+ * @param url The URL of the resource.
+ * @param data The request payload.
+ * @returns A Promise<Response> with the response from the API.
+ */
 export const httpPUTRequest = (url: string, data: any) => {
   return fetch(url, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
+      "Authorization": getAccessToken(),
     },
     body: JSON.stringify(data),
   });

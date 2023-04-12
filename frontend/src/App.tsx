@@ -15,8 +15,6 @@ import { AuthProvider } from "react-oidc-context";
 import { CompanyMetadata, CompanyMetadataContextType } from "./common/authentication/types";
 
 const oidcConfig = {
-  // https://dev.loginproxy.gov.bc.ca/auth/realms/standard/.well-known/openid-configuration
-  // https://dev.loginproxy.gov.bc.ca/auth/.well-known/openid-configuration
   authority: "https://dev.loginproxy.gov.bc.ca/auth/realms/standard",
   realm: "standard",
   client_id: "on-route-bc-direct-4598",
