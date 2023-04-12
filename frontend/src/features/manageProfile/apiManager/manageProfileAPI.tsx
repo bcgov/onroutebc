@@ -44,7 +44,8 @@ export interface CompanyProfile {
 // Wizard to setup their initial company profile
 //let TEST_COMPANY_GUID = "06D0D93CE18A43948979F255C7046B72";
 //let TEST_COMPANY_GUID = "C16A95599A264242A850BDDC21B739F4"; // Harry Ewing User
-let TEST_COMPANY_ID = "1";
+let TEST_COMPANY_ID = "74";
+const TEMP_TOKEN = import.meta.env.VITE_ACCESS_TOKEN;
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 export const getCompanyInfo = async (
@@ -54,7 +55,14 @@ export const getCompanyInfo = async (
   const url = new URL(MANAGE_PROFILE_API.COMPANY_INFO);
 
   try {
-    const response = await fetch(`${url.href}/${TEST_COMPANY_ID}`);
+    const response = await fetch(`${url.href}/${TEST_COMPANY_ID}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        // prettier-ignore
+        "Authorization": `Bearer ${TEMP_TOKEN}`,
+      },
+    });
     const data = await response.json();
 
     // Handle API errors created from the backend API
@@ -92,6 +100,8 @@ export const updateCompanyInfo = async ({
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
+      // prettier-ignore
+      "Authorization": `Bearer ${TEMP_TOKEN}`,
     },
     body: JSON.stringify(companyInfo),
   });
@@ -139,6 +149,8 @@ export const createCompanyInfo = async (): Promise<CompanyProfile> => {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      // prettier-ignore
+      "Authorization": `Bearer ${TEMP_TOKEN}`,
     },
     body: JSON.stringify(TEST_POST_DATA),
   });

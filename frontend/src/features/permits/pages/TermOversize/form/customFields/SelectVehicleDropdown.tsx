@@ -40,7 +40,11 @@ const sortVehicles = (chooseFrom: string, options: Vehicle[] | undefined) => {
     if (chooseFrom === "plate") {
       return a.plate > b.plate ? 1 : -1;
     }
-    return a.unitNumber > b.unitNumber ? 1 : -1;
+    if (a.unitNumber && b.unitNumber) {
+      return a.unitNumber > b.unitNumber ? 1 : -1;
+    }
+
+    return 0;
   };
 
   const sortByVehicleType = (a: Vehicle, b: Vehicle) => {
