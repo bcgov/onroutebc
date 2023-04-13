@@ -5,14 +5,18 @@ import { Header } from "./common/components/header/Header";
 import { Footer } from "./common/components/footer/Footer";
 import { ThemeProvider } from "@mui/material/styles";
 import { bcGovTheme } from "./themes/bcGovTheme";
-import { createContext, Dispatch, useEffect, useState } from "react";
+import {
+  createContext,
+  Dispatch,
+  useEffect,
+  useState,
+} from "react";
 import {
   CustomSnackbar,
   SnackBarOptions,
 } from "./common/components/snackbar/CustomSnackBar";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider } from "react-oidc-context";
-// import { CompanyMetadata, CompanyMetadataContextType } from "./common/authentication/types";
 
 /**
  * The OIDC Configuration needed for authentication.
@@ -21,7 +25,7 @@ const oidcConfig = {
   authority: "https://dev.loginproxy.gov.bc.ca/auth/realms/standard",
   realm: "standard",
   client_id: "on-route-bc-direct-4598",
-  redirect_uri: window.location.origin + "/welcome",
+  redirect_uri: window.location.origin + "/",
   scope: "openid",
   automaticSilentRenew: true,
   revokeTokensOnSignout: true,
@@ -30,13 +34,6 @@ const oidcConfig = {
 export const SnackBarContext = createContext({
   setSnackBar: (() => undefined) as Dispatch<SnackBarOptions>,
 });
-
-// export const UserCompanyContext = createContext({
-//   setCompanyMetadata: (() => undefined) as Dispatch<CompanyMetadata>,
-// });
-
-// const [companyMetadata, setCompanyMetadata] = useState<CompanyMetadata | null>(null);
-
 
 const App = () => {
   const queryClient = new QueryClient();
@@ -48,6 +45,7 @@ const App = () => {
     message: "",
     isError: false,
   });
+
   // Needed the following usestate and useffect code so that the snackbar would disapear/close
   const [displaySnackBar, setDisplaySnackBar] = useState(false);
   useEffect(() => {
@@ -63,7 +61,6 @@ const App = () => {
 
   return (
     <AuthProvider {...oidcConfig}>
-      {/* <UserCompanyContext.Provider value={{ setCompanyMetadata }}> */}
         <ThemeProvider theme={bcGovTheme}>
           <QueryClientProvider client={queryClient}>
             <SnackBarContext.Provider value={{ setSnackBar: setSnackBar }}>
@@ -81,7 +78,6 @@ const App = () => {
             </SnackBarContext.Provider>
           </QueryClientProvider>
         </ThemeProvider>
-      {/* </UserCompanyContext.Provider> */}
     </AuthProvider>
   );
 };

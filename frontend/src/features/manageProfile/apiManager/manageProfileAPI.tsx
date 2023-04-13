@@ -4,8 +4,9 @@ import {
   httpPOSTRequest,
   httpPUTRequest,
 } from "../../../common/apiManager/httpRequestHandler";
+import { UserContextType } from "../../../common/authentication/types";
 import { ApiErrorResponse } from "../../../types/common";
-import { MANAGE_PROFILE_API } from "./endpoints/endpoints";
+import { MANAGE_PROFILE_API, MANAGE_PROFILE_URL } from "./endpoints/endpoints";
 
 interface Address {
   addressLine1: string;
@@ -156,6 +157,8 @@ export const addUserInfo = async ({
 /**
  * Retrieve the company and user details post login.
  */
-export const getUserContext = (): Promise<Response> => {
-  return httpGETRequestPromise(`${MANAGE_PROFILE_API}/user-context`);
+export const getUserContext = (): Promise<UserContextType> => {
+  return httpGETRequestPromise(`${MANAGE_PROFILE_URL}/users/user-company`).then(
+    (response) => response.json()
+  );
 };

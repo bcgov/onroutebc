@@ -1,7 +1,11 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
+import { useAuth } from "react-oidc-context";
 import { useNavigate } from "react-router-dom";
 import * as routes from "../../constants/routes";
+import { HomePage2 } from "../../features/homePage/HomePage2";
+import { getUserContext } from "../../features/manageProfile/apiManager/manageProfileAPI";
+import { UserContextType } from "./types";
 
 /*
  * Redirects user to their correct landing page after loading their
@@ -9,53 +13,68 @@ import * as routes from "../../constants/routes";
  *
  */
 export const LoginRedirect = () => {
-    const navigate = useNavigate();
-  
-    // const userQuery = useQuery({
-    //   queryKey: ["userContext"],
-    //   queryFn: getPowerUnitTypes,
-    //   retry: false,
-    // });
-  
-    const user = false;
-    const company = false;
-    const pendingUser = false;
-  
-    useEffect(() => {
-      if (!user) {
-        if (pendingUser) {
-          navigate(routes.USER_INFO);
-        } else if (!company) {
-          navigate(routes.WELCOME);
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
+
+  const userContextQuery = useQuery({
+    queryKey: ["userContext"],
+    queryFn: getUserContext,
+    onSuccess: (userContextResponseBody: UserContextType) => {
+      // TODO - Switch to a react context if needed.
+      // Session Storage works alright as there is no leakage of information
+      // than what is already displayed to the user.
+      sessionStorage.setItem(
+        "onroutebc.user.context",
+        JSON.stringify(userContextResponseBody)
+      );
+    },
+    retry: false,
+  });
+
+  const queryClient = useQueryClient();
+  const { isLoading } = userContextQuery;
+
+  /**
+   * Hook to determine where to navigate to.
+   */
+  useEffect(() => {
+    if (isAuthenticated && !isLoading) {
+      const userContextData: UserContextType | undefined =
+        queryClient.getQueryData<UserContextType>(["userContext"]);
+      if (userContextData) {
+        const { associatedCompanies, pendingCompanies, user } = userContextData;
+        // If the user does not exist
+        if (!user?.userGUID) {
+          // The user is in pending companies => Redirect them to User Info Page.
+          if (pendingCompanies.length > 0) {
+            navigate(routes.USER_INFO);
+          }
+          // The user and company does not exist => Redirect them to Add new company page.
+          else if (associatedCompanies.length < 1) {
+            navigate(routes.WELCOME);
+          }
         }
-      } else {
-        navigate(routes.HOME);
+        // The user exists
+        else if (user?.userGUID && associatedCompanies.length) {
+          navigate(routes.HOME);
+        } else if (user?.userGUID && !associatedCompanies.length) {
+          // Error Page
+        }
       }
-      
-    }, [user, pendingUser, company]);
-  
-    /**
-     * GET User info
-     * GET Company info
-     * if (user && company)
-     *    navigate(routes.HOME)
-     *    
-     *    // Multiple companies off scope.
-     *
-     * if (!user)
-     *    if (pendingUser)
-     *        navigate(routes.MY_INFO)
-     *    if (!company)
-     *        navigate(routes.COMPANY_INFO)
-     *    else
-     *        Error Page.
-     
-     * if (company && user) useNavigate(routes.HOME)
-     * if (company && !user) useNavigate(routes.MY_INFO)
-     * if (!user && !company) useNavigate(routes.COMPANY_INFO)
-     * if (company && !user) useNavigate(routes.HOME)
-     */
-    //
-  
-    return <></>;
-  };
+    }
+  }, [isLoading]);
+
+  if (isLoading) {
+    return (
+      <>
+        <span>Loading...</span>
+      </>
+    );
+  }
+
+  return (
+    <>
+      <HomePage2></HomePage2>
+    </>
+  );
+};
