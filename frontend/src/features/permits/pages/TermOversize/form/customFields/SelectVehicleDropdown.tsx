@@ -16,6 +16,7 @@ import {
 import { useFormContext } from "react-hook-form";
 import "../../TermOversize.scss";
 import { useVehiclesQuery } from "../../../../../manageVehicles/apiManager/hooks";
+import { useEffect } from "react";
 
 const GroupHeader = styled("div")(({ theme }) => ({
   position: "sticky",
@@ -45,11 +46,7 @@ const sortVehicles = (chooseFrom: string, options: Vehicle[] | undefined) => {
     if (chooseFrom === "plate") {
       return a.plate > b.plate ? 1 : -1;
     }
-    if (a.unitNumber && b.unitNumber) {
-      return a.unitNumber > b.unitNumber ? 1 : -1;
-    }
-
-    return 0;
+    return (a.unitNumber || -1) > (b.unitNumber || -1) ? 1 : -1;
   };
 
   const sortByVehicleType = (a: Vehicle, b: Vehicle) => {
@@ -90,10 +87,8 @@ export const SelectVehicleDropdown = ({
   width: string;
   setSelectedVehicle: any;
 }) => {
-  // Sort vehicles alphabetically
+  // Sort vehicles alphanumerically
   const sortedVehicles = sortVehicles(chooseFrom, options);
-  const allVehiclesQuery = useVehiclesQuery();
-
   const { resetField, setValue } = useFormContext();
 
   return (
@@ -119,10 +114,9 @@ export const SelectVehicleDropdown = ({
             setSelectedVehicle(values.plate);
 
             // Get the selected vehicle object from the plate number
-            const vehicle: (PowerUnit | Trailer)[] | undefined =
-              allVehiclesQuery.data?.filter((item) => {
-                return item.plate === values.plate;
-              });
+            const vehicle: Vehicle[] | undefined = options?.filter((item) => {
+              return item.plate === values.plate;
+            });
 
             if (!vehicle || vehicle.length <= 0) return;
 

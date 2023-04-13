@@ -120,10 +120,10 @@ export const TermOversizeForm = () => {
     reValidateMode: "onBlur",
   });
 
-  const { handleSubmit, setValue, getValues } = formMethods;
+  const { handleSubmit, setValue } = formMethods;
 
   /**
-   * UseEffect to get company mailing address, since companyInfo query is async
+   * UseEffect to get company mailing address and primary contact, since companyInfo query is async
    */
   useEffect(() => {
     setValue("application.mailingAddress", {
@@ -134,14 +134,19 @@ export const TermOversizeForm = () => {
       countryCode: companyInfoQuery?.data?.companyAddress?.countryCode || "",
       postalCode: companyInfoQuery?.data?.companyAddress?.postalCode || "",
     });
+
+    setValue("application.contactDetails", {
+      firstName: companyInfoQuery?.data?.primaryContact?.firstName || "",
+      lastName: companyInfoQuery?.data?.primaryContact?.lastName || "",
+      phone1: companyInfoQuery?.data?.primaryContact?.phone1 || "",
+      email: companyInfoQuery?.data?.primaryContact?.email || "",
+    });
   }, [companyInfoQuery]);
 
   const navigate = useNavigate();
 
   const onContinue = function (data: FieldValues) {
     const termOverSizeToBeAdded = data as TermOversizeApplication;
-    console.log("termOverSizeToBeAdded", termOverSizeToBeAdded);
-    console.log("getValues", getValues().application.vehicleDetails);
     handleSaveVehicle(termOverSizeToBeAdded);
     applicationContext?.setApplicationData(termOverSizeToBeAdded);
     applicationContext?.next();

@@ -39,7 +39,6 @@ export const VehicleDetails = ({ feature }: { feature: string }) => {
   const {
     setValue,
     resetField,
-    register,
     formState: { isDirty },
   } = useFormContext();
 
