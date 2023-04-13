@@ -76,7 +76,7 @@ export class PowerUnit extends Base {
     precision: 18,
     scale: 2,
     name: 'LICENSED_GVW',
-    nullable: false,
+    nullable: true,
   })
   licensedGvw: number;
 

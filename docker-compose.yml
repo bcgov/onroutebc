@@ -68,6 +68,9 @@ services:
       MSSQL_SA_USER: ${MSSQL_SA_USER}
       MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD}
       MSSQL_ENCRYPT: ${MSSQL_ENCRYPT}
+      AUTH0_ISSUER_URL: ${AUTH0_ISSUER_URL}
+      AUTH0_AUDIENCE: ${AUTH0_AUDIENCE}
+      AUTH0_IGNORE_EXP: ${AUTH0_IGNORE_EXP}
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5000/"]
       interval: 1m30s

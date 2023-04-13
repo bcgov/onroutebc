@@ -101,11 +101,14 @@ jobs:
           exportEnv: 'false'
           namespace: platform-services
           secrets: |
-            ${{secrets.VAULT_ENV}}/data/database-dev  DATABASE_HOST               | VAULT_DATABASE_HOST;
-            ${{secrets.VAULT_ENV}}/data/database-dev  DATABASE_USER               | VAULT_DATABASE_USER;
-            ${{secrets.VAULT_ENV}}/data/database-dev  DATABASE_NAME               | VAULT_DATABASE_NAME;
-            ${{secrets.VAULT_ENV}}/data/database-dev  DATABASE_PASSWORD           | VAULT_DATABASE_PASSWORD;
-            ${{secrets.VAULT_ENV}}/data/database-dev  DATABASE_PORT               | VAULT_DATABASE_PORT;
+            ${{secrets.VAULT_ENV}}/data/database-dev  DATABASE_HOST     | VAULT_DATABASE_HOST;
+            ${{secrets.VAULT_ENV}}/data/database-dev  DATABASE_USER     | VAULT_DATABASE_USER;
+            ${{secrets.VAULT_ENV}}/data/database-dev  DATABASE_NAME     | VAULT_DATABASE_NAME;
+            ${{secrets.VAULT_ENV}}/data/database-dev  DATABASE_PASSWORD | VAULT_DATABASE_PASSWORD;
+            ${{secrets.VAULT_ENV}}/data/database-dev  DATABASE_PORT     | VAULT_DATABASE_PORT;
+            ${{secrets.VAULT_ENV}}/data/auth0-dev     AUTH0_ISSUER_URL  | VAULT_AUTH0_ISSUER_URL;
+            ${{secrets.VAULT_ENV}}/data/auth0-dev     AUTH0_AUDIENCE    | VAULT_AUTH0_AUDIENCE;
+            ${{secrets.VAULT_ENV}}/data/auth0-dev     AUTH0_IGNORE_EXP  | VAULT_AUTH0_IGNORE_EXP
       - name: Deploy Application
         uses: bcgov-nr/action-deployer-openshift@v1.0.3
         with:
@@ -123,6 +126,9 @@ jobs:
             -p DATABASE_USER=${{steps.secrets.outputs.VAULT_DATABASE_USER}}
             -p DATABASE_PASSWORD=${{steps.secrets.outputs.VAULT_DATABASE_PASSWORD}}
             -p DATABASE_HOST=${{steps.secrets.outputs.VAULT_DATABASE_HOST}}
+            -p AUTH0_ISSUER_URL=${{steps.secrets.outputs.VAULT_AUTH0_ISSUER_URL}}
+            -p AUTH0_AUDIENCE=${{steps.secrets.outputs.VAULT_AUTH0_AUDIENCE}}
+            -p AUTH0_IGNORE_EXP=${{steps.secrets.outputs.VAULT_AUTH0_IGNORE_EXP}}
             ${{ matrix.parameters }}
 
   helm-deploys:
@@ -163,7 +169,7 @@ jobs:
         uses: vimeda/helm@v1.6.8
         with:
           chart: 'common-object-management-service/common-object-management-service'
-          chart-version: 0.0.12
+          chart-version: 0.0.13
           namespace: ${{ secrets.OC_NAMESPACE }}
           release: ${{ github.event.repository.name }}-${{ github.event.number }}-common-object-management-service
           repo: https://bcgov.github.io/common-object-management-service
