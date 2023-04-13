@@ -123,56 +123,56 @@ jobs:
             ${{ matrix.parameters }}
           penetration_test: true
   
-  deploys-test-helm:
-    name: TEST Deployments - HELM
-    needs:
-      - codeql
-      - trivy
-    environment: test
-    runs-on: ubuntu-22.04
-    strategy:
-      max-parallel: 1
-      fail-fast: true
-    steps:      
-      - name: Authenticate and set context
-        uses: redhat-actions/oc-login@v1
-        with:
-          openshift_server_url: ${{ secrets.OC_SERVER }}
-          openshift_token: ${{ secrets.OC_TOKEN }}
-          namespace: ${{ secrets.OC_NAMESPACE }}
-
-      - name: Helm Deploy
-        uses: vimeda/helm@v1.6.8
-        with:
-          chart: 'common-object-management-service/common-object-management-service'
-          chart-version: 0.0.13
-          namespace: ${{ secrets.OC_NAMESPACE }}
-          release: ${{ github.event.repository.name }}-test-common-object-management-service
-          repo: https://bcgov.github.io/common-object-management-service
-          repo-alias: common-object-management-service
-          token: ${{secrets.OC_TOKEN}}
-          values: |
-            fullNameOverride: ${{ github.event.repository.name }}-test-common-object-management-service
-            route:
-              host: ${{ github.event.repository.name }}-test-common-object-management-service.apps.silver.devops.gov.bc.ca
-            basicAuthSecretOverride:
-              username: ${{steps.secrets.outputs.VAULT_BASICAUTH_USERNAME}}
-            objectStorageSecretOverride:
-              username: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_ACCESSKEYID}}
-              password: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_SECRETACCESSKEY}}
-            features:
-              oidcAuth: false
-            config:
-              enabled: true
-              releaseScoped: true
-              configMap:
-                KC_IDENTITYKEY: null
-                KC_PUBLICKEY: null
-                KC_REALM: null
-                KC_SERVERURL: null
-                OBJECTSTORAGE_BUCKET: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_BUCKET}}
-                OBJECTSTORAGE_ENDPOINT: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_ENDPOINT}}
-                OBJECTSTORAGE_KEY: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_KEY}}
+          #  deploys-test-helm:
+          #    name: TEST Deployments - HELM
+          #    needs:
+          #      - codeql
+          #      - trivy
+          #    environment: test
+          #    runs-on: ubuntu-22.04
+          #    strategy:
+          #      max-parallel: 1
+          #      fail-fast: true
+          #    steps:      
+          #      - name: Authenticate and set context
+          #        uses: redhat-actions/oc-login@v1
+          #        with:
+          #          openshift_server_url: ${{ secrets.OC_SERVER }}
+          #          openshift_token: ${{ secrets.OC_TOKEN }}
+          #          namespace: ${{ secrets.OC_NAMESPACE }}
+          #
+          #      - name: Helm Deploy
+          #        uses: vimeda/helm@v1.6.8
+          #        with:
+          #          chart: 'common-object-management-service/common-object-management-service'
+          #          chart-version: 0.0.13
+          #          namespace: ${{ secrets.OC_NAMESPACE }}
+          #          release: ${{ github.event.repository.name }}-test-common-object-management-service
+          #          repo: https://bcgov.github.io/common-object-management-service
+          #          repo-alias: common-object-management-service
+          #          token: ${{secrets.OC_TOKEN}}
+          #          values: |
+          #            fullNameOverride: ${{ github.event.repository.name }}-test-common-object-management-service
+          #            route:
+          #              host: ${{ github.event.repository.name }}-test-common-object-management-service.apps.silver.devops.gov.bc.ca
+          #            basicAuthSecretOverride:
+          #              username: ${{steps.secrets.outputs.VAULT_BASICAUTH_USERNAME}}
+          #            objectStorageSecretOverride:
+          #              username: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_ACCESSKEYID}}
+          #              password: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_SECRETACCESSKEY}}
+          #            features:
+          #              oidcAuth: false
+          #            config:
+          #              enabled: true
+          #              releaseScoped: true
+          #              configMap:
+          #                KC_IDENTITYKEY: null
+          #                KC_PUBLICKEY: null
+          #                KC_REALM: null
+          #                KC_SERVERURL: null
+          #                OBJECTSTORAGE_BUCKET: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_BUCKET}}
+          #                OBJECTSTORAGE_ENDPOINT: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_ENDPOINT}}
+          #                OBJECTSTORAGE_KEY: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_KEY}}
 
   deploys-prod:
     name: PROD Deployments
@@ -236,55 +236,55 @@ jobs:
             ${{ matrix.parameters }}
           penetration_test: false
       
-  deploys-prod-helm:
-    name: PROD Deployments - HELM
-    needs:
-      - deploys-test-helm
-    environment: test
-    runs-on: ubuntu-22.04
-    strategy:
-      max-parallel: 1
-      fail-fast: true
-    steps:
-      - name: Authenticate and set context
-        uses: redhat-actions/oc-login@v1
-        with:
-          openshift_server_url: ${{ secrets.OC_SERVER }}
-          openshift_token: ${{ secrets.OC_TOKEN }}
-          namespace: ${{ secrets.OC_NAMESPACE }}
-
-      - name: Helm Deploy
-        uses: vimeda/helm@v1.6.8
-        with:
-          chart: 'common-object-management-service/common-object-management-service'
-          chart-version: 0.0.13
-          namespace: ${{ secrets.OC_NAMESPACE }}
-          release: ${{ github.event.repository.name }}-prod-common-object-management-service
-          repo: https://bcgov.github.io/common-object-management-service
-          repo-alias: common-object-management-service
-          token: ${{secrets.OC_TOKEN}}
-          values: |
-            fullNameOverride: ${{ github.event.repository.name }}-prod-common-object-management-service
-            route:
-              host: ${{ github.event.repository.name }}-prod-common-object-management-service.apps.silver.devops.gov.bc.ca
-            basicAuthSecretOverride:
-              username: ${{steps.secrets.outputs.VAULT_BASICAUTH_USERNAME}}
-            objectStorageSecretOverride:
-              username: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_ACCESSKEYID}}
-              password: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_SECRETACCESSKEY}}
-            features:
-              oidcAuth: false
-            config:
-              enabled: true
-              releaseScoped: true
-              configMap:
-                KC_IDENTITYKEY: null
-                KC_PUBLICKEY: null
-                KC_REALM: null
-                KC_SERVERURL: null
-                OBJECTSTORAGE_BUCKET: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_BUCKET}}
-                OBJECTSTORAGE_ENDPOINT: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_ENDPOINT}}
-                OBJECTSTORAGE_KEY: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_KEY}}
+          #  deploys-prod-helm:
+          #    name: PROD Deployments - HELM
+          #    needs:
+          #      - deploys-test-helm
+          #    environment: test
+          #    runs-on: ubuntu-22.04
+          #    strategy:
+          #      max-parallel: 1
+          #      fail-fast: true
+          #    steps:
+          #      - name: Authenticate and set context
+          #        uses: redhat-actions/oc-login@v1
+          #        with:
+          #          openshift_server_url: ${{ secrets.OC_SERVER }}
+          #          openshift_token: ${{ secrets.OC_TOKEN }}
+          #          namespace: ${{ secrets.OC_NAMESPACE }}
+          #
+          #      - name: Helm Deploy
+          #        uses: vimeda/helm@v1.6.8
+          #        with:
+          #          chart: 'common-object-management-service/common-object-management-service'
+          #          chart-version: 0.0.13
+          #          namespace: ${{ secrets.OC_NAMESPACE }}
+          #          release: ${{ github.event.repository.name }}-prod-common-object-management-service
+          #          repo: https://bcgov.github.io/common-object-management-service
+          #          repo-alias: common-object-management-service
+          #          token: ${{secrets.OC_TOKEN}}
+          #          values: |
+          #            fullNameOverride: ${{ github.event.repository.name }}-prod-common-object-management-service
+          #            route:
+          #              host: ${{ github.event.repository.name }}-prod-common-object-management-service.apps.silver.devops.gov.bc.ca
+          #            basicAuthSecretOverride:
+          #              username: ${{steps.secrets.outputs.VAULT_BASICAUTH_USERNAME}}
+          #            objectStorageSecretOverride:
+          #              username: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_ACCESSKEYID}}
+          #              password: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_SECRETACCESSKEY}}
+          #            features:
+          #              oidcAuth: false
+          #            config:
+          #              enabled: true
+          #              releaseScoped: true
+          #              configMap:
+          #                KC_IDENTITYKEY: null
+          #                KC_PUBLICKEY: null
+          #                KC_REALM: null
+          #                KC_SERVERURL: null
+          #                OBJECTSTORAGE_BUCKET: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_BUCKET}}
+          #                OBJECTSTORAGE_ENDPOINT: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_ENDPOINT}}
+          #                OBJECTSTORAGE_KEY: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_KEY}}
 
   image-promotions:
     name: Promote images to PROD
