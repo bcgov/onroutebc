@@ -51,6 +51,8 @@ export const ReviewVehicleInfo = ({
     return typeObject?.type;
   };
 
+  console.log("values", values);
+
   return (
     <Box sx={PERMIT_MAIN_BOX_STYLE}>
       <Box sx={PERMIT_LEFT_BOX_STYLE}>

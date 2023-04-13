@@ -36,7 +36,12 @@ import { SelectVehicleSubTypeDropdown } from "./customFields/SelectVehicleSubTyp
 import { ApplicationContext } from "../../../context/ApplicationContext";
 
 export const VehicleDetails = ({ feature }: { feature: string }) => {
-  const { setValue, resetField, register } = useFormContext();
+  const {
+    setValue,
+    resetField,
+    register,
+    formState: { isDirty },
+  } = useFormContext();
 
   const formFieldStyle = {
     fontWeight: "bold",
@@ -64,6 +69,11 @@ export const VehicleDetails = ({ feature }: { feature: string }) => {
   // Selected vehicle is the selected vehicles plate number
   const [selectedVehicle, setSelectedVehicle] = useState("");
   const [vehicleType, setVehicleType] = useState("");
+  const [saveVehicle, setSaveVehicle] = useState(false);
+
+  useEffect(() => {
+    handleSaveVehicleRadioBtns("false");
+  }, []);
 
   useEffect(() => {
     if (applicationData) {
@@ -96,14 +106,18 @@ export const VehicleDetails = ({ feature }: { feature: string }) => {
     }
   }, [applicationData]);
 
-  /**
-   * Set default values for Contact Details
-   * If the user has entered a value, use that value
-   * Else, use the value from the CompanyInfo query
-   */
   useEffect(() => {
     if (!selectedVehicle) {
       setVehicleType("");
+      return;
+    }
+
+    if (!isDirty && applicationData?.application.vehicleDetails?.vehicleType) {
+      setVehicleType(applicationData?.application.vehicleDetails?.vehicleType);
+      setValue(
+        "application.vehicleDetails.vehicleType",
+        applicationData?.application.vehicleDetails?.vehicleType
+      );
       return;
     }
 
@@ -161,6 +175,12 @@ export const VehicleDetails = ({ feature }: { feature: string }) => {
     }
     resetField("application.vehicleDetails.vehicleSubType");
     setValue("application.vehicleDetails.vehicleSubType", "");
+  };
+
+  const handleSaveVehicleRadioBtns = (isSave: string) => {
+    const isTrue = isSave === "true";
+    setSaveVehicle(isTrue);
+    setValue("application.vehicleDetails.saveVehicle", isTrue);
   };
 
   return (
@@ -323,25 +343,18 @@ export const VehicleDetails = ({ feature }: { feature: string }) => {
         <FormControl>
           <FormLabel
             id="demo-radio-buttons-group-label"
-            sx={{ fontWeight: "bold", marginTop: "8px" }}
+            sx={{ fontWeight: "bold", marginTop: "24px" }}
           >
             Would you like to add/update this vehicle to your Vehicle Inventory?
           </FormLabel>
           <RadioGroup
             aria-labelledby="radio-buttons-group-label"
-            defaultValue={false}
+            defaultValue={saveVehicle}
             name="radio-buttons-group"
+            onChange={(x) => handleSaveVehicleRadioBtns(x.target.value)}
           >
             <Box sx={{ display: "flex" }}>
-              <FormControlLabel
-                value={true}
-                control={
-                  <Radio
-                    {...register("application.vehicleDetails.saveVehicle")}
-                  />
-                }
-                label="Yes"
-              />
+              <FormControlLabel value={true} control={<Radio />} label="Yes" />
               <FormControlLabel value={false} control={<Radio />} label="No" />
             </Box>
           </RadioGroup>

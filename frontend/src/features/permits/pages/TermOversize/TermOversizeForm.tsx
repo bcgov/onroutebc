@@ -120,7 +120,7 @@ export const TermOversizeForm = () => {
     reValidateMode: "onBlur",
   });
 
-  const { handleSubmit, setValue } = formMethods;
+  const { handleSubmit, setValue, getValues } = formMethods;
 
   /**
    * UseEffect to get company mailing address, since companyInfo query is async
@@ -139,8 +139,9 @@ export const TermOversizeForm = () => {
   const navigate = useNavigate();
 
   const onContinue = function (data: FieldValues) {
-    console.log("powerUnitId");
     const termOverSizeToBeAdded = data as TermOversizeApplication;
+    console.log("termOverSizeToBeAdded", termOverSizeToBeAdded);
+    console.log("getValues", getValues().application.vehicleDetails);
     handleSaveVehicle(termOverSizeToBeAdded);
     applicationContext?.setApplicationData(termOverSizeToBeAdded);
     applicationContext?.next();
