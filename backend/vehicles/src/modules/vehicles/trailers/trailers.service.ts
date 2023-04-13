@@ -72,58 +72,26 @@ export class TrailersService {
   }
 
   async removeAll(trailerIds: string[], companyId: number): Promise<DeleteDto> {
-    const idsPresentInDB = await this.trailerRepository
-      .createQueryBuilder('Trailer')
-      .select(['Trailer.trailerId'])
-      .where('Trailer.trailerId IN (:...id)', {
-        id: trailerIds,
-      })
-      .andWhere('Trailer.companyId = :companyId', {
-        companyId: companyId,
-      })
-      .getMany();
-    const idsFoundInDB: string[] = [];
-    const idsNotdeletedfromDB: string[] = [];
-    let i = 0;
-    for (const id of idsPresentInDB) {
-      idsFoundInDB[i] = id.trailerId;
-      i = i + 1;
-    }
-    i = 0;
-    await this.trailerRepository
+    const deletedResult = await this.trailerRepository
       .createQueryBuilder()
       .delete()
-      .from(Trailer)
-      .where('trailerId IN (:...id)', {
-        id: trailerIds,
-      })
+      .whereInIds(trailerIds)
       .andWhere('companyId = :companyId', {
         companyId: companyId,
       })
+      .output('DELETED.TRAILER_ID')
       .execute();
-    const notDeletedIds = await this.trailerRepository
-      .createQueryBuilder('Trailer')
-      .select(['Trailer.trailerId'])
-      .where('Trailer.trailerId IN (:...id)', {
-        id: trailerIds,
-      })
-      .andWhere('Trailer.companyId = :companyId', {
-        companyId: companyId,
-      })
-      .getMany();
-    //Convert PowerUnitId to flat array
-    for (const id of notDeletedIds) {
-      idsNotdeletedfromDB[i] = id.trailerId;
-      i = i + 1;
-    }
 
-    const deleteDto: DeleteDto = new DeleteDto();
-    deleteDto.success = idsFoundInDB.filter(
-      (x) => !idsNotdeletedfromDB.includes(x),
+    const trailersDeleted = Array.from(
+      deletedResult?.raw as [{ TRAILER_ID: string }],
     );
-    deleteDto.failure = trailerIds.filter((x) => !idsFoundInDB.includes(x));
-    deleteDto.failure.concat(idsNotdeletedfromDB);
 
+    const success = trailersDeleted?.map((trailer) => trailer.TRAILER_ID);
+    const failure = trailerIds?.filter((id) => !success?.includes(id));
+    const deleteDto: DeleteDto = {
+      success: success,
+      failure: failure,
+    };
     return deleteDto;
   }
 }

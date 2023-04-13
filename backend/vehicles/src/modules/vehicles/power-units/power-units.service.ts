@@ -77,58 +77,30 @@ export class PowerUnitsService {
     powerUnitIds: string[],
     companyId: number,
   ): Promise<DeleteDto> {
-    const idsPresentInDB = await this.powerUnitRepository
-      .createQueryBuilder('PowerUnit')
-      .select(['PowerUnit.powerUnitId'])
-      .where('PowerUnit.powerUnitId IN (:...id)', {
-        id: powerUnitIds,
-      })
-      .andWhere('PowerUnit.companyId = :companyId', {
-        companyId: companyId,
-      })
-      .getMany();
-    const idsFoundInDB: string[] = [];
-    const idsNotdeletedfromDB: string[] = [];
-    let i = 0;
-    for (const id of idsPresentInDB) {
-      idsFoundInDB[i] = id.powerUnitId;
-      i = i + 1;
-    }
-    i = 0;
-    await this.powerUnitRepository
+    const deletedResult = await this.powerUnitRepository
       .createQueryBuilder()
       .delete()
-      .from(PowerUnit)
-      .where('powerUnitId IN (:...id)', {
-        id: powerUnitIds,
-      })
+      .whereInIds(powerUnitIds)
       .andWhere('companyId = :companyId', {
         companyId: companyId,
       })
+      .output('DELETED.POWER_UNIT_ID')
       .execute();
-    const notDeletedIds = await this.powerUnitRepository
-      .createQueryBuilder('PowerUnit')
-      .select(['PowerUnit.powerUnitId'])
-      .where('PowerUnit.powerUnitId IN (:...id)', {
-        id: powerUnitIds,
-      })
-      .andWhere('PowerUnit.companyId = :companyId', {
-        companyId: companyId,
-      })
-      .getMany();
-    //Convert PowerUnitId to flat array
-    for (const id of notDeletedIds) {
-      idsNotdeletedfromDB[i] = id.powerUnitId;
-      i = i + 1;
-    }
 
-    const deleteDto: DeleteDto = new DeleteDto();
-    deleteDto.success = idsFoundInDB.filter(
-      (x) => !idsNotdeletedfromDB.includes(x),
+    const powerUnitsDeleted = Array.from(
+      deletedResult?.raw as [{ POWER_UNIT_ID: string }],
     );
-    deleteDto.failure = powerUnitIds.filter((x) => !idsFoundInDB.includes(x));
-    deleteDto.failure.concat(idsNotdeletedfromDB);
+    console.log('Power units ids ', powerUnitIds);
+    console.log('Power units deleted ', powerUnitsDeleted);
 
+    const success = powerUnitsDeleted?.map(
+      (powerUnit) => powerUnit.POWER_UNIT_ID,
+    );
+    const failure = powerUnitIds?.filter((id) => !success?.includes(id));
+    const deleteDto: DeleteDto = {
+      success: success,
+      failure: failure,
+    };
     return deleteDto;
   }
 }
