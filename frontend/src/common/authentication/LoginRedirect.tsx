@@ -23,10 +23,24 @@ export const LoginRedirect = () => {
       // TODO - Switch to a react context if needed.
       // Session Storage works alright as there is no leakage of information
       // than what is already displayed to the user.
-      sessionStorage.setItem(
-        "onroutebc.user.context",
-        JSON.stringify(userContextResponseBody)
-      );
+      const { user, associatedCompanies } = userContextResponseBody;
+
+      if (user?.userGUID) {
+        const userContextSessionObject = {
+          companyId: associatedCompanies[0].companyId,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          userName: user.userName,
+        };
+        sessionStorage.setItem(
+          "onRoutebc.user.context",
+          JSON.stringify(userContextSessionObject)
+        );
+      }
+      // sessionStorage.setItem(
+      //   "onroutebc.user.context",
+      //   JSON.stringify(userContextResponseBody)
+      // );
     },
     retry: false,
   });

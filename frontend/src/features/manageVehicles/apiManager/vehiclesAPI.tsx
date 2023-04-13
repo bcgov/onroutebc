@@ -17,12 +17,12 @@ import { UserContextType } from "../../../common/authentication/types";
  *
  */
 const getCompanyIdFromSession = (): string | null => {
-  const userContext = JSON.parse(
-    sessionStorage.getItem("onroutebc.user.context") as string
-  ) as UserContextType;
-  if (!userContext.associatedCompanies.length) return null;
+  const userContextString = sessionStorage.getItem("onRoutebc.user.context");
+  if (!userContextString) return null;
+  const userContext = JSON.parse(userContextString as string);
+  if (!userContext.companyId) return null;
   // Currently we only support one company per user.
-  return userContext.associatedCompanies[0]?.companyId;
+  return userContext.companyId;
 };
 
 /**

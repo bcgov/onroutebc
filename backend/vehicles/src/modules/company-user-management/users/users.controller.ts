@@ -48,10 +48,9 @@ export class UsersController {
   constructor(private readonly userService: UsersService) {}
 
   /**
-   * A GET method defined with the @Get(':userGUID') decorator and a route of
-   * /user-company/:userGUID that verifies if the user exists in ORBC and retrieves
+   * A GET method defined with a route of
+   * /user-context that verifies if the user exists in ORBC and retrieves
    * the user by its GUID (global unique identifier) and associated company, if any.
-   * TODO: Secure endpoints once login is implemented.
    *
    * @returns The user details with response object {@link ReadUserOrbcStatusDto}.
    */
@@ -60,7 +59,7 @@ export class UsersController {
     type: ReadUserOrbcStatusDto,
   })
   @AuthOnly()
-  @Get('user-company')
+  @Get('user-context')
   async find(@Req() request: Request): Promise<ReadUserOrbcStatusDto> {
     const currentUser = request.user as IUserJWT;
     const userExists = await this.userService.findORBCUser(
