@@ -10,6 +10,7 @@ import { Trailer } from '../../src/modules/vehicles/trailers/entities/trailer.en
 import { TrailersModule } from '../../src/modules/vehicles/trailers/trailers.module';
 import {
   createTrailerDtoMock,
+  deleteTrailersMock,
   readTrailerDtoMock,
   trailerEntityMock,
   updateTrailerDtoMock,
@@ -95,7 +96,7 @@ describe('Trailers (e2e)', () => {
     it('should delete the trailer.', () => {
       return request(app.getHttpServer())
         .post('/companies/3/vehicles/trailers/delete-requests')
-        .send({ trailers: ['3'] })
+        .send(deleteTrailersMock)
         .expect(200)
         .expect(deleteDtoMock3);
     });

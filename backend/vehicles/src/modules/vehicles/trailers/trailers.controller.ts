@@ -14,6 +14,7 @@ import { CreateTrailerDto } from './dto/request/create-trailer.dto';
 import { UpdateTrailerDto } from './dto/request/update-trailer.dto';
 import {
   ApiBearerAuth,
+  ApiBody,
   ApiCreatedResponse,
   ApiInternalServerErrorResponse,
   ApiMethodNotAllowedResponse,
@@ -29,6 +30,7 @@ import { Request } from 'express';
 import { Roles } from '../../../common/decorator/roles.decorator';
 import { Role } from '../../../common/enum/roles.enum';
 import { DeleteDto } from 'src/modules/common/dto/response/delete.dto';
+import { DeleteTrailerDto } from './dto/request/delete-trailer.dto';
 
 @ApiTags('Vehicles - Trailers')
 @ApiNotFoundResponse({
@@ -126,6 +128,10 @@ export class TrailersController {
   }
 
   @Post('delete-requests')
+  @ApiBody({
+    description: 'The Power Unit Resource',
+    type: DeleteTrailerDto,
+  })
   @HttpCode(200)
   async deleteTrailers(
     @Body('trailers') trailers: string[],

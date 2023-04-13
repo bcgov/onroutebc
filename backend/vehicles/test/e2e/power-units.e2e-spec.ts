@@ -11,6 +11,7 @@ import { PowerUnit } from '../../src/modules/vehicles/power-units/entities/power
 import { PowerUnitsModule } from '../../src/modules/vehicles/power-units/power-units.module';
 import {
   createPowerUnitDtoMock,
+  deletePowerUnitMock,
   powerUnitEntityMock,
   readPowerUnitDtoMock,
   updatePowerUnitDtoMock,
@@ -96,7 +97,7 @@ describe('Power Units (e2e)', () => {
     it('should delete the power unit.', () => {
       return request(app.getHttpServer())
         .post('/companies/3/vehicles/powerUnits/delete-requests')
-        .send({ powerUnits: ['3'] })
+        .send(deletePowerUnitMock)
         .expect(200)
         .expect(deleteDtoMock3);
     });

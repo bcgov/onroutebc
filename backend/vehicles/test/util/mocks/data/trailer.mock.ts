@@ -1,3 +1,4 @@
+import { DeleteTrailerDto } from 'src/modules/vehicles/trailers/dto/request/delete-trailer.dto';
 import { CreateTrailerDto } from '../../../../src/modules/vehicles/trailers/dto/request/create-trailer.dto';
 import { UpdateTrailerDto } from '../../../../src/modules/vehicles/trailers/dto/request/update-trailer.dto';
 import { ReadTrailerDto } from '../../../../src/modules/vehicles/trailers/dto/response/read-trailer.dto';
@@ -53,4 +54,8 @@ export const readTrailerDtoMock: ReadTrailerDto = {
   ...createTrailerDtoMock,
   trailerId: TRAILER_ID,
   createdDateTime: baseDtoMock.createdDateTime,
+};
+
+export const deleteTrailersMock: DeleteTrailerDto = {
+  trailers: ['3'],
 };

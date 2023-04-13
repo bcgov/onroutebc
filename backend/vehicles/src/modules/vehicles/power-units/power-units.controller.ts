@@ -14,6 +14,7 @@ import { CreatePowerUnitDto } from './dto/request/create-power-unit.dto';
 import { UpdatePowerUnitDto } from './dto/request/update-power-unit.dto';
 import {
   ApiBearerAuth,
+  ApiBody,
   ApiCreatedResponse,
   ApiInternalServerErrorResponse,
   ApiMethodNotAllowedResponse,
@@ -29,6 +30,7 @@ import { Request } from 'express';
 import { Roles } from '../../../common/decorator/roles.decorator';
 import { Role } from '../../../common/enum/roles.enum';
 import { DeleteDto } from 'src/modules/common/dto/response/delete.dto';
+import { DeletePowerUnitDto } from './dto/request/delete-power-units.dto';
 
 @ApiTags('Vehicles - Power Units')
 @ApiNotFoundResponse({
@@ -131,6 +133,14 @@ export class PowerUnitsController {
     return { deleted: true };
   }
 
+  @ApiOkResponse({
+    description: 'The Power Unit Resource',
+    type: DeleteDto,
+  })
+  @ApiBody({
+    description: 'The Power Unit Resource',
+    type: DeletePowerUnitDto,
+  })
   @Post('delete-requests')
   @HttpCode(200)
   async deletePowerUnits(
@@ -138,7 +148,7 @@ export class PowerUnitsController {
     @Param('companyId') companyId: number,
   ): Promise<DeleteDto> {
     const deleteResult = await this.powerUnitsService.removeAll(
-      powerUnits,
+      Array.from(powerUnits),
       companyId,
     );
     if (deleteResult == null) {

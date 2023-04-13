@@ -90,9 +90,6 @@ export class PowerUnitsService {
     const powerUnitsDeleted = Array.from(
       deletedResult?.raw as [{ POWER_UNIT_ID: string }],
     );
-    console.log('Power units ids ', powerUnitIds);
-    console.log('Power units deleted ', powerUnitsDeleted);
-
     const success = powerUnitsDeleted?.map(
       (powerUnit) => powerUnit.POWER_UNIT_ID,
     );
