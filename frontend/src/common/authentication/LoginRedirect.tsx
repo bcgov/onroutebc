@@ -3,14 +3,13 @@ import { useEffect } from "react";
 import { useAuth } from "react-oidc-context";
 import { useNavigate } from "react-router-dom";
 import * as routes from "../../constants/routes";
-import { HomePage2 } from "../../features/homePage/HomePage2";
+import { HomePage } from "../../features/homePage/HomePage";
 import { getUserContext } from "../../features/manageProfile/apiManager/manageProfileAPI";
 import { UserContextType } from "./types";
 
 /*
- * Redirects user to their correct landing page after loading their
+ * Redirects user to their correct page after loading their
  * user and company info.
- *
  */
 export const LoginRedirect = () => {
   const navigate = useNavigate();
@@ -20,9 +19,6 @@ export const LoginRedirect = () => {
     queryKey: ["userContext"],
     queryFn: getUserContext,
     onSuccess: (userContextResponseBody: UserContextType) => {
-      // TODO - Switch to a react context if needed.
-      // Session Storage works alright as there is no leakage of information
-      // than what is already displayed to the user.
       const { user, associatedCompanies } = userContextResponseBody;
 
       if (user?.userGUID) {
@@ -32,15 +28,15 @@ export const LoginRedirect = () => {
           lastName: user.lastName,
           userName: user.userName,
         };
+
+        // TODO - Switch to a react context if needed.
+        // Session Storage works alright as there is no leakage of information
+        // than what is already displayed to the user.
         sessionStorage.setItem(
           "onRoutebc.user.context",
           JSON.stringify(userContextSessionObject)
         );
       }
-      // sessionStorage.setItem(
-      //   "onroutebc.user.context",
-      //   JSON.stringify(userContextResponseBody)
-      // );
     },
     retry: false,
   });
@@ -88,7 +84,7 @@ export const LoginRedirect = () => {
 
   return (
     <>
-      <HomePage2></HomePage2>
+      <HomePage></HomePage>
     </>
   );
 };
