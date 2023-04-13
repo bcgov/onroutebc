@@ -11,7 +11,6 @@ import {
   httpPOSTRequest,
   httpPUTRequest,
 } from "../../../common/apiManager/httpRequestHandler";
-import { UserContextType } from "../../../common/authentication/types";
 
 /**
  *
@@ -19,7 +18,7 @@ import { UserContextType } from "../../../common/authentication/types";
 const getCompanyIdFromSession = (): string | null => {
   const userContextString = sessionStorage.getItem("onRoutebc.user.context");
   if (!userContextString) return null;
-  const userContext = JSON.parse(userContextString as string);
+  const userContext = JSON.parse(userContextString);
   if (!userContext.companyId) return null;
   // Currently we only support one company per user.
   return userContext.companyId;

@@ -29,7 +29,8 @@ export const LoginRedirect = () => {
           userName: user.userName,
         };
 
-        // TODO - Switch to a react context if needed.
+        // Switch to a react context when implementing multiple companies.
+        // We currently don't need a dedicated react context.
         // Session Storage works alright as there is no leakage of information
         // than what is already displayed to the user.
         sessionStorage.setItem(

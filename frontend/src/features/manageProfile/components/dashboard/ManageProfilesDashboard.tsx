@@ -1,7 +1,6 @@
 import React from "react";
 import { TabLayout } from "../../../../common/components/dashboard/TabLayout";
 import { CompanyInfo } from "../pages/CompanyInfo";
-import { UserInformationForm } from "../pages/UserInformationForm";
 
 export const ManageProfilesDashboard = React.memo(() => {
   const tabs = [
@@ -11,7 +10,7 @@ export const ManageProfilesDashboard = React.memo(() => {
     },
     {
       label: "My Information",
-      component: <UserInformationForm />,
+      component: <>TODO</>,
     },
     {
       label: "User Management",

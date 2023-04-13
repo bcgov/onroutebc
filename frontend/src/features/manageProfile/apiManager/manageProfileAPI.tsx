@@ -158,8 +158,7 @@ export const addUserInfo = async ({
  * Retrieve the company and user details post login.
  */
 export const getUserContext = (): Promise<UserContextType> => {
-  // user-context;
-  return httpGETRequestPromise(`${MANAGE_PROFILE_URL}/users/user-company`).then(
+  return httpGETRequestPromise(`${MANAGE_PROFILE_URL}/users/user-context`).then(
     (response) => response.json()
   );
 };

@@ -5,7 +5,7 @@ import { ApiErrorResponse } from "../../types/common";
  * @returns A string containing the access token.
  */
 const getAccessToken = () => {
-  // TODO - Add environment variables to get the full key.
+  // TODO Add environment variables to get the full key.
 
   // Full key: oidc.user:https://dev.loginproxy.gov.bc.ca/auth/realms/standard:on-route-bc-direct-4598
   const storageKey: string = Object.keys(sessionStorage).find((key) =>

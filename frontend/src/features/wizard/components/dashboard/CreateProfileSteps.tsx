@@ -11,7 +11,6 @@ import {
 import React from "react";
 import { Banner } from "../../../../common/components/dashboard/Banner";
 import "../../../../common/components/dashboard/Dashboard.scss";
-import { UserInformationForm } from "../pages/UserInformationForm";
 import { FormProvider, useForm, FieldValues } from "react-hook-form";
 import {
   CompanyAndUserRequest,
@@ -54,7 +53,6 @@ export const CreateProfileSteps = React.memo(() => {
 
   const [activeStep, setActiveStep] = React.useState(0);
   const [clientNumber, setClientNumber] = React.useState(null);
-  // const [clientNumber, setClientNumber] = React.useState("123443444");
   const [completed, setCompleted] = React.useState<{
     [k: number]: boolean;
   }>({});
@@ -219,10 +217,9 @@ export const CreateProfileSteps = React.memo(() => {
                     <div>
                       <h2>Company Mailing Address</h2>
                       <hr></hr>
-                      <CompanyBanner legalName="Bandstra Transportation Systems Ltd." />
-                      {/* <CompanyBanner
+                      <CompanyBanner
                         legalName={user?.profile?.bceid_business_name as string}
-                      /> */}
+                      />
                       <CompanyInformationWizardForm />
                     </div>
                   )}
@@ -230,7 +227,6 @@ export const CreateProfileSteps = React.memo(() => {
                     <div>
                       <h2>User Details</h2>
                       <hr></hr>
-                      {/* <UserInformationForm></UserInformationForm> */}
                       <UserInformationWizardForm />
                     </div>
                   )}

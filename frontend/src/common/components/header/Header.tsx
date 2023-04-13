@@ -5,6 +5,7 @@ import { useAuth } from "react-oidc-context";
 import "./Header.scss";
 import * as routes from "../../../constants/routes";
 import { BC_COLOURS } from "../../../themes/bcGovStyles";
+import { Grid } from "@mui/material";
 
 /*
  * The Header component includes the BC Gov banner and Navigation bar
@@ -116,8 +117,30 @@ export const Header = () => {
         style={{ backgroundColor: headerColor }}
         data-testid="header-background"
       >
-        <Brand />
-        <NavButton />
+        <Grid container>
+          <Grid item xs={11}>
+            <Brand />
+            <NavButton />
+          </Grid>
+          {isAuthenticated && (
+            <Grid item xs={1}>
+              <a
+                style={{ cursor: "pointer"}}
+                onClick={() => {
+                  sessionStorage.removeItem("onRoutebc.user.context");
+                  signoutRedirect({
+                    extraQueryParams: {
+                      redirect_uri: window.location.origin + "/",
+                      kc_idp_hint: user?.profile?.identity_provider as string,
+                    },
+                  });
+                }}
+              >
+                Log Out
+              </a>
+            </Grid>
+          )}
+        </Grid>
       </header>
       <Navigation />
     </div>

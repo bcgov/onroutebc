@@ -1,18 +1,13 @@
 import { useAuth } from "react-oidc-context";
-import { ReactNode } from "react";
 import Button from "@mui/material/Button";
 import Grid from "@mui/material/Grid";
 import { LoginRedirect } from "./LoginRedirect";
-
-interface AuthProps {
-  children: ReactNode;
-}
 
 /*
  * The Authentication component handles user login
  *
  */
-export const Authentication = ({ children }: AuthProps) => {
+export const Authentication = () => {
   const auth = useAuth();
 
   if (auth.isLoading) {
@@ -20,8 +15,7 @@ export const Authentication = ({ children }: AuthProps) => {
   }
 
   if (auth.isAuthenticated) {
-    return <LoginRedirect />
-    // return <>{children}</>;
+    return <LoginRedirect />;
   }
 
   return (
@@ -32,11 +26,11 @@ export const Authentication = ({ children }: AuthProps) => {
         <Button
           id="login-bceid"
           variant="contained"
-          onClick={() =>
-            void auth.signinRedirect({
+          onClick={() => {
+            auth.signinRedirect({
               extraQueryParams: { kc_idp_hint: "bceidboth" },
-            })
-          }
+            });
+          }}
         >
           Log in with BCeID
         </Button>
@@ -47,11 +41,11 @@ export const Authentication = ({ children }: AuthProps) => {
         <Button
           id="login-idir"
           variant="contained"
-          onClick={() =>
-            void auth.signinRedirect({
+          onClick={() => {
+            auth.signinRedirect({
               extraQueryParams: { kc_idp_hint: "idir" },
-            })
-          }
+            });
+          }}
         >
           Log in with IDIR
         </Button>
