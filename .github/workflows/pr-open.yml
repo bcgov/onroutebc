@@ -79,6 +79,19 @@ jobs:
             file: common/openshift.init.yml
             overwrite: false
     steps:
+      - name: Set up Docker
+        uses: crazy-max/ghaction-setup-docker@v1
+        
+      - name: Log in to the Container registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.OC_TOKEN }}
+          
+      - name: List registry 
+        run: docker image list 
+        
       - name: Import Secrets
         id: secrets
         uses: hashicorp/vault-action@v2 
