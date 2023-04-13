@@ -8,7 +8,7 @@ export const CompanyContactDetailsForm = ({ feature }: { feature: string }) => (
       feature={feature}
       options={{
         name: "email",
-        rules: { required: false },
+        rules: { required: true },
         label: "Email",
       }}
     />

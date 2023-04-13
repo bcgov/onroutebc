@@ -1,4 +1,4 @@
-import { CompanyProfile } from "../features/manageProfile/apiManager/manageProfileAPI";
+import { CompanyAndUserRequest, CompanyProfile, UserInformation } from "../features/manageProfile/apiManager/manageProfileAPI";
 import {
   PowerUnit,
   Trailer,
@@ -9,4 +9,4 @@ export interface ApiErrorResponse {
   errorMessage: string; // array?
 }
 
-export type ORBC_FormTypes = CompanyProfile | PowerUnit | Trailer;
+export type ORBC_FormTypes = CompanyProfile | PowerUnit | Trailer | UserInformation | CompanyAndUserRequest;
