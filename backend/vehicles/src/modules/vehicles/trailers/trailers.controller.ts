@@ -129,8 +129,12 @@ export class TrailersController {
 
   @Post('delete-requests')
   @ApiBody({
-    description: 'The Power Unit Resource',
+    description: 'The Trailer Resource',
     type: DeleteTrailerDto,
+  })
+  @ApiOkResponse({
+    description: 'The Trailer Resource',
+    type: DeleteDto,
   })
   @HttpCode(200)
   async deleteTrailers(
