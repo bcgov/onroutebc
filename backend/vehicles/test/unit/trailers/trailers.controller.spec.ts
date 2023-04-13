@@ -12,6 +12,8 @@ import { trailersServiceMock } from '../../util/mocks/service/trailers.service.m
 const TRAILER_ID_1 = '1';
 const TRAILER_ID_2 = '2';
 const COMPANY_ID_1 = 1;
+const TRAILER_IDS_1 = ['1'];
+const TRAILER_IDS_2 = ['2'];
 
 describe('TrailersController', () => {
   let controller: TrailersController;
@@ -114,6 +116,28 @@ describe('TrailersController', () => {
     it('should thrown a DataNotFoundException if the trailer is not found', async () => {
       await expect(async () => {
         await controller.remove(null, COMPANY_ID_1, TRAILER_ID_2);
+      }).rejects.toThrow(DataNotFoundException);
+    });
+  });
+
+  describe('Trailer controller remove function.', () => {
+    it('should delete the trailer', async () => {
+      const deleteResult = await controller.deleteTrailers(
+        TRAILER_IDS_1,
+        COMPANY_ID_1,
+      );
+      expect(typeof deleteResult).toBe('object');
+      expect(deleteResult.success).toBeTruthy();
+      expect(deleteResult.failure).toBeTruthy();
+      expect(trailersServiceMock.removeAll).toHaveBeenCalledWith(
+        TRAILER_IDS_1,
+        COMPANY_ID_1,
+      );
+    });
+
+    it('should thrown a DataNotFoundException if the trailer is not found', async () => {
+      await expect(async () => {
+        await controller.deleteTrailers(TRAILER_IDS_2, COMPANY_ID_1);
       }).rejects.toThrow(DataNotFoundException);
     });
   });

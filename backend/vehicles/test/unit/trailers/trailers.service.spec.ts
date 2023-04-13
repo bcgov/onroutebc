@@ -15,6 +15,8 @@ import {
 } from '../../util/mocks/data/trailer.mock';
 
 const TRAILER_ID_1 = '1';
+const TRAILER_IDS_2 = ['2'];
+const COMPANY_ID_2 = 2;
 
 describe('TrailersService', () => {
   let service: TrailersService;
@@ -92,6 +94,14 @@ describe('TrailersService', () => {
     it('should delete the trailer', async () => {
       const deleteResult = await service.remove(TRAILER_ID_1);
       expect(typeof deleteResult).toBe('object');
+    });
+  });
+
+  describe('Trailer service remove function', () => {
+    it('should delete the trailer', async () => {
+      const deleteResult = await service.removeAll(TRAILER_IDS_2, COMPANY_ID_2);
+      expect(typeof deleteResult).toBe('object');
+      // expect(deleteResult).toEqual(deleteDtoMock2);
     });
   });
 });
