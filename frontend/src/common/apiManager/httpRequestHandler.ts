@@ -5,9 +5,9 @@ import { ApiErrorResponse } from "../../types/common";
  * @returns A string containing the access token.
  */
 const getAccessToken = () => {
-  // TODO Add environment variables to get the full key.
-
-  // Full key: oidc.user:https://dev.loginproxy.gov.bc.ca/auth/realms/standard:on-route-bc-direct-4598
+  // Add environment variables to get the full key.
+  // Full key structure: oidc.user:${AUTH0_ISSUER_URL}:${AUTH0_AUDIENCE}
+  // Full key example:: oidc.user:https://dev.loginproxy.gov.bc.ca/auth/realms/standard:on-route-bc-direct-4598
   const storageKey: string = Object.keys(sessionStorage).find((key) =>
     key.startsWith("oidc.user")
   ) as string;
@@ -19,6 +19,22 @@ const getAccessToken = () => {
     " " +
     parsedSessionObject["access_token"]
   );
+};
+
+/**
+ * Retrieves the companyId from the session.
+ * @returns string | null
+ */
+export const getCompanyIdFromSession = (): string | null => {
+  const userContextString = sessionStorage.getItem("onRoutebc.user.context");
+  if (!userContextString) return null;
+
+  const userContext = JSON.parse(userContextString);
+
+  if (!userContext.companyId) return null;
+
+  // Currently we only support one company per user.
+  return userContext.companyId;
 };
 
 export const httpGETRequest = async (url: URL) => {

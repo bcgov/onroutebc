@@ -3,6 +3,7 @@ import {
   httpGETRequestPromise,
   httpPOSTRequest,
   httpPUTRequest,
+  getCompanyIdFromSession,
 } from "../../../common/apiManager/httpRequestHandler";
 import { UserContextType } from "../../../common/authentication/types";
 import { ApiErrorResponse } from "../../../types/common";
@@ -65,23 +66,12 @@ export interface CompanyAndUserRequest {
   adminUser: UserInformation;
 }
 
-// I have hardcoded the companyGUID because for this sprint we have assumed
-// that the user has logged in with BCeID and has already completed the
-// Wizard to setup their initial company profile
-//let TEST_COMPANY_GUID = "06D0D93CE18A43948979F255C7046B72";
-//let TEST_COMPANY_GUID = "C16A95599A264242A850BDDC21B739F4"; // Harry Ewing User
-const TEST_COMPANY_ID = "1";
-
-/* eslint-disable @typescript-eslint/no-unused-vars */
-export const getCompanyInfo = async (
-  companyGUID: string
-): Promise<CompanyProfile> => {
-  //return TEST_DATA;
-  const url = new URL(MANAGE_PROFILE_API.COMPANY_INFO);
+export const getCompanyInfo = async (): Promise<CompanyProfile> => {
+  const url = new URL(MANAGE_PROFILE_API.COMPANIES);
 
   try {
     const response = await httpGETRequest(
-      new URL(`${url.href}/${TEST_COMPANY_ID}`)
+      new URL(`${url.href}/${getCompanyIdFromSession()}`)
     );
     const data = await response.json();
 
@@ -103,13 +93,10 @@ export const getCompanyInfo = async (
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 export const updateCompanyInfo = async ({
-  companyGUID,
   companyInfo,
 }: {
-  companyGUID: string;
   companyInfo: CompanyProfile;
 }): Promise<Response> => {
-  console.log("companyInfo", companyInfo);
   // If the mailing address is the same as the company address, then send an undefined mailing address
   // The backend API will set the mailing address ID to match the company address ID
   if (companyInfo.mailingAddressSameAsCompanyAddress) {
@@ -117,7 +104,7 @@ export const updateCompanyInfo = async ({
   }
 
   return httpPUTRequest(
-    `${MANAGE_PROFILE_API.COMPANY_INFO}/${TEST_COMPANY_ID}`,
+    `${MANAGE_PROFILE_API.COMPANIES}/${getCompanyIdFromSession()}`,
     companyInfo
   );
 };
@@ -131,26 +118,8 @@ export const createOnRouteBCProfile = async (
   onRouteBCProfileRequestObject: CompanyAndUserRequest
 ): Promise<Response> => {
   return httpPOSTRequest(
-    `${MANAGE_PROFILE_API.COMPANY_INFO}`,
+    `${MANAGE_PROFILE_API.COMPANIES}`,
     onRouteBCProfileRequestObject
-  );
-};
-
-/**
- *
- * @param param0
- * @returns
- */
-export const addUserInfo = async ({
-  companyGUID,
-  userInfo,
-}: {
-  companyGUID: string;
-  userInfo: UserInformation;
-}): Promise<Response> => {
-  return httpPOSTRequest(
-    `${MANAGE_PROFILE_API.COMPANY_INFO}/${companyGUID}`,
-    userInfo
   );
 };
 

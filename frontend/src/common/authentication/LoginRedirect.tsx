@@ -65,12 +65,18 @@ export const LoginRedirect = () => {
             navigate(routes.WELCOME);
           }
         }
-        // The user exists
-        else if (user?.userGUID && associatedCompanies.length) {
+        // The user and company exist
+        else if (associatedCompanies.length) {
           navigate(routes.HOME);
-        } else if (user?.userGUID && !associatedCompanies.length) {
+        } 
+        // User exists but company does not exist. This is not a possible scenario.
+        else if (!associatedCompanies.length) {
           // Error Page
         }
+
+        // else if(pendingCompanies.length) (i.e., user exists and has invites from a company) 
+        // is not a valid block currently because
+        // one user can only be part of one company currently.
       }
     }
   }, [isLoading]);

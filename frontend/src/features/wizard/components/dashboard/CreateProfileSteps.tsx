@@ -53,7 +53,9 @@ export const CreateProfileSteps = React.memo(() => {
 
   const [activeStep, setActiveStep] = React.useState(0);
   const [clientNumber, setClientNumber] = React.useState(null);
-  const [completed, setCompleted] = React.useState<{
+
+  // Add a setter when there's a use for it.
+  const [completed] = React.useState<{
     [k: number]: boolean;
   }>({});
 
@@ -74,6 +76,21 @@ export const CreateProfileSteps = React.memo(() => {
     onSuccess: async (response) => {
       if (response.status === 201 || response.status === 200) {
         const responseBody = await response.json();
+        const userContextSessionObject = {
+          companyId: responseBody["companyId"],
+          firstName: responseBody.adminUser?.firstName,
+          lastName: responseBody.adminUser?.lastName,
+          userName: responseBody.adminUser?.userName,
+        };
+        // Switch to a react context when implementing multiple companies.
+        // We currently don't need a dedicated react context.
+        // Session Storage works alright as there is no leakage of information
+        // than what is already displayed to the user.
+        sessionStorage.setItem(
+          "onRoutebc.user.context",
+          JSON.stringify(userContextSessionObject)
+        );
+
         setClientNumber(() => responseBody["clientNumber"]);
       } else {
         // Display Error

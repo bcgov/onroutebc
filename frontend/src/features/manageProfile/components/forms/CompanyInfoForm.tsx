@@ -91,7 +91,6 @@ export const CompanyInfoForm = memo(
     const onUpdateCompanyInfo = function (data: FieldValues) {
       const companyInfoToBeUpdated = data as CompanyProfile;
       addCompanyInfoQuery.mutate({
-        companyGUID: "TEST_changeme",
         companyInfo: companyInfoToBeUpdated,
       });
     };
