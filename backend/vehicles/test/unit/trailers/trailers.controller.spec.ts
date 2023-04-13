@@ -11,6 +11,9 @@ import { trailersServiceMock } from '../../util/mocks/service/trailers.service.m
 
 const TRAILER_ID_1 = '1';
 const TRAILER_ID_2 = '2';
+const COMPANY_ID_1 = 1;
+const TRAILER_IDS_1 = ['1'];
+const TRAILER_IDS_2 = ['2'];
 
 describe('TrailersController', () => {
   let controller: TrailersController;
@@ -29,7 +32,11 @@ describe('TrailersController', () => {
   });
   describe('Trailer controller create function', () => {
     it('should create trailer', async () => {
-      const retTrailer = await controller.create(createTrailerDtoMock);
+      const retTrailer = await controller.create(
+        null,
+        COMPANY_ID_1,
+        createTrailerDtoMock,
+      );
       expect(typeof retTrailer).toBe('object');
       expect(retTrailer).toEqual(readTrailerDtoMock);
       expect(trailersServiceMock.create).toHaveBeenCalledWith(
@@ -40,7 +47,7 @@ describe('TrailersController', () => {
 
   describe('Trailer controller findAll function', () => {
     it('should return all the trailers', async () => {
-      const retTrailers = await controller.findAll();
+      const retTrailers = await controller.findAll(COMPANY_ID_1);
       expect(typeof retTrailers).toBe('object');
       expect(retTrailers).toContain(readTrailerDtoMock);
       expect(retTrailers.length).toBe(1);
@@ -49,7 +56,11 @@ describe('TrailersController', () => {
 
   describe('Trailer controller findOne function', () => {
     it('should return the trailer', async () => {
-      const retTrailer = await controller.findOne(TRAILER_ID_1);
+      const retTrailer = await controller.findOne(
+        null,
+        COMPANY_ID_1,
+        TRAILER_ID_1,
+      );
       expect(typeof retTrailer).toBe('object');
       expect(retTrailer).toEqual(readTrailerDtoMock);
       expect(trailersServiceMock.findOne).toHaveBeenCalledWith(TRAILER_ID_1);
@@ -57,7 +68,7 @@ describe('TrailersController', () => {
 
     it('should throw an DataNotFoundException if trailer is not found', async () => {
       await expect(async () => {
-        await controller.findOne(TRAILER_ID_2);
+        await controller.findOne(null, COMPANY_ID_1, TRAILER_ID_2);
       }).rejects.toThrow(DataNotFoundException);
     });
   });
@@ -65,6 +76,8 @@ describe('TrailersController', () => {
   describe('Trailer controller update function', () => {
     it('should update the trailer', async () => {
       const retTrailer = await controller.update(
+        null,
+        COMPANY_ID_1,
         TRAILER_ID_1,
         updateTrailerDtoMock,
       );
@@ -78,14 +91,23 @@ describe('TrailersController', () => {
 
     it('should thrown a DataNotFoundException if the trailer is not found', async () => {
       await expect(async () => {
-        await controller.update(TRAILER_ID_2, updateTrailerDtoMock);
+        await controller.update(
+          null,
+          COMPANY_ID_1,
+          TRAILER_ID_2,
+          updateTrailerDtoMock,
+        );
       }).rejects.toThrow(DataNotFoundException);
     });
   });
 
   describe('Trailer controller remove function.', () => {
     it('should delete the trailer', async () => {
-      const deleteResult = await controller.remove(TRAILER_ID_1);
+      const deleteResult = await controller.remove(
+        null,
+        COMPANY_ID_1,
+        TRAILER_ID_1,
+      );
       expect(typeof deleteResult).toBe('object');
       expect(deleteResult.deleted).toBeTruthy();
       expect(trailersServiceMock.remove).toHaveBeenCalledWith(TRAILER_ID_1);
@@ -93,7 +115,29 @@ describe('TrailersController', () => {
 
     it('should thrown a DataNotFoundException if the trailer is not found', async () => {
       await expect(async () => {
-        await controller.remove(TRAILER_ID_2);
+        await controller.remove(null, COMPANY_ID_1, TRAILER_ID_2);
+      }).rejects.toThrow(DataNotFoundException);
+    });
+  });
+
+  describe('Trailer controller remove function.', () => {
+    it('should delete the trailer', async () => {
+      const deleteResult = await controller.deleteTrailers(
+        TRAILER_IDS_1,
+        COMPANY_ID_1,
+      );
+      expect(typeof deleteResult).toBe('object');
+      expect(deleteResult.success).toBeTruthy();
+      expect(deleteResult.failure).toBeTruthy();
+      expect(trailersServiceMock.removeAll).toHaveBeenCalledWith(
+        TRAILER_IDS_1,
+        COMPANY_ID_1,
+      );
+    });
+
+    it('should thrown a DataNotFoundException if the trailer is not found', async () => {
+      await expect(async () => {
+        await controller.deleteTrailers(TRAILER_IDS_2, COMPANY_ID_1);
       }).rejects.toThrow(DataNotFoundException);
     });
   });

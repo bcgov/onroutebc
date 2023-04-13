@@ -6,11 +6,15 @@ import {
   Param,
   Delete,
   Put,
+  Req,
+  HttpCode,
 } from '@nestjs/common';
 import { PowerUnitsService } from './power-units.service';
 import { CreatePowerUnitDto } from './dto/request/create-power-unit.dto';
 import { UpdatePowerUnitDto } from './dto/request/update-power-unit.dto';
 import {
+  ApiBearerAuth,
+  ApiBody,
   ApiCreatedResponse,
   ApiInternalServerErrorResponse,
   ApiMethodNotAllowedResponse,
@@ -22,6 +26,11 @@ import {
 import { ReadPowerUnitDto } from './dto/response/read-power-unit.dto';
 import { ExceptionDto } from '../../common/dto/exception.dto';
 import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
+import { Request } from 'express';
+import { Roles } from '../../../common/decorator/roles.decorator';
+import { Role } from '../../../common/enum/roles.enum';
+import { DeleteDto } from 'src/modules/common/dto/response/delete.dto';
+import { DeletePowerUnitDto } from './dto/request/delete-power-units.dto';
 
 @ApiTags('Vehicles - Power Units')
 @ApiNotFoundResponse({
@@ -36,7 +45,8 @@ import { DataNotFoundException } from '../../../common/exception/data-not-found.
   description: 'The Power Unit Api Internal Server Error Response',
   type: ExceptionDto,
 })
-@Controller('vehicles/powerUnits')
+@ApiBearerAuth()
+@Controller('companies/:companyId/vehicles/powerUnits')
 export class PowerUnitsController {
   constructor(private readonly powerUnitsService: PowerUnitsService) {}
 
@@ -45,7 +55,12 @@ export class PowerUnitsController {
     type: ReadPowerUnitDto,
   })
   @Post()
-  async create(@Body() createPowerUnitDto: CreatePowerUnitDto) {
+  async create(
+    @Req() request: Request,
+    @Param('companyId') companyId: number,
+    @Body() createPowerUnitDto: CreatePowerUnitDto,
+  ) {
+    //const currentUser = request.user as IUserJWT;
     return await this.powerUnitsService.create(createPowerUnitDto);
   }
 
@@ -54,8 +69,11 @@ export class PowerUnitsController {
     type: ReadPowerUnitDto,
     isArray: true,
   })
+  @Roles(Role.READ_VEHICLE)
   @Get()
-  async findAll(): Promise<ReadPowerUnitDto[]> {
+  async findAll(
+    @Param('companyId') companyId: number,
+  ): Promise<ReadPowerUnitDto[]> {
     return await this.powerUnitsService.findAll();
   }
 
@@ -63,8 +81,11 @@ export class PowerUnitsController {
     description: 'The Power Unit Resource',
     type: ReadPowerUnitDto,
   })
+  @Roles(Role.READ_VEHICLE)
   @Get(':powerUnitId')
   async findOne(
+    @Req() request: Request,
+    @Param('companyId') companyId: number,
     @Param('powerUnitId') powerUnitId: string,
   ): Promise<ReadPowerUnitDto> {
     const powerUnit = await this.powerUnitsService.findOne(powerUnitId);
@@ -78,11 +99,15 @@ export class PowerUnitsController {
     description: 'The Power Unit Resource',
     type: ReadPowerUnitDto,
   })
+  @Roles(Role.WRITE_VEHICLE)
   @Put(':powerUnitId')
   async update(
+    @Req() request: Request,
+    @Param('companyId') companyId: number,
     @Param('powerUnitId') powerUnitId: string,
     @Body() updatePowerUnitDto: UpdatePowerUnitDto,
   ): Promise<ReadPowerUnitDto> {
+    //const currentUser = request.user as IUserJWT;
     const powerUnit = await this.powerUnitsService.update(
       powerUnitId,
       updatePowerUnitDto,
@@ -93,12 +118,42 @@ export class PowerUnitsController {
     return powerUnit;
   }
 
+  @Roles(Role.WRITE_VEHICLE)
   @Delete(':powerUnitId')
-  async remove(@Param('powerUnitId') powerUnitId: string) {
+  async remove(
+    @Req() request: Request,
+    @Param('companyId') companyId: number,
+    @Param('powerUnitId') powerUnitId: string,
+  ) {
+    //const currentUser = request.user as IUserJWT;
     const deleteResult = await this.powerUnitsService.remove(powerUnitId);
     if (deleteResult.affected === 0) {
       throw new DataNotFoundException();
     }
     return { deleted: true };
+  }
+
+  @ApiOkResponse({
+    description: 'The Power Unit Resource',
+    type: DeleteDto,
+  })
+  @ApiBody({
+    description: 'The Power Unit Resource',
+    type: DeletePowerUnitDto,
+  })
+  @Post('delete-requests')
+  @HttpCode(200)
+  async deletePowerUnits(
+    @Body('powerUnits') powerUnits: string[],
+    @Param('companyId') companyId: number,
+  ): Promise<DeleteDto> {
+    const deleteResult = await this.powerUnitsService.removeAll(
+      Array.from(powerUnits),
+      companyId,
+    );
+    if (deleteResult == null) {
+      throw new DataNotFoundException();
+    }
+    return deleteResult;
   }
 }

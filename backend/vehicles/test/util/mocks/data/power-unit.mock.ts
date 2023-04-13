@@ -1,3 +1,4 @@
+import { DeletePowerUnitDto } from 'src/modules/vehicles/power-units/dto/request/delete-power-units.dto';
 import { CreatePowerUnitDto } from '../../../../src/modules/vehicles/power-units/dto/request/create-power-unit.dto';
 import { UpdatePowerUnitDto } from '../../../../src/modules/vehicles/power-units/dto/request/update-power-unit.dto';
 import { ReadPowerUnitDto } from '../../../../src/modules/vehicles/power-units/dto/response/read-power-unit.dto';
@@ -17,6 +18,7 @@ const STEER_AXLE_TIRE_SIZE = 32;
 const PROVINCE_CODE = 'BC';
 const COUNTRY_CODE = 'CA';
 const POWER_UNIT_TYPE_CODE = 'CONCRET';
+const COMPANY_ID = 1;
 
 export const powerUnitEntityMock: PowerUnit = {
   powerUnitId: POWER_UNIT_ID,
@@ -29,6 +31,8 @@ export const powerUnitEntityMock: PowerUnit = {
   vin: VIN,
   licensedGvw: LICENSED_GVW,
   steerAxleTireSize: STEER_AXLE_TIRE_SIZE,
+  companyId: COMPANY_ID,
+
   ...baseEntityMock,
 };
 
@@ -54,4 +58,8 @@ export const readPowerUnitDtoMock: ReadPowerUnitDto = {
   ...createPowerUnitDtoMock,
   powerUnitId: POWER_UNIT_ID,
   createdDateTime: baseDtoMock.createdDateTime,
+};
+
+export const deletePowerUnitMock: DeletePowerUnitDto = {
+  powerUnits: ['3'],
 };

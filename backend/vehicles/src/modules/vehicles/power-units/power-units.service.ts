@@ -7,6 +7,7 @@ import { PowerUnit } from './entities/power-unit.entity';
 import { InjectMapper } from '@automapper/nestjs';
 import { Mapper } from '@automapper/core';
 import { ReadPowerUnitDto } from './dto/response/read-power-unit.dto';
+import { DeleteDto } from 'src/modules/common/dto/response/delete.dto';
 
 @Injectable()
 export class PowerUnitsService {
@@ -70,5 +71,33 @@ export class PowerUnitsService {
   }
   async remove(powerUnitId: string): Promise<DeleteResult> {
     return await this.powerUnitRepository.delete(powerUnitId);
+  }
+
+  async removeAll(
+    powerUnitIds: string[],
+    companyId: number,
+  ): Promise<DeleteDto> {
+    const deletedResult = await this.powerUnitRepository
+      .createQueryBuilder()
+      .delete()
+      .whereInIds(powerUnitIds)
+      .andWhere('companyId = :companyId', {
+        companyId: companyId,
+      })
+      .output('DELETED.POWER_UNIT_ID')
+      .execute();
+
+    const powerUnitsDeleted = Array.from(
+      deletedResult?.raw as [{ POWER_UNIT_ID: string }],
+    );
+    const success = powerUnitsDeleted?.map(
+      (powerUnit) => powerUnit.POWER_UNIT_ID,
+    );
+    const failure = powerUnitIds?.filter((id) => !success?.includes(id));
+    const deleteDto: DeleteDto = {
+      success: success,
+      failure: failure,
+    };
+    return deleteDto;
   }
 }
