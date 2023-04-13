@@ -15,6 +15,7 @@ import "../../TermOversize.scss";
 import { getErrorMessage } from "../../../../../../common/components/form/CustomFormComponents";
 import { BC_COLOURS } from "../../../../../../themes/bcGovStyles";
 import { ApplicationContext } from "../../../../context/ApplicationContext";
+import { mapTypeCodeToObject } from "../../../../helpers/mapSubTypeCodeToObject";
 
 /**
  * Sort Power Unit or Trailer Types alphabetically
@@ -35,35 +36,6 @@ const sortVehicleSubTypes = (
     return 0;
   });
   return options;
-};
-
-/**
- * Maps the typeCode (Example: GRADERS) to the TrailerType or PowerUnitType object, then return that object
- * @param typeCode
- * @param vehicleType
- * @param powerUnitTypes
- * @param trailerTypes
- * @returns A Vehicle Sub type object
- */
-const mapTypeCodeToObject = (
-  typeCode: string,
-  vehicleType: string,
-  powerUnitTypes: VehicleType[] | undefined,
-  trailerTypes: VehicleType[] | undefined
-) => {
-  let typeObject = undefined;
-
-  if (powerUnitTypes && vehicleType === "powerUnit") {
-    typeObject = powerUnitTypes.find((v) => {
-      return v.typeCode == typeCode;
-    });
-  } else if (trailerTypes && vehicleType === "trailer") {
-    typeObject = trailerTypes.find((v) => {
-      return v.typeCode == typeCode;
-    });
-  }
-
-  return typeObject;
 };
 
 /**

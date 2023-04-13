@@ -139,6 +139,7 @@ export const TermOversizeForm = () => {
   const navigate = useNavigate();
 
   const onContinue = function (data: FieldValues) {
+    console.log("powerUnitId");
     const termOverSizeToBeAdded = data as TermOversizeApplication;
     handleSaveVehicle(termOverSizeToBeAdded);
     applicationContext?.setApplicationData(termOverSizeToBeAdded);
@@ -156,9 +157,13 @@ export const TermOversizeForm = () => {
       });
 
     if (data.application.vehicleDetails.vehicleType === "powerUnit") {
-      const powerUnitId = existingVehicle
-        ? (existingVehicle[0] as PowerUnit).powerUnitId
-        : "";
+      let powerUnitId = "";
+      if (existingVehicle && existingVehicle[0]) {
+        const powerUnit = existingVehicle[0] as PowerUnit;
+        if (powerUnit.powerUnitId) {
+          powerUnitId = powerUnit.powerUnitId;
+        }
+      }
 
       const powerUnit: PowerUnit = {
         powerUnitId: powerUnitId,
@@ -180,9 +185,13 @@ export const TermOversizeForm = () => {
     }
 
     if (data.application.vehicleDetails.vehicleType === "trailer") {
-      const trailerId = existingVehicle
-        ? (existingVehicle[0] as Trailer).trailerId
-        : "";
+      let trailerId = "";
+      if (existingVehicle && existingVehicle[0]) {
+        const trailer = existingVehicle[0] as Trailer;
+        if (trailer.trailerId) {
+          trailerId = trailer.trailerId;
+        }
+      }
 
       const trailer: Trailer = {
         trailerId: trailerId,
