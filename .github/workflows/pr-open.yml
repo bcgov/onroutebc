@@ -32,7 +32,6 @@ jobs:
 
             Once merged, code will be promoted and handed off to following workflow run.
             [Main Merge Workflow](https://github.com/${{ github.repository }}/actions/workflows/merge-main.yml)
-
   builds:
     name: Builds
     runs-on: ubuntu-22.04
@@ -48,6 +47,7 @@ jobs:
             triggers: ('frontend/')
     steps:
       - uses: actions/checkout@v3
+      
       - uses: bcgov-nr/action-builder-ghcr@v1.1.0
         with:
           package: ${{ matrix.package }}
@@ -55,6 +55,19 @@ jobs:
           tag_fallback: test
           token: ${{ secrets.GITHUB_TOKEN }}
           triggers: ${{ matrix.triggers }}
+      
+      - name: Set up Docker
+        uses: crazy-max/ghaction-setup-docker@v1
+        
+      - name: Log in to the Container registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: List registry 
+        run: docker image list ghcr.io
 
   deploys:
     name: Deploys
@@ -79,27 +92,24 @@ jobs:
           - name: init
             file: common/openshift.init.yml
             overwrite: false
-    steps:
-      - name: Get Vault Environment
-        shell: bash
-        run: echo VAULT_ENV=${{secrets.OC_NAMESPACE}} | awk -F '-' '{print($2!="prod")?$1"-nonprod":$1"-prod"}' | tee $GITHUB_ENV
+    steps: 
       - name: Import Secrets
         id: secrets
-        uses: hashicorp/vault-action@v2
+        uses: hashicorp/vault-action@v2 
         with:
           url: https://vault.developer.gov.bc.ca
           token: ${{ secrets.VAULT_TOKEN }}
           exportEnv: 'false'
           namespace: platform-services
           secrets: |
-            ${{env.VAULT_ENV}}/data/database-dev  DATABASE_HOST     | VAULT_DATABASE_HOST;
-            ${{env.VAULT_ENV}}/data/database-dev  DATABASE_USER     | VAULT_DATABASE_USER;
-            ${{env.VAULT_ENV}}/data/database-dev  DATABASE_NAME     | VAULT_DATABASE_NAME;
-            ${{env.VAULT_ENV}}/data/database-dev  DATABASE_PASSWORD | VAULT_DATABASE_PASSWORD;
-            ${{env.VAULT_ENV}}/data/database-dev  DATABASE_PORT     | VAULT_DATABASE_PORT;
-            ${{env.VAULT_ENV}}/data/auth0-dev     AUTH0_ISSUER_URL  | VAULT_AUTH0_ISSUER_URL;
-            ${{env.VAULT_ENV}}/data/auth0-dev     AUTH0_AUDIENCE    | VAULT_AUTH0_AUDIENCE;
-            ${{env.VAULT_ENV}}/data/auth0-dev     AUTH0_IGNORE_EXP  | VAULT_AUTH0_IGNORE_EXP
+            ${{secrets.VAULT_ENV}}/data/database-dev  DATABASE_HOST     | VAULT_DATABASE_HOST;
+            ${{secrets.VAULT_ENV}}/data/database-dev  DATABASE_USER     | VAULT_DATABASE_USER;
+            ${{secrets.VAULT_ENV}}/data/database-dev  DATABASE_NAME     | VAULT_DATABASE_NAME;
+            ${{secrets.VAULT_ENV}}/data/database-dev  DATABASE_PASSWORD | VAULT_DATABASE_PASSWORD;
+            ${{secrets.VAULT_ENV}}/data/database-dev  DATABASE_PORT     | VAULT_DATABASE_PORT;
+            ${{secrets.VAULT_ENV}}/data/auth0-dev     AUTH0_ISSUER_URL  | VAULT_AUTH0_ISSUER_URL;
+            ${{secrets.VAULT_ENV}}/data/auth0-dev     AUTH0_AUDIENCE    | VAULT_AUTH0_AUDIENCE;
+            ${{secrets.VAULT_ENV}}/data/auth0-dev     AUTH0_IGNORE_EXP  | VAULT_AUTH0_IGNORE_EXP
       - name: Deploy Application
         uses: bcgov-nr/action-deployer-openshift@v1.0.3
         with:
@@ -121,3 +131,30 @@ jobs:
             -p AUTH0_AUDIENCE=${{steps.secrets.outputs.VAULT_AUTH0_AUDIENCE}}
             -p AUTH0_IGNORE_EXP=${{steps.secrets.outputs.VAULT_AUTH0_IGNORE_EXP}}
             ${{ matrix.parameters }}
+
+  helm-deploys:
+    name: Helm Deploys
+    needs:
+      - builds
+    runs-on: ubuntu-22.04
+    environment: dev
+    strategy:
+      max-parallel: 1
+      fail-fast: true
+    steps:
+      - name: Import Secrets
+        id: secrets
+        uses: hashicorp/vault-action@v2 
+        with:
+          url: https://vault.developer.gov.bc.ca
+          token: ${{ secrets.VAULT_TOKEN }}
+          exportEnv: 'false'
+          namespace: platform-services
+          secrets: |
+            ${{secrets.VAULT_ENV}}/data/coms-dev  BASICAUTH_PASSWORD              | VAULT_BASICAUTH_PASSWORD;
+            ${{secrets.VAULT_ENV}}/data/coms-dev  BASICAUTH_USERNAME              | VAULT_BASICAUTH_USERNAME;
+            ${{secrets.VAULT_ENV}}/data/coms-dev  OBJECTSTORAGE_ACCESSKEYID       | VAULT_OBJECTSTORAGE_ACCESSKEYID;
+            ${{secrets.VAULT_ENV}}/data/coms-dev  OBJECTSTORAGE_BUCKET            | VAULT_OBJECTSTORAGE_BUCKET;
+            ${{secrets.VAULT_ENV}}/data/coms-dev  OBJECTSTORAGE_ENDPOINT          | VAULT_OBJECTSTORAGE_ENDPOINT;
+            ${{secrets.VAULT_ENV}}/data/coms-dev  OBJECTSTORAGE_KEY               | VAULT_OBJECTSTORAGE_KEY;
+            ${{secrets.VAULT_ENV}}/data/coms-dev  OBJECTSTORAGE_SECRETACCESSKEY   | VAULT_OBJECTSTORAGE_SECRETACCESSKEY;
