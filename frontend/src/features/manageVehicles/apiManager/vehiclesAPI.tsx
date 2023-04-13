@@ -106,9 +106,9 @@ export const deleteVehicle = (
 ): Promise<Response> => {
   let url: string | null = null;
   if (vehicleType === "powerUnit") {
-    url = VEHICLES_API.POWER_UNIT;
+    url = `${VEHICLE_URL}/companies/${getCompanyIdFromSession()}/vehicles/powerUnits`;
   } else {
-    url = VEHICLES_API.TRAILER;
+    url = `${VEHICLE_URL}/companies/${getCompanyIdFromSession()}/vehicles/trailers`;
   }
   return httpDELETERequest(`${url}/${vehicleId}`);
 };
@@ -117,22 +117,20 @@ export const deleteVehicle = (
  * Delete one or more vehicles.
  * @param vehicleIds Array of vehicle ids to be deleted.
  * @param vehicleType The {@link VehicleTypesAsString} to be deleted.
- * @param companyId The company id the vehicles are part of.
  * @returns A Promise with the API response.
  */
 export const deleteVehicles = (
   vehicleIds: Array<string>,
   vehicleType: VehicleTypesAsString,
-  companyId = "12" // Remove hardcoded value
 ): Promise<Response> => {
   let url: string | null = null;
   let requestBody: { powerUnits: Array<string> } | { trailers: Array<string> };
   if (vehicleType === "powerUnit") {
-    url = VEHICLES_API.POWER_UNIT;
+    url = `${VEHICLE_URL}/companies/${getCompanyIdFromSession()}/vehicles/powerUnits/delete-requests`;
     requestBody = { powerUnits: vehicleIds };
   } else {
-    url = VEHICLES_API.TRAILER;
+    url = `${VEHICLE_URL}/companies/${getCompanyIdFromSession()}/vehicles/trailers/delete-requests`;
     requestBody = { trailers: vehicleIds };
   }
-  return httpPOSTRequest(`${url}/delete-requests/${companyId}`, requestBody);
+  return httpPOSTRequest(url, requestBody);
 };

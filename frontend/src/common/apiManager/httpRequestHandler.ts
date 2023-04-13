@@ -115,5 +115,8 @@ export const httpPUTRequest = (url: string, data: any) => {
 export const httpDELETERequest = (url: string) => {
   return fetch(url, {
     method: "DELETE",
+    headers: {
+      Authorization: getAccessToken(),
+    }
   });
 };
