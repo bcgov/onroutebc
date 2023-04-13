@@ -61,7 +61,7 @@ export const CompanyInfo = () => {
     //refetch,
   } = useQuery({
     queryKey: ["companyInfo"],
-    queryFn: () => getCompanyInfo("TEST_changeme"),
+    queryFn: () => getCompanyInfo(),
     keepPreviousData: true,
     staleTime: 5000,
   });

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80">
+  <g id="Existing_Account_Graphic" transform="translate(-395 -675)">
+    <g id="Rectangle_3371" data-name="Rectangle 3371" transform="translate(395 675)" fill="#f4f5f8" stroke="#b2b5b6" stroke-width="1">
+      <rect width="80" height="80" rx="2" stroke="none"/>
+      <rect x="0.5" y="0.5" width="79" height="79" rx="1.5" fill="none"/>
+    </g>
+    <path id="Rectangle_3372" data-name="Rectangle 3372" d="M2,0H78a2,2,0,0,1,2,2V16a0,0,0,0,1,0,0H0a0,0,0,0,1,0,0V2A2,2,0,0,1,2,0Z" transform="translate(395 675)" fill="#313132"/>
+    <path id="Path_1428" data-name="Path 1428" d="M81.837,36.882a4.093,4.093,0,0,0,1.135-2.845,3.952,3.952,0,0,0-4-3.973,3.848,3.848,0,0,0-2.81,1.18,3.8,3.8,0,0,0-1.189,2.793,3.918,3.918,0,0,0,1.189,2.845,4.069,4.069,0,0,0,2.81,1.182,4.205,4.205,0,0,0,2.866-1.182" transform="translate(324.028 648.936)" fill="#d8292f" stroke="rgba(0,0,0,0)" stroke-width="1"/>
+    <path id="Path_1429" data-name="Path 1429" d="M104.523,36.882a3.916,3.916,0,0,0,1.189-2.845,3.8,3.8,0,0,0-1.189-2.793,3.85,3.85,0,0,0-2.81-1.18,3.953,3.953,0,0,0-4,3.973,4.1,4.1,0,0,0,1.135,2.845,4.2,4.2,0,0,0,2.865,1.182,4.071,4.071,0,0,0,2.81-1.182" transform="translate(311.288 648.936)" fill="#fcba19" stroke="rgba(0,0,0,0)" stroke-width="1"/>
+    <path id="Path_1430" data-name="Path 1430" d="M124.307,30.064a3.813,3.813,0,0,0-2.792,1.18,4.036,4.036,0,0,0-1.181,2.793,4.159,4.159,0,0,0,1.181,2.845,4.031,4.031,0,0,0,2.792,1.181,4.032,4.032,0,0,0,4.027-4.027,4.032,4.032,0,0,0-1.181-2.793,3.937,3.937,0,0,0-2.847-1.18" transform="translate(298.666 648.936)" fill="#2e8540" stroke="rgba(0,0,0,0)" stroke-width="1"/>
+    <rect id="Rectangle_3363" data-name="Rectangle 3363" width="46" height="10" transform="translate(403 695)" fill="#d9eaf7" stroke="rgba(0,0,0,0)" stroke-width="1"/>
+    <rect id="Rectangle_3364" data-name="Rectangle 3364" width="10" height="10" transform="translate(457 695)" fill="#f9f1c6" stroke="rgba(0,0,0,0)" stroke-width="1"/>
+    <rect id="Rectangle_3365" data-name="Rectangle 3365" width="36" height="38" transform="translate(431 709)" fill="#f2dede" stroke="rgba(0,0,0,0)" stroke-width="1"/>
+    <rect id="Rectangle_3366" data-name="Rectangle 3366" width="20" height="15" transform="translate(403 709)" fill="#d9eaf7" stroke="rgba(0,0,0,0)" stroke-width="1"/>
+    <rect id="Rectangle_3367" data-name="Rectangle 3367" width="20" height="19" transform="translate(403 728)" fill="#b5c0cf" stroke="rgba(0,0,0,0)" stroke-width="1"/>
+  </g>
+</svg>

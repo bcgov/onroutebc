@@ -12,6 +12,8 @@ import { powerUnitsServiceMock } from '../../util/mocks/service/power-units.serv
 const POWER_UNIT_ID_1 = '1';
 const POWER_UNIT_ID_2 = '2';
 const COMPANY_ID_1 = 1;
+const POWER_UNIT_IDS_1 = ['1'];
+const POWER_UNIT_IDS_2 = ['2'];
 
 describe('PowerUnitsController', () => {
   let controller: PowerUnitsController;
@@ -124,6 +126,29 @@ describe('PowerUnitsController', () => {
     it('should thrown a DataNotFoundException if the power unit does not exist', async () => {
       await expect(async () => {
         await controller.remove(null, COMPANY_ID_1, POWER_UNIT_ID_2);
+      }).rejects.toThrow(DataNotFoundException);
+    });
+  });
+
+  //removeAll
+  describe('Power unit controller remove function.', () => {
+    it('should delete the power unit', async () => {
+      const deleteResult = await controller.deletePowerUnits(
+        POWER_UNIT_IDS_1,
+        COMPANY_ID_1,
+      );
+      expect(typeof deleteResult).toBe('object');
+      expect(deleteResult.success).toBeTruthy();
+      expect(deleteResult.failure).toBeTruthy();
+      expect(powerUnitsServiceMock.removeAll).toHaveBeenCalledWith(
+        POWER_UNIT_IDS_1,
+        COMPANY_ID_1,
+      );
+    });
+
+    it('should thrown a DataNotFoundException if the power unit does not exist', async () => {
+      await expect(async () => {
+        await controller.deletePowerUnits(POWER_UNIT_IDS_2, COMPANY_ID_1);
       }).rejects.toThrow(DataNotFoundException);
     });
   });

@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/require-await */
 import { UpdateTrailerDto } from '../../../../src/modules/vehicles/trailers/dto/request/update-trailer.dto';
+import { deleteDtoMock } from '../data/delete-dto.mock';
 import { readTrailerDtoMock } from '../data/trailer.mock';
 
 const TRAILER_ID_1 = '1';
@@ -29,6 +30,13 @@ export const trailersServiceMock = {
       return { affected: 1 };
     } else {
       return { affected: 0 };
+    }
+  }),
+  removeAll: jest.fn(async (trailerIds: string[], companyId: number) => {
+    if (trailerIds.length == 1 && trailerIds[0] == '1' && companyId == 1) {
+      return deleteDtoMock;
+    } else {
+      return null;
     }
   }),
 };
