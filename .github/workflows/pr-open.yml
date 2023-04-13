@@ -146,22 +146,15 @@ jobs:
           openshift_token: ${{ secrets.OC_TOKEN }}
           namespace: ${{ secrets.OC_NAMESPACE }}
 
-
-          #- name: Base64 Secret Overries
-          #run: |
-          #echo VAULT_BASICAUTH_USERNAME64=$(echo ${{steps.secrets.outputs.VAULT_BASICAUTH_USERNAME }} | base64) | tee $GITHUB_ENV
-          #echo VAULT_OBJECTSTORAGE_ACCESSKEYID64=$(echo ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_ACCESSKEYID }} | base64) | tee $GITHUB_ENV
-          #echo VAULT_OBJECTSTORAGE_SECRETACCESSKEY64=$(echo {{steps.secrets.outputs.VAULT_OBJECTSTORAGE_SECRETACCESSKEY }} | base64) | tee $GITHUB_ENV
-
       - name: Helm Deploy
         uses: vimeda/helm@v1.6.8
         with:
-          chart: '~/common-object-management-service/charts/coms/Chart.yaml'
-          chart-version: 0.0.11
+          chart: 'common-object-management-service/common-object-management-service'
+          chart-version: 0.0.13
           namespace: ${{ secrets.OC_NAMESPACE }}
           release: ${{ github.event.repository.name }}-${{ github.event.number }}-common-object-management-service
-          #repo: https://bcgov.github.io/common-object-management-service
-          #repo-alias: common-object-management-service
+          repo: https://bcgov.github.io/common-object-management-service
+          repo-alias: common-object-management-service
           token: ${{secrets.OC_TOKEN}}
           values: |
             fullNameOverride: ${{ github.event.repository.name }}-${{ github.event.number }}-common-object-management-service
