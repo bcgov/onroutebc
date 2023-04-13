@@ -92,4 +92,12 @@ export class PowerUnit extends Base {
   })
   @Column({ type: 'integer', name: 'STEER_AXLE_TIRE_SIZE', nullable: true })
   steerAxleTireSize: number;
+
+  @AutoMap()
+  @ApiProperty({
+    example: '1',
+    description: 'The Company Id to which the Power Unit belongs',
+  })
+  @Column({ type: 'integer', name: 'COMPANY_ID', nullable: true })
+  companyId: number;
 }

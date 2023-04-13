@@ -122,7 +122,6 @@ jobs:
             -p AUTH0_IGNORE_EXP=${{steps.secrets.outputs.VAULT_AUTH0_IGNORE_EXP}}
             ${{ matrix.parameters }}
           penetration_test: true
-  
   deploys-test-helm:
     name: TEST Deployments - HELM
     needs:
@@ -134,6 +133,7 @@ jobs:
       max-parallel: 1
       fail-fast: true
     steps:      
+
       - name: Authenticate and set context
         uses: redhat-actions/oc-login@v1
         with:

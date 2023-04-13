@@ -7,6 +7,7 @@ import { CreateTrailerDto } from './dto/request/create-trailer.dto';
 import { ReadTrailerDto } from './dto/response/read-trailer.dto';
 import { UpdateTrailerDto } from './dto/request/update-trailer.dto';
 import { Trailer } from './entities/trailer.entity';
+import { DeleteDto } from 'src/modules/common/dto/response/delete.dto';
 
 @Injectable()
 export class TrailersService {
@@ -68,5 +69,29 @@ export class TrailersService {
 
   async remove(trailerId: string): Promise<DeleteResult> {
     return await this.trailerRepository.delete(trailerId);
+  }
+
+  async removeAll(trailerIds: string[], companyId: number): Promise<DeleteDto> {
+    const deletedResult = await this.trailerRepository
+      .createQueryBuilder()
+      .delete()
+      .whereInIds(trailerIds)
+      .andWhere('companyId = :companyId', {
+        companyId: companyId,
+      })
+      .output('DELETED.TRAILER_ID')
+      .execute();
+
+    const trailersDeleted = Array.from(
+      deletedResult?.raw as [{ TRAILER_ID: string }],
+    );
+
+    const success = trailersDeleted?.map((trailer) => trailer.TRAILER_ID);
+    const failure = trailerIds?.filter((id) => !success?.includes(id));
+    const deleteDto: DeleteDto = {
+      success: success,
+      failure: failure,
+    };
+    return deleteDto;
   }
 }
