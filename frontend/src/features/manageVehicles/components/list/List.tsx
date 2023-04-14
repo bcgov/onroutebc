@@ -5,10 +5,15 @@ import MaterialReactTable, {
   MRT_Row,
   MRT_TableInstance,
 } from "material-react-table";
+import { RowSelectionState } from "@tanstack/table-core";
 import "./List.scss";
 import { Box, IconButton, Tooltip } from "@mui/material";
-import { VehicleTypes, VehicleTypesAsString } from "../../types/managevehicles";
-
+import {
+  VehicleTypes,
+  VehicleTypesAsString,
+  PowerUnit,
+  Trailer,
+} from "../../types/managevehicles";
 import { Filter } from "../options/Filter";
 import { Trash } from "../options/Trash";
 import { CSVOptions } from "../options/CSVOptions";
@@ -17,6 +22,8 @@ import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { UseQueryResult } from "@tanstack/react-query";
 import { CustomSnackbar } from "../../../../common/components/snackbar/CustomSnackBar";
 import { PowerUnitColumnDefinition, TrailerColumnDefinition } from "./Columns";
+import { deleteVehicles } from "../../apiManager/vehiclesAPI";
+import DeleteConfirmationDialog from "./ConfirmationDialog";
 
 /**
  * Dynamically set the column based on vehicle type
@@ -65,15 +72,48 @@ export const List = memo(
       []
     );
 
-    const handleDeleteRow = useCallback((row: MRT_Row<VehicleTypes>) => {
-      if (
-        !confirm(
-          `Are you sure you want to delete ${row.getValue("unitNumber")}`
-        )
-      ) {
-        return;
-      }
-      //send api delete request here, then refetch or update local table data for re-render
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+    const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
+    /**
+     * Callback function for clicking on the Trash icon above the Table.
+     */
+    const onClickTrashIcon = useCallback(() => {
+      setIsDeleteDialogOpen(() => true);
+    }, []);
+
+    /**
+     * Function that deletes a vehicle once the user confirms the delete action
+     * in the confirmation dialog.
+     */
+    const onConfirmDelete = () => {
+      const vehicleIds: string[] = Object.keys(rowSelection);
+
+      deleteVehicles(vehicleIds, vehicleType).then((response) => {
+        if (response.status === 200) {
+          response
+            .json()
+            .then((responseBody: { success: string[]; failure: string[] }) => {
+              setIsDeleteDialogOpen(() => false);
+              if (responseBody.failure.length > 0) {
+                setShowErrorSnackbar(() => true);
+              }
+              setRowSelection(() => {
+                return {};
+              });
+              query.refetch();
+            });
+        }
+      });
+    };
+
+    /**
+     * Function that clears the delete related states when the user clicks on cancel.
+     */
+    const onCancelDelete = useCallback(() => {
+      setIsDeleteDialogOpen(() => false);
+      setRowSelection(() => {
+        return {};
+      });
     }, []);
 
     // Start snackbar code for error handling
@@ -108,13 +148,26 @@ export const List = memo(
             showAlertBanner: isError,
             showProgressBars: isFetching,
             sorting: [{ id: "createdDateTime", desc: true }],
+            columnVisibility: { powerUnitId: false, trailerId: false },
+            rowSelection: rowSelection,
           }}
           // Disable the default column actions so that we can use our custom actions
           enableColumnActions={false}
           // Enable checkboxes for row selection
           enableRowSelection={true}
           // Row copy, delete, and edit options
+          getRowId={(originalRow) => {
+            if (vehicleType === "powerUnit") {
+              const powerUnitRow = originalRow as PowerUnit;
+              return powerUnitRow.powerUnitId as string;
+            } else {
+              const trailerRow = originalRow as Trailer;
+              return trailerRow.trailerId as string;
+            }
+          }}
           enableRowActions={true}
+          selectAllMode="page"
+          onRowSelectionChange={setRowSelection}
           enableStickyHeader
           positionActionsColumn="last"
           displayColumnDefOptions={{
@@ -153,8 +206,18 @@ export const List = memo(
                   {/*tslint:disable-next-line*/}
                   <IconButton
                     color="error"
-                    onClick={() => handleDeleteRow(row)}
-                    disabled={true}
+                    onClick={() => {
+                      setIsDeleteDialogOpen(() => true);
+                      setRowSelection(() => {
+                        const newObject: { [key: string]: boolean } = {};
+                        // Setting the selected row to false so that 
+                        // the row appears unchecked.
+                        newObject[row.getValue(`${vehicleType}Id`) as string] =
+                          false;
+                        return newObject;
+                      });
+                    }}
+                    disabled={false}
                   >
                     <Delete />
                   </IconButton>
@@ -175,7 +238,7 @@ export const List = memo(
               >
                 <MRT_GlobalFilterTextField table={table} />
                 <Filter />
-                <Trash />
+                <Trash onClickTrash={onClickTrashIcon} />
                 <CSVOptions />
               </Box>
             ),
@@ -245,6 +308,11 @@ export const List = memo(
           muiTableHeadRowProps={{
             sx: { backgroundColor: BC_COLOURS.bc_background_light_grey },
           }}
+        />
+        <DeleteConfirmationDialog
+          onClickDelete={onConfirmDelete}
+          isOpen={isDeleteDialogOpen}
+          onClickCancel={onCancelDelete}
         />
       </div>
     );
