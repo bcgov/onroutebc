@@ -14,10 +14,10 @@ import { Trash } from "../options/Trash";
 import { CSVOptions } from "../options/CSVOptions";
 import { Delete, Edit, ContentCopy } from "@mui/icons-material";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
-import { UseQueryResult } from "@tanstack/react-query";
+import { useQueryClient, UseQueryResult } from "@tanstack/react-query";
 import { CustomSnackbar } from "../../../../common/components/snackbar/CustomSnackBar";
 import { PowerUnitColumnDefinition, TrailerColumnDefinition } from "./Columns";
-import { deleteVehicle, deleteVehicles } from "../../apiManager/vehiclesAPI";
+import { deleteVehicles } from "../../apiManager/vehiclesAPI";
 import DeleteConfirmationDialog from "./ConfirmationDialog";
 
 /**
@@ -61,6 +61,8 @@ export const List = memo(
       //refetch,
     } = query;
 
+    const queryClient = useQueryClient();
+
     // Column definitions for the table
     const columns = useMemo<MRT_ColumnDef<VehicleTypes>[]>(
       () => getColumns(vehicleType),
@@ -80,52 +82,27 @@ export const List = memo(
      * Function that deletes a vehicle once the user confirms the delete action
      * in the confirmation dialog.
      */
-    const onConfirmDelete = useCallback(() => {
+    const onConfirmDelete = () => {
       const vehicleIds: string[] = Object.keys(rowSelection);
-      console.log("VehicleIds for deletion::", vehicleIds);
-      console.log("rowSelection deletion::", rowSelection);
       // const vehicleId: string = selectedRows[0].getValue(`${vehicleType}Id`);
 
-      // deleteVehicles(vehicleIds, vehicleType, "12").then((response) => {
-      //   if (response.status === 200) {
-      //     response
-      //       .json()
-      //       .then((responseBody: { success: string[]; failure: string[] }) => {
-      //         if(responseBody.failure.length > 0) {
-      //           setShowErrorSnackbar(() => true);
-      //         }
-      //         query.refetch();
-      //       });
-      //   }
-      // });
-
-      const deleteVehiclePromises: Promise<Response>[] = vehicleIds.map(
-        (vehicleId) => deleteVehicle(vehicleId, vehicleType)
-      );
-
-      Promise.all(deleteVehiclePromises).then((responses) => {
-        responses.forEach((response) => {
-          if (response.status !== 200) {
-            setShowErrorSnackbar(() => true);
-          }
-        });
-        setIsDeleteDialogOpen(() => false);
-        setRowSelection(() => {
-          return {};
-        });
-        query.refetch();
+      deleteVehicles(vehicleIds, vehicleType).then((response) => {
+        if (response.status === 200) {
+          response
+            .json()
+            .then((responseBody: { success: string[]; failure: string[] }) => {
+              setIsDeleteDialogOpen(() => false);
+              if (responseBody.failure.length > 0) {
+                setShowErrorSnackbar(() => true);
+              }
+              setRowSelection(() => {
+                return {};
+              });
+              queryClient.invalidateQueries(["powerUnits"]);
+            });
+        }
       });
-
-      // deleteVehicle(vehicleId, vehicleType).then((response) => {
-      //   setIsDeleteDialogOpen(() => false);
-      //   setSelectedRows(() => []);
-      //   if (response.status === 200) {
-      //     query.refetch();
-      //   } else {
-      //     setShowErrorSnackbar(() => true);
-      //   }
-      // });
-    }, [rowSelection]);
+    };
 
     /**
      * Function that clears the delete related states when the user clicks on cancel.
