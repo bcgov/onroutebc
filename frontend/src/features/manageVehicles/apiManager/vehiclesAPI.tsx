@@ -4,6 +4,7 @@ import {
   UpdatePowerUnit,
   VehicleType,
   Trailer,
+  VehicleTypesAsString,
 } from "../types/managevehicles";
 
 import {
@@ -90,4 +91,26 @@ export const addTrailer = (trailer: Trailer): Promise<Response> => {
     `${VEHICLE_URL}/companies/${getCompanyIdFromSession()}/vehicles/trailers`,
     trailer
   );
+};
+
+/**
+ * Delete one or more vehicles.
+ * @param vehicleIds Array of vehicle ids to be deleted.
+ * @param vehicleType The {@link VehicleTypesAsString} to be deleted.
+ * @returns A Promise with the API response.
+ */
+export const deleteVehicles = (
+  vehicleIds: Array<string>,
+  vehicleType: VehicleTypesAsString,
+): Promise<Response> => {
+  let url: string | null = null;
+  let requestBody: { powerUnits: Array<string> } | { trailers: Array<string> };
+  if (vehicleType === "powerUnit") {
+    url = `${VEHICLE_URL}/companies/${getCompanyIdFromSession()}/vehicles/powerUnits/delete-requests`;
+    requestBody = { powerUnits: vehicleIds };
+  } else {
+    url = `${VEHICLE_URL}/companies/${getCompanyIdFromSession()}/vehicles/trailers/delete-requests`;
+    requestBody = { trailers: vehicleIds };
+  }
+  return httpPOSTRequest(url, requestBody);
 };
