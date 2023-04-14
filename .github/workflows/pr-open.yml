@@ -48,6 +48,14 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       
+      - uses: bcgov-nr/action-builder-ghcr@v1.1.0
+        with:
+          package: ${{ matrix.package }}
+          tag: ${{ github.event.number }}
+          tag_fallback: test
+          token: ${{ secrets.GITHUB_TOKEN }}
+          triggers: ${{ matrix.triggers }}
+      
       - name: Set up Docker
         uses: crazy-max/ghaction-setup-docker@v1
         
@@ -60,14 +68,6 @@ jobs:
           
       - name: List registry 
         run: docker image list
-
-      - uses: bcgov-nr/action-builder-ghcr@v1.1.0
-        with:
-          package: ${{ matrix.package }}
-          tag: ${{ github.event.number }}
-          tag_fallback: test
-          token: ${{ secrets.GITHUB_TOKEN }}
-          triggers: ${{ matrix.triggers }}
 
   deploys:
     name: Deploys
