@@ -210,6 +210,8 @@ export const List = memo(
                       setIsDeleteDialogOpen(() => true);
                       setRowSelection(() => {
                         const newObject: { [key: string]: boolean } = {};
+                        // Setting the selected row to false so that 
+                        // the row appears unchecked.
                         newObject[row.getValue(`${vehicleType}Id`) as string] =
                           false;
                         return newObject;
