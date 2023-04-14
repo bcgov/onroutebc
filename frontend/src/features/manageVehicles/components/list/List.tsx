@@ -8,13 +8,18 @@ import MaterialReactTable, {
 import { RowSelectionState } from "@tanstack/table-core";
 import "./List.scss";
 import { Box, IconButton, Tooltip } from "@mui/material";
-import { VehicleTypes, VehicleTypesAsString } from "../../types/managevehicles";
+import {
+  VehicleTypes,
+  VehicleTypesAsString,
+  PowerUnit,
+  Trailer,
+} from "../../types/managevehicles";
 import { Filter } from "../options/Filter";
 import { Trash } from "../options/Trash";
 import { CSVOptions } from "../options/CSVOptions";
 import { Delete, Edit, ContentCopy } from "@mui/icons-material";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
-import { useQueryClient, UseQueryResult } from "@tanstack/react-query";
+import { UseQueryResult } from "@tanstack/react-query";
 import { CustomSnackbar } from "../../../../common/components/snackbar/CustomSnackBar";
 import { PowerUnitColumnDefinition, TrailerColumnDefinition } from "./Columns";
 import { deleteVehicles } from "../../apiManager/vehiclesAPI";
@@ -61,8 +66,6 @@ export const List = memo(
       //refetch,
     } = query;
 
-    const queryClient = useQueryClient();
-
     // Column definitions for the table
     const columns = useMemo<MRT_ColumnDef<VehicleTypes>[]>(
       () => getColumns(vehicleType),
@@ -84,7 +87,6 @@ export const List = memo(
      */
     const onConfirmDelete = () => {
       const vehicleIds: string[] = Object.keys(rowSelection);
-      // const vehicleId: string = selectedRows[0].getValue(`${vehicleType}Id`);
 
       deleteVehicles(vehicleIds, vehicleType).then((response) => {
         if (response.status === 200) {
@@ -98,7 +100,7 @@ export const List = memo(
               setRowSelection(() => {
                 return {};
               });
-              queryClient.invalidateQueries(["powerUnits"]);
+              query.refetch();
             });
         }
       });
@@ -113,9 +115,6 @@ export const List = memo(
         return {};
       });
     }, []);
-
-    // console.log("Rows to delete::", selectedRows);
-    console.log("Rows selected::", rowSelection);
 
     // Start snackbar code for error handling
     const [showErrorSnackbar, setShowErrorSnackbar] = useState(false);
@@ -157,6 +156,15 @@ export const List = memo(
           // Enable checkboxes for row selection
           enableRowSelection={true}
           // Row copy, delete, and edit options
+          getRowId={(originalRow) => {
+            if (vehicleType === "powerUnit") {
+              const powerUnitRow = originalRow as PowerUnit;
+              return powerUnitRow.powerUnitId as string;
+            } else {
+              const trailerRow = originalRow as Trailer;
+              return trailerRow.trailerId as string;
+            }
+          }}
           enableRowActions={true}
           selectAllMode="page"
           onRowSelectionChange={setRowSelection}
@@ -206,8 +214,6 @@ export const List = memo(
                           false;
                         return newObject;
                       });
-
-                      // onDeleteRow(row);
                     }}
                     disabled={false}
                   >
