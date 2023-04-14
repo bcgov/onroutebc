@@ -6,7 +6,6 @@ import {
   getCompanyIdFromSession,
 } from "../../../common/apiManager/httpRequestHandler";
 import { UserContextType } from "../../../common/authentication/types";
-import { ApiErrorResponse } from "../../../types/common";
 import { MANAGE_PROFILE_API, MANAGE_PROFILE_URL } from "./endpoints/endpoints";
 
 interface Address {

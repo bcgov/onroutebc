@@ -23,11 +23,11 @@ export const getAllVehicles = async (): Promise<(PowerUnit | Trailer)[]> => {
   const powerUnits = await getAllPowerUnits();
   const trailers = await getAllTrailers();
 
-  powerUnits.map((p: PowerUnit) => {
+  powerUnits.forEach((p: PowerUnit) => {
     p.vehicleType = "powerUnit";
   });
 
-  trailers.map((t: Trailer) => {
+  trailers.forEach((t: Trailer) => {
     t.vehicleType = "trailer";
   });
 
