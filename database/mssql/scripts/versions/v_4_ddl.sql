@@ -325,8 +325,6 @@ GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Surrogate primary key for the permit metadata record' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT', @level2type=N'COLUMN',@level2name=N'ID'
 GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Foreign key to the permit table identifying the permit record this metadata record is associated with' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT', @level2type=N'COLUMN',@level2name=N'PERMIT_DATA_ID'
-GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Foreign key to the ORBC_COMPANY table, represents the company requesting the permit' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT', @level2type=N'COLUMN',@level2name=N'COMPANY_ID'
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Foreign key to the permit type table, represents the type of permit this record refers to' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT', @level2type=N'COLUMN',@level2name=N'PERMIT_TYPE_ID'
@@ -380,6 +378,8 @@ GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Individual time-stamped comments related to an individual permit application' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT_COMMENTS'
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Unique ID of the permit data record and revision (each revision is its own ID)' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT_DATA', @level2type=N'COLUMN',@level2name=N'ID'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Foreign key to the permit table identifying the permit record this data record is associated with' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT_DATA', @level2type=N'COLUMN',@level2name=N'PERMIT_ID'
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'JSON structured data representing the permit details' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT_DATA', @level2type=N'COLUMN',@level2name=N'PERMIT_DATA'
 GO

@@ -1,12 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
+import { Controller, Post, Body, Req } from '@nestjs/common';
 import { PermitService } from './permit.service';
 import { ExceptionDto } from '../common/dto/exception.dto';
 import {
@@ -17,6 +9,8 @@ import {
 } from '@nestjs/swagger';
 import { Public } from '../../common/decorator/public.decorator';
 import { CreatePermitDto } from './dto/request/create-permit.dto';
+import { ReadPermitDto } from './dto/response/read-permit.dto';
+import { Request } from 'express';
 
 @ApiTags('Permit')
 @ApiNotFoundResponse({
@@ -37,27 +31,10 @@ export class PermitController {
 
   @Public()
   @Post()
-  async create(@Body() createPermitDto: CreatePermitDto) {
+  async create(
+    @Req() request: Request,
+    @Body() createPermitDto: CreatePermitDto,
+  ): Promise<ReadPermitDto> {
     return await this.permitService.create(createPermitDto);
-  }
-
-  @Get()
-  findAll() {
-    return this.permitService.findAll();
-  }
-
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.permitService.findOne(+id);
-  // }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePermitDto: CreatePermitDto) {
-    return this.permitService.update(+id, updatePermitDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.permitService.remove(+id);
   }
 }
