@@ -1,4 +1,8 @@
-import { CompanyProfile } from "../features/manageProfile/apiManager/manageProfileAPI";
+import {
+  CompanyAndUserRequest,
+  CompanyProfile,
+  UserInformation,
+} from "../features/manageProfile/apiManager/manageProfileAPI";
 import {
   PowerUnit,
   Trailer,
@@ -17,4 +21,6 @@ export type ORBC_FormTypes =
   | CompanyProfile
   | PowerUnit
   | Trailer
-  | TermOversizeApplication;
+  | TermOversizeApplication
+  | UserInformation
+  | CompanyAndUserRequest;

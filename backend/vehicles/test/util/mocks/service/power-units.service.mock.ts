@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/require-await */
 import { UpdatePowerUnitDto } from '../../../../src/modules/vehicles/power-units/dto/request/update-power-unit.dto';
+import { deleteDtoMock } from '../data/delete-dto.mock';
 import { readPowerUnitDtoMock } from '../data/power-unit.mock';
 
 const POWER_UNIT_ID_1 = '1';
@@ -29,6 +30,13 @@ export const powerUnitsServiceMock = {
       return { affected: 1 };
     } else {
       return { affected: 0 };
+    }
+  }),
+  removeAll: jest.fn(async (powerUnitIds: string[], companyId: number) => {
+    if (powerUnitIds.length == 1 && powerUnitIds[0] == '1' && companyId == 1) {
+      return deleteDtoMock;
+    } else {
+      return null;
     }
   }),
 };

@@ -1,4 +1,4 @@
-import { VEHICLES_API } from "./endpoints/endpoints";
+import { VEHICLES_API, VEHICLE_URL } from "./endpoints/endpoints";
 import {
   PowerUnit,
   UpdatePowerUnit,
@@ -11,6 +11,7 @@ import {
   httpGETRequest,
   httpPOSTRequest,
   httpPUTRequest,
+  getCompanyIdFromSession,
 } from "../../../common/apiManager/httpRequestHandler";
 
 /**
@@ -19,11 +20,8 @@ import {
  * @return An array of combined PowerUnit and Trailers
  */
 export const getAllVehicles = async (): Promise<(PowerUnit | Trailer)[]> => {
-  const urlPowerUnits = new URL(VEHICLES_API.GET_ALL_POWER_UNITS);
-  const urlTrailers = new URL(VEHICLES_API.GET_ALL_TRAILERS);
-
-  const powerUnits = await httpGETRequest(urlPowerUnits);
-  const trailers = await httpGETRequest(urlTrailers);
+  const powerUnits = await getAllPowerUnits();
+  const trailers = await getAllTrailers();
 
   powerUnits.map((p: PowerUnit) => {
     p.vehicleType = "powerUnit";
@@ -44,7 +42,9 @@ export const getAllVehicles = async (): Promise<(PowerUnit | Trailer)[]> => {
  * @return {*}  {Promise<void>}
  */
 export const getAllPowerUnits = async (): Promise<PowerUnit[]> => {
-  const url = new URL(VEHICLES_API.GET_ALL_POWER_UNITS);
+  const url = new URL(
+    `${VEHICLE_URL}/companies/${getCompanyIdFromSession()}/vehicles/powerUnits`
+  );
   return httpGETRequest(url);
 };
 
@@ -63,7 +63,10 @@ export const getPowerUnitTypes = async (): Promise<Array<VehicleType>> => {
  * @returns Promise containing the response from the create powerUnit API.
  */
 export const addPowerUnit = (powerUnit: PowerUnit): Promise<Response> => {
-  return httpPOSTRequest(VEHICLES_API.POWER_UNIT, powerUnit);
+  return httpPOSTRequest(
+    `${VEHICLE_URL}/companies/${getCompanyIdFromSession()}/vehicles/powerUnits`,
+    powerUnit
+  );
 };
 
 /**
@@ -74,17 +77,20 @@ export const addPowerUnit = (powerUnit: PowerUnit): Promise<Response> => {
 export const updatePowerUnit = (
   powerUnit: UpdatePowerUnit
 ): Promise<Response> => {
-  const url = VEHICLES_API.POWER_UNIT + "/" + powerUnit.powerUnitId;
-  return httpPUTRequest(url, powerUnit);
+  return httpPUTRequest(
+    `${VEHICLE_URL}/companies/${getCompanyIdFromSession()}/vehicles/powerUnits`,
+    powerUnit
+  );
 };
 
 /**
- * Fetch*
- * All Trailer Data
- * @return {*}  {Promise<void>}
+ * Fetch All Trailer Data
+ * @return {Promise<Trailer[]>}  An array of trailers.
  */
 export const getAllTrailers = async (): Promise<Trailer[]> => {
-  const url = new URL(VEHICLES_API.GET_ALL_TRAILERS);
+  const url = new URL(
+    `${VEHICLE_URL}/companies/${getCompanyIdFromSession()}/vehicles/trailers`
+  );
   return httpGETRequest(url);
 };
 
@@ -103,7 +109,10 @@ export const getTrailerTypes = async (): Promise<Array<VehicleType>> => {
  * @returns Promise containing the response from the create trailer API.
  */
 export const addTrailer = (trailer: Trailer): Promise<Response> => {
-  return httpPOSTRequest(VEHICLES_API.TRAILER, trailer);
+  return httpPOSTRequest(
+    `${VEHICLE_URL}/companies/${getCompanyIdFromSession()}/vehicles/trailers`,
+    trailer
+  );
 };
 
 export const updateTrailer = (trailer: UpdateTrailer): Promise<Response> => {

@@ -6,7 +6,6 @@ import {
   CompanyProfile,
   updateCompanyInfo,
 } from "../../apiManager/manageProfileAPI";
-import { InfoBcGovBanner } from "../../../../common/components/banners/AlertBanners";
 
 import "./CompanyInfoForms.scss";
 import { CompanyInfoGeneralForm } from "./subForms/CompanyInfoGeneralForm";
@@ -14,6 +13,7 @@ import { CompanyContactDetailsForm } from "./subForms/CompanyContactDetailsForm"
 import { CompanyMailingAddressForm } from "./subForms/CompanyMailingAddressForm";
 import { CompanyPrimaryContactForm } from "./subForms/CompanyPrimaryContactForm";
 import { formatPhoneNumber } from "../../../../common/components/form/subFormComponents/PhoneNumberInput";
+import { InfoBcGovBanner } from "../../../../common/components/banners/AlertBanners";
 
 /**
  * The Company Information Form contains multiple subs forms including
@@ -94,7 +94,6 @@ export const CompanyInfoForm = memo(
     const onUpdateCompanyInfo = function (data: FieldValues) {
       const companyInfoToBeUpdated = data as CompanyProfile;
       addCompanyInfoQuery.mutate({
-        companyGUID: "TEST_changeme",
         companyInfo: companyInfoToBeUpdated,
       });
     };

@@ -4,7 +4,7 @@ import { getCompanyInfo } from "./manageProfileAPI";
 export const useCompanyInfoQuery = () => {
   return useQuery({
     queryKey: ["companyInfo"],
-    queryFn: () => getCompanyInfo("TEST_changeme"),
+    queryFn: getCompanyInfo,
     retry: false,
   });
 };
