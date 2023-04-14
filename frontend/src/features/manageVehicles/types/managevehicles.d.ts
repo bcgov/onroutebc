@@ -23,7 +23,7 @@ export interface PowerUnit extends Vehicle {
 }
 
 export interface Trailer extends Vehicle {
-  trailerId?: number;
+  trailerId?: string;
   trailerTypeCode: string;
   emptyTrailerWidth: number;
 }
