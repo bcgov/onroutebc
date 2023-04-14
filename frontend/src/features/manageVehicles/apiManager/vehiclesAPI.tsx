@@ -8,7 +8,6 @@ import {
 } from "../types/managevehicles";
 
 import {
-  httpDELETERequest,
   httpGETRequest,
   httpPOSTRequest,
   httpPUTRequest,
