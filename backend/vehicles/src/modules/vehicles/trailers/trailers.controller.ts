@@ -7,12 +7,14 @@ import {
   Delete,
   Put,
   Req,
+  HttpCode,
 } from '@nestjs/common';
 import { TrailersService } from './trailers.service';
 import { CreateTrailerDto } from './dto/request/create-trailer.dto';
 import { UpdateTrailerDto } from './dto/request/update-trailer.dto';
 import {
   ApiBearerAuth,
+  ApiBody,
   ApiCreatedResponse,
   ApiInternalServerErrorResponse,
   ApiMethodNotAllowedResponse,
@@ -27,6 +29,8 @@ import { DataNotFoundException } from '../../../common/exception/data-not-found.
 import { Request } from 'express';
 import { Roles } from '../../../common/decorator/roles.decorator';
 import { Role } from '../../../common/enum/roles.enum';
+import { DeleteDto } from 'src/modules/common/dto/response/delete.dto';
+import { DeleteTrailerDto } from './dto/request/delete-trailer.dto';
 
 @ApiTags('Vehicles - Trailers')
 @ApiNotFoundResponse({
@@ -121,5 +125,30 @@ export class TrailersController {
       throw new DataNotFoundException();
     }
     return { deleted: true };
+  }
+
+  @Post('delete-requests')
+  @ApiBody({
+    description: 'The Trailer Resource',
+    type: DeleteTrailerDto,
+  })
+  @ApiOkResponse({
+    description: 'The Trailer Resource',
+    type: DeleteDto,
+  })
+  @HttpCode(200)
+  async deleteTrailers(
+    @Body('trailers') trailers: string[],
+    @Param('companyId') companyId: number,
+  ): Promise<DeleteDto> {
+    const deleteResult = await this.trailersService.removeAll(
+      trailers,
+      companyId,
+    );
+
+    if (deleteResult == null) {
+      throw new DataNotFoundException();
+    }
+    return deleteResult;
   }
 }

@@ -1,3 +1,4 @@
+import { DeleteTrailerDto } from 'src/modules/vehicles/trailers/dto/request/delete-trailer.dto';
 import { CreateTrailerDto } from '../../../../src/modules/vehicles/trailers/dto/request/create-trailer.dto';
 import { UpdateTrailerDto } from '../../../../src/modules/vehicles/trailers/dto/request/update-trailer.dto';
 import { ReadTrailerDto } from '../../../../src/modules/vehicles/trailers/dto/response/read-trailer.dto';
@@ -16,6 +17,7 @@ const EMPTY_TRAILER_WIDTH = 3.2;
 const PROVINCE_CODE = 'BC';
 const COUNTRY_CODE = 'CA';
 const TRAILER_TYPE_CODE = 'BOOSTER';
+const COMPANY_ID = 1;
 
 export const trailerEntityMock: Trailer = {
   trailerId: TRAILER_ID,
@@ -27,6 +29,7 @@ export const trailerEntityMock: Trailer = {
   make: MAKE,
   vin: VIN,
   emptyTrailerWidth: EMPTY_TRAILER_WIDTH,
+  companyId: COMPANY_ID,
   ...baseEntityMock,
 };
 
@@ -51,4 +54,8 @@ export const readTrailerDtoMock: ReadTrailerDto = {
   ...createTrailerDtoMock,
   trailerId: TRAILER_ID,
   createdDateTime: baseDtoMock.createdDateTime,
+};
+
+export const deleteTrailersMock: DeleteTrailerDto = {
+  trailers: ['3'],
 };
