@@ -17,10 +17,17 @@ export const TermOversizeReview = () => {
   const { applicationData, back, next } = useContext(ApplicationContext);
   const methods = useForm<TermOversizeApplication>();
 
+  // TODO Temporary method to format request data
+  const formatAPIRequest = {
+    companyId: applicationData?.companyId,
+    permitType: applicationData?.applicationName,
+    permitData: applicationData?.application,
+  };
+
   // Send data to the backend API
   const submitTermOversizeQuery = useSubmitTermOversizeMutation();
   const onSubmit = () => {
-    if (applicationData) submitTermOversizeQuery.mutate(applicationData);
+    if (applicationData) submitTermOversizeQuery.mutate(formatAPIRequest);
     next();
   };
 

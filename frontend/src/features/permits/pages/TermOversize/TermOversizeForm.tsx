@@ -47,10 +47,11 @@ export const TermOversizeForm = () => {
   // Default values to register with React Hook Forms
   // If data was passed to this component, then use that data, otherwise use empty or undefined values
   const termOversizeDefaultValues: TermOversizeApplication = {
+    companyId: userJson.companyId || "",
     applicationId:
       applicationContext?.applicationData?.applicationId || 1234567,
     applicationName:
-      applicationContext?.applicationData?.applicationName || "Oversize: Term",
+      applicationContext?.applicationData?.applicationName || "TROS",
     dateCreated: applicationContext?.applicationData?.dateCreated || dayjs(),
     lastUpdated: applicationContext?.applicationData?.lastUpdated || dayjs(),
     application: {

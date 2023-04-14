@@ -4,6 +4,7 @@ import { Dayjs } from "dayjs";
  * A base permit type. This is an incomplete object and meant to be extended for use.
  */
 export interface Application {
+  companyId: number;
   applicationId: number;
   applicationName: string;
   dateCreated: Dayjs;

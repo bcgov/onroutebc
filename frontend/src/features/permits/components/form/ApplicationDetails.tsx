@@ -59,8 +59,9 @@ export const ApplicationDetails = ({
   values: TermOversizeApplication | undefined;
 }) => {
   const companyInfoQuery = useCompanyInfoQuery();
-  //const { getValues } = useFormContext<Application>();
-  //const applicationValues = getValues();
+  // TODO use an enum
+  const applicationName =
+    values?.applicationName === "TROS" ? "Term: Oversize" : "";
 
   if (!values) return <></>;
 
@@ -75,7 +76,7 @@ export const ApplicationDetails = ({
           borderBottom: "none",
         }}
       >
-        {values.applicationName}
+        {applicationName}
       </Typography>
       <Typography
         variant="h2"
