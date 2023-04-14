@@ -3,7 +3,7 @@ import "../../../../common/components/dashboard/Dashboard.scss";
 import { Banner } from "../../../../common/components/dashboard/Banner";
 import { TermOversizeForm } from "../../pages/TermOversize/TermOversizeForm";
 import { ApplicationContext } from "../../context/ApplicationContext";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { TermOversizeApplication } from "../../types/application";
 import { TermOversizePay } from "../../pages/TermOversize/TermOversizePay";
 import { TermOversizeReview } from "../../pages/TermOversize/TermOversizeReview";
@@ -47,26 +47,17 @@ export const ApplicationDashboard = () => {
     }
   };
 
-  /**
-   * Sonarcloud fix:
-   * Providing values like an object to a React Context will provoke additional re-renders as React doesn’t know the object is the same.
-   * This can significantly impact performance since the whole component tree will be re-rendered each time.
-   * Wrapping the value in a useMemo hook will avoid additional render passes.
-   */
-  const memoizedValues = useMemo(
-    () => ({
-      applicationData: applicationData,
-      setApplicationData: setApplicationData,
-      next,
-      back,
-      goTo,
-      currentStepIndex,
-    }),
-    []
-  );
-
   return (
-    <ApplicationContext.Provider value={memoizedValues}>
+    <ApplicationContext.Provider
+      value={{
+        applicationData: applicationData,
+        setApplicationData: setApplicationData,
+        next,
+        back,
+        goTo,
+        currentStepIndex,
+      }}
+    >
       <Box
         className="layout-box"
         sx={{
