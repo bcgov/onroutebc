@@ -95,25 +95,6 @@ export const addTrailer = (trailer: Trailer): Promise<Response> => {
 };
 
 /**
- * Deletes a vehicle.
- * @param vehicleId The vehicle to be deleted.
- * @param vehicleType The {@link VehicleTypesAsString} to be deleted.
- * @returns A Promise with the API response.
- */
-export const deleteVehicle = (
-  vehicleId: string,
-  vehicleType: VehicleTypesAsString
-): Promise<Response> => {
-  let url: string | null = null;
-  if (vehicleType === "powerUnit") {
-    url = `${VEHICLE_URL}/companies/${getCompanyIdFromSession()}/vehicles/powerUnits`;
-  } else {
-    url = `${VEHICLE_URL}/companies/${getCompanyIdFromSession()}/vehicles/trailers`;
-  }
-  return httpDELETERequest(`${url}/${vehicleId}`);
-};
-
-/**
  * Delete one or more vehicles.
  * @param vehicleIds Array of vehicle ids to be deleted.
  * @param vehicleType The {@link VehicleTypesAsString} to be deleted.

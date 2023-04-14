@@ -110,7 +110,7 @@ export const httpPUTRequest = (url: string, data: any) => {
 /**
  * HTTP Delete Request
  * @param url The URL containing the resource id to be deleted.
- * @returns A Promise.
+ * @returns A Promise<Response> with the response from the API.
  */
 export const httpDELETERequest = (url: string) => {
   return fetch(url, {
