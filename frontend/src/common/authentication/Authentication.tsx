@@ -1,13 +1,7 @@
 import { useAuth } from "react-oidc-context";
 import Button from "@mui/material/Button";
-import Grid from "@mui/material/Grid";
 import { LoginRedirect } from "./LoginRedirect";
 import { Box, Container, Typography } from "@mui/material";
-import { ReactNode } from "react";
-
-interface AuthProps {
-  children: ReactNode;
-}
 
 const Loading = () => (
   <Box
@@ -21,17 +15,6 @@ const Loading = () => (
     Loading...
   </Box>
 );
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const UserDetails = ({ auth, children }: any) => {
-  console.log(auth.user);
-  return (
-    <div className="Xyz">
-      <div>{`Hello ${auth.user?.profile?.given_name}`}</div>
-      <div>{children}</div>
-    </div>
-  );
-};
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const LoginOptions = ({ auth }: any) => (

@@ -27,6 +27,12 @@ export const LoginRedirect = () => {
           firstName: user.firstName,
           lastName: user.lastName,
           userName: user.userName,
+          phone1: user.phone1,
+          phone1Extension: user.phone1Extension,
+          phone2: user.phone2,
+          phone2Extension: user.phone2Extension,
+          email: user.email,
+          fax: user.fax,
         };
 
         // Switch to a react context when implementing multiple companies.
@@ -68,13 +74,13 @@ export const LoginRedirect = () => {
         // The user and company exist
         else if (associatedCompanies.length) {
           navigate(routes.HOME);
-        } 
+        }
         // User exists but company does not exist. This is not a possible scenario.
         else if (!associatedCompanies.length) {
           // Error Page
         }
 
-        // else if(pendingCompanies.length) (i.e., user exists and has invites from a company) 
+        // else if(pendingCompanies.length) (i.e., user exists and has invites from a company)
         // is not a valid block currently because
         // one user can only be part of one company currently.
       }

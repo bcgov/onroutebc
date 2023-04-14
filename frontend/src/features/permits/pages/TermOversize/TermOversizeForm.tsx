@@ -40,6 +40,10 @@ export const TermOversizeForm = () => {
   const updateTrailerQuery = useUpdateTrailerMutation();
   const allVehiclesQuery = useVehiclesQuery();
 
+  // TODO Clean this up
+  const userInfo: any = sessionStorage.getItem("onRoutebc.user.context");
+  const userJson = JSON.parse(userInfo);
+
   // Default values to register with React Hook Forms
   // If data was passed to this component, then use that data, otherwise use empty or undefined values
   const termOversizeDefaultValues: TermOversizeApplication = {
@@ -61,16 +65,24 @@ export const TermOversizeForm = () => {
       contactDetails: {
         firstName:
           applicationContext?.applicationData?.application?.contactDetails
-            ?.firstName || "",
+            ?.firstName ||
+          userJson.firstName ||
+          "",
         lastName:
           applicationContext?.applicationData?.application?.contactDetails
-            ?.lastName || "",
+            ?.lastName ||
+          userJson.lastName ||
+          "",
         phone1:
           applicationContext?.applicationData?.application?.contactDetails
-            ?.phone1 || "",
+            ?.phone1 ||
+          userJson.phone1 ||
+          "",
         email:
           applicationContext?.applicationData?.application?.contactDetails
-            ?.email || "",
+            ?.email ||
+          userJson.email ||
+          "",
       },
       mailingAddress: {
         addressLine1:
@@ -135,12 +147,12 @@ export const TermOversizeForm = () => {
       postalCode: companyInfoQuery?.data?.companyAddress?.postalCode || "",
     });
 
-    setValue("application.contactDetails", {
-      firstName: companyInfoQuery?.data?.primaryContact?.firstName || "",
-      lastName: companyInfoQuery?.data?.primaryContact?.lastName || "",
-      phone1: companyInfoQuery?.data?.primaryContact?.phone1 || "",
-      email: companyInfoQuery?.data?.primaryContact?.email || "",
-    });
+    // setValue("application.contactDetails", {
+    //   firstName: companyInfoQuery?.data?.primaryContact?.firstName || "",
+    //   lastName: companyInfoQuery?.data?.primaryContact?.lastName || "",
+    //   phone1: companyInfoQuery?.data?.primaryContact?.phone1 || "",
+    //   email: companyInfoQuery?.data?.primaryContact?.email || "",
+    // });
   }, [companyInfoQuery]);
 
   const navigate = useNavigate();
