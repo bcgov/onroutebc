@@ -67,7 +67,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
           
       - name: List registry 
-        run: docker image list
+        run: docker image list ghcr.io
 
   deploys:
     name: Deploys
