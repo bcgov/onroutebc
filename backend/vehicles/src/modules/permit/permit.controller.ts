@@ -6,6 +6,7 @@ import {
   ApiNotFoundResponse,
   ApiMethodNotAllowedResponse,
   ApiInternalServerErrorResponse,
+  ApiCreatedResponse,
 } from '@nestjs/swagger';
 import { Public } from '../../common/decorator/public.decorator';
 import { CreatePermitDto } from './dto/request/create-permit.dto';
@@ -29,6 +30,10 @@ import { Request } from 'express';
 export class PermitController {
   constructor(private readonly permitService: PermitService) {}
 
+  @ApiCreatedResponse({
+    description: 'The Permit Resource',
+    type: ReadPermitDto,
+  })
   @Public()
   @Post()
   async create(
