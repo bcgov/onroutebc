@@ -56,19 +56,6 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           triggers: ${{ matrix.triggers }}
       
-      - name: Set up Docker
-        uses: crazy-max/ghaction-setup-docker@v1
-        
-      - name: Log in to the Container registry
-        uses: docker/login-action@v2
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-          
-      - name: List registry 
-        run: docker image list ghcr.io
-
   deploys:
     name: Deploys
     needs:
