@@ -173,7 +173,7 @@ jobs:
   image-promotion-uat:
     name: Promote images to UAT
     needs:
-      - deploys-uat
+      - deploys-test
     runs-on: ubuntu-22.04
     strategy:
       matrix:
@@ -305,7 +305,6 @@ jobs:
     name: Mainline Versioning - GitVersion
     needs:
       - deploys-uat
-
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout Code
