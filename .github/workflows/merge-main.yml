@@ -305,6 +305,7 @@ jobs:
     name: Mainline Versioning - GitVersion
     needs:
       - deploys-uat
+
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout Code
