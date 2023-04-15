@@ -170,6 +170,21 @@ jobs:
           #                OBJECTSTORAGE_BUCKET: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_BUCKET}}
           #                OBJECTSTORAGE_ENDPOINT: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_ENDPOINT}}
           #                OBJECTSTORAGE_KEY: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_KEY}}
+  image-promotion-uat:
+    name: Promote images to UAT
+    needs:
+      - deploys-uat
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        component: [backend/vehicles, frontend]
+    steps:
+      - uses: shrink/actions-docker-registry-tag@v3
+        with:
+          registry: ghcr.io
+          repository: ${{ github.repository }}/${{ matrix.component }}
+          target: test
+          tags: uat
 
   
   deploys-uat:
@@ -178,6 +193,7 @@ jobs:
       - codeql
       - trivy
       - deploys-test
+      - image-promotion-uat
     environment: uat
     runs-on: ubuntu-22.04
     strategy:
@@ -285,25 +301,11 @@ jobs:
           #                OBJECTSTORAGE_BUCKET: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_BUCKET}}
           #                OBJECTSTORAGE_ENDPOINT: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_ENDPOINT}}
           #                OBJECTSTORAGE_KEY: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_KEY}}
-  image-promotion-uat:
-    name: Promote images to UAT
-    needs:
-      - deploys-uat
-    runs-on: ubuntu-22.04
-    strategy:
-      matrix:
-        component: [backend/vehicles, frontend]
-    steps:
-      - uses: shrink/actions-docker-registry-tag@v3
-        with:
-          registry: ghcr.io
-          repository: ${{ github.repository }}/${{ matrix.component }}
-          target: test
-          tags: uat
   GitVersion:
     name: Mainline Versioning - GitVersion
     needs:
-      - image-promotion-uat
+      - deploys-uat
+
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout Code
