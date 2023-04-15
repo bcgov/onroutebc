@@ -303,7 +303,7 @@ jobs:
   GitVersion:
     name: Mainline Versioning - GitVersion
     needs:
-      - deploys-prod
+      - image-promotion-uat
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout Code
@@ -365,6 +365,7 @@ jobs:
     name: Create Release
     runs-on: ubuntu-22.04
     needs:
+      - image-promotion-uat
       - GitVersion
     steps:
       - uses: actions/create-release@v1
@@ -396,6 +397,8 @@ jobs:
   deploys-prod:
     name: PROD Deployments
     needs:
+      - tag-images
+      - release
       - deploys-uat
     environment: prod
     runs-on: ubuntu-22.04
