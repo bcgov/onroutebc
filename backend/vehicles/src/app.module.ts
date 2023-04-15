@@ -16,6 +16,7 @@ import { UsersModule } from './modules/company-user-management/users/users.modul
 import { CompanyModule } from './modules/company-user-management/company/company.module';
 import { PendingUsersModule } from './modules/company-user-management/pending-users/pending-users.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { PermitModule } from './modules/permit/permit.module';
 
 const envPath = path.resolve(process.cwd() + '/../../');
 
@@ -62,6 +63,7 @@ const envPath = path.resolve(process.cwd() + '/../../');
     CommonModule,
     PendingUsersModule,
     AuthModule,
+    PermitModule,
   ],
   controllers: [AppController],
   providers: [AppService],
