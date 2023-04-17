@@ -16,6 +16,7 @@ import {
 
 const POWER_UNIT_ID_1 = '1';
 const POWER_UNIT_IDS_2 = ['2', '3'];
+const COMPANY_ID_1 = 1;
 const COMPANY_ID_2 = 2;
 
 describe('PowerUnitsService', () => {
@@ -59,7 +60,7 @@ describe('PowerUnitsService', () => {
   describe('Power unit service findAll function', () => {
     it('should return all the power units', async () => {
       repo.find.mockResolvedValue([powerUnitEntityMock]);
-      const retPowerUnits = await service.findAll();
+      const retPowerUnits = await service.findAll(COMPANY_ID_1);
       expect(typeof retPowerUnits).toBe('object');
       expect(retPowerUnits[0].powerUnitId).toBe(POWER_UNIT_ID_1);
     });
@@ -68,7 +69,7 @@ describe('PowerUnitsService', () => {
   describe('Power unit service findOne function', () => {
     it('should return the power unit', async () => {
       repo.findOne.mockResolvedValue(powerUnitEntityMock);
-      const retPowerUnit = await service.findOne('1');
+      const retPowerUnit = await service.findOne(COMPANY_ID_1, POWER_UNIT_ID_1);
       expect(typeof retPowerUnit).toBe('object');
       expect(retPowerUnit.powerUnitId).toBe(POWER_UNIT_ID_1);
     });
@@ -81,6 +82,7 @@ describe('PowerUnitsService', () => {
         unitNumber: 'KEN2',
       });
       const retPowerUnit = await service.update(
+        COMPANY_ID_1,
         POWER_UNIT_ID_1,
         updatePowerUnitDtoMock,
       );
@@ -92,7 +94,7 @@ describe('PowerUnitsService', () => {
 
   describe('Power unit service remove function.', () => {
     it('should delete the power Unit', async () => {
-      const deleteResult = await service.remove('1');
+      const deleteResult = await service.remove(COMPANY_ID_1, '1');
       expect(typeof deleteResult).toBe('object');
     });
   });
@@ -104,7 +106,6 @@ describe('PowerUnitsService', () => {
         COMPANY_ID_2,
       );
       expect(typeof deleteResult).toBe('object');
-      // expect(deleteResult).toEqual(deleteDtoMock2);
     });
   });
 });

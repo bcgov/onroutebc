@@ -61,5 +61,5 @@ export const readPowerUnitDtoMock: ReadPowerUnitDto = {
 };
 
 export const deletePowerUnitMock: DeletePowerUnitDto = {
-  powerUnits: ['3'],
+  powerUnits: [POWER_UNIT_ID],
 };

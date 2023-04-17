@@ -14,7 +14,6 @@ import { CreatePowerUnitDto } from './dto/request/create-power-unit.dto';
 import { UpdatePowerUnitDto } from './dto/request/update-power-unit.dto';
 import {
   ApiBearerAuth,
-  ApiBody,
   ApiCreatedResponse,
   ApiInternalServerErrorResponse,
   ApiMethodNotAllowedResponse,
@@ -74,7 +73,7 @@ export class PowerUnitsController {
   async findAll(
     @Param('companyId') companyId: number,
   ): Promise<ReadPowerUnitDto[]> {
-    return await this.powerUnitsService.findAll();
+    return await this.powerUnitsService.findAll(companyId);
   }
 
   @ApiOkResponse({
@@ -88,7 +87,10 @@ export class PowerUnitsController {
     @Param('companyId') companyId: number,
     @Param('powerUnitId') powerUnitId: string,
   ): Promise<ReadPowerUnitDto> {
-    const powerUnit = await this.powerUnitsService.findOne(powerUnitId);
+    const powerUnit = await this.powerUnitsService.findOne(
+      companyId,
+      powerUnitId,
+    );
     if (!powerUnit) {
       throw new DataNotFoundException();
     }
@@ -109,6 +111,7 @@ export class PowerUnitsController {
   ): Promise<ReadPowerUnitDto> {
     //const currentUser = request.user as IUserJWT;
     const powerUnit = await this.powerUnitsService.update(
+      companyId,
       powerUnitId,
       updatePowerUnitDto,
     );
@@ -126,7 +129,10 @@ export class PowerUnitsController {
     @Param('powerUnitId') powerUnitId: string,
   ) {
     //const currentUser = request.user as IUserJWT;
-    const deleteResult = await this.powerUnitsService.remove(powerUnitId);
+    const deleteResult = await this.powerUnitsService.remove(
+      companyId,
+      powerUnitId,
+    );
     if (deleteResult.affected === 0) {
       throw new DataNotFoundException();
     }
@@ -137,18 +143,14 @@ export class PowerUnitsController {
     description: 'The Power Unit Resource',
     type: DeleteDto,
   })
-  @ApiBody({
-    description: 'The Power Unit Resource',
-    type: DeletePowerUnitDto,
-  })
   @Post('delete-requests')
   @HttpCode(200)
   async deletePowerUnits(
-    @Body('powerUnits') powerUnits: string[],
+    @Body() deletePowerUnitDto: DeletePowerUnitDto,
     @Param('companyId') companyId: number,
   ): Promise<DeleteDto> {
     const deleteResult = await this.powerUnitsService.removeAll(
-      Array.from(powerUnits),
+      deletePowerUnitDto.powerUnits,
       companyId,
     );
     if (deleteResult == null) {

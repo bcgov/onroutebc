@@ -30,9 +30,10 @@ export class PowerUnitsService {
     );
   }
 
-  async findAll(): Promise<ReadPowerUnitDto[]> {
+  async findAll(companyId: number): Promise<ReadPowerUnitDto[]> {
     return this.classMapper.mapArrayAsync(
       await this.powerUnitRepository.find({
+        where: { companyId: companyId },
         relations: {
           powerUnitType: true,
           province: true,
@@ -43,10 +44,13 @@ export class PowerUnitsService {
     );
   }
 
-  async findOne(powerUnitId: string): Promise<ReadPowerUnitDto> {
+  async findOne(
+    companyId: number,
+    powerUnitId: string,
+  ): Promise<ReadPowerUnitDto> {
     return this.classMapper.mapAsync(
       await this.powerUnitRepository.findOne({
-        where: { powerUnitId },
+        where: { powerUnitId: powerUnitId, companyId: companyId },
         relations: {
           powerUnitType: true,
           province: true,
@@ -58,6 +62,7 @@ export class PowerUnitsService {
   }
 
   async update(
+    companyId: number,
     powerUnitId: string,
     updatePowerUnitDto: UpdatePowerUnitDto,
   ): Promise<ReadPowerUnitDto> {
@@ -66,10 +71,14 @@ export class PowerUnitsService {
       UpdatePowerUnitDto,
       PowerUnit,
     );
-    await this.powerUnitRepository.update({ powerUnitId }, newPowerUnit);
-    return this.findOne(powerUnitId);
+    await this.powerUnitRepository.update(
+      { powerUnitId: powerUnitId, companyId: companyId },
+      newPowerUnit,
+    );
+    return this.findOne(companyId, powerUnitId);
   }
-  async remove(powerUnitId: string): Promise<DeleteResult> {
+
+  async remove(companyId: number, powerUnitId: string): Promise<DeleteResult> {
     return await this.powerUnitRepository.delete(powerUnitId);
   }
 

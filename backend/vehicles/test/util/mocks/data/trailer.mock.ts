@@ -57,5 +57,5 @@ export const readTrailerDtoMock: ReadTrailerDto = {
 };
 
 export const deleteTrailersMock: DeleteTrailerDto = {
-  trailers: ['3'],
+  trailers: [TRAILER_ID],
 };
