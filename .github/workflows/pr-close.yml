@@ -22,6 +22,23 @@ jobs:
 
           # Remove old build runs, build pods and deployment pods
           oc delete all,pvc,secret,configmap -l app=${{ github.event.repository.name }}-${{ github.event.number }}
+      - name: Authenticate and set context
+        uses: redhat-actions/oc-login@v1
+        with:
+          openshift_server_url: ${{ secrets.OC_SERVER }}
+          openshift_token: ${{ secrets.OC_TOKEN }}
+          namespace: ${{ secrets.OC_NAMESPACE }}
+      - name: Remove Helm artifacts
+        uses: vimeda/helm@v1.6.8
+        with:
+          chart: 'common-object-management-service/common-object-management-service'
+          chart-version: 0.0.13
+          namespace: ${{ secrets.OC_NAMESPACE }}
+          release: ${{ github.event.repository.name }}-${{ github.event.number }}-common-object-management-service
+          repo: https://bcgov.github.io/common-object-management-service
+          repo-alias: common-object-management-service
+          task: 'remove'
+          token: ${{secrets.OC_TOKEN}}
   
   image-promotion-test:
     name: Image Promotions
