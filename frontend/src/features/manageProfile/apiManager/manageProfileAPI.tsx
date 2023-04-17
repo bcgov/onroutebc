@@ -6,7 +6,6 @@ import {
   getCompanyIdFromSession,
 } from "../../../common/apiManager/httpRequestHandler";
 import { UserContextType } from "../../../common/authentication/types";
-import { ApiErrorResponse } from "../../../types/common";
 import { MANAGE_PROFILE_API, MANAGE_PROFILE_URL } from "./endpoints/endpoints";
 
 interface Address {
@@ -26,6 +25,7 @@ interface Contact {
   phone2?: string;
   phone2Extension?: string;
   email: string;
+  fax?: string;
   city: string;
   provinceCode: string;
   countryCode: string;
@@ -37,7 +37,7 @@ export interface CompanyProfile {
   clientNumber: string;
   legalName: string;
   companyAddress: Address;
-  mailingAddressSameAsCompanyAddress: boolean;
+  mailingAddressSameAsCompanyAddress?: boolean;
   mailingAddress?: Address;
   email: string;
   phone: string;
@@ -68,27 +68,7 @@ export interface CompanyAndUserRequest {
 
 export const getCompanyInfo = async (): Promise<CompanyProfile> => {
   const url = new URL(MANAGE_PROFILE_API.COMPANIES);
-
-  try {
-    const response = await httpGETRequest(
-      new URL(`${url.href}/${getCompanyIdFromSession()}`)
-    );
-    const data = await response.json();
-
-    // Handle API errors created from the backend API
-    if (!response.ok) {
-      const err: ApiErrorResponse = data;
-      return Promise.reject(err.errorMessage);
-    }
-
-    return data;
-    // eslint-disable-next-line  @typescript-eslint/no-explicit-any
-  } catch (error: any) {
-    // Handle network errors
-    // Error type has name and message
-    // eslint-disable-next-line  @typescript-eslint/no-explicit-any
-    return Promise.reject(error.message);
-  }
+  return httpGETRequest(new URL(`${url.href}/${getCompanyIdFromSession()}`));
 };
 
 /* eslint-disable @typescript-eslint/no-unused-vars */

@@ -4,6 +4,7 @@ import {
   UpdatePowerUnit,
   VehicleType,
   Trailer,
+  UpdateTrailer,
   VehicleTypesAsString,
 } from "../types/managevehicles";
 
@@ -13,6 +14,28 @@ import {
   httpPUTRequest,
   getCompanyIdFromSession,
 } from "../../../common/apiManager/httpRequestHandler";
+
+/**
+ * Fetch*
+ * All Power Unit and Trailer Data
+ * @return An array of combined PowerUnit and Trailers
+ */
+export const getAllVehicles = async (): Promise<(PowerUnit | Trailer)[]> => {
+  const powerUnits = await getAllPowerUnits();
+  const trailers = await getAllTrailers();
+
+  powerUnits.forEach((p: PowerUnit) => {
+    p.vehicleType = "powerUnit";
+  });
+
+  trailers.forEach((t: Trailer) => {
+    t.vehicleType = "trailer";
+  });
+
+  const allVehicles: (PowerUnit | Trailer)[] = [...powerUnits, ...trailers];
+
+  return allVehicles;
+};
 
 /**
  * Fetch*
@@ -93,6 +116,11 @@ export const addTrailer = (trailer: Trailer): Promise<Response> => {
   );
 };
 
+export const updateTrailer = (trailer: UpdateTrailer): Promise<Response> => {
+  const url = VEHICLES_API.TRAILER + "/" + trailer.trailerId;
+  return httpPUTRequest(url, trailer);
+};
+
 /**
  * Delete one or more vehicles.
  * @param vehicleIds Array of vehicle ids to be deleted.
@@ -101,7 +129,7 @@ export const addTrailer = (trailer: Trailer): Promise<Response> => {
  */
 export const deleteVehicles = (
   vehicleIds: Array<string>,
-  vehicleType: VehicleTypesAsString,
+  vehicleType: VehicleTypesAsString
 ): Promise<Response> => {
   let url: string | null = null;
   let requestBody: { powerUnits: Array<string> } | { trailers: Array<string> };

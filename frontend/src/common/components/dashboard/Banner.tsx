@@ -1,4 +1,4 @@
-import { Grid, Typography } from "@mui/material";
+import { Box, Grid, Typography } from "@mui/material";
 import "./Dashboard.scss";
 
 /**
@@ -26,9 +26,15 @@ export const Banner = ({
     style={extendHeight ? { paddingBottom: "39px", paddingTop: "39px" } : {}}
   >
     <Grid container>
-      <Grid xs={12} item>
+      <Grid
+        xs={12}
+        item
+        sx={{ display: "flex", justifyContent: "space-between" }}
+      >
         <h2>{bannerText}</h2>
-        {bannerButton ? bannerButton : null}
+        <Box sx={{ display: "flex", alignItems: "center" }}>
+          {bannerButton ? bannerButton : null}
+        </Box>
       </Grid>
       <Grid xs item>
         <div className="banner-subtext">

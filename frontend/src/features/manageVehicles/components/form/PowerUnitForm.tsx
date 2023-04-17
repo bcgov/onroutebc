@@ -10,6 +10,8 @@ import {
   usePowerUnitTypesQuery,
 } from "../../apiManager/hooks";
 import { useNavigate } from "react-router-dom";
+import { useContext } from "react";
+import { SnackBarContext } from "../../../../App";
 
 /**
  * Props used by the power unit form.
@@ -58,6 +60,7 @@ export const PowerUnitForm = ({ powerUnit }: PowerUnitFormProps) => {
 
   const powerUnitTypesQuery = usePowerUnitTypesQuery();
   const addVehicleQuery = useAddPowerUnitMutation();
+  const snackBar = useContext(SnackBarContext);
   const navigate = useNavigate();
 
   /**
@@ -72,9 +75,18 @@ export const PowerUnitForm = ({ powerUnit }: PowerUnitFormProps) => {
   /**
    * Adds a vehicle.
    */
-  const onAddVehicle = function (data: FieldValues) {
+  const onAddVehicle = async (data: FieldValues) => {
     const powerUnitToBeAdded = data as PowerUnit;
-    addVehicleQuery.mutate(powerUnitToBeAdded);
+    const result = await addVehicleQuery.mutateAsync(powerUnitToBeAdded);
+    if (result.ok) {
+      snackBar.setSnackBar({
+        showSnackbar: true,
+        setShowSnackbar: () => true,
+        message: "Power unit has been added successfully",
+        isError: false,
+      });
+      navigate("../");
+    }
   };
 
   /**

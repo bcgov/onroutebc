@@ -8,6 +8,7 @@ import {
 } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { ORBC_FormTypes } from "../../../types/common";
+import { CustomDatePicker } from "./subFormComponents/CustomDatePicker";
 import { CustomOutlinedInput } from "./subFormComponents/CustomOutlinedInput";
 import { CustomSelect } from "./subFormComponents/CustomSelect";
 import { PhoneNumberInput } from "./subFormComponents/PhoneNumberInput";
@@ -16,7 +17,7 @@ import { PhoneNumberInput } from "./subFormComponents/PhoneNumberInput";
  * Properties of onRouteBC custom form components
  */
 export interface CustomFormComponentProps<T extends FieldValues> {
-  type: "input" | "select" | "phone";
+  type: "input" | "select" | "phone" | "datePicker";
   feature: string;
   options: CustomFormOptionsProps<T>;
   i18options?: InternationalOptionsProps;
@@ -43,6 +44,23 @@ interface InternationalOptionsProps {
   inValidMessage_i18?: string;
   inValidMessage_fieldName_i18?: string;
 }
+
+/**
+ * Recursive method to dynamically get the error message of a fieldname that has nested json
+ * Example: Field name of primaryContact.provinceCode
+ * @param errors The "errors" object from formState: { errors } in useFormContext (See top of this file). Passed by value since recursive.
+ * @param fieldPath The field name variable. Either provinceField or countryField
+ * @returns Error message as a string
+ */
+// eslint-disable-next-line  @typescript-eslint/no-explicit-any
+export const getErrorMessage = (errors: any, fieldPath: string): string => {
+  const parts = fieldPath.split(".");
+  if (parts.length > 1 && typeof errors[parts[0]] === "object") {
+    return getErrorMessage(errors[parts[0]], parts.splice(1).join("."));
+  } else {
+    return errors[parts[0]]?.message;
+  }
+};
 
 /**
  * This onRouteBC Custom Form component abstracts the MUI / React Hook form code to allow for simple reusable form components.
@@ -86,23 +104,6 @@ export const CustomFormComponent = <T extends ORBC_FormTypes>({
   const { t } = useTranslation();
 
   /**
-   * Recursive method to dynamically get the error message of a fieldname that has nested json
-   * Example: Field name of primaryContact.provinceCode
-   * @param errors The "errors" object from formState: { errors } in useFormContext (See top of this file). Passed by value since recursive.
-   * @param fieldPath The field name variable. Either provinceField or countryField
-   * @returns Error message as a string
-   */
-  // eslint-disable-next-line  @typescript-eslint/no-explicit-any
-  const getErrorMessage = (errors: any, fieldPath: string): string => {
-    const parts = fieldPath.split(".");
-    if (parts.length > 1 && typeof errors[parts[0]] === "object") {
-      return getErrorMessage(errors[parts[0]], parts.splice(1).join("."));
-    } else {
-      return errors[parts[0]]?.message;
-    }
-  };
-
-  /**
    * Function to check the rules object for either required or required: { value: true}
    * @returns true/false depending on field rule object
    */
@@ -137,6 +138,16 @@ export const CustomFormComponent = <T extends ORBC_FormTypes>({
       case "input":
         return (
           <CustomOutlinedInput
+            feature={feature}
+            name={name}
+            rules={rules}
+            inputProps={inputProps}
+            invalid={invalid}
+          />
+        );
+      case "datePicker":
+        return (
+          <CustomDatePicker
             feature={feature}
             name={name}
             rules={rules}

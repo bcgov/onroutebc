@@ -23,14 +23,17 @@ export const ErrorBcGovBanner = ({ description }: { description: string }) => (
 
 export const WarningBcGovBanner = ({
   description,
+  width,
 }: {
   description: string;
+  width?: string;
 }) => (
   <div
     className="bc-gov-alertbanner bc-gov-alertbanner-warning"
     role="alert"
     aria-labelledby="warning"
     aria-describedby="warning-desc"
+    style={{ width: width }}
   >
     <p id="warning-desc">{description}</p>
   </div>
@@ -38,9 +41,11 @@ export const WarningBcGovBanner = ({
 
 export const InfoBcGovBanner = ({
   description,
+  htmlDescription,
   width,
 }: {
   description: string;
+  htmlDescription?: JSX.Element;
   width?: string;
 }) => (
   <div
@@ -51,6 +56,7 @@ export const InfoBcGovBanner = ({
     style={{ width: width }}
   >
     <p id="info-desc">{description}</p>
+    <>{htmlDescription}</>
   </div>
 );
 

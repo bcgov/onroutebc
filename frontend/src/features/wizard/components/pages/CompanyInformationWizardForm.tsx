@@ -4,8 +4,9 @@ import { CompanyInfoGeneralForm } from "../../../manageProfile/components/forms/
 import { CompanyMailingAddressForm } from "../../../manageProfile/components/forms/subForms/CompanyMailingAddressForm";
 import Typography from "@mui/material/Typography";
 import { CompanyContactDetailsForm } from "../../../manageProfile/components/forms/subForms/CompanyContactDetailsForm";
-import { InfoBcGovBanner } from "../../../../common/components/alertBanners/AlertBanners";
+
 import { CompanyPrimaryContactForm } from "../../../manageProfile/components/forms/subForms/CompanyPrimaryContactForm";
+import { InfoBcGovBanner } from "../../../../common/components/banners/AlertBanners";
 
 /**
  * The User Information Form contains multiple subs forms including

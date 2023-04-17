@@ -8,7 +8,7 @@ import { Box, Typography } from "@mui/material";
 import "../../../../common/components/dashboard/Dashboard.scss";
 import { Banner } from "../../../../common/components/dashboard/Banner";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
-import { InfoBcGovBanner } from "../../../../common/components/alertBanners/AlertBanners";
+import { InfoBcGovBanner } from "../../../../common/components/banners/AlertBanners";
 import { useNavigate } from "react-router-dom";
 
 export const AddVehicleDashboard = React.memo(

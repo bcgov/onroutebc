@@ -1,42 +1,14 @@
 import { Box, Button, Typography } from "@mui/material";
 import { memo } from "react";
 import { CompanyProfile } from "../../apiManager/manageProfileAPI";
-import CountriesAndStates from "../../../../constants/countries_and_states.json";
+
 import { formatPhoneNumber } from "../../../../common/components/form/subFormComponents/PhoneNumberInput";
+import {
+  formatCountry,
+  formatProvince,
+} from "../../../../common/helpers.ts/formatCountryProvince";
 // Disable any eslint for references to countries_and_states.json
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
-/**
- * Converts CountryCode to Country Name using the countries_and_states.json file
- * @param countryCode
- * @returns Full name of the country
- */
-const formatCountry = (countryCode: string) => {
-  const countryName = CountriesAndStates.filter(
-    (country: any) => country.code === countryCode
-  );
-  return countryName[0].name;
-};
-
-/**
- * Converts provinceCode to Province Name using the countries_and_states.json file
- * @param countryCode
- * @param provinceCode
- * @returns Full name of the province
- */
-const formatProvince = (countryCode: string, provinceCode: string) => {
-  const countries = CountriesAndStates.filter(
-    (country: any) => country.code === countryCode
-  ).flatMap((country: any) => country.states);
-
-  const provinceName = countries.filter(
-    (province: any) => province.code === provinceCode
-  );
-
-  if (!provinceName[0]) return "";
-
-  return provinceName[0].name;
-};
 
 export const DisplayInfo = memo(
   ({
