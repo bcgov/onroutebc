@@ -58,12 +58,13 @@ jobs:
         uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: "trivy-results.sarif"
-  
+          
   deploys-test:
     name: TEST Deployments
     needs:
       - codeql
       - trivy
+      - image-promotion-test
     environment: test
     runs-on: ubuntu-22.04
     strategy:
