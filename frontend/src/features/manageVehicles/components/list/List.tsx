@@ -188,7 +188,7 @@ export const List = memo(
                   {/*tslint:disable-next-line*/}
                   <IconButton
                     onClick={() => table.setEditingRow(row)}
-                    disabled={true}
+                    disabled={false}
                   >
                     <Edit />
                   </IconButton>
