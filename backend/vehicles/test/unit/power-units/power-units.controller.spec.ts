@@ -67,10 +67,6 @@ describe('PowerUnitsController', () => {
       );
       expect(typeof retPowerUnit).toBe('object');
       expect(retPowerUnit).toEqual(readPowerUnitDtoMock);
-      expect(powerUnitsServiceMock.findOne).toHaveBeenCalledWith(
-        COMPANY_ID_1,
-        POWER_UNIT_ID_1,
-      );
     });
 
     it('should throw a DataNotFoundException if power unit is not found', async () => {

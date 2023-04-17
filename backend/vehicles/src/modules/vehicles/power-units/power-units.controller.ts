@@ -8,6 +8,7 @@ import {
   Put,
   Req,
   HttpCode,
+  ForbiddenException,
 } from '@nestjs/common';
 import { PowerUnitsService } from './power-units.service';
 import { CreatePowerUnitDto } from './dto/request/create-power-unit.dto';
@@ -88,7 +89,7 @@ export class PowerUnitsController {
     @Param('companyId') companyId: number,
     @Param('powerUnitId') powerUnitId: string,
   ): Promise<ReadPowerUnitDto> {
-    const powerUnit = await this.powerUnitsService.findOne(
+    const powerUnit = await this.checkVehicleCompanyContext(
       companyId,
       powerUnitId,
     );
@@ -97,7 +98,6 @@ export class PowerUnitsController {
     }
     return powerUnit;
   }
-
   @ApiOkResponse({
     description: 'The Power Unit Resource',
     type: ReadPowerUnitDto,
@@ -111,6 +111,7 @@ export class PowerUnitsController {
     @Body() updatePowerUnitDto: UpdatePowerUnitDto,
   ): Promise<ReadPowerUnitDto> {
     //const currentUser = request.user as IUserJWT;
+    await this.checkVehicleCompanyContext(companyId, powerUnitId);
     const powerUnit = await this.powerUnitsService.update(
       companyId,
       powerUnitId,
@@ -130,6 +131,7 @@ export class PowerUnitsController {
     @Param('powerUnitId') powerUnitId: string,
   ) {
     //const currentUser = request.user as IUserJWT;
+    await this.checkVehicleCompanyContext(companyId, powerUnitId);
     const deleteResult = await this.powerUnitsService.remove(
       companyId,
       powerUnitId,
@@ -160,5 +162,19 @@ export class PowerUnitsController {
       throw new DataNotFoundException();
     }
     return deleteResult;
+  }
+
+  private async checkVehicleCompanyContext(
+    companyId: number,
+    powerUnitId: string,
+  ) {
+    const vehicle = await this.powerUnitsService.findOne(
+      undefined,
+      powerUnitId,
+    );
+    if (vehicle && vehicle?.companyId != companyId) {
+      throw new ForbiddenException();
+    }
+    return vehicle;
   }
 }
