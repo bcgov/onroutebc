@@ -10,7 +10,10 @@ export const powerUnitsServiceMock = {
   create: jest.fn().mockResolvedValue(readPowerUnitDtoMock),
   findAll: jest.fn().mockResolvedValue([readPowerUnitDtoMock]),
   findOne: jest.fn(async (companyId: number, id: string) => {
-    if (companyId === COMPANY_ID_1 && id === POWER_UNIT_ID_1) {
+    if (
+      ((companyId && companyId === COMPANY_ID_1) || !companyId) &&
+      id === POWER_UNIT_ID_1
+    ) {
       return readPowerUnitDtoMock;
     } else {
       return null;
