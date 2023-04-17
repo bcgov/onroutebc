@@ -17,11 +17,17 @@ export class PowerUnitsService {
     @InjectMapper() private readonly classMapper: Mapper,
   ) {}
 
-  async create(powerUnit: CreatePowerUnitDto): Promise<ReadPowerUnitDto> {
+  async create(
+    companyId: number,
+    powerUnit: CreatePowerUnitDto,
+  ): Promise<ReadPowerUnitDto> {
     const newPowerUnit = this.classMapper.map(
       powerUnit,
       CreatePowerUnitDto,
       PowerUnit,
+      {
+        extraArgs: () => ({ companyId: companyId }),
+      },
     );
     return this.classMapper.mapAsync(
       await this.powerUnitRepository.save(newPowerUnit),

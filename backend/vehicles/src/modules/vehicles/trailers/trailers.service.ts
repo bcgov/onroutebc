@@ -17,8 +17,18 @@ export class TrailersService {
     @InjectMapper() private readonly classMapper: Mapper,
   ) {}
 
-  async create(trailer: CreateTrailerDto): Promise<ReadTrailerDto> {
-    const newTrailer = this.classMapper.map(trailer, CreateTrailerDto, Trailer);
+  async create(
+    companyId: number,
+    trailer: CreateTrailerDto,
+  ): Promise<ReadTrailerDto> {
+    const newTrailer = this.classMapper.map(
+      trailer,
+      CreateTrailerDto,
+      Trailer,
+      {
+        extraArgs: () => ({ companyId: companyId }),
+      },
+    );
     return this.classMapper.mapAsync(
       await this.trailerRepository.save(newTrailer),
       Trailer,

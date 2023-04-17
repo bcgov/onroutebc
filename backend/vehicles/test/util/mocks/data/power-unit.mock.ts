@@ -57,6 +57,7 @@ export const updatePowerUnitDtoMock: UpdatePowerUnitDto = {
 export const readPowerUnitDtoMock: ReadPowerUnitDto = {
   ...createPowerUnitDtoMock,
   powerUnitId: POWER_UNIT_ID,
+  companyId: COMPANY_ID,
   createdDateTime: baseDtoMock.createdDateTime,
 };
 

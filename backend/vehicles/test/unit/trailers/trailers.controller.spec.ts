@@ -40,6 +40,7 @@ describe('TrailersController', () => {
       expect(typeof retTrailer).toBe('object');
       expect(retTrailer).toEqual(readTrailerDtoMock);
       expect(trailersServiceMock.create).toHaveBeenCalledWith(
+        COMPANY_ID_1,
         createTrailerDtoMock,
       );
     });

@@ -60,7 +60,7 @@ export class PowerUnitsController {
     @Body() createPowerUnitDto: CreatePowerUnitDto,
   ) {
     //const currentUser = request.user as IUserJWT;
-    return await this.powerUnitsService.create(createPowerUnitDto);
+    return await this.powerUnitsService.create(companyId, createPowerUnitDto);
   }
 
   @ApiOkResponse({

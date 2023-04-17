@@ -51,7 +51,10 @@ describe('PowerUnitsService', () => {
   describe('Power unit service create function', () => {
     it('should create a power unit.', async () => {
       repo.save.mockResolvedValue(powerUnitEntityMock);
-      const retPowerUnit = await service.create(createPowerUnitDtoMock);
+      const retPowerUnit = await service.create(
+        COMPANY_ID_1,
+        createPowerUnitDtoMock,
+      );
       expect(typeof retPowerUnit).toBe('object');
       expect(retPowerUnit.powerUnitId).toBe(POWER_UNIT_ID_1);
     });

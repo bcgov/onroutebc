@@ -43,6 +43,7 @@ describe('PowerUnitsController', () => {
       expect(typeof retPowerUnit).toBe('object');
       expect(retPowerUnit).toEqual(readPowerUnitDtoMock);
       expect(powerUnitsServiceMock.create).toHaveBeenCalledWith(
+        COMPANY_ID_1,
         createPowerUnitDtoMock,
       );
     });

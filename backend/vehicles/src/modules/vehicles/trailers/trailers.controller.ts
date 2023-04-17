@@ -60,7 +60,7 @@ export class TrailersController {
     @Param('companyId') companyId: number,
     @Body() createTrailerDto: CreateTrailerDto,
   ) {
-    return this.trailersService.create(createTrailerDto);
+    return this.trailersService.create(companyId, createTrailerDto);
   }
 
   @ApiOkResponse({

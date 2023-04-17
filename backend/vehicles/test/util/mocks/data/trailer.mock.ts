@@ -53,6 +53,7 @@ export const updateTrailerDtoMock: UpdateTrailerDto = {
 export const readTrailerDtoMock: ReadTrailerDto = {
   ...createTrailerDtoMock,
   trailerId: TRAILER_ID,
+  companyId: COMPANY_ID,
   createdDateTime: baseDtoMock.createdDateTime,
 };
 

@@ -51,7 +51,10 @@ describe('TrailersService', () => {
   describe('Trailer service create function', () => {
     it('Should create a trailer', async () => {
       repo.save.mockResolvedValue(trailerEntityMock);
-      const retTrailer = await service.create(createTrailerDtoMock);
+      const retTrailer = await service.create(
+        COMPANY_ID_1,
+        createTrailerDtoMock,
+      );
       expect(typeof retTrailer).toBe('object');
       expect(retTrailer.trailerId).toBe(TRAILER_ID_1);
     });

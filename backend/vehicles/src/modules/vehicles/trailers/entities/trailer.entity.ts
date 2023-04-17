@@ -90,6 +90,11 @@ export class Trailer extends Base {
     example: '1',
     description: 'The Company Id to which the Trailer belongs',
   })
-  @Column({ type: 'integer', name: 'COMPANY_ID', nullable: true })
+  @Column({
+    update: false,
+    type: 'int',
+    name: 'COMPANY_ID',
+    nullable: false,
+  })
   companyId: number;
 }
