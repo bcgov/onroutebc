@@ -16,7 +16,7 @@ import {
   readPowerUnitDtoMock,
   updatePowerUnitDtoMock,
 } from '../util/mocks/data/power-unit.mock';
-import { deleteDtoMock3 } from 'test/util/mocks/data/delete-dto.mock';
+import { deleteDtoFailureMock } from 'test/util/mocks/data/delete-dto.mock';
 
 describe('Power Units (e2e)', () => {
   let app: INestApplication;
@@ -93,13 +93,13 @@ describe('Power Units (e2e)', () => {
     });
   });
 
-  describe('/companies/3/vehicles/powerUnits/delete-requests DELETE', () => {
+  describe('/companies/1/vehicles/powerUnits/delete-requests DELETE', () => {
     it('should delete the power unit.', () => {
       return request(app.getHttpServer())
-        .post('/companies/3/vehicles/powerUnits/delete-requests')
+        .post('/companies/1/vehicles/powerUnits/delete-requests')
         .send(deletePowerUnitMock)
         .expect(200)
-        .expect(deleteDtoMock3);
+        .expect(deleteDtoFailureMock);
     });
   });
 

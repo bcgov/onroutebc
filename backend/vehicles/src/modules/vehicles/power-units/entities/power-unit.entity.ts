@@ -98,6 +98,11 @@ export class PowerUnit extends Base {
     example: '1',
     description: 'The Company Id to which the Power Unit belongs',
   })
-  @Column({ type: 'integer', name: 'COMPANY_ID', nullable: true })
+  @Column({
+    update: false,
+    type: 'integer',
+    name: 'COMPANY_ID',
+    nullable: false,
+  })
   companyId: number;
 }

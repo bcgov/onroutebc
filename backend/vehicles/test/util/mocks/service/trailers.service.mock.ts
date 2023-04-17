@@ -3,12 +3,13 @@ import { UpdateTrailerDto } from '../../../../src/modules/vehicles/trailers/dto/
 import { deleteDtoMock } from '../data/delete-dto.mock';
 import { readTrailerDtoMock } from '../data/trailer.mock';
 
+const COMPANY_ID_1 = 1;
 const TRAILER_ID_1 = '1';
 
 export const trailersServiceMock = {
   create: jest.fn().mockResolvedValue(readTrailerDtoMock),
   findAll: jest.fn().mockResolvedValue([readTrailerDtoMock]),
-  findOne: jest.fn(async (id: string) => {
+  findOne: jest.fn(async (companyId: number, id: string) => {
     if (id === readTrailerDtoMock.trailerId) {
       return readTrailerDtoMock;
     } else {
@@ -16,7 +17,11 @@ export const trailersServiceMock = {
     }
   }),
   update: jest.fn(
-    async (id: string, updateTrailerDtoMock: UpdateTrailerDto) => {
+    async (
+      companyId: number,
+      id: string,
+      updateTrailerDtoMock: UpdateTrailerDto,
+    ) => {
       if (id === TRAILER_ID_1) {
         Object.assign(readTrailerDtoMock, updateTrailerDtoMock);
         return readTrailerDtoMock;
@@ -25,7 +30,7 @@ export const trailersServiceMock = {
       }
     },
   ),
-  remove: jest.fn(async (id: string) => {
+  remove: jest.fn(async (companyId: number, id: string) => {
     if (id === TRAILER_ID_1) {
       return { affected: 1 };
     } else {
@@ -33,7 +38,11 @@ export const trailersServiceMock = {
     }
   }),
   removeAll: jest.fn(async (trailerIds: string[], companyId: number) => {
-    if (trailerIds.length == 1 && trailerIds[0] == '1' && companyId == 1) {
+    if (
+      trailerIds.length == 1 &&
+      trailerIds[0] == TRAILER_ID_1 &&
+      companyId === COMPANY_ID_1
+    ) {
       return deleteDtoMock;
     } else {
       return null;

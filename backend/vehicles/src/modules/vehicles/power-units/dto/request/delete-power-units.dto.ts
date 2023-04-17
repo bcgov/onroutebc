@@ -6,7 +6,7 @@ export class DeletePowerUnitDto {
   @ApiProperty({
     description: 'Power unit Ids.',
     isArray: true,
-    type: [String],
+    type: String,
     example: ['74'],
   })
   powerUnits: string[];

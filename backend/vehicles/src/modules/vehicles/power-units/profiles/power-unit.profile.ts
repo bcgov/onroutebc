@@ -1,5 +1,11 @@
 import { AutomapperProfile, InjectMapper } from '@automapper/nestjs';
-import { createMap, forMember, mapFrom, Mapper } from '@automapper/core';
+import {
+  createMap,
+  forMember,
+  mapFrom,
+  Mapper,
+  mapWithArguments,
+} from '@automapper/core';
 import { Injectable } from '@nestjs/common';
 import { ReadPowerUnitDto } from '../dto/response/read-power-unit.dto';
 import { PowerUnit } from '../entities/power-unit.entity';
@@ -47,6 +53,12 @@ export class PowerUnitsProfile extends AutomapperProfile {
         forMember(
           (d) => d.powerUnitType.typeCode,
           mapFrom((s) => s.powerUnitTypeCode),
+        ),
+        forMember(
+          (d) => d.companyId,
+          mapWithArguments((source, { companyId }) => {
+            return companyId;
+          }),
         ),
       );
       createMap(

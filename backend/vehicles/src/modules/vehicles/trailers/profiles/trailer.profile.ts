@@ -1,5 +1,11 @@
 import { AutomapperProfile, InjectMapper } from '@automapper/nestjs';
-import { createMap, forMember, mapFrom, Mapper } from '@automapper/core';
+import {
+  createMap,
+  forMember,
+  mapFrom,
+  Mapper,
+  mapWithArguments,
+} from '@automapper/core';
 import { Injectable } from '@nestjs/common';
 import { Trailer } from '../entities/trailer.entity';
 import { ReadTrailerDto } from '../dto/response/read-trailer.dto';
@@ -47,6 +53,12 @@ export class TrailersProfile extends AutomapperProfile {
         forMember(
           (d) => d.trailerType.typeCode,
           mapFrom((s) => s.trailerTypeCode),
+        ),
+        forMember(
+          (d) => d.companyId,
+          mapWithArguments((source, { companyId }) => {
+            return companyId;
+          }),
         ),
       );
       createMap(

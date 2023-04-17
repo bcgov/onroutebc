@@ -14,7 +14,6 @@ import { CreateTrailerDto } from './dto/request/create-trailer.dto';
 import { UpdateTrailerDto } from './dto/request/update-trailer.dto';
 import {
   ApiBearerAuth,
-  ApiBody,
   ApiCreatedResponse,
   ApiInternalServerErrorResponse,
   ApiMethodNotAllowedResponse,
@@ -61,7 +60,7 @@ export class TrailersController {
     @Param('companyId') companyId: number,
     @Body() createTrailerDto: CreateTrailerDto,
   ) {
-    return this.trailersService.create(createTrailerDto);
+    return this.trailersService.create(companyId, createTrailerDto);
   }
 
   @ApiOkResponse({
@@ -69,24 +68,26 @@ export class TrailersController {
     type: ReadTrailerDto,
     isArray: true,
   })
+  @Roles(Role.READ_VEHICLE)
   @Get()
   async findAll(
     @Param('companyId') companyId: number,
   ): Promise<ReadTrailerDto[]> {
-    return await this.trailersService.findAll();
+    return await this.trailersService.findAll(companyId);
   }
 
   @ApiOkResponse({
     description: 'The Trailer Resource',
     type: ReadTrailerDto,
   })
+  @Roles(Role.READ_VEHICLE)
   @Get(':trailerId')
   async findOne(
     @Req() request: Request,
     @Param('companyId') companyId: number,
     @Param('trailerId') trailerId: string,
   ): Promise<ReadTrailerDto> {
-    const trailer = await this.trailersService.findOne(trailerId);
+    const trailer = await this.trailersService.findOne(companyId, trailerId);
     if (!trailer) {
       throw new DataNotFoundException();
     }
@@ -97,6 +98,7 @@ export class TrailersController {
     description: 'The Trailer Resource',
     type: ReadTrailerDto,
   })
+  @Roles(Role.WRITE_VEHICLE)
   @Put(':trailerId')
   async update(
     @Req() request: Request,
@@ -105,6 +107,7 @@ export class TrailersController {
     @Body() updateTrailerDto: UpdateTrailerDto,
   ): Promise<ReadTrailerDto> {
     const trailer = await this.trailersService.update(
+      companyId,
       trailerId,
       updateTrailerDto,
     );
@@ -114,35 +117,37 @@ export class TrailersController {
     return trailer;
   }
 
+  @Roles(Role.WRITE_VEHICLE)
   @Delete(':trailerId')
   async remove(
     @Req() request: Request,
     @Param('companyId') companyId: number,
     @Param('trailerId') trailerId: string,
   ) {
-    const deleteResult = await this.trailersService.remove(trailerId);
+    const deleteResult = await this.trailersService.remove(
+      companyId,
+      trailerId,
+    );
     if (deleteResult.affected === 0) {
       throw new DataNotFoundException();
     }
     return { deleted: true };
   }
 
-  @Post('delete-requests')
-  @ApiBody({
-    description: 'The Trailer Resource',
-    type: DeleteTrailerDto,
-  })
   @ApiOkResponse({
-    description: 'The Trailer Resource',
+    description:
+      'The delete dto resource which includes the success and failure list.',
     type: DeleteDto,
   })
+  @Roles(Role.WRITE_VEHICLE)
   @HttpCode(200)
+  @Post('delete-requests')
   async deleteTrailers(
-    @Body('trailers') trailers: string[],
+    @Body() deleteTrailerDto: DeleteTrailerDto,
     @Param('companyId') companyId: number,
   ): Promise<DeleteDto> {
     const deleteResult = await this.trailersService.removeAll(
-      trailers,
+      deleteTrailerDto.trailers,
       companyId,
     );
 
