@@ -13,7 +13,7 @@
     "@mui/icons-material": "^5.11.11",
     "@mui/material": "^5.11.14",
     "@mui/x-date-pickers": "^6.0.4",
-    "@tanstack/react-query": "^4.28.0",
+    "@tanstack/react-query": "^4.29.3",
     "dayjs": "^1.11.7",
     "i18next": "^22.4.10",
     "material-react-table": "^1.10.0",
