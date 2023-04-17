@@ -53,6 +53,7 @@ export class PowerUnitsController {
     description: 'The Power Unit Resource',
     type: ReadPowerUnitDto,
   })
+  @Roles(Role.WRITE_VEHICLE)
   @Post()
   async create(
     @Req() request: Request,
@@ -140,9 +141,11 @@ export class PowerUnitsController {
   }
 
   @ApiOkResponse({
-    description: 'The Power Unit Resource',
+    description:
+      'The delete dto resource which includes the success and failure list.',
     type: DeleteDto,
   })
+  @Roles(Role.WRITE_VEHICLE)
   @Post('delete-requests')
   @HttpCode(200)
   async deletePowerUnits(

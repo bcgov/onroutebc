@@ -68,6 +68,7 @@ export class TrailersController {
     type: ReadTrailerDto,
     isArray: true,
   })
+  @Roles(Role.READ_VEHICLE)
   @Get()
   async findAll(
     @Param('companyId') companyId: number,
@@ -79,6 +80,7 @@ export class TrailersController {
     description: 'The Trailer Resource',
     type: ReadTrailerDto,
   })
+  @Roles(Role.READ_VEHICLE)
   @Get(':trailerId')
   async findOne(
     @Req() request: Request,
@@ -96,6 +98,7 @@ export class TrailersController {
     description: 'The Trailer Resource',
     type: ReadTrailerDto,
   })
+  @Roles(Role.WRITE_VEHICLE)
   @Put(':trailerId')
   async update(
     @Req() request: Request,
@@ -114,6 +117,7 @@ export class TrailersController {
     return trailer;
   }
 
+  @Roles(Role.WRITE_VEHICLE)
   @Delete(':trailerId')
   async remove(
     @Req() request: Request,
@@ -130,12 +134,14 @@ export class TrailersController {
     return { deleted: true };
   }
 
-  @Post('delete-requests')
   @ApiOkResponse({
-    description: 'The Trailer Resource',
+    description:
+      'The delete dto resource which includes the success and failure list.',
     type: DeleteDto,
   })
+  @Roles(Role.WRITE_VEHICLE)
   @HttpCode(200)
+  @Post('delete-requests')
   async deleteTrailers(
     @Body() deleteTrailerDto: DeleteTrailerDto,
     @Param('companyId') companyId: number,
