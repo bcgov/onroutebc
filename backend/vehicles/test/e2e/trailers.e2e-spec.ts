@@ -15,7 +15,7 @@ import {
   trailerEntityMock,
   updateTrailerDtoMock,
 } from '../util/mocks/data/trailer.mock';
-import { deleteDtoMock3 } from 'test/util/mocks/data/delete-dto.mock';
+import { deleteDtoFailureMock } from 'test/util/mocks/data/delete-dto.mock';
 
 describe('Trailers (e2e)', () => {
   let app: INestApplication;
@@ -92,13 +92,13 @@ describe('Trailers (e2e)', () => {
     });
   });
 
-  describe('/companies/3/vehicles/trailers/delete-requests DELETE', () => {
+  describe('/companies/1/vehicles/trailers/delete-requests DELETE', () => {
     it('should delete the trailer.', () => {
       return request(app.getHttpServer())
-        .post('/companies/3/vehicles/trailers/delete-requests')
+        .post('/companies/1/vehicles/trailers/delete-requests')
         .send(deleteTrailersMock)
         .expect(200)
-        .expect(deleteDtoMock3);
+        .expect(deleteDtoFailureMock);
     });
   });
 

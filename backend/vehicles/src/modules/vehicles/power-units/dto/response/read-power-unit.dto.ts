@@ -12,6 +12,13 @@ export class ReadPowerUnitDto {
 
   @AutoMap()
   @ApiProperty({
+    example: '1',
+    description: 'The Id of the company which owns the vehicle.',
+  })
+  companyId: number;
+
+  @AutoMap()
+  @ApiProperty({
     description:
       'Number or code that the company uses to refer to the vehicle.',
     example: 'KEN1',

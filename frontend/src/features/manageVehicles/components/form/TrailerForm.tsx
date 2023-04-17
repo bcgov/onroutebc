@@ -10,6 +10,8 @@ import {
   useTrailerTypesQuery,
 } from "../../apiManager/hooks";
 import { useNavigate } from "react-router-dom";
+import { useContext } from "react";
+import { SnackBarContext } from "../../../../App";
 
 /**
  * Props used by the power unit form.
@@ -53,6 +55,7 @@ export const TrailerForm = ({ trailer }: TrailerFormProps) => {
 
   const trailerTypesQuery = useTrailerTypesQuery();
   const addVehicleQuery = useAddTrailerMutation();
+  const snackBar = useContext(SnackBarContext);
   const navigate = useNavigate();
 
   /**
@@ -67,9 +70,18 @@ export const TrailerForm = ({ trailer }: TrailerFormProps) => {
   /**
    * Adds a vehicle.
    */
-  const onAddVehicle = function (data: FieldValues) {
+  const onAddVehicle = async (data: FieldValues) => {
     const trailerToBeAdded = data as Trailer;
-    addVehicleQuery.mutate(trailerToBeAdded);
+    const result = await addVehicleQuery.mutateAsync(trailerToBeAdded);
+    if (result.ok) {
+      snackBar.setSnackBar({
+        showSnackbar: true,
+        setShowSnackbar: () => true,
+        message: "Trailer has been added successfully",
+        isError: false,
+      });
+      navigate("../");
+    }
   };
 
   /**

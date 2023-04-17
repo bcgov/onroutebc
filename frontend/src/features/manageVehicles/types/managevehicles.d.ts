@@ -5,27 +5,28 @@ export type VehicleTypesAsString = "powerUnit" | "trailer";
  * A base vehicle type. This is an incomplete object and meant to be extended for use.
  */
 interface Vehicle {
-  unitNumber: string;
+  unitNumber?: string;
   plate: string;
   provinceCode: string;
   countryCode: string;
   make: string;
   vin: string;
-  year: number;
-  createdDateTime: string | null;
+  year: number | null;
+  createdDateTime?: string | null;
+  vehicleType?: "powerUnit" | "trailer";
 }
 
 export interface PowerUnit extends Vehicle {
   powerUnitId?: string;
-  licensedGvw: number;
-  steerAxleTireSize: number;
+  licensedGvw?: number;
+  steerAxleTireSize?: number;
   powerUnitTypeCode: string;
 }
 
 export interface Trailer extends Vehicle {
   trailerId?: string;
   trailerTypeCode: string;
-  emptyTrailerWidth: number;
+  emptyTrailerWidth?: number;
 }
 
 /**

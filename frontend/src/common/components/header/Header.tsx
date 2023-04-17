@@ -106,6 +106,13 @@ export const Header = () => {
               </NavLink>
             </li>
           )}
+          {isAuthenticated && (
+            <li>
+              <NavLink to={routes.PERMITS} onClick={menuToggleHandler}>
+                Permits
+              </NavLink>
+            </li>
+          )}
         </ul>
       </div>
     </nav>
@@ -125,7 +132,7 @@ export const Header = () => {
           {isAuthenticated && (
             <Grid item xs={1}>
               <a
-                style={{ cursor: "pointer"}}
+                style={{ cursor: "pointer" }}
                 onClick={() => {
                   sessionStorage.removeItem("onRoutebc.user.context");
                   signoutRedirect({

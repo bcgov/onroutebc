@@ -1,14 +1,12 @@
-import { Box, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
 import { useState } from "react";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { CompanyInfoForm } from "../forms/CompanyInfoForm";
 
 import { DisplayInfo } from "./DisplayCompanyInfo";
 import { useQuery } from "@tanstack/react-query";
-import {
-  CompanyProfile,
-  getCompanyInfo,
-} from "../../apiManager/manageProfileAPI";
+import { getCompanyInfo } from "../../apiManager/manageProfileAPI";
+import { CompanyBanner } from "../../../../common/components/banners/CompanyBanner";
 
 const Header = () => {
   return (
@@ -18,32 +16,6 @@ const Header = () => {
     >
       Edit Company Information
     </Typography>
-  );
-};
-
-const CompanyBanner = ({ companyInfo }: { companyInfo?: CompanyProfile }) => {
-  return (
-    <Box
-      sx={{
-        height: 100,
-        backgroundColor: BC_COLOURS.banner_grey,
-        color: BC_COLOURS.bc_primary_blue,
-        marginTop: "20px",
-        px: 3,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-      }}
-    >
-      <div>
-        <Typography variant="h5">COMPANY NAME</Typography>
-        <Typography variant="h4">{companyInfo?.legalName}</Typography>
-      </div>
-      <div>
-        <Typography variant="h5">onRouteBC CLIENT NUMBER</Typography>
-        <Typography variant="h4">{companyInfo?.clientNumber}</Typography>
-      </div>
-    </Box>
   );
 };
 
@@ -61,7 +33,7 @@ export const CompanyInfo = () => {
     //refetch,
   } = useQuery({
     queryKey: ["companyInfo"],
-    queryFn: () => getCompanyInfo(),
+    queryFn: getCompanyInfo,
     keepPreviousData: true,
     staleTime: 5000,
   });

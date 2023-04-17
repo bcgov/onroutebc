@@ -1,14 +1,26 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useContext } from "react";
-import { useNavigate } from "react-router-dom";
-import { SnackBarContext } from "../../../App";
 import { getUserContext } from "../../manageProfile/apiManager/manageProfileAPI";
 import {
   addPowerUnit,
   addTrailer,
+  getAllVehicles,
   getPowerUnitTypes,
   getTrailerTypes,
+  updatePowerUnit,
+  updateTrailer,
 } from "./vehiclesAPI";
+
+/**
+ *
+ * @returns An array of Powerunits and Trailers
+ */
+export const useVehiclesQuery = () => {
+  return useQuery({
+    queryKey: ["vehicles"],
+    queryFn: getAllVehicles,
+    retry: false,
+  });
+};
 
 export const usePowerUnitTypesQuery = () => {
   return useQuery({
@@ -24,31 +36,38 @@ export const useUserContext = () => {
     queryFn: getUserContext,
     onSuccess: (userContextResponseBody) => {
       console.log(userContextResponseBody);
-      sessionStorage.setItem("onroutebc.user.context", JSON.stringify(userContextResponseBody));
+      sessionStorage.setItem(
+        "onroutebc.user.context",
+        JSON.stringify(userContextResponseBody)
+      );
     },
     retry: false,
   });
-}
+};
 
 export const useAddPowerUnitMutation = () => {
   const queryClient = useQueryClient();
-  const snackBar = useContext(SnackBarContext);
-  const navigate = useNavigate();
 
   return useMutation({
     mutationFn: addPowerUnit,
     onSuccess: (response) => {
       if (response.status === 201) {
         queryClient.invalidateQueries(["powerUnits"]);
+      } else {
+        // Display Error in the form.
+      }
+    },
+  });
+};
 
-        snackBar.setSnackBar({
-          showSnackbar: true,
-          setShowSnackbar: () => true,
-          message: "Power unit has been added successfully",
-          isError: false,
-        });
+export const useUpdatePowerUnitMutation = () => {
+  const queryClient = useQueryClient();
 
-        navigate("../");
+  return useMutation({
+    mutationFn: updatePowerUnit,
+    onSuccess: (response) => {
+      if (response.status === 201) {
+        queryClient.invalidateQueries(["powerUnits"]);
       } else {
         // Display Error in the form.
       }
@@ -66,23 +85,27 @@ export const useTrailerTypesQuery = () => {
 
 export const useAddTrailerMutation = () => {
   const queryClient = useQueryClient();
-  const snackBar = useContext(SnackBarContext);
-  const navigate = useNavigate();
 
   return useMutation({
     mutationFn: addTrailer,
     onSuccess: (response) => {
       if (response.status === 201) {
         queryClient.invalidateQueries(["trailers"]);
+      } else {
+        // Display Error in the form.
+      }
+    },
+  });
+};
 
-        snackBar.setSnackBar({
-          showSnackbar: true,
-          setShowSnackbar: () => true,
-          message: "Trailer has been added successfully",
-          isError: false,
-        });
+export const useUpdateTrailerMutation = () => {
+  const queryClient = useQueryClient();
 
-        navigate("../");
+  return useMutation({
+    mutationFn: updateTrailer,
+    onSuccess: (response) => {
+      if (response.status === 201) {
+        queryClient.invalidateQueries(["trailers"]);
       } else {
         // Display Error in the form.
       }
