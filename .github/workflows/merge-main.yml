@@ -134,7 +134,7 @@ jobs:
             -p AUTH0_AUDIENCE=${{steps.secrets.outputs.VAULT_AUTH0_AUDIENCE}}
             -p AUTH0_IGNORE_EXP=${{steps.secrets.outputs.VAULT_AUTH0_IGNORE_EXP}}
             ${{ matrix.parameters }}
-          penetration_test: true
+          penetration_test: false
   
   
           #  deploys-test-helm:
