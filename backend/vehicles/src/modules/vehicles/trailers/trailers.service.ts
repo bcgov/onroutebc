@@ -26,9 +26,10 @@ export class TrailersService {
     );
   }
 
-  async findAll(): Promise<ReadTrailerDto[]> {
+  async findAll(companyId: number): Promise<ReadTrailerDto[]> {
     return this.classMapper.mapArrayAsync(
       await this.trailerRepository.find({
+        where: { companyId: companyId },
         relations: {
           trailerType: true,
           province: true,
@@ -39,10 +40,10 @@ export class TrailersService {
     );
   }
 
-  async findOne(trailerId: string): Promise<ReadTrailerDto> {
+  async findOne(companyId: number, trailerId: string): Promise<ReadTrailerDto> {
     return this.classMapper.mapAsync(
       await this.trailerRepository.findOne({
-        where: { trailerId },
+        where: { trailerId: trailerId, companyId: companyId },
         relations: {
           trailerType: true,
           province: true,
@@ -54,6 +55,7 @@ export class TrailersService {
   }
 
   async update(
+    companyId: number,
     trailerId: string,
     updateTrailerDto: UpdateTrailerDto,
   ): Promise<ReadTrailerDto> {
@@ -63,11 +65,14 @@ export class TrailersService {
       Trailer,
     );
 
-    await this.trailerRepository.update({ trailerId }, newTrailer);
-    return this.findOne(trailerId);
+    await this.trailerRepository.update(
+      { trailerId: trailerId, companyId: companyId },
+      newTrailer,
+    );
+    return this.findOne(companyId, trailerId);
   }
 
-  async remove(trailerId: string): Promise<DeleteResult> {
+  async remove(companyId: number, trailerId: string): Promise<DeleteResult> {
     return await this.trailerRepository.delete(trailerId);
   }
 

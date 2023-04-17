@@ -14,7 +14,6 @@ import { deleteDtoMock } from '../../util/mocks/data/delete-dto.mock';
 const POWER_UNIT_ID_1 = '1';
 const POWER_UNIT_ID_2 = '2';
 const COMPANY_ID_1 = 1;
-const POWER_UNIT_IDS_2 = ['2'];
 
 describe('PowerUnitsController', () => {
   let controller: PowerUnitsController;
@@ -134,8 +133,7 @@ describe('PowerUnitsController', () => {
     });
   });
 
-  //removeAll
-  describe('Power unit controller bult delete function.', () => {
+  describe('Power unit controller bulk delete function.', () => {
     it('should delete the power unit', async () => {
       const deleteResult = await controller.deletePowerUnits(
         deletePowerUnitMock,
@@ -153,7 +151,7 @@ describe('PowerUnitsController', () => {
 
     it('should thrown a DataNotFoundException if the power unit does not exist or cannot be deleted', async () => {
       await expect(async () => {
-        deletePowerUnitMock.powerUnits = POWER_UNIT_IDS_2;
+        deletePowerUnitMock.powerUnits = [POWER_UNIT_ID_2];
         await controller.deletePowerUnits(deletePowerUnitMock, COMPANY_ID_1);
       }).rejects.toThrow(DataNotFoundException);
     });

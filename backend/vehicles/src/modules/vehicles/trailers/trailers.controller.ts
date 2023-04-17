@@ -14,7 +14,6 @@ import { CreateTrailerDto } from './dto/request/create-trailer.dto';
 import { UpdateTrailerDto } from './dto/request/update-trailer.dto';
 import {
   ApiBearerAuth,
-  ApiBody,
   ApiCreatedResponse,
   ApiInternalServerErrorResponse,
   ApiMethodNotAllowedResponse,
@@ -73,7 +72,7 @@ export class TrailersController {
   async findAll(
     @Param('companyId') companyId: number,
   ): Promise<ReadTrailerDto[]> {
-    return await this.trailersService.findAll();
+    return await this.trailersService.findAll(companyId);
   }
 
   @ApiOkResponse({
@@ -86,7 +85,7 @@ export class TrailersController {
     @Param('companyId') companyId: number,
     @Param('trailerId') trailerId: string,
   ): Promise<ReadTrailerDto> {
-    const trailer = await this.trailersService.findOne(trailerId);
+    const trailer = await this.trailersService.findOne(companyId, trailerId);
     if (!trailer) {
       throw new DataNotFoundException();
     }
@@ -105,6 +104,7 @@ export class TrailersController {
     @Body() updateTrailerDto: UpdateTrailerDto,
   ): Promise<ReadTrailerDto> {
     const trailer = await this.trailersService.update(
+      companyId,
       trailerId,
       updateTrailerDto,
     );
@@ -120,7 +120,10 @@ export class TrailersController {
     @Param('companyId') companyId: number,
     @Param('trailerId') trailerId: string,
   ) {
-    const deleteResult = await this.trailersService.remove(trailerId);
+    const deleteResult = await this.trailersService.remove(
+      companyId,
+      trailerId,
+    );
     if (deleteResult.affected === 0) {
       throw new DataNotFoundException();
     }
@@ -128,21 +131,17 @@ export class TrailersController {
   }
 
   @Post('delete-requests')
-  @ApiBody({
-    description: 'The Trailer Resource',
-    type: DeleteTrailerDto,
-  })
   @ApiOkResponse({
     description: 'The Trailer Resource',
     type: DeleteDto,
   })
   @HttpCode(200)
   async deleteTrailers(
-    @Body('trailers') trailers: string[],
+    @Body() deleteTrailerDto: DeleteTrailerDto,
     @Param('companyId') companyId: number,
   ): Promise<DeleteDto> {
     const deleteResult = await this.trailersService.removeAll(
-      trailers,
+      deleteTrailerDto.trailers,
       companyId,
     );
 
