@@ -198,7 +198,10 @@ export const TermOversizeForm = () => {
       };
 
       if (powerUnitId) {
-        updatePowerUnitQuery.mutate(powerUnit);
+        updatePowerUnitQuery.mutate({
+          powerUnit: powerUnit,
+          powerUnitId: powerUnitId,
+        });
       } else {
         addPowerUnitQuery.mutate(powerUnit);
       }
@@ -226,7 +229,7 @@ export const TermOversizeForm = () => {
       };
 
       if (trailerId) {
-        updateTrailerQuery.mutate(trailer);
+        updateTrailerQuery.mutate({ trailer: trailer, trailerId: trailerId });
       } else {
         addTrailerQuery.mutate(trailer);
       }

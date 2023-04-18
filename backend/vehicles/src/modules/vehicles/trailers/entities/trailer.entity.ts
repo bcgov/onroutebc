@@ -76,7 +76,7 @@ export class Trailer extends Base {
     precision: 18,
     scale: 2,
     name: 'EMPTY_TRAILER_WIDTH',
-    nullable: false,
+    nullable: true,
   })
   emptyTrailerWidth: number;
 

@@ -18,9 +18,10 @@ export const LoginRedirect = () => {
   const userContextQuery = useQuery({
     queryKey: ["userContext"],
     queryFn: getUserContext,
+    cacheTime: 500,
+    refetchOnMount: "always",
     onSuccess: (userContextResponseBody: UserContextType) => {
       const { user, associatedCompanies } = userContextResponseBody;
-
       if (user?.userGUID) {
         const userContextSessionObject = {
           companyId: associatedCompanies[0].companyId,
