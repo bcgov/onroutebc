@@ -38,7 +38,8 @@ fi
 # Test 3.4 - verify correct client number generation routine
 TEST_3_4_RESULT=$(/opt/mssql-tools/bin/sqlcmd -U ${USER} -P "${PASS}" -S ${SERVER} -v DB_NAME=${DATABASE} -h -1 -i ${TESTS_DIR}/v_3_4_test.sql)
 
-if [[ $TEST_3_4_RESULT =~ C4-123456-[0-9][0-9][0-9] ]]; then
+# sqlcmd adds blank spaces to the end of the result, so we account for that in the regex
+if [[ $TEST_3_4_RESULT =~ ^C4-123456-[0-9]{3}[[:space:]]*$ ]]; then
     echo "Test 3.4 passed: Correct client number generation"
 else
     echo "******** Test 3.4 failed: Incorrect client number generation"
