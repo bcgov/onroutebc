@@ -81,6 +81,12 @@ export const CreateProfileSteps = React.memo(() => {
           firstName: responseBody.adminUser?.firstName,
           lastName: responseBody.adminUser?.lastName,
           userName: responseBody.adminUser?.userName,
+          phone1: responseBody.adminUser?.phone1,
+          phone1Extension: responseBody.adminUser?.phone1Extension,
+          phone2: responseBody.adminUser?.phone2,
+          phone2Extension: responseBody.adminUser?.phone2Extension,
+          email: responseBody.adminUser?.email,
+          fax: responseBody.adminUser?.fax,
         };
         // Switch to a react context when implementing multiple companies.
         // We currently don't need a dedicated react context.
