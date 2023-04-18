@@ -121,56 +121,71 @@ jobs:
           penetration_test: false
   
   
-          #  deploys-test-helm:
-          #    name: TEST Deployments - HELM
-          #    needs:
-          #      - codeql
-          #      - trivy
-          #    environment: test
-          #    runs-on: ubuntu-22.04
-          #    strategy:
-          #      max-parallel: 1
-          #      fail-fast: true
-          #    steps:      
-          #      - name: Authenticate and set context
-          #        uses: redhat-actions/oc-login@v1
-          #        with:
-          #          openshift_server_url: ${{ secrets.OC_SERVER }}
-          #          openshift_token: ${{ secrets.OC_TOKEN }}
-          #          namespace: ${{ secrets.OC_NAMESPACE }}
-          #
-          #      - name: Helm Deploy
-          #        uses: vimeda/helm@v1.6.8
-          #        with:
-          #          chart: 'common-object-management-service/common-object-management-service'
-          #          chart-version: 0.0.13
-          #          namespace: ${{ secrets.OC_NAMESPACE }}
-          #          release: ${{ github.event.repository.name }}-test-common-object-management-service
-          #          repo: https://bcgov.github.io/common-object-management-service
-          #          repo-alias: common-object-management-service
-          #          token: ${{secrets.OC_TOKEN}}
-          #          values: |
-          #            fullNameOverride: ${{ github.event.repository.name }}-test-common-object-management-service
-          #            route:
-          #              host: ${{ github.event.repository.name }}-test-common-object-management-service.apps.silver.devops.gov.bc.ca
-          #            basicAuthSecretOverride:
-          #              username: ${{steps.secrets.outputs.VAULT_BASICAUTH_USERNAME}}
-          #            objectStorageSecretOverride:
-          #              username: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_ACCESSKEYID}}
-          #              password: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_SECRETACCESSKEY}}
-          #            features:
-          #              oidcAuth: false
-          #            config:
-          #              enabled: true
-          #              releaseScoped: true
-          #              configMap:
-          #                KC_IDENTITYKEY: null
-          #                KC_PUBLICKEY: null
-          #                KC_REALM: null
-          #                KC_SERVERURL: null
-          #                OBJECTSTORAGE_BUCKET: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_BUCKET}}
-          #                OBJECTSTORAGE_ENDPOINT: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_ENDPOINT}}
-          #                OBJECTSTORAGE_KEY: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_KEY}}
+  deploys-test-helm:
+    name: TEST Deployments - HELM
+    needs:
+      - deploys-test
+    environment: test
+    runs-on: ubuntu-22.04
+    strategy:
+      max-parallel: 1
+      fail-fast: true
+    steps:      
+      - name: Import Secrets
+        id: secrets
+        uses: hashicorp/vault-action@v2
+        with:
+            url: https://vault.developer.gov.bc.ca
+            token: ${{ secrets.VAULT_TOKEN }}
+            exportEnv: 'false'
+            namespace: platform-services
+            secrets: |
+                ${{secrets.VAULT_ENV}}/data/coms-test  BASICAUTH_PASSWORD              | VAULT_BASICAUTH_PASSWORD;
+                ${{secrets.VAULT_ENV}}/data/coms-test  BASICAUTH_USERNAME              | VAULT_BASICAUTH_USERNAME;
+                ${{secrets.VAULT_ENV}}/data/coms-test  OBJECTSTORAGE_ACCESSKEYID       | VAULT_OBJECTSTORAGE_ACCESSKEYID;
+                ${{secrets.VAULT_ENV}}/data/coms-test  OBJECTSTORAGE_BUCKET            | VAULT_OBJECTSTORAGE_BUCKET;
+                ${{secrets.VAULT_ENV}}/data/coms-test  OBJECTSTORAGE_ENDPOINT          | VAULT_OBJECTSTORAGE_ENDPOINT;
+                ${{secrets.VAULT_ENV}}/data/coms-test  OBJECTSTORAGE_KEY               | VAULT_OBJECTSTORAGE_KEY;
+                ${{secrets.VAULT_ENV}}/data/coms-test  OBJECTSTORAGE_SECRETACCESSKEY   | VAULT_OBJECTSTORAGE_SECRETACCESSKEY;
+      - name: Authenticate and set context
+        uses: redhat-actions/oc-login@v1
+        with:
+          openshift_server_url: ${{ secrets.OC_SERVER }}
+          openshift_token: ${{ secrets.OC_TOKEN }}
+          namespace: ${{ secrets.OC_NAMESPACE }}
+  
+      - name: Helm Deploy
+        uses: vimeda/helm@v1.6.8
+        with:
+          chart: 'common-object-management-service/common-object-management-service'
+          chart-version: 0.0.13
+          namespace: ${{ secrets.OC_NAMESPACE }}
+          release: ${{ github.event.repository.name }}-test-common-object-management-service
+          repo: https://bcgov.github.io/common-object-management-service
+          repo-alias: common-object-management-service
+          token: ${{secrets.OC_TOKEN}}
+          values: |
+            fullNameOverride: ${{ github.event.repository.name }}-test-common-object-management-service
+            route:
+              host: ${{ github.event.repository.name }}-test-common-object-management-service.apps.silver.devops.gov.bc.ca
+            basicAuthSecretOverride:
+              username: ${{steps.secrets.outputs.VAULT_BASICAUTH_USERNAME}}
+            objectStorageSecretOverride:
+              username: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_ACCESSKEYID}}
+              password: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_SECRETACCESSKEY}}
+            features:
+              oidcAuth: false
+            config:
+              enabled: true
+              releaseScoped: true
+              configMap:
+                KC_IDENTITYKEY: null
+                KC_PUBLICKEY: null
+                KC_REALM: null
+                KC_SERVERURL: null
+                OBJECTSTORAGE_BUCKET: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_BUCKET}}
+                OBJECTSTORAGE_ENDPOINT: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_ENDPOINT}}
+                OBJECTSTORAGE_KEY: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_KEY}}
   
   image-promotion-uat:
     name: Promote images to UAT
@@ -253,57 +268,71 @@ jobs:
           penetration_test: true
   
   
-          #  deploys-uat-helm:
-          #    name: UAT Deployments - HELM
-          #    needs:
-          #      - codeql
-          #      - trivy
-          #      - deploys-test
-          #    environment: uat
-          #    runs-on: ubuntu-22.04
-          #    strategy:
-          #      max-parallel: 1
-          #      fail-fast: true
-          #    steps:      
-          #      - name: Authenticate and set context
-          #        uses: redhat-actions/oc-login@v1
-          #        with:
-          #          openshift_server_url: ${{ secrets.OC_SERVER }}
-          #          openshift_token: ${{ secrets.OC_TOKEN }}
-          #          namespace: ${{ secrets.OC_NAMESPACE }}
-          #
-          #      - name: Helm Deploy
-          #        uses: vimeda/helm@v1.6.8
-          #        with:
-          #          chart: 'common-object-management-service/common-object-management-service'
-          #          chart-version: 0.0.13
-          #          namespace: ${{ secrets.OC_NAMESPACE }}
-          #          release: ${{ github.event.repository.name }}-uat-common-object-management-service
-          #          repo: https://bcgov.github.io/common-object-management-service
-          #          repo-alias: common-object-management-service
-          #          token: ${{secrets.OC_TOKEN}}
-          #          values: |
-          #            fullNameOverride: ${{ github.event.repository.name }}-uat-common-object-management-service
-          #            route:
-          #              host: ${{ github.event.repository.name }}-uat-common-object-management-service.apps.silver.devops.gov.bc.ca
-          #            basicAuthSecretOverride:
-          #              username: ${{steps.secrets.outputs.VAULT_BASICAUTH_USERNAME}}
-          #            objectStorageSecretOverride:
-          #              username: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_ACCESSKEYID}}
-          #              password: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_SECRETACCESSKEY}}
-          #            features:
-          #              oidcAuth: false
-          #            config:
-          #              enabled: true
-          #              releaseScoped: true
-          #              configMap:
-          #                KC_IDENTITYKEY: null
-          #                KC_PUBLICKEY: null
-          #                KC_REALM: null
-          #                KC_SERVERURL: null
-          #                OBJECTSTORAGE_BUCKET: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_BUCKET}}
-          #                OBJECTSTORAGE_ENDPOINT: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_ENDPOINT}}
-          #                OBJECTSTORAGE_KEY: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_KEY}}
+  deploys-uat-helm:
+    name: UAT Deployments - HELM
+    needs:
+      - deploys-uat
+    environment: uat
+    runs-on: ubuntu-22.04
+    strategy:
+      max-parallel: 1
+      fail-fast: true
+    steps:      
+      - name: Import Secrets
+        id: secrets
+        uses: hashicorp/vault-action@v2
+        with:
+            url: https://vault.developer.gov.bc.ca
+            token: ${{ secrets.VAULT_TOKEN }}
+            exportEnv: 'false'
+            namespace: platform-services
+            secrets: |
+                ${{secrets.VAULT_ENV}}/data/coms-uat  BASICAUTH_PASSWORD              | VAULT_BASICAUTH_PASSWORD;
+                ${{secrets.VAULT_ENV}}/data/coms-uat  BASICAUTH_USERNAME              | VAULT_BASICAUTH_USERNAME;
+                ${{secrets.VAULT_ENV}}/data/coms-uat  OBJECTSTORAGE_ACCESSKEYID       | VAULT_OBJECTSTORAGE_ACCESSKEYID;
+                ${{secrets.VAULT_ENV}}/data/coms-uat  OBJECTSTORAGE_BUCKET            | VAULT_OBJECTSTORAGE_BUCKET;
+                ${{secrets.VAULT_ENV}}/data/coms-uat  OBJECTSTORAGE_ENDPOINT          | VAULT_OBJECTSTORAGE_ENDPOINT;
+                ${{secrets.VAULT_ENV}}/data/coms-uat  OBJECTSTORAGE_KEY               | VAULT_OBJECTSTORAGE_KEY;
+                ${{secrets.VAULT_ENV}}/data/coms-uat  OBJECTSTORAGE_SECRETACCESSKEY   | VAULT_OBJECTSTORAGE_SECRETACCESSKEY;
+      - name: Authenticate and set context
+        uses: redhat-actions/oc-login@v1
+        with:
+          openshift_server_url: ${{ secrets.OC_SERVER }}
+          openshift_token: ${{ secrets.OC_TOKEN }}
+          namespace: ${{ secrets.OC_NAMESPACE }}
+  
+      - name: Helm Deploy
+        uses: vimeda/helm@v1.6.8
+        with:
+          chart: 'common-object-management-service/common-object-management-service'
+          chart-version: 0.0.13
+          namespace: ${{ secrets.OC_NAMESPACE }}
+          release: ${{ github.event.repository.name }}-uat-common-object-management-service
+          repo: https://bcgov.github.io/common-object-management-service
+          repo-alias: common-object-management-service
+          token: ${{secrets.OC_TOKEN}}
+          values: |
+            fullNameOverride: ${{ github.event.repository.name }}-uat-common-object-management-service
+            route:
+              host: ${{ github.event.repository.name }}-uat-common-object-management-service.apps.silver.devops.gov.bc.ca
+            basicAuthSecretOverride:
+              username: ${{steps.secrets.outputs.VAULT_BASICAUTH_USERNAME}}
+            objectStorageSecretOverride:
+              username: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_ACCESSKEYID}}
+              password: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_SECRETACCESSKEY}}
+            features:
+              oidcAuth: false
+            config:
+              enabled: true
+              releaseScoped: true
+              configMap:
+                KC_IDENTITYKEY: null
+                KC_PUBLICKEY: null
+                KC_REALM: null
+                KC_SERVERURL: null
+                OBJECTSTORAGE_BUCKET: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_BUCKET}}
+                OBJECTSTORAGE_ENDPOINT: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_ENDPOINT}}
+                OBJECTSTORAGE_KEY: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_KEY}}
   GitVersion:
     name: Mainline Versioning - GitVersion
     needs:
@@ -475,52 +504,68 @@ jobs:
             ${{ matrix.parameters }}
           penetration_test: false
       
-          #  deploys-prod-helm:
-          #    name: PROD Deployments - HELM
-          #    needs:
-          #      - deploys-test-helm
-          #    environment: test
-          #    runs-on: ubuntu-22.04
-          #    strategy:
-          #      max-parallel: 1
-          #      fail-fast: true
-          #    steps:
-          #      - name: Authenticate and set context
-          #        uses: redhat-actions/oc-login@v1
-          #        with:
-          #          openshift_server_url: ${{ secrets.OC_SERVER }}
-          #          openshift_token: ${{ secrets.OC_TOKEN }}
-          #          namespace: ${{ secrets.OC_NAMESPACE }}
-          #
-          #      - name: Helm Deploy
-          #        uses: vimeda/helm@v1.6.8
-          #        with:
-          #          chart: 'common-object-management-service/common-object-management-service'
-          #          chart-version: 0.0.13
-          #          namespace: ${{ secrets.OC_NAMESPACE }}
-          #          release: ${{ github.event.repository.name }}-prod-common-object-management-service
-          #          repo: https://bcgov.github.io/common-object-management-service
-          #          repo-alias: common-object-management-service
-          #          token: ${{secrets.OC_TOKEN}}
-          #          values: |
-          #            fullNameOverride: ${{ github.event.repository.name }}-prod-common-object-management-service
-          #            route:
-          #              host: ${{ github.event.repository.name }}-prod-common-object-management-service.apps.silver.devops.gov.bc.ca
-          #            basicAuthSecretOverride:
-          #              username: ${{steps.secrets.outputs.VAULT_BASICAUTH_USERNAME}}
-          #            objectStorageSecretOverride:
-          #              username: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_ACCESSKEYID}}
-          #              password: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_SECRETACCESSKEY}}
-          #            features:
-          #              oidcAuth: false
-          #            config:
-          #              enabled: true
-          #              releaseScoped: true
-          #              configMap:
-          #                KC_IDENTITYKEY: null
-          #                KC_PUBLICKEY: null
-          #                KC_REALM: null
-          #                KC_SERVERURL: null
-          #                OBJECTSTORAGE_BUCKET: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_BUCKET}}
-          #                OBJECTSTORAGE_ENDPOINT: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_ENDPOINT}}
-          #                OBJECTSTORAGE_KEY: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_KEY}}
+    deploys-prod-helm:
+      name: PROD Deployments - HELM
+      needs:
+        - deploys-prod
+      environment: test
+      runs-on: ubuntu-22.04
+      strategy:
+        max-parallel: 1
+        fail-fast: true
+      steps:
+      - name: Import Secrets
+        id: secrets
+        uses: hashicorp/vault-action@v2
+        with:
+            url: https://vault.developer.gov.bc.ca
+            token: ${{ secrets.VAULT_TOKEN }}
+            exportEnv: 'false'
+            namespace: platform-services
+            secrets: |
+                ${{secrets.VAULT_ENV}}/data/coms-prod  BASICAUTH_PASSWORD              | VAULT_BASICAUTH_PASSWORD;
+                ${{secrets.VAULT_ENV}}/data/coms-prod  BASICAUTH_USERNAME              | VAULT_BASICAUTH_USERNAME;
+                ${{secrets.VAULT_ENV}}/data/coms-prod  OBJECTSTORAGE_ACCESSKEYID       | VAULT_OBJECTSTORAGE_ACCESSKEYID;
+                ${{secrets.VAULT_ENV}}/data/coms-prod  OBJECTSTORAGE_BUCKET            | VAULT_OBJECTSTORAGE_BUCKET;
+                ${{secrets.VAULT_ENV}}/data/coms-prod  OBJECTSTORAGE_ENDPOINT          | VAULT_OBJECTSTORAGE_ENDPOINT;
+                ${{secrets.VAULT_ENV}}/data/coms-prod  OBJECTSTORAGE_KEY               | VAULT_OBJECTSTORAGE_KEY;
+                ${{secrets.VAULT_ENV}}/data/coms-prod  OBJECTSTORAGE_SECRETACCESSKEY   | VAULT_OBJECTSTORAGE_SECRETACCESSKEY;
+        - name: Authenticate and set context
+          uses: redhat-actions/oc-login@v1
+          with:
+            openshift_server_url: ${{ secrets.OC_SERVER }}
+            openshift_token: ${{ secrets.OC_TOKEN }}
+            namespace: ${{ secrets.OC_NAMESPACE }}
+  
+        - name: Helm Deploy
+          uses: vimeda/helm@v1.6.8
+          with:
+            chart: 'common-object-management-service/common-object-management-service'
+            chart-version: 0.0.13
+            namespace: ${{ secrets.OC_NAMESPACE }}
+            release: ${{ github.event.repository.name }}-prod-common-object-management-service
+            repo: https://bcgov.github.io/common-object-management-service
+            repo-alias: common-object-management-service
+            token: ${{secrets.OC_TOKEN}}
+            values: |
+              fullNameOverride: ${{ github.event.repository.name }}-prod-common-object-management-service
+              route:
+                host: ${{ github.event.repository.name }}-prod-common-object-management-service.apps.silver.devops.gov.bc.ca
+              basicAuthSecretOverride:
+                username: ${{steps.secrets.outputs.VAULT_BASICAUTH_USERNAME}}
+              objectStorageSecretOverride:
+                username: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_ACCESSKEYID}}
+                password: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_SECRETACCESSKEY}}
+              features:
+                oidcAuth: false
+              config:
+                enabled: true
+                releaseScoped: true
+                configMap:
+                  KC_IDENTITYKEY: null
+                  KC_PUBLICKEY: null
+                  KC_REALM: null
+                  KC_SERVERURL: null
+                  OBJECTSTORAGE_BUCKET: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_BUCKET}}
+                  OBJECTSTORAGE_ENDPOINT: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_ENDPOINT}}
+                  OBJECTSTORAGE_KEY: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_KEY}}
