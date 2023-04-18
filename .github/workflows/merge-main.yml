@@ -514,22 +514,22 @@ jobs:
       max-parallel: 1
       fail-fast: true
     steps:
-    - name: Import Secrets
-      id: secrets
-      uses: hashicorp/vault-action@v2
-      with:
-          url: https://vault.developer.gov.bc.ca
-          token: ${{ secrets.VAULT_TOKEN }}
-          exportEnv: 'false'
-          namespace: platform-services
-          secrets: |
-              ${{secrets.VAULT_ENV}}/data/coms-prod  BASICAUTH_PASSWORD              | VAULT_BASICAUTH_PASSWORD;
-              ${{secrets.VAULT_ENV}}/data/coms-prod  BASICAUTH_USERNAME              | VAULT_BASICAUTH_USERNAME;
-              ${{secrets.VAULT_ENV}}/data/coms-prod  OBJECTSTORAGE_ACCESSKEYID       | VAULT_OBJECTSTORAGE_ACCESSKEYID;
-              ${{secrets.VAULT_ENV}}/data/coms-prod  OBJECTSTORAGE_BUCKET            | VAULT_OBJECTSTORAGE_BUCKET;
-              ${{secrets.VAULT_ENV}}/data/coms-prod  OBJECTSTORAGE_ENDPOINT          | VAULT_OBJECTSTORAGE_ENDPOINT;
-              ${{secrets.VAULT_ENV}}/data/coms-prod  OBJECTSTORAGE_KEY               | VAULT_OBJECTSTORAGE_KEY;
-              ${{secrets.VAULT_ENV}}/data/coms-prod  OBJECTSTORAGE_SECRETACCESSKEY   | VAULT_OBJECTSTORAGE_SECRETACCESSKEY;
+      - name: Import Secrets
+        id: secrets
+        uses: hashicorp/vault-action@v2
+        with:
+            url: https://vault.developer.gov.bc.ca
+            token: ${{ secrets.VAULT_TOKEN }}
+            exportEnv: 'false'
+            namespace: platform-services
+            secrets: |
+                ${{secrets.VAULT_ENV}}/data/coms-prod  BASICAUTH_PASSWORD              | VAULT_BASICAUTH_PASSWORD;
+                ${{secrets.VAULT_ENV}}/data/coms-prod  BASICAUTH_USERNAME              | VAULT_BASICAUTH_USERNAME;
+                ${{secrets.VAULT_ENV}}/data/coms-prod  OBJECTSTORAGE_ACCESSKEYID       | VAULT_OBJECTSTORAGE_ACCESSKEYID;
+                ${{secrets.VAULT_ENV}}/data/coms-prod  OBJECTSTORAGE_BUCKET            | VAULT_OBJECTSTORAGE_BUCKET;
+                ${{secrets.VAULT_ENV}}/data/coms-prod  OBJECTSTORAGE_ENDPOINT          | VAULT_OBJECTSTORAGE_ENDPOINT;
+                ${{secrets.VAULT_ENV}}/data/coms-prod  OBJECTSTORAGE_KEY               | VAULT_OBJECTSTORAGE_KEY;
+                ${{secrets.VAULT_ENV}}/data/coms-prod  OBJECTSTORAGE_SECRETACCESSKEY   | VAULT_OBJECTSTORAGE_SECRETACCESSKEY;
       - name: Authenticate and set context
         uses: redhat-actions/oc-login@v1
         with:
