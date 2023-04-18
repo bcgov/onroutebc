@@ -71,7 +71,6 @@ export const List = memo(
       isError,
       isFetching,
       isLoading,
-      error,
       //refetch,
     } = query;
 
