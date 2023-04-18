@@ -16,6 +16,7 @@ import { Address } from '../../../common/entities/address.entity';
 
 import { ReadAddressDto } from '../../../common/dto/response/read-address.dto';
 import { UpdateAddressDto } from '../../../common/dto/request/update-address.dto';
+import { v4 as uuidv4 } from 'uuid';
 import { CreateCompanyDto } from '../dto/request/create-company.dto';
 import { UpdateCompanyDto } from '../dto/request/update-company.dto';
 import { ReadCompanyDto } from '../dto/response/read-company.dto';
@@ -37,15 +38,18 @@ export class CompanyProfile extends AutomapperProfile {
        * instances of the Address entity using the mapWith function. The
        * directory property is mapped to a value provided as an argument
        * to the mapping function using the mapWithArguments function.
+       * TODO: Implement client number generation and change the mapping.
+       * TODO: Change companyGUID mapping once the login is implemented.
        */
       createMap(
         mapper,
         CreateCompanyDto,
         Company,
+        //! Below Mapping to be removed once the login is implemented.
         forMember(
           (d) => d.companyGUID,
-          mapWithArguments((source, { companyGUID }) => {
-            return companyGUID;
+          mapFrom(() => {
+            return tempCompanyGuid();
           }),
         ),
         forMember(
@@ -197,3 +201,14 @@ export class CompanyProfile extends AutomapperProfile {
     };
   }
 }
+
+/**
+ * A temporary function to generate company guid for the time being.
+ * TODO: Below function to be removed once login is implemented.
+ * @returns A guid without '-'.
+ */
+const tempCompanyGuid = () => {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+  const uuid: string = uuidv4() as string;
+  return uuid.replace(/-/gi, '').toUpperCase();
+};
