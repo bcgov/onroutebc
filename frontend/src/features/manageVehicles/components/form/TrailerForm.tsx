@@ -8,6 +8,7 @@ import { CustomFormComponent } from "../../../../common/components/form/CustomFo
 import {
   useAddTrailerMutation,
   useTrailerTypesQuery,
+  useUpdateTrailerMutation,
 } from "../../apiManager/hooks";
 import { useNavigate } from "react-router-dom";
 import { useContext } from "react";
@@ -54,7 +55,8 @@ export const TrailerForm = ({ trailer }: TrailerFormProps) => {
   const { handleSubmit } = formMethods;
 
   const trailerTypesQuery = useTrailerTypesQuery();
-  const addVehicleQuery = useAddTrailerMutation();
+  const addTrailerMutation = useAddTrailerMutation();
+  const updateTrailerMutation = useUpdateTrailerMutation();
   const snackBar = useContext(SnackBarContext);
   const navigate = useNavigate();
 
@@ -68,19 +70,36 @@ export const TrailerForm = ({ trailer }: TrailerFormProps) => {
   };
 
   /**
-   * Adds a vehicle.
+   * Adds or updates a vehicle.
    */
-  const onAddVehicle = async (data: FieldValues) => {
-    const trailerToBeAdded = data as Trailer;
-    const result = await addVehicleQuery.mutateAsync(trailerToBeAdded);
-    if (result.ok) {
-      snackBar.setSnackBar({
-        showSnackbar: true,
-        setShowSnackbar: () => true,
-        message: "Trailer has been added successfully",
-        isError: false,
+  const onAddOrUpdateVehicle = async (data: FieldValues) => {
+    if (trailer?.trailerId) {
+      const trailerToBeUpdated = data as Trailer;
+      const result = await updateTrailerMutation.mutateAsync({
+        trailerId: trailer?.trailerId,
+        trailer: trailerToBeUpdated,
       });
-      navigate("../");
+      if (result.ok) {
+        snackBar.setSnackBar({
+          showSnackbar: true,
+          setShowSnackbar: () => true,
+          message: "Changes Saved",
+          alertType: "info",
+        });
+        navigate("../");
+      }
+    } else {
+      const trailerToBeAdded = data as Trailer;
+      const result = await addTrailerMutation.mutateAsync(trailerToBeAdded);
+      if (result.ok) {
+        snackBar.setSnackBar({
+          showSnackbar: true,
+          setShowSnackbar: () => true,
+          message: "Trailer has been added successfully",
+          alertType: "success",
+        });
+        navigate("../");
+      }
     }
   };
 
@@ -233,9 +252,10 @@ export const TrailerForm = ({ trailer }: TrailerFormProps) => {
           aria-label="Add To Inventory"
           variant="contained"
           color="primary"
-          onClick={handleSubmit(onAddVehicle)}
+          onClick={handleSubmit(onAddOrUpdateVehicle)}
         >
-          Add To Inventory
+          {trailer?.trailerId && "Save"}
+          {!trailer?.trailerId && "Add To Inventory"}
         </Button>
       </Box>
     </div>

@@ -10,6 +10,7 @@ import { VEHICLE_TYPES_ENUM } from "../features/manageVehicles/components/form/c
 import { ManageVehicles } from "../features/manageVehicles/ManageVehicles";
 import { CreateProfileWizard } from "../features/wizard/CreateProfileWizard";
 import { ApplicationDashboard } from "../features/permits/components/dashboard/ApplicationDashboard";
+import { EditVehicleDashboard } from "../features/manageVehicles/components/dashboard/EditVehicleDashboard";
 
 export const AppRoutes = () => {
   const { isAuthenticated } = useAuth();
@@ -21,13 +22,29 @@ export const AppRoutes = () => {
         <Route path={routes.MANAGE_VEHICLES}>
           <Route index={true} element={<ManageVehicles />} />
           <Route
+            path="power-units/:vehicleId"
+            element={
+              <EditVehicleDashboard
+                editVehicleMode={VEHICLE_TYPES_ENUM.POWER_UNIT}
+              />
+            }
+          />
+          <Route
+            path="trailers/:vehicleId"
+            element={
+              <EditVehicleDashboard
+                editVehicleMode={VEHICLE_TYPES_ENUM.TRAILER}
+              />
+            }
+          />
+          <Route
             path={routes.ADD_POWER_UNIT}
             element={
               <AddVehicleDashboard
                 addVehicleMode={VEHICLE_TYPES_ENUM.POWER_UNIT}
               />
             }
-          />
+          ></Route>
           <Route
             path={routes.ADD_TRAILER}
             element={
