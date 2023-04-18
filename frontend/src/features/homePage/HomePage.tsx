@@ -5,8 +5,9 @@ export const HomePage = React.memo(() => {
   const { isAuthenticated } = useAuth();
 
   // TODO Clean this up
+  let userJson;
   const userInfo: any = sessionStorage.getItem("onRoutebc.user.context");
-  const userJson = JSON.parse(userInfo);
+  if (userInfo) userJson = JSON.parse(userInfo);
 
   const DEPLOY_ENV =
     import.meta.env.VITE_DEPLOY_ENVIRONMENT ||
@@ -17,7 +18,7 @@ export const HomePage = React.memo(() => {
       {isAuthenticated && userJson && (
         <div>{`Hello ${userJson?.firstName} ${userJson?.lastName}`}</div>
       )}
-      {isAuthenticated && !userJson &&(
+      {isAuthenticated && !userJson && (
         <div>Welcome to OnRouteBC - Please create your profile</div>
       )}
       <p>OnRouteBC Home -{DEPLOY_ENV}- Environment</p>
