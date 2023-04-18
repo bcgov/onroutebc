@@ -177,6 +177,8 @@ CREATE TABLE [permit].[ORBC_VT_PERMIT_TYPE](
 ) ON [PRIMARY]
 GO
 
+ALTER TABLE [permit].[ORBC_PERMIT] ADD  CONSTRAINT [DF_ORBC_PERMIT_REVISION]  DEFAULT ((0)) FOR [REVISION]
+GO
 ALTER TABLE [permit].[ORBC_PERMIT] ADD  CONSTRAINT [DF_ORBC_PERMIT_DB_CREATE_USERID]  DEFAULT (user_name()) FOR [DB_CREATE_USERID]
 GO
 ALTER TABLE [permit].[ORBC_PERMIT] ADD  CONSTRAINT [DF_ORBC_PERMIT_DB_CREATE_TIMESTAMP]  DEFAULT (getdate()) FOR [DB_CREATE_TIMESTAMP]
@@ -202,6 +204,8 @@ GO
 ALTER TABLE [permit].[ORBC_PERMIT_DATA] ADD  CONSTRAINT [DF_ORBC_PERMIT_DATA_DB_LAST_UPDATE_USERID]  DEFAULT (user_name()) FOR [DB_LAST_UPDATE_USERID]
 GO
 ALTER TABLE [permit].[ORBC_PERMIT_DATA] ADD  CONSTRAINT [DF_ORBC_PERMIT_DATA_DB_LAST_UPDATE_TIMESTAMP]  DEFAULT (getdate()) FOR [DB_LAST_UPDATE_TIMESTAMP]
+GO
+ALTER TABLE [permit].[ORBC_PERMIT_STATE] ADD  CONSTRAINT [DF_ORBC_PERMIT_STATE_STATE_CHANGE_DATE]  DEFAULT (getdate()) FOR [STATE_CHANGE_DATE]
 GO
 ALTER TABLE [permit].[ORBC_PERMIT_STATE] ADD  CONSTRAINT [DF_ORBC_PERMIT_STATE_DB_CREATE_USERID]  DEFAULT (user_name()) FOR [DB_CREATE_USERID]
 GO
@@ -492,47 +496,122 @@ GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Table enumerating all possible permit types' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_VT_PERMIT_TYPE'
 GO
 
-CREATE FUNCTION [permit].[ORBC_GENERATE_PERMIT_NUMBER_FN] (@TYPE char(1), @SOURCE tinyint, @SEQ int)
--- @TYPE is either 'A' or 'P' - application number (A) or approved permit number (P)
--- @SOURCE is the source of either the application (for A), or the source of the permit approval (for P)
--- @SEQ is typically the PERMIT_ID (integer, intended to be auto-incrementing)
--- Returning varchar(19) to allow for future permit amendment suffix characters
-RETURNS varchar(19)
-AS
-BEGIN
-	DECLARE @PermitNumber varchar(19);
-	DECLARE @Now datetime2(7) = getdate()
-	DECLARE @Milli char(3);
-	SET @Milli = FORMAT(@Now, 'fff');
-
-
-	SET @PermitNumber = CONCAT(@TYPE, @SOURCE, '-', FORMAT(@SEQ, '00000000'), '-', @Milli);
-	RETURN(@PermitNumber);
-END;
-GO
-
 CREATE   TRIGGER [permit].[ORBC_PERMIT_APPLICATION_NUMBER_TRG] 
    ON  [permit].[ORBC_PERMIT] 
    AFTER INSERT
 AS 
 BEGIN
 	SET NOCOUNT ON;
-	DECLARE @ApplicationNumber varchar(19), @OriginId varchar(8), @Src tinyint, @SeqVal bigint, @MetadataId bigint
+	DECLARE @ApplicationNumber varchar(19)
+	DECLARE @PermitID bigint
+	DECLARE @OriginId varchar(8)
+	DECLARE @Src tinyint
+	DECLARE @SeqVal char(8)
+	DECLARE @Revision tinyint
+	DECLARE @RevisionSuffix varchar(4) = ''
+	DECLARE @Rnd char(3)
+
 	SELECT @ApplicationNumber = APPLICATION_NUMBER FROM INSERTED
+	SELECT @PermitID = ID FROM INSERTED
 
 	IF @ApplicationNumber IS NULL
+	BEGIN
+		SELECT @Revision = REVISION FROM INSERTED
+		IF @Revision > 0
 		BEGIN
-			SELECT @OriginId = APPLICATION_ORIGIN_ID FROM INSERTED
-			SELECT @SeqVal = ID FROM INSERTED
-			SELECT @Src = CODE FROM [PERMIT].[ORBC_VT_PERMIT_APPLICATION_ORIGIN] WHERE ID = @OriginId
-			DECLARE @NewApplicationNumber varchar(19)
-			SET @NewApplicationNumber = [permit].[ORBC_GENERATE_PERMIT_NUMBER_FN]('A', @Src, @SeqVal);
-			UPDATE [PERMIT].[ORBC_PERMIT] SET APPLICATION_NUMBER = @NewApplicationNumber  WHERE ID = @SeqVal
+			-- All revisions of a permit share the same sequence number
+			-- and 3-character suffix number
+			DECLARE @PreviousID bigint, @PreviousPermitNumber varchar(19)
+
+			-- For a permit to have a revision, it must have previously
+			-- had a permit number assigned (i.e. the previous revision must
+			-- have been in an ISSUED state)
+			SELECT @PreviousID = PREVIOUS_REV_ID FROM INSERTED
+			SELECT @PreviousPermitNumber = PERMIT_NUMBER FROM [PERMIT].[ORBC_PERMIT] WHERE ID = @PreviousID
+			SET @SeqVal = SUBSTRING(@PreviousPermitNumber, 4, 8)
+			SET @Rnd = SUBSTRING(@PreviousPermitNumber, 13, 3)
+			SET @RevisionSuffix = CONCAT('-R', FORMAT(@Revision, '00'))
 		END
+		ELSE
+		BEGIN
+			-- New applications get their sequence number from the ID and
+			-- the 3-character suffix number is randomized
+			SET @SeqVal = FORMAT(@PermitID, '00000000')
+			SET @Rnd = FORMAT(CAST(RAND() * 1000 AS INT), '000')
+		END
+		
+		SELECT @OriginId = APPLICATION_ORIGIN_ID FROM INSERTED
+		SELECT @Src = CODE FROM [PERMIT].[ORBC_VT_PERMIT_APPLICATION_ORIGIN] WHERE ID = @OriginId
+
+		UPDATE [PERMIT].[ORBC_PERMIT] SET APPLICATION_NUMBER = CONCAT('A', @Src, '-', @SeqVal, '-', @Rnd, @RevisionSuffix) WHERE ID = @PermitID
+	END
+
+	-- Set this new application state to IN_PROGRESS by default
+	INSERT INTO [PERMIT].[ORBC_PERMIT_STATE] (PERMIT_ID, PERMIT_STATUS_ID) VALUES (@PermitID, 'IN_PROGRESS')
 END
 GO
 
 ALTER TABLE [permit].[ORBC_PERMIT] ENABLE TRIGGER [ORBC_PERMIT_APPLICATION_NUMBER_TRG]
+GO
+
+CREATE TRIGGER [permit].[ORBC_PERMIT_NUMBER_TRG] 
+   ON  [permit].[ORBC_PERMIT_STATE] 
+   AFTER INSERT
+AS 
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+    -- Insert statements for trigger here
+	DECLARE @Status varchar(20)
+	SELECT @Status = PERMIT_STATUS_ID FROM INSERTED
+	IF @Status = 'ISSUED'
+	BEGIN
+		-- When a status of ISSUED is set on a permit, we create
+		-- a permit number automatically if not already set
+		DECLARE @PermitID bigint
+		SELECT @PermitID = PERMIT_ID FROM INSERTED
+		DECLARE @PermitNumber varchar(19)
+		SELECT @PermitNumber = PERMIT_NUMBER FROM [PERMIT].[ORBC_PERMIT] WHERE ID = @PermitID
+
+		IF (@PermitNumber IS NULL)
+		BEGIN
+			DECLARE @ApplicationNumber varchar(19)
+			SELECT @ApplicationNumber = APPLICATION_NUMBER FROM [PERMIT].[ORBC_PERMIT] WHERE ID = @PermitID
+			DECLARE @SrcID varchar(8)
+			SELECT @SrcID = PERMIT_APPROVAL_SOURCE_ID FROM [PERMIT].[ORBC_PERMIT] WHERE ID = @PermitID
+			DECLARE @ApprovalCode tinyint
+			SELECT @ApprovalCode = CODE FROM [PERMIT].[ORBC_VT_PERMIT_APPROVAL_SOURCE] WHERE ID = @SrcID
+			DECLARE @Revision tinyint
+			SELECT @Revision = REVISION FROM [PERMIT].[ORBC_PERMIT] WHERE ID = @PermitID
+			IF @Revision = 0
+			BEGIN
+				-- If this is the original permit with no revisions, calculate a new random
+				-- 3-digit suffix so the user cannot guess the permit number from the
+				-- application number
+				DECLARE @Rnd char(3)
+				SET @Rnd = FORMAT(CAST(RAND() * 1000 AS INT), '000')
+				DECLARE @SeqVal char(8)
+				SET @SeqVal = SUBSTRING(@ApplicationNumber, 4, 8)
+				SET @PermitNumber = CONCAT('P', @ApprovalCode, '-', @SeqVal, '-', @Rnd)
+			END
+			ELSE
+			BEGIN
+				-- For any revision and all subsequent revisions, we maintain the same
+				-- permit number and application number, apart from the second character
+				-- which indicates who approved the permit
+				SET @PermitNumber = SUBSTRING(@ApplicationNumber, 4, 19)
+				SET @PermitNumber = CONCAT('P', @ApprovalCode, '-', @PermitNumber)
+			END
+
+			UPDATE [PERMIT].[ORBC_PERMIT] SET PERMIT_NUMBER = @PermitNumber WHERE ID = @PermitID
+		END
+	END
+END
+GO
+
+ALTER TABLE [permit].[ORBC_PERMIT_STATE] ENABLE TRIGGER [ORBC_PERMIT_NUMBER_TRG]
 GO
 
 DECLARE @VersionDescription VARCHAR(255)
