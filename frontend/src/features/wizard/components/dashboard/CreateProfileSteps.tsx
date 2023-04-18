@@ -18,7 +18,7 @@ import {
 } from "../../../manageProfile/apiManager/manageProfileAPI";
 import { UserInformationWizardForm } from "../pages/UserInformationWizardForm";
 import { CompanyInformationWizardForm } from "../pages/CompanyInformationWizardForm";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { OnRouteBCProfileCreated } from "../pages/OnRouteBCProfileCreated";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { useAuth } from "react-oidc-context";
@@ -46,6 +46,7 @@ const CompanyBanner = ({ legalName }: { legalName: string }) => {
 };
 
 export const CreateProfileSteps = React.memo(() => {
+  const queryClient = useQueryClient();
   const steps = ["Company Information", "My Information"];
 
   const { user } = useAuth();
@@ -98,6 +99,7 @@ export const CreateProfileSteps = React.memo(() => {
         );
 
         setClientNumber(() => responseBody["clientNumber"]);
+        queryClient.invalidateQueries(["userContext"]);
       } else {
         // Display Error
       }
