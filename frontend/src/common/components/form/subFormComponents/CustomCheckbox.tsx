@@ -6,7 +6,7 @@ import {
   Controller,
   useFormContext,
 } from "react-hook-form";
-import { ORBC_FormTypes } from "../../../../types/common";
+import { ORBC_FormTypes } from "../../../types/common";
 
 /**
  * Properties of the onrouteBC customized Checkbox MUI component

@@ -12,7 +12,7 @@ import { CompanyProfile } from "../../../manageProfile/apiManager/manageProfileA
 import {
   formatCountry,
   formatProvince,
-} from "../../../../common/helpers.ts/formatCountryProvince";
+} from "../../../../common/helpers/formatCountryProvince";
 
 const CompanyInformation = ({
   companyInfo,

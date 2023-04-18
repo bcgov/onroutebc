@@ -10,7 +10,7 @@ import { BC_COLOURS } from "../../../../../themes/bcGovStyles";
 import {
   formatCountry,
   formatProvince,
-} from "../../../../../common/helpers.ts/formatCountryProvince";
+} from "../../../../../common/helpers/formatCountryProvince";
 import {
   usePowerUnitTypesQuery,
   useTrailerTypesQuery,

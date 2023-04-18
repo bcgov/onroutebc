@@ -2,12 +2,12 @@ import { useFormContext, FieldPath } from "react-hook-form";
 import { useCallback, useEffect, useState } from "react";
 import { SelectChangeEvent } from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
-import { COUNTRIES_THAT_SUPPORT_PROVINCE } from "../../../constants/countries";
+import { COUNTRIES_THAT_SUPPORT_PROVINCE } from "../../constants/countries";
 
-import CountriesAndStates from "../../../constants/countries_and_states.json";
+import CountriesAndStates from "../../constants/countries_and_states.json";
 import { DEFAULT_WIDTH } from "../../../themes/bcGovStyles";
 import { CustomFormComponent } from "./CustomFormComponents";
-import { ORBC_FormTypes } from "../../../types/common";
+import { ORBC_FormTypes } from "../../types/common";
 
 /**
  * The props that can be passed to the country and provinces subsection of a form.

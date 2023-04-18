@@ -5,7 +5,7 @@ import {
   RegisterOptions,
   useFormContext,
 } from "react-hook-form";
-import { ORBC_FormTypes } from "../../../../types/common";
+import { ORBC_FormTypes } from "../../../types/common";
 import { SELECT_FIELD_STYLE } from "../../../../themes/orbcStyles";
 
 /**
@@ -35,6 +35,8 @@ export const CustomSelect = <T extends ORBC_FormTypes>({
     formState: { isSubmitted },
   } = useFormContext();
   const value = watch(name);
+
+  //console.log("custom select", name, " ", value);
   return (
     <Select
       aria-labelledby={`${feature}-${name}-label`}

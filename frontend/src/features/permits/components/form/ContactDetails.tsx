@@ -9,8 +9,27 @@ import {
   PHONE_WIDTH,
   EXT_WIDTH,
 } from "../../../../themes/orbcStyles";
+import { useCompanyInfoQuery } from "../../../manageProfile/apiManager/hooks";
+import { useFormContext } from "react-hook-form";
+import { useEffect } from "react";
 
 export const ContactDetails = ({ feature }: { feature: string }) => {
+  const companyInfoQuery = useCompanyInfoQuery();
+  const { setValue } = useFormContext();
+  /**
+   * UseEffect to get company mailing address and primary contact, since companyInfo query is async
+   */
+  useEffect(() => {
+    setValue("application.mailingAddress", {
+      addressLine1: companyInfoQuery?.data?.companyAddress?.addressLine1 || "",
+      addressLine2: companyInfoQuery?.data?.companyAddress?.addressLine2 || "",
+      city: companyInfoQuery?.data?.companyAddress?.city || "",
+      provinceCode: companyInfoQuery?.data?.companyAddress?.provinceCode || "",
+      countryCode: companyInfoQuery?.data?.companyAddress?.countryCode || "",
+      postalCode: companyInfoQuery?.data?.companyAddress?.postalCode || "",
+    });
+  }, [companyInfoQuery]);
+
   return (
     <Box sx={PERMIT_MAIN_BOX_STYLE}>
       <Box sx={PERMIT_LEFT_BOX_STYLE}>

@@ -6,7 +6,7 @@ import { formatPhoneNumber } from "../../../../common/components/form/subFormCom
 import {
   formatCountry,
   formatProvince,
-} from "../../../../common/helpers.ts/formatCountryProvince";
+} from "../../../../common/helpers/formatCountryProvince";
 // Disable any eslint for references to countries_and_states.json
 /* eslint-disable @typescript-eslint/no-explicit-any */
 

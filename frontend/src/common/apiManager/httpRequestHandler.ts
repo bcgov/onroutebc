@@ -1,4 +1,4 @@
-import { ApiErrorResponse } from "../../types/common";
+import { ApiErrorResponse } from "../types/common";
 
 /**
  * Retrieves the access token from session.
@@ -117,6 +117,6 @@ export const httpDELETERequest = (url: string) => {
     method: "DELETE",
     headers: {
       Authorization: getAccessToken(),
-    }
+    },
   });
 };

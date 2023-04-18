@@ -3,7 +3,7 @@ import { NavLink } from "react-router-dom";
 import { useAuth } from "react-oidc-context";
 
 import "./Header.scss";
-import * as routes from "../../../constants/routes";
+import * as routes from "../../../routes/routeConstants";
 import { BC_COLOURS } from "../../../themes/bcGovStyles";
 import { Grid } from "@mui/material";
 
