@@ -41,13 +41,14 @@ export const TermOversizeForm = () => {
   const allVehiclesQuery = useVehiclesQuery();
 
   // TODO Clean this up
+  let userJson;
   const userInfo: any = sessionStorage.getItem("onRoutebc.user.context");
-  const userJson = JSON.parse(userInfo);
+  if (userInfo) userJson = JSON.parse(userInfo);
 
   // Default values to register with React Hook Forms
   // If data was passed to this component, then use that data, otherwise use empty or undefined values
   const termOversizeDefaultValues: TermOversizeApplication = {
-    companyId: userJson.companyId || "",
+    companyId: userJson?.companyId || "",
     applicationId:
       applicationContext?.applicationData?.applicationId || 1234567,
     applicationName:
@@ -67,22 +68,22 @@ export const TermOversizeForm = () => {
         firstName:
           applicationContext?.applicationData?.application?.contactDetails
             ?.firstName ||
-          userJson.firstName ||
+          userJson?.firstName ||
           "",
         lastName:
           applicationContext?.applicationData?.application?.contactDetails
             ?.lastName ||
-          userJson.lastName ||
+          userJson?.lastName ||
           "",
         phone1:
           applicationContext?.applicationData?.application?.contactDetails
             ?.phone1 ||
-          userJson.phone1 ||
+          userJson?.phone1 ||
           "",
         email:
           applicationContext?.applicationData?.application?.contactDetails
             ?.email ||
-          userJson.email ||
+          userJson?.email ||
           "",
       },
       mailingAddress: {
