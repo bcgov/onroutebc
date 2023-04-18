@@ -82,8 +82,8 @@ export class CompanyController {
 
     return await this.companyService.create(
       createCompanyDto,
-      currentUser.userName,
       directory,
+      currentUser,
     );
   }
 

@@ -8,7 +8,6 @@ import {
 } from '@automapper/core';
 import { Injectable } from '@nestjs/common';
 import { User } from '../entities/user.entity';
-import { v4 as uuidv4 } from 'uuid';
 import { CreateContactDto } from '../../../common/dto/request/create-contact.dto';
 import { Contact } from '../../../common/entities/contact.entity';
 import { CreateUserDto } from '../dto/request/create-user.dto';
@@ -31,17 +30,15 @@ export class UsersProfile extends AutomapperProfile {
        * implemented). The remaining forMember calls map the userName,
        * directory, and userContact properties of the destination object to
        * properties of the source object using mapWithArguments or mapFrom.
-       * TODO: Change userGUID mapping once the login is implemented.
        */
       createMap(
         mapper,
         CreateUserDto,
         User,
-        //! Below Mapping to be removed once the login is implemented.
         forMember(
           (d) => d.userGUID,
-          mapFrom(() => {
-            return tempUserGuid();
+          mapWithArguments((source, { userGUID }) => {
+            return userGUID;
           }),
         ),
         forMember(
@@ -123,14 +120,3 @@ export class UsersProfile extends AutomapperProfile {
     };
   }
 }
-
-/**
- * A temporary function to generate user guid for the time being.
- * TODO: Below function to be removed once login is implemented.
- * @returns A guid without '-'.
- */
-const tempUserGuid = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-  const uuid: string = uuidv4() as string;
-  return uuid.replace(/-/gi, '').toUpperCase();
-};
