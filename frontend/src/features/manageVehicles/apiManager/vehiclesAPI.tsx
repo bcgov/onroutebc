@@ -171,7 +171,7 @@ export const addTrailer = (trailer: Trailer): Promise<Response> => {
 /**
  * Updates a trailer.
  * @param trailerId The trailer id to be updated.
- * @param trailer The trailer request object. 
+ * @param trailer The trailer request object.
  * @returns A Promise<Response> containing the response from the API.
  */
 export const updateTrailer = ({
