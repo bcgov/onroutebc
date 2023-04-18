@@ -76,8 +76,8 @@ export class CompanyUsersController {
     return await this.userService.create(
       createUserDto,
       companyId,
-      currentUser.userName,
       directory,
+      currentUser,
     );
   }
 
