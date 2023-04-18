@@ -52,13 +52,6 @@ const App = () => {
   useEffect(() => {
     setDisplaySnackBar(snackBar.showSnackbar);
   }, [snackBar]);
-  // setCompanyMetadata(() => {
-  //   return {
-  //     clientNumber: "xyz",
-  //     legalName: "Xyz",
-  //     companyId: "zuz"
-  //   }
-  // })
 
   return (
     <AuthProvider {...oidcConfig}>

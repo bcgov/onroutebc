@@ -1,4 +1,4 @@
-import { memo, useCallback, useEffect, useMemo, useState } from "react";
+import { memo, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import MaterialReactTable, {
   MRT_ColumnDef,
   MRT_GlobalFilterTextField,
@@ -24,6 +24,9 @@ import { CustomSnackbar } from "../../../../common/components/snackbar/CustomSna
 import { PowerUnitColumnDefinition, TrailerColumnDefinition } from "./Columns";
 import { deleteVehicles } from "../../apiManager/vehiclesAPI";
 import DeleteConfirmationDialog from "./ConfirmationDialog";
+import { MANAGE_VEHICLES } from "../../../../constants/routes";
+import { useNavigate } from "react-router-dom";
+import { SnackBarContext } from "../../../../App";
 
 /**
  * Dynamically set the column based on vehicle type
@@ -72,6 +75,7 @@ export const List = memo(
       []
     );
 
+    const snackBar = useContext(SnackBarContext);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
     /**
@@ -95,7 +99,20 @@ export const List = memo(
             .then((responseBody: { success: string[]; failure: string[] }) => {
               setIsDeleteDialogOpen(() => false);
               if (responseBody.failure.length > 0) {
-                setShowErrorSnackbar(() => true);
+                // setShowErrorSnackbar(() => true);
+                snackBar.setSnackBar({
+                  isError: true,
+                  message: "An unexpected error occurred.",
+                  showSnackbar: true,
+                  setShowSnackbar: () => true,
+                });
+              } else {
+                snackBar.setSnackBar({
+                  isError: false,
+                  message: "An unexpected error occurred.",
+                  showSnackbar: true,
+                  setShowSnackbar: () => true,
+                });
               }
               setRowSelection(() => {
                 return {};
@@ -105,6 +122,8 @@ export const List = memo(
         }
       });
     };
+
+    const navigate = useNavigate();
 
     /**
      * Function that clears the delete related states when the user clicks on cancel.
@@ -187,7 +206,7 @@ export const List = memo(
                 <Tooltip arrow placement="left" title="Edit">
                   {/*tslint:disable-next-line*/}
                   <IconButton
-                    onClick={() => table.setEditingRow(row)}
+                    onClick={() => { navigate(`/${MANAGE_VEHICLES}/trailers/${row.getValue("trailerId")}`)}}
                     disabled={false}
                   >
                     <Edit />

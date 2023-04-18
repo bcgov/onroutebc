@@ -19,15 +19,8 @@ import { SnackBarContext } from "../../../../App";
 interface PowerUnitFormProps {
   /**
    * The power unit details to be displayed if in edit mode.
-   * @deprecated This prop is only temporarily supported and scheduled to be removed.
    */
   powerUnit?: PowerUnit;
-
-  /**
-   * The power unit id to be retrieved.
-   * If valid and available, the form will be in an editable state.
-   */
-  powerUnitId?: string;
 }
 
 /**

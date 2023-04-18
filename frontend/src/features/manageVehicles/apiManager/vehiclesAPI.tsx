@@ -13,6 +13,7 @@ import {
   httpPOSTRequest,
   httpPUTRequest,
   getCompanyIdFromSession,
+  httpGETRequestPromise,
 } from "../../../common/apiManager/httpRequestHandler";
 
 /**
@@ -47,6 +48,20 @@ export const getAllPowerUnits = async (): Promise<PowerUnit[]> => {
     `${VEHICLE_URL}/companies/${getCompanyIdFromSession()}/vehicles/powerUnits`
   );
   return httpGETRequest(url);
+};
+
+/**
+ * Gets a power unit by id.
+ * @param powerUnitId The powerUnitId
+ * @returns A Promise<Response> containing the API response.
+ */
+export const getPowerUnit = (powerUnitId: string): Promise<PowerUnit> => {
+  const url = new URL(
+    `${VEHICLE_URL}/companies/${getCompanyIdFromSession()}/vehicles/powerUnits/${powerUnitId}`
+  );
+  return httpGETRequestPromise(url.toString()).then((response) =>
+    response.json()
+  );
 };
 
 /**
@@ -96,6 +111,20 @@ export const getAllTrailers = async (): Promise<Trailer[]> => {
 };
 
 /**
+ * Get Trailer by Id
+ * @param trailerId The trailer to be retrieved.
+ * @returns A Promise<Trailer> with data from the API.
+ */
+export const getTrailer = (trailerId: string): Promise<Trailer> => {
+  const url = new URL(
+    `${VEHICLE_URL}/companies/${getCompanyIdFromSession()}/vehicles/trailers/${trailerId}`
+  );
+  return httpGETRequestPromise(url.toString()).then((response) =>
+    response.json()
+  );
+};
+
+/**
  * Gets the trailer types.
  * @returns Array<VehicleType>
  */
@@ -116,8 +145,14 @@ export const addTrailer = (trailer: Trailer): Promise<Response> => {
   );
 };
 
-export const updateTrailer = (trailer: UpdateTrailer): Promise<Response> => {
-  const url = VEHICLES_API.TRAILER + "/" + trailer.trailerId;
+export const updateTrailer = ({
+  trailerId,
+  trailer,
+}: {
+  trailerId: string;
+  trailer: UpdateTrailer;
+}): Promise<Response> => {
+  const url = `${VEHICLE_URL}/companies/${getCompanyIdFromSession()}/vehicles/trailers/${trailerId}`;
   return httpPUTRequest(url, trailer);
 };
 

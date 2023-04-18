@@ -4,6 +4,7 @@ import {
   addPowerUnit,
   addTrailer,
   getAllVehicles,
+  getPowerUnit,
   getPowerUnitTypes,
   getTrailerTypes,
   updatePowerUnit,
@@ -20,6 +21,14 @@ export const useVehiclesQuery = () => {
     queryFn: getAllVehicles,
     retry: false,
   });
+};
+
+export const useVehicleByIdQuery = (powerUnitId: string) => {
+  return useQuery(
+    ["powerUnitById", powerUnitId],
+    () => getPowerUnit(powerUnitId),
+    { retry: false }
+  );
 };
 
 export const usePowerUnitTypesQuery = () => {
@@ -89,7 +98,7 @@ export const useAddTrailerMutation = () => {
   return useMutation({
     mutationFn: addTrailer,
     onSuccess: (response) => {
-      if (response.status === 201) {
+      if (response.status === 200) {
         queryClient.invalidateQueries(["trailers"]);
       } else {
         // Display Error in the form.
@@ -103,8 +112,8 @@ export const useUpdateTrailerMutation = () => {
 
   return useMutation({
     mutationFn: updateTrailer,
-    onSuccess: (response) => {
-      if (response.status === 201) {
+    onSuccess: (response: Response) => {
+      if (response.status === 200) {
         queryClient.invalidateQueries(["trailers"]);
       } else {
         // Display Error in the form.

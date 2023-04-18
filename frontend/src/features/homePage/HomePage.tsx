@@ -14,8 +14,11 @@ export const HomePage = React.memo(() => {
 
   return (
     <div style={{ padding: "0px 60px", height: "100vh" }}>
+      {isAuthenticated && userJson && (
+        <div>{`Hello ${userJson?.firstName} ${userJson?.lastName}`}</div>
+      )}
       {isAuthenticated && (
-        <div>{`Hello ${userJson.firstName} ${userJson.lastName}`}</div>
+        <div>Welcome to OnRouteBC - Please create your profile</div>
       )}
       <p>OnRouteBC Home -{DEPLOY_ENV}- Environment</p>
     </div>
