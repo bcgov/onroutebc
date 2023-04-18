@@ -543,6 +543,11 @@ BEGIN
 		SELECT @OriginId = APPLICATION_ORIGIN_ID FROM INSERTED
 		SELECT @Src = CODE FROM [PERMIT].[ORBC_VT_PERMIT_APPLICATION_ORIGIN] WHERE ID = @OriginId
 
+		-- We should not get to this point, but if no application source was
+		-- specified we fall back to 9 for unknown source
+		IF @Src IS NULL
+			SET @Src = 9
+
 		UPDATE [PERMIT].[ORBC_PERMIT] SET APPLICATION_NUMBER = CONCAT('A', @Src, '-', @SeqVal, '-', @Rnd, @RevisionSuffix) WHERE ID = @PermitID
 	END
 
@@ -583,6 +588,11 @@ BEGIN
 			SELECT @SrcID = PERMIT_APPROVAL_SOURCE_ID FROM [PERMIT].[ORBC_PERMIT] WHERE ID = @PermitID
 			DECLARE @ApprovalCode tinyint
 			SELECT @ApprovalCode = CODE FROM [PERMIT].[ORBC_VT_PERMIT_APPROVAL_SOURCE] WHERE ID = @SrcID
+			
+			-- If somehow there is no approval code, fall back to 9 for unknown
+			IF @ApprovalCode IS NULL
+				SET @ApprovalCode = 9
+
 			DECLARE @Revision tinyint
 			SELECT @Revision = REVISION FROM [PERMIT].[ORBC_PERMIT] WHERE ID = @PermitID
 			IF @Revision = 0
