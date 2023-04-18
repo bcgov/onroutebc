@@ -1,4 +1,11 @@
-import { memo, useCallback, useEffect, useMemo, useState } from "react";
+import {
+  memo,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import MaterialReactTable, {
   MRT_ColumnDef,
   MRT_GlobalFilterTextField,
@@ -20,10 +27,12 @@ import { CSVOptions } from "../options/CSVOptions";
 import { Delete, Edit, ContentCopy } from "@mui/icons-material";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { UseQueryResult } from "@tanstack/react-query";
-import { CustomSnackbar } from "../../../../common/components/snackbar/CustomSnackBar";
 import { PowerUnitColumnDefinition, TrailerColumnDefinition } from "./Columns";
 import { deleteVehicles } from "../../apiManager/vehiclesAPI";
 import DeleteConfirmationDialog from "./ConfirmationDialog";
+import { MANAGE_VEHICLES } from "../../../../constants/routes";
+import { useNavigate } from "react-router-dom";
+import { SnackBarContext } from "../../../../App";
 
 /**
  * Dynamically set the column based on vehicle type
@@ -62,7 +71,6 @@ export const List = memo(
       isError,
       isFetching,
       isLoading,
-      error,
       //refetch,
     } = query;
 
@@ -72,6 +80,7 @@ export const List = memo(
       []
     );
 
+    const snackBar = useContext(SnackBarContext);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
     /**
@@ -95,7 +104,19 @@ export const List = memo(
             .then((responseBody: { success: string[]; failure: string[] }) => {
               setIsDeleteDialogOpen(() => false);
               if (responseBody.failure.length > 0) {
-                setShowErrorSnackbar(() => true);
+                snackBar.setSnackBar({
+                  message: "An unexpected error occurred.",
+                  showSnackbar: true,
+                  setShowSnackbar: () => true,
+                  alertType: "error",
+                });
+              } else {
+                snackBar.setSnackBar({
+                  message: "Vehicle Deleted",
+                  showSnackbar: true,
+                  setShowSnackbar: () => true,
+                  alertType: "info",
+                });
               }
               setRowSelection(() => {
                 return {};
@@ -105,6 +126,8 @@ export const List = memo(
         }
       });
     };
+
+    const navigate = useNavigate();
 
     /**
      * Function that clears the delete related states when the user clicks on cancel.
@@ -116,27 +139,20 @@ export const List = memo(
       });
     }, []);
 
-    // Start snackbar code for error handling
-    const [showErrorSnackbar, setShowErrorSnackbar] = useState(false);
-    // Display error message from API call. If error is an unexpected type (not a string),
-    // then display generic error message
-    const errorMessage: string =
-      typeof error === "string" ? error : "An unexpected error occured";
-
     useEffect(() => {
-      if (isError) setShowErrorSnackbar(true);
+      if (isError) {
+        snackBar.setSnackBar({
+          message: "An unexpected error occurred.",
+          showSnackbar: true,
+          setShowSnackbar: () => true,
+          alertType: "error",
+        });
+      }
     }, [isError]);
     // End snackbar code for error handling
 
     return (
       <div className="table-container">
-        <CustomSnackbar
-          showSnackbar={showErrorSnackbar}
-          setShowSnackbar={setShowErrorSnackbar}
-          message={errorMessage}
-          isError={isError}
-        />
-
         <MaterialReactTable
           // Required Props
           data={data ?? []}
@@ -187,8 +203,22 @@ export const List = memo(
                 <Tooltip arrow placement="left" title="Edit">
                   {/*tslint:disable-next-line*/}
                   <IconButton
-                    onClick={() => table.setEditingRow(row)}
-                    disabled={true}
+                    onClick={() => {
+                      if (vehicleType === "powerUnit") {
+                        navigate(
+                          `/${MANAGE_VEHICLES}/power-units/${row.getValue(
+                            "powerUnitId"
+                          )}`
+                        );
+                      } else if (vehicleType === "trailer") {
+                        navigate(
+                          `/${MANAGE_VEHICLES}/trailers/${row.getValue(
+                            "trailerId"
+                          )}`
+                        );
+                      }
+                    }}
+                    disabled={false}
                   >
                     <Edit />
                   </IconButton>
@@ -210,7 +240,7 @@ export const List = memo(
                       setIsDeleteDialogOpen(() => true);
                       setRowSelection(() => {
                         const newObject: { [key: string]: boolean } = {};
-                        // Setting the selected row to false so that 
+                        // Setting the selected row to false so that
                         // the row appears unchecked.
                         newObject[row.getValue(`${vehicleType}Id`) as string] =
                           false;
