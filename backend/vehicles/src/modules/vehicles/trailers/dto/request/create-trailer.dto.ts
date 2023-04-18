@@ -62,8 +62,9 @@ export class CreateTrailerDto {
   @ApiProperty({
     description: 'Width in metres of the empty trailer.',
     example: '3.2',
+    required: false,
   })
-  emptyTrailerWidth: number;
+  emptyTrailerWidth?: number;
 
   @AutoMap()
   @ApiProperty({
