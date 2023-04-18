@@ -78,7 +78,7 @@ export const ApplicationDetails = ({
       >
         {applicationName}
       </Typography>
-      <Typography
+      {/* <Typography
         variant="h2"
         sx={{
           display: "block",
@@ -104,7 +104,7 @@ export const ApplicationDetails = ({
           {"  "}
           {values.lastUpdated.format("LLL")}
         </Typography>
-      </Box>
+      </Box> */}
       <CompanyBanner companyInfo={companyInfoQuery.data} />
       <CompanyInformation companyInfo={companyInfoQuery.data} />
     </>

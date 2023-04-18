@@ -22,9 +22,8 @@ jobs:
 
           # Remove old build runs, build pods and deployment pods
           oc delete all,pvc,secret,configmap -l app=${{ github.event.repository.name }}-${{ github.event.number }}
-
-  # If merged into main, then handle any image promotions
-  image-promotions:
+  
+  image-promotion-test:
     name: Image Promotions
     if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main'
     runs-on: ubuntu-22.04
