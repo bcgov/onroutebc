@@ -106,7 +106,7 @@ export const List = memo(
                 });
               } else {
                 snackBar.setSnackBar({
-                  message: "Changes Saved.",
+                  message: "Vehicle Deleted",
                   showSnackbar: true,
                   setShowSnackbar: () => true,
                   alertType: "info"

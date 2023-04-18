@@ -76,7 +76,7 @@ export const PowerUnitForm = ({ powerUnit }: PowerUnitFormProps) => {
         showSnackbar: true,
         setShowSnackbar: () => true,
         message: "Power unit has been added successfully",
-        isError: false,
+        alertType: "success"
       });
       navigate("../");
     }
