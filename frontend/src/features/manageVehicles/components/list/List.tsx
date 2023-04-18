@@ -20,7 +20,6 @@ import { CSVOptions } from "../options/CSVOptions";
 import { Delete, Edit, ContentCopy } from "@mui/icons-material";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { UseQueryResult } from "@tanstack/react-query";
-import { CustomSnackbar } from "../../../../common/components/snackbar/CustomSnackBar";
 import { PowerUnitColumnDefinition, TrailerColumnDefinition } from "./Columns";
 import { deleteVehicles } from "../../apiManager/vehiclesAPI";
 import DeleteConfirmationDialog from "./ConfirmationDialog";
@@ -99,19 +98,18 @@ export const List = memo(
             .then((responseBody: { success: string[]; failure: string[] }) => {
               setIsDeleteDialogOpen(() => false);
               if (responseBody.failure.length > 0) {
-                // setShowErrorSnackbar(() => true);
                 snackBar.setSnackBar({
-                  isError: true,
                   message: "An unexpected error occurred.",
                   showSnackbar: true,
                   setShowSnackbar: () => true,
+                  alertType: "error",
                 });
               } else {
                 snackBar.setSnackBar({
-                  isError: false,
-                  message: "An unexpected error occurred.",
+                  message: "Changes Saved.",
                   showSnackbar: true,
                   setShowSnackbar: () => true,
+                  alertType: "info"
                 });
               }
               setRowSelection(() => {
@@ -135,27 +133,20 @@ export const List = memo(
       });
     }, []);
 
-    // Start snackbar code for error handling
-    const [showErrorSnackbar, setShowErrorSnackbar] = useState(false);
-    // Display error message from API call. If error is an unexpected type (not a string),
-    // then display generic error message
-    const errorMessage: string =
-      typeof error === "string" ? error : "An unexpected error occured";
-
     useEffect(() => {
-      if (isError) setShowErrorSnackbar(true);
+      if (isError) {
+        snackBar.setSnackBar({
+          message: "An unexpected error occurred.",
+          showSnackbar: true,
+          setShowSnackbar: () => true,
+          alertType: "error",
+        });
+      }
     }, [isError]);
     // End snackbar code for error handling
 
     return (
       <div className="table-container">
-        <CustomSnackbar
-          showSnackbar={showErrorSnackbar}
-          setShowSnackbar={setShowErrorSnackbar}
-          message={errorMessage}
-          isError={isError}
-        />
-
         <MaterialReactTable
           // Required Props
           data={data ?? []}

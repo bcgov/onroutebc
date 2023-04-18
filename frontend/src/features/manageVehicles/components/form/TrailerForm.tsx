@@ -84,7 +84,7 @@ export const TrailerForm = ({ trailer }: TrailerFormProps) => {
           showSnackbar: true,
           setShowSnackbar: () => true,
           message: "Changes Saved",
-          isError: false,
+          alertType: "info",
         });
         navigate("../");
       }
@@ -96,7 +96,7 @@ export const TrailerForm = ({ trailer }: TrailerFormProps) => {
           showSnackbar: true,
           setShowSnackbar: () => true,
           message: "Trailer has been added successfully",
-          isError: false,
+          alertType: "success",
         });
         navigate("../");
       }

@@ -7,7 +7,7 @@ export interface SnackBarOptions {
   showSnackbar: boolean;
   setShowSnackbar: React.Dispatch<React.SetStateAction<boolean>>;
   message: string;
-  isError: boolean;
+  alertType: "info" | "error" | "success";
 }
 
 /**
@@ -21,7 +21,7 @@ export const CustomSnackbar = ({
   showSnackbar,
   setShowSnackbar,
   message,
-  isError,
+  alertType,
 }: SnackBarOptions) => {
   const vertical = "top";
   const horizontal = "right";
@@ -45,7 +45,7 @@ export const CustomSnackbar = ({
     >
       <Alert
         onClose={handleClose}
-        severity={isError ? "error" : "success"}
+        severity={alertType}
         sx={{ width: "100%" }}
       >
         {message}
