@@ -21,6 +21,7 @@ import { PendingUsersService } from '../pending-users/pending-users.service';
 import { CompanyService } from '../company/company.service';
 import { ReadCompanyMetadataDto } from '../company/dto/response/read-company-metadata.dto';
 import { Role } from '../../../common/enum/roles.enum';
+import { IUserJWT } from '../../../common/interface/user-jwt.interface';
 
 @Injectable()
 export class UsersService {
@@ -47,16 +48,16 @@ export class UsersService {
    * @param createUserDto Request object of type {@link CreateUserDto} for
    * creating a new user.
    * @param companyId The company Id.
-   * @param userName User name from the access token.
    * @param Directory Directory dervied from the access token.
+   * @param currentUser The current user details from the token.
    *
    * @returns The user details as a promise of type {@link ReadUserDto}
    */
   async create(
     createUserDto: CreateUserDto,
     companyId: number,
-    userName: string,
     directory: Directory,
+    currentUser: IUserJWT,
   ): Promise<ReadUserDto> {
     let newUser: ReadUserDto;
     const queryRunner = this.dataSource.createQueryRunner();
@@ -66,15 +67,15 @@ export class UsersService {
       newUser = await this.createUser(
         companyId,
         createUserDto,
-        userName,
         directory,
         createUserDto.userAuthGroup,
         queryRunner,
+        currentUser,
       );
 
       await queryRunner.manager.delete(PendingUser, {
         companyId: companyId,
-        userName: userName,
+        userName: currentUser.userName,
       });
 
       await queryRunner.commitTransaction();
@@ -95,23 +96,27 @@ export class UsersService {
    * @param companyId The company Id.
    * @param createUserDto Request object of type {@link CreateUserDto} for
    * creating a new user.
-   * @param userName User name from the access token.
    * @param directory Directory derived from the access token.
    * @param userAuthGroup User auth group from the access token.
    * @param queryRunner Query runner passed from calling function.
+   * @param currentUser The current user details.
    *
    * @returns The user details as a promise of type {@link ReadUserDto}
    */
   async createUser(
     companyId: number,
     createUserDto: CreateUserDto,
-    userName: string,
     directory: Directory,
     userAuthGroup: UserAuthGroup,
     queryRunner: QueryRunner,
+    currentUser: IUserJWT,
   ): Promise<ReadUserDto> {
     let user = this.classMapper.map(createUserDto, CreateUserDto, User, {
-      extraArgs: () => ({ userName: userName, directory: directory }),
+      extraArgs: () => ({
+        userName: currentUser.userName,
+        directory: directory,
+        userGUID: currentUser.userGUID,
+      }),
     });
 
     const newCompanyUser = this.createCompanyUserUtil(

@@ -14,6 +14,7 @@ import { ReadCompanyDto } from './dto/response/read-company.dto';
 import { Company } from './entities/company.entity';
 import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
 import { ReadCompanyMetadataDto } from './dto/response/read-company-metadata.dto';
+import { IUserJWT } from '../../../common/interface/user-jwt.interface';
 
 @Injectable()
 export class CompanyService {
@@ -34,23 +35,26 @@ export class CompanyService {
    *
    * @param createCompanyDto Request object of type {@link CreateCompanyDto} for
    * creating a new company and admin user.
-   * @param userName User name from the access token.
    * @param directory Directory derived from the access token.
+   * @param currentUser The current user details from the token.
    *
    * @returns The company and admin user details as a promise of type
    * {@link ReadCompanyUserDto}
    */
   async create(
     createCompanyDto: CreateCompanyDto,
-    userName: string,
     directory: Directory,
+    currentUser: IUserJWT,
   ): Promise<ReadCompanyUserDto> {
     let newCompany = this.classMapper.map(
       createCompanyDto,
       CreateCompanyDto,
       Company,
       {
-        extraArgs: () => ({ directory: directory }),
+        extraArgs: () => ({
+          directory: directory,
+          companyGUID: currentUser.bceid_business_guid,
+        }),
       },
     );
 
@@ -68,10 +72,10 @@ export class CompanyService {
       newUser = await this.userService.createUser(
         newCompany.companyId,
         createCompanyDto.adminUser,
-        userName,
         directory,
         UserAuthGroup.COMPANY_ADMINISTRATOR,
         queryRunner,
+        currentUser,
       );
 
       await queryRunner.commitTransaction();

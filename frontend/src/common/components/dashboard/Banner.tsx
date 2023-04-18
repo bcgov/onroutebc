@@ -1,5 +1,6 @@
 import { Box, Grid, Typography } from "@mui/material";
 import "./Dashboard.scss";
+import { ReactNode } from "react";
 
 /**
  * The Banner component is a common component that is used to display a banner in a dashboard
@@ -17,7 +18,7 @@ export const Banner = ({
   extendHeight,
 }: {
   bannerText: string;
-  bannerSubtext?: string;
+  bannerSubtext?: string | ReactNode;
   bannerButton?: JSX.Element;
   extendHeight?: boolean;
 }) => (

@@ -24,7 +24,6 @@ const client_id =
  */
 const oidcConfig = {
   authority: authority,
-  //realm: "standard",
   client_id: client_id,
   redirect_uri: window.location.origin + "/",
   scope: "openid",
@@ -44,7 +43,7 @@ const App = () => {
     showSnackbar: false,
     setShowSnackbar: () => undefined,
     message: "",
-    isError: false,
+    alertType: "info",
   });
 
   // Needed the following usestate and useffect code so that the snackbar would disapear/close
@@ -52,13 +51,6 @@ const App = () => {
   useEffect(() => {
     setDisplaySnackBar(snackBar.showSnackbar);
   }, [snackBar]);
-  // setCompanyMetadata(() => {
-  //   return {
-  //     clientNumber: "xyz",
-  //     legalName: "Xyz",
-  //     companyId: "zuz"
-  //   }
-  // })
 
   return (
     <AuthProvider {...oidcConfig}>
@@ -69,7 +61,7 @@ const App = () => {
               showSnackbar={displaySnackBar}
               setShowSnackbar={setDisplaySnackBar}
               message={snackBar.message}
-              isError={snackBar.isError}
+              alertType={snackBar.alertType}
             />
             <Router>
               <Header />
