@@ -119,7 +119,7 @@ jobs:
             -p AUTH0_IGNORE_EXP=${{steps.secrets.outputs.VAULT_AUTH0_IGNORE_EXP}}
             ${{ matrix.parameters }}
 
-  helm-deploys-DEV:
+  helm-deploys-dev:
     name: DEV Deployments - HELM
     needs:
       - builds
