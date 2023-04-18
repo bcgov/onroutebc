@@ -8,6 +8,7 @@ import { CustomFormComponent } from "../../../../common/components/form/CustomFo
 import {
   useAddPowerUnitMutation,
   usePowerUnitTypesQuery,
+  useUpdatePowerUnitMutation,
 } from "../../apiManager/hooks";
 import { useNavigate } from "react-router-dom";
 import { useContext } from "react";
@@ -52,7 +53,8 @@ export const PowerUnitForm = ({ powerUnit }: PowerUnitFormProps) => {
   const { handleSubmit } = formMethods;
 
   const powerUnitTypesQuery = usePowerUnitTypesQuery();
-  const addVehicleQuery = useAddPowerUnitMutation();
+  const addPowerUnitMutation = useAddPowerUnitMutation();
+  const updatePowerUnitMutation = useUpdatePowerUnitMutation();
   const snackBar = useContext(SnackBarContext);
   const navigate = useNavigate();
 
@@ -68,18 +70,36 @@ export const PowerUnitForm = ({ powerUnit }: PowerUnitFormProps) => {
   /**
    * Adds a vehicle.
    */
-  const onAddVehicle = async (data: FieldValues) => {
-    const powerUnitToBeAdded = data as PowerUnit;
-    const result = await addVehicleQuery.mutateAsync(powerUnitToBeAdded);
-    if (result.ok) {
-      snackBar.setSnackBar({
-        showSnackbar: true,
-        setShowSnackbar: () => true,
-        message: "Power unit has been added successfully",
-        alertType: "success"
+  const onAddOrUpdateVehicle = async (data: FieldValues) => {
+    if (powerUnit?.powerUnitId) {
+      const powerUnitToBeUpdated = data as PowerUnit;
+      const result = await updatePowerUnitMutation.mutateAsync({
+        powerUnitId: powerUnit?.powerUnitId,
+        powerUnit: powerUnitToBeUpdated,
       });
-      navigate("../");
+      if (result.ok) {
+        snackBar.setSnackBar({
+          showSnackbar: true,
+          setShowSnackbar: () => true,
+          message: "Changes Saved",
+          alertType: "info",
+        });
+        navigate("../");
+      }
+    } else {
+      const powerUnitToBeAdded = data as PowerUnit;
+      const result = await addPowerUnitMutation.mutateAsync(powerUnitToBeAdded);
+      if (result.ok) {
+        snackBar.setSnackBar({
+          showSnackbar: true,
+          setShowSnackbar: () => true,
+          message: "Power unit has been added successfully",
+          alertType: "success"
+        });
+        navigate("../");
+      }
     }
+    
   };
 
   /**
@@ -256,9 +276,10 @@ export const PowerUnitForm = ({ powerUnit }: PowerUnitFormProps) => {
           aria-label="Add To Inventory"
           variant="contained"
           color="primary"
-          onClick={handleSubmit(onAddVehicle)}
+          onClick={handleSubmit(onAddOrUpdateVehicle)}
         >
-          Add To Inventory
+          {powerUnit?.powerUnitId && "Save"}
+          {!powerUnit?.powerUnitId && "Add To Inventory"}
         </Button>
       </Box>
     </div>

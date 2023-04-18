@@ -75,7 +75,7 @@ export const useUpdatePowerUnitMutation = () => {
   return useMutation({
     mutationFn: updatePowerUnit,
     onSuccess: (response) => {
-      if (response.status === 201) {
+      if (response.status === 200) {
         queryClient.invalidateQueries(["powerUnits"]);
       } else {
         // Display Error in the form.

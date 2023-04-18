@@ -6,6 +6,7 @@ import {
   Trailer,
   UpdateTrailer,
   VehicleTypesAsString,
+  Vehicle,
 } from "../types/managevehicles";
 
 import {
@@ -90,11 +91,15 @@ export const addPowerUnit = (powerUnit: PowerUnit): Promise<Response> => {
  * @param {UpdatePowerUnit} powerUnit The power unit to be updated
  * @returns Response from the update powerUnit API.
  */
-export const updatePowerUnit = (
-  powerUnit: UpdatePowerUnit
-): Promise<Response> => {
+export const updatePowerUnit = ({
+  powerUnit,
+  powerUnitId,
+}: {
+  powerUnit: UpdatePowerUnit;
+  powerUnitId: string;
+}): Promise<Response> => {
   return httpPUTRequest(
-    `${VEHICLE_URL}/companies/${getCompanyIdFromSession()}/vehicles/powerUnits`,
+    `${VEHICLE_URL}/companies/${getCompanyIdFromSession()}/vehicles/powerUnits/${powerUnitId}`,
     powerUnit
   );
 };
@@ -125,6 +130,24 @@ export const getTrailer = (trailerId: string): Promise<Trailer> => {
 };
 
 /**
+ * Get Vehicle by Id
+ * @param vehicleId The vehicle to be retrieved.
+ * @returns A Promise<Vehicle> with data from the API.
+ */
+export const getVehicleById = (
+  vehicleId: string,
+  vehicleType: VehicleTypesAsString
+): Promise<Vehicle> => {
+  let url = `${VEHICLE_URL}/companies/${getCompanyIdFromSession()}/vehicles`;
+  if (vehicleType === "powerUnit") {
+    url += `/powerUnits/${vehicleId}`;
+  } else {
+    url += `/trailers/${vehicleId}`;
+  }
+  return httpGETRequestPromise(url).then((response) => response.json());
+};
+
+/**
  * Gets the trailer types.
  * @returns Array<VehicleType>
  */
@@ -145,6 +168,12 @@ export const addTrailer = (trailer: Trailer): Promise<Response> => {
   );
 };
 
+/**
+ * Updates a trailer.
+ * @param trailerId The trailer id to be updated.
+ * @param trailer The trailer request object. 
+ * @returns A Promise<Response> containing the response from the API.
+ */
 export const updateTrailer = ({
   trailerId,
   trailer,

@@ -1,4 +1,11 @@
-import { memo, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import {
+  memo,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import MaterialReactTable, {
   MRT_ColumnDef,
   MRT_GlobalFilterTextField,
@@ -109,7 +116,7 @@ export const List = memo(
                   message: "Vehicle Deleted",
                   showSnackbar: true,
                   setShowSnackbar: () => true,
-                  alertType: "info"
+                  alertType: "info",
                 });
               }
               setRowSelection(() => {
@@ -197,7 +204,21 @@ export const List = memo(
                 <Tooltip arrow placement="left" title="Edit">
                   {/*tslint:disable-next-line*/}
                   <IconButton
-                    onClick={() => { navigate(`/${MANAGE_VEHICLES}/trailers/${row.getValue("trailerId")}`)}}
+                    onClick={() => {
+                      if (vehicleType === "powerUnit") {
+                        navigate(
+                          `/${MANAGE_VEHICLES}/power-units/${row.getValue(
+                            "powerUnitId"
+                          )}`
+                        );
+                      } else if (vehicleType === "trailer") {
+                        navigate(
+                          `/${MANAGE_VEHICLES}/trailers/${row.getValue(
+                            "trailerId"
+                          )}`
+                        );
+                      }
+                    }}
                     disabled={false}
                   >
                     <Edit />
@@ -220,7 +241,7 @@ export const List = memo(
                       setIsDeleteDialogOpen(() => true);
                       setRowSelection(() => {
                         const newObject: { [key: string]: boolean } = {};
-                        // Setting the selected row to false so that 
+                        // Setting the selected row to false so that
                         // the row appears unchecked.
                         newObject[row.getValue(`${vehicleType}Id`) as string] =
                           false;

@@ -11,7 +11,7 @@ import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { InfoBcGovBanner } from "../../../../common/components/banners/AlertBanners";
 import { useNavigate, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { getPowerUnit, getTrailer } from "../../apiManager/vehiclesAPI";
+import { getVehicleById } from "../../apiManager/vehiclesAPI";
 import { PowerUnit, Trailer } from "../../types/managevehicles";
 
 export const EditVehicleDashboard = React.memo(
@@ -20,8 +20,14 @@ export const EditVehicleDashboard = React.memo(
     const { vehicleId } = useParams();
 
     const { data: vehicleToEdit, isLoading } = useQuery(
-      ["trailerId", vehicleId],
-      () => getTrailer(vehicleId as string),
+      ["vehicleById", vehicleId],
+      () =>
+        getVehicleById(
+          vehicleId as string,
+          editVehicleMode === VEHICLE_TYPES_ENUM.POWER_UNIT
+            ? "powerUnit"
+            : "trailer"
+        ),
       { retry: false, enabled: true }
     );
 
@@ -170,9 +176,11 @@ export const EditVehicleDashboard = React.memo(
               "Trailer Details"}
           </Typography>
           {!isLoading && editVehicleMode === VEHICLE_TYPES_ENUM.POWER_UNIT && (
-            <PowerUnitForm />
+            <PowerUnitForm powerUnit={vehicleToEdit as PowerUnit} />
           )}
-          {!isLoading && <TrailerForm trailer={vehicleToEdit as Trailer} />}
+          {!isLoading && editVehicleMode === VEHICLE_TYPES_ENUM.TRAILER && (
+            <TrailerForm trailer={vehicleToEdit as Trailer} />
+          )}
         </Box>
       </>
     );
