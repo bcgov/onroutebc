@@ -64,10 +64,6 @@ describe('TrailersController', () => {
       );
       expect(typeof retTrailer).toBe('object');
       expect(retTrailer).toEqual(readTrailerDtoMock);
-      expect(trailersServiceMock.findOne).toHaveBeenCalledWith(
-        COMPANY_ID_1,
-        TRAILER_ID_1,
-      );
     });
 
     it('should throw an DataNotFoundException if trailer is not found', async () => {

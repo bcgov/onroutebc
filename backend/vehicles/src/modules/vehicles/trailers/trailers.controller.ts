@@ -8,6 +8,7 @@ import {
   Put,
   Req,
   HttpCode,
+  ForbiddenException,
 } from '@nestjs/common';
 import { TrailersService } from './trailers.service';
 import { CreateTrailerDto } from './dto/request/create-trailer.dto';
@@ -87,7 +88,7 @@ export class TrailersController {
     @Param('companyId') companyId: number,
     @Param('trailerId') trailerId: string,
   ): Promise<ReadTrailerDto> {
-    const trailer = await this.trailersService.findOne(companyId, trailerId);
+    const trailer = await this.checkVehicleCompanyContext(companyId, trailerId);
     if (!trailer) {
       throw new DataNotFoundException();
     }
@@ -106,6 +107,7 @@ export class TrailersController {
     @Param('trailerId') trailerId: string,
     @Body() updateTrailerDto: UpdateTrailerDto,
   ): Promise<ReadTrailerDto> {
+    await this.checkVehicleCompanyContext(companyId, trailerId);
     const trailer = await this.trailersService.update(
       companyId,
       trailerId,
@@ -124,6 +126,7 @@ export class TrailersController {
     @Param('companyId') companyId: number,
     @Param('trailerId') trailerId: string,
   ) {
+    await this.checkVehicleCompanyContext(companyId, trailerId);
     const deleteResult = await this.trailersService.remove(
       companyId,
       trailerId,
@@ -155,5 +158,16 @@ export class TrailersController {
       throw new DataNotFoundException();
     }
     return deleteResult;
+  }
+
+  private async checkVehicleCompanyContext(
+    companyId: number,
+    trailerId: string,
+  ) {
+    const vehicle = await this.trailersService.findOne(undefined, trailerId);
+    if (vehicle && vehicle?.companyId != companyId) {
+      throw new ForbiddenException();
+    }
+    return vehicle;
   }
 }

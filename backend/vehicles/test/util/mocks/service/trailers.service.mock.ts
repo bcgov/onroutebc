@@ -10,7 +10,10 @@ export const trailersServiceMock = {
   create: jest.fn().mockResolvedValue(readTrailerDtoMock),
   findAll: jest.fn().mockResolvedValue([readTrailerDtoMock]),
   findOne: jest.fn(async (companyId: number, id: string) => {
-    if (id === readTrailerDtoMock.trailerId) {
+    if (
+      ((companyId && companyId === COMPANY_ID_1) || !companyId) &&
+      id === readTrailerDtoMock.trailerId
+    ) {
       return readTrailerDtoMock;
     } else {
       return null;
@@ -22,7 +25,7 @@ export const trailersServiceMock = {
       id: string,
       updateTrailerDtoMock: UpdateTrailerDto,
     ) => {
-      if (id === TRAILER_ID_1) {
+      if (companyId === COMPANY_ID_1 && id === TRAILER_ID_1) {
         Object.assign(readTrailerDtoMock, updateTrailerDtoMock);
         return readTrailerDtoMock;
       } else {
@@ -31,7 +34,7 @@ export const trailersServiceMock = {
     },
   ),
   remove: jest.fn(async (companyId: number, id: string) => {
-    if (id === TRAILER_ID_1) {
+    if (companyId === COMPANY_ID_1 && id === TRAILER_ID_1) {
       return { affected: 1 };
     } else {
       return { affected: 0 };

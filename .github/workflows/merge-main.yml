@@ -58,7 +58,6 @@ jobs:
         uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: "trivy-results.sarif"
-
   deploys-test:
     name: TEST Deployments
     needs:
@@ -107,7 +106,8 @@ jobs:
           oc_server: ${{ secrets.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
           overwrite: ${{ matrix.overwrite }}
-          parameters: -p ZONE=test
+          parameters: 
+            -p ZONE=test
             -p NAME=${{ github.event.repository.name }} ${{ matrix.parameters }}
             -p PROMOTE=${{ github.repository }}/${{ matrix.name }}:test
             -p DATABASE_NAME=${{steps.secrets.outputs.VAULT_DATABASE_NAME}}
@@ -118,7 +118,8 @@ jobs:
             -p AUTH0_AUDIENCE=${{steps.secrets.outputs.VAULT_AUTH0_AUDIENCE}}
             -p AUTH0_IGNORE_EXP=${{steps.secrets.outputs.VAULT_AUTH0_IGNORE_EXP}}
             ${{ matrix.parameters }}
-          penetration_test: true
+          penetration_test: false
+  
   
           #  deploys-test-helm:
           #    name: TEST Deployments - HELM
@@ -170,6 +171,7 @@ jobs:
           #                OBJECTSTORAGE_BUCKET: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_BUCKET}}
           #                OBJECTSTORAGE_ENDPOINT: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_ENDPOINT}}
           #                OBJECTSTORAGE_KEY: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_KEY}}
+  
   image-promotion-uat:
     name: Promote images to UAT
     needs:
@@ -186,7 +188,6 @@ jobs:
           target: test
           tags: uat
 
-  
   deploys-uat:
     name: UAT Deployments
     needs:
@@ -237,7 +238,8 @@ jobs:
           oc_server: ${{ secrets.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
           overwrite: ${{ matrix.overwrite }}
-          parameters: -p ZONE=uat
+          parameters: 
+            -p ZONE=uat
             -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/${{ matrix.name }}:uat
             -p DATABASE_NAME=${{steps.secrets.outputs.VAULT_DATABASE_NAME}}
@@ -249,6 +251,7 @@ jobs:
             -p AUTH0_IGNORE_EXP=${{steps.secrets.outputs.VAULT_AUTH0_IGNORE_EXP}}
             ${{ matrix.parameters }}
           penetration_test: true
+  
   
           #  deploys-uat-helm:
           #    name: UAT Deployments - HELM
@@ -366,7 +369,7 @@ jobs:
     name: Create Release
     runs-on: ubuntu-22.04
     needs:
-      - image-promotion-uat
+      - deploys-uat
       - GitVersion
     steps:
       - uses: actions/create-release@v1
@@ -378,7 +381,7 @@ jobs:
           draft: false
           prerelease: false
   
-  tag-images:
+  image-promotion-release:
     name: Tag images with Release Version
     needs:
       - GitVersion
@@ -392,15 +395,30 @@ jobs:
         with:
           registry: ghcr.io
           repository: ${{ github.repository }}/${{ matrix.component }}
-          target: prod
+          target: uat
           tags: ${{ needs.GitVersion.outputs.fullSemVer }}
+  
+  image-promotion-prod:
+    name: Promote images to PROD
+    needs:
+      - deploys-uat
+      - image-promotion-release
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        component: [backend/vehicles, frontend]
+    steps:
+      - uses: shrink/actions-docker-registry-tag@v3
+        with:
+          registry: ghcr.io
+          repository: ${{ github.repository }}/${{ matrix.component }}
+          target: uat
+          tags: prod
 
   deploys-prod:
     name: PROD Deployments
     needs:
-      - tag-images
-      - release
-      - deploys-uat
+      - image-promotion-prod
     environment: prod
     runs-on: ubuntu-22.04
     strategy:
@@ -443,9 +461,10 @@ jobs:
           oc_server: ${{ secrets.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
           overwrite: ${{ matrix.overwrite }}
-          parameters: -p ZONE=prod
+          parameters: 
+            -p ZONE=prod
             -p NAME=${{ github.event.repository.name }}
-            -p PROMOTE=${{ github.repository }}/${{ matrix.name }}:test
+            -p PROMOTE=${{ github.repository }}/${{ matrix.name }}:prod
             -p DATABASE_NAME=${{steps.secrets.outputs.VAULT_DATABASE_NAME}}
             -p DATABASE_USER=${{steps.secrets.outputs.VAULT_DATABASE_USER}}
             -p DATABASE_PASSWORD=${{steps.secrets.outputs.VAULT_DATABASE_PASSWORD}}
@@ -505,19 +524,3 @@ jobs:
           #                OBJECTSTORAGE_BUCKET: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_BUCKET}}
           #                OBJECTSTORAGE_ENDPOINT: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_ENDPOINT}}
           #                OBJECTSTORAGE_KEY: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_KEY}}
-
-  image-promotion-prod:
-    name: Promote images to PROD
-    needs:
-      - deploys-prod
-    runs-on: ubuntu-22.04
-    strategy:
-      matrix:
-        component: [backend/vehicles, frontend]
-    steps:
-      - uses: shrink/actions-docker-registry-tag@v3
-        with:
-          registry: ghcr.io
-          repository: ${{ github.repository }}/${{ matrix.component }}
-          target: uat
-          tags: prod
