@@ -12,16 +12,14 @@ import React from "react";
 import { Banner } from "../../../../common/components/dashboard/Banner";
 import "../../../../common/components/dashboard/Dashboard.scss";
 import { FormProvider, useForm, FieldValues } from "react-hook-form";
-import {
-  CompanyAndUserRequest,
-  createOnRouteBCProfile,
-} from "../../../manageProfile/apiManager/manageProfileAPI";
-import { UserInformationWizardForm } from "../pages/UserInformationWizardForm";
-import { CompanyInformationWizardForm } from "../pages/CompanyInformationWizardForm";
+import { createOnRouteBCProfile } from "../../../manageProfile/apiManager/manageProfileAPI";
+import { UserInformationWizardForm } from "../../pages/UserInformationWizardForm";
+import { CompanyInformationWizardForm } from "../../pages/CompanyInformationWizardForm";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { OnRouteBCProfileCreated } from "../pages/OnRouteBCProfileCreated";
+import { OnRouteBCProfileCreated } from "../../pages/OnRouteBCProfileCreated";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { useAuth } from "react-oidc-context";
+import { CompanyAndUserRequest } from "../../../manageProfile/types/manageProfile";
 
 const CompanyBanner = ({ legalName }: { legalName: string }) => {
   return (

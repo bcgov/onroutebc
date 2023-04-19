@@ -6,7 +6,6 @@ import {
   FormLabel,
   TextField,
 } from "@mui/material";
-
 import { RegisterOptions, useFormContext } from "react-hook-form";
 import { useContext, useEffect, useState } from "react";
 import { SELECT_FIELD_STYLE } from "../../../../../../../themes/orbcStyles";
@@ -15,12 +14,12 @@ import "../../../TermOversize.scss";
 import { getErrorMessage } from "../../../../../../../common/components/form/CustomFormComponents";
 import { BC_COLOURS } from "../../../../../../../themes/bcGovStyles";
 import { ApplicationContext } from "../../../../../context/ApplicationContext";
-import { mapTypeCodeToObject } from "../../../../../helpers/mapSubTypeCodeToObject";
 import {
   usePowerUnitTypesQuery,
   useTrailerTypesQuery,
 } from "../../../../../../manageVehicles/apiManager/hooks";
-import { sortVehicleSubTypes } from "../utils/sorter";
+import { mapTypeCodeToObject } from "../../../../../helpers/mappers";
+import { sortVehicleSubTypes } from "../../../../../helpers/sorter";
 
 /**
  * An MUI auto complete component with

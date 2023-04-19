@@ -25,7 +25,7 @@ import {
   PowerUnit,
   Trailer,
 } from "../../../manageVehicles/types/managevehicles";
-import { getExistingVehicle } from "./form/VehicleDetails/utils/mappers";
+import { mapVinToVehicleObject } from "../../helpers/mappers";
 
 /**
  * The first step in creating and submitting a TROS Application.
@@ -159,7 +159,7 @@ export const TermOversizeForm = () => {
     const vehicle = data.application.vehicleDetails;
 
     // Check if the vehicle that is to be saved was created from an existing vehicle
-    const existingVehicle = getExistingVehicle(
+    const existingVehicle = mapVinToVehicleObject(
       allVehiclesQuery.data,
       vehicle.vin
     );

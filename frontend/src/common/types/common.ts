@@ -2,7 +2,7 @@ import {
   CompanyAndUserRequest,
   CompanyProfile,
   UserInformation,
-} from "../../features/manageProfile/apiManager/manageProfileAPI";
+} from "../../features/manageProfile/types/manageProfile";
 import {
   PowerUnit,
   Trailer,

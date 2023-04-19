@@ -2,10 +2,7 @@ import { Button, Typography } from "@mui/material";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { memo } from "react";
 import { FormProvider, useForm, FieldValues } from "react-hook-form";
-import {
-  CompanyProfile,
-  updateCompanyInfo,
-} from "../../apiManager/manageProfileAPI";
+import { updateCompanyInfo } from "../../apiManager/manageProfileAPI";
 
 import "./CompanyInfoForms.scss";
 import { CompanyInfoGeneralForm } from "./subForms/CompanyInfoGeneralForm";
@@ -14,6 +11,7 @@ import { CompanyMailingAddressForm } from "./subForms/CompanyMailingAddressForm"
 import { CompanyPrimaryContactForm } from "./subForms/CompanyPrimaryContactForm";
 import { formatPhoneNumber } from "../../../../common/components/form/subFormComponents/PhoneNumberInput";
 import { InfoBcGovBanner } from "../../../../common/components/banners/AlertBanners";
+import { CompanyProfile } from "../../types/manageProfile";
 
 /**
  * The Company Information Form contains multiple subs forms including

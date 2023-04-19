@@ -20,11 +20,14 @@ import {
   PERMIT_RIGHT_BOX_STYLE,
 } from "../../../../../../themes/orbcStyles";
 import { useFormContext } from "react-hook-form";
-import { CustomSimpleSelect } from "../../../../../../common/components/form/subFormComponents/CustomSimpleSelect";
+import { SelectPowerUnitOrTrailer } from "./customFields/SelectPowerUnitOrTrailer";
 import { SelectVehicleDropdown } from "./customFields/SelectVehicleDropdown";
 import { SelectVehicleSubTypeDropdown } from "./customFields/SelectVehicleSubTypeDropdown";
 import { ApplicationContext } from "../../../../context/ApplicationContext";
-import { chooseFromOptions, vehicleTypes } from "./constants/constants";
+import {
+  chooseFromOptions,
+  vehicleTypes,
+} from "../../../../constants/constants";
 
 export const VehicleDetails = ({ feature }: { feature: string }) => {
   const formFieldStyle = {
@@ -35,12 +38,8 @@ export const VehicleDetails = ({ feature }: { feature: string }) => {
 
   const {
     setValue,
-    watch,
     formState: { isDirty },
-    getFieldState,
   } = useFormContext();
-
-  const vehicleType = watch("application.vehicleDetails.vehicleType");
 
   const { applicationData, setApplicationData } =
     useContext(ApplicationContext);
@@ -57,39 +56,10 @@ export const VehicleDetails = ({ feature }: { feature: string }) => {
     handleSaveVehicleRadioBtns("false");
   }, []);
 
+  // If the Select Vehicle dropdown changes then populate the vehicle details fields with data from that existing vehicle
   useEffect(() => {
-    const field = getFieldState("application.vehicleDetails.vehicleType");
-    console.log("selectedVehicle", selectedVehicle);
-    console.log("field dirty", field);
-    // If the user changed the vehicle type then reset the vehicle subtype
-    if (field.isDirty) {
-      setValue("application.vehicleDetails.vehicleSubType", "");
-      // Update the vehicle type and subtype in application context by making a copy of the context data
-      // then change the vehicle subtype field and set the data
-      const updated = applicationData;
-      if (updated && updated.application.vehicleDetails) {
-        updated.application.vehicleDetails.vehicleType = vehicleType;
-        updated.application.vehicleDetails.vehicleSubType = "";
-        setApplicationData(updated);
-      }
-    }
-  }, [vehicleType]);
-
-  // useEffect(() => {
-  //   if (applicationData?.application.vehicleDetails) {
-  //     setValue(
-  //       "application.vehicleDetails.vehicleType",
-  //       applicationData.application.vehicleDetails.vehicleType
-  //     );
-  //   }
-  // }, [applicationData]);
-
-  useEffect(() => {
-    if (isDirty && !selectedVehicle) {
-      setValue("application.vehicleDetails.vehicleType", "");
-      return;
-    }
-
+    // If the form is initially loaded and there is application data from the application context,
+    // then populate vehicle type from the application context data
     if (!isDirty && applicationData?.application.vehicleDetails?.vehicleType) {
       setValue(
         "application.vehicleDetails.vehicleType",
@@ -107,6 +77,19 @@ export const VehicleDetails = ({ feature }: { feature: string }) => {
     const isTrue = isSave === "true";
     setSaveVehicle(isTrue);
     setValue("application.vehicleDetails.saveVehicle", isTrue);
+  };
+
+  // Reset the vehicle sub type field if the vehicle type field changes
+  const handleVehicleType = (event: SelectChangeEvent) => {
+    const updatedVehicleType = event.target.value as string;
+    setValue("application.vehicleDetails.vehicleType", updatedVehicleType);
+    const updated = applicationData;
+    if (updated && updated.application.vehicleDetails) {
+      updated.application.vehicleDetails.vehicleType = updatedVehicleType;
+      updated.application.vehicleDetails.vehicleSubType = "";
+      setApplicationData(updated);
+    }
+    setValue("application.vehicleDetails.vehicleSubType", "");
   };
 
   return (
@@ -141,7 +124,7 @@ export const VehicleDetails = ({ feature }: { feature: string }) => {
           }
         />
         <Box sx={{ display: "flex", gap: "40px" }}>
-          <CustomSimpleSelect
+          <SelectPowerUnitOrTrailer
             value={chooseFrom}
             label={"Choose from"}
             onChange={handleChooseFrom}
@@ -243,6 +226,7 @@ export const VehicleDetails = ({ feature }: { feature: string }) => {
                 value: true,
                 message: "Vehicle Type is required.",
               },
+              onChange: handleVehicleType,
             },
             label: "Vehicle Type",
             width: formFieldStyle.width,

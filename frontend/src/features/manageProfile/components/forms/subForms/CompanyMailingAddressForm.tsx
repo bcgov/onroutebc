@@ -4,7 +4,7 @@ import { CountryAndProvince } from "../../../../../common/components/form/Countr
 import { CustomCheckbox } from "../../../../../common/components/form/subFormComponents/CustomCheckbox";
 import { CustomFormComponent } from "../../../../../common/components/form/CustomFormComponents";
 import { CITY_WIDTH, POSTAL_WIDTH } from "../../../../../themes/bcGovStyles";
-import { CompanyProfile } from "../../../apiManager/manageProfileAPI";
+import { CompanyProfile } from "../../../types/manageProfile";
 
 export const CompanyMailingAddressForm = ({
   feature,

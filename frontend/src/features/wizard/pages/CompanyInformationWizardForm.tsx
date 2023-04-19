@@ -1,12 +1,12 @@
 import { memo } from "react";
-import "../../../manageProfile/components/forms/CompanyInfoForms.scss";
-import { CompanyInfoGeneralForm } from "../../../manageProfile/components/forms/subForms/CompanyInfoGeneralForm";
-import { CompanyMailingAddressForm } from "../../../manageProfile/components/forms/subForms/CompanyMailingAddressForm";
+import "../../manageProfile/components/forms/CompanyInfoForms.scss";
+import { CompanyInfoGeneralForm } from "../../manageProfile/components/forms/subForms/CompanyInfoGeneralForm";
+import { CompanyMailingAddressForm } from "../../manageProfile/components/forms/subForms/CompanyMailingAddressForm";
 import Typography from "@mui/material/Typography";
-import { CompanyContactDetailsForm } from "../../../manageProfile/components/forms/subForms/CompanyContactDetailsForm";
+import { CompanyContactDetailsForm } from "../../manageProfile/components/forms/subForms/CompanyContactDetailsForm";
 
-import { CompanyPrimaryContactForm } from "../../../manageProfile/components/forms/subForms/CompanyPrimaryContactForm";
-import { InfoBcGovBanner } from "../../../../common/components/banners/AlertBanners";
+import { CompanyPrimaryContactForm } from "../../manageProfile/components/forms/subForms/CompanyPrimaryContactForm";
+import { InfoBcGovBanner } from "../../../common/components/banners/AlertBanners";
 
 /**
  * The User Information Form contains multiple subs forms including

@@ -16,8 +16,9 @@ import {
 import { useFormContext } from "react-hook-form";
 import "../../../TermOversize.scss";
 import { useVehiclesQuery } from "../../../../../../manageVehicles/apiManager/hooks";
-import { sortVehicles } from "../utils/sorter";
-import { getExistingVehicle } from "../utils/mappers";
+
+import { mapVinToVehicleObject } from "../../../../../helpers/mappers";
+import { sortVehicles } from "../../../../../helpers/sorter";
 
 const GroupHeader = styled("div")(({ theme }) => ({
   position: "sticky",
@@ -81,7 +82,7 @@ export const SelectVehicleDropdown = ({
    * @param selectedVehicle
    */
   const setAllFields = (selectedVehicle: Vehicle) => {
-    const vehicle = getExistingVehicle(data, selectedVehicle.vin);
+    const vehicle = mapVinToVehicleObject(data, selectedVehicle.vin);
     if (!vehicle) return;
 
     setSelectedVehicle(selectedVehicle.plate);

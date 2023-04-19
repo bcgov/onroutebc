@@ -1,7 +1,7 @@
 import {
-  Vehicle,
   VehicleType,
-} from "../../../../../../manageVehicles/types/managevehicles";
+  Vehicle,
+} from "../../manageVehicles/types/managevehicles";
 
 /**
  * Sort Power Unit or Trailer Types alphabetically

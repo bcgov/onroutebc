@@ -1,6 +1,6 @@
 import React from "react";
 import { TabLayout } from "../../../../common/components/dashboard/TabLayout";
-import { CompanyInfo } from "../pages/CompanyInfo";
+import { CompanyInfo } from "../../pages/CompanyInfo";
 
 export const ManageProfilesDashboard = React.memo(() => {
   const tabs = [

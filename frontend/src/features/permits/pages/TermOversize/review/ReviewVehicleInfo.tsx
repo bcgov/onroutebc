@@ -15,7 +15,7 @@ import {
   usePowerUnitTypesQuery,
   useTrailerTypesQuery,
 } from "../../../../manageVehicles/apiManager/hooks";
-import { mapTypeCodeToObject } from "../../../helpers/mapSubTypeCodeToObject";
+import { mapTypeCodeToObject } from "../../../helpers/mappers";
 
 export const ReviewVehicleInfo = ({
   values,
