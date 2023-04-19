@@ -48,6 +48,7 @@ export interface Commodities {
   condition: string;
   conditionLink: string;
   checked: boolean;
+  disabled?: boolean;
 }
 
 export interface TermOversizeApplication extends Application {

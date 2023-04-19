@@ -10,7 +10,6 @@ import { useContext } from "react";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { PERMIT_LEFT_COLUMN_WIDTH } from "../../../../themes/orbcStyles";
 import { ApplicationContext } from "../../context/ApplicationContext";
-import { TROSCommodities } from "./form/ConditionsTable";
 import { PermitDetails } from "./form/PermitDetails";
 import { ProgressBar } from "../../components/progressBar/ProgressBar";
 import { ScrollButton } from "../../components/scrollButton/ScrollButton";
@@ -26,6 +25,7 @@ import {
   Trailer,
 } from "../../../manageVehicles/types/managevehicles";
 import { mapVinToVehicleObject } from "../../helpers/mappers";
+import { TROS_COMMODITIES } from "../../constants/termOversizeConstants";
 
 /**
  * The first step in creating and submitting a TROS Application.
@@ -65,7 +65,7 @@ export const TermOversizeForm = () => {
       expiryDate:
         applicationContext?.applicationData?.application?.expiryDate || dayjs(),
       commodities: applicationContext?.applicationData?.application
-        ?.commodities || [TROSCommodities[0], TROSCommodities[1]],
+        ?.commodities || [TROS_COMMODITIES[0], TROS_COMMODITIES[1]],
       contactDetails: {
         firstName:
           applicationContext?.applicationData?.application?.contactDetails

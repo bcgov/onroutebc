@@ -12,7 +12,7 @@ import {
   PERMIT_LEFT_HEADER_STYLE,
   PERMIT_RIGHT_BOX_STYLE,
 } from "../../../../../themes/orbcStyles";
-import { TROS_PERMIT_DURATIONS } from "../../../constants/constants";
+import { TROS_PERMIT_DURATIONS } from "../../../constants/termOversizeConstants";
 
 export const PermitDetails = ({ feature }: { feature: string }) => {
   const { getValues, watch, register, setValue } = useFormContext();
