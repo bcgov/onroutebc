@@ -25,8 +25,8 @@ import { SelectVehicleDropdown } from "./customFields/SelectVehicleDropdown";
 import { SelectVehicleSubTypeDropdown } from "./customFields/SelectVehicleSubTypeDropdown";
 import { ApplicationContext } from "../../../../context/ApplicationContext";
 import {
-  chooseFromOptions,
-  vehicleTypes,
+  CHOOSE_FROM_OPTIONS,
+  VEHICLE_TYPES,
 } from "../../../../constants/constants";
 
 export const VehicleDetails = ({ feature }: { feature: string }) => {
@@ -127,7 +127,7 @@ export const VehicleDetails = ({ feature }: { feature: string }) => {
             value={chooseFrom}
             label={"Choose from"}
             onChange={handleChooseFrom}
-            menuItems={chooseFromOptions.map((data) => (
+            menuItems={CHOOSE_FROM_OPTIONS.map((data) => (
               <MenuItem key={data.value} value={data.value}>
                 {data.label}
               </MenuItem>
@@ -230,7 +230,7 @@ export const VehicleDetails = ({ feature }: { feature: string }) => {
             label: "Vehicle Type",
             width: formFieldStyle.width,
           }}
-          menuOptions={vehicleTypes.map((data) => (
+          menuOptions={VEHICLE_TYPES.map((data) => (
             <MenuItem key={data.value} value={data.value}>
               {data.label}
             </MenuItem>
