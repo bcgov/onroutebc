@@ -125,7 +125,7 @@ jobs:
     needs:
       - deploys-test
     runs-on: ubuntu-22.04
-    environment: dev
+    environment: test
     strategy:
       max-parallel: 1
       fail-fast: true
@@ -268,7 +268,7 @@ jobs:
     needs:
       - deploys-uat
     runs-on: ubuntu-22.04
-    environment: dev
+    environment: uat
     strategy:
       max-parallel: 1
       fail-fast: true
@@ -505,7 +505,7 @@ jobs:
     needs:
       - deploys-prod
     runs-on: ubuntu-22.04
-    environment: dev
+    environment: prod
     strategy:
       max-parallel: 1
       fail-fast: true
