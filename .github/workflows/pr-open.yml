@@ -120,7 +120,7 @@ jobs:
             ${{ matrix.parameters }}
 
   helm-deploys-dev:
-    name: DEV Deployments - HELM
+    name: Dev Deployments - HELM
     needs:
       - builds
     runs-on: ubuntu-22.04
