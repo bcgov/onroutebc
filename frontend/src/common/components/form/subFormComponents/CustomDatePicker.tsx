@@ -12,6 +12,7 @@ import {
 import { ORBC_FormTypes } from "../../../types/common";
 import { DatePicker, DateValidationError } from "@mui/x-date-pickers";
 import { useState, useEffect } from "react";
+import dayjs from "dayjs";
 
 /**
  * Properties of the onrouteBC customized Date Picker MUI component
@@ -38,6 +39,9 @@ export const CustomDatePicker = <T extends ORBC_FormTypes>(
     formState: { isSubmitted },
     control,
   } = useFormContext();
+
+  // User can only select a date that is up to 14 days into the future of the current date
+  const maxDate = dayjs().add(14, "day");
 
   /**
    * DatePicker is tricky, because in theory, you have two components with event listeners.
@@ -69,6 +73,11 @@ export const CustomDatePicker = <T extends ORBC_FormTypes>(
         setErrorMessage("Start Date cannot be in the past.");
         break;
       }
+      case "maxDate": {
+        setError(name, { type: "focus" }, { shouldFocus: true });
+        setErrorMessage("Start Date must be within 14 days.");
+        break;
+      }
       case "invalidDate": {
         setError(name, { type: "focus" }, { shouldFocus: true });
         setErrorMessage("Your date is not valid");
@@ -89,6 +98,7 @@ export const CustomDatePicker = <T extends ORBC_FormTypes>(
         value={value}
         onChange={onChange}
         disablePast
+        maxDate={maxDate}
         onError={(newError) => setMUIError(newError)}
         slotProps={{
           textField: {
