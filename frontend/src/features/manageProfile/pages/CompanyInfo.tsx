@@ -1,12 +1,12 @@
 import { Typography } from "@mui/material";
 import { useState } from "react";
-import { BC_COLOURS } from "../../../../themes/bcGovStyles";
-import { CompanyInfoForm } from "../forms/CompanyInfoForm";
+import { BC_COLOURS } from "../../../themes/bcGovStyles";
+import { CompanyInfoForm } from "../components/forms/CompanyInfoForm";
 
 import { DisplayInfo } from "./DisplayCompanyInfo";
 import { useQuery } from "@tanstack/react-query";
-import { getCompanyInfo } from "../../apiManager/manageProfileAPI";
-import { CompanyBanner } from "../../../../common/components/banners/CompanyBanner";
+import { getCompanyInfo } from "../apiManager/manageProfileAPI";
+import { CompanyBanner } from "../../../common/components/banners/CompanyBanner";
 
 const Header = () => {
   return (

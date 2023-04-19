@@ -6,37 +6,20 @@ import {
   FormLabel,
   TextField,
 } from "@mui/material";
-
 import { RegisterOptions, useFormContext } from "react-hook-form";
 import { useContext, useEffect, useState } from "react";
-import { SELECT_FIELD_STYLE } from "../../../../../../themes/orbcStyles";
-import { VehicleType } from "../../../../../manageVehicles/types/managevehicles";
-import "../../TermOversize.scss";
-import { getErrorMessage } from "../../../../../../common/components/form/CustomFormComponents";
-import { BC_COLOURS } from "../../../../../../themes/bcGovStyles";
-import { ApplicationContext } from "../../../../context/ApplicationContext";
-import { mapTypeCodeToObject } from "../../../../helpers/mapSubTypeCodeToObject";
-
-/**
- * Sort Power Unit or Trailer Types alphabetically
- * @param vehicleType string, either powerUnit or trailer
- * @param options array of Vehicle Types
- * @returns an array of sorted vehicle types alphabetically
- */
-const sortVehicleSubTypes = (
-  vehicleType: string,
-  options: VehicleType[] | undefined
-) => {
-  if (!vehicleType || !options) return [];
-  options?.sort((a, b) => {
-    if (a.type?.toLowerCase() === b.type?.toLowerCase()) {
-      return a.typeCode > b.typeCode ? 1 : -1;
-    }
-    if (a.type && b.type) return a.type > b.type ? 1 : -1;
-    return 0;
-  });
-  return options;
-};
+import { SELECT_FIELD_STYLE } from "../../../../../../../themes/orbcStyles";
+import { VehicleType } from "../../../../../../manageVehicles/types/managevehicles";
+import "../../../TermOversize.scss";
+import { getErrorMessage } from "../../../../../../../common/components/form/CustomFormComponents";
+import { BC_COLOURS } from "../../../../../../../themes/bcGovStyles";
+import { ApplicationContext } from "../../../../../context/ApplicationContext";
+import {
+  usePowerUnitTypesQuery,
+  useTrailerTypesQuery,
+} from "../../../../../../manageVehicles/apiManager/hooks";
+import { mapTypeCodeToObject } from "../../../../../helpers/mappers";
+import { sortVehicleSubTypes } from "../../../../../helpers/sorter";
 
 /**
  * An MUI auto complete component with
@@ -45,28 +28,19 @@ const sortVehicleSubTypes = (
  * From https://mui.com/material-ui/react-autocomplete/
  */
 export const SelectVehicleSubTypeDropdown = ({
-  options,
-  vehicleType,
   label,
   width,
   name,
   rules,
-  powerUnitTypes,
-  trailerTypes,
 }: {
-  options: VehicleType[] | undefined;
-  vehicleType: string;
   label: string;
   width: string;
   name: string;
   rules: RegisterOptions;
-  powerUnitTypes: VehicleType[] | undefined;
-  trailerTypes: VehicleType[] | undefined;
 }) => {
   const {
     register,
     watch,
-    resetField,
     setValue,
     getFieldState,
     trigger,
@@ -74,6 +48,18 @@ export const SelectVehicleSubTypeDropdown = ({
   } = useFormContext();
 
   const { applicationData } = useContext(ApplicationContext);
+  const { data: powerUnitTypes } = usePowerUnitTypesQuery();
+  const { data: trailerTypes } = useTrailerTypesQuery();
+  const [options, setOptions] = useState<VehicleType[] | undefined>();
+  const vehicleType = watch("application.vehicleDetails.vehicleType");
+
+  useEffect(() => {
+    if (vehicleType === "powerUnit") {
+      setOptions(powerUnitTypes);
+    } else if (vehicleType === "trailer") {
+      setOptions(trailerTypes);
+    }
+  }, [vehicleType]);
 
   const { invalid } = getFieldState(name);
 
@@ -85,7 +71,7 @@ export const SelectVehicleSubTypeDropdown = ({
 
   // The following code is used to associate the typecode to the rest of the vehicle type object.
   // This allows the component to render the name of the type in plain english instead of displaying the typecode
-  const [type, setDescription] = useState<VehicleType | undefined>(typecode);
+  const [type, setType] = useState<VehicleType | undefined>(typecode);
   useEffect(() => {
     const typecodeFromContext =
       applicationData?.application.vehicleDetails?.vehicleSubType || "";
@@ -109,7 +95,7 @@ export const SelectVehicleSubTypeDropdown = ({
         trailerTypes
       );
     }
-    setDescription(typeObject);
+    setType(typeObject);
   }, [typecode, applicationData]);
 
   return (
@@ -117,13 +103,13 @@ export const SelectVehicleSubTypeDropdown = ({
       <FormControl margin="normal" error={invalid}>
         <FormLabel className="select-field-form-label">{label}</FormLabel>
         <Autocomplete
-          id="vehicle-subtype-autocomplete"
+          id="tros-vehicle-subtype-dropdown"
           options={sortedVehicles || []}
           {...register(name, rules)}
           value={type || null}
           onChange={(e, option, reason) => {
             if (reason === "clear") {
-              resetField(name);
+              setValue(name, "");
               return;
             }
             if (option) setValue(name, option.typeCode);

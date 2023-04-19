@@ -1,6 +1,6 @@
 import { Box, Typography } from "@mui/material";
-import { CompanyProfile } from "../../../features/manageProfile/apiManager/manageProfileAPI";
 import { BC_COLOURS } from "../../../themes/bcGovStyles";
+import { CompanyProfile } from "../../../features/manageProfile/types/manageProfile";
 
 export const CompanyBanner = ({
   companyInfo,

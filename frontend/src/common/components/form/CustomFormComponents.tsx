@@ -7,7 +7,7 @@ import {
   useFormContext,
 } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { ORBC_FormTypes } from "../../../types/common";
+import { ORBC_FormTypes } from "../../types/common";
 import { CustomDatePicker } from "./subFormComponents/CustomDatePicker";
 import { CustomOutlinedInput } from "./subFormComponents/CustomOutlinedInput";
 import { CustomSelect } from "./subFormComponents/CustomSelect";

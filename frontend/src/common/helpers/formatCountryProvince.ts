@@ -1,4 +1,4 @@
-import CountriesAndStates from "../../constants/countries_and_states.json";
+import CountriesAndStates from "../constants/countries_and_states.json";
 
 /**
  * Converts CountryCode to Country Name using the countries_and_states.json file

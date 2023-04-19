@@ -10,12 +10,12 @@ import { BC_COLOURS } from "../../../../../themes/bcGovStyles";
 import {
   formatCountry,
   formatProvince,
-} from "../../../../../common/helpers.ts/formatCountryProvince";
+} from "../../../../../common/helpers/formatCountryProvince";
 import {
   usePowerUnitTypesQuery,
   useTrailerTypesQuery,
 } from "../../../../manageVehicles/apiManager/hooks";
-import { mapTypeCodeToObject } from "../../../helpers/mapSubTypeCodeToObject";
+import { mapTypeCodeToObject } from "../../../helpers/mappers";
 
 export const ReviewVehicleInfo = ({
   values,

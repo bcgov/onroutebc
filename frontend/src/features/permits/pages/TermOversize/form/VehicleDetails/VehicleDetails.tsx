@@ -9,162 +9,78 @@ import {
   SelectChangeEvent,
   Typography,
 } from "@mui/material";
-import { CountryAndProvince } from "../../../../../common/components/form/CountryAndProvince";
-import { CustomFormComponent } from "../../../../../common/components/form/CustomFormComponents";
-import {
-  PowerUnit,
-  Trailer,
-} from "../../../../manageVehicles/types/managevehicles";
-import {
-  usePowerUnitTypesQuery,
-  useTrailerTypesQuery,
-  useVehiclesQuery,
-} from "../../../../manageVehicles/apiManager/hooks";
-import { InfoBcGovBanner } from "../../../../../common/components/banners/AlertBanners";
+import { CountryAndProvince } from "../../../../../../common/components/form/CountryAndProvince";
+import { CustomFormComponent } from "../../../../../../common/components/form/CustomFormComponents";
+import { InfoBcGovBanner } from "../../../../../../common/components/banners/AlertBanners";
 import { useContext, useEffect, useState } from "react";
 import {
   PERMIT_MAIN_BOX_STYLE,
   PERMIT_LEFT_BOX_STYLE,
   PERMIT_LEFT_HEADER_STYLE,
   PERMIT_RIGHT_BOX_STYLE,
-} from "../../../../../themes/orbcStyles";
+} from "../../../../../../themes/orbcStyles";
 import { useFormContext } from "react-hook-form";
-import { CustomSimpleSelect } from "../../../../../common/components/form/subFormComponents/CustomSimpleSelect";
-import { CustomSimpleSelectWithRegister } from "../../../../../common/components/form/subFormComponents/CustomSimpleSelectWithRegister";
+import { SelectPowerUnitOrTrailer } from "./customFields/SelectPowerUnitOrTrailer";
 import { SelectVehicleDropdown } from "./customFields/SelectVehicleDropdown";
 import { SelectVehicleSubTypeDropdown } from "./customFields/SelectVehicleSubTypeDropdown";
-import { ApplicationContext } from "../../../context/ApplicationContext";
+import { ApplicationContext } from "../../../../context/ApplicationContext";
+import {
+  chooseFromOptions,
+  vehicleTypes,
+} from "../../../../constants/constants";
 
 export const VehicleDetails = ({ feature }: { feature: string }) => {
-  const {
-    setValue,
-    resetField,
-    formState: { isDirty },
-  } = useFormContext();
-
   const formFieldStyle = {
     fontWeight: "bold",
     width: "490px",
     marginLeft: "8px",
   };
 
-  const powerUnitTypesQuery = usePowerUnitTypesQuery();
-  const trailerTypesQuery = useTrailerTypesQuery();
-  const allVehiclesQuery = useVehiclesQuery();
+  const {
+    setValue,
+    formState: { isDirty },
+  } = useFormContext();
+
   const { applicationData, setApplicationData } =
     useContext(ApplicationContext);
 
-  const chooseFromOptions = [
-    { value: "unitNumber", label: "Unit Number" },
-    { value: "plate", label: "Plate" },
-  ];
-
-  const vehicleTypes = [
-    { value: "powerUnit", label: "Power Unit" },
-    { value: "trailer", label: "Trailer" },
-  ];
-
+  // Choose vehicle based on either Unit Number or Plate
   const [chooseFrom, setChooseFrom] = useState("");
   // Selected vehicle is the selected vehicles plate number
   const [selectedVehicle, setSelectedVehicle] = useState("");
-  const [vehicleType, setVehicleType] = useState("");
+  // Radio button value to decide if the user wants to save the vehicle in inventory
   const [saveVehicle, setSaveVehicle] = useState(false);
 
+  // Set the 'Save to Inventory' radio button to false on render
   useEffect(() => {
     handleSaveVehicleRadioBtns("false");
   }, []);
 
+  // If the Select Vehicle dropdown changes then populate the vehicle details fields with data from that existing vehicle
   useEffect(() => {
-    if (applicationData) {
-      setSelectedVehicle(
-        applicationData?.application.vehicleDetails?.plate || ""
-      );
-    }
-
-    // Populate the 'Vehicle Type' and 'Vehicle Sub Type' form fields with the selected vehicle information
-
-    if (
-      applicationData?.application.vehicleDetails?.vehicleType === "powerUnit"
-    ) {
-      setVehicleType("powerUnit");
-      setValue("application.vehicleDetails.vehicleType", "powerUnit");
-      setValue(
-        "application.vehicleDetails.vehicleSubType",
-        applicationData?.application.vehicleDetails?.vehicleSubType
-      );
-    }
-    if (
-      applicationData?.application.vehicleDetails?.vehicleType === "trailer"
-    ) {
-      setVehicleType("trailer");
-      setValue("application.vehicleDetails.vehicleType", "trailer");
-      setValue(
-        "application.vehicleDetails.vehicleSubType",
-        applicationData?.application.vehicleDetails?.vehicleSubType
-      );
-    }
-  }, [applicationData]);
-
-  useEffect(() => {
-    if (!selectedVehicle) {
-      setVehicleType("");
-      return;
-    }
-
+    // If the form is initially loaded and there is application data from the application context,
+    // then populate vehicle type from the application context data
     if (!isDirty && applicationData?.application.vehicleDetails?.vehicleType) {
-      setVehicleType(applicationData?.application.vehicleDetails?.vehicleType);
       setValue(
         "application.vehicleDetails.vehicleType",
         applicationData?.application.vehicleDetails?.vehicleType
       );
-      return;
-    }
-
-    // Get the selected vehicle object from the plate number
-    const vehicle: (PowerUnit | Trailer)[] | undefined =
-      allVehiclesQuery.data?.filter((item) => {
-        return item.plate === selectedVehicle;
-      });
-
-    if (!vehicle || vehicle.length <= 0) return;
-
-    // Populate the 'Vehicle Type' and 'Vehicle Sub Type' form fields with the selected vehicle information
-    const powerUnit = vehicle[0] as PowerUnit;
-    if (powerUnit.powerUnitTypeCode) {
-      setVehicleType("powerUnit");
-      setValue("application.vehicleDetails.vehicleType", "powerUnit");
-      setValue(
-        "application.vehicleDetails.vehicleSubType",
-        powerUnit.powerUnitTypeCode
-      );
-    }
-    const trailer = vehicle[0] as Trailer;
-    if (trailer.trailerTypeCode) {
-      setVehicleType("trailer");
-      setValue("application.vehicleDetails.vehicleType", "trailer");
-      setValue(
-        "application.vehicleDetails.vehicleSubType",
-        trailer.trailerTypeCode
-      );
     }
   }, [selectedVehicle]);
-
-  const setVehicleSubTypeOptions = () => {
-    if (vehicleType === "powerUnit") {
-      return powerUnitTypesQuery?.data;
-    } else if (vehicleType === "trailer") {
-      return trailerTypesQuery?.data;
-    }
-    return undefined;
-  };
 
   const handleChooseFrom = (event: SelectChangeEvent) => {
     setChooseFrom(event.target.value as string);
   };
 
+  const handleSaveVehicleRadioBtns = (isSave: string) => {
+    const isTrue = isSave === "true";
+    setSaveVehicle(isTrue);
+    setValue("application.vehicleDetails.saveVehicle", isTrue);
+  };
+
+  // Reset the vehicle sub type field if the vehicle type field changes
   const handleVehicleType = (event: SelectChangeEvent) => {
     const updatedVehicleType = event.target.value as string;
-    setVehicleType(updatedVehicleType);
     setValue("application.vehicleDetails.vehicleType", updatedVehicleType);
     const updated = applicationData;
     if (updated && updated.application.vehicleDetails) {
@@ -172,14 +88,7 @@ export const VehicleDetails = ({ feature }: { feature: string }) => {
       updated.application.vehicleDetails.vehicleSubType = "";
       setApplicationData(updated);
     }
-    resetField("application.vehicleDetails.vehicleSubType");
     setValue("application.vehicleDetails.vehicleSubType", "");
-  };
-
-  const handleSaveVehicleRadioBtns = (isSave: string) => {
-    const isTrue = isSave === "true";
-    setSaveVehicle(isTrue);
-    setValue("application.vehicleDetails.saveVehicle", isTrue);
   };
 
   return (
@@ -214,7 +123,7 @@ export const VehicleDetails = ({ feature }: { feature: string }) => {
           }
         />
         <Box sx={{ display: "flex", gap: "40px" }}>
-          <CustomSimpleSelect
+          <SelectPowerUnitOrTrailer
             value={chooseFrom}
             label={"Choose from"}
             onChange={handleChooseFrom}
@@ -228,7 +137,6 @@ export const VehicleDetails = ({ feature }: { feature: string }) => {
           <SelectVehicleDropdown
             label={"Select vehicle"}
             width={"268px"}
-            options={allVehiclesQuery?.data}
             chooseFrom={chooseFrom}
             setSelectedVehicle={setSelectedVehicle}
           />
@@ -307,36 +215,35 @@ export const VehicleDetails = ({ feature }: { feature: string }) => {
           width={formFieldStyle.width}
         />
 
-        <CustomSimpleSelectWithRegister
-          value={vehicleType}
-          label={"Vehicle Type"}
-          menuItems={vehicleTypes.map((data) => (
+        <CustomFormComponent
+          type="select"
+          feature={feature}
+          options={{
+            name: "application.vehicleDetails.vehicleType",
+            rules: {
+              required: {
+                value: true,
+                message: "Vehicle Type is required.",
+              },
+              onChange: handleVehicleType,
+            },
+            label: "Vehicle Type",
+            width: formFieldStyle.width,
+          }}
+          menuOptions={vehicleTypes.map((data) => (
             <MenuItem key={data.value} value={data.value}>
               {data.label}
             </MenuItem>
           ))}
-          width={formFieldStyle.width}
-          registerOptions={{
-            name: "application.vehicleDetails.vehicleType",
-            options: {
-              value: vehicleType,
-              required: true,
-              onChange: handleVehicleType,
-            },
-          }}
         />
 
         <SelectVehicleSubTypeDropdown
           label={"Vehicle Sub-type"}
-          vehicleType={vehicleType}
-          options={setVehicleSubTypeOptions()}
           width={formFieldStyle.width}
           name="application.vehicleDetails.vehicleSubType"
           rules={{
             required: { value: true, message: "Vehicle Sub-type is required." },
           }}
-          powerUnitTypes={powerUnitTypesQuery?.data}
-          trailerTypes={trailerTypesQuery?.data}
         />
 
         <FormControl>

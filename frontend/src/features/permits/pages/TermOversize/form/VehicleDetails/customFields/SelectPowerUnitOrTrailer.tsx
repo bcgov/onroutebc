@@ -4,13 +4,13 @@ import {
   Select,
   SelectChangeEvent,
 } from "@mui/material";
-import { SELECT_FIELD_STYLE } from "../../../../themes/orbcStyles";
+import { SELECT_FIELD_STYLE } from "../../../../../../../themes/orbcStyles";
 
 /**
  * This simple MUI select component without
  * integration with React Hook Forms
  */
-export const CustomSimpleSelect = ({
+export const SelectPowerUnitOrTrailer = ({
   value,
   label,
   onChange,

@@ -6,7 +6,7 @@ import {
   useFormContext,
 } from "react-hook-form";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
-import { ORBC_FormTypes } from "../../../../types/common";
+import { ORBC_FormTypes } from "../../../types/common";
 
 /**
  * Properties of the onrouteBC customized OutlineInput MUI component

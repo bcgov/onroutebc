@@ -30,9 +30,9 @@ import { UseQueryResult } from "@tanstack/react-query";
 import { PowerUnitColumnDefinition, TrailerColumnDefinition } from "./Columns";
 import { deleteVehicles } from "../../apiManager/vehiclesAPI";
 import DeleteConfirmationDialog from "./ConfirmationDialog";
-import { MANAGE_VEHICLES } from "../../../../constants/routes";
 import { useNavigate } from "react-router-dom";
 import { SnackBarContext } from "../../../../App";
+import { MANAGE_VEHICLES } from "../../../../routes/routeConstants";
 
 /**
  * Dynamically set the column based on vehicle type

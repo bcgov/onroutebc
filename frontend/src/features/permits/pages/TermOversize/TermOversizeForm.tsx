@@ -4,21 +4,20 @@ import { useNavigate } from "react-router-dom";
 import { TermOversizeApplication } from "../../types/application";
 import { ContactDetails } from "../../components/form/ContactDetails";
 import { ApplicationDetails } from "../../components/form/ApplicationDetails";
-import { VehicleDetails } from "./form/VehicleDetails";
+import { VehicleDetails } from "./form/VehicleDetails/VehicleDetails";
 import dayjs from "dayjs";
-import { useContext, useEffect } from "react";
+import { useContext } from "react";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { PERMIT_LEFT_COLUMN_WIDTH } from "../../../../themes/orbcStyles";
 import { ApplicationContext } from "../../context/ApplicationContext";
 import { TROSCommodities } from "./form/ConditionsTable";
-import { useCompanyInfoQuery } from "../../../manageProfile/apiManager/hooks";
 import { PermitDetails } from "./form/PermitDetails";
 import { ProgressBar } from "../../components/progressBar/ProgressBar";
 import { ScrollButton } from "../../components/scrollButton/ScrollButton";
 import {
   useAddPowerUnitMutation,
-  useAddTrailerMutation,
   useUpdatePowerUnitMutation,
+  useAddTrailerMutation,
   useUpdateTrailerMutation,
   useVehiclesQuery,
 } from "../../../manageVehicles/apiManager/hooks";
@@ -26,27 +25,30 @@ import {
   PowerUnit,
   Trailer,
 } from "../../../manageVehicles/types/managevehicles";
+import { mapVinToVehicleObject } from "../../helpers/mappers";
 
 /**
  * The first step in creating and submitting a TROS Application.
  * @returns A form for users to create a Term Oversize Application
  */
 export const TermOversizeForm = () => {
-  const applicationContext = useContext(ApplicationContext);
-  const companyInfoQuery = useCompanyInfoQuery();
-  const addPowerUnitQuery = useAddPowerUnitMutation();
-  const updatePowerUnitQuery = useUpdatePowerUnitMutation();
-  const addTrailerQuery = useAddTrailerMutation();
-  const updateTrailerQuery = useUpdateTrailerMutation();
-  const allVehiclesQuery = useVehiclesQuery();
+  //The name of this feature that is used for id's, keys, and associating form components
+  const FEATURE = "term-oversize";
 
-  // TODO Clean this up
+  // Styling / responsiveness
+  const theme = useTheme();
+  const matches = useMediaQuery(theme.breakpoints.down("lg"));
+
+  // Context to hold all of the application data related to the TROS application
+  const applicationContext = useContext(ApplicationContext);
+
+  // Get the logged in users data from session storage
   let userJson;
   const userInfo: any = sessionStorage.getItem("onRoutebc.user.context");
   if (userInfo) userJson = JSON.parse(userInfo);
 
   // Default values to register with React Hook Forms
-  // If data was passed to this component, then use that data, otherwise use empty or undefined values
+  // Use saved data from the TROS application context, otherwise use empty or undefined values
   const termOversizeDefaultValues: TermOversizeApplication = {
     companyId: userJson?.companyId || "",
     applicationId:
@@ -86,16 +88,14 @@ export const TermOversizeForm = () => {
           userJson?.email ||
           "",
       },
+      // Default values are updated from companyInfo query in the ContactDetails common component
       mailingAddress: {
-        addressLine1:
-          companyInfoQuery?.data?.companyAddress?.addressLine1 || "",
-        addressLine2:
-          companyInfoQuery?.data?.companyAddress?.addressLine2 || "",
-        city: companyInfoQuery?.data?.companyAddress?.city || "",
-        provinceCode:
-          companyInfoQuery?.data?.companyAddress?.provinceCode || "",
-        countryCode: companyInfoQuery?.data?.companyAddress?.countryCode || "",
-        postalCode: companyInfoQuery?.data?.companyAddress?.postalCode || "",
+        addressLine1: "",
+        addressLine2: "",
+        city: "",
+        provinceCode: "",
+        countryCode: "",
+        postalCode: "",
       },
       vehicleDetails: {
         vin:
@@ -134,28 +134,7 @@ export const TermOversizeForm = () => {
     reValidateMode: "onBlur",
   });
 
-  const { handleSubmit, setValue } = formMethods;
-
-  /**
-   * UseEffect to get company mailing address and primary contact, since companyInfo query is async
-   */
-  useEffect(() => {
-    setValue("application.mailingAddress", {
-      addressLine1: companyInfoQuery?.data?.companyAddress?.addressLine1 || "",
-      addressLine2: companyInfoQuery?.data?.companyAddress?.addressLine2 || "",
-      city: companyInfoQuery?.data?.companyAddress?.city || "",
-      provinceCode: companyInfoQuery?.data?.companyAddress?.provinceCode || "",
-      countryCode: companyInfoQuery?.data?.companyAddress?.countryCode || "",
-      postalCode: companyInfoQuery?.data?.companyAddress?.postalCode || "",
-    });
-
-    // setValue("application.contactDetails", {
-    //   firstName: companyInfoQuery?.data?.primaryContact?.firstName || "",
-    //   lastName: companyInfoQuery?.data?.primaryContact?.lastName || "",
-    //   phone1: companyInfoQuery?.data?.primaryContact?.phone1 || "",
-    //   email: companyInfoQuery?.data?.primaryContact?.email || "",
-    // });
-  }, [companyInfoQuery]);
+  const { handleSubmit } = formMethods;
 
   const navigate = useNavigate();
 
@@ -166,25 +145,34 @@ export const TermOversizeForm = () => {
     applicationContext?.next();
   };
 
+  const addPowerUnitQuery = useAddPowerUnitMutation();
+  const updatePowerUnitQuery = useUpdatePowerUnitMutation();
+  const addTrailerQuery = useAddTrailerMutation();
+  const updateTrailerQuery = useUpdateTrailerMutation();
+  const allVehiclesQuery = useVehiclesQuery();
+
   const handleSaveVehicle = (data: TermOversizeApplication) => {
+    // Check if the "add/update vehicle" checkbox was checked by the user
     if (!data.application.vehicleDetails?.saveVehicle) return;
 
+    // Get the vehicle info from the form
     const vehicle = data.application.vehicleDetails;
 
-    const existingVehicle: (PowerUnit | Trailer)[] | undefined =
-      allVehiclesQuery.data?.filter((item) => {
-        return item.vin === vehicle.vin;
-      });
+    // Check if the vehicle that is to be saved was created from an existing vehicle
+    const existingVehicle = mapVinToVehicleObject(
+      allVehiclesQuery.data,
+      vehicle.vin
+    );
 
-    if (data.application.vehicleDetails.vehicleType === "powerUnit") {
+    // If the vehicle type is a power unit then create a power unit object
+    if (vehicle.vehicleType === "powerUnit") {
       let powerUnitId = "";
-      if (existingVehicle && existingVehicle[0]) {
-        const powerUnit = existingVehicle[0] as PowerUnit;
+      if (existingVehicle) {
+        const powerUnit = existingVehicle as PowerUnit;
         if (powerUnit.powerUnitId) {
           powerUnitId = powerUnit.powerUnitId;
         }
       }
-
       const powerUnit: PowerUnit = {
         powerUnitId: powerUnitId,
         unitNumber: "",
@@ -197,6 +185,7 @@ export const TermOversizeForm = () => {
         powerUnitTypeCode: vehicle.vehicleSubType,
       };
 
+      // Either send a PUT or POST request based on powerUnitID
       if (powerUnitId) {
         updatePowerUnitQuery.mutate({
           powerUnit: powerUnit,
@@ -207,10 +196,10 @@ export const TermOversizeForm = () => {
       }
     }
 
-    if (data.application.vehicleDetails.vehicleType === "trailer") {
+    if (vehicle.vehicleType === "trailer") {
       let trailerId = "";
-      if (existingVehicle && existingVehicle[0]) {
-        const trailer = existingVehicle[0] as Trailer;
+      if (existingVehicle) {
+        const trailer = existingVehicle as Trailer;
         if (trailer.trailerId) {
           trailerId = trailer.trailerId;
         }
@@ -242,20 +231,6 @@ export const TermOversizeForm = () => {
   const handleClose = () => {
     navigate("../");
   };
-
-  /**
-   * The name of this feature that is used for id's, keys, and associating form components
-   */
-  const FEATURE = "term-oversize";
-
-  /**
-   * The following code is used to style the bottom banner that has the
-   * Leave Application, Save App, Continue, and To Top buttons
-   *
-   * Need to clean up this up
-   */
-  const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.down("lg"));
 
   return (
     <>

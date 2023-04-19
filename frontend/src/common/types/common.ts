@@ -2,12 +2,12 @@ import {
   CompanyAndUserRequest,
   CompanyProfile,
   UserInformation,
-} from "../features/manageProfile/apiManager/manageProfileAPI";
+} from "../../features/manageProfile/types/manageProfile";
 import {
   PowerUnit,
   Trailer,
-} from "../features/manageVehicles/types/managevehicles";
-import { TermOversizeApplication } from "../features/permits/types/application";
+} from "../../features/manageVehicles/types/managevehicles";
+import { TermOversizeApplication } from "../../features/permits/types/application";
 
 export interface ApiErrorResponse {
   status: number;

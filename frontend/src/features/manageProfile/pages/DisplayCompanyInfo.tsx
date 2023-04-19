@@ -1,12 +1,11 @@
 import { Box, Button, Typography } from "@mui/material";
 import { memo } from "react";
-import { CompanyProfile } from "../../apiManager/manageProfileAPI";
-
-import { formatPhoneNumber } from "../../../../common/components/form/subFormComponents/PhoneNumberInput";
+import { formatPhoneNumber } from "../../../common/components/form/subFormComponents/PhoneNumberInput";
 import {
   formatCountry,
   formatProvince,
-} from "../../../../common/helpers.ts/formatCountryProvince";
+} from "../../../common/helpers/formatCountryProvince";
+import { CompanyProfile } from "../types/manageProfile";
 // Disable any eslint for references to countries_and_states.json
 /* eslint-disable @typescript-eslint/no-explicit-any */
 

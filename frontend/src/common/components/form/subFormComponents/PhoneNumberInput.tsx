@@ -2,7 +2,7 @@ import { OutlinedInput } from "@mui/material";
 import { useState } from "react";
 import { PathValue, Path, useFormContext } from "react-hook-form";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
-import { ORBC_FormTypes } from "../../../../types/common";
+import { ORBC_FormTypes } from "../../../types/common";
 import { CustomOutlinedInputProps } from "./CustomOutlinedInput";
 
 /**

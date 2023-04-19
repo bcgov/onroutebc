@@ -8,11 +8,11 @@ import {
 } from "../../../../themes/orbcStyles";
 import { TermOversizeApplication } from "../../types/application";
 import { useCompanyInfoQuery } from "../../../manageProfile/apiManager/hooks";
-import { CompanyProfile } from "../../../manageProfile/apiManager/manageProfileAPI";
 import {
   formatCountry,
   formatProvince,
-} from "../../../../common/helpers.ts/formatCountryProvince";
+} from "../../../../common/helpers/formatCountryProvince";
+import { CompanyProfile } from "../../../manageProfile/types/manageProfile";
 
 const CompanyInformation = ({
   companyInfo,

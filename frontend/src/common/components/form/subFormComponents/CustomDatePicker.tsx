@@ -9,7 +9,7 @@ import {
   useFormContext,
   useController,
 } from "react-hook-form";
-import { ORBC_FormTypes } from "../../../../types/common";
+import { ORBC_FormTypes } from "../../../types/common";
 import { DatePicker, DateValidationError } from "@mui/x-date-pickers";
 import { useState, useEffect } from "react";
 
