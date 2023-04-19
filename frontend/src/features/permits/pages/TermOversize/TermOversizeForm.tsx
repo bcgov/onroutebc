@@ -198,7 +198,7 @@ export const TermOversizeForm = () => {
 
     if (vehicle.vehicleType === "trailer") {
       let trailerId = "";
-      if (existingVehicle && existingVehicle) {
+      if (existingVehicle) {
         const trailer = existingVehicle as Trailer;
         if (trailer.trailerId) {
           trailerId = trailer.trailerId;

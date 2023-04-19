@@ -65,7 +65,6 @@ export const VehicleDetails = ({ feature }: { feature: string }) => {
         "application.vehicleDetails.vehicleType",
         applicationData?.application.vehicleDetails?.vehicleType
       );
-      return;
     }
   }, [selectedVehicle]);
 

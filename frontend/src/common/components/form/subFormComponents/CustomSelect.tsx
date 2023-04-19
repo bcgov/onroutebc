@@ -36,7 +36,6 @@ export const CustomSelect = <T extends ORBC_FormTypes>({
   } = useFormContext();
   const value = watch(name);
 
-  //console.log("custom select", name, " ", value);
   return (
     <Select
       aria-labelledby={`${feature}-${name}-label`}
