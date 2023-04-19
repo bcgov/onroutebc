@@ -152,7 +152,7 @@ jobs:
           openshift_token: ${{ secrets.OC_TOKEN }}
           namespace: ${{ secrets.OC_NAMESPACE }}
       - name: Helm Deploy
-        uses: vimeda/helm@v1.6.8
+        uses: vimeda/helm@v1.7.0
         with:
           chart: 'common-object-management-service/common-object-management-service'
           chart-version: 0.0.13
