@@ -19,10 +19,7 @@ import { useVehiclesQuery } from "../../../../../../manageVehicles/apiManager/ho
 
 import { mapVinToVehicleObject } from "../../../../../helpers/mappers";
 import { sortVehicles } from "../../../../../helpers/sorter";
-import {
-  removeIneligibleVehicleSubTypes,
-  removeIneligibleVehicles,
-} from "../../../../../helpers/removeIneligibleVehicles";
+import { removeIneligibleVehicles } from "../../../../../helpers/removeIneligibleVehicles";
 import {
   TROS_INELIGIBLE_POWERUNITS,
   TROS_INELIGIBLE_TRAILERS,
@@ -61,6 +58,8 @@ export const SelectVehicleDropdown = ({
 }) => {
   const { data } = useVehiclesQuery();
   const sortedVehicles = sortVehicles(chooseFrom, data);
+  // Temporary method to remove ineligible vehicles as per TROS policy.
+  // Will be replaced by backend endpoint with optional query parameter
   const eligibleVehicles = removeIneligibleVehicles(
     sortedVehicles,
     TROS_INELIGIBLE_POWERUNITS,

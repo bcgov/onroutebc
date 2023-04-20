@@ -70,7 +70,8 @@ export const SelectVehicleSubTypeDropdown = ({
 
   // Sort vehicle subtypes alphabetically
   const sortedVehicles = sortVehicleSubTypes(vehicleType, options);
-  // Remove ineligible sub types from sorted vehicle list
+  // Temporary method to remove ineligible vehicles as per TROS policy.
+  // Will be replaced by backend endpoint with optional query parameter
   const eligibleVehicles = removeIneligibleVehicleSubTypes(
     sortedVehicles,
     vehicleType,
