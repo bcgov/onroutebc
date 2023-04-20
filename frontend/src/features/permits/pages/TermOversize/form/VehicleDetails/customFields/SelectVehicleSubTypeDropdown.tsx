@@ -24,6 +24,7 @@ import {
   TROS_INELIGIBLE_POWERUNITS,
   TROS_INELIGIBLE_TRAILERS,
 } from "../../../../../constants/termOversizeConstants";
+import { removeIneligibleVehicleSubTypes } from "../../../../../helpers/removeIneligibleVehicles";
 
 /**
  * An MUI auto complete component with
@@ -57,21 +58,6 @@ export const SelectVehicleSubTypeDropdown = ({
   const [options, setOptions] = useState<VehicleType[] | undefined>();
   const vehicleType = watch("application.vehicleDetails.vehicleType");
 
-  const removeIneligibleVehicleTypes = (vehicles: VehicleType[]) => {
-    let ineligibleList: VehicleType[];
-    if (vehicleType === "powerUnit")
-      ineligibleList = TROS_INELIGIBLE_POWERUNITS;
-    if (vehicleType === "trailer") ineligibleList = TROS_INELIGIBLE_TRAILERS;
-
-    vehicles.forEach((item, index) => {
-      ineligibleList.forEach((x) => {
-        if (item.typeCode === x.typeCode) vehicles.splice(index, 1);
-      });
-    });
-
-    return vehicles;
-  };
-
   useEffect(() => {
     if (vehicleType === "powerUnit") {
       setOptions(powerUnitTypes);
@@ -84,7 +70,13 @@ export const SelectVehicleSubTypeDropdown = ({
 
   // Sort vehicle subtypes alphabetically
   const sortedVehicles = sortVehicleSubTypes(vehicleType, options);
-  const eligibleVehicles = removeIneligibleVehicleTypes(sortedVehicles);
+  // Remove ineligible sub types from sorted vehicle list
+  const eligibleVehicles = removeIneligibleVehicleSubTypes(
+    sortedVehicles,
+    vehicleType,
+    TROS_INELIGIBLE_POWERUNITS,
+    TROS_INELIGIBLE_TRAILERS
+  );
 
   // The typecode used in the json request object. Example: FARMVEH
   const typecode = watch(name);
