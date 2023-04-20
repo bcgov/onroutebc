@@ -166,15 +166,15 @@ export const TermOversizeForm = () => {
     // If the vehicle type is a power unit then create a power unit object
     if (vehicle.vehicleType === "powerUnit") {
       let powerUnitId = "";
+      let unitNumber = "";
       if (existingVehicle) {
         const powerUnit = existingVehicle as PowerUnit;
-        if (powerUnit.powerUnitId) {
-          powerUnitId = powerUnit.powerUnitId;
-        }
+        if (powerUnit.powerUnitId) powerUnitId = powerUnit.powerUnitId;
+        if (powerUnit.unitNumber) unitNumber = powerUnit.unitNumber;
       }
       const powerUnit: PowerUnit = {
         powerUnitId: powerUnitId,
-        unitNumber: "",
+        unitNumber: unitNumber,
         vin: vehicle.vin,
         plate: vehicle.plate,
         make: vehicle.make,
@@ -197,16 +197,16 @@ export const TermOversizeForm = () => {
 
     if (vehicle.vehicleType === "trailer") {
       let trailerId = "";
+      let unitNumber = "";
       if (existingVehicle) {
         const trailer = existingVehicle as Trailer;
-        if (trailer.trailerId) {
-          trailerId = trailer.trailerId;
-        }
+        if (trailer.trailerId) trailerId = trailer.trailerId;
+        if (trailer.unitNumber) unitNumber = trailer.unitNumber;
       }
 
       const trailer: Trailer = {
         trailerId: trailerId,
-        unitNumber: "",
+        unitNumber: unitNumber,
         vin: vehicle.vin,
         plate: vehicle.plate,
         make: vehicle.make,
