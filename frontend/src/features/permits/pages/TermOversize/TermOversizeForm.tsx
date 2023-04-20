@@ -51,12 +51,11 @@ export const TermOversizeForm = () => {
   // Use saved data from the TROS application context, otherwise use empty or undefined values
   const termOversizeDefaultValues: TermOversizeApplication = {
     companyId: userJson?.companyId || "",
-    applicationId:
-      applicationContext?.applicationData?.applicationId || 1234567,
+    //applicationId: applicationContext?.applicationData?.applicationId || 0,
     applicationName:
       applicationContext?.applicationData?.applicationName || "TROS",
-    dateCreated: applicationContext?.applicationData?.dateCreated || dayjs(),
-    lastUpdated: applicationContext?.applicationData?.lastUpdated || dayjs(),
+    //dateCreated: applicationContext?.applicationData?.dateCreated || dayjs(),
+    //lastUpdated: applicationContext?.applicationData?.lastUpdated || dayjs(),
     application: {
       startDate:
         applicationContext?.applicationData?.application?.startDate || dayjs(),

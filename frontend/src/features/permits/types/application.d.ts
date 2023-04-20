@@ -5,10 +5,10 @@ import { Dayjs } from "dayjs";
  */
 export interface Application {
   companyId: number;
-  applicationId: number;
+  applicationId?: number;
   applicationName: string;
-  dateCreated: Dayjs;
-  lastUpdated: Dayjs;
+  dateCreated?: Dayjs;
+  lastUpdated?: Dayjs;
 }
 
 interface MailingAddress {
