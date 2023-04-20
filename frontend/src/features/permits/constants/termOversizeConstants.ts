@@ -15,6 +15,53 @@ export const TROS_PERMIT_DURATIONS = [
   { value: 365, label: "1 Year" },
 ];
 
+export const TROS_INELIGIBLE_POWERUNITS = [
+  {
+    typeCode: "OGSERVC",
+    type: "Oil and Gas - Service Rigs",
+    description:
+      "Oil and Gas - Service Rigs are fixed equipment oilfield service trucks and includes rathole augers only equiped with heavy front projected crane (must exceed 14,000 kg tare weight).",
+  },
+  {
+    typeCode: "SCRAPER",
+    type: "Scrapers",
+    description:
+      "A Scraper is a vehicle that is designed and used primarily for grading of highways, earth moving and other construction work on highways and that is not designed or used primarily for the transportation of persons or property, and that is only incidentally operated or moved over a highway.",
+  },
+  {
+    typeCode: "BUSCRUM",
+    type: "Buses/Crummies",
+    description:
+      "A motor vehicle used to transport persons, when such transportation is not undertaken for compensation or gain.",
+  },
+  {
+    typeCode: "FARMVEH",
+    type: "Farm Vehicles",
+    description:
+      "A Farm Vehicle is a commercial vehicle owned and operated by a farmer, rancher or market gardener, the use of which is confined to purposes connected with his farm, ranch or market garden, including use for pleasure and is not used in connection with any other business in which the owner may be engaged.",
+  },
+];
+
+export const TROS_INELIGIBLE_TRAILERS = [
+  {
+    typeCode: "STSTEER",
+    type: "Semi-Trailers - Steering Trailers",
+    description:
+      "See Commercial Transport Procedures Manual chapter 5.3 for details.",
+  },
+  {
+    typeCode: "STWDTAN",
+    type: "Semi-Trailers - Widespread Tandems",
+    description: "",
+  },
+  {
+    typeCode: "STACTRN",
+    type: "Semi-Trailers - A-Trains and C-Trains",
+    description:
+      "A-Train means a combination of vehicles composed of a truck tractor, a semi-trailer and either, (a) an A dolly and a semi-trailer, or (b) a full trailer.    C-Train means a combination of vehicles composed of a truck tractor and a semi-trailer, followed by another semi-trailer attached to the first semi-trailer by the means of a C dolly or C converter dolly.",
+  },
+];
+
 export const TROS_COMMODITIES: Commodities[] = [
   {
     description: "General Permit Conditions",

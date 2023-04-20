@@ -20,6 +20,10 @@ import {
 } from "../../../../../../manageVehicles/apiManager/hooks";
 import { mapTypeCodeToObject } from "../../../../../helpers/mappers";
 import { sortVehicleSubTypes } from "../../../../../helpers/sorter";
+import {
+  TROS_INELIGIBLE_POWERUNITS,
+  TROS_INELIGIBLE_TRAILERS,
+} from "../../../../../constants/termOversizeConstants";
 
 /**
  * An MUI auto complete component with
@@ -53,6 +57,21 @@ export const SelectVehicleSubTypeDropdown = ({
   const [options, setOptions] = useState<VehicleType[] | undefined>();
   const vehicleType = watch("application.vehicleDetails.vehicleType");
 
+  const removeIneligibleVehicleTypes = (vehicles: VehicleType[]) => {
+    let ineligibleList: VehicleType[];
+    if (vehicleType === "powerUnit")
+      ineligibleList = TROS_INELIGIBLE_POWERUNITS;
+    if (vehicleType === "trailer") ineligibleList = TROS_INELIGIBLE_TRAILERS;
+
+    vehicles.forEach((item, index) => {
+      ineligibleList.forEach((x) => {
+        if (item.typeCode === x.typeCode) vehicles.splice(index, 1);
+      });
+    });
+
+    return vehicles;
+  };
+
   useEffect(() => {
     if (vehicleType === "powerUnit") {
       setOptions(powerUnitTypes);
@@ -65,6 +84,7 @@ export const SelectVehicleSubTypeDropdown = ({
 
   // Sort vehicle subtypes alphabetically
   const sortedVehicles = sortVehicleSubTypes(vehicleType, options);
+  const eligibleVehicles = removeIneligibleVehicleTypes(sortedVehicles);
 
   // The typecode used in the json request object. Example: FARMVEH
   const typecode = watch(name);
@@ -104,7 +124,7 @@ export const SelectVehicleSubTypeDropdown = ({
         <FormLabel className="select-field-form-label">{label}</FormLabel>
         <Autocomplete
           id="tros-vehicle-subtype-dropdown"
-          options={sortedVehicles || []}
+          options={eligibleVehicles || []}
           {...register(name, rules)}
           value={type || null}
           onChange={(e, option, reason) => {
