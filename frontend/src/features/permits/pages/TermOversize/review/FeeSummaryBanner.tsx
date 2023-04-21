@@ -1,7 +1,11 @@
 import { Box, Typography } from "@mui/material";
 import { BC_COLOURS } from "../../../../../themes/bcGovStyles";
+import { useContext } from "react";
+import { ApplicationContext } from "../../../context/ApplicationContext";
 
 export const FeeSummaryBanner = () => {
+  const { applicationData } = useContext(ApplicationContext);
+  const calculatedFee = applicationData?.application.permitDuration || 0;
   return (
     <Box
       sx={{
@@ -40,7 +44,7 @@ export const FeeSummaryBanner = () => {
         }}
       >
         <Typography variant="h6">Term Oversize Permit</Typography>
-        <Typography variant="h6">$30.00</Typography>
+        <Typography variant="h6">${calculatedFee}.00</Typography>
       </Box>
       <Box
         sx={{
@@ -50,7 +54,7 @@ export const FeeSummaryBanner = () => {
         }}
       >
         <Typography variant="h4">Total</Typography>
-        <Typography variant="h4">$30.00</Typography>
+        <Typography variant="h4">${calculatedFee}.00</Typography>
       </Box>
     </Box>
   );
