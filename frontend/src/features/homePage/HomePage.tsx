@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useAuth } from "react-oidc-context";
+import { getUserRolesByCompanyId } from "../manageProfile/apiManager/manageProfileAPI";
 
 export const HomePage = React.memo(() => {
   const { isAuthenticated } = useAuth();
@@ -12,6 +13,14 @@ export const HomePage = React.memo(() => {
   const DEPLOY_ENV =
     import.meta.env.VITE_DEPLOY_ENVIRONMENT ||
     envConfig.VITE_DEPLOY_ENVIRONMENT;
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      getUserRolesByCompanyId().then((response: string[]) => {
+        sessionStorage.setItem("onRoutebc.user.roles", JSON.stringify(response));
+      })
+    }
+  }, [isAuthenticated]);
 
   return (
     <div style={{ padding: "0px 60px", height: "100vh" }}>

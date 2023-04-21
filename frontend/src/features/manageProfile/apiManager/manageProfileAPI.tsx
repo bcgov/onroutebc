@@ -54,3 +54,12 @@ export const getUserContext = (): Promise<UserContextType> => {
     (response) => response.json()
   );
 };
+
+/**
+ * Retrieves the roles of the user w.r.t a company.
+ */
+export const getUserRolesByCompanyId = (): Promise<string[]> => {
+  return httpGETRequestPromise(
+    `${MANAGE_PROFILE_URL}/users/roles?companyId=${getCompanyIdFromSession()}`
+  ).then((response) => response.json());
+};
