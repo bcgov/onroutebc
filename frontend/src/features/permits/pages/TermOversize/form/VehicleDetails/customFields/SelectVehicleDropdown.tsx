@@ -19,6 +19,11 @@ import { useVehiclesQuery } from "../../../../../../manageVehicles/apiManager/ho
 
 import { mapVinToVehicleObject } from "../../../../../helpers/mappers";
 import { sortVehicles } from "../../../../../helpers/sorter";
+import { removeIneligibleVehicles } from "../../../../../helpers/removeIneligibleVehicles";
+import {
+  TROS_INELIGIBLE_POWERUNITS,
+  TROS_INELIGIBLE_TRAILERS,
+} from "../../../../../constants/termOversizeConstants";
 
 const GroupHeader = styled("div")(({ theme }) => ({
   position: "sticky",
@@ -53,6 +58,14 @@ export const SelectVehicleDropdown = ({
 }) => {
   const { data } = useVehiclesQuery();
   const sortedVehicles = sortVehicles(chooseFrom, data);
+  // Temporary method to remove ineligible vehicles as per TROS policy.
+  // Will be replaced by backend endpoint with optional query parameter
+  const eligibleVehicles = removeIneligibleVehicles(
+    sortedVehicles,
+    TROS_INELIGIBLE_POWERUNITS,
+    TROS_INELIGIBLE_TRAILERS
+  );
+
   const {
     setValue,
     formState: { isSubmitted },
@@ -126,7 +139,7 @@ export const SelectVehicleDropdown = ({
             setAllFields(value);
           }
         }}
-        options={sortedVehicles}
+        options={eligibleVehicles}
         groupBy={(option) => option?.vehicleType || ""}
         getOptionLabel={(option) => {
           if (!option) return "";

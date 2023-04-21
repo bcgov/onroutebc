@@ -12,20 +12,15 @@ import {
   PERMIT_LEFT_HEADER_STYLE,
   PERMIT_RIGHT_BOX_STYLE,
 } from "../../../../../themes/orbcStyles";
+import { TROS_PERMIT_DURATIONS } from "../../../constants/termOversizeConstants";
 
 export const PermitDetails = ({ feature }: { feature: string }) => {
-  const permitDurations = [
-    { value: 30, label: "30 Days" },
-    { value: 60, label: "60 Days" },
-    { value: 90, label: "90 Days" },
-    { value: 120, label: "120 Days" },
-    { value: 365, label: "1 Year" },
-  ];
-
   const { getValues, watch, register, setValue } = useFormContext();
 
   const startDate = watch("application.startDate");
-  const duration = getValues("application.permitDuration");
+  // the permit expiry date is the permit duration minus 1 plus the <start date>
+  const duration = getValues("application.permitDuration") - 1;
+
   const formatDate = () => {
     return startDate.add(duration, "day").format("LL");
   };
@@ -71,7 +66,7 @@ export const PermitDetails = ({ feature }: { feature: string }) => {
               label: "Permit Duration",
               width: PHONE_WIDTH,
             }}
-            menuOptions={permitDurations.map((data) => (
+            menuOptions={TROS_PERMIT_DURATIONS.map((data) => (
               <MenuItem key={data.value} value={data.value}>
                 {data.label}
               </MenuItem>

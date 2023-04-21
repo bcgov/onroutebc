@@ -5,10 +5,10 @@ import { Dayjs } from "dayjs";
  */
 export interface Application {
   companyId: number;
-  applicationId: number;
+  applicationId?: number;
   applicationName: string;
-  dateCreated: Dayjs;
-  lastUpdated: Dayjs;
+  dateCreated?: Dayjs;
+  lastUpdated?: Dayjs;
 }
 
 interface MailingAddress {
@@ -48,6 +48,7 @@ export interface Commodities {
   condition: string;
   conditionLink: string;
   checked: boolean;
+  disabled?: boolean;
 }
 
 export interface TermOversizeApplication extends Application {
