@@ -1,5 +1,3 @@
-import { ApiErrorResponse } from "../types/common";
-
 /**
  * Retrieves the access token from session.
  * @returns A string containing the access token.
@@ -37,35 +35,12 @@ export const getCompanyIdFromSession = (): string | null => {
   return userContext.companyId;
 };
 
-export const httpGETRequest = async (url: URL) => {
-  try {
-    const response = await fetch(url.href, {
-      headers: {
-        Authorization: getAccessToken(),
-      },
-    });
-    const data = await response.json();
-    // Handle API errors created from the backend API
-    if (!response.ok) {
-      const err: ApiErrorResponse = data;
-      return Promise.reject(err.errorMessage);
-    }
-    return data;
-    // eslint-disable-next-line  @typescript-eslint/no-explicit-any
-  } catch (error: any) {
-    // Handle network errors
-    // Error type has name and message
-    // eslint-disable-next-line  @typescript-eslint/no-explicit-any
-    return Promise.reject(error.message);
-  }
-};
-
 /**
  * A generic HTTP GET Request
  * @param url The URL of the resource.
  * @returns A Promise<Response> with the response from the API.
  */
-export const httpGETRequestPromise = (url: string) => {
+export const httpGETRequest = (url: string) => {
   return fetch(url, {
     headers: {
       Authorization: getAccessToken(),
