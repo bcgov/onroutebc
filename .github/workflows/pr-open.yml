@@ -183,3 +183,26 @@ jobs:
                 OBJECTSTORAGE_BUCKET: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_BUCKET}}
                 OBJECTSTORAGE_ENDPOINT: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_ENDPOINT}}
                 OBJECTSTORAGE_KEY: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_KEY}}
+
+  configure-db-dev:
+    name: Rebuild database to most recent schema
+    needs:
+      - helm-deploys-dev
+    runs-on: ubuntu-22.04
+    environment: dev
+    strategy:
+      max-parallel: 1
+      fail-fast: true
+    steps:
+      - name: Install sqlcmd
+        uses: potatoqualitee/mssqlsuite@v1.7
+        with:
+          install: sqlengine, sqlpackage
+      - name: configure-db.sh
+        env:
+          MSSQL_SA_USER: ORBC_TEST
+          MSSQL_SA_PASSWORD: 9EFv27EOD6F#ycN1%Q*S
+          MSSQL_SA_HOST: sqltest.th.gov.bc.ca
+          MSSQL_SA_DB: ORBC_TEST
+        run: database/mssql/configure-db.sh
+        shell: bash
