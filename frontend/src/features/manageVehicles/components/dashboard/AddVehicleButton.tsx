@@ -15,7 +15,7 @@ import {
   ADD_POWER_UNIT,
   ADD_TRAILER,
   MANAGE_VEHICLES,
-} from "../../../../routes/routeConstants";
+} from "../../../../routes/constants";
 
 /**
  *

@@ -10,11 +10,10 @@ import {
 } from "../types/managevehicles";
 
 import {
-  httpGETRequest,
   httpPOSTRequest,
   httpPUTRequest,
   getCompanyIdFromSession,
-  httpGETRequestPromise,
+  httpGETRequest,
 } from "../../../common/apiManager/httpRequestHandler";
 
 /**
@@ -45,10 +44,8 @@ export const getAllVehicles = async (): Promise<(PowerUnit | Trailer)[]> => {
  * @return {*}  {Promise<void>}
  */
 export const getAllPowerUnits = async (): Promise<PowerUnit[]> => {
-  const url = new URL(
-    `${VEHICLE_URL}/companies/${getCompanyIdFromSession()}/vehicles/powerUnits`
-  );
-  return httpGETRequest(url);
+  const url = `${VEHICLE_URL}/companies/${getCompanyIdFromSession()}/vehicles/powerUnits`;
+  return httpGETRequest(url).then((response) => response.data);
 };
 
 /**
@@ -56,13 +53,9 @@ export const getAllPowerUnits = async (): Promise<PowerUnit[]> => {
  * @param powerUnitId The powerUnitId
  * @returns A Promise<Response> containing the API response.
  */
-export const getPowerUnit = (powerUnitId: string): Promise<PowerUnit> => {
-  const url = new URL(
-    `${VEHICLE_URL}/companies/${getCompanyIdFromSession()}/vehicles/powerUnits/${powerUnitId}`
-  );
-  return httpGETRequestPromise(url.toString()).then((response) =>
-    response.json()
-  );
+export const getPowerUnit = async (powerUnitId: string): Promise<PowerUnit> => {
+  const url = `${VEHICLE_URL}/companies/${getCompanyIdFromSession()}/vehicles/powerUnits/${powerUnitId}`;
+  return httpGETRequest(url).then((response) => response.data);
 };
 
 /**
@@ -71,7 +64,7 @@ export const getPowerUnit = (powerUnitId: string): Promise<PowerUnit> => {
  */
 export const getPowerUnitTypes = async (): Promise<Array<VehicleType>> => {
   const url = new URL(VEHICLES_API.POWER_UNIT_TYPES);
-  return httpGETRequest(url);
+  return httpGETRequest(url.toString()).then((response) => response.data);
 };
 
 /**
@@ -80,10 +73,8 @@ export const getPowerUnitTypes = async (): Promise<Array<VehicleType>> => {
  * @returns Promise containing the response from the create powerUnit API.
  */
 export const addPowerUnit = (powerUnit: PowerUnit): Promise<Response> => {
-  return httpPOSTRequest(
-    `${VEHICLE_URL}/companies/${getCompanyIdFromSession()}/vehicles/powerUnits`,
-    powerUnit
-  );
+  const url = `${VEHICLE_URL}/companies/${getCompanyIdFromSession()}/vehicles/powerUnits`;
+  return httpPOSTRequest(url, powerUnit);
 };
 
 /**
@@ -98,10 +89,8 @@ export const updatePowerUnit = ({
   powerUnit: UpdatePowerUnit;
   powerUnitId: string;
 }): Promise<Response> => {
-  return httpPUTRequest(
-    `${VEHICLE_URL}/companies/${getCompanyIdFromSession()}/vehicles/powerUnits/${powerUnitId}`,
-    powerUnit
-  );
+  const url = `${VEHICLE_URL}/companies/${getCompanyIdFromSession()}/vehicles/powerUnits/${powerUnitId}`;
+  return httpPUTRequest(url, powerUnit);
 };
 
 /**
@@ -109,10 +98,8 @@ export const updatePowerUnit = ({
  * @return {Promise<Trailer[]>}  An array of trailers.
  */
 export const getAllTrailers = async (): Promise<Trailer[]> => {
-  const url = new URL(
-    `${VEHICLE_URL}/companies/${getCompanyIdFromSession()}/vehicles/trailers`
-  );
-  return httpGETRequest(url);
+  const url = `${VEHICLE_URL}/companies/${getCompanyIdFromSession()}/vehicles/trailers`;
+  return httpGETRequest(url).then((response) => response.data);
 };
 
 /**
@@ -120,13 +107,9 @@ export const getAllTrailers = async (): Promise<Trailer[]> => {
  * @param trailerId The trailer to be retrieved.
  * @returns A Promise<Trailer> with data from the API.
  */
-export const getTrailer = (trailerId: string): Promise<Trailer> => {
-  const url = new URL(
-    `${VEHICLE_URL}/companies/${getCompanyIdFromSession()}/vehicles/trailers/${trailerId}`
-  );
-  return httpGETRequestPromise(url.toString()).then((response) =>
-    response.json()
-  );
+export const getTrailer = async (trailerId: string): Promise<Trailer> => {
+  const url = `${VEHICLE_URL}/companies/${getCompanyIdFromSession()}/vehicles/trailers/${trailerId}`;
+  return httpGETRequest(url).then((response) => response.data);
 };
 
 /**
@@ -134,7 +117,7 @@ export const getTrailer = (trailerId: string): Promise<Trailer> => {
  * @param vehicleId The vehicle to be retrieved.
  * @returns A Promise<Vehicle> with data from the API.
  */
-export const getVehicleById = (
+export const getVehicleById = async (
   vehicleId: string,
   vehicleType: VehicleTypesAsString
 ): Promise<Vehicle> => {
@@ -144,7 +127,7 @@ export const getVehicleById = (
   } else {
     url += `/trailers/${vehicleId}`;
   }
-  return httpGETRequestPromise(url).then((response) => response.json());
+  return httpGETRequest(url).then((response) => response.data);
 };
 
 /**
@@ -153,7 +136,7 @@ export const getVehicleById = (
  */
 export const getTrailerTypes = async (): Promise<Array<VehicleType>> => {
   const url = new URL(VEHICLES_API.TRAILER_TYPES);
-  return httpGETRequest(url);
+  return httpGETRequest(url.toString()).then((response) => response.data);
 };
 
 /**
@@ -162,10 +145,8 @@ export const getTrailerTypes = async (): Promise<Array<VehicleType>> => {
  * @returns Promise containing the response from the create trailer API.
  */
 export const addTrailer = (trailer: Trailer): Promise<Response> => {
-  return httpPOSTRequest(
-    `${VEHICLE_URL}/companies/${getCompanyIdFromSession()}/vehicles/trailers`,
-    trailer
-  );
+  const url = `${VEHICLE_URL}/companies/${getCompanyIdFromSession()}/vehicles/trailers`;
+  return httpPOSTRequest(url, trailer);
 };
 
 /**

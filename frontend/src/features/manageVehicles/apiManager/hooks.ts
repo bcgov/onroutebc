@@ -1,5 +1,4 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { getUserContext } from "../../manageProfile/apiManager/manageProfileAPI";
 import {
   addPowerUnit,
   addTrailer,
@@ -35,21 +34,6 @@ export const usePowerUnitTypesQuery = () => {
   return useQuery({
     queryKey: ["powerUnitTypes"],
     queryFn: getPowerUnitTypes,
-    retry: false,
-  });
-};
-
-export const useUserContext = () => {
-  return useQuery({
-    queryKey: ["userContext"],
-    queryFn: getUserContext,
-    onSuccess: (userContextResponseBody) => {
-      console.log(userContextResponseBody);
-      sessionStorage.setItem(
-        "onroutebc.user.context",
-        JSON.stringify(userContextResponseBody)
-      );
-    },
     retry: false,
   });
 };

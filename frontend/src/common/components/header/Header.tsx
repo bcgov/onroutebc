@@ -3,7 +3,7 @@ import { NavLink } from "react-router-dom";
 import { useAuth } from "react-oidc-context";
 
 import "./Header.scss";
-import * as routes from "../../../routes/routeConstants";
+import * as routes from "../../../routes/constants";
 import { BC_COLOURS } from "../../../themes/bcGovStyles";
 import { Grid } from "@mui/material";
 
@@ -93,25 +93,29 @@ export const Header = () => {
             </NavLink>
           </li>
           {isAuthenticated && (
-            <li>
-              <NavLink to={routes.MANAGE_VEHICLES} onClick={menuToggleHandler}>
-                Vehicle Inventory
-              </NavLink>
-            </li>
-          )}
-          {isAuthenticated && (
-            <li>
-              <NavLink to={routes.MANAGE_PROFILES} onClick={menuToggleHandler}>
-                Profile
-              </NavLink>
-            </li>
-          )}
-          {isAuthenticated && (
-            <li>
-              <NavLink to={routes.PERMITS} onClick={menuToggleHandler}>
-                Permits
-              </NavLink>
-            </li>
+            <>
+              <li>
+                <NavLink
+                  to={routes.MANAGE_VEHICLES}
+                  onClick={menuToggleHandler}
+                >
+                  Vehicle Inventory
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
+                  to={routes.MANAGE_PROFILES}
+                  onClick={menuToggleHandler}
+                >
+                  Profile
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to={routes.PERMITS} onClick={menuToggleHandler}>
+                  Permits
+                </NavLink>
+              </li>
+            </>
           )}
         </ul>
       </div>

@@ -8,6 +8,11 @@ import { TermOversizeApplication } from "../../types/application";
 import { TermOversizePay } from "../../pages/TermOversize/TermOversizePay";
 import { TermOversizeReview } from "../../pages/TermOversize/TermOversizeReview";
 import { useMultiStepForm } from "../../hooks/useMultiStepForm";
+import { useCompanyInfoQuery } from "../../../manageProfile/apiManager/hooks";
+import { Loading } from "../../../../common/pages/Loading";
+import { UnexpectedError } from "../../../../common/pages/UnexpectedError";
+import { AxiosError } from "axios";
+import { Unauthorized } from "../../../../common/pages/Unauthorized";
 
 export enum ApplicationStep {
   Form = "Form",
@@ -18,6 +23,8 @@ export enum ApplicationStep {
 export const ApplicationDashboard = () => {
   const [applicationData, setApplicationData] =
     useState<TermOversizeApplication>();
+
+  const companyInfoQuery = useCompanyInfoQuery();
 
   const {
     //steps,
@@ -46,6 +53,19 @@ export const ApplicationDashboard = () => {
         return "";
     }
   };
+
+  if (companyInfoQuery.isLoading) {
+    return <Loading />;
+  }
+
+  if (companyInfoQuery.isError) {
+    if (companyInfoQuery.error instanceof AxiosError) {
+      if (companyInfoQuery.error.response?.status === 401) {
+        return <Unauthorized />;
+      }
+      return <UnexpectedError error={companyInfoQuery.error.message} />;
+    }
+  }
 
   return (
     <ApplicationContext.Provider
