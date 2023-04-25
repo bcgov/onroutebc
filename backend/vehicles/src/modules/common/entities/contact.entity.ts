@@ -98,7 +98,7 @@ export class Contact extends Base {
    * company associated with the contact person.
    */
   @AutoMap(() => Company)
-  @OneToOne(() => Company, (Company) => Company.companyAddress)
+  @OneToOne(() => Company, (Company) => Company.primaryContact)
   company: Company;
 
   /**
