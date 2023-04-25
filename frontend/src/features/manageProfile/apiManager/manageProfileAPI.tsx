@@ -1,6 +1,5 @@
 import {
   httpGETRequest,
-  httpGETRequestPromise,
   httpPOSTRequest,
   httpPUTRequest,
   getCompanyIdFromSession,
@@ -10,8 +9,8 @@ import { CompanyProfile, CompanyAndUserRequest } from "../types/manageProfile";
 import { MANAGE_PROFILE_API, MANAGE_PROFILE_URL } from "./endpoints/endpoints";
 
 export const getCompanyInfo = async (): Promise<CompanyProfile> => {
-  const url = new URL(MANAGE_PROFILE_API.COMPANIES);
-  return httpGETRequest(new URL(`${url.href}/${getCompanyIdFromSession()}`));
+  const url = MANAGE_PROFILE_API.COMPANIES + "/" + getCompanyIdFromSession();
+  return httpGETRequest(url).then((response) => response.data);
 };
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
@@ -50,7 +49,6 @@ export const createOnRouteBCProfile = async (
  * Retrieve the company and user details post login.
  */
 export const getUserContext = (): Promise<UserContextType> => {
-  return httpGETRequestPromise(`${MANAGE_PROFILE_URL}/users/user-context`).then(
-    (response) => response.json()
-  );
+  const url = `${MANAGE_PROFILE_URL}/users/user-context`;
+  return httpGETRequest(url).then((response) => response.data);
 };

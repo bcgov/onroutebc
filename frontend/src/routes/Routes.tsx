@@ -1,24 +1,25 @@
 import { Routes, Route } from "react-router-dom";
-import * as routes from "./routeConstants";
-import { useAuth } from "react-oidc-context";
-
+import * as routes from "./constants";
 import { InitialLandingPage } from "../features/homePage/InitialLandingPage";
 import { WelcomePage } from "../features/homePage/welcome/WelcomePage";
+import { NotFound } from "../common/pages/NotFound";
+import { ProtectedRoutes } from "./ProtectedRoutes";
 import { ManageProfiles } from "../features/manageProfile/ManageProfiles";
-import { AddVehicleDashboard } from "../features/manageVehicles/components/dashboard/AddVehicleDashboard";
-import { VEHICLE_TYPES_ENUM } from "../features/manageVehicles/components/form/constants";
 import { ManageVehicles } from "../features/manageVehicles/ManageVehicles";
-import { CreateProfileWizard } from "../features/wizard/CreateProfileWizard";
-import { ApplicationDashboard } from "../features/permits/components/dashboard/ApplicationDashboard";
+import { AddVehicleDashboard } from "../features/manageVehicles/components/dashboard/AddVehicleDashboard";
 import { EditVehicleDashboard } from "../features/manageVehicles/components/dashboard/EditVehicleDashboard";
+import { VEHICLE_TYPES_ENUM } from "../features/manageVehicles/components/form/constants";
+import { ApplicationDashboard } from "../features/permits/components/dashboard/ApplicationDashboard";
+import { CreateProfileWizard } from "../features/wizard/CreateProfileWizard";
 
 export const AppRoutes = () => {
-  const { isAuthenticated } = useAuth();
   return (
     <Routes>
       <Route path={routes.HOME} element={<InitialLandingPage />} />
       <Route path={routes.WELCOME} element={<WelcomePage />} />
-      {isAuthenticated && (
+      <Route path="*" element={<NotFound />} />
+      {/* Protected Routes */}
+      <Route element={<ProtectedRoutes />}>
         <Route path={routes.MANAGE_VEHICLES}>
           <Route index={true} element={<ManageVehicles />} />
           <Route
@@ -44,7 +45,7 @@ export const AppRoutes = () => {
                 addVehicleMode={VEHICLE_TYPES_ENUM.POWER_UNIT}
               />
             }
-          ></Route>
+          />
           <Route
             path={routes.ADD_TRAILER}
             element={
@@ -54,25 +55,10 @@ export const AppRoutes = () => {
             }
           />
         </Route>
-      )}
-
-      {isAuthenticated && (
-        <Route
-          path={routes.MANAGE_PROFILES}
-          element={<ManageProfiles />}
-        ></Route>
-      )}
-
-      {isAuthenticated && (
+        <Route path={routes.MANAGE_PROFILES} element={<ManageProfiles />} />
         <Route path={routes.PERMITS} element={<ApplicationDashboard />} />
-      )}
-
-      {isAuthenticated && (
-        <Route
-          path={routes.CREATE_PROFILE}
-          element={<CreateProfileWizard />}
-        ></Route>
-      )}
+        <Route path={routes.CREATE_PROFILE} element={<CreateProfileWizard />} />
+      </Route>
     </Routes>
   );
 };

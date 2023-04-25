@@ -1,5 +1,4 @@
 import { httpPOSTRequest } from "../../../common/apiManager/httpRequestHandler";
-import { TermOversizeApplication } from "../types/application";
 import { PERMITS_API } from "./endpoints/endpoints";
 
 export const submitTermOversize = (
