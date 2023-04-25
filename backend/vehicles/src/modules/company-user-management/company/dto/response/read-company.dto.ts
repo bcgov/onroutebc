@@ -37,25 +37,10 @@ export class ReadCompanyDto {
 
   @AutoMap()
   @ApiProperty({
-    description: 'The physical address of the company.',
-    required: true,
-  })
-  companyAddress: ReadAddressDto;
-
-  @AutoMap()
-  @ApiProperty({
-    description:
-      'A boolean field that indicates whether the mailing address of the company is the same as the physical address of the company.',
-    required: true,
-  })
-  mailingAddressSameAsCompanyAddress: boolean;
-
-  @AutoMap()
-  @ApiProperty({
     description:
       'The mailing address of the company. ' +
-      'If given, the object must adhere to the individual field rules',
-    required: false,
+      'The object must adhere to the individual field rules',
+    required: true,
   })
   mailingAddress: ReadAddressDto;
 

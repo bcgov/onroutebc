@@ -366,8 +366,6 @@ export class UsersService {
     const companyUsers = await this.companyUserRepository
       .createQueryBuilder('companyUser')
       .leftJoinAndSelect('companyUser.company', 'company')
-      .leftJoinAndSelect('company.companyAddress', 'companyAddress')
-      .innerJoinAndSelect('companyAddress.province', 'companyAddressProvince')
       .leftJoinAndSelect('company.mailingAddress', 'mailingAddress')
       .innerJoinAndSelect('mailingAddress.province', 'mailingAddressProvince')
       .leftJoinAndSelect('companyUser.user', 'user')
