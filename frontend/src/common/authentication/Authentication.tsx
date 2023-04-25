@@ -2,19 +2,7 @@ import { useAuth } from "react-oidc-context";
 import Button from "@mui/material/Button";
 import { LoginRedirect } from "./LoginRedirect";
 import { Box, Container, Typography } from "@mui/material";
-
-const Loading = () => (
-  <Box
-    sx={{
-      minHeight: "calc(100vh - 155px)",
-      height: "80%",
-      overflow: "hidden",
-      textAlign: "center",
-    }}
-  >
-    Loading...
-  </Box>
-);
+import { Loading } from "../pages/Loading";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const LoginOptions = ({ auth }: any) => (

@@ -1,14 +1,19 @@
 import { useAuth } from "react-oidc-context";
 import { useLocation, Navigate, Outlet } from "react-router-dom";
-import { UNAUTHORIZED } from "./constants";
+import { HOME } from "./constants";
+import { Loading } from "../common/pages/Loading";
 
 export const ProtectedRoutes = () => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
   const location = useLocation();
+
+  if (isLoading) {
+    return <Loading />;
+  }
 
   return isAuthenticated ? (
     <Outlet />
   ) : (
-    <Navigate to={`/${UNAUTHORIZED}`} state={{ from: location }} replace />
+    <Navigate to={HOME} state={{ from: location }} replace />
   );
 };
