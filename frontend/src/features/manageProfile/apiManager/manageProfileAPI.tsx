@@ -10,7 +10,7 @@ import { MANAGE_PROFILE_API, MANAGE_PROFILE_URL } from "./endpoints/endpoints";
 
 export const getCompanyInfo = async (): Promise<CompanyProfile> => {
   const url = MANAGE_PROFILE_API.COMPANIES + "/" + getCompanyIdFromSession();
-  return httpGETRequest(url).then((response) => response.json());
+  return httpGETRequest(url).then((response) => response.data);
 };
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
@@ -50,5 +50,5 @@ export const createOnRouteBCProfile = async (
  */
 export const getUserContext = (): Promise<UserContextType> => {
   const url = `${MANAGE_PROFILE_URL}/users/user-context`;
-  return httpGETRequest(url).then((response) => response.json());
+  return httpGETRequest(url).then((response) => response.data);
 };

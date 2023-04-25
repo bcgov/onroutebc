@@ -1,3 +1,5 @@
+import axios from "axios";
+
 /**
  * Retrieves the access token from session.
  * @returns A string containing the access token.
@@ -41,7 +43,7 @@ export const getCompanyIdFromSession = (): string | null => {
  * @returns A Promise<Response> with the response from the API.
  */
 export const httpGETRequest = (url: string) => {
-  return fetch(url, {
+  return axios.get(url, {
     headers: {
       Authorization: getAccessToken(),
     },

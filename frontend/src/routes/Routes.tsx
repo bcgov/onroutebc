@@ -11,6 +11,7 @@ import { ManageVehicles } from "../features/manageVehicles/ManageVehicles";
 import { CreateProfileWizard } from "../features/wizard/CreateProfileWizard";
 import { ApplicationDashboard } from "../features/permits/components/dashboard/ApplicationDashboard";
 import { EditVehicleDashboard } from "../features/manageVehicles/components/dashboard/EditVehicleDashboard";
+import { NotFound } from "../common/pages/NotFound";
 
 export const AppRoutes = () => {
   const { isAuthenticated } = useAuth();
@@ -73,6 +74,8 @@ export const AppRoutes = () => {
           element={<CreateProfileWizard />}
         ></Route>
       )}
+
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 };

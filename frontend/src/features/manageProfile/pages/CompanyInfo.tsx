@@ -7,6 +7,9 @@ import { DisplayInfo } from "./DisplayCompanyInfo";
 import { useQuery } from "@tanstack/react-query";
 import { getCompanyInfo } from "../apiManager/manageProfileAPI";
 import { CompanyBanner } from "../../../common/components/banners/CompanyBanner";
+import { AxiosError } from "axios";
+import { Unauthorized } from "../../../common/pages/Unauthorized";
+import { CompanyProfile } from "../types/manageProfile";
 
 const Header = () => {
   return (
@@ -22,31 +25,12 @@ const Header = () => {
 /**
  * Company Information page that includes includes React components for displaying and editting Company Information
  */
-export const CompanyInfo = () => {
+export const CompanyInfo = ({
+  companyInfoData,
+}: {
+  companyInfoData: CompanyProfile | undefined;
+}) => {
   const [isEditting, setIsEditting] = useState(false);
-
-  const {
-    data: companyInfoData,
-    isLoading,
-    isError,
-    error,
-    //refetch,
-  } = useQuery({
-    queryKey: ["companyInfo"],
-    queryFn: getCompanyInfo,
-    keepPreviousData: true,
-    staleTime: 5000,
-  });
-
-  if (isLoading) {
-    return <span>Loading...</span>;
-  }
-
-  if (isError) {
-    if (error instanceof Error) {
-      return <span>Error: {error.message}</span>;
-    }
-  }
 
   return (
     <>
