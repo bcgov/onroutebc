@@ -55,6 +55,7 @@ export const readTrailerDtoMock: ReadTrailerDto = {
   trailerId: TRAILER_ID,
   companyId: COMPANY_ID,
   createdDateTime: baseDtoMock.createdDateTime,
+  updatedDateTime: baseDtoMock.updatedDateTime,
 };
 
 export const deleteTrailersMock: DeleteTrailerDto = {

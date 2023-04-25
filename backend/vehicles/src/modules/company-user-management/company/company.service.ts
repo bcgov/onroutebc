@@ -58,10 +58,6 @@ export class CompanyService {
       },
     );
 
-    newCompany.setMailingAddressSameAsCompanyAddress(
-      createCompanyDto.mailingAddressSameAsCompanyAddress,
-    );
-
     let newUser: ReadUserDto;
 
     const queryRunner = this.dataSource.createQueryRunner();
@@ -69,6 +65,7 @@ export class CompanyService {
     await queryRunner.startTransaction();
     try {
       newCompany = await queryRunner.manager.save(newCompany);
+
       newUser = await this.userService.createUser(
         newCompany.companyId,
         createCompanyDto.adminUser,
@@ -112,7 +109,6 @@ export class CompanyService {
         relations: {
           mailingAddress: true,
           primaryContact: true,
-          companyAddress: true,
         },
       }),
       Company,
@@ -186,7 +182,6 @@ export class CompanyService {
         relations: {
           mailingAddress: true,
           primaryContact: true,
-          companyAddress: true,
         },
       }),
       Company,
@@ -221,7 +216,6 @@ export class CompanyService {
       relations: {
         mailingAddress: true,
         primaryContact: true,
-        companyAddress: true,
       },
     });
 
@@ -230,7 +224,6 @@ export class CompanyService {
     }
 
     const contactId = company.primaryContact.contactId;
-    const companyAddressId = company.companyAddress.addressId;
     const mailingAddressId = company.mailingAddress.addressId;
     const clientNumber = company.clientNumber;
 
@@ -243,21 +236,11 @@ export class CompanyService {
           companyId: company.companyId,
           clientNumber: clientNumber,
           directory: directory,
-          companyAddressId: companyAddressId,
-          mailingAddressId:
-            company.mailingAddressSameAsCompanyAddress !==
-            updateCompanyDto.mailingAddressSameAsCompanyAddress
-              ? null
-              : mailingAddressId,
+          mailingAddressId: mailingAddressId,
           contactId: contactId,
         }),
       },
     );
-
-    newCompany.setMailingAddressSameAsCompanyAddress(
-      updateCompanyDto.mailingAddressSameAsCompanyAddress,
-    );
-
     const updatedCompany = await this.companyRepository.save(newCompany);
 
     return this.findOne(updatedCompany.companyId);

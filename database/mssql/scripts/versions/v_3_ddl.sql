@@ -37,7 +37,6 @@ CREATE TABLE [dbo].[ORBC_COMPANY](
 	[CLIENT_NUMBER] [char](13) NULL,
 	[LEGAL_NAME] [nvarchar](100) NOT NULL,
 	[COMPANY_DIRECTORY] [varchar](10) NOT NULL,
-	[PHYSICAL_ADDRESS_ID] [int] NOT NULL,
 	[MAILING_ADDRESS_ID] [int] NOT NULL,
 	[PHONE] [varchar](20) NOT NULL,
 	[EXTENSION] [varchar](5) NULL,
@@ -368,11 +367,6 @@ REFERENCES [dbo].[ORBC_ADDRESS] ([ADDRESS_ID])
 GO
 ALTER TABLE [dbo].[ORBC_COMPANY] CHECK CONSTRAINT [FK_ORBC_COMPANY_MAILING_ADDRESS]
 GO
-ALTER TABLE [dbo].[ORBC_COMPANY]  WITH CHECK ADD  CONSTRAINT [FK_ORBC_COMPANY_PHYSICAL_ADDRESS] FOREIGN KEY([PHYSICAL_ADDRESS_ID])
-REFERENCES [dbo].[ORBC_ADDRESS] ([ADDRESS_ID])
-GO
-ALTER TABLE [dbo].[ORBC_COMPANY] CHECK CONSTRAINT [FK_ORBC_COMPANY_PHYSICAL_ADDRESS]
-GO
 ALTER TABLE [dbo].[ORBC_COMPANY]  WITH CHECK ADD  CONSTRAINT [FK_ORBC_COMPANY_PRIMARY_CONTACT] FOREIGN KEY([PRIMARY_CONTACT_ID])
 REFERENCES [dbo].[ORBC_CONTACT] ([CONTACT_ID])
 GO
@@ -563,8 +557,6 @@ GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Legal name of the company' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_COMPANY', @level2type=N'COLUMN',@level2name=N'LEGAL_NAME'
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The source of the company record - this can be Business BCeID or onRouteBC for clients without a Business BCeID. FK into directory table.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_COMPANY', @level2type=N'COLUMN',@level2name=N'COMPANY_DIRECTORY'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID of the physical address of the company (FK into address table)' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_COMPANY', @level2type=N'COLUMN',@level2name=N'PHYSICAL_ADDRESS_ID'
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID of the mailing address of the company (FK into address table)' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_COMPANY', @level2type=N'COLUMN',@level2name=N'MAILING_ADDRESS_ID'
 GO

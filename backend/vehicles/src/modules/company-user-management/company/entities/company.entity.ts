@@ -61,14 +61,6 @@ export class Company extends Base {
 
   /**
    * A one-to-one relationship with the {@link Address} entity, representing the
-   * company's physical address
-   */
-  @OneToOne(() => Address, (Address) => Address.company, { cascade: true })
-  @JoinColumn({ name: 'PHYSICAL_ADDRESS_ID' })
-  companyAddress: Address;
-
-  /**
-   * A one-to-one relationship with the {@link Address} entity, representing the
    * company's mailing address.
    */
   @OneToOne(() => Address, (Address) => Address.company, { cascade: true })
@@ -149,27 +141,4 @@ export class Company extends Base {
   @AutoMap(() => [CompanyUser])
   @OneToMany(() => CompanyUser, (CompanyUser) => CompanyUser.company)
   companyUsers: CompanyUser[];
-
-  /**
-   * The mailingAddressSameAsCompanyAddress property is a getter that returns a
-   * boolean value indicating whether the mailing address is the same as the
-   * company address.
-   */
-  public get mailingAddressSameAsCompanyAddress(): boolean {
-    return this.companyAddress.addressId === this.mailingAddress.addressId;
-  }
-
-  /**
-   * setMailingAddressSameAsCompanyAddress() method sets the mailing address to
-   * the company address if the parameter is true.
-   * @param mailingAddressSameAsCompanyAddress sets the mailing address to the
-   * company address if the parameter is true.
-   */
-  public setMailingAddressSameAsCompanyAddress(
-    mailingAddressSameAsCompanyAddress: boolean,
-  ) {
-    if (mailingAddressSameAsCompanyAddress) {
-      this.mailingAddress = this.companyAddress;
-    }
-  }
 }

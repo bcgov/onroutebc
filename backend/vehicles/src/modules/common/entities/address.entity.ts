@@ -62,9 +62,9 @@ export class Address extends Base {
   /**
    * A one-to-one relationship to the Company entity, representing the company
    * that the address belongs to. The relationship is mapped by the
-   * primaryContact field in the Company entity.
+   * mailingAddress field in the Company entity.
    */
   @AutoMap(() => Company)
-  @OneToOne(() => Company, (Company) => Company.primaryContact)
+  @OneToOne(() => Company, (Company) => Company.mailingAddress)
   company: Company;
 }

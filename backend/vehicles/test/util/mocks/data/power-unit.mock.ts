@@ -59,6 +59,7 @@ export const readPowerUnitDtoMock: ReadPowerUnitDto = {
   powerUnitId: POWER_UNIT_ID,
   companyId: COMPANY_ID,
   createdDateTime: baseDtoMock.createdDateTime,
+  updatedDateTime: baseDtoMock.updatedDateTime,
 };
 
 export const deletePowerUnitMock: DeletePowerUnitDto = {
