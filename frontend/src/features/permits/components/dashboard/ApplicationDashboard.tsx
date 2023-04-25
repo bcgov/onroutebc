@@ -63,9 +63,8 @@ export const ApplicationDashboard = () => {
       if (companyInfoQuery.error.response?.status === 401) {
         return <Unauthorized />;
       }
-      return <span>Error: {companyInfoQuery.error.message}</span>;
+      return <UnexpectedError error={companyInfoQuery.error.message} />;
     }
-    return <UnexpectedError />;
   }
 
   return (

@@ -4,11 +4,7 @@ import { BC_COLOURS } from "../../../themes/bcGovStyles";
 import { CompanyInfoForm } from "../components/forms/CompanyInfoForm";
 
 import { DisplayInfo } from "./DisplayCompanyInfo";
-import { useQuery } from "@tanstack/react-query";
-import { getCompanyInfo } from "../apiManager/manageProfileAPI";
 import { CompanyBanner } from "../../../common/components/banners/CompanyBanner";
-import { AxiosError } from "axios";
-import { Unauthorized } from "../../../common/pages/Unauthorized";
 import { CompanyProfile } from "../types/manageProfile";
 
 const Header = () => {
