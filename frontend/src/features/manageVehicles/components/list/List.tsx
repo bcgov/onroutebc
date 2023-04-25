@@ -32,7 +32,7 @@ import { deleteVehicles } from "../../apiManager/vehiclesAPI";
 import DeleteConfirmationDialog from "./ConfirmationDialog";
 import { useNavigate } from "react-router-dom";
 import { SnackBarContext } from "../../../../App";
-import { MANAGE_VEHICLES } from "../../../../routes/routeConstants";
+import { MANAGE_VEHICLES } from "../../../../routes/constants";
 
 /**
  * Dynamically set the column based on vehicle type

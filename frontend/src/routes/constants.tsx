@@ -1,4 +1,5 @@
 export const HOME = "/";
+export const UNAUTHORIZED = "unauthorized";
 
 // Manage Vehicles
 export const MANAGE_VEHICLES = "manage-vehicles";

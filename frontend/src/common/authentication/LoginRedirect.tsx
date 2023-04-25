@@ -2,7 +2,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useAuth } from "react-oidc-context";
 import { useNavigate } from "react-router-dom";
-import * as routes from "../../routes/routeConstants";
+import * as routes from "../../routes/constants";
 import { HomePage } from "../../features/homePage/HomePage";
 import { getUserContext } from "../../features/manageProfile/apiManager/manageProfileAPI";
 import { UserContextType } from "./types";
