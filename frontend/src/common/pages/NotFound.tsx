@@ -1,20 +1,21 @@
-import { Button, Grid, Typography } from "@mui/material";
+import { Button, Container, Grid, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
 export const NotFound = () => {
   const navigate = useNavigate();
   return (
-    <Grid
-      container
-      direction="row"
-      justifyContent="center"
-      alignItems="center"
-      height="calc(100vh - 100px)"
-    >
-      <Grid container item xs={2} justifyContent="center">
-        <Typography variant="h4" align="center" marginBottom={"24px"}>
-          404 Page Not Found
-        </Typography>
+    <Container className="feature-container" sx={{ paddingTop: "24px" }}>
+      <Grid
+        container
+        direction="row"
+        justifyContent="center"
+        alignItems="center"
+      >
+        <Grid container item xs={12} justifyContent="center">
+          <Typography variant="h4" align="center" marginBottom={"24px"}>
+            404 Page Not Found
+          </Typography>
+        </Grid>
         <Grid item>
           <Button
             variant="contained"
@@ -26,6 +27,6 @@ export const NotFound = () => {
           </Button>
         </Grid>
       </Grid>
-    </Grid>
+    </Container>
   );
 };

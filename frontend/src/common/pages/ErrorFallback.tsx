@@ -1,4 +1,4 @@
-import { Box, Grid, Typography, Button } from "@mui/material";
+import { Grid, Typography, Button, Container } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
 /**
@@ -11,7 +11,7 @@ export const ErrorFallback = ({ error }: any) => {
 
   const navigate = useNavigate();
   return (
-    <Box height="calc(100vh - 100px)" paddingTop="24px">
+    <Container className="feature-container" sx={{ paddingTop: "24px" }}>
       <Grid
         container
         direction="row"
@@ -40,6 +40,6 @@ export const ErrorFallback = ({ error }: any) => {
           </Button>
         </Grid>
       </Grid>
-    </Box>
+    </Container>
   );
 };

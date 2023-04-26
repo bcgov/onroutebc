@@ -1,10 +1,10 @@
-import { Box, Button, Grid, Typography } from "@mui/material";
+import { Button, Container, Grid, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
 export const UnexpectedError = ({ error }: { error: string }) => {
   const navigate = useNavigate();
   return (
-    <Box height="calc(100vh - 100px)" paddingTop="24px">
+    <Container className="feature-container" sx={{ paddingTop: "24px" }}>
       <Grid
         container
         direction="row"
@@ -33,6 +33,6 @@ export const UnexpectedError = ({ error }: { error: string }) => {
           </Button>
         </Grid>
       </Grid>
-    </Box>
+    </Container>
   );
 };
