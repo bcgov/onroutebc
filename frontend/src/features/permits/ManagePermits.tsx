@@ -1,14 +1,14 @@
 import React from "react";
-import { CreateProfileSteps } from "./components/dashboard/CreateProfileSteps";
+import { ApplicationDashboard } from "./components/dashboard/ApplicationDashboard";
 import { ErrorBoundary } from "react-error-boundary";
 import { ErrorFallback } from "../../common/pages/ErrorFallback";
 
-export const CreateProfileWizard = React.memo(() => {
+export const ManagePermits = React.memo(() => {
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
-      <CreateProfileSteps />
+      <ApplicationDashboard />
     </ErrorBoundary>
   );
 });
 
-CreateProfileWizard.displayName = "CreateProfileWizard";
+ManagePermits.displayName = "ManagePermits";
