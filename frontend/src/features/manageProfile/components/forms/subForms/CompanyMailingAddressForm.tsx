@@ -1,7 +1,6 @@
 import { Typography } from "@mui/material";
 import { useState } from "react";
 import { CountryAndProvince } from "../../../../../common/components/form/CountryAndProvince";
-import { CustomCheckbox } from "../../../../../common/components/form/subFormComponents/CustomCheckbox";
 import { CustomFormComponent } from "../../../../../common/components/form/CustomFormComponents";
 import { CITY_WIDTH, POSTAL_WIDTH } from "../../../../../themes/bcGovStyles";
 import { CompanyProfile } from "../../../types/manageProfile";
@@ -13,7 +12,7 @@ export const CompanyMailingAddressForm = ({
   feature: string;
   companyInfo?: CompanyProfile;
 }) => {
-  const [showMailingAddress, setShowMailingAddress] = useState();
+  const [showMailingAddress,] = useState();
 
   return (
     <>
