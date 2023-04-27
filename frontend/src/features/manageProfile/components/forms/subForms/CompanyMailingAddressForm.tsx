@@ -13,24 +13,11 @@ export const CompanyMailingAddressForm = ({
   feature: string;
   companyInfo?: CompanyProfile;
 }) => {
-  const [showMailingAddress, setShowMailingAddress] = useState(
-    !companyInfo?.mailingAddressSameAsCompanyAddress
-  );
+  const [showMailingAddress, setShowMailingAddress] = useState();
 
   return (
     <>
-      <CustomCheckbox
-        feature={feature}
-        name="mailingAddressSameAsCompanyAddress"
-        label={"Mailing address is the same as company address"}
-        inputProps={{
-          "aria-label": "Mailing Address Checkbox",
-        }}
-        checked={!showMailingAddress}
-        handleOnChange={() => setShowMailingAddress(!showMailingAddress)}
-      />
-
-      {showMailingAddress ? (
+      {
         <>
           <Typography variant="h2" gutterBottom>
             Company Mailing Address
@@ -93,7 +80,7 @@ export const CompanyMailingAddressForm = ({
             />
           </div>
         </>
-      ) : null}
+      }
     </>
   );
 };

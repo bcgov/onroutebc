@@ -33,19 +33,19 @@ const CompanyInformation = ({
       <Box sx={PERMIT_RIGHT_BOX_STYLE}>
         <Typography variant={"h3"}>Company Mailing Address</Typography>
         <Box>
-          <Typography>{companyInfo?.companyAddress.addressLine1}</Typography>
+          <Typography>{companyInfo?.mailingAddress.addressLine1}</Typography>
           <Typography>
-            {formatCountry(companyInfo?.companyAddress.countryCode)}
+            {formatCountry(companyInfo?.mailingAddress.countryCode)}
           </Typography>
           <Typography>
             {formatProvince(
-              companyInfo?.companyAddress.countryCode,
-              companyInfo?.companyAddress.provinceCode
+              companyInfo?.mailingAddress.countryCode,
+              companyInfo?.mailingAddress.provinceCode
             )}
           </Typography>
           <Typography>
-            {companyInfo?.companyAddress.city}{" "}
-            {companyInfo?.companyAddress.postalCode}
+            {companyInfo?.mailingAddress.city}{" "}
+            {companyInfo?.mailingAddress.postalCode}
           </Typography>
         </Box>
       </Box>

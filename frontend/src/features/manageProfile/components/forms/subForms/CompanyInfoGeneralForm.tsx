@@ -8,7 +8,7 @@ export const CompanyInfoGeneralForm = ({ feature }: { feature: string }) => (
       type="input"
       feature={feature}
       options={{
-        name: "companyAddress.addressLine1",
+        name: "mailingAddress.addressLine1",
         rules: {
           required: { value: true, message: "Address is required" },
         },
@@ -20,7 +20,7 @@ export const CompanyInfoGeneralForm = ({ feature }: { feature: string }) => (
       type="input"
       feature={feature}
       options={{
-        name: "companyAddress.addressLine2",
+        name: "mailingAddress.addressLine2",
         rules: { required: false },
         label: "Address (Line 2)",
       }}
@@ -28,8 +28,8 @@ export const CompanyInfoGeneralForm = ({ feature }: { feature: string }) => (
 
     <CountryAndProvince
       feature={feature}
-      countryField="companyAddress.countryCode"
-      provinceField="companyAddress.provinceCode"
+      countryField="mailingAddress.countryCode"
+      provinceField="mailingAddress.provinceCode"
     />
 
     <div className="mp-side-by-side-container">
@@ -37,7 +37,7 @@ export const CompanyInfoGeneralForm = ({ feature }: { feature: string }) => (
         type="input"
         feature={feature}
         options={{
-          name: "companyAddress.city",
+          name: "mailingAddress.city",
           rules: {
             required: { value: true, message: "City is required" },
           },
@@ -49,7 +49,7 @@ export const CompanyInfoGeneralForm = ({ feature }: { feature: string }) => (
         type="input"
         feature={feature}
         options={{
-          name: "companyAddress.postalCode",
+          name: "mailingAddress.postalCode",
           rules: {
             required: { value: true, message: "Postal / Zip Code is required" },
           },

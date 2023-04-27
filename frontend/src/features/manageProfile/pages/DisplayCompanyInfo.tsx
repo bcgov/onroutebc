@@ -27,43 +27,18 @@ export const DisplayInfo = memo(
         }}
       >
         <Box>
-          <Typography variant="h3">Company Address</Typography>
-          <Typography>{companyInfo?.companyAddress.addressLine1}</Typography>
+          <Typography variant="h3">Mailing Address</Typography>
+          <Typography>{companyInfo?.mailingAddress.addressLine1}</Typography>
           <Typography>
-            {formatCountry(companyInfo?.companyAddress.countryCode)}
+            {formatCountry(companyInfo?.mailingAddress.countryCode)}
           </Typography>
           <Typography>
             {formatProvince(
-              companyInfo?.companyAddress.countryCode,
-              companyInfo?.companyAddress.provinceCode
+              companyInfo?.mailingAddress.countryCode,
+              companyInfo?.mailingAddress.provinceCode
             )}
           </Typography>
-          <Typography>{`${companyInfo?.companyAddress.city} ${companyInfo?.companyAddress.postalCode}`}</Typography>
-
-          <Typography variant="h3">Mailing Address</Typography>
-          {companyInfo?.mailingAddressSameAsCompanyAddress ? (
-            <Typography>Same as Company Address</Typography>
-          ) : (
-            <>
-              <Typography>
-                {companyInfo?.mailingAddress?.addressLine1}
-              </Typography>
-              <Typography>
-                {companyInfo?.mailingAddress?.countryCode
-                  ? formatCountry(companyInfo?.mailingAddress?.countryCode)
-                  : ""}
-              </Typography>
-              <Typography>
-                {companyInfo?.mailingAddress?.provinceCode
-                  ? formatProvince(
-                      companyInfo?.mailingAddress?.countryCode,
-                      companyInfo?.mailingAddress?.provinceCode
-                    )
-                  : ""}
-              </Typography>
-              <Typography>{`${companyInfo?.mailingAddress?.city} ${companyInfo?.mailingAddress?.postalCode}`}</Typography>
-            </>
-          )}
+          <Typography>{`${companyInfo?.mailingAddress.city} ${companyInfo?.mailingAddress.postalCode}`}</Typography>
 
           <Typography variant="h3">Company Contact Details</Typography>
           <Typography>Email: {companyInfo?.email}</Typography>
