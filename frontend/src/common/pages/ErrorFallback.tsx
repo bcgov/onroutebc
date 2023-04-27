@@ -1,7 +1,14 @@
-import { Button, Container, Grid, Typography } from "@mui/material";
+import { Grid, Typography, Button, Container } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
-export const NotFound = () => {
+/**
+ * React-Error-Boundary fallback component.
+ * Renders when there is a React error
+ * Used code from: https://github.com/bvaughn/react-error-boundary
+ */
+export const ErrorFallback = ({ error }: any) => {
+  // Call resetErrorBoundary() to reset the error boundary and retry the render.
+
   const navigate = useNavigate();
   return (
     <Container className="feature-container" sx={{ paddingTop: "24px" }}>
@@ -12,10 +19,16 @@ export const NotFound = () => {
         alignItems="center"
       >
         <Grid container item xs={12} justifyContent="center">
-          <Typography variant="h4" align="center" marginBottom={"24px"}>
-            404 Page Not Found
+          <Typography variant="h4" align="center">
+            Error:
           </Typography>
         </Grid>
+        <Grid container item xs={12} justifyContent="center">
+          <Typography variant="h4" align="center" margin={"20px"}>
+            {error.message}
+          </Typography>
+        </Grid>
+
         <Grid item>
           <Button
             variant="contained"

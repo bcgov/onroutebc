@@ -1,19 +1,20 @@
-import { Grid, Typography } from "@mui/material";
+import { Container, Grid, Typography } from "@mui/material";
 
 export const Loading = () => {
   return (
-    <Grid
-      container
-      direction="row"
-      justifyContent="center"
-      alignItems="center"
-      spacing={1}
-      padding={"2em 2em 1em 2em"}
-      height="calc(100vh - 100px)"
-    >
-      <Typography variant="h4" align="center">
-        ... Loading
-      </Typography>
-    </Grid>
+    <Container className="feature-container" sx={{ paddingTop: "24px" }}>
+      <Grid
+        container
+        direction="row"
+        justifyContent="center"
+        alignItems="center"
+      >
+        <Grid container item xs={12} justifyContent="center">
+          <Typography variant="h4" align="center" marginBottom={"24px"}>
+            ... Loading
+          </Typography>
+        </Grid>
+      </Grid>
+    </Container>
   );
 };

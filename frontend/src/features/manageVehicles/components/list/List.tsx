@@ -297,7 +297,9 @@ export const List = memo(
           muiTableContainerProps={{
             sx: {
               outline: "1px solid #DBDCDC",
-              height: "calc(100vh - 160px)",
+              //height: "calc(100vh - 160px)",
+              //minHeight: "30vh",
+              height: "calc(100vh - 475px)",
             },
           }}
           // Pagination

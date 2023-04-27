@@ -9,8 +9,8 @@ import { ManageVehicles } from "../features/manageVehicles/ManageVehicles";
 import { AddVehicleDashboard } from "../features/manageVehicles/components/dashboard/AddVehicleDashboard";
 import { EditVehicleDashboard } from "../features/manageVehicles/components/dashboard/EditVehicleDashboard";
 import { VEHICLE_TYPES_ENUM } from "../features/manageVehicles/components/form/constants";
-import { ApplicationDashboard } from "../features/permits/components/dashboard/ApplicationDashboard";
 import { CreateProfileWizard } from "../features/wizard/CreateProfileWizard";
+import { ManagePermits } from "../features/permits/ManagePermits";
 
 export const AppRoutes = () => {
   return (
@@ -56,7 +56,7 @@ export const AppRoutes = () => {
           />
         </Route>
         <Route path={routes.MANAGE_PROFILES} element={<ManageProfiles />} />
-        <Route path={routes.PERMITS} element={<ApplicationDashboard />} />
+        <Route path={routes.PERMITS} element={<ManagePermits />} />
         <Route path={routes.CREATE_PROFILE} element={<CreateProfileWizard />} />
       </Route>
     </Routes>
