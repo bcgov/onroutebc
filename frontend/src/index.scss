@@ -5,8 +5,12 @@ body {
   background-color: #f2f2f2;
 }
 
+.feature-container {
+  height: calc(100vh - 155px);
+}
+
 @media screen and (max-width: 768px) {
   .feature-container {
-    padding: 10px;
+    height: calc(100vh - 115px);
   }
 }
