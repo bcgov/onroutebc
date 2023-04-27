@@ -7,6 +7,26 @@ import * as routes from "../../../routes/constants";
 import { BC_COLOURS } from "../../../themes/bcGovStyles";
 import { Grid } from "@mui/material";
 
+const LogOutBtn = () => {
+  const { signoutRedirect, user } = useAuth();
+
+  return (
+    <a
+      style={{ cursor: "pointer" }}
+      onClick={() => {
+        sessionStorage.removeItem("onRoutebc.user.context");
+        signoutRedirect({
+          extraQueryParams: {
+            redirect_uri: window.location.origin + "/",
+            kc_idp_hint: user?.profile?.identity_provider as string,
+          },
+        });
+      }}
+    >
+      Log Out
+    </a>
+  );
+};
 /*
  * The Header component includes the BC Gov banner and Navigation bar
  * and is responsive for mobile
@@ -19,7 +39,7 @@ export const Header = () => {
   const mediaQuery = "(max-width: 768px)";
   const mediaQueryList: MediaQueryList = window.matchMedia(mediaQuery);
   const [menuOpen, setMenuOpen] = useState(!mediaQueryList.matches);
-  const { isAuthenticated, signoutRedirect, user } = useAuth();
+  const { isAuthenticated } = useAuth();
 
   let headerColor: string;
   const env =
@@ -117,6 +137,11 @@ export const Header = () => {
               </li>
             </>
           )}
+          {isAuthenticated && (
+            <li className={"log-out-txt"}>
+              <LogOutBtn />
+            </li>
+          )}
         </ul>
       </div>
     </nav>
@@ -129,28 +154,18 @@ export const Header = () => {
         data-testid="header-background"
       >
         <Grid container>
-          <Grid item xs={11}>
+          <Grid item xs={10}>
             <Brand />
-            <NavButton />
           </Grid>
-          {isAuthenticated && (
-            <Grid item xs={1}>
-              <a
-                style={{ cursor: "pointer" }}
-                onClick={() => {
-                  sessionStorage.removeItem("onRoutebc.user.context");
-                  signoutRedirect({
-                    extraQueryParams: {
-                      redirect_uri: window.location.origin + "/",
-                      kc_idp_hint: user?.profile?.identity_provider as string,
-                    },
-                  });
-                }}
-              >
-                Log Out
-              </a>
-            </Grid>
-          )}
+
+          <Grid item xs={2} display="flex" alignItems={"center"}>
+            <NavButton />
+            {isAuthenticated && (
+              <div className="log-out-btn">
+                <LogOutBtn />
+              </div>
+            )}
+          </Grid>
         </Grid>
       </header>
       <Navigation />

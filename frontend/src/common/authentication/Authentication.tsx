@@ -57,9 +57,8 @@ export const Authentication = () => {
 
   return (
     <Container
+      className="feature-container"
       sx={{
-        minHeight: "calc(100vh - 155px)",
-        height: "80%",
         overflow: "hidden",
         textAlign: "center",
       }}

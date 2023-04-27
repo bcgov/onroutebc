@@ -1,7 +1,6 @@
 import { memo } from "react";
 import "../../manageProfile/components/forms/CompanyInfoForms.scss";
 import { CompanyInfoGeneralForm } from "../../manageProfile/components/forms/subForms/CompanyInfoGeneralForm";
-import { CompanyMailingAddressForm } from "../../manageProfile/components/forms/subForms/CompanyMailingAddressForm";
 import Typography from "@mui/material/Typography";
 import { CompanyContactDetailsForm } from "../../manageProfile/components/forms/subForms/CompanyContactDetailsForm";
 
@@ -20,8 +19,6 @@ export const CompanyInformationWizardForm = memo(() => {
   return (
     <div className="mp-form-container">
       <CompanyInfoGeneralForm feature={FEATURE} />
-
-      <CompanyMailingAddressForm feature={FEATURE} />
 
       <Typography variant="h2" gutterBottom>
         Company Contact Details
