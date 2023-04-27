@@ -7,7 +7,6 @@ import { updateCompanyInfo } from "../../apiManager/manageProfileAPI";
 import "./CompanyInfoForms.scss";
 import { CompanyInfoGeneralForm } from "./subForms/CompanyInfoGeneralForm";
 import { CompanyContactDetailsForm } from "./subForms/CompanyContactDetailsForm";
-import { CompanyMailingAddressForm } from "./subForms/CompanyMailingAddressForm";
 import { CompanyPrimaryContactForm } from "./subForms/CompanyPrimaryContactForm";
 import { formatPhoneNumber } from "../../../../common/components/form/subFormComponents/PhoneNumberInput";
 import { InfoBcGovBanner } from "../../../../common/components/banners/AlertBanners";
@@ -33,16 +32,6 @@ export const CompanyInfoForm = memo(
       defaultValues: {
         clientNumber: companyInfo?.clientNumber || "",
         legalName: companyInfo?.legalName || "",
-        companyAddress: {
-          addressLine1: companyInfo?.companyAddress?.addressLine1 || "",
-          addressLine2: companyInfo?.companyAddress?.addressLine2 || "",
-          city: companyInfo?.companyAddress?.city || "",
-          provinceCode: companyInfo?.companyAddress?.provinceCode || "",
-          countryCode: companyInfo?.companyAddress?.countryCode || "",
-          postalCode: companyInfo?.companyAddress?.postalCode || "",
-        },
-        mailingAddressSameAsCompanyAddress:
-          companyInfo?.mailingAddressSameAsCompanyAddress,
         mailingAddress: {
           addressLine1: companyInfo?.mailingAddress?.addressLine1 || "",
           addressLine2: companyInfo?.mailingAddress?.addressLine2 || "",
@@ -102,11 +91,6 @@ export const CompanyInfoForm = memo(
       <div className="mp-form-container">
         <FormProvider {...formMethods}>
           <CompanyInfoGeneralForm feature={FEATURE} />
-
-          <CompanyMailingAddressForm
-            feature={FEATURE}
-            companyInfo={companyInfo}
-          />
 
           <Typography variant="h2" gutterBottom>
             Company Contact Details
