@@ -39,7 +39,7 @@ export const Header = () => {
   const mediaQuery = "(max-width: 768px)";
   const mediaQueryList: MediaQueryList = window.matchMedia(mediaQuery);
   const [menuOpen, setMenuOpen] = useState(!mediaQueryList.matches);
-  const { isAuthenticated, signoutRedirect, user } = useAuth();
+  const { isAuthenticated } = useAuth();
 
   let headerColor: string;
   const env =
