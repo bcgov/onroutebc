@@ -7,6 +7,26 @@ import * as routes from "../../../routes/constants";
 import { BC_COLOURS } from "../../../themes/bcGovStyles";
 import { Grid } from "@mui/material";
 
+const LogOutBtn = () => {
+  const { signoutRedirect, user } = useAuth();
+
+  return (
+    <a
+      style={{ cursor: "pointer" }}
+      onClick={() => {
+        sessionStorage.removeItem("onRoutebc.user.context");
+        signoutRedirect({
+          extraQueryParams: {
+            redirect_uri: window.location.origin + "/",
+            kc_idp_hint: user?.profile?.identity_provider as string,
+          },
+        });
+      }}
+    >
+      Log Out
+    </a>
+  );
+};
 /*
  * The Header component includes the BC Gov banner and Navigation bar
  * and is responsive for mobile
@@ -78,23 +98,6 @@ export const Header = () => {
         <i className="fas fa-bars" id="menu"></i>
       </a>
     </div>
-  );
-
-  const LogOutBtn = () => (
-    <a
-      style={{ cursor: "pointer" }}
-      onClick={() => {
-        sessionStorage.removeItem("onRoutebc.user.context");
-        signoutRedirect({
-          extraQueryParams: {
-            redirect_uri: window.location.origin + "/",
-            kc_idp_hint: user?.profile?.identity_provider as string,
-          },
-        });
-      }}
-    >
-      Log Out
-    </a>
   );
 
   const Navigation = () => (
