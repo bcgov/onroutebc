@@ -20,7 +20,7 @@ const client_id =
   import.meta.env.VITE_AUTH0_AUDIENCE || envConfig.VITE_AUTH0_AUDIENCE;
 
 /**
- * The OIDC Configuration needed for authentication.
+ * The OIDC Configuration needed for authentication
  */
 const oidcConfig = {
   authority: authority,
