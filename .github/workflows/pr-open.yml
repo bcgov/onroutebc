@@ -82,7 +82,7 @@ jobs:
     steps: 
       - name: Import Secrets
         id: secrets
-        uses: hashicorp/vault-action@v2 
+        uses: hashicorp/vault-action@v2.2.0 
         with:
           url: https://vault.developer.gov.bc.ca
           token: ${{ secrets.VAULT_TOKEN }}
@@ -131,7 +131,7 @@ jobs:
     steps:
       - name: Import Secrets
         id: secrets
-        uses: hashicorp/vault-action@v2
+        uses: hashicorp/vault-action@v2.2.0
         with:
             url: https://vault.developer.gov.bc.ca
             token: ${{ secrets.VAULT_TOKEN }}
