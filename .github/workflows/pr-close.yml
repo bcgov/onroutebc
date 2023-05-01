@@ -64,7 +64,7 @@ jobs:
           chart: 'common-object-management-service/common-object-management-service'
           chart-version: 0.0.13
           namespace: ${{ secrets.OC_NAMESPACE }}
-          release: ${{ github.event.repository.name }}-${{ github.event.number }}-common-object-management-service
+          release: ${{ github.event.repository.name }}-dev-common-object-management-service
           repo: https://bcgov.github.io/common-object-management-service
           repo-alias: common-object-management-service
           task: 'remove'
