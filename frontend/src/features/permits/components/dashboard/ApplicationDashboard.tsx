@@ -10,9 +10,9 @@ import { TermOversizeReview } from "../../pages/TermOversize/TermOversizeReview"
 import { useMultiStepForm } from "../../hooks/useMultiStepForm";
 import { useCompanyInfoQuery } from "../../../manageProfile/apiManager/hooks";
 import { Loading } from "../../../../common/pages/Loading";
-import { UnexpectedError } from "../../../../common/pages/UnexpectedError";
 import { AxiosError } from "axios";
 import { Unauthorized } from "../../../../common/pages/Unauthorized";
+import { ErrorFallback } from "../../../../common/pages/ErrorFallback";
 
 export enum ApplicationStep {
   Form = "Form",
@@ -63,7 +63,7 @@ export const ApplicationDashboard = () => {
       if (companyInfoQuery.error.response?.status === 401) {
         return <Unauthorized />;
       }
-      return <UnexpectedError error={companyInfoQuery.error.message} />;
+      return <ErrorFallback error={companyInfoQuery.error.message} />;
     }
   }
 
