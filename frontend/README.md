@@ -6,8 +6,9 @@ This project was bootstrapped with [Vite](https://vitejs.dev/).
 
 - React with Typescript
 - Material UI
-- Tanstack React Query
-- React Hook Forms
+- [Tanstack React Query](https://tanstack.com/query/v3/)
+- [React Hook Forms](https://react-hook-form.com/)
+- [Material React Table](https://www.material-react-table.com/)
 
 ## Getting Started
 
@@ -19,6 +20,8 @@ Create a .env file in the root directory of onRouteBC and add the following vari
 VITE_DEPLOY_ENVIRONMENT=local
 VITE_API_VEHICLE_URL=http://localhost:5000
 VITE_API_MANAGE_PROFILE_URL=http://localhost:5000
+VITE_AUTH0_ISSUER_URL=
+VITE_AUTH0_AUDIENCE=
 ```
 
 ### Prerequisites
