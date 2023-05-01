@@ -2,18 +2,6 @@
 version: "3.8"
 
 services:
-  postgres-db:
-    container_name: postgres-db
-    environment:
-      POSTGRES_USER: ${POSTGRESQL_USER}
-      POSTGRES_PASSWORD: ${POSTGRESQL_PASSWORD}
-      POSTGRES_DB: ${POSTGRESQL_DATABASE}
-    hostname: postgres-db
-    image: postgres:13
-    restart: always
-    volumes:
-      - /pgdata
-
   sql-server-db:
     container_name: sql-server-db
     build:
@@ -58,10 +46,6 @@ services:
     environment:
       NODE_ENV: development
       DB_TYPE: ${DB_TYPE}
-      POSTGRESQL_HOST: postgres-db
-      POSTGRES_USER: ${POSTGRESQL_USER}
-      POSTGRES_PASSWORD: ${POSTGRESQL_PASSWORD}
-      POSTGRES_DB: ${POSTGRESQL_DATABASE}
       MSSQL_HOST: sql-server-db
       MSSQL_PORT: ${MSSQL_PORT}
       MSSQL_DB: ${MSSQL_DB}
@@ -83,7 +67,6 @@ services:
     hostname: vehicles-api
     links:
       - sql-server-db
-      - postgres-db
     ports:
       - "5000:5000"
 
