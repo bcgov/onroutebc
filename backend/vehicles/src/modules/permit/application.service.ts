@@ -4,12 +4,12 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PermitStatus } from 'src/common/enum/permit-status.enum';
 import { Repository } from 'typeorm';
-import { CreatePermitApplicationDto } from './dto/request/create-permit-application.dto';
-import { ReadPermitApplicationDto } from './dto/response/read-permit-application.dto';
+import { CreateApplicationDto } from './dto/request/create-application.dto';
+import { ReadApplicationDto } from './dto/response/read-application.dto';
 import { Permit } from './entities/permit.entity';
 
 @Injectable()
-export class PermitApplicationService {
+export class ApplicationService {
   constructor(
     @InjectMapper() private readonly classMapper: Mapper,
     @InjectRepository(Permit)
@@ -17,14 +17,12 @@ export class PermitApplicationService {
   ) {}
 
   async create(
-    createPermitApplicationDto: CreatePermitApplicationDto,
-    userGuid: string,
-  ): Promise<ReadPermitApplicationDto> {
-    createPermitApplicationDto.userGuid = userGuid;
-    createPermitApplicationDto.permitStatus = PermitStatus.IN_PROGRESS;
+    createApplicationDto: CreateApplicationDto,
+  ): Promise<ReadApplicationDto> {
+    createApplicationDto.permitStatus = PermitStatus.IN_PROGRESS;
     const permitApplication = this.classMapper.map(
-      createPermitApplicationDto,
-      CreatePermitApplicationDto,
+      createApplicationDto,
+      CreateApplicationDto,
       Permit,
     );
     const savedPermitEntity = await this.permitRepository.save(
@@ -36,7 +34,7 @@ export class PermitApplicationService {
     return await this.classMapper.mapAsync(
       refreshedPermitEntity,
       Permit,
-      ReadPermitApplicationDto,
+      ReadApplicationDto,
     );
   }
 
@@ -49,12 +47,12 @@ export class PermitApplicationService {
     });
   }
 
-  async findApplication(permitId: string): Promise<ReadPermitApplicationDto> {
+  async findApplication(permitId: string): Promise<ReadApplicationDto> {
     const application = await this.findOne(permitId);
     const readPermitApplicationdto = await this.classMapper.mapAsync(
       application,
       Permit,
-      ReadPermitApplicationDto,
+      ReadApplicationDto,
     );
     return readPermitApplicationdto;
   }
@@ -62,34 +60,36 @@ export class PermitApplicationService {
   ///get all application for a company. Initially written to facilitate get application in progress for IDIR user.
   async findAllApplicationCompany(
     companyId: string,
-  ): Promise<ReadPermitApplicationDto[]> {
+    status: string,
+  ): Promise<ReadApplicationDto[]> {
     const applications = await this.permitRepository.find({
-      where: { companyId: +companyId, permitStatus: PermitStatus.IN_PROGRESS },
+      where: { companyId: +companyId, permitStatus: status },
     });
 
     return this.classMapper.mapArrayAsync(
       applications,
       Permit,
-      ReadPermitApplicationDto,
+      ReadApplicationDto,
     );
   }
   //get all application in progress for a specific user of a specific company. Initially written to facilitate get application in progress for company User.
   async findAllApplicationUser(
     companyId: string,
     userGuid: string,
-  ): Promise<ReadPermitApplicationDto[]> {
+    status: string,
+  ): Promise<ReadApplicationDto[]> {
     const applications: Permit[] = await this.permitRepository.find({
       where: {
         companyId: +companyId,
         userGuid: userGuid,
-        permitStatus: PermitStatus.IN_PROGRESS,
+        permitStatus: status,
       },
     });
 
     return this.classMapper.mapArrayAsync(
       applications,
       Permit,
-      ReadPermitApplicationDto,
+      ReadApplicationDto,
     );
   }
 }

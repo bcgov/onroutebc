@@ -6,18 +6,18 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { PermitProfile } from './profile/permit.profile';
 import { PermitData } from './entities/permit-data.entity';
 import { Permit } from './entities/permit.entity';
-import { PermitApplicationController } from './permit-application.controller';
-import { PermitApplicationService } from './permit-application.service';
-import { PermitApplicationProfile } from './profile/permit-application.profile';
+import { ApplicationController } from './application.controller';
+import { ApplicationService } from './application.service';
+import { ApplicationProfile } from './profile/application.profile';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Permit, PermitData])],
-  controllers: [PermitController, PermitApplicationController],
+  controllers: [PermitController, ApplicationController],
   providers: [
     PermitService,
-    PermitApplicationService,
+    ApplicationService,
     PermitProfile,
-    PermitApplicationProfile,
+    ApplicationProfile,
   ],
 })
 export class PermitModule {}

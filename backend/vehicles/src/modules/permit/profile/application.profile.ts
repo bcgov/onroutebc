@@ -2,11 +2,11 @@ import { AutomapperProfile, InjectMapper } from '@automapper/nestjs';
 import { createMap, forMember, mapFrom, Mapper } from '@automapper/core';
 import { Injectable } from '@nestjs/common';
 import { Permit } from '../entities/permit.entity';
-import { CreatePermitApplicationDto } from '../dto/request/create-permit-application.dto';
-import { ReadPermitApplicationDto } from '../dto/response/read-permit-application.dto';
+import { CreateApplicationDto } from '../dto/request/create-application.dto';
+import { ReadApplicationDto } from '../dto/response/read-application.dto';
 
 @Injectable()
-export class PermitApplicationProfile extends AutomapperProfile {
+export class ApplicationProfile extends AutomapperProfile {
   constructor(@InjectMapper() mapper: Mapper) {
     super(mapper);
   }
@@ -14,7 +14,7 @@ export class PermitApplicationProfile extends AutomapperProfile {
     return (mapper: Mapper) => {
       createMap(
         mapper,
-        CreatePermitApplicationDto,
+        CreateApplicationDto,
         Permit,
         forMember(
           (d) => d.permitData?.permitData,
@@ -27,7 +27,7 @@ export class PermitApplicationProfile extends AutomapperProfile {
       createMap(
         mapper,
         Permit,
-        ReadPermitApplicationDto,
+        ReadApplicationDto,
         forMember(
           (d) => d.permitData,
           mapFrom((s) => {

@@ -5,7 +5,7 @@ import { PermitApprovalSource } from 'src/common/enum/permit-approval-source.enu
 import { PermitStatus } from 'src/common/enum/permit-status.enum';
 import { PermitType } from 'src/common/enum/permit-type.enum';
 
-export class CreatePermitApplicationDto {
+export class CreateApplicationDto {
   @AutoMap()
   @ApiProperty({
     description: 'Id of the company requesting the permit.',
