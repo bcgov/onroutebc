@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
  */
 export const ErrorFallback = ({ error }: any) => {
   // Call resetErrorBoundary() to reset the error boundary and retry the render.
-
+  console.log("ErrorFallback: ", error.message || error);
   const navigate = useNavigate();
   return (
     <Container className="feature-container" sx={{ paddingTop: "24px" }}>
@@ -20,12 +20,12 @@ export const ErrorFallback = ({ error }: any) => {
       >
         <Grid container item xs={12} justifyContent="center">
           <Typography variant="h4" align="center">
-            Error:
+            Unexpected Error
           </Typography>
         </Grid>
         <Grid container item xs={12} justifyContent="center">
-          <Typography variant="h4" align="center" margin={"20px"}>
-            {error.message}
+          <Typography variant="h5" align="center" margin={"20px"}>
+            Please call XXX-XXXX
           </Typography>
         </Grid>
 
