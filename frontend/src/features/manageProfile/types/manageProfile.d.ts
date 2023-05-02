@@ -26,9 +26,7 @@ export interface CompanyProfile {
   companyGUID: string;
   clientNumber: string;
   legalName: string;
-  companyAddress: Address;
-  mailingAddressSameAsCompanyAddress?: boolean;
-  mailingAddress?: Address;
+  mailingAddress: Address;
   email: string;
   phone: string;
   extension?: string;
@@ -45,9 +43,7 @@ export interface CompanyAndUserRequest {
   companyId: string;
   companyGUID: string;
   legalName: string;
-  companyAddress: Address;
-  mailingAddressSameAsCompanyAddress: boolean;
-  mailingAddress?: Address;
+  mailingAddress: Address;
   email: string;
   phone: string;
   extension?: string;

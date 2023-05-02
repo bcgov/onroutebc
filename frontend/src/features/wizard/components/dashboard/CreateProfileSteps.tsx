@@ -48,7 +48,6 @@ export const CreateProfileSteps = React.memo(() => {
   const steps = ["Company Information", "My Information"];
 
   const { user } = useAuth();
-  console.log(user?.profile?.bceid_business_name);
 
   const [activeStep, setActiveStep] = React.useState(0);
   const [clientNumber, setClientNumber] = React.useState(null);
@@ -60,9 +59,7 @@ export const CreateProfileSteps = React.memo(() => {
 
   const formMethods = useForm<CompanyAndUserRequest>({
     defaultValues: {
-      legalName:
-        (user?.profile?.bceid_business_name as string) ||
-        "Bandstra Transportation Systems Ltd.",
+      legalName: user?.profile?.bceid_business_name as string,
       adminUser: {
         userAuthGroup: "ORGADMIN",
       },
@@ -111,7 +108,6 @@ export const CreateProfileSteps = React.memo(() => {
    */
   const onClickFinish = function (data: FieldValues) {
     const profileToBeCreated = data as CompanyAndUserRequest;
-    console.log(profileToBeCreated);
     createProfileQuery.mutate(profileToBeCreated);
   };
 
