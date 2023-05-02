@@ -2,7 +2,6 @@ import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
 import {
   IsAlphanumeric,
-  IsISO31661Alpha2,
   IsNumber,
   IsOptional,
   IsPositive,
@@ -22,7 +21,7 @@ export class CreatePowerUnitDto {
   })
   @IsOptional()
   @IsString()
-  @IsAlphanumeric()
+  //@IsAlphanumeric()
   @MaxLength(10)
   unitNumber?: string;
 
@@ -32,7 +31,7 @@ export class CreatePowerUnitDto {
     example: 'AS 5895',
   })
   @IsString()
-  @IsAlphanumeric()
+  //@IsAlphanumeric()
   @MaxLength(10)
   plate: string;
 
@@ -44,7 +43,7 @@ export class CreatePowerUnitDto {
       'Required if the countryCode is either CA or US.',
     required: false,
   })
-  provinceCode: string;
+  provinceCode?: string;
 
   @AutoMap()
   @ApiProperty({
@@ -53,7 +52,6 @@ export class CreatePowerUnitDto {
       'A 2-character string indicating the country of registration of the vehicle.',
     required: true,
   })
-  @IsISO31661Alpha2()
   countryCode: string;
 
   @AutoMap()
@@ -72,7 +70,7 @@ export class CreatePowerUnitDto {
     example: 'Kenworth',
   })
   @IsString()
-  @IsAlphanumeric()
+  // @IsAlphanumeric()
   @MaxLength(20)
   make: string;
 

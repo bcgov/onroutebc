@@ -38,7 +38,7 @@ export class ReadPowerUnitDto {
     description:
       'A 2-character string indicating the Canadian province or US state of registration of the vehicle.',
   })
-  provinceCode: string;
+  provinceCode?: string;
 
   @AutoMap()
   @ApiProperty({

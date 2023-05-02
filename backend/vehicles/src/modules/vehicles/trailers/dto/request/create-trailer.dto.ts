@@ -1,5 +1,15 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
+import {
+  IsAlphanumeric,
+  IsNumber,
+  IsOptional,
+  IsPositive,
+  IsString,
+  Length,
+  MaxLength,
+  Min,
+} from 'class-validator';
 
 export class CreateTrailerDto {
   @AutoMap()
@@ -7,14 +17,22 @@ export class CreateTrailerDto {
     description:
       'Number or code that the company uses to refer to the vehicle.',
     example: 'KEN1',
+    required: false,
   })
-  unitNumber: string;
+  @IsOptional()
+  @IsString()
+  //@IsAlphanumeric()
+  @MaxLength(10)
+  unitNumber?: string;
 
   @AutoMap()
   @ApiProperty({
     description: 'License plate.',
     example: 'AS 5895',
   })
+  @IsString()
+  //@IsAlphanumeric()
+  @MaxLength(10)
   plate: string;
 
   @AutoMap()
@@ -25,7 +43,7 @@ export class CreateTrailerDto {
       'Required if the countryCode is either CA or US.',
     required: false,
   })
-  provinceCode: string;
+  provinceCode?: string;
 
   @AutoMap()
   @ApiProperty({
@@ -41,6 +59,9 @@ export class CreateTrailerDto {
     description: 'Year of manufacture of the vehicle.',
     example: '2010',
   })
+  @IsNumber()
+  @IsPositive()
+  @Min(1950)
   year: number;
 
   @AutoMap()
@@ -48,6 +69,9 @@ export class CreateTrailerDto {
     description: 'Make (manufacturer) of the vehicle.',
     example: 'Kenworth',
   })
+  @IsString()
+  // @IsAlphanumeric()
+  @MaxLength(20)
   make: string;
 
   @AutoMap()
@@ -56,6 +80,9 @@ export class CreateTrailerDto {
       'Short vehicle identification number (last 6 characters) for the trailer.',
     example: '1ZVFT8',
   })
+  @IsString()
+  @IsAlphanumeric()
+  @Length(6, 6, { message: 'vin must be equal to $constraint1 characters.' })
   vin: string;
 
   @AutoMap()
@@ -64,6 +91,8 @@ export class CreateTrailerDto {
     example: '3.2',
     required: false,
   })
+  @IsOptional()
+  @IsNumber()
   emptyTrailerWidth?: number;
 
   @AutoMap()
