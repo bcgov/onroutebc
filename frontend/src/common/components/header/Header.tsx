@@ -6,6 +6,8 @@ import "./Header.scss";
 import * as routes from "../../../routes/constants";
 import { BC_COLOURS } from "../../../themes/bcGovStyles";
 import { Grid } from "@mui/material";
+import { doesUserHaveRole } from "../../authentication/util";
+import { ROLES } from "../../authentication/types";
 
 const LogOutBtn = () => {
   const { signoutRedirect, user } = useAuth();
@@ -114,14 +116,16 @@ export const Header = () => {
           </li>
           {isAuthenticated && (
             <>
-              <li>
-                <NavLink
-                  to={routes.MANAGE_VEHICLES}
-                  onClick={menuToggleHandler}
-                >
-                  Vehicle Inventory
-                </NavLink>
-              </li>
+              {doesUserHaveRole(ROLES.READ_VEHICLE) && (
+                <li>
+                  <NavLink
+                    to={routes.MANAGE_VEHICLES}
+                    onClick={menuToggleHandler}
+                  >
+                    Vehicle Inventory
+                  </NavLink>
+                </li>
+              )}
               <li>
                 <NavLink
                   to={routes.MANAGE_PROFILES}
