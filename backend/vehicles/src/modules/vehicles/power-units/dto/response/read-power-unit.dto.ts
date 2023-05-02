@@ -23,7 +23,7 @@ export class ReadPowerUnitDto {
       'Number or code that the company uses to refer to the vehicle.',
     example: 'KEN1',
   })
-  unitNumber: string;
+  unitNumber?: string;
 
   @AutoMap()
   @ApiProperty({
@@ -75,7 +75,7 @@ export class ReadPowerUnitDto {
     description: 'Licensed gross vehicle weight of the power unit.',
     example: '35600',
   })
-  licensedGvw: number;
+  licensedGvw?: number;
 
   @AutoMap()
   @ApiProperty({
@@ -89,7 +89,7 @@ export class ReadPowerUnitDto {
     description: 'Size of the steer axle tires (width).',
     example: '32',
   })
-  steerAxleTireSize: number;
+  steerAxleTireSize?: number;
 
   @AutoMap()
   @ApiProperty({
