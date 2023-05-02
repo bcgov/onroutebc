@@ -31,7 +31,6 @@ export class PermitApplicationController {
     return await this.permitApplicationService.create(
       createPermitApplication,
       currentUser.userGUID,
-      createPermitApplication.companyId,
     );
   }
 

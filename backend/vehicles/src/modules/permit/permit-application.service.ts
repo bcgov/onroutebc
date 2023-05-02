@@ -19,10 +19,8 @@ export class PermitApplicationService {
   async create(
     createPermitApplicationDto: CreatePermitApplicationDto,
     userGuid: string,
-    company_id: string,
   ): Promise<ReadPermitApplicationDto> {
     createPermitApplicationDto.userGuid = userGuid;
-    createPermitApplicationDto.companyId = company_id;
     createPermitApplicationDto.permitStatus = PermitStatus.IN_PROGRESS;
     const permitApplication = this.classMapper.map(
       createPermitApplicationDto,
