@@ -76,7 +76,7 @@ export const LoadUserContext = () => {
 //     retry: true,
 //     enabled: !!userContextData?.associatedCompanies[0]?.companyId,
 //   });
-  //   useUserContext();
-    useUserRolesByCompanyId();
+    useUserContext();
+    // useUserRolesByCompanyId();
   return null;
 };

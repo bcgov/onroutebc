@@ -6,7 +6,6 @@ import { useContext, useEffect } from "react";
 import OnRouteBCContext from "../common/authentication/OnRouteBCContext";
 import { doesUserHaveRoleWithContext } from "../common/authentication/util";
 import { LoadUserRolesByCompany } from "../common/authentication/LoadUserRolesByCompanyId";
-import { LoadUserContext } from "../common/authentication/LoadUserContext";
 
 export const ProtectedRoutes = ({
   requiredRole,
@@ -14,7 +13,7 @@ export const ProtectedRoutes = ({
   requiredRole?: string;
 }) => {
   const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
-  const { userRoles, companyId } = useContext(OnRouteBCContext);
+  const { userRoles } = useContext(OnRouteBCContext);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -32,10 +31,10 @@ export const ProtectedRoutes = ({
     return <Loading />;
   }
 
-  if(isAuthenticated && !userRoles) {
+  if (isAuthenticated && !userRoles) {
     return (
       <>
-        <LoadUserContext />
+        <LoadUserRolesByCompany />
         <Loading />
       </>
     );
@@ -50,13 +49,4 @@ export const ProtectedRoutes = ({
   ) : (
     <Navigate to={HOME} state={{ from: location }} replace />
   );
-  
-    // if (!userRoles) {
-    //   return (
-    //     <>
-    //       <LoadUserRolesByCompany />
-    //       <Loading />
-    //     </>
-    //   );
-    // }
 };
