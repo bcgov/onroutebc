@@ -5,7 +5,7 @@ import { Header } from "./common/components/header/Header";
 import { Footer } from "./common/components/footer/Footer";
 import { ThemeProvider } from "@mui/material/styles";
 import { bcGovTheme } from "./themes/bcGovTheme";
-import { createContext, Dispatch, useEffect, useState } from "react";
+import { createContext, Dispatch, useEffect, useMemo, useState } from "react";
 import {
   CustomSnackbar,
   SnackBarOptions,
@@ -69,14 +69,16 @@ const App = () => {
       <ThemeProvider theme={bcGovTheme}>
         <QueryClientProvider client={queryClient}>
           <OnRouteBCContext.Provider
-            value={{
-              userRoles,
-              setUserRoles,
-              companyId,
-              setCompanyId,
-              userDetails,
-              setUserDetails,
-            }}
+            value={useMemo(() => {
+              return {
+                userRoles,
+                setUserRoles,
+                companyId,
+                setCompanyId,
+                userDetails,
+                setUserDetails,
+              };
+            }, [userRoles, companyId, userDetails])}
           >
             <SnackBarContext.Provider value={{ setSnackBar: setSnackBar }}>
               <CustomSnackbar

@@ -6,7 +6,7 @@ import * as routes from "../../routes/constants";
 import { HomePage } from "../../features/homePage/HomePage";
 import { UserContextType } from "./types";
 import { Loading } from "../pages/Loading";
-import { useUserContext, useUserRolesByCompanyId } from "../../features/manageProfile/apiManager/hooks";
+import { useUserContext } from "../../features/manageProfile/apiManager/hooks";
 
 /*
  * Redirects user to their correct page after loading their
