@@ -32,7 +32,6 @@ export const LoadUserContext = () => {
 //     onSuccess: (userContextResponseBody: UserContextType) => {
 //       const { user, associatedCompanies } = userContextResponseBody;
 //       if (user?.userGUID) {
-//         const companyId = associatedCompanies[0].companyId;
 //         setCompanyId?.(() => companyId);
 
 //         const userDetails = {
