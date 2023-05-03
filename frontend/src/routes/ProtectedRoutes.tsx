@@ -4,7 +4,7 @@ import { HOME, UNAUTHORIZED } from "./constants";
 import { Loading } from "../common/pages/Loading";
 import { useContext, useEffect } from "react";
 import OnRouteBCContext from "../common/authentication/OnRouteBCContext";
-import { doesUserHaveRole } from "../common/authentication/util";
+import { DoesUserHaveRole } from "../common/authentication/util";
 import { LoadUserRolesByCompany } from "../common/authentication/LoadUserRolesByCompany";
 import { LoadUserContext } from "../common/authentication/LoadUserContext";
 
@@ -49,7 +49,7 @@ export const ProtectedRoutes = ({
         </>
       );
     }
-    if (!doesUserHaveRole(userRoles, requiredRole)) {
+    if (!DoesUserHaveRole(userRoles, requiredRole)) {
       return <Navigate to={UNAUTHORIZED} state={{ from: location }} replace />;
     }
     return <Outlet />;

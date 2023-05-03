@@ -33,7 +33,6 @@ import DeleteConfirmationDialog from "./ConfirmationDialog";
 import { useNavigate } from "react-router-dom";
 import { SnackBarContext } from "../../../../App";
 import { MANAGE_VEHICLES } from "../../../../routes/constants";
-import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { doesUserHaveRoleWithContext } from "../../../../common/authentication/util";
 import { ROLES } from "../../../../common/authentication/types";
 
@@ -84,7 +83,6 @@ export const List = memo(
     );
 
     const snackBar = useContext(SnackBarContext);
-    const { userRoles } = useContext(OnRouteBCContext);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
     /**

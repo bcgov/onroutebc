@@ -7,7 +7,7 @@ import OnRouteBCContext from "./OnRouteBCContext";
  * @param requiredRole The role to check for.
  * @returns A boolean indicating if the user has the role to access a page.
  */
-export const doesUserHaveRole = (
+export const DoesUserHaveRole = (
   userRoles: string[] | undefined,
   requiredRole: string | undefined
 ) => {
@@ -24,7 +24,9 @@ export const doesUserHaveRole = (
  * @param requiredRole The role to check for.
  * @returns A boolean indicating if the user has the role to access a page or feature.
  */
-export const doesUserHaveRoleWithContext = (requiredRole: string | undefined) => {
+export const doesUserHaveRoleWithContext = (
+  requiredRole: string | undefined
+) => {
   const { userRoles } = useContext(OnRouteBCContext);
   return (
     requiredRole &&

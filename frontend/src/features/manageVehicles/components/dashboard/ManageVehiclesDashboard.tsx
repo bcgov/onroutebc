@@ -4,7 +4,7 @@ import { AddVehicleButton } from "./AddVehicleButton";
 import { List } from "../list/List";
 
 import "./ManageVehiclesDashboard.scss";
-import { memo, useContext } from "react";
+import { memo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getAllPowerUnits, getAllTrailers } from "../../apiManager/vehiclesAPI";
 import { doesUserHaveRoleWithContext } from "../../../../common/authentication/util";
