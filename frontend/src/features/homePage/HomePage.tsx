@@ -1,12 +1,12 @@
 import React, { useContext } from "react";
 import { useAuth } from "react-oidc-context";
-import { LoadUserRolesByCompany } from "../../common/authentication/LoadUserRolesByCompanyId";
+import { LoadUserRolesByCompany } from "../../common/authentication/LoadUserRolesByCompany";
 import OnRouteBCContext from "../../common/authentication/OnRouteBCContext";
 
 export const HomePage = React.memo(() => {
   const { isAuthenticated } = useAuth();
 
-  const { userDetails } =  useContext(OnRouteBCContext);
+  const { userDetails } = useContext(OnRouteBCContext);
   const DEPLOY_ENV =
     import.meta.env.VITE_DEPLOY_ENVIRONMENT ||
     envConfig.VITE_DEPLOY_ENVIRONMENT;
