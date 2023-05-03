@@ -1,7 +1,6 @@
-import React, { useContext, useEffect } from "react";
+import React from "react";
 import { useAuth } from "react-oidc-context";
-import OnRouteBCContext from "../../common/authentication/OnRouteBCContext";
-import { useUserRolesByCompanyId } from "../manageProfile/apiManager/hooks";
+import { LoadUserRolesByCompany } from "../../common/authentication/LoadUserRolesByCompanyId";
 
 export const HomePage = React.memo(() => {
   const { isAuthenticated } = useAuth();
@@ -15,20 +14,19 @@ export const HomePage = React.memo(() => {
     import.meta.env.VITE_DEPLOY_ENVIRONMENT ||
     envConfig.VITE_DEPLOY_ENVIRONMENT;
 
-  if (isAuthenticated) {
-    useUserRolesByCompanyId();
-  }
-
   return (
-    <div style={{ padding: "0px 60px", height: "100vh" }}>
-      {isAuthenticated && userJson && (
-        <div>{`Hello ${userJson?.firstName} ${userJson?.lastName}`}</div>
-      )}
-      {isAuthenticated && !userJson && (
-        <div>Welcome to OnRouteBC - Please create your profile</div>
-      )}
-      <p>OnRouteBC Home -{DEPLOY_ENV}- Environment</p>
-    </div>
+    <>
+      <LoadUserRolesByCompany />
+      <div style={{ padding: "0px 60px", height: "100vh" }}>
+        {isAuthenticated && userJson && (
+          <div>{`Hello ${userJson?.firstName} ${userJson?.lastName}`}</div>
+        )}
+        {isAuthenticated && !userJson && (
+          <div>Welcome to OnRouteBC - Please create your profile</div>
+        )}
+        <p>OnRouteBC Home -{DEPLOY_ENV}- Environment</p>
+      </div>
+    </>
   );
 });
 
