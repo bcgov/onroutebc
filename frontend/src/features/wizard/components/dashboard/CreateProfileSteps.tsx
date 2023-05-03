@@ -88,6 +88,11 @@ export const CreateProfileSteps = React.memo(() => {
         };
         setUserDetails?.(() => userDetails);
         setCompanyId?.(() => companyId);
+        
+        // Setting the companyId in the sessionStorage so that it can be used
+        // used outside of react components;
+        sessionStorage.setItem('onRouteBC.user.companyId', companyId);
+
 
         setClientNumber(() => responseBody["clientNumber"]);
         queryClient.invalidateQueries(["userContext"]);
