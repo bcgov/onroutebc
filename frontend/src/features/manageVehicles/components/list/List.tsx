@@ -33,7 +33,7 @@ import DeleteConfirmationDialog from "./ConfirmationDialog";
 import { useNavigate } from "react-router-dom";
 import { SnackBarContext } from "../../../../App";
 import { MANAGE_VEHICLES } from "../../../../routes/constants";
-import { doesUserHaveRoleWithContext } from "../../../../common/authentication/util";
+import { DoesUserHaveRoleWithContext } from "../../../../common/authentication/util";
 import { ROLES } from "../../../../common/authentication/types";
 
 /**
@@ -202,7 +202,7 @@ export const List = memo(
               row: MRT_Row<VehicleTypes>;
             }) => (
               <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-                {doesUserHaveRoleWithContext(ROLES.WRITE_VEHICLE) && (
+                {DoesUserHaveRoleWithContext(ROLES.WRITE_VEHICLE) && (
                   <>
                     <Tooltip arrow placement="left" title="Edit">
                       {/*tslint:disable-next-line*/}
@@ -275,7 +275,7 @@ export const List = memo(
               >
                 <MRT_GlobalFilterTextField table={table} />
                 <Filter />
-                {doesUserHaveRoleWithContext(ROLES.WRITE_VEHICLE) && (
+                {DoesUserHaveRoleWithContext(ROLES.WRITE_VEHICLE) && (
                   <Trash onClickTrash={onClickTrashIcon} />
                 )}
                 <CSVOptions />

@@ -7,7 +7,7 @@ import "./ManageVehiclesDashboard.scss";
 import { memo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getAllPowerUnits, getAllTrailers } from "../../apiManager/vehiclesAPI";
-import { doesUserHaveRoleWithContext } from "../../../../common/authentication/util";
+import { DoesUserHaveRoleWithContext } from "../../../../common/authentication/util";
 import { ROLES } from "../../../../common/authentication/types";
 
 /**
@@ -50,7 +50,7 @@ export const ManageVehiclesDashboard = memo(() => {
     <TabLayout
       bannerText="Vehicle Inventory"
       bannerButton={
-        doesUserHaveRoleWithContext(ROLES.WRITE_VEHICLE) ? (
+        DoesUserHaveRoleWithContext(ROLES.WRITE_VEHICLE) ? (
           <AddVehicleButton />
         ) : undefined
       }

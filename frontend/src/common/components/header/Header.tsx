@@ -6,7 +6,7 @@ import "./Header.scss";
 import * as routes from "../../../routes/constants";
 import { BC_COLOURS } from "../../../themes/bcGovStyles";
 import { Grid } from "@mui/material";
-import { doesUserHaveRoleWithContext } from "../../authentication/util";
+import { DoesUserHaveRoleWithContext } from "../../authentication/util";
 import { ROLES } from "../../authentication/types";
 
 const LogOutBtn = () => {
@@ -116,7 +116,7 @@ export const Header = () => {
           </li>
           {isAuthenticated && (
             <>
-              {doesUserHaveRoleWithContext(ROLES.READ_VEHICLE) && (
+              {DoesUserHaveRoleWithContext(ROLES.READ_VEHICLE) && (
                 <li>
                   <NavLink
                     to={routes.MANAGE_VEHICLES}
@@ -126,7 +126,7 @@ export const Header = () => {
                   </NavLink>
                 </li>
               )}
-              {doesUserHaveRoleWithContext(ROLES.READ_ORG) && (
+              {DoesUserHaveRoleWithContext(ROLES.READ_ORG) && (
                 <li>
                   <NavLink
                     to={routes.MANAGE_PROFILES}
@@ -137,7 +137,7 @@ export const Header = () => {
                 </li>
               )}
 
-              {doesUserHaveRoleWithContext(ROLES.WRITE_PERMIT) && (
+              {DoesUserHaveRoleWithContext(ROLES.WRITE_PERMIT) && (
                 <li>
                   <NavLink to={routes.PERMITS} onClick={menuToggleHandler}>
                     Permits
