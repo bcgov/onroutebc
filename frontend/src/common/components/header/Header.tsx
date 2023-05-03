@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { useAuth } from "react-oidc-context";
 
@@ -6,6 +6,9 @@ import "./Header.scss";
 import * as routes from "../../../routes/constants";
 import { BC_COLOURS } from "../../../themes/bcGovStyles";
 import { Grid } from "@mui/material";
+import { doesUserHaveRole } from "../../authentication/util";
+import { ROLES } from "../../authentication/types";
+import OnRouteBCContext from "../../authentication/OnRouteBCContext";
 
 const LogOutBtn = () => {
   const { signoutRedirect, user } = useAuth();
@@ -40,6 +43,7 @@ export const Header = () => {
   const mediaQueryList: MediaQueryList = window.matchMedia(mediaQuery);
   const [menuOpen, setMenuOpen] = useState(!mediaQueryList.matches);
   const { isAuthenticated } = useAuth();
+  const { userRoles } = useContext(OnRouteBCContext);
 
   let headerColor: string;
   const env =
@@ -114,27 +118,34 @@ export const Header = () => {
           </li>
           {isAuthenticated && (
             <>
-              <li>
-                <NavLink
-                  to={routes.MANAGE_VEHICLES}
-                  onClick={menuToggleHandler}
-                >
-                  Vehicle Inventory
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to={routes.MANAGE_PROFILES}
-                  onClick={menuToggleHandler}
-                >
-                  Profile
-                </NavLink>
-              </li>
-              <li>
-                <NavLink to={routes.PERMITS} onClick={menuToggleHandler}>
-                  Permits
-                </NavLink>
-              </li>
+              {doesUserHaveRole(userRoles, ROLES.READ_VEHICLE) && (
+                <li>
+                  <NavLink
+                    to={routes.MANAGE_VEHICLES}
+                    onClick={menuToggleHandler}
+                  >
+                    Vehicle Inventory
+                  </NavLink>
+                </li>
+              )}
+              {doesUserHaveRole(userRoles, ROLES.READ_ORG) && (
+                <li>
+                  <NavLink
+                    to={routes.MANAGE_PROFILES}
+                    onClick={menuToggleHandler}
+                  >
+                    Profile
+                  </NavLink>
+                </li>
+              )}
+
+              {doesUserHaveRole(userRoles, ROLES.WRITE_PERMIT) && (
+                <li>
+                  <NavLink to={routes.PERMITS} onClick={menuToggleHandler}>
+                    Permits
+                  </NavLink>
+                </li>
+              )}
             </>
           )}
           {isAuthenticated && (
