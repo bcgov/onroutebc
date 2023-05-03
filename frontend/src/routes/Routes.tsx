@@ -11,58 +11,60 @@ import { EditVehicleDashboard } from "../features/manageVehicles/components/dash
 import { VEHICLE_TYPES_ENUM } from "../features/manageVehicles/components/form/constants";
 import { CreateProfileWizard } from "../features/wizard/CreateProfileWizard";
 import { ManagePermits } from "../features/permits/ManagePermits";
-import { doesUserHaveRole } from "../common/authentication/util";
 import { ROLES } from "../common/authentication/types";
 
 export const AppRoutes = () => {
+
   return (
     <Routes>
       <Route path={routes.HOME} element={<InitialLandingPage />} />
       <Route path={routes.WELCOME} element={<WelcomePage />} />
       <Route path="*" element={<NotFound />} />
       {/* Protected Routes */}
-      <Route element={<ProtectedRoutes />}>
-        {doesUserHaveRole(ROLES.READ_VEHICLE) && (
-          <Route path={routes.MANAGE_VEHICLES}>
-            <Route index={true} element={<ManageVehicles />} />
-            <Route
-              path="power-units/:vehicleId"
-              element={
-                <EditVehicleDashboard
-                  editVehicleMode={VEHICLE_TYPES_ENUM.POWER_UNIT}
-                />
-              }
-            />
-            <Route
-              path="trailers/:vehicleId"
-              element={
-                <EditVehicleDashboard
-                  editVehicleMode={VEHICLE_TYPES_ENUM.TRAILER}
-                />
-              }
-            />
-            <Route
-              path={routes.ADD_POWER_UNIT}
-              element={
-                <AddVehicleDashboard
-                  addVehicleMode={VEHICLE_TYPES_ENUM.POWER_UNIT}
-                />
-              }
-            />
-            <Route
-              path={routes.ADD_TRAILER}
-              element={
-                <AddVehicleDashboard
-                  addVehicleMode={VEHICLE_TYPES_ENUM.TRAILER}
-                />
-              }
-            />
-          </Route>
-        )}
-        <Route path={routes.MANAGE_PROFILES} element={<ManageProfiles />} />
-        <Route path={routes.PERMITS} element={<ManagePermits />} />
-        <Route path={routes.CREATE_PROFILE} element={<CreateProfileWizard />} />
+      <Route element={<ProtectedRoutes requiredRole={ROLES.READ_VEHICLE} />}>
+        <Route path={routes.MANAGE_VEHICLES}>
+          <Route index={true} element={<ManageVehicles />} />
+          <Route
+            path="power-units/:vehicleId"
+            element={
+              <EditVehicleDashboard
+                editVehicleMode={VEHICLE_TYPES_ENUM.POWER_UNIT}
+              />
+            }
+          />
+          <Route
+            path="trailers/:vehicleId"
+            element={
+              <EditVehicleDashboard
+                editVehicleMode={VEHICLE_TYPES_ENUM.TRAILER}
+              />
+            }
+          />
+          <Route
+            path={routes.ADD_POWER_UNIT}
+            element={
+              <AddVehicleDashboard
+                addVehicleMode={VEHICLE_TYPES_ENUM.POWER_UNIT}
+              />
+            }
+          />
+          <Route
+            path={routes.ADD_TRAILER}
+            element={
+              <AddVehicleDashboard
+                addVehicleMode={VEHICLE_TYPES_ENUM.TRAILER}
+              />
+            }
+          />
+        </Route>
       </Route>
+      <Route element={<ProtectedRoutes requiredRole={ROLES.READ_ORG} />}>
+        <Route path={routes.MANAGE_PROFILES} element={<ManageProfiles />} />
+      </Route>
+      <Route element={<ProtectedRoutes requiredRole={ROLES.WRITE_PERMIT} />}>
+        <Route path={routes.PERMITS} element={<ManagePermits />} />
+      </Route>
+      <Route path={routes.CREATE_PROFILE} element={<CreateProfileWizard />} />
     </Routes>
   );
 };
