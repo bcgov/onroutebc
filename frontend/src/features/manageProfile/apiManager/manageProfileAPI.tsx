@@ -15,7 +15,7 @@ export const getCompanyInfo = async (): Promise<CompanyProfile> => {
 };
 
 export const getMyInfo = async (): Promise<UserInformation> => {
-  const url = `${MANAGE_PROFILE_API.MY_INFO}/${getUserGuidFromSession()}`;
+  const url = `${MANAGE_PROFILE_API.MY_INFO}/${getUserGuidFromSession()}?companyId=${getCompanyIdFromSession()}`;
   return httpGETRequest(url).then((response) => response.data);
 };
 
