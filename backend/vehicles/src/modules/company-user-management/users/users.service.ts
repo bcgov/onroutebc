@@ -125,7 +125,7 @@ export class UsersService {
       userAuthGroup,
     );
     user.companyUsers = [newCompanyUser];
-
+    console.log(user);
     user = await queryRunner.manager.save(user);
 
     const readUserDto = await this.mapUserEntitytoReadUserDto(user);

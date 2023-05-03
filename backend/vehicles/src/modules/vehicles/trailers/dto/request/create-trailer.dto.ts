@@ -43,6 +43,11 @@ export class CreateTrailerDto {
       'Required if the countryCode is either CA or US.',
     required: false,
   })
+  @IsOptional()
+  @IsString()
+  @Length(2, 2, {
+    message: 'provinceCode must be equal to $constraint1 characters.',
+  })
   provinceCode?: string;
 
   @AutoMap()
@@ -51,6 +56,11 @@ export class CreateTrailerDto {
     description:
       'A 2-character string indicating the country of registration of the vehicle.',
     required: true,
+  })
+  @IsOptional()
+  @IsString()
+  @Length(2, 2, {
+    message: 'countryCode must be equal to $constraint1 characters.',
   })
   countryCode: string;
 

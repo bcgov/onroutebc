@@ -2,6 +2,7 @@ import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
 import { UserAuthGroup } from '../../../../../common/enum/user-auth-group.enum';
 import { CreateContactDto } from '../../../../common/dto/request/create-contact.dto';
+import { Allow } from 'class-validator';
 
 /**
  * JSON representation of the request object for creating a user.
@@ -13,5 +14,6 @@ export class CreateUserDto extends CreateContactDto {
     description: 'The user auth group.',
     example: UserAuthGroup.COMPANY_ADMINISTRATOR,
   })
+  @Allow()
   userAuthGroup: UserAuthGroup;
 }

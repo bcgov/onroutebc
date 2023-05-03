@@ -61,7 +61,7 @@ export class ReadCompanyDto {
     maxLength: 5,
     example: '99999',
   })
-  extension: string;
+  extension?: string;
 
   @AutoMap()
   @ApiProperty({
@@ -71,7 +71,7 @@ export class ReadCompanyDto {
     minLength: 10,
     example: '9999999999',
   })
-  fax: string;
+  fax?: string;
 
   @AutoMap()
   @ApiProperty({

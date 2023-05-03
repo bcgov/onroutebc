@@ -1,5 +1,6 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
+import { IsOptional, IsString, Length } from 'class-validator';
 
 /**
  * JSON representation of a physical address
@@ -12,6 +13,8 @@ export class CreateAddressDto {
       'The first segment of the address (commonly known as Address Line 1)',
     required: true,
   })
+  @IsString()
+  @Length(1, 150)
   addressLine1: string;
 
   @AutoMap()
@@ -22,7 +25,10 @@ export class CreateAddressDto {
     required: false,
     format: 'Alphanumeric',
   })
-  addressLine2: string;
+  @IsOptional()
+  @IsString()
+  @Length(1, 100)
+  addressLine2?: string;
 
   @AutoMap()
   @ApiProperty({
@@ -31,6 +37,8 @@ export class CreateAddressDto {
     required: true,
     format: 'Alphabetic',
   })
+  @IsString()
+  @Length(1, 100)
   city: string;
 
   @AutoMap()
@@ -41,13 +49,22 @@ export class CreateAddressDto {
       'Required if the countryCode is either CA or US.',
     required: false,
   })
-  provinceCode: string;
+  @IsOptional()
+  @IsString()
+  @Length(2, 2, {
+    message: 'provinceCode must be equal to $constraint1 characters.',
+  })
+  provinceCode?: string;
 
   @AutoMap()
   @ApiProperty({
     example: 'CA',
     description: 'A 2-character string indicating the country.',
     required: true,
+  })
+  @IsString()
+  @Length(2, 2, {
+    message: 'countryCode must be equal to $constraint1 characters.',
   })
   countryCode: string;
 
@@ -57,5 +74,7 @@ export class CreateAddressDto {
     description: 'Postal/zip code - 5 characters if US, 6 characters if CA.',
     required: true,
   })
+  @IsString()
+  @Length(5, 7)
   postalCode: string;
 }

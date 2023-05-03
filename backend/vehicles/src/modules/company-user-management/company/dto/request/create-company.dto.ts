@@ -3,6 +3,14 @@ import { ApiProperty } from '@nestjs/swagger';
 import { CreateAddressDto } from '../../../../common/dto/request/create-address.dto';
 import { CreateContactDto } from '../../../../common/dto/request/create-contact.dto';
 import { CreateUserDto } from '../../../users/dto/request/create-user.dto';
+import {
+  IsEmail,
+  IsOptional,
+  IsString,
+  Length,
+  ValidateNested,
+} from 'class-validator';
+import { Type } from 'class-transformer';
 
 /**
  * JSON representation of the request object for creating a new company and
@@ -23,6 +31,8 @@ export class CreateCompanyDto {
       'The object must adhere to the individual field rules',
     required: true,
   })
+  @ValidateNested()
+  @Type(() => CreateAddressDto)
   mailingAddress: CreateAddressDto;
 
   @AutoMap()
@@ -33,6 +43,8 @@ export class CreateCompanyDto {
     minLength: 10,
     example: '9999999999',
   })
+  @IsString()
+  @Length(10, 20)
   phone: string;
 
   @AutoMap()
@@ -42,7 +54,10 @@ export class CreateCompanyDto {
     maxLength: 5,
     example: '99999',
   })
-  extension: string;
+  @IsOptional()
+  @IsString()
+  @Length(1, 5)
+  extension?: string;
 
   @AutoMap()
   @ApiProperty({
@@ -52,7 +67,10 @@ export class CreateCompanyDto {
     minLength: 10,
     example: '9999999999',
   })
-  fax: string;
+  @IsOptional()
+  @IsString()
+  @Length(10, 20)
+  fax?: string;
 
   @AutoMap()
   @ApiProperty({
@@ -60,6 +78,7 @@ export class CreateCompanyDto {
     required: true,
     example: 'test@test.gov.bc.ca',
   })
+  @IsEmail()
   email: string;
 
   @AutoMap()
@@ -67,6 +86,8 @@ export class CreateCompanyDto {
     description: 'The primary contact of the company.',
     required: true,
   })
+  @ValidateNested()
+  @Type(() => CreateContactDto)
   primaryContact: CreateContactDto;
 
   @AutoMap()
@@ -74,5 +95,7 @@ export class CreateCompanyDto {
     description: 'The admin user of the company.',
     required: true,
   })
+  @ValidateNested()
+  @Type(() => CreateUserDto)
   adminUser: CreateUserDto;
 }
