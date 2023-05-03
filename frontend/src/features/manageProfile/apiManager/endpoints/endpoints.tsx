@@ -4,4 +4,5 @@ export const MANAGE_PROFILE_URL =
 
 export const MANAGE_PROFILE_API = {
   COMPANIES: `${MANAGE_PROFILE_URL}/companies`,
+  MY_INFO: `${MANAGE_PROFILE_URL}/users`,
 };

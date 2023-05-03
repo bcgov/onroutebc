@@ -38,6 +38,21 @@ export const getCompanyIdFromSession = (): string | null => {
 };
 
 /**
+ * Retrieves user's GUID from session.
+ * @returns string | null
+ */
+export const getUserGuidFromSession = (): string | null => {
+  const storageKey: string = Object.keys(sessionStorage).find((key) =>
+    key.startsWith("oidc.user")
+  ) as string;
+  const parsedSessionObject = JSON.parse(
+    sessionStorage.getItem(storageKey) as string
+  );
+  
+  return parsedSessionObject?.profile?.bceid_user_guid ?? null;
+};
+
+/**
  * A generic HTTP GET Request
  * @param url The URL of the resource.
  * @returns A Promise<Response> with the response from the API.
