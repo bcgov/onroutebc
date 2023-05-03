@@ -32,28 +32,31 @@ export const ProtectedRoutes = ({
     return <Loading />;
   }
 
-  if (isAuthenticated) {
-    if (!companyId) {
-      return (
-        <>
-          <LoadUserContext />
-          <Loading />
-        </>
-      );
-    }
-    if (!userRoles) {
-      return (
-        <>
-          <LoadUserRolesByCompany />
-          <Loading />
-        </>
-      );
-    }
-    if (!doesUserHaveRoleWithContext(requiredRole)) {
-      return <Navigate to={UNAUTHORIZED} state={{ from: location }} replace />;
-    }
-    return <Outlet />;
-  } else {
-    return <Navigate to={HOME} state={{ from: location }} replace />;
+  if(isAuthenticated && !userRoles) {
+    return (
+      <>
+        <LoadUserContext />
+        <Loading />
+      </>
+    );
   }
+
+  if (!doesUserHaveRoleWithContext(requiredRole)) {
+    return <Navigate to={UNAUTHORIZED} state={{ from: location }} replace />;
+  }
+
+  return isAuthenticated ? (
+    <Outlet />
+  ) : (
+    <Navigate to={HOME} state={{ from: location }} replace />
+  );
+  
+    // if (!userRoles) {
+    //   return (
+    //     <>
+    //       <LoadUserRolesByCompany />
+    //       <Loading />
+    //     </>
+    //   );
+    // }
 };
