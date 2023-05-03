@@ -4,9 +4,11 @@ import { AddVehicleButton } from "./AddVehicleButton";
 import { List } from "../list/List";
 
 import "./ManageVehiclesDashboard.scss";
-import { memo } from "react";
+import { memo, useContext } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getAllPowerUnits, getAllTrailers } from "../../apiManager/vehiclesAPI";
+import { doesUserHaveRoleWithContext } from "../../../../common/authentication/util";
+import { ROLES } from "../../../../common/authentication/types";
 
 /**
  * React component to render the vehicle inventory
@@ -47,7 +49,11 @@ export const ManageVehiclesDashboard = memo(() => {
   return (
     <TabLayout
       bannerText="Vehicle Inventory"
-      bannerButton={<AddVehicleButton />}
+      bannerButton={
+        doesUserHaveRoleWithContext(ROLES.WRITE_VEHICLE) ? (
+          <AddVehicleButton />
+        ) : undefined
+      }
       componentList={tabs}
     />
   );

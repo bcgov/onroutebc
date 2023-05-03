@@ -8,7 +8,7 @@ import {
   Stepper,
   Typography,
 } from "@mui/material";
-import React from "react";
+import React, { useContext } from "react";
 import { Banner } from "../../../../common/components/dashboard/Banner";
 import "../../../../common/components/dashboard/Dashboard.scss";
 import { FormProvider, useForm, FieldValues } from "react-hook-form";
@@ -20,6 +20,7 @@ import { OnRouteBCProfileCreated } from "../../pages/OnRouteBCProfileCreated";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { useAuth } from "react-oidc-context";
 import { CompanyAndUserRequest } from "../../../manageProfile/types/manageProfile";
+import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 
 const CompanyBanner = ({ legalName }: { legalName: string }) => {
   return (
@@ -46,6 +47,7 @@ const CompanyBanner = ({ legalName }: { legalName: string }) => {
 export const CreateProfileSteps = React.memo(() => {
   const queryClient = useQueryClient();
   const steps = ["Company Information", "My Information"];
+  const { setCompanyId, setUserDetails } = useContext(OnRouteBCContext);
 
   const { user } = useAuth();
 
@@ -72,8 +74,8 @@ export const CreateProfileSteps = React.memo(() => {
     onSuccess: async (response) => {
       if (response.status === 201 || response.status === 200) {
         const responseBody = await response.json();
-        const userContextSessionObject = {
-          companyId: responseBody["companyId"],
+        const companyId = responseBody["companyId"];
+        const userDetails = {
           firstName: responseBody.adminUser?.firstName,
           lastName: responseBody.adminUser?.lastName,
           userName: responseBody.adminUser?.userName,
@@ -84,14 +86,8 @@ export const CreateProfileSteps = React.memo(() => {
           email: responseBody.adminUser?.email,
           fax: responseBody.adminUser?.fax,
         };
-        // Switch to a react context when implementing multiple companies.
-        // We currently don't need a dedicated react context.
-        // Session Storage works alright as there is no leakage of information
-        // than what is already displayed to the user.
-        sessionStorage.setItem(
-          "onRoutebc.user.context",
-          JSON.stringify(userContextSessionObject)
-        );
+        setUserDetails?.(() => userDetails);
+        setCompanyId?.(() => companyId);
 
         setClientNumber(() => responseBody["clientNumber"]);
         queryClient.invalidateQueries(["userContext"]);

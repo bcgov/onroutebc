@@ -4,8 +4,9 @@ import { HOME, UNAUTHORIZED } from "./constants";
 import { Loading } from "../common/pages/Loading";
 import { useContext, useEffect } from "react";
 import OnRouteBCContext from "../common/authentication/OnRouteBCContext";
-import { doesUserHaveRole } from "../common/authentication/util";
+import { doesUserHaveRoleWithContext } from "../common/authentication/util";
 import { LoadUserRolesByCompany } from "../common/authentication/LoadUserRolesByCompanyId";
+import { LoadUserContext } from "../common/authentication/LoadUserContext";
 
 export const ProtectedRoutes = ({
   requiredRole,
@@ -13,7 +14,7 @@ export const ProtectedRoutes = ({
   requiredRole?: string;
 }) => {
   const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
-  const { userRoles } = useContext(OnRouteBCContext);
+  const { userRoles, companyId } = useContext(OnRouteBCContext);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -31,22 +32,28 @@ export const ProtectedRoutes = ({
     return <Loading />;
   }
 
-  if (isAuthenticated && !userRoles) {
-    return (
-      <>
-        <LoadUserRolesByCompany />
-        <Loading />
-      </>
-    );
+  if (isAuthenticated) {
+    if (!companyId) {
+      return (
+        <>
+          <LoadUserContext />
+          <Loading />
+        </>
+      );
+    }
+    if (!userRoles) {
+      return (
+        <>
+          <LoadUserRolesByCompany />
+          <Loading />
+        </>
+      );
+    }
+    if (!doesUserHaveRoleWithContext(requiredRole)) {
+      return <Navigate to={UNAUTHORIZED} state={{ from: location }} replace />;
+    }
+    return <Outlet />;
+  } else {
+    return <Navigate to={HOME} state={{ from: location }} replace />;
   }
-
-  if (!doesUserHaveRole(userRoles, requiredRole)) {
-    return <Navigate to={UNAUTHORIZED} state={{ from: location }} replace />;
-  }
-
-  return isAuthenticated ? (
-    <Outlet />
-  ) : (
-    <Navigate to={HOME} state={{ from: location }} replace />
-  );
 };

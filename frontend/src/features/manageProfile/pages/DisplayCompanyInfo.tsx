@@ -6,6 +6,10 @@ import {
   formatProvince,
 } from "../../../common/helpers/formatCountryProvince";
 import { CompanyProfile } from "../types/manageProfile";
+import {
+  doesUserHaveRoleWithContext,
+} from "../../../common/authentication/util";
+import { ROLES } from "../../../common/authentication/types";
 // Disable any eslint for references to countries_and_states.json
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -72,17 +76,19 @@ export const DisplayInfo = memo(
           </Typography>
           <Typography>{companyInfo?.primaryContact.city}</Typography>
         </Box>
-        <div>
-          <Button
-            variant="contained"
-            color="tertiary"
-            sx={{ marginTop: "20px" }}
-            onClick={() => setIsEditting(true)}
-          >
-            <i className="fa fa-pencil" style={{ marginRight: "7px" }}></i>
-            Edit
-          </Button>
-        </div>
+        {doesUserHaveRoleWithContext(ROLES.WRITE_ORG) && (
+          <div>
+            <Button
+              variant="contained"
+              color="tertiary"
+              sx={{ marginTop: "20px" }}
+              onClick={() => setIsEditting(true)}
+            >
+              <i className="fa fa-pencil" style={{ marginRight: "7px" }}></i>
+              Edit
+            </Button>
+          </div>
+        )}
       </Box>
     );
   }
