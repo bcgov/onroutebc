@@ -7,6 +7,7 @@ import { Unauthorized } from "../../../../common/pages/Unauthorized";
 import { getCompanyInfo } from "../../apiManager/manageProfileAPI";
 import { Loading } from "../../../../common/pages/Loading";
 import { ErrorFallback } from "../../../../common/pages/ErrorFallback";
+import { MyInfo } from "../../pages/MyInfo";
 
 export const ManageProfilesDashboard = React.memo(() => {
   const {
@@ -42,7 +43,7 @@ export const ManageProfilesDashboard = React.memo(() => {
     },
     {
       label: "My Information",
-      component: <>TODO</>,
+      component: <MyInfo />,
     },
     {
       label: "User Management",
