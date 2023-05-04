@@ -1,5 +1,5 @@
 /**
- * Remove all the null and undefined fields.
+ * Remove all the null, undefined and empty fields (including arrays).
  * @param obj The object to remove empty values from.
  * @returns An Object with only valid values.
  *
@@ -8,10 +8,15 @@
 export const removeEmptyValues = (obj: object): object => {
   return Object.fromEntries(
     Object.entries(obj)
-      .filter(([_, value]) => value != null && value !== "" && value.length > 0)
+      .filter(([_key, value]) => {
+        if (Array.isArray(value)) {
+          return value.length > 0;
+        }
+        return value != null && value !== "";
+      })
       .map(([key, value]) => [
         key,
-        value === Object(value) ? removeEmptyValues(value) : value,
+        typeof value === "object" ? removeEmptyValues(value) : value,
       ])
   );
 };
