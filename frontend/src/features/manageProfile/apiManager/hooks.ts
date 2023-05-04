@@ -50,19 +50,9 @@ export const useUserContext = () => {
         } as UserDetailContext;
         setUserDetails?.(() => userDetails);
 
-        const userContextSessionObject = {
-          companyId,
-          ...userDetails,
-        };
-
-        // Switch to a react context when implementing multiple companies.
-        // We currently don't need a dedicated react context.
-        // Session Storage works alright as there is no leakage of information
-        // than what is already displayed to the user.
-        sessionStorage.setItem(
-          "onRoutebc.user.context",
-          JSON.stringify(userContextSessionObject)
-        );
+        // Setting the companyId to sessionStorage so that it can be
+        // used outside of react components.
+        sessionStorage.setItem("onRouteBC.user.companyId", companyId);
       }
     },
     retry: false,

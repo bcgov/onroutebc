@@ -1,3 +1,9 @@
+/**
+ * The roles of a user.
+ * 
+ * NOTE: The frontend has an identical copy of this. Any changes made here
+ * should be cascaded.
+ */
 export enum Role {
   PUBLIC_AGENT = 'ORBC-PUBLIC-AGENT',
   PUBLIC_ORG_ADMIN = 'ORBC-PUBLIC-ORG-ADMIN',

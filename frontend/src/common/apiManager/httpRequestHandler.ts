@@ -26,15 +26,7 @@ const getAccessToken = () => {
  * @returns string | null
  */
 export const getCompanyIdFromSession = (): string | null => {
-  const userContextString = sessionStorage.getItem("onRoutebc.user.context");
-  if (!userContextString) return null;
-
-  const userContext = JSON.parse(userContextString);
-
-  if (!userContext.companyId) return null;
-
-  // Currently we only support one company per user.
-  return userContext.companyId;
+  return sessionStorage.getItem("onRouteBC.user.companyId");
 };
 
 /**
