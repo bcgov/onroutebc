@@ -33,6 +33,8 @@ import DeleteConfirmationDialog from "./ConfirmationDialog";
 import { useNavigate } from "react-router-dom";
 import { SnackBarContext } from "../../../../App";
 import { MANAGE_VEHICLES } from "../../../../routes/constants";
+import { DoesUserHaveRoleWithContext } from "../../../../common/authentication/util";
+import { ROLES } from "../../../../common/authentication/types";
 
 /**
  * Dynamically set the column based on vehicle type
@@ -200,58 +202,63 @@ export const List = memo(
               row: MRT_Row<VehicleTypes>;
             }) => (
               <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-                <Tooltip arrow placement="left" title="Edit">
-                  {/*tslint:disable-next-line*/}
-                  <IconButton
-                    onClick={() => {
-                      if (vehicleType === "powerUnit") {
-                        navigate(
-                          `/${MANAGE_VEHICLES}/power-units/${row.getValue(
-                            "powerUnitId"
-                          )}`
-                        );
-                      } else if (vehicleType === "trailer") {
-                        navigate(
-                          `/${MANAGE_VEHICLES}/trailers/${row.getValue(
-                            "trailerId"
-                          )}`
-                        );
-                      }
-                    }}
-                    disabled={false}
-                  >
-                    <Edit />
-                  </IconButton>
-                </Tooltip>
-                <Tooltip arrow placement="top" title="Copy">
-                  {/*tslint:disable-next-line*/}
-                  <IconButton
-                    onClick={() => table.setEditingRow(row)}
-                    disabled={true}
-                  >
-                    <ContentCopy />
-                  </IconButton>
-                </Tooltip>
-                <Tooltip arrow placement="top" title="Delete">
-                  {/*tslint:disable-next-line*/}
-                  <IconButton
-                    color="error"
-                    onClick={() => {
-                      setIsDeleteDialogOpen(() => true);
-                      setRowSelection(() => {
-                        const newObject: { [key: string]: boolean } = {};
-                        // Setting the selected row to false so that
-                        // the row appears unchecked.
-                        newObject[row.getValue(`${vehicleType}Id`) as string] =
-                          false;
-                        return newObject;
-                      });
-                    }}
-                    disabled={false}
-                  >
-                    <Delete />
-                  </IconButton>
-                </Tooltip>
+                {DoesUserHaveRoleWithContext(ROLES.WRITE_VEHICLE) && (
+                  <>
+                    <Tooltip arrow placement="left" title="Edit">
+                      {/*tslint:disable-next-line*/}
+                      <IconButton
+                        onClick={() => {
+                          if (vehicleType === "powerUnit") {
+                            navigate(
+                              `/${MANAGE_VEHICLES}/power-units/${row.getValue(
+                                "powerUnitId"
+                              )}`
+                            );
+                          } else if (vehicleType === "trailer") {
+                            navigate(
+                              `/${MANAGE_VEHICLES}/trailers/${row.getValue(
+                                "trailerId"
+                              )}`
+                            );
+                          }
+                        }}
+                        disabled={false}
+                      >
+                        <Edit />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip arrow placement="top" title="Copy">
+                      {/*tslint:disable-next-line*/}
+                      <IconButton
+                        onClick={() => table.setEditingRow(row)}
+                        disabled={true}
+                      >
+                        <ContentCopy />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip arrow placement="top" title="Delete">
+                      {/*tslint:disable-next-line*/}
+                      <IconButton
+                        color="error"
+                        onClick={() => {
+                          setIsDeleteDialogOpen(() => true);
+                          setRowSelection(() => {
+                            const newObject: { [key: string]: boolean } = {};
+                            // Setting the selected row to false so that
+                            // the row appears unchecked.
+                            newObject[
+                              row.getValue(`${vehicleType}Id`) as string
+                            ] = false;
+                            return newObject;
+                          });
+                        }}
+                        disabled={false}
+                      >
+                        <Delete />
+                      </IconButton>
+                    </Tooltip>
+                  </>
+                )}
               </Box>
             ),
             []
@@ -268,7 +275,9 @@ export const List = memo(
               >
                 <MRT_GlobalFilterTextField table={table} />
                 <Filter />
-                <Trash onClickTrash={onClickTrashIcon} />
+                {DoesUserHaveRoleWithContext(ROLES.WRITE_VEHICLE) && (
+                  <Trash onClickTrash={onClickTrashIcon} />
+                )}
                 <CSVOptions />
               </Box>
             ),

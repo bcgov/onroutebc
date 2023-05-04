@@ -50,10 +50,7 @@ const App = () => {
   });
 
   const [userRoles, setUserRoles] = useState<string[] | undefined>();
-  const [companyId, setCompanyId] = useState<string | undefined>(
-    JSON.parse(sessionStorage.getItem("onRoutebc.user.context") as string)
-      ?.companyId
-  );
+  const [companyId, setCompanyId] = useState<string | undefined>();
   const [userDetails, setUserDetails] = useState<
     UserDetailContext | undefined
   >();

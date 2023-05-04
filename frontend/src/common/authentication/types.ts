@@ -42,6 +42,8 @@ export interface UserContextType {
 
 /**
  * The set of user roles.
+ * 
+ * Cross verify with the roles enum in the backend for any modifications.
  */
 export enum ROLES {
   PUBLIC_AGENT = "ORBC-PUBLIC-AGENT",
