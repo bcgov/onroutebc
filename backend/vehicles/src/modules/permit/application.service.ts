@@ -2,7 +2,7 @@ import { Mapper } from '@automapper/core';
 import { InjectMapper } from '@automapper/nestjs';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { PermitStatus } from 'src/common/enum/permit-status.enum';
+import { ApplicationStatus } from 'src/common/enum/application-status.enum';
 import { IsNull, Repository } from 'typeorm';
 import { CreateApplicationDto } from './dto/request/create-application.dto';
 import { ReadApplicationDto } from './dto/response/read-application.dto';
@@ -19,7 +19,7 @@ export class ApplicationService {
   async create(
     createApplicationDto: CreateApplicationDto,
   ): Promise<ReadApplicationDto> {
-    createApplicationDto.permitStatus = PermitStatus.IN_PROGRESS;
+    createApplicationDto.permitStatus = ApplicationStatus.IN_PROGRESS;
     const permitApplication = this.classMapper.map(
       createApplicationDto,
       CreateApplicationDto,
@@ -61,7 +61,7 @@ export class ApplicationService {
      Initially written to facilitate get application in progress for IDIR user.*/
   async findAllApplicationCompany(
     companyId: string,
-    status: string,
+    status: ApplicationStatus,
   ): Promise<ReadApplicationDto[]> {
     const applications = await this.permitRepository.find({
       where: {
@@ -85,7 +85,7 @@ export class ApplicationService {
   async findAllApplicationUser(
     companyId: string,
     userGuid: string,
-    status: string,
+    status: ApplicationStatus,
   ): Promise<ReadApplicationDto[]> {
     const applications: Permit[] = await this.permitRepository.find({
       where: {

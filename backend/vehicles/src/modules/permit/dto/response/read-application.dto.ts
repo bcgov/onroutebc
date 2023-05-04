@@ -1,8 +1,8 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
+import { ApplicationStatus } from 'src/common/enum/application-status.enum';
 import { PermitApplicationOrigin } from 'src/common/enum/permit-application-origin.enum';
 import { PermitApprovalSource } from 'src/common/enum/permit-approval-source.enum';
-import { PermitStatus } from 'src/common/enum/permit-status.enum';
 import { PermitType } from 'src/common/enum/permit-type.enum';
 
 export class ReadApplicationDto {
@@ -17,10 +17,10 @@ export class ReadApplicationDto {
   @AutoMap()
   @ApiProperty({
     description: 'Satus of Permit/Permit Application',
-    example: PermitStatus.IN_PROGRESS,
+    example: ApplicationStatus.IN_PROGRESS,
     required: false,
   })
-  permitStatus: string;
+  permitStatus: ApplicationStatus;
 
   @AutoMap()
   @ApiProperty({

@@ -6,7 +6,7 @@ import { PermitType } from '../../../common/enum/permit-type.enum';
 import { PermitData } from './permit-data.entity';
 import { PermitApplicationOrigin } from '../../../common/enum/permit-application-origin.enum';
 import { PermitApprovalSource } from '../../../common/enum/permit-approval-source.enum';
-import { PermitStatus } from 'src/common/enum/permit-status.enum';
+import { ApplicationStatus } from 'src/common/enum/application-status.enum';
 
 @Entity({ name: 'permit.ORBC_PERMIT' })
 export class Permit extends Base {
@@ -117,7 +117,7 @@ export class Permit extends Base {
 
   @AutoMap()
   @ApiProperty({
-    example: PermitStatus.IN_PROGRESS,
+    example: ApplicationStatus.IN_PROGRESS,
     description:
       'State of a permit or permit application, at any given point in time',
   })
@@ -126,5 +126,5 @@ export class Permit extends Base {
     name: 'PERMIT_STATUS_ID',
     nullable: true,
   })
-  permitStatus: string;
+  permitStatus: ApplicationStatus;
 }
