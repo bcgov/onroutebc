@@ -3,8 +3,7 @@ import { Box, Button, Typography } from "@mui/material";
 
 import { UserInformation } from "../types/manageProfile";
 import { formatPhoneNumber } from "../../../common/components/form/subFormComponents/PhoneNumberInput";
-import { formatProvince } from "../../../common/helpers/formatCountryProvince";
-import { formatCountry } from "../../../common/helpers/formatCountryProvince";
+import { formatProvince, formatCountry } from "../../../common/helpers/formatCountryProvince";
 
 export const DisplayMyInfo = memo(({
   myInfo,
