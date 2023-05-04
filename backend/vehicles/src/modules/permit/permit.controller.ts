@@ -1,6 +1,6 @@
 import { Controller, Post, Body, Req } from '@nestjs/common';
 import { PermitService } from './permit.service';
-import { ExceptionDto } from '../common/dto/exception.dto';
+import { ExceptionDto } from '../../common/exception/exception.dto';
 import {
   ApiTags,
   ApiNotFoundResponse,

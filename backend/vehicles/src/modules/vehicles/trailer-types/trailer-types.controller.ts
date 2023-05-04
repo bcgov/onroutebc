@@ -11,6 +11,7 @@ import { TrailerTypesService } from './trailer-types.service';
 import { CreateTrailerTypeDto } from './dto/request/create-trailer-type.dto';
 import { UpdateTrailerTypeDto } from './dto/request/update-trailer-type.dto';
 import {
+  ApiBadRequestResponse,
   ApiBearerAuth,
   ApiCreatedResponse,
   ApiInternalServerErrorResponse,
@@ -20,10 +21,14 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { ReadTrailerTypeDto } from './dto/response/read-trailer-type.dto';
-import { ExceptionDto } from '../../common/dto/exception.dto';
+import { ExceptionDto } from '../../../common/exception/exception.dto';
 import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
 
 @ApiTags('Vehicles - Trailer Types')
+@ApiBadRequestResponse({
+  description: 'Bad Request Response',
+  type: ExceptionDto,
+})
 @ApiNotFoundResponse({
   description: 'The Trailer Type Api Not Found Response',
   type: ExceptionDto,

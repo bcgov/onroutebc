@@ -1,15 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class BadRequestExceptionDto {
-  constructor(status: number, message: string[]) {
-    this.message = message;
-    this.status = status;
-  }
   @ApiProperty({
-    example: '400',
-    description: 'Http Status Code',
+    example: 'vin',
+    description: 'The field name',
   })
-  status: number;
+  field: string;
 
   @ApiProperty({
     description: 'Error Message',

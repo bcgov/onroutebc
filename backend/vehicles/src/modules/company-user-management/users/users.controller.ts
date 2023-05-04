@@ -8,6 +8,7 @@ import {
 } from '@nestjs/common';
 
 import {
+  ApiBadRequestResponse,
   ApiBearerAuth,
   ApiInternalServerErrorResponse,
   ApiMethodNotAllowedResponse,
@@ -16,7 +17,7 @@ import {
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
-import { ExceptionDto } from '../../common/dto/exception.dto';
+import { ExceptionDto } from '../../../common/exception/exception.dto';
 import { ReadUserOrbcStatusDto } from './dto/response/read-user-orbc-status.dto';
 import { UsersService } from './users.service';
 import { Role } from '../../../common/enum/roles.enum';
@@ -30,6 +31,10 @@ import { ReadUserDto } from './dto/response/read-user.dto';
 import { IDP } from '../../../common/enum/idp.enum';
 
 @ApiTags('Company and User Management - User')
+@ApiBadRequestResponse({
+  description: 'Bad Request Response',
+  type: ExceptionDto,
+})
 @ApiNotFoundResponse({
   description: 'The User Api Not Found Response',
   type: ExceptionDto,

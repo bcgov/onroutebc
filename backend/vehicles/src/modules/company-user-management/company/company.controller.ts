@@ -11,6 +11,7 @@ import {
 } from '@nestjs/common';
 import { CompanyService } from './company.service';
 import {
+  ApiBadRequestResponse,
   ApiBearerAuth,
   ApiCreatedResponse,
   ApiInternalServerErrorResponse,
@@ -21,7 +22,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
-import { ExceptionDto } from '../../common/dto/exception.dto';
+import { ExceptionDto } from '../../../common/exception/exception.dto';
 import { CreateCompanyDto } from './dto/request/create-company.dto';
 import { UpdateCompanyDto } from './dto/request/update-company.dto';
 import { ReadCompanyDto } from './dto/response/read-company.dto';
@@ -37,6 +38,10 @@ import { getDirectory, matchRoles } from '../../../common/helper/auth.helper';
 import { IDP } from '../../../common/enum/idp.enum';
 
 @ApiTags('Company and User Management - Company')
+@ApiBadRequestResponse({
+  description: 'Bad Request Response',
+  type: ExceptionDto,
+})
 @ApiNotFoundResponse({
   description: 'The Company Api Not Found Response',
   type: ExceptionDto,

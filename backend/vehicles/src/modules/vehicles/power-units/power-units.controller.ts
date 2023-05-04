@@ -25,19 +25,18 @@ import {
 } from '@nestjs/swagger';
 
 import { ReadPowerUnitDto } from './dto/response/read-power-unit.dto';
-import { ExceptionDto } from '../../common/dto/exception.dto';
+import { ExceptionDto } from '../../../common/exception/exception.dto';
 import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
 import { Request } from 'express';
 import { Roles } from '../../../common/decorator/roles.decorator';
 import { Role } from '../../../common/enum/roles.enum';
 import { DeleteDto } from 'src/modules/common/dto/response/delete.dto';
 import { DeletePowerUnitDto } from './dto/request/delete-power-units.dto';
-import { BadRequestExceptionDto } from '../../common/dto/badRequestException.dto';
 
 @ApiTags('Vehicles - Power Units')
 @ApiBadRequestResponse({
   description: 'Bad Request Response',
-  type: BadRequestExceptionDto,
+  type: ExceptionDto,
 })
 @ApiNotFoundResponse({
   description: 'The Power Unit Api Not Found Response',
