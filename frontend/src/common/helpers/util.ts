@@ -5,7 +5,7 @@
  *
  * @see https://bobbyhadz.com/blog/javascript-remove-null-values-from-object
  */
-export const removeEmptyValues = (obj: Object): Object => {
+export const removeEmptyValues = (obj: object): object => {
   return Object.fromEntries(
     Object.entries(obj)
       .filter(([_, value]) => value != null && value !== "" && value.length > 0)
