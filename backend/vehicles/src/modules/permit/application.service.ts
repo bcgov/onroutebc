@@ -7,6 +7,7 @@ import { Repository } from 'typeorm';
 import { CreateApplicationDto } from './dto/request/create-application.dto';
 import { ReadApplicationDto } from './dto/response/read-application.dto';
 import { Permit } from './entities/permit.entity';
+import { UpdateApplicationDto } from './dto/request/update-application.dto';
 
 @Injectable()
 export class ApplicationService {
@@ -91,5 +92,54 @@ export class ApplicationService {
       Permit,
       ReadApplicationDto,
     );
+  }
+
+  async findByApplication(
+    applicationNumber: string,
+  ): Promise<ReadApplicationDto> {
+    const application = await this.permitRepository.findOne({
+      where: [{ applicationNumber: applicationNumber }],
+      relations: {
+        permitData: true,
+      },
+    });
+
+    const readPermitApplicationdto = await this.classMapper.mapAsync(
+      application,
+      Permit,
+      ReadApplicationDto,
+    );
+    return readPermitApplicationdto;
+  }
+
+  async update(
+    companyId: number,
+    applicationNumber: string,
+    updateApplicationDto: UpdateApplicationDto,
+  ): Promise<ReadApplicationDto> {
+    console.log('updateApplicationDto', updateApplicationDto);
+
+    const newApplication = this.classMapper.map(
+      updateApplicationDto,
+      UpdateApplicationDto,
+      Permit,
+    );
+
+    console.log('newApplication', newApplication)
+
+    const app = await this.findByApplication(applicationNumber);
+
+    //console.log('app', app)
+
+    //console.log('newApplication', newApplication)
+
+    // console.log('applicationNumber', applicationNumber);
+    // console.log('companyId', companyId);
+
+    await this.permitRepository.save({ ...app, ...newApplication });
+
+    //console.log('permitRepository.update')
+
+    return this.findApplication(applicationNumber);
   }
 }

@@ -1,7 +1,7 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
 import { PermitApplicationOrigin } from 'src/common/enum/permit-application-origin.enum';
-import { PermitApprovalSource } from 'src/common/enum/permit-approval-source.enum';
+import { PermitStatus } from 'src/common/enum/permit-status.enum';
 import { PermitType } from 'src/common/enum/permit-type.enum';
 
 export class UpdateApplicationDto {
@@ -23,6 +23,13 @@ export class UpdateApplicationDto {
 
   @AutoMap()
   @ApiProperty({
+    example: 'A2-00000002-120',
+    description: 'Unique formatted permit application number.',
+  })
+  applicationNumber: string;
+
+  @AutoMap()
+  @ApiProperty({
     enum: PermitType,
     description: 'Friendly name for the permit type.',
     example: PermitType.TERM_OVERSIZE,
@@ -31,11 +38,11 @@ export class UpdateApplicationDto {
 
   @AutoMap()
   @ApiProperty({
-    enum: PermitApprovalSource,
-    example: PermitApprovalSource.PPC,
-    description: 'Unique identifier for the application approval source.',
+    enum: PermitStatus,
+    description: 'Friendly name for the permit type.',
+    example: PermitStatus.IN_PROGRESS,
   })
-  permitApprovalSource: PermitApprovalSource;
+  permitStatus: PermitStatus;
 
   @AutoMap()
   @ApiProperty({
