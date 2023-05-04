@@ -1,6 +1,6 @@
 /**
  * The roles of a user.
- * 
+ *
  * NOTE: The frontend has an identical copy of this. Any changes made here
  * should be cascaded.
  */
