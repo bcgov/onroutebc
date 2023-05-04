@@ -3,7 +3,7 @@ import { InjectMapper } from '@automapper/nestjs';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PermitStatus } from 'src/common/enum/permit-status.enum';
-import { Repository } from 'typeorm';
+import { IsNull, Repository } from 'typeorm';
 import { CreateApplicationDto } from './dto/request/create-application.dto';
 import { ReadApplicationDto } from './dto/response/read-application.dto';
 import { Permit } from './entities/permit.entity';
@@ -46,7 +46,7 @@ export class ApplicationService {
       },
     });
   }
-
+  /* Get single application By Permit ID*/
   async findApplication(permitId: string): Promise<ReadApplicationDto> {
     const application = await this.findOne(permitId);
     const readPermitApplicationdto = await this.classMapper.mapAsync(
@@ -57,13 +57,21 @@ export class ApplicationService {
     return readPermitApplicationdto;
   }
 
-  ///get all application for a company. Initially written to facilitate get application in progress for IDIR user.
+  /* Get all application for a company. 
+     Initially written to facilitate get application in progress for IDIR user.*/
   async findAllApplicationCompany(
     companyId: string,
     status: string,
   ): Promise<ReadApplicationDto[]> {
     const applications = await this.permitRepository.find({
-      where: { companyId: +companyId, permitStatus: status },
+      where: {
+        companyId: +companyId,
+        permitStatus: status,
+        permitNumber: IsNull(),
+      },
+      relations: {
+        permitData: true,
+      },
     });
 
     return this.classMapper.mapArrayAsync(
@@ -72,7 +80,8 @@ export class ApplicationService {
       ReadApplicationDto,
     );
   }
-  //get all application in progress for a specific user of a specific company. Initially written to facilitate get application in progress for company User.
+  /*Get all application in progress for a specific user of a specific company.
+    Initially written to facilitate get application in progress for company User. */
   async findAllApplicationUser(
     companyId: string,
     userGuid: string,
@@ -83,6 +92,10 @@ export class ApplicationService {
         companyId: +companyId,
         userGuid: userGuid,
         permitStatus: status,
+        permitNumber: IsNull(),
+      },
+      relations: {
+        permitData: true,
       },
     });
 
