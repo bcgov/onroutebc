@@ -1,5 +1,11 @@
 import { AutomapperProfile, InjectMapper } from '@automapper/nestjs';
-import { createMap, forMember, mapFrom, Mapper } from '@automapper/core';
+import {
+  createMap,
+  forMember,
+  mapFrom,
+  Mapper,
+  mapWithArguments,
+} from '@automapper/core';
 import { Injectable } from '@nestjs/common';
 import { Permit } from '../entities/permit.entity';
 import { CreateApplicationDto } from '../dto/request/create-application.dto';
@@ -40,38 +46,44 @@ export class ApplicationProfile extends AutomapperProfile {
         ),
       );
 
-      // createMap(
-      //   mapper,
-      //   UpdateApplicationDto,
-      //   Permit,
-      //   forMember(
-      //     (d) => d.permitData?.permitData,
-      //     mapFrom((s) => {
-      //       return s.permitData ? JSON.stringify(s.permitData) : undefined;
-      //     }),
-      //   ),
-      // );
-
-      // TODO: Update type from any
       createMap(
         mapper,
         UpdateApplicationDto,
         Permit,
         forMember(
-          (d : any) => {
-            //console.log('d', d);
-            return d.permitData;
-            //return d.permitData?.permitData;
-          },
+          (d) => d.permitData?.permitData,
           mapFrom((s) => {
-            //console.log('s', s);
-            //const str = JSON.stringify(s.permitData)
-            //const obj = {str}
-            return s.permitData;
-            //return s.permitData ? JSON.stringify(s.permitData) : undefined;
+            return s.permitData ? JSON.stringify(s.permitData) : undefined;
+          }),
+        ),
+        forMember(
+          (d) => d.permitId,
+          mapWithArguments((source, { permitId }) => {
+            return permitId;
           }),
         ),
       );
+
+      // TODO: Update type from any
+      // createMap(
+      //   mapper,
+      //   UpdateApplicationDto,
+      //   Permit,
+      //   forMember(
+      //     (d : any) => {
+      //       //console.log('d', d);
+      //       return d.permitData;
+      //       //return d.permitData?.permitData;
+      //     },
+      //     mapFrom((s) => {
+      //       //console.log('s', s);
+      //       //const str = JSON.stringify(s.permitData)
+      //       //const obj = {str}
+      //       return s.permitData;
+      //       //return s.permitData ? JSON.stringify(s.permitData) : undefined;
+      //     }),
+      //   ),
+      // );
     };
   }
 }

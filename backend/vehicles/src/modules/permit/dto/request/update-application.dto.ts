@@ -23,13 +23,6 @@ export class UpdateApplicationDto {
 
   @AutoMap()
   @ApiProperty({
-    example: 'A2-00000002-120',
-    description: 'Unique formatted permit application number.',
-  })
-  applicationNumber: string;
-
-  @AutoMap()
-  @ApiProperty({
     enum: PermitType,
     description: 'Friendly name for the permit type.',
     example: PermitType.TERM_OVERSIZE,

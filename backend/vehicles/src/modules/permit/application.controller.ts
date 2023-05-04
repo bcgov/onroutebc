@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Param, Post, Put, Query, Req } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Put,
+  Query,
+  Req,
+} from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiCreatedResponse,
@@ -89,31 +98,23 @@ export class ApplicationController {
 
   @ApiOkResponse({
     description: 'The Permit Application Resource',
-    type: ReadApplicationDto
+    type: ReadApplicationDto,
   })
   @Put(':applicationNumber')
   async update(
     @Req() request: Request,
-    @Param('companyId') companyId: number,
     @Param('applicationNumber') applicationNumber: string,
     @Body() updateApplicationDto: UpdateApplicationDto,
   ): Promise<ReadApplicationDto> {
 
-    //console.log('request', request.body)
-    //console.log('updateApplicationDto 1', updateApplicationDto)
-
-    const existingApplication = await this.applicationService.findByApplication(applicationNumber);
-
-    updateApplicationDto.applicationNumber = applicationNumber;
-
     const application = await this.applicationService.update(
-      companyId,
+      null,
       applicationNumber,
       updateApplicationDto,
     );
 
     //console.log('updateApplicationDto 1', updateApplicationDto)
-    
+
     if (!application) {
       throw new DataNotFoundException();
     }

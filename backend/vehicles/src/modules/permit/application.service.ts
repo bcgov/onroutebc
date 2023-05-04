@@ -96,19 +96,19 @@ export class ApplicationService {
 
   async findByApplication(
     applicationNumber: string,
-  ): Promise<ReadApplicationDto> {
+  ): Promise<ReadApplicationDto> {   
     const application = await this.permitRepository.findOne({
       where: [{ applicationNumber: applicationNumber }],
       relations: {
         permitData: true,
       },
     });
-
-    const readPermitApplicationdto = await this.classMapper.mapAsync(
+     const readPermitApplicationdto = await this.classMapper.mapAsync(
       application,
       Permit,
       ReadApplicationDto,
     );
+
     return readPermitApplicationdto;
   }
 
@@ -117,18 +117,20 @@ export class ApplicationService {
     applicationNumber: string,
     updateApplicationDto: UpdateApplicationDto,
   ): Promise<ReadApplicationDto> {
-    console.log('updateApplicationDto', updateApplicationDto);
 
+    const app = await this.findByApplication(applicationNumber);
+    
     const newApplication = this.classMapper.map(
       updateApplicationDto,
       UpdateApplicationDto,
       Permit,
+      {
+        extraArgs: () => ({
+          permitId: app.permitId,
+        }),
+      },
     );
-
-    console.log('newApplication', newApplication)
-
-    const app = await this.findByApplication(applicationNumber);
-
+ 
     //console.log('app', app)
 
     //console.log('newApplication', newApplication)
@@ -136,10 +138,7 @@ export class ApplicationService {
     // console.log('applicationNumber', applicationNumber);
     // console.log('companyId', companyId);
 
-    await this.permitRepository.save({ ...app, ...newApplication });
-
-    //console.log('permitRepository.update')
-
-    return this.findApplication(applicationNumber);
+    await this.permitRepository.save(newApplication);
+    return this.findByApplication(applicationNumber);
   }
 }
