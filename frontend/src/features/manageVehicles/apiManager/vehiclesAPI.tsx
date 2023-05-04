@@ -15,6 +15,7 @@ import {
   getCompanyIdFromSession,
   httpGETRequest,
 } from "../../../common/apiManager/httpRequestHandler";
+import { removeEmptyValues } from "../../../common/helpers/util";
 
 /**
  * Fetch*
@@ -74,7 +75,7 @@ export const getPowerUnitTypes = async (): Promise<Array<VehicleType>> => {
  */
 export const addPowerUnit = (powerUnit: PowerUnit): Promise<Response> => {
   const url = `${VEHICLE_URL}/companies/${getCompanyIdFromSession()}/vehicles/powerUnits`;
-  return httpPOSTRequest(url, powerUnit);
+  return httpPOSTRequest(url, removeEmptyValues(powerUnit));
 };
 
 /**
@@ -90,7 +91,7 @@ export const updatePowerUnit = ({
   powerUnitId: string;
 }): Promise<Response> => {
   const url = `${VEHICLE_URL}/companies/${getCompanyIdFromSession()}/vehicles/powerUnits/${powerUnitId}`;
-  return httpPUTRequest(url, powerUnit);
+  return httpPUTRequest(url, removeEmptyValues(powerUnit));
 };
 
 /**
@@ -146,7 +147,7 @@ export const getTrailerTypes = async (): Promise<Array<VehicleType>> => {
  */
 export const addTrailer = (trailer: Trailer): Promise<Response> => {
   const url = `${VEHICLE_URL}/companies/${getCompanyIdFromSession()}/vehicles/trailers`;
-  return httpPOSTRequest(url, trailer);
+  return httpPOSTRequest(url, removeEmptyValues(trailer));
 };
 
 /**
@@ -163,7 +164,7 @@ export const updateTrailer = ({
   trailer: UpdateTrailer;
 }): Promise<Response> => {
   const url = `${VEHICLE_URL}/companies/${getCompanyIdFromSession()}/vehicles/trailers/${trailerId}`;
-  return httpPUTRequest(url, trailer);
+  return httpPUTRequest(url, removeEmptyValues(trailer));
 };
 
 /**
@@ -185,5 +186,5 @@ export const deleteVehicles = (
     url = `${VEHICLE_URL}/companies/${getCompanyIdFromSession()}/vehicles/trailers/delete-requests`;
     requestBody = { trailers: vehicleIds };
   }
-  return httpPOSTRequest(url, requestBody);
+  return httpPOSTRequest(url, removeEmptyValues(requestBody));
 };

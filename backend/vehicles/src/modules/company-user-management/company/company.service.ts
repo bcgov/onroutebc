@@ -78,6 +78,7 @@ export class CompanyService {
       await queryRunner.commitTransaction();
     } catch (err) {
       await queryRunner.rollbackTransaction();
+      throw new Error('Internal Server Error'); // TODO: Handle the typeorm Error handling
     } finally {
       await queryRunner.release();
     }

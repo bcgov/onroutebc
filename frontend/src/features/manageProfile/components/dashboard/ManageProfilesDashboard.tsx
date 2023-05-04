@@ -6,7 +6,8 @@ import { AxiosError } from "axios";
 import { Unauthorized } from "../../../../common/pages/Unauthorized";
 import { getCompanyInfo } from "../../apiManager/manageProfileAPI";
 import { Loading } from "../../../../common/pages/Loading";
-import { UnexpectedError } from "../../../../common/pages/UnexpectedError";
+import { ErrorFallback } from "../../../../common/pages/ErrorFallback";
+import { MyInfo } from "../../pages/MyInfo";
 
 export const ManageProfilesDashboard = React.memo(() => {
   const {
@@ -31,7 +32,7 @@ export const ManageProfilesDashboard = React.memo(() => {
       if (error.response?.status === 401) {
         return <Unauthorized />;
       }
-      return <UnexpectedError error={error.message} />;
+      return <ErrorFallback error={error.message} />;
     }
   }
 
@@ -42,7 +43,7 @@ export const ManageProfilesDashboard = React.memo(() => {
     },
     {
       label: "My Information",
-      component: <>TODO</>,
+      component: <MyInfo />,
     },
     {
       label: "User Management",

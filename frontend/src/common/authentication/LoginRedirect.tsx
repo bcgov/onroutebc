@@ -1,12 +1,12 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useAuth } from "react-oidc-context";
 import { useNavigate } from "react-router-dom";
 import * as routes from "../../routes/constants";
 import { HomePage } from "../../features/homePage/HomePage";
-import { getUserContext } from "../../features/manageProfile/apiManager/manageProfileAPI";
 import { UserContextType } from "./types";
 import { Loading } from "../pages/Loading";
+import { useUserContext } from "../../features/manageProfile/apiManager/hooks";
 
 /*
  * Redirects user to their correct page after loading their
@@ -16,40 +16,7 @@ export const LoginRedirect = () => {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
 
-  const userContextQuery = useQuery({
-    queryKey: ["userContext"],
-    queryFn: getUserContext,
-    cacheTime: 500,
-    refetchOnMount: "always",
-    onSuccess: (userContextResponseBody: UserContextType) => {
-      const { user, associatedCompanies } = userContextResponseBody;
-      if (user?.userGUID) {
-        const userContextSessionObject = {
-          companyId: associatedCompanies[0].companyId,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          userName: user.userName,
-          phone1: user.phone1,
-          phone1Extension: user.phone1Extension,
-          phone2: user.phone2,
-          phone2Extension: user.phone2Extension,
-          email: user.email,
-          fax: user.fax,
-        };
-
-        // Switch to a react context when implementing multiple companies.
-        // We currently don't need a dedicated react context.
-        // Session Storage works alright as there is no leakage of information
-        // than what is already displayed to the user.
-        sessionStorage.setItem(
-          "onRoutebc.user.context",
-          JSON.stringify(userContextSessionObject)
-        );
-      }
-    },
-    retry: false,
-  });
-
+  const userContextQuery = useUserContext();
   const queryClient = useQueryClient();
   const { isLoading } = userContextQuery;
 
@@ -80,6 +47,7 @@ export const LoginRedirect = () => {
         // User exists but company does not exist. This is not a possible scenario.
         else if (!associatedCompanies.length) {
           // Error Page
+          navigate(routes.UNAUTHORIZED);
         }
 
         // else if(pendingCompanies.length) (i.e., user exists and has invites from a company)

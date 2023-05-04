@@ -1,19 +1,59 @@
 import { useAuth } from "react-oidc-context";
-import { useLocation, Navigate, Outlet } from "react-router-dom";
-import { HOME } from "./constants";
+import { useLocation, Navigate, Outlet, useNavigate } from "react-router-dom";
+import { HOME, UNAUTHORIZED } from "./constants";
 import { Loading } from "../common/pages/Loading";
+import { useContext, useEffect } from "react";
+import OnRouteBCContext from "../common/authentication/OnRouteBCContext";
+import { DoesUserHaveRole } from "../common/authentication/util";
+import { LoadUserRolesByCompany } from "../common/authentication/LoadUserRolesByCompany";
+import { LoadUserContext } from "../common/authentication/LoadUserContext";
 
-export const ProtectedRoutes = () => {
-  const { isAuthenticated, isLoading } = useAuth();
+export const ProtectedRoutes = ({
+  requiredRole,
+}: {
+  requiredRole?: string;
+}) => {
+  const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
+  const { userRoles, companyId } = useContext(OnRouteBCContext);
   const location = useLocation();
+  const navigate = useNavigate();
 
-  if (isLoading) {
+  /**
+   * Redirect the user back to login page if they are trying to directly access
+   * a protected page but are unauthenticated.
+   */
+  useEffect(() => {
+    if (!isAuthLoading && !isAuthenticated) {
+      navigate(HOME);
+    }
+  }, [isAuthLoading, isAuthenticated]);
+
+  if (isAuthLoading) {
     return <Loading />;
   }
 
-  return isAuthenticated ? (
-    <Outlet />
-  ) : (
-    <Navigate to={HOME} state={{ from: location }} replace />
-  );
+  if (isAuthenticated) {
+    if (!companyId) {
+      return (
+        <>
+          <LoadUserContext />
+          <Loading />
+        </>
+      );
+    }
+    if (!userRoles) {
+      return (
+        <>
+          <LoadUserRolesByCompany />
+          <Loading />
+        </>
+      );
+    }
+    if (!DoesUserHaveRole(userRoles, requiredRole)) {
+      return <Navigate to={UNAUTHORIZED} state={{ from: location }} replace />;
+    }
+    return <Outlet />;
+  } else {
+    return <Navigate to={HOME} state={{ from: location }} replace />;
+  }
 };

@@ -6,6 +6,8 @@ import "./Header.scss";
 import * as routes from "../../../routes/constants";
 import { BC_COLOURS } from "../../../themes/bcGovStyles";
 import { Grid } from "@mui/material";
+import { DoesUserHaveRoleWithContext } from "../../authentication/util";
+import { ROLES } from "../../authentication/types";
 
 const LogOutBtn = () => {
   const { signoutRedirect, user } = useAuth();
@@ -114,27 +116,34 @@ export const Header = () => {
           </li>
           {isAuthenticated && (
             <>
-              <li>
-                <NavLink
-                  to={routes.MANAGE_VEHICLES}
-                  onClick={menuToggleHandler}
-                >
-                  Vehicle Inventory
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to={routes.MANAGE_PROFILES}
-                  onClick={menuToggleHandler}
-                >
-                  Profile
-                </NavLink>
-              </li>
-              <li>
-                <NavLink to={routes.PERMITS} onClick={menuToggleHandler}>
-                  Permits
-                </NavLink>
-              </li>
+              {DoesUserHaveRoleWithContext(ROLES.READ_VEHICLE) && (
+                <li>
+                  <NavLink
+                    to={routes.MANAGE_VEHICLES}
+                    onClick={menuToggleHandler}
+                  >
+                    Vehicle Inventory
+                  </NavLink>
+                </li>
+              )}
+              {DoesUserHaveRoleWithContext(ROLES.READ_ORG) && (
+                <li>
+                  <NavLink
+                    to={routes.MANAGE_PROFILES}
+                    onClick={menuToggleHandler}
+                  >
+                    Profile
+                  </NavLink>
+                </li>
+              )}
+
+              {DoesUserHaveRoleWithContext(ROLES.WRITE_PERMIT) && (
+                <li>
+                  <NavLink to={routes.PERMITS} onClick={menuToggleHandler}>
+                    Permits
+                  </NavLink>
+                </li>
+              )}
             </>
           )}
           {isAuthenticated && (

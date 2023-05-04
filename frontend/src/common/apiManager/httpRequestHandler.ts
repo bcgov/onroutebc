@@ -26,15 +26,22 @@ const getAccessToken = () => {
  * @returns string | null
  */
 export const getCompanyIdFromSession = (): string | null => {
-  const userContextString = sessionStorage.getItem("onRoutebc.user.context");
-  if (!userContextString) return null;
+  return sessionStorage.getItem("onRouteBC.user.companyId");
+};
 
-  const userContext = JSON.parse(userContextString);
-
-  if (!userContext.companyId) return null;
-
-  // Currently we only support one company per user.
-  return userContext.companyId;
+/**
+ * Retrieves user's GUID from session.
+ * @returns string | null
+ */
+export const getUserGuidFromSession = (): string | null => {
+  const storageKey: string = Object.keys(sessionStorage).find((key) =>
+    key.startsWith("oidc.user")
+  ) as string;
+  const parsedSessionObject = JSON.parse(
+    sessionStorage.getItem(storageKey) as string
+  );
+  
+  return parsedSessionObject?.profile?.bceid_user_guid ?? null;
 };
 
 /**

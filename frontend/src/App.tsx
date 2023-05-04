@@ -5,13 +5,16 @@ import { Header } from "./common/components/header/Header";
 import { Footer } from "./common/components/footer/Footer";
 import { ThemeProvider } from "@mui/material/styles";
 import { bcGovTheme } from "./themes/bcGovTheme";
-import { createContext, Dispatch, useEffect, useState } from "react";
+import { createContext, Dispatch, useEffect, useMemo, useState } from "react";
 import {
   CustomSnackbar,
   SnackBarOptions,
 } from "./common/components/snackbar/CustomSnackBar";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider } from "react-oidc-context";
+import OnRouteBCContext, {
+  UserDetailContext,
+} from "./common/authentication/OnRouteBCContext";
 
 const authority =
   import.meta.env.VITE_AUTH0_ISSUER_URL || envConfig.VITE_AUTH0_ISSUER_URL;
@@ -46,6 +49,12 @@ const App = () => {
     alertType: "info",
   });
 
+  const [userRoles, setUserRoles] = useState<string[] | undefined>();
+  const [companyId, setCompanyId] = useState<string | undefined>();
+  const [userDetails, setUserDetails] = useState<
+    UserDetailContext | undefined
+  >();
+
   // Needed the following usestate and useffect code so that the snackbar would disapear/close
   const [displaySnackBar, setDisplaySnackBar] = useState(false);
   useEffect(() => {
@@ -56,19 +65,32 @@ const App = () => {
     <AuthProvider {...oidcConfig}>
       <ThemeProvider theme={bcGovTheme}>
         <QueryClientProvider client={queryClient}>
-          <SnackBarContext.Provider value={{ setSnackBar: setSnackBar }}>
-            <CustomSnackbar
-              showSnackbar={displaySnackBar}
-              setShowSnackbar={setDisplaySnackBar}
-              message={snackBar.message}
-              alertType={snackBar.alertType}
-            />
-            <Router>
-              <Header />
-              <AppRoutes />
-            </Router>
-            <Footer />
-          </SnackBarContext.Provider>
+          <OnRouteBCContext.Provider
+            value={useMemo(() => {
+              return {
+                userRoles,
+                setUserRoles,
+                companyId,
+                setCompanyId,
+                userDetails,
+                setUserDetails,
+              };
+            }, [userRoles, companyId, userDetails])}
+          >
+            <SnackBarContext.Provider value={{ setSnackBar: setSnackBar }}>
+              <CustomSnackbar
+                showSnackbar={displaySnackBar}
+                setShowSnackbar={setDisplaySnackBar}
+                message={snackBar.message}
+                alertType={snackBar.alertType}
+              />
+              <Router>
+                <Header />
+                <AppRoutes />
+              </Router>
+              <Footer />
+            </SnackBarContext.Provider>
+          </OnRouteBCContext.Provider>
         </QueryClientProvider>
       </ThemeProvider>
     </AuthProvider>

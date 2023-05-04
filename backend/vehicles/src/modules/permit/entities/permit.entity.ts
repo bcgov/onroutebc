@@ -6,6 +6,7 @@ import { PermitType } from '../../../common/enum/permit-type.enum';
 import { PermitData } from './permit-data.entity';
 import { PermitApplicationOrigin } from '../../../common/enum/permit-application-origin.enum';
 import { PermitApprovalSource } from '../../../common/enum/permit-approval-source.enum';
+import { PermitStatus } from 'src/common/enum/permit-status.enum';
 
 @Entity({ name: 'permit.ORBC_PERMIT' })
 export class Permit extends Base {
@@ -31,6 +32,14 @@ export class Permit extends Base {
   })
   @Column({ type: 'integer', name: 'COMPANY_ID', nullable: true })
   companyId: number;
+
+  @AutoMap()
+  @ApiProperty({
+    example: '1',
+    description: 'GUID of the user requesting the permit.',
+  })
+  @Column({ length: 32, name: 'OWNER_USER_GUID', nullable: true })
+  userGuid: string;
 
   @AutoMap()
   @ApiProperty({
@@ -105,4 +114,17 @@ export class Permit extends Base {
     nullable: true,
   })
   permitNumber: string;
+
+  @AutoMap()
+  @ApiProperty({
+    example: PermitStatus.IN_PROGRESS,
+    description:
+      'State of a permit or permit application, at any given point in time',
+  })
+  @Column({
+    length: 20,
+    name: 'PERMIT_STATUS_ID',
+    nullable: true,
+  })
+  permitStatus: string;
 }
