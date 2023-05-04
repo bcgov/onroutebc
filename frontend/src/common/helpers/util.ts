@@ -16,7 +16,7 @@ export const removeEmptyValues = (obj: object): object => {
       })
       .map(([key, value]) => {
         if (Array.isArray(value)) {
-          return value;
+          return [key, value];
         }
         return [
           key,
