@@ -3,14 +3,20 @@ import {
   httpPOSTRequest,
   httpPUTRequest,
   getCompanyIdFromSession,
+  getUserGuidFromSession,
 } from "../../../common/apiManager/httpRequestHandler";
 import { UserContextType } from "../../../common/authentication/types";
 import { removeEmptyValues } from "../../../common/helpers/util";
-import { CompanyProfile, CompanyAndUserRequest } from "../types/manageProfile";
+import { CompanyProfile, CompanyAndUserRequest, UserInformation } from "../types/manageProfile";
 import { MANAGE_PROFILE_API, MANAGE_PROFILE_URL } from "./endpoints/endpoints";
 
 export const getCompanyInfo = async (): Promise<CompanyProfile> => {
   const url = MANAGE_PROFILE_API.COMPANIES + "/" + getCompanyIdFromSession();
+  return httpGETRequest(url).then((response) => response.data);
+};
+
+export const getMyInfo = async (): Promise<UserInformation> => {
+  const url = `${MANAGE_PROFILE_API.MY_INFO}/${getUserGuidFromSession()}?companyId=${getCompanyIdFromSession()}`;
   return httpGETRequest(url).then((response) => response.data);
 };
 
