@@ -26,6 +26,7 @@ import {
 } from "../../../manageVehicles/types/managevehicles";
 import { mapVinToVehicleObject } from "../../helpers/mappers";
 import { TROS_COMMODITIES } from "../../constants/termOversizeConstants";
+import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 
 /**
  * The first step in creating and submitting a TROS Application.
@@ -41,16 +42,12 @@ export const TermOversizeForm = () => {
 
   // Context to hold all of the application data related to the TROS application
   const applicationContext = useContext(ApplicationContext);
-
-  // Get the logged in users data from session storage
-  let userJson;
-  const userInfo: any = sessionStorage.getItem("onRoutebc.user.context");
-  if (userInfo) userJson = JSON.parse(userInfo);
+  const { companyId, userDetails } = useContext(OnRouteBCContext);
 
   // Default values to register with React Hook Forms
   // Use saved data from the TROS application context, otherwise use empty or undefined values
   const termOversizeDefaultValues: TermOversizeApplication = {
-    companyId: userJson?.companyId || "",
+    companyId: companyId ? +companyId : +"",
     //applicationId: applicationContext?.applicationData?.applicationId || 0,
     applicationName:
       applicationContext?.applicationData?.applicationName || "TROS",
@@ -69,22 +66,22 @@ export const TermOversizeForm = () => {
         firstName:
           applicationContext?.applicationData?.application?.contactDetails
             ?.firstName ||
-          userJson?.firstName ||
+          userDetails?.firstName ||
           "",
         lastName:
           applicationContext?.applicationData?.application?.contactDetails
             ?.lastName ||
-          userJson?.lastName ||
+          userDetails?.lastName ||
           "",
         phone1:
           applicationContext?.applicationData?.application?.contactDetails
             ?.phone1 ||
-          userJson?.phone1 ||
+          userDetails?.phone1 ||
           "",
         email:
           applicationContext?.applicationData?.application?.contactDetails
             ?.email ||
-          userJson?.email ||
+          userDetails?.email ||
           "",
       },
       // Default values are updated from companyInfo query in the ContactDetails common component
