@@ -14,9 +14,14 @@ export const removeEmptyValues = (obj: object): object => {
         }
         return value != null && value !== "";
       })
-      .map(([key, value]) => [
-        key,
-        typeof value === "object" ? removeEmptyValues(value) : value,
-      ])
+      .map(([key, value]) => {
+        if (Array.isArray(value)) {
+          return value;
+        }
+        return [
+          key,
+          typeof value === "object" ? removeEmptyValues(value) : value,
+        ];
+      })
   );
 };
