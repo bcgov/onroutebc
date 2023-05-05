@@ -10,6 +10,7 @@ import { getMyInfo } from "../apiManager/manageProfileAPI";
 import { Loading } from "../../../common/pages/Loading";
 import { Unauthorized } from "../../../common/pages/Unauthorized";
 import { ErrorFallback } from "../../../common/pages/ErrorFallback";
+import { MyInfoForm } from "../components/forms/myInfo/MyInfoForm";
 
 const Header = () => (
   <Typography
@@ -55,7 +56,7 @@ export const MyInfo = memo(() => {
       {isEditing ? <Header /> : null}
       <UserInfoBanner userInfo={myInfo} />
       {isEditing ? (
-        <>Edit My Information Form here</>
+        <MyInfoForm myInfo={myInfo} setIsEditing={setIsEditing} />
       ) : (
         <DisplayMyInfo myInfo={myInfo} setIsEditing={setIsEditing} />
       )}

@@ -33,6 +33,17 @@ export const updateCompanyInfo = async ({
   );
 };
 
+export const updateMyInfo = async ({
+  myInfo,
+}: {
+  myInfo: UserInformation;
+}): Promise<Response> => {
+  return httpPUTRequest(
+    `${MANAGE_PROFILE_API.COMPANIES}/${getCompanyIdFromSession()}/users/${getUserGuidFromSession()}`,
+    replaceEmptyValuesWithNull(myInfo),
+  );
+};
+
 /**
  * Creates an onRouteBC profile.
  * @param onRouteBCProfileRequestObject The request object containing the profile details
