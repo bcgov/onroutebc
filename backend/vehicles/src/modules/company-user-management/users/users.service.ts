@@ -324,7 +324,7 @@ export class UsersService {
       extraArgs: () => ({
         userGUID: userGUID,
         userName: userName,
-        directory: Directory,
+        directory: directory,
       }),
     });
     user.userContact.contactId = userDetails.userContact.contactId;
