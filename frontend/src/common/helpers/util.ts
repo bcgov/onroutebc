@@ -39,7 +39,7 @@ export const removeEmptyValues = (obj: object): object => {
  *
  * @see https://dev.to/typescripttv/what-is-the-difference-between-null-and-undefined-5h76
  */
-export const replaceEmptyValuesWithNull = (obj: object): any => {
+export const replaceEmptyValuesWithNull = (obj: object): object | null => {
   if (Array.isArray(obj)) {
     return obj.map((item) => replaceEmptyValuesWithNull(item));
   } 
