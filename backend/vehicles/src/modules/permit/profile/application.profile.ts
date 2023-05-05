@@ -11,7 +11,6 @@ import { Permit } from '../entities/permit.entity';
 import { CreateApplicationDto } from '../dto/request/create-application.dto';
 import { ReadApplicationDto } from '../dto/response/read-application.dto';
 import { UpdateApplicationDto } from '../dto/request/update-application.dto';
-import { PermitData } from '../entities/permit-data.entity';
 
 @Injectable()
 export class ApplicationProfile extends AutomapperProfile {
@@ -53,7 +52,7 @@ export class ApplicationProfile extends AutomapperProfile {
         forMember(
           (d) => d.permitData?.permitData,
           mapFrom((s) => {
-            return s.permitData ? JSON.stringify(s.permitData) : undefined;
+            return s.permitData ? JSON.stringify(s.permitData) : null;
           }),
         ),
         forMember(
@@ -62,28 +61,14 @@ export class ApplicationProfile extends AutomapperProfile {
             return permitId;
           }),
         ),
+        forMember(
+          (d) => d.permitData.permitDataId,
+          mapWithArguments((source, { permitDataId }) => {
+            // TODO: Throw exception if permitDataId is null
+            return permitDataId;
+          }),
+        ),
       );
-
-      // TODO: Update type from any
-      // createMap(
-      //   mapper,
-      //   UpdateApplicationDto,
-      //   Permit,
-      //   forMember(
-      //     (d : any) => {
-      //       //console.log('d', d);
-      //       return d.permitData;
-      //       //return d.permitData?.permitData;
-      //     },
-      //     mapFrom((s) => {
-      //       //console.log('s', s);
-      //       //const str = JSON.stringify(s.permitData)
-      //       //const obj = {str}
-      //       return s.permitData;
-      //       //return s.permitData ? JSON.stringify(s.permitData) : undefined;
-      //     }),
-      //   ),
-      // );
     };
   }
 }

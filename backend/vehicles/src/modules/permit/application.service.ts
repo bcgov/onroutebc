@@ -107,51 +107,56 @@ export class ApplicationService {
     );
   }
 
-  async findByApplication(
+  /**
+   * Get a single application by application number
+   * @param applicationNumber example: "A2-00000004-373"
+   * @returns Permit object associated with the given applicationNumber
+   */
+  private async findByApplicationNumber(
     applicationNumber: string,
-  ): Promise<ReadApplicationDto> {   
+  ): Promise<Permit> {
     const application = await this.permitRepository.findOne({
       where: [{ applicationNumber: applicationNumber }],
       relations: {
         permitData: true,
       },
     });
-     const readPermitApplicationdto = await this.classMapper.mapAsync(
-      application,
-      Permit,
-      ReadApplicationDto,
-    );
 
-    return readPermitApplicationdto;
+    return application;
   }
 
+  /**
+   * Update an application
+   * @param applicationNumber The key used to find the existing application
+   * @param updateApplicationDto 
+   * @returns The updated application as a ReadApplicationDto 
+   */
   async update(
-    companyId: number,
     applicationNumber: string,
     updateApplicationDto: UpdateApplicationDto,
   ): Promise<ReadApplicationDto> {
+    const existingApplication = await this.findByApplicationNumber(
+      applicationNumber,
+    );
 
-    const app = await this.findByApplication(applicationNumber);
-    
     const newApplication = this.classMapper.map(
       updateApplicationDto,
       UpdateApplicationDto,
       Permit,
       {
         extraArgs: () => ({
-          permitId: app.permitId,
+          permitId: existingApplication.permitId,
+          permitDataId: existingApplication.permitData.permitDataId,
         }),
       },
     );
- 
-    //console.log('app', app)
-
-    //console.log('newApplication', newApplication)
-
-    // console.log('applicationNumber', applicationNumber);
-    // console.log('companyId', companyId);
 
     await this.permitRepository.save(newApplication);
-    return this.findByApplication(applicationNumber);
+
+    return this.classMapper.mapAsync(
+      await this.findByApplicationNumber(applicationNumber),
+      Permit,
+      ReadApplicationDto,
+    );
   }
 }

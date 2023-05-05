@@ -109,12 +109,9 @@ export class ApplicationController {
   ): Promise<ReadApplicationDto> {
 
     const application = await this.applicationService.update(
-      null,
       applicationNumber,
       updateApplicationDto,
     );
-
-    //console.log('updateApplicationDto 1', updateApplicationDto)
 
     if (!application) {
       throw new DataNotFoundException();
