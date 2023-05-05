@@ -328,9 +328,6 @@ export class UsersService {
       }),
     });
     user.userContact.contactId = userDetails.userContact.contactId;
-
-    console.log(user);
-
     await this.userRepository.save(user);
     return this.findUserbyUserGUID(user.userGUID);
   }
