@@ -35,7 +35,7 @@ export const removeEmptyValues = (obj: object): object => {
  * If the object is not an array and not an object, it checks whether the value is undefined or an empty string (''). If it is, it returns null. Otherwise, it returns the original value.
 
  * @param obj The object to replace empty values from.
- * @returns An Object with only valid values.
+ * @returns An Object with only valid values
  *
  * @see https://dev.to/typescripttv/what-is-the-difference-between-null-and-undefined-5h76
  */
