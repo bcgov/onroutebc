@@ -42,7 +42,7 @@ export class ReadContactDto {
     maxLength: 5,
     format: 'Numeric',
   })
-  phone1Extension: string;
+  phone1Extension?: string;
 
   @AutoMap()
   @ApiProperty({
@@ -53,7 +53,7 @@ export class ReadContactDto {
     maxLength: 20,
     minLength: 10,
   })
-  phone2: string;
+  phone2?: string;
 
   @AutoMap()
   @ApiProperty({
@@ -63,7 +63,7 @@ export class ReadContactDto {
     format: 'Numeric',
     maxLength: 5,
   })
-  phone2Extension: string;
+  phone2Extension?: string;
 
   @AutoMap()
   @ApiProperty({
@@ -99,7 +99,7 @@ export class ReadContactDto {
     description: 'A 2-character string indicating the province/state',
     required: false,
   })
-  provinceCode: string;
+  provinceCode?: string;
 
   @AutoMap()
   @ApiProperty({

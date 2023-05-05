@@ -11,6 +11,7 @@ import { PowerUnitTypesService } from './power-unit-types.service';
 import { CreatePowerUnitTypeDto } from './dto/request/create-power-unit-type.dto';
 import { UpdatePowerUnitTypeDto } from './dto/request/update-power-unit-type.dto';
 import {
+  ApiBadRequestResponse,
   ApiBearerAuth,
   ApiCreatedResponse,
   ApiInternalServerErrorResponse,
@@ -20,10 +21,14 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { ReadPowerUnitTypeDto } from './dto/response/read-power-unit-type.dto';
-import { ExceptionDto } from '../../common/dto/exception.dto';
+import { ExceptionDto } from '../../../common/exception/exception.dto';
 import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
 
 @ApiTags('Vehicles - Power Unit Types')
+@ApiBadRequestResponse({
+  description: 'Bad Request Response',
+  type: ExceptionDto,
+})
 @ApiNotFoundResponse({
   description: 'The Power Unit Type Api Not Found Response',
   type: ExceptionDto,

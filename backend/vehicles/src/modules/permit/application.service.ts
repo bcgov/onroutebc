@@ -2,8 +2,8 @@ import { Mapper } from '@automapper/core';
 import { InjectMapper } from '@automapper/nestjs';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { PermitStatus } from 'src/common/enum/permit-status.enum';
-import { Repository } from 'typeorm';
+import { ApplicationStatus } from 'src/common/enum/application-status.enum';
+import { IsNull, Repository } from 'typeorm';
 import { CreateApplicationDto } from './dto/request/create-application.dto';
 import { ReadApplicationDto } from './dto/response/read-application.dto';
 import { Permit } from './entities/permit.entity';
@@ -20,7 +20,7 @@ export class ApplicationService {
   async create(
     createApplicationDto: CreateApplicationDto,
   ): Promise<ReadApplicationDto> {
-    createApplicationDto.permitStatus = PermitStatus.IN_PROGRESS;
+    createApplicationDto.permitStatus = ApplicationStatus.IN_PROGRESS;
     const permitApplication = this.classMapper.map(
       createApplicationDto,
       CreateApplicationDto,
@@ -47,7 +47,7 @@ export class ApplicationService {
       },
     });
   }
-
+  /* Get single application By Permit ID*/
   async findApplication(permitId: string): Promise<ReadApplicationDto> {
     const application = await this.findOne(permitId);
     const readPermitApplicationdto = await this.classMapper.mapAsync(
@@ -58,13 +58,21 @@ export class ApplicationService {
     return readPermitApplicationdto;
   }
 
-  ///get all application for a company. Initially written to facilitate get application in progress for IDIR user.
+  /* Get all application for a company. 
+     Initially written to facilitate get application in progress for IDIR user.*/
   async findAllApplicationCompany(
     companyId: string,
-    status: string,
+    status: ApplicationStatus,
   ): Promise<ReadApplicationDto[]> {
     const applications = await this.permitRepository.find({
-      where: { companyId: +companyId, permitStatus: status },
+      where: {
+        companyId: +companyId,
+        permitStatus: status,
+        permitNumber: IsNull(),
+      },
+      relations: {
+        permitData: true,
+      },
     });
 
     return this.classMapper.mapArrayAsync(
@@ -73,17 +81,22 @@ export class ApplicationService {
       ReadApplicationDto,
     );
   }
-  //get all application in progress for a specific user of a specific company. Initially written to facilitate get application in progress for company User.
+  /*Get all application in progress for a specific user of a specific company.
+    Initially written to facilitate get application in progress for company User. */
   async findAllApplicationUser(
     companyId: string,
     userGuid: string,
-    status: string,
+    status: ApplicationStatus,
   ): Promise<ReadApplicationDto[]> {
     const applications: Permit[] = await this.permitRepository.find({
       where: {
         companyId: +companyId,
         userGuid: userGuid,
         permitStatus: status,
+        permitNumber: IsNull(),
+      },
+      relations: {
+        permitData: true,
       },
     });
 

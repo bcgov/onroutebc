@@ -22,7 +22,7 @@ export class ReadAddressDto {
     required: false,
     format: 'Alphanumeric',
   })
-  addressLine2: string;
+  addressLine2?: string;
 
   @AutoMap()
   @ApiProperty({
@@ -37,9 +37,9 @@ export class ReadAddressDto {
   @ApiProperty({
     example: 'BC',
     description: 'A 2-character string indicating the province',
-    required: true,
+    required: false,
   })
-  provinceCode: string;
+  provinceCode?: string;
 
   @AutoMap()
   @ApiProperty({

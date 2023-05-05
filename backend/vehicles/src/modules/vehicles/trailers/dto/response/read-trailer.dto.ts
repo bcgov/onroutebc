@@ -23,7 +23,7 @@ export class ReadTrailerDto {
       'Number or code that the company uses to refer to the vehicle.',
     example: 'KEN1',
   })
-  unitNumber: string;
+  unitNumber?: string;
 
   @AutoMap()
   @ApiProperty({
@@ -38,7 +38,7 @@ export class ReadTrailerDto {
     description:
       'A 2-character string indicating the Canadian province or US state of registration of the vehicle.',
   })
-  provinceCode: string;
+  provinceCode?: string;
 
   @AutoMap()
   @ApiProperty({

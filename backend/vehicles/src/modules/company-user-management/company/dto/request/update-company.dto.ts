@@ -2,6 +2,14 @@ import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
 import { UpdateAddressDto } from '../../../../common/dto/request/update-address.dto';
 import { UpdateContactDto } from '../../../../common/dto/request/update-contact.dto';
+import {
+  IsEmail,
+  IsOptional,
+  IsString,
+  Length,
+  ValidateNested,
+} from 'class-validator';
+import { Type } from 'class-transformer';
 
 /**
  * JSON representation of request object for updating a company.
@@ -21,6 +29,8 @@ export class UpdateCompanyDto {
       'The object must adhere to the individual field rules',
     required: true,
   })
+  @ValidateNested()
+  @Type(() => UpdateAddressDto)
   mailingAddress: UpdateAddressDto;
 
   @AutoMap()
@@ -31,6 +41,8 @@ export class UpdateCompanyDto {
     minLength: 10,
     example: '9999999999',
   })
+  @IsString()
+  @Length(10, 20)
   phone: string;
 
   @AutoMap()
@@ -40,7 +52,10 @@ export class UpdateCompanyDto {
     maxLength: 5,
     example: '99999',
   })
-  extension: string;
+  @IsOptional()
+  @IsString()
+  @Length(1, 5)
+  extension?: string;
 
   @AutoMap()
   @ApiProperty({
@@ -50,7 +65,10 @@ export class UpdateCompanyDto {
     minLength: 10,
     example: '9999999999',
   })
-  fax: string;
+  @IsOptional()
+  @IsString()
+  @Length(10, 20)
+  fax?: string;
 
   @AutoMap()
   @ApiProperty({
@@ -58,6 +76,7 @@ export class UpdateCompanyDto {
     required: true,
     example: 'test@test.gov.bc.ca',
   })
+  @IsEmail()
   email: string;
 
   @AutoMap()
@@ -65,5 +84,7 @@ export class UpdateCompanyDto {
     description: 'The primary contact of the company.',
     required: true,
   })
+  @ValidateNested()
+  @Type(() => UpdateContactDto)
   primaryContact: UpdateContactDto;
 }

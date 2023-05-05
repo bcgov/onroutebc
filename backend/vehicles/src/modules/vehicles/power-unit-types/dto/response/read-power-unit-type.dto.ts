@@ -21,6 +21,7 @@ export class ReadPowerUnitTypeDto {
     example:
       'Concrete Pumper Trucks are used to pump concrete from a cement mixer truck to where the concrete is actually needed. They travel on the highway at their equipped weight with no load.',
     description: 'Long description of the power unit type.',
+    required: false,
   })
-  description: string;
+  description?: string;
 }

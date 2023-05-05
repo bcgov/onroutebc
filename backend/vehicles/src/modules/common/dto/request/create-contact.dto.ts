@@ -1,6 +1,12 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail } from 'class-validator';
+import {
+  IsEmail,
+  IsNumberString,
+  IsOptional,
+  IsString,
+  Length,
+} from 'class-validator';
 
 /**
  * JSON representation of a contact
@@ -12,6 +18,8 @@ export class CreateContactDto {
     description: 'The first name of the contact.',
     required: true,
   })
+  @IsString()
+  @Length(1, 100)
   firstName: string;
 
   @AutoMap()
@@ -20,6 +28,8 @@ export class CreateContactDto {
     description: 'The last name of the contact.',
     required: true,
   })
+  @IsString()
+  @Length(1, 100)
   lastName: string;
 
   @AutoMap()
@@ -32,6 +42,8 @@ export class CreateContactDto {
     maxLength: 20,
     minLength: 10,
   })
+  @IsString()
+  @Length(10, 20)
   phone1: string;
 
   @AutoMap()
@@ -42,7 +54,11 @@ export class CreateContactDto {
     maxLength: 5,
     format: 'Numeric',
   })
-  phone1Extension: string;
+  @IsOptional()
+  @IsString()
+  @Length(1, 5)
+  @IsNumberString()
+  phone1Extension?: string;
 
   @AutoMap()
   @ApiProperty({
@@ -53,7 +69,10 @@ export class CreateContactDto {
     maxLength: 20,
     minLength: 10,
   })
-  phone2: string;
+  @IsOptional()
+  @IsString()
+  @Length(10, 20)
+  phone2?: string;
 
   @AutoMap()
   @ApiProperty({
@@ -63,7 +82,11 @@ export class CreateContactDto {
     format: 'Numeric',
     maxLength: 5,
   })
-  phone2Extension: string;
+  @IsOptional()
+  @IsString()
+  @Length(1, 5)
+  @IsNumberString()
+  phone2Extension?: string;
 
   @AutoMap()
   @ApiProperty({
@@ -73,6 +96,9 @@ export class CreateContactDto {
     minLength: 10,
     example: '9999999999',
   })
+  @IsOptional()
+  @IsString()
+  @Length(10, 20)
   fax?: string;
 
   @AutoMap()
@@ -91,6 +117,8 @@ export class CreateContactDto {
     required: true,
     format: 'Alphabetic',
   })
+  @IsString()
+  @Length(1, 100)
   city: string;
 
   @AutoMap()
@@ -101,13 +129,22 @@ export class CreateContactDto {
       'Required if the countryCode is either CA or US.',
     required: false,
   })
-  provinceCode: string;
+  @IsOptional()
+  @IsString()
+  @Length(2, 2, {
+    message: 'provinceCode must be equal to $constraint1 characters.',
+  })
+  provinceCode?: string;
 
   @AutoMap()
   @ApiProperty({
     example: 'CA',
     description: 'A 2-character string indicating the country.',
     required: false,
+  })
+  @IsString()
+  @Length(2, 2, {
+    message: 'countryCode must be equal to $constraint1 characters.',
   })
   countryCode: string;
 }

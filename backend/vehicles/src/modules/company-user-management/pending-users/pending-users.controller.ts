@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 
 import {
+  ApiBadRequestResponse,
   ApiBearerAuth,
   ApiCreatedResponse,
   ApiInternalServerErrorResponse,
@@ -18,13 +19,17 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
-import { ExceptionDto } from '../../common/dto/exception.dto';
+import { ExceptionDto } from '../../../common/exception/exception.dto';
 import { CreatePendingUserDto } from './dto/request/create-pending-user.dto';
 import { UpdatePendingUserDto } from './dto/request/update-pending-user.dto';
 import { ReadPendingUserDto } from './dto/response/read-pending-user.dto';
 import { PendingUsersService } from './pending-users.service';
 
 @ApiTags('Company and User Management - Pending User')
+@ApiBadRequestResponse({
+  description: 'Bad Request Response',
+  type: ExceptionDto,
+})
 @ApiNotFoundResponse({
   description: 'The Pending User Api Not Found Response',
   type: ExceptionDto,

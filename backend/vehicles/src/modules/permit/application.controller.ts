@@ -23,7 +23,8 @@ import { CreateApplicationDto } from './dto/request/create-application.dto';
 import { ReadApplicationDto } from './dto/response/read-application.dto';
 import { ApplicationService } from './application.service';
 import { Request } from 'express';
-import { ExceptionDto } from '../common/dto/exception.dto';
+import { ApplicationStatus } from '../../common/enum/application-status.enum';
+import { ExceptionDto } from '../../common/exception/exception.dto';
 import { UpdateApplicationDto } from './dto/request/update-application.dto';
 import { DataNotFoundException } from 'src/common/exception/data-not-found.exception';
 
@@ -31,15 +32,15 @@ import { DataNotFoundException } from 'src/common/exception/data-not-found.excep
 @ApiTags('Permit Application')
 @Controller('permits/applications')
 @ApiNotFoundResponse({
-  description: 'The User Api Not Found Response',
+  description: 'The Application Api Not Found Response',
   type: ExceptionDto,
 })
 @ApiMethodNotAllowedResponse({
-  description: 'The User Api Method Not Allowed Response',
+  description: 'The Application Api Method Not Allowed Response',
   type: ExceptionDto,
 })
 @ApiInternalServerErrorResponse({
-  description: 'The User Api Internal Server Error Response',
+  description: 'The Application Api Internal Server Error Response',
   type: ExceptionDto,
 })
 export class ApplicationController {
@@ -66,7 +67,7 @@ export class ApplicationController {
     @Req() request: Request,
     @Query('companyId') companyId: string,
     @Query('userGUID') userGUID?: string,
-    @Query('status') status?: string,
+    @Query('status') status?: ApplicationStatus,
   ): Promise<ReadApplicationDto[]> {
     const currentUser = request.user as IUserJWT;
     if (currentUser.identity_provider == IDP.IDIR) {
@@ -77,7 +78,7 @@ export class ApplicationController {
     } else {
       return await this.applicationService.findAllApplicationUser(
         companyId,
-        userGUID,
+        currentUser.userGUID,
         status,
       );
     }

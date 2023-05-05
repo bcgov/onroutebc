@@ -14,6 +14,7 @@ import { TrailersService } from './trailers.service';
 import { CreateTrailerDto } from './dto/request/create-trailer.dto';
 import { UpdateTrailerDto } from './dto/request/update-trailer.dto';
 import {
+  ApiBadRequestResponse,
   ApiBearerAuth,
   ApiCreatedResponse,
   ApiInternalServerErrorResponse,
@@ -24,7 +25,7 @@ import {
 } from '@nestjs/swagger';
 
 import { ReadTrailerDto } from './dto/response/read-trailer.dto';
-import { ExceptionDto } from '../../common/dto/exception.dto';
+import { ExceptionDto } from '../../../common/exception/exception.dto';
 import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
 import { Request } from 'express';
 import { Roles } from '../../../common/decorator/roles.decorator';
@@ -33,6 +34,10 @@ import { DeleteDto } from 'src/modules/common/dto/response/delete.dto';
 import { DeleteTrailerDto } from './dto/request/delete-trailer.dto';
 
 @ApiTags('Vehicles - Trailers')
+@ApiBadRequestResponse({
+  description: 'Bad Request Response',
+  type: ExceptionDto,
+})
 @ApiNotFoundResponse({
   description: 'The Trailer Api Not Found Response',
   type: ExceptionDto,

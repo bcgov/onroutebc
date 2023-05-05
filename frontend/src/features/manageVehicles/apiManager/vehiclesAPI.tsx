@@ -15,7 +15,7 @@ import {
   getCompanyIdFromSession,
   httpGETRequest,
 } from "../../../common/apiManager/httpRequestHandler";
-import { removeEmptyValues } from "../../../common/helpers/util";
+import { replaceEmptyValuesWithNull } from "../../../common/helpers/util";
 
 /**
  * Fetch*
@@ -75,7 +75,7 @@ export const getPowerUnitTypes = async (): Promise<Array<VehicleType>> => {
  */
 export const addPowerUnit = (powerUnit: PowerUnit): Promise<Response> => {
   const url = `${VEHICLE_URL}/companies/${getCompanyIdFromSession()}/vehicles/powerUnits`;
-  return httpPOSTRequest(url, removeEmptyValues(powerUnit));
+  return httpPOSTRequest(url, replaceEmptyValuesWithNull(powerUnit));
 };
 
 /**
@@ -91,7 +91,7 @@ export const updatePowerUnit = ({
   powerUnitId: string;
 }): Promise<Response> => {
   const url = `${VEHICLE_URL}/companies/${getCompanyIdFromSession()}/vehicles/powerUnits/${powerUnitId}`;
-  return httpPUTRequest(url, removeEmptyValues(powerUnit));
+  return httpPUTRequest(url, replaceEmptyValuesWithNull(powerUnit));
 };
 
 /**
@@ -147,7 +147,7 @@ export const getTrailerTypes = async (): Promise<Array<VehicleType>> => {
  */
 export const addTrailer = (trailer: Trailer): Promise<Response> => {
   const url = `${VEHICLE_URL}/companies/${getCompanyIdFromSession()}/vehicles/trailers`;
-  return httpPOSTRequest(url, removeEmptyValues(trailer));
+  return httpPOSTRequest(url, replaceEmptyValuesWithNull(trailer));
 };
 
 /**
@@ -164,7 +164,7 @@ export const updateTrailer = ({
   trailer: UpdateTrailer;
 }): Promise<Response> => {
   const url = `${VEHICLE_URL}/companies/${getCompanyIdFromSession()}/vehicles/trailers/${trailerId}`;
-  return httpPUTRequest(url, removeEmptyValues(trailer));
+  return httpPUTRequest(url, replaceEmptyValuesWithNull(trailer));
 };
 
 /**
@@ -186,5 +186,5 @@ export const deleteVehicles = (
     url = `${VEHICLE_URL}/companies/${getCompanyIdFromSession()}/vehicles/trailers/delete-requests`;
     requestBody = { trailers: vehicleIds };
   }
-  return httpPOSTRequest(url, removeEmptyValues(requestBody));
+  return httpPOSTRequest(url, replaceEmptyValuesWithNull(requestBody));
 };

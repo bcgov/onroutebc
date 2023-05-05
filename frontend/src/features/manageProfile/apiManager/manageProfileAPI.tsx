@@ -6,7 +6,7 @@ import {
   getUserGuidFromSession,
 } from "../../../common/apiManager/httpRequestHandler";
 import { UserContextType } from "../../../common/authentication/types";
-import { removeEmptyValues } from "../../../common/helpers/util";
+import { replaceEmptyValuesWithNull } from "../../../common/helpers/util";
 import { CompanyProfile, CompanyAndUserRequest, UserInformation } from "../types/manageProfile";
 import { MANAGE_PROFILE_API, MANAGE_PROFILE_URL } from "./endpoints/endpoints";
 
@@ -29,7 +29,7 @@ export const updateCompanyInfo = async ({
 
   return httpPUTRequest(
     `${MANAGE_PROFILE_API.COMPANIES}/${getCompanyIdFromSession()}`,
-    removeEmptyValues(companyInfo)
+    replaceEmptyValuesWithNull(companyInfo)
   );
 };
 
@@ -43,7 +43,7 @@ export const createOnRouteBCProfile = async (
 ): Promise<Response> => {
   return httpPOSTRequest(
     `${MANAGE_PROFILE_API.COMPANIES}`,
-    removeEmptyValues(onRouteBCProfileRequestObject)
+    replaceEmptyValuesWithNull(onRouteBCProfileRequestObject)
   );
 };
 

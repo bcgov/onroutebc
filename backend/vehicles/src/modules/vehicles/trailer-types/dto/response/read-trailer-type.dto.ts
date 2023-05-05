@@ -20,6 +20,7 @@ export class ReadTrailerTypeDto {
   @ApiProperty({
     example: 'A Booster is similar to a jeep, but it is used behind a load.',
     description: 'Long description of the trailer type.',
+    required: false,
   })
-  description: string;
+  description?: string;
 }

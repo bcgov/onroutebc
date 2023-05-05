@@ -1,6 +1,6 @@
 import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
 import { Response } from 'express';
-import { ExceptionDto } from '../../modules/common/dto/exception.dto';
+import { ExceptionDto } from '../exception/exception.dto';
 
 /*Catch all but http exceptions */
 @Catch()
