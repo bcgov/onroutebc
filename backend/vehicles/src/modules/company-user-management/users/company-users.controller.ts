@@ -2,6 +2,7 @@ import { Controller, Post, Body, Param, Put } from '@nestjs/common';
 import { Query, Req } from '@nestjs/common/decorators';
 
 import {
+  ApiBadRequestResponse,
   ApiBearerAuth,
   ApiCreatedResponse,
   ApiInternalServerErrorResponse,
@@ -13,7 +14,7 @@ import {
 } from '@nestjs/swagger';
 import { UserStatus } from '../../../common/enum/user-status.enum';
 import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
-import { ExceptionDto } from '../../common/dto/exception.dto';
+import { ExceptionDto } from '../../../common/exception/exception.dto';
 import { CreateUserDto } from './dto/request/create-user.dto';
 import { ReadUserDto } from './dto/response/read-user.dto';
 import { UsersService } from './users.service';
@@ -30,6 +31,10 @@ import { Directory } from '../../../common/enum/directory.enum';
 import { UpdateUserDto } from './dto/request/update-user.dto';
 
 @ApiTags('Company and User Management - Company User')
+@ApiBadRequestResponse({
+  description: 'Bad Request Response',
+  type: ExceptionDto,
+})
 @ApiNotFoundResponse({
   description: 'The User Api Not Found Response',
   type: ExceptionDto,

@@ -14,8 +14,8 @@ import { CreateApplicationDto } from './dto/request/create-application.dto';
 import { ReadApplicationDto } from './dto/response/read-application.dto';
 import { ApplicationService } from './application.service';
 import { Request } from 'express';
-import { ExceptionDto } from '../common/dto/exception.dto';
-import { ApplicationStatus } from 'src/common/enum/application-status.enum';
+import { ApplicationStatus } from '../../common/enum/application-status.enum';
+import { ExceptionDto } from '../../common/exception/exception.dto';
 
 @ApiBearerAuth()
 @ApiTags('Permit Application')
