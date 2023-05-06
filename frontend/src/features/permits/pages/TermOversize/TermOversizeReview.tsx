@@ -12,6 +12,7 @@ import { ReviewFeeSummary } from "./review/ReviewFeeSummary";
 import { ReviewPermitDetails } from "./review/ReviewPermitDetails";
 import { ReviewVehicleInfo } from "./review/ReviewVehicleInfo";
 import { ProgressBar } from "../../components/progressBar/ProgressBar";
+import { getUserGuidFromSession } from "../../../../common/apiManager/httpRequestHandler";
 
 export const TermOversizeReview = () => {
   const { applicationData, back, next } = useContext(ApplicationContext);
@@ -20,7 +21,8 @@ export const TermOversizeReview = () => {
   // TODO Temporary method to format request data
   const formatAPIRequest = {
     companyId: applicationData?.companyId,
-    permitType: applicationData?.applicationName,
+    userGuid: getUserGuidFromSession(),
+    permitType: applicationData?.permitType,
     permitData: applicationData?.application,
   };
 

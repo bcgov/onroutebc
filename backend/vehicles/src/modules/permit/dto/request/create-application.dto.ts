@@ -1,5 +1,6 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
+import { Allow } from 'class-validator';
 import { ApplicationStatus } from 'src/common/enum/application-status.enum';
 import { PermitApplicationOrigin } from 'src/common/enum/permit-application-origin.enum';
 import { PermitApprovalSource } from 'src/common/enum/permit-approval-source.enum';
@@ -7,6 +8,7 @@ import { PermitType } from 'src/common/enum/permit-type.enum';
 
 export class CreateApplicationDto {
   @AutoMap()
+  @Allow()
   @ApiProperty({
     description: 'Id of the company requesting the permit.',
     example: 74,

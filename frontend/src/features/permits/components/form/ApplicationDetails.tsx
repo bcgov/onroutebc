@@ -61,7 +61,7 @@ export const ApplicationDetails = ({
   const companyInfoQuery = useCompanyInfoQuery();
   // TODO use an enum
   const applicationName =
-    values?.applicationName === "TROS" ? "Term: Oversize" : "";
+    values?.permitType === "TROS" ? "Term: Oversize" : "";
 
   if (!values) return <></>;
 

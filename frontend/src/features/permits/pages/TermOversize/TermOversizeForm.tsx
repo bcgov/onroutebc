@@ -49,8 +49,8 @@ export const TermOversizeForm = () => {
   const termOversizeDefaultValues: TermOversizeApplication = {
     companyId: companyId ? +companyId : +"",
     //applicationId: applicationContext?.applicationData?.applicationId || 0,
-    applicationName:
-      applicationContext?.applicationData?.applicationName || "TROS",
+    permitType:
+      applicationContext?.applicationData?.permitType || "TROS",
     //dateCreated: applicationContext?.applicationData?.dateCreated || dayjs(),
     //lastUpdated: applicationContext?.applicationData?.lastUpdated || dayjs(),
     application: {
