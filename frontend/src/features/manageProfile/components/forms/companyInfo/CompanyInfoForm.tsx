@@ -30,35 +30,35 @@ export const CompanyInfoForm = memo(
 
     const formMethods = useForm<CompanyProfile>({
       defaultValues: {
-        clientNumber: companyInfo?.clientNumber || "",
-        legalName: companyInfo?.legalName || "",
+        clientNumber: companyInfo?.clientNumber ?? "",
+        legalName: companyInfo?.legalName ?? "",
         mailingAddress: {
-          addressLine1: companyInfo?.mailingAddress?.addressLine1 || "",
-          addressLine2: companyInfo?.mailingAddress?.addressLine2 || "",
-          city: companyInfo?.mailingAddress?.city || "",
-          provinceCode: companyInfo?.mailingAddress?.provinceCode || "",
-          countryCode: companyInfo?.mailingAddress?.countryCode || "",
-          postalCode: companyInfo?.mailingAddress?.postalCode || "",
+          addressLine1: companyInfo?.mailingAddress?.addressLine1 ?? "",
+          addressLine2: companyInfo?.mailingAddress?.addressLine2 ?? "",
+          city: companyInfo?.mailingAddress?.city ?? "",
+          provinceCode: companyInfo?.mailingAddress?.provinceCode ?? "",
+          countryCode: companyInfo?.mailingAddress?.countryCode ?? "",
+          postalCode: companyInfo?.mailingAddress?.postalCode ?? "",
         },
-        email: companyInfo?.email || "",
+        email: companyInfo?.email ?? "",
         phone: companyInfo?.phone ? formatPhoneNumber(companyInfo?.phone) : "",
-        extension: companyInfo?.extension || "",
-        fax: companyInfo?.fax || "",
+        extension: companyInfo?.extension ?? "",
+        fax: companyInfo?.fax ?? "",
         primaryContact: {
-          firstName: companyInfo?.primaryContact?.firstName || "",
-          lastName: companyInfo?.primaryContact?.lastName || "",
+          firstName: companyInfo?.primaryContact?.firstName ?? "",
+          lastName: companyInfo?.primaryContact?.lastName ?? "",
           phone1: companyInfo?.primaryContact?.phone1
             ? formatPhoneNumber(companyInfo?.primaryContact?.phone1)
             : "",
-          phone1Extension: companyInfo?.primaryContact?.phone1Extension || "",
+          phone1Extension: companyInfo?.primaryContact?.phone1Extension ?? "",
           phone2: companyInfo?.primaryContact?.phone2
             ? formatPhoneNumber(companyInfo?.primaryContact?.phone2)
             : "",
-          phone2Extension: companyInfo?.primaryContact?.phone2Extension || "",
-          email: companyInfo?.primaryContact?.email || "",
-          city: companyInfo?.primaryContact?.city || "",
-          provinceCode: companyInfo?.primaryContact?.provinceCode || "",
-          countryCode: companyInfo?.primaryContact?.countryCode || "",
+          phone2Extension: companyInfo?.primaryContact?.phone2Extension ?? "",
+          email: companyInfo?.primaryContact?.email ?? "",
+          city: companyInfo?.primaryContact?.city ?? "",
+          provinceCode: companyInfo?.primaryContact?.provinceCode ?? "",
+          countryCode: companyInfo?.primaryContact?.countryCode ?? "",
         },
       },
     });
@@ -72,9 +72,7 @@ export const CompanyInfoForm = memo(
         if (response.status === 200) {
           queryClient.invalidateQueries(["companyInfo"]);
           setIsEditting(false);
-        } else {
-          // Display Error in the form.
-        }
+        } // else { // Display Error in the form }
       },
     });
 
