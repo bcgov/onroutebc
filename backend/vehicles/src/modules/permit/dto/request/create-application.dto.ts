@@ -9,10 +9,10 @@ export class CreateApplicationDto {
   @AutoMap()
   @ApiProperty({
     description: 'Id of the company requesting the permit.',
-    example: '74',
+    example: 74,
     required: false,
   })
-  companyId: string;
+  companyId: number;
 
   @AutoMap()
   @ApiProperty({

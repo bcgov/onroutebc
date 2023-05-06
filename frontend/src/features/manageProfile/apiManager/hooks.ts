@@ -52,7 +52,7 @@ export const useUserContext = () => {
 
         // Setting the companyId to sessionStorage so that it can be
         // used outside of react components.
-        sessionStorage.setItem("onRouteBC.user.companyId", companyId);
+        sessionStorage.setItem("onRouteBC.user.companyId", companyId.toString());
       }
     },
     retry: false,

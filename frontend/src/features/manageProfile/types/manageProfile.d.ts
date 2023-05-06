@@ -22,7 +22,7 @@ interface Contact {
 }
 
 export interface CompanyProfile {
-  companyId: string;
+  companyId: number;
   companyGUID: string;
   clientNumber: string;
   legalName: string;
@@ -40,7 +40,7 @@ export interface UserInformation extends Contact {
 }
 
 export interface CompanyAndUserRequest {
-  companyId: string;
+  companyId: number;
   companyGUID: string;
   legalName: string;
   mailingAddress: Address;
