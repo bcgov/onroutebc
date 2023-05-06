@@ -52,7 +52,7 @@ export const TrailerForm = ({ trailer }: TrailerFormProps) => {
     reValidateMode: "onBlur",
   });
 
-  const { handleSubmit } = formMethods;
+  const { handleSubmit, setValue } = formMethods;
 
   const trailerTypesQuery = useTrailerTypesQuery();
   const addTrailerMutation = useAddTrailerMutation();
@@ -151,12 +151,12 @@ export const TrailerForm = ({ trailer }: TrailerFormProps) => {
               name: "year",
               rules: {
                 required: { value: true, message: "Year is required." },
-                pattern: {
-                  value: /^\d+$/,
-                  message: "Please enter a number",
-                },
-                minLength: { value: 4, message: "Min length is 4" },
+                valueAsNumber: true,
                 maxLength: 4,
+                validate: {
+                  isNumber: (v) => !isNaN(v) || "Must be a number",
+                  lessThan1950: v => parseInt(v) > 1950 || "Year must not be less than 1950",
+                },
               },
               label: "Year",
               width: formFieldStyle.width,
@@ -219,7 +219,17 @@ export const TrailerForm = ({ trailer }: TrailerFormProps) => {
             feature={FEATURE}
             options={{
               name: "emptyTrailerWidth",
-              rules: { required: false, maxLength: 10 },
+              rules: {
+                required: false,
+                //valueAsNumber: true,
+                validate: {
+                  isNumber: (v) => {
+                    if (!isNaN(v)) {setValue("emptyTrailerWidth", Number(v))}
+                    else { setValue("emptyTrailerWidth", null) }
+                    return !isNaN(v) || "Must be a number"
+                  },
+                },
+              },
               label: "Empty Trailer Width (m)",
               width: formFieldStyle.width,
             }}
