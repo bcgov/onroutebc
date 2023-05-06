@@ -11,6 +11,7 @@ import { CompanyPrimaryContactForm } from "./subForms/CompanyPrimaryContactForm"
 import { formatPhoneNumber } from "../../../../../common/components/form/subFormComponents/PhoneNumberInput";
 import { InfoBcGovBanner } from "../../../../../common/components/banners/AlertBanners";
 import { CompanyProfile } from "../../../types/manageProfile";
+import { transformNullableStrToStr } from "../../../../../common/helpers/util";
 
 /**
  * The Company Information Form contains multiple subs forms including
@@ -30,35 +31,31 @@ export const CompanyInfoForm = memo(
 
     const formMethods = useForm<CompanyProfile>({
       defaultValues: {
-        clientNumber: companyInfo?.clientNumber ?? "",
-        legalName: companyInfo?.legalName ?? "",
+        clientNumber: transformNullableStrToStr(companyInfo?.clientNumber),
+        legalName: transformNullableStrToStr(companyInfo?.legalName),
         mailingAddress: {
-          addressLine1: companyInfo?.mailingAddress?.addressLine1 ?? "",
-          addressLine2: companyInfo?.mailingAddress?.addressLine2 ?? "",
-          city: companyInfo?.mailingAddress?.city ?? "",
-          provinceCode: companyInfo?.mailingAddress?.provinceCode ?? "",
-          countryCode: companyInfo?.mailingAddress?.countryCode ?? "",
-          postalCode: companyInfo?.mailingAddress?.postalCode ?? "",
+          addressLine1: transformNullableStrToStr(companyInfo?.mailingAddress?.addressLine1),
+          addressLine2: transformNullableStrToStr(companyInfo?.mailingAddress?.addressLine2),
+          city: transformNullableStrToStr(companyInfo?.mailingAddress?.city),
+          provinceCode: transformNullableStrToStr(companyInfo?.mailingAddress?.provinceCode),
+          countryCode: transformNullableStrToStr(companyInfo?.mailingAddress?.countryCode),
+          postalCode: transformNullableStrToStr(companyInfo?.mailingAddress?.postalCode),
         },
-        email: companyInfo?.email ?? "",
-        phone: companyInfo?.phone ? formatPhoneNumber(companyInfo?.phone) : "",
-        extension: companyInfo?.extension ?? "",
-        fax: companyInfo?.fax ?? "",
+        email: transformNullableStrToStr(companyInfo?.email),
+        phone: transformNullableStrToStr(companyInfo?.phone, formatPhoneNumber),
+        extension: transformNullableStrToStr(companyInfo?.extension),
+        fax: transformNullableStrToStr(companyInfo?.fax),
         primaryContact: {
-          firstName: companyInfo?.primaryContact?.firstName ?? "",
-          lastName: companyInfo?.primaryContact?.lastName ?? "",
-          phone1: companyInfo?.primaryContact?.phone1
-            ? formatPhoneNumber(companyInfo?.primaryContact?.phone1)
-            : "",
-          phone1Extension: companyInfo?.primaryContact?.phone1Extension ?? "",
-          phone2: companyInfo?.primaryContact?.phone2
-            ? formatPhoneNumber(companyInfo?.primaryContact?.phone2)
-            : "",
-          phone2Extension: companyInfo?.primaryContact?.phone2Extension ?? "",
-          email: companyInfo?.primaryContact?.email ?? "",
-          city: companyInfo?.primaryContact?.city ?? "",
-          provinceCode: companyInfo?.primaryContact?.provinceCode ?? "",
-          countryCode: companyInfo?.primaryContact?.countryCode ?? "",
+          firstName: transformNullableStrToStr(companyInfo?.primaryContact?.firstName),
+          lastName: transformNullableStrToStr(companyInfo?.primaryContact?.lastName),
+          phone1: transformNullableStrToStr(companyInfo?.primaryContact?.phone1, formatPhoneNumber),
+          phone1Extension: transformNullableStrToStr(companyInfo?.primaryContact?.phone1Extension),
+          phone2: transformNullableStrToStr(companyInfo?.primaryContact?.phone2, formatPhoneNumber),
+          phone2Extension: transformNullableStrToStr(companyInfo?.primaryContact?.phone2Extension),
+          email: transformNullableStrToStr(companyInfo?.primaryContact?.email),
+          city: transformNullableStrToStr(companyInfo?.primaryContact?.city),
+          provinceCode: transformNullableStrToStr(companyInfo?.primaryContact?.provinceCode),
+          countryCode: transformNullableStrToStr(companyInfo?.primaryContact?.countryCode),
         },
       },
     });

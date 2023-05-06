@@ -9,6 +9,7 @@ import { updateMyInfo } from "../../../apiManager/manageProfileAPI";
 import { formatPhoneNumber } from "../../../../../common/components/form/subFormComponents/PhoneNumberInput";
 import { CustomFormComponent } from "../../../../../common/components/form/CustomFormComponents";
 import { CountryAndProvince } from "../../../../../common/components/form/CountryAndProvince";
+import { transformNullableStrToStr } from "../../../../../common/helpers/util";
 
 
 export const MyInfoForm = memo(({
@@ -21,18 +22,18 @@ export const MyInfoForm = memo(({
   const queryClient = useQueryClient();
   const formMethods = useForm<UserInformation>({
     defaultValues: {
-      firstName: myInfo?.firstName ?? "",
-      lastName: myInfo?.lastName ?? "",
-      email: myInfo?.email ?? "",
-      phone1: formatPhoneNumber(myInfo?.phone1),
-      phone1Extension: myInfo?.phone1Extension ?? "",
-      phone2: formatPhoneNumber(myInfo?.phone2),
-      phone2Extension: myInfo?.phone2Extension ?? "",
-      fax: formatPhoneNumber(myInfo?.fax),
-      countryCode: myInfo?.countryCode ?? "",
-      provinceCode: myInfo?.provinceCode ?? "",
-      city: myInfo?.city ?? "",
-      userAuthGroup: myInfo?.userAuthGroup ?? "",
+      firstName: transformNullableStrToStr(myInfo?.firstName),
+      lastName: transformNullableStrToStr(myInfo?.lastName),
+      email: transformNullableStrToStr(myInfo?.email),
+      phone1: transformNullableStrToStr(myInfo?.phone1, formatPhoneNumber),
+      phone1Extension: transformNullableStrToStr(myInfo?.phone1Extension),
+      phone2: transformNullableStrToStr(myInfo?.phone2, formatPhoneNumber),
+      phone2Extension: transformNullableStrToStr(myInfo?.phone2Extension),
+      fax: transformNullableStrToStr(myInfo?.fax, formatPhoneNumber),
+      countryCode: transformNullableStrToStr(myInfo?.countryCode),
+      provinceCode: transformNullableStrToStr(myInfo?.provinceCode),
+      city: transformNullableStrToStr(myInfo?.city),
+      userAuthGroup: transformNullableStrToStr(myInfo?.userAuthGroup),
     },
   });
 

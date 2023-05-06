@@ -54,3 +54,16 @@ export const replaceEmptyValuesWithNull = (obj: object): object | null => {
     return obj === undefined || obj === '' ? null : obj;
   }
 }
+
+/**
+ * Transform a nullable/undefined string value to an appropriate string (empty if null or undefined).
+ * 
+ * @param inputStr Potentially nullable/undefined string input
+ * @param transformFn Additional (optional) string transformation function
+ * 
+ * @returns A string value, or empty string if input was null/undefined. 
+ */
+export const transformNullableStrToStr = (inputStr?: string | null, transformFn?: (str?: string) => string): string => {
+  const result = inputStr ?? "";
+  return transformFn ? transformFn(result) : result;
+};
