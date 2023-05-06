@@ -38,7 +38,6 @@ export const ContactDetails = ({ feature }: { feature: string }) => {
           Contact Information
         </Typography>
       </Box>
-
       <Box sx={PERMIT_RIGHT_BOX_STYLE}>
         <CustomFormComponent
           type="input"
@@ -51,7 +50,6 @@ export const ContactDetails = ({ feature }: { feature: string }) => {
             label: "First Name",
           }}
         />
-
         <CustomFormComponent
           type="input"
           feature={feature}
@@ -77,7 +75,6 @@ export const ContactDetails = ({ feature }: { feature: string }) => {
               width: PHONE_WIDTH,
             }}
           />
-
           <CustomFormComponent
             type="input"
             feature={feature}
@@ -89,7 +86,6 @@ export const ContactDetails = ({ feature }: { feature: string }) => {
             }}
           />
         </div>
-
         <div className="mp-side-by-side-container">
           <CustomFormComponent
             type="phone"
@@ -101,7 +97,6 @@ export const ContactDetails = ({ feature }: { feature: string }) => {
               width: PHONE_WIDTH,
             }}
           />
-          
           <CustomFormComponent
             type="input"
             feature={feature}
