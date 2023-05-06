@@ -220,17 +220,6 @@ export const TrailerForm = ({ trailer }: TrailerFormProps) => {
             options={{
               name: "emptyTrailerWidth",
               rules: { required: false, maxLength: 10 },
-              // rules: {
-              //   required: false,
-              //   //valueAsNumber: true,
-              //   validate: {
-              //     isNumber: (v) => {
-              //       if (!isNaN(v)) {setValue("emptyTrailerWidth", Number(v))}
-              //       else { setValue("emptyTrailerWidth", null) }
-              //       return !isNaN(v) || "Must be a number"
-              //     },
-              //   },
-              // },
               label: "Empty Trailer Width (m)",
               width: formFieldStyle.width,
             }}

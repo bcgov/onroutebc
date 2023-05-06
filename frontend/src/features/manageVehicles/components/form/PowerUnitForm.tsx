@@ -252,17 +252,6 @@ export const PowerUnitForm = ({ powerUnit }: PowerUnitFormProps) => {
                   message: "Please enter a number",
                 },
               },
-              // rules: {
-              //   required: false,
-              //   //valueAsNumber: true,
-              //   validate: {
-              //     isNumber: (v) => {
-              //       if (!isNaN(v)) {setValue("steerAxleTireSize", Number(v))}
-              //       else { setValue("steerAxleTireSize", null) }
-              //       return !isNaN(v) || "Must be a number"
-              //     },
-              //   },
-              // },
               label: "Steer Axle Tire Size (mm)",
               width: formFieldStyle.width,
             }}
