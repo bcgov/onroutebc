@@ -19,7 +19,7 @@ interface Vehicle {
 export interface PowerUnit extends Vehicle {
   powerUnitId?: string;
   licensedGvw?: number;
-  steerAxleTireSize?: number;
+  steerAxleTireSize?: number | null;
   powerUnitTypeCode: string;
 }
 
