@@ -13,6 +13,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useContext } from "react";
 import { SnackBarContext } from "../../../../App";
+import { getDefaultRequiredVal, getDefaultNullableVal } from "../../../../common/helpers/util";
 
 /**
  * Props used by the power unit form.
@@ -31,18 +32,16 @@ export const PowerUnitForm = ({ powerUnit }: PowerUnitFormProps) => {
   // Default values to register with React Hook Forms
   // If data was passed to this component, then use that data, otherwise use empty or undefined values
   const powerUnitDefaultValues = {
-    provinceCode: powerUnit?.provinceCode || "",
-    countryCode: powerUnit?.countryCode || "",
-    unitNumber: powerUnit?.unitNumber || "",
-    licensedGvw: (powerUnit?.licensedGvw as number) || undefined,
-    make: powerUnit?.make || "",
-    plate: powerUnit?.plate || "",
-    powerUnitTypeCode: powerUnit?.powerUnitTypeCode || "",
-    steerAxleTireSize: powerUnit?.steerAxleTireSize
-      ? powerUnit?.steerAxleTireSize
-      : undefined,
-    vin: powerUnit?.vin ? powerUnit?.vin : "",
-    year: powerUnit?.year ? powerUnit?.year : undefined,
+    provinceCode: getDefaultRequiredVal("", powerUnit?.provinceCode),
+    countryCode: getDefaultRequiredVal("", powerUnit?.countryCode),
+    unitNumber: getDefaultRequiredVal("", powerUnit?.unitNumber),
+    licensedGvw: getDefaultNullableVal(powerUnit?.licensedGvw),
+    make: getDefaultRequiredVal("", powerUnit?.make),
+    plate: getDefaultRequiredVal("", powerUnit?.plate),
+    powerUnitTypeCode: getDefaultRequiredVal("", powerUnit?.powerUnitTypeCode),
+    steerAxleTireSize: getDefaultNullableVal(powerUnit?.steerAxleTireSize),
+    vin: getDefaultRequiredVal("", powerUnit?.vin),
+    year: getDefaultNullableVal(powerUnit?.year),
   };
 
   const formMethods = useForm<PowerUnit>({

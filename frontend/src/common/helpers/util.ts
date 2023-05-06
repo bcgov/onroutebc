@@ -56,14 +56,50 @@ export const replaceEmptyValuesWithNull = (obj: object): object | null => {
 }
 
 /**
- * Transform a nullable/undefined string value to an appropriate string (empty if null or undefined).
+ * Apply a function to an input value only when the input is non-nullable/undefined.
  * 
- * @param inputStr Potentially nullable/undefined string input
- * @param transformFn Additional (optional) string transformation function
+ * Eg. applyWhenNotNullable(someFn, "abc", "") === someFn("abc")
  * 
- * @returns A string value, or empty string if input was null/undefined. 
+ * Eg. applyWhenNotNullable(someFn, null, 123) === 123
+ * 
+ * @param applyFn Function to apply when inputVal is non-nullable
+ * @param inputVal Potentially nullable/undefined input value
+ * @param explicitDefaultVal Explicit (optional) default value to return when input is nullable
+ * 
+ * @returns Result of applyFn, or explicitDefaultVal 
  */
-export const transformNullableStrToStr = (inputStr?: string | null, transformFn?: (str?: string) => string): string => {
-  const result = inputStr ?? "";
-  return transformFn ? transformFn(result) : result;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const applyWhenNotNullable = <T>(applyFn: (val: T) => any, inputVal?: T | null, explicitDefaultVal?: any) => {
+  return inputVal != null ? applyFn(inputVal) : explicitDefaultVal;
+};
+
+/**
+ * Get the first non-null/undefined value from a list of provided values (ordered from nullable to non-nullable).
+ * 
+ * Eg. getDefaultNullableVal(undefined, 0) === 0
+ * 
+ * Eg. getDefaultNullableVal(undefined, null, null) === undefined
+ * 
+ * @param defaultVals List of provided possibly nullable values (ordered from nullable to non-nullable)
+ * 
+ * @returns The first non-nullable value from defaultVals, or undefined if there are no non-nullable values.
+ */
+export const getDefaultNullableVal = <T>(...defaultVals: (T | null | undefined)[]): T | undefined => {
+  return defaultVals.find(val => val != null) ?? undefined;
+};
+
+/**
+ * Get the first non-nullable value from a list of provided values (ordered from nullable to non-nullable).
+ * 
+ * Eg. getDefaultRequiredVal(0, undefined, null) === 0
+ * 
+ * Eg. getDefaultRequiredVal("", null, undefined, "somestr") === "somestr"
+ * 
+ * @param fallbackDefault Required non-nullable default value to return if all other provided default values are null/undefined
+ * @param defaultVals List of provided possibly nullable values (ordered from nullable to non-nullable)
+ * 
+ * @returns The first non-nullable value from defaultVals, or fallbackDefault if there are no non-nullable values.
+ */
+export const getDefaultRequiredVal = <T>(fallbackDefault: T, ...defaultVals: (T | null | undefined)[]): T => {
+  return defaultVals.find(val => val != null) ?? fallbackDefault;
 };

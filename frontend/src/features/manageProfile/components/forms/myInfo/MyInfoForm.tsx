@@ -9,7 +9,7 @@ import { updateMyInfo } from "../../../apiManager/manageProfileAPI";
 import { formatPhoneNumber } from "../../../../../common/components/form/subFormComponents/PhoneNumberInput";
 import { CustomFormComponent } from "../../../../../common/components/form/CustomFormComponents";
 import { CountryAndProvince } from "../../../../../common/components/form/CountryAndProvince";
-import { transformNullableStrToStr } from "../../../../../common/helpers/util";
+import { getDefaultRequiredVal, applyWhenNotNullable } from "../../../../../common/helpers/util";
 
 
 export const MyInfoForm = memo(({
@@ -22,18 +22,18 @@ export const MyInfoForm = memo(({
   const queryClient = useQueryClient();
   const formMethods = useForm<UserInformation>({
     defaultValues: {
-      firstName: transformNullableStrToStr(myInfo?.firstName),
-      lastName: transformNullableStrToStr(myInfo?.lastName),
-      email: transformNullableStrToStr(myInfo?.email),
-      phone1: transformNullableStrToStr(myInfo?.phone1, formatPhoneNumber),
-      phone1Extension: transformNullableStrToStr(myInfo?.phone1Extension),
-      phone2: transformNullableStrToStr(myInfo?.phone2, formatPhoneNumber),
-      phone2Extension: transformNullableStrToStr(myInfo?.phone2Extension),
-      fax: transformNullableStrToStr(myInfo?.fax, formatPhoneNumber),
-      countryCode: transformNullableStrToStr(myInfo?.countryCode),
-      provinceCode: transformNullableStrToStr(myInfo?.provinceCode),
-      city: transformNullableStrToStr(myInfo?.city),
-      userAuthGroup: transformNullableStrToStr(myInfo?.userAuthGroup),
+      firstName: getDefaultRequiredVal("", myInfo?.firstName),
+      lastName: getDefaultRequiredVal("", myInfo?.lastName),
+      email: getDefaultRequiredVal("", myInfo?.email),
+      phone1: applyWhenNotNullable(formatPhoneNumber, myInfo?.phone1, ""),
+      phone1Extension: getDefaultRequiredVal("", myInfo?.phone1Extension),
+      phone2: applyWhenNotNullable(formatPhoneNumber, myInfo?.phone2, ""),
+      phone2Extension: getDefaultRequiredVal("", myInfo?.phone2Extension),
+      fax: applyWhenNotNullable(formatPhoneNumber, myInfo?.fax, ""),
+      countryCode: getDefaultRequiredVal("", myInfo?.countryCode),
+      provinceCode: getDefaultRequiredVal("", myInfo?.provinceCode),
+      city: getDefaultRequiredVal("", myInfo?.city),
+      userAuthGroup: getDefaultRequiredVal("", myInfo?.userAuthGroup),
     },
   });
 

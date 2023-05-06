@@ -11,7 +11,7 @@ import { CompanyPrimaryContactForm } from "./subForms/CompanyPrimaryContactForm"
 import { formatPhoneNumber } from "../../../../../common/components/form/subFormComponents/PhoneNumberInput";
 import { InfoBcGovBanner } from "../../../../../common/components/banners/AlertBanners";
 import { CompanyProfile } from "../../../types/manageProfile";
-import { transformNullableStrToStr } from "../../../../../common/helpers/util";
+import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../../../common/helpers/util";
 
 /**
  * The Company Information Form contains multiple subs forms including
@@ -31,31 +31,31 @@ export const CompanyInfoForm = memo(
 
     const formMethods = useForm<CompanyProfile>({
       defaultValues: {
-        clientNumber: transformNullableStrToStr(companyInfo?.clientNumber),
-        legalName: transformNullableStrToStr(companyInfo?.legalName),
+        clientNumber: getDefaultRequiredVal("", companyInfo?.clientNumber),
+        legalName: getDefaultRequiredVal("", companyInfo?.legalName),
         mailingAddress: {
-          addressLine1: transformNullableStrToStr(companyInfo?.mailingAddress?.addressLine1),
-          addressLine2: transformNullableStrToStr(companyInfo?.mailingAddress?.addressLine2),
-          city: transformNullableStrToStr(companyInfo?.mailingAddress?.city),
-          provinceCode: transformNullableStrToStr(companyInfo?.mailingAddress?.provinceCode),
-          countryCode: transformNullableStrToStr(companyInfo?.mailingAddress?.countryCode),
-          postalCode: transformNullableStrToStr(companyInfo?.mailingAddress?.postalCode),
+          addressLine1: getDefaultRequiredVal("", companyInfo?.mailingAddress?.addressLine1),
+          addressLine2: getDefaultRequiredVal("", companyInfo?.mailingAddress?.addressLine2),
+          city: getDefaultRequiredVal("", companyInfo?.mailingAddress?.city),
+          provinceCode: getDefaultRequiredVal("", companyInfo?.mailingAddress?.provinceCode),
+          countryCode: getDefaultRequiredVal("", companyInfo?.mailingAddress?.countryCode),
+          postalCode: getDefaultRequiredVal("", companyInfo?.mailingAddress?.postalCode),
         },
-        email: transformNullableStrToStr(companyInfo?.email),
-        phone: transformNullableStrToStr(companyInfo?.phone, formatPhoneNumber),
-        extension: transformNullableStrToStr(companyInfo?.extension),
-        fax: transformNullableStrToStr(companyInfo?.fax),
+        email: getDefaultRequiredVal("", companyInfo?.email),
+        phone: applyWhenNotNullable(formatPhoneNumber, companyInfo?.phone, ""),
+        extension: getDefaultRequiredVal("", companyInfo?.extension),
+        fax: applyWhenNotNullable(formatPhoneNumber, companyInfo?.fax, ""),
         primaryContact: {
-          firstName: transformNullableStrToStr(companyInfo?.primaryContact?.firstName),
-          lastName: transformNullableStrToStr(companyInfo?.primaryContact?.lastName),
-          phone1: transformNullableStrToStr(companyInfo?.primaryContact?.phone1, formatPhoneNumber),
-          phone1Extension: transformNullableStrToStr(companyInfo?.primaryContact?.phone1Extension),
-          phone2: transformNullableStrToStr(companyInfo?.primaryContact?.phone2, formatPhoneNumber),
-          phone2Extension: transformNullableStrToStr(companyInfo?.primaryContact?.phone2Extension),
-          email: transformNullableStrToStr(companyInfo?.primaryContact?.email),
-          city: transformNullableStrToStr(companyInfo?.primaryContact?.city),
-          provinceCode: transformNullableStrToStr(companyInfo?.primaryContact?.provinceCode),
-          countryCode: transformNullableStrToStr(companyInfo?.primaryContact?.countryCode),
+          firstName: getDefaultRequiredVal("", companyInfo?.primaryContact?.firstName),
+          lastName: getDefaultRequiredVal("", companyInfo?.primaryContact?.lastName),
+          phone1: applyWhenNotNullable(formatPhoneNumber, companyInfo?.primaryContact?.phone1, ""),
+          phone1Extension: getDefaultRequiredVal("", companyInfo?.primaryContact?.phone1Extension),
+          phone2: applyWhenNotNullable(formatPhoneNumber, companyInfo?.primaryContact?.phone2, ""),
+          phone2Extension: getDefaultRequiredVal("", companyInfo?.primaryContact?.phone2Extension),
+          email: getDefaultRequiredVal("", companyInfo?.primaryContact?.email),
+          city: getDefaultRequiredVal("", companyInfo?.primaryContact?.city),
+          provinceCode: getDefaultRequiredVal("", companyInfo?.primaryContact?.provinceCode),
+          countryCode: getDefaultRequiredVal("", companyInfo?.primaryContact?.countryCode),
         },
       },
     });

@@ -25,6 +25,7 @@ import {
   TROS_INELIGIBLE_TRAILERS,
 } from "../../../../../constants/termOversizeConstants";
 import { removeIneligibleVehicleSubTypes } from "../../../../../helpers/removeIneligibleVehicles";
+import { getDefaultRequiredVal } from "../../../../../../../common/helpers/util";
 
 /**
  * An MUI auto complete component with
@@ -87,9 +88,9 @@ export const SelectVehicleSubTypeDropdown = ({
   const [type, setType] = useState<VehicleType | undefined>(typecode);
   useEffect(() => {
     const typecodeFromContext =
-      applicationData?.application.vehicleDetails?.vehicleSubType || "";
+      getDefaultRequiredVal("", applicationData?.application.vehicleDetails?.vehicleSubType);
     const typeFromContext =
-      applicationData?.application.vehicleDetails?.vehicleType || "";
+      getDefaultRequiredVal("", applicationData?.application.vehicleDetails?.vehicleType);
 
     // Use data from permit context
     let typeObject = mapTypeCodeToObject(

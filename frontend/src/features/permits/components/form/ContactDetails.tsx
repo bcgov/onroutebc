@@ -12,6 +12,7 @@ import {
 import { useCompanyInfoQuery } from "../../../manageProfile/apiManager/hooks";
 import { useFormContext } from "react-hook-form";
 import { useEffect } from "react";
+import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 
 export const ContactDetails = ({ feature }: { feature: string }) => {
   const companyInfoQuery = useCompanyInfoQuery();
@@ -21,12 +22,12 @@ export const ContactDetails = ({ feature }: { feature: string }) => {
    */
   useEffect(() => {
     setValue("application.mailingAddress", {
-      addressLine1: companyInfoQuery?.data?.mailingAddress?.addressLine1 || "",
-      addressLine2: companyInfoQuery?.data?.mailingAddress?.addressLine2 || "",
-      city: companyInfoQuery?.data?.mailingAddress?.city || "",
-      provinceCode: companyInfoQuery?.data?.mailingAddress?.provinceCode || "",
-      countryCode: companyInfoQuery?.data?.mailingAddress?.countryCode || "",
-      postalCode: companyInfoQuery?.data?.mailingAddress?.postalCode || "",
+      addressLine1: getDefaultRequiredVal("", companyInfoQuery?.data?.mailingAddress?.addressLine1),
+      addressLine2: getDefaultRequiredVal("", companyInfoQuery?.data?.mailingAddress?.addressLine2),
+      city: getDefaultRequiredVal("", companyInfoQuery?.data?.mailingAddress?.city),
+      provinceCode: getDefaultRequiredVal("", companyInfoQuery?.data?.mailingAddress?.provinceCode),
+      countryCode: getDefaultRequiredVal("", companyInfoQuery?.data?.mailingAddress?.countryCode),
+      postalCode: getDefaultRequiredVal("", companyInfoQuery?.data?.mailingAddress?.postalCode),
     });
   }, [companyInfoQuery]);
 
@@ -37,6 +38,7 @@ export const ContactDetails = ({ feature }: { feature: string }) => {
           Contact Information
         </Typography>
       </Box>
+
       <Box sx={PERMIT_RIGHT_BOX_STYLE}>
         <CustomFormComponent
           type="input"
@@ -49,6 +51,7 @@ export const ContactDetails = ({ feature }: { feature: string }) => {
             label: "First Name",
           }}
         />
+
         <CustomFormComponent
           type="input"
           feature={feature}
@@ -74,6 +77,7 @@ export const ContactDetails = ({ feature }: { feature: string }) => {
               width: PHONE_WIDTH,
             }}
           />
+
           <CustomFormComponent
             type="input"
             feature={feature}
@@ -85,6 +89,7 @@ export const ContactDetails = ({ feature }: { feature: string }) => {
             }}
           />
         </div>
+
         <div className="mp-side-by-side-container">
           <CustomFormComponent
             type="phone"
@@ -96,6 +101,7 @@ export const ContactDetails = ({ feature }: { feature: string }) => {
               width: PHONE_WIDTH,
             }}
           />
+          
           <CustomFormComponent
             type="input"
             feature={feature}
