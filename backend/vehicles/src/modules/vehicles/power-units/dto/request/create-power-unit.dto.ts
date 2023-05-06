@@ -3,6 +3,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   IsAlphanumeric,
   IsNumber,
+  IsNumberString,
   IsOptional,
   IsPositive,
   IsString,
@@ -118,6 +119,6 @@ export class CreatePowerUnitDto {
     required: false,
   })
   @IsOptional()
-  @IsNumber()
+  @IsNumberString()
   steerAxleTireSize?: number;
 }

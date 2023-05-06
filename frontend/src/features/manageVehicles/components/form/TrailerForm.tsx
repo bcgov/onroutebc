@@ -44,7 +44,7 @@ export const TrailerForm = ({ trailer }: TrailerFormProps) => {
     year: trailer?.year ? trailer?.year : undefined,
     emptyTrailerWidth: trailer?.emptyTrailerWidth
       ? trailer?.emptyTrailerWidth
-      : undefined,
+      : null,
   };
 
   const formMethods = useForm<Trailer>({
@@ -52,7 +52,7 @@ export const TrailerForm = ({ trailer }: TrailerFormProps) => {
     reValidateMode: "onBlur",
   });
 
-  const { handleSubmit, setValue } = formMethods;
+  const { handleSubmit, setValue, getValues } = formMethods;
 
   const trailerTypesQuery = useTrailerTypesQuery();
   const addTrailerMutation = useAddTrailerMutation();
@@ -219,17 +219,18 @@ export const TrailerForm = ({ trailer }: TrailerFormProps) => {
             feature={FEATURE}
             options={{
               name: "emptyTrailerWidth",
-              rules: {
-                required: false,
-                //valueAsNumber: true,
-                validate: {
-                  isNumber: (v) => {
-                    if (!isNaN(v)) {setValue("emptyTrailerWidth", Number(v))}
-                    else { setValue("emptyTrailerWidth", null) }
-                    return !isNaN(v) || "Must be a number"
-                  },
-                },
-              },
+              rules: { required: false, maxLength: 10 },
+              // rules: {
+              //   required: false,
+              //   //valueAsNumber: true,
+              //   validate: {
+              //     isNumber: (v) => {
+              //       if (!isNaN(v)) {setValue("emptyTrailerWidth", Number(v))}
+              //       else { setValue("emptyTrailerWidth", null) }
+              //       return !isNaN(v) || "Must be a number"
+              //     },
+              //   },
+              // },
               label: "Empty Trailer Width (m)",
               width: formFieldStyle.width,
             }}

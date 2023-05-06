@@ -3,6 +3,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   IsAlphanumeric,
   IsNumber,
+  IsNumberString,
   IsOptional,
   IsPositive,
   IsString,
@@ -102,7 +103,7 @@ export class CreateTrailerDto {
     required: false,
   })
   @IsOptional()
-  @IsNumber()
+  @IsNumberString()
   emptyTrailerWidth?: number;
 
   @AutoMap()
