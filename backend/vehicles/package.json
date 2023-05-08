@@ -70,7 +70,7 @@
     "uuid": "^9.0.0"
   },
   "devDependencies": {
-    "@golevelup/ts-jest": "^0.3.4",
+    "@golevelup/ts-jest": "^0.3.7",
     "@types/express": "^4.17.17",
     "@types/jest": "^27.0.2",
     "@types/node": "^18.11.18",
