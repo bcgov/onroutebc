@@ -10,9 +10,9 @@ export class ReadCompanyDto {
   @AutoMap()
   @ApiProperty({
     description: 'The company ID.',
-    example: '1',
+    example: 1,
   })
-  companyId: string;
+  companyId: number;
 
   @AutoMap()
   @ApiProperty({

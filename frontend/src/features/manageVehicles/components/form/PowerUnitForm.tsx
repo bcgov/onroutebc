@@ -153,12 +153,12 @@ export const PowerUnitForm = ({ powerUnit }: PowerUnitFormProps) => {
               name: "year",
               rules: {
                 required: { value: true, message: "Year is required." },
-                pattern: {
-                  value: /^\d+$/,
-                  message: "Please enter a number",
-                },
-                minLength: { value: 4, message: "Min length is 4" },
+                valueAsNumber: true,
                 maxLength: 4,
+                validate: {
+                  isNumber: (v) => !isNaN(v) || "Must be a number",
+                  lessThan1950: v => parseInt(v) > 1950 || "Year must not be less than 1950",
+                },
               },
               label: "Year",
               width: formFieldStyle.width,
@@ -230,9 +230,9 @@ export const PowerUnitForm = ({ powerUnit }: PowerUnitFormProps) => {
               name: "licensedGvw",
               rules: {
                 required: { value: true, message: "Licensed GVW is required." },
-                pattern: {
-                  value: /^\d+$/,
-                  message: "Please enter a number",
+                valueAsNumber: true,
+                validate: {
+                  isNumber: (v) => !isNaN(v) || "Must be a number",
                 },
               },
               label: "Licensed GVW",

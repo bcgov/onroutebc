@@ -48,10 +48,10 @@ export const TermOversizeForm = () => {
   // Default values to register with React Hook Forms
   // Use saved data from the TROS application context, otherwise use empty or undefined values
   const termOversizeDefaultValues: TermOversizeApplication = {
-    companyId: +(getDefaultRequiredVal("", companyId)),
+    companyId: +(getDefaultRequiredVal(0, companyId)),
     //applicationId: getDefaultRequiredVal(0, applicationContext?.applicationData?.applicationId),
-    applicationName:
-      getDefaultRequiredVal("TROS", applicationContext?.applicationData?.applicationName),
+    permitType:
+      getDefaultRequiredVal("TROS", applicationContext?.applicationData?.permitType),
     //dateCreated: getDefaultRequiredVal(dayjs(), applicationContext?.applicationData?.dateCreated),
     //lastUpdated: getDefaultRequiredVal(dayjs(), applicationContext?.applicationData?.lastUpdated),
     application: {

@@ -50,7 +50,7 @@ const App = () => {
   });
 
   const [userRoles, setUserRoles] = useState<string[] | undefined>();
-  const [companyId, setCompanyId] = useState<string | undefined>();
+  const [companyId, setCompanyId] = useState<number | undefined>();
   const [userDetails, setUserDetails] = useState<
     UserDetailContext | undefined
   >();

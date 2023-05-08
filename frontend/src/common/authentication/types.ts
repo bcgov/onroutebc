@@ -10,7 +10,7 @@ export interface CompanyMetadataContextType {
  * Company Basic Info type
  */
 export interface CompanyMetadata {
-  companyId: string;
+  companyId: number;
   clientNumber: string;
   legalName: string;
 }

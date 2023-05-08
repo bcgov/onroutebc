@@ -60,7 +60,7 @@ export class ApplicationService {
   /* Get all application for a company. 
      Initially written to facilitate get application in progress for IDIR user.*/
   async findAllApplicationCompany(
-    companyId: string,
+    companyId: number,
     status: ApplicationStatus,
   ): Promise<ReadApplicationDto[]> {
     const applications = await this.permitRepository.find({
@@ -83,7 +83,7 @@ export class ApplicationService {
   /*Get all application in progress for a specific user of a specific company.
     Initially written to facilitate get application in progress for company User. */
   async findAllApplicationUser(
-    companyId: string,
+    companyId: number,
     userGuid: string,
     status: ApplicationStatus,
   ): Promise<ReadApplicationDto[]> {

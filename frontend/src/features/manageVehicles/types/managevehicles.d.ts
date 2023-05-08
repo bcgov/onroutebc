@@ -19,14 +19,14 @@ interface Vehicle {
 export interface PowerUnit extends Vehicle {
   powerUnitId?: string;
   licensedGvw?: number;
-  steerAxleTireSize?: number;
+  steerAxleTireSize?: number | null;
   powerUnitTypeCode: string;
 }
 
 export interface Trailer extends Vehicle {
   trailerId?: string;
   trailerTypeCode: string;
-  emptyTrailerWidth?: number;
+  emptyTrailerWidth?: number | null;
 }
 
 /**
