@@ -1,10 +1,10 @@
-import { CountryAndProvince } from "../../../../../common/components/form/CountryAndProvince";
-import { CustomFormComponent } from "../../../../../common/components/form/CustomFormComponents";
+import { CountryAndProvince } from "../../../../../../common/components/form/CountryAndProvince";
+import { CustomFormComponent } from "../../../../../../common/components/form/CustomFormComponents";
 import {
   PHONE_WIDTH,
   EXT_WIDTH,
   CITY_WIDTH,
-} from "../../../../../themes/bcGovStyles";
+} from "../../../../../../themes/bcGovStyles";
 
 export const CompanyPrimaryContactForm = ({ feature }: { feature: string }) => (
   <>

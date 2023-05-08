@@ -13,6 +13,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useContext } from "react";
 import { SnackBarContext } from "../../../../App";
+import { getDefaultRequiredVal, getDefaultNullableVal } from "../../../../common/helpers/util";
 
 /**
  * Props used by the power unit form.
@@ -34,17 +35,15 @@ export const TrailerForm = ({ trailer }: TrailerFormProps) => {
   // Default values to register with React Hook Forms
   // If data was passed to this component, then use that data, otherwise use empty or undefined values
   const trailerDefaultValues = {
-    provinceCode: trailer?.provinceCode || "",
-    countryCode: trailer?.countryCode || "",
-    unitNumber: trailer?.unitNumber || "",
-    make: trailer?.make || "",
-    plate: trailer?.plate || "",
-    trailerTypeCode: trailer?.trailerTypeCode || "",
-    vin: trailer?.vin ? trailer?.vin : "",
-    year: trailer?.year ? trailer?.year : undefined,
-    emptyTrailerWidth: trailer?.emptyTrailerWidth
-      ? trailer?.emptyTrailerWidth
-      : undefined,
+    provinceCode: getDefaultRequiredVal("", trailer?.provinceCode),
+    countryCode: getDefaultRequiredVal("", trailer?.countryCode),
+    unitNumber: getDefaultRequiredVal("", trailer?.unitNumber),
+    make: getDefaultRequiredVal("", trailer?.make),
+    plate: getDefaultRequiredVal("", trailer?.plate),
+    trailerTypeCode: getDefaultRequiredVal("", trailer?.trailerTypeCode),
+    vin: getDefaultRequiredVal("", trailer?.vin),
+    year: getDefaultNullableVal(trailer?.year),
+    emptyTrailerWidth: getDefaultNullableVal(trailer?.emptyTrailerWidth),
   };
 
   const formMethods = useForm<Trailer>({
@@ -151,12 +150,12 @@ export const TrailerForm = ({ trailer }: TrailerFormProps) => {
               name: "year",
               rules: {
                 required: { value: true, message: "Year is required." },
-                pattern: {
-                  value: /^\d+$/,
-                  message: "Please enter a number",
-                },
-                minLength: { value: 4, message: "Min length is 4" },
+                valueAsNumber: true,
                 maxLength: 4,
+                validate: {
+                  isNumber: (v) => !isNaN(v) || "Must be a number",
+                  lessThan1950: v => parseInt(v) > 1950 || "Year must not be less than 1950",
+                },
               },
               label: "Year",
               width: formFieldStyle.width,

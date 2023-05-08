@@ -22,6 +22,7 @@ export interface CustomFormComponentProps<T extends FieldValues> {
   options: CustomFormOptionsProps<T>;
   i18options?: InternationalOptionsProps;
   menuOptions?: JSX.Element[];
+  className?: string;
 }
 
 /**
@@ -96,6 +97,7 @@ export const CustomFormComponent = <T extends ORBC_FormTypes>({
   },
   i18options,
   menuOptions,
+  className,
 }: CustomFormComponentProps<T>): JSX.Element => {
   const {
     control,
@@ -160,7 +162,7 @@ export const CustomFormComponent = <T extends ORBC_FormTypes>({
     }
   };
   return (
-    <Box sx={{ width: width }}>
+    <Box sx={ className ? null : { width }} className={className}>
       <Controller
         key={`controller-${feature}-${name}`}
         name={name}

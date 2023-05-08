@@ -65,7 +65,7 @@ export class ApplicationController {
   @Get()
   async findAllApplication(
     @Req() request: Request,
-    @Query('companyId') companyId: string,
+    @Query('companyId') companyId: number,
     @Query('userGUID') userGUID?: string,
     @Query('status') status?: ApplicationStatus,
   ): Promise<ReadApplicationDto[]> {

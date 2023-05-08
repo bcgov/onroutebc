@@ -1,10 +1,10 @@
 import { memo } from "react";
-import "../../manageProfile/components/forms/CompanyInfoForms.scss";
-import { CompanyInfoGeneralForm } from "../../manageProfile/components/forms/subForms/CompanyInfoGeneralForm";
+import "../../manageProfile/components/forms/companyInfo/CompanyInfoForms.scss";
+import { CompanyInfoGeneralForm } from "../../manageProfile/components/forms/companyInfo/subForms/CompanyInfoGeneralForm";
 import Typography from "@mui/material/Typography";
-import { CompanyContactDetailsForm } from "../../manageProfile/components/forms/subForms/CompanyContactDetailsForm";
+import { CompanyContactDetailsForm } from "../../manageProfile/components/forms/companyInfo/subForms/CompanyContactDetailsForm";
 
-import { CompanyPrimaryContactForm } from "../../manageProfile/components/forms/subForms/CompanyPrimaryContactForm";
+import { CompanyPrimaryContactForm } from "../../manageProfile/components/forms/companyInfo/subForms/CompanyPrimaryContactForm";
 import { InfoBcGovBanner } from "../../../common/components/banners/AlertBanners";
 
 /**

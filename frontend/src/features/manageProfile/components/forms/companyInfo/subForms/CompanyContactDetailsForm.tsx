@@ -1,5 +1,5 @@
-import { CustomFormComponent } from "../../../../../common/components/form/CustomFormComponents";
-import { PHONE_WIDTH, EXT_WIDTH } from "../../../../../themes/bcGovStyles";
+import { CustomFormComponent } from "../../../../../../common/components/form/CustomFormComponents";
+import { PHONE_WIDTH, EXT_WIDTH } from "../../../../../../themes/bcGovStyles";
 
 export const CompanyContactDetailsForm = ({ feature }: { feature: string }) => (
   <>

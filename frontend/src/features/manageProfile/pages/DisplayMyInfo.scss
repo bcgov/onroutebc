@@ -1,0 +1,22 @@
+.my-info-display {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 40px;
+
+  &__edit {
+    button {
+      margin-top: 20px;
+
+      i {
+        margin-right: 7px;
+      }
+    }
+  }
+}
+
+@media (width <= 500px) {
+  .my-info-display {
+    display: flex;
+    flex-direction: column;
+  }
+}

@@ -1,0 +1,42 @@
+.my-info-form {
+  display: flex;
+  flex-direction: column;
+  margin-top: 0.5em;
+  max-width: 528px;
+
+  .side-by-side-inputs {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  &__input {
+    width: 100%;
+
+    &--left {
+      width: 60%;
+    }
+
+    &--right {
+      width: 30%;
+    }
+  }
+
+  &__submission {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 2em;
+    margin-bottom: 2em;
+    
+    .submit-btn {
+      &--cancel {
+        margin-right: 1em;
+      }
+    }
+  }
+}
+
+@media (width <= 528px) {
+  .my-info-form {
+    width: 100%;
+  }
+}
