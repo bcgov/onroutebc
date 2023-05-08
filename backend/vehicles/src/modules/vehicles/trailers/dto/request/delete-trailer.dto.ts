@@ -1,5 +1,6 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
+import { IsNumberString } from 'class-validator';
 
 export class DeleteTrailerDto {
   @AutoMap()
@@ -9,5 +10,6 @@ export class DeleteTrailerDto {
     type: [String],
     example: ['74'],
   })
+  @IsNumberString({}, { each: true })
   trailers: string[];
 }
