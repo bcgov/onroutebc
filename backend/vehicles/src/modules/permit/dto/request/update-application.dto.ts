@@ -1,6 +1,6 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumberString } from 'class-validator';
+import { IsNumber } from 'class-validator';
 import { ApplicationStatus } from 'src/common/enum/application-status.enum';
 import { PermitApplicationOrigin } from 'src/common/enum/permit-application-origin.enum';
 import { PermitStatus } from 'src/common/enum/permit-status.enum';
@@ -9,7 +9,7 @@ import { PermitType } from 'src/common/enum/permit-type.enum';
 export class UpdateApplicationDto {
 
   @AutoMap()
-  @IsNumberString()
+  @IsNumber()
   @ApiProperty({
     description: 'Id of the company requesting the permit.',
     example: 74,
