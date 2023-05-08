@@ -27,6 +27,7 @@ import {
 import { mapVinToVehicleObject } from "../../helpers/mappers";
 import { TROS_COMMODITIES } from "../../constants/termOversizeConstants";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
+import { getDefaultRequiredVal, applyWhenNotNullable } from "../../../../common/helpers/util";
 
 /**
  * The first step in creating and submitting a TROS Application.
@@ -47,42 +48,49 @@ export const TermOversizeForm = () => {
   // Default values to register with React Hook Forms
   // Use saved data from the TROS application context, otherwise use empty or undefined values
   const termOversizeDefaultValues: TermOversizeApplication = {
-    companyId: companyId ? +companyId : +"",
-    //applicationId: applicationContext?.applicationData?.applicationId || 0,
+    companyId: +(getDefaultRequiredVal(0, companyId)),
+    //applicationId: getDefaultRequiredVal(0, applicationContext?.applicationData?.applicationId),
     permitType:
-      applicationContext?.applicationData?.permitType || "TROS",
-    //dateCreated: applicationContext?.applicationData?.dateCreated || dayjs(),
-    //lastUpdated: applicationContext?.applicationData?.lastUpdated || dayjs(),
+      getDefaultRequiredVal("TROS", applicationContext?.applicationData?.permitType),
+    //dateCreated: getDefaultRequiredVal(dayjs(), applicationContext?.applicationData?.dateCreated),
+    //lastUpdated: getDefaultRequiredVal(dayjs(), applicationContext?.applicationData?.lastUpdated),
     application: {
       startDate:
-        applicationContext?.applicationData?.application?.startDate || dayjs(),
+        getDefaultRequiredVal(dayjs(), applicationContext?.applicationData?.application?.startDate),
       permitDuration:
-        applicationContext?.applicationData?.application?.permitDuration || 30,
+        getDefaultRequiredVal(30, applicationContext?.applicationData?.application?.permitDuration),
       expiryDate:
-        applicationContext?.applicationData?.application?.expiryDate || dayjs(),
-      commodities: applicationContext?.applicationData?.application
-        ?.commodities || [TROS_COMMODITIES[0], TROS_COMMODITIES[1]],
+        getDefaultRequiredVal(dayjs(), applicationContext?.applicationData?.application?.expiryDate),
+      commodities: 
+        getDefaultRequiredVal(
+          [TROS_COMMODITIES[0], TROS_COMMODITIES[1]], 
+          applicationContext?.applicationData?.application?.commodities
+        ),
       contactDetails: {
         firstName:
-          applicationContext?.applicationData?.application?.contactDetails
-            ?.firstName ||
-          userDetails?.firstName ||
-          "",
+          getDefaultRequiredVal(
+            "", 
+            applicationContext?.applicationData?.application?.contactDetails?.firstName,
+            userDetails?.firstName
+          ),
         lastName:
-          applicationContext?.applicationData?.application?.contactDetails
-            ?.lastName ||
-          userDetails?.lastName ||
-          "",
+          getDefaultRequiredVal(
+            "",
+            applicationContext?.applicationData?.application?.contactDetails?.lastName,
+            userDetails?.lastName
+          ),
         phone1:
-          applicationContext?.applicationData?.application?.contactDetails
-            ?.phone1 ||
-          userDetails?.phone1 ||
-          "",
+          getDefaultRequiredVal(
+            "",
+            applicationContext?.applicationData?.application?.contactDetails?.phone1,
+            userDetails?.phone1
+          ),
         email:
-          applicationContext?.applicationData?.application?.contactDetails
-            ?.email ||
-          userDetails?.email ||
-          "",
+          getDefaultRequiredVal(
+            "",
+            applicationContext?.applicationData?.application?.contactDetails?.email,
+            userDetails?.email
+          ),
       },
       // Default values are updated from companyInfo query in the ContactDetails common component
       mailingAddress: {
@@ -95,32 +103,51 @@ export const TermOversizeForm = () => {
       },
       vehicleDetails: {
         vin:
-          applicationContext?.applicationData?.application?.vehicleDetails
-            ?.vin || "",
+          getDefaultRequiredVal(
+            "",
+            applicationContext?.applicationData?.application?.vehicleDetails?.vin
+          ),
         plate:
-          applicationContext?.applicationData?.application?.vehicleDetails
-            ?.plate || "",
+          getDefaultRequiredVal(
+            "",
+            applicationContext?.applicationData?.application?.vehicleDetails?.plate
+          ),
         make:
-          applicationContext?.applicationData?.application?.vehicleDetails
-            ?.make || "",
+          getDefaultRequiredVal(
+            "",
+            applicationContext?.applicationData?.application?.vehicleDetails?.make
+          ),
         year:
-          applicationContext?.applicationData?.application?.vehicleDetails
-            ?.year || null,
+          applyWhenNotNullable(
+            (year) => year, 
+            applicationContext?.applicationData?.application?.vehicleDetails?.year,
+            null
+          ),
         countryCode:
-          applicationContext?.applicationData?.application?.vehicleDetails
-            ?.countryCode || "",
+          getDefaultRequiredVal(
+            "",
+            applicationContext?.applicationData?.application?.vehicleDetails?.countryCode
+          ),
         provinceCode:
-          applicationContext?.applicationData?.application?.vehicleDetails
-            ?.provinceCode || "",
+          getDefaultRequiredVal(
+            "",
+            applicationContext?.applicationData?.application?.vehicleDetails?.provinceCode
+          ),
         vehicleType:
-          applicationContext?.applicationData?.application?.vehicleDetails
-            ?.vehicleType || "",
+          getDefaultRequiredVal(
+            "",
+            applicationContext?.applicationData?.application?.vehicleDetails?.vehicleType
+          ),
         vehicleSubType:
-          applicationContext?.applicationData?.application?.vehicleDetails
-            ?.vehicleSubType || "",
+          getDefaultRequiredVal(
+            "",
+            applicationContext?.applicationData?.application?.vehicleDetails?.vehicleSubType
+          ),
         saveVehicle:
-          applicationContext?.applicationData?.application?.vehicleDetails
-            ?.saveVehicle || false,
+          getDefaultRequiredVal(
+            false,
+            applicationContext?.applicationData?.application?.vehicleDetails?.saveVehicle
+          ),
       },
     },
   };
