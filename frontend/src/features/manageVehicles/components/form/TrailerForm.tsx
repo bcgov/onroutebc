@@ -51,7 +51,7 @@ export const TrailerForm = ({ trailer }: TrailerFormProps) => {
     reValidateMode: "onBlur",
   });
 
-  const { handleSubmit, setValue, getValues } = formMethods;
+  const { handleSubmit } = formMethods;
 
   const trailerTypesQuery = useTrailerTypesQuery();
   const addTrailerMutation = useAddTrailerMutation();

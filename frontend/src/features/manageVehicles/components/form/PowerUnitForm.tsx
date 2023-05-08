@@ -49,7 +49,7 @@ export const PowerUnitForm = ({ powerUnit }: PowerUnitFormProps) => {
     reValidateMode: "onBlur",
   });
 
-  const { handleSubmit, setValue } = formMethods;
+  const { handleSubmit } = formMethods;
 
   const powerUnitTypesQuery = usePowerUnitTypesQuery();
   const addPowerUnitMutation = useAddPowerUnitMutation();
