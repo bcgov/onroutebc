@@ -119,6 +119,8 @@ export class CreatePowerUnitDto {
     required: false,
   })
   @IsOptional()
+  // TODO: Temporary solution for a frontend issue with sending an optional number value through React Hook Forms
+  // Ideally, this should be @IsNumber()
   @IsNumberString()
   steerAxleTireSize?: number;
 }
