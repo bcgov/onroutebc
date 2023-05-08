@@ -8,6 +8,7 @@ import {
 } from "../../../../../themes/orbcStyles";
 import { TermOversizeApplication } from "../../../types/application";
 import { ReviewConditionsTable } from "./ReviewConditionsTable";
+import { getDefaultRequiredVal } from "../../../../../common/helpers/util";
 
 export const ReviewPermitDetails = ({
   values,
@@ -29,7 +30,7 @@ export const ReviewPermitDetails = ({
           <Typography>{values?.application.permitDuration} Days</Typography>
         </Box>
         <PermitExpiryDateBanner
-          expiryDate={values?.application.expiryDate.format("LL") || ""}
+          expiryDate={getDefaultRequiredVal("", values?.application?.expiryDate?.format("LL"))}
         />
         <Box>
           <Typography variant="h3">

@@ -2,15 +2,16 @@ import { Button, Typography } from "@mui/material";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { memo } from "react";
 import { FormProvider, useForm, FieldValues } from "react-hook-form";
-import { updateCompanyInfo } from "../../apiManager/manageProfileAPI";
+import { updateCompanyInfo } from "../../../apiManager/manageProfileAPI";
 
 import "./CompanyInfoForms.scss";
 import { CompanyInfoGeneralForm } from "./subForms/CompanyInfoGeneralForm";
 import { CompanyContactDetailsForm } from "./subForms/CompanyContactDetailsForm";
 import { CompanyPrimaryContactForm } from "./subForms/CompanyPrimaryContactForm";
-import { formatPhoneNumber } from "../../../../common/components/form/subFormComponents/PhoneNumberInput";
-import { InfoBcGovBanner } from "../../../../common/components/banners/AlertBanners";
-import { CompanyProfile } from "../../types/manageProfile";
+import { formatPhoneNumber } from "../../../../../common/components/form/subFormComponents/PhoneNumberInput";
+import { InfoBcGovBanner } from "../../../../../common/components/banners/AlertBanners";
+import { CompanyProfile } from "../../../types/manageProfile";
+import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../../../common/helpers/util";
 
 /**
  * The Company Information Form contains multiple subs forms including
@@ -30,35 +31,31 @@ export const CompanyInfoForm = memo(
 
     const formMethods = useForm<CompanyProfile>({
       defaultValues: {
-        clientNumber: companyInfo?.clientNumber || "",
-        legalName: companyInfo?.legalName || "",
+        clientNumber: getDefaultRequiredVal("", companyInfo?.clientNumber),
+        legalName: getDefaultRequiredVal("", companyInfo?.legalName),
         mailingAddress: {
-          addressLine1: companyInfo?.mailingAddress?.addressLine1 || "",
-          addressLine2: companyInfo?.mailingAddress?.addressLine2 || "",
-          city: companyInfo?.mailingAddress?.city || "",
-          provinceCode: companyInfo?.mailingAddress?.provinceCode || "",
-          countryCode: companyInfo?.mailingAddress?.countryCode || "",
-          postalCode: companyInfo?.mailingAddress?.postalCode || "",
+          addressLine1: getDefaultRequiredVal("", companyInfo?.mailingAddress?.addressLine1),
+          addressLine2: getDefaultRequiredVal("", companyInfo?.mailingAddress?.addressLine2),
+          city: getDefaultRequiredVal("", companyInfo?.mailingAddress?.city),
+          provinceCode: getDefaultRequiredVal("", companyInfo?.mailingAddress?.provinceCode),
+          countryCode: getDefaultRequiredVal("", companyInfo?.mailingAddress?.countryCode),
+          postalCode: getDefaultRequiredVal("", companyInfo?.mailingAddress?.postalCode),
         },
-        email: companyInfo?.email || "",
-        phone: companyInfo?.phone ? formatPhoneNumber(companyInfo?.phone) : "",
-        extension: companyInfo?.extension || "",
-        fax: companyInfo?.fax || "",
+        email: getDefaultRequiredVal("", companyInfo?.email),
+        phone: applyWhenNotNullable(formatPhoneNumber, companyInfo?.phone, ""),
+        extension: getDefaultRequiredVal("", companyInfo?.extension),
+        fax: applyWhenNotNullable(formatPhoneNumber, companyInfo?.fax, ""),
         primaryContact: {
-          firstName: companyInfo?.primaryContact?.firstName || "",
-          lastName: companyInfo?.primaryContact?.lastName || "",
-          phone1: companyInfo?.primaryContact?.phone1
-            ? formatPhoneNumber(companyInfo?.primaryContact?.phone1)
-            : "",
-          phone1Extension: companyInfo?.primaryContact?.phone1Extension || "",
-          phone2: companyInfo?.primaryContact?.phone2
-            ? formatPhoneNumber(companyInfo?.primaryContact?.phone2)
-            : "",
-          phone2Extension: companyInfo?.primaryContact?.phone2Extension || "",
-          email: companyInfo?.primaryContact?.email || "",
-          city: companyInfo?.primaryContact?.city || "",
-          provinceCode: companyInfo?.primaryContact?.provinceCode || "",
-          countryCode: companyInfo?.primaryContact?.countryCode || "",
+          firstName: getDefaultRequiredVal("", companyInfo?.primaryContact?.firstName),
+          lastName: getDefaultRequiredVal("", companyInfo?.primaryContact?.lastName),
+          phone1: applyWhenNotNullable(formatPhoneNumber, companyInfo?.primaryContact?.phone1, ""),
+          phone1Extension: getDefaultRequiredVal("", companyInfo?.primaryContact?.phone1Extension),
+          phone2: applyWhenNotNullable(formatPhoneNumber, companyInfo?.primaryContact?.phone2, ""),
+          phone2Extension: getDefaultRequiredVal("", companyInfo?.primaryContact?.phone2Extension),
+          email: getDefaultRequiredVal("", companyInfo?.primaryContact?.email),
+          city: getDefaultRequiredVal("", companyInfo?.primaryContact?.city),
+          provinceCode: getDefaultRequiredVal("", companyInfo?.primaryContact?.provinceCode),
+          countryCode: getDefaultRequiredVal("", companyInfo?.primaryContact?.countryCode),
         },
       },
     });
@@ -72,9 +69,7 @@ export const CompanyInfoForm = memo(
         if (response.status === 200) {
           queryClient.invalidateQueries(["companyInfo"]);
           setIsEditting(false);
-        } else {
-          // Display Error in the form.
-        }
+        } // else { // Display Error in the form }
       },
     });
 

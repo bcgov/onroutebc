@@ -1,6 +1,6 @@
-import { CountryAndProvince } from "../../../../../common/components/form/CountryAndProvince";
-import { CustomFormComponent } from "../../../../../common/components/form/CustomFormComponents";
-import { CITY_WIDTH, POSTAL_WIDTH } from "../../../../../themes/bcGovStyles";
+import { CountryAndProvince } from "../../../../../../common/components/form/CountryAndProvince";
+import { CustomFormComponent } from "../../../../../../common/components/form/CustomFormComponents";
+import { CITY_WIDTH, POSTAL_WIDTH } from "../../../../../../themes/bcGovStyles";
 
 export const CompanyInfoGeneralForm = ({ feature }: { feature: string }) => (
   <>

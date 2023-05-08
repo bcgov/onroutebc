@@ -1,5 +1,5 @@
 import { memo } from "react";
-import "../../manageProfile/components/forms/CompanyInfoForms.scss";
+import "../../manageProfile/components/forms/companyInfo/CompanyInfoForms.scss";
 import { CustomFormComponent } from "../../../common/components/form/CustomFormComponents";
 import { CountryAndProvince } from "../../../common/components/form/CountryAndProvince";
 import { EXT_WIDTH, PHONE_WIDTH } from "../../../themes/bcGovStyles";

@@ -24,6 +24,7 @@ import {
   TROS_INELIGIBLE_POWERUNITS,
   TROS_INELIGIBLE_TRAILERS,
 } from "../../../../../constants/termOversizeConstants";
+import { getDefaultRequiredVal } from "../../../../../../../common/helpers/util";
 
 const GroupHeader = styled("div")(({ theme }) => ({
   position: "sticky",
@@ -140,7 +141,7 @@ export const SelectVehicleDropdown = ({
           }
         }}
         options={eligibleVehicles}
-        groupBy={(option) => option?.vehicleType || ""}
+        groupBy={(option) => getDefaultRequiredVal("", option?.vehicleType)}
         getOptionLabel={(option) => {
           if (!option) return "";
           if (!option.unitNumber) option.unitNumber = "-";

@@ -1,7 +1,7 @@
 import { Typography } from "@mui/material";
 import { useState } from "react";
 import { BC_COLOURS } from "../../../themes/bcGovStyles";
-import { CompanyInfoForm } from "../components/forms/CompanyInfoForm";
+import { CompanyInfoForm } from "../components/forms/companyInfo/CompanyInfoForm";
 
 import { DisplayInfo } from "./DisplayCompanyInfo";
 import { CompanyBanner } from "../../../common/components/banners/CompanyBanner";

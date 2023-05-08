@@ -1,6 +1,7 @@
 import { memo } from "react";
 import { Box, Button, Typography } from "@mui/material";
 
+import "./DisplayMyInfo.scss";
 import { UserInformation } from "../types/manageProfile";
 import { formatPhoneNumber } from "../../../common/components/form/subFormComponents/PhoneNumberInput";
 import { formatProvince, formatCountry } from "../../../common/helpers/formatCountryProvince";
@@ -14,13 +15,7 @@ export const DisplayMyInfo = memo(({
 }) => {
   if (!myInfo) return <></>;
   return (
-    <Box
-      sx={{
-        display: "flex",
-        justifyContent: "space-between",
-        marginBottom: "40px",
-      }}
-    >
+    <div className="my-info-display">
       <Box>
         <Typography variant="h3">
           {`${myInfo.firstName} ${myInfo.lastName}`}
@@ -51,18 +46,17 @@ export const DisplayMyInfo = memo(({
           {myInfo.city}
         </Typography>
       </Box>
-      <div>
+      <div className="my-info-display__edit">
         <Button
           variant="contained"
           color="tertiary"
-          sx={{ marginTop: "20px" }}
           onClick={() => setIsEditing(true)}
         >
-          <i className="fa fa-pencil" style={{ marginRight: "7px" }} />
+          <i className="fa fa-pencil" />
           Edit
         </Button>
       </div>
-    </Box>
+    </div>
   );
 });
 
