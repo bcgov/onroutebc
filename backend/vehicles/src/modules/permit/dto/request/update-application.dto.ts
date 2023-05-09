@@ -7,7 +7,6 @@ import { PermitStatus } from 'src/common/enum/permit-status.enum';
 import { PermitType } from 'src/common/enum/permit-type.enum';
 
 export class UpdateApplicationDto {
-
   @AutoMap()
   @IsNumber()
   @ApiProperty({
