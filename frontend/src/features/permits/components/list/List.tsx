@@ -22,7 +22,6 @@ import { Delete, ContentCopy } from "@mui/icons-material";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { UseQueryResult } from "@tanstack/react-query";
 import DeleteConfirmationDialog from "../../../manageVehicles/components/list/ConfirmationDialog";
-import { useNavigate } from "react-router-dom";
 import { SnackBarContext } from "../../../../App";
 import { ApplicationInProgress } from "../../types/application";
 import { ApplicationInProgressColumnDefinition } from "./Columns";
@@ -81,9 +80,7 @@ export const List = memo(
      * in the confirmation dialog.
      */
     const onConfirmDelete = () => {
-      // deleteApplicationsInProgress(applicationIds).then((response) => {
-      // 
-      // });
+      console.log("delete applications: to be implemented");
     };
 
     /**
