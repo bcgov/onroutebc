@@ -23,13 +23,14 @@ export const ManageApplicationDashboard = React.memo(() => {
   });
 
   const {
+    data,
     isLoading,
     isError,
     error,
     //refetch,
   } = useQuery({
-    queryKey: ["companyInfo"],
-    queryFn: getCompanyInfo,
+    queryKey: ["applicationInProgress"],
+    queryFn: getApplicationsInProgress,
     keepPreviousData: true,
     staleTime: 5000,
   });
@@ -50,7 +51,20 @@ export const ManageApplicationDashboard = React.memo(() => {
   const tabs = [
     {
       label: "Applications in Progress",
-      component: <List query={applicationInProgressQuery} />,
+      //bruce test
+      // component: <List query={applicationInProgressQuery} />,
+      component: (data?.length === 0)?
+                  <div
+                  style={{
+                    display: "flex",
+                    padding: "20px 0px",
+                    backgroundColor: "white",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                  >
+                    <img src="https://static.vecteezy.com/system/resources/thumbnails/007/104/553/small/search-no-result-not-found-concept-illustration-flat-design-eps10-modern-graphic-element-for-landing-page-empty-state-ui-infographic-icon-vector.jpg"/></div>
+                  :<List query={applicationInProgressQuery} />,
     },
     {
       label: "Applications in Review",

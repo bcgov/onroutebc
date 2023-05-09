@@ -33,3 +33,6 @@ export const ApplicationInProgressColumnDefinition: MRT_ColumnDef<ApplicationInP
     header: "Last Updated",
   }
 ];
+
+export const ApplicationNotFoundColumnDefinition: MRT_ColumnDef<ApplicationInProgress>[] = [
+];
