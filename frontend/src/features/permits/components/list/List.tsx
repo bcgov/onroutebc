@@ -82,16 +82,6 @@ export const List = memo(
       console.log("delete applications: to be implemented");
     };
 
-    /**
-     * Function that clears the delete related states when the user clicks on cancel.
-     */
-    const onCancelApplicationDelete = useCallback(() => {
-      setIsDeleteDialogOpen(() => false);
-      setRowSelection(() => {
-        return {};
-      });
-    }, []);
-
     useEffect(() => {
       if (isError) {
         snackBar.setSnackBar({
@@ -103,11 +93,21 @@ export const List = memo(
       }
     }, [isError]);
 
+    /**
+     * Function that clears the delete related states when the user clicks on cancel.
+     */
+    const onCancelApplicationDelete = useCallback(() => {
+      setRowSelection(() => {
+        return {};
+      });
+      setIsDeleteDialogOpen(() => false);
+    }, []);
+
     return (
       <div className="table-container">
         <MaterialReactTable
-          data={data ?? []}
           columns={columns}
+          data={data ?? []}
           state={{
             showAlertBanner: isError,
             showProgressBars: isFetching,
