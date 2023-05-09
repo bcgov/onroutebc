@@ -107,7 +107,6 @@ export class ApplicationController {
     @Param('applicationNumber') applicationNumber: string,
     @Body() updateApplicationDto: UpdateApplicationDto,
   ): Promise<ReadApplicationDto> {
-
     const application = await this.applicationService.update(
       applicationNumber,
       updateApplicationDto,

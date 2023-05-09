@@ -128,8 +128,8 @@ export class ApplicationService {
   /**
    * Update an application
    * @param applicationNumber The key used to find the existing application
-   * @param updateApplicationDto 
-   * @returns The updated application as a ReadApplicationDto 
+   * @param updateApplicationDto
+   * @returns The updated application as a ReadApplicationDto
    */
   async update(
     applicationNumber: string,
