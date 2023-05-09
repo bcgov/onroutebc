@@ -64,7 +64,6 @@ export class ApplicationProfile extends AutomapperProfile {
         forMember(
           (d) => d.permitData.permitDataId,
           mapWithArguments((source, { permitDataId }) => {
-            // TODO: Throw exception if permitDataId is null
             return permitDataId;
           }),
         ),
