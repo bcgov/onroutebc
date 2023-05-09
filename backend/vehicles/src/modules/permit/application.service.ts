@@ -7,6 +7,7 @@ import { IsNull, Repository } from 'typeorm';
 import { CreateApplicationDto } from './dto/request/create-application.dto';
 import { ReadApplicationDto } from './dto/response/read-application.dto';
 import { Permit } from './entities/permit.entity';
+import { UpdateApplicationDto } from './dto/request/update-application.dto';
 
 @Injectable()
 export class ApplicationService {
@@ -101,6 +102,59 @@ export class ApplicationService {
 
     return this.classMapper.mapArrayAsync(
       applications,
+      Permit,
+      ReadApplicationDto,
+    );
+  }
+
+  /**
+   * Get a single application by application number
+   * @param applicationNumber example: "A2-00000004-373"
+   * @returns Permit object associated with the given applicationNumber
+   */
+  private async findByApplicationNumber(
+    applicationNumber: string,
+  ): Promise<Permit> {
+    const application = await this.permitRepository.findOne({
+      where: [{ applicationNumber: applicationNumber }],
+      relations: {
+        permitData: true,
+      },
+    });
+
+    return application;
+  }
+
+  /**
+   * Update an application
+   * @param applicationNumber The key used to find the existing application
+   * @param updateApplicationDto 
+   * @returns The updated application as a ReadApplicationDto 
+   */
+  async update(
+    applicationNumber: string,
+    updateApplicationDto: UpdateApplicationDto,
+  ): Promise<ReadApplicationDto> {
+    const existingApplication = await this.findByApplicationNumber(
+      applicationNumber,
+    );
+
+    const newApplication = this.classMapper.map(
+      updateApplicationDto,
+      UpdateApplicationDto,
+      Permit,
+      {
+        extraArgs: () => ({
+          permitId: existingApplication.permitId,
+          permitDataId: existingApplication.permitData.permitDataId,
+        }),
+      },
+    );
+
+    await this.permitRepository.save(newApplication);
+
+    return this.classMapper.mapAsync(
+      await this.findByApplicationNumber(applicationNumber),
       Permit,
       ReadApplicationDto,
     );
