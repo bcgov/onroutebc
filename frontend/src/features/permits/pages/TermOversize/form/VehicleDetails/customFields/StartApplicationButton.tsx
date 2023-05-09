@@ -46,12 +46,7 @@ export const StartApplicationButton = () => {
             width={"180px"}
           />
         <Button
-          // ref={anchorRef}
-          //id="composition-button"
           variant="contained"
-          // aria-controls={isMenuOpen ? "composition-menu" : undefined}
-          // aria-expanded={isMenuOpen ? "true" : undefined}
-          //aria-haspopup="true"
           onClick={handleStartButtonClicked}
           sx={{
             marginTop: "45px",

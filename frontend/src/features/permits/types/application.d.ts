@@ -78,4 +78,3 @@ export interface PermitApplicationInProgress extends Application{
 }
 
 export type ApplicationInProgress = PermitApplicationInProgress;
-export type ApplicationInProgressAsString = "applicationInProgress";

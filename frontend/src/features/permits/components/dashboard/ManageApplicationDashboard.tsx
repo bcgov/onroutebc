@@ -11,8 +11,10 @@ import { getApplicationsInProgress } from "../../../../features/permits/apiManag
 import { StartApplicationButton } from "../../../../features/permits/pages/TermOversize/form/VehicleDetails/customFields/StartApplicationButton";
 
 export const ManageApplicationDashboard = React.memo(() => {
+
   const keepPreviousData = true;
   const staleTime = 5000;
+
   const applicationInProgressQuery = useQuery({
     queryKey: ["applicationInProgress"],
     queryFn: getApplicationsInProgress,
@@ -21,7 +23,6 @@ export const ManageApplicationDashboard = React.memo(() => {
   });
 
   const {
-    data: companyInfoData,
     isLoading,
     isError,
     error,
@@ -49,7 +50,7 @@ export const ManageApplicationDashboard = React.memo(() => {
   const tabs = [
     {
       label: "Applications in Progress",
-      component: <List applicationType="applicationInProgress" query={applicationInProgressQuery} />,
+      component: <List query={applicationInProgressQuery} />,
     },
     {
       label: "Applications in Review",
