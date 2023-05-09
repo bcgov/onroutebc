@@ -26,9 +26,9 @@ import { SnackBarContext } from "../../../../App";
 import { ApplicationInProgress } from "../../types/application";
 import { ApplicationInProgressColumnDefinition } from "./Columns";
 
+
 /**
- * Dynamically set the column based on vehicle type
- * @param applicationType Either "applicationInProgress" | "applicationInReview" | "applicationInActive" | "applicationExpired"
+ * Dynamically set the column
  * @returns An array of column headers/accessor keys ofr Material React Table
  */
 const getColumns = (
@@ -57,7 +57,6 @@ export const List = memo(
       isError,
       isFetching,
       isLoading,
-      //refetch,
     } = query;
 
     const columns = useMemo<MRT_ColumnDef<ApplicationInProgress>[]>(
@@ -76,17 +75,17 @@ export const List = memo(
     }, []);
 
     /**
-     * Function that deletes a vehicle once the user confirms the delete action
+     * Function that deletes a application once the user confirms the delete action
      * in the confirmation dialog.
      */
-    const onConfirmDelete = () => {
+    const onConfirmApplicationDelete = () => {
       console.log("delete applications: to be implemented");
     };
 
     /**
      * Function that clears the delete related states when the user clicks on cancel.
      */
-    const onCancelDelete = useCallback(() => {
+    const onCancelApplicationDelete = useCallback(() => {
       setIsDeleteDialogOpen(() => false);
       setRowSelection(() => {
         return {};
@@ -103,32 +102,27 @@ export const List = memo(
         });
       }
     }, [isError]);
-    // End snackbar code for error handling
 
     return (
       <div className="table-container">
         <MaterialReactTable
-          // Required Props
           data={data ?? []}
           columns={columns}
-          // State variables and actions
-          //rowCount={rowCount}
           state={{
-            isLoading,
             showAlertBanner: isError,
             showProgressBars: isFetching,
-            // sorting: [{ id: "createdDateTime", desc: true }],
             columnVisibility: { applicationId: true },
             rowSelection: rowSelection,
+            isLoading,
           }}
-          // Disable the default column actions so that we can use our custom actions
-          enableColumnActions={false}
-          enableRowSelection={true}
-          enableRowActions={true}
           selectAllMode="page"
           onRowSelectionChange={setRowSelection}
           enableStickyHeader
           positionActionsColumn="last"
+          // Disable the default column actions so that we can use our custom actions
+          enableColumnActions={false}
+          enableRowSelection={true}
+          enableRowActions={true} 
           displayColumnDefOptions={{
             "mrt-row-actions": {
               header: "",
@@ -142,31 +136,26 @@ export const List = memo(
               table: MRT_TableInstance<ApplicationInProgress>;
               row: MRT_Row<ApplicationInProgress>;
             }) => (
-              <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+              <Box sx={{justifyContent: "flex-end", display: "flex"}}>
                 <Tooltip arrow placement="top" title="Make a copy">
-                  {/*tslint:disable-next-line*/}
                   <IconButton
-                    onClick={() => table.setEditingRow(row)}
                     disabled={false}
+                    onClick={() => table.setEditingRow(row)}
                   >
                     <ContentCopy />
                   </IconButton>
                 </Tooltip>
                 <Tooltip arrow placement="top" title="Delete">
-                  {/*tslint:disable-next-line*/}
                   <IconButton
-                    color="error"
-                    onClick={() => {
-                      setIsDeleteDialogOpen(() => true);
+                    
+                    onClick={() => {  
                       setRowSelection(() => {
                         const newObject: { [key: string]: boolean } = {};
-                        // Setting the selected row to false so that
-                        // the row appears unchecked.
-                        // newObject[row.getValue(`${vehicleType}Id`) as string] =
-                        //   false;
                         return newObject;
                       });
+                      setIsDeleteDialogOpen(() => true);
                     }}
+                    color="error"
                     disabled={false}
                   >
                     <Delete />
@@ -209,28 +198,25 @@ export const List = memo(
           }}
           // Column widths
           defaultColumn={{
-            maxSize: 200, //allow columns to get larger than default
-            minSize: 25,
             size: 50,
+            maxSize: 200,
+            minSize: 25,
           }}
           // Cell/Body container
           muiTableContainerProps={{
             sx: {
-              outline: "1px solid #DBDCDC",
-              //height: "calc(100vh - 160px)",
-              //minHeight: "30vh",
               height: "calc(100vh - 475px)",
+              outline: "1px solid #DBDCDC",
             },
           }}
           // Pagination
           muiBottomToolbarProps={{
             sx: {
-              zIndex: 0, // resolve z-index conflict with sliding panel
               backgroundColor: BC_COLOURS.bc_background_light_grey,
+              zIndex: 0,
             },
           }}
-          // Top toolbar
-          muiTopToolbarProps={{ sx: { zIndex: 0 } }} // resolve z-index conflict with sliding panel
+          
           // Alert banner
           muiToolbarAlertBannerProps={
             isError
@@ -240,6 +226,8 @@ export const List = memo(
                 }
               : undefined
           }
+          // Top toolbar
+          muiTopToolbarProps={{ sx: { zIndex: 0 } }}
           // Search Bar
           positionGlobalFilter="left"
           initialState={{ showGlobalFilter: true }} //show the search bar by default
@@ -258,13 +246,15 @@ export const List = memo(
           }}
           // Row Header
           muiTableHeadRowProps={{
-            sx: { backgroundColor: BC_COLOURS.bc_background_light_grey },
+            sx: { 
+              backgroundColor: BC_COLOURS.bc_background_light_grey 
+            },
           }}
         />
         <DeleteConfirmationDialog
-          onClickDelete={onConfirmDelete}
+          onClickDelete={onConfirmApplicationDelete}
           isOpen={isDeleteDialogOpen}
-          onClickCancel={onCancelDelete}
+          onClickCancel={onCancelApplicationDelete}
         />
       </div>
     );
