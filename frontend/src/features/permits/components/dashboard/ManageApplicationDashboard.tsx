@@ -51,8 +51,6 @@ export const ManageApplicationDashboard = React.memo(() => {
   const tabs = [
     {
       label: "Applications in Progress",
-      //bruce test
-      // component: <List query={applicationInProgressQuery} />,
       component: (data?.length === 0)?
                   <div
                   style={{
