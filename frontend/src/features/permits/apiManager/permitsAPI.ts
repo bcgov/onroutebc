@@ -2,6 +2,7 @@ import { httpGETRequest, httpPOSTRequest, getCompanyIdFromSession, getUserGuidFr
 import { replaceEmptyValuesWithNull } from "../../../common/helpers/util";
 import { PERMITS_API, VEHICLE_URL } from "./endpoints/endpoints";
 import { PermitApplicationInProgress } from "../types/application";
+import { formatDate } from "../../../common/helpers/formatDate";
 
 export const submitTermOversize = (
   termOversizePermit: any
@@ -54,23 +55,16 @@ export const getApplicationsInProgress = async (): Promise<(PermitApplicationInP
 
 };
 
-const formatDate = (formatter: Intl.DateTimeFormat, inputDateStr: any) => {
-  let inputDate;
-  if (typeof inputDateStr === 'string') {
-    inputDate = new Date(inputDateStr);
-  } else if (typeof inputDateStr === 'object') {
-    const year = inputDateStr.$y;
-      const month = inputDateStr.$M;
-      const day = inputDateStr.$D;
-      const hour = inputDateStr.$H;
-      const minute = inputDateStr.$m;
-      const second = inputDateStr.$s;
-      inputDate = new Date(year, month, day, hour, minute, second);
-  } else {
-    throw new Error('Invalid date format');
-  }
-  const formattedDateStr = formatter.format(inputDate);
-  console.log(formattedDateStr);
-  return formattedDateStr;
-}
+/**
+ * Delete Permit Applications in Progress
+ * @return An object with two string arrays for deletion success or failure
+ */
+export const deleteApplicationsInProgress = (
+  applicationNumbers: Array<string>,
+): Promise<Response> => {
+  const url = `${VEHICLE_URL}/permits/applications/delete-requests?companyId=${getCompanyIdFromSession()}`;
+  const requestBody = { applicationsInProgress: applicationNumbers };
+  return httpPOSTRequest(url, replaceEmptyValuesWithNull(requestBody));
+};
+
 

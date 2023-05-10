@@ -25,6 +25,10 @@ import DeleteConfirmationDialog from "../../../manageVehicles/components/list/Co
 import { SnackBarContext } from "../../../../App";
 import { ApplicationInProgress } from "../../types/application";
 import { ApplicationInProgressColumnDefinition, ApplicationNotFoundColumnDefinition} from "./Columns";
+import { deleteApplicationsInProgress } from "../../apiManager/permitsAPI";
+import { Vehicle } from "../../../manageVehicles/types/managevehicles";
+import { PowerUnit } from "../../../manageVehicles/types/managevehicles";
+import { PermitApplicationInProgress } from "../../types/application";
 
 
 /**
@@ -85,6 +89,36 @@ export const List = memo(
      */
     const onConfirmApplicationDelete = () => {
       console.log("delete applications: to be implemented");
+      const applicationNumbers: string[] = Object.keys(rowSelection);
+
+      deleteApplicationsInProgress(applicationNumbers).then((response) => {
+        if (response.status === 200) {
+          response
+            .json()
+            .then((responseBody: { success: string[]; failure: string[] }) => {
+              setIsDeleteDialogOpen(() => false);
+              if (responseBody.failure.length > 0) {
+                snackBar.setSnackBar({
+                  message: "An unexpected error occurred.",
+                  showSnackbar: true,
+                  setShowSnackbar: () => true,
+                  alertType: "error",
+                });
+              } else {
+                snackBar.setSnackBar({
+                  message: "Application(s) Deleted",
+                  showSnackbar: true,
+                  setShowSnackbar: () => true,
+                  alertType: "info",
+                });
+              }
+              setRowSelection(() => {
+                return {};
+              });
+              query.refetch();
+            });
+        }
+      });
     };
 
     useEffect(() => {
@@ -127,6 +161,11 @@ export const List = memo(
           // Disable the default column actions so that we can use our custom actions
           enableColumnActions={false}
           enableRowSelection={true}
+          // Row copy, delete, and edit options
+          getRowId={(originalRow) => {
+            const applicationRow = originalRow as PermitApplicationInProgress;
+            return applicationRow.applicationNumber as string;
+          }}
           enableRowActions={true} 
           displayColumnDefOptions={{
             "mrt-row-actions": {
@@ -151,20 +190,24 @@ export const List = memo(
                   </IconButton>
                 </Tooltip>
                 <Tooltip arrow placement="top" title="Delete">
-                  <IconButton
-                    
-                    onClick={() => {  
-                      setRowSelection(() => {
-                        const newObject: { [key: string]: boolean } = {};
-                        return newObject;
-                      });
-                      setIsDeleteDialogOpen(() => true);
-                    }}
-                    color="error"
-                    disabled={false}
-                  >
-                    <Delete />
-                  </IconButton>
+                      <IconButton
+                        color="error"
+                        onClick={() => {
+                          setIsDeleteDialogOpen(() => true);
+                          setRowSelection(() => {
+                            const newObject: { [key: string]: boolean } = {};
+                            // Setting the selected row to false so that
+                            // the row appears unchecked.
+                            newObject[
+                              row.getValue(`applicationNumber`) as string
+                            ] = false;
+                            return newObject;
+                          });
+                        }}
+                        disabled={false}
+                      >
+                        <Delete />
+                      </IconButton>
                 </Tooltip>
               </Box>
             ),
