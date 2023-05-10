@@ -10,7 +10,8 @@ GO
 BEGIN TRANSACTION
 
 CREATE TABLE [permit].[ORBC_PERMIT](
-	[ID] [bigint] IDENTITY(1,1) NOT NULL,	
+	[ID] [bigint] IDENTITY(1,1) NOT NULL,
+	[ORIGINAL_ID] [bigint] NULL,
 	[COMPANY_ID] [int] NULL,
 	[PERMIT_TYPE_ID] [varchar](10) NULL,
 	[PERMIT_APPROVAL_SOURCE_ID] [varchar](8) NULL,
@@ -20,7 +21,7 @@ CREATE TABLE [permit].[ORBC_PERMIT](
 	[REVISION] [tinyint] NULL,
 	[PREVIOUS_REV_ID] [bigint] NULL,
 	[OWNER_USER_GUID] [char](32) NULL,
-	[PERMIT_STATUS_ID] [varchar](20) NOT NULL,
+	[PERMIT_STATUS_ID] [varchar](20) NULL,
 	[CONCURRENCY_CONTROL_NUMBER] [int] NULL,
 	[DB_CREATE_USERID] [varchar](63) NOT NULL,
 	[DB_CREATE_TIMESTAMP] [datetime2](7) NOT NULL,
@@ -180,6 +181,8 @@ CREATE TABLE [permit].[ORBC_VT_PERMIT_TYPE](
 GO
 
 ALTER TABLE [permit].[ORBC_PERMIT] ADD  CONSTRAINT [DF_ORBC_PERMIT_REVISION]  DEFAULT ((0)) FOR [REVISION]
+GO
+ALTER TABLE [permit].[ORBC_PERMIT] ADD  CONSTRAINT [DF_ORBC_PERMIT_PERMIT_STATUS_ID]  DEFAULT ('IN_PROGRESS') FOR [PERMIT_STATUS_ID]
 GO
 ALTER TABLE [permit].[ORBC_PERMIT] ADD  CONSTRAINT [DF_ORBC_PERMIT_DB_CREATE_USERID]  DEFAULT (user_name()) FOR [DB_CREATE_USERID]
 GO
@@ -341,6 +344,8 @@ GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Surrogate primary key for the permit metadata record' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT', @level2type=N'COLUMN',@level2name=N'ID'
 GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID of the original permit or application without any revisions. All subsequent revisions of that original permit will share the same ORIGINAL_ID value making history tracking straightforward.' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT', @level2type=N'COLUMN',@level2name=N'ORIGINAL_ID'
+GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Foreign key to the ORBC_COMPANY table, represents the company requesting the permit' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT', @level2type=N'COLUMN',@level2name=N'COMPANY_ID'
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Foreign key to the permit type table, represents the type of permit this record refers to' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT', @level2type=N'COLUMN',@level2name=N'PERMIT_TYPE_ID'
@@ -356,6 +361,8 @@ GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Revision of the permit, begins with zero and increments by 1 for each subsequent revision' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT', @level2type=N'COLUMN',@level2name=N'REVISION'
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID of the previous permit revision metadata record, if this permit revision is greater than zero' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT', @level2type=N'COLUMN',@level2name=N'PREVIOUS_REV_ID'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Current status of the permit or permit application.' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT', @level2type=N'COLUMN',@level2name=N'PERMIT_STATUS_ID'
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Application code is responsible for retrieving the row and then incrementing the value of the CONCURRENCY_CONTROL_NUMBER column by one prior to issuing an update. If this is done then the update will succeed, provided that the row was not updated by any other transactions in the period between the read and the update operations.' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT', @level2type=N'COLUMN',@level2name=N'CONCURRENCY_CONTROL_NUMBER'
 GO
@@ -506,6 +513,15 @@ GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time the record was created or last updated.' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_VT_PERMIT_TYPE', @level2type=N'COLUMN',@level2name=N'DB_LAST_UPDATE_TIMESTAMP'
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Table enumerating all possible permit types' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_VT_PERMIT_TYPE'
+GO
+
+CREATE SEQUENCE [permit].[ORBC_PERMIT_NUMBER_SEQ] 
+ AS [bigint]
+ START WITH 10000
+ INCREMENT BY 1
+ MINVALUE 1
+ MAXVALUE 99999999
+ CACHE 
 GO
 
 CREATE   TRIGGER [permit].[ORBC_PERMIT_APPLICATION_NUMBER_TRG] 

@@ -1,11 +1,14 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
+import { IsNumber } from 'class-validator';
+import { ApplicationStatus } from 'src/common/enum/application-status.enum';
 import { PermitApplicationOrigin } from 'src/common/enum/permit-application-origin.enum';
-import { PermitApprovalSource } from 'src/common/enum/permit-approval-source.enum';
+import { PermitStatus } from 'src/common/enum/permit-status.enum';
 import { PermitType } from 'src/common/enum/permit-type.enum';
 
 export class UpdateApplicationDto {
   @AutoMap()
+  @IsNumber()
   @ApiProperty({
     description: 'Id of the company requesting the permit.',
     example: 74,
@@ -16,7 +19,7 @@ export class UpdateApplicationDto {
   @AutoMap()
   @ApiProperty({
     description: 'GUID of the user requesting the permit.',
-    example: '6F9619FF8B86D011B42D00C04FC964FF',
+    example: '06267945F2EB4E31B585932F78B76269',
     required: false,
   })
   userGuid: string;
@@ -31,11 +34,11 @@ export class UpdateApplicationDto {
 
   @AutoMap()
   @ApiProperty({
-    enum: PermitApprovalSource,
-    example: PermitApprovalSource.PPC,
-    description: 'Unique identifier for the application approval source.',
+    enum: PermitStatus,
+    description: 'Friendly name for the permit type.',
+    example: ApplicationStatus.IN_PROGRESS,
   })
-  permitApprovalSource: PermitApprovalSource;
+  permitStatus: PermitStatus;
 
   @AutoMap()
   @ApiProperty({

@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Param, Post, Query, Req } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Put,
+  Query,
+  Req,
+} from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiCreatedResponse,
@@ -16,6 +25,8 @@ import { ApplicationService } from './application.service';
 import { Request } from 'express';
 import { ApplicationStatus } from '../../common/enum/application-status.enum';
 import { ExceptionDto } from '../../common/exception/exception.dto';
+import { UpdateApplicationDto } from './dto/request/update-application.dto';
+import { DataNotFoundException } from 'src/common/exception/data-not-found.exception';
 
 @ApiBearerAuth()
 @ApiTags('Permit Application')
@@ -84,5 +95,26 @@ export class ApplicationController {
     @Param('permitId') permitId: string,
   ): Promise<ReadApplicationDto> {
     return await this.applicationService.findApplication(permitId);
+  }
+
+  @ApiOkResponse({
+    description: 'The Permit Application Resource',
+    type: ReadApplicationDto,
+  })
+  @Put(':applicationNumber')
+  async update(
+    @Req() request: Request,
+    @Param('applicationNumber') applicationNumber: string,
+    @Body() updateApplicationDto: UpdateApplicationDto,
+  ): Promise<ReadApplicationDto> {
+    const application = await this.applicationService.update(
+      applicationNumber,
+      updateApplicationDto,
+    );
+
+    if (!application) {
+      throw new DataNotFoundException();
+    }
+    return application;
   }
 }
