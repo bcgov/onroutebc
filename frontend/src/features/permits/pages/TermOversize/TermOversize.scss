@@ -26,3 +26,41 @@
   font-weight: bold !important;
   margin-bottom: 8px !important;
 }
+
+.payment-option-box {
+  max-width: 500px;
+  background-color: $bc-messages-blue-background;
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid $bc-black;
+  opacity: 1;
+}
+
+.payment-option-container {
+  display: block;
+}
+
+.payment-layout {
+  padding: 0px 60px;
+  overflow: hidden;
+  background-color: white;
+  min-height: calc(100vh - 390px);
+  height: 100%;
+}
+
+.payment-img {
+  height: 16px;
+  width: auto;
+  padding: 0px 8px;
+}
+
+.payment-img-payBC {
+  height: 27px;
+  margin-bottom: -4px;
+}
+
+.payment-fee-summary {
+  padding: 24px;
+  width: 488px;
+  margin-left: auto;
+}
