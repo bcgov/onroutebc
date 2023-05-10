@@ -303,6 +303,7 @@ export const List = memo(
           onClickDelete={onConfirmApplicationDelete}
           isOpen={isDeleteDialogOpen}
           onClickCancel={onCancelApplicationDelete}
+          caption="application"
         />
       </div>
     );

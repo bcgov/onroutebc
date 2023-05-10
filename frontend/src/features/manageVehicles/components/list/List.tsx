@@ -354,6 +354,7 @@ export const List = memo(
           onClickDelete={onConfirmDelete}
           isOpen={isDeleteDialogOpen}
           onClickCancel={onCancelDelete}
+          caption="item"
         />
       </div>
     );

@@ -13,6 +13,7 @@ export default function DeleteConfirmationDialog({
   isOpen,
   onClickDelete,
   onClickCancel,
+  caption,
 }: {
   /**
    * Boolean to control the open and close state of Dialog box.
@@ -29,7 +30,13 @@ export default function DeleteConfirmationDialog({
    * @returns void
    */
   onClickCancel: () => void;
+  /**
+   * A caption string showing on title of the Dialog box.
+   * @returns string
+   */
+  caption: string
 }) {
+  const title = caption;
   return (
     <div>
       <Dialog
@@ -44,7 +51,7 @@ export default function DeleteConfirmationDialog({
           }}
         >
           <i className="fa fa-trash"></i> &nbsp;
-          <strong>Delete item(s)? </strong>
+          <strong>Delete {title}(s)? </strong>
         </DialogTitle>
         <DialogContent dividers>
           <Typography gutterBottom>
