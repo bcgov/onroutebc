@@ -3,7 +3,6 @@ import { TabLayout } from "../../../../common/components/dashboard/TabLayout";
 import { useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { Unauthorized } from "../../../../common/pages/Unauthorized";
-import { getCompanyInfo } from "../../../../features/manageProfile/apiManager/manageProfileAPI";
 import { Loading } from "../../../../common/pages/Loading";
 import { ErrorFallback } from "../../../../common/pages/ErrorFallback";
 import { List } from "../list/List";

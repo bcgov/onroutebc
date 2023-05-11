@@ -26,8 +26,6 @@ import { SnackBarContext } from "../../../../App";
 import { ApplicationInProgress } from "../../types/application";
 import { ApplicationInProgressColumnDefinition, ApplicationNotFoundColumnDefinition} from "./Columns";
 import { deleteApplicationsInProgress } from "../../apiManager/permitsAPI";
-import { Vehicle } from "../../../manageVehicles/types/managevehicles";
-import { PowerUnit } from "../../../manageVehicles/types/managevehicles";
 import { PermitApplicationInProgress } from "../../types/application";
 
 
@@ -87,11 +85,11 @@ export const List = memo(
      * Function that deletes a application once the user confirms the delete action
      * in the confirmation dialog.
      */
-    const onConfirmApplicationDelete = () => {
+    const onConfirmApplicationDelete = async () => {
       console.log("delete applications: to be implemented");
       const applicationNumbers: string[] = Object.keys(rowSelection);
 
-      deleteApplicationsInProgress(applicationNumbers).then((response) => {
+      await deleteApplicationsInProgress(applicationNumbers).then((response) => {
         if (response.status === 200) {
           response
             .json()
