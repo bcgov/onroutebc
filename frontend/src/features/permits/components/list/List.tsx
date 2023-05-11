@@ -112,10 +112,6 @@ export const List = memo(
               query.refetch();
             });
         }
-      })
-      .catch(error => {
-        // handle the error here
-        console.log(error);
       });
     };
 
