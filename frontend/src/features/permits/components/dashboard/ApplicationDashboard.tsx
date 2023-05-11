@@ -4,7 +4,7 @@ import { Banner } from "../../../../common/components/dashboard/Banner";
 import { TermOversizeForm } from "../../pages/TermOversize/TermOversizeForm";
 import { ApplicationContext } from "../../context/ApplicationContext";
 import { useState } from "react";
-import { TermOversizeApplication } from "../../types/application";
+import { Application, TermOversizeApplication } from "../../types/application";
 import { TermOversizePay } from "../../pages/TermOversize/TermOversizePay";
 import { TermOversizeReview } from "../../pages/TermOversize/TermOversizeReview";
 import { useMultiStepForm } from "../../hooks/useMultiStepForm";
@@ -21,8 +21,7 @@ export enum ApplicationStep {
 }
 
 export const ApplicationDashboard = () => {
-  const [applicationData, setApplicationData] =
-    useState<TermOversizeApplication>();
+  const [applicationData, setApplicationData] = useState<Application>();
 
   const companyInfoQuery = useCompanyInfoQuery();
 

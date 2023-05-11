@@ -5,12 +5,15 @@ import {
   PERMIT_LEFT_HEADER_STYLE,
   PERMIT_RIGHT_BOX_STYLE,
 } from "../../../../../themes/orbcStyles";
-import { TermOversizeApplication } from "../../../types/application";
+import {
+  Application,
+  TermOversizeApplication,
+} from "../../../types/application";
 
 export const ReviewContactDetails = ({
   values,
 }: {
-  values: TermOversizeApplication | undefined;
+  values: Application | undefined;
 }) => {
   return (
     <Box sx={PERMIT_MAIN_BOX_STYLE}>
@@ -22,15 +25,15 @@ export const ReviewContactDetails = ({
       <Box sx={PERMIT_RIGHT_BOX_STYLE}>
         <Box sx={{ gap: "40px", paddingTop: "24px" }}>
           <Typography>
-            {values?.application.contactDetails?.firstName}{" "}
-            {values?.application.contactDetails?.lastName}
+            {values?.permitData.contactDetails?.firstName}{" "}
+            {values?.permitData.contactDetails?.lastName}
           </Typography>
           <Typography>
-            Primary Phone: {values?.application.contactDetails?.phone1} Ext:{" "}
-            {values?.application.contactDetails?.phone1Extension}
+            Primary Phone: {values?.permitData.contactDetails?.phone1} Ext:{" "}
+            {values?.permitData.contactDetails?.phone1Extension}
           </Typography>
           <Typography>
-            Email: {values?.application.contactDetails?.email}
+            Email: {values?.permitData.contactDetails?.email}
           </Typography>
         </Box>
       </Box>

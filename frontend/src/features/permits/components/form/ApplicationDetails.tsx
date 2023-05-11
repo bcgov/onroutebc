@@ -6,7 +6,7 @@ import {
   PERMIT_LEFT_HEADER_STYLE,
   PERMIT_RIGHT_BOX_STYLE,
 } from "../../../../themes/orbcStyles";
-import { TermOversizeApplication } from "../../types/application";
+import { Application, TermOversizeApplication } from "../../types/application";
 import { useCompanyInfoQuery } from "../../../manageProfile/apiManager/hooks";
 import {
   formatCountry,
@@ -56,12 +56,11 @@ const CompanyInformation = ({
 export const ApplicationDetails = ({
   values,
 }: {
-  values: TermOversizeApplication | undefined;
+  values: Application | undefined;
 }) => {
   const companyInfoQuery = useCompanyInfoQuery();
   // TODO use an enum
-  const applicationName =
-    values?.permitType === "TROS" ? "Term: Oversize" : "";
+  const applicationName = values?.permitType === "TROS" ? "Term: Oversize" : "";
 
   if (!values) return <></>;
 

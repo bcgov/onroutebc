@@ -40,7 +40,7 @@ export const getUserGuidFromSession = (): string | null => {
   const parsedSessionObject = JSON.parse(
     sessionStorage.getItem(storageKey) as string
   );
-  
+
   return parsedSessionObject?.profile?.bceid_user_guid ?? null;
 };
 
@@ -74,6 +74,15 @@ export const httpPOSTRequest = (url: string, data: any) => {
   });
 };
 
+export const httpPOSTRequest_axios = (url: string, data: any) => {
+  return axios.post(url, JSON.stringify(data), {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: getAccessToken(),
+    },
+  });
+};
+
 /**
  * A generic HTTP PUT Request
  * @param url The URL of the resource.
@@ -88,6 +97,15 @@ export const httpPUTRequest = (url: string, data: any) => {
       Authorization: getAccessToken(),
     },
     body: JSON.stringify(data),
+  });
+};
+
+export const httpPUTRequest_axios = (url: string, data: any) => {
+  return axios.put(url, JSON.stringify(data), {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: getAccessToken(),
+    },
   });
 };
 

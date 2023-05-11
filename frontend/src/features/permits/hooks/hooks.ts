@@ -1,5 +1,8 @@
-import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
-import { submitTermOversize } from "../apiManager/permitsAPI";
+import { useQueryClient, useMutation } from "@tanstack/react-query";
+import {
+  submitTermOversize,
+  updateTermOversize,
+} from "../apiManager/permitsAPI";
 
 /**
  * A custom react query mutation hook that submits the application data to the backend API
@@ -12,6 +15,31 @@ export const useSubmitTermOversizeMutation = () => {
     onSuccess: (response) => {
       if (response.status === 201) {
         queryClient.invalidateQueries(["termOversize"]);
+        queryClient.setQueryData(["termOversize"], response);
+        return response;
+      } else {
+        // Display Error in the form.
+      }
+    },
+  });
+};
+
+export const useSaveTermOversizeMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: any) => {
+      console.log("data", data);
+      if (data.applicationNumber) {
+        return updateTermOversize(data, data.applicationNumber);
+      } else {
+        return submitTermOversize(data);
+      }
+    },
+    onSuccess: (response) => {
+      if (response.status === 201) {
+        queryClient.invalidateQueries(["termOversize"]);
+        queryClient.setQueryData(["termOversize"], response);
+        return response;
       } else {
         // Display Error in the form.
       }
