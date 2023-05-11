@@ -83,7 +83,7 @@ export const List = memo(
      * Function that deletes a application once the user confirms the delete action
      * in the confirmation dialog.
      */
-    const onConfirmApplicationDelete = async () => {
+    const onConfirmApplicationDelete = () => {
       const applicationNumbers: string[] = Object.keys(rowSelection);
       deleteApplicationsInProgress(applicationNumbers).then((response) => {
         if (response.status === 200) {
