@@ -79,6 +79,7 @@ export const SelectVehicleDropdown = ({
   const clearAllFields = () => {
     setSelectedVehicle("");
     setValue("application.vehicleDetails", {
+      unitNumber: "",
       vin: "",
       plate: "",
       make: "",
@@ -101,6 +102,7 @@ export const SelectVehicleDropdown = ({
 
     setSelectedVehicle(selectedVehicle.plate);
     setValue("application.vehicleDetails", {
+      unitNumber: vehicle.unitNumber,
       vin: vehicle.vin,
       plate: vehicle.plate,
       make: vehicle.make,
