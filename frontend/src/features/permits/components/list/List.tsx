@@ -85,36 +85,42 @@ export const List = memo(
      */
     const onConfirmApplicationDelete = () => {
       const applicationNumbers: string[] = Object.keys(rowSelection);
-      deleteApplicationsInProgress(applicationNumbers).then((response) => {
-        if (response.status === 200) {
-          response
-            .json()
-            .then((responseBody: { success: string[]; failure: string[] }) => {
-              setIsDeleteDialogOpen(() => false);
-              if (responseBody.failure.length > 0) {
-                snackBar.setSnackBar({
-                  showSnackbar: true,
-                  message: "An unexpected error occurred.",
-                  alertType: "error",
-                  setShowSnackbar: () => true,
+      deleteApplicationsInProgress(applicationNumbers)
+        .then((response) => {
+          if (response.status === 200) {
+            response.json()
+              .then((responseBody: { success: string[]; failure: string[] }) => {
+                setIsDeleteDialogOpen(() => false);
+                if (responseBody.failure.length > 0) {
+                  snackBar.setSnackBar({
+                    showSnackbar: true,
+                    message: "An unexpected error occurred.",
+                    alertType: "error",
+                    setShowSnackbar: () => true,
+                  });
+                } else {
+                  snackBar.setSnackBar({
+                    showSnackbar: true,
+                    message: "Application Deleted",
+                    alertType: "info",
+                    setShowSnackbar: () => true,
+                  });
+                }
+                setRowSelection(() => {
+                  return {};
                 });
-              } else {
-                snackBar.setSnackBar({
-                  showSnackbar: true,
-                  message: "Application Deleted",
-                  alertType: "info",
-                  setShowSnackbar: () => true,
-                });
-              }
-              setRowSelection(() => {
-                return {};
+                query.refetch();
+              })
+              .catch((error) => {
+                // Handle the error here
               });
-              query.refetch();
-            });
-        }
-      });
+          }
+        })
+        .catch((error) => {
+          // Handle the error here
+        });
     };
-
+    
     useEffect(() => {
       if (isError) {
         snackBar.setSnackBar({
