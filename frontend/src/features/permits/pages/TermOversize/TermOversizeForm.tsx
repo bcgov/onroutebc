@@ -180,7 +180,7 @@ export const TermOversizeForm = () => {
     reValidateMode: "onBlur",
   });
 
-  const { handleSubmit, clearErrors, getValues } = formMethods;
+  const { handleSubmit, getValues } = formMethods;
 
   const navigate = useNavigate();
 
