@@ -187,7 +187,7 @@ export class UsersService {
     userGUID?: string,
     companyId?: number,
   ): Promise<ReadUserDto[]> {
-    const userDetails = await this.findUsersEntity(undefined, companyId);
+    const userDetails = await this.findUsersEntity(userGUID, companyId);
 
     const readUserDto = await this.classMapper.mapArrayAsync(
       userDetails,
