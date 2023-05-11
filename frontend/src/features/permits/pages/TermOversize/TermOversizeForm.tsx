@@ -1,7 +1,7 @@
 import { useForm, FormProvider, FieldValues } from "react-hook-form";
 import { Box, Button, useMediaQuery, useTheme } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { Application, TermOversizeApplication } from "../../types/application";
+import { Application } from "../../types/application";
 import { ContactDetails } from "../../components/form/ContactDetails";
 import { ApplicationDetails } from "../../components/form/ApplicationDetails";
 import { VehicleDetails } from "./form/VehicleDetails/VehicleDetails";

@@ -4,7 +4,7 @@ import { Banner } from "../../../../common/components/dashboard/Banner";
 import { TermOversizeForm } from "../../pages/TermOversize/TermOversizeForm";
 import { ApplicationContext } from "../../context/ApplicationContext";
 import { useState } from "react";
-import { Application, TermOversizeApplication } from "../../types/application";
+import { Application } from "../../types/application";
 import { TermOversizePay } from "../../pages/TermOversize/TermOversizePay";
 import { TermOversizeReview } from "../../pages/TermOversize/TermOversizeReview";
 import { useMultiStepForm } from "../../hooks/useMultiStepForm";

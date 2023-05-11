@@ -5,7 +5,7 @@ import { WarningBcGovBanner } from "../../../../common/components/banners/AlertB
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { ApplicationDetails } from "../../components/form/ApplicationDetails";
 import { ApplicationContext } from "../../context/ApplicationContext";
-import { TermOversizeApplication } from "../../types/application";
+import { Application } from "../../types/application";
 import { useSaveTermOversizeMutation } from "../../hooks/hooks";
 import { ReviewContactDetails } from "./review/ReviewContactDetails";
 import { ReviewFeeSummary } from "./review/ReviewFeeSummary";
@@ -16,13 +16,12 @@ import { ProgressBar } from "../../components/progressBar/ProgressBar";
 export const TermOversizeReview = () => {
   const { applicationData, setApplicationData, back, next } =
     useContext(ApplicationContext);
-  const methods = useForm<TermOversizeApplication>();
+  const methods = useForm<Application>();
 
   // Send data to the backend API
   const submitTermOversizeQuery = useSaveTermOversizeMutation();
   const onSubmit = async () => {
     if (applicationData) {
-      console.log("permitData", applicationData);
       const response = await submitTermOversizeQuery.mutateAsync(
         applicationData
       );

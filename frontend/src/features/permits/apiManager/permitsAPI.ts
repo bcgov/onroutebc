@@ -4,11 +4,11 @@ import {
   httpPUTRequest_axios,
 } from "../../../common/apiManager/httpRequestHandler";
 import { replaceEmptyValuesWithNull } from "../../../common/helpers/util";
-import { TermOversizeApplication } from "../types/application";
+import { Application } from "../types/application";
 import { PERMITS_API } from "./endpoints/endpoints";
 
 export const submitTermOversize = (
-  termOversizePermit: any
+  termOversizePermit: Application
 ): Promise<AxiosResponse> => {
   return httpPOSTRequest_axios(
     PERMITS_API.SUBMIT_TERM_OVERSIZE_PERMIT,
@@ -17,7 +17,7 @@ export const submitTermOversize = (
 };
 
 export const updateTermOversize = (
-  termOversizePermit: TermOversizeApplication,
+  termOversizePermit: Application,
   applicationNumber: string
 ): Promise<AxiosResponse> => {
   return httpPUTRequest_axios(

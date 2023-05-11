@@ -8,11 +8,7 @@ import {
   TableBody,
   Checkbox,
 } from "@mui/material";
-import {
-  TermOversizeApplication,
-  Commodities,
-  Application,
-} from "../../../types/application";
+import { Commodities, Application } from "../../../types/application";
 
 export const ReviewConditionsTable = ({
   values,

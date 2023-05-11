@@ -6,10 +6,7 @@ import {
   PERMIT_LEFT_HEADER_STYLE,
   PERMIT_RIGHT_BOX_STYLE,
 } from "../../../../../themes/orbcStyles";
-import {
-  Application,
-  TermOversizeApplication,
-} from "../../../types/application";
+import { Application } from "../../../types/application";
 import { ReviewConditionsTable } from "./ReviewConditionsTable";
 import { getDefaultRequiredVal } from "../../../../../common/helpers/util";
 

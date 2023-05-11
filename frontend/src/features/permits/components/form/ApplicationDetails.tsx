@@ -6,7 +6,7 @@ import {
   PERMIT_LEFT_HEADER_STYLE,
   PERMIT_RIGHT_BOX_STYLE,
 } from "../../../../themes/orbcStyles";
-import { Application, TermOversizeApplication } from "../../types/application";
+import { Application } from "../../types/application";
 import { useCompanyInfoQuery } from "../../../manageProfile/apiManager/hooks";
 import {
   formatCountry,

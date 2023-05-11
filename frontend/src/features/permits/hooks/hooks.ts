@@ -3,6 +3,7 @@ import {
   submitTermOversize,
   updateTermOversize,
 } from "../apiManager/permitsAPI";
+import { Application } from "../types/application";
 
 /**
  * A custom react query mutation hook that submits the application data to the backend API
@@ -27,8 +28,7 @@ export const useSubmitTermOversizeMutation = () => {
 export const useSaveTermOversizeMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (data: any) => {
-      console.log("data", data);
+    mutationFn: (data: Application) => {
       if (data.applicationNumber) {
         return updateTermOversize(data, data.applicationNumber);
       } else {
