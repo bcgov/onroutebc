@@ -17,21 +17,18 @@ export class AuthService {
     identity_provider: string,
     userGuid: string,
   ): Promise<boolean> {
-    let user: ReadUserDto;
+    let user: ReadUserDto[];
 
     if (identity_provider === IDP.IDIR) {
-      user = await this.usersService.findUserbyUserGUID(userGuid);
+      user = await this.usersService.findUsersDto(userGuid);
     } else {
       if (!companyId) {
-        user = await this.usersService.findUserbyUserGUID(userGuid);
+        user = await this.usersService.findUsersDto(userGuid);
       } else {
-        user = await this.usersService.findUserbyUserGUIDandCompanyId(
-          userGuid,
-          companyId,
-        );
+        user = await this.usersService.findUsersDto(userGuid, companyId);
       }
     }
-    return user ? true : false;
+    return user?.length ? true : false;
   }
 
   /**

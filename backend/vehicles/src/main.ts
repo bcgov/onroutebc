@@ -16,7 +16,6 @@ async function bootstrap() {
   app.useGlobalPipes(
     new ValidationPipe({
       exceptionFactory: (e) => {
-        console.log(e);
         const badRequestExceptionList: BadRequestExceptionDto[] = [];
         e.forEach((error) => {
           const badRequestExceptionDto = new BadRequestExceptionDto();
