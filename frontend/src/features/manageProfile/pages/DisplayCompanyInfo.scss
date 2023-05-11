@@ -1,0 +1,23 @@
+.display-company-info {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-bottom: 2em;
+
+  &__edit {
+    button {
+      margin-top: 20px;
+
+      i {
+        margin-right: 7px;
+      }
+    }
+  }
+}
+
+@media (width <= 500px) {
+  .display-company-info {
+    display: flex;
+    flex-direction: column;
+  }
+}

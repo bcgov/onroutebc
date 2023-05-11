@@ -83,7 +83,7 @@ export const CompanyInfoForm = memo(
     const FEATURE = "company-profile";
 
     return (
-      <div className="mp-form-container">
+      <div className="company-info-form">
         <FormProvider {...formMethods}>
           <CompanyInfoGeneralForm feature={FEATURE} />
 

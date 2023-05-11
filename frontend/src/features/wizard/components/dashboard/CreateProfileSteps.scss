@@ -1,0 +1,132 @@
+.create-profile-steps {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: flex-start;
+  width: 100%;
+  padding-top: 2em;
+  
+  &__create-profile {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    width: 60%;
+
+    .create-profile-section {
+      width: 100%;
+
+      &--steps {
+        margin: 1em 0;
+
+        .step {
+          &__label {
+            align-items: flex-start;
+
+            .MuiStepLabel-labelContainer {
+              text-align: start;
+            }
+          }
+
+          .MuiStepConnector-root {
+            left: calc(-100% + 3em);
+            right: calc(100% + 0.25em);
+          }
+        }
+      }
+
+      &--info {
+        margin: 1em 0;
+      }
+
+      &--nav {
+        display: flex;
+        flex-direction: row;
+        align-items: flex-start;
+        margin: 2em 0;
+      }
+    }
+  }
+
+  &__existing-tps {
+    display: flex;
+    flex-direction: column;
+    width: 30%;
+    align-items: flex-start;
+    justify-content: flex-start;
+    margin-left: 2em;
+  }
+
+  .existing-tps-action {
+    margin-top: 1em;
+    margin-bottom: 1em;
+    border-top: 1px solid #dbdcdc;
+    border-bottom: 1px solid #dbdcdc;
+    padding: 1em 0;
+    width: 100%;
+  
+    &__img-wrapper {
+      padding: 2em;
+      background-color: #f2f2f2;
+      border-radius: 50%;
+      margin-right: 1em;
+    }
+  
+    &__profile {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+
+      strong {
+        margin-bottom: 0.5em;
+      }
+
+      button {
+        padding: 0 1em;
+        border-color: #b2b5b6;
+        color: #313132;
+
+        &:hover {
+          background-color: #fff;
+        }
+      }
+    }
+
+    &--lg {
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-start;
+      align-items: center;
+    }
+
+    &--sm {
+      display: none;
+    }
+  }
+}
+
+@media (width < 950px) {
+  .create-profile-steps {
+    &__create-profile {
+      max-width: 500px;
+      width: 90%;
+    }
+
+    &__existing-tps {
+      display: none;
+    }
+
+    .existing-tps-action {
+      &--lg {
+        display: none;
+      }
+  
+      &--sm {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: center;
+      }
+    }
+  }
+}

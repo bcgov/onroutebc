@@ -1,5 +1,7 @@
 import { Box, Button, Typography } from "@mui/material";
 import { memo } from "react";
+
+import "./DisplayCompanyInfo.scss";
 import { formatPhoneNumber } from "../../../common/components/form/subFormComponents/PhoneNumberInput";
 import {
   formatCountry,
@@ -21,13 +23,7 @@ export const DisplayInfo = memo(
   }) => {
     if (!companyInfo) return <></>;
     return (
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          marginBottom: "40px",
-        }}
-      >
+      <div className="display-company-info">
         <Box>
           <Typography variant="h3">Mailing Address</Typography>
           <Typography>{companyInfo?.mailingAddress.addressLine1}</Typography>
@@ -75,7 +71,7 @@ export const DisplayInfo = memo(
           <Typography>{companyInfo?.primaryContact.city}</Typography>
         </Box>
         {DoesUserHaveRoleWithContext(ROLES.WRITE_ORG) && (
-          <div>
+          <div className="display-company-info__edit">
             <Button
               variant="contained"
               color="tertiary"
@@ -87,7 +83,7 @@ export const DisplayInfo = memo(
             </Button>
           </div>
         )}
-      </Box>
+      </div>
     );
   }
 );
