@@ -25,7 +25,6 @@ import DeleteConfirmationDialog from "../../../manageVehicles/components/list/Co
 import { SnackBarContext } from "../../../../App";
 import { ApplicationInProgress, PermitApplicationInProgress} from "../../types/application";
 import { ApplicationInProgressColumnDefinition, ApplicationNotFoundColumnDefinition} from "./Columns";
-import { deleteApplicationsInProgress } from "../../apiManager/permitsAPI";
 
 /**
  * Dynamically set the column
@@ -84,41 +83,7 @@ export const List = memo(
      * in the confirmation dialog.
      */
     const onConfirmApplicationDelete = () => {
-      const applicationNumbers: string[] = Object.keys(rowSelection);
-      deleteApplicationsInProgress(applicationNumbers)
-        .then((response) => {
-          if (response.status === 200) {
-            response.json()
-              .then((responseBody: { success: string[]; failure: string[] }) => {
-                setIsDeleteDialogOpen(() => false);
-                if (responseBody.failure.length > 0) {
-                  snackBar.setSnackBar({
-                    showSnackbar: true,
-                    message: "An unexpected error occurred.",
-                    alertType: "error",
-                    setShowSnackbar: () => true,
-                  });
-                } else {
-                  snackBar.setSnackBar({
-                    showSnackbar: true,
-                    message: "Application Deleted",
-                    alertType: "info",
-                    setShowSnackbar: () => true,
-                  });
-                }
-                setRowSelection(() => {
-                  return {};
-                });
-                query.refetch();
-              })
-              .catch((error) => {
-                // Handle the error here
-              });
-          }
-        })
-        .catch((error) => {
-          // Handle the error here
-        });
+      console.log("delete application");
     };
     
     useEffect(() => {
