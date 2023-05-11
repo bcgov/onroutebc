@@ -23,11 +23,9 @@ import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { UseQueryResult } from "@tanstack/react-query";
 import DeleteConfirmationDialog from "../../../manageVehicles/components/list/ConfirmationDialog";
 import { SnackBarContext } from "../../../../App";
-import { ApplicationInProgress } from "../../types/application";
+import { ApplicationInProgress, PermitApplicationInProgress} from "../../types/application";
 import { ApplicationInProgressColumnDefinition, ApplicationNotFoundColumnDefinition} from "./Columns";
 import { deleteApplicationsInProgress } from "../../apiManager/permitsAPI";
-import { PermitApplicationInProgress } from "../../types/application";
-
 
 /**
  * Dynamically set the column
@@ -89,32 +87,33 @@ export const List = memo(
       console.log("delete applications: to be implemented");
       const applicationNumbers: string[] = Object.keys(rowSelection);
 
-      await deleteApplicationsInProgress(applicationNumbers).then((response) => {
+      deleteApplicationsInProgress(applicationNumbers).then((response) => {
         if (response.status === 200) {
-          response
-            .json()
-            .then((responseBody: { success: string[]; failure: string[] }) => {
-              setIsDeleteDialogOpen(() => false);
-              if (responseBody.failure.length > 0) {
-                snackBar.setSnackBar({
-                  message: "An unexpected error occurred.",
-                  showSnackbar: true,
-                  setShowSnackbar: () => true,
-                  alertType: "error",
-                });
-              } else {
-                snackBar.setSnackBar({
-                  message: "Application(s) Deleted",
-                  showSnackbar: true,
-                  setShowSnackbar: () => true,
-                  alertType: "info",
-                });
-              }
-              setRowSelection(() => {
-                return {};
-              });
-              query.refetch();
-            });
+          console.log("application deleted");
+          // response
+          //   .json()
+          //   .then((responseBody: { success: string[]; failure: string[] }) => {
+          //     setIsDeleteDialogOpen(() => false);
+          //     if (responseBody.failure.length > 0) {
+          //       snackBar.setSnackBar({
+          //         message: "An unexpected error occurred.",
+          //         showSnackbar: true,
+          //         setShowSnackbar: () => true,
+          //         alertType: "error",
+          //       });
+          //     } else {
+          //       snackBar.setSnackBar({
+          //         message: "Application(s) Deleted",
+          //         showSnackbar: true,
+          //         setShowSnackbar: () => true,
+          //         alertType: "info",
+          //       });
+          //     }
+          //     setRowSelection(() => {
+          //       return {};
+          //     });
+          //     query.refetch();
+          //   });
         }
       });
     };
