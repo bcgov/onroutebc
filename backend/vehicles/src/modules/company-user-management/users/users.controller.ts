@@ -166,7 +166,7 @@ export class UsersController {
     );
 
     const users = await this.userService.findUsersDto(userGUID);
-    if (!users || !users.length) {
+    if (!users?.length) {
       throw new DataNotFoundException();
     }
     return users[0];

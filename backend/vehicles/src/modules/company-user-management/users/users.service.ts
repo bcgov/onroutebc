@@ -219,7 +219,7 @@ export class UsersService {
   ): Promise<ReadUserDto> {
     const userDetails = await this.findUsersEntity(userGUID);
 
-    if (!userDetails || !userDetails.length) {
+    if (!userDetails?.length) {
       throw new DataNotFoundException();
     }
 

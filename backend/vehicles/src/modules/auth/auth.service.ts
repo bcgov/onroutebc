@@ -28,7 +28,7 @@ export class AuthService {
         user = await this.usersService.findUsersDto(userGuid, companyId);
       }
     }
-    return user && user.length ? true : false;
+    return user?.length ? true : false;
   }
 
   /**
