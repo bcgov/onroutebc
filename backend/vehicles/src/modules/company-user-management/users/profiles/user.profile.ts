@@ -2,6 +2,7 @@ import { AutomapperProfile, InjectMapper } from '@automapper/nestjs';
 import {
   createMap,
   forMember,
+  forSelf,
   mapFrom,
   Mapper,
   mapWithArguments,
@@ -100,9 +101,10 @@ export class UsersProfile extends AutomapperProfile {
 
       /**
        * The mapping is between User to ReadUserDto mapping. In the mapping
-       * there are three forMember calls. These map the userGUID, userName, and
-       * userAuthGroup properties of the source object to properties of the
-       * destination object using mapFrom.
+       * there are two forMember calls. These map the userGUID,  and userName
+       * properties of the source object to properties of the destination object
+       * using mapFrom. forSelf flattens the userContacts and maps to
+       * ReadUserDto
        */
       createMap(
         mapper,
@@ -116,6 +118,7 @@ export class UsersProfile extends AutomapperProfile {
           (d) => d.userName,
           mapFrom((s) => s.userName),
         ),
+        forSelf(Contact, (source) => source.userContact),
       );
     };
   }

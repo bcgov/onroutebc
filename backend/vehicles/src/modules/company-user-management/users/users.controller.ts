@@ -129,7 +129,7 @@ export class UsersController {
     if (currentUser.identity_provider !== IDP.IDIR && !companyId) {
       throw new BadRequestException();
     }
-    return await this.userService.findAllUsers(companyId);
+    return await this.userService.findUsersDto(undefined, companyId);
   }
 
   /**
@@ -156,20 +156,17 @@ export class UsersController {
     @Query('companyId') companyId?: number,
   ): Promise<ReadUserDto> {
     const currentUser = request.user as IUserJWT;
-    if (currentUser.identity_provider !== IDP.IDIR && !companyId) {
-      throw new BadRequestException();
-    }
     userGUID = await this.validateUserCompanyAndRoleForUserGuidQueryParam(
       currentUser,
       userGUID,
       [Role.READ_USER],
     );
 
-    const companyUser = await this.userService.findUserbyUserGUID(userGUID);
-    if (!companyUser) {
+    const users = await this.userService.findUsersDto(userGUID, companyId);
+    if (!users?.length) {
       throw new DataNotFoundException();
     }
-    return companyUser;
+    return users[0];
   }
 
   private async validateUserCompanyAndRoleForUserGuidQueryParam(
