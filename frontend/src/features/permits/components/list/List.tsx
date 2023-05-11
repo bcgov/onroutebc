@@ -85,11 +85,32 @@ export const List = memo(
      */
     const onConfirmApplicationDelete = async () => {
       const applicationNumbers: string[] = Object.keys(rowSelection);
-
       deleteApplicationsInProgress(applicationNumbers).then((response) => {
         if (response.status === 200) {
-          //to be updated once delete application is available
-          console.log("application deleted");
+          response
+            .json()
+            .then((responseBody: { success: string[]; failure: string[] }) => {
+              setIsDeleteDialogOpen(() => false);
+              if (responseBody.failure.length > 0) {
+                snackBar.setSnackBar({
+                  showSnackbar: true,
+                  message: "An unexpected error occurred.",
+                  alertType: "error",
+                  setShowSnackbar: () => true,
+                });
+              } else {
+                snackBar.setSnackBar({
+                  showSnackbar: true,
+                  message: "Application Deleted",
+                  alertType: "info",
+                  setShowSnackbar: () => true,
+                });
+              }
+              setRowSelection(() => {
+                return {};
+              });
+              query.refetch();
+            });
         }
       });
     };
