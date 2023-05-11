@@ -234,6 +234,7 @@ export const CreateProfileSteps = React.memo(() => {
             <div className="create-profile-section create-profile-section--nav">
               {activeStep === 0 && (
                 <Button
+                  className="proceed-btn proceed-btn--next"
                   onClick={handleNext}
                   variant="contained"
                   color="primary"
@@ -249,12 +250,14 @@ export const CreateProfileSteps = React.memo(() => {
                     variant="contained"
                     color="secondary"
                     startIcon={<>&larr;</>}
+                    className="proceed-btn proceed-btn--prev"
                   >
                     Previous
                   </Button>
                   <Button
                     onClick={handleSubmit(onClickFinish)}
                     variant="contained"
+                    className="proceed-btn proceed-btn--finish"
                   >
                     Finish
                   </Button>

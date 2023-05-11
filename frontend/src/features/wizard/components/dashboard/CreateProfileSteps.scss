@@ -44,6 +44,12 @@
         flex-direction: row;
         align-items: flex-start;
         margin: 2em 0;
+
+        .proceed-btn {
+          &--prev {
+            margin-right: 2em;
+          }
+        }
       }
     }
   }
