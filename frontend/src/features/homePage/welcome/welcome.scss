@@ -1,3 +1,5 @@
+@use "../../../themes/orbcStyles";
+
 .welcome-page {
   display: flex;
   flex-direction: row;
@@ -17,12 +19,8 @@
     align-items: center;
 
     .welcome-graphic {
-      /* Layout Properties */
-      //   top: 191px;
-      //   left: 871px;
       width: 178px;
       height: 160px;
-      /* UI Properties */
       background: transparent url("./Welcome_Graphic.svg") 0% 0% no-repeat
         padding-box;
       opacity: 1;
@@ -32,7 +30,7 @@
   .separator-line {
     height: 0.5px;
     width: 100%;
-    background-color: #b2b5b6;
+    background-color: orbcStyles.$bc-text-box-border-grey;
     margin: 1em 0;
     position: relative;
     text-align: center;
@@ -40,8 +38,8 @@
     &__label {
       position: relative;
       text-transform: uppercase;
-      background-color: #313132;
-      color: #fff;
+      background-color: orbcStyles.$bc-black;
+      color: orbcStyles.$white;
       font-size: 0.75rem;
       top: -1rem;
     }
@@ -55,8 +53,8 @@
     .welcome-cards {
       width: 220px;
       height: 190px;
-      background: #ffffff 0% 0% no-repeat padding-box;
-      border: 1px solid #b2b5b6;
+      background: orbcStyles.$white 0% 0% no-repeat padding-box;
+      border: 1px solid orbcStyles.$bc-text-box-border-grey;
       border-radius: 8px;
       opacity: 1;
       text-align: center;
@@ -84,8 +82,8 @@
       &__recommend {
         position: relative;
         text-transform: uppercase;
-        background-color: #fcba19;
-        color: #313132;
+        background-color: orbcStyles.$bc-gold;
+        color: orbcStyles.$bc-black;
         font-size: 0.75rem;
         top: -0.25rem;
       }

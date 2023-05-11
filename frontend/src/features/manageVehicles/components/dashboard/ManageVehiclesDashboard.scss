@@ -1,10 +1,12 @@
+@use "../../../../themes/orbcStyles";
+
 .dash-downarrow {
   margin-left: 16px;
 }
 
 .slide-pane__header {
-  background: #313132 0% 0% no-repeat padding-box;
-  color: white;
+  background: orbcStyles.$bc-black 0% 0% no-repeat padding-box;
+  color: orbcStyles.$white;
 }
 
 .slide-pane__header .slide-pane__title,

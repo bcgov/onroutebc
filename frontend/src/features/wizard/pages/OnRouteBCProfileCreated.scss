@@ -1,3 +1,5 @@
+@use "../../../themes/orbcStyles";
+
 .profile-created {
   display: flex;
   flex-direction: column;
@@ -17,8 +19,8 @@
 
     &--client-number {
       padding: 1em 0;
-      border-top: 1px solid #dbdcdc;
-      border-bottom: 1px solid #dbdcdc;
+      border-top: 1px solid orbcStyles.$bc-border-grey;
+      border-bottom: 1px solid orbcStyles.$bc-border-grey;
       text-align: center;
       width: 100%;
 
@@ -33,11 +35,11 @@
 
     &--view-profile {
       button {
-        border: 1px solid #b2b5b6;
+        border: 1px solid orbcStyles.$bc-text-box-border-grey;
       }
 
       button:hover {
-        color: #fff;
+        color: orbcStyles.$white;
       }
     }
   }

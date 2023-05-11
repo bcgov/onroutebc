@@ -1,3 +1,5 @@
+@use "../../../../themes/orbcStyles";
+
 .create-profile-steps {
   display: flex;
   flex-direction: row;
@@ -50,7 +52,7 @@
             margin-right: 2em;
 
             &:hover {
-              color: #fff;
+              color: orbcStyles.$white;
             }
           }
         }
@@ -70,14 +72,14 @@
   .existing-tps-action {
     margin-top: 1em;
     margin-bottom: 1em;
-    border-top: 1px solid #dbdcdc;
-    border-bottom: 1px solid #dbdcdc;
+    border-top: 1px solid orbcStyles.$bc-border-grey;
+    border-bottom: 1px solid orbcStyles.$bc-border-grey;
     padding: 1em 0;
     width: 100%;
   
     &__img-wrapper {
       padding: 2em;
-      background-color: #f2f2f2;
+      background-color: orbcStyles.$bc-background-light-grey;
       border-radius: 50%;
       margin-right: 1em;
     }
@@ -93,11 +95,11 @@
 
       button {
         padding: 0 1em;
-        border-color: #b2b5b6;
-        color: #313132;
+        border-color: orbcStyles.$bc-text-box-border-grey;
+        color: orbcStyles.$bc-black;
 
         &:hover {
-          color: #fff;
+          color: orbcStyles.$white;
         }
       }
     }

@@ -5,15 +5,16 @@
   flex-direction: column;
   margin-top: 1em;
 
-  .mp-side-by-side-container {
-    display: flex;
-    flex-direction: row;
-  }
-
-  .mp-form-submit-container {
+  &__submission {
     display: flex;
     justify-content: flex-end;
     margin: 2em 0;
     width: 100%;
+
+    .submit-btn {
+      &--cancel {
+        margin-right: 1em;
+      }
+    }
   }
 }

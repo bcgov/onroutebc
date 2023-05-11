@@ -1,6 +1,8 @@
+@use "../../../themes/orbcStyles";
+
 .company-banner {
-  background-color: #ebeef3;
-  color: #003366;
+  background-color: orbcStyles.$banner-grey;
+  color: orbcStyles.$bc-primary-blue;
   margin-top: 1em;
   display: flex;
   flex-direction: row;
