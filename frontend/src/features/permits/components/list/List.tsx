@@ -84,7 +84,6 @@ export const List = memo(
      * in the confirmation dialog.
      */
     const onConfirmApplicationDelete = async () => {
-      console.log("delete applications: to be implemented");
       const applicationNumbers: string[] = Object.keys(rowSelection);
 
       deleteApplicationsInProgress(applicationNumbers).then((response) => {

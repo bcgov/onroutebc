@@ -59,7 +59,7 @@ export const getApplicationsInProgress = async (): Promise<(PermitApplicationInP
  * Delete Permit Applications in Progress
  * @return An object with two string arrays for deletion success or failure
  */
-export const deleteApplicationsInProgress = async (
+export const deleteApplicationsInProgress = (
   applicationNumbers: Array<string>,
 ): Promise<Response> => {
   const url = `${VEHICLE_URL}/permits/applications/delete-requests?companyId=${getCompanyIdFromSession()}`;
