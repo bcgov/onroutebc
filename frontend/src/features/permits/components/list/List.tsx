@@ -89,31 +89,8 @@ export const List = memo(
 
       deleteApplicationsInProgress(applicationNumbers).then((response) => {
         if (response.status === 200) {
+          //to be updated once delete application is available
           console.log("application deleted");
-          // response
-          //   .json()
-          //   .then((responseBody: { success: string[]; failure: string[] }) => {
-          //     setIsDeleteDialogOpen(() => false);
-          //     if (responseBody.failure.length > 0) {
-          //       snackBar.setSnackBar({
-          //         message: "An unexpected error occurred.",
-          //         showSnackbar: true,
-          //         setShowSnackbar: () => true,
-          //         alertType: "error",
-          //       });
-          //     } else {
-          //       snackBar.setSnackBar({
-          //         message: "Application(s) Deleted",
-          //         showSnackbar: true,
-          //         setShowSnackbar: () => true,
-          //         alertType: "info",
-          //       });
-          //     }
-          //     setRowSelection(() => {
-          //       return {};
-          //     });
-          //     query.refetch();
-          //   });
         }
       });
     };
