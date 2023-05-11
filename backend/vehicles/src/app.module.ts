@@ -49,7 +49,7 @@ const envPath = path.resolve(process.cwd() + '/../../');
       // entities: [User],
       autoLoadEntities: true, // Auto load all entities regiestered by typeorm forFeature method.
       synchronize: false, // This changes the DB schema to match changes to entities, which we might not want.
-      logging: true,
+      logging: false,
     }),
     AutomapperModule.forRoot({
       strategyInitializer: classes(),
