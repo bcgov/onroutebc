@@ -169,14 +169,15 @@ export const TermOversizePay = () => {
         sx={{
           paddingTop: "24px",
           backgroundColor: BC_COLOURS.white,
-          display: "flex",
+          display: { sm: "block", md: "flex" },
+          flexDirection: { sm: "column", md: "row" },
         }}
       >
         <Box className="payment-option-container">
           <PayBC />
         </Box>
 
-        <Box sx={{ marginLeft: "auto" }}>
+        <Box sx={{ marginLeft: { sm: "0", md: "auto" } }}>
           <ApplicationSummary />
           <FeeSummary />
         </Box>
