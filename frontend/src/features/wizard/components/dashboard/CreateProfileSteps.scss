@@ -48,6 +48,10 @@
         .proceed-btn {
           &--prev {
             margin-right: 2em;
+
+            &:hover {
+              color: #fff;
+            }
           }
         }
       }
@@ -93,7 +97,7 @@
         color: #313132;
 
         &:hover {
-          background-color: #fff;
+          color: #fff;
         }
       }
     }
