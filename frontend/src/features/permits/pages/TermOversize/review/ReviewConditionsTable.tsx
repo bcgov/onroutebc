@@ -8,15 +8,12 @@ import {
   TableBody,
   Checkbox,
 } from "@mui/material";
-import {
-  TermOversizeApplication,
-  Commodities,
-} from "../../../types/application";
+import { Commodities, Application } from "../../../types/application";
 
 export const ReviewConditionsTable = ({
   values,
 }: {
-  values: TermOversizeApplication | undefined;
+  values: Application | undefined;
 }) => {
   return (
     <TableContainer component={Paper}>
@@ -28,7 +25,7 @@ export const ReviewConditionsTable = ({
           </TableRow>
         </TableHead>
         <TableBody>
-          {values?.application.commodities.map((row: Commodities) => {
+          {values?.permitData.commodities.map((row: Commodities) => {
             return (
               <TableRow
                 key={row.condition}

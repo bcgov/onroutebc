@@ -1,9 +1,9 @@
 import { Dispatch, ReactElement, createContext } from "react";
-import { TermOversizeApplication } from "../types/application";
+import { Application } from "../types/application";
 
 interface ApplicationContextType {
-  applicationData: TermOversizeApplication | undefined;
-  setApplicationData: Dispatch<TermOversizeApplication>;
+  applicationData: Application | undefined;
+  setApplicationData: Dispatch<Application>;
   next: () => void;
   back: () => void;
   goTo: (index: number) => void;
@@ -16,7 +16,7 @@ interface ApplicationContextType {
 
 export const ApplicationContext = createContext<ApplicationContextType>({
   applicationData: undefined,
-  setApplicationData: (() => undefined) as Dispatch<TermOversizeApplication>,
+  setApplicationData: (() => undefined) as Dispatch<Application>,
   next: () => undefined,
   back: () => undefined,
   goTo: () => undefined,

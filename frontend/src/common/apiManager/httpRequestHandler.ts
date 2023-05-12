@@ -1,14 +1,19 @@
 import axios from "axios";
-import { applyWhenNotNullable, getDefaultNullableVal, getDefaultRequiredVal, } from "../helpers/util";
+import {
+  applyWhenNotNullable,
+  getDefaultNullableVal,
+  getDefaultRequiredVal,
+} from "../helpers/util";
 
 // Add environment variables to get the full key.
 // Full key structure: oidc.user:${AUTH0_ISSUER_URL}:${AUTH0_AUDIENCE}
 // Full key example:: oidc.user:https://dev.loginproxy.gov.bc.ca/auth/realms/standard:on-route-bc-direct-4598
-const getUserStorageKey = () => Object.keys(sessionStorage).find(key => key.startsWith("oidc.user"));
+const getUserStorageKey = () =>
+  Object.keys(sessionStorage).find((key) => key.startsWith("oidc.user"));
 
 /**
  * Retrieves user's sessionStorage item based on provided key.
- * 
+ *
  * @returns JSON parsed object, or undefined if item not found in sessionStorage.
  */
 const getUserStorage = () => {
@@ -22,13 +27,18 @@ const getUserStorage = () => {
  */
 const getAccessToken = () => {
   const parsedSessionObject = getDefaultRequiredVal(
-    { token_type: "", access_token: "" }, 
+    { token_type: "", access_token: "" },
     getUserStorage()
   );
-  const tokenType = String(getDefaultRequiredVal("", parsedSessionObject["token_type"]));
-  const accessToken = String(getDefaultRequiredVal("", parsedSessionObject["access_token"]));
-  return tokenType.trim() !== "" && accessToken.trim() !== "" ? 
-    `${parsedSessionObject["token_type"]} ${parsedSessionObject["access_token"]}` : "";
+  const tokenType = String(
+    getDefaultRequiredVal("", parsedSessionObject["token_type"])
+  );
+  const accessToken = String(
+    getDefaultRequiredVal("", parsedSessionObject["access_token"])
+  );
+  return tokenType.trim() !== "" && accessToken.trim() !== ""
+    ? `${parsedSessionObject["token_type"]} ${parsedSessionObject["access_token"]}`
+    : "";
 };
 
 /**
@@ -45,10 +55,10 @@ export const getCompanyIdFromSession = (): string | null => {
  */
 export const getUserGuidFromSession = (): string | null => {
   const parsedSessionObject = getDefaultRequiredVal(
-    { profile: { bceid_user_guid: "" } }, 
+    { profile: { bceid_user_guid: "" } },
     getUserStorage()
   );
-  
+
   return parsedSessionObject.profile?.bceid_user_guid ?? null;
 };
 
@@ -62,7 +72,9 @@ export const getCompanyNameFromSession = (): string | undefined => {
     getUserStorage()
   );
 
-  return getDefaultNullableVal(parsedSessionObject.profile?.bceid_business_name);
+  return getDefaultNullableVal(
+    parsedSessionObject.profile?.bceid_business_name
+  );
 };
 
 /**
@@ -95,6 +107,15 @@ export const httpPOSTRequest = (url: string, data: any) => {
   });
 };
 
+export const httpPOSTRequest_axios = (url: string, data: any) => {
+  return axios.post(url, JSON.stringify(data), {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: getAccessToken(),
+    },
+  });
+};
+
 /**
  * A generic HTTP PUT Request
  * @param url The URL of the resource.
@@ -109,6 +130,15 @@ export const httpPUTRequest = (url: string, data: any) => {
       Authorization: getAccessToken(),
     },
     body: JSON.stringify(data),
+  });
+};
+
+export const httpPUTRequest_axios = (url: string, data: any) => {
+  return axios.put(url, JSON.stringify(data), {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: getAccessToken(),
+    },
   });
 };
 

@@ -6,14 +6,14 @@ import {
   PERMIT_LEFT_HEADER_STYLE,
   PERMIT_RIGHT_BOX_STYLE,
 } from "../../../../../themes/orbcStyles";
-import { TermOversizeApplication } from "../../../types/application";
+import { Application } from "../../../types/application";
 import { ReviewConditionsTable } from "./ReviewConditionsTable";
 import { getDefaultRequiredVal } from "../../../../../common/helpers/util";
 
 export const ReviewPermitDetails = ({
   values,
 }: {
-  values: TermOversizeApplication | undefined;
+  values: Application | undefined;
 }) => {
   return (
     <Box sx={PERMIT_MAIN_BOX_STYLE}>
@@ -25,12 +25,15 @@ export const ReviewPermitDetails = ({
       <Box sx={PERMIT_RIGHT_BOX_STYLE}>
         <Box sx={{ gap: "40px", paddingTop: "24px" }}>
           <Typography sx={{ fontWeight: "bold" }}>Start Date:</Typography>
-          <Typography>{values?.application.startDate.format("LL")}</Typography>
+          <Typography>{values?.permitData.startDate.format("LL")}</Typography>
           <Typography sx={{ fontWeight: "bold" }}>Permit Duration:</Typography>
-          <Typography>{values?.application.permitDuration} Days</Typography>
+          <Typography>{values?.permitData.permitDuration} Days</Typography>
         </Box>
         <PermitExpiryDateBanner
-          expiryDate={getDefaultRequiredVal("", values?.application?.expiryDate?.format("LL"))}
+          expiryDate={getDefaultRequiredVal(
+            "",
+            values?.permitData?.expiryDate?.format("LL")
+          )}
         />
         <Box>
           <Typography variant="h3">
