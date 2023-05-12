@@ -143,6 +143,15 @@ export const Header = () => {
                     Permits
                   </NavLink>
                 </li>
+                
+              )}
+              
+              {DoesUserHaveRoleWithContext(ROLES.WRITE_PERMIT) && (
+                <li>
+                  <NavLink to={routes.APPLICATIONS} onClick={menuToggleHandler}>
+                    Applications
+                  </NavLink>
+                </li>
               )}
             </>
           )}
