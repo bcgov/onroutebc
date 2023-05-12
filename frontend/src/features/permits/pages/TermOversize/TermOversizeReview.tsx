@@ -5,31 +5,29 @@ import { WarningBcGovBanner } from "../../../../common/components/banners/AlertB
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { ApplicationDetails } from "../../components/form/ApplicationDetails";
 import { ApplicationContext } from "../../context/ApplicationContext";
-import { TermOversizeApplication } from "../../types/application";
-import { useSubmitTermOversizeMutation } from "../../hooks/hooks";
+import { Application } from "../../types/application";
+import { useSaveTermOversizeMutation } from "../../hooks/hooks";
 import { ReviewContactDetails } from "./review/ReviewContactDetails";
 import { ReviewFeeSummary } from "./review/ReviewFeeSummary";
 import { ReviewPermitDetails } from "./review/ReviewPermitDetails";
 import { ReviewVehicleInfo } from "./review/ReviewVehicleInfo";
 import { ProgressBar } from "../../components/progressBar/ProgressBar";
-import { getUserGuidFromSession } from "../../../../common/apiManager/httpRequestHandler";
 
 export const TermOversizeReview = () => {
-  const { applicationData, back, next } = useContext(ApplicationContext);
-  const methods = useForm<TermOversizeApplication>();
-
-  // TODO Temporary method to format request data
-  const formatAPIRequest = {
-    companyId: applicationData?.companyId,
-    userGuid: getUserGuidFromSession(),
-    permitType: applicationData?.permitType,
-    permitData: applicationData?.application,
-  };
+  const { applicationData, setApplicationData, back, next } =
+    useContext(ApplicationContext);
+  const methods = useForm<Application>();
 
   // Send data to the backend API
-  const submitTermOversizeQuery = useSubmitTermOversizeMutation();
-  const onSubmit = () => {
-    if (applicationData) submitTermOversizeQuery.mutate(formatAPIRequest);
+  const submitTermOversizeQuery = useSaveTermOversizeMutation();
+  const onSubmit = async () => {
+    if (applicationData) {
+      const response = await submitTermOversizeQuery.mutateAsync(
+        applicationData
+      );
+      const data = await response.data;
+      setApplicationData(data);
+    }
     next();
   };
 

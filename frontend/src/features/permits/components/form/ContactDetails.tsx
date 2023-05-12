@@ -21,13 +21,31 @@ export const ContactDetails = ({ feature }: { feature: string }) => {
    * UseEffect to get company mailing address and primary contact, since companyInfo query is async
    */
   useEffect(() => {
-    setValue("application.mailingAddress", {
-      addressLine1: getDefaultRequiredVal("", companyInfoQuery?.data?.mailingAddress?.addressLine1),
-      addressLine2: getDefaultRequiredVal("", companyInfoQuery?.data?.mailingAddress?.addressLine2),
-      city: getDefaultRequiredVal("", companyInfoQuery?.data?.mailingAddress?.city),
-      provinceCode: getDefaultRequiredVal("", companyInfoQuery?.data?.mailingAddress?.provinceCode),
-      countryCode: getDefaultRequiredVal("", companyInfoQuery?.data?.mailingAddress?.countryCode),
-      postalCode: getDefaultRequiredVal("", companyInfoQuery?.data?.mailingAddress?.postalCode),
+    setValue("permitData.mailingAddress", {
+      addressLine1: getDefaultRequiredVal(
+        "",
+        companyInfoQuery?.data?.mailingAddress?.addressLine1
+      ),
+      addressLine2: getDefaultRequiredVal(
+        "",
+        companyInfoQuery?.data?.mailingAddress?.addressLine2
+      ),
+      city: getDefaultRequiredVal(
+        "",
+        companyInfoQuery?.data?.mailingAddress?.city
+      ),
+      provinceCode: getDefaultRequiredVal(
+        "",
+        companyInfoQuery?.data?.mailingAddress?.provinceCode
+      ),
+      countryCode: getDefaultRequiredVal(
+        "",
+        companyInfoQuery?.data?.mailingAddress?.countryCode
+      ),
+      postalCode: getDefaultRequiredVal(
+        "",
+        companyInfoQuery?.data?.mailingAddress?.postalCode
+      ),
     });
   }, [companyInfoQuery]);
 
@@ -43,7 +61,7 @@ export const ContactDetails = ({ feature }: { feature: string }) => {
           type="input"
           feature={feature}
           options={{
-            name: "application.contactDetails.firstName",
+            name: "permitData.contactDetails.firstName",
             rules: {
               required: { value: true, message: "First Name is required" },
             },
@@ -54,7 +72,7 @@ export const ContactDetails = ({ feature }: { feature: string }) => {
           type="input"
           feature={feature}
           options={{
-            name: "application.contactDetails.lastName",
+            name: "permitData.contactDetails.lastName",
             rules: {
               required: { value: true, message: "Last Name is required" },
             },
@@ -67,7 +85,7 @@ export const ContactDetails = ({ feature }: { feature: string }) => {
             type="phone"
             feature={feature}
             options={{
-              name: "application.contactDetails.phone1",
+              name: "permitData.contactDetails.phone1",
               rules: {
                 required: { value: true, message: "Phone Number is required" },
               },
@@ -79,7 +97,7 @@ export const ContactDetails = ({ feature }: { feature: string }) => {
             type="input"
             feature={feature}
             options={{
-              name: "application.contactDetails.phone1Extension",
+              name: "permitData.contactDetails.phone1Extension",
               rules: { required: false },
               label: "Ext",
               width: EXT_WIDTH,
@@ -91,7 +109,7 @@ export const ContactDetails = ({ feature }: { feature: string }) => {
             type="phone"
             feature={feature}
             options={{
-              name: "application.contactDetails.phone2",
+              name: "permitData.contactDetails.phone2",
               rules: { required: false },
               label: "Alternate Number",
               width: PHONE_WIDTH,
@@ -101,7 +119,7 @@ export const ContactDetails = ({ feature }: { feature: string }) => {
             type="input"
             feature={feature}
             options={{
-              name: "application.contactDetails.phone2Extension",
+              name: "permitData.contactDetails.phone2Extension",
               rules: { required: false },
               label: "Ext",
               width: EXT_WIDTH,
@@ -118,7 +136,7 @@ export const ContactDetails = ({ feature }: { feature: string }) => {
           type="input"
           feature={feature}
           options={{
-            name: "application.contactDetails.email",
+            name: "permitData.contactDetails.email",
             rules: {
               required: { value: true, message: "Email is required" },
             },
@@ -130,7 +148,7 @@ export const ContactDetails = ({ feature }: { feature: string }) => {
           type="input"
           feature={feature}
           options={{
-            name: "application.contactDetails.fax",
+            name: "permitData.contactDetails.fax",
             rules: { required: false },
             label: "Fax",
             width: PHONE_WIDTH,

@@ -4,10 +4,18 @@ import { Dayjs } from "dayjs";
  * A base permit type. This is an incomplete object and meant to be extended for use.
  */
 export interface Application {
+  permitId?: number;
+  permitStatus?: string;
   companyId: number;
+  userGuid?: string | null;
   permitType: string;
-  dateCreated?: Dayjs;
-  lastUpdated?: Dayjs;
+  applicationNumber?: string;
+  permitNumber?: number;
+  permitApprovalSource?: string;
+  permitApprovalSource?: string;
+  createdDateTime?: Dayjs;
+  updatedDateTime?: Dayjs;
+  permitData: TermOversizeApplication;
 }
 
 interface MailingAddress {
@@ -50,19 +58,17 @@ export interface Commodities {
   disabled?: boolean;
 }
 
-export interface TermOversizeApplication extends Application {
-  application: {
-    startDate: Dayjs;
-    permitDuration: number; //days
-    expiryDate: Dayjs;
-    contactDetails?: ContactDetails;
-    vehicleDetails?: VehicleDetails;
-    commodities: Commodities[];
-    mailingAddress: MailingAddress;
-  };
+export interface TermOversizeApplication {
+  startDate: Dayjs;
+  permitDuration: number; //days
+  expiryDate: Dayjs;
+  contactDetails?: ContactDetails;
+  vehicleDetails?: VehicleDetails;
+  commodities: Commodities[];
+  mailingAddress: MailingAddress;
 }
 
-export interface PermitApplicationInProgress extends Application{
+export interface PermitApplicationInProgress extends Application {
   applicationNumber: String;
   permitType: String;
   startDate: Dayjs;
@@ -73,8 +79,8 @@ export interface PermitApplicationInProgress extends Application{
       unitNumber: String;
       vin: String;
       plate: String;
-    }
-  }
+    };
+  };
 }
 
 export type ApplicationInProgress = PermitApplicationInProgress;

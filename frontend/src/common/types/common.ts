@@ -7,7 +7,7 @@ import {
   PowerUnit,
   Trailer,
 } from "../../features/manageVehicles/types/managevehicles";
-import { TermOversizeApplication } from "../../features/permits/types/application";
+import { Application } from "../../features/permits/types/application";
 
 export interface ApiErrorResponse {
   status: number;
@@ -21,6 +21,6 @@ export type ORBC_FormTypes =
   | CompanyProfile
   | PowerUnit
   | Trailer
-  | TermOversizeApplication
+  | Application
   | UserInformation
   | CompanyAndUserRequest;

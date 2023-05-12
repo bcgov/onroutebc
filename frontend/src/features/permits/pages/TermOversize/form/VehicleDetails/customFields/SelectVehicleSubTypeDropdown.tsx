@@ -57,7 +57,7 @@ export const SelectVehicleSubTypeDropdown = ({
   const { data: powerUnitTypes } = usePowerUnitTypesQuery();
   const { data: trailerTypes } = useTrailerTypesQuery();
   const [options, setOptions] = useState<VehicleType[] | undefined>();
-  const vehicleType = watch("application.vehicleDetails.vehicleType");
+  const vehicleType = watch("permitData.vehicleDetails.vehicleType");
 
   useEffect(() => {
     if (vehicleType === "powerUnit") {
@@ -87,10 +87,14 @@ export const SelectVehicleSubTypeDropdown = ({
   // This allows the component to render the name of the type in plain english instead of displaying the typecode
   const [type, setType] = useState<VehicleType | undefined>(typecode);
   useEffect(() => {
-    const typecodeFromContext =
-      getDefaultRequiredVal("", applicationData?.application.vehicleDetails?.vehicleSubType);
-    const typeFromContext =
-      getDefaultRequiredVal("", applicationData?.application.vehicleDetails?.vehicleType);
+    const typecodeFromContext = getDefaultRequiredVal(
+      "",
+      applicationData?.permitData?.vehicleDetails?.vehicleSubType
+    );
+    const typeFromContext = getDefaultRequiredVal(
+      "",
+      applicationData?.permitData?.vehicleDetails?.vehicleType
+    );
 
     // Use data from permit context
     let typeObject = mapTypeCodeToObject(

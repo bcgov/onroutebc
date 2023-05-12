@@ -78,7 +78,7 @@ export const SelectVehicleDropdown = ({
    */
   const clearAllFields = () => {
     setSelectedVehicle("");
-    setValue("application.vehicleDetails", {
+    setValue("permitData.vehicleDetails", {
       unitNumber: "",
       vin: "",
       plate: "",
@@ -101,7 +101,7 @@ export const SelectVehicleDropdown = ({
     if (!vehicle) return;
 
     setSelectedVehicle(selectedVehicle.plate);
-    setValue("application.vehicleDetails", {
+    setValue("permitData.vehicleDetails", {
       unitNumber: vehicle.unitNumber,
       vin: vehicle.vin,
       plate: vehicle.plate,
@@ -115,7 +115,7 @@ export const SelectVehicleDropdown = ({
     if (vehicle.vehicleType === "powerUnit") {
       const powerUnit = vehicle as PowerUnit;
       setValue(
-        "application.vehicleDetails.vehicleSubType",
+        "permitData.vehicleDetails.vehicleSubType",
         powerUnit.powerUnitTypeCode
       );
     }
@@ -123,7 +123,7 @@ export const SelectVehicleDropdown = ({
     if (vehicle.vehicleType === "trailer") {
       const trailer = vehicle as Trailer;
       setValue(
-        "application.vehicleDetails.vehicleSubType",
+        "permitData.vehicleDetails.vehicleSubType",
         trailer.trailerTypeCode
       );
     }
@@ -179,10 +179,10 @@ export const SelectVehicleDropdown = ({
         onClose={async () => {
           if (isSubmitted) {
             const output = await trigger(
-              "application.vehicleDetails.vehicleSubType"
+              "permitData.vehicleDetails.vehicleSubType"
             );
             if (!output) {
-              trigger("application.vehicleDetails.vehicleSubType");
+              trigger("permitData.vehicleDetails.vehicleSubType");
             }
           }
         }}
