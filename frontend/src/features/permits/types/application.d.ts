@@ -67,3 +67,20 @@ export interface TermOversizeApplication {
   commodities: Commodities[];
   mailingAddress: MailingAddress;
 }
+
+export interface PermitApplicationInProgress extends Application{
+  applicationNumber: String;
+  permitType: String;
+  startDate: Dayjs;
+  updatedDateTime: Dayjs;
+  permitData: {
+    startDate: Dayjs;
+    vehicleDetails: {
+      unitNumber: String;
+      vin: String;
+      plate: String;
+    }
+  }
+}
+
+export type ApplicationInProgress = PermitApplicationInProgress;
