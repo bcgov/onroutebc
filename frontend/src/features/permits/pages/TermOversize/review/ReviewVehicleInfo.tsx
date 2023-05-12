@@ -5,7 +5,7 @@ import {
   PERMIT_LEFT_HEADER_STYLE,
   PERMIT_RIGHT_BOX_STYLE,
 } from "../../../../../themes/orbcStyles";
-import { TermOversizeApplication } from "../../../types/application";
+import { Application } from "../../../types/application";
 import { BC_COLOURS } from "../../../../../themes/bcGovStyles";
 import {
   formatCountry,
@@ -20,21 +20,21 @@ import { mapTypeCodeToObject } from "../../../helpers/mappers";
 export const ReviewVehicleInfo = ({
   values,
 }: {
-  values: TermOversizeApplication | undefined;
+  values: Application | undefined;
 }) => {
   const powerUnitTypesQuery = usePowerUnitTypesQuery();
   const trailerTypesQuery = useTrailerTypesQuery();
 
   const DisplayVehicleType = () => {
-    const vehicleTypeCode = values?.application.vehicleDetails?.vehicleType;
+    const vehicleTypeCode = values?.permitData.vehicleDetails?.vehicleType;
     if (vehicleTypeCode === "powerUnit") return "Power Unit";
     if (vehicleTypeCode === "trailer") return "Trailer";
     return "";
   };
 
   const DisplayVehicleSubType = () => {
-    const code = values?.application.vehicleDetails?.vehicleSubType;
-    const vehicleTypeCode = values?.application.vehicleDetails?.vehicleType;
+    const code = values?.permitData.vehicleDetails?.vehicleSubType;
+    const vehicleTypeCode = values?.permitData.vehicleDetails?.vehicleType;
 
     if (!code || !vehicleTypeCode) return "";
 
@@ -61,29 +61,29 @@ export const ReviewVehicleInfo = ({
       <Box sx={PERMIT_RIGHT_BOX_STYLE}>
         <Box sx={{ gap: "40px", paddingTop: "24px" }}>
           <Typography sx={{ fontWeight: "bold" }}>VIN</Typography>
-          <Typography>{values?.application.vehicleDetails?.vin}</Typography>
+          <Typography>{values?.permitData.vehicleDetails?.vin}</Typography>
           <Typography sx={{ fontWeight: "bold" }}>Plate</Typography>
-          <Typography>{values?.application.vehicleDetails?.plate}</Typography>
+          <Typography>{values?.permitData.vehicleDetails?.plate}</Typography>
           <Typography sx={{ fontWeight: "bold" }}>Make</Typography>
-          <Typography>{values?.application.vehicleDetails?.make}</Typography>
+          <Typography>{values?.permitData.vehicleDetails?.make}</Typography>
           <Typography sx={{ fontWeight: "bold" }}>Year</Typography>
-          <Typography>{values?.application.vehicleDetails?.year}</Typography>
+          <Typography>{values?.permitData.vehicleDetails?.year}</Typography>
           <Typography sx={{ fontWeight: "bold" }}>Country</Typography>
           <Typography>
-            {formatCountry(values?.application.vehicleDetails?.countryCode)}
+            {formatCountry(values?.permitData.vehicleDetails?.countryCode)}
           </Typography>
           <Typography sx={{ fontWeight: "bold" }}>Province / State</Typography>
           <Typography>
             {formatProvince(
-              values?.application.vehicleDetails?.countryCode,
-              values?.application.vehicleDetails?.provinceCode
+              values?.permitData.vehicleDetails?.countryCode,
+              values?.permitData.vehicleDetails?.provinceCode
             )}
           </Typography>
           <Typography sx={{ fontWeight: "bold" }}>Vehicle Type</Typography>
           <Typography>{DisplayVehicleType()}</Typography>
           <Typography sx={{ fontWeight: "bold" }}>Vehicle Sub-type</Typography>
           <Typography>{DisplayVehicleSubType()}</Typography>
-          {values?.application.vehicleDetails?.saveVehicle && (
+          {values?.permitData.vehicleDetails?.saveVehicle && (
             <Typography sx={{ color: BC_COLOURS.bc_green, fontWeight: "bold" }}>
               This vehicle has been added/updated to your Vehicle Inventory.
             </Typography>

@@ -1,38 +1,135 @@
-.welcome-graphic {
-  /* Layout Properties */
-  //   top: 191px;
-  //   left: 871px;
-  width: 178px;
-  height: 160px;
-  /* UI Properties */
-  background: transparent url("./Welcome_Graphic.svg") 0% 0% no-repeat
-    padding-box;
-  opacity: 1;
+@use "../../../themes/orbcStyles";
+
+.welcome-page {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+
+  &__main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 2em;
+    margin-bottom: 2em;
+  }
+  
+  &__header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .welcome-graphic {
+      width: 178px;
+      height: 160px;
+      background: transparent url("./Welcome_Graphic.svg") 0% 0% no-repeat
+        padding-box;
+      opacity: 1;
+    }
+  }
+
+  .separator-line {
+    height: 0.5px;
+    width: 100%;
+    background-color: orbcStyles.$bc-text-box-border-grey;
+    margin: 1em 0;
+    position: relative;
+    text-align: center;
+
+    &__label {
+      position: relative;
+      text-transform: uppercase;
+      background-color: orbcStyles.$bc-black;
+      color: orbcStyles.$white;
+      font-size: 0.75rem;
+      top: -1rem;
+    }
+  }
+
+  &__company-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1em 1em 1.5em 1em;
+    max-width: 440px;
+
+    .company-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      margin-bottom: 0.5em;
+    }
+
+    .company-name {
+      font-size: 1.3rem;
+      font-weight: 600;
+      text-align: center;
+    }
+  }
+
+  &__profile-actions {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+    .welcome-cards {
+      width: 220px;
+      height: 190px;
+      background: orbcStyles.$white 0% 0% no-repeat padding-box;
+      border: 1px solid orbcStyles.$bc-text-box-border-grey;
+      border-radius: 8px;
+      opacity: 1;
+      text-align: center;
+      margin-top: 2em;
+      margin-bottom: 2em;
+      padding: 1em 0;
+      box-shadow: none;
+
+      .welcome-account-graphics {
+        padding-top: 2rem;
+      }
+
+      &--existing {
+        margin-left: 0;
+        margin-right: 1em;
+        position: relative;
+        overflow: visible;
+      }
+
+      &--new {
+        margin-left: 1em;
+        margin-right: 0em;
+      }
+
+      &__recommend {
+        position: relative;
+        text-transform: uppercase;
+        background-color: orbcStyles.$bc-gold;
+        color: orbcStyles.$bc-black;
+        font-size: 0.75rem;
+        top: -0.25rem;
+      }
+    }
+  }
 }
 
-.welcome-text {
-  /* Layout Properties */
-  top: 367px;
-  left: 720px;
-  width: 480px;
-  height: 43px;
-  /* UI Properties */
-  text-align: center;
-  font: normal normal bold 32px/42px;
-  letter-spacing: -0.64px;
-  color: #313132;
-  opacity: 1;
-}
+@media (width < 550px) {
+  .welcome-page {
+    &__profile-actions {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
 
-.welcome-cards {
-  width: 220px;
-  height: 190px;
-  background: #ffffff 0% 0% no-repeat padding-box;
-  border: 1px solid #b2b5b6;
-  border-radius: 8px;
-  opacity: 1;
-}
+    .welcome-cards {
+      margin-left: 0;
+      margin-right: 0;
 
-.welcome-account-graphics {
-    padding-top: 32px;
+      &--existing {
+        margin-bottom: 1em;
+      }
+
+      &--new {
+        margin-top: 1em;
+      }
+    }
+  }
 }

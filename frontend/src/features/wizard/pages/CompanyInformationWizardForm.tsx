@@ -1,9 +1,9 @@
 import { memo } from "react";
-import "../../manageProfile/components/forms/companyInfo/CompanyInfoForms.scss";
-import { CompanyInfoGeneralForm } from "../../manageProfile/components/forms/companyInfo/subForms/CompanyInfoGeneralForm";
 import Typography from "@mui/material/Typography";
-import { CompanyContactDetailsForm } from "../../manageProfile/components/forms/companyInfo/subForms/CompanyContactDetailsForm";
 
+import "./CompanyInformationWizardForm.scss";
+import { CompanyInfoGeneralForm } from "../../manageProfile/components/forms/companyInfo/subForms/CompanyInfoGeneralForm";
+import { CompanyContactDetailsForm } from "../../manageProfile/components/forms/companyInfo/subForms/CompanyContactDetailsForm";
 import { CompanyPrimaryContactForm } from "../../manageProfile/components/forms/companyInfo/subForms/CompanyPrimaryContactForm";
 import { InfoBcGovBanner } from "../../../common/components/banners/AlertBanners";
 
@@ -17,7 +17,7 @@ export const CompanyInformationWizardForm = memo(() => {
   const FEATURE = "wizard";
 
   return (
-    <div className="mp-form-container">
+    <div className="company-info-wizard-form">
       <CompanyInfoGeneralForm feature={FEATURE} />
 
       <Typography variant="h2" gutterBottom>

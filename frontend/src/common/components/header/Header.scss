@@ -1,8 +1,10 @@
+@use "../../../themes/orbcStyles";
+
 header {
-  background-color: #036;
-  border-bottom: 2px solid #fcba19;
+  background-color: orbcStyles.$bc-primary-blue;
+  border-bottom: 2px solid orbcStyles.$bc-gold;
   padding: 0 30px 0 30px;
-  color: #fff;
+  color: orbcStyles.$white;
   display: flex;
   height: 65px;
   top: 0;
@@ -43,13 +45,13 @@ header .other {
 }
 
 header a [class^="fas fa-"] {
-  color: white;
+  color: orbcStyles.$white;
   font-size: 1.4em;
   font-style: bold;
   line-height: 1;
   /* border-style: solid;
   border-width: 1px;
-  border-color: #fcba19; */
+  border-color: orbcStyles.$bc-gold; */
   padding: 5px;
   -webkit-font-smoothing: antialiased;
 }
@@ -74,8 +76,8 @@ header .nav-btn {
   display: none;
   position: sticky;
   top: 65px;
-  color: #fcba19;
-  background-color: #38598a;
+  color: orbcStyles.$bc-gold;
+  background-color: orbcStyles.$bc-background-blue;
   width: 100%;
   // -webkit-box-shadow: 0 6px 8px -4px #b3b1b3;
   // -moz-box-shadow: 0 6px 8px -4px #b3b1b3;
@@ -91,7 +93,7 @@ header .nav-btn {
   display: flex;
   flex-direction: column;
   margin: 0;
-  color: #fff;
+  color: orbcStyles.$white;
   list-style: none;
   padding-left: 60px;
   //margin-left: -25px;
@@ -109,7 +111,7 @@ header .nav-btn {
   display: flex;
   font-size: 0.813em;
   font-weight: normal; /* 400 */
-  color: #fff;
+  color: orbcStyles.$white;
   padding: 0 15px 0 15px;
   text-decoration: none;
 
@@ -125,12 +127,12 @@ header .nav-btn {
 .navigation-main .list-container ul .active {
   //text-decoration: underline;
   font-weight: bold;
-  background-color: #f2f2f2;
-  color: #38598a;
+  background-color: orbcStyles.$bc-background-light-grey;
+  color: orbcStyles.$bc-background-blue;
 }
 
 .nav-container :focus {
-  outline: 2px solid #3b99fc;
+  outline: 2px solid orbcStyles.$focus-blue;
   outline-offset: -12px;
 }
 

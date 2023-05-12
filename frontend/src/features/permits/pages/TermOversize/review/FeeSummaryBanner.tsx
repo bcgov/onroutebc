@@ -5,7 +5,7 @@ import { ApplicationContext } from "../../../context/ApplicationContext";
 
 export const FeeSummaryBanner = () => {
   const { applicationData } = useContext(ApplicationContext);
-  const calculatedFee = applicationData?.application.permitDuration || 0;
+  const calculatedFee = applicationData?.permitData.permitDuration || 0;
   return (
     <Box
       sx={{

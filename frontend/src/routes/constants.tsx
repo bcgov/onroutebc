@@ -12,6 +12,9 @@ export const MANAGE_PROFILES = "manage-profiles";
 //Permits
 export const PERMITS = "permits";
 
+//Applications
+export const APPLICATIONS = "applications";
+
 // Wizard
 export const CREATE_PROFILE = "create-profile";
 export const WELCOME = "welcome";

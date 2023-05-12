@@ -1,8 +1,8 @@
+import "./CompanyContactDetailsForm.scss";
 import { CustomFormComponent } from "../../../../../../common/components/form/CustomFormComponents";
-import { PHONE_WIDTH, EXT_WIDTH } from "../../../../../../themes/bcGovStyles";
 
 export const CompanyContactDetailsForm = ({ feature }: { feature: string }) => (
-  <>
+  <div className="company-contact-details-form">
     <CustomFormComponent
       type="input"
       feature={feature}
@@ -11,8 +11,9 @@ export const CompanyContactDetailsForm = ({ feature }: { feature: string }) => (
         rules: { required: true },
         label: "Email",
       }}
+      className="company-contact-details-form__input"
     />
-    <div className="mp-side-by-side-container">
+    <div className="side-by-side-inputs">
       <CustomFormComponent
         type="phone"
         feature={feature}
@@ -22,9 +23,9 @@ export const CompanyContactDetailsForm = ({ feature }: { feature: string }) => (
             required: { value: true, message: "Phone Number is required" },
           },
           label: "Phone Number",
-          width: PHONE_WIDTH,
           inputProps: { maxLength: 20 },
         }}
+        className="company-contact-details-form__input company-contact-details-form__input--left"
       />
       <CustomFormComponent
         type="input"
@@ -33,8 +34,8 @@ export const CompanyContactDetailsForm = ({ feature }: { feature: string }) => (
           name: "extension",
           rules: { required: false },
           label: "Ext",
-          width: EXT_WIDTH,
         }}
+        className="company-contact-details-form__input company-contact-details-form__input--right"
       />
     </div>
     <CustomFormComponent
@@ -44,8 +45,8 @@ export const CompanyContactDetailsForm = ({ feature }: { feature: string }) => (
         name: "fax",
         rules: { required: false },
         label: "Fax",
-        width: PHONE_WIDTH,
       }}
+      className="company-contact-details-form__input company-contact-details-form__input--left"
     />
-  </>
+  </div>
 );

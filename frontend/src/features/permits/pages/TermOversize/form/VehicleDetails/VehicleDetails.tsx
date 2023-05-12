@@ -60,10 +60,10 @@ export const VehicleDetails = ({ feature }: { feature: string }) => {
   useEffect(() => {
     // If the form is initially loaded and there is application data from the application context,
     // then populate vehicle type from the application context data
-    if (!isDirty && applicationData?.application.vehicleDetails?.vehicleType) {
+    if (!isDirty && applicationData?.permitData?.vehicleDetails?.vehicleType) {
       setValue(
-        "application.vehicleDetails.vehicleType",
-        applicationData?.application.vehicleDetails?.vehicleType
+        "permitData.vehicleDetails.vehicleType",
+        applicationData?.permitData?.vehicleDetails?.vehicleType
       );
     }
   }, [selectedVehicle]);
@@ -75,20 +75,20 @@ export const VehicleDetails = ({ feature }: { feature: string }) => {
   const handleSaveVehicleRadioBtns = (isSave: string) => {
     const isTrue = isSave === "true";
     setSaveVehicle(isTrue);
-    setValue("application.vehicleDetails.saveVehicle", isTrue);
+    setValue("permitData.vehicleDetails.saveVehicle", isTrue);
   };
 
   // Reset the vehicle sub type field if the vehicle type field changes
   const handleVehicleType = (event: SelectChangeEvent) => {
     const updatedVehicleType = event.target.value as string;
-    setValue("application.vehicleDetails.vehicleType", updatedVehicleType);
+    setValue("permitData.vehicleDetails.vehicleType", updatedVehicleType);
     const updated = applicationData;
-    if (updated && updated.application.vehicleDetails) {
-      updated.application.vehicleDetails.vehicleType = updatedVehicleType;
-      updated.application.vehicleDetails.vehicleSubType = "";
+    if (updated && updated.permitData.vehicleDetails) {
+      updated.permitData.vehicleDetails.vehicleType = updatedVehicleType;
+      updated.permitData.vehicleDetails.vehicleSubType = "";
       setApplicationData(updated);
     }
-    setValue("application.vehicleDetails.vehicleSubType", "");
+    setValue("permitData.vehicleDetails.vehicleSubType", "");
   };
 
   return (
@@ -146,7 +146,7 @@ export const VehicleDetails = ({ feature }: { feature: string }) => {
           type="input"
           feature={feature}
           options={{
-            name: "application.vehicleDetails.vin",
+            name: "permitData.vehicleDetails.vin",
             rules: {
               required: { value: true, message: "VIN is required." },
               minLength: { value: 6, message: "Length must be 6" },
@@ -162,7 +162,7 @@ export const VehicleDetails = ({ feature }: { feature: string }) => {
           type="input"
           feature={feature}
           options={{
-            name: "application.vehicleDetails.plate",
+            name: "permitData.vehicleDetails.plate",
             rules: { required: true, maxLength: 10 },
             label: "Plate",
             width: formFieldStyle.width,
@@ -177,7 +177,7 @@ export const VehicleDetails = ({ feature }: { feature: string }) => {
           type="input"
           feature={feature}
           options={{
-            name: "application.vehicleDetails.make",
+            name: "permitData.vehicleDetails.make",
             rules: { required: true, maxLength: 20 },
             label: "Make",
             width: formFieldStyle.width,
@@ -192,7 +192,7 @@ export const VehicleDetails = ({ feature }: { feature: string }) => {
           type="input"
           feature={feature}
           options={{
-            name: "application.vehicleDetails.year",
+            name: "permitData.vehicleDetails.year",
             rules: {
               required: { value: true, message: "Year is required." },
               valueAsNumber: true,
@@ -210,8 +210,8 @@ export const VehicleDetails = ({ feature }: { feature: string }) => {
 
         <CountryAndProvince
           feature={feature}
-          countryField="application.vehicleDetails.countryCode"
-          provinceField="application.vehicleDetails.provinceCode"
+          countryField="permitData.vehicleDetails.countryCode"
+          provinceField="permitData.vehicleDetails.provinceCode"
           isProvinceRequired={true}
           width={formFieldStyle.width}
         />
@@ -220,7 +220,7 @@ export const VehicleDetails = ({ feature }: { feature: string }) => {
           type="select"
           feature={feature}
           options={{
-            name: "application.vehicleDetails.vehicleType",
+            name: "permitData.vehicleDetails.vehicleType",
             rules: {
               required: {
                 value: true,
@@ -241,7 +241,7 @@ export const VehicleDetails = ({ feature }: { feature: string }) => {
         <SelectVehicleSubTypeDropdown
           label={"Vehicle Sub-type"}
           width={formFieldStyle.width}
-          name="application.vehicleDetails.vehicleSubType"
+          name="permitData.vehicleDetails.vehicleSubType"
           rules={{
             required: { value: true, message: "Vehicle Sub-type is required." },
           }}

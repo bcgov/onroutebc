@@ -37,6 +37,8 @@ interface CountryAndProvinceProps {
    */
   isCountryRequired?: boolean;
   isProvinceRequired?: boolean;
+  countryClassName?: string;
+  provinceClassName?: string;
 }
 
 /**
@@ -53,6 +55,8 @@ export const CountryAndProvince = <T extends ORBC_FormTypes>({
   isCountryRequired = true,
   provinceField,
   isProvinceRequired = true,
+  countryClassName,
+  provinceClassName,
 }: CountryAndProvinceProps): JSX.Element => {
   const {
     resetField,
@@ -146,6 +150,7 @@ export const CountryAndProvince = <T extends ORBC_FormTypes>({
             {country.name}
           </MenuItem>
         ))}
+        className={countryClassName}
       />
       {shouldDisplayProvince && (
         <CustomFormComponent
@@ -162,6 +167,7 @@ export const CountryAndProvince = <T extends ORBC_FormTypes>({
               {state?.name}
             </MenuItem>
           ))}
+          className={provinceClassName}
         />
       )}
     </>

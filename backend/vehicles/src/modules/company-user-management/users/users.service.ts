@@ -7,8 +7,6 @@ import { User } from './entities/user.entity';
 import { ReadUserDto } from './dto/response/read-user.dto';
 import { CreateUserDto } from './dto/request/create-user.dto';
 import { UpdateUserDto } from './dto/request/update-user.dto';
-import { Contact } from '../../common/entities/contact.entity';
-import { ReadContactDto } from '../../common/dto/response/read-contact.dto';
 import { Company } from '../company/entities/company.entity';
 import { CompanyUser } from './entities/company-user.entity';
 import { UserStatus } from '../../../common/enum/user-status.enum';
@@ -126,34 +124,14 @@ export class UsersService {
       userAuthGroup,
     );
     user.companyUsers = [newCompanyUser];
-    console.log(user);
     user = await queryRunner.manager.save(user);
 
-    const readUserDto = await this.mapUserEntitytoReadUserDto(user);
-    return readUserDto;
-  }
-
-  /**
-   * The mapUserEntitytoReadUserDto() helper method maps a User entity to a
-   * ReadUserDto object and returns it.
-   *
-   * @param user The {@link User} entity.
-   *
-   * @returns The mapped {@link ReadUserDto} Dto.
-   */
-  private async mapUserEntitytoReadUserDto(user: User) {
     const readUserDto = await this.classMapper.mapAsync(
       user,
       User,
       ReadUserDto,
     );
 
-    const readContactDto = await this.classMapper.mapAsync(
-      user.userContact,
-      Contact,
-      ReadContactDto,
-    );
-    Object.assign(readUserDto, readContactDto);
     return readUserDto;
   }
 
@@ -181,117 +159,42 @@ export class UsersService {
     return newCompanyUser;
   }
 
-  /**
-   * The findUserbyUserGUID() method finds and returns a {@link ReadUserDto} object for a
-   * user with a specific userGUID parameters.
-   *
-   * @param userGUID The user GUID.
-   *
-   * @returns The user details as a promise of type {@link ReadUserDto}
-   */
-  async findUserbyUserGUID(userGUID: string): Promise<ReadUserDto> {
-    const user = await this.findUserEntitybyUserGUID(userGUID);
-    let readUserDto: ReadUserDto;
-    if (user) {
-      readUserDto = await this.mapUserEntitytoReadUserDto(user);
-    }
-    return readUserDto;
-  }
-
-  /**
-   * The findUserbyUserGUIDandCompanyId() method finds and returns a {@link ReadUserDto} object for a
-   * user with a specific userGUID and companyId parameters.
-   *
-   * @param userGUID The user GUID.
-   * @param companyId The company Id.
-   *
-   * @returns The user details as a promise of type {@link ReadUserDto}
-   */
-  async findUserbyUserGUIDandCompanyId(
-    userGUID: string,
-    companyId: number,
-  ): Promise<ReadUserDto> {
-    const user = await this.findUserEntitybyUserGUIDandCompanyId(
-      userGUID,
-      companyId,
-    );
-
-    if (user) {
-      const readUserDto = await this.mapUserEntitytoReadUserDto(user);
-      return readUserDto;
-    }
-  }
-
-  /**
-   * The findUserEntitybyUserGUIDandCompanyId() helper method finds and returns a User entity for a
-   * user with a specific userGUID parameters.
-   *
-   * @param userGUID The user GUID.
-   * @param companyId The company Id.
-   *
-   * @returns The {@link User} entity.
-   */
-  private async findUserEntitybyUserGUIDandCompanyId(
-    userGUID: string,
-    companyId: number,
-  ) {
+  private async findUsersEntity(userGUID?: string, companyId?: number) {
     return await this.userRepository
       .createQueryBuilder('user')
       .innerJoinAndSelect('user.userContact', 'userContact')
       .innerJoinAndSelect('userContact.province', 'province')
-      .innerJoinAndSelect('user.companyUsers', 'companyUser')
-      .innerJoin('companyUser.company', 'company')
-      .where('user.userGUID = :userGUID', { userGUID: userGUID })
-      .andWhere('company.companyId= :companyId', {
-        companyId: companyId,
+      .leftJoinAndSelect('user.companyUsers', 'companyUser')
+      .leftJoinAndSelect('companyUser.company', 'company')
+      .where(userGUID ? 'user.userGUID = :userGUID' : '1=1', {
+        userGUID: userGUID,
       })
-      .getOne();
+      .andWhere(companyId ? `company.companyId= :companyId` : '1=1', {
+        companyId,
+      })
+      .getMany();
   }
 
   /**
-   * The findUserEntitybyUserGUID() helper method finds and returns a User entity for a
-   * user with a specific userGUID parameters.
-   *
-   * @param userGUID The user GUID.
-   *
-   * @returns The {@link User} entity.
-   */
-  private async findUserEntitybyUserGUID(userGUID: string) {
-    return await this.userRepository
-      .createQueryBuilder('user')
-      .innerJoinAndSelect('user.userContact', 'userContact')
-      .innerJoinAndSelect('userContact.province', 'province')
-      .where('user.userGUID = :userGUID', { userGUID: userGUID })
-      .getOne();
-  }
-
-  /**
-   * The findAll() method finds and returns an array of ReadUserDto objects for
+   * The findUsersDto() method finds and returns an array of ReadUserDto objects for
    * all users with a specific companyId.
    *
    * @param companyId The company Id.
    *
    * @returns The list of users as an array of type {@link ReadUserDto}
    */
-  async findAllUsers(companyId: number): Promise<ReadUserDto[]> {
-    const users = await this.userRepository
-      .createQueryBuilder('user')
-      .innerJoinAndSelect('user.userContact', 'userContact')
-      .innerJoinAndSelect('userContact.province', 'province')
-      .innerJoinAndSelect('user.companyUsers', 'companyUser')
-      .innerJoin('companyUser.company', 'company')
-      .andWhere('company.companyId= :companyId', {
-        companyId: companyId,
-      })
-      .getMany();
+  async findUsersDto(
+    userGUID?: string,
+    companyId?: number,
+  ): Promise<ReadUserDto[]> {
+    const userDetails = await this.findUsersEntity(userGUID, companyId);
 
-    const userList: ReadUserDto[] = [];
-
-    for (const user of users) {
-      const readUserDto = this.mapUserEntitytoReadUserDto(user);
-      userList.push(await readUserDto);
-    }
-    return userList;
+    const readUserDto = await this.classMapper.mapArrayAsync(
+      userDetails,
+      User,
+      ReadUserDto,
+    );
+    return readUserDto;
   }
 
   /**
@@ -314,9 +217,9 @@ export class UsersService {
     directory: Directory,
     updateUserDto: UpdateUserDto,
   ): Promise<ReadUserDto> {
-    const userDetails = await this.findUserEntitybyUserGUID(userGUID);
+    const userDetails = await this.findUsersEntity(userGUID);
 
-    if (!userDetails) {
+    if (!userDetails?.length) {
       throw new DataNotFoundException();
     }
 
@@ -327,9 +230,10 @@ export class UsersService {
         directory: directory,
       }),
     });
-    user.userContact.contactId = userDetails.userContact.contactId;
+    user.userContact.contactId = userDetails[0]?.userContact?.contactId;
     await this.userRepository.save(user);
-    return this.findUserbyUserGUID(user.userGUID);
+    const userListDto = await this.findUsersDto(user.userGUID);
+    return userListDto[0];
   }
 
   /**
@@ -440,7 +344,11 @@ export class UsersService {
           ),
         );
       }
-      userExistsDto.user = await this.mapUserEntitytoReadUserDto(user);
+      userExistsDto.user = await this.classMapper.mapAsync(
+        user,
+        User,
+        ReadUserDto,
+      );
       userExistsDto.associatedCompanies = readCompanyMetadataDto;
     }
 
