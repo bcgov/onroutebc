@@ -1,11 +1,15 @@
 import React from "react";
 import Card from "@mui/material/Card";
 import { useNavigate } from "react-router-dom";
+
 import "./welcome.scss";
 import { CardActionArea, CardContent, Chip, Typography } from "@mui/material";
+import { getCompanyNameFromSession } from "../../../common/apiManager/httpRequestHandler";
 
 export const WelcomePage = React.memo(() => {
   const navigate = useNavigate();
+  const companyName = getCompanyNameFromSession();
+
   return (
     <div className="welcome-page">
       <div className="welcome-page__main">
@@ -13,6 +17,15 @@ export const WelcomePage = React.memo(() => {
           <div className="welcome-graphic"></div>
           <h2>Welcome to onRouteBC!</h2>
         </div>
+        {companyName ? (
+          <>
+            <div className="separator-line"></div>
+            <div className="welcome-page__company-info">
+              <div className="company-label">Company Name</div>
+              <div className="company-name">{companyName}</div>
+            </div>
+          </>
+        ) : null}
         <div className="separator-line">
           <Chip className="separator-line__label" label="Choose An Option Below" />
         </div>

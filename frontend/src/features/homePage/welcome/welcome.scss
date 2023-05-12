@@ -45,6 +45,25 @@
     }
   }
 
+  &__company-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1em 0 1.5em;
+
+    .company-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      margin-bottom: 0.5em;
+    }
+
+    .company-name {
+      font-size: 1.3rem;
+      font-weight: 600;
+      margin-top: 1em 0;
+    }
+  }
+
   &__profile-actions {
     display: flex;
     flex-direction: row;
