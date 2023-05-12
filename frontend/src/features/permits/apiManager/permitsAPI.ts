@@ -7,9 +7,8 @@ import {
   httpPUTRequest_axios,
 } from "../../../common/apiManager/httpRequestHandler";
 import { replaceEmptyValuesWithNull } from "../../../common/helpers/util";
-import { Application } from "../types/application";
+import { Application, PermitApplicationInProgress } from "../types/application";
 import { PERMITS_API, VEHICLE_URL } from "./endpoints/endpoints";
-import { PermitApplicationInProgress } from "../types/application";
 import { formatDate } from "../../../common/helpers/formatDate";
 
 export const submitTermOversize = (
