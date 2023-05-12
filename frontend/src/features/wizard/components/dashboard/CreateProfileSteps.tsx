@@ -235,7 +235,7 @@ export const CreateProfileSteps = React.memo(() => {
               {activeStep === 0 && (
                 <Button
                   className="proceed-btn proceed-btn--next"
-                  onClick={handleNext}
+                  onClick={handleSubmit(handleNext)}
                   variant="contained"
                   color="primary"
                   endIcon={<>&rarr;</>}
