@@ -82,8 +82,32 @@ export const CreateProfileSteps = React.memo(() => {
   const formMethods = useForm<CompanyAndUserRequest>({
     defaultValues: {
       legalName: user?.profile?.bceid_business_name as string,
+      mailingAddress: {
+        addressLine1: "",
+        addressLine2: "",
+        provinceCode: "",
+        countryCode: "",
+        city: "",
+        postalCode: "",
+      },
+      email: "",
+      phone: "",
+      extension: "",
+      fax: "",
       adminUser: {
         userAuthGroup: "ORGADMIN",
+      },
+      primaryContact: {
+        firstName: "",
+        lastName: "",
+        email: "",
+        phone1: "",
+        phone1Extension: "",
+        phone2: "",
+        phone2Extension: "",
+        countryCode: "",
+        provinceCode: "",
+        city: "",
       },
     },
   });
