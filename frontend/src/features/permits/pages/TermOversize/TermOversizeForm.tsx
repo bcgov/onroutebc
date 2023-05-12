@@ -33,6 +33,7 @@ import {
 } from "../../../../common/helpers/util";
 import { useSaveTermOversizeMutation } from "../../hooks/hooks";
 import { SnackBarContext } from "../../../../App";
+import { getUserGuidFromSession } from "../../../../common/apiManager/httpRequestHandler";
 
 /**
  * The first step in creating and submitting a TROS Application.
@@ -60,6 +61,7 @@ export const TermOversizeForm = () => {
       "",
       applicationContext?.applicationData?.applicationNumber
     ),
+    userGuid: getUserGuidFromSession(),
     permitType: getDefaultRequiredVal(
       "TROS",
       applicationContext?.applicationData?.permitType

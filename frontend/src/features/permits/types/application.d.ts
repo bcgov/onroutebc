@@ -7,7 +7,7 @@ export interface Application {
   permitId?: number;
   permitStatus?: string;
   companyId: number;
-  userGuid?: string;
+  userGuid?: string | null;
   permitType: string;
   applicationNumber?: string;
   permitNumber?: number;
@@ -68,7 +68,7 @@ export interface TermOversizeApplication {
   mailingAddress: MailingAddress;
 }
 
-export interface PermitApplicationInProgress extends Application{
+export interface PermitApplicationInProgress extends Application {
   applicationNumber: String;
   permitType: String;
   startDate: Dayjs;
@@ -79,8 +79,8 @@ export interface PermitApplicationInProgress extends Application{
       unitNumber: String;
       vin: String;
       plate: String;
-    }
-  }
+    };
+  };
 }
 
 export type ApplicationInProgress = PermitApplicationInProgress;
