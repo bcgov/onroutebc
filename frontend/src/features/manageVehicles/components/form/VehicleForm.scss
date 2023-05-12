@@ -1,3 +1,5 @@
+@use "../../../../themes/orbcStyles";
+
 /*
 
 Manage Vehicles Styles
@@ -24,7 +26,7 @@ mv - manage vehicles
 
 .mv-h1 {
   font-weight: 100;
-  color: white;
+  color: orbcStyles.$white;
   text-align: center;
   padding-bottom: 10px;
   border-bottom: 1px solid rgb(79, 98, 148);
@@ -44,7 +46,7 @@ mv - manage vehicles
   box-sizing: border-box;
   width: 100%;
   border-radius: 4px;
-  border: 1px solid white;
+  border: 1px solid orbcStyles.$white;
   padding: 10px 15px;
   margin-bottom: 10px;
   font-size: 14px;
@@ -56,14 +58,14 @@ mv - manage vehicles
   display: block;
   margin-bottom: 13px;
   margin-top: 20px;
-  color: white;
+  color: orbcStyles.$white;
   font-size: 14px;
   font-weight: 200;
 }
 
 .mv-input[type="submit"] {
-  background: #003366;
-  color: white;
+  background: orbcStyles.$bc-primary-blue;
+  color: orbcStyles.$white;
   text-transform: uppercase;
   border: none;
   margin-top: 40px;
@@ -109,12 +111,12 @@ mv - manage vehicles
   padding-left: 5%;
   padding-right: 5%;
   //height: 75px;
-  background-color: white;
+  background-color: orbcStyles.$white;
   position: fixed;
   bottom: 1px;
 
   display: flex;
   justify-content: center;
   align-items: center;
-  border-top: 1px solid #b2b5b6;
+  border-top: 1px solid orbcStyles.$bc-text-box-border-grey;
 }

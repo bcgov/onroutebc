@@ -1,5 +1,77 @@
+// Widths
+$profile-form-max-width: 528px;
 $tros-left-column-width: 400px;
 
 // Colours
+$banner-grey: #ebeef3;
+$bc-background-blue: #38598a;
+$bc-background-blue-grey: #f4f5f8;
+$bc-background-light-grey: #f2f2f2;
+$bc-black: #313132;
+$bc-border-grey: #dbdcdc;
+$bc-form-elements-grey: #606060;
+$bc-gold: #fcba19;
+$bc-green: #2e8540;
+$bc-messages-blue-background: #d9eaf7;
+$bc-messages-gold-background: #f9f1c6;
+$bc-messages-gold-text: #6c4a00;
+$bc-messages-green-text: #2d4822;
+$bc-messages-green-background: #dff0d8;
+$bc-messages-red-background: #f2dede;
+$bc-messages-red-text: #a12722;
+$bc-text-links-blue: #1a5a96;
+$bc-primary-blue: #003366;
+$bc-red: #d8292f;
 $bc-text-box-border-grey: #b2b5b6;
 $bc-white: #ffffff;
+$black: #000000;
+$button-hover: #2d5992;
+$disabled-colour: #b5c0cf;
+$focus-blue: #3b99fc;
+$shadow-colour: #00000029;
+$white: #ffffff;
+
+// Mixins
+@mixin form-layout($form-container-class) {
+  #{$form-container-class} {
+    width: 100%;
+    max-width: 528px;
+    
+    .side-by-side-inputs {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+    }
+
+    &__input {
+      width: 100%;
+
+      &--left {
+        width: 60%;
+      }
+
+      &--right {
+        width: 30%;
+      }
+    }
+  }
+
+  @media (width < 450px) {
+    #{$form-container-class} {
+      .side-by-side-inputs {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+  
+      &__input {
+        &--left {
+          width: 100%;
+        }
+  
+        &--right {
+          width: 50%;
+        }
+      }
+    }
+  }
+}

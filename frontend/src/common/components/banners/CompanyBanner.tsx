@@ -1,5 +1,6 @@
-import { Box, Typography } from "@mui/material";
-import { BC_COLOURS } from "../../../themes/bcGovStyles";
+import { Typography } from "@mui/material";
+
+import "./CompanyBanner.scss";
 import { CompanyProfile } from "../../../features/manageProfile/types/manageProfile";
 
 export const CompanyBanner = ({
@@ -8,26 +9,15 @@ export const CompanyBanner = ({
   companyInfo?: CompanyProfile;
 }) => {
   return (
-    <Box
-      sx={{
-        height: 100,
-        backgroundColor: BC_COLOURS.banner_grey,
-        color: BC_COLOURS.bc_primary_blue,
-        marginTop: "20px",
-        px: 3,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-      }}
-    >
-      <div>
+    <div className="company-banner">
+      <div className="company-banner__company-name">
         <Typography variant="h5">COMPANY NAME</Typography>
         <Typography variant="h4">{companyInfo?.legalName}</Typography>
       </div>
-      <div>
+      <div className="company-banner__client-number">
         <Typography variant="h5">onRouteBC CLIENT NUMBER</Typography>
         <Typography variant="h4">{companyInfo?.clientNumber}</Typography>
       </div>
-    </Box>
+    </div>
   );
 };
