@@ -83,7 +83,7 @@ export const CompanyInfoForm = memo(
     const FEATURE = "company-profile";
 
     return (
-      <div className="mp-form-container">
+      <div className="company-info-form">
         <FormProvider {...formMethods}>
           <CompanyInfoGeneralForm feature={FEATURE} />
 
@@ -101,14 +101,14 @@ export const CompanyInfoForm = memo(
 
           <CompanyPrimaryContactForm feature={FEATURE} />
         </FormProvider>
-        <div className="mp-form-submit-container">
+        <div className="company-info-form__submission">
           <Button
             key="update-company-info-cancel-button"
             aria-label="Cancel Update"
             variant="contained"
             color="tertiary"
-            sx={{ marginRight: "40px" }}
             onClick={() => setIsEditting(false)}
+            className="submit-btn submit-btn--cancel"
           >
             Cancel
           </Button>
@@ -118,6 +118,7 @@ export const CompanyInfoForm = memo(
             variant="contained"
             color="primary"
             onClick={handleSubmit(onUpdateCompanyInfo)}
+            className="submit-btn"
           >
             Save
           </Button>

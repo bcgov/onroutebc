@@ -2,23 +2,24 @@ import {
   Alert,
   Box,
   Button,
-  Grid,
   Step,
   StepLabel,
   Stepper,
   Typography,
 } from "@mui/material";
 import React, { useContext } from "react";
+import { useAuth } from "react-oidc-context";
+import { FormProvider, useForm, FieldValues } from "react-hook-form";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+
+import "./CreateProfileSteps.scss";
 import { Banner } from "../../../../common/components/dashboard/Banner";
 import "../../../../common/components/dashboard/Dashboard.scss";
-import { FormProvider, useForm, FieldValues } from "react-hook-form";
 import { createOnRouteBCProfile } from "../../../manageProfile/apiManager/manageProfileAPI";
 import { UserInformationWizardForm } from "../../pages/UserInformationWizardForm";
 import { CompanyInformationWizardForm } from "../../pages/CompanyInformationWizardForm";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { OnRouteBCProfileCreated } from "../../pages/OnRouteBCProfileCreated";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
-import { useAuth } from "react-oidc-context";
 import { CompanyAndUserRequest } from "../../../manageProfile/types/manageProfile";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 
@@ -43,6 +44,25 @@ const CompanyBanner = ({ legalName }: { legalName: string }) => {
     </Box>
   );
 };
+
+const ExistingTPSSelection = ({ screenSize }: { screenSize: "lg" | "sm" }) => (
+  <div className={`existing-tps-action existing-tps-action--${screenSize}`}>
+    <div className="existing-tps-action__img-wrapper">
+      <img
+        height="54"
+        width="54"
+        src="./Existing_Account_Graphic.svg"
+        alt="TPS Profile"
+      />
+    </div>
+    <div className="existing-tps-action__profile">
+      <strong>Already have a TPS profile?</strong>
+      <Button variant="outlined" color="info" size="small">
+        Claim it now
+      </Button>
+    </div>
+  </div>
+);
 
 export const CreateProfileSteps = React.memo(() => {
   const queryClient = useQueryClient();
@@ -168,130 +188,86 @@ export const CreateProfileSteps = React.memo(() => {
           <br></br>
         </Box>
         <div
-          className="tabpanel-container"
+          className="tabpanel-container create-profile-steps"
           role="profile-steps"
           id={`profile-steps`}
           aria-labelledby={`profile-steps`}
         >
-          <Box sx={{ width: "100%" }}>
-            <br></br>
-            <div>
-              <Grid container>
-                <Grid xs={6} item>
-                  <Stepper activeStep={activeStep} alternativeLabel>
-                    {steps.map((label) => (
-                      <Step key={label}>
-                        <StepLabel>{label}</StepLabel>
-                      </Step>
-                    ))}
-                  </Stepper>
-                </Grid>
-                <Grid xs={2} item></Grid>
-                <Grid xs={3} item>
-                  <Grid container>
-                    <Grid xs={12} item>
-                      <hr />
-                    </Grid>
-                    <Grid xs={12} item>
-                      <Grid container>
-                        <Grid xs={3} item>
-                          <img
-                            height="64"
-                            width="64"
-                            src="./Existing_Account_Graphic.svg"
-                          ></img>
-                        </Grid>
-                        <Grid xs={9} item>
-                          <Grid container>
-                            <Grid item>
-                              <strong>Already have a TPS profile?</strong>
-                            </Grid>
-                            <br />
-                            <Grid item>
-                              <Button variant="outlined" color="info">
-                                Claim it now
-                              </Button>
-                            </Grid>
-                          </Grid>
-                        </Grid>
-                      </Grid>
-                    </Grid>
-                    <Grid xs={12} item>
-                      <hr />
-                    </Grid>
-                  </Grid>
-                </Grid>
-              </Grid>
-              <br></br>
-              <Grid container>
-                <Grid xs={7} item>
-                  <Alert severity="info">
-                    <Typography>
-                      <strong>
-                        Please note, unless stated otherwise, all fields are
-                        mandatory.
-                      </strong>
-                    </Typography>
-                  </Alert>
-                  {activeStep === 0 && (
-                    <div>
-                      <h2>Company Mailing Address</h2>
-                      <hr></hr>
-                      <CompanyBanner
-                        legalName={user?.profile?.bceid_business_name as string}
-                      />
-                      <CompanyInformationWizardForm />
-                    </div>
-                  )}
-                  {activeStep === 1 && (
-                    <div>
-                      <h2>User Details</h2>
-                      <hr></hr>
-                      <UserInformationWizardForm />
-                    </div>
-                  )}
-                </Grid>
-              </Grid>
-              <br></br>
+          <div className="create-profile-steps__create-profile">
+            <div className="create-profile-section create-profile-section--steps">
+              <Stepper activeStep={activeStep} alternativeLabel>
+                {steps.map((label) => (
+                  <Step className="step" key={label}>
+                    <StepLabel className="step__label">{label}</StepLabel>
+                  </Step>
+                ))}
+              </Stepper>
+            </div>
+            <ExistingTPSSelection screenSize="sm" />
+            <div className="create-profile-section create-profile-section--info">
+              <Alert severity="info">
+                <Typography>
+                  <strong>
+                    Please note, unless stated otherwise, all fields are
+                    mandatory.
+                  </strong>
+                </Typography>
+              </Alert>
+            </div>
+            {activeStep === 0 && (
+              <div className="create-profile-section create-profile-section--company">
+                <h2>Company Mailing Address</h2>
+                <hr></hr>
+                <CompanyBanner
+                  legalName={user?.profile?.bceid_business_name as string}
+                />
+                <CompanyInformationWizardForm />
+              </div>
+            )}
+            {activeStep === 1 && (
+              <div className="create-profile-section create-profile-section--user">
+                <h2>User Details</h2>
+                <hr></hr>
+                <UserInformationWizardForm />
+              </div>
+            )}
+            <div className="create-profile-section create-profile-section--nav">
               {activeStep === 0 && (
-                <Grid container>
-                  <Grid xs={2} item>
-                    <Button
-                      onClick={handleNext}
-                      variant="contained"
-                      color="primary"
-                      endIcon={<>&rarr;</>}
-                    >
-                      Next
-                    </Button>
-                  </Grid>
-                </Grid>
+                <Button
+                  className="proceed-btn proceed-btn--next"
+                  onClick={handleNext}
+                  variant="contained"
+                  color="primary"
+                  endIcon={<>&rarr;</>}
+                >
+                  Next
+                </Button>
               )}
               {activeStep === 1 && (
-                <Grid container>
-                  <Grid xs={2} item>
-                    <Button
-                      onClick={handleBack}
-                      variant="contained"
-                      color="secondary"
-                      startIcon={<>&larr;</>}
-                    >
-                      Previous
-                    </Button>
-                  </Grid>
-                  <Grid item>
-                    <Button
-                      onClick={handleSubmit(onClickFinish)}
-                      variant="contained"
-                    >
-                      Finish
-                    </Button>
-                  </Grid>
-                </Grid>
+                <>
+                  <Button
+                    onClick={handleBack}
+                    variant="contained"
+                    color="secondary"
+                    startIcon={<>&larr;</>}
+                    className="proceed-btn proceed-btn--prev"
+                  >
+                    Previous
+                  </Button>
+                  <Button
+                    onClick={handleSubmit(onClickFinish)}
+                    variant="contained"
+                    className="proceed-btn proceed-btn--finish"
+                  >
+                    Finish
+                  </Button>
+                </>
               )}
             </div>
-          </Box>
-          <br></br>
+          </div>
+          <div className="create-profile-steps__existing-tps">
+            <ExistingTPSSelection screenSize="lg" />
+          </div>
         </div>
       </FormProvider>
     </>

@@ -1,23 +1,20 @@
-/**
-* mp = Manage Profile
-*
-*/
-
-.mp-form-container {
+.company-info-form {
+  width: 100%;
+  max-width: 528px;
   display: flex;
   flex-direction: column;
-  width: 1056px;
-  margin-top: 10px;
-}
+  margin-top: 1em;
 
-.mp-form-submit-container {
-  display: flex;
-  justify-content: flex-end;
-  margin: 30px 0px;
-  width: 528px;
-}
+  &__submission {
+    display: flex;
+    justify-content: flex-end;
+    margin: 2em 0;
+    width: 100%;
 
-.mp-side-by-side-container {
-  display: flex;
-  gap: 40px;
+    .submit-btn {
+      &--cancel {
+        margin-right: 1em;
+      }
+    }
+  }
 }
