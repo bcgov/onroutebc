@@ -3,7 +3,7 @@ import "../../../../common/components/dashboard/Dashboard.scss";
 import { Banner } from "../../../../common/components/dashboard/Banner";
 import { TermOversizeForm } from "../../pages/TermOversize/TermOversizeForm";
 import { ApplicationContext } from "../../context/ApplicationContext";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Application } from "../../types/application";
 import { TermOversizePay } from "../../pages/TermOversize/TermOversizePay";
 import { TermOversizeReview } from "../../pages/TermOversize/TermOversizeReview";
@@ -13,6 +13,9 @@ import { Loading } from "../../../../common/pages/Loading";
 import { AxiosError } from "axios";
 import { Unauthorized } from "../../../../common/pages/Unauthorized";
 import { ErrorFallback } from "../../../../common/pages/ErrorFallback";
+import { getApplicationInProgressById } from "../../apiManager/permitsAPI";
+import { useParams } from "react-router-dom";
+import { formatDate } from "../../../../common/helpers/formatDate";
 
 export enum ApplicationStep {
   Form = "Form",
@@ -24,6 +27,14 @@ export const ApplicationDashboard = () => {
   const [applicationData, setApplicationData] = useState<Application>();
 
   const companyInfoQuery = useCompanyInfoQuery();
+
+  const {applicationNumber} = useParams();
+  useEffect(() => {
+      getApplicationInProgressById(applicationNumber).then((response) => {
+      setApplicationData(response);
+    });
+    
+  }, []);
 
   const {
     //steps,
@@ -43,7 +54,7 @@ export const ApplicationDashboard = () => {
   const displayHeaderText = () => {
     switch (step.key) {
       case ApplicationStep.Form:
-        return "Permit Application";
+        return (applicationNumber !== undefined)? "Permit Application: " + applicationData?.applicationNumber: "Permit Application";
       case ApplicationStep.Review:
         return "Review and Confirm Details";
       case ApplicationStep.Pay:

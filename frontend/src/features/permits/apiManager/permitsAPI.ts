@@ -89,3 +89,10 @@ export const getApplicationsInProgress = async (): Promise<
   }
   return applications;
 };
+
+export const getApplicationInProgressById = (
+  applicationNumber: string | undefined,
+)  : Promise<Application | undefined>=> {
+  const url = `${VEHICLE_URL}/permits/applications/${applicationNumber}`;
+  return httpGETRequest(url).then(response => response.data);
+};
