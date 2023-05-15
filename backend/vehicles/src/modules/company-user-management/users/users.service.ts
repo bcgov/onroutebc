@@ -265,7 +265,7 @@ export class UsersService {
    *
    * @returns The list of users as an array of type {@link ReadUserDto}
    */
-  async findAllCompanyUsersByUserGuid(
+  private async findAllCompanyUsersByUserGuid(
     userGUID: string,
   ): Promise<CompanyUser[]> {
     const companyUsers = await this.companyUserRepository

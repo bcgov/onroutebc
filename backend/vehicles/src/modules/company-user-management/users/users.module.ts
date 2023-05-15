@@ -1,4 +1,4 @@
-import { forwardRef, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CompanyModule } from '../company/company.module';
 import { PendingUsersModule } from '../pending-users/pending-users.module';
@@ -13,7 +13,7 @@ import { UsersService } from './users.service';
   imports: [
     TypeOrmModule.forFeature([User, CompanyUser]),
     PendingUsersModule,
-    forwardRef(() => CompanyModule),
+    CompanyModule,
   ],
   controllers: [UsersController, CompanyUsersController],
   providers: [UsersService, UsersProfile],

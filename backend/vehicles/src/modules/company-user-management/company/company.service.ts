@@ -6,7 +6,6 @@ import { DataSource, Repository } from 'typeorm';
 import { UserAuthGroup } from '../../../common/enum/user-auth-group.enum';
 import { Directory } from '../../../common/enum/directory.enum';
 import { ReadUserDto } from '../users/dto/response/read-user.dto';
-import { UsersService } from '../users/users.service';
 import { CreateCompanyDto } from './dto/request/create-company.dto';
 import { UpdateCompanyDto } from './dto/request/update-company.dto';
 import { ReadCompanyUserDto } from './dto/response/read-company-user.dto';
@@ -15,11 +14,13 @@ import { Company } from './entities/company.entity';
 import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
 import { ReadCompanyMetadataDto } from './dto/response/read-company-metadata.dto';
 import { IUserJWT } from '../../../common/interface/user-jwt.interface';
+import { CreateUserDto } from '../users/dto/request/create-user.dto';
+import { User } from '../users/entities/user.entity';
+import { CompanyUser } from '../users/entities/company-user.entity';
 
 @Injectable()
 export class CompanyService {
   constructor(
-    private readonly userService: UsersService,
     @InjectRepository(Company)
     private companyRepository: Repository<Company>,
     @InjectMapper() private readonly classMapper: Mapper,
@@ -66,14 +67,29 @@ export class CompanyService {
     try {
       newCompany = await queryRunner.manager.save(newCompany);
 
-      newUser = await this.userService.createUser(
-        newCompany.companyId,
+      let user = this.classMapper.map(
         createCompanyDto.adminUser,
-        directory,
-        UserAuthGroup.COMPANY_ADMINISTRATOR,
-        queryRunner,
-        currentUser,
+        CreateUserDto,
+        User,
+        {
+          extraArgs: () => ({
+            userName: currentUser.userName,
+            directory: directory,
+            userGUID: currentUser.userGUID,
+          }),
+        },
       );
+
+      const newCompanyUser = new CompanyUser();
+      newCompanyUser.company = new Company();
+      newCompanyUser.company.companyId = newCompany.companyId;
+      newCompanyUser.user = user;
+      newCompanyUser.userAuthGroup = UserAuthGroup.COMPANY_ADMINISTRATOR;
+
+      user.companyUsers = [newCompanyUser];
+      user = await queryRunner.manager.save(user);
+
+      newUser = await this.classMapper.mapAsync(user, User, ReadUserDto);
 
       await queryRunner.commitTransaction();
     } catch (err) {
@@ -129,20 +145,23 @@ export class CompanyService {
   async findCompanyMetadataByUserGuid(
     userGUID: string,
   ): Promise<ReadCompanyMetadataDto[]> {
-    const companyUsers = await this.userService.findAllCompanyUsersByUserGuid(
-      userGUID,
+    const companyUsers = await this.companyRepository
+      .createQueryBuilder('company')
+      .innerJoinAndSelect('company.mailingAddress', 'mailingAddress')
+      .innerJoinAndSelect('mailingAddress.province', 'mailingAddressProvince')
+      .innerJoinAndSelect('company.companyUsers', 'companyUsers')
+      .leftJoinAndSelect('companyUsers.user', 'user')
+      .where('user.userGUID= :userGUID', {
+        userGUID: userGUID,
+      })
+      .getMany();
+
+    const companyMetadata = await this.classMapper.mapArrayAsync(
+      companyUsers,
+      Company,
+      ReadCompanyMetadataDto,
     );
 
-    const companyMetadata: ReadCompanyMetadataDto[] = [];
-    for (const companyUser of companyUsers) {
-      companyMetadata.push(
-        await this.classMapper.mapAsync(
-          companyUser.company,
-          Company,
-          ReadCompanyMetadataDto,
-        ),
-      );
-    }
     return companyMetadata;
   }
 
