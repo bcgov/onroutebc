@@ -17,9 +17,9 @@ import { TROS_PERMIT_DURATIONS } from "../../../constants/termOversizeConstants"
 export const PermitDetails = ({ feature }: { feature: string }) => {
   const { getValues, watch, register, setValue } = useFormContext();
 
-  const startDate = watch("application.startDate");
+  const startDate = watch("permitData.startDate");
   // the permit expiry date is the permit duration minus 1 plus the <start date>
-  const duration = getValues("application.permitDuration") - 1;
+  const duration = getValues("permitData.permitDuration") - 1;
 
   const formatDate = () => {
     return startDate.add(duration, "day").format("LL");
@@ -27,11 +27,11 @@ export const PermitDetails = ({ feature }: { feature: string }) => {
 
   const [expiryDate, setExpiryDate] = useState(formatDate());
 
-  register("application.expiryDate");
+  register("permitData.expiryDate");
 
   useEffect(() => {
     setExpiryDate(formatDate());
-    setValue("application.expiryDate", startDate.add(duration, "day"));
+    setValue("permitData.expiryDate", startDate.add(duration, "day"));
   }, [startDate, duration]);
 
   return (
@@ -47,7 +47,7 @@ export const PermitDetails = ({ feature }: { feature: string }) => {
             type="datePicker"
             feature={feature}
             options={{
-              name: "application.startDate",
+              name: "permitData.startDate",
               rules: {
                 required: { value: true, message: "Start Date is required." },
               },
@@ -59,7 +59,7 @@ export const PermitDetails = ({ feature }: { feature: string }) => {
             type="select"
             feature={feature}
             options={{
-              name: "application.permitDuration",
+              name: "permitData.permitDuration",
               rules: {
                 required: { value: true, message: "Duration is required." },
               },

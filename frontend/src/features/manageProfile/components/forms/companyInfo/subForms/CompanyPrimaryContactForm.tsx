@@ -1,13 +1,9 @@
+import "./CompanyPrimaryContactForm.scss";
 import { CountryAndProvince } from "../../../../../../common/components/form/CountryAndProvince";
 import { CustomFormComponent } from "../../../../../../common/components/form/CustomFormComponents";
-import {
-  PHONE_WIDTH,
-  EXT_WIDTH,
-  CITY_WIDTH,
-} from "../../../../../../themes/bcGovStyles";
 
 export const CompanyPrimaryContactForm = ({ feature }: { feature: string }) => (
-  <>
+  <div className="company-primary-contact-form">
     <CustomFormComponent
       type="input"
       feature={feature}
@@ -18,6 +14,7 @@ export const CompanyPrimaryContactForm = ({ feature }: { feature: string }) => (
         },
         label: "First Name",
       }}
+      className="company-primary-contact-form__input"
     />
     <CustomFormComponent
       type="input"
@@ -29,6 +26,7 @@ export const CompanyPrimaryContactForm = ({ feature }: { feature: string }) => (
         },
         label: "Last Name",
       }}
+      className="company-primary-contact-form__input"
     />
     <CustomFormComponent
       type="input"
@@ -40,9 +38,10 @@ export const CompanyPrimaryContactForm = ({ feature }: { feature: string }) => (
         },
         label: "Email",
       }}
+      className="company-primary-contact-form__input"
     />
 
-    <div className="mp-side-by-side-container">
+    <div className="side-by-side-inputs">
       <CustomFormComponent
         type="phone"
         feature={feature}
@@ -52,8 +51,8 @@ export const CompanyPrimaryContactForm = ({ feature }: { feature: string }) => (
             required: { value: true, message: "Phone Number is required" },
           },
           label: "Phone Number",
-          width: PHONE_WIDTH,
         }}
+        className="company-primary-contact-form__input company-primary-contact-form__input--left"
       />
       <CustomFormComponent
         type="input"
@@ -62,11 +61,11 @@ export const CompanyPrimaryContactForm = ({ feature }: { feature: string }) => (
           name: "primaryContact.phone1Extension",
           rules: { required: false },
           label: "Ext",
-          width: EXT_WIDTH,
         }}
+        className="company-primary-contact-form__input company-primary-contact-form__input--right"
       />
     </div>
-    <div className="mp-side-by-side-container">
+    <div className="side-by-side-inputs">
       <CustomFormComponent
         type="phone"
         feature={feature}
@@ -74,8 +73,8 @@ export const CompanyPrimaryContactForm = ({ feature }: { feature: string }) => (
           name: "primaryContact.phone2",
           rules: { required: false },
           label: "Alternate Number",
-          width: PHONE_WIDTH,
         }}
+        className="company-primary-contact-form__input company-primary-contact-form__input--left"
       />
       <CustomFormComponent
         type="input"
@@ -84,8 +83,8 @@ export const CompanyPrimaryContactForm = ({ feature }: { feature: string }) => (
           name: "primaryContact.phone2Extension",
           rules: { required: false },
           label: "Ext",
-          width: EXT_WIDTH,
         }}
+        className="company-primary-contact-form__input company-primary-contact-form__input--right"
       />
     </div>
 
@@ -93,8 +92,10 @@ export const CompanyPrimaryContactForm = ({ feature }: { feature: string }) => (
       feature={feature}
       countryField="primaryContact.countryCode"
       isCountryRequired={true}
+      countryClassName="company-primary-contact-form__input"
       provinceField="primaryContact.provinceCode"
       isProvinceRequired={true}
+      provinceClassName="company-primary-contact-form__input"
     />
     <CustomFormComponent
       type="input"
@@ -105,8 +106,8 @@ export const CompanyPrimaryContactForm = ({ feature }: { feature: string }) => (
           required: { value: true, message: "City is required" },
         },
         label: "City",
-        width: CITY_WIDTH,
       }}
+      className="company-primary-contact-form__input"
     />
-  </>
+  </div>
 );

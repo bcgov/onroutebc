@@ -12,6 +12,7 @@ import { VEHICLE_TYPES_ENUM } from "../features/manageVehicles/components/form/c
 import { CreateProfileWizard } from "../features/wizard/CreateProfileWizard";
 import { ManagePermits } from "../features/permits/ManagePermits";
 import { ROLES } from "../common/authentication/types";
+import { ManageApplications } from "../features/permits/ManageApplications";
 
 export const AppRoutes = () => {
 
@@ -63,6 +64,10 @@ export const AppRoutes = () => {
       </Route>
       <Route element={<ProtectedRoutes requiredRole={ROLES.WRITE_PERMIT} />}>
         <Route path={routes.PERMITS} element={<ManagePermits />} />
+      </Route>
+      {/* <Route path={routes.APPLICATIONS} element={<ManageApplications />} /> */}
+      <Route element={<ProtectedRoutes requiredRole={ROLES.WRITE_PERMIT} />}>
+        <Route path={routes.APPLICATIONS} element={<ManageApplications />} />
       </Route>
       <Route path={routes.CREATE_PROFILE} element={<CreateProfileWizard />} />
     </Routes>

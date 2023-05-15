@@ -1,7 +1,7 @@
 import { useForm, FormProvider, FieldValues } from "react-hook-form";
 import { Box, Button, useMediaQuery, useTheme } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { TermOversizeApplication } from "../../types/application";
+import { Application } from "../../types/application";
 import { ContactDetails } from "../../components/form/ContactDetails";
 import { ApplicationDetails } from "../../components/form/ApplicationDetails";
 import { VehicleDetails } from "./form/VehicleDetails/VehicleDetails";
@@ -27,7 +27,13 @@ import {
 import { mapVinToVehicleObject } from "../../helpers/mappers";
 import { TROS_COMMODITIES } from "../../constants/termOversizeConstants";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
-import { getDefaultRequiredVal, applyWhenNotNullable } from "../../../../common/helpers/util";
+import {
+  getDefaultRequiredVal,
+  applyWhenNotNullable,
+} from "../../../../common/helpers/util";
+import { useSaveTermOversizeMutation } from "../../hooks/hooks";
+import { SnackBarContext } from "../../../../App";
+import { getUserGuidFromSession } from "../../../../common/apiManager/httpRequestHandler";
 
 /**
  * The first step in creating and submitting a TROS Application.
@@ -44,53 +50,76 @@ export const TermOversizeForm = () => {
   // Context to hold all of the application data related to the TROS application
   const applicationContext = useContext(ApplicationContext);
   const { companyId, userDetails } = useContext(OnRouteBCContext);
+  const submitTermOversizeQuery = useSaveTermOversizeMutation();
+  const snackBar = useContext(SnackBarContext);
 
   // Default values to register with React Hook Forms
   // Use saved data from the TROS application context, otherwise use empty or undefined values
-  const termOversizeDefaultValues: TermOversizeApplication = {
-    companyId: +(getDefaultRequiredVal(0, companyId)),
-    //applicationId: getDefaultRequiredVal(0, applicationContext?.applicationData?.applicationId),
-    permitType:
-      getDefaultRequiredVal("TROS", applicationContext?.applicationData?.permitType),
-    //dateCreated: getDefaultRequiredVal(dayjs(), applicationContext?.applicationData?.dateCreated),
-    //lastUpdated: getDefaultRequiredVal(dayjs(), applicationContext?.applicationData?.lastUpdated),
-    application: {
-      startDate:
-        getDefaultRequiredVal(dayjs(), applicationContext?.applicationData?.application?.startDate),
-      permitDuration:
-        getDefaultRequiredVal(30, applicationContext?.applicationData?.application?.permitDuration),
-      expiryDate:
-        getDefaultRequiredVal(dayjs(), applicationContext?.applicationData?.application?.expiryDate),
-      commodities: 
-        getDefaultRequiredVal(
-          [TROS_COMMODITIES[0], TROS_COMMODITIES[1]], 
-          applicationContext?.applicationData?.application?.commodities
-        ),
+  const termOversizeDefaultValues: Application = {
+    companyId: +getDefaultRequiredVal(0, companyId),
+    applicationNumber: getDefaultRequiredVal(
+      "",
+      applicationContext?.applicationData?.applicationNumber
+    ),
+    userGuid: getUserGuidFromSession(),
+    permitType: getDefaultRequiredVal(
+      "TROS",
+      applicationContext?.applicationData?.permitType
+    ),
+    permitStatus: getDefaultRequiredVal(
+      "IN_PROGRESS",
+      applicationContext?.applicationData?.permitType
+    ),
+    createdDateTime: getDefaultRequiredVal(
+      dayjs(),
+      applicationContext?.applicationData?.createdDateTime
+    ),
+    updatedDateTime: getDefaultRequiredVal(
+      dayjs(),
+      applicationContext?.applicationData?.updatedDateTime
+    ),
+    permitData: {
+      startDate: getDefaultRequiredVal(
+        dayjs(),
+        applicationContext?.applicationData?.permitData?.startDate
+      ),
+      permitDuration: getDefaultRequiredVal(
+        30,
+        applicationContext?.applicationData?.permitData?.permitDuration
+      ),
+      expiryDate: getDefaultRequiredVal(
+        dayjs(),
+        applicationContext?.applicationData?.permitData?.expiryDate
+      ),
+      commodities: getDefaultRequiredVal(
+        [TROS_COMMODITIES[0], TROS_COMMODITIES[1]],
+        applicationContext?.applicationData?.permitData?.commodities
+      ),
       contactDetails: {
-        firstName:
-          getDefaultRequiredVal(
-            "", 
-            applicationContext?.applicationData?.application?.contactDetails?.firstName,
-            userDetails?.firstName
-          ),
-        lastName:
-          getDefaultRequiredVal(
-            "",
-            applicationContext?.applicationData?.application?.contactDetails?.lastName,
-            userDetails?.lastName
-          ),
-        phone1:
-          getDefaultRequiredVal(
-            "",
-            applicationContext?.applicationData?.application?.contactDetails?.phone1,
-            userDetails?.phone1
-          ),
-        email:
-          getDefaultRequiredVal(
-            "",
-            applicationContext?.applicationData?.application?.contactDetails?.email,
-            userDetails?.email
-          ),
+        firstName: getDefaultRequiredVal(
+          "",
+          applicationContext?.applicationData?.permitData?.contactDetails
+            ?.firstName,
+          userDetails?.firstName
+        ),
+        lastName: getDefaultRequiredVal(
+          "",
+          applicationContext?.applicationData?.permitData?.contactDetails
+            ?.lastName,
+          userDetails?.lastName
+        ),
+        phone1: getDefaultRequiredVal(
+          "",
+          applicationContext?.applicationData?.permitData?.contactDetails
+            ?.phone1,
+          userDetails?.phone1
+        ),
+        email: getDefaultRequiredVal(
+          "",
+          applicationContext?.applicationData?.permitData?.contactDetails
+            ?.email,
+          userDetails?.email
+        ),
       },
       // Default values are updated from companyInfo query in the ContactDetails common component
       mailingAddress: {
@@ -102,70 +131,104 @@ export const TermOversizeForm = () => {
         postalCode: "",
       },
       vehicleDetails: {
-        vin:
-          getDefaultRequiredVal(
-            "",
-            applicationContext?.applicationData?.application?.vehicleDetails?.vin
-          ),
-        plate:
-          getDefaultRequiredVal(
-            "",
-            applicationContext?.applicationData?.application?.vehicleDetails?.plate
-          ),
-        make:
-          getDefaultRequiredVal(
-            "",
-            applicationContext?.applicationData?.application?.vehicleDetails?.make
-          ),
-        year:
-          applyWhenNotNullable(
-            (year) => year, 
-            applicationContext?.applicationData?.application?.vehicleDetails?.year,
-            null
-          ),
-        countryCode:
-          getDefaultRequiredVal(
-            "",
-            applicationContext?.applicationData?.application?.vehicleDetails?.countryCode
-          ),
-        provinceCode:
-          getDefaultRequiredVal(
-            "",
-            applicationContext?.applicationData?.application?.vehicleDetails?.provinceCode
-          ),
-        vehicleType:
-          getDefaultRequiredVal(
-            "",
-            applicationContext?.applicationData?.application?.vehicleDetails?.vehicleType
-          ),
-        vehicleSubType:
-          getDefaultRequiredVal(
-            "",
-            applicationContext?.applicationData?.application?.vehicleDetails?.vehicleSubType
-          ),
-        saveVehicle:
-          getDefaultRequiredVal(
-            false,
-            applicationContext?.applicationData?.application?.vehicleDetails?.saveVehicle
-          ),
+        vin: getDefaultRequiredVal(
+          "",
+          applicationContext?.applicationData?.permitData?.vehicleDetails?.vin
+        ),
+        plate: getDefaultRequiredVal(
+          "",
+          applicationContext?.applicationData?.permitData?.vehicleDetails?.plate
+        ),
+        make: getDefaultRequiredVal(
+          "",
+          applicationContext?.applicationData?.permitData?.vehicleDetails?.make
+        ),
+        year: applyWhenNotNullable(
+          (year) => year,
+          applicationContext?.applicationData?.permitData?.vehicleDetails?.year,
+          null
+        ),
+        countryCode: getDefaultRequiredVal(
+          "",
+          applicationContext?.applicationData?.permitData?.vehicleDetails
+            ?.countryCode
+        ),
+        provinceCode: getDefaultRequiredVal(
+          "",
+          applicationContext?.applicationData?.permitData?.vehicleDetails
+            ?.provinceCode
+        ),
+        vehicleType: getDefaultRequiredVal(
+          "",
+          applicationContext?.applicationData?.permitData?.vehicleDetails
+            ?.vehicleType
+        ),
+        vehicleSubType: getDefaultRequiredVal(
+          "",
+          applicationContext?.applicationData?.permitData?.vehicleDetails
+            ?.vehicleSubType
+        ),
+        saveVehicle: getDefaultRequiredVal(
+          false,
+          applicationContext?.applicationData?.permitData?.vehicleDetails
+            ?.saveVehicle
+        ),
       },
     },
   };
 
-  const formMethods = useForm<TermOversizeApplication>({
+  const formMethods = useForm<Application>({
     defaultValues: termOversizeDefaultValues,
     reValidateMode: "onBlur",
   });
 
-  const { handleSubmit } = formMethods;
+  const { handleSubmit, getValues } = formMethods;
 
   const navigate = useNavigate();
 
   const onContinue = function (data: FieldValues) {
-    const termOverSizeToBeAdded = data as TermOversizeApplication;
+    const termOverSizeToBeAdded = data as Application;
+    termOverSizeToBeAdded.applicationNumber =
+      applicationContext.applicationData?.applicationNumber;
     handleSaveVehicle(termOverSizeToBeAdded);
     applicationContext?.setApplicationData(termOverSizeToBeAdded);
     applicationContext?.next();
+  };
+
+  const onSaveApplication = async () => {
+    const termOverSizeToBeAdded = getValues() as Application;
+    termOverSizeToBeAdded.applicationNumber =
+      applicationContext.applicationData?.applicationNumber;
+    const response = await submitTermOversizeQuery.mutateAsync(
+      termOverSizeToBeAdded
+    );
+    const responseData = await response.data;
+    if (response.status === 200) {
+      snackBar.setSnackBar({
+        showSnackbar: true,
+        setShowSnackbar: () => true,
+        message: `Application ${responseData.applicationNumber} updated.`,
+        alertType: "success",
+      });
+    } else if (response.status === 201) {
+      snackBar.setSnackBar({
+        showSnackbar: true,
+        setShowSnackbar: () => true,
+        message: `Application ${responseData.applicationNumber} created.`,
+        alertType: "success",
+      });
+    }
+
+    if (response.status === 201 || response.status === 200) {
+      applicationContext?.setApplicationData(responseData);
+    } else {
+      snackBar.setSnackBar({
+        showSnackbar: true,
+        setShowSnackbar: () => true,
+        message: `An unexpected error occured`,
+        alertType: "error",
+      });
+    }
   };
 
   const addPowerUnitQuery = useAddPowerUnitMutation();
@@ -174,12 +237,12 @@ export const TermOversizeForm = () => {
   const updateTrailerQuery = useUpdateTrailerMutation();
   const allVehiclesQuery = useVehiclesQuery();
 
-  const handleSaveVehicle = (data: TermOversizeApplication) => {
+  const handleSaveVehicle = (data: Application) => {
     // Check if the "add/update vehicle" checkbox was checked by the user
-    if (!data.application.vehicleDetails?.saveVehicle) return;
+    if (!data.permitData.vehicleDetails?.saveVehicle) return;
 
     // Get the vehicle info from the form
-    const vehicle = data.application.vehicleDetails;
+    const vehicle = data.permitData.vehicleDetails;
 
     // Check if the vehicle that is to be saved was created from an existing vehicle
     const existingVehicle = mapVinToVehicleObject(
@@ -311,6 +374,7 @@ export const TermOversizeForm = () => {
               variant="contained"
               color="secondary"
               sx={{ marginLeft: "-420px" }}
+              onClick={onSaveApplication}
             >
               Save Application
             </Button>
