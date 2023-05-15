@@ -7,7 +7,7 @@ import "./TermOversize.scss";
 
 export const TermOversizePay = () => {
   const { applicationData } = useContext(ApplicationContext);
-  const calculatedFee = applicationData?.application.permitDuration || 0;
+  const calculatedFee = applicationData?.permitData.permitDuration || 0;
 
   useEffect(() => {
     window.scrollTo(0, 0);
