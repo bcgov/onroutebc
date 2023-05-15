@@ -13,9 +13,9 @@ import { CreateProfileWizard } from "../features/wizard/CreateProfileWizard";
 import { ManagePermits } from "../features/permits/ManagePermits";
 import { ROLES } from "../common/authentication/types";
 import { ManageApplications } from "../features/permits/ManageApplications";
+import { SuccessPage } from "../features/permits/pages/SuccessPage/SuccessPage";
 
 export const AppRoutes = () => {
-
   return (
     <Routes>
       <Route path={routes.HOME} element={<InitialLandingPage />} />
@@ -67,7 +67,10 @@ export const AppRoutes = () => {
       </Route>
       {/* <Route path={routes.APPLICATIONS} element={<ManageApplications />} /> */}
       <Route element={<ProtectedRoutes requiredRole={ROLES.WRITE_PERMIT} />}>
-        <Route path={routes.APPLICATIONS} element={<ManageApplications />} />
+        <Route path={routes.APPLICATIONS}>
+          <Route index={true} element={<ManageApplications />} />
+          <Route path={routes.APPLICATIONS_SUCCESS} element={<SuccessPage />} />
+        </Route>
       </Route>
       <Route path={routes.CREATE_PROFILE} element={<CreateProfileWizard />} />
     </Routes>
