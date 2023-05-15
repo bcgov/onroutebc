@@ -27,40 +27,42 @@
   margin-bottom: 8px !important;
 }
 
-.payment-option-box {
-  max-width: 500px;
-  background-color: $bc-messages-blue-background;
-  padding: 16px;
-  border-radius: 8px;
-  border: 1px solid $bc-black;
-  opacity: 1;
-}
-
-.payment-option-container {
-  display: block;
-}
-
-.payment-layout {
+.payment {
   padding: 0px 60px;
-  overflow: hidden;
+  //overflow: hidden;
   background-color: white;
   min-height: calc(100vh - 390px);
   height: 100%;
-}
+  display: flex;
+  flex-direction: column;
+  //min-width: 100%;
+  &--options {
+    display: block;
+  }
 
-.payment-img {
-  height: 16px;
-  width: auto;
-  padding: 0px 8px;
-}
+  &--fee-summary {
+    padding: 24px;
+    max-width: 488px;
+    margin-left: auto;
+  }
 
-.payment-img-payBC {
-  height: 27px;
-  margin-bottom: -4px;
-}
+  &--img-payBC {
+    height: 27px;
+    margin-bottom: -4px;
+  }
 
-.payment-fee-summary {
-  padding: 24px;
-  max-width: 488px;
-  margin-left: auto;
+  &--img {
+    height: 16px;
+    width: auto;
+    padding: 0px 8px;
+  }
+
+  &--option-box {
+    max-width: 500px;
+    background-color: $bc-messages-blue-background;
+    padding: 16px;
+    border-radius: 8px;
+    border: 1px solid $bc-black;
+    opacity: 1;
+  }
 }

@@ -4,10 +4,13 @@ import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { ApplicationContext } from "../../context/ApplicationContext";
 import { ProgressBar } from "../../components/progressBar/ProgressBar";
 import "./TermOversize.scss";
+import { useNavigate } from "react-router-dom";
 
 export const TermOversizePay = () => {
   const { applicationData } = useContext(ApplicationContext);
   const calculatedFee = applicationData?.permitData.permitDuration || 0;
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -21,7 +24,7 @@ export const TermOversizePay = () => {
 
   const PayBC = () => {
     return (
-      <Box className="payment-option-box">
+      <Box className="payment--option-box">
         <Box display="flex" alignItems="center">
           <Radio
             disableRipple
@@ -45,13 +48,13 @@ export const TermOversizePay = () => {
           >
             Use
           </Typography>
-          <img className="payment-img-payBC" src="./PayBC-Main-Logo.png" />
+          <img className="payment--img-payBC" src="./PayBC-Main-Logo.png" />
           <Box
             sx={{ display: "flex", alignItems: "center", marginLeft: "auto" }}
           >
-            <img className="payment-img" src="./Visa_Logo.svg" />
-            <img className="payment-img" src="./Mastercard_Logo.svg" />
-            <img className="payment-img" src="./Amex_Logo.svg" />
+            <img className="payment--img" src="./Visa_Logo.svg" />
+            <img className="payment--img" src="./Mastercard_Logo.svg" />
+            <img className="payment--img" src="./Amex_Logo.svg" />
           </Box>
         </Box>
 
@@ -66,7 +69,7 @@ export const TermOversizePay = () => {
   const ApplicationSummary = () => {
     return (
       <Box
-        className="payment-fee-summary"
+        className="payment--fee-summary"
         sx={{
           backgroundColor: BC_COLOURS.bc_black,
         }}
@@ -96,7 +99,7 @@ export const TermOversizePay = () => {
   const FeeSummary = () => {
     return (
       <Box
-        className="payment-fee-summary"
+        className="payment--fee-summary"
         sx={{
           backgroundColor: BC_COLOURS.banner_grey,
           color: BC_COLOURS.bc_primary_blue,
@@ -149,7 +152,13 @@ export const TermOversizePay = () => {
           <Typography variant="h4">${calculatedFee}.00</Typography>
         </Box>
 
-        <Button variant="contained" sx={{ width: "100%" }}>
+        <Button
+          variant="contained"
+          sx={{ width: "100%" }}
+          onClick={() => {
+            navigate("/applications/success");
+          }}
+        >
           Pay Now
         </Button>
 
@@ -165,15 +174,15 @@ export const TermOversizePay = () => {
     <>
       <ProgressBar />
       <Box
-        className="payment-layout"
+        className="payment"
         sx={{
           paddingTop: "24px",
           backgroundColor: BC_COLOURS.white,
-          display: { sm: "block", md: "flex" },
+          display: { sm: "inline-block", md: "flex" },
           flexDirection: { sm: "column", md: "row" },
         }}
       >
-        <Box className="payment-option-container">
+        <Box className="payment--options">
           <PayBC />
         </Box>
 
