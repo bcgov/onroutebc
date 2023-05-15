@@ -1,0 +1,34 @@
+@use "../../../../themes/orbcStyles";
+
+.success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  &__container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 90%;
+    max-width: 640px;
+    margin: 2em 0;
+  }
+
+  &__block {
+    margin: 1em 0;
+
+    &--info {
+      text-align: center;
+    }
+
+    &--view-permits {
+      button {
+        border: 1px solid orbcStyles.$bc-text-box-border-grey;
+      }
+
+      button:hover {
+        color: orbcStyles.$white;
+      }
+    }
+  }
+}
