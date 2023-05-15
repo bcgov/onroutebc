@@ -41,7 +41,7 @@ const applicationDetailsQuery = useApplicationDetailsMutation();
     else{
       setApplicationData(undefined);
     }
-  });
+  }, []);
 
   const {
     //steps,
