@@ -16,6 +16,7 @@ import { ErrorFallback } from "../../../../common/pages/ErrorFallback";
 import { getApplicationInProgressById } from "../../apiManager/permitsAPI";
 import { useParams } from "react-router-dom";
 import { formatDate } from "../../../../common/helpers/formatDate";
+import { useApplicationDetailsMutation } from "../../hooks/hooks";
 
 export enum ApplicationStep {
   Form = "Form",
@@ -24,17 +25,23 @@ export enum ApplicationStep {
 }
 
 export const ApplicationDashboard = () => {
-  const [applicationData, setApplicationData] = useState<Application>();
+const [applicationData, setApplicationData] = useState<Application>();
+const companyInfoQuery = useCompanyInfoQuery();
+const {applicationNumber} = useParams();
+const applicationDetailsQuery = useApplicationDetailsMutation();
 
-  const companyInfoQuery = useCompanyInfoQuery();
-
-  const {applicationNumber} = useParams();
   useEffect(() => {
-      getApplicationInProgressById(applicationNumber).then((response) => {
-      setApplicationData(response);
-    });
-    
-  }, []);
+    if(applicationNumber !== undefined){
+        applicationDetailsQuery.mutateAsync(
+        applicationNumber
+      ).then((response) => {
+        setApplicationData(response);
+      });     
+    }
+    else{
+      setApplicationData(undefined);
+    }
+  });
 
   const {
     //steps,
@@ -54,7 +61,7 @@ export const ApplicationDashboard = () => {
   const displayHeaderText = () => {
     switch (step.key) {
       case ApplicationStep.Form:
-        return (applicationNumber !== undefined)? "Permit Application: " + applicationData?.applicationNumber: "Permit Application";
+        return "Permit Application";
       case ApplicationStep.Review:
         return "Review and Confirm Details";
       case ApplicationStep.Pay:
