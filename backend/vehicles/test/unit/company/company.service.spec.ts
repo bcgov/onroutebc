@@ -9,15 +9,6 @@ import { createMapper } from '@automapper/core';
 import { CompanyService } from '../../../src/modules/company-user-management/company/company.service';
 import { CompanyProfile } from '../../../src/modules/company-user-management/company/profiles/company.profile';
 import { Company } from '../../../src/modules/company-user-management/company/entities/company.entity';
-import {
-  createCompanyDtoMock,
-  updateCompanyDtoMock,
-} from '../../util/mocks/data/company.mock';
-import { Directory } from '../../../src/common/enum/directory.enum';
-import { companyEntityMock } from '../../util/mocks/data/company.mock';
-import { currentUserMock } from '../../util/mocks/data/user.mock';
-import { AddressProfile } from '../../../src/modules/common/profiles/address.profile';
-import { ContactProfile } from '../../../src/modules/common/profiles/contact.profile';
 import { DataSource, Repository } from 'typeorm';
 import {
   MockType,
@@ -25,6 +16,11 @@ import {
   dataSourceMockFactory,
 } from '../../util/mocks/factory/dataSource.factory.mock';
 import { UsersProfile } from '../../../src/modules/company-user-management/users/profiles/user.profile';
+import { Directory } from '../../../src/common/enum/directory.enum';
+import { AddressProfile } from '../../../src/modules/common/profiles/address.profile';
+import { ContactProfile } from '../../../src/modules/common/profiles/contact.profile';
+import { companyEntityMock, createCompanyDtoMock, updateCompanyDtoMock } from '../../util/mocks/data/company.mock';
+import { currentUserMock } from '../../util/mocks/data/user.mock';
 
 const COMPANY_ID_1 = 1;
 const USER_GUID = '06267945F2EB4E31B585932F78B76269';
