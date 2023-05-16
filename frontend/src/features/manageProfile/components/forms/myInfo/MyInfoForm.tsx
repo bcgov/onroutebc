@@ -67,9 +67,11 @@ export const MyInfoForm = memo(({
             name: "firstName",
             rules: {
               required: { value: true, message: "First name is required" },
-              validate: (firstName: string) =>
-                (firstName.length >= 1 && firstName.length <= 100)
-                  || "First name length must be between 1-100 characters",
+              validate: {
+                validateFirstName: (firstName: string) =>
+                  (firstName.length >= 1 && firstName.length <= 100)
+                    || "First name length must be between 1-100 characters",
+              },
             },
             label: "First Name",
           }}
@@ -82,9 +84,11 @@ export const MyInfoForm = memo(({
             name: "lastName",
             rules: {
               required: { value: true, message: "Last name is required" },
-              validate: (lastName: string) =>
-                (lastName.length >= 1 && lastName.length <= 100)
-                  || "Last name length must be between 1-100 characters",
+              validate: {
+                validateLastName: (lastName: string) =>
+                  (lastName.length >= 1 && lastName.length <= 100)
+                    || "Last name length must be between 1-100 characters",
+              },
             },
             label: "Last Name",
           }}
@@ -97,8 +101,10 @@ export const MyInfoForm = memo(({
             name: "email",
             rules: {
               required: { value: true, message: "Email is required" },
-              validate: (email: string) =>
-                isEmail(email) || "Incorrect email format",
+              validate: {
+                validateEmail: (email: string) => 
+                  isEmail(email) || "Incorrect email format",
+              },
             },
             label: "Email",
           }}
@@ -112,9 +118,11 @@ export const MyInfoForm = memo(({
               name: "phone1",
               rules: {
                 required: { value: true, message: "Primary phone is required" },
-                validate: (phone: string) =>
-                  (phone.length >= 10 && phone.length <= 20)
-                    || "Phone length must be between 10-20 characters",
+                validate: {
+                  validatePhone1: (phone: string) =>
+                    (phone.length >= 10 && phone.length <= 20)
+                      || "Phone length must be between 10-20 characters",
+                },
               },
               label: "Primary Phone",
             }}
@@ -127,10 +135,12 @@ export const MyInfoForm = memo(({
               name: "phone1Extension",
               rules: { 
                 required: false,
-                validate: (ext?: string) =>
-                  (ext == null || ext === "")
-                    || (ext != null && ext !== "" && ext.length <= 5)
-                    || "Extension length must be less than 5 characters",
+                validate: {
+                  validateExt1: (ext?: string) =>
+                    (ext == null || ext === "")
+                      || (ext != null && ext !== "" && ext.length <= 5)
+                      || "Extension length must be less than 5 characters",
+                },
               },
               label: "Ext",
             }}
@@ -145,10 +155,12 @@ export const MyInfoForm = memo(({
               name: "phone2",
               rules: { 
                 required: false,
-                validate: (phone2?: string) =>
-                  (phone2 == null || phone2 === "")
-                    || (phone2 != null && phone2 !== "" && phone2.length >= 10 && phone2.length <= 20)
-                    || "Alternate phone length must be between 10-20 characters",
+                validate: {
+                  validatePhone2: (phone2?: string) =>
+                    (phone2 == null || phone2 === "")
+                      || (phone2 != null && phone2 !== "" && phone2.length >= 10 && phone2.length <= 20)
+                      || "Alternate phone length must be between 10-20 characters",
+                },
               },
               label: "Alternate Phone",
             }}
@@ -161,10 +173,12 @@ export const MyInfoForm = memo(({
               name: "phone2Extension",
               rules: { 
                 required: false,
-                validate: (ext?: string) =>
-                  (ext == null || ext === "")
-                    || (ext != null && ext !== "" && ext.length <= 5)
-                    || "Extension length must be less than 5 characters",
+                validate: {
+                  validateExt2: (ext?: string) =>
+                    (ext == null || ext === "")
+                      || (ext != null && ext !== "" && ext.length <= 5)
+                      || "Extension length must be less than 5 characters",
+                },
               },
               label: "Ext",
             }}
@@ -178,10 +192,12 @@ export const MyInfoForm = memo(({
             name: "fax",
             rules: { 
               required: false,
-              validate: (fax?: string) =>
-                (fax == null || fax === "")
-                  || (fax != null && fax !== "" && fax.length >= 10 && fax.length <= 20)
-                  || "Fax length must be between 10-20 characters",
+              validate: {
+                validateFax: (fax?: string) =>
+                  (fax == null || fax === "")
+                    || (fax != null && fax !== "" && fax.length >= 10 && fax.length <= 20)
+                    || "Fax length must be between 10-20 characters",
+              },
             },
             label: "Fax",
           }}
@@ -200,9 +216,11 @@ export const MyInfoForm = memo(({
             name: "city",
             rules: {
               required: { value: true, message: "City is required" },
-              validate: (city: string) =>
-                (city.length >= 1 && city.length <= 100)
-                  || "City length must be between 1-100 characters",
+              validate: {
+                validateCity: (city: string) =>
+                  (city.length >= 1 && city.length <= 100)
+                    || "City length must be between 1-100 characters",
+              },
             },
             label: "City",
           }}

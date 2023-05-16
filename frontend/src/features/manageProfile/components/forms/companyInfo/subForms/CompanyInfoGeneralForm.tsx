@@ -13,9 +13,11 @@ export const CompanyInfoGeneralForm = ({ feature }: { feature: string }) => (
         name: "mailingAddress.addressLine1",
         rules: {
           required: { value: true, message: "Address is required" },
-          validate: (address1: string) => 
-            (address1.length >= 1 && address1.length <= 150) 
-              || "Address length must be between 1-150 characters",
+          validate: {
+            validateAddress1: (address1: string) => 
+              (address1.length >= 1 && address1.length <= 150) 
+                || "Address length must be between 1-150 characters",
+          },
         },
         label: "Address (Line 1)",
       }}
@@ -29,10 +31,12 @@ export const CompanyInfoGeneralForm = ({ feature }: { feature: string }) => (
         name: "mailingAddress.addressLine2",
         rules: { 
           required: false,
-          validate: (address2?: string) =>
-            (address2 == null || address2 === "")
-              || (address2 != null && address2 !== "" && address2.length >= 1 && address2.length <= 100)
-              || "Address length must be between 1-100 characters",
+          validate: {
+            validateAddress2: (address2?: string) =>
+              (address2 == null || address2 === "")
+                || (address2 != null && address2 !== "" && address2.length >= 1 && address2.length <= 100)
+                || "Address length must be between 1-100 characters",
+          },
         },
         label: "Address (Line 2)",
       }}
@@ -55,9 +59,11 @@ export const CompanyInfoGeneralForm = ({ feature }: { feature: string }) => (
           name: "mailingAddress.city",
           rules: {
             required: { value: true, message: "City is required" },
-            validate: (city: string) =>
-              (city.length >= 1 && city.length <= 100)
-                || "City length must be between 1-100 characters long",
+            validate: {
+              validateCity: (city: string) =>
+                (city.length >= 1 && city.length <= 100)
+                  || "City length must be between 1-100 characters long",
+            },
           },
           label: "City",
         }}
@@ -70,9 +76,11 @@ export const CompanyInfoGeneralForm = ({ feature }: { feature: string }) => (
           name: "mailingAddress.postalCode",
           rules: {
             required: { value: true, message: "Postal / Zip Code is required" },
-            validate: (postalCode: string) =>
-              (postalCode.length >= 5 && postalCode.length <= 7 && isPostalCode(postalCode, "any")) 
-                || "Incorrect postal code format",
+            validate: {
+              validatePostalCode: (postalCode: string) =>
+                (postalCode.length >= 5 && postalCode.length <= 7 && isPostalCode(postalCode, "any")) 
+                  || "Incorrect postal code format",
+            },
           },
           label: "Postal / Zip Code",
         }}

@@ -12,7 +12,9 @@ export const CompanyContactDetailsForm = ({ feature }: { feature: string }) => (
         name: "email",
         rules: { 
           required: { value: true, message: "Email is required" },
-          validate: (email: string) => isEmail(email) || "Incorrect email format",
+          validate: {
+            validateEmail: (email: string) => isEmail(email) || "Incorrect email format",
+          },
         },
         label: "Email",
       }}
@@ -26,9 +28,11 @@ export const CompanyContactDetailsForm = ({ feature }: { feature: string }) => (
           name: "phone",
           rules: {
             required: { value: true, message: "Phone Number is required" },
-            validate: (phone: string) => 
-              (phone.length >= 10 && phone.length <= 20) 
-                || "Phone number should be between 10-20 characters long",
+            validate: {
+              validatePhone: (phone: string) => 
+                (phone.length >= 10 && phone.length <= 20) 
+                  || "Phone number should be between 10-20 characters long",
+            },
           },
           label: "Phone Number",
           inputProps: { maxLength: 20 },
@@ -42,10 +46,12 @@ export const CompanyContactDetailsForm = ({ feature }: { feature: string }) => (
           name: "extension",
           rules: { 
             required: false,
-            validate: (ext?: string) => 
-              (ext == null || ext === "")
-                || (ext != null && ext !== "" && ext.length <= 5) 
-                || "Extension length should be less than 5 characters",
+            validate: {
+              validateExt: (ext?: string) => 
+                (ext == null || ext === "")
+                  || (ext != null && ext !== "" && ext.length <= 5) 
+                  || "Extension length should be less than 5 characters",
+            },
           },
           label: "Ext",
         }}
@@ -59,10 +65,12 @@ export const CompanyContactDetailsForm = ({ feature }: { feature: string }) => (
         name: "fax",
         rules: { 
           required: false,
-          validate: (fax?: string) =>
-            (fax == null || fax === "")
-              || (fax != null && fax !== "" && fax.length >= 10 && fax.length <= 20)
-              || "Fax should be between 10-20 characters long",
+          validate: {
+            validateFax: (fax?: string) =>
+              (fax == null || fax === "")
+                || (fax != null && fax !== "" && fax.length >= 10 && fax.length <= 20)
+                || "Fax should be between 10-20 characters long",
+          },
         },
         label: "Fax",
       }}
