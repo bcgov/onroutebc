@@ -1,0 +1,13 @@
+<svg id="Visa_Logo" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="49" height="16" viewBox="0 0 49 16">
+  <defs>
+    <clipPath id="clip-path">
+      <rect id="Rectangle_3424" data-name="Rectangle 3424" width="49" height="16" fill="none"/>
+    </clipPath>
+  </defs>
+  <g id="Group_1684" data-name="Group 1684" clip-path="url(#clip-path)">
+    <path id="Path_1436" data-name="Path 1436" d="M18.6,5.267H14.446L10.325,15.8,8.658,6.844A1.852,1.852,0,0,0,6.832,5.267H.094L0,5.716A16.36,16.36,0,0,1,3.907,7.033a1.693,1.693,0,0,1,.94,1.36L8,20.743h4.185Z" transform="translate(0 -4.984)" fill="#254aa5"/>
+    <path id="Path_1437" data-name="Path 1437" d="M328.019,5.267h-3.958l-3.275,15.476h3.959Z" transform="translate(-303.757 -4.984)" fill="#254aa5"/>
+    <path id="Path_1438" data-name="Path 1438" d="M457.922,10.706c.016-4.084-5.587-4.31-5.549-6.136.013-.553.536-1.144,1.68-1.294a7.38,7.38,0,0,1,3.9.692l.7-3.281a10.509,10.509,0,0,0-3.7-.687c-3.914,0-6.667,2.1-6.689,5.115h0c-.028,2.229,1.964,3.473,3.465,4.212,1.542.759,2.06,1.245,2.054,1.924-.012,1.038-1.23,1.5-2.37,1.515a8.2,8.2,0,0,1-4.065-.977l-.717,3.391a11.807,11.807,0,0,0,4.4.821c4.158,0,6.879-2.075,6.893-5.294" transform="translate(-422.918)" fill="#254aa5"/>
+    <path id="Path_1439" data-name="Path 1439" d="M663.165,5.267h0A1.8,1.8,0,0,0,661.48,6.4l-5.94,14.341H659.7l.827-2.311H665.6l.48,2.311h3.662l-3.2-15.476Zm1.78,9.992h-3.284l2.085-5.811Z" transform="translate(-620.742 -4.984)" fill="#254aa5"/>
+  </g>
+</svg>
