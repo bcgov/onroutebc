@@ -1,0 +1,356 @@
+{
+	"info": {
+		"_postman_id": "2969d29e-2da4-42b8-8824-b4cb96060c0f",
+		"name": "onRouteBC Payment Process - PayBC",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "11120889"
+	},
+	"item": [
+		{
+			"name": "Forward Transaction Details to PayBC",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"let trnNum = 'T-' + (new Date()).getTime();\r",
+							"pm.environment.set('transaction_number', trnNum);\r",
+							"\r",
+							"// There should be a better way of doing this which is not as rigid - something like\r",
+							"// dynamically removing the hashValue param from the actual query string instead of building\r",
+							"// it up manually below, but this is sufficient for now.\r",
+							"let queryString = pm.variables.replaceIn(\"pbcRefNumber={{paybc_ref_number}}&description={{paybc_description}}&trnNumber={{transaction_number}}&trnAmount={{transaction_amount}}&redirectUri={{paybc_redirect_uri}}{{paybc_api_key}}\");\r",
+							"\r",
+							"let hash = CryptoJS.MD5(queryString).toString();\r",
+							"pm.collectionVariables.set('paybc_hash', hash);\r",
+							"console.log(hash);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const $ = cheerio.load(pm.response.text());\r",
+							"\r",
+							"pm.collectionVariables.set(\"session_token\", $(\"#sessionToken\").attr(\"value\"));\r",
+							"pm.collectionVariables.set(\"paybc_tmp_order_number\", $(\"input[name='trnOrderNumber']\").attr(\"value\"));\r",
+							"pm.collectionVariables.set(\"paybc_tmp_merchant_id\", $(\"#merchant_id\").attr(\"value\"));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{paybc_base_url}}?pbcRefNumber={{paybc_ref_number}}&description={{paybc_description}}&trnNumber={{transaction_number}}&trnAmount={{transaction_amount}}&redirectUri={{paybc_redirect_uri}}&hashValue={{paybc_hash}}",
+					"host": [
+						"{{paybc_base_url}}"
+					],
+					"query": [
+						{
+							"key": "pbcRefNumber",
+							"value": "{{paybc_ref_number}}"
+						},
+						{
+							"key": "description",
+							"value": "{{paybc_description}}"
+						},
+						{
+							"key": "trnNumber",
+							"value": "{{transaction_number}}"
+						},
+						{
+							"key": "trnAmount",
+							"value": "{{transaction_amount}}"
+						},
+						{
+							"key": "redirectUri",
+							"value": "{{paybc_redirect_uri}}"
+						},
+						{
+							"key": "hashValue",
+							"value": "{{paybc_hash}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Submit Payment Details",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const $ = cheerio.load(pm.response.text());\r",
+							"\r",
+							"pm.collectionVariables.set(\"pay_form_params\", encodeURIComponent($(\"#payFormParams\").attr(\"value\")));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{bambora_host}}/scripts/payment/payment.asp?sessionToken={{session_token}}&merchant_id={{paybc_tmp_merchant_id}}&trnOrderNumber={{paybc_tmp_order_number}}&paymentMethod=CC&trnCardOwner=A. Trucker&trnCardType={{cc_type}}&trnCardNumber={{cc_number}}&trnExpMonth={{cc_exp_month}}&trnExpYear={{cc_exp_year}}&trnCardCvd={{cc_cvd}}",
+					"host": [
+						"{{bambora_host}}"
+					],
+					"path": [
+						"scripts",
+						"payment",
+						"payment.asp"
+					],
+					"query": [
+						{
+							"key": "sessionToken",
+							"value": "{{session_token}}"
+						},
+						{
+							"key": "merchant_id",
+							"value": "{{paybc_tmp_merchant_id}}"
+						},
+						{
+							"key": "trnOrderNumber",
+							"value": "{{paybc_tmp_order_number}}"
+						},
+						{
+							"key": "paymentMethod",
+							"value": "CC"
+						},
+						{
+							"key": "trnCardOwner",
+							"value": "A. Trucker"
+						},
+						{
+							"key": "trnCardType",
+							"value": "{{cc_type}}"
+						},
+						{
+							"key": "trnCardNumber",
+							"value": "{{cc_number}}"
+						},
+						{
+							"key": "trnExpMonth",
+							"value": "{{cc_exp_month}}"
+						},
+						{
+							"key": "trnExpYear",
+							"value": "{{cc_exp_year}}"
+						},
+						{
+							"key": "trnCardCvd",
+							"value": "{{cc_cvd}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Process Transaction",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const redirectUri = pm.response.headers.find(h => h.key === \"Location\").value;\r",
+							"pm.collectionVariables.set('paybc_redirect_to_orbc_1', redirectUri);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"followRedirects": false
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{bambora_host}}/scripts/process_transaction.asp?payFormParams={{pay_form_params}}",
+					"host": [
+						"{{bambora_host}}"
+					],
+					"path": [
+						"scripts",
+						"process_transaction.asp"
+					],
+					"query": [
+						{
+							"key": "payFormParams",
+							"value": "{{pay_form_params}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Forward Response to Directsale",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const redirectUri = pm.response.headers.find(h => h.key === \"Location\").value;\r",
+							"pm.collectionVariables.set('paybc_redirect_to_orbc_2', redirectUri);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"followRedirects": false
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{paybc_redirect_to_orbc_1}}",
+					"host": [
+						"{{paybc_redirect_to_orbc_1}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Forward Response to onRouteBC",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const redirectUri = pm.response.headers.find(h => h.key === \"Location\").value;\r",
+							"const queryString = redirectUri.split('?')[1];\r",
+							"\r",
+							"const pairs = queryString.split('&');\r",
+							"let paramsJson = {};\r",
+							"paramsJson['params'] = [];\r",
+							"pairs.forEach(function (pair) {\r",
+							"  let param = {};\r",
+							"  pair = pair.split('=');\r",
+							"  param['key'] = pair[0].trim();\r",
+							"  param['value'] = decodeURIComponent(pair[1].replaceAll('+', ' ') || '');\r",
+							"  paramsJson.params.push(param);\r",
+							"});\r",
+							"\r",
+							"// Validate payBC hash\r",
+							"let qsWithoutHash = queryString.substring(0, queryString.indexOf('&hashValue='));\r",
+							"let validationString = qsWithoutHash + pm.environment.get('paybc_api_key');\r",
+							"let validationHash = CryptoJS.MD5(validationString).toString();\r",
+							"let submittedHash = paramsJson.params.find(p => p.key === 'hashValue').value;\r",
+							"let validationParam = {};\r",
+							"validationParam['key'] = 'Hash Validated?';\r",
+							"validationParam['value'] = (validationHash === submittedHash).toString();\r",
+							"paramsJson.params.push(validationParam);\r",
+							"\r",
+							"let template = `\r",
+							"  <div>\r",
+							"    <table>\r",
+							"      <tr>\r",
+							"        <th>Key</th>\r",
+							"        <th>Value</th>\r",
+							"      </tr>\r",
+							"      {{#each .}}\r",
+							"      <tr>\r",
+							"        <td>{{key}}</td>\r",
+							"        <td>{{value}}</td>\r",
+							"      </tr>\r",
+							"      {{/each}}\r",
+							"    </table>\r",
+							"  </div>`;\r",
+							"\r",
+							"pm.visualizer.set(template, paramsJson.params);\r",
+							"\r",
+							"// Set environment variables for CFS to retrieve\r",
+							"pm.environment.set('bambora_auth_code', paramsJson.params.find(p => p.key === 'authCode').value);\r",
+							"pm.environment.set('paybc_order_number', paramsJson.params.find(p => p.key === 'trnOrderId').value);\r",
+							"pm.environment.set('paybc_receipt_number', paramsJson.params.find(p => p.key === 'receiptNumber').value);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"followRedirects": false
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{paybc_redirect_to_orbc_2}}",
+					"host": [
+						"{{paybc_redirect_to_orbc_2}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "paybc_hash",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "session_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "pay_form_params",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "paybc_redirect_to_orbc_1",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "paybc_redirect_to_orbc_2",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "paybc_tmp_order_number",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "paybc_tmp_merchant_id",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
