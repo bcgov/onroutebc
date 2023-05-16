@@ -97,6 +97,7 @@ export const CountryAndProvince = <T extends ORBC_FormTypes>({
       resetField(provinceField, { defaultValue: "" });
     } else {
       setShouldDisplayProvince(() => true);
+      resetField(provinceField, { defaultValue: "" });
     }
   };
 
@@ -124,6 +125,10 @@ export const CountryAndProvince = <T extends ORBC_FormTypes>({
       value: isCountryRequired,
       message: "Country is required.",
     },
+    validate: (country?: string) => 
+      (!isCountryRequired && (country == null || country === "")) 
+        || (country != null && country !== "" && /^[A-Z]{2}$/.test(country)) 
+        || "Invalid country code", 
     onChange: onChangeCountry,
   };
 
@@ -132,6 +137,10 @@ export const CountryAndProvince = <T extends ORBC_FormTypes>({
       value: shouldDisplayProvince && isProvinceRequired,
       message: "Province / State is required.",
     },
+    validate: (province?: string) =>
+      (!isProvinceRequired && (province == null || province === ""))
+        || (province != null && province !== "" && /^[A-Z]{2}$/.test(province)) 
+        || "Invalid province code",
   };
 
   return (

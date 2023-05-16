@@ -1,3 +1,5 @@
+import isEmail from "validator/lib/isEmail";
+
 import "./CompanyPrimaryContactForm.scss";
 import { CountryAndProvince } from "../../../../../../common/components/form/CountryAndProvince";
 import { CustomFormComponent } from "../../../../../../common/components/form/CustomFormComponents";
@@ -11,6 +13,9 @@ export const CompanyPrimaryContactForm = ({ feature }: { feature: string }) => (
         name: "primaryContact.firstName",
         rules: {
           required: { value: true, message: "First Name is required" },
+          validate: (firstName: string) =>
+            firstName.length >= 1 && firstName.length <= 100
+              || "First name length must be between 1-100 characters",
         },
         label: "First Name",
       }}
@@ -23,6 +28,9 @@ export const CompanyPrimaryContactForm = ({ feature }: { feature: string }) => (
         name: "primaryContact.lastName",
         rules: {
           required: { value: true, message: "Last Name is required" },
+          validate: (lastName: string) =>
+            lastName.length >= 1 && lastName.length <= 100
+              || "Last name length must be between 1-100 characters",
         },
         label: "Last Name",
       }}
@@ -35,6 +43,8 @@ export const CompanyPrimaryContactForm = ({ feature }: { feature: string }) => (
         name: "primaryContact.email",
         rules: {
           required: { value: true, message: "Email is required" },
+          validate: (email: string) =>
+            isEmail(email) || "Incorrect email format",
         },
         label: "Email",
       }}
@@ -49,6 +59,9 @@ export const CompanyPrimaryContactForm = ({ feature }: { feature: string }) => (
           name: "primaryContact.phone1",
           rules: {
             required: { value: true, message: "Phone Number is required" },
+            validate: (phone: string) =>
+              (phone.length >= 10 && phone.length <= 20)
+                || "Phone number length must be between 10-20 characters",
           },
           label: "Phone Number",
         }}
@@ -59,7 +72,13 @@ export const CompanyPrimaryContactForm = ({ feature }: { feature: string }) => (
         feature={feature}
         options={{
           name: "primaryContact.phone1Extension",
-          rules: { required: false },
+          rules: { 
+            required: false,
+            validate: (ext?: string) =>
+              (ext == null || ext === "")
+                || (ext != null && ext !== "" && ext.length <= 5)
+                || "Extension length must be less than 5 characters",
+          },
           label: "Ext",
         }}
         className="company-primary-contact-form__input company-primary-contact-form__input--right"
@@ -71,7 +90,13 @@ export const CompanyPrimaryContactForm = ({ feature }: { feature: string }) => (
         feature={feature}
         options={{
           name: "primaryContact.phone2",
-          rules: { required: false },
+          rules: { 
+            required: false,
+            validate: (phone2?: string) =>
+              (phone2 == null || phone2 === "")
+                || (phone2 != null && phone2 !== "" && phone2.length >= 10 && phone2.length <= 20)
+                || "Alternate number length must be between 10-20 characters",
+          },
           label: "Alternate Number",
         }}
         className="company-primary-contact-form__input company-primary-contact-form__input--left"
@@ -81,7 +106,13 @@ export const CompanyPrimaryContactForm = ({ feature }: { feature: string }) => (
         feature={feature}
         options={{
           name: "primaryContact.phone2Extension",
-          rules: { required: false },
+          rules: { 
+            required: false,
+            validate: (ext?: string) =>
+              (ext == null || ext === "")
+                || (ext != null && ext !== "" && ext.length <= 5)
+                || "Extension length must be less than 5 characters",
+          },
           label: "Ext",
         }}
         className="company-primary-contact-form__input company-primary-contact-form__input--right"
@@ -104,6 +135,9 @@ export const CompanyPrimaryContactForm = ({ feature }: { feature: string }) => (
         name: "primaryContact.city",
         rules: {
           required: { value: true, message: "City is required" },
+          validate: (city: string) =>
+            (city.length >= 1 && city.length <= 100)
+              || "City length must be between 1-100 characters",
         },
         label: "City",
       }}
