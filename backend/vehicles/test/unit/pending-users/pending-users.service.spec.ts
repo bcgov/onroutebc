@@ -6,7 +6,6 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { createMapper } from '@automapper/core';
 import { PendingUsersService } from '../../../src/modules/company-user-management/pending-users/pending-users.service';
 import { Repository } from 'typeorm';
-import { CompanyService } from '../../../src/modules/company-user-management/company/company.service';
 import { PendingUser } from '../../../src/modules/company-user-management/pending-users/entities/pending-user.entity';
 import { PendingUsersProfile } from '../../../src/modules/company-user-management/pending-users/profiles/pending-user.profile';
 
@@ -22,7 +21,7 @@ describe('PendingUsersService', () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [AutomapperModule],
       providers: [
-        CompanyService,
+        PendingUsersService,
         {
           provide: getRepositoryToken(PendingUser),
           useValue: repo,
