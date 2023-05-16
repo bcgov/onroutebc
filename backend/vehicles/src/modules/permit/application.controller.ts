@@ -27,6 +27,8 @@ import { ApplicationStatus } from '../../common/enum/application-status.enum';
 import { ExceptionDto } from '../../common/exception/exception.dto';
 import { UpdateApplicationDto } from './dto/request/update-application.dto';
 import { DataNotFoundException } from 'src/common/exception/data-not-found.exception';
+import { UpdateApplicationStatusDto } from './dto/request/update-application-status.dto';
+import { ResultDto } from './dto/response/result.dto';
 
 @ApiBearerAuth()
 @ApiTags('Permit Application')
@@ -115,6 +117,19 @@ export class ApplicationController {
     if (!application) {
       throw new DataNotFoundException();
     }
+    return application;
+  }
+
+  @Put(':companyId/status')
+  async updateApplicationStatus(
+    @Body() updateApplicationStatusDto: UpdateApplicationStatusDto,
+    @Param('companyId') companyId: number,
+    @Query('applicationStatus') applicationStatus: ApplicationStatus,
+  ): Promise<ResultDto> {
+    const application = await this.applicationService.updateApplicationStatus(
+      updateApplicationStatusDto.applicationIds,
+      applicationStatus,
+    );
     return application;
   }
 }
