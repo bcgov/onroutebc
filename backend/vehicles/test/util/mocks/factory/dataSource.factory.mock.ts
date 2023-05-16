@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/require-await */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
@@ -31,3 +32,31 @@ export const dataSourceMockFactory: () => MockType<DataSource> = jest.fn(
     })),
   }),
 );
+
+export const createQueryBuilderMock = (filteredList: object[]) => {
+  return {
+    ...jest.requireActual('typeorm/query-builder/SelectQueryBuilder'),
+    select: jest.fn().mockReturnThis(),
+    addSelect: jest.fn().mockReturnThis(),
+    groupBy: jest.fn().mockReturnThis(),
+    where: jest.fn().mockReturnThis(),
+    delete: jest.fn().mockReturnThis(),
+    innerJoinAndSelect: jest.fn().mockReturnThis(),
+    innerJoin: jest.fn().mockReturnThis(),
+    leftJoinAndSelect: jest.fn().mockReturnThis(),
+    leftJoin: jest.fn().mockReturnThis(),
+    from: jest.fn().mockReturnThis(),
+    orWhere: jest.fn().mockReturnThis(),
+    andWhere: jest.fn().mockReturnThis(),
+    execute: jest.fn().mockReturnThis(),
+    orderBy: jest.fn().mockReturnThis(),
+    take: jest.fn().mockReturnThis(),
+    skip: jest.fn().mockReturnThis(),
+    getOne: jest.fn().mockImplementationOnce(() => {
+      return filteredList[0];
+    }),
+    getMany: jest.fn().mockImplementationOnce(() => {
+      return filteredList;
+    }),
+  };
+};

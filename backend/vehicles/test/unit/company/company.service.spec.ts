@@ -21,11 +21,14 @@ import { ContactProfile } from '../../../src/modules/common/profiles/contact.pro
 import { DataSource, Repository } from 'typeorm';
 import {
   MockType,
+  createQueryBuilderMock,
   dataSourceMockFactory,
 } from '../../util/mocks/factory/dataSource.factory.mock';
 import { UsersProfile } from '../../../src/modules/company-user-management/users/profiles/user.profile';
 
 const COMPANY_ID_1 = 1;
+const USER_GUID = '06267945F2EB4E31B585932F78B76269';
+const COMPANY_GUID = '6F9619FF8B86D011B42D00C04FC964FF';
 
 describe('CompanyService', () => {
   let service: CompanyService;
@@ -108,6 +111,43 @@ describe('CompanyService', () => {
       const retCompany = await service.findOne(COMPANY_ID_1);
       expect(typeof retCompany).toBe('object');
       expect(retCompany.companyId).toBe(COMPANY_ID_1);
+    });
+  });
+
+  describe('Company service findCompanyMetadata function', () => {
+    it('should return the Company Metadata', async () => {
+      repo.findOne.mockResolvedValue(companyEntityMock);
+      const retCompany = await service.findCompanyMetadata(COMPANY_ID_1);
+      expect(typeof retCompany).toBe('object');
+      expect(retCompany.companyId).toBe(COMPANY_ID_1);
+    });
+  });
+
+  describe('Company service findOneByCompanyGuid function', () => {
+    it('should return the Company details', async () => {
+      repo.findOne.mockResolvedValue(companyEntityMock);
+      const retCompany = await service.findOneByCompanyGuid(COMPANY_GUID);
+      expect(typeof retCompany).toBe('object');
+      expect(retCompany.companyId).toBe(COMPANY_ID_1);
+    });
+  });
+
+  describe('Company service findCompanyMetadataByUserGuid function', () => {
+    it('should return the Company Metadata List', async () => {
+      const PARAMS = { userGUID: USER_GUID };
+      const companyList: Company[] = [companyEntityMock];
+      const FILTERED_LIST = companyList.filter(
+        (r) => r.companyUsers[0].user.userGUID === PARAMS.userGUID,
+      );
+
+      jest
+        .spyOn(repo, 'createQueryBuilder')
+        .mockImplementation(() => createQueryBuilderMock(FILTERED_LIST));
+
+      const retCompany = await service.findCompanyMetadataByUserGuid(USER_GUID);
+
+      expect(typeof retCompany).toBe('object');
+      expect(retCompany[0].companyId).toBe(COMPANY_ID_1);
     });
   });
 });
