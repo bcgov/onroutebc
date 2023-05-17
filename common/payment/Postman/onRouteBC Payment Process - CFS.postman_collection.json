@@ -1,0 +1,504 @@
+{
+	"info": {
+		"_postman_id": "9ff6bed0-ab79-413b-a830-17aba0b258b3",
+		"name": "onRouteBC Payment Process - CFS",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "11120889"
+	},
+	"item": [
+		{
+			"name": "Request a Token",
+			"item": [
+				{
+					"name": "Request a CFS Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property('access_token');\r",
+									"    pm.collectionVariables.set('access_token', jsonData.access_token);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{cfs_client_secret}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{cfs_client_id}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{cfs_base_url}}/oauth/token",
+							"host": [
+								"{{cfs_base_url}}"
+							],
+							"path": [
+								"oauth",
+								"token"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Parties",
+			"item": [
+				{
+					"name": "Create Party",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property('party_number');\r",
+									"    pm.collectionVariables.set('party_number', jsonData.party_number);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"business_number\":\"{{business_number}}\",\r\n    \"customer_name\":\"{{customer_name}} ({{onroute_client_number}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{cfs_base_url}}/cfs/parties/",
+							"host": [
+								"{{cfs_base_url}}"
+							],
+							"path": [
+								"cfs",
+								"parties",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Party",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{cfs_base_url}}/cfs/parties/{{party_number}}",
+							"host": [
+								"{{cfs_base_url}}"
+							],
+							"path": [
+								"cfs",
+								"parties",
+								"{{party_number}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Accounts",
+			"item": [
+				{
+					"name": "Create Account",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property('account_number');\r",
+									"    pm.collectionVariables.set('account_number', jsonData.account_number);    \r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let acctNum = 'A-' + (new Date()).getTime();\r",
+									"pm.collectionVariables.set('account_number', acctNum);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"account_number\":\"{{account_number}}\",\r\n   \"account_description\":\"{{account_description}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "text"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{cfs_base_url}}/cfs/parties/{{party_number}}/accs/",
+							"host": [
+								"{{cfs_base_url}}"
+							],
+							"path": [
+								"cfs",
+								"parties",
+								"{{party_number}}",
+								"accs",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Accounts",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{cfs_base_url}}/cfs/parties/{{party_number}}/accs/",
+							"host": [
+								"{{cfs_base_url}}"
+							],
+							"path": [
+								"cfs",
+								"parties",
+								"{{party_number}}",
+								"accs",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Account Site",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property('site_number');\r",
+									"    pm.collectionVariables.set('site_number', jsonData.site_number);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"customer_site_id\":\"orbc-default\",\r\n    \"site_name\":\"DEFAULT SITE\",\r\n    \"primary_bill_to\":\"Y\",\r\n    \"address_line_1\":\"940 Blanshard Street\",\r\n    \"address_line_2\":\"Suite #200\",\r\n    \"city\":\"Victoria\",\r\n    \"postal_code\":\"V8W 3E6\",\r\n    \"province\":\"BC\",\r\n    \"country\":\"CA\",\r\n    \"customer_profile_class\":\"CAS_IND_DEFAULT\"\r\n}\r\n"
+						},
+						"url": {
+							"raw": "{{cfs_base_url}}/cfs/parties/{{party_number}}/accs/{{account_number}}/sites/",
+							"host": [
+								"{{cfs_base_url}}"
+							],
+							"path": [
+								"cfs",
+								"parties",
+								"{{party_number}}",
+								"accs",
+								"{{account_number}}",
+								"sites",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Account Site",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{cfs_base_url}}/cfs/parties/{{party_number}}/accs/{{account_number}}/sites/{{site_number}}",
+							"host": [
+								"{{cfs_base_url}}"
+							],
+							"path": [
+								"cfs",
+								"parties",
+								"{{party_number}}",
+								"accs",
+								"{{account_number}}",
+								"sites",
+								"{{site_number}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Invoices",
+			"item": [
+				{
+					"name": "Create Invoice",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property('invoice_number');\r",
+									"    pm.collectionVariables.set('invoice_number', jsonData.invoice_number);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.collectionVariables.set('transaction_date', new Date().toString());"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"transaction_number\":\"{{transaction_number}}\",\r\n    \"batch_source\":\"ONROUTE MANUAL\",\r\n    \"cust_trx_type\":\"Onroute\",\r\n    \"transaction_date\":\"{{transaction_date}}\",\r\n    \"gl_date\":\"{{transaction_date}}\",\r\n    \"comments\":\"\",\r\n    \"term_name\" :\"IMMEDIATE\",\r\n    \"lines\":[\r\n        {\r\n        \"line_number\":\"1\",\r\n        \"line_type\":\"LINE\",\r\n        \"memo_line_name\":\"Onroute BC\",\r\n        \"description\":\"\",\r\n        \"unit_price\":\"{{transaction_amount}}\",\r\n        \"quantity\":\"1\"\r\n        }\r\n    ]\r\n}"
+						},
+						"url": {
+							"raw": "{{cfs_base_url}}/cfs/parties/{{party_number}}/accs/{{account_number}}/sites/{{site_number}}/invs/",
+							"host": [
+								"{{cfs_base_url}}"
+							],
+							"path": [
+								"cfs",
+								"parties",
+								"{{party_number}}",
+								"accs",
+								"{{account_number}}",
+								"sites",
+								"{{site_number}}",
+								"invs",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Invoice",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{cfs_base_url}}/cfs/parties/{{party_number}}/accs/{{account_number}}/sites/{{site_number}}/invs/{{invoice_number}}",
+							"host": [
+								"{{cfs_base_url}}"
+							],
+							"path": [
+								"cfs",
+								"parties",
+								"{{party_number}}",
+								"accs",
+								"{{account_number}}",
+								"sites",
+								"{{site_number}}",
+								"invs",
+								"{{invoice_number}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Invoices for Account",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{cfs_base_url}}/cfs/parties/{{party_number}}/accs/{{account_number}}/invs/",
+							"host": [
+								"{{cfs_base_url}}"
+							],
+							"path": [
+								"cfs",
+								"parties",
+								"{{party_number}}",
+								"accs",
+								"{{account_number}}",
+								"invs",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Invoices for Site",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{cfs_base_url}}/cfs/parties/{{party_number}}/accs/{{account_number}}/sites/{{site_number}}/invs/",
+							"host": [
+								"{{cfs_base_url}}"
+							],
+							"path": [
+								"cfs",
+								"parties",
+								"{{party_number}}",
+								"accs",
+								"{{account_number}}",
+								"sites",
+								"{{site_number}}",
+								"invs",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "oauth2",
+		"oauth2": [
+			{
+				"key": "addTokenTo",
+				"value": "header",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "access_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "business_number",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "party_number",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "customer_name",
+			"value": "ABC Trucking Inc.",
+			"type": "string"
+		},
+		{
+			"key": "account_description",
+			"value": "Test account for ABC Trucking",
+			"type": "string"
+		},
+		{
+			"key": "account_number",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "site_number",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "invoice_number",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "transaction_date",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "gl_date",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "onroute_client_number",
+			"value": "B2-000067-245",
+			"type": "string"
+		}
+	]
+}

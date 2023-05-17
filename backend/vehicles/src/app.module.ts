@@ -46,7 +46,6 @@ const envPath = path.resolve(process.cwd() + '/../../');
           ? process.env.MSSQL_SA_PASSWORD
           : process.env.POSTGRESQL_PASSWORD,
       options: { encrypt: process.env.MSSQL_ENCRYPT === 'true' },
-      // entities: [User],
       autoLoadEntities: true, // Auto load all entities regiestered by typeorm forFeature method.
       synchronize: false, // This changes the DB schema to match changes to entities, which we might not want.
       logging: false,

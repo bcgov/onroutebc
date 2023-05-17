@@ -84,7 +84,6 @@ export class CompanyController {
   ) {
     const currentUser = request.user as IUserJWT;
     const directory = getDirectory(currentUser);
-
     return await this.companyService.create(
       createCompanyDto,
       directory,
