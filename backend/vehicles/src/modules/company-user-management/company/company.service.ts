@@ -1,6 +1,6 @@
 import { Mapper } from '@automapper/core';
 import { InjectMapper } from '@automapper/nestjs';
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { UserAuthGroup } from '../../../common/enum/user-auth-group.enum';
@@ -47,24 +47,24 @@ export class CompanyService {
     directory: Directory,
     currentUser: IUserJWT,
   ): Promise<ReadCompanyUserDto> {
-    let newCompany = this.classMapper.map(
-      createCompanyDto,
-      CreateCompanyDto,
-      Company,
-      {
-        extraArgs: () => ({
-          directory: directory,
-          companyGUID: currentUser.bceid_business_guid,
-        }),
-      },
-    );
-
+    let newCompany: Company;
     let newUser: ReadUserDto;
-
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
+      newCompany = this.classMapper.map(
+        createCompanyDto,
+        CreateCompanyDto,
+        Company,
+        {
+          extraArgs: () => ({
+            directory: directory,
+            companyGUID: currentUser.bceid_business_guid,
+          }),
+        },
+      );
+
       newCompany = await queryRunner.manager.save(newCompany);
 
       let user = this.classMapper.map(
@@ -94,7 +94,7 @@ export class CompanyService {
       await queryRunner.commitTransaction();
     } catch (err) {
       await queryRunner.rollbackTransaction();
-      throw new Error('Internal Server Error'); // TODO: Handle the typeorm Error handling
+      throw new InternalServerErrorException(); // TODO: Handle the typeorm Error handling
     } finally {
       await queryRunner.release();
     }

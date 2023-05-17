@@ -19,10 +19,17 @@ import { UsersProfile } from '../../../src/modules/company-user-management/users
 import { Directory } from '../../../src/common/enum/directory.enum';
 import { AddressProfile } from '../../../src/modules/common/profiles/address.profile';
 import { ContactProfile } from '../../../src/modules/common/profiles/contact.profile';
-import { companyEntityMock, createCompanyDtoMock, updateCompanyDtoMock } from '../../util/mocks/data/company.mock';
+import {
+  companyEntityMock,
+  createCompanyDtoMock,
+  updateCompanyDtoMock,
+} from '../../util/mocks/data/company.mock';
 import { currentUserMock } from '../../util/mocks/data/user.mock';
+import { DataNotFoundException } from '../../../src/common/exception/data-not-found.exception';
+import { InternalServerErrorException } from '@nestjs/common';
 
 const COMPANY_ID_1 = 1;
+const COMPANY_ID_2 = 2;
 const USER_GUID = '06267945F2EB4E31B585932F78B76269';
 const COMPANY_GUID = '6F9619FF8B86D011B42D00C04FC964FF';
 
@@ -77,6 +84,12 @@ describe('CompanyService', () => {
       expect(typeof retCompanyUser).toBe('object');
       expect(retCompanyUser.companyId).toBe(COMPANY_ID_1);
     });
+
+    it('should catch and throw and Internal Error Exceptions user.', async () => {
+      await expect(async () => {
+        await service.create(null, Directory.BBCEID, currentUserMock);
+      }).rejects.toThrowError(InternalServerErrorException);
+    });
   });
 
   describe('Company service update function', () => {
@@ -98,6 +111,18 @@ describe('CompanyService', () => {
       expect(typeof retCompany).toBe('object');
       expect(retCompany.companyId).toBe(COMPANY_ID_1);
       expect(retCompany.phone).toEqual('8888888888');
+    });
+
+    it('should throw DataNotFound Exception', async () => {
+      repo.findOne.mockResolvedValueOnce(null);
+
+      await expect(async () => {
+        await service.update(
+          COMPANY_ID_2,
+          { ...updateCompanyDtoMock, phone: '8888888888' },
+          Directory.BBCEID,
+        );
+      }).rejects.toThrow(DataNotFoundException);
     });
   });
 
