@@ -110,51 +110,6 @@ describe('UsersService', () => {
     });
   });
 
-  describe('User service findORBCUser function', () => {
-    it('should return the user-context when user exists', async () => {
-      repo.findOne.mockResolvedValue(userEntityMock1);
-      companyServiceMock.findCompanyMetadataByUserGuid.mockResolvedValue([
-        readCompanyMetadataDtoMock,
-      ]);
-      const retCompanies = await service.findORBCUser(
-        USER_GUID_1,
-        USER_NAME,
-        COMPANY_GUID,
-      );
-      expect(typeof retCompanies).toBe('object');
-      expect(retCompanies.user.userGUID).toBe(USER_GUID_1);
-    });
-    it('should return the context when user does not exists', async () => {
-      repo.findOne.mockResolvedValue(null);
-      companyServiceMock.findOneByCompanyGuid.mockResolvedValue(
-        readCompanyDtoMock,
-      );
-      const retCompanies = await service.findORBCUser(
-        USER_GUID_1,
-        USER_NAME,
-        COMPANY_GUID,
-      );
-      expect(typeof retCompanies).toBe('object');
-      expect(retCompanies.associatedCompanies[0].companyId).toBe(COMPANY_ID_1);
-    });
-    it('should return the context when user is a Pending user', async () => {
-      repo.findOne.mockResolvedValue(null);
-      pendingUsersServiceMock.findPendingUsersDto.mockResolvedValue([
-        readPendingUserDtoMock2,
-      ]);
-      companyServiceMock.findOneByCompanyGuid.mockResolvedValue(
-        readCompanyDtoMock,
-      );
-      const retCompanies = await service.findORBCUser(
-        USER_GUID_2,
-        USER_NAME_2,
-        COMPANY_GUID,
-      );
-      expect(typeof retCompanies).toBe('object');
-      expect(retCompanies.associatedCompanies[0].companyId).toBe(COMPANY_ID_1);
-    });
-  });
-
   describe('User service create function', () => {
     it('should create a user.', async () => {
       const retUser = await service.create(
@@ -240,6 +195,39 @@ describe('UsersService', () => {
 
       expect(typeof retUserRoles).toBe('object');
       expect(retUserRoles[0]).toBe(Role.READ_SELF);
+    });
+  });
+
+  describe('User service findORBCUser function', () => {
+    it('should return the user-context when user exists', async () => {
+      repo.findOne.mockResolvedValue(userEntityMock1);
+      companyServiceMock.findCompanyMetadataByUserGuid.mockResolvedValue([
+        readCompanyMetadataDtoMock,
+      ]);
+      const retUserContext = await service.findORBCUser(
+        USER_GUID_1,
+        USER_NAME,
+        COMPANY_GUID,
+      );
+      expect(typeof retUserContext).toBe('object');
+      expect(retUserContext.user.userGUID).toBe(USER_GUID_1);
+    });
+    it('should return the context when user is a Pending user', async () => {
+      pendingUsersServiceMock.findPendingUsersDto.mockResolvedValue([
+        readPendingUserDtoMock2,
+      ]);
+      companyServiceMock.findOneByCompanyGuid.mockResolvedValue(
+        readCompanyDtoMock,
+      );
+      const retUserContext = await service.findORBCUser(
+        USER_GUID_2,
+        USER_NAME_2,
+        COMPANY_GUID,
+      );
+      expect(typeof retUserContext).toBe('object');
+      expect(retUserContext.associatedCompanies[0].companyId).toBe(
+        COMPANY_ID_1,
+      );
     });
   });
 });
