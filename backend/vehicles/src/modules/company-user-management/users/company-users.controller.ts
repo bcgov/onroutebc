@@ -22,7 +22,6 @@ import { IUserJWT } from '../../../common/interface/user-jwt.interface';
 import { Request } from 'express';
 import { Roles } from '../../../common/decorator/roles.decorator';
 import { Role } from '../../../common/enum/roles.enum';
-import { Directory } from '../../../common/enum/directory.enum';
 import { UpdateUserDto } from './dto/request/update-user.dto';
 import { UpdateUserStatusDto } from './dto/request/update-user-status.dto';
 
@@ -97,6 +96,7 @@ export class CompanyUsersController {
     description: 'The User Resource',
     type: ReadUserDto,
   })
+  @Roles(Role.WRITE_SELF, Role.WRITE_USER)
   @Put(':userGUID')
   async update(
     @Req() request: Request,
@@ -104,13 +104,7 @@ export class CompanyUsersController {
     @Param('userGUID') userGUID: string,
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<ReadUserDto> {
-    //const currentUser = request.user as IUserJWT;
-    const user = await this.userService.update(
-      userGUID,
-      'ASMITH', //! Hardcoded value to be replaced by user name from access token
-      Directory.BBCEID, //! Hardcoded value to be replaced by user directory from access token
-      updateUserDto,
-    );
+    const user = await this.userService.update(userGUID, updateUserDto);
     if (!user) {
       throw new DataNotFoundException();
     }

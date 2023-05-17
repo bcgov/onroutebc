@@ -172,8 +172,6 @@ export class UsersService {
    */
   async update(
     userGUID: string,
-    userName: string,
-    directory: Directory,
     updateUserDto: UpdateUserDto,
   ): Promise<ReadUserDto> {
     const userDetails = await this.findUsersEntity(userGUID);
@@ -185,8 +183,6 @@ export class UsersService {
     const user = this.classMapper.map(updateUserDto, UpdateUserDto, User, {
       extraArgs: () => ({
         userGUID: userGUID,
-        userName: userName,
-        directory: directory,
       }),
     });
     user.userContact.contactId = userDetails[0]?.userContact?.contactId;
