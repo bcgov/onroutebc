@@ -8,10 +8,22 @@ import { PendingUsersService } from '../../../src/modules/company-user-managemen
 import { Repository } from 'typeorm';
 import { PendingUser } from '../../../src/modules/company-user-management/pending-users/entities/pending-user.entity';
 import { PendingUsersProfile } from '../../../src/modules/company-user-management/pending-users/profiles/pending-user.profile';
+import {
+  createPendingUserDtoMock,
+  updatePendingUserDtoMock,
+  PENDING_USER_LIST,
+} from '../../util/mocks/data/pending-user.mock';
+import { createQueryBuilderMock } from '../../util/mocks/factory/dataSource.factory.mock';
+import { UserAuthGroup } from '../../../src/common/enum/user-auth-group.enum';
 
-// const COMPANY_ID_1 = 1;
-// const USER_GUID = '06267945F2EB4E31B585932F78B76269';
-// const COMPANY_GUID = '6F9619FF8B86D011B42D00C04FC964FF';
+const COMPANY_ID_1 = 1;
+const USER_NAME_1 = 'ASMITH';
+const USER_NAME_2 = 'JDOE';
+
+interface SelectQueryBuilderParameters {
+  userName?: string;
+  companyId?: number;
+}
 
 describe('PendingUsersService', () => {
   let service: PendingUsersService;
@@ -43,84 +55,101 @@ describe('PendingUsersService', () => {
     expect(service).toBeDefined();
   });
 
-  // describe('Company service create function', () => {
-  //   it('should create a company and its admin user.', async () => {
-  //     repo.findOne.mockResolvedValue(companyEntityMock);
-  //     const retCompanyUser = await service.create(
-  //       createCompanyDtoMock,
-  //       Directory.BBCEID,
-  //       currentUserMock,
-  //     );
-  //     expect(typeof retCompanyUser).toBe('object');
-  //     expect(retCompanyUser.companyId).toBe(COMPANY_ID_1);
-  //   });
-  // });
+  describe('Pending user service create function', () => {
+    it('should create a Pending user.', async () => {
+      const PARAMS = { userName: USER_NAME_1, companyId: COMPANY_ID_1 };
+      findPendingUsersEntityMock(PARAMS, repo);
 
-  // describe('Company service update function', () => {
-  //   it('should update the company', async () => {
-  //     repo.findOne
-  //       .mockResolvedValueOnce(companyEntityMock)
-  //       .mockResolvedValueOnce({ ...companyEntityMock, phone: '8888888888' });
-  //     repo.save.mockResolvedValue({
-  //       ...companyEntityMock,
-  //       phone: '8888888888',
-  //     });
+      const retPendingUser = await service.create(
+        COMPANY_ID_1,
+        createPendingUserDtoMock,
+      );
+      expect(typeof retPendingUser).toBe('object');
+      expect(retPendingUser.companyId).toBe(COMPANY_ID_1);
+    });
+  });
 
-  //     const retCompany = await service.update(
-  //       COMPANY_ID_1,
-  //       { ...updateCompanyDtoMock, phone: '8888888888' },
-  //       Directory.BBCEID,
-  //     );
+  describe('Pending user service update function', () => {
+    it('should update a Pending user.', async () => {
+      const PARAMS = { userName: USER_NAME_2, companyId: COMPANY_ID_1 };
+      PENDING_USER_LIST[1].userAuthGroup = UserAuthGroup.CV_CLIENT;
+      findPendingUsersEntityMock(PARAMS, repo, PENDING_USER_LIST);
 
-  //     expect(typeof retCompany).toBe('object');
-  //     expect(retCompany.companyId).toBe(COMPANY_ID_1);
-  //     expect(retCompany.phone).toEqual('8888888888');
-  //   });
-  // });
+      const retPendingUser = await service.update(
+        COMPANY_ID_1,
+        USER_NAME_2,
+        updatePendingUserDtoMock,
+      );
+      expect(typeof retPendingUser).toBe('object');
+      expect(retPendingUser.companyId).toBe(COMPANY_ID_1);
+    });
+  });
 
-  // describe('Company service findOne function', () => {
-  //   it('should return the Company', async () => {
-  //     repo.findOne.mockResolvedValue(companyEntityMock);
-  //     const retCompany = await service.findOne(COMPANY_ID_1);
-  //     expect(typeof retCompany).toBe('object');
-  //     expect(retCompany.companyId).toBe(COMPANY_ID_1);
-  //   });
-  // });
+  describe('Pending user service findPendingUsersDto function', () => {
+    it('should find a Pending user by User Name and Company Id.', async () => {
+      const PARAMS = { userName: USER_NAME_1, companyId: COMPANY_ID_1 };
+      findPendingUsersEntityMock(PARAMS, repo, PENDING_USER_LIST);
 
-  // describe('Company service findCompanyMetadata function', () => {
-  //   it('should return the Company Metadata', async () => {
-  //     repo.findOne.mockResolvedValue(companyEntityMock);
-  //     const retCompany = await service.findCompanyMetadata(COMPANY_ID_1);
-  //     expect(typeof retCompany).toBe('object');
-  //     expect(retCompany.companyId).toBe(COMPANY_ID_1);
-  //   });
-  // });
+      const retPendingUser = await service.findPendingUsersDto(
+        USER_NAME_1,
+        COMPANY_ID_1,
+      );
+      expect(typeof retPendingUser).toBe('object');
+      expect(retPendingUser[0].companyId).toBe(COMPANY_ID_1);
+    });
+    it('should find a Pending user by User Name.', async () => {
+      const params: SelectQueryBuilderParameters = { userName: USER_NAME_1 };
+      findPendingUsersEntityMock(params, repo, PENDING_USER_LIST);
 
-  // describe('Company service findOneByCompanyGuid function', () => {
-  //   it('should return the Company details', async () => {
-  //     repo.findOne.mockResolvedValue(companyEntityMock);
-  //     const retCompany = await service.findOneByCompanyGuid(COMPANY_GUID);
-  //     expect(typeof retCompany).toBe('object');
-  //     expect(retCompany.companyId).toBe(COMPANY_ID_1);
-  //   });
-  // });
+      const retPendingUser = await service.findPendingUsersDto(USER_NAME_1);
+      expect(typeof retPendingUser).toBe('object');
+      expect(retPendingUser[0].companyId).toBe(COMPANY_ID_1);
+    });
+    it('should find all Pending users by Company Id.', async () => {
+      const params: SelectQueryBuilderParameters = { companyId: COMPANY_ID_1 };
+      findPendingUsersEntityMock(params, repo, PENDING_USER_LIST);
 
-  // describe('Company service findCompanyMetadataByUserGuid function', () => {
-  //   it('should return the Company Metadata List', async () => {
-  //     const PARAMS = { userGUID: USER_GUID };
-  //     const companyList: Company[] = [companyEntityMock];
-  //     const FILTERED_LIST = companyList.filter(
-  //       (r) => r.companyUsers[0].user.userGUID === PARAMS.userGUID,
-  //     );
+      const retPendingUser = await service.findPendingUsersDto(
+        null,
+        COMPANY_ID_1,
+      );
+      expect(typeof retPendingUser).toBe('object');
+      expect(retPendingUser[0].companyId).toBe(COMPANY_ID_1);
+    });
+    it('should find all Pending user,', async () => {
+      const params: SelectQueryBuilderParameters = { companyId: COMPANY_ID_1 };
+      findPendingUsersEntityMock(params, repo, PENDING_USER_LIST);
 
-  //     jest
-  //       .spyOn(repo, 'createQueryBuilder')
-  //       .mockImplementation(() => createQueryBuilderMock(FILTERED_LIST));
+      const retPendingUser = await service.findPendingUsersDto(null, null);
+      expect(typeof retPendingUser).toBe('object');
+      expect(retPendingUser[0].companyId).toBe(COMPANY_ID_1);
+    });
+  });
 
-  //     const retCompany = await service.findCompanyMetadataByUserGuid(USER_GUID);
-
-  //     expect(typeof retCompany).toBe('object');
-  //     expect(retCompany[0].companyId).toBe(COMPANY_ID_1);
-  //   });
-  // });
+  describe('Pending user service remove function', () => {
+    it('should find delete a Pending user.', async () => {
+      const deleteResult = await service.remove(COMPANY_ID_1, USER_NAME_1);
+      expect(typeof deleteResult).toBe('object');
+    });
+  });
 });
+function findPendingUsersEntityMock(
+  params: SelectQueryBuilderParameters,
+  repo,
+  pendingUserList = PENDING_USER_LIST,
+) {
+  const filteredList = pendingUserList.filter((r) => {
+    const isMatchedUserName = params.userName
+      ? r.userName === params.userName
+      : true;
+    const isMatchedCompanyId = params.companyId
+      ? r.companyId === params.companyId
+      : true;
+    return isMatchedUserName && isMatchedCompanyId;
+  });
+
+  jest
+    .spyOn(repo, 'createQueryBuilder')
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    .mockImplementation(() => createQueryBuilderMock(filteredList));
+}

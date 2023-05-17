@@ -94,7 +94,7 @@ export class PendingUsersController {
   async findAll(
     @Param('companyId') companyId: number,
   ): Promise<ReadPendingUserDto[]> {
-    return await this.pendingUserService.findAll(companyId);
+    return await this.pendingUserService.findPendingUsersDto(null, companyId);
   }
 
   /**
@@ -118,14 +118,15 @@ export class PendingUsersController {
     @Param('companyId') companyId: number,
     @Param('userName') userName: string,
   ): Promise<ReadPendingUserDto> {
-    const pendingUser = await this.pendingUserService.findOne(
-      companyId,
+    const pendingUser = await this.pendingUserService.findPendingUsersDto(
       userName,
+      companyId,
     );
-    if (!pendingUser) {
+
+    if (!pendingUser?.length) {
       throw new DataNotFoundException();
     }
-    return pendingUser;
+    return pendingUser[0];
   }
 
   /**

@@ -160,15 +160,15 @@ export class UsersService {
   }
 
   /**
- * Finds user entities based on optional filtering criteria of userGUID and
- * companyId. Retrieves associated data for userContact, province, companyUser,
- * and company.
- *
- * @param userGUID (Optional) The user GUID for filtering.
- * @param companyId (Optional) The company ID for filtering.
- *
- * @returns A Promise that resolves to an array of {@link User} entities.
- */
+   * Finds user entities based on optional filtering criteria of userGUID and
+   * companyId. Retrieves associated data for userContact, province, companyUser,
+   * and company.
+   *
+   * @param userGUID (Optional) The user GUID for filtering.
+   * @param companyId (Optional) The company ID for filtering.
+   *
+   * @returns A Promise that resolves to an array of {@link User} entities.
+   */
   private async findUsersEntity(userGUID?: string, companyId?: number) {
     // Construct the query builder to retrieve user entities and associated data
     return await this.userRepository
@@ -177,10 +177,10 @@ export class UsersService {
       .innerJoinAndSelect('userContact.province', 'province')
       .leftJoinAndSelect('user.companyUsers', 'companyUser')
       .leftJoinAndSelect('companyUser.company', 'company')
-       /* Conditional WHERE clause for userGUID. If userGUID is provided, the
+      /* Conditional WHERE clause for userGUID. If userGUID is provided, the
        WHERE clause is user.userGUID = :userGUID; otherwise, it is 1=1 to
        include all users.*/
-      .where(userGUID ? 'user.userGUID = :userGUID' : '1=1', { 
+      .where(userGUID ? 'user.userGUID = :userGUID' : '1=1', {
         userGUID: userGUID,
       })
       /* Conditional WHERE clause for companyId. If companyId is provided, the
@@ -192,20 +192,19 @@ export class UsersService {
       .getMany();
   }
 
-/**
- * Finds and returns an array of ReadUserDto objects for all users with a
- * specific companyId.
- *
- * @param userGUID (Optional) The user GUID for filtering.
- * @param companyId (Optional) The company ID for filtering.
- *
- * @returns A Promise that resolves to an array of {@link ReadUserDto} objects.
- */
+  /**
+   * Finds and returns an array of ReadUserDto objects for all users with a
+   * specific companyId.
+   *
+   * @param userGUID (Optional) The user GUID for filtering.
+   * @param companyId (Optional) The company ID for filtering.
+   *
+   * @returns A Promise that resolves to an array of {@link ReadUserDto} objects.
+   */
   async findUsersDto(
     userGUID?: string,
     companyId?: number,
   ): Promise<ReadUserDto[]> {
-
     // Find user entities based on the provided filtering criteria
     const userDetails = await this.findUsersEntity(userGUID, companyId);
 
@@ -332,10 +331,11 @@ export class UsersService {
       },
     });
 
-    const pendingCompanies = await this.pendingUsersService.findAllbyUserName(
+    const pendingCompanies = await this.pendingUsersService.findPendingUsersDto(
       userName,
     );
-    if (pendingCompanies) {
+
+    if (!pendingCompanies?.length) {
       for (const pendingCompany of pendingCompanies) {
         userExistsDto.pendingCompanies.push(
           await this.companyService.findCompanyMetadata(
