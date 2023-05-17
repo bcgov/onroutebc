@@ -9,7 +9,7 @@ import { Repository } from 'typeorm';
 import { PendingUser } from '../../../src/modules/company-user-management/pending-users/entities/pending-user.entity';
 import { PendingUsersProfile } from '../../../src/modules/company-user-management/pending-users/profiles/pending-user.profile';
 import {
-  createPendingUserDtoMock,
+  createPendingUserDtoMock1,
   updatePendingUserDtoMock,
   PENDING_USER_LIST,
 } from '../../util/mocks/data/pending-user.mock';
@@ -62,7 +62,7 @@ describe('PendingUsersService', () => {
 
       const retPendingUser = await service.create(
         COMPANY_ID_1,
-        createPendingUserDtoMock,
+        createPendingUserDtoMock1,
       );
       expect(typeof retPendingUser).toBe('object');
       expect(retPendingUser.companyId).toBe(COMPANY_ID_1);

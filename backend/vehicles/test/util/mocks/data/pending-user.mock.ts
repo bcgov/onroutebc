@@ -33,12 +33,22 @@ export const updatePendingUserDtoMock: UpdatePendingUserDto = {
   userAuthGroup: USER_AUTH_GROUP,
 };
 
-export const createPendingUserDtoMock: CreatePendingUserDto = {
+export const createPendingUserDtoMock1: CreatePendingUserDto = {
   userName: USER_NAME_1,
   ...updatePendingUserDtoMock,
 };
 
-export const readPendingUserDtoMock: ReadPendingUserDto = {
+export const createPendingUserDtoMock2: CreatePendingUserDto = {
+  userName: USER_NAME_2,
+  ...updatePendingUserDtoMock,
+};
+
+export const readPendingUserDtoMock1: ReadPendingUserDto = {
   companyId: COMPANY_ID,
-  ...createPendingUserDtoMock,
+  ...createPendingUserDtoMock1,
+};
+
+export const readPendingUserDtoMock2: ReadPendingUserDto = {
+  companyId: COMPANY_ID,
+  ...createPendingUserDtoMock2,
 };

@@ -18,6 +18,8 @@ import {
 } from './company-user.mock';
 import { IUserJWT } from '../../../../src/common/interface/user-jwt.interface';
 import { UpdateUserStatusDto } from '../../../../src/modules/company-user-management/users/dto/request/update-user-status.dto';
+import { ReadUserOrbcStatusDto } from '../../../../src/modules/company-user-management/users/dto/response/read-user-orbc-status.dto';
+import { readCompanyMetadataDtoMock } from './company.mock';
 
 const USER_GUID_1 = '06267945F2EB4E31B585932F78B76269';
 const USER_GUID_2 = '081BA455A00D4374B0CC13092117A706';
@@ -97,4 +99,10 @@ export const currentUserMock: IUserJWT = {
   companyId: 1,
   roles: null,
   associatedCompanies: [1],
+};
+
+export const ReadUserOrbcStatusDtoMock: ReadUserOrbcStatusDto = {
+  user: { ...readUserDtoMock },
+  associatedCompanies: [readCompanyMetadataDtoMock],
+  pendingCompanies: [],
 };
