@@ -61,24 +61,15 @@ export const CountryAndProvince = <T extends ORBC_FormTypes>({
   const {
     resetField,
     watch,
-    formState: { isDirty },
   } = useFormContext();
 
-  const [shouldDisplayProvince, setShouldDisplayProvince] =
-    useState<boolean>(true);
+  const countrySupportsProvinces = (country: string) => COUNTRIES_THAT_SUPPORT_PROVINCE.includes(country);
 
   const countrySelected = watch(countryField);
+  const initShouldDisplayProvince = countrySupportsProvinces(countrySelected);
 
-  /**
-   * Useeffect to display the province dropdown based on React Hook Form changes
-   */
-  useEffect(() => {
-    // Only update if there have been changes to the form
-    // Fixes bug with loading in default values with the TROS Contact Info form fields
-    if (isDirty) {
-      handleDisplayProvince(countrySelected);
-    }
-  }, [countrySelected]);
+  const [shouldDisplayProvince, setShouldDisplayProvince] =
+    useState<boolean>(initShouldDisplayProvince);
 
   /**
    * When the selected country supports provinces, provinces are displayed.
@@ -87,9 +78,7 @@ export const CountryAndProvince = <T extends ORBC_FormTypes>({
    */
   const handleDisplayProvince = (country: string) => {
     if (
-      !COUNTRIES_THAT_SUPPORT_PROVINCE.find(
-        (supportedCountry) => supportedCountry === country
-      )
+      !countrySupportsProvinces(country)
     ) {
       // If country does not support province, as per API spec, set country to province too
       // even though the field is hidden.
@@ -97,6 +86,7 @@ export const CountryAndProvince = <T extends ORBC_FormTypes>({
       resetField(provinceField, { defaultValue: "" });
     } else {
       setShouldDisplayProvince(() => true);
+      // Should always reset province once country changes
       resetField(provinceField, { defaultValue: "" });
     }
   };
@@ -106,7 +96,7 @@ export const CountryAndProvince = <T extends ORBC_FormTypes>({
    * @param event the select event
    */
   const onChangeCountry = useCallback(function (event: SelectChangeEvent) {
-    const country: string = event.target.value as string;
+    const country = String(event.target.value);
     handleDisplayProvince(country);
   }, []);
 

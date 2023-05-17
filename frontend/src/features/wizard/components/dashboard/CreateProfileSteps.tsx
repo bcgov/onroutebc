@@ -96,6 +96,17 @@ export const CreateProfileSteps = React.memo(() => {
       fax: "",
       adminUser: {
         userAuthGroup: "ORGADMIN",
+        firstName: "",
+        lastName: "",
+        email: "",
+        phone1: "",
+        phone1Extension: "",
+        phone2: "",
+        phone2Extension: "",
+        fax: "",
+        countryCode: "",
+        provinceCode: "",
+        city: "",
       },
       primaryContact: {
         firstName: "",
