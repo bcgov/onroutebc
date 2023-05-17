@@ -76,9 +76,8 @@ export class UsersController {
 
   /**
    * A GET method defined with the @Get() decorator and a route of
-   * /user/list that retrieves a list of users associated with
+   * /user/roles that retrieves a list of users associated with
    * the company ID
-   * TODO: Secure endpoints once login is implemented.
    *
    * @param companyId The company Id.
    *
@@ -108,7 +107,7 @@ export class UsersController {
    * /users that retrieves a list of users associated with
    * the company ID
    *
-   * @param companyId The company Id.  Mandatory for all user directories apart from IDIR.
+   * @param companyId The company Id. Required when authorized as IDIR User.
    *
    * @returns The user list with response object {@link ReadUserDto}.
    */
@@ -128,18 +127,18 @@ export class UsersController {
     if (currentUser.identity_provider === IDP.IDIR && !companyId) {
       throw new BadRequestException();
     }
-    companyId = currentUser.companyId ? currentUser.companyId : companyId;
 
-    return await this.userService.findUsersDto(undefined, [companyId]);
+    const companyIdList = companyId
+      ? [companyId]
+      : currentUser.associatedCompanies;
+    return await this.userService.findUsersDto(undefined, companyIdList);
   }
 
   /**
    * A GET method defined with the @Get() decorator and a route of
    * /users/:userGuid that retrieves a user by its GUID
    * (global unique identifier).
-   * TODO: Secure endpoints once login is implemented.
    *
-   //* @param companyId  The company Id. Mandatory for all user directories apart from IDIR.
    * @param userGUID  The user GUID.
    *
    * @returns The user details with response object {@link ReadUserDto}.

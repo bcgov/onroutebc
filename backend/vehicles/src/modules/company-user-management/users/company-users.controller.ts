@@ -136,7 +136,6 @@ export class CompanyUsersController {
     @Body() updateUserStatusDto: UpdateUserStatusDto,
   ): Promise<object> {
     const updateResult = await this.userService.updateStatus(
-      companyId,
       userGUID,
       updateUserStatusDto.statusCode,
     );

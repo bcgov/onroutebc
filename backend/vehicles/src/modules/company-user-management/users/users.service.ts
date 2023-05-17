@@ -157,14 +157,11 @@ export class UsersService {
   }
 
   /**
-   * The update() method updates a user with the {@link updateUserDto} object,
-   * userGUID, userName, and {@link Directory} parameters, and returns
-   * the updated user as a ReadUserDto object. If the user is not found, it
-   * throws an error.
+   * The update() method updates a user with the {@link updateUserDto} object
+   * and userGUID parameters, and returns the updated user as a ReadUserDto
+   * object. If the user is not found, it throws an error.
    *
    * @param userGUID The user GUID.
-   * @param userName User name from the access token.
-   * @param directory Directory derived from the access token.
    * @param updateUserDto Request object of type {@link UpdateUserDto} for
    * updating a user.
    *
@@ -193,7 +190,7 @@ export class UsersService {
 
   /**
    * The updateStatus() method updates the statusCode of the user with
-   * companyId, userGUID and {@link UserStatus} parameters.
+   * userGUID and {@link UserStatus} parameters.
    *
    * @param companyId The company Id.
    * @param userGUID The user GUID.
@@ -202,7 +199,6 @@ export class UsersService {
    * @returns The UpdateResult of the operation
    */
   async updateStatus(
-    companyId: number,
     userGUID: string,
     statusCode: UserStatus,
   ): Promise<UpdateResult> {
