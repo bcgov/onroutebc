@@ -65,8 +65,7 @@ describe('CompanyService', () => {
       ],
     }).compile();
 
-    service = module.get<CompanyService>(CompanyService);
-    dataSourceMock = module.get(DataSource);
+    service = module.get<CompanyService>(CompanyService);    
   });
 
   it('Company service should be defined', () => {

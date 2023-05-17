@@ -85,7 +85,6 @@ describe('UsersService', () => {
     }).compile();
 
     service = module.get<UsersService>(UsersService);
-    dataSourceMock = module.get(DataSource);
   });
 
   it('User service should be defined', () => {
