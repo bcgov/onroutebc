@@ -22,6 +22,7 @@ import { OnRouteBCProfileCreated } from "../../pages/OnRouteBCProfileCreated";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { CompanyAndUserRequest } from "../../../manageProfile/types/manageProfile";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
+import { SnackBarContext } from "../../../../App";
 
 const CompanyBanner = ({ legalName }: { legalName: string }) => {
   return (
@@ -64,10 +65,31 @@ const ExistingTPSSelection = ({ screenSize }: { screenSize: "lg" | "sm" }) => (
   </div>
 );
 
+/**
+ * Gets the section name inside the form for a particular field name
+ * @param field - Field name inside the form (eg. primaryContact.firstName)
+ * @returns Name of the section in the form that the field belongs to (eg. Company Primary Contact)
+ */
+const getSectionNameByField = (field: string) => {
+  const sectionParts = field.split(".");
+
+  switch (sectionParts[0]) {
+    case "mailingAddress":
+      return "Company Mailing Address";
+    case "primaryContact":
+      return "Company Primary Contact";
+    case "adminUser":
+      return "User Details";
+    default:
+      return "Company Contact Details";
+  }
+};
+
 export const CreateProfileSteps = React.memo(() => {
   const queryClient = useQueryClient();
   const steps = ["Company Information", "My Information"];
   const { setCompanyId, setUserDetails } = useContext(OnRouteBCContext);
+  const { setSnackBar } = useContext(SnackBarContext);
 
   const { user } = useAuth();
 
@@ -153,6 +175,21 @@ export const CreateProfileSteps = React.memo(() => {
         queryClient.invalidateQueries(["userContext"]);
       } else {
         // Display Error
+        if (response.status === 400) {
+          const { error } = await response.json();
+          if (error && error.length > 0) {
+            const { field, message } = error[0];
+            const firstErrMsg = message && message.length > 0 ? message[0] : undefined;
+            if (firstErrMsg) {
+              setSnackBar({
+                message: `${getSectionNameByField(field)} validation error: ${firstErrMsg}`,
+                showSnackbar: true,
+                setShowSnackbar: () => true,
+                alertType: "error",
+              });
+            }
+          }
+        }
       }
     },
   });

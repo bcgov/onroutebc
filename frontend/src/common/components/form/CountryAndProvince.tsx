@@ -1,5 +1,5 @@
 import { useFormContext, FieldPath } from "react-hook-form";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { SelectChangeEvent } from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import { COUNTRIES_THAT_SUPPORT_PROVINCE } from "../../constants/countries";
