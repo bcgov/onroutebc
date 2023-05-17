@@ -52,6 +52,7 @@ export default function LeaveConfirmationDialog({
           <span className="fa-stack fa-sm">
             <i className="fa fa-circle fa-stack-2x"></i>
             <i className="fa fa-exclamation-triangle fa-stack-1x fa-inverse"></i>
+            <i className="fa fa-exclamation-triangle fa-stack-1x"></i>
           </span> 
           <strong>Are you sure you want to leave? </strong>
         </DialogTitle>
