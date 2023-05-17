@@ -22,6 +22,15 @@ export const matchRoles = (roles: Role[], userRoles: Role[]) => {
   return roles.some((role) => userRoles?.includes(role));
 };
 
+export const matchCompanies = (
+  associatedCompanies: number[],
+  currentUserAssociatedCompanies: number[],
+) => {
+  return associatedCompanies.some((associatedCompany) =>
+    currentUserAssociatedCompanies?.includes(associatedCompany),
+  );
+};
+
 export const checkAssociatedCompanies = (
   companyId: number,
   userCompanies: number[],
@@ -43,7 +52,7 @@ export const checkUserCompaniesContext = (
   return true;
 };
 
-export const validateUserCompanyAndRoleForUserGuidQueryParam = (
+export const validateUserCompanyAndRoleContext = (
   roles: Role[],
   userGUID: string,
   userCompanies: number[],

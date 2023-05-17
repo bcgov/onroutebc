@@ -25,7 +25,7 @@ export class AuthService {
       if (!companyId) {
         user = await this.usersService.findUsersDto(userGuid);
       } else {
-        user = await this.usersService.findUsersDto(userGuid, companyId);
+        user = await this.usersService.findUsersDto(userGuid, [companyId]);
       }
     }
     return user?.length ? true : false;

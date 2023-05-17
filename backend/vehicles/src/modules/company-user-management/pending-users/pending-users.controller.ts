@@ -51,7 +51,6 @@ export class PendingUsersController {
    * A POST method defined with the @Post() decorator and a route of
    * company/:companyId/pending-user that creates a new pending user
    * associated with the company.
-   * TODO: Validations on {@link CreatePendingUserDto}.
    * TODO: Secure endpoints once login is implemented.
    *
    * @param companyId The company Id.
@@ -94,7 +93,7 @@ export class PendingUsersController {
   async findAll(
     @Param('companyId') companyId: number,
   ): Promise<ReadPendingUserDto[]> {
-    return await this.pendingUserService.findAll(companyId);
+    return await this.pendingUserService.findPendingUsersDto(null, companyId);
   }
 
   /**
@@ -118,28 +117,28 @@ export class PendingUsersController {
     @Param('companyId') companyId: number,
     @Param('userName') userName: string,
   ): Promise<ReadPendingUserDto> {
-    const pendingUser = await this.pendingUserService.findOne(
-      companyId,
+    const pendingUser = await this.pendingUserService.findPendingUsersDto(
       userName,
+      companyId,
     );
-    if (!pendingUser) {
+
+    if (!pendingUser?.length) {
       throw new DataNotFoundException();
     }
-    return pendingUser;
+    return pendingUser[0];
   }
 
   /**
    * A PUT method defined with the @Put(':userName') decorator and a route of
    * company/:companyId/pending-user/:userName that updates a pending user by
    * user name.
-   * TODO: Validations on {@link UpdateCompanyDto}.
-   * TODO: Validations on {@link UpdateCompanyDto}.
+   *
    * TODO: Secure endpoints once login is implemented.
    *
    * @param companyId The company Id.
    * @param userName The user name of the pending user.
-   * @param updatePendingUserDto The http request object of type {@link UpdatePendingUserDto}
-   * containing the pending user details.
+   * @param updatePendingUserDto The http request object of type
+   * {@link UpdatePendingUserDto} containing the pending user details.
    *
    * @returns The pending user with response object {@link ReadPendingUserDto}.
    */

@@ -255,7 +255,7 @@ jobs:
             -p PROMOTE=${{ github.repository }}/${{ matrix.name }}:staging
             -p DATABASE_NAME=${{steps.secrets.outputs.VAULT_DATABASE_NAME}}
             -p DATABASE_USER=${{steps.secrets.outputs.VAULT_DATABASE_USER}}
-            -p DATABASE_PASSWORD=${{steps.secrets.outputs.VAULT_DATABASE_PASSWORD}}
+            -p DATABASE_PASSWORD='${{steps.secrets.outputs.VAULT_DATABASE_PASSWORD}}'
             -p DATABASE_HOST=${{steps.secrets.outputs.VAULT_DATABASE_HOST}}
             -p AUTH0_ISSUER_URL=${{steps.secrets.outputs.VAULT_AUTH0_ISSUER_URL}}
             -p AUTH0_AUDIENCE=${{steps.secrets.outputs.VAULT_AUTH0_AUDIENCE}}
