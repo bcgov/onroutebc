@@ -1,5 +1,5 @@
 import { Controller, Post, Body, Param, Put } from '@nestjs/common';
-import { Query, Req } from '@nestjs/common/decorators';
+import { Req } from '@nestjs/common/decorators';
 
 import {
   ApiBadRequestResponse,
@@ -9,26 +9,22 @@ import {
   ApiMethodNotAllowedResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
-  ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
-import { UserStatus } from '../../../common/enum/user-status.enum';
 import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
 import { ExceptionDto } from '../../../common/exception/exception.dto';
 import { CreateUserDto } from './dto/request/create-user.dto';
 import { ReadUserDto } from './dto/response/read-user.dto';
 import { UsersService } from './users.service';
 import { AuthOnly } from '../../../common/decorator/auth-only.decorator';
-import {
-  validateUserCompanyAndRoleForUserGuidQueryParam,
-  getDirectory,
-} from '../../../common/helper/auth.helper';
+import { getDirectory } from '../../../common/helper/auth.helper';
 import { IUserJWT } from '../../../common/interface/user-jwt.interface';
 import { Request } from 'express';
 import { Roles } from '../../../common/decorator/roles.decorator';
 import { Role } from '../../../common/enum/roles.enum';
 import { Directory } from '../../../common/enum/directory.enum';
 import { UpdateUserDto } from './dto/request/update-user.dto';
+import { UpdateUserStatusDto } from './dto/request/update-user-status.dto';
 
 @ApiTags('Company and User Management - Company User')
 @ApiBadRequestResponse({
@@ -124,47 +120,31 @@ export class CompanyUsersController {
   /**
    * A PUT method defined with the @Put(':userGUID/status/:statusCode')
    * decorator and a route of
-   * company/:companyId/user/:userGUID/status/:statusCode that updates the
+   * company/:companyId/user/:userGUID/status/ that updates the
    * user status by its GUID.
    * ? This end point maybe merged with user update endpoint. TBD.
    * TODO: Secure endpoints once login is implemented.
    *
    * @param companyId The company Id.
-   * @param userGUID A temporary placeholder parameter to get the user by Id.
-   *        Will be removed once login system is implemented.
-   * @param statusCode The status Code of the user of type {@link UserStatus}
+   * @param userGUID The userGUID
    *
    * @returns True on successfull operation.
    */
   @ApiOkResponse({
     description: '{statusUpdated : true}',
   })
-  @ApiQuery({ name: 'code', enum: UserStatus })
-  @ApiQuery({ name: 'userGUID', required: false })
   @Roles(Role.WRITE_SELF, Role.WRITE_USER)
   @Put(':userGUID/status')
   async updateStatus(
     @Req() request: Request,
     @Param('companyId') companyId: number,
-    @Query('code') statusCode: UserStatus,
-    @Query('userGUID') userGUID?: string,
+    @Param('userGUID') userGUID: string,
+    @Body() updateUserStatusDto: UpdateUserStatusDto,
   ): Promise<object> {
-    const currentUser = request.user as IUserJWT;
-    const userCompanies = userGUID
-      ? await this.userService.getCompaniesForUser(userGUID)
-      : undefined;
-    validateUserCompanyAndRoleForUserGuidQueryParam(
-      [Role.READ_ORG],
-      userGUID,
-      userCompanies,
-      currentUser,
-    );
-    userGUID = userGUID ? userGUID : currentUser.userGUID;
-
     const updateResult = await this.userService.updateStatus(
       companyId,
       userGUID,
-      statusCode,
+      updateUserStatusDto.statusCode,
     );
     if (updateResult.affected === 0) {
       throw new DataNotFoundException();
