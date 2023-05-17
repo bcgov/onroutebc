@@ -50,9 +50,6 @@ export class CompanyUsersController {
   /**
    * A POST method defined with the @Post() decorator and a route of
    * company/:companyId/user that creates a new user associated to a company.
-   * TODO: Validations on {@link CreateUserDto}.
-   * TODO: Secure endpoints once login is implemented.
-   * TODO: Grab user name from the access token and remove the hard coded value 'ASMITH'.
    *
    * @param createUserDto The http request object containing the user details.
    *
@@ -84,9 +81,6 @@ export class CompanyUsersController {
   /**
    * A PUT method defined with the @Put(':userGUID') decorator and a route of
    * /companies/:companyId/users/:userGUID that updates a user details by its GUID.
-   * TODO: Secure endpoints once login is implemented.
-   * TODO: Grab user name from the access token and remove the hard coded value 'ASMITH'.
-   * TODO: Grab user directory from the access token and remove the hard coded value Directory.BBCEID.
    *
    * @param userGUID The GUID of the user.
    *
@@ -117,7 +111,6 @@ export class CompanyUsersController {
    * company/:companyId/user/:userGUID/status/ that updates the
    * user status by its GUID.
    * ? This end point maybe merged with user update endpoint. TBD.
-   * TODO: Secure endpoints once login is implemented.
    *
    * @param companyId The company Id.
    * @param userGUID The userGUID
