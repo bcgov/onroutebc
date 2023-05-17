@@ -50,7 +50,10 @@ export default function LeaveConfirmationDialog({
             color: BC_COLOURS.bc_brown,
           }}
         >
-          <i className="fa fa-exclamation-triangle"></i> &nbsp;
+          <span className="fa-stack fa-sm">
+            <i className="fa fa-circle fa-stack-2x"></i>
+            <i className="fa fa-exclamation-triangle fa-stack-1x fa-inverse"></i>
+          </span> 
           <strong>Are you sure you want to leave? </strong>
         </DialogTitle>
         <DialogContent dividers>
