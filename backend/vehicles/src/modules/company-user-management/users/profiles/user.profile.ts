@@ -80,18 +80,6 @@ export class UsersProfile extends AutomapperProfile {
           }),
         ),
         forMember(
-          (d) => d.userName,
-          mapWithArguments((source, { userName }) => {
-            return userName;
-          }),
-        ),
-        forMember(
-          (d) => d.directory,
-          mapWithArguments((source, { directory }) => {
-            return directory;
-          }),
-        ),
-        forMember(
           (d) => d.userContact,
           mapFrom((s) => {
             return this.mapper.map(s, CreateContactDto, Contact);

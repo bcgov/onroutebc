@@ -24,7 +24,6 @@ import { Role } from '../../../common/enum/roles.enum';
 import { Request } from 'express';
 import { IUserJWT } from '../../../common/interface/user-jwt.interface';
 import { AuthOnly } from '../../../common/decorator/auth-only.decorator';
-import { validateUserCompanyAndRoleForUserGuidQueryParam } from '../../../common/helper/auth.helper';
 import { Roles } from '../../../common/decorator/roles.decorator';
 import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
 import { ReadUserDto } from './dto/response/read-user.dto';
@@ -77,9 +76,8 @@ export class UsersController {
 
   /**
    * A GET method defined with the @Get() decorator and a route of
-   * /user/list that retrieves a list of users associated with
+   * /user/roles that retrieves a list of users associated with
    * the company ID
-   * TODO: Secure endpoints once login is implemented.
    *
    * @param companyId The company Id.
    *
@@ -109,7 +107,7 @@ export class UsersController {
    * /users that retrieves a list of users associated with
    * the company ID
    *
-   * @param companyId The company Id.  Mandatory for all user directories apart from IDIR.
+   * @param companyId The company Id. Required when authorized as IDIR User.
    *
    * @returns The user list with response object {@link ReadUserDto}.
    */
@@ -126,19 +124,21 @@ export class UsersController {
     @Query('companyId') companyId?: number,
   ): Promise<ReadUserDto[]> {
     const currentUser = request.user as IUserJWT;
-    if (currentUser.identity_provider !== IDP.IDIR && !companyId) {
+    if (currentUser.identity_provider === IDP.IDIR && !companyId) {
       throw new BadRequestException();
     }
-    return await this.userService.findUsersDto(undefined, companyId);
+
+    const companyIdList = companyId
+      ? [companyId]
+      : currentUser.associatedCompanies;
+    return await this.userService.findUsersDto(undefined, companyIdList);
   }
 
   /**
    * A GET method defined with the @Get() decorator and a route of
    * /users/:userGuid that retrieves a user by its GUID
    * (global unique identifier).
-   * TODO: Secure endpoints once login is implemented.
    *
-   * @param companyId  The company Id. Mandatory for all user directories apart from IDIR.
    * @param userGUID  The user GUID.
    *
    * @returns The user details with response object {@link ReadUserDto}.
@@ -147,47 +147,20 @@ export class UsersController {
     description: 'The User Resource',
     type: ReadUserDto,
   })
-  @ApiQuery({ name: 'companyId', required: false })
   @Roles(Role.READ_SELF, Role.READ_USER)
   @Get(':userGUID')
   async findUserDetails(
     @Req() request: Request,
     @Param('userGUID') userGUID: string,
-    @Query('companyId') companyId?: number,
   ): Promise<ReadUserDto> {
     const currentUser = request.user as IUserJWT;
-    userGUID = await this.validateUserCompanyAndRoleForUserGuidQueryParam(
-      currentUser,
+    const users = await this.userService.findUsersDto(
       userGUID,
-      [Role.READ_USER],
+      currentUser.associatedCompanies,
     );
-
-    const users = await this.userService.findUsersDto(userGUID, companyId);
     if (!users?.length) {
       throw new DataNotFoundException();
     }
     return users[0];
-  }
-
-  private async validateUserCompanyAndRoleForUserGuidQueryParam(
-    currentUser: IUserJWT,
-    userGUID: string,
-    roles: Role[],
-  ) {
-    if (userGUID === currentUser.userGUID) {
-      return userGUID;
-    }
-    const userCompanies = userGUID
-      ? await this.userService.getCompaniesForUser(userGUID)
-      : undefined;
-
-    validateUserCompanyAndRoleForUserGuidQueryParam(
-      roles,
-      userGUID,
-      userCompanies,
-      currentUser,
-    );
-    userGUID = userGUID ? userGUID : currentUser.userGUID;
-    return userGUID;
   }
 }
