@@ -5,7 +5,6 @@ import {
   updateTermOversize,
 } from "../apiManager/permitsAPI";
 import { Application } from "../types/application";
-import dayjs from "dayjs";
 
 /**
  * A custom react query mutation hook that saves the application data to the backend API

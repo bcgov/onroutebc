@@ -312,13 +312,6 @@ export const TermOversizeForm = () => {
     }
   };
 
-  /**
-   * Changed view to the main Vehicle Inventory page
-   */
-  const handleClose = () => {
-    navigate("../");
-  };
-
   const handleLeave = () => {
     setIsLeaveDialogOpen(() => true);
   };

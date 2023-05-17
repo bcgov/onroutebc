@@ -13,9 +13,7 @@ import { Loading } from "../../../../common/pages/Loading";
 import { AxiosError } from "axios";
 import { Unauthorized } from "../../../../common/pages/Unauthorized";
 import { ErrorFallback } from "../../../../common/pages/ErrorFallback";
-import { getApplicationInProgressById } from "../../apiManager/permitsAPI";
 import { useParams } from "react-router-dom";
-import { formatDate } from "../../../../common/helpers/formatDate";
 import { useApplicationDetailsMutation } from "../../hooks/hooks";
 
 export enum ApplicationStep {

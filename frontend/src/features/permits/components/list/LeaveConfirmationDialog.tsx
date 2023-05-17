@@ -36,7 +36,6 @@ export default function LeaveConfirmationDialog({
    */
   caption: string
 }) {
-  const title = caption;
   return (
     <div>
       <Dialog
