@@ -24,8 +24,6 @@ export class UsersService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
-    @InjectRepository(CompanyUser)
-    private companyUserRepository: Repository<CompanyUser>,
     @InjectMapper() private readonly classMapper: Mapper,
     private dataSource: DataSource,
     private readonly pendingUsersService: PendingUsersService,
@@ -94,6 +92,58 @@ export class UsersService {
   }
 
   /**
+   * The update() method updates a user with the {@link updateUserDto} object
+   * and userGUID parameters, and returns the updated user as a ReadUserDto
+   * object. If the user is not found, it throws an error.
+   *
+   * @param userGUID The user GUID.
+   * @param updateUserDto Request object of type {@link UpdateUserDto} for
+   * updating a user.
+   *
+   * @returns The updated user details as a promise of type {@link ReadUserDto}.
+   */
+  async update(
+    userGUID: string,
+    updateUserDto: UpdateUserDto,
+  ): Promise<ReadUserDto> {
+    const userDetails = await this.findUsersEntity(userGUID);
+
+    if (!userDetails?.length) {
+      throw new DataNotFoundException();
+    }
+
+    const user = this.classMapper.map(updateUserDto, UpdateUserDto, User, {
+      extraArgs: () => ({
+        userGUID: userGUID,
+      }),
+    });
+    user.userContact.contactId = userDetails[0]?.userContact?.contactId;
+    await this.userRepository.save(user);
+    const userListDto = await this.findUsersDto(user.userGUID);
+    return userListDto[0];
+  }
+
+  /**
+   * The updateStatus() method updates the statusCode of the user with
+   * userGUID and {@link UserStatus} parameters.
+   *
+   * @param companyId The company Id.
+   * @param userGUID The user GUID.
+   * @param statusCode The User status code of type {@link UserStatus}
+   *
+   * @returns The UpdateResult of the operation
+   */
+  async updateStatus(
+    userGUID: string,
+    statusCode: UserStatus,
+  ): Promise<UpdateResult> {
+    const user = new User();
+    user.userGUID = userGUID;
+    user.statusCode = statusCode;
+    return await this.userRepository.update({ userGUID }, user);
+  }
+
+  /**
    * Finds user entities based on optional filtering criteria of userGUID and
    * companyId. Retrieves associated data for userContact, province, companyUser,
    * and company.
@@ -154,58 +204,6 @@ export class UsersService {
 
     // Return the array of ReadUserDto objects
     return readUserDto;
-  }
-
-  /**
-   * The update() method updates a user with the {@link updateUserDto} object
-   * and userGUID parameters, and returns the updated user as a ReadUserDto
-   * object. If the user is not found, it throws an error.
-   *
-   * @param userGUID The user GUID.
-   * @param updateUserDto Request object of type {@link UpdateUserDto} for
-   * updating a user.
-   *
-   * @returns The updated user details as a promise of type {@link ReadUserDto}.
-   */
-  async update(
-    userGUID: string,
-    updateUserDto: UpdateUserDto,
-  ): Promise<ReadUserDto> {
-    const userDetails = await this.findUsersEntity(userGUID);
-
-    if (!userDetails?.length) {
-      throw new DataNotFoundException();
-    }
-
-    const user = this.classMapper.map(updateUserDto, UpdateUserDto, User, {
-      extraArgs: () => ({
-        userGUID: userGUID,
-      }),
-    });
-    user.userContact.contactId = userDetails[0]?.userContact?.contactId;
-    await this.userRepository.save(user);
-    const userListDto = await this.findUsersDto(user.userGUID);
-    return userListDto[0];
-  }
-
-  /**
-   * The updateStatus() method updates the statusCode of the user with
-   * userGUID and {@link UserStatus} parameters.
-   *
-   * @param companyId The company Id.
-   * @param userGUID The user GUID.
-   * @param statusCode The User status code of type {@link UserStatus}
-   *
-   * @returns The UpdateResult of the operation
-   */
-  async updateStatus(
-    userGUID: string,
-    statusCode: UserStatus,
-  ): Promise<UpdateResult> {
-    const user = new User();
-    user.userGUID = userGUID;
-    user.statusCode = statusCode;
-    return await this.userRepository.update({ userGUID }, user);
   }
 
   /**

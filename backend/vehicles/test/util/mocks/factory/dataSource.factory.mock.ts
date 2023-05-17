@@ -6,7 +6,7 @@ import { DataSource } from 'typeorm';
 import { Company } from '../../../../src/modules/company-user-management/company/entities/company.entity';
 import { companyEntityMock } from '../data/company.mock';
 import { User } from '../../../../src/modules/company-user-management/users/entities/user.entity';
-import { userEntityMock } from '../data/user.mock';
+import { userEntityMock1 } from '../data/user.mock';
 
 export type MockType<T> = {
   [P in keyof T]?: jest.Mock<object>;
@@ -21,11 +21,12 @@ export const dataSourceMockFactory: () => MockType<DataSource> = jest.fn(
       rollbackTransaction: jest.fn(),
       commitTransaction: jest.fn(),
       manager: {
+        delete: jest.fn(),
         save: jest.fn(async (saveObject: object) => {
           if (saveObject instanceof Company) {
             return companyEntityMock;
           } else if (saveObject instanceof User) {
-            return userEntityMock;
+            return userEntityMock1;
           }
         }),
       },

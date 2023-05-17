@@ -15,7 +15,7 @@ import {
 import { AccountRegion } from '../../../../src/common/enum/account-region.enum';
 import { AccountSource } from '../../../../src/common/enum/account-source.enum';
 import { Directory } from '../../../../src/common/enum/directory.enum';
-import { companyUserEntityMock } from './company-user.mock';
+import { companyUserEntityMock1 } from './company-user.mock';
 import { createUserDtoMock, readUserDtoMock } from './user.mock';
 import { CreateCompanyDto } from '../../../../src/modules/company-user-management/company/dto/request/create-company.dto';
 import { UpdateCompanyDto } from '../../../../src/modules/company-user-management/company/dto/request/update-company.dto';
@@ -49,7 +49,7 @@ export const companyEntityMock: Company = {
   primaryContact: { ...contactEntityMock },
   accountRegion: ACCOUNT_REGION,
   accountSource: ACCOUNT_SOURCE,
-  companyUsers: [{ ...companyUserEntityMock }],
+  companyUsers: [{ ...companyUserEntityMock1 }],
   ...baseEntityMock,
 };
 

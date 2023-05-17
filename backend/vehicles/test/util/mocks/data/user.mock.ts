@@ -12,25 +12,43 @@ import {
 import { CreateUserDto } from '../../../../src/modules/company-user-management/users/dto/request/create-user.dto';
 import { UpdateUserDto } from '../../../../src/modules/company-user-management/users/dto/request/update-user.dto';
 import { ReadUserDto } from '../../../../src/modules/company-user-management/users/dto/response/read-user.dto';
-import { companyUserEntityMock } from './company-user.mock';
+import {
+  companyUserEntityMock1,
+  companyUserEntityMock2,
+} from './company-user.mock';
 import { IUserJWT } from '../../../../src/common/interface/user-jwt.interface';
+import { UpdateUserStatusDto } from '../../../../src/modules/company-user-management/users/dto/request/update-user-status.dto';
 
-const USER_GUID = '06267945F2EB4E31B585932F78B76269';
+const USER_GUID_1 = '06267945F2EB4E31B585932F78B76269';
+const USER_GUID_2 = '081BA455A00D4374B0CC13092117A706';
 const USER_NAME = 'REDTRUCK';
 const USER_AUTH_GROUP = UserAuthGroup.COMPANY_ADMINISTRATOR;
 const DIRECOTRY = Directory.BBCEID;
 const USER_STATUS = UserStatus.ACTIVE;
 
-export const userEntityMock: User = {
-  userGUID: USER_GUID,
+export const userEntityMock1: User = {
+  userGUID: USER_GUID_1,
   userName: USER_NAME,
   directory: DIRECOTRY,
   userAuthGroup: USER_AUTH_GROUP,
   statusCode: USER_STATUS,
   userContact: { ...contactEntityMock },
-  companyUsers: [{ ...companyUserEntityMock }],
+  companyUsers: [{ ...companyUserEntityMock1 }],
   ...baseEntityMock,
 };
+
+export const userEntityMock2: User = {
+  userGUID: USER_GUID_2,
+  userName: USER_NAME,
+  directory: DIRECOTRY,
+  userAuthGroup: USER_AUTH_GROUP,
+  statusCode: USER_STATUS,
+  userContact: { ...contactEntityMock },
+  companyUsers: [{ ...companyUserEntityMock2 }],
+  ...baseEntityMock,
+};
+
+export const USER_LIST: User[] = [userEntityMock1, userEntityMock2];
 
 export const createUserDtoMock: CreateUserDto = {
   userAuthGroup: USER_AUTH_GROUP,
@@ -42,8 +60,12 @@ export const updateUserDtoMock: UpdateUserDto = {
   ...updateContactDtoMock,
 };
 
+export const updateUserStatusDtoMock: UpdateUserStatusDto = {
+  statusCode: UserStatus.DISABLED,
+};
+
 export const readUserDtoMock: ReadUserDto = {
-  userGUID: USER_GUID,
+  userGUID: USER_GUID_1,
   userName: USER_NAME,
   userAuthGroup: USER_AUTH_GROUP,
   statusCode: USER_STATUS,
@@ -71,7 +93,7 @@ export const currentUserMock: IUserJWT = {
   bceid_business_guid: '6F9619FF8B86D011B42D00C04FC964FF',
   bceid_business_name: 'ABC Carriers Inc.',
   userName: USER_NAME,
-  userGUID: USER_GUID,
+  userGUID: USER_GUID_1,
   companyId: 1,
   roles: null,
   associatedCompanies: [1],
