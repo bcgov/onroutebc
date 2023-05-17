@@ -151,8 +151,11 @@ export class ApplicationService {
       },
     );
 
-    await this.permitRepository.save(newApplication);
-
+    let applicationData: Permit = {
+      ...newApplication,
+      updatedDateTime: new Date(),
+    };
+    await this.permitRepository.save(applicationData);
     return this.classMapper.mapAsync(
       await this.findByApplicationNumber(applicationNumber),
       Permit,
