@@ -66,10 +66,9 @@ export const CountryAndProvince = <T extends ORBC_FormTypes>({
   const countrySupportsProvinces = (country: string) => COUNTRIES_THAT_SUPPORT_PROVINCE.includes(country);
 
   const countrySelected = watch(countryField);
-  const initShouldDisplayProvince = countrySupportsProvinces(countrySelected);
 
   const [shouldDisplayProvince, setShouldDisplayProvince] =
-    useState<boolean>(initShouldDisplayProvince);
+    useState<boolean>(true);
 
   /**
    * When the selected country supports provinces, provinces are displayed.

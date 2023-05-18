@@ -23,6 +23,7 @@ import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { CompanyAndUserRequest } from "../../../manageProfile/types/manageProfile";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { SnackBarContext } from "../../../../App";
+import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 
 const CompanyBanner = ({ legalName }: { legalName: string }) => {
   return (
@@ -83,6 +84,13 @@ const getSectionNameByField = (field: string) => {
     default:
       return "Company Contact Details";
   }
+};
+
+const isSubmissionSuccessful = (status: number) => status === 201 || status === 200;
+const hasValidationErrors = (status: number) => status === 400;
+const getFirstValidationError = (errors: { field: string, message: string[] }[]) => {
+  if (errors.length === 0 || errors[0].message.length === 0) return undefined;
+  return `${getSectionNameByField(errors[0].field)} validation error: ${errors[0].message[0]}`;
 };
 
 export const CreateProfileSteps = React.memo(() => {
@@ -149,7 +157,7 @@ export const CreateProfileSteps = React.memo(() => {
   const createProfileQuery = useMutation({
     mutationFn: createOnRouteBCProfile,
     onSuccess: async (response) => {
-      if (response.status === 201 || response.status === 200) {
+      if (isSubmissionSuccessful(response.status)) {
         const responseBody = await response.json();
         const companyId = responseBody["companyId"];
         const userDetails = {
@@ -173,22 +181,16 @@ export const CreateProfileSteps = React.memo(() => {
 
         setClientNumber(() => responseBody["clientNumber"]);
         queryClient.invalidateQueries(["userContext"]);
-      } else {
-        // Display Error
-        if (response.status === 400) {
-          const { error } = await response.json();
-          if (error && error.length > 0) {
-            const { field, message } = error[0];
-            const firstErrMsg = message && message.length > 0 ? message[0] : undefined;
-            if (firstErrMsg) {
-              setSnackBar({
-                message: `${getSectionNameByField(field)} validation error: ${firstErrMsg}`,
-                showSnackbar: true,
-                setShowSnackbar: () => true,
-                alertType: "error",
-              });
-            }
-          }
+      } else if (hasValidationErrors(response.status)) {
+        const { error } = await response.json();
+        const firstErrMsg = getFirstValidationError(getDefaultRequiredVal([], error));
+        if (firstErrMsg) {
+          setSnackBar({
+            message: firstErrMsg,
+            showSnackbar: true,
+            setShowSnackbar: () => true,
+            alertType: "error",
+          });
         }
       }
     },
