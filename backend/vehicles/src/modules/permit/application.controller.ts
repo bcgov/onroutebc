@@ -120,6 +120,10 @@ export class ApplicationController {
     return application;
   }
 
+  @ApiOkResponse({
+    description: 'The Permit Application Resource',
+    type: ResultDto,
+  })
   @Post('status')
   async updateApplicationStatus(
     @Body() updateApplicationStatusDto: UpdateApplicationStatusDto,
