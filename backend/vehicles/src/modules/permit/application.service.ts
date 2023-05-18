@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-return */
 import { Mapper } from '@automapper/core';
 import { InjectMapper } from '@automapper/nestjs';
 import { Injectable } from '@nestjs/common';
@@ -36,9 +35,7 @@ export class ApplicationService {
       updatedDateTime: new Date(),
     };
 
-    const savedPermitEntity = await this.permitRepository.save(
-      applicationData,
-    );
+    const savedPermitEntity = await this.permitRepository.save(applicationData);
     const refreshedPermitEntity = await this.findOne(
       savedPermitEntity.permitId,
     );
