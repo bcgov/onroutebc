@@ -26,8 +26,15 @@ export class ApplicationService {
       CreateApplicationDto,
       Permit,
     );
+
+    const applicationData: Permit = {
+      ...permitApplication,
+      createdDateTime: new Date(),
+      updatedDateTime: new Date(),
+    };
+
     const savedPermitEntity = await this.permitRepository.save(
-      permitApplication,
+      applicationData,
     );
     const refreshedPermitEntity = await this.findOne(
       savedPermitEntity.permitId,
@@ -151,7 +158,7 @@ export class ApplicationService {
       },
     );
 
-    let applicationData: Permit = {
+    const applicationData: Permit = {
       ...newApplication,
       updatedDateTime: new Date(),
     };
