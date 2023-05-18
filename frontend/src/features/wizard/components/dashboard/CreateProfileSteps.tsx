@@ -22,6 +22,8 @@ import { OnRouteBCProfileCreated } from "../../pages/OnRouteBCProfileCreated";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { CompanyAndUserRequest } from "../../../manageProfile/types/manageProfile";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
+import { SnackBarContext } from "../../../../App";
+import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 
 const CompanyBanner = ({ legalName }: { legalName: string }) => {
   return (
@@ -64,10 +66,38 @@ const ExistingTPSSelection = ({ screenSize }: { screenSize: "lg" | "sm" }) => (
   </div>
 );
 
+/**
+ * Gets the section name inside the form for a particular field name
+ * @param field - Field name inside the form (eg. primaryContact.firstName)
+ * @returns Name of the section in the form that the field belongs to (eg. Company Primary Contact)
+ */
+const getSectionNameByField = (field: string) => {
+  const sectionParts = field.split(".");
+
+  switch (sectionParts[0]) {
+    case "mailingAddress":
+      return "Company Mailing Address";
+    case "primaryContact":
+      return "Company Primary Contact";
+    case "adminUser":
+      return "User Details";
+    default:
+      return "Company Contact Details";
+  }
+};
+
+const isSubmissionSuccessful = (status: number) => status === 201 || status === 200;
+const hasValidationErrors = (status: number) => status === 400;
+const getFirstValidationError = (errors: { field: string, message: string[] }[]) => {
+  if (errors.length === 0 || errors[0].message.length === 0) return undefined;
+  return `${getSectionNameByField(errors[0].field)} validation error: ${errors[0].message[0]}`;
+};
+
 export const CreateProfileSteps = React.memo(() => {
   const queryClient = useQueryClient();
   const steps = ["Company Information", "My Information"];
   const { setCompanyId, setUserDetails } = useContext(OnRouteBCContext);
+  const { setSnackBar } = useContext(SnackBarContext);
 
   const { user } = useAuth();
 
@@ -82,8 +112,43 @@ export const CreateProfileSteps = React.memo(() => {
   const formMethods = useForm<CompanyAndUserRequest>({
     defaultValues: {
       legalName: user?.profile?.bceid_business_name as string,
+      mailingAddress: {
+        addressLine1: "",
+        addressLine2: "",
+        provinceCode: "",
+        countryCode: "",
+        city: "",
+        postalCode: "",
+      },
+      email: "",
+      phone: "",
+      extension: "",
+      fax: "",
       adminUser: {
         userAuthGroup: "ORGADMIN",
+        firstName: "",
+        lastName: "",
+        email: "",
+        phone1: "",
+        phone1Extension: "",
+        phone2: "",
+        phone2Extension: "",
+        fax: "",
+        countryCode: "",
+        provinceCode: "",
+        city: "",
+      },
+      primaryContact: {
+        firstName: "",
+        lastName: "",
+        email: "",
+        phone1: "",
+        phone1Extension: "",
+        phone2: "",
+        phone2Extension: "",
+        countryCode: "",
+        provinceCode: "",
+        city: "",
       },
     },
   });
@@ -92,7 +157,7 @@ export const CreateProfileSteps = React.memo(() => {
   const createProfileQuery = useMutation({
     mutationFn: createOnRouteBCProfile,
     onSuccess: async (response) => {
-      if (response.status === 201 || response.status === 200) {
+      if (isSubmissionSuccessful(response.status)) {
         const responseBody = await response.json();
         const companyId = responseBody["companyId"];
         const userDetails = {
@@ -116,8 +181,17 @@ export const CreateProfileSteps = React.memo(() => {
 
         setClientNumber(() => responseBody["clientNumber"]);
         queryClient.invalidateQueries(["userContext"]);
-      } else {
-        // Display Error
+      } else if (hasValidationErrors(response.status)) {
+        const { error } = await response.json();
+        const firstErrMsg = getFirstValidationError(getDefaultRequiredVal([], error));
+        if (firstErrMsg) {
+          setSnackBar({
+            message: firstErrMsg,
+            showSnackbar: true,
+            setShowSnackbar: () => true,
+            alertType: "error",
+          });
+        }
       }
     },
   });
@@ -235,7 +309,7 @@ export const CreateProfileSteps = React.memo(() => {
               {activeStep === 0 && (
                 <Button
                   className="proceed-btn proceed-btn--next"
-                  onClick={handleNext}
+                  onClick={handleSubmit(handleNext)}
                   variant="contained"
                   color="primary"
                   endIcon={<>&rarr;</>}
