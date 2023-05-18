@@ -145,7 +145,7 @@ export const ContactDetails = ({ feature }: { feature: string }) => {
         />
 
         <CustomFormComponent
-          type="input"
+          type="phone"
           feature={feature}
           options={{
             name: "permitData.contactDetails.fax",

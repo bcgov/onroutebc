@@ -26,7 +26,7 @@ export const StartApplicationButton = () => {
   };
 
   const handleStartButtonClicked = () => {
-    navigate('/permits');
+    navigate('/applications/permits');
   }
 
   return (

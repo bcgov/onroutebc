@@ -116,11 +116,11 @@ const PayBC = ({
         >
           Use
         </Typography>
-        <img className="payment--img-payBC" src="./PayBC-Main-Logo.png" />
+        <img className="payment--img-payBC" src="/PayBC-Main-Logo.png" />
         <Box sx={{ display: "flex", alignItems: "center", marginLeft: "auto" }}>
-          <img className="payment--img" src="./Visa_Logo.svg" />
-          <img className="payment--img" src="./Mastercard_Logo.svg" />
-          <img className="payment--img" src="./Amex_Logo.svg" />
+          <img className="payment--img" src="/Visa_Logo.svg" />
+          <img className="payment--img" src="/Mastercard_Logo.svg" />
+          <img className="payment--img" src="/Amex_Logo.svg" />
         </Box>
       </Box>
 

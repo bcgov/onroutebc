@@ -71,9 +71,10 @@ export const TermOversizeReview = () => {
                 variant="contained"
                 color="secondary"
                 onClick={() => back()}
-                sx={{ marginRight: "24px" }}
+                sx={{ marginRight: "24px", display: "flex", alignItems: "center", gap: "10px"}}
               >
-                Edit Application
+                <i className="fa fa-pencil" />
+                Edit
               </Button>
               <Button
                 key="submit-TROS-button"
