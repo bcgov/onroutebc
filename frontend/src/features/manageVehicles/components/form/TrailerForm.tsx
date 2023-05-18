@@ -150,7 +150,7 @@ export const TrailerForm = ({ trailer }: TrailerFormProps) => {
               name: "year",
               rules: {
                 required: { value: true, message: "Year is required." },
-                // valueAsNumber: true,
+                valueAsNumber: true,
                 maxLength: 4,
                 validate: {
                   isNumber: (v) => !isNaN(v) || "Must be a number",

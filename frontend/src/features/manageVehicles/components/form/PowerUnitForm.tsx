@@ -153,7 +153,7 @@ export const PowerUnitForm = ({ powerUnit }: PowerUnitFormProps) => {
               name: "year",
               rules: {
                 required: { value: true, message: "Year is required." },
-                // valueAsNumber: true,
+                valueAsNumber: true,
                 maxLength: 4,
                 validate: {
                   isNumber: (v) => !isNaN(v) || "Must be a number",
@@ -230,7 +230,7 @@ export const PowerUnitForm = ({ powerUnit }: PowerUnitFormProps) => {
               name: "licensedGvw",
               rules: {
                 required: { value: true, message: "Licensed GVW is required." },
-                // valueAsNumber: true,
+                valueAsNumber: true,
                 validate: {
                   isNumber: (v) => !isNaN(v) || "Must be a number",
                 },
