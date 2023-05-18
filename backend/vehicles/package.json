@@ -45,6 +45,7 @@
     "@automapper/core": "^8.7.7",
     "@automapper/nestjs": "^8.7.7",
     "@automapper/types": "^6.3.1",
+    "@nestjs/axios": "^2.0.0",
     "@nestjs/cli": "^9.4.2",
     "@nestjs/common": "^9.4.0",
     "@nestjs/config": "^2.3.1",
