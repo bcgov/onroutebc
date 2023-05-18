@@ -26,8 +26,15 @@ export class ApplicationService {
       CreateApplicationDto,
       Permit,
     );
+
+    const applicationData: Permit = {
+      ...permitApplication,
+      createdDateTime: new Date(),
+      updatedDateTime: new Date(),
+    };
+
     const savedPermitEntity = await this.permitRepository.save(
-      permitApplication,
+      applicationData,
     );
     const refreshedPermitEntity = await this.findOne(
       savedPermitEntity.permitId,
@@ -151,8 +158,11 @@ export class ApplicationService {
       },
     );
 
-    await this.permitRepository.save(newApplication);
-
+    const applicationData: Permit = {
+      ...newApplication,
+      updatedDateTime: new Date(),
+    };
+    await this.permitRepository.save(applicationData);
     return this.classMapper.mapAsync(
       await this.findByApplicationNumber(applicationNumber),
       Permit,

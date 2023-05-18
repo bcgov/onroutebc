@@ -9,6 +9,7 @@ import {
 import { Application } from "../../../types/application";
 import { ReviewConditionsTable } from "./ReviewConditionsTable";
 import { getDefaultRequiredVal } from "../../../../../common/helpers/util";
+import { formatDate } from "../../../../../common/helpers/formatDate";
 
 export const ReviewPermitDetails = ({
   values,
@@ -25,14 +26,35 @@ export const ReviewPermitDetails = ({
       <Box sx={PERMIT_RIGHT_BOX_STYLE}>
         <Box sx={{ gap: "40px", paddingTop: "24px" }}>
           <Typography sx={{ fontWeight: "bold" }}>Start Date:</Typography>
-          <Typography>{values?.permitData.startDate.format("LL")}</Typography>
+          startDate={getDefaultRequiredVal(
+            "",
+            (values?.permitData?.startDate?.$u !== null)? values?.permitData?.startDate?.format("LL"): formatDate(
+              new Intl.DateTimeFormat("en-US", {
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+                hour: "numeric",
+                minute: "numeric",
+                timeZoneName: "short",
+              }), values?.permitData?.startDate
+            )
+            )}
           <Typography sx={{ fontWeight: "bold" }}>Permit Duration:</Typography>
           <Typography>{values?.permitData.permitDuration} Days</Typography>
         </Box>
         <PermitExpiryDateBanner
           expiryDate={getDefaultRequiredVal(
             "",
-            values?.permitData?.expiryDate?.format("LL")
+            (values?.permitData?.expiryDate?.$u !== null)? values?.permitData?.expiryDate?.format("LL"): formatDate(
+              new Intl.DateTimeFormat("en-US", {
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+                hour: "numeric",
+                minute: "numeric",
+                timeZoneName: "short",
+              }), values?.permitData?.expiryDate
+            )
           )}
         />
         <Box>

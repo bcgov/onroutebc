@@ -11,6 +11,7 @@ export const BC_COLOURS = {
   bc_green: "#2E8540",
   bc_red: "#D8292F",
   bc_gold: "#FCBA19",
+  bc_brown: "#6C4A00",
 
   bc_background_blue: "#38598A",
   bc_background_blue_grey: "#F4F5F8",

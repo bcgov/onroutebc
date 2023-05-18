@@ -6,7 +6,11 @@ export const ApplicationInProgressColumnDefinition: MRT_ColumnDef<ApplicationInP
   {
     accessorKey: "applicationNumber",
     header: "Application #",
-    Cell: (props: {cell: any}) => <Link to="#">{props.cell.getValue()}</Link>
+    accessorFn: (row) => row.applicationNumber,
+    Cell: (props: {cell: any, row: any}) => {
+      return <Link to={`/applications/${props.row.original.permitId}`}>{props.cell.getValue()}</Link>
+    },
+
   },
   {
     accessorKey: "permitType",

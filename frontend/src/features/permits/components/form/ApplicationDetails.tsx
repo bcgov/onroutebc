@@ -13,6 +13,7 @@ import {
   formatProvince,
 } from "../../../../common/helpers/formatCountryProvince";
 import { CompanyProfile } from "../../../manageProfile/types/manageProfile";
+import { formatDate } from "../../../../common/helpers/formatDate";
 
 const CompanyInformation = ({
   companyInfo,
@@ -66,44 +67,64 @@ export const ApplicationDetails = ({
 
   return (
     <>
+      {(values.applicationNumber !== "")?
+      <div>
       <Typography
-        variant={"h1"}
-        sx={{
-          marginRight: "200px",
-          marginTop: "0px",
-          paddingTop: "0px",
-          borderBottom: "none",
-        }}
-      >
-        {applicationName}
+      variant={"h1"}
+      sx={{
+        marginRight: "200px",
+        marginTop: "0px",
+        paddingTop: "0px",
+        borderBottom: "none",
+      }}
+    >
+      {applicationName}
+    </Typography>
+    <Typography
+      variant="h2"
+      sx={{
+        display: "block",
+        borderBottom: "none",
+        paddingBottom: "8px",
+        paddingTop: "8px",
+      }}
+    >
+      Application # {values.applicationNumber}
+    </Typography>
+    <Box sx={{ display: "flex" , gap: "40px"}}>
+      <Typography sx={{ width: "327px"}}>
+        <Box component="span" fontWeight="bold">
+          Date Created:
+        </Box>
+        {"  "}
+        {(typeof values.createdDateTime !== "string")? values.createdDateTime?.format("LLL"): formatDate(new Intl.DateTimeFormat("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+        hour: "numeric",
+        minute: "numeric",
+        timeZoneName: "short",
+      }), values.createdDateTime)}
       </Typography>
-      {/* <Typography
-        variant="h2"
-        sx={{
-          display: "block",
-          borderBottom: "none",
-          paddingBottom: "8px",
-          paddingTop: "8px",
-        }}
-      >
-        Application # {values.applicationId}
+      <Typography>
+        <Box component="span" fontWeight="bold">
+          Last Updated:
+        </Box>
+        {"  "}
+        {(typeof values.updatedDateTime !== "string")? values.createdDateTime?.format("LLL"): formatDate(new Intl.DateTimeFormat("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+        hour: "numeric",
+        minute: "numeric",
+        timeZoneName: "short",
+      }), values.updatedDateTime)}
       </Typography>
-      <Box sx={{ display: "flex" }}>
-        <Typography sx={{ width: "327px" }}>
-          <Box component="span" fontWeight="bold">
-            Date Created:
-          </Box>
-          {"  "}
-          {values.dateCreated.format("LLL")}
-        </Typography>
-        <Typography>
-          <Box component="span" fontWeight="bold">
-            Last Updated:
-          </Box>
-          {"  "}
-          {values.lastUpdated.format("LLL")}
-        </Typography>
-      </Box> */}
+    </Box>
+    </div>
+    :
+    ""
+      }
       <CompanyBanner companyInfo={companyInfoQuery.data} />
       <CompanyInformation companyInfo={companyInfoQuery.data} />
     </>
