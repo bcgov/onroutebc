@@ -59,7 +59,7 @@ export const CompanyContactDetailsForm = ({ feature }: { feature: string }) => (
       />
     </div>
     <CustomFormComponent
-      type="input"
+      type="phone"
       feature={feature}
       options={{
         name: "fax",
