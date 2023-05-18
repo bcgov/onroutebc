@@ -20,6 +20,7 @@ import { IUserJWT } from '../../../../src/common/interface/user-jwt.interface';
 import { UpdateUserStatusDto } from '../../../../src/modules/company-user-management/users/dto/request/update-user-status.dto';
 import { ReadUserOrbcStatusDto } from '../../../../src/modules/company-user-management/users/dto/response/read-user-orbc-status.dto';
 import { readCompanyMetadataDtoMock } from './company.mock';
+import { Role } from '../../../../src/common/enum/roles.enum';
 
 const USER_GUID_1 = '06267945F2EB4E31B585932F78B76269';
 const USER_GUID_2 = '081BA455A00D4374B0CC13092117A706';
@@ -97,11 +98,32 @@ export const currentUserMock: IUserJWT = {
   userName: USER_NAME,
   userGUID: USER_GUID_1,
   companyId: 1,
-  roles: null,
+  roles: [
+    Role.PUBLIC_AGENT,
+    Role.PUBLIC_ORG_ADMIN,
+    Role.PUBLIC_USER_ADMIN,
+    Role.PUBLIC_VEHICLE_ADMIN,
+    Role.PUBLIC_VERIFIED,
+    Role.READ_BILLING,
+    Role.READ_ORG,
+    Role.READ_PERMIT,
+    Role.READ_SELF,
+    Role.READ_USER,
+    Role.READ_VEHICLE,
+    Role.STAFF,
+    Role.STAFF_ADMIN,
+    Role.STAFF_PERMIT_ISSUER,
+    Role.WRITE_BILLING,
+    Role.WRITE_ORG,
+    Role.WRITE_PERMIT,
+    Role.WRITE_SELF,
+    Role.WRITE_USER,
+    Role.WRITE_VEHICLE,
+  ],
   associatedCompanies: [1],
 };
 
-export const ReadUserOrbcStatusDtoMock: ReadUserOrbcStatusDto = {
+export const readUserOrbcStatusDtoMock: ReadUserOrbcStatusDto = {
   user: { ...readUserDtoMock },
   associatedCompanies: [readCompanyMetadataDtoMock],
   pendingCompanies: [],
