@@ -146,7 +146,7 @@ export const UserInformationWizardForm = memo(() => {
         />
       </div>
       <CustomFormComponent
-        type="input"
+        type="phone"
         feature={FEATURE}
         options={{
           name: "adminUser.fax",
@@ -180,7 +180,7 @@ export const UserInformationWizardForm = memo(() => {
           rules: {
             required: { value: true, message: "City is required" },
             validate: {
-              validateFax: (city: string) =>
+              validateCity: (city: string) =>
                 (city.length >= 1 && city.length <= 100)
                   || "City length must be between 1-100 characters",
             },
