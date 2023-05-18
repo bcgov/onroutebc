@@ -120,16 +120,17 @@ export class ApplicationController {
     return application;
   }
 
-  @Put(':companyId/status')
+  @Post('status')
   async updateApplicationStatus(
     @Body() updateApplicationStatusDto: UpdateApplicationStatusDto,
-    @Param('companyId') companyId: number,
-    @Query('applicationStatus') applicationStatus: ApplicationStatus,
   ): Promise<ResultDto> {
-    const application = await this.applicationService.updateApplicationStatus(
+    const result = await this.applicationService.updateApplicationStatus(
       updateApplicationStatusDto.applicationIds,
-      applicationStatus,
+      updateApplicationStatusDto.applicationStatus,
     );
-    return application;
+    if (!result) {
+      throw new DataNotFoundException();
+    }
+    return result;
   }
 }

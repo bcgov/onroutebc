@@ -172,7 +172,7 @@ export class ApplicationService {
   async updateApplicationStatus(
     applicationIds: string[],
     applicationStatus: ApplicationStatus,
-  ):Promise<ResultDto> {
+  ): Promise<ResultDto> {
     // console.log(await callDatabaseSequence('permit.ORBC_PERMIT_NUMBER_SEQ',this.datasource))
     const updateResult = await this.permitRepository
       .createQueryBuilder()
