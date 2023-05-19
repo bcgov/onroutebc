@@ -58,7 +58,6 @@ export class PdfService {
    */
   private async getTemplate(templateRef: string): Promise<ITemplate> {
     // TODO: implement
-    console.log('getTemplate');
     const todo: ITemplate = {
       content: 'TODO',
       encodingType: ENCODING_TYPE,
@@ -84,8 +83,11 @@ export class PdfService {
 
     // TODO: Map the permit data to template data? Or can I just pass all of the data to cdogs?
     // Parse permitData string into JSON
-    const permitData = JSON.parse(permit.permitData.permitData);
-    permit.permitData = permitData;
+    const templateData: any = permit;
+    const permitData = JSON.parse(permit.permitData.permitData); // TODO: Type?
+    templateData.createdDateTime = permit.createdDateTime.toLocaleString(); // TODO: timezone?
+    templateData.updatedDateTime = permit.updatedDateTime.toLocaleString(); // TODO: timezone?
+    templateData.permitData = permitData;
 
     // We need the oidc api to generate a token for us
     // Use 'lastValueFrom' to make the nestjs HttpService use a promise instead of on RxJS Observable
@@ -119,7 +121,7 @@ export class PdfService {
     const cdogsResponse = await fetch(cdogs_url, {
       method: 'POST',
       body: JSON.stringify({
-        data: permit,
+        data: templateData,
         template: {
           encodingType: ENCODING_TYPE,
           fileType: TEMPLATE_FILE_TYPE,
