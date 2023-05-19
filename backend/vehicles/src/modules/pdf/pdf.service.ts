@@ -6,16 +6,13 @@ import { Permit } from 'src/modules/permit/entities/permit.entity';
 import { Repository } from 'typeorm';
 import { Template } from './entities/template.entity';
 import * as fs from 'fs';
-
-// TODO: Move this to different interface/types folder
-interface ITemplate {
-  content: string;
-  encodingType: 'base64';
-  fileType: 'docx';
-}
-
-// TODO: Move this to different constants folder
-const TEMPLATE_NAME = 'tros-template-v1';
+import { ITemplate } from './interface/template.interface';
+import {
+  ENCODING_TYPE,
+  TEMPLATE_FILE_PATH,
+  TEMPLATE_FILE_TYPE,
+  TEMPLATE_NAME,
+} from './constants/template.constant';
 
 @Injectable()
 export class PdfService {
@@ -64,8 +61,8 @@ export class PdfService {
     console.log('getTemplate');
     const todo: ITemplate = {
       content: 'TODO',
-      encodingType: 'base64',
-      fileType: 'docx',
+      encodingType: ENCODING_TYPE,
+      fileType: TEMPLATE_FILE_TYPE,
     };
     return todo;
   }
@@ -108,14 +105,14 @@ export class PdfService {
 
     // TODO: get this from COMS and use the passed in template variable
     // Temp helper function
-    function base64_encode(file: string) {
+    const encode = (file: string) => {
       const contents = fs.readFileSync(file);
-      return contents.toString('base64');
-    }
+      return contents.toString(ENCODING_TYPE);
+    };
 
     // TODO: get this from COMS
-    const templateContent = base64_encode(
-      `./src/modules/pdf/sampleTemplates/${TEMPLATE_NAME}.docx`,
+    const templateContent = encode(
+      `${TEMPLATE_FILE_PATH}/${TEMPLATE_NAME}.${TEMPLATE_FILE_TYPE}`,
     );
 
     // TODO: Change to use axios/httpService
@@ -124,15 +121,15 @@ export class PdfService {
       body: JSON.stringify({
         data: permit,
         template: {
-          encodingType: 'base64',
-          fileType: 'docx',
+          encodingType: ENCODING_TYPE,
+          fileType: TEMPLATE_FILE_TYPE,
           content: templateContent,
         },
         options: {
           cacheReport: false,
           convertTo: 'pdf',
           overwrite: true,
-          reportName: 'test.pdf',
+          reportName: `${TEMPLATE_NAME}.pdf`,
         },
       }),
       headers: {
@@ -157,7 +154,7 @@ export class PdfService {
     // TODO: S3 versioning
     // TODO: Temp - saves a pdf file - the CDOGS output.
     fs.writeFileSync(
-      `./src/modules/pdf/sampleTemplates/${TEMPLATE_NAME}.pdf`,
+      `${TEMPLATE_FILE_PATH}/${TEMPLATE_NAME}.pdf`,
       Buffer.from(pdf),
       'binary',
     );
