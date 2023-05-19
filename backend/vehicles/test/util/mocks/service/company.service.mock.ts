@@ -2,34 +2,34 @@
 import { Directory } from '../../../../src/common/enum/directory.enum';
 import { UpdateCompanyDto } from '../../../../src/modules/company-user-management/company/dto/request/update-company.dto';
 import {
-  readCompanyDtoMock,
-  readCompanyMetadataDtoMock,
-  readCompanyUserDtoMock,
+  readRedCompanyDtoMock,
+  readRedCompanyMetadataDtoMock,
+  readRedCompanyUserDtoMock,
 } from '../data/company.mock';
+import { RED_COMPANY_ID } from '../data/test-data.constants';
 
 export const companyServiceMock = {
-  create: jest.fn().mockResolvedValue(readCompanyUserDtoMock),
-  findAll: jest.fn().mockResolvedValue([readCompanyUserDtoMock]),
+  create: jest.fn().mockResolvedValue(readRedCompanyUserDtoMock),
   findOne: jest.fn(async (companyId: number) => {
-    if (companyId === 1) {
-      return readCompanyDtoMock;
+    if (companyId === RED_COMPANY_ID) {
+      return readRedCompanyDtoMock;
     } else {
       return null;
     }
   }),
   findCompanyMetadataByUserGuid: jest
     .fn()
-    .mockResolvedValue([readCompanyMetadataDtoMock]),
+    .mockResolvedValue([readRedCompanyMetadataDtoMock]),
   update: jest.fn(
     async (
       companyId: number,
-      updateCompanyDtoMock: UpdateCompanyDto,
+      updateRedCompanyDtoMock: UpdateCompanyDto,
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       directory?: Directory,
     ) => {
-      if (companyId === 1) {
-        Object.assign(readCompanyDtoMock, updateCompanyDtoMock);
-        return readCompanyDtoMock;
+      if (companyId === RED_COMPANY_ID) {
+        Object.assign(readRedCompanyDtoMock, updateRedCompanyDtoMock); // TODO Rework
+        return readRedCompanyDtoMock;
       } else {
         return null;
       }

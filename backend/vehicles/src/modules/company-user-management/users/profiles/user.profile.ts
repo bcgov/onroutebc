@@ -99,14 +99,18 @@ export class UsersProfile extends AutomapperProfile {
         User,
         ReadUserDto,
         forMember(
-          (d) => d.userGUID,
-          mapFrom((s) => s.userGUID),
-        ),
-        forMember(
           (d) => d.userName,
           mapFrom((s) => s.userName),
         ),
         forSelf(Contact, (source) => source.userContact),
+        forMember(
+          (d) => d.phone1Extension,
+          mapFrom((s) => s.userContact.extension1),
+        ),
+        forMember(
+          (d) => d.phone2Extension,
+          mapFrom((s) => s.userContact.extension2),
+        ),
       );
     };
   }

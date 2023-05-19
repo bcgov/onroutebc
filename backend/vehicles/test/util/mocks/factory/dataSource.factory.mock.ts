@@ -4,9 +4,18 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 import { DataSource } from 'typeorm';
 import { Company } from '../../../../src/modules/company-user-management/company/entities/company.entity';
-import { companyEntityMock } from '../data/company.mock';
 import { User } from '../../../../src/modules/company-user-management/users/entities/user.entity';
-import { userEntityMock1 } from '../data/user.mock';
+import * as constants from '../data/test-data.constants';
+import {
+  blueCompanyEntityMock,
+  redCompanyEntityMock,
+} from '../data/company.mock';
+import {
+  blueCompanyAdminUserEntityMock,
+  blueCompanyCvClientUserEntityMock,
+  redCompanyAdminUserEntityMock,
+  redCompanyCvClientUserEntityMock,
+} from '../data/user.mock';
 
 export type MockType<T> = {
   [P in keyof T]?: jest.Mock<object>;
@@ -24,9 +33,29 @@ export const dataSourceMockFactory: () => MockType<DataSource> = jest.fn(
         delete: jest.fn(),
         save: jest.fn(async (saveObject: object) => {
           if (saveObject instanceof Company) {
-            return companyEntityMock;
+            if (saveObject.legalName === constants.RED_COMPANY_LEGAL_NAME) {
+              return redCompanyEntityMock;
+            } else if (
+              saveObject.legalName === constants.BLUE_COMPANY_LEGAL_NAME
+            ) {
+              return blueCompanyEntityMock;
+            }
           } else if (saveObject instanceof User) {
-            return userEntityMock1;
+            if (saveObject.userGUID === constants.RED_COMPANY_ADMIN_USER_GUID) {
+              return redCompanyAdminUserEntityMock;
+            } else if (
+              saveObject.userGUID === constants.RED_COMPANY_CVCLIENT_USER_GUID
+            ) {
+              return redCompanyCvClientUserEntityMock;
+            } else if (
+              saveObject.userGUID === constants.BLUE_COMPANY_ADMIN_USER_GUID
+            ) {
+              return blueCompanyAdminUserEntityMock;
+            } else if (
+              saveObject.userGUID === constants.BLUE_COMPANY_CVCLIENT_USER_GUID
+            ) {
+              return blueCompanyCvClientUserEntityMock;
+            }
           }
         }),
       },

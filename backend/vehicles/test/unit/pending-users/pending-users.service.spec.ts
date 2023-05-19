@@ -9,16 +9,13 @@ import { Repository } from 'typeorm';
 import { PendingUser } from '../../../src/modules/company-user-management/pending-users/entities/pending-user.entity';
 import { PendingUsersProfile } from '../../../src/modules/company-user-management/pending-users/profiles/pending-user.profile';
 import {
-  createPendingUserDtoMock1,
-  updatePendingUserDtoMock,
   PENDING_USER_LIST,
+  createRedCompanyPendingUserDtoMock,
 } from '../../util/mocks/data/pending-user.mock';
 import { createQueryBuilderMock } from '../../util/mocks/factory/dataSource.factory.mock';
 import { UserAuthGroup } from '../../../src/common/enum/user-auth-group.enum';
-
-const COMPANY_ID_1 = 1;
-const USER_NAME_1 = 'ASMITH';
-const USER_NAME_2 = 'JDOE';
+import * as constants from '../../util/mocks/data/test-data.constants';
+import { updateRedCompanyPendingUserDtoMock } from '../../util/mocks/data/pending-user.mock';
 
 interface SelectQueryBuilderParameters {
   userName?: string;
@@ -57,78 +54,98 @@ describe('PendingUsersService', () => {
 
   describe('Pending user service create function', () => {
     it('should create a Pending user.', async () => {
-      const PARAMS = { userName: USER_NAME_1, companyId: COMPANY_ID_1 };
+      const PARAMS = {
+        userName: constants.RED_COMPANY_PENDING_USER_NAME,
+        companyId: constants.RED_COMPANY_ID,
+      };
       findPendingUsersEntityMock(PARAMS, repo);
 
       const retPendingUser = await service.create(
-        COMPANY_ID_1,
-        createPendingUserDtoMock1,
+        constants.RED_COMPANY_ID,
+        createRedCompanyPendingUserDtoMock,
       );
       expect(typeof retPendingUser).toBe('object');
-      expect(retPendingUser.companyId).toBe(COMPANY_ID_1);
+      expect(retPendingUser.companyId).toBe(constants.RED_COMPANY_ID);
     });
   });
 
   describe('Pending user service update function', () => {
     it('should update a Pending user.', async () => {
-      const PARAMS = { userName: USER_NAME_2, companyId: COMPANY_ID_1 };
-      PENDING_USER_LIST[1].userAuthGroup = UserAuthGroup.CV_CLIENT;
+      const PARAMS = {
+        userName: constants.RED_COMPANY_PENDING_USER_NAME,
+        companyId: constants.RED_COMPANY_ID,
+      };
+      PENDING_USER_LIST[0].userAuthGroup = UserAuthGroup.COMPANY_ADMINISTRATOR;
       findPendingUsersEntityMock(PARAMS, repo, PENDING_USER_LIST);
 
       const retPendingUser = await service.update(
-        COMPANY_ID_1,
-        USER_NAME_2,
-        updatePendingUserDtoMock,
+        constants.RED_COMPANY_ID,
+        constants.RED_COMPANY_PENDING_USER_NAME,
+        updateRedCompanyPendingUserDtoMock,
       );
       expect(typeof retPendingUser).toBe('object');
-      expect(retPendingUser.companyId).toBe(COMPANY_ID_1);
+      expect(retPendingUser.companyId).toBe(constants.RED_COMPANY_ID);
     });
   });
 
   describe('Pending user service findPendingUsersDto function', () => {
     it('should find a Pending user by User Name and Company Id.', async () => {
-      const PARAMS = { userName: USER_NAME_1, companyId: COMPANY_ID_1 };
+      const PARAMS = {
+        userName: constants.RED_COMPANY_PENDING_USER_NAME,
+        companyId: constants.RED_COMPANY_ID,
+      };
       findPendingUsersEntityMock(PARAMS, repo, PENDING_USER_LIST);
 
       const retPendingUser = await service.findPendingUsersDto(
-        USER_NAME_1,
-        COMPANY_ID_1,
+        constants.RED_COMPANY_PENDING_USER_NAME,
+        constants.RED_COMPANY_ID,
       );
       expect(typeof retPendingUser).toBe('object');
-      expect(retPendingUser[0].companyId).toBe(COMPANY_ID_1);
+      expect(retPendingUser[0].companyId).toBe(constants.RED_COMPANY_ID);
     });
     it('should find a Pending user by User Name.', async () => {
-      const params: SelectQueryBuilderParameters = { userName: USER_NAME_1 };
+      const params: SelectQueryBuilderParameters = {
+        userName: constants.RED_COMPANY_PENDING_USER_NAME,
+      };
       findPendingUsersEntityMock(params, repo, PENDING_USER_LIST);
 
-      const retPendingUser = await service.findPendingUsersDto(USER_NAME_1);
+      const retPendingUser = await service.findPendingUsersDto(
+        constants.RED_COMPANY_PENDING_USER_NAME,
+      );
       expect(typeof retPendingUser).toBe('object');
-      expect(retPendingUser[0].companyId).toBe(COMPANY_ID_1);
+      expect(retPendingUser[0].companyId).toBe(constants.RED_COMPANY_ID);
     });
     it('should find all Pending users by Company Id.', async () => {
-      const params: SelectQueryBuilderParameters = { companyId: COMPANY_ID_1 };
+      const params: SelectQueryBuilderParameters = {
+        companyId: constants.RED_COMPANY_ID,
+      };
       findPendingUsersEntityMock(params, repo, PENDING_USER_LIST);
 
       const retPendingUser = await service.findPendingUsersDto(
         null,
-        COMPANY_ID_1,
+        constants.RED_COMPANY_ID,
       );
       expect(typeof retPendingUser).toBe('object');
-      expect(retPendingUser[0].companyId).toBe(COMPANY_ID_1);
+      expect(retPendingUser[0].companyId).toBe(constants.RED_COMPANY_ID);
     });
     it('should find all Pending user,', async () => {
-      const params: SelectQueryBuilderParameters = { companyId: COMPANY_ID_1 };
+      const params: SelectQueryBuilderParameters = {
+        companyId: constants.RED_COMPANY_ID,
+      };
       findPendingUsersEntityMock(params, repo, PENDING_USER_LIST);
 
       const retPendingUser = await service.findPendingUsersDto(null, null);
       expect(typeof retPendingUser).toBe('object');
-      expect(retPendingUser[0].companyId).toBe(COMPANY_ID_1);
+      expect(retPendingUser[0].companyId).toBe(constants.RED_COMPANY_ID);
     });
   });
 
   describe('Pending user service remove function', () => {
     it('should find delete a Pending user.', async () => {
-      const deleteResult = await service.remove(COMPANY_ID_1, USER_NAME_1);
+      const deleteResult = await service.remove(
+        constants.RED_COMPANY_ID,
+        constants.RED_COMPANY_PENDING_USER_NAME,
+      );
       expect(typeof deleteResult).toBe('object');
     });
   });

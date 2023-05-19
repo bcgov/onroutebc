@@ -4,51 +4,50 @@ import { PendingUser } from '../../../../src/modules/company-user-management/pen
 import { UpdatePendingUserDto } from '../../../../src/modules/company-user-management/pending-users/dto/request/update-pending-user.dto';
 import { CreatePendingUserDto } from '../../../../src/modules/company-user-management/pending-users/dto/request/create-pending-user.dto';
 import { ReadPendingUserDto } from '../../../../src/modules/company-user-management/pending-users/dto/response/read-pending-user.dto';
+import * as constants from './test-data.constants';
 
-const COMPANY_ID = 1;
-const USER_NAME_1 = 'ASMITH';
-const USER_NAME_2 = 'JDOE';
-const USER_AUTH_GROUP = UserAuthGroup.COMPANY_ADMINISTRATOR;
-
-export const pendingUserEntityMock1: PendingUser = {
-  companyId: COMPANY_ID,
-  userName: USER_NAME_1,
-  userAuthGroup: USER_AUTH_GROUP,
+export const redCompanyPendingUserEntityMock: PendingUser = {
+  companyId: constants.RED_COMPANY_ID,
+  userName: constants.RED_COMPANY_PENDING_USER_NAME,
+  userAuthGroup: UserAuthGroup.CV_CLIENT,
   ...baseEntityMock,
 };
 
-export const pendingUserEntityMock2: PendingUser = {
-  companyId: COMPANY_ID,
-  userName: USER_NAME_2,
-  userAuthGroup: USER_AUTH_GROUP,
+export const updateRedCompanyPendingUserDtoMock: UpdatePendingUserDto = {
+  userAuthGroup: UserAuthGroup.COMPANY_ADMINISTRATOR,
+};
+
+export const createRedCompanyPendingUserDtoMock: CreatePendingUserDto = {
+  userName: constants.RED_COMPANY_PENDING_USER_NAME,
+  ...updateRedCompanyPendingUserDtoMock,
+};
+
+export const readRedCompanyPendingUserDtoMock: ReadPendingUserDto = {
+  companyId: constants.RED_COMPANY_ID,
+  ...createRedCompanyPendingUserDtoMock,
+};
+
+export const blueCompanyPendingUserEntityMock: PendingUser = {
+  companyId: constants.BLUE_COMPANY_ID,
+  userName: constants.BLUE_COMPANY_PENDING_USER_NAME,
+  userAuthGroup: UserAuthGroup.CV_CLIENT,
   ...baseEntityMock,
+};
+
+export const updateBlueCompanyPendingUserDtoMock: UpdatePendingUserDto = {
+  userAuthGroup: UserAuthGroup.COMPANY_ADMINISTRATOR,
+};
+
+export const createBlueCompanyPendingUserDtoMock: CreatePendingUserDto = {
+  userName: constants.BLUE_COMPANY_PENDING_USER_NAME,
+  ...updateRedCompanyPendingUserDtoMock,
+};
+export const readBlueCompanyPendingUserDtoMock: ReadPendingUserDto = {
+  companyId: constants.BLUE_COMPANY_ID,
+  ...createBlueCompanyPendingUserDtoMock,
 };
 
 export const PENDING_USER_LIST: PendingUser[] = [
-  pendingUserEntityMock1,
-  pendingUserEntityMock2,
+  redCompanyPendingUserEntityMock,
+  blueCompanyPendingUserEntityMock,
 ];
-
-export const updatePendingUserDtoMock: UpdatePendingUserDto = {
-  userAuthGroup: USER_AUTH_GROUP,
-};
-
-export const createPendingUserDtoMock1: CreatePendingUserDto = {
-  userName: USER_NAME_1,
-  ...updatePendingUserDtoMock,
-};
-
-export const createPendingUserDtoMock2: CreatePendingUserDto = {
-  userName: USER_NAME_2,
-  ...updatePendingUserDtoMock,
-};
-
-export const readPendingUserDtoMock1: ReadPendingUserDto = {
-  companyId: COMPANY_ID,
-  ...createPendingUserDtoMock1,
-};
-
-export const readPendingUserDtoMock2: ReadPendingUserDto = {
-  companyId: COMPANY_ID,
-  ...createPendingUserDtoMock2,
-};

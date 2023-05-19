@@ -20,31 +20,24 @@ import {
 } from '../../util/mocks/factory/dataSource.factory.mock';
 
 import { PendingUsersService } from '../../../src/modules/company-user-management/pending-users/pending-users.service';
-import {
-  readCompanyDtoMock,
-  readCompanyMetadataDtoMock,
-} from '../../util/mocks/data/company.mock';
-import {
-  USER_LIST,
-  createUserDtoMock,
-  currentUserMock,
-  updateUserDtoMock,
-  userEntityMock1,
-} from '../../util/mocks/data/user.mock';
+
 import { InternalServerErrorException } from '@nestjs/common';
-import { Directory } from '../../../src/common/enum/directory.enum';
-import { UserAuthGroup } from '../../../src/common/enum/user-auth-group.enum';
 import { UserStatus } from '../../../src/common/enum/user-status.enum';
 import { Role } from '../../../src/common/enum/roles.enum';
 import { DataNotFoundException } from '../../../src/common/exception/data-not-found.exception';
-import { readPendingUserDtoMock2 } from '../../util/mocks/data/pending-user.mock';
-
-const COMPANY_ID_1 = 1;
-const USER_NAME = 'ASMITH';
-const USER_NAME_2 = 'JDOE';
-const USER_GUID_1 = '06267945F2EB4E31B585932F78B76269';
-const USER_GUID_2 = '081BA455A00D4374B0CC13092117A706';
-const COMPANY_GUID = '6F9619FF8B86D011B42D00C04FC964FF';
+import * as constants from '../../util/mocks/data/test-data.constants';
+import {
+  readRedCompanyDtoMock,
+  readRedCompanyMetadataDtoMock,
+} from '../../util/mocks/data/company.mock';
+import {
+  USER_LIST,
+  createRedCompanyCvClientUserDtoMock,
+  redCompanyAdminUserEntityMock,
+  updateRedCompanyCvClientUserDtoMock,
+} from '../../util/mocks/data/user.mock';
+import { redCompanyCvClientUserJWTMock } from '../../util/mocks/data/jwt.mock';
+import { readRedCompanyPendingUserDtoMock } from '../../util/mocks/data/pending-user.mock';
 
 interface SelectQueryBuilderParameters {
   userGUID?: string;
@@ -102,33 +95,35 @@ describe('UsersService', () => {
   describe('User service getCompaniesForUser function', () => {
     it('should return the Associated Company List', async () => {
       companyServiceMock.findCompanyMetadataByUserGuid.mockResolvedValue([
-        readCompanyMetadataDtoMock,
+        readRedCompanyMetadataDtoMock,
       ]);
-      const retCompanies = await service.getCompaniesForUser(USER_GUID_1);
+      const retCompanies = await service.getCompaniesForUser(
+        constants.RED_COMPANY_CVCLIENT_USER_GUID,
+      );
       expect(typeof retCompanies).toBe('object');
-      expect(retCompanies[0]).toBe(COMPANY_ID_1);
+      expect(retCompanies[0]).toBe(constants.RED_COMPANY_ID);
     });
   });
 
   describe('User service create function', () => {
     it('should create a user.', async () => {
       const retUser = await service.create(
-        createUserDtoMock,
-        COMPANY_ID_1,
-        Directory.BBCEID,
-        currentUserMock,
+        createRedCompanyCvClientUserDtoMock,
+        constants.RED_COMPANY_ID,
+        constants.RED_COMPANY_CVCLIENT_USER_STATUS_DIRECOTRY,
+        redCompanyCvClientUserJWTMock,
       );
       expect(typeof retUser).toBe('object');
-      expect(retUser.userGUID).toBe(USER_GUID_1);
+      expect(retUser.userGUID).toBe(constants.RED_COMPANY_CVCLIENT_USER_GUID);
     });
 
     it('should catch and throw and Internal Error Exceptions user.', async () => {
       await expect(async () => {
         await service.create(
           null,
-          COMPANY_ID_1,
-          Directory.BBCEID,
-          currentUserMock,
+          null,
+          constants.RED_COMPANY_CVCLIENT_USER_STATUS_DIRECOTRY,
+          redCompanyCvClientUserJWTMock,
         );
       }).rejects.toThrowError(InternalServerErrorException);
     });
@@ -136,17 +131,23 @@ describe('UsersService', () => {
 
   describe('User service update function', () => {
     it('should update the user', async () => {
-      const params: SelectQueryBuilderParameters = { userGUID: USER_GUID_2 };
-      USER_LIST[1].userAuthGroup = UserAuthGroup.CV_CLIENT;
+      const params: SelectQueryBuilderParameters = {
+        userGUID: constants.RED_COMPANY_CVCLIENT_USER_GUID,
+      };
+      USER_LIST[1].userContact.phone2 = null; // TODO - To be reworked
+      USER_LIST[1].userContact.extension2 = null; // TODO - To be reworked
+
       findUsersEntityMock(params, repo, USER_LIST);
 
-      const retUser = await service.update(USER_GUID_2, {
-        ...updateUserDtoMock,
-        userAuthGroup: UserAuthGroup.CV_CLIENT,
-      });
+      const retUser = await service.update(
+        constants.RED_COMPANY_CVCLIENT_USER_GUID,
+        updateRedCompanyCvClientUserDtoMock,
+      );
+
       expect(typeof retUser).toBe('object');
-      expect(retUser.userGUID).toBe(USER_GUID_2);
-      expect(retUser.userAuthGroup).toEqual(UserAuthGroup.CV_CLIENT);
+      expect(retUser.userGUID).toBe(constants.RED_COMPANY_CVCLIENT_USER_GUID);
+      expect(retUser.phone2).toBeNull();
+      expect(retUser.phone2Extension).toBeNull();
     });
     it('should throw DataNotFoundException', async () => {
       const params: SelectQueryBuilderParameters = {
@@ -154,10 +155,10 @@ describe('UsersService', () => {
       };
       findUsersEntityMock(params, repo, USER_LIST);
       await expect(async () => {
-        await service.update(USER_GUID_2, {
-          ...updateUserDtoMock,
-          userAuthGroup: UserAuthGroup.CV_CLIENT,
-        });
+        await service.update(
+          constants.RED_COMPANY_CVCLIENT_USER_GUID,
+          updateRedCompanyCvClientUserDtoMock,
+        );
       }).rejects.toThrow(DataNotFoundException);
     });
   });
@@ -171,7 +172,7 @@ describe('UsersService', () => {
       });
 
       const retUpdateResult = await service.updateStatus(
-        USER_GUID_2,
+        constants.BLUE_COMPANY_CVCLIENT_USER_GUID,
         UserStatus.DISABLED,
       );
       expect(typeof retUpdateResult).toBe('object');
@@ -181,6 +182,7 @@ describe('UsersService', () => {
 
   describe('User service getRolesForUser function', () => {
     it('should get the user Roles', async () => {
+      // TODO - To be reworked
       repo.query.mockResolvedValue([
         { ROLE_ID: Role.READ_SELF },
         { ROLE_ID: Role.READ_USER },
@@ -189,8 +191,8 @@ describe('UsersService', () => {
       ]);
 
       const retUserRoles = await service.getRolesForUser(
-        USER_GUID_1,
-        COMPANY_ID_1,
+        constants.RED_COMPANY_CVCLIENT_USER_GUID,
+        constants.RED_COMPANY_ID,
       );
 
       expect(typeof retUserRoles).toBe('object');
@@ -200,33 +202,35 @@ describe('UsersService', () => {
 
   describe('User service findORBCUser function', () => {
     it('should return the user-context when user exists', async () => {
-      repo.findOne.mockResolvedValue(userEntityMock1);
+      repo.findOne.mockResolvedValue(redCompanyAdminUserEntityMock);
       companyServiceMock.findCompanyMetadataByUserGuid.mockResolvedValue([
-        readCompanyMetadataDtoMock,
+        readRedCompanyMetadataDtoMock,
       ]);
       const retUserContext = await service.findORBCUser(
-        USER_GUID_1,
-        USER_NAME,
-        COMPANY_GUID,
+        constants.RED_COMPANY_ADMIN_USER_GUID,
+        constants.RED_COMPANY_ADMIN_USER_NAME,
+        constants.RED_COMPANY_GUID,
       );
       expect(typeof retUserContext).toBe('object');
-      expect(retUserContext.user.userGUID).toBe(USER_GUID_1);
+      expect(retUserContext.user.userGUID).toBe(
+        constants.RED_COMPANY_ADMIN_USER_GUID,
+      );
     });
     it('should return the context when user is a Pending user', async () => {
       pendingUsersServiceMock.findPendingUsersDto.mockResolvedValue([
-        readPendingUserDtoMock2,
+        readRedCompanyPendingUserDtoMock,
       ]);
       companyServiceMock.findOneByCompanyGuid.mockResolvedValue(
-        readCompanyDtoMock,
+        readRedCompanyDtoMock,
       );
       const retUserContext = await service.findORBCUser(
-        USER_GUID_2,
-        USER_NAME_2,
-        COMPANY_GUID,
+        constants.RED_COMPANY_PENDING_USER_GUID,
+        constants.RED_COMPANY_PENDING_USER_NAME,
+        constants.RED_COMPANY_GUID,
       );
       expect(typeof retUserContext).toBe('object');
       expect(retUserContext.associatedCompanies[0].companyId).toBe(
-        COMPANY_ID_1,
+        constants.RED_COMPANY_ID,
       );
     });
   });
