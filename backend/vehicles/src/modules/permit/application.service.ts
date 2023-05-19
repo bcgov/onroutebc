@@ -3,11 +3,12 @@ import { InjectMapper } from '@automapper/nestjs';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ApplicationStatus } from 'src/common/enum/application-status.enum';
-import { IsNull, Repository } from 'typeorm';
+import { DataSource, IsNull, Repository } from 'typeorm';
 import { CreateApplicationDto } from './dto/request/create-application.dto';
 import { ReadApplicationDto } from './dto/response/read-application.dto';
 import { Permit } from './entities/permit.entity';
 import { UpdateApplicationDto } from './dto/request/update-application.dto';
+import { ResultDto } from './dto/response/result.dto';
 
 @Injectable()
 export class ApplicationService {
@@ -15,6 +16,7 @@ export class ApplicationService {
     @InjectMapper() private readonly classMapper: Mapper,
     @InjectRepository(Permit)
     private permitRepository: Repository<Permit>,
+    private datasource: DataSource,
   ) {}
 
   async create(
@@ -26,9 +28,14 @@ export class ApplicationService {
       CreateApplicationDto,
       Permit,
     );
-    const savedPermitEntity = await this.permitRepository.save(
-      permitApplication,
-    );
+
+    const applicationData: Permit = {
+      ...permitApplication,
+      createdDateTime: new Date(),
+      updatedDateTime: new Date(),
+    };
+
+    const savedPermitEntity = await this.permitRepository.save(applicationData);
     const refreshedPermitEntity = await this.findOne(
       savedPermitEntity.permitId,
     );
@@ -151,12 +158,51 @@ export class ApplicationService {
       },
     );
 
-    await this.permitRepository.save(newApplication);
-
+    const applicationData: Permit = {
+      ...newApplication,
+      updatedDateTime: new Date(),
+    };
+    await this.permitRepository.save(applicationData);
     return this.classMapper.mapAsync(
       await this.findByApplicationNumber(applicationNumber),
       Permit,
       ReadApplicationDto,
     );
+  }
+
+  /**
+   * Update status of applications
+   * @param applicationIds array of applications ids to be updated. ex ['1','2']
+   * @param applicationStatus application status to be set to this values. And
+   * can be picked from enum ApplicationStatus i.e. allowed status for an application.
+   **/
+  async updateApplicationStatus(
+    applicationIds: string[],
+    applicationStatus: ApplicationStatus,
+  ): Promise<ResultDto> {
+    // console.log(await callDatabaseSequence('permit.ORBC_PERMIT_NUMBER_SEQ',this.datasource))
+    const updateResult = await this.permitRepository
+      .createQueryBuilder()
+      .update()
+      .set({ permitStatus: applicationStatus })
+      .whereInIds(applicationIds)
+      .andWhere('permitNumber is null')
+      .returning(['permitId'])
+      .execute();
+
+    const updatedApplications = Array.from(
+      updateResult?.raw as [
+        {
+          ID: string;
+        },
+      ],
+    );
+    const success = updatedApplications?.map((permit) => permit.ID);
+    const failure = applicationIds?.filter((id) => !success?.includes(id));
+    const resultDto: ResultDto = {
+      success: success,
+      failure: failure,
+    };
+    return resultDto;
   }
 }
