@@ -11,7 +11,6 @@ import { CompanyProfile } from '../../../src/modules/company-user-management/com
 import { Company } from '../../../src/modules/company-user-management/company/entities/company.entity';
 import { DataSource, Repository } from 'typeorm';
 import {
-  MockType,
   createQueryBuilderMock,
   dataSourceMockFactory,
 } from '../../util/mocks/factory/dataSource.factory.mock';
@@ -45,8 +44,7 @@ describe('CompanyService', () => {
 
   beforeEach(async () => {
     jest.clearAllMocks();
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    let dataSourceMock: MockType<DataSource>;
+    const dataSourceMock = dataSourceMockFactory();
     const module: TestingModule = await Test.createTestingModule({
       imports: [AutomapperModule],
       providers: [
@@ -63,7 +61,7 @@ describe('CompanyService', () => {
         },
         {
           provide: DataSource,
-          useFactory: dataSourceMockFactory,
+          useValue: dataSourceMock,
         },
         CompanyProfile,
         ContactProfile,

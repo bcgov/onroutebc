@@ -14,7 +14,6 @@ import { User } from '../../../src/modules/company-user-management/users/entitie
 import { UsersProfile } from '../../../src/modules/company-user-management/users/profiles/user.profile';
 import { UsersService } from '../../../src/modules/company-user-management/users/users.service';
 import {
-  MockType,
   createQueryBuilderMock,
   dataSourceMockFactory,
 } from '../../util/mocks/factory/dataSource.factory.mock';
@@ -49,10 +48,11 @@ describe('UsersService', () => {
   const pendingUsersServiceMock = createMock<PendingUsersService>();
   const companyServiceMock = createMock<CompanyService>();
   const repo = createMock<Repository<User>>();
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  let dataSourceMock: MockType<DataSource>;
 
   beforeEach(async () => {
+    jest.clearAllMocks();
+    const dataSourceMock = dataSourceMockFactory();
+
     const module: TestingModule = await Test.createTestingModule({
       imports: [AutomapperModule],
       providers: [
@@ -77,7 +77,7 @@ describe('UsersService', () => {
         },
         {
           provide: DataSource,
-          useFactory: dataSourceMockFactory,
+          useValue: dataSourceMock,
         },
         ContactProfile,
         AddressProfile,
@@ -86,6 +86,10 @@ describe('UsersService', () => {
     }).compile();
 
     service = module.get<UsersService>(UsersService);
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
   });
 
   it('User service should be defined', () => {

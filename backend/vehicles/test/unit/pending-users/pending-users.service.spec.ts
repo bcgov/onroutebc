@@ -11,11 +11,11 @@ import { PendingUsersProfile } from '../../../src/modules/company-user-managemen
 import {
   PENDING_USER_LIST,
   createRedCompanyPendingUserDtoMock,
+  updateRedCompanyPendingUserDtoMock,
 } from '../../util/mocks/data/pending-user.mock';
 import { createQueryBuilderMock } from '../../util/mocks/factory/dataSource.factory.mock';
 import { UserAuthGroup } from '../../../src/common/enum/user-auth-group.enum';
 import * as constants from '../../util/mocks/data/test-data.constants';
-import { updateRedCompanyPendingUserDtoMock } from '../../util/mocks/data/pending-user.mock';
 
 interface SelectQueryBuilderParameters {
   userName?: string;
@@ -27,6 +27,7 @@ describe('PendingUsersService', () => {
   const repo = createMock<Repository<PendingUser>>();
 
   beforeEach(async () => {
+    jest.clearAllMocks();
     const module: TestingModule = await Test.createTestingModule({
       imports: [AutomapperModule],
       providers: [
@@ -46,6 +47,10 @@ describe('PendingUsersService', () => {
     }).compile();
 
     service = module.get<PendingUsersService>(PendingUsersService);
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
   });
 
   it('Pending User service should be defined', () => {

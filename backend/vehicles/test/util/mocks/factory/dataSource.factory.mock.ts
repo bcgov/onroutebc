@@ -1,8 +1,4 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/require-await */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-import { DataSource } from 'typeorm';
 import { Company } from '../../../../src/modules/company-user-management/company/entities/company.entity';
 import { User } from '../../../../src/modules/company-user-management/users/entities/user.entity';
 import * as constants from '../data/test-data.constants';
@@ -21,8 +17,8 @@ export type MockType<T> = {
   [P in keyof T]?: jest.Mock<object>;
 };
 
-export const dataSourceMockFactory: () => MockType<DataSource> = jest.fn(
-  () => ({
+export const dataSourceMockFactory = () => {
+  return {
     createQueryRunner: jest.fn().mockImplementation(() => ({
       connect: jest.fn(),
       startTransaction: jest.fn(),
@@ -31,7 +27,7 @@ export const dataSourceMockFactory: () => MockType<DataSource> = jest.fn(
       commitTransaction: jest.fn(),
       manager: {
         delete: jest.fn(),
-        save: jest.fn(async (saveObject: object) => {
+        save: jest.fn((saveObject: object) => {
           if (saveObject instanceof Company) {
             if (saveObject.legalName === constants.RED_COMPANY_LEGAL_NAME) {
               return redCompanyEntityMock;
@@ -60,8 +56,8 @@ export const dataSourceMockFactory: () => MockType<DataSource> = jest.fn(
         }),
       },
     })),
-  }),
-);
+  };
+};
 
 export const createQueryBuilderMock = (filteredList: object[]) => {
   return {
