@@ -1,0 +1,59 @@
+@use "../../../../themes/orbcStyles";
+
+.leave-application-dialog {
+  &__title {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 1em;
+    color: orbcStyles.$bc-messages-gold-text;
+    background-color: orbcStyles.$bc-background-light-grey;
+    font-size: 1.2rem;
+  }
+
+  &__icon {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    background-color: orbcStyles.$bc-messages-gold-text;
+    margin-right: 0.5em;
+
+    .warning-icon {
+      color: orbcStyles.$white;
+    }
+  }
+
+  &__content {
+    padding: 1em 2em 0 1.5em;
+  }
+
+  &__actions {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    padding: 1em 1.5em 1.5em 0;
+
+    .leave-action {
+      &--discard {
+        color: orbcStyles.$black;
+        background-color: orbcStyles.$bc-background-light-grey;
+        padding: 0 1em;
+
+        &:hover {
+          color: orbcStyles.$white;
+        }
+      }
+
+      &--back {
+        color: orbcStyles.$white;
+        background-color: orbcStyles.$bc-primary-blue;
+        font-weight: 600;
+        margin-left: 1em;
+      }
+    }
+  }
+}

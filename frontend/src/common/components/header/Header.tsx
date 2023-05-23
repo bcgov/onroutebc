@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { useAuth } from "react-oidc-context";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBars } from "@fortawesome/free-solid-svg-icons";
 
 import "./Header.scss";
 import * as routes from "../../../routes/constants";
@@ -97,7 +99,7 @@ export const Header = () => {
   const NavButton = () => (
     <div className="other">
       <a className="nav-btn" onClick={menuToggleHandler}>
-        <i className="fas fa-bars" id="menu"></i>
+        <FontAwesomeIcon id="menu" className="menu-icon" icon={faBars} />
       </a>
     </div>
   );
