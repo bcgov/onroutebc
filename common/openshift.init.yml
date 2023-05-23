@@ -9,27 +9,15 @@ parameters:
     required: true
   - name: PROMOTE
     description: Dummy param, for convenience in deployments
-  - name: DATABASE_NAME
-    description: Name of Database to connect to 
+  - name: LICENCE_PLATE
+    description: The BC GOV LICENCE_PLATE for this project
     required: true
-  - name: DATABASE_USER
-    description: User connecting to database
+  - name: VAULT_ENVIRONMENT
+    description: The Vault environment for this project
     required: true
-  - name: DATABASE_PASSWORD
-    description: Password of user connecting to database
+  - name: VAULT_ZONE
+    description: Using Dev/Test/etc.. within vault
     required: true
-  - name: DATABASE_HOST
-    description: Host url/service of database connection
-    required: true
-  - name: AUTH0_ISSUER_URL
-    description: The principal that issued the JWT
-    required: true
-  - name: AUTH0_AUDIENCE
-    description: Identifies the recipients that the JWT is intended for
-    required: true
-  - name: AUTH0_IGNORE_EXP
-    description: The boolean flag to ignore the JWT expiration
-    required: true    
 objects:
   - apiVersion: networking.k8s.io/v1
     kind: NetworkPolicy
