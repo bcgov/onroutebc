@@ -12,6 +12,8 @@ import {
   redCompanyAdminUserEntityMock,
   redCompanyCvClientUserEntityMock,
 } from '../data/user.mock';
+import { DataSource } from 'typeorm';
+
 
 export type MockType<T> = {
   [P in keyof T]?: jest.Mock<object>;
@@ -94,3 +96,9 @@ export const createQueryBuilderMock = (
         }),
   };
 };
+// export const dataSourceMockFactory1 = (): DataSource => ({
+//   // Add methods and properties from your DataSource class that you need to mock.
+//   // For example, if you are using a `save` method, add it here:
+//   save: jest.fn(/* your implementation */),
+//   // Add other methods as needed
+// });

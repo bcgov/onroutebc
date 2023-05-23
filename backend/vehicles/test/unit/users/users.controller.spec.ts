@@ -117,7 +117,7 @@ describe('UsersController', () => {
         companyId: [constants.RED_COMPANY_ID],
       };
       findUsersDtoMock(params);
-      const retUsers = await controller.findAll(request, undefined);
+      const retUsers = await controller.findAll(request);
       expect(typeof retUsers).toBe('object');
 
       expect(userService.findUsersDto).toHaveBeenCalledWith(undefined, [

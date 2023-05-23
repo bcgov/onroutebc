@@ -194,7 +194,6 @@ describe('UsersService', () => {
 
   describe('User service getRolesForUser function', () => {
     it('should get the user Roles', async () => {
-      // TODO - To be reworked
       repo.query.mockResolvedValue([
         { ROLE_ID: Role.READ_SELF },
         { ROLE_ID: Role.READ_USER },
