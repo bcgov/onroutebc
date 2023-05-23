@@ -111,6 +111,14 @@ export class UsersProfile extends AutomapperProfile {
           (d) => d.phone2Extension,
           mapFrom((s) => s.userContact.extension2),
         ),
+        forMember(
+          (d) => d.provinceCode,
+          mapFrom((s) => s.userContact?.province?.provinceCode),
+        ),
+        forMember(
+          (d) => d.countryCode,
+          mapFrom((s) => s.userContact?.province?.country?.countryCode),
+        ),
       );
     };
   }

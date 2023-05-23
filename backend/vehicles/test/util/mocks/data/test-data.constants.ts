@@ -38,7 +38,7 @@ export const RED_COMPANY_ACCOUNT_SOURCE = AccountSource.BCeID;
 
 export const RED_COMPANY_ADDRESS_ID = 1;
 export const RED_COMPANY_ADDRESS_LINE_1 = '4458 James Street';
-export const RED_COMPANY_ADDRESS_LINE_2: string = undefined;
+export const RED_COMPANY_ADDRESS_LINE_2 = 'Unit 007';
 export const RED_COMPANY_ADDRESS_CITY = 'Burnaby';
 export const RED_COMPANY_ADDRESS_POSTAL = 'V5G 1J9';
 export const RED_COMPANY_PROVINCE_CODE = PROVINCE_CODE_BC;
@@ -58,7 +58,7 @@ export const BLUE_COMPANY_ACCOUNT_SOURCE = AccountSource.BCeID;
 
 export const BLUE_COMPANY_ADDRESS_ID = 2;
 export const BLUE_COMPANY_ADDRESS_LINE_1 = '334 Main Street';
-export const BLUE_COMPANY_ADDRESS_LINE_2: string = undefined;
+export const BLUE_COMPANY_ADDRESS_LINE_2 = 'Unit 007';
 export const BLUE_COMPANY_ADDRESS_CITY = 'Redmond';
 export const BLUE_COMPANY_ADDRESS_POSTAL = '98052';
 export const BLUE_COMPANY_PROVINCE_CODE = PROVINCE_CODE_WA;

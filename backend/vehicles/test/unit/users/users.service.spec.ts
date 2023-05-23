@@ -55,7 +55,7 @@ describe('UsersService', () => {
     pendingUsersServiceMock = createMock<PendingUsersService>();
     companyServiceMock = createMock<CompanyService>();
     repo = createMock<Repository<User>>();
-    const dataSourceMock = dataSourceMockFactory();
+    const dataSourceMock = dataSourceMockFactory() as DataSource;
 
     const module: TestingModule = await Test.createTestingModule({
       imports: [AutomapperModule],

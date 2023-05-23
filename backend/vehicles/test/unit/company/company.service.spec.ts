@@ -45,7 +45,7 @@ describe('CompanyService', () => {
     jest.clearAllMocks();
 
     repo = createMock<Repository<Company>>();
-    const dataSourceMock = dataSourceMockFactory();
+    const dataSourceMock = dataSourceMockFactory() as DataSource;
     const module: TestingModule = await Test.createTestingModule({
       imports: [AutomapperModule],
       providers: [

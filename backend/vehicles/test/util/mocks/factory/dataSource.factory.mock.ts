@@ -19,6 +19,7 @@ export type MockType<T> = {
 
 export const dataSourceMockFactory = () => {
   return {
+    ...jest.requireActual('typeorm/data-source/DataSource'),
     createQueryRunner: jest.fn().mockImplementation(() => ({
       connect: jest.fn(),
       startTransaction: jest.fn(),
