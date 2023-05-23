@@ -59,6 +59,9 @@ parameters:
   - name: AUTH0_IGNORE_EXP
     description: The boolean flag to ignore the JWT expiration
     required: true
+  - name: VAULT_ENVIRONMENT
+    description: The Vault environment to connect to
+    required: true
 objects:
   - apiVersion: v1
     kind: ConfigMap
@@ -124,6 +127,25 @@ objects:
         type: Rolling
       template:
         metadata:
+          annotations:
+            # 1. Vault injector configuration goes here, inside the template.
+            vault.hashicorp.com/agent-inject: 'true'
+            vault.hashicorp.com/agent-inject-token: 'true'
+            vault.hashicorp.com/agent-pre-populate-only: 'true' # this makes sure the secret vault will only change during pod restart
+            vault.hashicorp.com/auth-path: auth/k8s-silver  # This was tricky.  Be sure to use k8s-silver, k8s-gold, or k8s-golddr
+            vault.hashicorp.com/namespace: platform-services
+            vault.hashicorp.com/role: abc123-nonprod  # licenseplate-nonprod or licenseplate-prod are your options
+
+            # Configure how to retrieve and populate the secrets from Vault:
+            # - The name of the secret is any unique string after vault.hashicorp.com/agent-inject-secret-<name>
+            # - The value is the path in Vault where the secret is located.
+            vault.hashicorp.com/agent-inject-secret-myapp-secret-dev: abc123-nonprod/myapp-secret-dev
+            # - The template Vault Agent should use for rendering a secret:
+            vault.hashicorp.com/agent-inject-template-myapp-secret-dev: |
+              {{- with secret "abc123-nonprod/myapp-secret-dev" }}
+              export dev_database_host="{{ .Data.data.dev_database_host }}"
+              export dev_database_name="{{ .Data.data.dev_database_name }}"
+              {{- end `}} }}
           labels:
             app: ${NAME}-${ZONE}
             deploymentconfig: ${NAME}-${ZONE}-${COMPONENT}
