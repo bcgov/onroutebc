@@ -111,11 +111,11 @@ objects:
             # Configure how to retrieve and populate the secrets from Vault:
             # - The name of the secret is any unique string after vault.hashicorp.com/agent-inject-secret-<name>
             # - The value is the path in Vault where the secret is located.
-            vault.hashicorp.com/agent-inject-secret-myapp-secret-dev: ${VAULT_ENVIRONMENT}/auth0-${VAULT_ZONE}
-            vault.hashicorp.com/agent-inject-secret-myapp-secret-dev: ${VAULT_ENVIRONMENT}/cdogs-${VAULT_ZONE}
-            vault.hashicorp.com/agent-inject-secret-myapp-secret-dev: ${VAULT_ENVIRONMENT}/ches-${VAULT_ZONE}
-            vault.hashicorp.com/agent-inject-secret-myapp-secret-dev: ${VAULT_ENVIRONMENT}/coms-${VAULT_ZONE}
-            vault.hashicorp.com/agent-inject-secret-myapp-secret-dev: ${VAULT_ENVIRONMENT}/database-${VAULT_ZONE}
+            vault.hashicorp.com/agent-inject-secret-auth0-dev: ${VAULT_ENVIRONMENT}/auth0-${VAULT_ZONE}
+            vault.hashicorp.com/agent-inject-secret-cdogs-dev: ${VAULT_ENVIRONMENT}/cdogs-${VAULT_ZONE}
+            vault.hashicorp.com/agent-inject-secret-ches-dev: ${VAULT_ENVIRONMENT}/ches-${VAULT_ZONE}
+            vault.hashicorp.com/agent-inject-secret-coms-dev: ${VAULT_ENVIRONMENT}/coms-${VAULT_ZONE}
+            vault.hashicorp.com/agent-inject-secret-database-dev: ${VAULT_ENVIRONMENT}/database-${VAULT_ZONE}
           labels:
             app: ${NAME}-${ZONE}
             deploymentconfig: ${NAME}-${ZONE}-${COMPONENT}
@@ -126,11 +126,11 @@ objects:
               imagePullPolicy: Always
               name: ${NAME}
               args:
-                ['sh', '-c', 'source /vault/secrets/${VAULT_ENVIRONMENT}/auth0-${VAULT_ZONE} && \
-                source /vault/secrets/${VAULT_ENVIRONMENT}/cdogs-${VAULT_ZONE} && \ 
-                source /vault/secrets/${VAULT_ENVIRONMENT}/coms-${VAULT_ZONE} && \
-                source /vault/secrets/${VAULT_ENVIRONMENT}/ches-${VAULT_ZONE} && \
-                source /vault/secrets/${VAULT_ENVIRONMENT}/database-${VAULT_ZONE}'
+                ['sh', '-c', 'source /vault/secrets/auth0-${VAULT_ZONE} && \
+                source /vault/secrets/cdogs-${VAULT_ZONE} && \ 
+                source /vault/secrets/coms-${VAULT_ZONE} && \
+                source /vault/secrets/ches-${VAULT_ZONE} && \
+                source /vault/secrets/database-${VAULT_ZONE}'
                 ]
 
               env:
