@@ -147,6 +147,9 @@ describe('PendingUsers (e2e)', () => {
       expect(response.body).toMatchObject({ deleted: true });
     });
   });
+  afterAll(async () => {
+    await app.close();
+  });
 });
 function findPendingUsersEntityMock(
   params: SelectQueryBuilderParameters,
