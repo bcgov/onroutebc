@@ -77,6 +77,10 @@ export const readRedAdminUserOrbcStatusDtoMock: ReadUserOrbcStatusDto = {
   pendingCompanies: [],
 };
 
+export const updateRedCompanyAdminUserStatusDtoMock: UpdateUserStatusDto = {
+  statusCode: UserStatus.DISABLED,
+};
+
 //Red Company Cv Client User
 export const redCompanyCvClientUserEntityMock: User = {
   userGUID: constants.RED_COMPANY_CVCLIENT_USER_GUID,
