@@ -32,6 +32,10 @@ import {
   readBlueCompanyCvClientContactDtoMock,
   redCompanyCvClientContactEntityMock,
   createRedCompanyCvClientContactDtoMock,
+  createSysAdminStaffContactDtoMock,
+  readSysAdminStaffContactDtoMock,
+  sysAdminStaffContactEntityMock,
+  updateSysAdminStaffContactDtoMock,
 } from './contact.mock';
 import { UpdateUserStatusDto } from '../../../../src/modules/company-user-management/users/dto/request/update-user-status.dto';
 import { UserStatus } from '../../../../src/common/enum/user-status.enum';
@@ -190,9 +194,70 @@ export const readBlueCvClientUserOrbcStatusDtoMock: ReadUserOrbcStatusDto = {
   pendingCompanies: [],
 };
 
+//Blue Company Cv Client User
+export const sysAdminStaffUserEntityMock: User = {
+  userGUID: constants.SYS_ADMIN_STAFF_USER_GUID,
+  userName: constants.SYS_ADMIN_STAFF_USER_NAME,
+  directory: constants.SYS_ADMIN_STAFF_USER_STATUS_DIRECOTRY,
+  userAuthGroup: constants.SYS_ADMIN_STAFF_USER_AUTH_GROUP,
+  statusCode: constants.SYS_ADMIN_STAFF_USER_STATUS,
+  userContact: { ...sysAdminStaffContactEntityMock },
+  companyUsers: undefined,
+  ...baseEntityMock,
+};
+
+export const createSysAdminStaffUserDtoMock: CreateUserDto = {
+  userAuthGroup: constants.SYS_ADMIN_STAFF_USER_AUTH_GROUP,
+  ...createSysAdminStaffContactDtoMock,
+};
+
+export const updateSysAdminStaffUserDtoMock: UpdateUserDto = {
+  userAuthGroup: constants.SYS_ADMIN_STAFF_USER_AUTH_GROUP,
+  ...updateSysAdminStaffContactDtoMock,
+};
+
+export const updateSysAdminStaffUserStatusDtoMock: UpdateUserStatusDto = {
+  statusCode: UserStatus.DISABLED,
+};
+
+export const readSysAdminStaffUserDtoMock: ReadUserDto = {
+  userGUID: constants.SYS_ADMIN_STAFF_USER_GUID,
+  userName: constants.SYS_ADMIN_STAFF_USER_NAME,
+  userAuthGroup: constants.SYS_ADMIN_STAFF_USER_AUTH_GROUP,
+  statusCode: constants.SYS_ADMIN_STAFF_USER_STATUS,
+  ...readSysAdminStaffContactDtoMock,
+};
+
+export const readSysAdminStaffUserOrbcStatusDtoMock: ReadUserOrbcStatusDto = {
+  user: { ...readSysAdminStaffUserDtoMock },
+  associatedCompanies: [],
+  pendingCompanies: [],
+};
+
 export const USER_LIST: User[] = [
   redCompanyAdminUserEntityMock,
   redCompanyCvClientUserEntityMock,
   blueCompanyAdminUserEntityMock,
   blueCompanyCvClientUserEntityMock,
+  sysAdminStaffUserEntityMock,
+];
+
+export const USER_DTO_LIST = [
+  {
+    userDto: readRedCompanyAdminUserDtoMock,
+    companyId: constants.RED_COMPANY_ID,
+  },
+  {
+    userDto: readRedCompanyCvClientUserDtoMock,
+    companyId: constants.RED_COMPANY_ID,
+  },
+  {
+    userDto: readBlueCompanyAdminUserDtoMock,
+    companyId: constants.BLUE_COMPANY_ID,
+  },
+  {
+    userDto: readBlueCompanyCvClientUserDtoMock,
+    companyId: constants.BLUE_COMPANY_ID,
+  },
+  { userDto: readSysAdminStaffUserDtoMock, companyId: undefined },
 ];

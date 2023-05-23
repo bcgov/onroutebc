@@ -142,8 +142,8 @@ describe('UsersService', () => {
       const params: SelectQueryBuilderParameters = {
         userGUID: constants.RED_COMPANY_CVCLIENT_USER_GUID,
       };
-      USER_LIST[1].userContact.phone2 = null; // TODO - To be reworked
-      USER_LIST[1].userContact.extension2 = null; // TODO - To be reworked
+      USER_LIST[1].userContact.phone2 = null;
+      USER_LIST[1].userContact.extension2 = null;
 
       findUsersEntityMock(params, USER_LIST);
 
@@ -169,6 +169,11 @@ describe('UsersService', () => {
         );
       }).rejects.toThrow(DataNotFoundException);
     });
+    afterEach(() => {
+      USER_LIST[1].userContact.phone2 = constants.RED_COMPANY_CVCLIENT_PHONE_2;
+      USER_LIST[1].userContact.phone2 =
+        constants.RED_COMPANY_CVCLIENT_PHONE_2_EXT;
+    });
   });
 
   describe('User service updateStatus function', () => {
@@ -178,7 +183,6 @@ describe('UsersService', () => {
         raw: undefined,
         generatedMaps: undefined,
       });
-
       const retUpdateResult = await service.updateStatus(
         constants.BLUE_COMPANY_CVCLIENT_USER_GUID,
         UserStatus.DISABLED,

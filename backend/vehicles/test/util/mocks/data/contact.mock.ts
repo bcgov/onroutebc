@@ -252,3 +252,44 @@ export const updateBlueCompanyCvClientContactDtoMock: UpdateContactDto = {
 export const readBlueCompanyCvClientContactDtoMock: ReadContactDto = {
   ...createBlueCompanyCvClientContactDtoMock,
 };
+
+export const sysAdminStaffContactEntityMock: Contact = {
+  contactId: constants.SYS_ADMIN_STAFF_CONTACT_ID,
+  firstName: constants.SYS_ADMIN_STAFF_FIRST_NAME,
+  lastName: constants.SYS_ADMIN_STAFF_LAST_NAME,
+  email: constants.SYS_ADMIN_STAFF_EMAIL,
+  phone1: constants.SYS_ADMIN_STAFF_PHONE_1,
+  extension1: constants.SYS_ADMIN_STAFF_PHONE_1_EXT,
+  phone2: constants.SYS_ADMIN_STAFF_PHONE_2,
+  extension2: constants.SYS_ADMIN_STAFF_PHONE_2_EXT,
+  fax: constants.SYS_ADMIN_STAFF_FAX,
+  city: constants.SYS_ADMIN_STAFF_CITY,
+  province: { ...provinceWAEntityMock },
+  company: null,
+  user: null,
+  ...baseEntityMock,
+};
+
+export const createSysAdminStaffContactDtoMock: CreateContactDto = {
+  firstName: constants.SYS_ADMIN_STAFF_FIRST_NAME,
+  lastName: constants.SYS_ADMIN_STAFF_LAST_NAME,
+  email: constants.SYS_ADMIN_STAFF_EMAIL,
+  phone1: constants.SYS_ADMIN_STAFF_PHONE_1,
+  phone1Extension: constants.SYS_ADMIN_STAFF_PHONE_1_EXT,
+  phone2: constants.SYS_ADMIN_STAFF_PHONE_2,
+  phone2Extension: constants.SYS_ADMIN_STAFF_PHONE_2_EXT,
+  fax: constants.SYS_ADMIN_STAFF_FAX,
+  city: constants.SYS_ADMIN_STAFF_CITY,
+  provinceCode: constants.SYS_ADMIN_STAFF_PROVINCE_CODE,
+  countryCode: constants.SYS_ADMIN_STAFF_COUNTRY_CODE,
+};
+
+export const updateSysAdminStaffContactDtoMock: UpdateContactDto = {
+  ...createSysAdminStaffContactDtoMock,
+  phone2: null,
+  phone2Extension: null,
+};
+
+export const readSysAdminStaffContactDtoMock: ReadContactDto = {
+  ...createSysAdminStaffContactDtoMock,
+};

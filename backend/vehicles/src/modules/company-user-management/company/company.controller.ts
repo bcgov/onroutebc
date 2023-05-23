@@ -136,7 +136,6 @@ export class CompanyController {
   ): Promise<ReadCompanyMetadataDto[]> {
     const currentUser = request.user as IUserJWT;
     const rolesExists = matchRoles([Role.READ_ORG], currentUser.roles);
-
     if (
       userGUID &&
       (!rolesExists ||
@@ -149,7 +148,7 @@ export class CompanyController {
     const company = await this.companyService.findCompanyMetadataByUserGuid(
       userGUID,
     );
-    if (company?.length) {
+    if (!company?.length) {
       throw new DataNotFoundException();
     }
     return company;
@@ -174,14 +173,14 @@ export class CompanyController {
     @Param('companyId') companyId: number,
     @Body() updateCompanyDto: UpdateCompanyDto,
   ): Promise<ReadCompanyDto> {
-    const powerUnitType = await this.companyService.update(
+    const retCompany = await this.companyService.update(
       companyId,
       updateCompanyDto,
       Directory.BBCEID,
     );
-    if (!powerUnitType) {
+    if (!retCompany) {
       throw new DataNotFoundException();
     }
-    return powerUnitType;
+    return retCompany;
   }
 }
