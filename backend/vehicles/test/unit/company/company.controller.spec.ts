@@ -99,10 +99,7 @@ describe('CompanyController', () => {
       companyService.findCompanyMetadataByUserGuid.mockResolvedValue([
         readRedCompanyMetadataDtoMock,
       ]);
-      const retCompanyMetadata = await controller.getCompanyMetadata(
-        request,
-        undefined,
-      );
+      const retCompanyMetadata = await controller.getCompanyMetadata(request);
       expect(typeof retCompanyMetadata).toBe('object');
       expect(retCompanyMetadata).toContainEqual(readRedCompanyMetadataDtoMock);
       expect(retCompanyMetadata.length).toBe(1);
