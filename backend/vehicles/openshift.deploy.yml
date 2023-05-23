@@ -126,11 +126,12 @@ objects:
               imagePullPolicy: Always
               name: ${NAME}
               args:
-                ['sh', '-c', 'source /vault/secrets/${VAULT_ENVIRONMENT}/auth0-${VAULT_ZONE} && \
-                source /vault/secrets/${VAULT_ENVIRONMENT}/cdogs-${VAULT_ZONE} && \
-                source /vault/secrets/${VAULT_ENVIRONMENT}/coms-${VAULT_ZONE} && \
-                source /vault/secrets/${VAULT_ENVIRONMENT}/ches-${VAULT_ZONE} && \
-                source /vault/secrets/${VAULT_ENVIRONMENT}/database-${VAULT_ZONE}'
+                ['sh', '-c', 'source /vault/secrets/${VAULT_ENVIRONMENT}/auth0-${VAULT_ZONE}',
+                'sh', '-c', 'source /vault/secrets/${VAULT_ENVIRONMENT}/cdogs-${VAULT_ZONE}',
+                'sh', '-c', 'source /vault/secrets/${VAULT_ENVIRONMENT}/coms-${VAULT_ZONE}',
+                'sh', '-c', 'source /vault/secrets/${VAULT_ENVIRONMENT}/ches-${VAULT_ZONE}',
+                'sh', '-c', 'source /vault/secrets/${VAULT_ENVIRONMENT}/database-${VAULT_ZONE}'
+                ]
 
               env:
                 - name: DB_TYPE
