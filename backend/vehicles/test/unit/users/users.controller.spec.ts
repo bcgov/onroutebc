@@ -130,7 +130,7 @@ describe('UsersController', () => {
       const request = createMock<Request>();
       request.user = sysAdminStaffUserJWTMock;
       await expect(async () => {
-        await controller.findAll(request, undefined);
+        await controller.findAll(request);
       }).rejects.toThrow(BadRequestException);
     });
   });
