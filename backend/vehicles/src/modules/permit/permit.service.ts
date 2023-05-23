@@ -7,7 +7,6 @@ import { Repository } from 'typeorm';
 import { CreatePermitDto } from './dto/request/create-permit.dto';
 import { ReadPermitDto } from './dto/response/read-permit.dto';
 import { Permit } from './entities/permit.entity';
-import { PdfService } from '../pdf/pdf.service';
 
 @Injectable()
 export class PermitService {
@@ -15,7 +14,6 @@ export class PermitService {
     @InjectMapper() private readonly classMapper: Mapper,
     @InjectRepository(Permit)
     private permitRepository: Repository<Permit>,
-    private readonly pdfService: PdfService,
   ) {}
 
   async create(createPermitDto: CreatePermitDto): Promise<ReadPermitDto> {
@@ -36,11 +34,6 @@ export class PermitService {
       Permit,
       ReadPermitDto,
     );
-
-    // COMS Reference ID for the generated PDF of the Permit
-    const pdf = await this.pdfService.generatePDF(refreshedPermitEntity);
-    // TODO: handle the coms reference
-    console.log('Completed pdf generation', pdf);
 
     return readPermitDto;
   }

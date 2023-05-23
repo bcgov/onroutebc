@@ -13,13 +13,18 @@ import {
   TEMPLATE_FILE_TYPE,
   TEMPLATE_NAME,
 } from './constants/template.constant';
+import { PowerUnitTypesService } from '../vehicles/power-unit-types/power-unit-types.service';
+import { TrailerTypesService } from '../vehicles/trailer-types/trailer-types.service';
+import { formatTROS } from './helpers/formatTROS';
 
 @Injectable()
 export class PdfService {
   constructor(
     @InjectRepository(Template)
     private templateRepository: Repository<Template>,
-    private readonly httpService: HttpService,
+    private httpService: HttpService,
+    private powerUnitTypeService: PowerUnitTypesService,
+    private trailerTypeService: TrailerTypesService,
   ) {}
 
   /**
@@ -81,13 +86,13 @@ export class PdfService {
     const token_url = process.env.CDOGS_TOKEN_URL;
     const cdogs_url = process.env.CDOGS_URL;
 
-    // TODO: Map the permit data to template data? Or can I just pass all of the data to cdogs?
+    // TODO: Map/format the permit data to template data
     // Parse permitData string into JSON
-    const templateData: any = permit;
-    const permitData = JSON.parse(permit.permitData.permitData); // TODO: Type?
-    templateData.createdDateTime = permit.createdDateTime.toLocaleString(); // TODO: timezone?
-    templateData.updatedDateTime = permit.updatedDateTime.toLocaleString(); // TODO: timezone?
-    templateData.permitData = permitData;
+    const templateData = await formatTROS(
+      permit,
+      this.powerUnitTypeService, //TODO: fix prop drilling?
+      this.trailerTypeService, //TODO: fix prop drilling?
+    );
 
     // We need the oidc api to generate a token for us
     // Use 'lastValueFrom' to make the nestjs HttpService use a promise instead of on RxJS Observable
