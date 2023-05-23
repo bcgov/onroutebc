@@ -6,7 +6,7 @@ import { ContactDetails } from "../../components/form/ContactDetails";
 import { ApplicationDetails } from "../../components/form/ApplicationDetails";
 import { VehicleDetails } from "./form/VehicleDetails/VehicleDetails";
 import dayjs from "dayjs";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { PERMIT_LEFT_COLUMN_WIDTH } from "../../../../themes/orbcStyles";
 import { ApplicationContext } from "../../context/ApplicationContext";
@@ -34,6 +34,7 @@ import {
 import { useSaveTermOversizeMutation } from "../../hooks/hooks";
 import { SnackBarContext } from "../../../../App";
 import { getUserGuidFromSession } from "../../../../common/apiManager/httpRequestHandler";
+import LeaveConfirmationDialog from "../../components/list/LeaveConfirmationDialog";
 
 /**
  * The first step in creating and submitting a TROS Application.
@@ -311,12 +312,20 @@ export const TermOversizeForm = () => {
     }
   };
 
-  /**
-   * Changed view to the main Vehicle Inventory page
-   */
-  const handleClose = () => {
+  const handleLeave = () => {
+    setIsLeaveDialogOpen(() => true);
+  };
+
+  const onCancelLeave = () => {
+    setIsLeaveDialogOpen(() => false);
     navigate("../");
   };
+
+  const onConfirmLeave = () => {
+    setIsLeaveDialogOpen(() => false);
+  };
+
+  const [isLeaveDialogOpen, setIsLeaveDialogOpen] = useState(false);
 
   return (
     <>
@@ -358,14 +367,14 @@ export const TermOversizeForm = () => {
             aria-label="leave"
             variant="contained"
             color="secondary"
-            onClick={handleClose}
+            onClick={handleLeave}
             sx={{
               marginLeft: matches
                 ? "20px"
                 : `calc(${PERMIT_LEFT_COLUMN_WIDTH} + 60px)`,
             }}
           >
-            Leave Application
+            Leave
           </Button>
           <Box>
             <Button
@@ -373,10 +382,12 @@ export const TermOversizeForm = () => {
               aria-label="save"
               variant="contained"
               color="secondary"
-              sx={{ marginLeft: "-420px" }}
+              sx={{ marginLeft: "-420px", marginTop: "40px", display: "flex", alignItems: "center", gap: "10px"}}
               onClick={onSaveApplication}
             >
-              Save Application
+              {/* Save Application */}
+              <i className="fa fa-save"/>
+              Save
             </Button>
             <Button
               key="submit-TROS-button"
@@ -384,7 +395,7 @@ export const TermOversizeForm = () => {
               variant="contained"
               color="primary"
               onClick={handleSubmit(onContinue)}
-              sx={{ marginLeft: "20px" }}
+              sx={{ marginLeft: "-260px", marginTop: "-72px" }}
             >
               Continue
             </Button>
@@ -392,6 +403,12 @@ export const TermOversizeForm = () => {
           </Box>
         </Box>
       </Box>
+      <LeaveConfirmationDialog
+          onClickLeave={onConfirmLeave}
+          isOpen={isLeaveDialogOpen}
+          onClickCancel={onCancelLeave}
+          caption="item"
+        />
     </>
   );
 };

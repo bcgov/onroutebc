@@ -237,7 +237,7 @@ export class UsersService {
       userName,
     );
 
-    if (!pendingCompanies?.length) {
+    if (pendingCompanies?.length) {
       for (const pendingCompany of pendingCompanies) {
         userExistsDto.pendingCompanies.push(
           await this.companyService.findCompanyMetadata(
@@ -246,7 +246,6 @@ export class UsersService {
         );
       }
     }
-
     if (!user) {
       if (companyGUID) {
         const company = await this.companyService.findOneByCompanyGuid(

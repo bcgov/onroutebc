@@ -38,30 +38,16 @@ parameters:
   - name: PROMOTE
     description: Image (namespace/name:tag) to promote/import
     value: bcgov/onroutebc:prod-backend-vehicles
-  - name: DATABASE_NAME
-    description: Name of Database to connect to 
-    required: true
-  - name: DATABASE_USER
-    description: User connecting to database
-    required: true
-  - name: DATABASE_PASSWORD
-    description: Password of user connecting to database
-    required: true
-  - name: DATABASE_HOST
-    description: Host url/service of database connection
-    required: true
-  - name: AUTH0_ISSUER_URL
-    description: The principal that issued the JWT
-    required: true
-  - name: AUTH0_AUDIENCE
-    description: Identifies the recipients that the JWT is intended for
-    required: true
-  - name: AUTH0_IGNORE_EXP
-    description: The boolean flag to ignore the JWT expiration
+  - name: LICENCE_PLATE
+    description: The BC GOV LICENCE_PLATE for this project
     required: true
   - name: VAULT_ENVIRONMENT
-    description: The Vault environment to connect to
+    description: The Vault environment for this project
     required: true
+  - name: VAULT_ZONE
+    description: Using Dev/Test/etc.. within vault
+    required: true
+
 objects:
   - apiVersion: v1
     kind: ConfigMap
@@ -71,22 +57,8 @@ objects:
       name: ${NAME}-${ZONE}-${COMPONENT}
     data:
       database-type: mssql
-      database-name: "${DATABASE_NAME}"
-      database-host: "${DATABASE_HOST}"
       database-encrypt: "false"
       database-port: "1433"
-      auth0-issuer-url: "${AUTH0_ISSUER_URL}"
-      auth0-audience: "${AUTH0_AUDIENCE}"
-      auth0-ignore-exp: "${AUTH0_IGNORE_EXP}"
-  - apiVersion: v1
-    kind: Secret
-    metadata:
-      labels:
-        app: ${NAME}-${ZONE}
-      name: ${NAME}-${ZONE}-${COMPONENT}
-    stringData:
-      database-user: "${DATABASE_USER}"
-      database-password: "${DATABASE_PASSWORD}"
   - apiVersion: v1
     kind: ImageStream
     metadata:
@@ -134,77 +106,48 @@ objects:
             vault.hashicorp.com/agent-pre-populate-only: 'true' # this makes sure the secret vault will only change during pod restart
             vault.hashicorp.com/auth-path: auth/k8s-silver  # This was tricky.  Be sure to use k8s-silver, k8s-gold, or k8s-golddr
             vault.hashicorp.com/namespace: platform-services
-            vault.hashicorp.com/role: abc123-nonprod  # licenseplate-nonprod or licenseplate-prod are your options
+            vault.hashicorp.com/role: ${VAULT_ENVIRONMENT}  # licenseplate-nonprod or licenseplate-prod are your options
 
             # Configure how to retrieve and populate the secrets from Vault:
             # - The name of the secret is any unique string after vault.hashicorp.com/agent-inject-secret-<name>
             # - The value is the path in Vault where the secret is located.
-            vault.hashicorp.com/agent-inject-secret-myapp-secret-dev: abc123-nonprod/myapp-secret-dev
-            # - The template Vault Agent should use for rendering a secret:
-            vault.hashicorp.com/agent-inject-template-myapp-secret-dev: |
-              {{- with secret "abc123-nonprod/myapp-secret-dev" }}
-              export dev_database_host="{{ .Data.data.dev_database_host }}"
-              export dev_database_name="{{ .Data.data.dev_database_name }}"
-              {{- end `}} }}
+            vault.hashicorp.com/agent-inject-secret-myapp-secret-dev: ${VAULT_ENVIRONMENT}/auth0-${VAULT_ZONE}
+            vault.hashicorp.com/agent-inject-secret-myapp-secret-dev: ${VAULT_ENVIRONMENT}/cdogs-${VAULT_ZONE}
+            vault.hashicorp.com/agent-inject-secret-myapp-secret-dev: ${VAULT_ENVIRONMENT}/ches-${VAULT_ZONE}
+            vault.hashicorp.com/agent-inject-secret-myapp-secret-dev: ${VAULT_ENVIRONMENT}/coms-${VAULT_ZONE}
+            vault.hashicorp.com/agent-inject-secret-myapp-secret-dev: ${VAULT_ENVIRONMENT}/database-${VAULT_ZONE}
           labels:
             app: ${NAME}-${ZONE}
             deploymentconfig: ${NAME}-${ZONE}-${COMPONENT}
         spec:
+          serviceAccountName: ${LICENCE_PLATE}-vault
           containers:
             - image: ${NAME}-${ZONE}-${COMPONENT}:${IMAGE_TAG}
               imagePullPolicy: Always
               name: ${NAME}
+              args:
+                ['sh', '-c', 'source /vault/secrets/${VAULT_ENVIRONMENT}/auth0-${VAULT_ZONE} && \
+                source /vault/secrets/${VAULT_ENVIRONMENT}/cdogs-${VAULT_ZONE} && \
+                source /vault/secrets/${VAULT_ENVIRONMENT}/coms-${VAULT_ZONE} && \
+                source /vault/secrets/${VAULT_ENVIRONMENT}/ches-${VAULT_ZONE} && \
+                source /vault/secrets/${VAULT_ENVIRONMENT}/database-${VAULT_ZONE}'
+
               env:
                 - name: DB_TYPE
                   valueFrom:
                     configMapKeyRef:
                       name: ${NAME}-${ZONE}-${COMPONENT}
                       key: database-type
-                - name: MSSQL_HOST
-                  valueFrom:
-                    configMapKeyRef:
-                      name: ${NAME}-${ZONE}-${COMPONENT}
-                      key: database-host
                 - name: MSSQL_PORT
                   valueFrom:
                     configMapKeyRef:
                       name: ${NAME}-${ZONE}-${COMPONENT}
                       key: database-port
-                - name: MSSQL_DB
-                  valueFrom:
-                    configMapKeyRef:
-                      name: ${NAME}-${ZONE}-${COMPONENT}
-                      key: database-name
                 - name: MSSQL_ENCRYPT
                   valueFrom:
                     configMapKeyRef:
                       name: ${NAME}-${ZONE}-${COMPONENT}
                       key: database-encrypt
-                - name: MSSQL_SA_PASSWORD
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}-${ZONE}-${COMPONENT}
-                      key: database-password
-                - name: MSSQL_SA_USER
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}-${ZONE}-${COMPONENT}
-                      key: database-user
-                - name: AUTH0_ISSUER_URL
-                  valueFrom:
-                    configMapKeyRef:
-                      name: ${NAME}-${ZONE}-${COMPONENT}
-                      key: auth0-issuer-url
-                - name: AUTH0_AUDIENCE
-                  valueFrom:
-                    configMapKeyRef:
-                      name: ${NAME}-${ZONE}-${COMPONENT}
-                      key: auth0-audience   
-                - name: AUTH0_IGNORE_EXP
-                  valueFrom:
-                    configMapKeyRef:
-                      name: ${NAME}-${ZONE}-${COMPONENT}
-                      key: auth0-ignore-exp                                         
               ports:
                 - containerPort: 5000
                   protocol: TCP

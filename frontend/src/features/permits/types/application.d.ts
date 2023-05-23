@@ -59,9 +59,9 @@ export interface Commodities {
 }
 
 export interface TermOversizeApplication {
-  startDate: Dayjs;
+  startDate: Dayjs | any;
   permitDuration: number; //days
-  expiryDate: Dayjs;
+  expiryDate: Dayjs | any;
   contactDetails?: ContactDetails;
   vehicleDetails?: VehicleDetails;
   commodities: Commodities[];
