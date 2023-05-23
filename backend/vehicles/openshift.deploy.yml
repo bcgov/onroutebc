@@ -117,7 +117,7 @@ objects:
             export AUTH0_ISSUER_URL="{{ .Data.data.AUTH0_ISSUER_URL }}"
             export AUTH0_AUDIANCE="{{ .Data.data.AUTH0_AUDIENCE }}"
             export AUTH0_IGNORE_EXP="{{ .Data.data.AUTH0_IGNORE_EXP }}"
-            {{- end `}} }}
+            {{- end }}
           labels:
             app: ${NAME}-${ZONE}
             deploymentconfig: ${NAME}-${ZONE}-${COMPONENT}
