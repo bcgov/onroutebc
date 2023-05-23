@@ -38,8 +38,8 @@ parameters:
   - name: PROMOTE
     description: Image (namespace/name:tag) to promote/import
     value: bcgov/onroutebc:prod-backend-vehicles
-  - name: LICENCE_PLATE
-    description: The BC GOV LICENCE_PLATE for this project
+  - name: LICENSE_PLATE
+    description: The BC GOV LICENSE_PLATE for this project
     required: true
   - name: VAULT_ENVIRONMENT
     description: The Vault environment for this project
