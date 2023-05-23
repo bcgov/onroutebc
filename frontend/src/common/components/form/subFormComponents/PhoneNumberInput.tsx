@@ -1,6 +1,5 @@
 import { OutlinedInput } from "@mui/material";
-import { useState } from "react";
-import { PathValue, Path, useFormContext } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { ORBC_FormTypes } from "../../../types/common";
 import { CustomOutlinedInputProps } from "./CustomOutlinedInput";
@@ -12,20 +11,12 @@ import { CustomOutlinedInputProps } from "./CustomOutlinedInput";
 export const PhoneNumberInput = <T extends ORBC_FormTypes>(
   props: CustomOutlinedInputProps<T>
 ): JSX.Element => {
-  const { register, getValues } = useFormContext();
-  // Get the value of the field from React Hook Form
-  // eslint-disable-next-line  @typescript-eslint/no-explicit-any
-  const defaultVal: PathValue<T, Path<T>> = getValues<any>(props.name);
-  // Set the value of the field in a useState variable,
-  // which is used to automatically format the users input
-  const [value, setValue] = useState<PathValue<T, Path<T>> | string>(
-    defaultVal
-  );
+  const { register, setValue } = useFormContext();
 
   // Everytime the user types, update the format of the users input
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const formattedValue = formatPhoneNumber(e.target.value);
-    setValue(formattedValue);
+    setValue<string>(props.name, formattedValue, { shouldValidate: true });
   };
 
   return (
@@ -40,7 +31,6 @@ export const PhoneNumberInput = <T extends ORBC_FormTypes>(
         },
       }}
       {...register(props.name, props.rules)}
-      value={value}
       onChange={handleChange}
       autoComplete="tel"
     />
