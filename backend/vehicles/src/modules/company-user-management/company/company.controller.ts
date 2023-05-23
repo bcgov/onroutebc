@@ -62,9 +62,6 @@ export class CompanyController {
   /**
    * A POST method defined with the @Post() decorator and a route of /company
    * that creates a new company and its admin user.
-   * TODO: Validations on {@link CreateCompanyDto}.
-   * TODO: Secure endpoints once login is implemented.
-   * TODO: Grab user name from the access token and remove the hard coded value 'ASMITH'.
    *
    * @param createCompanyDto The http request object containing the company and
    * admin user details.
@@ -139,7 +136,6 @@ export class CompanyController {
   ): Promise<ReadCompanyMetadataDto[]> {
     const currentUser = request.user as IUserJWT;
     const rolesExists = matchRoles([Role.READ_ORG], currentUser.roles);
-
     if (
       userGUID &&
       (!rolesExists ||
@@ -152,7 +148,7 @@ export class CompanyController {
     const company = await this.companyService.findCompanyMetadataByUserGuid(
       userGUID,
     );
-    if (!company) {
+    if (!company?.length) {
       throw new DataNotFoundException();
     }
     return company;
@@ -161,8 +157,6 @@ export class CompanyController {
   /**
    * A PUT method defined with the @Put(':companyId') decorator and a route of
    * /company/:companyId that updates a company by its ID.
-   * TODO: Validations on {@link UpdateCompanyDto}.
-   * TODO: Secure endpoints once login is implemented.
    * ? Should the company Directory be updated
    *
    * @param companyId The company Id.
@@ -179,14 +173,14 @@ export class CompanyController {
     @Param('companyId') companyId: number,
     @Body() updateCompanyDto: UpdateCompanyDto,
   ): Promise<ReadCompanyDto> {
-    const powerUnitType = await this.companyService.update(
+    const retCompany = await this.companyService.update(
       companyId,
       updateCompanyDto,
       Directory.BBCEID,
     );
-    if (!powerUnitType) {
+    if (!retCompany) {
       throw new DataNotFoundException();
     }
-    return powerUnitType;
+    return retCompany;
   }
 }

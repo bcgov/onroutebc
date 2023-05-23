@@ -82,6 +82,7 @@ export class CompanyUsersController {
    * A PUT method defined with the @Put(':userGUID') decorator and a route of
    * /companies/:companyId/users/:userGUID that updates a user details by its GUID.
    *
+   * @param companyId The company Id.
    * @param userGUID The GUID of the user.
    *
    * @returns The updated user deails with response object {@link ReadUserDto}.
