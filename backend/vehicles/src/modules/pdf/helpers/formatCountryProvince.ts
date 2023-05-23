@@ -1,37 +1,36 @@
-import CountriesAndStates from '../constants/countries_and_states.json';
+import { Country } from 'src/modules/common/entities/country.entity';
+import { Province } from 'src/modules/common/entities/province.entity';
+import { Repository } from 'typeorm';
 
 /**
- * Converts CountryCode to Country Name using the countries_and_states.json file
+ * Converts CountryCode to Country Name using the ORBC_VT_COUNTRY table
  * @param countryCode
+ * @param countryRepository
  * @returns Full name of the country
  */
-export const formatCountry = (countryCode?: string) => {
-  if (!countryCode) return '';
-
-  const countryName = CountriesAndStates.filter(
-    (country: any) => country.code === countryCode,
-  );
-  return countryName[0].name;
+export const formatCountry = async (
+  countryCode: string,
+  countryRepository: Repository<Country>,
+) => {
+  const countryName = await countryRepository.findOne({
+    where: { countryCode: countryCode },
+  });
+  return countryName.countryName;
 };
 
 /**
- * Converts provinceCode to Province Name using the countries_and_states.json file
- * @param countryCode
+ * Converts provinceCode to Province Name using the ORBC_VT_PROVINCE table
  * @param provinceCode
+ * @param provinceRepository
  * @returns Full name of the province
  */
-export const formatProvince = (countryCode?: string, provinceCode?: string) => {
-  if (!countryCode || !provinceCode) return '';
+export const formatProvince = async (
+  provinceCode: string,
+  provinceRepository: Repository<Province>,
+) => {
+  const provinceName = await provinceRepository.findOne({
+    where: { provinceCode: provinceCode },
+  });
 
-  const countries = CountriesAndStates.filter(
-    (country: any) => country.code === countryCode,
-  ).flatMap((country: any) => country.states);
-
-  const provinceName = countries.filter(
-    (province: any) => province.code === provinceCode,
-  );
-
-  if (!provinceName[0]) return '';
-
-  return provinceName[0].name;
+  return provinceName.provinceName;
 };

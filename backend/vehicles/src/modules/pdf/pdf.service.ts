@@ -16,6 +16,8 @@ import {
 import { PowerUnitTypesService } from '../vehicles/power-unit-types/power-unit-types.service';
 import { TrailerTypesService } from '../vehicles/trailer-types/trailer-types.service';
 import { formatTROS } from './helpers/formatTROS';
+import { Country } from '../common/entities/country.entity';
+import { Province } from '../common/entities/province.entity';
 
 @Injectable()
 export class PdfService {
@@ -25,6 +27,10 @@ export class PdfService {
     private httpService: HttpService,
     private powerUnitTypeService: PowerUnitTypesService,
     private trailerTypeService: TrailerTypesService,
+    @InjectRepository(Country)
+    private countryRepository: Repository<Country>,
+    @InjectRepository(Province)
+    private provinceRepository: Repository<Province>,
   ) {}
 
   /**
@@ -92,6 +98,8 @@ export class PdfService {
       permit,
       this.powerUnitTypeService, //TODO: fix prop drilling?
       this.trailerTypeService, //TODO: fix prop drilling?
+      this.countryRepository, //TODO: fix prop drilling?
+      this.provinceRepository, //TODO: fix prop drilling?
     );
 
     // We need the oidc api to generate a token for us

@@ -4,6 +4,9 @@ import { formatCountry, formatProvince } from './formatCountryProvince';
 import { PowerUnitTypesService } from 'src/modules/vehicles/power-unit-types/power-unit-types.service';
 import { TrailerTypesService } from 'src/modules/vehicles/trailer-types/trailer-types.service';
 import { formatVehicleTypes } from './formatVehicleTypes';
+import { Country } from 'src/modules/common/entities/country.entity';
+import { Repository } from 'typeorm';
+import { Province } from 'src/modules/common/entities/province.entity';
 
 /**
  * TODO: Should formatting be done on the frontend?
@@ -16,6 +19,8 @@ export const formatTROS = async (
   permit: Permit,
   powerUnitTypeService: PowerUnitTypesService, //TODO: fix prop drilling?
   trailerTypeService: TrailerTypesService, //TODO: fix prop drilling?
+  countryRepository: Repository<Country>,
+  provinceRepository: Repository<Province>,
 ) => {
   // Parse permitData string into JSON
   const templateData: any = permit;
@@ -29,19 +34,21 @@ export const formatTROS = async (
     trailerTypeService,
   );
 
-  const mailingCountryCode = formatCountry(
+  const mailingCountryCode = await formatCountry(
     permitData.vehicleDetails.countryCode,
+    countryRepository,
   );
-  const mailingProvinceCode = formatProvince(
-    permitData.vehicleDetails.countryCode,
+  const mailingProvinceCode = await formatProvince(
     permitData.vehicleDetails.provinceCode,
+    provinceRepository,
   );
-  const vehicleCountryCode = formatCountry(
+  const vehicleCountryCode = await formatCountry(
     permitData.mailingAddress.countryCode,
+    countryRepository,
   );
-  const vehicleProvinceCode = formatProvince(
-    permitData.mailingAddress.countryCode,
+  const vehicleProvinceCode = await formatProvince(
     permitData.mailingAddress.provinceCode,
+    provinceRepository,
   );
 
   templateData.permitData.vehicleDetails.vehicleType = vehicleType.vehicleType;
