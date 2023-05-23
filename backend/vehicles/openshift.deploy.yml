@@ -120,7 +120,7 @@ objects:
             app: ${NAME}-${ZONE}
             deploymentconfig: ${NAME}-${ZONE}-${COMPONENT}
         spec:
-          serviceAccountName: ${LICENCE_PLATE}-vault
+          serviceAccountName: ${LICENSE_PLATE}-vault
           containers:
             - image: ${NAME}-${ZONE}-${COMPONENT}:${IMAGE_TAG}
               imagePullPolicy: Always
