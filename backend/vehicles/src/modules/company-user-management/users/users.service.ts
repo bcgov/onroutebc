@@ -246,7 +246,6 @@ export class UsersService {
         );
       }
     }
-
     if (!user) {
       if (companyGUID) {
         const company = await this.companyService.findOneByCompanyGuid(

@@ -59,7 +59,11 @@ export const dataSourceMockFactory = () => {
   };
 };
 
-export const createQueryBuilderMock = (filteredList: object[]) => {
+export const createQueryBuilderMock = (
+  filteredList: object[],
+  customGetOne?: jest.Mock,
+  customGetMany?: jest.Mock,
+) => {
   return {
     ...jest.requireActual('typeorm/query-builder/SelectQueryBuilder'),
     select: jest.fn().mockReturnThis(),
@@ -78,11 +82,15 @@ export const createQueryBuilderMock = (filteredList: object[]) => {
     orderBy: jest.fn().mockReturnThis(),
     take: jest.fn().mockReturnThis(),
     skip: jest.fn().mockReturnThis(),
-    getOne: jest.fn().mockImplementationOnce(() => {
-      return filteredList[0];
-    }),
-    getMany: jest.fn().mockImplementationOnce(() => {
-      return filteredList;
-    }),
+    getOne: customGetOne
+      ? customGetOne
+      : jest.fn().mockImplementation(() => {
+          return filteredList[0];
+        }),
+    getMany: customGetMany
+      ? customGetMany
+      : jest.fn().mockImplementation(() => {
+          return filteredList;
+        }),
   };
 };

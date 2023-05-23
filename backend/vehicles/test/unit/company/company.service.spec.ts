@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
-import { createMock } from '@golevelup/ts-jest';
+import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { classes } from '@automapper/classes';
 import { AutomapperModule, getMapperToken } from '@automapper/nestjs';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -36,14 +36,15 @@ import {
 } from '../../util/mocks/data/jwt.mock';
 
 const COMPANY_ID_99 = 99;
+let repo: DeepMocked<Repository<Company>>;
 
 describe('CompanyService', () => {
   let service: CompanyService;
 
-  const repo = createMock<Repository<Company>>();
-
   beforeEach(async () => {
     jest.clearAllMocks();
+
+    repo = createMock<Repository<Company>>();
     const dataSourceMock = dataSourceMockFactory();
     const module: TestingModule = await Test.createTestingModule({
       imports: [AutomapperModule],

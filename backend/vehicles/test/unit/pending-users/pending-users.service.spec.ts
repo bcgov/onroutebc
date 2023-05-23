@@ -1,4 +1,4 @@
-import { createMock } from '@golevelup/ts-jest';
+import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { classes } from '@automapper/classes';
 import { AutomapperModule, getMapperToken } from '@automapper/nestjs';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -22,12 +22,14 @@ interface SelectQueryBuilderParameters {
   companyId?: number;
 }
 
+let repo: DeepMocked<Repository<PendingUser>>;
+
 describe('PendingUsersService', () => {
   let service: PendingUsersService;
-  const repo = createMock<Repository<PendingUser>>();
 
   beforeEach(async () => {
     jest.clearAllMocks();
+    repo = createMock<Repository<PendingUser>>();
     const module: TestingModule = await Test.createTestingModule({
       imports: [AutomapperModule],
       providers: [
@@ -63,7 +65,7 @@ describe('PendingUsersService', () => {
         userName: constants.RED_COMPANY_PENDING_USER_NAME,
         companyId: constants.RED_COMPANY_ID,
       };
-      findPendingUsersEntityMock(PARAMS, repo);
+      findPendingUsersEntityMock(PARAMS);
 
       const retPendingUser = await service.create(
         constants.RED_COMPANY_ID,
@@ -81,7 +83,7 @@ describe('PendingUsersService', () => {
         companyId: constants.RED_COMPANY_ID,
       };
       PENDING_USER_LIST[0].userAuthGroup = UserAuthGroup.COMPANY_ADMINISTRATOR;
-      findPendingUsersEntityMock(PARAMS, repo, PENDING_USER_LIST);
+      findPendingUsersEntityMock(PARAMS, PENDING_USER_LIST);
 
       const retPendingUser = await service.update(
         constants.RED_COMPANY_ID,
@@ -99,7 +101,7 @@ describe('PendingUsersService', () => {
         userName: constants.RED_COMPANY_PENDING_USER_NAME,
         companyId: constants.RED_COMPANY_ID,
       };
-      findPendingUsersEntityMock(PARAMS, repo, PENDING_USER_LIST);
+      findPendingUsersEntityMock(PARAMS, PENDING_USER_LIST);
 
       const retPendingUser = await service.findPendingUsersDto(
         constants.RED_COMPANY_PENDING_USER_NAME,
@@ -112,7 +114,7 @@ describe('PendingUsersService', () => {
       const params: SelectQueryBuilderParameters = {
         userName: constants.RED_COMPANY_PENDING_USER_NAME,
       };
-      findPendingUsersEntityMock(params, repo, PENDING_USER_LIST);
+      findPendingUsersEntityMock(params, PENDING_USER_LIST);
 
       const retPendingUser = await service.findPendingUsersDto(
         constants.RED_COMPANY_PENDING_USER_NAME,
@@ -124,7 +126,7 @@ describe('PendingUsersService', () => {
       const params: SelectQueryBuilderParameters = {
         companyId: constants.RED_COMPANY_ID,
       };
-      findPendingUsersEntityMock(params, repo, PENDING_USER_LIST);
+      findPendingUsersEntityMock(params, PENDING_USER_LIST);
 
       const retPendingUser = await service.findPendingUsersDto(
         null,
@@ -137,7 +139,7 @@ describe('PendingUsersService', () => {
       const params: SelectQueryBuilderParameters = {
         companyId: constants.RED_COMPANY_ID,
       };
-      findPendingUsersEntityMock(params, repo, PENDING_USER_LIST);
+      findPendingUsersEntityMock(params, PENDING_USER_LIST);
 
       const retPendingUser = await service.findPendingUsersDto(null, null);
       expect(typeof retPendingUser).toBe('object');
@@ -157,7 +159,6 @@ describe('PendingUsersService', () => {
 });
 function findPendingUsersEntityMock(
   params: SelectQueryBuilderParameters,
-  repo,
   pendingUserList = PENDING_USER_LIST,
 ) {
   const filteredList = pendingUserList.filter((r) => {

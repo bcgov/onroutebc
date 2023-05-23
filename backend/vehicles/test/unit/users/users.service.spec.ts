@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
-import { createMock } from '@golevelup/ts-jest';
+import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { classes } from '@automapper/classes';
 import { AutomapperModule, getMapperToken } from '@automapper/nestjs';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -43,14 +43,18 @@ interface SelectQueryBuilderParameters {
   companyId?: number;
 }
 
+let repo: DeepMocked<Repository<User>>;
+let pendingUsersServiceMock: DeepMocked<PendingUsersService>;
+let companyServiceMock: DeepMocked<CompanyService>;
+
 describe('UsersService', () => {
   let service: UsersService;
-  const pendingUsersServiceMock = createMock<PendingUsersService>();
-  const companyServiceMock = createMock<CompanyService>();
-  const repo = createMock<Repository<User>>();
 
   beforeEach(async () => {
     jest.clearAllMocks();
+    pendingUsersServiceMock = createMock<PendingUsersService>();
+    companyServiceMock = createMock<CompanyService>();
+    repo = createMock<Repository<User>>();
     const dataSourceMock = dataSourceMockFactory();
 
     const module: TestingModule = await Test.createTestingModule({
@@ -141,7 +145,7 @@ describe('UsersService', () => {
       USER_LIST[1].userContact.phone2 = null; // TODO - To be reworked
       USER_LIST[1].userContact.extension2 = null; // TODO - To be reworked
 
-      findUsersEntityMock(params, repo, USER_LIST);
+      findUsersEntityMock(params, USER_LIST);
 
       const retUser = await service.update(
         constants.RED_COMPANY_CVCLIENT_USER_GUID,
@@ -157,7 +161,7 @@ describe('UsersService', () => {
       const params: SelectQueryBuilderParameters = {
         userGUID: '081BA455A00D4374B0CC130XXXXXXX',
       };
-      findUsersEntityMock(params, repo, USER_LIST);
+      findUsersEntityMock(params, USER_LIST);
       await expect(async () => {
         await service.update(
           constants.RED_COMPANY_CVCLIENT_USER_GUID,
@@ -221,9 +225,14 @@ describe('UsersService', () => {
       );
     });
     it('should return the context when user is a Pending user', async () => {
+      repo.findOne.mockReturnValue(undefined);
       pendingUsersServiceMock.findPendingUsersDto.mockResolvedValue([
         readRedCompanyPendingUserDtoMock,
       ]);
+      companyServiceMock.findCompanyMetadata.mockResolvedValue(
+        readRedCompanyMetadataDtoMock,
+      );
+
       companyServiceMock.findOneByCompanyGuid.mockResolvedValue(
         readRedCompanyDtoMock,
       );
@@ -232,6 +241,7 @@ describe('UsersService', () => {
         constants.RED_COMPANY_PENDING_USER_NAME,
         constants.RED_COMPANY_GUID,
       );
+
       expect(typeof retUserContext).toBe('object');
       expect(retUserContext.associatedCompanies[0].companyId).toBe(
         constants.RED_COMPANY_ID,
@@ -241,7 +251,6 @@ describe('UsersService', () => {
 });
 function findUsersEntityMock(
   params: SelectQueryBuilderParameters,
-  repo,
   userList = USER_LIST,
 ) {
   const filteredList = userList.filter((r) => {
