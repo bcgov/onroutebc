@@ -19,7 +19,7 @@ export const updateRedCompanyPendingUserDtoMock: UpdatePendingUserDto = {
 
 export const createRedCompanyPendingUserDtoMock: CreatePendingUserDto = {
   userName: constants.RED_COMPANY_PENDING_USER_NAME,
-  ...updateRedCompanyPendingUserDtoMock,
+  userAuthGroup: UserAuthGroup.CV_CLIENT,
 };
 
 export const readRedCompanyPendingUserDtoMock: ReadPendingUserDto = {
@@ -40,7 +40,7 @@ export const updateBlueCompanyPendingUserDtoMock: UpdatePendingUserDto = {
 
 export const createBlueCompanyPendingUserDtoMock: CreatePendingUserDto = {
   userName: constants.BLUE_COMPANY_PENDING_USER_NAME,
-  ...updateRedCompanyPendingUserDtoMock,
+  userAuthGroup: UserAuthGroup.CV_CLIENT,
 };
 export const readBlueCompanyPendingUserDtoMock: ReadPendingUserDto = {
   companyId: constants.BLUE_COMPANY_ID,
