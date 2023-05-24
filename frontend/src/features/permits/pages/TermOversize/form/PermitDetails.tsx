@@ -24,19 +24,26 @@ export const PermitDetails = ({ feature, values}: { feature: string, values: App
   // the permit expiry date is the permit duration minus 1 plus the <start date>
   const duration = (values?.permitData?.permitDuration !== undefined)? values?.permitData?.permitDuration - 1: 30;
   const expiryDate = dayjs(startDate).add(duration, "day");
-  const formattedExpiryDate = dayjs(expiryDate).format("LL");
-
+  const [formattedExpiryDate, setFormattedExpiryDate] = useState(dayjs(expiryDate).format("LL"));
   register("permitData.expiryDate");
   useEffect(() => {
-    setValue("permitData.expiryDate", dayjs(startDate).add(duration, "day"));
+    if(applicationNumber !== undefined)
+    {
+      setValue("permitData.startDate", dayjs(values?.permitData?.startDate));
+      setValue("permitData.permitDuration", values?.permitData.permitDuration);
+    }
   }, [startDate, duration]);
 
   useEffect(() => {
-    setValue("permitData.startDate", dayjs(values?.permitData?.startDate));
-    setValue("permitData.permitDuration", values?.permitData.permitDuration);
-    setValue("permitData.commodities", values?.permitData.commodities);
-    }, [values?.permitData.startDate, values?.permitData.permitDuration]);
+    if(applicationNumber !== undefined){
+      setValue("permitData.expiryDate", formattedExpiryDate);
+    }
+    setFormattedExpiryDate(watch("permitData.startDate").add(watch("permitData.permitDuration"),"days").format("LL"));
+  }, [values?.permitData?.startDate, values?.permitData.permitDuration, watch("permitData.startDate"), watch("permitData.permitDuration"), formattedExpiryDate]);
 
+  useEffect(() => {
+    setValue("permitData.commodities", values?.permitData.commodities);
+    }, [values?.permitData.permitDuration]);
 
   return (
     <Box sx={PERMIT_MAIN_BOX_STYLE}>
