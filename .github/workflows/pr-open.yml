@@ -96,7 +96,11 @@ jobs:
             ${{secrets.VAULT_ENV}}/data/database-dev  DATABASE_PORT     | VAULT_DATABASE_PORT;
             ${{secrets.VAULT_ENV}}/data/auth0-dev     AUTH0_ISSUER_URL  | VAULT_AUTH0_ISSUER_URL;
             ${{secrets.VAULT_ENV}}/data/auth0-dev     AUTH0_AUDIENCE    | VAULT_AUTH0_AUDIENCE;
-            ${{secrets.VAULT_ENV}}/data/auth0-dev     AUTH0_IGNORE_EXP  | VAULT_AUTH0_IGNORE_EXP
+            ${{secrets.VAULT_ENV}}/data/auth0-dev     AUTH0_IGNORE_EXP  | VAULT_AUTH0_IGNORE_EXP;
+            ${{secrets.VAULT_ENV}}/data/cdogs-dev     CDOGS_CLIENT_ID   | VAULT_CDOGS_CLIENT_ID;
+            ${{secrets.VAULT_ENV}}/data/cdogs-dev     CDOGS_CLIENT_SECRET   | VAULT_CDOGS_CLIENT_SECRET;
+            ${{secrets.VAULT_ENV}}/data/cdogs-dev     CDOGS_TOKEN_URL   | VAULT_CDOGS_TOKEN_URL;
+            ${{secrets.VAULT_ENV}}/data/cdogs-dev     CDOGS_URL         | VAULT_CDOGS_URL;
       - name: Deploy Application
         uses: bcgov-nr/action-deployer-openshift@v1.0.4
         with:
@@ -117,6 +121,10 @@ jobs:
             -p AUTH0_ISSUER_URL=${{steps.secrets.outputs.VAULT_AUTH0_ISSUER_URL}}
             -p AUTH0_AUDIENCE=${{steps.secrets.outputs.VAULT_AUTH0_AUDIENCE}}
             -p AUTH0_IGNORE_EXP=${{steps.secrets.outputs.VAULT_AUTH0_IGNORE_EXP}}
+            -p CDOGS_CLIENT_ID=${{steps.secrets.outputs.VAULT_CDOGS_CLIENT_ID}}
+            -p CDOGS_CLIENT_SECRET=${{steps.secrets.outputs.VAULT_CDOGS_CLIENT_SECRET}}
+            -p CDOGS_TOKEN_URL=${{steps.secrets.outputs.VAULT_CDOGS_TOKEN_URL}}
+            -p CDOGS_URL=${{steps.secrets.outputs.VAULT_CDOGS_URL}}
             ${{ matrix.parameters }}
 
   helm-deploys-dev:

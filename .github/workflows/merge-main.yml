@@ -97,7 +97,7 @@ jobs:
             ${{secrets.VAULT_ENV}}/data/database-test   DATABASE_PORT     | VAULT_DATABASE_PORT;
             ${{secrets.VAULT_ENV}}/data/auth0-test      AUTH0_ISSUER_URL  | VAULT_AUTH0_ISSUER_URL;
             ${{secrets.VAULT_ENV}}/data/auth0-test      AUTH0_AUDIENCE    | VAULT_AUTH0_AUDIENCE;
-            ${{secrets.VAULT_ENV}}/data/auth0-test      AUTH0_IGNORE_EXP  | VAULT_AUTH0_IGNORE_EXP
+            ${{secrets.VAULT_ENV}}/data/auth0-test      AUTH0_IGNORE_EXP  | VAULT_AUTH0_IGNORE_EXP;
       
       - uses: bcgov-nr/action-deployer-openshift@v1.0.4
         with:
@@ -240,7 +240,11 @@ jobs:
             ${{secrets.VAULT_ENV}}/data/database-staging    DATABASE_PORT       | VAULT_DATABASE_PORT;
             ${{secrets.VAULT_ENV}}/data/auth0-staging       AUTH0_ISSUER_URL    | VAULT_AUTH0_ISSUER_URL;
             ${{secrets.VAULT_ENV}}/data/auth0-staging       AUTH0_AUDIENCE      | VAULT_AUTH0_AUDIENCE;
-            ${{secrets.VAULT_ENV}}/data/auth0-staging       AUTH0_IGNORE_EXP    | VAULT_AUTH0_IGNORE_EXP
+            ${{secrets.VAULT_ENV}}/data/auth0-staging       AUTH0_IGNORE_EXP    | VAULT_AUTH0_IGNORE_EXP;
+            ${{secrets.VAULT_ENV}}/data/cdogs-staging       CDOGS_CLIENT_ID     | VAULT_CDOGS_CLIENT_ID;
+            ${{secrets.VAULT_ENV}}/data/cdogs-staging       CDOGS_CLIENT_SECRET | VAULT_CDOGS_CLIENT_SECRET;
+            ${{secrets.VAULT_ENV}}/data/cdogs-staging       CDOGS_TOKEN_URL     | VAULT_CDOGS_TOKEN_URL;
+            ${{secrets.VAULT_ENV}}/data/cdogs-staging       CDOGS_URL           | VAULT_CDOGS_URL;
       
       - uses: bcgov-nr/action-deployer-openshift@v1.0.4
         with:
@@ -260,6 +264,11 @@ jobs:
             -p AUTH0_ISSUER_URL=${{steps.secrets.outputs.VAULT_AUTH0_ISSUER_URL}}
             -p AUTH0_AUDIENCE=${{steps.secrets.outputs.VAULT_AUTH0_AUDIENCE}}
             -p AUTH0_IGNORE_EXP=${{steps.secrets.outputs.VAULT_AUTH0_IGNORE_EXP}}
+            -p CDOGS_CLIENT_ID=${{steps.secrets.outputs.VAULT_CDOGS_CLIENT_ID}}
+            -p CDOGS_CLIENT_SECRET=${{steps.secrets.outputs.VAULT_CDOGS_CLIENT_SECRET}}
+            -p CDOGS_TOKEN_URL=${{steps.secrets.outputs.VAULT_CDOGS_TOKEN_URL}}
+            -p CDOGS_URL=${{steps.secrets.outputs.VAULT_CDOGS_URL}}
+            
             ${{ matrix.parameters }}
           penetration_test: true
   
@@ -382,7 +391,11 @@ jobs:
             ${{secrets.VAULT_ENV}}/data/database-uat    DATABASE_PORT     | VAULT_DATABASE_PORT;
             ${{secrets.VAULT_ENV}}/data/auth0-uat      AUTH0_ISSUER_URL   | VAULT_AUTH0_ISSUER_URL;
             ${{secrets.VAULT_ENV}}/data/auth0-uat      AUTH0_AUDIENCE     | VAULT_AUTH0_AUDIENCE;
-            ${{secrets.VAULT_ENV}}/data/auth0-uat      AUTH0_IGNORE_EXP   | VAULT_AUTH0_IGNORE_EXP
+            ${{secrets.VAULT_ENV}}/data/auth0-uat      AUTH0_IGNORE_EXP   | VAULT_AUTH0_IGNORE_EXP;
+            ${{secrets.VAULT_ENV}}/data/cdogs-uat       CDOGS_CLIENT_ID     | VAULT_CDOGS_CLIENT_ID;
+            ${{secrets.VAULT_ENV}}/data/cdogs-uat       CDOGS_CLIENT_SECRET | VAULT_CDOGS_CLIENT_SECRET;
+            ${{secrets.VAULT_ENV}}/data/cdogs-uat       CDOGS_TOKEN_URL     | VAULT_CDOGS_TOKEN_URL;
+            ${{secrets.VAULT_ENV}}/data/cdogs-uat       CDOGS_URL           | VAULT_CDOGS_URL;
       
       - uses: bcgov-nr/action-deployer-openshift@v1.0.4
         with:
@@ -402,6 +415,10 @@ jobs:
             -p AUTH0_ISSUER_URL=${{steps.secrets.outputs.VAULT_AUTH0_ISSUER_URL}}
             -p AUTH0_AUDIENCE=${{steps.secrets.outputs.VAULT_AUTH0_AUDIENCE}}
             -p AUTH0_IGNORE_EXP=${{steps.secrets.outputs.VAULT_AUTH0_IGNORE_EXP}}
+            -p CDOGS_CLIENT_ID=${{steps.secrets.outputs.VAULT_CDOGS_CLIENT_ID}}
+            -p CDOGS_CLIENT_SECRET=${{steps.secrets.outputs.VAULT_CDOGS_CLIENT_SECRET}}
+            -p CDOGS_TOKEN_URL=${{steps.secrets.outputs.VAULT_CDOGS_TOKEN_URL}}
+            -p CDOGS_URL=${{steps.secrets.outputs.VAULT_CDOGS_URL}}
             ${{ matrix.parameters }}
           penetration_test: true
   
@@ -620,7 +637,11 @@ jobs:
             ${{secrets.VAULT_ENV}}/data/database-prod  DATABASE_PORT     | VAULT_DATABASE_PORT;
             ${{secrets.VAULT_ENV}}/data/auth0-prod     AUTH0_ISSUER_URL  | VAULT_AUTH0_ISSUER_URL;
             ${{secrets.VAULT_ENV}}/data/auth0-prod     AUTH0_AUDIENCE    | VAULT_AUTH0_AUDIENCE;
-            ${{secrets.VAULT_ENV}}/data/auth0-prod     AUTH0_IGNORE_EXP  | VAULT_AUTH0_IGNORE_EXP
+            ${{secrets.VAULT_ENV}}/data/auth0-prod     AUTH0_IGNORE_EXP  | VAULT_AUTH0_IGNORE_EXP;
+            ${{secrets.VAULT_ENV}}/data/cdogs-prod     CDOGS_CLIENT_ID     | VAULT_CDOGS_CLIENT_ID;
+            ${{secrets.VAULT_ENV}}/data/cdogs-prod     CDOGS_CLIENT_SECRET | VAULT_CDOGS_CLIENT_SECRET;
+            ${{secrets.VAULT_ENV}}/data/cdogs-prod     CDOGS_TOKEN_URL     | VAULT_CDOGS_TOKEN_URL;
+            ${{secrets.VAULT_ENV}}/data/cdogs-prod     CDOGS_URL           | VAULT_CDOGS_URL;
       - uses: bcgov-nr/action-deployer-openshift@v1.0.4
         with:
           file: ${{ matrix.file }}
@@ -639,6 +660,10 @@ jobs:
             -p AUTH0_ISSUER_URL=${{steps.secrets.outputs.VAULT_AUTH0_ISSUER_URL}}
             -p AUTH0_AUDIENCE=${{steps.secrets.outputs.VAULT_AUTH0_AUDIENCE}}
             -p AUTH0_IGNORE_EXP=${{steps.secrets.outputs.VAULT_AUTH0_IGNORE_EXP}}
+            -p CDOGS_CLIENT_ID=${{steps.secrets.outputs.VAULT_CDOGS_CLIENT_ID}}
+            -p CDOGS_CLIENT_SECRET=${{steps.secrets.outputs.VAULT_CDOGS_CLIENT_SECRET}}
+            -p CDOGS_TOKEN_URL=${{steps.secrets.outputs.VAULT_CDOGS_TOKEN_URL}}
+            -p CDOGS_URL=${{steps.secrets.outputs.VAULT_CDOGS_URL}}
             ${{ matrix.parameters }}
           penetration_test: false
   
