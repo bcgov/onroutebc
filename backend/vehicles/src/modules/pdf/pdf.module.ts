@@ -6,10 +6,11 @@ import { Template } from './entities/template.entity';
 import { PowerUnitTypesModule } from '../vehicles/power-unit-types/power-unit-types.module';
 import { TrailerTypesModule } from '../vehicles/trailer-types/trailer-types.module';
 import { CommonModule } from '../common/common.module';
+import { PermitType } from '../permit/entities/permit-type.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Template]),
+    TypeOrmModule.forFeature([Template, PermitType]),
     HttpModule,
     CommonModule,
     PowerUnitTypesModule,

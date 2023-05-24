@@ -7,6 +7,8 @@ import { formatVehicleTypes } from './formatVehicleTypes';
 import { Country } from 'src/modules/common/entities/country.entity';
 import { Repository } from 'typeorm';
 import { Province } from 'src/modules/common/entities/province.entity';
+import { formatPermitType } from './formatPermitType';
+import { PermitType } from 'src/modules/permit/entities/permit-type.entity';
 
 /**
  * TODO: Should formatting be done on the frontend?
@@ -21,6 +23,8 @@ export const formatTemplateData = async (
   trailerTypeService: TrailerTypesService, //TODO: fix prop drilling?
   countryRepository: Repository<Country>,
   provinceRepository: Repository<Province>,
+  permitTypeRepository: Repository<PermitType>,
+
 ) => {
   // Parse permitData string into JSON
   const templateData: any = permit;
@@ -59,12 +63,10 @@ export const formatTemplateData = async (
     },
   ];
 
-  // TODO: get permit name from ORBC_VT_PERMIT_TYPE table in database
-  // TODO: Create entity and use permit type enum
-  let permitName: string;
-  if (permit.permitType === 'TROS') {
-    permitName = 'Oversize: Term';
-  }
+  const permitName = await formatPermitType(
+    permit.permitType,
+    permitTypeRepository,
+  );
 
   templateData.permitData.vehicleDetails.vehicleType = vehicleType.vehicleType;
   templateData.permitData.vehicleDetails.vehicleSubType =

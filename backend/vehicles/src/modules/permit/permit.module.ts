@@ -10,9 +10,10 @@ import { ApplicationController } from './application.controller';
 import { ApplicationService } from './application.service';
 import { ApplicationProfile } from './profile/application.profile';
 import { PdfModule } from '../pdf/pdf.module';
+import { PermitType } from './entities/permit-type.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Permit, PermitData]), PdfModule],
+  imports: [TypeOrmModule.forFeature([Permit, PermitData, PermitType]), PdfModule],
   controllers: [PermitController, ApplicationController],
   providers: [
     PermitService,
