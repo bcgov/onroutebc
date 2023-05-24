@@ -6,7 +6,6 @@ import {
   getUserGuidFromSession,
   httpPUTRequest_axios,
 } from "../../../common/apiManager/httpRequestHandler";
-import { replaceEmptyValuesWithNull } from "../../../common/helpers/util";
 import { Application, PermitApplicationInProgress } from "../types/application";
 import { PERMITS_API, VEHICLE_URL } from "./endpoints/endpoints";
 import { formatDate } from "../../../common/helpers/formatDate";
@@ -16,7 +15,7 @@ export const submitTermOversize = (
 ): Promise<AxiosResponse> => {
   return httpPOSTRequest_axios(
     PERMITS_API.SUBMIT_TERM_OVERSIZE_PERMIT,
-    replaceEmptyValuesWithNull(termOversizePermit)
+    termOversizePermit
   );
 };
 
@@ -26,7 +25,7 @@ export const updateTermOversize = (
 ): Promise<AxiosResponse> => {
   return httpPUTRequest_axios(
     `${PERMITS_API.SUBMIT_TERM_OVERSIZE_PERMIT}/${applicationNumber}`,
-    replaceEmptyValuesWithNull(termOversizePermit)
+    termOversizePermit
   );
 };
 

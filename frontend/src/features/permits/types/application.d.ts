@@ -48,6 +48,7 @@ interface VehicleDetails {
   vehicleType: string;
   vehicleSubType: string;
   saveVehicle?: boolean;
+  unitNumber?: string;
 }
 
 export interface Commodities {

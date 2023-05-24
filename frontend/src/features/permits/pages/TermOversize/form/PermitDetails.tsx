@@ -13,14 +13,14 @@ import {
   PERMIT_RIGHT_BOX_STYLE,
 } from "../../../../../themes/orbcStyles";
 import { TROS_PERMIT_DURATIONS } from "../../../constants/termOversizeConstants";
+import { Application } from "../../../types/application";
+import dayjs from "dayjs";
 
-export const PermitDetails = ({ feature }: { feature: string }) => {
+export const PermitDetails = ({ feature, values}: { feature: string, values: Application | undefined  }) => {
   const { getValues, watch, register, setValue } = useFormContext();
-
   const startDate = watch("permitData.startDate");
   // the permit expiry date is the permit duration minus 1 plus the <start date>
-  const duration = getValues("permitData.permitDuration") - 1;
-
+  const duration = (values?.permitData?.permitDuration !== undefined)? values?.permitData?.permitDuration - 1: 30;
   const formatDate = () => {
     return startDate.add(duration, "day").format("LL");
   };
@@ -32,7 +32,15 @@ export const PermitDetails = ({ feature }: { feature: string }) => {
   useEffect(() => {
     setExpiryDate(formatDate());
     setValue("permitData.expiryDate", startDate.add(duration, "day"));
+    
   }, [startDate, duration]);
+
+  useEffect(() => {
+    setValue("permitData.startDate", dayjs(values?.permitData?.startDate));
+    setValue("permitData.permitDuration", values?.permitData.permitDuration);
+    setValue("permitData.commodities", values?.permitData.commodities);
+    }, [values?.permitData.startDate, values?.permitData.permitDuration]);
+
 
   return (
     <Box sx={PERMIT_MAIN_BOX_STYLE}>

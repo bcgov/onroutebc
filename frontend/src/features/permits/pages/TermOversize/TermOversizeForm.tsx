@@ -121,6 +121,26 @@ export const TermOversizeForm = () => {
             ?.email,
           userDetails?.email
         ),
+        phone1Extension: getDefaultRequiredVal(
+          "",
+          applicationContext?.applicationData?.permitData?.contactDetails
+            ?.phone1Extension
+        ),
+        phone2Extension: getDefaultRequiredVal(
+          "",
+          applicationContext?.applicationData?.permitData?.contactDetails
+            ?.phone2Extension
+        ),
+        phone2: getDefaultRequiredVal(
+          "",
+          applicationContext?.applicationData?.permitData?.contactDetails
+            ?.phone2
+        ),
+        fax: getDefaultRequiredVal(
+          "",
+          applicationContext?.applicationData?.permitData?.contactDetails
+            ?.fax
+        ),
       },
       // Default values are updated from companyInfo query in the ContactDetails common component
       mailingAddress: {
@@ -132,6 +152,10 @@ export const TermOversizeForm = () => {
         postalCode: "",
       },
       vehicleDetails: {
+        unitNumber: getDefaultRequiredVal(
+          "",
+          applicationContext?.applicationData?.permitData?.vehicleDetails?.unitNumber
+        ),
         vin: getDefaultRequiredVal(
           "",
           applicationContext?.applicationData?.permitData?.vehicleDetails?.vin
@@ -340,9 +364,9 @@ export const TermOversizeForm = () => {
         <Box sx={{ paddingBottom: "80px" }}>
           <FormProvider {...formMethods}>
             <ApplicationDetails values={termOversizeDefaultValues} />
-            <ContactDetails feature={FEATURE} />
-            <PermitDetails feature={FEATURE} />
-            <VehicleDetails feature={FEATURE} />
+            <ContactDetails feature={FEATURE}  values={termOversizeDefaultValues} />
+            <PermitDetails feature={FEATURE}   values={termOversizeDefaultValues}/>
+            <VehicleDetails feature={FEATURE} values={termOversizeDefaultValues}/>
           </FormProvider>
         </Box>
 

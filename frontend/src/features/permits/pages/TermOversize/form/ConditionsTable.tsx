@@ -9,12 +9,55 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material";
-import { useState } from "react";
+import { useContext } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import { TROS_COMMODITIES } from "../../../constants/termOversizeConstants";
+import { Commodities } from "../../../types/application";
+import { ApplicationContext } from "../../../context/ApplicationContext";
+import { useParams } from "react-router-dom";
 
 export const ConditionsTable = () => {
-  const [checkedValues, setCheckedValues] = useState(TROS_COMMODITIES);
+  const applicationContext = useContext(ApplicationContext);
+  const existingComodities: Commodities[] = [];
+  const existingCommodities = applicationContext.applicationData?.permitData.commodities;
+  TROS_COMMODITIES.forEach(defaultElement => {
+    const combinedElement: Commodities = {
+      description: defaultElement.description,
+      condition: defaultElement.condition,
+      conditionLink: defaultElement.conditionLink,
+      checked: false
+    }
+    if(existingCommodities !== undefined){
+      existingCommodities.forEach(element => {
+        if(element.condition === defaultElement.condition){ 
+          combinedElement.checked = element.checked;
+        }
+      });
+      
+    }
+    if(defaultElement.condition === "CVSE-1000" || defaultElement.condition === "CVSE-1070"){
+      combinedElement.disabled = true;
+    }
+    existingComodities.push(combinedElement); 
+  });
+  const {applicationNumber} = useParams();
+  let checkedValues = TROS_COMMODITIES;
+  if(applicationNumber !== undefined){
+    checkedValues = existingComodities;
+  }
+  else{
+    checkedValues = TROS_COMMODITIES;
+  }
+  
+
+  
+
+  
+
+
+
+
+
   const { control, setValue } = useFormContext();
 
   function handleSelect(checkedName: string) {
@@ -36,7 +79,7 @@ export const ConditionsTable = () => {
         };
       });
 
-    setCheckedValues(newNames);
+    // setCheckedValues(newNames);
     setValue("permitData.commodities", checkedNames);
 
     return newNames;
