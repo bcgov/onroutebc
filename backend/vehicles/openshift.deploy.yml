@@ -169,14 +169,12 @@ objects:
               imagePullPolicy: Always
               name: ${NAME}
               args:
-                ['sh', '-c', '\
-                source /vault/secrets/auth0-${VAULT_ZONE} && \
+                ['sh', '-c', 'source /vault/secrets/auth0-${VAULT_ZONE} && \
                 source /vault/secrets/cdogs-${VAULT_ZONE} && \
                 source /vault/secrets/ches-${VAULT_ZONE} && \
                 source /vault/secrets/coms-${VAULT_ZONE} && \
                 source /vault/secrets/database-${VAULT_ZONE} && \
-                npm run start:prod
-                ']
+                npm run start:prod']
 
               env:
                 - name: DB_TYPE
