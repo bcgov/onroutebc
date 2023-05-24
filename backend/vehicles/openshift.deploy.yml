@@ -171,7 +171,7 @@ objects:
               args:
                 - 'sh' 
                 - '-c'
-                - >-
+                - |
                 source /vault/secrets/auth0-${VAULT_ZONE} && 
                 source /vault/secrets/cdogs-${VAULT_ZONE} &&
                 source /vault/secrets/ches-${VAULT_ZONE} &&
