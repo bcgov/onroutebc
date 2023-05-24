@@ -15,7 +15,7 @@ parse_options "${USAGE}" ${@}
 # Retrieve the version of the ORBC database from the version history table.
 # If the version history table does not exist then a value of zero (0) will
 # be returned.
-ORBC_DB_VERSION=$(/opt/mssql-tools/bin/sqlcmd -U ${USER} -P "${PASS}" -S ${SERVER} -v DB_NAME=${DATABASE} -h -1 -i ${SCRIPT_DIR}/get-orbc-db-version.sql)
+ORBC_DB_VERSION=$(sqlcmd -U ${USER} -P "${PASS}" -S ${SERVER} -v DB_NAME=${DATABASE} -h -1 -i ${SCRIPT_DIR}/get-orbc-db-version.sql)
 
 echo "ORBC DB Version: ${ORBC_DB_VERSION}"
 

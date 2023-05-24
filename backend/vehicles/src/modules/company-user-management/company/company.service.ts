@@ -90,7 +90,6 @@ export class CompanyService {
       user = await queryRunner.manager.save(user);
 
       newUser = await this.classMapper.mapAsync(user, User, ReadUserDto);
-
       await queryRunner.commitTransaction();
     } catch (err) {
       await queryRunner.rollbackTransaction();

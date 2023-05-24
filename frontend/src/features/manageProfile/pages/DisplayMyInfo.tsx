@@ -1,5 +1,7 @@
 import { memo } from "react";
 import { Box, Button, Typography } from "@mui/material";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPencil } from "@fortawesome/free-solid-svg-icons";
 
 import "./DisplayMyInfo.scss";
 import { UserInformation } from "../types/manageProfile";
@@ -52,7 +54,7 @@ export const DisplayMyInfo = memo(({
           color="tertiary"
           onClick={() => setIsEditing(true)}
         >
-          <i className="fa fa-pencil" />
+          <FontAwesomeIcon className="edit-icon" icon={faPencil} />
           Edit
         </Button>
       </div>

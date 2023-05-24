@@ -1,5 +1,4 @@
 import { Box, MenuItem, Typography } from "@mui/material";
-import { useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { InfoBcGovBanner } from "../../../../../common/components/banners/AlertBanners";
 import { PermitExpiryDateBanner } from "../../../../../common/components/banners/PermitExpiryDateBanner";
@@ -13,26 +12,23 @@ import {
   PERMIT_RIGHT_BOX_STYLE,
 } from "../../../../../themes/orbcStyles";
 import { TROS_PERMIT_DURATIONS } from "../../../constants/termOversizeConstants";
-import { Application } from "../../../types/application";
 import dayjs from "dayjs";
+import { useEffect, useState } from "react";
+import { Application } from "../../../types/application";
+import { useParams } from "react-router";
 
 export const PermitDetails = ({ feature, values}: { feature: string, values: Application | undefined  }) => {
   const { watch, register, setValue } = useFormContext();
-  const startDate = watch("permitData.startDate");
+  const {applicationNumber} = useParams();
+  const startDate = (applicationNumber !== undefined)? values?.permitData?.startDate: watch("permitData.startDate");
   // the permit expiry date is the permit duration minus 1 plus the <start date>
   const duration = (values?.permitData?.permitDuration !== undefined)? values?.permitData?.permitDuration - 1: 30;
-  const formatDate = () => {
-    return startDate.add(duration, "day").format("LL");
-  };
-
-  const [expiryDate, setExpiryDate] = useState(formatDate());
+  const expiryDate = dayjs(startDate).add(duration, "day");
+  const formattedExpiryDate = dayjs(expiryDate).format("LL");
 
   register("permitData.expiryDate");
-
   useEffect(() => {
-    setExpiryDate(formatDate());
-    setValue("permitData.expiryDate", startDate.add(duration, "day"));
-    
+    setValue("permitData.expiryDate", dayjs(startDate).add(duration, "day"));
   }, [startDate, duration]);
 
   useEffect(() => {
@@ -81,7 +77,7 @@ export const PermitDetails = ({ feature, values}: { feature: string, values: App
             ))}
           />
         </Box>
-        <PermitExpiryDateBanner expiryDate={expiryDate} />
+        <PermitExpiryDateBanner expiryDate={formattedExpiryDate} />
         <Box>
           <Typography variant="h3">
             Select the commodities below and their respective CVSE forms.

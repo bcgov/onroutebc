@@ -12,7 +12,6 @@ export interface Application {
   applicationNumber?: string;
   permitNumber?: number;
   permitApprovalSource?: string;
-  permitApprovalSource?: string;
   createdDateTime?: Dayjs;
   updatedDateTime?: Dayjs;
   permitData: TermOversizeApplication;
@@ -27,7 +26,7 @@ interface MailingAddress {
   postalCode: string;
 }
 
-interface ContactDetails {
+export interface ContactDetails {
   firstName: string;
   lastName: string;
   phone1: string;
@@ -38,7 +37,7 @@ interface ContactDetails {
   fax?: string;
 }
 
-interface VehicleDetails {
+export interface VehicleDetails {
   vin: string;
   plate: string;
   make: string;
@@ -70,16 +69,16 @@ export interface TermOversizeApplication {
 }
 
 export interface PermitApplicationInProgress extends Application {
-  applicationNumber: String;
-  permitType: String;
+  applicationNumber: string;
+  permitType: string;
   startDate: Dayjs;
   updatedDateTime: Dayjs;
   permitData: {
     startDate: Dayjs;
     vehicleDetails: {
-      unitNumber: String;
-      vin: String;
-      plate: String;
+      unitNumber: string;
+      vin: string;
+      plate: string;
     };
   };
 }
