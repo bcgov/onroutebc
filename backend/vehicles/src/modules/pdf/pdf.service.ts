@@ -93,6 +93,7 @@ export class PdfService {
     const cdogs_url = process.env.CDOGS_URL;
 
     // TODO: Map/format the permit data to template data
+    // TODO: Add payment/refund data from payBC transaction
     // Parse permitData string into JSON
     const templateData = await formatTemplateData(
       permit,
