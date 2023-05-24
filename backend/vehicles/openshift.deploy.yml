@@ -177,8 +177,7 @@ objects:
                 source /vault/secrets/ches-${VAULT_ZONE} &&
                 source /vault/secrets/coms-${VAULT_ZONE} &&
                 source /vault/secrets/database-${VAULT_ZONE} &&
-                npm run start:prod'
-              ]
+                npm run start:prod
 
               env:
                 - name: DB_TYPE
