@@ -113,52 +113,52 @@ objects:
             # - The value is the path in Vault where the secret is located.
             vault.hashicorp.com/agent-inject-secret-auth0-dev:    ${VAULT_ENVIRONMENT}/auth0-${VAULT_ZONE}
             vault.hashicorp.com/agent-inject-template-auth0-dev:  |
-            {{- with secret "${VAULT_ENVIRONMENT}/auth0-${VAULT_ZONE}" }}
-            export AUTH0_ISSUER_URL="{{ .Data.data.AUTH0_ISSUER_URL }}"
-            export AUTH0_AUDIANCE="{{ .Data.data.AUTH0_AUDIENCE }}"
-            export AUTH0_IGNORE_EXP="{{ .Data.data.AUTH0_IGNORE_EXP }}"
-            {{- end }}
+              {{- with secret "${VAULT_ENVIRONMENT}/auth0-${VAULT_ZONE}" }}
+              export AUTH0_ISSUER_URL="{{ .Data.data.AUTH0_ISSUER_URL }}"
+              export AUTH0_AUDIANCE="{{ .Data.data.AUTH0_AUDIENCE }}"
+              export AUTH0_IGNORE_EXP="{{ .Data.data.AUTH0_IGNORE_EXP }}"
+              {{- end }}
 
             vault.hashicorp.com/agent-inject-secret-cdogs-dev:    ${VAULT_ENVIRONMENT}/cdogs-${VAULT_ZONE}
             vault.hashicorp.com/agent-inject-template-cdogs-dev:  |
-            {{- with secret "${VAULT_ENVIRONMENT}/cdogs-${VAULT_ZONE}" }}
-            export CDOGS_CLIENT_ID="{{ .Data.data.CDOGS_CLIENT_ID }}"
-            export CDOGS_CLIENT_SECRET="{{ .Data.data.CDOGS_CLIENT_SECRET }}"
-            export CDOGS_TOKEN_URL="{{ .Data.data.CDOGS_TOKEN_URL }}"
-            export CDOGS_URL="{{ .Data.data.CDOGS_URL }}"
-            {{- end }}
+              {{- with secret "${VAULT_ENVIRONMENT}/cdogs-${VAULT_ZONE}" }}
+              export CDOGS_CLIENT_ID="{{ .Data.data.CDOGS_CLIENT_ID }}"
+              export CDOGS_CLIENT_SECRET="{{ .Data.data.CDOGS_CLIENT_SECRET }}"
+              export CDOGS_TOKEN_URL="{{ .Data.data.CDOGS_TOKEN_URL }}"
+              export CDOGS_URL="{{ .Data.data.CDOGS_URL }}"
+              {{- end }}
 
             vault.hashicorp.com/agent-inject-secret-ches-dev:     ${VAULT_ENVIRONMENT}/ches-${VAULT_ZONE}
             vault.hashicorp.com/agent-inject-template-ches-dev:  |
-            {{- with secret "${VAULT_ENVIRONMENT}/ches-${VAULT_ZONE}" }}
-            export CHES_CLIENT_ID="{{ .Data.data.CHES_CLIENT_ID }}"
-            export CHES_CLIENT_SECRET="{{ .Data.data.CHES_CLIENT_SECRET }}"
-            export CHES_TOKEN_ENDPOINT="{{ .Data.data.CHES_TOKEN_ENDPOINT }}"
-            {{- end }}
+              {{- with secret "${VAULT_ENVIRONMENT}/ches-${VAULT_ZONE}" }}
+              export CHES_CLIENT_ID="{{ .Data.data.CHES_CLIENT_ID }}"
+              export CHES_CLIENT_SECRET="{{ .Data.data.CHES_CLIENT_SECRET }}"
+              export CHES_TOKEN_ENDPOINT="{{ .Data.data.CHES_TOKEN_ENDPOINT }}"
+              {{- end }}
 
             vault.hashicorp.com/agent-inject-secret-coms-dev:     ${VAULT_ENVIRONMENT}/coms-${VAULT_ZONE}
             vault.hashicorp.com/agent-inject-template-coms-dev:  |
-            {{- with secret "${VAULT_ENVIRONMENT}/coms-${VAULT_ZONE}" }}
-            export BASICAUTH_PASSWORD="{{ .Data.data.BASICAUTH_PASSWORD }}"
-            export BASICAUTH_USERNAME="{{ .Data.data.BASICAUTH_USERNAME }}"
-            export COMS_PRESIGNED_URL_EXPIRY="{{ .Data.data.COMS_PRESIGNED_URL_EXPIRY }}"
-            export COMS_URL="{{ .Data.data.COMS_URL }}"
-            export OBJECTSTORAGE_ACCESSKEYID="{{ .Data.data.OBJECTSTORAGE_ACCESSKEYID }}"
-            export OBJECTSTORAGE_BUCKET="{{ .Data.data.OBJECTSTORAGE_BUCKET }}"
-            export OBJECTSTORAGE_ENDPOINT="{{ .Data.data.OBJECTSTORAGE_ENDPOINT }}"
-            export OBJECTSTORAGE_KEY="{{ .Data.data.OBJECTSTORAGE_KEY }}"
-            export OBJECTSTORAGE_SECRETACCESSKEY="{{ .Data.data.OBJECTSTORAGE_SECRETACCESSKEY }}"
-            {{- end }}
+              {{- with secret "${VAULT_ENVIRONMENT}/coms-${VAULT_ZONE}" }}
+              export BASICAUTH_PASSWORD="{{ .Data.data.BASICAUTH_PASSWORD }}"
+              export BASICAUTH_USERNAME="{{ .Data.data.BASICAUTH_USERNAME }}"
+              export COMS_PRESIGNED_URL_EXPIRY="{{ .Data.data.COMS_PRESIGNED_URL_EXPIRY }}"
+              export COMS_URL="{{ .Data.data.COMS_URL }}"
+              export OBJECTSTORAGE_ACCESSKEYID="{{ .Data.data.OBJECTSTORAGE_ACCESSKEYID }}"
+              export OBJECTSTORAGE_BUCKET="{{ .Data.data.OBJECTSTORAGE_BUCKET }}"
+              export OBJECTSTORAGE_ENDPOINT="{{ .Data.data.OBJECTSTORAGE_ENDPOINT }}"
+              export OBJECTSTORAGE_KEY="{{ .Data.data.OBJECTSTORAGE_KEY }}"
+              export OBJECTSTORAGE_SECRETACCESSKEY="{{ .Data.data.OBJECTSTORAGE_SECRETACCESSKEY }}"
+              {{- end }}
             
             vault.hashicorp.com/agent-inject-secret-database-dev: ${VAULT_ENVIRONMENT}/database-${VAULT_ZONE}
             vault.hashicorp.com/agent-inject-template-database-dev:  |
-            {{- with secret "${VAULT_ENVIRONMENT}/database-${VAULT_ZONE}" }}
-            export DATABASE_HOST="{{ .Data.data.DATABASE_HOST }}"
-            export DATABASE_NAME="{{ .Data.data.DATABASE_NAME }}"
-            export DATABASE_PASSWORD="{{ .Data.data.DATABASE_PASSWORD }}"
-            export DATABASE_PORT="{{ .Data.data.DATABASE_PORT }}"
-            export DATABASE_USER="{{ .Data.data.DATABASE_USER }}"
-            {{- end }}
+              {{- with secret "${VAULT_ENVIRONMENT}/database-${VAULT_ZONE}" }}
+              export DATABASE_HOST="{{ .Data.data.DATABASE_HOST }}"
+              export DATABASE_NAME="{{ .Data.data.DATABASE_NAME }}"
+              export DATABASE_PASSWORD="{{ .Data.data.DATABASE_PASSWORD }}"
+              export DATABASE_PORT="{{ .Data.data.DATABASE_PORT }}"
+              export DATABASE_USER="{{ .Data.data.DATABASE_USER }}"
+              {{- end }}
           labels:
             app: ${NAME}-${ZONE}
             deploymentconfig: ${NAME}-${ZONE}-${COMPONENT}
