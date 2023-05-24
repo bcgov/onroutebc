@@ -1,5 +1,4 @@
 import { Box, MenuItem, Typography } from "@mui/material";
-import { useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { InfoBcGovBanner } from "../../../../../common/components/banners/AlertBanners";
 import { PermitExpiryDateBanner } from "../../../../../common/components/banners/PermitExpiryDateBanner";
@@ -13,6 +12,8 @@ import {
   PERMIT_RIGHT_BOX_STYLE,
 } from "../../../../../themes/orbcStyles";
 import { TROS_PERMIT_DURATIONS } from "../../../constants/termOversizeConstants";
+import dayjs from "dayjs";
+import { useEffect } from "react";
 
 export const PermitDetails = ({ feature }: { feature: string }) => {
   const { getValues, watch, register, setValue } = useFormContext();
@@ -21,17 +22,12 @@ export const PermitDetails = ({ feature }: { feature: string }) => {
   // the permit expiry date is the permit duration minus 1 plus the <start date>
   const duration = getValues("permitData.permitDuration") - 1;
 
-  const formatDate = () => {
-    return startDate.add(duration, "day").format("LL");
-  };
-
-  const [expiryDate, setExpiryDate] = useState(formatDate());
+  const expiryDate = dayjs(startDate).add(duration, "day");
+  const formattedExpiryDate = dayjs(expiryDate).format("LL");
 
   register("permitData.expiryDate");
-
   useEffect(() => {
-    setExpiryDate(formatDate());
-    setValue("permitData.expiryDate", startDate.add(duration, "day"));
+    setValue("permitData.expiryDate", expiryDate);
   }, [startDate, duration]);
 
   return (
@@ -73,7 +69,7 @@ export const PermitDetails = ({ feature }: { feature: string }) => {
             ))}
           />
         </Box>
-        <PermitExpiryDateBanner expiryDate={expiryDate} />
+        <PermitExpiryDateBanner expiryDate={formattedExpiryDate} />
         <Box>
           <Typography variant="h3">
             Select the commodities below and their respective CVSE forms.

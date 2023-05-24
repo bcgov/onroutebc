@@ -1,5 +1,3 @@
-import dayjs from "dayjs";
-
 import { getDefaultRequiredVal } from "../../../common/helpers/util";
 import {
   TermOversizeApplication,
@@ -7,6 +5,7 @@ import {
   VehicleDetails as VehicleDetailsType,
   ContactDetails as ContactDetailsType,
 } from "../types/application";
+import { formatFromObject } from "../../../common/helpers/formatDate";
 
 const areContactDetailsEqual = (contactDetails1?: ContactDetailsType, contactDetails2?: ContactDetailsType) => {
   if (!contactDetails1 && !contactDetails2) return true;
@@ -50,8 +49,8 @@ const areVehicleDetailsEqual = (vehicleDetails1?: VehicleDetailsType, vehicleDet
 
 export const areApplicationDataEqual = (data1: TermOversizeApplication, data2: TermOversizeApplication) => {
   return data1.permitDuration === data2.permitDuration
-    && dayjs(data1.startDate).format("YYYY-MM-DD") === dayjs(data2.startDate).format("YYYY-MM-DD") // issues with date comparison
-    && dayjs(data1.expiryDate).format("YYYY-MM-DD") === dayjs(data2.expiryDate).format("YYYY-MM-DD") // issues with date comparison
+    && formatFromObject(data1.startDate, "date", "local") === formatFromObject(data2.startDate, "date", "local") // issues with date comparison
+    && formatFromObject(data1.expiryDate, "date", "local") === formatFromObject(data2.expiryDate, "date", "local") // issues with date comparison
     && areContactDetailsEqual(data1.contactDetails, data2.contactDetails)
     && areVehicleDetailsEqual(data1.vehicleDetails, data2.vehicleDetails)
     && areCommoditiesEqual(data1.commodities, data2.commodities);

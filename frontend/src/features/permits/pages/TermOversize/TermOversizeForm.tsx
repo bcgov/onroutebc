@@ -1,5 +1,7 @@
 import { useForm, FormProvider, FieldValues } from "react-hook-form";
 import { Box, Button, useMediaQuery, useTheme } from "@mui/material";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSave } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 import { Application } from "../../types/application";
 import { ContactDetails } from "../../components/form/ContactDetails";
@@ -36,6 +38,7 @@ import { SnackBarContext } from "../../../../App";
 import { getUserGuidFromSession } from "../../../../common/apiManager/httpRequestHandler";
 import { LeaveApplicationDialog } from "../../components/dialog/LeaveApplicationDialog";
 import { areApplicationDataEqual } from "../../helpers/equality";
+import { PartialDayJsObject, formatFromObject, now } from "../../../../common/helpers/formatDate";
 
 /**
  * The first step in creating and submitting a TROS Application.
@@ -84,17 +87,19 @@ export const TermOversizeForm = () => {
       applicationContext?.applicationData?.updatedDateTime
     ),
     permitData: {
-      startDate: getDefaultRequiredVal(
-        dayjs(),
-        applicationContext?.applicationData?.permitData?.startDate
+      startDate: applyWhenNotNullable(
+        (val: PartialDayJsObject) => dayjs(formatFromObject(val, "date", "local")),
+        applicationContext?.applicationData?.permitData?.startDate, 
+        now()
       ),
       permitDuration: getDefaultRequiredVal(
         30,
         applicationContext?.applicationData?.permitData?.permitDuration
       ),
-      expiryDate: getDefaultRequiredVal(
-        dayjs(),
-        applicationContext?.applicationData?.permitData?.expiryDate
+      expiryDate: applyWhenNotNullable(
+        (val: PartialDayJsObject) => dayjs(formatFromObject(val, "date", "local")),
+        applicationContext?.applicationData?.permitData?.expiryDate, 
+        now()
       ),
       commodities: getDefaultRequiredVal(
         [TROS_COMMODITIES[0], TROS_COMMODITIES[1]],
@@ -119,11 +124,31 @@ export const TermOversizeForm = () => {
             ?.phone1,
           userDetails?.phone1
         ),
+        phone1Extension: getDefaultRequiredVal(
+          "",
+          applicationContext?.applicationData?.permitData?.contactDetails
+            ?.phone1Extension
+        ),
+        phone2: getDefaultRequiredVal(
+          "",
+          applicationContext?.applicationData?.permitData?.contactDetails
+            ?.phone2
+        ),
+        phone2Extension: getDefaultRequiredVal(
+          "",
+          applicationContext?.applicationData?.permitData?.contactDetails
+            ?.phone2Extension
+        ),
         email: getDefaultRequiredVal(
           "",
           applicationContext?.applicationData?.permitData?.contactDetails
             ?.email,
           userDetails?.email
+        ),
+        fax: getDefaultRequiredVal(
+          "",
+          applicationContext?.applicationData?.permitData?.contactDetails
+            ?.fax
         ),
       },
       // Default values are updated from companyInfo query in the ContactDetails common component
@@ -405,8 +430,7 @@ export const TermOversizeForm = () => {
               sx={{ marginLeft: "-420px", marginTop: "40px", display: "flex", alignItems: "center", gap: "10px"}}
               onClick={onSaveApplication}
             >
-              {/* Save Application */}
-              <i className="fa fa-save"/>
+              <FontAwesomeIcon icon={faSave} />
               Save
             </Button>
             <Button
