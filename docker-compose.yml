@@ -55,6 +55,10 @@ services:
       AUTH0_ISSUER_URL: ${AUTH0_ISSUER_URL}
       AUTH0_AUDIENCE: ${AUTH0_AUDIENCE}
       AUTH0_IGNORE_EXP: ${AUTH0_IGNORE_EXP}
+      CDOGS_CLIENT_ID: ${CDOGS_CLIENT_ID}
+      CDOGS_CLIENT_SECRET: ${CDOGS_CLIENT_SECRET}
+      CDOGS_TOKEN_URL: ${CDOGS_TOKEN_URL}
+      CDOGS_URL: ${CDOGS_URL}
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5000/"]
       interval: 1m30s
