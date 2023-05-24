@@ -28,6 +28,7 @@ jobs:
 
             Any successful deployments (not always required) will be available below.
             [Backend - Vehicles](https://${{ env.PREFIX }}-backend-vehicles.${{ env.DOMAIN }}/) available
+            [Backend - DMS](https://${{ env.PREFIX }}-backend-dms.${{ env.DOMAIN }}/) available
             [Frontend](https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}/) available
 
             Once merged, code will be promoted and handed off to following workflow run.
@@ -39,10 +40,12 @@ jobs:
       packages: write
     strategy:
       matrix:
-        package: [backend/vehicles, frontend]
+        package: [backend/vehicles, backend/dms, frontend]
         include:
           - package: backend/vehicles
             triggers: ('backend/vehicles/')
+          - package: backend/dms
+            triggers: ('backend/dms/')            
           - package: frontend
             triggers: ('frontend/')
     steps:
@@ -66,12 +69,16 @@ jobs:
       max-parallel: 1
       fail-fast: true
       matrix:
-        name: [init, backend/vehicles, frontend]
+        name: [init, backend/vehicles, backend/dms, frontend]
         include:
           - name: backend/vehicles
             file: backend/vehicles/openshift.deploy.yml
             overwrite: true
             parameters: -p MIN_REPLICAS=1 -p MAX_REPLICAS=2
+          - name: backend/dms
+            file: backend/dms/openshift.deploy.yml
+            overwrite: true
+            parameters: -p MIN_REPLICAS=1 -p MAX_REPLICAS=2            
           - name: frontend
             file: frontend/openshift.deploy.yml
             overwrite: true

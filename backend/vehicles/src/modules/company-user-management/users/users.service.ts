@@ -159,6 +159,7 @@ export class UsersService {
       .createQueryBuilder('user')
       .innerJoinAndSelect('user.userContact', 'userContact')
       .innerJoinAndSelect('userContact.province', 'province')
+      .innerJoinAndSelect('province.country', 'country')
       .leftJoinAndSelect('user.companyUsers', 'companyUser')
       .leftJoinAndSelect('companyUser.company', 'company')
       /* Conditional WHERE clause for userGUID. If userGUID is provided, the

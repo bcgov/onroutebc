@@ -11,10 +11,19 @@ import { ApplicationService } from './application.service';
 import { ApplicationProfile } from './profile/application.profile';
 import { PdfModule } from '../pdf/pdf.module';
 import { PermitType } from './entities/permit-type.entity';
+import { PermitApplicationOrigin } from './entities/permit-application-origin.entity';
+import { PermitApprovalSource } from './entities/permit-approval-source.entity';
+import { DatabaseHelper } from 'src/common/helper/database.helper';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Permit, PermitData, PermitType]),
+    TypeOrmModule.forFeature([
+      Permit,
+      PermitData,
+      PermitType,
+      PermitApplicationOrigin,
+      PermitApprovalSource,
+    ]),
     PdfModule,
   ],
   controllers: [PermitController, ApplicationController],
@@ -23,6 +32,7 @@ import { PermitType } from './entities/permit-type.entity';
     ApplicationService,
     PermitProfile,
     ApplicationProfile,
+    DatabaseHelper,
   ],
 })
 export class PermitModule {}

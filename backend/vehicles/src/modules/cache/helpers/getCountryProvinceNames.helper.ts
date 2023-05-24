@@ -14,7 +14,7 @@ export const getCountryName = async (
   countryCode: string,
   commonService: CommonService,
 ) => {
-  let cachedData: string = await cacheManager.get(countryCode);
+  const cachedData: string = await cacheManager.get(countryCode);
 
   if (cachedData) return cachedData;
 
@@ -37,7 +37,7 @@ export const getProvinceName = async (
   provinceCode: string,
   commonService: CommonService,
 ) => {
-  let cachedData: string = await cacheManager.get(provinceCode);
+  const cachedData: string = await cacheManager.get(provinceCode);
 
   if (cachedData) return cachedData;
 
