@@ -21,9 +21,9 @@ export class Template {
   templateVersion: string;
 
   /**
-   * Common Object Management System (COMS) reference ID
+   * Document Management System (DMS) reference ID
    */
-  @Column({ length: 50, name: 'COMS_REF_ID', nullable: false })
+  @Column({ length: 50, name: 'DMS_REF_ID', nullable: false })
   comsRef: string;
 
   /**

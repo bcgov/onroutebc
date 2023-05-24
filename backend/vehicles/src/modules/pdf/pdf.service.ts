@@ -49,10 +49,10 @@ export class PdfService {
   }
 
   /**
-   * Queries the ORBC Template table using the permit type to get the reference to the associated template object in COMS
+   * Queries the ORBC Template table using the permit type to get the reference to the associated template object in DMS
    * @param {string} permitType permit type. Example: 'TROS'
    * @param {string} templateVersion template version. Defaults to latest version
-   * @returns {string} a COMS reference ID used to retrieve the template in COMS
+   * @returns {string} a DMS reference ID used to retrieve the template in DMS
    */
   private async getTemplateRef(
     permitType: string,
@@ -63,9 +63,9 @@ export class PdfService {
   }
 
   /**
-   * Get the template object from COMS by reference ID
-   * @param {string} templateRef key used to look up template object in COMS. @see getTemplateRef
-   * @returns {string} a COMS reference ID used to retrieve the template in COMS
+   * Get the template object from DMS by reference ID
+   * @param {string} templateRef key used to look up template object in DMS. @see getTemplateRef
+   * @returns {string} a DMS reference ID used to retrieve the template in DMS
    */
   private async getTemplate(templateRef: string): Promise<ITemplate> {
     // TODO: implement
@@ -119,14 +119,14 @@ export class PdfService {
 
     const keycloak = await oidcResponse.data;
 
-    // TODO: get this from COMS and use the passed in template variable
+    // TODO: get this from DMS and use the passed in template variable
     // Temp helper function
     const encode = (file: string) => {
       const contents = fs.readFileSync(file);
       return contents.toString(ENCODING_TYPE);
     };
 
-    // TODO: get this from COMS
+    // TODO: get this from DMS
     const templateContent = encode(
       `${TEMPLATE_FILE_PATH}/${TEMPLATE_NAME}.${TEMPLATE_FILE_TYPE}`,
     );
@@ -154,16 +154,16 @@ export class PdfService {
       },
     });
 
-    // TODO: which format does COMS/DMS expect? Currently set to array buffer
+    // TODO: which format does DMS/DMS expect? Currently set to array buffer
     const pdf = await cdogsResponse.arrayBuffer();
 
     return pdf;
   }
 
   /**
-   * Saves the pdf object in COMS
+   * Saves the pdf object in DMS
    * @param {ArrayBuffer} pdf the pdf object
-   * @returns a COMS reference ID
+   * @returns a DMS reference ID
    */
   private async savePDF(pdf: ArrayBuffer): Promise<string> {
     // TODO: Should we save the permit pdf including the attachments?
@@ -180,29 +180,34 @@ export class PdfService {
 
   /**
    * Generate a PDF using the BC Government Common Document Generation Service (CDOGS).
-   * This function uses a .docx template associated with the permit type (eg. 'TROS') which is stored in the Common Object Management Service (COMS),
-   * then populates the template with permit json data, then creates and saves the PDF in the COMS.
+   * This function uses a .docx template associated with the permit type (eg. 'TROS') which is stored in the Document Management Service (DMS),
+   * then populates the template with permit json data, then creates and saves the PDF in the DMS.
    *
    * {@link CDOGS https://digital.gov.bc.ca/bcgov-common-components/common-document-generation-service/}
    * {@link COMS https://digital.gov.bc.ca/bcgov-common-components/common-object-management-service/}
    *
    * @param {Permit} permit permit data
    * @param {string} templateVersion template version. Defaults to latest version
-   * @returns {string} a COMS reference ID used to retrieve the template in COMS
+   * @returns {string} a DMS reference ID used to retrieve the template in DMS
    */
   public async generatePDF(
     permit: Permit,
     templateVersion: string = 'latest',
   ): Promise<string> {
+
+    // Call ORBC Template table to get the DMS Reference of the associated template/permit type
     const templateRef = await this.getTemplateRef(
       permit.permitType,
       templateVersion,
     );
 
+    // Call DMS to get the template 
     const template = await this.getTemplate(templateRef);
 
+    // Call CDOGS to generate the pdf
     const pdf = await this.createPDF(permit, template);
 
+    // Call DMS to store the pdf
     const pdfRef = await this.savePDF(pdf);
 
     return pdfRef;

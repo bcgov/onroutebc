@@ -15,6 +15,7 @@ export const formatCountry = async (
   const countryName = await countryRepository.findOne({
     where: { countryCode: countryCode },
   });
+  // TODO: Cache this ^ data
   return countryName.countryName;
 };
 
@@ -31,6 +32,6 @@ export const formatProvince = async (
   const provinceName = await provinceRepository.findOne({
     where: { provinceCode: provinceCode },
   });
-
+  // TODO: Cache this ^ data
   return provinceName.provinceName;
 };

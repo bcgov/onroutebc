@@ -22,12 +22,14 @@ export const formatVehicleTypes = async (
     const powerUnitDto = await powerUnitTypeService.findOne(
       permitData.vehicleDetails.vehicleSubType,
     );
+    // TODO: Cache this ^ data
     vehicleSubType = powerUnitDto.type;
   } else if (permitData.vehicleDetails.vehicleType === 'trailer') {
     vehicleType = 'Trailer';
     const trailerDto = await trailerTypeService.findOne(
       permitData.vehicleDetails.vehicleSubType,
     );
+    // TODO: Cache this ^ data
     vehicleSubType = trailerDto.type;
   }
 

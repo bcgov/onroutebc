@@ -60,6 +60,7 @@ export const formatTemplateData = async (
   ];
 
   // TODO: get permit name from ORBC_VT_PERMIT_TYPE table in database
+  // TODO: Create entity and use permit type enum
   let permitName: string;
   if (permit.permitType === 'TROS') {
     permitName = 'Oversize: Term';
