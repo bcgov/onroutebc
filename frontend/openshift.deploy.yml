@@ -59,6 +59,18 @@ parameters:
   - name: AUTH0_IGNORE_EXP
     description: The boolean flag to ignore the JWT expiration
     required: true
+  - name: CDOGS_CLIENT_ID
+    description: The keycloak client ID for common hosted CDOGS
+    required: true
+  - name: CDOGS_CLIENT_SECRET
+    description: The keycloak client secret for common hosted CDOGS
+    required: true
+  - name: CDOGS_TOKEN_URL
+    description: The keycloak url for common hosted CDOGS
+    required: true
+  - name: CDOGS_URL
+    description: The CDOGS API url 
+    required: true
 objects:
   - apiVersion: v1
     kind: ImageStream

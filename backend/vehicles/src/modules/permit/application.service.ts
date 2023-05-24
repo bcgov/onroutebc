@@ -202,7 +202,7 @@ export class ApplicationService {
     const success = updatedApplications?.map((permit) => permit.ID);
     const failure = applicationIds?.filter((id) => !success?.includes(id));
 
-    // If the status is updated to 'APPROVED' or 'AUTO-APPROVED', then create pdf and store it in COMS
+    // If the status is updated to 'APPROVED' or 'AUTO-APPROVED', then create pdf and store it in DMS
     // TODO: Temp solution. To be confirmed
     // TODO: Should his endpoint use application number instead or permit/app ID?
     updateResult.raw.forEach(async (x: any) => {
@@ -211,9 +211,9 @@ export class ApplicationService {
         permit.permitStatus === ApplicationStatus.APPROVED ||
         permit.permitStatus === ApplicationStatus.AUTO_APPROVED
       ) {
-        // COMS Reference ID for the generated PDF of the Permit
+        // DMS Reference ID for the generated PDF of the Permit
         const pdf = await this.pdfService.generatePDF(permit);
-        // TODO: handle the coms reference
+        // TODO: handle the DMS reference
         console.log('Completed pdf generation', pdf);
       }
     });
