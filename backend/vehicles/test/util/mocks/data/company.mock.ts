@@ -1,99 +1,181 @@
-import { baseEntityMock } from './base.mock';
-import { Company } from '../../../../src/modules/company-user-management/company/entities/company.entity';
-import {
-  addressEntityMock,
-  createAddressDtoMock,
-  readAddressDtoMock,
-  updateAddressDtoMock,
-} from './address.mock';
-import {
-  contactEntityMock,
-  createContactDtoMock,
-  readContactDtoMock,
-  updateContactDtoMock,
-} from './contact.mock';
-import { AccountRegion } from '../../../../src/common/enum/account-region.enum';
-import { AccountSource } from '../../../../src/common/enum/account-source.enum';
-import { Directory } from '../../../../src/common/enum/directory.enum';
-import { companyUserEntityMock1 } from './company-user.mock';
-import { createUserDtoMock, readUserDtoMock } from './user.mock';
 import { CreateCompanyDto } from '../../../../src/modules/company-user-management/company/dto/request/create-company.dto';
 import { UpdateCompanyDto } from '../../../../src/modules/company-user-management/company/dto/request/update-company.dto';
-import { ReadCompanyDto } from '../../../../src/modules/company-user-management/company/dto/response/read-company.dto';
-import { ReadCompanyUserDto } from '../../../../src/modules/company-user-management/company/dto/response/read-company-user.dto';
 import { ReadCompanyMetadataDto } from '../../../../src/modules/company-user-management/company/dto/response/read-company-metadata.dto';
+import { ReadCompanyUserDto } from '../../../../src/modules/company-user-management/company/dto/response/read-company-user.dto';
+import { ReadCompanyDto } from '../../../../src/modules/company-user-management/company/dto/response/read-company.dto';
+import { Company } from '../../../../src/modules/company-user-management/company/entities/company.entity';
+import {
+  redCompanyAddressEntityMock,
+  createRedCompanyAddressDtoMock,
+  updateRedCompanyAddressDtoMock,
+  readRedCompanyAddressDtoMock,
+  blueCompanyAddressEntityMock,
+  createBlueCompanyAddressDtoMock,
+  readBlueCompanyAddressDtoMock,
+  updateBlueCompanyAddressDtoMock,
+} from './address.mock';
+import { baseEntityMock } from './base.mock';
+import {
+  blueCompanyAdminCompanyUserEntityMock,
+  blueCompanyCvClientCompanyUserEntityMock,
+  redCompanyAdminCompanyUserEntityMock,
+  redCompanyCvClientCompanyUserEntityMock,
+} from './company-user.mock';
+import {
+  redCompanyContactEntityMock,
+  createRedCompanyContactDtoMock,
+  updateRedCompanyContactDtoMock,
+  readRedCompanyContactDtoMock,
+  blueCompanyContactEntityMock,
+  createBlueCompanyContactDtoMock,
+  readBlueCompanyContactDtoMock,
+  updateBlueCompanyContactDtoMock,
+} from './contact.mock';
+import * as constants from './test-data.constants';
+import {
+  createBlueCompanyAdminUserDtoMock,
+  createRedCompanyAdminUserDtoMock,
+  readBlueCompanyAdminUserDtoMock,
+  readRedCompanyAdminUserDtoMock,
+} from './user.mock';
 
-const COMPANY_ID = 1;
-const COMPANY_GUID = '6F9619FF8B86D011B42D00C04FC964FF';
-const CLIENT_NUMBER = 'ABC Carriers Inc.';
-const LEGAL_NAME = 'B3-000005-722';
-const DIRECOTRY = Directory.BBCEID;
-const PHONE_1 = '9999999999';
-const PHONE_1_EXT = '99999';
-const FAX = '9999999999';
-const EMAIL = 'test@test.gov.bc.ca';
-const ACCOUNT_REGION = AccountRegion.BritishColumbia;
-const ACCOUNT_SOURCE = AccountSource.BCeID;
-
-export const companyEntityMock: Company = {
-  companyId: COMPANY_ID,
-  companyGUID: COMPANY_GUID,
-  clientNumber: CLIENT_NUMBER,
-  legalName: LEGAL_NAME,
-  directory: DIRECOTRY,
-  mailingAddress: { ...addressEntityMock },
-  phone: PHONE_1,
-  extension: PHONE_1_EXT,
-  fax: FAX,
-  email: EMAIL,
-  primaryContact: { ...contactEntityMock },
-  accountRegion: ACCOUNT_REGION,
-  accountSource: ACCOUNT_SOURCE,
-  companyUsers: [{ ...companyUserEntityMock1 }],
+export const redCompanyEntityMock: Company = {
+  companyId: constants.RED_COMPANY_ID,
+  companyGUID: constants.RED_COMPANY_GUID,
+  clientNumber: constants.RED_COMPANY_CLIENT_NUMBER,
+  legalName: constants.RED_COMPANY_LEGAL_NAME,
+  directory: constants.RED_COMPANY_DIRECOTRY,
+  mailingAddress: { ...redCompanyAddressEntityMock },
+  phone: constants.RED_COMPANY_PHONE_1,
+  extension: constants.RED_COMPANY_PHONE_1_EXT,
+  fax: constants.RED_COMPANY_FAX,
+  email: constants.RED_COMPANY_EMAIL,
+  primaryContact: { ...redCompanyContactEntityMock },
+  accountRegion: constants.RED_COMPANY_ACCOUNT_REGION,
+  accountSource: constants.RED_COMPANY_ACCOUNT_SOURCE,
+  companyUsers: [
+    { ...redCompanyAdminCompanyUserEntityMock },
+    { ...redCompanyCvClientCompanyUserEntityMock },
+  ],
   ...baseEntityMock,
 };
 
-export const createCompanyDtoMock: CreateCompanyDto = {
-  legalName: LEGAL_NAME,
-  mailingAddress: { ...createAddressDtoMock },
-  phone: PHONE_1,
-  extension: PHONE_1_EXT,
-  fax: FAX,
-  email: EMAIL,
-  primaryContact: { ...createContactDtoMock },
-  adminUser: { ...createUserDtoMock },
+export const createRedCompanyDtoMock: CreateCompanyDto = {
+  legalName: constants.RED_COMPANY_LEGAL_NAME,
+  mailingAddress: { ...createRedCompanyAddressDtoMock },
+  phone: constants.RED_COMPANY_PHONE_1,
+  extension: constants.RED_COMPANY_PHONE_1_EXT,
+  fax: constants.RED_COMPANY_FAX,
+  email: constants.RED_COMPANY_EMAIL,
+  primaryContact: { ...createRedCompanyContactDtoMock },
+  adminUser: { ...createRedCompanyAdminUserDtoMock },
 };
 
-export const updateCompanyDtoMock: UpdateCompanyDto = {
-  legalName: LEGAL_NAME,
-  mailingAddress: { ...updateAddressDtoMock },
-  phone: PHONE_1,
-  extension: PHONE_1_EXT,
-  fax: FAX,
-  email: EMAIL,
-  primaryContact: { ...updateContactDtoMock },
+export const updateRedCompanyDtoMock: UpdateCompanyDto = {
+  legalName: constants.RED_COMPANY_LEGAL_NAME,
+  mailingAddress: { ...updateRedCompanyAddressDtoMock },
+  phone: constants.RED_COMPANY_PHONE_1,
+  extension: null,
+  fax: constants.RED_COMPANY_FAX,
+  email: constants.RED_COMPANY_EMAIL,
+  primaryContact: { ...updateRedCompanyContactDtoMock },
 };
 
-export const readCompanyDtoMock: ReadCompanyDto = {
-  companyId: COMPANY_ID,
-  companyGUID: COMPANY_GUID,
-  legalName: LEGAL_NAME,
-  clientNumber: CLIENT_NUMBER,
-  mailingAddress: { ...readAddressDtoMock },
-  phone: PHONE_1,
-  extension: PHONE_1_EXT,
-  fax: FAX,
-  email: EMAIL,
-  primaryContact: { ...readContactDtoMock },
+export const readRedCompanyDtoMock: ReadCompanyDto = {
+  companyId: constants.RED_COMPANY_ID,
+  companyGUID: constants.RED_COMPANY_GUID,
+  legalName: constants.RED_COMPANY_LEGAL_NAME,
+  clientNumber: constants.RED_COMPANY_CLIENT_NUMBER,
+  mailingAddress: { ...readRedCompanyAddressDtoMock },
+  phone: constants.RED_COMPANY_PHONE_1,
+  extension: constants.RED_COMPANY_PHONE_1_EXT,
+  fax: constants.RED_COMPANY_FAX,
+  email: constants.RED_COMPANY_EMAIL,
+  primaryContact: { ...readRedCompanyContactDtoMock },
 };
 
-export const readCompanyUserDtoMock: ReadCompanyUserDto = {
-  adminUser: { ...readUserDtoMock },
-  ...readCompanyDtoMock,
+export const readRedCompanyUserDtoMock: ReadCompanyUserDto = {
+  adminUser: { ...readRedCompanyAdminUserDtoMock },
+  ...readRedCompanyDtoMock,
 };
 
-export const readCompanyMetadataDtoMock: ReadCompanyMetadataDto = {
-  companyId: COMPANY_ID,
-  legalName: LEGAL_NAME,
-  clientNumber: CLIENT_NUMBER,
+export const readRedCompanyMetadataDtoMock: ReadCompanyMetadataDto = {
+  companyId: constants.RED_COMPANY_ID,
+  legalName: constants.RED_COMPANY_LEGAL_NAME,
+  clientNumber: constants.RED_COMPANY_CLIENT_NUMBER,
 };
+
+/**
+ *
+ * BLUE COMPANY
+ * */
+export const blueCompanyEntityMock: Company = {
+  companyId: constants.BLUE_COMPANY_ID,
+  companyGUID: constants.BLUE_COMPANY_GUID,
+  clientNumber: constants.BLUE_COMPANY_CLIENT_NUMBER,
+  legalName: constants.BLUE_COMPANY_LEGAL_NAME,
+  directory: constants.BLUE_COMPANY_DIRECOTRY,
+  mailingAddress: { ...blueCompanyAddressEntityMock },
+  phone: constants.BLUE_COMPANY_PHONE_1,
+  extension: constants.BLUE_COMPANY_PHONE_1_EXT,
+  fax: constants.BLUE_COMPANY_FAX,
+  email: constants.BLUE_COMPANY_EMAIL,
+  primaryContact: { ...blueCompanyContactEntityMock },
+  accountRegion: constants.BLUE_COMPANY_ACCOUNT_REGION,
+  accountSource: constants.BLUE_COMPANY_ACCOUNT_SOURCE,
+  companyUsers: [
+    { ...blueCompanyAdminCompanyUserEntityMock },
+    { ...blueCompanyCvClientCompanyUserEntityMock },
+  ],
+  ...baseEntityMock,
+};
+
+export const createBlueCompanyDtoMock: CreateCompanyDto = {
+  legalName: constants.BLUE_COMPANY_LEGAL_NAME,
+  mailingAddress: { ...createBlueCompanyAddressDtoMock },
+  phone: constants.BLUE_COMPANY_PHONE_1,
+  extension: constants.BLUE_COMPANY_PHONE_1_EXT,
+  fax: constants.BLUE_COMPANY_FAX,
+  email: constants.BLUE_COMPANY_EMAIL,
+  primaryContact: { ...createBlueCompanyContactDtoMock },
+  adminUser: { ...createBlueCompanyAdminUserDtoMock },
+};
+
+export const updateBlueCompanyDtoMock: UpdateCompanyDto = {
+  legalName: constants.BLUE_COMPANY_LEGAL_NAME,
+  mailingAddress: { ...updateBlueCompanyAddressDtoMock },
+  phone: constants.BLUE_COMPANY_PHONE_1,
+  extension: null,
+  fax: constants.BLUE_COMPANY_FAX,
+  email: constants.BLUE_COMPANY_EMAIL,
+  primaryContact: { ...updateBlueCompanyContactDtoMock },
+};
+
+export const readBlueCompanyDtoMock: ReadCompanyDto = {
+  companyId: constants.BLUE_COMPANY_ID,
+  companyGUID: constants.BLUE_COMPANY_GUID,
+  legalName: constants.BLUE_COMPANY_LEGAL_NAME,
+  clientNumber: constants.BLUE_COMPANY_CLIENT_NUMBER,
+  mailingAddress: { ...readBlueCompanyAddressDtoMock },
+  phone: constants.BLUE_COMPANY_PHONE_1,
+  extension: constants.BLUE_COMPANY_PHONE_1_EXT,
+  fax: constants.BLUE_COMPANY_FAX,
+  email: constants.BLUE_COMPANY_EMAIL,
+  primaryContact: { ...readBlueCompanyContactDtoMock },
+};
+
+export const readBlueCompanyUserDtoMock: ReadCompanyUserDto = {
+  adminUser: { ...readBlueCompanyAdminUserDtoMock },
+  ...readBlueCompanyDtoMock,
+};
+
+export const readBlueCompanyMetadataDtoMock: ReadCompanyMetadataDto = {
+  companyId: constants.BLUE_COMPANY_ID,
+  legalName: constants.BLUE_COMPANY_LEGAL_NAME,
+  clientNumber: constants.BLUE_COMPANY_CLIENT_NUMBER,
+};
+
+export const COMPANY_LIST: Company[] = [
+  redCompanyEntityMock,
+  blueCompanyEntityMock,
+];
