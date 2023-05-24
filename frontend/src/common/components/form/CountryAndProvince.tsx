@@ -8,6 +8,11 @@ import CountriesAndStates from "../../constants/countries_and_states.json";
 import { DEFAULT_WIDTH } from "../../../themes/bcGovStyles";
 import { CustomFormComponent } from "./CustomFormComponents";
 import { ORBC_FormTypes } from "../../types/common";
+import { 
+  invalidCountryCode, 
+  invalidProvinceCode, 
+  requiredMessage 
+} from "../../helpers/validationMessages";
 
 /**
  * The props that can be passed to the country and provinces subsection of a form.
@@ -112,13 +117,13 @@ export const CountryAndProvince = <T extends ORBC_FormTypes>({
   const updatedCountryRules = {
     required: {
       value: isCountryRequired,
-      message: "Country is required.",
+      message: requiredMessage(),
     },
     validate: {
       validateCountry: (country?: string) => 
         (!isCountryRequired && (country == null || country === "")) 
           || (country != null && country !== "" && /^[A-Z]{2}$/.test(country)) 
-          || "Invalid country code",
+          || invalidCountryCode(),
     },
     onChange: onChangeCountry,
   };
@@ -126,13 +131,13 @@ export const CountryAndProvince = <T extends ORBC_FormTypes>({
   const updatedProvinceRules = {
     required: {
       value: shouldDisplayProvince && isProvinceRequired,
-      message: "Province / State is required.",
+      message: requiredMessage(),
     },
     validate: {
       validateProvince: (province?: string) =>
         (!isProvinceRequired && (province == null || province === ""))
           || (province != null && province !== "" && /^[A-Z]{2}$/.test(province)) 
-          || "Invalid province code",
+          || invalidProvinceCode(),
     },
   };
 

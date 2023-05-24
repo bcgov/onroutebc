@@ -1,4 +1,6 @@
 import { IconButton } from "@mui/material";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
 
 export const Trash = ({
   onClickTrash,
@@ -19,7 +21,7 @@ export const Trash = ({
         onClickTrash();
       }}
     >
-      <i className="fa fa-trash"></i>
+      <FontAwesomeIcon icon={faTrash} />
     </IconButton>
   );
 };

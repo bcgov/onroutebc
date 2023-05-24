@@ -3,7 +3,7 @@ import "../../../../common/components/dashboard/Dashboard.scss";
 import { Banner } from "../../../../common/components/dashboard/Banner";
 import { TermOversizeForm } from "../../pages/TermOversize/TermOversizeForm";
 import { ApplicationContext } from "../../context/ApplicationContext";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Application } from "../../types/application";
 import { TermOversizePay } from "../../pages/TermOversize/TermOversizePay";
 import { TermOversizeReview } from "../../pages/TermOversize/TermOversizeReview";
@@ -27,6 +27,7 @@ const [applicationData, setApplicationData] = useState<Application>();
 const companyInfoQuery = useCompanyInfoQuery();
 const {applicationNumber} = useParams();
 const applicationDetailsQuery = useApplicationDetailsMutation();
+const applicationContext = useContext(ApplicationContext);
 
   useEffect(() => {
     if(applicationNumber !== undefined){
@@ -34,6 +35,7 @@ const applicationDetailsQuery = useApplicationDetailsMutation();
         applicationNumber
       ).then((response) => {
         setApplicationData(response);
+        applicationContext.applicationData = response;
       });     
     }
     else{

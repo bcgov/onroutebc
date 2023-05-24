@@ -9,5 +9,6 @@ import { TrailerTypesProfile } from './profiles/trailer-type.profile';
   imports: [TypeOrmModule.forFeature([TrailerType])],
   controllers: [TrailerTypesController],
   providers: [TrailerTypesService, TrailerTypesProfile],
+  exports: [TrailerTypesService],
 })
 export class TrailerTypesModule {}

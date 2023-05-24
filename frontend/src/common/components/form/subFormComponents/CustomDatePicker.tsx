@@ -13,6 +13,11 @@ import { ORBC_FormTypes } from "../../../types/common";
 import { DatePicker, DateValidationError } from "@mui/x-date-pickers";
 import { useState, useEffect } from "react";
 import dayjs from "dayjs";
+import { 
+  invalidDate, 
+  invalidMaxStartDate, 
+  invalidPastStartDate 
+} from "../../../helpers/validationMessages";
 
 /**
  * Properties of the onrouteBC customized Date Picker MUI component
@@ -70,17 +75,17 @@ export const CustomDatePicker = <T extends ORBC_FormTypes>(
       case "minDate":
       case "disablePast": {
         setError(name, { type: "focus" }, { shouldFocus: true });
-        setErrorMessage("Start Date cannot be in the past.");
+        setErrorMessage(invalidPastStartDate());
         break;
       }
       case "maxDate": {
         setError(name, { type: "focus" }, { shouldFocus: true });
-        setErrorMessage("Start Date must be within 14 days.");
+        setErrorMessage(invalidMaxStartDate(14));
         break;
       }
       case "invalidDate": {
         setError(name, { type: "focus" }, { shouldFocus: true });
-        setErrorMessage("Your date is not valid");
+        setErrorMessage(invalidDate());
         break;
       }
       default: {
@@ -95,7 +100,7 @@ export const CustomDatePicker = <T extends ORBC_FormTypes>(
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <DatePicker
         ref={ref}
-        value={value}
+        value={typeof value === "string"? dayjs(value): value}
         onChange={onChange}
         disablePast
         maxDate={maxDate}

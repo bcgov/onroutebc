@@ -81,7 +81,7 @@ jobs:
             overwrite: false
     steps: 
       - name: Deploy Application
-        uses: bcgov-nr/action-deployer-openshift@v1.0.4
+        uses: bcgov-nr/action-deployer-openshift@v1.0.5
         with:
           file: ${{ matrix.file }}
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
@@ -92,8 +92,7 @@ jobs:
           parameters:
             -p ZONE=${{ github.event.number }}
             -p NAME=${{ github.event.repository.name }}
-            -p PROMOTE=${{ github.repository }}/${{ matrix.name }}:${{ github.event.number }} 
+            -p PROMOTE=${{ github.repository }}/${{ matrix.name }}:${{ github.event.number }}
             -p LICENSE_PLATE=${{secrets.OC_LICENSE_PLATE}}
             -p VAULT_ENVIRONMENT=${{secrets.VAULT_ENVIRONMENT}}
             -p VAULT_ZONE=dev
-            ${{ matrix.parameters }}
