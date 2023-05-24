@@ -153,11 +153,11 @@ objects:
             vault.hashicorp.com/agent-inject-secret-database-dev: ${VAULT_ENVIRONMENT}/database-${VAULT_ZONE}
             vault.hashicorp.com/agent-inject-template-database-dev:  |
               {{- with secret "${VAULT_ENVIRONMENT}/database-${VAULT_ZONE}" }}
-              export DATABASE_HOST="{{ .Data.data.DATABASE_HOST }}"
-              export DATABASE_NAME="{{ .Data.data.DATABASE_NAME }}"
-              export DATABASE_PASSWORD="{{ .Data.data.DATABASE_PASSWORD }}"
-              export DATABASE_PORT="{{ .Data.data.DATABASE_PORT }}"
-              export DATABASE_USER="{{ .Data.data.DATABASE_USER }}"
+              export MSSQL_HOST="{{ .Data.data.DATABASE_HOST }}"
+              export MSSQL_DB="{{ .Data.data.DATABASE_NAME }}"
+              export MSSQL_SA_PASSWORD="{{ .Data.data.DATABASE_PASSWORD }}"
+              export MSSQL_PORT="{{ .Data.data.DATABASE_PORT }}"
+              export MSSQL_SA_USER="{{ .Data.data.DATABASE_USER }}"
               {{- end }}
           labels:
             app: ${NAME}-${ZONE}
@@ -169,12 +169,16 @@ objects:
               imagePullPolicy: Always
               name: ${NAME}
               args:
-                ['sh', '-c', 'source /vault/secrets/auth0-${VAULT_ZONE} && \
-                source /vault/secrets/cdogs-${VAULT_ZONE} && \
-                source /vault/secrets/ches-${VAULT_ZONE} && \
-                source /vault/secrets/coms-${VAULT_ZONE} && \
-                source /vault/secrets/database-${VAULT_ZONE} && \
-                npm run start:prod']
+                - 'sh' 
+                - '-c'
+                - >-
+                source /vault/secrets/auth0-${VAULT_ZONE} && 
+                source /vault/secrets/cdogs-${VAULT_ZONE} &&
+                source /vault/secrets/ches-${VAULT_ZONE} &&
+                source /vault/secrets/coms-${VAULT_ZONE} &&
+                source /vault/secrets/database-${VAULT_ZONE} &&
+                npm run start:prod'
+              ]
 
               env:
                 - name: DB_TYPE
