@@ -78,8 +78,6 @@ export const ConditionsTable = () => {
           checked: y.checked,
         };
       });
-
-    // setCheckedValues(newNames);
     setValue("permitData.commodities", checkedNames);
 
     return newNames;

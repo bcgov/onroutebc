@@ -17,7 +17,7 @@ import { Application } from "../../../types/application";
 import dayjs from "dayjs";
 
 export const PermitDetails = ({ feature, values}: { feature: string, values: Application | undefined  }) => {
-  const { getValues, watch, register, setValue } = useFormContext();
+  const { watch, register, setValue } = useFormContext();
   const startDate = watch("permitData.startDate");
   // the permit expiry date is the permit duration minus 1 plus the <start date>
   const duration = (values?.permitData?.permitDuration !== undefined)? values?.permitData?.permitDuration - 1: 30;
