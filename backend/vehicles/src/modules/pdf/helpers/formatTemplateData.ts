@@ -13,9 +13,9 @@ import { Province } from 'src/modules/common/entities/province.entity';
  * @param permit
  * @param powerUnitTypeService
  * @param trailerTypeService
- * @returns formatted Term Oversize data to be displayed on the PDF
+ * @returns formatted permit data to be displayed on the PDF
  */
-export const formatTROS = async (
+export const formatTemplateData = async (
   permit: Permit,
   powerUnitTypeService: PowerUnitTypesService, //TODO: fix prop drilling?
   trailerTypeService: TrailerTypesService, //TODO: fix prop drilling?
@@ -51,6 +51,20 @@ export const formatTROS = async (
     provinceRepository,
   );
 
+  // TODO: Revision history
+  const revisions = [
+    {
+      timeStamp: '',
+      description: 'N/A',
+    },
+  ];
+
+  // TODO: get permit name from ORBC_VT_PERMIT_TYPE table in database
+  let permitName: string;
+  if (permit.permitType === 'TROS') {
+    permitName = 'Oversize: Term';
+  }
+
   templateData.permitData.vehicleDetails.vehicleType = vehicleType.vehicleType;
   templateData.permitData.vehicleDetails.vehicleSubType =
     vehicleType.vehicleSubType;
@@ -58,8 +72,10 @@ export const formatTROS = async (
   templateData.permitData.vehicleDetails.provinceCode = mailingProvinceCode;
   templateData.permitData.mailingAddress.countryCode = vehicleCountryCode;
   templateData.permitData.mailingAddress.provinceCode = vehicleProvinceCode;
-  templateData.createdDateTime = permit.createdDateTime.toLocaleString(); // TODO: timezone?
-  templateData.updatedDateTime = permit.updatedDateTime.toLocaleString(); // TODO: timezone?
+  templateData.revisions = revisions;
+  templateData.permitName = permitName;
+  //templateData.createdDateTime = permit.createdDateTime.toLocaleString(); // TODO: timezone? Format is done in word template
+  //templateData.updatedDateTime = permit.updatedDateTime.toLocaleString(); // TODO: timezone? Format is done in word template
 
   return templateData;
 };

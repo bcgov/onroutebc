@@ -15,7 +15,7 @@ import {
 } from './constants/template.constant';
 import { PowerUnitTypesService } from '../vehicles/power-unit-types/power-unit-types.service';
 import { TrailerTypesService } from '../vehicles/trailer-types/trailer-types.service';
-import { formatTROS } from './helpers/formatTROS';
+import { formatTemplateData } from './helpers/formatTemplateData';
 import { Country } from '../common/entities/country.entity';
 import { Province } from '../common/entities/province.entity';
 
@@ -51,7 +51,7 @@ export class PdfService {
   /**
    * Queries the ORBC Template table using the permit type to get the reference to the associated template object in COMS
    * @param {string} permitType permit type. Example: 'TROS'
-   * @param {string} version template version. Defaults to latest version
+   * @param {string} templateVersion template version. Defaults to latest version
    * @returns {string} a COMS reference ID used to retrieve the template in COMS
    */
   private async getTemplateRef(
@@ -94,7 +94,7 @@ export class PdfService {
 
     // TODO: Map/format the permit data to template data
     // Parse permitData string into JSON
-    const templateData = await formatTROS(
+    const templateData = await formatTemplateData(
       permit,
       this.powerUnitTypeService, //TODO: fix prop drilling?
       this.trailerTypeService, //TODO: fix prop drilling?
