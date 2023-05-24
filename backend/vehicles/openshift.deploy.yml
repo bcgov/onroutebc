@@ -59,6 +59,18 @@ parameters:
   - name: AUTH0_IGNORE_EXP
     description: The boolean flag to ignore the JWT expiration
     required: true
+  - name: CDOGS_CLIENT_ID
+    description: The keycloak client ID for common hosted CDOGS
+    required: true
+  - name: CDOGS_CLIENT_SECRET
+    description: The keycloak client secret for common hosted CDOGS
+    required: true
+  - name: CDOGS_TOKEN_URL
+    description: The keycloak url for common hosted CDOGS
+    required: true
+  - name: CDOGS_URL
+    description: The CDOGS API url 
+    required: true
 objects:
   - apiVersion: v1
     kind: ConfigMap
@@ -84,6 +96,10 @@ objects:
     stringData:
       database-user: "${DATABASE_USER}"
       database-password: "${DATABASE_PASSWORD}"
+      cdogs-client-id: "${CDOGS_CLIENT_ID}"
+      cdogs-client-secret: "${CDOGS_CLIENT_SECRET}"
+      cdogs-token-url: "${CDOGS_TOKEN_URL}"
+      cdogs-url: "${CDOGS_URL}"
   - apiVersion: v1
     kind: ImageStream
     metadata:
@@ -182,7 +198,27 @@ objects:
                   valueFrom:
                     configMapKeyRef:
                       name: ${NAME}-${ZONE}-${COMPONENT}
-                      key: auth0-ignore-exp                                         
+                      key: auth0-ignore-exp    
+                - name: CDOGS_CLIENT_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: cdogs-client-id
+                - name: CDOGS_CLIENT_SECRET
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: cdogs-client-secret
+                - name: CDOGS_TOKEN_URL
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: cdogs-token-url
+                - name: CDOGS_URL
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: cdogs-url                                         
               ports:
                 - containerPort: 5000
                   protocol: TCP
