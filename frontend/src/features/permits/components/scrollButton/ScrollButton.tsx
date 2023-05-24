@@ -1,5 +1,7 @@
 import { Button, useMediaQuery, useTheme } from "@mui/material";
 import { useState, useEffect } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChevronUp } from "@fortawesome/free-solid-svg-icons";
 
 export const ScrollButton = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -40,10 +42,10 @@ export const ScrollButton = () => {
         width: "20px",
       }}
     >
-      <i
-        className="fa fa-chevron-up"
+      <FontAwesomeIcon
+        icon={faChevronUp}
         style={{ marginLeft: "8px", marginRight: "8px" }}
-      ></i>
+      />
     </Button>
   ) : (
     <></>

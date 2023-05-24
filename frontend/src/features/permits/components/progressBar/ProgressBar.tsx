@@ -1,9 +1,12 @@
 import { Box, Typography } from "@mui/material";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
+import { useContext } from "react";
+import { useNavigate } from "react-router-dom";
+
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { ApplicationStep } from "../dashboard/ApplicationDashboard";
-import { useContext } from "react";
 import { ApplicationContext } from "../../context/ApplicationContext";
-import { useNavigate } from "react-router-dom";
 
 export const ProgressBar = () => {
   const { currentStepIndex, goTo } = useContext(ApplicationContext);
@@ -88,8 +91,8 @@ const CustomLink = ({
 );
 
 const ChevronRight = () => (
-  <i
-    className="fa fa-chevron-right"
+  <FontAwesomeIcon
+    icon={faChevronRight}
     style={{ marginLeft: "8px", marginRight: "8px" }}
-  ></i>
+  />
 );

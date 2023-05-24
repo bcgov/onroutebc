@@ -1,5 +1,7 @@
 import { useForm, FormProvider, FieldValues } from "react-hook-form";
 import { Box, Button, useMediaQuery, useTheme } from "@mui/material";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSave } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 import { Application } from "../../types/application";
 import { ContactDetails } from "../../components/form/ContactDetails";
@@ -34,7 +36,9 @@ import {
 import { useSaveTermOversizeMutation } from "../../hooks/hooks";
 import { SnackBarContext } from "../../../../App";
 import { getUserGuidFromSession } from "../../../../common/apiManager/httpRequestHandler";
-import LeaveConfirmationDialog from "../../components/list/LeaveConfirmationDialog";
+import { LeaveApplicationDialog } from "../../components/dialog/LeaveApplicationDialog";
+import { areApplicationDataEqual } from "../../helpers/equality";
+import { PartialDayJsObject, formatFromObject, now } from "../../../../common/helpers/formatDate";
 
 /**
  * The first step in creating and submitting a TROS Application.
@@ -53,6 +57,9 @@ export const TermOversizeForm = () => {
   const { companyId, userDetails } = useContext(OnRouteBCContext);
   const submitTermOversizeQuery = useSaveTermOversizeMutation();
   const snackBar = useContext(SnackBarContext);
+
+  // Show leave application dialog
+  const [showLeaveApplicationDialog, setShowLeaveApplicationDialog] = useState<boolean>(false); 
 
   // Default values to register with React Hook Forms
   // Use saved data from the TROS application context, otherwise use empty or undefined values
@@ -80,17 +87,19 @@ export const TermOversizeForm = () => {
       applicationContext?.applicationData?.updatedDateTime
     ),
     permitData: {
-      startDate: getDefaultRequiredVal(
-        dayjs(),
-        applicationContext?.applicationData?.permitData?.startDate
+      startDate: applyWhenNotNullable(
+        (val: PartialDayJsObject) => dayjs(formatFromObject(val, "date", "local")),
+        applicationContext?.applicationData?.permitData?.startDate, 
+        now()
       ),
       permitDuration: getDefaultRequiredVal(
         30,
         applicationContext?.applicationData?.permitData?.permitDuration
       ),
-      expiryDate: getDefaultRequiredVal(
-        dayjs(),
-        applicationContext?.applicationData?.permitData?.expiryDate
+      expiryDate: applyWhenNotNullable(
+        (val: PartialDayJsObject) => dayjs(formatFromObject(val, "date", "local")),
+        applicationContext?.applicationData?.permitData?.expiryDate, 
+        now()
       ),
       commodities: getDefaultRequiredVal(
         [TROS_COMMODITIES[0], TROS_COMMODITIES[1]],
@@ -115,11 +124,31 @@ export const TermOversizeForm = () => {
             ?.phone1,
           userDetails?.phone1
         ),
+        phone1Extension: getDefaultRequiredVal(
+          "",
+          applicationContext?.applicationData?.permitData?.contactDetails
+            ?.phone1Extension
+        ),
+        phone2: getDefaultRequiredVal(
+          "",
+          applicationContext?.applicationData?.permitData?.contactDetails
+            ?.phone2
+        ),
+        phone2Extension: getDefaultRequiredVal(
+          "",
+          applicationContext?.applicationData?.permitData?.contactDetails
+            ?.phone2Extension
+        ),
         email: getDefaultRequiredVal(
           "",
           applicationContext?.applicationData?.permitData?.contactDetails
             ?.email,
           userDetails?.email
+        ),
+        fax: getDefaultRequiredVal(
+          "",
+          applicationContext?.applicationData?.permitData?.contactDetails
+            ?.fax
         ),
       },
       // Default values are updated from companyInfo query in the ContactDetails common component
@@ -187,48 +216,62 @@ export const TermOversizeForm = () => {
 
   const navigate = useNavigate();
 
+  const applicationFormData = (data: FieldValues) => {
+    return {
+      ...data,
+      applicationNumber: applicationContext.applicationData?.applicationNumber,
+    } as Application;
+  };
+
+  const isApplicationSaved = () => {
+    const currentFormData = applicationFormData(getValues());
+    const savedData = applicationContext.applicationData;
+    if (!savedData) return false;
+
+    // Check if all current form field values match field values saved in application context
+    return areApplicationDataEqual(currentFormData.permitData, savedData.permitData);
+  };
+
   const onContinue = function (data: FieldValues) {
-    const termOverSizeToBeAdded = data as Application;
-    termOverSizeToBeAdded.applicationNumber =
-      applicationContext.applicationData?.applicationNumber;
+    const termOverSizeToBeAdded = applicationFormData(data);
     handleSaveVehicle(termOverSizeToBeAdded);
     applicationContext?.setApplicationData(termOverSizeToBeAdded);
     applicationContext?.next();
   };
 
+  const isSubmitTermOversizeSuccessful = (status: number) => status === 200 || status === 201;
+
+  const onSubmitSuccess = (responseData: Application, status: number) => {
+    snackBar.setSnackBar({
+      showSnackbar: true,
+      setShowSnackbar: () => true,
+      message: `Application ${responseData.applicationNumber} ${status === 201 ? "created" : "updated"}.`,
+      alertType: "success",
+    });
+
+    applicationContext?.setApplicationData(responseData);
+  };
+
+  const onSubmitFailure = () => {
+    snackBar.setSnackBar({
+      showSnackbar: true,
+      setShowSnackbar: () => true,
+      message: `An unexpected error occured`,
+      alertType: "error",
+    });
+  };
+
   const onSaveApplication = async () => {
-    const termOverSizeToBeAdded = getValues() as Application;
-    termOverSizeToBeAdded.applicationNumber =
-      applicationContext.applicationData?.applicationNumber;
+    const termOverSizeToBeAdded = applicationFormData(getValues());
     const response = await submitTermOversizeQuery.mutateAsync(
       termOverSizeToBeAdded
     );
-    const responseData = await response.data;
-    if (response.status === 200) {
-      snackBar.setSnackBar({
-        showSnackbar: true,
-        setShowSnackbar: () => true,
-        message: `Application ${responseData.applicationNumber} updated.`,
-        alertType: "success",
-      });
-    } else if (response.status === 201) {
-      snackBar.setSnackBar({
-        showSnackbar: true,
-        setShowSnackbar: () => true,
-        message: `Application ${responseData.applicationNumber} created.`,
-        alertType: "success",
-      });
-    }
-
-    if (response.status === 201 || response.status === 200) {
-      applicationContext?.setApplicationData(responseData);
+    
+    if (isSubmitTermOversizeSuccessful(response.status)) {
+      const responseData = await response.data;
+      onSubmitSuccess(responseData as Application, response.status);
     } else {
-      snackBar.setSnackBar({
-        showSnackbar: true,
-        setShowSnackbar: () => true,
-        message: `An unexpected error occured`,
-        alertType: "error",
-      });
+      onSubmitFailure();
     }
   };
 
@@ -312,20 +355,21 @@ export const TermOversizeForm = () => {
     }
   };
 
-  const handleLeave = () => {
-    setIsLeaveDialogOpen(() => true);
+  const handleLeaveApplication = () => {
+    if (!isApplicationSaved()) {
+      setShowLeaveApplicationDialog(true);
+    } else {
+      navigate("../applications");
+    }
   };
 
-  const onCancelLeave = () => {
-    setIsLeaveDialogOpen(() => false);
-    navigate("../");
+  const handleLeaveUnsaved = () => {
+    navigate("../applications");
   };
 
-  const onConfirmLeave = () => {
-    setIsLeaveDialogOpen(() => false);
+  const handleStayOnApplication = () => {
+    setShowLeaveApplicationDialog(false);
   };
-
-  const [isLeaveDialogOpen, setIsLeaveDialogOpen] = useState(false);
 
   return (
     <>
@@ -367,7 +411,8 @@ export const TermOversizeForm = () => {
             aria-label="leave"
             variant="contained"
             color="secondary"
-            onClick={handleLeave}
+            onClick={handleLeaveApplication}
+            //onClick={handleLeaveApplication}
             sx={{
               marginLeft: matches
                 ? "20px"
@@ -385,8 +430,7 @@ export const TermOversizeForm = () => {
               sx={{ marginLeft: "-420px", marginTop: "40px", display: "flex", alignItems: "center", gap: "10px"}}
               onClick={onSaveApplication}
             >
-              {/* Save Application */}
-              <i className="fa fa-save"/>
+              <FontAwesomeIcon icon={faSave} />
               Save
             </Button>
             <Button
@@ -403,12 +447,11 @@ export const TermOversizeForm = () => {
           </Box>
         </Box>
       </Box>
-      <LeaveConfirmationDialog
-          onClickLeave={onConfirmLeave}
-          isOpen={isLeaveDialogOpen}
-          onClickCancel={onCancelLeave}
-          caption="item"
-        />
+      <LeaveApplicationDialog
+        onLeaveUnsaved={handleLeaveUnsaved}
+        onContinueEditing={handleStayOnApplication}
+        showDialog={showLeaveApplicationDialog}
+      />
     </>
   );
 };
