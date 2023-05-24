@@ -158,6 +158,66 @@ objects:
         type: Rolling
       template:
         metadata:
+          annotations:
+            # 1. Vault injector configuration goes here, inside the template.
+            vault.hashicorp.com/agent-inject: 'true'
+            vault.hashicorp.com/agent-inject-token: 'true'
+            vault.hashicorp.com/agent-pre-populate-only: 'true' # this makes sure the secret vault will only change during pod restart
+            vault.hashicorp.com/auth-path: auth/k8s-silver  # This was tricky.  Be sure to use k8s-silver, k8s-gold, or k8s-golddr
+            vault.hashicorp.com/namespace: platform-services
+            vault.hashicorp.com/role: ${VAULT_ENVIRONMENT}  # licenseplate-nonprod or licenseplate-prod are your options
+
+            # Configure how to retrieve and populate the secrets from Vault:
+            # - The name of the secret is any unique string after vault.hashicorp.com/agent-inject-secret-<name>
+            # - The value is the path in Vault where the secret is located.
+            vault.hashicorp.com/agent-inject-secret-auth0-${VAULT_ZONE}:    ${VAULT_ENVIRONMENT}/auth0-${VAULT_ZONE}
+            vault.hashicorp.com/agent-inject-template-auth0-${VAULT_ZONE}:  |
+              {{- with secret "${VAULT_ENVIRONMENT}/auth0-${VAULT_ZONE}" }}
+              export AUTH0_ISSUER_URL="{{ .Data.data.AUTH0_ISSUER_URL }}"
+              export AUTH0_AUDIANCE="{{ .Data.data.AUTH0_AUDIENCE }}"
+              export AUTH0_IGNORE_EXP="{{ .Data.data.AUTH0_IGNORE_EXP }}"
+              {{- end }}
+
+            vault.hashicorp.com/agent-inject-secret-cdogs-${VAULT_ZONE}:    ${VAULT_ENVIRONMENT}/cdogs-${VAULT_ZONE}
+            vault.hashicorp.com/agent-inject-template-cdogs-${VAULT_ZONE}:  |
+              {{- with secret "${VAULT_ENVIRONMENT}/cdogs-${VAULT_ZONE}" }}
+              export CDOGS_CLIENT_ID="{{ .Data.data.CDOGS_CLIENT_ID }}"
+              export CDOGS_CLIENT_SECRET="{{ .Data.data.CDOGS_CLIENT_SECRET }}"
+              export CDOGS_TOKEN_URL="{{ .Data.data.CDOGS_TOKEN_URL }}"
+              export CDOGS_URL="{{ .Data.data.CDOGS_URL }}"
+              {{- end }}
+
+            vault.hashicorp.com/agent-inject-secret-ches-${VAULT_ZONE}:     ${VAULT_ENVIRONMENT}/ches-${VAULT_ZONE}
+            vault.hashicorp.com/agent-inject-template-ches-${VAULT_ZONE}:  |
+              {{- with secret "${VAULT_ENVIRONMENT}/ches-${VAULT_ZONE}" }}
+              export CHES_CLIENT_ID="{{ .Data.data.CHES_CLIENT_ID }}"
+              export CHES_CLIENT_SECRET="{{ .Data.data.CHES_CLIENT_SECRET }}"
+              export CHES_TOKEN_ENDPOINT="{{ .Data.data.CHES_TOKEN_ENDPOINT }}"
+              {{- end }}
+
+            vault.hashicorp.com/agent-inject-secret-coms-${VAULT_ZONE}:     ${VAULT_ENVIRONMENT}/coms-${VAULT_ZONE}
+            vault.hashicorp.com/agent-inject-template-coms-${VAULT_ZONE}:  |
+              {{- with secret "${VAULT_ENVIRONMENT}/coms-${VAULT_ZONE}" }}
+              export BASICAUTH_PASSWORD="{{ .Data.data.BASICAUTH_PASSWORD }}"
+              export BASICAUTH_USERNAME="{{ .Data.data.BASICAUTH_USERNAME }}"
+              export COMS_PRESIGNED_URL_EXPIRY="{{ .Data.data.COMS_PRESIGNED_URL_EXPIRY }}"
+              export COMS_URL="{{ .Data.data.COMS_URL }}"
+              export OBJECTSTORAGE_ACCESSKEYID="{{ .Data.data.OBJECTSTORAGE_ACCESSKEYID }}"
+              export OBJECTSTORAGE_BUCKET="{{ .Data.data.OBJECTSTORAGE_BUCKET }}"
+              export OBJECTSTORAGE_ENDPOINT="{{ .Data.data.OBJECTSTORAGE_ENDPOINT }}"
+              export OBJECTSTORAGE_KEY="{{ .Data.data.OBJECTSTORAGE_KEY }}"
+              export OBJECTSTORAGE_SECRETACCESSKEY="{{ .Data.data.OBJECTSTORAGE_SECRETACCESSKEY }}"
+              {{- end }}
+            
+            vault.hashicorp.com/agent-inject-secret-database-${VAULT_ZONE}: ${VAULT_ENVIRONMENT}/database-${VAULT_ZONE}
+            vault.hashicorp.com/agent-inject-template-database-${VAULT_ZONE}:  |
+              {{- with secret "${VAULT_ENVIRONMENT}/database-${VAULT_ZONE}" }}
+              export MSSQL_HOST="{{ .Data.data.DATABASE_HOST }}"
+              export MSSQL_DB="{{ .Data.data.DATABASE_NAME }}"
+              export MSSQL_SA_PASSWORD="{{ .Data.data.DATABASE_PASSWORD }}"
+              export MSSQL_PORT="{{ .Data.data.DATABASE_PORT }}"
+              export MSSQL_SA_USER="{{ .Data.data.DATABASE_USER }}"
+              {{- end }}
           labels:
             app: ${NAME}-${ZONE}
             deploymentconfig: ${NAME}-${ZONE}-${COMPONENT}
@@ -166,6 +226,10 @@ objects:
             - image: ${NAME}-${ZONE}-${COMPONENT}:${IMAGE_TAG}
               imagePullPolicy: Always
               name: ${NAME}
+              args:
+                - 'sh' 
+                - '-c'
+                - 'source /vault/secrets/auth0-${VAULT_ZONE} && source /vault/secrets/cdogs-${VAULT_ZONE} && source /vault/secrets/ches-${VAULT_ZONE} && source /vault/secrets/coms-${VAULT_ZONE} && source /vault/secrets/database-${VAULT_ZONE} && npm run start:prod'
               env:
                 - name: DB_TYPE
                   valueFrom:
