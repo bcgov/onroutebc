@@ -8,6 +8,7 @@ import { Template } from './entities/template.entity';
 import * as fs from 'fs';
 import { ITemplate } from './interface/template.interface';
 import {
+  CDOGS_RESPONSE_TYPE,
   ENCODING_TYPE,
   TEMPLATE_FILE_PATH,
   TEMPLATE_FILE_TYPE,
@@ -62,7 +63,6 @@ export class PdfService {
    * @returns {string} a DMS reference ID used to retrieve the template in DMS
    */
   private async getTemplate(templateRef: string): Promise<ITemplate> {
-    // TODO: implement
     const todo: ITemplate = {
       content: 'TODO',
       encodingType: ENCODING_TYPE,
@@ -128,31 +128,35 @@ export class PdfService {
       `${TEMPLATE_FILE_PATH}/${TEMPLATE_NAME}.${TEMPLATE_FILE_TYPE}`,
     );
 
-    // TODO: Change to use axios/httpService
-    const cdogsResponse = await fetch(cdogs_url, {
-      method: 'POST',
-      body: JSON.stringify({
-        data: templateData,
-        template: {
-          encodingType: ENCODING_TYPE,
-          fileType: TEMPLATE_FILE_TYPE,
-          content: templateContent,
-        },
-        options: {
-          cacheReport: false,
-          convertTo: 'pdf',
-          overwrite: true,
-          reportName: `${TEMPLATE_NAME}.pdf`,
-        },
-      }),
-      headers: {
-        Authorization: `Bearer ${keycloak.access_token}`,
-        'Content-Type': 'application/json',
-      },
-    });
-
     // TODO: which format does DMS/DMS expect? Currently set to array buffer
-    const pdf = await cdogsResponse.arrayBuffer();
+    const cdogsResponse = await lastValueFrom(
+      this.httpService.post(
+        cdogs_url,
+        JSON.stringify({
+          data: templateData,
+          template: {
+            encodingType: ENCODING_TYPE,
+            fileType: TEMPLATE_FILE_TYPE,
+            content: templateContent,
+          },
+          options: {
+            cacheReport: false,
+            convertTo: 'pdf',
+            overwrite: true,
+            reportName: `${TEMPLATE_NAME}.pdf`,
+          },
+        }),
+        {
+          headers: {
+            Authorization: `Bearer ${keycloak.access_token}`,
+            'Content-Type': 'application/json',
+          },
+          responseType: CDOGS_RESPONSE_TYPE
+        },
+      ),
+    );
+
+    const pdf = await cdogsResponse.data;
 
     return pdf;
   }
