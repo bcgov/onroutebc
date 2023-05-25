@@ -57,7 +57,7 @@ const CompanyInformation = ({
 export const ApplicationDetails = ({
   values,
 }: {
-  values: Application | undefined;
+  values: Application | undefined
 }) => {
   const companyInfoQuery = useCompanyInfoQuery();
   // TODO use an enum

@@ -26,7 +26,7 @@ export const ReviewPermitDetails = ({
       <Box sx={PERMIT_RIGHT_BOX_STYLE}>
         <Box sx={{ gap: "40px", paddingTop: "24px" }}>
           <Typography sx={{ fontWeight: "bold" }}>Start Date:</Typography>
-          startDate={getDefaultRequiredVal(
+          {getDefaultRequiredVal(
             "",
             (values?.permitData?.startDate?.$u !== null)? values?.permitData?.startDate?.format("LL"): formatDate(
               new Intl.DateTimeFormat("en-US", {
@@ -45,16 +45,7 @@ export const ReviewPermitDetails = ({
         <PermitExpiryDateBanner
           expiryDate={getDefaultRequiredVal(
             "",
-            (values?.permitData?.expiryDate?.$u !== null)? values?.permitData?.expiryDate?.format("LL"): formatDate(
-              new Intl.DateTimeFormat("en-US", {
-                month: "short",
-                day: "numeric",
-                year: "numeric",
-                hour: "numeric",
-                minute: "numeric",
-                timeZoneName: "short",
-              }), values?.permitData?.expiryDate
-            )
+            values?.permitData?.expiryDate
           )}
         />
         <Box>
