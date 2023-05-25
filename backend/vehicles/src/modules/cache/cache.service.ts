@@ -9,65 +9,61 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { FullNames } from './interface/fullNames.interface';
 import { PermitData } from '../pdf/interface/permitData.interface';
-import { Country } from '../common/entities/country.entity';
-import { Province } from '../common/entities/province.entity';
-import { formatCountry, formatProvince } from './helpers/formatCountryProvince.helper';
-import { formatPermitType } from './helpers/formatPermitType.helper';
-import { formatVehicleTypes } from './helpers/formatVehicleTypes.helper';
+import { getCountryName, getProvinceName } from './helpers/getCountryProvinceNames.helper';
+import { getPermitTypeName } from './helpers/getPermitTypeName.helper';
+import { getVehicleTypeNames } from './helpers/getVehicleTypeNames.helper';
+import { CommonService } from '../common/common.service';
 
 @Injectable()
 export class CacheService {
   constructor(
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
+    private commonService: CommonService,
     private powerUnitTypeService: PowerUnitTypesService,
     private trailerTypeService: TrailerTypesService,
-    @InjectRepository(Country)
-    private countryRepository: Repository<Country>,
-    @InjectRepository(Province)
-    private provinceRepository: Repository<Province>,
     @InjectRepository(PermitType)
     private permitTypeRepository: Repository<PermitType>,
   ) {}
 
   /**
-   * Converts code names to full names by calling the ORBC database.
-   * Example: 'TROS' to 'Oversize: Term'
+   * Converts code names associated with a permit to full names by calling the ORBC database.
+   * Example: 'TROS' to 'Oversize: Term'.
    * @param permit
    * @returns
    */
   public async getFullNamesFromDatabase(permit: Permit): Promise<FullNames> {
     const permitData: PermitData = JSON.parse(permit.permitData.permitData);
 
-    const { vehicleType, vehicleSubType } = await formatVehicleTypes(
+    const { vehicleType, vehicleSubType } = await getVehicleTypeNames(
       this.cacheManager,
       permitData,
       this.powerUnitTypeService,
       this.trailerTypeService,
     );
 
-    const mailingCountryCode = await formatCountry(
+    const mailingCountryCode = await getCountryName(
       this.cacheManager,
       permitData.vehicleDetails.countryCode,
-      this.countryRepository,
+      this.commonService,
     );
-    const mailingProvinceCode = await formatProvince(
+    const mailingProvinceCode = await getProvinceName(
       this.cacheManager,
       permitData.vehicleDetails.provinceCode,
-      this.provinceRepository,
+      this.commonService,
     );
-    const vehicleCountryCode = await formatCountry(
+    const vehicleCountryCode = await getCountryName(
       this.cacheManager,
       permitData.mailingAddress.countryCode,
-      this.countryRepository,
+      this.commonService,
     );
-    const vehicleProvinceCode = await formatProvince(
+    const vehicleProvinceCode = await getProvinceName(
       this.cacheManager,
       permitData.mailingAddress.provinceCode,
-      this.provinceRepository,
+      this.commonService,
     );
 
-    const permitName = await formatPermitType(
+    const permitName = await getPermitTypeName(
       this.cacheManager,
       permit.permitType,
       this.permitTypeRepository,

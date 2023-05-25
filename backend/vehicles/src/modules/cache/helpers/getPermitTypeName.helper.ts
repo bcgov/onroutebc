@@ -10,15 +10,12 @@ import { TTL } from '../constants/cache.constant';
  * @param permitTypeRepository
  * @returns Full name of the permit type
  */
-export const formatPermitType = async (
+export const getPermitTypeName = async (
   cacheManager: Cache,
   permitTypeCode: string,
   permitTypeRepository: Repository<PermitType>,
 ) => {
   let cachedData: string = await cacheManager.get(permitTypeCode);
-
-  console.log('permitTypeCode', permitTypeCode);
-  console.log('cachedData', cachedData);
 
   if (cachedData) return cachedData;
 

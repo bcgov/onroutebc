@@ -1,18 +1,17 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-
 import { CacheService } from './cache.service';
 import { PermitType } from '../permit/entities/permit-type.entity';
 import { PowerUnitTypesModule } from '../vehicles/power-unit-types/power-unit-types.module';
 import { TrailerTypesModule } from '../vehicles/trailer-types/trailer-types.module';
-import { Country } from '../common/entities/country.entity';
-import { Province } from '../common/entities/province.entity';
+import { CommonModule } from '../common/common.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Country, Province, PermitType]),
+    TypeOrmModule.forFeature([PermitType]),
     PowerUnitTypesModule,
     TrailerTypesModule,
+    CommonModule,
   ],
   providers: [CacheService],
   exports: [CacheService],

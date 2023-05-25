@@ -13,11 +13,11 @@ import { TTL } from '../constants/cache.constant';
  * @param trailerTypeService
  * @returns an object that includes full names of the vehicle type and subtype
  */
-export const formatVehicleTypes = async (
+export const getVehicleTypeNames = async (
   cacheManager: Cache,
   permitData: PermitData,
-  powerUnitTypeService: PowerUnitTypesService, //TODO: fix prop drilling?
-  trailerTypeService: TrailerTypesService, //TODO: fix prop drilling?
+  powerUnitTypeService: PowerUnitTypesService,
+  trailerTypeService: TrailerTypesService,
 ) => {
   let vehicleType: string = await cacheManager.get(
     permitData.vehicleDetails.vehicleType,

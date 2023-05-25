@@ -1,31 +1,24 @@
-import { Country } from 'src/modules/common/entities/country.entity';
-import { Province } from 'src/modules/common/entities/province.entity';
-import { Repository } from 'typeorm';
 import { Cache } from 'cache-manager';
 import { TTL } from '../constants/cache.constant';
+import { CommonService } from 'src/modules/common/common.service';
 
 /**
  * Converts CountryCode to Country Name using the ORBC_VT_COUNTRY table
  * @param cacheManager
  * @param countryCode
- * @param countryRepository
+ * @param commonService
  * @returns Full name of the country
  */
-export const formatCountry = async (
+export const getCountryName = async (
   cacheManager: Cache,
   countryCode: string,
-  countryRepository: Repository<Country>,
+  commonService: CommonService,
 ) => {
   let cachedData: string = await cacheManager.get(countryCode);
 
-  console.log('countryCode', countryCode);
-  console.log('cachedData', cachedData);
-
   if (cachedData) return cachedData;
 
-  const countryName = await countryRepository.findOne({
-    where: { countryCode: countryCode },
-  });
+  const countryName = await commonService.findOneCountry(countryCode);
 
   await cacheManager.set(countryCode, countryName.countryName, TTL);
 
@@ -36,24 +29,19 @@ export const formatCountry = async (
  * Converts provinceCode to Province Name using the ORBC_VT_PROVINCE table
  * @param cacheManager
  * @param provinceCode
- * @param provinceRepository
+ * @param commonService
  * @returns Full name of the province
  */
-export const formatProvince = async (
+export const getProvinceName = async (
   cacheManager: Cache,
   provinceCode: string,
-  provinceRepository: Repository<Province>,
+  commonService: CommonService,
 ) => {
   let cachedData: string = await cacheManager.get(provinceCode);
 
-  console.log('provinceCode', provinceCode);
-  console.log('cachedData', cachedData);
-
   if (cachedData) return cachedData;
 
-  const provinceName = await provinceRepository.findOne({
-    where: { provinceCode: provinceCode },
-  });
+  const provinceName = await commonService.findOneProvince(provinceCode);
 
   await cacheManager.set(provinceCode, provinceName.provinceName, TTL);
 
