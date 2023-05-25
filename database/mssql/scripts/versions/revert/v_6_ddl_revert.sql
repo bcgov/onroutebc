@@ -7,6 +7,8 @@ GO
 BEGIN TRANSACTION
 
 DROP TABLE [dms].[ORBC_DOCUMENT]
+DROP SCHEMA [dms]
+
 
 DECLARE @VersionDescription VARCHAR(255)
 SET @VersionDescription = 'Reverting initial creation of entities for Document Management System (DMS).'
