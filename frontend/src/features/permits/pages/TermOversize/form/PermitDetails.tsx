@@ -13,22 +13,37 @@ import {
 } from "../../../../../themes/orbcStyles";
 import { TROS_PERMIT_DURATIONS } from "../../../constants/termOversizeConstants";
 import dayjs from "dayjs";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { Application } from "../../../types/application";
+import { useParams } from "react-router";
 
-export const PermitDetails = ({ feature }: { feature: string }) => {
-  const { getValues, watch, register, setValue } = useFormContext();
-
-  const startDate = watch("permitData.startDate");
+export const PermitDetails = ({ feature, values}: { feature: string, values: Application | undefined  }) => {
+  const { watch, register, setValue } = useFormContext();
+  const {applicationNumber} = useParams();
+  const startDate = (applicationNumber !== undefined)? values?.permitData?.startDate: watch("permitData.startDate");
   // the permit expiry date is the permit duration minus 1 plus the <start date>
-  const duration = getValues("permitData.permitDuration") - 1;
-
+  const duration = (values?.permitData?.permitDuration !== undefined)? values?.permitData?.permitDuration - 1: 30;
   const expiryDate = dayjs(startDate).add(duration, "day");
-  const formattedExpiryDate = dayjs(expiryDate).format("LL");
-
+  const [formattedExpiryDate, setFormattedExpiryDate] = useState(dayjs(expiryDate).format("LL"));
   register("permitData.expiryDate");
   useEffect(() => {
-    setValue("permitData.expiryDate", expiryDate);
+    if(applicationNumber !== undefined)
+    {
+      setValue("permitData.startDate", dayjs(values?.permitData?.startDate));
+      setValue("permitData.permitDuration", values?.permitData.permitDuration);
+    }
   }, [startDate, duration]);
+
+  useEffect(() => {
+    if(applicationNumber !== undefined){
+      setValue("permitData.expiryDate", formattedExpiryDate);
+    }
+    setFormattedExpiryDate(watch("permitData.startDate").add(watch("permitData.permitDuration"),"days").format("LL"));
+  }, [values?.permitData?.startDate, values?.permitData.permitDuration, watch("permitData.startDate"), watch("permitData.permitDuration"), formattedExpiryDate]);
+
+  useEffect(() => {
+    setValue("permitData.commodities", values?.permitData.commodities);
+    }, [values?.permitData.permitDuration]);
 
   return (
     <Box sx={PERMIT_MAIN_BOX_STYLE}>

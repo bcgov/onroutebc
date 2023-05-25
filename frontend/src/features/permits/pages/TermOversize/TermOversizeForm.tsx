@@ -38,7 +38,7 @@ import { SnackBarContext } from "../../../../App";
 import { getUserGuidFromSession } from "../../../../common/apiManager/httpRequestHandler";
 import { LeaveApplicationDialog } from "../../components/dialog/LeaveApplicationDialog";
 import { areApplicationDataEqual } from "../../helpers/equality";
-import { PartialDayJsObject, formatFromObject, now } from "../../../../common/helpers/formatDate";
+
 
 /**
  * The first step in creating and submitting a TROS Application.
@@ -87,19 +87,17 @@ export const TermOversizeForm = () => {
       applicationContext?.applicationData?.updatedDateTime
     ),
     permitData: {
-      startDate: applyWhenNotNullable(
-        (val: PartialDayJsObject) => dayjs(formatFromObject(val, "date", "local")),
-        applicationContext?.applicationData?.permitData?.startDate, 
-        now()
+      startDate: getDefaultRequiredVal(
+        dayjs(),
+        applicationContext?.applicationData?.permitData?.startDate
       ),
       permitDuration: getDefaultRequiredVal(
         30,
         applicationContext?.applicationData?.permitData?.permitDuration
       ),
-      expiryDate: applyWhenNotNullable(
-        (val: PartialDayJsObject) => dayjs(formatFromObject(val, "date", "local")),
-        applicationContext?.applicationData?.permitData?.expiryDate, 
-        now()
+      expiryDate: getDefaultRequiredVal(
+        dayjs(),
+        applicationContext?.applicationData?.permitData?.expiryDate
       ),
       commodities: getDefaultRequiredVal(
         [TROS_COMMODITIES[0], TROS_COMMODITIES[1]],
@@ -161,6 +159,10 @@ export const TermOversizeForm = () => {
         postalCode: "",
       },
       vehicleDetails: {
+        unitNumber: getDefaultRequiredVal(
+          "",
+          applicationContext?.applicationData?.permitData?.vehicleDetails?.unitNumber
+        ),
         vin: getDefaultRequiredVal(
           "",
           applicationContext?.applicationData?.permitData?.vehicleDetails?.vin
@@ -384,9 +386,9 @@ export const TermOversizeForm = () => {
         <Box sx={{ paddingBottom: "80px" }}>
           <FormProvider {...formMethods}>
             <ApplicationDetails values={termOversizeDefaultValues} />
-            <ContactDetails feature={FEATURE} />
-            <PermitDetails feature={FEATURE} />
-            <VehicleDetails feature={FEATURE} />
+            <ContactDetails feature={FEATURE} values={termOversizeDefaultValues} />
+            <PermitDetails feature={FEATURE}  values={termOversizeDefaultValues}/>
+            <VehicleDetails feature={FEATURE} values={termOversizeDefaultValues}/>
           </FormProvider>
         </Box>
 
