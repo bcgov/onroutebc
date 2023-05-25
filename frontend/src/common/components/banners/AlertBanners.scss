@@ -7,77 +7,60 @@
   margin-bottom: 20px;
   margin-top: 20px;
   padding: 15px;
-}
 
-.bc-gov-alertbanner:before {
-  float: left;
-  font-family: "Font Awesome 5 Free", sans-serif;
-  font-size: larger;
-  font-style: normal;
-  line-height: 1;
-  margin-right: 10px;
-  position: relative;
-  top: 3px;
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-font-smoothing: antialiased;
-}
+  &--error {
+    background-color: orbcStyles.$bc-messages-red-background;
+    border-color: #ebccd1;
+    color: orbcStyles.$bc-messages-red-text;
 
-.bc-gov-alertbanner p {
-  font-size: 18px;
-  margin: 0;
-  padding-left: 35px;
-}
+    a {
+      color: #843534;
+    }
+  }
 
-.bc-gov-alertbanner-error {
-  background-color: orbcStyles.$bc-messages-red-background;
-  border-color: #ebccd1;
-  color: orbcStyles.$bc-messages-red-text;
-}
+  &--warning {
+    background-color: orbcStyles.$bc-messages-gold-background;
+    border-color: #faebcc;
+    color: orbcStyles.$bc-messages-gold-text;
 
-.bc-gov-alertbanner-error:before {
-  content: "\f06a";
-}
+    a {
+      color: #66512c;
+    }
+  }
 
-.bc-gov-alertbanner-error a {
-  color: #843534;
-}
+  &--info {
+    background-color: orbcStyles.$bc-messages-blue-background;
 
-.bc-gov-alertbanner-warning {
-  background-color: orbcStyles.$bc-messages-gold-background;
-  border-color: #faebcc;
-  color: orbcStyles.$bc-messages-gold-text;
-}
+    a {
+      color: orbcStyles.$bc-text-links-blue;
+    }
+  }
 
-.bc-gov-alertbanner-warning:before {
-  content: "\f071";
-}
+  &--success {
+    background-color: orbcStyles.$bc-messages-green-background;
+    border-color: #d6e9c6;
+    color: orbcStyles.$bc-messages-green-text;
 
-.bc-gov-alertbanner-warning a {
-  color: #66512c;
-}
+    a {
+      color: #2b542c;
+    }
+  }
 
-.bc-gov-alertbanner-info {
-  background-color: orbcStyles.$bc-messages-blue-background;
-}
+  &__icon {
+    float: left;
+    font-size: larger;
+    font-style: normal;
+    line-height: 1;
+    margin-right: 10px;
+    position: relative;
+    top: 3px;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+  }
 
-.bc-gov-alertbanner-info:before {
-  content: "\f05a";
-}
-
-.bc-gov-alertbanner-info a {
-  color: orbcStyles.$bc-text-links-blue;
-}
-
-.bc-gov-alertbanner-success {
-  background-color: orbcStyles.$bc-messages-green-background;
-  border-color: #d6e9c6;
-  color: orbcStyles.$bc-messages-green-text;
-}
-
-.bc-gov-alertbanner-success:before {
-  content: "\f058";
-}
-
-.bc-gov-alertbanner-success a {
-  color: #2b542c;
+  p {
+    font-size: 18px;
+    margin: 0;
+    padding-left: 35px;
+  }
 }

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
-import { createMock } from '@golevelup/ts-jest';
+import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { classes } from '@automapper/classes';
 import { AutomapperModule, getMapperToken } from '@automapper/nestjs';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -11,7 +11,6 @@ import { CompanyProfile } from '../../../src/modules/company-user-management/com
 import { Company } from '../../../src/modules/company-user-management/company/entities/company.entity';
 import { DataSource, Repository } from 'typeorm';
 import {
-  MockType,
   createQueryBuilderMock,
   dataSourceMockFactory,
 } from '../../util/mocks/factory/dataSource.factory.mock';
@@ -20,26 +19,33 @@ import { Directory } from '../../../src/common/enum/directory.enum';
 import { AddressProfile } from '../../../src/modules/common/profiles/address.profile';
 import { ContactProfile } from '../../../src/modules/common/profiles/contact.profile';
 import {
-  companyEntityMock,
-  createCompanyDtoMock,
-  updateCompanyDtoMock,
+  COMPANY_LIST,
+  blueCompanyEntityMock,
+  createBlueCompanyDtoMock,
+  createRedCompanyDtoMock,
+  redCompanyEntityMock,
+  updateRedCompanyDtoMock,
 } from '../../util/mocks/data/company.mock';
-import { currentUserMock } from '../../util/mocks/data/user.mock';
+
 import { DataNotFoundException } from '../../../src/common/exception/data-not-found.exception';
 import { InternalServerErrorException } from '@nestjs/common';
+import * as constants from '../../util/mocks/data/test-data.constants';
+import {
+  blueCompanyAdminUserJWTMock,
+  redCompanyAdminUserJWTMock,
+} from '../../util/mocks/data/jwt.mock';
 
-const COMPANY_ID_1 = 1;
-const COMPANY_ID_2 = 2;
-const USER_GUID = '06267945F2EB4E31B585932F78B76269';
-const COMPANY_GUID = '6F9619FF8B86D011B42D00C04FC964FF';
+const COMPANY_ID_99 = 99;
+let repo: DeepMocked<Repository<Company>>;
 
 describe('CompanyService', () => {
   let service: CompanyService;
-  const repo = createMock<Repository<Company>>();
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  let dataSourceMock: MockType<DataSource>;
 
   beforeEach(async () => {
+    jest.clearAllMocks();
+
+    repo = createMock<Repository<Company>>();
+    const dataSourceMock = dataSourceMockFactory() as DataSource;
     const module: TestingModule = await Test.createTestingModule({
       imports: [AutomapperModule],
       providers: [
@@ -56,7 +62,7 @@ describe('CompanyService', () => {
         },
         {
           provide: DataSource,
-          useFactory: dataSourceMockFactory,
+          useValue: dataSourceMock,
         },
         CompanyProfile,
         ContactProfile,
@@ -68,25 +74,40 @@ describe('CompanyService', () => {
     service = module.get<CompanyService>(CompanyService);
   });
 
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   it('Company service should be defined', () => {
     expect(service).toBeDefined();
   });
 
   describe('Company service create function', () => {
-    it('should create a company and its admin user.', async () => {
-      repo.findOne.mockResolvedValue(companyEntityMock);
+    it('should create a company registered in BC and its admin user.', async () => {
+      repo.findOne.mockResolvedValue(redCompanyEntityMock);
       const retCompanyUser = await service.create(
-        createCompanyDtoMock,
-        Directory.BBCEID,
-        currentUserMock,
+        createRedCompanyDtoMock,
+        constants.RED_COMPANY_DIRECOTRY,
+        redCompanyAdminUserJWTMock,
       );
       expect(typeof retCompanyUser).toBe('object');
-      expect(retCompanyUser.companyId).toBe(COMPANY_ID_1);
+      expect(retCompanyUser.companyId).toBe(constants.RED_COMPANY_ID);
+    });
+
+    it('should create a company registered in US and its admin user.', async () => {
+      repo.findOne.mockResolvedValue(blueCompanyEntityMock);
+      const retCompanyUser = await service.create(
+        createBlueCompanyDtoMock,
+        constants.BLUE_COMPANY_DIRECOTRY,
+        blueCompanyAdminUserJWTMock,
+      );
+      expect(typeof retCompanyUser).toBe('object');
+      expect(retCompanyUser.companyId).toBe(constants.BLUE_COMPANY_ID);
     });
 
     it('should catch and throw and Internal Error Exceptions user.', async () => {
       await expect(async () => {
-        await service.create(null, Directory.BBCEID, currentUserMock);
+        await service.create(null, null, redCompanyAdminUserJWTMock);
       }).rejects.toThrowError(InternalServerErrorException);
     });
   });
@@ -94,22 +115,22 @@ describe('CompanyService', () => {
   describe('Company service update function', () => {
     it('should update the company', async () => {
       repo.findOne
-        .mockResolvedValueOnce(companyEntityMock)
-        .mockResolvedValueOnce({ ...companyEntityMock, phone: '8888888888' });
+        .mockResolvedValueOnce(redCompanyEntityMock)
+        .mockResolvedValueOnce({ ...redCompanyEntityMock, extension: null });
       repo.save.mockResolvedValue({
-        ...companyEntityMock,
-        phone: '8888888888',
+        ...redCompanyEntityMock,
+        extension: 'null',
       });
 
       const retCompany = await service.update(
-        COMPANY_ID_1,
-        { ...updateCompanyDtoMock, phone: '8888888888' },
-        Directory.BBCEID,
+        constants.RED_COMPANY_ID,
+        updateRedCompanyDtoMock,
+        constants.RED_COMPANY_DIRECOTRY,
       );
 
       expect(typeof retCompany).toBe('object');
-      expect(retCompany.companyId).toBe(COMPANY_ID_1);
-      expect(retCompany.phone).toEqual('8888888888');
+      expect(retCompany.companyId).toBe(constants.RED_COMPANY_ID);
+      expect(retCompany.extension).toBeNull();
     });
 
     it('should throw DataNotFound Exception', async () => {
@@ -117,8 +138,8 @@ describe('CompanyService', () => {
 
       await expect(async () => {
         await service.update(
-          COMPANY_ID_2,
-          { ...updateCompanyDtoMock, phone: '8888888888' },
+          COMPANY_ID_99,
+          updateRedCompanyDtoMock,
           Directory.BBCEID,
         );
       }).rejects.toThrow(DataNotFoundException);
@@ -127,36 +148,39 @@ describe('CompanyService', () => {
 
   describe('Company service findOne function', () => {
     it('should return the Company', async () => {
-      repo.findOne.mockResolvedValue(companyEntityMock);
-      const retCompany = await service.findOne(COMPANY_ID_1);
+      repo.findOne.mockResolvedValue(redCompanyEntityMock);
+      const retCompany = await service.findOne(constants.RED_COMPANY_ID);
       expect(typeof retCompany).toBe('object');
-      expect(retCompany.companyId).toBe(COMPANY_ID_1);
+      expect(retCompany.companyId).toBe(constants.RED_COMPANY_ID);
     });
   });
 
   describe('Company service findCompanyMetadata function', () => {
     it('should return the Company Metadata', async () => {
-      repo.findOne.mockResolvedValue(companyEntityMock);
-      const retCompany = await service.findCompanyMetadata(COMPANY_ID_1);
+      repo.findOne.mockResolvedValue(redCompanyEntityMock);
+      const retCompany = await service.findCompanyMetadata(
+        constants.RED_COMPANY_ID,
+      );
       expect(typeof retCompany).toBe('object');
-      expect(retCompany.companyId).toBe(COMPANY_ID_1);
+      expect(retCompany.companyId).toBe(constants.RED_COMPANY_ID);
     });
   });
 
   describe('Company service findOneByCompanyGuid function', () => {
     it('should return the Company details', async () => {
-      repo.findOne.mockResolvedValue(companyEntityMock);
-      const retCompany = await service.findOneByCompanyGuid(COMPANY_GUID);
+      repo.findOne.mockResolvedValue(redCompanyEntityMock);
+      const retCompany = await service.findOneByCompanyGuid(
+        constants.RED_COMPANY_GUID,
+      );
       expect(typeof retCompany).toBe('object');
-      expect(retCompany.companyId).toBe(COMPANY_ID_1);
+      expect(retCompany.companyId).toBe(constants.RED_COMPANY_ID);
     });
   });
 
   describe('Company service findCompanyMetadataByUserGuid function', () => {
     it('should return the Company Metadata List', async () => {
-      const PARAMS = { userGUID: USER_GUID };
-      const companyList: Company[] = [companyEntityMock];
-      const FILTERED_LIST = companyList.filter(
+      const PARAMS = { userGUID: constants.RED_COMPANY_ADMIN_USER_GUID };
+      const FILTERED_LIST = COMPANY_LIST.filter(
         (r) => r.companyUsers[0].user.userGUID === PARAMS.userGUID,
       );
 
@@ -164,10 +188,12 @@ describe('CompanyService', () => {
         .spyOn(repo, 'createQueryBuilder')
         .mockImplementation(() => createQueryBuilderMock(FILTERED_LIST));
 
-      const retCompany = await service.findCompanyMetadataByUserGuid(USER_GUID);
+      const retCompany = await service.findCompanyMetadataByUserGuid(
+        constants.RED_COMPANY_ADMIN_USER_GUID,
+      );
 
       expect(typeof retCompany).toBe('object');
-      expect(retCompany[0].companyId).toBe(COMPANY_ID_1);
+      expect(retCompany[0].companyId).toBe(constants.RED_COMPANY_ID);
     });
   });
 });

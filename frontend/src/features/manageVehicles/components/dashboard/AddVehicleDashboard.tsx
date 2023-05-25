@@ -2,8 +2,9 @@ import React from "react";
 import { VEHICLE_TYPES_ENUM } from "../form/constants";
 import { PowerUnitForm } from "../form/PowerUnitForm";
 import { TrailerForm } from "../form/TrailerForm";
-
 import { Box, Typography } from "@mui/material";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
 
 import "../../../../common/components/dashboard/Dashboard.scss";
 import { Banner } from "../../../../common/components/dashboard/Banner";
@@ -55,10 +56,10 @@ export const AddVehicleDashboard = React.memo(
           >
             Vehicle Inventory
           </Typography>
-          <i
-            className="fa fa-chevron-right"
+          <FontAwesomeIcon
+            icon={faChevronRight}
             style={{ marginLeft: "8px", marginRight: "8px" }}
-          ></i>
+          />
           <Typography
             onClick={handleShowAddVehicle}
             style={{
@@ -70,10 +71,10 @@ export const AddVehicleDashboard = React.memo(
             {addVehicleMode === VEHICLE_TYPES_ENUM.POWER_UNIT && "Power Unit"}
             {addVehicleMode === VEHICLE_TYPES_ENUM.TRAILER && "Trailer"}
           </Typography>
-          <i
-            className="fa fa-chevron-right"
+          <FontAwesomeIcon
+            icon={faChevronRight}
             style={{ marginLeft: "8px", marginRight: "8px" }}
-          ></i>
+          />
           <Typography>
             {addVehicleMode === VEHICLE_TYPES_ENUM.POWER_UNIT &&
               "Add Power Unit"}
