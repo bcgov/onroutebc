@@ -46,6 +46,7 @@
     "@automapper/nestjs": "^8.7.7",
     "@automapper/types": "^6.3.1",
     "@nestjs/axios": "^2.0.0",
+    "@nestjs/cache-manager": "^1.0.0",
     "@nestjs/cli": "^9.4.2",
     "@nestjs/common": "^9.4.0",
     "@nestjs/config": "^2.3.1",
@@ -56,6 +57,7 @@
     "@nestjs/swagger": "^6.3.0",
     "@nestjs/testing": "^9.4.0",
     "@nestjs/typeorm": "^9.0.1",
+    "cache-manager": "^5.2.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
     "dotenv": "^16.0.3",
@@ -72,6 +74,7 @@
   },
   "devDependencies": {
     "@golevelup/ts-jest": "^0.3.7",
+    "@types/cache-manager": "^4.0.2",
     "@types/express": "^4.17.17",
     "@types/jest": "^29.5.1",
     "@types/node": "^20.1.1",

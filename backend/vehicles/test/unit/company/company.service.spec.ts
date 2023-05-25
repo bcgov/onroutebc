@@ -65,7 +65,7 @@ describe('CompanyService', () => {
       ],
     }).compile();
 
-    service = module.get<CompanyService>(CompanyService);    
+    service = module.get<CompanyService>(CompanyService);
   });
 
   it('Company service should be defined', () => {

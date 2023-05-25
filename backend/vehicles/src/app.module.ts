@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import { Module } from '@nestjs/common';
+import { CacheModule } from '@nestjs/cache-manager';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { AppService } from './app.service';
@@ -53,6 +54,9 @@ const envPath = path.resolve(process.cwd() + '/../../');
     }),
     AutomapperModule.forRoot({
       strategyInitializer: classes(),
+    }),
+    CacheModule.register({
+      isGlobal: true, // Allows access to cache manager globally
     }),
     PowerUnitsModule,
     TrailersModule,

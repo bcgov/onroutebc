@@ -13,12 +13,10 @@ import {
   TEMPLATE_FILE_TYPE,
   TEMPLATE_NAME,
 } from './constants/template.constant';
-import { PowerUnitTypesService } from '../vehicles/power-unit-types/power-unit-types.service';
-import { TrailerTypesService } from '../vehicles/trailer-types/trailer-types.service';
 import { formatTemplateData } from './helpers/formatTemplateData';
-import { Country } from '../common/entities/country.entity';
-import { Province } from '../common/entities/province.entity';
-import { PermitType } from '../permit/entities/permit-type.entity';
+import { TemplateVersion } from 'src/common/enum/pdf-template-version.enum';
+import { FullNames } from '../cache/interface/fullNames.interface';
+import { CacheService } from '../cache/cache.service';
 
 @Injectable()
 export class PdfService {
@@ -26,14 +24,7 @@ export class PdfService {
     @InjectRepository(Template)
     private templateRepository: Repository<Template>,
     private httpService: HttpService,
-    private powerUnitTypeService: PowerUnitTypesService,
-    private trailerTypeService: TrailerTypesService,
-    @InjectRepository(Country)
-    private countryRepository: Repository<Country>,
-    @InjectRepository(Province)
-    private provinceRepository: Repository<Province>,
-    @InjectRepository(PermitType)
-    private permitTypeRepository: Repository<PermitType>,
+    private readonly cacheService: CacheService,
   ) {}
 
   /**
@@ -59,7 +50,7 @@ export class PdfService {
    */
   private async getTemplateRef(
     permitType: string,
-    templateVersion: string = 'latest',
+    templateVersion: string = TemplateVersion.LATEST,
   ): Promise<string> {
     const template = await this.findOne(permitType, templateVersion);
     return template.comsRef;
@@ -81,6 +72,16 @@ export class PdfService {
   }
 
   /**
+   * Converts code name to full name by calling the ORBC database.
+   * Example: 'TROS' to 'Oversize: Term'
+   * @param permit
+   * @returns
+   */
+  private async getFullNamesFromDatabase(permit: Permit): Promise<FullNames> {
+    return await this.cacheService.getFullNamesFromDatabase(permit);
+  }
+
+  /**
    * Generate pdf document from inline Template
    * @param {Permit} permit permit data
    * @param {Template} template template version. Defaults to latest version
@@ -95,17 +96,9 @@ export class PdfService {
     const token_url = process.env.CDOGS_TOKEN_URL;
     const cdogs_url = process.env.CDOGS_URL;
 
-    // TODO: Map/format the permit data to template data
-    // TODO: Add payment/refund data from payBC transaction
-    // Parse permitData string into JSON
-    const templateData = await formatTemplateData(
-      permit,
-      this.powerUnitTypeService, //TODO: fix prop drilling?
-      this.trailerTypeService, //TODO: fix prop drilling?
-      this.countryRepository, //TODO: fix prop drilling?
-      this.provinceRepository, //TODO: fix prop drilling?
-      this.permitTypeRepository,
-    );
+    // Format the template data to be used in the templated word documents
+    const fullNames = await this.getFullNamesFromDatabase(permit);
+    const templateData = await formatTemplateData(permit, fullNames);
 
     // We need the oidc api to generate a token for us
     // Use 'lastValueFrom' to make the nestjs HttpService use a promise instead of on RxJS Observable
@@ -196,16 +189,15 @@ export class PdfService {
    */
   public async generatePDF(
     permit: Permit,
-    templateVersion: string = 'latest',
+    templateVersion: string = TemplateVersion.LATEST,
   ): Promise<string> {
-
     // Call ORBC Template table to get the DMS Reference of the associated template/permit type
     const templateRef = await this.getTemplateRef(
       permit.permitType,
       templateVersion,
     );
 
-    // Call DMS to get the template 
+    // Call DMS to get the template
     const template = await this.getTemplate(templateRef);
 
     // Call CDOGS to generate the pdf

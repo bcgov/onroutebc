@@ -13,7 +13,10 @@ import { PdfModule } from '../pdf/pdf.module';
 import { PermitType } from './entities/permit-type.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Permit, PermitData, PermitType]), PdfModule],
+  imports: [
+    TypeOrmModule.forFeature([Permit, PermitData, PermitType]),
+    PdfModule,
+  ],
   controllers: [PermitController, ApplicationController],
   providers: [
     PermitService,
