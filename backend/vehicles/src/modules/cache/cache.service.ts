@@ -11,9 +11,9 @@ import { FullNames } from './interface/fullNames.interface';
 import { PermitData } from '../pdf/interface/permitData.interface';
 import { Country } from '../common/entities/country.entity';
 import { Province } from '../common/entities/province.entity';
-import { formatCountry, formatProvince } from './helpers/formatCountryProvince';
-import { formatPermitType } from './helpers/formatPermitType';
-import { formatVehicleTypes } from './helpers/formatVehicleTypes';
+import { formatCountry, formatProvince } from './helpers/formatCountryProvince.helper';
+import { formatPermitType } from './helpers/formatPermitType.helper';
+import { formatVehicleTypes } from './helpers/formatVehicleTypes.helper';
 
 @Injectable()
 export class CacheService {

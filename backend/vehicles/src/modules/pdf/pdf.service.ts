@@ -13,7 +13,7 @@ import {
   TEMPLATE_FILE_TYPE,
   TEMPLATE_NAME,
 } from './constants/template.constant';
-import { formatTemplateData } from './helpers/formatTemplateData';
+import { formatTemplateData } from './helpers/formatTemplateData.helper';
 import { TemplateVersion } from 'src/common/enum/pdf-template-version.enum';
 import { FullNames } from '../cache/interface/fullNames.interface';
 import { CacheService } from '../cache/cache.service';
