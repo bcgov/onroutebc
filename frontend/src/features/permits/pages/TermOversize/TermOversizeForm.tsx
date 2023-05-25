@@ -38,7 +38,7 @@ import { SnackBarContext } from "../../../../App";
 import { getUserGuidFromSession } from "../../../../common/apiManager/httpRequestHandler";
 import { LeaveApplicationDialog } from "../../components/dialog/LeaveApplicationDialog";
 import { areApplicationDataEqual } from "../../helpers/equality";
-import { PartialDayJsObject, formatFromObject, now } from "../../../../common/helpers/formatDate";
+
 
 /**
  * The first step in creating and submitting a TROS Application.
