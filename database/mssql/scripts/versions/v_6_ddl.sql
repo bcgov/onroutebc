@@ -50,7 +50,7 @@ GO
 DECLARE @VersionDescription VARCHAR(255)
 SET @VersionDescription = 'Initial creation of entities for Document Management System (DMS)'
 
-INSERT [dms].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [DDL_FILE_SHA1], [RELEASE_DATE]) VALUES (6, @VersionDescription, '$(FILE_HASH)', getdate())
+INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [DDL_FILE_SHA1], [RELEASE_DATE]) VALUES (6, @VersionDescription, '$(FILE_HASH)', getdate())
 
 
 COMMIT
