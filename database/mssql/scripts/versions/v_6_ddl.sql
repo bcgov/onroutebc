@@ -36,6 +36,16 @@ GO
 ALTER TABLE [dms].[ORBC_DOCUMENT] ADD  CONSTRAINT [DF_ORBC_DOCUMENTS_DB_LAST_UPDATE_TIMESTAMP]  DEFAULT (getdate()) FOR [DB_LAST_UPDATE_TIMESTAMP]
 GO
 
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Surrogate primary key for the document metadata record' , @level0type=N'SCHEMA',@level0name=N'dms', @level1type=N'TABLE',@level1name=N'ORBC_DOCUMENT', @level2type=N'COLUMN',@level2name=N'ID'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The uuid representing the object in S3' , @level0type=N'SCHEMA',@level0name=N'dms', @level1type=N'TABLE',@level1name=N'ORBC_DOCUMENT', @level2type=N'COLUMN',@level2name=N'S3_OBJECT_ID'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The version identifier created in S3' , @level0type=N'SCHEMA',@level0name=N'dms', @level1type=N'TABLE',@level1name=N'ORBC_DOCUMENT', @level2type=N'COLUMN',@level2name=N'S3_VERSION_ID'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The URL to the uploaded resource' , @level0type=N'SCHEMA',@level0name=N'dms', @level1type=N'TABLE',@level1name=N'ORBC_DOCUMENT', @level2type=N'COLUMN',@level2name=N'S3_LOCATION'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The object MIME Type' , @level0type=N'SCHEMA',@level0name=N'dms', @level1type=N'TABLE',@level1name=N'ORBC_DOCUMENT', @level2type=N'COLUMN',@level2name=N'OBJECT_MIME_TYPE'
+GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user or proxy account that created the record.' , @level0type=N'SCHEMA',@level0name=N'dms', @level1type=N'TABLE',@level1name=N'ORBC_DOCUMENT', @level2type=N'COLUMN',@level2name=N'DB_CREATE_USERID'
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time the record was created.' , @level0type=N'SCHEMA',@level0name=N'dms', @level1type=N'TABLE',@level1name=N'ORBC_DOCUMENT', @level2type=N'COLUMN',@level2name=N'DB_CREATE_TIMESTAMP'
