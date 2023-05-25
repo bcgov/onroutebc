@@ -14,6 +14,7 @@ import {
 import { TROS_PERMIT_DURATIONS } from "../../../constants/termOversizeConstants";
 import dayjs from "dayjs";
 import { useEffect } from "react";
+import { requiredMessage } from "../../../../../common/helpers/validationMessages";
 
 export const PermitDetails = ({ feature }: { feature: string }) => {
   const { getValues, watch, register, setValue } = useFormContext();
@@ -45,7 +46,7 @@ export const PermitDetails = ({ feature }: { feature: string }) => {
             options={{
               name: "permitData.startDate",
               rules: {
-                required: { value: true, message: "Start Date is required." },
+                required: { value: true, message: requiredMessage() },
               },
               label: "Start Date",
               width: PHONE_WIDTH,
@@ -57,7 +58,7 @@ export const PermitDetails = ({ feature }: { feature: string }) => {
             options={{
               name: "permitData.permitDuration",
               rules: {
-                required: { value: true, message: "Duration is required." },
+                required: { value: true, message: requiredMessage() },
               },
               label: "Permit Duration",
               width: PHONE_WIDTH,

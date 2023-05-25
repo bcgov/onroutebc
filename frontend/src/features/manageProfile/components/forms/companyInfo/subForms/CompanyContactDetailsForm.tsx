@@ -2,6 +2,12 @@ import isEmail from "validator/lib/isEmail";
 
 import "./CompanyContactDetailsForm.scss";
 import { CustomFormComponent } from "../../../../../../common/components/form/CustomFormComponents";
+import { 
+  invalidEmail, 
+  invalidExtensionLength, 
+  invalidPhoneLength, 
+  requiredMessage 
+} from "../../../../../../common/helpers/validationMessages";
 
 export const CompanyContactDetailsForm = ({ feature }: { feature: string }) => (
   <div className="company-contact-details-form">
@@ -11,9 +17,9 @@ export const CompanyContactDetailsForm = ({ feature }: { feature: string }) => (
       options={{
         name: "email",
         rules: { 
-          required: { value: true, message: "Email is required" },
+          required: { value: true, message: requiredMessage() },
           validate: {
-            validateEmail: (email: string) => isEmail(email) || "Incorrect email format",
+            validateEmail: (email: string) => isEmail(email) || invalidEmail(),
           },
         },
         label: "Email",
@@ -27,11 +33,11 @@ export const CompanyContactDetailsForm = ({ feature }: { feature: string }) => (
         options={{
           name: "phone",
           rules: {
-            required: { value: true, message: "Phone Number is required" },
+            required: { value: true, message: requiredMessage() },
             validate: {
               validatePhone: (phone: string) => 
                 (phone.length >= 10 && phone.length <= 20) 
-                  || "Phone number should be between 10-20 characters long",
+                  || invalidPhoneLength(10, 20),
             },
           },
           label: "Phone Number",
@@ -50,7 +56,7 @@ export const CompanyContactDetailsForm = ({ feature }: { feature: string }) => (
               validateExt: (ext?: string) => 
                 (ext == null || ext === "")
                   || (ext != null && ext !== "" && ext.length <= 5) 
-                  || "Extension length should be less than 5 characters",
+                  || invalidExtensionLength(5),
             },
           },
           label: "Ext",
@@ -69,7 +75,7 @@ export const CompanyContactDetailsForm = ({ feature }: { feature: string }) => (
             validateFax: (fax?: string) =>
               (fax == null || fax === "")
                 || (fax != null && fax !== "" && fax.length >= 10 && fax.length <= 20)
-                || "Fax should be between 10-20 characters long",
+                || invalidPhoneLength(10, 20),
           },
         },
         label: "Fax",

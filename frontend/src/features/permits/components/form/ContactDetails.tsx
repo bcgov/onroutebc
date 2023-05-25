@@ -13,6 +13,7 @@ import { useCompanyInfoQuery } from "../../../manageProfile/apiManager/hooks";
 import { useFormContext } from "react-hook-form";
 import { useEffect } from "react";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
+import { requiredMessage } from "../../../../common/helpers/validationMessages";
 
 export const ContactDetails = ({ feature }: { feature: string }) => {
   const companyInfoQuery = useCompanyInfoQuery();
@@ -63,7 +64,7 @@ export const ContactDetails = ({ feature }: { feature: string }) => {
           options={{
             name: "permitData.contactDetails.firstName",
             rules: {
-              required: { value: true, message: "First Name is required" },
+              required: { value: true, message: requiredMessage() },
             },
             label: "First Name",
           }}
@@ -74,7 +75,7 @@ export const ContactDetails = ({ feature }: { feature: string }) => {
           options={{
             name: "permitData.contactDetails.lastName",
             rules: {
-              required: { value: true, message: "Last Name is required" },
+              required: { value: true, message: requiredMessage() },
             },
             label: "Last Name",
           }}
@@ -87,7 +88,7 @@ export const ContactDetails = ({ feature }: { feature: string }) => {
             options={{
               name: "permitData.contactDetails.phone1",
               rules: {
-                required: { value: true, message: "Phone Number is required" },
+                required: { value: true, message: requiredMessage() },
               },
               label: "Phone Number",
               width: PHONE_WIDTH,
@@ -138,7 +139,7 @@ export const ContactDetails = ({ feature }: { feature: string }) => {
           options={{
             name: "permitData.contactDetails.email",
             rules: {
-              required: { value: true, message: "Email is required" },
+              required: { value: true, message: requiredMessage() },
             },
             label: "Email",
           }}
