@@ -212,9 +212,10 @@ export class ApplicationService {
         permit.permitStatus === ApplicationStatus.AUTO_APPROVED
       ) {
         // DMS Reference ID for the generated PDF of the Permit
-        const pdf = await this.pdfService.generatePDF(permit);
+        const dmsDocumentId = await this.pdfService.generatePDF(permit);
         // TODO: handle the DMS reference
-        console.log('Completed pdf generation', pdf);
+        console.log('Completed pdf generation');
+        console.log('DMS Document Id: ', dmsDocumentId);
       }
     });
 

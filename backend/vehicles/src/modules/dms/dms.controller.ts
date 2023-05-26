@@ -68,7 +68,7 @@ export class DmsController {
         ],
       }),
     )
-    file: Express.Multer.File,
+    file: ArrayBuffer,
   ): Promise<ReadFileDto> {
     return await this.dmsService.create(file);
   }

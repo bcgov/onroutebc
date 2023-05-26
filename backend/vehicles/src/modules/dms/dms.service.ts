@@ -16,7 +16,7 @@ export class DmsService {
     @InjectMapper() private readonly classMapper: Mapper,
     private readonly comsService: ComsService,
   ) {}
-  async create(file: Express.Multer.File): Promise<ReadFileDto> {
+  async create(file: ArrayBuffer): Promise<ReadFileDto> {
     const readCOMSDtoList = await this.comsService.createObject(file);
 
     if (!readCOMSDtoList?.length) {

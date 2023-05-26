@@ -31,8 +31,8 @@ export class PdfService {
 
   /**
    * Find one template from the ORBC database
-   * @param permitType
-   * @param version
+   * @param permitType permit type, which equals the template name in the ORBC DB
+   * @param version template version
    * @returns
    */
   private async findOne(
@@ -46,6 +46,7 @@ export class PdfService {
 
   /**
    * Queries the ORBC Template table using the permit type to get the reference to the associated template object in DMS
+   * NOTE: permit type = template name
    * @param {string} permitType permit type. Example: 'TROS'
    * @param {string} templateVersion template version. Defaults to latest version
    * @returns {string} a DMS reference ID used to retrieve the template in DMS
@@ -65,8 +66,8 @@ export class PdfService {
    */
   private async getTemplate(templateRef: string): Promise<string> {
 
+    // The DMS service returns an HTTP 201 containing a direct, temporary pre-signed S3 object URL location
     const dmsDocument = await this.dmsService.findOne(templateRef);
-
     const url = dmsDocument.preSignedS3Url;
 
     // From the url provided by DMS, get the array buffer of the template
@@ -76,14 +77,14 @@ export class PdfService {
       }),
     )
 
-    // Encode array buffer to base64
+    // Decode array buffer to base64
     const template = templateArrayBuffer.data.toString(ENCODING_TYPE);
 
     return template;
   }
 
   /**
-   * Converts code name to full name by calling the ORBC database.
+   * Converts code names to full names by calling the ORBC database.
    * Example: 'TROS' to 'Oversize: Term'
    * @param permit
    * @returns
@@ -93,7 +94,7 @@ export class PdfService {
   }
 
   /**
-   * Generate pdf document from inline Template
+   * Generate pdf document using CDOGS and an inline template
    * @param {Permit} permit permit data
    * @param {Template} template template as a base64 string
    * @returns {ArrayBuffer} an Array Buffer of the pdf
@@ -123,9 +124,9 @@ export class PdfService {
         },
       ),
     );
-
     const keycloak = await oidcResponse.data;
 
+    // Calls the CDOGS service, which converts the the template document into a pdf
     const cdogsResponse = await lastValueFrom(
       this.httpService.post(
         cdogs_url,
@@ -159,21 +160,13 @@ export class PdfService {
   }
 
   /**
-   * Saves the pdf object in DMS
-   * @param {ArrayBuffer} pdf the pdf object
+   * Saves the pdf in DMS using the DMS service
+   * @param {ArrayBuffer} pdf 
    * @returns a DMS reference ID
    */
   private async savePDF(pdf: ArrayBuffer): Promise<string> {
-    // TODO: Should we save the permit pdf including the attachments?
-    // TODO: S3 versioning
-    // TODO: Temp - saves a pdf file - the CDOGS output.
-    fs.writeFileSync(
-      `${TEMPLATE_FILE_PATH}/${TEMPLATE_NAME}.pdf`,
-      Buffer.from(pdf),
-      'binary',
-    );
-
-    return '';
+    const readFileDto = await this.dmsService.create(pdf);
+    return readFileDto.documentId;
   }
 
   /**
@@ -205,8 +198,8 @@ export class PdfService {
     const pdf = await this.createPDF(permit, template);
 
     // Call DMS to store the pdf
-    const pdfRef = await this.savePDF(pdf);
+    const dmsRef = await this.savePDF(pdf);
 
-    return pdfRef;
+    return dmsRef;
   }
 }

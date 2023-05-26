@@ -9,10 +9,10 @@ import { ReadFileDto } from './dto/response/read-file.dto';
 export class ComsService {
   constructor(private readonly httpService: HttpService) {}
 
-  async createObject(file: Express.Multer.File): Promise<ReadCOMSDto[]> {
-    const { buffer, originalname } = file;
+  async createObject(file: ArrayBuffer): Promise<ReadCOMSDto[]> {
+
     const fd = new FormData();
-    fd.append('file', new Blob([buffer]), originalname);
+    fd.append('file', new Blob([file]));
 
     const reqConfig: AxiosRequestConfig = {
       headers: {
