@@ -9,6 +9,8 @@
 
 echo "Executing configure-db.sh ..."
 
+export PATH="/opt/mssql-tools/bin:$PATH"
+
 DBSTATUS=1
 ERRCODE=1
 i=0
