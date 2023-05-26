@@ -30,6 +30,18 @@ parameters:
   - name: AUTH0_IGNORE_EXP
     description: The boolean flag to ignore the JWT expiration
     required: true    
+  - name: BASICAUTH_USERNAME
+    description: The basic auth username for COMS
+    required: true
+  - name: BASICAUTH_PASSWORD
+    description: The basic auth password for COMS
+    required: true
+  - name: COMS_URL
+    description: The URL for the deployed instance of COMS
+    required: true
+  - name: COMS_PRESIGNED_URL_EXPIRY
+    description: The exipry value (seconds) of the presigned URL
+    required: true
   - name: CDOGS_CLIENT_ID
     description: The keycloak client ID for common hosted CDOGS
     required: true
