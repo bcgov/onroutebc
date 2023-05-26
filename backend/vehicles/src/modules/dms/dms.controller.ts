@@ -18,6 +18,8 @@ import {
   ApiMethodNotAllowedResponse,
   ApiInternalServerErrorResponse,
   ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiOkResponse,
 } from '@nestjs/swagger';
 import { ExceptionDto } from '../../common/exception/exception.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -46,6 +48,10 @@ import { ReadFileDto } from './dto/response/read-file.dto';
 export class DmsController {
   constructor(private readonly dmsService: DmsService) {}
 
+  @ApiCreatedResponse({
+    description: 'The DMS file Resource',
+    type: ReadFileDto,
+  })
   @ApiConsumes('multipart/form-data')
   @Post('upload')
   @UseInterceptors(FileInterceptor('file'))
@@ -67,6 +73,10 @@ export class DmsController {
     return await this.dmsService.create(file);
   }
 
+  @ApiOkResponse({
+    description: 'The DMS file Resource',
+    type: ReadFileDto,
+  })
   @Get(':documentId')
   async downloadFile(
     @Param('documentId') documentId: string,

@@ -46,20 +46,19 @@ export class ComsService {
 
   async getObjectUrl(readFile: ReadFileDto): Promise<string> {
     const reqConfig: AxiosRequestConfig = {
-      headers: {
-        Accept: 'application/json',
-      },
       auth: {
         username: process.env.BASICAUTH_USERNAME,
         password: process.env.BASICAUTH_PASSWORD,
       },
     };
 
-    const url =
-      process.env.COMS_URL +
-      `object/${readFile.s3ObjectId}?download=url&expiresIn=${process.env.COMS_PRESIGNED_URL_EXPIRY}}`;
+    const params = {
+      download: 'url',
+      expiresIn: process.env.COMS_PRESIGNED_URL_EXPIRY,
+    };
+    const url = `${process.env.COMS_URL}object/${readFile.s3ObjectId}`;
     const responseData: string = await lastValueFrom(
-      this.httpService.get(url, reqConfig).pipe(
+      this.httpService.get(url, { params, ...reqConfig }).pipe(
         map((response) => {
           return response;
         }),
