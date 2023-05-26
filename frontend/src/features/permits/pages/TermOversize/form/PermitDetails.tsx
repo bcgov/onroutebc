@@ -21,6 +21,7 @@ export const PermitDetails = ({ feature, values}: { feature: string, values: App
   const { watch, register, setValue } = useFormContext();
   const {applicationNumber} = useParams();
   const startDate = (applicationNumber !== undefined)? values?.permitData?.startDate: watch("permitData.startDate");
+  const startDateDayjs = dayjs(startDate);
   // the permit expiry date is the permit duration minus 1 plus the <start date>
   const duration = (values?.permitData?.permitDuration !== undefined)? values?.permitData?.permitDuration - 1: 30;
   const expiryDate = dayjs(startDate).add(duration, "day");
@@ -28,8 +29,8 @@ export const PermitDetails = ({ feature, values}: { feature: string, values: App
   register("permitData.expiryDate");
   useEffect(() => {
     if(applicationNumber !== undefined)
-    {
-      setValue("permitData.startDate", dayjs(values?.permitData?.startDate));
+    {  
+      setValue("permitData.startDate", dayjs(values?.permitData?.startDate)); 
       setValue("permitData.permitDuration", values?.permitData.permitDuration);
     }
   }, [startDate, duration]);
@@ -38,7 +39,8 @@ export const PermitDetails = ({ feature, values}: { feature: string, values: App
     if(applicationNumber !== undefined){
       setValue("permitData.expiryDate", formattedExpiryDate);
     }
-    setFormattedExpiryDate(watch("permitData.startDate").add(watch("permitData.permitDuration"),"days").format("LL"));
+    const tempStartDate = typeof watch("permitData.startDate") === "string"? dayjs(watch("permitData.startDate")): watch("permitData.startDate"); 
+    setFormattedExpiryDate(tempStartDate.add(watch("permitData.permitDuration"),"days").format("LL"));
   }, [values?.permitData?.startDate, values?.permitData.permitDuration, watch("permitData.startDate"), watch("permitData.permitDuration"), formattedExpiryDate]);
 
   useEffect(() => {
