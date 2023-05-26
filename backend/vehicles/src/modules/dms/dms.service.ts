@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { Dms } from './entities/dms.entity';
 import { Mapper } from '@automapper/core';
 import { InjectMapper } from '@automapper/nestjs';
@@ -17,9 +17,17 @@ export class DmsService {
     private readonly comsService: ComsService,
   ) {}
   async create(file: Express.Multer.File): Promise<ReadFileDto> {
-    const readCOMSDto = await this.comsService.createObject(file);
+    const readCOMSDtoList = await this.comsService.createObject(file);
 
-    const dmsRecord = this.classMapper.map(readCOMSDto, ReadCOMSDto, Dms);
+    if (!readCOMSDtoList?.length) {
+      throw new InternalServerErrorException();
+    }
+    const dmsRecord = this.classMapper.map(
+      readCOMSDtoList[0],
+      ReadCOMSDto,
+      Dms,
+    );
+    //dmsRecord.objectMimeType = file.mimetype; //TODO confirm mime type
 
     return this.classMapper.mapAsync(
       await this.dmsRepository.save(dmsRecord),
@@ -30,7 +38,7 @@ export class DmsService {
 
   async findOne(documentId: string): Promise<ReadFileDto> {
     const readFile = await this.classMapper.mapAsync(
-      await this.dmsRepository.findOneBy({ documentId }),
+      await this.dmsRepository.findOne({ where: { documentId: documentId } }),
       Dms,
       ReadFileDto,
     );

@@ -5,10 +5,11 @@ import { Dms } from './entities/dms.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { HttpModule } from '@nestjs/axios';
 import { ComsService } from './coms.service';
+import { DmsProfile } from './profiles/dms.profile';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Dms]), HttpModule],
   controllers: [DmsController],
-  providers: [DmsService, ComsService],
+  providers: [DmsService, ComsService, DmsProfile],
 })
 export class DmsModule {}
