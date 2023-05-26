@@ -9,7 +9,7 @@ import {
 import { Application } from "../../../types/application";
 import { ReviewConditionsTable } from "./ReviewConditionsTable";
 import { getDefaultRequiredVal } from "../../../../../common/helpers/util";
-import { formatDate } from "../../../../../common/helpers/formatDate";
+import dayjs from "dayjs";
 
 export const ReviewPermitDetails = ({
   values,
@@ -28,16 +28,7 @@ export const ReviewPermitDetails = ({
           <Typography sx={{ fontWeight: "bold" }}>Start Date:</Typography>
           {getDefaultRequiredVal(
             "",
-            (values?.permitData?.startDate?.$u !== null)? values?.permitData?.startDate?.format("LL"): formatDate(
-              new Intl.DateTimeFormat("en-US", {
-                month: "short",
-                day: "numeric",
-                year: "numeric",
-                hour: "numeric",
-                minute: "numeric",
-                timeZoneName: "short",
-              }), values?.permitData?.startDate
-            )
+            (typeof values?.permitData?.startDate !== "string")? values?.permitData?.startDate?.format("LL"): dayjs(values?.permitData?.startDate).format("LL")
             )}
           <Typography sx={{ fontWeight: "bold" }}>Permit Duration:</Typography>
           <Typography>{values?.permitData.permitDuration} Days</Typography>
@@ -45,7 +36,8 @@ export const ReviewPermitDetails = ({
         <PermitExpiryDateBanner
           expiryDate={getDefaultRequiredVal(
             "",
-            values?.permitData?.expiryDate
+            (typeof values?.permitData?.expiryDate !== "string")? values?.permitData?.expiryDate?.format("LL"): dayjs(values?.permitData?.expiryDate).format("LL")
+      
           )}
         />
         <Box>
