@@ -24,7 +24,7 @@ export class Template {
    * Document Management System (DMS) reference ID
    */
   @Column({ length: 50, name: 'DMS_REF_ID', nullable: false })
-  comsRef: string;
+  dmsRef: string;
 
   /**
    * Variation of the template, if there are multiple templates associated with a single permit type

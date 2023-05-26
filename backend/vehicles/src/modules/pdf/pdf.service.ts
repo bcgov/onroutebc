@@ -6,7 +6,6 @@ import { Permit } from 'src/modules/permit/entities/permit.entity';
 import { Repository } from 'typeorm';
 import { Template } from './entities/template.entity';
 import * as fs from 'fs';
-import { ITemplate } from './interface/template.interface';
 import {
   CDOGS_RESPONSE_TYPE,
   ENCODING_TYPE,
@@ -54,7 +53,7 @@ export class PdfService {
     templateVersion: string = TemplateVersion.LATEST,
   ): Promise<string> {
     const template = await this.findOne(permitType, templateVersion);
-    return template.comsRef;
+    return template.dmsRef;
   }
 
   /**
@@ -62,13 +61,23 @@ export class PdfService {
    * @param {string} templateRef key used to look up template object in DMS. @see getTemplateRef
    * @returns {string} a DMS reference ID used to retrieve the template in DMS
    */
-  private async getTemplate(templateRef: string): Promise<ITemplate> {
-    const todo: ITemplate = {
-      content: 'TODO',
-      encodingType: ENCODING_TYPE,
-      fileType: TEMPLATE_FILE_TYPE,
-    };
-    return todo;
+  private async getTemplate(templateRef: string): Promise<string> {
+
+    // TODO: get template url from DMS
+    const url =
+      'https://moti-int.objectstore.gov.bc.ca/tran_api_orbc_docs_dev/tran_api_orbc_docs_dev%40moti-int.objectstore.gov.bc.ca/7a52ba18-eaa8-4e94-bcff-849a491da67e?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=tran_api_orbc_docs_dev%2F20230526%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20230526T193233Z&X-Amz-Expires=30000&X-Amz-Signature=eb2000bc1040229f7ddfafd9c2b7e0d82d2a58616d30cbb0031e1bfffae4020c&X-Amz-SignedHeaders=host&x-id=GetObject';
+
+    // From the url provided by DMS, get the array buffer of the template
+    const templateArrayBuffer = await lastValueFrom(
+      this.httpService.get(url, {
+        responseType: CDOGS_RESPONSE_TYPE,
+      }),
+    )
+
+    // Encode array buffer to base64
+    const template = templateArrayBuffer.data.toString(ENCODING_TYPE);
+
+    return template;
   }
 
   /**
@@ -84,12 +93,12 @@ export class PdfService {
   /**
    * Generate pdf document from inline Template
    * @param {Permit} permit permit data
-   * @param {Template} template template version. Defaults to latest version
+   * @param {Template} template template as a base64 string
    * @returns {ArrayBuffer} an Array Buffer of the pdf
    */
   private async createPDF(
     permit: Permit,
-    template: ITemplate,
+    template: string,
   ): Promise<ArrayBuffer> {
     const client_id = process.env.CDOGS_CLIENT_ID;
     const client_secret = process.env.CDOGS_CLIENT_SECRET;
@@ -101,7 +110,6 @@ export class PdfService {
     const templateData = await formatTemplateData(permit, fullNames);
 
     // We need the oidc api to generate a token for us
-    // Use 'lastValueFrom' to make the nestjs HttpService use a promise instead of on RxJS Observable
     const oidcResponse = await lastValueFrom(
       this.httpService.post(
         token_url,
@@ -116,19 +124,6 @@ export class PdfService {
 
     const keycloak = await oidcResponse.data;
 
-    // TODO: get this from DMS and use the passed in template variable
-    // Temp helper function
-    const encode = (file: string) => {
-      const contents = fs.readFileSync(file);
-      return contents.toString(ENCODING_TYPE);
-    };
-
-    // TODO: get this from DMS
-    const templateContent = encode(
-      `${TEMPLATE_FILE_PATH}/${TEMPLATE_NAME}.${TEMPLATE_FILE_TYPE}`,
-    );
-
-    // TODO: which format does DMS/DMS expect? Currently set to array buffer
     const cdogsResponse = await lastValueFrom(
       this.httpService.post(
         cdogs_url,
@@ -137,7 +132,7 @@ export class PdfService {
           template: {
             encodingType: ENCODING_TYPE,
             fileType: TEMPLATE_FILE_TYPE,
-            content: templateContent,
+            content: template,
           },
           options: {
             cacheReport: false,
@@ -151,12 +146,12 @@ export class PdfService {
             Authorization: `Bearer ${keycloak.access_token}`,
             'Content-Type': 'application/json',
           },
-          responseType: CDOGS_RESPONSE_TYPE
+          responseType: CDOGS_RESPONSE_TYPE,
         },
       ),
     );
 
-    const pdf = await cdogsResponse.data;
+    const pdf : ArrayBuffer = await cdogsResponse.data;
 
     return pdf;
   }
