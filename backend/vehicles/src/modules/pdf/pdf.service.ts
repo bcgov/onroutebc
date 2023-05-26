@@ -5,11 +5,9 @@ import { lastValueFrom } from 'rxjs';
 import { Permit } from 'src/modules/permit/entities/permit.entity';
 import { Repository } from 'typeorm';
 import { Template } from './entities/template.entity';
-import * as fs from 'fs';
 import {
   CDOGS_RESPONSE_TYPE,
   ENCODING_TYPE,
-  TEMPLATE_FILE_PATH,
   TEMPLATE_FILE_TYPE,
   TEMPLATE_NAME,
 } from './constants/template.constant';
