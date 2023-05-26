@@ -7,6 +7,7 @@ import { PowerUnitTypesModule } from '../vehicles/power-unit-types/power-unit-ty
 import { TrailerTypesModule } from '../vehicles/trailer-types/trailer-types.module';
 import { CommonModule } from '../common/common.module';
 import { CacheModule } from '../cache/cache.module';
+import { DmsModule } from '../dms/dms.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { CacheModule } from '../cache/cache.module';
     PowerUnitTypesModule,
     TrailerTypesModule,
     CacheModule,
+    DmsModule
   ],
   providers: [PdfService],
   exports: [PdfService],

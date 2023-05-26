@@ -17,6 +17,7 @@ import { formatTemplateData } from './helpers/formatTemplateData.helper';
 import { TemplateVersion } from 'src/common/enum/pdf-template-version.enum';
 import { FullNames } from '../cache/interface/fullNames.interface';
 import { CacheService } from '../cache/cache.service';
+import { DmsService } from '../dms/dms.service';
 
 @Injectable()
 export class PdfService {
@@ -25,6 +26,7 @@ export class PdfService {
     private templateRepository: Repository<Template>,
     private httpService: HttpService,
     private readonly cacheService: CacheService,
+    private readonly dmsService: DmsService
   ) {}
 
   /**
@@ -63,9 +65,9 @@ export class PdfService {
    */
   private async getTemplate(templateRef: string): Promise<string> {
 
-    // TODO: get template url from DMS
-    const url =
-      'https://moti-int.objectstore.gov.bc.ca/tran_api_orbc_docs_dev/tran_api_orbc_docs_dev%40moti-int.objectstore.gov.bc.ca/7a52ba18-eaa8-4e94-bcff-849a491da67e?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=tran_api_orbc_docs_dev%2F20230526%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20230526T193233Z&X-Amz-Expires=30000&X-Amz-Signature=eb2000bc1040229f7ddfafd9c2b7e0d82d2a58616d30cbb0031e1bfffae4020c&X-Amz-SignedHeaders=host&x-id=GetObject';
+    const dmsDocument = await this.dmsService.findOne(templateRef);
+
+    const url = dmsDocument.preSignedS3Url;
 
     // From the url provided by DMS, get the array buffer of the template
     const templateArrayBuffer = await lastValueFrom(
