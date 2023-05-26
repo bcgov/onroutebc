@@ -7,8 +7,8 @@ import { ReadFileDto } from './dto/response/read-file.dto';
 
 const COMS_USER_NAME: string = process.env.BASICAUTH_USERNAME;
 const COMS_PASSWORD: string = process.env.BASICAUTH_PASSWORD;
-const COMS_URL =
-  'https://onroutebc-334-common-object-management-service.apps.silver.devops.gov.bc.ca/api/v1/';
+const COMS_URL: string = process.env.COMS_URL;
+const COMS_PRESIGNED_URL_EXPIRY: string = process.env.COMS_PRESIGNED_URL_EXPIRY;
 
 @Injectable()
 export class ComsService {
@@ -61,7 +61,8 @@ export class ComsService {
     };
 
     const url =
-      COMS_URL + `object/${readFile.s3ObjectId}?download=url&expiresIn=300`;
+      COMS_URL +
+      `object/${readFile.s3ObjectId}?download=url&expiresIn=${COMS_PRESIGNED_URL_EXPIRY}}`;
     const responseData: string = await lastValueFrom(
       this.httpService.get(url, reqConfig).pipe(
         map((response) => {
