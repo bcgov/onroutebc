@@ -9,7 +9,6 @@ import {
 import { Application } from "../../../types/application";
 import { ReviewConditionsTable } from "./ReviewConditionsTable";
 import { getDefaultRequiredVal } from "../../../../../common/helpers/util";
-import { formatDate } from "../../../../../common/helpers/formatDate";
 import dayjs from "dayjs";
 
 export const ReviewPermitDetails = ({

@@ -21,7 +21,6 @@ export const PermitDetails = ({ feature, values}: { feature: string, values: App
   const { watch, register, setValue } = useFormContext();
   const {applicationNumber} = useParams();
   const startDate = (applicationNumber !== undefined)? values?.permitData?.startDate: watch("permitData.startDate");
-  const startDateDayjs = dayjs(startDate);
   // the permit expiry date is the permit duration minus 1 plus the <start date>
   const duration = (values?.permitData?.permitDuration !== undefined)? values?.permitData?.permitDuration - 1: 30;
   const expiryDate = dayjs(startDate).add(duration, "day");
