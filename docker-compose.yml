@@ -55,6 +55,10 @@ services:
       AUTH0_ISSUER_URL: ${AUTH0_ISSUER_URL}
       AUTH0_AUDIENCE: ${AUTH0_AUDIENCE}
       AUTH0_IGNORE_EXP: ${AUTH0_IGNORE_EXP}
+      BASICAUTH_USERNAME: ${BASICAUTH_USERNAME}
+      BASICAUTH_PASSWORD: ${BASICAUTH_PASSWORD}
+      COMS_URL: ${COMS_URL}
+      COMS_PRESIGNED_URL_EXPIRY: ${COMS_PRESIGNED_URL_EXPIRY}
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5000/"]
       interval: 1m30s
