@@ -36,6 +36,23 @@ export class Permit extends Base {
   @AutoMap()
   @ApiProperty({
     example: '1',
+    description: 'Represents the revision number for a permit.',
+  })
+  @Column({ type: 'integer', name: 'REVISION', nullable: true })
+  revision: number;
+
+  @AutoMap()
+  @ApiProperty({
+    example: '1',
+    description:
+      'Foreign key to the ORBC_CPermit table, represents the old permit.',
+  })
+  @Column({ type: 'integer', name: 'PREVIOUS_REV_ID', nullable: true })
+  previousRevId: number;
+
+  @AutoMap()
+  @ApiProperty({
+    example: '1',
     description: 'GUID of the user requesting the permit.',
   })
   @Column({ length: 32, name: 'OWNER_USER_GUID', nullable: true })

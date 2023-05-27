@@ -9,6 +9,7 @@ import { Permit } from './entities/permit.entity';
 import { ApplicationController } from './application.controller';
 import { ApplicationService } from './application.service';
 import { ApplicationProfile } from './profile/application.profile';
+import { Datasource } from 'src/common/helper/database.helper';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Permit, PermitData])],
@@ -18,6 +19,7 @@ import { ApplicationProfile } from './profile/application.profile';
     ApplicationService,
     PermitProfile,
     ApplicationProfile,
+    Datasource,
   ],
 })
 export class PermitModule {}

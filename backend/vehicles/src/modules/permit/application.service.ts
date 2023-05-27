@@ -3,12 +3,13 @@ import { InjectMapper } from '@automapper/nestjs';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ApplicationStatus } from 'src/common/enum/application-status.enum';
-import { DataSource, IsNull, Repository } from 'typeorm';
+import { IsNull, Repository } from 'typeorm';
 import { CreateApplicationDto } from './dto/request/create-application.dto';
 import { ReadApplicationDto } from './dto/response/read-application.dto';
 import { Permit } from './entities/permit.entity';
 import { UpdateApplicationDto } from './dto/request/update-application.dto';
 import { ResultDto } from './dto/response/result.dto';
+import { Datasource } from 'src/common/helper/database.helper';
 
 @Injectable()
 export class ApplicationService {
@@ -16,13 +17,36 @@ export class ApplicationService {
     @InjectMapper() private readonly classMapper: Mapper,
     @InjectRepository(Permit)
     private permitRepository: Repository<Permit>,
-    private datasource: DataSource,
+    private dataSource: Datasource,
   ) {}
 
   async create(
     createApplicationDto: CreateApplicationDto,
   ): Promise<ReadApplicationDto> {
     createApplicationDto.permitStatus = ApplicationStatus.IN_PROGRESS;
+    createApplicationDto.previousRevId = createApplicationDto.permitId;
+
+    //Generate appliction number for the application to be created in database.
+    const applicationNumber = await this.dataSource.generateApplicationNumber(
+      createApplicationDto.permitNumber,
+      createApplicationDto.permitApplicationOrigin,
+      createApplicationDto.permitId,
+    );
+    createApplicationDto.applicationNumber = applicationNumber;
+    console.log(
+      'Application Number is',
+      createApplicationDto.applicationNumber,
+    );
+
+    //If permit id exists assign it to null to create new application.
+    if (createApplicationDto.permitId) {
+      createApplicationDto.revision = await this.dataSource.getRevision(
+        createApplicationDto.permitId,
+      );
+      createApplicationDto.revision = createApplicationDto.revision + 1;
+      createApplicationDto.permitId = null;
+    }
+
     const permitApplication = this.classMapper.map(
       createApplicationDto,
       CreateApplicationDto,
@@ -34,6 +58,7 @@ export class ApplicationService {
       createdDateTime: new Date(),
       updatedDateTime: new Date(),
     };
+    console.log('Permit application data', applicationData);
 
     const savedPermitEntity = await this.permitRepository.save(applicationData);
     const refreshedPermitEntity = await this.findOne(
