@@ -12,7 +12,5 @@
     "baseUrl": "./",
     "incremental": true,
     "skipLibCheck": true,
-    "resolveJsonModule": true,
-    "esModuleInterop": true
   }
 }
