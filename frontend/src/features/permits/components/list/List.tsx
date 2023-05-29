@@ -112,6 +112,10 @@ export const List = memo(
                 return {};
               });
               query.refetch();
+            })
+            .catch(error => {
+              // Handle the rejection
+              console.log(error);
             });
         }
       })
