@@ -90,16 +90,22 @@ jobs:
           exportEnv: "false"
           namespace: platform-services
           secrets: |
-            ${{secrets.VAULT_ENV}}/data/database-test   DATABASE_HOST     | VAULT_DATABASE_HOST;
-            ${{secrets.VAULT_ENV}}/data/database-test   DATABASE_USER     | VAULT_DATABASE_USER;
-            ${{secrets.VAULT_ENV}}/data/database-test   DATABASE_NAME     | VAULT_DATABASE_NAME;
-            ${{secrets.VAULT_ENV}}/data/database-test   DATABASE_PASSWORD | VAULT_DATABASE_PASSWORD;
-            ${{secrets.VAULT_ENV}}/data/database-test   DATABASE_PORT     | VAULT_DATABASE_PORT;
-            ${{secrets.VAULT_ENV}}/data/auth0-test      AUTH0_ISSUER_URL  | VAULT_AUTH0_ISSUER_URL;
-            ${{secrets.VAULT_ENV}}/data/auth0-test      AUTH0_AUDIENCE    | VAULT_AUTH0_AUDIENCE;
-            ${{secrets.VAULT_ENV}}/data/auth0-test      AUTH0_IGNORE_EXP  | VAULT_AUTH0_IGNORE_EXP
+            ${{secrets.VAULT_ENV}}/data/database-test   DATABASE_HOST             | VAULT_DATABASE_HOST;
+            ${{secrets.VAULT_ENV}}/data/database-test   DATABASE_USER             | VAULT_DATABASE_USER;
+            ${{secrets.VAULT_ENV}}/data/database-test   DATABASE_NAME             | VAULT_DATABASE_NAME;
+            ${{secrets.VAULT_ENV}}/data/database-test   DATABASE_PASSWORD         | VAULT_DATABASE_PASSWORD;
+            ${{secrets.VAULT_ENV}}/data/database-test   DATABASE_PORT             | VAULT_DATABASE_PORT;
+            ${{secrets.VAULT_ENV}}/data/auth0-test      AUTH0_ISSUER_URL          | VAULT_AUTH0_ISSUER_URL;
+            ${{secrets.VAULT_ENV}}/data/auth0-test      AUTH0_AUDIENCE            | VAULT_AUTH0_AUDIENCE;
+            ${{secrets.VAULT_ENV}}/data/auth0-test      AUTH0_IGNORE_EXP          | VAULT_AUTH0_IGNORE_EXP;
+            ${{secrets.VAULT_ENV}}/data/coms-test       BASICAUTH_PASSWORD        | VAULT_BASICAUTH_PASSWORD;
+            ${{secrets.VAULT_ENV}}/data/coms-test       BASICAUTH_USERNAME        | VAULT_BASICAUTH_USERNAME;
+            ${{secrets.VAULT_ENV}}/data/coms-test       COMS_URL                  | VAULT_COMS_URL;
+            ${{secrets.VAULT_ENV}}/data/coms-test       COMS_PRESIGNED_URL_EXPIRY | VAULT_PRESIGNED_URL_EXPIRY;
+            ${{secrets.VAULT_ENV}}/data/ches-test       CHES_CLIENT_ID            | VAULT_CHES_CLIENT_ID;
+            ${{secrets.VAULT_ENV}}/data/ches-test       CHES_CLIENT_SECRET        | VAULT_CHES_CLIENT_SECRET;
       
-      - uses: bcgov-nr/action-deployer-openshift@v1.0.4
+      - uses: bcgov-nr/action-deployer-openshift@v1.0.5
         with:
           file: ${{ matrix.file }}
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
@@ -117,6 +123,12 @@ jobs:
             -p AUTH0_ISSUER_URL=${{steps.secrets.outputs.VAULT_AUTH0_ISSUER_URL}}
             -p AUTH0_AUDIENCE=${{steps.secrets.outputs.VAULT_AUTH0_AUDIENCE}}
             -p AUTH0_IGNORE_EXP=${{steps.secrets.outputs.VAULT_AUTH0_IGNORE_EXP}}
+            -p BASICAUTH_PASSWORD=${{steps.secrets.outputs.VAULT_BASICAUTH_PASSWORD}}
+            -p BASICAUTH_USERNAME=${{steps.secrets.outputs.VAULT_BASICAUTH_USERNAME}}
+            -p COMS_URL=${{steps.secrets.outputs.VAULT_COMS_URL}}
+            -p COMS_PRESIGNED_URL_EXPIRY=${{steps.secrets.outputs.VAULT_PRESIGNED_URL_EXPIRY}}
+            -p CHES_CLIENT_ID=${{steps.secrets.outputs.VAULT_CHES_CLIENT_ID}}
+            -p CHES_CLIENT_SECRET=${{steps.secrets.outputs.VAULT_CHES_CLIENT_SECRET}}
             ${{ matrix.parameters }}
           penetration_test: false
   
@@ -242,7 +254,7 @@ jobs:
             ${{secrets.VAULT_ENV}}/data/auth0-staging       AUTH0_AUDIENCE      | VAULT_AUTH0_AUDIENCE;
             ${{secrets.VAULT_ENV}}/data/auth0-staging       AUTH0_IGNORE_EXP    | VAULT_AUTH0_IGNORE_EXP
       
-      - uses: bcgov-nr/action-deployer-openshift@v1.0.4
+      - uses: bcgov-nr/action-deployer-openshift@v1.0.5
         with:
           file: ${{ matrix.file }}
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
@@ -384,7 +396,7 @@ jobs:
             ${{secrets.VAULT_ENV}}/data/auth0-uat      AUTH0_AUDIENCE     | VAULT_AUTH0_AUDIENCE;
             ${{secrets.VAULT_ENV}}/data/auth0-uat      AUTH0_IGNORE_EXP   | VAULT_AUTH0_IGNORE_EXP
       
-      - uses: bcgov-nr/action-deployer-openshift@v1.0.4
+      - uses: bcgov-nr/action-deployer-openshift@v1.0.5
         with:
           file: ${{ matrix.file }}
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
@@ -621,7 +633,7 @@ jobs:
             ${{secrets.VAULT_ENV}}/data/auth0-prod     AUTH0_ISSUER_URL  | VAULT_AUTH0_ISSUER_URL;
             ${{secrets.VAULT_ENV}}/data/auth0-prod     AUTH0_AUDIENCE    | VAULT_AUTH0_AUDIENCE;
             ${{secrets.VAULT_ENV}}/data/auth0-prod     AUTH0_IGNORE_EXP  | VAULT_AUTH0_IGNORE_EXP
-      - uses: bcgov-nr/action-deployer-openshift@v1.0.4
+      - uses: bcgov-nr/action-deployer-openshift@v1.0.5
         with:
           file: ${{ matrix.file }}
           oc_namespace: ${{ secrets.OC_NAMESPACE }}

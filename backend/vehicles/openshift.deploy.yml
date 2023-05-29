@@ -59,6 +59,24 @@ parameters:
   - name: AUTH0_IGNORE_EXP
     description: The boolean flag to ignore the JWT expiration
     required: true
+  - name: BASICAUTH_USERNAME
+    description: The basic auth username for COMS
+    required: true
+  - name: BASICAUTH_PASSWORD
+    description: The basic auth password for COMS
+    required: true
+  - name: COMS_URL
+    description: The URL for the deployed instance of COMS
+    required: true
+  - name: COMS_PRESIGNED_URL_EXPIRY
+    description: The exipry value (seconds) of the presigned URL
+    required: true
+  - name: CHES_CLIENT_ID
+    description: Client Id to request the access token for connecting to CHES
+    required: true
+  - name: CHES_CLIENT_SECRET
+    description: Client Secret to request the access token for connecting to CHES
+    required: true
 objects:
   - apiVersion: v1
     kind: ConfigMap
@@ -84,6 +102,12 @@ objects:
     stringData:
       database-user: "${DATABASE_USER}"
       database-password: "${DATABASE_PASSWORD}"
+      coms-url: "${COMS_URL}"
+      coms-presigned-url-expiry: "${COMS_PRESIGNED_URL_EXPIRY}"
+      coms-basic-user: "${BASICAUTH_USERNAME}"
+      coms-basic-password: "${BASICAUTH_PASSWORD}"
+      ches-client-id: "${CHES_CLIENT_ID}"
+      ches-client-secret: "${CHES_CLIENT_SECRET}"
   - apiVersion: v1
     kind: ImageStream
     metadata:
@@ -177,12 +201,42 @@ objects:
                   valueFrom:
                     configMapKeyRef:
                       name: ${NAME}-${ZONE}-${COMPONENT}
-                      key: auth0-audience   
+                      key: auth0-audience
                 - name: AUTH0_IGNORE_EXP
                   valueFrom:
                     configMapKeyRef:
                       name: ${NAME}-${ZONE}-${COMPONENT}
-                      key: auth0-ignore-exp                                         
+                      key: auth0-ignore-exp
+                - name: BASICAUTH_USERNAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: coms-basic-user 
+                - name: BASICAUTH_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: coms-basic-password
+                - name: COMS_URL
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: coms-url
+                - name: COMS_PRESIGNED_URL_EXPIRY
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: coms-presigned-url-expiry
+                - name: CHES_CLIENT_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: ches-client-id
+                - name: CHES_CLIENT_SECRET
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: ches-client-secret
               ports:
                 - containerPort: 5000
                   protocol: TCP
