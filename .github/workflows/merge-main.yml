@@ -102,8 +102,8 @@ jobs:
             ${{secrets.VAULT_ENV}}/data/coms-test       BASICAUTH_USERNAME        | VAULT_BASICAUTH_USERNAME;
             ${{secrets.VAULT_ENV}}/data/coms-test       COMS_URL                  | VAULT_COMS_URL;
             ${{secrets.VAULT_ENV}}/data/coms-test       COMS_PRESIGNED_URL_EXPIRY | VAULT_PRESIGNED_URL_EXPIRY;
-            ${{env.VAULT_ENV}}/data/ches-test           CHES_CLIENT_ID            | VAULT_CHES_CLIENT_ID;
-            ${{env.VAULT_ENV}}/data/ches-test           CHES_CLIENT_SECRET        | VAULT_CHES_CLIENT_SECRET;
+            ${{secrets.VAULT_ENV}}/data/ches-test       CHES_CLIENT_ID            | VAULT_CHES_CLIENT_ID;
+            ${{secrets.VAULT_ENV}}/data/ches-test       CHES_CLIENT_SECRET        | VAULT_CHES_CLIENT_SECRET;
       
       - uses: bcgov-nr/action-deployer-openshift@v1.0.4
         with:
