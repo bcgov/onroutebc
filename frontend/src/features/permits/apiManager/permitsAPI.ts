@@ -8,7 +8,7 @@ import {
   httpPOSTRequest,
 } from "../../../common/apiManager/httpRequestHandler";
 import { Application, PermitApplicationInProgress } from "../types/application";
-import { PERMITS_API, VEHICLE_URL } from "./endpoints/endpoints";
+import { APPLICATION_UPDATE_STATUS_API, PERMITS_API, VEHICLE_URL } from "./endpoints/endpoints";
 import { formatDate } from "../../../common/helpers/formatDate";
 import { replaceEmptyValuesWithNull } from "../../../common/helpers/util";
 
@@ -104,10 +104,10 @@ export const getApplicationInProgressById = (
  * @returns A Promise with the API response.
  */
 export const deleteApplications = (
-  permitIds: Array<string>,
+  applicationIds: Array<string>,
 ): Promise<Response> => {
   let url: string | null = null;
-  const requestBody: { permitIds: Array<string> } = { permitIds: permitIds };
-  url = `${VEHICLE_URL}/companies/${getCompanyIdFromSession()}/applications/delete-requests`;
+  const requestBody: { applicationIds: Array<string>, applicationStatus: string } = { applicationIds: applicationIds, applicationStatus: "CANCELLED"};
+  url = `${APPLICATION_UPDATE_STATUS_API}`;
   return httpPOSTRequest(url, replaceEmptyValuesWithNull(requestBody));
 };

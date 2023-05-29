@@ -12,7 +12,7 @@ import MaterialReactTable, {
   MRT_Row,
   MRT_TableInstance,
 } from "material-react-table";
-import { RowSelectionState } from "@tanstack/table-core";
+import { RowSelectionState, isRowSelected } from "@tanstack/table-core";
 import "../../../manageVehicles/components/list/List.scss";
 import { Box, IconButton, Tooltip } from "@mui/material";
 import { Filter } from "../../../../features/manageVehicles/components/options/Filter";
@@ -84,10 +84,10 @@ export const List = memo(
      * in the confirmation dialog.
      */
     const onConfirmApplicationDelete = () => {
-      const permitIds: string[] = Object.keys(rowSelection);
+      const applicationIds: string[] = Object.keys(rowSelection);
 
-      deleteApplications(permitIds).then((response) => {
-        if (response.status === 200) {
+      deleteApplications(applicationIds).then((response) => {
+        if (response.status === 201) {
           response
             .json()
             .then((responseBody: { success: string[]; failure: string[] }) => {
@@ -159,7 +159,7 @@ export const List = memo(
           // Row copy, delete, and edit options
           getRowId={(originalRow) => {
             const applicationRow = originalRow as PermitApplicationInProgress;
-            return applicationRow.applicationNumber as string;
+            return applicationRow.permitId as string;
           }}
           enableRowActions={true} 
           displayColumnDefOptions={{
@@ -194,7 +194,7 @@ export const List = memo(
                             // Setting the selected row to false so that
                             // the row appears unchecked.
                             newObject[
-                              row.getValue(`applicationNumber`) as string
+                              row.original.permitId as string
                             ] = false;
                             return newObject;
                           });
