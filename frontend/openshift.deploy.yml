@@ -71,6 +71,12 @@ parameters:
   - name: COMS_PRESIGNED_URL_EXPIRY
     description: The exipry value (seconds) of the presigned URL
     required: true
+  - name: CHES_CLIENT_ID
+    description: Client Id to request the access token for connecting to CHES
+    required: true
+  - name: CHES_CLIENT_SECRET
+    description: Client Secret to request the access token for connecting to CHES
+    required: true
 objects:
   - apiVersion: v1
     kind: ImageStream
