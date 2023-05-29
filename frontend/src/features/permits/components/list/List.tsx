@@ -12,7 +12,7 @@ import MaterialReactTable, {
   MRT_Row,
   MRT_TableInstance,
 } from "material-react-table";
-import { RowSelectionState, isRowSelected } from "@tanstack/table-core";
+import { RowSelectionState } from "@tanstack/table-core";
 import "../../../manageVehicles/components/list/List.scss";
 import { Box, IconButton, Tooltip } from "@mui/material";
 import { Filter } from "../../../../features/manageVehicles/components/options/Filter";
@@ -94,17 +94,18 @@ export const List = memo(
               setIsDeleteDialogOpen(() => false);
               if (responseBody.failure.length > 0) {
                 snackBar.setSnackBar({
-                  message: "An unexpected error occurred.",
-                  showSnackbar: true,
-                  setShowSnackbar: () => true,
                   alertType: "error",
+                  message: "An unexpected error occurred.",
+                  setShowSnackbar: () => true,
+                  showSnackbar: true,
                 });
               } else {
                 snackBar.setSnackBar({
                   message: "Vehicle Deleted",
-                  showSnackbar: true,
-                  setShowSnackbar: () => true,
                   alertType: "info",
+                  setShowSnackbar: () => true,
+                  showSnackbar: true,
+                  
                 });
               }
               setRowSelection(() => {
@@ -113,6 +114,10 @@ export const List = memo(
               query.refetch();
             });
         }
+      })
+      .catch(error => {
+        // Handle the rejection
+        console.log(error);
       });
     };
     
@@ -159,7 +164,7 @@ export const List = memo(
           // Row copy, delete, and edit options
           getRowId={(originalRow) => {
             const applicationRow = originalRow as PermitApplicationInProgress;
-            return applicationRow.permitId as string;
+            return applicationRow.permitId;
           }}
           enableRowActions={true} 
           displayColumnDefOptions={{
