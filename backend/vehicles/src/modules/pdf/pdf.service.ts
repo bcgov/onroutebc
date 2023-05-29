@@ -163,7 +163,7 @@ export class PdfService {
    * @returns a DMS reference ID
    */
   private async savePDF(pdf: ArrayBuffer): Promise<string> {
-    const readFileDto = await this.dmsService.create(pdf);
+    const readFileDto = await this.dmsService.create_TEMP(pdf);
     return readFileDto.documentId;
   }
 
