@@ -101,7 +101,7 @@ export const List = memo(
                 });
               } else {
                 snackBar.setSnackBar({
-                  message: "Vehicle Deleted",
+                  message: "Application Deleted",
                   alertType: "info",
                   setShowSnackbar: () => true,
                   showSnackbar: true,
