@@ -59,6 +59,8 @@ services:
       BASICAUTH_PASSWORD: ${BASICAUTH_PASSWORD}
       COMS_URL: ${COMS_URL}
       COMS_PRESIGNED_URL_EXPIRY: ${COMS_PRESIGNED_URL_EXPIRY}
+      CHES_CLIENT_ID: ${CHES_CLIENT_ID}
+      CHES_CLIENT_SECRET: ${CHES_CLIENT_SECRET}
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5000/"]
       interval: 1m30s

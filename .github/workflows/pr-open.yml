@@ -100,7 +100,9 @@ jobs:
             ${{secrets.VAULT_ENV}}/data/coms-dev      BASICAUTH_PASSWORD        | VAULT_BASICAUTH_PASSWORD;
             ${{secrets.VAULT_ENV}}/data/coms-dev      BASICAUTH_USERNAME        | VAULT_BASICAUTH_USERNAME;
             ${{secrets.VAULT_ENV}}/data/coms-dev      COMS_URL                  | COMS_URL;
-            ${{secrets.VAULT_ENV}}/data/coms-dev      COMS_PRESIGNED_URL_EXPIRY | VAULT_COMS_PRESIGNED_URL_EXPIRY
+            ${{secrets.VAULT_ENV}}/data/coms-dev      COMS_PRESIGNED_URL_EXPIRY | VAULT_COMS_PRESIGNED_URL_EXPIRY;
+            ${{env.VAULT_ENV}}/data/ches-dev          CHES_CLIENT_ID            | VAULT_CHES_CLIENT_ID;
+            ${{env.VAULT_ENV}}/data/ches-dev          CHES_CLIENT_SECRET        | VAULT_CHES_CLIENT_SECRET;
       - name: Deploy Application
         uses: bcgov-nr/action-deployer-openshift@v1.0.4
         with:
@@ -125,6 +127,8 @@ jobs:
             -p BASICAUTH_USERNAME=${{steps.secrets.outputs.VAULT_BASICAUTH_USERNAME}}
             -p COMS_URL=${{steps.secrets.outputs.COMS_URL}}
             -p COMS_PRESIGNED_URL_EXPIRY=${{steps.secrets.outputs.VAULT_COMS_PRESIGNED_URL_EXPIRY}}
+            -p CHES_CLIENT_ID=${{steps.secrets.outputs.VAULT_CHES_CLIENT_ID}}
+            -p CHES_CLIENT_SECRET=${{steps.secrets.outputs.VAULT_CHES_CLIENT_SECRET}}
             ${{ matrix.parameters }}
 
   helm-deploys-dev:
