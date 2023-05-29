@@ -101,9 +101,13 @@ jobs:
             ${{secrets.VAULT_ENV}}/data/coms-test       BASICAUTH_PASSWORD        | VAULT_BASICAUTH_PASSWORD;
             ${{secrets.VAULT_ENV}}/data/coms-test       BASICAUTH_USERNAME        | VAULT_BASICAUTH_USERNAME;
             ${{secrets.VAULT_ENV}}/data/coms-test       COMS_URL                  | VAULT_COMS_URL;
-            ${{secrets.VAULT_ENV}}/data/coms-test       COMS_PRESIGNED_URL_EXPIRY | VAULT_PRESIGNED_URL_EXPIRY;;
+            ${{secrets.VAULT_ENV}}/data/coms-test       COMS_PRESIGNED_URL_EXPIRY | VAULT_PRESIGNED_URL_EXPIRY;
             ${{secrets.VAULT_ENV}}/data/ches-test       CHES_CLIENT_ID            | VAULT_CHES_CLIENT_ID;
             ${{secrets.VAULT_ENV}}/data/ches-test       CHES_CLIENT_SECRET        | VAULT_CHES_CLIENT_SECRET;
+            ${{secrets.VAULT_ENV}}/data/cdogs-test      CDOGS_CLIENT_ID           | VAULT_CDOGS_CLIENT_ID;
+            ${{secrets.VAULT_ENV}}/data/cdogs-test      CDOGS_CLIENT_SECRET       | VAULT_CDOGS_CLIENT_SECRET;
+            ${{secrets.VAULT_ENV}}/data/cdogs-test      CDOGS_TOKEN_URL           | VAULT_CDOGS_TOKEN_URL;
+            ${{secrets.VAULT_ENV}}/data/cdogs-test      CDOGS_URL                 | VAULT_CDOGS_URL;
       
       - uses: bcgov-nr/action-deployer-openshift@v1.0.5
         with:
@@ -129,6 +133,10 @@ jobs:
             -p COMS_PRESIGNED_URL_EXPIRY=${{steps.secrets.outputs.VAULT_PRESIGNED_URL_EXPIRY}}
             -p CHES_CLIENT_ID=${{steps.secrets.outputs.VAULT_CHES_CLIENT_ID}}
             -p CHES_CLIENT_SECRET=${{steps.secrets.outputs.VAULT_CHES_CLIENT_SECRET}}
+            -p CDOGS_CLIENT_ID=${{steps.secrets.outputs.VAULT_CDOGS_CLIENT_ID}}
+            -p CDOGS_CLIENT_SECRET=${{steps.secrets.outputs.VAULT_CDOGS_CLIENT_SECRET}}
+            -p CDOGS_TOKEN_URL=${{steps.secrets.outputs.VAULT_CDOGS_TOKEN_URL}}
+            -p CDOGS_URL=${{steps.secrets.outputs.VAULT_CDOGS_URL}}
             ${{ matrix.parameters }}
           penetration_test: false
   
@@ -396,14 +404,14 @@ jobs:
           exportEnv: "false"
           namespace: platform-services
           secrets: |
-            ${{secrets.VAULT_ENV}}/data/database-uat    DATABASE_HOST     | VAULT_DATABASE_HOST;
-            ${{secrets.VAULT_ENV}}/data/database-uat    DATABASE_USER     | VAULT_DATABASE_USER;
-            ${{secrets.VAULT_ENV}}/data/database-uat    DATABASE_NAME     | VAULT_DATABASE_NAME;
-            ${{secrets.VAULT_ENV}}/data/database-uat    DATABASE_PASSWORD | VAULT_DATABASE_PASSWORD;
-            ${{secrets.VAULT_ENV}}/data/database-uat    DATABASE_PORT     | VAULT_DATABASE_PORT;
-            ${{secrets.VAULT_ENV}}/data/auth0-uat      AUTH0_ISSUER_URL   | VAULT_AUTH0_ISSUER_URL;
-            ${{secrets.VAULT_ENV}}/data/auth0-uat      AUTH0_AUDIENCE     | VAULT_AUTH0_AUDIENCE;
-            ${{secrets.VAULT_ENV}}/data/auth0-uat      AUTH0_IGNORE_EXP   | VAULT_AUTH0_IGNORE_EXP;
+            ${{secrets.VAULT_ENV}}/data/database-uat    DATABASE_HOST       | VAULT_DATABASE_HOST;
+            ${{secrets.VAULT_ENV}}/data/database-uat    DATABASE_USER       | VAULT_DATABASE_USER;
+            ${{secrets.VAULT_ENV}}/data/database-uat    DATABASE_NAME       | VAULT_DATABASE_NAME;
+            ${{secrets.VAULT_ENV}}/data/database-uat    DATABASE_PASSWORD   | VAULT_DATABASE_PASSWORD;
+            ${{secrets.VAULT_ENV}}/data/database-uat    DATABASE_PORT       | VAULT_DATABASE_PORT;
+            ${{secrets.VAULT_ENV}}/data/auth0-uat       AUTH0_ISSUER_URL    | VAULT_AUTH0_ISSUER_URL;
+            ${{secrets.VAULT_ENV}}/data/auth0-uat       AUTH0_AUDIENCE      | VAULT_AUTH0_AUDIENCE;
+            ${{secrets.VAULT_ENV}}/data/auth0-uat       AUTH0_IGNORE_EXP    | VAULT_AUTH0_IGNORE_EXP;
             ${{secrets.VAULT_ENV}}/data/cdogs-uat       CDOGS_CLIENT_ID     | VAULT_CDOGS_CLIENT_ID;
             ${{secrets.VAULT_ENV}}/data/cdogs-uat       CDOGS_CLIENT_SECRET | VAULT_CDOGS_CLIENT_SECRET;
             ${{secrets.VAULT_ENV}}/data/cdogs-uat       CDOGS_TOKEN_URL     | VAULT_CDOGS_TOKEN_URL;
