@@ -102,7 +102,7 @@ jobs:
             ${{secrets.VAULT_ENV}}/data/coms-dev      COMS_URL                  | COMS_URL;
             ${{secrets.VAULT_ENV}}/data/coms-dev      COMS_PRESIGNED_URL_EXPIRY | VAULT_COMS_PRESIGNED_URL_EXPIRY
       - name: Deploy Application
-        uses: bcgov-nr/action-deployer-openshift@v1.0.4
+        uses: bcgov-nr/action-deployer-openshift@v1.0.5
         with:
           file: ${{ matrix.file }}
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
