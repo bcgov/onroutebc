@@ -70,7 +70,7 @@ export const ManageApplicationDashboard = React.memo(() => {
                       />
                     </div>
                     <div>
-                      <label><strong>No Records Found.</strong></label>
+                      <h3>No Records Found.</h3>
                     </div>
                     </div>
                   :<List query={applicationInProgressQuery} />,

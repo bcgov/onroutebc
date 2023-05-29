@@ -25,6 +25,7 @@ import DeleteConfirmationDialog from "../../../manageVehicles/components/list/Co
 import { SnackBarContext } from "../../../../App";
 import { ApplicationInProgress, PermitApplicationInProgress} from "../../types/application";
 import { ApplicationInProgressColumnDefinition, ApplicationNotFoundColumnDefinition} from "./Columns";
+import { deleteApplications } from "../../apiManager/permitsAPI";
 
 /**
  * Dynamically set the column
@@ -83,7 +84,36 @@ export const List = memo(
      * in the confirmation dialog.
      */
     const onConfirmApplicationDelete = () => {
-      console.log("delete application");
+      const permitIds: string[] = Object.keys(rowSelection);
+
+      deleteApplications(permitIds).then((response) => {
+        if (response.status === 200) {
+          response
+            .json()
+            .then((responseBody: { success: string[]; failure: string[] }) => {
+              setIsDeleteDialogOpen(() => false);
+              if (responseBody.failure.length > 0) {
+                snackBar.setSnackBar({
+                  message: "An unexpected error occurred.",
+                  showSnackbar: true,
+                  setShowSnackbar: () => true,
+                  alertType: "error",
+                });
+              } else {
+                snackBar.setSnackBar({
+                  message: "Vehicle Deleted",
+                  showSnackbar: true,
+                  setShowSnackbar: () => true,
+                  alertType: "info",
+                });
+              }
+              setRowSelection(() => {
+                return {};
+              });
+              query.refetch();
+            });
+        }
+      });
     };
     
     useEffect(() => {
