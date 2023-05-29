@@ -16,8 +16,30 @@ export class DmsService {
     @InjectMapper() private readonly classMapper: Mapper,
     private readonly comsService: ComsService,
   ) {}
+
   async create(file: Express.Multer.File): Promise<ReadFileDto> {
     const readCOMSDtoList = await this.comsService.createObject(file);
+
+    if (!readCOMSDtoList?.length) {
+      throw new InternalServerErrorException();
+    }
+    const dmsRecord = this.classMapper.map(
+      readCOMSDtoList[0],
+      ReadCOMSDto,
+      Dms,
+    );
+    //dmsRecord.objectMimeType = file.mimetype; //TODO confirm mime type
+
+    return this.classMapper.mapAsync(
+      await this.dmsRepository.save(dmsRecord),
+      Dms,
+      ReadFileDto,
+    );
+  }
+
+  // TODO: Once dms becomes its own microservice, replace ArrayBuffer with Express.Multer.File
+  async create_TEMP(file: ArrayBuffer): Promise<ReadFileDto> {
+    const readCOMSDtoList = await this.comsService.createObject_TEMP(file);
 
     if (!readCOMSDtoList?.length) {
       throw new InternalServerErrorException();
@@ -42,6 +64,8 @@ export class DmsService {
       Dms,
       ReadFileDto,
     );
+
+    readFile.s3ObjectId = readFile.s3ObjectId.toLowerCase();
 
     const url = await this.comsService.getObjectUrl(readFile);
     readFile.preSignedS3Url = url;

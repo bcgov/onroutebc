@@ -44,6 +44,42 @@ export class ComsService {
     return responseData;
   }
 
+  // TODO: Once dms becomes its own microservice, replace ArrayBuffer with Express.Multer.File
+  async createObject_TEMP(file: ArrayBuffer): Promise<ReadCOMSDto[]> {
+
+    const fd = new FormData();
+    fd.append('file', new Blob([file]));
+
+    const reqConfig: AxiosRequestConfig = {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        Accept: 'application/json',
+      },
+      auth: {
+        username: process.env.BASICAUTH_USERNAME,
+        password: process.env.BASICAUTH_PASSWORD,
+      },
+    };
+
+    const url = process.env.COMS_URL + `object?tagset[x]=a`;
+    const responseData: ReadCOMSDto[] = await lastValueFrom(
+      this.httpService.post(url, fd, reqConfig).pipe(
+        map((response) => {
+          return response;
+        }),
+      ),
+    )
+      .then((response) => {
+        return response.data as ReadCOMSDto[];
+      })
+      .catch((error) => {
+        console.log(error);
+        throw new InternalServerErrorException();
+      });
+
+    return responseData;
+  }
+
   async getObjectUrl(readFile: ReadFileDto): Promise<string> {
     const reqConfig: AxiosRequestConfig = {
       auth: {

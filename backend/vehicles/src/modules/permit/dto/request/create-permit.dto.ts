@@ -42,6 +42,66 @@ export class CreatePermitDto {
   @AutoMap()
   @ApiProperty({
     description: 'Permit Application JSON.',
+    example: {
+      startDate: 'May 18, 2023', // TODO
+      expiryDate: 'July 15, 2023', // TODO
+      permitDuration: 90,
+      companyName: 'M. D. TRANSPORT CO. LTD.', //TODO
+      clientNumber: '2023-87456', // TODO
+      feeSummary: '90', // TODO
+      commodities: [
+        {
+          description: 'General Permit Conditions',
+          condition: 'CVSE-1000',
+          conditionLink:
+            'https://www.th.gov.bc.ca/forms/getForm.aspx?formId=1251',
+          checked: true,
+        },
+        {
+          description: 'Permit Scope and Limitation',
+          condition: 'CVSE-1070',
+          conditionLink:
+            'https://www.th.gov.bc.ca/forms/getForm.aspx?formId=1261',
+          checked: true,
+        },
+        {
+          description: 'Log Permit Conditions',
+          condition: 'CVSE-1000L',
+          conditionLink:
+            'https://www.th.gov.bc.ca/forms/getForm.aspx?formId=1250',
+          checked: true,
+        },
+      ],
+      contactDetails: {
+        firstName: 'Lewis',
+        lastName: 'Hamilton',
+        phone1: '(778) 952-1234',
+        email: 'lewis@f1.com',
+        phone1Extension: '1',
+        phone2: null,
+        phone2Extension: null,
+        fax: null,
+      },
+      mailingAddress: {
+        addressLine1: '123 Short Street',
+        addressLine2: null,
+        city: 'Victoria',
+        provinceCode: 'BC',
+        countryCode: 'CA',
+        postalCode: 'V8X2V5',
+      },
+      vehicleDetails: {
+        vin: '781452',
+        plate: 'PRJZZP',
+        make: 'GMC',
+        year: 2001,
+        countryCode: 'CA',
+        provinceCode: 'BC',
+        vehicleType: 'powerUnit',
+        vehicleSubType: 'LOGGING',
+        saveVehicle: true,
+      },
+    },
   })
   permitData: JSON;
 }

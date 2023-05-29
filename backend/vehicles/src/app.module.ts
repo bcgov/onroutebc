@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import { Module } from '@nestjs/common';
+import { CacheModule } from '@nestjs/cache-manager';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { AppService } from './app.service';
@@ -18,6 +19,7 @@ import { PendingUsersModule } from './modules/company-user-management/pending-us
 import { AuthModule } from './modules/auth/auth.module';
 import { PermitModule } from './modules/permit/permit.module';
 import { DmsModule } from './modules/dms/dms.module';
+import { PdfModule } from './modules/pdf/pdf.module';
 
 const envPath = path.resolve(process.cwd() + '/../../');
 
@@ -54,6 +56,9 @@ const envPath = path.resolve(process.cwd() + '/../../');
     AutomapperModule.forRoot({
       strategyInitializer: classes(),
     }),
+    CacheModule.register({
+      isGlobal: true, // Allows access to cache manager globally
+    }),
     PowerUnitsModule,
     TrailersModule,
     PowerUnitTypesModule,
@@ -65,6 +70,7 @@ const envPath = path.resolve(process.cwd() + '/../../');
     AuthModule,
     PermitModule,
     DmsModule,
+    PdfModule,
   ],
   controllers: [AppController],
   providers: [AppService],

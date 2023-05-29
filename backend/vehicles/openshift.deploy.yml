@@ -71,6 +71,18 @@ parameters:
   - name: COMS_PRESIGNED_URL_EXPIRY
     description: The exipry value (seconds) of the presigned URL
     required: true
+  - name: CDOGS_CLIENT_ID
+    description: The keycloak client ID for common hosted CDOGS
+    required: true
+  - name: CDOGS_CLIENT_SECRET
+    description: The keycloak client secret for common hosted CDOGS
+    required: true
+  - name: CDOGS_TOKEN_URL
+    description: The keycloak url for common hosted CDOGS
+    required: true
+  - name: CDOGS_URL
+    description: The CDOGS API url 
+    required: true
   - name: CHES_CLIENT_ID
     description: Client Id to request the access token for connecting to CHES
     required: true
@@ -102,10 +114,6 @@ objects:
     stringData:
       database-user: "${DATABASE_USER}"
       database-password: "${DATABASE_PASSWORD}"
-      coms-url: "${COMS_URL}"
-      coms-presigned-url-expiry: "${COMS_PRESIGNED_URL_EXPIRY}"
-      coms-basic-user: "${BASICAUTH_USERNAME}"
-      coms-basic-password: "${BASICAUTH_PASSWORD}"
       ches-client-id: "${CHES_CLIENT_ID}"
       ches-client-secret: "${CHES_CLIENT_SECRET}"
   - apiVersion: v1
@@ -206,27 +214,7 @@ objects:
                   valueFrom:
                     configMapKeyRef:
                       name: ${NAME}-${ZONE}-${COMPONENT}
-                      key: auth0-ignore-exp
-                - name: BASICAUTH_USERNAME
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}-${ZONE}-${COMPONENT}
-                      key: coms-basic-user 
-                - name: BASICAUTH_PASSWORD
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}-${ZONE}-${COMPONENT}
-                      key: coms-basic-password
-                - name: COMS_URL
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}-${ZONE}-${COMPONENT}
-                      key: coms-url
-                - name: COMS_PRESIGNED_URL_EXPIRY
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}-${ZONE}-${COMPONENT}
-                      key: coms-presigned-url-expiry
+                      key: auth0-ignore-exp                                         
                 - name: CHES_CLIENT_ID
                   valueFrom:
                     secretKeyRef:

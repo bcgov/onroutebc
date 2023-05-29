@@ -101,6 +101,10 @@ jobs:
             ${{secrets.VAULT_ENV}}/data/coms-dev      BASICAUTH_USERNAME        | VAULT_BASICAUTH_USERNAME;
             ${{secrets.VAULT_ENV}}/data/coms-dev      COMS_URL                  | COMS_URL;
             ${{secrets.VAULT_ENV}}/data/coms-dev      COMS_PRESIGNED_URL_EXPIRY | VAULT_COMS_PRESIGNED_URL_EXPIRY;
+            ${{secrets.VAULT_ENV}}/data/cdogs-dev     CDOGS_CLIENT_ID   | VAULT_CDOGS_CLIENT_ID;
+            ${{secrets.VAULT_ENV}}/data/cdogs-dev     CDOGS_CLIENT_SECRET   | VAULT_CDOGS_CLIENT_SECRET;
+            ${{secrets.VAULT_ENV}}/data/cdogs-dev     CDOGS_TOKEN_URL   | VAULT_CDOGS_TOKEN_URL;
+            ${{secrets.VAULT_ENV}}/data/cdogs-dev     CDOGS_URL         | VAULT_CDOGS_URL;;
             ${{secrets.VAULT_ENV}}/data/ches-dev      CHES_CLIENT_ID            | VAULT_CHES_CLIENT_ID;
             ${{secrets.VAULT_ENV}}/data/ches-dev      CHES_CLIENT_SECRET        | VAULT_CHES_CLIENT_SECRET;
       - name: Deploy Application
@@ -129,6 +133,10 @@ jobs:
             -p COMS_PRESIGNED_URL_EXPIRY=${{steps.secrets.outputs.VAULT_COMS_PRESIGNED_URL_EXPIRY}}
             -p CHES_CLIENT_ID=${{steps.secrets.outputs.VAULT_CHES_CLIENT_ID}}
             -p CHES_CLIENT_SECRET=${{steps.secrets.outputs.VAULT_CHES_CLIENT_SECRET}}
+            -p CDOGS_CLIENT_ID=${{steps.secrets.outputs.VAULT_CDOGS_CLIENT_ID}}
+            -p CDOGS_CLIENT_SECRET=${{steps.secrets.outputs.VAULT_CDOGS_CLIENT_SECRET}}
+            -p CDOGS_TOKEN_URL=${{steps.secrets.outputs.VAULT_CDOGS_TOKEN_URL}}
+            -p CDOGS_URL=${{steps.secrets.outputs.VAULT_CDOGS_URL}}
             ${{ matrix.parameters }}
 
   helm-deploys-dev:
