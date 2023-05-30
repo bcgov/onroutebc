@@ -100,7 +100,7 @@ export const CustomDatePicker = <T extends ORBC_FormTypes>(
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <DatePicker
         ref={ref}
-        value={value}
+        value={typeof value === "string"? dayjs(value): value}
         onChange={onChange}
         disablePast
         maxDate={maxDate}

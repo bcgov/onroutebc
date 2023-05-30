@@ -69,6 +69,7 @@ export interface TermOversizeApplication {
 }
 
 export interface PermitApplicationInProgress extends Application {
+  permitId: string
   applicationNumber: string;
   permitType: string;
   startDate: Dayjs;

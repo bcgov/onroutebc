@@ -9,5 +9,6 @@ import { PowerUnitTypesProfile } from './profiles/power-unit-type.profile';
   imports: [TypeOrmModule.forFeature([PowerUnitType])],
   controllers: [PowerUnitTypesController],
   providers: [PowerUnitTypesService, PowerUnitTypesProfile],
+  exports: [PowerUnitTypesService],
 })
 export class PowerUnitTypesModule {}

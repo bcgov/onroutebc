@@ -34,6 +34,7 @@ export class PermitService {
       Permit,
       ReadPermitDto,
     );
+
     return readPermitDto;
   }
 
