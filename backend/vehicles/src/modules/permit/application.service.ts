@@ -9,7 +9,8 @@ import { ReadApplicationDto } from './dto/response/read-application.dto';
 import { Permit } from './entities/permit.entity';
 import { UpdateApplicationDto } from './dto/request/update-application.dto';
 import { ResultDto } from './dto/response/result.dto';
-import { Datasource } from 'src/common/helper/database.helper';
+import { DatabaseHelper } from 'src/common/helper/database.helper';
+import { PermitApplicationOrigin } from './entities/permit-application-origin.entity';
 
 @Injectable()
 export class ApplicationService {
@@ -17,34 +18,39 @@ export class ApplicationService {
     @InjectMapper() private readonly classMapper: Mapper,
     @InjectRepository(Permit)
     private permitRepository: Repository<Permit>,
-    private dataSource: Datasource,
+    private databaseHelper: DatabaseHelper,
+    @InjectRepository(PermitApplicationOrigin)
+    private permitApplicationOriginRepository: Repository<PermitApplicationOrigin>,
   ) {}
 
+  /**
+   * createApplicationDto.permitID null means new application for new permit
+   * if createApplicationDto.permitID is not null then create new application for permit amendment.
+   * @param createApplicationDto
+   *
+   */
   async create(
     createApplicationDto: CreateApplicationDto,
   ): Promise<ReadApplicationDto> {
     createApplicationDto.permitStatus = ApplicationStatus.IN_PROGRESS;
+    //permitId Null means new application for
     createApplicationDto.previousRevId = createApplicationDto.permitId;
 
     //Generate appliction number for the application to be created in database.
-    const applicationNumber = await this.dataSource.generateApplicationNumber(
+    const applicationNumber = await this.generateApplicationNumber(
       createApplicationDto.permitNumber,
       createApplicationDto.permitApplicationOrigin,
       createApplicationDto.permitId,
     );
     createApplicationDto.applicationNumber = applicationNumber;
-    console.log(
-      'Application Number is',
-      createApplicationDto.applicationNumber,
-    );
-
     //If permit id exists assign it to null to create new application.
     if (createApplicationDto.permitId) {
-      createApplicationDto.revision = await this.dataSource.getRevision(
+      createApplicationDto.revision = await this.getRevision(
         createApplicationDto.permitId,
       );
       createApplicationDto.revision = createApplicationDto.revision + 1;
       createApplicationDto.permitId = null;
+      createApplicationDto.permitNumber = null;
     }
 
     const permitApplication = this.classMapper.map(
@@ -52,14 +58,11 @@ export class ApplicationService {
       CreateApplicationDto,
       Permit,
     );
-
     const applicationData: Permit = {
       ...permitApplication,
       createdDateTime: new Date(),
       updatedDateTime: new Date(),
     };
-    console.log('Permit application data', applicationData);
-
     const savedPermitEntity = await this.permitRepository.save(applicationData);
     const refreshedPermitEntity = await this.findOne(
       savedPermitEntity.permitId,
@@ -205,7 +208,6 @@ export class ApplicationService {
     applicationIds: string[],
     applicationStatus: ApplicationStatus,
   ): Promise<ResultDto> {
-    // console.log(await callDatabaseSequence('permit.ORBC_PERMIT_NUMBER_SEQ',this.datasource))
     const updateResult = await this.permitRepository
       .createQueryBuilder()
       .update()
@@ -229,5 +231,86 @@ export class ApplicationService {
       failure: failure,
     };
     return resultDto;
+  }
+
+  /**
+   * Generate Application Number
+   * @param permitNumber to generate application number from permit number.
+   * @param applicationSource to get the source code
+   * @param permitId if permit id is present then it is a permit amendment
+   * and application number will be generated from exisitng permit number.
+   */
+  async generateApplicationNumber(
+    permitNumber: string,
+    permitApplicationOrigin: string,
+    permitId: string,
+  ): Promise<string> {
+    let seq: string;
+    let source;
+    let rnd;
+    let rev = '-R00';
+    let revision: number;
+    if (permitId) {
+      //Amendment to existing permit.//Get revision Id from database.
+      revision = await this.getRevision(permitId);
+
+      //Format revision id
+      rev = '-R' + String(revision + 1).padStart(2, '0');
+     // rev = '-R' + String(revision + 1);
+      if (permitNumber) {
+        seq = permitNumber.substring(3, 11);
+        rnd = permitNumber.substring(12, 15);
+      } else {
+        seq = await this.databaseHelper.callDatabaseSequence(
+          'permit.ORBC_PERMIT_NUMBER_SEQ',
+        );
+        rnd = String(Math.floor(Math.random() * (100 - 999 + 1)) + 999);
+      }
+      source = await this.getPermitApplicationOrigin(permitApplicationOrigin);
+    } else {
+      //New Permit application.
+      seq = await this.databaseHelper.callDatabaseSequence(
+        'permit.ORBC_PERMIT_NUMBER_SEQ',
+      );
+      source = await this.getPermitApplicationOrigin(permitApplicationOrigin);
+
+      rnd = String(Math.floor(Math.random() * (100 - 999 + 1)) + 999);
+    }
+
+    const applicationNumber = String(
+      'A' +
+        String(source) +
+        '-' +
+        String(seq.padStart(8, '0')) +
+        '-' +
+        String(rnd) +
+        String(rev),
+    );
+
+    return applicationNumber;
+  }
+
+  /**
+   * Get Application Origin Code from database lookup table ORBC_VT_PERMIT_APPLICATION_ORIGIN
+   * @param permitApplicationOrigin
+   *
+   */
+  private async getPermitApplicationOrigin(
+    permitApplicationOrigin: string,
+  ): Promise<number> {
+    const code = await this.permitApplicationOriginRepository.findOne({
+      where: [{ id: permitApplicationOrigin }],
+    });
+
+    return code.code;
+  }
+
+  /**
+   * Get Permit Revision from database permit table
+   * @param permitId
+   */
+  async getRevision(permitId: string): Promise<number> {
+    const revision = await this.findOne(permitId);
+    return revision.revision;
   }
 }
