@@ -41,12 +41,17 @@ export const useSaveTermOversizeMutation = () => {
 export const useApplicationDetailsQuery = (permitId?: string) => {
   const [applicationData, setApplicationData] = useState<Application | undefined>(undefined);
   
+  // Currently, creating new application route doesn't contain permitId
+  // ie. route === "/applications/permits" instead of "/applications/:permitId"
+  // Thus we need to do a check
+  const isPermitIdValid = permitId != null && !isNaN(Number(permitId));
+  
   const query = useQuery({
     queryKey: ["termOversize"],
     queryFn: () => getApplicationInProgressById(permitId),
     retry: false,
     refetchOnMount: "always",
-    //enabled: !!permitId,
+    enabled: isPermitIdValid,
     onSuccess: (application) => {
       if (!application) {
         setApplicationData(undefined);

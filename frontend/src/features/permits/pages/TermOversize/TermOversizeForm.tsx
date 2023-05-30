@@ -125,10 +125,10 @@ export const TermOversizeForm = () => {
     }
   };
 
-  const addPowerUnitQuery = useAddPowerUnitMutation();
-  const updatePowerUnitQuery = useUpdatePowerUnitMutation();
-  const addTrailerQuery = useAddTrailerMutation();
-  const updateTrailerQuery = useUpdateTrailerMutation();
+  const addPowerUnitMutation = useAddPowerUnitMutation();
+  const updatePowerUnitMutation = useUpdatePowerUnitMutation();
+  const addTrailerMutation = useAddTrailerMutation();
+  const updateTrailerMutation = useUpdateTrailerMutation();
   const allVehiclesQuery = useVehiclesQuery();
 
   const handleSaveVehicle = (data: Application) => {
@@ -167,12 +167,12 @@ export const TermOversizeForm = () => {
 
       // Either send a PUT or POST request based on powerUnitID
       if (powerUnitId) {
-        updatePowerUnitQuery.mutate({
+        updatePowerUnitMutation.mutate({
           powerUnit: powerUnit,
           powerUnitId: powerUnitId,
         });
       } else {
-        addPowerUnitQuery.mutate(powerUnit);
+        addPowerUnitMutation.mutate(powerUnit);
       }
     }
 
@@ -198,9 +198,9 @@ export const TermOversizeForm = () => {
       };
 
       if (trailerId) {
-        updateTrailerQuery.mutate({ trailer: trailer, trailerId: trailerId });
+        updateTrailerMutation.mutate({ trailer: trailer, trailerId: trailerId });
       } else {
-        addTrailerQuery.mutate(trailer);
+        addTrailerMutation.mutate(trailer);
       }
     }
   };

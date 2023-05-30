@@ -70,7 +70,7 @@ export const ApplicationDashboard = () => {
     }
   }
 
-  if (applicationDataQuery.isLoading) {
+  if (applicationDataQuery.isInitialLoading) {
     return <Loading />;
   }
 
