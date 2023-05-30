@@ -11,6 +11,6 @@ import { DmsProfile } from './profiles/dms.profile';
   imports: [TypeOrmModule.forFeature([Dms]), HttpModule],
   controllers: [DmsController],
   providers: [DmsService, ComsService, DmsProfile],
-  exports: [DmsService]
+  exports: [DmsService],
 })
 export class DmsModule {}

@@ -9,7 +9,10 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { FullNames } from './interface/fullNames.interface';
 import { PermitData } from '../pdf/interface/permitData.interface';
-import { getCountryName, getProvinceName } from './helpers/getCountryProvinceNames.helper';
+import {
+  getCountryName,
+  getProvinceName,
+} from './helpers/getCountryProvinceNames.helper';
 import { getPermitTypeName } from './helpers/getPermitTypeName.helper';
 import { getVehicleTypeNames } from './helpers/getVehicleTypeNames.helper';
 import { CommonService } from '../common/common.service';
