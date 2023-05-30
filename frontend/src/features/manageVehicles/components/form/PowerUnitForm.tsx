@@ -14,6 +14,13 @@ import { useNavigate } from "react-router-dom";
 import { useContext } from "react";
 import { SnackBarContext } from "../../../../App";
 import { getDefaultRequiredVal, getDefaultNullableVal } from "../../../../common/helpers/util";
+import { 
+  invalidNumber, 
+  invalidPlateLength, 
+  invalidVINLength, 
+  invalidYearMin, 
+  requiredMessage 
+} from "../../../../common/helpers/validationMessages";
 
 /**
  * Props used by the power unit form.
@@ -136,13 +143,15 @@ export const PowerUnitForm = ({ powerUnit }: PowerUnitFormProps) => {
             feature={FEATURE}
             options={{
               name: "make",
-              rules: { required: true, maxLength: 20 },
+              rules: { 
+                required: { value: true, message: requiredMessage() }, 
+                maxLength: 20 
+              },
               label: "Make",
               width: formFieldStyle.width,
             }}
             i18options={{
               label_i18: "vehicle.power-unit.make",
-              inValidMessage_i18: "vehicle.power-unit.required",
             }}
           />
 
@@ -152,12 +161,12 @@ export const PowerUnitForm = ({ powerUnit }: PowerUnitFormProps) => {
             options={{
               name: "year",
               rules: {
-                required: { value: true, message: "Year is required." },
+                required: { value: true, message: requiredMessage() },
                 valueAsNumber: true,
                 maxLength: 4,
                 validate: {
-                  isNumber: (v) => !isNaN(v) || "Must be a number",
-                  lessThan1950: v => parseInt(v) > 1950 || "Year must not be less than 1950",
+                  isNumber: (v) => !isNaN(v) || invalidNumber(),
+                  lessThan1950: v => parseInt(v) > 1950 || invalidYearMin(1950),
                 },
               },
               label: "Year",
@@ -171,8 +180,8 @@ export const PowerUnitForm = ({ powerUnit }: PowerUnitFormProps) => {
             options={{
               name: "vin",
               rules: {
-                required: { value: true, message: "VIN is required." },
-                minLength: { value: 6, message: "Length must be 6" },
+                required: { value: true, message: requiredMessage() },
+                minLength: { value: 6, message: invalidVINLength(6) },
                 maxLength: 6,
               },
               label: "VIN",
@@ -186,13 +195,15 @@ export const PowerUnitForm = ({ powerUnit }: PowerUnitFormProps) => {
             feature={FEATURE}
             options={{
               name: "plate",
-              rules: { required: true, maxLength: 10 },
+              rules: { 
+                required: { value: true, message: requiredMessage() }, 
+                maxLength: { value: 10, message: invalidPlateLength(10) }
+              },
               label: "Plate",
               width: formFieldStyle.width,
             }}
             i18options={{
               label_i18: "vehicle.power-unit.plate",
-              inValidMessage_i18: "vehicle.power-unit.required",
             }}
           />
 
@@ -204,7 +215,7 @@ export const PowerUnitForm = ({ powerUnit }: PowerUnitFormProps) => {
               rules: {
                 required: {
                   value: true,
-                  message: "Vehicle Sub-type is required.",
+                  message: requiredMessage(),
                 },
               },
               label: "Vehicle Sub-type",
@@ -229,10 +240,10 @@ export const PowerUnitForm = ({ powerUnit }: PowerUnitFormProps) => {
             options={{
               name: "licensedGvw",
               rules: {
-                required: { value: true, message: "Licensed GVW is required." },
+                required: { value: true, message: requiredMessage() },
                 valueAsNumber: true,
                 validate: {
-                  isNumber: (v) => !isNaN(v) || "Must be a number",
+                  isNumber: (v) => !isNaN(v) || invalidNumber(),
                 },
               },
               label: "Licensed GVW",
@@ -248,7 +259,7 @@ export const PowerUnitForm = ({ powerUnit }: PowerUnitFormProps) => {
                 required: false,
                 pattern: {
                   value: /^\d+$/,
-                  message: "Please enter a number",
+                  message: invalidNumber(),
                 },
               },
               label: "Steer Axle Tire Size (mm)",

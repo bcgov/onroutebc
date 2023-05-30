@@ -1,5 +1,7 @@
 import { Box, Button, Typography } from "@mui/material";
 import { memo } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPencil } from "@fortawesome/free-solid-svg-icons";
 
 import "./DisplayCompanyInfo.scss";
 import { formatPhoneNumber } from "../../../common/components/form/subFormComponents/PhoneNumberInput";
@@ -78,7 +80,7 @@ export const DisplayInfo = memo(
               sx={{ marginTop: "20px" }}
               onClick={() => setIsEditting(true)}
             >
-              <i className="fa fa-pencil" style={{ marginRight: "7px" }}></i>
+              <FontAwesomeIcon icon={faPencil} style={{ marginRight: "7px" }} />
               Edit
             </Button>
           </div>

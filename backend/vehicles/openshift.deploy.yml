@@ -47,7 +47,6 @@ parameters:
   - name: VAULT_ZONE
     description: Using Dev/Test/etc.. within vault
     required: true
-
 objects:
   - apiVersion: v1
     kind: ConfigMap
@@ -59,6 +58,7 @@ objects:
       database-type: mssql
       database-encrypt: "false"
       database-port: "1433"
+
   - apiVersion: v1
     kind: ImageStream
     metadata:
@@ -146,6 +146,7 @@ objects:
                     configMapKeyRef:
                       name: ${NAME}-${ZONE}-${COMPONENT}
                       key: database-encrypt
+
               ports:
                 - containerPort: 5000
                   protocol: TCP

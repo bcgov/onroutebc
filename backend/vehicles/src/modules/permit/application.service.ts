@@ -9,6 +9,7 @@ import { ReadApplicationDto } from './dto/response/read-application.dto';
 import { Permit } from './entities/permit.entity';
 import { UpdateApplicationDto } from './dto/request/update-application.dto';
 import { ResultDto } from './dto/response/result.dto';
+import { PdfService } from '../pdf/pdf.service';
 
 @Injectable()
 export class ApplicationService {
@@ -17,6 +18,7 @@ export class ApplicationService {
     @InjectRepository(Permit)
     private permitRepository: Repository<Permit>,
     private datasource: DataSource,
+    private readonly pdfService: PdfService,
   ) {}
 
   async create(
@@ -199,6 +201,24 @@ export class ApplicationService {
     );
     const success = updatedApplications?.map((permit) => permit.ID);
     const failure = applicationIds?.filter((id) => !success?.includes(id));
+
+    // If the status is updated to 'APPROVED' or 'AUTO-APPROVED', then create pdf and store it in DMS
+    // TODO: Temp solution. To be confirmed
+    // TODO: Should his endpoint use application number instead or permit/app ID?
+    updateResult.raw.forEach(async (x: any) => {
+      const permit = await this.findOne(x.ID);
+      if (
+        permit.permitStatus === ApplicationStatus.APPROVED ||
+        permit.permitStatus === ApplicationStatus.AUTO_APPROVED
+      ) {
+        // DMS Reference ID for the generated PDF of the Permit
+        const dmsDocumentId = await this.pdfService.generatePDF(permit);
+        // TODO: handle the DMS reference
+        console.log('Completed pdf generation');
+        console.log('DMS Document Id: ', dmsDocumentId);
+      }
+    });
+
     const resultDto: ResultDto = {
       success: success,
       failure: failure,

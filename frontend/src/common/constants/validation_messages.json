@@ -1,0 +1,101 @@
+{
+  "required": {
+    "defaultMessage": "This is a required field.",
+    "messageTemplate": ":fieldName is required",
+    "placeholders": [":fieldName"]
+  },
+  "NaN": {
+    "defaultMessage": "Must be a number"
+  },
+  "country": {
+    "defaultMessage": "Invalid country code"
+  },
+  "province": {
+    "defaultMessage": "Invalid province code"
+  },
+  "date": {
+    "defaultMessage": "Your date is not valid",
+    "start": {
+      "past": {
+        "defaultMessage": "Start Date cannot be in the past."
+      },
+      "max": {
+        "messageTemplate": "Start Date must be within :max days.",
+        "placeholders": [":max"]
+      }
+    }
+  },
+  "email": {
+    "defaultMessage": "Invalid email format"
+  },
+  "phone": {
+    "defaultMessage": "Invalid phone number",
+    "length": {
+      "messageTemplate": "Phone number should be between :min-:max characters long",
+      "placeholders": [":min", ":max"]
+    }
+  },
+  "extension": {
+    "defaultMessage": "Invalid extension number",
+    "length": {
+      "messageTemplate": "Extension length should be less than :max characters",
+      "placeholders": [":max"]
+    }
+  },
+  "address": {
+    "defaultMessage": "Invalid address format",
+    "length": {
+      "messageTemplate": "Address length must be between :min-:max characters",
+      "placeholders": [":min", ":max"]
+    }
+  },
+  "city": {
+    "defaultMessage": "Invalid city format",
+    "length": {
+      "messageTemplate": "City length must be between :min-:max characters long",
+      "placeholders": [":min", ":max"]
+    }
+  },
+  "postalCode": {
+    "defaultMessage": "Incorrect postal code format"
+  },
+  "firstName": {
+    "defaultMessage": "Invalid first name format",
+    "length": {
+      "messageTemplate": "First name length must be between :min-:max characters",
+      "placeholders": [":min", ":max"]
+    }
+  },
+  "lastName": {
+    "defaultMessage": "Invalid last name format",
+    "length": {
+      "messageTemplate": "Last name length must be between :min-:max characters",
+      "placeholders": [":min", ":max"]
+    }
+  },
+  "year": {
+    "defaultMessage": "Invalid year format",
+    "min": {
+      "messageTemplate": "Year must not be less than :min",
+      "placeholders": [":min"]
+    }
+  },
+  "vin": {
+    "defaultMessage": "Invalid VIN format",
+    "length": {
+      "equal": {
+        "messageTemplate": "Length must be :len",
+        "placeholders": [":len"]
+      }
+    }
+  },
+  "plate": {
+    "defaultMessage": "Invalid plate format",
+    "length": {
+      "max": {
+        "messageTemplate": "Plate length must not be longer than :max",
+        "placeholders": [":max"]
+      }
+    }
+  }
+}

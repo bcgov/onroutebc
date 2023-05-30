@@ -6,10 +6,11 @@ import { Contact } from './entities/contact.entity';
 import { Address } from './entities/address.entity';
 import { AddressProfile } from './profiles/address.profile';
 import { ContactProfile } from './profiles/contact.profile';
+import { CommonService } from './common.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Country, Province, Address, Contact])],
-  providers: [AddressProfile, ContactProfile],
-  exports: [TypeOrmModule, AddressProfile, ContactProfile],
+  providers: [AddressProfile, ContactProfile, CommonService],
+  exports: [TypeOrmModule, AddressProfile, ContactProfile, CommonService],
 })
 export class CommonModule {}

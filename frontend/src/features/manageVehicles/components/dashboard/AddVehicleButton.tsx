@@ -8,6 +8,8 @@ import MenuItem from "@mui/material/MenuItem";
 import MenuList from "@mui/material/MenuList";
 import Stack from "@mui/material/Stack";
 import { useTranslation } from "react-i18next";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 
 import { VEHICLE_TYPES_ENUM } from "../form/constants";
 import { useNavigate } from "react-router-dom";
@@ -103,7 +105,7 @@ export const AddVehicleButton = () => {
           aria-haspopup="true"
           onClick={handleToggle}
         >
-          Add Vehicle <i className="fa fa-chevron-down dash-downarrow"></i>
+          Add Vehicle <FontAwesomeIcon className="dash-downarrow" icon={faChevronDown} />
         </Button>
         <Popper
           open={isMenuOpen}

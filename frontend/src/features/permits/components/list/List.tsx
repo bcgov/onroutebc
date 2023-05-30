@@ -25,6 +25,7 @@ import DeleteConfirmationDialog from "../../../manageVehicles/components/list/Co
 import { SnackBarContext } from "../../../../App";
 import { ApplicationInProgress, PermitApplicationInProgress} from "../../types/application";
 import { ApplicationInProgressColumnDefinition, ApplicationNotFoundColumnDefinition} from "./Columns";
+import { deleteApplications } from "../../apiManager/permitsAPI";
 
 /**
  * Dynamically set the column
@@ -83,7 +84,45 @@ export const List = memo(
      * in the confirmation dialog.
      */
     const onConfirmApplicationDelete = () => {
-      console.log("delete application");
+      const applicationIds: string[] = Object.keys(rowSelection);
+
+      deleteApplications(applicationIds).then((response) => {
+        if (response.status === 201) {
+          response
+            .json()
+            .then((responseBody: { success: string[]; failure: string[] }) => {
+              setIsDeleteDialogOpen(() => false);
+              if (responseBody.failure.length > 0) {
+                snackBar.setSnackBar({
+                  alertType: "error",
+                  message: "An unexpected error occurred.",
+                  setShowSnackbar: () => true,
+                  showSnackbar: true,
+                });
+              } else {
+                snackBar.setSnackBar({
+                  message: "Application Deleted",
+                  alertType: "info",
+                  setShowSnackbar: () => true,
+                  showSnackbar: true,
+                  
+                });
+              }
+              setRowSelection(() => {
+                return {};
+              });
+              query.refetch();
+            })
+            .catch(error => {
+              // Handle the rejection
+              console.log(error);
+            });
+        }
+      })
+      .catch(error => {
+        // Handle the rejection
+        console.log(error);
+      });
     };
     
     useEffect(() => {
@@ -129,7 +168,7 @@ export const List = memo(
           // Row copy, delete, and edit options
           getRowId={(originalRow) => {
             const applicationRow = originalRow as PermitApplicationInProgress;
-            return applicationRow.applicationNumber as string;
+            return applicationRow.permitId;
           }}
           enableRowActions={true} 
           displayColumnDefOptions={{
@@ -164,7 +203,7 @@ export const List = memo(
                             // Setting the selected row to false so that
                             // the row appears unchecked.
                             newObject[
-                              row.getValue(`applicationNumber`) as string
+                              row.original.permitId as string
                             ] = false;
                             return newObject;
                           });

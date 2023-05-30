@@ -13,8 +13,10 @@ import { useCompanyInfoQuery } from "../../../manageProfile/apiManager/hooks";
 import { useFormContext } from "react-hook-form";
 import { useEffect } from "react";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
+import { requiredMessage } from "../../../../common/helpers/validationMessages";
+import { Application } from "../../types/application";
 
-export const ContactDetails = ({ feature }: { feature: string }) => {
+export const ContactDetails = ({ feature, values}: { feature: string, values: Application | undefined }) => {
   const companyInfoQuery = useCompanyInfoQuery();
   const { setValue } = useFormContext();
   /**
@@ -49,6 +51,54 @@ export const ContactDetails = ({ feature }: { feature: string }) => {
     });
   }, [companyInfoQuery]);
 
+  useEffect(() => {
+    setValue("permitData.contactDetails", {
+      firstName: getDefaultRequiredVal(
+        "",
+        values?.permitData.contactDetails?.firstName,
+      ),
+      lastName: getDefaultRequiredVal(
+        "",
+        values?.permitData.contactDetails?.lastName,
+      ),
+      phone1: getDefaultRequiredVal(
+        "",
+        values?.permitData.contactDetails?.phone1,
+      ),
+      phone1Extension: getDefaultRequiredVal(
+        "",
+        values?.permitData.contactDetails?.phone1Extension,
+      ),
+      phone2: getDefaultRequiredVal(
+        "",
+        values?.permitData.contactDetails?.phone2,
+      ),
+      phone2Extension: getDefaultRequiredVal(
+        "",
+        values?.permitData.contactDetails?.phone2Extension,
+      ),
+      email: getDefaultRequiredVal(
+        "",
+        values?.permitData.contactDetails?.email,
+      ),
+      fax: getDefaultRequiredVal(
+        "",
+        values?.permitData.contactDetails?.fax,
+      ),
+      
+    });
+
+  }, [
+    values?.permitData.contactDetails?.firstName, 
+    values?.permitData.contactDetails?.lastName,
+    values?.permitData.contactDetails?.phone1,
+    values?.permitData.contactDetails?.phone1Extension,
+    values?.permitData.contactDetails?.phone2,
+    values?.permitData.contactDetails?.phone2Extension,
+    values?.permitData.contactDetails?.email,
+    values?.permitData.contactDetails?.fax
+  ]);
+
   return (
     <Box sx={PERMIT_MAIN_BOX_STYLE}>
       <Box sx={PERMIT_LEFT_BOX_STYLE}>
@@ -63,7 +113,7 @@ export const ContactDetails = ({ feature }: { feature: string }) => {
           options={{
             name: "permitData.contactDetails.firstName",
             rules: {
-              required: { value: true, message: "First Name is required" },
+              required: { value: true, message: requiredMessage() },
             },
             label: "First Name",
           }}
@@ -74,7 +124,7 @@ export const ContactDetails = ({ feature }: { feature: string }) => {
           options={{
             name: "permitData.contactDetails.lastName",
             rules: {
-              required: { value: true, message: "Last Name is required" },
+              required: { value: true, message: requiredMessage() },
             },
             label: "Last Name",
           }}
@@ -87,7 +137,7 @@ export const ContactDetails = ({ feature }: { feature: string }) => {
             options={{
               name: "permitData.contactDetails.phone1",
               rules: {
-                required: { value: true, message: "Phone Number is required" },
+                required: { value: true, message: requiredMessage() },
               },
               label: "Phone Number",
               width: PHONE_WIDTH,
@@ -138,7 +188,7 @@ export const ContactDetails = ({ feature }: { feature: string }) => {
           options={{
             name: "permitData.contactDetails.email",
             rules: {
-              required: { value: true, message: "Email is required" },
+              required: { value: true, message: requiredMessage() },
             },
             label: "Email",
           }}
