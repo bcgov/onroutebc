@@ -233,7 +233,12 @@ export const TermOversizeForm = () => {
       >
         <Box sx={{ paddingBottom: "80px" }}>
           <FormProvider {...formMethods}>
-            <ApplicationDetails values={termOversizeDefaultValues} />
+            <ApplicationDetails
+              permitType={termOversizeDefaultValues.permitType}
+              applicationNumber={termOversizeDefaultValues.applicationNumber}
+              createdDateTime={termOversizeDefaultValues.createdDateTime}
+              updatedDateTime={termOversizeDefaultValues.updatedDateTime}
+            />
             <ContactDetails feature={FEATURE} values={termOversizeDefaultValues} />
             <PermitDetails 
               feature={FEATURE}
