@@ -1,10 +1,12 @@
-import { useQueryClient, useMutation } from "@tanstack/react-query";
+import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import {
   getApplicationInProgressById,
   submitTermOversize,
   updateTermOversize,
 } from "../apiManager/permitsAPI";
 import { Application } from "../types/application";
+import { useState } from "react";
+import { mapApplicationResponseToApplication } from "../helpers/mappers";
 
 /**
  * A custom react query mutation hook that saves the application data to the backend API
@@ -14,7 +16,6 @@ export const useSaveTermOversizeMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (data: Application) => {
-      
       if (data.applicationNumber) {
         return updateTermOversize(data, data.applicationNumber);
       } else {
@@ -34,23 +35,32 @@ export const useSaveTermOversizeMutation = () => {
 };
 
 /**
- * A custom react query mutation hook that get application details to the backend API
+ * A custom react query hook that get application details from the backend API
  * The hook gets application data by its permit ID
  */
-export const useApplicationDetailsMutation = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (permitId: string) => {
-      return getApplicationInProgressById(permitId);
-    },
-    onSuccess: (response) => {
-      if (response !== undefined) {
-        queryClient.invalidateQueries(["termOversize"]);
-        queryClient.setQueryData(["termOversize"], response);
-        return response;
+export const useApplicationDetailsQuery = (permitId?: string) => {
+  const [applicationData, setApplicationData] = useState<Application | undefined>(undefined);
+  
+  const query = useQuery({
+    queryKey: ["termOversize"],
+    queryFn: () => getApplicationInProgressById(permitId),
+    retry: false,
+    refetchOnMount: "always",
+    //enabled: !!permitId,
+    onSuccess: (application) => {
+      if (!application) {
+        setApplicationData(undefined);
       } else {
-        // Display Error in the form.
+        setApplicationData(
+          mapApplicationResponseToApplication(application)
+        );
       }
     },
   });
+
+  return {
+    query,
+    applicationData,
+    setApplicationData,
+  };
 };

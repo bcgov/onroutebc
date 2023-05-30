@@ -7,7 +7,6 @@ import { Application } from "../../types/application";
 import { ContactDetails } from "../../components/form/ContactDetails";
 import { ApplicationDetails } from "../../components/form/ApplicationDetails";
 import { VehicleDetails } from "./form/VehicleDetails/VehicleDetails";
-import dayjs from "dayjs";
 import { useContext, useState } from "react";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { PERMIT_LEFT_COLUMN_WIDTH } from "../../../../themes/orbcStyles";
@@ -27,18 +26,11 @@ import {
   Trailer,
 } from "../../../manageVehicles/types/managevehicles";
 import { mapVinToVehicleObject } from "../../helpers/mappers";
-import { TROS_COMMODITIES } from "../../constants/termOversizeConstants";
-import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
-import {
-  getDefaultRequiredVal,
-  applyWhenNotNullable,
-} from "../../../../common/helpers/util";
 import { useSaveTermOversizeMutation } from "../../hooks/hooks";
 import { SnackBarContext } from "../../../../App";
-import { getUserGuidFromSession } from "../../../../common/apiManager/httpRequestHandler";
 import { LeaveApplicationDialog } from "../../components/dialog/LeaveApplicationDialog";
 import { areApplicationDataEqual } from "../../helpers/equality";
-
+import { useDefaultApplicationFormData } from "../../hooks/useDefaultApplicationFormData";
 
 /**
  * The first step in creating and submitting a TROS Application.
@@ -54,8 +46,10 @@ export const TermOversizeForm = () => {
 
   // Context to hold all of the application data related to the TROS application
   const applicationContext = useContext(ApplicationContext);
-  const { companyId, userDetails } = useContext(OnRouteBCContext);
-  const submitTermOversizeQuery = useSaveTermOversizeMutation();
+  const { defaultApplicationDataValues: termOversizeDefaultValues } = useDefaultApplicationFormData(
+    applicationContext?.applicationData
+  );
+  const submitTermOversizeMutation = useSaveTermOversizeMutation();
   const snackBar = useContext(SnackBarContext);
 
   // Show leave application dialog
@@ -63,152 +57,6 @@ export const TermOversizeForm = () => {
 
   // Default values to register with React Hook Forms
   // Use saved data from the TROS application context, otherwise use empty or undefined values
-  const termOversizeDefaultValues: Application = {
-    companyId: +getDefaultRequiredVal(0, companyId),
-    applicationNumber: getDefaultRequiredVal(
-      "",
-      applicationContext?.applicationData?.applicationNumber
-    ),
-    userGuid: getUserGuidFromSession(),
-    permitType: getDefaultRequiredVal(
-      "TROS",
-      applicationContext?.applicationData?.permitType
-    ),
-    permitStatus: getDefaultRequiredVal(
-      "IN_PROGRESS",
-      applicationContext?.applicationData?.permitType
-    ),
-    createdDateTime: getDefaultRequiredVal(
-      dayjs(),
-      applicationContext?.applicationData?.createdDateTime
-    ),
-    updatedDateTime: getDefaultRequiredVal(
-      dayjs(),
-      applicationContext?.applicationData?.updatedDateTime
-    ),
-    permitData: {
-      startDate: getDefaultRequiredVal(
-        dayjs(),
-        applicationContext?.applicationData?.permitData?.startDate
-      ),
-      permitDuration: getDefaultRequiredVal(
-        30,
-        applicationContext?.applicationData?.permitData?.permitDuration
-      ),
-      expiryDate: getDefaultRequiredVal(
-        dayjs(),
-        applicationContext?.applicationData?.permitData?.expiryDate
-      ),
-      commodities: getDefaultRequiredVal(
-        [TROS_COMMODITIES[0], TROS_COMMODITIES[1]],
-        applicationContext?.applicationData?.permitData?.commodities
-      ),
-      contactDetails: {
-        firstName: getDefaultRequiredVal(
-          "",
-          applicationContext?.applicationData?.permitData?.contactDetails
-            ?.firstName,
-          userDetails?.firstName
-        ),
-        lastName: getDefaultRequiredVal(
-          "",
-          applicationContext?.applicationData?.permitData?.contactDetails
-            ?.lastName,
-          userDetails?.lastName
-        ),
-        phone1: getDefaultRequiredVal(
-          "",
-          applicationContext?.applicationData?.permitData?.contactDetails
-            ?.phone1,
-          userDetails?.phone1
-        ),
-        phone1Extension: getDefaultRequiredVal(
-          "",
-          applicationContext?.applicationData?.permitData?.contactDetails
-            ?.phone1Extension
-        ),
-        phone2: getDefaultRequiredVal(
-          "",
-          applicationContext?.applicationData?.permitData?.contactDetails
-            ?.phone2
-        ),
-        phone2Extension: getDefaultRequiredVal(
-          "",
-          applicationContext?.applicationData?.permitData?.contactDetails
-            ?.phone2Extension
-        ),
-        email: getDefaultRequiredVal(
-          "",
-          applicationContext?.applicationData?.permitData?.contactDetails
-            ?.email,
-          userDetails?.email
-        ),
-        fax: getDefaultRequiredVal(
-          "",
-          applicationContext?.applicationData?.permitData?.contactDetails
-            ?.fax
-        ),
-      },
-      // Default values are updated from companyInfo query in the ContactDetails common component
-      mailingAddress: {
-        addressLine1: "",
-        addressLine2: "",
-        city: "",
-        provinceCode: "",
-        countryCode: "",
-        postalCode: "",
-      },
-      vehicleDetails: {
-        unitNumber: getDefaultRequiredVal(
-          "",
-          applicationContext?.applicationData?.permitData?.vehicleDetails?.unitNumber
-        ),
-        vin: getDefaultRequiredVal(
-          "",
-          applicationContext?.applicationData?.permitData?.vehicleDetails?.vin
-        ),
-        plate: getDefaultRequiredVal(
-          "",
-          applicationContext?.applicationData?.permitData?.vehicleDetails?.plate
-        ),
-        make: getDefaultRequiredVal(
-          "",
-          applicationContext?.applicationData?.permitData?.vehicleDetails?.make
-        ),
-        year: applyWhenNotNullable(
-          (year) => year,
-          applicationContext?.applicationData?.permitData?.vehicleDetails?.year,
-          null
-        ),
-        countryCode: getDefaultRequiredVal(
-          "",
-          applicationContext?.applicationData?.permitData?.vehicleDetails
-            ?.countryCode
-        ),
-        provinceCode: getDefaultRequiredVal(
-          "",
-          applicationContext?.applicationData?.permitData?.vehicleDetails
-            ?.provinceCode
-        ),
-        vehicleType: getDefaultRequiredVal(
-          "",
-          applicationContext?.applicationData?.permitData?.vehicleDetails
-            ?.vehicleType
-        ),
-        vehicleSubType: getDefaultRequiredVal(
-          "",
-          applicationContext?.applicationData?.permitData?.vehicleDetails
-            ?.vehicleSubType
-        ),
-        saveVehicle: getDefaultRequiredVal(
-          false,
-          applicationContext?.applicationData?.permitData?.vehicleDetails
-            ?.saveVehicle
-        ),
-      },
-    },
-  };
-
   const formMethods = useForm<Application>({
     defaultValues: termOversizeDefaultValues,
     reValidateMode: "onBlur",
@@ -265,7 +113,7 @@ export const TermOversizeForm = () => {
 
   const onSaveApplication = async () => {
     const termOverSizeToBeAdded = applicationFormData(getValues());
-    const response = await submitTermOversizeQuery.mutateAsync(
+    const response = await submitTermOversizeMutation.mutateAsync(
       termOverSizeToBeAdded
     );
     
@@ -387,7 +235,11 @@ export const TermOversizeForm = () => {
           <FormProvider {...formMethods}>
             <ApplicationDetails values={termOversizeDefaultValues} />
             <ContactDetails feature={FEATURE} values={termOversizeDefaultValues} />
-            <PermitDetails feature={FEATURE}  values={termOversizeDefaultValues}/>
+            <PermitDetails 
+              feature={FEATURE}
+              defaultStartDate={termOversizeDefaultValues.permitData.startDate}
+              defaultDuration={termOversizeDefaultValues.permitData.permitDuration}
+            />
             <VehicleDetails feature={FEATURE} values={termOversizeDefaultValues}/>
           </FormProvider>
         </Box>

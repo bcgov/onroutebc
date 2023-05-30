@@ -1,5 +1,9 @@
 import { Dayjs } from "dayjs";
 
+type ReplaceDayjsWithString<T> = {
+  [K in keyof T]: T[K] extends Dayjs ? string : (T[K] extends (Dayjs | undefined) ? (string | undefined) : T[K]);
+};
+
 /**
  * A base permit type. This is an incomplete object and meant to be extended for use.
  */
@@ -16,6 +20,13 @@ export interface Application {
   updatedDateTime?: Dayjs;
   permitData: TermOversizeApplication;
 }
+
+type TransformPermitData<T> = {
+  [K in keyof T]: T[K] extends TermOversizeApplication ? ReplaceDayjsWithString<TermOversizeApplication> : T[K];
+};
+
+export type ApplicationResponse = TransformPermitData<ReplaceDayjsWithString<Application>>;
+export type ApplicationRequestData = TransformPermitData<ReplaceDayjsWithString<Application>>;
 
 interface MailingAddress {
   addressLine1: string;
@@ -59,9 +70,9 @@ export interface Commodities {
 }
 
 export interface TermOversizeApplication {
-  startDate: Dayjs | any;
+  startDate: Dayjs;
   permitDuration: number; //days
-  expiryDate: Dayjs | any;
+  expiryDate: Dayjs;
   contactDetails?: ContactDetails;
   vehicleDetails?: VehicleDetails;
   commodities: Commodities[];

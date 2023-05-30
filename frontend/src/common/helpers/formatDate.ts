@@ -29,12 +29,19 @@ export const formatDate = (
 };
 
 export const now = () => dayjs();
+export const nowUtc = () => dayjs.utc();
 
-export const toUtc = (datetime: Dayjs, formatStr: "YYYY-MM-DD HH:mm:ss" | "YYYY-MM-DD") => 
+export const dayjsToUtcStr = (datetime: Dayjs, formatStr?: string) => 
   dayjs(datetime).utc().format(formatStr);
 
-export const toLocal = (datetimeStr: string, formatStr: "YYYY-MM-DD HH:mm:ss" | "YYYY-MM-DD") =>
+export const toUtc = (datetime: string, formatStr?: string) =>
+  dayjs(datetime).utc().format(formatStr);
+
+export const toLocal = (datetimeStr: string, formatStr: string) =>
   dayjs(datetimeStr).local().format(formatStr);
+
+export const toLocalDayjs = (datetimeStr: string) =>
+  dayjs.utc(datetimeStr).local();
 
 export const toTimeZone = (datetimeStr: string, formatStr: "YYYY-MM-DD HH:mm:ss" | "YYYY-MM-DD", ianaId?: string) =>
   ianaId ? dayjs(datetimeStr).tz(ianaId).format(formatStr) : toLocal(datetimeStr, formatStr);

@@ -7,17 +7,19 @@ import {
   httpPUTRequest_axios,
   httpPOSTRequest,
 } from "../../../common/apiManager/httpRequestHandler";
-import { Application, PermitApplicationInProgress } from "../types/application";
+
+import { replaceEmptyValuesWithNull } from "../../../common/helpers/util";
+import { Application, ApplicationResponse, PermitApplicationInProgress } from "../types/application";
 import { APPLICATION_UPDATE_STATUS_API, PERMITS_API, VEHICLE_URL } from "./endpoints/endpoints";
 import { formatDate } from "../../../common/helpers/formatDate";
-import { replaceEmptyValuesWithNull } from "../../../common/helpers/util";
+import { mapApplicationToApplicationRequestData } from "../helpers/mappers";
 
 export const submitTermOversize = (
   termOversizePermit: Application
 ): Promise<AxiosResponse> => {
   return httpPOSTRequest_axios(
     PERMITS_API.SUBMIT_TERM_OVERSIZE_PERMIT,
-    termOversizePermit
+    mapApplicationToApplicationRequestData(termOversizePermit)
   );
 };
 
@@ -27,7 +29,7 @@ export const updateTermOversize = (
 ): Promise<AxiosResponse> => {
   return httpPUTRequest_axios(
     `${PERMITS_API.SUBMIT_TERM_OVERSIZE_PERMIT}/${applicationNumber}`,
-    termOversizePermit
+    mapApplicationToApplicationRequestData(termOversizePermit)
   );
 };
 
@@ -93,7 +95,7 @@ export const getApplicationsInProgress = async (): Promise<
 
 export const getApplicationInProgressById = (
   permitId: string | undefined,
-)  : Promise<Application | undefined>=> {
+)  : Promise<ApplicationResponse | undefined>=> {
   const url = `${VEHICLE_URL}/permits/applications/${permitId}`;
   return httpGETRequest(url).then(response => response.data);
 };

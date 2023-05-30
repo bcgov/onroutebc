@@ -1,9 +1,13 @@
+import { Dayjs } from "dayjs";
+import { applyWhenNotNullable } from "../../../common/helpers/util";
 import {
   PowerUnit,
   Trailer,
   VehicleType,
   VehicleTypes,
 } from "../../manageVehicles/types/managevehicles";
+import { Application, ApplicationRequestData, ApplicationResponse } from "../types/application";
+import { dayjsToUtcStr, now, toLocalDayjs } from "../../../common/helpers/formatDate";
 
 /**
  * This helper function is used to get the vehicle object that matches the vin prop
@@ -54,4 +58,54 @@ export const mapTypeCodeToObject = (
   }
 
   return typeObject;
+};
+
+export const mapApplicationResponseToApplication = (response: ApplicationResponse): Application => {
+  return {
+    ...response,
+    createdDateTime: applyWhenNotNullable(
+      (datetimeStr: string): Dayjs => toLocalDayjs(datetimeStr),
+      response.createdDateTime,
+      undefined
+    ),
+    updatedDateTime: applyWhenNotNullable(
+      (datetimeStr: string): Dayjs => toLocalDayjs(datetimeStr),
+      response.updatedDateTime,
+      undefined
+    ),
+    permitData: {
+      ...response.permitData,
+      startDate: applyWhenNotNullable(
+        (datetimeStr: string): Dayjs => toLocalDayjs(datetimeStr),
+        response.permitData.startDate,
+        now()
+      ),
+      expiryDate: applyWhenNotNullable(
+        (datetimeStr: string): Dayjs => toLocalDayjs(datetimeStr),
+        response.permitData.expiryDate,
+        now()
+      ),
+    }
+  };
+};
+
+export const mapApplicationToApplicationRequestData = (data: Application): ApplicationRequestData => {
+  return {
+    ...data,
+    createdDateTime: applyWhenNotNullable(
+      dayjsToUtcStr,
+      data.createdDateTime,
+      undefined
+    ),
+    updatedDateTime: applyWhenNotNullable(
+      dayjsToUtcStr,
+      data.updatedDateTime,
+      undefined
+    ),
+    permitData: {
+      ...data.permitData,
+      startDate: dayjsToUtcStr(data.permitData.startDate),
+      expiryDate: dayjsToUtcStr(data.permitData.expiryDate),
+    }
+  };
 };
