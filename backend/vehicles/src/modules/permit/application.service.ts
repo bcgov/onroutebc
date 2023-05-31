@@ -269,7 +269,6 @@ export class ApplicationService {
 
       //Format revision id
       rev = '-R' + String(permit.revision + 1).padStart(2, '0');
-      // rev = '-R' + String(revision + 1);
       if (permit.permitNumber) {
         seq = permit.permitNumber.substring(3, 11);
         rnd = permit.permitNumber.substring(12, 15);
