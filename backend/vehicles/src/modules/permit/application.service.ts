@@ -287,7 +287,7 @@ export class ApplicationService {
       }
       source = await this.getPermitApplicationOrigin(permitApplicationOrigin);
     } else {
-      //New Permit application.
+      //New permit application.
       seq = await this.databaseHelper.callDatabaseSequence(
         'permit.ORBC_PERMIT_NUMBER_SEQ',
       );
@@ -339,7 +339,12 @@ export class ApplicationService {
     return code.code;
   }
 
-  async generatePermitNumber(permitId: string): Promise<string> {
+    /**
+     * Generate permit number for a permit application.
+     * @param permitId 
+     * @returns permitNumber
+     */
+    async generatePermitNumber(permitId: string): Promise<string> {
     const permit = await this.findOne(permitId);
     let approvalSourceId: number;
     let rnd;
