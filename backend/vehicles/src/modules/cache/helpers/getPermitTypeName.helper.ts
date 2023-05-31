@@ -15,7 +15,7 @@ export const getPermitTypeName = async (
   permitTypeCode: string,
   permitTypeRepository: Repository<PermitType>,
 ) => {
-  let cachedData: string = await cacheManager.get(permitTypeCode);
+  const cachedData: string = await cacheManager.get(permitTypeCode);
 
   if (cachedData) return cachedData;
 
