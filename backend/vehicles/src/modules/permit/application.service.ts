@@ -3,7 +3,7 @@ import { InjectMapper } from '@automapper/nestjs';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ApplicationStatus } from 'src/common/enum/application-status.enum';
-import { IsNull, Repository } from 'typeorm';
+import { IsNull, Repository, UpdateResult } from 'typeorm';
 import { CreateApplicationDto } from './dto/request/create-application.dto';
 import { ReadApplicationDto } from './dto/response/read-application.dto';
 import { Permit } from './entities/permit.entity';
@@ -11,6 +11,7 @@ import { UpdateApplicationDto } from './dto/request/update-application.dto';
 import { ResultDto } from './dto/response/result.dto';
 import { DatabaseHelper } from 'src/common/helper/database.helper';
 import { PermitApplicationOrigin } from './entities/permit-application-origin.entity';
+import { PermitApprovalSource } from './entities/permit-approval-source.entity';
 
 @Injectable()
 export class ApplicationService {
@@ -21,6 +22,8 @@ export class ApplicationService {
     private databaseHelper: DatabaseHelper,
     @InjectRepository(PermitApplicationOrigin)
     private permitApplicationOriginRepository: Repository<PermitApplicationOrigin>,
+    @InjectRepository(PermitApprovalSource)
+    private permitApprovalSourceRepository: Repository<PermitApprovalSource>,
   ) {}
 
   /**
@@ -45,10 +48,8 @@ export class ApplicationService {
     createApplicationDto.applicationNumber = applicationNumber;
     //If permit id exists assign it to null to create new application.
     if (createApplicationDto.permitId) {
-      createApplicationDto.revision = await this.getRevision(
-        createApplicationDto.permitId,
-      );
-      createApplicationDto.revision = createApplicationDto.revision + 1;
+      const permit = await this.findOne(createApplicationDto.permitId);
+      createApplicationDto.revision = permit.revision + 1;
       createApplicationDto.permitId = null;
       createApplicationDto.permitNumber = null;
     }
@@ -208,14 +209,32 @@ export class ApplicationService {
     applicationIds: string[],
     applicationStatus: ApplicationStatus,
   ): Promise<ResultDto> {
-    const updateResult = await this.permitRepository
-      .createQueryBuilder()
-      .update()
-      .set({ permitStatus: applicationStatus })
-      .whereInIds(applicationIds)
-      .andWhere('permitNumber is null')
-      .returning(['permitId'])
-      .execute();
+    let updateResult: UpdateResult;
+    if (
+      applicationIds.length === 1 &&
+      applicationStatus === ApplicationStatus.ISSUED
+    ) {
+      const permitNumber = await this.generatePermitNumber(applicationIds[0]);
+      console.log('Permit Number ',permitNumber)
+      updateResult = await this.permitRepository
+        .createQueryBuilder()
+        .update()
+        .set({ permitStatus: applicationStatus, permitNumber: permitNumber })
+        .whereInIds(applicationIds)
+        .andWhere('permitNumber is null')
+        .returning(['permitId'])
+        .execute();
+      console.log(updateResult);
+    } else {
+      updateResult = await this.permitRepository
+        .createQueryBuilder()
+        .update()
+        .set({ permitStatus: applicationStatus })
+        .whereInIds(applicationIds)
+        .andWhere('permitNumber is null')
+        .returning(['permitId'])
+        .execute();
+    }
 
     const updatedApplications = Array.from(
       updateResult?.raw as [
@@ -249,14 +268,14 @@ export class ApplicationService {
     let source;
     let rnd;
     let rev = '-R00';
-    let revision: number;
+    let permit: Permit;
     if (permitId) {
       //Amendment to existing permit.//Get revision Id from database.
-      revision = await this.getRevision(permitId);
+      permit = await this.findOne(permitId);
 
       //Format revision id
-      rev = '-R' + String(revision + 1).padStart(2, '0');
-     // rev = '-R' + String(revision + 1);
+      rev = '-R' + String(permit.revision + 1).padStart(2, '0');
+      // rev = '-R' + String(revision + 1);
       if (permitNumber) {
         seq = permitNumber.substring(3, 11);
         rnd = permitNumber.substring(12, 15);
@@ -306,11 +325,45 @@ export class ApplicationService {
   }
 
   /**
-   * Get Permit Revision from database permit table
-   * @param permitId
+   * Get Application Origin Code from database lookup table ORBC_VT_PERMIT_APPLICATION_ORIGIN
+   * @param permitApplicationOrigin
+   *
    */
-  async getRevision(permitId: string): Promise<number> {
-    const revision = await this.findOne(permitId);
-    return revision.revision;
+  private async getPermitApprovalSource(
+    permitApprovalSource: string,
+  ): Promise<number> {
+    const code = await this.permitApprovalSourceRepository.findOne({
+      where: [{ id: permitApprovalSource }],
+    });
+
+    return code.code;
+  }
+
+  async generatePermitNumber(permitId: string): Promise<string> {
+    const permit = await this.findOne(permitId);
+    let approvalSourceId: number;
+    let rnd;
+    let seq:string;
+    const approvalSource = await this.permitApprovalSourceRepository.findOne({
+      where: [{ id: permit.permitApprovalSource }],
+    });
+    if (!approvalSourceId) {
+      approvalSourceId = 9;
+    } else {
+      approvalSourceId = approvalSource.code;
+    }
+    if (permit.revision == 0) {
+      seq = await this.databaseHelper.callDatabaseSequence(
+        'permit.ORBC_PERMIT_NUMBER_SEQ',
+      );
+      seq = seq.padStart(8, '0');
+      rnd = String(Math.floor(Math.random() * (100 - 999 + 1)) + 999);
+    } else {
+      seq = permit.applicationNumber.substring(3, 15);
+      rnd = '-A' + String(permit.revision).padStart(2, '0');
+    }
+    const permitNumber =
+      'P' + String(approvalSourceId) + '-' + String(seq) + String(rnd);
+    return permitNumber;
   }
 }

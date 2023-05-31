@@ -11,10 +11,11 @@ import { ApplicationService } from './application.service';
 import { ApplicationProfile } from './profile/application.profile';
 import { DatabaseHelper } from 'src/common/helper/database.helper';
 import { PermitApplicationOrigin } from './entities/permit-application-origin.entity';
+import { PermitApprovalSource } from './entities/permit-approval-source.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Permit, PermitData, PermitApplicationOrigin]),
+    TypeOrmModule.forFeature([Permit, PermitData, PermitApplicationOrigin, PermitApprovalSource]),
   ],
   controllers: [PermitController, ApplicationController],
   providers: [
