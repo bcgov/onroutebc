@@ -41,7 +41,6 @@ export class ApplicationService {
 
     //Generate appliction number for the application to be created in database.
     const applicationNumber = await this.generateApplicationNumber(
-      createApplicationDto.permitNumber,
       createApplicationDto.permitApplicationOrigin,
       createApplicationDto.permitId,
     );
@@ -51,7 +50,6 @@ export class ApplicationService {
       const permit = await this.findOne(createApplicationDto.permitId);
       createApplicationDto.revision = permit.revision + 1;
       createApplicationDto.permitId = null;
-      createApplicationDto.permitNumber = null;
     }
 
     const permitApplication = this.classMapper.map(
@@ -215,7 +213,6 @@ export class ApplicationService {
       applicationStatus === ApplicationStatus.ISSUED
     ) {
       const permitNumber = await this.generatePermitNumber(applicationIds[0]);
-      console.log('Permit Number ',permitNumber)
       updateResult = await this.permitRepository
         .createQueryBuilder()
         .update()
@@ -224,7 +221,6 @@ export class ApplicationService {
         .andWhere('permitNumber is null')
         .returning(['permitId'])
         .execute();
-      console.log(updateResult);
     } else {
       updateResult = await this.permitRepository
         .createQueryBuilder()
@@ -254,13 +250,11 @@ export class ApplicationService {
 
   /**
    * Generate Application Number
-   * @param permitNumber to generate application number from permit number.
    * @param applicationSource to get the source code
    * @param permitId if permit id is present then it is a permit amendment
    * and application number will be generated from exisitng permit number.
    */
   async generateApplicationNumber(
-    permitNumber: string,
     permitApplicationOrigin: string,
     permitId: string,
   ): Promise<string> {
@@ -276,9 +270,9 @@ export class ApplicationService {
       //Format revision id
       rev = '-R' + String(permit.revision + 1).padStart(2, '0');
       // rev = '-R' + String(revision + 1);
-      if (permitNumber) {
-        seq = permitNumber.substring(3, 11);
-        rnd = permitNumber.substring(12, 15);
+      if (permit.permitNumber) {
+        seq = permit.permitNumber.substring(3, 11);
+        rnd = permit.permitNumber.substring(12, 15);
       } else {
         seq = await this.databaseHelper.callDatabaseSequence(
           'permit.ORBC_PERMIT_NUMBER_SEQ',
@@ -339,16 +333,16 @@ export class ApplicationService {
     return code.code;
   }
 
-    /**
-     * Generate permit number for a permit application.
-     * @param permitId 
-     * @returns permitNumber
-     */
-    async generatePermitNumber(permitId: string): Promise<string> {
+  /**
+   * Generate permit number for a permit application.
+   * @param permitId
+   * @returns permitNumber
+   */
+  async generatePermitNumber(permitId: string): Promise<string> {
     const permit = await this.findOne(permitId);
     let approvalSourceId: number;
     let rnd;
-    let seq:string;
+    let seq: string;
     const approvalSource = await this.permitApprovalSourceRepository.findOne({
       where: [{ id: permit.permitApprovalSource }],
     });

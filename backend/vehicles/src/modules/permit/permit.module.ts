@@ -15,7 +15,12 @@ import { PermitApprovalSource } from './entities/permit-approval-source.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Permit, PermitData, PermitApplicationOrigin, PermitApprovalSource]),
+    TypeOrmModule.forFeature([
+      Permit,
+      PermitData,
+      PermitApplicationOrigin,
+      PermitApprovalSource,
+    ]),
   ],
   controllers: [PermitController, ApplicationController],
   providers: [
