@@ -276,7 +276,8 @@ export class ApplicationService {
         seq = await this.databaseHelper.callDatabaseSequence(
           'permit.ORBC_PERMIT_NUMBER_SEQ',
         );
-        rnd = String(Math.floor(Math.random() * (100 - 999 + 1)) + 999);
+        const { randomInt } = await import('crypto');
+        rnd = randomInt(100, 1000);
       }
       source = await this.getPermitApplicationOrigin(permitApplicationOrigin);
     } else {
@@ -285,8 +286,8 @@ export class ApplicationService {
         'permit.ORBC_PERMIT_NUMBER_SEQ',
       );
       source = await this.getPermitApplicationOrigin(permitApplicationOrigin);
-
-      rnd = String(Math.floor(Math.random() * (100 - 999 + 1)) + 999);
+      const { randomInt } = await import('crypto');
+      rnd = randomInt(100, 1000);
     }
 
     const applicationNumber = String(
@@ -355,13 +356,14 @@ export class ApplicationService {
         'permit.ORBC_PERMIT_NUMBER_SEQ',
       );
       seq = seq.padStart(8, '0');
-      rnd = String(Math.floor(Math.random() * (100 - 999 + 1)) + 999);
+      const { randomInt } = await import('crypto');
+      rnd = randomInt(100, 1000);
     } else {
       seq = permit.applicationNumber.substring(3, 15);
-      rnd = '-A' + String(permit.revision).padStart(2, '0');
+      rnd = 'A' + String(permit.revision).padStart(2, '0');
     }
     const permitNumber =
-      'P' + String(approvalSourceId) + '-' + String(seq) + String(rnd);
+      'P' + String(approvalSourceId) + '-' + String(seq) +'-'+String(rnd);
     return permitNumber;
   }
 }
