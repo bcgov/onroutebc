@@ -119,7 +119,11 @@ objects:
       ches-client-id: "${CHES_CLIENT_ID}"
       ches-client-secret: "${CHES_CLIENT_SECRET}"
       coms-basic-user: "${BASICAUTH_USERNAME}"
-      coms-basic-password: "${BASICAUTH_PASSWORD}"      
+      coms-basic-password: "${BASICAUTH_PASSWORD}"
+      cdogs-client-id: "${CDOGS_CLIENT_ID}"
+      cdogs-client-secret: "${CDOGS_CLIENT_SECRET}"
+      cdogs-token-url: "${CDOGS_TOKEN_URL}"
+      cdogs-url: "${CDOGS_URL}"      
   - apiVersion: v1
     kind: ImageStream
     metadata:
@@ -249,6 +253,26 @@ objects:
                     secretKeyRef:
                       name: ${NAME}-${ZONE}-${COMPONENT}
                       key: ches-client-secret
+                - name: CDOGS_CLIENT_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: cdogs-client-id
+                - name: CDOGS_CLIENT_SECRET
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: cdogs-client-secret
+                - name: CDOGS_TOKEN_URL
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: cdogs-token-url
+                - name: CDOGS_URL
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: cdogs-url              
               ports:
                 - containerPort: 5000
                   protocol: TCP
