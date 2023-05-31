@@ -107,6 +107,8 @@ objects:
       auth0-ignore-exp: "${AUTH0_IGNORE_EXP}"
       coms-url: "${COMS_URL}"
       coms-presigned-url-expiry: "${COMS_PRESIGNED_URL_EXPIRY}"
+      cdogs-token-url: "${CDOGS_TOKEN_URL}"
+      cdogs-url: "${CDOGS_URL}"      
   - apiVersion: v1
     kind: Secret
     metadata:
@@ -121,9 +123,7 @@ objects:
       coms-basic-user: "${BASICAUTH_USERNAME}"
       coms-basic-password: "${BASICAUTH_PASSWORD}"
       cdogs-client-id: "${CDOGS_CLIENT_ID}"
-      cdogs-client-secret: "${CDOGS_CLIENT_SECRET}"
-      cdogs-token-url: "${CDOGS_TOKEN_URL}"
-      cdogs-url: "${CDOGS_URL}"      
+      cdogs-client-secret: "${CDOGS_CLIENT_SECRET}"   
   - apiVersion: v1
     kind: ImageStream
     metadata:
@@ -265,12 +265,12 @@ objects:
                       key: cdogs-client-secret
                 - name: CDOGS_TOKEN_URL
                   valueFrom:
-                    secretKeyRef:
+                    configMapKeyRef:
                       name: ${NAME}-${ZONE}-${COMPONENT}
                       key: cdogs-token-url
                 - name: CDOGS_URL
                   valueFrom:
-                    secretKeyRef:
+                    configMapKeyRef:
                       name: ${NAME}-${ZONE}-${COMPONENT}
                       key: cdogs-url              
               ports:
