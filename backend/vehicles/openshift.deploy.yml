@@ -105,6 +105,8 @@ objects:
       auth0-issuer-url: "${AUTH0_ISSUER_URL}"
       auth0-audience: "${AUTH0_AUDIENCE}"
       auth0-ignore-exp: "${AUTH0_IGNORE_EXP}"
+      coms-url: "${COMS_URL}"
+      coms-presigned-url-expiry: "${COMS_PRESIGNED_URL_EXPIRY}"
   - apiVersion: v1
     kind: Secret
     metadata:
@@ -116,6 +118,8 @@ objects:
       database-password: "${DATABASE_PASSWORD}"
       ches-client-id: "${CHES_CLIENT_ID}"
       ches-client-secret: "${CHES_CLIENT_SECRET}"
+      coms-basic-user: "${BASICAUTH_USERNAME}"
+      coms-basic-password: "${BASICAUTH_PASSWORD}"      
   - apiVersion: v1
     kind: ImageStream
     metadata:
@@ -214,7 +218,27 @@ objects:
                   valueFrom:
                     configMapKeyRef:
                       name: ${NAME}-${ZONE}-${COMPONENT}
-                      key: auth0-ignore-exp                                         
+                      key: auth0-ignore-exp
+                - name: BASICAUTH_USERNAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: coms-basic-user 
+                - name: BASICAUTH_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: coms-basic-password
+                - name: COMS_URL
+                  valueFrom:
+                    configMapKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: coms-url
+                - name: COMS_PRESIGNED_URL_EXPIRY
+                  valueFrom:
+                    configMapKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: coms-presigned-url-expiry                                                               
                 - name: CHES_CLIENT_ID
                   valueFrom:
                     secretKeyRef:
