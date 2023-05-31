@@ -65,7 +65,6 @@ export const CompanyInfoForm = memo(
     const addCompanyInfoQuery = useMutation({
       mutationFn: updateCompanyInfo,
       onSuccess: (response) => {
-        console.log(response.status);
         if (response.status === 200) {
           queryClient.invalidateQueries(["companyInfo"]);
           setIsEditting(false);

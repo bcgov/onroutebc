@@ -28,6 +28,13 @@ import {
   CHOOSE_FROM_OPTIONS,
   VEHICLE_TYPES,
 } from "../../../../constants/constants";
+import { 
+  invalidNumber, 
+  invalidPlateLength, 
+  invalidVINLength, 
+  invalidYearMin, 
+  requiredMessage 
+} from "../../../../../../common/helpers/validationMessages";
 import { Application } from "../../../../types/application";
 import { getDefaultRequiredVal } from "../../../../../../common/helpers/util";
 
@@ -196,8 +203,8 @@ export const VehicleDetails = ({ feature, values}: { feature: string, values: Ap
           options={{
             name: "permitData.vehicleDetails.vin",
             rules: {
-              required: { value: true, message: "VIN is required." },
-              minLength: { value: 6, message: "Length must be 6" },
+              required: { value: true, message: requiredMessage() },
+              minLength: { value: 6, message: invalidVINLength(6) },
               maxLength: 6,
             },
             label: "VIN",
@@ -211,13 +218,15 @@ export const VehicleDetails = ({ feature, values}: { feature: string, values: Ap
           feature={feature}
           options={{
             name: "permitData.vehicleDetails.plate",
-            rules: { required: true, maxLength: 10 },
+            rules: { 
+              required: { value: true, message: requiredMessage() }, 
+              maxLength: { value: 10, message: invalidPlateLength(10) },
+            },
             label: "Plate",
             width: formFieldStyle.width,
           }}
           i18options={{
             label_i18: "vehicle.power-unit.plate",
-            inValidMessage_i18: "vehicle.power-unit.required",
           }}
         />
 
@@ -226,13 +235,15 @@ export const VehicleDetails = ({ feature, values}: { feature: string, values: Ap
           feature={feature}
           options={{
             name: "permitData.vehicleDetails.make",
-            rules: { required: true, maxLength: 20 },
+            rules: { 
+              required: { value: true, message: requiredMessage() }, 
+              maxLength: 20 
+            },
             label: "Make",
             width: formFieldStyle.width,
           }}
           i18options={{
             label_i18: "vehicle.power-unit.make",
-            inValidMessage_i18: "vehicle.power-unit.required",
           }}
         />
 
@@ -242,13 +253,13 @@ export const VehicleDetails = ({ feature, values}: { feature: string, values: Ap
           options={{
             name: "permitData.vehicleDetails.year",
             rules: {
-              required: { value: true, message: "Year is required." },
+              required: { value: true, message: requiredMessage() },
               valueAsNumber: true,
               maxLength: 4,
               validate: {
-                isNumber: (v) => !isNaN(v) || "Must be a number",
+                isNumber: (v) => !isNaN(v) || invalidNumber(),
                 lessThan1950: (v) =>
-                  parseInt(v) > 1950 || "Year must not be less than 1950",
+                  parseInt(v) > 1950 || invalidYearMin(1950),
               },
             },
             label: "Year",
@@ -272,7 +283,7 @@ export const VehicleDetails = ({ feature, values}: { feature: string, values: Ap
             rules: {
               required: {
                 value: true,
-                message: "Vehicle Type is required.",
+                message: requiredMessage(),
               },
               onChange: handleVehicleType,
             },
@@ -291,7 +302,7 @@ export const VehicleDetails = ({ feature, values}: { feature: string, values: Ap
           width={formFieldStyle.width}
           name="permitData.vehicleDetails.vehicleSubType"
           rules={{
-            required: { value: true, message: "Vehicle Sub-type is required." },
+            required: { value: true, message: requiredMessage() },
           }}
         />
 

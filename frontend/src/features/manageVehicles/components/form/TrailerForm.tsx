@@ -14,6 +14,9 @@ import { useNavigate } from "react-router-dom";
 import { useContext } from "react";
 import { SnackBarContext } from "../../../../App";
 import { getDefaultRequiredVal, getDefaultNullableVal } from "../../../../common/helpers/util";
+import { 
+  invalidNumber, invalidPlateLength, invalidVINLength, invalidYearMin, requiredMessage 
+} from "../../../../common/helpers/validationMessages";
 
 /**
  * Props used by the power unit form.
@@ -135,7 +138,10 @@ export const TrailerForm = ({ trailer }: TrailerFormProps) => {
             options={{
               name: "make",
               rules: {
-                required: { value: true, message: "Make required." },
+                required: { 
+                  value: true,
+                  message: requiredMessage()
+                },
                 maxLength: 20,
               },
               label: "Make",
@@ -149,13 +155,16 @@ export const TrailerForm = ({ trailer }: TrailerFormProps) => {
             options={{
               name: "year",
               rules: {
-                required: { value: true, message: "Year is required." },
+                required: { 
+                  value: true,
+                  message: requiredMessage()
+                },
+                validate: {
+                  isNumber: (v) => !isNaN(v) || invalidNumber(),
+                  lessThan1950: v => parseInt(v) > 1950 || invalidYearMin(1950),
+                },
                 valueAsNumber: true,
                 maxLength: 4,
-                validate: {
-                  isNumber: (v) => !isNaN(v) || "Must be a number",
-                  lessThan1950: v => parseInt(v) > 1950 || "Year must not be less than 1950",
-                },
               },
               label: "Year",
               width: formFieldStyle.width,
@@ -168,8 +177,14 @@ export const TrailerForm = ({ trailer }: TrailerFormProps) => {
             options={{
               name: "vin",
               rules: {
-                required: { value: true, message: "VIN is required." },
-                minLength: { value: 6, message: "Length must be 6" },
+                required: { 
+                  value: true,
+                  message: requiredMessage()
+                },
+                minLength: { 
+                  value: 6,
+                  message: invalidVINLength(6)
+                },
                 maxLength: 6,
               },
               label: "VIN",
@@ -184,8 +199,14 @@ export const TrailerForm = ({ trailer }: TrailerFormProps) => {
             options={{
               name: "plate",
               rules: {
-                required: { value: true, message: "Plate required." },
-                maxLength: 10,
+                required: { 
+                  value: true, 
+                  message: requiredMessage()
+                },
+                maxLength: { 
+                  value: 10,
+                  message: invalidPlateLength(10)
+                },
               },
               label: "Plate",
               width: formFieldStyle.width,
@@ -200,7 +221,7 @@ export const TrailerForm = ({ trailer }: TrailerFormProps) => {
               rules: {
                 required: {
                   value: true,
-                  message: "Vehicle Sub-type is required.",
+                  message: requiredMessage(),
                 },
               },
               label: "Vehicle Sub-type",
