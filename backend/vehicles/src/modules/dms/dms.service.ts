@@ -18,7 +18,7 @@ export class DmsService {
     private readonly comsService: ComsService,
   ) {}
 
-  async create(file: Express.Multer.File| IFile): Promise<ReadFileDto> {
+  async create(file: Express.Multer.File | IFile): Promise<ReadFileDto> {
     const readCOMSDtoList = await this.comsService.createObject(file);
 
     if (!readCOMSDtoList?.length) {

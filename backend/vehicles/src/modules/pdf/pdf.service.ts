@@ -166,8 +166,8 @@ export class PdfService {
     const file: IFile = {
       buffer: pdf,
       originalname: TEMPLATE_NAME,
-      mimetype: 'application/pdf'
-    }
+      mimetype: 'application/pdf',
+    };
 
     const readFileDto = await this.dmsService.create(file);
     return readFileDto.documentId;
