@@ -1,5 +1,5 @@
 export enum TemplateVersion {
-  LATEST = 'latest',
-  VERSION_1 = 'v1',
-  VERSION_2 = 'v2',
+  LATEST = 1,
+  V1,
+  V2,
 }

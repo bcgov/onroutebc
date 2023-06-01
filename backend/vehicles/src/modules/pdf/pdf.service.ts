@@ -36,7 +36,7 @@ export class PdfService {
    */
   private async findOne(
     permitType: string,
-    templateVersion: string,
+    templateVersion: number,
   ): Promise<Template> {
     return await this.templateRepository.findOne({
       where: { permitTypeId: permitType, templateVersion: templateVersion },
@@ -51,7 +51,7 @@ export class PdfService {
    */
   private async getTemplateRef(
     permitType: string,
-    templateVersion: string = TemplateVersion.LATEST,
+    templateVersion: number = TemplateVersion.LATEST,
   ): Promise<string> {
     const template = await this.findOne(permitType, templateVersion);
     return template.dmsRef;
@@ -186,7 +186,7 @@ export class PdfService {
    */
   public async generatePDF(
     permit: Permit,
-    templateVersion: string = TemplateVersion.LATEST,
+    templateVersion: number = TemplateVersion.LATEST,
   ): Promise<string> {
     // Call ORBC Template table to get the DMS Reference of the associated template/permit type
     const templateRef = await this.getTemplateRef(

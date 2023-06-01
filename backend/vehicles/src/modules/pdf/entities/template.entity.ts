@@ -23,8 +23,8 @@ export class Template {
   /**
    * Template version
    */
-  @Column({ length: 50, name: 'TEMPLATE_VERSION', nullable: false })
-  templateVersion: string;
+  @Column({ type: 'integer', name: 'TEMPLATE_VERSION', nullable: false })
+  templateVersion: number;
 
   /**
    * Document Management System (DMS) reference ID
