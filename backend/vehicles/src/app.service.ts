@@ -8,10 +8,8 @@ import { Repository } from 'typeorm';
 import { PermitType } from './modules/permit/entities/permit-type.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 
-
 @Injectable()
 export class AppService {
-
   constructor(
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
@@ -23,7 +21,6 @@ export class AppService {
 
     @InjectRepository(PermitType)
     private permitTypeRepository: Repository<PermitType>,
-    
   ) {}
 
   getHello(): string {
@@ -32,7 +29,7 @@ export class AppService {
 
   // TODO: Refactor item structure
   async addToCache(key: string, item: string) {
-    this.cacheManager.set(key, item);
+    await this.cacheManager.set(key, item);
   }
 
   async getFromCache(key: string) {
@@ -42,34 +39,32 @@ export class AppService {
 
   // TODO: Decide on a cache structure
   async initializeCache() {
-
     const countries = await this.commonService.findAllCountries();
-    countries.forEach(async (country) => {
-      await this.addToCache(country.countryCode, country.countryName)
-    })
+    for (const country of countries) {
+      await this.addToCache(country.countryCode, country.countryName);
+    }
 
     const provinces = await this.commonService.findAllProvinces();
-    provinces.forEach(async (province) => {
-      await this.addToCache(province.provinceCode, province.provinceName)
-    })
+    for (const province of provinces) {
+      await this.addToCache(province.provinceCode, province.provinceName);
+    }
 
     const permitTypes = await this.permitTypeRepository.find({});
-    permitTypes.forEach(async (permitType) => {
-      await this.addToCache(permitType.permitTypeId, permitType.name)
-    })
+    for (const permitType of permitTypes) {
+      await this.addToCache(permitType.permitTypeId, permitType.name);
+    }
 
     const powerUnitTypes = await this.powerUnitTypeService.findAll();
-    powerUnitTypes.forEach(async (pu) => {
-      await this.addToCache(pu.typeCode, pu.type)
-    })
+    for (const pu of powerUnitTypes) {
+      await this.addToCache(pu.typeCode, pu.type);
+    }
 
     const trailerTypes = await this.trailerTypeService.findAll();
-    trailerTypes.forEach(async (t) => {
-      await this.addToCache(t.typeCode, t.type)
-    })
+    for (const trailer of trailerTypes) {
+      await this.addToCache(trailer.typeCode, trailer.type);
+    }
 
     await this.addToCache('powerUnit', 'Power Unit');
     await this.addToCache('trailer', 'Trailer');
-
   }
 }

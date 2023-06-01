@@ -11,15 +11,13 @@ export const getVehicleTypeNames = async (
   cacheManager: Cache,
   permitData: PermitData,
 ) => {
-
-  
   const vehicleType = await cacheManager.get(
     permitData.vehicleDetails.vehicleType,
-  ) as string;
+  );
 
   const vehicleSubType = await cacheManager.get(
     permitData.vehicleDetails.vehicleSubType,
-  ) as string;
+  );
 
   // TODO: Error handling if cache can't find values
 

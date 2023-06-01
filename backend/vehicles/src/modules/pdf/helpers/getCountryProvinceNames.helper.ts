@@ -11,7 +11,7 @@ export const getCountryName = async (
   countryCode: string,
 ) => {
   // TODO: Error handling if cache can't find values
-  return await cacheManager.get(countryCode) as string;
+  return await cacheManager.get(countryCode);
 };
 
 /**
@@ -25,5 +25,5 @@ export const getProvinceName = async (
   provinceCode: string,
 ) => {
   // TODO: Error handling if cache can't find values
-  return await cacheManager.get(provinceCode) as string;
+  return await cacheManager.get(provinceCode);
 };

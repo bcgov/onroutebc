@@ -1,4 +1,4 @@
-import { PermitData } from "./permitData.interface";
+import { PermitData } from './permitData.interface';
 
 export interface PermitTemplate {
   permitName: string;

@@ -102,32 +102,35 @@ export class PdfService {
   private async getFullNamesFromCache(permit: Permit): Promise<FullNames> {
     const permitData = JSON.parse(permit.permitData.permitData) as PermitData;
 
-    const { vehicleType, vehicleSubType } = await getVehicleTypeNames(
+    const { vehicleType, vehicleSubType } = (await getVehicleTypeNames(
       this.cacheManager,
       permitData,
-    );
+    )) as { vehicleType: string; vehicleSubType: string };
 
-    const mailingCountryCode = await getCountryName(
+    const mailingCountryCode = (await getCountryName(
       this.cacheManager,
       permitData.vehicleDetails.countryCode,
-    );
-    const mailingProvinceCode = await getProvinceName(
+    )) as string;
+
+    const mailingProvinceCode = (await getProvinceName(
       this.cacheManager,
       permitData.vehicleDetails.provinceCode,
-    );
-    const vehicleCountryCode = await getCountryName(
+    )) as string;
+
+    const vehicleCountryCode = (await getCountryName(
       this.cacheManager,
       permitData.mailingAddress.countryCode,
-    );
-    const vehicleProvinceCode = await getProvinceName(
+    )) as string;
+
+    const vehicleProvinceCode = (await getProvinceName(
       this.cacheManager,
       permitData.mailingAddress.provinceCode,
-    );
+    )) as string;
 
-    const permitName = await getPermitTypeName(
+    const permitName = (await getPermitTypeName(
       this.cacheManager,
       permit.permitType,
-    );
+    )) as string;
 
     return {
       vehicleType,

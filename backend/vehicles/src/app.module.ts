@@ -80,12 +80,13 @@ const envPath = path.resolve(process.cwd() + '/../../');
   providers: [AppService],
 })
 export class AppModule {
-
   constructor(private readonly appService: AppService) {
-    this.initializeCache();
+    this.initializeCache().catch((err) => {
+      console.error('Cache initialization failed:', err);
+    });
   }
 
-  private initializeCache() {
-    this.appService.initializeCache();
+  private async initializeCache() {
+    return await this.appService.initializeCache();
   }
 }

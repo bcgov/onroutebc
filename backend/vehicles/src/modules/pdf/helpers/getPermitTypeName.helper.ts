@@ -11,5 +11,5 @@ export const getPermitTypeName = async (
   permitTypeCode: string,
 ) => {
   // TODO: Error handling if cache can't find values
- return await cacheManager.get(permitTypeCode) as string;
+  return await cacheManager.get(permitTypeCode);
 };

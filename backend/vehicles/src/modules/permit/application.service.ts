@@ -201,7 +201,7 @@ export class ApplicationService {
     );
     const success = updatedApplications?.map((permit) => permit.ID);
     const failure = applicationIds?.filter((id) => !success?.includes(id));
-    
+
     // TODO: When to generate PDF?
     await this.generatePDFs(success);
 
@@ -218,7 +218,6 @@ export class ApplicationService {
    * @param permitIds array of permit ID's to be converted as PDF's and saved in DMS
    */
   async generatePDFs(permitIds: string[]) {
-
     for (const id of permitIds) {
       const permit = await this.findOne(id);
       if (

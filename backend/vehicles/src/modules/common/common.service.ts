@@ -19,7 +19,7 @@ export class CommonService {
     });
   }
 
-  async findAllCountries() : Promise<Country[]> {
+  async findAllCountries(): Promise<Country[]> {
     return await this.countryRepository.find({});
   }
 
@@ -29,7 +29,7 @@ export class CommonService {
     });
   }
 
-  async findAllProvinces() : Promise<Province[]> {
+  async findAllProvinces(): Promise<Province[]> {
     return await this.provinceRepository.find({});
   }
 }
