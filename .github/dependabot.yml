@@ -16,6 +16,14 @@
 #       include: "scope"
 
 #   - package-ecosystem: npm
+#     directory: /backend/dms
+#     schedule:
+#       interval: weekly
+#     commit-message:
+#       prefix: "Backend"
+#       include: "scope"
+
+#   - package-ecosystem: npm
 #     directory: /frontend
 #     schedule:
 #       interval: weekly
