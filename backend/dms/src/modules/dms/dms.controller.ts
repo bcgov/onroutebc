@@ -9,6 +9,7 @@ import {
   MaxFileSizeValidator,
   ParseFilePipe,
   Query,
+  Res,
 } from '@nestjs/common';
 import { DmsService } from './dms.service';
 import {
@@ -27,7 +28,6 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { CreateFileDto } from './dto/request/create-file.dto';
 import { ReadFileDto } from './dto/response/read-file.dto';
 import { FileDownloadModes } from '../../common/enum/file-download-modes.enum';
-import { Res } from '@nestjs/common';
 import { Response } from 'express';
 
 @ApiTags('DMS')

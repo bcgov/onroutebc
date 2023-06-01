@@ -1,13 +1,10 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
-import {
-  Injectable,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { passportJwtSecret } from 'jwks-rsa';
 import { AuthService } from './auth.service';
 import { IUserJWT } from '../../common/interface/user-jwt.interface';
 import { Request } from 'express';
-
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -30,17 +27,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   // eslint-disable-next-line @typescript-eslint/require-await
-  async validate(req: Request, payload: IUserJWT): Promise<IUserJWT> {   
-
-    // const currentUser = {
-    //   userName,
-    //   userGUID,
-    //   roles,
-    //   companyId,
-    //   associatedCompanies,
-    // };
-
-    // Object.assign(payload, currentUser);
+  async validate(req: Request, payload: IUserJWT): Promise<IUserJWT> {
     return payload;
   }
 }

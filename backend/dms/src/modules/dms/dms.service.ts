@@ -29,7 +29,6 @@ export class DmsService {
       ReadCOMSDto,
       Dms,
     );
-    //dmsRecord.objectMimeType = file.mimetype; //TODO confirm mime type
 
     return this.classMapper.mapAsync(
       await this.dmsRepository.save(dmsRecord),

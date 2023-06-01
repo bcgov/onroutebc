@@ -19,7 +19,6 @@ async function bootstrap() {
         const badRequestExceptionList: BadRequestExceptionDto[] = [];
         e.forEach((error) => {
           const badRequestExceptionDto = new BadRequestExceptionDto();
-          // TODO : Handle Validations of an Array of Nested/Child Objects
           badRequestExceptionDto.field = error.children[0]
             ? error.property.concat('.', error.children[0]?.property.toString())
             : error.property;
