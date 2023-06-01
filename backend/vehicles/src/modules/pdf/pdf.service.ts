@@ -18,6 +18,7 @@ import { CacheService } from '../cache/cache.service';
 import { DmsService } from '../dms/dms.service';
 import { IFile } from '../../common/interface/file.interface';
 import { PdfReturnType } from 'src/common/enum/pdf-return-type.enum';
+import { oidcResponse } from './interface/oidcResponse.interface';
 
 @Injectable()
 export class PdfService {
@@ -73,10 +74,13 @@ export class PdfService {
       this.httpService.get(url, {
         responseType: CDOGS_RESPONSE_TYPE,
       }),
-    );
+    )
+    .then((response) => {
+      return response.data as Buffer;
+    });
 
-    // Decode array buffer to base64
-    const template = templateArrayBuffer.data.toString(ENCODING_TYPE);
+    // Decode array buffer to string
+    const template = templateArrayBuffer.toString(ENCODING_TYPE);
 
     return template;
   }
@@ -108,7 +112,7 @@ export class PdfService {
 
     // Format the template data to be used in the templated word documents
     const fullNames = await this.getFullNamesFromDatabase(permit);
-    const templateData = await formatTemplateData(permit, fullNames);
+    const templateData = formatTemplateData(permit, fullNames);
 
     // We need the oidc api to generate a token for us
     const oidcResponse = await lastValueFrom(
@@ -121,8 +125,11 @@ export class PdfService {
           },
         },
       ),
-    );
-    const keycloak = await oidcResponse.data;
+    )
+    .then((response) => {
+      return response.data as oidcResponse;
+    })
+
 
     // Calls the CDOGS service, which converts the the template document into a pdf
     const cdogsResponse = await lastValueFrom(
@@ -144,7 +151,7 @@ export class PdfService {
         }),
         {
           headers: {
-            Authorization: `Bearer ${keycloak.access_token}`,
+            Authorization: `Bearer ${oidcResponse.access_token}`,
             'Content-Type': 'application/json',
           },
           responseType: CDOGS_RESPONSE_TYPE,
@@ -152,7 +159,7 @@ export class PdfService {
       ),
     );
 
-    const pdf: ArrayBuffer = await cdogsResponse.data;
+    const pdf = await cdogsResponse.data as ArrayBuffer;
 
     return pdf;
   }
@@ -162,7 +169,10 @@ export class PdfService {
    * @param {ArrayBuffer} pdf
    * @returns a DMS reference ID
    */
-  private async savePDF(pdf: ArrayBuffer, returnValue?: PdfReturnType): Promise<string> {
+  private async savePDF(
+    pdf: ArrayBuffer,
+    returnValue?: PdfReturnType,
+  ): Promise<string> {
     const file: IFile = {
       buffer: pdf,
       originalname: TEMPLATE_NAME,
@@ -171,9 +181,9 @@ export class PdfService {
 
     const readFileDto = await this.dmsService.create(file);
 
-    let returnVal : string;
+    let returnVal: string;
 
-    switch(returnValue) {
+    switch (returnValue) {
       case PdfReturnType.MIME_TYPE:
         returnVal = readFileDto.objectMimeType;
         break;

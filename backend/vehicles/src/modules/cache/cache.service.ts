@@ -36,7 +36,7 @@ export class CacheService {
    * @returns
    */
   public async getFullNamesFromDatabase(permit: Permit): Promise<FullNames> {
-    const permitData: PermitData = JSON.parse(permit.permitData.permitData);
+    const permitData = JSON.parse(permit.permitData.permitData) as PermitData;
 
     const { vehicleType, vehicleSubType } = await getVehicleTypeNames(
       this.cacheManager,

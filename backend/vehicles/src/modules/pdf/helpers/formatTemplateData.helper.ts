@@ -1,5 +1,7 @@
 import { Permit } from 'src/modules/permit/entities/permit.entity';
 import { FullNames } from '../../cache/interface/fullNames.interface';
+import { PermitData } from '../interface/permitData.interface';
+import { PermitTemplate } from '../interface/permit.template.interface';
 
 /**
  * Formats the permit data so that it can be used in the templated word documents
@@ -7,26 +9,26 @@ import { FullNames } from '../../cache/interface/fullNames.interface';
  * @param fullNames
  * @returns formatted permit data to be displayed on the PDF
  */
-export const formatTemplateData = async (
-  permit: Permit,
-  fullNames: FullNames,
-) => {
+export const formatTemplateData = (permit: Permit, fullNames: FullNames) => {
   // Create a new template object that is a copy of the permit
   // This template object will include the formatted values used in the templated word documents
-  const template: any = permit;
-  template.permitData = JSON.parse(permit.permitData.permitData);
+  const template: PermitTemplate = {
+    permitName: '',
+    permitNumber: '',
+    revisions: [
+      {
+        timeStamp: '',
+        description: 'N/A',
+      },
+    ],
+    permitData: null,
+  };
 
-  // TODO: Revision history
-  const revisions = [
-    {
-      timeStamp: '',
-      description: 'N/A',
-    },
-  ];
+  template.permitNumber = permit.permitNumber || '';
+  template.permitData = JSON.parse(permit.permitData.permitData) as PermitData;
 
   // Format Permit information
   template.permitName = fullNames.permitName;
-  template.revisions = revisions;
 
   // Format Vehicle Details
   template.permitData.vehicleDetails.vehicleType = fullNames.vehicleType;
