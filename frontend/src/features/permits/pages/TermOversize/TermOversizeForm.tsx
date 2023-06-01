@@ -1,9 +1,9 @@
-import { useForm, FormProvider, FieldValues } from "react-hook-form";
+import { FormProvider, FieldValues } from "react-hook-form";
 import { Box, Button, useMediaQuery, useTheme } from "@mui/material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSave } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
-import { Application } from "../../types/application";
+import { Application, VehicleDetails as VehicleDetailsType } from "../../types/application";
 import { ContactDetails } from "../../components/form/ContactDetails";
 import { ApplicationDetails } from "../../components/form/ApplicationDetails";
 import { VehicleDetails } from "./form/VehicleDetails/VehicleDetails";
@@ -46,7 +46,10 @@ export const TermOversizeForm = () => {
 
   // Context to hold all of the application data related to the TROS application
   const applicationContext = useContext(ApplicationContext);
-  const { defaultApplicationDataValues: termOversizeDefaultValues } = useDefaultApplicationFormData(
+  const { 
+    defaultApplicationDataValues: termOversizeDefaultValues,
+    formMethods,
+  } = useDefaultApplicationFormData(
     applicationContext?.applicationData
   );
   const submitTermOversizeMutation = useSaveTermOversizeMutation();
@@ -54,13 +57,6 @@ export const TermOversizeForm = () => {
 
   // Show leave application dialog
   const [showLeaveApplicationDialog, setShowLeaveApplicationDialog] = useState<boolean>(false); 
-
-  // Default values to register with React Hook Forms
-  // Use saved data from the TROS application context, otherwise use empty or undefined values
-  const formMethods = useForm<Application>({
-    defaultValues: termOversizeDefaultValues,
-    reValidateMode: "onBlur",
-  });
 
   const { handleSubmit, getValues } = formMethods;
 
@@ -84,14 +80,16 @@ export const TermOversizeForm = () => {
 
   const onContinue = function (data: FieldValues) {
     const termOverSizeToBeAdded = applicationFormData(data);
-    handleSaveVehicle(termOverSizeToBeAdded);
-    applicationContext?.setApplicationData(termOverSizeToBeAdded);
-    applicationContext?.next();
+    const vehicleData = termOverSizeToBeAdded.permitData.vehicleDetails;
+    handleSaveVehicle(vehicleData);
+
+    // Save application before continuing
+    onSaveApplication(() => applicationContext?.next());
   };
 
-  const isSubmitTermOversizeSuccessful = (status: number) => status === 200 || status === 201;
+  const isSaveTermOversizeSuccessful = (status: number) => status === 200 || status === 201;
 
-  const onSubmitSuccess = (responseData: Application, status: number) => {
+  const onSaveSuccess = (responseData: Application, status: number) => {
     snackBar.setSnackBar({
       showSnackbar: true,
       setShowSnackbar: () => true,
@@ -102,7 +100,7 @@ export const TermOversizeForm = () => {
     applicationContext?.setApplicationData(responseData);
   };
 
-  const onSubmitFailure = () => {
+  const onSaveFailure = () => {
     snackBar.setSnackBar({
       showSnackbar: true,
       setShowSnackbar: () => true,
@@ -111,17 +109,18 @@ export const TermOversizeForm = () => {
     });
   };
 
-  const onSaveApplication = async () => {
+  const onSaveApplication = async (additionalSuccessAction?: () => void) => {
     const termOverSizeToBeAdded = applicationFormData(getValues());
     const response = await submitTermOversizeMutation.mutateAsync(
       termOverSizeToBeAdded
     );
     
-    if (isSubmitTermOversizeSuccessful(response.status)) {
+    if (isSaveTermOversizeSuccessful(response.status)) {
       const responseData = await response.data;
-      onSubmitSuccess(responseData as Application, response.status);
+      onSaveSuccess(responseData as Application, response.status);
+      additionalSuccessAction?.();
     } else {
-      onSubmitFailure();
+      onSaveFailure();
     }
   };
 
@@ -131,12 +130,12 @@ export const TermOversizeForm = () => {
   const updateTrailerMutation = useUpdateTrailerMutation();
   const allVehiclesQuery = useVehiclesQuery();
 
-  const handleSaveVehicle = (data: Application) => {
+  const handleSaveVehicle = (vehicleData?: VehicleDetailsType) => {
     // Check if the "add/update vehicle" checkbox was checked by the user
-    if (!data.permitData.vehicleDetails?.saveVehicle) return;
+    if (!vehicleData?.saveVehicle) return;
 
     // Get the vehicle info from the form
-    const vehicle = data.permitData.vehicleDetails;
+    const vehicle = vehicleData;
 
     // Check if the vehicle that is to be saved was created from an existing vehicle
     const existingVehicle = mapVinToVehicleObject(
@@ -239,13 +238,16 @@ export const TermOversizeForm = () => {
               createdDateTime={termOversizeDefaultValues.createdDateTime}
               updatedDateTime={termOversizeDefaultValues.updatedDateTime}
             />
-            <ContactDetails feature={FEATURE} values={termOversizeDefaultValues} />
+            <ContactDetails feature={FEATURE} />
             <PermitDetails 
               feature={FEATURE}
               defaultStartDate={termOversizeDefaultValues.permitData.startDate}
               defaultDuration={termOversizeDefaultValues.permitData.permitDuration}
             />
-            <VehicleDetails feature={FEATURE} values={termOversizeDefaultValues}/>
+            <VehicleDetails
+              feature={FEATURE}
+              vehicleData={termOversizeDefaultValues.permitData.vehicleDetails}
+            />
           </FormProvider>
         </Box>
 
@@ -287,7 +289,7 @@ export const TermOversizeForm = () => {
               variant="contained"
               color="secondary"
               sx={{ marginLeft: "-420px", marginTop: "40px", display: "flex", alignItems: "center", gap: "10px"}}
-              onClick={onSaveApplication}
+              onClick={() => onSaveApplication()}
             >
               <FontAwesomeIcon icon={faSave} />
               Save

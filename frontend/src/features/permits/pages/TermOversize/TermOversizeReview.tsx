@@ -55,7 +55,12 @@ export const TermOversizeReview = () => {
             description="Please review and confirm that the information below is correct."
             width="668px"
           />
-          <ApplicationDetails values={applicationData} />
+          <ApplicationDetails 
+            permitType={applicationData?.permitType}
+            applicationNumber={applicationData?.applicationNumber}
+            createdDateTime={applicationData?.createdDateTime}
+            updatedDateTime={applicationData?.updatedDateTime}
+          />
           <ReviewContactDetails values={applicationData} />
           <ReviewPermitDetails values={applicationData} />
           <ReviewVehicleInfo values={applicationData} />

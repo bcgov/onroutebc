@@ -62,7 +62,7 @@ export const ApplicationDetails = ({
   createdDateTime,
   updatedDateTime,
 }: {
-  permitType: string,
+  permitType?: string,
   applicationNumber?: string,
   createdDateTime?: Dayjs,
   updatedDateTime?: Dayjs,

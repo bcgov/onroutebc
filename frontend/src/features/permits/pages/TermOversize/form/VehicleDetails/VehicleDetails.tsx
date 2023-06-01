@@ -9,25 +9,28 @@ import {
   SelectChangeEvent,
   Typography,
 } from "@mui/material";
+import { useFormContext } from "react-hook-form";
+import { useEffect, useState } from "react";
+
 import { CountryAndProvince } from "../../../../../../common/components/form/CountryAndProvince";
 import { CustomFormComponent } from "../../../../../../common/components/form/CustomFormComponents";
 import { InfoBcGovBanner } from "../../../../../../common/components/banners/AlertBanners";
-import { useContext, useEffect, useState } from "react";
+import { VehicleDetails as VehicleDetailsType } from "../../../../types/application";
 import {
   PERMIT_MAIN_BOX_STYLE,
   PERMIT_LEFT_BOX_STYLE,
   PERMIT_LEFT_HEADER_STYLE,
   PERMIT_RIGHT_BOX_STYLE,
 } from "../../../../../../themes/orbcStyles";
-import { useFormContext } from "react-hook-form";
+
 import { SelectPowerUnitOrTrailer } from "./customFields/SelectPowerUnitOrTrailer";
 import { SelectVehicleDropdown } from "./customFields/SelectVehicleDropdown";
 import { SelectVehicleSubTypeDropdown } from "./customFields/SelectVehicleSubTypeDropdown";
-import { ApplicationContext } from "../../../../context/ApplicationContext";
 import {
   CHOOSE_FROM_OPTIONS,
   VEHICLE_TYPES,
 } from "../../../../constants/constants";
+
 import { 
   invalidNumber, 
   invalidPlateLength, 
@@ -35,10 +38,8 @@ import {
   invalidYearMin, 
   requiredMessage 
 } from "../../../../../../common/helpers/validationMessages";
-import { Application } from "../../../../types/application";
-import { getDefaultRequiredVal } from "../../../../../../common/helpers/util";
 
-export const VehicleDetails = ({ feature, values}: { feature: string, values: Application | undefined }) => {
+export const VehicleDetails = ({ feature, vehicleData }: { feature: string, vehicleData?: VehicleDetailsType }) => {
   const formFieldStyle = {
     fontWeight: "bold",
     width: "490px",
@@ -50,8 +51,6 @@ export const VehicleDetails = ({ feature, values}: { feature: string, values: Ap
     formState: { isDirty },
   } = useFormContext();
 
-  const { applicationData, setApplicationData } =
-    useContext(ApplicationContext);
   // Choose vehicle based on either Unit Number or Plate
   const [chooseFrom, setChooseFrom] = useState("");
   // Selected vehicle is the selected vehicles plate number
@@ -68,60 +67,13 @@ export const VehicleDetails = ({ feature, values}: { feature: string, values: Ap
   useEffect(() => {
     // If the form is initially loaded and there is application data from the application context,
     // then populate vehicle type from the application context data
-    if (!isDirty && applicationData?.permitData?.vehicleDetails?.vehicleType) {
+    if (!isDirty && vehicleData?.vehicleType) {
       setValue(
         "permitData.vehicleDetails.vehicleType",
-        applicationData?.permitData?.vehicleDetails?.vehicleType
+        vehicleData?.vehicleType
       );
     }
   }, [selectedVehicle]);
-
-  //initial vehicle info with existing data
-  useEffect(() => {
-    // If the form is initially loaded and there is application data from the application context,
-    // then populate vehicle type from the application context data
-    // if (values?.permitData.vehicleDetails !== undefined) 
-    {
-      setValue(
-        "permitData.vehicleDetails",{
-          // vin: values?.permitData.vehicleDetails.vin,
-          // vehicleType: values?.permitData?.vehicleDetails?.vehicleType,
-          vin: getDefaultRequiredVal(
-            "",
-            values?.permitData?.vehicleDetails?.vin
-          ),
-          plate: getDefaultRequiredVal(
-            "",
-            values?.permitData?.vehicleDetails?.plate
-          ),
-          make: getDefaultRequiredVal(
-            "",
-            values?.permitData?.vehicleDetails?.make
-          ),
-          year: getDefaultRequiredVal(
-            null,
-            values?.permitData?.vehicleDetails?.year
-          ),
-          countryCode: getDefaultRequiredVal(
-            "",
-            values?.permitData?.vehicleDetails?.countryCode
-          ),
-          provinceCode: getDefaultRequiredVal(
-            "",
-            values?.permitData?.vehicleDetails?.provinceCode
-          ),
-          vehicleType: getDefaultRequiredVal(
-            "",
-            values?.permitData?.vehicleDetails?.vehicleType
-          ),
-          vehicleSubType: getDefaultRequiredVal(
-            "",
-            values?.permitData?.vehicleDetails?.vehicleSubType
-          ),
-        }
-      );
-    }
-  }, [values?.permitData.vehicleDetails?.vin]);
 
   const handleChooseFrom = (event: SelectChangeEvent) => {
     setChooseFrom(event.target.value as string);
@@ -137,12 +89,6 @@ export const VehicleDetails = ({ feature, values}: { feature: string, values: Ap
   const handleVehicleType = (event: SelectChangeEvent) => {
     const updatedVehicleType = event.target.value as string;
     setValue("permitData.vehicleDetails.vehicleType", updatedVehicleType);
-    const updated = applicationData;
-    if (updated && updated.permitData.vehicleDetails) {
-      updated.permitData.vehicleDetails.vehicleType = updatedVehicleType;
-      updated.permitData.vehicleDetails.vehicleSubType = "";
-      setApplicationData(updated);
-    }
     setValue("permitData.vehicleDetails.vehicleSubType", "");
   };
 

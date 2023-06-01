@@ -28,7 +28,7 @@ type TransformPermitData<T> = {
 export type ApplicationResponse = TransformPermitData<ReplaceDayjsWithString<Application>>;
 export type ApplicationRequestData = TransformPermitData<ReplaceDayjsWithString<Application>>;
 
-interface MailingAddress {
+export interface MailingAddress {
   addressLine1: string;
   addressLine2?: string;
   city: string;

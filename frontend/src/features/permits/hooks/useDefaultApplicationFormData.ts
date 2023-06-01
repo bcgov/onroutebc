@@ -1,203 +1,20 @@
 import { useState, useEffect, useContext } from "react";
-import dayjs from "dayjs";
 
 import { Application } from "../types/application";
-import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../common/helpers/util";
-import { getUserGuidFromSession } from "../../../common/apiManager/httpRequestHandler";
-import { now } from "../../../common/helpers/formatDate";
-import { TROS_COMMODITIES } from "../constants/termOversizeConstants";
-import OnRouteBCContext, { UserDetailContext } from "../../../common/authentication/OnRouteBCContext"; 
-
-const getDefaultValues = (applicationData?: Application, companyId?: number, userDetails?: UserDetailContext) => ({
-  companyId: +getDefaultRequiredVal(0, companyId),
-  applicationNumber: getDefaultRequiredVal(
-    "",
-    applicationData?.applicationNumber
-  ),
-  userGuid: getUserGuidFromSession(),
-  permitType: getDefaultRequiredVal(
-    "TROS",
-    applicationData?.permitType
-  ),
-  permitStatus: getDefaultRequiredVal(
-    "IN_PROGRESS",
-    applicationData?.permitStatus
-  ),
-  createdDateTime: applyWhenNotNullable(
-    (date) => dayjs(date),
-    applicationData?.createdDateTime,
-    now()
-  ),
-  updatedDateTime: applyWhenNotNullable(
-    (date) => dayjs(date),
-    applicationData?.updatedDateTime,
-    now()
-  ),
-  permitData: {
-    startDate: applyWhenNotNullable(
-      (date) => dayjs(date),
-      applicationData?.permitData?.startDate,
-      now()
-    ),
-    permitDuration: applyWhenNotNullable(
-      (duration) => +duration,
-      applicationData?.permitData?.permitDuration,
-      30
-    ),
-    expiryDate: applyWhenNotNullable(
-      (date) => dayjs(date),
-      applicationData?.permitData?.expiryDate,
-      now()
-    ),
-    commodities: getDefaultRequiredVal(
-      [TROS_COMMODITIES[0], TROS_COMMODITIES[1]],
-      applicationData?.permitData?.commodities
-    ),
-    contactDetails: {
-      firstName: getDefaultRequiredVal(
-        "",
-        applicationData?.permitData?.contactDetails
-          ?.firstName,
-        userDetails?.firstName
-      ),
-      lastName: getDefaultRequiredVal(
-        "",
-        applicationData?.permitData?.contactDetails
-          ?.lastName,
-        userDetails?.lastName
-      ),
-      phone1: getDefaultRequiredVal(
-        "",
-        applicationData?.permitData?.contactDetails
-          ?.phone1,
-        userDetails?.phone1
-      ),
-      phone1Extension: getDefaultRequiredVal(
-        "",
-        applicationData?.permitData?.contactDetails
-          ?.phone1Extension
-      ),
-      phone2: getDefaultRequiredVal(
-        "",
-        applicationData?.permitData?.contactDetails
-          ?.phone2
-      ),
-      phone2Extension: getDefaultRequiredVal(
-        "",
-        applicationData?.permitData?.contactDetails
-          ?.phone2Extension
-      ),
-      email: getDefaultRequiredVal(
-        "",
-        applicationData?.permitData?.contactDetails
-          ?.email,
-        userDetails?.email
-      ),
-      fax: getDefaultRequiredVal(
-        "",
-        applicationData?.permitData?.contactDetails
-          ?.fax
-      ),
-    },
-    // Default values are updated from companyInfo query in the ContactDetails common component
-    mailingAddress: {
-      addressLine1: getDefaultRequiredVal(
-        "",
-        applicationData?.permitData?.mailingAddress?.addressLine1
-      ),
-      addressLine2: getDefaultRequiredVal(
-        "",
-        applicationData?.permitData?.mailingAddress?.addressLine2
-      ),
-      city: getDefaultRequiredVal(
-        "",
-        applicationData?.permitData?.mailingAddress?.city
-      ),
-      provinceCode: getDefaultRequiredVal(
-        "",
-        applicationData?.permitData?.mailingAddress?.provinceCode
-      ),
-      countryCode: getDefaultRequiredVal(
-        "",
-        applicationData?.permitData?.mailingAddress?.countryCode
-      ),
-      postalCode: getDefaultRequiredVal(
-        "",
-        applicationData?.permitData?.mailingAddress?.postalCode
-      ),
-    },
-    vehicleDetails: {
-      unitNumber: getDefaultRequiredVal(
-        "",
-        applicationData?.permitData?.vehicleDetails?.unitNumber
-      ),
-      vin: getDefaultRequiredVal(
-        "",
-        applicationData?.permitData?.vehicleDetails?.vin
-      ),
-      plate: getDefaultRequiredVal(
-        "",
-        applicationData?.permitData?.vehicleDetails?.plate
-      ),
-      make: getDefaultRequiredVal(
-        "",
-        applicationData?.permitData?.vehicleDetails?.make
-      ),
-      year: applyWhenNotNullable(
-        (year) => year,
-        applicationData?.permitData?.vehicleDetails?.year,
-        null
-      ),
-      countryCode: getDefaultRequiredVal(
-        "",
-        applicationData?.permitData?.vehicleDetails
-          ?.countryCode
-      ),
-      provinceCode: getDefaultRequiredVal(
-        "",
-        applicationData?.permitData?.vehicleDetails
-          ?.provinceCode
-      ),
-      vehicleType: getDefaultRequiredVal(
-        "",
-        applicationData?.permitData?.vehicleDetails
-          ?.vehicleType
-      ),
-      vehicleSubType: getDefaultRequiredVal(
-        "",
-        applicationData?.permitData?.vehicleDetails
-          ?.vehicleSubType
-      ),
-      saveVehicle: getDefaultRequiredVal(
-        false,
-        applicationData?.permitData?.vehicleDetails
-          ?.saveVehicle
-      ),
-    },
-  },
-});
+import OnRouteBCContext from "../../../common/authentication/OnRouteBCContext"; 
+import { useForm } from "react-hook-form";
+import { getDefaultContactDetails, getDefaultMailingAddress, getDefaultValues, getDefaultVehicleDetails } from "../helpers/getDefaultApplicationFormData";
+import { useCompanyInfoQuery } from "../../manageProfile/apiManager/hooks";
 
 export const useDefaultApplicationFormData = (applicationData?: Application) => {
   const { companyId, userDetails } = useContext(OnRouteBCContext);
+  const companyInfoQuery = useCompanyInfoQuery();
 
   const [defaultApplicationDataValues, setDefaultApplicationDataValues] = useState<Application>(
     getDefaultValues(applicationData, companyId, userDetails)
   );
 
-  useEffect(() => {
-    setDefaultApplicationDataValues(
-      getDefaultValues(applicationData, companyId, userDetails)
-    );
-  }, [
-    companyId,
-    applicationData?.applicationNumber,
-    applicationData?.permitStatus,
-    applicationData?.permitType,
-    applicationData?.createdDateTime,
-    applicationData?.updatedDateTime,
-    applicationData?.permitData?.startDate,
-    applicationData?.permitData?.permitDuration,
-    applicationData?.permitData?.expiryDate,
+  const contactDetailsDepArray = [
     applicationData?.permitData?.contactDetails?.firstName,
     userDetails?.firstName,
     applicationData?.permitData?.contactDetails?.lastName,
@@ -210,12 +27,24 @@ export const useDefaultApplicationFormData = (applicationData?: Application) => 
     applicationData?.permitData?.contactDetails?.email,
     userDetails?.email,
     applicationData?.permitData?.contactDetails?.fax,
+  ];
+
+  const mailingAddressDepArray = [
     applicationData?.permitData?.mailingAddress?.addressLine1,
     applicationData?.permitData?.mailingAddress?.addressLine2,
     applicationData?.permitData?.mailingAddress?.city,
     applicationData?.permitData?.mailingAddress?.countryCode,
     applicationData?.permitData?.mailingAddress?.provinceCode,
     applicationData?.permitData?.mailingAddress?.postalCode,
+    companyInfoQuery.data?.mailingAddress?.addressLine1,
+    companyInfoQuery.data?.mailingAddress?.addressLine2,
+    companyInfoQuery.data?.mailingAddress?.city,
+    companyInfoQuery.data?.mailingAddress?.countryCode,
+    companyInfoQuery.data?.mailingAddress?.provinceCode,
+    companyInfoQuery.data?.mailingAddress?.postalCode,
+  ];
+
+  const vehicleDetailsDepArray = [
     applicationData?.permitData?.vehicleDetails?.unitNumber,
     applicationData?.permitData?.vehicleDetails?.vin,
     applicationData?.permitData?.vehicleDetails?.plate,
@@ -226,12 +55,64 @@ export const useDefaultApplicationFormData = (applicationData?: Application) => 
     applicationData?.permitData?.vehicleDetails?.vehicleType,
     applicationData?.permitData?.vehicleDetails?.vehicleSubType,
     applicationData?.permitData?.vehicleDetails?.saveVehicle,
-  ]);
+  ];
+
+  const applicationFormDataDepArray = [
+    companyId,
+    applicationData?.applicationNumber,
+    applicationData?.permitStatus,
+    applicationData?.permitType,
+    applicationData?.createdDateTime,
+    applicationData?.updatedDateTime,
+    applicationData?.permitData?.startDate,
+    applicationData?.permitData?.permitDuration,
+    applicationData?.permitData?.expiryDate,
+    ...contactDetailsDepArray,
+    ...mailingAddressDepArray,
+    ...vehicleDetailsDepArray,
+  ];
+
+  useEffect(() => {
+    setDefaultApplicationDataValues(
+      getDefaultValues(applicationData, companyId, userDetails)
+    );
+  }, applicationFormDataDepArray);
+
+  // Default values to register with React Hook Forms
+  // Use saved data from the TROS application context, otherwise use empty or undefined values
+  const formMethods = useForm<Application>({
+    defaultValues: defaultApplicationDataValues,
+    reValidateMode: "onBlur",
+  });
+
+  const { setValue } = formMethods;
+
+  useEffect(() => {
+    setValue(
+      "permitData.contactDetails",
+      getDefaultContactDetails(applicationData?.permitData?.contactDetails, userDetails)
+    );
+  }, contactDetailsDepArray);
+
+  useEffect(() => {
+    setValue(
+      "permitData.mailingAddress",
+      getDefaultMailingAddress(applicationData?.permitData?.mailingAddress, companyInfoQuery.data?.mailingAddress)
+    );
+  }, mailingAddressDepArray);
+
+  useEffect(() => {
+    setValue(
+      "permitData.vehicleDetails", 
+      getDefaultVehicleDetails(applicationData?.permitData?.vehicleDetails)
+    );
+  }, vehicleDetailsDepArray);
 
   return {
     companyId,
     userDetails,
     defaultApplicationDataValues,
     setDefaultApplicationDataValues,
+    formMethods,
   };
 };

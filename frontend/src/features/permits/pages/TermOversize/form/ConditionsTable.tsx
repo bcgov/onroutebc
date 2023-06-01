@@ -27,41 +27,29 @@ export const ConditionsTable = () => {
       conditionLink: defaultElement.conditionLink,
       checked: false
     }
+
     if(existingCommodities !== undefined){
       existingCommodities.forEach(element => {
         if(element.condition === defaultElement.condition){ 
           combinedElement.checked = element.checked;
         }
       });
-      
     }
+
     if(defaultElement.condition === "CVSE-1000" || defaultElement.condition === "CVSE-1070"){
       combinedElement.disabled = true;
     }
+
     existingComodities.push(combinedElement); 
   });
+
   const {applicationNumber} = useParams();
-  let checkedValues = TROS_COMMODITIES;
-  if(applicationNumber !== undefined){
-    checkedValues = existingComodities;
-  }
-  else{
-    checkedValues = TROS_COMMODITIES;
-  }
-  
-
-  
-
-  
-
-
-
-
+  const checkedValues = applicationNumber !== undefined ? existingComodities : TROS_COMMODITIES;
 
   const { control, setValue } = useFormContext();
 
   function handleSelect(checkedName: string) {
-    const newNames = checkedValues?.map((item) => {
+    const newNames = checkedValues.map((item) => {
       if (item.description === checkedName) {
         item.checked = !item.checked;
       }
