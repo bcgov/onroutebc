@@ -1,5 +1,5 @@
 import { HttpService } from '@nestjs/axios';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { lastValueFrom } from 'rxjs';
 import { Permit } from 'src/modules/permit/entities/permit.entity';
@@ -13,20 +13,29 @@ import {
 } from './constants/template.constant';
 import { formatTemplateData } from './helpers/formatTemplateData.helper';
 import { TemplateVersion } from 'src/common/enum/pdf-template-version.enum';
-import { FullNames } from '../cache/interface/fullNames.interface';
-import { CacheService } from '../cache/cache.service';
 import { DmsService } from '../dms/dms.service';
 import { IFile } from '../../common/interface/file.interface';
 import { PdfReturnType } from 'src/common/enum/pdf-return-type.enum';
 import { oidcResponse } from './interface/oidcResponse.interface';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
+import { PermitData } from './interface/permitData.interface';
+import { getVehicleTypeNames } from './helpers/getVehicleTypeNames.helper';
+import {
+  getCountryName,
+  getProvinceName,
+} from './helpers/getCountryProvinceNames.helper';
+import { getPermitTypeName } from './helpers/getPermitTypeName.helper';
+import { FullNames } from './interface/fullNames.interface';
 
 @Injectable()
 export class PdfService {
   constructor(
+    @Inject(CACHE_MANAGER)
+    private readonly cacheManager: Cache,
     @InjectRepository(Template)
     private templateRepository: Repository<Template>,
     private httpService: HttpService,
-    private readonly cacheService: CacheService,
     private readonly dmsService: DmsService,
   ) {}
 
@@ -74,8 +83,7 @@ export class PdfService {
       this.httpService.get(url, {
         responseType: CDOGS_RESPONSE_TYPE,
       }),
-    )
-    .then((response) => {
+    ).then((response) => {
       return response.data as Buffer;
     });
 
@@ -86,13 +94,50 @@ export class PdfService {
   }
 
   /**
-   * Converts code names to full names by calling the ORBC database.
+   * Converts code names to full names by calling the cache manager.
    * Example: 'TROS' to 'Oversize: Term'
    * @param permit
    * @returns
    */
-  private async getFullNamesFromDatabase(permit: Permit): Promise<FullNames> {
-    return await this.cacheService.getFullNamesFromDatabase(permit);
+  private async getFullNamesFromCache(permit: Permit): Promise<FullNames> {
+    const permitData = JSON.parse(permit.permitData.permitData) as PermitData;
+
+    const { vehicleType, vehicleSubType } = await getVehicleTypeNames(
+      this.cacheManager,
+      permitData,
+    );
+
+    const mailingCountryCode = await getCountryName(
+      this.cacheManager,
+      permitData.vehicleDetails.countryCode,
+    );
+    const mailingProvinceCode = await getProvinceName(
+      this.cacheManager,
+      permitData.vehicleDetails.provinceCode,
+    );
+    const vehicleCountryCode = await getCountryName(
+      this.cacheManager,
+      permitData.mailingAddress.countryCode,
+    );
+    const vehicleProvinceCode = await getProvinceName(
+      this.cacheManager,
+      permitData.mailingAddress.provinceCode,
+    );
+
+    const permitName = await getPermitTypeName(
+      this.cacheManager,
+      permit.permitType,
+    );
+
+    return {
+      vehicleType,
+      vehicleSubType,
+      mailingCountryCode,
+      mailingProvinceCode,
+      vehicleCountryCode,
+      vehicleProvinceCode,
+      permitName,
+    };
   }
 
   /**
@@ -111,7 +156,7 @@ export class PdfService {
     const cdogs_url = process.env.CDOGS_URL;
 
     // Format the template data to be used in the templated word documents
-    const fullNames = await this.getFullNamesFromDatabase(permit);
+    const fullNames = await this.getFullNamesFromCache(permit);
     const templateData = formatTemplateData(permit, fullNames);
 
     // We need the oidc api to generate a token for us
@@ -125,11 +170,9 @@ export class PdfService {
           },
         },
       ),
-    )
-    .then((response) => {
+    ).then((response) => {
       return response.data as oidcResponse;
-    })
-
+    });
 
     // Calls the CDOGS service, which converts the the template document into a pdf
     const cdogsResponse = await lastValueFrom(
@@ -159,7 +202,7 @@ export class PdfService {
       ),
     );
 
-    const pdf = await cdogsResponse.data as ArrayBuffer;
+    const pdf = (await cdogsResponse.data) as ArrayBuffer;
 
     return pdf;
   }

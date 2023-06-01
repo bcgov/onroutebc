@@ -1,7 +1,7 @@
 import { Permit } from 'src/modules/permit/entities/permit.entity';
-import { FullNames } from '../../cache/interface/fullNames.interface';
 import { PermitData } from '../interface/permitData.interface';
 import { PermitTemplate } from '../interface/permit.template.interface';
+import { FullNames } from '../interface/fullNames.interface';
 
 /**
  * Formats the permit data so that it can be used in the templated word documents
@@ -15,6 +15,8 @@ export const formatTemplateData = (permit: Permit, fullNames: FullNames) => {
   const template: PermitTemplate = {
     permitName: '',
     permitNumber: '',
+    createdDateTime: '',
+    updatedDateTime: '',
     revisions: [
       {
         timeStamp: '',
@@ -42,8 +44,8 @@ export const formatTemplateData = (permit: Permit, fullNames: FullNames) => {
   template.permitData.mailingAddress.provinceCode =
     fullNames.vehicleProvinceCode;
 
-  //templateData.createdDateTime = permit.createdDateTime.toLocaleString(); // TODO: timezone? Format is done in word template
-  //templateData.updatedDateTime = permit.updatedDateTime.toLocaleString(); // TODO: timezone? Format is done in word template
+  template.createdDateTime = permit.createdDateTime.toLocaleString(); // TODO: timezone? Format is done in word template
+  template.updatedDateTime = permit.updatedDateTime.toLocaleString(); // TODO: timezone? Format is done in word template
 
   return template;
 };

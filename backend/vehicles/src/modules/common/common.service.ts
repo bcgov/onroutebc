@@ -19,9 +19,17 @@ export class CommonService {
     });
   }
 
+  async findAllCountries() : Promise<Country[]> {
+    return await this.countryRepository.find({});
+  }
+
   async findOneProvince(provinceCode: string): Promise<Province> {
     return await this.provinceRepository.findOne({
       where: { provinceCode: provinceCode },
     });
+  }
+
+  async findAllProvinces() : Promise<Province[]> {
+    return await this.provinceRepository.find({});
   }
 }
