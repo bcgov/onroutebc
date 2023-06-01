@@ -39,13 +39,12 @@ export class PdfService {
     templateVersion: string,
   ): Promise<Template> {
     return await this.templateRepository.findOne({
-      where: { templateName: permitType, templateVersion: templateVersion },
+      where: { permitTypeId: permitType, templateVersion: templateVersion },
     });
   }
 
   /**
    * Queries the ORBC Template table using the permit type to get the reference to the associated template object in DMS
-   * NOTE: permit type = template name
    * @param {string} permitType permit type. Example: 'TROS'
    * @param {string} templateVersion template version. Defaults to latest version
    * @returns {string} a DMS reference ID used to retrieve the template in DMS
