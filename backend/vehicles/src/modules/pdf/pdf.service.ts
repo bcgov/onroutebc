@@ -16,6 +16,7 @@ import { TemplateVersion } from 'src/common/enum/pdf-template-version.enum';
 import { FullNames } from '../cache/interface/fullNames.interface';
 import { CacheService } from '../cache/cache.service';
 import { DmsService } from '../dms/dms.service';
+import { IFile } from '../../common/interface/file.interface';
 
 @Injectable()
 export class PdfService {
@@ -24,7 +25,7 @@ export class PdfService {
     private templateRepository: Repository<Template>,
     private httpService: HttpService,
     private readonly cacheService: CacheService,
-    private readonly dmsService: DmsService
+    private readonly dmsService: DmsService,
   ) {}
 
   /**
@@ -63,7 +64,6 @@ export class PdfService {
    * @returns {string} a DMS reference ID used to retrieve the template in DMS
    */
   private async getTemplate(templateRef: string): Promise<string> {
-
     // The DMS service returns an HTTP 201 containing a direct, temporary pre-signed S3 object URL location
     const dmsDocument = await this.dmsService.findOne(templateRef);
     const url = dmsDocument.preSignedS3Url;
@@ -73,7 +73,7 @@ export class PdfService {
       this.httpService.get(url, {
         responseType: CDOGS_RESPONSE_TYPE,
       }),
-    )
+    );
 
     // Decode array buffer to base64
     const template = templateArrayBuffer.data.toString(ENCODING_TYPE);
@@ -152,18 +152,24 @@ export class PdfService {
       ),
     );
 
-    const pdf : ArrayBuffer = await cdogsResponse.data;
+    const pdf: ArrayBuffer = await cdogsResponse.data;
 
     return pdf;
   }
 
   /**
    * Saves the pdf in DMS using the DMS service
-   * @param {ArrayBuffer} pdf 
+   * @param {ArrayBuffer} pdf
    * @returns a DMS reference ID
    */
   private async savePDF(pdf: ArrayBuffer): Promise<string> {
-    const readFileDto = await this.dmsService.create_TEMP(pdf);
+    const file: IFile = {
+      buffer: pdf,
+      originalname: TEMPLATE_NAME,
+      mimetype: 'application/pdf',
+    };
+
+    const readFileDto = await this.dmsService.create(file);
     return readFileDto.documentId;
   }
 

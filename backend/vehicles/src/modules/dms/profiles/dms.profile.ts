@@ -34,7 +34,15 @@ export class DmsProfile extends AutomapperProfile {
           mapFrom((s) => s.mimeType),
         ),
       );
-      createMap(mapper, Dms, ReadFileDto);
+      createMap(
+        mapper,
+        Dms,
+        ReadFileDto,
+        forMember(
+          (d) => d.s3ObjectId,
+          mapFrom((s) => s.s3ObjectId?.toLowerCase()),
+        ),
+      );
     };
   }
 }

@@ -17,7 +17,7 @@ import { DmsModule } from '../dms/dms.module';
     PowerUnitTypesModule,
     TrailerTypesModule,
     CacheModule,
-    DmsModule
+    DmsModule,
   ],
   providers: [PdfService],
   exports: [PdfService],
