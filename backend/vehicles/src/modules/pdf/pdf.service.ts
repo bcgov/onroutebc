@@ -17,6 +17,7 @@ import { FullNames } from '../cache/interface/fullNames.interface';
 import { CacheService } from '../cache/cache.service';
 import { DmsService } from '../dms/dms.service';
 import { IFile } from '../../common/interface/file.interface';
+import { PdfReturnType } from 'src/common/enum/pdf-return-type.enum';
 
 @Injectable()
 export class PdfService {
@@ -161,7 +162,7 @@ export class PdfService {
    * @param {ArrayBuffer} pdf
    * @returns a DMS reference ID
    */
-  private async savePDF(pdf: ArrayBuffer): Promise<string> {
+  private async savePDF(pdf: ArrayBuffer, returnValue?: PdfReturnType): Promise<string> {
     const file: IFile = {
       buffer: pdf,
       originalname: TEMPLATE_NAME,
@@ -169,7 +170,27 @@ export class PdfService {
     };
 
     const readFileDto = await this.dmsService.create(file);
-    return readFileDto.documentId;
+
+    let returnVal : string;
+
+    switch(returnValue) {
+      case PdfReturnType.MIME_TYPE:
+        returnVal = readFileDto.objectMimeType;
+        break;
+      case PdfReturnType.DMS_DOC_ID:
+        returnVal = readFileDto.documentId;
+        break;
+      case PdfReturnType.PRESIGNED_URL:
+        returnVal = readFileDto.preSignedS3Url;
+        break;
+      case PdfReturnType.S3_OBJ_ID:
+        returnVal = readFileDto.s3ObjectId;
+        break;
+      default:
+        returnVal = readFileDto.documentId;
+    }
+
+    return returnVal;
   }
 
   /**
@@ -182,11 +203,13 @@ export class PdfService {
    *
    * @param {Permit} permit permit data
    * @param {string} templateVersion template version. Defaults to latest version
+   * @param {PdfReturnType} returnValue optional parameter to choose the return type
    * @returns {string} a DMS reference ID used to retrieve the template in DMS
    */
   public async generatePDF(
     permit: Permit,
     templateVersion: number = TemplateVersion.LATEST,
+    returnValue?: PdfReturnType,
   ): Promise<string> {
     // Call ORBC Template table to get the DMS Reference of the associated template/permit type
     const templateRef = await this.getTemplateRef(
@@ -201,7 +224,7 @@ export class PdfService {
     const pdf = await this.createPDF(permit, template);
 
     // Call DMS to store the pdf
-    const dmsRef = await this.savePDF(pdf);
+    const dmsRef = await this.savePDF(pdf, returnValue);
 
     return dmsRef;
   }
