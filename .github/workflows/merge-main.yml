@@ -69,11 +69,14 @@ jobs:
       max-parallel: 1
       fail-fast: true
       matrix:
-        name: [init, backend/vehicles, frontend]
+        name: [init, backend/vehicles, backend/dms, frontend]
         include:
           - name: backend/vehicles
             file: backend/vehicles/openshift.deploy.yml
             overwrite: true
+          - name: backend/dms
+            file: backend/dms/openshift.deploy.yml
+            overwrite: true            
           - name: frontend
             file: frontend/openshift.deploy.yml
             overwrite: true
@@ -213,7 +216,7 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        component: [backend/vehicles, frontend]
+        component: [backend/vehicles, backend/dms, frontend]
     steps:
       - uses: shrink/actions-docker-registry-tag@v3
         with:
@@ -232,11 +235,14 @@ jobs:
       max-parallel: 1
       fail-fast: true
       matrix:
-        name: [init, backend/vehicles, frontend]
+        name: [init, backend/vehicles, backend/dms, frontend]
         include:
           - name: backend/vehicles
             file: backend/vehicles/openshift.deploy.yml
             overwrite: true
+          - name: backend/dms
+            file: backend/dms/openshift.deploy.yml
+            overwrite: true            
           - name: frontend
             file: frontend/openshift.deploy.yml
             overwrite: true
@@ -376,7 +382,7 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        component: [backend/vehicles, frontend]
+        component: [backend/vehicles, backend/dms, frontend]
     steps:
       - uses: shrink/actions-docker-registry-tag@v3
         with:
@@ -395,11 +401,14 @@ jobs:
       max-parallel: 1
       fail-fast: true
       matrix:
-        name: [init, backend/vehicles, frontend]
+        name: [init, backend/vehicles, backend/dms, frontend]
         include:
           - name: backend/vehicles
             file: backend/vehicles/openshift.deploy.yml
             overwrite: true
+          - name: backend/dms
+            file: backend/dms/openshift.deploy.yml
+            overwrite: true            
           - name: frontend
             file: frontend/openshift.deploy.yml
             overwrite: true
@@ -618,7 +627,7 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        component: [backend/vehicles, frontend]
+        component: [backend/vehicles, backend/dms, frontend]
     steps:
       - uses: shrink/actions-docker-registry-tag@v3
         with:
@@ -635,7 +644,7 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        component: [backend/vehicles, frontend]
+        component: [backend/vehicles, backend/dms, frontend]
     steps:
       - uses: shrink/actions-docker-registry-tag@v3
         with:
@@ -654,11 +663,14 @@ jobs:
       max-parallel: 1
       fail-fast: true
       matrix:
-        name: [init, backend/vehicles, frontend]
+        name: [init, backend/vehicles, backend/dms, frontend]
         include:
           - name: backend/vehicles
             file: backend/vehicles/openshift.deploy.yml
             overwrite: true
+          - name: backend/dms
+            file: backend/dms/openshift.deploy.yml
+            overwrite: true            
           - name: frontend
             file: frontend/openshift.deploy.yml
             overwrite: true
