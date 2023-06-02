@@ -1,5 +1,5 @@
 import { HttpService } from '@nestjs/axios';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { lastValueFrom } from 'rxjs';
 import { Permit } from 'src/modules/permit/entities/permit.entity';
@@ -12,47 +12,51 @@ import {
   TEMPLATE_NAME,
 } from './constants/template.constant';
 import { formatTemplateData } from './helpers/formatTemplateData.helper';
-import { TemplateVersion } from 'src/common/enum/pdf-template-version.enum';
-import { FullNames } from '../cache/interface/fullNames.interface';
-import { CacheService } from '../cache/cache.service';
 import { DmsService } from '../dms/dms.service';
 import { IFile } from '../../common/interface/file.interface';
+import { PdfReturnType } from 'src/common/enum/pdf-return-type.enum';
+import { KeycloakResponse } from './interface/keycloakResponse.interface';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
+import { FullNames } from './interface/fullNames.interface';
+import { PermitData } from './interface/permit.template.interface';
+import { getFullNameFromCache } from 'src/common/helper/cache.helper';
 
 @Injectable()
 export class PdfService {
   constructor(
+    @Inject(CACHE_MANAGER)
+    private readonly cacheManager: Cache,
     @InjectRepository(Template)
     private templateRepository: Repository<Template>,
     private httpService: HttpService,
-    private readonly cacheService: CacheService,
     private readonly dmsService: DmsService,
   ) {}
 
   /**
    * Find one template from the ORBC database
    * @param permitType permit type, which equals the template name in the ORBC DB
-   * @param version template version
+   * @param templateVersion template version
    * @returns
    */
   private async findOne(
     permitType: string,
-    templateVersion: string,
+    templateVersion: number,
   ): Promise<Template> {
     return await this.templateRepository.findOne({
-      where: { templateName: permitType, templateVersion: templateVersion },
+      where: { permitTypeId: permitType, templateVersion: templateVersion },
     });
   }
 
   /**
    * Queries the ORBC Template table using the permit type to get the reference to the associated template object in DMS
-   * NOTE: permit type = template name
    * @param {string} permitType permit type. Example: 'TROS'
-   * @param {string} templateVersion template version. Defaults to latest version
+   * @param {number} templateVersion template version
    * @returns {string} a DMS reference ID used to retrieve the template in DMS
    */
   private async getTemplateRef(
     permitType: string,
-    templateVersion: string = TemplateVersion.LATEST,
+    templateVersion: number,
   ): Promise<string> {
     const template = await this.findOne(permitType, templateVersion);
     return template.dmsRef;
@@ -73,22 +77,66 @@ export class PdfService {
       this.httpService.get(url, {
         responseType: CDOGS_RESPONSE_TYPE,
       }),
-    );
+    ).then((response) => {
+      return response.data as Buffer;
+    });
 
-    // Decode array buffer to base64
-    const template = templateArrayBuffer.data.toString(ENCODING_TYPE);
+    // Decode array buffer to string
+    const template = templateArrayBuffer.toString(ENCODING_TYPE);
 
     return template;
   }
 
   /**
-   * Converts code names to full names by calling the ORBC database.
+   * Converts code names to full names by calling the cache manager.
    * Example: 'TROS' to 'Oversize: Term'
    * @param permit
    * @returns
    */
-  private async getFullNamesFromDatabase(permit: Permit): Promise<FullNames> {
-    return await this.cacheService.getFullNamesFromDatabase(permit);
+  private async getFullNamesFromCache(permit: Permit): Promise<FullNames> {
+    const permitData = JSON.parse(permit.permitData.permitData) as PermitData;
+
+    const vehicleTypeName = (await getFullNameFromCache(
+      this.cacheManager,
+      permitData.vehicleDetails.vehicleType,
+    )) as string;
+    const vehicleSubTypeName = (await getFullNameFromCache(
+      this.cacheManager,
+      permitData.vehicleDetails.vehicleSubType,
+    )) as string;
+
+    const mailingCountryName = (await getFullNameFromCache(
+      this.cacheManager,
+      permitData.vehicleDetails.countryCode,
+    )) as string;
+    const mailingProvinceName = (await getFullNameFromCache(
+      this.cacheManager,
+      permitData.vehicleDetails.provinceCode,
+    )) as string;
+
+    const vehicleCountryName = (await getFullNameFromCache(
+      this.cacheManager,
+      permitData.mailingAddress.countryCode,
+    )) as string;
+    const vehicleProvinceName = (await getFullNameFromCache(
+      this.cacheManager,
+      permitData.mailingAddress.provinceCode,
+    )) as string;
+
+    const permitName = (await getFullNameFromCache(
+      this.cacheManager,
+      permit.permitType,
+    )) as string;
+
+    return {
+      vehicleTypeName,
+      vehicleSubTypeName,
+      mailingCountryName,
+      mailingProvinceName,
+      vehicleCountryName,
+      vehicleProvinceName,
+      permitName,
+    };
   }
 
   /**
@@ -107,11 +155,11 @@ export class PdfService {
     const cdogs_url = process.env.CDOGS_URL;
 
     // Format the template data to be used in the templated word documents
-    const fullNames = await this.getFullNamesFromDatabase(permit);
-    const templateData = await formatTemplateData(permit, fullNames);
+    const fullNames = await this.getFullNamesFromCache(permit);
+    const templateData = formatTemplateData(permit, fullNames);
 
     // We need the oidc api to generate a token for us
-    const oidcResponse = await lastValueFrom(
+    const keycloak = await lastValueFrom(
       this.httpService.post(
         token_url,
         `grant_type=client_credentials&client_id=${client_id}&client_secret=${client_secret}`,
@@ -121,8 +169,9 @@ export class PdfService {
           },
         },
       ),
-    );
-    const keycloak = await oidcResponse.data;
+    ).then((response) => {
+      return response.data as KeycloakResponse;
+    });
 
     // Calls the CDOGS service, which converts the the template document into a pdf
     const cdogsResponse = await lastValueFrom(
@@ -152,7 +201,7 @@ export class PdfService {
       ),
     );
 
-    const pdf: ArrayBuffer = await cdogsResponse.data;
+    const pdf = (await cdogsResponse.data) as ArrayBuffer;
 
     return pdf;
   }
@@ -162,7 +211,10 @@ export class PdfService {
    * @param {ArrayBuffer} pdf
    * @returns a DMS reference ID
    */
-  private async savePDF(pdf: ArrayBuffer): Promise<string> {
+  private async savePDF(
+    pdf: ArrayBuffer,
+    returnValue?: PdfReturnType,
+  ): Promise<string> {
     const file: IFile = {
       buffer: pdf,
       originalname: TEMPLATE_NAME,
@@ -170,7 +222,27 @@ export class PdfService {
     };
 
     const readFileDto = await this.dmsService.create(file);
-    return readFileDto.documentId;
+
+    let returnVal: string;
+
+    switch (returnValue) {
+      case PdfReturnType.MIME_TYPE:
+        returnVal = readFileDto.objectMimeType;
+        break;
+      case PdfReturnType.DMS_DOC_ID:
+        returnVal = readFileDto.documentId;
+        break;
+      case PdfReturnType.PRESIGNED_URL:
+        returnVal = readFileDto.preSignedS3Url;
+        break;
+      case PdfReturnType.S3_OBJ_ID:
+        returnVal = readFileDto.s3ObjectId;
+        break;
+      default:
+        returnVal = readFileDto.documentId;
+    }
+
+    return returnVal;
   }
 
   /**
@@ -182,12 +254,14 @@ export class PdfService {
    * {@link COMS https://digital.gov.bc.ca/bcgov-common-components/common-object-management-service/}
    *
    * @param {Permit} permit permit data
-   * @param {string} templateVersion template version. Defaults to latest version
-   * @returns {string} a DMS reference ID used to retrieve the template in DMS
+   * @param {number} templateVersion template version
+   * @param {PdfReturnType} returnValue optional parameter to choose the return type
+   * @returns {string} value of returnValue type. Defaults to DMS Document Reference ID
    */
   public async generatePDF(
     permit: Permit,
-    templateVersion: string = TemplateVersion.LATEST,
+    templateVersion: number,
+    returnValue?: PdfReturnType,
   ): Promise<string> {
     // Call ORBC Template table to get the DMS Reference of the associated template/permit type
     const templateRef = await this.getTemplateRef(
@@ -202,8 +276,8 @@ export class PdfService {
     const pdf = await this.createPDF(permit, template);
 
     // Call DMS to store the pdf
-    const dmsRef = await this.savePDF(pdf);
+    const dms = await this.savePDF(pdf, returnValue);
 
-    return dmsRef;
+    return dms;
   }
 }

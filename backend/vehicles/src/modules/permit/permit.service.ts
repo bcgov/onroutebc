@@ -7,6 +7,7 @@ import { Repository } from 'typeorm';
 import { CreatePermitDto } from './dto/request/create-permit.dto';
 import { ReadPermitDto } from './dto/response/read-permit.dto';
 import { Permit } from './entities/permit.entity';
+import { PermitType } from './entities/permit-type.entity';
 
 @Injectable()
 export class PermitService {
@@ -14,6 +15,8 @@ export class PermitService {
     @InjectMapper() private readonly classMapper: Mapper,
     @InjectRepository(Permit)
     private permitRepository: Repository<Permit>,
+    @InjectRepository(PermitType)
+    private permitTypeRepository: Repository<PermitType>,
   ) {}
 
   async create(createPermitDto: CreatePermitDto): Promise<ReadPermitDto> {
@@ -45,5 +48,9 @@ export class PermitService {
         permitData: true,
       },
     });
+  }
+
+  public async findAllPermitTypes(): Promise<PermitType[]> {
+    return await this.permitTypeRepository.find({});
   }
 }
