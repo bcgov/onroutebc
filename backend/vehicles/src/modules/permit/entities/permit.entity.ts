@@ -36,6 +36,14 @@ export class Permit extends Base {
   @AutoMap()
   @ApiProperty({
     example: '1',
+    description: 'Represents the revision number for a permit.',
+  })
+  @Column({ type: 'integer', name: 'REVISION', nullable: true })
+  revision: number;
+
+  @AutoMap()
+  @ApiProperty({
+    example: '1',
     description: 'GUID of the user requesting the permit.',
   })
   @Column({ length: 32, name: 'OWNER_USER_GUID', nullable: true })
@@ -92,8 +100,6 @@ export class Permit extends Base {
     description: 'Unique formatted permit application number.',
   })
   @Column({
-    insert: false,
-    update: false,
     length: '19',
     name: 'APPLICATION_NUMBER',
     nullable: true,
@@ -107,9 +113,7 @@ export class Permit extends Base {
       'Unique formatted permit number, recorded once the permit is approved and issued.',
   })
   @Column({
-    insert: false,
-    update: false,
-    length: '19',
+     length: '19',
     name: 'PERMIT_NUMBER',
     nullable: true,
   })

@@ -112,7 +112,7 @@ export const ConditionsTable = () => {
               </TableCell>
 
               <TableCell component="th" scope="row">
-                <a href={row.conditionLink}>{row.condition}</a>
+                {row.condition}
               </TableCell>
             </TableRow>
           ))}

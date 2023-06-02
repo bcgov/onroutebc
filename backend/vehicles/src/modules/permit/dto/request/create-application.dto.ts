@@ -18,6 +18,37 @@ export class CreateApplicationDto {
 
   @AutoMap()
   @ApiProperty({
+    description: 'Id of the permit.',
+    example: '',
+    required: false,
+  })
+  permitId: string;
+
+  @AutoMap()
+  @ApiProperty({
+    example: 'A2-00000002-120',
+    description: 'Unique formatted permit application number.',
+  })
+  applicationNumber: string;
+
+  @AutoMap()
+  @ApiProperty({
+    description: 'Id of the old permit.',
+    example: '',
+    required: false,
+  })
+  previousRevId: string;
+
+  @AutoMap()
+  @ApiProperty({
+    description: 'Revision number for permit',
+    example: '',
+    required: false,
+  })
+  revision: number;
+
+  @AutoMap()
+  @ApiProperty({
     description: 'GUID of the user requesting the permit.',
     example: '06267945F2EB4E31B585932F78B76269',
     required: false,
