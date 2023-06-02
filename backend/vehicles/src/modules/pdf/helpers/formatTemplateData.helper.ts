@@ -1,5 +1,8 @@
 import { Permit } from 'src/modules/permit/entities/permit.entity';
-import { PermitData, PermitTemplate } from '../interface/permit.template.interface';
+import {
+  PermitData,
+  PermitTemplate,
+} from '../interface/permit.template.interface';
 import { FullNames } from '../interface/fullNames.interface';
 
 /**
