@@ -113,7 +113,7 @@ export class Permit extends Base {
       'Unique formatted permit number, recorded once the permit is approved and issued.',
   })
   @Column({
-     length: '19',
+    length: '19',
     name: 'PERMIT_NUMBER',
     nullable: true,
   })

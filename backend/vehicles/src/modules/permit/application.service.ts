@@ -273,7 +273,7 @@ export class ApplicationService {
         console.log('Completed pdf generation');
         console.log('DMS Document Id: ', dmsDocumentId);
       }
-    };
+    }
   }
 
   /**
@@ -306,7 +306,9 @@ export class ApplicationService {
         const { randomInt } = await import('crypto');
         rnd = randomInt(100, 1000);
       }
-      source = await this.getPermitApplicationOrigin(permit.permitApplicationOrigin);
+      source = await this.getPermitApplicationOrigin(
+        permit.permitApplicationOrigin,
+      );
     } else {
       //New permit application.
       seq = await this.databaseHelper.callDatabaseSequence(

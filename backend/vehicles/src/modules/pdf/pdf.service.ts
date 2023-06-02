@@ -16,7 +16,7 @@ import { TemplateVersion } from 'src/common/enum/pdf-template-version.enum';
 import { DmsService } from '../dms/dms.service';
 import { IFile } from '../../common/interface/file.interface';
 import { PdfReturnType } from 'src/common/enum/pdf-return-type.enum';
-import { oidcResponse } from './interface/oidcResponse.interface';
+import { KeycloakResponse } from './interface/keycloakResponse.interface';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { PermitData } from './interface/permitData.interface';
@@ -163,7 +163,7 @@ export class PdfService {
     const templateData = formatTemplateData(permit, fullNames);
 
     // We need the oidc api to generate a token for us
-    const oidcResponse = await lastValueFrom(
+    const keycloak = await lastValueFrom(
       this.httpService.post(
         token_url,
         `grant_type=client_credentials&client_id=${client_id}&client_secret=${client_secret}`,
@@ -174,7 +174,7 @@ export class PdfService {
         },
       ),
     ).then((response) => {
-      return response.data as oidcResponse;
+      return response.data as KeycloakResponse;
     });
 
     // Calls the CDOGS service, which converts the the template document into a pdf
@@ -197,7 +197,7 @@ export class PdfService {
         }),
         {
           headers: {
-            Authorization: `Bearer ${oidcResponse.access_token}`,
+            Authorization: `Bearer ${keycloak.access_token}`,
             'Content-Type': 'application/json',
           },
           responseType: CDOGS_RESPONSE_TYPE,
