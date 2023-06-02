@@ -20,7 +20,6 @@ import { AuthModule } from './modules/auth/auth.module';
 import { PermitModule } from './modules/permit/permit.module';
 import { DmsModule } from './modules/dms/dms.module';
 import { PdfModule } from './modules/pdf/pdf.module';
-import { PermitType } from './modules/permit/entities/permit-type.entity';
 
 const envPath = path.resolve(process.cwd() + '/../../');
 
@@ -62,7 +61,6 @@ const envPath = path.resolve(process.cwd() + '/../../');
       ttl: 0, // disable expiration of the cache
       isGlobal: true, // Allows access to cache manager globally
     }),
-    TypeOrmModule.forFeature([PermitType]),
     PowerUnitsModule,
     TrailersModule,
     PowerUnitTypesModule,

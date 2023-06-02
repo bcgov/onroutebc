@@ -13,6 +13,7 @@ import { PdfService } from '../pdf/pdf.service';
 import { DatabaseHelper } from 'src/common/helper/database.helper';
 import { PermitApplicationOrigin } from './entities/permit-application-origin.entity';
 import { PermitApprovalSource } from './entities/permit-approval-source.entity';
+import { PdfReturnType } from 'src/common/enum/pdf-return-type.enum';
 
 @Injectable()
 export class ApplicationService {
@@ -268,7 +269,12 @@ export class ApplicationService {
         permit.permitStatus === ApplicationStatus.AUTO_APPROVED
       ) {
         // DMS Reference ID for the generated PDF of the Permit
-        const dmsDocumentId: string = await this.pdfService.generatePDF(permit);
+        // TODO: write helper to determine 'latest' template version
+        const dmsDocumentId: string = await this.pdfService.generatePDF(
+          permit,
+          1,
+          PdfReturnType.DMS_DOC_ID,
+        );
         // TODO: handle the DMS reference
         console.log('Completed pdf generation');
         console.log('DMS Document Id: ', dmsDocumentId);

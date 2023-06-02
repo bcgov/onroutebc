@@ -1,5 +1,5 @@
 import { Permit } from 'src/modules/permit/entities/permit.entity';
-import { PermitData } from '../interface/permitData.interface';
+import { PermitData } from '../interface/permit.template.interface';
 import { PermitTemplate } from '../interface/permit.template.interface';
 import { FullNames } from '../interface/fullNames.interface';
 
@@ -10,8 +10,7 @@ import { FullNames } from '../interface/fullNames.interface';
  * @returns formatted permit data to be displayed on the PDF
  */
 export const formatTemplateData = (permit: Permit, fullNames: FullNames) => {
-  // Create a new template object that is a copy of the permit
-  // This template object will include the formatted values used in the templated word documents
+  // Create a new template object that includes the formatted values used in the templated word documents
   const template: PermitTemplate = {
     permitName: '',
     permitNumber: '',
@@ -26,26 +25,26 @@ export const formatTemplateData = (permit: Permit, fullNames: FullNames) => {
     permitData: null,
   };
 
-  template.permitNumber = permit.permitNumber || '';
   template.permitData = JSON.parse(permit.permitData.permitData) as PermitData;
 
   // Format Permit information
   template.permitName = fullNames.permitName;
-
-  // Format Vehicle Details
-  template.permitData.vehicleDetails.vehicleType = fullNames.vehicleType;
-  template.permitData.vehicleDetails.vehicleSubType = fullNames.vehicleSubType;
-  template.permitData.vehicleDetails.countryCode = fullNames.mailingCountryCode;
-  template.permitData.vehicleDetails.provinceCode =
-    fullNames.mailingProvinceCode;
-
-  // Format Mailing Address
-  template.permitData.mailingAddress.countryCode = fullNames.vehicleCountryCode;
-  template.permitData.mailingAddress.provinceCode =
-    fullNames.vehicleProvinceCode;
-
+  template.permitNumber = permit.permitNumber || '';
   template.createdDateTime = permit.createdDateTime.toLocaleString(); // TODO: timezone? Format is done in word template
   template.updatedDateTime = permit.updatedDateTime.toLocaleString(); // TODO: timezone? Format is done in word template
+
+  // Format Vehicle Details
+  template.permitData.vehicleDetails.vehicleType = fullNames.vehicleTypeName;
+  template.permitData.vehicleDetails.vehicleSubType =
+    fullNames.vehicleSubTypeName;
+  template.permitData.vehicleDetails.countryCode = fullNames.mailingCountryName;
+  template.permitData.vehicleDetails.provinceCode =
+    fullNames.mailingProvinceName;
+
+  // Format Mailing Address
+  template.permitData.mailingAddress.countryCode = fullNames.vehicleCountryName;
+  template.permitData.mailingAddress.provinceCode =
+    fullNames.vehicleProvinceName;
 
   return template;
 };

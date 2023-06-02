@@ -12,21 +12,15 @@ import {
   TEMPLATE_NAME,
 } from './constants/template.constant';
 import { formatTemplateData } from './helpers/formatTemplateData.helper';
-import { TemplateVersion } from 'src/common/enum/pdf-template-version.enum';
 import { DmsService } from '../dms/dms.service';
 import { IFile } from '../../common/interface/file.interface';
 import { PdfReturnType } from 'src/common/enum/pdf-return-type.enum';
 import { KeycloakResponse } from './interface/keycloakResponse.interface';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
-import { PermitData } from './interface/permitData.interface';
-import { getVehicleTypeNames } from './helpers/getVehicleTypeNames.helper';
-import {
-  getCountryName,
-  getProvinceName,
-} from './helpers/getCountryProvinceNames.helper';
-import { getPermitTypeName } from './helpers/getPermitTypeName.helper';
 import { FullNames } from './interface/fullNames.interface';
+import { PermitData } from './interface/permit.template.interface';
+import { getFullNameFromCache } from './helpers/getFullNameFromCache';
 
 @Injectable()
 export class PdfService {
@@ -42,7 +36,7 @@ export class PdfService {
   /**
    * Find one template from the ORBC database
    * @param permitType permit type, which equals the template name in the ORBC DB
-   * @param version template version
+   * @param templateVersion template version
    * @returns
    */
   private async findOne(
@@ -57,12 +51,12 @@ export class PdfService {
   /**
    * Queries the ORBC Template table using the permit type to get the reference to the associated template object in DMS
    * @param {string} permitType permit type. Example: 'TROS'
-   * @param {string} templateVersion template version. Defaults to latest version
+   * @param {number} templateVersion template version
    * @returns {string} a DMS reference ID used to retrieve the template in DMS
    */
   private async getTemplateRef(
     permitType: string,
-    templateVersion: number = TemplateVersion.LATEST,
+    templateVersion: number,
   ): Promise<string> {
     const template = await this.findOne(permitType, templateVersion);
     return template.dmsRef;
@@ -102,43 +96,45 @@ export class PdfService {
   private async getFullNamesFromCache(permit: Permit): Promise<FullNames> {
     const permitData = JSON.parse(permit.permitData.permitData) as PermitData;
 
-    const { vehicleType, vehicleSubType } = (await getVehicleTypeNames(
+    const vehicleTypeName = (await getFullNameFromCache(
       this.cacheManager,
-      permitData,
-    )) as { vehicleType: string; vehicleSubType: string };
+      permitData.vehicleDetails.vehicleType,
+    )) as string;
+    const vehicleSubTypeName = (await getFullNameFromCache(
+      this.cacheManager,
+      permitData.vehicleDetails.vehicleSubType,
+    )) as string;
 
-    const mailingCountryCode = (await getCountryName(
+    const mailingCountryName = (await getFullNameFromCache(
       this.cacheManager,
       permitData.vehicleDetails.countryCode,
     )) as string;
-
-    const mailingProvinceCode = (await getProvinceName(
+    const mailingProvinceName = (await getFullNameFromCache(
       this.cacheManager,
       permitData.vehicleDetails.provinceCode,
     )) as string;
 
-    const vehicleCountryCode = (await getCountryName(
+    const vehicleCountryName = (await getFullNameFromCache(
       this.cacheManager,
       permitData.mailingAddress.countryCode,
     )) as string;
-
-    const vehicleProvinceCode = (await getProvinceName(
+    const vehicleProvinceName = (await getFullNameFromCache(
       this.cacheManager,
       permitData.mailingAddress.provinceCode,
     )) as string;
 
-    const permitName = (await getPermitTypeName(
+    const permitName = (await getFullNameFromCache(
       this.cacheManager,
       permit.permitType,
     )) as string;
 
     return {
-      vehicleType,
-      vehicleSubType,
-      mailingCountryCode,
-      mailingProvinceCode,
-      vehicleCountryCode,
-      vehicleProvinceCode,
+      vehicleTypeName,
+      vehicleSubTypeName,
+      mailingCountryName,
+      mailingProvinceName,
+      vehicleCountryName,
+      vehicleProvinceName,
       permitName,
     };
   }
@@ -258,13 +254,13 @@ export class PdfService {
    * {@link COMS https://digital.gov.bc.ca/bcgov-common-components/common-object-management-service/}
    *
    * @param {Permit} permit permit data
-   * @param {string} templateVersion template version. Defaults to latest version
+   * @param {number} templateVersion template version
    * @param {PdfReturnType} returnValue optional parameter to choose the return type
-   * @returns {string} a DMS reference ID used to retrieve the template in DMS
+   * @returns {string} value of returnValue type. Defaults to DMS Document Reference ID
    */
   public async generatePDF(
     permit: Permit,
-    templateVersion: number = TemplateVersion.LATEST,
+    templateVersion: number,
     returnValue?: PdfReturnType,
   ): Promise<string> {
     // Call ORBC Template table to get the DMS Reference of the associated template/permit type
@@ -280,8 +276,8 @@ export class PdfService {
     const pdf = await this.createPDF(permit, template);
 
     // Call DMS to store the pdf
-    const dmsRef = await this.savePDF(pdf, returnValue);
+    const dms = await this.savePDF(pdf, returnValue);
 
-    return dmsRef;
+    return dms;
   }
 }

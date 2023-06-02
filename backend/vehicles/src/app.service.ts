@@ -4,23 +4,17 @@ import { Cache } from 'cache-manager';
 import { PowerUnitTypesService } from './modules/vehicles/power-unit-types/power-unit-types.service';
 import { TrailerTypesService } from './modules/vehicles/trailer-types/trailer-types.service';
 import { CommonService } from './modules/common/common.service';
-import { Repository } from 'typeorm';
-import { PermitType } from './modules/permit/entities/permit-type.entity';
-import { InjectRepository } from '@nestjs/typeorm';
+import { PermitService } from './modules/permit/permit.service';
 
 @Injectable()
 export class AppService {
   constructor(
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
-
+    private permitTypeService: PermitService,
     private powerUnitTypeService: PowerUnitTypesService,
     private trailerTypeService: TrailerTypesService,
-
     private commonService: CommonService,
-
-    @InjectRepository(PermitType)
-    private permitTypeRepository: Repository<PermitType>,
   ) {}
 
   getHello(): string {
@@ -49,7 +43,7 @@ export class AppService {
       await this.addToCache(province.provinceCode, province.provinceName);
     }
 
-    const permitTypes = await this.permitTypeRepository.find({});
+    const permitTypes = await this.permitTypeService.findAllPermitTypes();
     for (const permitType of permitTypes) {
       await this.addToCache(permitType.permitTypeId, permitType.name);
     }

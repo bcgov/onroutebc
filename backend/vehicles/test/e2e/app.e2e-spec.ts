@@ -4,15 +4,13 @@ import { INestApplication } from '@nestjs/common';
 import { AppController } from '../../src/app.controller';
 import { AppService } from '../../src/app.service';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { PermitType } from 'src/modules/permit/entities/permit-type.entity';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { PowerUnitTypesService } from 'src/modules/vehicles/power-unit-types/power-unit-types.service';
 import { TrailerTypesService } from 'src/modules/vehicles/trailer-types/trailer-types.service';
 import { CommonService } from 'src/modules/common/common.service';
+import { PermitService } from 'src/modules/permit/permit.service';
 
-let repo: DeepMocked<Repository<PermitType>>;
+let permitServiceMock: DeepMocked<PermitService>;
 let powerUnitTypeServiceMock: DeepMocked<PowerUnitTypesService>;
 let trailerTypeServiceMock: DeepMocked<TrailerTypesService>;
 let commonServiceMock: DeepMocked<CommonService>;
@@ -21,7 +19,7 @@ describe('AppController (e2e)', () => {
   let app: INestApplication;
 
   beforeAll(async () => {
-    repo = createMock<Repository<PermitType>>();
+    permitServiceMock = createMock<PermitService>();
     powerUnitTypeServiceMock = createMock<PowerUnitTypesService>();
     trailerTypeServiceMock = createMock<TrailerTypesService>();
     commonServiceMock = createMock<CommonService>();
@@ -32,8 +30,8 @@ describe('AppController (e2e)', () => {
         AppService,
         { provide: CACHE_MANAGER, useFactory: jest.fn() },
         {
-          provide: getRepositoryToken(PermitType),
-          useValue: repo,
+          provide: PermitService,
+          useValue: permitServiceMock,
         },
         {
           provide: PowerUnitTypesService,
