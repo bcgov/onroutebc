@@ -20,7 +20,7 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { FullNames } from './interface/fullNames.interface';
 import { PermitData } from './interface/permit.template.interface';
-import { getFullNameFromCache } from './helpers/getFullNameFromCache';
+import { getFullNameFromCache } from 'src/common/helper/cache.helper';
 
 @Injectable()
 export class PdfService {
