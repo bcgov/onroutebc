@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import { Module } from '@nestjs/common';
+import { Module, OnApplicationBootstrap } from '@nestjs/common';
 import { CacheModule } from '@nestjs/cache-manager';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
@@ -79,14 +79,12 @@ const envPath = path.resolve(process.cwd() + '/../../');
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {
-  constructor(private readonly appService: AppService) {
-    this.initializeCache().catch((err) => {
+export class AppModule implements OnApplicationBootstrap {
+  constructor(private readonly appService: AppService) {}
+
+  onApplicationBootstrap() {
+    this.appService.initializeCache().catch((err) => {
       console.error('Cache initialization failed:', err);
     });
-  }
-
-  private async initializeCache() {
-    return await this.appService.initializeCache();
   }
 }
