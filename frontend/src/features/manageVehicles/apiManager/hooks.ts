@@ -19,6 +19,7 @@ export const useVehiclesQuery = () => {
     queryKey: ["vehicles"],
     queryFn: getAllVehicles,
     retry: false,
+    refetchOnWindowFocus: false,
   });
 };
 
@@ -35,6 +36,7 @@ export const usePowerUnitTypesQuery = () => {
     queryKey: ["powerUnitTypes"],
     queryFn: getPowerUnitTypes,
     retry: false,
+    refetchOnWindowFocus: false,
   });
 };
 
@@ -73,6 +75,7 @@ export const useTrailerTypesQuery = () => {
     queryKey: ["trailerTypes"],
     queryFn: getTrailerTypes,
     retry: false,
+    refetchOnWindowFocus: false,
   });
 };
 

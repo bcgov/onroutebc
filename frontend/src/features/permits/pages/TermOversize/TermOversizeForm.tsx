@@ -20,6 +20,8 @@ import {
   useAddTrailerMutation,
   useUpdateTrailerMutation,
   useVehiclesQuery,
+  usePowerUnitTypesQuery,
+  useTrailerTypesQuery,
 } from "../../../manageVehicles/apiManager/hooks";
 import {
   PowerUnit,
@@ -31,6 +33,7 @@ import { SnackBarContext } from "../../../../App";
 import { LeaveApplicationDialog } from "../../components/dialog/LeaveApplicationDialog";
 import { areApplicationDataEqual } from "../../helpers/equality";
 import { useDefaultApplicationFormData } from "../../hooks/useDefaultApplicationFormData";
+import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 
 /**
  * The first step in creating and submitting a TROS Application.
@@ -129,6 +132,12 @@ export const TermOversizeForm = () => {
   const addTrailerMutation = useAddTrailerMutation();
   const updateTrailerMutation = useUpdateTrailerMutation();
   const allVehiclesQuery = useVehiclesQuery();
+  const powerUnitTypesQuery = usePowerUnitTypesQuery();
+  const trailerTypesQuery = useTrailerTypesQuery();
+
+  const fetchedVehicles = getDefaultRequiredVal([], allVehiclesQuery.data);
+  const fetchedPowerUnitTypes = getDefaultRequiredVal([], powerUnitTypesQuery.data);
+  const fetchedTrailerTypes = getDefaultRequiredVal([], trailerTypesQuery.data);
 
   const handleSaveVehicle = (vehicleData?: VehicleDetailsType) => {
     // Check if the "add/update vehicle" checkbox was checked by the user
@@ -139,7 +148,7 @@ export const TermOversizeForm = () => {
 
     // Check if the vehicle that is to be saved was created from an existing vehicle
     const existingVehicle = mapVinToVehicleObject(
-      allVehiclesQuery.data,
+      fetchedVehicles,
       vehicle.vin
     );
 
@@ -247,6 +256,9 @@ export const TermOversizeForm = () => {
             <VehicleDetails
               feature={FEATURE}
               vehicleData={termOversizeDefaultValues.permitData.vehicleDetails}
+              vehicleOptions={fetchedVehicles}
+              powerUnitTypes={fetchedPowerUnitTypes}
+              trailerTypes={fetchedTrailerTypes}
             />
           </FormProvider>
         </Box>

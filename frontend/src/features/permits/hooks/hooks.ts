@@ -51,6 +51,7 @@ export const useApplicationDetailsQuery = (permitId?: string) => {
     queryFn: () => getApplicationInProgressById(permitId),
     retry: false,
     refetchOnMount: "always",
+    refetchOnWindowFocus: false,
     enabled: isPermitIdValid,
     onSuccess: (application) => {
       if (!application) {

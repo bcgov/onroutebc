@@ -19,17 +19,15 @@ export const removeIneligibleVehicleSubTypes = (
   ineligiblePowerUnits: VehicleType[],
   ineligibleTrailers: VehicleType[]
 ) => {
-  let ineligibleList: VehicleType[];
+  let ineligibleList: VehicleType[] = [];
   if (vehicleType === "powerUnit") ineligibleList = ineligiblePowerUnits;
   if (vehicleType === "trailer") ineligibleList = ineligibleTrailers;
 
-  vehicles.forEach((item, index) => {
-    ineligibleList.forEach((x) => {
-      if (item.typeCode === x.typeCode) vehicles.splice(index, 1);
-    });
+  const filteredVehicles = vehicles.filter(vehicle => {
+    return !ineligibleList.some(ineligible => vehicle.typeCode === ineligible.typeCode);
   });
 
-  return vehicles;
+  return filteredVehicles;
 };
 
 /**
@@ -44,20 +42,21 @@ export const removeIneligibleVehicles = (
   ineligiblePowerUnits: VehicleType[],
   ineligibleTrailers: VehicleType[]
 ) => {
-  vehicles.forEach((item, index) => {
-    if (item.vehicleType === "powerUnit") {
-      const powerUnit = item as PowerUnit;
-      ineligiblePowerUnits.forEach((x) => {
-        if (powerUnit.powerUnitTypeCode === x.typeCode)
-          vehicles.splice(index, 1);
+  const filteredVehicles = vehicles.filter(vehicle => {
+    if (vehicle.vehicleType === "powerUnit") {
+      const powerUnit = vehicle as PowerUnit;
+      return !ineligiblePowerUnits.some(ineligible => {
+        return powerUnit.powerUnitTypeCode === ineligible.typeCode;
       });
-    } else if (item.vehicleType === "trailer") {
-      const trailer = item as Trailer;
-      ineligibleTrailers.forEach((x) => {
-        if (trailer.trailerTypeCode === x.typeCode) vehicles.splice(index, 1);
+    } else if (vehicle.vehicleType === "trailer") {
+      const trailer = vehicle as Trailer;
+      return !ineligibleTrailers.some(ineligible => {
+        return trailer.trailerTypeCode === ineligible.typeCode;
       });
+    } else {
+      return true;
     }
   });
 
-  return vehicles;
+  return filteredVehicles;
 };
