@@ -297,7 +297,6 @@ export const VehicleDetails = ({
             name: "permitData.vehicleDetails.year",
             rules: {
               required: { value: true, message: requiredMessage() },
-              valueAsNumber: true,
               maxLength: 4,
               validate: {
                 isNumber: (v) => !isNaN(v) || invalidNumber(),
@@ -305,6 +304,7 @@ export const VehicleDetails = ({
                   parseInt(v) > 1950 || invalidYearMin(1950),
               },
             },
+            inputType: "number",
             label: "Year",
             width: formFieldStyle.width,
           }}

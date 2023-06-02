@@ -16,6 +16,7 @@ export const useCompanyInfoQuery = () => {
     queryKey: ["companyInfo"],
     queryFn: getCompanyInfo,
     refetchInterval: FIVE_MINUTES,
+    refetchOnWindowFocus: false,
     retry: false,
   });
 };

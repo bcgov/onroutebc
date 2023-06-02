@@ -66,9 +66,18 @@ export const TermOversizeForm = () => {
   const navigate = useNavigate();
 
   const applicationFormData = (data: FieldValues) => {
+    // Convert year to number here, as React doesn't accept valueAsNumber prop for input component
     return {
       ...data,
       applicationNumber: applicationContext.applicationData?.applicationNumber,
+      permitData: {
+        ...data.permitData,
+        vehicleDetails: {
+          ...data.permitData.vehicleDetails,
+          year: !isNaN(Number(data.permitData.vehicleDetails.year)) ? 
+            Number(data.permitData.vehicleDetails.year) : data.permitData.vehicleDetails.year
+        }
+      }
     } as Application;
   };
 

@@ -19,7 +19,10 @@ export const submitTermOversize = (
 ): Promise<AxiosResponse> => {
   return httpPOSTRequest_axios(
     PERMITS_API.SUBMIT_TERM_OVERSIZE_PERMIT,
-    mapApplicationToApplicationRequestData(termOversizePermit)
+    replaceEmptyValuesWithNull({
+      ...mapApplicationToApplicationRequestData(termOversizePermit),
+      permitApplicationOrigin: "PPC",
+    })
   );
 };
 
@@ -29,7 +32,10 @@ export const updateTermOversize = (
 ): Promise<AxiosResponse> => {
   return httpPUTRequest_axios(
     `${PERMITS_API.SUBMIT_TERM_OVERSIZE_PERMIT}/${applicationNumber}`,
-    mapApplicationToApplicationRequestData(termOversizePermit)
+    replaceEmptyValuesWithNull({
+      ...mapApplicationToApplicationRequestData(termOversizePermit),
+      permitApplicationOrigin: "PPC"
+    })
   );
 };
 

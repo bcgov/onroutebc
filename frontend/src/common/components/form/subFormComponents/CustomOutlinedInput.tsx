@@ -17,6 +17,7 @@ export interface CustomOutlinedInputProps<T extends FieldValues> {
   rules: RegisterOptions;
   inputProps: RegisterOptions;
   invalid: boolean;
+  inputType?: "number"; // currently only support number, TODO add "date", "email" and other types later
 }
 
 /**
@@ -33,6 +34,18 @@ export const CustomOutlinedInput = <T extends ORBC_FormTypes>(
   // eslint-disable-next-line  @typescript-eslint/no-explicit-any
   const updatedInputProps: any = props.inputProps;
   updatedInputProps["aria-label"] = props.name;
+
+  // Set the 'type' attribute for the input element, along with other number related attributes, for display purposes only
+  // (ie. not setting values, since input values always yield string type)
+  // Note: it is impossible to make the non-standard HTML 'valueAsNumber' attribute work in React (hence we don't include it here),
+  // and instead we can only convert input values to numbers explicitly in the components that use them
+  // https://technology.blog.gov.uk/2020/02/24/why-the-gov-uk-design-system-team-changed-the-input-type-for-numbers/
+  if (props.inputType === "number") {
+    // We would like <input type="number" inputMode="numeric" pattern="[0-9]*" ... />
+    updatedInputProps["type"] = "number";
+    updatedInputProps["inputMode"] = "numeric";
+    updatedInputProps["pattern"] = "[0-9]*";
+  }
 
   return (
     <OutlinedInput
