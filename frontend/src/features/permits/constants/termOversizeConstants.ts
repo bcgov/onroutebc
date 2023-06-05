@@ -40,6 +40,18 @@ export const TROS_INELIGIBLE_POWERUNITS = [
     description:
       "A Farm Vehicle is a commercial vehicle owned and operated by a farmer, rancher or market gardener, the use of which is confined to purposes connected with his farm, ranch or market garden, including use for pleasure and is not used in connection with any other business in which the owner may be engaged.",
   },
+  {
+    typeCode: "CRAFTAT",
+    type: "Cranes, Rubber-Tired Loaders, Firetrucks - All Terrain",
+    description:
+      "Industrial vehicles not designed to transport load on highways.",
+  },
+  {
+    typeCode: "CRAFTMB",
+    type: "Cranes, Rubber-Tired Loaders, Firetrucks - Mobile",
+    description:
+      "Industrial vehicles not designed to transport load on highways.",
+  },
 ];
 
 export const TROS_INELIGIBLE_TRAILERS = [
@@ -59,6 +71,28 @@ export const TROS_INELIGIBLE_TRAILERS = [
     type: "Semi-Trailers - A-Trains and C-Trains",
     description:
       "A-Train means a combination of vehicles composed of a truck tractor, a semi-trailer and either, (a) an A dolly and a semi-trailer, or (b) a full trailer.    C-Train means a combination of vehicles composed of a truck tractor and a semi-trailer, followed by another semi-trailer attached to the first semi-trailer by the means of a C dolly or C converter dolly.",
+  },
+  {
+    typeCode: "XXXXXXX",
+    type: "None",
+    description:
+      "Select \"None\" if no trailer is required and only the power unit is being permitted.",
+  },
+  {
+    typeCode: "STROPRT", 
+    type: "Steering Trailers - Manned", 
+    description: "Treated as a semi-trailer axle group and a booster in the Heavy Haul Quick Reference Chart, but with a requirement that the number of axles in the frst axle group cannot exceed the number of axles in the second axle group"
+  },
+  {
+    typeCode: "STRSELF",
+    type: "Steering Trailers - Self/Remote",
+    description: "Treated as a semi-trailer axle group and a booster in the Heavy Haul Quick Reference Chart, but with a requirement that the number of axles in the first axle group cannot exceed the number of axles in the second axle group."
+  },
+  {
+    typeCode: "DBTRBTR",
+    type: "Tandem/Tridem Drive B-Train (Super B-Train)",
+    description:
+      "B-trains for wood chip residual.",
   },
 ];
 
