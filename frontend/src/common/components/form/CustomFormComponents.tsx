@@ -35,7 +35,7 @@ interface CustomFormOptionsProps<T extends FieldValues> {
   inputProps?: RegisterOptions;
   width?: string;
   customHelperText?: string;
-  inputType?: "number"; // currently only support number, TODO add "date", "email" and other types later
+  inputType?: "number"; // currently only support number, add "date", "email" and other types later
 }
 
 /**
@@ -95,7 +95,7 @@ export const CustomFormComponent = <T extends ORBC_FormTypes>({
     inputProps = rules,
     width = "528px",
     customHelperText,
-    inputType, // currently only used for "input" types, TODO add for "select" types later
+    inputType, // currently only used for "input" types, add for "select" types later
   },
   i18options,
   menuOptions,

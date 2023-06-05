@@ -71,12 +71,10 @@ export const mapApplicationResponseToApplication = (response: ApplicationRespons
     createdDateTime: applyWhenNotNullable(
       (datetimeStr: string): Dayjs => toLocalDayjs(datetimeStr),
       response.createdDateTime,
-      undefined
     ),
     updatedDateTime: applyWhenNotNullable(
       (datetimeStr: string): Dayjs => toLocalDayjs(datetimeStr),
       response.updatedDateTime,
-      undefined
     ),
     permitData: {
       ...response.permitData,
@@ -105,12 +103,10 @@ export const mapApplicationToApplicationRequestData = (data: Application): Appli
     createdDateTime: applyWhenNotNullable(
       dayjsToUtcStr,
       data.createdDateTime,
-      undefined
     ),
     updatedDateTime: applyWhenNotNullable(
       dayjsToUtcStr,
       data.updatedDateTime,
-      undefined
     ),
     permitData: {
       ...data.permitData,

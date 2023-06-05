@@ -77,6 +77,11 @@ export const PowerUnitForm = ({ powerUnit }: PowerUnitFormProps) => {
    * Adds a vehicle.
    */
   const onAddOrUpdateVehicle = async (data: FieldValues) => {
+    // return input as a number if it's a valid number value, or original value if invalid number
+    const convertToNumberIfValid = (str?: string | null, valueToReturnWhenInvalid?: 0 | string | null) => {
+      return str != null && str !== "" && !isNaN(Number(str)) ? Number(str) : valueToReturnWhenInvalid;
+    };
+
     if (powerUnit?.powerUnitId) {
       const powerUnitToBeUpdated = data as PowerUnit;
       const result = await updatePowerUnitMutation.mutateAsync({
@@ -84,9 +89,10 @@ export const PowerUnitForm = ({ powerUnit }: PowerUnitFormProps) => {
         powerUnit: {
           ...powerUnitToBeUpdated,
           // need to explicitly convert form values to number here (since we can't use valueAsNumber prop)
-          year: !isNaN(Number(data.year)) ? Number(data.year) : data.year,
-          licensedGvw: data.licensedGvw != null && data.licensedGvw !== "" && !isNaN(Number(data.licensedGvw)) ?
-            Number(data.licensedGvw) : data.licensedGvw
+          /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+          year: convertToNumberIfValid(data.year, data.year as string) as any,
+          /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+          licensedGvw: convertToNumberIfValid(data.licensedGvw, data.licensedGvw as string) as any,
         },
       });
       if (result.ok) {

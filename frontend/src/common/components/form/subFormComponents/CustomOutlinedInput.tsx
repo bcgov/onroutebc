@@ -17,7 +17,7 @@ export interface CustomOutlinedInputProps<T extends FieldValues> {
   rules: RegisterOptions;
   inputProps: RegisterOptions;
   invalid: boolean;
-  inputType?: "number"; // currently only support number, TODO add "date", "email" and other types later
+  inputType?: "number"; // currently only support number, add "date", "email" and other types later
 }
 
 /**

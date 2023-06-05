@@ -100,13 +100,13 @@ export const TermOversizeForm = () => {
   };
 
   // When "Continue" button is clicked
-  const onContinue = function (data: FieldValues) {
+  const onContinue = async (data: FieldValues) => {
     const termOverSizeToBeAdded = applicationFormData(data);
     const vehicleData = termOverSizeToBeAdded.permitData.vehicleDetails;
     handleSaveVehicle(vehicleData);
 
     // Save application before continuing
-    onSaveApplication(() => applicationContext?.next());
+    await onSaveApplication(() => applicationContext?.next());
   };
 
   const isSaveTermOversizeSuccessful = (status: number) => status === 200 || status === 201;
@@ -176,61 +176,65 @@ export const TermOversizeForm = () => {
       vehicle.vin
     );
 
-    // If the vehicle type is a power unit then create a power unit object
-    if (vehicle.vehicleType === "powerUnit") {
-      let powerUnitId = "";
-      let unitNumber = "";
-      if (existingVehicle) {
-        const powerUnit = existingVehicle as PowerUnit;
-        if (powerUnit.powerUnitId) powerUnitId = powerUnit.powerUnitId;
-        if (powerUnit.unitNumber) unitNumber = powerUnit.unitNumber;
-      }
-      const powerUnit: PowerUnit = {
-        powerUnitId: powerUnitId,
-        unitNumber: unitNumber,
-        vin: vehicle.vin,
-        plate: vehicle.plate,
-        make: vehicle.make,
-        year: vehicle.year,
-        countryCode: vehicle.countryCode,
-        provinceCode: vehicle.provinceCode,
-        powerUnitTypeCode: vehicle.vehicleSubType,
+    const transformByVehicleType = (vehicleFormData: VehicleDetailsType, existingVehicle?: PowerUnit | Trailer): PowerUnit | Trailer => {
+      const defaultPowerUnit: PowerUnit = {
+        powerUnitId: "",
+        unitNumber: "",
+        vin: vehicleFormData.vin,
+        plate: vehicleFormData.plate,
+        make: vehicleFormData.make,
+        year: vehicleFormData.year,
+        countryCode: vehicleFormData.countryCode,
+        provinceCode: vehicleFormData.provinceCode,
+        powerUnitTypeCode: vehicleFormData.vehicleSubType,
       };
 
+      const defaultTrailer: Trailer = {
+        trailerId: "",
+        unitNumber: "",
+        vin: vehicleFormData.vin,
+        plate: vehicleFormData.plate,
+        make: vehicleFormData.make,
+        year: vehicleFormData.year,
+        countryCode: vehicleFormData.countryCode,
+        provinceCode: vehicleFormData.provinceCode,
+        trailerTypeCode: vehicleFormData.vehicleSubType,
+      };
+
+      switch (vehicleFormData.vehicleType) {
+        case "trailer":
+          return {
+            ...defaultTrailer,
+            trailerId: getDefaultRequiredVal("", (existingVehicle as Trailer)?.trailerId),
+            unitNumber: getDefaultRequiredVal("", existingVehicle?.unitNumber),
+          } as Trailer;
+        default:
+          return {
+            ...defaultPowerUnit,
+            unitNumber: getDefaultRequiredVal("", existingVehicle?.unitNumber),
+            powerUnitId: getDefaultRequiredVal("", (existingVehicle as PowerUnit)?.powerUnitId),
+          } as PowerUnit;
+      }
+    };
+
+    // If the vehicle type is a power unit then create a power unit object
+    if (vehicle.vehicleType === "powerUnit") {
+      const powerUnit = transformByVehicleType(vehicle, existingVehicle) as PowerUnit;
+
       // Either send a PUT or POST request based on powerUnitID
-      if (powerUnitId) {
+      if (powerUnit.powerUnitId) {
         updatePowerUnitMutation.mutate({
-          powerUnit: powerUnit,
-          powerUnitId: powerUnitId,
+          powerUnit,
+          powerUnitId: powerUnit.powerUnitId,
         });
       } else {
         addPowerUnitMutation.mutate(powerUnit);
       }
-    }
-
-    if (vehicle.vehicleType === "trailer") {
-      let trailerId = "";
-      let unitNumber = "";
-      if (existingVehicle) {
-        const trailer = existingVehicle as Trailer;
-        if (trailer.trailerId) trailerId = trailer.trailerId;
-        if (trailer.unitNumber) unitNumber = trailer.unitNumber;
-      }
-
-      const trailer: Trailer = {
-        trailerId: trailerId,
-        unitNumber: unitNumber,
-        vin: vehicle.vin,
-        plate: vehicle.plate,
-        make: vehicle.make,
-        year: vehicle.year,
-        countryCode: vehicle.countryCode,
-        provinceCode: vehicle.provinceCode,
-        trailerTypeCode: vehicle.vehicleSubType,
-      };
-
-      if (trailerId) {
-        updateTrailerMutation.mutate({ trailer: trailer, trailerId: trailerId });
+    } else if (vehicle.vehicleType === "trailer") {
+      const trailer = transformByVehicleType(vehicle, existingVehicle) as Trailer;
+      
+      if (trailer.trailerId) {
+        updateTrailerMutation.mutate({ trailer, trailerId: trailer.trailerId });
       } else {
         addTrailerMutation.mutate(trailer);
       }

@@ -148,6 +148,17 @@ export const VehicleDetails = ({
       return;
     }
 
+    const selectedVehicleSubtype = (vehicle: Vehicle) => {
+      switch (vehicle.vehicleType) {
+        case "powerUnit":
+          return (vehicle as PowerUnit).powerUnitTypeCode;
+        case "trailer":
+          return (vehicle as Trailer).trailerTypeCode;
+        default:
+          return "";
+      }
+    };
+
     // Prepare form fields with values from selected vehicle
     const vehicleDetails = {
       unitNumber: vehicle.unitNumber,
@@ -158,11 +169,7 @@ export const VehicleDetails = ({
       countryCode: vehicle.countryCode,
       provinceCode: vehicle.provinceCode,
       vehicleType: vehicle.vehicleType,
-      vehicleSubType: vehicle.vehicleType === "powerUnit" ?
-        (vehicle as PowerUnit).powerUnitTypeCode : (
-          vehicle.vehicleType === "trailer" ? 
-            (vehicle as Trailer).trailerTypeCode : ""
-        )
+      vehicleSubType: selectedVehicleSubtype(vehicle)
     };
     
     clearVehicle();
