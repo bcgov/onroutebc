@@ -65,7 +65,7 @@ services:
       CDOGS_URL: ${CDOGS_URL}
       CHES_CLIENT_ID: ${CHES_CLIENT_ID}
       CHES_CLIENT_SECRET: ${CHES_CLIENT_SECRET}
-      DMS_URL: ${DMS_URL}
+      DMS_URL: "http://dms-api:5001"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5000/"]
       interval: 1m30s
@@ -78,6 +78,7 @@ services:
     hostname: vehicles-api
     links:
       - sql-server-db
+      - dms-api
     ports:
       - "5000:5000"
 
