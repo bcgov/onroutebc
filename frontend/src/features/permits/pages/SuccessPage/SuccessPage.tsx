@@ -1,7 +1,9 @@
 import { Box, Button, Typography } from "@mui/material";
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
 import "./SuccessPage.scss";
 import { useNavigate } from "react-router-dom";
+import { ApplicationContext } from "../../context/ApplicationContext";
+import { viewPermitApplicationPdf } from "../../apiManager/permitsAPI";
 
 export const SuccessPage = () => {
   useEffect(() => {
@@ -9,6 +11,16 @@ export const SuccessPage = () => {
   }, []);
 
   const navigate = useNavigate();
+
+
+  const applicationContext = useContext(ApplicationContext);
+  const viewPermitPdf = async () => {
+    const permitId = applicationContext.applicationData?.permitId as number;
+    // const dmsRef = viewPermitApplicationPdf(permitId).then(response => response);
+    const dmsRef = "/CVSE1000.pdf"
+    window.open(await dmsRef, '_blank');
+  }
+
   return (
     <Box className="success feature-container">
       <Box className="success__container">
@@ -42,7 +54,9 @@ export const SuccessPage = () => {
           <Button
             variant="contained"
             color="secondary"
-            onClick={() => navigate("/applications")}
+            onClick={() => {
+              viewPermitPdf();
+            }}
           >
             View Permits
           </Button>

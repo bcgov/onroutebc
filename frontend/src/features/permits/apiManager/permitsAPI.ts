@@ -8,7 +8,7 @@ import {
   httpPOSTRequest,
 } from "../../../common/apiManager/httpRequestHandler";
 import { Application, PermitApplicationInProgress } from "../types/application";
-import { APPLICATION_UPDATE_STATUS_API, PERMITS_API, VEHICLE_URL } from "./endpoints/endpoints";
+import { APPLICATION_PDF_API, APPLICATION_UPDATE_STATUS_API, PERMITS_API, VEHICLE_URL } from "./endpoints/endpoints";
 import { formatDate } from "../../../common/helpers/formatDate";
 import { replaceEmptyValuesWithNull } from "../../../common/helpers/util";
 
@@ -110,4 +110,16 @@ export const deleteApplications = (
   const requestBody: { applicationIds: Array<string>, applicationStatus: string } = { applicationIds: applicationIds, applicationStatus: "CANCELLED"};
   url = `${APPLICATION_UPDATE_STATUS_API}`;
   return httpPOSTRequest(url, replaceEmptyValuesWithNull(requestBody));
+};
+
+/**
+ * View permit application pdf file.
+ * @param permitId permit id of the permit application.
+ * @returns A Promise of dms reference string.
+ */
+export const viewPermitApplicationPdf = (
+  permitId: number,
+): Promise<string> => {
+  const url = `${APPLICATION_PDF_API}/${permitId}`;
+  return httpGETRequest(url).then(response => response.data);
 };
