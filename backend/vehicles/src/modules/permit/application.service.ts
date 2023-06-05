@@ -267,8 +267,7 @@ export class ApplicationService {
     for (const id of permitIds) {
       const permit = await this.findOne(id);
       if (
-        permit.permitStatus === ApplicationStatus.APPROVED ||
-        permit.permitStatus === ApplicationStatus.AUTO_APPROVED
+        permit.permitStatus === ApplicationStatus.ISSUED
       ) {
         // DMS Reference ID for the generated PDF of the Permit
         // TODO: write helper to determine 'latest' template version

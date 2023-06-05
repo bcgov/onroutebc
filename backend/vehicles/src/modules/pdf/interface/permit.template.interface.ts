@@ -3,6 +3,8 @@ export interface PermitTemplate {
   permitNumber: string;
   createdDateTime: string;
   updatedDateTime: string;
+  companyName: string;
+  clientNumber: string;
   revisions: Revision[];
   permitData?: PermitData;
 }
@@ -16,6 +18,7 @@ export interface PermitData {
   startDate: string;
   permitDuration: number; //days
   expiryDate: string;
+  feeSummary: string;
   contactDetails?: ContactDetails;
   vehicleDetails?: VehicleDetails;
   commodities: Commodities[];
