@@ -208,6 +208,7 @@ export const TermOversizeForm = () => {
             trailerId: getDefaultRequiredVal("", (existingVehicle as Trailer)?.trailerId),
             unitNumber: getDefaultRequiredVal("", existingVehicle?.unitNumber),
           } as Trailer;
+        case "powerUnit":
         default:
           return {
             ...defaultPowerUnit,

@@ -70,7 +70,10 @@ describe("All Trailer Form Fields", () => {
     expect(selectFields).toHaveLength(5);
     // Check for number of input fields
     const inputFields = await screen.findAllByRole("textbox");
-    expect(inputFields).toHaveLength(6);
+    expect(inputFields).toHaveLength(5);
+    // Check for number of inputs with type="number" (ie. role of "spinbutton")
+    const numberFields = await screen.findAllByRole("spinbutton");
+    expect(numberFields).toHaveLength(1);
   });
 });
 
@@ -132,7 +135,7 @@ describe("Trailer Form Submission", () => {
     // Still need to figure out how to test MUI Select dropdowns for Country/Province
     expect(unitNumber).toHaveValue("Ken10");
     expect(make).toHaveValue("Kenworth");
-    expect(year).toHaveValue("2020");
+    expect(year).toHaveValue(2020);
     expect(vin).toHaveValue("123456");
     expect(plate).toHaveValue("ABC123");
     expect(subtype).toHaveTextContent(/Boosters/i);
