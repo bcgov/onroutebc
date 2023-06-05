@@ -67,7 +67,8 @@ export const getMake = () => {
 };
 
 export const getYear = () => {
-  return screen.getByRole("textbox", {
+  // "year" field is now of type="number" (ie. role of "spinbutton")
+  return screen.getByRole("spinbutton", {
     name: /year/i,
   });
 };
@@ -115,7 +116,8 @@ export const getEmptyTrailerWidth = () => {
 };
 
 export const getLicensedGvw = () => {
-  return screen.getByRole("textbox", {
+  // "licensedGvw" field is now of type="number" (ie. role of "spinbutton")
+  return screen.getByRole("spinbutton", {
     name: /licensedGvw/i,
   });
 };

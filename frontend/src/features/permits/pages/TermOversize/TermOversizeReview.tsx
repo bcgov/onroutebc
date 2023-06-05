@@ -14,15 +14,20 @@ import { ReviewVehicleInfo } from "./review/ReviewVehicleInfo";
 import { ProgressBar } from "../../components/progressBar/ProgressBar";
 
 export const TermOversizeReview = () => {
-  const { applicationData, setApplicationData, back, next } =
-    useContext(ApplicationContext);
+  const { 
+    applicationData, 
+    setApplicationData, 
+    back, 
+    next 
+  } = useContext(ApplicationContext);
+  
   const methods = useForm<Application>();
 
   // Send data to the backend API
-  const submitTermOversizeQuery = useSaveTermOversizeMutation();
+  const submitTermOversizeMutation = useSaveTermOversizeMutation();
   const onSubmit = async () => {
     if (applicationData) {
-      const response = await submitTermOversizeQuery.mutateAsync(
+      const response = await submitTermOversizeMutation.mutateAsync(
         applicationData
       );
       const data = await response.data;
@@ -50,7 +55,12 @@ export const TermOversizeReview = () => {
             description="Please review and confirm that the information below is correct."
             width="668px"
           />
-          <ApplicationDetails values={applicationData} />
+          <ApplicationDetails 
+            permitType={applicationData?.permitType}
+            applicationNumber={applicationData?.applicationNumber}
+            createdDateTime={applicationData?.createdDateTime}
+            updatedDateTime={applicationData?.updatedDateTime}
+          />
           <ReviewContactDetails values={applicationData} />
           <ReviewPermitDetails values={applicationData} />
           <ReviewVehicleInfo values={applicationData} />

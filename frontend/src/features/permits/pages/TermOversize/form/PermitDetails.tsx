@@ -12,40 +12,48 @@ import {
   PERMIT_RIGHT_BOX_STYLE,
 } from "../../../../../themes/orbcStyles";
 import { TROS_PERMIT_DURATIONS } from "../../../constants/termOversizeConstants";
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import { requiredMessage } from "../../../../../common/helpers/validationMessages";
-import { useEffect, useState } from "react";
-import { Application } from "../../../types/application";
-import { useParams } from "react-router";
+import { useEffect } from "react";
 
-export const PermitDetails = ({ feature, values}: { feature: string, values: Application | undefined  }) => {
+export const PermitDetails = ({ 
+  feature, 
+  defaultStartDate,
+  defaultDuration,
+}: { 
+  feature: string, 
+  defaultStartDate: Dayjs,
+  defaultDuration: number,
+}) => {
   const { watch, register, setValue } = useFormContext();
-  const {applicationNumber} = useParams();
-  const startDate = (applicationNumber !== undefined)? values?.permitData?.startDate: watch("permitData.startDate");
-  // the permit expiry date is the permit duration minus 1 plus the <start date>
-  const duration = (values?.permitData?.permitDuration !== undefined)? values?.permitData?.permitDuration - 1: 30;
-  const expiryDate = dayjs(startDate).add(duration, "day");
-  const [formattedExpiryDate, setFormattedExpiryDate] = useState(dayjs(expiryDate).format("LL"));
+  
+  // watch() is subscribed to fields, and will always have the latest values from the fields
+  // thus, no need to use this in useState and useEffect
+  const startDate = watch("permitData.startDate");
+  const duration = watch("permitData.permitDuration");
+
+  // Permit expiry date === Permit start date + Permit duration - 1
+  const expiryDate = dayjs(startDate).add(duration - 1, "day");
+
+  // Formatted expiry date is just a derived value, and always reflects latest value of expiry date
+  // no need to use useState nor place inside useEffect
+  const formattedExpiryDate = dayjs(expiryDate).format("LL");
+
+  useEffect(() => {
+    // We do need to check if the root form default values (which are from ApplicationContext) are changed,
+    // as watch() doesn't capture when defaultValues are changed
+    // This will explicitly update the startDate and permitDuration fields, and in turn trigger the next useEffect
+    setValue("permitData.startDate", dayjs(defaultStartDate));
+    setValue("permitData.permitDuration", defaultDuration);
+  }, [defaultStartDate, defaultDuration]);
+
   register("permitData.expiryDate");
   useEffect(() => {
-    if(applicationNumber !== undefined)
-    {  
-      setValue("permitData.startDate", dayjs(values?.permitData?.startDate)); 
-      setValue("permitData.permitDuration", values?.permitData.permitDuration);
-    }
+    // use setValue to explicitly set the invisible form field for expiry date
+    // this needs useEffect as this form field update process is manual, and needs to happen whenever startDate and duration changes
+    // also, the form field component is accepting a dayJS object
+    setValue("permitData.expiryDate", dayjs(expiryDate));
   }, [startDate, duration]);
-
-  useEffect(() => {
-    if(applicationNumber !== undefined){
-      setValue("permitData.expiryDate", formattedExpiryDate);
-    }
-    const tempStartDate = typeof watch("permitData.startDate") === "string"? dayjs(watch("permitData.startDate")): watch("permitData.startDate"); 
-    setFormattedExpiryDate(tempStartDate.add(watch("permitData.permitDuration"),"days").format("LL"));
-  }, [values?.permitData?.startDate, values?.permitData.permitDuration, watch("permitData.startDate"), watch("permitData.permitDuration"), formattedExpiryDate]);
-
-  useEffect(() => {
-    setValue("permitData.commodities", values?.permitData.commodities);
-    }, [values?.permitData.permitDuration]);
 
   return (
     <Box sx={PERMIT_MAIN_BOX_STYLE}>
