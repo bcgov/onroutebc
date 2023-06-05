@@ -14,6 +14,7 @@ import { DatabaseHelper } from 'src/common/helper/database.helper';
 import { PermitApplicationOrigin } from './entities/permit-application-origin.entity';
 import { PermitApprovalSource } from './entities/permit-approval-source.entity';
 import { PdfReturnType } from 'src/common/enum/pdf-return-type.enum';
+import { IUserJWT } from 'src/common/interface/user-jwt.interface';
 
 @Injectable()
 export class ApplicationService {
@@ -210,6 +211,7 @@ export class ApplicationService {
   async updateApplicationStatus(
     applicationIds: string[],
     applicationStatus: ApplicationStatus,
+    currentUser: IUserJWT,
   ): Promise<ResultDto> {
     let updateResult: UpdateResult;
     if (
@@ -247,7 +249,7 @@ export class ApplicationService {
     const failure = applicationIds?.filter((id) => !success?.includes(id));
 
     // TODO: When to generate PDF?
-    await this.generatePDFs(success);
+    await this.generatePDFs(currentUser.access_token, success);
 
     const resultDto: ResultDto = {
       success: success,
@@ -261,7 +263,7 @@ export class ApplicationService {
    * If the status is updated to 'APPROVED' or 'AUTO-APPROVED', then create pdf and store it in DMS
    * @param permitIds array of permit ID's to be converted as PDF's and saved in DMS
    */
-  async generatePDFs(permitIds: string[]) {
+  async generatePDFs(access_token: string, permitIds: string[]) {
     for (const id of permitIds) {
       const permit = await this.findOne(id);
       if (
@@ -271,6 +273,7 @@ export class ApplicationService {
         // DMS Reference ID for the generated PDF of the Permit
         // TODO: write helper to determine 'latest' template version
         const dmsDocumentId: string = await this.pdfService.generatePDF(
+          access_token,
           permit,
           1,
           PdfReturnType.DMS_DOC_ID,

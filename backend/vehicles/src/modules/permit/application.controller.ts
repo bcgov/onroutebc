@@ -126,11 +126,14 @@ export class ApplicationController {
   })
   @Post('status')
   async updateApplicationStatus(
+    @Req() request: Request,
     @Body() updateApplicationStatusDto: UpdateApplicationStatusDto,
   ): Promise<ResultDto> {
+    const currentUser = request.user as IUserJWT; // TODO: consider security with passing JWT token to DMS microservice
     const result = await this.applicationService.updateApplicationStatus(
       updateApplicationStatusDto.applicationIds,
       updateApplicationStatusDto.applicationStatus,
+      currentUser,
     );
     if (!result) {
       throw new DataNotFoundException();

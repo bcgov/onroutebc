@@ -50,6 +50,7 @@ export const redCompanyAdminUserJWTMock: IUserJWT = {
     Role.WRITE_VEHICLE,
   ],
   associatedCompanies: [constants.RED_COMPANY_ID],
+  access_token: undefined,
 };
 
 export const redCompanyCvClientUserJWTMock: IUserJWT = {
@@ -99,6 +100,7 @@ export const redCompanyCvClientUserJWTMock: IUserJWT = {
     Role.WRITE_VEHICLE,
   ],
   associatedCompanies: [constants.RED_COMPANY_ID],
+  access_token: undefined,
 };
 
 export const blueCompanyAdminUserJWTMock: IUserJWT = {
@@ -148,6 +150,7 @@ export const blueCompanyAdminUserJWTMock: IUserJWT = {
     Role.WRITE_VEHICLE,
   ],
   associatedCompanies: [constants.BLUE_COMPANY_ID],
+  access_token: undefined,
 };
 
 export const blueCompanyCvClientUserJWTMock: IUserJWT = {
@@ -197,6 +200,7 @@ export const blueCompanyCvClientUserJWTMock: IUserJWT = {
     Role.WRITE_VEHICLE,
   ],
   associatedCompanies: [constants.BLUE_COMPANY_ID],
+  access_token: undefined,
 };
 
 export const sysAdminStaffUserJWTMock: IUserJWT = {
@@ -246,4 +250,5 @@ export const sysAdminStaffUserJWTMock: IUserJWT = {
     Role.WRITE_VEHICLE,
   ],
   associatedCompanies: undefined,
+  access_token: undefined,
 };

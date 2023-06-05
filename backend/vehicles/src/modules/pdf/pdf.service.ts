@@ -1,5 +1,5 @@
 import { HttpService } from '@nestjs/axios';
-import { Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { lastValueFrom } from 'rxjs';
 import { Permit } from 'src/modules/permit/entities/permit.entity';
@@ -12,8 +12,6 @@ import {
   TEMPLATE_NAME,
 } from './constants/template.constant';
 import { formatTemplateData } from './helpers/formatTemplateData.helper';
-import { DmsService } from '../dms/dms.service';
-import { IFile } from '../../common/interface/file.interface';
 import { PdfReturnType } from 'src/common/enum/pdf-return-type.enum';
 import { KeycloakResponse } from './interface/keycloakResponse.interface';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
@@ -21,6 +19,7 @@ import { Cache } from 'cache-manager';
 import { FullNames } from './interface/fullNames.interface';
 import { PermitData } from './interface/permit.template.interface';
 import { getFullNameFromCache } from 'src/common/helper/cache.helper';
+import { DmsResponse } from 'src/common/interface/dms.interface';
 
 @Injectable()
 export class PdfService {
@@ -30,7 +29,6 @@ export class PdfService {
     @InjectRepository(Template)
     private templateRepository: Repository<Template>,
     private httpService: HttpService,
-    private readonly dmsService: DmsService,
   ) {}
 
   /**
@@ -67,9 +65,25 @@ export class PdfService {
    * @param {string} templateRef key used to look up template object in DMS. @see getTemplateRef
    * @returns {string} a DMS reference ID used to retrieve the template in DMS
    */
-  private async getTemplate(templateRef: string): Promise<string> {
+  private async getTemplate(
+    access_token: string,
+    templateRef: string,
+  ): Promise<string> {
     // The DMS service returns an HTTP 201 containing a direct, temporary pre-signed S3 object URL location
-    const dmsDocument = await this.dmsService.findOne(templateRef);
+    const dmsDocument = await lastValueFrom(
+      this.httpService.get(`${process.env.DMS_URL}/dms/${templateRef}`, {
+        headers: { Authorization: access_token },
+        params: { download: 'url' },
+      }),
+    )
+      .then((response) => {
+        return response.data as DmsResponse;
+      })
+      .catch((error) => {
+        console.log('dmsDocument error: ', error);
+        throw new BadRequestException();
+      });
+
     const url = dmsDocument.preSignedS3Url;
 
     // From the url provided by DMS, get the array buffer of the template
@@ -212,34 +226,44 @@ export class PdfService {
    * @returns a DMS reference ID
    */
   private async savePDF(
+    access_token: string,
     pdf: ArrayBuffer,
     returnValue?: PdfReturnType,
   ): Promise<string> {
-    const file: IFile = {
-      buffer: pdf,
-      originalname: TEMPLATE_NAME,
-      mimetype: 'application/pdf',
-    };
+    // Convert Array Buffer to Blob to pass to DMS microservice
+    const formData = new FormData();
+    formData.append('file', new Blob([pdf]));
 
-    const readFileDto = await this.dmsService.create(file);
+    const dmsResource = await lastValueFrom(
+      this.httpService.post(`${process.env.DMS_URL}/dms/upload`, formData, {
+        headers: { Authorization: access_token },
+      }),
+    )
+      .then((response) => {
+        return response.data as DmsResponse;
+      })
+      .catch((error) => {
+        console.log('dmsResource error: ', error);
+        throw new BadRequestException();
+      });
 
     let returnVal: string;
 
     switch (returnValue) {
       case PdfReturnType.MIME_TYPE:
-        returnVal = readFileDto.objectMimeType;
+        returnVal = dmsResource.objectMimeType;
         break;
       case PdfReturnType.DMS_DOC_ID:
-        returnVal = readFileDto.documentId;
+        returnVal = dmsResource.documentId;
         break;
       case PdfReturnType.PRESIGNED_URL:
-        returnVal = readFileDto.preSignedS3Url;
+        returnVal = dmsResource.preSignedS3Url;
         break;
       case PdfReturnType.S3_OBJ_ID:
-        returnVal = readFileDto.s3ObjectId;
+        returnVal = dmsResource.s3ObjectId;
         break;
       default:
-        returnVal = readFileDto.documentId;
+        returnVal = dmsResource.documentId;
     }
 
     return returnVal;
@@ -259,6 +283,7 @@ export class PdfService {
    * @returns {string} value of returnValue type. Defaults to DMS Document Reference ID
    */
   public async generatePDF(
+    access_token: string,
     permit: Permit,
     templateVersion: number,
     returnValue?: PdfReturnType,
@@ -270,13 +295,13 @@ export class PdfService {
     );
 
     // Call DMS to get the template
-    const template = await this.getTemplate(templateRef);
+    const template = await this.getTemplate(access_token, templateRef);
 
     // Call CDOGS to generate the pdf
     const pdf = await this.createPDF(permit, template);
 
     // Call DMS to store the pdf
-    const dms = await this.savePDF(pdf, returnValue);
+    const dms = await this.savePDF(access_token, pdf, returnValue);
 
     return dms;
   }

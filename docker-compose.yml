@@ -65,6 +65,7 @@ services:
       CDOGS_URL: ${CDOGS_URL}
       CHES_CLIENT_ID: ${CHES_CLIENT_ID}
       CHES_CLIENT_SECRET: ${CHES_CLIENT_SECRET}
+      DMS_URL: ${DMS_URL}
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5000/"]
       interval: 1m30s
