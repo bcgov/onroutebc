@@ -69,8 +69,10 @@ export const VehicleDetails = ({
   const [chooseFrom, setChooseFrom] = useState("");
   // Radio button value to decide if the user wants to save the vehicle in inventory
   const [saveVehicle, setSaveVehicle] = useState(false);
+  // Options for the vehicle subtype field (based on vehicle type)
   const [subtypeOptions, setSubtypeOptions] = useState<VehicleType[]>([]);
 
+  // Returns correct subtype options based on vehicle type
   const getSubtypeOptions = (vehicleType: string) => {
     if (vehicleType === "powerUnit") {
       return [...powerUnitTypes];
@@ -81,6 +83,7 @@ export const VehicleDetails = ({
     return [];
   };
 
+  // Returns eligible subset of subtype options to be used by select field for vehicle subtype
   const getEligibleSubtypeOptions = (vehicleType?: string) => {
     if (vehicleType !== "powerUnit" && vehicleType !== "trailer") {
       return [];
@@ -104,8 +107,8 @@ export const VehicleDetails = ({
     return eligibleVehicleSubtypes
   };
 
-  // Update subtype options whenever application data (from context) changes
-  // or powerUnitTypes/trailerTypes are queried from backend
+  // Update subtype options whenever application data (from context) is updated with new values,
+  // or when powerUnitTypes/trailerTypes are queried from backend
   useEffect(() => {
     const subtypes = getEligibleSubtypeOptions(
       getDefaultRequiredVal("", vehicleData?.vehicleType)
@@ -113,6 +116,7 @@ export const VehicleDetails = ({
     setSubtypeOptions(subtypes);
   }, [vehicleData?.vehicleType, powerUnitTypes, trailerTypes]);
 
+  // Resets vehicle subtype field when vehicle type changes
   const resetSubtype = (updatedVehicleType?: string) => {
     // Update subtype options when vehicle type changes
     const subtypes = getEligibleSubtypeOptions(updatedVehicleType);
@@ -121,6 +125,7 @@ export const VehicleDetails = ({
     resetField("permitData.vehicleDetails.vehicleSubType", { defaultValue: "" });
   };
 
+  // Clears vehicle details fields
   const clearVehicle = () => {
     // Must reset each specific field this way
     resetField("permitData.vehicleDetails.unitNumber", { defaultValue: "" });
@@ -134,13 +139,16 @@ export const VehicleDetails = ({
     resetSubtype("");
   };
 
+  // Whenever a new vehicle is selected
   const onSelectVehicle = (selectedVehicle: Vehicle) => {
     const vehicle = mapVinToVehicleObject(vehicleOptions, selectedVehicle.vin);
     if (!vehicle) {
+      // vehicle selection is invalid
       clearVehicle();
       return;
     }
 
+    // Prepare form fields with values from selected vehicle
     const vehicleDetails = {
       unitNumber: vehicle.unitNumber,
       vin: vehicle.vin,
@@ -179,7 +187,7 @@ export const VehicleDetails = ({
     setValue("permitData.vehicleDetails.saveVehicle", isTrue);
   };
 
-  // Reset the vehicle sub type field if the vehicle type field changes
+  // Reset the vehicle subtype field whenever a different vehicle type is selected
   const handleChangeVehicleType = (event: SelectChangeEvent) => {
     const updatedVehicleType = event.target.value as string;
     setValue("permitData.vehicleDetails.vehicleType", updatedVehicleType);

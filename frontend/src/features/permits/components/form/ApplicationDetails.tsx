@@ -73,58 +73,60 @@ export const ApplicationDetails = ({
 
   return (
     <>
-      {(applicationNumber && applicationNumber !== "") ? (
-        <div>
-          <Typography
-            variant={"h1"}
-            sx={{
-              marginRight: "200px",
-              marginTop: "0px",
-              paddingTop: "0px",
-              borderBottom: "none",
-            }}
-          >
-            {applicationName}
-          </Typography>
-          <Typography
-            variant="h2"
-            sx={{
-              display: "block",
-              borderBottom: "none",
-              paddingBottom: "8px",
-              paddingTop: "8px",
-            }}
-          >
-            Application # {applicationNumber}
-          </Typography>
-          <Box sx={{ display: "flex" , gap: "40px"}}>
-            <Typography sx={{ width: "327px"}}>
-              <Box component="span" fontWeight="bold">
-                Date Created:
-              </Box>
-              {"  "}
-              {applyWhenNotNullable(
-                (dayjsObj) => dayjsToLocalStr(dayjsObj, "LLL"),
-                createdDateTime,
-                ""
-              )}
+      <div>
+        <Typography
+          variant={"h1"}
+          sx={{
+            marginRight: "200px",
+            marginTop: "0px",
+            paddingTop: "0px",
+            borderBottom: "none",
+          }}
+        >
+          {applicationName}
+        </Typography>
+        {(applicationNumber && applicationNumber !== "") ? (
+          <>
+            <Typography
+              variant="h2"
+              sx={{
+                display: "block",
+                borderBottom: "none",
+                paddingBottom: "8px",
+                paddingTop: "8px",
+              }}
+            >
+              Application # {applicationNumber}
             </Typography>
-            <Typography>
-              <Box component="span" fontWeight="bold">
-                Last Updated:
-              </Box>
-              {"  "}
-              {applyWhenNotNullable(
-                (dayjsObj) => dayjsToLocalStr(dayjsObj, "LLL"),
-                updatedDateTime,
-                ""
-              )}
-            </Typography>
-          </Box>
-        </div>
-      ) : (
-        <></>
-      )}
+            <Box sx={{ display: "flex" , gap: "40px"}}>
+              <Typography sx={{ width: "327px"}}>
+                <Box component="span" fontWeight="bold">
+                  Date Created:
+                </Box>
+                {"  "}
+                {applyWhenNotNullable(
+                  (dayjsObj) => dayjsToLocalStr(dayjsObj, "LLL"),
+                  createdDateTime,
+                  ""
+                )}
+              </Typography>
+              <Typography>
+                <Box component="span" fontWeight="bold">
+                  Last Updated:
+                </Box>
+                {"  "}
+                {applyWhenNotNullable(
+                  (dayjsObj) => dayjsToLocalStr(dayjsObj, "LLL"),
+                  updatedDateTime,
+                  ""
+                )}
+              </Typography>
+            </Box>
+          </>
+        ) : (
+          <></>
+        )}
+      </div>
       <CompanyBanner companyInfo={companyInfoQuery.data} />
       <CompanyInformation companyInfo={companyInfoQuery.data} />
     </>

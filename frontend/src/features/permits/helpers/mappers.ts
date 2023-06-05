@@ -60,6 +60,11 @@ export const mapTypeCodeToObject = (
   return typeObject;
 };
 
+/**
+ * Maps/transforms an ApplicationResponse (with string for dates) to an Application object (Dayjs object for dates)
+ * @param response ApplicationResponse object received as response data from backend
+ * @returns converted Application object that can be used by form fields and the front-end app
+ */
 export const mapApplicationResponseToApplication = (response: ApplicationResponse): Application => {
   return {
     ...response,
@@ -89,6 +94,11 @@ export const mapApplicationResponseToApplication = (response: ApplicationRespons
   };
 };
 
+/**
+ * Maps/transforms Application form data into ApplicationRequestData so it can be used as payload for backend requests
+ * @param data Application form data
+ * @returns ApplicationRequestData object that's used for payload to request to backend
+ */
 export const mapApplicationToApplicationRequestData = (data: Application): ApplicationRequestData => {
   return {
     ...data,

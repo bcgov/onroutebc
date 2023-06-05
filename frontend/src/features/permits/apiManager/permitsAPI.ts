@@ -14,18 +14,30 @@ import { APPLICATION_UPDATE_STATUS_API, PERMITS_API, VEHICLE_URL } from "./endpo
 import { formatDate } from "../../../common/helpers/formatDate";
 import { mapApplicationToApplicationRequestData } from "../helpers/mappers";
 
+/**
+ * Submits a new term oversize application.
+ * @param termOversizePermit application data for term oversize permit
+ * @returns response with created application data, or error if failed
+ */
 export const submitTermOversize = (
   termOversizePermit: Application
 ): Promise<AxiosResponse> => {
   return httpPOSTRequest_axios(
     PERMITS_API.SUBMIT_TERM_OVERSIZE_PERMIT,
     replaceEmptyValuesWithNull({
+      // must convert application to ApplicationRequestData (dayjs fields to strings)
       ...mapApplicationToApplicationRequestData(termOversizePermit),
-      permitApplicationOrigin: "PPC",
+      permitApplicationOrigin: "PPC", // temporarily added here, TODO remove once backend handler for this logic is ready
     })
   );
 };
 
+/**
+ * Updates an existing term oversize application.
+ * @param termOversizePermit application data for term oversize permit
+ * @param applicationNumber application number for the application to update
+ * @returns response with updated application data, or error if failed
+ */
 export const updateTermOversize = (
   termOversizePermit: Application,
   applicationNumber: string
@@ -33,15 +45,15 @@ export const updateTermOversize = (
   return httpPUTRequest_axios(
     `${PERMITS_API.SUBMIT_TERM_OVERSIZE_PERMIT}/${applicationNumber}`,
     replaceEmptyValuesWithNull({
+      // must convert application to ApplicationRequestData (dayjs fields to strings)
       ...mapApplicationToApplicationRequestData(termOversizePermit),
-      permitApplicationOrigin: "PPC"
+      permitApplicationOrigin: "PPC", // temporarily added here, TODO remove once backend handler for this logic is ready
     })
   );
 };
 
 /**
- * Fetch*
- * All Permit Application in Progress
+ * Fetch All Permit Application in Progress
  * @return An array of permit applications
  */
 export const getApplicationsInProgress = async (): Promise<
@@ -99,6 +111,11 @@ export const getApplicationsInProgress = async (): Promise<
   return applications;
 };
 
+/**
+ * Fetch in-progress application by its permit id.
+ * @param permitId permit id of the application to fetch
+ * @returns ApplicationResponse data as response, or undefined if fetch failed
+ */
 export const getApplicationInProgressById = (
   permitId: string | undefined,
 )  : Promise<ApplicationResponse | undefined>=> {

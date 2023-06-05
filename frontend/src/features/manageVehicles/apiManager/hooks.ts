@@ -11,15 +11,15 @@ import {
 } from "./vehiclesAPI";
 
 /**
- *
- * @returns An array of Powerunits and Trailers
+ * Fetches all vehicles.
+ * @returns An array of vehicles (both Powerunits and Trailers)
  */
 export const useVehiclesQuery = () => {
   return useQuery({
     queryKey: ["vehicles"],
     queryFn: getAllVehicles,
     retry: false,
-    refetchOnWindowFocus: false,
+    refetchOnWindowFocus: false, // prevents unnecessary queries performed whenever page shows in foreground
   });
 };
 
@@ -31,15 +31,23 @@ export const useVehicleByIdQuery = (powerUnitId: string) => {
   );
 };
 
+/**
+ * Fetches a list of vehicle subtypes for PowerUnit vehicles.
+ * @returns List of vehicle subtypes for PowerUnit vehicles
+ */
 export const usePowerUnitTypesQuery = () => {
   return useQuery({
     queryKey: ["powerUnitTypes"],
     queryFn: getPowerUnitTypes,
     retry: false,
-    refetchOnWindowFocus: false,
+    refetchOnWindowFocus: false, // prevents unnecessary queries
   });
 };
 
+/**
+ * Creates a PowerUnit vehicle.
+ * @returns newly created PowerUnit vehicle, or error when fails
+ */
 export const useAddPowerUnitMutation = () => {
   const queryClient = useQueryClient();
 
@@ -55,6 +63,10 @@ export const useAddPowerUnitMutation = () => {
   });
 };
 
+/**
+ * Updates an existing PowerUnit vehicle.
+ * @returns updated PowerUnit vehicle, or error when fails
+ */
 export const useUpdatePowerUnitMutation = () => {
   const queryClient = useQueryClient();
 
@@ -70,15 +82,23 @@ export const useUpdatePowerUnitMutation = () => {
   });
 };
 
+/**
+ * Fetches a list of vehicle subtypes for trailer vehicles.
+ * @returns list of vehicle subtypes for trailer vehicles
+ */
 export const useTrailerTypesQuery = () => {
   return useQuery({
     queryKey: ["trailerTypes"],
     queryFn: getTrailerTypes,
     retry: false,
-    refetchOnWindowFocus: false,
+    refetchOnWindowFocus: false, // prevents unnecessary queries
   });
 };
 
+/**
+ * Creates a trailer vehicle.
+ * @returns newly created trailer vehicle, or error if failed
+ */
 export const useAddTrailerMutation = () => {
   const queryClient = useQueryClient();
 
@@ -94,6 +114,10 @@ export const useAddTrailerMutation = () => {
   });
 };
 
+/**
+ * Updates an existing trailer vehicle.
+ * @returns updated trailer vehicle, or error if failed
+ */
 export const useUpdateTrailerMutation = () => {
   const queryClient = useQueryClient();
 

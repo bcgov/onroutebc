@@ -22,7 +22,9 @@ export enum ApplicationStep {
 
 export const ApplicationDashboard = () => {
   const companyInfoQuery = useCompanyInfoQuery();
-  const { applicationNumber } = useParams();
+  const { applicationNumber } = useParams(); // Get application number from route, if there is one (for edit applications)
+
+  // Query for the application data whenever this page is rendered
   const { 
     query: applicationDataQuery, 
     applicationData, 
@@ -70,6 +72,10 @@ export const ApplicationDashboard = () => {
     }
   }
 
+  // Show loading screen while application data is being fetched
+  // Note: when creating a new application, applicationNumber will be undefined, and the query will not be performed
+  // since it's disabled on invalid application numbers, but isLoading will always be (stuck) in the true state
+  // We need to check for isInitialLoading state instead (see https://tanstack.com/query/latest/docs/react/guides/disabling-queries)
   if (applicationDataQuery.isInitialLoading) {
     return <Loading />;
   }

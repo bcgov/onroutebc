@@ -49,12 +49,19 @@ export const TermOversizeForm = () => {
 
   // Context to hold all of the application data related to the TROS application
   const applicationContext = useContext(ApplicationContext);
+
+  // Use a custom hook that performs the following whenever page is rendered (or when application context is updated/changed):
+  // 1. Get all data needed to generate default values for the application form (from application context, company, user details)
+  // 2. Generate those default values and register them to the form
+  // 3. Listens for changes to application context (which happens when application is fetched/submitted/updated)
+  // 4. Updates form default values when application context data values change
   const { 
     defaultApplicationDataValues: termOversizeDefaultValues,
     formMethods,
   } = useDefaultApplicationFormData(
     applicationContext?.applicationData
   );
+
   const submitTermOversizeMutation = useSaveTermOversizeMutation();
   const snackBar = useContext(SnackBarContext);
 
@@ -65,8 +72,8 @@ export const TermOversizeForm = () => {
 
   const navigate = useNavigate();
 
+  // Helper method to return form field values as an Application object
   const applicationFormData = (data: FieldValues) => {
-    // Convert year to number here, as React doesn't accept valueAsNumber prop for input component
     return {
       ...data,
       applicationNumber: applicationContext.applicationData?.applicationNumber,
@@ -74,6 +81,7 @@ export const TermOversizeForm = () => {
         ...data.permitData,
         vehicleDetails: {
           ...data.permitData.vehicleDetails,
+          // Convert year to number here, as React doesn't accept valueAsNumber prop for input component
           year: !isNaN(Number(data.permitData.vehicleDetails.year)) ? 
             Number(data.permitData.vehicleDetails.year) : data.permitData.vehicleDetails.year
         }
@@ -81,15 +89,17 @@ export const TermOversizeForm = () => {
     } as Application;
   };
 
+  // Check to see if all application values were already saved
   const isApplicationSaved = () => {
     const currentFormData = applicationFormData(getValues());
     const savedData = applicationContext.applicationData;
     if (!savedData) return false;
 
-    // Check if all current form field values match field values saved in application context
+    // Check if all current form field values match field values already saved in application context
     return areApplicationDataEqual(currentFormData.permitData, savedData.permitData);
   };
 
+  // When "Continue" button is clicked
   const onContinue = function (data: FieldValues) {
     const termOverSizeToBeAdded = applicationFormData(data);
     const vehicleData = termOverSizeToBeAdded.permitData.vehicleDetails;
@@ -121,6 +131,7 @@ export const TermOversizeForm = () => {
     });
   };
 
+  // Whenever application is to be saved (either through "Save" or "Continue")
   const onSaveApplication = async (additionalSuccessAction?: () => void) => {
     const termOverSizeToBeAdded = applicationFormData(getValues());
     const response = await submitTermOversizeMutation.mutateAsync(
@@ -136,14 +147,18 @@ export const TermOversizeForm = () => {
     }
   };
 
+  // Mutations used to add/update vehicle details
   const addPowerUnitMutation = useAddPowerUnitMutation();
   const updatePowerUnitMutation = useUpdatePowerUnitMutation();
   const addTrailerMutation = useAddTrailerMutation();
   const updateTrailerMutation = useUpdateTrailerMutation();
+
+  // Queries used to populate select options for vehicle details
   const allVehiclesQuery = useVehiclesQuery();
   const powerUnitTypesQuery = usePowerUnitTypesQuery();
   const trailerTypesQuery = useTrailerTypesQuery();
 
+  // Vehicle details that have been fetched by vehicle details queries
   const fetchedVehicles = getDefaultRequiredVal([], allVehiclesQuery.data);
   const fetchedPowerUnitTypes = getDefaultRequiredVal([], powerUnitTypesQuery.data);
   const fetchedTrailerTypes = getDefaultRequiredVal([], trailerTypesQuery.data);
@@ -222,6 +237,7 @@ export const TermOversizeForm = () => {
     }
   };
 
+  // Whenever "Leave" button is clicked
   const handleLeaveApplication = () => {
     if (!isApplicationSaved()) {
       setShowLeaveApplicationDialog(true);

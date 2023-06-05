@@ -37,6 +37,8 @@ export const useSaveTermOversizeMutation = () => {
 /**
  * A custom react query hook that get application details from the backend API
  * The hook gets application data by its permit ID
+ * @param permitId permit id for the application, if it exists
+ * @returns appropriate Application data, or error if failed
  */
 export const useApplicationDetailsQuery = (permitId?: string) => {
   const [applicationData, setApplicationData] = useState<Application | undefined>(undefined);
@@ -50,13 +52,15 @@ export const useApplicationDetailsQuery = (permitId?: string) => {
     queryKey: ["termOversize"],
     queryFn: () => getApplicationInProgressById(permitId),
     retry: false,
-    refetchOnMount: "always",
-    refetchOnWindowFocus: false,
-    enabled: isPermitIdValid,
+    refetchOnMount: "always", // always fetch when component is mounted (ApplicationDashboard page)
+    refetchOnWindowFocus: false, // prevent unnecessary multiple queries on page showing up in foreground
+    enabled: isPermitIdValid, // does not perform the query at all if permit id is invalid
     onSuccess: (application) => {
       if (!application) {
+        // set to undefined when application not found
         setApplicationData(undefined);
       } else {
+        // if found, convert to ApplicationResponse object to Application (date string values to Dayjs objects to be used for date inputs)
         setApplicationData(
           mapApplicationResponseToApplication(application)
         );

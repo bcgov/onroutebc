@@ -6,14 +6,23 @@ import { useForm } from "react-hook-form";
 import { getDefaultContactDetails, getDefaultMailingAddress, getDefaultValues, getDefaultVehicleDetails } from "../helpers/getDefaultApplicationFormData";
 import { useCompanyInfoQuery } from "../../manageProfile/apiManager/hooks";
 
+/**
+ * Custom hook used to fetch application data and populate the form, as well as fetching current company id and user details.
+ * This also involves resetting certain form values when new/updated application data is received through ApplicationContext
+ * @param applicationData Application data received to fill out the form, preferrably from ApplicationContext/backend
+ * @returns current companyId, user details, default application data values, its setter method, and methods to manage the form
+ */
 export const useDefaultApplicationFormData = (applicationData?: Application) => {
   const { companyId, userDetails } = useContext(OnRouteBCContext);
   const companyInfoQuery = useCompanyInfoQuery();
 
+  // initialize the entire form data with default values
+  // Use default values (saved data from the TROS application context, or empty values)
   const [defaultApplicationDataValues, setDefaultApplicationDataValues] = useState<Application>(
-    getDefaultValues(applicationData, companyId, userDetails)
+    getDefaultValues(applicationData, companyId, userDetails) 
   );
 
+  // Update contact details form fields whenever these values are updated
   const contactDetailsDepArray = [
     applicationData?.permitData?.contactDetails?.firstName,
     userDetails?.firstName,
@@ -29,6 +38,7 @@ export const useDefaultApplicationFormData = (applicationData?: Application) => 
     applicationData?.permitData?.contactDetails?.fax,
   ];
 
+  // Update mailing address form fields whenever these values are updated
   const mailingAddressDepArray = [
     applicationData?.permitData?.mailingAddress?.addressLine1,
     applicationData?.permitData?.mailingAddress?.addressLine2,
@@ -44,6 +54,7 @@ export const useDefaultApplicationFormData = (applicationData?: Application) => 
     companyInfoQuery.data?.mailingAddress?.postalCode,
   ];
 
+  // update vehicle details form fields whenever these values are updated
   const vehicleDetailsDepArray = [
     applicationData?.permitData?.vehicleDetails?.unitNumber,
     applicationData?.permitData?.vehicleDetails?.vin,
@@ -57,6 +68,7 @@ export const useDefaultApplicationFormData = (applicationData?: Application) => 
     applicationData?.permitData?.vehicleDetails?.saveVehicle,
   ];
 
+  // update the entire form whenever these values are updated
   const applicationFormDataDepArray = [
     companyId,
     applicationData?.applicationNumber,
@@ -78,8 +90,7 @@ export const useDefaultApplicationFormData = (applicationData?: Application) => 
     );
   }, applicationFormDataDepArray);
 
-  // Default values to register with React Hook Forms
-  // Use saved data from the TROS application context, otherwise use empty or undefined values
+  // Register default values with react-hook-form
   const formMethods = useForm<Application>({
     defaultValues: defaultApplicationDataValues,
     reValidateMode: "onBlur",

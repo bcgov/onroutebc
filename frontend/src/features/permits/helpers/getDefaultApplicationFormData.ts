@@ -8,6 +8,12 @@ import { TROS_COMMODITIES } from "../constants/termOversizeConstants";
 import { now } from "../../../common/helpers/formatDate";
 import { Address } from "../../manageProfile/types/manageProfile";
 
+/**
+ * Get default values for contact details, or populate with existing contact details and/or user details
+ * @param contactDetails existing contact details, if any
+ * @param userDetails existing user details, if any
+ * @returns default values for contact details
+ */
 export const getDefaultContactDetails = (contactDetails?: ContactDetails, userDetails?: UserDetailContext) => ({
   firstName: getDefaultRequiredVal(
     "",
@@ -47,6 +53,12 @@ export const getDefaultContactDetails = (contactDetails?: ContactDetails, userDe
   ),
 });
 
+/**
+ * Get default values for mailing address, or populate with values from existing mailing address and/or alternate address.
+ * @param mailingAddress existing mailing address, if any
+ * @param alternateAddress existing alternative address, if any
+ * @returns default values for mailing address
+ */
 export const getDefaultMailingAddress = (mailingAddress?: MailingAddress, alternateAddress?: Address) => 
   mailingAddress ? ({
     addressLine1: getDefaultRequiredVal(
@@ -100,6 +112,11 @@ export const getDefaultMailingAddress = (mailingAddress?: MailingAddress, altern
     ),
   });
 
+/**
+ * Gets default values for vehicle details, or populate with values from existing vehicle details.
+ * @param vehicleDetails existing vehicle details, if any
+ * @returns default values for vehicle details
+ */
 export const getDefaultVehicleDetails = (vehicleDetails?: VehicleDetails) => ({
   unitNumber: getDefaultRequiredVal(
     "",
@@ -144,6 +161,13 @@ export const getDefaultVehicleDetails = (vehicleDetails?: VehicleDetails) => ({
   ),
 });
 
+/**
+ * Gets default values for the application data, or populate with values from existing application data and company id/user details.
+ * @param applicationData existing application data, if any
+ * @param companyId company id of the current user, if any
+ * @param userDetails user details of current user, if any
+ * @returns default values for the application data
+ */
 export const getDefaultValues = (applicationData?: Application, companyId?: number, userDetails?: UserDetailContext) => ({
   companyId: +getDefaultRequiredVal(0, companyId),
   applicationNumber: getDefaultRequiredVal(
