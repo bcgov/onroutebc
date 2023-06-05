@@ -266,9 +266,7 @@ export class ApplicationService {
   async generatePDFs(access_token: string, permitIds: string[]) {
     for (const id of permitIds) {
       const permit = await this.findOne(id);
-      if (
-        permit.permitStatus === ApplicationStatus.ISSUED
-      ) {
+      if (permit.permitStatus === ApplicationStatus.ISSUED) {
         // DMS Reference ID for the generated PDF of the Permit
         // TODO: write helper to determine 'latest' template version
         const dmsDocumentId: string = await this.pdfService.generatePDF(

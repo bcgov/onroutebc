@@ -11,7 +11,7 @@ import { CompanyModule } from '../company-user-management/company/company.module
     TypeOrmModule.forFeature([Template]),
     HttpModule,
     CommonModule,
-    CompanyModule
+    CompanyModule,
   ],
   providers: [PdfService],
   exports: [PdfService],

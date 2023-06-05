@@ -12,7 +12,11 @@ import { ReadCompanyDto } from 'src/modules/company-user-management/company/dto/
  * @param fullNames
  * @returns formatted permit data to be displayed on the PDF
  */
-export const formatTemplateData = (permit: Permit, fullNames: FullNames, companyInfo: ReadCompanyDto) => {
+export const formatTemplateData = (
+  permit: Permit,
+  fullNames: FullNames,
+  companyInfo: ReadCompanyDto,
+) => {
   // Create a new template object that includes the formatted values used in the templated word documents
   const template: PermitTemplate = {
     permitName: '',
@@ -56,7 +60,8 @@ export const formatTemplateData = (permit: Permit, fullNames: FullNames, company
   template.clientNumber = companyInfo.clientNumber;
 
   // Format Fee Summary
-  template.permitData.feeSummary = template.permitData.permitDuration.toString(); // TODO: get from frontend
+  template.permitData.feeSummary =
+    template.permitData.permitDuration.toString(); // TODO: get from frontend
 
   return template;
 };
