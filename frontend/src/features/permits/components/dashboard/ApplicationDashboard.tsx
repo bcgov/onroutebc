@@ -3,8 +3,6 @@ import "../../../../common/components/dashboard/Dashboard.scss";
 import { Banner } from "../../../../common/components/dashboard/Banner";
 import { TermOversizeForm } from "../../pages/TermOversize/TermOversizeForm";
 import { ApplicationContext } from "../../context/ApplicationContext";
-import { useContext, useEffect, useState } from "react";
-import { Application } from "../../types/application";
 import { TermOversizePay } from "../../pages/TermOversize/TermOversizePay";
 import { TermOversizeReview } from "../../pages/TermOversize/TermOversizeReview";
 import { useMultiStepForm } from "../../hooks/useMultiStepForm";
@@ -14,7 +12,7 @@ import { AxiosError } from "axios";
 import { Unauthorized } from "../../../../common/pages/Unauthorized";
 import { ErrorFallback } from "../../../../common/pages/ErrorFallback";
 import { useParams } from "react-router-dom";
-import { useApplicationDetailsMutation } from "../../hooks/hooks";
+import { useApplicationDetailsQuery } from "../../hooks/hooks";
 
 export enum ApplicationStep {
   Form = "Form",
@@ -23,25 +21,15 @@ export enum ApplicationStep {
 }
 
 export const ApplicationDashboard = () => {
-const [applicationData, setApplicationData] = useState<Application>();
-const companyInfoQuery = useCompanyInfoQuery();
-const {applicationNumber} = useParams();
-const applicationDetailsQuery = useApplicationDetailsMutation();
-const applicationContext = useContext(ApplicationContext);
+  const companyInfoQuery = useCompanyInfoQuery();
+  const { applicationNumber } = useParams(); // Get application number from route, if there is one (for edit applications)
 
-  useEffect(() => {
-    if(applicationNumber !== undefined){
-        applicationDetailsQuery.mutateAsync(
-        applicationNumber
-      ).then((response) => {
-        setApplicationData(response);
-        applicationContext.applicationData = response;
-      });     
-    }
-    else{
-      setApplicationData(undefined);
-    }
-  }, []);
+  // Query for the application data whenever this page is rendered
+  const { 
+    query: applicationDataQuery, 
+    applicationData, 
+    setApplicationData 
+  } = useApplicationDetailsQuery(applicationNumber);
 
   const {
     //steps,
@@ -84,11 +72,19 @@ const applicationContext = useContext(ApplicationContext);
     }
   }
 
+  // Show loading screen while application data is being fetched
+  // Note: when creating a new application, applicationNumber will be undefined, and the query will not be performed
+  // since it's disabled on invalid application numbers, but isLoading will always be (stuck) in the true state
+  // We need to check for isInitialLoading state instead (see https://tanstack.com/query/latest/docs/react/guides/disabling-queries)
+  if (applicationDataQuery.isInitialLoading) {
+    return <Loading />;
+  }
+
   return (
     <ApplicationContext.Provider
       value={{
-        applicationData: applicationData,
-        setApplicationData: setApplicationData,
+        applicationData,
+        setApplicationData,
         next,
         back,
         goTo,

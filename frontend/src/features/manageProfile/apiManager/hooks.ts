@@ -11,11 +11,16 @@ import OnRouteBCContext, {
 } from "../../../common/authentication/OnRouteBCContext";
 import { UserContextType } from "../../../common/authentication/types";
 
+/**
+ * Fetches company info of current user.
+ * @returns company info of current user, or error if failed
+ */
 export const useCompanyInfoQuery = () => {
   return useQuery({
     queryKey: ["companyInfo"],
     queryFn: getCompanyInfo,
     refetchInterval: FIVE_MINUTES,
+    refetchOnWindowFocus: false, // fixes issue where a query is run everytime the screen is brought to foreground
     retry: false,
   });
 };

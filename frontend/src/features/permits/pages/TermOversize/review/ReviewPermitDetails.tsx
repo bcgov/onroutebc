@@ -1,4 +1,6 @@
 import { Box, Typography } from "@mui/material";
+import dayjs from "dayjs";
+
 import { PermitExpiryDateBanner } from "../../../../../common/components/banners/PermitExpiryDateBanner";
 import {
   PERMIT_MAIN_BOX_STYLE,
@@ -8,8 +10,7 @@ import {
 } from "../../../../../themes/orbcStyles";
 import { Application } from "../../../types/application";
 import { ReviewConditionsTable } from "./ReviewConditionsTable";
-import { getDefaultRequiredVal } from "../../../../../common/helpers/util";
-import dayjs from "dayjs";
+import { applyWhenNotNullable } from "../../../../../common/helpers/util";
 
 export const ReviewPermitDetails = ({
   values,
@@ -26,18 +27,19 @@ export const ReviewPermitDetails = ({
       <Box sx={PERMIT_RIGHT_BOX_STYLE}>
         <Box sx={{ gap: "40px", paddingTop: "24px" }}>
           <Typography sx={{ fontWeight: "bold" }}>Start Date:</Typography>
-          {getDefaultRequiredVal(
-            "",
-            (typeof values?.permitData?.startDate !== "string")? values?.permitData?.startDate?.format("LL"): dayjs(values?.permitData?.startDate).format("LL")
-            )}
+          {applyWhenNotNullable(
+            (dayJsObject) => dayjs(dayJsObject).format("LL"),
+            values?.permitData?.startDate,
+            ""
+          )}
           <Typography sx={{ fontWeight: "bold" }}>Permit Duration:</Typography>
           <Typography>{values?.permitData.permitDuration} Days</Typography>
         </Box>
         <PermitExpiryDateBanner
-          expiryDate={getDefaultRequiredVal(
-            "",
-            (typeof values?.permitData?.expiryDate !== "string")? values?.permitData?.expiryDate?.format("LL"): dayjs(values?.permitData?.expiryDate).format("LL")
-      
+          expiryDate={applyWhenNotNullable(
+            (dayJsObject) => dayjs(dayJsObject).format("LL"),
+            values?.permitData?.expiryDate,
+            ""
           )}
         />
         <Box>

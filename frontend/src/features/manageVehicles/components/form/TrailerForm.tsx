@@ -79,7 +79,11 @@ export const TrailerForm = ({ trailer }: TrailerFormProps) => {
       const trailerToBeUpdated = data as Trailer;
       const result = await updateTrailerMutation.mutateAsync({
         trailerId: trailer?.trailerId,
-        trailer: trailerToBeUpdated,
+        trailer: {
+          ...trailerToBeUpdated,
+          // need to explicitly convert form values to number here (since we can't use valueAsNumber prop)
+          year: !isNaN(Number(data.year)) ? Number(data.year) : data.year
+        },
       });
       if (result.ok) {
         snackBar.setSnackBar({
@@ -92,7 +96,11 @@ export const TrailerForm = ({ trailer }: TrailerFormProps) => {
       }
     } else {
       const trailerToBeAdded = data as Trailer;
-      const result = await addTrailerMutation.mutateAsync(trailerToBeAdded);
+      const result = await addTrailerMutation.mutateAsync({
+        ...trailerToBeAdded,
+        // need to explicitly convert form values to number here (since we can't use valueAsNumber prop)
+        year: !isNaN(Number(data.year)) ? Number(data.year) : data.year
+      });
       if (result.ok) {
         snackBar.setSnackBar({
           showSnackbar: true,
@@ -163,9 +171,9 @@ export const TrailerForm = ({ trailer }: TrailerFormProps) => {
                   isNumber: (v) => !isNaN(v) || invalidNumber(),
                   lessThan1950: v => parseInt(v) > 1950 || invalidYearMin(1950),
                 },
-                valueAsNumber: true,
                 maxLength: 4,
               },
+              inputType: "number",
               label: "Year",
               width: formFieldStyle.width,
             }}

@@ -1,6 +1,21 @@
 import { Dayjs } from "dayjs";
 
 /**
+ * A type that replaces all direct entries with Dayjs types to string types.
+ * 
+ * eg. T = { a: Dayjs, b: number } 
+ * 
+ * then ReplaceDayjsWithString = { a: string, b: number }
+ * 
+ * eg. T = { a?: Dayjs, b: number }, 
+ * 
+ * then ReplaceDayjsWithString = { a?: string, b: number }
+ */
+type ReplaceDayjsWithString<T> = {
+  [K in keyof T]: T[K] extends Dayjs ? string : (T[K] extends (Dayjs | undefined) ? (string | undefined) : T[K]);
+};
+
+/**
  * A base permit type. This is an incomplete object and meant to be extended for use.
  */
 export interface Application {
@@ -17,7 +32,25 @@ export interface Application {
   permitData: TermOversizeApplication;
 }
 
-interface MailingAddress {
+/**
+ * Type that replaces all Dayjs types inside direct TermOversizeApplication entries to string types
+ * 
+ * eg. TermOversizeApplication = { c?: Dayjs }, 
+ * 
+ * and T = { a: number, b: TermOversizeApplication },
+ * 
+ * then TransformPermitData = { a: number, b: { c?: string } }
+ */
+type TransformPermitData<T> = {
+  [K in keyof T]: T[K] extends TermOversizeApplication ? ReplaceDayjsWithString<TermOversizeApplication> : T[K];
+};
+
+// These two types are used to transform an application data response object (with strings as date fields) to Application type (with Dayjs as date fields)
+// and vice versa (Application type to application data request data object with strings as date fields)
+export type ApplicationResponse = TransformPermitData<ReplaceDayjsWithString<Application>>;
+export type ApplicationRequestData = TransformPermitData<ReplaceDayjsWithString<Application>>;
+
+export interface MailingAddress {
   addressLine1: string;
   addressLine2?: string;
   city: string;
@@ -59,9 +92,9 @@ export interface Commodities {
 }
 
 export interface TermOversizeApplication {
-  startDate: Dayjs | any;
+  startDate: Dayjs;
   permitDuration: number; //days
-  expiryDate: Dayjs | any;
+  expiryDate: Dayjs;
   contactDetails?: ContactDetails;
   vehicleDetails?: VehicleDetails;
   commodities: Commodities[];

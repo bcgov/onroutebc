@@ -55,6 +55,7 @@ ENV CDOGS_TOKEN_URL ${CDOGS_TOKEN_URL}
 ENV CDOGS_URL ${CDOGS_URL}
 ENV CHES_CLIENT_ID ${CHES_CLIENT_ID}
 ENV CHES_CLIENT_SECRET ${CHES_CLIENT_SECRET}
+ENV DMS_URL ${DMS_URL}
 
 # Copy production files from build
 COPY --from=builder /app/package*.json ./

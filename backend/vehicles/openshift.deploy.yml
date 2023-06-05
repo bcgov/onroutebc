@@ -108,7 +108,8 @@ objects:
       coms-url: "${COMS_URL}"
       coms-presigned-url-expiry: "${COMS_PRESIGNED_URL_EXPIRY}"
       cdogs-token-url: "${CDOGS_TOKEN_URL}"
-      cdogs-url: "${CDOGS_URL}"      
+      cdogs-url: "${CDOGS_URL}"
+      dms-url: "https://${NAME}-${ZONE}-backend-dms.${DOMAIN}"
   - apiVersion: v1
     kind: Secret
     metadata:
@@ -272,7 +273,12 @@ objects:
                   valueFrom:
                     configMapKeyRef:
                       name: ${NAME}-${ZONE}-${COMPONENT}
-                      key: cdogs-url              
+                      key: cdogs-url 
+                - name: DMS_URL
+                  valueFrom:
+                    configMapKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: dms-url              
               ports:
                 - containerPort: 5000
                   protocol: TCP

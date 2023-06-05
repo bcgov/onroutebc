@@ -9,96 +9,9 @@ import {
   PHONE_WIDTH,
   EXT_WIDTH,
 } from "../../../../themes/orbcStyles";
-import { useCompanyInfoQuery } from "../../../manageProfile/apiManager/hooks";
-import { useFormContext } from "react-hook-form";
-import { useEffect } from "react";
-import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { requiredMessage } from "../../../../common/helpers/validationMessages";
-import { Application } from "../../types/application";
 
-export const ContactDetails = ({ feature, values}: { feature: string, values: Application | undefined }) => {
-  const companyInfoQuery = useCompanyInfoQuery();
-  const { setValue } = useFormContext();
-  /**
-   * UseEffect to get company mailing address and primary contact, since companyInfo query is async
-   */
-  useEffect(() => {
-    setValue("permitData.mailingAddress", {
-      addressLine1: getDefaultRequiredVal(
-        "",
-        companyInfoQuery?.data?.mailingAddress?.addressLine1
-      ),
-      addressLine2: getDefaultRequiredVal(
-        "",
-        companyInfoQuery?.data?.mailingAddress?.addressLine2
-      ),
-      city: getDefaultRequiredVal(
-        "",
-        companyInfoQuery?.data?.mailingAddress?.city
-      ),
-      provinceCode: getDefaultRequiredVal(
-        "",
-        companyInfoQuery?.data?.mailingAddress?.provinceCode
-      ),
-      countryCode: getDefaultRequiredVal(
-        "",
-        companyInfoQuery?.data?.mailingAddress?.countryCode
-      ),
-      postalCode: getDefaultRequiredVal(
-        "",
-        companyInfoQuery?.data?.mailingAddress?.postalCode
-      ),
-    });
-  }, [companyInfoQuery]);
-
-  useEffect(() => {
-    setValue("permitData.contactDetails", {
-      firstName: getDefaultRequiredVal(
-        "",
-        values?.permitData.contactDetails?.firstName,
-      ),
-      lastName: getDefaultRequiredVal(
-        "",
-        values?.permitData.contactDetails?.lastName,
-      ),
-      phone1: getDefaultRequiredVal(
-        "",
-        values?.permitData.contactDetails?.phone1,
-      ),
-      phone1Extension: getDefaultRequiredVal(
-        "",
-        values?.permitData.contactDetails?.phone1Extension,
-      ),
-      phone2: getDefaultRequiredVal(
-        "",
-        values?.permitData.contactDetails?.phone2,
-      ),
-      phone2Extension: getDefaultRequiredVal(
-        "",
-        values?.permitData.contactDetails?.phone2Extension,
-      ),
-      email: getDefaultRequiredVal(
-        "",
-        values?.permitData.contactDetails?.email,
-      ),
-      fax: getDefaultRequiredVal(
-        "",
-        values?.permitData.contactDetails?.fax,
-      ),
-      
-    });
-
-  }, [
-    values?.permitData.contactDetails?.firstName, 
-    values?.permitData.contactDetails?.lastName,
-    values?.permitData.contactDetails?.phone1,
-    values?.permitData.contactDetails?.phone1Extension,
-    values?.permitData.contactDetails?.phone2,
-    values?.permitData.contactDetails?.phone2Extension,
-    values?.permitData.contactDetails?.email,
-    values?.permitData.contactDetails?.fax
-  ]);
-
+export const ContactDetails = ({ feature }: { feature: string }) => {
   return (
     <Box sx={PERMIT_MAIN_BOX_STYLE}>
       <Box sx={PERMIT_LEFT_BOX_STYLE}>

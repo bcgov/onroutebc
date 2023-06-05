@@ -1,9 +1,13 @@
+import { Dayjs } from "dayjs";
+import { applyWhenNotNullable } from "../../../common/helpers/util";
 import {
   PowerUnit,
   Trailer,
   VehicleType,
   VehicleTypes,
 } from "../../manageVehicles/types/managevehicles";
+import { Application, ApplicationRequestData, ApplicationResponse } from "../types/application";
+import { dayjsToUtcStr, now, toLocalDayjs } from "../../../common/helpers/formatDate";
 
 /**
  * This helper function is used to get the vehicle object that matches the vin prop
@@ -54,4 +58,60 @@ export const mapTypeCodeToObject = (
   }
 
   return typeObject;
+};
+
+/**
+ * Maps/transforms an ApplicationResponse (with string for dates) to an Application object (Dayjs object for dates)
+ * @param response ApplicationResponse object received as response data from backend
+ * @returns converted Application object that can be used by form fields and the front-end app
+ */
+export const mapApplicationResponseToApplication = (response: ApplicationResponse): Application => {
+  return {
+    ...response,
+    createdDateTime: applyWhenNotNullable(
+      (datetimeStr: string): Dayjs => toLocalDayjs(datetimeStr),
+      response.createdDateTime,
+    ),
+    updatedDateTime: applyWhenNotNullable(
+      (datetimeStr: string): Dayjs => toLocalDayjs(datetimeStr),
+      response.updatedDateTime,
+    ),
+    permitData: {
+      ...response.permitData,
+      startDate: applyWhenNotNullable(
+        (datetimeStr: string): Dayjs => toLocalDayjs(datetimeStr),
+        response.permitData.startDate,
+        now()
+      ),
+      expiryDate: applyWhenNotNullable(
+        (datetimeStr: string): Dayjs => toLocalDayjs(datetimeStr),
+        response.permitData.expiryDate,
+        now()
+      ),
+    }
+  };
+};
+
+/**
+ * Maps/transforms Application form data into ApplicationRequestData so it can be used as payload for backend requests
+ * @param data Application form data
+ * @returns ApplicationRequestData object that's used for payload to request to backend
+ */
+export const mapApplicationToApplicationRequestData = (data: Application): ApplicationRequestData => {
+  return {
+    ...data,
+    createdDateTime: applyWhenNotNullable(
+      dayjsToUtcStr,
+      data.createdDateTime,
+    ),
+    updatedDateTime: applyWhenNotNullable(
+      dayjsToUtcStr,
+      data.updatedDateTime,
+    ),
+    permitData: {
+      ...data.permitData,
+      startDate: dayjsToUtcStr(data.permitData.startDate),
+      expiryDate: dayjsToUtcStr(data.permitData.expiryDate),
+    }
+  };
 };

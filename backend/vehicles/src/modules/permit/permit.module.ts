@@ -34,5 +34,6 @@ import { DatabaseHelper } from 'src/common/helper/database.helper';
     ApplicationProfile,
     DatabaseHelper,
   ],
+  exports: [PermitService],
 })
 export class PermitModule {}
