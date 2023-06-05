@@ -112,7 +112,7 @@ jobs:
             ${{secrets.VAULT_ENV}}/data/cdogs-test      CDOGS_TOKEN_URL           | VAULT_CDOGS_TOKEN_URL;
             ${{secrets.VAULT_ENV}}/data/cdogs-test      CDOGS_URL                 | VAULT_CDOGS_URL;
       
-      - uses: bcgov-nr/action-deployer-openshift@v1.0.5
+      - uses: bcgov-nr/action-deployer-openshift@v1.1.0
         with:
           file: ${{ matrix.file }}
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
@@ -278,7 +278,7 @@ jobs:
             ${{secrets.VAULT_ENV}}/data/cdogs-staging       CDOGS_TOKEN_URL           | VAULT_CDOGS_TOKEN_URL;
             ${{secrets.VAULT_ENV}}/data/cdogs-staging       CDOGS_URL                 | VAULT_CDOGS_URL;
       
-      - uses: bcgov-nr/action-deployer-openshift@v1.0.5
+      - uses: bcgov-nr/action-deployer-openshift@v1.1.0
         with:
           file: ${{ matrix.file }}
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
@@ -445,7 +445,7 @@ jobs:
             ${{secrets.VAULT_ENV}}/data/cdogs-uat       CDOGS_TOKEN_URL           | VAULT_CDOGS_TOKEN_URL;
             ${{secrets.VAULT_ENV}}/data/cdogs-uat       CDOGS_URL                 | VAULT_CDOGS_URL;
       
-      - uses: bcgov-nr/action-deployer-openshift@v1.0.5
+      - uses: bcgov-nr/action-deployer-openshift@v1.1.0
         with:
           file: ${{ matrix.file }}
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
@@ -705,7 +705,7 @@ jobs:
             ${{secrets.VAULT_ENV}}/data/cdogs-prod     CDOGS_CLIENT_SECRET       | VAULT_CDOGS_CLIENT_SECRET;
             ${{secrets.VAULT_ENV}}/data/cdogs-prod     CDOGS_TOKEN_URL           | VAULT_CDOGS_TOKEN_URL;
             ${{secrets.VAULT_ENV}}/data/cdogs-prod     CDOGS_URL                 | VAULT_CDOGS_URL;
-      - uses: bcgov-nr/action-deployer-openshift@v1.0.5
+      - uses: bcgov-nr/action-deployer-openshift@v1.1.0
         with:
           file: ${{ matrix.file }}
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
