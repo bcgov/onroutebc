@@ -3,7 +3,7 @@ import { InjectMapper } from '@automapper/nestjs';
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ApplicationStatus } from 'src/common/enum/application-status.enum';
-import { DataSource, IsNull, Repository } from 'typeorm';
+import { DataSource, IsNull, Repository, UpdateResult } from 'typeorm';
 import { CreateApplicationDto } from './dto/request/create-application.dto';
 import { ReadApplicationDto } from './dto/response/read-application.dto';
 import { Permit } from './entities/permit.entity';
@@ -12,11 +12,12 @@ import { ResultDto } from './dto/response/result.dto';
 import { PdfService } from '../pdf/pdf.service';
 import { DatabaseHelper } from 'src/common/helper/database.helper';
 import { PermitApplicationOriginEntity } from './entities/permit-application-origin.entity';
-import { PermitApprovalSource } from './entities/permit-approval-source.entity';
+import { PermitApprovalSourceEntity } from './entities/permit-approval-source.entity';
 import { IDP } from 'src/common/enum/idp.enum';
 import { PermitApplicationOrigin } from 'src/common/enum/permit-application-origin.enum';
 import { PdfReturnType } from 'src/common/enum/pdf-return-type.enum';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
+import { PermitApprovalSource } from 'src/common/enum/permit-approval-source.enum';
 
 @Injectable()
 export class ApplicationService {
@@ -29,8 +30,8 @@ export class ApplicationService {
     private databaseHelper: DatabaseHelper,
     @InjectRepository(PermitApplicationOriginEntity)
     private permitApplicationOriginRepository: Repository<PermitApplicationOriginEntity>,
-    @InjectRepository(PermitApprovalSource)
-    private permitApprovalSourceRepository: Repository<PermitApprovalSource>,
+    @InjectRepository(PermitApprovalSourceEntity)
+    private permitApprovalSourceRepository: Repository<PermitApprovalSourceEntity>,
   ) {}
 
   /**
@@ -219,30 +220,42 @@ export class ApplicationService {
     applicationStatus: ApplicationStatus,
     currentUser: IUserJWT,
   ): Promise<ResultDto> {
-    let permitNumber = null;
+    let updateResult: UpdateResult;
     if (
       applicationIds.length === 1 &&
       applicationStatus === ApplicationStatus.ISSUED
     ) {
-      permitNumber = await this.generatePermitNumber(applicationIds[0]);
-    }
-
-    if (
+      updateResult = await this.updateApplicationStatusIssued(
+        applicationIds,
+        applicationStatus,
+      );
+    } else if (
+      applicationIds.length === 1 &&
+      (applicationStatus === ApplicationStatus.APPROVED ||
+        applicationStatus === ApplicationStatus.AUTO_APPROVED)
+    ) {
+      updateResult = await this.updateApplicationStatusApproved(
+        applicationIds,
+        applicationStatus,
+        currentUser,
+      );
+    } else if (
       applicationIds.length > 1 &&
       applicationStatus != ApplicationStatus.CANCELLED
     ) {
       throw new ForbiddenException(
         'Bulk status update is only allowed for Cancellation',
       );
+    } else {
+      updateResult = await this.permitRepository
+        .createQueryBuilder()
+        .update()
+        .set({ permitStatus: applicationStatus })
+        .whereInIds(applicationIds)
+        .andWhere('permitNumber is null')
+        .returning(['permitId'])
+        .execute();
     }
-    const updateResult = await this.permitRepository
-      .createQueryBuilder()
-      .update()
-      .set({ permitStatus: applicationStatus, permitNumber: permitNumber })
-      .whereInIds(applicationIds)
-      .andWhere('permitNumber is null')
-      .returning(['permitId'])
-      .execute();
 
     const updatedApplications = Array.from(
       updateResult?.raw as [
@@ -286,6 +299,57 @@ export class ApplicationService {
         console.log('DMS Document Id: ', dmsDocumentId);
       }
     }
+  }
+
+  /**
+   *
+   * @param applicationIds
+   * @param applicationStatus
+   * @returns
+   */
+  async updateApplicationStatusIssued(
+    applicationIds: string[],
+    applicationStatus: ApplicationStatus,
+  ): Promise<UpdateResult> {
+    const permitNumber = await this.generatePermitNumber(applicationIds[0]);
+    const updateResult = await this.permitRepository
+      .createQueryBuilder()
+      .update()
+      .set({ permitStatus: applicationStatus, permitNumber: permitNumber })
+      .whereInIds(applicationIds)
+      .andWhere('permitNumber is null')
+      .returning(['permitId'])
+      .execute();
+    return updateResult;
+  }
+
+  /**
+   *
+   * @param applicationIds
+   * @param applicationStatus
+   * @returns
+   */
+  async updateApplicationStatusApproved(
+    applicationIds: string[],
+    applicationStatus: ApplicationStatus,
+    currentUser: IUserJWT,
+  ): Promise<UpdateResult> {
+    let permitApprovalSource: PermitApprovalSource;
+    if (currentUser.identity_provider == IDP.IDIR)
+      permitApprovalSource = PermitApprovalSource.PPC;
+    else permitApprovalSource = PermitApprovalSource.AUTO;
+    const updateResult = await this.permitRepository
+      .createQueryBuilder()
+      .update()
+      .set({
+        permitStatus: applicationStatus,
+        permitApprovalSource: permitApprovalSource,
+      })
+      .whereInIds(applicationIds)
+      .andWhere('permitNumber is null')
+      .returning(['permitId'])
+      .execute();
+    return updateResult;
   }
 
   /**
@@ -370,12 +434,12 @@ export class ApplicationService {
    */
   private async getPermitApprovalSource(
     permitApprovalSource: string,
-  ): Promise<number> {
+  ): Promise<string> {
     const code = await this.permitApprovalSourceRepository.findOne({
       where: [{ id: permitApprovalSource }],
     });
 
-    return code.code;
+    return String(code.code);
   }
 
   /**

@@ -12,7 +12,7 @@ import { ApplicationProfile } from './profile/application.profile';
 import { PdfModule } from '../pdf/pdf.module';
 import { PermitType } from './entities/permit-type.entity';
 import { PermitApplicationOriginEntity } from './entities/permit-application-origin.entity';
-import { PermitApprovalSource } from './entities/permit-approval-source.entity';
+import { PermitApprovalSourceEntity } from './entities/permit-approval-source.entity';
 import { DatabaseHelper } from 'src/common/helper/database.helper';
 
 @Module({
@@ -22,7 +22,7 @@ import { DatabaseHelper } from 'src/common/helper/database.helper';
       PermitData,
       PermitType,
       PermitApplicationOriginEntity,
-      PermitApprovalSource,
+      PermitApprovalSourceEntity,
     ]),
     PdfModule,
   ],
