@@ -11,7 +11,7 @@ import { ApplicationService } from './application.service';
 import { ApplicationProfile } from './profile/application.profile';
 import { PdfModule } from '../pdf/pdf.module';
 import { PermitType } from './entities/permit-type.entity';
-import { PermitApplicationOrigin } from './entities/permit-application-origin.entity';
+import { PermitApplicationOriginEntity } from './entities/permit-application-origin.entity';
 import { PermitApprovalSource } from './entities/permit-approval-source.entity';
 import { DatabaseHelper } from 'src/common/helper/database.helper';
 
@@ -21,7 +21,7 @@ import { DatabaseHelper } from 'src/common/helper/database.helper';
       Permit,
       PermitData,
       PermitType,
-      PermitApplicationOrigin,
+      PermitApplicationOriginEntity,
       PermitApprovalSource,
     ]),
     PdfModule,

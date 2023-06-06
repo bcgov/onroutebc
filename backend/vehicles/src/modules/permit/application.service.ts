@@ -1,9 +1,9 @@
 import { Mapper } from '@automapper/core';
 import { InjectMapper } from '@automapper/nestjs';
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ApplicationStatus } from 'src/common/enum/application-status.enum';
-import { DataSource, IsNull, Repository, UpdateResult } from 'typeorm';
+import { DataSource, IsNull, Repository } from 'typeorm';
 import { CreateApplicationDto } from './dto/request/create-application.dto';
 import { ReadApplicationDto } from './dto/response/read-application.dto';
 import { Permit } from './entities/permit.entity';
@@ -11,8 +11,11 @@ import { UpdateApplicationDto } from './dto/request/update-application.dto';
 import { ResultDto } from './dto/response/result.dto';
 import { PdfService } from '../pdf/pdf.service';
 import { DatabaseHelper } from 'src/common/helper/database.helper';
-import { PermitApplicationOrigin } from './entities/permit-application-origin.entity';
+import { PermitApplicationOriginEntity } from './entities/permit-application-origin.entity';
 import { PermitApprovalSource } from './entities/permit-approval-source.entity';
+import { IDP } from 'src/common/enum/idp.enum';
+import { PermitApplicationOrigin } from 'src/common/enum/permit-application-origin.enum';
+import { IUserJWT } from 'src/common/interface/user-jwt.interface';
 
 @Injectable()
 export class ApplicationService {
@@ -23,8 +26,8 @@ export class ApplicationService {
     private datasource: DataSource,
     private readonly pdfService: PdfService,
     private databaseHelper: DatabaseHelper,
-    @InjectRepository(PermitApplicationOrigin)
-    private permitApplicationOriginRepository: Repository<PermitApplicationOrigin>,
+    @InjectRepository(PermitApplicationOriginEntity)
+    private permitApplicationOriginRepository: Repository<PermitApplicationOriginEntity>,
     @InjectRepository(PermitApprovalSource)
     private permitApprovalSourceRepository: Repository<PermitApprovalSource>,
   ) {}
@@ -37,6 +40,7 @@ export class ApplicationService {
    */
   async create(
     createApplicationDto: CreateApplicationDto,
+    currentUser: IUserJWT,
   ): Promise<ReadApplicationDto> {
     createApplicationDto.permitStatus = ApplicationStatus.IN_PROGRESS;
     //permitId Null means new application for
@@ -44,7 +48,7 @@ export class ApplicationService {
 
     //Generate appliction number for the application to be created in database.
     const applicationNumber = await this.generateApplicationNumber(
-      createApplicationDto.permitApplicationOrigin,
+      currentUser.identity_provider,
       createApplicationDto.permitId,
     );
     createApplicationDto.applicationNumber = applicationNumber;
@@ -205,35 +209,38 @@ export class ApplicationService {
    * @param applicationIds array of applications ids to be updated. ex ['1','2']
    * @param applicationStatus application status to be set to this values. And
    * can be picked from enum ApplicationStatus i.e. allowed status for an application.
+   *
+   * Assumption has been made that @param applicationIds length > 1 is only applicable for bulk delete.
+   * which means move all the applications to Cancelled status. For every other status length will be one.
    **/
   async updateApplicationStatus(
     applicationIds: string[],
     applicationStatus: ApplicationStatus,
   ): Promise<ResultDto> {
-    let updateResult: UpdateResult;
+    let permitNumber = null;
     if (
       applicationIds.length === 1 &&
       applicationStatus === ApplicationStatus.ISSUED
     ) {
-      const permitNumber = await this.generatePermitNumber(applicationIds[0]);
-      updateResult = await this.permitRepository
-        .createQueryBuilder()
-        .update()
-        .set({ permitStatus: applicationStatus, permitNumber: permitNumber })
-        .whereInIds(applicationIds)
-        .andWhere('permitNumber is null')
-        .returning(['permitId'])
-        .execute();
-    } else {
-      updateResult = await this.permitRepository
-        .createQueryBuilder()
-        .update()
-        .set({ permitStatus: applicationStatus })
-        .whereInIds(applicationIds)
-        .andWhere('permitNumber is null')
-        .returning(['permitId'])
-        .execute();
+      permitNumber = await this.generatePermitNumber(applicationIds[0]);
     }
+
+    if (
+      applicationIds.length > 1 &&
+      applicationStatus != ApplicationStatus.CANCELLED
+    ) {
+      throw new ForbiddenException(
+        'Bulk status update is only allowed for Cancellation',
+      );
+    }
+    const updateResult = await this.permitRepository
+      .createQueryBuilder()
+      .update()
+      .set({ permitStatus: applicationStatus, permitNumber: permitNumber })
+      .whereInIds(applicationIds)
+      .andWhere('permitNumber is null')
+      .returning(['permitId'])
+      .execute();
 
     const updatedApplications = Array.from(
       updateResult?.raw as [
@@ -299,13 +306,19 @@ export class ApplicationService {
         const { randomInt } = await import('crypto');
         rnd = randomInt(100, 1000);
       }
-      source = await this.getPermitApplicationOrigin(permit.permitApplicationOrigin);
+      source = await this.getPermitApplicationOrigin(
+        permit.permitApplicationOrigin,
+      );
     } else {
       //New permit application.
       seq = await this.databaseHelper.callDatabaseSequence(
         'permit.ORBC_PERMIT_NUMBER_SEQ',
       );
-      source = await this.getPermitApplicationOrigin(permitApplicationOrigin);
+      source = await this.getPermitApplicationOrigin(
+        permitApplicationOrigin == IDP.IDIR
+          ? PermitApplicationOrigin.PPC
+          : PermitApplicationOrigin.ONLINE,
+      );
       const { randomInt } = await import('crypto');
       rnd = randomInt(100, 1000);
     }

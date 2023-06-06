@@ -54,9 +54,11 @@ export class ApplicationController {
   })
   @Post()
   async createPermitApplication(
+    @Req() request: Request,
     @Body() createApplication: CreateApplicationDto,
   ): Promise<ReadApplicationDto> {
-    return await this.applicationService.create(createApplication);
+    const currentUser = request.user as IUserJWT;
+    return await this.applicationService.create(createApplication, currentUser);
   }
 
   @ApiOkResponse({

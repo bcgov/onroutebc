@@ -17,6 +17,9 @@ import { IUserJWT } from '../../../common/interface/user-jwt.interface';
 import { CreateUserDto } from '../users/dto/request/create-user.dto';
 import { User } from '../users/entities/user.entity';
 import { CompanyUser } from '../users/entities/company-user.entity';
+import { DatabaseHelper } from 'src/common/helper/database.helper';
+import { IDP } from 'src/common/enum/idp.enum';
+import { AccountSource } from 'src/common/enum/account-source.enum';
 
 @Injectable()
 export class CompanyService {
@@ -25,6 +28,7 @@ export class CompanyService {
     private companyRepository: Repository<Company>,
     @InjectMapper() private readonly classMapper: Mapper,
     private dataSource: DataSource,
+    private databaseHelper: DatabaseHelper,
   ) {}
 
   /**
@@ -64,6 +68,15 @@ export class CompanyService {
           }),
         },
       );
+
+      if (!newCompany.clientNumber) {
+        newCompany.clientNumber = await this.generateClientNumber(
+          newCompany,
+          currentUser,
+        );
+      }
+
+      console.log('Client Number Is ', newCompany.clientNumber);
 
       newCompany = await queryRunner.manager.save(newCompany);
 
@@ -263,5 +276,35 @@ export class CompanyService {
     const updatedCompany = await this.companyRepository.save(newCompany);
 
     return this.findOne(updatedCompany.companyId);
+  }
+
+  /**
+   * Generates clientNumber for the newly created company.
+   * @param company
+   *
+   */
+  private async generateClientNumber(
+    company: Company,
+    currentUser: IUserJWT,
+  ): Promise<string> {
+    const { randomInt } = await import('crypto');
+    const rnd = randomInt(100, 1000);
+    const seq = await this.databaseHelper.callDatabaseSequence(
+      'dbo.ORBC_CLIENT_NUMBER_SEQ',
+    );
+    console.log('current user ', currentUser.identity_provider);
+    const accountSource =
+      currentUser.identity_provider == IDP.IDIR
+        ? AccountSource.PPCStaff
+        : AccountSource.BCeID;
+
+    const clientNumber =
+      company.accountRegion +
+      String(accountSource) +
+      '-' +
+      seq.padStart(6, '0') +
+      '-' +
+      String(rnd);
+    return clientNumber;
   }
 }
