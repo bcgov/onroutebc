@@ -9,66 +9,66 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material";
-import { useContext } from "react";
+import { useState, useEffect } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import { TROS_COMMODITIES } from "../../../constants/termOversizeConstants";
 import { Commodities } from "../../../types/application";
-import { ApplicationContext } from "../../../context/ApplicationContext";
-import { useParams } from "react-router-dom";
 
-export const ConditionsTable = () => {
-  const applicationContext = useContext(ApplicationContext);
-  const existingComodities: Commodities[] = [];
-  const existingCommodities = applicationContext.applicationData?.permitData.commodities;
-  TROS_COMMODITIES.forEach(defaultElement => {
-    const combinedElement: Commodities = {
-      description: defaultElement.description,
-      condition: defaultElement.condition,
-      conditionLink: defaultElement.conditionLink,
-      checked: false
-    }
+export const ConditionsTable = ({
+  commodities,
+  applicationWasCreated,
+}: {
+  commodities: Commodities[];
+  applicationWasCreated: boolean;
+}) => {
+  const { control, setValue, resetField } = useFormContext();
+  const [allOptions, setAllOptions] = useState<Commodities[]>([]);
 
-    if(existingCommodities !== undefined){
-      existingCommodities.forEach(element => {
-        if(element.condition === defaultElement.condition){ 
-          combinedElement.checked = element.checked;
-        }
-      });
-    }
+  const getOptions = (applicationWasCreated: boolean, existingCommodities: Commodities[]) => {
+    const isMustSelectOption = (commodity: Commodities) => 
+      commodity.condition === "CVSE-1000" || commodity.condition === "CVSE-1070";
 
-    if(defaultElement.condition === "CVSE-1000" || defaultElement.condition === "CVSE-1070"){
-      combinedElement.disabled = true;
-    }
+    const defaultOptions = TROS_COMMODITIES.map(commodity => ({
+      ...commodity,
+      // must-select options are checked and disabled (for toggling) by default
+      checked: isMustSelectOption(commodity),
+      disabled: isMustSelectOption(commodity),
+    }));
 
-    existingComodities.push(combinedElement); 
-  });
+    if (!applicationWasCreated) return defaultOptions; // return default options for new application (not created one)
+    // Application exists at this point, thus select all commodities that were selected in the application
+    return defaultOptions.map(defaultCommodity => {
+      const existingCommodity = existingCommodities.find(c => 
+        c.condition === defaultCommodity.condition
+      );
 
-  const {applicationNumber} = useParams();
-  const checkedValues = applicationNumber !== undefined ? existingComodities : TROS_COMMODITIES;
+      return {
+        ...defaultCommodity,
+        checked: existingCommodity ? existingCommodity.checked : defaultCommodity.checked,
+      };
+    });
+  };
 
-  const { control, setValue } = useFormContext();
+  useEffect(() => {
+    const updatedCommodities = getOptions(applicationWasCreated, commodities);
+    resetField("permitData.commodities", { defaultValue: [] }); // reset all options
+    setValue("permitData.commodities", updatedCommodities.filter(c => c.checked)); // select the commodities in the existing application
+    setAllOptions(updatedCommodities);
+  }, [applicationWasCreated, commodities]);
 
-  function handleSelect(checkedName: string) {
-    const newNames = checkedValues.map((item) => {
-      if (item.description === checkedName) {
-        item.checked = !item.checked;
+  function handleSelect(checkedCondition: string) {
+    const newOptions = allOptions.map((option) => {
+      if (option.condition === checkedCondition) {
+        option.checked = !option.checked;
       }
-      return item;
+      return option;
     });
 
-    const checkedNames = checkedValues
-      .filter((x) => x.checked)
-      .map((y) => {
-        return {
-          description: y.description,
-          condition: y.condition,
-          conditionLink: y.conditionLink,
-          checked: y.checked,
-        };
-      });
-    setValue("permitData.commodities", checkedNames);
+    setAllOptions(newOptions);
+    resetField("permitData.commodities", { defaultValue: [] }); // reset all options first
+    setValue("permitData.commodities", newOptions.filter(option => option.checked)); // then select the newly selected options
 
-    return newNames;
+    return newOptions;
   }
 
   return (
@@ -81,7 +81,7 @@ export const ConditionsTable = () => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {checkedValues.map((row) => (
+          {allOptions.map((row) => (
             <TableRow
               key={row.condition}
               sx={{
@@ -96,10 +96,10 @@ export const ConditionsTable = () => {
                       render={() => {
                         return (
                           <Checkbox
-                            key={row.description}
+                            key={row.condition}
                             checked={row.checked}
                             disabled={row.disabled}
-                            onChange={() => handleSelect(row.description)}
+                            onChange={() => handleSelect(row.condition)}
                           />
                         );
                       }}
