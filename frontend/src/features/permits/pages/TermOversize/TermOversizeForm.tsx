@@ -1,13 +1,12 @@
-import { useForm, FormProvider, FieldValues } from "react-hook-form";
+import { FormProvider, FieldValues } from "react-hook-form";
 import { Box, Button, useMediaQuery, useTheme } from "@mui/material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSave } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
-import { Application } from "../../types/application";
+import { Application, VehicleDetails as VehicleDetailsType } from "../../types/application";
 import { ContactDetails } from "../../components/form/ContactDetails";
 import { ApplicationDetails } from "../../components/form/ApplicationDetails";
 import { VehicleDetails } from "./form/VehicleDetails/VehicleDetails";
-import dayjs from "dayjs";
 import { useContext, useState } from "react";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { PERMIT_LEFT_COLUMN_WIDTH } from "../../../../themes/orbcStyles";
@@ -21,24 +20,20 @@ import {
   useAddTrailerMutation,
   useUpdateTrailerMutation,
   useVehiclesQuery,
+  usePowerUnitTypesQuery,
+  useTrailerTypesQuery,
 } from "../../../manageVehicles/apiManager/hooks";
 import {
   PowerUnit,
   Trailer,
 } from "../../../manageVehicles/types/managevehicles";
 import { mapVinToVehicleObject } from "../../helpers/mappers";
-import { TROS_COMMODITIES } from "../../constants/termOversizeConstants";
-import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
-import {
-  getDefaultRequiredVal,
-  applyWhenNotNullable,
-} from "../../../../common/helpers/util";
 import { useSaveTermOversizeMutation } from "../../hooks/hooks";
 import { SnackBarContext } from "../../../../App";
-import { getUserGuidFromSession } from "../../../../common/apiManager/httpRequestHandler";
 import { LeaveApplicationDialog } from "../../components/dialog/LeaveApplicationDialog";
 import { areApplicationDataEqual } from "../../helpers/equality";
-
+import { useDefaultApplicationFormData } from "../../hooks/useDefaultApplicationFormData";
+import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 
 /**
  * The first step in creating and submitting a TROS Application.
@@ -54,196 +49,69 @@ export const TermOversizeForm = () => {
 
   // Context to hold all of the application data related to the TROS application
   const applicationContext = useContext(ApplicationContext);
-  const { companyId, userDetails } = useContext(OnRouteBCContext);
-  const submitTermOversizeQuery = useSaveTermOversizeMutation();
+
+  // Use a custom hook that performs the following whenever page is rendered (or when application context is updated/changed):
+  // 1. Get all data needed to generate default values for the application form (from application context, company, user details)
+  // 2. Generate those default values and register them to the form
+  // 3. Listens for changes to application context (which happens when application is fetched/submitted/updated)
+  // 4. Updates form default values when application context data values change
+  const { 
+    defaultApplicationDataValues: termOversizeDefaultValues,
+    formMethods,
+  } = useDefaultApplicationFormData(
+    applicationContext?.applicationData
+  );
+
+  const submitTermOversizeMutation = useSaveTermOversizeMutation();
   const snackBar = useContext(SnackBarContext);
 
   // Show leave application dialog
   const [showLeaveApplicationDialog, setShowLeaveApplicationDialog] = useState<boolean>(false); 
 
-  // Default values to register with React Hook Forms
-  // Use saved data from the TROS application context, otherwise use empty or undefined values
-  const termOversizeDefaultValues: Application = {
-    companyId: +getDefaultRequiredVal(0, companyId),
-    applicationNumber: getDefaultRequiredVal(
-      "",
-      applicationContext?.applicationData?.applicationNumber
-    ),
-    userGuid: getUserGuidFromSession(),
-    permitType: getDefaultRequiredVal(
-      "TROS",
-      applicationContext?.applicationData?.permitType
-    ),
-    permitStatus: getDefaultRequiredVal(
-      "IN_PROGRESS",
-      applicationContext?.applicationData?.permitType
-    ),
-    createdDateTime: getDefaultRequiredVal(
-      dayjs(),
-      applicationContext?.applicationData?.createdDateTime
-    ),
-    updatedDateTime: getDefaultRequiredVal(
-      dayjs(),
-      applicationContext?.applicationData?.updatedDateTime
-    ),
-    permitData: {
-      startDate: getDefaultRequiredVal(
-        dayjs(),
-        applicationContext?.applicationData?.permitData?.startDate
-      ),
-      permitDuration: getDefaultRequiredVal(
-        30,
-        applicationContext?.applicationData?.permitData?.permitDuration
-      ),
-      expiryDate: getDefaultRequiredVal(
-        dayjs(),
-        applicationContext?.applicationData?.permitData?.expiryDate
-      ),
-      commodities: getDefaultRequiredVal(
-        [TROS_COMMODITIES[0], TROS_COMMODITIES[1]],
-        applicationContext?.applicationData?.permitData?.commodities
-      ),
-      contactDetails: {
-        firstName: getDefaultRequiredVal(
-          "",
-          applicationContext?.applicationData?.permitData?.contactDetails
-            ?.firstName,
-          userDetails?.firstName
-        ),
-        lastName: getDefaultRequiredVal(
-          "",
-          applicationContext?.applicationData?.permitData?.contactDetails
-            ?.lastName,
-          userDetails?.lastName
-        ),
-        phone1: getDefaultRequiredVal(
-          "",
-          applicationContext?.applicationData?.permitData?.contactDetails
-            ?.phone1,
-          userDetails?.phone1
-        ),
-        phone1Extension: getDefaultRequiredVal(
-          "",
-          applicationContext?.applicationData?.permitData?.contactDetails
-            ?.phone1Extension
-        ),
-        phone2: getDefaultRequiredVal(
-          "",
-          applicationContext?.applicationData?.permitData?.contactDetails
-            ?.phone2
-        ),
-        phone2Extension: getDefaultRequiredVal(
-          "",
-          applicationContext?.applicationData?.permitData?.contactDetails
-            ?.phone2Extension
-        ),
-        email: getDefaultRequiredVal(
-          "",
-          applicationContext?.applicationData?.permitData?.contactDetails
-            ?.email,
-          userDetails?.email
-        ),
-        fax: getDefaultRequiredVal(
-          "",
-          applicationContext?.applicationData?.permitData?.contactDetails
-            ?.fax
-        ),
-      },
-      // Default values are updated from companyInfo query in the ContactDetails common component
-      mailingAddress: {
-        addressLine1: "",
-        addressLine2: "",
-        city: "",
-        provinceCode: "",
-        countryCode: "",
-        postalCode: "",
-      },
-      vehicleDetails: {
-        unitNumber: getDefaultRequiredVal(
-          "",
-          applicationContext?.applicationData?.permitData?.vehicleDetails?.unitNumber
-        ),
-        vin: getDefaultRequiredVal(
-          "",
-          applicationContext?.applicationData?.permitData?.vehicleDetails?.vin
-        ),
-        plate: getDefaultRequiredVal(
-          "",
-          applicationContext?.applicationData?.permitData?.vehicleDetails?.plate
-        ),
-        make: getDefaultRequiredVal(
-          "",
-          applicationContext?.applicationData?.permitData?.vehicleDetails?.make
-        ),
-        year: applyWhenNotNullable(
-          (year) => year,
-          applicationContext?.applicationData?.permitData?.vehicleDetails?.year,
-          null
-        ),
-        countryCode: getDefaultRequiredVal(
-          "",
-          applicationContext?.applicationData?.permitData?.vehicleDetails
-            ?.countryCode
-        ),
-        provinceCode: getDefaultRequiredVal(
-          "",
-          applicationContext?.applicationData?.permitData?.vehicleDetails
-            ?.provinceCode
-        ),
-        vehicleType: getDefaultRequiredVal(
-          "",
-          applicationContext?.applicationData?.permitData?.vehicleDetails
-            ?.vehicleType
-        ),
-        vehicleSubType: getDefaultRequiredVal(
-          "",
-          applicationContext?.applicationData?.permitData?.vehicleDetails
-            ?.vehicleSubType
-        ),
-        saveVehicle: getDefaultRequiredVal(
-          false,
-          applicationContext?.applicationData?.permitData?.vehicleDetails
-            ?.saveVehicle
-        ),
-      },
-    },
-  };
-
-  const formMethods = useForm<Application>({
-    defaultValues: termOversizeDefaultValues,
-    reValidateMode: "onBlur",
-  });
-
   const { handleSubmit, getValues } = formMethods;
 
   const navigate = useNavigate();
 
+  // Helper method to return form field values as an Application object
   const applicationFormData = (data: FieldValues) => {
     return {
       ...data,
       applicationNumber: applicationContext.applicationData?.applicationNumber,
+      permitData: {
+        ...data.permitData,
+        vehicleDetails: {
+          ...data.permitData.vehicleDetails,
+          // Convert year to number here, as React doesn't accept valueAsNumber prop for input component
+          year: !isNaN(Number(data.permitData.vehicleDetails.year)) ? 
+            Number(data.permitData.vehicleDetails.year) : data.permitData.vehicleDetails.year
+        }
+      }
     } as Application;
   };
 
+  // Check to see if all application values were already saved
   const isApplicationSaved = () => {
     const currentFormData = applicationFormData(getValues());
     const savedData = applicationContext.applicationData;
     if (!savedData) return false;
 
-    // Check if all current form field values match field values saved in application context
+    // Check if all current form field values match field values already saved in application context
     return areApplicationDataEqual(currentFormData.permitData, savedData.permitData);
   };
 
-  const onContinue = function (data: FieldValues) {
+  // When "Continue" button is clicked
+  const onContinue = async (data: FieldValues) => {
     const termOverSizeToBeAdded = applicationFormData(data);
-    handleSaveVehicle(termOverSizeToBeAdded);
-    applicationContext?.setApplicationData(termOverSizeToBeAdded);
-    applicationContext?.next();
+    const vehicleData = termOverSizeToBeAdded.permitData.vehicleDetails;
+    handleSaveVehicle(vehicleData);
+
+    // Save application before continuing
+    await onSaveApplication(() => applicationContext?.next());
   };
 
-  const isSubmitTermOversizeSuccessful = (status: number) => status === 200 || status === 201;
+  const isSaveTermOversizeSuccessful = (status: number) => status === 200 || status === 201;
 
-  const onSubmitSuccess = (responseData: Application, status: number) => {
+  const onSaveSuccess = (responseData: Application, status: number) => {
     snackBar.setSnackBar({
       showSnackbar: true,
       setShowSnackbar: () => true,
@@ -254,7 +122,7 @@ export const TermOversizeForm = () => {
     applicationContext?.setApplicationData(responseData);
   };
 
-  const onSubmitFailure = () => {
+  const onSaveFailure = () => {
     snackBar.setSnackBar({
       showSnackbar: true,
       setShowSnackbar: () => true,
@@ -263,100 +131,118 @@ export const TermOversizeForm = () => {
     });
   };
 
-  const onSaveApplication = async () => {
+  // Whenever application is to be saved (either through "Save" or "Continue")
+  const onSaveApplication = async (additionalSuccessAction?: () => void) => {
     const termOverSizeToBeAdded = applicationFormData(getValues());
-    const response = await submitTermOversizeQuery.mutateAsync(
+    const response = await submitTermOversizeMutation.mutateAsync(
       termOverSizeToBeAdded
     );
     
-    if (isSubmitTermOversizeSuccessful(response.status)) {
+    if (isSaveTermOversizeSuccessful(response.status)) {
       const responseData = await response.data;
-      onSubmitSuccess(responseData as Application, response.status);
+      onSaveSuccess(responseData as Application, response.status);
+      additionalSuccessAction?.();
     } else {
-      onSubmitFailure();
+      onSaveFailure();
     }
   };
 
-  const addPowerUnitQuery = useAddPowerUnitMutation();
-  const updatePowerUnitQuery = useUpdatePowerUnitMutation();
-  const addTrailerQuery = useAddTrailerMutation();
-  const updateTrailerQuery = useUpdateTrailerMutation();
-  const allVehiclesQuery = useVehiclesQuery();
+  // Mutations used to add/update vehicle details
+  const addPowerUnitMutation = useAddPowerUnitMutation();
+  const updatePowerUnitMutation = useUpdatePowerUnitMutation();
+  const addTrailerMutation = useAddTrailerMutation();
+  const updateTrailerMutation = useUpdateTrailerMutation();
 
-  const handleSaveVehicle = (data: Application) => {
+  // Queries used to populate select options for vehicle details
+  const allVehiclesQuery = useVehiclesQuery();
+  const powerUnitTypesQuery = usePowerUnitTypesQuery();
+  const trailerTypesQuery = useTrailerTypesQuery();
+
+  // Vehicle details that have been fetched by vehicle details queries
+  const fetchedVehicles = getDefaultRequiredVal([], allVehiclesQuery.data);
+  const fetchedPowerUnitTypes = getDefaultRequiredVal([], powerUnitTypesQuery.data);
+  const fetchedTrailerTypes = getDefaultRequiredVal([], trailerTypesQuery.data);
+
+  const handleSaveVehicle = (vehicleData?: VehicleDetailsType) => {
     // Check if the "add/update vehicle" checkbox was checked by the user
-    if (!data.permitData.vehicleDetails?.saveVehicle) return;
+    if (!vehicleData?.saveVehicle) return;
 
     // Get the vehicle info from the form
-    const vehicle = data.permitData.vehicleDetails;
+    const vehicle = vehicleData;
 
     // Check if the vehicle that is to be saved was created from an existing vehicle
     const existingVehicle = mapVinToVehicleObject(
-      allVehiclesQuery.data,
+      fetchedVehicles,
       vehicle.vin
     );
 
+    const transformByVehicleType = (vehicleFormData: VehicleDetailsType, existingVehicle?: PowerUnit | Trailer): PowerUnit | Trailer => {
+      const defaultPowerUnit: PowerUnit = {
+        powerUnitId: "",
+        unitNumber: "",
+        vin: vehicleFormData.vin,
+        plate: vehicleFormData.plate,
+        make: vehicleFormData.make,
+        year: vehicleFormData.year,
+        countryCode: vehicleFormData.countryCode,
+        provinceCode: vehicleFormData.provinceCode,
+        powerUnitTypeCode: vehicleFormData.vehicleSubType,
+      };
+
+      const defaultTrailer: Trailer = {
+        trailerId: "",
+        unitNumber: "",
+        vin: vehicleFormData.vin,
+        plate: vehicleFormData.plate,
+        make: vehicleFormData.make,
+        year: vehicleFormData.year,
+        countryCode: vehicleFormData.countryCode,
+        provinceCode: vehicleFormData.provinceCode,
+        trailerTypeCode: vehicleFormData.vehicleSubType,
+      };
+
+      switch (vehicleFormData.vehicleType) {
+        case "trailer":
+          return {
+            ...defaultTrailer,
+            trailerId: getDefaultRequiredVal("", (existingVehicle as Trailer)?.trailerId),
+            unitNumber: getDefaultRequiredVal("", existingVehicle?.unitNumber),
+          } as Trailer;
+        case "powerUnit":
+        default:
+          return {
+            ...defaultPowerUnit,
+            unitNumber: getDefaultRequiredVal("", existingVehicle?.unitNumber),
+            powerUnitId: getDefaultRequiredVal("", (existingVehicle as PowerUnit)?.powerUnitId),
+          } as PowerUnit;
+      }
+    };
+
     // If the vehicle type is a power unit then create a power unit object
     if (vehicle.vehicleType === "powerUnit") {
-      let powerUnitId = "";
-      let unitNumber = "";
-      if (existingVehicle) {
-        const powerUnit = existingVehicle as PowerUnit;
-        if (powerUnit.powerUnitId) powerUnitId = powerUnit.powerUnitId;
-        if (powerUnit.unitNumber) unitNumber = powerUnit.unitNumber;
-      }
-      const powerUnit: PowerUnit = {
-        powerUnitId: powerUnitId,
-        unitNumber: unitNumber,
-        vin: vehicle.vin,
-        plate: vehicle.plate,
-        make: vehicle.make,
-        year: vehicle.year,
-        countryCode: vehicle.countryCode,
-        provinceCode: vehicle.provinceCode,
-        powerUnitTypeCode: vehicle.vehicleSubType,
-      };
+      const powerUnit = transformByVehicleType(vehicle, existingVehicle) as PowerUnit;
 
       // Either send a PUT or POST request based on powerUnitID
-      if (powerUnitId) {
-        updatePowerUnitQuery.mutate({
-          powerUnit: powerUnit,
-          powerUnitId: powerUnitId,
+      if (powerUnit.powerUnitId) {
+        updatePowerUnitMutation.mutate({
+          powerUnit,
+          powerUnitId: powerUnit.powerUnitId,
         });
       } else {
-        addPowerUnitQuery.mutate(powerUnit);
+        addPowerUnitMutation.mutate(powerUnit);
       }
-    }
-
-    if (vehicle.vehicleType === "trailer") {
-      let trailerId = "";
-      let unitNumber = "";
-      if (existingVehicle) {
-        const trailer = existingVehicle as Trailer;
-        if (trailer.trailerId) trailerId = trailer.trailerId;
-        if (trailer.unitNumber) unitNumber = trailer.unitNumber;
-      }
-
-      const trailer: Trailer = {
-        trailerId: trailerId,
-        unitNumber: unitNumber,
-        vin: vehicle.vin,
-        plate: vehicle.plate,
-        make: vehicle.make,
-        year: vehicle.year,
-        countryCode: vehicle.countryCode,
-        provinceCode: vehicle.provinceCode,
-        trailerTypeCode: vehicle.vehicleSubType,
-      };
-
-      if (trailerId) {
-        updateTrailerQuery.mutate({ trailer: trailer, trailerId: trailerId });
+    } else if (vehicle.vehicleType === "trailer") {
+      const trailer = transformByVehicleType(vehicle, existingVehicle) as Trailer;
+      
+      if (trailer.trailerId) {
+        updateTrailerMutation.mutate({ trailer, trailerId: trailer.trailerId });
       } else {
-        addTrailerQuery.mutate(trailer);
+        addTrailerMutation.mutate(trailer);
       }
     }
   };
 
+  // Whenever "Leave" button is clicked
   const handleLeaveApplication = () => {
     if (!isApplicationSaved()) {
       setShowLeaveApplicationDialog(true);
@@ -385,10 +271,25 @@ export const TermOversizeForm = () => {
       >
         <Box sx={{ paddingBottom: "80px" }}>
           <FormProvider {...formMethods}>
-            <ApplicationDetails values={termOversizeDefaultValues} />
-            <ContactDetails feature={FEATURE} values={termOversizeDefaultValues} />
-            <PermitDetails feature={FEATURE}  values={termOversizeDefaultValues}/>
-            <VehicleDetails feature={FEATURE} values={termOversizeDefaultValues}/>
+            <ApplicationDetails
+              permitType={termOversizeDefaultValues.permitType}
+              applicationNumber={termOversizeDefaultValues.applicationNumber}
+              createdDateTime={termOversizeDefaultValues.createdDateTime}
+              updatedDateTime={termOversizeDefaultValues.updatedDateTime}
+            />
+            <ContactDetails feature={FEATURE} />
+            <PermitDetails 
+              feature={FEATURE}
+              defaultStartDate={termOversizeDefaultValues.permitData.startDate}
+              defaultDuration={termOversizeDefaultValues.permitData.permitDuration}
+            />
+            <VehicleDetails
+              feature={FEATURE}
+              vehicleData={termOversizeDefaultValues.permitData.vehicleDetails}
+              vehicleOptions={fetchedVehicles}
+              powerUnitTypes={fetchedPowerUnitTypes}
+              trailerTypes={fetchedTrailerTypes}
+            />
           </FormProvider>
         </Box>
 
@@ -430,7 +331,7 @@ export const TermOversizeForm = () => {
               variant="contained"
               color="secondary"
               sx={{ marginLeft: "-420px", marginTop: "40px", display: "flex", alignItems: "center", gap: "10px"}}
-              onClick={onSaveApplication}
+              onClick={() => onSaveApplication()}
             >
               <FontAwesomeIcon icon={faSave} />
               Save

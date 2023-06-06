@@ -15,6 +15,7 @@ import { PermitApplicationOriginEntity } from './entities/permit-application-ori
 import { PermitApprovalSource } from './entities/permit-approval-source.entity';
 import { IDP } from 'src/common/enum/idp.enum';
 import { PermitApplicationOrigin } from 'src/common/enum/permit-application-origin.enum';
+import { PdfReturnType } from 'src/common/enum/pdf-return-type.enum';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
 
 @Injectable()
@@ -216,6 +217,7 @@ export class ApplicationService {
   async updateApplicationStatus(
     applicationIds: string[],
     applicationStatus: ApplicationStatus,
+    currentUser: IUserJWT,
   ): Promise<ResultDto> {
     let permitNumber = null;
     if (
@@ -252,28 +254,38 @@ export class ApplicationService {
     const success = updatedApplications?.map((permit) => permit.ID);
     const failure = applicationIds?.filter((id) => !success?.includes(id));
 
-    // If the status is updated to 'APPROVED' or 'AUTO-APPROVED', then create pdf and store it in DMS
-    // TODO: Temp solution. To be confirmed
-    // TODO: Should his endpoint use application number instead or permit/app ID?
-    updateResult.raw.forEach(async (x: any) => {
-      const permit = await this.findOne(x.ID);
-      if (
-        permit.permitStatus === ApplicationStatus.APPROVED ||
-        permit.permitStatus === ApplicationStatus.AUTO_APPROVED
-      ) {
-        // DMS Reference ID for the generated PDF of the Permit
-        const dmsDocumentId = await this.pdfService.generatePDF(permit);
-        // TODO: handle the DMS reference
-        console.log('Completed pdf generation');
-        console.log('DMS Document Id: ', dmsDocumentId);
-      }
-    });
+    // TODO: When to generate PDF?
+    await this.generatePDFs(currentUser.access_token, success);
 
     const resultDto: ResultDto = {
       success: success,
       failure: failure,
     };
     return resultDto;
+  }
+
+  /**
+   * Generates PDF's of supplied permit ID's
+   * If the status is updated to 'APPROVED' or 'AUTO-APPROVED', then create pdf and store it in DMS
+   * @param permitIds array of permit ID's to be converted as PDF's and saved in DMS
+   */
+  async generatePDFs(access_token: string, permitIds: string[]) {
+    for (const id of permitIds) {
+      const permit = await this.findOne(id);
+      if (permit.permitStatus === ApplicationStatus.ISSUED) {
+        // DMS Reference ID for the generated PDF of the Permit
+        // TODO: write helper to determine 'latest' template version
+        const dmsDocumentId: string = await this.pdfService.generatePDF(
+          access_token,
+          permit,
+          1,
+          PdfReturnType.DMS_DOC_ID,
+        );
+        // TODO: handle the DMS reference
+        console.log('Completed pdf generation');
+        console.log('DMS Document Id: ', dmsDocumentId);
+      }
+    }
   }
 
   /**

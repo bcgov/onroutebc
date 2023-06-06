@@ -43,12 +43,10 @@ export class CreatePermitDto {
   @ApiProperty({
     description: 'Permit Application JSON.',
     example: {
-      startDate: 'May 18, 2023', // TODO
-      expiryDate: 'July 15, 2023', // TODO
-      permitDuration: 90,
-      companyName: 'M. D. TRANSPORT CO. LTD.', //TODO
-      clientNumber: '2023-87456', // TODO
-      feeSummary: '90', // TODO
+      startDate: '2023-06-05T19:12:22Z',
+      expiryDate: '2023-07-04T19:12:22Z',
+      permitDuration: 30,
+      feeSummary: '30',
       commodities: [
         {
           description: 'General Permit Conditions',

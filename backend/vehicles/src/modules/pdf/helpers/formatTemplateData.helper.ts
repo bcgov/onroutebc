@@ -1,5 +1,10 @@
 import { Permit } from 'src/modules/permit/entities/permit.entity';
-import { FullNames } from '../../cache/interface/fullNames.interface';
+import {
+  PermitData,
+  PermitTemplate,
+} from '../interface/permit.template.interface';
+import { FullNames } from '../interface/fullNames.interface';
+import { ReadCompanyDto } from 'src/modules/company-user-management/company/dto/response/read-company.dto';
 
 /**
  * Formats the permit data so that it can be used in the templated word documents
@@ -7,41 +12,56 @@ import { FullNames } from '../../cache/interface/fullNames.interface';
  * @param fullNames
  * @returns formatted permit data to be displayed on the PDF
  */
-export const formatTemplateData = async (
+export const formatTemplateData = (
   permit: Permit,
   fullNames: FullNames,
+  companyInfo: ReadCompanyDto,
 ) => {
-  // Create a new template object that is a copy of the permit
-  // This template object will include the formatted values used in the templated word documents
-  const template: any = permit;
-  template.permitData = JSON.parse(permit.permitData.permitData);
+  // Create a new template object that includes the formatted values used in the templated word documents
+  const template: PermitTemplate = {
+    permitName: '',
+    permitNumber: '',
+    createdDateTime: '',
+    updatedDateTime: '',
+    companyName: '',
+    clientNumber: '',
+    revisions: [
+      {
+        timeStamp: '',
+        description: 'N/A',
+      },
+    ],
+    permitData: null,
+  };
 
-  // TODO: Revision history
-  const revisions = [
-    {
-      timeStamp: '',
-      description: 'N/A',
-    },
-  ];
+  template.permitData = JSON.parse(permit.permitData.permitData) as PermitData;
 
   // Format Permit information
   template.permitName = fullNames.permitName;
-  template.revisions = revisions;
+  template.permitNumber = permit.permitNumber || ''; // TODO
+  template.createdDateTime = permit.createdDateTime.toISOString(); // TODO: timezone? Format is done in word template
+  template.updatedDateTime = permit.updatedDateTime.toISOString(); // TODO: timezone? Format is done in word template
 
   // Format Vehicle Details
-  template.permitData.vehicleDetails.vehicleType = fullNames.vehicleType;
-  template.permitData.vehicleDetails.vehicleSubType = fullNames.vehicleSubType;
-  template.permitData.vehicleDetails.countryCode = fullNames.mailingCountryCode;
+  template.permitData.vehicleDetails.vehicleType = fullNames.vehicleTypeName;
+  template.permitData.vehicleDetails.vehicleSubType =
+    fullNames.vehicleSubTypeName;
+  template.permitData.vehicleDetails.countryCode = fullNames.mailingCountryName;
   template.permitData.vehicleDetails.provinceCode =
-    fullNames.mailingProvinceCode;
+    fullNames.mailingProvinceName;
 
   // Format Mailing Address
-  template.permitData.mailingAddress.countryCode = fullNames.vehicleCountryCode;
+  template.permitData.mailingAddress.countryCode = fullNames.vehicleCountryName;
   template.permitData.mailingAddress.provinceCode =
-    fullNames.vehicleProvinceCode;
+    fullNames.vehicleProvinceName;
 
-  //templateData.createdDateTime = permit.createdDateTime.toLocaleString(); // TODO: timezone? Format is done in word template
-  //templateData.updatedDateTime = permit.updatedDateTime.toLocaleString(); // TODO: timezone? Format is done in word template
+  // Format Company
+  template.companyName = companyInfo.legalName;
+  template.clientNumber = companyInfo.clientNumber;
+
+  // Format Fee Summary
+  template.permitData.feeSummary =
+    template.permitData.permitDuration.toString(); // TODO: get from frontend
 
   return template;
 };

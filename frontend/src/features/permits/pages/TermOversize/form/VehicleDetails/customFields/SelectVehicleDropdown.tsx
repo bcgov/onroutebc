@@ -7,17 +7,15 @@ import {
   lighten,
   styled,
 } from "@mui/material";
+
+import "../../../TermOversize.scss";
 import { SELECT_FIELD_STYLE } from "../../../../../../../themes/orbcStyles";
 import {
   PowerUnit,
   Trailer,
   Vehicle,
 } from "../../../../../../manageVehicles/types/managevehicles";
-import { useFormContext } from "react-hook-form";
-import "../../../TermOversize.scss";
-import { useVehiclesQuery } from "../../../../../../manageVehicles/apiManager/hooks";
 
-import { mapVinToVehicleObject } from "../../../../../helpers/mappers";
 import { sortVehicles } from "../../../../../helpers/sorter";
 import { removeIneligibleVehicles } from "../../../../../helpers/removeIneligibleVehicles";
 import {
@@ -50,15 +48,18 @@ export const SelectVehicleDropdown = ({
   chooseFrom,
   label,
   width,
-  setSelectedVehicle,
+  vehicleOptions,
+  handleSelectVehicle,
+  handleClearVehicle,
 }: {
   chooseFrom: string;
   label: string;
   width: string;
-  setSelectedVehicle: any;
+  vehicleOptions: (PowerUnit | Trailer)[];
+  handleSelectVehicle: (vehicle: Vehicle) => void;
+  handleClearVehicle: () => void;
 }) => {
-  const { data } = useVehiclesQuery();
-  const sortedVehicles = sortVehicles(chooseFrom, data);
+  const sortedVehicles = sortVehicles(chooseFrom, vehicleOptions);
   // Temporary method to remove ineligible vehicles as per TROS policy.
   // Will be replaced by backend endpoint with optional query parameter
   const eligibleVehicles = removeIneligibleVehicles(
@@ -67,79 +68,16 @@ export const SelectVehicleDropdown = ({
     TROS_INELIGIBLE_TRAILERS
   );
 
-  const {
-    setValue,
-    formState: { isSubmitted },
-    trigger,
-  } = useFormContext();
-
-  /**
-   * Set all vehicle details fields to a blank string
-   */
-  const clearAllFields = () => {
-    setSelectedVehicle("");
-    setValue("permitData.vehicleDetails", {
-      unitNumber: "",
-      vin: "",
-      plate: "",
-      make: "",
-      year: "",
-      countryCode: "",
-      provinceCode: "",
-      vehicleType: "",
-      vehicleSubType: "",
-    });
-  };
-
-  /**
-   * Using the useVehiclesQuery, set all the vehicle details fields to
-   * the data corresponding to the selected vehicle.
-   * @param selectedVehicle
-   */
-  const setAllFields = (selectedVehicle: Vehicle) => {
-    const vehicle = mapVinToVehicleObject(data, selectedVehicle.vin);
-    if (!vehicle) return;
-
-    setSelectedVehicle(selectedVehicle.plate);
-    setValue("permitData.vehicleDetails", {
-      unitNumber: vehicle.unitNumber,
-      vin: vehicle.vin,
-      plate: vehicle.plate,
-      make: vehicle.make,
-      year: vehicle.year,
-      countryCode: vehicle.countryCode,
-      provinceCode: vehicle.provinceCode,
-      vehicleType: vehicle.vehicleType,
-    });
-
-    if (vehicle.vehicleType === "powerUnit") {
-      const powerUnit = vehicle as PowerUnit;
-      setValue(
-        "permitData.vehicleDetails.vehicleSubType",
-        powerUnit.powerUnitTypeCode
-      );
-    }
-
-    if (vehicle.vehicleType === "trailer") {
-      const trailer = vehicle as Trailer;
-      setValue(
-        "permitData.vehicleDetails.vehicleSubType",
-        trailer.trailerTypeCode
-      );
-    }
-  };
-
   return (
     <FormControl margin="normal">
       <FormLabel className="select-field-form-label">{label}</FormLabel>
       <Autocomplete
         id="tros-select-vehicle"
-        onChange={(event: any, value: Vehicle | null | undefined, reason) => {
-          if (!value) return;
-          if (reason === "clear") {
-            clearAllFields();
+        onChange={(_, value: Vehicle | null | undefined, reason) => {
+          if (!value || (reason === "clear")) {
+            handleClearVehicle();
           } else {
-            setAllFields(value);
+            handleSelectVehicle(value);
           }
         }}
         options={eligibleVehicles}
@@ -173,19 +111,6 @@ export const SelectVehicleDropdown = ({
             <GroupItems>{params.children}</GroupItems>
           </li>
         )}
-        // This onClose function fixes a bug where the Select component does not immediately
-        // revalidate when selecting an option after an invalid form submission.
-        // The validation needed to be triggered again manually
-        onClose={async () => {
-          if (isSubmitted) {
-            const output = await trigger(
-              "permitData.vehicleDetails.vehicleSubType"
-            );
-            if (!output) {
-              trigger("permitData.vehicleDetails.vehicleSubType");
-            }
-          }
-        }}
       />
     </FormControl>
   );

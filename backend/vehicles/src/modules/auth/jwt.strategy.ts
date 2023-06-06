@@ -73,12 +73,15 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       );
     }
 
+    const access_token = req.headers.authorization;
+
     const currentUser = {
       userName,
       userGUID,
       roles,
       companyId,
       associatedCompanies,
+      access_token,
     };
 
     Object.assign(payload, currentUser);

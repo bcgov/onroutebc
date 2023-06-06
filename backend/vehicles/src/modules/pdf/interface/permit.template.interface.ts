@@ -1,3 +1,30 @@
+export interface PermitTemplate {
+  permitName: string;
+  permitNumber: string;
+  createdDateTime: string;
+  updatedDateTime: string;
+  companyName: string;
+  clientNumber: string;
+  revisions: Revision[];
+  permitData?: PermitData;
+}
+
+interface Revision {
+  timeStamp: string;
+  description: string;
+}
+
+export interface PermitData {
+  startDate: string;
+  permitDuration: number; //days
+  expiryDate: string;
+  feeSummary: string;
+  contactDetails?: ContactDetails;
+  vehicleDetails?: VehicleDetails;
+  commodities: Commodities[];
+  mailingAddress: MailingAddress;
+}
+
 interface MailingAddress {
   addressLine1: string;
   addressLine2?: string;
@@ -36,14 +63,4 @@ interface Commodities {
   conditionLink: string;
   checked: boolean;
   disabled?: boolean;
-}
-
-export interface PermitData {
-  startDate: string;
-  permitDuration: number; //days
-  expiryDate: string;
-  contactDetails?: ContactDetails;
-  vehicleDetails?: VehicleDetails;
-  commodities: Commodities[];
-  mailingAddress: MailingAddress;
 }

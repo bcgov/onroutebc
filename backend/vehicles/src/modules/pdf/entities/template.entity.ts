@@ -15,10 +15,16 @@ export class Template {
   templateName: string;
 
   /**
+   * Template name
+   */
+  @Column({ length: 10, name: 'PERMIT_TYPE_ID', nullable: false })
+  permitTypeId: string;
+
+  /**
    * Template version
    */
-  @Column({ length: 50, name: 'TEMPLATE_VERSION', nullable: false })
-  templateVersion: string;
+  @Column({ type: 'integer', name: 'TEMPLATE_VERSION', nullable: false })
+  templateVersion: number;
 
   /**
    * Document Management System (DMS) reference ID

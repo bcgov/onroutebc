@@ -50,30 +50,33 @@ export const ManageApplicationDashboard = React.memo(() => {
   const tabs = [
     {
       label: "Applications in Progress",
-      component: (data?.length === 0)?
-                  <div
-                  style={{
-                    textAlign: "center",
-                    padding: "20px 0px",
-                    backgroundColor: "white",
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                  >
-                    <div>
-                      <img src="No_Data_Graphic.svg"
-                      style={{
-                        width: "124px",
-                        height: "112px",
-                        marginTop: "80px",
-                      }}
-                      />
-                    </div>
-                    <div>
-                      <h3>No Records Found.</h3>
-                    </div>
-                    </div>
-                  :<List query={applicationInProgressQuery} />,
+      component: (data?.length === 0) ? 
+        (
+          <div
+            style={{
+              display: "flex",
+              padding: "20px 0px",
+              backgroundColor: "white",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <div>
+              <img src="No_Data_Graphic.svg"
+              style={{
+                width: "124px",
+                height: "112px",
+                marginTop: "80px",
+              }}
+              />
+            </div>
+            <div>
+              <h3>No Records Found.</h3>
+            </div>
+          </div>
+        ) : (
+          <List query={applicationInProgressQuery} />
+        ),
     },
     {
       label: "Applications in Review",
