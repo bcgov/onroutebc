@@ -15,15 +15,20 @@ import { TROS_PERMIT_DURATIONS } from "../../../constants/termOversizeConstants"
 import dayjs, { Dayjs } from "dayjs";
 import { requiredMessage } from "../../../../../common/helpers/validationMessages";
 import { useEffect } from "react";
+import { Commodities } from "../../../types/application";
 
 export const PermitDetails = ({ 
   feature, 
   defaultStartDate,
   defaultDuration,
+  commodities,
+  applicationNumber,
 }: { 
   feature: string, 
   defaultStartDate: Dayjs,
   defaultDuration: number,
+  commodities: Commodities[],
+  applicationNumber?: string,
 }) => {
   const { watch, register, setValue } = useFormContext();
   
@@ -115,7 +120,10 @@ export const PermitDetails = ({
               </p>
             }
           />
-          <ConditionsTable />
+          <ConditionsTable
+            commodities={commodities}
+            applicationWasCreated={applicationNumber != null && applicationNumber !== ""}
+          />
         </Box>
       </Box>
     </Box>
