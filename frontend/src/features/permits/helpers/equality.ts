@@ -32,21 +32,21 @@ const areContactDetailsEqual = (contactDetails1?: ContactDetailsType, contactDet
  * @param list2 second commodities list
  * @returns true when commodities lists are equivalent, false otherwise
  */
-const areCommoditiesEqual = (list1: Commodities[], list2: Commodities[]) => {
+export const areCommoditiesEqual = (list1: Commodities[], list2: Commodities[]) => {
   // Instead of comparing arrays directly (as items can be in different orders), transform them into maps and compare key-value pairs
-  const commodityMap1 = new Map(list1.map(commodity1 => [commodity1.description, commodity1]));
-  const commodityMap2 = new Map(list2.map(commodity2 => [commodity2.description, commodity2]));
+  const commodityMap1 = new Map(list1.map(commodity1 => [commodity1.condition, commodity1]));
+  const commodityMap2 = new Map(list2.map(commodity2 => [commodity2.condition, commodity2]));
 
   // Compare all key-value pairs of first commodities map with key-value pairs of second commodities map
-  for (const [description, commodity] of commodityMap1) {
-    if (commodity.checked !== commodityMap2.get(description)?.checked) {
+  for (const [condition, commodity] of commodityMap1) {
+    if (commodity.checked !== commodityMap2.get(condition)?.checked) {
       return false;
     }
   }
 
   // Do the same the other way (ie. kv pairs of second map with kv pairs of first)
-  for (const [description, commodity] of commodityMap2) {
-    if (commodity.checked !== commodityMap1.get(description)?.checked) {
+  for (const [condition, commodity] of commodityMap2) {
+    if (commodity.checked !== commodityMap1.get(condition)?.checked) {
       return false;
     }
   }
