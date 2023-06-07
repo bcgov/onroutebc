@@ -395,7 +395,9 @@ export class ApplicationService {
     let approvalSourceId: number;
     let rnd;
     let seq: string;
-    const approvalSource = await this.permitApprovalSourceRepository.find({where : {id : permit.permitApprovalSource}})
+    const approvalSource = await this.permitApprovalSourceRepository.find({
+      where: { id: permit.permitApprovalSource },
+    });
     if (!approvalSourceId) {
       approvalSourceId = 9;
     } else {
