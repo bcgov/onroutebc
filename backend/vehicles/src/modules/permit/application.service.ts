@@ -377,24 +377,9 @@ export class ApplicationService {
    */
   private async getPermitApplicationOrigin(
     permitApplicationOrigin: string,
-  ): Promise<number> {
+  ): Promise<string> {
     const code = await this.permitApplicationOriginRepository.findOne({
       where: [{ id: permitApplicationOrigin }],
-    });
-
-    return code.code;
-  }
-
-  /**
-   * Get Application Origin Code from database lookup table ORBC_VT_PERMIT_APPLICATION_ORIGIN
-   * @param permitApplicationOrigin
-   *
-   */
-  private async getPermitApprovalSource(
-    permitApprovalSource: string,
-  ): Promise<string> {
-    const code = await this.permitApprovalSourceRepository.findOne({
-      where: [{ id: permitApprovalSource }],
     });
 
     return String(code.code);
@@ -410,13 +395,11 @@ export class ApplicationService {
     let approvalSourceId: number;
     let rnd;
     let seq: string;
-    const approvalSource = await this.permitApprovalSourceRepository.findOne({
-      where: [{ id: permit.permitApprovalSource }],
-    });
+    const approvalSource = await this.permitApprovalSourceRepository.find({where : {id : permit.permitApprovalSource}})
     if (!approvalSourceId) {
       approvalSourceId = 9;
     } else {
-      approvalSourceId = approvalSource.code;
+      approvalSourceId = approvalSource[0].code;
     }
     if (permit.revision == 0) {
       seq = await this.databaseHelper.callDatabaseSequence(
