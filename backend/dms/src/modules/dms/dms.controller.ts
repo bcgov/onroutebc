@@ -10,6 +10,8 @@ import {
   ParseFilePipe,
   Query,
   Res,
+  InternalServerErrorException,
+  BadRequestException,
 } from '@nestjs/common';
 import { DmsService } from './dms.service';
 import {
@@ -29,6 +31,8 @@ import { CreateFileDto } from './dto/request/create-file.dto';
 import { ReadFileDto } from './dto/response/read-file.dto';
 import { FileDownloadModes } from '../../common/enum/file-download-modes.enum';
 import { Response } from 'express';
+import { ComsService } from './coms.service';
+import { UpdateFileDto } from './dto/request/update-file.dto';
 
 @ApiTags('DMS')
 @ApiBadRequestResponse({
@@ -50,7 +54,10 @@ import { Response } from 'express';
 @ApiBearerAuth()
 @Controller('dms')
 export class DmsController {
-  constructor(private readonly dmsService: DmsService) {}
+  constructor(
+    private readonly dmsService: DmsService,
+    private readonly comsService: ComsService,
+  ) {}
 
   @ApiCreatedResponse({
     description: 'The DMS file Resource',
@@ -74,7 +81,61 @@ export class DmsController {
     )
     file: Express.Multer.File,
   ): Promise<ReadFileDto> {
-    return await this.dmsService.create(file);
+    file.filename = createFileDto.fileName
+      ? createFileDto.fileName
+      : file.originalname;
+
+    const readCOMSDtoList = await this.comsService.createObject(file);
+
+    if (!readCOMSDtoList?.length) {
+      throw new InternalServerErrorException();
+    }
+
+    return await this.dmsService.create(readCOMSDtoList);
+  }
+
+  @ApiCreatedResponse({
+    description: 'The DMS file Resource',
+    type: ReadFileDto,
+  })
+  @ApiConsumes('multipart/form-data')
+  @Post('upload/:documentId')
+  @UseInterceptors(FileInterceptor('file'))
+  async updateFile(
+    @Body() updateFileDto: UpdateFileDto,
+    @Param('documentId') documentId: string,
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({ maxSize: 100000000 }),
+          /**
+           * TODO explore custom validator to verify files magic number rather
+           * than extention in the filename. Also, accept multiple file types */
+          //new FileTypeValidator({ fileType: 'pdf' }),
+        ],
+      }),
+    )
+    file: Express.Multer.File,
+  ): Promise<ReadFileDto> {
+    file.filename = updateFileDto.fileName
+      ? updateFileDto.fileName
+      : file.originalname;
+
+    const dmsObject = await this.dmsService.findLatest(documentId);
+    if (dmsObject?.documentId !== documentId) {
+      throw new BadRequestException('Invalid Document Id');
+    }
+
+    const readCOMSDto = await this.comsService.createObject(
+      file,
+      dmsObject.s3ObjectId,
+    );
+
+    if (!readCOMSDto?.length) {
+      throw new InternalServerErrorException();
+    }
+
+    return await this.dmsService.create(readCOMSDto, dmsObject);
   }
 
   @ApiCreatedResponse({
@@ -100,28 +161,22 @@ export class DmsController {
   ) {
     const file = await this.dmsService.findOne(documentId);
 
-    if (download === FileDownloadModes.URL) {
-      res.status(201).send(file);
+    if (download === FileDownloadModes.PROXY) {
+      //await this.comsService.getResponseHeaders(file, FileDownloadModes.PROXY, res);
+      const fileObject = await this.comsService.getObject(
+        file,
+        FileDownloadModes.PROXY,
+        res,
+      );
+      res.status(200).send(fileObject);
     } else {
-      res.status(302).set('Location', file.preSignedS3Url).end();
-    }
-  }
-
-  /**
-   * @function processCOMSHeaders
-   * Accepts a typical COMS/S3 response object and inserts appropriate express response headers
-   * Returns an array of non-standard headers that need to be CORS exposed
-   * @param {object} s3Resp S3 response object
-   * @param {object} res Express response object
-   * @returns {string[]} An array of non-standard headers that need to be CORS exposed
-   */
-  processCOMSHeaders(s3Resp: Response, res: Response) {
-    const headerNamesList = s3Resp.getHeaderNames();
-    headerNamesList?.forEach((hName) => {
-      if (s3Resp.getHeader(hName)) {
-        res.setHeader(hName, s3Resp.getHeader(hName));
+      const url = await this.comsService.getObject(file, FileDownloadModes.URL);
+      file.preSignedS3Url = url;
+      if (download === FileDownloadModes.URL) {
+        res.status(201).send(file);
+      } else {
+        res.status(302).set('Location', file.preSignedS3Url).end();
       }
-    });
-    return res;
+    }
   }
 }
