@@ -1,8 +1,8 @@
 import { HttpService } from '@nestjs/axios';
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { lastValueFrom } from 'rxjs';
-import { Permit } from 'src/modules/permit/entities/permit.entity';
+import { Permit } from '../permit/entities/permit.entity';
 import { Repository } from 'typeorm';
 import { Template } from './entities/template.entity';
 import {
@@ -12,17 +12,16 @@ import {
   TEMPLATE_NAME,
 } from './constants/template.constant';
 import { formatTemplateData } from './helpers/formatTemplateData.helper';
-import { DownloadMode, PdfReturnType } from 'src/common/enum/pdf.enum';
+import { DownloadMode, PdfReturnType } from '../../common/enum/pdf.enum';
 import { KeycloakResponse } from './interface/keycloakResponse.interface';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { FullNames } from './interface/fullNames.interface';
 import { PermitData } from './interface/permit.template.interface';
-import { getFullNameFromCache } from 'src/common/helper/cache.helper';
-import { DmsResponse } from 'src/common/interface/dms.interface';
+import { getFullNameFromCache } from '../../common/helper/cache.helper';
+import { DmsResponse } from '../../common/interface/dms.interface';
 import { CompanyService } from '../company-user-management/company/company.service';
 import { Stream } from 'stream';
-import { ExceptionDto } from 'src/common/exception/exception.dto';
 
 @Injectable()
 export class PdfService {
@@ -45,7 +44,7 @@ export class PdfService {
     permitType: string,
     templateVersion: number,
   ): Promise<Template> {
-    return await this.templateRepository.findOne({
+    return this.templateRepository.findOne({
       where: { permitTypeId: permitType, templateVersion: templateVersion },
     });
   }
@@ -70,13 +69,13 @@ export class PdfService {
    * @returns {string} a DMS reference ID used to retrieve the template in DMS
    */
   private async getTemplate(
-    access_token: string,
+    accessToken: string,
     templateRef: string,
   ): Promise<string> {
     // The DMS service returns an HTTP 201 containing a direct, temporary pre-signed S3 object URL location
     const dmsDocument = await lastValueFrom(
       this.httpService.get(`${process.env.DMS_URL}/dms/${templateRef}`, {
-        headers: { Authorization: access_token },
+        headers: { Authorization: accessToken },
         params: { download: 'url' },
       }),
     )
@@ -167,10 +166,10 @@ export class PdfService {
     permit: Permit,
     template: string,
   ): Promise<ArrayBuffer> {
-    const client_id = process.env.CDOGS_CLIENT_ID;
-    const client_secret = process.env.CDOGS_CLIENT_SECRET;
-    const token_url = process.env.CDOGS_TOKEN_URL;
-    const cdogs_url = process.env.CDOGS_URL;
+    const CLIENT_ID = process.env.CDOGS_CLIENT_ID;
+    const CLIENT_SECRET = process.env.CDOGS_CLIENT_SECRET;
+    const TOKEN_URL = process.env.CDOGS_TOKEN_URL;
+    const CDOGS_URL = process.env.CDOGS_URL;
 
     // Format the template data to be used in the templated word documents
     const fullNames = await this.getFullNamesFromCache(permit);
@@ -180,8 +179,8 @@ export class PdfService {
     // We need the oidc api to generate a token for us
     const keycloak = await lastValueFrom(
       this.httpService.post(
-        token_url,
-        `grant_type=client_credentials&client_id=${client_id}&client_secret=${client_secret}`,
+        TOKEN_URL,
+        `grant_type=client_credentials&client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}`,
         {
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -195,7 +194,7 @@ export class PdfService {
     // Calls the CDOGS service, which converts the the template document into a pdf
     const cdogsResponse = await lastValueFrom(
       this.httpService.post(
-        cdogs_url,
+        CDOGS_URL,
         JSON.stringify({
           data: templateData,
           template: {
@@ -231,7 +230,7 @@ export class PdfService {
    * @returns a DMS reference ID
    */
   private async savePDF(
-    access_token: string,
+    accessToken: string,
     pdf: ArrayBuffer,
     returnValue?: PdfReturnType,
   ): Promise<string> {
@@ -241,7 +240,7 @@ export class PdfService {
 
     const dmsResource = await lastValueFrom(
       this.httpService.post(`${process.env.DMS_URL}/dms/upload`, formData, {
-        headers: { Authorization: access_token },
+        headers: { Authorization: accessToken },
       }),
     )
       .then((response) => {
@@ -288,7 +287,7 @@ export class PdfService {
    * @returns {string} value of returnValue type. Defaults to DMS Document Reference ID
    */
   public async generatePDF(
-    access_token: string,
+    accessToken: string,
     permit: Permit,
     templateVersion: number,
     returnValue?: PdfReturnType,
@@ -300,13 +299,13 @@ export class PdfService {
     );
 
     // Call DMS to get the template
-    const template = await this.getTemplate(access_token, templateRef);
+    const template = await this.getTemplate(accessToken, templateRef);
 
     // Call CDOGS to generate the pdf
     const pdf = await this.createPDF(permit, template);
 
     // Call DMS to store the pdf
-    const dms = await this.savePDF(access_token, pdf, returnValue);
+    const dms = await this.savePDF(accessToken, pdf, returnValue);
 
     return dms;
   }
@@ -319,8 +318,8 @@ export class PdfService {
   private async createFile(data: Stream) {
     // Read the stream data and concatenate all chunks into a single Buffer
     const streamReadPromise = new Promise<Buffer>((resolve) => {
-      const chunks = [];
-      data.on('data', (chunk) => {
+      const chunks: Buffer[] = [];
+      data.on('data', (chunk: Buffer) => {
         chunks.push(Buffer.from(chunk));
       });
       data.on('end', () => {
@@ -328,18 +327,18 @@ export class PdfService {
       });
     });
     // Return the Promise that resolves to the created file Buffer
-    return await streamReadPromise;
+    return streamReadPromise;
   }
 
   /**
    * Retrieves a PDF document from DMS (Document Management System) based on the document ID.
-   * @param access_token - The access token for authorization.
+   * @param accessToken - The access token for authorization.
    * @param documentId - The ID of the document to retrieve.
    * @param downloadMode - The mode for downloading the document (default: DownloadMode.URL).
    * @returns A Promise resolving to a DmsResponse object representing the retrieved document.
    */
   public async findPDFbyDocumentId(
-    access_token: string,
+    accessToken: string,
     documentId: string,
     downloadMode: DownloadMode = DownloadMode.URL,
   ): Promise<DmsResponse> {
@@ -349,7 +348,7 @@ export class PdfService {
     // TODO: handle redirect option
     const dmsDocument = await lastValueFrom(
       this.httpService.get(`${process.env.DMS_URL}/dms/${documentId}`, {
-        headers: { Authorization: access_token },
+        headers: { Authorization: accessToken },
         params: { download: downloadMode },
         responseType: resType,
       }),
@@ -363,7 +362,7 @@ export class PdfService {
       })
       .catch((error) => {
         console.log('dmsDocument error: ', error);
-        throw new ExceptionDto(500, 'Error fetching document from DMS');
+        throw new HttpException('Error fetching document from DMS', 500);
       });
 
     return dmsDocument;

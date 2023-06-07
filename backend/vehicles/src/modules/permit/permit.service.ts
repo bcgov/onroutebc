@@ -45,7 +45,7 @@ export class PermitService {
   }
 
   private async findOne(permitId: string): Promise<Permit> {
-    return await this.permitRepository.findOne({
+    return this.permitRepository.findOne({
       where: { permitId: permitId },
       relations: {
         permitData: true,
@@ -54,18 +54,18 @@ export class PermitService {
   }
 
   public async findAllPermitTypes(): Promise<PermitType[]> {
-    return await this.permitTypeRepository.find({});
+    return this.permitTypeRepository.find({});
   }
 
   /**
    * Finds a PDF document associated with a specific permit ID.
-   * @param access_token - The access token for authorization.
+   * @param accessToken - The access token for authorization.
    * @param permitId - The ID of the permit for which to find the PDF document.
    * @param downloadMode - The mode for downloading the document (optional).
    * @returns A Promise resolving to a DmsResponse object representing the found PDF document.
    */
   public async findPDFbyPermitId(
-    access_token: string,
+    accessToken: string,
     permitId: string,
     downloadMode?: DownloadMode,
   ): Promise<DmsResponse> {
@@ -73,7 +73,7 @@ export class PermitService {
     const permit = await this.findOne(permitId);
     // Find the PDF document based on the associated document ID
     const response = await this.pdfService.findPDFbyDocumentId(
-      access_token,
+      accessToken,
       permit.documentId,
       downloadMode,
     );

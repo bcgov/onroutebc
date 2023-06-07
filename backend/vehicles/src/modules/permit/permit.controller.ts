@@ -56,7 +56,7 @@ export class PermitController {
     @Req() request: Request,
     @Body() createPermitDto: CreatePermitDto,
   ): Promise<ReadPermitDto> {
-    return await this.permitService.create(createPermitDto);
+    return this.permitService.create(createPermitDto);
   }
 
   @AuthOnly()
@@ -79,11 +79,11 @@ export class PermitController {
     @Res() response: Response,
   ): Promise<void> {
     // TODO: Use IUserJWT / Exception handling
-    const access_token = request.headers.authorization;
-    if (!access_token) throw new HttpException('Unauthorized', 401);
+    const accessToken = request.headers.authorization;
+    if (!accessToken) throw new HttpException('Unauthorized', 401);
 
     const document = await this.permitService.findPDFbyPermitId(
-      access_token,
+      accessToken,
       permitId,
       download,
     );

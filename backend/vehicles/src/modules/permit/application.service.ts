@@ -71,7 +71,7 @@ export class ApplicationService {
     const refreshedPermitEntity = await this.findOne(
       savedPermitEntity.permitId,
     );
-    return await this.classMapper.mapAsync(
+    return this.classMapper.mapAsync(
       refreshedPermitEntity,
       Permit,
       ReadApplicationDto,
@@ -79,13 +79,14 @@ export class ApplicationService {
   }
 
   private async findOne(permitId: string): Promise<Permit> {
-    return await this.permitRepository.findOne({
+    return this.permitRepository.findOne({
       where: [{ permitId: permitId }],
       relations: {
         permitData: true,
       },
     });
   }
+
   /* Get single application By Permit ID*/
   async findApplication(permitId: string): Promise<ReadApplicationDto> {
     const application = await this.findOne(permitId);
@@ -120,6 +121,7 @@ export class ApplicationService {
       ReadApplicationDto,
     );
   }
+
   /*Get all application in progress for a specific user of a specific company.
     Initially written to facilitate get application in progress for company User. */
   async findAllApplicationUser(
@@ -261,22 +263,24 @@ export class ApplicationService {
   /**
    * Generates PDF's of supplied permit ID's
    * If the status is updated to 'ISSUED', then create pdf, store it in DMS, then update permit record with dms document ID
-   * @param access_token the access token for authorization.
+   * @param accessToken the access token for authorization.
    * @param permitIds array of permit ID's to be converted as PDF's and saved in DMS
    */
-  async generatePDFs(access_token: string, permitIds: string[]) {
+  async generatePDFs(accessToken: string, permitIds: string[]) {
     for (const id of permitIds) {
       const permit = await this.findOne(id);
       // Generate PDF only if the permit status is 'ISSUED'
       if (permit.permitStatus === ApplicationStatus.ISSUED) {
-        // Check if a PDF document already exists for the permit
+        // Check if a PDF document already exists for the permit.
+        // It's important that a PDF does not get overwritten.
+        // Once its created, it is a permanent legal document.
         if (permit.documentId) {
           throw new HttpException('Document already exists', 409);
         }
         // DMS Reference ID for the generated PDF of the Permit
         // TODO: write helper to determine 'latest' template version
         const dmsDocumentId: string = await this.pdfService.generatePDF(
-          access_token,
+          accessToken,
           permit,
           1,
           PdfReturnType.DMS_DOC_ID,
