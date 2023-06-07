@@ -48,6 +48,14 @@ export class ApplicationService {
     //permitId Null means new application for
     createApplicationDto.previousRevId = createApplicationDto.permitId;
 
+    //Assign Permit Application Origin
+    if (currentUser.identity_provider == IDP.IDIR)
+      createApplicationDto.permitApplicationOrigin =
+        PermitApplicationOrigin.PPC;
+    else
+      createApplicationDto.permitApplicationOrigin =
+        PermitApplicationOrigin.ONLINE;
+
     //Generate appliction number for the application to be created in database.
     const applicationNumber = await this.generateApplicationNumber(
       currentUser.identity_provider,
@@ -220,25 +228,21 @@ export class ApplicationService {
     applicationStatus: ApplicationStatus,
     currentUser: IUserJWT,
   ): Promise<ResultDto> {
-    let updateResult: UpdateResult;
+    let permitNumber: string = null;
+    let permitApprovalSource: PermitApprovalSource = null;
     if (
       applicationIds.length === 1 &&
       applicationStatus === ApplicationStatus.ISSUED
     ) {
-      updateResult = await this.updateApplicationStatusIssued(
-        applicationIds,
-        applicationStatus,
-      );
+      permitNumber = await this.generatePermitNumber(applicationIds[0]);
     } else if (
       applicationIds.length === 1 &&
       (applicationStatus === ApplicationStatus.APPROVED ||
         applicationStatus === ApplicationStatus.AUTO_APPROVED)
     ) {
-      updateResult = await this.updateApplicationStatusApproved(
-        applicationIds,
-        applicationStatus,
-        currentUser,
-      );
+      if (currentUser.identity_provider == IDP.IDIR)
+        permitApprovalSource = PermitApprovalSource.PPC;
+      else permitApprovalSource = PermitApprovalSource.AUTO;
     } else if (
       applicationIds.length > 1 &&
       applicationStatus != ApplicationStatus.CANCELLED
@@ -246,16 +250,21 @@ export class ApplicationService {
       throw new ForbiddenException(
         'Bulk status update is only allowed for Cancellation',
       );
-    } else {
-      updateResult = await this.permitRepository
-        .createQueryBuilder()
-        .update()
-        .set({ permitStatus: applicationStatus })
-        .whereInIds(applicationIds)
-        .andWhere('permitNumber is null')
-        .returning(['permitId'])
-        .execute();
     }
+    const updateResult = await this.permitRepository
+      .createQueryBuilder()
+      .update()
+      .set({
+        permitStatus: applicationStatus,
+        ...(permitNumber && { permitNumber: permitNumber }),
+        ...(permitApprovalSource && {
+          permitApprovalSource: permitApprovalSource,
+        }),
+      })
+      .whereInIds(applicationIds)
+      .andWhere('permitNumber is null')
+      .returning(['permitId'])
+      .execute();
 
     const updatedApplications = Array.from(
       updateResult?.raw as [
@@ -299,57 +308,6 @@ export class ApplicationService {
         console.log('DMS Document Id: ', dmsDocumentId);
       }
     }
-  }
-
-  /**
-   *
-   * @param applicationIds
-   * @param applicationStatus
-   * @returns
-   */
-  async updateApplicationStatusIssued(
-    applicationIds: string[],
-    applicationStatus: ApplicationStatus,
-  ): Promise<UpdateResult> {
-    const permitNumber = await this.generatePermitNumber(applicationIds[0]);
-    const updateResult = await this.permitRepository
-      .createQueryBuilder()
-      .update()
-      .set({ permitStatus: applicationStatus, permitNumber: permitNumber })
-      .whereInIds(applicationIds)
-      .andWhere('permitNumber is null')
-      .returning(['permitId'])
-      .execute();
-    return updateResult;
-  }
-
-  /**
-   *
-   * @param applicationIds
-   * @param applicationStatus
-   * @returns
-   */
-  async updateApplicationStatusApproved(
-    applicationIds: string[],
-    applicationStatus: ApplicationStatus,
-    currentUser: IUserJWT,
-  ): Promise<UpdateResult> {
-    let permitApprovalSource: PermitApprovalSource;
-    if (currentUser.identity_provider == IDP.IDIR)
-      permitApprovalSource = PermitApprovalSource.PPC;
-    else permitApprovalSource = PermitApprovalSource.AUTO;
-    const updateResult = await this.permitRepository
-      .createQueryBuilder()
-      .update()
-      .set({
-        permitStatus: applicationStatus,
-        permitApprovalSource: permitApprovalSource,
-      })
-      .whereInIds(applicationIds)
-      .andWhere('permitNumber is null')
-      .returning(['permitId'])
-      .execute();
-    return updateResult;
   }
 
   /**
