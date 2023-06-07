@@ -16,7 +16,7 @@ export class UpdateApplicationStatusDto {
 
   @ApiProperty({
     description: 'Application Status.',
-    example: ApplicationStatus.APPROVED,
+    example: ApplicationStatus.ISSUED,
     enum: ApplicationStatus,
   })
   applicationStatus: ApplicationStatus;

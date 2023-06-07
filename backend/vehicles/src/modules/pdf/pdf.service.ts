@@ -20,6 +20,7 @@ import { FullNames } from './interface/fullNames.interface';
 import { PermitData } from './interface/permit.template.interface';
 import { getFullNameFromCache } from 'src/common/helper/cache.helper';
 import { DmsResponse } from 'src/common/interface/dms.interface';
+import { CompanyService } from '../company-user-management/company/company.service';
 
 @Injectable()
 export class PdfService {
@@ -29,6 +30,7 @@ export class PdfService {
     @InjectRepository(Template)
     private templateRepository: Repository<Template>,
     private httpService: HttpService,
+    private companyService: CompanyService,
   ) {}
 
   /**
@@ -170,7 +172,8 @@ export class PdfService {
 
     // Format the template data to be used in the templated word documents
     const fullNames = await this.getFullNamesFromCache(permit);
-    const templateData = formatTemplateData(permit, fullNames);
+    const companyInfo = await this.companyService.findOne(permit.companyId);
+    const templateData = formatTemplateData(permit, fullNames, companyInfo);
 
     // We need the oidc api to generate a token for us
     const keycloak = await lastValueFrom(

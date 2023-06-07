@@ -283,6 +283,8 @@ export const TermOversizeForm = () => {
               feature={FEATURE}
               defaultStartDate={termOversizeDefaultValues.permitData.startDate}
               defaultDuration={termOversizeDefaultValues.permitData.permitDuration}
+              commodities={termOversizeDefaultValues.permitData.commodities}
+              applicationNumber={termOversizeDefaultValues.applicationNumber}
             />
             <VehicleDetails
               feature={FEATURE}
