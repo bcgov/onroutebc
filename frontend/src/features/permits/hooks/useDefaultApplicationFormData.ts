@@ -1,10 +1,12 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, useRef } from "react";
 
-import { Application } from "../types/application";
+import { Application, Commodities } from "../types/application";
 import OnRouteBCContext from "../../../common/authentication/OnRouteBCContext"; 
 import { useForm } from "react-hook-form";
 import { getDefaultContactDetails, getDefaultMailingAddress, getDefaultValues, getDefaultVehicleDetails } from "../helpers/getDefaultApplicationFormData";
 import { useCompanyInfoQuery } from "../../manageProfile/apiManager/hooks";
+import { areCommoditiesEqual } from "../helpers/equality";
+import { getDefaultRequiredVal } from "../../../common/helpers/util";
 
 /**
  * Custom hook used to fetch application data and populate the form, as well as fetching current company id and user details.
@@ -68,6 +70,17 @@ export const useDefaultApplicationFormData = (applicationData?: Application) => 
     applicationData?.permitData?.vehicleDetails?.saveVehicle,
   ];
 
+  // Recommended way of making deep comparisons (for arrays/objects) in dependency arrays
+  // https://stackoverflow.com/questions/59467758/passing-array-to-useeffect-dependency-list
+  const commoditiesRef = useRef<Commodities[] | undefined>(applicationData?.permitData?.commodities);
+  const incomingCommodities = getDefaultRequiredVal([], applicationData?.permitData?.commodities);
+  if (!areCommoditiesEqual( // areCommoditiesEqual is a custom equality helper function to deep compare arrays of objects
+    incomingCommodities,
+    getDefaultRequiredVal([], commoditiesRef.current),
+  )) {
+    commoditiesRef.current = incomingCommodities;
+  }
+
   // update the entire form whenever these values are updated
   const applicationFormDataDepArray = [
     companyId,
@@ -79,6 +92,7 @@ export const useDefaultApplicationFormData = (applicationData?: Application) => 
     applicationData?.permitData?.startDate,
     applicationData?.permitData?.permitDuration,
     applicationData?.permitData?.expiryDate,
+    commoditiesRef.current, // array deep comparison used here
     ...contactDetailsDepArray,
     ...mailingAddressDepArray,
     ...vehicleDetailsDepArray,

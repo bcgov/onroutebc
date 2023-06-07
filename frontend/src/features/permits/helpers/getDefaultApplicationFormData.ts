@@ -211,7 +211,10 @@ export const getDefaultValues = (applicationData?: Application, companyId?: numb
     ),
     commodities: getDefaultRequiredVal(
       [TROS_COMMODITIES[0], TROS_COMMODITIES[1]],
-      applicationData?.permitData?.commodities
+      applyWhenNotNullable(
+        (commodities) => commodities.map(commodity => ({...commodity})),
+        applicationData?.permitData?.commodities
+      )
     ),
     contactDetails: getDefaultContactDetails(applicationData?.permitData?.contactDetails, userDetails),
     // Default values are updated from companyInfo query in the ContactDetails common component
