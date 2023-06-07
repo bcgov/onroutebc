@@ -1,10 +1,5 @@
 import { HttpService } from '@nestjs/axios';
-import {
-  BadRequestException,
-  Inject,
-  Injectable,
-  StreamableFile,
-} from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { lastValueFrom } from 'rxjs';
 import { Permit } from 'src/modules/permit/entities/permit.entity';
@@ -17,10 +12,7 @@ import {
   TEMPLATE_NAME,
 } from './constants/template.constant';
 import { formatTemplateData } from './helpers/formatTemplateData.helper';
-import {
-  DownloadMode,
-  PdfReturnType,
-} from 'src/common/enum/pdf-return-type.enum';
+import { DownloadMode, PdfReturnType } from 'src/common/enum/pdf.enum';
 import { KeycloakResponse } from './interface/keycloakResponse.interface';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
@@ -29,14 +21,8 @@ import { PermitData } from './interface/permit.template.interface';
 import { getFullNameFromCache } from 'src/common/helper/cache.helper';
 import { DmsResponse } from 'src/common/interface/dms.interface';
 import { CompanyService } from '../company-user-management/company/company.service';
-import {
-  createReadStream,
-  createWriteStream,
-  statSync,
-  writeFileSync,
-} from 'fs';
-import { join } from 'path';
 import { Stream } from 'stream';
+import { ExceptionDto } from 'src/common/exception/exception.dto';
 
 @Injectable()
 export class PdfService {
@@ -325,7 +311,13 @@ export class PdfService {
     return dms;
   }
 
+  /**
+   * Creates a file from a stream of data.
+   * @param data - The stream of data to create a file from.
+   * @returns A Promise resolving to a Buffer representing the created file.
+   */
   private async createFile(data: Stream) {
+    // Read the stream data and concatenate all chunks into a single Buffer
     const streamReadPromise = new Promise<Buffer>((resolve) => {
       const chunks = [];
       data.on('data', (chunk) => {
@@ -335,15 +327,23 @@ export class PdfService {
         resolve(Buffer.concat(chunks));
       });
     });
+    // Return the Promise that resolves to the created file Buffer
     return await streamReadPromise;
   }
 
+  /**
+   * Retrieves a PDF document from DMS (Document Management System) based on the document ID.
+   * @param access_token - The access token for authorization.
+   * @param documentId - The ID of the document to retrieve.
+   * @param downloadMode - The mode for downloading the document (default: DownloadMode.URL).
+   * @returns A Promise resolving to a DmsResponse object representing the retrieved document.
+   */
   public async findPDFbyDocumentId(
     access_token: string,
     documentId: string,
     downloadMode: DownloadMode = DownloadMode.URL,
   ): Promise<DmsResponse> {
-    // Determine response type based on download mode
+    // Determine DMS response type based on download mode. Proxy returns a stream, url / redirect returns in json
     const resType = downloadMode === DownloadMode.PROXY ? 'stream' : 'json';
 
     // TODO: handle redirect option
@@ -363,7 +363,7 @@ export class PdfService {
       })
       .catch((error) => {
         console.log('dmsDocument error: ', error);
-        throw new BadRequestException();
+        throw new ExceptionDto(500, 'Error fetching document from DMS');
       });
 
     return dmsDocument;

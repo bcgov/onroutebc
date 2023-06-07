@@ -13,7 +13,7 @@ import { PdfService } from '../pdf/pdf.service';
 import { DatabaseHelper } from 'src/common/helper/database.helper';
 import { PermitApplicationOrigin } from './entities/permit-application-origin.entity';
 import { PermitApprovalSource } from './entities/permit-approval-source.entity';
-import { PdfReturnType } from 'src/common/enum/pdf-return-type.enum';
+import { PdfReturnType } from 'src/common/enum/pdf.enum';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
 
 @Injectable()
@@ -261,15 +261,18 @@ export class ApplicationService {
   /**
    * Generates PDF's of supplied permit ID's
    * If the status is updated to 'ISSUED', then create pdf, store it in DMS, then update permit record with dms document ID
+   * @param access_token the access token for authorization.
    * @param permitIds array of permit ID's to be converted as PDF's and saved in DMS
    */
   async generatePDFs(access_token: string, permitIds: string[]) {
     for (const id of permitIds) {
       const permit = await this.findOne(id);
+      // Generate PDF only if the permit status is 'ISSUED'
       if (permit.permitStatus === ApplicationStatus.ISSUED) {
-
-        // Cannot overwrite an existing PDF document
-        if (permit.documentId) throw new HttpException("Document already exists", 409)
+        // Check if a PDF document already exists for the permit
+        if (permit.documentId) {
+          throw new HttpException('Document already exists', 409);
+        }
         // DMS Reference ID for the generated PDF of the Permit
         // TODO: write helper to determine 'latest' template version
         const dmsDocumentId: string = await this.pdfService.generatePDF(
@@ -281,11 +284,11 @@ export class ApplicationService {
 
         // Update Permit record with the new DMS Document ID
         await this.permitRepository
-        .createQueryBuilder()
-        .update()
-        .set({ documentId: dmsDocumentId })
-        .whereInIds(permit.permitId)
-        .execute();
+          .createQueryBuilder()
+          .update()
+          .set({ documentId: dmsDocumentId })
+          .whereInIds(permit.permitId)
+          .execute();
 
         console.log('Completed pdf generation');
         console.log('DMS Document Id: ', dmsDocumentId);

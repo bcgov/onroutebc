@@ -7,8 +7,6 @@ import {
   Param,
   HttpException,
   Query,
-  Header,
-  StreamableFile,
   Res,
 } from '@nestjs/common';
 import { PermitService } from './permit.service';
@@ -28,8 +26,7 @@ import { ReadPermitDto } from './dto/response/read-permit.dto';
 import { Request, Response } from 'express';
 import { AuthOnly } from 'src/common/decorator/auth-only.decorator';
 import { ReadPdfDto } from './dto/response/read-pdf.dto';
-import { DownloadMode } from 'src/common/enum/pdf-return-type.enum';
-import { doc } from 'prettier';
+import { DownloadMode } from 'src/common/enum/pdf.enum';
 
 @ApiBearerAuth()
 @ApiTags('Permit')
@@ -110,29 +107,4 @@ export class PermitController {
     });
     response.send(readPdfDto);
   }
-
-  // @AuthOnly()
-  // @Get('/download/:permitId')
-  // async downloadPDF(
-  //   @Req() request: Request,
-  //   @Param('permitId') permitId: string,
-  //   @Res() response: Response,
-  // ): Promise<void> {
-  //   // TODO: Use IUserJWT / Exception handling
-  //   const access_token = request.headers.authorization;
-  //   if (!access_token) throw new HttpException('Unauthorized', 401);
-
-  //   const document = await this.permitService.findPDFbyPermitId(
-  //     access_token,
-  //     permitId,
-  //     DmsDownloadMode.PROXY,
-  //   );
-
-  //   response.set({
-  //     'Content-Type': 'application/pdf',
-  //     'Content-Disposition': 'attachment; filename=test.pdf',
-  //   });
-
-  //   response.send(document.file);
-  // }
 }
