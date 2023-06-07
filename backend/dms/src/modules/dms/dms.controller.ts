@@ -161,8 +161,7 @@ export class DmsController {
   ) {
     const file = await this.dmsService.findOne(documentId);
 
-    if (download === FileDownloadModes.PROXY) {
-      //await this.comsService.getResponseHeaders(file, FileDownloadModes.PROXY, res);
+    if (download === FileDownloadModes.PROXY) {     
       const fileObject = await this.comsService.getObject(
         file,
         FileDownloadModes.PROXY,
