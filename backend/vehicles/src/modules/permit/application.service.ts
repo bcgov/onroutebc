@@ -1,6 +1,6 @@
 import { Mapper } from '@automapper/core';
 import { InjectMapper } from '@automapper/nestjs';
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ApplicationStatus } from 'src/common/enum/application-status.enum';
 import { DataSource, IsNull, Repository, UpdateResult } from 'typeorm';
@@ -260,13 +260,16 @@ export class ApplicationService {
 
   /**
    * Generates PDF's of supplied permit ID's
-   * If the status is updated to 'APPROVED' or 'AUTO-APPROVED', then create pdf and store it in DMS
+   * If the status is updated to 'ISSUED', then create pdf, store it in DMS, then update permit record with dms document ID
    * @param permitIds array of permit ID's to be converted as PDF's and saved in DMS
    */
   async generatePDFs(access_token: string, permitIds: string[]) {
     for (const id of permitIds) {
       const permit = await this.findOne(id);
       if (permit.permitStatus === ApplicationStatus.ISSUED) {
+
+        // Cannot overwrite an existing PDF document
+        if (permit.documentId) throw new HttpException("Document already exists", 409)
         // DMS Reference ID for the generated PDF of the Permit
         // TODO: write helper to determine 'latest' template version
         const dmsDocumentId: string = await this.pdfService.generatePDF(
@@ -275,7 +278,15 @@ export class ApplicationService {
           1,
           PdfReturnType.DMS_DOC_ID,
         );
-        // TODO: handle the DMS reference
+
+        // Update Permit record with the new DMS Document ID
+        await this.permitRepository
+        .createQueryBuilder()
+        .update()
+        .set({ documentId: dmsDocumentId })
+        .whereInIds(permit.permitId)
+        .execute();
+
         console.log('Completed pdf generation');
         console.log('DMS Document Id: ', dmsDocumentId);
       }

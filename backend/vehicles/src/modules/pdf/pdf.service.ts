@@ -1,5 +1,10 @@
 import { HttpService } from '@nestjs/axios';
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  StreamableFile,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { lastValueFrom } from 'rxjs';
 import { Permit } from 'src/modules/permit/entities/permit.entity';
@@ -12,7 +17,10 @@ import {
   TEMPLATE_NAME,
 } from './constants/template.constant';
 import { formatTemplateData } from './helpers/formatTemplateData.helper';
-import { PdfReturnType } from 'src/common/enum/pdf-return-type.enum';
+import {
+  DownloadMode,
+  PdfReturnType,
+} from 'src/common/enum/pdf-return-type.enum';
 import { KeycloakResponse } from './interface/keycloakResponse.interface';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
@@ -21,6 +29,14 @@ import { PermitData } from './interface/permit.template.interface';
 import { getFullNameFromCache } from 'src/common/helper/cache.helper';
 import { DmsResponse } from 'src/common/interface/dms.interface';
 import { CompanyService } from '../company-user-management/company/company.service';
+import {
+  createReadStream,
+  createWriteStream,
+  statSync,
+  writeFileSync,
+} from 'fs';
+import { join } from 'path';
+import { Stream } from 'stream';
 
 @Injectable()
 export class PdfService {
@@ -307,5 +323,49 @@ export class PdfService {
     const dms = await this.savePDF(access_token, pdf, returnValue);
 
     return dms;
+  }
+
+  private async createFile(data: Stream) {
+    const streamReadPromise = new Promise<Buffer>((resolve) => {
+      const chunks = [];
+      data.on('data', (chunk) => {
+        chunks.push(Buffer.from(chunk));
+      });
+      data.on('end', () => {
+        resolve(Buffer.concat(chunks));
+      });
+    });
+    return await streamReadPromise;
+  }
+
+  public async findPDFbyDocumentId(
+    access_token: string,
+    documentId: string,
+    downloadMode: DownloadMode = DownloadMode.URL,
+  ): Promise<DmsResponse> {
+    // Determine response type based on download mode
+    const resType = downloadMode === DownloadMode.PROXY ? 'stream' : 'json';
+
+    // TODO: handle redirect option
+    const dmsDocument = await lastValueFrom(
+      this.httpService.get(`${process.env.DMS_URL}/dms/${documentId}`, {
+        headers: { Authorization: access_token },
+        params: { download: downloadMode },
+        responseType: resType,
+      }),
+    )
+      .then(async (response) => {
+        if (downloadMode === DownloadMode.PROXY) {
+          const file = await this.createFile(response.data);
+          response.data.file = file;
+        }
+        return response.data as DmsResponse;
+      })
+      .catch((error) => {
+        console.log('dmsDocument error: ', error);
+        throw new BadRequestException();
+      });
+
+    return dmsDocument;
   }
 }

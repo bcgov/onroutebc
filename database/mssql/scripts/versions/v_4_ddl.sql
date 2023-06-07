@@ -22,6 +22,7 @@ CREATE TABLE [permit].[ORBC_PERMIT](
 	[PREVIOUS_REV_ID] [bigint] NULL,
 	[OWNER_USER_GUID] [char](32) NULL,
 	[PERMIT_STATUS_ID] [varchar](20) NULL,
+	[DOCUMENT_ID] [varchar](10) NULL,
 	[CONCURRENCY_CONTROL_NUMBER] [int] NULL,
 	[DB_CREATE_USERID] [varchar](63) NOT NULL,
 	[DB_CREATE_TIMESTAMP] [datetime2](7) NOT NULL,
@@ -361,6 +362,8 @@ GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Revision of the permit, begins with zero and increments by 1 for each subsequent revision' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT', @level2type=N'COLUMN',@level2name=N'REVISION'
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID of the previous permit revision metadata record, if this permit revision is greater than zero' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT', @level2type=N'COLUMN',@level2name=N'PREVIOUS_REV_ID'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID of the document/PDF that references the Document Management System (DMS)' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT', @level2type=N'COLUMN',@level2name=N'DOCUMENT_ID'
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Current status of the permit or permit application.' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT', @level2type=N'COLUMN',@level2name=N'PERMIT_STATUS_ID'
 GO

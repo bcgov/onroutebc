@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, StreamableFile } from '@nestjs/common';
 
 import { Mapper } from '@automapper/core';
 import { InjectMapper } from '@automapper/nestjs';
@@ -8,6 +8,10 @@ import { CreatePermitDto } from './dto/request/create-permit.dto';
 import { ReadPermitDto } from './dto/response/read-permit.dto';
 import { Permit } from './entities/permit.entity';
 import { PermitType } from './entities/permit-type.entity';
+import { PdfService } from '../pdf/pdf.service';
+import { IUserJWT } from 'src/common/interface/user-jwt.interface';
+import { DmsResponse } from 'src/common/interface/dms.interface';
+import { DownloadMode } from 'src/common/enum/pdf-return-type.enum';
 
 @Injectable()
 export class PermitService {
@@ -17,6 +21,7 @@ export class PermitService {
     private permitRepository: Repository<Permit>,
     @InjectRepository(PermitType)
     private permitTypeRepository: Repository<PermitType>,
+    private readonly pdfService: PdfService,
   ) {}
 
   async create(createPermitDto: CreatePermitDto): Promise<ReadPermitDto> {
@@ -52,5 +57,12 @@ export class PermitService {
 
   public async findAllPermitTypes(): Promise<PermitType[]> {
     return await this.permitTypeRepository.find({});
+  }
+
+  public async findPDFbyPermitId(access_token: string, permitId: string, downloadMode?: DownloadMode): Promise<DmsResponse> {
+    const permit = await this.findOne(permitId);
+    const response = await this.pdfService.findPDFbyDocumentId(access_token, permit.documentId, downloadMode);
+    response.fileName = permit.applicationNumber; // TODO: change to permit number
+    return response;
   }
 }

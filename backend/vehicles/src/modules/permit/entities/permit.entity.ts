@@ -131,4 +131,15 @@ export class Permit extends Base {
     nullable: true,
   })
   permitStatus: ApplicationStatus;
+
+  @AutoMap()
+  @ApiProperty({
+    description:
+      'DMS Document ID used to retrieve the PDF of the permit',
+  })
+  @Column({
+    name: 'DOCUMENT_ID',
+    nullable: true,
+  })
+  documentId: string;
 }

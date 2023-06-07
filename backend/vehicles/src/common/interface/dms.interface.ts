@@ -1,3 +1,5 @@
+import { StreamableFile } from "@nestjs/common";
+
 export interface DmsResponse {
   documentId: string;
   s3ObjectId: string;
@@ -5,4 +7,6 @@ export interface DmsResponse {
   s3Location: string;
   objectMimeType: string;
   preSignedS3Url: string;
+  file?: StreamableFile;
+  fileName?: string;
 }
