@@ -45,4 +45,20 @@ export class Dms extends Base {
   })
   @Column({ length: '50', name: 'OBJECT_MIME_TYPE', nullable: false })
   objectMimeType: string;
+
+  @AutoMap()
+  @ApiProperty({
+    example: 'TROS_TEMPLATE_V1.docx',
+    description: 'The file Name.',
+  })
+  @Column({ length: '50', name: 'FILE_NAME', nullable: false })
+  fileName: string;
+
+  @AutoMap()
+  @ApiProperty({
+    example: '1',
+    description: 'The DMS Version ID.',
+  })
+  @Column({ type: 'int', name: 'DMS_VERSION_ID', nullable: false })
+  dmsVersionId: number;
 }
