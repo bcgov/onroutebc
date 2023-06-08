@@ -76,30 +76,34 @@ export class PdfService {
     const dmsDocument = await lastValueFrom(
       this.httpService.get(`${process.env.DMS_URL}/dms/${templateRef}`, {
         headers: { Authorization: accessToken },
-        params: { download: 'url' },
+        params: { download: 'proxy' },
+        responseType: 'stream',
       }),
     )
-      .then((response) => {
-        return response.data as DmsResponse;
+      .then(async (response) => {
+        //console.log('response', response)
+        const file = await this.createFile(response.data);
+        return file;
       })
       .catch((error) => {
         console.log('dmsDocument error: ', error);
         throw new BadRequestException();
       });
 
-    const url = dmsDocument.preSignedS3Url;
+    // const url = dmsDocument.preSignedS3Url;
 
-    // From the url provided by DMS, get the array buffer of the template
-    const templateArrayBuffer = await lastValueFrom(
-      this.httpService.get(url, {
-        responseType: CDOGS_RESPONSE_TYPE,
-      }),
-    ).then((response) => {
-      return response.data as Buffer;
-    });
+    // // From the url provided by DMS, get the array buffer of the template
+    // const templateArrayBuffer = await lastValueFrom(
+    //   this.httpService.get(url, {
+    //     responseType: CDOGS_RESPONSE_TYPE,
+    //   }),
+    // ).then((response) => {
+    //   return response.data as Buffer;
+    // });
 
     // Decode array buffer to string
-    const template = templateArrayBuffer.toString(ENCODING_TYPE);
+    const template = dmsDocument.toString(ENCODING_TYPE);
+
 
     return template;
   }
