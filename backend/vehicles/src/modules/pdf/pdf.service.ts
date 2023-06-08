@@ -234,9 +234,12 @@ export class PdfService {
     pdf: ArrayBuffer,
     returnValue?: PdfReturnType,
   ): Promise<string> {
+
+    console.log('SAVE PDF')
+
     // Convert Array Buffer to Blob to pass to DMS microservice
     const formData = new FormData();
-    formData.append('file', new Blob([pdf]));
+    formData.append('file', new Blob([pdf], {type: 'application/pdf'}), 'test');
 
     const dmsResource = await lastValueFrom(
       this.httpService.post(`${process.env.DMS_URL}/dms/upload`, formData, {
@@ -244,6 +247,7 @@ export class PdfService {
       }),
     )
       .then((response) => {
+        console.log('DMS response', response)
         return response.data as DmsResponse;
       })
       .catch((error) => {

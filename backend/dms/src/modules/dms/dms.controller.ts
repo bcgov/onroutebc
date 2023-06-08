@@ -34,6 +34,8 @@ import { Response } from 'express';
 import { ComsService } from './coms.service';
 import { UpdateFileDto } from './dto/request/update-file.dto';
 
+import * as fs from 'fs';
+
 @ApiTags('DMS')
 @ApiBadRequestResponse({
   description: 'Bad Request Response',
@@ -162,20 +164,26 @@ export class DmsController {
     const file = await this.dmsService.findOne(documentId);
 
     if (download === FileDownloadModes.PROXY) {     
-      // const fileObject = await this.comsService.getObject(
-      //   file,
-      //   FileDownloadModes.PROXY,
-      //   res,
+      const fileObject = await this.comsService.getObject(
+        file,
+        FileDownloadModes.PROXY,
+        res,
+      );
+      // fs.writeFileSync(
+      //   `./test.pdf`,
+      //   Buffer.from(fileObject as ArrayBuffer),
+      //   'binary',
       // );
-      //res.status(200).send(fileObject);
+      //console.log('fileObject', fileObject)
+      res.status(200).send(fileObject);
 
       // TODO: Start Temp solution - discuss with praveen
-      const url = await this.comsService.getObject(file, FileDownloadModes.URL);
-      file.preSignedS3Url = url;
-      res.status(302).set('Location', file.preSignedS3Url).end();
+      // const url = await this.comsService.getObject(file, FileDownloadModes.URL);
+      // file.preSignedS3Url = url;
+      // res.status(302).set('Location', file.preSignedS3Url).end();
       // TODO: End Temp solution
     } else {
-      const url = await this.comsService.getObject(file, FileDownloadModes.URL);
+      const url = await this.comsService.getObject(file, FileDownloadModes.URL) as string;
       file.preSignedS3Url = url;
       if (download === FileDownloadModes.URL) {
         res.status(201).send(file);
