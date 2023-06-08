@@ -4,4 +4,5 @@ export interface IFile {
   mimetype?: string;
   buffer?: Buffer | ArrayBuffer;
   size?: number;
+  filename?: string;
 }

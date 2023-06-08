@@ -48,4 +48,18 @@ export class ReadFileDto {
     description: 'A Presigned S3 URL.',
   })
   preSignedS3Url: string;
+
+  @AutoMap()
+  @ApiProperty({
+    example: 'Sample Document.pdf',
+    description: 'The File Name.',
+  })
+  fileName: string;
+
+  @AutoMap()
+  @ApiProperty({
+    example: '1',
+    description: 'The DMS Version ID.',
+  })
+  dmsVersionId: number;
 }

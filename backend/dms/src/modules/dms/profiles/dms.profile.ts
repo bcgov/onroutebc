@@ -1,5 +1,11 @@
 import { AutomapperProfile, InjectMapper } from '@automapper/nestjs';
-import { createMap, forMember, mapFrom, Mapper } from '@automapper/core';
+import {
+  createMap,
+  forMember,
+  mapFrom,
+  Mapper,
+  mapWithArguments,
+} from '@automapper/core';
 import { Injectable } from '@nestjs/common';
 import { Dms } from '../entities/dms.entity';
 import { ReadCOMSDto } from '../dto/response/read-coms.dto';
@@ -32,6 +38,18 @@ export class DmsProfile extends AutomapperProfile {
         forMember(
           (d) => d.objectMimeType,
           mapFrom((s) => s.mimeType),
+        ),
+        forMember(
+          (d) => d.fileName,
+          mapFrom((s) => {
+            return s.metadata['name'] as string;
+          }),
+        ),
+        forMember(
+          (d) => d.dmsVersionId,
+          mapWithArguments((source, { dmsVersionId }) => {
+            return dmsVersionId;
+          }),
         ),
       );
       createMap(
