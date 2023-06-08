@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Dms } from './entities/dms.entity';
 import { Mapper } from '@automapper/core';
 import { InjectMapper } from '@automapper/nestjs';
@@ -6,8 +6,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ReadCOMSDto } from './dto/response/read-coms.dto';
 import { ReadFileDto } from './dto/response/read-file.dto';
-import { ComsService } from './coms.service';
-import { IFile } from '../../common/interface/file.interface';
 
 @Injectable()
 export class DmsService {
@@ -15,19 +13,26 @@ export class DmsService {
     @InjectRepository(Dms)
     private dmsRepository: Repository<Dms>,
     @InjectMapper() private readonly classMapper: Mapper,
-    private readonly comsService: ComsService,
   ) {}
 
-  async create(file: Express.Multer.File | IFile): Promise<ReadFileDto> {
-    const readCOMSDtoList = await this.comsService.createObject(file);
-
-    if (!readCOMSDtoList?.length) {
-      throw new InternalServerErrorException();
+  async create(
+    readCOMSDtoList: ReadCOMSDto[],
+    dmsObject?: ReadFileDto,
+  ): Promise<ReadFileDto> {
+    let dmsVersionId = 1;
+    if (dmsObject) {
+      dmsVersionId = dmsObject.dmsVersionId + 1;
     }
+
     const dmsRecord = this.classMapper.map(
       readCOMSDtoList[0],
       ReadCOMSDto,
       Dms,
+      {
+        extraArgs: () => ({
+          dmsVersionId: dmsVersionId,
+        }),
+      },
     );
 
     return this.classMapper.mapAsync(
@@ -43,9 +48,28 @@ export class DmsService {
       Dms,
       ReadFileDto,
     );
+    return readFile;
+  }
 
-    const url = await this.comsService.getObjectUrl(readFile);
-    readFile.preSignedS3Url = url;
+  async findLatest(documentId: string): Promise<ReadFileDto> {
+    const subQuery = this.dmsRepository
+      .createQueryBuilder('dms')
+      .select('dms.s3ObjectId')
+      .where('dms.documentId = :documentId')
+      .getQuery();
+
+    const latestDmsObject = await this.dmsRepository
+      .createQueryBuilder('dms')
+      .where(`dms.s3ObjectId IN (${subQuery})`, { documentId: documentId })
+      .orderBy('dms.dmsVersionId', 'DESC')
+      .getOne();
+
+    const readFile = await this.classMapper.mapAsync(
+      latestDmsObject,
+      Dms,
+      ReadFileDto,
+    );
+
     return readFile;
   }
 }

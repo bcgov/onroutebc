@@ -15,6 +15,8 @@ CREATE TABLE [dms].[ORBC_DOCUMENT](
 	[S3_VERSION_ID] [bigint] NULL,
 	[S3_LOCATION] [varchar](200) NOT NULL,
 	[OBJECT_MIME_TYPE] [varchar](50) NOT NULL,
+	[FILE_NAME] [varchar](50) NOT NULL,
+	[DMS_VERSION_ID] int NOT NULL,
 	[CONCURRENCY_CONTROL_NUMBER] [int] NULL,
 	[DB_CREATE_USERID] [varchar](63) NOT NULL,
 	[DB_CREATE_TIMESTAMP] [datetime2](7) NOT NULL,
@@ -45,6 +47,10 @@ GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The URL to the uploaded resource' , @level0type=N'SCHEMA',@level0name=N'dms', @level1type=N'TABLE',@level1name=N'ORBC_DOCUMENT', @level2type=N'COLUMN',@level2name=N'S3_LOCATION'
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The object MIME Type' , @level0type=N'SCHEMA',@level0name=N'dms', @level1type=N'TABLE',@level1name=N'ORBC_DOCUMENT', @level2type=N'COLUMN',@level2name=N'OBJECT_MIME_TYPE'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The File Name' , @level0type=N'SCHEMA',@level0name=N'dms', @level1type=N'TABLE',@level1name=N'ORBC_DOCUMENT', @level2type=N'COLUMN',@level2name=N'FILE_NAME'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The DMS Version ID' , @level0type=N'SCHEMA',@level0name=N'dms', @level1type=N'TABLE',@level1name=N'ORBC_DOCUMENT', @level2type=N'COLUMN',@level2name=N'DMS_VERSION_ID'
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user or proxy account that created the record.' , @level0type=N'SCHEMA',@level0name=N'dms', @level1type=N'TABLE',@level1name=N'ORBC_DOCUMENT', @level2type=N'COLUMN',@level2name=N'DB_CREATE_USERID'
 GO
