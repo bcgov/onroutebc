@@ -29,6 +29,8 @@ import { UpdateApplicationDto } from './dto/request/update-application.dto';
 import { DataNotFoundException } from 'src/common/exception/data-not-found.exception';
 import { UpdateApplicationStatusDto } from './dto/request/update-application-status.dto';
 import { ResultDto } from './dto/response/result.dto';
+import { Roles } from 'src/common/decorator/roles.decorator';
+import { Role } from 'src/common/enum/roles.enum';
 
 @ApiBearerAuth()
 @ApiTags('Permit Application')
@@ -52,6 +54,7 @@ export class ApplicationController {
     description: 'The Permit Application Resource',
     type: ReadApplicationDto,
   })
+  @Roles(Role.WRITE_PERMIT)
   @Post()
   async createPermitApplication(
     @Req() request: Request,
@@ -66,6 +69,7 @@ export class ApplicationController {
     type: ReadApplicationDto,
     isArray: true,
   })
+  @Roles(Role.READ_PERMIT)
   @Get()
   async findAllApplication(
     @Req() request: Request,
@@ -93,6 +97,7 @@ export class ApplicationController {
     type: ReadApplicationDto,
     isArray: true,
   })
+  @Roles(Role.READ_PERMIT)
   @Get(':permitId')
   async findOneApplication(
     @Req() request: Request,
@@ -105,6 +110,7 @@ export class ApplicationController {
     description: 'The Permit Application Resource',
     type: ReadApplicationDto,
   })
+  @Roles(Role.WRITE_PERMIT)
   @Put(':applicationNumber')
   async update(
     @Req() request: Request,
@@ -126,6 +132,7 @@ export class ApplicationController {
     description: 'The Permit Application Resource',
     type: ResultDto,
   })
+  //TODO Assign role @Roles(Role.WRITE_PERMIT) Should have a different role.
   @Post('status')
   async updateApplicationStatus(
     @Req() request: Request,
