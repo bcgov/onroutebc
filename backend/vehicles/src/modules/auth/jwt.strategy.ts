@@ -48,8 +48,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       companyId = +req.params['companyId'];
     } else if (req.query['companyId']) {
       companyId = +req.query['companyId'];
-    }
-    else if (req.body.companyId){
+    } else if (req.body.companyId) {
       companyId = req.body.companyId;
     }
 
@@ -117,7 +116,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       const associatedCompanies = await this.authService.getCompaniesForUser(
         userGUIDParam,
       );
-
 
       if (!associatedCompanies?.length) {
         throw new DataNotFoundException();

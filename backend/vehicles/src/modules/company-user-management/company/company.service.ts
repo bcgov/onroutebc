@@ -75,9 +75,6 @@ export class CompanyService {
           currentUser,
         );
       }
-
-      console.log('Client Number Is ', newCompany.clientNumber);
-
       newCompany = await queryRunner.manager.save(newCompany);
 
       let user = this.classMapper.map(
@@ -292,7 +289,6 @@ export class CompanyService {
     const seq = await this.databaseHelper.callDatabaseSequence(
       'dbo.ORBC_CLIENT_NUMBER_SEQ',
     );
-    console.log('current user ', currentUser.identity_provider);
     const accountSource =
       currentUser.identity_provider == IDP.IDIR
         ? AccountSource.PPCStaff
