@@ -49,7 +49,11 @@ import { Role } from 'src/common/enum/roles.enum';
 })
 export class ApplicationController {
   constructor(private readonly applicationService: ApplicationService) {}
-
+  /**
+   * Create Permit application
+   * @param request
+   * @param createApplication
+   */
   @ApiCreatedResponse({
     description: 'The Permit Application Resource',
     type: ReadApplicationDto,
@@ -64,6 +68,13 @@ export class ApplicationController {
     return await this.applicationService.create(createApplication, currentUser);
   }
 
+  /**
+   * Find all application for given status of a company for current logged in user
+   * @param request
+   * @param companyId
+   * @param userGUID
+   * @param status
+   */
   @ApiOkResponse({
     description: 'The Permit Application Resource',
     type: ReadApplicationDto,
@@ -92,6 +103,14 @@ export class ApplicationController {
     }
   }
 
+  /**
+   * Update Applications status to given status.
+   * If status is not cancellation the can only update one application at a time.
+   * Else also allow bulk cancellation for applications.
+   * @param request
+   * @param permitId
+   * @param companyId
+   */
   @ApiOkResponse({
     description: 'The Permit Application Resource',
     type: ReadApplicationDto,
@@ -129,6 +148,11 @@ export class ApplicationController {
     return application;
   }
 
+  /**
+   * Update application Data.
+   * @param request
+   * @param updateApplicationStatusDto
+   */
   @ApiOkResponse({
     description: 'The Permit Application Resource',
     type: ResultDto,
