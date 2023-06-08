@@ -10,14 +10,15 @@ import { Permit } from './entities/permit.entity';
 import { UpdateApplicationDto } from './dto/request/update-application.dto';
 import { ResultDto } from './dto/response/result.dto';
 import { PdfService } from '../pdf/pdf.service';
-import { DatabaseHelper } from 'src/common/helper/database.helper';
-import { PermitApplicationOriginEntity } from './entities/permit-application-origin.entity';
-import { PermitApprovalSourceEntity } from './entities/permit-approval-source.entity';
+import { PermitApplicationOrigin } from './entities/permit-application-origin.entity';
+import { PermitApprovalSource } from './entities/permit-approval-source.entity';
 import { IDP } from 'src/common/enum/idp.enum';
-import { PermitApplicationOrigin } from 'src/common/enum/permit-application-origin.enum';
+import { PermitApplicationOrigin as PermitApplicationOriginEnum } from 'src/common/enum/permit-application-origin.enum';
 import { PdfReturnType } from 'src/common/enum/pdf-return-type.enum';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
-import { PermitApprovalSource } from 'src/common/enum/permit-approval-source.enum';
+import { PermitApprovalSource as PermitApprovalSourceEnum } from 'src/common/enum/permit-approval-source.enum';
+import { callDatabaseSequence } from 'src/common/helper/database.helper';
+import { randomInt } from 'crypto';
 
 @Injectable()
 export class ApplicationService {
@@ -25,13 +26,12 @@ export class ApplicationService {
     @InjectMapper() private readonly classMapper: Mapper,
     @InjectRepository(Permit)
     private permitRepository: Repository<Permit>,
-    private datasource: DataSource,
+    private dataSource: DataSource,
     private readonly pdfService: PdfService,
-    private databaseHelper: DatabaseHelper,
-    @InjectRepository(PermitApplicationOriginEntity)
-    private permitApplicationOriginRepository: Repository<PermitApplicationOriginEntity>,
-    @InjectRepository(PermitApprovalSourceEntity)
-    private permitApprovalSourceRepository: Repository<PermitApprovalSourceEntity>,
+    @InjectRepository(PermitApplicationOrigin)
+    private permitApplicationOriginRepository: Repository<PermitApplicationOrigin>,
+    @InjectRepository(PermitApprovalSource)
+    private permitApprovalSourceRepository: Repository<PermitApprovalSource>,
   ) {}
 
   /**
@@ -45,16 +45,13 @@ export class ApplicationService {
     currentUser: IUserJWT,
   ): Promise<ReadApplicationDto> {
     createApplicationDto.permitStatus = ApplicationStatus.IN_PROGRESS;
-    //permitId Null means new application for
-    createApplicationDto.previousRevId = createApplicationDto.permitId;
-
     //Assign Permit Application Origin
     if (currentUser.identity_provider == IDP.IDIR)
       createApplicationDto.permitApplicationOrigin =
-        PermitApplicationOrigin.PPC;
+        PermitApplicationOriginEnum.PPC;
     else
       createApplicationDto.permitApplicationOrigin =
-        PermitApplicationOrigin.ONLINE;
+        PermitApplicationOriginEnum.ONLINE;
 
     //Generate appliction number for the application to be created in database.
     const applicationNumber = await this.generateApplicationNumber(
@@ -66,6 +63,7 @@ export class ApplicationService {
     if (createApplicationDto.permitId) {
       const permit = await this.findOne(createApplicationDto.permitId);
       createApplicationDto.revision = permit.revision + 1;
+      createApplicationDto.previousRevision = createApplicationDto.permitId;
       createApplicationDto.permitId = null;
     }
 
@@ -229,20 +227,20 @@ export class ApplicationService {
     currentUser: IUserJWT,
   ): Promise<ResultDto> {
     let permitNumber: string = null;
-    let permitApprovalSource: PermitApprovalSource = null;
-    if (
-      applicationIds.length === 1 &&
-      applicationStatus === ApplicationStatus.ISSUED
-    ) {
-      permitNumber = await this.generatePermitNumber(applicationIds[0]);
-    } else if (
-      applicationIds.length === 1 &&
-      (applicationStatus === ApplicationStatus.APPROVED ||
-        applicationStatus === ApplicationStatus.AUTO_APPROVED)
-    ) {
-      if (currentUser.identity_provider == IDP.IDIR)
-        permitApprovalSource = PermitApprovalSource.PPC;
-      else permitApprovalSource = PermitApprovalSource.AUTO;
+    let permitApprovalSource: PermitApprovalSourceEnum = null;
+    if (applicationIds.length === 1) {
+      if (applicationStatus === ApplicationStatus.ISSUED)
+        permitNumber = await this.generatePermitNumber(applicationIds[0]);
+      else if (
+        applicationStatus === ApplicationStatus.APPROVED ||
+        applicationStatus === ApplicationStatus.AUTO_APPROVED
+      ){
+        if(currentUser.identity_provider == IDP.IDIR)
+        permitApprovalSource = PermitApprovalSourceEnum.PPC;
+        else if (currentUser.identity_provider == IDP.BCEID)
+        permitApprovalSource = PermitApprovalSourceEnum.AUTO;
+      }
+       
     } else if (
       applicationIds.length > 1 &&
       applicationStatus != ApplicationStatus.CANCELLED
@@ -334,10 +332,10 @@ export class ApplicationService {
         seq = permit.permitNumber.substring(3, 11);
         rnd = permit.permitNumber.substring(12, 15);
       } else {
-        seq = await this.databaseHelper.callDatabaseSequence(
+        seq = await callDatabaseSequence(
           'permit.ORBC_PERMIT_NUMBER_SEQ',
+          this.dataSource,
         );
-        const { randomInt } = await import('crypto');
         rnd = randomInt(100, 1000);
       }
       source = await this.getPermitApplicationOrigin(
@@ -345,15 +343,15 @@ export class ApplicationService {
       );
     } else {
       //New permit application.
-      seq = await this.databaseHelper.callDatabaseSequence(
+      seq = await callDatabaseSequence(
         'permit.ORBC_PERMIT_NUMBER_SEQ',
+        this.dataSource,
       );
       source = await this.getPermitApplicationOrigin(
         permitApplicationOrigin == IDP.IDIR
-          ? PermitApplicationOrigin.PPC
-          : PermitApplicationOrigin.ONLINE,
+          ? PermitApplicationOriginEnum.PPC
+          : PermitApplicationOriginEnum.ONLINE,
       );
-      const { randomInt } = await import('crypto');
       rnd = randomInt(100, 1000);
     }
 
@@ -378,11 +376,12 @@ export class ApplicationService {
   private async getPermitApplicationOrigin(
     permitApplicationOrigin: string,
   ): Promise<string> {
-    const code = await this.permitApplicationOriginRepository.findOne({
-      where: [{ id: permitApplicationOrigin }],
-    });
+    const applicationOrigin =
+      await this.permitApplicationOriginRepository.findOne({
+        where: [{ id: permitApplicationOrigin }],
+      });
 
-    return String(code.code);
+    return String(applicationOrigin.code);
   }
 
   /**
@@ -404,8 +403,9 @@ export class ApplicationService {
       approvalSourceId = approvalSource[0].code;
     }
     if (permit.revision == 0) {
-      seq = await this.databaseHelper.callDatabaseSequence(
+      seq = await callDatabaseSequence(
         'permit.ORBC_PERMIT_NUMBER_SEQ',
+        this.dataSource,
       );
       seq = seq.padStart(8, '0');
       const { randomInt } = await import('crypto');

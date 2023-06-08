@@ -5,12 +5,11 @@ import { CompanyService } from './company.service';
 import { Company } from './entities/company.entity';
 import { CompanyProfile } from './profiles/company.profile';
 import { DataSource } from 'typeorm';
-import { DatabaseHelper } from 'src/common/helper/database.helper';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Company])],
   controllers: [CompanyController],
-  providers: [CompanyService, CompanyProfile, DatabaseHelper],
+  providers: [CompanyService, CompanyProfile],
   exports: [CompanyService],
 })
 export class CompanyModule {

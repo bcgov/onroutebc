@@ -17,9 +17,8 @@ import { IUserJWT } from '../../../common/interface/user-jwt.interface';
 import { CreateUserDto } from '../users/dto/request/create-user.dto';
 import { User } from '../users/entities/user.entity';
 import { CompanyUser } from '../users/entities/company-user.entity';
-import { DatabaseHelper } from 'src/common/helper/database.helper';
-import { IDP } from 'src/common/enum/idp.enum';
-import { AccountSource } from 'src/common/enum/account-source.enum';
+import { callDatabaseSequence } from 'src/common/helper/database.helper';
+import { randomInt } from 'crypto';
 
 @Injectable()
 export class CompanyService {
@@ -28,7 +27,6 @@ export class CompanyService {
     private companyRepository: Repository<Company>,
     @InjectMapper() private readonly classMapper: Mapper,
     private dataSource: DataSource,
-    private databaseHelper: DatabaseHelper,
   ) {}
 
   /**
@@ -65,16 +63,18 @@ export class CompanyService {
           extraArgs: () => ({
             directory: directory,
             companyGUID: currentUser.bceid_business_guid,
+            accountSource: currentUser.accountSource,
           }),
         },
       );
 
-      if (!newCompany.clientNumber) {
-        newCompany.clientNumber = await this.generateClientNumber(
-          newCompany,
-          currentUser,
-        );
-      }
+      newCompany.clientNumber = await this.generateClientNumber(
+        newCompany,
+        currentUser,
+      );
+
+      console.log('New Company', newCompany);
+
       newCompany = await queryRunner.manager.save(newCompany);
 
       let user = this.classMapper.map(
@@ -284,19 +284,14 @@ export class CompanyService {
     company: Company,
     currentUser: IUserJWT,
   ): Promise<string> {
-    const { randomInt } = await import('crypto');
     const rnd = randomInt(100, 1000);
-    const seq = await this.databaseHelper.callDatabaseSequence(
+    const seq = await callDatabaseSequence(
       'dbo.ORBC_CLIENT_NUMBER_SEQ',
+      this.dataSource,
     );
-    const accountSource =
-      currentUser.identity_provider == IDP.IDIR
-        ? AccountSource.PPCStaff
-        : AccountSource.BCeID;
-
     const clientNumber =
       company.accountRegion +
-      String(accountSource) +
+      currentUser.accountSource +
       '-' +
       seq.padStart(6, '0') +
       '-' +

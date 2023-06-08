@@ -37,7 +37,7 @@ export class CreateApplicationDto {
     example: '',
     required: false,
   })
-  previousRevId: string;
+  previousRevision: string;
 
   @AutoMap()
   @ApiProperty({

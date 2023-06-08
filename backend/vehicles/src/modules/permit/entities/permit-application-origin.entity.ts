@@ -4,7 +4,7 @@ import { Base } from 'src/modules/common/entities/base.entity';
 import { Column, Entity, PrimaryColumn } from 'typeorm';
 
 @Entity({ name: 'permit.ORBC_VT_PERMIT_APPLICATION_ORIGIN' })
-export class PermitApplicationOriginEntity extends Base {
+export class PermitApplicationOrigin extends Base {
   @AutoMap()
   @ApiProperty({
     example: 'ONLINE',
