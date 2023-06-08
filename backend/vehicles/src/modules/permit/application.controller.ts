@@ -102,6 +102,7 @@ export class ApplicationController {
   async findOneApplication(
     @Req() request: Request,
     @Param('permitId') permitId: string,
+    @Query('companyId') companyId?: number,
   ): Promise<ReadApplicationDto> {
     return await this.applicationService.findApplication(permitId);
   }
