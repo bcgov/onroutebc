@@ -68,7 +68,6 @@ export class PermitController {
     enum: DownloadMode,
     description:
       'Download mode behavior.' +
-      'Default behavior (undefined) will yield an HTTP 302 redirect to the S3 bucket via presigned URL.' +
       'If proxy is specified, the object contents will be available proxied through DMS.' +
       'If url is specified, expect an HTTP 201 cotaining the presigned URL as a JSON string in the response.',
   })
@@ -88,7 +87,6 @@ export class PermitController {
       download,
     );
 
-    // TODO: Fix error on DMS microservice for handling redirect option
     if (download === DownloadMode.PROXY) {
       response.set({
         'Content-Type': 'application/pdf',

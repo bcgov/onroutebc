@@ -134,8 +134,7 @@ export class Permit extends Base {
 
   @AutoMap()
   @ApiProperty({
-    description:
-      'DMS Document ID used to retrieve the PDF of the permit',
+    description: 'DMS Document ID used to retrieve the PDF of the permit',
   })
   @Column({
     name: 'DOCUMENT_ID',

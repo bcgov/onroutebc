@@ -1,5 +1,10 @@
 import { HttpService } from '@nestjs/axios';
-import { BadRequestException, HttpException, Inject, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  Inject,
+  Injectable,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { lastValueFrom } from 'rxjs';
 import { Permit } from '../permit/entities/permit.entity';
@@ -81,12 +86,10 @@ export class PdfService {
       }),
     )
       .then(async (response) => {
-        //console.log('response', response)
-        const file = await this.createFile(response.data);
-        return file;
+        return await this.createFile(response.data as Stream);
       })
       .catch((error) => {
-        console.log('dmsDocument error: ', error);
+        console.log('Get Template from DMS error: ', error);
         throw new BadRequestException();
       });
 
@@ -100,10 +103,10 @@ export class PdfService {
     // ).then((response) => {
     //   return response.data as Buffer;
     // });
+    // const template = templateArrayBuffer.toString(ENCODING_TYPE);
 
     // Decode array buffer to string
     const template = dmsDocument.toString(ENCODING_TYPE);
-
 
     return template;
   }
@@ -238,12 +241,14 @@ export class PdfService {
     pdf: ArrayBuffer,
     returnValue?: PdfReturnType,
   ): Promise<string> {
-
-    console.log('SAVE PDF')
-
     // Convert Array Buffer to Blob to pass to DMS microservice
     const formData = new FormData();
-    formData.append('file', new Blob([pdf], {type: 'application/pdf'}), 'test');
+    formData.append(
+      'file',
+      new Blob([pdf], { type: 'application/pdf' }),
+      // TODO: provide a name
+      'test',
+    );
 
     const dmsResource = await lastValueFrom(
       this.httpService.post(`${process.env.DMS_URL}/dms/upload`, formData, {
@@ -251,7 +256,6 @@ export class PdfService {
       }),
     )
       .then((response) => {
-        console.log('DMS response', response)
         return response.data as DmsResponse;
       })
       .catch((error) => {
@@ -353,7 +357,6 @@ export class PdfService {
     // Determine DMS response type based on download mode. Proxy returns a stream, url / redirect returns in json
     const resType = downloadMode === DownloadMode.PROXY ? 'stream' : 'json';
 
-    // TODO: handle redirect option
     const dmsDocument = await lastValueFrom(
       this.httpService.get(`${process.env.DMS_URL}/dms/${documentId}`, {
         headers: { Authorization: accessToken },
@@ -362,14 +365,15 @@ export class PdfService {
       }),
     )
       .then(async (response) => {
+        const data = response.data as DmsResponse;
         if (downloadMode === DownloadMode.PROXY) {
-          const file = await this.createFile(response.data);
-          response.data.file = file;
+          const file = await this.createFile(response.data as Stream);
+          data.file = file;
         }
-        return response.data as DmsResponse;
+        return data;
       })
       .catch((error) => {
-        console.log('dmsDocument error: ', error);
+        console.log('FindPDFbyDocumentId DMS error: ', error);
         throw new HttpException('Error fetching document from DMS', 500);
       });
 

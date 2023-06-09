@@ -8,5 +8,4 @@ export enum PdfReturnType {
 export enum DownloadMode {
   URL = 'url',
   PROXY = 'proxy',
-  REDIRECT = 'redirect'
 }

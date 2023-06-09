@@ -33,33 +33,25 @@ export class ComsService {
     // Extract necessary properties from the file
     const { buffer, originalname, filename, mimetype } = file;
 
-    console.log('buffer', buffer)
-    console.log('originalname', originalname)
-    console.log('filename', filename)
-    console.log('mimetype', mimetype)
-
     // Create a FormData object and append the file to it
     const fd = new FormData();
     let headers: any;
-    // TODO: KEEP
-    if (mimetype === 'application/pdf'){
-      console.log('TEST')
-      fd.append('file', new Blob([buffer], {type: mimetype}), filename ? filename : originalname);
+    if (mimetype === 'application/pdf') {
+      fd.append(
+        'file',
+        new Blob([buffer], { type: mimetype }),
+        filename ? filename : originalname,
+      );
       headers = {
-        
         'Content-Type': 'application/pdf',
       };
-    }
-    else{
+    } else {
       fd.append('file', new Blob([buffer]), filename ? filename : originalname);
       headers = {
-        
         'Content-Type': 'multipart/form-data',
         Accept: 'application/json',
-      
       };
     }
-    
 
     // Set the request configuration
     const reqConfig: AxiosRequestConfig = {
@@ -91,13 +83,18 @@ export class ComsService {
         return response.data as ReadCOMSDto[];
       })
       .catch((error) => {
-        console.log(error);
+        console.log('createObject error: ', error);
         throw new InternalServerErrorException();
       });
 
     return responseData;
   }
 
+  /**
+   * Creates a file from a stream of data.
+   * @param data - The stream of data to create a file from.
+   * @returns A Promise resolving to a Buffer representing the created file.
+   */
   private async createFile(data: Stream) {
     // Read the stream data and concatenate all chunks into a single Buffer
     const streamReadPromise = new Promise<Buffer>((resolve) => {
@@ -118,7 +115,7 @@ export class ComsService {
    * @param readFile - The {@link ReadFileDto} object containing the information
    *                   about the file to be retrieved.
    * @param download - The file download mode - {@link FileDownloadModes}.
-   * @returns A Promise that resolves to a string representing the retrieved
+   * @returns A Promise that resolves to a string (url) or ArrayBuffer (proxy) representing the retrieved
    *          object.
    */
   async getObject(
@@ -126,6 +123,7 @@ export class ComsService {
     download = FileDownloadModes.URL,
     res?: Response,
   ): Promise<ArrayBuffer | string> {
+    
     // Set the request configuration
     const reqConfig: AxiosRequestConfig = {
       auth: {
@@ -139,48 +137,31 @@ export class ComsService {
       download: download,
       expiresIn: process.env.COMS_PRESIGNED_URL_EXPIRY,
     };
+
     // Construct the URL for the request
     const url = `${
       process.env.COMS_URL
     }object/${readFile.s3ObjectId?.toLowerCase()}`;
 
-    console.log('download', download)
-    console.log('readFile', readFile)
-    console.log('res', res)
 
     if (download === FileDownloadModes.PROXY) {
       const axiosResponse = await lastValueFrom(
         this.httpService.get(url, {
-          ...reqConfig,
-          //headers: { Authorization: accessToken },
           params: { download: download },
+          ...reqConfig,
           responseType: 'stream',
         }),
-        // this.httpService.get(url, { params, ...reqConfig }).pipe(
-        //   map((response) => {
-        //     return response;
-        //   }),
-        // ),
       )
         .then(async (response) => {
-          console.log('COMS response')
-          const file = await this.createFile(response.data);
-          return file;
+          return await this.createFile(response.data);
         })
         .catch((error) => {
-          console.log(error);
+          console.log('COMS getObject proxy error: ', error);
           throw new InternalServerErrorException();
         });
-  
-      // if (res) {
-      //   this.convertAxiosToExpress(axiosResponse, res);
-      // }
-  
-      //console.log('axiosResponse.data', axiosResponse.data)
-  
+
       return axiosResponse;
     }
-
     // Send the GET request to retrieve the object and retrieve the response
     const axiosResponse = await lastValueFrom(
       this.httpService.get(url, { params, ...reqConfig }).pipe(
@@ -190,20 +171,16 @@ export class ComsService {
       ),
     )
       .then((response) => {
-        console.log('COMS response', response)
         return response;
       })
       .catch((error) => {
-        console.log(error);
+        console.log('COMS getObject url Error: ', error);
         throw new InternalServerErrorException();
       });
 
     if (res) {
       this.convertAxiosToExpress(axiosResponse, res);
     }
-
-    //console.log('axiosResponse.data', axiosResponse.data)
-
     return axiosResponse.data as string;
   }
 
@@ -216,8 +193,6 @@ export class ComsService {
   convertAxiosToExpress(response: AxiosResponse, res: Response) {
     // Get the headers from the Axios response
     const headers = response.headers;
-
-    console.log('headers', headers)
 
     // Set the headers in the Express response object using the res.set() method
     Object.keys(headers).forEach((key) => {
