@@ -95,6 +95,7 @@ export class ComsService {
         username: process.env.BASICAUTH_USERNAME,
         password: process.env.BASICAUTH_PASSWORD,
       },
+      responseType: download === FileDownloadModes.PROXY ? 'stream' : 'json',
     };
 
     // Set the request parameters
@@ -123,8 +124,22 @@ export class ComsService {
         throw new InternalServerErrorException();
       });
 
-    if (res) {
+    if (download === FileDownloadModes.PROXY) {
+      if (!res) {
+        throw new InternalServerErrorException(
+          'Response Parameter is required when DownloadMode is proxy.',
+        );
+      }
       this.convertAxiosToExpress(axiosResponse, res);
+      const responseData = axiosResponse.data as NodeJS.ReadableStream;
+      responseData.pipe(res);
+      /*Wait for the stream to end before sending the response status and
+        headers. This ensures that the client receives a complete response and
+        prevents any issues with partial responses or response headers being
+        sent prematurely.*/
+      responseData.on('end', () => {
+        return null;
+      });
     }
 
     return axiosResponse.data as string;
