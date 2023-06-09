@@ -97,7 +97,6 @@ export class PdfService {
     const template = dmsDocument.toString(ENCODING_TYPE);
 
     return template;
-
   }
 
   /**

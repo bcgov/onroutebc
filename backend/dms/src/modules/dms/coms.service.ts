@@ -11,7 +11,6 @@ import { IFile } from '../../common/interface/file.interface';
 import { Response } from 'express';
 import { FileDownloadModes } from '../../common/enum/file-download-modes.enum';
 import { lastValueFrom, map } from 'rxjs';
-import { Stream } from 'stream';
 
 @Injectable()
 export class ComsService {
@@ -31,27 +30,17 @@ export class ComsService {
     s3ObjectId?: string,
   ): Promise<ReadCOMSDto[]> {
     // Extract necessary properties from the file
-    const { buffer, originalname, filename, mimetype } = file;
+    const { buffer, originalname, filename } = file;
 
     // Create a FormData object and append the file to it
     const fd = new FormData();
-    let headers: any;
-    if (mimetype === 'application/pdf') {
-      fd.append(
-        'file',
-        new Blob([buffer], { type: mimetype }),
-        filename ? filename : originalname,
-      );
-      headers = {
-        'Content-Type': 'application/pdf',
-      };
-    } else {
-      fd.append('file', new Blob([buffer]), filename ? filename : originalname);
-      headers = {
-        'Content-Type': 'multipart/form-data',
-        Accept: 'application/json',
-      };
-    }
+    fd.append('file', new Blob([buffer]), filename ? filename : originalname);
+
+    // Set the headers
+    const headers = {
+      'Content-Type': 'multipart/form-data',
+      Accept: 'application/json',
+    };
 
     // Set the request configuration
     const reqConfig: AxiosRequestConfig = {
@@ -102,8 +91,7 @@ export class ComsService {
     readFile: ReadFileDto,
     download = FileDownloadModes.URL,
     res?: Response,
-  ): Promise<ArrayBuffer | string> {
-    
+  ): Promise<string> {
     // Set the request configuration
     const reqConfig: AxiosRequestConfig = {
       auth: {
