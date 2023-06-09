@@ -71,8 +71,7 @@ export const EditVehicleDashboard = React.memo(
                     "",
                     applyWhenNotNullable(
                       (dateTimeStr: string) => toLocal(dateTimeStr, DATE_FORMATS.SHORT),
-                      vehicleToEdit?.updatedDateTime,
-                      undefined
+                      vehicleToEdit?.updatedDateTime
                     ),
                     applyWhenNotNullable(
                       (dateTimeStr: string) => toLocal(dateTimeStr, DATE_FORMATS.SHORT),
