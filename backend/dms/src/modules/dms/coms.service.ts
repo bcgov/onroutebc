@@ -36,15 +36,12 @@ export class ComsService {
     const fd = new FormData();
     fd.append('file', new Blob([buffer]), filename ? filename : originalname);
 
-    // Set the headers
-    const headers = {
-      'Content-Type': 'multipart/form-data',
-      Accept: 'application/json',
-    };
-
     // Set the request configuration
     const reqConfig: AxiosRequestConfig = {
-      headers: headers,
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        Accept: 'application/json',
+      },
       auth: {
         username: process.env.BASICAUTH_USERNAME,
         password: process.env.BASICAUTH_PASSWORD,
