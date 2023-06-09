@@ -77,7 +77,7 @@ export class PdfService {
     accessToken: string,
     templateRef: string,
   ): Promise<string> {
-    // The DMS service returns an HTTP 201 containing a direct, temporary pre-signed S3 object URL location
+    //The DMS service returns an HTTP 201 containing a direct, temporary pre-signed S3 object URL location
     const dmsDocument = await lastValueFrom(
       this.httpService.get(`${process.env.DMS_URL}/dms/${templateRef}`, {
         headers: { Authorization: accessToken },
@@ -93,22 +93,11 @@ export class PdfService {
         throw new BadRequestException();
       });
 
-    // const url = dmsDocument.preSignedS3Url;
-
-    // // From the url provided by DMS, get the array buffer of the template
-    // const templateArrayBuffer = await lastValueFrom(
-    //   this.httpService.get(url, {
-    //     responseType: CDOGS_RESPONSE_TYPE,
-    //   }),
-    // ).then((response) => {
-    //   return response.data as Buffer;
-    // });
-    // const template = templateArrayBuffer.toString(ENCODING_TYPE);
-
     // Decode array buffer to string
     const template = dmsDocument.toString(ENCODING_TYPE);
 
     return template;
+
   }
 
   /**
