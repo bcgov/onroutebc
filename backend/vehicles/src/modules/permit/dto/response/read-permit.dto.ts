@@ -69,4 +69,10 @@ export class ReadPermitDto {
     description: 'Permit updated Date and Time.',
   })
   updatedDateTime: string;
+
+  @AutoMap()
+  @ApiProperty({
+    description: 'Permit document ID.',
+  })
+  documentId: string;
 }

@@ -5,4 +5,6 @@ export interface DmsResponse {
   s3Location: string;
   objectMimeType: string;
   preSignedS3Url: string;
+  file?: Buffer;
+  fileName?: string;
 }

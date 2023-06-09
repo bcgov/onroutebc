@@ -56,7 +56,7 @@ export class ApplicationController {
   async createPermitApplication(
     @Body() createApplication: CreateApplicationDto,
   ): Promise<ReadApplicationDto> {
-    return await this.applicationService.create(createApplication);
+    return this.applicationService.create(createApplication);
   }
 
   @ApiOkResponse({
@@ -73,12 +73,12 @@ export class ApplicationController {
   ): Promise<ReadApplicationDto[]> {
     const currentUser = request.user as IUserJWT;
     if (currentUser.identity_provider == IDP.IDIR) {
-      return await this.applicationService.findAllApplicationCompany(
+      return this.applicationService.findAllApplicationCompany(
         companyId,
         status,
       );
     } else {
-      return await this.applicationService.findAllApplicationUser(
+      return this.applicationService.findAllApplicationUser(
         companyId,
         currentUser.userGUID,
         status,
@@ -96,7 +96,7 @@ export class ApplicationController {
     @Req() request: Request,
     @Param('permitId') permitId: string,
   ): Promise<ReadApplicationDto> {
-    return await this.applicationService.findApplication(permitId);
+    return this.applicationService.findApplication(permitId);
   }
 
   @ApiOkResponse({
