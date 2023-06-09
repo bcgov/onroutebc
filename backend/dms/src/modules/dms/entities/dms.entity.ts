@@ -43,7 +43,7 @@ export class Dms extends Base {
     example: 'text/plain',
     description: 'The object MIME Type.',
   })
-  @Column({ length: '50', name: 'OBJECT_MIME_TYPE', nullable: false })
+  @Column({ length: '200', name: 'OBJECT_MIME_TYPE', nullable: false })
   objectMimeType: string;
 
   @AutoMap()

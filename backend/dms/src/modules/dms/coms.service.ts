@@ -30,11 +30,15 @@ export class ComsService {
     s3ObjectId?: string,
   ): Promise<ReadCOMSDto[]> {
     // Extract necessary properties from the file
-    const { buffer, originalname, filename } = file;
+    const { buffer, originalname, filename, mimetype } = file;
 
     // Create a FormData object and append the file to it
     const fd = new FormData();
-    fd.append('file', new Blob([buffer]), filename ? filename : originalname);
+    fd.append(
+      'file',
+      new Blob([buffer], { type: mimetype }),
+      filename ? filename : originalname,
+    );
 
     // Set the request configuration
     const reqConfig: AxiosRequestConfig = {

@@ -87,6 +87,8 @@ export class DmsController {
 
     const readCOMSDtoList = await this.comsService.createObject(file);
 
+    console.log(readCOMSDtoList);
+
     if (!readCOMSDtoList?.length) {
       throw new InternalServerErrorException();
     }
