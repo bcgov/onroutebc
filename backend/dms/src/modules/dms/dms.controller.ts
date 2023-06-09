@@ -161,13 +161,9 @@ export class DmsController {
   ) {
     const file = await this.dmsService.findOne(documentId);
 
-    if (download === FileDownloadModes.PROXY) {     
-      const fileObject = await this.comsService.getObject(
-        file,
-        FileDownloadModes.PROXY,
-        res,
-      );
-      res.status(200).send(fileObject);
+    if (download === FileDownloadModes.PROXY) {
+      await this.comsService.getObject(file, FileDownloadModes.PROXY, res);
+      res.status(200);
     } else {
       const url = await this.comsService.getObject(file, FileDownloadModes.URL);
       file.preSignedS3Url = url;

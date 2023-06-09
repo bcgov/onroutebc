@@ -4,3 +4,8 @@ export enum PdfReturnType {
   PRESIGNED_URL = 'PRESIGNED_URL',
   S3_OBJ_ID = 'S3_OBJ_ID',
 }
+
+export enum DownloadMode {
+  URL = 'url',
+  PROXY = 'proxy',
+}
