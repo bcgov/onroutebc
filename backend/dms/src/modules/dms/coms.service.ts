@@ -91,26 +91,6 @@ export class ComsService {
   }
 
   /**
-   * Creates a file from a stream of data.
-   * @param data - The stream of data to create a file from.
-   * @returns A Promise resolving to a Buffer representing the created file.
-   */
-  private async createFile(data: Stream) {
-    // Read the stream data and concatenate all chunks into a single Buffer
-    const streamReadPromise = new Promise<Buffer>((resolve) => {
-      const chunks: Buffer[] = [];
-      data.on('data', (chunk: Buffer) => {
-        chunks.push(Buffer.from(chunk));
-      });
-      data.on('end', () => {
-        resolve(Buffer.concat(chunks));
-      });
-    });
-    // Return the Promise that resolves to the created file Buffer
-    return streamReadPromise;
-  }
-
-  /**
    * Retrieves an object from COMS.
    * @param readFile - The {@link ReadFileDto} object containing the information
    *                   about the file to be retrieved.
@@ -144,25 +124,6 @@ export class ComsService {
       process.env.COMS_URL
     }object/${readFile.s3ObjectId?.toLowerCase()}`;
 
-
-    if (download === FileDownloadModes.PROXY) {
-      const axiosResponse = await lastValueFrom(
-        this.httpService.get(url, {
-          params: { download: download },
-          ...reqConfig,
-          responseType: 'stream',
-        }),
-      )
-        .then(async (response) => {
-          return await this.createFile(response.data);
-        })
-        .catch((error) => {
-          console.log('COMS getObject proxy error: ', error);
-          throw new InternalServerErrorException();
-        });
-
-      return axiosResponse;
-    }
     // Send the GET request to retrieve the object and retrieve the response
     const axiosResponse = await lastValueFrom(
       this.httpService.get(url, { params, ...reqConfig }).pipe(
