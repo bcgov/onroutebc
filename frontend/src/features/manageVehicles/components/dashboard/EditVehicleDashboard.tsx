@@ -14,18 +14,25 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getVehicleById } from "../../apiManager/vehiclesAPI";
 import { PowerUnit, Trailer } from "../../types/managevehicles";
+import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../../common/helpers/util";
+import { DATE_FORMATS, toLocal } from "../../../../common/helpers/formatDate";
 
 export const EditVehicleDashboard = React.memo(
   ({ editVehicleMode }: { editVehicleMode: VEHICLE_TYPES_ENUM }) => {
     const navigate = useNavigate();
     const { vehicleId } = useParams();
 
+    const isEditPowerUnit = (editVehicleMode: VEHICLE_TYPES_ENUM) => 
+      editVehicleMode === VEHICLE_TYPES_ENUM.POWER_UNIT;
+    const isEditTrailer = (editVehicleMode: VEHICLE_TYPES_ENUM) => 
+      editVehicleMode === VEHICLE_TYPES_ENUM.TRAILER;
+    
     const { data: vehicleToEdit, isLoading } = useQuery(
       ["vehicleById", vehicleId],
       () =>
         getVehicleById(
           vehicleId as string,
-          editVehicleMode === VEHICLE_TYPES_ENUM.POWER_UNIT
+          isEditPowerUnit(editVehicleMode)
             ? "powerUnit"
             : "trailer"
         ),
@@ -34,21 +41,6 @@ export const EditVehicleDashboard = React.memo(
 
     const handleShowAddVehicle = () => {
       navigate("../");
-    };
-
-    /**
-     * Formats a given ISO date string into a user-friendly format.
-     * @param dateString The date value as a string
-     * @returns The formatted date. E.g.: Apr 17, 2023.
-     *          Empty string if the date is undefined or null
-     */
-    const formatDate = (dateString: string | undefined | null): string => {
-      if (!dateString) return "";
-      return new Intl.DateTimeFormat("default", {
-        day: "2-digit",
-        month: "short",
-        year: "numeric",
-      }).format(new Date(dateString));
     };
 
     return (
@@ -60,35 +52,34 @@ export const EditVehicleDashboard = React.memo(
             borderColor: "divider",
           }}
         >
-          {editVehicleMode === VEHICLE_TYPES_ENUM.POWER_UNIT && (
+          {(isEditPowerUnit(editVehicleMode) || isEditTrailer(editVehicleMode)) && (
             <Banner
-              bannerText={"Edit Power Unit"}
+              bannerText={`Edit ${isEditPowerUnit(editVehicleMode) ? "Power Unit" : "Trailer"}`}
               // Replace with a grid structure
               bannerSubtext={
                 <div>
                   <strong>Date Created:</strong>
                   &nbsp;
-                  {formatDate(vehicleToEdit?.createdDateTime)}
+                  {applyWhenNotNullable(
+                    (dateTimeStr: string) => toLocal(dateTimeStr, DATE_FORMATS.SHORT),
+                    vehicleToEdit?.createdDateTime,
+                    ""
+                  )}
                   &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
                   <strong>Last Updated:</strong>&nbsp;{" "}
-                  {formatDate(vehicleToEdit?.createdDateTime)}
-                </div>
-              }
-              extendHeight={true}
-            />
-          )}
-          {editVehicleMode === VEHICLE_TYPES_ENUM.TRAILER && (
-            <Banner
-              bannerText={"Edit Trailer"}
-              // Replace with a grid structure
-              bannerSubtext={
-                <div>
-                  <strong>Date Created:</strong>
-                  &nbsp;
-                  {formatDate(vehicleToEdit?.createdDateTime)}
-                  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-                  <strong>Last Updated:</strong>&nbsp;{" "}
-                  {formatDate(vehicleToEdit?.createdDateTime)}
+                  {getDefaultRequiredVal(
+                    "",
+                    applyWhenNotNullable(
+                      (dateTimeStr: string) => toLocal(dateTimeStr, DATE_FORMATS.SHORT),
+                      vehicleToEdit?.updatedDateTime,
+                      undefined
+                    ),
+                    applyWhenNotNullable(
+                      (dateTimeStr: string) => toLocal(dateTimeStr, DATE_FORMATS.SHORT),
+                      vehicleToEdit?.createdDateTime,
+                      ""
+                    )
+                  )}
                 </div>
               }
               extendHeight={true}

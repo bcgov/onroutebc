@@ -29,7 +29,7 @@ export const ApplicationInProgressColumnDefinition: MRT_ColumnDef<ApplicationInP
     header: "Plate",
   },
   {
-    accessorKey: "startDate",
+    accessorKey: "permitData.startDate",
     header: "Permit Start Date",
   },
   {

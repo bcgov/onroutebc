@@ -24,7 +24,7 @@ import { UseQueryResult } from "@tanstack/react-query";
 import DeleteConfirmationDialog from "../../../manageVehicles/components/list/ConfirmationDialog";
 import { SnackBarContext } from "../../../../App";
 import { ApplicationInProgress, PermitApplicationInProgress} from "../../types/application";
-import { ApplicationInProgressColumnDefinition, ApplicationNotFoundColumnDefinition} from "./Columns";
+import { ApplicationInProgressColumnDefinition } from "./Columns";
 import { deleteApplications } from "../../apiManager/permitsAPI";
 
 /**
@@ -35,11 +35,6 @@ const getColumns = (
 ): MRT_ColumnDef<ApplicationInProgress>[] => {
   return ApplicationInProgressColumnDefinition;
 };
-
-const getNotFound = (
-  ): MRT_ColumnDef<ApplicationInProgress>[] => {
-    return ApplicationNotFoundColumnDefinition;
-  };
 
 /*
  *

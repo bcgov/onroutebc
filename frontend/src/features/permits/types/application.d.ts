@@ -101,20 +101,19 @@ export interface TermOversizeApplication {
   mailingAddress: MailingAddress;
 }
 
-export interface PermitApplicationInProgress extends Application {
-  permitId: string
+export interface PermitApplicationInProgress {
   applicationNumber: string;
+  companyId: number;
+  createdDateTime: string;
+  permitApplicationOrigin?: string | null;
+  permitApprovalSource?: string | null;
+  permitData: ReplaceDayjsWithString<TermOversizeApplication>;
+  permitId: string
+  permitNumber?: string | null;
+  permitStatus: "IN_PROGRESS";
   permitType: string;
-  startDate: Dayjs;
-  updatedDateTime: Dayjs;
-  permitData: {
-    startDate: Dayjs;
-    vehicleDetails: {
-      unitNumber: string;
-      vin: string;
-      plate: string;
-    };
-  };
+  updatedDateTime: string;
+  userGuid: string;
 }
 
 export type ApplicationInProgress = PermitApplicationInProgress;

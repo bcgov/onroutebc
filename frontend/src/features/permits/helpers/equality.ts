@@ -5,7 +5,7 @@ import {
   VehicleDetails as VehicleDetailsType,
   ContactDetails as ContactDetailsType,
 } from "../types/application";
-import { dayjsToLocalStr } from "../../../common/helpers/formatDate";
+import { DATE_FORMATS, dayjsToLocalStr } from "../../../common/helpers/formatDate";
 
 /**
  * Compare whether or not two contact details are equal.
@@ -81,8 +81,8 @@ const areVehicleDetailsEqual = (vehicleDetails1?: VehicleDetailsType, vehicleDet
  */
 export const areApplicationDataEqual = (data1: TermOversizeApplication, data2: TermOversizeApplication) => {
   return data1.permitDuration === data2.permitDuration
-    && dayjsToLocalStr(data1.startDate) === dayjsToLocalStr(data2.startDate)
-    && dayjsToLocalStr(data1.expiryDate) === dayjsToLocalStr(data2.expiryDate)
+    && dayjsToLocalStr(data1.startDate, DATE_FORMATS.DATEONLY) === dayjsToLocalStr(data2.startDate, DATE_FORMATS.DATEONLY)
+    && dayjsToLocalStr(data1.expiryDate, DATE_FORMATS.DATEONLY) === dayjsToLocalStr(data2.expiryDate, DATE_FORMATS.DATEONLY)
     && areContactDetailsEqual(data1.contactDetails, data2.contactDetails)
     && areVehicleDetailsEqual(data1.vehicleDetails, data2.vehicleDetails)
     && areCommoditiesEqual(data1.commodities, data2.commodities);

@@ -8,10 +8,10 @@ import {
   httpPOSTRequest,
 } from "../../../common/apiManager/httpRequestHandler";
 
-import { replaceEmptyValuesWithNull } from "../../../common/helpers/util";
+import { getDefaultRequiredVal, replaceEmptyValuesWithNull } from "../../../common/helpers/util";
 import { Application, ApplicationResponse, PermitApplicationInProgress } from "../types/application";
 import { APPLICATION_UPDATE_STATUS_API, PERMITS_API, VEHICLE_URL } from "./endpoints/endpoints";
-import { formatDate } from "../../../common/helpers/formatDate";
+import { DATE_FORMATS, toLocal } from "../../../common/helpers/formatDate";
 import { mapApplicationToApplicationRequestData } from "../helpers/mappers";
 
 /**
@@ -61,53 +61,32 @@ export const getApplicationsInProgress = async (): Promise<
 > => {
   const applicationsUrl = `${VEHICLE_URL}/permits/applications?companyId=${getCompanyIdFromSession()}&userGUID=${getUserGuidFromSession()}&status=IN_PROGRESS`;
   const applications = await httpGETRequest(applicationsUrl).then(
-    (response) => response.data
-  );
-  if (applications.length > 0) {
-    applications.forEach(
-      (a: {
-        unitNumber: any;
-        permitData: any;
-        vehicleDetails: any;
-        plate: any;
-        permitType: any;
-        startDate: any;
-        updatedDateTime: any;
-        vehicleType: any;
-      }) => {
-        if (a.permitType === "TROS") {
-          a.permitType = "Term Oversize";
-        } else if (a.permitType === "STOS") {
-          a.permitType = "Single Trip Oversize";
+    (response) => (getDefaultRequiredVal([], response.data) as PermitApplicationInProgress[])
+      .map(application => {
+        let permitType = "";
+        switch (application.permitType) {
+          case "TROS":
+            permitType = "Term Oversize";
+            break;
+          case "STOS":
+          default:
+            permitType = "Single Trip Oversize";
+            break;
         }
 
-        const startDateFormatter = new Intl.DateTimeFormat("en-US", {
-          month: "long",
-          day: "numeric",
-          year: "numeric",
-        });
-        const startDateFormattedStr = formatDate(
-          startDateFormatter,
-          a.permitData.startDate
-        );
-        a.startDate = startDateFormattedStr;
-
-        const updatedDateTimeFormatter = new Intl.DateTimeFormat("en-US", {
-          month: "short",
-          day: "numeric",
-          year: "numeric",
-          hour: "numeric",
-          minute: "numeric",
-          timeZoneName: "short",
-        });
-        const updatedDateTimeFormattedStr = formatDate(
-          updatedDateTimeFormatter,
-          a.updatedDateTime
-        );
-        a.updatedDateTime = updatedDateTimeFormattedStr;
-      }
-    );
-  }
+        return {
+          ...application,
+          permitType,
+          createdDateTime: toLocal(application.createdDateTime, DATE_FORMATS.DATETIME_LONG_TZ),
+          updatedDateTime: toLocal(application.updatedDateTime, DATE_FORMATS.DATETIME_LONG_TZ),
+          permitData: {
+            ...application.permitData,
+            startDate: toLocal(application.permitData.startDate, DATE_FORMATS.DATEONLY_SHORT_NAME),
+            expiryDate: toLocal(application.permitData.startDate, DATE_FORMATS.DATEONLY_SHORT_NAME),
+          }
+        } as PermitApplicationInProgress;
+      })
+  );
   return applications;
 };
 
