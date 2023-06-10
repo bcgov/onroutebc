@@ -142,9 +142,11 @@ export const deleteApplications = (
  * @param permitId permit id of the permit application.
  * @returns A Promise of dms reference string.
  */
-export const viewPermitApplicationPdf = (
-  permitId: number,
-): Promise<string> => {
-  const url = `${APPLICATION_PDF_API}/${permitId}`;
-  return httpGETRequest(url).then(response => response.data);
+export const downloadPermitApplicationPdf = (
+  permitId: number | undefined,
+): Promise<any> => {
+  const url = `${APPLICATION_PDF_API}/${permitId}?download=proxy`;
+  return httpGETRequest(url).then((response) => {
+    return response;
+  });
 };

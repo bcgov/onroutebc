@@ -134,7 +134,7 @@ const PayBC = ({
 
 const FeeSummary = ({ calculatedFee }: { calculatedFee: number }) => {
   const navigate = useNavigate();
-
+  const { applicationData } = useContext(ApplicationContext);
   return (
     <Box
       className="payment--fee-summary"
@@ -194,7 +194,7 @@ const FeeSummary = ({ calculatedFee }: { calculatedFee: number }) => {
         variant="contained"
         sx={{ width: "100%" }}
         onClick={() => {
-          navigate("/applications/success");
+          navigate(`/applications/success/${applicationData?.permitId}`);
         }}
       >
         Pay Now

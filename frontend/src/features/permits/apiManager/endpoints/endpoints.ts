@@ -7,4 +7,4 @@ export const PERMITS_API = {
 
 export const APPLICATION_UPDATE_STATUS_API = `${VEHICLE_URL}/permits/applications/status`;
 
-export const APPLICATION_PDF_API = `${VEHICLE_URL}/applications/pdf`;
+export const APPLICATION_PDF_API = `${VEHICLE_URL}/permit/pdf`;

@@ -92,7 +92,11 @@ export class PermitController {
         'Content-Type': 'application/pdf',
         'Content-Disposition': `attachment; filename=${document.fileName}.pdf`,
       });
-      response.send(document.file);
+      // Convert the PDF data to base64 to avoid byte shaving
+      // It is critical to assure that the server sends the data in Base64 encoding, 
+      // otherwise the client side can't deserialize the PDF string back to the binary format.
+      const base64Data = document.file.toString('base64');
+      response.send(base64Data);
       return;
     }
 

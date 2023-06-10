@@ -41,7 +41,9 @@ async function bootstrap() {
       validationError: { target: false },
     }),
   );
-  app.enableCors();
+  app.enableCors({
+    exposedHeaders: ['Content-Disposition'],
+  });
   const config = new DocumentBuilder()
     .setTitle('Vehicles API')
     .setDescription('The vehicles API description')
