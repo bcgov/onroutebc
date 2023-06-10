@@ -1,4 +1,14 @@
-import { Controller, Post, Body, Req } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Req,
+  Get,
+  Param,
+  HttpException,
+  Query,
+  Res,
+} from '@nestjs/common';
 import { PermitService } from './permit.service';
 import { ExceptionDto } from '../../common/exception/exception.dto';
 import {
@@ -7,23 +17,29 @@ import {
   ApiMethodNotAllowedResponse,
   ApiInternalServerErrorResponse,
   ApiCreatedResponse,
+  ApiBearerAuth,
+  ApiQuery,
 } from '@nestjs/swagger';
 import { Public } from '../../common/decorator/public.decorator';
 import { CreatePermitDto } from './dto/request/create-permit.dto';
 import { ReadPermitDto } from './dto/response/read-permit.dto';
-import { Request } from 'express';
+import { Request, Response } from 'express';
+import { AuthOnly } from 'src/common/decorator/auth-only.decorator';
+import { ReadPdfDto } from './dto/response/read-pdf.dto';
+import { DownloadMode } from 'src/common/enum/pdf.enum';
 
+@ApiBearerAuth()
 @ApiTags('Permit')
 @ApiNotFoundResponse({
-  description: 'The User Api Not Found Response',
+  description: 'The Permit Api Not Found Response',
   type: ExceptionDto,
 })
 @ApiMethodNotAllowedResponse({
-  description: 'The User Api Method Not Allowed Response',
+  description: 'The Permit Api Method Not Allowed Response',
   type: ExceptionDto,
 })
 @ApiInternalServerErrorResponse({
-  description: 'The User Api Internal Server Error Response',
+  description: 'The Permit Api Internal Server Error Response',
   type: ExceptionDto,
 })
 @Controller('permit')
@@ -40,6 +56,53 @@ export class PermitController {
     @Req() request: Request,
     @Body() createPermitDto: CreatePermitDto,
   ): Promise<ReadPermitDto> {
-    return await this.permitService.create(createPermitDto);
+    return this.permitService.create(createPermitDto);
+  }
+
+  @AuthOnly()
+  @Get('/pdf/:permitId')
+  @ApiQuery({
+    name: 'download',
+    required: false,
+    example: 'download=proxy',
+    enum: DownloadMode,
+    description:
+      'Download mode behavior.' +
+      'If proxy is specified, the object contents will be available proxied through DMS.' +
+      'If url is specified, expect an HTTP 201 cotaining the presigned URL as a JSON string in the response.',
+  })
+  async getPDF(
+    @Req() request: Request,
+    @Param('permitId') permitId: string,
+    @Query('download') download: DownloadMode,
+    @Res() response: Response,
+  ): Promise<void> {
+    // TODO: Use IUserJWT / Exception handling
+    const accessToken = request.headers.authorization;
+    if (!accessToken) throw new HttpException('Unauthorized', 401);
+
+    const document = await this.permitService.findPDFbyPermitId(
+      accessToken,
+      permitId,
+      download,
+    );
+
+    if (download === DownloadMode.PROXY) {
+      response.set({
+        'Content-Type': 'application/pdf',
+        'Content-Disposition': `attachment; filename=${document.fileName}.pdf`,
+      });
+      response.send(document.file);
+      return;
+    }
+
+    const readPdfDto: ReadPdfDto = {
+      documentId: document.documentId,
+      document: document.preSignedS3Url,
+    };
+    response.set({
+      'Content-Type': 'application/json',
+    });
+    response.send(readPdfDto);
   }
 }

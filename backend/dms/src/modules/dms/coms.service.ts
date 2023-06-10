@@ -30,11 +30,15 @@ export class ComsService {
     s3ObjectId?: string,
   ): Promise<ReadCOMSDto[]> {
     // Extract necessary properties from the file
-    const { buffer, originalname, filename } = file;
+    const { buffer, originalname, filename, mimetype } = file;
 
     // Create a FormData object and append the file to it
     const fd = new FormData();
-    fd.append('file', new Blob([buffer]), filename ? filename : originalname);
+    fd.append(
+      'file',
+      new Blob([buffer], { type: mimetype }),
+      filename ? filename : originalname,
+    );
 
     // Set the request configuration
     const reqConfig: AxiosRequestConfig = {
@@ -69,7 +73,7 @@ export class ComsService {
         return response.data as ReadCOMSDto[];
       })
       .catch((error) => {
-        console.log(error);
+        console.log('createObject error: ', error);
         throw new InternalServerErrorException();
       });
 
@@ -81,7 +85,7 @@ export class ComsService {
    * @param readFile - The {@link ReadFileDto} object containing the information
    *                   about the file to be retrieved.
    * @param download - The file download mode - {@link FileDownloadModes}.
-   * @returns A Promise that resolves to a string representing the retrieved
+   * @returns A Promise that resolves to a string (url) or ArrayBuffer (proxy) representing the retrieved
    *          object.
    */
   async getObject(
@@ -95,6 +99,7 @@ export class ComsService {
         username: process.env.BASICAUTH_USERNAME,
         password: process.env.BASICAUTH_PASSWORD,
       },
+      responseType: download === FileDownloadModes.PROXY ? 'stream' : 'json',
     };
 
     // Set the request parameters
@@ -102,6 +107,7 @@ export class ComsService {
       download: download,
       expiresIn: process.env.COMS_PRESIGNED_URL_EXPIRY,
     };
+
     // Construct the URL for the request
     const url = `${
       process.env.COMS_URL
@@ -119,14 +125,27 @@ export class ComsService {
         return response;
       })
       .catch((error) => {
-        console.log(error);
+        console.log('COMS getObject url Error: ', error);
         throw new InternalServerErrorException();
       });
 
-    if (res) {
+    if (download === FileDownloadModes.PROXY) {
+      if (!res) {
+        throw new InternalServerErrorException(
+          'Response Parameter is required when DownloadMode is proxy.',
+        );
+      }
       this.convertAxiosToExpress(axiosResponse, res);
+      const responseData = axiosResponse.data as NodeJS.ReadableStream;
+      responseData.pipe(res);
+      /*Wait for the stream to end before sending the response status and
+        headers. This ensures that the client receives a complete response and
+        prevents any issues with partial responses or response headers being
+        sent prematurely.*/
+      responseData.on('end', () => {
+        return null;
+      });
     }
-
     return axiosResponse.data as string;
   }
 

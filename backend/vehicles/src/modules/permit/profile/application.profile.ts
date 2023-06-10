@@ -17,6 +17,7 @@ export class ApplicationProfile extends AutomapperProfile {
   constructor(@InjectMapper() mapper: Mapper) {
     super(mapper);
   }
+
   override get profile() {
     return (mapper: Mapper) => {
       createMap(

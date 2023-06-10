@@ -1,6 +1,6 @@
 import { Mapper } from '@automapper/core';
 import { InjectMapper } from '@automapper/nestjs';
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import {  ForbiddenException, HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ApplicationStatus } from 'src/common/enum/application-status.enum';
 import { DataSource, IsNull, Repository } from 'typeorm';
@@ -13,8 +13,8 @@ import { PdfService } from '../pdf/pdf.service';
 import { PermitApplicationOrigin } from './entities/permit-application-origin.entity';
 import { PermitApprovalSource } from './entities/permit-approval-source.entity';
 import { IDP } from 'src/common/enum/idp.enum';
+import { PdfReturnType } from 'src/common/enum/pdf.enum';
 import { PermitApplicationOrigin as PermitApplicationOriginEnum } from 'src/common/enum/permit-application-origin.enum';
-import { PdfReturnType } from 'src/common/enum/pdf-return-type.enum';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
 import { PermitApprovalSource as PermitApprovalSourceEnum } from 'src/common/enum/permit-approval-source.enum';
 import { callDatabaseSequence } from 'src/common/helper/database.helper';
@@ -96,6 +96,7 @@ export class ApplicationService {
       },
     });
   }
+
   /* Get single application By Permit ID*/
   async findApplication(permitId: string): Promise<ReadApplicationDto> {
     const application = await this.findOne(permitId);
@@ -130,6 +131,7 @@ export class ApplicationService {
       ReadApplicationDto,
     );
   }
+
   /*Get all application in progress for a specific user of a specific company.
     Initially written to facilitate get application in progress for company User. */
   async findAllApplicationUser(
@@ -285,22 +287,38 @@ export class ApplicationService {
 
   /**
    * Generates PDF's of supplied permit ID's
-   * If the status is updated to 'APPROVED' or 'AUTO-APPROVED', then create pdf and store it in DMS
+   * If the status is updated to 'ISSUED', then create pdf, store it in DMS, then update permit record with dms document ID
+   * @param accessToken the access token for authorization.
    * @param permitIds array of permit ID's to be converted as PDF's and saved in DMS
    */
-  async generatePDFs(access_token: string, permitIds: string[]) {
+  async generatePDFs(accessToken: string, permitIds: string[]) {
     for (const id of permitIds) {
       const permit = await this.findOne(id);
+      // Generate PDF only if the permit status is 'ISSUED'
       if (permit.permitStatus === ApplicationStatus.ISSUED) {
+        // Check if a PDF document already exists for the permit.
+        // It's important that a PDF does not get overwritten.
+        // Once its created, it is a permanent legal document.
+        if (permit.documentId) {
+          throw new HttpException('Document already exists', 409);
+        }
         // DMS Reference ID for the generated PDF of the Permit
         // TODO: write helper to determine 'latest' template version
         const dmsDocumentId: string = await this.pdfService.generatePDF(
-          access_token,
+          accessToken,
           permit,
           1,
           PdfReturnType.DMS_DOC_ID,
         );
-        // TODO: handle the DMS reference
+
+        // Update Permit record with the new DMS Document ID
+        await this.permitRepository
+          .createQueryBuilder()
+          .update()
+          .set({ documentId: dmsDocumentId })
+          .whereInIds(permit.permitId)
+          .execute();
+
         console.log('Completed pdf generation');
         console.log('DMS Document Id: ', dmsDocumentId);
       }
