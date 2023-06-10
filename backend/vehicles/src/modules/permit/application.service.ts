@@ -1,6 +1,6 @@
 import { Mapper } from '@automapper/core';
 import { InjectMapper } from '@automapper/nestjs';
-import {  ForbiddenException, HttpException, Injectable } from '@nestjs/common';
+import { ForbiddenException, HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ApplicationStatus } from 'src/common/enum/application-status.enum';
 import { DataSource, IsNull, Repository } from 'typeorm';
@@ -391,7 +391,7 @@ export class ApplicationService {
    *
    */
   private async getPermitApplicationOrigin(
-    permitApplicationOrigin: string,
+    permitApplicationOrigin: PermitApplicationOriginEnum,
   ): Promise<string> {
     const applicationOrigin =
       await this.permitApplicationOriginRepository.findOne({
