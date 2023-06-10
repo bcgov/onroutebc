@@ -49,8 +49,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       companyId = +req.params['companyId'];
     } else if (req.query['companyId']) {
       companyId = +req.query['companyId'];
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     } else if (req.body.companyId) {
-      companyId = req.body.companyId;
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      companyId = req.body.companyId as number;
     }
 
     if (payload.identity_provider === IDP.IDIR) {

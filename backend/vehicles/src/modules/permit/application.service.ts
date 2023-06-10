@@ -234,13 +234,12 @@ export class ApplicationService {
       else if (
         applicationStatus === ApplicationStatus.APPROVED ||
         applicationStatus === ApplicationStatus.AUTO_APPROVED
-      ){
-        if(currentUser.identity_provider == IDP.IDIR)
-        permitApprovalSource = PermitApprovalSourceEnum.PPC;
+      ) {
+        if (currentUser.identity_provider == IDP.IDIR)
+          permitApprovalSource = PermitApprovalSourceEnum.PPC;
         else if (currentUser.identity_provider == IDP.BCEID)
-        permitApprovalSource = PermitApprovalSourceEnum.AUTO;
+          permitApprovalSource = PermitApprovalSourceEnum.AUTO;
       }
-       
     } else if (
       applicationIds.length > 1 &&
       applicationStatus != ApplicationStatus.CANCELLED

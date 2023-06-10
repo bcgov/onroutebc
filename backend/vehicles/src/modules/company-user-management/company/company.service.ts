@@ -73,8 +73,6 @@ export class CompanyService {
         currentUser,
       );
 
-      console.log('New Company', newCompany);
-
       newCompany = await queryRunner.manager.save(newCompany);
 
       let user = this.classMapper.map(

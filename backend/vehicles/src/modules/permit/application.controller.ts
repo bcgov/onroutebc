@@ -109,7 +109,7 @@ export class ApplicationController {
    * Else also allow bulk cancellation for applications.
    * @param request
    * @param permitId
-   * @param companyId
+   * @param companyId for authorization
    */
   @ApiOkResponse({
     description: 'The Permit Application Resource',
@@ -121,7 +121,6 @@ export class ApplicationController {
   async findOneApplication(
     @Req() request: Request,
     @Param('permitId') permitId: string,
-    @Query('companyId') companyId?: number,
   ): Promise<ReadApplicationDto> {
     return await this.applicationService.findApplication(permitId);
   }
