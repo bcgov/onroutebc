@@ -44,6 +44,14 @@ export class Permit extends Base {
   @AutoMap()
   @ApiProperty({
     example: '1',
+    description: 'Represents the previous permit id for a revised permit.',
+  })
+  @Column({ type: 'integer', name: 'PREVIOUS_REV_ID', nullable: true })
+  previousRevision: number;
+
+  @AutoMap()
+  @ApiProperty({
+    example: '1',
     description: 'GUID of the user requesting the permit.',
   })
   @Column({ length: 32, name: 'OWNER_USER_GUID', nullable: true })

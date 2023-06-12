@@ -17,6 +17,8 @@ import { IUserJWT } from '../../../common/interface/user-jwt.interface';
 import { CreateUserDto } from '../users/dto/request/create-user.dto';
 import { User } from '../users/entities/user.entity';
 import { CompanyUser } from '../users/entities/company-user.entity';
+import { callDatabaseSequence } from 'src/common/helper/database.helper';
+import { randomInt } from 'crypto';
 
 @Injectable()
 export class CompanyService {
@@ -61,8 +63,14 @@ export class CompanyService {
           extraArgs: () => ({
             directory: directory,
             companyGUID: currentUser.bceid_business_guid,
+            accountSource: currentUser.accountSource,
           }),
         },
+      );
+
+      newCompany.clientNumber = await this.generateClientNumber(
+        newCompany,
+        currentUser,
       );
 
       newCompany = await queryRunner.manager.save(newCompany);
@@ -263,5 +271,29 @@ export class CompanyService {
     const updatedCompany = await this.companyRepository.save(newCompany);
 
     return this.findOne(updatedCompany.companyId);
+  }
+
+  /**
+   * Generates clientNumber for the newly created company.
+   * @param company
+   *
+   */
+  private async generateClientNumber(
+    company: Company,
+    currentUser: IUserJWT,
+  ): Promise<string> {
+    const rnd = randomInt(100, 1000);
+    const seq = await callDatabaseSequence(
+      'dbo.ORBC_CLIENT_NUMBER_SEQ',
+      this.dataSource,
+    );
+    const clientNumber =
+      company.accountRegion +
+      currentUser.accountSource +
+      '-' +
+      seq.padStart(6, '0') +
+      '-' +
+      String(rnd);
+    return clientNumber;
   }
 }

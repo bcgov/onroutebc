@@ -63,6 +63,12 @@ export class ApplicationProfile extends AutomapperProfile {
           }),
         ),
         forMember(
+          (d) => d.previousRevision,
+          mapWithArguments((source, { previousRevision }) => {
+            return previousRevision;
+          }),
+        ),
+        forMember(
           (d) => d.permitData.permitDataId,
           mapWithArguments((source, { permitDataId }) => {
             return permitDataId;

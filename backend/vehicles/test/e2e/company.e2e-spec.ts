@@ -32,6 +32,7 @@ import { ContactProfile } from '../../src/modules/common/profiles/contact.profil
 import { CompanyProfile } from '../../src/modules/company-user-management/company/profiles/company.profile';
 import { UsersProfile } from '../../src/modules/company-user-management/users/profiles/user.profile';
 import * as constants from '../util/mocks/data/test-data.constants';
+import * as databaseHelper from 'src/common/helper/database.helper';
 
 let repo: DeepMocked<Repository<Company>>;
 
@@ -68,6 +69,11 @@ describe('Company (e2e)', () => {
   describe('/companies CREATE', () => {
     it('should create a new Company.', async () => {
       repo.findOne.mockResolvedValue(redCompanyEntityMock);
+      jest
+        .spyOn(databaseHelper, 'callDatabaseSequence')
+        .mockImplementation(async () => {
+          return Promise.resolve('000005');
+        });
       const response = await request(app.getHttpServer())
         .post('/companies')
         .send(createRedCompanyDtoMock)

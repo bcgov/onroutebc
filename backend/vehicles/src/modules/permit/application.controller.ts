@@ -29,6 +29,8 @@ import { UpdateApplicationDto } from './dto/request/update-application.dto';
 import { DataNotFoundException } from 'src/common/exception/data-not-found.exception';
 import { UpdateApplicationStatusDto } from './dto/request/update-application-status.dto';
 import { ResultDto } from './dto/response/result.dto';
+import { Roles } from 'src/common/decorator/roles.decorator';
+import { Role } from 'src/common/enum/roles.enum';
 
 @ApiBearerAuth()
 @ApiTags('Permit Application')
@@ -47,23 +49,38 @@ import { ResultDto } from './dto/response/result.dto';
 })
 export class ApplicationController {
   constructor(private readonly applicationService: ApplicationService) {}
-
+  /**
+   * Create Permit application
+   * @param request
+   * @param createApplication
+   */
   @ApiCreatedResponse({
     description: 'The Permit Application Resource',
     type: ReadApplicationDto,
   })
+  @Roles(Role.WRITE_PERMIT)
   @Post()
   async createPermitApplication(
+    @Req() request: Request,
     @Body() createApplication: CreateApplicationDto,
   ): Promise<ReadApplicationDto> {
-    return this.applicationService.create(createApplication);
+    const currentUser = request.user as IUserJWT;
+    return await this.applicationService.create(createApplication, currentUser);
   }
 
+  /**
+   * Find all application for given status of a company for current logged in user
+   * @param request
+   * @param companyId
+   * @param userGUID
+   * @param status
+   */
   @ApiOkResponse({
     description: 'The Permit Application Resource',
     type: ReadApplicationDto,
     isArray: true,
   })
+  @Roles(Role.READ_PERMIT)
   @Get()
   async findAllApplication(
     @Req() request: Request,
@@ -86,11 +103,20 @@ export class ApplicationController {
     }
   }
 
+  /**
+   * Update Applications status to given status.
+   * If status is not cancellation the can only update one application at a time.
+   * Else also allow bulk cancellation for applications.
+   * @param request
+   * @param permitId
+   * @param companyId for authorization
+   */
   @ApiOkResponse({
     description: 'The Permit Application Resource',
     type: ReadApplicationDto,
     isArray: true,
   })
+  @Roles(Role.READ_PERMIT)
   @Get(':permitId')
   async findOneApplication(
     @Req() request: Request,
@@ -103,6 +129,7 @@ export class ApplicationController {
     description: 'The Permit Application Resource',
     type: ReadApplicationDto,
   })
+  @Roles(Role.WRITE_PERMIT)
   @Put(':applicationNumber')
   async update(
     @Req() request: Request,
@@ -120,10 +147,16 @@ export class ApplicationController {
     return application;
   }
 
+  /**
+   * Update application Data.
+   * @param request
+   * @param updateApplicationStatusDto
+   */
   @ApiOkResponse({
     description: 'The Permit Application Resource',
     type: ResultDto,
   })
+  //TODO Assign role @Roles(Role.WRITE_PERMIT) Should have a different role.
   @Post('status')
   async updateApplicationStatus(
     @Req() request: Request,

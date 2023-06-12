@@ -13,7 +13,6 @@ import { PdfModule } from '../pdf/pdf.module';
 import { PermitType } from './entities/permit-type.entity';
 import { PermitApplicationOrigin } from './entities/permit-application-origin.entity';
 import { PermitApprovalSource } from './entities/permit-approval-source.entity';
-import { DatabaseHelper } from 'src/common/helper/database.helper';
 
 @Module({
   imports: [
@@ -32,7 +31,6 @@ import { DatabaseHelper } from 'src/common/helper/database.helper';
     ApplicationService,
     PermitProfile,
     ApplicationProfile,
-    DatabaseHelper,
   ],
   exports: [PermitService],
 })
