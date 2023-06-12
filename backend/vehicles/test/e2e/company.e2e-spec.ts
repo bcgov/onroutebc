@@ -33,7 +33,6 @@ import { CompanyProfile } from '../../src/modules/company-user-management/compan
 import { UsersProfile } from '../../src/modules/company-user-management/users/profiles/user.profile';
 import * as constants from '../util/mocks/data/test-data.constants';
 import * as databaseHelper from 'src/common/helper/database.helper';
-import { randomInt } from 'crypto';
 
 let repo: DeepMocked<Repository<Company>>;
 
@@ -73,9 +72,7 @@ describe('Company (e2e)', () => {
       jest
         .spyOn(databaseHelper, 'callDatabaseSequence')
         .mockImplementation(async () => {
-          return Promise.resolve(
-            String(randomInt(100, 10000)).padStart(6, '0'),
-          );
+          return Promise.resolve('000005');
         });
       const response = await request(app.getHttpServer())
         .post('/companies')

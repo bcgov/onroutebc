@@ -34,7 +34,6 @@ import {
   blueCompanyAdminUserJWTMock,
   redCompanyAdminUserJWTMock,
 } from '../../util/mocks/data/jwt.mock';
-import { randomInt } from 'crypto';
 import * as databaseHelper from 'src/common/helper/database.helper';
 
 const COMPANY_ID_99 = 99;
@@ -86,14 +85,12 @@ describe('CompanyService', () => {
 
   describe('Company service create function', () => {
     it('should create a company registered in BC and its admin user.', async () => {
+      repo.findOne.mockResolvedValue(redCompanyEntityMock);
       jest
         .spyOn(databaseHelper, 'callDatabaseSequence')
         .mockImplementation(async () => {
-          return Promise.resolve(
-            String(randomInt(100, 10000)).padStart(6, '0'),
-          );
+          return Promise.resolve('000005');
         });
-      repo.findOne.mockResolvedValue(redCompanyEntityMock);
       const retCompanyUser = await service.create(
         createRedCompanyDtoMock,
         constants.RED_COMPANY_DIRECOTRY,
@@ -104,14 +101,12 @@ describe('CompanyService', () => {
     });
 
     it('should create a company registered in US and its admin user.', async () => {
+      repo.findOne.mockResolvedValue(blueCompanyEntityMock);
       jest
         .spyOn(databaseHelper, 'callDatabaseSequence')
         .mockImplementation(async () => {
-          return Promise.resolve(
-            String(randomInt(100, 10000)).padStart(6, '0'),
-          );
+          return Promise.resolve('000006');
         });
-      repo.findOne.mockResolvedValue(blueCompanyEntityMock);
       const retCompanyUser = await service.create(
         createBlueCompanyDtoMock,
         constants.BLUE_COMPANY_DIRECOTRY,
