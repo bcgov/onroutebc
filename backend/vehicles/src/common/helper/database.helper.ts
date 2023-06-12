@@ -1,4 +1,3 @@
-import { Sequence } from 'src/modules/permit/interface/sequence.interface';
 import { DataSource } from 'typeorm';
 
 export const callDatabaseSequence = async (
@@ -8,6 +7,6 @@ export const callDatabaseSequence = async (
   const queryRunner = dataSource.createQueryRunner();
   const query =
     'Select NEXT VALUE FOR ' + databaseSequenceName + ' as Next_Value;';
-  const sequence: Sequence[] = (await queryRunner.query(query)) as Sequence[];
+  const sequence = (await queryRunner.query(query)) as [{ Next_Value: string }];
   return sequence[0].Next_Value;
 };

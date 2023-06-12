@@ -11,7 +11,13 @@ export class PermitApplicationOrigin extends Base {
     example: 'ONLINE',
     description: 'Unique identifier to represent origin of application',
   })
-  @PrimaryColumn({ type: 'nvarchar', name: 'ID' })
+  @PrimaryColumn({
+    type: 'simple-enum',
+    enum: PermitApplicationOriginEnum,
+    length: 8,
+    name: 'ID',
+    nullable: false,
+  })
   id: PermitApplicationOriginEnum;
 
   @AutoMap()

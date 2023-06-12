@@ -1,6 +1,6 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsNumberString } from 'class-validator';
+import { IsEnum, IsNumber, IsNumberString, IsOptional } from 'class-validator';
 import { ApplicationStatus } from 'src/common/enum/application-status.enum';
 
 export class UpdateApplicationStatusDto {
@@ -21,6 +21,8 @@ export class UpdateApplicationStatusDto {
     example: 74,
     required: false,
   })
+  @IsOptional()
+  @IsNumber()
   companyId: number;
 
   @ApiProperty({
@@ -28,5 +30,6 @@ export class UpdateApplicationStatusDto {
     example: ApplicationStatus.ISSUED,
     enum: ApplicationStatus,
   })
+  @IsEnum(ApplicationStatus)
   applicationStatus: ApplicationStatus;
 }
