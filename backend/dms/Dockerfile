@@ -18,7 +18,7 @@ RUN npm prune --production
 
 
 # Deployment container
-FROM node:18.12.1-alpine
+FROM node:18.16.0-alpine
 RUN npm cache clean --force
 
 # Create and Assign permissions to npm folder
