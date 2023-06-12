@@ -13,6 +13,7 @@ interface Vehicle {
   vin: string;
   year: number | null;
   createdDateTime?: string | null;
+  updatedDateTime?: string | null;
   vehicleType?: "powerUnit" | "trailer";
 }
 

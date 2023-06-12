@@ -14,7 +14,7 @@ import {
   formatProvince,
 } from "../../../../common/helpers/formatCountryProvince";
 import { CompanyProfile } from "../../../manageProfile/types/manageProfile";
-import { dayjsToLocalStr } from "../../../../common/helpers/formatDate";
+import { DATE_FORMATS, dayjsToLocalStr } from "../../../../common/helpers/formatDate";
 import { applyWhenNotNullable } from "../../../../common/helpers/util";
 
 const CompanyInformation = ({
@@ -105,7 +105,7 @@ export const ApplicationDetails = ({
                 </Box>
                 {"  "}
                 {applyWhenNotNullable(
-                  (dayjsObj) => dayjsToLocalStr(dayjsObj, "LLL"),
+                  (dayjsObj) => dayjsToLocalStr(dayjsObj, DATE_FORMATS.LONG),
                   createdDateTime,
                   ""
                 )}
@@ -116,7 +116,7 @@ export const ApplicationDetails = ({
                 </Box>
                 {"  "}
                 {applyWhenNotNullable(
-                  (dayjsObj) => dayjsToLocalStr(dayjsObj, "LLL"),
+                  (dayjsObj) => dayjsToLocalStr(dayjsObj, DATE_FORMATS.LONG),
                   updatedDateTime,
                   ""
                 )}

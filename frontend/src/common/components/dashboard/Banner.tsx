@@ -1,4 +1,4 @@
-import { Box, Grid, Typography } from "@mui/material";
+import { Box, Grid } from "@mui/material";
 import "./Dashboard.scss";
 import { ReactNode } from "react";
 
@@ -39,7 +39,7 @@ export const Banner = ({
       </Grid>
       <Grid xs item>
         <div className="banner-subtext">
-          <Typography>{bannerSubtext}</Typography>
+          <div>{bannerSubtext}</div>
         </div>
       </Grid>
     </Grid>
