@@ -11,14 +11,9 @@ on:
         description: 'Which vault to use if sandboxing'
         default: 'dev'
         required: true
-      zone:
-        description: 'Deployment environment'
-        default: 'dev'
-        required: true
 jobs:
   deploy:
     name: Deployments
-    environment: ${{.github.event.inputs.zone}}
     runs-on: ubuntu-22.04
     strategy:
       max-parallel: 1
@@ -103,7 +98,6 @@ jobs:
     needs:
       - deploys
     runs-on: ubuntu-22.04
-    environment: {{.github.event.inputs.zone}}
     strategy:
       max-parallel: 1
       fail-fast: true
