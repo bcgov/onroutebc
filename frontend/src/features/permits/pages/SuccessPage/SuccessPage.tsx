@@ -75,7 +75,9 @@ export const SuccessPage = () => {
             variant="contained"
             color="secondary"
             onClick={() => {
-              viewPermitPdf(permitId as number | undefined);
+              viewPermitPdf(permitId as number | undefined).catch((err) => {
+                console.log(err);
+              });
             }}
           >
             View Permits
