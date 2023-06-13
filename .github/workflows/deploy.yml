@@ -8,18 +8,22 @@ on:
         description: 'Which environment to deploy to'
         default: 'staging'
         required: false
+        type: string
       imagetag:
         description: 'Which image tag to use'
         default: 'test'
         required: false
+        type: string
       penetration_test:
         description: 'If penetration test is required'
         default: false
         required: false
+        type: string
       vault_zone:
         description: 'Which vault to use'
         default: 'dev'
         required: false
+        type: string
 jobs:
   deploy:
     name: Deployments
