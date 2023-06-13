@@ -1,10 +1,7 @@
 name: Deploy
 
-# Controls when the action will run. Workflow runs when manually triggered using the UI
-# or API.
 on:
   workflow_dispatch:
-    # Inputs the workflow accepts.
     inputs:
       imagetag:
         description: 'Which image tag to use'
@@ -21,7 +18,7 @@ on:
 jobs:
   deploy:
     name: Deployments
-    environment: ${{.github.inputs.zone}}
+    environment: ${{.github.event.inputs.zone}}
     runs-on: ubuntu-22.04
     strategy:
       max-parallel: 1
