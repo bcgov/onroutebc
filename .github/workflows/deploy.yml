@@ -34,6 +34,9 @@ on:
       vault_token::
         description: 'Vault access token'
         required: true
+      vault_environment::
+        description: 'Vault environment that is being used'
+        required: true
 jobs:
   deploy:
     name: Deployments
