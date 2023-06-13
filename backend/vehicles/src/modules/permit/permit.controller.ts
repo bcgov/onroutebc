@@ -27,6 +27,7 @@ import { Request, Response } from 'express';
 import { AuthOnly } from 'src/common/decorator/auth-only.decorator';
 import { ReadPdfDto } from './dto/response/read-pdf.dto';
 import { DownloadMode } from 'src/common/enum/pdf.enum';
+import { ENCODING_TYPE } from '../pdf/constants/template.constant';
 
 @ApiBearerAuth()
 @ApiTags('Permit')
@@ -92,7 +93,7 @@ export class PermitController {
         'Content-Type': 'application/pdf',
         'Content-Disposition': `attachment; filename=${document.fileName}.pdf`,
       });
-      response.send(document.file);
+      response.send(document.file.toString(ENCODING_TYPE));
       return;
     }
 
