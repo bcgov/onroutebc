@@ -99,6 +99,7 @@ jobs:
   
   deploys-coms:
     name: Deployments - COMS
+    environment: ${{.github.event.inputs.zone}}
     needs:
       - deploys
     runs-on: ubuntu-22.04
