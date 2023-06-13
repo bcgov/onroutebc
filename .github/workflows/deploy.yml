@@ -1,19 +1,21 @@
 name: Deploy
 
 on:
-  push:
-    branches:
-      - feature/deploy.yml
-    paths-ignore:
-      - ".github/ISSUE_TEMPLATE/*"
-      - "**.md"
   workflow_dispatch:
     # Inputs the workflow accepts.
     inputs:
+      environment:
+        description: 'Which environment to deploy to'
+        default: ${{ secrets.OC_NAMESPACE }}
+        required: true
       imagetag:
         description: 'Which image tag to use'
         default: 'dev'
         required: true
+      penetration_test:
+        description: 'If penetration test is required'
+        default: false
+        required: false
       vault_zone:
         description: 'Which vault to use if sandboxing'
         default: 'dev'
@@ -73,7 +75,7 @@ jobs:
       - uses: bcgov-nr/action-deployer-openshift@v1.0.5
         with:
           file: ${{ matrix.file }}
-          oc_namespace: ${{ secrets.OC_NAMESPACE }}
+          oc_namespace: ${{ github.event.inputs.environmnet }}
           oc_server: ${{ secrets.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
           overwrite: ${{ matrix.overwrite }}
@@ -132,13 +134,13 @@ jobs:
         with:
           openshift_server_url: ${{ secrets.OC_SERVER }}
           openshift_token: ${{ secrets.OC_TOKEN }}
-          namespace: ${{ secrets.OC_NAMESPACE }}
+          namespace: ${{ github.event.inputs.environmnet }}
       - name: Helm Deploy
         uses: vimeda/helm@v1.7.0
         with:
           chart: 'common-object-management-service/common-object-management-service'
           chart-version: 0.0.13
-          namespace: ${{ secrets.OC_NAMESPACE }}
+          namespace: ${{ github.event.inputs.environmnet }}
           release: ${{ github.event.repository.name }}-${{ github.event.inputs.vault_zone}}-common-object-management-service
           repo: https://bcgov github.io/common-object-management-service
           repo-alias: common-object-management-service
