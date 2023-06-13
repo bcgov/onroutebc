@@ -74,7 +74,7 @@ export const AppRoutes = () => {
       <Route element={<ProtectedRoutes requiredRole={ROLES.WRITE_PERMIT} />}>
         <Route path={routes.APPLICATIONS}>
           <Route index={true} element={<ManageApplications />} />
-          <Route path={routes.APPLICATIONS_SUCCESS} element={<SuccessPage />} />
+          <Route path={`${routes.APPLICATIONS_SUCCESS}/:permitId`} element={<SuccessPage />} />
         </Route>
       </Route>
       <Route path={routes.CREATE_PROFILE} element={<CreateProfileWizard />} />

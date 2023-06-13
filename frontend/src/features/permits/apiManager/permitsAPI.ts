@@ -10,8 +10,8 @@ import {
 
 import { getDefaultRequiredVal, replaceEmptyValuesWithNull } from "../../../common/helpers/util";
 import { Application, ApplicationResponse, PermitApplicationInProgress } from "../types/application";
-import { APPLICATION_UPDATE_STATUS_API, PERMITS_API, VEHICLE_URL } from "./endpoints/endpoints";
 import { DATE_FORMATS, toLocal } from "../../../common/helpers/formatDate";
+import { APPLICATION_PDF_API, APPLICATION_UPDATE_STATUS_API, PERMITS_API, VEHICLE_URL } from "./endpoints/endpoints";
 import { mapApplicationToApplicationRequestData } from "../helpers/mappers";
 
 /**
@@ -114,4 +114,18 @@ export const deleteApplications = (
   const requestBody: { applicationIds: Array<string>, applicationStatus: string } = { applicationIds: applicationIds, applicationStatus: "CANCELLED"};
   url = `${APPLICATION_UPDATE_STATUS_API}`;
   return httpPOSTRequest(url, replaceEmptyValuesWithNull(requestBody));
+};
+
+/**
+ * View permit application pdf file.
+ * @param permitId permit id of the permit application.
+ * @returns A Promise of dms reference string.
+ */
+export const downloadPermitApplicationPdf = (
+  permitId: number | undefined,
+): Promise<any> => {
+  const url = `${APPLICATION_PDF_API}/${permitId}?download=proxy`;
+  return httpGETRequest(url).then((response) => {
+    return response;
+  });
 };

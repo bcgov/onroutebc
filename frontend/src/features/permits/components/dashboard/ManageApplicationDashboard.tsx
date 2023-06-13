@@ -54,11 +54,9 @@ export const ManageApplicationDashboard = React.memo(() => {
         (
           <div
             style={{
-              display: "flex",
               padding: "20px 0px",
               backgroundColor: "white",
-              justifyContent: "center",
-              alignItems: "center",
+              textAlign: "center",
             }}
           >
             <div>
