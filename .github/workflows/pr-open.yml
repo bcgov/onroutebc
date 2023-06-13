@@ -64,7 +64,6 @@ jobs:
     with:
       environment: 'dev'
       imagetag: ${{ github.event.number }}
-      vault_zone: 'dev'
 
 
 
