@@ -66,7 +66,12 @@ jobs:
     with:
       environment: 'dev'
       imagetag: ${{ github.event.number }}
-    secrets: inherit
+      penetration_test: false
+    secrets:
+      server: ${{ secrets.OC_SERVER }}
+      access_token: ${{ secrets.OC_TOKEN }}
+      vault_token:: ${{ secrets.VAULT_TOKEN }}
+      vault_zone: dev
 
 
 
