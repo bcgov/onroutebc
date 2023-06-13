@@ -61,6 +61,8 @@ jobs:
   
   deploys:
     uses: ./.github/workflows/deploy.yml
+    needs:
+      - builds
     with:
       environment: 'dev'
       imagetag: ${{ github.event.number }}
