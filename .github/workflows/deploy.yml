@@ -67,24 +67,24 @@ jobs:
           exportEnv: "false"
           namespace: platform-services
           secrets: |
-            ${{secrets.VAULT_ENV}}/data/database-${{inputs.vault_zone}}   DATABASE_HOST             | VAULT_DATABASE_HOST;
-            ${{secrets.VAULT_ENV}}/data/database-${{inputs.vault_zone}}   DATABASE_USER             | VAULT_DATABASE_USER;
-            ${{secrets.VAULT_ENV}}/data/database-${{inputs.vault_zone}}   DATABASE_NAME             | VAULT_DATABASE_NAME;
-            ${{secrets.VAULT_ENV}}/data/database-${{inputs.vault_zone}}   DATABASE_PASSWORD         | VAULT_DATABASE_PASSWORD;
-            ${{secrets.VAULT_ENV}}/data/database-${{inputs.vault_zone}}   DATABASE_PORT             | VAULT_DATABASE_PORT;
-            ${{secrets.VAULT_ENV}}/data/auth0-${{inputs.vault_zone}}      AUTH0_ISSUER_URL          | VAULT_AUTH0_ISSUER_URL;
-            ${{secrets.VAULT_ENV}}/data/auth0-${{inputs.vault_zone}}      AUTH0_AUDIENCE            | VAULT_AUTH0_AUDIENCE;
-            ${{secrets.VAULT_ENV}}/data/auth0-${{inputs.vault_zone}}      AUTH0_IGNORE_EXP          | VAULT_AUTH0_IGNORE_EXP;
-            ${{secrets.VAULT_ENV}}/data/coms-${{inputs.vault_zone}}       BASICAUTH_PASSWORD        | VAULT_BASICAUTH_PASSWORD;
-            ${{secrets.VAULT_ENV}}/data/coms-${{inputs.vault_zone}}       BASICAUTH_USERNAME        | VAULT_BASICAUTH_USERNAME;
-            ${{secrets.VAULT_ENV}}/data/coms-${{inputs.vault_zone}}       COMS_URL                  | VAULT_COMS_URL;
-            ${{secrets.VAULT_ENV}}/data/coms-${{inputs.vault_zone}}       COMS_PRESIGNED_URL_EXPIRY | VAULT_PRESIGNED_URL_EXPIRY;
-            ${{secrets.VAULT_ENV}}/data/ches-${{inputs.vault_zone}}       CHES_CLIENT_ID            | VAULT_CHES_CLIENT_ID;
-            ${{secrets.VAULT_ENV}}/data/ches-${{inputs.vault_zone}}       CHES_CLIENT_SECRET        | VAULT_CHES_CLIENT_SECRET;
-            ${{secrets.VAULT_ENV}}/data/cdogs-${{inputs.vault_zone}}      CDOGS_CLIENT_ID           | VAULT_CDOGS_CLIENT_ID;
-            ${{secrets.VAULT_ENV}}/data/cdogs-${{inputs.vault_zone}}      CDOGS_CLIENT_SECRET       | VAULT_CDOGS_CLIENT_SECRET;
-            ${{secrets.VAULT_ENV}}/data/cdogs-${{inputs.vault_zone}}      CDOGS_TOKEN_URL           | VAULT_CDOGS_TOKEN_URL;
-            ${{secrets.VAULT_ENV}}/data/cdogs-${{inputs.vault_zone}}      CDOGS_URL                 | VAULT_CDOGS_URL;
+            ${{secrets.vault_environment}}/data/database-${{inputs.vault_zone}}   DATABASE_HOST             | VAULT_DATABASE_HOST;
+            ${{secrets.vault_environment}}/data/database-${{inputs.vault_zone}}   DATABASE_USER             | VAULT_DATABASE_USER;
+            ${{secrets.vault_environment}}/data/database-${{inputs.vault_zone}}   DATABASE_NAME             | VAULT_DATABASE_NAME;
+            ${{secrets.vault_environment}}/data/database-${{inputs.vault_zone}}   DATABASE_PASSWORD         | VAULT_DATABASE_PASSWORD;
+            ${{secrets.vault_environment}}/data/database-${{inputs.vault_zone}}   DATABASE_PORT             | VAULT_DATABASE_PORT;
+            ${{secrets.vault_environment}}/data/auth0-${{inputs.vault_zone}}      AUTH0_ISSUER_URL          | VAULT_AUTH0_ISSUER_URL;
+            ${{secrets.vault_environment}}/data/auth0-${{inputs.vault_zone}}      AUTH0_AUDIENCE            | VAULT_AUTH0_AUDIENCE;
+            ${{secrets.vault_environment}}/data/auth0-${{inputs.vault_zone}}      AUTH0_IGNORE_EXP          | VAULT_AUTH0_IGNORE_EXP;
+            ${{secrets.vault_environment}}/data/coms-${{inputs.vault_zone}}       BASICAUTH_PASSWORD        | VAULT_BASICAUTH_PASSWORD;
+            ${{secrets.vault_environment}}/data/coms-${{inputs.vault_zone}}       BASICAUTH_USERNAME        | VAULT_BASICAUTH_USERNAME;
+            ${{secrets.vault_environment}}/data/coms-${{inputs.vault_zone}}       COMS_URL                  | VAULT_COMS_URL;
+            ${{secrets.vault_environment}}/data/coms-${{inputs.vault_zone}}       COMS_PRESIGNED_URL_EXPIRY | VAULT_PRESIGNED_URL_EXPIRY;
+            ${{secrets.vault_environment}}/data/ches-${{inputs.vault_zone}}       CHES_CLIENT_ID            | VAULT_CHES_CLIENT_ID;
+            ${{secrets.vault_environment}}/data/ches-${{inputs.vault_zone}}       CHES_CLIENT_SECRET        | VAULT_CHES_CLIENT_SECRET;
+            ${{secrets.vault_environment}}/data/cdogs-${{inputs.vault_zone}}      CDOGS_CLIENT_ID           | VAULT_CDOGS_CLIENT_ID;
+            ${{secrets.vault_environment}}/data/cdogs-${{inputs.vault_zone}}      CDOGS_CLIENT_SECRET       | VAULT_CDOGS_CLIENT_SECRET;
+            ${{secrets.vault_environment}}/data/cdogs-${{inputs.vault_zone}}      CDOGS_TOKEN_URL           | VAULT_CDOGS_TOKEN_URL;
+            ${{secrets.vault_environment}}/data/cdogs-${{inputs.vault_zone}}      CDOGS_URL                 | VAULT_CDOGS_URL;
       
       - uses: bcgov-nr/action-deployer-openshift@v1.0.5
         with:
@@ -136,13 +136,13 @@ jobs:
             exportEnv: 'false'
             namespace: platform-services
             secrets: |
-                ${{secrets.VAULT_ENV}}/data/coms-${{inputs.vault_zone}}  BASICAUTH_PASSWORD              | VAULT_BASICAUTH_PASSWORD;
-                ${{secrets.VAULT_ENV}}/data/coms-${{inputs.vault_zone}}  BASICAUTH_USERNAME              | VAULT_BASICAUTH_USERNAME;
-                ${{secrets.VAULT_ENV}}/data/coms-${{inputs.vault_zone}}  OBJECTSTORAGE_ACCESSKEYID       | VAULT_OBJECTSTORAGE_ACCESSKEYID;
-                ${{secrets.VAULT_ENV}}/data/coms-${{inputs.vault_zone}}  OBJECTSTORAGE_BUCKET            | VAULT_OBJECTSTORAGE_BUCKET;
-                ${{secrets.VAULT_ENV}}/data/coms-${{inputs.vault_zone}}  OBJECTSTORAGE_ENDPOINT          | VAULT_OBJECTSTORAGE_ENDPOINT;
-                ${{secrets.VAULT_ENV}}/data/coms-${{inputs.vault_zone}}  OBJECTSTORAGE_KEY               | VAULT_OBJECTSTORAGE_KEY;
-                ${{secrets.VAULT_ENV}}/data/coms-${{inputs.vault_zone}}  OBJECTSTORAGE_SECRETACCESSKEY   | VAULT_OBJECTSTORAGE_SECRETACCESSKEY;
+                ${{secrets.vault_environment}}/data/coms-${{inputs.vault_zone}}  BASICAUTH_PASSWORD              | VAULT_BASICAUTH_PASSWORD;
+                ${{secrets.vault_environment}}/data/coms-${{inputs.vault_zone}}  BASICAUTH_USERNAME              | VAULT_BASICAUTH_USERNAME;
+                ${{secrets.vault_environment}}/data/coms-${{inputs.vault_zone}}  OBJECTSTORAGE_ACCESSKEYID       | VAULT_OBJECTSTORAGE_ACCESSKEYID;
+                ${{secrets.vault_environment}}/data/coms-${{inputs.vault_zone}}  OBJECTSTORAGE_BUCKET            | VAULT_OBJECTSTORAGE_BUCKET;
+                ${{secrets.vault_environment}}/data/coms-${{inputs.vault_zone}}  OBJECTSTORAGE_ENDPOINT          | VAULT_OBJECTSTORAGE_ENDPOINT;
+                ${{secrets.vault_environment}}/data/coms-${{inputs.vault_zone}}  OBJECTSTORAGE_KEY               | VAULT_OBJECTSTORAGE_KEY;
+                ${{secrets.vault_environment}}/data/coms-${{inputs.vault_zone}}  OBJECTSTORAGE_SECRETACCESSKEY   | VAULT_OBJECTSTORAGE_SECRETACCESSKEY;
       - name: Authenticate and set context
         uses: redhat-actions/oc-login@v1
         with:

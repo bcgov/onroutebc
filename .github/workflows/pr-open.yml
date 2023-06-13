@@ -71,8 +71,5 @@ jobs:
     secrets:
       server: ${{ secrets.OC_SERVER }}
       access_token: ${{ secrets.OC_TOKEN }}
+      vault_environment:: ${{ secrets.VAULT_ENV }}
       vault_token:: ${{ secrets.VAULT_TOKEN }}
-
-
-
-
