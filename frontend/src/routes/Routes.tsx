@@ -69,7 +69,7 @@ export const AppRoutes = () => {
         <Route path={routes.APPLICATIONS} element={<ManageApplications />} />
       </Route>
       <Route element={<ProtectedRoutes requiredRole={ROLES.WRITE_PERMIT} />}>
-        <Route path={`${routes.APPLICATIONS}/:applicationNumber(\\d+)`} element={<ManagePermits />} />
+        <Route path={`${routes.APPLICATIONS}/:applicationNumber`} element={<ManagePermits />} />
       </Route>
       <Route element={<ProtectedRoutes requiredRole={ROLES.WRITE_PERMIT} />}>
         <Route path={routes.APPLICATIONS}>
