@@ -105,7 +105,7 @@ jobs:
     name: Deployments - COMS
     environment: ${{ github.event.inputs.zone}}
     needs:
-      - deploys
+      - deploy
     runs-on: ubuntu-22.04
     strategy:
       max-parallel: 1
