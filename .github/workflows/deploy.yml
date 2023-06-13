@@ -21,7 +21,7 @@ on:
 jobs:
   deploy:
     name: Deployments
-    environment: ${{.github.event.inputs.zone}}
+    environment: ${{ github.event.inputs.zone}}
     runs-on: ubuntu-22.04
     strategy:
       max-parallel: 1
@@ -51,24 +51,24 @@ jobs:
           exportEnv: "false"
           namespace: platform-services
           secrets: |
-            ${{secrets.VAULT_ENV}}/data/database-${{.github.event.inputs.vault_zone}}   DATABASE_HOST             | VAULT_DATABASE_HOST;
-            ${{secrets.VAULT_ENV}}/data/database-${{.github.event.inputs.vault_zone}}   DATABASE_USER             | VAULT_DATABASE_USER;
-            ${{secrets.VAULT_ENV}}/data/database-${{.github.event.inputs.vault_zone}}   DATABASE_NAME             | VAULT_DATABASE_NAME;
-            ${{secrets.VAULT_ENV}}/data/database-${{.github.event.inputs.vault_zone}}   DATABASE_PASSWORD         | VAULT_DATABASE_PASSWORD;
-            ${{secrets.VAULT_ENV}}/data/database-${{.github.event.inputs.vault_zone}}   DATABASE_PORT             | VAULT_DATABASE_PORT;
-            ${{secrets.VAULT_ENV}}/data/auth0-${{.github.event.inputs.vault_zone}}      AUTH0_ISSUER_URL          | VAULT_AUTH0_ISSUER_URL;
-            ${{secrets.VAULT_ENV}}/data/auth0-${{.github.event.inputs.vault_zone}}      AUTH0_AUDIENCE            | VAULT_AUTH0_AUDIENCE;
-            ${{secrets.VAULT_ENV}}/data/auth0-${{.github.event.inputs.vault_zone}}      AUTH0_IGNORE_EXP          | VAULT_AUTH0_IGNORE_EXP;
-            ${{secrets.VAULT_ENV}}/data/coms-${{.github.event.inputs.vault_zone}}       BASICAUTH_PASSWORD        | VAULT_BASICAUTH_PASSWORD;
-            ${{secrets.VAULT_ENV}}/data/coms-${{.github.event.inputs.vault_zone}}       BASICAUTH_USERNAME        | VAULT_BASICAUTH_USERNAME;
-            ${{secrets.VAULT_ENV}}/data/coms-${{.github.event.inputs.vault_zone}}       COMS_URL                  | VAULT_COMS_URL;
-            ${{secrets.VAULT_ENV}}/data/coms-${{.github.event.inputs.vault_zone}}       COMS_PRESIGNED_URL_EXPIRY | VAULT_PRESIGNED_URL_EXPIRY;
-            ${{secrets.VAULT_ENV}}/data/ches-${{.github.event.inputs.vault_zone}}       CHES_CLIENT_ID            | VAULT_CHES_CLIENT_ID;
-            ${{secrets.VAULT_ENV}}/data/ches-${{.github.event.inputs.vault_zone}}       CHES_CLIENT_SECRET        | VAULT_CHES_CLIENT_SECRET;
-            ${{secrets.VAULT_ENV}}/data/cdogs-${{.github.event.inputs.vault_zone}}      CDOGS_CLIENT_ID           | VAULT_CDOGS_CLIENT_ID;
-            ${{secrets.VAULT_ENV}}/data/cdogs-${{.github.event.inputs.vault_zone}}      CDOGS_CLIENT_SECRET       | VAULT_CDOGS_CLIENT_SECRET;
-            ${{secrets.VAULT_ENV}}/data/cdogs-${{.github.event.inputs.vault_zone}}      CDOGS_TOKEN_URL           | VAULT_CDOGS_TOKEN_URL;
-            ${{secrets.VAULT_ENV}}/data/cdogs-${{.github.event.inputs.vault_zone}}      CDOGS_URL                 | VAULT_CDOGS_URL;
+            ${{secrets.VAULT_ENV}}/data/database-${{ github.event.inputs.vault_zone}}   DATABASE_HOST             | VAULT_DATABASE_HOST;
+            ${{secrets.VAULT_ENV}}/data/database-${{ github.event.inputs.vault_zone}}   DATABASE_USER             | VAULT_DATABASE_USER;
+            ${{secrets.VAULT_ENV}}/data/database-${{ github.event.inputs.vault_zone}}   DATABASE_NAME             | VAULT_DATABASE_NAME;
+            ${{secrets.VAULT_ENV}}/data/database-${{ github.event.inputs.vault_zone}}   DATABASE_PASSWORD         | VAULT_DATABASE_PASSWORD;
+            ${{secrets.VAULT_ENV}}/data/database-${{ github.event.inputs.vault_zone}}   DATABASE_PORT             | VAULT_DATABASE_PORT;
+            ${{secrets.VAULT_ENV}}/data/auth0-${{ github.event.inputs.vault_zone}}      AUTH0_ISSUER_URL          | VAULT_AUTH0_ISSUER_URL;
+            ${{secrets.VAULT_ENV}}/data/auth0-${{ github.event.inputs.vault_zone}}      AUTH0_AUDIENCE            | VAULT_AUTH0_AUDIENCE;
+            ${{secrets.VAULT_ENV}}/data/auth0-${{ github.event.inputs.vault_zone}}      AUTH0_IGNORE_EXP          | VAULT_AUTH0_IGNORE_EXP;
+            ${{secrets.VAULT_ENV}}/data/coms-${{ github.event.inputs.vault_zone}}       BASICAUTH_PASSWORD        | VAULT_BASICAUTH_PASSWORD;
+            ${{secrets.VAULT_ENV}}/data/coms-${{ github.event.inputs.vault_zone}}       BASICAUTH_USERNAME        | VAULT_BASICAUTH_USERNAME;
+            ${{secrets.VAULT_ENV}}/data/coms-${{ github.event.inputs.vault_zone}}       COMS_URL                  | VAULT_COMS_URL;
+            ${{secrets.VAULT_ENV}}/data/coms-${{ github.event.inputs.vault_zone}}       COMS_PRESIGNED_URL_EXPIRY | VAULT_PRESIGNED_URL_EXPIRY;
+            ${{secrets.VAULT_ENV}}/data/ches-${{ github.event.inputs.vault_zone}}       CHES_CLIENT_ID            | VAULT_CHES_CLIENT_ID;
+            ${{secrets.VAULT_ENV}}/data/ches-${{ github.event.inputs.vault_zone}}       CHES_CLIENT_SECRET        | VAULT_CHES_CLIENT_SECRET;
+            ${{secrets.VAULT_ENV}}/data/cdogs-${{ github.event.inputs.vault_zone}}      CDOGS_CLIENT_ID           | VAULT_CDOGS_CLIENT_ID;
+            ${{secrets.VAULT_ENV}}/data/cdogs-${{ github.event.inputs.vault_zone}}      CDOGS_CLIENT_SECRET       | VAULT_CDOGS_CLIENT_SECRET;
+            ${{secrets.VAULT_ENV}}/data/cdogs-${{ github.event.inputs.vault_zone}}      CDOGS_TOKEN_URL           | VAULT_CDOGS_TOKEN_URL;
+            ${{secrets.VAULT_ENV}}/data/cdogs-${{ github.event.inputs.vault_zone}}      CDOGS_URL                 | VAULT_CDOGS_URL;
       
       - uses: bcgov-nr/action-deployer-openshift@v1.0.5
         with:
@@ -78,9 +78,9 @@ jobs:
           oc_token: ${{ secrets.OC_TOKEN }}
           overwrite: ${{ matrix.overwrite }}
           parameters: 
-            -p ZONE=${{.github.event.inputs.zone}}
+            -p ZONE=${{ github.event.inputs.zone}}
             -p NAME=${{ github.event.repository.name }} ${{ matrix.parameters }}
-            -p PROMOTE=${{ github.repository }}/${{ matrix.name }}:${{.github.event.inputs.imagetag}}
+            -p PROMOTE=${{ github.repository }}/${{ matrix.name }}:${{ github.event.inputs.imagetag}}
             -p DATABASE_NAME=${{steps.secrets.outputs.VAULT_DATABASE_NAME}}
             -p DATABASE_USER=${{steps.secrets.outputs.VAULT_DATABASE_USER}}
             -p DATABASE_PASSWORD=${{steps.secrets.outputs.VAULT_DATABASE_PASSWORD}}
@@ -103,7 +103,7 @@ jobs:
   
   deploys-coms:
     name: Deployments - COMS
-    environment: ${{.github.event.inputs.zone}}
+    environment: ${{ github.event.inputs.zone}}
     needs:
       - deploys
     runs-on: ubuntu-22.04
@@ -120,13 +120,13 @@ jobs:
             exportEnv: 'false'
             namespace: platform-services
             secrets: |
-                ${{secrets.VAULT_ENV}}/data/coms-${{.github.event.inputs.vault_zone}}  BASICAUTH_PASSWORD              | VAULT_BASICAUTH_PASSWORD;
-                ${{secrets.VAULT_ENV}}/data/coms-${{.github.event.inputs.vault_zone}}  BASICAUTH_USERNAME              | VAULT_BASICAUTH_USERNAME;
-                ${{secrets.VAULT_ENV}}/data/coms-${{.github.event.inputs.vault_zone}}  OBJECTSTORAGE_ACCESSKEYID       | VAULT_OBJECTSTORAGE_ACCESSKEYID;
-                ${{secrets.VAULT_ENV}}/data/coms-${{.github.event.inputs.vault_zone}}  OBJECTSTORAGE_BUCKET            | VAULT_OBJECTSTORAGE_BUCKET;
-                ${{secrets.VAULT_ENV}}/data/coms-${{.github.event.inputs.vault_zone}}  OBJECTSTORAGE_ENDPOINT          | VAULT_OBJECTSTORAGE_ENDPOINT;
-                ${{secrets.VAULT_ENV}}/data/coms-${{.github.event.inputs.vault_zone}}  OBJECTSTORAGE_KEY               | VAULT_OBJECTSTORAGE_KEY;
-                ${{secrets.VAULT_ENV}}/data/coms-${{.github.event.inputs.vault_zone}}  OBJECTSTORAGE_SECRETACCESSKEY   | VAULT_OBJECTSTORAGE_SECRETACCESSKEY;
+                ${{secrets.VAULT_ENV}}/data/coms-${{ github.event.inputs.vault_zone}}  BASICAUTH_PASSWORD              | VAULT_BASICAUTH_PASSWORD;
+                ${{secrets.VAULT_ENV}}/data/coms-${{ github.event.inputs.vault_zone}}  BASICAUTH_USERNAME              | VAULT_BASICAUTH_USERNAME;
+                ${{secrets.VAULT_ENV}}/data/coms-${{ github.event.inputs.vault_zone}}  OBJECTSTORAGE_ACCESSKEYID       | VAULT_OBJECTSTORAGE_ACCESSKEYID;
+                ${{secrets.VAULT_ENV}}/data/coms-${{ github.event.inputs.vault_zone}}  OBJECTSTORAGE_BUCKET            | VAULT_OBJECTSTORAGE_BUCKET;
+                ${{secrets.VAULT_ENV}}/data/coms-${{ github.event.inputs.vault_zone}}  OBJECTSTORAGE_ENDPOINT          | VAULT_OBJECTSTORAGE_ENDPOINT;
+                ${{secrets.VAULT_ENV}}/data/coms-${{ github.event.inputs.vault_zone}}  OBJECTSTORAGE_KEY               | VAULT_OBJECTSTORAGE_KEY;
+                ${{secrets.VAULT_ENV}}/data/coms-${{ github.event.inputs.vault_zone}}  OBJECTSTORAGE_SECRETACCESSKEY   | VAULT_OBJECTSTORAGE_SECRETACCESSKEY;
       - name: Authenticate and set context
         uses: redhat-actions/oc-login@v1
         with:
@@ -139,14 +139,14 @@ jobs:
           chart: 'common-object-management-service/common-object-management-service'
           chart-version: 0.0.13
           namespace: ${{ secrets.OC_NAMESPACE }}
-          release: ${{ github.event.repository.name }}-${{.github.event.inputs.vault_zone}}-common-object-management-service
-          repo: https://bcgov.github.io/common-object-management-service
+          release: ${{ github.event.repository.name }}-${{ github.event.inputs.vault_zone}}-common-object-management-service
+          repo: https://bcgov github.io/common-object-management-service
           repo-alias: common-object-management-service
           token: ${{secrets.OC_TOKEN}}
           values: |
-            fullNameOverride: ${{ github.event.repository.name }}-${{.github.event.inputs.vault_zone}}-common-object-management-service
+            fullNameOverride: ${{ github.event.repository.name }}-${{ github.event.inputs.vault_zone}}-common-object-management-service
             route:
-              host: ${{ github.event.repository.name }}-${{.github.event.inputs.vault_zone}}-common-object-management-service.apps.silver.devops.gov.bc.ca
+              host: ${{ github.event.repository.name }}-${{ github.event.inputs.vault_zone}}-common-object-management-service.apps.silver.devops.gov.bc.ca
             basicAuthSecretOverride:
               username: ${{steps.secrets.outputs.VAULT_BASICAUTH_USERNAME}}
             objectStorageSecretOverride:
