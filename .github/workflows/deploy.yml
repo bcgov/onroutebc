@@ -8,6 +8,7 @@ on:
         description: 'Which environment to deploy to'
         default: 'staging'
         required: false
+        type: string
       imagetag:
         description: 'Which image tag to use'
         default: 'test'
