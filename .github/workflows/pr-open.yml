@@ -60,12 +60,12 @@ jobs:
           triggers: ${{ matrix.triggers }}
   
   deploys:
-    name: Deploys
-    runs-on: ubuntu-22.04
-    permissions:
-      packages: write
-    steps:
-      - uses: actions/checkout@v3
-      - uses: ./.github/workflows/deploy.yml
+    uses: ./.github/workflows/deploy.yml
+    with:
+      environment: 'dev'
+      imagetag: ${{ github.event.number }}
+      vault_zone: 'dev'
+
+
 
 
