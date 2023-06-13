@@ -12,12 +12,12 @@ import {
 import { ORBC_FormTypes } from "../../../types/common";
 import { DatePicker, DateValidationError } from "@mui/x-date-pickers";
 import { useState, useEffect } from "react";
-import dayjs from "dayjs";
 import { 
   invalidDate, 
   invalidMaxStartDate, 
   invalidPastStartDate 
 } from "../../../helpers/validationMessages";
+import { now } from "../../../helpers/formatDate";
 
 /**
  * Properties of the onrouteBC customized Date Picker MUI component
@@ -46,7 +46,7 @@ export const CustomDatePicker = <T extends ORBC_FormTypes>(
   } = useFormContext();
 
   // User can only select a date that is up to 14 days into the future of the current date
-  const maxDate = dayjs().add(14, "day");
+  const maxDate = now().add(14, "day");
 
   /**
    * DatePicker is tricky, because in theory, you have two components with event listeners.
@@ -100,7 +100,7 @@ export const CustomDatePicker = <T extends ORBC_FormTypes>(
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <DatePicker
         ref={ref}
-        value={typeof value === "string"? dayjs(value): value}
+        value={value}
         onChange={onChange}
         disablePast
         maxDate={maxDate}

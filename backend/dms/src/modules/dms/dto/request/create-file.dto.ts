@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Allow, IsOptional, IsString } from 'class-validator';
+import { Allow, IsOptional, IsString, Length } from 'class-validator';
 
 export class CreateFileDto {
   @ApiProperty({ type: 'string', format: 'binary' })
@@ -14,5 +14,6 @@ export class CreateFileDto {
   })
   @IsOptional()
   @IsString()
+  @Length(1, 50)
   fileName?: string;
 }

@@ -228,13 +228,15 @@ export const List = memo(
                       </IconButton>
                     </Tooltip>
                     <Tooltip arrow placement="top" title="Copy">
-                      {/*tslint:disable-next-line*/}
-                      <IconButton
-                        onClick={() => table.setEditingRow(row)}
-                        disabled={true}
-                      >
-                        <ContentCopy />
-                      </IconButton>
+                      <span>
+                        {/*tslint:disable-next-line*/}
+                        <IconButton
+                          onClick={() => table.setEditingRow(row)}
+                          disabled={true}
+                        >
+                          <ContentCopy />
+                        </IconButton>
+                      </span>
                     </Tooltip>
                     <Tooltip arrow placement="top" title="Delete">
                       {/*tslint:disable-next-line*/}

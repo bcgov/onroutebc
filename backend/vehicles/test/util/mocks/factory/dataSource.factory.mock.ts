@@ -26,6 +26,7 @@ export const dataSourceMockFactory = () => {
       release: jest.fn(),
       rollbackTransaction: jest.fn(),
       commitTransaction: jest.fn(),
+      query: jest.fn(),
       manager: {
         delete: jest.fn(),
         save: jest.fn((saveObject: object) => {

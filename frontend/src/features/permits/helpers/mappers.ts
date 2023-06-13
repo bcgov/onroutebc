@@ -7,7 +7,7 @@ import {
   VehicleTypes,
 } from "../../manageVehicles/types/managevehicles";
 import { Application, ApplicationRequestData, ApplicationResponse } from "../types/application";
-import { dayjsToUtcStr, now, toLocalDayjs } from "../../../common/helpers/formatDate";
+import { DATE_FORMATS, dayjsToLocalStr, dayjsToUtcStr, now, toLocalDayjs, utcToLocalDayjs } from "../../../common/helpers/formatDate";
 
 /**
  * This helper function is used to get the vehicle object that matches the vin prop
@@ -69,11 +69,11 @@ export const mapApplicationResponseToApplication = (response: ApplicationRespons
   return {
     ...response,
     createdDateTime: applyWhenNotNullable(
-      (datetimeStr: string): Dayjs => toLocalDayjs(datetimeStr),
+      (datetimeStr: string): Dayjs => utcToLocalDayjs(datetimeStr),
       response.createdDateTime,
     ),
     updatedDateTime: applyWhenNotNullable(
-      (datetimeStr: string): Dayjs => toLocalDayjs(datetimeStr),
+      (datetimeStr: string): Dayjs => utcToLocalDayjs(datetimeStr),
       response.updatedDateTime,
     ),
     permitData: {
@@ -110,8 +110,8 @@ export const mapApplicationToApplicationRequestData = (data: Application): Appli
     ),
     permitData: {
       ...data.permitData,
-      startDate: dayjsToUtcStr(data.permitData.startDate),
-      expiryDate: dayjsToUtcStr(data.permitData.expiryDate),
+      startDate: dayjsToLocalStr(data.permitData.startDate, DATE_FORMATS.DATEONLY),
+      expiryDate: dayjsToLocalStr(data.permitData.expiryDate, DATE_FORMATS.DATEONLY),
     }
   };
 };

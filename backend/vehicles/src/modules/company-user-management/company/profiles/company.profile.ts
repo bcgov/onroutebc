@@ -54,6 +54,12 @@ export class CompanyProfile extends AutomapperProfile {
           }),
         ),
         forMember(
+          (d) => d.accountSource,
+          mapWithArguments((source, { accountSource }) => {
+            return accountSource;
+          }),
+        ),
+        forMember(
           (d) => d.mailingAddress,
           mapWith(Address, CreateAddressDto, (s) => {
             return s.mailingAddress;

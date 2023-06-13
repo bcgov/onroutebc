@@ -16,6 +16,7 @@ import {
   validateUserCompanyAndRoleContext,
 } from '../../common/helper/auth.helper';
 import { DataNotFoundException } from '../../common/exception/data-not-found.exception';
+import { AccountSource } from 'src/common/enum/account-source.enum';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -48,14 +49,20 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       companyId = +req.params['companyId'];
     } else if (req.query['companyId']) {
       companyId = +req.query['companyId'];
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    } else if (req.body.companyId) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      companyId = req.body.companyId as number;
     }
 
     if (payload.identity_provider === IDP.IDIR) {
       userGUID = payload.idir_user_guid;
       userName = payload.idir_username;
+      payload.accountSource = AccountSource.PPCStaff;
     } else if (payload.identity_provider === IDP.BCEID) {
       userGUID = payload.bceid_user_guid;
       userName = payload.bceid_username;
+      payload.accountSource = AccountSource.BCeID;
     }
 
     if (req.headers['AuthOnly'] === 'false') {
