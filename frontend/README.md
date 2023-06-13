@@ -29,7 +29,7 @@ VITE_AUTH0_AUDIENCE=
 #### [Node.js](https://nodejs.org/en/)
 
 - You’ll need to have Node 18 and npm on your machine. You can use [nvm](https://github.com/nvm-sh/nvm#installation) (macOS/Linux) or [nvm-windows](https://github.com/coreybutler/nvm-windows#node-version-manager-nvm-for-windows) to switch Node versions between different projects.
-- Note: We are using Node 18.12.1-alpine as a base image on our pipeline.
+- Note: We are using Node 18.16.0-alpine as a base image on our pipeline.
 
 ### Installation
 

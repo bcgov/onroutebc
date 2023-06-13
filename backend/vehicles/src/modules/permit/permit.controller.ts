@@ -27,6 +27,7 @@ import { Request, Response } from 'express';
 import { AuthOnly } from 'src/common/decorator/auth-only.decorator';
 import { ReadPdfDto } from './dto/response/read-pdf.dto';
 import { DownloadMode } from 'src/common/enum/pdf.enum';
+import { ENCODING_TYPE } from '../pdf/constants/template.constant';
 
 @ApiBearerAuth()
 @ApiTags('Permit')
@@ -92,11 +93,7 @@ export class PermitController {
         'Content-Type': 'application/pdf',
         'Content-Disposition': `attachment; filename=${document.fileName}.pdf`,
       });
-      // Convert the PDF data to base64 to avoid byte shaving
-      // It is critical to assure that the server sends the data in Base64 encoding, 
-      // otherwise the client side can't deserialize the PDF string back to the binary format.
-      const base64Data = document.file.toString('base64');
-      response.send(base64Data);
+      response.send(document.file.toString(ENCODING_TYPE));
       return;
     }
 
