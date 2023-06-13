@@ -1,8 +1,7 @@
 import { Box, Button, Typography } from "@mui/material";
-import { useContext, useEffect } from "react";
+import { useEffect } from "react";
 import "./SuccessPage.scss";
 import { useNavigate, useParams } from "react-router-dom";
-import { ApplicationContext } from "../../context/ApplicationContext";
 import { downloadPermitApplicationPdf } from "../../apiManager/permitsAPI";
 
 export const SuccessPage = () => {
@@ -11,49 +10,35 @@ export const SuccessPage = () => {
   }, []);
 
   const navigate = useNavigate();
-  const {permitId} = useParams();
+  const { permitId } = useParams();
   const viewPermitPdf = async (permitId: number | undefined) => {
     await downloadPermitApplicationPdf(permitId).then((response) => {
-    const contentDisposition = response.headers['content-disposition'];
-    if (contentDisposition) {
-    const filenameMatch = contentDisposition.match(/filename=(.+)/);
-    if (filenameMatch && filenameMatch.length === 2) {
-      const filename =  filenameMatch[1];
-      const base64Data = response.data.toString('base64');
-      const binaryString = atob(base64Data);
-      const binaryLen = binaryString.length;
-      const bytes = new Uint8Array(binaryLen);
+      const contentDisposition = response.headers['content-disposition'];
+      if (contentDisposition) {
+        const filenameMatch = contentDisposition.match(/filename=(.+)/);
+        if (filenameMatch && filenameMatch.length === 2) {
+          const filename = filenameMatch[1];
+          const binaryString = atob(response.data);//Convert base64 string to binary data
+          const binaryLen = binaryString.length;
+          const bytes = new Uint8Array(binaryLen);
 
-      for (let i = 0; i < binaryLen; i++) {
-          const ascii = binaryString.charCodeAt(i);
-          bytes[i] = ascii;
+          for (let i = 0; i < binaryLen; i++) {
+            const ascii = binaryString.charCodeAt(i);
+            bytes[i] = ascii;
+          }
+
+          const blob = new Blob([bytes], { type: 'application/pdf' });
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.setAttribute('download', `${filename}`); // Set the desired file name
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        }
       }
 
-      const blob = new Blob([bytes], { type: 'application/pdf'});
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', `${filename}`); // Set the desired file name
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
-  }
-    
-    
-
     });
-
-    // console.log(dmsRef);
-    // // const dmsRef = "/CVSE1000.pdf"
-    // // window.open(dmsRef, '_blank');
-    // const url = URL.createObjectURL(new Blob([dmsRef]));
-    // const link = document.createElement('a');
-    // link.href = url;
-    // link.setAttribute('download', 'file.pdf'); // Set the desired file name
-    // document.body.appendChild(link);
-    // link.click();
-    // document.body.removeChild(link);
   }
 
   return (
