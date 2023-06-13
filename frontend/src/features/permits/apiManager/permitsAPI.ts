@@ -98,7 +98,8 @@ export const getApplicationsInProgress = async (): Promise<
 export const getApplicationInProgressById = (
   permitId: string | undefined,
 )  : Promise<ApplicationResponse | undefined>=> {
-  const url = `${VEHICLE_URL}/permits/applications/${permitId}`;
+  const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
+  const url = `${VEHICLE_URL}/permits/applications/${permitId}?companyId=${companyId}`;
   return httpGETRequest(url).then(response => response.data);
 };
 
