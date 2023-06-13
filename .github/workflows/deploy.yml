@@ -13,19 +13,19 @@ on:
       environment:
         description: 'Which environment to deploy to'
         default: 'staging'
-        required: true
+        required: false
       imagetag:
         description: 'Which image tag to use'
-        default: 'dev'
-        required: true
+        default: 'test'
+        required: false
       penetration_test:
         description: 'If penetration test is required'
         default: false
         required: false
       vault_zone:
-        description: 'Which vault to use if sandboxing'
+        description: 'Which vault to use'
         default: 'dev'
-        required: true
+        required: false
 jobs:
   deploy:
     name: Deployments
