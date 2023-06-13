@@ -1,12 +1,6 @@
 name: Deploy
 
 on:
-  push:
-    branches:
-      - feature/deploy.yml
-    paths-ignore:
-      - ".github/ISSUE_TEMPLATE/*"
-      - "**.md"
   workflow_dispatch:
     # Inputs the workflow accepts.
     inputs:
