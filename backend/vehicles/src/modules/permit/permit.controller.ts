@@ -19,6 +19,7 @@ import {
   ApiCreatedResponse,
   ApiBearerAuth,
   ApiQuery,
+  ApiOkResponse,
 } from '@nestjs/swagger';
 import { Public } from '../../common/decorator/public.decorator';
 import { CreatePermitDto } from './dto/request/create-permit.dto';
@@ -58,6 +59,19 @@ export class PermitController {
     @Body() createPermitDto: CreatePermitDto,
   ): Promise<ReadPermitDto> {
     return this.permitService.create(createPermitDto);
+  }
+
+  @ApiOkResponse({
+    description: 'The Permit Resource',
+    type: ReadPermitDto,
+    isArray: true,
+  })
+  @Public()
+  @Get()
+  async get(
+    @Query('permitNumber') permitNumber: string
+  ): Promise<ReadPermitDto[]> {
+    return this.permitService.findByPermitNumber(permitNumber);
   }
 
   @AuthOnly()
