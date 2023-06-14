@@ -46,7 +46,37 @@ beforeEach(async () => {
   });
 });
 
+const assertProperCompanyInfo = () => {
+  // Assert company info still displays properly
+  expect(screen.getByText("Company Information")).toBeInTheDocument();
+  expect(
+    screen.getByText(
+      "If the Company Mailing Address is incorrect, please contact your onRouteBC Administrator."
+    )
+  ).toBeInTheDocument();
+  expect(screen.getByText("My Company LLC")).toBeInTheDocument();
+  expect(screen.getByText("B3-000001-700")).toBeInTheDocument();
+  expect(screen.getByText(/^Company Mailing Address$/i)).toBeInTheDocument();
+  expect(screen.getByText("123-4567 My Street")).toBeInTheDocument();
+  expect(screen.getByText("Canada")).toBeInTheDocument();
+  expect(screen.getByText("British Columbia")).toBeInTheDocument();
+  expect(screen.getByText("Richmond V1C 2B3")).toBeInTheDocument();
+};
+
 describe("Application Details Display", () => {
+  it("properly displays with empty application values", () => {
+    // Arrange and Act
+    renderWithClient(<ApplicationDetails/>);
+
+    // Assert empty application values
+    expect(screen.queryByText("Term: Oversize")).toBeNull();
+    expect(screen.queryByText(/Application #/i)).toBeNull();
+    expect(screen.queryByText(/Date Created/i)).toBeNull();
+    expect(screen.queryByText(/Last Updated/i)).toBeNull();
+
+    assertProperCompanyInfo();
+  });
+
   it("properly displays non-empty application details info", () => {
     // Arrange and act
     renderWithClient(
@@ -58,10 +88,12 @@ describe("Application Details Display", () => {
       />
     );
 
-    // Assert
+    // Assert application values display properly
     expect(screen.getByText("Term: Oversize")).toBeInTheDocument();
     expect(screen.getByText("Application # ABC-123456")).toBeInTheDocument();
     expect(screen.getByText(dayjsToLocalStr(createdAt, DATE_FORMATS.LONG))).toBeInTheDocument();
     expect(screen.getByText(dayjsToLocalStr(updatedAt, DATE_FORMATS.LONG))).toBeInTheDocument();
+
+    assertProperCompanyInfo();
   });
 });
