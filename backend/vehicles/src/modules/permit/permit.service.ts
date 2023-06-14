@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Mapper } from '@automapper/core';
 import { InjectMapper } from '@automapper/nestjs';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { CreatePermitDto } from './dto/request/create-permit.dto';
 import { ReadPermitDto } from './dto/response/read-permit.dto';
 import { Permit } from './entities/permit.entity';
@@ -51,6 +51,22 @@ export class PermitService {
         permitData: true,
       },
     });
+  }
+
+  /**
+   * Finds permits by permit number.
+   * @param permitNumber partial or full permit number to search
+   * @returns an array of permits
+   */
+  public async findByPermitNumber(permitNumber: string): Promise<ReadPermitDto[]> {
+    const permits = await this.permitRepository.find({
+      where: {permitNumber: Like(`%${permitNumber}%`)}
+    });
+    return this.classMapper.mapArrayAsync(
+      permits,
+      Permit,
+      ReadPermitDto,
+    );
   }
 
   public async findAllPermitTypes(): Promise<PermitType[]> {
