@@ -1,6 +1,7 @@
 import { act, fireEvent, screen, within } from "@testing-library/react";
 import { vi } from "vitest";
 import { TrailerForm } from "../components/form/TrailerForm";
+import { renderWithClient } from "../../../common/helpers/testHelper";
 import {
   clickSubmit,
   getCountry,
@@ -12,7 +13,6 @@ import {
   getTrailerTypeCode,
   getVIN,
   getYear,
-  renderWithClient,
 } from "./utils";
 
 beforeEach(async () => {

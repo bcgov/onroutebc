@@ -1,6 +1,7 @@
 import { act, fireEvent, screen, within } from "@testing-library/react";
 import { vi } from "vitest";
 import { PowerUnitForm } from "../components/form/PowerUnitForm";
+import { renderWithClient } from "../../../common/helpers/testHelper";
 import {
   clickSubmit,
   getCountry,
@@ -13,7 +14,6 @@ import {
   getPowerUnitTypeCode,
   getVIN,
   getYear,
-  renderWithClient,
 } from "./utils";
 
 beforeEach(async () => {
