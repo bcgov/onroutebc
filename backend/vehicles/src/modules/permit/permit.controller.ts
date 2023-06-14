@@ -60,6 +60,20 @@ export class PermitController {
     return this.permitService.create(createPermitDto);
   }
 
+  @ApiCreatedResponse({
+    description: 'The Permit Resource',
+    type: ReadPermitDto,
+    isArray: true,
+  })
+  @Public()
+  @Get()
+  async get(
+    @Req() request: Request,
+    @Query('permitNumber') permitNumber: string
+  ): Promise<ReadPermitDto[]> {
+    return this.permitService.findByPermitNumber(permitNumber);
+  }
+
   @AuthOnly()
   @Get('/pdf/:permitId')
   @ApiQuery({
