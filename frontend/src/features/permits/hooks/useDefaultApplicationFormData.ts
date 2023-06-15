@@ -26,6 +26,7 @@ export const useDefaultApplicationFormData = (applicationData?: Application) => 
 
   // Update contact details form fields whenever these values are updated
   const contactDetailsDepArray = [
+    applicationData?.applicationNumber,
     applicationData?.permitData?.contactDetails?.firstName,
     userDetails?.firstName,
     applicationData?.permitData?.contactDetails?.lastName,
@@ -33,11 +34,15 @@ export const useDefaultApplicationFormData = (applicationData?: Application) => 
     applicationData?.permitData?.contactDetails?.phone1,
     userDetails?.phone1,
     applicationData?.permitData?.contactDetails?.phone1Extension,
+    userDetails?.phone1Extension,
     applicationData?.permitData?.contactDetails?.phone2,
+    userDetails?.phone2,
     applicationData?.permitData?.contactDetails?.phone2Extension,
+    userDetails?.phone2Extension,
     applicationData?.permitData?.contactDetails?.email,
     userDetails?.email,
     applicationData?.permitData?.contactDetails?.fax,
+    userDetails?.fax,
   ];
 
   // Update mailing address form fields whenever these values are updated
@@ -115,7 +120,11 @@ export const useDefaultApplicationFormData = (applicationData?: Application) => 
   useEffect(() => {
     setValue(
       "permitData.contactDetails",
-      getDefaultContactDetails(applicationData?.permitData?.contactDetails, userDetails)
+      getDefaultContactDetails(
+        getDefaultRequiredVal("", applicationData?.applicationNumber).trim() === "",
+        applicationData?.permitData?.contactDetails, 
+        userDetails
+      )
     );
   }, contactDetailsDepArray);
 

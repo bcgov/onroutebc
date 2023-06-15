@@ -10,48 +10,83 @@ import { Address } from "../../manageProfile/types/manageProfile";
 
 /**
  * Get default values for contact details, or populate with existing contact details and/or user details
- * @param contactDetails existing contact details, if any
+ * @param isNewApplication true if the application has not been created yet, false if created already
+ * @param contactDetails existing contact details for the application, if any
  * @param userDetails existing user details, if any
  * @returns default values for contact details
  */
-export const getDefaultContactDetails = (contactDetails?: ContactDetails, userDetails?: UserDetailContext) => ({
-  firstName: getDefaultRequiredVal(
-    "",
-    contactDetails?.firstName,
-    userDetails?.firstName
-  ),
-  lastName: getDefaultRequiredVal(
-    "",
-    contactDetails?.lastName,
-    userDetails?.lastName
-  ),
-  phone1: getDefaultRequiredVal(
-    "",
-    contactDetails?.phone1,
-    userDetails?.phone1
-  ),
-  phone1Extension: getDefaultRequiredVal(
-    "",
-    contactDetails?.phone1Extension
-  ),
-  phone2: getDefaultRequiredVal(
-    "",
-    contactDetails?.phone2
-  ),
-  phone2Extension: getDefaultRequiredVal(
-    "",
-    contactDetails?.phone2Extension
-  ),
-  email: getDefaultRequiredVal(
-    "",
-    contactDetails?.email,
-    userDetails?.email
-  ),
-  fax: getDefaultRequiredVal(
-    "",
-    contactDetails?.fax
-  ),
-});
+export const getDefaultContactDetails = (isNewApplication: boolean, contactDetails?: ContactDetails, userDetails?: UserDetailContext) => {
+  if (isNewApplication) {
+    return {
+      firstName: getDefaultRequiredVal(
+        "",
+        userDetails?.firstName
+      ),
+      lastName: getDefaultRequiredVal(
+        "",
+        userDetails?.lastName
+      ),
+      phone1: getDefaultRequiredVal(
+        "",
+        userDetails?.phone1
+      ),
+      phone1Extension: getDefaultRequiredVal(
+        "",
+        userDetails?.phone1Extension
+      ),
+      phone2: getDefaultRequiredVal(
+        "",
+        userDetails?.phone2
+      ),
+      phone2Extension: getDefaultRequiredVal(
+        "",
+        userDetails?.phone2Extension
+      ),
+      email: getDefaultRequiredVal(
+        "",
+        userDetails?.email
+      ),
+      fax: getDefaultRequiredVal(
+        "",
+        userDetails?.fax
+      ),
+    };
+  }
+  return {
+    firstName: getDefaultRequiredVal(
+      "",
+      contactDetails?.firstName,
+    ),
+    lastName: getDefaultRequiredVal(
+      "",
+      contactDetails?.lastName,
+    ),
+    phone1: getDefaultRequiredVal(
+      "",
+      contactDetails?.phone1,
+    ),
+    phone1Extension: getDefaultRequiredVal(
+      "",
+      contactDetails?.phone1Extension
+    ),
+    phone2: getDefaultRequiredVal(
+      "",
+      contactDetails?.phone2
+    ),
+    phone2Extension: getDefaultRequiredVal(
+      "",
+      contactDetails?.phone2Extension
+    ),
+    email: getDefaultRequiredVal(
+      "",
+      contactDetails?.email,
+    ),
+    fax: getDefaultRequiredVal(
+      "",
+      contactDetails?.fax
+    ),
+  };
+};
 
 /**
  * Get default values for mailing address, or populate with values from existing mailing address and/or alternate address.
@@ -216,7 +251,11 @@ export const getDefaultValues = (applicationData?: Application, companyId?: numb
         applicationData?.permitData?.commodities
       )
     ),
-    contactDetails: getDefaultContactDetails(applicationData?.permitData?.contactDetails, userDetails),
+    contactDetails: getDefaultContactDetails(
+      getDefaultRequiredVal("", applicationData?.applicationNumber).trim() === "",
+      applicationData?.permitData?.contactDetails, 
+      userDetails
+    ),
     // Default values are updated from companyInfo query in the ContactDetails common component
     mailingAddress: getDefaultMailingAddress(applicationData?.permitData?.mailingAddress),
     vehicleDetails: getDefaultVehicleDetails(applicationData?.permitData?.vehicleDetails),
