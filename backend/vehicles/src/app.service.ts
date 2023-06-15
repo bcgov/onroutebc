@@ -62,15 +62,16 @@ export class AppService {
     await this.addToCache('powerUnit', 'Power Unit');
     await this.addToCache('trailer', 'Trailer');
 
+    //Temp Commented out. Failing in Docker and openshift
     //SVG Image to Base 64 String
-    await this.addToCache(
+   /* await this.addToCache(
       'onRouteBCLogo',
       this.encodeFiletoBase64('./src/common/assets/onRouteBCLogo.svg'),
     );
     await this.addToCache(
       'motiBCLogo',
       this.encodeFiletoBase64('./src/common/assets/motiBCLogo.svg'),
-    );
+    );*/
   }
 
   private encodeFiletoBase64(svgFilePath: string) {
