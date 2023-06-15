@@ -58,15 +58,13 @@ export class PermitService {
    * @param permitNumber partial or full permit number to search
    * @returns an array of permits
    */
-  public async findByPermitNumber(permitNumber: string): Promise<ReadPermitDto[]> {
+  public async findByPermitNumber(
+    permitNumber: string,
+  ): Promise<ReadPermitDto[]> {
     const permits = await this.permitRepository.find({
-      where: {permitNumber: Like(`%${permitNumber}%`)}
+      where: { permitNumber: Like(`%${permitNumber}%`) },
     });
-    return this.classMapper.mapArrayAsync(
-      permits,
-      Permit,
-      ReadPermitDto,
-    );
+    return this.classMapper.mapArrayAsync(permits, Permit, ReadPermitDto);
   }
 
   public async findAllPermitTypes(): Promise<PermitType[]> {
