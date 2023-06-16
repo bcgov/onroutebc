@@ -1,6 +1,11 @@
 import { Mapper } from '@automapper/core';
 import { InjectMapper } from '@automapper/nestjs';
-import { ForbiddenException, HttpException, Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  HttpException,
+  Inject,
+  Injectable,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ApplicationStatus } from 'src/common/enum/application-status.enum';
 import { DataSource, IsNull, Repository } from 'typeorm';
@@ -19,6 +24,13 @@ import { IUserJWT } from 'src/common/interface/user-jwt.interface';
 import { PermitApprovalSource as PermitApprovalSourceEnum } from 'src/common/enum/permit-approval-source.enum';
 import { callDatabaseSequence } from 'src/common/helper/database.helper';
 import { randomInt } from 'crypto';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
+import { FullNames } from './interface/fullNames.interface';
+import { PermitData } from 'src/common/interface/permit.template.interface';
+import { getFullNameFromCache } from 'src/common/helper/cache.helper';
+import { CompanyService } from '../company-user-management/company/company.service';
+import { formatTemplateData } from './helpers/formatTemplateData.helper';
 
 @Injectable()
 export class ApplicationService {
@@ -32,6 +44,9 @@ export class ApplicationService {
     private permitApplicationOriginRepository: Repository<PermitApplicationOrigin>,
     @InjectRepository(PermitApprovalSource)
     private permitApprovalSourceRepository: Repository<PermitApprovalSource>,
+    @Inject(CACHE_MANAGER)
+    private readonly cacheManager: Cache,
+    private companyService: CompanyService,
   ) {}
 
   /**
@@ -228,11 +243,10 @@ export class ApplicationService {
     applicationStatus: ApplicationStatus,
     currentUser: IUserJWT,
   ): Promise<ResultDto> {
-    let permitNumber: string = null;
     let permitApprovalSource: PermitApprovalSourceEnum = null;
     if (applicationIds.length === 1) {
       if (applicationStatus === ApplicationStatus.ISSUED)
-        permitNumber = await this.generatePermitNumber(applicationIds[0]);
+        return await this.issuePermit(currentUser, applicationIds[0]);
       else if (
         applicationStatus === ApplicationStatus.APPROVED ||
         applicationStatus === ApplicationStatus.AUTO_APPROVED
@@ -255,7 +269,6 @@ export class ApplicationService {
       .update()
       .set({
         permitStatus: applicationStatus,
-        ...(permitNumber && { permitNumber: permitNumber }),
         ...(permitApprovalSource && {
           permitApprovalSource: permitApprovalSource,
         }),
@@ -275,9 +288,6 @@ export class ApplicationService {
     const success = updatedApplications?.map((permit) => permit.ID);
     const failure = applicationIds?.filter((id) => !success?.includes(id));
 
-    // TODO: When to generate PDF?
-    await this.generatePDFs(currentUser.access_token, success);
-
     const resultDto: ResultDto = {
       success: success,
       failure: failure,
@@ -286,43 +296,153 @@ export class ApplicationService {
   }
 
   /**
-   * Generates PDF's of supplied permit ID's
-   * If the status is updated to 'ISSUED', then create pdf, store it in DMS, then update permit record with dms document ID
-   * @param accessToken the access token for authorization.
-   * @param permitIds array of permit ID's to be converted as PDF's and saved in DMS
+   * This function is responsible for issuing a permit based on a given application.
+   * It performs various operations, including generating a permit number, calling the PDF generation service, and updating the permit record in the database.
+   * It commits the transaction if successful, or rolls back the transaction and logs an error if an exception occurs during permit or pdf generation.
+   * @param currentUser // TODO: protect endpoint
+   * @param applicationId applicationId to identify the application to be issued. It is the same as permitId.
+   * @returns a resultDto that describes if the transaction was successful or if it failed
    */
-  async generatePDFs(accessToken: string, permitIds: string[]) {
-    for (const id of permitIds) {
-      const permit = await this.findOne(id);
-      // Generate PDF only if the permit status is 'ISSUED'
-      if (permit.permitStatus === ApplicationStatus.ISSUED) {
-        // Check if a PDF document already exists for the permit.
-        // It's important that a PDF does not get overwritten.
-        // Once its created, it is a permanent legal document.
-        if (permit.documentId) {
-          throw new HttpException('Document already exists', 409);
-        }
-        // DMS Reference ID for the generated PDF of the Permit
-        // TODO: write helper to determine 'latest' template version
-        const dmsDocumentId: string = await this.pdfService.generatePDF(
-          accessToken,
-          permit,
-          1,
-          PdfReturnType.DMS_DOC_ID,
-        );
+  private async issuePermit(currentUser: IUserJWT, applicationId: string) {
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
 
-        // Update Permit record with the new DMS Document ID
-        await this.permitRepository
-          .createQueryBuilder()
-          .update()
-          .set({ documentId: dmsDocumentId })
-          .whereInIds(permit.permitId)
-          .execute();
+    let success = '';
+    let failure = '';
 
-        console.log('Completed pdf generation');
-        console.log('DMS Document Id: ', dmsDocumentId);
-      }
+    const tempPermit = await this.findOne(applicationId);
+
+    // Check if a PDF document already exists for the permit.
+    // It's important that a PDF does not get overwritten.
+    // Once its created, it is a permanent legal document.
+    if (tempPermit.documentId || tempPermit.permitStatus === ApplicationStatus.ISSUED) {
+      throw new HttpException('Document already exists', 409);
     }
+
+    try {
+      const permitNumber = await this.generatePermitNumber(applicationId);
+      tempPermit.permitNumber = permitNumber;
+      tempPermit.permitStatus = ApplicationStatus.ISSUED;
+
+      const dmsDocumentId = await this.generatePDF(
+        currentUser.access_token,
+        tempPermit,
+      );
+
+      // Update Permit record with an ISSUED status, new permit number, and new DMS Document ID
+      await queryRunner.manager
+        .getRepository(Permit)
+        .createQueryBuilder()
+        .update(Permit)
+        .set({
+          permitStatus: ApplicationStatus.ISSUED,
+          ...(permitNumber && { permitNumber: permitNumber }),
+          ...{ documentId: dmsDocumentId },
+        })
+        .where('ID = :applicationId', { applicationId })
+        .andWhere('permitNumber IS NULL')
+        .execute();
+
+      success = applicationId;
+      failure = '';
+
+      await queryRunner.commitTransaction();
+    } catch (err) {
+      console.log('Error Issuing Application: ', err);
+      success = '';
+      failure = applicationId;
+      await queryRunner.rollbackTransaction();
+    } finally {
+      await queryRunner.release();
+    }
+
+    const resultDto: ResultDto = {
+      success: [success],
+      failure: [failure],
+    };
+    return resultDto;
+  }
+
+  /**
+   * Generates a PDF of an issued permit.
+   * First, format the permit data so that it complies with the .docx template, then generate the PDF
+   * @param accessToken the access token for authorization.
+   * @param permit the permit entity
+   */
+  async generatePDF(accessToken: string, permit: Permit) {
+
+    // Provide the permit json data required to populate the .docx template that is used to generate a PDF
+    const fullNames = await this.getFullNamesFromCache(permit);
+    const companyInfo = await this.companyService.findOne(permit.companyId);
+    const permitDataForTemplate = formatTemplateData(
+      permit,
+      fullNames,
+      companyInfo,
+    );
+
+    // DMS Reference ID for the generated PDF of the Permit
+    // TODO: write helper to determine 'latest' template version
+    const dmsDocumentId: string = await this.pdfService.generatePDF(
+      accessToken,
+      permitDataForTemplate,
+      1,
+      PdfReturnType.DMS_DOC_ID,
+    );
+
+    return dmsDocumentId;
+  }
+
+  /**
+   * Converts code names to full names by calling the cache manager.
+   * Example: 'TROS' to 'Oversize: Term'
+   * @param permit
+   * @returns a json object of the full names
+   */
+  private async getFullNamesFromCache(permit: Permit): Promise<FullNames> {
+    const permitData = JSON.parse(permit.permitData.permitData) as PermitData;
+
+    const vehicleTypeName = (await getFullNameFromCache(
+      this.cacheManager,
+      permitData.vehicleDetails.vehicleType,
+    )) as string;
+    const vehicleSubTypeName = (await getFullNameFromCache(
+      this.cacheManager,
+      permitData.vehicleDetails.vehicleSubType,
+    )) as string;
+
+    const mailingCountryName = (await getFullNameFromCache(
+      this.cacheManager,
+      permitData.vehicleDetails.countryCode,
+    )) as string;
+    const mailingProvinceName = (await getFullNameFromCache(
+      this.cacheManager,
+      permitData.vehicleDetails.provinceCode,
+    )) as string;
+
+    const vehicleCountryName = (await getFullNameFromCache(
+      this.cacheManager,
+      permitData.mailingAddress.countryCode,
+    )) as string;
+    const vehicleProvinceName = (await getFullNameFromCache(
+      this.cacheManager,
+      permitData.mailingAddress.provinceCode,
+    )) as string;
+
+    const permitName = (await getFullNameFromCache(
+      this.cacheManager,
+      permit.permitType,
+    )) as string;
+
+    return {
+      vehicleTypeName,
+      vehicleSubTypeName,
+      mailingCountryName,
+      mailingProvinceName,
+      vehicleCountryName,
+      vehicleProvinceName,
+      permitName,
+    };
   }
 
   /**
