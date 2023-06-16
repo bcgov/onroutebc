@@ -1,5 +1,5 @@
 import { HttpService } from '@nestjs/axios';
-import { BadRequestException, HttpException, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { lastValueFrom } from 'rxjs';
 import { Repository } from 'typeorm';
@@ -11,10 +11,13 @@ import {
   TEMPLATE_NAME,
 } from './constants/template.constant';
 import { DownloadMode, PdfReturnType } from '../../common/enum/pdf.enum';
-import { KeycloakResponse } from './interface/keycloakResponse.interface';
 import { PermitTemplateData } from '../../common/interface/permit.template.interface';
 import { DmsResponse } from '../../common/interface/dms.interface';
 import { Stream } from 'stream';
+import { GovCommonServices } from 'src/common/enum/gov-common-services.enum';
+import { getAccessToken } from 'src/common/helper/gov-common-services.helper';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 
 @Injectable()
 export class PdfService {
@@ -22,6 +25,8 @@ export class PdfService {
     @InjectRepository(Template)
     private templateRepository: Repository<Template>,
     private httpService: HttpService,
+    @Inject(CACHE_MANAGER)
+    private readonly cacheManager: Cache,
   ) {}
 
   /**
@@ -94,25 +99,14 @@ export class PdfService {
     permit: PermitTemplateData,
     template: string,
   ): Promise<ArrayBuffer> {
-    const CLIENT_ID = process.env.CDOGS_CLIENT_ID;
-    const CLIENT_SECRET = process.env.CDOGS_CLIENT_SECRET;
-    const TOKEN_URL = process.env.CDOGS_TOKEN_URL;
+
     const CDOGS_URL = process.env.CDOGS_URL;
 
-    // We need the oidc api to generate a token for us
-    const keycloak = await lastValueFrom(
-      this.httpService.post(
-        TOKEN_URL,
-        `grant_type=client_credentials&client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}`,
-        {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
-        },
-      ),
-    ).then((response) => {
-      return response.data as KeycloakResponse;
-    });
+    const token = await getAccessToken(
+      GovCommonServices.COMMON_DOCUMENT_GENERATION_SERVICE,
+      this.httpService,
+      this.cacheManager,
+    );
 
     // Calls the CDOGS service, which converts the the template document into a pdf
     const cdogsResponse = await lastValueFrom(
@@ -134,7 +128,7 @@ export class PdfService {
         }),
         {
           headers: {
-            Authorization: `Bearer ${keycloak.access_token}`,
+            Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json',
           },
           responseType: CDOGS_RESPONSE_TYPE,
