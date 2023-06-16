@@ -316,7 +316,10 @@ export class ApplicationService {
     // Check if a PDF document already exists for the permit.
     // It's important that a PDF does not get overwritten.
     // Once its created, it is a permanent legal document.
-    if (tempPermit.documentId || tempPermit.permitStatus === ApplicationStatus.ISSUED) {
+    if (
+      tempPermit.documentId ||
+      tempPermit.permitStatus === ApplicationStatus.ISSUED
+    ) {
       throw new HttpException('Document already exists', 409);
     }
 
@@ -345,7 +348,6 @@ export class ApplicationService {
         .execute();
 
       success = applicationId;
-      failure = '';
 
       await queryRunner.commitTransaction();
     } catch (err) {
@@ -371,7 +373,6 @@ export class ApplicationService {
    * @param permit the permit entity
    */
   async generatePDF(accessToken: string, permit: Permit) {
-
     // Provide the permit json data required to populate the .docx template that is used to generate a PDF
     const fullNames = await this.getFullNamesFromCache(permit);
     const companyInfo = await this.companyService.findOne(permit.companyId);

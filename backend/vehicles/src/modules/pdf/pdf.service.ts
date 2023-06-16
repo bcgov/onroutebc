@@ -1,9 +1,5 @@
 import { HttpService } from '@nestjs/axios';
-import {
-  BadRequestException,
-  HttpException,
-  Injectable,
-} from '@nestjs/common';
+import { BadRequestException, HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { lastValueFrom } from 'rxjs';
 import { Repository } from 'typeorm';
@@ -88,8 +84,6 @@ export class PdfService {
     return template;
   }
 
-  
-
   /**
    * Generate pdf document using CDOGS and an inline template
    * @param {PermitTemplateData} permit permit data used to populate the .docx template
@@ -155,8 +149,8 @@ export class PdfService {
 
   /**
    * Saves the pdf in S3 using the DMS service
-   * @param {string} accessToken 
-   * @param {ArrayBuffer} pdf 
+   * @param {string} accessToken
+   * @param {ArrayBuffer} pdf
    * @param {PdfReturnType} returnValue optional return value type
    * @returns Defaults to DMS document Id
    */
@@ -217,7 +211,7 @@ export class PdfService {
    * {@link CDOGS https://digital.gov.bc.ca/bcgov-common-components/common-document-generation-service/}
    * {@link COMS https://digital.gov.bc.ca/bcgov-common-components/common-object-management-service/}
    *
-   * @param {string} accessToken 
+   * @param {string} accessToken
    * @param {PermitTemplateData} permit permit data used to populate the .docx template
    * @param {number} templateVersion template version
    * @param {PdfReturnType} returnValue optional parameter to choose the return type
