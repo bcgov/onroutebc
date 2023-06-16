@@ -64,7 +64,7 @@ export class AppService {
 
     //Temp Commented out. Failing in Docker and openshift
     //SVG Image to Base 64 String
-   /* await this.addToCache(
+    /* await this.addToCache(
       'onRouteBCLogo',
       this.encodeFiletoBase64('./src/common/assets/onRouteBCLogo.svg'),
     );
