@@ -298,16 +298,11 @@ export class ApplicationService {
   /**
    * This function is responsible for issuing a permit based on a given application.
    * It performs various operations, including generating a permit number, calling the PDF generation service, and updating the permit record in the database.
-   * It commits the transaction if successful, or rolls back the transaction and logs an error if an exception occurs during permit or pdf generation.
    * @param currentUser // TODO: protect endpoint
    * @param applicationId applicationId to identify the application to be issued. It is the same as permitId.
    * @returns a resultDto that describes if the transaction was successful or if it failed
    */
   private async issuePermit(currentUser: IUserJWT, applicationId: string) {
-    const queryRunner = this.dataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-
     let success = '';
     let failure = '';
 
@@ -334,13 +329,12 @@ export class ApplicationService {
       );
 
       // Update Permit record with an ISSUED status, new permit number, and new DMS Document ID
-      await queryRunner.manager
-        .getRepository(Permit)
+      await this.permitRepository
         .createQueryBuilder()
-        .update(Permit)
+        .update()
         .set({
           permitStatus: ApplicationStatus.ISSUED,
-          ...(permitNumber && { permitNumber: permitNumber }),
+          ...{ permitNumber: permitNumber },
           ...{ documentId: dmsDocumentId },
         })
         .where('ID = :applicationId', { applicationId })
@@ -348,15 +342,10 @@ export class ApplicationService {
         .execute();
 
       success = applicationId;
-
-      await queryRunner.commitTransaction();
     } catch (err) {
       console.log('Error Issuing Application: ', err);
       success = '';
       failure = applicationId;
-      await queryRunner.rollbackTransaction();
-    } finally {
-      await queryRunner.release();
     }
 
     const resultDto: ResultDto = {

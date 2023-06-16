@@ -1,5 +1,10 @@
 import { HttpService } from '@nestjs/axios';
-import { BadRequestException, HttpException, Inject, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  Inject,
+  Injectable,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { lastValueFrom } from 'rxjs';
 import { Repository } from 'typeorm';
@@ -99,7 +104,6 @@ export class PdfService {
     permit: PermitTemplateData,
     template: string,
   ): Promise<ArrayBuffer> {
-
     const CDOGS_URL = process.env.CDOGS_URL;
 
     const token = await getAccessToken(
