@@ -25,17 +25,17 @@ on:
         required: false
         type: string
     secrets:
-      server:
-        description: 'Server url to connect to'
-        required: true
       access_token:
         description: 'Server access token'
         required: true
+      server:
+        description: 'Server url to connect to'
+        required: true
+      vault_environment:
+        description: 'Vault environment that is being used'
+        required: true
       vault_token:
         description: 'Vault access token'
-        required: true
-      vault_environment::
-        description: 'Vault environment that is being used'
         required: true
 jobs:
   deploy:
