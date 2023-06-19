@@ -31,7 +31,7 @@ on:
       access_token:
         description: 'Server access token'
         required: true
-      vault_token::
+      vault_token:
         description: 'Vault access token'
         required: true
       vault_environment::
