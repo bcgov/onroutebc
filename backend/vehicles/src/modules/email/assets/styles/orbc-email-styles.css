@@ -1,0 +1,79 @@
+h4 {
+    font-family: BC Sans, sans-serif;
+    font-style: normal;
+    font-weight: bold;
+    font-size:
+        20px;
+    line-height: 30px;
+    letter-spacing: -0.4px;
+    color: #313132;
+}
+
+h2 {
+    font-family: BC Sans, sans-serif;
+    font-style: normal;
+    font-weight: bold;
+    font-size:
+        32px;
+    line-height: 42px;
+    letter-spacing: -0.64px;
+    color: #313132;
+}
+
+h3 {
+    font-family: BC Sans, sans-serif;
+    font-style: normal;
+    font-weight: bold;
+    font-size:
+        24px;
+    line-height: 36px;
+    letter-spacing: -0.48px;
+    color: #313132;
+}
+
+p,
+li {
+    font-family: BC Sans, sans-serif;
+    font-style: normal;
+    font-weight: normal;
+    font-size:
+        16px;
+    line-height: 24px;
+    letter-spacing: 0px;
+    color: #313132;
+}
+
+.container {
+    max-width: 100%;
+    margin-left: 3.704vw;
+    margin-right: 3.704vw;
+}
+
+.container * {
+    max-width: 100%;
+}
+
+.flex-container {
+    margin-top: 2.962962962963vh;
+}
+
+.flex-container * {
+    margin: 0px;
+}
+
+ul.no-bullets {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+li,
+h2,
+h3,
+h4 {
+    white-space: nowrap;
+}
+
+hr.solid {
+    border-top: 1px solid #bbb;
+}

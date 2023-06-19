@@ -58,6 +58,7 @@ ENV CHES_CLIENT_ID ${CHES_CLIENT_ID}
 ENV CHES_CLIENT_SECRET ${CHES_CLIENT_SECRET}
 ENV CHES_URL ${CHES_URL}
 ENV DMS_URL ${DMS_URL}
+ENV FRONT_END_URL ${FRONT_END_URL}
 
 # Copy production files from build
 COPY --from=builder /app/package*.json ./

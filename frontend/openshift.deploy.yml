@@ -93,6 +93,9 @@ parameters:
     required: true
   - name: CHES_URL
     description: The CHES API url
+  - name: NODE_ENV
+    description: The NODE Environment
+    required: true    
 objects:
   - apiVersion: v1
     kind: ImageStream

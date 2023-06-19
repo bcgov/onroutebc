@@ -94,6 +94,9 @@ parameters:
     required: true
   - name: CHES_URL
     description: The CHES API url
+  - name: NODE_ENV
+    description: The NODE Environment
+    required: true    
 objects:
   - apiVersion: v1
     kind: ConfigMap
@@ -111,7 +114,8 @@ objects:
       auth0-audience: "${AUTH0_AUDIENCE}"
       auth0-ignore-exp: "${AUTH0_IGNORE_EXP}"
       coms-url: "${COMS_URL}"
-      coms-presigned-url-expiry: "${COMS_PRESIGNED_URL_EXPIRY}"    
+      coms-presigned-url-expiry: "${COMS_PRESIGNED_URL_EXPIRY}"
+      node-env: "${NODE_ENV}"
   - apiVersion: v1
     kind: Secret
     metadata:
@@ -241,7 +245,12 @@ objects:
                   valueFrom:
                     configMapKeyRef:
                       name: ${NAME}-${ZONE}-${COMPONENT}
-                      key: coms-presigned-url-expiry             
+                      key: coms-presigned-url-expiry
+                - name: NODE_ENV
+                  valueFrom:
+                    configMapKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: node-env
               ports:
                 - containerPort: 5001
                   protocol: TCP
