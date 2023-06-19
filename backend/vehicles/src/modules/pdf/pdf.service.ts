@@ -7,7 +7,6 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { lastValueFrom } from 'rxjs';
-import { Permit } from '../permit/entities/permit.entity';
 import { Repository } from 'typeorm';
 import { Template } from './entities/template.entity';
 import {
@@ -16,27 +15,23 @@ import {
   TEMPLATE_FILE_TYPE,
   TEMPLATE_NAME,
 } from './constants/template.constant';
-import { formatTemplateData } from './helpers/formatTemplateData.helper';
 import { DownloadMode, PdfReturnType } from '../../common/enum/pdf.enum';
-import { KeycloakResponse } from './interface/keycloakResponse.interface';
+import { PermitTemplateData } from '../../common/interface/permit.template.interface';
+import { DmsResponse } from '../../common/interface/dms.interface';
+import { Stream } from 'stream';
+import { GovCommonServices } from 'src/common/enum/gov-common-services.enum';
+import { getAccessToken } from 'src/common/helper/gov-common-services.helper';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
-import { FullNames } from './interface/fullNames.interface';
-import { PermitData } from './interface/permit.template.interface';
-import { getFullNameFromCache } from '../../common/helper/cache.helper';
-import { DmsResponse } from '../../common/interface/dms.interface';
-import { CompanyService } from '../company-user-management/company/company.service';
-import { Stream } from 'stream';
 
 @Injectable()
 export class PdfService {
   constructor(
-    @Inject(CACHE_MANAGER)
-    private readonly cacheManager: Cache,
     @InjectRepository(Template)
     private templateRepository: Repository<Template>,
     private httpService: HttpService,
-    private companyService: CompanyService,
+    @Inject(CACHE_MANAGER)
+    private readonly cacheManager: Cache,
   ) {}
 
   /**
@@ -100,98 +95,29 @@ export class PdfService {
   }
 
   /**
-   * Converts code names to full names by calling the cache manager.
-   * Example: 'TROS' to 'Oversize: Term'
-   * @param permit
-   * @returns
-   */
-  private async getFullNamesFromCache(permit: Permit): Promise<FullNames> {
-    const permitData = JSON.parse(permit.permitData.permitData) as PermitData;
-
-    const vehicleTypeName = (await getFullNameFromCache(
-      this.cacheManager,
-      permitData.vehicleDetails.vehicleType,
-    )) as string;
-    const vehicleSubTypeName = (await getFullNameFromCache(
-      this.cacheManager,
-      permitData.vehicleDetails.vehicleSubType,
-    )) as string;
-
-    const mailingCountryName = (await getFullNameFromCache(
-      this.cacheManager,
-      permitData.vehicleDetails.countryCode,
-    )) as string;
-    const mailingProvinceName = (await getFullNameFromCache(
-      this.cacheManager,
-      permitData.vehicleDetails.provinceCode,
-    )) as string;
-
-    const vehicleCountryName = (await getFullNameFromCache(
-      this.cacheManager,
-      permitData.mailingAddress.countryCode,
-    )) as string;
-    const vehicleProvinceName = (await getFullNameFromCache(
-      this.cacheManager,
-      permitData.mailingAddress.provinceCode,
-    )) as string;
-
-    const permitName = (await getFullNameFromCache(
-      this.cacheManager,
-      permit.permitType,
-    )) as string;
-
-    return {
-      vehicleTypeName,
-      vehicleSubTypeName,
-      mailingCountryName,
-      mailingProvinceName,
-      vehicleCountryName,
-      vehicleProvinceName,
-      permitName,
-    };
-  }
-
-  /**
    * Generate pdf document using CDOGS and an inline template
-   * @param {Permit} permit permit data
+   * @param {PermitTemplateData} permit permit data used to populate the .docx template
    * @param {Template} template template as a base64 string
    * @returns {ArrayBuffer} an Array Buffer of the pdf
    */
   private async createPDF(
-    permit: Permit,
+    permit: PermitTemplateData,
     template: string,
   ): Promise<ArrayBuffer> {
-    const CLIENT_ID = process.env.CDOGS_CLIENT_ID;
-    const CLIENT_SECRET = process.env.CDOGS_CLIENT_SECRET;
-    const TOKEN_URL = process.env.CDOGS_TOKEN_URL;
     const CDOGS_URL = process.env.CDOGS_URL;
 
-    // Format the template data to be used in the templated word documents
-    const fullNames = await this.getFullNamesFromCache(permit);
-    const companyInfo = await this.companyService.findOne(permit.companyId);
-    const templateData = formatTemplateData(permit, fullNames, companyInfo);
-
-    // We need the oidc api to generate a token for us
-    const keycloak = await lastValueFrom(
-      this.httpService.post(
-        TOKEN_URL,
-        `grant_type=client_credentials&client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}`,
-        {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
-        },
-      ),
-    ).then((response) => {
-      return response.data as KeycloakResponse;
-    });
+    const token = await getAccessToken(
+      GovCommonServices.COMMON_DOCUMENT_GENERATION_SERVICE,
+      this.httpService,
+      this.cacheManager,
+    );
 
     // Calls the CDOGS service, which converts the the template document into a pdf
     const cdogsResponse = await lastValueFrom(
       this.httpService.post(
         CDOGS_URL,
         JSON.stringify({
-          data: templateData,
+          data: permit,
           template: {
             encodingType: ENCODING_TYPE,
             fileType: TEMPLATE_FILE_TYPE,
@@ -206,7 +132,7 @@ export class PdfService {
         }),
         {
           headers: {
-            Authorization: `Bearer ${keycloak.access_token}`,
+            Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json',
           },
           responseType: CDOGS_RESPONSE_TYPE,
@@ -220,9 +146,11 @@ export class PdfService {
   }
 
   /**
-   * Saves the pdf in DMS using the DMS service
+   * Saves the pdf in S3 using the DMS service
+   * @param {string} accessToken
    * @param {ArrayBuffer} pdf
-   * @returns a DMS reference ID
+   * @param {PdfReturnType} returnValue optional return value type
+   * @returns Defaults to DMS document Id
    */
   private async savePDF(
     accessToken: string,
@@ -281,14 +209,15 @@ export class PdfService {
    * {@link CDOGS https://digital.gov.bc.ca/bcgov-common-components/common-document-generation-service/}
    * {@link COMS https://digital.gov.bc.ca/bcgov-common-components/common-object-management-service/}
    *
-   * @param {Permit} permit permit data
+   * @param {string} accessToken
+   * @param {PermitTemplateData} permit permit data used to populate the .docx template
    * @param {number} templateVersion template version
    * @param {PdfReturnType} returnValue optional parameter to choose the return type
    * @returns {string} value of returnValue type. Defaults to DMS Document Reference ID
    */
   public async generatePDF(
     accessToken: string,
-    permit: Permit,
+    permit: PermitTemplateData,
     templateVersion: number,
     returnValue?: PdfReturnType,
   ): Promise<string> {

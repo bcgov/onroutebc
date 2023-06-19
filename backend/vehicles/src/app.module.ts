@@ -19,6 +19,7 @@ import { PendingUsersModule } from './modules/company-user-management/pending-us
 import { AuthModule } from './modules/auth/auth.module';
 import { PermitModule } from './modules/permit/permit.module';
 import { PdfModule } from './modules/pdf/pdf.module';
+import { EmailModule } from './modules/email/email.module';
 
 const envPath = path.resolve(process.cwd() + '/../../');
 
@@ -71,6 +72,7 @@ const envPath = path.resolve(process.cwd() + '/../../');
     AuthModule,
     PermitModule,
     PdfModule,
+    EmailModule,
   ],
   controllers: [AppController],
   providers: [AppService],

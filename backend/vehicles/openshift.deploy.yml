@@ -83,12 +83,18 @@ parameters:
   - name: CDOGS_URL
     description: The CDOGS API url 
     required: true
+  - name: CHES_TOKEN_URL
+    description: The keycloak url for common hosted CHES
+    required: true    
   - name: CHES_CLIENT_ID
     description: Client Id to request the access token for connecting to CHES
     required: true
   - name: CHES_CLIENT_SECRET
     description: Client Secret to request the access token for connecting to CHES
     required: true
+  - name: CHES_URL
+    description: The CHES API url
+    required: true     
 objects:
   - apiVersion: v1
     kind: ConfigMap
@@ -109,6 +115,8 @@ objects:
       coms-presigned-url-expiry: "${COMS_PRESIGNED_URL_EXPIRY}"
       cdogs-token-url: "${CDOGS_TOKEN_URL}"
       cdogs-url: "${CDOGS_URL}"
+      ches-token-url: "${CHES_TOKEN_URL}"
+      ches-url: "${CHES_URL}"      
       dms-url: "https://${NAME}-${ZONE}-backend-dms.${DOMAIN}"
   - apiVersion: v1
     kind: Secret
@@ -243,7 +251,12 @@ objects:
                   valueFrom:
                     configMapKeyRef:
                       name: ${NAME}-${ZONE}-${COMPONENT}
-                      key: coms-presigned-url-expiry                                                               
+                      key: coms-presigned-url-expiry 
+                - name: CHES_TOKEN_URL
+                  valueFrom:
+                    configMapKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: ches-token-url                                                                                    
                 - name: CHES_CLIENT_ID
                   valueFrom:
                     secretKeyRef:
@@ -254,6 +267,11 @@ objects:
                     secretKeyRef:
                       name: ${NAME}-${ZONE}-${COMPONENT}
                       key: ches-client-secret
+                - name: CHES_URL
+                  valueFrom:
+                    configMapKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: ches-url                       
                 - name: CDOGS_CLIENT_ID
                   valueFrom:
                     secretKeyRef:
