@@ -1,8 +1,8 @@
 import { Permit } from 'src/modules/permit/entities/permit.entity';
 import {
   PermitData,
-  PermitTemplate,
-} from '../interface/permit.template.interface';
+  PermitTemplateData,
+} from '../../../common/interface/permit.template.interface';
 import { FullNames } from '../interface/fullNames.interface';
 import { ReadCompanyDto } from 'src/modules/company-user-management/company/dto/response/read-company.dto';
 
@@ -10,6 +10,7 @@ import { ReadCompanyDto } from 'src/modules/company-user-management/company/dto/
  * Formats the permit data so that it can be used in the templated word documents
  * @param permit
  * @param fullNames
+ * @param companyInfo used to get the company name and client number
  * @returns formatted permit data to be displayed on the PDF
  */
 export const formatTemplateData = (
@@ -18,9 +19,10 @@ export const formatTemplateData = (
   companyInfo: ReadCompanyDto,
 ) => {
   // Create a new template object that includes the formatted values used in the templated word documents
-  const template: PermitTemplate = {
+  const template: PermitTemplateData = {
     permitName: '',
     permitNumber: '',
+    permitType: '',
     createdDateTime: '',
     updatedDateTime: '',
     companyName: '',
@@ -39,6 +41,7 @@ export const formatTemplateData = (
   // Format Permit information
   template.permitName = fullNames.permitName;
   template.permitNumber = permit.permitNumber || ''; // TODO
+  template.permitType = permit.permitType;
   template.createdDateTime = permit.createdDateTime.toISOString(); // TODO: timezone? Format is done in word template
   template.updatedDateTime = permit.updatedDateTime.toISOString(); // TODO: timezone? Format is done in word template
 

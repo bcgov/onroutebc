@@ -63,8 +63,10 @@ services:
       CDOGS_CLIENT_SECRET: ${CDOGS_CLIENT_SECRET}
       CDOGS_TOKEN_URL: ${CDOGS_TOKEN_URL}
       CDOGS_URL: ${CDOGS_URL}
+      CHES_TOKEN_URL: ${CHES_TOKEN_URL}
       CHES_CLIENT_ID: ${CHES_CLIENT_ID}
       CHES_CLIENT_SECRET: ${CHES_CLIENT_SECRET}
+      CHES_URL: ${CHES_URL}
       DMS_URL: "http://dms-api:5001"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5000/"]

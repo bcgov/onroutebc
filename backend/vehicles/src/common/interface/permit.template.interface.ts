@@ -1,6 +1,8 @@
-export interface PermitTemplate {
+// Data used to populate a .docx template
+export interface PermitTemplateData {
   permitName: string;
   permitNumber: string;
+  permitType: string;
   createdDateTime: string;
   updatedDateTime: string;
   companyName: string;

@@ -5,6 +5,7 @@ import { PowerUnitTypesService } from './modules/vehicles/power-unit-types/power
 import { TrailerTypesService } from './modules/vehicles/trailer-types/trailer-types.service';
 import { CommonService } from './modules/common/common.service';
 import { PermitService } from './modules/permit/permit.service';
+import * as fs from 'fs';
 
 @Injectable()
 export class AppService {
@@ -60,5 +61,21 @@ export class AppService {
 
     await this.addToCache('powerUnit', 'Power Unit');
     await this.addToCache('trailer', 'Trailer');
+
+    //Temp Commented out. Failing in Docker and openshift
+    //SVG Image to Base 64 String
+    /* await this.addToCache(
+      'onRouteBCLogo',
+      this.encodeFiletoBase64('./src/common/assets/onRouteBCLogo.svg'),
+    );
+    await this.addToCache(
+      'motiBCLogo',
+      this.encodeFiletoBase64('./src/common/assets/motiBCLogo.svg'),
+    );*/
+  }
+
+  private encodeFiletoBase64(svgFilePath: string) {
+    const svgString = fs.readFileSync(svgFilePath, 'utf-8');
+    return Buffer.from(svgString).toString('base64');
   }
 }
