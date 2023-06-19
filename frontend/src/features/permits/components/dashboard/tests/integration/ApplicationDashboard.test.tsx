@@ -22,7 +22,7 @@ import { getDefaultUserDetails } from "./fixtures/getUserDetails";
 import { getDefaultCompanyInfo } from "./fixtures/getCompanyInfo";
 import { createApplication, getApplication, resetApplicationSource, updateApplication } from "./fixtures/getActiveApplication";
 import { dayjsToUtcStr, now } from "../../../../../../common/helpers/formatDate";
-import { ApplicationDashboard } from "../../../../components/dashboard/ApplicationDashboard";
+import { ApplicationDashboard } from "../../ApplicationDashboard";
 
 // Use some default user details values to give to the OnRouteBCContext context provider
 const defaultUserDetails = getDefaultUserDetails();
