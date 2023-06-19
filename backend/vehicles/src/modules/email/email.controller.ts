@@ -16,7 +16,7 @@ export class EmailController {
       EmailTemplate.PROFILE_REGISTRATION_EMAIL_TEMPLATE,
       null,
       emailSubject,
-      null,
+      ['praveen.1.raju@gov.bc.ca', 'praveen.raju@aot-technologies.com'],
     );
   }
 }

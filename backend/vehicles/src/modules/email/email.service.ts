@@ -1,7 +1,12 @@
 import { HttpService } from '@nestjs/axios';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
-import { HttpException, Inject, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { AxiosRequestConfig } from 'axios';
 import { lastValueFrom, map } from 'rxjs';
 import { getFullNameFromCache } from '../../common/helper/cache.helper';
@@ -85,13 +90,22 @@ export class EmailService {
     templateName: EmailTemplate,
     data: ProfileRegistrationEmailData,
   ): Promise<string> {
-    const template = await this.cacheManager.get(templateName);
+    const template = (await getFullNameFromCache(
+      this.cacheManager,
+      templateName,
+    )) as string;
+    if (!template?.length) {
+      throw new InternalServerErrorException('Template not found');
+    }
     const compiledTemplate = Handlebars.compile(template);
     const htmlBody = compiledTemplate({
       ...data,
       headerLogo: process.env.FRONT_END_URL + '/BC_Logo_MOTI.png',
       footerLogo: process.env.FRONT_END_URL + '/onRouteBC_Logo.png',
-      orbcEmailStyles: await this.cacheManager.get('orbcEmailStyles'),
+      orbcEmailStyles: (await getFullNameFromCache(
+        this.cacheManager,
+        'orbcEmailStyles',
+      )) as string,
     });
     return htmlBody;
   }
