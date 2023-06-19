@@ -62,7 +62,7 @@ jobs:
             overwrite: false
     steps:
       - name: Import Secrets
-        id: secrets
+        id: vault
         uses: hashicorp/vault-action@v2
         with:
           url: https://vault.developer.gov.bc.ca
@@ -70,24 +70,24 @@ jobs:
           exportEnv: "false"
           namespace: platform-services
           secrets: |
-            ${{secrets.vault_environment}}/data/database-${{inputs.vault_zone}}   DATABASE_HOST             | VAULT_DATABASE_HOST;
-            ${{secrets.vault_environment}}/data/database-${{inputs.vault_zone}}   DATABASE_USER             | VAULT_DATABASE_USER;
-            ${{secrets.vault_environment}}/data/database-${{inputs.vault_zone}}   DATABASE_NAME             | VAULT_DATABASE_NAME;
-            ${{secrets.vault_environment}}/data/database-${{inputs.vault_zone}}   DATABASE_PASSWORD         | VAULT_DATABASE_PASSWORD;
-            ${{secrets.vault_environment}}/data/database-${{inputs.vault_zone}}   DATABASE_PORT             | VAULT_DATABASE_PORT;
-            ${{secrets.vault_environment}}/data/auth0-${{inputs.vault_zone}}      AUTH0_ISSUER_URL          | VAULT_AUTH0_ISSUER_URL;
-            ${{secrets.vault_environment}}/data/auth0-${{inputs.vault_zone}}      AUTH0_AUDIENCE            | VAULT_AUTH0_AUDIENCE;
-            ${{secrets.vault_environment}}/data/auth0-${{inputs.vault_zone}}      AUTH0_IGNORE_EXP          | VAULT_AUTH0_IGNORE_EXP;
-            ${{secrets.vault_environment}}/data/coms-${{inputs.vault_zone}}       BASICAUTH_PASSWORD        | VAULT_BASICAUTH_PASSWORD;
-            ${{secrets.vault_environment}}/data/coms-${{inputs.vault_zone}}       BASICAUTH_USERNAME        | VAULT_BASICAUTH_USERNAME;
-            ${{secrets.vault_environment}}/data/coms-${{inputs.vault_zone}}       COMS_URL                  | VAULT_COMS_URL;
-            ${{secrets.vault_environment}}/data/coms-${{inputs.vault_zone}}       COMS_PRESIGNED_URL_EXPIRY | VAULT_PRESIGNED_URL_EXPIRY;
-            ${{secrets.vault_environment}}/data/ches-${{inputs.vault_zone}}       CHES_CLIENT_ID            | VAULT_CHES_CLIENT_ID;
-            ${{secrets.vault_environment}}/data/ches-${{inputs.vault_zone}}       CHES_CLIENT_SECRET        | VAULT_CHES_CLIENT_SECRET;
-            ${{secrets.vault_environment}}/data/cdogs-${{inputs.vault_zone}}      CDOGS_CLIENT_ID           | VAULT_CDOGS_CLIENT_ID;
-            ${{secrets.vault_environment}}/data/cdogs-${{inputs.vault_zone}}      CDOGS_CLIENT_SECRET       | VAULT_CDOGS_CLIENT_SECRET;
-            ${{secrets.vault_environment}}/data/cdogs-${{inputs.vault_zone}}      CDOGS_TOKEN_URL           | VAULT_CDOGS_TOKEN_URL;
-            ${{secrets.vault_environment}}/data/cdogs-${{inputs.vault_zone}}      CDOGS_URL                 | VAULT_CDOGS_URL;
+            ${{vault.vault_environment}}/data/database-${{inputs.vault_zone}}   DATABASE_HOST             | VAULT_DATABASE_HOST;
+            ${{vault.vault_environment}}/data/database-${{inputs.vault_zone}}   DATABASE_USER             | VAULT_DATABASE_USER;
+            ${{vault.vault_environment}}/data/database-${{inputs.vault_zone}}   DATABASE_NAME             | VAULT_DATABASE_NAME;
+            ${{vault.vault_environment}}/data/database-${{inputs.vault_zone}}   DATABASE_PASSWORD         | VAULT_DATABASE_PASSWORD;
+            ${{vault.vault_environment}}/data/database-${{inputs.vault_zone}}   DATABASE_PORT             | VAULT_DATABASE_PORT;
+            ${{vault.vault_environment}}/data/auth0-${{inputs.vault_zone}}      AUTH0_ISSUER_URL          | VAULT_AUTH0_ISSUER_URL;
+            ${{vault.vault_environment}}/data/auth0-${{inputs.vault_zone}}      AUTH0_AUDIENCE            | VAULT_AUTH0_AUDIENCE;
+            ${{vault.vault_environment}}/data/auth0-${{inputs.vault_zone}}      AUTH0_IGNORE_EXP          | VAULT_AUTH0_IGNORE_EXP;
+            ${{vault.vault_environment}}/data/coms-${{inputs.vault_zone}}       BASICAUTH_PASSWORD        | VAULT_BASICAUTH_PASSWORD;
+            ${{vault.vault_environment}}/data/coms-${{inputs.vault_zone}}       BASICAUTH_USERNAME        | VAULT_BASICAUTH_USERNAME;
+            ${{vault.vault_environment}}/data/coms-${{inputs.vault_zone}}       COMS_URL                  | VAULT_COMS_URL;
+            ${{vault.vault_environment}}/data/coms-${{inputs.vault_zone}}       COMS_PRESIGNED_URL_EXPIRY | VAULT_PRESIGNED_URL_EXPIRY;
+            ${{vault.vault_environment}}/data/ches-${{inputs.vault_zone}}       CHES_CLIENT_ID            | VAULT_CHES_CLIENT_ID;
+            ${{vault.vault_environment}}/data/ches-${{inputs.vault_zone}}       CHES_CLIENT_SECRET        | VAULT_CHES_CLIENT_SECRET;
+            ${{vault.vault_environment}}/data/cdogs-${{inputs.vault_zone}}      CDOGS_CLIENT_ID           | VAULT_CDOGS_CLIENT_ID;
+            ${{vault.vault_environment}}/data/cdogs-${{inputs.vault_zone}}      CDOGS_CLIENT_SECRET       | VAULT_CDOGS_CLIENT_SECRET;
+            ${{vault.vault_environment}}/data/cdogs-${{inputs.vault_zone}}      CDOGS_TOKEN_URL           | VAULT_CDOGS_TOKEN_URL;
+            ${{vault.vault_environment}}/data/cdogs-${{inputs.vault_zone}}      CDOGS_URL                 | VAULT_CDOGS_URL;
       
       - uses: bcgov-nr/action-deployer-openshift@v1.0.5
         with:
@@ -100,87 +100,22 @@ jobs:
             -p ZONE=${{inputs.zone}}
             -p NAME=${{ github.event.repository.name }} ${{ matrix.parameters }}
             -p PROMOTE=${{ github.repository }}/${{ matrix.name }}:${{inputs.imagetag}}
-            -p DATABASE_NAME=${{steps.secrets.outputs.VAULT_DATABASE_NAME}}
-            -p DATABASE_USER=${{steps.secrets.outputs.VAULT_DATABASE_USER}}
-            -p DATABASE_PASSWORD=${{steps.secrets.outputs.VAULT_DATABASE_PASSWORD}}
-            -p DATABASE_HOST=${{steps.secrets.outputs.VAULT_DATABASE_HOST}}
-            -p AUTH0_ISSUER_URL=${{steps.secrets.outputs.VAULT_AUTH0_ISSUER_URL}}
-            -p AUTH0_AUDIENCE=${{steps.secrets.outputs.VAULT_AUTH0_AUDIENCE}}
-            -p AUTH0_IGNORE_EXP=${{steps.secrets.outputs.VAULT_AUTH0_IGNORE_EXP}}
-            -p BASICAUTH_PASSWORD=${{steps.secrets.outputs.VAULT_BASICAUTH_PASSWORD}}
-            -p BASICAUTH_USERNAME=${{steps.secrets.outputs.VAULT_BASICAUTH_USERNAME}}
-            -p COMS_URL=${{steps.secrets.outputs.VAULT_COMS_URL}}
-            -p COMS_PRESIGNED_URL_EXPIRY=${{steps.secrets.outputs.VAULT_PRESIGNED_URL_EXPIRY}}
-            -p CHES_CLIENT_ID=${{steps.secrets.outputs.VAULT_CHES_CLIENT_ID}}
-            -p CHES_CLIENT_SECRET=${{steps.secrets.outputs.VAULT_CHES_CLIENT_SECRET}}
-            -p CDOGS_CLIENT_ID=${{steps.secrets.outputs.VAULT_CDOGS_CLIENT_ID}}
-            -p CDOGS_CLIENT_SECRET=${{steps.secrets.outputs.VAULT_CDOGS_CLIENT_SECRET}}
-            -p CDOGS_TOKEN_URL=${{steps.secrets.outputs.VAULT_CDOGS_TOKEN_URL}}
-            -p CDOGS_URL=${{steps.secrets.outputs.VAULT_CDOGS_URL}}
+            -p DATABASE_NAME=${{steps.vault.outputs.VAULT_DATABASE_NAME}}
+            -p DATABASE_USER=${{steps.vault.outputs.VAULT_DATABASE_USER}}
+            -p DATABASE_PASSWORD=${{steps.vault.outputs.VAULT_DATABASE_PASSWORD}}
+            -p DATABASE_HOST=${{steps.vault.outputs.VAULT_DATABASE_HOST}}
+            -p AUTH0_ISSUER_URL=${{steps.vault.outputs.VAULT_AUTH0_ISSUER_URL}}
+            -p AUTH0_AUDIENCE=${{steps.vault.outputs.VAULT_AUTH0_AUDIENCE}}
+            -p AUTH0_IGNORE_EXP=${{steps.vault.outputs.VAULT_AUTH0_IGNORE_EXP}}
+            -p BASICAUTH_PASSWORD=${{steps.vault.outputs.VAULT_BASICAUTH_PASSWORD}}
+            -p BASICAUTH_USERNAME=${{steps.vault.outputs.VAULT_BASICAUTH_USERNAME}}
+            -p COMS_URL=${{steps.vault.outputs.VAULT_COMS_URL}}
+            -p COMS_PRESIGNED_URL_EXPIRY=${{steps.vault.outputs.VAULT_PRESIGNED_URL_EXPIRY}}
+            -p CHES_CLIENT_ID=${{steps.vault.outputs.VAULT_CHES_CLIENT_ID}}
+            -p CHES_CLIENT_SECRET=${{steps.vault.outputs.VAULT_CHES_CLIENT_SECRET}}
+            -p CDOGS_CLIENT_ID=${{steps.vault.outputs.VAULT_CDOGS_CLIENT_ID}}
+            -p CDOGS_CLIENT_SECRET=${{steps.vault.outputs.VAULT_CDOGS_CLIENT_SECRET}}
+            -p CDOGS_TOKEN_URL=${{steps.vault.outputs.VAULT_CDOGS_TOKEN_URL}}
+            -p CDOGS_URL=${{steps.vault.outputs.VAULT_CDOGS_URL}}
             ${{ matrix.parameters }}
           penetration_test: false
-  
-  deploys-coms:
-    name: Deployments - COMS
-    environment: ${{inputs.zone}}
-    needs:
-      - deploy
-    runs-on: ubuntu-22.04
-    strategy:
-      max-parallel: 1
-      fail-fast: true
-    steps:
-      - name: Import Secrets
-        id: secrets
-        uses: hashicorp/vault-action@v2
-        with:
-            url: https://vault.developer.gov.bc.ca
-            token: ${{ secrets.vault_token }}
-            exportEnv: 'false'
-            namespace: platform-services
-            secrets: |
-                ${{secrets.vault_environment}}/data/coms-${{inputs.vault_zone}}  BASICAUTH_PASSWORD              | VAULT_BASICAUTH_PASSWORD;
-                ${{secrets.vault_environment}}/data/coms-${{inputs.vault_zone}}  BASICAUTH_USERNAME              | VAULT_BASICAUTH_USERNAME;
-                ${{secrets.vault_environment}}/data/coms-${{inputs.vault_zone}}  OBJECTSTORAGE_ACCESSKEYID       | VAULT_OBJECTSTORAGE_ACCESSKEYID;
-                ${{secrets.vault_environment}}/data/coms-${{inputs.vault_zone}}  OBJECTSTORAGE_BUCKET            | VAULT_OBJECTSTORAGE_BUCKET;
-                ${{secrets.vault_environment}}/data/coms-${{inputs.vault_zone}}  OBJECTSTORAGE_ENDPOINT          | VAULT_OBJECTSTORAGE_ENDPOINT;
-                ${{secrets.vault_environment}}/data/coms-${{inputs.vault_zone}}  OBJECTSTORAGE_KEY               | VAULT_OBJECTSTORAGE_KEY;
-                ${{secrets.vault_environment}}/data/coms-${{inputs.vault_zone}}  OBJECTSTORAGE_SECRETACCESSKEY   | VAULT_OBJECTSTORAGE_SECRETACCESSKEY;
-      - name: Authenticate and set context
-        uses: redhat-actions/oc-login@v1
-        with:
-          openshift_server_url: ${{ secrets.server }}
-          openshift_token: ${{ secrets.access_token }}
-          namespace: ${{inputs.environmnet }}
-      - name: Helm Deploy
-        uses: vimeda/helm@v1.7.0
-        with:
-          chart: 'common-object-management-service/common-object-management-service'
-          chart-version: 0.0.13
-          namespace: ${{inputs.environmnet }}
-          release: ${{ github.event.repository.name }}-${{inputs.vault_zone}}-common-object-management-service
-          repo: https://bcgov github.io/common-object-management-service
-          repo-alias: common-object-management-service
-          token: ${{secrets.access_token}}
-          values: |
-            fullNameOverride: ${{ github.event.repository.name }}-${{inputs.vault_zone}}-common-object-management-service
-            route:
-              host: ${{ github.event.repository.name }}-${{inputs.vault_zone}}-common-object-management-service.apps.silver.devops.gov.bc.ca
-            basicAuthSecretOverride:
-              username: ${{steps.secrets.outputs.VAULT_BASICAUTH_USERNAME}}
-            objectStorageSecretOverride:
-              username: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_ACCESSKEYID}}
-              password: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_SECRETACCESSKEY}}
-            features:
-              oidcAuth: false
-            config:
-              enabled: true
-              releaseScoped: true
-              configMap:
-                KC_IDENTITYKEY: null
-                KC_PUBLICKEY: null
-                KC_REALM: null
-                KC_SERVERURL: null
-                OBJECTSTORAGE_BUCKET: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_BUCKET}}
-                OBJECTSTORAGE_ENDPOINT: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_ENDPOINT}}
-                OBJECTSTORAGE_KEY: ${{steps.secrets.outputs.VAULT_OBJECTSTORAGE_KEY}}
