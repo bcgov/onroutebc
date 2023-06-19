@@ -6,6 +6,7 @@ import { TrailerTypesService } from './modules/vehicles/trailer-types/trailer-ty
 import { CommonService } from './modules/common/common.service';
 import { PermitService } from './modules/permit/permit.service';
 import * as fs from 'fs';
+import { EmailTemplate } from './common/enum/email-template.enum';
 
 @Injectable()
 export class AppService {
@@ -62,20 +63,29 @@ export class AppService {
     await this.addToCache('powerUnit', 'Power Unit');
     await this.addToCache('trailer', 'Trailer');
 
-    //Temp Commented out. Failing in Docker and openshift
-    //SVG Image to Base 64 String
-    /* await this.addToCache(
-      'onRouteBCLogo',
-      this.encodeFiletoBase64('./src/common/assets/onRouteBCLogo.svg'),
+    const assetsPath =
+      process.env.NODE_ENV === 'local'
+        ? './src/modules/email/assets/'
+        : './dist/modules/email/assets/';
+
+    await this.addToCache(
+      EmailTemplate.PROFILE_REGISTRATION_EMAIL_TEMPLATE,
+      this.convertFiletoString(
+        assetsPath + 'templates/profile-registration.email.hbs',
+      ),
     );
     await this.addToCache(
-      'motiBCLogo',
-      this.encodeFiletoBase64('./src/common/assets/motiBCLogo.svg'),
-    );*/
+      'orbcEmailStyles',
+      this.convertFiletoString(assetsPath + 'styles/orbc-email-styles.css'),
+    );
   }
 
-  private encodeFiletoBase64(svgFilePath: string) {
-    const svgString = fs.readFileSync(svgFilePath, 'utf-8');
-    return Buffer.from(svgString).toString('base64');
+  private convertFiletoString(svgFilePath: string, encode?: string) {
+    const file = fs.readFileSync(svgFilePath, 'utf-8');
+    if (encode) {
+      return Buffer.from(file).toString('base64');
+    } else {
+      return Buffer.from(file).toString();
+    }
   }
 }

@@ -1,0 +1,95 @@
+<head>
+  <meta charset='UTF-8' />
+  <meta http-equiv='X-UA-Compatible' content='IE=edge' />
+  <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+  <title>Welcome to onRouteBC</title>
+  <style>
+    {{orbcEmailStyles}}
+  </style>
+</head>
+
+<body>
+
+  <div class='container'>
+    <img src='{{headerLogo}}' alt='motiBCLogo' />
+    <hr class='solid' />
+    <div class='flex-container'>
+      <h2>Welcome to onRouteBC</h2>
+    </div>
+
+    <div class='flex-container' style='max-width: 752px;'>
+      <p>Hello,
+        <br />
+        <br />
+        Your company profile for [{{companyName}}] has been successfully
+        completed. The details you provided are listed below. You can start
+        applying for permits online at
+        <a
+          href='https://www.onroutebc.gov.bc.ca/'
+        >https://onroutebc.gov.bc.ca/</a>.
+      </p>
+    </div>
+
+    <div class='flex-container'>
+      <h4>onRouteBC Client Number</h4>
+      <p style='white-space: nowrap;'>{{onRoutebBcClientNumber}}</p>
+    </div>
+
+    <div class='flex-container'>
+      <h4>Company Mailing Address</h4>
+      <p>
+        <ul class='no-bullets'>
+          <li>{{companyAddressLine1}}</li>
+          <li>{{companyAddressLine2}}</li>
+          <li>{{companyCountry}}</li>
+          <li>{{companyProvinceState}}</li>
+          <li>{{companyCity}} {{companyPostalCode}}</li>
+        </ul>
+      </p>
+    </div>
+
+    <div class='flex-container'>
+      <h4>Company Contact Details</h4>
+      <p>
+        <ul class='no-bullets'>
+          <li>Email: {{companyEmail}}</li>
+          <li>Phone: {{companyPhoneNumber}}</li>
+          <li>Fax: {{companyFaxNumber}}</li>
+        </ul>
+      </p>
+    </div>
+
+    <div class='flex-container'>
+      <h4>Company Primary Contact</h4>
+      <p>
+        <ul class='no-bullets'>
+          <li>{{primaryContactFirstname}} {{primaryContactLastname}}</li>
+          <li>Email: {{primaryContactEmail}}</li>
+          <li>Primary Phone:
+            {{primaryContactPhoneNumber}}
+            Ext:
+            {{primaryContactExtension}}</li>
+          <li>Alternate Phone: {{primaryContactAlternatePhoneNumber}}</li>
+          <li>{{primaryContactCountry}}</li>
+          <li>{{primaryContactProvinceState}}</li>
+          <li>{{primaryContactCity}}</li>
+        </ul>
+      </p>
+    </div>
+    <hr class='solid' />
+    <div class='flex-container'>
+      <img src='{{footerLogo}}' alt='onRouteBCLogo' />
+
+      <p>Have questions or need help? Check out the
+        <a
+          href='https://www2.gov.bc.ca/gov/content/transportation/vehicle-safety-enforcement/services/permitting/commercial-transport-permits'
+        >Commercial Vehicle Permits</a>
+        page or email us at
+        <a href='mailto:onRouteBc@gov.bc.ca'>onRouteBc@gov.bc.ca</a>.
+      </p>
+
+      <p><a href='#'>Terms of Service</a> and <a href='#'>Privacy Policy</a></p>
+    </div>
+    <hr class='solid' />
+  </div>
+</body>

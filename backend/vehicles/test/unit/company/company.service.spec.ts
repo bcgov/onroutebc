@@ -35,9 +35,14 @@ import {
   redCompanyAdminUserJWTMock,
 } from '../../util/mocks/data/jwt.mock';
 import * as databaseHelper from 'src/common/helper/database.helper';
+import { EmailService } from '../../../src/modules/email/email.service';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 
 const COMPANY_ID_99 = 99;
 let repo: DeepMocked<Repository<Company>>;
+let emailService: DeepMocked<EmailService>;
+let cacheManager: DeepMocked<Cache>;
 
 describe('CompanyService', () => {
   let service: CompanyService;
@@ -46,6 +51,8 @@ describe('CompanyService', () => {
     jest.clearAllMocks();
 
     repo = createMock<Repository<Company>>();
+    emailService = createMock<EmailService>();
+    cacheManager = createMock<Cache>();
     const dataSourceMock = dataSourceMockFactory() as DataSource;
     const module: TestingModule = await Test.createTestingModule({
       imports: [AutomapperModule],
@@ -69,6 +76,8 @@ describe('CompanyService', () => {
         ContactProfile,
         AddressProfile,
         UsersProfile,
+        { provide: EmailService, useValue: emailService },
+        { provide: CACHE_MANAGER, useValue: cacheManager },
       ],
     }).compile();
 
@@ -86,6 +95,10 @@ describe('CompanyService', () => {
   describe('Company service create function', () => {
     it('should create a company registered in BC and its admin user.', async () => {
       repo.findOne.mockResolvedValue(redCompanyEntityMock);
+      emailService.sendEmailMessage.mockResolvedValue(
+        '00000000-0000-0000-0000-000000000000',
+      );
+
       jest
         .spyOn(databaseHelper, 'callDatabaseSequence')
         .mockImplementation(async () => {
@@ -102,6 +115,9 @@ describe('CompanyService', () => {
 
     it('should create a company registered in US and its admin user.', async () => {
       repo.findOne.mockResolvedValue(blueCompanyEntityMock);
+      emailService.sendEmailMessage.mockResolvedValue(
+        '00000000-0000-0000-0000-000000000000',
+      );
       jest
         .spyOn(databaseHelper, 'callDatabaseSequence')
         .mockImplementation(async () => {

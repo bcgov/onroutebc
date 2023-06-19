@@ -1,6 +1,7 @@
 import { Controller, Post } from '@nestjs/common';
 import { EmailService } from './email.service';
 import { Public } from '../../common/decorator/public.decorator';
+import { EmailTemplate } from '../../common/enum/email-template.enum';
 
 @Controller('email')
 export class EmailController {
@@ -10,8 +11,12 @@ export class EmailController {
   @Public()
   async sendEmail() {
     const emailSubject = 'Welcome to onRouteBC';
-    await this.emailService.sendEmailMessage('<h1>Hello</h1>', emailSubject, [
-      'test.1.test@gov.bc.ca',
-    ]);
+
+    await this.emailService.sendEmailMessage(
+      EmailTemplate.PROFILE_REGISTRATION_EMAIL_TEMPLATE,
+      null,
+      emailSubject,
+      ['praveen.1.raju@gov.bc.ca', 'praveen.raju@aot-technologies.com'],
+    );
   }
 }
