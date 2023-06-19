@@ -247,7 +247,15 @@ export const TrailerForm = ({ trailer }: TrailerFormProps) => {
             feature={FEATURE}
             options={{
               name: "emptyTrailerWidth",
-              rules: { required: false, maxLength: 10 },
+              //bruce tes
+              // rules: { required: false, maxLength: 10 },
+              rules: {
+                required: false,
+                pattern: {
+                  value: /^\d+$/,
+                  message: invalidNumber(),
+                },
+              },
               label: "Empty Trailer Width (m)",
               width: formFieldStyle.width,
             }}
