@@ -1,6 +1,10 @@
 import { Mapper } from '@automapper/core';
 import { InjectMapper } from '@automapper/nestjs';
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository, UpdateResult } from 'typeorm';
 import { User } from './entities/user.entity';
@@ -18,12 +22,19 @@ import { PendingUsersService } from '../pending-users/pending-users.service';
 import { CompanyService } from '../company/company.service';
 import { Role } from '../../../common/enum/roles.enum';
 import { IUserJWT } from '../../../common/interface/user-jwt.interface';
+import { IdirUser } from './entities/idir.user.entity';
+import { UserAuthGroup } from 'src/common/enum/user-auth-group.enum';
+import { PendingIdirUser } from '../pending-users/entities/pending-idir-user.entity';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
+    @InjectRepository(IdirUser)
+    private idirUserRepository: Repository<IdirUser>,
+    @InjectRepository(PendingIdirUser)
+    private pendingIdirUserRepository: Repository<PendingIdirUser>,
     @InjectMapper() private readonly classMapper: Mapper,
     private dataSource: DataSource,
     private readonly pendingUsersService: PendingUsersService,
@@ -287,10 +298,12 @@ export class UsersService {
       [userGUID, companyId],
     )) as [{ ROLE_ID: Role }];
 
+
     const roles = queryResult.map((r) => r.ROLE_ID);
 
     return roles;
-  }
+    }
+
 
   /**
    * The getCompaniesForUser() method finds and returns a {@link number[]} object
@@ -305,5 +318,93 @@ export class UsersService {
       await this.companyService.findCompanyMetadataByUserGuid(userGuid)
     ).map((r) => +r.companyId);
     return companies;
+  }
+
+  async checkIdirUser(currentUser: IUserJWT) {
+    let userExists = false;
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    const idirUser = await queryRunner.manager.findOneBy(IdirUser, {
+      userGUID: currentUser.userGUID,
+    });
+    if (!idirUser) {
+      /**
+       * IF IDIR use is not found in DB then check pending user table to see if the user has been invited
+       */
+      const pendingUser = await this.pendingIdirUserRepository.findOne({
+        where: [{ userName: currentUser.idir_username }],
+      });
+      /**
+       * IF user found in pending idir user table that means user has been invited
+       * in this case create user in the database followed by a deletion from pending user table.
+       * ELSE it implies that user has been been invited and raise unauthorized exception.
+       */
+      if (pendingUser) {
+        try {
+          const pendingUser = await queryRunner.manager.findOneBy(
+            PendingIdirUser,
+            {
+              userName: currentUser.userName,
+            },
+          );
+
+          if (pendingUser) {
+            const user: IdirUser = this.mapIdirUser(
+              currentUser,
+              pendingUser.userAuthGroup,
+            );
+            await queryRunner.manager.save(user);
+            await queryRunner.manager.delete(PendingIdirUser, {
+              userName: currentUser.userName,
+            });
+            await queryRunner.commitTransaction();
+            userExists = true;
+          } else {
+            throw new UnauthorizedException();
+          }
+        } catch (err) {
+          await queryRunner.rollbackTransaction();
+          throw new InternalServerErrorException(); // TODO: Handle the typeorm Error handling
+        } finally {
+          await queryRunner.release();
+        }
+      } else {
+        throw new UnauthorizedException();
+      }
+    }
+    else{
+      userExists = true;
+    }
+    return userExists;
+  }
+
+  private mapIdirUser(
+    currentUser: IUserJWT,
+    userAuthGroup: UserAuthGroup,
+  ): IdirUser {
+    const user: IdirUser = new IdirUser();
+    user.firstName = currentUser.given_name;
+    user.lastName = currentUser.family_name;
+    user.email = currentUser.email;
+    user.statusCode = UserStatus.ACTIVE;
+    user.userAuthGroup = userAuthGroup;
+    user.userGUID = currentUser.idir_user_guid;
+    user.userName = currentUser.idir_username;
+    return user;
+  }
+
+  async findIdirUser(
+    userGUID?: string,
+  ): Promise<ReadUserDto[]> {
+    // Find user entities based on the provided filtering criteria
+    const userDetails = await this.idirUserRepository.find({where: {userGUID: userGUID}});
+    // Map the retrieved user entities to ReadUserDto objects
+    const readUserDto = await this.classMapper.mapArrayAsync(
+      userDetails,
+      IdirUser,
+      ReadUserDto,
+    );
+    return readUserDto;
   }
 }

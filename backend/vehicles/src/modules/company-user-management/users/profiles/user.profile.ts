@@ -14,6 +14,7 @@ import { Contact } from '../../../common/entities/contact.entity';
 import { CreateUserDto } from '../dto/request/create-user.dto';
 import { ReadUserDto } from '../dto/response/read-user.dto';
 import { UpdateUserDto } from '../dto/request/update-user.dto';
+import { IdirUser } from '../entities/idir.user.entity';
 
 @Injectable()
 export class UsersProfile extends AutomapperProfile {
@@ -118,6 +119,31 @@ export class UsersProfile extends AutomapperProfile {
         forMember(
           (d) => d.countryCode,
           mapFrom((s) => s.userContact?.province?.country?.countryCode),
+        ),
+      );
+
+        /**
+       * The mapping is between IdirUser to ReadUserDto mapping. 
+       */
+      createMap(
+        mapper,
+        IdirUser,
+        ReadUserDto,
+        forMember(
+          (d) => d.userName,
+          mapFrom((s) => s.userName),
+        ),
+        forMember(
+          (d) => d.userGUID,
+          mapFrom((s) => s.userGUID),
+        ),
+        forMember(
+          (d) => d.userAuthGroup,
+          mapFrom((s) => s.userAuthGroup),
+        ),
+        forMember(
+          (d) => d.statusCode,
+          mapFrom((s) => s.statusCode),
         ),
       );
     };

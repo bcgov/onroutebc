@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from '../company-user-management/users/users.service';
 import { ReadUserDto } from '../company-user-management/users/dto/response/read-user.dto';
 import { PendingUsersService } from '../company-user-management/pending-users/pending-users.service';
 import { Role } from '../../common/enum/roles.enum';
 import { IDP } from '../../common/enum/idp.enum';
+import { IUserJWT } from 'src/common/interface/user-jwt.interface';
 
 @Injectable()
 export class AuthService {
@@ -18,9 +19,8 @@ export class AuthService {
     userGuid: string,
   ): Promise<boolean> {
     let user: ReadUserDto[];
-
     if (identity_provider === IDP.IDIR) {
-      user = await this.usersService.findUsersDto(userGuid);
+      user = await this.usersService.findIdirUser(userGuid);
     } else {
       if (!companyId) {
         user = await this.usersService.findUsersDto(userGuid);
@@ -57,5 +57,12 @@ export class AuthService {
   async getCompaniesForUser(userGuid: string): Promise<number[]> {
     const companies = await this.usersService.getCompaniesForUser(userGuid);
     return companies;
+  }
+
+  async checkIdirUser(currentUser: IUserJWT) {
+    const userExists: boolean = await this.usersService.checkIdirUser(
+      currentUser,
+    );
+    return userExists;
   }
 }

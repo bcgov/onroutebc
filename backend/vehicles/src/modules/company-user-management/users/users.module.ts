@@ -8,10 +8,12 @@ import { User } from './entities/user.entity';
 import { UsersProfile } from './profiles/user.profile';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
+import { IdirUser } from './entities/idir.user.entity';
+import { PendingIdirUser } from '../pending-users/entities/pending-idir-user.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, CompanyUser]),
+    TypeOrmModule.forFeature([User, CompanyUser, IdirUser, PendingIdirUser]),
     PendingUsersModule,
     CompanyModule,
   ],

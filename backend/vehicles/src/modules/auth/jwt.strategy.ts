@@ -56,9 +56,14 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     }
 
     if (payload.identity_provider === IDP.IDIR) {
+      companyId = 0;
       userGUID = payload.idir_user_guid;
       userName = payload.idir_username;
       payload.accountSource = AccountSource.PPCStaff;
+      const userExists = await this.authService.checkIdirUser(payload);
+      if (!userExists) {
+        throw new UnauthorizedException();
+      }
     } else if (payload.identity_provider === IDP.BCEID) {
       userGUID = payload.bceid_user_guid;
       userName = payload.bceid_username;
@@ -95,7 +100,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
     /*Additional validations to validate userGuid and company context where
     userGUID is explicitly provided as either path or query parameter*/
-
     await this.AdditionalValidations(req, payload, companyId);
 
     return payload;
@@ -112,6 +116,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     } else if (req.query['userGUID']) {
       userGUIDParam = req.query['userGUID']?.toString();
     }
+
 
     if (
       req.headers['AuthOnly'] === 'false' &&
@@ -137,7 +142,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         } else {
           roles = [Role.WRITE_USER];
         }
-
         validateUserCompanyAndRoleContext(
           roles,
           userGUIDParam,
