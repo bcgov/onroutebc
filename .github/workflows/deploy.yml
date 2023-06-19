@@ -83,6 +83,7 @@ jobs:
             ${{secrets.vault_environment}}/data/coms-${{inputs.vault_zone}}       COMS_URL                  | VAULT_COMS_URL;
             ${{secrets.vault_environment}}/data/coms-${{inputs.vault_zone}}       COMS_PRESIGNED_URL_EXPIRY | VAULT_PRESIGNED_URL_EXPIRY;
             ${{secrets.vault_environment}}/data/ches-${{inputs.vault_zone}}       CHES_TOKEN_URL            | VAULT_CHES_TOKEN_URL;
+            ${{secrets.vault_environment}}/data/ches-${{inputs.vault_zone}}       CHES_URL                  | VAULT_CHES_URL;
             ${{secrets.vault_environment}}/data/ches-${{inputs.vault_zone}}       CHES_CLIENT_ID            | VAULT_CHES_CLIENT_ID;
             ${{secrets.vault_environment}}/data/ches-${{inputs.vault_zone}}       CHES_CLIENT_SECRET        | VAULT_CHES_CLIENT_SECRET;
             ${{secrets.vault_environment}}/data/cdogs-${{inputs.vault_zone}}      CDOGS_CLIENT_ID           | VAULT_CDOGS_CLIENT_ID;
@@ -115,6 +116,7 @@ jobs:
             -p CHES_TOKEN_URL=${{steps.vault.outputs.VAULT_CHES_TOKEN_URL}}
             -p CHES_CLIENT_ID=${{steps.vault.outputs.VAULT_CHES_CLIENT_ID}}
             -p CHES_CLIENT_SECRET=${{steps.vault.outputs.VAULT_CHES_CLIENT_SECRET}}
+            -p CHES_URL=${{steps.vault.outputs.VAULT_CHES_URL}}
             -p CDOGS_CLIENT_ID=${{steps.vault.outputs.VAULT_CDOGS_CLIENT_ID}}
             -p CDOGS_CLIENT_SECRET=${{steps.vault.outputs.VAULT_CDOGS_CLIENT_SECRET}}
             -p CDOGS_TOKEN_URL=${{steps.vault.outputs.VAULT_CDOGS_TOKEN_URL}}
