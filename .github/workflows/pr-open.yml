@@ -64,12 +64,7 @@ jobs:
     needs:
       - builds
     with:
-      environment: 'dev'
+      environment: 'staging'
       imagetag: ${{ github.event.number }}
       penetration_test: false
       vault_zone: dev
-    secrets:
-      server: ${{ secrets.OC_SERVER }}
-      access_token: ${{ secrets.OC_TOKEN }}
-      vault_environment: ${{ secrets.VAULT_ENVIRONMENT }}
-      vault_token: ${{ secrets.VAULT_TOKEN }}
