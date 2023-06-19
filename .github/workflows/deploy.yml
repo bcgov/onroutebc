@@ -101,6 +101,7 @@ jobs:
             ${{secrets.VAULT_ENVIRONMENT}}/data/cdogs-${{inputs.vault_zone}}      CDOGS_CLIENT_SECRET       | VAULT_CDOGS_CLIENT_SECRET;
             ${{secrets.VAULT_ENVIRONMENT}}/data/cdogs-${{inputs.vault_zone}}      CDOGS_TOKEN_URL           | VAULT_CDOGS_TOKEN_URL;
             ${{secrets.VAULT_ENVIRONMENT}}/data/cdogs-${{inputs.vault_zone}}      CDOGS_URL                 | VAULT_CDOGS_URL;
+            ${{secrets.VAULT_ENVIRONMENT}}/data/be-api-${{inputs.vault_zone}}     NODE_ENV                  | VAULT_NODE_ENV;
       
       - uses: bcgov-nr/action-deployer-openshift@v1.0.5
         with:
@@ -132,5 +133,6 @@ jobs:
             -p CDOGS_CLIENT_SECRET=${{steps.vault.outputs.VAULT_CDOGS_CLIENT_SECRET}}
             -p CDOGS_TOKEN_URL=${{steps.vault.outputs.VAULT_CDOGS_TOKEN_URL}}
             -p CDOGS_URL=${{steps.vault.outputs.VAULT_CDOGS_URL}}
+            -p NODE_ENV=${{steps.vault.outputs.VAULT_NODE_ENV}}
             ${{ matrix.parameters }}
           penetration_test: false
