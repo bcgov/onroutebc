@@ -112,9 +112,12 @@ jobs:
             ${{secrets.VAULT_ENV}}/data/cdogs-dev     CDOGS_CLIENT_SECRET       | VAULT_CDOGS_CLIENT_SECRET;
             ${{secrets.VAULT_ENV}}/data/cdogs-dev     CDOGS_TOKEN_URL           | VAULT_CDOGS_TOKEN_URL;
             ${{secrets.VAULT_ENV}}/data/cdogs-dev     CDOGS_URL                 | VAULT_CDOGS_URL;
+            ${{secrets.VAULT_ENV}}/data/ches-dev      CHES_TOKEN_URL            | VAULT_CHES_TOKEN_URL;
             ${{secrets.VAULT_ENV}}/data/ches-dev      CHES_CLIENT_ID            | VAULT_CHES_CLIENT_ID;
             ${{secrets.VAULT_ENV}}/data/ches-dev      CHES_CLIENT_SECRET        | VAULT_CHES_CLIENT_SECRET;
-      - name: Deploy Application
+            ${{secrets.VAULT_ENV}}/data/ches-dev      CHES_URL                  | VAULT_CHES_URL;
+            ${{secrets.VAULT_ENV}}/data/be-api-dev    NODE_ENV                  | VAULT_NODE_ENV;
+      - name: Deploy Application    
         uses: bcgov-nr/action-deployer-openshift@v1.0.5
         with:
           file: ${{ matrix.file }}
@@ -138,12 +141,15 @@ jobs:
             -p BASICAUTH_USERNAME=${{steps.secrets.outputs.VAULT_BASICAUTH_USERNAME}}
             -p COMS_URL=${{steps.secrets.outputs.COMS_URL}}
             -p COMS_PRESIGNED_URL_EXPIRY=${{steps.secrets.outputs.VAULT_COMS_PRESIGNED_URL_EXPIRY}}
+            -p CHES_TOKEN_URL=${{steps.secrets.outputs.VAULT_CHES_TOKEN_URL}}
             -p CHES_CLIENT_ID=${{steps.secrets.outputs.VAULT_CHES_CLIENT_ID}}
             -p CHES_CLIENT_SECRET=${{steps.secrets.outputs.VAULT_CHES_CLIENT_SECRET}}
+            -p CHES_URL=${{steps.secrets.outputs.VAULT_CHES_URL}}
             -p CDOGS_CLIENT_ID=${{steps.secrets.outputs.VAULT_CDOGS_CLIENT_ID}}
             -p CDOGS_CLIENT_SECRET=${{steps.secrets.outputs.VAULT_CDOGS_CLIENT_SECRET}}
             -p CDOGS_TOKEN_URL=${{steps.secrets.outputs.VAULT_CDOGS_TOKEN_URL}}
             -p CDOGS_URL=${{steps.secrets.outputs.VAULT_CDOGS_URL}}
+            -p NODE_ENV=${{steps.secrets.outputs.VAULT_NODE_ENV}}
             ${{ matrix.parameters }}
 
   helm-deploys-dev:

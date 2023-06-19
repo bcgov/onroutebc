@@ -5,6 +5,8 @@ import { PowerUnitTypesService } from './modules/vehicles/power-unit-types/power
 import { TrailerTypesService } from './modules/vehicles/trailer-types/trailer-types.service';
 import { CommonService } from './modules/common/common.service';
 import { PermitService } from './modules/permit/permit.service';
+import * as fs from 'fs';
+import { EmailTemplate } from './common/enum/email-template.enum';
 
 @Injectable()
 export class AppService {
@@ -60,5 +62,30 @@ export class AppService {
 
     await this.addToCache('powerUnit', 'Power Unit');
     await this.addToCache('trailer', 'Trailer');
+
+    const assetsPath =
+      process.env.NODE_ENV === 'local'
+        ? './src/modules/email/assets/'
+        : './dist/modules/email/assets/';
+
+    await this.addToCache(
+      EmailTemplate.PROFILE_REGISTRATION_EMAIL_TEMPLATE,
+      this.convertFiletoString(
+        assetsPath + 'templates/profile-registration.email.hbs',
+      ),
+    );
+    await this.addToCache(
+      'orbcEmailStyles',
+      this.convertFiletoString(assetsPath + 'styles/orbc-email-styles.css'),
+    );
+  }
+
+  private convertFiletoString(svgFilePath: string, encode?: string) {
+    const file = fs.readFileSync(svgFilePath, 'utf-8');
+    if (encode) {
+      return Buffer.from(file).toString('base64');
+    } else {
+      return Buffer.from(file).toString();
+    }
   }
 }

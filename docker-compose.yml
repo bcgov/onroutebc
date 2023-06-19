@@ -63,9 +63,12 @@ services:
       CDOGS_CLIENT_SECRET: ${CDOGS_CLIENT_SECRET}
       CDOGS_TOKEN_URL: ${CDOGS_TOKEN_URL}
       CDOGS_URL: ${CDOGS_URL}
+      CHES_TOKEN_URL: ${CHES_TOKEN_URL}
       CHES_CLIENT_ID: ${CHES_CLIENT_ID}
       CHES_CLIENT_SECRET: ${CHES_CLIENT_SECRET}
+      CHES_URL: ${CHES_URL}
       DMS_URL: "http://dms-api:5001"
+      FRONT_END_URL: "http://frontend:3000"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5000/"]
       interval: 1m30s
@@ -102,7 +105,7 @@ services:
       BASICAUTH_USERNAME: ${BASICAUTH_USERNAME}
       BASICAUTH_PASSWORD: ${BASICAUTH_PASSWORD}
       COMS_URL: ${COMS_URL}
-      COMS_PRESIGNED_URL_EXPIRY: ${COMS_PRESIGNED_URL_EXPIRY}
+      COMS_PRESIGNED_URL_EXPIRY: ${COMS_PRESIGNED_URL_EXPIRY}      
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5001/"]
       interval: 1m30s

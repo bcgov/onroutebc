@@ -69,7 +69,7 @@ export class PermitController {
   @Public()
   @Get()
   async get(
-    @Query('permitNumber') permitNumber: string
+    @Query('permitNumber') permitNumber: string,
   ): Promise<ReadPermitDto[]> {
     return this.permitService.findByPermitNumber(permitNumber);
   }

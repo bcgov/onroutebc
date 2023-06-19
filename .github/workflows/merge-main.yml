@@ -105,12 +105,16 @@ jobs:
             ${{secrets.VAULT_ENV}}/data/coms-test       BASICAUTH_USERNAME        | VAULT_BASICAUTH_USERNAME;
             ${{secrets.VAULT_ENV}}/data/coms-test       COMS_URL                  | VAULT_COMS_URL;
             ${{secrets.VAULT_ENV}}/data/coms-test       COMS_PRESIGNED_URL_EXPIRY | VAULT_PRESIGNED_URL_EXPIRY;
+            ${{secrets.VAULT_ENV}}/data/ches-test       CHES_TOKEN_URL            | VAULT_CHES_TOKEN_URL;
             ${{secrets.VAULT_ENV}}/data/ches-test       CHES_CLIENT_ID            | VAULT_CHES_CLIENT_ID;
             ${{secrets.VAULT_ENV}}/data/ches-test       CHES_CLIENT_SECRET        | VAULT_CHES_CLIENT_SECRET;
+            ${{secrets.VAULT_ENV}}/data/ches-test       CHES_URL                  | VAULT_CHES_URL;
             ${{secrets.VAULT_ENV}}/data/cdogs-test      CDOGS_CLIENT_ID           | VAULT_CDOGS_CLIENT_ID;
             ${{secrets.VAULT_ENV}}/data/cdogs-test      CDOGS_CLIENT_SECRET       | VAULT_CDOGS_CLIENT_SECRET;
             ${{secrets.VAULT_ENV}}/data/cdogs-test      CDOGS_TOKEN_URL           | VAULT_CDOGS_TOKEN_URL;
             ${{secrets.VAULT_ENV}}/data/cdogs-test      CDOGS_URL                 | VAULT_CDOGS_URL;
+            ${{secrets.VAULT_ENV}}/data/be-api-test     NODE_ENV                  | VAULT_NODE_ENV;
+            
       
       - uses: bcgov-nr/action-deployer-openshift@v1.0.5
         with:
@@ -134,12 +138,15 @@ jobs:
             -p BASICAUTH_USERNAME=${{steps.secrets.outputs.VAULT_BASICAUTH_USERNAME}}
             -p COMS_URL=${{steps.secrets.outputs.VAULT_COMS_URL}}
             -p COMS_PRESIGNED_URL_EXPIRY=${{steps.secrets.outputs.VAULT_PRESIGNED_URL_EXPIRY}}
+            -p CHES_TOKEN_URL=${{steps.secrets.outputs.VAULT_CHES_TOKEN_URL}}
             -p CHES_CLIENT_ID=${{steps.secrets.outputs.VAULT_CHES_CLIENT_ID}}
             -p CHES_CLIENT_SECRET=${{steps.secrets.outputs.VAULT_CHES_CLIENT_SECRET}}
+            -p CHES_URL=${{steps.secrets.outputs.VAULT_CHES_URL}}
             -p CDOGS_CLIENT_ID=${{steps.secrets.outputs.VAULT_CDOGS_CLIENT_ID}}
             -p CDOGS_CLIENT_SECRET=${{steps.secrets.outputs.VAULT_CDOGS_CLIENT_SECRET}}
             -p CDOGS_TOKEN_URL=${{steps.secrets.outputs.VAULT_CDOGS_TOKEN_URL}}
             -p CDOGS_URL=${{steps.secrets.outputs.VAULT_CDOGS_URL}}
+            -p NODE_ENV=${{steps.secrets.outputs.VAULT_NODE_ENV}}
             ${{ matrix.parameters }}
           penetration_test: false
   
@@ -271,13 +278,15 @@ jobs:
             ${{secrets.VAULT_ENV}}/data/coms-staging        BASICAUTH_USERNAME        | VAULT_BASICAUTH_USERNAME;
             ${{secrets.VAULT_ENV}}/data/coms-staging        COMS_URL                  | VAULT_COMS_URL;
             ${{secrets.VAULT_ENV}}/data/coms-staging        COMS_PRESIGNED_URL_EXPIRY | VAULT_PRESIGNED_URL_EXPIRY;
+            ${{secrets.VAULT_ENV}}/data/ches-staging        CHES_TOKEN_URL            | VAULT_CHES_TOKEN_URL;
             ${{secrets.VAULT_ENV}}/data/ches-staging        CHES_CLIENT_ID            | VAULT_CHES_CLIENT_ID;
             ${{secrets.VAULT_ENV}}/data/ches-staging        CHES_CLIENT_SECRET        | VAULT_CHES_CLIENT_SECRET;
+            ${{secrets.VAULT_ENV}}/data/ches-staging        CHES_URL                  | VAULT_CHES_URL;
             ${{secrets.VAULT_ENV}}/data/cdogs-staging       CDOGS_CLIENT_ID           | VAULT_CDOGS_CLIENT_ID;
             ${{secrets.VAULT_ENV}}/data/cdogs-staging       CDOGS_CLIENT_SECRET       | VAULT_CDOGS_CLIENT_SECRET;
             ${{secrets.VAULT_ENV}}/data/cdogs-staging       CDOGS_TOKEN_URL           | VAULT_CDOGS_TOKEN_URL;
             ${{secrets.VAULT_ENV}}/data/cdogs-staging       CDOGS_URL                 | VAULT_CDOGS_URL;
-      
+            ${{secrets.VAULT_ENV}}/data/be-api-staging      NODE_ENV                  | VAULT_NODE_ENV;
       - uses: bcgov-nr/action-deployer-openshift@v1.0.5
         with:
           file: ${{ matrix.file }}
@@ -300,13 +309,15 @@ jobs:
             -p BASICAUTH_USERNAME=${{steps.secrets.outputs.VAULT_BASICAUTH_USERNAME}}
             -p COMS_URL=${{steps.secrets.outputs.VAULT_COMS_URL}}
             -p COMS_PRESIGNED_URL_EXPIRY=${{steps.secrets.outputs.VAULT_PRESIGNED_URL_EXPIRY}}
+            -p CHES_TOKEN_URL=${{steps.secrets.outputs.VAULT_CHES_TOKEN_URL}}
             -p CHES_CLIENT_ID=${{steps.secrets.outputs.VAULT_CHES_CLIENT_ID}}
             -p CHES_CLIENT_SECRET=${{steps.secrets.outputs.VAULT_CHES_CLIENT_SECRET}}
+            -p CHES_URL=${{steps.secrets.outputs.VAULT_CHES_URL}}
             -p CDOGS_CLIENT_ID=${{steps.secrets.outputs.VAULT_CDOGS_CLIENT_ID}}
             -p CDOGS_CLIENT_SECRET=${{steps.secrets.outputs.VAULT_CDOGS_CLIENT_SECRET}}
             -p CDOGS_TOKEN_URL=${{steps.secrets.outputs.VAULT_CDOGS_TOKEN_URL}}
             -p CDOGS_URL=${{steps.secrets.outputs.VAULT_CDOGS_URL}}
-            
+            -p NODE_ENV=${{steps.secrets.outputs.VAULT_NODE_ENV}}
             ${{ matrix.parameters }}
           penetration_test: true
   
@@ -437,13 +448,16 @@ jobs:
             ${{secrets.VAULT_ENV}}/data/coms-uat        BASICAUTH_USERNAME        | VAULT_BASICAUTH_USERNAME;
             ${{secrets.VAULT_ENV}}/data/coms-uat        COMS_URL                  | VAULT_COMS_URL;
             ${{secrets.VAULT_ENV}}/data/coms-uat        COMS_PRESIGNED_URL_EXPIRY | VAULT_PRESIGNED_URL_EXPIRY;
+            ${{secrets.VAULT_ENV}}/data/ches-uat        CHES_TOKEN_URL            | VAULT_CHES_TOKEN_URL;
             ${{secrets.VAULT_ENV}}/data/ches-uat        CHES_CLIENT_ID            | VAULT_CHES_CLIENT_ID;
             ${{secrets.VAULT_ENV}}/data/ches-uat        CHES_CLIENT_SECRET        | VAULT_CHES_CLIENT_SECRET;
+            ${{secrets.VAULT_ENV}}/data/ches-uat        CHES_URL                  | VAULT_CHES_URL;
             ${{secrets.VAULT_ENV}}/data/cdogs-uat       CDOGS_CLIENT_ID           | VAULT_CDOGS_CLIENT_ID;
             ${{secrets.VAULT_ENV}}/data/cdogs-uat       CDOGS_CLIENT_ID           | VAULT_CDOGS_CLIENT_ID;
             ${{secrets.VAULT_ENV}}/data/cdogs-uat       CDOGS_CLIENT_SECRET       | VAULT_CDOGS_CLIENT_SECRET;
             ${{secrets.VAULT_ENV}}/data/cdogs-uat       CDOGS_TOKEN_URL           | VAULT_CDOGS_TOKEN_URL;
             ${{secrets.VAULT_ENV}}/data/cdogs-uat       CDOGS_URL                 | VAULT_CDOGS_URL;
+            ${{secrets.VAULT_ENV}}/data/be-api-uat      NODE_ENV                  | VAULT_NODE_ENV;
       
       - uses: bcgov-nr/action-deployer-openshift@v1.0.5
         with:
@@ -467,12 +481,15 @@ jobs:
             -p BASICAUTH_USERNAME=${{steps.secrets.outputs.VAULT_BASICAUTH_USERNAME}}
             -p COMS_URL=${{steps.secrets.outputs.VAULT_COMS_URL}}
             -p COMS_PRESIGNED_URL_EXPIRY=${{steps.secrets.outputs.VAULT_PRESIGNED_URL_EXPIRY}}
+            -p CHES_TOKEN_URL=${{steps.secrets.outputs.VAULT_CHES_TOKEN_URL}}
             -p CHES_CLIENT_ID=${{steps.secrets.outputs.VAULT_CHES_CLIENT_ID}}
             -p CHES_CLIENT_SECRET=${{steps.secrets.outputs.VAULT_CHES_CLIENT_SECRET}}
+            -p CHES_URL=${{steps.secrets.outputs.VAULT_CHES_URL}}
             -p CDOGS_CLIENT_ID=${{steps.secrets.outputs.VAULT_CDOGS_CLIENT_ID}}
             -p CDOGS_CLIENT_SECRET=${{steps.secrets.outputs.VAULT_CDOGS_CLIENT_SECRET}}
             -p CDOGS_TOKEN_URL=${{steps.secrets.outputs.VAULT_CDOGS_TOKEN_URL}}
             -p CDOGS_URL=${{steps.secrets.outputs.VAULT_CDOGS_URL}}
+            -p NODE_ENV=${{steps.secrets.outputs.VAULT_NODE_ENV}}
             ${{ matrix.parameters }}
           penetration_test: true
   
@@ -699,12 +716,15 @@ jobs:
             ${{secrets.VAULT_ENV}}/data/coms-prod      BASICAUTH_USERNAME        | VAULT_BASICAUTH_USERNAME;
             ${{secrets.VAULT_ENV}}/data/coms-prod      COMS_URL                  | VAULT_COMS_URL;
             ${{secrets.VAULT_ENV}}/data/coms-prod      COMS_PRESIGNED_URL_EXPIRY | VAULT_PRESIGNED_URL_EXPIRY;
+            ${{secrets.VAULT_ENV}}/data/ches-prod      CHES_TOKEN_URL            | VAULT_CHES_TOKEN_URL;
             ${{secrets.VAULT_ENV}}/data/ches-prod      CHES_CLIENT_ID            | VAULT_CHES_CLIENT_ID;
-            ${{secrets.VAULT_ENV}}/data/ches-prod      CHES_CLIENT_SECRET        | VAULT_CHES_CLIENT_SECRET;            
+            ${{secrets.VAULT_ENV}}/data/ches-prod      CHES_CLIENT_SECRET        | VAULT_CHES_CLIENT_SECRET;
+            ${{secrets.VAULT_ENV}}/data/ches-prod      CHES_URL                  | VAULT_CHES_URL;
             ${{secrets.VAULT_ENV}}/data/cdogs-prod     CDOGS_CLIENT_ID           | VAULT_CDOGS_CLIENT_ID;
             ${{secrets.VAULT_ENV}}/data/cdogs-prod     CDOGS_CLIENT_SECRET       | VAULT_CDOGS_CLIENT_SECRET;
             ${{secrets.VAULT_ENV}}/data/cdogs-prod     CDOGS_TOKEN_URL           | VAULT_CDOGS_TOKEN_URL;
             ${{secrets.VAULT_ENV}}/data/cdogs-prod     CDOGS_URL                 | VAULT_CDOGS_URL;
+            ${{secrets.VAULT_ENV}}/data/be-api-prod    NODE_ENV                  | VAULT_NODE_ENV;
       - uses: bcgov-nr/action-deployer-openshift@v1.0.5
         with:
           file: ${{ matrix.file }}
@@ -727,12 +747,15 @@ jobs:
             -p BASICAUTH_USERNAME=${{steps.secrets.outputs.VAULT_BASICAUTH_USERNAME}}
             -p COMS_URL=${{steps.secrets.outputs.VAULT_COMS_URL}}
             -p COMS_PRESIGNED_URL_EXPIRY=${{steps.secrets.outputs.VAULT_PRESIGNED_URL_EXPIRY}}
+            -p CHES_TOKEN_URL=${{steps.secrets.outputs.VAULT_CHES_TOKEN_URL}}
             -p CHES_CLIENT_ID=${{steps.secrets.outputs.VAULT_CHES_CLIENT_ID}}
             -p CHES_CLIENT_SECRET=${{steps.secrets.outputs.VAULT_CHES_CLIENT_SECRET}}
+            -p CHES_URL=${{steps.secrets.outputs.VAULT_CHES_URL}}
             -p CDOGS_CLIENT_ID=${{steps.secrets.outputs.VAULT_CDOGS_CLIENT_ID}}
             -p CDOGS_CLIENT_SECRET=${{steps.secrets.outputs.VAULT_CDOGS_CLIENT_SECRET}}
             -p CDOGS_TOKEN_URL=${{steps.secrets.outputs.VAULT_CDOGS_TOKEN_URL}}
             -p CDOGS_URL=${{steps.secrets.outputs.VAULT_CDOGS_URL}}
+            -p NODE_ENV=${{steps.secrets.outputs.VAULT_NODE_ENV}}
             ${{ matrix.parameters }}
           penetration_test: false
   

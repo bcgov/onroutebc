@@ -19,6 +19,7 @@ import { PendingUsersModule } from './modules/company-user-management/pending-us
 import { AuthModule } from './modules/auth/auth.module';
 import { PermitModule } from './modules/permit/permit.module';
 import { PdfModule } from './modules/pdf/pdf.module';
+import { EmailModule } from './modules/email/email.module';
 
 const envPath = path.resolve(process.cwd() + '/../../');
 
@@ -60,6 +61,7 @@ const envPath = path.resolve(process.cwd() + '/../../');
       ttl: 0, // disable expiration of the cache
       isGlobal: true, // Allows access to cache manager globally
     }),
+    EmailModule,
     PowerUnitsModule,
     TrailersModule,
     PowerUnitTypesModule,

@@ -13,6 +13,7 @@ import { PdfModule } from '../pdf/pdf.module';
 import { PermitType } from './entities/permit-type.entity';
 import { PermitApplicationOrigin } from './entities/permit-application-origin.entity';
 import { PermitApprovalSource } from './entities/permit-approval-source.entity';
+import { CompanyModule } from '../company-user-management/company/company.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { PermitApprovalSource } from './entities/permit-approval-source.entity';
       PermitApprovalSource,
     ]),
     PdfModule,
+    CompanyModule,
   ],
   controllers: [PermitController, ApplicationController],
   providers: [
