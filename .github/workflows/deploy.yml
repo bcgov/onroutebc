@@ -40,7 +40,7 @@ on:
 jobs:
   deploy:
     name: Deployments
-    environment: ${{inputs.zone}}
+    environment: ${{inputs.environment}}
     runs-on: ubuntu-22.04
     strategy:
       max-parallel: 1
@@ -97,7 +97,7 @@ jobs:
           oc_token: ${{ secrets.access_token }}
           overwrite: ${{ matrix.overwrite }}
           parameters: 
-            -p ZONE=${{inputs.zone}}
+            -p ZONE=${{inputs.environment}}
             -p NAME=${{ github.event.repository.name }} ${{ matrix.parameters }}
             -p PROMOTE=${{ github.repository }}/${{ matrix.name }}:${{inputs.imagetag}}
             -p DATABASE_NAME=${{steps.vault.outputs.VAULT_DATABASE_NAME}}
