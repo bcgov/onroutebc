@@ -85,6 +85,7 @@ describe('Company (e2e)', () => {
 
   describe('/companies CREATE', () => {
     it('should create a new Company.', async () => {
+      
       repo.findOne.mockResolvedValue(redCompanyEntityMock);
 
       jest
