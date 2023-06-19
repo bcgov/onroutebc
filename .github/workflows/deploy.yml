@@ -24,19 +24,6 @@ on:
         default: 'dev'
         required: false
         type: string
-    secrets:
-      access_token:
-        description: 'Server access token'
-        required: true
-      server:
-        description: 'Server url to connect to'
-        required: true
-      vault_environment:
-        description: 'Vault environment that is being used'
-        required: true
-      vault_token:
-        description: 'Vault access token'
-        required: true
   
   workflow_dispatch:
     # Inputs the workflow accepts.
@@ -44,41 +31,25 @@ on:
       environment:
         description: 'Which environment to deploy to'
         default: 'staging'
-        required: true
+        required: false
         type: string
       imagetag:
         description: 'Which image tag to use'
         default: 'test'
-        required: true
+        required: false
         type: string
       penetration_test:
         description: 'If penetration test is required'
         default: false
-        required: true
+        required: false
         type: string
       vault_zone:
         description: 'Which vault zone to use'
         default: 'dev'
-        required: true
+        required: false
         type: string
-      access_token:
-        description: 'Server access token'
-        default: ${{secrets.OC_TOKEN}}
-        required: false
-      server:
-        description: 'Server url to connect to'
-        default: ${{secrets.OC_SERVER}}
-        required: false
-      vault_environment:
-        description: 'Vault environment that is being used'
-        default: ${{secrets.VAULT_ENVIRONMENT}}
-        required: false
-      vault_token:
-        description: 'Vault access token'
-        default: ${{secrets.VAULT_TOKEN}}
-        required: false
 jobs:
-  deploy:
+  deployments:
     name: Deployments
     environment: ${{inputs.environment}}
     runs-on: ubuntu-22.04
@@ -106,37 +77,37 @@ jobs:
         uses: hashicorp/vault-action@v2
         with:
           url: https://vault.developer.gov.bc.ca
-          token: ${{ secrets.vault_token }}
+          token: ${{ secrets.VAULT_TOKEN }}
           exportEnv: "false"
           namespace: platform-services
           secrets: |
-            ${{secrets.vault_environment}}/data/database-${{inputs.vault_zone}}   DATABASE_HOST             | VAULT_DATABASE_HOST;
-            ${{secrets.vault_environment}}/data/database-${{inputs.vault_zone}}   DATABASE_USER             | VAULT_DATABASE_USER;
-            ${{secrets.vault_environment}}/data/database-${{inputs.vault_zone}}   DATABASE_NAME             | VAULT_DATABASE_NAME;
-            ${{secrets.vault_environment}}/data/database-${{inputs.vault_zone}}   DATABASE_PASSWORD         | VAULT_DATABASE_PASSWORD;
-            ${{secrets.vault_environment}}/data/database-${{inputs.vault_zone}}   DATABASE_PORT             | VAULT_DATABASE_PORT;
-            ${{secrets.vault_environment}}/data/auth0-${{inputs.vault_zone}}      AUTH0_ISSUER_URL          | VAULT_AUTH0_ISSUER_URL;
-            ${{secrets.vault_environment}}/data/auth0-${{inputs.vault_zone}}      AUTH0_AUDIENCE            | VAULT_AUTH0_AUDIENCE;
-            ${{secrets.vault_environment}}/data/auth0-${{inputs.vault_zone}}      AUTH0_IGNORE_EXP          | VAULT_AUTH0_IGNORE_EXP;
-            ${{secrets.vault_environment}}/data/coms-${{inputs.vault_zone}}       BASICAUTH_PASSWORD        | VAULT_BASICAUTH_PASSWORD;
-            ${{secrets.vault_environment}}/data/coms-${{inputs.vault_zone}}       BASICAUTH_USERNAME        | VAULT_BASICAUTH_USERNAME;
-            ${{secrets.vault_environment}}/data/coms-${{inputs.vault_zone}}       COMS_URL                  | VAULT_COMS_URL;
-            ${{secrets.vault_environment}}/data/coms-${{inputs.vault_zone}}       COMS_PRESIGNED_URL_EXPIRY | VAULT_PRESIGNED_URL_EXPIRY;
-            ${{secrets.vault_environment}}/data/ches-${{inputs.vault_zone}}       CHES_TOKEN_URL            | VAULT_CHES_TOKEN_URL;
-            ${{secrets.vault_environment}}/data/ches-${{inputs.vault_zone}}       CHES_URL                  | VAULT_CHES_URL;
-            ${{secrets.vault_environment}}/data/ches-${{inputs.vault_zone}}       CHES_CLIENT_ID            | VAULT_CHES_CLIENT_ID;
-            ${{secrets.vault_environment}}/data/ches-${{inputs.vault_zone}}       CHES_CLIENT_SECRET        | VAULT_CHES_CLIENT_SECRET;
-            ${{secrets.vault_environment}}/data/cdogs-${{inputs.vault_zone}}      CDOGS_CLIENT_ID           | VAULT_CDOGS_CLIENT_ID;
-            ${{secrets.vault_environment}}/data/cdogs-${{inputs.vault_zone}}      CDOGS_CLIENT_SECRET       | VAULT_CDOGS_CLIENT_SECRET;
-            ${{secrets.vault_environment}}/data/cdogs-${{inputs.vault_zone}}      CDOGS_TOKEN_URL           | VAULT_CDOGS_TOKEN_URL;
-            ${{secrets.vault_environment}}/data/cdogs-${{inputs.vault_zone}}      CDOGS_URL                 | VAULT_CDOGS_URL;
+            ${{secrets.VAULT_ENVIRONMENT}}/data/database-${{inputs.vault_zone}}   DATABASE_HOST             | VAULT_DATABASE_HOST;
+            ${{secrets.VAULT_ENVIRONMENT}}/data/database-${{inputs.vault_zone}}   DATABASE_USER             | VAULT_DATABASE_USER;
+            ${{secrets.VAULT_ENVIRONMENT}}/data/database-${{inputs.vault_zone}}   DATABASE_NAME             | VAULT_DATABASE_NAME;
+            ${{secrets.VAULT_ENVIRONMENT}}/data/database-${{inputs.vault_zone}}   DATABASE_PASSWORD         | VAULT_DATABASE_PASSWORD;
+            ${{secrets.VAULT_ENVIRONMENT}}/data/database-${{inputs.vault_zone}}   DATABASE_PORT             | VAULT_DATABASE_PORT;
+            ${{secrets.VAULT_ENVIRONMENT}}/data/auth0-${{inputs.vault_zone}}      AUTH0_ISSUER_URL          | VAULT_AUTH0_ISSUER_URL;
+            ${{secrets.VAULT_ENVIRONMENT}}/data/auth0-${{inputs.vault_zone}}      AUTH0_AUDIENCE            | VAULT_AUTH0_AUDIENCE;
+            ${{secrets.VAULT_ENVIRONMENT}}/data/auth0-${{inputs.vault_zone}}      AUTH0_IGNORE_EXP          | VAULT_AUTH0_IGNORE_EXP;
+            ${{secrets.VAULT_ENVIRONMENT}}/data/coms-${{inputs.vault_zone}}       BASICAUTH_PASSWORD        | VAULT_BASICAUTH_PASSWORD;
+            ${{secrets.VAULT_ENVIRONMENT}}/data/coms-${{inputs.vault_zone}}       BASICAUTH_USERNAME        | VAULT_BASICAUTH_USERNAME;
+            ${{secrets.VAULT_ENVIRONMENT}}/data/coms-${{inputs.vault_zone}}       COMS_URL                  | VAULT_COMS_URL;
+            ${{secrets.VAULT_ENVIRONMENT}}/data/coms-${{inputs.vault_zone}}       COMS_PRESIGNED_URL_EXPIRY | VAULT_PRESIGNED_URL_EXPIRY;
+            ${{secrets.VAULT_ENVIRONMENT}}/data/ches-${{inputs.vault_zone}}       CHES_TOKEN_URL            | VAULT_CHES_TOKEN_URL;
+            ${{secrets.VAULT_ENVIRONMENT}}/data/ches-${{inputs.vault_zone}}       CHES_URL                  | VAULT_CHES_URL;
+            ${{secrets.VAULT_ENVIRONMENT}}/data/ches-${{inputs.vault_zone}}       CHES_CLIENT_ID            | VAULT_CHES_CLIENT_ID;
+            ${{secrets.VAULT_ENVIRONMENT}}/data/ches-${{inputs.vault_zone}}       CHES_CLIENT_SECRET        | VAULT_CHES_CLIENT_SECRET;
+            ${{secrets.VAULT_ENVIRONMENT}}/data/cdogs-${{inputs.vault_zone}}      CDOGS_CLIENT_ID           | VAULT_CDOGS_CLIENT_ID;
+            ${{secrets.VAULT_ENVIRONMENT}}/data/cdogs-${{inputs.vault_zone}}      CDOGS_CLIENT_SECRET       | VAULT_CDOGS_CLIENT_SECRET;
+            ${{secrets.VAULT_ENVIRONMENT}}/data/cdogs-${{inputs.vault_zone}}      CDOGS_TOKEN_URL           | VAULT_CDOGS_TOKEN_URL;
+            ${{secrets.VAULT_ENVIRONMENT}}/data/cdogs-${{inputs.vault_zone}}      CDOGS_URL                 | VAULT_CDOGS_URL;
       
       - uses: bcgov-nr/action-deployer-openshift@v1.0.5
         with:
           file: ${{ matrix.file }}
           oc_namespace: ${{inputs.environmnet }}
-          oc_server: ${{ secrets.server }}
-          oc_token: ${{ secrets.access_token }}
+          oc_server: ${{ secrets.OC_SERVER }}
+          oc_token: ${{ secrets.OC_TOKEN }}
           overwrite: ${{ matrix.overwrite }}
           parameters: 
             -p ZONE=${{inputs.environment}}
