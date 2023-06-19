@@ -298,12 +298,10 @@ export class UsersService {
       [userGUID, companyId],
     )) as [{ ROLE_ID: Role }];
 
-
     const roles = queryResult.map((r) => r.ROLE_ID);
 
     return roles;
-    }
-
+  }
 
   /**
    * The getCompaniesForUser() method finds and returns a {@link number[]} object
@@ -372,8 +370,7 @@ export class UsersService {
       } else {
         throw new UnauthorizedException();
       }
-    }
-    else{
+    } else {
       userExists = true;
     }
     return userExists;
@@ -394,11 +391,11 @@ export class UsersService {
     return user;
   }
 
-  async findIdirUser(
-    userGUID?: string,
-  ): Promise<ReadUserDto[]> {
+  async findIdirUser(userGUID?: string): Promise<ReadUserDto[]> {
     // Find user entities based on the provided filtering criteria
-    const userDetails = await this.idirUserRepository.find({where: {userGUID: userGUID}});
+    const userDetails = await this.idirUserRepository.find({
+      where: { userGUID: userGUID },
+    });
     // Map the retrieved user entities to ReadUserDto objects
     const readUserDto = await this.classMapper.mapArrayAsync(
       userDetails,

@@ -117,7 +117,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       userGUIDParam = req.query['userGUID']?.toString();
     }
 
-
     if (
       req.headers['AuthOnly'] === 'false' &&
       payload.identity_provider !== IDP.IDIR &&

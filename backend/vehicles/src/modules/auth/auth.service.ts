@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { UsersService } from '../company-user-management/users/users.service';
 import { ReadUserDto } from '../company-user-management/users/dto/response/read-user.dto';
 import { PendingUsersService } from '../company-user-management/pending-users/pending-users.service';

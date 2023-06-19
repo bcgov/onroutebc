@@ -122,8 +122,8 @@ export class UsersProfile extends AutomapperProfile {
         ),
       );
 
-        /**
-       * The mapping is between IdirUser to ReadUserDto mapping. 
+      /**
+       * The mapping is between IdirUser to ReadUserDto mapping.
        */
       createMap(
         mapper,
