@@ -247,8 +247,6 @@ export const TrailerForm = ({ trailer }: TrailerFormProps) => {
             feature={FEATURE}
             options={{
               name: "emptyTrailerWidth",
-              //bruce tes
-              // rules: { required: false, maxLength: 10 },
               rules: {
                 required: false,
                 pattern: {
