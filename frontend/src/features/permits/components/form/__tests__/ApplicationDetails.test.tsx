@@ -9,7 +9,6 @@ const updatedAt = utcToLocalDayjs("2023-06-15T13:00:00.000Z");
 beforeEach(async () => {
   vi.resetModules();
 
-  // Temp solution for mocking React Query to test the gettrailerTypes API call
   vi.mock("@tanstack/react-query", async () => {
     const actual: any = await vi.importActual("@tanstack/react-query");
     return {

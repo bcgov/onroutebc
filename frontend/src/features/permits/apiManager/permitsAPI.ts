@@ -27,7 +27,6 @@ export const submitTermOversize = (
     replaceEmptyValuesWithNull({
       // must convert application to ApplicationRequestData (dayjs fields to strings)
       ...mapApplicationToApplicationRequestData(termOversizePermit),
-      permitApplicationOrigin: "PPC", // temporarily added here, remove once backend handler for this logic is ready
     })
   );
 };
@@ -47,7 +46,6 @@ export const updateTermOversize = (
     replaceEmptyValuesWithNull({
       // must convert application to ApplicationRequestData (dayjs fields to strings)
       ...mapApplicationToApplicationRequestData(termOversizePermit),
-      permitApplicationOrigin: "PPC", // temporarily added here, remove once backend handler for this logic is ready
     })
   );
 };
