@@ -116,7 +116,7 @@ jobs:
             ${{secrets.VAULT_ENV}}/data/ches-dev      CHES_CLIENT_ID            | VAULT_CHES_CLIENT_ID;
             ${{secrets.VAULT_ENV}}/data/ches-dev      CHES_CLIENT_SECRET        | VAULT_CHES_CLIENT_SECRET;
             ${{secrets.VAULT_ENV}}/data/ches-dev      CHES_URL                  | VAULT_CHES_URL;
-      - name: Deploy Application
+            ${{secrets.VAULT_ENV}}/data/be-api-dev    NODE_ENV                  | VAULT_NODE_ENV;
         uses: bcgov-nr/action-deployer-openshift@v1.0.5
         with:
           file: ${{ matrix.file }}
@@ -148,6 +148,7 @@ jobs:
             -p CDOGS_CLIENT_SECRET=${{steps.secrets.outputs.VAULT_CDOGS_CLIENT_SECRET}}
             -p CDOGS_TOKEN_URL=${{steps.secrets.outputs.VAULT_CDOGS_TOKEN_URL}}
             -p CDOGS_URL=${{steps.secrets.outputs.VAULT_CDOGS_URL}}
+            -p NODE_ENV=${{steps.secrets.outputs.VAULT_NODE_ENV}}
             ${{ matrix.parameters }}
 
   helm-deploys-dev:
