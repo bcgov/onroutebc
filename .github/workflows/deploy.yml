@@ -1,36 +1,6 @@
 name: Deployments
 
 on:
-  push:
-    branches:
-      - feature/deploy.yml
-    paths-ignore:
-      - ".github/ISSUE_TEMPLATE/*"
-      - "**.md"
-  workflow_call:
-    # Inputs the workflow accepts.
-    inputs:
-      environment:
-        description: 'Which environment to deploy to'
-        default: 'dev'
-        required: true
-        type: string
-      imagetag:
-        description: 'Which image tag to use'
-        default: 'latest'
-        required: true
-        type: string
-      penetration_test:
-        description: 'If penetration test is required'
-        default: false
-        required: true
-        type: string
-      vault_zone:
-        description: 'Which vault zone to use'
-        default: 'dev'
-        required: true
-        type: string
-  
   workflow_dispatch:
     # Inputs the workflow accepts.
     inputs:
