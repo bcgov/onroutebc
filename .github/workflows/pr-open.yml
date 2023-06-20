@@ -68,3 +68,4 @@ jobs:
       imagetag: ${{ github.event.number }}
       penetration_test: false
       vault_environment: 'dev'
+    secrets: inherit
