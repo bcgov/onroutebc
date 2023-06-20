@@ -103,6 +103,7 @@ export class CreateTrailerDto {
     required: false,
   })
   @IsOptional()
+  @IsNumberString()
   emptyTrailerWidth?: string;
 
   @AutoMap()

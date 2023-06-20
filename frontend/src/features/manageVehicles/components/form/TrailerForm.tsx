@@ -250,7 +250,7 @@ export const TrailerForm = ({ trailer }: TrailerFormProps) => {
               rules: {
                 required: false,
                 pattern: {
-                  value: /^\d+$/,
+                  value: /^\d+(\.\d+)?$/,
                   message: invalidNumber(),
                 },
               },
