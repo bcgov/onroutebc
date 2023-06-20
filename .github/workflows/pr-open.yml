@@ -62,7 +62,7 @@ jobs:
   deploys:
     uses: ./.github/workflows/deploy.yml
     with:
-    	environment: 'dev'
-    	imagetag: ${{ github.event.number }}
-    	penetration_test: false
-    	vault_zone: dev
+      environment: 'dev'
+      imagetag: ${{ github.event.number }}
+      penetration_test: false
+      vault_zone: dev
