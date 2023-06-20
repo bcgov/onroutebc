@@ -22,9 +22,9 @@ import { PendingUsersService } from '../pending-users/pending-users.service';
 import { CompanyService } from '../company/company.service';
 import { Role } from '../../../common/enum/roles.enum';
 import { IUserJWT } from '../../../common/interface/user-jwt.interface';
-import { IdirUser } from './entities/idir.user.entity';
 import { UserAuthGroup } from 'src/common/enum/user-auth-group.enum';
 import { PendingIdirUser } from '../pending-users/entities/pending-idir-user.entity';
+import { IdirUser } from './entities/idir.user.entity';
 
 @Injectable()
 export class UsersService {
