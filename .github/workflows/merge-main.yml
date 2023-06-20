@@ -125,7 +125,7 @@ jobs:
           overwrite: ${{ matrix.overwrite }}
           parameters: 
             -p ZONE=test
-            -p NAME=${{ github.event.repository.name }} ${{ matrix.parameters }}
+            -p NAME=${{ github.event.repository.name }} 
             -p PROMOTE=${{ github.repository }}/${{ matrix.name }}:test
             -p DATABASE_NAME=${{steps.secrets.outputs.VAULT_DATABASE_NAME}}
             -p DATABASE_USER=${{steps.secrets.outputs.VAULT_DATABASE_USER}}

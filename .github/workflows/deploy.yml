@@ -1,7 +1,7 @@
 name: Deployments
 
 on:
-  workflow_dispatch:
+  workflow_call:
     # Inputs the workflow accepts.
     inputs:
       environment:
@@ -11,16 +11,57 @@ on:
         type: string
       imagetag:
         description: 'Which image tag to use'
-        default: 'latest'
+        default: 'test'
         required: true
         type: string
       penetration_test:
         description: 'If penetration test is required'
         default: false
         required: true
-        type: string
+        type: boolean
       vault_zone:
         description: 'Which vault zone to use'
+        default: 'dev'
+        required: true
+        type: string
+      zone:
+        description: 'Which zone to use'
+        default: 'dev'
+        required: true
+        type: string
+  workflow_dispatch:
+    # Inputs the workflow accepts.
+    inputs:
+      environment:
+        description: 'Which environment to deploy to'
+        default: 'dev'
+        required: true
+        type: choice
+        options:
+          - 'dev'
+          - 'test'
+          - 'prod'
+      imagetag:
+        description: 'Which image tag to use'
+        default: 'test'
+        required: true
+        type: string
+      penetration_test:
+        description: 'If penetration test is required'
+        default: false
+        required: true
+        type: boolean
+      vault_zone:
+        description: 'Which vault zone to use'
+        default: 'dev'
+        required: true
+        type: choice
+        options:
+          - 'dev'
+          - 'test'
+          - 'prod'
+      zone:
+        description: 'Which zone to use'
         default: 'dev'
         required: true
         type: string
@@ -87,8 +128,8 @@ jobs:
           oc_token: ${{ secrets.OC_TOKEN }}
           overwrite: ${{ matrix.overwrite }}
           parameters: 
-            -p ZONE=${{inputs.environment}}
-            -p NAME=${{ github.event.repository.name }} ${{ matrix.parameters }}
+            -p ZONE=${{inputs.zone}}
+            -p NAME=${{ github.event.repository.name }} 
             -p PROMOTE=${{ github.repository }}/${{ matrix.name }}:${{inputs.imagetag}}
             -p DATABASE_NAME=${{steps.vault.outputs.VAULT_DATABASE_NAME}}
             -p DATABASE_USER=${{steps.vault.outputs.VAULT_DATABASE_USER}}
