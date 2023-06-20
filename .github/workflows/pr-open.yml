@@ -60,18 +60,9 @@ jobs:
           triggers: ${{ matrix.triggers }}
       
   deploys:
-    name: Deploys
-    needs:
-      - builds
-    runs-on: ubuntu-22.04
-    environment: dev
-    strategy:
-      max-parallel: 1
-      fail-fast: true
-    steps: 
-      - uses: ./.github/workflows/deploy.yml
-    		with:
-      		environment: 'dev'
-      		imagetag: ${{ github.event.number }}
-      		penetration_test: false
-      		vault_zone: dev
+    - uses: ./.github/workflows/deploy.yml
+    	with:
+    		environment: 'dev'
+    		imagetag: ${{ github.event.number }}
+    		penetration_test: false
+    		vault_zone: dev
