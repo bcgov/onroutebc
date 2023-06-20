@@ -249,6 +249,7 @@ export const TrailerForm = ({ trailer }: TrailerFormProps) => {
               name: "emptyTrailerWidth",
               rules: {
                 required: false,
+                maxLength: 10,
                 pattern: {
                   value: /^\d+(\.\d+)?$/,
                   message: invalidNumber(),
