@@ -18,7 +18,7 @@ import { PdfService } from '../pdf/pdf.service';
 import { PermitApplicationOrigin } from './entities/permit-application-origin.entity';
 import { PermitApprovalSource } from './entities/permit-approval-source.entity';
 import { IDP } from 'src/common/enum/idp.enum';
-import { PdfReturnType } from 'src/common/enum/pdf.enum';
+import { DownloadMode, PdfReturnType } from 'src/common/enum/pdf.enum';
 import { PermitApplicationOrigin as PermitApplicationOriginEnum } from 'src/common/enum/permit-application-origin.enum';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
 import { PermitApprovalSource as PermitApprovalSourceEnum } from 'src/common/enum/permit-approval-source.enum';
@@ -31,6 +31,12 @@ import { PermitData } from 'src/common/interface/permit.template.interface';
 import { getFullNameFromCache } from 'src/common/helper/cache.helper';
 import { CompanyService } from '../company-user-management/company/company.service';
 import { formatTemplateData } from './helpers/formatTemplateData.helper';
+import { EmailService } from '../email/email.service';
+import { PermitService } from './permit.service';
+import { EmailTemplate } from '../../common/enum/email-template.enum';
+import { IssuePermitEmailData } from '../../common/interface/issue-permit-email-data.interface';
+import { AttachementEmailData } from '../../common/interface/attachment-email-data.interface';
+import { ReadCompanyDto } from '../company-user-management/company/dto/response/read-company.dto';
 
 @Injectable()
 export class ApplicationService {
@@ -47,6 +53,8 @@ export class ApplicationService {
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
     private companyService: CompanyService,
+    private readonly emailService: EmailService,
+    private readonly permitService: PermitService,
   ) {}
 
   /**
@@ -323,9 +331,14 @@ export class ApplicationService {
       tempPermit.permitNumber = permitNumber;
       tempPermit.permitStatus = ApplicationStatus.ISSUED;
 
-      const dmsDocumentId = await this.generatePDF(
-        currentUser.access_token,
+      const companyInfo = await this.companyService.findOne(
+        tempPermit.companyId,
+      );
+
+      const { dmsDocumentId, permitDataForTemplate } = await this.generatePDF(
         tempPermit,
+        companyInfo,
+        currentUser,
       );
 
       // Update Permit record with an ISSUED status, new permit number, and new DMS Document ID
@@ -342,6 +355,38 @@ export class ApplicationService {
         .execute();
 
       success = applicationId;
+
+      try {
+        const document = await this.permitService.findPDFbyPermitId(
+          currentUser.access_token,
+          applicationId,
+          DownloadMode.PROXY,
+        );
+
+        const emailData: IssuePermitEmailData = {
+          companyName: companyInfo.legalName,
+        };
+
+        const attachment: AttachementEmailData = {
+          filename: tempPermit.permitNumber + '.pdf',
+          contentType: 'application/pdf',
+          encoding: 'base64',
+          content: document.file.toString('base64'),
+        };
+
+        await this.emailService.sendEmailMessage(
+          EmailTemplate.ISSUE_PERMIT_EMAIL_TEMPLATE,
+          emailData,
+          'onRouteBC Permits - ' + companyInfo.legalName,
+          [
+            permitDataForTemplate.permitData?.contactDetails?.email,
+            companyInfo.primaryContact.email,
+          ],
+          attachment,
+        );
+      } catch (error: unknown) {
+        console.log('Error in Email Service', error);
+      }
     } catch (err) {
       console.log('Error Issuing Application: ', err);
       success = '';
@@ -358,15 +403,21 @@ export class ApplicationService {
   /**
    * Generates a PDF of an issued permit.
    * First, format the permit data so that it complies with the .docx template, then generate the PDF
-   * @param accessToken the access token for authorization.
    * @param permit the permit entity
+   * @param companyInfo the information about the users company
+   * @param currentUser the details of the current user for authorization.
+   *
    */
-  async generatePDF(accessToken: string, permit: Permit) {
+  private async generatePDF(
+    tempPermit: Permit,
+    companyInfo: ReadCompanyDto,
+    currentUser: IUserJWT,
+  ) {
+    const fullNames = await this.getFullNamesFromCache(tempPermit);
+
     // Provide the permit json data required to populate the .docx template that is used to generate a PDF
-    const fullNames = await this.getFullNamesFromCache(permit);
-    const companyInfo = await this.companyService.findOne(permit.companyId);
     const permitDataForTemplate = formatTemplateData(
-      permit,
+      tempPermit,
       fullNames,
       companyInfo,
     );
@@ -374,13 +425,12 @@ export class ApplicationService {
     // DMS Reference ID for the generated PDF of the Permit
     // TODO: write helper to determine 'latest' template version
     const dmsDocumentId: string = await this.pdfService.generatePDF(
-      accessToken,
+      currentUser.access_token,
       permitDataForTemplate,
       1,
       PdfReturnType.DMS_DOC_ID,
     );
-
-    return dmsDocumentId;
+    return { dmsDocumentId, permitDataForTemplate };
   }
 
   /**

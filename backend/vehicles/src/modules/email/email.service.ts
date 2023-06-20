@@ -15,6 +15,8 @@ import { GovCommonServices } from '../../common/enum/gov-common-services.enum';
 import * as Handlebars from 'handlebars';
 import { EmailTemplate } from '../../common/enum/email-template.enum';
 import { ProfileRegistrationEmailData } from '../../common/interface/profile-registration-email-data.interface';
+import { IssuePermitEmailData } from '../../common/interface/issue-permit-email-data.interface';
+import { AttachementEmailData } from '../../common/interface/attachment-email-data.interface';
 
 @Injectable()
 export class EmailService {
@@ -27,9 +29,10 @@ export class EmailService {
   private chesUrl = process.env.CHES_URL;
   async sendEmailMessage(
     template: EmailTemplate,
-    data: ProfileRegistrationEmailData,
+    data: ProfileRegistrationEmailData | IssuePermitEmailData,
     subject: string,
     to: string[],
+    attachment?: AttachementEmailData,
   ): Promise<string> {
     const messageBody = await this.renderTemplate(template, data);
     const token = await getAccessToken(
@@ -49,6 +52,7 @@ export class EmailService {
       priority: 'normal',
       subject: subject,
       to: to,
+      attachments: attachment?[attachment]:undefined,
     };
 
     const requestConfig: AxiosRequestConfig = {
@@ -88,7 +92,7 @@ export class EmailService {
 
   async renderTemplate(
     templateName: EmailTemplate,
-    data: ProfileRegistrationEmailData,
+    data: ProfileRegistrationEmailData | IssuePermitEmailData,
   ): Promise<string> {
     const template = (await getFullNameFromCache(
       this.cacheManager,

@@ -172,7 +172,7 @@ export class CompanyService {
         [readCompanyUserDto.email, readCompanyUserDto.primaryContact.email],
       );
     } catch (error: unknown) {
-      console.log('Error in Email Service');
+      console.log('Error in Email Service', error);
     }
 
     return readCompanyUserDto;
