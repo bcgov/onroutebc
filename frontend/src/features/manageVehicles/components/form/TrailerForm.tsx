@@ -13,9 +13,16 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useContext } from "react";
 import { SnackBarContext } from "../../../../App";
-import { getDefaultRequiredVal, getDefaultNullableVal } from "../../../../common/helpers/util";
-import { 
-  invalidNumber, invalidPlateLength, invalidVINLength, invalidYearMin, requiredMessage 
+import {
+  getDefaultRequiredVal,
+  getDefaultNullableVal,
+} from "../../../../common/helpers/util";
+import {
+  invalidNumber,
+  invalidPlateLength,
+  invalidVINLength,
+  invalidYearMin,
+  requiredMessage,
 } from "../../../../common/helpers/validationMessages";
 
 /**
@@ -82,7 +89,7 @@ export const TrailerForm = ({ trailer }: TrailerFormProps) => {
         trailer: {
           ...trailerToBeUpdated,
           // need to explicitly convert form values to number here (since we can't use valueAsNumber prop)
-          year: !isNaN(Number(data.year)) ? Number(data.year) : data.year
+          year: !isNaN(Number(data.year)) ? Number(data.year) : data.year,
         },
       });
       if (result.ok) {
@@ -99,7 +106,7 @@ export const TrailerForm = ({ trailer }: TrailerFormProps) => {
       const result = await addTrailerMutation.mutateAsync({
         ...trailerToBeAdded,
         // need to explicitly convert form values to number here (since we can't use valueAsNumber prop)
-        year: !isNaN(Number(data.year)) ? Number(data.year) : data.year
+        year: !isNaN(Number(data.year)) ? Number(data.year) : data.year,
       });
       if (result.ok) {
         snackBar.setSnackBar({
@@ -146,9 +153,9 @@ export const TrailerForm = ({ trailer }: TrailerFormProps) => {
             options={{
               name: "make",
               rules: {
-                required: { 
+                required: {
                   value: true,
-                  message: requiredMessage()
+                  message: requiredMessage(),
                 },
                 maxLength: 20,
               },
@@ -163,13 +170,14 @@ export const TrailerForm = ({ trailer }: TrailerFormProps) => {
             options={{
               name: "year",
               rules: {
-                required: { 
+                required: {
                   value: true,
-                  message: requiredMessage()
+                  message: requiredMessage(),
                 },
                 validate: {
                   isNumber: (v) => !isNaN(v) || invalidNumber(),
-                  lessThan1950: v => parseInt(v) > 1950 || invalidYearMin(1950),
+                  lessThan1950: (v) =>
+                    parseInt(v) > 1950 || invalidYearMin(1950),
                 },
                 maxLength: 4,
               },
@@ -185,13 +193,13 @@ export const TrailerForm = ({ trailer }: TrailerFormProps) => {
             options={{
               name: "vin",
               rules: {
-                required: { 
+                required: {
                   value: true,
-                  message: requiredMessage()
+                  message: requiredMessage(),
                 },
-                minLength: { 
+                minLength: {
                   value: 6,
-                  message: invalidVINLength(6)
+                  message: invalidVINLength(6),
                 },
                 maxLength: 6,
               },
@@ -207,13 +215,13 @@ export const TrailerForm = ({ trailer }: TrailerFormProps) => {
             options={{
               name: "plate",
               rules: {
-                required: { 
-                  value: true, 
-                  message: requiredMessage()
+                required: {
+                  value: true,
+                  message: requiredMessage(),
                 },
-                maxLength: { 
+                maxLength: {
                   value: 10,
-                  message: invalidPlateLength(10)
+                  message: invalidPlateLength(10),
                 },
               },
               label: "Plate",
@@ -247,7 +255,13 @@ export const TrailerForm = ({ trailer }: TrailerFormProps) => {
             feature={FEATURE}
             options={{
               name: "emptyTrailerWidth",
-              rules: { required: false, maxLength: 10 },
+              rules: {
+                required: false,
+                maxLength: 10,
+                validate: {
+                  isNumber: (v) => !isNaN(v) || invalidNumber(),
+                },
+              },
               label: "Empty Trailer Width (m)",
               width: formFieldStyle.width,
             }}
