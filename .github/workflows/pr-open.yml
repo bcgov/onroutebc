@@ -60,6 +60,8 @@ jobs:
           triggers: ${{ matrix.triggers }}
       
   deploys:
+    needs: 
+      - builds
     uses: ./.github/workflows/deploy.yml
     with:
       environment: 'dev'
