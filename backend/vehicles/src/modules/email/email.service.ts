@@ -52,7 +52,7 @@ export class EmailService {
       priority: 'normal',
       subject: subject,
       to: to,
-      attachments: [attachment],
+      attachments: attachment?[attachment]:undefined,
     };
 
     const requestConfig: AxiosRequestConfig = {
