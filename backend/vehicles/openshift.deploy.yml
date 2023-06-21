@@ -94,7 +94,10 @@ parameters:
     required: true
   - name: CHES_URL
     description: The CHES API url
-    required: true     
+    required: true
+  - name: NODE_ENV
+    description: The NODE Environment
+    required: true      
 objects:
   - apiVersion: v1
     kind: ConfigMap
@@ -118,6 +121,8 @@ objects:
       ches-token-url: "${CHES_TOKEN_URL}"
       ches-url: "${CHES_URL}"      
       dms-url: "https://${NAME}-${ZONE}-backend-dms.${DOMAIN}"
+      front-end-url: "https://${NAME}-${ZONE}-frontend.${DOMAIN}"
+      node-env: "${NODE_ENV}"  
   - apiVersion: v1
     kind: Secret
     metadata:
@@ -296,7 +301,17 @@ objects:
                   valueFrom:
                     configMapKeyRef:
                       name: ${NAME}-${ZONE}-${COMPONENT}
-                      key: dms-url              
+                      key: dms-url
+                - name: FRONT_END_URL
+                  valueFrom:
+                    configMapKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: front-end-url                      
+                - name: NODE_ENV
+                  valueFrom:
+                    configMapKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: node-env
               ports:
                 - containerPort: 5000
                   protocol: TCP

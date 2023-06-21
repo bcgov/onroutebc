@@ -1,16 +1,22 @@
-/* eslint-disable @typescript-eslint/restrict-plus-operands */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
 import { HttpService } from '@nestjs/axios';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
-import { Inject, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { AxiosRequestConfig } from 'axios';
 import { lastValueFrom, map } from 'rxjs';
 import { getFullNameFromCache } from '../../common/helper/cache.helper';
 import { getAccessToken } from '../../common/helper/gov-common-services.helper';
 import { GovCommonServices } from '../../common/enum/gov-common-services.enum';
+import * as Handlebars from 'handlebars';
+import { EmailTemplate } from '../../common/enum/email-template.enum';
+import { ProfileRegistrationEmailData } from '../../common/interface/profile-registration-email-data.interface';
+import { IssuePermitEmailData } from '../../common/interface/issue-permit-email-data.interface';
+import { AttachementEmailData } from '../../common/interface/attachment-email-data.interface';
 
 @Injectable()
 export class EmailService {
@@ -22,20 +28,18 @@ export class EmailService {
 
   private chesUrl = process.env.CHES_URL;
   async sendEmailMessage(
-    messageBody: string,
+    template: EmailTemplate,
+    data: ProfileRegistrationEmailData | IssuePermitEmailData,
     subject: string,
     to: string[],
+    attachment?: AttachementEmailData,
   ): Promise<string> {
+    const messageBody = await this.renderTemplate(template, data);
     const token = await getAccessToken(
       GovCommonServices.COMMON_HOSTED_EMAIL_SERVICE,
       this.httpService,
       this.cacheManager,
     );
-
-    const onRouteBCLogoBase64 = (await getFullNameFromCache(
-      this.cacheManager,
-      'onRouteBCLogo',
-    )) as string;
 
     const requestData = {
       bcc: [],
@@ -48,6 +52,7 @@ export class EmailService {
       priority: 'normal',
       subject: subject,
       to: to,
+      attachments: attachment?[attachment]:undefined,
     };
 
     const requestConfig: AxiosRequestConfig = {
@@ -67,13 +72,45 @@ export class EmailService {
         ),
     )
       .then((response) => {
-        return response.data;
+        return response.data as {
+          messages: [
+            {
+              msgId: string;
+              tag: string;
+              to: [string];
+            },
+          ];
+          txId: string;
+        };
       })
-      .catch((error) => {
-        console.log(error.response);
-        return error.response;
+      .catch((error: HttpException) => {
+        throw error;
       });
 
-    return responseData;
+    return responseData.txId;
+  }
+
+  async renderTemplate(
+    templateName: EmailTemplate,
+    data: ProfileRegistrationEmailData | IssuePermitEmailData,
+  ): Promise<string> {
+    const template = (await getFullNameFromCache(
+      this.cacheManager,
+      templateName,
+    )) as string;
+    if (!template?.length) {
+      throw new InternalServerErrorException('Template not found');
+    }
+    const compiledTemplate = Handlebars.compile(template);
+    const htmlBody = compiledTemplate({
+      ...data,
+      headerLogo: process.env.FRONT_END_URL + '/BC_Logo_MOTI.png',
+      footerLogo: process.env.FRONT_END_URL + '/onRouteBC_Logo.png',
+      orbcEmailStyles: (await getFullNameFromCache(
+        this.cacheManager,
+        'orbcEmailStyles',
+      )) as string,
+    });
+    return htmlBody;
   }
 }

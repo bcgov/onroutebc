@@ -33,8 +33,15 @@ import { CompanyProfile } from '../../src/modules/company-user-management/compan
 import { UsersProfile } from '../../src/modules/company-user-management/users/profiles/user.profile';
 import * as constants from '../util/mocks/data/test-data.constants';
 import * as databaseHelper from 'src/common/helper/database.helper';
+import { Cache } from 'cache-manager';
+import { EmailService } from '../../src/modules/email/email.service';
+import { HttpService } from '@nestjs/axios';
+import { EmailModule } from '../../src/modules/email/email.module';
 
 let repo: DeepMocked<Repository<Company>>;
+let emailService: DeepMocked<EmailService>;
+let cacheManager: DeepMocked<Cache>;
+let httpService: DeepMocked<HttpService>;
 
 describe('Company (e2e)', () => {
   let app: INestApplication;
@@ -42,15 +49,25 @@ describe('Company (e2e)', () => {
   beforeAll(async () => {
     jest.clearAllMocks();
     repo = createMock<Repository<Company>>();
+    emailService = createMock<EmailService>();
+    cacheManager = createMock<Cache>();
+    httpService = createMock<HttpService>();
     const dataSourceMock = dataSourceMockFactory() as DataSource;
     const moduleFixture = await Test.createTestingModule({
       imports: [
-        CompanyModule.forRoot(dataSourceMock),
+        CompanyModule.forRoot(dataSourceMock, cacheManager),
         AutomapperModule.forRoot({
           strategyInitializer: classes(),
         }),
+        EmailModule.forRoot(httpService, cacheManager),
       ],
-      providers: [CompanyProfile, ContactProfile, AddressProfile, UsersProfile],
+      providers: [
+        CompanyProfile,
+        ContactProfile,
+        AddressProfile,
+        UsersProfile,
+        { provide: EmailService, useValue: emailService },
+      ],
     })
       .overrideProvider(getRepositoryToken(Company))
       .useValue(repo)
@@ -69,6 +86,12 @@ describe('Company (e2e)', () => {
   describe('/companies CREATE', () => {
     it('should create a new Company.', async () => {
       repo.findOne.mockResolvedValue(redCompanyEntityMock);
+
+      jest
+        .spyOn(emailService, 'sendEmailMessage')
+        .mockImplementation(async () => {
+          return Promise.resolve('00000000-0000-0000-0000-000000000000');
+        });
       jest
         .spyOn(databaseHelper, 'callDatabaseSequence')
         .mockImplementation(async () => {

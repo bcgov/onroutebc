@@ -113,6 +113,8 @@ jobs:
             ${{secrets.VAULT_ENV}}/data/cdogs-test      CDOGS_CLIENT_SECRET       | VAULT_CDOGS_CLIENT_SECRET;
             ${{secrets.VAULT_ENV}}/data/cdogs-test      CDOGS_TOKEN_URL           | VAULT_CDOGS_TOKEN_URL;
             ${{secrets.VAULT_ENV}}/data/cdogs-test      CDOGS_URL                 | VAULT_CDOGS_URL;
+            ${{secrets.VAULT_ENV}}/data/be-api-test     NODE_ENV                  | VAULT_NODE_ENV;
+            
       
       - uses: bcgov-nr/action-deployer-openshift@v1.0.5
         with:
@@ -123,7 +125,7 @@ jobs:
           overwrite: ${{ matrix.overwrite }}
           parameters: 
             -p ZONE=test
-            -p NAME=${{ github.event.repository.name }} ${{ matrix.parameters }}
+            -p NAME=${{ github.event.repository.name }} 
             -p PROMOTE=${{ github.repository }}/${{ matrix.name }}:test
             -p DATABASE_NAME=${{steps.secrets.outputs.VAULT_DATABASE_NAME}}
             -p DATABASE_USER=${{steps.secrets.outputs.VAULT_DATABASE_USER}}
@@ -144,6 +146,7 @@ jobs:
             -p CDOGS_CLIENT_SECRET=${{steps.secrets.outputs.VAULT_CDOGS_CLIENT_SECRET}}
             -p CDOGS_TOKEN_URL=${{steps.secrets.outputs.VAULT_CDOGS_TOKEN_URL}}
             -p CDOGS_URL=${{steps.secrets.outputs.VAULT_CDOGS_URL}}
+            -p NODE_ENV=${{steps.secrets.outputs.VAULT_NODE_ENV}}
             ${{ matrix.parameters }}
           penetration_test: false
   
@@ -283,7 +286,7 @@ jobs:
             ${{secrets.VAULT_ENV}}/data/cdogs-staging       CDOGS_CLIENT_SECRET       | VAULT_CDOGS_CLIENT_SECRET;
             ${{secrets.VAULT_ENV}}/data/cdogs-staging       CDOGS_TOKEN_URL           | VAULT_CDOGS_TOKEN_URL;
             ${{secrets.VAULT_ENV}}/data/cdogs-staging       CDOGS_URL                 | VAULT_CDOGS_URL;
-      
+            ${{secrets.VAULT_ENV}}/data/be-api-staging      NODE_ENV                  | VAULT_NODE_ENV;
       - uses: bcgov-nr/action-deployer-openshift@v1.0.5
         with:
           file: ${{ matrix.file }}
@@ -314,7 +317,7 @@ jobs:
             -p CDOGS_CLIENT_SECRET=${{steps.secrets.outputs.VAULT_CDOGS_CLIENT_SECRET}}
             -p CDOGS_TOKEN_URL=${{steps.secrets.outputs.VAULT_CDOGS_TOKEN_URL}}
             -p CDOGS_URL=${{steps.secrets.outputs.VAULT_CDOGS_URL}}
-            
+            -p NODE_ENV=${{steps.secrets.outputs.VAULT_NODE_ENV}}
             ${{ matrix.parameters }}
           penetration_test: true
   
@@ -454,6 +457,7 @@ jobs:
             ${{secrets.VAULT_ENV}}/data/cdogs-uat       CDOGS_CLIENT_SECRET       | VAULT_CDOGS_CLIENT_SECRET;
             ${{secrets.VAULT_ENV}}/data/cdogs-uat       CDOGS_TOKEN_URL           | VAULT_CDOGS_TOKEN_URL;
             ${{secrets.VAULT_ENV}}/data/cdogs-uat       CDOGS_URL                 | VAULT_CDOGS_URL;
+            ${{secrets.VAULT_ENV}}/data/be-api-uat      NODE_ENV                  | VAULT_NODE_ENV;
       
       - uses: bcgov-nr/action-deployer-openshift@v1.0.5
         with:
@@ -485,6 +489,7 @@ jobs:
             -p CDOGS_CLIENT_SECRET=${{steps.secrets.outputs.VAULT_CDOGS_CLIENT_SECRET}}
             -p CDOGS_TOKEN_URL=${{steps.secrets.outputs.VAULT_CDOGS_TOKEN_URL}}
             -p CDOGS_URL=${{steps.secrets.outputs.VAULT_CDOGS_URL}}
+            -p NODE_ENV=${{steps.secrets.outputs.VAULT_NODE_ENV}}
             ${{ matrix.parameters }}
           penetration_test: true
   
@@ -719,6 +724,7 @@ jobs:
             ${{secrets.VAULT_ENV}}/data/cdogs-prod     CDOGS_CLIENT_SECRET       | VAULT_CDOGS_CLIENT_SECRET;
             ${{secrets.VAULT_ENV}}/data/cdogs-prod     CDOGS_TOKEN_URL           | VAULT_CDOGS_TOKEN_URL;
             ${{secrets.VAULT_ENV}}/data/cdogs-prod     CDOGS_URL                 | VAULT_CDOGS_URL;
+            ${{secrets.VAULT_ENV}}/data/be-api-prod    NODE_ENV                  | VAULT_NODE_ENV;
       - uses: bcgov-nr/action-deployer-openshift@v1.0.5
         with:
           file: ${{ matrix.file }}
@@ -749,6 +755,7 @@ jobs:
             -p CDOGS_CLIENT_SECRET=${{steps.secrets.outputs.VAULT_CDOGS_CLIENT_SECRET}}
             -p CDOGS_TOKEN_URL=${{steps.secrets.outputs.VAULT_CDOGS_TOKEN_URL}}
             -p CDOGS_URL=${{steps.secrets.outputs.VAULT_CDOGS_URL}}
+            -p NODE_ENV=${{steps.secrets.outputs.VAULT_NODE_ENV}}
             ${{ matrix.parameters }}
           penetration_test: false
   

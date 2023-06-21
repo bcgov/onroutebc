@@ -61,6 +61,7 @@ const envPath = path.resolve(process.cwd() + '/../../');
       ttl: 0, // disable expiration of the cache
       isGlobal: true, // Allows access to cache manager globally
     }),
+    EmailModule,
     PowerUnitsModule,
     TrailersModule,
     PowerUnitTypesModule,
@@ -72,7 +73,6 @@ const envPath = path.resolve(process.cwd() + '/../../');
     AuthModule,
     PermitModule,
     PdfModule,
-    EmailModule,
   ],
   controllers: [AppController],
   providers: [AppService],

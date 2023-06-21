@@ -1,6 +1,10 @@
 import { Mapper } from '@automapper/core';
 import { InjectMapper } from '@automapper/nestjs';
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { UserAuthGroup } from '../../../common/enum/user-auth-group.enum';
@@ -19,6 +23,12 @@ import { User } from '../users/entities/user.entity';
 import { CompanyUser } from '../users/entities/company-user.entity';
 import { callDatabaseSequence } from 'src/common/helper/database.helper';
 import { randomInt } from 'crypto';
+import { EmailService } from '../../email/email.service';
+import { EmailTemplate } from '../../../common/enum/email-template.enum';
+import { ProfileRegistrationEmailData } from '../../../common/interface/profile-registration-email-data.interface';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
+import { getFullNameFromCache } from '../../../common/helper/cache.helper';
 
 @Injectable()
 export class CompanyService {
@@ -27,6 +37,9 @@ export class CompanyService {
     private companyRepository: Repository<Company>,
     @InjectMapper() private readonly classMapper: Mapper,
     private dataSource: DataSource,
+    private readonly emailService: EmailService,
+    @Inject(CACHE_MANAGER)
+    private readonly cacheManager: Cache,
   ) {}
 
   /**
@@ -113,6 +126,54 @@ export class CompanyService {
     );
 
     readCompanyUserDto.adminUser = newUser;
+
+    try {
+      const emailData: ProfileRegistrationEmailData = {
+        companyName: readCompanyUserDto.legalName,
+        onRoutebBcClientNumber: readCompanyUserDto.clientNumber,
+        companyAddressLine1: readCompanyUserDto.mailingAddress.addressLine1,
+        companyAddressLine2: readCompanyUserDto.mailingAddress.addressLine2,
+        companyCountry: (await getFullNameFromCache(
+          this.cacheManager,
+          readCompanyUserDto.mailingAddress.countryCode,
+        )) as string,
+        companyProvinceState: (await getFullNameFromCache(
+          this.cacheManager,
+          readCompanyUserDto.mailingAddress.provinceCode,
+        )) as string,
+        companyCity: readCompanyUserDto.mailingAddress.city,
+        companyPostalCode: readCompanyUserDto.mailingAddress.postalCode,
+        companyEmail: readCompanyUserDto.email,
+        companyPhoneNumber: readCompanyUserDto.phone,
+        companyFaxNumber: readCompanyUserDto.fax,
+        primaryContactFirstname: readCompanyUserDto.primaryContact.firstName,
+        primaryContactLastname: readCompanyUserDto.primaryContact.lastName,
+        primaryContactEmail: readCompanyUserDto.primaryContact.email,
+        primaryContactPhoneNumber: readCompanyUserDto.primaryContact.phone1,
+        primaryContactExtension:
+          readCompanyUserDto.primaryContact.phone1Extension,
+        primaryContactAlternatePhoneNumber:
+          readCompanyUserDto.primaryContact.phone2,
+        primaryContactCountry: (await getFullNameFromCache(
+          this.cacheManager,
+          readCompanyUserDto.primaryContact.countryCode,
+        )) as string,
+        primaryContactProvinceState: (await getFullNameFromCache(
+          this.cacheManager,
+          readCompanyUserDto.primaryContact.provinceCode,
+        )) as string,
+        primaryContactCity: readCompanyUserDto.primaryContact.city,
+      };
+
+      await this.emailService.sendEmailMessage(
+        EmailTemplate.PROFILE_REGISTRATION_EMAIL_TEMPLATE,
+        emailData,
+        'Welcome to onRouteBC',
+        [readCompanyUserDto.email, readCompanyUserDto.primaryContact.email],
+      );
+    } catch (error: unknown) {
+      console.log('Error in Email Service', error);
+    }
 
     return readCompanyUserDto;
   }
