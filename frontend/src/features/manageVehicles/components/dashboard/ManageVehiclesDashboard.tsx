@@ -13,7 +13,6 @@ import { useLocation } from "react-router-dom";
 
 /**
  * Returns the selected tab index (if there is one)
- * @param vehicleType The vehicle type
  * @returns A number indicating the selected tab. Defaults to 0.
  */
 const useTabIndexFromURL = (): number => {
