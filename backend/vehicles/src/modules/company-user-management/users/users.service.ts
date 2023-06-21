@@ -323,9 +323,7 @@ export class UsersService {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
-    const idirUser = await queryRunner.manager.findOneBy(IdirUser, {
-      userGUID: currentUser.userGUID,
-    });
+    const idirUser = await this.findIdirUser(currentUser.idir_user_guid);
     if (!idirUser) {
       /**
        * IF IDIR use is not found in DB then check pending user table to see if the user has been invited
