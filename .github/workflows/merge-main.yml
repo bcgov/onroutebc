@@ -186,7 +186,6 @@ jobs:
 
   deploys-prod:
     name: Deploy images to prod
-    needs: 
     needs:
       - image-promotion-prod
     uses: ./.github/workflows/deploy.yml
