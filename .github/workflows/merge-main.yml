@@ -165,7 +165,7 @@ jobs:
           registry: ghcr.io
           repository: ${{ github.repository }}/${{ matrix.component }}
           target: test
-          tags: ${{ needs.GitVersion.outputs.fullSemVer }}
+          tags: "${{ needs.GitVersion.outputs.fullSemVer }}"
   
   image-promotion-prod:
     name: Promote images to PROD
@@ -181,7 +181,7 @@ jobs:
         with:
           registry: ghcr.io
           repository: ${{ github.repository }}/${{ matrix.component }}
-          target: ${{ needs.GitVersion.outputs.fullSemVer }}
+          target: "${{ needs.GitVersion.outputs.fullSemVer }}"
           tags: prod
 
   deploys-prod:
