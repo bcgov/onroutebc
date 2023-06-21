@@ -169,7 +169,7 @@ jobs:
   image-promotion-prod:
     name: Tag images with Prod Version
     needs:
-      - image-promotion-release
+      - create-release
     runs-on: ubuntu-22.04
     strategy:
       matrix:
