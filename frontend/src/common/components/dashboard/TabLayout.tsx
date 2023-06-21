@@ -19,6 +19,7 @@ interface TabLayoutProps {
   bannerText: string;
   bannerButton?: JSX.Element;
   componentList: ComponentProps[];
+  selectedTabIndex?: number;
 }
 
 const TabPanel = (props: TabPanelProps) => {
@@ -53,26 +54,28 @@ const DisplayTabs = ({
   value: number;
   handleChange: (event: React.SyntheticEvent, newValue: number) => void;
   componentList: ComponentProps[];
-}) => (
-  <Tabs
-    value={value}
-    onChange={handleChange}
-    variant="scrollable"
-    scrollButtons="auto"
-    aria-label="scrollable profile tabs"
-  >
-    {componentList.map(({ label }, index) => {
-      return (
-        <Tab
-          key={label}
-          label={label}
-          {...TabProps(index)}
-          //sx={{ px: 0, marginRight: "40px", fontWeight: 700 }}
-        />
-      );
-    })}
-  </Tabs>
-);
+}) => {
+  return (
+    <Tabs
+      value={value}
+      onChange={handleChange}
+      variant="scrollable"
+      scrollButtons="auto"
+      aria-label="scrollable profile tabs"
+    >
+      {componentList.map(({ label }, index) => {
+        return (
+          <Tab
+            key={label}
+            label={label}
+            {...TabProps(index)}
+            //sx={{ px: 0, marginRight: "40px", fontWeight: 700 }}
+          />
+        );
+      })}
+    </Tabs>
+  );
+};
 
 const DisplayTabPanels = ({
   value,
@@ -102,16 +105,20 @@ const DisplayTabPanels = ({
  * @param bannerText - string to display on the banner. (Example: "Profile")
  * @param bannerButton - string to display on the banner. (Example: "Profile")
  * @param componentList - Array of ComponentProps that contain labels (string) and components (JSX.Element)
+ * @param selectedTabIndex - The tab to be displayed instead of a default one. Defaults to zero.
  * @returns React component containing a layout for a Banner, Tabs, and TabPanels.
  */
 export const TabLayout = React.memo(
-  ({ bannerText, bannerButton, componentList }: TabLayoutProps) => {
-    const [value, setValue] = useState(0);
-
+  ({
+    bannerText,
+    bannerButton,
+    componentList,
+    selectedTabIndex = 0,
+  }: TabLayoutProps) => {
+    const [value, setValue] = useState<number>(selectedTabIndex);
     const handleChange = (event: React.SyntheticEvent, newValue: number) => {
       setValue(newValue);
     };
-
     return (
       <>
         <Box

@@ -9,6 +9,25 @@ import { useQuery } from "@tanstack/react-query";
 import { getAllPowerUnits, getAllTrailers } from "../../apiManager/vehiclesAPI";
 import { DoesUserHaveRoleWithContext } from "../../../../common/authentication/util";
 import { ROLES } from "../../../../common/authentication/types";
+import { useLocation } from "react-router-dom";
+
+/**
+ * Returns the selected tab index (if there is one)
+ * @returns A number indicating the selected tab. Defaults to 0.
+ */
+const useTabIndexFromURL = (): number => {
+  const { hash: selectedTab } = useLocation();
+  switch (selectedTab) {
+    case "#power-unit":
+      return 0;
+    case "#trailer":
+      return 1;
+    case "#vehicle-configuration":
+      return 2;
+    default:
+      return 0;
+  }
+};
 
 /**
  * React component to render the vehicle inventory
@@ -49,6 +68,7 @@ export const ManageVehiclesDashboard = memo(() => {
   return (
     <TabLayout
       bannerText="Vehicle Inventory"
+      selectedTabIndex={useTabIndexFromURL()}
       bannerButton={
         DoesUserHaveRoleWithContext(ROLES.WRITE_VEHICLE) ? (
           <AddVehicleButton />
