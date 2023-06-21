@@ -153,7 +153,6 @@ jobs:
   image-promotion-release:
     name: Tag images with Release Version
     needs:
-      - GitVersion
       - create-release
     runs-on: ubuntu-22.04
     strategy:
@@ -165,12 +164,11 @@ jobs:
           registry: ghcr.io
           repository: ${{ github.repository }}/${{ matrix.component }}
           target: test
-          tags: "${{ needs.GitVersion.outputs.fullSemVer }}"
+          tags: ${{ needs.GitVersion.outputs.fullSemVer }}
   
   image-promotion-prod:
-    name: Promote images to PROD
+    name: Tag images with Prod Version
     needs:
-      - deploys-test
       - image-promotion-release
     runs-on: ubuntu-22.04
     strategy:
@@ -181,7 +179,7 @@ jobs:
         with:
           registry: ghcr.io
           repository: ${{ github.repository }}/${{ matrix.component }}
-          target: "${{ needs.GitVersion.outputs.fullSemVer }}"
+          target: test
           tags: prod
 
   deploys-prod:
