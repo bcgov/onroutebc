@@ -16,7 +16,7 @@ import { useLocation } from "react-router-dom";
  * @param vehicleType The vehicle type
  * @returns A number indicating the selected tab. Defaults to 0.
  */
-const getTabIndexFromURL = (): number => {
+const useTabIndexFromURL = (): number => {
   const { hash: selectedTab } = useLocation();
   switch (selectedTab) {
     case "#power-unit":
@@ -69,7 +69,7 @@ export const ManageVehiclesDashboard = memo(() => {
   return (
     <TabLayout
       bannerText="Vehicle Inventory"
-      selectedTabIndex={getTabIndexFromURL()}
+      selectedTabIndex={useTabIndexFromURL()}
       bannerButton={
         DoesUserHaveRoleWithContext(ROLES.WRITE_VEHICLE) ? (
           <AddVehicleButton />
