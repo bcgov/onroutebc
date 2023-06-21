@@ -153,6 +153,7 @@ jobs:
   image-promotion-release:
     name: Tag images with Release Version
     needs:
+      - GitVersion
       - create-release
     runs-on: ubuntu-22.04
     strategy:
