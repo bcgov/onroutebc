@@ -1,5 +1,6 @@
 import { useForm, FormProvider, FieldValues } from "react-hook-form";
 import { Box, Button, MenuItem } from "@mui/material";
+import * as routes from "../../../../routes/constants";
 import "./VehicleForm.scss";
 // import { AxleGroupForm } from "./AxleGroupForm";
 import { Trailer, VehicleType } from "../../types/managevehicles";
@@ -99,7 +100,7 @@ export const TrailerForm = ({ trailer }: TrailerFormProps) => {
           message: "Changes Saved",
           alertType: "info",
         });
-        navigate("../");
+        navigate(`/${routes.MANAGE_VEHICLES}#trailer`);
       }
     } else {
       const trailerToBeAdded = data as Trailer;
@@ -115,7 +116,7 @@ export const TrailerForm = ({ trailer }: TrailerFormProps) => {
           message: "Trailer has been added successfully",
           alertType: "success",
         });
-        navigate("../");
+        navigate(`/${routes.MANAGE_VEHICLES}#trailer`);
       }
     }
   };
@@ -124,7 +125,7 @@ export const TrailerForm = ({ trailer }: TrailerFormProps) => {
    * Changed view to the main Vehicle Inventory page
    */
   const handleClose = () => {
-    navigate("../");
+    navigate(`/${routes.MANAGE_VEHICLES}#trailer`);
   };
 
   /**
