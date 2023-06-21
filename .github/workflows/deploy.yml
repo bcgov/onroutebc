@@ -125,7 +125,7 @@ jobs:
           file: ${{ matrix.file }}
           oc_namespace: ${{inputs.environmnet }}
           oc_server: ${{ secrets.OC_SERVER }}
-          oc_token: ${{ secrets.OC_TOKEN }}
+          oc_token: "${{ secrets.OC_TOKEN }}"
           overwrite: ${{ matrix.overwrite }}
           parameters: 
             -p ZONE=${{inputs.zone}}
