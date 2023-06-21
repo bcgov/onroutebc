@@ -13,7 +13,43 @@ const activeApplicationSource = factory({
     permitApprovalSource: nullable(String),
     createdDateTime: String,
     updatedDateTime: String,
-    permitData: Object,
+    permitData: {
+      startDate: String,
+      permitDuration: Number,
+      expiryDate: String,
+      contactDetails: {
+        firstName: nullable(String),
+        lastName: nullable(String),
+        phone1: nullable(String),
+        phone1Extension: nullable(String),
+        phone2: nullable(String),
+        phone2Extension: nullable(String),
+        email: nullable(String),
+        fax: nullable(String),
+      },
+      vehicleDetails: {
+        vin: nullable(String),
+        plate: nullable(String),
+        make: nullable(String),
+        year: nullable(Number),
+        countryCode: nullable(String),
+        provinceCode: nullable(String),
+        vehicleType: nullable(String),
+        vehicleSubType: nullable(String),
+        saveVehicle: nullable(Boolean),
+        unitNumber: nullable(String),
+      },
+      commodities: Array,
+      mailingAddress: {
+        addressLine1: nullable(String),
+        addressLine2: nullable(String),
+        city: nullable(String),
+        provinceCode: nullable(String),
+        countryCode: nullable(String),
+        postalCode: nullable(String),
+      },
+      feeSummary: nullable(String),
+    },
   }
 });
 
@@ -28,7 +64,7 @@ export const updateApplication = (application: ApplicationRequestData, applicati
       }
     },
     data: {
-      ...application,
+      ...application
     }
   });
 };

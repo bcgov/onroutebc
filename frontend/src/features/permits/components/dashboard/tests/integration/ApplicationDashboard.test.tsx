@@ -23,6 +23,8 @@ import { getDefaultCompanyInfo } from "./fixtures/getCompanyInfo";
 import { createApplication, getApplication, resetApplicationSource, updateApplication } from "./fixtures/getActiveApplication";
 import { dayjsToUtcStr, now } from "../../../../../../common/helpers/formatDate";
 import { ApplicationDashboard } from "../../ApplicationDashboard";
+import { Commodities } from "../../../../types/application";
+import { getDefaultRequiredVal } from "../../../../../../common/helpers/util";
 
 // Use some default user details values to give to the OnRouteBCContext context provider
 const defaultUserDetails = getDefaultUserDetails();
@@ -37,6 +39,10 @@ const {
   fax,
 } = defaultUserDetails.userDetails;
 
+const transformNullable = <T extends (number | string)>(input: T | null | undefined) => {
+  return input != null ? input : undefined;
+};
+
 // Mock API endpoints
 const server = setupServer(
   // Mock creating/saving application
@@ -48,20 +54,92 @@ const server = setupServer(
       createdDateTime: dayjsToUtcStr(now()),
       updatedDateTime: dayjsToUtcStr(now()),
     };
+    const createdApplication = createApplication(applicationData); // add to mock application store
+    const application = {
+      ...createdApplication,
+      permitId: transformNullable(createdApplication.permitId),
+      permitStatus: transformNullable(createdApplication.permitStatus),
+      permitNumber: transformNullable(createdApplication.permitNumber),
+      permitApprovalSource: transformNullable(createdApplication.permitApprovalSource),
+      permitData: {
+        startDate: getDefaultRequiredVal("", createdApplication.permitData?.startDate),
+        permitDuration: getDefaultRequiredVal(0, createdApplication.permitData?.permitDuration),
+        expiryDate: getDefaultRequiredVal("", createdApplication.permitData?.expiryDate),
+        commodities: getDefaultRequiredVal([], createdApplication.permitData?.commodities) as Commodities[],
+        mailingAddress: {
+          addressLine1: getDefaultRequiredVal("", createdApplication.permitData?.mailingAddress?.addressLine1),
+          addressLine2: transformNullable(createdApplication.permitData?.mailingAddress?.addressLine2),
+          city: getDefaultRequiredVal("", createdApplication.permitData?.mailingAddress?.city),
+          provinceCode: getDefaultRequiredVal("", createdApplication.permitData?.mailingAddress?.provinceCode),
+          countryCode: getDefaultRequiredVal("", createdApplication.permitData?.mailingAddress?.countryCode),
+          postalCode: getDefaultRequiredVal("", createdApplication.permitData?.mailingAddress?.postalCode),
+        },
+        contactDetails: {
+          firstName: getDefaultRequiredVal("", createdApplication.permitData?.contactDetails?.firstName),
+          lastName: getDefaultRequiredVal("", createdApplication.permitData?.contactDetails?.lastName),
+          phone1: getDefaultRequiredVal("", createdApplication.permitData?.contactDetails?.phone1),
+          phone1Extension: transformNullable(createdApplication.permitData?.contactDetails?.phone1Extension),
+          phone2: transformNullable(createdApplication.permitData?.contactDetails?.phone2),
+          phone2Extension: transformNullable(createdApplication.permitData?.contactDetails?.phone2Extension),
+          email: getDefaultRequiredVal("", createdApplication.permitData?.contactDetails?.email),
+          fax: transformNullable(createdApplication.permitData?.contactDetails?.fax),
+        },
+      }
+    };
     return res(ctx.status(201), ctx.json({
-      data: createApplication(applicationData), // add to mock application store
+      data: application,
     }));
   }),
   // Mock updating/saving application
   rest.put(`${PERMITS_API.SUBMIT_TERM_OVERSIZE_PERMIT}/:id`, async (req, res, ctx) => {
     const id = String(req.params.id);
     const reqBody = await req.json();
+    const applicationData = {
+      ...reqBody,
+      updatedDateTime: dayjsToUtcStr(now()),
+    }
+    const updatedApplication = updateApplication(applicationData, id); // update application in mock application store
+
+    if (!updatedApplication) {
+      return res(ctx.status(404), ctx.json({
+        message: "Application not found",
+      }));
+    }
+
+    const application = {
+      ...updatedApplication,
+      permitId: transformNullable(updatedApplication.permitId),
+      permitStatus: transformNullable(updatedApplication.permitStatus),
+      permitNumber: transformNullable(updatedApplication.permitNumber),
+      permitApprovalSource: transformNullable(updatedApplication.permitApprovalSource),
+      permitData: {
+        startDate: getDefaultRequiredVal("", updatedApplication.permitData?.startDate),
+        permitDuration: getDefaultRequiredVal(0, updatedApplication.permitData?.permitDuration),
+        expiryDate: getDefaultRequiredVal("", updatedApplication.permitData?.expiryDate),
+        commodities: getDefaultRequiredVal([], updatedApplication.permitData?.commodities) as Commodities[],
+        mailingAddress: {
+          addressLine1: getDefaultRequiredVal("", updatedApplication.permitData?.mailingAddress?.addressLine1),
+          addressLine2: transformNullable(updatedApplication.permitData?.mailingAddress?.addressLine2),
+          city: getDefaultRequiredVal("", updatedApplication.permitData?.mailingAddress?.city),
+          provinceCode: getDefaultRequiredVal("", updatedApplication.permitData?.mailingAddress?.provinceCode),
+          countryCode: getDefaultRequiredVal("", updatedApplication.permitData?.mailingAddress?.countryCode),
+          postalCode: getDefaultRequiredVal("", updatedApplication.permitData?.mailingAddress?.postalCode),
+        },
+        contactDetails: {
+          firstName: getDefaultRequiredVal("", updatedApplication.permitData?.contactDetails?.firstName),
+          lastName: getDefaultRequiredVal("", updatedApplication.permitData?.contactDetails?.lastName),
+          phone1: getDefaultRequiredVal("", updatedApplication.permitData?.contactDetails?.phone1),
+          phone1Extension: transformNullable(updatedApplication.permitData?.contactDetails?.phone1Extension),
+          phone2: transformNullable(updatedApplication.permitData?.contactDetails?.phone2),
+          phone2Extension: transformNullable(updatedApplication.permitData?.contactDetails?.phone2Extension),
+          email: getDefaultRequiredVal("", updatedApplication.permitData?.contactDetails?.email),
+          fax: transformNullable(updatedApplication.permitData?.contactDetails?.fax),
+        },
+      }
+    };
     
     return res(ctx.json({
-      data: updateApplication({ // update application in mock application store
-        ...reqBody,
-        updatedDateTime: dayjsToUtcStr(now()),
-      }, id),
+      data: application,
     }));
   }),
   // Mock getting application
@@ -224,17 +302,20 @@ describe("Application editing", () => {
     await user.click(saveBtn);
 
     // Assert - mock store should contain updated values
-    const applicationData = getApplication();
-    waitFor(() => {
-      expect(applicationData?.permitData?.contactDetails?.firstName).toBe(newFirstName);
-      expect(applicationData?.permitData?.contactDetails?.lastName).toBe(newLastName);
-      expect(applicationData?.permitData?.contactDetails?.phone1).toBe(newPhone1);
-      expect(applicationData?.permitData?.contactDetails?.phone1Extension).toBe(phone1Extension);
-      expect(applicationData?.permitData?.contactDetails?.phone2).toBe(newPhone2);
-      expect(applicationData?.permitData?.contactDetails?.phone2Extension).toBe(phone2Extension);
-      expect(applicationData?.permitData?.contactDetails?.email).toBe(newEmail);
-      expect(applicationData?.permitData?.contactDetails?.fax).toBe(fax);
+    await waitFor(() => {
+      expect(getApplication()).not.toBeUndefined();
     });
+    const applicationData = getApplication();
+    expect(applicationData?.permitData).not.toBeUndefined();
+    expect(applicationData?.permitData?.contactDetails).not.toBeUndefined();
+    expect(applicationData?.permitData?.contactDetails?.firstName).toBe(newFirstName);
+    expect(applicationData?.permitData?.contactDetails?.lastName).toBe(newLastName);
+    expect(applicationData?.permitData?.contactDetails?.phone1).toBe(newPhone1);
+    expect(applicationData?.permitData?.contactDetails?.phone1Extension).toBe(phone1Extension);
+    expect(applicationData?.permitData?.contactDetails?.phone2).toBe(newPhone2);
+    expect(applicationData?.permitData?.contactDetails?.phone2Extension).toBe(phone2Extension);
+    expect(applicationData?.permitData?.contactDetails?.email).toBe(newEmail);
+    expect(applicationData?.permitData?.contactDetails?.fax).toBe(fax);
     
     // Assert - input fields should contain updated values
     expect(firstNameInput).toHaveValue(newFirstName);
