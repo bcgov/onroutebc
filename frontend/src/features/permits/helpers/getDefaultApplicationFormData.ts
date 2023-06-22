@@ -210,6 +210,14 @@ export const getDefaultValues = (applicationData?: Application, companyId?: numb
     applicationData?.applicationNumber
   ),
   userGuid: getUserGuidFromSession(),
+  permitId: getDefaultRequiredVal(
+    "",
+    applicationData?.permitId,
+  ),
+  permitNumber: getDefaultRequiredVal(
+    "",
+    applicationData?.permitNumber,
+  ),
   permitType: getDefaultRequiredVal(
     "TROS",
     applicationData?.permitType
@@ -227,6 +235,18 @@ export const getDefaultValues = (applicationData?: Application, companyId?: numb
     (date) => dayjs(date),
     applicationData?.updatedDateTime,
     now()
+  ),
+  revision: getDefaultRequiredVal(
+    0, 
+    applicationData?.revision,
+  ),
+  previousRevision: getDefaultRequiredVal(
+    "", 
+    applicationData?.previousRevision,
+  ),
+  documentId: getDefaultRequiredVal(
+    "",
+    applicationData?.documentId,
   ),
   permitData: {
     startDate: applyWhenNotNullable(
@@ -259,5 +279,6 @@ export const getDefaultValues = (applicationData?: Application, companyId?: numb
     // Default values are updated from companyInfo query in the ContactDetails common component
     mailingAddress: getDefaultMailingAddress(applicationData?.permitData?.mailingAddress),
     vehicleDetails: getDefaultVehicleDetails(applicationData?.permitData?.vehicleDetails),
+    feeSummary: getDefaultRequiredVal("30", applicationData?.permitData?.feeSummary),
   },
 });

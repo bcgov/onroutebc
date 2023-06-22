@@ -79,7 +79,6 @@ export const TermOversizeForm = () => {
       applicationNumber: applicationContext.applicationData?.applicationNumber,
       permitData: {
         ...data.permitData,
-        feeSummary: data.permitData.permitDuration.toString(),
         vehicleDetails: {
           ...data.permitData.vehicleDetails,
           // Convert year to number here, as React doesn't accept valueAsNumber prop for input component

@@ -90,6 +90,8 @@ export const useDefaultApplicationFormData = (applicationData?: Application) => 
   const applicationFormDataDepArray = [
     companyId,
     applicationData?.applicationNumber,
+    applicationData?.permitId,
+    applicationData?.permitNumber,
     applicationData?.permitStatus,
     applicationData?.permitType,
     applicationData?.createdDateTime,
@@ -97,6 +99,10 @@ export const useDefaultApplicationFormData = (applicationData?: Application) => 
     applicationData?.permitData?.startDate,
     applicationData?.permitData?.permitDuration,
     applicationData?.permitData?.expiryDate,
+    applicationData?.permitData?.feeSummary,
+    applicationData?.documentId,
+    applicationData?.revision,
+    applicationData?.previousRevision,
     commoditiesRef.current, // array deep comparison used here
     ...contactDetailsDepArray,
     ...mailingAddressDepArray,

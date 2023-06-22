@@ -5,10 +5,16 @@ import { ApplicationContext } from "../../context/ApplicationContext";
 import { ProgressBar } from "../../components/progressBar/ProgressBar";
 import "./TermOversize.scss";
 import { useNavigate } from "react-router-dom";
+import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 
 export const TermOversizePay = () => {
   const { applicationData } = useContext(ApplicationContext);
-  const calculatedFee = applicationData?.permitData.permitDuration || 0;
+  const calculatedFee = Number(
+    getDefaultRequiredVal(
+      "30",
+      applicationData?.permitData?.feeSummary,
+    )
+  );
 
   useEffect(() => {
     window.scrollTo(0, 0);

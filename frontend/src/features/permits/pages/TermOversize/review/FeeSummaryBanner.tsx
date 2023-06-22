@@ -2,10 +2,14 @@ import { Box, Typography } from "@mui/material";
 import { BC_COLOURS } from "../../../../../themes/bcGovStyles";
 import { useContext } from "react";
 import { ApplicationContext } from "../../../context/ApplicationContext";
+import { getDefaultRequiredVal } from "../../../../../common/helpers/util";
 
 export const FeeSummaryBanner = () => {
   const { applicationData } = useContext(ApplicationContext);
-  const calculatedFee = applicationData?.permitData.permitDuration || 0;
+  const calculatedFee = Number(
+    getDefaultRequiredVal("30", applicationData?.permitData.feeSummary)
+  );
+  
   return (
     <Box
       sx={{

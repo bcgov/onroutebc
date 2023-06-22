@@ -4,15 +4,19 @@ import { ApplicationRequestData } from "../../../../../types/application";
 const activeApplicationSource = factory({
   application: {
     applicationNumber: primaryKey(String),
-    permitId: nullable(Number),
+    permitId: nullable(String),
     permitStatus: nullable(String),
     companyId: Number,
     userGuid: nullable(String),
     permitType: String,
-    permitNumber: nullable(Number),
+    permitNumber: nullable(String),
+    permitApplicationOrigin: nullable(String),
     permitApprovalSource: nullable(String),
+    revision: nullable(Number),
+    previousRevision: nullable(String),
     createdDateTime: String,
     updatedDateTime: String,
+    documentId: nullable(String),
     permitData: {
       startDate: String,
       permitDuration: Number,

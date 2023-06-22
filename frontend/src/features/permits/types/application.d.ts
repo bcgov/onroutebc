@@ -15,21 +15,30 @@ type ReplaceDayjsWithString<T> = {
   [K in keyof T]: T[K] extends Dayjs ? string : (T[K] extends (Dayjs | undefined) ? (string | undefined) : T[K]);
 };
 
+type PermitType = "STOS" | "TROS";
+type PermitApplicationOrigin = "ONLINE" | "PPC";
+type PermitApprovalSource = "AUTO" | "PPC" | "TPS";
+type PermitStatus = "APPROVED" | "AUTO_APPROVED" | "CANCELLED" | "IN_PROGRESS" | "REJECTED" | "UNDER_REVIEW" | "WAITING_APPROVAL" | "WAITING_PAYMENT" | "ISSUED";
+
 /**
  * A base permit type. This is an incomplete object and meant to be extended for use.
  */
 export interface Application {
-  permitId?: number;
-  permitStatus?: string;
+  permitId?: string;
+  permitStatus?: PermitStatus;
   companyId: number;
   userGuid?: string | null;
-  permitType: string;
+  permitType: PermitType;
   applicationNumber?: string;
-  permitNumber?: number;
-  permitApprovalSource?: string;
+  permitNumber?: string;
+  permitApplicationOrigin?: PermitApplicationOrigin;
+  permitApprovalSource?: PermitApprovalSource;
+  revision?: number;
+  previousRevision?: string;
   createdDateTime?: Dayjs;
   updatedDateTime?: Dayjs;
   permitData: TermOversizeApplication;
+  documentId?: string;
 }
 
 /**
@@ -99,21 +108,23 @@ export interface TermOversizeApplication {
   vehicleDetails?: VehicleDetails;
   commodities: Commodities[];
   mailingAddress: MailingAddress;
+  feeSummary?: string;
 }
 
 export interface PermitApplicationInProgress {
   applicationNumber: string;
   companyId: number;
   createdDateTime: string;
-  permitApplicationOrigin?: string | null;
-  permitApprovalSource?: string | null;
+  permitApplicationOrigin?: PermitApplicationOrigin | null;
+  permitApprovalSource?: PermitApprovalSource | null;
   permitData: ReplaceDayjsWithString<TermOversizeApplication>;
   permitId: string
   permitNumber?: string | null;
   permitStatus: "IN_PROGRESS";
-  permitType: string;
+  permitType: PermitType;
   updatedDateTime: string;
   userGuid: string;
+  documentId?: string | null;
 }
 
 export type ApplicationInProgress = PermitApplicationInProgress;

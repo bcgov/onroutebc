@@ -10,7 +10,7 @@ import {
 } from "../../../../../themes/orbcStyles";
 import { Application } from "../../../types/application";
 import { ReviewConditionsTable } from "./ReviewConditionsTable";
-import { applyWhenNotNullable } from "../../../../../common/helpers/util";
+import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../../../common/helpers/util";
 
 export const ReviewPermitDetails = ({
   values,
@@ -33,7 +33,7 @@ export const ReviewPermitDetails = ({
             ""
           )}
           <Typography sx={{ fontWeight: "bold" }}>Permit Duration:</Typography>
-          <Typography>{values?.permitData.permitDuration} Days</Typography>
+          <Typography>{getDefaultRequiredVal(30, values?.permitData.permitDuration)} Days</Typography>
         </Box>
         <PermitExpiryDateBanner
           expiryDate={applyWhenNotNullable(
