@@ -1,0 +1,302 @@
+{
+	"info": {
+		"_postman_id": "59204162-e7bb-4d33-a913-86371888e6d4",
+		"name": "onRouteBC Payment Process - MOTI Gateway",
+		"description": "This collection simulates the sequence of payment via credit card using the MOTI payment gateway to Bambora / Worldline.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "11120889"
+	},
+	"item": [
+		{
+			"name": "Forward Transaction Details to MOTI Payment Gateway",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const currDate = new Date();\r",
+							"let trnNum = 'T-' + currDate.getTime();\r",
+							"pm.environment.set('transaction_number', trnNum);\r",
+							"\r",
+							"// Giving our hash expiry a value of current date plus 10 minutes which is sufficient\r",
+							"let hashExpiryDt = new Date(currDate.getTime() + (10*60000));\r",
+							"let year = hashExpiryDt.getFullYear();\r",
+							"let monthPadded = (\"00\" + (hashExpiryDt.getMonth() + 1)).slice(-2);\r",
+							"let dayPadded = (\"00\" + hashExpiryDt.getDate()).slice(-2);\r",
+							"let hoursPadded = (\"00\" + hashExpiryDt.getHours()).slice(-2);\r",
+							"let minutesPadded = (\"00\" + hashExpiryDt.getMinutes()).slice(-2);\r",
+							"let hashExpiry = `${year}${monthPadded}${dayPadded}${hoursPadded}${minutesPadded}`;\r",
+							"pm.collectionVariables.set('motipay_hash_expiry', hashExpiry);\r",
+							"\r",
+							"// There should be a better way of doing this which is not as rigid - something like\r",
+							"// dynamically removing the hashValue param from the actual query string instead of building\r",
+							"// it up manually below, but this is sufficient for now.\r",
+							"let queryString = pm.variables.replaceIn(\"merchant_id={{merchant_id}}&trnType=P&trnOrderNumber={{transaction_number}}&trnAmount={{transaction_amount}}&approvedPage={{approved_redirect_uri}}&declinedPage={{declined_redirect_uri}}{{motipay_api_key}}\");\r",
+							"\r",
+							"let hash = CryptoJS.MD5(queryString).toString();\r",
+							"pm.collectionVariables.set('motipay_hash', hash);\r",
+							"console.log(hash);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const $ = cheerio.load(pm.response.text());\r",
+							"\r",
+							"pm.collectionVariables.set(\"session_token\", $(\"#sessionToken\").attr(\"value\"));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{motipay_base_url}}?merchant_id={{merchant_id}}&trnType=P&trnOrderNumber={{transaction_number}}&trnAmount={{transaction_amount}}&approvedPage={{approved_redirect_uri}}&declinedPage={{declined_redirect_uri}}&hashValue={{motipay_hash}}",
+					"host": [
+						"{{motipay_base_url}}"
+					],
+					"query": [
+						{
+							"key": "merchant_id",
+							"value": "{{merchant_id}}"
+						},
+						{
+							"key": "trnType",
+							"value": "P"
+						},
+						{
+							"key": "trnOrderNumber",
+							"value": "{{transaction_number}}"
+						},
+						{
+							"key": "trnAmount",
+							"value": "{{transaction_amount}}"
+						},
+						{
+							"key": "approvedPage",
+							"value": "{{approved_redirect_uri}}"
+						},
+						{
+							"key": "declinedPage",
+							"value": "{{declined_redirect_uri}}"
+						},
+						{
+							"key": "hashValue",
+							"value": "{{motipay_hash}}"
+						}
+					]
+				},
+				"description": "The initial request supplies the MOTI payment gateway with a unique transaction ID, the merchant number for onRouteBC, amount, redirect URIs for approved and declined scenarios, and a hash value for validation."
+			},
+			"response": []
+		},
+		{
+			"name": "Submit Payment Details",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const $ = cheerio.load(pm.response.text());\r",
+							"\r",
+							"pm.collectionVariables.set(\"pay_form_params\", encodeURIComponent($(\"#payFormParams\").attr(\"value\")));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{bambora_host}}/scripts/payment/payment.asp?sessionToken={{session_token}}&merchant_id={{merchant_id}}&trnOrderNumber={{transaction_number}}&paymentMethod=CC&trnCardOwner=A. Trucker&trnCardType={{cc_type}}&trnCardNumber={{cc_number}}&trnExpMonth={{cc_exp_month}}&trnExpYear={{cc_exp_year}}&trnCardCvd={{cc_cvd}}",
+					"host": [
+						"{{bambora_host}}"
+					],
+					"path": [
+						"scripts",
+						"payment",
+						"payment.asp"
+					],
+					"query": [
+						{
+							"key": "sessionToken",
+							"value": "{{session_token}}"
+						},
+						{
+							"key": "merchant_id",
+							"value": "{{merchant_id}}"
+						},
+						{
+							"key": "trnOrderNumber",
+							"value": "{{transaction_number}}"
+						},
+						{
+							"key": "paymentMethod",
+							"value": "CC"
+						},
+						{
+							"key": "trnCardOwner",
+							"value": "A. Trucker"
+						},
+						{
+							"key": "trnCardType",
+							"value": "{{cc_type}}"
+						},
+						{
+							"key": "trnCardNumber",
+							"value": "{{cc_number}}"
+						},
+						{
+							"key": "trnExpMonth",
+							"value": "{{cc_exp_month}}"
+						},
+						{
+							"key": "trnExpYear",
+							"value": "{{cc_exp_year}}"
+						},
+						{
+							"key": "trnCardCvd",
+							"value": "{{cc_cvd}}"
+						}
+					]
+				},
+				"description": "This request simulates the user entering the credit card payment details into the payment form."
+			},
+			"response": []
+		},
+		{
+			"name": "Process Transaction",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const redirectUri = pm.response.headers.find(h => h.key === \"Location\").value;\r",
+							"pm.collectionVariables.set('motipay_redirect_to_orbc', redirectUri);\r",
+							"\r",
+							"const queryString = redirectUri.split('?')[1];\r",
+							"\r",
+							"const pairs = queryString.split('&');\r",
+							"let paramsJson = {};\r",
+							"paramsJson['params'] = [];\r",
+							"pairs.forEach(function (pair) {\r",
+							"  let param = {};\r",
+							"  pair = pair.split('=');\r",
+							"  param['key'] = pair[0].trim();\r",
+							"  param['value'] = decodeURIComponent(pair[1].replaceAll('+', ' ') || '');\r",
+							"  paramsJson.params.push(param);\r",
+							"});\r",
+							"\r",
+							"// Validate payBC hash\r",
+							"let qsWithoutHash = queryString.substring(0, queryString.indexOf('&hashValue='));\r",
+							"let validationString = qsWithoutHash + pm.environment.get('paybc_api_key');\r",
+							"let validationHash = CryptoJS.MD5(validationString).toString();\r",
+							"let submittedHash = ''; //paramsJson.params.find(p => p.key === 'hashValue').value;\r",
+							"let validationParam = {};\r",
+							"validationParam['key'] = 'Hash Validated?';\r",
+							"validationParam['value'] = (validationHash === submittedHash).toString();\r",
+							"paramsJson.params.push(validationParam);\r",
+							"\r",
+							"let template = `\r",
+							"  <div>\r",
+							"    <table>\r",
+							"      <tr>\r",
+							"        <th>Key</th>\r",
+							"        <th>Value</th>\r",
+							"      </tr>\r",
+							"      {{#each .}}\r",
+							"      <tr>\r",
+							"        <td>{{key}}</td>\r",
+							"        <td>{{value}}</td>\r",
+							"      </tr>\r",
+							"      {{/each}}\r",
+							"    </table>\r",
+							"  </div>`;\r",
+							"\r",
+							"pm.visualizer.set(template, paramsJson.params);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"followRedirects": false
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{bambora_host}}/scripts/process_transaction.asp?payFormParams={{pay_form_params}}",
+					"host": [
+						"{{bambora_host}}"
+					],
+					"path": [
+						"scripts",
+						"process_transaction.asp"
+					],
+					"query": [
+						{
+							"key": "payFormParams",
+							"value": "{{pay_form_params}}"
+						}
+					]
+				},
+				"description": "This request simulates the internal Bambora / Worldline transaction processing call (auto-submitting form), which results in a final redirect back to our redirect URL. Note that we configure the request to not automatically follow redirects so we can display the parameters received from Bambora / Worldline in the visualizer."
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "motipay_hash",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "motipay_hash_expiry",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "session_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "pay_form_params",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "motipay_redirect_to_orbc",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
