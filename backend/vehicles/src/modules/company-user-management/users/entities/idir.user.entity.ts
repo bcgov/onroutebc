@@ -11,7 +11,7 @@ export class IdirUser extends Base {
    *  A primary column representing the unique identifier for the user in ORBC.
    */
   @AutoMap()
-  @PrimaryColumn({ length: 32, name: 'USER_GUID', nullable: false })
+  @PrimaryColumn({ length: 32, name: 'USER_GUID', nullable: false, update: false})
   userGUID: string;
 
   /**
@@ -52,7 +52,7 @@ export class IdirUser extends Base {
     enum: UserStatus,
     length: 10,
     name: 'STATUS_CODE',
-    default: 'ACTIVE',
+    default: UserStatus.ACTIVE,
     nullable: false,
   })
   statusCode: UserStatus;
@@ -67,7 +67,7 @@ export class IdirUser extends Base {
     enum: UserAuthGroup,
     length: 10,
     name: 'USER_AUTH_GROUP_ID',
-    nullable: true,
+    nullable: false,
   })
   userAuthGroup: UserAuthGroup;
 }

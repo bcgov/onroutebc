@@ -19,7 +19,7 @@ export class AuthService {
   ): Promise<boolean> {
     let user: ReadUserDto[];
     if (identity_provider === IDP.IDIR) {
-      user = await this.usersService.findIdirUser(userGuid);
+      user = Array(await this.usersService.findIdirUser(userGuid));
     } else {
       if (!companyId) {
         user = await this.usersService.findUsersDto(userGuid);

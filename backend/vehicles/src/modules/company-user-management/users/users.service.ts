@@ -397,13 +397,14 @@ export class UsersService {
     return user;
   }
 
-  async findIdirUser(userGUID?: string): Promise<ReadUserDto[]> {
+  async findIdirUser(userGUID?: string): Promise<ReadUserDto> {
     // Find user entities based on the provided filtering criteria
-    const userDetails = await this.findOneIdirUser(userGUID);
+    const userDetails = await this.idirUserRepository.findOne({
+      where: { userGUID: userGUID },
+    });
     // Map the retrieved user entities to ReadUserDto objects
-    const readUserDto: ReadUserDto[] = Array(
-      await this.classMapper.mapAsync(userDetails, IdirUser, ReadUserDto),
-    );
+    const readUserDto: ReadUserDto = 
+      await this.classMapper.mapAsync(userDetails, IdirUser, ReadUserDto);
     return readUserDto;
   }
 
