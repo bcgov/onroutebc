@@ -28,7 +28,7 @@ export class Base {
   @AutoMap()
   @ApiProperty({ description: 'Resource Creation Date' })
   @CreateDateColumn({
-    default: () => 'NOW()',
+    default: () => 'GETUTCDATETIME()',
     name: 'DB_CREATE_TIMESTAMP',
     nullable: true,
   })
@@ -46,7 +46,7 @@ export class Base {
   @AutoMap()
   @ApiProperty({ description: 'Resource Update Date' })
   @UpdateDateColumn({
-    default: () => 'NOW()',
+    default: () => 'GETUTCDATETIME()',
     name: 'DB_LAST_UPDATE_TIMESTAMP',
     nullable: true,
   })
