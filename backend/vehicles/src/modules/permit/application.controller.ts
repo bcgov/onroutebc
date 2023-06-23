@@ -81,7 +81,7 @@ export class ApplicationController {
     type: ReadApplicationDto,
     isArray: true,
   })
-  @ApiQuery({name:"companyId", required: false})
+  @ApiQuery({ name: 'companyId', required: false })
   @Roles(Role.READ_PERMIT)
   @Get()
   async findAllApplication(
@@ -117,7 +117,7 @@ export class ApplicationController {
     type: ReadApplicationDto,
     isArray: true,
   })
-  @ApiQuery({name:"companyId", required: false})
+  @ApiQuery({ name: 'companyId', required: false })
   @Roles(Role.READ_PERMIT)
   @Get(':permitId')
   async findOneApplication(

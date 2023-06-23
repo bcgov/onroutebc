@@ -319,11 +319,11 @@ export class UsersService {
   }
 
   async checkIdirUser(currentUser: IUserJWT) {
-    let userExists = false;
+    let userExists: ReadUserOrbcStatusDto = null;
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
-    const idirUser = await this.findIdirUser(currentUser.idir_user_guid);
+    const idirUser = await this.findOneIdirUser(currentUser.idir_user_guid);
     if (!idirUser) {
       /**
        * IF IDIR use is not found in DB then check pending user table to see if the user has been invited
@@ -341,7 +341,7 @@ export class UsersService {
           const pendingUser = await queryRunner.manager.findOneBy(
             PendingIdirUser,
             {
-              userName: currentUser.userName,
+              userName: currentUser.idir_username,
             },
           );
 
@@ -352,10 +352,14 @@ export class UsersService {
             );
             await queryRunner.manager.save(user);
             await queryRunner.manager.delete(PendingIdirUser, {
-              userName: currentUser.userName,
+              userName: currentUser.idir_username,
             });
             await queryRunner.commitTransaction();
-            userExists = true;
+            userExists = await this.classMapper.mapAsync(
+              user,
+              IdirUser,
+              ReadUserOrbcStatusDto,
+            );
           } else {
             throw new UnauthorizedException();
           }
@@ -369,7 +373,11 @@ export class UsersService {
         throw new UnauthorizedException();
       }
     } else {
-      userExists = true;
+      userExists = await this.classMapper.mapAsync(
+        idirUser,
+        IdirUser,
+        ReadUserOrbcStatusDto,
+      );
     }
     return userExists;
   }
@@ -391,15 +399,20 @@ export class UsersService {
 
   async findIdirUser(userGUID?: string): Promise<ReadUserDto[]> {
     // Find user entities based on the provided filtering criteria
-    const userDetails = await this.idirUserRepository.find({
-      where: { userGUID: userGUID },
-    });
+    const userDetails = await this.findOneIdirUser(userGUID);
     // Map the retrieved user entities to ReadUserDto objects
-    const readUserDto = await this.classMapper.mapArrayAsync(
-      userDetails,
-      IdirUser,
-      ReadUserDto,
+    const readUserDto: ReadUserDto[] = Array(
+      await this.classMapper.mapAsync(userDetails, IdirUser, ReadUserDto),
     );
     return readUserDto;
+  }
+
+  async findOneIdirUser(userGUID?: string): Promise<IdirUser> {
+    // Find user entities based on the provided filtering criteria
+    const userDetails = await this.idirUserRepository.findOne({
+      where: { userGUID: userGUID },
+    });
+
+    return userDetails;
   }
 }

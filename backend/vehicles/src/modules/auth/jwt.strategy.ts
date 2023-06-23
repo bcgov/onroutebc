@@ -60,10 +60,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       userGUID = payload.idir_user_guid;
       userName = payload.idir_username;
       payload.accountSource = AccountSource.PPCStaff;
-      const userExists = await this.authService.checkIdirUser(payload);
-      if (!userExists) {
-        throw new UnauthorizedException();
-      }
     } else if (payload.identity_provider === IDP.BCEID) {
       userGUID = payload.bceid_user_guid;
       userName = payload.bceid_username;

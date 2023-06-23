@@ -4,7 +4,6 @@ import { ReadUserDto } from '../company-user-management/users/dto/response/read-
 import { PendingUsersService } from '../company-user-management/pending-users/pending-users.service';
 import { Role } from '../../common/enum/roles.enum';
 import { IDP } from '../../common/enum/idp.enum';
-import { IUserJWT } from 'src/common/interface/user-jwt.interface';
 
 @Injectable()
 export class AuthService {
@@ -57,12 +56,5 @@ export class AuthService {
   async getCompaniesForUser(userGuid: string): Promise<number[]> {
     const companies = await this.usersService.getCompaniesForUser(userGuid);
     return companies;
-  }
-
-  async checkIdirUser(currentUser: IUserJWT) {
-    const userExists: boolean = await this.usersService.checkIdirUser(
-      currentUser,
-    );
-    return userExists;
   }
 }

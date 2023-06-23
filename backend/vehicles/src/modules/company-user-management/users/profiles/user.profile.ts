@@ -15,6 +15,7 @@ import { CreateUserDto } from '../dto/request/create-user.dto';
 import { ReadUserDto } from '../dto/response/read-user.dto';
 import { UpdateUserDto } from '../dto/request/update-user.dto';
 import { IdirUser } from '../entities/idir.user.entity';
+import { ReadUserOrbcStatusDto } from '../dto/response/read-user-orbc-status.dto';
 
 @Injectable()
 export class UsersProfile extends AutomapperProfile {
@@ -143,6 +144,43 @@ export class UsersProfile extends AutomapperProfile {
         ),
         forMember(
           (d) => d.statusCode,
+          mapFrom((s) => s.statusCode),
+        ),
+      );
+
+      /**
+       * The mapping is between IdirUser to ReadUserOrbcStatusDto mapping.
+       */
+      createMap(
+        mapper,
+        IdirUser,
+        ReadUserOrbcStatusDto,
+        forMember(
+          (d) => d.user.firstName,
+          mapFrom((s) => s.userName),
+        ),
+        forMember(
+          (d) => d.user.lastName,
+          mapFrom((s) => s.lastName),
+        ),
+        forMember(
+          (d) => d.user.email,
+          mapFrom((s) => s.email),
+        ),
+        forMember(
+          (d) => d.user.userName,
+          mapFrom((s) => s.userName),
+        ),
+        forMember(
+          (d) => d.user.userGUID,
+          mapFrom((s) => s.userGUID),
+        ),
+        forMember(
+          (d) => d.user.userAuthGroup,
+          mapFrom((s) => s.userAuthGroup),
+        ),
+        forMember(
+          (d) => d.user.statusCode,
           mapFrom((s) => s.statusCode),
         ),
       );
