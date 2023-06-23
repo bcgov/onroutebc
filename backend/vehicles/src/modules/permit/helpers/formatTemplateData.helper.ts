@@ -5,6 +5,7 @@ import {
 } from '../../../common/interface/permit.template.interface';
 import { FullNames } from '../interface/fullNames.interface';
 import { ReadCompanyDto } from 'src/modules/company-user-management/company/dto/response/read-company.dto';
+import { convertUtcToPt } from 'src/common/helper/convertUtcToPt.helper';
 
 /**
  * Formats the permit data so that it can be used in the templated word documents
@@ -40,10 +41,26 @@ export const formatTemplateData = (
 
   // Format Permit information
   template.permitName = fullNames.permitName;
-  template.permitNumber = permit.permitNumber || ''; // TODO
+  template.permitNumber = permit.permitNumber || '';
   template.permitType = permit.permitType;
-  template.createdDateTime = permit.createdDateTime.toISOString(); // TODO: timezone? Format is done in word template
-  template.updatedDateTime = permit.updatedDateTime.toISOString(); // TODO: timezone? Format is done in word template
+  template.createdDateTime = convertUtcToPt(
+    permit.createdDateTime.toString(),
+    'MMM. D, YYYY, hh:mm a',
+  );
+  template.updatedDateTime = convertUtcToPt(
+    permit.updatedDateTime.toString(),
+    'MMM. D, YYYY, hh:mm a',
+  );
+
+  // Start & Expiry date
+  template.permitData.startDate = convertUtcToPt(
+    template.permitData.startDate.toString(),
+    'MMM. D, YYYY',
+  );
+  template.permitData.expiryDate = convertUtcToPt(
+    template.permitData.expiryDate.toString(),
+    'MMM. D, YYYY',
+  );
 
   // Format Vehicle Details
   template.permitData.vehicleDetails.vehicleType = fullNames.vehicleTypeName;
