@@ -318,7 +318,7 @@ export class UsersService {
     return companies;
   }
 
-  async checkIdirUser(currentUser: IUserJWT) {
+  async checkIdirUser(currentUser: IUserJWT):Promise<ReadUserOrbcStatusDto> {
     let userExists: ReadUserOrbcStatusDto = null;
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
