@@ -10,13 +10,14 @@ export class EmailController {
   @Post()
   @Public()
   async sendEmail() {
+    //TODO: Refactor and provide an endpoint
     const emailSubject = 'Welcome to onRouteBC';
 
     await this.emailService.sendEmailMessage(
-      EmailTemplate.PROFILE_REGISTRATION_EMAIL_TEMPLATE,
+      EmailTemplate.ISSUE_PERMIT_EMAIL_TEMPLATE,
       null,
       emailSubject,
-      ['praveen.1.raju@gov.bc.ca', 'praveen.raju@aot-technologies.com'],
+      null,
     );
   }
 }
