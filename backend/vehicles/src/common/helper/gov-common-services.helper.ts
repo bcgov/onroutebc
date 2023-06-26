@@ -5,34 +5,34 @@ import { GovCommonServices } from '../enum/gov-common-services.enum';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Cache } from 'cache-manager';
 import { GovCommonServicesToken } from '../interface/gov-common-services-token.interface';
+import { CacheKey } from '../enum/cache-key.enum';
+import { addToCache, getFromCache } from './cache.helper';
 
-const CHES_ACCESS_TOKEN = 'CHES_ACCESS_TOKEN';
-const CDOGS_ACCESS_TOKEN = 'CDOGS_ACCESS_TOKEN';
 export async function getAccessToken(
   govCommonServices: GovCommonServices,
   httpService: HttpService,
   cacheManager: Cache,
 ) {
-  let tokenKey: string = undefined;
+  let tokenCacheKey: CacheKey = undefined;
   let tokenUrl: string = undefined;
   let username: string = undefined;
   let password: string = undefined;
   if (govCommonServices === GovCommonServices.COMMON_HOSTED_EMAIL_SERVICE) {
-    tokenKey = CHES_ACCESS_TOKEN;
+    tokenCacheKey = CacheKey.CHES_ACCESS_TOKEN;
     tokenUrl = process.env.CHES_TOKEN_URL;
     username = process.env.CHES_CLIENT_ID;
     password = process.env.CHES_CLIENT_SECRET;
   } else if (
     govCommonServices === GovCommonServices.COMMON_DOCUMENT_GENERATION_SERVICE
   ) {
-    tokenKey = CDOGS_ACCESS_TOKEN;
+    tokenCacheKey = CacheKey.CDOGS_ACCESS_TOKEN;
     tokenUrl = process.env.CDOGS_TOKEN_URL;
     username = process.env.CDOGS_CLIENT_ID;
     password = process.env.CDOGS_CLIENT_SECRET;
   }
 
   const tokenFromCache: GovCommonServicesToken = await cacheManager.get(
-    tokenKey,
+    tokenCacheKey,
   );
   if (tokenFromCache) {
     if (Date.now() < tokenFromCache.expires_at) {
@@ -65,7 +65,7 @@ export async function getAccessToken(
 
   token.expires_at = Date.now() + (token.expires_in - 15) * 1000;
 
-  await cacheManager.set(tokenKey, token);
+  await cacheManager.set(tokenCacheKey, token);
 
   return token.access_token;
 }
