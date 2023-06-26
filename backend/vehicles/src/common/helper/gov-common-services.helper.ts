@@ -6,7 +6,6 @@ import { InternalServerErrorException } from '@nestjs/common';
 import { Cache } from 'cache-manager';
 import { GovCommonServicesToken } from '../interface/gov-common-services-token.interface';
 import { CacheKey } from '../enum/cache-key.enum';
-import { addToCache, getFromCache } from './cache.helper';
 
 export async function getAccessToken(
   govCommonServices: GovCommonServices,
