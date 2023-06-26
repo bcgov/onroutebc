@@ -25,6 +25,7 @@ export class AppService {
   }
 
   async initializeCache() {
+    const startDateTime = new Date();
     const countries = await this.commonService.findAllCountries();
     await addToCache(
       this.cacheManager,
@@ -87,6 +88,15 @@ export class AppService {
       this.cacheManager,
       CacheKey.EMAIL_TEMPLATE_ORBC_STYLE,
       this.convertFiletoString(assetsPath + 'styles/orbc-email-styles.css'),
+    );
+
+    const endDateTime = new Date();
+    const processingTime =
+      endDateTime.getMilliseconds() - startDateTime.getMilliseconds();
+    console.log(
+      `initializeCache() -> Start time: ${startDateTime.toISOString()},` +
+        `End time: ${endDateTime.toISOString()},` +
+        `Processing time: ${processingTime}ms`,
     );
   }
 

@@ -57,9 +57,9 @@ const envPath = path.resolve(process.cwd() + '/../../');
       strategyInitializer: classes(),
     }),
     CacheModule.register({
-      max: 400, // TODO: change this once we refactor the cache structure
-      ttl: 0, // disable expiration of the cache
-      isGlobal: true, // Allows access to cache manager globally
+      max: 50, //Max cache items in store. Revisit the number when required.
+      ttl: 0, // disable expiration of the cache.
+      isGlobal: true, // Allows access to cache manager globally.
     }),
     EmailModule,
     PowerUnitsModule,
@@ -80,8 +80,8 @@ const envPath = path.resolve(process.cwd() + '/../../');
 export class AppModule implements OnApplicationBootstrap {
   constructor(private readonly appService: AppService) {}
 
-  onApplicationBootstrap() {
-    this.appService.initializeCache().catch((err) => {
+  async onApplicationBootstrap() {
+    await this.appService.initializeCache().catch((err) => {
       console.error('Cache initialization failed:', err);
     });
   }
