@@ -6,7 +6,8 @@ import { TrailerTypesService } from './modules/vehicles/trailer-types/trailer-ty
 import { CommonService } from './modules/common/common.service';
 import { PermitService } from './modules/permit/permit.service';
 import * as fs from 'fs';
-import { EmailTemplate } from './common/enum/email-template.enum';
+import { CacheKey } from './common/enum/cache-key.enum';
+import { addToCache, createCacheMap } from './common/helper/cache.helper';
 
 @Injectable()
 export class AppService {
@@ -23,64 +24,79 @@ export class AppService {
     return 'Vehicles Healthcheck!';
   }
 
-  // TODO: Refactor item structure
-  async addToCache(key: string, item: string) {
-    await this.cacheManager.set(key, item);
-  }
-
-  async getFromCache(key: string) {
-    const value = await this.cacheManager.get(key);
-    return value as string;
-  }
-
-  // TODO: Decide on a cache structure
   async initializeCache() {
+    const startDateTime = new Date();
     const countries = await this.commonService.findAllCountries();
-    for (const country of countries) {
-      await this.addToCache(country.countryCode, country.countryName);
-    }
+    await addToCache(
+      this.cacheManager,
+      CacheKey.COUNTRY,
+      createCacheMap(countries, 'countryCode', 'countryName'),
+    );
 
     const provinces = await this.commonService.findAllProvinces();
-    for (const province of provinces) {
-      await this.addToCache(province.provinceCode, province.provinceName);
-    }
+    await addToCache(
+      this.cacheManager,
+      CacheKey.PROVINCE,
+      createCacheMap(provinces, 'provinceCode', 'provinceName'),
+    );
 
     const permitTypes = await this.permitTypeService.findAllPermitTypes();
-    for (const permitType of permitTypes) {
-      await this.addToCache(permitType.permitTypeId, permitType.name);
-    }
+    await addToCache(
+      this.cacheManager,
+      CacheKey.PERMIT_TYPE,
+      createCacheMap(permitTypes, 'permitTypeId', 'name'),
+    );
 
     const powerUnitTypes = await this.powerUnitTypeService.findAll();
-    for (const pu of powerUnitTypes) {
-      await this.addToCache(pu.typeCode, pu.type);
-    }
+    await addToCache(
+      this.cacheManager,
+      CacheKey.POWER_UNIT_TYPE,
+      createCacheMap(powerUnitTypes, 'typeCode', 'type'),
+    );
 
     const trailerTypes = await this.trailerTypeService.findAll();
-    for (const trailer of trailerTypes) {
-      await this.addToCache(trailer.typeCode, trailer.type);
-    }
+    await addToCache(
+      this.cacheManager,
+      CacheKey.TRAILER_TYPE,
+      createCacheMap(trailerTypes, 'typeCode', 'type'),
+    );
 
-    await this.addToCache('powerUnit', 'Power Unit');
-    await this.addToCache('trailer', 'Trailer');
+    const vehicleTypesMap = new Map<string, string>();
+    vehicleTypesMap.set('powerUnit', 'Power Unit');
+    vehicleTypesMap.set('trailer', 'Trailer');
+
+    await addToCache(this.cacheManager, CacheKey.VEHICLE_TYPE, vehicleTypesMap);
 
     const assetsPath =
       process.env.NODE_ENV === 'local'
         ? './src/modules/email/assets/'
         : './dist/modules/email/assets/';
 
-    await this.addToCache(
-      EmailTemplate.PROFILE_REGISTRATION_EMAIL_TEMPLATE,
+    await addToCache(
+      this.cacheManager,
+      CacheKey.EMAIL_TEMPLATE_PROFILE_REGISTRATION,
       this.convertFiletoString(
         assetsPath + 'templates/profile-registration.email.hbs',
       ),
     );
-    await this.addToCache(
-      EmailTemplate.ISSUE_PERMIT_EMAIL_TEMPLATE,
+    await addToCache(
+      this.cacheManager,
+      CacheKey.EMAIL_TEMPLATE_ISSUE_PERMIT,
       this.convertFiletoString(assetsPath + 'templates/issue-permit.email.hbs'),
     );
-    await this.addToCache(
-      'orbcEmailStyles',
+    await addToCache(
+      this.cacheManager,
+      CacheKey.EMAIL_TEMPLATE_ORBC_STYLE,
       this.convertFiletoString(assetsPath + 'styles/orbc-email-styles.css'),
+    );
+
+    const endDateTime = new Date();
+    const processingTime =
+      endDateTime.getMilliseconds() - startDateTime.getMilliseconds();
+    console.log(
+      `initializeCache() -> Start time: ${startDateTime.toISOString()},` +
+        `End time: ${endDateTime.toISOString()},` +
+        `Processing time: ${processingTime}ms`,
     );
   }
 
