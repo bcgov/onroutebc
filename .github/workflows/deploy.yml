@@ -96,7 +96,7 @@ jobs:
           url: https://vault.developer.gov.bc.ca
           token: ${{ secrets.VAULT_TOKEN }}
           exportEnv: "false"
-          namespace: platform-services
+          namespace: ${{secrets.OC_LICENSE_PLATE }}-${{inputs.environment}}
           secrets: |
             ${{secrets.VAULT_ENVIRONMENT}}/data/database-${{inputs.vault_zone}}   DATABASE_HOST             | VAULT_DATABASE_HOST;
             ${{secrets.VAULT_ENVIRONMENT}}/data/database-${{inputs.vault_zone}}   DATABASE_USER             | VAULT_DATABASE_USER;
