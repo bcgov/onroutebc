@@ -14,7 +14,7 @@ export class EmailController {
     const emailSubject = 'Welcome to onRouteBC';
 
     await this.emailService.sendEmailMessage(
-      EmailTemplate.ISSUE_PERMIT_EMAIL_TEMPLATE,
+      EmailTemplate.ISSUE_PERMIT,
       null,
       emailSubject,
       null,
