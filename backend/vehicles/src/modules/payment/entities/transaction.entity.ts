@@ -1,47 +1,83 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, ManyToMany, JoinTable } from 'typeorm';
 import { AutoMap } from '@automapper/classes';
 import { Base } from '../../common/entities/base.entity';
-import { Payment } from './payment.entity';
+import { Permit } from 'src/modules/permit/entities/permit.entity';
 
 @Entity({ name: 'permit.ORBC_TRANSACTION' })
 export class Transaction extends Base {
   @AutoMap()
   @ApiProperty({
     example: '10000148',
-    description: 'Unique identifier for the transaction metadata.',
+    description: 'Bambora-assigned eight-digit unique id number used to identify an individual transaction.',
   })
-  @PrimaryGeneratedColumn({ type: 'bigint', name: 'ID' })
+  @PrimaryGeneratedColumn({ type: 'bigint', name: 'TRANSACTION_ID' })
   transactionId: string;
 
 
   @AutoMap()
   @ApiProperty({
-    example: 'true',
-    description: 'Represents the approval result of a transaction.',
+    example: 'P',
+    description: 'Represents the original value sent to indicate the type of transaction to perform (i.e. P, R, VP, VR, PA, PAC, Q).',
   })
-  @Column({ type: 'boolean', name: 'TRANSACTION_APPROVED', nullable: false })
-  approved: boolean;
+  @Column({
+    length: '3',
+    name: 'TRANSACTION_TYPE',
+    nullable: false,
+  })
+  transactionType: string;
+
+  @AutoMap()
+  @ApiProperty({
+    example: 'T-1687586193681',
+    description: 'Represents the auth code of a transaction.',
+  })
+  @Column({
+    length: '30',
+    name: 'TRANSACTION_ORDER_NUMBER',
+    nullable: false,
+  })
+  transactionOrderNumber: string;
+
+  @AutoMap()
+  @ApiProperty({
+    example: '30.00',
+    description: 'Represents the amount of the transaction.',
+  })
+  @Column({
+    name: 'TRANSACTION_AMOUNT',
+    nullable: false,
+  })
+  transactionAmount: number;
+
+  @AutoMap()
+  @ApiProperty({
+    example: '1',
+    description: 'Represents the approval result of a transaction. 0 = Transaction refused, 1 = Transaction approved',
+  })
+  @Column({ type: 'number', name: 'TRANSACTION_APPROVED', nullable: false })
+  approved: number;
 
   @AutoMap()
   @ApiProperty({
     example: 'TEST',
-    description: 'Represents the auth code of a transaction.',
+    description: 'Represents the auth code of a transaction. If the transaction is approved this parameter will contain a unique bank-issued code.',
   })
   @Column({
-    length: '10',
+    length: '32',
     name: 'TRANSACTION_AUTH_CODE',
     nullable: false,
   })
   authCode: string;
 
+  
   @AutoMap()
   @ApiProperty({
     example: 'VI',
-    description: 'Represents the card type of a transaction.',
+    description: 'Represents the type of card used in the transaction.',
   })
   @Column({
-    length: '5',
+    length: '2',
     name: 'TRANSACTION_CARD_TYPE',
     nullable: false,
   })
@@ -49,43 +85,8 @@ export class Transaction extends Base {
 
   @AutoMap()
   @ApiProperty({
-    example: 'VI',
-    description: 'Represents the card type of a transaction.',
-  })
-  @Column({
-    name: 'TRANSACTION_CVD_ID',
-    nullable: false,
-  })
-  cvdId: number;
-
-  @AutoMap()
-  @ApiProperty({
-    example: 'CC',
-    description: 'Represents the payment method of a transaction.',
-  })
-  @Column({
-    length: '5',
-    name: 'TRANSACTION_PAYMENT_METHOD',
-    nullable: false,
-  })
-  paymentMethod: string;
-
-  @AutoMap()
-  @ApiProperty({
-    example: 'T',
-    description: 'Represents the response type of a transaction.',
-  })
-  @Column({
-    length: '5',
-    name: 'TRANSACTION_RESPONSE_TYPE',
-    nullable: false,
-  })
-  responseType: string;
-
-  @AutoMap()
-  @ApiProperty({
     example: '6/23/2023 10:57:28 PM',
-    description: 'Represents the date and time of a transaction.',
+    description: 'Represents the date and time that the transaction was processed.',
   })
   @Column({
     insert: false,
@@ -96,46 +97,47 @@ export class Transaction extends Base {
   })
   transactionDate: string;
 
+  
   @AutoMap()
   @ApiProperty({
-    example: 'eng',
-    description: 'Represents the language of a transaction.',
+    example: '1',
+    description: 'Represents the card cvd match status.',
   })
   @Column({
-    length: '10',
-    name: 'TRANSACTION_LANGUAGE',
+    name: 'TRANSACTION_CVD_ID',
     nullable: false,
   })
-  language: string;
+  cvdId: number;
 
+  
   @AutoMap()
   @ApiProperty({
-    example: 'P',
-    description: 'Represents the transaction type of a transaction.',
+    example: 'CC',
+    description: 'Represents the payment method of a transaction.',
   })
   @Column({
-    length: '5',
-    name: 'TRANSACTION_TYPE',
+    length: '2',
+    name: 'TRANSACTION_PAYMENT_METHOD',
     nullable: false,
   })
-  transactionType: string;
+  paymentMethod: string;
 
   @AutoMap()
   @ApiProperty({
     example: '111',
-    description: 'Unique identifier for the transaction metadata.',
+    description: 'References a detailed approved/declined transaction response message.',
   })
   @Column({
     name: 'TRANSACTION_MESSAGE_ID',
     nullable: false,
-    type: 'bigint',
+    type: 'int',
   })
   messageId: string;
 
   @AutoMap()
   @ApiProperty({
     example: 'Approved',
-    description: 'Represents the success or failure message text for a transaction.',
+    description: 'Represents basic approved/declined message for a transaction.',
   })
   @Column({
     length: '100',
@@ -144,7 +146,8 @@ export class Transaction extends Base {
   })
   messageText: string;
 
-  @ManyToOne(() => Payment, payment => payment.transactions)
-  payment: Payment;
+  @ManyToMany(() => Permit)
+  @JoinTable()
+  permits: Permit[]
 
 }
