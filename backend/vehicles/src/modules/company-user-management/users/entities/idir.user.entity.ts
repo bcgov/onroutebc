@@ -11,7 +11,12 @@ export class IdirUser extends Base {
    *  A primary column representing the unique identifier for the user in ORBC.
    */
   @AutoMap()
-  @PrimaryColumn({ length: 32, name: 'USER_GUID', nullable: false, update: false})
+  @PrimaryColumn({
+    length: 32,
+    name: 'USER_GUID',
+    nullable: false,
+    update: false,
+  })
   userGUID: string;
 
   /**

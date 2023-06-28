@@ -33,9 +33,15 @@ import {
   updateRedCompanyCvClientUserDtoMock,
 } from '../util/mocks/data/user.mock';
 import { UserStatus } from '../../src/common/enum/user-status.enum';
+import { IdirUser } from 'src/modules/company-user-management/users/entities/idir.user.entity';
+import { PendingIdirUser } from 'src/modules/company-user-management/pending-users/entities/pending-idir-user.entity';
+import { PendingIdirUsersService } from 'src/modules/company-user-management/pending-idir-users/pending-idir-users.service';
 
 let repo: DeepMocked<Repository<User>>;
+let repoIdirUser: DeepMocked<Repository<IdirUser>>;
+let repoPendingIdirUser: DeepMocked<Repository<PendingIdirUser>>;
 let pendingUsersServiceMock: DeepMocked<PendingUsersService>;
+let pendingIdirUsersServiceMock: DeepMocked<PendingIdirUsersService>;
 let companyServiceMock: DeepMocked<CompanyService>;
 
 describe('Company Users (e2e)', () => {
@@ -44,7 +50,10 @@ describe('Company Users (e2e)', () => {
   beforeAll(async () => {
     jest.clearAllMocks();
     repo = createMock<Repository<User>>();
+    repoIdirUser = createMock<Repository<IdirUser>>();
+    repoPendingIdirUser = createMock<Repository<PendingIdirUser>>();
     pendingUsersServiceMock = createMock<PendingUsersService>();
+    pendingIdirUsersServiceMock = createMock<PendingIdirUsersService>();
     companyServiceMock = createMock<CompanyService>();
     const dataSourceMock = dataSourceMockFactory() as DataSource;
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -56,8 +65,20 @@ describe('Company Users (e2e)', () => {
           useValue: repo,
         },
         {
+          provide: getRepositoryToken(IdirUser),
+          useValue: repoIdirUser,
+        },
+        {
+          provide: getRepositoryToken(PendingIdirUser),
+          useValue: repoPendingIdirUser,
+        },
+        {
           provide: PendingUsersService,
           useValue: pendingUsersServiceMock,
+        },
+        {
+          provide: PendingIdirUsersService,
+          useValue: pendingIdirUsersServiceMock,
         },
         {
           provide: CompanyService,

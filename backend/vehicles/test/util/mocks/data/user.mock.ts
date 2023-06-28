@@ -39,6 +39,7 @@ import {
 } from './contact.mock';
 import { UpdateUserStatusDto } from '../../../../src/modules/company-user-management/users/dto/request/update-user-status.dto';
 import { UserStatus } from '../../../../src/common/enum/user-status.enum';
+import { IdirUser } from 'src/modules/company-user-management/users/entities/idir.user.entity';
 
 //User list
 
@@ -265,3 +266,14 @@ export const USER_DTO_LIST = [
   },
   { userDto: readSysAdminStaffUserDtoMock, companyId: undefined },
 ];
+
+export const idirUserEntityMock: IdirUser = {
+  userGUID: constants.SYS_ADMIN_STAFF_USER_GUID,
+  userName: constants.SYS_ADMIN_STAFF_USER_NAME,
+  userAuthGroup: constants.SYS_ADMIN_STAFF_USER_AUTH_GROUP,
+  statusCode: constants.SYS_ADMIN_STAFF_USER_STATUS,
+  email: constants.SYS_ADMIN_STAFF_EMAIL,
+  firstName: constants.SYS_ADMIN_STAFF_FIRST_NAME,
+  lastName: constants.SYS_ADMIN_STAFF_LAST_NAME,
+  ...baseEntityMock,
+};

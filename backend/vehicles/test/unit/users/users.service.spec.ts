@@ -37,6 +37,9 @@ import {
 } from '../../util/mocks/data/user.mock';
 import { redCompanyCvClientUserJWTMock } from '../../util/mocks/data/jwt.mock';
 import { readRedCompanyPendingUserDtoMock } from '../../util/mocks/data/pending-user.mock';
+import { IdirUser } from 'src/modules/company-user-management/users/entities/idir.user.entity';
+import { PendingIdirUser } from 'src/modules/company-user-management/pending-users/entities/pending-idir-user.entity';
+import { PendingIdirUsersService } from 'src/modules/company-user-management/pending-idir-users/pending-idir-users.service';
 
 interface SelectQueryBuilderParameters {
   userGUID?: string;
@@ -44,7 +47,10 @@ interface SelectQueryBuilderParameters {
 }
 
 let repo: DeepMocked<Repository<User>>;
+let repoIdirUser: DeepMocked<Repository<IdirUser>>;
+let repoPendingIdirUser: DeepMocked<Repository<PendingIdirUser>>;
 let pendingUsersServiceMock: DeepMocked<PendingUsersService>;
+let pendingIdirUsersServiceMock: DeepMocked<PendingIdirUsersService>;
 let companyServiceMock: DeepMocked<CompanyService>;
 
 describe('UsersService', () => {
@@ -53,8 +59,11 @@ describe('UsersService', () => {
   beforeEach(async () => {
     jest.clearAllMocks();
     pendingUsersServiceMock = createMock<PendingUsersService>();
+    pendingIdirUsersServiceMock = createMock<PendingIdirUsersService>();
     companyServiceMock = createMock<CompanyService>();
     repo = createMock<Repository<User>>();
+    repoIdirUser = createMock<Repository<IdirUser>>();
+    repoPendingIdirUser = createMock<Repository<PendingIdirUser>>();
     const dataSourceMock = dataSourceMockFactory() as DataSource;
 
     const module: TestingModule = await Test.createTestingModule({
@@ -66,8 +75,20 @@ describe('UsersService', () => {
           useValue: repo,
         },
         {
+          provide: getRepositoryToken(IdirUser),
+          useValue: repoIdirUser,
+        },
+        {
+          provide: getRepositoryToken(PendingIdirUser),
+          useValue: repoPendingIdirUser,
+        },
+        {
           provide: PendingUsersService,
           useValue: pendingUsersServiceMock,
+        },
+        {
+          provide: PendingIdirUsersService,
+          useValue: pendingIdirUsersServiceMock,
         },
         {
           provide: CompanyService,
