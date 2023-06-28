@@ -106,10 +106,6 @@ export class EmailService {
       ...data,
       headerLogo: process.env.FRONT_END_URL + '/BC_Logo_MOTI.png',
       footerLogo: process.env.FRONT_END_URL + '/onRouteBC_Logo.png',
-      orbcEmailStyles: (await getFullNameFromCache(
-        this.cacheManager,
-        'orbcEmailStyles',
-      )) as string,
     });
     return htmlBody;
   }

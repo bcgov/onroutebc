@@ -78,10 +78,6 @@ export class AppService {
       EmailTemplate.ISSUE_PERMIT_EMAIL_TEMPLATE,
       this.convertFiletoString(assetsPath + 'templates/issue-permit.email.hbs'),
     );
-    await this.addToCache(
-      'orbcEmailStyles',
-      this.convertFiletoString(assetsPath + 'styles/orbc-email-styles.css'),
-    );
   }
 
   private convertFiletoString(svgFilePath: string, encode?: string) {
