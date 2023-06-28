@@ -11,21 +11,26 @@ import { IFile } from '../../common/interface/file.interface';
 import { Response } from 'express';
 import { FileDownloadModes } from '../../common/enum/file-download-modes.enum';
 import { lastValueFrom, map } from 'rxjs';
+import { IUserJWT } from '../../common/interface/user-jwt.interface';
 
 @Injectable()
 export class ComsService {
   constructor(private readonly httpService: HttpService) {}
 
+  private comsServiceType = process.env.COMS_SERVICE;
+  private comsBucketId = process.env.COMS_BUCKET_ID;
+
   /**
    * Creates an object in COMS.
+   * @param currentUser - The current user details of type {@link IUserJWT}
    * @param file - The file to be uploaded. It can be either an
-   *               {@link Express.Multer.File} object or an
-   *               {@link IFile} object.
-   * @returns A Promise that resolves to an array of ReadCOMSDto
-   *          objects
-   *           representing the created objects.
+   *               {@link Express.Multer.File} object or an {@link IFile}
+   *               object.
+   * @returns A Promise that resolves to an array of ReadCOMSDto objects
+   *          representing the created objects.
    */
-  async createObject(
+  async createOrUpdateObject(
+    currentUser: IUserJWT,
     file: Express.Multer.File | IFile,
     s3ObjectId?: string,
   ): Promise<ReadCOMSDto[]> {
@@ -45,17 +50,26 @@ export class ComsService {
       headers: {
         'Content-Type': 'multipart/form-data',
         Accept: 'application/json',
+        Authorization:
+          this.comsServiceType === 'hosted'
+            ? currentUser.access_token
+            : undefined,
       },
-      auth: {
-        username: process.env.BASICAUTH_USERNAME,
-        password: process.env.BASICAUTH_PASSWORD,
-      },
+      auth:
+        this.comsServiceType !== 'hosted'
+          ? {
+              username: process.env.BASICAUTH_USERNAME,
+              password: process.env.BASICAUTH_PASSWORD,
+            }
+          : undefined,
     };
 
     // Construct the URL for the request
     let url = process.env.COMS_URL + `object`;
     if (s3ObjectId) {
       url = url.concat('/', s3ObjectId);
+    } else if (this.comsServiceType === 'hosted' && this.comsBucketId) {
+      url = url.concat('?', 'bucketId=', this.comsBucketId);
     }
 
     // Send the POST request to create the object and retrieve the response
@@ -82,23 +96,34 @@ export class ComsService {
 
   /**
    * Retrieves an object from COMS.
+   * @param currentUser - The current user details of type {@link IUserJWT}
    * @param readFile - The {@link ReadFileDto} object containing the information
    *                   about the file to be retrieved.
    * @param download - The file download mode - {@link FileDownloadModes}.
-   * @returns A Promise that resolves to a string (url) or ArrayBuffer (proxy) representing the retrieved
-   *          object.
+   * @returns A Promise that resolves to a string (url) or ArrayBuffer (proxy)
+   *          representing the retrieved object.
    */
   async getObject(
+    currentUser: IUserJWT,
     readFile: ReadFileDto,
     download = FileDownloadModes.URL,
     res?: Response,
   ): Promise<string> {
     // Set the request configuration
     const reqConfig: AxiosRequestConfig = {
-      auth: {
-        username: process.env.BASICAUTH_USERNAME,
-        password: process.env.BASICAUTH_PASSWORD,
+      headers: {
+        Authorization:
+          this.comsServiceType === 'hosted'
+            ? currentUser.access_token
+            : undefined,
       },
+      auth:
+        this.comsServiceType !== 'hosted'
+          ? {
+              username: process.env.BASICAUTH_USERNAME,
+              password: process.env.BASICAUTH_PASSWORD,
+            }
+          : undefined,
       responseType: download === FileDownloadModes.PROXY ? 'stream' : 'json',
     };
 

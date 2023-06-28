@@ -12,6 +12,7 @@ import {
   Res,
   InternalServerErrorException,
   BadRequestException,
+  Req,
 } from '@nestjs/common';
 import { DmsService } from './dms.service';
 import {
@@ -33,6 +34,8 @@ import { FileDownloadModes } from '../../common/enum/file-download-modes.enum';
 import { Response } from 'express';
 import { ComsService } from './coms.service';
 import { UpdateFileDto } from './dto/request/update-file.dto';
+import { IUserJWT } from '../../common/interface/user-jwt.interface';
+import { Request } from 'express';
 
 @ApiTags('DMS')
 @ApiBadRequestResponse({
@@ -67,6 +70,7 @@ export class DmsController {
   @Post('upload')
   @UseInterceptors(FileInterceptor('file'))
   async uploadFile(
+    @Req() request: Request,
     @Body() createFileDto: CreateFileDto,
     @UploadedFile(
       new ParseFilePipe({
@@ -81,11 +85,15 @@ export class DmsController {
     )
     file: Express.Multer.File,
   ): Promise<ReadFileDto> {
+    const currentUser = request.user as IUserJWT;
     file.filename = createFileDto.fileName
       ? createFileDto.fileName
       : file.originalname;
 
-    const readCOMSDtoList = await this.comsService.createObject(file);
+    const readCOMSDtoList = await this.comsService.createOrUpdateObject(
+      currentUser,
+      file,
+    );
 
     if (!readCOMSDtoList?.length) {
       throw new InternalServerErrorException();
@@ -102,6 +110,7 @@ export class DmsController {
   @Post('upload/:documentId')
   @UseInterceptors(FileInterceptor('file'))
   async updateFile(
+    @Req() request: Request,
     @Body() updateFileDto: UpdateFileDto,
     @Param('documentId') documentId: string,
     @UploadedFile(
@@ -117,6 +126,7 @@ export class DmsController {
     )
     file: Express.Multer.File,
   ): Promise<ReadFileDto> {
+    const currentUser = request.user as IUserJWT;
     file.filename = updateFileDto.fileName
       ? updateFileDto.fileName
       : file.originalname;
@@ -126,7 +136,8 @@ export class DmsController {
       throw new BadRequestException('Invalid Document Id');
     }
 
-    const readCOMSDto = await this.comsService.createObject(
+    const readCOMSDto = await this.comsService.createOrUpdateObject(
+      currentUser,
       file,
       dmsObject.s3ObjectId,
     );
@@ -155,17 +166,28 @@ export class DmsController {
   })
   @Get(':documentId')
   async downloadFile(
+    @Req() request: Request,
     @Param('documentId') documentId: string,
     @Query('download') download: FileDownloadModes,
     @Res() res: Response,
   ) {
+    const currentUser = request.user as IUserJWT;
     const file = await this.dmsService.findOne(documentId);
 
     if (download === FileDownloadModes.PROXY) {
-      await this.comsService.getObject(file, FileDownloadModes.PROXY, res);
+      await this.comsService.getObject(
+        currentUser,
+        file,
+        FileDownloadModes.PROXY,
+        res,
+      );
       res.status(200);
     } else {
-      const url = await this.comsService.getObject(file, FileDownloadModes.URL);
+      const url = await this.comsService.getObject(
+        currentUser,
+        file,
+        FileDownloadModes.URL,
+      );
       file.preSignedS3Url = url;
       if (download === FileDownloadModes.URL) {
         res.status(201).send(file);
