@@ -79,6 +79,9 @@ parameters:
   - name: COMS_URL
     description: The URL for the deployed instance of COMS
     required: true
+  - name: COMS_SERVICE
+    description: The identifier to determine whether COMS is hosted vs self-hosted
+    required: true
   - name: COMS_PRESIGNED_URL_EXPIRY
     description: The exipry value (seconds) of the presigned URL
     required: true
