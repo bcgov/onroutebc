@@ -6,18 +6,17 @@ SET NOCOUNT ON
 GO
 BEGIN TRANSACTION
 
-CREATE TABLE [permit].[ORBC_PAYMENT_METHODS](
-	[ID] [int] IDENTITY(1,1) NOT NULL,
-	[PAYMENT_METHOD_NAME] [varchar] (2) NOT NULL,
-	[PAYMENT_METHOD_DESCRIPTION] [varchar] (20) NULL,
-	[CONCURRENCY_CONTROL_NUMBER] [int] NULL,
+CREATE TABLE [permit].[ORBC_VT_PAYMENT_METHOD](
+	[PAYMENT_METHOD_ID] [int] IDENTITY(1,1) NOT NULL,
+	[NAME] [varchar] (20) NOT NULL,
+	[DESCRIPTION] [varchar] (50) NULL,
 	[DB_CREATE_USERID] [varchar](63) NULL,
 	[DB_CREATE_TIMESTAMP] [datetime2](7) NULL,
 	[DB_LAST_UPDATE_USERID] [varchar](63) NULL,
 	[DB_LAST_UPDATE_TIMESTAMP] [datetime2](7) NULL,
- CONSTRAINT [PK_ORBC_PAYMENT_METHODS] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_ORBC_VT_PAYMENT_MOTHOD] PRIMARY KEY CLUSTERED 
 (
-	[ID] ASC
+	[PAYMENT_METHOD_ID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
@@ -39,6 +38,7 @@ CREATE TABLE [permit].[ORBC_TRANSACTION](
 	[TRANSACTION_SUBMIT_DATE] [datetime2](7) NULL,
 	[TRANSACTION_DATE] [datetime2](7) NULL,
 	[CVD_ID] [tinyint] NULL CHECK (CVD_ID BETWEEN 1 AND 6),
+	[PAYMENT_METHOD] [varchar] (2) NULL,
 	[PAYMENT_METHOD_ID] [int] NULL,
 	[MESSAGE_ID] [int] NULL,
 	[MESSAGE_TEXT] [varchar](100) NULL,
@@ -75,7 +75,7 @@ CREATE TABLE [permit].[ORBC_PERMIT_TRANSACTION](
 GO
 
 ALTER TABLE [permit].[ORBC_TRANSACTION]  WITH CHECK ADD  CONSTRAINT [FK_ORBC_TRANSACTION_PAYMENT_METHOD] FOREIGN KEY([PAYMENT_METHOD_ID])
-REFERENCES [permit].[ORBC_PAYMENT_METHODS] ([ID])
+REFERENCES [permit].[ORBC_VT_PAYMENT_METHOD] ([PAYMENT_METHOD_ID])
 GO
 
 ALTER TABLE [permit].[ORBC_PERMIT_TRANSACTION]  WITH CHECK ADD  CONSTRAINT [FK_ORBC_PERMIT_TRANSACTION_PERMIT_ID] FOREIGN KEY([PERMIT_ID])
@@ -86,11 +86,11 @@ ALTER TABLE [permit].[ORBC_PERMIT_TRANSACTION]  WITH CHECK ADD  CONSTRAINT [FK_O
 REFERENCES [permit].[ORBC_TRANSACTION] ([TRANSACTION_ID])
 GO
 
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Primary key for payment method metadata record' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PAYMENT_METHODS', @level2type=N'COLUMN',@level2name=N'ID'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Primary key for payment method metadata record' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_VT_PAYMENT_METHOD', @level2type=N'COLUMN',@level2name=N'PAYMENT_METHOD_ID'
 GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Payment method name' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PAYMENT_METHODS', @level2type=N'COLUMN',@level2name=N'PAYMENT_METHOD_NAME'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Payment method name' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_VT_PAYMENT_METHOD', @level2type=N'COLUMN',@level2name=N'NAME'
 GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Payment method description' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PAYMENT_METHODS', @level2type=N'COLUMN',@level2name=N'PAYMENT_METHOD_DESCRIPTION'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Payment method description' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_VT_PAYMENT_METHOD', @level2type=N'COLUMN',@level2name=N'DESCRIPTION'
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Primary key for the transaction metadata record' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_TRANSACTION', @level2type=N'COLUMN',@level2name=N'TRANSACTION_ID'
 GO
@@ -114,7 +114,9 @@ EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and t
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Card verification match ID' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_TRANSACTION', @level2type=N'COLUMN',@level2name=N'CVD_ID'
 GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Payment method ID' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_TRANSACTION', @level2type=N'COLUMN',@level2name=N'PAYMENT_METHOD_ID'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'2 characters that Bambora sends back references interac online transaction or credit card transaction' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_TRANSACTION', @level2type=N'COLUMN',@level2name=N'PAYMENT_METHOD'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Payment method identifier of the user selected payment method' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_TRANSACTION', @level2type=N'COLUMN',@level2name=N'PAYMENT_METHOD_ID'
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The message id references a detailed approved/declined transaction response message' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_TRANSACTION', @level2type=N'COLUMN',@level2name=N'MESSAGE_ID'
 GO

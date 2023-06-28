@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, ManyToMany, JoinTable } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToMany, JoinTable } from 'typeorm';
 import { AutoMap } from '@automapper/classes';
 import { Base } from '../../common/entities/base.entity';
 import { Permit } from 'src/modules/permit/entities/permit.entity';
@@ -8,12 +8,11 @@ import { Permit } from 'src/modules/permit/entities/permit.entity';
 export class Transaction extends Base {
   @AutoMap()
   @ApiProperty({
-    example: '10000148',
-    description: 'Bambora-assigned eight-digit unique id number used to identify an individual transaction.',
+    example: '1',
+    description: 'Unique identifier for the transaction metadata.',
   })
   @PrimaryGeneratedColumn({ type: 'bigint', name: 'TRANSACTION_ID' })
   transactionId: string;
-
 
   @AutoMap()
   @ApiProperty({
@@ -38,6 +37,16 @@ export class Transaction extends Base {
     nullable: false,
   })
   transactionOrderNumber: string;
+
+  
+  @AutoMap()
+  @ApiProperty({
+    example: '10000148',
+    description: 'Bambora-assigned eight-digit unique id number used to identify an individual transaction.',
+  })
+  @PrimaryGeneratedColumn({ type: 'bigint', name: 'TRANSACTION_ID' })
+  providerTransactionId: string;
+
 
   @AutoMap()
   @ApiProperty({
@@ -117,10 +126,21 @@ export class Transaction extends Base {
   })
   @Column({
     length: '2',
-    name: 'TRANSACTION_PAYMENT_METHOD',
+    name: 'PAYMENT_METHOD',
     nullable: false,
   })
   paymentMethod: string;
+
+  @AutoMap()
+  @ApiProperty({
+    example: 1,
+    description: 'The identifier of the user selected payment method.',
+  })
+  @Column({
+    name: 'PAYMENT_METHOD_ID',
+    nullable: false,
+  })
+  paymentMethodId: number;
 
   @AutoMap()
   @ApiProperty({
