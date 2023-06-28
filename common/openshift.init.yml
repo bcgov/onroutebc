@@ -42,6 +42,9 @@ parameters:
   - name: COMS_SERVICE
     description: The identifier to determine whether COMS is hosted vs self-hosted
     required: true
+  - name: COMS_BUCKET_ID
+    description: The Uuid representing the bucket
+    required: true
   - name: COMS_PRESIGNED_URL_EXPIRY
     description: The exipry value (seconds) of the presigned URL
     required: true
