@@ -36,33 +36,11 @@
   display: flex;
   flex-direction: column;
   //min-width: 100%;
-  &--options {
-    display: block;
-  }
+
 
   &--fee-summary {
     padding: 24px;
     max-width: 488px;
-    margin-left: auto;
   }
 
-  &--img-payBC {
-    height: 27px;
-    margin-bottom: -4px;
-  }
-
-  &--img {
-    height: 16px;
-    width: auto;
-    padding: 0px 8px;
-  }
-
-  &--option-box {
-    max-width: 500px;
-    background-color: $bc-messages-blue-background;
-    padding: 16px;
-    border-radius: 8px;
-    border: 1px solid $bc-black;
-    opacity: 1;
-  }
 }
