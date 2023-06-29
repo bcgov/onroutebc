@@ -101,6 +101,15 @@ parameters:
   - name: NODE_ENV
     description: The NODE Environment
     required: true      
+  - name: MOTIPAY_API_KEY
+    description: API Key for MOTI Pay
+    required: true  
+  - name: MOTIPAY_MERCHANT_ID
+    description: Merchant ID for MOTI Pay
+    required: true  
+  - name: MOTIPAY_BASE_URL
+    description: Base URL for MOTI Pay
+    required: true  
 objects:
   - apiVersion: v1
     kind: ConfigMap
@@ -127,6 +136,8 @@ objects:
       dms-url: "https://${NAME}-${ZONE}-backend-dms.${DOMAIN}"
       front-end-url: "https://${NAME}-${ZONE}-frontend.${DOMAIN}"
       node-env: "${NODE_ENV}"  
+      moti-pay-base-url: "${MOTIPAY_BASE_URL}"  
+      moti-pay-redirect: "https://${NAME}-${ZONE}-frontend.${DOMAIN}/payment"
   - apiVersion: v1
     kind: Secret
     metadata:
@@ -142,6 +153,8 @@ objects:
       coms-basic-password: "${BASICAUTH_PASSWORD}"
       cdogs-client-id: "${CDOGS_CLIENT_ID}"
       cdogs-client-secret: "${CDOGS_CLIENT_SECRET}"   
+      moti-pay-api-key: "${MOTIPAY_API_KEY}"
+      moti-pay-merchant-id: "${MOTIPAY_MERCHANT_ID}"
   - apiVersion: v1
     kind: ImageStream
     metadata:
@@ -321,6 +334,21 @@ objects:
                     configMapKeyRef:
                       name: ${NAME}-${ZONE}-${COMPONENT}
                       key: node-env
+                - name: MOTIPAY_API_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: moti-pay-api-key
+                - name: MOTIPAY_MERCHANT_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: moti-pay-merchant-id
+                - name: MOTIPAY_BASE_URL
+                  valueFrom:
+                    configMapKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: moti-pay-base-url
               ports:
                 - containerPort: 5000
                   protocol: TCP

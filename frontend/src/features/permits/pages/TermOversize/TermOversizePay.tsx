@@ -4,8 +4,8 @@ import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { ApplicationContext } from "../../context/ApplicationContext";
 import { ProgressBar } from "../../components/progressBar/ProgressBar";
 import "./TermOversize.scss";
-import { forwardTransactionDetails } from "../../helpers/payment";
 import { ErrorFallback } from "../../../../common/pages/ErrorFallback";
+import { getMotiPayTransactionUrl } from "../../apiManager/permitsAPI";
 
 export const TermOversizePay = () => {
   const { applicationData } = useContext(ApplicationContext);
@@ -80,11 +80,15 @@ const ApplicationSummary = () => {
 
 const FeeSummary = ({ calculatedFee }: { calculatedFee: number }) => {
   const { applicationData } = useContext(ApplicationContext);
-  if (!applicationData) return <ErrorFallback error={'Application data not found'}/>;
+  if (!applicationData)
+    return <ErrorFallback error={"Application data not found"} />;
+
+  // TODO: Use transaction amount
+  const transactionAmount = applicationData.permitData.permitDuration;
 
   const handlePayNow = async () => {
-    const url = forwardTransactionDetails(applicationData);
-    window.open(url,"_self")
+    const url = await getMotiPayTransactionUrl(transactionAmount);
+    window.open(url, "_self");
   };
 
   return (
@@ -162,7 +166,6 @@ const FeeSummary = ({ calculatedFee }: { calculatedFee: number }) => {
         <span style={{ fontWeight: "700" }}> 1-800-559-9688</span> or Email:{" "}
         <span style={{ fontWeight: "700" }}>ppcpermit@gov.bc.ca</span>
       </Typography>
-
     </>
   );
 };

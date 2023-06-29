@@ -11,7 +11,7 @@ import {
 import { getDefaultRequiredVal, replaceEmptyValuesWithNull } from "../../../common/helpers/util";
 import { Application, ApplicationResponse, PermitApplicationInProgress } from "../types/application";
 import { DATE_FORMATS, toLocal } from "../../../common/helpers/formatDate";
-import { APPLICATION_PDF_API, APPLICATION_UPDATE_STATUS_API, PERMITS_API, VEHICLE_URL } from "./endpoints/endpoints";
+import { APPLICATION_PDF_API, APPLICATION_UPDATE_STATUS_API, PAYMENT_API, PERMITS_API, VEHICLE_URL } from "./endpoints/endpoints";
 import { mapApplicationToApplicationRequestData } from "../helpers/mappers";
 
 /**
@@ -128,5 +128,15 @@ export const downloadPermitApplicationPdf = (
   const url = `${APPLICATION_PDF_API}/${permitId}?download=proxy`;
   return httpGETRequest(url).then((response) => {
     return response;
+  });
+};
+
+
+export const getMotiPayTransactionUrl = (
+  transactionAmount: number,
+): Promise<any> => {
+  const url = `${PAYMENT_API}?transactionAmount=${transactionAmount}`;
+  return httpGETRequest(url).then((response) => {
+    return response.data.url;
   });
 };

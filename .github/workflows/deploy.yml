@@ -120,6 +120,8 @@ jobs:
             ${{secrets.VAULT_ENVIRONMENT}}/data/cdogs-${{inputs.vault_zone}}      CDOGS_TOKEN_URL           | VAULT_CDOGS_TOKEN_URL;
             ${{secrets.VAULT_ENVIRONMENT}}/data/cdogs-${{inputs.vault_zone}}      CDOGS_URL                 | VAULT_CDOGS_URL;
             ${{secrets.VAULT_ENVIRONMENT}}/data/be-api-${{inputs.vault_zone}}     NODE_ENV                  | VAULT_NODE_ENV;
+            ${{secrets.VAULT_ENVIRONMENT}}/data/payment-${{inputs.vault_zone}}    MOTIPAY_API_KEY           | VAULT_MOTIPAY_API_KEY;
+            ${{secrets.VAULT_ENVIRONMENT}}/data/payment-${{inputs.vault_zone}}    MOTIPAY_MERCHANT_ID       | VAULT_MOTIPAY_MERCHANT_ID;
       
       - uses: bcgov-nr/action-deployer-openshift@v1.0.5
         with:
@@ -153,5 +155,7 @@ jobs:
             -p CDOGS_TOKEN_URL=${{steps.vault.outputs.VAULT_CDOGS_TOKEN_URL}}
             -p CDOGS_URL=${{steps.vault.outputs.VAULT_CDOGS_URL}}
             -p NODE_ENV=${{steps.vault.outputs.VAULT_NODE_ENV}}
+            -p MOTIPAY_API_KEY=${{steps.vault.outputs.VAULT_MOTIPAY_API_KEY}}
+            -p MOTIPAY_MERCHANT_ID=${{steps.vault.outputs.VAULT_MOTIPAY_MERCHANT_ID}}
             ${{ matrix.parameters }}
           penetration_test: false
