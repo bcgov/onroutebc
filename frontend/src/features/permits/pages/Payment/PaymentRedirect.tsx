@@ -8,7 +8,6 @@ import { getURLParameters } from "../../helpers/payment";
  * Otherwise, it displays the payment status message.
  */
 export const PaymentRedirect = () => {
-
   const [paymentStatus, setPaymentStatus] = useState<string>();
 
   useEffect(() => {
@@ -17,5 +16,9 @@ export const PaymentRedirect = () => {
     setPaymentStatus(parameters.messageText);
   }, []);
 
-  return paymentStatus === "Approved" ? <SuccessPage/> : <div>{paymentStatus}</div>;
+  return paymentStatus === "Approved" ? (
+    <SuccessPage />
+  ) : (
+    <div>{paymentStatus}</div>
+  );
 };

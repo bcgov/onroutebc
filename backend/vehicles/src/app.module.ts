@@ -74,7 +74,7 @@ const envPath = path.resolve(process.cwd() + '/../../');
     AuthModule,
     PermitModule,
     PdfModule,
-    PaymentModule
+    PaymentModule,
   ],
   controllers: [AppController],
   providers: [AppService],

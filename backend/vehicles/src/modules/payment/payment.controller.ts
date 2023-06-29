@@ -1,8 +1,4 @@
-import {
-  Controller,
-  Get,
-  Query,
-} from '@nestjs/common';
+import { Controller, Get, Query } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiInternalServerErrorResponse,
@@ -41,17 +37,16 @@ export class PaymentController {
   //@Roles(Role.WRITE_PERMIT)
   @Public()
   @Get()
-  async forwardTransactionDetails(
+  forwardTransactionDetails(
     @Query('transactionAmount') transactionAmount: number,
-  ): Promise<ReadPaymentDto> {
-
-    const URL = this.paymentService.forwardTransactionDetails(transactionAmount);
+  ): ReadPaymentDto {
+    const URL =
+      this.paymentService.forwardTransactionDetails(transactionAmount);
 
     const readPaymentDto: ReadPaymentDto = {
-      url: URL
+      url: URL,
     };
-    
+
     return readPaymentDto;
   }
-
 }
