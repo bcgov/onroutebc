@@ -32,7 +32,6 @@ import {
 import {
   USER_LIST,
   createRedCompanyCvClientUserDtoMock,
-  idirUserEntityMock,
   redCompanyAdminUserEntityMock,
   updateRedCompanyCvClientUserDtoMock,
 } from '../../util/mocks/data/user.mock';
