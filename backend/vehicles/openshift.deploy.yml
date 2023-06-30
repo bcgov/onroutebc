@@ -349,6 +349,11 @@ objects:
                     secretKeyRef:
                       name: ${NAME}-${ZONE}-${COMPONENT}
                       key: moti-pay-base-url
+                - name: MOTIPAY_REDIRECT
+                  valueFrom:
+                    configMapKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: moti-pay-redirect
               ports:
                 - containerPort: 5000
                   protocol: TCP
