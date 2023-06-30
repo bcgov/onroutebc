@@ -17,11 +17,10 @@ export class EmailController {
     @Req() _: Request,
     @Body() emailDto: ProfileRegistrationEmailDto
   ) {
-    //TODO: Refactor and provide an endpoint
     const { subject, to, ...emailData } = emailDto;
 
     await this.emailService.sendEmailMessage(
-      EmailTemplate.PROFILE_REGISTRATION_EMAIL_TEMPLATE,
+      EmailTemplate.PROFILE_REGISTRATION,
       {
         ...emailData,
       },
@@ -36,11 +35,10 @@ export class EmailController {
     @Req() _: Request,
     @Body() emailDto: IssuePermitEmailDto
   ) {
-    //TODO: Refactor and provide an endpoint
     const { subject, to, ...emailData } = emailDto;
 
     await this.emailService.sendEmailMessage(
-      EmailTemplate.ISSUE_PERMIT_EMAIL_TEMPLATE,
+      EmailTemplate.ISSUE_PERMIT,
       {
         ...emailData,
       },

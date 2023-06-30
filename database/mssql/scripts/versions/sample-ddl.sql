@@ -16,6 +16,6 @@ BEGIN TRANSACTION
 DECLARE @VersionDescription VARCHAR(255)
 SET @VersionDescription = '*** Enter description of DB change here ***'
 
-INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [DDL_FILE_SHA1], [RELEASE_DATE]) VALUES (/*<<REPLACE VERSION NUMBER HERE>>*/, @VersionDescription, '$(FILE_HASH)', getdate())
+INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [DDL_FILE_SHA1], [RELEASE_DATE]) VALUES (/*<<REPLACE VERSION NUMBER HERE>>*/, @VersionDescription, '$(FILE_HASH)', getutcdate())
 
 COMMIT

@@ -28,7 +28,7 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { FullNames } from './interface/fullNames.interface';
 import { PermitData } from 'src/common/interface/permit.template.interface';
-import { getFullNameFromCache } from 'src/common/helper/cache.helper';
+import { getFromCache } from 'src/common/helper/cache.helper';
 import { CompanyService } from '../company-user-management/company/company.service';
 import { formatTemplateData } from './helpers/formatTemplateData.helper';
 import { EmailService } from '../email/email.service';
@@ -37,6 +37,7 @@ import { EmailTemplate } from '../../common/enum/email-template.enum';
 import { IssuePermitEmailData } from '../../common/interface/issue-permit-email-data.interface';
 import { AttachementEmailData } from '../../common/interface/attachment-email-data.interface';
 import { ReadCompanyDto } from '../company-user-management/company/dto/response/read-company.dto';
+import { CacheKey } from '../../common/enum/cache-key.enum';
 
 @Injectable()
 export class ApplicationService {
@@ -375,7 +376,7 @@ export class ApplicationService {
         };
 
         await this.emailService.sendEmailMessage(
-          EmailTemplate.ISSUE_PERMIT_EMAIL_TEMPLATE,
+          EmailTemplate.ISSUE_PERMIT,
           emailData,
           'onRouteBC Permits - ' + companyInfo.legalName,
           [
@@ -442,37 +443,47 @@ export class ApplicationService {
   private async getFullNamesFromCache(permit: Permit): Promise<FullNames> {
     const permitData = JSON.parse(permit.permitData.permitData) as PermitData;
 
-    const vehicleTypeName = (await getFullNameFromCache(
+    const vehicleTypeName = await getFromCache(
       this.cacheManager,
+      CacheKey.VEHICLE_TYPE,
       permitData.vehicleDetails.vehicleType,
-    )) as string;
-    const vehicleSubTypeName = (await getFullNameFromCache(
+    );
+
+    const vehicleSubTypeName = await getFromCache(
       this.cacheManager,
+      vehicleTypeName === 'Trailer'
+        ? CacheKey.TRAILER_TYPE
+        : CacheKey.POWER_UNIT_TYPE,
       permitData.vehicleDetails.vehicleSubType,
-    )) as string;
+    );
 
-    const mailingCountryName = (await getFullNameFromCache(
+    const mailingCountryName = await getFromCache(
       this.cacheManager,
+      CacheKey.COUNTRY,
       permitData.vehicleDetails.countryCode,
-    )) as string;
-    const mailingProvinceName = (await getFullNameFromCache(
+    );
+    const mailingProvinceName = await getFromCache(
       this.cacheManager,
+      CacheKey.PROVINCE,
       permitData.vehicleDetails.provinceCode,
-    )) as string;
+    );
 
-    const vehicleCountryName = (await getFullNameFromCache(
+    const vehicleCountryName = await getFromCache(
       this.cacheManager,
+      CacheKey.COUNTRY,
       permitData.mailingAddress.countryCode,
-    )) as string;
-    const vehicleProvinceName = (await getFullNameFromCache(
+    );
+    const vehicleProvinceName = await getFromCache(
       this.cacheManager,
+      CacheKey.PROVINCE,
       permitData.mailingAddress.provinceCode,
-    )) as string;
+    );
 
-    const permitName = (await getFullNameFromCache(
+    const permitName = await getFromCache(
       this.cacheManager,
+      CacheKey.PERMIT_TYPE,
       permit.permitType,
-    )) as string;
+    );
 
     return {
       vehicleTypeName,

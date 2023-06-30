@@ -9,7 +9,6 @@ import {
 } from '@nestjs/common';
 import { AxiosRequestConfig } from 'axios';
 import { lastValueFrom, map } from 'rxjs';
-import { getFullNameFromCache } from '../../common/helper/cache.helper';
 import { getAccessToken } from '../../common/helper/gov-common-services.helper';
 import { GovCommonServices } from '../../common/enum/gov-common-services.enum';
 import * as Handlebars from 'handlebars';
@@ -17,6 +16,8 @@ import { EmailTemplate } from '../../common/enum/email-template.enum';
 import { ProfileRegistrationEmailData } from '../../common/interface/profile-registration-email-data.interface';
 import { IssuePermitEmailData } from '../../common/interface/issue-permit-email-data.interface';
 import { AttachementEmailData } from '../../common/interface/attachment-email-data.interface';
+import { CacheKey } from '../../common/enum/cache-key.enum';
+import { getFromCache } from '../../common/helper/cache.helper';
 
 @Injectable()
 export class EmailService {
@@ -52,7 +53,7 @@ export class EmailService {
       priority: 'normal',
       subject: subject,
       to: to,
-      attachments: attachment?[attachment]:undefined,
+      attachments: attachment ? [attachment] : undefined,
     };
 
     const requestConfig: AxiosRequestConfig = {
@@ -94,10 +95,10 @@ export class EmailService {
     templateName: EmailTemplate,
     data: ProfileRegistrationEmailData | IssuePermitEmailData,
   ): Promise<string> {
-    const template = (await getFullNameFromCache(
+    const template = await getFromCache(
       this.cacheManager,
-      templateName,
-    )) as string;
+      this.getCacheKeyforEmailTemplate(templateName),
+    );
     if (!template?.length) {
       throw new InternalServerErrorException('Template not found');
     }
@@ -116,5 +117,16 @@ export class EmailService {
       whiteMedFooterLogo: process.env.FRONT_END_URL + '/onRouteBC_Logo_White@2x.jpg',
     });
     return htmlBody;
+  }
+
+  getCacheKeyforEmailTemplate(templateName: EmailTemplate): CacheKey {
+    switch (templateName) {
+      case EmailTemplate.ISSUE_PERMIT:
+        return CacheKey.EMAIL_TEMPLATE_ISSUE_PERMIT;
+      case EmailTemplate.PROFILE_REGISTRATION:
+        return CacheKey.EMAIL_TEMPLATE_PROFILE_REGISTRATION;
+      default:
+        throw new Error('Invalid template name');
+    }
   }
 }
