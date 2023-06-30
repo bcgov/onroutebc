@@ -27,6 +27,6 @@ FOREIGN KEY (PERMIT_TYPE_ID) REFERENCES [permit].[ORBC_VT_PERMIT_TYPE](PERMIT_TY
 DECLARE @VersionDescription VARCHAR(255)
 SET @VersionDescription = 'Initial creation of entities for generating a pdf'
 
-INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [DDL_FILE_SHA1], [RELEASE_DATE]) VALUES (5, @VersionDescription, '$(FILE_HASH)', getdate())
+INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [DDL_FILE_SHA1], [RELEASE_DATE]) VALUES (5, @VersionDescription, '$(FILE_HASH)', getutcdate())
 
 COMMIT

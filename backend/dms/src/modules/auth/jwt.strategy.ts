@@ -28,6 +28,14 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
   // eslint-disable-next-line @typescript-eslint/require-await
   async validate(req: Request, payload: IUserJWT): Promise<IUserJWT> {
+    const access_token = req.headers.authorization;
+
+    const currentUser = {
+      access_token,
+    };
+
+    Object.assign(payload, currentUser);
+
     return payload;
   }
 }
