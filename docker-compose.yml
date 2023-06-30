@@ -73,9 +73,7 @@ services:
       MOTIPAY_API_KEY: ${MOTIPAY_API_KEY}
       MOTIPAY_MERCHANT_ID: ${MOTIPAY_MERCHANT_ID}
       MOTIPAY_BASE_URL: ${MOTIPAY_BASE_URL}
-      MOTIPAY_DESCRIPTION: ${MOTIPAY_DESCRIPTION}
       MOTIPAY_REDIRECT: ${MOTIPAY_REDIRECT}
-      BAMBORA_HOST: ${BAMBORA_HOST}
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5000/"]
       interval: 1m30s

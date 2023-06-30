@@ -51,7 +51,7 @@ export class PaymentService {
   /**
    * Generates a URL with transaction details for forwarding the user to the payment gateway.
    *
-   * @param {Application} termOversizePermit - The term oversize permit application object.
+   * @param {number} transactionAmount - The amount of the transaction.
    * @returns {string} The URL containing transaction details for the payment gateway.
    */
   forwardTransactionDetails = (transactionAmount: number): string => {

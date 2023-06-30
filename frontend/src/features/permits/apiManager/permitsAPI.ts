@@ -132,6 +132,11 @@ export const downloadPermitApplicationPdf = (
 };
 
 
+/**
+ * Generates a URL for making a payment transaction with Moti Pay.
+ * @param {number} transactionAmount - The amount of the transaction.
+ * @returns {Promise<any>} - A Promise that resolves to the transaction URL.
+ */
 export const getMotiPayTransactionUrl = (
   transactionAmount: number,
 ): Promise<any> => {
