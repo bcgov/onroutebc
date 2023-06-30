@@ -45,7 +45,9 @@ export class PendingIdirUsersController {
    * @returns
    */
   @Post()
-  async create(@Body() createPendingIdirUserDto: CreatePendingIdirUserDto):Promise<ReadPendingIdirUserDto> {
+  async create(
+    @Body() createPendingIdirUserDto: CreatePendingIdirUserDto,
+  ): Promise<ReadPendingIdirUserDto> {
     const pendingIdirUser = await this.pendingIdirUserService.create(
       createPendingIdirUserDto,
     );

@@ -6,8 +6,12 @@ import { classes } from '@automapper/classes';
 import { AutomapperModule } from '@automapper/nestjs';
 import { createMock } from '@golevelup/ts-jest';
 import { Repository } from 'typeorm';
-import { PendingIdirUser } from 'src/modules/company-user-management/pending-users/entities/pending-idir-user.entity';
-import { createPendingIdirUserMock, pendingIdirUserEntityMock, readPendingIdirUserMock } from 'test/util/mocks/data/pending-idir-user.mock';
+import { PendingIdirUser } from 'src/modules/company-user-management/pending-idir-users/entities/pending-idir-user.entity';
+import {
+  createPendingIdirUserMock,
+  pendingIdirUserEntityMock,
+  readPendingIdirUserMock,
+} from 'test/util/mocks/data/pending-idir-user.mock';
 import { PendingIdirUsersModule } from 'src/modules/company-user-management/pending-idir-users/pending-idir-users.module';
 
 const repo = createMock<Repository<PendingIdirUser>>();
@@ -39,12 +43,12 @@ describe('PendingUsers (e2e)', () => {
 
   describe('pending-idir-users CREATE', () => {
     it('should create a new pending idir User.', async () => {
-      repo.save.mockResolvedValue(pendingIdirUserEntityMock)
+      repo.save.mockResolvedValue(pendingIdirUserEntityMock);
       const response = await request(app.getHttpServer())
         .post('/pending-idir-users')
         .send(createPendingIdirUserMock)
         .expect(201);
-    expect(response.body).toMatchObject(readPendingIdirUserMock)
+      expect(response.body).toMatchObject(readPendingIdirUserMock);
     });
   });
   afterAll(async () => {

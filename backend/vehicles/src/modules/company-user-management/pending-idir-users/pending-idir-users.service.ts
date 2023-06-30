@@ -31,9 +31,15 @@ export class PendingIdirUsersService {
       CreatePendingIdirUserDto,
       PendingIdirUser,
     );
-   const idirUser = await this.pendingIdirUserRepository.save(newPendingIdirUserDto);
-   const readPendingIdirUser = await this.classMapper.mapAsync(idirUser,PendingIdirUser,ReadPendingIdirUserDto);
-  return readPendingIdirUser;
+    const idirUser = await this.pendingIdirUserRepository.save(
+      newPendingIdirUserDto,
+    );
+    const readPendingIdirUser = await this.classMapper.mapAsync(
+      idirUser,
+      PendingIdirUser,
+      ReadPendingIdirUserDto,
+    );
+    return readPendingIdirUser;
   }
   /**
    * Finds and returns ReadPendingIdirUserDto objects for pending idir users

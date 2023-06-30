@@ -34,7 +34,7 @@ import {
 } from '../util/mocks/data/user.mock';
 import { UserStatus } from '../../src/common/enum/user-status.enum';
 import { IdirUser } from 'src/modules/company-user-management/users/entities/idir.user.entity';
-import { PendingIdirUser } from 'src/modules/company-user-management/pending-users/entities/pending-idir-user.entity';
+import { PendingIdirUser } from 'src/modules/company-user-management/pending-idir-users/entities/pending-idir-user.entity';
 import { PendingIdirUsersService } from 'src/modules/company-user-management/pending-idir-users/pending-idir-users.service';
 
 let repo: DeepMocked<Repository<User>>;

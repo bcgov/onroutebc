@@ -44,9 +44,7 @@ describe('PendingIdirUsersController', () => {
     it('should create a company', async () => {
       const request = createMock<Request>();
       request.user = sysAdminStaffUserJWTMock;
-      pendingIdirUserService.create.mockResolvedValue(
-        readPendingIdirUserMock,
-      );
+      pendingIdirUserService.create.mockResolvedValue(readPendingIdirUserMock);
       const retPendingUser = await controller.create(createPendingIdirUserMock);
       expect(typeof retPendingUser).toBe('object');
       expect(retPendingUser.userName).toEqual(

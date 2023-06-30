@@ -1,10 +1,6 @@
 import { Mapper } from '@automapper/core';
 import { InjectMapper } from '@automapper/nestjs';
-import {
-  Injectable,
-  InternalServerErrorException,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository, UpdateResult } from 'typeorm';
 import { User } from './entities/user.entity';
@@ -23,7 +19,7 @@ import { CompanyService } from '../company/company.service';
 import { Role } from '../../../common/enum/roles.enum';
 import { IUserJWT } from '../../../common/interface/user-jwt.interface';
 import { UserAuthGroup } from 'src/common/enum/user-auth-group.enum';
-import { PendingIdirUser } from '../pending-users/entities/pending-idir-user.entity';
+import { PendingIdirUser } from '../pending-idir-users/entities/pending-idir-user.entity';
 import { IdirUser } from './entities/idir.user.entity';
 import { PendingIdirUsersService } from '../pending-idir-users/pending-idir-users.service';
 
@@ -322,9 +318,6 @@ export class UsersService {
 
   async checkIdirUser(currentUser: IUserJWT): Promise<ReadUserOrbcStatusDto> {
     let userExists: ReadUserOrbcStatusDto = null;
-    const queryRunner = this.dataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
     const idirUser = await this.findOneIdirUser(currentUser.idir_user_guid);
     if (!idirUser) {
       /**
@@ -340,6 +333,9 @@ export class UsersService {
        * ELSE it implies that user has been been invited and raise unauthorized exception.
        */
       if (pendingIdirUser) {
+        const queryRunner = this.dataSource.createQueryRunner();
+        await queryRunner.connect();
+        await queryRunner.startTransaction();
         try {
           const user: IdirUser = this.mapIdirUser(
             currentUser,
@@ -361,8 +357,6 @@ export class UsersService {
         } finally {
           await queryRunner.release();
         }
-      } else {
-        throw new UnauthorizedException();
       }
     } else {
       userExists = await this.classMapper.mapAsync(

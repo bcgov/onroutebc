@@ -32,14 +32,19 @@ import {
 import {
   USER_LIST,
   createRedCompanyCvClientUserDtoMock,
+  idirUserEntityMock,
   redCompanyAdminUserEntityMock,
   updateRedCompanyCvClientUserDtoMock,
 } from '../../util/mocks/data/user.mock';
-import { redCompanyCvClientUserJWTMock } from '../../util/mocks/data/jwt.mock';
+import {
+  redCompanyCvClientUserJWTMock,
+  sysAdminStaffUserJWTMock,
+} from '../../util/mocks/data/jwt.mock';
 import { readRedCompanyPendingUserDtoMock } from '../../util/mocks/data/pending-user.mock';
 import { IdirUser } from 'src/modules/company-user-management/users/entities/idir.user.entity';
-import { PendingIdirUser } from 'src/modules/company-user-management/pending-users/entities/pending-idir-user.entity';
+import { PendingIdirUser } from 'src/modules/company-user-management/pending-idir-users/entities/pending-idir-user.entity';
 import { PendingIdirUsersService } from 'src/modules/company-user-management/pending-idir-users/pending-idir-users.service';
+import { pendingIdirUserEntityMock } from 'test/util/mocks/data/pending-idir-user.mock';
 
 interface SelectQueryBuilderParameters {
   userGUID?: string;
@@ -58,6 +63,7 @@ describe('UsersService', () => {
 
   beforeEach(async () => {
     jest.clearAllMocks();
+    jest.resetAllMocks();
     pendingUsersServiceMock = createMock<PendingUsersService>();
     pendingIdirUsersServiceMock = createMock<PendingIdirUsersService>();
     companyServiceMock = createMock<CompanyService>();
@@ -269,6 +275,19 @@ describe('UsersService', () => {
       expect(typeof retUserContext).toBe('object');
       expect(retUserContext.associatedCompanies[0].companyId).toBe(
         constants.RED_COMPANY_ID,
+      );
+    });
+  });
+
+  //check Idir user
+  describe('User service check Idir User function', () => {
+    it('should create and return idir user', async () => {
+      repoPendingIdirUser.findOne.mockResolvedValue(pendingIdirUserEntityMock);
+      repoIdirUser.findOne.mockResolvedValue(null)
+      const userExists = await service.checkIdirUser(sysAdminStaffUserJWTMock);
+      expect(typeof userExists).toBe('object');
+      expect(userExists.user.userName).toBe(
+        constants.SYS_ADMIN_STAFF_USER_NAME,
       );
     });
   });
