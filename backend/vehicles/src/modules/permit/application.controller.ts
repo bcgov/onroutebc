@@ -15,6 +15,7 @@ import {
   ApiMethodNotAllowedResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
+  ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
 import { IDP } from 'src/common/enum/idp.enum';
@@ -80,12 +81,12 @@ export class ApplicationController {
     type: ReadApplicationDto,
     isArray: true,
   })
+  @ApiQuery({ name: 'companyId', required: false })
   @Roles(Role.READ_PERMIT)
   @Get()
   async findAllApplication(
     @Req() request: Request,
-    @Query('companyId') companyId: number,
-    @Query('userGUID') userGUID?: string,
+    @Query('companyId') companyId?: number,
     @Query('status') status?: ApplicationStatus,
   ): Promise<ReadApplicationDto[]> {
     const currentUser = request.user as IUserJWT;
@@ -116,6 +117,7 @@ export class ApplicationController {
     type: ReadApplicationDto,
     isArray: true,
   })
+  @ApiQuery({ name: 'companyId', required: false })
   @Roles(Role.READ_PERMIT)
   @Get(':permitId')
   async findOneApplication(
@@ -156,7 +158,7 @@ export class ApplicationController {
     description: 'The Permit Application Resource',
     type: ResultDto,
   })
-  //TODO Assign role @Roles(Role.WRITE_PERMIT) Should have a different role.
+  //TODO Assign role. Should have a different role like @Roles(Role.WRITE_PERMIT_STATUS) .
   @Post('status')
   async updateApplicationStatus(
     @Req() request: Request,
