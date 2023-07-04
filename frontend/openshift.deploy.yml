@@ -7,6 +7,9 @@ parameters:
   - name: NAME
     description: Module name
     value: onroutebc
+  - name: NAMESPACE
+    description: Deployment environment namespace
+    required: true
   - name: COMPONENT
     description: Component name
     value: frontend
@@ -15,8 +18,6 @@ parameters:
     required: true
   - name: IMAGE_TAG
     description: Image tag to use
-    value: latest
-  - name: DOMAIN
     value: apps.silver.devops.gov.bc.ca
   - name: CPU_REQUEST
     value: "25m"
@@ -130,7 +131,7 @@ objects:
         const envConfig = (() => {
           return {
             "VITE_DEPLOY_ENVIRONMENT":"${ZONE}",
-            "VITE_API_VEHICLE_URL":"https://${NAME}-${ZONE}-backend-vehicles.${DOMAIN}",
+            "VITE_API_VEHICLE_URL":"${NAME}-${ZONE}-backend-vehicles.${NAMESPACE}",
             "VITE_API_MANAGE_PROFILE_URL":"https://${NAME}-${ZONE}-backend-vehicles.${DOMAIN}",
             "VITE_AUTH0_ISSUER_URL":"${AUTH0_ISSUER_URL}",
             "VITE_AUTH0_AUDIENCE":"${AUTH0_AUDIENCE}"
