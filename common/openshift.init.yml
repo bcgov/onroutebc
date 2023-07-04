@@ -4,6 +4,9 @@ parameters:
   - name: NAME
     description: Product name
     value: onroutebc
+  - name: NAMESPACE
+    description: Deployment environment namespace
+    required: false
   - name: ZONE
     description: Deployment zone, e.g. pr-### or prod
     required: true
