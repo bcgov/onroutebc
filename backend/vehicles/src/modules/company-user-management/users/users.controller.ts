@@ -64,7 +64,7 @@ export class UsersController {
     type: ReadUserOrbcStatusDto,
   })
   @AuthOnly()
-  @Post('user-context')
+  @Get('user-context')
   async find(@Req() request: Request): Promise<ReadUserOrbcStatusDto> {
     const currentUser = request.user as IUserJWT;
     let userExists: ReadUserOrbcStatusDto;

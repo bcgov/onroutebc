@@ -80,14 +80,15 @@ const ApplicationSummary = () => {
 
 const FeeSummary = ({ calculatedFee }: { calculatedFee: number }) => {
   const { applicationData } = useContext(ApplicationContext);
-  if (!applicationData)
+  if (!applicationData || !applicationData.permitId)
     return <ErrorFallback error={"Application data not found"} />;
 
   // TODO: Use transaction amount
   const transactionAmount = applicationData.permitData.permitDuration;
+  const permitId = applicationData.permitId;
 
   const handlePayNow = async () => {
-    const url = await getMotiPayTransactionUrl(transactionAmount);
+    const url = await getMotiPayTransactionUrl(transactionAmount, permitId);
     window.open(url, "_self");
   };
 

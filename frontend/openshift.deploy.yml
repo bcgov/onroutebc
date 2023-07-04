@@ -140,9 +140,6 @@ objects:
           return {
             "VITE_DEPLOY_ENVIRONMENT":"${ZONE}",
             "VITE_API_VEHICLE_URL":"https://${NAME}-${ZONE}-backend-vehicles.${DOMAIN}",
-            "VITE_API_MANAGE_PROFILE_URL":"https://${NAME}-${ZONE}-backend-vehicles.${DOMAIN}",
-            "VITE_AUTH0_ISSUER_URL":"${AUTH0_ISSUER_URL}",
-            "VITE_AUTH0_AUDIENCE":"${AUTH0_AUDIENCE}"
           };
         })();
   - apiVersion: v1

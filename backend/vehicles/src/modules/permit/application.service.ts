@@ -311,7 +311,7 @@ export class ApplicationService {
    * @param applicationId applicationId to identify the application to be issued. It is the same as permitId.
    * @returns a resultDto that describes if the transaction was successful or if it failed
    */
-  private async issuePermit(currentUser: IUserJWT, applicationId: string) {
+  async issuePermit(currentUser: IUserJWT, applicationId: string) {
     let success = '';
     let failure = '';
 
@@ -389,7 +389,7 @@ export class ApplicationService {
         console.log('Error in Email Service', error);
       }
     } catch (err) {
-      console.log('Error Issuing Application: ', err);
+      console.log('Error Issuing Application: ', err.response.status, " ", err.response.statusText);
       success = '';
       failure = applicationId;
     }

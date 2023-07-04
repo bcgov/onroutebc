@@ -13,6 +13,7 @@ import { Application, ApplicationResponse, PermitApplicationInProgress } from ".
 import { DATE_FORMATS, toLocal } from "../../../common/helpers/formatDate";
 import { APPLICATION_PDF_API, APPLICATION_UPDATE_STATUS_API, PAYMENT_API, PERMITS_API, VEHICLE_URL } from "./endpoints/endpoints";
 import { mapApplicationToApplicationRequestData } from "../helpers/mappers";
+import { Transaction } from "../types/payment";
 
 /**
  * Submits a new term oversize application.
@@ -137,11 +138,24 @@ export const downloadPermitApplicationPdf = (
  * @param {number} transactionAmount - The amount of the transaction.
  * @returns {Promise<any>} - A Promise that resolves to the transaction URL.
  */
-export const getMotiPayTransactionUrl = (
+export const getMotiPayTransactionUrl = async (
   transactionAmount: number,
+  permitId: number
 ): Promise<any> => {
-  const url = `${PAYMENT_API}?transactionAmount=${transactionAmount}`;
+  const url = `${PAYMENT_API}?transactionAmount=${transactionAmount}&permitId=${permitId}`;
   return httpGETRequest(url).then((response) => {
     return response.data.url;
+  });
+};
+
+export const postTransaction = async (
+  transactionDetails: Transaction,
+): Promise<any> => {
+  const url = `${PAYMENT_API}`;
+  return httpPOSTRequest_axios(url, transactionDetails).then((response) => {
+    return response;
+  })
+  .catch((err) => {
+    return err;
   });
 };

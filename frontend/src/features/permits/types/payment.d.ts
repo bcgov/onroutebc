@@ -7,8 +7,8 @@ export interface MotiPaymentDetails {
   avsProcessed: string;
   avsResult: string;
   cardType: string;
-  cvdId: string;
-  trnApproved: string;
+  cvdId: number;
+  trnApproved: number;
   messageId: string;
   messageText: string;
   paymentMethod: string;
@@ -18,7 +18,7 @@ export interface MotiPaymentDetails {
   ref4: string;
   ref5: string;
   responseType: string;
-  trnAmount: string;
+  trnAmount: number;
   trnCustomerName: string;
   trnDate: string;
   trnEmailAddress: string;
@@ -27,4 +27,25 @@ export interface MotiPaymentDetails {
   trnOrderNumber: string;
   trnPhoneNumber: string;
   trnType: string;
+}
+
+export interface Transaction {
+  transactionId: number;
+  transactionType: string;
+  transactionOrderNumber: string;
+  transactionAmount: number;
+  approved: number;
+  authCode: string;
+  cardType: string;
+  transactionDate: string;
+  cvdId: number;
+  paymentMethod: string;
+  paymentMethodId: number; // TODO: what is this?
+  messageId: string;
+  messageText: string;
+}
+
+export interface PermitTransaction {
+  permitId: number;
+  transactionId: string;
 }

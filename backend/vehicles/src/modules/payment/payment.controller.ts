@@ -1,6 +1,14 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Query,
+  Req,
+} from '@nestjs/common';
 import {
   ApiBearerAuth,
+  ApiCreatedResponse,
   ApiInternalServerErrorResponse,
   ApiMethodNotAllowedResponse,
   ApiNotFoundResponse,
@@ -10,7 +18,11 @@ import {
 import { ExceptionDto } from '../../common/exception/exception.dto';
 import { PaymentService } from './payment.service';
 import { Public } from 'src/common/decorator/public.decorator';
-import { ReadPaymentDto } from './dto/response/read-payment.dto';
+import { MotiPayDetailsDto } from './dto/response/read-motiPayUrl.dto';
+import { CreateTransactionDto } from './dto/request/create-transaction.dto';
+import { ReadTransactionDto } from './dto/response/read-transaction.dto';
+import { IUserJWT } from 'src/common/interface/user-jwt.interface';
+import { Request } from 'express';
 
 @ApiBearerAuth()
 @ApiTags('Payment')
@@ -31,22 +43,38 @@ export class PaymentController {
   constructor(private readonly paymentService: PaymentService) {}
 
   @ApiOkResponse({
-    description: 'The Payment URL',
+    description: 'The MOTI Pay Resource',
   })
-  // TODO: Protect endpoint
-  //@Roles(Role.WRITE_PERMIT)
   @Public()
   @Get()
-  forwardTransactionDetails(
+  async forwardTransactionDetails(
     @Query('transactionAmount') transactionAmount: number,
-  ): ReadPaymentDto {
-    const URL =
+    @Query('permitId') permitId: number,
+  ): Promise<MotiPayDetailsDto> {
+    const paymentDetails =
       this.paymentService.forwardTransactionDetails(transactionAmount);
 
-    const readPaymentDto: ReadPaymentDto = {
-      url: URL,
-    };
+    await this.paymentService.createPermitTransaction(
+      permitId,
+      paymentDetails.transactionOrderNumber,
+    );
 
-    return readPaymentDto;
+    return paymentDetails;
+  }
+
+  @ApiCreatedResponse({
+    description: 'The Transaction Resource',
+    type: ReadTransactionDto,
+  })
+  @Post()
+  async createTransaction(
+    @Req() request: Request,
+    @Body() createTransactionDto: CreateTransactionDto,
+  ) {
+    const currentUser = request.user as IUserJWT;
+    return await this.paymentService.createTransaction(
+      currentUser.access_token,
+      createTransactionDto,
+    );
   }
 }
