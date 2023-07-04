@@ -1,12 +1,11 @@
-export const VEHICLE_URL =
-  import.meta.env.VITE_API_VEHICLE_URL || envConfig.VITE_API_VEHICLE_URL;
+import { VEHICLES_URL } from "../../../../common/apiManager/endpoints/endpoints";
 
 export const PERMITS_API = {
-  SUBMIT_TERM_OVERSIZE_PERMIT: `${VEHICLE_URL}/permits/applications`,
+  SUBMIT_TERM_OVERSIZE_PERMIT: `${VEHICLES_URL}/permits/applications`,
 };
 
-export const APPLICATION_UPDATE_STATUS_API = `${VEHICLE_URL}/permits/applications/status`;
+export const APPLICATION_UPDATE_STATUS_API = `${VEHICLES_URL}/permits/applications/status`;
 
-export const APPLICATION_PDF_API = `${VEHICLE_URL}/permit/pdf`;
+export const APPLICATION_PDF_API = `${VEHICLES_URL}/permit/pdf`;
 
-export const PAYMENT_API = `${VEHICLE_URL}/payment`;
+export const PAYMENT_API = `${VEHICLES_URL}/payment`;
