@@ -11,9 +11,10 @@ import {
 import { getDefaultRequiredVal, replaceEmptyValuesWithNull } from "../../../common/helpers/util";
 import { Application, ApplicationResponse, PermitApplicationInProgress } from "../types/application";
 import { DATE_FORMATS, toLocal } from "../../../common/helpers/formatDate";
-import { APPLICATION_PDF_API, APPLICATION_UPDATE_STATUS_API, PAYMENT_API, PERMITS_API, VEHICLE_URL } from "./endpoints/endpoints";
+import { APPLICATION_PDF_API, APPLICATION_UPDATE_STATUS_API, PAYMENT_API, PERMITS_API } from "./endpoints/endpoints";
 import { mapApplicationToApplicationRequestData } from "../helpers/mappers";
 import { Transaction } from "../types/payment";
+import { VEHICLES_URL } from "../../../common/apiManager/endpoints/endpoints";
 
 /**
  * Submits a new term oversize application.
@@ -60,7 +61,7 @@ export const updateTermOversize = (
 export const getApplicationsInProgress = async (): Promise<
   PermitApplicationInProgress[]
 > => {
-  const applicationsUrl = `${VEHICLE_URL}/permits/applications?companyId=${getCompanyIdFromSession()}&userGUID=${getUserGuidFromSession()}&status=IN_PROGRESS`;
+  const applicationsUrl = `${VEHICLES_URL}/permits/applications?companyId=${getCompanyIdFromSession()}&userGUID=${getUserGuidFromSession()}&status=IN_PROGRESS`;
   const applications = await httpGETRequest(applicationsUrl).then(
     (response) => (getDefaultRequiredVal([], response.data) as PermitApplicationInProgress[])
       .map(application => {
@@ -100,7 +101,7 @@ export const getApplicationInProgressById = (
   permitId: string | undefined,
 )  : Promise<ApplicationResponse | undefined>=> {
   const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
-  const url = `${VEHICLE_URL}/permits/applications/${permitId}?companyId=${companyId}`;
+  const url = `${VEHICLES_URL}/permits/applications/${permitId}?companyId=${companyId}`;
   return httpGETRequest(url).then(response => response.data);
 };
 
