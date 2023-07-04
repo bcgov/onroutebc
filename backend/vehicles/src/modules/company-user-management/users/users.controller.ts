@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   Param,
+  Post,
   Query,
   Req,
 } from '@nestjs/common';
@@ -63,14 +64,19 @@ export class UsersController {
     type: ReadUserOrbcStatusDto,
   })
   @AuthOnly()
-  @Get('user-context')
+  @Post('user-context')
   async find(@Req() request: Request): Promise<ReadUserOrbcStatusDto> {
     const currentUser = request.user as IUserJWT;
-    const userExists = await this.userService.findORBCUser(
-      currentUser.userGUID,
-      currentUser.userName,
-      currentUser.bceid_business_guid,
-    );
+    let userExists: ReadUserOrbcStatusDto;
+    if (currentUser.identity_provider == IDP.IDIR) {
+      userExists = await this.userService.checkIdirUser(currentUser);
+    } else {
+      userExists = await this.userService.findORBCUser(
+        currentUser.userGUID,
+        currentUser.userName,
+        currentUser.bceid_business_guid,
+      );
+    }
     return userExists;
   }
 
