@@ -18,6 +18,8 @@ parameters:
     required: true
   - name: IMAGE_TAG
     description: Image tag to use
+    value: latest
+  - name: DOMAIN
     value: apps.silver.devops.gov.bc.ca
   - name: CPU_REQUEST
     value: "25m"
