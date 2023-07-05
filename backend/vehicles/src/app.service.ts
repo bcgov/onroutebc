@@ -84,11 +84,6 @@ export class AppService {
       CacheKey.EMAIL_TEMPLATE_ISSUE_PERMIT,
       this.convertFiletoString(assetsPath + 'templates/issue-permit.email.hbs'),
     );
-    await addToCache(
-      this.cacheManager,
-      CacheKey.EMAIL_TEMPLATE_ORBC_STYLE,
-      this.convertFiletoString(assetsPath + 'styles/orbc-email-styles.css'),
-    );
 
     const endDateTime = new Date();
     const processingTime =
