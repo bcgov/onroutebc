@@ -4,8 +4,8 @@ import { PaymentController } from './payment.controller';
 import { Transaction } from './entities/transaction.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TransactionProfile } from './profile/transaction.profile';
-import { PermitTransactionProfile } from './profile/permitTransaction.profile';
-import { PermitTransaction } from './entities/permitTransaction.entity';
+import { PermitTransactionProfile } from './profile/permit-transaction.profile';
+import { PermitTransaction } from './entities/permit-transaction.entity';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Transaction, PermitTransaction])],

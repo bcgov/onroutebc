@@ -3,7 +3,7 @@ import { Entity, Column, PrimaryGeneratedColumn, ManyToMany, JoinTable } from 't
 import { AutoMap } from '@automapper/classes';
 import { Base } from '../../common/entities/base.entity';
 import { Permit } from 'src/modules/permit/entities/permit.entity';
-import { PermitTransaction } from './permitTransaction.entity';
+import { PermitTransaction } from './permit-transaction.entity';
 
 @Entity({ name: 'permit.ORBC_TRANSACTION' })
 export class Transaction extends Base {
