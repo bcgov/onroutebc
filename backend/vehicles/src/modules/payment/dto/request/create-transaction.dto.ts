@@ -8,12 +8,12 @@ import {
 
 export class CreateTransactionDto {
 
-  @AutoMap()
-  @ApiProperty({
-    example: '1',
-    description: 'Unique identifier for the transaction metadata.',
-  })
-  transactionId: number;
+  // @AutoMap()
+  // @ApiProperty({
+  //   example: '1',
+  //   description: 'Unique identifier for the transaction metadata.',
+  // })
+  // transactionId: number;
 
   @AutoMap()
   @ApiProperty({
@@ -31,6 +31,14 @@ export class CreateTransactionDto {
   })
   @IsString()
   transactionOrderNumber: string;
+
+  @AutoMap()
+  @ApiProperty({
+    example: '10000148',
+    description: 'Bambora-assigned eight-digit unique id number used to identify an individual transaction.',
+  })
+  @IsNumber()
+  providerTransactionId: number;
 
   @AutoMap()
   @ApiProperty({
@@ -111,5 +119,15 @@ export class CreateTransactionDto {
   })
   @IsString()
   messageText: string;
+
+  // @AutoMap()
+  // @ApiProperty({
+  //   description: 'Application Ids.',
+  //   isArray: true,
+  //   type: String,
+  //   example: ['1', '2'],
+  // })
+  // @IsNumberString({}, { each: true })
+  // applicationIds: string[];
 
 }

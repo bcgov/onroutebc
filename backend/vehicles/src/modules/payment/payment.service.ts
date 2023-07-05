@@ -37,7 +37,7 @@ export class PaymentService {
     const currDate = new Date();
 
     // Generate a unique transaction number based on the current timestamp
-    const trnNum = 'T' + currDate.getTime().toString();
+    const trnNum = 'T' + currDate.getTime().toString().substring(4);
     const transactionNumber = trnNum;
 
     // Giving our hash expiry a value of current date plus 10 minutes which is sufficient
@@ -133,7 +133,7 @@ export class PaymentService {
       await this.updatePermitTransaction(
         applicationId,
         newTransaction.transactionOrderNumber,
-        transaction.transactionId,
+        transaction.providerTransactionId,
       );
     }
 
@@ -162,13 +162,13 @@ export class PaymentService {
   async updatePermitTransaction(
     permitId: string,
     transactionOrderNumber: string,
-    transactionId: number,
+    providerTransactionId: number,
   ) {
     return await this.permitTransactionRepository
       .createQueryBuilder()
       .update()
       .set({
-        transactionId: transactionId,
+        transactionId: providerTransactionId,
       })
       .where('PERMIT_ID = :permitId', { permitId })
       .andWhere('TRANSACTION_ORDER_NUMBER = :transactionOrderNumber', {
@@ -191,17 +191,4 @@ export class PaymentService {
     );
   }
 
-  async findOneTransaction(
-    transactionOrderNumber: string,
-  ): Promise<ReadPermitTransactionDto> {
-    return this.classMapper.mapAsync(
-      await this.permitTransactionRepository.findOne({
-        where: {
-          transactionOrderNumber: transactionOrderNumber,
-        },
-      }),
-      PermitTransaction,
-      ReadPermitTransactionDto,
-    );
-  }
 }

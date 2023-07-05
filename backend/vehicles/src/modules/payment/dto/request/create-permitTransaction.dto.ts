@@ -15,6 +15,6 @@ export class CreatePermitTransactionDto {
     example: '10000203',
     description: 'Represents the ID of a transaction.',
   })
-  transactionId: string;
+  transactionId: number;
 
 }

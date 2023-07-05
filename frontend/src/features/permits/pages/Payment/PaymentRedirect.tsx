@@ -42,9 +42,10 @@ export const PaymentRedirect = () => {
 
 const mapTransactionDetails = (motiResponse: MotiPaymentDetails) : Transaction => {
   return {
-    transactionId: Number(motiResponse.trnId),
+    //transactionId: Number(motiResponse.trnId), // TODO check this and providerTransactionId
     transactionType: motiResponse.trnType,
     transactionOrderNumber: motiResponse.trnOrderNumber,
+    providerTransactionId: Number(motiResponse.trnId),
     transactionAmount: Number(motiResponse.trnAmount),
     approved: Number(motiResponse.trnApproved),
     authCode: motiResponse.authCode,

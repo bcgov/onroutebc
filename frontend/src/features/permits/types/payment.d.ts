@@ -30,9 +30,10 @@ export interface MotiPaymentDetails {
 }
 
 export interface Transaction {
-  transactionId: number;
+  //transactionId: number;
   transactionType: string;
   transactionOrderNumber: string;
+  providerTransactionId: number;
   transactionAmount: number;
   approved: number;
   authCode: string;

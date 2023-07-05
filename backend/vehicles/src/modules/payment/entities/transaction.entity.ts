@@ -3,6 +3,7 @@ import { Entity, Column, PrimaryGeneratedColumn, ManyToMany, JoinTable } from 't
 import { AutoMap } from '@automapper/classes';
 import { Base } from '../../common/entities/base.entity';
 import { Permit } from 'src/modules/permit/entities/permit.entity';
+import { PermitTransaction } from './permitTransaction.entity';
 
 @Entity({ name: 'permit.ORBC_TRANSACTION' })
 export class Transaction extends Base {
@@ -39,15 +40,13 @@ export class Transaction extends Base {
   })
   transactionOrderNumber: string;
 
-  
   @AutoMap()
   @ApiProperty({
     example: '10000148',
     description: 'Bambora-assigned eight-digit unique id number used to identify an individual transaction.',
   })
-  @PrimaryGeneratedColumn({ type: 'bigint', name: 'PROVIDER_TRANSACTION_ID' })
-  providerTransactionId: string;
-
+  @Column({ type: 'bigint', name: 'PROVIDER_TRANSACTION_ID' })
+  providerTransactionId: number;
 
   @AutoMap()
   @ApiProperty({
@@ -171,5 +170,11 @@ export class Transaction extends Base {
   // @ManyToMany(() => Permit)
   // @JoinTable()
   // permits: Permit[]
+
+  // @AutoMap(() => PermitTransaction)
+  // @ManyToMany(() => PermitTransaction, (PermitTransaction) => PermitTransaction.permitId, {
+  //   cascade: true,
+  // })
+  // permits: PermitTransaction[];
 
 }
