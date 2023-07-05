@@ -9,6 +9,8 @@ import { AutomapperModule } from '@automapper/nestjs';
 import { classes } from '@automapper/classes';
 import { AuthModule } from './modules/auth/auth.module';
 import { DmsModule } from './modules/dms/dms.module';
+import { CacheModule } from '@nestjs/cache-manager';
+import { DgenModule } from './modules/dgen/dgen.module';
 
 const envPath = path.resolve(process.cwd() + '/../../');
 
@@ -30,8 +32,14 @@ const envPath = path.resolve(process.cwd() + '/../../');
     AutomapperModule.forRoot({
       strategyInitializer: classes(),
     }),
+        CacheModule.register({
+      max: 50, //Max cache items in store. Revisit the number when required.
+      ttl: 0, // disable expiration of the cache.
+      isGlobal: true, // Allows access to cache manager globally.
+    }),
     AuthModule,
     DmsModule,
+    DgenModule,
   ],
   controllers: [AppController],
   providers: [AppService],
