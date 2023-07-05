@@ -13,7 +13,6 @@ import { ReadPermitTransactionDto } from './dto/response/read-permit-transaction
 import { MotiPayDetailsDto } from './dto/response/read-moti-pay-details.dto';
 import { HttpService } from '@nestjs/axios';
 import { lastValueFrom } from 'rxjs';
-import { ExceptionDto } from 'src/common/exception/exception.dto';
 
 @Injectable()
 export class PaymentService {
@@ -125,7 +124,9 @@ export class PaymentService {
         ),
       ).catch((err) => {
         throw new HttpException(
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
           err.response.data.message,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
           err.response.data.status,
         );
       });
@@ -190,5 +191,4 @@ export class PaymentService {
       ReadPermitTransactionDto,
     );
   }
-
 }

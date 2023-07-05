@@ -5,7 +5,8 @@ export class ReadTransactionDto {
   @AutoMap()
   @ApiProperty({
     example: 'P',
-    description: 'Represents the original value sent to indicate the type of transaction to perform (i.e. P, R, VP, VR, PA, PAC, Q).',
+    description:
+      'Represents the original value sent to indicate the type of transaction to perform (i.e. P, R, VP, VR, PA, PAC, Q).',
   })
   transactionType: string;
 
@@ -26,14 +27,16 @@ export class ReadTransactionDto {
   @AutoMap()
   @ApiProperty({
     example: '1',
-    description: 'Represents the approval result of a transaction. 0 = Transaction refused, 1 = Transaction approved',
+    description:
+      'Represents the approval result of a transaction. 0 = Transaction refused, 1 = Transaction approved',
   })
   approved: number;
 
   @AutoMap()
   @ApiProperty({
     example: 'TEST',
-    description: 'Represents the auth code of a transaction. If the transaction is approved this parameter will contain a unique bank-issued code.',
+    description:
+      'Represents the auth code of a transaction. If the transaction is approved this parameter will contain a unique bank-issued code.',
   })
   authCode: string;
 
@@ -47,7 +50,8 @@ export class ReadTransactionDto {
   @AutoMap()
   @ApiProperty({
     example: '6/23/2023 10:57:28 PM',
-    description: 'Represents the date and time that the transaction was processed.',
+    description:
+      'Represents the date and time that the transaction was processed.',
   })
   transactionDate: string;
 
@@ -75,14 +79,16 @@ export class ReadTransactionDto {
   @AutoMap()
   @ApiProperty({
     example: '111',
-    description: 'References a detailed approved/declined transaction response message.',
+    description:
+      'References a detailed approved/declined transaction response message.',
   })
   messageId: string;
 
   @AutoMap()
   @ApiProperty({
     example: 'Approved',
-    description: 'Represents basic approved/declined message for a transaction.',
+    description:
+      'Represents basic approved/declined message for a transaction.',
   })
   messageText: string;
 }

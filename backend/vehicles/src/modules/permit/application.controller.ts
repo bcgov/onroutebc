@@ -32,7 +32,6 @@ import { UpdateApplicationStatusDto } from './dto/request/update-application-sta
 import { ResultDto } from './dto/response/result.dto';
 import { Roles } from 'src/common/decorator/roles.decorator';
 import { Role } from 'src/common/enum/roles.enum';
-import { IssuePermitDto } from './dto/request/issue-permit.dto';
 
 @ApiBearerAuth()
 @ApiTags('Permit Application')
@@ -182,10 +181,11 @@ export class ApplicationController {
     type: ResultDto,
   })
   @Post('/issue')
-  async issuePermit(
-    @Req() request: Request,
-  ): Promise<ResultDto> {
+  async issuePermit(@Req() request: Request): Promise<ResultDto> {
     const currentUser = request.user as IUserJWT;
-    return await this.applicationService.issuePermit(currentUser, request.body.applicationId);
+    return await this.applicationService.issuePermit(
+      currentUser,
+      request.body.applicationId,
+    );
   }
 }

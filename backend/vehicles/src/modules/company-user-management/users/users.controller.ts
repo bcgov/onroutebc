@@ -3,7 +3,6 @@ import {
   Controller,
   Get,
   Param,
-  Post,
   Query,
   Req,
 } from '@nestjs/common';

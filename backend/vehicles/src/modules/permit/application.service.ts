@@ -389,7 +389,13 @@ export class ApplicationService {
         console.log('Error in Email Service', error);
       }
     } catch (err) {
-      console.log('Error Issuing Application: ', err.response.status, " ", err.response.statusText);
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
+      console.log(
+        'Error Issuing Application: ',
+        err.response.status,
+        ' ',
+        err.response.statusText,
+      );
       success = '';
       failure = applicationId;
     }

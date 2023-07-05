@@ -1,9 +1,9 @@
-import { Mapper, createMap } from "@automapper/core";
-import { AutomapperProfile, InjectMapper } from "@automapper/nestjs";
-import { Injectable } from "@nestjs/common";
-import { PermitTransaction } from "../entities/permit-transaction.entity";
-import { ReadPermitTransactionDto } from "../dto/response/read-permit-transaction.dto";
-import { CreatePermitTransactionDto } from "../dto/request/create-permit-transaction.dto";
+import { Mapper, createMap } from '@automapper/core';
+import { AutomapperProfile, InjectMapper } from '@automapper/nestjs';
+import { Injectable } from '@nestjs/common';
+import { PermitTransaction } from '../entities/permit-transaction.entity';
+import { ReadPermitTransactionDto } from '../dto/response/read-permit-transaction.dto';
+import { CreatePermitTransactionDto } from '../dto/request/create-permit-transaction.dto';
 
 @Injectable()
 export class PermitTransactionProfile extends AutomapperProfile {

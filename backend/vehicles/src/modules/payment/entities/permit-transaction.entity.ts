@@ -34,5 +34,4 @@ export class PermitTransaction extends Base {
     nullable: true,
   })
   transactionOrderNumber: string;
-
 }

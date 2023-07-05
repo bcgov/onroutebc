@@ -1,9 +1,9 @@
-import { Mapper, createMap } from "@automapper/core";
-import { AutomapperProfile, InjectMapper } from "@automapper/nestjs";
-import { Injectable } from "@nestjs/common";
-import { Transaction } from "../entities/transaction.entity";
-import { ReadTransactionDto } from "../dto/response/read-transaction.dto";
-import { CreateTransactionDto } from "../dto/request/create-transaction.dto";
+import { Mapper, createMap } from '@automapper/core';
+import { AutomapperProfile, InjectMapper } from '@automapper/nestjs';
+import { Injectable } from '@nestjs/common';
+import { Transaction } from '../entities/transaction.entity';
+import { ReadTransactionDto } from '../dto/response/read-transaction.dto';
+import { CreateTransactionDto } from '../dto/request/create-transaction.dto';
 
 @Injectable()
 export class TransactionProfile extends AutomapperProfile {

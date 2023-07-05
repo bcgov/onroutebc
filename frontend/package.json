@@ -37,7 +37,8 @@
     "test": "vitest watch --reporter verbose",
     "test:no-watch": "vitest run",
     "test:cov": "vitest run --coverage",
-    "format": "prettier --write \"src/**/*.hbs\" \"src/**/*.ts\" \"test/**/*.ts\""
+    "format": "npx prettier --write .",
+    "lint": "eslint src"
   },
   "browserslist": {
     "production": [

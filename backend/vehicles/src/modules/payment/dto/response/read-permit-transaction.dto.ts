@@ -22,5 +22,4 @@ export class ReadPermitTransactionDto {
     description: 'Represents the auth code of a transaction.',
   })
   transactionOrderNumber: string;
-
 }

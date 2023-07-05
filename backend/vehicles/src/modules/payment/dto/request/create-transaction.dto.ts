@@ -1,13 +1,8 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsNumber,
-  IsString,
-  MaxLength,
-} from 'class-validator';
+import { IsNumber, IsString, MaxLength } from 'class-validator';
 
 export class CreateTransactionDto {
-
   // @AutoMap()
   // @ApiProperty({
   //   example: '1',
@@ -18,7 +13,8 @@ export class CreateTransactionDto {
   @AutoMap()
   @ApiProperty({
     example: 'P',
-    description: 'Represents the original value sent to indicate the type of transaction to perform (i.e. P, R, VP, VR, PA, PAC, Q).',
+    description:
+      'Represents the original value sent to indicate the type of transaction to perform (i.e. P, R, VP, VR, PA, PAC, Q).',
   })
   @IsString()
   @MaxLength(3)
@@ -35,7 +31,8 @@ export class CreateTransactionDto {
   @AutoMap()
   @ApiProperty({
     example: '10000148',
-    description: 'Bambora-assigned eight-digit unique id number used to identify an individual transaction.',
+    description:
+      'Bambora-assigned eight-digit unique id number used to identify an individual transaction.',
   })
   @IsNumber()
   providerTransactionId: number;
@@ -51,7 +48,8 @@ export class CreateTransactionDto {
   @AutoMap()
   @ApiProperty({
     example: '1',
-    description: 'Represents the approval result of a transaction. 0 = Transaction refused, 1 = Transaction approved',
+    description:
+      'Represents the approval result of a transaction. 0 = Transaction refused, 1 = Transaction approved',
   })
   @IsNumber()
   approved: number;
@@ -59,7 +57,8 @@ export class CreateTransactionDto {
   @AutoMap()
   @ApiProperty({
     example: 'TEST',
-    description: 'Represents the auth code of a transaction. If the transaction is approved this parameter will contain a unique bank-issued code.',
+    description:
+      'Represents the auth code of a transaction. If the transaction is approved this parameter will contain a unique bank-issued code.',
   })
   @IsString()
   authCode: string;
@@ -75,7 +74,8 @@ export class CreateTransactionDto {
   @AutoMap()
   @ApiProperty({
     example: '6/23/2023 10:57:28 PM',
-    description: 'Represents the date and time that the transaction was processed.',
+    description:
+      'Represents the date and time that the transaction was processed.',
   })
   @IsString()
   transactionDate: string;
@@ -107,7 +107,8 @@ export class CreateTransactionDto {
   @AutoMap()
   @ApiProperty({
     example: '111',
-    description: 'References a detailed approved/declined transaction response message.',
+    description:
+      'References a detailed approved/declined transaction response message.',
   })
   @IsString()
   messageId: string;
@@ -115,7 +116,8 @@ export class CreateTransactionDto {
   @AutoMap()
   @ApiProperty({
     example: 'Approved',
-    description: 'Represents basic approved/declined message for a transaction.',
+    description:
+      'Represents basic approved/declined message for a transaction.',
   })
   @IsString()
   messageText: string;
@@ -129,5 +131,4 @@ export class CreateTransactionDto {
   // })
   // @IsNumberString({}, { each: true })
   // applicationIds: string[];
-
 }

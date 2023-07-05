@@ -2,7 +2,6 @@ import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreatePermitTransactionDto {
-
   @AutoMap()
   @ApiProperty({
     example: '1',
@@ -16,5 +15,4 @@ export class CreatePermitTransactionDto {
     description: 'Represents the ID of a transaction.',
   })
   transactionId: number;
-
 }
