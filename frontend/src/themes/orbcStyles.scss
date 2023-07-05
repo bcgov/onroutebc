@@ -1,6 +1,7 @@
 // Widths
 $profile-form-max-width: 528px;
 $tros-left-column-width: 400px;
+$permit-left-column-width: 400px;
 
 // Colours
 $banner-grey: #ebeef3;
@@ -73,5 +74,31 @@ $white: #ffffff;
         }
       }
     }
+  }
+}
+
+@mixin permit-main-box-style($permit-main-box) {
+  #{$permit-main-box} {
+    display: flex;
+    flex-wrap: wrap;
+    background-color: $white;
+    border-bottom: 1px solid $bc-text-box-border-grey;
+    padding-bottom: 1.5rem;
+  }
+}
+
+@mixin permit-left-box-style($permit-left-box) {
+  #{$permit-left-box} {
+    padding-top: 1.5rem;
+    min-width: $permit-left-column-width;
+    max-width: $permit-left-column-width;
+  }
+}
+
+@mixin permit-right-box-style($permit-right-box) {
+  #{$permit-right-box} {
+    padding-top: 1.5rem;
+    min-width: 600px;
+    max-width: calc(100% - $permit-left-column-width);
   }
 }

@@ -6,6 +6,15 @@ import {
   PERMIT_RIGHT_BOX_STYLE,
 } from "../../../../../themes/orbcStyles";
 import { Application } from "../../../types/application";
+import { getDefaultRequiredVal } from "../../../../../common/helpers/util";
+
+const phoneDisplay = (label: string, phone?: string, ext?: string) => {
+  if (!phone) return "";
+  const firstPart = `${label}: ${phone}`;
+  const secondPart = getDefaultRequiredVal("", ext).trim() !== "" ? 
+    `Ext: ${ext}` : "";
+  return `${firstPart} ${secondPart}`;
+};
 
 export const ReviewContactDetails = ({
   values,
@@ -26,12 +35,32 @@ export const ReviewContactDetails = ({
             {values?.permitData.contactDetails?.lastName}
           </Typography>
           <Typography>
-            Primary Phone: {values?.permitData.contactDetails?.phone1} Ext:{" "}
-            {values?.permitData.contactDetails?.phone1Extension}
+            {phoneDisplay(
+              "Primary Phone", 
+              values?.permitData.contactDetails?.phone1, 
+              values?.permitData.contactDetails?.phone1Extension
+            )}
           </Typography>
+          {values?.permitData.contactDetails?.phone2 ? (
+            <Typography>
+              {phoneDisplay(
+                "Alternate Phone", 
+                values?.permitData.contactDetails?.phone2, 
+                values?.permitData.contactDetails?.phone2Extension
+              )}
+            </Typography>
+          ) : null}
           <Typography>
             Email: {values?.permitData.contactDetails?.email}
           </Typography>
+          {values?.permitData?.contactDetails?.fax ? (
+            <Typography>
+              {phoneDisplay(
+                "Fax", 
+                values?.permitData.contactDetails?.fax
+              )}
+            </Typography>
+          ) : null}
         </Box>
       </Box>
     </Box>

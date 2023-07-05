@@ -118,6 +118,13 @@ export const Header = () => {
           </li>
           {isAuthenticated && (
             <>
+              {DoesUserHaveRoleWithContext(ROLES.WRITE_PERMIT) && (
+                <li>
+                  <NavLink to={routes.APPLICATIONS} onClick={menuToggleHandler}>
+                    Permits
+                  </NavLink>
+                </li>
+              )}
               {DoesUserHaveRoleWithContext(ROLES.READ_VEHICLE) && (
                 <li>
                   <NavLink
@@ -135,14 +142,6 @@ export const Header = () => {
                     onClick={menuToggleHandler}
                   >
                     Profile
-                  </NavLink>
-                </li>
-              )}
-              
-              {DoesUserHaveRoleWithContext(ROLES.WRITE_PERMIT) && (
-                <li>
-                  <NavLink to={routes.APPLICATIONS} onClick={menuToggleHandler}>
-                    Permits
                   </NavLink>
                 </li>
               )}
