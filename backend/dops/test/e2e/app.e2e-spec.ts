@@ -21,5 +21,5 @@ describe('AppController (e2e)', () => {
     request(app.getHttpServer())
       .get('/')
       .expect(200)
-      .expect('DMS Healthcheck!'));
+      .expect('DOPS Healthcheck!'));
 });

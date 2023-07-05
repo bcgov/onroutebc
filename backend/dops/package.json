@@ -1,7 +1,7 @@
 {
-  "name": "onroutebc-dms-api",
+  "name": "onroutebc-dops-api",
   "version": "0.0.1",
-  "description": "OnRouteBC Data Management System (DMS) api.",
+  "description": "OnRouteBC Document Operations (DOPS) api.",
   "main": "index.js",
   "scripts": {
     "prebuild": "rimraf dist",

@@ -74,7 +74,7 @@ export class PdfService {
   ): Promise<string> {
     //The DMS service returns an HTTP 201 containing a direct, temporary pre-signed S3 object URL location
     const dmsDocument = await lastValueFrom(
-      this.httpService.get(`${process.env.DMS_URL}/dms/${templateRef}`, {
+      this.httpService.get(`${process.env.DOPS_URL}/dms/${templateRef}`, {
         headers: { Authorization: accessToken },
         params: { download: 'proxy' },
         responseType: 'stream',
@@ -167,7 +167,7 @@ export class PdfService {
     );
 
     const dmsResource = await lastValueFrom(
-      this.httpService.post(`${process.env.DMS_URL}/dms/upload`, formData, {
+      this.httpService.post(`${process.env.DOPS_URL}/dms/upload`, formData, {
         headers: { Authorization: accessToken },
       }),
     )
@@ -275,7 +275,7 @@ export class PdfService {
     const resType = downloadMode === DownloadMode.PROXY ? 'stream' : 'json';
 
     const dmsDocument = await lastValueFrom(
-      this.httpService.get(`${process.env.DMS_URL}/dms/${documentId}`, {
+      this.httpService.get(`${process.env.DOPS_URL}/dms/${documentId}`, {
         headers: { Authorization: accessToken },
         params: { download: downloadMode },
         responseType: resType,

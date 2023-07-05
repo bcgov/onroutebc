@@ -42,8 +42,8 @@ async function bootstrap() {
   );
   app.enableCors();
   const config = new DocumentBuilder()
-    .setTitle('DMS API')
-    .setDescription('The Data Management System API description')
+    .setTitle('DOPS API')
+    .setDescription('The Document Operations API description')
     .setVersion('1.0')
     .addBearerAuth()
     .build();

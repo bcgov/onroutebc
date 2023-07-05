@@ -15,8 +15,8 @@ describe('AppController', () => {
   });
 
   describe('root', () => {
-    it('should return "DMS Healthcheck!"', () => {
-      expect(appController.getHello()).toBe('DMS Healthcheck!');
+    it('should return "DOPS Healthcheck!"', () => {
+      expect(appController.getHello()).toBe('DOPS Healthcheck!');
     });
   });
 });

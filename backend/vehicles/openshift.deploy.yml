@@ -128,7 +128,7 @@ objects:
       cdogs-url: "${CDOGS_URL}"
       ches-token-url: "${CHES_TOKEN_URL}"
       ches-url: "${CHES_URL}"      
-      dms-url: "https://${NAME}-${ZONE}-backend-dms.${DOMAIN}"
+      dops-url: "https://${NAME}-${ZONE}-backend-dops.${DOMAIN}"
       front-end-url: "https://${NAME}-${ZONE}-frontend.${DOMAIN}"
       node-env: "${NODE_ENV}"  
   - apiVersion: v1
@@ -315,11 +315,11 @@ objects:
                     configMapKeyRef:
                       name: ${NAME}-${ZONE}-${COMPONENT}
                       key: cdogs-url 
-                - name: DMS_URL
+                - name: DOPS_URL
                   valueFrom:
                     configMapKeyRef:
                       name: ${NAME}-${ZONE}-${COMPONENT}
-                      key: dms-url
+                      key: dops-url
                 - name: FRONT_END_URL
                   valueFrom:
                     configMapKeyRef:

@@ -69,7 +69,7 @@ services:
       CHES_CLIENT_ID: ${CHES_CLIENT_ID}
       CHES_CLIENT_SECRET: ${CHES_CLIENT_SECRET}
       CHES_URL: ${CHES_URL}
-      DMS_URL: "http://dms-api:5001"
+      DOPS_URL: "http://dops-api:5001"
       FRONT_END_URL: "http://frontend:3000"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5000/"]
@@ -83,14 +83,14 @@ services:
     hostname: vehicles-api
     links:
       - sql-server-db
-      - dms-api
+      - dops-api
     ports:
       - "5000:5000"
 
-  dms-api:
-    container_name: dms-api
+  dops-api:
+    container_name: dops-api
     build:
-      context: ./backend/dms/
+      context: ./backend/dops/
       dockerfile: Dockerfile
     environment:
       NODE_ENV: development
@@ -119,7 +119,7 @@ services:
     depends_on:
       sql-server-db:
         condition: service_healthy
-    hostname: dms-api
+    hostname: dops-api
     links:
       - sql-server-db
     ports:
@@ -144,7 +144,7 @@ services:
     hostname: frontend
     links:
       - vehicles-api
-      - dms-api
+      - dops-api
     ports:
       - "3000:3000"
     volumes:

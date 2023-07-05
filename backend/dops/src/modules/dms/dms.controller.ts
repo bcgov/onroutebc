@@ -31,11 +31,10 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { CreateFileDto } from './dto/request/create-file.dto';
 import { ReadFileDto } from './dto/response/read-file.dto';
 import { FileDownloadModes } from '../../common/enum/file-download-modes.enum';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { ComsService } from './coms.service';
 import { UpdateFileDto } from './dto/request/update-file.dto';
 import { IUserJWT } from '../../common/interface/user-jwt.interface';
-import { Request } from 'express';
 
 @ApiTags('DMS')
 @ApiBadRequestResponse({
