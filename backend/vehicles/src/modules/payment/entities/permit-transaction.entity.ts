@@ -1,8 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Entity, Column, PrimaryColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryColumn } from 'typeorm';
 import { AutoMap } from '@automapper/classes';
-import { Permit } from 'src/modules/permit/entities/permit.entity';
-import { Transaction } from './transaction.entity';
 import { Base } from 'src/modules/common/entities/base.entity';
 
 @Entity({ name: 'permit.ORBC_PERMIT_TRANSACTION' })
