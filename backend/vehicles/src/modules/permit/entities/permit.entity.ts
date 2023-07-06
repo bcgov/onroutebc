@@ -1,5 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Entity, Column, PrimaryGeneratedColumn, OneToOne, ManyToMany } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  OneToOne,
+  ManyToMany,
+} from 'typeorm';
 import { AutoMap } from '@automapper/classes';
 import { Base } from '../../common/entities/base.entity';
 import { PermitType } from '../../../common/enum/permit-type.enum';
@@ -151,9 +157,6 @@ export class Permit extends Base {
   })
   documentId: string;
 
-  @ManyToMany(
-    () => Transaction,
-    transaction => transaction.permits,
-  )
+  @ManyToMany(() => Transaction, (transaction) => transaction.permits)
   transactions?: Transaction[];
 }

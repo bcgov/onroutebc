@@ -81,7 +81,7 @@ const ApplicationSummary = () => {
 
 const FeeSummary = ({ calculatedFee }: { calculatedFee: number }) => {
   const { applicationData } = useContext(ApplicationContext);
-  if (!applicationData || !applicationData.permitId)
+  if (!applicationData?.permitId)
     return <ErrorFallback error={"Application data not found"} />;
 
   // TODO: Use transaction amount

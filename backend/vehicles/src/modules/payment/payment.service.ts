@@ -13,7 +13,6 @@ import { ReadPermitTransactionDto } from './dto/response/read-permit-transaction
 import { MotiPayDetailsDto } from './dto/response/read-moti-pay-details.dto';
 import { HttpService } from '@nestjs/axios';
 import { lastValueFrom } from 'rxjs';
-import { Permit } from '../permit/entities/permit.entity';
 
 @Injectable()
 export class PaymentService {
@@ -157,7 +156,7 @@ export class PaymentService {
     permitIds: number[],
     paymentDetails: MotiPayDetailsDto,
   ) {
-    permitIds.forEach(async (id) => {
+    for (const id of permitIds) {
       await this.transactionRepository
         .createQueryBuilder()
         .insert()
@@ -166,7 +165,7 @@ export class PaymentService {
           transactionOrderNumber: paymentDetails.transactionOrderNumber,
           transactionAmount: paymentDetails.transactionAmount,
           transactionType: paymentDetails.transactionType,
-          transactionSubmitDate: paymentDetails.transactionSubmitDate
+          transactionSubmitDate: paymentDetails.transactionSubmitDate,
         })
         .execute();
 
@@ -180,7 +179,7 @@ export class PaymentService {
       };
 
       await this.permitTransactionRepository.save(permitTransaction);
-    });
+    }
 
     // const permit: Permit = await lastValueFrom(
     //   this.httpService.get(

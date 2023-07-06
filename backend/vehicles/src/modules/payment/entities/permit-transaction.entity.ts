@@ -40,5 +40,4 @@ export class PermitTransaction extends Base {
   // )
   // @JoinColumn([{ name: 'TRANSACTION_ID', referencedColumnName: 'transactionId' }])
   // transactions?: Transaction[];
-
 }

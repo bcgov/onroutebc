@@ -200,7 +200,7 @@ export class Transaction extends Base {
       referencedColumnName: 'permitId',
     },
   })
-  permits: Permit[]
+  permits: Permit[];
 
   // @AutoMap(() => PermitTransaction)
   // @ManyToMany(() => PermitTransaction, (PermitTransaction) => PermitTransaction.permitId, {

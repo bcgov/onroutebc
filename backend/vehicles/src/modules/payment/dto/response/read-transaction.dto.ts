@@ -2,7 +2,6 @@ import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class ReadTransactionDto {
-
   @AutoMap()
   @ApiProperty({
     example: '1',
