@@ -22,18 +22,6 @@ header h1 {
   visibility: hidden;
 }
 
-header .banner {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  margin: 0 10px 0 0;
-  padding-left: 30px;
-  width: 200px;
-  /* border-style: dotted;
-  border-width: 1px;
-  border-color: lightgrey; */
-}
-
 header .other {
   display: flex;
   justify-content: end;
@@ -64,12 +52,18 @@ header .nav-btn {
   cursor: pointer;
 }
 
-.log-out-btn {
+.user-section {
   display: none;
-}
 
-.log-out-txt {
-  display: block;
+  &--mobile {
+    display: block;
+    padding: 0rem 1rem;
+    font-size: 0.813rem;
+
+    .user-section-info {
+      margin-bottom: 0.5rem;
+    }
+  }
 }
 
 .navigation-main {
@@ -174,12 +168,12 @@ header .nav-btn {
     cursor: pointer;
   }
 
-  .log-out-btn {
+  .user-section {
     display: block;
-  }
 
-  .log-out-txt {
-    display: none;
+    &--mobile {
+      display: none;
+    }
   }
 }
 

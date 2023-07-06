@@ -68,6 +68,12 @@ parameters:
   - name: COMS_URL
     description: The URL for the deployed instance of COMS
     required: true
+  - name: COMS_SERVICE
+    description: The identifier to determine whether COMS is hosted vs self-hosted
+    required: true
+  - name: COMS_BUCKET_ID
+    description: The Uuid representing the bucket
+    required: true
   - name: COMS_PRESIGNED_URL_EXPIRY
     description: The exipry value (seconds) of the presigned URL
     required: true
@@ -114,6 +120,8 @@ objects:
       auth0-audience: "${AUTH0_AUDIENCE}"
       auth0-ignore-exp: "${AUTH0_IGNORE_EXP}"
       coms-url: "${COMS_URL}"
+      coms-service: "${COMS_SERVICE}"
+      coms-bucket-id: "${COMS_BUCKET_ID}"
       coms-presigned-url-expiry: "${COMS_PRESIGNED_URL_EXPIRY}"
       node-env: "${NODE_ENV}"
   - apiVersion: v1
@@ -241,6 +249,16 @@ objects:
                     configMapKeyRef:
                       name: ${NAME}-${ZONE}-${COMPONENT}
                       key: coms-url
+                - name: COMS_SERVICE
+                  valueFrom:
+                    configMapKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: coms-service
+                - name: COMS_BUCKET_ID
+                  valueFrom:
+                    configMapKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: coms-bucket-id
                 - name: COMS_PRESIGNED_URL_EXPIRY
                   valueFrom:
                     configMapKeyRef:

@@ -331,7 +331,7 @@ export const TermOversizeForm = () => {
               key="save-TROS-button"
               aria-label="save"
               variant="contained"
-              color="secondary"
+              color="tertiary"
               sx={{ marginLeft: "-420px", marginTop: "40px", display: "flex", alignItems: "center", gap: "10px"}}
               onClick={() => onSaveApplication()}
             >

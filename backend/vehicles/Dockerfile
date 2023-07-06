@@ -1,5 +1,5 @@
 # Build container
-FROM node:18.16.0-alpine AS builder
+FROM node:18.16.1-alpine AS builder
 
 # Set the working directory to /app inside the container
 WORKDIR /app
@@ -18,7 +18,7 @@ RUN npm prune --production
 
 
 # Deployment container
-FROM node:18.16.0-alpine
+FROM node:18.16.1-alpine
 RUN npm cache clean --force
 
 # Create and Assign permissions to npm folder
@@ -48,6 +48,8 @@ ENV AUTH0_IGNORE_EXP ${AUTH0_IGNORE_EXP}
 ENV BASICAUTH_USERNAME ${BASICAUTH_USERNAME}
 ENV BASICAUTH_PASSWORD ${BASICAUTH_PASSWORD}
 ENV COMS_URL ${COMS_URL}
+ENV COMS_SERVICE ${COMS_SERVICE}
+ENV COMS_BUCKET_ID ${COMS_BUCKET_ID}
 ENV COMS_PRESIGNED_URL_EXPIRY ${COMS_PRESIGNED_URL_EXPIRY}
 ENV CDOGS_CLIENT_ID ${CDOGS_CLIENT_ID}
 ENV CDOGS_CLIENT_SECRET ${CDOGS_CLIENT_SECRET}

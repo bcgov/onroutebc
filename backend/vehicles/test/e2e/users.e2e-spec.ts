@@ -7,12 +7,14 @@ import { classes } from '@automapper/classes';
 import { AutomapperModule, getMapperToken } from '@automapper/nestjs';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { DataSource, Repository } from 'typeorm';
-import { readRedCompanyMetadataDtoMock } from '../util/mocks/data/company.mock';
 import {
   createQueryBuilderMock,
   dataSourceMockFactory,
 } from '../util/mocks/factory/dataSource.factory.mock';
-import { redCompanyAdminUserJWTMock } from '../util/mocks/data/jwt.mock';
+import {
+  redCompanyAdminUserJWTMock,
+  sysAdminStaffUserJWTMock,
+} from '../util/mocks/data/jwt.mock';
 import { TestUserMiddleware } from './test-user.middleware';
 import { AddressProfile } from '../../src/modules/common/profiles/address.profile';
 import { ContactProfile } from '../../src/modules/common/profiles/contact.profile';
@@ -23,6 +25,7 @@ import { User } from '../../src/modules/company-user-management/users/entities/u
 import { CompanyService } from '../../src/modules/company-user-management/company/company.service';
 import { PendingUsersService } from '../../src/modules/company-user-management/pending-users/pending-users.service';
 import {
+  idirUserEntityMock,
   readRedCompanyAdminUserDtoMock,
   redCompanyAdminUserEntityMock,
   redCompanyCvClientUserEntityMock,
@@ -31,18 +34,29 @@ import { createMapper } from '@automapper/core';
 import { UsersService } from '../../src/modules/company-user-management/users/users.service';
 import { UsersController } from '../../src/modules/company-user-management/users/users.controller';
 import { Role } from '../../src/common/enum/roles.enum';
+import { IdirUser } from 'src/modules/company-user-management/users/entities/idir.user.entity';
+import { PendingIdirUser } from 'src/modules/company-user-management/pending-idir-users/entities/pending-idir-user.entity';
+import { PendingIdirUsersService } from 'src/modules/company-user-management/pending-idir-users/pending-idir-users.service';
+import { PendingIdirUsersProfile } from 'src/modules/company-user-management/pending-idir-users/profiles/pending-idir-user.profile';
+import { readRedCompanyMetadataDtoMock } from 'test/util/mocks/data/company.mock';
 
 let repo: DeepMocked<Repository<User>>;
+let repoIdirUser: DeepMocked<Repository<IdirUser>>;
+let repoPendingIdirUser: DeepMocked<Repository<PendingIdirUser>>;
 let pendingUsersServiceMock: DeepMocked<PendingUsersService>;
+let pendingIdirUsersServiceMock: DeepMocked<PendingIdirUsersService>;
 let companyServiceMock: DeepMocked<CompanyService>;
 
 describe('Users (e2e)', () => {
   let app: INestApplication;
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     jest.clearAllMocks();
     repo = createMock<Repository<User>>();
+    repoIdirUser = createMock<Repository<IdirUser>>();
+    repoPendingIdirUser = createMock<Repository<PendingIdirUser>>();
     pendingUsersServiceMock = createMock<PendingUsersService>();
+    pendingIdirUsersServiceMock = createMock<PendingIdirUsersService>();
     companyServiceMock = createMock<CompanyService>();
     const dataSourceMock = dataSourceMockFactory() as DataSource;
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -54,8 +68,20 @@ describe('Users (e2e)', () => {
           useValue: repo,
         },
         {
+          provide: getRepositoryToken(IdirUser),
+          useValue: repoIdirUser,
+        },
+        {
+          provide: getRepositoryToken(PendingIdirUser),
+          useValue: repoPendingIdirUser,
+        },
+        {
           provide: PendingUsersService,
           useValue: pendingUsersServiceMock,
+        },
+        {
+          provide: PendingIdirUsersService,
+          useValue: pendingIdirUsersServiceMock,
         },
         {
           provide: CompanyService,
@@ -74,6 +100,7 @@ describe('Users (e2e)', () => {
         ContactProfile,
         AddressProfile,
         UsersProfile,
+        PendingIdirUsersProfile,
       ],
       controllers: [UsersController],
     }).compile();
@@ -88,13 +115,22 @@ describe('Users (e2e)', () => {
     jest.restoreAllMocks();
   });
 
-  describe('/users/user-context GET', () => {
+  describe('/users/user-context POST', () => {
     it('should return the ORBC userContext.', async () => {
       repo.findOne.mockResolvedValue(redCompanyAdminUserEntityMock);
       companyServiceMock.findCompanyMetadataByUserGuid.mockResolvedValue([
         readRedCompanyMetadataDtoMock,
       ]);
-      await request(app.getHttpServer()).get('/users/user-context').expect(200);
+      await request(app.getHttpServer())
+        .post('/users/user-context')
+        .expect(201);
+    });
+    it('should return the  ORBC IDIR userContext.', async () => {
+      TestUserMiddleware.testUser = sysAdminStaffUserJWTMock;
+      repoIdirUser.findOne.mockResolvedValue(idirUserEntityMock);
+      await request(app.getHttpServer())
+        .post('/users/user-context')
+        .expect(201);
     });
   });
 
@@ -153,7 +189,7 @@ describe('Users (e2e)', () => {
     });
   });
 
-  afterAll(async () => {
+  afterEach(async () => {
     await app.close();
   });
 });

@@ -18,15 +18,24 @@ import { PendingUsersService } from '../pending-users/pending-users.service';
 import { CompanyService } from '../company/company.service';
 import { Role } from '../../../common/enum/roles.enum';
 import { IUserJWT } from '../../../common/interface/user-jwt.interface';
+import { UserAuthGroup } from 'src/common/enum/user-auth-group.enum';
+import { PendingIdirUser } from '../pending-idir-users/entities/pending-idir-user.entity';
+import { IdirUser } from './entities/idir.user.entity';
+import { PendingIdirUsersService } from '../pending-idir-users/pending-idir-users.service';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
+    @InjectRepository(IdirUser)
+    private idirUserRepository: Repository<IdirUser>,
+    @InjectRepository(PendingIdirUser)
+    private pendingIdirUserRepository: Repository<PendingIdirUser>,
     @InjectMapper() private readonly classMapper: Mapper,
     private dataSource: DataSource,
     private readonly pendingUsersService: PendingUsersService,
+    private readonly pendingUsersIdirService: PendingIdirUsersService,
     private readonly companyService: CompanyService,
   ) {}
 
@@ -305,5 +314,95 @@ export class UsersService {
       await this.companyService.findCompanyMetadataByUserGuid(userGuid)
     ).map((r) => +r.companyId);
     return companies;
+  }
+
+  async checkIdirUser(currentUser: IUserJWT): Promise<ReadUserOrbcStatusDto> {
+    let userExists: ReadUserOrbcStatusDto = null;
+    const idirUser = await this.findOneIdirUser(currentUser.idir_user_guid);
+    if (!idirUser) {
+      /**
+       * IF IDIR use is not found in DB then check pending user table to see if the user has been invited
+       */
+      const pendingIdirUser =
+        await this.pendingUsersIdirService.findPendingIdirUser(
+          currentUser.userName,
+        );
+      /**
+       * IF user found in pending idir user table that means user has been invited
+       * in this case create user in the database followed by a deletion from pending user table.
+       * ELSE it implies that user has been been invited and raise unauthorized exception.
+       */
+      if (pendingIdirUser) {
+        const queryRunner = this.dataSource.createQueryRunner();
+        await queryRunner.connect();
+        await queryRunner.startTransaction();
+        try {
+          const user: IdirUser = this.mapIdirUser(
+            currentUser,
+            pendingIdirUser.userAuthGroup,
+          );
+          await queryRunner.manager.save(user);
+          await queryRunner.manager.delete(PendingIdirUser, {
+            userName: currentUser.idir_username,
+          });
+          await queryRunner.commitTransaction();
+          userExists = await this.classMapper.mapAsync(
+            user,
+            IdirUser,
+            ReadUserOrbcStatusDto,
+          );
+        } catch (err) {
+          await queryRunner.rollbackTransaction();
+          throw new InternalServerErrorException(); // TODO: Handle the typeorm Error handling
+        } finally {
+          await queryRunner.release();
+        }
+      }
+    } else {
+      userExists = await this.classMapper.mapAsync(
+        idirUser,
+        IdirUser,
+        ReadUserOrbcStatusDto,
+      );
+    }
+    return userExists;
+  }
+
+  private mapIdirUser(
+    currentUser: IUserJWT,
+    userAuthGroup: UserAuthGroup,
+  ): IdirUser {
+    const user: IdirUser = new IdirUser();
+    user.firstName = currentUser.given_name;
+    user.lastName = currentUser.family_name;
+    user.email = currentUser.email;
+    user.statusCode = UserStatus.ACTIVE;
+    user.userAuthGroup = userAuthGroup;
+    user.userGUID = currentUser.idir_user_guid;
+    user.userName = currentUser.idir_username;
+    return user;
+  }
+
+  async findIdirUser(userGUID?: string): Promise<ReadUserDto> {
+    // Find user entities based on the provided filtering criteria
+    const userDetails = await this.idirUserRepository.findOne({
+      where: { userGUID: userGUID },
+    });
+    // Map the retrieved user entities to ReadUserDto objects
+    const readUserDto: ReadUserDto = await this.classMapper.mapAsync(
+      userDetails,
+      IdirUser,
+      ReadUserDto,
+    );
+    return readUserDto;
+  }
+
+  async findOneIdirUser(userGUID?: string): Promise<IdirUser> {
+    // Find user entities based on the provided filtering criteria
+    const userDetails = await this.idirUserRepository.findOne({
+      where: { userGUID: userGUID },
+    });
+
+    return userDetails;
   }
 }

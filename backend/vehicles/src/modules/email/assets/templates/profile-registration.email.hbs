@@ -1,95 +1,432 @@
 <head>
-  <meta charset='UTF-8' />
-  <meta http-equiv='X-UA-Compatible' content='IE=edge' />
-  <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="format-detection" content="telephone=no" />
   <title>Welcome to onRouteBC</title>
-  <style>
-    {{orbcEmailStyles}}
-  </style>
 </head>
 
-<body>
-
-  <div class='container'>
-    <img src='{{headerLogo}}' alt='motiBCLogo' />
-    <hr class='solid' />
-    <div class='flex-container'>
-      <h2>Welcome to onRouteBC</h2>
+<div>
+  <div 
+    class="container" 
+    style="margin: 0 2em;"
+  >
+    <br />
+    <div>
+      <img 
+        src="{{whiteHeaderLogo}}" 
+        alt="motiBCLogo" 
+        style="background-color: #fff; 
+          margin: 0;" 
+      />
+    </div>
+    <br />
+    <hr 
+      class="solid" 
+      style="border-top: 1px solid #dbdcdc;" 
+    />
+    <div 
+      class="flex-container" 
+      style="margin: 1em 0;"
+    >
+      <h2 
+        style="font-family: BC Sans, sans-serif; 
+          font-style: normal; 
+          font-size: 32px; 
+          color: #313132; 
+          margin: 0px;"
+      >
+        Welcome to onRouteBC
+      </h2>
     </div>
 
-    <div class='flex-container' style='max-width: 752px;'>
-      <p>Hello,
+    <div 
+      class="flex-container" 
+      style="margin: 1em 0;"
+    >
+      <p 
+        style="font-family: BC Sans, sans-serif; 
+          font-style: normal; 
+          font-size: 16px; 
+          color: #313132;
+          margin: 0px;"
+      >
+        Hello,
         <br />
         <br />
         Your company profile for [{{companyName}}] has been successfully
         completed. The details you provided are listed below. You can start
         applying for permits online at
-        <a
-          href='https://www.onroutebc.gov.bc.ca/'
+        <a 
+          href="https://www.onroutebc.gov.bc.ca/"
+          style="color: #1a5a96;"
         >https://onroutebc.gov.bc.ca/</a>.
       </p>
     </div>
 
-    <div class='flex-container'>
-      <h4>onRouteBC Client Number</h4>
-      <p style='white-space: nowrap;'>{{onRoutebBcClientNumber}}</p>
-    </div>
-
-    <div class='flex-container'>
-      <h4>Company Mailing Address</h4>
-      <p>
-        <ul class='no-bullets'>
-          <li>{{companyAddressLine1}}</li>
-          <li>{{companyAddressLine2}}</li>
-          <li>{{companyCountry}}</li>
-          <li>{{companyProvinceState}}</li>
-          <li>{{companyCity}} {{companyPostalCode}}</li>
-        </ul>
+    <div 
+      class="flex-container" 
+      style="margin: 1em 0;"
+    >
+      <h4 
+        style="font-family: BC Sans, sans-serif; 
+          font-style: normal; 
+          font-size: 20px; 
+          color: #313132;
+          margin: 0px;"
+      >
+        onRouteBC Client Number
+      </h4>
+      <p 
+        style="font-family: BC Sans, sans-serif; 
+          font-style: normal; 
+          font-size: 16px; 
+          color: #313132;
+          margin: 0px;
+          text-decoration: none;"
+      >
+        {{onRoutebBcClientNumber}}
       </p>
     </div>
 
-    <div class='flex-container'>
-      <h4>Company Contact Details</h4>
-      <p>
-        <ul class='no-bullets'>
-          <li>Email: {{companyEmail}}</li>
-          <li>Phone: {{companyPhoneNumber}}</li>
-          <li>Fax: {{companyFaxNumber}}</li>
-        </ul>
-      </p>
+    <div 
+      class="flex-container" 
+      style="margin: 1em 0;"
+    >
+      <h4 
+        style="font-family: BC Sans, sans-serif; 
+          font-style: normal; 
+          font-size: 20px; 
+          color: #313132;
+          margin: 0px;"
+      >
+        Company Mailing Address
+      </h4>
+      <div 
+        class="info-section" 
+        style="font-family: BC Sans, sans-serif; 
+          font-style: normal; 
+          font-size: 16px; 
+          color: #313132; 
+          margin: 0px;"
+      >
+        <p 
+          class="info-section__item" 
+          style="font-family: BC Sans, sans-serif; 
+            font-style: normal; 
+            font-size: 16px; 
+            margin: 0; 
+            padding: 0;"
+        >
+          <a
+            href="#"
+            x-apple-data-detectors="false"
+            style="color: #313132;
+              text-decoration: none;"
+          >{{companyAddressLine1}}</a>
+        </p>
+        {{#if companyAddressLine2}}
+        <p 
+          class="info-section__item" 
+          style="font-family: BC Sans, sans-serif; 
+            font-style: normal; 
+            font-size: 16px; 
+            margin: 0; 
+            padding: 0;"
+        >
+          <a 
+            href="#"
+            x-apple-data-detectors="false"
+            style="color: #313132;
+              text-decoration: none;"
+          >{{companyAddressLine2}}</a>
+        </p>
+        {{/if}}
+        <p 
+          class="info-section__item" 
+          style="font-family: BC Sans, sans-serif; 
+            font-style: normal; 
+            font-size: 16px; 
+            color: #313132; 
+            margin: 0; 
+            padding: 0;"
+        >
+          {{companyCountry}}
+        </p>
+        <p 
+          class="info-section__item" 
+          style="font-family: BC Sans, sans-serif; 
+            font-style: normal; 
+            font-size: 16px; 
+            color: #313132; 
+            margin: 0; 
+            padding: 0;"
+        >
+          {{companyProvinceState}}
+        </p>
+        <p 
+          class="info-section__item" 
+          style="font-family: BC Sans, sans-serif; 
+            font-style: normal; 
+            font-size: 16px; 
+            color: #313132; 
+            margin: 0; 
+            padding: 0;"
+        >
+          {{companyCity}} {{companyPostalCode}}
+        </p>
+      </div>
     </div>
 
-    <div class='flex-container'>
-      <h4>Company Primary Contact</h4>
-      <p>
-        <ul class='no-bullets'>
-          <li>{{primaryContactFirstname}} {{primaryContactLastname}}</li>
-          <li>Email: {{primaryContactEmail}}</li>
-          <li>Primary Phone:
-            {{primaryContactPhoneNumber}}
-            Ext:
-            {{primaryContactExtension}}</li>
-          <li>Alternate Phone: {{primaryContactAlternatePhoneNumber}}</li>
-          <li>{{primaryContactCountry}}</li>
-          <li>{{primaryContactProvinceState}}</li>
-          <li>{{primaryContactCity}}</li>
-        </ul>
+    <div 
+      class="flex-container" 
+      style="margin: 1em 0;"
+    >
+      <h4 
+        style="font-family: BC Sans, sans-serif; 
+          font-style: normal; 
+          font-size: 20px; 
+          color: #313132; 
+          margin: 0px;"
+      >
+        Company Contact Details
+      </h4>
+      <div 
+        class="info-section" 
+        style="font-family: BC Sans, sans-serif; 
+          font-style: normal; 
+          font-size: 16px; 
+          color: #313132; 
+          margin: 0px;"
+      >
+        <p 
+          class="info-section__item" 
+          style="font-family: BC Sans, sans-serif; 
+            font-style: normal; 
+            font-size: 16px; 
+            color: #313132; 
+            margin: 0; 
+            padding: 0;"
+        >
+          Email: 
+          <a href="mailto:{{companyEmail}}" 
+            style="color: #1a5a96;"
+          >{{companyEmail}}</a>
+        </p>
+        <p 
+          class="info-section__item" 
+          style="font-family: BC Sans, sans-serif; 
+            font-style: normal; 
+            font-size: 16px; 
+            color: #313132; 
+            margin: 0; 
+            padding: 0;"
+        >
+          Phone: 
+          <a 
+            href="#"
+            x-apple-data-detectors="false"
+            style="color: #313232; text-decoration: none;"
+          >{{companyPhoneNumber}}</a>
+        </p>
+        {{#if companyFaxNumber}}
+        <p 
+          class="info-section__item" 
+          style="font-family: BC Sans, sans-serif; 
+            font-style: normal; 
+            font-size: 16px; 
+            color: #313132; 
+            margin: 0; 
+            padding: 0;"
+        >
+          Fax: 
+          <a 
+            href="#"
+            x-apple-data-detectors="false"
+            style="color: #313232; text-decoration: none;"
+          >{{companyFaxNumber}}</a>
+        </p>
+        {{/if}}
+      </div>
+    </div>
+
+    <div 
+      class="flex-container" 
+      style="margin: 1em 0;"
+    >
+      <h4 
+        style="font-family: BC Sans, sans-serif; 
+          font-style: normal; 
+          font-size: 20px; 
+          color: #313132; 
+          margin: 0px;"
+      >
+        Company Primary Contact
+      </h4>
+      <div 
+        class="info-section" 
+        style="font-family: BC Sans, sans-serif; 
+          font-style: normal; 
+          font-size: 16px; 
+          color: #313132; 
+          margin: 0px;"
+      >
+        <p 
+          class="info-section__item" 
+          style="font-family: BC Sans, sans-serif; 
+            font-style: normal; 
+            font-size: 16px; 
+            color: #313132; 
+            margin: 0; 
+            padding: 0;"
+        >
+          {{primaryContactFirstname}} {{primaryContactLastname}}
+        </p>
+        <p 
+          class="info-section__item" 
+          style="font-family: BC Sans, sans-serif; 
+            font-style: normal; 
+            font-size: 16px; 
+            color: #313132; 
+            margin: 0; 
+            padding: 0;"
+        >
+          Email: 
+          <a href="mailto:{{primaryContactEmail}}" 
+            style="color: #1a5a96;"
+          >{{primaryContactEmail}}</a>
+        </p>
+        <p 
+          class="info-section__item" 
+          style="font-family: BC Sans, sans-serif; 
+            font-style: normal; 
+            font-size: 16px; 
+            color: #313132; 
+            margin: 0; 
+            padding: 0;"
+        >
+          Primary Phone: 
+          <a 
+            href="#"
+            x-apple-data-detectors="false"
+            style="color: #313232; text-decoration: none;"
+          >{{primaryContactPhoneNumber}} {{#if primaryContactExtension}}
+          Ext: {{primaryContactExtension}}
+          {{/if}}
+          </a>
+        </p>
+        {{#if primaryContactAlternatePhoneNumber}}
+        <p 
+          class="info-section__item" 
+          style="font-family: BC Sans, sans-serif; 
+            font-style: normal; 
+            font-size: 16px; 
+            color: #313132; 
+            margin: 0; 
+            padding: 0;"
+        >
+          Alternate Phone: 
+          <a 
+            href="#"
+            x-apple-data-detectors="false"
+            style="color: #313232; text-decoration: none;"
+          >{{primaryContactAlternatePhoneNumber}}</a>
+        </p>
+        {{/if}}
+        <p 
+          class="info-section__item" 
+          style="font-family: BC Sans, sans-serif; 
+            font-style: normal; 
+            font-size: 16px; 
+            color: #313132; 
+            margin: 0; 
+            padding: 0;"
+        >
+          {{primaryContactCountry}}
+        </p>
+        <p 
+          class="info-section__item" 
+          style="font-family: BC Sans, sans-serif; 
+            font-style: normal; 
+            font-size: 16px; 
+            color: #313132; 
+            margin: 0; 
+            padding: 0;"
+        >
+          {{primaryContactProvinceState}}
+        </p>
+        <p 
+          class="info-section__item" 
+          style="font-family: BC Sans, sans-serif; 
+            font-style: normal; 
+            font-size: 16px; 
+            color: #313132; 
+            margin: 0; 
+            padding: 0;"
+        >
+          {{primaryContactCity}}
+        </p>
+      </div>
+    </div>
+    <hr 
+      class="solid" 
+      style="border-top: 1px solid #dbdcdc;"
+    />
+    <div 
+      class="flex-container" 
+      style="margin: 1em 0;"
+    >
+      <div>
+        <img 
+          src="{{whiteFooterLogo}}" 
+          alt="onRouteBCLogo" 
+          style="background-color: #fff; 
+            margin: 0px;"
+        />
+      </div>
+
+      <br />
+
+      <p 
+        style="font-family: BC Sans, sans-serif; 
+          font-style: normal; 
+          font-size: 16px; 
+          color: #313132; 
+          margin: 0;"
+      >
+        Have questions or need help? Check out the
+        <a 
+          href="https://www2.gov.bc.ca/gov/content/transportation/vehicle-safety-enforcement/services/permitting/commercial-transport-permits" 
+          style="color: #1a5a96;"
+        >Commercial Vehicle Permits</a> page or email us at
+        <a 
+          href="mailto:onRouteBc@gov.bc.ca" 
+          style="color: #1a5a96;"
+        >onRouteBc@gov.bc.ca</a>.
+      </p>
+
+      <br />
+
+      <p 
+        style="font-family: BC Sans, sans-serif; 
+          font-style: normal; 
+          font-size: 16px; 
+          color: #313132; 
+          margin: 0px;"
+      >
+        <a 
+          href="#"
+          style="color: #1a5a96;"
+        >Terms of Service</a> and 
+        <a 
+          href="#"
+          style="color: #1a5a96;"
+        >Privacy Policy</a>
       </p>
     </div>
-    <hr class='solid' />
-    <div class='flex-container'>
-      <img src='{{footerLogo}}' alt='onRouteBCLogo' />
-
-      <p>Have questions or need help? Check out the
-        <a
-          href='https://www2.gov.bc.ca/gov/content/transportation/vehicle-safety-enforcement/services/permitting/commercial-transport-permits'
-        >Commercial Vehicle Permits</a>
-        page or email us at
-        <a href='mailto:onRouteBc@gov.bc.ca'>onRouteBc@gov.bc.ca</a>.
-      </p>
-
-      <p><a href='#'>Terms of Service</a> and <a href='#'>Privacy Policy</a></p>
-    </div>
-    <hr class='solid' />
+    <hr 
+      class="solid" 
+      style="border-top: 1px solid #dbdcdc;"
+    />
   </div>
-</body>
+</div>

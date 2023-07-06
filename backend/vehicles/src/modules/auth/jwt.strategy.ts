@@ -56,6 +56,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     }
 
     if (payload.identity_provider === IDP.IDIR) {
+      companyId = 0;
       userGUID = payload.idir_user_guid;
       userName = payload.idir_username;
       payload.accountSource = AccountSource.PPCStaff;
@@ -95,7 +96,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
     /*Additional validations to validate userGuid and company context where
     userGUID is explicitly provided as either path or query parameter*/
-
     await this.AdditionalValidations(req, payload, companyId);
 
     return payload;
@@ -137,7 +137,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         } else {
           roles = [Role.WRITE_USER];
         }
-
         validateUserCompanyAndRoleContext(
           roles,
           userGUIDParam,

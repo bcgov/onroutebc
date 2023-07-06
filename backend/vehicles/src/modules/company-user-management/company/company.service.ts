@@ -28,7 +28,8 @@ import { EmailTemplate } from '../../../common/enum/email-template.enum';
 import { ProfileRegistrationEmailData } from '../../../common/interface/profile-registration-email-data.interface';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
-import { getFullNameFromCache } from '../../../common/helper/cache.helper';
+import { getFromCache } from '../../../common/helper/cache.helper';
+import { CacheKey } from '../../../common/enum/cache-key.enum';
 
 @Injectable()
 export class CompanyService {
@@ -133,14 +134,16 @@ export class CompanyService {
         onRoutebBcClientNumber: readCompanyUserDto.clientNumber,
         companyAddressLine1: readCompanyUserDto.mailingAddress.addressLine1,
         companyAddressLine2: readCompanyUserDto.mailingAddress.addressLine2,
-        companyCountry: (await getFullNameFromCache(
+        companyCountry: await getFromCache(
           this.cacheManager,
+          CacheKey.COUNTRY,
           readCompanyUserDto.mailingAddress.countryCode,
-        )) as string,
-        companyProvinceState: (await getFullNameFromCache(
+        ),
+        companyProvinceState: await getFromCache(
           this.cacheManager,
+          CacheKey.PROVINCE,
           readCompanyUserDto.mailingAddress.provinceCode,
-        )) as string,
+        ),
         companyCity: readCompanyUserDto.mailingAddress.city,
         companyPostalCode: readCompanyUserDto.mailingAddress.postalCode,
         companyEmail: readCompanyUserDto.email,
@@ -154,19 +157,21 @@ export class CompanyService {
           readCompanyUserDto.primaryContact.phone1Extension,
         primaryContactAlternatePhoneNumber:
           readCompanyUserDto.primaryContact.phone2,
-        primaryContactCountry: (await getFullNameFromCache(
+        primaryContactCountry: await getFromCache(
           this.cacheManager,
+          CacheKey.COUNTRY,
           readCompanyUserDto.primaryContact.countryCode,
-        )) as string,
-        primaryContactProvinceState: (await getFullNameFromCache(
+        ),
+        primaryContactProvinceState: await getFromCache(
           this.cacheManager,
+          CacheKey.PROVINCE,
           readCompanyUserDto.primaryContact.provinceCode,
-        )) as string,
+        ),
         primaryContactCity: readCompanyUserDto.primaryContact.city,
       };
 
       await this.emailService.sendEmailMessage(
-        EmailTemplate.PROFILE_REGISTRATION_EMAIL_TEMPLATE,
+        EmailTemplate.PROFILE_REGISTRATION,
         emailData,
         'Welcome to onRouteBC',
         [readCompanyUserDto.email, readCompanyUserDto.primaryContact.email],

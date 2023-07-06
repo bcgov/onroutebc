@@ -1,6 +1,9 @@
 import { Box, Button } from "@mui/material";
 import { useContext, useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPencil } from "@fortawesome/free-solid-svg-icons";
+
 import { WarningBcGovBanner } from "../../../../common/components/banners/AlertBanners";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { ApplicationDetails } from "../../components/form/ApplicationDetails";
@@ -79,11 +82,11 @@ export const TermOversizeReview = () => {
                 key="save-TROS-button"
                 aria-label="save"
                 variant="contained"
-                color="secondary"
+                color="tertiary"
                 onClick={() => back()}
                 sx={{ marginRight: "24px", display: "flex", alignItems: "center", gap: "10px"}}
               >
-                <i className="fa fa-pencil" />
+                <FontAwesomeIcon icon={faPencil} />
                 Edit
               </Button>
               <Button

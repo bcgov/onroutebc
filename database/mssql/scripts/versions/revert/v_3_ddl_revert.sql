@@ -8,6 +8,7 @@ BEGIN TRANSACTION
 
 DROP TABLE [dbo].[ORBC_COMPANY_USER]
 DROP TABLE [dbo].[ORBC_PENDING_USER]
+DROP TABLE [dbo].[ORBC_PENDING_IDIR_USER]
 /* Drop the FK constraints and company ID column added to the vehicle tables */
 ALTER TABLE [dbo].ORBC_POWER_UNIT DROP CONSTRAINT [FK_ORBC_POWER_UNIT_COMPANY]
 ALTER TABLE [dbo].ORBC_POWER_UNIT DROP COLUMN COMPANY_ID
@@ -16,6 +17,7 @@ ALTER TABLE [dbo].ORBC_TRAILER DROP COLUMN COMPANY_ID
 DROP TABLE [dbo].[ORBC_COMPANY]
 DROP TABLE [access].[ORBC_GROUP_ROLE]
 DROP TABLE [dbo].[ORBC_USER]
+DROP TABLE [dbo].[ORBC_IDIR_USER]
 DROP TABLE [dbo].[ORBC_ADDRESS]
 DROP TABLE [dbo].[ORBC_CONTACT]
 DROP TABLE [dbo].[ORBC_VT_DIRECTORY]
@@ -30,6 +32,6 @@ DROP SCHEMA [access]
 DECLARE @VersionDescription VARCHAR(255)
 SET @VersionDescription = 'Reverting initial creation of schema entities for manage profile feature'
 
-INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [DDL_FILE_SHA1], [RELEASE_DATE]) VALUES (2, @VersionDescription, '$(FILE_HASH)', getdate())
+INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [DDL_FILE_SHA1], [RELEASE_DATE]) VALUES (2, @VersionDescription, '$(FILE_HASH)', getutcdate())
 
 COMMIT
