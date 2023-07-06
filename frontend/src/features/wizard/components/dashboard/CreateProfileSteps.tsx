@@ -111,7 +111,10 @@ export const CreateProfileSteps = React.memo(() => {
 
   const formMethods = useForm<CompanyAndUserRequest>({
     defaultValues: {
-      legalName: user?.profile?.bceid_business_name as string,
+      legalName: getDefaultRequiredVal(
+        "", 
+        user?.profile?.bceid_business_name as string
+      ),
       mailingAddress: {
         addressLine1: "",
         addressLine2: "",
@@ -120,7 +123,10 @@ export const CreateProfileSteps = React.memo(() => {
         city: "",
         postalCode: "",
       },
-      email: "",
+      email: getDefaultRequiredVal(
+        "", 
+        user?.profile?.email
+      ),
       phone: "",
       extension: "",
       fax: "",
@@ -293,7 +299,10 @@ export const CreateProfileSteps = React.memo(() => {
                 <h2>Company Mailing Address</h2>
                 <hr></hr>
                 <CompanyBanner
-                  legalName={user?.profile?.bceid_business_name as string}
+                  legalName={getDefaultRequiredVal(
+                    "", 
+                    user?.profile?.bceid_business_name as string
+                  )}
                 />
                 <CompanyInformationWizardForm />
               </div>

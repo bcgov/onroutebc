@@ -18,6 +18,8 @@ export interface CustomOutlinedInputProps<T extends FieldValues> {
   inputProps: RegisterOptions;
   invalid: boolean;
   inputType?: "number"; // currently only support number, add "date", "email" and other types later
+  disabled?: boolean;
+  readOnly?: boolean;
 }
 
 /**
@@ -50,6 +52,8 @@ export const CustomOutlinedInput = <T extends ORBC_FormTypes>(
   return (
     <OutlinedInput
       inputProps={updatedInputProps}
+      disabled={props.disabled}
+      readOnly={props.readOnly}
       sx={{
         "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
           borderColor: props.invalid
