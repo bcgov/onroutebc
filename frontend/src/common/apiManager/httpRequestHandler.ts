@@ -92,6 +92,21 @@ export const getLoginUsernameFromSession = (): string => {
 };
 
 /**
+ * Retrieves company email from session.
+ * @returns string | undefined
+ */
+export const getCompanyEmailFromSession = (): string | undefined => {
+  const parsedSessionObject = getDefaultRequiredVal(
+    { profile: { email: "" } },
+    getUserStorage()
+  );
+
+  return getDefaultNullableVal(
+    parsedSessionObject.profile?.email
+  );
+};
+
+/**
  * A generic HTTP GET Request
  * @param url The URL of the resource.
  * @returns A Promise<Response> with the response from the API.

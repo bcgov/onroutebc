@@ -12,6 +12,8 @@ import {
 import { CompanyProfile } from "../types/manageProfile";
 import { DoesUserHaveRoleWithContext } from "../../../common/authentication/util";
 import { ROLES } from "../../../common/authentication/types";
+import { getCompanyEmailFromSession } from "../../../common/apiManager/httpRequestHandler";
+import { getDefaultRequiredVal } from "../../../common/helpers/util";
 // Disable any eslint for references to countries_and_states.json
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -24,6 +26,8 @@ export const DisplayInfo = memo(
     setIsEditting: React.Dispatch<React.SetStateAction<boolean>>;
   }) => {
     if (!companyInfo) return <></>;
+
+    const companyEmail = getCompanyEmailFromSession();
     return (
       <div className="display-company-info">
         <Box>
@@ -41,7 +45,15 @@ export const DisplayInfo = memo(
           <Typography>{`${companyInfo?.mailingAddress.city} ${companyInfo?.mailingAddress.postalCode}`}</Typography>
 
           <Typography variant="h3">Company Contact Details</Typography>
-          <Typography>Email: {companyInfo?.email}</Typography>
+          <Typography>
+            Email: {
+              getDefaultRequiredVal(
+                "",
+                companyEmail,
+                companyInfo?.email
+              )
+            }
+          </Typography>
           <Typography>{`Phone: ${formatPhoneNumber(companyInfo?.phone)} ${
             companyInfo?.extension ? `Ext: ${companyInfo?.extension}` : ""
           }`}</Typography>
@@ -53,7 +65,14 @@ export const DisplayInfo = memo(
 
           <Typography variant="h3">Company Primary Contact</Typography>
           <Typography>{`${companyInfo?.primaryContact.firstName} ${companyInfo?.primaryContact.lastName}`}</Typography>
-          <Typography>Email: {companyInfo?.primaryContact.email}</Typography>
+          <Typography>
+            Email: {
+              getDefaultRequiredVal(
+                "", 
+                companyInfo?.primaryContact?.email
+              )
+            }
+          </Typography>
           <Typography>{`Primary Phone: ${formatPhoneNumber(
             companyInfo?.primaryContact.phone1
           )} ${
