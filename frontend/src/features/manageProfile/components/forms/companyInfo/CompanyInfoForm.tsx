@@ -12,6 +12,7 @@ import { formatPhoneNumber } from "../../../../../common/components/form/subForm
 import { InfoBcGovBanner } from "../../../../../common/components/banners/AlertBanners";
 import { CompanyProfile } from "../../../types/manageProfile";
 import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../../../common/helpers/util";
+import { getCompanyEmailFromSession } from "../../../../../common/apiManager/httpRequestHandler";
 
 /**
  * The Company Information Form contains multiple subs forms including
@@ -28,6 +29,7 @@ export const CompanyInfoForm = memo(
     setIsEditting: React.Dispatch<React.SetStateAction<boolean>>;
   }) => {
     const queryClient = useQueryClient();
+    const companyEmail = getCompanyEmailFromSession();
 
     const formMethods = useForm<CompanyProfile>({
       defaultValues: {
@@ -41,7 +43,7 @@ export const CompanyInfoForm = memo(
           countryCode: getDefaultRequiredVal("", companyInfo?.mailingAddress?.countryCode),
           postalCode: getDefaultRequiredVal("", companyInfo?.mailingAddress?.postalCode),
         },
-        email: getDefaultRequiredVal("", companyInfo?.email),
+        email: getDefaultRequiredVal("", companyEmail, companyInfo?.email),
         phone: applyWhenNotNullable(formatPhoneNumber, companyInfo?.phone, ""),
         extension: getDefaultRequiredVal("", companyInfo?.extension),
         fax: applyWhenNotNullable(formatPhoneNumber, companyInfo?.fax, ""),
