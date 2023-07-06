@@ -37,7 +37,7 @@ USER app
 EXPOSE 3000
 
 # Have only the compiled app, ready for production with Nginx
-FROM nginx:1.25.0-alpine as production-stage
+FROM nginx:1.25.1-alpine as production-stage
 RUN mkdir /app
 COPY --from=builder /app/build /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/nginx.conf
