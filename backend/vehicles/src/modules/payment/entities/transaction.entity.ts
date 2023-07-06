@@ -102,6 +102,18 @@ export class Transaction extends Base {
 
   @AutoMap()
   @ApiProperty({
+    example: '2023-07-06T14:49:53.508Z',
+    description:
+      'Represents the date and time that the transaction was submitted (user clicks Pay Now).',
+  })
+  @Column({
+    name: 'TRANSACTION_SUBMIT_DATE',
+    nullable: false,
+  })
+  transactionSubmitDate: string;
+
+  @AutoMap()
+  @ApiProperty({
     example: '6/23/2023 10:57:28 PM',
     description:
       'Represents the date and time that the transaction was processed.',

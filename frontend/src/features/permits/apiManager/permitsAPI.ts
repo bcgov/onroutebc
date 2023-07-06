@@ -140,10 +140,11 @@ export const downloadPermitApplicationPdf = (
  * @returns {Promise<any>} - A Promise that resolves to the transaction URL.
  */
 export const getMotiPayTransactionUrl = async (
+  transactionSubmitDate: string,
   transactionAmount: number,
-  permitId: number
+  permitIds: number[]
 ): Promise<any> => {
-  const url = `${PAYMENT_API}?transactionAmount=${transactionAmount}&permitId=${permitId}`;
+  const url = `${PAYMENT_API}?transactionSubmitDate=${transactionSubmitDate}&transactionAmount=${transactionAmount}&permitIds=${permitIds.toString()}`;
   return httpGETRequest(url).then((response) => {
     return response.data.url;
   });

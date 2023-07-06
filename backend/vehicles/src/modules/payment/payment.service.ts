@@ -81,6 +81,7 @@ export class PaymentService {
    * @returns {string} The URL containing transaction details for the payment gateway.
    */
   forwardTransactionDetails = (
+    transactionSubmitDate: string,
     transactionAmount: number,
   ): MotiPayDetailsDto => {
     // Generate the hash and other necessary values for the transaction
@@ -95,6 +96,7 @@ export class PaymentService {
       transactionOrderNumber: transactionNumber,
       transactionAmount: transactionAmount,
       transactionType: transactionType,
+      transactionSubmitDate: transactionSubmitDate,
     };
   };
 
@@ -142,8 +144,8 @@ export class PaymentService {
       newTransaction,
     );
 
-    if (!updatedTransaction.affected){
-      throw new HttpException("Error updating transaction", 500);
+    if (!updatedTransaction.affected) {
+      throw new HttpException('Error updating transaction', 500);
     }
 
     return newTransaction;
@@ -152,9 +154,33 @@ export class PaymentService {
   async createTransaction(
     // accessToken: string,
     // companyId: number,
-    permitId: number,
+    permitIds: number[],
     paymentDetails: MotiPayDetailsDto,
   ) {
+    permitIds.forEach(async (id) => {
+      await this.transactionRepository
+        .createQueryBuilder()
+        .insert()
+        .values({
+          //permits: [permit],
+          transactionOrderNumber: paymentDetails.transactionOrderNumber,
+          transactionAmount: paymentDetails.transactionAmount,
+          transactionType: paymentDetails.transactionType,
+          transactionSubmitDate: paymentDetails.transactionSubmitDate
+        })
+        .execute();
+
+      const transaction = await this.findOneTransaction(
+        paymentDetails.transactionOrderNumber,
+      );
+
+      const permitTransaction = {
+        permitId: id,
+        transactionId: transaction.transactionId,
+      };
+
+      await this.permitTransactionRepository.save(permitTransaction);
+    });
 
     // const permit: Permit = await lastValueFrom(
     //   this.httpService.get(
@@ -166,28 +192,6 @@ export class PaymentService {
     // ).then((response) => {
     //   return response.data;
     // });
-
-    await this.transactionRepository
-      .createQueryBuilder()
-      .insert()
-      .values({
-        //permits: [permit],
-        transactionOrderNumber: paymentDetails.transactionOrderNumber,
-        transactionAmount: paymentDetails.transactionAmount,
-        transactionType: paymentDetails.transactionType,
-      })
-      .execute();
-
-    const transaction = await this.findOneTransaction(
-      paymentDetails.transactionOrderNumber,
-    );
-
-    const permitTransaction = {
-      permitId: permitId,
-      transactionId: transaction.transactionId,
-    };
-
-    await this.permitTransactionRepository.save(permitTransaction);
   }
 
   async findOneTransaction(

@@ -3,4 +3,5 @@ export class MotiPayDetailsDto {
   transactionOrderNumber: string;
   transactionAmount: number;
   transactionType: string;
+  transactionSubmitDate: string;
 }

@@ -10,7 +10,6 @@ import {
 } from '@nestjs/swagger';
 import { ExceptionDto } from '../../common/exception/exception.dto';
 import { PaymentService } from './payment.service';
-import { Public } from 'src/common/decorator/public.decorator';
 import { MotiPayDetailsDto } from './dto/response/read-moti-pay-details.dto';
 import { CreateTransactionDto } from './dto/request/create-transaction.dto';
 import { ReadTransactionDto } from './dto/response/read-transaction.dto';
@@ -40,16 +39,16 @@ export class PaymentController {
   })
   @Get()
   async forwardTransactionDetails(
+    @Query('transactionSubmitDate') transactionSubmitDate: string,
     @Query('transactionAmount') transactionAmount: number,
-    @Query('permitId') permitId: number,
+    @Query('permitIds') permitIds: string,
   ): Promise<MotiPayDetailsDto> {
-    const paymentDetails =
-      this.paymentService.forwardTransactionDetails(transactionAmount);
+    const permitIdArray: number[] = permitIds.split(',').map(Number);
 
-    await this.paymentService.createTransaction(
-      permitId,
-      paymentDetails
-    );
+    const paymentDetails =
+      this.paymentService.forwardTransactionDetails(transactionSubmitDate, transactionAmount);
+
+    await this.paymentService.createTransaction(permitIdArray, paymentDetails);
 
     return paymentDetails;
   }

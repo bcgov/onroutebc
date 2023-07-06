@@ -400,15 +400,11 @@ export class ApplicationService {
       failure = applicationId;
     }
 
-    
-
     const resultDto: ResultDto = {
       success: [success],
       failure: [failure],
     };
 
-    console.log('resultDto', resultDto)
-    
     return resultDto;
   }
 

@@ -6,6 +6,7 @@ import { ProgressBar } from "../../components/progressBar/ProgressBar";
 import "./TermOversize.scss";
 import { ErrorFallback } from "../../../../common/pages/ErrorFallback";
 import { getMotiPayTransactionUrl } from "../../apiManager/permitsAPI";
+import dayjs from "dayjs";
 
 export const TermOversizePay = () => {
   const { applicationData } = useContext(ApplicationContext);
@@ -85,10 +86,11 @@ const FeeSummary = ({ calculatedFee }: { calculatedFee: number }) => {
 
   // TODO: Use transaction amount
   const transactionAmount = applicationData.permitData.permitDuration;
-  const permitId = applicationData.permitId;
+  const permitIds = [applicationData.permitId];
+  const transactionSubmitDate = dayjs().utc().toISOString();
 
   const handlePayNow = async () => {
-    const url = await getMotiPayTransactionUrl(transactionAmount, permitId);
+    const url = await getMotiPayTransactionUrl(transactionSubmitDate, transactionAmount, permitIds);
     window.open(url, "_self");
   };
 
