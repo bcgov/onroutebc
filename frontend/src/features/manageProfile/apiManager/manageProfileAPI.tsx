@@ -64,7 +64,7 @@ export const createOnRouteBCProfile = async (
  */
 export const getUserContext = (): Promise<UserContextType> => {
   const url = `${MANAGE_PROFILE_URL}/users/user-context`;
-  return httpPOSTRequest_axios(url, null).then((response) => response.data);
+  return httpPOSTRequest_axios(url, {}).then((response) => response.data);
 };
 
 /**
