@@ -39,6 +39,7 @@ export class PaymentController {
   })
   @Get()
   async forwardTransactionDetails(
+    @Query('paymentMethodId') paymentMethodId: number,
     @Query('transactionSubmitDate') transactionSubmitDate: string,
     @Query('transactionAmount') transactionAmount: number,
     @Query('permitIds') permitIds: string,
@@ -46,6 +47,7 @@ export class PaymentController {
     const permitIdArray: number[] = permitIds.split(',').map(Number);
 
     const paymentDetails = this.paymentService.forwardTransactionDetails(
+      paymentMethodId,
       transactionSubmitDate,
       transactionAmount,
     );

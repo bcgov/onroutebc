@@ -80,6 +80,7 @@ export class PaymentService {
    * @returns {string} The URL containing transaction details for the payment gateway.
    */
   forwardTransactionDetails = (
+    paymentMethodId: number,
     transactionSubmitDate: string,
     transactionAmount: number,
   ): MotiPayDetailsDto => {
@@ -96,6 +97,7 @@ export class PaymentService {
       transactionAmount: transactionAmount,
       transactionType: transactionType,
       transactionSubmitDate: transactionSubmitDate,
+      paymentMethodId: paymentMethodId,
     };
   };
 
@@ -166,6 +168,7 @@ export class PaymentService {
           transactionAmount: paymentDetails.transactionAmount,
           transactionType: paymentDetails.transactionType,
           transactionSubmitDate: paymentDetails.transactionSubmitDate,
+          paymentMethodId: paymentDetails.paymentMethodId
         })
         .execute();
 

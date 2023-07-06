@@ -56,7 +56,7 @@ const mapTransactionDetails = (motiResponse: MotiPaymentDetails) : Transaction =
     transactionDate: "TODO", // TODO
     cvdId: Number(motiResponse.cvdId),
     paymentMethod: motiResponse.paymentMethod,
-    paymentMethodId: 0, // TODO: what is this?
+    paymentMethodId: 1, // TODO: change once different payment methods are implemented
     messageId: motiResponse.messageId,
     messageText: motiResponse.messageText,
   }

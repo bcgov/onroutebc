@@ -88,9 +88,10 @@ const FeeSummary = ({ calculatedFee }: { calculatedFee: number }) => {
   const transactionAmount = applicationData.permitData.permitDuration;
   const permitIds = [applicationData.permitId];
   const transactionSubmitDate = dayjs().utc().toISOString();
+  const paymentMethodId = 1; // TODO: implement payment method (ie payBC, manual, etc)
 
   const handlePayNow = async () => {
-    const url = await getMotiPayTransactionUrl(transactionSubmitDate, transactionAmount, permitIds);
+    const url = await getMotiPayTransactionUrl(paymentMethodId, transactionSubmitDate, transactionAmount, permitIds);
     window.open(url, "_self");
   };
 
