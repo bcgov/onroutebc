@@ -78,6 +78,20 @@ export const getCompanyNameFromSession = (): string | undefined => {
 };
 
 /**
+ * Retrieves username from session
+ * @returns username or empty string
+ */
+export const getLoginUsernameFromSession = (): string => {
+  const parsedSessionObject = getUserStorage();
+  if (!parsedSessionObject) return "";
+  return getDefaultRequiredVal(
+    "", 
+    parsedSessionObject.profile?.bceid_username,
+    parsedSessionObject.profile?.idir_username,
+  );
+};
+
+/**
  * A generic HTTP GET Request
  * @param url The URL of the resource.
  * @returns A Promise<Response> with the response from the API.

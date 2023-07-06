@@ -1,12 +1,8 @@
 import { Box, Typography } from "@mui/material";
-import {
-  PERMIT_MAIN_BOX_STYLE,
-  PERMIT_LEFT_BOX_STYLE,
-  PERMIT_LEFT_HEADER_STYLE,
-  PERMIT_RIGHT_BOX_STYLE,
-} from "../../../../../themes/orbcStyles";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCircleCheck } from "@fortawesome/free-regular-svg-icons";
+
 import { Application } from "../../../types/application";
-import { BC_COLOURS } from "../../../../../themes/bcGovStyles";
 import {
   formatCountry,
   formatProvince,
@@ -16,6 +12,7 @@ import {
   useTrailerTypesQuery,
 } from "../../../../manageVehicles/apiManager/hooks";
 import { mapTypeCodeToObject } from "../../../helpers/mappers";
+import "./ReviewVehicleInfo.scss";
 
 export const ReviewVehicleInfo = ({
   values,
@@ -52,39 +49,74 @@ export const ReviewVehicleInfo = ({
   };
 
   return (
-    <Box sx={PERMIT_MAIN_BOX_STYLE}>
-      <Box sx={PERMIT_LEFT_BOX_STYLE}>
-        <Typography variant={"h3"} sx={PERMIT_LEFT_HEADER_STYLE}>
+    <Box className="review-vehicle-info">
+      <Box className="review-vehicle-info__header">
+        <Typography variant={"h3"}>
           Vehicle Information
         </Typography>
       </Box>
-      <Box sx={PERMIT_RIGHT_BOX_STYLE}>
-        <Box sx={{ gap: "40px", paddingTop: "24px" }}>
-          <Typography sx={{ fontWeight: "bold" }}>VIN</Typography>
-          <Typography>{values?.permitData.vehicleDetails?.vin}</Typography>
-          <Typography sx={{ fontWeight: "bold" }}>Plate</Typography>
-          <Typography>{values?.permitData.vehicleDetails?.plate}</Typography>
-          <Typography sx={{ fontWeight: "bold" }}>Make</Typography>
-          <Typography>{values?.permitData.vehicleDetails?.make}</Typography>
-          <Typography sx={{ fontWeight: "bold" }}>Year</Typography>
-          <Typography>{values?.permitData.vehicleDetails?.year}</Typography>
-          <Typography sx={{ fontWeight: "bold" }}>Country</Typography>
-          <Typography>
+      <Box className="review-vehicle-info__body">
+        <Box className="info-section">
+          <Typography className="info-section__label">
+            Unit #
+          </Typography>
+          <Typography className="info-section__data">
+            {values?.permitData.vehicleDetails?.unitNumber}
+          </Typography>
+          <Typography className="info-section__label">
+            VIN <span className="info-section__label--indicator">(last 6 digits)</span>
+          </Typography>
+          <Typography className="info-section__data">
+            {values?.permitData.vehicleDetails?.vin}
+          </Typography>
+          <Typography className="info-section__label">
+            Plate
+          </Typography>
+          <Typography className="info-section__data">
+            {values?.permitData.vehicleDetails?.plate}
+          </Typography>
+          <Typography className="info-section__label">
+            Make
+          </Typography>
+          <Typography className="info-section__data">
+            {values?.permitData.vehicleDetails?.make}
+          </Typography>
+          <Typography className="info-section__label">
+            Year
+          </Typography>
+          <Typography className="info-section__data">
+            {values?.permitData.vehicleDetails?.year}
+          </Typography>
+          <Typography className="info-section__label">
+            Country
+          </Typography>
+          <Typography className="info-section__data">
             {formatCountry(values?.permitData.vehicleDetails?.countryCode)}
           </Typography>
-          <Typography sx={{ fontWeight: "bold" }}>Province / State</Typography>
-          <Typography>
+          <Typography className="info-section__label">
+            Province / State
+          </Typography>
+          <Typography className="info-section__data">
             {formatProvince(
               values?.permitData.vehicleDetails?.countryCode,
               values?.permitData.vehicleDetails?.provinceCode
             )}
           </Typography>
-          <Typography sx={{ fontWeight: "bold" }}>Vehicle Type</Typography>
-          <Typography>{DisplayVehicleType()}</Typography>
-          <Typography sx={{ fontWeight: "bold" }}>Vehicle Sub-type</Typography>
-          <Typography>{DisplayVehicleSubType()}</Typography>
+          <Typography className="info-section__label">
+            Vehicle Type
+          </Typography>
+          <Typography className="info-section__data">
+            {DisplayVehicleType()}
+          </Typography>
+          <Typography className="info-section__label">
+            Vehicle Sub-type
+          </Typography>
+          <Typography className="info-section__data">
+            {DisplayVehicleSubType()}
+          </Typography>
           {values?.permitData.vehicleDetails?.saveVehicle && (
-            <Typography sx={{ color: BC_COLOURS.bc_green, fontWeight: "bold" }}>
+            <Typography className="info-section__msg">
+              <FontAwesomeIcon className="icon" icon={faCircleCheck} />
               This vehicle has been added/updated to your Vehicle Inventory.
             </Typography>
           )}
