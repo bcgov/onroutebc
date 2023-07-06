@@ -1,3 +1,19 @@
+@import "../../../../themes/orbcStyles.scss";
+
 .logout-button {
-  cursor: pointer;   
+  cursor: pointer;
+  border-radius: 4px;
+  background-color: $white;
+  color: $bc-black;
+  padding: 0.5rem 0.75rem;
+  border: none;
+  font-family: "BCSans", "Noto Sans", Verdana, Arial, sans-serif;
+
+  &:focus {
+    outline: none;
+  }
+  
+  &__icon {
+    margin-right: 0.5rem;
+  }
 }

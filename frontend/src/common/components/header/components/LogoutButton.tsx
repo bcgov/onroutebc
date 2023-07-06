@@ -1,12 +1,14 @@
 import { useAuth } from "react-oidc-context";
 
 import "./LogoutButton.scss";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowRightFromBracket } from "@fortawesome/free-solid-svg-icons";
 
 export const LogoutButton = () => {
   const { signoutRedirect, user } = useAuth();
 
   return (
-    <a
+    <button
       className="logout-button"
       onClick={() => {
         sessionStorage.removeItem("onRoutebc.user.context");
@@ -18,7 +20,11 @@ export const LogoutButton = () => {
         });
       }}
     >
-      Log Out
-    </a>
+      <FontAwesomeIcon 
+        className="logout-button__icon"
+        icon={faArrowRightFromBracket} 
+      />
+      Logout
+    </button>
   );
 };

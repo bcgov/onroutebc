@@ -57,6 +57,12 @@ header .nav-btn {
 
   &--mobile {
     display: block;
+    padding: 0rem 1rem;
+    font-size: 0.813rem;
+
+    .user-section-info {
+      margin-bottom: 0.5rem;
+    }
   }
 }
 
