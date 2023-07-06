@@ -1,0 +1,13 @@
+@import "../../../../themes/orbcStyles.scss";
+
+.user-section {
+  position: relative;
+
+  &__logout {
+    position: relative;
+    background-color: $bc-primary-blue;
+    z-index: 3;
+    text-align: center;
+    padding: 0.5rem 0;
+  }
+}

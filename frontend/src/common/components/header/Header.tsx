@@ -10,27 +10,12 @@ import { BC_COLOURS } from "../../../themes/bcGovStyles";
 import { Grid } from "@mui/material";
 import { DoesUserHaveRoleWithContext } from "../../authentication/util";
 import { ROLES } from "../../authentication/types";
+import { Brand } from "./components/Brand";
+import { LogoutButton } from "./components/LogoutButton";
+import { UserSection } from "./components/UserSection";
+import { UserSectionInfo } from "./components/UserSectionInfo";
+import { getLoginUsernameFromSession } from "../../apiManager/httpRequestHandler";
 
-const LogOutBtn = () => {
-  const { signoutRedirect, user } = useAuth();
-
-  return (
-    <a
-      style={{ cursor: "pointer" }}
-      onClick={() => {
-        sessionStorage.removeItem("onRoutebc.user.context");
-        signoutRedirect({
-          extraQueryParams: {
-            redirect_uri: window.location.origin + "/",
-            kc_idp_hint: user?.profile?.identity_provider as string,
-          },
-        });
-      }}
-    >
-      Log Out
-    </a>
-  );
-};
 /*
  * The Header component includes the BC Gov banner and Navigation bar
  * and is responsive for mobile
@@ -44,6 +29,7 @@ export const Header = () => {
   const mediaQueryList: MediaQueryList = window.matchMedia(mediaQuery);
   const [menuOpen, setMenuOpen] = useState(!mediaQueryList.matches);
   const { isAuthenticated } = useAuth();
+  const username = getLoginUsernameFromSession();
 
   let headerColor: string;
   const env =
@@ -82,19 +68,6 @@ export const Header = () => {
       setMenuOpen((toggle) => !toggle);
     }
   }, [mediaQueryList]);
-
-  const Brand = () => (
-    <div className="banner">
-      <a href={routes.HOME}>
-        <img
-          src="https://developer.gov.bc.ca/static/BCID_H_rgb_rev-20eebe74aef7d92e02732a18b6aa6bbb.svg"
-          alt="Go to the onRouteBC Home Page"
-          height="50px"
-        />
-      </a>
-      <h1>onRouteBC</h1>
-    </div>
-  );
 
   const NavButton = () => (
     <div className="other">
@@ -148,8 +121,9 @@ export const Header = () => {
             </>
           )}
           {isAuthenticated && (
-            <li className={"log-out-txt"}>
-              <LogOutBtn />
+            <li className="user-section user-section--mobile">
+              <UserSectionInfo username={username} />
+              <LogoutButton />
             </li>
           )}
         </ul>
@@ -171,9 +145,7 @@ export const Header = () => {
           <Grid item xs={2} display="flex" alignItems={"center"}>
             <NavButton />
             {isAuthenticated && (
-              <div className="log-out-btn">
-                <LogOutBtn />
-              </div>
+              <UserSection username={username} />
             )}
           </Grid>
         </Grid>
