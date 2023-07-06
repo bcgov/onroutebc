@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   Param,
+  Post,
   Query,
   Req,
 } from '@nestjs/common';
@@ -63,7 +64,7 @@ export class UsersController {
     type: ReadUserOrbcStatusDto,
   })
   @AuthOnly()
-  @Get('user-context')
+  @Post('user-context')
   async find(@Req() request: Request): Promise<ReadUserOrbcStatusDto> {
     const currentUser = request.user as IUserJWT;
     let userExists: ReadUserOrbcStatusDto;
