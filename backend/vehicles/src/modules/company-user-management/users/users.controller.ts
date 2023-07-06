@@ -53,7 +53,7 @@ export class UsersController {
   constructor(private readonly userService: UsersService) {}
 
   /**
-   * A GET method defined with a route of
+   * A POST method defined with a route of
    * /user-context that verifies if the user exists in ORBC and retrieves
    * the user by its GUID (global unique identifier) and associated company, if any.
    *
