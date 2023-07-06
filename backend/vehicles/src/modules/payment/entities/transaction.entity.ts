@@ -3,9 +3,12 @@ import {
   Entity,
   Column,
   PrimaryGeneratedColumn,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
 import { AutoMap } from '@automapper/classes';
 import { Base } from '../../common/entities/base.entity';
+import { Permit } from 'src/modules/permit/entities/permit.entity';
 
 @Entity({ name: 'permit.ORBC_TRANSACTION' })
 export class Transaction extends Base {
@@ -173,9 +176,19 @@ export class Transaction extends Base {
   messageText: string;
 
   // TODO
-  // @ManyToMany(() => Permit)
-  // @JoinTable()
-  // permits: Permit[]
+  @ManyToMany(() => Permit, (permit) => permit.permitId)
+  @JoinTable({
+    name: 'permit.ORBC_PERMIT_TRANSACTION',
+    joinColumn: {
+      name: 'transactionId',
+      referencedColumnName: 'transactionId',
+    },
+    inverseJoinColumn: {
+      name: 'permitId',
+      referencedColumnName: 'permitId',
+    },
+  })
+  permits: Permit[]
 
   // @AutoMap(() => PermitTransaction)
   // @ManyToMany(() => PermitTransaction, (PermitTransaction) => PermitTransaction.permitId, {

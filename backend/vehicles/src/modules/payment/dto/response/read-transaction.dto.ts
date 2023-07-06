@@ -2,6 +2,14 @@ import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class ReadTransactionDto {
+
+  @AutoMap()
+  @ApiProperty({
+    example: '1',
+    description: 'Unique identifier for the transaction metadata.',
+  })
+  transactionId: number;
+
   @AutoMap()
   @ApiProperty({
     example: 'P',

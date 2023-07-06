@@ -1,5 +1,7 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
+import { Permit } from 'src/modules/permit/entities/permit.entity';
+import { Transaction } from '../../entities/transaction.entity';
 
 export class ReadPermitTransactionDto {
   @AutoMap()
@@ -14,7 +16,13 @@ export class ReadPermitTransactionDto {
     example: '00000',
     description: 'Represents the ID of a transaction.',
   })
-  transactionId: string;
+  permits?: Permit[];
+
+  @AutoMap()
+  transactionId: number;
+
+  @AutoMap()
+  transactions?: Transaction[];
 
   @AutoMap()
   @ApiProperty({

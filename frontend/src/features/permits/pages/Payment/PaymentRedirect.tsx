@@ -11,31 +11,34 @@ import { Loading } from "../../../../common/pages/Loading";
  * Otherwise, it displays the payment status message.
  */
 export const PaymentRedirect = () => {
-  const [paymentStatus, setPaymentStatus] = useState<string>();
+  const [paymentStatus, setPaymentStatus] = useState<number>();
+  const [message, setMessage] = useState<string>();
 
   useEffect(() => {
     const url = window.location.href;
     const parameters = getURLParameters(url);
     const transaction = mapTransactionDetails(parameters);
-    handlePostTransaction(transaction, parameters.messageText);
+    handlePostTransaction(transaction, parameters.messageText, parameters.trnApproved);
   }, []);
 
-  const handlePostTransaction = async (transaction: Transaction, messageText: string) => {
+  const handlePostTransaction = async (transaction: Transaction, messageText: string, isApproved: number) => {
     const result = await postTransaction(transaction);
+    
     if (result.status != 201){
-      setPaymentStatus(result.response.data.message);
+      setMessage(result.response.data.message);
     }
     else{
-      setPaymentStatus(messageText);
+      setMessage(messageText);
     }
+    setPaymentStatus(isApproved);
   }
 
   if (!paymentStatus) return <Loading/>
 
-  return paymentStatus === "Approved" ? (
+  return paymentStatus === 1 ? (
     <SuccessPage />
   ) : (
-    <div>{paymentStatus}</div>
+    <div>{message}</div>
   );
 };
 

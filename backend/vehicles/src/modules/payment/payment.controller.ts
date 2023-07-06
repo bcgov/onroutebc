@@ -38,7 +38,6 @@ export class PaymentController {
   @ApiOkResponse({
     description: 'The MOTI Pay Resource',
   })
-  @Public()
   @Get()
   async forwardTransactionDetails(
     @Query('transactionAmount') transactionAmount: number,
@@ -47,9 +46,9 @@ export class PaymentController {
     const paymentDetails =
       this.paymentService.forwardTransactionDetails(transactionAmount);
 
-    await this.paymentService.createPermitTransaction(
+    await this.paymentService.createTransaction(
       permitId,
-      paymentDetails.transactionOrderNumber,
+      paymentDetails
     );
 
     return paymentDetails;
@@ -60,12 +59,12 @@ export class PaymentController {
     type: ReadTransactionDto,
   })
   @Post()
-  async createTransaction(
+  async updateTransaction(
     @Req() request: Request,
     @Body() createTransactionDto: CreateTransactionDto,
   ) {
     const currentUser = request.user as IUserJWT;
-    return await this.paymentService.createTransaction(
+    return await this.paymentService.updateTransaction(
       currentUser.access_token,
       createTransactionDto,
     );

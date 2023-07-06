@@ -13,6 +13,7 @@ import { ReadPermitTransactionDto } from './dto/response/read-permit-transaction
 import { MotiPayDetailsDto } from './dto/response/read-moti-pay-details.dto';
 import { HttpService } from '@nestjs/axios';
 import { lastValueFrom } from 'rxjs';
+import { Permit } from '../permit/entities/permit.entity';
 
 @Injectable()
 export class PaymentService {
@@ -35,7 +36,7 @@ export class PaymentService {
     // Get the current date and time
     const currDate = new Date();
 
-    // Generate a unique transaction number based on the current timestamp
+    // TODO: Generate a unique transaction number based on the current timestamp
     const trnNum = 'T' + currDate.getTime().toString().substring(4);
     const transactionNumber = trnNum;
 
@@ -86,22 +87,28 @@ export class PaymentService {
     const hash = this.createHash(transactionAmount.toString());
     const motipayHash = hash.motipayHash;
     const transactionNumber = hash.transactionNumber;
+    const transactionType = 'P';
 
     // Construct the URL with the transaction details for the payment gateway
     return {
-      url: `${process.env.MOTIPAY_BASE_URL}?merchant_id=${process.env.MOTIPAY_MERCHANT_ID}&trnType=P&trnOrderNumber=${transactionNumber}&trnAmount=${transactionAmount}&approvedPage=${process.env.MOTIPAY_REDIRECT}&declinedPage=${process.env.MOTIPAY_REDIRECT}&hashValue=${motipayHash}`,
+      url: `${process.env.MOTIPAY_BASE_URL}?merchant_id=${process.env.MOTIPAY_MERCHANT_ID}&trnType=${transactionType}&trnOrderNumber=${transactionNumber}&trnAmount=${transactionAmount}&approvedPage=${process.env.MOTIPAY_REDIRECT}&declinedPage=${process.env.MOTIPAY_REDIRECT}&hashValue=${motipayHash}`,
       transactionOrderNumber: transactionNumber,
+      transactionAmount: transactionAmount,
+      transactionType: transactionType,
     };
   };
 
-  async createTransaction(
+  async updateTransaction(
     accessToken: string,
     transaction: CreateTransactionDto,
   ): Promise<ReadTransactionDto> {
-    const existingTransaction = await this.findOnePermitTransaction(
+    const existingTransaction = await this.findOneTransaction(
       transaction.transactionOrderNumber,
     );
-    const applicationId = existingTransaction.permitId;
+
+    const existingPermitTransaction = await this.findOnePermitTransaction(
+      existingTransaction.transactionId,
+    );
 
     const newTransaction = this.classMapper.map(
       transaction,
@@ -109,15 +116,13 @@ export class PaymentService {
       Transaction,
     );
 
-    const body = {
-      applicationId: applicationId.toString(),
-    };
-
     if (newTransaction.approved) {
       await lastValueFrom(
         this.httpService.post(
           `${process.env.VEHICLES_URL}/permits/applications/issue`,
-          body,
+          {
+            applicationId: existingPermitTransaction.permitId.toString(),
+          },
           {
             headers: { Authorization: accessToken },
           },
@@ -130,61 +135,82 @@ export class PaymentService {
           err.response.data.status,
         );
       });
-
-      await this.updatePermitTransaction(
-        applicationId,
-        newTransaction.transactionOrderNumber,
-        transaction.providerTransactionId,
-      );
     }
 
+    const updatedTransaction = await this.transactionRepository.update(
+      { transactionId: existingTransaction.transactionId },
+      newTransaction,
+    );
+
+    if (!updatedTransaction.affected){
+      throw new HttpException("Error updating transaction", 500);
+    }
+
+    return newTransaction;
+  }
+
+  async createTransaction(
+    // accessToken: string,
+    // companyId: number,
+    permitId: number,
+    paymentDetails: MotiPayDetailsDto,
+  ) {
+
+    // const permit: Permit = await lastValueFrom(
+    //   this.httpService.get(
+    //     `${process.env.VEHICLES_URL}/permits/applications/${permitId}?companyId=${companyId}`,
+    //     {
+    //       headers: { Authorization: accessToken },
+    //     },
+    //   ),
+    // ).then((response) => {
+    //   return response.data;
+    // });
+
+    await this.transactionRepository
+      .createQueryBuilder()
+      .insert()
+      .values({
+        //permits: [permit],
+        transactionOrderNumber: paymentDetails.transactionOrderNumber,
+        transactionAmount: paymentDetails.transactionAmount,
+        transactionType: paymentDetails.transactionType,
+      })
+      .execute();
+
+    const transaction = await this.findOneTransaction(
+      paymentDetails.transactionOrderNumber,
+    );
+
+    const permitTransaction = {
+      permitId: permitId,
+      transactionId: transaction.transactionId,
+    };
+
+    await this.permitTransactionRepository.save(permitTransaction);
+  }
+
+  async findOneTransaction(
+    transactionOrderNumber: string,
+  ): Promise<ReadTransactionDto> {
     return this.classMapper.mapAsync(
-      await this.transactionRepository.save(newTransaction),
+      await this.transactionRepository.findOne({
+        where: {
+          transactionOrderNumber: transactionOrderNumber,
+        },
+      }),
       Transaction,
       ReadTransactionDto,
     );
   }
 
-  async createPermitTransaction(
-    permitId: number,
-    transactionOrderNumber: string,
-  ) {
-    await this.permitTransactionRepository
-      .createQueryBuilder()
-      .insert()
-      .values({
-        permitId: permitId,
-        transactionId: 0, // TODO
-        transactionOrderNumber: transactionOrderNumber,
-      })
-      .execute();
-  }
-
-  async updatePermitTransaction(
-    permitId: string,
-    transactionOrderNumber: string,
-    providerTransactionId: number,
-  ) {
-    return await this.permitTransactionRepository
-      .createQueryBuilder()
-      .update()
-      .set({
-        transactionId: providerTransactionId,
-      })
-      .where('PERMIT_ID = :permitId', { permitId })
-      .andWhere('TRANSACTION_ORDER_NUMBER = :transactionOrderNumber', {
-        transactionOrderNumber,
-      })
-      .execute();
-  }
-
   async findOnePermitTransaction(
-    transactionOrderNumber: string,
+    transactionId: number,
   ): Promise<ReadPermitTransactionDto> {
     return this.classMapper.mapAsync(
       await this.permitTransactionRepository.findOne({
         where: {
-          transactionOrderNumber: transactionOrderNumber,
+          transactionId: transactionId,
         },
       }),
       PermitTransaction,

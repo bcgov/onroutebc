@@ -4,6 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { Transaction } from '../entities/transaction.entity';
 import { ReadTransactionDto } from '../dto/response/read-transaction.dto';
 import { CreateTransactionDto } from '../dto/request/create-transaction.dto';
+import { ReadPermitTransactionDto } from '../dto/response/read-permit-transaction.dto';
 
 @Injectable()
 export class TransactionProfile extends AutomapperProfile {
@@ -15,6 +16,7 @@ export class TransactionProfile extends AutomapperProfile {
     return (mapper: Mapper) => {
       createMap(mapper, Transaction, ReadTransactionDto);
       createMap(mapper, CreateTransactionDto, Transaction);
+      createMap(mapper, Transaction, ReadPermitTransactionDto);
     };
   }
 }
