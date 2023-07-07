@@ -23,3 +23,5 @@ export const USER_INFO = "user-info";
 
 //IDIR
 export const SEARCH_PPC = "search-ppc";
+// Payment
+export const PAYMENT_REDIRECT = "payment"
