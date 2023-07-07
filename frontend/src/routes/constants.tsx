@@ -20,3 +20,6 @@ export const APPLICATIONS_SUCCESS = "success";
 export const CREATE_PROFILE = "create-profile";
 export const WELCOME = "welcome";
 export const USER_INFO = "user-info";
+
+//IDIR
+export const SEARCH_PPC = "search-ppc";
