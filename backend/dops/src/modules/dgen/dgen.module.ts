@@ -1,11 +1,12 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DgenService } from './dgen.service';
-import { Template } from './entities/template.entity';
-import { HttpModule } from '@nestjs/axios';
+import { DocumentTemplate } from './entities/document-template.entity';
+import { DgenController } from './dgen.controller';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Template]),HttpModule],
+  imports: [TypeOrmModule.forFeature([DocumentTemplate])],
+  controllers: [DgenController],
   providers: [DgenService],
   exports: [DgenService],
 })

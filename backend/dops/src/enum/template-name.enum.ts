@@ -1,0 +1,4 @@
+export enum TemplateName {
+  PERMIT_TROS = 'PERMIT_TROS',
+  PAYMENT_RECEIPT = 'PAYMENT_RECEIPT',
+}

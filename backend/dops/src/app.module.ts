@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import { Module } from '@nestjs/common';
+import { Module, OnApplicationBootstrap } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { AppService } from './app.service';
@@ -11,6 +11,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { DmsModule } from './modules/dms/dms.module';
 import { CacheModule } from '@nestjs/cache-manager';
 import { DgenModule } from './modules/dgen/dgen.module';
+import { CommonModule } from './modules/common/common.module';
 
 const envPath = path.resolve(process.cwd() + '/../../');
 
@@ -32,11 +33,12 @@ const envPath = path.resolve(process.cwd() + '/../../');
     AutomapperModule.forRoot({
       strategyInitializer: classes(),
     }),
-        CacheModule.register({
+    CacheModule.register({
       max: 50, //Max cache items in store. Revisit the number when required.
       ttl: 0, // disable expiration of the cache.
       isGlobal: true, // Allows access to cache manager globally.
     }),
+    CommonModule,
     AuthModule,
     DmsModule,
     DgenModule,
@@ -44,4 +46,12 @@ const envPath = path.resolve(process.cwd() + '/../../');
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule implements OnApplicationBootstrap {
+  constructor(private readonly appService: AppService) {}
+
+  async onApplicationBootstrap() {
+    await this.appService.initializeCache().catch((err) => {
+      console.error('Cache initialization failed:', err);
+    });
+  }
+}

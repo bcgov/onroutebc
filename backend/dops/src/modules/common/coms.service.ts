@@ -5,13 +5,13 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { ReadCOMSDto } from './dto/response/read-coms.dto';
-import { ReadFileDto } from './dto/response/read-file.dto';
-import { IFile } from '../../common/interface/file.interface';
+import { ReadCOMSDto } from '../dms/dto/response/read-coms.dto';
+import { ReadFileDto } from '../dms/dto/response/read-file.dto';
+import { IFile } from '../../interface/file.interface';
 import { Response } from 'express';
-import { FileDownloadModes } from '../../common/enum/file-download-modes.enum';
+import { FileDownloadModes } from '../../enum/file-download-modes.enum';
 import { lastValueFrom, map } from 'rxjs';
-import { IUserJWT } from '../../common/interface/user-jwt.interface';
+import { IUserJWT } from '../../interface/user-jwt.interface';
 
 @Injectable()
 export class ComsService {
@@ -155,21 +155,22 @@ export class ComsService {
       });
 
     if (download === FileDownloadModes.PROXY) {
-      if (!res) {
-        throw new InternalServerErrorException(
-          'Response Parameter is required when DownloadMode is proxy.',
-        );
-      }
-      this.convertAxiosToExpress(axiosResponse, res);
-      const responseData = axiosResponse.data as NodeJS.ReadableStream;
-      responseData.pipe(res);
-      /*Wait for the stream to end before sending the response status and
+      if (res) {
+        this.convertAxiosToExpress(axiosResponse, res);
+        const responseData = axiosResponse.data as NodeJS.ReadableStream;
+        responseData.pipe(res);
+        /*Wait for the stream to end before sending the response status and
         headers. This ensures that the client receives a complete response and
         prevents any issues with partial responses or response headers being
         sent prematurely.*/
-      responseData.on('end', () => {
-        return null;
-      });
+        responseData.on('end', () => {
+          return null;
+        });
+      }
+      const file = await this.createFile(
+        axiosResponse.data as NodeJS.ReadableStream,
+      );
+      return file?.toString('base64');
     }
     return axiosResponse.data as string;
   }
@@ -188,5 +189,25 @@ export class ComsService {
     Object.keys(headers).forEach((key) => {
       res.set(key, headers[key] as string);
     });
+  }
+
+  /**
+   * Creates a file from a stream of data.
+   * @param data - The stream of data to create a file from.
+   * @returns A Promise resolving to a Buffer representing the created file.
+   */
+  private async createFile(data: NodeJS.ReadableStream) {
+    // Read the stream data and concatenate all chunks into a single Buffer
+    const streamReadPromise = new Promise<Buffer>((resolve) => {
+      const chunks: Buffer[] = [];
+      data.on('data', (chunk: Buffer) => {
+        chunks.push(Buffer.from(chunk));
+      });
+      data.on('end', () => {
+        resolve(Buffer.concat(chunks));
+      });
+    });
+    // Return the Promise that resolves to the created file Buffer
+    return streamReadPromise;
   }
 }

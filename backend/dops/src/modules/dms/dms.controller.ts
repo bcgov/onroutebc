@@ -26,15 +26,15 @@ import {
   ApiCreatedResponse,
   ApiQuery,
 } from '@nestjs/swagger';
-import { ExceptionDto } from '../../common/exception/exception.dto';
+import { ExceptionDto } from '../../exception/exception.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CreateFileDto } from './dto/request/create-file.dto';
 import { ReadFileDto } from './dto/response/read-file.dto';
-import { FileDownloadModes } from '../../common/enum/file-download-modes.enum';
+import { FileDownloadModes } from '../../enum/file-download-modes.enum';
 import { Request, Response } from 'express';
-import { ComsService } from './coms.service';
+import { ComsService } from '../common/coms.service';
 import { UpdateFileDto } from './dto/request/update-file.dto';
-import { IUserJWT } from '../../common/interface/user-jwt.interface';
+import { IUserJWT } from '../../interface/user-jwt.interface';
 
 @ApiTags('DMS')
 @ApiBadRequestResponse({

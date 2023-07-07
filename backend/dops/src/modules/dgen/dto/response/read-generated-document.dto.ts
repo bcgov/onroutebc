@@ -1,16 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 import { AutoMap } from '@automapper/classes';
-import { Base } from './base.entity';
 
-@Entity({ name: 'dops.ORBC_DOCUMENT' })
-export class Dms extends Base {
+export class ReadGeneratedDocumentDto {
   @AutoMap()
   @ApiProperty({
     example: '1',
     description: 'Primary key for the document metadata record',
   })
-  @PrimaryGeneratedColumn({ type: 'bigint', name: 'ID' })
   documentId: string;
 
   @AutoMap()
@@ -18,7 +14,6 @@ export class Dms extends Base {
     example: '111195da-d092-4121-a226-10b995e2400a',
     description: 'The uuid representing the object in S3.',
   })
-  @Column({ type: 'uniqueidentifier', name: 'S3_OBJECT_ID', nullable: false })
   s3ObjectId: string;
 
   @AutoMap()
@@ -26,7 +21,6 @@ export class Dms extends Base {
     example: '1647462569641',
     description: 'The version identifier created in S3.',
   })
-  @Column({ type: 'bigint', name: 'S3_VERSION_ID', nullable: true })
   s3VersionId: string;
 
   @AutoMap()
@@ -35,7 +29,6 @@ export class Dms extends Base {
       'https://your.objectstore.com/yourbucket/coms/env/00000000-0000-0000-0000-000000000000',
     description: 'The URL to the uploaded resource.',
   })
-  @Column({ length: '200', name: 'S3_LOCATION', nullable: false })
   s3Location: string;
 
   @AutoMap()
@@ -43,15 +36,24 @@ export class Dms extends Base {
     example: 'text/plain',
     description: 'The object MIME Type.',
   })
-  @Column({ length: '200', name: 'OBJECT_MIME_TYPE', nullable: false })
   objectMimeType: string;
 
   @AutoMap()
   @ApiProperty({
-    example: 'TROS_TEMPLATE_V1.docx',
-    description: 'The file Name.',
+    example:
+      'https://your.objectstore.com/yourbucket/coms/env/00000000-0000-0000-0000-000000000000?' +
+      'X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential' +
+      '=credential%2F20220411%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20220411T204528Z&X-Amz-Expires=300' +
+      '&X-Amz-Signature=SIGNATURE&X-Amz-SignedHeaders=host&x-id=GetObject',
+    description: 'A Presigned S3 URL.',
   })
-  @Column({ length: '50', name: 'FILE_NAME', nullable: false })
+  preSignedS3Url: string;
+
+  @AutoMap()
+  @ApiProperty({
+    example: 'Sample Document.pdf',
+    description: 'The File Name.',
+  })
   fileName: string;
 
   @AutoMap()
@@ -59,6 +61,5 @@ export class Dms extends Base {
     example: '1',
     description: 'The DMS Version ID.',
   })
-  @Column({ type: 'int', name: 'DMS_VERSION_ID', nullable: false })
   dmsVersionId: number;
 }

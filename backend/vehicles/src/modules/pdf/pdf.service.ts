@@ -221,6 +221,7 @@ export class PdfService {
     templateVersion: number,
     returnValue?: PdfReturnType,
   ): Promise<string> {
+    console.log('permit',permit);
     // Call ORBC Template table to get the DMS Reference of the associated template/permit type
     const templateRef = await this.getTemplateRef(
       permit.permitType,
