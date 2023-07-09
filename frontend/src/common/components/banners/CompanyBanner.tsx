@@ -12,11 +12,21 @@ export const CompanyBanner = ({
     <div className="company-banner">
       <div className="company-banner__company-name">
         <Typography variant="h5">COMPANY NAME</Typography>
-        <Typography variant="h4">{companyInfo?.legalName}</Typography>
+        <Typography
+          variant="h4"
+          data-testid="company-banner-name"
+        >
+          {companyInfo?.legalName}
+        </Typography>
       </div>
       <div className="company-banner__client-number">
         <Typography variant="h5">onRouteBC CLIENT NUMBER</Typography>
-        <Typography variant="h4">{companyInfo?.clientNumber}</Typography>
+        <Typography
+          variant="h4"
+          data-testid="company-banner-client"
+        >
+          {companyInfo?.clientNumber}
+        </Typography>
       </div>
     </div>
   );

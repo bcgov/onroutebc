@@ -68,7 +68,7 @@ describe("Application Details Display", () => {
     renderWithClient(<ApplicationDetails/>);
 
     // Assert empty application values
-    expect(screen.queryByText("Term: Oversize")).toBeNull();
+    expect(screen.queryByText("Oversize: Term")).toBeNull();
     expect(screen.queryByText(/Application #/i)).toBeNull();
     expect(screen.queryByText(/Date Created/i)).toBeNull();
     expect(screen.queryByText(/Last Updated/i)).toBeNull();
@@ -88,10 +88,10 @@ describe("Application Details Display", () => {
     );
 
     // Assert application values display properly
-    expect(screen.getByText("Term: Oversize")).toBeInTheDocument();
-    expect(screen.getByText("Application # ABC-123456")).toBeInTheDocument();
-    expect(screen.getByText(dayjsToLocalStr(createdAt, DATE_FORMATS.LONG))).toBeInTheDocument();
-    expect(screen.getByText(dayjsToLocalStr(updatedAt, DATE_FORMATS.LONG))).toBeInTheDocument();
+    expect(screen.getByText("Oversize: Term")).toBeInTheDocument();
+    expect(screen.getByTestId("application-number")).toHaveTextContent("ABC-123456");
+    expect(screen.getByTestId("application-created-date")).toHaveTextContent(dayjsToLocalStr(createdAt, DATE_FORMATS.LONG));
+    expect(screen.getByTestId("application-updated-date")).toHaveTextContent(dayjsToLocalStr(updatedAt, DATE_FORMATS.LONG));
 
     assertProperCompanyInfo();
   });

@@ -6,6 +6,7 @@ import { useCompanyInfoQuery } from "../../../manageProfile/apiManager/hooks";
 import { DATE_FORMATS, dayjsToLocalStr } from "../../../../common/helpers/formatDate";
 import { applyWhenNotNullable } from "../../../../common/helpers/util";
 import { CompanyInformation } from "./CompanyInformation";
+import "./ApplicationDetails.scss";
 
 export const ApplicationDetails = ({
   permitType,
@@ -24,58 +25,76 @@ export const ApplicationDetails = ({
 
   return (
     <>
-      <div>
+      <div className="application-details">
         <Typography
+          className="application-details__title"
           variant={"h1"}
-          sx={{
-            marginRight: "200px",
-            marginTop: "0px",
-            paddingTop: "0px",
-            borderBottom: "none",
-          }}
         >
           {applicationName}
         </Typography>
         {(applicationNumber && applicationNumber !== "") ? (
-          <>
+          <Box>
             <Typography
+              className="application-number"
               variant="h2"
-              sx={{
-                display: "block",
-                borderBottom: "none",
-                paddingBottom: "8px",
-                paddingTop: "8px",
-              }}
             >
-              Application #: {applicationNumber}
+              <Box 
+                className="application-number__label" 
+                component="span"
+              >
+                Application #:
+              </Box>
+              <Box
+                className="application-number__number"
+                component="span"
+                data-testid="application-number"
+              >
+                {applicationNumber}
+              </Box>
             </Typography>
-            <Box sx={{ display: "flex" , gap: "40px"}}>
-              <Typography sx={{ width: "327px"}}>
-                <Box component="span" fontWeight="bold">
+            <Box className="application-details__audit-dates">
+              <Typography className="audit-date audit-date--created">
+                <Box 
+                  className="audit-date__label"
+                  component="span"
+                >
                   Date Created:
                 </Box>
-                {"  "}
-                {applyWhenNotNullable(
-                  (dayjsObj) => dayjsToLocalStr(dayjsObj, DATE_FORMATS.LONG),
-                  createdDateTime,
-                  ""
-                )}
+                <Box 
+                  className="audit-date__date" 
+                  component="span"
+                  data-testid="application-created-date"
+                >
+                  {applyWhenNotNullable(
+                    (dayjsObj) => dayjsToLocalStr(dayjsObj, DATE_FORMATS.LONG),
+                    createdDateTime,
+                    ""
+                  )}
+                </Box>
               </Typography>
-              <Typography>
-                <Box component="span" fontWeight="bold">
+              <Typography className="audit-date audit-date--updated">
+                <Box 
+                  className="audit-date__label"
+                  component="span"
+                >
                   Last Updated:
                 </Box>
-                {"  "}
-                {applyWhenNotNullable(
-                  (dayjsObj) => dayjsToLocalStr(dayjsObj, DATE_FORMATS.LONG),
-                  updatedDateTime,
-                  ""
-                )}
+                <Box 
+                  className="audit-date__date" 
+                  component="span"
+                  data-testid="application-updated-date"
+                >
+                  {applyWhenNotNullable(
+                    (dayjsObj) => dayjsToLocalStr(dayjsObj, DATE_FORMATS.LONG),
+                    updatedDateTime,
+                    ""
+                  )}
+                </Box>
               </Typography>
             </Box>
-          </>
+          </Box>
         ) : (
-          <></>
+          <Box></Box>
         )}
       </div>
       <CompanyBanner companyInfo={companyInfoQuery.data} />

@@ -317,7 +317,7 @@ export const TermOversizeForm = () => {
             variant="contained"
             color="secondary"
             onClick={handleLeaveApplication}
-            //onClick={handleLeaveApplication}
+            data-testid="leave-application-button"
             sx={{
               marginLeft: matches
                 ? "20px"
@@ -334,6 +334,7 @@ export const TermOversizeForm = () => {
               color="tertiary"
               sx={{ marginLeft: "-420px", marginTop: "40px", display: "flex", alignItems: "center", gap: "10px"}}
               onClick={() => onSaveApplication()}
+              data-testid="save-application-button"
             >
               <FontAwesomeIcon icon={faSave} />
               Save
@@ -345,6 +346,7 @@ export const TermOversizeForm = () => {
               color="primary"
               onClick={handleSubmit(onContinue)}
               sx={{ marginLeft: "-260px", marginTop: "-72px" }}
+              data-testid="continue-application-button"
             >
               Continue
             </Button>

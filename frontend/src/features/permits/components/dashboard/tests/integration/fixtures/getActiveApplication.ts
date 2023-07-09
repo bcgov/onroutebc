@@ -1,5 +1,12 @@
 import { factory, nullable, primaryKey } from "@mswjs/data";
+import dayjs from "dayjs";
+
 import { ApplicationRequestData } from "../../../../../types/application";
+import { DATE_FORMATS, dayjsToLocalStr, now } from "../../../../../../../common/helpers/formatDate";
+import { getDefaultUserDetails } from "./getUserDetails";
+import { getDefaultPowerUnits } from "./getVehicleInfo";
+import { getDefaultCompanyInfo } from "./getCompanyInfo";
+import { TROS_COMMODITIES } from "../../../../../constants/termOversizeConstants";
 
 const activeApplicationSource = factory({
   application: {
@@ -85,4 +92,55 @@ export const resetApplicationSource = () => {
       }
     }
   });
+};
+
+export const getDefaultApplication = () => {
+  const currentDt = now();
+  const startDate = dayjsToLocalStr(currentDt, DATE_FORMATS.DATEONLY);
+  const expiryDt = dayjs(currentDt).add(30 - 1, "day");
+  const expiryDate = dayjsToLocalStr(expiryDt, DATE_FORMATS.DATEONLY);
+  const { companyId, userDetails } = getDefaultUserDetails();
+  const contactDetails = {
+    firstName: userDetails.firstName,
+    lastName: userDetails.lastName,
+    phone1: userDetails.phone1,
+    phone1Extension: userDetails.phone1Extension,
+    phone2: userDetails.phone2,
+    phone2Extension: userDetails.phone2Extension,
+    email: userDetails.email,
+    fax: userDetails.fax,
+  };
+  const vehicle = getDefaultPowerUnits()[0];
+  const vehicleDetails = {
+    vin: vehicle.vin,
+    plate: vehicle.plate,
+    make: vehicle.make,
+    year: vehicle.year,
+    countryCode: vehicle.countryCode,
+    provinceCode: vehicle.provinceCode,
+    vehicleType: "powerUnit",
+    vehicleSubType: vehicle.powerUnitTypeCode,
+    unitNumber: vehicle.unitNumber,
+  };
+  const commodities = [
+    TROS_COMMODITIES[0], 
+    TROS_COMMODITIES[1],
+    { ...TROS_COMMODITIES[2], checked: true },
+  ];
+  const { mailingAddress } = getDefaultCompanyInfo();
+
+  return {
+    companyId,
+    userGuid: "AB1CD2EFAB34567CD89012E345FA678B",
+    permitType: "TROS",
+    permitData: {
+      startDate,
+      permitDuration: 30,
+      expiryDate,
+      contactDetails,
+      vehicleDetails,
+      commodities,
+      mailingAddress,
+    },
+  };
 };

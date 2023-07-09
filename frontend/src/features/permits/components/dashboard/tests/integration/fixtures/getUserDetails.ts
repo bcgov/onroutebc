@@ -12,3 +12,18 @@ export const getDefaultUserDetails = () => ({
     fax: "604-123-4569",
   },
 });
+
+export const getEmptyUserDetails = () => ({
+  companyId: 74,
+  userDetails: {
+    firstName: "",
+    lastName: "",
+    userName: "",
+    phone1: "",
+    phone1Extension: "",
+    phone2: "",
+    phone2Extension: "",
+    email: "",
+    fax: "",
+  },
+});

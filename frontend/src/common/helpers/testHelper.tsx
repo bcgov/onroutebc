@@ -29,7 +29,7 @@ export function renderWithClient(ui: React.ReactElement) {
     rerender: (rerenderUi: React.ReactElement) =>
       rerender(
         <QueryClientProvider client={testQueryClient}>
-          {rerenderUi}
+          <Router>{rerenderUi}</Router>
         </QueryClientProvider>
       ),
   };

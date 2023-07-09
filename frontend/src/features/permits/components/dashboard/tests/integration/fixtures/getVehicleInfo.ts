@@ -50,7 +50,7 @@ const vehicleSourceDef = factory({
   },
 });
 
-const getDefaultPowerUnits = () => ([
+export const getDefaultPowerUnits = () => ([
   {
     companyId: 74,
     unitNumber: "61",
@@ -68,7 +68,7 @@ const getDefaultPowerUnits = () => ([
   },
 ]);
 
-const getDefaultTrailers = () => ([
+export const getDefaultTrailers = () => ([
   {
     companyId: 74,
     unitNumber: "3",

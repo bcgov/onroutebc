@@ -1,10 +1,6 @@
-import { screen, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import { setupServer } from "msw/node";
 import { rest } from "msw";
 
-import { renderWithClient } from "../../../../../../common/helpers/testHelper";
-import OnRouteBCContext from "../../../../../../common/authentication/OnRouteBCContext";
 import { formatPhoneNumber } from "../../../../../../common/components/form/subFormComponents/PhoneNumberInput";
 import { 
   createPowerUnit,
@@ -18,11 +14,27 @@ import {
 } from "./fixtures/getVehicleInfo";
 import { PERMITS_API } from "../../../../apiManager/endpoints/endpoints";
 import { VEHICLES_API, VEHICLE_URL } from "../../../../../manageVehicles/apiManager/endpoints/endpoints";
-import { getDefaultUserDetails } from "./fixtures/getUserDetails";
+import { getDefaultUserDetails, getEmptyUserDetails } from "./fixtures/getUserDetails";
 import { getDefaultCompanyInfo } from "./fixtures/getCompanyInfo";
 import { createApplication, getApplication, resetApplicationSource, updateApplication } from "./fixtures/getActiveApplication";
-import { dayjsToUtcStr, now } from "../../../../../../common/helpers/formatDate";
-import { ApplicationDashboard } from "../../ApplicationDashboard";
+import { DATE_FORMATS, dayjsToLocalStr, dayjsToUtcStr, now, utcToLocalDayjs } from "../../../../../../common/helpers/formatDate";
+import { renderTestComponent } from "./helpers/prepare";
+import { 
+  applicationCreatedDateDisplay,
+  applicationNumberDisplay,
+  applicationUpdatedDateDisplay,
+  companyClientNumberDisplay,
+  companyNameDisplay,
+  continueApplication,
+  errMsgForEmail,
+  errMsgForFirstName,
+  errMsgForLastName,
+  errMsgForPhone1,
+  getSavedApplication,
+  inputWithValue, replaceValueForInput, saveApplication, sendPermitToEmailMsg,
+} from "./helpers/access";
+import { MANAGE_PROFILE_API } from "../../../../../manageProfile/apiManager/endpoints/endpoints";
+import { getDefaultRequiredVal } from "../../../../../../common/helpers/util";
 
 // Use some default user details values to give to the OnRouteBCContext context provider
 const defaultUserDetails = getDefaultUserDetails();
@@ -37,6 +49,9 @@ const {
   fax,
 } = defaultUserDetails.userDetails;
 
+const newApplicationNumber = "A1-00000001-800-R01";
+const companyInfo = getDefaultCompanyInfo();
+
 // Mock API endpoints
 const server = setupServer(
   // Mock creating/saving application
@@ -44,13 +59,13 @@ const server = setupServer(
     const reqBody = await req.json();
     const applicationData = { 
       ...reqBody,
-      applicationNumber: `A1-00000001-800-R01`,
+      applicationNumber: newApplicationNumber,
       createdDateTime: dayjsToUtcStr(now()),
       updatedDateTime: dayjsToUtcStr(now()),
     };
     const createdApplication = createApplication(applicationData); // add to mock application store
     return res(ctx.status(201), ctx.json({
-      data: createdApplication,
+      ...createdApplication,
     }));
   }),
   // Mock updating/saving application
@@ -69,7 +84,7 @@ const server = setupServer(
       }));
     }
     return res(ctx.json({
-      data: updatedApplication,
+      ...updatedApplication,
     }));
   }),
   // Mock getting application
@@ -105,9 +120,9 @@ const server = setupServer(
     }));
   }),
   // Mock getting company details
-  rest.get(`${VEHICLE_URL}/companies/:companyId`, async (_, res, ctx) => {
+  rest.get(`${MANAGE_PROFILE_API.COMPANIES}/:companyId`, async (_, res, ctx) => {
     return res(ctx.json({
-      data: getDefaultCompanyInfo(),
+      ...companyInfo,
     }));
   }),
   // Mock creating power unit vehicle
@@ -166,76 +181,51 @@ afterAll(() => {
   server.close();
 });
 
-describe("Application display", () => {
+describe("Application Contact Details", () => {
   it("should properly display Contact Details", async () => {
     // Arrange and Act
-    renderWithClient(
-      <OnRouteBCContext.Provider value={defaultUserDetails}>
-        <ApplicationDashboard />
-      </OnRouteBCContext.Provider>
-    );
+    renderTestComponent(defaultUserDetails);
 
     // Assert - should show proper info for the default user details passed in
-    expect(await screen.findByDisplayValue(firstName)).toBeVisible();
-    expect(await screen.findByDisplayValue(lastName)).toBeVisible();
-    expect(await screen.findByDisplayValue(phone1)).toBeVisible();
-    expect(await screen.findByDisplayValue(phone1Extension)).toBeVisible();
-    expect(await screen.findByDisplayValue(phone2)).toBeVisible();
-    expect(await screen.findByDisplayValue(phone2Extension)).toBeVisible();
-    expect(await screen.findByDisplayValue(email)).toBeVisible();
-    expect(await screen.findByDisplayValue(fax)).toBeVisible();
-    expect(await screen.findByText(/The permit will be sent to the email/i)).toBeInTheDocument();
+    expect(await inputWithValue(firstName)).toBeVisible();
+    expect(await inputWithValue(lastName)).toBeVisible();
+    expect(await inputWithValue(phone1)).toBeVisible();
+    expect(await inputWithValue(phone1Extension)).toBeVisible();
+    expect(await inputWithValue(phone2)).toBeVisible();
+    expect(await inputWithValue(phone2Extension)).toBeVisible();
+    expect(await inputWithValue(email)).toBeVisible();
+    expect(await inputWithValue(fax)).toBeVisible();
+    expect(await sendPermitToEmailMsg()).toBeInTheDocument();
   });
-});
 
-describe("Application editing", () => {
   it("should properly edit Contact Details", async () => {
     // Arrange
-    const user = userEvent.setup();
-    renderWithClient(
-      <OnRouteBCContext.Provider value={defaultUserDetails}>
-        <ApplicationDashboard />
-      </OnRouteBCContext.Provider>
-    );
+    const { user } = renderTestComponent(defaultUserDetails);
 
-    const firstNameInput = await screen.findByDisplayValue(firstName);
-    const lastNameInput = await screen.findByDisplayValue(lastName);
-    const phone1Input = await screen.findByDisplayValue(phone1);
-    const phone1ExtInput = await screen.findByDisplayValue(phone1Extension);
-    const phone2Input = await screen.findByDisplayValue(phone2);
-    const phone2ExtInput = await screen.findByDisplayValue(phone2Extension);
-    const emailInput = await screen.findByDisplayValue(email);
-    const faxInput = await screen.findByDisplayValue(fax);
+    const firstNameInput = await inputWithValue(firstName);
+    const lastNameInput = await inputWithValue(lastName);
+    const phone1Input = await inputWithValue(phone1);
+    const phone1ExtInput = await inputWithValue(phone1Extension);
+    const phone2Input = await inputWithValue(phone2);
+    const phone2ExtInput = await inputWithValue(phone2Extension);
+    const emailInput = await inputWithValue(email);
+    const faxInput = await inputWithValue(fax);
 
     // Act - change various input field values and save application
-    await user.click(firstNameInput);
-    await user.pointer([{target: firstNameInput, offset: 0, keys: '[MouseLeft>]'}, {offset: firstName.length}]);
     const newFirstName = "Myfirstname";
-    await user.paste(newFirstName);
-    await user.click(lastNameInput);
-    await user.pointer([{target: lastNameInput, offset: 0, keys: '[MouseLeft>]'}, {offset: lastName.length}]);
+    await replaceValueForInput(user, firstNameInput, firstName.length, newFirstName);
     const newLastName = "Mylastname";
-    await user.paste(newLastName);
-    await user.click(phone1Input);
-    await user.pointer([{target: phone1Input, offset: 0, keys: '[MouseLeft>]'}, {offset: phone1.length}]);
+    await replaceValueForInput(user, lastNameInput, lastName.length, newLastName);
     const newPhone1 = formatPhoneNumber("778-123-4567");
-    await user.paste(newPhone1);
-    await user.click(phone2Input);
-    await user.pointer([{target: phone2Input, offset: 0, keys: '[MouseLeft>]'}, {offset: phone2.length}]);
+    await replaceValueForInput(user, phone1Input, phone1.length, newPhone1);
     const newPhone2 = formatPhoneNumber("778-123-4568");
-    await user.paste(newPhone2);
-    await user.click(emailInput);
-    await user.pointer([{target: emailInput, offset: 0, keys: '[MouseLeft>]'}, {offset: email.length}]);
+    await replaceValueForInput(user, phone2Input, phone2.length, newPhone2);
     const newEmail = "mc@mycompany.co";
-    await user.paste(newEmail);
-    const saveBtn = await screen.findByText(/^Save$/i);
-    await user.click(saveBtn);
+    await replaceValueForInput(user, emailInput, email.length, newEmail);
+    await saveApplication(user);
 
     // Assert - mock store should contain updated values
-    await waitFor(() => {
-      expect(getApplication()).not.toBeUndefined();
-    });
-    const applicationData = getApplication();
+    const applicationData = await getSavedApplication();
     expect(applicationData?.permitData).not.toBeUndefined();
     expect(applicationData?.permitData?.contactDetails).not.toBeUndefined();
     expect(applicationData?.permitData?.contactDetails?.firstName).toBe(newFirstName);
@@ -256,41 +246,89 @@ describe("Application editing", () => {
     expect(phone2ExtInput).toHaveValue(phone2Extension);
     expect(emailInput).toHaveValue(newEmail);
     expect(faxInput).toHaveValue(fax);
-    expect(screen.getByText(/The permit will be sent to the email/i)).toBeInTheDocument();
+    expect(await sendPermitToEmailMsg()).toBeInTheDocument();
   });
 
   it("should show validation errors when submitting empty contact details", async () => {
     // Arrange
-    const user = userEvent.setup();
-    const emptyUserDetails = {
-      companyId: 74,
-      userDetails: {
-        firstName: "",
-        lastName: "",
-        userName: "",
-        phone1: "",
-        phone1Extension: "",
-        phone2: "",
-        phone2Extension: "",
-        email: "",
-        fax: "",
-      },
-    };
-    renderWithClient(
-      <OnRouteBCContext.Provider value={emptyUserDetails}>
-        <ApplicationDashboard />
-      </OnRouteBCContext.Provider>
-    );
+    const emptyUserDetails = getEmptyUserDetails();
+    const { user } = renderTestComponent(emptyUserDetails);
 
     // Act - click 'continue' when contact details fields are empty
-    const continueBtn = await screen.findByText(/^Continue$/i);
-    await user.click(continueBtn);
+    await continueApplication(user);
 
     // Assert - error messages should be displayed
     const requiredMsg = "This is a required field."
-    expect(await screen.findByTestId("alert-permitData.contactDetails.firstName")).toHaveTextContent(requiredMsg);
-    expect(await screen.findByTestId("alert-permitData.contactDetails.lastName")).toHaveTextContent(requiredMsg);
-    expect(await screen.findByTestId("alert-permitData.contactDetails.phone1")).toHaveTextContent(requiredMsg);
-    expect(await screen.findByTestId("alert-permitData.contactDetails.email")).toHaveTextContent(requiredMsg);
+    expect(await errMsgForFirstName()).toHaveTextContent(requiredMsg);
+    expect(await errMsgForLastName()).toHaveTextContent(requiredMsg);
+    expect(await errMsgForPhone1()).toHaveTextContent(requiredMsg);
+    expect(await errMsgForEmail()).toHaveTextContent(requiredMsg);
+  });
+});
+
+describe("Application Header", () => {
+  it("should display application number after creating application", async () => {
+    // Arrange
+    const { user } = renderTestComponent(defaultUserDetails);
+
+    // Act
+    await saveApplication(user);
+
+    // Assert
+    const applicationData = await getSavedApplication();
+    const expectedApplicationNumber = getDefaultRequiredVal(
+      newApplicationNumber,
+      applicationData?.applicationNumber,
+    );
+    expect(await applicationNumberDisplay()).toHaveTextContent(expectedApplicationNumber);
+  });
+
+  it("should display proper created datetime after creating application", async () => {
+    // Arrange
+    const { user } = renderTestComponent(defaultUserDetails);
+
+    // Act
+    await saveApplication(user);
+
+    // Assert
+    const applicationData = await getSavedApplication();
+    const expectedCreatedDt = getDefaultRequiredVal(
+      "",
+      applicationData?.createdDateTime,
+    );
+    const formattedDt = dayjsToLocalStr(
+      utcToLocalDayjs(expectedCreatedDt), 
+      DATE_FORMATS.LONG
+    );
+    expect(await applicationCreatedDateDisplay()).toHaveTextContent(formattedDt);
+  });
+
+  it("should display proper updated datetime after updating application", async () => {
+    // Arrange
+    const { user } = renderTestComponent(defaultUserDetails);
+
+    // Act
+    await saveApplication(user);
+
+    // Assert
+    const applicationData = await getSavedApplication();
+    const expectedUpdatedDt = getDefaultRequiredVal(
+      "",
+      applicationData?.updatedDateTime,
+    );
+    const formattedDt = dayjsToLocalStr(
+      utcToLocalDayjs(expectedUpdatedDt), 
+      DATE_FORMATS.LONG
+    );
+    expect(await applicationUpdatedDateDisplay()).toHaveTextContent(formattedDt);
+  });
+
+  it("should display company information", async () => {
+    // Arrange and Act
+    renderTestComponent(defaultUserDetails);
+
+    // Assert
+    expect(await companyNameDisplay()).toHaveTextContent(companyInfo.legalName);
+    expect(await companyClientNumberDisplay()).toHaveTextContent(companyInfo.clientNumber);
   });
 });
