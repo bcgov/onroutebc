@@ -182,11 +182,11 @@ export class DmsController {
       );
       res.status(200);
     } else {
-      const url = await this.comsService.getObject(
+      const url = (await this.comsService.getObject(
         currentUser,
         file,
         FileDownloadModes.URL,
-      );
+      )) as string;
       file.preSignedS3Url = url;
       if (download === FileDownloadModes.URL) {
         res.status(201).send(file);

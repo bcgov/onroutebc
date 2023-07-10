@@ -3,5 +3,5 @@ export interface TemplateFile {
   templateName: string;
   templateVersion: number;
   documentId: string;
-  templatefileBase64Encoded: string;
+  templatefile: string;
 }

@@ -26,25 +26,23 @@ export class DgenService {
     return await this.documentTemplateRepository.find();
   }
 
-
-  async getLatestTemplates() : Promise<DocumentTemplate[]>  {
-      const latestTemplates = await this.documentTemplateRepository
+  async getLatestTemplates(): Promise<DocumentTemplate[]> {
+    const latestTemplates = await this.documentTemplateRepository
       .createQueryBuilder('documentTemplate')
       .innerJoin(
-        query => query
-          .select('template_name')
-          .addSelect('MAX(template.templateVersion)', 'max_version')
-          .from(DocumentTemplate, 'template')
-          .groupBy('template_name'),
+        (query) =>
+          query
+            .select('template_name')
+            .addSelect('MAX(template.templateVersion)', 'max_version')
+            .from(DocumentTemplate, 'template')
+            .groupBy('template_name'),
         'documentTemplateLatest',
-        'documentTemplate.templateName = documentTemplateLatest.template_name AND documentTemplate.templateVersion = documentTemplateLatest.max_version'
+        'documentTemplate.templateName = documentTemplateLatest.template_name AND documentTemplate.templateVersion = documentTemplateLatest.max_version',
       )
       .getMany();
-     
+
     return latestTemplates;
   }
-
- 
 
   /**
    * Find one template from the ORBC database

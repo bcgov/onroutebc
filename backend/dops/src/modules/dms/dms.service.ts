@@ -4,7 +4,7 @@ import { Mapper } from '@automapper/core';
 import { InjectMapper } from '@automapper/nestjs';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { ReadCOMSDto } from './dto/response/read-coms.dto';
+import { ReadCOMSDto } from '../common/dto/response/read-coms.dto';
 import { ReadFileDto } from './dto/response/read-file.dto';
 
 @Injectable()

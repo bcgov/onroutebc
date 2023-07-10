@@ -8,7 +8,7 @@ import {
 } from '@automapper/core';
 import { Injectable } from '@nestjs/common';
 import { Dms } from '../entities/dms.entity';
-import { ReadCOMSDto } from '../dto/response/read-coms.dto';
+import { ReadCOMSDto } from '../../common/dto/response/read-coms.dto';
 import { ReadFileDto } from '../dto/response/read-file.dto';
 
 @Injectable()

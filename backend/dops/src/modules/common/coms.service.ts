@@ -5,7 +5,7 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { ReadCOMSDto } from '../dms/dto/response/read-coms.dto';
+import { ReadCOMSDto } from './dto/response/read-coms.dto';
 import { ReadFileDto } from '../dms/dto/response/read-file.dto';
 import { IFile } from '../../interface/file.interface';
 import { Response } from 'express';
@@ -39,6 +39,7 @@ export class ComsService {
 
     // Create a FormData object and append the file to it
     const fd = new FormData();
+    //ExperimentalWarning: buffer.File is an experimental feature and might change at any time
     fd.append(
       'file',
       new Blob([buffer], { type: mimetype }),
@@ -108,7 +109,7 @@ export class ComsService {
     readFile: ReadFileDto,
     download = FileDownloadModes.URL,
     res?: Response,
-  ): Promise<string> {
+  ): Promise<string | Buffer> {
     // Set the request configuration
     const reqConfig: AxiosRequestConfig = {
       headers: {
@@ -166,11 +167,14 @@ export class ComsService {
         responseData.on('end', () => {
           return null;
         });
+        responseData.on('error', () => {
+          throw new Error('An error occurred while reading the file.');
+        });
       }
       const file = await this.createFile(
         axiosResponse.data as NodeJS.ReadableStream,
       );
-      return file?.toString('base64');
+      return file;
     }
     return axiosResponse.data as string;
   }
@@ -198,16 +202,11 @@ export class ComsService {
    */
   private async createFile(data: NodeJS.ReadableStream) {
     // Read the stream data and concatenate all chunks into a single Buffer
-    const streamReadPromise = new Promise<Buffer>((resolve) => {
+    return new Promise<Buffer>((resolve, reject) => {
       const chunks: Buffer[] = [];
-      data.on('data', (chunk: Buffer) => {
-        chunks.push(Buffer.from(chunk));
-      });
-      data.on('end', () => {
-        resolve(Buffer.concat(chunks));
-      });
+      data.on('data', (chunk: Buffer) => chunks.push(chunk));
+      data.on('end', () => resolve(Buffer.concat(chunks)));
+      data.on('error', (err) => reject(err));
     });
-    // Return the Promise that resolves to the created file Buffer
-    return streamReadPromise;
   }
 }

@@ -31,20 +31,18 @@ export class AppService {
         const templateMetadata = await this.dmsService.findLatest(
           template.documentId,
         );
-        const templatefile = await this.comsService.getObject(
+        const templatefile = (await this.comsService.getObject(
           undefined,
           templateMetadata,
           FileDownloadModes.PROXY,
-        );
-        return { ...template, templatefileBase64Encoded: templatefile };
+        )) as Buffer;
+        return { ...template, templatefile: templatefile.toString('base64') };
       }),
     );
-
     await this.cacheManager.set(CacheKey.DOCUMENT_TEMPLATE, templateFiles);
 
     const endDateTime = new Date();
-    const processingTime =
-      endDateTime.getMilliseconds() - startDateTime.getMilliseconds();
+    const processingTime = endDateTime.getTime() - startDateTime.getTime();
     console.log(
       `initializeCache() -> Start time: ${startDateTime.toISOString()},` +
         `End time: ${endDateTime.toISOString()},` +

@@ -2,7 +2,7 @@ import { AutoMap } from '@automapper/classes';
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 import { TemplateName } from '../../../enum/template-name.enum';
 
-@Entity({ name: 'ORBC_DOCUMENT_TEMPLATE' })
+@Entity({ name: 'dops.ORBC_DOCUMENT_TEMPLATE' })
 export class DocumentTemplate {
   /**
    * Primary key of the Template entity, automatically generated as an integer.

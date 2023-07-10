@@ -6,7 +6,7 @@ SET NOCOUNT ON
 GO
 BEGIN TRANSACTION
 
-DROP TABLE [dbo].[ORBC_DOCUMENT_TEMPLATE]
+DROP TABLE [dops].[ORBC_DOCUMENT_TEMPLATE]
 
 DECLARE @VersionDescription VARCHAR(255)
 SET @VersionDescription = 'Reverting initial creation of entities for document generation feature'

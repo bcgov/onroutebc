@@ -29,7 +29,7 @@ export class CdogsService {
   /**
    * Generates a document from template via CDOGS.
    * @param currentUser - The current user details of type {@link IUserJWT}
-   * @param createGeneratedDocumentDto - The template details and data of type 
+   * @param createGeneratedDocumentDto - The template details and data of type
    *               {@link CreateGeneratedDocumentDto}.
    * @returns A Promise that resolves to an array of ReadCOMSDto objects
    *          representing the created objects.
@@ -67,10 +67,11 @@ export class CdogsService {
       this.httpService,
       this.cacheManager,
     );
-    const fileName=createGeneratedDocumentDto.generatedDocumentFileName +'.pdf'
+    const fileName =
+      createGeneratedDocumentDto.generatedDocumentFileName + '.pdf';
 
-     // Calls the CDOGS service, which converts the the template document into a pdf
-     const cdogsResponse = await lastValueFrom(
+    // Calls the CDOGS service, which converts the the template document into a pdf
+    const cdogsResponse = await lastValueFrom(
       this.httpService.post(
         process.env.CDOGS_URL,
         JSON.stringify({
@@ -78,13 +79,14 @@ export class CdogsService {
           template: {
             encodingType: 'base64',
             fileType: 'docx',
-            content: templateFile.templatefileBase64Encoded,
+            content: templateFile.templatefile,
           },
           options: {
             cacheReport: false,
             convertTo: 'pdf',
             overwrite: true,
-            reportName: createGeneratedDocumentDto.generatedDocumentFileName +'.pdf',
+            reportName:
+              createGeneratedDocumentDto.generatedDocumentFileName + '.pdf',
           },
         }),
         {
@@ -95,16 +97,22 @@ export class CdogsService {
           responseType: 'arraybuffer',
         },
       ),
-    );
+    )
+      .then((response) => {
+        return response;
+      })
+      .catch((error) => {
+        console.log('generate Document error: ', error);
+        throw error;
+      });
 
-    const generatedDocument : IFile = {
+    const generatedDocument: IFile = {
       originalname: fileName,
-      encoding: cdogsResponse.headers['Content-Encoding'] as string,
-      mimetype: cdogsResponse.headers['Content-Type'] as string,
-      buffer: (await cdogsResponse.data) as ArrayBuffer,
-      size: cdogsResponse.headers['Content-Length'] as number,
-    }
+      encoding: cdogsResponse.headers['content-transfer-encoding'] as string,
+      mimetype: cdogsResponse.headers['content-type'] as string,
+      buffer: Buffer.from((await cdogsResponse.data) as ArrayBuffer),
+      size: cdogsResponse.headers['content-length'] as number,
+    };
     return generatedDocument;
   }
-
 }
