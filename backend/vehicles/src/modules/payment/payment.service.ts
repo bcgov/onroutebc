@@ -168,7 +168,7 @@ export class PaymentService {
           transactionAmount: paymentDetails.transactionAmount,
           transactionType: paymentDetails.transactionType,
           transactionSubmitDate: paymentDetails.transactionSubmitDate,
-          paymentMethodId: paymentDetails.paymentMethodId
+          paymentMethodId: paymentDetails.paymentMethodId,
         })
         .execute();
 
