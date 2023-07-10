@@ -7,7 +7,7 @@ import {
   mapWithArguments,
 } from '@automapper/core';
 import { Injectable } from '@nestjs/common';
-import { Dms } from '../entities/dms.entity';
+import { Document } from '../entities/document.entity';
 import { ReadCOMSDto } from '../../common/dto/response/read-coms.dto';
 import { ReadFileDto } from '../dto/response/read-file.dto';
 
@@ -22,7 +22,7 @@ export class DmsProfile extends AutomapperProfile {
       createMap(
         mapper,
         ReadCOMSDto,
-        Dms,
+        Document,
         forMember(
           (d) => d.s3ObjectId,
           mapFrom((s) => s.id),
@@ -54,7 +54,7 @@ export class DmsProfile extends AutomapperProfile {
       );
       createMap(
         mapper,
-        Dms,
+        Document,
         ReadFileDto,
         forMember(
           (d) => d.s3ObjectId,

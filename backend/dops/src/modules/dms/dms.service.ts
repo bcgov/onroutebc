@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { Dms } from './entities/dms.entity';
+import { Document } from './entities/document.entity';
 import { Mapper } from '@automapper/core';
 import { InjectMapper } from '@automapper/nestjs';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -15,8 +15,8 @@ import { IFile } from '../../interface/file.interface';
 @Injectable()
 export class DmsService {
   constructor(
-    @InjectRepository(Dms)
-    private dmsRepository: Repository<Dms>,
+    @InjectRepository(Document)
+    private documentRepository: Repository<Document>,
     @InjectMapper() private readonly classMapper: Mapper,
     private readonly comsService: ComsService,
   ) {}
@@ -39,7 +39,7 @@ export class DmsService {
     const dmsRecord = this.classMapper.map(
       readCOMSDtoList[0],
       ReadCOMSDto,
-      Dms,
+      Document,
       {
         extraArgs: () => ({
           dmsVersionId: dmsVersionId,
@@ -48,8 +48,8 @@ export class DmsService {
     );
 
     return this.classMapper.mapAsync(
-      await this.dmsRepository.save(dmsRecord),
-      Dms,
+      await this.documentRepository.save(dmsRecord),
+      Document,
       ReadFileDto,
     );
   }
@@ -77,7 +77,7 @@ export class DmsService {
     const dmsRecord = this.classMapper.map(
       readCOMSDtoList[0],
       ReadCOMSDto,
-      Dms,
+      Document,
       {
         extraArgs: () => ({
           dmsVersionId: dmsObject.dmsVersionId + 1,
@@ -86,16 +86,18 @@ export class DmsService {
     );
 
     return this.classMapper.mapAsync(
-      await this.dmsRepository.save(dmsRecord),
-      Dms,
+      await this.documentRepository.save(dmsRecord),
+      Document,
       ReadFileDto,
     );
   }
 
   async findOne(documentId: string): Promise<ReadFileDto> {
     const readFile = await this.classMapper.mapAsync(
-      await this.dmsRepository.findOne({ where: { documentId: documentId } }),
-      Dms,
+      await this.documentRepository.findOne({
+        where: { documentId: documentId },
+      }),
+      Document,
       ReadFileDto,
     );
     return readFile;
@@ -122,21 +124,21 @@ export class DmsService {
   }
 
   async findLatest(documentId: string): Promise<ReadFileDto> {
-    const subQuery = this.dmsRepository
-      .createQueryBuilder('dms')
-      .select('dms.s3ObjectId')
-      .where('dms.documentId = :documentId')
+    const subQuery = this.documentRepository
+      .createQueryBuilder('document')
+      .select('document.s3ObjectId')
+      .where('document.documentId = :documentId')
       .getQuery();
 
-    const latestDmsObject = await this.dmsRepository
-      .createQueryBuilder('dms')
-      .where(`dms.s3ObjectId IN (${subQuery})`, { documentId: documentId })
-      .orderBy('dms.dmsVersionId', 'DESC')
+    const latestDmsObject = await this.documentRepository
+      .createQueryBuilder('document')
+      .where(`document.s3ObjectId IN (${subQuery})`, { documentId: documentId })
+      .orderBy('document.dmsVersionId', 'DESC')
       .getOne();
 
     const readFile = await this.classMapper.mapAsync(
       latestDmsObject,
-      Dms,
+      Document,
       ReadFileDto,
     );
 

@@ -1,9 +1,10 @@
 import { AutoMap } from '@automapper/classes';
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 import { TemplateName } from '../../../enum/template-name.enum';
+import { Base } from '../../common/entities/base.entity';
 
 @Entity({ name: 'dops.ORBC_DOCUMENT_TEMPLATE' })
-export class DocumentTemplate {
+export class DocumentTemplate extends Base {
   /**
    * Primary key of the Template entity, automatically generated as an integer.
    */
