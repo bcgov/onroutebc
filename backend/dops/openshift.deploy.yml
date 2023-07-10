@@ -145,6 +145,8 @@ objects:
       database-password: "${DATABASE_PASSWORD}"
       coms-basic-user: "${BASICAUTH_USERNAME}"
       coms-basic-password: "${BASICAUTH_PASSWORD}"
+      cdogs-client-id: "${CDOGS_CLIENT_ID}"
+      cdogs-client-secret: "${CDOGS_CLIENT_SECRET}"
   - apiVersion: v1
     kind: ImageStream
     metadata:
@@ -284,6 +286,16 @@ objects:
                     configMapKeyRef:
                       name: ${NAME}-${ZONE}-${COMPONENT}
                       key: cdogs-token-url
+                - name: CDOGS_CLIENT_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: cdogs-client-id
+                - name: CDOGS_CLIENT_SECRET
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: cdogs-client-secret
               ports:
                 - containerPort: 5001
                   protocol: TCP
