@@ -1,14 +1,16 @@
+import { VEHICLES_URL } from "../../../common/apiManager/endpoints/endpoints";
 import {
   httpGETRequest,
   httpPOSTRequest,
   httpPUTRequest,
   getCompanyIdFromSession,
   getUserGuidFromSession,
+  httpPOSTRequest_axios,
 } from "../../../common/apiManager/httpRequestHandler";
 import { UserContextType } from "../../../common/authentication/types";
 import { replaceEmptyValuesWithNull } from "../../../common/helpers/util";
 import { CompanyProfile, CompanyAndUserRequest, UserInformation } from "../types/manageProfile";
-import { MANAGE_PROFILE_API, MANAGE_PROFILE_URL } from "./endpoints/endpoints";
+import { MANAGE_PROFILE_API } from "./endpoints/endpoints";
 
 export const getCompanyInfo = async (): Promise<CompanyProfile> => {
   const url = MANAGE_PROFILE_API.COMPANIES + "/" + getCompanyIdFromSession();
@@ -62,8 +64,8 @@ export const createOnRouteBCProfile = async (
  * Retrieve the company and user details post login.
  */
 export const getUserContext = (): Promise<UserContextType> => {
-  const url = `${MANAGE_PROFILE_URL}/users/user-context`;
-  return httpGETRequest(url).then((response) => response.data);
+  const url = `${VEHICLES_URL}/users/user-context`;
+  return httpPOSTRequest_axios(url, {}).then((response) => response.data);
 };
 
 /**
@@ -71,6 +73,6 @@ export const getUserContext = (): Promise<UserContextType> => {
  */
 export const getUserRolesByCompanyId = (): Promise<string[]> => {
   return httpGETRequest(
-    `${MANAGE_PROFILE_URL}/users/roles?companyId=${getCompanyIdFromSession()}`
+    `${VEHICLES_URL}/users/roles?companyId=${getCompanyIdFromSession()}`
   ).then((response) => response.data);
 };

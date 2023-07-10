@@ -38,20 +38,6 @@
         "condition": "CVSE-1013",
         "conditionLink": "https://www.th.gov.bc.ca/forms/getForm.aspx?formId=1254",
         "checked": false
-      },
-      {
-        "description": "Hay",
-        "condition": "HAY (hay bales)",
-        "conditionLink":
-          "https://www.cvse.ca/ctpm/com_circulars/2012/120803_comp_cc_0912_changes_hay_bales.pdf",
-        "checked": false
-      },
-      {
-        "description": "Stinger Steered Transport",
-        "condition": "SST (Stinger Steered Transporters)",
-        "conditionLink":
-          "https://www.cvse.ca/CTPM/Com_Circulars/2017/171227-comp-cc_08-2107-Stinger-Steered-Car-Carrier.pdf",
-        "checked": false
       }
     ],
     "ineligiblePowerUnitSubtypes": [

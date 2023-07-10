@@ -14,12 +14,14 @@ import { ManagePermits } from "../features/permits/ManagePermits";
 import { ROLES } from "../common/authentication/types";
 import { ManageApplications } from "../features/permits/ManageApplications";
 import { SuccessPage } from "../features/permits/pages/SuccessPage/SuccessPage";
+import { PaymentRedirect } from "../features/permits/pages/Payment/PaymentRedirect";
 
 export const AppRoutes = () => {
   return (
     <Routes>
       <Route path={routes.HOME} element={<InitialLandingPage />} />
       <Route path={routes.WELCOME} element={<WelcomePage />} />
+      <Route path={routes.SEARCH_PPC} element={<> TODO </>} />
       <Route path="*" element={<NotFound />} />
       {/* Protected Routes */}
       <Route element={<ProtectedRoutes requiredRole={ROLES.READ_VEHICLE} />}>
@@ -63,19 +65,31 @@ export const AppRoutes = () => {
         <Route path={routes.MANAGE_PROFILES} element={<ManageProfiles />} />
       </Route>
       <Route element={<ProtectedRoutes requiredRole={ROLES.WRITE_PERMIT} />}>
-        <Route path={`${routes.APPLICATIONS}/${routes.PERMITS}`} element={<ManagePermits />} />
+        <Route
+          path={`${routes.APPLICATIONS}/${routes.PERMITS}`}
+          element={<ManagePermits />}
+        />
       </Route>
       <Route element={<ProtectedRoutes requiredRole={ROLES.WRITE_PERMIT} />}>
         <Route path={routes.APPLICATIONS} element={<ManageApplications />} />
       </Route>
       <Route element={<ProtectedRoutes requiredRole={ROLES.WRITE_PERMIT} />}>
-        <Route path={`${routes.APPLICATIONS}/:applicationNumber`} element={<ManagePermits />} />
+        <Route
+          path={`${routes.APPLICATIONS}/:applicationNumber`}
+          element={<ManagePermits />}
+        />
       </Route>
       <Route element={<ProtectedRoutes requiredRole={ROLES.WRITE_PERMIT} />}>
         <Route path={routes.APPLICATIONS}>
           <Route index={true} element={<ManageApplications />} />
-          <Route path={`${routes.APPLICATIONS_SUCCESS}/:permitId`} element={<SuccessPage />} />
+          <Route
+            path={`${routes.APPLICATIONS_SUCCESS}/:permitId`}
+            element={<SuccessPage />}
+          />
         </Route>
+      </Route>
+      <Route element={<ProtectedRoutes requiredRole={ROLES.WRITE_PERMIT} />}>
+        <Route path={routes.PAYMENT_REDIRECT} element={<PaymentRedirect />} />
       </Route>
       <Route path={routes.CREATE_PROFILE} element={<CreateProfileWizard />} />
     </Routes>

@@ -23,6 +23,8 @@ export interface CustomFormComponentProps<T extends FieldValues> {
   i18options?: InternationalOptionsProps;
   menuOptions?: JSX.Element[];
   className?: string;
+  disabled?: boolean;
+  readOnly?: boolean;
 }
 
 /**
@@ -100,6 +102,8 @@ export const CustomFormComponent = <T extends ORBC_FormTypes>({
   i18options,
   menuOptions,
   className,
+  disabled,
+  readOnly,
 }: CustomFormComponentProps<T>): JSX.Element => {
   const {
     control,
@@ -148,6 +152,8 @@ export const CustomFormComponent = <T extends ORBC_FormTypes>({
             inputProps={inputProps}
             invalid={invalid}
             inputType={inputType}
+            disabled={disabled}
+            readOnly={readOnly}
           />
         );
       case "datePicker":
