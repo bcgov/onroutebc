@@ -68,7 +68,7 @@ export class PaymentController {
   ) {
     const currentUser = request.user as IUserJWT;
     return await this.paymentService.updateTransaction(
-      currentUser.access_token,
+      currentUser,
       createTransactionDto,
     );
   }

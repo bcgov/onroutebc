@@ -70,7 +70,7 @@ const mapTransactionDetails = (
     approved: Number(motiResponse.trnApproved),
     authCode: motiResponse.authCode,
     cardType: motiResponse.cardType,
-    transactionDate: "TODO", // TODO
+    transactionDate: motiResponse.trnDate, // TODO
     cvdId: Number(motiResponse.cvdId),
     paymentMethod: motiResponse.paymentMethod,
     paymentMethodId: 1, // TODO: change once different payment methods are implemented
