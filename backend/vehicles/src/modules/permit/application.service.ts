@@ -374,12 +374,12 @@ export class ApplicationService {
           companyName: companyInfo.legalName,
         };
 
-        const attachment: AttachementEmailData = {
+        const attachments: AttachementEmailData[] = [{
           filename: tempPermit.permitNumber + '.pdf',
           contentType: 'application/pdf',
           encoding: 'base64',
           content: generatedDocument.buffer.toString('base64'),
-        };
+        }];
 
         await this.emailService.sendEmailMessage(
           EmailTemplate.ISSUE_PERMIT,
@@ -389,7 +389,7 @@ export class ApplicationService {
             permitDataForTemplate.permitData?.contactDetails?.email,
             companyInfo.primaryContact.email,
           ],
-          attachment,
+          attachments,
         );
       } catch (error: unknown) {
         console.log('Error in Email Service', error);

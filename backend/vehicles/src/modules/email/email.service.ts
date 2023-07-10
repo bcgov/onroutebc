@@ -33,7 +33,7 @@ export class EmailService {
     data: ProfileRegistrationEmailData | IssuePermitEmailData,
     subject: string,
     to: string[],
-    attachment?: AttachementEmailData,
+    attachments?: AttachementEmailData[],
   ): Promise<string> {
     const messageBody = await this.renderTemplate(template, data);
     const token = await getAccessToken(
@@ -53,7 +53,7 @@ export class EmailService {
       priority: 'normal',
       subject: subject,
       to: to,
-      attachments: attachment ? [attachment] : undefined,
+      attachments: attachments?.length ? attachments : undefined,
     };
 
     const requestConfig: AxiosRequestConfig = {
