@@ -115,6 +115,8 @@ services:
       COMS_BUCKET_ID: ${COMS_BUCKET_ID}
       COMS_PRESIGNED_URL_EXPIRY: ${COMS_PRESIGNED_URL_EXPIRY}
       CDOGS_TOKEN_URL: ${CDOGS_TOKEN_URL}
+      CDOGS_CLIENT_ID: ${CDOGS_CLIENT_ID}
+      CDOGS_CLIENT_SECRET: ${CDOGS_CLIENT_SECRET}
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5001/"]
       interval: 1m30s

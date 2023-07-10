@@ -159,7 +159,7 @@ objects:
       cdogs-client-secret: "${CDOGS_CLIENT_SECRET}"   
       moti-pay-api-key: "${MOTIPAY_API_KEY}"
       moti-pay-merchant-id: "${MOTIPAY_MERCHANT_ID}"
-      moti-pay-base-url: "${MOTIPAY_BASE_URL}"  
+      moti-pay-base-url: "${MOTIPAY_BASE_URL}"
   - apiVersion: v1
     kind: ImageStream
     metadata:
