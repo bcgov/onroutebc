@@ -120,7 +120,7 @@ export class DopsService {
         return response;
       })
       .catch((error) => {
-        console.log('generate Document error: ', error.response.data);
+        console.log('generate Document error: ', error);
         throw error;
       });
 

@@ -39,9 +39,7 @@ import { DmsService } from '../dms/dms.service';
 @Controller('dgen')
 export class DgenController {
   constructor(
-    private readonly cdogsService: CdogsService,
     private readonly dgenService: DgenService,
-    private readonly dmsService: DmsService,
   ) {}
 
   @ApiCreatedResponse({
