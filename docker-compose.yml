@@ -71,6 +71,10 @@ services:
       CHES_URL: ${CHES_URL}
       DOPS_URL: "http://dops-api:5001"
       FRONT_END_URL: "http://frontend:3000"
+      MOTIPAY_API_KEY: ${MOTIPAY_API_KEY}
+      MOTIPAY_MERCHANT_ID: ${MOTIPAY_MERCHANT_ID}
+      MOTIPAY_BASE_URL: ${MOTIPAY_BASE_URL}
+      MOTIPAY_REDIRECT: ${MOTIPAY_REDIRECT}
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5000/"]
       interval: 1m30s

@@ -41,9 +41,11 @@ export const ApplicationDashboard = () => {
     next,
     goTo,
   } = useMultiStepForm([
+    
     <TermOversizeForm key={ApplicationStep.Form} />,
     <TermOversizeReview key={ApplicationStep.Review} />,
     <TermOversizePay key={ApplicationStep.Pay} />,
+    
   ]);
 
   const displayHeaderText = () => {

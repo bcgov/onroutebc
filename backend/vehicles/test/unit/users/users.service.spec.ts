@@ -282,7 +282,7 @@ describe('UsersService', () => {
   describe('User service check Idir User function', () => {
     it('should create and return idir user', async () => {
       repoPendingIdirUser.findOne.mockResolvedValue(pendingIdirUserEntityMock);
-      repoIdirUser.findOne.mockResolvedValue(null)
+      repoIdirUser.findOne.mockResolvedValue(null);
       const userExists = await service.checkIdirUser(sysAdminStaffUserJWTMock);
       expect(typeof userExists).toBe('object');
       expect(userExists.user.userName).toBe(

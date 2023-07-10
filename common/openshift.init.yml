@@ -73,7 +73,16 @@ parameters:
     description: The CHES API url
   - name: NODE_ENV
     description: The NODE Environment
-    required: true    
+    required: true   
+  - name: MOTIPAY_API_KEY
+    description: API Key for MOTI Pay
+    required: true  
+  - name: MOTIPAY_MERCHANT_ID
+    description: Merchant ID for MOTI Pay
+    required: true  
+  - name: MOTIPAY_BASE_URL
+    description: Base URL for MOTI Pay
+    required: true   
 objects:
   - apiVersion: networking.k8s.io/v1
     kind: NetworkPolicy
