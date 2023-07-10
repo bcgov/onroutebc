@@ -42,6 +42,7 @@ import { DopsService } from '../common/dops.service';
 import { DopsGeneratedDocument } from '../../common/interface/dops-generated-document.interface';
 import { TemplateName } from '../../common/enum/template-name.enum';
 import { IFile } from '../../common/interface/file.interface';
+import { IReceipt } from 'src/common/interface/receipt.interface';
 
 @Injectable()
 export class ApplicationService {
@@ -315,7 +316,7 @@ export class ApplicationService {
    * @param applicationId applicationId to identify the application to be issued. It is the same as permitId.
    * @returns a resultDto that describes if the transaction was successful or if it failed
    */
-  async issuePermit(currentUser: IUserJWT, applicationId: string) {
+  async issuePermit(currentUser: IUserJWT, applicationId: string, transactionDetails?: IReceipt) {
     let success = '';
     let failure = '';
 
