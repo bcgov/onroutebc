@@ -98,6 +98,7 @@ export class CreateGeneratedDocumentDto {
     },
   })
   @Allow()
+  //TODO Change to String and validate if JSON String
   templateData: object;
 
   @AutoMap()
