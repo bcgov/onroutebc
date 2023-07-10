@@ -23,7 +23,7 @@ export class PaymentService {
     @InjectRepository(Transaction)
     private transactionRepository: Repository<Transaction>,
     @InjectMapper() private readonly classMapper: Mapper,
-    private applicationService: ApplicationService
+    private applicationService: ApplicationService,
   ) {}
 
   /**
@@ -121,17 +121,19 @@ export class PaymentService {
     );
 
     if (newTransaction.approved) {
-
       const applicationId = existingPermitTransaction.permitId.toString();
-      const transactionDetails : IReceipt = {
+      const transactionDetails: IReceipt = {
         transactionOrderNumber: newTransaction.transactionOrderNumber,
         transactionAmount: newTransaction.transactionAmount,
         transactionDate: newTransaction.transactionDate,
         paymentMethod: newTransaction.paymentMethod,
-      } 
+      };
 
-      await this.applicationService.issuePermit(currentUser, applicationId, transactionDetails);
-
+      await this.applicationService.issuePermit(
+        currentUser,
+        applicationId,
+        transactionDetails,
+      );
     }
 
     const updatedTransaction = await this.transactionRepository.update(

@@ -25,10 +25,7 @@ import { randomInt } from 'crypto';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { FullNames } from './interface/fullNames.interface';
-import {
-  PermitData,
-  PermitTemplateData,
-} from 'src/common/interface/permit.template.interface';
+import { PermitData } from 'src/common/interface/permit.template.interface';
 import { getFromCache } from 'src/common/helper/cache.helper';
 import { CompanyService } from '../company-user-management/company/company.service';
 import { formatTemplateData } from './helpers/formatTemplateData.helper';
@@ -41,7 +38,6 @@ import { CacheKey } from '../../common/enum/cache-key.enum';
 import { DopsService } from '../common/dops.service';
 import { DopsGeneratedDocument } from '../../common/interface/dops-generated-document.interface';
 import { TemplateName } from '../../common/enum/template-name.enum';
-import { IFile } from '../../common/interface/file.interface';
 import { IReceipt } from 'src/common/interface/receipt.interface';
 
 @Injectable()
@@ -316,7 +312,11 @@ export class ApplicationService {
    * @param applicationId applicationId to identify the application to be issued. It is the same as permitId.
    * @returns a resultDto that describes if the transaction was successful or if it failed
    */
-  async issuePermit(currentUser: IUserJWT, applicationId: string, transactionDetails?: IReceipt) {
+  async issuePermit(
+    currentUser: IUserJWT,
+    applicationId: string,
+    transactionDetails?: IReceipt,
+  ) {
     let success = '';
     let failure = '';
 
@@ -350,9 +350,32 @@ export class ApplicationService {
         companyInfo,
       );
 
-      const generatedDocument = await this.generatePDF(
+      let dopsRequestData: DopsGeneratedDocument = {
+        templateName: TemplateName.PERMIT_TROS,
+        generatedDocumentFileName: permitDataForTemplate.permitNumber,
+        templateData: permitDataForTemplate,
+      };
+
+      //TODO User Promise.all to combine both calls or change DOPS to generate multiple files at once.
+      const generatedPermitDocument = await this.generateDocument(
         currentUser,
-        permitDataForTemplate,
+        dopsRequestData,
+      );
+      const receiptNo = '12437592034';
+
+      dopsRequestData = {
+        templateName: TemplateName.PAYMENT_RECEIPT,
+        generatedDocumentFileName: `Receipt_No_${receiptNo}`,
+        templateData: {
+          ...permitDataForTemplate,
+          ...transactionDetails,
+          receiptNo,
+        },
+      };
+
+      const generatedReceiptDocument = await this.generateDocument(
+        currentUser,
+        dopsRequestData,
       );
 
       // Update Permit record with an ISSUED status, new permit number, and new DMS Document ID
@@ -362,7 +385,7 @@ export class ApplicationService {
         .set({
           permitStatus: ApplicationStatus.ISSUED,
           ...{ permitNumber: permitNumber },
-          ...{ documentId: generatedDocument.dmsId },
+          ...{ documentId: generatedPermitDocument.dmsId },
         })
         .where('ID = :applicationId', { applicationId })
         .andWhere('permitNumber IS NULL')
@@ -375,12 +398,20 @@ export class ApplicationService {
           companyName: companyInfo.legalName,
         };
 
-        const attachments: AttachementEmailData[] = [{
-          filename: tempPermit.permitNumber + '.pdf',
-          contentType: 'application/pdf',
-          encoding: 'base64',
-          content: generatedDocument.buffer.toString('base64'),
-        }];
+        const attachments: AttachementEmailData[] = [
+          {
+            filename: tempPermit.permitNumber + '.pdf',
+            contentType: 'application/pdf',
+            encoding: 'base64',
+            content: generatedPermitDocument.buffer.toString('base64'),
+          },
+          {
+            filename: `Receipt_No_${receiptNo}.pdf`,
+            contentType: 'application/pdf',
+            encoding: 'base64',
+            content: generatedReceiptDocument.buffer.toString('base64'),
+          },
+        ];
 
         await this.emailService.sendEmailMessage(
           EmailTemplate.ISSUE_PERMIT,
@@ -415,25 +446,10 @@ export class ApplicationService {
     return resultDto;
   }
 
-  /**
-   * Generates a PDF of an issued permit.
-   * First, format the permit data so that it complies with the .docx template, then generate the PDF
-   * @param permit the permit entity
-   * @param companyInfo the information about the users company
-   * @param currentUser the details of the current user for authorization.
-   *
-   */
-  private async generatePDF(
+  private async generateDocument(
     currentUser: IUserJWT,
-    permitDataForTemplate: PermitTemplateData,
-  ): Promise<IFile> {
-    // DMS Reference ID for the generated PDF of the Permit
-    const dopsRequestData: DopsGeneratedDocument = {
-      templateName: TemplateName.PERMIT_TROS,
-      generatedDocumentFileName: permitDataForTemplate.permitNumber,
-      templateData: permitDataForTemplate,
-    };
-
+    dopsRequestData: DopsGeneratedDocument,
+  ) {
     return await this.dopsService.generateDocument(
       currentUser,
       dopsRequestData,

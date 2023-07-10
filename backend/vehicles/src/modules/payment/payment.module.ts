@@ -9,7 +9,10 @@ import { PermitTransaction } from './entities/permit-transaction.entity';
 import { PermitModule } from '../permit/permit.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Transaction, PermitTransaction]), PermitModule],
+  imports: [
+    TypeOrmModule.forFeature([Transaction, PermitTransaction]),
+    PermitModule,
+  ],
   controllers: [PaymentController],
   providers: [PaymentService, TransactionProfile, PermitTransactionProfile],
   exports: [PaymentService],

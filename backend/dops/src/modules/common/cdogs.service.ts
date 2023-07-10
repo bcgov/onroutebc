@@ -46,10 +46,13 @@ export class CdogsService {
 
     // The below implemenation is a fail proof version to always get the latest version --start
     const filteredTemplateFiles = documentTemplates.filter((element) => {
-      return element.templateName === createGeneratedDocumentDto.templateName &&
-        createGeneratedDocumentDto.templateVersion
-        ? element.templateVersion === createGeneratedDocumentDto.templateVersion
-        : true;
+      return (
+        element.templateName === createGeneratedDocumentDto.templateName &&
+        (createGeneratedDocumentDto.templateVersion
+          ? element.templateVersion ===
+            createGeneratedDocumentDto.templateVersion
+          : true)
+      );
     });
     if (!filteredTemplateFiles?.length) {
       throw new Error('Template not found!');
