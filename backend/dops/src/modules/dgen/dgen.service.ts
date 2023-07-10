@@ -75,7 +75,6 @@ export class DgenService {
       currentUser,
       generatedDocument,
     );
-
     res.setHeader('x-orbc-dms-id', dmsObject.documentId);
     res.setHeader(
       'Content-Disposition',

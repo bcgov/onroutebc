@@ -14,11 +14,9 @@ import { ReadApplicationDto } from './dto/response/read-application.dto';
 import { Permit } from './entities/permit.entity';
 import { UpdateApplicationDto } from './dto/request/update-application.dto';
 import { ResultDto } from './dto/response/result.dto';
-import { PdfService } from '../pdf/pdf.service';
 import { PermitApplicationOrigin } from './entities/permit-application-origin.entity';
 import { PermitApprovalSource } from './entities/permit-approval-source.entity';
 import { IDP } from 'src/common/enum/idp.enum';
-import { DownloadMode, PdfReturnType } from 'src/common/enum/pdf.enum';
 import { PermitApplicationOrigin as PermitApplicationOriginEnum } from 'src/common/enum/permit-application-origin.enum';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
 import { PermitApprovalSource as PermitApprovalSourceEnum } from 'src/common/enum/permit-approval-source.enum';
@@ -27,7 +25,10 @@ import { randomInt } from 'crypto';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { FullNames } from './interface/fullNames.interface';
-import { PermitData } from 'src/common/interface/permit.template.interface';
+import {
+  PermitData,
+  PermitTemplateData,
+} from 'src/common/interface/permit.template.interface';
 import { getFromCache } from 'src/common/helper/cache.helper';
 import { CompanyService } from '../company-user-management/company/company.service';
 import { formatTemplateData } from './helpers/formatTemplateData.helper';
@@ -36,8 +37,11 @@ import { PermitService } from './permit.service';
 import { EmailTemplate } from '../../common/enum/email-template.enum';
 import { IssuePermitEmailData } from '../../common/interface/issue-permit-email-data.interface';
 import { AttachementEmailData } from '../../common/interface/attachment-email-data.interface';
-import { ReadCompanyDto } from '../company-user-management/company/dto/response/read-company.dto';
 import { CacheKey } from '../../common/enum/cache-key.enum';
+import { DopsService } from '../common/dops.service';
+import { DopsGeneratedDocument } from '../../common/interface/dops-generated-document.interface';
+import { TemplateName } from '../../common/enum/template-name.enum';
+import { IFile } from '../../common/interface/file.interface';
 
 @Injectable()
 export class ApplicationService {
@@ -46,7 +50,7 @@ export class ApplicationService {
     @InjectRepository(Permit)
     private permitRepository: Repository<Permit>,
     private dataSource: DataSource,
-    private readonly pdfService: PdfService,
+    private readonly dopsService: DopsService,
     @InjectRepository(PermitApplicationOrigin)
     private permitApplicationOriginRepository: Repository<PermitApplicationOrigin>,
     @InjectRepository(PermitApprovalSource)
@@ -336,10 +340,18 @@ export class ApplicationService {
         tempPermit.companyId,
       );
 
-      const { dmsDocumentId, permitDataForTemplate } = await this.generatePDF(
+      const fullNames = await this.getFullNamesFromCache(tempPermit);
+
+      // Provide the permit json data required to populate the .docx template that is used to generate a PDF
+      const permitDataForTemplate = formatTemplateData(
         tempPermit,
+        fullNames,
         companyInfo,
+      );
+
+      const generatedDocument = await this.generatePDF(
         currentUser,
+        permitDataForTemplate,
       );
 
       // Update Permit record with an ISSUED status, new permit number, and new DMS Document ID
@@ -349,7 +361,7 @@ export class ApplicationService {
         .set({
           permitStatus: ApplicationStatus.ISSUED,
           ...{ permitNumber: permitNumber },
-          ...{ documentId: dmsDocumentId },
+          ...{ documentId: generatedDocument.dmsId },
         })
         .where('ID = :applicationId', { applicationId })
         .andWhere('permitNumber IS NULL')
@@ -358,12 +370,6 @@ export class ApplicationService {
       success = applicationId;
 
       try {
-        const document = await this.permitService.findPDFbyPermitId(
-          currentUser.access_token,
-          applicationId,
-          DownloadMode.PROXY,
-        );
-
         const emailData: IssuePermitEmailData = {
           companyName: companyInfo.legalName,
         };
@@ -372,7 +378,7 @@ export class ApplicationService {
           filename: tempPermit.permitNumber + '.pdf',
           contentType: 'application/pdf',
           encoding: 'base64',
-          content: document.file.toString('base64'),
+          content: generatedDocument.buffer.toString('base64'),
         };
 
         await this.emailService.sendEmailMessage(
@@ -417,28 +423,20 @@ export class ApplicationService {
    *
    */
   private async generatePDF(
-    tempPermit: Permit,
-    companyInfo: ReadCompanyDto,
     currentUser: IUserJWT,
-  ) {
-    const fullNames = await this.getFullNamesFromCache(tempPermit);
-
-    // Provide the permit json data required to populate the .docx template that is used to generate a PDF
-    const permitDataForTemplate = formatTemplateData(
-      tempPermit,
-      fullNames,
-      companyInfo,
-    );
-
+    permitDataForTemplate: PermitTemplateData,
+  ): Promise<IFile> {
     // DMS Reference ID for the generated PDF of the Permit
-    // TODO: write helper to determine 'latest' template version
-    const dmsDocumentId: string = await this.pdfService.generatePDF(
-      currentUser.access_token,
-      permitDataForTemplate,
-      1,
-      PdfReturnType.DMS_DOC_ID,
+    const dopsRequestData: DopsGeneratedDocument = {
+      templateName: TemplateName.PERMIT_TROS,
+      generatedDocumentFileName: permitDataForTemplate.permitNumber,
+      templateData: permitDataForTemplate,
+    };
+
+    return await this.dopsService.generateDocument(
+      currentUser,
+      dopsRequestData,
     );
-    return { dmsDocumentId, permitDataForTemplate };
   }
 
   /**

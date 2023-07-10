@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { AutoMap } from '@automapper/classes';
-import { Allow, IsEnum, IsNumber, IsString } from 'class-validator';
+import { Allow, IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
 import { TemplateName } from '../../../../enum/template-name.enum';
 
 export class CreateGeneratedDocumentDto {
@@ -20,6 +20,7 @@ export class CreateGeneratedDocumentDto {
     description:
       'The template versions. By default, the latest template version will be used.',
   })
+  @IsOptional()
   @IsNumber()
   templateVersion?: number;
 
@@ -97,7 +98,7 @@ export class CreateGeneratedDocumentDto {
     },
   })
   @Allow()
-  templateData: JSON;
+  templateData: object;
 
   @AutoMap()
   @ApiProperty({

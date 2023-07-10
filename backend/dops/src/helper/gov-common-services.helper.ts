@@ -58,7 +58,7 @@ export async function getAccessToken(
       return response.data as GovCommonServicesToken;
     })
     .catch((error) => {
-      console.log('Error: getCommonServiceAccessToken() ', error);
+      console.error('Error: getCommonServiceAccessToken() ', error);
       throw new InternalServerErrorException();
     });
 

@@ -108,7 +108,7 @@ export class CdogsService {
         return response;
       })
       .catch((error) => {
-        console.log('generate Document error: ', error);
+        console.error('generate Document error: ', error);
         throw error;
       });
 

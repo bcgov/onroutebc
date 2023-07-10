@@ -108,13 +108,17 @@ export class EmailService {
       headerLogo: process.env.FRONT_END_URL + '/BC_Logo_MOTI.png',
       footerLogo: process.env.FRONT_END_URL + '/onRouteBC_Logo.png',
       darkModeHeaderLogo: process.env.FRONT_END_URL + '/BC_Logo_Rev_MOTI.png',
-      darkModeMedHeaderLogo: process.env.FRONT_END_URL + '/BC_Logo_Rev_MOTI@2x.png',
+      darkModeMedHeaderLogo:
+        process.env.FRONT_END_URL + '/BC_Logo_Rev_MOTI@2x.png',
       darkModeFooterLogo: process.env.FRONT_END_URL + '/onRouteBC_Rev_Logo.png',
-      darkModeMedFooterLogo: process.env.FRONT_END_URL + '/onRouteBC_Rev_Logo@2x.png',
+      darkModeMedFooterLogo:
+        process.env.FRONT_END_URL + '/onRouteBC_Rev_Logo@2x.png',
       whiteHeaderLogo: process.env.FRONT_END_URL + '/BC_Logo_MOTI_White.jpg',
-      whiteMedHeaderLogo: process.env.FRONT_END_URL + '/BC_Logo_MOTI_White@2x.jpg',
+      whiteMedHeaderLogo:
+        process.env.FRONT_END_URL + '/BC_Logo_MOTI_White@2x.jpg',
       whiteFooterLogo: process.env.FRONT_END_URL + '/onRouteBC_Logo_White.jpg',
-      whiteMedFooterLogo: process.env.FRONT_END_URL + '/onRouteBC_Logo_White@2x.jpg',
+      whiteMedFooterLogo:
+        process.env.FRONT_END_URL + '/onRouteBC_Logo_White@2x.jpg',
     });
     return htmlBody;
   }

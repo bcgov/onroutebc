@@ -26,6 +26,7 @@ export class ComsService {
    * @param file - The file to be uploaded. It can be either an
    *               {@link Express.Multer.File} object or an {@link IFile}
    *               object.
+   * @param s3ObjectId: An optional S3 Object Id.
    * @returns A Promise that resolves to an array of ReadCOMSDto objects
    *          representing the created objects.
    */
@@ -88,7 +89,7 @@ export class ComsService {
         return response.data as ReadCOMSDto[];
       })
       .catch((error) => {
-        console.log('createObject error: ', error);
+        console.error('createObject error: ', error);
         throw new InternalServerErrorException();
       });
 
@@ -101,7 +102,8 @@ export class ComsService {
    * @param readFile - The {@link ReadFileDto} object containing the information
    *                   about the file to be retrieved.
    * @param download - The file download mode - {@link FileDownloadModes}.
-   * @returns A Promise that resolves to a string (url) or ArrayBuffer (proxy)
+   * @param res - An optional Response object.
+   * @returns A Promise that resolves to a string (url) or Buffer (proxy)
    *          representing the retrieved object.
    */
   async getObject(
@@ -151,7 +153,7 @@ export class ComsService {
         return response;
       })
       .catch((error) => {
-        console.log('COMS getObject url Error: ', error);
+        console.error('COMS getObject url Error: ', error);
         throw new InternalServerErrorException();
       });
 

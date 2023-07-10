@@ -13,7 +13,10 @@ import { ExceptionDto } from '../exception/exception.dto';
 export class HttpExceptionFilter implements ExceptionFilter {
   catch(exception: HttpException, host: ArgumentsHost) {
     let exceptionDto: ExceptionDto;
-    console.log('HTTP exception handler triggered', JSON.stringify(exception));
+    console.error(
+      'HTTP exception handler triggered',
+      JSON.stringify(exception),
+    );
 
     const ctx = host.switchToHttp();
 
