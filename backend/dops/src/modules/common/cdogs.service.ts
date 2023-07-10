@@ -2,10 +2,7 @@
  * Service responsible for interacting with CDOGS (Common Document Generation
  * Service).
  */
-import {
-  Inject,
-  Injectable,
-} from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { lastValueFrom } from 'rxjs';
 import { IUserJWT } from '../../interface/user-jwt.interface';
@@ -17,6 +14,11 @@ import { TemplateFile } from '../../interface/template-file.interface';
 import { getAccessToken } from '../../helper/gov-common-services.helper';
 import { GovCommonServices } from '../../enum/gov-common-services.enum';
 import { IFile } from '../../interface/file.interface';
+import {
+  FILE_ENCODING_TYPE,
+  FILE_TYPE_DOCX,
+  FILE_TYPE_PDF,
+} from '../../constants/dops.constant';
 
 @Injectable()
 export class CdogsService {
@@ -68,7 +70,9 @@ export class CdogsService {
       this.cacheManager,
     );
     const fileName =
-      createGeneratedDocumentDto.generatedDocumentFileName + '.pdf';
+      createGeneratedDocumentDto.generatedDocumentFileName +
+      '.' +
+      FILE_TYPE_PDF;
 
     // Calls the CDOGS service, which converts the the template document into a pdf
     const cdogsResponse = await lastValueFrom(
@@ -77,16 +81,18 @@ export class CdogsService {
         JSON.stringify({
           data: createGeneratedDocumentDto.templateData,
           template: {
-            encodingType: 'base64',
-            fileType: 'docx',
+            encodingType: FILE_ENCODING_TYPE,
+            fileType: FILE_TYPE_DOCX,
             content: templateFile.templatefile,
           },
           options: {
             cacheReport: false,
-            convertTo: 'pdf',
+            convertTo: FILE_TYPE_PDF,
             overwrite: true,
             reportName:
-              createGeneratedDocumentDto.generatedDocumentFileName + '.pdf',
+              createGeneratedDocumentDto.generatedDocumentFileName +
+              '.' +
+              FILE_TYPE_PDF,
           },
         }),
         {

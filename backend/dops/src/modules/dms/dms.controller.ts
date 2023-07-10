@@ -10,8 +10,6 @@ import {
   ParseFilePipe,
   Query,
   Res,
-  InternalServerErrorException,
-  BadRequestException,
   Req,
 } from '@nestjs/common';
 import { DmsService } from './dms.service';
@@ -32,7 +30,6 @@ import { CreateFileDto } from './dto/request/create-file.dto';
 import { ReadFileDto } from './dto/response/read-file.dto';
 import { FileDownloadModes } from '../../enum/file-download-modes.enum';
 import { Request, Response } from 'express';
-import { ComsService } from '../common/coms.service';
 import { UpdateFileDto } from './dto/request/update-file.dto';
 import { IUserJWT } from '../../interface/user-jwt.interface';
 
@@ -56,10 +53,7 @@ import { IUserJWT } from '../../interface/user-jwt.interface';
 @ApiBearerAuth()
 @Controller('dms')
 export class DmsController {
-  constructor(
-    private readonly dmsService: DmsService,
-    private readonly comsService: ComsService,
-  ) {}
+  constructor(private readonly dmsService: DmsService) {}
 
   @ApiCreatedResponse({
     description: 'The DMS file Resource',
@@ -89,16 +83,7 @@ export class DmsController {
       ? createFileDto.fileName
       : file.originalname;
 
-    const readCOMSDtoList = await this.comsService.createOrUpdateObject(
-      currentUser,
-      file,
-    );
-
-    if (!readCOMSDtoList?.length) {
-      throw new InternalServerErrorException();
-    }
-
-    return await this.dmsService.create(readCOMSDtoList);
+    return await this.dmsService.create(currentUser, file);
   }
 
   @ApiCreatedResponse({
@@ -130,22 +115,7 @@ export class DmsController {
       ? updateFileDto.fileName
       : file.originalname;
 
-    const dmsObject = await this.dmsService.findLatest(documentId);
-    if (dmsObject?.documentId !== documentId) {
-      throw new BadRequestException('Invalid Document Id');
-    }
-
-    const readCOMSDto = await this.comsService.createOrUpdateObject(
-      currentUser,
-      file,
-      dmsObject.s3ObjectId,
-    );
-
-    if (!readCOMSDto?.length) {
-      throw new InternalServerErrorException();
-    }
-
-    return await this.dmsService.create(readCOMSDto, dmsObject);
+    return await this.dmsService.update(currentUser, documentId, file);
   }
 
   @ApiCreatedResponse({
@@ -171,23 +141,22 @@ export class DmsController {
     @Res() res: Response,
   ) {
     const currentUser = request.user as IUserJWT;
-    const file = await this.dmsService.findOne(documentId);
 
     if (download === FileDownloadModes.PROXY) {
-      await this.comsService.getObject(
+      await this.dmsService.download(
         currentUser,
-        file,
+        documentId,
         FileDownloadModes.PROXY,
         res,
       );
       res.status(200);
     } else {
-      const url = (await this.comsService.getObject(
+      const file = await this.dmsService.download(
         currentUser,
-        file,
+        documentId,
         FileDownloadModes.URL,
-      )) as string;
-      file.preSignedS3Url = url;
+        res,
+      );
       if (download === FileDownloadModes.URL) {
         res.status(201).send(file);
       } else {

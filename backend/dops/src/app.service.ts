@@ -8,6 +8,7 @@ import { DocumentTemplate } from './modules/dgen/entities/document-template.enti
 import { DmsService } from './modules/dms/dms.service';
 import { FileDownloadModes } from './enum/file-download-modes.enum';
 import { TemplateFile } from './interface/template-file.interface';
+import { FILE_ENCODING_TYPE } from './constants/dops.constant';
 
 @Injectable()
 export class AppService {
@@ -36,7 +37,10 @@ export class AppService {
           templateMetadata,
           FileDownloadModes.PROXY,
         )) as Buffer;
-        return { ...template, templatefile: templatefile.toString('base64') };
+        return {
+          ...template,
+          templatefile: templatefile.toString(FILE_ENCODING_TYPE),
+        };
       }),
     );
     await this.cacheManager.set(CacheKey.DOCUMENT_TEMPLATE, templateFiles);
