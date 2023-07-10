@@ -140,7 +140,7 @@ objects:
       cdogs-url: "${CDOGS_URL}"
       ches-token-url: "${CHES_TOKEN_URL}"
       ches-url: "${CHES_URL}"      
-      dops-url: "${NAME}-${ZONE}-backend-dms.${NAMESPACE}"
+      dops-url: "${NAME}-${ZONE}-backend-dops.${NAMESPACE}"
       vehicles-url: "${NAME}-${ZONE}-backend-vehicles.${NAMESPACE}"
       front-end-url: "https://${NAME}-${ZONE}-frontend.${DOMAIN}"
       node-env: "${NODE_ENV}"  
