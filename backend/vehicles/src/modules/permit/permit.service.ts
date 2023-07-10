@@ -84,7 +84,7 @@ export class PermitService {
     currentUser: IUserJWT,
     permitId: string,
     downloadMode: FileDownloadModes,
-    res: Response,
+    res?: Response,
   ): Promise<ReadFileDto> {
     // Retrieve the permit details using the permit ID
     const permit = await this.findOne(permitId);
