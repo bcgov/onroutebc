@@ -152,7 +152,7 @@ GO
 DECLARE @VersionDescription VARCHAR(255)
 SET @VersionDescription = 'Initial creation of entities for Permit Payment'
 
-INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [DDL_FILE_SHA1], [RELEASE_DATE]) VALUES (7, @VersionDescription, '$(FILE_HASH)', getdate())
+INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [DDL_FILE_SHA1], [RELEASE_DATE]) VALUES (7, @VersionDescription, '$(FILE_HASH)', getutcdate())
 
 
 COMMIT

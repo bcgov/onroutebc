@@ -7,9 +7,11 @@ import { CreatePermitDto } from './dto/request/create-permit.dto';
 import { ReadPermitDto } from './dto/response/read-permit.dto';
 import { Permit } from './entities/permit.entity';
 import { PermitType } from './entities/permit-type.entity';
-import { PdfService } from '../pdf/pdf.service';
-import { DmsResponse } from 'src/common/interface/dms.interface';
-import { DownloadMode } from 'src/common/enum/pdf.enum';
+import { DopsService } from '../common/dops.service';
+import { FileDownloadModes } from '../../common/enum/file-download-modes.enum';
+import { IUserJWT } from '../../common/interface/user-jwt.interface';
+import { Response } from 'express';
+import { ReadFileDto } from '../common/dto/response/read-file.dto';
 
 @Injectable()
 export class PermitService {
@@ -19,7 +21,7 @@ export class PermitService {
     private permitRepository: Repository<Permit>,
     @InjectRepository(PermitType)
     private permitTypeRepository: Repository<PermitType>,
-    private readonly pdfService: PdfService,
+    private readonly dopsService: DopsService,
   ) {}
 
   async create(createPermitDto: CreatePermitDto): Promise<ReadPermitDto> {
@@ -73,26 +75,36 @@ export class PermitService {
 
   /**
    * Finds a PDF document associated with a specific permit ID.
-   * @param accessToken - The access token for authorization.
+   * @param currentUser - The current User Details.
    * @param permitId - The ID of the permit for which to find the PDF document.
    * @param downloadMode - The mode for downloading the document (optional).
-   * @returns A Promise resolving to a DmsResponse object representing the found PDF document.
+   * @returns A Promise resolving to a ReadFileDto object representing the found PDF document.
    */
   public async findPDFbyPermitId(
-    accessToken: string,
+    currentUser: IUserJWT,
     permitId: string,
-    downloadMode?: DownloadMode,
-  ): Promise<DmsResponse> {
+    downloadMode: FileDownloadModes,
+    res?: Response,
+  ): Promise<ReadFileDto> {
     // Retrieve the permit details using the permit ID
     const permit = await this.findOne(permitId);
-    // Find the PDF document based on the associated document ID
-    const response = await this.pdfService.findPDFbyDocumentId(
-      accessToken,
-      permit.documentId,
-      downloadMode,
-    );
-    // Set the file name of the response to the permit permit number
-    response.fileName = permit.applicationNumber; // TODO: change to permit number
-    return response;
+
+    let file: ReadFileDto = null;
+    if (downloadMode === FileDownloadModes.PROXY) {
+      await this.dopsService.download(
+        currentUser,
+        permit.documentId,
+        downloadMode,
+        res,
+      );
+    } else {
+      file = (await this.dopsService.download(
+        currentUser,
+        permit.documentId,
+        downloadMode,
+        res,
+      )) as ReadFileDto;
+    }
+    return file;
   }
 }

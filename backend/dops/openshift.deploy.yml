@@ -1,0 +1,343 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+labels:
+  app: ${NAME}-${ZONE}
+  app.kubernetes.io/part-of: ${NAME}-${ZONE}
+parameters:
+  - name: NAME
+    description: Module name
+    value: onroutebc
+  - name: NAMESPACE
+    description: Deployment environment namespace
+    required: false
+  - name: COMPONENT
+    description: Component name
+    value: backend-dops
+  - name: ZONE
+    description: Deployment zone, e.g. pr-### or prod
+    required: true
+  - name: IMAGE_TAG
+    description: Image tag to use
+    value: latest
+  - name: DOMAIN
+    value: apps.silver.devops.gov.bc.ca
+  - name: CPU_REQUEST
+    value: "25m"
+  - name: MEMORY_REQUEST
+    value: "50Mi"
+  - name: CPU_LIMIT
+    value: "75m"
+  - name: MEMORY_LIMIT
+    value: "150Mi"
+  - name: MIN_REPLICAS
+    description: The minimum amount of replicas for the horizontal pod autoscaler.
+    value: "3"
+  - name: MAX_REPLICAS
+    description: The maximum amount of replicas for the horizontal pod autoscaler.
+    value: "5"
+  - name: REGISTRY
+    description: Container registry to import from (internal is image-registry.openshift-image-registry.svc:5000)
+    value: ghcr.io
+  - name: PROMOTE
+    description: Image (namespace/name:tag) to promote/import
+    value: bcgov/onroutebc:prod-backend-dops
+  - name: DATABASE_NAME
+    description: Name of Database to connect to 
+    required: true
+  - name: DATABASE_USER
+    description: User connecting to database
+    required: true
+  - name: DATABASE_PASSWORD
+    description: Password of user connecting to database
+    required: true
+  - name: DATABASE_HOST
+    description: Host url/service of database connection
+    required: true
+  - name: AUTH0_ISSUER_URL
+    description: The principal that issued the JWT
+    required: true
+  - name: AUTH0_AUDIENCE
+    description: Identifies the recipients that the JWT is intended for
+    required: true
+  - name: AUTH0_IGNORE_EXP
+    description: The boolean flag to ignore the JWT expiration
+    required: true
+  - name: BASICAUTH_USERNAME
+    description: The basic auth username for COMS
+    required: true
+  - name: BASICAUTH_PASSWORD
+    description: The basic auth password for COMS
+    required: true
+  - name: COMS_URL
+    description: The URL for the deployed instance of COMS
+    required: true
+  - name: COMS_SERVICE
+    description: The identifier to determine whether COMS is hosted vs self-hosted
+    required: true
+  - name: COMS_BUCKET_ID
+    description: The Uuid representing the bucket
+    required: true
+  - name: COMS_PRESIGNED_URL_EXPIRY
+    description: The exipry value (seconds) of the presigned URL
+    required: true
+  - name: CDOGS_CLIENT_ID
+    description: The keycloak client ID for common hosted CDOGS
+    required: true
+  - name: CDOGS_CLIENT_SECRET
+    description: The keycloak client secret for common hosted CDOGS
+    required: true
+  - name: CDOGS_TOKEN_URL
+    description: The keycloak url for common hosted CDOGS
+    required: true
+  - name: CDOGS_URL
+    description: The CDOGS API url 
+    required: true
+  - name: CHES_TOKEN_URL
+    description: The keycloak url for common hosted CHES
+    required: true    
+  - name: CHES_CLIENT_ID
+    description: Client Id to request the access token for connecting to CHES
+    required: true
+  - name: CHES_CLIENT_SECRET
+    description: Client Secret to request the access token for connecting to CHES
+    required: true
+  - name: CHES_URL
+    description: The CHES API url
+  - name: NODE_ENV
+    description: The NODE Environment
+    required: true 
+  - name: MOTIPAY_API_KEY
+    description: API Key for MOTI Pay
+    required: true  
+  - name: MOTIPAY_MERCHANT_ID
+    description: Merchant ID for MOTI Pay
+    required: true  
+  - name: MOTIPAY_BASE_URL
+    description: Base URL for MOTI Pay
+    required: true     
+objects:
+  - apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      labels:
+        app: ${NAME}-${ZONE}
+      name: ${NAME}-${ZONE}-${COMPONENT}
+    data:
+      database-type: mssql
+      database-name: "${DATABASE_NAME}"
+      database-host: "${DATABASE_HOST}"
+      database-encrypt: "false"
+      database-port: "1433"
+      auth0-issuer-url: "${AUTH0_ISSUER_URL}"
+      auth0-audience: "${AUTH0_AUDIENCE}"
+      auth0-ignore-exp: "${AUTH0_IGNORE_EXP}"
+      coms-url: "${COMS_URL}"
+      coms-service: "${COMS_SERVICE}"
+      coms-bucket-id: "${COMS_BUCKET_ID}"
+      coms-presigned-url-expiry: "${COMS_PRESIGNED_URL_EXPIRY}"
+      node-env: "${NODE_ENV}"
+  - apiVersion: v1
+    kind: Secret
+    metadata:
+      labels:
+        app: ${NAME}-${ZONE}
+      name: ${NAME}-${ZONE}-${COMPONENT}
+    stringData:
+      database-user: "${DATABASE_USER}"
+      database-password: "${DATABASE_PASSWORD}"
+      coms-basic-user: "${BASICAUTH_USERNAME}"
+      coms-basic-password: "${BASICAUTH_PASSWORD}"
+  - apiVersion: v1
+    kind: ImageStream
+    metadata:
+      labels:
+        app: ${NAME}-${ZONE}
+      name: ${NAME}-${ZONE}-${COMPONENT}
+    spec:
+      lookupPolicy:
+        local: false
+      tags:
+        - name: ${IMAGE_TAG}
+          from:
+            kind: DockerImage
+            name: ${REGISTRY}/${PROMOTE}
+          referencePolicy:
+            type: Local
+  - apiVersion: v1
+    kind: DeploymentConfig
+    metadata:
+      labels:
+        app: ${NAME}-${ZONE}
+      name: ${NAME}-${ZONE}-${COMPONENT}
+    spec:
+      replicas: 1
+      triggers:
+        - type: ConfigChange
+        - type: ImageChange
+          imageChangeParams:
+            automatic: true
+            containerNames:
+              - ${NAME}
+            from:
+              kind: ImageStreamTag
+              name: ${NAME}-${ZONE}-${COMPONENT}:${IMAGE_TAG}
+      selector:
+        deploymentconfig: ${NAME}-${ZONE}-${COMPONENT}
+      strategy:
+        type: Rolling
+      template:
+        metadata:
+          labels:
+            app: ${NAME}-${ZONE}
+            deploymentconfig: ${NAME}-${ZONE}-${COMPONENT}
+        spec:
+          containers:
+            - image: ${NAME}-${ZONE}-${COMPONENT}:${IMAGE_TAG}
+              imagePullPolicy: Always
+              name: ${NAME}
+              env:
+                - name: DB_TYPE
+                  valueFrom:
+                    configMapKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: database-type
+                - name: MSSQL_HOST
+                  valueFrom:
+                    configMapKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: database-host
+                - name: MSSQL_PORT
+                  valueFrom:
+                    configMapKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: database-port
+                - name: MSSQL_DB
+                  valueFrom:
+                    configMapKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: database-name
+                - name: MSSQL_ENCRYPT
+                  valueFrom:
+                    configMapKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: database-encrypt
+                - name: MSSQL_SA_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: database-password
+                - name: MSSQL_SA_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: database-user
+                - name: AUTH0_ISSUER_URL
+                  valueFrom:
+                    configMapKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: auth0-issuer-url
+                - name: AUTH0_AUDIENCE
+                  valueFrom:
+                    configMapKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: auth0-audience
+                - name: AUTH0_IGNORE_EXP
+                  valueFrom:
+                    configMapKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: auth0-ignore-exp
+                - name: BASICAUTH_USERNAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: coms-basic-user 
+                - name: BASICAUTH_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: coms-basic-password
+                - name: COMS_URL
+                  valueFrom:
+                    configMapKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: coms-url
+                - name: COMS_SERVICE
+                  valueFrom:
+                    configMapKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: coms-service
+                - name: COMS_BUCKET_ID
+                  valueFrom:
+                    configMapKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: coms-bucket-id
+                - name: COMS_PRESIGNED_URL_EXPIRY
+                  valueFrom:
+                    configMapKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: coms-presigned-url-expiry
+                - name: NODE_ENV
+                  valueFrom:
+                    configMapKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: node-env
+              ports:
+                - containerPort: 5001
+                  protocol: TCP
+              resources:
+                requests:
+                  cpu: ${CPU_REQUEST}
+                  memory: ${MEMORY_REQUEST}
+                limits:
+                  cpu: ${CPU_LIMIT}
+                  memory: ${MEMORY_LIMIT}
+              readinessProbe:
+                httpGet:
+                  path: /
+                  port: 5001
+                  scheme: HTTP
+                initialDelaySeconds: 60
+                periodSeconds: 15
+                timeoutSeconds: 5
+              livenessProbe:
+                successThreshold: 1
+                failureThreshold: 3
+                httpGet:
+                  path: /
+                  port: 5001
+                  scheme: HTTP
+                initialDelaySeconds: 60
+                periodSeconds: 30
+                timeoutSeconds: 5
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      labels:
+        app: ${NAME}-${ZONE}
+      name: ${NAME}-${ZONE}-${COMPONENT}
+    spec:
+      ports:
+        - name: 5001-tcp
+          protocol: TCP
+          port: 80
+          targetPort: 5001
+      selector:
+        deploymentconfig: ${NAME}-${ZONE}-${COMPONENT}
+  - apiVersion: autoscaling/v2
+    kind: HorizontalPodAutoscaler
+    metadata:
+      name: ${NAME}-${ZONE}-${COMPONENT}
+    spec:
+      scaleTargetRef:
+        apiVersion: apps.openshift.io/v1
+        kind: DeploymentConfig
+        name: ${NAME}-${ZONE}-${COMPONENT}
+      minReplicas: ${{MIN_REPLICAS}}
+      maxReplicas: ${{MAX_REPLICAS}}
+      metrics:
+        - type: Resource
+          resource:
+            name: cpu
+            target:
+              type: Utilization
+              averageUtilization: 100

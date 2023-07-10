@@ -8,6 +8,7 @@ import { AddressProfile } from './profiles/address.profile';
 import { ContactProfile } from './profiles/contact.profile';
 import { CommonService } from './common.service';
 import { HttpModule } from '@nestjs/axios';
+import { DopsService } from './dops.service';
 
 @Global()
 @Module({
@@ -15,7 +16,13 @@ import { HttpModule } from '@nestjs/axios';
     HttpModule,
     TypeOrmModule.forFeature([Country, Province, Address, Contact]),
   ],
-  providers: [AddressProfile, ContactProfile, CommonService],
-  exports: [HttpModule, AddressProfile, ContactProfile, CommonService],
+  providers: [AddressProfile, ContactProfile, CommonService, DopsService],
+  exports: [
+    HttpModule,
+    AddressProfile,
+    ContactProfile,
+    CommonService,
+    DopsService,
+  ],
 })
 export class CommonModule {}

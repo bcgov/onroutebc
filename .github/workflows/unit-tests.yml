@@ -26,12 +26,12 @@ jobs:
     strategy:
       matrix:
         #dir: [backend/vehicles, frontend]
-        dir: [backend/vehicles, backend/dms, frontend]
+        dir: [backend/vehicles, backend/dops, frontend]
         include:
           - dir: backend/vehicles
             sonar_projectKey: bcgov_onroutebc_backend
             token: SONAR_TOKEN_BACKEND
-          - dir: backend/dms
+          - dir: backend/dops
             sonar_projectKey: bcgov_onroutebc_backend
             token: SONAR_TOKEN_BACKEND            
           - dir: frontend
