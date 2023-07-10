@@ -134,6 +134,7 @@ objects:
       coms-presigned-url-expiry: "${COMS_PRESIGNED_URL_EXPIRY}"
       node-env: "${NODE_ENV}"
       cdogs-token-url: "${CDOGS_TOKEN_URL}"
+      cdogs-url: "${CDOGS_URL}"
   - apiVersion: v1
     kind: Secret
     metadata:
@@ -296,6 +297,11 @@ objects:
                     secretKeyRef:
                       name: ${NAME}-${ZONE}-${COMPONENT}
                       key: cdogs-client-secret
+                - name: CDOGS_URL
+                  valueFrom:
+                    configMapKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: cdogs-url
               ports:
                 - containerPort: 5001
                   protocol: TCP
