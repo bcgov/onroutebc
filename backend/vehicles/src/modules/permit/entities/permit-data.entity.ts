@@ -5,6 +5,7 @@ import {
   PrimaryGeneratedColumn,
   OneToOne,
   JoinColumn,
+  Index,
 } from 'typeorm';
 import { AutoMap } from '@automapper/classes';
 import { Base } from '../../common/entities/base.entity';
@@ -26,6 +27,7 @@ export class PermitData extends Base {
   permit: Permit;
 
   @AutoMap()
+  @Index({ fulltext: true })
   @Column({ length: 4000, name: 'PERMIT_DATA', nullable: true })
   permitData: string;
 
