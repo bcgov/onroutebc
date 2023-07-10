@@ -11,39 +11,56 @@ import { Loading } from "../../../../common/pages/Loading";
  * Otherwise, it displays the payment status message.
  */
 export const PaymentRedirect = () => {
+  const [isLoading, setIsLoading] = useState<boolean>();
   const [paymentStatus, setPaymentStatus] = useState<number>();
   const [message, setMessage] = useState<string>();
 
   useEffect(() => {
+    setIsLoading(true);
     const url = window.location.href;
     const parameters = getURLParameters(url);
     const transaction = mapTransactionDetails(parameters);
-    handlePostTransaction(transaction, parameters.messageText, parameters.trnApproved);
+    handlePostTransaction(
+      transaction,
+      parameters.messageText,
+      parameters.trnApproved
+    );
   }, []);
 
-  const handlePostTransaction = async (transaction: Transaction, messageText: string, isApproved: number) => {
-    const result = await postTransaction(transaction);
-    
-    if (result.status != 201){
-      setMessage(result.response.data.message);
-    }
-    else{
+  const handlePostTransaction = async (
+    transaction: Transaction,
+    messageText: string,
+    isApproved: number
+  ) => {
+    if (isApproved == 0) {
+      setPaymentStatus(isApproved);
       setMessage(messageText);
+      setIsLoading(false);
+      return;
     }
-    setPaymentStatus(isApproved);
-  }
 
-  if (!paymentStatus) return <Loading/>
+    const result = await postTransaction(transaction);
 
-  return paymentStatus === 1 ? (
-    <SuccessPage />
-  ) : (
-    <div>{message}</div>
-  );
+    if (result.status != 201) {
+      console.log("Error: handlePostTransaction.", result);
+      setMessage(`TODO: Payment approved but error in ORBC Backend: ${result.response.data.message}`);
+      setPaymentStatus(0);
+    } else {
+      setMessage(messageText);
+      setPaymentStatus(isApproved);
+    }
+    
+    setIsLoading(false);
+  };
+
+  if (isLoading) return <Loading />;
+
+  return paymentStatus === 1 ? <SuccessPage /> : <div>{message}</div>;
 };
 
-
-const mapTransactionDetails = (motiResponse: MotiPaymentDetails) : Transaction => {
+const mapTransactionDetails = (
+  motiResponse: MotiPaymentDetails
+): Transaction => {
   return {
     //transactionId: Number(motiResponse.trnId), // TODO check this and providerTransactionId
     transactionType: motiResponse.trnType,
@@ -59,5 +76,5 @@ const mapTransactionDetails = (motiResponse: MotiPaymentDetails) : Transaction =
     paymentMethodId: 1, // TODO: change once different payment methods are implemented
     messageId: motiResponse.messageId,
     messageText: motiResponse.messageText,
-  }
-}
+  };
+};
