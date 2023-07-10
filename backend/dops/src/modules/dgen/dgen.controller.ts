@@ -15,6 +15,7 @@ import { IUserJWT } from '../../interface/user-jwt.interface';
 import { CreateGeneratedDocumentDto } from './dto/request/create-generated-document.dto';
 import { DgenService } from './dgen.service';
 import { Public } from '../../decorator/public.decorator';
+import { AuthOnly } from '../../decorator/auth-only.decorator';
 
 @ApiTags('Document Generator (DGEN)')
 @ApiBadRequestResponse({
@@ -42,7 +43,7 @@ export class DgenController {
     description: 'The Generated Document Resource',
     type: ReadGeneratedDocumentDto,
   })
-  @Public()
+  @AuthOnly()
   @Post('/template/render')
   async generate(
     @Req() request: Request,

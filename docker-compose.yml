@@ -113,7 +113,8 @@ services:
       COMS_URL: ${COMS_URL}
       COMS_SERVICE: ${COMS_SERVICE}
       COMS_BUCKET_ID: ${COMS_BUCKET_ID}
-      COMS_PRESIGNED_URL_EXPIRY: ${COMS_PRESIGNED_URL_EXPIRY}      
+      COMS_PRESIGNED_URL_EXPIRY: ${COMS_PRESIGNED_URL_EXPIRY}
+      CDOGS_TOKEN_URL: ${CDOGS_TOKEN_URL}
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5001/"]
       interval: 1m30s
