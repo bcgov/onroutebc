@@ -86,8 +86,7 @@ export class AppService {
     );
 
     const endDateTime = new Date();
-    const processingTime =
-      endDateTime.getMilliseconds() - startDateTime.getMilliseconds();
+    const processingTime = endDateTime.getTime() - startDateTime.getTime();
     console.log(
       `initializeCache() -> Start time: ${startDateTime.toISOString()},` +
         `End time: ${endDateTime.toISOString()},` +

@@ -110,7 +110,7 @@ export class PermitController {
       const file = await this.permitService.findPDFbyPermitId(
         currentUser,
         permitId,
-        download,        
+        download,
       );
       if (download === FileDownloadModes.URL) {
         res.status(201).send(file);

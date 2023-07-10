@@ -15,8 +15,6 @@ import { IUserJWT } from '../../interface/user-jwt.interface';
 import { CreateGeneratedDocumentDto } from './dto/request/create-generated-document.dto';
 import { DgenService } from './dgen.service';
 import { Public } from '../../decorator/public.decorator';
-import { CdogsService } from '../common/cdogs.service';
-import { DmsService } from '../dms/dms.service';
 
 @ApiTags('Document Generator (DGEN)')
 @ApiBadRequestResponse({
@@ -38,9 +36,7 @@ import { DmsService } from '../dms/dms.service';
 @ApiBearerAuth()
 @Controller('dgen')
 export class DgenController {
-  constructor(
-    private readonly dgenService: DgenService,
-  ) {}
+  constructor(private readonly dgenService: DgenService) {}
 
   @ApiCreatedResponse({
     description: 'The Generated Document Resource',
