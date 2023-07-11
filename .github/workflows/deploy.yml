@@ -111,14 +111,14 @@ jobs:
             ${{secrets.VAULT_ENVIRONMENT}}/data/coms-${{inputs.vault_zone}}       COMS_URL                        | VAULT_COMS_URL;
             ${{secrets.VAULT_ENVIRONMENT}}/data/coms-${{inputs.vault_zone}}       COMS_AUTH_TYPE                  | VAULT_COMS_AUTH_TYPE;
             ${{secrets.VAULT_ENVIRONMENT}}/data/coms-${{inputs.vault_zone}}       COMS_BUCKET_ID                  | VAULT_COMS_BUCKET_ID;
-            ${{secrets.VAULT_ENVIRONMENT}}/data/coms-${{inputs.vault_zone}}       COMS_PRESIGNED_URL_EXPIRY       | VAULT_PRESIGNED_URL_EXPIRY;
+            ${{secrets.VAULT_ENVIRONMENT}}/data/coms-${{inputs.vault_zone}}       COMS_PRESIGNED_URL_EXPIRY       | VAULT_COMS_PRESIGNED_URL_EXPIRY;
             ${{secrets.VAULT_ENVIRONMENT}}/data/dops-${{inputs.vault_zone}}       DOPS_S3_ACCESS_TYPE             | VAULT_DOPS_S3_ACCESS_TYPE;
             ${{secrets.VAULT_ENVIRONMENT}}/data/dops-${{inputs.vault_zone}}       DOPS_S3_ACCESSKEYID             | VAULT_DOPS_S3_ACCESSKEYID;
             ${{secrets.VAULT_ENVIRONMENT}}/data/dops-${{inputs.vault_zone}}       DOPS_S3_BUCKET                  | VAULT_DOPS_S3_BUCKET;
-            ${{secrets.VAULT_ENVIRONMENT}}/data/dops-${{inputs.vault_zone}}       DOPS_S3_PRESIGNED_URL_EXPIRY    | VAULT_S3_PRESIGNED_URL_EXPIRY;
-            ${{secrets.VAULT_ENVIRONMENT}}/data/dops-${{inputs.vault_zone}}       DOPS_S3_ENDPOINT                | VAULT_S3_ENDPOINT;
-            ${{secrets.VAULT_ENVIRONMENT}}/data/dops-${{inputs.vault_zone}}       DOPS_S3_KEY                     | VAULT_S3_KEY;
-            ${{secrets.VAULT_ENVIRONMENT}}/data/dops-${{inputs.vault_zone}}       DOPS_S3_SECRETACCESSKEY         | VAULT_S3_SECRETACCESSKEY;
+            ${{secrets.VAULT_ENVIRONMENT}}/data/dops-${{inputs.vault_zone}}       DOPS_S3_PRESIGNED_URL_EXPIRY    | VAULT_DOPS_S3_PRESIGNED_URL_EXPIRY;
+            ${{secrets.VAULT_ENVIRONMENT}}/data/dops-${{inputs.vault_zone}}       DOPS_S3_ENDPOINT                | VAULT_DOPS_S3_ENDPOINT;
+            ${{secrets.VAULT_ENVIRONMENT}}/data/dops-${{inputs.vault_zone}}       DOPS_S3_KEY                     | VAULT_DOPS_S3_KEY;
+            ${{secrets.VAULT_ENVIRONMENT}}/data/dops-${{inputs.vault_zone}}       DOPS_S3_SECRETACCESSKEY         | VAULT_DOPS_S3_SECRETACCESSKEY;
             ${{secrets.VAULT_ENVIRONMENT}}/data/ches-${{inputs.vault_zone}}       CHES_TOKEN_URL                  | VAULT_CHES_TOKEN_URL;
             ${{secrets.VAULT_ENVIRONMENT}}/data/ches-${{inputs.vault_zone}}       CHES_URL                        | VAULT_CHES_URL;
             ${{secrets.VAULT_ENVIRONMENT}}/data/ches-${{inputs.vault_zone}}       CHES_CLIENT_ID                  | VAULT_CHES_CLIENT_ID;
@@ -155,7 +155,7 @@ jobs:
             -p COMS_URL=${{steps.vault.outputs.VAULT_COMS_URL}}
             -p COMS_AUTH_TYPE=${{steps.vault.outputs.VAULT_COMS_AUTH_TYPE}}
             -p COMS_BUCKET_ID=${{steps.vault.outputs.VAULT_COMS_BUCKET_ID}}
-            -p COMS_PRESIGNED_URL_EXPIRY=${{steps.vault.outputs.VAULT_PRESIGNED_URL_EXPIRY}}
+            -p COMS_PRESIGNED_URL_EXPIRY=${{steps.vault.outputs.VAULT_COMS_PRESIGNED_URL_EXPIRY}}
             -p DOPS_S3_ACCESS_TYPE=${{steps.vault.outputs.VAULT_DOPS_S3_ACCESS_TYPE}}
             -p DOPS_S3_ACCESSKEYID=${{steps.vault.outputs.VAULT_DOPS_S3_ACCESSKEYID}}
             -p DOPS_S3_BUCKET=${{steps.vault.outputs.VAULT_DOPS_S3_BUCKET}}
