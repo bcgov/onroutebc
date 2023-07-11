@@ -29,6 +29,7 @@ export const ApplicationDetails = ({
         <Typography
           className="application-details__title"
           variant={"h1"}
+          data-testid="application-title"
         >
           {applicationName}
         </Typography>

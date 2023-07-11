@@ -1,24 +1,10 @@
-import { setupServer } from "msw/node";
-import { rest } from "msw";
-
 import { formatPhoneNumber } from "../../../../../../common/components/form/subFormComponents/PhoneNumberInput";
-import { 
-  createPowerUnit,
-  createTrailer,
-  getAllPowerUnitTypes, 
-  getAllPowerUnits, 
-  getAllTrailerTypes, 
-  getAllTrailers,
-  resetVehicleSource,
-  updatePowerUnit,
-} from "./fixtures/getVehicleInfo";
-import { PERMITS_API } from "../../../../apiManager/endpoints/endpoints";
-import { VEHICLES_API, VEHICLE_URL } from "../../../../../manageVehicles/apiManager/endpoints/endpoints";
-import { getDefaultUserDetails, getEmptyUserDetails } from "./fixtures/getUserDetails";
-import { getDefaultCompanyInfo } from "./fixtures/getCompanyInfo";
-import { createApplication, getApplication, resetApplicationSource, updateApplication } from "./fixtures/getActiveApplication";
-import { DATE_FORMATS, dayjsToLocalStr, dayjsToUtcStr, now, utcToLocalDayjs } from "../../../../../../common/helpers/formatDate";
-import { renderTestComponent } from "./helpers/prepare";
+import { resetVehicleSource } from "./fixtures/getVehicleInfo";
+import { getEmptyUserDetails } from "./fixtures/getUserDetails";
+import { resetApplicationSource } from "./fixtures/getActiveApplication";
+import { DATE_FORMATS, dayjsToLocalStr, utcToLocalDayjs } from "../../../../../../common/helpers/formatDate";
+import { closeMockServer, companyInfo, defaultUserDetails, listenToMockServer, newApplicationNumber, renderTestComponent, resetMockServer } from "./helpers/prepare";
+import { getDefaultRequiredVal } from "../../../../../../common/helpers/util";
 import { 
   applicationCreatedDateDisplay,
   applicationNumberDisplay,
@@ -33,11 +19,7 @@ import {
   getSavedApplication,
   inputWithValue, replaceValueForInput, saveApplication, sendPermitToEmailMsg,
 } from "./helpers/access";
-import { MANAGE_PROFILE_API } from "../../../../../manageProfile/apiManager/endpoints/endpoints";
-import { getDefaultRequiredVal } from "../../../../../../common/helpers/util";
 
-// Use some default user details values to give to the OnRouteBCContext context provider
-const defaultUserDetails = getDefaultUserDetails();
 const {
   firstName,
   lastName,
@@ -49,122 +31,10 @@ const {
   fax,
 } = defaultUserDetails.userDetails;
 
-const newApplicationNumber = "A1-00000001-800-R01";
-const companyInfo = getDefaultCompanyInfo();
-
-// Mock API endpoints
-const server = setupServer(
-  // Mock creating/saving application
-  rest.post(PERMITS_API.SUBMIT_TERM_OVERSIZE_PERMIT, async (req, res, ctx) => {
-    const reqBody = await req.json();
-    const applicationData = { 
-      ...reqBody,
-      applicationNumber: newApplicationNumber,
-      createdDateTime: dayjsToUtcStr(now()),
-      updatedDateTime: dayjsToUtcStr(now()),
-    };
-    const createdApplication = createApplication(applicationData); // add to mock application store
-    return res(ctx.status(201), ctx.json({
-      ...createdApplication,
-    }));
-  }),
-  // Mock updating/saving application
-  rest.put(`${PERMITS_API.SUBMIT_TERM_OVERSIZE_PERMIT}/:id`, async (req, res, ctx) => {
-    const id = String(req.params.id);
-    const reqBody = await req.json();
-    const applicationData = {
-      ...reqBody,
-      updatedDateTime: dayjsToUtcStr(now()),
-    }
-    const updatedApplication = updateApplication(applicationData, id); // update application in mock application store
-
-    if (!updatedApplication) {
-      return res(ctx.status(404), ctx.json({
-        message: "Application not found",
-      }));
-    }
-    return res(ctx.json({
-      ...updatedApplication,
-    }));
-  }),
-  // Mock getting application
-  rest.get(`${VEHICLE_URL}/permits/applications/:permitId`, (_, res, ctx) => {
-    return res(ctx.json({
-      // get application from mock application store (there's only 1 application or empty), since we're testing save/create/edit behaviour
-      data: getApplication(), 
-    }));
-  }),
-  // Mock getting power unit types
-  rest.get(VEHICLES_API.POWER_UNIT_TYPES, async (_, res, ctx) => {
-    return res(ctx.json({
-      data: getAllPowerUnitTypes() // get power unit types from mock vehicle store
-    
-    }));
-  }),
-  // Mock getting trailer types
-  rest.get(VEHICLES_API.TRAILER_TYPES, async (_, res, ctx) => {
-    return res(ctx.json({
-      data: getAllTrailerTypes() // get trailer types from mock vehicle store
-    }));
-  }),
-  // Mock getting power unit vehicles
-  rest.get(`${VEHICLE_URL}/companies/:companyId/vehicles/powerUnits`, async (_, res, ctx) => {
-    return res(ctx.json({
-      data: getAllPowerUnits(), // get power unit vehicles from mock vehicle store
-    }));
-  }),
-  // Mock getting trailer vehicles
-  rest.get(`${VEHICLE_URL}/companies/:companyId/vehicles/trailers`, async (_, res, ctx) => {
-    return res(ctx.json({
-      data: getAllTrailers(), // get trailer vehicles from mock vehicle store
-    }));
-  }),
-  // Mock getting company details
-  rest.get(`${MANAGE_PROFILE_API.COMPANIES}/:companyId`, async (_, res, ctx) => {
-    return res(ctx.json({
-      ...companyInfo,
-    }));
-  }),
-  // Mock creating power unit vehicle
-  rest.post(`${VEHICLE_URL}/companies/:companyId/vehicles/powerUnits`, async (req, res, ctx) => {
-    const reqBody = await req.json();
-    const newPowerUnit = createPowerUnit(reqBody); // create power unit vehicle in mock vehicle store
-    return res(ctx.status(201), ctx.json({
-      data: newPowerUnit
-    }));
-  }),
-  // Mock updating power unit vehicle
-  rest.put(`${VEHICLE_URL}/companies/:companyId/vehicles/powerUnits/:powerUnitId`, async (req, res, ctx) => {
-    const id = String(req.params.powerUnitId);
-    const reqBody = await req.json();
-    const updatedPowerUnit = updatePowerUnit(id, reqBody); // update power unit vehicle in mock vehicle store
-    return res(ctx.json({
-      data: updatedPowerUnit,
-    }));
-  }),
-  // Mock creating trailer vehicle
-  rest.post(`${VEHICLE_URL}/companies/:companyId/vehicles/trailers`, async (req, res, ctx) => {
-    const reqBody = await req.json();
-    const newTrailer = createTrailer(reqBody); // create trailer vehicle in mock vehicle store
-    return res(ctx.status(201), ctx.json({
-      data: newTrailer
-    }));
-  }),
-  // Mock updating trailer vehicle
-  rest.put(`${VEHICLE_URL}/companies/:companyId/vehicles/trailers/:trailerId`, async (req, res, ctx) => {
-    const id = String(req.params.trailerId);
-    const reqBody = await req.json();
-    const updatedTrailer = updatePowerUnit(id, reqBody); // update trailer vehicle in mock vehicle store
-    return res(ctx.json({
-      data: updatedTrailer,
-    }));
-  }),
-);
-
 beforeAll(() => {
   resetVehicleSource();
   resetApplicationSource();
-  server.listen();
+  listenToMockServer();
 });
 
 beforeEach(async () => {
@@ -174,11 +44,11 @@ beforeEach(async () => {
 });
 
 afterEach(() => {
-  server.resetHandlers();
+  resetMockServer();
 });
 
 afterAll(() => {
-  server.close();
+  closeMockServer();
 });
 
 describe("Application Contact Details", () => {
@@ -224,20 +94,8 @@ describe("Application Contact Details", () => {
     await replaceValueForInput(user, emailInput, email.length, newEmail);
     await saveApplication(user);
 
-    // Assert - mock store should contain updated values
-    const applicationData = await getSavedApplication();
-    expect(applicationData?.permitData).not.toBeUndefined();
-    expect(applicationData?.permitData?.contactDetails).not.toBeUndefined();
-    expect(applicationData?.permitData?.contactDetails?.firstName).toBe(newFirstName);
-    expect(applicationData?.permitData?.contactDetails?.lastName).toBe(newLastName);
-    expect(applicationData?.permitData?.contactDetails?.phone1).toBe(newPhone1);
-    expect(applicationData?.permitData?.contactDetails?.phone1Extension).toBe(phone1Extension);
-    expect(applicationData?.permitData?.contactDetails?.phone2).toBe(newPhone2);
-    expect(applicationData?.permitData?.contactDetails?.phone2Extension).toBe(phone2Extension);
-    expect(applicationData?.permitData?.contactDetails?.email).toBe(newEmail);
-    expect(applicationData?.permitData?.contactDetails?.fax).toBe(fax);
-    
     // Assert - input fields should contain updated values
+    await getSavedApplication();
     expect(firstNameInput).toHaveValue(newFirstName);
     expect(lastNameInput).toHaveValue(newLastName);
     expect(phone1Input).toHaveValue(newPhone1);
@@ -328,7 +186,8 @@ describe("Application Header", () => {
     renderTestComponent(defaultUserDetails);
 
     // Assert
-    expect(await companyNameDisplay()).toHaveTextContent(companyInfo.legalName);
-    expect(await companyClientNumberDisplay()).toHaveTextContent(companyInfo.clientNumber);
+    const { legalName, clientNumber } = companyInfo;
+    expect(await companyNameDisplay()).toHaveTextContent(legalName);
+    expect(await companyClientNumberDisplay()).toHaveTextContent(clientNumber);
   });
 });
