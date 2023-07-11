@@ -11,8 +11,10 @@ import {
 import { getDefaultRequiredVal, replaceEmptyValuesWithNull } from "../../../common/helpers/util";
 import { Application, ApplicationResponse, PermitApplicationInProgress } from "../types/application";
 import { DATE_FORMATS, toLocal } from "../../../common/helpers/formatDate";
-import { APPLICATION_PDF_API, APPLICATION_UPDATE_STATUS_API, PERMITS_API, VEHICLE_URL } from "./endpoints/endpoints";
+import { APPLICATION_PDF_API, APPLICATION_UPDATE_STATUS_API, PAYMENT_API, PERMITS_API } from "./endpoints/endpoints";
 import { mapApplicationToApplicationRequestData } from "../helpers/mappers";
+import { Transaction } from "../types/payment";
+import { VEHICLES_URL } from "../../../common/apiManager/endpoints/endpoints";
 
 /**
  * Submits a new term oversize application.
@@ -57,7 +59,7 @@ export const updateTermOversize = (
 export const getApplicationsInProgress = async (): Promise<
   PermitApplicationInProgress[]
 > => {
-  const applicationsUrl = `${VEHICLE_URL}/permits/applications?companyId=${getCompanyIdFromSession()}&userGUID=${getUserGuidFromSession()}&status=IN_PROGRESS`;
+  const applicationsUrl = `${VEHICLES_URL}/permits/applications?companyId=${getCompanyIdFromSession()}&userGUID=${getUserGuidFromSession()}&status=IN_PROGRESS`;
   const applications = await httpGETRequest(applicationsUrl).then(
     (response) => (getDefaultRequiredVal([], response.data) as PermitApplicationInProgress[])
       .map(application => {
@@ -97,7 +99,7 @@ export const getApplicationInProgressById = (
   permitId: string | undefined,
 )  : Promise<ApplicationResponse | undefined>=> {
   const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
-  const url = `${VEHICLE_URL}/permits/applications/${permitId}?companyId=${companyId}`;
+  const url = `${VEHICLES_URL}/permits/applications/${permitId}?companyId=${companyId}`;
   return httpGETRequest(url).then(response => response.data);
 };
 
@@ -126,5 +128,38 @@ export const downloadPermitApplicationPdf = (
   const url = `${APPLICATION_PDF_API}/${permitId}?download=proxy`;
   return httpGETRequest(url).then((response) => {
     return response;
+  });
+};
+
+/**
+ * Generates a URL for making a payment transaction with Moti Pay.
+ * @param {number} transactionAmount - The amount of the transaction.
+ * @returns {Promise<any>} - A Promise that resolves to the transaction URL.
+ */
+export const getMotiPayTransactionUrl = async (
+  paymentMethodId: number,
+  transactionSubmitDate: string,
+  transactionAmount: number,
+  permitIds: string[]
+): Promise<any> => {
+  const url = `${PAYMENT_API}?` 
+    + `paymentMethodId=${paymentMethodId}`
+    + `&transactionSubmitDate=${transactionSubmitDate}`
+    + `&transactionAmount=${transactionAmount}`
+    + `&permitIds=${permitIds.toString()}`;
+  return httpGETRequest(url).then((response) => {
+    return response.data.url;
+  });
+};
+
+export const postTransaction = async (
+  transactionDetails: Transaction,
+): Promise<any> => {
+  const url = `${PAYMENT_API}`;
+  return httpPOSTRequest_axios(url, transactionDetails).then((response) => {
+    return response;
+  })
+  .catch((err) => {
+    return err;
   });
 };

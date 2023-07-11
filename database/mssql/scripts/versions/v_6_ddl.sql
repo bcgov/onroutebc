@@ -1,6 +1,3 @@
-CREATE SCHEMA [dms]
-GO
-
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -9,7 +6,7 @@ SET NOCOUNT ON
 GO
 BEGIN TRANSACTION
 
-CREATE TABLE [dms].[ORBC_DOCUMENT](
+CREATE TABLE [dops].[ORBC_DOCUMENT](
 	[ID] [bigint] IDENTITY(1,1) NOT NULL,
 	[S3_OBJECT_ID] [uniqueidentifier] NOT NULL,
 	[S3_VERSION_ID] [bigint] NULL,
@@ -29,38 +26,38 @@ CREATE TABLE [dms].[ORBC_DOCUMENT](
 ) ON [PRIMARY]
 GO
 
-ALTER TABLE [dms].[ORBC_DOCUMENT] ADD  CONSTRAINT [DF_ORBC_DOCUMENTS_DB_CREATE_USERID]  DEFAULT (user_name()) FOR [DB_CREATE_USERID]
+ALTER TABLE [dops].[ORBC_DOCUMENT] ADD  CONSTRAINT [DF_ORBC_DOCUMENTS_DB_CREATE_USERID]  DEFAULT (user_name()) FOR [DB_CREATE_USERID]
 GO
-ALTER TABLE [dms].[ORBC_DOCUMENT] ADD  CONSTRAINT [DF_ORBC_DOCUMENTS_DB_CREATE_TIMESTAMP]  DEFAULT (getutcdate()) FOR [DB_CREATE_TIMESTAMP]
+ALTER TABLE [dops].[ORBC_DOCUMENT] ADD  CONSTRAINT [DF_ORBC_DOCUMENTS_DB_CREATE_TIMESTAMP]  DEFAULT (getutcdate()) FOR [DB_CREATE_TIMESTAMP]
 GO
-ALTER TABLE [dms].[ORBC_DOCUMENT] ADD  CONSTRAINT [DF_ORBC_DOCUMENTS_DB_LAST_UPDATE_USERID]  DEFAULT (user_name()) FOR [DB_LAST_UPDATE_USERID]
+ALTER TABLE [dops].[ORBC_DOCUMENT] ADD  CONSTRAINT [DF_ORBC_DOCUMENTS_DB_LAST_UPDATE_USERID]  DEFAULT (user_name()) FOR [DB_LAST_UPDATE_USERID]
 GO
-ALTER TABLE [dms].[ORBC_DOCUMENT] ADD  CONSTRAINT [DF_ORBC_DOCUMENTS_DB_LAST_UPDATE_TIMESTAMP]  DEFAULT (getutcdate()) FOR [DB_LAST_UPDATE_TIMESTAMP]
+ALTER TABLE [dops].[ORBC_DOCUMENT] ADD  CONSTRAINT [DF_ORBC_DOCUMENTS_DB_LAST_UPDATE_TIMESTAMP]  DEFAULT (getutcdate()) FOR [DB_LAST_UPDATE_TIMESTAMP]
 GO
 
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Surrogate primary key for the document metadata record' , @level0type=N'SCHEMA',@level0name=N'dms', @level1type=N'TABLE',@level1name=N'ORBC_DOCUMENT', @level2type=N'COLUMN',@level2name=N'ID'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Surrogate primary key for the document metadata record' , @level0type=N'SCHEMA',@level0name=N'dops', @level1type=N'TABLE',@level1name=N'ORBC_DOCUMENT', @level2type=N'COLUMN',@level2name=N'ID'
 GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The uuid representing the object in S3' , @level0type=N'SCHEMA',@level0name=N'dms', @level1type=N'TABLE',@level1name=N'ORBC_DOCUMENT', @level2type=N'COLUMN',@level2name=N'S3_OBJECT_ID'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The uuid representing the object in S3' , @level0type=N'SCHEMA',@level0name=N'dops', @level1type=N'TABLE',@level1name=N'ORBC_DOCUMENT', @level2type=N'COLUMN',@level2name=N'S3_OBJECT_ID'
 GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The version identifier created in S3' , @level0type=N'SCHEMA',@level0name=N'dms', @level1type=N'TABLE',@level1name=N'ORBC_DOCUMENT', @level2type=N'COLUMN',@level2name=N'S3_VERSION_ID'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The version identifier created in S3' , @level0type=N'SCHEMA',@level0name=N'dops', @level1type=N'TABLE',@level1name=N'ORBC_DOCUMENT', @level2type=N'COLUMN',@level2name=N'S3_VERSION_ID'
 GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The URL to the uploaded resource' , @level0type=N'SCHEMA',@level0name=N'dms', @level1type=N'TABLE',@level1name=N'ORBC_DOCUMENT', @level2type=N'COLUMN',@level2name=N'S3_LOCATION'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The URL to the uploaded resource' , @level0type=N'SCHEMA',@level0name=N'dops', @level1type=N'TABLE',@level1name=N'ORBC_DOCUMENT', @level2type=N'COLUMN',@level2name=N'S3_LOCATION'
 GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The object MIME Type' , @level0type=N'SCHEMA',@level0name=N'dms', @level1type=N'TABLE',@level1name=N'ORBC_DOCUMENT', @level2type=N'COLUMN',@level2name=N'OBJECT_MIME_TYPE'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The object MIME Type' , @level0type=N'SCHEMA',@level0name=N'dops', @level1type=N'TABLE',@level1name=N'ORBC_DOCUMENT', @level2type=N'COLUMN',@level2name=N'OBJECT_MIME_TYPE'
 GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The File Name' , @level0type=N'SCHEMA',@level0name=N'dms', @level1type=N'TABLE',@level1name=N'ORBC_DOCUMENT', @level2type=N'COLUMN',@level2name=N'FILE_NAME'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The File Name' , @level0type=N'SCHEMA',@level0name=N'dops', @level1type=N'TABLE',@level1name=N'ORBC_DOCUMENT', @level2type=N'COLUMN',@level2name=N'FILE_NAME'
 GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The DMS Version ID' , @level0type=N'SCHEMA',@level0name=N'dms', @level1type=N'TABLE',@level1name=N'ORBC_DOCUMENT', @level2type=N'COLUMN',@level2name=N'DMS_VERSION_ID'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The DMS Version ID' , @level0type=N'SCHEMA',@level0name=N'dops', @level1type=N'TABLE',@level1name=N'ORBC_DOCUMENT', @level2type=N'COLUMN',@level2name=N'DMS_VERSION_ID'
 GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user or proxy account that created the record.' , @level0type=N'SCHEMA',@level0name=N'dms', @level1type=N'TABLE',@level1name=N'ORBC_DOCUMENT', @level2type=N'COLUMN',@level2name=N'DB_CREATE_USERID'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user or proxy account that created the record.' , @level0type=N'SCHEMA',@level0name=N'dops', @level1type=N'TABLE',@level1name=N'ORBC_DOCUMENT', @level2type=N'COLUMN',@level2name=N'DB_CREATE_USERID'
 GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time the record was created.' , @level0type=N'SCHEMA',@level0name=N'dms', @level1type=N'TABLE',@level1name=N'ORBC_DOCUMENT', @level2type=N'COLUMN',@level2name=N'DB_CREATE_TIMESTAMP'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time the record was created.' , @level0type=N'SCHEMA',@level0name=N'dops', @level1type=N'TABLE',@level1name=N'ORBC_DOCUMENT', @level2type=N'COLUMN',@level2name=N'DB_CREATE_TIMESTAMP'
 GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user or proxy account that created or last updated the record.' , @level0type=N'SCHEMA',@level0name=N'dms', @level1type=N'TABLE',@level1name=N'ORBC_DOCUMENT', @level2type=N'COLUMN',@level2name=N'DB_LAST_UPDATE_USERID'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user or proxy account that created or last updated the record.' , @level0type=N'SCHEMA',@level0name=N'dops', @level1type=N'TABLE',@level1name=N'ORBC_DOCUMENT', @level2type=N'COLUMN',@level2name=N'DB_LAST_UPDATE_USERID'
 GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time the record was created or last updated.' , @level0type=N'SCHEMA',@level0name=N'dms', @level1type=N'TABLE',@level1name=N'ORBC_DOCUMENT', @level2type=N'COLUMN',@level2name=N'DB_LAST_UPDATE_TIMESTAMP'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time the record was created or last updated.' , @level0type=N'SCHEMA',@level0name=N'dops', @level1type=N'TABLE',@level1name=N'ORBC_DOCUMENT', @level2type=N'COLUMN',@level2name=N'DB_LAST_UPDATE_TIMESTAMP'
 GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Table recording metadata of documents stored in OCIO S3 Storage via COMS ' , @level0type=N'SCHEMA',@level0name=N'dms', @level1type=N'TABLE',@level1name=N'ORBC_DOCUMENT'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Table recording metadata of documents stored in OCIO S3 Storage via COMS ' , @level0type=N'SCHEMA',@level0name=N'dops', @level1type=N'TABLE',@level1name=N'ORBC_DOCUMENT'
 GO
 
 DECLARE @VersionDescription VARCHAR(255)

@@ -36,7 +36,8 @@
     "serve-vite": "vite preview",
     "test": "vitest watch --reporter verbose",
     "test:no-watch": "vitest run",
-    "test:cov": "vitest run --coverage"
+    "test:cov": "vitest run --coverage",
+    "lint": "eslint src"
   },
   "browserslist": {
     "production": [

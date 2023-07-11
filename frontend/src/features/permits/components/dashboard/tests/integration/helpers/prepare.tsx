@@ -10,7 +10,8 @@ import { ApplicationDashboard } from "../../../ApplicationDashboard";
 import { PERMITS_API } from "../../../../../apiManager/endpoints/endpoints";
 import { dayjsToUtcStr, now } from "../../../../../../../common/helpers/formatDate";
 import { createApplication, getApplication, updateApplication } from "../fixtures/getActiveApplication";
-import { VEHICLES_API, VEHICLE_URL } from "../../../../../../manageVehicles/apiManager/endpoints/endpoints";
+import { VEHICLES_API } from "../../../../../../manageVehicles/apiManager/endpoints/endpoints";
+import { VEHICLES_URL } from "../../../../../../../common/apiManager/endpoints/endpoints";
 import { MANAGE_PROFILE_API } from "../../../../../../manageProfile/apiManager/endpoints/endpoints";
 import { getDefaultCompanyInfo } from "../fixtures/getCompanyInfo";
 import { getDefaultUserDetails } from "../fixtures/getUserDetails";
@@ -65,7 +66,7 @@ const server = setupServer(
     }));
   }),
   // Mock getting application
-  rest.get(`${VEHICLE_URL}/permits/applications/:permitId`, (_, res, ctx) => {
+  rest.get(`${VEHICLES_URL}/permits/applications/:permitId`, (_, res, ctx) => {
     return res(ctx.json({
       // get application from mock application store (there's only 1 application or empty), since we're testing save/create/edit behaviour
       data: getApplication(), 
@@ -85,13 +86,13 @@ const server = setupServer(
     }));
   }),
   // Mock getting power unit vehicles
-  rest.get(`${VEHICLE_URL}/companies/:companyId/vehicles/powerUnits`, async (_, res, ctx) => {
+  rest.get(`${VEHICLES_URL}/companies/:companyId/vehicles/powerUnits`, async (_, res, ctx) => {
     return res(ctx.json({
       data: getAllPowerUnits(), // get power unit vehicles from mock vehicle store
     }));
   }),
   // Mock getting trailer vehicles
-  rest.get(`${VEHICLE_URL}/companies/:companyId/vehicles/trailers`, async (_, res, ctx) => {
+  rest.get(`${VEHICLES_URL}/companies/:companyId/vehicles/trailers`, async (_, res, ctx) => {
     return res(ctx.json({
       data: getAllTrailers(), // get trailer vehicles from mock vehicle store
     }));
@@ -103,7 +104,7 @@ const server = setupServer(
     }));
   }),
   // Mock creating power unit vehicle
-  rest.post(`${VEHICLE_URL}/companies/:companyId/vehicles/powerUnits`, async (req, res, ctx) => {
+  rest.post(`${VEHICLES_URL}/companies/:companyId/vehicles/powerUnits`, async (req, res, ctx) => {
     const reqBody = await req.json();
     const newPowerUnit = createPowerUnit(reqBody); // create power unit vehicle in mock vehicle store
     return res(ctx.status(201), ctx.json({
@@ -111,7 +112,7 @@ const server = setupServer(
     }));
   }),
   // Mock updating power unit vehicle
-  rest.put(`${VEHICLE_URL}/companies/:companyId/vehicles/powerUnits/:powerUnitId`, async (req, res, ctx) => {
+  rest.put(`${VEHICLES_URL}/companies/:companyId/vehicles/powerUnits/:powerUnitId`, async (req, res, ctx) => {
     const id = String(req.params.powerUnitId);
     const reqBody = await req.json();
     const updatedPowerUnit = updatePowerUnit(id, reqBody); // update power unit vehicle in mock vehicle store
@@ -120,7 +121,7 @@ const server = setupServer(
     }));
   }),
   // Mock creating trailer vehicle
-  rest.post(`${VEHICLE_URL}/companies/:companyId/vehicles/trailers`, async (req, res, ctx) => {
+  rest.post(`${VEHICLES_URL}/companies/:companyId/vehicles/trailers`, async (req, res, ctx) => {
     const reqBody = await req.json();
     const newTrailer = createTrailer(reqBody); // create trailer vehicle in mock vehicle store
     return res(ctx.status(201), ctx.json({
@@ -128,7 +129,7 @@ const server = setupServer(
     }));
   }),
   // Mock updating trailer vehicle
-  rest.put(`${VEHICLE_URL}/companies/:companyId/vehicles/trailers/:trailerId`, async (req, res, ctx) => {
+  rest.put(`${VEHICLES_URL}/companies/:companyId/vehicles/trailers/:trailerId`, async (req, res, ctx) => {
     const id = String(req.params.trailerId);
     const reqBody = await req.json();
     const updatedTrailer = updatePowerUnit(id, reqBody); // update trailer vehicle in mock vehicle store

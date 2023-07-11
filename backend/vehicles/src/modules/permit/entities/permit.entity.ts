@@ -1,5 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Entity, Column, PrimaryGeneratedColumn, OneToOne } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  OneToOne,
+  ManyToMany,
+} from 'typeorm';
 import { AutoMap } from '@automapper/classes';
 import { Base } from '../../common/entities/base.entity';
 import { PermitType } from '../../../common/enum/permit-type.enum';
@@ -7,6 +13,7 @@ import { PermitData } from './permit-data.entity';
 import { PermitApplicationOrigin } from '../../../common/enum/permit-application-origin.enum';
 import { PermitApprovalSource } from '../../../common/enum/permit-approval-source.enum';
 import { ApplicationStatus } from 'src/common/enum/application-status.enum';
+import { Transaction } from 'src/modules/payment/entities/transaction.entity';
 
 @Entity({ name: 'permit.ORBC_PERMIT' })
 export class Permit extends Base {
@@ -149,4 +156,7 @@ export class Permit extends Base {
     nullable: true,
   })
   documentId: string;
+
+  @ManyToMany(() => Transaction, (transaction) => transaction.permits)
+  transactions?: Transaction[];
 }

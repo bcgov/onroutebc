@@ -18,8 +18,8 @@ import { CompanyModule } from './modules/company-user-management/company/company
 import { PendingUsersModule } from './modules/company-user-management/pending-users/pending-users.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { PermitModule } from './modules/permit/permit.module';
-import { PdfModule } from './modules/pdf/pdf.module';
 import { EmailModule } from './modules/email/email.module';
+import { PaymentModule } from './modules/payment/payment.module';
 
 const envPath = path.resolve(process.cwd() + '/../../');
 
@@ -72,7 +72,7 @@ const envPath = path.resolve(process.cwd() + '/../../');
     PendingUsersModule,
     AuthModule,
     PermitModule,
-    PdfModule,
+    PaymentModule,
   ],
   controllers: [AppController],
   providers: [AppService],

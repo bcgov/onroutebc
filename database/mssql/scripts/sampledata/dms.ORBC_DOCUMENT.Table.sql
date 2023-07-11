@@ -1,9 +1,0 @@
-SET NOCOUNT ON
-GO
-SET IDENTITY_INSERT [dms].[ORBC_DOCUMENT] ON 
-
-INSERT [dms].[ORBC_DOCUMENT] ([ID], [S3_OBJECT_ID], [S3_VERSION_ID], [S3_LOCATION], [OBJECT_MIME_TYPE], [FILE_NAME], [DMS_VERSION_ID], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (1, N'bcc0644f-9076-41e0-9841-4ee23e109e7a', NULL, N'https://moti-int.objectstore.gov.bc.ca/tran_api_orbc_docs_dev/tran_api_orbc_docs_dev%40moti-int.objectstore.gov.bc.ca/bcc0644f-9076-41e0-9841-4ee23e109e7a', N'application/vnd.openxmlformats-officedocument.wordprocessingml.document',N'tros-template-v1.docx',1, 1, N'dms', GETUTCDATE(), N'dms', GETUTCDATE())
-GO
-
-SET IDENTITY_INSERT [dms].[ORBC_DOCUMENT] OFF
-GO
