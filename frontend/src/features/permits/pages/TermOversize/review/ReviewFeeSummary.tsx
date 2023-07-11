@@ -1,21 +1,17 @@
 import { Box, Typography } from "@mui/material";
-import {
-  PERMIT_MAIN_BOX_STYLE,
-  PERMIT_LEFT_BOX_STYLE,
-  PERMIT_LEFT_HEADER_STYLE,
-  PERMIT_RIGHT_BOX_STYLE,
-} from "../../../../../themes/orbcStyles";
+
+import "./ReviewFeeSummary.scss";
 import { ConfirmationCheckboxes } from "../form/ConfirmationCheckboxes";
 import { FeeSummaryBanner } from "./FeeSummaryBanner";
 
 export const ReviewFeeSummary = () => {
   return (
-    <Box sx={PERMIT_MAIN_BOX_STYLE}>
-      <Box sx={PERMIT_LEFT_BOX_STYLE}>
-        <Typography variant={"h3"} sx={PERMIT_LEFT_HEADER_STYLE}></Typography>
+    <Box className="review-fee-summary">
+      <Box className="review-fee-summary__header">
+        <Typography variant={"h3"}></Typography>
       </Box>
-      <Box sx={PERMIT_RIGHT_BOX_STYLE}>
-        <Box sx={{ gap: "40px", paddingTop: "24px" }}>
+      <Box className="review-fee-summary__body">
+        <Box className="fee-summary">
           <FeeSummaryBanner />
           <ConfirmationCheckboxes />
         </Box>

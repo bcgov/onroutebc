@@ -11,6 +11,7 @@ import {
 import { Application } from "../../../types/application";
 import { ReviewConditionsTable } from "./ReviewConditionsTable";
 import { applyWhenNotNullable } from "../../../../../common/helpers/util";
+import { DATE_FORMATS } from "../../../../../common/helpers/formatDate";
 
 export const ReviewPermitDetails = ({
   values,
@@ -28,7 +29,7 @@ export const ReviewPermitDetails = ({
         <Box sx={{ gap: "40px", paddingTop: "24px" }}>
           <Typography sx={{ fontWeight: "bold" }}>Start Date:</Typography>
           {applyWhenNotNullable(
-            (dayJsObject) => dayjs(dayJsObject).format("LL"),
+            (dayJsObject) => dayjs(dayJsObject).format(DATE_FORMATS.DATEONLY_SLASH),
             values?.permitData?.startDate,
             ""
           )}
@@ -37,7 +38,7 @@ export const ReviewPermitDetails = ({
         </Box>
         <PermitExpiryDateBanner
           expiryDate={applyWhenNotNullable(
-            (dayJsObject) => dayjs(dayJsObject).format("LL"),
+            (dayJsObject) => dayjs(dayJsObject).format(DATE_FORMATS.SHORT),
             values?.permitData?.expiryDate,
             ""
           )}

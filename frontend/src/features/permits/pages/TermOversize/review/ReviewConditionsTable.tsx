@@ -1,6 +1,5 @@
 import {
   TableContainer,
-  Paper,
   Table,
   TableHead,
   TableRow,
@@ -8,7 +7,11 @@ import {
   TableBody,
   Checkbox,
 } from "@mui/material";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowUpRightFromSquare } from "@fortawesome/free-solid-svg-icons";
+
 import { Commodities, Application } from "../../../types/application";
+import "./ReviewConditionsTable.scss";
 
 export const ReviewConditionsTable = ({
   values,
@@ -16,25 +19,24 @@ export const ReviewConditionsTable = ({
   values: Application | undefined;
 }) => {
   return (
-    <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 650 }} aria-label="simple table">
+    <TableContainer>
+      <Table className="review-conditions-table" aria-label="simple table">
         <TableHead>
           <TableRow>
-            <TableCell sx={{ fontWeight: "bold" }}>Description</TableCell>
-            <TableCell sx={{ fontWeight: "bold" }}>Conditions</TableCell>
+            <TableCell className="review-conditions-table__header">Description</TableCell>
+            <TableCell className="review-conditions-table__header">Conditions</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {values?.permitData.commodities.map((row: Commodities) => {
             return (
               <TableRow
+                className="review-conditions-table__row"
                 key={row.condition}
-                sx={{
-                  "&:last-child td, &:last-child th": { border: 0 },
-                }}
               >
-                <TableCell component="th" scope="row">
+                <TableCell component="td" scope="row">
                   <Checkbox
+                    className="checkbox"
                     key={row.condition}
                     checked={true}
                     disabled={true}
@@ -42,8 +44,10 @@ export const ReviewConditionsTable = ({
                   {row.description}
                 </TableCell>
 
-                <TableCell component="th" scope="row">
-                  <a href={row.conditionLink}>{row.condition}</a>
+                <TableCell component="td" scope="row">
+                  <a href={row.conditionLink} className="condition-link">
+                    {row.condition}<FontAwesomeIcon className="condition-link__icon" icon={faArrowUpRightFromSquare} />
+                  </a>
                 </TableCell>
               </TableRow>
             );

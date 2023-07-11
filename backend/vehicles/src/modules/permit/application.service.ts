@@ -14,11 +14,9 @@ import { ReadApplicationDto } from './dto/response/read-application.dto';
 import { Permit } from './entities/permit.entity';
 import { UpdateApplicationDto } from './dto/request/update-application.dto';
 import { ResultDto } from './dto/response/result.dto';
-import { PdfService } from '../pdf/pdf.service';
 import { PermitApplicationOrigin } from './entities/permit-application-origin.entity';
 import { PermitApprovalSource } from './entities/permit-approval-source.entity';
 import { IDP } from 'src/common/enum/idp.enum';
-import { DownloadMode, PdfReturnType } from 'src/common/enum/pdf.enum';
 import { PermitApplicationOrigin as PermitApplicationOriginEnum } from 'src/common/enum/permit-application-origin.enum';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
 import { PermitApprovalSource as PermitApprovalSourceEnum } from 'src/common/enum/permit-approval-source.enum';
@@ -36,8 +34,11 @@ import { PermitService } from './permit.service';
 import { EmailTemplate } from '../../common/enum/email-template.enum';
 import { IssuePermitEmailData } from '../../common/interface/issue-permit-email-data.interface';
 import { AttachementEmailData } from '../../common/interface/attachment-email-data.interface';
-import { ReadCompanyDto } from '../company-user-management/company/dto/response/read-company.dto';
 import { CacheKey } from '../../common/enum/cache-key.enum';
+import { DopsService } from '../common/dops.service';
+import { DopsGeneratedDocument } from '../../common/interface/dops-generated-document.interface';
+import { TemplateName } from '../../common/enum/template-name.enum';
+import { IReceipt } from 'src/common/interface/receipt.interface';
 
 @Injectable()
 export class ApplicationService {
@@ -46,7 +47,7 @@ export class ApplicationService {
     @InjectRepository(Permit)
     private permitRepository: Repository<Permit>,
     private dataSource: DataSource,
-    private readonly pdfService: PdfService,
+    private readonly dopsService: DopsService,
     @InjectRepository(PermitApplicationOrigin)
     private permitApplicationOriginRepository: Repository<PermitApplicationOrigin>,
     @InjectRepository(PermitApprovalSource)
@@ -311,7 +312,11 @@ export class ApplicationService {
    * @param applicationId applicationId to identify the application to be issued. It is the same as permitId.
    * @returns a resultDto that describes if the transaction was successful or if it failed
    */
-  private async issuePermit(currentUser: IUserJWT, applicationId: string) {
+  async issuePermit(
+    currentUser: IUserJWT,
+    applicationId: string,
+    transactionDetails?: IReceipt,
+  ) {
     let success = '';
     let failure = '';
 
@@ -336,10 +341,41 @@ export class ApplicationService {
         tempPermit.companyId,
       );
 
-      const { dmsDocumentId, permitDataForTemplate } = await this.generatePDF(
+      const fullNames = await this.getFullNamesFromCache(tempPermit);
+
+      // Provide the permit json data required to populate the .docx template that is used to generate a PDF
+      const permitDataForTemplate = formatTemplateData(
         tempPermit,
+        fullNames,
         companyInfo,
+      );
+
+      let dopsRequestData: DopsGeneratedDocument = {
+        templateName: TemplateName.PERMIT_TROS,
+        generatedDocumentFileName: permitDataForTemplate.permitNumber,
+        templateData: permitDataForTemplate,
+      };
+
+      //TODO User Promise.all to combine both calls or change DOPS to generate multiple files at once.
+      const generatedPermitDocument = await this.generateDocument(
         currentUser,
+        dopsRequestData,
+      );
+      const receiptNo = '12437592034';
+
+      dopsRequestData = {
+        templateName: TemplateName.PAYMENT_RECEIPT,
+        generatedDocumentFileName: `Receipt_No_${receiptNo}`,
+        templateData: {
+          ...permitDataForTemplate,
+          ...transactionDetails,
+          receiptNo,
+        },
+      };
+
+      const generatedReceiptDocument = await this.generateDocument(
+        currentUser,
+        dopsRequestData,
       );
 
       // Update Permit record with an ISSUED status, new permit number, and new DMS Document ID
@@ -349,7 +385,7 @@ export class ApplicationService {
         .set({
           permitStatus: ApplicationStatus.ISSUED,
           ...{ permitNumber: permitNumber },
-          ...{ documentId: dmsDocumentId },
+          ...{ documentId: generatedPermitDocument.dmsId },
         })
         .where('ID = :applicationId', { applicationId })
         .andWhere('permitNumber IS NULL')
@@ -358,22 +394,24 @@ export class ApplicationService {
       success = applicationId;
 
       try {
-        const document = await this.permitService.findPDFbyPermitId(
-          currentUser.access_token,
-          applicationId,
-          DownloadMode.PROXY,
-        );
-
         const emailData: IssuePermitEmailData = {
           companyName: companyInfo.legalName,
         };
 
-        const attachment: AttachementEmailData = {
-          filename: tempPermit.permitNumber + '.pdf',
-          contentType: 'application/pdf',
-          encoding: 'base64',
-          content: document.file.toString('base64'),
-        };
+        const attachments: AttachementEmailData[] = [
+          {
+            filename: tempPermit.permitNumber + '.pdf',
+            contentType: 'application/pdf',
+            encoding: 'base64',
+            content: generatedPermitDocument.buffer.toString('base64'),
+          },
+          {
+            filename: `Receipt_No_${receiptNo}.pdf`,
+            contentType: 'application/pdf',
+            encoding: 'base64',
+            content: generatedReceiptDocument.buffer.toString('base64'),
+          },
+        ];
 
         await this.emailService.sendEmailMessage(
           EmailTemplate.ISSUE_PERMIT,
@@ -383,13 +421,19 @@ export class ApplicationService {
             permitDataForTemplate.permitData?.contactDetails?.email,
             companyInfo.primaryContact.email,
           ],
-          attachment,
+          attachments,
         );
       } catch (error: unknown) {
         console.log('Error in Email Service', error);
       }
     } catch (err) {
-      console.log('Error Issuing Application: ', err);
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
+      console.log(
+        'Error Issuing Application: ',
+        err.response.status,
+        ' ',
+        err.response.statusText,
+      );
       success = '';
       failure = applicationId;
     }
@@ -398,40 +442,18 @@ export class ApplicationService {
       success: [success],
       failure: [failure],
     };
+
     return resultDto;
   }
 
-  /**
-   * Generates a PDF of an issued permit.
-   * First, format the permit data so that it complies with the .docx template, then generate the PDF
-   * @param permit the permit entity
-   * @param companyInfo the information about the users company
-   * @param currentUser the details of the current user for authorization.
-   *
-   */
-  private async generatePDF(
-    tempPermit: Permit,
-    companyInfo: ReadCompanyDto,
+  private async generateDocument(
     currentUser: IUserJWT,
+    dopsRequestData: DopsGeneratedDocument,
   ) {
-    const fullNames = await this.getFullNamesFromCache(tempPermit);
-
-    // Provide the permit json data required to populate the .docx template that is used to generate a PDF
-    const permitDataForTemplate = formatTemplateData(
-      tempPermit,
-      fullNames,
-      companyInfo,
+    return await this.dopsService.generateDocument(
+      currentUser,
+      dopsRequestData,
     );
-
-    // DMS Reference ID for the generated PDF of the Permit
-    // TODO: write helper to determine 'latest' template version
-    const dmsDocumentId: string = await this.pdfService.generatePDF(
-      currentUser.access_token,
-      permitDataForTemplate,
-      1,
-      PdfReturnType.DMS_DOC_ID,
-    );
-    return { dmsDocumentId, permitDataForTemplate };
   }
 
   /**

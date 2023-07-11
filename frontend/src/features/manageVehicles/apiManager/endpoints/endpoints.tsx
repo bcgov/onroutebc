@@ -1,10 +1,9 @@
-export const VEHICLE_URL =
-  import.meta.env.VITE_API_VEHICLE_URL || envConfig.VITE_API_VEHICLE_URL;
+import { VEHICLES_URL } from "../../../../common/apiManager/endpoints/endpoints";
 
 export const VEHICLES_API = {
-  POWER_UNIT: `${VEHICLE_URL}/vehicles/powerUnits`,
-  POWER_UNIT_TYPES: `${VEHICLE_URL}/vehicles/power-unit-types`,
+  POWER_UNIT: `${VEHICLES_URL}/vehicles/powerUnits`,
+  POWER_UNIT_TYPES: `${VEHICLES_URL}/vehicles/power-unit-types`,
 
-  TRAILER: `${VEHICLE_URL}/vehicles/trailers`,
-  TRAILER_TYPES: `${VEHICLE_URL}/vehicles/trailer-types`,
+  TRAILER: `${VEHICLES_URL}/vehicles/trailers`,
+  TRAILER_TYPES: `${VEHICLES_URL}/vehicles/trailer-types`,
 };

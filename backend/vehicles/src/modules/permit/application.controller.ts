@@ -175,4 +175,17 @@ export class ApplicationController {
     }
     return result;
   }
+
+  @ApiCreatedResponse({
+    description: 'The Permit Application Resource',
+    type: ResultDto,
+  })
+  @Post('/issue')
+  async issuePermit(@Req() request: Request): Promise<ResultDto> {
+    const currentUser = request.user as IUserJWT;
+    return await this.applicationService.issuePermit(
+      currentUser,
+      request.body.applicationId,
+    );
+  }
 }

@@ -11,6 +11,7 @@ export const SuccessPage = () => {
 
   const navigate = useNavigate();
   const { permitId } = useParams();
+
   const viewPermitPdf = async (permitId: number | undefined) => {
     await downloadPermitApplicationPdf(permitId).then((response) => {
       const contentDisposition = response.headers['content-disposition'];
@@ -57,7 +58,7 @@ export const SuccessPage = () => {
         </Box>
         <Box className="success__block success__block--info">
           <Typography variant="body1">
-            TODO: The permit(s) and receipt have been sent to the email/fax
+            The permit has been sent to the email/fax
             provided.
           </Typography>
         </Box>
@@ -79,15 +80,17 @@ export const SuccessPage = () => {
                 console.log(err);
               });
             }}
+            disabled={true} // TODO
           >
-            View Permits
+            TODO: Download Permit
           </Button>
           <Button
             sx={{ marginLeft: "24px" }}
             variant="contained"
             color="secondary"
+            disabled={true} // TODO
           >
-            View Receipts
+            TODO: View Receipts
           </Button>
         </Box>
       </Box>

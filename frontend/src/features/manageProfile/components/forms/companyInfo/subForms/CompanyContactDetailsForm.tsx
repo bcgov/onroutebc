@@ -25,6 +25,8 @@ export const CompanyContactDetailsForm = ({ feature }: { feature: string }) => (
         label: "Email",
       }}
       className="company-contact-details-form__input"
+      disabled={true}
+      readOnly={true}
     />
     <div className="side-by-side-inputs">
       <CustomFormComponent

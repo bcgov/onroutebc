@@ -78,6 +78,35 @@ export const getCompanyNameFromSession = (): string | undefined => {
 };
 
 /**
+ * Retrieves username from session
+ * @returns username or empty string
+ */
+export const getLoginUsernameFromSession = (): string => {
+  const parsedSessionObject = getUserStorage();
+  if (!parsedSessionObject) return "";
+  return getDefaultRequiredVal(
+    "", 
+    parsedSessionObject.profile?.bceid_username,
+    parsedSessionObject.profile?.idir_username,
+  );
+};
+
+/**
+ * Retrieves company email from session.
+ * @returns string | undefined
+ */
+export const getCompanyEmailFromSession = (): string | undefined => {
+  const parsedSessionObject = getDefaultRequiredVal(
+    { profile: { email: "" } },
+    getUserStorage()
+  );
+
+  return getDefaultNullableVal(
+    parsedSessionObject.profile?.email
+  );
+};
+
+/**
  * A generic HTTP GET Request
  * @param url The URL of the resource.
  * @returns A Promise<Response> with the response from the API.

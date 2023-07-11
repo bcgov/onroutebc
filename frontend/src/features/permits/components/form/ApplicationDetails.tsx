@@ -69,7 +69,7 @@ export const ApplicationDetails = ({
 }) => {
   const companyInfoQuery = useCompanyInfoQuery();
   // TODO use an enum
-  const applicationName = permitType === "TROS" ? "Term: Oversize" : "";
+  const applicationName = permitType === "TROS" ? "Oversize: Term" : "";
 
   return (
     <>
@@ -96,7 +96,7 @@ export const ApplicationDetails = ({
                 paddingTop: "8px",
               }}
             >
-              Application # {applicationNumber}
+              Application #: {applicationNumber}
             </Typography>
             <Box sx={{ display: "flex" , gap: "40px"}}>
               <Typography sx={{ width: "327px"}}>

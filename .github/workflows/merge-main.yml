@@ -158,7 +158,7 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        component: [backend/vehicles, backend/dms, frontend]
+        component: [backend/vehicles, backend/dops, frontend]
     steps:
       - uses: shrink/actions-docker-registry-tag@v3
         with:
@@ -174,7 +174,7 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        component: [backend/vehicles, backend/dms, frontend]
+        component: [backend/vehicles, backend/dops, frontend]
     steps:
       - uses: shrink/actions-docker-registry-tag@v3
         with:
