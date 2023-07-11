@@ -109,7 +109,7 @@ jobs:
             ${{secrets.VAULT_ENVIRONMENT}}/data/coms-${{inputs.vault_zone}}       BASICAUTH_PASSWORD              | VAULT_BASICAUTH_PASSWORD;
             ${{secrets.VAULT_ENVIRONMENT}}/data/coms-${{inputs.vault_zone}}       BASICAUTH_USERNAME              | VAULT_BASICAUTH_USERNAME;
             ${{secrets.VAULT_ENVIRONMENT}}/data/coms-${{inputs.vault_zone}}       COMS_URL                        | VAULT_COMS_URL;
-            ${{secrets.VAULT_ENVIRONMENT}}/data/coms-${{inputs.vault_zone}}       COMS_AUTH_TYPE                  | COMS_AUTH_TYPE;
+            ${{secrets.VAULT_ENVIRONMENT}}/data/coms-${{inputs.vault_zone}}       COMS_AUTH_TYPE                  | VAULT_COMS_AUTH_TYPE;
             ${{secrets.VAULT_ENVIRONMENT}}/data/coms-${{inputs.vault_zone}}       COMS_BUCKET_ID                  | VAULT_COMS_BUCKET_ID;
             ${{secrets.VAULT_ENVIRONMENT}}/data/coms-${{inputs.vault_zone}}       COMS_PRESIGNED_URL_EXPIRY       | VAULT_PRESIGNED_URL_EXPIRY;
             ${{secrets.VAULT_ENVIRONMENT}}/data/dops-${{inputs.vault_zone}}       DOPS_S3_ACCESS_TYPE             | VAULT_DOPS_S3_ACCESS_TYPE;
