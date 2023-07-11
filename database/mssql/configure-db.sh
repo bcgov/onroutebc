@@ -42,9 +42,6 @@ fi
 echo "Creating ORBC database..."
 /opt/mssql-tools/bin/sqlcmd -U ${MSSQL_SA_USER} -P "${MSSQL_SA_PASSWORD}" -S ${MSSQL_HOST} -d master -Q "CREATE DATABASE ${MSSQL_DB}"
 
-echo "Creating Full Text Catalog ..."
-/opt/mssql-tools/bin/sqlcmd -U ${MSSQL_SA_USER} -P "${MSSQL_SA_PASSWORD}" -S ${MSSQL_HOST} -d ${MSSQL_DB} -Q "CREATE FULLTEXT CATALOG PermitDataFTCat AS DEFAULT"
-
 # Load current schema into the database from all DDL version scripts
 /usr/config/utility/migrate-db-current.sh -u ${MSSQL_SA_USER} -p "${MSSQL_SA_PASSWORD}" -s ${MSSQL_HOST} -d ${MSSQL_DB}
 
