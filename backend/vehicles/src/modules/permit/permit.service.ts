@@ -100,6 +100,7 @@ export class PermitService {
     searchColumn: string,
     searchString: string,
   ): Promise<ReadPermitDto[]> {
+    searchString = '"*'+searchString+'*"';
     const permits = await this.permitRepository
       .createQueryBuilder('permit')
       .innerJoinAndSelect('permit.permitData', 'permitData')

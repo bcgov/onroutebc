@@ -5,17 +5,18 @@ import { EmailTemplate } from '../../common/enum/email-template.enum';
 import { ProfileRegistrationEmailDto } from './dto/request/profile-registration-email.dto';
 import { IssuePermitEmailDto } from './dto/request/issue-permit-email.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { Request } from 'express';
 
-@ApiTags("Email Testing")
+@ApiTags('Email Testing')
 @Controller('email')
 export class EmailController {
   constructor(private readonly emailService: EmailService) {}
 
-  @Post("/profile")
+  @Post('/profile')
   @Public()
   async sendProfileRegistrationEmail(
     @Req() _: Request,
-    @Body() emailDto: ProfileRegistrationEmailDto
+    @Body() emailDto: ProfileRegistrationEmailDto,
   ) {
     const { subject, to, ...emailData } = emailDto;
 
@@ -29,11 +30,11 @@ export class EmailController {
     );
   }
 
-  @Post("/permit")
+  @Post('/permit')
   @Public()
   async sendIssuePermitEmail(
     @Req() _: Request,
-    @Body() emailDto: IssuePermitEmailDto
+    @Body() emailDto: IssuePermitEmailDto,
   ) {
     const { subject, to, ...emailData } = emailDto;
 
