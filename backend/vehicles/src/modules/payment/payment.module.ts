@@ -6,9 +6,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { TransactionProfile } from './profile/transaction.profile';
 import { PermitTransactionProfile } from './profile/permit-transaction.profile';
 import { PermitTransaction } from './entities/permit-transaction.entity';
+import { PermitModule } from '../permit/permit.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Transaction, PermitTransaction])],
+  imports: [
+    TypeOrmModule.forFeature([Transaction, PermitTransaction]),
+    PermitModule,
+  ],
   controllers: [PaymentController],
   providers: [PaymentService, TransactionProfile, PermitTransactionProfile],
   exports: [PaymentService],

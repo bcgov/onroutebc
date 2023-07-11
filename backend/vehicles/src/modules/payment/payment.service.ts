@@ -11,8 +11,9 @@ import { Repository } from 'typeorm';
 import { PermitTransaction } from './entities/permit-transaction.entity';
 import { ReadPermitTransactionDto } from './dto/response/read-permit-transaction.dto';
 import { MotiPayDetailsDto } from './dto/response/read-moti-pay-details.dto';
-import { HttpService } from '@nestjs/axios';
-import { lastValueFrom } from 'rxjs';
+import { ApplicationService } from '../permit/application.service';
+import { IUserJWT } from 'src/common/interface/user-jwt.interface';
+import { IReceipt } from 'src/common/interface/receipt.interface';
 
 @Injectable()
 export class PaymentService {
@@ -22,7 +23,7 @@ export class PaymentService {
     @InjectRepository(Transaction)
     private transactionRepository: Repository<Transaction>,
     @InjectMapper() private readonly classMapper: Mapper,
-    private httpService: HttpService,
+    private applicationService: ApplicationService,
   ) {}
 
   /**
@@ -102,7 +103,7 @@ export class PaymentService {
   };
 
   async updateTransaction(
-    accessToken: string,
+    currentUser: IUserJWT,
     transaction: CreateTransactionDto,
   ): Promise<ReadTransactionDto> {
     const existingTransaction = await this.findOneTransaction(
@@ -120,24 +121,19 @@ export class PaymentService {
     );
 
     if (newTransaction.approved) {
-      await lastValueFrom(
-        this.httpService.post(
-          `${process.env.VEHICLES_URL}/permits/applications/issue`,
-          {
-            applicationId: existingPermitTransaction.permitId.toString(),
-          },
-          {
-            headers: { Authorization: accessToken },
-          },
-        ),
-      ).catch((err) => {
-        throw new HttpException(
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
-          err.response.data.message,
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
-          err.response.data.status,
-        );
-      });
+      const applicationId = existingPermitTransaction.permitId.toString();
+      const transactionDetails: IReceipt = {
+        transactionOrderNumber: newTransaction.transactionOrderNumber,
+        transactionAmount: newTransaction.transactionAmount,
+        transactionDate: newTransaction.transactionDate,
+        paymentMethod: newTransaction.paymentMethod,
+      };
+
+      await this.applicationService.issuePermit(
+        currentUser,
+        applicationId,
+        transactionDetails,
+      );
     }
 
     const updatedTransaction = await this.transactionRepository.update(

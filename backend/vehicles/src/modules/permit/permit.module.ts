@@ -32,6 +32,6 @@ import { CompanyModule } from '../company-user-management/company/company.module
     PermitProfile,
     ApplicationProfile,
   ],
-  exports: [PermitService],
+  exports: [PermitService, ApplicationService],
 })
 export class PermitModule {}
