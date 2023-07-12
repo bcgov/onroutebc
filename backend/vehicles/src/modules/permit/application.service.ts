@@ -419,7 +419,7 @@ export class ApplicationService {
           'onRouteBC Permits - ' + companyInfo.legalName,
           [
             permitDataForTemplate.permitData?.contactDetails?.email,
-            companyInfo.primaryContact.email,
+            companyInfo.email,
           ],
           attachments,
         );
