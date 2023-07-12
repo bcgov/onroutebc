@@ -17,7 +17,7 @@ import { IUserJWT } from '../../interface/user-jwt.interface';
 export class ComsService {
   constructor(private readonly httpService: HttpService) {}
 
-  private comsServiceType = process.env.COMS_SERVICE;
+  private comsAuthType = process.env.COMS_AUTH_TYPE;
   private comsBucketId = process.env.COMS_BUCKET_ID;
 
   /**
@@ -53,12 +53,12 @@ export class ComsService {
         'Content-Type': 'multipart/form-data',
         Accept: 'application/json',
         Authorization:
-          this.comsServiceType === 'hosted'
+          this.comsAuthType === 'full-auth'
             ? currentUser.access_token
             : undefined,
       },
       auth:
-        this.comsServiceType !== 'hosted'
+        this.comsAuthType !== 'full-auth'
           ? {
               username: process.env.BASICAUTH_USERNAME,
               password: process.env.BASICAUTH_PASSWORD,
@@ -70,7 +70,7 @@ export class ComsService {
     let url = process.env.COMS_URL + `object`;
     if (s3ObjectId) {
       url = url.concat('/', s3ObjectId);
-    } else if (this.comsServiceType === 'hosted' && this.comsBucketId) {
+    } else if (this.comsAuthType === 'full-auth' && this.comsBucketId) {
       url = url.concat('?', 'bucketId=', this.comsBucketId);
     }
 
@@ -116,12 +116,12 @@ export class ComsService {
     const reqConfig: AxiosRequestConfig = {
       headers: {
         Authorization:
-          this.comsServiceType === 'hosted'
+          this.comsAuthType === 'full-auth'
             ? currentUser.access_token
             : undefined,
       },
       auth:
-        this.comsServiceType !== 'hosted'
+        this.comsAuthType !== 'full-auth'
           ? {
               username: process.env.BASICAUTH_USERNAME,
               password: process.env.BASICAUTH_PASSWORD,
