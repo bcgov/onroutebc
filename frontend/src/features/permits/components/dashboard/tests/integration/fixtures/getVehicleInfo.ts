@@ -1,5 +1,6 @@
 import { factory, nullable, primaryKey } from "@mswjs/data";
 import { PowerUnit, Trailer } from "../../../../../../manageVehicles/types/managevehicles";
+import { TROS_INELIGIBLE_POWERUNITS, TROS_INELIGIBLE_TRAILERS } from "../../../../../constants/termOversizeConstants";
 
 let powerUnitId = 1;
 let trailerId = 1;
@@ -85,7 +86,7 @@ export const getDefaultTrailers = () => ([
   },
 ]);
 
-const getDefaultPowerUnitTypes = () => ([
+export const getDefaultPowerUnitTypes = () => ([
   {
     typeCode: "PUTYPEA",
     type: "Power Unit Type A",
@@ -101,9 +102,10 @@ const getDefaultPowerUnitTypes = () => ([
     type: "Power Unit Type C",
     description: "Power Unit Type C."
   },
+  {...TROS_INELIGIBLE_POWERUNITS[0]},
 ]);
 
-const getDefaultTrailerTypes = () => ([
+export const getDefaultTrailerTypes = () => ([
   {
     typeCode: "TRAILTA",
     type: "Trailer Type A",
@@ -119,6 +121,7 @@ const getDefaultTrailerTypes = () => ([
     type: "Trailer Type C",
     description: "Trailer Type C."
   },
+  {...TROS_INELIGIBLE_TRAILERS[0]},
 ]);
 
 export const createPowerUnit = (powerUnit: PowerUnit) => {

@@ -10,7 +10,7 @@ import { SELECT_FIELD_STYLE } from "../../../../../../../themes/orbcStyles";
  * This simple MUI select component without
  * integration with React Hook Forms
  */
-export const SelectPowerUnitOrTrailer = ({
+export const SelectUnitOrPlate = ({
   value,
   label,
   onChange,
@@ -35,6 +35,7 @@ export const SelectPowerUnitOrTrailer = ({
           width: { width },
         },
       ]}
+      data-testid="select-unit-or-plate"
     >
       {menuItems}
     </Select>

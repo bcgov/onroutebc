@@ -69,3 +69,47 @@ export const companyNameDisplay = async () => {
 export const companyClientNumberDisplay = async () => {
   return await screen.findByTestId("company-banner-client");
 };
+
+export const selectVehicleType = async (user: UserEvent, vehicleType: string) => {
+  const vehicleTypeSelect = await screen.findByTestId("select-permitData.vehicleDetails.vehicleType");
+  await user.click(vehicleTypeSelect);
+  const vehicleTypeOption = await screen.findByText(vehicleType, { selector: "li" });
+  await user.click(vehicleTypeOption);
+};
+
+export const openVehicleSubtypeSelect = async (user: UserEvent) => {
+  const vehicleSubtypeSelect = await screen.findByTestId("select-permitData.vehicleDetails.vehicleSubType");
+  await user.click(vehicleSubtypeSelect);
+};
+
+export const vehicleSubtypeOptions = async () => {
+  return await screen.findAllByTestId("subtype-menu-item");
+};
+
+export const errMsgForVIN = async () => {
+  return await screen.findByTestId("alert-permitData.vehicleDetails.vin");
+};
+
+export const errMsgForPlate = async () => {
+  return await screen.findByTestId("alert-permitData.vehicleDetails.plate");
+};
+
+export const errMsgForMake = async () => {
+  return await screen.findByTestId("alert-permitData.vehicleDetails.make");
+};
+
+export const errMsgForVehicleYear = async () => {
+  return await screen.findByTestId("alert-permitData.vehicleDetails.year");
+};
+
+export const errMsgForVehicleCountry = async () => {
+  return await screen.findByTestId("alert-permitData.vehicleDetails.countryCode");
+};
+
+export const errMsgForVehicleType = async () => {
+  return await screen.findByTestId("alert-permitData.vehicleDetails.vehicleType");
+};
+
+export const errMsgForVehicleSubtype = async () => {
+  return await screen.findByTestId("alert-permitData.vehicleDetails.vehicleSubType");
+};

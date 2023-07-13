@@ -111,6 +111,7 @@ export const SelectVehicleDropdown = ({
             <GroupItems>{params.children}</GroupItems>
           </li>
         )}
+        data-testid="select-vehicle"
       />
     </FormControl>
   );

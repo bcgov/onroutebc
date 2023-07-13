@@ -74,28 +74,27 @@ const server = setupServer(
   }),
   // Mock getting power unit types
   rest.get(VEHICLES_API.POWER_UNIT_TYPES, async (_, res, ctx) => {
-    return res(ctx.json({
-      data: getAllPowerUnitTypes() // get power unit types from mock vehicle store
-    
-    }));
+    return res(ctx.json([
+      ...getAllPowerUnitTypes() // get power unit types from mock vehicle store
+    ]));
   }),
   // Mock getting trailer types
   rest.get(VEHICLES_API.TRAILER_TYPES, async (_, res, ctx) => {
-    return res(ctx.json({
-      data: getAllTrailerTypes() // get trailer types from mock vehicle store
-    }));
+    return res(ctx.json([
+      ...getAllTrailerTypes() // get trailer types from mock vehicle store
+    ]));
   }),
   // Mock getting power unit vehicles
   rest.get(`${VEHICLES_URL}/companies/:companyId/vehicles/powerUnits`, async (_, res, ctx) => {
-    return res(ctx.json({
-      data: getAllPowerUnits(), // get power unit vehicles from mock vehicle store
-    }));
+    return res(ctx.json([
+      ...getAllPowerUnits(), // get power unit vehicles from mock vehicle store
+    ]));
   }),
   // Mock getting trailer vehicles
   rest.get(`${VEHICLES_URL}/companies/:companyId/vehicles/trailers`, async (_, res, ctx) => {
-    return res(ctx.json({
-      data: getAllTrailers(), // get trailer vehicles from mock vehicle store
-    }));
+    return res(ctx.json([
+      ...getAllTrailers(), // get trailer vehicles from mock vehicle store
+    ]));
   }),
   // Mock getting company details
   rest.get(`${MANAGE_PROFILE_API.COMPANIES}/:companyId`, async (_, res, ctx) => {

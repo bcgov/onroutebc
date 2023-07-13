@@ -23,7 +23,7 @@ import {
   PERMIT_RIGHT_BOX_STYLE,
 } from "../../../../../../themes/orbcStyles";
 
-import { SelectPowerUnitOrTrailer } from "./customFields/SelectPowerUnitOrTrailer";
+import { SelectUnitOrPlate } from "./customFields/SelectUnitOrPlate";
 import { SelectVehicleDropdown } from "./customFields/SelectVehicleDropdown";
 import {
   CHOOSE_FROM_OPTIONS,
@@ -234,7 +234,7 @@ export const VehicleDetails = ({
           }
         />
         <Box sx={{ display: "flex", gap: "40px" }}>
-          <SelectPowerUnitOrTrailer
+          <SelectUnitOrPlate
             value={chooseFrom}
             label={"Choose from"}
             onChange={handleChooseFrom}
@@ -349,7 +349,11 @@ export const VehicleDetails = ({
             width: formFieldStyle.width,
           }}
           menuOptions={VEHICLE_TYPES.map((data) => (
-            <MenuItem key={data.value} value={data.value}>
+            <MenuItem 
+              key={data.value} 
+              value={data.value}
+              data-testid="vehicle-type-menu-item"
+            >
               {data.label}
             </MenuItem>
           ))}
@@ -367,7 +371,11 @@ export const VehicleDetails = ({
             width: formFieldStyle.width,
           }}
           menuOptions={subtypeOptions.map((subtype) => (
-            <MenuItem key={subtype.typeCode} value={subtype.typeCode}>
+            <MenuItem 
+              key={subtype.typeCode} 
+              value={subtype.typeCode}
+              data-testid="subtype-menu-item"
+            >
               {subtype.type}
             </MenuItem>
           ))}

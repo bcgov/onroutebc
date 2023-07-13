@@ -18,6 +18,10 @@ interface CustomSelectProps<T extends FieldValues> {
   menuOptions?: JSX.Element[];
 }
 
+interface CustomSelectDisplayProps extends React.HTMLAttributes<HTMLDivElement> {
+  "data-testid": string;
+}
+
 /**
  * An onRouteBC customized MUI Select component
  * Based on https://mui.com/material-ui/react-select/
@@ -41,7 +45,6 @@ export const CustomSelect = <T extends ORBC_FormTypes>({
       aria-labelledby={`${feature}-${name}-label`}
       inputProps={{
         "aria-label": name,
-        "data-testid": `select-${name}`,
       }}
       value={value ?? ""}
       {...register(name, rules)}
@@ -58,6 +61,9 @@ export const CustomSelect = <T extends ORBC_FormTypes>({
           }
         }
       }}
+      SelectDisplayProps={{
+        "data-testid": `select-${name}`
+      } as CustomSelectDisplayProps}
     >
       {menuOptions}
     </Select>

@@ -1,5 +1,5 @@
 import { formatPhoneNumber } from "../../../../../../common/components/form/subFormComponents/PhoneNumberInput";
-import { resetVehicleSource } from "./fixtures/getVehicleInfo";
+import { getDefaultPowerUnitTypes, getDefaultTrailerTypes, resetVehicleSource } from "./fixtures/getVehicleInfo";
 import { getEmptyUserDetails } from "./fixtures/getUserDetails";
 import { resetApplicationSource } from "./fixtures/getActiveApplication";
 import { DATE_FORMATS, dayjsToLocalStr, utcToLocalDayjs } from "../../../../../../common/helpers/formatDate";
@@ -15,9 +15,16 @@ import {
   errMsgForEmail,
   errMsgForFirstName,
   errMsgForLastName,
+  errMsgForMake,
   errMsgForPhone1,
+  errMsgForPlate,
+  errMsgForVIN,
+  errMsgForVehicleCountry,
+  errMsgForVehicleSubtype,
+  errMsgForVehicleType,
+  errMsgForVehicleYear,
   getSavedApplication,
-  inputWithValue, replaceValueForInput, saveApplication, sendPermitToEmailMsg,
+  inputWithValue, openVehicleSubtypeSelect, replaceValueForInput, saveApplication, selectVehicleType, sendPermitToEmailMsg, vehicleSubtypeOptions,
 } from "./helpers/access";
 
 const {
@@ -116,7 +123,7 @@ describe("Application Contact Details", () => {
     await continueApplication(user);
 
     // Assert - error messages should be displayed
-    const requiredMsg = "This is a required field."
+    const requiredMsg = "This is a required field.";
     expect(await errMsgForFirstName()).toHaveTextContent(requiredMsg);
     expect(await errMsgForLastName()).toHaveTextContent(requiredMsg);
     expect(await errMsgForPhone1()).toHaveTextContent(requiredMsg);
@@ -189,5 +196,89 @@ describe("Application Header", () => {
     const { legalName, clientNumber } = companyInfo;
     expect(await companyNameDisplay()).toHaveTextContent(legalName);
     expect(await companyClientNumberDisplay()).toHaveTextContent(clientNumber);
+  });
+});
+
+describe("Vehicle Details", () => {
+  it("should not show excluded subtypes for power units", async () => {
+    // Arrange
+    const { user } = renderTestComponent(defaultUserDetails);
+
+    // Act
+    await selectVehicleType(user, "Power Unit");
+    await openVehicleSubtypeSelect(user);
+
+    // Assert
+    const shownSubtypes = getDefaultPowerUnitTypes().slice(0, -1).map(subtype => subtype.type);
+    const excludedSubtypes = getDefaultPowerUnitTypes().slice(-1).map(subtype => subtype.type);
+    const subtypeOptions = await vehicleSubtypeOptions();
+    const subtypeOptionsText = subtypeOptions.map(option => option.textContent ?? "");
+    const properOptions = subtypeOptionsText.filter((optionText) => {
+      return shownSubtypes.includes(optionText);
+    });
+    const displayedOptions = shownSubtypes.filter((subtype) => {
+      return subtypeOptionsText.includes(subtype);
+    });
+    const excludedOptions = subtypeOptionsText.filter((optionText) => {
+      return excludedSubtypes.includes(optionText);
+    });
+    const displayedExcludedOptions = excludedSubtypes.filter((subtype) => {
+      return subtypeOptionsText.includes(subtype);
+    });
+    expect(properOptions).toHaveLength(shownSubtypes.length);
+    expect(displayedOptions).toHaveLength(shownSubtypes.length);
+    expect(excludedOptions).toHaveLength(0);
+    expect(displayedExcludedOptions).toHaveLength(0);
+  });
+
+  it("should not show excluded subtypes for trailers", async () => {
+    // Arrange
+    const { user } = renderTestComponent(defaultUserDetails);
+
+    // Act
+    await selectVehicleType(user, "Trailer");
+    await openVehicleSubtypeSelect(user);
+
+    // Assert
+    const shownSubtypes = getDefaultTrailerTypes().slice(0, -1).map(subtype => subtype.type);
+    const excludedSubtypes = getDefaultTrailerTypes().slice(-1).map(subtype => subtype.type);
+    const subtypeOptions = await vehicleSubtypeOptions();
+    const subtypeOptionsText = subtypeOptions.map(option => option.textContent ?? "");
+    const properOptions = subtypeOptionsText.filter((optionText) => {
+      return shownSubtypes.includes(optionText);
+    });
+    const displayedOptions = shownSubtypes.filter((subtype) => {
+      return subtypeOptionsText.includes(subtype);
+    });
+    const excludedOptions = subtypeOptionsText.filter((optionText) => {
+      return excludedSubtypes.includes(optionText);
+    });
+    const displayedExcludedOptions = excludedSubtypes.filter((subtype) => {
+      return subtypeOptionsText.includes(subtype);
+    });
+    expect(properOptions).toHaveLength(shownSubtypes.length);
+    expect(displayedOptions).toHaveLength(shownSubtypes.length);
+    expect(excludedOptions).toHaveLength(0);
+    expect(displayedExcludedOptions).toHaveLength(0);
+  });
+
+  it("should display error messages for empty vehicle detail fields", async () => {
+    // Arrange
+    const { user } = renderTestComponent(defaultUserDetails);
+
+    // Act
+    await continueApplication(user);
+
+    // Assert
+    const requiredMsg = "This is a required field.";
+    const emptyYearMsg = "Year must not be less than 1950.";
+    expect(await errMsgForVIN()).toHaveTextContent(requiredMsg);
+    expect(await errMsgForPlate()).toHaveTextContent(requiredMsg);
+    expect(await errMsgForMake()).toHaveTextContent(requiredMsg);
+    const vehicleYearErrDisplay = await errMsgForVehicleYear();
+    expect([requiredMsg, emptyYearMsg]).toContain(vehicleYearErrDisplay.textContent);
+    expect(await errMsgForVehicleCountry()).toHaveTextContent(requiredMsg);
+    expect(await errMsgForVehicleSubtype()).toHaveTextContent(requiredMsg);
+    expect(await errMsgForVehicleType()).toHaveTextContent(requiredMsg);
   });
 });
