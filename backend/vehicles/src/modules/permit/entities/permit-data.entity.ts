@@ -40,4 +40,14 @@ export class PermitData extends Base {
     type: 'date',
   })
   startDate: string;
+
+  @AutoMap()
+  @Column({
+    insert: false,
+    update: false,
+    name: 'EXPIRY_DATE',
+    nullable: true,
+    type: 'date',
+  })
+  expiryDate: string;
 }
