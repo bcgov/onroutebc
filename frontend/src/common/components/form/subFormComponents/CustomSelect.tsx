@@ -7,6 +7,7 @@ import {
 } from "react-hook-form";
 import { ORBC_FormTypes } from "../../../types/common";
 import { SELECT_FIELD_STYLE } from "../../../../themes/orbcStyles";
+import { CustomSelectDisplayProps } from "../../../types/formElements";
 
 /**
  * Properties of the onrouteBC customized Select MUI component
@@ -16,10 +17,6 @@ interface CustomSelectProps<T extends FieldValues> {
   name: FieldPath<T>;
   rules: RegisterOptions;
   menuOptions?: JSX.Element[];
-}
-
-interface CustomSelectDisplayProps extends React.HTMLAttributes<HTMLDivElement> {
-  "data-testid": string;
 }
 
 /**

@@ -9,7 +9,7 @@ const vehicleSourceDef = factory({
   powerUnit: {
     powerUnitId: primaryKey(() => `${powerUnitId++}` as string),
     companyId: Number,
-    unitNumber: String,
+    unitNumber: nullable(String),
     plate: String,
     year: nullable(Number),
     make: String,
@@ -26,7 +26,7 @@ const vehicleSourceDef = factory({
   trailer: {
     trailerId: primaryKey(() => `${trailerId++}` as string),
     companyId: Number,
-    unitNumber: String,
+    unitNumber: nullable(String),
     plate: String,
     year: nullable(Number),
     make: String,
@@ -125,32 +125,66 @@ export const getDefaultTrailerTypes = () => ([
 ]);
 
 export const createPowerUnit = (powerUnit: PowerUnit) => {
-  return vehicleSourceDef.powerUnit.create({...powerUnit, powerUnitId: undefined});
+  try {
+    return vehicleSourceDef.powerUnit.create({...powerUnit});
+  } catch (e) {
+    console.error(e);
+  }
 };
 export const updatePowerUnit = (powerUnitId: string, powerUnit: PowerUnit) => {
-  return vehicleSourceDef.powerUnit.update({
-    where: {
-      powerUnitId: {
-        equals: powerUnitId
+  try {
+    return vehicleSourceDef.powerUnit.update({
+      where: {
+        powerUnitId: {
+          equals: powerUnitId
+        }
+      },
+      data: {
+        ...powerUnit,
       }
-    },
-    data: {
-      ...powerUnit,
+    });
+  } catch (e) {
+    console.error(e);
+  }
+};
+export const findPowerUnit = (vin: string) => {
+  return vehicleSourceDef.powerUnit.findFirst({
+    where: {
+      vin: {
+        equals: vin,
+      }
     }
   });
 };
 export const createTrailer = (trailer: Trailer) => {
-  return vehicleSourceDef.trailer.create({...trailer, trailerId: undefined});
+  try {
+    return vehicleSourceDef.trailer.create({...trailer});
+  } catch (e) {
+    console.error(e);
+  }
 };
 export const updateTrailer = (trailerId: string, trailer: Trailer) => {
-  return vehicleSourceDef.trailer.update({
-    where: {
-      trailerId: {
-        equals: trailerId
+  try {
+    return vehicleSourceDef.trailer.update({
+      where: {
+        trailerId: {
+          equals: trailerId
+        }
+      },
+      data: {
+        ...trailer,
       }
-    },
-    data: {
-      ...trailer,
+    });
+  } catch (e) {
+    console.error(e);
+  }
+};
+export const findTrailer = (vin: string) => {
+  return vehicleSourceDef.trailer.findFirst({
+    where: {
+      vin: {
+        equals: vin,
+      }
     }
   });
 };

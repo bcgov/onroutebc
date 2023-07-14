@@ -98,13 +98,29 @@ export const SelectVehicleDropdown = ({
         ]}
         renderOption={(props, option) => {
           if (!option) return "";
+          const vehicleType = option.vehicleType === "powerUnit" ? "powerUnit" : "trailer";
           return (
-            <li {...props} key={option.vin}>
+            <li 
+              {...props} 
+              key={option.vin} 
+              data-testid={`select-vehicle-option-${vehicleType}`}
+            >
               {chooseFrom == "plate" ? option.plate : option.unitNumber}
             </li>
           );
         }}
-        renderInput={(params) => <TextField sx={{ padding: 0 }} {...params} />}
+        renderInput={(params) => (
+          <TextField 
+            sx={{ padding: 0 }} 
+            {...{
+              ...params, 
+              inputProps: {
+                ...params.inputProps, 
+                "data-testid": "select-vehicle-autocomplete"
+              }
+            }}
+          />
+        )}
         renderGroup={(params) => (
           <li key={params.key}>
             <GroupHeader>{params.group}</GroupHeader>

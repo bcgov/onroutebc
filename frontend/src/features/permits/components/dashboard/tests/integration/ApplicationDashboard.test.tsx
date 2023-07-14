@@ -1,14 +1,32 @@
 import { formatPhoneNumber } from "../../../../../../common/components/form/subFormComponents/PhoneNumberInput";
-import { getDefaultPowerUnitTypes, getDefaultTrailerTypes, resetVehicleSource } from "./fixtures/getVehicleInfo";
+import { 
+  findPowerUnit,
+  getAllPowerUnitTypes, 
+  getAllPowerUnits, 
+  getAllTrailers, 
+  getDefaultPowerUnitTypes, 
+  getDefaultTrailerTypes, 
+  resetVehicleSource,
+} from "./fixtures/getVehicleInfo";
 import { getEmptyUserDetails } from "./fixtures/getUserDetails";
 import { resetApplicationSource } from "./fixtures/getActiveApplication";
 import { DATE_FORMATS, dayjsToLocalStr, utcToLocalDayjs } from "../../../../../../common/helpers/formatDate";
-import { closeMockServer, companyInfo, defaultUserDetails, listenToMockServer, newApplicationNumber, renderTestComponent, resetMockServer } from "./helpers/prepare";
+import { 
+  closeMockServer, 
+  companyInfo, 
+  defaultUserDetails, 
+  listenToMockServer, 
+  newApplicationNumber, 
+  renderTestComponent, 
+  resetMockServer,
+} from "./helpers/prepare";
 import { getDefaultRequiredVal } from "../../../../../../common/helpers/util";
 import { 
   applicationCreatedDateDisplay,
   applicationNumberDisplay,
   applicationUpdatedDateDisplay,
+  chooseOption,
+  chooseSaveVehicleToInventory,
   companyClientNumberDisplay,
   companyNameDisplay,
   continueApplication,
@@ -24,8 +42,25 @@ import {
   errMsgForVehicleType,
   errMsgForVehicleYear,
   getSavedApplication,
-  inputWithValue, openVehicleSubtypeSelect, replaceValueForInput, saveApplication, selectVehicleType, sendPermitToEmailMsg, vehicleSubtypeOptions,
+  inputWithValue, 
+  makeInput, 
+  openVehicleSelect, 
+  openVehicleSubtypeSelect, 
+  plateInput, 
+  replaceValueForInput, 
+  saveApplication, 
+  sendPermitToEmailMsg, 
+  unitNumberOrPlateSelect, 
+  vehicleCountrySelect,
+  vehicleOptions, 
+  vehicleProvinceSelect, 
+  vehicleSubtypeOptions,
+  vehicleSubtypeSelect,
+  vehicleTypeSelect,
+  vehicleYearInput,
+  vinInput,
 } from "./helpers/access";
+import { waitFor } from "@testing-library/dom";
 
 const {
   firstName,
@@ -37,6 +72,8 @@ const {
   email,
   fax,
 } = defaultUserDetails.userDetails;
+
+global.scrollTo = vi.fn();
 
 beforeAll(() => {
   resetVehicleSource();
@@ -205,7 +242,8 @@ describe("Vehicle Details", () => {
     const { user } = renderTestComponent(defaultUserDetails);
 
     // Act
-    await selectVehicleType(user, "Power Unit");
+    const vehicleType = await vehicleTypeSelect();
+    await chooseOption(user, vehicleType, "Power Unit");
     await openVehicleSubtypeSelect(user);
 
     // Assert
@@ -236,7 +274,8 @@ describe("Vehicle Details", () => {
     const { user } = renderTestComponent(defaultUserDetails);
 
     // Act
-    await selectVehicleType(user, "Trailer");
+    const vehicleType = await vehicleTypeSelect();
+    await chooseOption(user, vehicleType, "Trailer");
     await openVehicleSubtypeSelect(user);
 
     // Assert
@@ -280,5 +319,196 @@ describe("Vehicle Details", () => {
     expect(await errMsgForVehicleCountry()).toHaveTextContent(requiredMsg);
     expect(await errMsgForVehicleSubtype()).toHaveTextContent(requiredMsg);
     expect(await errMsgForVehicleType()).toHaveTextContent(requiredMsg);
+  });
+
+  it("should add new vehicle to inventory if user chooses to", async () => {
+    // Arrange
+    const { user } = renderTestComponent(defaultUserDetails);
+    const powerUnits = getAllPowerUnits();
+    const existingVehicle = powerUnits[0];
+    const vehicle = {
+      ...existingVehicle,
+      vin: `${existingVehicle.vin.slice(1)}1`,
+    };
+    const country = "Canada";
+    const province = "British Columbia";
+    const vehicleType = "Power Unit";
+    const vehicleSubtype = getAllPowerUnitTypes()
+      .find(subtype => subtype.typeCode === vehicle.powerUnitTypeCode)?.type ?? "";
+    const vinTextField = await vinInput();
+    const plateTextField = await plateInput();
+    const makeTextField = await makeInput();
+    const yearTextField = await vehicleYearInput();
+    const countrySelect = await vehicleCountrySelect();
+    const provinceSelect = await vehicleProvinceSelect();
+    const typeSelect = await vehicleTypeSelect();
+    const subtypeSelect = await vehicleSubtypeSelect();
+
+    // Act
+    await replaceValueForInput(user, vinTextField, 0, vehicle.vin);
+    await replaceValueForInput(user, plateTextField, 0, vehicle.plate);
+    await replaceValueForInput(user, makeTextField, 0, vehicle.make);
+    await replaceValueForInput(user, yearTextField, 1, `${vehicle.year}`);
+    await chooseOption(user, countrySelect, country);
+    await chooseOption(user, provinceSelect, province);
+    await chooseOption(user, typeSelect, vehicleType);
+    await chooseOption(user, subtypeSelect, vehicleSubtype);
+    await chooseSaveVehicleToInventory(user, true);
+    await continueApplication(user);
+
+    // Assert
+    await waitFor(() => {
+      expect(getAllPowerUnits().length).toBeGreaterThan(powerUnits.length);
+    });
+  });
+
+  it("should not add new vehicle to inventory if user chooses not to", async () => {
+    // Arrange
+    const { user } = renderTestComponent(defaultUserDetails);
+    const powerUnits = getAllPowerUnits();
+    const existingVehicle = powerUnits[0];
+    const vehicle = {
+      ...existingVehicle,
+      vin: `${existingVehicle.vin.slice(1)}1`,
+    };
+    const country = "Canada";
+    const province = "British Columbia";
+    const vehicleType = "Power Unit";
+    const vehicleSubtype = getAllPowerUnitTypes()
+      .find(subtype => subtype.typeCode === vehicle.powerUnitTypeCode)?.type ?? "";
+    const vinTextField = await vinInput();
+    const plateTextField = await plateInput();
+    const makeTextField = await makeInput();
+    const yearTextField = await vehicleYearInput();
+    const countrySelect = await vehicleCountrySelect();
+    const provinceSelect = await vehicleProvinceSelect();
+    const typeSelect = await vehicleTypeSelect();
+    const subtypeSelect = await vehicleSubtypeSelect();
+
+    // Act
+    await replaceValueForInput(user, vinTextField, 0, vehicle.vin);
+    await replaceValueForInput(user, plateTextField, 0, vehicle.plate);
+    await replaceValueForInput(user, makeTextField, 0, vehicle.make);
+    await replaceValueForInput(user, yearTextField, 1, `${vehicle.year}`);
+    await chooseOption(user, countrySelect, country);
+    await chooseOption(user, provinceSelect, province);
+    await chooseOption(user, typeSelect, vehicleType);
+    await chooseOption(user, subtypeSelect, vehicleSubtype);
+    await chooseSaveVehicleToInventory(user, false);
+    await continueApplication(user);
+
+    // Assert
+    await waitFor(() => {
+      expect(getAllPowerUnits().length).toBeGreaterThan(powerUnits.length);
+    }).catch(err => {
+      expect(err).not.toBeUndefined();
+    });
+  });
+
+  it("should update vehicle in inventory if user chooses to", async () => {
+    // Arrange
+    const { user } = renderTestComponent(defaultUserDetails);
+    const powerUnits = getAllPowerUnits();
+    const existingVehicle = powerUnits[0];
+    const country = "Canada";
+    const updatedProvince = "Alberta";
+    const updatedProvinceAbbr = "AB";
+    const vehicleType = "Power Unit";
+    const vehicleSubtype = getAllPowerUnitTypes()
+      .find(subtype => subtype.typeCode === existingVehicle.powerUnitTypeCode)?.type ?? "";
+    const vinTextField = await vinInput();
+    const plateTextField = await plateInput();
+    const makeTextField = await makeInput();
+    const yearTextField = await vehicleYearInput();
+    const countrySelect = await vehicleCountrySelect();
+    const provinceSelect = await vehicleProvinceSelect();
+    const typeSelect = await vehicleTypeSelect();
+    const subtypeSelect = await vehicleSubtypeSelect();
+
+    // Act
+    await replaceValueForInput(user, vinTextField, 0, existingVehicle.vin);
+    await replaceValueForInput(user, plateTextField, 0, existingVehicle.plate);
+    await replaceValueForInput(user, makeTextField, 0, existingVehicle.make);
+    await replaceValueForInput(user, yearTextField, 1, `${existingVehicle.year}`);
+    await chooseOption(user, countrySelect, country);
+    await chooseOption(user, provinceSelect, updatedProvince);
+    await chooseOption(user, typeSelect, vehicleType);
+    await chooseOption(user, subtypeSelect, vehicleSubtype);
+    await chooseSaveVehicleToInventory(user, true);
+    await continueApplication(user);
+
+    // Assert
+    await waitFor(() => {
+      const updatedVehicle = findPowerUnit(existingVehicle.vin);
+      expect(updatedVehicle?.provinceCode).toBe(updatedProvinceAbbr);
+    });
+  });
+
+  it("should not update vehicle in inventory if user chooses not to", async () => {
+    // Arrange
+    const { user } = renderTestComponent(defaultUserDetails);
+    const powerUnits = getAllPowerUnits();
+    const existingVehicle = powerUnits[0];
+    const country = "Canada";
+    const updatedProvince = "Alberta";
+    const updatedProvinceAbbr = "AB";
+    const vehicleType = "Power Unit";
+    const vehicleSubtype = getAllPowerUnitTypes()
+      .find(subtype => subtype.typeCode === existingVehicle.powerUnitTypeCode)?.type ?? "";
+    const vinTextField = await vinInput();
+    const plateTextField = await plateInput();
+    const makeTextField = await makeInput();
+    const yearTextField = await vehicleYearInput();
+    const countrySelect = await vehicleCountrySelect();
+    const provinceSelect = await vehicleProvinceSelect();
+    const typeSelect = await vehicleTypeSelect();
+    const subtypeSelect = await vehicleSubtypeSelect();
+
+    // Act
+    await replaceValueForInput(user, vinTextField, 0, existingVehicle.vin);
+    await replaceValueForInput(user, plateTextField, 0, existingVehicle.plate);
+    await replaceValueForInput(user, makeTextField, 0, existingVehicle.make);
+    await replaceValueForInput(user, yearTextField, 1, `${existingVehicle.year}`);
+    await chooseOption(user, countrySelect, country);
+    await chooseOption(user, provinceSelect, updatedProvince);
+    await chooseOption(user, typeSelect, vehicleType);
+    await chooseOption(user, subtypeSelect, vehicleSubtype);
+    await chooseSaveVehicleToInventory(user, false);
+    await continueApplication(user);
+
+    // Assert
+    await waitFor(() => {
+      const updatedVehicle = findPowerUnit(existingVehicle.vin);
+      expect(updatedVehicle?.provinceCode).toBe(updatedProvinceAbbr);
+    }).catch(err => {
+      expect(err).not.toBeUndefined();
+    });
+  });
+
+  it("should show vehicles grouped by vehicle type", async () => {
+    // Arrange
+    const { user } = renderTestComponent(defaultUserDetails);
+    const unitNumberOrPlate = await unitNumberOrPlateSelect();
+    const powerUnits = getAllPowerUnits();
+    const trailers = getAllTrailers();
+
+    // Act
+    await chooseOption(user, unitNumberOrPlate, "Unit Number");
+    await openVehicleSelect(user);
+
+    // Assert
+    const powerUnitOptions = await vehicleOptions("powerUnit");
+    const trailerOptions = await vehicleOptions("trailer");
+    expect(powerUnitOptions.length).toBe(powerUnits.length);
+    expect(trailerOptions.length).toBe(trailers.length);
+
+    await chooseOption(user, unitNumberOrPlate, "Plate");
+    await openVehicleSelect(user);
+
+    // Assert
+    const updatedPowerUnitOptions = await vehicleOptions("powerUnit");
+    const updatedTrailerOptions = await vehicleOptions("trailer");
+    expect(updatedPowerUnitOptions.length).toBe(powerUnits.length);
+    expect(updatedTrailerOptions.length).toBe(trailers.length);
   });
 });

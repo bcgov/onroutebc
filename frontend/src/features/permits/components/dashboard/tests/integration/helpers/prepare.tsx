@@ -107,7 +107,7 @@ const server = setupServer(
     const reqBody = await req.json();
     const newPowerUnit = createPowerUnit(reqBody); // create power unit vehicle in mock vehicle store
     return res(ctx.status(201), ctx.json({
-      data: newPowerUnit
+      ...newPowerUnit
     }));
   }),
   // Mock updating power unit vehicle
@@ -116,7 +116,7 @@ const server = setupServer(
     const reqBody = await req.json();
     const updatedPowerUnit = updatePowerUnit(id, reqBody); // update power unit vehicle in mock vehicle store
     return res(ctx.json({
-      data: updatedPowerUnit,
+      ...updatedPowerUnit,
     }));
   }),
   // Mock creating trailer vehicle
@@ -124,7 +124,7 @@ const server = setupServer(
     const reqBody = await req.json();
     const newTrailer = createTrailer(reqBody); // create trailer vehicle in mock vehicle store
     return res(ctx.status(201), ctx.json({
-      data: newTrailer
+      ...newTrailer
     }));
   }),
   // Mock updating trailer vehicle
@@ -133,7 +133,7 @@ const server = setupServer(
     const reqBody = await req.json();
     const updatedTrailer = updatePowerUnit(id, reqBody); // update trailer vehicle in mock vehicle store
     return res(ctx.json({
-      data: updatedTrailer,
+      ...updatedTrailer,
     }));
   }),
 );

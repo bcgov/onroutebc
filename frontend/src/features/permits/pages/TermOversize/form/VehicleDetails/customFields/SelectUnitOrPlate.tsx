@@ -5,6 +5,7 @@ import {
   SelectChangeEvent,
 } from "@mui/material";
 import { SELECT_FIELD_STYLE } from "../../../../../../../themes/orbcStyles";
+import { CustomSelectDisplayProps } from "../../../../../../../common/types/formElements";
 
 /**
  * This simple MUI select component without
@@ -28,14 +29,18 @@ export const SelectUnitOrPlate = ({
     <Select
       value={value}
       onChange={onChange}
-      MenuProps={SELECT_FIELD_STYLE.MENU_PROPS}
+      SelectDisplayProps={{
+        "data-testid": "select-unit-or-plate"
+      } as CustomSelectDisplayProps}
+      MenuProps={{
+        ...SELECT_FIELD_STYLE.MENU_PROPS,
+      }}
       sx={[
         SELECT_FIELD_STYLE.SELECT_FIELDSET,
         {
           width: { width },
         },
       ]}
-      data-testid="select-unit-or-plate"
     >
       {menuItems}
     </Select>
