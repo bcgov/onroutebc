@@ -1,3 +1,5 @@
+import { waitFor } from "@testing-library/react";
+
 import { formatPhoneNumber } from "../../../../../../common/components/form/subFormComponents/PhoneNumberInput";
 import { 
   findPowerUnit,
@@ -54,13 +56,14 @@ import {
   vehicleCountrySelect,
   vehicleOptions, 
   vehicleProvinceSelect, 
+  vehicleSelect, 
   vehicleSubtypeOptions,
   vehicleSubtypeSelect,
   vehicleTypeSelect,
   vehicleYearInput,
   vinInput,
 } from "./helpers/access";
-import { waitFor } from "@testing-library/dom";
+import { formatCountry, formatProvince } from "../../../../../../common/helpers/formatCountryProvince";
 
 const {
   firstName,
@@ -330,8 +333,8 @@ describe("Vehicle Details", () => {
       ...existingVehicle,
       vin: `${existingVehicle.vin.slice(1)}1`,
     };
-    const country = "Canada";
-    const province = "British Columbia";
+    const country = formatCountry(vehicle.countryCode);
+    const province = formatProvince(vehicle.countryCode, vehicle.provinceCode);
     const vehicleType = "Power Unit";
     const vehicleSubtype = getAllPowerUnitTypes()
       .find(subtype => subtype.typeCode === vehicle.powerUnitTypeCode)?.type ?? "";
@@ -371,8 +374,8 @@ describe("Vehicle Details", () => {
       ...existingVehicle,
       vin: `${existingVehicle.vin.slice(1)}1`,
     };
-    const country = "Canada";
-    const province = "British Columbia";
+    const country = formatCountry(vehicle.countryCode);
+    const province = formatProvince(vehicle.countryCode, vehicle.provinceCode);
     const vehicleType = "Power Unit";
     const vehicleSubtype = getAllPowerUnitTypes()
       .find(subtype => subtype.typeCode === vehicle.powerUnitTypeCode)?.type ?? "";
@@ -410,9 +413,9 @@ describe("Vehicle Details", () => {
     const { user } = renderTestComponent(defaultUserDetails);
     const powerUnits = getAllPowerUnits();
     const existingVehicle = powerUnits[0];
-    const country = "Canada";
-    const updatedProvince = "Alberta";
+    const country = formatCountry(existingVehicle.countryCode);
     const updatedProvinceAbbr = "AB";
+    const updatedProvince = formatProvince(existingVehicle.countryCode, updatedProvinceAbbr);
     const vehicleType = "Power Unit";
     const vehicleSubtype = getAllPowerUnitTypes()
       .find(subtype => subtype.typeCode === existingVehicle.powerUnitTypeCode)?.type ?? "";
@@ -449,9 +452,9 @@ describe("Vehicle Details", () => {
     const { user } = renderTestComponent(defaultUserDetails);
     const powerUnits = getAllPowerUnits();
     const existingVehicle = powerUnits[0];
-    const country = "Canada";
-    const updatedProvince = "Alberta";
+    const country = formatCountry(existingVehicle.countryCode);
     const updatedProvinceAbbr = "AB";
+    const updatedProvince = formatProvince(existingVehicle.countryCode, updatedProvinceAbbr);
     const vehicleType = "Power Unit";
     const vehicleSubtype = getAllPowerUnitTypes()
       .find(subtype => subtype.typeCode === existingVehicle.powerUnitTypeCode)?.type ?? "";
@@ -502,6 +505,7 @@ describe("Vehicle Details", () => {
     expect(powerUnitOptions.length).toBe(powerUnits.length);
     expect(trailerOptions.length).toBe(trailers.length);
 
+    // Act
     await chooseOption(user, unitNumberOrPlate, "Plate");
     await openVehicleSelect(user);
 
@@ -510,5 +514,79 @@ describe("Vehicle Details", () => {
     const updatedTrailerOptions = await vehicleOptions("trailer");
     expect(updatedPowerUnitOptions.length).toBe(powerUnits.length);
     expect(updatedTrailerOptions.length).toBe(trailers.length);
+  });
+
+  it("should filter vehicle options by typing in plate", async () => {
+    // Arrange
+    const { user } = renderTestComponent(defaultUserDetails);
+    const { plate } = getAllPowerUnits()[0];
+    const unitNumberOrPlate = await unitNumberOrPlateSelect();
+    await chooseOption(user, unitNumberOrPlate, "Plate");
+
+    // Act
+    await openVehicleSelect(user);
+    const vehicleTextfield = await vehicleSelect();
+    await replaceValueForInput(user, vehicleTextfield, 0, plate);
+
+    // Assert
+    const powerUnitOptions = await vehicleOptions("powerUnit");
+    expect(powerUnitOptions.length).toBe(1);
+    expect(powerUnitOptions[0]).toHaveTextContent(plate);
+    expect(async () => await vehicleOptions("trailer")).rejects.toThrow();
+  });
+
+  it("should filter vehicle options by typing in unit number", async () => {
+    // Arrange
+    const { user } = renderTestComponent(defaultUserDetails);
+    const unitNumber = getDefaultRequiredVal("", getAllTrailers()[0].unitNumber);
+    const unitNumberOrPlate = await unitNumberOrPlateSelect();
+    await chooseOption(user, unitNumberOrPlate, "Unit Number");
+
+    // Act
+    await openVehicleSelect(user);
+    const vehicleTextfield = await vehicleSelect();
+    await replaceValueForInput(user, vehicleTextfield, 0, unitNumber);
+
+    // Assert
+    const trailerOptions = await vehicleOptions("trailer");
+    expect(trailerOptions.length).toBe(1);
+    expect(trailerOptions[0]).toHaveTextContent(unitNumber);
+    expect(async () => await vehicleOptions("powerUnit")).rejects.toThrow();
+  });
+
+  it("should fill in vehicle details after choosing vehicle option", async () => {
+    // Arrange
+    const { user } = renderTestComponent(defaultUserDetails);
+    const vehicle = getAllPowerUnits()[0];
+    const unitNumber = getDefaultRequiredVal("", vehicle.unitNumber);
+    const vehicleSubtype = getDefaultRequiredVal(
+      "",
+      getAllPowerUnitTypes()
+        .find(subtype => subtype.typeCode === vehicle.powerUnitTypeCode)?.type
+    );
+
+    // Act
+    const unitNumberOrPlate = await unitNumberOrPlateSelect();
+    await chooseOption(user, unitNumberOrPlate, "Unit Number");
+    const vehicleSelectEl = await vehicleSelect();
+    await chooseOption(user, vehicleSelectEl, unitNumber);
+
+    // Assert
+    const vin = await vinInput();
+    const plate = await plateInput();
+    const make = await makeInput();
+    const year = await vehicleYearInput();
+    const country = await vehicleCountrySelect();
+    const province = await vehicleProvinceSelect();
+    const type = await vehicleTypeSelect();
+    const subtype = await vehicleSubtypeSelect();
+    expect(vin).toHaveValue(vehicle.vin);
+    expect(plate).toHaveValue(vehicle.plate);
+    expect(make).toHaveValue(vehicle.make);
+    expect(year).toHaveValue(vehicle.year);
+    expect(country).toHaveTextContent(formatCountry(vehicle.countryCode));
+    expect(province).toHaveTextContent(formatProvince(vehicle.countryCode, vehicle.provinceCode));
+    expect(type).toHaveTextContent("Power Unit");
+    expect(subtype).toHaveTextContent(vehicleSubtype);
   });
 });
