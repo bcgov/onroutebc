@@ -1,16 +1,17 @@
 import { Box, Typography } from "@mui/material";
-import {
-  PERMIT_MAIN_BOX_STYLE,
-  PERMIT_LEFT_BOX_STYLE,
-  PERMIT_LEFT_HEADER_STYLE,
-  PERMIT_RIGHT_BOX_STYLE,
-} from "../../../../../themes/orbcStyles";
+import "./ReviewContactDetails.scss";
 import { Application } from "../../../types/application";
 import { getDefaultRequiredVal } from "../../../../../common/helpers/util";
 
-const phoneDisplay = (label: string, phone?: string, ext?: string) => {
+const nameDisplay = (firstName?: string, lastName?: string) => {
+  if (!firstName) return getDefaultRequiredVal("", lastName);
+  if (!lastName) return getDefaultRequiredVal("", firstName);
+  return `${firstName} ${lastName}`;
+};
+
+const phoneDisplay = (phone?: string, ext?: string) => {
   if (!phone) return "";
-  const firstPart = `${label}: ${phone}`;
+  const firstPart = `${phone}`;
   const secondPart = getDefaultRequiredVal("", ext).trim() !== "" ? 
     `Ext: ${ext}` : "";
   return `${firstPart} ${secondPart}`;
@@ -22,43 +23,75 @@ export const ReviewContactDetails = ({
   values: Application | undefined;
 }) => {
   return (
-    <Box sx={PERMIT_MAIN_BOX_STYLE}>
-      <Box sx={PERMIT_LEFT_BOX_STYLE}>
-        <Typography variant={"h3"} sx={PERMIT_LEFT_HEADER_STYLE}>
+    <Box className="review-contact-details">
+      <Box className="review-contact-details__header">
+        <Typography 
+          variant={"h3"}
+          className="review-contact-details__title"
+          data-testid="review-contact-details-title"
+        >
           Contact Information
         </Typography>
       </Box>
-      <Box sx={PERMIT_RIGHT_BOX_STYLE}>
-        <Box sx={{ gap: "40px", paddingTop: "24px" }}>
+      <Box className="review-contact-details__body">
+        <Box className="contact-details">
           <Typography>
-            {values?.permitData.contactDetails?.firstName}{" "}
-            {values?.permitData.contactDetails?.lastName}
+            <span 
+              className="contact-details__data"
+              data-testid="review-contact-details-name"
+            >
+              {nameDisplay(
+                values?.permitData?.contactDetails?.firstName,
+                values?.permitData?.contactDetails?.lastName
+              )}
+            </span>
           </Typography>
           <Typography>
-            {phoneDisplay(
-              "Primary Phone", 
-              values?.permitData.contactDetails?.phone1, 
-              values?.permitData.contactDetails?.phone1Extension
-            )}
+            <span className="contact-details__label">Primary Phone:</span>
+            <span 
+              className="contact-details__data"
+              data-testid="review-contact-details-phone1"
+            >
+              {phoneDisplay(
+                values?.permitData.contactDetails?.phone1, 
+                values?.permitData.contactDetails?.phone1Extension
+              )}
+            </span>
           </Typography>
           {values?.permitData.contactDetails?.phone2 ? (
             <Typography>
-              {phoneDisplay(
-                "Alternate Phone", 
-                values?.permitData.contactDetails?.phone2, 
-                values?.permitData.contactDetails?.phone2Extension
-              )}
+              <span className="contact-details__label">Alternate Phone:</span>
+              <span 
+                className="contact-details__data"
+                data-testid="review-contact-details-phone2"
+              >
+                {phoneDisplay(
+                  values?.permitData.contactDetails?.phone2, 
+                  values?.permitData.contactDetails?.phone2Extension
+                )}
+              </span>
             </Typography>
           ) : null}
           <Typography>
-            Email: {values?.permitData.contactDetails?.email}
+            <span className="contact-details__label">Email:</span>
+            <span 
+              className="contact-details__data"
+              data-testid="review-contact-details-email"
+            >
+              {values?.permitData.contactDetails?.email}
+            </span>
           </Typography>
           {values?.permitData?.contactDetails?.fax ? (
             <Typography>
-              {phoneDisplay(
-                "Fax", 
-                values?.permitData.contactDetails?.fax
-              )}
+              <span className="contact-details__label">Fax:</span>
+              <span 
+                className="contact-details__data"
+                data-testid="review-contact-details-fax"
+              >
+                {phoneDisplay(
+                  values?.permitData.contactDetails?.fax
+                )}
+              </span>
             </Typography>
           ) : null}
         </Box>

@@ -1,6 +1,7 @@
 import { render } from "@testing-library/react";
 import { CompanyProfile } from "../../../../../../manageProfile/types/manageProfile";
 import { CompanyInformation } from "../../../CompanyInformation";
+import { formatCountry, formatProvince } from "../../../../../../../common/helpers/formatCountryProvince";
 
 export const defaultCompanyInfo = {
   companyId: 74,
@@ -27,8 +28,11 @@ export const defaultCompanyInfo = {
   },
 };
 
-export const country = "Canada";
-export const province = "British Columbia";
+export const country = formatCountry(defaultCompanyInfo.mailingAddress.countryCode);
+export const province = formatProvince(
+  defaultCompanyInfo.mailingAddress.countryCode, 
+  defaultCompanyInfo.mailingAddress.provinceCode
+);
 
 export const companyInfoTitle = "Company Information";
 export const companyInfoDescription = 
