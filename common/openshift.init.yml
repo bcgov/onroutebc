@@ -29,24 +29,6 @@ parameters:
     required: true
   - name: AUTH0_IGNORE_EXP
     description: The boolean flag to ignore the JWT expiration
-    required: true    
-  - name: BASICAUTH_USERNAME
-    description: The basic auth username for COMS
-    required: true
-  - name: BASICAUTH_PASSWORD
-    description: The basic auth password for COMS
-    required: true
-  - name: COMS_URL
-    description: The URL for the deployed instance of COMS
-    required: true
-  - name: COMS_AUTH_TYPE
-    description: The identifier to determine whether COMS auth mode is basic-auth or full-auth
-    required: true
-  - name: COMS_BUCKET_ID
-    description: The Uuid representing the bucket
-    required: true
-  - name: COMS_PRESIGNED_URL_EXPIRY
-    description: The exipry value (seconds) of the presigned URL
     required: true
   - name: DOPS_S3_ACCESS_TYPE
     description: The key to switch between COMS or Direct access

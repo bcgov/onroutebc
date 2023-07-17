@@ -106,12 +106,6 @@ jobs:
             ${{secrets.VAULT_ENVIRONMENT}}/data/auth0-${{inputs.vault_zone}}      AUTH0_ISSUER_URL                | VAULT_AUTH0_ISSUER_URL;
             ${{secrets.VAULT_ENVIRONMENT}}/data/auth0-${{inputs.vault_zone}}      AUTH0_AUDIENCE                  | VAULT_AUTH0_AUDIENCE;
             ${{secrets.VAULT_ENVIRONMENT}}/data/auth0-${{inputs.vault_zone}}      AUTH0_IGNORE_EXP                | VAULT_AUTH0_IGNORE_EXP;
-            ${{secrets.VAULT_ENVIRONMENT}}/data/coms-${{inputs.vault_zone}}       BASICAUTH_PASSWORD              | VAULT_BASICAUTH_PASSWORD;
-            ${{secrets.VAULT_ENVIRONMENT}}/data/coms-${{inputs.vault_zone}}       BASICAUTH_USERNAME              | VAULT_BASICAUTH_USERNAME;
-            ${{secrets.VAULT_ENVIRONMENT}}/data/coms-${{inputs.vault_zone}}       COMS_URL                        | VAULT_COMS_URL;
-            ${{secrets.VAULT_ENVIRONMENT}}/data/coms-${{inputs.vault_zone}}       COMS_AUTH_TYPE                  | VAULT_COMS_AUTH_TYPE;
-            ${{secrets.VAULT_ENVIRONMENT}}/data/coms-${{inputs.vault_zone}}       COMS_BUCKET_ID                  | VAULT_COMS_BUCKET_ID;
-            ${{secrets.VAULT_ENVIRONMENT}}/data/coms-${{inputs.vault_zone}}       COMS_PRESIGNED_URL_EXPIRY       | VAULT_COMS_PRESIGNED_URL_EXPIRY;
             ${{secrets.VAULT_ENVIRONMENT}}/data/dops-${{inputs.vault_zone}}       DOPS_S3_ACCESS_TYPE             | VAULT_DOPS_S3_ACCESS_TYPE;
             ${{secrets.VAULT_ENVIRONMENT}}/data/dops-${{inputs.vault_zone}}       DOPS_S3_ACCESSKEYID             | VAULT_DOPS_S3_ACCESSKEYID;
             ${{secrets.VAULT_ENVIRONMENT}}/data/dops-${{inputs.vault_zone}}       DOPS_S3_BUCKET                  | VAULT_DOPS_S3_BUCKET;
@@ -150,12 +144,6 @@ jobs:
             -p AUTH0_ISSUER_URL=${{steps.vault.outputs.VAULT_AUTH0_ISSUER_URL}}
             -p AUTH0_AUDIENCE=${{steps.vault.outputs.VAULT_AUTH0_AUDIENCE}}
             -p AUTH0_IGNORE_EXP=${{steps.vault.outputs.VAULT_AUTH0_IGNORE_EXP}}
-            -p BASICAUTH_PASSWORD=${{steps.vault.outputs.VAULT_BASICAUTH_PASSWORD}}
-            -p BASICAUTH_USERNAME=${{steps.vault.outputs.VAULT_BASICAUTH_USERNAME}}
-            -p COMS_URL=${{steps.vault.outputs.VAULT_COMS_URL}}
-            -p COMS_AUTH_TYPE=${{steps.vault.outputs.VAULT_COMS_AUTH_TYPE}}
-            -p COMS_BUCKET_ID=${{steps.vault.outputs.VAULT_COMS_BUCKET_ID}}
-            -p COMS_PRESIGNED_URL_EXPIRY=${{steps.vault.outputs.VAULT_COMS_PRESIGNED_URL_EXPIRY}}
             -p DOPS_S3_ACCESS_TYPE=${{steps.vault.outputs.VAULT_DOPS_S3_ACCESS_TYPE}}
             -p DOPS_S3_ACCESSKEYID=${{steps.vault.outputs.VAULT_DOPS_S3_ACCESSKEYID}}
             -p DOPS_S3_BUCKET=${{steps.vault.outputs.VAULT_DOPS_S3_BUCKET}}
