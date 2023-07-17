@@ -26,8 +26,9 @@ export const matchCompanies = (
   associatedCompanies: number[],
   currentUserAssociatedCompanies: number[],
 ) => {
-  return associatedCompanies.some((associatedCompany) =>
-    currentUserAssociatedCompanies?.includes(associatedCompany),
+  return associatedCompanies.some(
+    (associatedCompany) =>
+      currentUserAssociatedCompanies?.includes(associatedCompany),
   );
 };
 
