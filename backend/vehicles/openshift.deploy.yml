@@ -59,23 +59,26 @@ parameters:
   - name: AUTH0_IGNORE_EXP
     description: The boolean flag to ignore the JWT expiration
     required: true
-  - name: BASICAUTH_USERNAME
-    description: The basic auth username for COMS
+  - name: DOPS_S3_ACCESS_TYPE
+    description: The key to switch between COMS or Direct access
     required: true
-  - name: BASICAUTH_PASSWORD
-    description: The basic auth password for COMS
+  - name: DOPS_S3_ACCESSKEYID
+    description: The Access Key for your S3 compatible object storage account
     required: true
-  - name: COMS_URL
-    description: The URL for the deployed instance of COMS
+  - name: DOPS_S3_BUCKET
+    description: The object storage bucket name
     required: true
-  - name: COMS_SERVICE
-    description: The identifier to determine whether COMS is hosted vs self-hosted
+  - name: DOPS_S3_PRESIGNED_URL_EXPIRY
+    description: The expiry time for pre-signed URLs to objects in seconds
     required: true
-  - name: COMS_BUCKET_ID
-    description: The Uuid representing the bucket
+  - name: DOPS_S3_ENDPOINT
+    description: Object store URL
     required: true
-  - name: COMS_PRESIGNED_URL_EXPIRY
-    description: The exipry value (seconds) of the presigned URL
+  - name: DOPS_S3_KEY
+    description: The base path for storage location
+    required: true
+  - name: DOPS_S3_SECRETACCESSKEY
+    description: The Secret Access Key for your S3 compatible object storage account
     required: true
   - name: CDOGS_CLIENT_ID
     description: The keycloak client ID for common hosted CDOGS
@@ -91,7 +94,7 @@ parameters:
     required: true
   - name: CHES_TOKEN_URL
     description: The keycloak url for common hosted CHES
-    required: true    
+    required: true
   - name: CHES_CLIENT_ID
     description: Client Id to request the access token for connecting to CHES
     required: true
@@ -103,16 +106,16 @@ parameters:
     required: true
   - name: NODE_ENV
     description: The NODE Environment
-    required: true      
+    required: true
   - name: MOTIPAY_API_KEY
     description: API Key for MOTI Pay
-    required: true  
+    required: true
   - name: MOTIPAY_MERCHANT_ID
     description: Merchant ID for MOTI Pay
-    required: true  
+    required: true
   - name: MOTIPAY_BASE_URL
     description: Base URL for MOTI Pay
-    required: true  
+    required: true
 objects:
   - apiVersion: v1
     kind: ConfigMap
@@ -129,12 +132,6 @@ objects:
       auth0-issuer-url: "${AUTH0_ISSUER_URL}"
       auth0-audience: "${AUTH0_AUDIENCE}"
       auth0-ignore-exp: "${AUTH0_IGNORE_EXP}"
-      coms-url: "${COMS_URL}"
-      coms-service: "${COMS_SERVICE}"
-      coms-bucket-id: "${COMS_BUCKET_ID}"
-      coms-presigned-url-expiry: "${COMS_PRESIGNED_URL_EXPIRY}"
-      cdogs-token-url: "${CDOGS_TOKEN_URL}"
-      cdogs-url: "${CDOGS_URL}"
       ches-token-url: "${CHES_TOKEN_URL}"
       ches-url: "${CHES_URL}"      
       dops-url: "https://${NAME}-${ZONE}-backend-dops.${DOMAIN}"
@@ -153,10 +150,6 @@ objects:
       database-password: "${DATABASE_PASSWORD}"
       ches-client-id: "${CHES_CLIENT_ID}"
       ches-client-secret: "${CHES_CLIENT_SECRET}"
-      coms-basic-user: "${BASICAUTH_USERNAME}"
-      coms-basic-password: "${BASICAUTH_PASSWORD}"
-      cdogs-client-id: "${CDOGS_CLIENT_ID}"
-      cdogs-client-secret: "${CDOGS_CLIENT_SECRET}"   
       moti-pay-api-key: "${MOTIPAY_API_KEY}"
       moti-pay-merchant-id: "${MOTIPAY_MERCHANT_ID}"
       moti-pay-base-url: "${MOTIPAY_BASE_URL}"
@@ -259,41 +252,11 @@ objects:
                     configMapKeyRef:
                       name: ${NAME}-${ZONE}-${COMPONENT}
                       key: auth0-ignore-exp
-                - name: BASICAUTH_USERNAME
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}-${ZONE}-${COMPONENT}
-                      key: coms-basic-user 
-                - name: BASICAUTH_PASSWORD
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}-${ZONE}-${COMPONENT}
-                      key: coms-basic-password
-                - name: COMS_URL
-                  valueFrom:
-                    configMapKeyRef:
-                      name: ${NAME}-${ZONE}-${COMPONENT}
-                      key: coms-url
-                - name: COMS_SERVICE
-                  valueFrom:
-                    configMapKeyRef:
-                      name: ${NAME}-${ZONE}-${COMPONENT}
-                      key: coms-service
-                - name: COMS_BUCKET_ID
-                  valueFrom:
-                    configMapKeyRef:
-                      name: ${NAME}-${ZONE}-${COMPONENT}
-                      key: coms-bucket-id
-                - name: COMS_PRESIGNED_URL_EXPIRY
-                  valueFrom:
-                    configMapKeyRef:
-                      name: ${NAME}-${ZONE}-${COMPONENT}
-                      key: coms-presigned-url-expiry 
                 - name: CHES_TOKEN_URL
                   valueFrom:
                     configMapKeyRef:
                       name: ${NAME}-${ZONE}-${COMPONENT}
-                      key: ches-token-url                                                                                    
+                      key: ches-token-url
                 - name: CHES_CLIENT_ID
                   valueFrom:
                     secretKeyRef:
@@ -309,26 +272,6 @@ objects:
                     configMapKeyRef:
                       name: ${NAME}-${ZONE}-${COMPONENT}
                       key: ches-url                       
-                - name: CDOGS_CLIENT_ID
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}-${ZONE}-${COMPONENT}
-                      key: cdogs-client-id
-                - name: CDOGS_CLIENT_SECRET
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}-${ZONE}-${COMPONENT}
-                      key: cdogs-client-secret
-                - name: CDOGS_TOKEN_URL
-                  valueFrom:
-                    configMapKeyRef:
-                      name: ${NAME}-${ZONE}-${COMPONENT}
-                      key: cdogs-token-url
-                - name: CDOGS_URL
-                  valueFrom:
-                    configMapKeyRef:
-                      name: ${NAME}-${ZONE}-${COMPONENT}
-                      key: cdogs-url 
                 - name: DOPS_URL
                   valueFrom:
                     configMapKeyRef:
