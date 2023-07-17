@@ -39,6 +39,9 @@ import { DopsService } from '../common/dops.service';
 import { DopsGeneratedDocument } from '../../common/interface/dops-generated-document.interface';
 import { TemplateName } from '../../common/enum/template-name.enum';
 import { IReceipt } from 'src/common/interface/receipt.interface';
+import { ReadTransactionDto } from '../payment/dto/response/read-transaction.dto';
+import { Transaction } from '../payment/entities/transaction.entity';
+import { Receipt } from '../payment/entities/receipt.entity';
 
 @Injectable()
 export class ApplicationService {
@@ -57,6 +60,10 @@ export class ApplicationService {
     private companyService: CompanyService,
     private readonly emailService: EmailService,
     private readonly permitService: PermitService,
+    @InjectRepository(Transaction)
+    private transactionRepository: Repository<Transaction>,
+    @InjectRepository(Receipt)
+    private receiptRepository: Repository<Receipt>,
   ) {}
 
   /**
@@ -391,6 +398,9 @@ export class ApplicationService {
         .andWhere('permitNumber IS NULL')
         .execute();
 
+        //brucd test generate receipt in db
+        await this.createReceipt(transactionDetails.transactionOrderNumber, generatedReceiptDocument.dmsId);
+
       success = applicationId;
 
       try {
@@ -627,5 +637,76 @@ export class ApplicationService {
     const permitNumber =
       'P' + String(approvalSourceId) + '-' + String(seq) + '-' + String(rnd);
     return permitNumber;
+  }
+
+  async createReceipt(
+    transactionOrderNumber: string,
+    receiptDocumentId: string,
+  ){
+
+    const transaction = await this.findOneTransactionByOrderNumber(
+      transactionOrderNumber,
+    );
+
+    //Generate receipt number for the permit to be created in database.
+    const receiptNumber = await this.generateReceiptNumber(
+      transaction.transactionId
+    );
+
+    
+    await this.receiptRepository
+        .createQueryBuilder()
+        .insert()
+        .values({
+          receiptNumber: receiptNumber,
+          transactionId: transaction.transactionId,
+          receiptDocumentId: receiptDocumentId,
+        })
+        .execute();
+  }
+
+   async findOneTransactionByOrderNumber(
+    transactionOrderNumber: string,
+  ): Promise<ReadTransactionDto> {
+    return this.classMapper.mapAsync(
+      await this.transactionRepository.findOne({
+        where: {
+          transactionOrderNumber: transactionOrderNumber,
+        },
+      }),
+      Transaction,
+      ReadTransactionDto,
+    );
+  }
+
+  /**
+   * Generate Receipt Number
+   * @param applicationSource to get the source code
+   * @param permitId if permit id is present then it is a permit amendment
+   * and application number will be generated from exisitng permit number.
+   */
+  async generateReceiptNumber(
+    transactionId: number,
+  ): Promise<string> {
+    let seq: string;
+    let source;
+    const currentDate = new Date();
+    const year = currentDate.getFullYear();
+    const month = String(currentDate.getMonth() + 1).padStart(2, "0");
+    const day = String(currentDate.getDate()).padStart(2, "0");
+    const dateString = `${year}${month}${day}`;
+    source = dateString;
+    //New receipt.
+    seq = await callDatabaseSequence(
+      'permit.ORBC_RECEIPT_NUMBER_SEQ',
+      this.dataSource,
+    );
+    const receiptNumber = String(
+        String(source) +
+        '-' +
+        String(seq.padStart(8, '0')),
+    );
+
+    return receiptNumber;
   }
 }

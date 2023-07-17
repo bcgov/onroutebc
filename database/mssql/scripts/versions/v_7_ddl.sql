@@ -54,6 +54,29 @@ CREATE TABLE [permit].[ORBC_TRANSACTION](
 ) ON [PRIMARY]
 GO
 
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [permit].[ORBC_RECEIPT](
+	[RECEIPT_ID] [bigint] IDENTITY(1,1) NOT NULL,
+	[RECEIPT_NUMBER] [varchar](19) NULL,
+	[TRANSACTION_ID] [bigint] NULL,
+	[RECEIPT_DOCUMENT_ID] [varchar](10) NULL,
+	[CONCURRENCY_CONTROL_NUMBER] [int] NULL,
+	[DB_CREATE_USERID] [varchar](63) NULL,
+	[DB_CREATE_TIMESTAMP] [datetime2](7) NULL,
+	[DB_LAST_UPDATE_USERID] [varchar](63) NULL,
+	[DB_LAST_UPDATE_TIMESTAMP] [datetime2](7) NULL,
+ CONSTRAINT [PK_ORBC_RECEIPT] PRIMARY KEY CLUSTERED 
+(
+	[RECEIPT_ID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+
+
 ALTER TABLE [permit].[ORBC_TRANSACTION] ADD  CONSTRAINT [DF_ORBC_TRANSACTION_DB_CREATE_USERID]  DEFAULT (user_name()) FOR [DB_CREATE_USERID]
 GO
 ALTER TABLE [permit].[ORBC_TRANSACTION] ADD  CONSTRAINT [DF_ORBC_TRANSACTION_DB_CREATE_TIMESTAMP]  DEFAULT (getutcdate()) FOR [DB_CREATE_TIMESTAMP]
@@ -62,6 +85,8 @@ ALTER TABLE [permit].[ORBC_TRANSACTION] ADD  CONSTRAINT [DF_ORBC_TRANSACTION_DB_
 GO
 ALTER TABLE [permit].[ORBC_TRANSACTION] ADD  CONSTRAINT [DF_ORBC_TRANSACTION_DB_LAST_UPDATE_TIMESTAMP]  DEFAULT (getutcdate()) FOR [DB_LAST_UPDATE_TIMESTAMP]
 GO
+
+
 
 SET ANSI_NULLS ON
 GO
@@ -107,6 +132,10 @@ ALTER TABLE [permit].[ORBC_PERMIT_TRANSACTION]  WITH CHECK ADD  CONSTRAINT [FK_O
 REFERENCES [permit].[ORBC_TRANSACTION] ([TRANSACTION_ID])
 GO
 
+ALTER TABLE [permit].[ORBC_RECEIPT]  WITH CHECK ADD  CONSTRAINT [FK_ORBC_RECEIPT_TRANSACTION_ID] FOREIGN KEY([TRANSACTION_ID])
+REFERENCES [permit].[ORBC_TRANSACTION] ([TRANSACTION_ID])
+GO
+
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Primary key for payment method metadata record' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_VT_PAYMENT_METHOD', @level2type=N'COLUMN',@level2name=N'PAYMENT_METHOD_ID'
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Payment method name' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_VT_PAYMENT_METHOD', @level2type=N'COLUMN',@level2name=N'NAME'
@@ -146,6 +175,22 @@ GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Permit ID relates to a transaction' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT_TRANSACTION', @level2type=N'COLUMN',@level2name=N'PERMIT_ID'
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Transaction ID relates to a permit' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT_TRANSACTION', @level2type=N'COLUMN',@level2name=N'TRANSACTION_ID'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Receipt ID for a payment transaction' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_RECEIPT', @level2type=N'COLUMN',@level2name=N'RECEIPT_ID'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Receipt number for a payment transaction' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_RECEIPT', @level2type=N'COLUMN',@level2name=N'RECEIPT_NUMBER'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Transaction ID of the payment receipt' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_RECEIPT', @level2type=N'COLUMN',@level2name=N'TRANSACTION_ID'
+GO
+
+
+CREATE SEQUENCE [permit].[ORBC_RECEIPT_NUMBER_SEQ] 
+ AS [bigint]
+ START WITH 1
+ INCREMENT BY 1
+ MINVALUE 1
+ MAXVALUE 99999999
+ CACHE 
 GO
 
 

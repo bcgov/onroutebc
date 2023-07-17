@@ -7,6 +7,7 @@ import { TransactionProfile } from './profile/transaction.profile';
 import { PermitTransactionProfile } from './profile/permit-transaction.profile';
 import { PermitTransaction } from './entities/permit-transaction.entity';
 import { PermitModule } from '../permit/permit.module';
+import { Receipt } from './entities/receipt.entity';
 
 @Module({
   imports: [

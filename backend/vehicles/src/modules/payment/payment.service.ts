@@ -7,13 +7,15 @@ import { InjectMapper } from '@automapper/nestjs';
 import { Mapper } from '@automapper/core';
 import { Transaction } from './entities/transaction.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { PermitTransaction } from './entities/permit-transaction.entity';
 import { ReadPermitTransactionDto } from './dto/response/read-permit-transaction.dto';
 import { MotiPayDetailsDto } from './dto/response/read-moti-pay-details.dto';
 import { ApplicationService } from '../permit/application.service';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
 import { IReceipt } from 'src/common/interface/receipt.interface';
+import { Receipt } from './entities/receipt.entity';
+import { callDatabaseSequence } from 'src/common/helper/database.helper';
 
 @Injectable()
 export class PaymentService {
@@ -22,6 +24,9 @@ export class PaymentService {
     private permitTransactionRepository: Repository<PermitTransaction>,
     @InjectRepository(Transaction)
     private transactionRepository: Repository<Transaction>,
+    // @InjectRepository(Receipt)
+    // private receiptRepository: Repository<Receipt>,
+    private dataSource: DataSource,
     @InjectMapper() private readonly classMapper: Mapper,
     private applicationService: ApplicationService,
   ) {}
@@ -192,6 +197,31 @@ export class PaymentService {
     // });
   }
 
+  // async createReceipt(
+  //   transactionOrderNumber: string,
+  // ){
+
+  //   const transaction = await this.findOneTransactionByOrderNumber(
+  //     transactionOrderNumber,
+  //   );
+
+  //   //Generate receipt number for the permit to be created in database.
+  //   const receiptNumber = await this.generateReceiptNumber(
+  //     transaction.transactionId
+  //   );
+
+    
+  //   await this.receiptRepository
+  //       .createQueryBuilder()
+  //       .insert()
+  //       .values({
+  //         receiptNumber: receiptNumber,
+  //         transactionId: transaction.transactionId,
+  //         receiptDocumentId: "111",
+  //       })
+  //       .execute();
+  // }
+
   async findOneTransaction(
     transactionOrderNumber: string,
   ): Promise<ReadTransactionDto> {
@@ -219,4 +249,35 @@ export class PaymentService {
       ReadPermitTransactionDto,
     );
   }
+
+  // /**
+  //  * Generate Receipt Number
+  //  * @param applicationSource to get the source code
+  //  * @param permitId if permit id is present then it is a permit amendment
+  //  * and application number will be generated from exisitng permit number.
+  //  */
+  // async generateReceiptNumber(
+  //   transactionId: number,
+  // ): Promise<string> {
+  //   let seq: string;
+  //   let source;
+  //   const currentDate = new Date();
+  //   const year = currentDate.getFullYear();
+  //   const month = String(currentDate.getMonth() + 1).padStart(2, "0");
+  //   const day = String(currentDate.getDate()).padStart(2, "0");
+  //   const dateString = `${year}${month}${day}`;
+  //   source = dateString;
+  //   //New receipt.
+  //   seq = await callDatabaseSequence(
+  //     'permit.ORBC_RECEIPT_NUMBER_SEQ',
+  //     this.dataSource,
+  //   );
+  //   const receiptNumber = String(
+  //       String(source) +
+  //       '-' +
+  //       String(seq.padStart(8, '0')),
+  //   );
+
+  //   return receiptNumber;
+  // }
 }
