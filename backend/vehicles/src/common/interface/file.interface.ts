@@ -2,7 +2,7 @@ export interface IFile {
   originalname?: string;
   encoding?: string;
   mimetype?: string;
-  buffer?: Buffer | ArrayBuffer;
+  buffer?: Buffer;
   size?: number;
   filename?: string;
   dmsId?: string;

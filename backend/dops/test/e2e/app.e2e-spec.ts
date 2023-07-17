@@ -4,13 +4,13 @@ import { INestApplication } from '@nestjs/common';
 import { AppController } from '../../src/app.controller';
 import { AppService } from '../../src/app.service';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
-import { ComsService } from '../../src/modules/common/coms.service';
 import { DgenService } from '../../src/modules/dgen/dgen.service';
 import { DmsService } from '../../src/modules/dms/dms.service';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { S3Service } from '../../src/modules/common/s3.service';
 
 let dgenServiceMock: DeepMocked<DgenService>;
-let comsServiceMock: DeepMocked<ComsService>;
+let s3ServiceMock: DeepMocked<S3Service>;
 let dmsServiceMock: DeepMocked<DmsService>;
 
 describe('AppController (e2e)', () => {
@@ -18,7 +18,7 @@ describe('AppController (e2e)', () => {
 
   beforeAll(async () => {
     dgenServiceMock = createMock<DgenService>();
-    comsServiceMock = createMock<ComsService>();
+    s3ServiceMock = createMock<S3Service>();
     dmsServiceMock = createMock<DmsService>();
     const moduleFixture = await Test.createTestingModule({
       controllers: [AppController],
@@ -30,8 +30,8 @@ describe('AppController (e2e)', () => {
           useValue: dgenServiceMock,
         },
         {
-          provide: ComsService,
-          useValue: comsServiceMock,
+          provide: S3Service,
+          useValue: s3ServiceMock,
         },
         {
           provide: DmsService,

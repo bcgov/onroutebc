@@ -4,13 +4,13 @@ import { Mapper } from '@automapper/core';
 import { InjectMapper } from '@automapper/nestjs';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { ReadCOMSDto } from '../common/dto/response/read-coms.dto';
 import { ReadFileDto } from './dto/response/read-file.dto';
-import { ComsService } from '../common/coms.service';
 import { IUserJWT } from '../../interface/user-jwt.interface';
-import { Response } from 'express';
 import { FileDownloadModes } from '../../enum/file-download-modes.enum';
 import { IFile } from '../../interface/file.interface';
+import { S3Service } from '../common/s3.service';
+import { Response } from 'express';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class DmsService {
@@ -18,34 +18,30 @@ export class DmsService {
     @InjectRepository(Document)
     private documentRepository: Repository<Document>,
     @InjectMapper() private readonly classMapper: Mapper,
-    private readonly comsService: ComsService,
+    private readonly s3Service: S3Service,
   ) {}
+
+  private s3accessType = process.env.DOPS_S3_ACCESS_TYPE;
 
   async create(
     currentUser: IUserJWT,
     file: Express.Multer.File | IFile,
   ): Promise<ReadFileDto> {
-    const readCOMSDtoList = await this.comsService.createOrUpdateObject(
-      currentUser,
-      file,
-    );
-
-    if (!readCOMSDtoList?.length) {
-      throw new Error('File not Created/Updated in Storage!');
-    }
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    const s3ObjectId = uuidv4() as string;
+    const s3Object = await this.s3Service.uploadFile(file, s3ObjectId);
 
     const dmsVersionId = 1;
 
-    const dmsRecord = this.classMapper.map(
-      readCOMSDtoList[0],
-      ReadCOMSDto,
-      Document,
-      {
-        extraArgs: () => ({
-          dmsVersionId: dmsVersionId,
-        }),
-      },
-    );
+    const dmsRecord = {
+      documentId: undefined,
+      s3ObjectId: s3ObjectId,
+      s3VersionId: s3Object.VersionId,
+      s3Location: s3Object.Location,
+      objectMimeType: file.mimetype,
+      fileName: file.filename ? file.filename : file.originalname,
+      dmsVersionId: dmsVersionId,
+    };
 
     return this.classMapper.mapAsync(
       await this.documentRepository.save(dmsRecord),
@@ -63,27 +59,20 @@ export class DmsService {
     if (dmsObject?.documentId !== documentId) {
       throw new BadRequestException('Invalid Document Id');
     }
-
-    const readCOMSDtoList = await this.comsService.createOrUpdateObject(
-      currentUser,
+    const s3Object = await this.s3Service.uploadFile(
       file,
       dmsObject.s3ObjectId,
     );
 
-    if (!readCOMSDtoList?.length) {
-      throw new Error('File not Created/Updated in Storage!');
-    }
-
-    const dmsRecord = this.classMapper.map(
-      readCOMSDtoList[0],
-      ReadCOMSDto,
-      Document,
-      {
-        extraArgs: () => ({
-          dmsVersionId: dmsObject.dmsVersionId + 1,
-        }),
-      },
-    );
+    const dmsRecord = {
+      documentId: undefined,
+      s3ObjectId: dmsObject.s3ObjectId,
+      s3VersionId: s3Object.VersionId,
+      s3Location: s3Object.Location,
+      objectMimeType: file.mimetype,
+      fileName: file.filename,
+      dmsVersionId: dmsObject.dmsVersionId + 1,
+    };
 
     return this.classMapper.mapAsync(
       await this.documentRepository.save(dmsRecord),
@@ -93,7 +82,7 @@ export class DmsService {
   }
 
   async findOne(documentId: string): Promise<ReadFileDto> {
-    const readFile = await this.classMapper.mapAsync(
+    const readFile = this.classMapper.mapAsync(
       await this.documentRepository.findOne({
         where: { documentId: documentId },
       }),
@@ -108,19 +97,17 @@ export class DmsService {
     documentId: string,
     downloadMode: FileDownloadModes,
     res?: Response,
-  ): Promise<ReadFileDto> {
+  ) {
+    let s3Object: NodeJS.ReadableStream = undefined;
     const file = await this.findOne(documentId);
 
     if (downloadMode === FileDownloadModes.PROXY) {
-      await this.comsService.getObject(currentUser, file, downloadMode, res);
+      s3Object = await this.s3Service.getFile(file.s3ObjectId, res);
     } else {
-      file.preSignedS3Url = (await this.comsService.getObject(
-        currentUser,
-        file,
-        FileDownloadModes.URL,
-      )) as string;
+      file.preSignedS3Url = await this.s3Service.presignUrl(file.s3ObjectId);
     }
-    return file;
+
+    return { file, s3Object };
   }
 
   async findLatest(documentId: string): Promise<ReadFileDto> {
