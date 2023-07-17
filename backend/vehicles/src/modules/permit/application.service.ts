@@ -398,7 +398,6 @@ export class ApplicationService {
         .andWhere('permitNumber IS NULL')
         .execute();
 
-        //brucd test generate receipt in db
         await this.createReceipt(transactionDetails.transactionOrderNumber, generatedReceiptDocument.dmsId);
 
       success = applicationId;
@@ -649,9 +648,7 @@ export class ApplicationService {
     );
 
     //Generate receipt number for the permit to be created in database.
-    const receiptNumber = await this.generateReceiptNumber(
-      transaction.transactionId
-    );
+    const receiptNumber = await this.generateReceiptNumber();
 
     
     await this.receiptRepository
@@ -686,7 +683,6 @@ export class ApplicationService {
    * and application number will be generated from exisitng permit number.
    */
   async generateReceiptNumber(
-    transactionId: number,
   ): Promise<string> {
     let seq: string;
     let source;
