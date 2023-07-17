@@ -68,16 +68,6 @@ export class DopsService {
         this.convertAxiosToExpress(dopsResponse, res);
         const responseData = dopsResponse.data as NodeJS.ReadableStream;
         responseData.pipe(res);
-        /*Wait for the stream to end before sending the response status and
-          headers. This ensures that the client receives a complete response and
-          prevents any issues with partial responses or response headers being
-          sent prematurely.*/
-        responseData.on('end', () => {
-          return null;
-        });
-        responseData.on('error', () => {
-          throw new Error('An error occurred while reading the file.');
-        });
       }
       const file = await this.createFile(
         dopsResponse.data as NodeJS.ReadableStream,
@@ -128,16 +118,6 @@ export class DopsService {
       this.convertAxiosToExpress(dopsResponse, res);
       const responseData = dopsResponse.data as NodeJS.ReadableStream;
       responseData.pipe(res);
-      /*Wait for the stream to end before sending the response status and
-      headers. This ensures that the client receives a complete response and
-      prevents any issues with partial responses or response headers being
-      sent prematurely.*/
-      responseData.on('end', () => {
-        return null;
-      });
-      responseData.on('error', () => {
-        throw new Error('An error occurred while reading the file.');
-      });
       return null;
     }
     const file = await this.createFile(

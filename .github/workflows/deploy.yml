@@ -98,32 +98,33 @@ jobs:
           exportEnv: "false"
           namespace: platform-services
           secrets: |
-            ${{secrets.VAULT_ENVIRONMENT}}/data/database-${{inputs.vault_zone}}   DATABASE_HOST             | VAULT_DATABASE_HOST;
-            ${{secrets.VAULT_ENVIRONMENT}}/data/database-${{inputs.vault_zone}}   DATABASE_USER             | VAULT_DATABASE_USER;
-            ${{secrets.VAULT_ENVIRONMENT}}/data/database-${{inputs.vault_zone}}   DATABASE_NAME             | VAULT_DATABASE_NAME;
-            ${{secrets.VAULT_ENVIRONMENT}}/data/database-${{inputs.vault_zone}}   DATABASE_PASSWORD         | VAULT_DATABASE_PASSWORD;
-            ${{secrets.VAULT_ENVIRONMENT}}/data/database-${{inputs.vault_zone}}   DATABASE_PORT             | VAULT_DATABASE_PORT;
-            ${{secrets.VAULT_ENVIRONMENT}}/data/auth0-${{inputs.vault_zone}}      AUTH0_ISSUER_URL          | VAULT_AUTH0_ISSUER_URL;
-            ${{secrets.VAULT_ENVIRONMENT}}/data/auth0-${{inputs.vault_zone}}      AUTH0_AUDIENCE            | VAULT_AUTH0_AUDIENCE;
-            ${{secrets.VAULT_ENVIRONMENT}}/data/auth0-${{inputs.vault_zone}}      AUTH0_IGNORE_EXP          | VAULT_AUTH0_IGNORE_EXP;
-            ${{secrets.VAULT_ENVIRONMENT}}/data/coms-${{inputs.vault_zone}}       BASICAUTH_PASSWORD        | VAULT_BASICAUTH_PASSWORD;
-            ${{secrets.VAULT_ENVIRONMENT}}/data/coms-${{inputs.vault_zone}}       BASICAUTH_USERNAME        | VAULT_BASICAUTH_USERNAME;
-            ${{secrets.VAULT_ENVIRONMENT}}/data/coms-${{inputs.vault_zone}}       COMS_URL                  | VAULT_COMS_URL;
-            ${{secrets.VAULT_ENVIRONMENT}}/data/coms-${{inputs.vault_zone}}       COMS_SERVICE              | VAULT_COMS_SERVICE;
-            ${{secrets.VAULT_ENVIRONMENT}}/data/coms-${{inputs.vault_zone}}       COMS_BUCKET_ID            | VAULT_COMS_BUCKET_ID;
-            ${{secrets.VAULT_ENVIRONMENT}}/data/coms-${{inputs.vault_zone}}       COMS_PRESIGNED_URL_EXPIRY | VAULT_PRESIGNED_URL_EXPIRY;
-            ${{secrets.VAULT_ENVIRONMENT}}/data/ches-${{inputs.vault_zone}}       CHES_TOKEN_URL            | VAULT_CHES_TOKEN_URL;
-            ${{secrets.VAULT_ENVIRONMENT}}/data/ches-${{inputs.vault_zone}}       CHES_URL                  | VAULT_CHES_URL;
-            ${{secrets.VAULT_ENVIRONMENT}}/data/ches-${{inputs.vault_zone}}       CHES_CLIENT_ID            | VAULT_CHES_CLIENT_ID;
-            ${{secrets.VAULT_ENVIRONMENT}}/data/ches-${{inputs.vault_zone}}       CHES_CLIENT_SECRET        | VAULT_CHES_CLIENT_SECRET;
-            ${{secrets.VAULT_ENVIRONMENT}}/data/cdogs-${{inputs.vault_zone}}      CDOGS_CLIENT_ID           | VAULT_CDOGS_CLIENT_ID;
-            ${{secrets.VAULT_ENVIRONMENT}}/data/cdogs-${{inputs.vault_zone}}      CDOGS_CLIENT_SECRET       | VAULT_CDOGS_CLIENT_SECRET;
-            ${{secrets.VAULT_ENVIRONMENT}}/data/cdogs-${{inputs.vault_zone}}      CDOGS_TOKEN_URL           | VAULT_CDOGS_TOKEN_URL;
-            ${{secrets.VAULT_ENVIRONMENT}}/data/cdogs-${{inputs.vault_zone}}      CDOGS_URL                 | VAULT_CDOGS_URL;
-            ${{secrets.VAULT_ENVIRONMENT}}/data/be-api-${{inputs.vault_zone}}     NODE_ENV                  | VAULT_NODE_ENV;
-            ${{secrets.VAULT_ENVIRONMENT}}/data/payment-${{inputs.vault_zone}}    MOTIPAY_API_KEY           | VAULT_MOTIPAY_API_KEY;
-            ${{secrets.VAULT_ENVIRONMENT}}/data/payment-${{inputs.vault_zone}}    MOTIPAY_MERCHANT_ID       | VAULT_MOTIPAY_MERCHANT_ID;
-            ${{secrets.VAULT_ENVIRONMENT}}/data/payment-${{inputs.vault_zone}}    MOTIPAY_BASE_URL          | VAULT_MOTIPAY_BASE_URL;
+            ${{secrets.VAULT_ENVIRONMENT}}/data/database-${{inputs.vault_zone}}   DATABASE_HOST                   | VAULT_DATABASE_HOST;
+            ${{secrets.VAULT_ENVIRONMENT}}/data/database-${{inputs.vault_zone}}   DATABASE_USER                   | VAULT_DATABASE_USER;
+            ${{secrets.VAULT_ENVIRONMENT}}/data/database-${{inputs.vault_zone}}   DATABASE_NAME                   | VAULT_DATABASE_NAME;
+            ${{secrets.VAULT_ENVIRONMENT}}/data/database-${{inputs.vault_zone}}   DATABASE_PASSWORD               | VAULT_DATABASE_PASSWORD;
+            ${{secrets.VAULT_ENVIRONMENT}}/data/database-${{inputs.vault_zone}}   DATABASE_PORT                   | VAULT_DATABASE_PORT;
+            ${{secrets.VAULT_ENVIRONMENT}}/data/auth0-${{inputs.vault_zone}}      AUTH0_ISSUER_URL                | VAULT_AUTH0_ISSUER_URL;
+            ${{secrets.VAULT_ENVIRONMENT}}/data/auth0-${{inputs.vault_zone}}      AUTH0_AUDIENCE                  | VAULT_AUTH0_AUDIENCE;
+            ${{secrets.VAULT_ENVIRONMENT}}/data/auth0-${{inputs.vault_zone}}      AUTH0_IGNORE_EXP                | VAULT_AUTH0_IGNORE_EXP;
+            ${{secrets.VAULT_ENVIRONMENT}}/data/dops-${{inputs.vault_zone}}       DOPS_S3_ACCESS_TYPE             | VAULT_DOPS_S3_ACCESS_TYPE;
+            ${{secrets.VAULT_ENVIRONMENT}}/data/dops-${{inputs.vault_zone}}       DOPS_S3_ACCESSKEYID             | VAULT_DOPS_S3_ACCESSKEYID;
+            ${{secrets.VAULT_ENVIRONMENT}}/data/dops-${{inputs.vault_zone}}       DOPS_S3_BUCKET                  | VAULT_DOPS_S3_BUCKET;
+            ${{secrets.VAULT_ENVIRONMENT}}/data/dops-${{inputs.vault_zone}}       DOPS_S3_PRESIGNED_URL_EXPIRY    | VAULT_DOPS_S3_PRESIGNED_URL_EXPIRY;
+            ${{secrets.VAULT_ENVIRONMENT}}/data/dops-${{inputs.vault_zone}}       DOPS_S3_ENDPOINT                | VAULT_DOPS_S3_ENDPOINT;
+            ${{secrets.VAULT_ENVIRONMENT}}/data/dops-${{inputs.vault_zone}}       DOPS_S3_KEY                     | VAULT_DOPS_S3_KEY;
+            ${{secrets.VAULT_ENVIRONMENT}}/data/dops-${{inputs.vault_zone}}       DOPS_S3_SECRETACCESSKEY         | VAULT_DOPS_S3_SECRETACCESSKEY;
+            ${{secrets.VAULT_ENVIRONMENT}}/data/ches-${{inputs.vault_zone}}       CHES_TOKEN_URL                  | VAULT_CHES_TOKEN_URL;
+            ${{secrets.VAULT_ENVIRONMENT}}/data/ches-${{inputs.vault_zone}}       CHES_URL                        | VAULT_CHES_URL;
+            ${{secrets.VAULT_ENVIRONMENT}}/data/ches-${{inputs.vault_zone}}       CHES_CLIENT_ID                  | VAULT_CHES_CLIENT_ID;
+            ${{secrets.VAULT_ENVIRONMENT}}/data/ches-${{inputs.vault_zone}}       CHES_CLIENT_SECRET              | VAULT_CHES_CLIENT_SECRET;
+            ${{secrets.VAULT_ENVIRONMENT}}/data/cdogs-${{inputs.vault_zone}}      CDOGS_CLIENT_ID                 | VAULT_CDOGS_CLIENT_ID;
+            ${{secrets.VAULT_ENVIRONMENT}}/data/cdogs-${{inputs.vault_zone}}      CDOGS_CLIENT_SECRET             | VAULT_CDOGS_CLIENT_SECRET;
+            ${{secrets.VAULT_ENVIRONMENT}}/data/cdogs-${{inputs.vault_zone}}      CDOGS_TOKEN_URL                 | VAULT_CDOGS_TOKEN_URL;
+            ${{secrets.VAULT_ENVIRONMENT}}/data/cdogs-${{inputs.vault_zone}}      CDOGS_URL                       | VAULT_CDOGS_URL;
+            ${{secrets.VAULT_ENVIRONMENT}}/data/be-api-${{inputs.vault_zone}}     NODE_ENV                        | VAULT_NODE_ENV;
+            ${{secrets.VAULT_ENVIRONMENT}}/data/payment-${{inputs.vault_zone}}    MOTIPAY_API_KEY                 | VAULT_MOTIPAY_API_KEY;
+            ${{secrets.VAULT_ENVIRONMENT}}/data/payment-${{inputs.vault_zone}}    MOTIPAY_MERCHANT_ID             | VAULT_MOTIPAY_MERCHANT_ID;
+            ${{secrets.VAULT_ENVIRONMENT}}/data/payment-${{inputs.vault_zone}}    MOTIPAY_BASE_URL                | VAULT_MOTIPAY_BASE_URL;
       
       - uses: bcgov-nr/action-deployer-openshift@v1.0.5
         with:
@@ -143,12 +144,13 @@ jobs:
             -p AUTH0_ISSUER_URL=${{steps.vault.outputs.VAULT_AUTH0_ISSUER_URL}}
             -p AUTH0_AUDIENCE=${{steps.vault.outputs.VAULT_AUTH0_AUDIENCE}}
             -p AUTH0_IGNORE_EXP=${{steps.vault.outputs.VAULT_AUTH0_IGNORE_EXP}}
-            -p BASICAUTH_PASSWORD=${{steps.vault.outputs.VAULT_BASICAUTH_PASSWORD}}
-            -p BASICAUTH_USERNAME=${{steps.vault.outputs.VAULT_BASICAUTH_USERNAME}}
-            -p COMS_URL=${{steps.vault.outputs.VAULT_COMS_URL}}
-            -p COMS_SERVICE=${{steps.vault.outputs.VAULT_COMS_SERVICE}}
-            -p COMS_BUCKET_ID=${{steps.vault.outputs.VAULT_COMS_BUCKET_ID}}
-            -p COMS_PRESIGNED_URL_EXPIRY=${{steps.vault.outputs.VAULT_PRESIGNED_URL_EXPIRY}}
+            -p DOPS_S3_ACCESS_TYPE=${{steps.vault.outputs.VAULT_DOPS_S3_ACCESS_TYPE}}
+            -p DOPS_S3_ACCESSKEYID=${{steps.vault.outputs.VAULT_DOPS_S3_ACCESSKEYID}}
+            -p DOPS_S3_BUCKET=${{steps.vault.outputs.VAULT_DOPS_S3_BUCKET}}
+            -p DOPS_S3_PRESIGNED_URL_EXPIRY=${{steps.vault.outputs.VAULT_DOPS_S3_PRESIGNED_URL_EXPIRY}}
+            -p DOPS_S3_ENDPOINT=${{steps.vault.outputs.VAULT_DOPS_S3_ENDPOINT}}
+            -p DOPS_S3_KEY=${{steps.vault.outputs.VAULT_DOPS_S3_KEY}}
+            -p DOPS_S3_SECRETACCESSKEY=${{steps.vault.outputs.VAULT_DOPS_S3_SECRETACCESSKEY}}
             -p CHES_TOKEN_URL=${{steps.vault.outputs.VAULT_CHES_TOKEN_URL}}
             -p CHES_CLIENT_ID=${{steps.vault.outputs.VAULT_CHES_CLIENT_ID}}
             -p CHES_CLIENT_SECRET=${{steps.vault.outputs.VAULT_CHES_CLIENT_SECRET}}
