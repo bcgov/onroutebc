@@ -119,7 +119,7 @@ export class CdogsService {
       originalname: fileName,
       encoding: cdogsResponse.headers['content-transfer-encoding'] as string,
       mimetype: cdogsResponse.headers['content-type'] as string,
-      buffer: Buffer.from((await cdogsResponse.data) as ArrayBuffer),
+      buffer: Buffer.from((await cdogsResponse.data) as Buffer),
       size: cdogsResponse.headers['content-length'] as number,
     };
     return generatedDocument;
