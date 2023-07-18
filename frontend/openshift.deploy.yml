@@ -70,23 +70,27 @@ parameters:
     required: true
   - name: CDOGS_URL
     description: The CDOGS API url 
-  - name: BASICAUTH_USERNAME
-    description: The basic auth username for COMS
     required: true
-  - name: BASICAUTH_PASSWORD
-    description: The basic auth password for COMS
+  - name: DOPS_S3_ACCESS_TYPE
+    description: The key to switch between COMS or Direct access
     required: true
-  - name: COMS_URL
-    description: The URL for the deployed instance of COMS
+  - name: DOPS_S3_ACCESSKEYID
+    description: The Access Key for your S3 compatible object storage account
     required: true
-  - name: COMS_SERVICE
-    description: The identifier to determine whether COMS is hosted vs self-hosted
+  - name: DOPS_S3_BUCKET
+    description: The object storage bucket name
     required: true
-  - name: COMS_BUCKET_ID
-    description: The Uuid representing the bucket
+  - name: DOPS_S3_PRESIGNED_URL_EXPIRY
+    description: The expiry time for pre-signed URLs to objects in seconds
     required: true
-  - name: COMS_PRESIGNED_URL_EXPIRY
-    description: The exipry value (seconds) of the presigned URL
+  - name: DOPS_S3_ENDPOINT
+    description: Object store URL
+    required: true
+  - name: DOPS_S3_KEY
+    description: The base path for storage location
+    required: true
+  - name: DOPS_S3_SECRETACCESSKEY
+    description: The Secret Access Key for your S3 compatible object storage account
     required: true
   - name: CHES_TOKEN_URL
     description: The keycloak url for common hosted CHES

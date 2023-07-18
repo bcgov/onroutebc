@@ -2,13 +2,13 @@ import { Inject, Injectable } from '@nestjs/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { DgenService } from './modules/dgen/dgen.service';
-import { ComsService } from './modules/common/coms.service';
 import { CacheKey } from './enum/cache-key.enum';
 import { DocumentTemplate } from './modules/dgen/entities/document-template.entity';
 import { DmsService } from './modules/dms/dms.service';
-import { FileDownloadModes } from './enum/file-download-modes.enum';
 import { TemplateFile } from './interface/template-file.interface';
 import { FILE_ENCODING_TYPE } from './constants/dops.constant';
+import { S3Service } from './modules/common/s3.service';
+import { createFile } from './helper/file.helper';
 
 @Injectable()
 export class AppService {
@@ -16,7 +16,7 @@ export class AppService {
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
     private dgenService: DgenService,
-    private comsService: ComsService,
+    private s3Service: S3Service,
     private dmsService: DmsService,
   ) {}
 
@@ -32,14 +32,15 @@ export class AppService {
         const templateMetadata = await this.dmsService.findLatest(
           template.documentId,
         );
-        const templatefile = (await this.comsService.getObject(
-          undefined,
-          templateMetadata,
-          FileDownloadModes.PROXY,
-        )) as Buffer;
+        const templatefile = await this.s3Service.getFile(
+          templateMetadata.s3ObjectId,
+        );
+
         return {
           ...template,
-          templatefile: templatefile.toString(FILE_ENCODING_TYPE),
+          templatefile: (await createFile(templatefile)).toString(
+            FILE_ENCODING_TYPE,
+          ),
         };
       }),
     );
