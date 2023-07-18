@@ -405,7 +405,8 @@ export class ApplicationService {
         .andWhere('permitNumber IS NULL')
         .execute();
 
-        await this.createReceipt(transactionDetails.transactionOrderNumber, generatedReceiptDocument.dmsId, receiptNo);
+
+        await this.createReceipt(transactionDetails.transactionOrderNumber, generatedDocuments.at(1).dmsId, receiptNo);
 
       success = applicationId;
 
