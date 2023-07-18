@@ -15,7 +15,7 @@ type ReplaceDayjsWithString<T> = {
   [K in keyof T]: T[K] extends Dayjs ? string : (T[K] extends (Dayjs | undefined) ? (string | undefined) : T[K]);
 };
 
-type PermitType = "STOS" | "TROS";
+export type PermitType = "STOS" | "TROS";
 type PermitApplicationOrigin = "ONLINE" | "PPC";
 type PermitApprovalSource = "AUTO" | "PPC" | "TPS";
 type PermitStatus = "APPROVED" | "AUTO_APPROVED" | "CANCELLED" | "IN_PROGRESS" | "REJECTED" | "UNDER_REVIEW" | "WAITING_APPROVAL" | "WAITING_PAYMENT" | "ISSUED";

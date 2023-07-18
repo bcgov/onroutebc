@@ -2,6 +2,7 @@ import { Box, Checkbox, Typography } from "@mui/material";
 import { useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { BC_COLOURS } from "../../../../../themes/bcGovStyles";
+import { CustomInputHTMLAttributes } from "../../../../../common/types/formElements";
 
 export const ConfirmationCheckboxes = () => {
   const checkboxes = [
@@ -52,12 +53,18 @@ export const ConfirmationCheckboxes = () => {
                   ? BC_COLOURS.bc_red
                   : BC_COLOURS.bc_primary_blue,
             }}
+            inputProps={{
+              "data-testid": "permit-attestation-checkbox"
+            } as CustomInputHTMLAttributes}
           />
           {x.description}
         </Box>
       ))}
       {isSubmitted && !isValid ? (
-        <Typography sx={{ color: BC_COLOURS.bc_red }}>
+        <Typography 
+          sx={{ color: BC_COLOURS.bc_red }}
+          data-testid="permit-attestation-checkbox-error"
+        >
           Checkbox selection is required.
         </Typography>
       ) : null}

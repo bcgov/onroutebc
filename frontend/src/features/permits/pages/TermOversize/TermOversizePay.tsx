@@ -9,6 +9,8 @@ import { ProgressBar } from "../../components/progressBar/ProgressBar";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { ErrorFallback } from "../../../../common/pages/ErrorFallback";
 import { getMotiPayTransactionUrl } from "../../apiManager/permitsAPI";
+import { permitTypeDisplayText } from "../../helpers/mappers";
+import { PermitType } from "../../types/application";
 
 export const TermOversizePay = () => {
   const { applicationData } = useContext(ApplicationContext);
@@ -43,8 +45,9 @@ export const TermOversizePay = () => {
 
 const ApplicationSummary = () => {
   const { applicationData } = useContext(ApplicationContext);
-  const applicationName =
-    applicationData?.permitType === "TROS" ? "Oversize: Term" : "";
+  const applicationName = permitTypeDisplayText(
+    getDefaultRequiredVal("", applicationData?.permitType) as PermitType
+  );
 
   return (
     <Box
@@ -150,7 +153,9 @@ const FeeSummary = ({ calculatedFee }: { calculatedFee: number }) => {
               borderBottom: `2px solid ${BC_COLOURS.bc_text_box_border_grey}`,
             }}
           >
-            <Typography variant="h6">Oversize: Term</Typography>
+            <Typography variant="h6">
+              {permitTypeDisplayText(applicationData?.permitType)}
+            </Typography>
             <Typography variant="h6">${calculatedFee}.00</Typography>
           </Box>
           <Box

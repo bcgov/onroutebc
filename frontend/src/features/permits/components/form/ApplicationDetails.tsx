@@ -4,9 +4,11 @@ import { Dayjs } from "dayjs";
 import { CompanyBanner } from "../../../../common/components/banners/CompanyBanner";
 import { useCompanyInfoQuery } from "../../../manageProfile/apiManager/hooks";
 import { DATE_FORMATS, dayjsToLocalStr } from "../../../../common/helpers/formatDate";
-import { applyWhenNotNullable } from "../../../../common/helpers/util";
+import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { CompanyInformation } from "./CompanyInformation";
 import "./ApplicationDetails.scss";
+import { permitTypeDisplayText } from "../../helpers/mappers";
+import { PermitType } from "../../types/application";
 
 export const ApplicationDetails = ({
   permitType,
@@ -20,8 +22,9 @@ export const ApplicationDetails = ({
   updatedDateTime?: Dayjs,
 }) => {
   const companyInfoQuery = useCompanyInfoQuery();
-  // TODO use an enum
-  const applicationName = permitType === "TROS" ? "Oversize: Term" : "";
+  const applicationName = permitTypeDisplayText(
+    getDefaultRequiredVal("", permitType) as PermitType
+  );
 
   return (
     <>

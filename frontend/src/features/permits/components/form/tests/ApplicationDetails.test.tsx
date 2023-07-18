@@ -15,6 +15,7 @@ import {
   title, 
   updatedDate,
 } from "./helpers/ApplicationDetails/access";
+import { permitTypeDisplayText } from "../../../helpers/mappers";
 
 beforeAll(() => {
   listenToMockServer();
@@ -46,7 +47,7 @@ describe("Application Details Display", () => {
     renderTestComponent(permitType, defaultApplicationNumber, createdAt, updatedAt);
 
     // Assert
-    expect(await title()).toHaveTextContent("Oversize: Term");
+    expect(await title()).toHaveTextContent(permitTypeDisplayText(permitType));
     expect(await applicationNumber()).toHaveTextContent(defaultApplicationNumber);
     expect(await createdDate()).toHaveTextContent(dayjsToLocalStr(createdAt, DATE_FORMATS.LONG));
     expect(await updatedDate()).toHaveTextContent(dayjsToLocalStr(updatedAt, DATE_FORMATS.LONG));

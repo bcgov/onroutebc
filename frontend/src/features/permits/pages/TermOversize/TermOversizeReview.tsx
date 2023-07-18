@@ -95,6 +95,7 @@ export const TermOversizeReview = () => {
                 variant="contained"
                 color="primary"
                 onClick={methods.handleSubmit(onSubmit)}
+                data-testid="proceed-pay-btn"
               >
                 Proceed to Pay
               </Button>

@@ -35,7 +35,7 @@ export const ReviewContactDetails = ({
       </Box>
       <Box className="review-contact-details__body">
         <Box className="contact-details">
-          <Typography>
+          <Typography className="contact-details__detail">
             <span 
               className="contact-details__data"
               data-testid="review-contact-details-name"
@@ -46,7 +46,7 @@ export const ReviewContactDetails = ({
               )}
             </span>
           </Typography>
-          <Typography>
+          <Typography className="contact-details__detail">
             <span className="contact-details__label">Primary Phone:</span>
             <span 
               className="contact-details__data"
@@ -59,7 +59,7 @@ export const ReviewContactDetails = ({
             </span>
           </Typography>
           {values?.permitData.contactDetails?.phone2 ? (
-            <Typography>
+            <Typography className="contact-details__detail">
               <span className="contact-details__label">Alternate Phone:</span>
               <span 
                 className="contact-details__data"
@@ -72,7 +72,7 @@ export const ReviewContactDetails = ({
               </span>
             </Typography>
           ) : null}
-          <Typography>
+          <Typography className="contact-details__detail">
             <span className="contact-details__label">Email:</span>
             <span 
               className="contact-details__data"
@@ -82,7 +82,7 @@ export const ReviewContactDetails = ({
             </span>
           </Typography>
           {values?.permitData?.contactDetails?.fax ? (
-            <Typography>
+            <Typography className="contact-details__detail">
               <span className="contact-details__label">Fax:</span>
               <span 
                 className="contact-details__data"

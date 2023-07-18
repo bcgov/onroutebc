@@ -1,4 +1,5 @@
 import { screen } from "@testing-library/react";
+import { UserEvent } from "@testing-library/user-event/dist/types/setup/setup";
 
 export const reviewConfirmWarning = async () => {
   return await screen.findByText("Please review and confirm that the information below is correct.");
@@ -86,4 +87,107 @@ export const contactInfoEmail = async () => {
 
 export const contactInfoFax = async () => {
   return await screen.findByTestId("review-contact-details-fax");
+};
+
+export const permitStartDate = async () => {
+  return await screen.findByTestId("permit-start-date");
+};
+
+export const permitDuration = async () => {
+  return await screen.findByTestId("permit-duration");
+};
+
+export const permitExpiryDate = async () => {
+  return await screen.findByTestId("permit-expiry-date");
+};
+
+export const permitConditions = async () => {
+  return await screen.findAllByTestId("review-permit-condition");
+};
+
+export const permitConditionDescriptions = async () => {
+  return await screen.findAllByTestId("permit-condition-description");
+};
+
+export const permitConditionLinks = async () => {
+  return await screen.findAllByTestId("permit-condition-link");
+};
+
+export const permitConditionCodes = async () => {
+  return await screen.findAllByTestId("permit-condition-code");
+};
+
+export const vehicleUnitNumber = async () => {
+  return await screen.findByTestId("review-vehicle-unit-number");
+};
+
+export const vehicleVIN = async () => {
+  return await screen.findByTestId("review-vehicle-vin");
+};
+
+export const vehiclePlate = async () => {
+  return await screen.findByTestId("review-vehicle-plate");
+};
+
+export const vehicleMake = async () => {
+  return await screen.findByTestId("review-vehicle-make");
+};
+
+export const vehicleYear = async () => {
+  return await screen.findByTestId("review-vehicle-year");
+};
+
+export const vehicleCountry = async () => {
+  return await screen.findByTestId("review-vehicle-country");
+};
+
+export const vehicleProvince = async () => {
+  return await screen.findByTestId("review-vehicle-province");
+};
+
+export const vehicleTypeDisplay = async () => {
+  return await screen.findByTestId("review-vehicle-type");
+};
+
+export const vehicleSubtypeDisplay = async () => {
+  return await screen.findByTestId("review-vehicle-subtype");
+};
+
+export const vehicleSavedMsg = async () => {
+  return await screen.findByTestId("review-vehicle-saved-msg");
+};
+
+export const feeSummaryPermitType = async () => {
+  return await screen.findByTestId("fee-summary-permit-type");
+};
+
+export const feeSummaryPrice = async () => {
+  return await screen.findByTestId("fee-summary-price");
+};
+
+export const feeSummaryTotal = async () => {
+  return await screen.findByTestId("fee-summary-total");
+};
+
+export const attestationCheckboxes = async () => {
+  return await screen.findAllByTestId("permit-attestation-checkbox");
+};
+
+export const checkAttestations = async (user: UserEvent, attestations: number[]) => {
+  const checkboxes = await attestationCheckboxes();
+  await Promise.all(attestations.map(async (attestation) => {
+    if (attestation >= 0 && attestation < checkboxes.length) {
+      return await user.click(checkboxes[attestation]);
+    }
+    return Promise.resolve();
+  }));
+};
+
+export const attestationErrorMsg = async () => {
+  return await screen.findByTestId("permit-attestation-checkbox-error");
+};
+
+export const proceedToPay = async (user: UserEvent) => {
+  const payBtn = await screen.findByTestId("proceed-pay-btn");
+  await user.click(payBtn);
 };

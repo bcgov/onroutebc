@@ -15,10 +15,16 @@ import { getDefaultApplication } from "../../../../../components/dashboard/tests
 import { MANAGE_PROFILE_API } from "../../../../../../manageProfile/apiManager/endpoints/endpoints";
 import { getDefaultCompanyInfo } from "../../../../../components/dashboard/tests/integration/fixtures/getCompanyInfo";
 import { VEHICLES_API } from "../../../../../../manageVehicles/apiManager/endpoints/endpoints";
-import { getAllPowerUnitTypes, getAllTrailerTypes } from "../../../../../components/dashboard/tests/integration/fixtures/getVehicleInfo";
+import { 
+  getAllPowerUnitTypes, 
+  getAllTrailerTypes, 
+  getDefaultPowerUnitTypes, 
+  getDefaultTrailerTypes, 
+} from "../../../../../components/dashboard/tests/integration/fixtures/getVehicleInfo";
 
 export const newApplicationNumber = "A1-00000001-800-R01";
 const { permitData, ...otherDetails } = getDefaultApplication();
+export const vehicleDetails = permitData.vehicleDetails;
 export const defaultApplicationData = {
   ...otherDetails,
   applicationNumber: newApplicationNumber,
@@ -37,6 +43,10 @@ export const companyInfoDescription =
   "If the Company Mailing Address is incorrect, please contact your onRouteBC Administrator.";
 export const companyMailAddrTitle = "Company Mailing Address";
 export const contactInfoTitle = "Contact Information";
+export const vehicleSubtypes = [
+  ...getDefaultPowerUnitTypes(),
+  ...getDefaultTrailerTypes(),
+];
 
 const server = setupServer(
   rest.get(`${MANAGE_PROFILE_API.COMPANIES}/:companyId`, async (_, res, ctx) => {

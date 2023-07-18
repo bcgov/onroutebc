@@ -5,8 +5,9 @@ import {
   Trailer,
   VehicleType,
   VehicleTypes,
+  VehicleTypesAsString,
 } from "../../manageVehicles/types/managevehicles";
-import { Application, ApplicationRequestData, ApplicationResponse } from "../types/application";
+import { Application, ApplicationRequestData, ApplicationResponse, PermitType } from "../types/application";
 import { DATE_FORMATS, dayjsToLocalStr, dayjsToUtcStr, now, toLocalDayjs, utcToLocalDayjs } from "../../../common/helpers/formatDate";
 
 /**
@@ -114,4 +115,32 @@ export const mapApplicationToApplicationRequestData = (data: Application): Appli
       expiryDate: dayjsToLocalStr(data.permitData.expiryDate, DATE_FORMATS.DATEONLY),
     }
   };
+};
+
+/**
+ * Gets display text for vehicle type.
+ * @param vehicleType Vehicle type (powerUnit or trailer)
+ * @returns display text for the vehicle type
+ */
+export const vehicleTypeDisplayText = (vehicleType: VehicleTypesAsString) => {
+  switch (vehicleType) {
+    case "trailer":
+      return "Trailer";
+    default:
+      return "Power Unit";
+  }
+};
+
+/**
+ * Gets display text for permit type.
+ * @param permitType Permit type (eg. TROS, STOS, etc)
+ * @returns display text for the permit type
+ */
+export const permitTypeDisplayText = (permitType: PermitType) => {
+  switch (permitType) {
+    case "TROS":
+      return "Oversize: Term";
+    default:
+      return "";
+  }
 };
