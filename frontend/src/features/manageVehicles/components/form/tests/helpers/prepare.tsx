@@ -98,3 +98,25 @@ export const renderTestTrailerForm = (trailer?: Trailer) => {
 
   return { user, component };
 };
+
+const commonVehicleDetails = {
+  newUnitNumber: "Ken10",
+  newMake: "Kenworth",
+  newYear: 2020,
+  newVin: "123456",
+  newPlate: "ABC123",
+  newCountry: "Canada",
+  newProvince: "Alberta",
+};
+
+export const powerUnitDetails = {
+  ...commonVehicleDetails,
+  newGvw: 85000,
+  newTireSize: "300",
+  newSubtype: defaultPowerUnitSubtypes[0].type,
+};
+
+export const trailerDetails = {
+  ...commonVehicleDetails,
+  newSubtype: defaultTrailerSubtypes[0].type,
+};

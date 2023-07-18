@@ -18,12 +18,14 @@ import { getDefaultUserDetails } from "../fixtures/getUserDetails";
 import { 
   createPowerUnit, 
   createTrailer, 
-  getAllPowerUnitTypes, 
   getAllPowerUnits, 
-  getAllTrailerTypes, 
   getAllTrailers, 
+  getDefaultPowerUnitTypes, 
+  getDefaultTrailerTypes, 
   updatePowerUnit,
 } from "../fixtures/getVehicleInfo";
+import { getDefaultRequiredVal } from "../../../../../../../common/helpers/util";
+import { formatCountry, formatProvince } from "../../../../../../../common/helpers/formatCountryProvince";
 
 // Use some default user details values to give to the OnRouteBCContext context provider
 export const defaultUserDetails = getDefaultUserDetails();
@@ -75,13 +77,13 @@ const server = setupServer(
   // Mock getting power unit types
   rest.get(VEHICLES_API.POWER_UNIT_TYPES, async (_, res, ctx) => {
     return res(ctx.json([
-      ...getAllPowerUnitTypes() // get power unit types from mock vehicle store
+      ...getDefaultPowerUnitTypes() // get power unit types from mock vehicle store
     ]));
   }),
   // Mock getting trailer types
   rest.get(VEHICLES_API.TRAILER_TYPES, async (_, res, ctx) => {
     return res(ctx.json([
-      ...getAllTrailerTypes() // get trailer types from mock vehicle store
+      ...getDefaultTrailerTypes() // get trailer types from mock vehicle store
     ]));
   }),
   // Mock getting power unit vehicles
@@ -167,4 +169,41 @@ export const renderTestComponent = (userDetails: OnRouteBCContextType) => {
   );
 
   return { user, component };
+};
+
+export const getVehicleDetails = (usage: "create" | "update", saveVehicle: boolean) => {
+  const powerUnits = getAllPowerUnits();
+  const existingVehicle = powerUnits[0];
+  const updatedProvinceAbbr = "AB";
+  const vehicle = {
+    ...existingVehicle,
+    vin: usage === "create" ? 
+      `${existingVehicle.vin.slice(1)}1` : existingVehicle.vin,
+    provinceCode: usage === "update" ? 
+      updatedProvinceAbbr : existingVehicle.provinceCode,
+  };
+  const vehicleSubtype = getDefaultRequiredVal(
+    "",
+    getDefaultPowerUnitTypes()
+      .find(subtype => subtype.typeCode === vehicle.powerUnitTypeCode)?.type
+  );
+  
+  return {
+    formDetails: {
+      vin: vehicle.vin,
+      plate: vehicle.plate,
+      make: vehicle.make,
+      year: getDefaultRequiredVal(0, vehicle.year),
+      country: formatCountry(vehicle.countryCode),
+      province: formatProvince(vehicle.countryCode, vehicle.provinceCode),
+      vehicleType: "Power Unit",
+      vehicleSubtype,
+      saveVehicle,
+    },
+    additionalInfo: {
+      originalVehicles: powerUnits,
+      vehicleUsed: vehicle,
+      updatedProvinceAbbr,
+    },
+  };
 };

@@ -8,16 +8,23 @@ import {
   numericInputs, 
   plateInput, 
   provinceSelect, 
-  replaceValueForInput, 
   selectOptionsAndButtons, 
-  submitErrorsDisplay, 
+  submitVehicleForm, 
   textInputs, 
   trailerTypeCodeSelect, 
   unitNumberInput, 
   vinInput, 
   yearInput,
 } from "./helpers/access";
-import { closeMockServer, defaultTrailerSubtypes, listenToMockServer, renderTestTrailerForm, resetMockServer } from "./helpers/prepare";
+import { 
+  closeMockServer, 
+  defaultTrailerSubtypes, 
+  listenToMockServer, 
+  renderTestTrailerForm, 
+  resetMockServer, 
+  trailerDetails,
+} from "./helpers/prepare";
+import { assertSuccessfulSubmit } from "./helpers/assert";
 
 beforeAll(() => {
   listenToMockServer();
@@ -89,46 +96,11 @@ describe("Trailer Form Submission", () => {
   it("should successfully submit form without errors shown on ui", async () => {
     // Arrange
     const { user } = renderTestTrailerForm();
-    const unitNumber = await unitNumberInput();
-    const make = await makeInput();
-    const year = await yearInput();
-    const vin = await vinInput();
-    const plate = await plateInput();
-    const subtype = await trailerTypeCodeSelect();
-    const country = await countrySelect();
-    const province = await provinceSelect();
-
-    // Act
-    const newUnitNumber = "Ken10";
-    const newMake = "Kenworth";
-    const newYear = 2020;
-    const newVin = "123456";
-    const newPlate = "ABC123";
-    const newSubtype = defaultTrailerSubtypes[0].type;
-    const newCountry = "Canada";
-    const newProvince = "Alberta";
     
-    await replaceValueForInput(user, unitNumber, 0, newUnitNumber);
-    await replaceValueForInput(user, make, 0, newMake);
-    await replaceValueForInput(user, year, 1, `${newYear}`);
-    await replaceValueForInput(user, vin, 0, newVin);
-    await replaceValueForInput(user, plate, 0, newPlate);
-    await chooseOption(user, subtype, newSubtype);
-    await chooseOption(user, country, newCountry);
-    await chooseOption(user, province, newProvince);
-    await clickSubmit(user);
+    // Act
+    await submitVehicleForm(user, "trailer", trailerDetails);
 
     // Assert
-    expect(unitNumber).toHaveValue(newUnitNumber);
-    expect(make).toHaveValue(newMake);
-    expect(year).toHaveValue(newYear);
-    expect(vin).toHaveValue(newVin);
-    expect(plate).toHaveValue(newPlate);
-    expect(subtype).toHaveTextContent(newSubtype);
-    expect(country).toHaveTextContent(newCountry);
-    expect(province).toHaveTextContent(newProvince);
-
-    // Assert - no errors shown after submission
-    expect(async () => await submitErrorsDisplay()).rejects.toThrow();
+    await assertSuccessfulSubmit("trailer", trailerDetails);
   });
 });

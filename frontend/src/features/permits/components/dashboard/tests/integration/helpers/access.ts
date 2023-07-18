@@ -172,3 +172,62 @@ export const openVehicleSelect = async (user: UserEvent) => {
 export const vehicleOptions = async (vehicleType: VehicleTypesAsString) => {
   return await screen.findAllByTestId(`select-vehicle-option-${vehicleType}`);
 };
+
+export const subtypeOptions = async (shownSubtypes: string[], excludedSubtypes: string[]) => {
+  const subtypeOptions = await vehicleSubtypeOptions();
+  const subtypeOptionsText = subtypeOptions.map(option => option.textContent ?? "");
+  const properOptions = subtypeOptionsText.filter((optionText) => {
+    return shownSubtypes.includes(optionText);
+  });
+  const displayedOptions = shownSubtypes.filter((subtype) => {
+    return subtypeOptionsText.includes(subtype);
+  });
+  const excludedOptions = subtypeOptionsText.filter((optionText) => {
+    return excludedSubtypes.includes(optionText);
+  });
+  const displayedExcludedOptions = excludedSubtypes.filter((subtype) => {
+    return subtypeOptionsText.includes(subtype);
+  });
+
+  return {
+    properOptions,
+    displayedOptions,
+    excludedOptions,
+    displayedExcludedOptions,
+  };
+};
+
+type VehicleDetail = {
+  vin: string;
+  plate: string;
+  make: string;
+  year: number;
+  country: string;
+  province: string;
+  vehicleType: string;
+  vehicleSubtype: string;
+  saveVehicle: boolean;
+};
+
+export const fillVehicleInfo = async (user: UserEvent, vehicle: VehicleDetail) => {
+  const vinTextField = await vinInput();
+  const plateTextField = await plateInput();
+  const makeTextField = await makeInput();
+  const yearTextField = await vehicleYearInput();
+  const countrySelect = await vehicleCountrySelect();
+  const provinceSelect = await vehicleProvinceSelect();
+  const typeSelect = await vehicleTypeSelect();
+  const subtypeSelect = await vehicleSubtypeSelect();
+
+  // Act
+  await replaceValueForInput(user, vinTextField, 0, vehicle.vin);
+  await replaceValueForInput(user, plateTextField, 0, vehicle.plate);
+  await replaceValueForInput(user, makeTextField, 0, vehicle.make);
+  await replaceValueForInput(user, yearTextField, 1, `${vehicle.year}`);
+  await chooseOption(user, countrySelect, vehicle.country);
+  await chooseOption(user, provinceSelect, vehicle.province);
+  await chooseOption(user, typeSelect, vehicle.vehicleType);
+  await chooseOption(user, subtypeSelect, vehicle.vehicleSubtype);
+  await chooseSaveVehicleToInventory(user, vehicle.saveVehicle);
+  await continueApplication(user);
+};

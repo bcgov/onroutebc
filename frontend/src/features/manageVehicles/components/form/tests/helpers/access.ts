@@ -1,5 +1,6 @@
 import { screen } from "@testing-library/react";
 import { UserEvent } from "@testing-library/user-event/dist/types/setup/setup";
+import { VehicleTypesAsString } from "../../../../types/managevehicles";
 
 export const clickSubmit = async (user: UserEvent) => {
   const submitButton = await screen.findByRole("button", { name: /Add To Inventory/i });
@@ -100,4 +101,51 @@ export const chooseOption = async (user: UserEvent, select: HTMLElement, optionT
   await user.click(select);
   const option = await screen.findByText(optionText);
   await user.click(option);
+};
+
+export interface VehicleFormDetail {
+  newUnitNumber: string;
+  newMake: string;
+  newYear: number;
+  newVin: string;
+  newPlate: string;
+  newCountry: string;
+  newProvince: string;
+  newSubtype: string;
+}
+
+export interface PowerUnitDetail extends VehicleFormDetail {
+  newGvw: number;
+  newTireSize: string;
+}
+
+export const submitVehicleForm = async (user: UserEvent, vehicleType: VehicleTypesAsString, details: VehicleFormDetail) => {
+  const unitNumber = await unitNumberInput();
+  const make = await makeInput();
+  const year = await yearInput();
+  const vin = await vinInput();
+  const plate = await plateInput();
+  const country = await countrySelect();
+  const province = await provinceSelect();
+
+  await replaceValueForInput(user, unitNumber, 0, details.newUnitNumber);
+  await replaceValueForInput(user, make, 0, details.newMake);
+  await replaceValueForInput(user, year, 1, `${details.newYear}`);
+  await replaceValueForInput(user, vin, 0, details.newVin);
+  await replaceValueForInput(user, plate, 0, details.newPlate);
+  if (vehicleType === "powerUnit") {
+    const powerUnitDetails = details as PowerUnitDetail;
+    const licensedGvw = await licensedGvwInput();
+    const steerAxleTireSize = await steerAxleTireSizeInput();
+    const subtype = await powerUnitTypeCodeSelect();
+    await replaceValueForInput(user, licensedGvw, 1, `${powerUnitDetails.newGvw}`);
+    await replaceValueForInput(user, steerAxleTireSize, 0, powerUnitDetails.newTireSize);
+    await chooseOption(user, subtype, details.newSubtype);
+  } else {
+    const subtype = await trailerTypeCodeSelect();
+    await chooseOption(user, subtype, details.newSubtype);
+  }
+  await chooseOption(user, country, details.newCountry);
+  await chooseOption(user, province, details.newProvince);
+  await clickSubmit(user);
 };
