@@ -368,7 +368,9 @@ export class ApplicationService {
         currentUser,
         dopsRequestData,
       );
-      const receiptNo = '12437592034';
+
+      //Generate receipt number for the permit to be created in database.
+      const receiptNo = await this.generateReceiptNumber();
 
       dopsRequestData = {
         templateName: TemplateName.PAYMENT_RECEIPT,
@@ -398,7 +400,7 @@ export class ApplicationService {
         .andWhere('permitNumber IS NULL')
         .execute();
 
-        await this.createReceipt(transactionDetails.transactionOrderNumber, generatedReceiptDocument.dmsId);
+        await this.createReceipt(transactionDetails.transactionOrderNumber, generatedReceiptDocument.dmsId, receiptNo);
 
       success = applicationId;
 
@@ -641,16 +643,11 @@ export class ApplicationService {
   async createReceipt(
     transactionOrderNumber: string,
     receiptDocumentId: string,
+    receiptNumber: string,
   ){
-
     const transaction = await this.findOneTransactionByOrderNumber(
       transactionOrderNumber,
     );
-
-    //Generate receipt number for the permit to be created in database.
-    const receiptNumber = await this.generateReceiptNumber();
-
-    
     await this.receiptRepository
         .createQueryBuilder()
         .insert()
@@ -678,9 +675,6 @@ export class ApplicationService {
 
   /**
    * Generate Receipt Number
-   * @param applicationSource to get the source code
-   * @param permitId if permit id is present then it is a permit amendment
-   * and application number will be generated from exisitng permit number.
    */
   async generateReceiptNumber(
   ): Promise<string> {
@@ -692,7 +686,6 @@ export class ApplicationService {
     const day = String(currentDate.getDate()).padStart(2, "0");
     const dateString = `${year}${month}${day}`;
     source = dateString;
-    //New receipt.
     seq = await callDatabaseSequence(
       'permit.ORBC_RECEIPT_NUMBER_SEQ',
       this.dataSource,
@@ -700,7 +693,7 @@ export class ApplicationService {
     const receiptNumber = String(
         String(source) +
         '-' +
-        String(seq.padStart(8, '0')),
+        String(seq),
     );
 
     return receiptNumber;
