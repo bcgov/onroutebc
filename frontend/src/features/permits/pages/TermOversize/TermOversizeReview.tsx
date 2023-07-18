@@ -33,7 +33,7 @@ export const TermOversizeReview = () => {
       const response = await submitTermOversizeMutation.mutateAsync(
         applicationData
       );
-      const data = await response.data;
+      const data = response.data;
       setApplicationData(data);
     }
     next();

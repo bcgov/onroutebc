@@ -139,7 +139,7 @@ export const TermOversizeForm = () => {
     );
     
     if (isSaveTermOversizeSuccessful(response.status)) {
-      const responseData = await response.data;
+      const responseData = response.data;
       onSaveSuccess(responseData as Application, response.status);
       additionalSuccessAction?.();
     } else {

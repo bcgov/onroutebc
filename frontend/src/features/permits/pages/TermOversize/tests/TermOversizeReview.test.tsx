@@ -1,4 +1,5 @@
 import { Dayjs } from "dayjs";
+import { waitFor } from "@testing-library/react";
 import { DATE_FORMATS, dayjsToLocalStr } from "../../../../../common/helpers/formatDate";
 import { 
   applicationCreatedDate,
@@ -68,9 +69,10 @@ import { permitTypeDisplayText, vehicleTypeDisplayText } from "../../../helpers/
 import { VehicleTypesAsString } from "../../../../manageVehicles/types/managevehicles";
 import { getDefaultRequiredVal } from "../../../../../common/helpers/util";
 
-global.scrollTo = vi.fn();
-
 beforeAll(() => {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  window.scrollTo = vi.fn();
   listenToMockServer();
 });
 
@@ -275,7 +277,9 @@ describe("Review and Confirm Application Details", () => {
       expect(await vehicleCountry()).toHaveTextContent(country);
       expect(await vehicleProvince()).toHaveTextContent(province);
       expect(await vehicleTypeDisplay()).toHaveTextContent(vehicleTypeStr);
-      expect(await vehicleSubtypeDisplay()).toHaveTextContent(vehicleSubtypeStr);
+      await waitFor(async () => {
+        expect(await vehicleSubtypeDisplay()).toHaveTextContent(vehicleSubtypeStr);
+      });
     });
 
     it("should display indication message if vehicle was saved to inventory", async () => {

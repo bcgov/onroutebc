@@ -95,7 +95,7 @@ export const PowerUnitForm = ({ powerUnit }: PowerUnitFormProps) => {
           licensedGvw: convertToNumberIfValid(data.licensedGvw, data.licensedGvw as string) as any,
         },
       });
-      if (result.ok) {
+      if (result.status === 200) {
         snackBar.setSnackBar({
           showSnackbar: true,
           setShowSnackbar: () => true,
@@ -113,7 +113,7 @@ export const PowerUnitForm = ({ powerUnit }: PowerUnitFormProps) => {
         licensedGvw: data.licensedGvw != null && data.licensedGvw !== "" && !isNaN(Number(data.licensedGvw)) ?
           Number(data.licensedGvw) : data.licensedGvw
       });
-      if (result.ok) {
+      if (result.status === 200 || result.status === 201) {
         snackBar.setSnackBar({
           showSnackbar: true,
           setShowSnackbar: () => true,

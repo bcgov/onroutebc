@@ -78,46 +78,33 @@ export const List = memo(
      * Function that deletes a application once the user confirms the delete action
      * in the confirmation dialog.
      */
-    const onConfirmApplicationDelete = () => {
+    const onConfirmApplicationDelete = async () => {
       const applicationIds: string[] = Object.keys(rowSelection);
-
-      deleteApplications(applicationIds).then((response) => {
-        if (response.status === 201) {
-          response
-            .json()
-            .then((responseBody: { success: string[]; failure: string[] }) => {
-              setIsDeleteDialogOpen(() => false);
-              if (responseBody.failure.length > 0) {
-                snackBar.setSnackBar({
-                  alertType: "error",
-                  message: "An unexpected error occurred.",
-                  setShowSnackbar: () => true,
-                  showSnackbar: true,
-                });
-              } else {
-                snackBar.setSnackBar({
-                  message: "Application Deleted",
-                  alertType: "info",
-                  setShowSnackbar: () => true,
-                  showSnackbar: true,
-                  
-                });
-              }
-              setRowSelection(() => {
-                return {};
-              });
-              query.refetch();
-            })
-            .catch(error => {
-              // Handle the rejection
-              console.log(error);
-            });
+      const response = await deleteApplications(applicationIds);
+      if (response.status === 201 || response.status === 200) {
+        const responseBody = response.data;
+        setIsDeleteDialogOpen(() => false);
+        if (responseBody.failure.length > 0) {
+          snackBar.setSnackBar({
+            alertType: "error",
+            message: "An unexpected error occurred.",
+            setShowSnackbar: () => true,
+            showSnackbar: true,
+          });
+        } else {
+          snackBar.setSnackBar({
+            message: "Application Deleted",
+            alertType: "info",
+            setShowSnackbar: () => true,
+            showSnackbar: true,
+            
+          });
         }
-      })
-      .catch(error => {
-        // Handle the rejection
-        console.log(error);
-      });
+        setRowSelection(() => {
+          return {};
+        });
+        query.refetch();
+      }
     };
     
     useEffect(() => {

@@ -1,10 +1,8 @@
-import { AxiosResponse } from "axios";
 import {
-  httpPOSTRequest_axios,
   getCompanyIdFromSession,
   httpGETRequest,
   getUserGuidFromSession,
-  httpPUTRequest_axios,
+  httpPUTRequest,
   httpPOSTRequest,
 } from "../../../common/apiManager/httpRequestHandler";
 
@@ -21,10 +19,10 @@ import { VEHICLES_URL } from "../../../common/apiManager/endpoints/endpoints";
  * @param termOversizePermit application data for term oversize permit
  * @returns response with created application data, or error if failed
  */
-export const submitTermOversize = (
+export const submitTermOversize = async (
   termOversizePermit: Application
-): Promise<AxiosResponse> => {
-  return httpPOSTRequest_axios(
+) => {
+  return await httpPOSTRequest(
     PERMITS_API.SUBMIT_TERM_OVERSIZE_PERMIT,
     replaceEmptyValuesWithNull({
       // must convert application to ApplicationRequestData (dayjs fields to strings)
@@ -39,11 +37,11 @@ export const submitTermOversize = (
  * @param applicationNumber application number for the application to update
  * @returns response with updated application data, or error if failed
  */
-export const updateTermOversize = (
+export const updateTermOversize = async (
   termOversizePermit: Application,
   applicationNumber: string
-): Promise<AxiosResponse> => {
-  return httpPUTRequest_axios(
+) => {
+  return await httpPUTRequest(
     `${PERMITS_API.SUBMIT_TERM_OVERSIZE_PERMIT}/${applicationNumber}`,
     replaceEmptyValuesWithNull({
       // must convert application to ApplicationRequestData (dayjs fields to strings)
@@ -108,13 +106,11 @@ export const getApplicationInProgressById = (
  * @param permitIds Array of permit ids to be deleted.
  * @returns A Promise with the API response.
  */
-export const deleteApplications = (
+export const deleteApplications = async (
   applicationIds: Array<string>,
-): Promise<Response> => {
-  let url: string | null = null;
-  const requestBody: { applicationIds: Array<string>, applicationStatus: string } = { applicationIds: applicationIds, applicationStatus: "CANCELLED"};
-  url = `${APPLICATION_UPDATE_STATUS_API}`;
-  return httpPOSTRequest(url, replaceEmptyValuesWithNull(requestBody));
+) => {
+  const requestBody = { applicationIds, applicationStatus: "CANCELLED"};
+  return await httpPOSTRequest(`${APPLICATION_UPDATE_STATUS_API}`, replaceEmptyValuesWithNull(requestBody));
 };
 
 /**
@@ -154,12 +150,6 @@ export const getMotiPayTransactionUrl = async (
 
 export const postTransaction = async (
   transactionDetails: Transaction,
-): Promise<any> => {
-  const url = `${PAYMENT_API}`;
-  return httpPOSTRequest_axios(url, transactionDetails).then((response) => {
-    return response;
-  })
-  .catch((err) => {
-    return err;
-  });
+) => {
+  return await httpPOSTRequest(`${PAYMENT_API}`, transactionDetails);
 };
