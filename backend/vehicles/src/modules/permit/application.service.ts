@@ -39,6 +39,7 @@ import { DopsService } from '../common/dops.service';
 import { DopsGeneratedDocument } from '../../common/interface/dops-generated-document.interface';
 import { TemplateName } from '../../common/enum/template-name.enum';
 import { IReceipt } from 'src/common/interface/receipt.interface';
+import { IFile } from '../../common/interface/file.interface';
 import { ReadTransactionDto } from '../payment/dto/response/read-transaction.dto';
 import { Transaction } from '../payment/entities/transaction.entity';
 import { Receipt } from '../payment/entities/receipt.entity';
@@ -363,8 +364,7 @@ export class ApplicationService {
         templateData: permitDataForTemplate,
       };
 
-      //TODO User Promise.all to combine both calls or change DOPS to generate multiple files at once.
-      const generatedPermitDocument = await this.generateDocument(
+      const generatedPermitDocumentPromise = this.generateDocument(
         currentUser,
         dopsRequestData,
       );
@@ -382,10 +382,15 @@ export class ApplicationService {
         },
       };
 
-      const generatedReceiptDocument = await this.generateDocument(
+      const generatedReceiptDocumentPromise = this.generateDocument(
         currentUser,
         dopsRequestData,
       );
+
+      const generatedDocuments: IFile[] = await Promise.all([
+        generatedPermitDocumentPromise,
+        generatedReceiptDocumentPromise,
+      ]);
 
       // Update Permit record with an ISSUED status, new permit number, and new DMS Document ID
       await this.permitRepository
@@ -394,7 +399,7 @@ export class ApplicationService {
         .set({
           permitStatus: ApplicationStatus.ISSUED,
           ...{ permitNumber: permitNumber },
-          ...{ documentId: generatedPermitDocument.dmsId },
+          ...{ documentId: generatedDocuments.at(0).dmsId },
         })
         .where('ID = :applicationId', { applicationId })
         .andWhere('permitNumber IS NULL')
@@ -414,17 +419,17 @@ export class ApplicationService {
             filename: tempPermit.permitNumber + '.pdf',
             contentType: 'application/pdf',
             encoding: 'base64',
-            content: generatedPermitDocument.buffer.toString('base64'),
+            content: generatedDocuments.at(0).buffer.toString('base64'),
           },
           {
             filename: `Receipt_No_${receiptNo}.pdf`,
             contentType: 'application/pdf',
             encoding: 'base64',
-            content: generatedReceiptDocument.buffer.toString('base64'),
+            content: generatedDocuments.at(1).buffer.toString('base64'),
           },
         ];
 
-        await this.emailService.sendEmailMessage(
+        void this.emailService.sendEmailMessage(
           EmailTemplate.ISSUE_PERMIT,
           emailData,
           'onRouteBC Permits - ' + companyInfo.legalName,
@@ -438,11 +443,12 @@ export class ApplicationService {
         console.log('Error in Email Service', error);
       }
     } catch (err) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
       console.log(
         'Error Issuing Application: ',
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         err.response.status,
         ' ',
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         err.response.statusText,
       );
       success = '';
