@@ -18,13 +18,21 @@ import { Upload } from '@aws-sdk/lib-storage';
 export class S3Service {
   constructor(private readonly httpService: HttpService) {}
 
+  private readonly _s3AccessKeyId = process.env.DOPS_S3_ACCESSKEYID;
+  private readonly _s3SecretAccessKey = process.env.DOPS_S3_SECRETACCESSKEY;
+  private readonly _s3EndPoint = process.env.DOPS_S3_ENDPOINT;
+  private readonly _s3Bucket = process.env.DOPS_S3_BUCKET;
+  private readonly _s3Key = process.env.DOPS_S3_KEY;
+  private readonly _s3PreSignedUrlExpiry =
+    process.env.DOPS_S3_PRESIGNED_URL_EXPIRY;
+
   private s3client: S3Client = new S3Client({
     apiVersion: '2006-03-01',
     credentials: {
-      accessKeyId: process.env.DOPS_S3_ACCESSKEYID,
-      secretAccessKey: process.env.DOPS_S3_SECRETACCESSKEY,
+      accessKeyId: this._s3AccessKeyId,
+      secretAccessKey: this._s3SecretAccessKey,
     },
-    endpoint: process.env.DOPS_S3_ENDPOINT,
+    endpoint: this._s3EndPoint,
     forcePathStyle: true,
     region: 'ca-central-1',
   });
@@ -37,8 +45,8 @@ export class S3Service {
     const upload = new Upload({
       client,
       params: {
-        Bucket: process.env.DOPS_S3_BUCKET,
-        Key: process.env.DOPS_S3_KEY + '/' + filePath,
+        Bucket: this._s3Bucket,
+        Key: this._s3Key + '/' + filePath,
         Body: file.buffer,
         ContentType: file.mimetype,
         //TODO Add metadata
@@ -54,8 +62,8 @@ export class S3Service {
     res?: Response,
   ): Promise<NodeJS.ReadableStream> {
     const params = {
-      Bucket: process.env.DOPS_S3_BUCKET,
-      Key: process.env.DOPS_S3_KEY + '/' + filePath,
+      Bucket: this._s3Bucket,
+      Key: this._s3Key + '/' + filePath,
     };
 
     try {
@@ -70,16 +78,18 @@ export class S3Service {
 
   async presignUrl(filePath: string): Promise<string> {
     const params = {
-      Bucket: process.env.DOPS_S3_BUCKET,
-      Key: process.env.DOPS_S3_KEY + '/' + filePath,
+      Bucket: this._s3Bucket,
+      Key: this._s3Key + '/' + filePath,
     };
 
-    const command = new GetObjectCommand(params);
-
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-    const url = await getSignedUrl(this.s3client, command, {
-      expiresIn: +process.env.DOPS_S3_PRESIGNED_URL_EXPIRY,
-    });
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-assignment
+    const url: string = await getSignedUrl(
+      this.s3client,
+      new GetObjectCommand(params),
+      {
+        expiresIn: +this._s3PreSignedUrlExpiry,
+      },
+    );
 
     return url;
   }
