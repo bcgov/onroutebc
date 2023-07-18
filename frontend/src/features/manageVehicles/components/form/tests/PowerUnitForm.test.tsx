@@ -132,17 +132,6 @@ describe("Power Unit Form Submission", () => {
 
     // Act
     const subtype = defaultPowerUnitSubtypes[0].type;
-    /*
-    const subtype = screen.getByRole("button", {
-      name: /powerUnitTypeCode/i,
-    });
-
-    fireEvent.mouseDown(subtype);
-
-    const listbox = within(screen.getByRole("listbox"));
-
-    fireEvent.click(listbox.getByText(/Concrete Pumper Trucks/i));
-    */
     const subtypeSelect = await powerUnitTypeCodeSelect();
     await chooseOption(user, subtypeSelect, subtype);
 

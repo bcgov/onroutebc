@@ -123,12 +123,10 @@ export const mapApplicationToApplicationRequestData = (data: Application): Appli
  * @returns display text for the vehicle type
  */
 export const vehicleTypeDisplayText = (vehicleType: VehicleTypesAsString) => {
-  switch (vehicleType) {
-    case "trailer":
-      return "Trailer";
-    default:
-      return "Power Unit";
+  if (vehicleType === "trailer") {
+    return "Trailer";
   }
+  return "Power Unit";
 };
 
 /**
@@ -140,6 +138,8 @@ export const permitTypeDisplayText = (permitType: PermitType) => {
   switch (permitType) {
     case "TROS":
       return "Oversize: Term";
+    case "STOS":
+      return "Oversize: Single Trip";
     default:
       return "";
   }

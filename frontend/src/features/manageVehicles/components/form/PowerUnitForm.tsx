@@ -1,7 +1,6 @@
 import { useForm, FormProvider, FieldValues } from "react-hook-form";
 import { Box, Button, MenuItem } from "@mui/material";
 import "./VehicleForm.scss";
-// import { AxleGroupForm } from "./AxleGroupForm";
 import { PowerUnit, VehicleType } from "../../types/managevehicles";
 import { CountryAndProvince } from "../../../../common/components/form/CountryAndProvince";
 import { CustomFormComponent } from "../../../../common/components/form/CustomFormComponents";

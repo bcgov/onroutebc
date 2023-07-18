@@ -7,7 +7,7 @@ let trailerId = 1;
 
 const vehicleSourceDef = factory({
   powerUnit: {
-    powerUnitId: primaryKey(() => `${powerUnitId++}` as string),
+    powerUnitId: primaryKey((): string => `${powerUnitId++}`),
     companyId: Number,
     unitNumber: nullable(String),
     plate: String,
@@ -24,7 +24,7 @@ const vehicleSourceDef = factory({
     vehicleType: () => "powerUnit",
   },
   trailer: {
-    trailerId: primaryKey(() => `${trailerId++}` as string),
+    trailerId: primaryKey((): string => `${trailerId++}`),
     companyId: Number,
     unitNumber: nullable(String),
     plate: String,

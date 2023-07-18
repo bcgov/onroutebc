@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { rest } from "msw";
 import { setupServer } from "msw/node";
 import userEvent from "@testing-library/user-event";
@@ -16,8 +16,6 @@ import { MANAGE_PROFILE_API } from "../../../../../../manageProfile/apiManager/e
 import { getDefaultCompanyInfo } from "../../../../../components/dashboard/tests/integration/fixtures/getCompanyInfo";
 import { VEHICLES_API } from "../../../../../../manageVehicles/apiManager/endpoints/endpoints";
 import { 
-  getAllPowerUnitTypes, 
-  getAllTrailerTypes, 
   getDefaultPowerUnitTypes, 
   getDefaultTrailerTypes, 
 } from "../../../../../components/dashboard/tests/integration/fixtures/getVehicleInfo";
@@ -78,12 +76,12 @@ const server = setupServer(
   }),
   rest.get(VEHICLES_API.POWER_UNIT_TYPES, async (_, res, ctx) => {
     return res(ctx.json([
-      ...getAllPowerUnitTypes() // get power unit types from mock vehicle store
+      ...getDefaultPowerUnitTypes() // get power unit types from mock vehicle store
     ]));
   }),
   rest.get(VEHICLES_API.TRAILER_TYPES, async (_, res, ctx) => {
     return res(ctx.json([
-      ...getAllTrailerTypes() // get trailer types from mock vehicle store
+      ...getDefaultTrailerTypes() // get trailer types from mock vehicle store
     ]));
   }),
 );
@@ -113,14 +111,14 @@ const ComponentWithWrapper = ({
   return (
     <ThemeProvider theme={bcGovTheme}>
       <ApplicationContext.Provider
-        value={{
+        value={useMemo(() => ({
           applicationData: testApplicationData,
           setApplicationData: setTestApplicationData,
           next,
           back,
           goTo,
           currentStepIndex: stepIndex,
-        }}
+        }), [testApplicationData, stepIndex])}
       >
         <TermOversizeReview />
       </ApplicationContext.Provider>
