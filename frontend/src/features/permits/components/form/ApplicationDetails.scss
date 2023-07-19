@@ -1,0 +1,59 @@
+.application-details {
+  & &__title {
+    margin-top: 0;
+    margin-bottom: 0.5em;
+    padding: 0;
+    border-bottom: none;
+  }
+
+  .application-number {
+    display: flex;
+    flex-direction: row;
+    border-bottom: none;
+    padding: 0.5rem 0;
+
+    &__label {
+      margin-right: 0.5em;
+    }
+  }
+
+  &__audit-dates {
+    display: flex;
+    flex-direction: row;
+    gap: 2.5rem;
+    padding: 1em 0;
+
+    .audit-date {
+      &__label {
+        font-weight: 600;
+        margin-right: 0.5rem;
+      }
+    }
+  }
+}
+
+@media (width < 820px) {
+  .application-details {
+    &__audit-dates {
+      flex-direction: column;
+      gap: 0;
+    }
+  }
+}
+
+@media (width < 470px) {
+  .application-details {
+    .application-number {
+      flex-direction: column;
+    }
+  }
+}
+
+@media (width < 380px) {
+  .application-details {
+    .audit-date {
+      display: flex;
+      flex-direction: column;
+    }
+  }
+}

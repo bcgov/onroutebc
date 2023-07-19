@@ -1,0 +1,12 @@
+@import "../../../themes/orbcStyles.scss";
+
+.permit-expiry-date-banner {
+  background-color: $banner-grey;
+  color: $bc-primary-blue;
+  margin-top: 1.25rem;
+  padding: 1.5em;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 270px;
+}

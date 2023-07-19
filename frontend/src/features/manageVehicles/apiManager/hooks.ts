@@ -123,7 +123,7 @@ export const useUpdateTrailerMutation = () => {
 
   return useMutation({
     mutationFn: updateTrailer,
-    onSuccess: (response: Response) => {
+    onSuccess: (response) => {
       if (response.status === 200) {
         queryClient.invalidateQueries(["trailers"]);
       } else {
