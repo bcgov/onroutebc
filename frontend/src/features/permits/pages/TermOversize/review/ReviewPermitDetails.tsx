@@ -1,17 +1,11 @@
 import { Box, Typography } from "@mui/material";
-import dayjs from "dayjs";
 
+import "./ReviewPermitDetails.scss";
 import { PermitExpiryDateBanner } from "../../../../../common/components/banners/PermitExpiryDateBanner";
-import {
-  PERMIT_MAIN_BOX_STYLE,
-  PERMIT_LEFT_BOX_STYLE,
-  PERMIT_LEFT_HEADER_STYLE,
-  PERMIT_RIGHT_BOX_STYLE,
-} from "../../../../../themes/orbcStyles";
 import { Application } from "../../../types/application";
 import { ReviewConditionsTable } from "./ReviewConditionsTable";
-import { applyWhenNotNullable } from "../../../../../common/helpers/util";
-import { DATE_FORMATS } from "../../../../../common/helpers/formatDate";
+import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../../../common/helpers/util";
+import { DATE_FORMATS, dayjsToLocalStr } from "../../../../../common/helpers/formatDate";
 
 export const ReviewPermitDetails = ({
   values,
@@ -19,31 +13,47 @@ export const ReviewPermitDetails = ({
   values: Application | undefined;
 }) => {
   return (
-    <Box sx={PERMIT_MAIN_BOX_STYLE}>
-      <Box sx={PERMIT_LEFT_BOX_STYLE}>
-        <Typography variant={"h3"} sx={PERMIT_LEFT_HEADER_STYLE}>
+    <Box className="review-permit-details">
+      <Box className="review-permit-details__header">
+        <Typography variant={"h3"} className="review-permit-details__title">
           Permit Details
         </Typography>
       </Box>
-      <Box sx={PERMIT_RIGHT_BOX_STYLE}>
-        <Box sx={{ gap: "40px", paddingTop: "24px" }}>
-          <Typography sx={{ fontWeight: "bold" }}>Start Date:</Typography>
-          {applyWhenNotNullable(
-            (dayJsObject) => dayjs(dayJsObject).format(DATE_FORMATS.DATEONLY_SLASH),
-            values?.permitData?.startDate,
-            ""
-          )}
-          <Typography sx={{ fontWeight: "bold" }}>Permit Duration:</Typography>
-          <Typography>{values?.permitData.permitDuration} Days</Typography>
+      <Box className="review-permit-details__body">
+        <Box className="permit-dates">
+          <Typography className="permit-dates__label">
+            Start Date:
+          </Typography>
+          <Typography 
+            className="permit-dates__data"
+            data-testid="permit-start-date"
+          >
+            {applyWhenNotNullable(
+              (dayJsObject) => dayjsToLocalStr(dayJsObject, DATE_FORMATS.DATEONLY_SLASH),
+              values?.permitData?.startDate,
+              ""
+            )}
+          </Typography>
+          <Typography className="permit-dates__label">
+            Permit Duration:
+          </Typography>
+          <Typography 
+            className="permit-dates__data"
+            data-testid="permit-duration"
+          >
+            {getDefaultRequiredVal(30, values?.permitData.permitDuration)} Days
+          </Typography>
         </Box>
-        <PermitExpiryDateBanner
-          expiryDate={applyWhenNotNullable(
-            (dayJsObject) => dayjs(dayJsObject).format(DATE_FORMATS.SHORT),
-            values?.permitData?.expiryDate,
-            ""
-          )}
-        />
-        <Box>
+        <Box className="permit-expiry-banner">
+          <PermitExpiryDateBanner
+            expiryDate={applyWhenNotNullable(
+              (dayJsObject) => dayjsToLocalStr(dayJsObject, DATE_FORMATS.SHORT),
+              values?.permitData?.expiryDate,
+              ""
+            )}
+          />
+        </Box>
+        <Box className="permit-conditions">
           <Typography variant="h3">
             Selected commodities and their respective CVSE forms.
           </Typography>

@@ -2,59 +2,13 @@ import { Box, Typography } from "@mui/material";
 import { Dayjs } from "dayjs";
 
 import { CompanyBanner } from "../../../../common/components/banners/CompanyBanner";
-import {
-  PERMIT_MAIN_BOX_STYLE,
-  PERMIT_LEFT_BOX_STYLE,
-  PERMIT_LEFT_HEADER_STYLE,
-  PERMIT_RIGHT_BOX_STYLE,
-} from "../../../../themes/orbcStyles";
 import { useCompanyInfoQuery } from "../../../manageProfile/apiManager/hooks";
-import {
-  formatCountry,
-  formatProvince,
-} from "../../../../common/helpers/formatCountryProvince";
-import { CompanyProfile } from "../../../manageProfile/types/manageProfile";
 import { DATE_FORMATS, dayjsToLocalStr } from "../../../../common/helpers/formatDate";
-import { applyWhenNotNullable } from "../../../../common/helpers/util";
-
-const CompanyInformation = ({
-  companyInfo,
-}: {
-  companyInfo?: CompanyProfile;
-}) => {
-  return (
-    <Box sx={PERMIT_MAIN_BOX_STYLE}>
-      <Box sx={PERMIT_LEFT_BOX_STYLE}>
-        <Typography variant={"h3"} sx={PERMIT_LEFT_HEADER_STYLE}>
-          Company Information
-        </Typography>
-        <Typography sx={{ width: "320px" }}>
-          If the Company Mailing Address is incorrect, please contact your
-          onRouteBC Administrator.
-        </Typography>
-      </Box>
-      <Box sx={PERMIT_RIGHT_BOX_STYLE}>
-        <Typography variant={"h3"}>Company Mailing Address</Typography>
-        <Box>
-          <Typography>{companyInfo?.mailingAddress.addressLine1}</Typography>
-          <Typography>
-            {formatCountry(companyInfo?.mailingAddress.countryCode)}
-          </Typography>
-          <Typography>
-            {formatProvince(
-              companyInfo?.mailingAddress.countryCode,
-              companyInfo?.mailingAddress.provinceCode
-            )}
-          </Typography>
-          <Typography>
-            {companyInfo?.mailingAddress.city}{" "}
-            {companyInfo?.mailingAddress.postalCode}
-          </Typography>
-        </Box>
-      </Box>
-    </Box>
-  );
-};
+import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../../common/helpers/util";
+import { CompanyInformation } from "./CompanyInformation";
+import "./ApplicationDetails.scss";
+import { permitTypeDisplayText } from "../../helpers/mappers";
+import { PermitType } from "../../types/application";
 
 export const ApplicationDetails = ({
   permitType,
@@ -68,63 +22,83 @@ export const ApplicationDetails = ({
   updatedDateTime?: Dayjs,
 }) => {
   const companyInfoQuery = useCompanyInfoQuery();
-  // TODO use an enum
-  const applicationName = permitType === "TROS" ? "Oversize: Term" : "";
+  const applicationName = permitTypeDisplayText(
+    getDefaultRequiredVal("", permitType) as PermitType
+  );
 
   return (
     <>
-      <div>
+      <div className="application-details">
         <Typography
+          className="application-details__title"
           variant={"h1"}
-          sx={{
-            marginRight: "200px",
-            marginTop: "0px",
-            paddingTop: "0px",
-            borderBottom: "none",
-          }}
+          data-testid="application-title"
         >
           {applicationName}
         </Typography>
         {(applicationNumber && applicationNumber !== "") ? (
-          <>
+          <Box>
             <Typography
+              className="application-number"
               variant="h2"
-              sx={{
-                display: "block",
-                borderBottom: "none",
-                paddingBottom: "8px",
-                paddingTop: "8px",
-              }}
             >
-              Application #: {applicationNumber}
+              <Box 
+                className="application-number__label" 
+                component="span"
+              >
+                Application #:
+              </Box>
+              <Box
+                className="application-number__number"
+                component="span"
+                data-testid="application-number"
+              >
+                {applicationNumber}
+              </Box>
             </Typography>
-            <Box sx={{ display: "flex" , gap: "40px"}}>
-              <Typography sx={{ width: "327px"}}>
-                <Box component="span" fontWeight="bold">
+            <Box className="application-details__audit-dates">
+              <Typography className="audit-date audit-date--created">
+                <Box 
+                  className="audit-date__label"
+                  component="span"
+                >
                   Date Created:
                 </Box>
-                {"  "}
-                {applyWhenNotNullable(
-                  (dayjsObj) => dayjsToLocalStr(dayjsObj, DATE_FORMATS.LONG),
-                  createdDateTime,
-                  ""
-                )}
+                <Box 
+                  className="audit-date__date" 
+                  component="span"
+                  data-testid="application-created-date"
+                >
+                  {applyWhenNotNullable(
+                    (dayjsObj) => dayjsToLocalStr(dayjsObj, DATE_FORMATS.LONG),
+                    createdDateTime,
+                    ""
+                  )}
+                </Box>
               </Typography>
-              <Typography>
-                <Box component="span" fontWeight="bold">
+              <Typography className="audit-date audit-date--updated">
+                <Box 
+                  className="audit-date__label"
+                  component="span"
+                >
                   Last Updated:
                 </Box>
-                {"  "}
-                {applyWhenNotNullable(
-                  (dayjsObj) => dayjsToLocalStr(dayjsObj, DATE_FORMATS.LONG),
-                  updatedDateTime,
-                  ""
-                )}
+                <Box 
+                  className="audit-date__date" 
+                  component="span"
+                  data-testid="application-updated-date"
+                >
+                  {applyWhenNotNullable(
+                    (dayjsObj) => dayjsToLocalStr(dayjsObj, DATE_FORMATS.LONG),
+                    updatedDateTime,
+                    ""
+                  )}
+                </Box>
               </Typography>
             </Box>
-          </>
+          </Box>
         ) : (
-          <></>
+          <Box></Box>
         )}
       </div>
       <CompanyBanner companyInfo={companyInfoQuery.data} />

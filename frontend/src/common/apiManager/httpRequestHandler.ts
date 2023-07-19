@@ -126,17 +126,6 @@ export const httpGETRequest = (url: string) => {
  * @returns A Promise<Response> with the response from the API.
  */
 export const httpPOSTRequest = (url: string, data: any) => {
-  return fetch(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: getAccessToken(),
-    },
-    body: JSON.stringify(data),
-  });
-};
-
-export const httpPOSTRequest_axios = (url: string, data: any) => {
   return axios.post(url, JSON.stringify(data), {
     headers: {
       "Content-Type": "application/json",
@@ -152,17 +141,6 @@ export const httpPOSTRequest_axios = (url: string, data: any) => {
  * @returns A Promise<Response> with the response from the API.
  */
 export const httpPUTRequest = (url: string, data: any) => {
-  return fetch(url, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: getAccessToken(),
-    },
-    body: JSON.stringify(data),
-  });
-};
-
-export const httpPUTRequest_axios = (url: string, data: any) => {
   return axios.put(url, JSON.stringify(data), {
     headers: {
       "Content-Type": "application/json",
@@ -177,8 +155,7 @@ export const httpPUTRequest_axios = (url: string, data: any) => {
  * @returns A Promise<Response> with the response from the API.
  */
 export const httpDELETERequest = (url: string) => {
-  return fetch(url, {
-    method: "DELETE",
+  return axios.delete(url, {
     headers: {
       Authorization: getAccessToken(),
     },

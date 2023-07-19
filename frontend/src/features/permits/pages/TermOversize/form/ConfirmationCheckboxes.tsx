@@ -1,9 +1,17 @@
 import { Box, Checkbox, Typography } from "@mui/material";
-import { useState } from "react";
-import { useFormContext } from "react-hook-form";
+import { Dispatch, SetStateAction, useState } from "react";
 import { BC_COLOURS } from "../../../../../themes/bcGovStyles";
+import { CustomInputHTMLAttributes } from "../../../../../common/types/formElements";
 
-export const ConfirmationCheckboxes = () => {
+export const ConfirmationCheckboxes = ({
+  isSubmitted,
+  isChecked,
+  setIsChecked,
+}: {
+  isSubmitted: boolean;
+  isChecked: boolean;
+  setIsChecked: Dispatch<SetStateAction<boolean>>;
+}) => {
   const checkboxes = [
     {
       description:
@@ -23,41 +31,44 @@ export const ConfirmationCheckboxes = () => {
   const [checked, setChecked] = useState(checkboxes);
 
   const handleCheck = (checkedName: string) => {
+    let isValid = true;
     const updated = checked.map((item) => {
       if (item.description === checkedName) {
         item.checked = !item.checked;
       }
+      if (!item.checked) isValid = false;
       return item;
     });
     setChecked(updated);
+    setIsChecked(isValid);
   };
-
-  const {
-    register,
-    formState: { isValid, isSubmitted },
-  } = useFormContext();
 
   return (
     <Box sx={{ paddingTop: "24px" }}>
-      {checked.map((x, index) => (
+      {checked.map(x => (
         <Box key={x.description}>
           <Checkbox
-            {...register(`checkbox #${index}`, { required: true })}
             key={x.description}
             checked={x.checked}
             onChange={() => handleCheck(x.description)}
             sx={{
               color:
-                isSubmitted && !isValid && !x.checked
+                isSubmitted && !x.checked
                   ? BC_COLOURS.bc_red
                   : BC_COLOURS.bc_primary_blue,
             }}
+            inputProps={{
+              "data-testid": "permit-attestation-checkbox"
+            } as CustomInputHTMLAttributes}
           />
           {x.description}
         </Box>
       ))}
-      {isSubmitted && !isValid ? (
-        <Typography sx={{ color: BC_COLOURS.bc_red }}>
+      {isSubmitted && !isChecked ? (
+        <Typography 
+          sx={{ color: BC_COLOURS.bc_red }}
+          data-testid="permit-attestation-checkbox-error"
+        >
           Checkbox selection is required.
         </Typography>
       ) : null}

@@ -4,6 +4,7 @@ import { getURLParameters } from "../../helpers/payment";
 import { MotiPaymentDetails, Transaction } from "../../types/payment";
 import { postTransaction } from "../../apiManager/permitsAPI";
 import { Loading } from "../../../../common/pages/Loading";
+import { AxiosError } from "axios";
 
 /**
  * React component that handles the payment redirect and displays the payment status.
@@ -27,30 +28,43 @@ export const PaymentRedirect = () => {
     );
   }, []);
 
+  const onTransactionResult = (msg: string, payStatus: number) => {
+    setMessage(msg);
+    setPaymentStatus(payStatus);
+    setIsLoading(false);
+  };
+
   const handlePostTransaction = async (
     transaction: Transaction,
     messageText: string,
     isApproved: number
   ) => {
-    if (isApproved == 0) {
-      setPaymentStatus(isApproved);
-      setMessage(messageText);
-      setIsLoading(false);
+    if (isApproved === 0) {
+      onTransactionResult(messageText, isApproved);
       return;
     }
 
-    const result = await postTransaction(transaction);
-
-    if (result.status != 201) {
-      console.log("Error: handlePostTransaction.", result);
-      setMessage(`TODO: Payment approved but error in ORBC Backend: ${result.response.data.message}`);
-      setPaymentStatus(0);
-    } else {
-      setMessage(messageText);
-      setPaymentStatus(isApproved);
+    try {
+      const result = await postTransaction(transaction);
+      if (result.status === 201) {
+        onTransactionResult(messageText, isApproved);
+      } else {
+        onTransactionResult("Something went wrong", 0);
+      }
+    } catch (err) {
+      if (!(err instanceof AxiosError)) {
+        onTransactionResult("Unknown Error", 0);
+        return;
+      }
+      if (err.response) {
+        onTransactionResult(
+          `TODO: Payment approved but error in ORBC Backend: ${err.response.data.message}`, 
+          0
+        );
+      } else {
+        onTransactionResult("Request Error", 0);
+      }
     }
-    
-    setIsLoading(false);
   };
 
   if (isLoading) return <Loading />;

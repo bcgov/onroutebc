@@ -36,6 +36,7 @@ export const CustomOutlinedInput = <T extends ORBC_FormTypes>(
   // eslint-disable-next-line  @typescript-eslint/no-explicit-any
   const updatedInputProps: any = props.inputProps;
   updatedInputProps["aria-label"] = props.name;
+  updatedInputProps["data-testid"] = `input-${props.name}`;
 
   // Set the 'type' attribute for the input element, along with other number related attributes, for display purposes only
   // (ie. not setting values, since input values always yield string type)

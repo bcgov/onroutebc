@@ -93,7 +93,7 @@ export const TrailerForm = ({ trailer }: TrailerFormProps) => {
           year: !isNaN(Number(data.year)) ? Number(data.year) : data.year,
         },
       });
-      if (result.ok) {
+      if (result.status === 200) {
         snackBar.setSnackBar({
           showSnackbar: true,
           setShowSnackbar: () => true,
@@ -109,7 +109,7 @@ export const TrailerForm = ({ trailer }: TrailerFormProps) => {
         // need to explicitly convert form values to number here (since we can't use valueAsNumber prop)
         year: !isNaN(Number(data.year)) ? Number(data.year) : data.year,
       });
-      if (result.ok) {
+      if (result.status === 200 || result.status === 201) {
         snackBar.setSnackBar({
           showSnackbar: true,
           setShowSnackbar: () => true,

@@ -79,7 +79,6 @@ export const TermOversizeForm = () => {
       applicationNumber: applicationContext.applicationData?.applicationNumber,
       permitData: {
         ...data.permitData,
-        feeSummary: data.permitData.permitDuration.toString(),
         vehicleDetails: {
           ...data.permitData.vehicleDetails,
           // Convert year to number here, as React doesn't accept valueAsNumber prop for input component
@@ -140,7 +139,7 @@ export const TermOversizeForm = () => {
     );
     
     if (isSaveTermOversizeSuccessful(response.status)) {
-      const responseData = await response.data;
+      const responseData = response.data;
       onSaveSuccess(responseData as Application, response.status);
       additionalSuccessAction?.();
     } else {
@@ -318,7 +317,7 @@ export const TermOversizeForm = () => {
             variant="contained"
             color="secondary"
             onClick={handleLeaveApplication}
-            //onClick={handleLeaveApplication}
+            data-testid="leave-application-button"
             sx={{
               marginLeft: matches
                 ? "20px"
@@ -335,6 +334,7 @@ export const TermOversizeForm = () => {
               color="tertiary"
               sx={{ marginLeft: "-420px", marginTop: "40px", display: "flex", alignItems: "center", gap: "10px"}}
               onClick={() => onSaveApplication()}
+              data-testid="save-application-button"
             >
               <FontAwesomeIcon icon={faSave} />
               Save
@@ -346,6 +346,7 @@ export const TermOversizeForm = () => {
               color="primary"
               onClick={handleSubmit(onContinue)}
               sx={{ marginLeft: "-260px", marginTop: "-72px" }}
+              data-testid="continue-application-button"
             >
               Continue
             </Button>
