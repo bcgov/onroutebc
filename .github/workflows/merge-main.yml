@@ -68,11 +68,27 @@ jobs:
     uses: ./.github/workflows/deploy.yml
     with:
       environment: 'test'
-      imagetag: 'test'
+      imagetag: 'latest'  # we promote AFTER successful deploy of candidate
       penetration_test: true
       vault_zone: 'test'
       zone: 'test'
     secrets: inherit
+  
+  image-promotion-test:
+    name: Tag images with test
+    needs:
+      - deploys-test
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        component: [backend/vehicles, backend/dops, frontend]
+    steps:
+      - uses: shrink/actions-docker-registry-tag@v3
+        with:
+          registry: ghcr.io
+          repository: ${{ github.repository }}/${{ matrix.component }}
+          target: latest
+          tags: test
   
   GitVersion:
     name: Mainline Versioning - GitVersion
@@ -167,10 +183,24 @@ jobs:
           target: test
           tags: ${{ needs.GitVersion.outputs.fullSemVer }}
   
+  deploys-prod:
+    name: Deploy images to prod
+    needs:
+      - GitVersion
+      - image-promotion-release
+    uses: ./.github/workflows/deploy.yml
+    with:
+      environment: 'prod'
+      imagetag: 'test'
+      penetration_test: false
+      vault_zone: 'prod'
+      zone: 'prod'
+    secrets: inherit
+  
   image-promotion-prod:
     name: Tag images with Prod Version
     needs:
-      - create-release
+      - deploys-prod
     runs-on: ubuntu-22.04
     strategy:
       matrix:
@@ -182,17 +212,3 @@ jobs:
           repository: ${{ github.repository }}/${{ matrix.component }}
           target: test
           tags: prod
-
-  deploys-prod:
-    name: Deploy images to prod
-    needs:
-      - image-promotion-release
-      - image-promotion-prod
-    uses: ./.github/workflows/deploy.yml
-    with:
-      environment: 'prod'
-      imagetag: 'prod'
-      penetration_test: false
-      vault_zone: 'prod'
-      zone: 'prod'
-    secrets: inherit
