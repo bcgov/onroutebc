@@ -149,6 +149,17 @@ export class Permit extends Base {
 
   @AutoMap()
   @ApiProperty({
+    example: '2023-07-13T17:31:17.470Z',
+    description: 'Permit Issue Date ',
+  })
+  @Column({
+    name: 'PERMIT_ISSUE_DATE_TIME',
+    nullable: true,
+  })
+  permitIssueDateTime: Date;
+
+  @AutoMap()
+  @ApiProperty({
     description: 'DMS Document ID used to retrieve the PDF of the permit',
   })
   @Column({

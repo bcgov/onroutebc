@@ -7,6 +7,8 @@ SET QUOTED_IDENTIFIER ON
 GO
 SET NOCOUNT ON
 GO
+CREATE FULLTEXT CATALOG PermitDataFTCat AS DEFAULT
+GO
 BEGIN TRANSACTION
 
 CREATE TABLE [permit].[ORBC_PERMIT](
@@ -22,6 +24,7 @@ CREATE TABLE [permit].[ORBC_PERMIT](
 	[PREVIOUS_REV_ID] [bigint] NULL,
 	[OWNER_USER_GUID] [char](32) NULL,
 	[PERMIT_STATUS_ID] [varchar](20) NULL,
+	[PERMIT_ISSUE_DATE_TIME] [datetime2](7) NULL,
 	[DOCUMENT_ID] [varchar](10) NULL,
 	[CONCURRENCY_CONTROL_NUMBER] [int] NULL,
 	[DB_CREATE_USERID] [varchar](63) NOT NULL,
@@ -67,6 +70,7 @@ CREATE TABLE [permit].[ORBC_PERMIT_DATA](
 	[PERMIT_ID] [bigint] NULL,
 	[PERMIT_DATA] [nvarchar](4000) NULL,
 	[START_DATE]  AS (json_value([PERMIT_DATA],'$.startDate')),
+	[EXPIRY_DATE]  AS (json_value([PERMIT_DATA],'$.expiryDate')),
 	[CONCURRENCY_CONTROL_NUMBER] [int] NULL,
 	[DB_CREATE_USERID] [varchar](63) NOT NULL,
 	[DB_CREATE_TIMESTAMP] [datetime2](7) NOT NULL,
@@ -363,6 +367,8 @@ EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Revision of th
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID of the previous permit revision metadata record, if this permit revision is greater than zero' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT', @level2type=N'COLUMN',@level2name=N'PREVIOUS_REV_ID'
 GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time when permit was issued' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT', @level2type=N'COLUMN',@level2name=N'PERMIT_ISSUE_DATE_TIME'
+GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID of the document/PDF that references the Document Management System (DMS)' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT', @level2type=N'COLUMN',@level2name=N'DOCUMENT_ID'
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Current status of the permit or permit application.' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT', @level2type=N'COLUMN',@level2name=N'PERMIT_STATUS_ID'
@@ -410,6 +416,8 @@ GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'JSON structured data representing the permit details' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT_DATA', @level2type=N'COLUMN',@level2name=N'PERMIT_DATA'
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Calculated column for the permit start date, pulled from the JSON PERMIT_DATA' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT_DATA', @level2type=N'COLUMN',@level2name=N'START_DATE'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Calculated column for the permit expiry date, pulled from the JSON PERMIT_DATA' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT_DATA', @level2type=N'COLUMN',@level2name=N'EXPIRY_DATE'
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Application code is responsible for retrieving the row and then incrementing the value of the CONCURRENCY_CONTROL_NUMBER column by one prior to issuing an update. If this is done then the update will succeed, provided that the row was not updated by any other transactions in the period between the read and the update operations.' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT_DATA', @level2type=N'COLUMN',@level2name=N'CONCURRENCY_CONTROL_NUMBER'
 GO
@@ -661,3 +669,5 @@ SET @VersionDescription = 'Initial creation of entities for applying for and iss
 INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [DDL_FILE_SHA1], [RELEASE_DATE]) VALUES (4, @VersionDescription, '$(FILE_HASH)', getutcdate())
 
 COMMIT
+
+CREATE FULLTEXT INDEX ON [permit].[ORBC_PERMIT_DATA](PERMIT_DATA) KEY INDEX PK_ORBC_PERMIT_DATA;
