@@ -53,6 +53,7 @@
   },
   "devDependencies": {
     "@hookform/devtools": "^4.3.1",
+    "@mswjs/data": "^0.13.0",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^14.0.0",
     "@testing-library/user-event": "^14.4.3",
@@ -65,18 +66,20 @@
     "@typescript-eslint/eslint-plugin": "^5.59.2",
     "@typescript-eslint/parser": "^5.59.7",
     "@vitejs/plugin-react-swc": "^3.3.1",
-    "@vitest/coverage-c8": "^0.31.0",
+    "@vitest/coverage-c8": "^0.32.0",
+    "@vitest/coverage-v8": "^0.32.0",
     "c8": "^8.0.0",
     "eslint": "^8.39.0",
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-jsx-a11y": "^6.4.1",
     "eslint-plugin-react": "^7.32.2",
-    "jsdom": "^21.1.1",
+    "jsdom": "^22.1.0",
+    "msw": "^1.2.2",
     "typescript": "^5.0.4",
     "vite": "^4.3.8",
     "vite-plugin-eslint": "^1.8.1",
     "vite-plugin-svgr": "^3.2.0",
     "vite-tsconfig-paths": "^4.2.0",
-    "vitest": "^0.31.0"
+    "vitest": "^0.32.0"
   }
 }

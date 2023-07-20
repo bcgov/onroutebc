@@ -43,7 +43,7 @@ import { ReadFileDto } from '../common/dto/response/read-file.dto';
   description: 'The Permit Api Internal Server Error Response',
   type: ExceptionDto,
 })
-@Controller('permit')
+@Controller('permits')
 export class PermitController {
   constructor(private readonly permitService: PermitService) {}
 
@@ -71,6 +71,25 @@ export class PermitController {
     @Query('permitNumber') permitNumber: string,
   ): Promise<ReadPermitDto[]> {
     return this.permitService.findByPermitNumber(permitNumber);
+  }
+
+  @AuthOnly()
+  @ApiOkResponse({
+    description: 'The Search Permit Resource',
+    type: ReadPermitDto,
+    isArray: true,
+  })
+  /**
+   * @Query searchColumn: Key to search a permit. ex: plate
+   * @Query searchString: Value of key. ex: AB123D
+   * The above example will search for a permit where plate is AB123D.
+   */
+  @Get('ppc/search')
+  async getPermitData(
+    @Query('searchColumn') searchColumn: string,
+    @Query('searchString') searchString: string,
+  ): Promise<ReadPermitDto[]> {
+    return this.permitService.findPermit(searchColumn, searchString);
   }
 
   @AuthOnly()

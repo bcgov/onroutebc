@@ -37,7 +37,7 @@ export const TermOversizeReview = () => {
       const response = await submitTermOversizeMutation.mutateAsync(
         applicationData
       );
-      const data = await response.data;
+      const data = response.data;
       setApplicationData(data);
     }
     next();
@@ -108,6 +108,7 @@ export const TermOversizeReview = () => {
                 variant="contained"
                 color="primary"
                 onClick={methods.handleSubmit(onSubmit)}
+                data-testid="proceed-pay-btn"
               >
                 Proceed to Pay
               </Button>

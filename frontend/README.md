@@ -19,7 +19,6 @@ Create a .env file in the root directory of onRouteBC and add the following vari
 ```conf
 VITE_DEPLOY_ENVIRONMENT=local
 VITE_API_VEHICLE_URL=http://localhost:5000
-VITE_API_MANAGE_PROFILE_URL=http://localhost:5000
 VITE_AUTH0_ISSUER_URL=
 VITE_AUTH0_AUDIENCE=
 ```

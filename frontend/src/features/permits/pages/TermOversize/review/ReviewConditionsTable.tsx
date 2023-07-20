@@ -33,6 +33,7 @@ export const ReviewConditionsTable = ({
               <TableRow
                 className="review-conditions-table__row"
                 key={row.condition}
+                data-testid="review-permit-condition"
               >
                 <TableCell component="td" scope="row">
                   <Checkbox
@@ -41,12 +42,21 @@ export const ReviewConditionsTable = ({
                     checked={true}
                     disabled={true}
                   />
-                  {row.description}
+                  <span data-testid="permit-condition-description">
+                    {row.description}
+                  </span>
                 </TableCell>
 
                 <TableCell component="td" scope="row">
-                  <a href={row.conditionLink} className="condition-link">
-                    {row.condition}<FontAwesomeIcon className="condition-link__icon" icon={faArrowUpRightFromSquare} />
+                  <a 
+                    href={row.conditionLink} 
+                    className="condition-link"
+                    data-testid="permit-condition-link"
+                  >
+                    <span data-testid="permit-condition-code">
+                      {row.condition}
+                    </span>
+                    <FontAwesomeIcon className="condition-link__icon" icon={faArrowUpRightFromSquare} />
                   </a>
                 </TableCell>
               </TableRow>

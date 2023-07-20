@@ -164,7 +164,7 @@ export const CreateProfileSteps = React.memo(() => {
     mutationFn: createOnRouteBCProfile,
     onSuccess: async (response) => {
       if (isSubmissionSuccessful(response.status)) {
-        const responseBody = await response.json();
+        const responseBody = response.data;
         const companyId = responseBody["companyId"];
         const userDetails = {
           firstName: responseBody.adminUser?.firstName,
@@ -188,7 +188,7 @@ export const CreateProfileSteps = React.memo(() => {
         setClientNumber(() => responseBody["clientNumber"]);
         queryClient.invalidateQueries(["userContext"]);
       } else if (hasValidationErrors(response.status)) {
-        const { error } = await response.json();
+        const { error } = response.data;
         const firstErrMsg = getFirstValidationError(getDefaultRequiredVal([], error));
         if (firstErrMsg) {
           setSnackBar({

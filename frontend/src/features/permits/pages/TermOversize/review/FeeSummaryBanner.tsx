@@ -3,10 +3,16 @@ import { useContext } from "react";
 
 import "./FeeSummaryBanner.scss";
 import { ApplicationContext } from "../../../context/ApplicationContext";
+import { getDefaultRequiredVal } from "../../../../../common/helpers/util";
+import { permitTypeDisplayText } from "../../../helpers/mappers";
+import { PermitType } from "../../../types/application";
 
 export const FeeSummaryBanner = () => {
   const { applicationData } = useContext(ApplicationContext);
-  const calculatedFee = applicationData?.permitData.permitDuration || 0;
+  const calculatedFee = Number(
+    getDefaultRequiredVal("30", applicationData?.permitData.feeSummary)
+  );
+  
   return (
     <Box className="fee-summary-banner">
       <Typography
@@ -20,12 +26,29 @@ export const FeeSummaryBanner = () => {
         <Typography variant="h6">Amount</Typography>
       </Box>
       <Box className="fee-summary-banner__body">
-        <Typography variant="h6">Oversize: Term</Typography>
-        <Typography variant="h6">${calculatedFee}.00</Typography>
+        <Typography 
+          variant="h6"
+          data-testid="fee-summary-permit-type"
+        >
+          {permitTypeDisplayText(
+            getDefaultRequiredVal("", applicationData?.permitType) as PermitType
+          )}
+        </Typography>
+        <Typography 
+          variant="h6"
+          data-testid="fee-summary-price"
+        >
+          ${calculatedFee}.00
+        </Typography>
       </Box>
       <Box className="fee-summary-banner__footer">
         <Typography variant="h4">Total (CAD)</Typography>
-        <Typography variant="h4">${calculatedFee}.00</Typography>
+        <Typography 
+          variant="h4"
+          data-testid="fee-summary-total"
+        >
+          ${calculatedFee}.00
+        </Typography>
       </Box>
     </Box>
   );

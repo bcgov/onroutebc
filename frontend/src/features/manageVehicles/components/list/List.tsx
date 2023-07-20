@@ -96,37 +96,33 @@ export const List = memo(
      * Function that deletes a vehicle once the user confirms the delete action
      * in the confirmation dialog.
      */
-    const onConfirmDelete = () => {
+    const onConfirmDelete = async () => {
       const vehicleIds: string[] = Object.keys(rowSelection);
 
-      deleteVehicles(vehicleIds, vehicleType).then((response) => {
-        if (response.status === 200) {
-          response
-            .json()
-            .then((responseBody: { success: string[]; failure: string[] }) => {
-              setIsDeleteDialogOpen(() => false);
-              if (responseBody.failure.length > 0) {
-                snackBar.setSnackBar({
-                  message: "An unexpected error occurred.",
-                  showSnackbar: true,
-                  setShowSnackbar: () => true,
-                  alertType: "error",
-                });
-              } else {
-                snackBar.setSnackBar({
-                  message: "Vehicle Deleted",
-                  showSnackbar: true,
-                  setShowSnackbar: () => true,
-                  alertType: "info",
-                });
-              }
-              setRowSelection(() => {
-                return {};
-              });
-              query.refetch();
-            });
+      const response = await deleteVehicles(vehicleIds, vehicleType);
+      if (response.status === 200) {
+        const responseBody = response.data;
+        setIsDeleteDialogOpen(() => false);
+        if (responseBody.failure.length > 0) {
+          snackBar.setSnackBar({
+            message: "An unexpected error occurred.",
+            showSnackbar: true,
+            setShowSnackbar: () => true,
+            alertType: "error",
+          });
+        } else {
+          snackBar.setSnackBar({
+            message: "Vehicle Deleted",
+            showSnackbar: true,
+            setShowSnackbar: () => true,
+            alertType: "info",
+          });
         }
-      });
+        setRowSelection(() => {
+          return {};
+        });
+        query.refetch();
+      }
     };
 
     const navigate = useNavigate();

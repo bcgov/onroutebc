@@ -5,7 +5,6 @@ import {
   httpPUTRequest,
   getCompanyIdFromSession,
   getUserGuidFromSession,
-  httpPOSTRequest_axios,
 } from "../../../common/apiManager/httpRequestHandler";
 import { UserContextType } from "../../../common/authentication/types";
 import { replaceEmptyValuesWithNull } from "../../../common/helpers/util";
@@ -27,9 +26,8 @@ export const updateCompanyInfo = async ({
   companyInfo,
 }: {
   companyInfo: CompanyProfile;
-}): Promise<Response> => {
-
-  return httpPUTRequest(
+}) => {
+  return await httpPUTRequest(
     `${MANAGE_PROFILE_API.COMPANIES}/${getCompanyIdFromSession()}`,
     replaceEmptyValuesWithNull(companyInfo)
   );
@@ -39,8 +37,8 @@ export const updateMyInfo = async ({
   myInfo,
 }: {
   myInfo: UserInformation;
-}): Promise<Response> => {
-  return httpPUTRequest(
+}) => {
+  return await httpPUTRequest(
     `${MANAGE_PROFILE_API.COMPANIES}/${getCompanyIdFromSession()}/users/${getUserGuidFromSession()}`,
     replaceEmptyValuesWithNull(myInfo),
   );
@@ -53,8 +51,8 @@ export const updateMyInfo = async ({
  */
 export const createOnRouteBCProfile = async (
   onRouteBCProfileRequestObject: CompanyAndUserRequest
-): Promise<Response> => {
-  return httpPOSTRequest(
+) => {
+  return await httpPOSTRequest(
     `${MANAGE_PROFILE_API.COMPANIES}`,
     replaceEmptyValuesWithNull(onRouteBCProfileRequestObject)
   );
@@ -65,7 +63,7 @@ export const createOnRouteBCProfile = async (
  */
 export const getUserContext = (): Promise<UserContextType> => {
   const url = `${VEHICLES_URL}/users/user-context`;
-  return httpPOSTRequest_axios(url, {}).then((response) => response.data);
+  return httpPOSTRequest(url, {}).then((response) => response.data);
 };
 
 /**

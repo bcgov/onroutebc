@@ -327,9 +327,7 @@ export class ApplicationService {
   ) {
     let success = '';
     let failure = '';
-
     const tempPermit = await this.findOne(applicationId);
-
     // Check if a PDF document already exists for the permit.
     // It's important that a PDF does not get overwritten.
     // Once its created, it is a permanent legal document.
