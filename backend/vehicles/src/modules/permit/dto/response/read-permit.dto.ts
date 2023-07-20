@@ -60,6 +60,12 @@ export class ReadPermitDto {
 
   @AutoMap()
   @ApiProperty({
+    description: 'Permit issue Date and Time.',
+  })
+  permitIssueDateTime: Date;
+
+  @AutoMap()
+  @ApiProperty({
     description: 'Permit created Date and Time.',
   })
   createdDateTime: string;
