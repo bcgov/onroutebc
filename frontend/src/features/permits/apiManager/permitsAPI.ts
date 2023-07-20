@@ -4,6 +4,7 @@ import {
   getUserGuidFromSession,
   httpPUTRequest,
   httpPOSTRequest,
+  httpGETRequestStream,
 } from "../../../common/apiManager/httpRequestHandler";
 
 import { getDefaultRequiredVal, replaceEmptyValuesWithNull } from "../../../common/helpers/util";
@@ -11,7 +12,7 @@ import { Application, ApplicationResponse, PermitApplicationInProgress } from ".
 import { DATE_FORMATS, toLocal } from "../../../common/helpers/formatDate";
 import { APPLICATION_PDF_API, APPLICATION_UPDATE_STATUS_API, PAYMENT_API, PERMITS_API } from "./endpoints/endpoints";
 import { mapApplicationToApplicationRequestData } from "../helpers/mappers";
-import { Transaction } from "../types/payment";
+import { PermitTransaction, Transaction } from "../types/payment";
 import { VEHICLES_URL } from "../../../common/apiManager/endpoints/endpoints";
 
 /**
@@ -113,18 +114,52 @@ export const deleteApplications = async (
   return await httpPOSTRequest(`${APPLICATION_UPDATE_STATUS_API}`, replaceEmptyValuesWithNull(requestBody));
 };
 
+const getFileNameFromHeaders = (headers: Headers) => {
+  const contentDisposition = headers.get('content-disposition');
+  if (!contentDisposition) return undefined;
+  const filenameMatch = contentDisposition.match(/filename=(.+)/);
+  if (filenameMatch && filenameMatch.length === 2) {
+    return filenameMatch[1];
+  }
+  return undefined;
+};
+
 /**
  * View permit application pdf file.
  * @param permitId permit id of the permit application.
  * @returns A Promise of dms reference string.
  */
-export const downloadPermitApplicationPdf = (
-  permitId: number | undefined,
-): Promise<any> => {
+export const downloadPermitApplicationPdf = async (permitId: number) => {
   const url = `${APPLICATION_PDF_API}/${permitId}?download=proxy`;
-  return httpGETRequest(url).then((response) => {
-    return response;
+  const response = await httpGETRequestStream(url);
+  const filename = getFileNameFromHeaders(response.headers);
+  if (!filename) {
+    throw new Error("Unable to download pdf, file not available");
+  }
+  if (!response.body) {
+    throw new Error("Unable to download pdf, no response found");
+  }
+  const reader = response.body.getReader();
+  const stream = new ReadableStream({
+    start: (controller) => {
+      const processRead = async () => {
+        const { done, value } = await reader.read();
+        if (done) {
+          // When no more data needs to be consumed, close the stream
+          controller.close();
+          return;
+        }
+        // Enqueue the next data chunk into our target stream
+        controller.enqueue(value);
+        console.log(value);
+        await processRead();
+      }
+      processRead();
+    }
   });
+  const newRes = new Response(stream);
+  const blobObj = await newRes.blob();
+  return { blobObj, filename };
 };
 
 /**
@@ -152,4 +187,9 @@ export const postTransaction = async (
   transactionDetails: Transaction,
 ) => {
   return await httpPOSTRequest(`${PAYMENT_API}`, transactionDetails);
+};
+
+export const getPermitTransaction = async (transactionOrderNumber: string) => {
+  const response = await httpGETRequest(`${PAYMENT_API}/${transactionOrderNumber}/permit`);
+  return response.data as PermitTransaction;
 };

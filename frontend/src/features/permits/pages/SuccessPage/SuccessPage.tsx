@@ -2,9 +2,13 @@ import { Box, Button, Typography } from "@mui/material";
 import { useEffect } from "react";
 import "./SuccessPage.scss";
 import { useNavigate, useParams } from "react-router-dom";
-import { downloadPermitApplicationPdf } from "../../apiManager/permitsAPI";
+import { downloadPermitApplicationPdf, getPermitTransaction } from "../../apiManager/permitsAPI";
 
-export const SuccessPage = () => {
+export const SuccessPage = ({
+  transactionOrderNumber,
+}: {
+  transactionOrderNumber?: string;
+}) => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -12,35 +16,43 @@ export const SuccessPage = () => {
   const navigate = useNavigate();
   const { permitId } = useParams();
 
-  const viewPermitPdf = async (permitId: number | undefined) => {
-    await downloadPermitApplicationPdf(permitId).then((response) => {
-      const contentDisposition = response.headers['content-disposition'];
-      if (contentDisposition) {
-        const filenameMatch = contentDisposition.match(/filename=(.+)/);
-        if (filenameMatch && filenameMatch.length === 2) {
-          const filename = filenameMatch[1];
-          const binaryString = atob(response.data);//Convert base64 string to binary data
-          const binaryLen = binaryString.length;
-          const bytes = new Uint8Array(binaryLen);
+  const viewPermitPdfByPermitId = async (permitId: number) => {
+    try {
+      const { blobObj, filename } = await downloadPermitApplicationPdf(permitId);      
+      // Create an object URL for the response
+      const objUrl = URL.createObjectURL(blobObj);
+      const link = document.createElement('a');
+      link.href = objUrl;
+      link.setAttribute('download', `${filename}`); // Set the desired file name
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(objUrl);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
-          for (let i = 0; i < binaryLen; i++) {
-            const ascii = binaryString.charCodeAt(i);
-            bytes[i] = ascii;
-          }
+  const viewPermitByTransaction = async (transactionOrderNumber?: string) => {
+    if (!transactionOrderNumber) {
+      console.error("Cannot find transaction order number");
+      return;
+    }
 
-          const blob = new Blob([bytes], { type: 'application/pdf' });
-          const url = URL.createObjectURL(blob);
-          const link = document.createElement('a');
-          link.href = url;
-          link.setAttribute('download', `${filename}`); // Set the desired file name
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-        }
-      }
+    try {
+      const permitData = await getPermitTransaction(transactionOrderNumber);
+      await viewPermitPdfByPermitId(+permitData.permitId);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
-    });
-  }
+  const viewPermitPdf = async () => {
+    if (permitId) {
+      return await viewPermitPdfByPermitId(+permitId);
+    }
+    return await viewPermitByTransaction(transactionOrderNumber);
+  };
 
   return (
     <Box className="success feature-container">
@@ -75,12 +87,7 @@ export const SuccessPage = () => {
           <Button
             variant="contained"
             color="secondary"
-            onClick={() => {
-              viewPermitPdf(permitId as number | undefined).catch((err) => {
-                console.log(err);
-              });
-            }}
-            disabled={true} // TODO
+            onClick={viewPermitPdf}
           >
             TODO: Download Permit
           </Button>

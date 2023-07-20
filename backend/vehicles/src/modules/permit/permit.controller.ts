@@ -97,7 +97,7 @@ export class PermitController {
   ): Promise<void> {
     // TODO: Use IUserJWT / Exception handling
     const currentUser = request.user as IUserJWT;
-
+    
     if (download === FileDownloadModes.PROXY) {
       await this.permitService.findPDFbyPermitId(
         currentUser,

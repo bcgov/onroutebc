@@ -15,12 +15,14 @@ export const PaymentRedirect = () => {
   const [isLoading, setIsLoading] = useState<boolean>();
   const [paymentStatus, setPaymentStatus] = useState<number>();
   const [message, setMessage] = useState<string>();
+  const [transactionOrderNumber, setTransactionOrderNumber] = useState<string>("");
 
   useEffect(() => {
     setIsLoading(true);
     const url = window.location.href;
     const parameters = getURLParameters(url);
     const transaction = mapTransactionDetails(parameters);
+    setTransactionOrderNumber(transaction.transactionOrderNumber);
     handlePostTransaction(
       transaction,
       parameters.messageText,
@@ -69,7 +71,11 @@ export const PaymentRedirect = () => {
 
   if (isLoading) return <Loading />;
 
-  return paymentStatus === 1 ? <SuccessPage /> : <div>{message}</div>;
+  return paymentStatus === 1 ? (
+    <SuccessPage transactionOrderNumber={transactionOrderNumber} />
+  ) : (
+    <div>{message}</div>
+  );
 };
 
 const mapTransactionDetails = (
