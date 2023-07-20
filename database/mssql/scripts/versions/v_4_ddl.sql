@@ -83,28 +83,6 @@ SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [permit].[ORBC_PERMIT_STATE](
-	[ID] [bigint] IDENTITY(1,1) NOT NULL,
-	[PERMIT_ID] [bigint] NULL,
-	[PERMIT_STATUS_ID] [varchar](20) NULL,
-	[STATE_CHANGE_DATE] [datetime2](7) NULL,
-	[USER_GUID] [char](32) NULL,
-	[CONCURRENCY_CONTROL_NUMBER] [int] NULL,
-	[DB_CREATE_USERID] [varchar](63) NOT NULL,
-	[DB_CREATE_TIMESTAMP] [datetime2](7) NOT NULL,
-	[DB_LAST_UPDATE_USERID] [varchar](63) NOT NULL,
-	[DB_LAST_UPDATE_TIMESTAMP] [datetime2](7) NOT NULL,
- CONSTRAINT [PK_ORBC_PERMIT_STATE] PRIMARY KEY CLUSTERED 
-(
-	[ID] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY]
-GO
-
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
 CREATE TABLE [permit].[ORBC_VT_PERMIT_APPLICATION_ORIGIN](
 	[ID] [varchar](8) NOT NULL,
 	[DESCRIPTION] [nvarchar](50) NULL,
@@ -211,16 +189,6 @@ ALTER TABLE [permit].[ORBC_PERMIT_DATA] ADD  CONSTRAINT [DF_ORBC_PERMIT_DATA_DB_
 GO
 ALTER TABLE [permit].[ORBC_PERMIT_DATA] ADD  CONSTRAINT [DF_ORBC_PERMIT_DATA_DB_LAST_UPDATE_TIMESTAMP]  DEFAULT (getutcdate()) FOR [DB_LAST_UPDATE_TIMESTAMP]
 GO
-ALTER TABLE [permit].[ORBC_PERMIT_STATE] ADD  CONSTRAINT [DF_ORBC_PERMIT_STATE_STATE_CHANGE_DATE]  DEFAULT (getutcdate()) FOR [STATE_CHANGE_DATE]
-GO
-ALTER TABLE [permit].[ORBC_PERMIT_STATE] ADD  CONSTRAINT [DF_ORBC_PERMIT_STATE_DB_CREATE_USERID]  DEFAULT (user_name()) FOR [DB_CREATE_USERID]
-GO
-ALTER TABLE [permit].[ORBC_PERMIT_STATE] ADD  CONSTRAINT [DF_ORBC_PERMIT_STATE_DB_CREATE_TIMESTAMP]  DEFAULT (getutcdate()) FOR [DB_CREATE_TIMESTAMP]
-GO
-ALTER TABLE [permit].[ORBC_PERMIT_STATE] ADD  CONSTRAINT [DF_ORBC_PERMIT_STATE_DB_LAST_UPDATE_USERID]  DEFAULT (user_name()) FOR [DB_LAST_UPDATE_USERID]
-GO
-ALTER TABLE [permit].[ORBC_PERMIT_STATE] ADD  CONSTRAINT [DF_ORBC_PERMIT_STATE_DB_LAST_UPDATE_TIMESTAMP]  DEFAULT (getutcdate()) FOR [DB_LAST_UPDATE_TIMESTAMP]
-GO
 ALTER TABLE [permit].[ORBC_VT_PERMIT_APPLICATION_ORIGIN] ADD  CONSTRAINT [DF_ORBC_VT_PERMIT_ORIGIN_DB_CREATE_USERID]  DEFAULT (user_name()) FOR [DB_CREATE_USERID]
 GO
 ALTER TABLE [permit].[ORBC_VT_PERMIT_APPLICATION_ORIGIN] ADD  CONSTRAINT [DF_ORBC_VT_PERMIT_ORIGIN_DB_CREATE_TIMESTAMP]  DEFAULT (getutcdate()) FOR [DB_CREATE_TIMESTAMP]
@@ -282,16 +250,6 @@ ALTER TABLE [permit].[ORBC_PERMIT_COMMENTS]  WITH CHECK ADD  CONSTRAINT [FK_ORBC
 REFERENCES [permit].[ORBC_PERMIT] ([ID])
 GO
 ALTER TABLE [permit].[ORBC_PERMIT_COMMENTS] CHECK CONSTRAINT [FK_ORBC_PERMIT_COMMENTS_PERMIT]
-GO
-ALTER TABLE [permit].[ORBC_PERMIT_STATE]  WITH CHECK ADD  CONSTRAINT [FK_ORBC_PERMIT_STATE_PERMIT] FOREIGN KEY([PERMIT_ID])
-REFERENCES [permit].[ORBC_PERMIT] ([ID])
-GO
-ALTER TABLE [permit].[ORBC_PERMIT_STATE] CHECK CONSTRAINT [FK_ORBC_PERMIT_STATE_PERMIT]
-GO
-ALTER TABLE [permit].[ORBC_PERMIT_STATE]  WITH CHECK ADD  CONSTRAINT [FK_ORBC_PERMIT_STATE_PERMIT_STATUS] FOREIGN KEY([PERMIT_STATUS_ID])
-REFERENCES [permit].[ORBC_VT_PERMIT_STATUS] ([PERMIT_STATUS_ID])
-GO
-ALTER TABLE [permit].[ORBC_PERMIT_STATE] CHECK CONSTRAINT [FK_ORBC_PERMIT_STATE_PERMIT_STATUS]
 GO
 ALTER TABLE [permit].[ORBC_PERMIT]  WITH CHECK ADD  CONSTRAINT [FK_ORBC_PERMIT_OWNER_USER_GUID] FOREIGN KEY([OWNER_USER_GUID])
 REFERENCES [dbo].[ORBC_USER] ([USER_GUID])
@@ -422,28 +380,6 @@ GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time the record was created or last updated.' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT_DATA', @level2type=N'COLUMN',@level2name=N'DB_LAST_UPDATE_TIMESTAMP'
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Table tracking the submitted permit data from the user input form' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT_DATA'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Surrogate primary key for this permit state record' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT_STATE', @level2type=N'COLUMN',@level2name=N'ID'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Foreign key to the permit metadata table that this state refers to' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT_STATE', @level2type=N'COLUMN',@level2name=N'PERMIT_ID'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Foreign key to the permit status table' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT_STATE', @level2type=N'COLUMN',@level2name=N'PERMIT_STATUS_ID'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Date and time that the state was changed' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT_STATE', @level2type=N'COLUMN',@level2name=N'STATE_CHANGE_DATE'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Foreign key relationship to the user table indicating the id of the user who effected the state change' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT_STATE', @level2type=N'COLUMN',@level2name=N'USER_GUID'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Application code is responsible for retrieving the row and then incrementing the value of the CONCURRENCY_CONTROL_NUMBER column by one prior to issuing an update. If this is done then the update will succeed, provided that the row was not updated by any other transactions in the period between the read and the update operations.' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT_STATE', @level2type=N'COLUMN',@level2name=N'CONCURRENCY_CONTROL_NUMBER'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user or proxy account that created the record.' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT_STATE', @level2type=N'COLUMN',@level2name=N'DB_CREATE_USERID'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time the record was created.' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT_STATE', @level2type=N'COLUMN',@level2name=N'DB_CREATE_TIMESTAMP'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user or proxy account that created or last updated the record.' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT_STATE', @level2type=N'COLUMN',@level2name=N'DB_LAST_UPDATE_USERID'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time the record was created or last updated.' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT_STATE', @level2type=N'COLUMN',@level2name=N'DB_LAST_UPDATE_TIMESTAMP'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Table tracking all historic changes to the permit or application status or other variable properties' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT_STATE'
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Unique identifier for the application origin' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_VT_PERMIT_APPLICATION_ORIGIN', @level2type=N'COLUMN',@level2name=N'ID'
 GO
@@ -581,78 +517,10 @@ BEGIN
 
 		UPDATE [PERMIT].[ORBC_PERMIT] SET APPLICATION_NUMBER = CONCAT('A', @Src, '-', @SeqVal, '-', @Rnd, @RevisionSuffix) WHERE ID = @PermitID
 	END
-
-	-- Set this new application state to IN_PROGRESS by default
-	INSERT INTO [PERMIT].[ORBC_PERMIT_STATE] (PERMIT_ID, PERMIT_STATUS_ID) VALUES (@PermitID, 'IN_PROGRESS')
 END
 GO
 
 ALTER TABLE [permit].[ORBC_PERMIT] DISABLE TRIGGER [ORBC_PERMIT_APPLICATION_NUMBER_TRG]
-GO
-
-CREATE TRIGGER [permit].[ORBC_PERMIT_NUMBER_TRG] 
-   ON  [permit].[ORBC_PERMIT_STATE] 
-   AFTER INSERT
-AS 
-BEGIN
-	-- SET NOCOUNT ON added to prevent extra result sets from
-	-- interfering with SELECT statements.
-	SET NOCOUNT ON;
-
-    -- Insert statements for trigger here
-	DECLARE @Status varchar(20)
-	SELECT @Status = PERMIT_STATUS_ID FROM INSERTED
-	IF @Status = 'ISSUED'
-	BEGIN
-		-- When a status of ISSUED is set on a permit, we create
-		-- a permit number automatically if not already set
-		DECLARE @PermitID bigint
-		SELECT @PermitID = PERMIT_ID FROM INSERTED
-		DECLARE @PermitNumber varchar(19)
-		SELECT @PermitNumber = PERMIT_NUMBER FROM [PERMIT].[ORBC_PERMIT] WHERE ID = @PermitID
-
-		IF (@PermitNumber IS NULL)
-		BEGIN
-			DECLARE @ApplicationNumber varchar(19)
-			SELECT @ApplicationNumber = APPLICATION_NUMBER FROM [PERMIT].[ORBC_PERMIT] WHERE ID = @PermitID
-			DECLARE @SrcID varchar(8)
-			SELECT @SrcID = PERMIT_APPROVAL_SOURCE_ID FROM [PERMIT].[ORBC_PERMIT] WHERE ID = @PermitID
-			DECLARE @ApprovalCode tinyint
-			SELECT @ApprovalCode = CODE FROM [PERMIT].[ORBC_VT_PERMIT_APPROVAL_SOURCE] WHERE ID = @SrcID
-			
-			-- If somehow there is no approval code, fall back to 9 for unknown
-			IF @ApprovalCode IS NULL
-				SET @ApprovalCode = 9
-
-			DECLARE @Revision tinyint
-			SELECT @Revision = REVISION FROM [PERMIT].[ORBC_PERMIT] WHERE ID = @PermitID
-			IF @Revision = 0
-			BEGIN
-				-- If this is the original permit with no revisions, calculate a new random
-				-- 3-digit suffix so the user cannot guess the permit number from the
-				-- application number
-				DECLARE @Rnd char(3)
-				SET @Rnd = FORMAT(CAST(RAND() * 1000 AS INT), '000')
-				DECLARE @SeqVal char(8)
-				SET @SeqVal = SUBSTRING(@ApplicationNumber, 4, 8)
-				SET @PermitNumber = CONCAT('P', @ApprovalCode, '-', @SeqVal, '-', @Rnd)
-			END
-			ELSE
-			BEGIN
-				-- For any revision and all subsequent revisions, we maintain the same
-				-- permit number and application number, apart from the second character
-				-- which indicates who approved the permit
-				SET @PermitNumber = SUBSTRING(@ApplicationNumber, 4, 19)
-				SET @PermitNumber = CONCAT('P', @ApprovalCode, '-', @PermitNumber)
-			END
-
-			UPDATE [PERMIT].[ORBC_PERMIT] SET PERMIT_NUMBER = @PermitNumber WHERE ID = @PermitID
-		END
-	END
-END
-GO
-
-ALTER TABLE [permit].[ORBC_PERMIT_STATE] DISABLE TRIGGER [ORBC_PERMIT_NUMBER_TRG]
 GO
 
 DECLARE @VersionDescription VARCHAR(255)
