@@ -23,7 +23,7 @@ import {
   PERMIT_RIGHT_BOX_STYLE,
 } from "../../../../../../themes/orbcStyles";
 
-import { SelectPowerUnitOrTrailer } from "./customFields/SelectPowerUnitOrTrailer";
+import { SelectUnitOrPlate } from "./customFields/SelectUnitOrPlate";
 import { SelectVehicleDropdown } from "./customFields/SelectVehicleDropdown";
 import {
   CHOOSE_FROM_OPTIONS,
@@ -43,6 +43,7 @@ import { getDefaultRequiredVal } from "../../../../../../common/helpers/util";
 import { sortVehicleSubTypes } from "../../../../helpers/sorter";
 import { removeIneligibleVehicleSubTypes } from "../../../../helpers/removeIneligibleVehicles";
 import { TROS_INELIGIBLE_POWERUNITS, TROS_INELIGIBLE_TRAILERS } from "../../../../constants/termOversizeConstants";
+import { CustomInputHTMLAttributes } from "../../../../../../common/types/formElements";
 
 export const VehicleDetails = ({ 
   feature, 
@@ -234,7 +235,7 @@ export const VehicleDetails = ({
           }
         />
         <Box sx={{ display: "flex", gap: "40px" }}>
-          <SelectPowerUnitOrTrailer
+          <SelectUnitOrPlate
             value={chooseFrom}
             label={"Choose from"}
             onChange={handleChooseFrom}
@@ -349,7 +350,11 @@ export const VehicleDetails = ({
             width: formFieldStyle.width,
           }}
           menuOptions={VEHICLE_TYPES.map((data) => (
-            <MenuItem key={data.value} value={data.value}>
+            <MenuItem 
+              key={data.value} 
+              value={data.value}
+              data-testid="vehicle-type-menu-item"
+            >
               {data.label}
             </MenuItem>
           ))}
@@ -367,7 +372,11 @@ export const VehicleDetails = ({
             width: formFieldStyle.width,
           }}
           menuOptions={subtypeOptions.map((subtype) => (
-            <MenuItem key={subtype.typeCode} value={subtype.typeCode}>
+            <MenuItem 
+              key={subtype.typeCode} 
+              value={subtype.typeCode}
+              data-testid="subtype-menu-item"
+            >
               {subtype.type}
             </MenuItem>
           ))}
@@ -383,12 +392,31 @@ export const VehicleDetails = ({
           <RadioGroup
             aria-labelledby="radio-buttons-group-label"
             defaultValue={saveVehicle}
+            value={saveVehicle}
             name="radio-buttons-group"
             onChange={(x) => handleSaveVehicleRadioBtns(x.target.value)}
           >
             <Box sx={{ display: "flex" }}>
-              <FormControlLabel value={true} control={<Radio />} label="Yes" />
-              <FormControlLabel value={false} control={<Radio />} label="No" />
+              <FormControlLabel 
+                value={true} 
+                control={
+                  <Radio
+                    key={`radio-save-vehicle-yes`}
+                    inputProps={{"data-testid": "save-vehicle-yes"} as CustomInputHTMLAttributes}
+                  />
+                }
+                label="Yes"
+              />
+              <FormControlLabel 
+                value={false} 
+                control={
+                  <Radio
+                    key={`radio-save-vehicle-no`}
+                    inputProps={{"data-testid": "save-vehicle-no"} as CustomInputHTMLAttributes}
+                  />
+                }
+                label="No" 
+              />
             </Box>
           </RadioGroup>
         </FormControl>

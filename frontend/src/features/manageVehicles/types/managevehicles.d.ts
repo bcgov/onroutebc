@@ -14,7 +14,7 @@ interface Vehicle {
   year: number | null;
   createdDateTime?: string | null;
   updatedDateTime?: string | null;
-  vehicleType?: "powerUnit" | "trailer";
+  vehicleType?: VehicleTypesAsString;
 }
 
 export interface PowerUnit extends Vehicle {

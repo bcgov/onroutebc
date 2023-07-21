@@ -107,4 +107,21 @@ export class PermitService {
     }
     return file;
   }
+
+  async findPermit(
+    searchColumn: string,
+    searchString: string,
+  ): Promise<ReadPermitDto[]> {
+    searchString = '"*' + searchString + '*"';
+    const permits = await this.permitRepository
+      .createQueryBuilder('permit')
+      .innerJoinAndSelect('permit.permitData', 'permitData')
+      .where(
+        `CONTAINS(permitData.permitData,'Near((${searchColumn},${searchString}), 0, True)')`,
+      )
+      .andWhere('permit.permitNumber IS NOT NULL')
+      .getMany();
+
+    return this.classMapper.mapArrayAsync(permits, Permit, ReadPermitDto);
+  }
 }

@@ -1,6 +1,7 @@
 import { Box, Checkbox, Typography } from "@mui/material";
 import { Dispatch, SetStateAction, useState } from "react";
 import { BC_COLOURS } from "../../../../../themes/bcGovStyles";
+import { CustomInputHTMLAttributes } from "../../../../../common/types/formElements";
 
 export const ConfirmationCheckboxes = ({
   isSubmitted,
@@ -44,7 +45,7 @@ export const ConfirmationCheckboxes = ({
 
   return (
     <Box sx={{ paddingTop: "24px" }}>
-      {checked.map((x, index) => (
+      {checked.map(x => (
         <Box key={x.description}>
           <Checkbox
             key={x.description}
@@ -56,12 +57,18 @@ export const ConfirmationCheckboxes = ({
                   ? BC_COLOURS.bc_red
                   : BC_COLOURS.bc_primary_blue,
             }}
+            inputProps={{
+              "data-testid": "permit-attestation-checkbox"
+            } as CustomInputHTMLAttributes}
           />
           {x.description}
         </Box>
       ))}
       {isSubmitted && !isChecked ? (
-        <Typography sx={{ color: BC_COLOURS.bc_red }}>
+        <Typography 
+          sx={{ color: BC_COLOURS.bc_red }}
+          data-testid="permit-attestation-checkbox-error"
+        >
           Checkbox selection is required.
         </Typography>
       ) : null}

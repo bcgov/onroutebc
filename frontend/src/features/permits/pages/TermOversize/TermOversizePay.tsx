@@ -1,16 +1,25 @@
 import { Box, Button, Typography } from "@mui/material";
 import { useContext, useEffect } from "react";
+import dayjs from "dayjs";
+
+import "./TermOversize.scss";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { ApplicationContext } from "../../context/ApplicationContext";
 import { ProgressBar } from "../../components/progressBar/ProgressBar";
-import "./TermOversize.scss";
+import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { ErrorFallback } from "../../../../common/pages/ErrorFallback";
 import { getMotiPayTransactionUrl } from "../../apiManager/permitsAPI";
-import dayjs from "dayjs";
+import { permitTypeDisplayText } from "../../helpers/mappers";
+import { PermitType } from "../../types/application";
 
 export const TermOversizePay = () => {
   const { applicationData } = useContext(ApplicationContext);
-  const calculatedFee = applicationData?.permitData.permitDuration || 0;
+  const calculatedFee = Number(
+    getDefaultRequiredVal(
+      "30",
+      applicationData?.permitData?.feeSummary,
+    )
+  );
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -36,8 +45,9 @@ export const TermOversizePay = () => {
 
 const ApplicationSummary = () => {
   const { applicationData } = useContext(ApplicationContext);
-  const applicationName =
-    applicationData?.permitType === "TROS" ? "Oversize: Term" : "";
+  const applicationName = permitTypeDisplayText(
+    getDefaultRequiredVal("", applicationData?.permitType) as PermitType
+  );
 
   return (
     <Box
@@ -91,7 +101,12 @@ const FeeSummary = ({ calculatedFee }: { calculatedFee: number }) => {
   const paymentMethodId = 1; // TODO: implement payment method (ie payBC, manual, etc)
 
   const handlePayNow = async () => {
-    const url = await getMotiPayTransactionUrl(paymentMethodId, transactionSubmitDate, transactionAmount, permitIds);
+    const url = await getMotiPayTransactionUrl(
+      paymentMethodId, 
+      transactionSubmitDate, 
+      transactionAmount, 
+      permitIds
+    );
     window.open(url, "_self");
   };
 
@@ -138,7 +153,9 @@ const FeeSummary = ({ calculatedFee }: { calculatedFee: number }) => {
               borderBottom: `2px solid ${BC_COLOURS.bc_text_box_border_grey}`,
             }}
           >
-            <Typography variant="h6">Oversize: Term</Typography>
+            <Typography variant="h6">
+              {permitTypeDisplayText(applicationData?.permitType)}
+            </Typography>
             <Typography variant="h6">${calculatedFee}.00</Typography>
           </Box>
           <Box
