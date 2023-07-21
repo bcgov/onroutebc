@@ -18,7 +18,7 @@ export class Receipt extends Base {
     description: 'Unique identifier for the receipt metadata.',
   })
   @PrimaryGeneratedColumn({ type: 'bigint', name: 'RECEIPT_ID' })
-  receiptId: number;
+  receiptId: string;
 
 
   @AutoMap()
@@ -42,7 +42,7 @@ export class Receipt extends Base {
   @Column({
     name: 'TRANSACTION_ID',
   })
-  transactionId: number;
+  transactionId: string;
 
   @AutoMap()
   @ApiProperty({

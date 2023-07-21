@@ -199,7 +199,7 @@ export class PaymentService {
   }
 
   async findOnePermitTransaction(
-    transactionId: number,
+    transactionId: string,
   ): Promise<ReadPermitTransactionDto> {
     return this.classMapper.mapAsync(
       await this.permitTransactionRepository.findOne({
