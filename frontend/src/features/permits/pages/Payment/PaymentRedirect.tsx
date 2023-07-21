@@ -13,7 +13,7 @@ import { AxiosError } from "axios";
  */
 export const PaymentRedirect = () => {
   const [isLoading, setIsLoading] = useState<boolean>();
-  const [paymentStatus, setPaymentStatus] = useState<number>();
+  const [paymentApproved, setPaymentApproved] = useState<boolean>(false);
   const [message, setMessage] = useState<string>();
   const [transactionOrderNumber, setTransactionOrderNumber] = useState<string>("");
 
@@ -30,48 +30,48 @@ export const PaymentRedirect = () => {
     );
   }, []);
 
-  const onTransactionResult = (msg: string, payStatus: number) => {
+  const onTransactionResult = (msg: string, approved: boolean) => {
     setMessage(msg);
-    setPaymentStatus(payStatus);
+    setPaymentApproved(approved);
     setIsLoading(false);
   };
 
   const handlePostTransaction = async (
     transaction: Transaction,
     messageText: string,
-    isApproved: number
+    paymentStatus: number
   ) => {
-    if (isApproved === 0) {
-      onTransactionResult(messageText, isApproved);
+    if (paymentStatus === 0) {
+      onTransactionResult(messageText, false);
       return;
     }
 
     try {
       const result = await postTransaction(transaction);
       if (result.status === 201) {
-        onTransactionResult(messageText, isApproved);
+        onTransactionResult(messageText, paymentStatus === 1);
       } else {
-        onTransactionResult("Something went wrong", 0);
+        onTransactionResult("Something went wrong", false);
       }
     } catch (err) {
       if (!(err instanceof AxiosError)) {
-        onTransactionResult("Unknown Error", 0);
+        onTransactionResult("Unknown Error", false);
         return;
       }
       if (err.response) {
         onTransactionResult(
           `TODO: Payment approved but error in ORBC Backend: ${err.response.data.message}`, 
-          0
+          false
         );
       } else {
-        onTransactionResult("Request Error", 0);
+        onTransactionResult("Request Error", false);
       }
     }
   };
 
   if (isLoading) return <Loading />;
 
-  return paymentStatus === 1 ? (
+  return paymentApproved ? (
     <SuccessPage transactionOrderNumber={transactionOrderNumber} />
   ) : (
     <div>{message}</div>

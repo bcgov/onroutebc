@@ -89,7 +89,7 @@ export const SuccessPage = ({
             color="secondary"
             onClick={viewPermitPdf}
           >
-            TODO: Download Permit
+            Download Permit
           </Button>
           <Button
             sx={{ marginLeft: "24px" }}
