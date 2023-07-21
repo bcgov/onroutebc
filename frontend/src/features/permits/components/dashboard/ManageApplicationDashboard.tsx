@@ -6,17 +6,30 @@ import { Unauthorized } from "../../../../common/pages/Unauthorized";
 import { Loading } from "../../../../common/pages/Loading";
 import { ErrorFallback } from "../../../../common/pages/ErrorFallback";
 import { List } from "../list/List";
-import { getApplicationsInProgress } from "../../../../features/permits/apiManager/permitsAPI";
+import { getActivePermits } from "../../../../features/permits/apiManager/permitsAPI";
 import { StartApplicationButton } from "../../../../features/permits/pages/TermOversize/form/VehicleDetails/customFields/StartApplicationButton";
 
 export const ManageApplicationDashboard = React.memo(() => {
-
   const keepPreviousData = true;
   const staleTime = 5000;
 
   const applicationInProgressQuery = useQuery({
     queryKey: ["applicationInProgress"],
-    queryFn: getApplicationsInProgress,
+    queryFn: getActivePermits,
+    keepPreviousData: keepPreviousData,
+    staleTime: staleTime,
+  });
+
+  const activePermitsQuery = useQuery({
+    queryKey: ["activePermits"],
+    queryFn: getActivePermits,
+    keepPreviousData: keepPreviousData,
+    staleTime: staleTime,
+  });
+
+  const expiredPermitsQuery = useQuery({
+    queryKey: ["expiredPermits"],
+    queryFn: getActivePermits,
     keepPreviousData: keepPreviousData,
     staleTime: staleTime,
   });
@@ -29,7 +42,7 @@ export const ManageApplicationDashboard = React.memo(() => {
     //refetch,
   } = useQuery({
     queryKey: ["applicationInProgress"],
-    queryFn: getApplicationsInProgress,
+    queryFn: getActivePermits,
     keepPreviousData: true,
     staleTime: 5000,
   });
@@ -50,8 +63,8 @@ export const ManageApplicationDashboard = React.memo(() => {
   const tabs = [
     {
       label: "Applications in Progress",
-      component: (data?.length === 0) ? 
-        (
+      component:
+        data?.length === 0 ? (
           <div
             style={{
               padding: "20px 0px",
@@ -60,12 +73,13 @@ export const ManageApplicationDashboard = React.memo(() => {
             }}
           >
             <div>
-              <img src="No_Data_Graphic.svg"
-              style={{
-                width: "124px",
-                height: "112px",
-                marginTop: "80px",
-              }}
+              <img
+                src="No_Data_Graphic.svg"
+                style={{
+                  width: "124px",
+                  height: "112px",
+                  marginTop: "80px",
+                }}
               />
             </div>
             <div>
@@ -82,15 +96,71 @@ export const ManageApplicationDashboard = React.memo(() => {
     },
     {
       label: "Active Permits",
-      component: <>TODO</>,
+      component:
+        data?.length === 0 ? (
+          <div
+            style={{
+              padding: "20px 0px",
+              backgroundColor: "white",
+              textAlign: "center",
+            }}
+          >
+            <div>
+              <img
+                src="No_Data_Graphic.svg"
+                style={{
+                  width: "124px",
+                  height: "112px",
+                  marginTop: "80px",
+                }}
+              />
+            </div>
+            <div>
+              <h3>No Records Found.</h3>
+            </div>
+          </div>
+        ) : (
+          <List query={activePermitsQuery} />
+        ),
     },
     {
       label: "Expired Permits",
-      component: <>TODO</>,
+      component:
+        data?.length === 0 ? (
+          <div
+            style={{
+              padding: "20px 0px",
+              backgroundColor: "white",
+              textAlign: "center",
+            }}
+          >
+            <div>
+              <img
+                src="No_Data_Graphic.svg"
+                style={{
+                  width: "124px",
+                  height: "112px",
+                  marginTop: "80px",
+                }}
+              />
+            </div>
+            <div>
+              <h3>No Records Found.</h3>
+            </div>
+          </div>
+        ) : (
+          <List query={activePermitsQuery} />
+        ),
     },
   ];
 
-  return <TabLayout bannerText="Permits" bannerButton={<StartApplicationButton/>} componentList={tabs} />;
+  return (
+    <TabLayout
+      bannerText="Permits"
+      bannerButton={<StartApplicationButton />}
+      componentList={tabs}
+    />
+  );
 });
 
 ManageApplicationDashboard.displayName = "ManageApplicationDashboard";

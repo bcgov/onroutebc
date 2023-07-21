@@ -8,13 +8,44 @@ import {
   httpPOSTRequest,
 } from "../../../common/apiManager/httpRequestHandler";
 
-import { getDefaultRequiredVal, replaceEmptyValuesWithNull } from "../../../common/helpers/util";
-import { Application, ApplicationResponse, PermitApplicationInProgress } from "../types/application";
+import {
+  getDefaultRequiredVal,
+  replaceEmptyValuesWithNull,
+} from "../../../common/helpers/util";
+import {
+  Application,
+  ApplicationResponse,
+  PermitApplicationInProgress,
+} from "../types/application";
 import { DATE_FORMATS, toLocal } from "../../../common/helpers/formatDate";
-import { APPLICATION_PDF_API, APPLICATION_UPDATE_STATUS_API, PAYMENT_API, PERMITS_API } from "./endpoints/endpoints";
+import {
+  APPLICATION_PDF_API,
+  APPLICATION_UPDATE_STATUS_API,
+  PAYMENT_API,
+  PERMITS_API,
+} from "./endpoints/endpoints";
 import { mapApplicationToApplicationRequestData } from "../helpers/mappers";
 import { Transaction } from "../types/payment";
 import { VEHICLES_URL } from "../../../common/apiManager/endpoints/endpoints";
+
+/**
+ *
+ * @param permitTypeKey
+ * @returns
+ */
+const getPermitType = (permitTypeKey: string): string => {
+  let permitType = "";
+  switch (permitTypeKey) {
+    case "TROS":
+      permitType = "Term Oversize";
+      break;
+    case "STOS":
+    default:
+      permitType = "Single Trip Oversize";
+      break;
+  }
+  return permitType;
+};
 
 /**
  * Submits a new term oversize application.
@@ -62,32 +93,35 @@ export const getApplicationsInProgress = async (): Promise<
   PermitApplicationInProgress[]
 > => {
   const applicationsUrl = `${VEHICLES_URL}/permits/applications?companyId=${getCompanyIdFromSession()}&userGUID=${getUserGuidFromSession()}&status=IN_PROGRESS`;
-  const applications = await httpGETRequest(applicationsUrl).then(
-    (response) => (getDefaultRequiredVal([], response.data) as PermitApplicationInProgress[])
-      .map(application => {
-        let permitType = "";
-        switch (application.permitType) {
-          case "TROS":
-            permitType = "Term Oversize";
-            break;
-          case "STOS":
-          default:
-            permitType = "Single Trip Oversize";
-            break;
-        }
-
-        return {
-          ...application,
-          permitType,
-          createdDateTime: toLocal(application.createdDateTime, DATE_FORMATS.DATETIME_LONG_TZ),
-          updatedDateTime: toLocal(application.updatedDateTime, DATE_FORMATS.DATETIME_LONG_TZ),
-          permitData: {
-            ...application.permitData,
-            startDate: toLocal(application.permitData.startDate, DATE_FORMATS.DATEONLY_SHORT_NAME),
-            expiryDate: toLocal(application.permitData.startDate, DATE_FORMATS.DATEONLY_SHORT_NAME),
-          }
-        } as PermitApplicationInProgress;
-      })
+  const applications = await httpGETRequest(applicationsUrl).then((response) =>
+    (
+      getDefaultRequiredVal([], response.data) as PermitApplicationInProgress[]
+    ).map((application) => {
+      let permitType = getPermitType(application.permitType);
+      return {
+        ...application,
+        permitType,
+        createdDateTime: toLocal(
+          application.createdDateTime,
+          DATE_FORMATS.DATETIME_LONG_TZ
+        ),
+        updatedDateTime: toLocal(
+          application.updatedDateTime,
+          DATE_FORMATS.DATETIME_LONG_TZ
+        ),
+        permitData: {
+          ...application.permitData,
+          startDate: toLocal(
+            application.permitData.startDate,
+            DATE_FORMATS.DATEONLY_SHORT_NAME
+          ),
+          expiryDate: toLocal(
+            application.permitData.startDate,
+            DATE_FORMATS.DATEONLY_SHORT_NAME
+          ),
+        },
+      } as PermitApplicationInProgress;
+    })
   );
   return applications;
 };
@@ -98,11 +132,11 @@ export const getApplicationsInProgress = async (): Promise<
  * @returns ApplicationResponse data as response, or undefined if fetch failed
  */
 export const getApplicationInProgressById = (
-  permitId: string | undefined,
-)  : Promise<ApplicationResponse | undefined>=> {
+  permitId: string | undefined
+): Promise<ApplicationResponse | undefined> => {
   const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
   const url = `${VEHICLES_URL}/permits/applications/${permitId}?companyId=${companyId}`;
-  return httpGETRequest(url).then(response => response.data);
+  return httpGETRequest(url).then((response) => response.data);
 };
 
 /**
@@ -111,10 +145,13 @@ export const getApplicationInProgressById = (
  * @returns A Promise with the API response.
  */
 export const deleteApplications = (
-  applicationIds: Array<string>,
+  applicationIds: Array<string>
 ): Promise<Response> => {
   let url: string | null = null;
-  const requestBody: { applicationIds: Array<string>, applicationStatus: string } = { applicationIds: applicationIds, applicationStatus: "CANCELLED"};
+  const requestBody: {
+    applicationIds: Array<string>;
+    applicationStatus: string;
+  } = { applicationIds: applicationIds, applicationStatus: "CANCELLED" };
   url = `${APPLICATION_UPDATE_STATUS_API}`;
   return httpPOSTRequest(url, replaceEmptyValuesWithNull(requestBody));
 };
@@ -125,14 +162,13 @@ export const deleteApplications = (
  * @returns A Promise of dms reference string.
  */
 export const downloadPermitApplicationPdf = (
-  permitId: number | undefined,
+  permitId: number | undefined
 ): Promise<any> => {
   const url = `${APPLICATION_PDF_API}/${permitId}?download=proxy`;
   return httpGETRequest(url).then((response) => {
     return response;
   });
 };
-
 
 /**
  * Generates a URL for making a payment transaction with Moti Pay.
@@ -152,13 +188,96 @@ export const getMotiPayTransactionUrl = async (
 };
 
 export const postTransaction = async (
-  transactionDetails: Transaction,
+  transactionDetails: Transaction
 ): Promise<any> => {
   const url = `${PAYMENT_API}`;
-  return httpPOSTRequest_axios(url, transactionDetails).then((response) => {
-    return response;
-  })
-  .catch((err) => {
-    return err;
-  });
+  return httpPOSTRequest_axios(url, transactionDetails)
+    .then((response) => {
+      return response;
+    })
+    .catch((err) => {
+      return err;
+    });
+};
+
+/**
+ * Fetch all the active permits for a company
+ * @return An array of permits
+ */
+export const getActivePermits = async (): Promise<
+  PermitApplicationInProgress[]
+> => {
+  const permitsURL = `${VEHICLES_URL}/permits?status=ACTIVE`;
+  const permits = await httpGETRequest(permitsURL).then((response) =>
+    (
+      getDefaultRequiredVal([], response.data) as PermitApplicationInProgress[]
+    ).map((permit) => {
+      let permitType = getPermitType(permit.permitType);
+      return {
+        ...permit,
+        permitType,
+        createdDateTime: toLocal(
+          permit.createdDateTime,
+          DATE_FORMATS.DATETIME_LONG_TZ
+        ),
+        updatedDateTime: toLocal(
+          permit.updatedDateTime,
+          DATE_FORMATS.DATETIME_LONG_TZ
+        ),
+        permitData: {
+          ...permit.permitData,
+          startDate: toLocal(
+            permit.permitData.startDate,
+            DATE_FORMATS.DATEONLY_SHORT_NAME
+          ),
+          expiryDate: toLocal(
+            permit.permitData.startDate,
+            DATE_FORMATS.DATEONLY_SHORT_NAME
+          ),
+        },
+      } as PermitApplicationInProgress;
+    })
+  );
+  return permits;
+};
+
+/**
+ * Fetch all the expired permits of a company
+ * @return An array of permits
+ */
+export const getExpiredPermits = async (): Promise<
+  PermitApplicationInProgress[]
+> => {
+  const permitsURL = `${VEHICLES_URL}/permits?status=EXPIRED`;
+  const permits = await httpGETRequest(permitsURL).then((response) =>
+    (
+      getDefaultRequiredVal([], response.data) as PermitApplicationInProgress[]
+    ).map((permit) => {
+      let permitType = getPermitType(permit.permitType);
+      return {
+        ...permit,
+        permitType,
+        createdDateTime: toLocal(
+          permit.createdDateTime,
+          DATE_FORMATS.DATETIME_LONG_TZ
+        ),
+        updatedDateTime: toLocal(
+          permit.updatedDateTime,
+          DATE_FORMATS.DATETIME_LONG_TZ
+        ),
+        permitData: {
+          ...permit.permitData,
+          startDate: toLocal(
+            permit.permitData.startDate,
+            DATE_FORMATS.DATEONLY_SHORT_NAME
+          ),
+          expiryDate: toLocal(
+            permit.permitData.startDate,
+            DATE_FORMATS.DATEONLY_SHORT_NAME
+          ),
+        },
+      } as PermitApplicationInProgress;
+    })
+  );
+  return permits;
 };
