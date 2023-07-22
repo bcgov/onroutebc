@@ -151,7 +151,6 @@ export const downloadPermitApplicationPdf = async (permitId: number) => {
         }
         // Enqueue the next data chunk into our target stream
         controller.enqueue(value);
-        console.log(value);
         await processRead();
       }
       processRead();
@@ -190,6 +189,13 @@ export const postTransaction = async (
 };
 
 export const getPermitTransaction = async (transactionOrderNumber: string) => {
-  const response = await httpGETRequest(`${PAYMENT_API}/${transactionOrderNumber}/permit`);
-  return response.data as PermitTransaction;
+  try {
+    const response = await httpGETRequest(`${PAYMENT_API}/${transactionOrderNumber}/permit`);
+    if (response.status === 200) {
+      return response.data as PermitTransaction;
+    }
+    return undefined;
+  } catch (err) {
+    return undefined;
+  }
 };

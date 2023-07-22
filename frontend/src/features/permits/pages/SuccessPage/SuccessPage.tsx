@@ -2,13 +2,9 @@ import { Box, Button, Typography } from "@mui/material";
 import { useEffect } from "react";
 import "./SuccessPage.scss";
 import { useNavigate, useParams } from "react-router-dom";
-import { downloadPermitApplicationPdf, getPermitTransaction } from "../../apiManager/permitsAPI";
+import { downloadPermitApplicationPdf } from "../../apiManager/permitsAPI";
 
-export const SuccessPage = ({
-  transactionOrderNumber,
-}: {
-  transactionOrderNumber?: string;
-}) => {
+export const SuccessPage = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -33,25 +29,10 @@ export const SuccessPage = ({
     }
   };
 
-  const viewPermitByTransaction = async (transactionOrderNumber?: string) => {
-    if (!transactionOrderNumber) {
-      console.error("Cannot find transaction order number");
-      return;
-    }
-
-    try {
-      const permitData = await getPermitTransaction(transactionOrderNumber);
-      await viewPermitPdfByPermitId(+permitData.permitId);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
   const viewPermitPdf = async () => {
     if (permitId) {
       return await viewPermitPdfByPermitId(+permitId);
     }
-    return await viewPermitByTransaction(transactionOrderNumber);
   };
 
   return (
@@ -88,6 +69,7 @@ export const SuccessPage = ({
             variant="contained"
             color="secondary"
             onClick={viewPermitPdf}
+            disabled={!permitId}
           >
             Download Permit
           </Button>
