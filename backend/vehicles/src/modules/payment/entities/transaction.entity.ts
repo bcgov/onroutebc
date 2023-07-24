@@ -18,7 +18,7 @@ export class Transaction extends Base {
     description: 'Unique identifier for the transaction metadata.',
   })
   @PrimaryGeneratedColumn({ type: 'bigint', name: 'TRANSACTION_ID' })
-  transactionId: number;
+  transactionId: string;
 
   @AutoMap()
   @ApiProperty({

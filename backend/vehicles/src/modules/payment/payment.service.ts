@@ -7,7 +7,7 @@ import { InjectMapper } from '@automapper/nestjs';
 import { Mapper } from '@automapper/core';
 import { Transaction } from './entities/transaction.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { PermitTransaction } from './entities/permit-transaction.entity';
 import { ReadPermitTransactionDto } from './dto/response/read-permit-transaction.dto';
 import { MotiPayDetailsDto } from './dto/response/read-moti-pay-details.dto';
@@ -22,6 +22,9 @@ export class PaymentService {
     private permitTransactionRepository: Repository<PermitTransaction>,
     @InjectRepository(Transaction)
     private transactionRepository: Repository<Transaction>,
+    // @InjectRepository(Receipt)
+    // private receiptRepository: Repository<Receipt>,
+    private dataSource: DataSource,
     @InjectMapper() private readonly classMapper: Mapper,
     private applicationService: ApplicationService,
   ) {}
@@ -179,17 +182,6 @@ export class PaymentService {
 
       await this.permitTransactionRepository.save(permitTransaction);
     }
-
-    // const permit: Permit = await lastValueFrom(
-    //   this.httpService.get(
-    //     `${process.env.VEHICLES_URL}/permits/applications/${permitId}?companyId=${companyId}`,
-    //     {
-    //       headers: { Authorization: accessToken },
-    //     },
-    //   ),
-    // ).then((response) => {
-    //   return response.data;
-    // });
   }
 
   async findOneTransaction(
@@ -207,7 +199,7 @@ export class PaymentService {
   }
 
   async findOnePermitTransaction(
-    transactionId: number,
+    transactionId: string,
   ): Promise<ReadPermitTransactionDto> {
     return this.classMapper.mapAsync(
       await this.permitTransactionRepository.findOne({
