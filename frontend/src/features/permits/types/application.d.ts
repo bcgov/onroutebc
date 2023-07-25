@@ -120,7 +120,7 @@ export interface PermitApplicationInProgress {
   permitData: ReplaceDayjsWithString<TermOversizeApplication>;
   permitId: string
   permitNumber?: string | null;
-  permitStatus: "IN_PROGRESS";
+  permitStatus: "IN_PROGRESS" | "ISSUED";
   permitType: PermitType;
   updatedDateTime: string;
   userGuid: string;

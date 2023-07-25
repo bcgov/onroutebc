@@ -6,8 +6,9 @@ import { Unauthorized } from "../../../../common/pages/Unauthorized";
 import { Loading } from "../../../../common/pages/Loading";
 import { ErrorFallback } from "../../../../common/pages/ErrorFallback";
 import { List } from "../list/List";
-import { getActivePermits } from "../../../../features/permits/apiManager/permitsAPI";
+import { getApplicationsInProgress } from "../../../../features/permits/apiManager/permitsAPI";
 import { StartApplicationButton } from "../../../../features/permits/pages/TermOversize/form/VehicleDetails/customFields/StartApplicationButton";
+import { PermitList } from "../permit-specific/PermitList";
 
 export const ManageApplicationDashboard = React.memo(() => {
   const keepPreviousData = true;
@@ -15,21 +16,7 @@ export const ManageApplicationDashboard = React.memo(() => {
 
   const applicationInProgressQuery = useQuery({
     queryKey: ["applicationInProgress"],
-    queryFn: getActivePermits,
-    keepPreviousData: keepPreviousData,
-    staleTime: staleTime,
-  });
-
-  const activePermitsQuery = useQuery({
-    queryKey: ["activePermits"],
-    queryFn: getActivePermits,
-    keepPreviousData: keepPreviousData,
-    staleTime: staleTime,
-  });
-
-  const expiredPermitsQuery = useQuery({
-    queryKey: ["expiredPermits"],
-    queryFn: getActivePermits,
+    queryFn: getApplicationsInProgress,
     keepPreviousData: keepPreviousData,
     staleTime: staleTime,
   });
@@ -42,7 +29,7 @@ export const ManageApplicationDashboard = React.memo(() => {
     //refetch,
   } = useQuery({
     queryKey: ["applicationInProgress"],
-    queryFn: getActivePermits,
+    queryFn: getApplicationsInProgress,
     keepPreviousData: true,
     staleTime: 5000,
   });
@@ -96,32 +83,7 @@ export const ManageApplicationDashboard = React.memo(() => {
     },
     {
       label: "Active Permits",
-      component:
-        data?.length === 0 ? (
-          <div
-            style={{
-              padding: "20px 0px",
-              backgroundColor: "white",
-              textAlign: "center",
-            }}
-          >
-            <div>
-              <img
-                src="No_Data_Graphic.svg"
-                style={{
-                  width: "124px",
-                  height: "112px",
-                  marginTop: "80px",
-                }}
-              />
-            </div>
-            <div>
-              <h3>No Records Found.</h3>
-            </div>
-          </div>
-        ) : (
-          <List query={activePermitsQuery} />
-        ),
+      component: <PermitList />,
     },
     {
       label: "Expired Permits",
@@ -149,7 +111,7 @@ export const ManageApplicationDashboard = React.memo(() => {
             </div>
           </div>
         ) : (
-          <List query={activePermitsQuery} />
+          <PermitList />
         ),
     },
   ];

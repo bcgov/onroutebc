@@ -93,7 +93,7 @@ export const getApplicationsInProgress = async (): Promise<
     (
       getDefaultRequiredVal([], response.data) as PermitApplicationInProgress[]
     ).map((application) => {
-      let permitType = getPermitType(application.permitType);
+      const permitType = getPermitType(application.permitType);
       return {
         ...application,
         permitType,
@@ -201,7 +201,7 @@ export const getActivePermits = async (): Promise<
     (
       getDefaultRequiredVal([], response.data) as PermitApplicationInProgress[]
     ).map((permit) => {
-      let permitType = getPermitType(permit.permitType);
+      const permitType = getPermitType(permit.permitType);
       return {
         ...permit,
         permitType,
@@ -242,7 +242,7 @@ export const getExpiredPermits = async (): Promise<
     (
       getDefaultRequiredVal([], response.data) as PermitApplicationInProgress[]
     ).map((permit) => {
-      let permitType = getPermitType(permit.permitType);
+      const permitType = getPermitType(permit.permitType);
       return {
         ...permit,
         permitType,
