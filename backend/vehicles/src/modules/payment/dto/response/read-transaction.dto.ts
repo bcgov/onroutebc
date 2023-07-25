@@ -7,7 +7,7 @@ export class ReadTransactionDto {
     example: '1',
     description: 'Unique identifier for the transaction metadata.',
   })
-  transactionId: number;
+  transactionId: string;
 
   @AutoMap()
   @ApiProperty({

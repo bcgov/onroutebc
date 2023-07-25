@@ -67,7 +67,11 @@ export class PaymentController {
     @Req() request: Request,
     @Body() createTransactionDto: CreateTransactionDto,
   ) {
+
+
+
     const currentUser = request.user as IUserJWT;
+    
     return await this.paymentService.updateTransaction(
       currentUser,
       createTransactionDto,

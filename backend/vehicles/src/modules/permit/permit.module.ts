@@ -13,6 +13,8 @@ import { PermitType } from './entities/permit-type.entity';
 import { PermitApplicationOrigin } from './entities/permit-application-origin.entity';
 import { PermitApprovalSource } from './entities/permit-approval-source.entity';
 import { CompanyModule } from '../company-user-management/company/company.module';
+import { Receipt } from '../payment/entities/receipt.entity';
+import { Transaction } from '../payment/entities/transaction.entity';
 
 @Module({
   imports: [
@@ -22,6 +24,8 @@ import { CompanyModule } from '../company-user-management/company/company.module
       PermitType,
       PermitApplicationOrigin,
       PermitApprovalSource,
+      Transaction,
+      Receipt,
     ]),
     CompanyModule,
   ],

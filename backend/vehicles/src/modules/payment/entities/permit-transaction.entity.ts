@@ -21,7 +21,7 @@ export class PermitTransaction extends Base {
   @PrimaryColumn({
     name: 'TRANSACTION_ID',
   })
-  transactionId: number;
+  transactionId: string;
 
   // @ManyToOne(
   //   () => Permit,
