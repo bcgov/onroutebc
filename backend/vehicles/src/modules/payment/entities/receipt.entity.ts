@@ -30,7 +30,7 @@ export class Receipt extends Base {
   @Column({
     length: '19',
     name: 'RECEIPT_NUMBER',
-    nullable: true,
+    nullable: false,
   })
   receiptNumber: string;
 
@@ -41,6 +41,7 @@ export class Receipt extends Base {
   })
   @Column({
     name: 'TRANSACTION_ID',
+    nullable: false,
   })
   transactionId: string;
 
@@ -50,7 +51,7 @@ export class Receipt extends Base {
   })
   @Column({
     name: 'RECEIPT_DOCUMENT_ID',
-    nullable: true,
+    nullable: false,
   })
   receiptDocumentId: string;
 
