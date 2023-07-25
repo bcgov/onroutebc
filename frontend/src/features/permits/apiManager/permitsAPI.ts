@@ -117,8 +117,9 @@ export const deleteApplications = async (
 const getFileNameFromHeaders = (headers: Headers) => {
   const contentDisposition = headers.get('content-disposition');
   if (!contentDisposition) return undefined;
-  const filenameMatch = contentDisposition.match(/filename=(.+)/);
-  if (filenameMatch && filenameMatch.length === 2) {
+  const matchRegex = /filename=(.+)/;
+  const filenameMatch = matchRegex.exec(contentDisposition);
+  if (filenameMatch && filenameMatch.length > 1) {
     return filenameMatch[1];
   }
   return undefined;
