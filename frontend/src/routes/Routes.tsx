@@ -15,6 +15,7 @@ import { ROLES } from "../common/authentication/types";
 import { ManageApplications } from "../features/permits/ManageApplications";
 import { SuccessPage } from "../features/permits/pages/SuccessPage/SuccessPage";
 import { PaymentRedirect } from "../features/permits/pages/Payment/PaymentRedirect";
+import { PaymentFailureRedirect } from "../features/permits/pages/Payment/PaymentFailureRedirect";
 
 export const AppRoutes = () => {
   return (
@@ -85,6 +86,10 @@ export const AppRoutes = () => {
           <Route
             path={`${routes.APPLICATIONS_SUCCESS}/:permitId`}
             element={<SuccessPage />}
+          />
+          <Route
+            path={`${routes.APPLICATIONS_FAILURE}/:msg`}
+            element={<PaymentFailureRedirect />}
           />
         </Route>
       </Route>
