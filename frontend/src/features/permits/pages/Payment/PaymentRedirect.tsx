@@ -70,7 +70,6 @@ const mapTransactionDetails = (
   motiResponse: MotiPaymentDetails
 ): Transaction => {
   return {
-    //transactionId: Number(motiResponse.trnId), // TODO check this and providerTransactionId
     transactionType: motiResponse.trnType,
     transactionOrderNumber: motiResponse.trnOrderNumber,
     providerTransactionId: Number(motiResponse.trnId),
@@ -78,10 +77,10 @@ const mapTransactionDetails = (
     approved: Number(motiResponse.trnApproved),
     authCode: motiResponse.authCode,
     cardType: motiResponse.cardType,
-    transactionDate: motiResponse.trnDate, // TODO
+    transactionDate: motiResponse.trnDate,
     cvdId: Number(motiResponse.cvdId),
     paymentMethod: motiResponse.paymentMethod,
-    paymentMethodId: 1, // TODO: change once different payment methods are implemented
+    paymentMethodId: 1, // TODO: change once different payment methods are implemented, currently 1 == MOTI Pay
     messageId: motiResponse.messageId,
     messageText: motiResponse.messageText,
   };
