@@ -47,6 +47,6 @@ export interface Transaction {
 }
 
 export interface PermitTransaction {
-  permitId: number;
-  transactionId: string;
+  permitId: string;
+  transactionId: number;
 }

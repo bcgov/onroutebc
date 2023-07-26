@@ -3,16 +3,10 @@ import { MotiPaymentDetails } from "../types/payment";
 /**
  * Extracts MotiPaymentDetails from the query parameters of a URL.
  *
- * @param {string} url - The URL containing the query parameters.
+ * @param {URLSearchParams} params - The object containing URL query parameters.
  * @returns {MotiPaymentDetails} The extracted MotiPaymentDetails object.
  */
-export const getURLParameters = (url: string): MotiPaymentDetails => {
-  // Split the URL to get the query string
-  const queryString = url.split("?")[1];
-
-  // Parse the query string into a URLSearchParams object
-  const params = new URLSearchParams(queryString);
-
+export const getMotiPaymentDetails = (params: URLSearchParams): MotiPaymentDetails => {
   // Extract the query parameters and assign them to the corresponding properties of MotiPaymentDetails
   const motiPaymentDetails: MotiPaymentDetails = {
     authCode: params.get("authCode") ?? "",
