@@ -189,6 +189,10 @@ export class Transaction extends Base {
   })
   messageText: string;
 
+  // TODO: Implement many to many relationship for permits and transactions
+  // Many permits can be associated with a transaction
+  // Many transactions can be associated with a permit (example: cancelled, paid, refund, etc)
+
   @ManyToMany(() => Permit, (permit) => permit.permitId)
   @JoinTable({
     name: 'permit.ORBC_PERMIT_TRANSACTION',

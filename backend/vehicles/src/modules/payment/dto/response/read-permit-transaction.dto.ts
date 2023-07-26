@@ -1,7 +1,5 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
-import { Permit } from 'src/modules/permit/entities/permit.entity';
-import { Transaction } from '../../entities/transaction.entity';
 
 export class ReadPermitTransactionDto {
   @AutoMap()
@@ -13,21 +11,37 @@ export class ReadPermitTransactionDto {
 
   @AutoMap()
   @ApiProperty({
-    example: '00000',
-    description: 'Represents the ID of a transaction.',
+    example: '1',
+    description: 'Unique identifier for the transaction metadata.',
   })
-  permits?: Permit[];
-
-  @AutoMap()
   transactionId: number;
 
   @AutoMap()
-  transactions?: Transaction[];
-
-  @AutoMap()
   @ApiProperty({
-    example: 'T-1687586193681',
+    example: 'T1687586193681',
     description: 'Represents the auth code of a transaction.',
   })
   transactionOrderNumber: string;
+
+  // TODO: Multiple permits to be associated with a transaction
+  // TODO: Use PermitDto
+  // @AutoMap()
+  // @ApiProperty({
+  //   description: 'Permit Ids.',
+  //   isArray: true,
+  //   type: String,
+  //   example: ['1', '2'],
+  // })
+  // permits?: Permit[];
+
+  // TODO: Multiple transactions
+  // TODO: Use TransactionDto
+  // @AutoMap()
+  // @ApiProperty({
+  //   description: 'Transaction Ids.',
+  //   isArray: true,
+  //   type: String,
+  //   example: ['1', '2'],
+  // })
+  // transactions?: Transaction[];
 }

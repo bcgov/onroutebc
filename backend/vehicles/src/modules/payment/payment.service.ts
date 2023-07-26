@@ -7,7 +7,7 @@ import { InjectMapper } from '@automapper/nestjs';
 import { Mapper } from '@automapper/core';
 import { Transaction } from './entities/transaction.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { PermitTransaction } from './entities/permit-transaction.entity';
 import { ReadPermitTransactionDto } from './dto/response/read-permit-transaction.dto';
 import { MotiPayDetailsDto } from './dto/response/read-moti-pay-details.dto';
@@ -29,7 +29,6 @@ export class PaymentService {
     private transactionRepository: Repository<Transaction>,
     @InjectRepository(Receipt)
     private receiptRepository: Repository<Receipt>,
-    private dataSource: DataSource,
     @InjectMapper() private readonly classMapper: Mapper,
     private applicationService: ApplicationService,
     private readonly dopsService: DopsService,
@@ -111,25 +110,38 @@ export class PaymentService {
     };
   };
 
+  /**
+   * Updates a transaction in the system based on the provided data.
+   *
+   * @param {IUserJWT} currentUser - The current user making the update request (JWT user object).
+   * @param {CreateTransactionDto} transaction - The data representing the updated transaction (CreateTransactionDto).
+   * @returns {ReadTransactionDto} A promise that resolves to the updated transaction data (ReadTransactionDto).
+   * @throws HttpException with status 500 if the transaction update fails.
+   */
   async updateTransaction(
     currentUser: IUserJWT,
     transaction: CreateTransactionDto,
   ): Promise<ReadTransactionDto> {
+    // Retrieve the existing transaction from the database based on the provided transaction order number.
     const existingTransaction = await this.findOneTransaction(
       transaction.transactionOrderNumber,
     );
 
+    // Find the corresponding permit transaction for the existing transaction.
     const existingPermitTransaction = await this.findOnePermitTransaction(
       existingTransaction.transactionId,
     );
 
+    // Map the updated transaction data (CreateTransactionDto) to a new Transaction object.
     const newTransaction = this.classMapper.map(
       transaction,
       CreateTransactionDto,
       Transaction,
     );
 
+    // If the updated transaction is approved, issue a permit using the application service.
     if (newTransaction.approved) {
+      // Extract relevant transaction details for issuing the permit.
       const applicationId = existingPermitTransaction.permitId.toString();
       const transactionDetails: IReceipt = {
         transactionOrderNumber: newTransaction.transactionOrderNumber,
@@ -138,6 +150,7 @@ export class PaymentService {
         paymentMethod: newTransaction.paymentMethod,
       };
 
+      // Call the application service to issue the permit.
       await this.applicationService.issuePermit(
         currentUser,
         applicationId,
@@ -145,25 +158,34 @@ export class PaymentService {
       );
     }
 
+    // Update the existing transaction record in the database with the new transaction data.
     const updatedTransaction = await this.transactionRepository.update(
       { transactionId: existingTransaction.transactionId },
       newTransaction,
     );
 
+    // Check if the transaction update was successful, if not, throw an exception.
     if (!updatedTransaction.affected) {
       throw new HttpException('Error updating transaction', 500);
     }
 
+    // Return the updated transaction data (ReadTransactionDto).
     return newTransaction;
   }
 
+  /**
+   * Creates new transactions and associates them with the provided permit IDs and payment details.
+   * TODO: Should be one transaction with many permits?
+   * @param permitIds - An array of permit IDs to associate with the new transactions.
+   * @param paymentDetails - The payment details to be added to each new transaction.
+   */
   async createTransaction(
-    // accessToken: string,
-    // companyId: number,
     permitIds: number[],
     paymentDetails: MotiPayDetailsDto,
   ) {
+    // Loop through each permit ID to create a new transaction and associate it with the permit.
     for (const id of permitIds) {
+      // Create a new transaction record in the transaction table with the provided payment details.
       await this.transactionRepository
         .createQueryBuilder()
         .insert()
@@ -177,15 +199,18 @@ export class PaymentService {
         })
         .execute();
 
+      // Retrieve the newly created transaction from the database based on the order number.
       const transaction = await this.findOneTransaction(
         paymentDetails.transactionOrderNumber,
       );
 
+      // Prepare the data to associate the permit with the newly created transaction.
       const permitTransaction = {
         permitId: id,
         transactionId: transaction.transactionId,
       };
 
+      // Save the association of the permit with the transaction in the permitTransaction table.
       await this.permitTransactionRepository.save(permitTransaction);
     }
   }
