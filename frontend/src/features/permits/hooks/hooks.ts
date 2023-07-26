@@ -1,12 +1,16 @@
 import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import {
   getApplicationInProgressById,
+  getPermitTransaction,
+  postTransaction,
   submitTermOversize,
   updateTermOversize,
 } from "../apiManager/permitsAPI";
 import { Application } from "../types/application";
 import { useState } from "react";
 import { mapApplicationResponseToApplication } from "../helpers/mappers";
+import { PermitTransaction } from "../types/payment";
+import { AxiosError } from "axios";
 
 /**
  * A custom react query mutation hook that saves the application data to the backend API
@@ -72,5 +76,87 @@ export const useApplicationDetailsQuery = (permitId?: string) => {
     query,
     applicationData,
     setApplicationData,
+  };
+};
+
+export const usePostTransaction = (
+  messageText: string,
+  paymentStatus: number
+) => {
+  const queryClient = useQueryClient();
+  const [paymentApproved, setPaymentApproved] = useState<boolean | undefined>(undefined);
+  const [message, setMessage] = useState<string>(messageText);
+  
+  const onTransactionResult = (message: string, paymentApproved: boolean) => {
+    setMessage(message);
+    setPaymentApproved(paymentApproved);
+  };
+
+  const onTransactionError = (err: unknown) => {
+    if (!(err instanceof AxiosError)) {
+      onTransactionResult("Unknown Error", false);
+      return;
+    }
+    if (err.response) {
+      onTransactionResult(
+        `Payment approved but error in ORBC Backend: ${err.response.data.message}`, 
+        false
+      );
+    } else {
+      onTransactionResult("Request Error", false);
+    }
+  };
+
+  const mutation = useMutation({
+    mutationFn: postTransaction,
+    retry: false,
+    onSuccess: (response) => {
+      if (response.status === 201) {
+        queryClient.invalidateQueries(["transactions"]);
+        onTransactionResult(messageText, paymentStatus === 1);
+      } else {
+        onTransactionResult("Something went wrong", false);
+      }
+    },
+    onError: (err) => {
+      onTransactionError(err);
+    },
+  });
+
+  return {
+    mutation,
+    paymentApproved,
+    message,
+    setPaymentApproved,
+    setMessage,
+  };
+};
+
+/**
+ * Custom hook for retrieving permit transaction data, which includes permit and transaction info
+ * @param transactionOrderNumber Transaction order number for the transaction
+ * @returns Associated permit transaction data
+ */
+export const usePermitTransactionQuery = (
+  transactionOrderNumber: string,
+  paymentApproved: boolean,
+) => {
+  const [permitTransaction, setPermitTransaction] = useState<PermitTransaction | undefined>(undefined);
+
+  const query = useQuery({
+    queryKey: ["permitTransaction"],
+    queryFn: () => getPermitTransaction(transactionOrderNumber),
+    enabled: paymentApproved,
+    retry: false,
+    refetchOnMount: "always",
+    refetchOnWindowFocus: false,
+    onSuccess: (permitTransaction) => {
+      setPermitTransaction(permitTransaction);
+    },
+  });
+
+  return {
+    query,
+    permitTransaction,
   };
 };

@@ -23,6 +23,10 @@ export class PermitTransaction extends Base {
   })
   transactionId: string;
 
+  // TODO: Implement many to many relationship for permits and transactions
+  // Many permits can be associated with a transaction
+  // Many transactions can be associated with a permit (example: cancelled, paid, refund, etc)
+
   // @ManyToOne(
   //   () => Permit,
   //   permit => permit.permitId,
