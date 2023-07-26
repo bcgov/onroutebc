@@ -42,7 +42,6 @@ import { DopsService } from '../common/dops.service';
 import { DopsGeneratedDocument } from '../../common/interface/dops-generated-document.interface';
 import { TemplateName } from '../../common/enum/template-name.enum';
 import { IReceipt } from 'src/common/interface/receipt.interface';
-import { IFile } from '../../common/interface/file.interface';
 import { ReadTransactionDto } from '../payment/dto/response/read-transaction.dto';
 import { Transaction } from '../payment/entities/transaction.entity';
 import { Receipt } from '../payment/entities/receipt.entity';
@@ -378,7 +377,7 @@ export class ApplicationService {
 
       try {
         // Create a DOPS request object with template data for generating the permit PDF
-        let dopsRequestData: DopsGeneratedDocument = {
+        const dopsRequestData: DopsGeneratedDocument = {
           templateName: TemplateName.PERMIT_TROS,
           generatedDocumentFileName: permitDataForTemplate.permitNumber,
           templateData: permitDataForTemplate,
