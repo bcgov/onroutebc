@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Param, Post, Query, Req } from '@nestjs/common';
+import { 
+  Body, 
+  Controller, 
+  Get, 
+  Param, 
+  Post, 
+  Query, 
+  Req,
+  Res,
+} from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiCreatedResponse,
@@ -16,6 +25,9 @@ import { ReadTransactionDto } from './dto/response/read-transaction.dto';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
 import { Request } from 'express';
 import { ReadPermitTransactionDto } from './dto/response/read-permit-transaction.dto';
+import { AuthOnly } from 'src/common/decorator/auth-only.decorator';
+import { ReadFileDto } from '../common/dto/response/read-file.dto';
+import { Response } from 'express';
 
 @ApiBearerAuth()
 @ApiTags('Payment')
@@ -67,9 +79,6 @@ export class PaymentController {
     @Req() request: Request,
     @Body() createTransactionDto: CreateTransactionDto,
   ) {
-
-
-
     const currentUser = request.user as IUserJWT;
     
     return await this.paymentService.updateTransaction(
@@ -89,5 +98,27 @@ export class PaymentController {
   ): Promise<ReadPermitTransactionDto> {
     const transaction = await this.paymentService.findOneTransaction(transactionOrderNumber);
     return await this.paymentService.findOnePermitTransaction(transaction.transactionId);
+  }
+
+  @AuthOnly()
+  @ApiCreatedResponse({
+    description: 'The DOPS file Resource with the presigned resource',
+    type: ReadFileDto,
+  })
+  @Get('/:transactionId/receipt')
+  async getReceiptPDF(
+    @Req() request: Request,
+    @Param('transactionId') transactionId: string,
+    @Res() res: Response,
+  ): Promise<void> {
+    // TODO: Use IUserJWT / Exception handling
+    const currentUser = request.user as IUserJWT;
+    
+    await this.paymentService.findReceiptPDF(
+      currentUser,
+      transactionId,
+      res,
+    );
+    res.status(200);
   }
 }

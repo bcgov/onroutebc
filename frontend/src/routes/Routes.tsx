@@ -84,7 +84,7 @@ export const AppRoutes = () => {
         <Route path={routes.APPLICATIONS}>
           <Route index={true} element={<ManageApplications />} />
           <Route
-            path={`${routes.APPLICATIONS_SUCCESS}/:permitId`}
+            path={`${routes.APPLICATIONS_SUCCESS}/:permitId/transaction/:transactionId`}
             element={<SuccessPage />}
           />
           <Route

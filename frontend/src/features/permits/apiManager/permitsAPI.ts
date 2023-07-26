@@ -125,13 +125,7 @@ const getFileNameFromHeaders = (headers: Headers) => {
   return undefined;
 };
 
-/**
- * View permit application pdf file.
- * @param permitId permit id of the permit application.
- * @returns A Promise of dms reference string.
- */
-export const downloadPermitApplicationPdf = async (permitId: number) => {
-  const url = `${APPLICATION_PDF_API}/${permitId}?download=proxy`;
+const streamDownload = async (url: string) => {
   const response = await httpGETRequestStream(url);
   const filename = getFileNameFromHeaders(response.headers);
   if (!filename) {
@@ -160,6 +154,26 @@ export const downloadPermitApplicationPdf = async (permitId: number) => {
   const newRes = new Response(stream);
   const blobObj = await newRes.blob();
   return { blobObj, filename };
+};
+
+/**
+ * Download permit application pdf file.
+ * @param permitId permit id of the permit application.
+ * @returns A Promise of dms reference string.
+ */
+export const downloadPermitApplicationPdf = async (permitId: string) => {
+  const url = `${APPLICATION_PDF_API}/${permitId}?download=proxy`;
+  return await streamDownload(url);
+};
+
+/**
+ * Download permit receipt pdf file.
+ * @param transactionId transaction id of the permit application associated with the receipt.
+ * @returns A Promise of dms reference string.
+ */
+export const downloadReceiptPdf = async (transactionId: string) => {
+  const url = `${PAYMENT_API}/${transactionId}/receipt`;
+  return await streamDownload(url);
 };
 
 /**

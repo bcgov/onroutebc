@@ -57,7 +57,7 @@ export const PaymentRedirect = () => {
   if (permitTransaction?.permitId) {
     return (
       <Navigate 
-        to={`/applications/success/${permitTransaction.permitId}`}
+        to={`/applications/success/${permitTransaction.permitId}/transaction/${permitTransaction.transactionId}`}
         replace={true}
       />
     );
