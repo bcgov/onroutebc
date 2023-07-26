@@ -360,21 +360,20 @@ export class ApplicationService {
       await queryRunner.connect();
       await queryRunner.startTransaction();
       try {
-
-          let dopsRequestData: DopsGeneratedDocument = {
+        let dopsRequestData: DopsGeneratedDocument = {
           templateName: TemplateName.PERMIT_TROS,
           generatedDocumentFileName: permitDataForTemplate.permitNumber,
           templateData: permitDataForTemplate,
         };
-  
+
         const generatedPermitDocumentPromise = this.generateDocument(
           currentUser,
           dopsRequestData,
         );
-  
+
         //Generate receipt number for the permit to be created in database.
         const receiptNo = await this.generateReceiptNumber();
-  
+
         dopsRequestData = {
           templateName: TemplateName.PAYMENT_RECEIPT,
           generatedDocumentFileName: `Receipt_No_${receiptNo}`,
@@ -384,12 +383,12 @@ export class ApplicationService {
             receiptNo,
           },
         };
-  
+
         const generatedReceiptDocumentPromise = this.generateDocument(
           currentUser,
           dopsRequestData,
         );
-  
+
         const generatedDocuments: IFile[] = await Promise.all([
           generatedPermitDocumentPromise,
           generatedReceiptDocumentPromise,
@@ -401,7 +400,7 @@ export class ApplicationService {
             permitData: true,
           },
         });
-        
+
         permitEntity.permitStatus = ApplicationStatus.ISSUED;
         permitEntity.permitNumber = permitNumber;
         permitEntity.documentId = generatedDocuments.at(0).dmsId;
@@ -423,51 +422,51 @@ export class ApplicationService {
             companyName: companyInfo.legalName,
           };
 
-        const attachments: AttachementEmailData[] = [
-           {
-             filename: tempPermit.permitNumber + '.pdf',
-             contentType: 'application/pdf',
-             encoding: 'base64',
-             content: generatedDocuments.at(0).buffer.toString('base64'),
-           },
-           {
-             filename: `Receipt_No_${receiptNo}.pdf`,
-             contentType: 'application/pdf',
-             encoding: 'base64',
-             content: generatedDocuments.at(1).buffer.toString('base64'),
-           },
-         ];
+          const attachments: AttachementEmailData[] = [
+            {
+              filename: tempPermit.permitNumber + '.pdf',
+              contentType: 'application/pdf',
+              encoding: 'base64',
+              content: generatedDocuments.at(0).buffer.toString('base64'),
+            },
+            {
+              filename: `Receipt_No_${receiptNo}.pdf`,
+              contentType: 'application/pdf',
+              encoding: 'base64',
+              content: generatedDocuments.at(1).buffer.toString('base64'),
+            },
+          ];
 
-         void this.emailService.sendEmailMessage(
-           EmailTemplate.ISSUE_PERMIT,
-           emailData,
-           'onRouteBC Permits - ' + companyInfo.legalName,
-           [
-             permitDataForTemplate.permitData?.contactDetails?.email,
-             companyInfo.email,
-           ],
-           attachments,
-         );
-       } catch (error: unknown) {
-         console.log('Error in Email Service', error);
-       }
-     } catch (err) {
-       console.log(
-         'Error Issuing Application: ',
-         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-         err.response.status,
-         ' ',
-         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-         err.response.statusText,
-       );
-       success = '';
-       failure = applicationId;
-     }
+          void this.emailService.sendEmailMessage(
+            EmailTemplate.ISSUE_PERMIT,
+            emailData,
+            'onRouteBC Permits - ' + companyInfo.legalName,
+            [
+              permitDataForTemplate.permitData?.contactDetails?.email,
+              companyInfo.email,
+            ],
+            attachments,
+          );
+        } catch (error: unknown) {
+          console.log('Error in Email Service', error);
+        }
+      } catch (err) {
+        console.log(
+          'Error Issuing Application: ',
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+          err.response.status,
+          ' ',
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+          err.response.statusText,
+        );
+        success = '';
+        failure = applicationId;
+      }
     } catch (err) {
-       await queryRunner.rollbackTransaction();
-      } finally {
-       await queryRunner.release();
-     }
+      await queryRunner.rollbackTransaction();
+    } finally {
+      await queryRunner.release();
+    }
 
     const resultDto: ResultDto = {
       success: [success],
@@ -660,7 +659,7 @@ export class ApplicationService {
     return permitNumber;
   }
 
-   async findOneTransactionByOrderNumber(
+  async findOneTransactionByOrderNumber(
     transactionOrderNumber: string,
   ): Promise<ReadTransactionDto> {
     return this.classMapper.mapAsync(
@@ -677,25 +676,20 @@ export class ApplicationService {
   /**
    * Generate Receipt Number
    */
-  async generateReceiptNumber(
-  ): Promise<string> {
+  async generateReceiptNumber(): Promise<string> {
     let seq: string;
     let source;
     const currentDate = new Date();
     const year = currentDate.getFullYear();
-    const month = String(currentDate.getMonth() + 1).padStart(2, "0");
-    const day = String(currentDate.getDate()).padStart(2, "0");
+    const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+    const day = String(currentDate.getDate()).padStart(2, '0');
     const dateString = `${year}${month}${day}`;
     source = dateString;
     seq = await callDatabaseSequence(
       'permit.ORBC_RECEIPT_NUMBER_SEQ',
       this.dataSource,
     );
-    const receiptNumber = String(
-        String(source) +
-        '-' +
-        String(seq),
-    );
+    const receiptNumber = String(String(source) + '-' + String(seq));
 
     return receiptNumber;
   }

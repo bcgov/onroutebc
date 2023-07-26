@@ -20,7 +20,6 @@ export class Receipt extends Base {
   @PrimaryGeneratedColumn({ type: 'bigint', name: 'RECEIPT_ID' })
   receiptId: string;
 
-
   @AutoMap()
   @ApiProperty({
     example: '20230711-1',

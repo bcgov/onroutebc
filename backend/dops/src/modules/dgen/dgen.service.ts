@@ -65,6 +65,7 @@ export class DgenService {
     currentUser: IUserJWT,
     createGeneratedDocumentDto: CreateGeneratedDocumentDto,
     res: Response,
+    companyId?: number,
   ) {
     const generatedDocument = await this.cdogsService.generateDocument(
       currentUser,
@@ -74,6 +75,7 @@ export class DgenService {
     const dmsObject = await this.dmsService.create(
       currentUser,
       generatedDocument,
+      companyId,
     );
     res.setHeader('x-orbc-dms-id', dmsObject.documentId);
     res.setHeader(
