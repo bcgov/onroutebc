@@ -76,15 +76,19 @@ export class PaymentController {
   }
 
   @ApiOkResponse({
-    description: "The Permit Transaction Resource",
+    description: 'The Permit Transaction Resource',
     type: ReadPermitTransactionDto,
   })
-  @Get("/:transactionOrderNumber/permit")
+  @Get('/:transactionOrderNumber/permit')
   async getPermitTransaction(
     @Req() request: Request,
-    @Param("transactionOrderNumber") transactionOrderNumber: string,
+    @Param('transactionOrderNumber') transactionOrderNumber: string,
   ): Promise<ReadPermitTransactionDto> {
-    const transaction = await this.paymentService.findOneTransaction(transactionOrderNumber);
-    return await this.paymentService.findOnePermitTransaction(transaction.transactionId);
+    const transaction = await this.paymentService.findOneTransaction(
+      transactionOrderNumber,
+    );
+    return await this.paymentService.findOnePermitTransaction(
+      transaction.transactionId,
+    );
   }
 }

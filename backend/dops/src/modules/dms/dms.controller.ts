@@ -34,6 +34,8 @@ import { Request, Response } from 'express';
 import { UpdateFileDto } from './dto/request/update-file.dto';
 import { IUserJWT } from '../../interface/user-jwt.interface';
 import { IDP } from '../../enum/idp.enum';
+import { Roles } from '../../decorator/roles.decorator';
+import { Role } from '../../enum/roles.enum';
 
 @ApiTags('DMS')
 @ApiBadRequestResponse({
@@ -68,6 +70,7 @@ export class DmsController {
     description: 'Required when IDP is not IDIR .',
   })
   @ApiConsumes('multipart/form-data')
+  @Roles(Role.WRITE_DOCUMENT)
   @Post('upload')
   @UseInterceptors(FileInterceptor('file'))
   async uploadFile(
@@ -111,6 +114,7 @@ export class DmsController {
     description: 'Required when IDP is not IDIR .',
   })
   @ApiConsumes('multipart/form-data')
+  @Roles(Role.WRITE_DOCUMENT)
   @Post('upload/:documentId')
   @UseInterceptors(FileInterceptor('file'))
   async updateFile(
@@ -170,6 +174,7 @@ export class DmsController {
     example: '74',
     description: 'Required when IDP is not IDIR .',
   })
+  @Roles(Role.READ_DOCUMENT)
   @Get(':documentId')
   async downloadFile(
     @Req() request: Request,

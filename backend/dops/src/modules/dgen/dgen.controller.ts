@@ -24,6 +24,8 @@ import { IUserJWT } from '../../interface/user-jwt.interface';
 import { CreateGeneratedDocumentDto } from './dto/request/create-generated-document.dto';
 import { DgenService } from './dgen.service';
 import { IDP } from '../../enum/idp.enum';
+import { Roles } from '../../decorator/roles.decorator';
+import { Role } from '../../enum/roles.enum';
 
 @ApiTags('Document Generator (DGEN)')
 @ApiBadRequestResponse({
@@ -57,6 +59,7 @@ export class DgenController {
     example: '74',
     description: 'Required when IDP is not IDIR .',
   })
+  @Roles(Role.GENERATE_DOCUMENT)
   @Post('/template/render')
   async generate(
     @Req() request: Request,
