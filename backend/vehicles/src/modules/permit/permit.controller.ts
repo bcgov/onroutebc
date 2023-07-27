@@ -28,6 +28,9 @@ import { AuthOnly } from 'src/common/decorator/auth-only.decorator';
 import { IUserJWT } from '../../common/interface/user-jwt.interface';
 import { FileDownloadModes } from '../../common/enum/file-download-modes.enum';
 import { ReadFileDto } from '../common/dto/response/read-file.dto';
+import { Roles } from 'src/common/decorator/roles.decorator';
+import { Role } from 'src/common/enum/roles.enum';
+import { IDP } from 'src/common/enum/idp.enum';
 
 @ApiBearerAuth()
 @ApiTags('Permit')
@@ -71,6 +74,33 @@ export class PermitController {
     @Query('permitNumber') permitNumber: string,
   ): Promise<ReadPermitDto[]> {
     return this.permitService.findByPermitNumber(permitNumber);
+  }
+
+  /**
+   * Get Permits of Logged in user
+   * @Query companyId Company id of logged in user
+   * @param status if true get active permits else get others
+   *
+   */
+  @ApiQuery({ name: 'companyId', required: true })
+  @ApiQuery({ name: 'expired', required: false, example: 'true' })
+  @Roles(Role.READ_PERMIT)
+  @Get('user')
+  async getUserPermit(
+    @Req() request: Request,
+    @Query('companyId') companyId: number,
+    @Query('expired') expired: string,
+  ): Promise<ReadPermitDto[]> {
+    const currentUser = request.user as IUserJWT;
+    const userGuid =
+      currentUser.identity_provider === IDP.BCEID
+        ? currentUser.bceid_user_guid
+        : null;
+    return await this.permitService.findUserPermit(
+      userGuid,
+      companyId,
+      expired,
+    );
   }
 
   @AuthOnly()

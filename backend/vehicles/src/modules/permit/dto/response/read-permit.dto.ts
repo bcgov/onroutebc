@@ -3,6 +3,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { PermitType } from '../../../../common/enum/permit-type.enum';
 import { PermitApprovalSource } from '../../../../common/enum/permit-approval-source.enum';
 import { PermitApplicationOrigin } from '../../../../common/enum/permit-application-origin.enum';
+import { PermitStatus } from 'src/common/enum/permit-status.enum';
 
 export class ReadPermitDto {
   @AutoMap()
@@ -35,6 +36,14 @@ export class ReadPermitDto {
       'Unique formatted permit number, recorded once the permit is approved and issued.',
   })
   permitNumber: string;
+
+  @AutoMap()
+  @ApiProperty({
+    description: 'Satus of Permit/Permit Application',
+    example: PermitStatus.ISSUED,
+    required: false,
+  })
+  permitStatus: PermitStatus;
 
   @AutoMap()
   @ApiProperty({
