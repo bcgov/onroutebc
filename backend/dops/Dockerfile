@@ -1,5 +1,5 @@
 # Build container
-FROM node:18.16.1-alpine AS builder
+FROM node:18.17.0-alpine AS builder
 
 # Set the working directory to /app inside the container
 WORKDIR /app
@@ -18,7 +18,7 @@ RUN npm prune --production
 
 
 # Deployment container
-FROM node:18.16.1-alpine
+FROM node:18.17.0-alpine
 RUN npm cache clean --force
 
 # Create and Assign permissions to npm folder
@@ -56,6 +56,7 @@ ENV CDOGS_TOKEN_URL ${CDOGS_TOKEN_URL}
 ENV CDOGS_CLIENT_ID ${CDOGS_CLIENT_ID}
 ENV CDOGS_CLIENT_SECRET ${CDOGS_CLIENT_SECRET}
 ENV CDOGS_URL ${CDOGS_URL}
+ENV ACCESS_API_URL ${ACCESS_API_URL}
 
 # Copy production files from build
 COPY --from=builder /app/package*.json ./

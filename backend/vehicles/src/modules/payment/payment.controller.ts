@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Query, Req } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query, Req } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiCreatedResponse,
@@ -15,6 +15,7 @@ import { CreateTransactionDto } from './dto/request/create-transaction.dto';
 import { ReadTransactionDto } from './dto/response/read-transaction.dto';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
 import { Request } from 'express';
+import { ReadPermitTransactionDto } from './dto/response/read-permit-transaction.dto';
 
 @ApiBearerAuth()
 @ApiTags('Payment')
@@ -66,14 +67,28 @@ export class PaymentController {
     @Req() request: Request,
     @Body() createTransactionDto: CreateTransactionDto,
   ) {
-
-
-
     const currentUser = request.user as IUserJWT;
-    
+
     return await this.paymentService.updateTransaction(
       currentUser,
       createTransactionDto,
+    );
+  }
+
+  @ApiOkResponse({
+    description: 'The Permit Transaction Resource',
+    type: ReadPermitTransactionDto,
+  })
+  @Get('/:transactionOrderNumber/permit')
+  async getPermitTransaction(
+    @Req() request: Request,
+    @Param('transactionOrderNumber') transactionOrderNumber: string,
+  ): Promise<ReadPermitTransactionDto> {
+    const transaction = await this.paymentService.findOneTransaction(
+      transactionOrderNumber,
+    );
+    return await this.paymentService.findOnePermitTransaction(
+      transaction.transactionId,
     );
   }
 }

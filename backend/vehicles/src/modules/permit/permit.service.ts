@@ -97,6 +97,7 @@ export class PermitService {
         permit.documentId,
         downloadMode,
         res,
+        permit.companyId,
       );
     } else {
       file = (await this.dopsService.download(
@@ -104,6 +105,7 @@ export class PermitService {
         permit.documentId,
         downloadMode,
         res,
+        permit.companyId,
       )) as ReadFileDto;
     }
     return file;

@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+} from '@nestjs/common';
 import { Document } from './entities/document.entity';
 import { Mapper } from '@automapper/core';
 import { InjectMapper } from '@automapper/nestjs';
@@ -11,6 +15,7 @@ import { IFile } from '../../interface/file.interface';
 import { S3Service } from '../common/s3.service';
 import { Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
+import { IDP } from '../../enum/idp.enum';
 
 @Injectable()
 export class DmsService {
@@ -26,6 +31,7 @@ export class DmsService {
   async create(
     currentUser: IUserJWT,
     file: Express.Multer.File | IFile,
+    companyId?: number,
   ): Promise<ReadFileDto> {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     const s3ObjectId = uuidv4() as string;
@@ -41,6 +47,7 @@ export class DmsService {
       objectMimeType: file.mimetype,
       fileName: file.filename ? file.filename : file.originalname,
       dmsVersionId: dmsVersionId,
+      companyId: companyId,
     };
 
     return this.classMapper.mapAsync(
@@ -54,10 +61,16 @@ export class DmsService {
     currentUser: IUserJWT,
     documentId: string,
     file: Express.Multer.File,
+    companyId?: number,
   ): Promise<ReadFileDto> {
     const dmsObject = await this.findLatest(documentId);
     if (dmsObject?.documentId !== documentId) {
       throw new BadRequestException('Invalid Document Id');
+    } else if (
+      currentUser.identity_provider !== IDP.IDIR &&
+      dmsObject?.companyId != companyId
+    ) {
+      throw new ForbiddenException('Invalid Company Id');
     }
     const s3Object = await this.s3Service.uploadFile(
       file,
@@ -72,6 +85,7 @@ export class DmsService {
       objectMimeType: file.mimetype,
       fileName: file.filename,
       dmsVersionId: dmsObject.dmsVersionId + 1,
+      companyId: companyId,
     };
 
     return this.classMapper.mapAsync(
@@ -97,9 +111,17 @@ export class DmsService {
     documentId: string,
     downloadMode: FileDownloadModes,
     res?: Response,
+    companyId?: number,
   ) {
     let s3Object: NodeJS.ReadableStream = undefined;
     const file = await this.findOne(documentId);
+
+    if (
+      currentUser.identity_provider !== IDP.IDIR &&
+      file?.companyId != companyId
+    ) {
+      throw new ForbiddenException('Invalid Company Id');
+    }
 
     if (downloadMode === FileDownloadModes.PROXY) {
       s3Object = await this.s3Service.getFile(file.s3ObjectId, res);
