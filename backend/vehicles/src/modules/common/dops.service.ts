@@ -30,11 +30,13 @@ export class DopsService {
     dmsId: string,
     download = FileDownloadModes.URL,
     res?: Response,
+    companyId?: number,
   ): Promise<ReadFileDto | Buffer> {
     // Construct the URL for the request
     const url = `${process.env.DOPS_URL}/dms/${dmsId}`;
 
     const reqConfig: AxiosRequestConfig = {
+      params: { companyId: companyId ? companyId : undefined },
       headers: {
         Authorization: currentUser.access_token,
         'Content-Type': 'application/json',
@@ -90,11 +92,13 @@ export class DopsService {
     currentUser: IUserJWT,
     dopsGeneratedDocument: DopsGeneratedDocument,
     res?: Response,
+    companyId?: number,
   ): Promise<IFile> {
     // Construct the URL for the request
     const url = process.env.DOPS_URL + `/dgen/template/render`;
 
     const reqConfig: AxiosRequestConfig = {
+      params: { companyId: companyId ? companyId : undefined },
       headers: {
         Authorization: currentUser.access_token,
         'Content-Type': 'application/json',

@@ -62,4 +62,12 @@ export class ReadFileDto {
     description: 'The DMS Version ID.',
   })
   dmsVersionId: number;
+
+  @AutoMap()
+  @ApiProperty({
+    example: '74',
+    description: 'The Company ID.',
+    required: false,
+  })
+  companyId: number;
 }

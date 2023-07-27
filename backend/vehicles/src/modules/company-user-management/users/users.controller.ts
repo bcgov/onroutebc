@@ -160,10 +160,15 @@ export class UsersController {
     @Param('userGUID') userGUID: string,
   ): Promise<ReadUserDto> {
     const currentUser = request.user as IUserJWT;
-    const users = await this.userService.findUsersDto(
-      userGUID,
-      currentUser.associatedCompanies,
-    );
+    let users: ReadUserDto[] = [];
+    if (currentUser.identity_provider !== IDP.IDIR) {
+      users = await this.userService.findUsersDto(
+        userGUID,
+        currentUser.associatedCompanies,
+      );
+    } else {
+      users.push(await this.userService.findIdirUser(userGUID));
+    }
     if (!users?.length) {
       throw new DataNotFoundException();
     }

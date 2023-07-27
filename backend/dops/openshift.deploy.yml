@@ -140,6 +140,7 @@ objects:
       node-env: "${NODE_ENV}"
       cdogs-token-url: "${CDOGS_TOKEN_URL}"
       cdogs-url: "${CDOGS_URL}"
+      access-api-url: "https://${NAME}-${ZONE}-backend-vehicles.${DOMAIN}"
   - apiVersion: v1
     kind: Secret
     metadata:
@@ -311,6 +312,11 @@ objects:
                     configMapKeyRef:
                       name: ${NAME}-${ZONE}-${COMPONENT}
                       key: cdogs-url
+                - name: ACCESS_API_URL
+                  valueFrom:
+                    configMapKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: access-api-url
               ports:
                 - containerPort: 5001
                   protocol: TCP
