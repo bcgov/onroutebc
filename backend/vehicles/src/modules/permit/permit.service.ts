@@ -162,31 +162,6 @@ export class PermitService {
       )
       .getMany();
 
-    console.log(
-      'Query is ',
-       this.permitRepository
-      .createQueryBuilder('permit')
-      .innerJoinAndSelect('permit.permitData', 'permitData')
-      .where('permit.permitNumber IS NOT NULL')
-      .andWhere('permit.companyId = :companyId', {
-        companyId: companyId,
-      })
-      .andWhere(userGUID ? 'permit.userGuid = :userGUID' : '1=1', {
-        userGUID: userGUID,
-      })
-      .andWhere(
-        expired === 'true'
-          ? '(permit.permitStaus IN (:...expiredStatus))OR(permit.permitStatus = :activeStatus AND permitData.expiryDate < :expiryDate))'
-          : '(permit.permitStatus = :activeStatus AND permitData.expiryDate >= :expiryDate)',
-        {
-          expiredStatus: Object.values(PermitStatus).filter(
-            (x) => x != PermitStatus.ISSUED && x != PermitStatus.SUPERSEDED,
-          ),
-          activeStatus: PermitStatus.ISSUED,
-          expiryDate: new Date(),
-        },
-      ).getSql(),
-    );
     return this.classMapper.mapArrayAsync(permits, Permit, ReadPermitDto);
   }
 }

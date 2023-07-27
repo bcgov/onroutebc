@@ -30,6 +30,7 @@ import { FileDownloadModes } from '../../common/enum/file-download-modes.enum';
 import { ReadFileDto } from '../common/dto/response/read-file.dto';
 import { Roles } from 'src/common/decorator/roles.decorator';
 import { Role } from 'src/common/enum/roles.enum';
+import { IDP } from 'src/common/enum/idp.enum';
 
 @ApiBearerAuth()
 @ApiTags('Permit')
@@ -91,9 +92,10 @@ export class PermitController {
     @Query('expired') expired: string,
   ): Promise<ReadPermitDto[]> {
     const currentUser = request.user as IUserJWT;
-    const userGuid = currentUser.bceid_user_guid
-      ? currentUser.bceid_user_guid
-      : null;
+    const userGuid =
+      currentUser.identity_provider === IDP.BCEID
+        ? currentUser.bceid_user_guid
+        : null;
     return await this.permitService.findUserPermit(
       userGuid,
       companyId,
