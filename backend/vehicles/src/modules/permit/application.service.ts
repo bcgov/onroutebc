@@ -338,132 +338,120 @@ export class ApplicationService {
       throw new HttpException('Document already exists', 409);
     }
 
+    const permitNumber = await this.generatePermitNumber(applicationId);
+    tempPermit.permitNumber = permitNumber;
+    tempPermit.permitStatus = ApplicationStatus.ISSUED;
+
+    const companyInfo = await this.companyService.findOne(tempPermit.companyId);
+
+    const fullNames = await this.getFullNamesFromCache(tempPermit);
+
+    // Provide the permit json data required to populate the .docx template that is used to generate a PDF
+    const permitDataForTemplate = formatTemplateData(
+      tempPermit,
+      fullNames,
+      companyInfo,
+    );
     const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
     try {
-      const permitNumber = await this.generatePermitNumber(applicationId);
-      tempPermit.permitNumber = permitNumber;
-      tempPermit.permitStatus = ApplicationStatus.ISSUED;
+      let dopsRequestData: DopsGeneratedDocument = {
+        templateName: TemplateName.PERMIT_TROS,
+        generatedDocumentFileName: permitDataForTemplate.permitNumber,
+        templateData: permitDataForTemplate,
+      };
 
-      const companyInfo = await this.companyService.findOne(
-        tempPermit.companyId,
+      const generatedPermitDocumentPromise = this.generateDocument(
+        currentUser,
+        dopsRequestData,
+        companyInfo.companyId,
       );
 
-      const fullNames = await this.getFullNamesFromCache(tempPermit);
+      //Generate receipt number for the permit to be created in database.
+      const receiptNo = await this.generateReceiptNumber();
 
-      // Provide the permit json data required to populate the .docx template that is used to generate a PDF
-      const permitDataForTemplate = formatTemplateData(
-        tempPermit,
-        fullNames,
-        companyInfo,
+      dopsRequestData = {
+        templateName: TemplateName.PAYMENT_RECEIPT,
+        generatedDocumentFileName: `Receipt_No_${receiptNo}`,
+        templateData: {
+          ...permitDataForTemplate,
+          ...transactionDetails,
+          receiptNo,
+        },
+      };
+
+      const generatedReceiptDocumentPromise = this.generateDocument(
+        currentUser,
+        dopsRequestData,
+        companyInfo.companyId,
       );
 
-      await queryRunner.connect();
-      await queryRunner.startTransaction();
+      const generatedDocuments: IFile[] = await Promise.all([
+        generatedPermitDocumentPromise,
+        generatedReceiptDocumentPromise,
+      ]);
+
+      const permitEntity = await this.permitRepository.findOne({
+        where: [{ applicationNumber: tempPermit.applicationNumber }],
+        relations: {
+          permitData: true,
+        },
+      });
+
+      permitEntity.permitStatus = ApplicationStatus.ISSUED;
+      permitEntity.permitNumber = permitNumber;
+      permitEntity.documentId = generatedDocuments.at(0).dmsId;
+      await queryRunner.manager.save(permitEntity);
+      const receiptEntity: Receipt = new Receipt();
+      const transaction = await this.findOneTransactionByOrderNumber(
+        transactionDetails.transactionOrderNumber,
+      );
+      receiptEntity.transactionId = transaction.transactionId;
+      receiptEntity.receiptNumber = receiptNo;
+      receiptEntity.receiptDocumentId = generatedDocuments.at(1).dmsId;
+      await queryRunner.manager.save(receiptEntity);
+      await queryRunner.commitTransaction();
+
+      success = applicationId;
       try {
-        let dopsRequestData: DopsGeneratedDocument = {
-          templateName: TemplateName.PERMIT_TROS,
-          generatedDocumentFileName: permitDataForTemplate.permitNumber,
-          templateData: permitDataForTemplate,
+        const emailData: IssuePermitEmailData = {
+          companyName: companyInfo.legalName,
         };
 
-        const generatedPermitDocumentPromise = this.generateDocument(
-          currentUser,
-          dopsRequestData,
-        );
-
-        //Generate receipt number for the permit to be created in database.
-        const receiptNo = await this.generateReceiptNumber();
-
-        dopsRequestData = {
-          templateName: TemplateName.PAYMENT_RECEIPT,
-          generatedDocumentFileName: `Receipt_No_${receiptNo}`,
-          templateData: {
-            ...permitDataForTemplate,
-            ...transactionDetails,
-            receiptNo,
+        const attachments: AttachementEmailData[] = [
+          {
+            filename: tempPermit.permitNumber + '.pdf',
+            contentType: 'application/pdf',
+            encoding: 'base64',
+            content: generatedDocuments.at(0).buffer.toString('base64'),
           },
-        };
-
-        const generatedReceiptDocumentPromise = this.generateDocument(
-          currentUser,
-          dopsRequestData,
-        );
-
-        const generatedDocuments: IFile[] = await Promise.all([
-          generatedPermitDocumentPromise,
-          generatedReceiptDocumentPromise,
-        ]);
-
-        const permitEntity = await this.permitRepository.findOne({
-          where: [{ applicationNumber: tempPermit.applicationNumber }],
-          relations: {
-            permitData: true,
+          {
+            filename: `Receipt_No_${receiptNo}.pdf`,
+            contentType: 'application/pdf',
+            encoding: 'base64',
+            content: generatedDocuments.at(1).buffer.toString('base64'),
           },
-        });
+        ];
 
-        permitEntity.permitStatus = ApplicationStatus.ISSUED;
-        permitEntity.permitNumber = permitNumber;
-        permitEntity.documentId = generatedDocuments.at(0).dmsId;
-        await queryRunner.manager.save(permitEntity);
-
-        const receiptEntity: Receipt = new Receipt();
-        const transaction = await this.findOneTransactionByOrderNumber(
-          transactionDetails.transactionOrderNumber,
+        void this.emailService.sendEmailMessage(
+          EmailTemplate.ISSUE_PERMIT,
+          emailData,
+          'onRouteBC Permits - ' + companyInfo.legalName,
+          [
+            permitDataForTemplate.permitData?.contactDetails?.email,
+            companyInfo.email,
+          ],
+          attachments,
         );
-        receiptEntity.transactionId = transaction.transactionId;
-        receiptEntity.receiptNumber = receiptNo;
-        receiptEntity.receiptDocumentId = generatedDocuments.at(1).dmsId;
-        await queryRunner.manager.save(receiptEntity);
-        await queryRunner.commitTransaction();
-
-        success = applicationId;
-        try {
-          const emailData: IssuePermitEmailData = {
-            companyName: companyInfo.legalName,
-          };
-
-          const attachments: AttachementEmailData[] = [
-            {
-              filename: tempPermit.permitNumber + '.pdf',
-              contentType: 'application/pdf',
-              encoding: 'base64',
-              content: generatedDocuments.at(0).buffer.toString('base64'),
-            },
-            {
-              filename: `Receipt_No_${receiptNo}.pdf`,
-              contentType: 'application/pdf',
-              encoding: 'base64',
-              content: generatedDocuments.at(1).buffer.toString('base64'),
-            },
-          ];
-
-          void this.emailService.sendEmailMessage(
-            EmailTemplate.ISSUE_PERMIT,
-            emailData,
-            'onRouteBC Permits - ' + companyInfo.legalName,
-            [
-              permitDataForTemplate.permitData?.contactDetails?.email,
-              companyInfo.email,
-            ],
-            attachments,
-          );
-        } catch (error: unknown) {
-          console.log('Error in Email Service', error);
-        }
-      } catch (err) {
-        console.log(
-          'Error Issuing Application: ',
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-          err.response.status,
-          ' ',
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-          err.response.statusText,
-        );
-        success = '';
-        failure = applicationId;
+      } catch (error: unknown) {
+        console.log('Error in Email Service', error);
       }
     } catch (err) {
       await queryRunner.rollbackTransaction();
+      console.log(err);
+      success = '';
+      failure = applicationId;
     } finally {
       await queryRunner.release();
     }
@@ -479,10 +467,13 @@ export class ApplicationService {
   private async generateDocument(
     currentUser: IUserJWT,
     dopsRequestData: DopsGeneratedDocument,
+    companyId?: number,
   ) {
     return await this.dopsService.generateDocument(
       currentUser,
       dopsRequestData,
+      undefined,
+      companyId,
     );
   }
 
@@ -677,15 +668,13 @@ export class ApplicationService {
    * Generate Receipt Number
    */
   async generateReceiptNumber(): Promise<string> {
-    let seq: string;
-    let source;
     const currentDate = new Date();
     const year = currentDate.getFullYear();
     const month = String(currentDate.getMonth() + 1).padStart(2, '0');
     const day = String(currentDate.getDate()).padStart(2, '0');
     const dateString = `${year}${month}${day}`;
-    source = dateString;
-    seq = await callDatabaseSequence(
+    const source = dateString;
+    const seq = await callDatabaseSequence(
       'permit.ORBC_RECEIPT_NUMBER_SEQ',
       this.dataSource,
     );
