@@ -14,7 +14,7 @@ parse_options "${USAGE}" ${@}
 # Retrieve the version of the ORBC database from the version history table.
 # If the version history table does not exist then a value of zero (0) will
 # be returned.
-ORBC_DB_VERSION=$(sqlcmd -U ${USER} -P ${PASS} -S ${SERVER} -v DB_NAME=${DATABASE} -h -1 -i ${SCRIPT_DIR}/get-orbc-db-version.sql)
+ORBC_DB_VERSION=$(sqlcmd -C -U ${USER} -P ${PASS} -S ${SERVER} -v DB_NAME=${DATABASE} -h -1 -i ${SCRIPT_DIR}/get-orbc-db-version.sql)
 
 echo "ORBC DB Version: ${ORBC_DB_VERSION}"
 
@@ -29,7 +29,7 @@ if test -f "${SCRIPT_DIR}/versions/revert/v_${VERSION}_ddl_revert.sql"; then
     # The FILE_HASH is saved to the database as a verification that the DDL was not altered
     # from what is present in the git repository.
     FILE_HASH=($(sha1sum ${SCRIPT_DIR}/versions/revert/v_${VERSION}_ddl_revert.sql))
-    sqlcmd -U ${USER} -P "${PASS}" -S ${SERVER} -d ${DATABASE} -v FILE_HASH=${FILE_HASH} -i ${SCRIPT_DIR}/versions/revert/v_${VERSION}_ddl_revert.sql
+    sqlcmd -C -U ${USER} -P "${PASS}" -S ${SERVER} -d ${DATABASE} -v FILE_HASH=${FILE_HASH} -i ${SCRIPT_DIR}/versions/revert/v_${VERSION}_ddl_revert.sql
 else
     echo "ERROR: migration file ${SCRIPT_DIR}/versions/revert/v_${VERSION}_ddl_revert.sql not found."
     exit

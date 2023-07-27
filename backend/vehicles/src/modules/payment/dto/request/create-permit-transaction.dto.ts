@@ -11,7 +11,7 @@ export class CreatePermitTransactionDto {
 
   @AutoMap()
   @ApiProperty({
-    example: '10000203',
+    example: '1',
     description: 'Represents the ID of a transaction.',
   })
   transactionId: number;
