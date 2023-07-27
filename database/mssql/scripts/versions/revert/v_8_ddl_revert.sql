@@ -4,11 +4,20 @@ SET QUOTED_IDENTIFIER ON
 GO
 SET NOCOUNT ON
 GO
-BEGIN TRANSACTION
+
+-- Add TRY CATCH as a TEMP solution untill Full Text Search is installed in DB.
+BEGIN TRY
 
 DROP FULLTEXT INDEX ON [permit].[ORBC_PERMIT_DATA]
 DROP FULLTEXT CATALOG PermitDataFTCat
 
+END TRY
+BEGIN CATCH
+    PRINT ERROR_MESSAGE()
+END CATCH
+
+BEGIN TRANSACTION
+GO
 DECLARE @VersionDescription VARCHAR(255)
 SET @VersionDescription = 'Reverting Creation of Full Text Search Index on ORBC_PERMIT_DATA table.'
 
