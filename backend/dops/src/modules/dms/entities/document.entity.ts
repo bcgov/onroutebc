@@ -61,4 +61,13 @@ export class Document extends Base {
   })
   @Column({ type: 'int', name: 'DMS_VERSION_ID', nullable: false })
   dmsVersionId: number;
+
+  @AutoMap()
+  @ApiProperty({
+    example: '1',
+    description: 'The Company ID.',
+    required: false,
+  })
+  @Column({ type: 'int', name: 'COMPANY_ID', nullable: true })
+  companyId: number;
 }

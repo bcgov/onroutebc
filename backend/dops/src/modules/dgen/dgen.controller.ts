@@ -1,4 +1,12 @@
-import { Controller, Post, Body, Req, Res } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Req,
+  Res,
+  Query,
+  BadRequestException,
+} from '@nestjs/common';
 import {
   ApiTags,
   ApiBadRequestResponse,
@@ -7,6 +15,7 @@ import {
   ApiInternalServerErrorResponse,
   ApiBearerAuth,
   ApiCreatedResponse,
+  ApiQuery,
 } from '@nestjs/swagger';
 import { ExceptionDto } from '../../exception/exception.dto';
 import { Request, Response } from 'express';
@@ -14,7 +23,9 @@ import { ReadGeneratedDocumentDto } from './dto/response/read-generated-document
 import { IUserJWT } from '../../interface/user-jwt.interface';
 import { CreateGeneratedDocumentDto } from './dto/request/create-generated-document.dto';
 import { DgenService } from './dgen.service';
-import { AuthOnly } from '../../decorator/auth-only.decorator';
+import { IDP } from '../../enum/idp.enum';
+import { Roles } from '../../decorator/roles.decorator';
+import { Role } from '../../enum/roles.enum';
 
 @ApiTags('Document Generator (DGEN)')
 @ApiBadRequestResponse({
@@ -42,18 +53,31 @@ export class DgenController {
     description: 'The Generated Document Resource',
     type: ReadGeneratedDocumentDto,
   })
-  @AuthOnly()
+  @ApiQuery({
+    name: 'companyId',
+    required: false,
+    example: '74',
+    description: 'Required when IDP is not IDIR .',
+  })
+  @Roles(Role.GENERATE_DOCUMENT)
   @Post('/template/render')
   async generate(
     @Req() request: Request,
     @Res() res: Response,
+    @Query('companyId') companyId: number,
     @Body() createGeneratedDocumentDto: CreateGeneratedDocumentDto,
   ) {
     const currentUser = request.user as IUserJWT;
+    if (currentUser.identity_provider !== IDP.IDIR && !companyId) {
+      throw new BadRequestException(
+        'Company Id is manadatory for all IDP but IDIR',
+      );
+    }
     await this.dgenService.generate(
       currentUser,
       createGeneratedDocumentDto,
       res,
+      companyId,
     );
     res.status(201);
   }
