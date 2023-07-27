@@ -8,8 +8,8 @@ GO
 -- Add TRY CATCH as a TEMP solution untill Full Text Search is installed in DB.
 BEGIN TRY
 
-DROP FULLTEXT INDEX ON [permit].[ORBC_PERMIT_DATA]
 DROP FULLTEXT CATALOG PermitDataFTCat
+DROP FULLTEXT INDEX ON [permit].[ORBC_PERMIT_DATA]
 
 END TRY
 BEGIN CATCH
