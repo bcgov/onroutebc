@@ -4,7 +4,7 @@ import { Navigate, useSearchParams } from "react-router-dom";
 import { getMotiPaymentDetails } from "../../helpers/payment";
 import { MotiPaymentDetails, Transaction } from "../../types/payment";
 import { Loading } from "../../../../common/pages/Loading";
-import { usePermitTransactionQuery, usePostTransaction } from "../../hooks/hooks";
+import { usePostTransaction } from "../../hooks/hooks";
 
 /**
  * React component that handles the payment redirect and displays the payment status.
@@ -49,7 +49,7 @@ export const PaymentRedirect = () => {
     );
   }
   
-  if (permitIds && transactionIds) {
+  if (paymentApproved === true && permitIds && transactionIds) {
     const permitIdsArray = permitIds.split(",").filter(id => id !== "");
     const transactionIdsArray = transactionIds.split(",").filter(id => id !== "");
     if (permitIdsArray.length !== 1 || transactionIdsArray.length !== 1) {
