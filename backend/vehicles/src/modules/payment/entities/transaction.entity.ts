@@ -193,15 +193,15 @@ export class Transaction extends Base {
   // Many permits can be associated with a transaction
   // Many transactions can be associated with a permit (example: cancelled, paid, refund, etc)
 
-  @ManyToMany(() => Permit, (permit) => permit.permitId)
+  @ManyToMany(() => Permit, (permit) => permit.transactions)
   @JoinTable({
     name: 'permit.ORBC_PERMIT_TRANSACTION',
     joinColumn: {
-      name: 'transactionId',
+      name: 'TRANSACTION_ID',
       referencedColumnName: 'transactionId',
     },
     inverseJoinColumn: {
-      name: 'permitId',
+      name: 'PERMIT_ID',
       referencedColumnName: 'permitId',
     },
   })
