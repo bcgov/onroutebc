@@ -38,7 +38,7 @@ export class DopsService {
     const reqConfig: AxiosRequestConfig = {
       params: {
         download: download,
-        companyId: companyId ? companyId : undefined,
+        companyId: companyId,
       },
       headers: {
         Authorization: currentUser.access_token,

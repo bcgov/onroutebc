@@ -23,11 +23,10 @@ import { MotiPayDetailsDto } from './dto/response/read-moti-pay-details.dto';
 import { CreateTransactionDto } from './dto/request/create-transaction.dto';
 import { ReadTransactionDto } from './dto/response/read-transaction.dto';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import { ReadPermitTransactionDto } from './dto/response/read-permit-transaction.dto';
 import { AuthOnly } from 'src/common/decorator/auth-only.decorator';
 import { ReadFileDto } from '../common/dto/response/read-file.dto';
-import { Response } from 'express';
 
 @ApiBearerAuth()
 @ApiTags('Payment')
@@ -119,7 +118,6 @@ export class PaymentController {
     @Param('transactionId') transactionId: string,
     @Res() res: Response,
   ): Promise<void> {
-    // TODO: Use IUserJWT / Exception handling
     const currentUser = request.user as IUserJWT;
     
     await this.paymentService.findReceiptPDF(
