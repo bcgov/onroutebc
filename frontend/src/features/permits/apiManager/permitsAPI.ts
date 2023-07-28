@@ -208,7 +208,7 @@ export const postTransaction = async (
 export const getActivePermits = async (): Promise<
   PermitApplicationInProgress[]
 > => {
-  const permitsURL = `${VEHICLES_URL}/permits?status=ACTIVE`;
+  const permitsURL = `${VEHICLES_URL}/permits`;
   const permits = await httpGETRequest(permitsURL).then((response) =>
     (
       getDefaultRequiredVal([], response.data) as PermitApplicationInProgress[]
@@ -249,7 +249,7 @@ export const getActivePermits = async (): Promise<
 export const getExpiredPermits = async (): Promise<
   PermitApplicationInProgress[]
 > => {
-  const permitsURL = `${VEHICLES_URL}/permits?status=EXPIRED`;
+  const permitsURL = `${VEHICLES_URL}/permits?expired=true`;
   const permits = await httpGETRequest(permitsURL).then((response) =>
     (
       getDefaultRequiredVal([], response.data) as PermitApplicationInProgress[]

@@ -14,7 +14,7 @@ export const Brand = () => {
           height="50px"
         />
       </a>
-      <h1>onRouteBC <strong>{`| ${companyLegalName}`}</strong></h1>
+      <h1>onRouteBC | <strong>{`${companyLegalName}`}</strong></h1>
     </div>
   );
 };

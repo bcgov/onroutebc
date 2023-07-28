@@ -20,6 +20,7 @@ import { getActivePermits } from "../../apiManager/permitsAPI";
 import { FIVE_MINUTES } from "../../../../common/constants/constants";
 import { PermitRowOptions } from "./PermitRowOptions";
 import { EmptyTable } from "../../../../common/components/table/EmptyTable";
+import { InfoBcGovBanner } from "../../../../common/components/banners/AlertBanners";
 
 /**
  * Dynamically set the column
@@ -126,7 +127,7 @@ export const PermitList = () => {
       },
     },
     {
-      permitId: "4",
+      permitId: "5",
       permitStatus: "ISSUED",
       companyId: 103,
       userGuid: "EB1CA523856F4E7C92F7322C0194CA3E",
@@ -192,6 +193,7 @@ export const PermitList = () => {
 
   return (
     <div className="table-container">
+      <InfoBcGovBanner description="Refunds and amendments can be requested over the phone by calling the Provincial Permit Centre at Toll-free: 1-800-559-9688. Please have your permit number ready." />
       <MaterialReactTable
         columns={columns}
         data={dd ?? []}
@@ -230,7 +232,10 @@ export const PermitList = () => {
             // );
             return (
               <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-                <PermitRowOptions isExpired={false} permitId={row.original.permitId} />
+                <PermitRowOptions
+                  isExpired={false}
+                  permitId={row.original.permitId}
+                />
               </Box>
             );
           },

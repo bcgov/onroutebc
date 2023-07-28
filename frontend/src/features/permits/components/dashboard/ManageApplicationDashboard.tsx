@@ -9,16 +9,17 @@ import { List } from "../list/List";
 import { getApplicationsInProgress } from "../../../../features/permits/apiManager/permitsAPI";
 import { StartApplicationButton } from "../../../../features/permits/pages/TermOversize/form/VehicleDetails/customFields/StartApplicationButton";
 import { PermitList } from "../permit-specific/PermitList";
+import { ExpiredPermitList } from "../permit-specific/ExpiredPermitList";
+import { FIVE_MINUTES } from "../../../../common/constants/constants";
 
 export const ManageApplicationDashboard = React.memo(() => {
   const keepPreviousData = true;
-  const staleTime = 5000;
 
   const applicationInProgressQuery = useQuery({
     queryKey: ["applicationInProgress"],
     queryFn: getApplicationsInProgress,
     keepPreviousData: keepPreviousData,
-    staleTime: staleTime,
+    staleTime: FIVE_MINUTES,
   });
 
   const {
@@ -31,7 +32,7 @@ export const ManageApplicationDashboard = React.memo(() => {
     queryKey: ["applicationInProgress"],
     queryFn: getApplicationsInProgress,
     keepPreviousData: true,
-    staleTime: 5000,
+    staleTime: FIVE_MINUTES,
   });
 
   if (isLoading) {
@@ -87,32 +88,7 @@ export const ManageApplicationDashboard = React.memo(() => {
     },
     {
       label: "Expired Permits",
-      component:
-        data?.length === 0 ? (
-          <div
-            style={{
-              padding: "20px 0px",
-              backgroundColor: "white",
-              textAlign: "center",
-            }}
-          >
-            <div>
-              <img
-                src="No_Data_Graphic.svg"
-                style={{
-                  width: "124px",
-                  height: "112px",
-                  marginTop: "80px",
-                }}
-              />
-            </div>
-            <div>
-              <h3>No Records Found.</h3>
-            </div>
-          </div>
-        ) : (
-          <PermitList />
-        ),
+      component: <ExpiredPermitList />,
     },
   ];
 

@@ -16,8 +16,8 @@ import {
   PermitApplicationInProgress,
 } from "../../types/application";
 import { ActivePermitsColumnDefinition } from "./Columns";
-import { getActivePermits } from "../../apiManager/permitsAPI";
-import { FIVE_MINUTES } from "../../../../common/constants/constants";
+import { getExpiredPermits } from "../../apiManager/permitsAPI";
+import { TEN_MINUTES } from "../../../../common/constants/constants";
 import { PermitRowOptions } from "./PermitRowOptions";
 import { EmptyTable } from "../../../../common/components/table/EmptyTable";
 
@@ -40,10 +40,10 @@ const getColumns = (): MRT_ColumnDef<PermitApplicationInProgress>[] => {
 /* eslint-disable react/prop-types */
 export const ExpiredPermitList = () => {
   const { data, isInitialLoading, isError } = useQuery({
-    queryKey: ["activePermits"],
-    queryFn: getActivePermits,
+    queryKey: ["expiredPermits"],
+    queryFn: getExpiredPermits,
     keepPreviousData: true,
-    staleTime: FIVE_MINUTES,
+    staleTime: TEN_MINUTES,
   });
 
   const snackBar = useContext(SnackBarContext);
@@ -126,7 +126,7 @@ export const ExpiredPermitList = () => {
       },
     },
     {
-      permitId: "4",
+      permitId: "5",
       permitStatus: "ISSUED",
       companyId: 103,
       userGuid: "EB1CA523856F4E7C92F7322C0194CA3E",
