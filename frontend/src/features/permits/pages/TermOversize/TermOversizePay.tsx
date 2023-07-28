@@ -107,8 +107,6 @@ const FeeSummary = ({ calculatedFee }: { calculatedFee: number }) => {
       transactionAmount, 
       permitIds
     );
-    console.log(permitIds);
-    console.log(url);
     window.open(url, "_self");
   };
 

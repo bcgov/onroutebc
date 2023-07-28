@@ -2,7 +2,18 @@ import { Box, Button, Typography } from "@mui/material";
 import { useEffect } from "react";
 import "./SuccessPage.scss";
 import { useNavigate, useParams } from "react-router-dom";
-import { downloadPermitApplicationPdf } from "../../apiManager/permitsAPI";
+import { downloadPermitApplicationPdf, downloadReceiptPdf } from "../../apiManager/permitsAPI";
+
+const downloadFile = (blob: Blob, filename: string) => {
+  const objUrl = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = objUrl;
+  link.setAttribute('download', `${filename}`); // Set the desired file name
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(objUrl);
+};
 
 export const SuccessPage = () => {
   useEffect(() => {
@@ -10,20 +21,13 @@ export const SuccessPage = () => {
   }, []);
 
   const navigate = useNavigate();
-  const { permitId } = useParams();
+  const { permitId, transactionId } = useParams();
 
-  const viewPermitPdfByPermitId = async (permitId: number) => {
+  const viewPermitPdfByPermitId = async (permitId: string) => {
     try {
       const { blobObj, filename } = await downloadPermitApplicationPdf(permitId);      
       // Create an object URL for the response
-      const objUrl = URL.createObjectURL(blobObj);
-      const link = document.createElement('a');
-      link.href = objUrl;
-      link.setAttribute('download', `${filename}`); // Set the desired file name
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(objUrl);
+      downloadFile(blobObj, filename);
     } catch (err) {
       console.error(err);
     }
@@ -31,7 +35,18 @@ export const SuccessPage = () => {
 
   const viewPermitPdf = async () => {
     if (permitId) {
-      return await viewPermitPdfByPermitId(+permitId);
+      return await viewPermitPdfByPermitId(permitId);
+    }
+  };
+
+  const viewReceiptPdf = async () => {
+    if (transactionId) {
+      try {
+        const { blobObj, filename } = await downloadReceiptPdf(transactionId);
+        downloadFile(blobObj, filename);
+      } catch (err) {
+        console.error(err);
+      }
     }
   };
 
@@ -77,9 +92,10 @@ export const SuccessPage = () => {
             sx={{ marginLeft: "24px" }}
             variant="contained"
             color="secondary"
-            disabled={true} // TODO
+            onClick={viewReceiptPdf}
+            disabled={!permitId}
           >
-            TODO: View Receipts
+            View Receipts
           </Button>
         </Box>
       </Box>
