@@ -4,6 +4,7 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { useCallback } from "react";
+import { getPermitPdfURL } from "../../apiManager/permitsAPI";
 
 const ACTIVE_OPTIONS = ["View Receipt"];
 const EXPIRED_OPTIONS = ["View Receipt"];
@@ -17,13 +18,17 @@ const getOptions = (isExpired: boolean): string[] => {
 
 const ITEM_HEIGHT = 48;
 
-export const PermitRowOptions = ({ isExpired }: { isExpired: boolean }) => {
+export const PermitRowOptions = ({
+  isExpired,
+  permitId,
+}: {
+  isExpired: boolean;
+  permitId: string;
+}) => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
-  const [isResendOpen, setIsResendOpen] = React.useState<boolean>(false);
   const handleClick = useCallback((event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
-    // console.log(event.currentTarget);
   }, []);
   const handleClose = (_event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(null);
@@ -31,8 +36,13 @@ export const PermitRowOptions = ({ isExpired }: { isExpired: boolean }) => {
 
   const onClickOption = (event: React.MouseEvent<HTMLElement>) => {
     const selectedOption = event.currentTarget.outerText as string;
-    if (selectedOption === "Resend") {
-      setIsResendOpen(() => true);
+
+    if (selectedOption === "View Receipt") {
+      getPermitPdfURL(permitId).then((response) => {
+        if (response.presignedUrl) {
+          window.open(response.presignedUrl, "_blank");
+        }
+      });
     }
     setAnchorEl(null);
   };

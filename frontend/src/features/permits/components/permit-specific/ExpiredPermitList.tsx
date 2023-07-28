@@ -38,7 +38,7 @@ const getColumns = (): MRT_ColumnDef<PermitApplicationInProgress>[] => {
  *
  */
 /* eslint-disable react/prop-types */
-export const PermitList = () => {
+export const ExpiredPermitList = () => {
   const { data, isInitialLoading, isError } = useQuery({
     queryKey: ["activePermits"],
     queryFn: getActivePermits,
@@ -334,4 +334,4 @@ export const PermitList = () => {
   // }
 };
 
-PermitList.displayName = "PermitList";
+ExpiredPermitList.displayName = "ExpiredPermitList";

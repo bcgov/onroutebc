@@ -50,9 +50,7 @@ const getPermitType = (permitTypeKey: string): string => {
  * @param termOversizePermit application data for term oversize permit
  * @returns response with created application data, or error if failed
  */
-export const submitTermOversize = async (
-  termOversizePermit: Application
-) => {
+export const submitTermOversize = async (termOversizePermit: Application) => {
   return await httpPOSTRequest(
     PERMITS_API.SUBMIT_TERM_OVERSIZE_PERMIT,
     replaceEmptyValuesWithNull({
@@ -140,11 +138,12 @@ export const getApplicationInProgressById = (
  * @param permitIds Array of permit ids to be deleted.
  * @returns A Promise with the API response.
  */
-export const deleteApplications = async (
-  applicationIds: Array<string>,
-) => {
-  const requestBody = { applicationIds, applicationStatus: "CANCELLED"};
-  return await httpPOSTRequest(`${APPLICATION_UPDATE_STATUS_API}`, replaceEmptyValuesWithNull(requestBody));
+export const deleteApplications = async (applicationIds: Array<string>) => {
+  const requestBody = { applicationIds, applicationStatus: "CANCELLED" };
+  return await httpPOSTRequest(
+    `${APPLICATION_UPDATE_STATUS_API}`,
+    replaceEmptyValuesWithNull(requestBody)
+  );
 };
 
 /**
@@ -162,6 +161,18 @@ export const downloadPermitApplicationPdf = (
 };
 
 /**
+ * View permit application pdf file.
+ * @param permitId permit id of the permit application.
+ * @returns A Promise of dms reference string.
+ */
+export const getPermitPdfURL = (permitId: string): Promise<any> => {
+  const url = `${APPLICATION_PDF_API}/${permitId}?download=url`;
+  return httpGETRequest(url).then((response) => {
+    return response;
+  });
+};
+
+/**
  * Generates a URL for making a payment transaction with Moti Pay.
  * @param {number} transactionAmount - The amount of the transaction.
  * @returns {Promise<any>} - A Promise that resolves to the transaction URL.
@@ -172,11 +183,12 @@ export const getMotiPayTransactionUrl = async (
   transactionAmount: number,
   permitIds: string[]
 ): Promise<any> => {
-  const url = `${PAYMENT_API}?` 
-    + `paymentMethodId=${paymentMethodId}`
-    + `&transactionSubmitDate=${transactionSubmitDate}`
-    + `&transactionAmount=${transactionAmount}`
-    + `&permitIds=${permitIds.toString()}`;
+  const url =
+    `${PAYMENT_API}?` +
+    `paymentMethodId=${paymentMethodId}` +
+    `&transactionSubmitDate=${transactionSubmitDate}` +
+    `&transactionAmount=${transactionAmount}` +
+    `&permitIds=${permitIds.toString()}`;
   return httpGETRequest(url).then((response) => {
     return response.data.url;
   });
