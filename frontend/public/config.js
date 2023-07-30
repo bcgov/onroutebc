@@ -18,7 +18,7 @@ const envConfig = (() => {
   return {
     VITE_DEPLOY_ENVIRONMENT: "docker",
     VITE_API_VEHICLE_URL: "http://localhost:5000",
-    VITE_AUTH0_ISSUER_URL: "",
-    VITE_AUTH0_AUDIENCE: "",
+    VITE_AUTH0_ISSUER_URL: "https://dev.loginproxy.gov.bc.ca/auth/realms/standard",
+    VITE_AUTH0_AUDIENCE: "on-route-bc-direct-4598",
   };
 })();

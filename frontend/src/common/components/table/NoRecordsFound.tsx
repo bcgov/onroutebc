@@ -1,6 +1,6 @@
 import { memo } from "react";
 
-export const EmptyTable = memo(() => {
+export const NoRecordsFound = memo(() => {
   return (
     <div
       style={{
@@ -26,4 +26,4 @@ export const EmptyTable = memo(() => {
   );
 });
 
-EmptyTable.displayName = "EmptyTable";
+NoRecordsFound.displayName = "NoRecordsFound";

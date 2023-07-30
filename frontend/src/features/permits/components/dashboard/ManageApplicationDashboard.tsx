@@ -8,7 +8,7 @@ import { ErrorFallback } from "../../../../common/pages/ErrorFallback";
 import { List } from "../list/List";
 import { getApplicationsInProgress } from "../../../../features/permits/apiManager/permitsAPI";
 import { StartApplicationButton } from "../../../../features/permits/pages/TermOversize/form/VehicleDetails/customFields/StartApplicationButton";
-import { PermitList } from "../permit-specific/PermitList";
+import { ActivePermitList } from "../permit-specific/ActivePermitList";
 import { ExpiredPermitList } from "../permit-specific/ExpiredPermitList";
 import { FIVE_MINUTES } from "../../../../common/constants/constants";
 
@@ -22,18 +22,7 @@ export const ManageApplicationDashboard = React.memo(() => {
     staleTime: FIVE_MINUTES,
   });
 
-  const {
-    data,
-    isLoading,
-    isError,
-    error,
-    //refetch,
-  } = useQuery({
-    queryKey: ["applicationInProgress"],
-    queryFn: getApplicationsInProgress,
-    keepPreviousData: true,
-    staleTime: FIVE_MINUTES,
-  });
+  const { data, isLoading, isError, error } = applicationInProgressQuery;
 
   if (isLoading) {
     return <Loading />;
@@ -84,7 +73,7 @@ export const ManageApplicationDashboard = React.memo(() => {
     },
     {
       label: "Active Permits",
-      component: <PermitList />,
+      component: <ActivePermitList />,
     },
     {
       label: "Expired Permits",

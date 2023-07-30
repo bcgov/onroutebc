@@ -1,24 +1,19 @@
 import { useQuery } from "@tanstack/react-query";
-import { TEN_MINUTES } from "../../../../common/constants/constants";
-import { getExpiredPermits } from "../../apiManager/permitsAPI";
+import { InfoBcGovBanner } from "../../../../common/components/banners/AlertBanners";
+import { FIVE_MINUTES } from "../../../../common/constants/constants";
+import { getActivePermits } from "../../apiManager/permitsAPI";
 import { PermitApplicationInProgress } from "../../types/application";
 import { BlankPermitList } from "./BlankPermitList";
 
-/*
- *
- * The List component uses Material React Table (MRT)
- * For detailed documentation, see here:
- * https://www.material-react-table.com/docs/getting-started/usage
- *
- *
+/**
+ * A wrapper with the query to load the table with active permits.
  */
-/* eslint-disable react/prop-types */
-export const ExpiredPermitList = () => {
+export const ActivePermitList = () => {
   const query = useQuery({
-    queryKey: ["expiredPermits"],
-    queryFn: getExpiredPermits,
+    queryKey: ["activePermits"],
+    queryFn: getActivePermits,
     keepPreviousData: true,
-    staleTime: TEN_MINUTES,
+    staleTime: FIVE_MINUTES,
   });
 
   const dd: PermitApplicationInProgress[] = [
@@ -152,9 +147,10 @@ export const ExpiredPermitList = () => {
 
   return (
     <div className="table-container">
+      <InfoBcGovBanner description="Refunds and amendments can be requested over the phone by calling the Provincial Permit Centre at Toll-free: 1-800-559-9688. Please have your permit number ready." />
       <BlankPermitList query={query} />
     </div>
   );
 };
 
-ExpiredPermitList.displayName = "ExpiredPermitList";
+ActivePermitList.displayName = "ActivePermitList";
