@@ -12,7 +12,7 @@ import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFou
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import "../../../manageVehicles/components/list/List.scss";
 import { ReadPermitDto } from "../../types/permit";
-import { ActivePermitsColumnDefinition } from "./Columns";
+import { PermitsColumnDefinition } from "./Columns";
 import { PermitRowOptions } from "./PermitRowOptions";
 
 /**
@@ -20,7 +20,7 @@ import { PermitRowOptions } from "./PermitRowOptions";
  * @returns An array of column headers/accessor keys ofr Material React Table
  */
 const getColumns = (): MRT_ColumnDef<ReadPermitDto>[] => {
-  return ActivePermitsColumnDefinition;
+  return PermitsColumnDefinition;
 };
 
 export const BasePermitList = ({
@@ -46,7 +46,7 @@ export const BasePermitList = ({
   const dd: ReadPermitDto[] = [
     {
       permitId: 4,
-      permitStatus: "ISSUED",
+      permitStatus: "VOIDED",
       companyId: 103,
       userGuid: "EB1CA523856F4E7C92F7322C0194CA3E",
       permitType: "TROS",
@@ -109,7 +109,7 @@ export const BasePermitList = ({
     },
     {
       permitId: 5,
-      permitStatus: "ISSUED",
+      permitStatus: "REVOKED",
       companyId: 103,
       userGuid: "EB1CA523856F4E7C92F7322C0194CA3E",
       permitType: "TROS",
@@ -171,7 +171,6 @@ export const BasePermitList = ({
       },
     },
   ];
-
   return (
     <MaterialReactTable
       columns={getColumns()}
@@ -188,11 +187,6 @@ export const BasePermitList = ({
       positionActionsColumn="last"
       // Disable the default column actions so that we can use our custom actions
       enableColumnActions={false}
-      // Row copy, delete, and edit options
-      getRowId={(originalRow) => {
-        const applicationRow = originalRow as ReadPermitDto;
-        return applicationRow.permitId.toString();
-      }}
       enableRowActions={true}
       displayColumnDefOptions={{
         "mrt-row-actions": {

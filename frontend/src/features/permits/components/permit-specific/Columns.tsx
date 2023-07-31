@@ -1,8 +1,19 @@
 import { MRT_ColumnDef } from "material-react-table";
 import { Link } from "react-router-dom";
 import { ReadPermitDto } from "../../types/permit";
+import { PermitChip } from "./PermitChip";
 
-export const ActivePermitsColumnDefinition: MRT_ColumnDef<ReadPermitDto>[] = [
+/**
+ * A boolean indicating if a small badge has to be displayed beside the Permit Number.
+ */
+const shouldShowPermitChip = (permitStatus: string) => {
+  return permitStatus === "VOIDED" || permitStatus === "REVOKED";
+};
+
+/**
+ * The column definition for Permits.
+ */
+export const PermitsColumnDefinition: MRT_ColumnDef<ReadPermitDto>[] = [
   {
     accessorKey: "permitNumber",
     header: "Permit #",
@@ -11,9 +22,14 @@ export const ActivePermitsColumnDefinition: MRT_ColumnDef<ReadPermitDto>[] = [
     accessorFn: (row) => row.permitNumber,
     Cell: (props: { cell: any; row: any }) => {
       return (
-        <Link to={`/permits/${props.row.original.permitId}`}>
-          {props.cell.getValue()}
-        </Link>
+        <>
+          <Link to={`/permits/${props.row.original.permitId}`}>
+            {props.cell.getValue()}
+          </Link>
+          {shouldShowPermitChip(props.row.original.permitStatus) && (
+            <PermitChip permitStatus={props.row.original.permitStatus} />
+          )}
+        </>
       );
     },
   },
@@ -23,7 +39,8 @@ export const ActivePermitsColumnDefinition: MRT_ColumnDef<ReadPermitDto>[] = [
     enableSorting: false,
   },
   {
-    accessorKey: "permitData.vehicleDetails.unitNumber",
+    accessorFn: (row) => `${row.permitData.vehicleDetails?.unitNumber || ""}`,
+    id: "unitNumber",
     header: "Unit #",
     enableSorting: false,
   },
@@ -50,4 +67,4 @@ export const ActivePermitsColumnDefinition: MRT_ColumnDef<ReadPermitDto>[] = [
 ];
 
 export const PermitsNotFoundColumnDefinition: MRT_ColumnDef<ReadPermitDto>[] =
-  ActivePermitsColumnDefinition;
+  PermitsColumnDefinition;

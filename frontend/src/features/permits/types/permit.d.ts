@@ -93,7 +93,7 @@ export interface VehicleDetails {
   vehicleType: string;
   vehicleSubType: string;
   saveVehicle?: boolean;
-  unitNumber?: string;
+  unitNumber?: string | undefined;
 }
 
 export interface Commodities {

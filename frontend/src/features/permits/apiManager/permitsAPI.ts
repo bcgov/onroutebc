@@ -247,9 +247,10 @@ export const postTransaction = async (
 export const getPermits = async ({ expired = false } = {}): Promise<
   ReadPermitDto[]
 > => {
-  let permitsURL = `${VEHICLES_URL}/permits`;
+  const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
+  let permitsURL = `${VEHICLES_URL}/permits/user?companyId=${companyId}`;
   if (expired) {
-    permitsURL += `?expired=${expired}`;
+    permitsURL += `&expired=${expired}`;
   }
   const permits = await httpGETRequest(permitsURL).then((response) =>
     (getDefaultRequiredVal([], response.data) as ReadPermitDto[]).map(
