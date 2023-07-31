@@ -235,7 +235,7 @@ export const postTransaction = async (
   transactionDetails: Transaction
 ): Promise<any> => {
   const url = `${PAYMENT_API}`;
-  return await httpPOSTRequest(`${PAYMENT_API}`, transactionDetails);
+  return await httpPOSTRequest(url, transactionDetails);
 };
 
 /**
