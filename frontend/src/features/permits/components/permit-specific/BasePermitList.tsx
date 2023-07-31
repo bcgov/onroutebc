@@ -17,19 +17,20 @@ import { ActivePermitsColumnDefinition } from "./Columns";
 import { UseQueryResult } from "@tanstack/react-query";
 import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
 import { SnackBarContext } from "../../../../App";
+import { ReadPermitDto } from "../../types/permit";
 
 /**
  * Dynamically set the column
  * @returns An array of column headers/accessor keys ofr Material React Table
  */
-const getColumns = (): MRT_ColumnDef<PermitApplicationInProgress>[] => {
+const getColumns = (): MRT_ColumnDef<ReadPermitDto>[] => {
   return ActivePermitsColumnDefinition;
 };
 
 export const BasePermitList = ({
   query,
 }: {
-  query: UseQueryResult<ApplicationInProgress[]>;
+  query: UseQueryResult<ReadPermitDto[]>;
 }) => {
   const { data, isError, isInitialLoading } = query;
   const snackBar = useContext(SnackBarContext);
@@ -44,20 +45,20 @@ export const BasePermitList = ({
     }
   }, [isError]);
 
-  const dd: PermitApplicationInProgress[] = [
+  const dd: ReadPermitDto[] = [
     {
-      permitId: "4",
+      permitId: 4,
       permitStatus: "ISSUED",
       companyId: 103,
       userGuid: "EB1CA523856F4E7C92F7322C0194CA3E",
       permitType: "TROS",
       applicationNumber: "A2-00010006-582-R00",
       permitNumber: "P2-00010006-582-R00",
-      permitApprovalSource: null,
+      permitApprovalSource: 'AUTO',
       permitApplicationOrigin: "ONLINE",
       createdDateTime: "2023-07-25T17:57:48.969Z",
       updatedDateTime: "2023-07-25T17:57:48.969Z",
-      documentId: null,
+      documentId: 'DOCUMENT-1',
       permitData: {
         startDate: "2023-07-25",
         permitDuration: 30,
@@ -109,18 +110,18 @@ export const BasePermitList = ({
       },
     },
     {
-      permitId: "5",
+      permitId: 5,
       permitStatus: "ISSUED",
       companyId: 103,
       userGuid: "EB1CA523856F4E7C92F7322C0194CA3E",
       permitType: "TROS",
       applicationNumber: "A2-00010006-582-R00",
       permitNumber: "P3-00010006-582-R00",
-      permitApprovalSource: null,
+      permitApprovalSource: 'AUTO',
       permitApplicationOrigin: "ONLINE",
       createdDateTime: "2023-07-25T17:57:48.969Z",
       updatedDateTime: "2023-07-25T17:57:48.969Z",
-      documentId: null,
+      documentId: 'DOCUMENT-2',
       permitData: {
         startDate: "2023-06-25",
         permitDuration: 30,
@@ -191,8 +192,8 @@ export const BasePermitList = ({
       enableColumnActions={false}
       // Row copy, delete, and edit options
       getRowId={(originalRow) => {
-        const applicationRow = originalRow as PermitApplicationInProgress;
-        return applicationRow.permitId;
+        const applicationRow = originalRow as ReadPermitDto;
+        return applicationRow.permitId.toString();
       }}
       enableRowActions={true}
       displayColumnDefOptions={{
@@ -204,8 +205,8 @@ export const BasePermitList = ({
         ({
           row,
         }: {
-          table: MRT_TableInstance<PermitApplicationInProgress>;
-          row: MRT_Row<PermitApplicationInProgress>;
+          table: MRT_TableInstance<ReadPermitDto>;
+          row: MRT_Row<ReadPermitDto>;
         }) => {
           // const isExpired = hasPermitExpired(
           //   row.original.permitData.expiryDate
@@ -223,7 +224,7 @@ export const BasePermitList = ({
       )}
       // Render a custom options Bar (inclues search, filter, trash, and csv options)
       renderTopToolbar={useCallback(
-        ({ table }: { table: MRT_TableInstance<ApplicationInProgress> }) => (
+        ({ table }: { table: MRT_TableInstance<ReadPermitDto> }) => (
           <Box
             sx={{
               display: "flex",

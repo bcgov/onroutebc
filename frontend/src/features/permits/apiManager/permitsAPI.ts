@@ -26,13 +26,14 @@ import {
 import { mapApplicationToApplicationRequestData } from "../helpers/mappers";
 import { PermitTransaction, Transaction } from "../types/payment";
 import { VEHICLES_URL } from "../../../common/apiManager/endpoints/endpoints";
+import { Permit, ReadPermitDto } from "../types/permit";
 
 /**
  * A record containing permit keys and full forms.
  */
 const permitAbbreviations: Record<string, string> = {
-  "TROS": "Term Oversize",
-  "STOS": "Single Trip Oversize"
+  TROS: "Term Oversize",
+  STOS: "Single Trip Oversize",
 };
 
 /**
@@ -136,7 +137,7 @@ export const deleteApplications = async (applicationIds: Array<string>) => {
 };
 
 const getFileNameFromHeaders = (headers: Headers) => {
-  const contentDisposition = headers.get('content-disposition');
+  const contentDisposition = headers.get("content-disposition");
   if (!contentDisposition) return undefined;
   const matchRegex = /filename=(.+)/;
   const filenameMatch = matchRegex.exec(contentDisposition);
@@ -168,9 +169,9 @@ const streamDownload = async (url: string) => {
         // Enqueue the next data chunk into our target stream
         controller.enqueue(value);
         await processRead();
-      }
+      };
       processRead();
-    }
+    },
   });
   const newRes = new Response(stream);
   const blobObj = await newRes.blob();
@@ -244,46 +245,48 @@ export const postTransaction = async (
  * @returns A list of permits.
  */
 export const getPermits = async ({ expired = false } = {}): Promise<
-  PermitApplicationInProgress[]
+  ReadPermitDto[]
 > => {
   let permitsURL = `${VEHICLES_URL}/permits`;
   if (expired) {
     permitsURL += `?expired=${expired}`;
   }
   const permits = await httpGETRequest(permitsURL).then((response) =>
-    (
-      getDefaultRequiredVal([], response.data) as PermitApplicationInProgress[]
-    ).map((permit) => {
-      return {
-        ...permit,
-        createdDateTime: toLocal(
-          permit.createdDateTime,
-          DATE_FORMATS.DATETIME_LONG_TZ
-        ),
-        updatedDateTime: toLocal(
-          permit.updatedDateTime,
-          DATE_FORMATS.DATETIME_LONG_TZ
-        ),
-        permitData: {
-          ...permit.permitData,
-          startDate: toLocal(
-            permit.permitData.startDate,
-            DATE_FORMATS.DATEONLY_SHORT_NAME
+    (getDefaultRequiredVal([], response.data) as ReadPermitDto[]).map(
+      (permit) => {
+        return {
+          ...permit,
+          createdDateTime: toLocal(
+            permit.createdDateTime,
+            DATE_FORMATS.DATETIME_LONG_TZ
           ),
-          expiryDate: toLocal(
-            permit.permitData.startDate,
-            DATE_FORMATS.DATEONLY_SHORT_NAME
+          updatedDateTime: toLocal(
+            permit.updatedDateTime,
+            DATE_FORMATS.DATETIME_LONG_TZ
           ),
-        },
-      } as PermitApplicationInProgress;
-    })
+          permitData: {
+            ...permit.permitData,
+            startDate: toLocal(
+              permit.permitData.startDate,
+              DATE_FORMATS.DATEONLY_SHORT_NAME
+            ),
+            expiryDate: toLocal(
+              permit.permitData.startDate,
+              DATE_FORMATS.DATEONLY_SHORT_NAME
+            ),
+          },
+        } as ReadPermitDto;
+      }
+    )
   );
   return permits;
-}
+};
 
 export const getPermitTransaction = async (transactionOrderNumber: string) => {
   try {
-    const response = await httpGETRequest(`${PAYMENT_API}/${transactionOrderNumber}/permit`);
+    const response = await httpGETRequest(
+      `${PAYMENT_API}/${transactionOrderNumber}/permit`
+    );
     if (response.status === 200) {
       return response.data as PermitTransaction;
     }

@@ -1,18 +1,21 @@
 import { MRT_ColumnDef } from "material-react-table";
-import { ApplicationInProgress, PermitApplicationInProgress } from "../../types/application";
 import { Link } from "react-router-dom";
+import { ReadPermitDto } from "../../types/permit";
 
-export const ActivePermitsColumnDefinition: MRT_ColumnDef<PermitApplicationInProgress>[] = [
+export const ActivePermitsColumnDefinition: MRT_ColumnDef<ReadPermitDto>[] = [
   {
     accessorKey: "permitNumber",
     header: "Permit #",
     enableSorting: false,
     size: 500,
     accessorFn: (row) => row.permitNumber,
-    Cell: (props: {cell: any, row: any}) => {
-      return <Link to={`/permits/${props.row.original.permitId}`}>{props.cell.getValue()}</Link>
+    Cell: (props: { cell: any; row: any }) => {
+      return (
+        <Link to={`/permits/${props.row.original.permitId}`}>
+          {props.cell.getValue()}
+        </Link>
+      );
     },
-
   },
   {
     accessorKey: "permitType",
@@ -38,13 +41,13 @@ export const ActivePermitsColumnDefinition: MRT_ColumnDef<PermitApplicationInPro
     header: "Permit End Date",
   },
   {
-    // accessorKey: "permitData.contactDetails.firstName",
-    accessorFn: (row) => `${row.permitData.contactDetails?.firstName} ${row.permitData.contactDetails?.lastName} `,
+    accessorFn: (row) =>
+      `${row.permitData.contactDetails?.firstName} ${row.permitData.contactDetails?.lastName} `,
     id: "application",
     header: "Applicant",
     enableSorting: false,
-  }
+  },
 ];
 
-export const PermitsNotFoundColumnDefinition: MRT_ColumnDef<PermitApplicationInProgress>[] = [
-];
+export const PermitsNotFoundColumnDefinition: MRT_ColumnDef<ReadPermitDto>[] =
+  ActivePermitsColumnDefinition;

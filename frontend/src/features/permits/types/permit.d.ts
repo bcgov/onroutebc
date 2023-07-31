@@ -19,17 +19,30 @@ type ReplaceDayjsWithString<T> = {
  * A base permit type. This is an incomplete object and meant to be extended for use.
  */
 export interface Permit {
-  permitId?: number;
-  permitStatus?: string;
+  permitId: number;
+  permitStatus: string;
   companyId: number;
   userGuid?: string | null;
   permitType: string;
-  applicationNumber?: string;
-  permitNumber?: number;
-  permitApprovalSource?: string;
-  createdDateTime?: Dayjs;
-  updatedDateTime?: Dayjs;
+  applicationNumber: string;
+  permitNumber: string;
+  permitApprovalSource: string;
+  permitApplicationOrigin: string;
+  permitIssueDateTime: Dayjs;
+  documentId?: string;
+  createdDateTime: Dayjs;
+  updatedDateTime: Dayjs;
   permitData: TermOversizeApplication;
+}
+
+/**
+ * The Read
+ */
+export interface ReadPermitDto extends Permit {
+  permitIssueDateTime?: string;
+  createdDateTime: string;
+  updatedDateTime: string;
+  permitData: ReplaceDayjsWithString<TermOversizeApplication>;
 }
 
 /**
@@ -99,6 +112,7 @@ export interface TermOversizeApplication {
   vehicleDetails?: VehicleDetails;
   commodities: Commodities[];
   mailingAddress: MailingAddress;
+  feeSummary: string;
 }
 
 export interface PermitApplicationInProgress {

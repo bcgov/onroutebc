@@ -23,7 +23,7 @@ export const PermitRowOptions = ({
   permitId,
 }: {
   isExpired: boolean;
-  permitId: string;
+  permitId: number;
 }) => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -38,7 +38,7 @@ export const PermitRowOptions = ({
     const selectedOption = event.currentTarget.outerText as string;
 
     if (selectedOption === "View Receipt") {
-      getPermitPdfURL(permitId).then((response) => {
+      getPermitPdfURL(permitId.toString()).then((response) => {
         if (response.presignedUrl) {
           window.open(response.presignedUrl, "_blank");
         }
