@@ -202,62 +202,23 @@ export const postTransaction = async (
 };
 
 /**
- * Fetch all the active permits for a company
- * @return An array of permits
+ * Retrieve the list of active or expired permits.
+ * @param expired If set to true, expired permits will be retrieved.
+ * @returns A list of permits.
  */
-export const getActivePermits = async (): Promise<
+export const getPermits = async ({ expired = false } = {}): Promise<
   PermitApplicationInProgress[]
 > => {
-  const permitsURL = `${VEHICLES_URL}/permits`;
+  let permitsURL = `${VEHICLES_URL}/permits`;
+  if (expired) {
+    permitsURL += `?expired=${expired}`;
+  }
   const permits = await httpGETRequest(permitsURL).then((response) =>
     (
       getDefaultRequiredVal([], response.data) as PermitApplicationInProgress[]
     ).map((permit) => {
-      const permitType = getPermitType(permit.permitType);
       return {
         ...permit,
-        permitType,
-        createdDateTime: toLocal(
-          permit.createdDateTime,
-          DATE_FORMATS.DATETIME_LONG_TZ
-        ),
-        updatedDateTime: toLocal(
-          permit.updatedDateTime,
-          DATE_FORMATS.DATETIME_LONG_TZ
-        ),
-        permitData: {
-          ...permit.permitData,
-          startDate: toLocal(
-            permit.permitData.startDate,
-            DATE_FORMATS.DATEONLY_SHORT_NAME
-          ),
-          expiryDate: toLocal(
-            permit.permitData.startDate,
-            DATE_FORMATS.DATEONLY_SHORT_NAME
-          ),
-        },
-      } as PermitApplicationInProgress;
-    })
-  );
-  return permits;
-};
-
-/**
- * Fetch all the expired permits of a company
- * @return An array of permits
- */
-export const getExpiredPermits = async (): Promise<
-  PermitApplicationInProgress[]
-> => {
-  const permitsURL = `${VEHICLES_URL}/permits?expired=true`;
-  const permits = await httpGETRequest(permitsURL).then((response) =>
-    (
-      getDefaultRequiredVal([], response.data) as PermitApplicationInProgress[]
-    ).map((permit) => {
-      const permitType = getPermitType(permit.permitType);
-      return {
-        ...permit,
-        permitType,
         createdDateTime: toLocal(
           permit.createdDateTime,
           DATE_FORMATS.DATETIME_LONG_TZ
