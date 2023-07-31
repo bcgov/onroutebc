@@ -25,8 +25,10 @@ const getColumns = (): MRT_ColumnDef<ReadPermitDto>[] => {
 
 export const BasePermitList = ({
   query,
+  isExpired = false,
 }: {
   query: UseQueryResult<ReadPermitDto[]>;
+  isExpired?: boolean;
 }) => {
   const { data, isError, isInitialLoading } = query;
   const snackBar = useContext(SnackBarContext);
@@ -50,11 +52,11 @@ export const BasePermitList = ({
       permitType: "TROS",
       applicationNumber: "A2-00010006-582-R00",
       permitNumber: "P2-00010006-582-R00",
-      permitApprovalSource: 'AUTO',
+      permitApprovalSource: "AUTO",
       permitApplicationOrigin: "ONLINE",
       createdDateTime: "2023-07-25T17:57:48.969Z",
       updatedDateTime: "2023-07-25T17:57:48.969Z",
-      documentId: 'DOCUMENT-1',
+      documentId: "DOCUMENT-1",
       permitData: {
         startDate: "2023-07-25",
         permitDuration: 30,
@@ -113,11 +115,11 @@ export const BasePermitList = ({
       permitType: "TROS",
       applicationNumber: "A2-00010006-582-R00",
       permitNumber: "P3-00010006-582-R00",
-      permitApprovalSource: 'AUTO',
+      permitApprovalSource: "AUTO",
       permitApplicationOrigin: "ONLINE",
       createdDateTime: "2023-07-25T17:57:48.969Z",
       updatedDateTime: "2023-07-25T17:57:48.969Z",
-      documentId: 'DOCUMENT-2',
+      documentId: "DOCUMENT-2",
       permitData: {
         startDate: "2023-06-25",
         permitDuration: 30,
@@ -204,13 +206,10 @@ export const BasePermitList = ({
           table: MRT_TableInstance<ReadPermitDto>;
           row: MRT_Row<ReadPermitDto>;
         }) => {
-          // const isExpired = hasPermitExpired(
-          //   row.original.permitData.expiryDate
-          // );
           return (
             <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
               <PermitRowOptions
-                isExpired={false}
+                isExpired={isExpired}
                 permitId={row.original.permitId}
               />
             </Box>
