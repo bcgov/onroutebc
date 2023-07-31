@@ -26,7 +26,7 @@ const getColumns = (): MRT_ColumnDef<PermitApplicationInProgress>[] => {
   return ActivePermitsColumnDefinition;
 };
 
-export const BlankPermitList = ({
+export const BasePermitList = ({
   query,
 }: {
   query: UseQueryResult<ApplicationInProgress[]>;

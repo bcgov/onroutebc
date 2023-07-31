@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { InfoBcGovBanner } from "../../../../common/components/banners/AlertBanners";
 import { FIVE_MINUTES } from "../../../../common/constants/constants";
 import { getPermits } from "../../apiManager/permitsAPI";
-import { BlankPermitList } from "./BlankPermitList";
+import { BasePermitList } from "./BasePermitList";
 
 /**
  * A wrapper with the query to load the table with active permits.
@@ -18,7 +18,7 @@ export const ActivePermitList = () => {
   return (
     <div className="table-container">
       <InfoBcGovBanner description="Refunds and amendments can be requested over the phone by calling the Provincial Permit Centre at Toll-free: 1-800-559-9688. Please have your permit number ready." />
-      <BlankPermitList query={query} />
+      <BasePermitList query={query} />
     </div>
   );
 };
