@@ -1,23 +1,19 @@
+import { Box } from "@mui/material";
+import { UseQueryResult } from "@tanstack/react-query";
 import MaterialReactTable, {
   MRT_ColumnDef,
   MRT_GlobalFilterTextField,
   MRT_Row,
   MRT_TableInstance,
 } from "material-react-table";
-import { BC_COLOURS } from "../../../../themes/bcGovStyles";
-import { Box } from "@mui/material";
-import { useCallback, useEffect, useContext } from "react";
-import { PermitRowOptions } from "./PermitRowOptions";
-import {
-  ApplicationInProgress,
-  PermitApplicationInProgress,
-} from "../../types/application";
-import "../../../manageVehicles/components/list/List.scss";
-import { ActivePermitsColumnDefinition } from "./Columns";
-import { UseQueryResult } from "@tanstack/react-query";
-import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
+import { useCallback, useContext, useEffect } from "react";
 import { SnackBarContext } from "../../../../App";
+import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
+import { BC_COLOURS } from "../../../../themes/bcGovStyles";
+import "../../../manageVehicles/components/list/List.scss";
 import { ReadPermitDto } from "../../types/permit";
+import { ActivePermitsColumnDefinition } from "./Columns";
+import { PermitRowOptions } from "./PermitRowOptions";
 
 /**
  * Dynamically set the column
