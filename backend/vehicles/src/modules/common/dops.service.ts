@@ -30,11 +30,16 @@ export class DopsService {
     dmsId: string,
     download = FileDownloadModes.URL,
     res?: Response,
+    companyId?: number,
   ): Promise<ReadFileDto | Buffer> {
     // Construct the URL for the request
     const url = `${process.env.DOPS_URL}/dms/${dmsId}`;
 
     const reqConfig: AxiosRequestConfig = {
+      params: {
+        download: download,
+        companyId: companyId,
+      },
       headers: {
         Authorization: currentUser.access_token,
         'Content-Type': 'application/json',
@@ -42,14 +47,9 @@ export class DopsService {
       responseType: download === FileDownloadModes.PROXY ? 'stream' : 'json',
     };
 
-    // Set the request parameters
-    const params = {
-      download: download,
-    };
-
     // Calls the DOPS service, which converts the the template document into a pdf
     const dopsResponse = await lastValueFrom(
-      this.httpService.get(url, { params, ...reqConfig }).pipe(
+      this.httpService.get(url, reqConfig).pipe(
         map((response) => {
           return response;
         }),
@@ -74,6 +74,7 @@ export class DopsService {
       );
       return file;
     }
+
     return dopsResponse.data as ReadFileDto;
   }
 
@@ -90,11 +91,13 @@ export class DopsService {
     currentUser: IUserJWT,
     dopsGeneratedDocument: DopsGeneratedDocument,
     res?: Response,
+    companyId?: number,
   ): Promise<IFile> {
     // Construct the URL for the request
     const url = process.env.DOPS_URL + `/dgen/template/render`;
 
     const reqConfig: AxiosRequestConfig = {
+      params: { companyId: companyId ? companyId : undefined },
       headers: {
         Authorization: currentUser.access_token,
         'Content-Type': 'application/json',

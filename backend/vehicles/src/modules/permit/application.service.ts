@@ -40,6 +40,9 @@ import { DopsGeneratedDocument } from '../../common/interface/dops-generated-doc
 import { TemplateName } from '../../common/enum/template-name.enum';
 import { IReceipt } from 'src/common/interface/receipt.interface';
 import { IFile } from '../../common/interface/file.interface';
+import { ReadTransactionDto } from '../payment/dto/response/read-transaction.dto';
+import { Transaction } from '../payment/entities/transaction.entity';
+import { Receipt } from '../payment/entities/receipt.entity';
 
 @Injectable()
 export class ApplicationService {
@@ -58,6 +61,10 @@ export class ApplicationService {
     private companyService: CompanyService,
     private readonly emailService: EmailService,
     private readonly permitService: PermitService,
+    @InjectRepository(Transaction)
+    private transactionRepository: Repository<Transaction>,
+    @InjectRepository(Receipt)
+    private receiptRepository: Repository<Receipt>,
   ) {}
 
   /**
@@ -331,24 +338,24 @@ export class ApplicationService {
       throw new HttpException('Document already exists', 409);
     }
 
+    const permitNumber = await this.generatePermitNumber(applicationId);
+    tempPermit.permitNumber = permitNumber;
+    tempPermit.permitStatus = ApplicationStatus.ISSUED;
+
+    const companyInfo = await this.companyService.findOne(tempPermit.companyId);
+
+    const fullNames = await this.getFullNamesFromCache(tempPermit);
+
+    // Provide the permit json data required to populate the .docx template that is used to generate a PDF
+    const permitDataForTemplate = formatTemplateData(
+      tempPermit,
+      fullNames,
+      companyInfo,
+    );
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
     try {
-      const permitNumber = await this.generatePermitNumber(applicationId);
-      tempPermit.permitNumber = permitNumber;
-      tempPermit.permitStatus = ApplicationStatus.ISSUED;
-
-      const companyInfo = await this.companyService.findOne(
-        tempPermit.companyId,
-      );
-
-      const fullNames = await this.getFullNamesFromCache(tempPermit);
-
-      // Provide the permit json data required to populate the .docx template that is used to generate a PDF
-      const permitDataForTemplate = formatTemplateData(
-        tempPermit,
-        fullNames,
-        companyInfo,
-      );
-
       let dopsRequestData: DopsGeneratedDocument = {
         templateName: TemplateName.PERMIT_TROS,
         generatedDocumentFileName: permitDataForTemplate.permitNumber,
@@ -358,9 +365,11 @@ export class ApplicationService {
       const generatedPermitDocumentPromise = this.generateDocument(
         currentUser,
         dopsRequestData,
+        companyInfo.companyId,
       );
 
-      const receiptNo = '12437592034';
+      //Generate receipt number for the permit to be created in database.
+      const receiptNo = await this.generateReceiptNumber();
 
       dopsRequestData = {
         templateName: TemplateName.PAYMENT_RECEIPT,
@@ -375,6 +384,7 @@ export class ApplicationService {
       const generatedReceiptDocumentPromise = this.generateDocument(
         currentUser,
         dopsRequestData,
+        companyInfo.companyId,
       );
 
       const generatedDocuments: IFile[] = await Promise.all([
@@ -382,22 +392,28 @@ export class ApplicationService {
         generatedReceiptDocumentPromise,
       ]);
 
-      // Update Permit record with an ISSUED status, new permit number, and new DMS Document ID
-      await this.permitRepository
-        .createQueryBuilder()
-        .update()
-        .set({
-          permitStatus: ApplicationStatus.ISSUED,
-          permitIssueDateTime: new Date(),
-          ...{ permitNumber: permitNumber },
-          ...{ documentId: generatedDocuments.at(0).dmsId },
-        })
-        .where('ID = :applicationId', { applicationId })
-        .andWhere('permitNumber IS NULL')
-        .execute();
+      const permitEntity = await this.permitRepository.findOne({
+        where: [{ applicationNumber: tempPermit.applicationNumber }],
+        relations: {
+          permitData: true,
+        },
+      });
+
+      permitEntity.permitStatus = ApplicationStatus.ISSUED;
+      permitEntity.permitNumber = permitNumber;
+      permitEntity.documentId = generatedDocuments.at(0).dmsId;
+      await queryRunner.manager.save(permitEntity);
+      const receiptEntity: Receipt = new Receipt();
+      const transaction = await this.findOneTransactionByOrderNumber(
+        transactionDetails.transactionOrderNumber,
+      );
+      receiptEntity.transactionId = transaction.transactionId;
+      receiptEntity.receiptNumber = receiptNo;
+      receiptEntity.receiptDocumentId = generatedDocuments.at(1).dmsId;
+      await queryRunner.manager.save(receiptEntity);
+      await queryRunner.commitTransaction();
 
       success = applicationId;
-
       try {
         const emailData: IssuePermitEmailData = {
           companyName: companyInfo.legalName,
@@ -432,16 +448,12 @@ export class ApplicationService {
         console.log('Error in Email Service', error);
       }
     } catch (err) {
-      console.log(
-        'Error Issuing Application: ',
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-        err.response.status,
-        ' ',
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-        err.response.statusText,
-      );
+      await queryRunner.rollbackTransaction();
+      console.log(err);
       success = '';
       failure = applicationId;
+    } finally {
+      await queryRunner.release();
     }
 
     const resultDto: ResultDto = {
@@ -455,10 +467,13 @@ export class ApplicationService {
   private async generateDocument(
     currentUser: IUserJWT,
     dopsRequestData: DopsGeneratedDocument,
+    companyId?: number,
   ) {
     return await this.dopsService.generateDocument(
       currentUser,
       dopsRequestData,
+      undefined,
+      companyId,
     );
   }
 
@@ -633,5 +648,38 @@ export class ApplicationService {
     const permitNumber =
       'P' + String(approvalSourceId) + '-' + String(seq) + '-' + String(rnd);
     return permitNumber;
+  }
+
+  async findOneTransactionByOrderNumber(
+    transactionOrderNumber: string,
+  ): Promise<ReadTransactionDto> {
+    return this.classMapper.mapAsync(
+      await this.transactionRepository.findOne({
+        where: {
+          transactionOrderNumber: transactionOrderNumber,
+        },
+      }),
+      Transaction,
+      ReadTransactionDto,
+    );
+  }
+
+  /**
+   * Generate Receipt Number
+   */
+  async generateReceiptNumber(): Promise<string> {
+    const currentDate = new Date();
+    const year = currentDate.getFullYear();
+    const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+    const day = String(currentDate.getDate()).padStart(2, '0');
+    const dateString = `${year}${month}${day}`;
+    const source = dateString;
+    const seq = await callDatabaseSequence(
+      'permit.ORBC_RECEIPT_NUMBER_SEQ',
+      this.dataSource,
+    );
+    const receiptNumber = String(String(source) + '-' + String(seq));
+
+    return receiptNumber;
   }
 }

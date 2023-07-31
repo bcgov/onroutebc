@@ -5,10 +5,12 @@ import {
   PrimaryGeneratedColumn,
   ManyToMany,
   JoinTable,
+  OneToOne,
 } from 'typeorm';
 import { AutoMap } from '@automapper/classes';
 import { Base } from '../../common/entities/base.entity';
 import { Permit } from 'src/modules/permit/entities/permit.entity';
+import { Receipt } from './receipt.entity';
 
 @Entity({ name: 'permit.ORBC_TRANSACTION' })
 export class Transaction extends Base {
@@ -18,7 +20,7 @@ export class Transaction extends Base {
     description: 'Unique identifier for the transaction metadata.',
   })
   @PrimaryGeneratedColumn({ type: 'bigint', name: 'TRANSACTION_ID' })
-  transactionId: number;
+  transactionId: string;
 
   @AutoMap()
   @ApiProperty({
@@ -187,24 +189,24 @@ export class Transaction extends Base {
   })
   messageText: string;
 
-  // TODO
-  @ManyToMany(() => Permit, (permit) => permit.permitId)
+  // TODO: Implement many to many relationship for permits and transactions
+  // Many permits can be associated with a transaction
+  // Many transactions can be associated with a permit (example: cancelled, paid, refund, etc)
+
+  @ManyToMany(() => Permit, (permit) => permit.transactions)
   @JoinTable({
     name: 'permit.ORBC_PERMIT_TRANSACTION',
     joinColumn: {
-      name: 'transactionId',
+      name: 'TRANSACTION_ID',
       referencedColumnName: 'transactionId',
     },
     inverseJoinColumn: {
-      name: 'permitId',
+      name: 'PERMIT_ID',
       referencedColumnName: 'permitId',
     },
   })
   permits: Permit[];
 
-  // @AutoMap(() => PermitTransaction)
-  // @ManyToMany(() => PermitTransaction, (PermitTransaction) => PermitTransaction.permitId, {
-  //   cascade: true,
-  // })
-  // permits: PermitTransaction[];
+  @OneToOne(() => Receipt, (receipt) => receipt.transactionId)
+  receipt: Receipt;
 }

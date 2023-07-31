@@ -4,6 +4,7 @@ import {
   getUserGuidFromSession,
   httpPUTRequest,
   httpPOSTRequest,
+  httpGETRequestStream,
 } from "../../../common/apiManager/httpRequestHandler";
 
 import {
@@ -23,7 +24,7 @@ import {
   PERMITS_API,
 } from "./endpoints/endpoints";
 import { mapApplicationToApplicationRequestData } from "../helpers/mappers";
-import { Transaction } from "../types/payment";
+import { PermitTransaction, Transaction } from "../types/payment";
 import { VEHICLES_URL } from "../../../common/apiManager/endpoints/endpoints";
 
 /**
@@ -134,18 +135,66 @@ export const deleteApplications = async (applicationIds: Array<string>) => {
   );
 };
 
+const getFileNameFromHeaders = (headers: Headers) => {
+  const contentDisposition = headers.get('content-disposition');
+  if (!contentDisposition) return undefined;
+  const matchRegex = /filename=(.+)/;
+  const filenameMatch = matchRegex.exec(contentDisposition);
+  if (filenameMatch && filenameMatch.length > 1) {
+    return filenameMatch[1];
+  }
+  return undefined;
+};
+
+const streamDownload = async (url: string) => {
+  const response = await httpGETRequestStream(url);
+  const filename = getFileNameFromHeaders(response.headers);
+  if (!filename) {
+    throw new Error("Unable to download pdf, file not available");
+  }
+  if (!response.body) {
+    throw new Error("Unable to download pdf, no response found");
+  }
+  const reader = response.body.getReader();
+  const stream = new ReadableStream({
+    start: (controller) => {
+      const processRead = async () => {
+        const { done, value } = await reader.read();
+        if (done) {
+          // When no more data needs to be consumed, close the stream
+          controller.close();
+          return;
+        }
+        // Enqueue the next data chunk into our target stream
+        controller.enqueue(value);
+        await processRead();
+      }
+      processRead();
+    }
+  });
+  const newRes = new Response(stream);
+  const blobObj = await newRes.blob();
+  return { blobObj, filename };
+};
+
 /**
- * View permit application pdf file.
+ * Download permit application pdf file.
  * @param permitId permit id of the permit application.
  * @returns A Promise of dms reference string.
  */
-export const downloadPermitApplicationPdf = (
-  permitId: number | undefined
-): Promise<any> => {
+export const downloadPermitApplicationPdf = async (permitId: string) => {
   const url = `${APPLICATION_PDF_API}/${permitId}?download=proxy`;
-  return httpGETRequest(url).then((response) => {
-    return response;
-  });
+  return await streamDownload(url);
+};
+
+/**
+ * Download permit receipt pdf file.
+ * @param transactionId transaction id of the permit application associated with the receipt.
+ * @returns A Promise of dms reference string.
+ */
+export const downloadReceiptPdf = async (transactionId: string) => {
+  const url = `${PAYMENT_API}/${transactionId}/receipt`;
+  return await streamDownload(url);
 };
 
 /**
@@ -230,4 +279,16 @@ export const getPermits = async ({ expired = false } = {}): Promise<
     })
   );
   return permits;
+}
+
+export const getPermitTransaction = async (transactionOrderNumber: string) => {
+  try {
+    const response = await httpGETRequest(`${PAYMENT_API}/${transactionOrderNumber}/permit`);
+    if (response.status === 200) {
+      return response.data as PermitTransaction;
+    }
+    return undefined;
+  } catch (err) {
+    return undefined;
+  }
 };

@@ -15,6 +15,7 @@ export const PERMITS = "permits";
 //Applications
 export const APPLICATIONS = "applications";
 export const APPLICATIONS_SUCCESS = "success";
+export const APPLICATIONS_FAILURE = "failure";
 
 // Wizard
 export const CREATE_PROFILE = "create-profile";

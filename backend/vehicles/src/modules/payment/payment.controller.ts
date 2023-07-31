@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Post, Query, Req } from '@nestjs/common';
+import { 
+  Body, 
+  Controller, 
+  Get, 
+  Param, 
+  Post, 
+  Query, 
+  Req,
+  Res,
+} from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiCreatedResponse,
@@ -14,7 +23,10 @@ import { MotiPayDetailsDto } from './dto/response/read-moti-pay-details.dto';
 import { CreateTransactionDto } from './dto/request/create-transaction.dto';
 import { ReadTransactionDto } from './dto/response/read-transaction.dto';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
-import { Request } from 'express';
+import { Request, Response } from 'express';
+import { ReadPermitTransactionDto } from './dto/response/read-permit-transaction.dto';
+import { AuthOnly } from 'src/common/decorator/auth-only.decorator';
+import { ReadFileDto } from '../common/dto/response/read-file.dto';
 
 @ApiBearerAuth()
 @ApiTags('Payment')
@@ -52,9 +64,13 @@ export class PaymentController {
       transactionAmount,
     );
 
-    await this.paymentService.createTransaction(permitIdArray, paymentDetails);
+    const permitTransactions = await this.paymentService.createTransaction(permitIdArray, paymentDetails);
 
-    return paymentDetails;
+    return this.paymentService.generateUrl(
+      paymentDetails, 
+      permitTransactions.map(permitTransaction => permitTransaction.permitId),
+      permitTransactions.map(permitTransaction => permitTransaction.transactionId),
+    );
   }
 
   @ApiCreatedResponse({
@@ -67,9 +83,48 @@ export class PaymentController {
     @Body() createTransactionDto: CreateTransactionDto,
   ) {
     const currentUser = request.user as IUserJWT;
+
     return await this.paymentService.updateTransaction(
       currentUser,
       createTransactionDto,
     );
+  }
+
+  @ApiOkResponse({
+    description: 'The Permit Transaction Resource',
+    type: ReadPermitTransactionDto,
+  })
+  @Get('/:transactionOrderNumber/permit')
+  async getPermitTransaction(
+    @Req() request: Request,
+    @Param('transactionOrderNumber') transactionOrderNumber: string,
+  ): Promise<ReadPermitTransactionDto> {
+    const transaction = await this.paymentService.findOneTransaction(
+      transactionOrderNumber,
+    );
+    return await this.paymentService.findOnePermitTransaction(
+      transaction.transactionId,
+    );
+  }
+
+  @AuthOnly()
+  @ApiCreatedResponse({
+    description: 'The DOPS file Resource with the presigned resource',
+    type: ReadFileDto,
+  })
+  @Get('/:transactionId/receipt')
+  async getReceiptPDF(
+    @Req() request: Request,
+    @Param('transactionId') transactionId: string,
+    @Res() res: Response,
+  ): Promise<void> {
+    const currentUser = request.user as IUserJWT;
+    
+    await this.paymentService.findReceiptPDF(
+      currentUser,
+      transactionId,
+      res,
+    );
+    res.status(200);
   }
 }

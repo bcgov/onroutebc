@@ -11,6 +11,7 @@ import {
   Query,
   Res,
   Req,
+  BadRequestException,
 } from '@nestjs/common';
 import { DmsService } from './dms.service';
 import {
@@ -32,7 +33,9 @@ import { FileDownloadModes } from '../../enum/file-download-modes.enum';
 import { Request, Response } from 'express';
 import { UpdateFileDto } from './dto/request/update-file.dto';
 import { IUserJWT } from '../../interface/user-jwt.interface';
-import { AuthOnly } from '../../decorator/auth-only.decorator';
+import { IDP } from '../../enum/idp.enum';
+import { Roles } from '../../decorator/roles.decorator';
+import { Role } from '../../enum/roles.enum';
 
 @ApiTags('DMS')
 @ApiBadRequestResponse({
@@ -60,13 +63,20 @@ export class DmsController {
     description: 'The DMS file Resource',
     type: ReadFileDto,
   })
+  @ApiQuery({
+    name: 'companyId',
+    required: false,
+    example: '74',
+    description: 'Required when IDP is not IDIR .',
+  })
   @ApiConsumes('multipart/form-data')
-  @AuthOnly()
+  @Roles(Role.WRITE_DOCUMENT)
   @Post('upload')
   @UseInterceptors(FileInterceptor('file'))
   async uploadFile(
     @Req() request: Request,
     @Body() createFileDto: CreateFileDto,
+    @Query('companyId') companyId: number,
     @UploadedFile(
       new ParseFilePipe({
         validators: [
@@ -81,25 +91,37 @@ export class DmsController {
     file: Express.Multer.File,
   ): Promise<ReadFileDto> {
     const currentUser = request.user as IUserJWT;
+    if (currentUser.identity_provider !== IDP.IDIR && !companyId) {
+      throw new BadRequestException(
+        'Company Id is manadatory for all IDP but IDIR',
+      );
+    }
     file.filename = createFileDto.fileName
       ? createFileDto.fileName
       : file.originalname;
 
-    return await this.dmsService.create(currentUser, file);
+    return await this.dmsService.create(currentUser, file, companyId);
   }
 
   @ApiCreatedResponse({
     description: 'The DMS file Resource',
     type: ReadFileDto,
   })
+  @ApiQuery({
+    name: 'companyId',
+    required: false,
+    example: '74',
+    description: 'Required when IDP is not IDIR .',
+  })
   @ApiConsumes('multipart/form-data')
-  @AuthOnly()
+  @Roles(Role.WRITE_DOCUMENT)
   @Post('upload/:documentId')
   @UseInterceptors(FileInterceptor('file'))
   async updateFile(
     @Req() request: Request,
     @Body() updateFileDto: UpdateFileDto,
     @Param('documentId') documentId: string,
+    @Query('companyId') companyId: number,
     @UploadedFile(
       new ParseFilePipe({
         validators: [
@@ -114,11 +136,21 @@ export class DmsController {
     file: Express.Multer.File,
   ): Promise<ReadFileDto> {
     const currentUser = request.user as IUserJWT;
+    if (currentUser.identity_provider !== IDP.IDIR && !companyId) {
+      throw new BadRequestException(
+        'Company Id is manadatory for all IDP but IDIR',
+      );
+    }
     file.filename = updateFileDto.fileName
       ? updateFileDto.fileName
       : file.originalname;
 
-    return await this.dmsService.update(currentUser, documentId, file);
+    return await this.dmsService.update(
+      currentUser,
+      documentId,
+      file,
+      companyId,
+    );
   }
 
   @ApiCreatedResponse({
@@ -136,20 +168,33 @@ export class DmsController {
       'If proxy is specified, the object contents will be available proxied through DMS.' +
       'If url is specified, expect an HTTP 201 cotaining the presigned URL as a JSON string in the response.',
   })
-  @AuthOnly()
+  @ApiQuery({
+    name: 'companyId',
+    required: false,
+    example: '74',
+    description: 'Required when IDP is not IDIR .',
+  })
+  @Roles(Role.READ_DOCUMENT)
   @Get(':documentId')
   async downloadFile(
     @Req() request: Request,
     @Param('documentId') documentId: string,
     @Query('download') download: FileDownloadModes,
+    @Query('companyId') companyId: number,
     @Res() res: Response,
   ) {
     const currentUser = request.user as IUserJWT;
+    if (currentUser.identity_provider !== IDP.IDIR && !companyId) {
+      throw new BadRequestException(
+        'Company Id is manadatory for all IDP but IDIR',
+      );
+    }
     const { file, s3Object } = await this.dmsService.download(
       currentUser,
       documentId,
       download,
       res,
+      companyId,
     );
 
     if (download === FileDownloadModes.PROXY) {

@@ -1,10 +1,10 @@
-import { useEffect, useState } from "react";
-import { SuccessPage } from "../SuccessPage/SuccessPage";
-import { getURLParameters } from "../../helpers/payment";
+import { useEffect, useRef } from "react";
+import { Navigate, useSearchParams } from "react-router-dom";
+
+import { getMotiPaymentDetails } from "../../helpers/payment";
 import { MotiPaymentDetails, Transaction } from "../../types/payment";
-import { postTransaction } from "../../apiManager/permitsAPI";
 import { Loading } from "../../../../common/pages/Loading";
-import { AxiosError } from "axios";
+import { usePostTransaction } from "../../hooks/hooks";
 
 /**
  * React component that handles the payment redirect and displays the payment status.
@@ -12,71 +12,64 @@ import { AxiosError } from "axios";
  * Otherwise, it displays the payment status message.
  */
 export const PaymentRedirect = () => {
-  const [isLoading, setIsLoading] = useState<boolean>();
-  const [paymentStatus, setPaymentStatus] = useState<number>();
-  const [message, setMessage] = useState<string>();
+  const postedTransaction = useRef(false);
+  const [searchParams] = useSearchParams();
+  const permitIds = searchParams.get("permitIds");
+  const transactionIds = searchParams.get("transactionIds");
+  const paymentDetails = getMotiPaymentDetails(searchParams);
+  const transaction = mapTransactionDetails(paymentDetails);
+
+  const { 
+    mutation: postTransactionMutation,
+    paymentApproved,
+    message,
+    setPaymentApproved,
+  } = usePostTransaction(
+    paymentDetails.messageText,
+    paymentDetails.trnApproved
+  );
 
   useEffect(() => {
-    setIsLoading(true);
-    const url = window.location.href;
-    const parameters = getURLParameters(url);
-    const transaction = mapTransactionDetails(parameters);
-    handlePostTransaction(
-      transaction,
-      parameters.messageText,
-      parameters.trnApproved
+    if (postedTransaction.current === false) {
+      if (paymentDetails.trnApproved > 0) {
+        postTransactionMutation.mutate(transaction);
+        postedTransaction.current = true;
+      } else {
+        setPaymentApproved(false);
+      }
+    }
+  }, [paymentDetails.trnApproved]);
+
+  if (paymentApproved === false) {
+    return (
+      <Navigate 
+        to={`/applications/failure/${message}`}
+        replace={true}
+      />
     );
-  }, []);
-
-  const onTransactionResult = (msg: string, payStatus: number) => {
-    setMessage(msg);
-    setPaymentStatus(payStatus);
-    setIsLoading(false);
-  };
-
-  const handlePostTransaction = async (
-    transaction: Transaction,
-    messageText: string,
-    isApproved: number
-  ) => {
-    if (isApproved === 0) {
-      onTransactionResult(messageText, isApproved);
-      return;
+  }
+  
+  if (paymentApproved === true && permitIds && transactionIds) {
+    const permitIdsArray = permitIds.split(",").filter(id => id !== "");
+    const transactionIdsArray = transactionIds.split(",").filter(id => id !== "");
+    if (permitIdsArray.length !== 1 || transactionIdsArray.length !== 1) {
+      return <Loading />;
     }
+    return (
+      <Navigate 
+        to={`/applications/success/${permitIdsArray[0]}/transaction/${transactionIdsArray[0]}`}
+        replace={true}
+      />
+    );
+  } 
 
-    try {
-      const result = await postTransaction(transaction);
-      if (result.status === 201) {
-        onTransactionResult(messageText, isApproved);
-      } else {
-        onTransactionResult("Something went wrong", 0);
-      }
-    } catch (err) {
-      if (!(err instanceof AxiosError)) {
-        onTransactionResult("Unknown Error", 0);
-        return;
-      }
-      if (err.response) {
-        onTransactionResult(
-          `TODO: Payment approved but error in ORBC Backend: ${err.response.data.message}`, 
-          0
-        );
-      } else {
-        onTransactionResult("Request Error", 0);
-      }
-    }
-  };
-
-  if (isLoading) return <Loading />;
-
-  return paymentStatus === 1 ? <SuccessPage /> : <div>{message}</div>;
+  return <Loading />;
 };
 
 const mapTransactionDetails = (
   motiResponse: MotiPaymentDetails
 ): Transaction => {
   return {
-    //transactionId: Number(motiResponse.trnId), // TODO check this and providerTransactionId
     transactionType: motiResponse.trnType,
     transactionOrderNumber: motiResponse.trnOrderNumber,
     providerTransactionId: Number(motiResponse.trnId),
@@ -84,10 +77,10 @@ const mapTransactionDetails = (
     approved: Number(motiResponse.trnApproved),
     authCode: motiResponse.authCode,
     cardType: motiResponse.cardType,
-    transactionDate: motiResponse.trnDate, // TODO
+    transactionDate: motiResponse.trnDate,
     cvdId: Number(motiResponse.cvdId),
     paymentMethod: motiResponse.paymentMethod,
-    paymentMethodId: 1, // TODO: change once different payment methods are implemented
+    paymentMethodId: 1, // TODO: change once different payment methods are implemented, currently 1 == MOTI Pay
     messageId: motiResponse.messageId,
     messageText: motiResponse.messageText,
   };
