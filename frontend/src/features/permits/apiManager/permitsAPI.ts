@@ -27,22 +27,11 @@ import { Transaction } from "../types/payment";
 import { VEHICLES_URL } from "../../../common/apiManager/endpoints/endpoints";
 
 /**
- *
- * @param permitTypeKey
- * @returns
+ * A record containing permit keys and full forms.
  */
-const getPermitType = (permitTypeKey: string): string => {
-  let permitType = "";
-  switch (permitTypeKey) {
-    case "TROS":
-      permitType = "Term Oversize";
-      break;
-    case "STOS":
-    default:
-      permitType = "Single Trip Oversize";
-      break;
-  }
-  return permitType;
+const permitAbbreviations: Record<string, string> = {
+  "TROS": "Term Oversize",
+  "STOS": "Single Trip Oversize"
 };
 
 /**
@@ -91,10 +80,9 @@ export const getApplicationsInProgress = async (): Promise<
     (
       getDefaultRequiredVal([], response.data) as PermitApplicationInProgress[]
     ).map((application) => {
-      const permitType = getPermitType(application.permitType);
       return {
         ...application,
-        permitType,
+        permitType: permitAbbreviations[application.permitType],
         createdDateTime: toLocal(
           application.createdDateTime,
           DATE_FORMATS.DATETIME_LONG_TZ
