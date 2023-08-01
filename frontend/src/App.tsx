@@ -51,6 +51,7 @@ const App = () => {
 
   const [userRoles, setUserRoles] = useState<string[] | undefined>();
   const [companyId, setCompanyId] = useState<number | undefined>();
+  const [companyLegalName, setCompanyLegalName] = useState<string | undefined>();
   const [userDetails, setUserDetails] = useState<
     UserDetailContext | undefined
   >();
@@ -74,6 +75,8 @@ const App = () => {
                 setCompanyId,
                 userDetails,
                 setUserDetails,
+                companyLegalName,
+                setCompanyLegalName
               };
             }, [userRoles, companyId, userDetails])}
           >

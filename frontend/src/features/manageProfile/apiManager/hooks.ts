@@ -30,7 +30,7 @@ export const useCompanyInfoQuery = () => {
  * @returns UseQueryResult containing the query results.
  */
 export const useUserContext = () => {
-  const { setCompanyId, setUserDetails } = useContext(OnRouteBCContext);
+  const { setCompanyId, setUserDetails, setCompanyLegalName } = useContext(OnRouteBCContext);
   return useQuery({
     queryKey: ["userContext"],
     queryFn: getUserContext,
@@ -40,8 +40,9 @@ export const useUserContext = () => {
       const { user, associatedCompanies } = userContextResponseBody;
       if (user?.userGUID) {
         const companyId = associatedCompanies[0].companyId;
+        const legalName = associatedCompanies[0].legalName;
         setCompanyId?.(() => companyId);
-
+        setCompanyLegalName?.(() => legalName);
         const userDetails = {
           firstName: user.firstName,
           lastName: user.lastName,
