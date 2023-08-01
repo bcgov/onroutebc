@@ -14,6 +14,12 @@ import { MotiPayDetailsDto } from './dto/response/read-moti-pay-details.dto';
 import { ApplicationService } from '../permit/application.service';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
 import { IReceipt } from 'src/common/interface/receipt.interface';
+import { Receipt } from './entities/receipt.entity';
+import { ReadFileDto } from '../common/dto/response/read-file.dto';
+import { FileDownloadModes } from 'src/common/enum/file-download-modes.enum';
+import { DopsService } from '../common/dops.service';
+import { Response } from 'express';
+import { Permit } from '../permit/entities/permit.entity';
 
 @Injectable()
 export class PaymentService {
@@ -22,8 +28,11 @@ export class PaymentService {
     private permitTransactionRepository: Repository<PermitTransaction>,
     @InjectRepository(Transaction)
     private transactionRepository: Repository<Transaction>,
+    @InjectRepository(Receipt)
+    private receiptRepository: Repository<Receipt>,
     @InjectMapper() private readonly classMapper: Mapper,
     private applicationService: ApplicationService,
+    private readonly dopsService: DopsService,
   ) {}
 
   private generateHashExpiry = (currDate?: Date) => {
@@ -294,5 +303,54 @@ export class PaymentService {
       PermitTransaction,
       ReadPermitTransactionDto,
     );
+  }
+
+  async findReceipt(transactionId: string): Promise<Receipt> {
+    return await this.receiptRepository.findOne({
+      where: {
+        transactionId,
+      }
+    });
+  }
+
+  async findPermit(transactionId: string): Promise<Permit> {
+    const transaction = await this.transactionRepository.findOne({
+      where: {
+        transactionId,
+      },
+      relations: {
+        permits: true,
+      }
+    });
+
+    if (transaction.permits.length === 0) {
+      throw new Error("No permits associated with transaction");
+    }
+    return transaction.permits[0];
+  };
+
+  /**
+   * Finds a receipt PDF document associated with a specific transaction ID.
+   * @param currentUser - The current User Details.
+   * @param transactionId - The ID of the transaction for which to find the receipt PDF document.
+   * @returns A Promise resolving to a ReadFileDto object representing the found PDF document.
+   */
+  public async findReceiptPDF(
+    currentUser: IUserJWT,
+    transactionId: string,
+    res?: Response,
+  ): Promise<ReadFileDto> {
+    const receipt = await this.findReceipt(transactionId);
+    const permit = await this.findPermit(transactionId);
+
+    let file: ReadFileDto = null;
+    await this.dopsService.download(
+      currentUser,
+      receipt.receiptDocumentId,
+      FileDownloadModes.PROXY,
+      res,
+      permit.companyId,
+    );
+    return file;
   }
 }

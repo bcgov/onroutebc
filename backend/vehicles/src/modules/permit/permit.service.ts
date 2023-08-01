@@ -13,7 +13,6 @@ import { IUserJWT } from '../../common/interface/user-jwt.interface';
 import { Response } from 'express';
 import { ReadFileDto } from '../common/dto/response/read-file.dto';
 import { PermitStatus } from 'src/common/enum/permit-status.enum';
-import { Receipt } from '../payment/entities/receipt.entity';
 
 @Injectable()
 export class PermitService {
@@ -23,8 +22,6 @@ export class PermitService {
     private permitRepository: Repository<Permit>,
     @InjectRepository(PermitType)
     private permitTypeRepository: Repository<PermitType>,
-    @InjectRepository(Receipt)
-    private receiptRepository: Repository<Receipt>,
     private readonly dopsService: DopsService,
   ) {}
 
@@ -55,15 +52,6 @@ export class PermitService {
       where: { permitId: permitId },
       relations: {
         permitData: true,
-      },
-    });
-  }
-
-  private async findOneWithTransactions(permitId: string): Promise<Permit> {
-    return this.permitRepository.findOne({
-      where: { permitId: permitId },
-      relations: {
-        transactions: true,
       },
     });
   }
@@ -177,57 +165,5 @@ export class PermitService {
       .getMany();
 
     return this.classMapper.mapArrayAsync(permits, Permit, ReadPermitDto);
-  }
-
-  async findReceipt(permit: Permit): Promise<Receipt> {
-    if (!permit.transactions || permit.transactions.length === 0) {
-      throw new Error("No transactions associated with this permit");
-    }
-
-    // Find the latest transaction for the permit, but not necessarily an approved transaction
-    let latestTransaction = permit.transactions[0];
-    let latestSubmitDate = latestTransaction.transactionSubmitDate;
-    permit.transactions.forEach(transaction => {
-      if (new Date(transaction.transactionSubmitDate) >= new Date(latestSubmitDate)) {
-        latestSubmitDate = transaction.transactionSubmitDate;
-        latestTransaction = transaction;
-      };
-    });
-
-    const receipt = await this.receiptRepository.findOne({
-      where: {
-        transactionId: latestTransaction.transactionId,
-      }
-    });
-
-    if (!receipt) {
-      throw new Error("No receipt generated for this permit's latest transaction");
-    }
-    return receipt;
-  }
-
-  /**
-   * Finds a receipt PDF document associated with a specific permit ID.
-   * @param currentUser - The current User Details.
-   * @param permitId - The ID of the permit for which to find the receipt PDF document.
-   * @returns A Promise resolving to a ReadFileDto object representing the found PDF document.
-   */
-  public async findReceiptPDF(
-    currentUser: IUserJWT,
-    permitId: string,
-    res?: Response,
-  ): Promise<ReadFileDto> {
-    const permit = await this.findOneWithTransactions(permitId);    
-    const receipt = await this.findReceipt(permit);
-
-    let file: ReadFileDto = null;
-    await this.dopsService.download(
-      currentUser,
-      receipt.receiptDocumentId,
-      FileDownloadModes.PROXY,
-      res,
-      permit.companyId,
-    );
-    return file;
   }
 }

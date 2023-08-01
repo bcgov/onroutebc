@@ -21,7 +21,7 @@ export const SuccessPage = () => {
   }, []);
 
   const navigate = useNavigate();
-  const { permitId } = useParams();
+  const { permitId, transactionId } = useParams();
 
   const viewPermitPdfByPermitId = async (permitId: string) => {
     try {
@@ -40,9 +40,9 @@ export const SuccessPage = () => {
   };
 
   const viewReceiptPdf = async () => {
-    if (permitId) {
+    if (transactionId) {
       try {
-        const { blobObj, filename } = await downloadReceiptPdf(permitId);
+        const { blobObj, filename } = await downloadReceiptPdf(transactionId);
         downloadFile(blobObj, filename);
       } catch (err) {
         console.error(err);
