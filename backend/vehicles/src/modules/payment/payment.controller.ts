@@ -6,7 +6,6 @@ import {
   Post, 
   Query, 
   Req,
-  Res,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -23,10 +22,8 @@ import { MotiPayDetailsDto } from './dto/response/read-moti-pay-details.dto';
 import { CreateTransactionDto } from './dto/request/create-transaction.dto';
 import { ReadTransactionDto } from './dto/response/read-transaction.dto';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
-import { Request, Response } from 'express';
+import { Request } from 'express';
 import { ReadPermitTransactionDto } from './dto/response/read-permit-transaction.dto';
-import { AuthOnly } from 'src/common/decorator/auth-only.decorator';
-import { ReadFileDto } from '../common/dto/response/read-file.dto';
 
 @ApiBearerAuth()
 @ApiTags('Payment')
@@ -105,26 +102,5 @@ export class PaymentController {
     return await this.paymentService.findOnePermitTransaction(
       transaction.transactionId,
     );
-  }
-
-  @AuthOnly()
-  @ApiCreatedResponse({
-    description: 'The DOPS file Resource with the presigned resource',
-    type: ReadFileDto,
-  })
-  @Get('/:transactionId/receipt')
-  async getReceiptPDF(
-    @Req() request: Request,
-    @Param('transactionId') transactionId: string,
-    @Res() res: Response,
-  ): Promise<void> {
-    const currentUser = request.user as IUserJWT;
-    
-    await this.paymentService.findReceiptPDF(
-      currentUser,
-      transactionId,
-      res,
-    );
-    res.status(200);
   }
 }
