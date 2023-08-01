@@ -14,6 +14,10 @@ import { ReadPermitDto } from "../../types/permit";
 import { PermitsColumnDefinition } from "./Columns";
 import { PermitRowOptions } from "./PermitRowOptions";
 
+/**
+ * A permit list component with common functionalities that can be shared by
+ * wrapping components. 
+ */
 export const BasePermitList = ({
   query,
   isExpired = false,

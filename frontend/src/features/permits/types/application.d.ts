@@ -18,7 +18,7 @@ type ReplaceDayjsWithString<T> = {
 export type PermitType = "STOS" | "TROS";
 type PermitApplicationOrigin = "ONLINE" | "PPC";
 type PermitApprovalSource = "AUTO" | "PPC" | "TPS";
-type PermitStatus = "APPROVED" | "AUTO_APPROVED" | "CANCELLED" | "IN_PROGRESS" | "REJECTED" | "UNDER_REVIEW" | "WAITING_APPROVAL" | "WAITING_PAYMENT" | "ISSUED";
+export type PermitStatus = "APPROVED" | "AUTO_APPROVED" | "CANCELLED" | "IN_PROGRESS" | "REJECTED" | "UNDER_REVIEW" | "WAITING_APPROVAL" | "WAITING_PAYMENT" | "ISSUED";
 
 /**
  * A base permit type. This is an incomplete object and meant to be extended for use.
@@ -120,7 +120,7 @@ export interface PermitApplicationInProgress {
   permitData: ReplaceDayjsWithString<TermOversizeApplication>;
   permitId: string
   permitNumber?: string | null;
-  permitStatus: "IN_PROGRESS" | "ISSUED";
+  permitStatus: "IN_PROGRESS";
   permitType: PermitType;
   updatedDateTime: string;
   userGuid: string;

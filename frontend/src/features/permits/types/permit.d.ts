@@ -2,23 +2,27 @@ import { Dayjs } from "dayjs";
 
 /**
  * A type that replaces all direct entries with Dayjs types to string types.
- * 
- * eg. T = { a: Dayjs, b: number } 
- * 
+ *
+ * eg. T = { a: Dayjs, b: number }
+ *
  * then ReplaceDayjsWithString = { a: string, b: number }
- * 
- * eg. T = { a?: Dayjs, b: number }, 
- * 
+ *
+ * eg. T = { a?: Dayjs, b: number },
+ *
  * then ReplaceDayjsWithString = { a?: string, b: number }
  */
 type ReplaceDayjsWithString<T> = {
-  [K in keyof T]: T[K] extends Dayjs ? string : (T[K] extends (Dayjs | undefined) ? (string | undefined) : T[K]);
+  [K in keyof T]: T[K] extends Dayjs
+    ? string
+    : T[K] extends Dayjs | undefined
+    ? string | undefined
+    : T[K];
 };
 
 /**
- * A base permit type. This is an incomplete object and meant to be extended for use.
+ * A partial permit type. This is an incomplete type and meant to be extended for use.
  */
-export interface Permit {
+interface PartialPermitType {
   permitId: number;
   permitStatus: string;
   companyId: number;
@@ -28,17 +32,13 @@ export interface Permit {
   permitNumber: string;
   permitApprovalSource: string;
   permitApplicationOrigin: string;
-  permitIssueDateTime: Dayjs;
   documentId?: string;
-  createdDateTime: Dayjs;
-  updatedDateTime: Dayjs;
-  permitData: TermOversizeApplication;
 }
 
 /**
- * The Read
+ * The response object structure from the permit API.
  */
-export interface ReadPermitDto extends Permit {
+export interface ReadPermitDto extends PartialPermitType {
   permitIssueDateTime?: string;
   createdDateTime: string;
   updatedDateTime: string;
@@ -47,21 +47,27 @@ export interface ReadPermitDto extends Permit {
 
 /**
  * Type that replaces all Dayjs types inside direct TermOversizeApplication entries to string types
- * 
- * eg. TermOversizeApplication = { c?: Dayjs }, 
- * 
+ *
+ * eg. TermOversizeApplication = { c?: Dayjs },
+ *
  * and T = { a: number, b: TermOversizeApplication },
- * 
+ *
  * then TransformPermitData = { a: number, b: { c?: string } }
  */
 type TransformPermitData<T> = {
-  [K in keyof T]: T[K] extends TermOversizeApplication ? ReplaceDayjsWithString<TermOversizeApplication> : T[K];
+  [K in keyof T]: T[K] extends TermOversizeApplication
+    ? ReplaceDayjsWithString<TermOversizeApplication>
+    : T[K];
 };
 
 // These two types are used to transform an application data response object (with strings as date fields) to Application type (with Dayjs as date fields)
 // and vice versa (Application type to application data request data object with strings as date fields)
-export type ApplicationResponse = TransformPermitData<ReplaceDayjsWithString<Application>>;
-export type ApplicationRequestData = TransformPermitData<ReplaceDayjsWithString<Application>>;
+export type ApplicationResponse = TransformPermitData<
+  ReplaceDayjsWithString<Application>
+>;
+export type ApplicationRequestData = TransformPermitData<
+  ReplaceDayjsWithString<Application>
+>;
 
 export interface MailingAddress {
   addressLine1: string;
@@ -114,20 +120,3 @@ export interface TermOversizeApplication {
   mailingAddress: MailingAddress;
   feeSummary: string;
 }
-
-export interface PermitApplicationInProgress {
-  applicationNumber: string;
-  companyId: number;
-  createdDateTime: string;
-  permitApplicationOrigin?: string | null;
-  permitApprovalSource?: string | null;
-  permitData: ReplaceDayjsWithString<TermOversizeApplication>;
-  permitId: string
-  permitNumber?: string | null;
-  permitStatus: "IN_PROGRESS";
-  permitType: string;
-  updatedDateTime: string;
-  userGuid: string;
-}
-
-export type ApplicationInProgress = PermitApplicationInProgress;

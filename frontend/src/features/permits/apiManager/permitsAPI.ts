@@ -26,7 +26,7 @@ import {
 import { mapApplicationToApplicationRequestData } from "../helpers/mappers";
 import { PermitTransaction, Transaction } from "../types/payment";
 import { VEHICLES_URL } from "../../../common/apiManager/endpoints/endpoints";
-import { Permit, ReadPermitDto } from "../types/permit";
+import { ReadPermitDto } from "../types/permit";
 
 /**
  * A record containing permit keys and full forms.
