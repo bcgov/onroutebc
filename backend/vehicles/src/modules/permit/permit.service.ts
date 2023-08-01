@@ -13,6 +13,12 @@ import { IUserJWT } from '../../common/interface/user-jwt.interface';
 import { Response } from 'express';
 import { ReadFileDto } from '../common/dto/response/read-file.dto';
 import { PermitStatus } from 'src/common/enum/permit-status.enum';
+import {
+  IPaginationMeta,
+  IPaginationOptions,
+} from 'src/common/interface/pagination.interface';
+import { PaginationDto } from 'src/common/class/pagination';
+import { paginate } from 'src/common/helper/paginate';
 
 @Injectable()
 export class PermitService {
@@ -165,5 +171,45 @@ export class PermitService {
       .getMany();
 
     return this.classMapper.mapArrayAsync(permits, Permit, ReadPermitDto);
+  }
+
+  /**
+   * Finds permits for user.
+   * @param userGUID if present get permits for this user
+   *  @param companyId if present get permits for this company
+   * @param expired if true get expired premits else get active permits
+   *
+   */
+  public async findPaginatedUserPermit(
+    options: IPaginationOptions,
+    userGUID: string,
+    companyId: number,
+    expired: string,
+  ): Promise<PaginationDto<Permit, IPaginationMeta>> {
+    const permits = this.permitRepository
+      .createQueryBuilder('permit')
+      .innerJoinAndSelect('permit.permitData', 'permitData')
+      .where('permit.permitNumber IS NOT NULL')
+      .andWhere('permit.companyId = :companyId', {
+        companyId: companyId,
+      })
+      .andWhere(userGUID ? 'permit.userGuid = :userGUID' : '1=1', {
+        userGUID: userGUID,
+      })
+      .andWhere(
+        expired === 'true'
+          ? '(permit.permitStatus IN (:...expiredStatus)OR(permit.permitStatus = :activeStatus AND permitData.expiryDate < :expiryDate))'
+          : '(permit.permitStatus = :activeStatus AND permitData.expiryDate >= :expiryDate)',
+        {
+          expiredStatus: Object.values(PermitStatus).filter(
+            (x) => x != PermitStatus.ISSUED && x != PermitStatus.SUPERSEDED,
+          ),
+          activeStatus: PermitStatus.ISSUED,
+          expiryDate: new Date(),
+        },
+      );
+
+    // return this.classMapper.mapArrayAsync(permits, Permit, ReadPermitDto);
+    return await paginate(permits, options);
   }
 }
