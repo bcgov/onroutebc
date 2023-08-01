@@ -1,10 +1,9 @@
 import { Box } from "@mui/material";
 import { UseQueryResult } from "@tanstack/react-query";
 import MaterialReactTable, {
-  MRT_ColumnDef,
   MRT_GlobalFilterTextField,
   MRT_Row,
-  MRT_TableInstance,
+  MRT_TableInstance
 } from "material-react-table";
 import { useCallback, useContext, useEffect } from "react";
 import { SnackBarContext } from "../../../../App";
@@ -14,14 +13,6 @@ import "../../../manageVehicles/components/list/List.scss";
 import { ReadPermitDto } from "../../types/permit";
 import { PermitsColumnDefinition } from "./Columns";
 import { PermitRowOptions } from "./PermitRowOptions";
-
-/**
- * Dynamically set the column
- * @returns An array of column headers/accessor keys ofr Material React Table
- */
-const getColumns = (): MRT_ColumnDef<ReadPermitDto>[] => {
-  return PermitsColumnDefinition;
-};
 
 export const BasePermitList = ({
   query,
@@ -45,7 +36,7 @@ export const BasePermitList = ({
 
   return (
     <MaterialReactTable
-      columns={getColumns()}
+      columns={PermitsColumnDefinition}
       data={data ?? []}
       state={{
         showAlertBanner: isError,
@@ -83,7 +74,6 @@ export const BasePermitList = ({
         },
         []
       )}
-      // Render a custom options Bar (inclues search, filter, trash, and csv options)
       renderTopToolbar={useCallback(
         ({ table }: { table: MRT_TableInstance<ReadPermitDto> }) => (
           <Box
@@ -103,7 +93,6 @@ export const BasePermitList = ({
        * STYLES
        *
        */
-
       // Main table container
       muiTablePaperProps={{
         sx: {

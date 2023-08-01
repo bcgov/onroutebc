@@ -4,7 +4,6 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { useCallback } from "react";
-import { getPermitPdfURL } from "../../apiManager/permitsAPI";
 
 const ACTIVE_OPTIONS = ["View Receipt"];
 const EXPIRED_OPTIONS = ["View Receipt"];
@@ -38,11 +37,7 @@ export const PermitRowOptions = ({
     const selectedOption = event.currentTarget.outerText as string;
 
     if (selectedOption === "View Receipt") {
-      getPermitPdfURL(permitId.toString()).then((response) => {
-        if (response.presignedUrl) {
-          window.open(response.presignedUrl, "_blank");
-        }
-      });
+      // Use permitId here to get the receipt.
     }
     setAnchorEl(null);
   };

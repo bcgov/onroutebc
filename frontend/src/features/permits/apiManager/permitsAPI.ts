@@ -199,18 +199,6 @@ export const downloadReceiptPdf = async (transactionId: string) => {
 };
 
 /**
- * View permit application pdf file.
- * @param permitId permit id of the permit application.
- * @returns A Promise of dms reference string.
- */
-export const getPermitPdfURL = (permitId: string): Promise<any> => {
-  const url = `${APPLICATION_PDF_API}/${permitId}?download=url`;
-  return httpGETRequest(url).then((response) => {
-    return response;
-  });
-};
-
-/**
  * Generates a URL for making a payment transaction with Moti Pay.
  * @param {number} transactionAmount - The amount of the transaction.
  * @returns {Promise<any>} - A Promise that resolves to the transaction URL.
