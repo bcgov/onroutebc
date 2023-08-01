@@ -60,16 +60,7 @@ type TransformPermitData<T> = {
     : T[K];
 };
 
-// These two types are used to transform an application data response object (with strings as date fields) to Application type (with Dayjs as date fields)
-// and vice versa (Application type to application data request data object with strings as date fields)
-export type ApplicationResponse = TransformPermitData<
-  ReplaceDayjsWithString<Application>
->;
-export type ApplicationRequestData = TransformPermitData<
-  ReplaceDayjsWithString<Application>
->;
-
-export interface MailingAddress {
+interface MailingAddress {
   addressLine1: string;
   addressLine2?: string;
   city: string;
@@ -78,7 +69,7 @@ export interface MailingAddress {
   postalCode: string;
 }
 
-export interface ContactDetails {
+interface ContactDetails {
   firstName: string;
   lastName: string;
   phone1: string;
@@ -89,7 +80,7 @@ export interface ContactDetails {
   fax?: string;
 }
 
-export interface VehicleDetails {
+interface VehicleDetails {
   vin: string;
   plate: string;
   make: string;
@@ -102,7 +93,7 @@ export interface VehicleDetails {
   unitNumber?: string | undefined;
 }
 
-export interface Commodities {
+interface Commodities {
   description: string;
   condition: string;
   conditionLink: string;
@@ -110,7 +101,7 @@ export interface Commodities {
   disabled?: boolean;
 }
 
-export interface TermOversizeApplication {
+interface TermOversizeApplication {
   startDate: Dayjs;
   permitDuration: number; //days
   expiryDate: Dayjs;
