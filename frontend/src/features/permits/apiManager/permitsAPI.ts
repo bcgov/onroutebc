@@ -255,7 +255,7 @@ export const getPermits = async ({ expired = false } = {}): Promise<
               DATE_FORMATS.DATEONLY_SHORT_NAME
             ),
             expiryDate: toLocal(
-              permit.permitData.startDate,
+              permit.permitData.expiryDate,
               DATE_FORMATS.DATEONLY_SHORT_NAME
             ),
           },
