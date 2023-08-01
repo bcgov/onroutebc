@@ -137,7 +137,7 @@ export class PermitController {
       'If proxy is specified, the object contents will be available proxied through DMS.' +
       'If url is specified, expect an HTTP 201 cotaining the presigned URL as a JSON string in the response.',
   })
-  @Get('/pdf/:permitId')
+  @Get('/:permitId/pdf')
   async getPDF(
     @Req() request: Request,
     @Param('permitId') permitId: string,
@@ -167,5 +167,26 @@ export class PermitController {
         res.status(302).set('Location', file.preSignedS3Url).end();
       }
     }
+  }
+
+  @AuthOnly()
+  @ApiCreatedResponse({
+    description: 'The DOPS file Resource with the presigned resource',
+    type: ReadFileDto,
+  })
+  @Get('/:permitId/receipt')
+  async getReceiptPDF(
+    @Req() request: Request,
+    @Param('permitId') permitId: string,
+    @Res() res: Response,
+  ): Promise<void> {
+    const currentUser = request.user as IUserJWT;
+    
+    await this.permitService.findReceiptPDF(
+      currentUser,
+      permitId,
+      res,
+    );
+    res.status(200);
   }
 }

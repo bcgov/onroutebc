@@ -17,12 +17,7 @@ import {
   PermitApplicationInProgress,
 } from "../types/application";
 import { DATE_FORMATS, toLocal } from "../../../common/helpers/formatDate";
-import {
-  APPLICATION_PDF_API,
-  APPLICATION_UPDATE_STATUS_API,
-  PAYMENT_API,
-  PERMITS_API,
-} from "./endpoints/endpoints";
+import { APPLICATION_UPDATE_STATUS_API, PAYMENT_API, PERMITS_API } from "./endpoints/endpoints";
 import { mapApplicationToApplicationRequestData } from "../helpers/mappers";
 import { PermitTransaction, Transaction } from "../types/payment";
 import { VEHICLES_URL } from "../../../common/apiManager/endpoints/endpoints";
@@ -184,17 +179,17 @@ const streamDownload = async (url: string) => {
  * @returns A Promise of dms reference string.
  */
 export const downloadPermitApplicationPdf = async (permitId: string) => {
-  const url = `${APPLICATION_PDF_API}/${permitId}?download=proxy`;
+  const url = `${PERMITS_API.BASE}/${permitId}/pdf?download=proxy`;
   return await streamDownload(url);
 };
 
 /**
  * Download permit receipt pdf file.
- * @param transactionId transaction id of the permit application associated with the receipt.
+ * @param permitId permit id of the permit application associated with the receipt.
  * @returns A Promise of dms reference string.
  */
-export const downloadReceiptPdf = async (transactionId: string) => {
-  const url = `${PAYMENT_API}/${transactionId}/receipt`;
+export const downloadReceiptPdf = async (permitId: string) => {
+  const url = `${PERMITS_API.BASE}/${permitId}/receipt`;
   return await streamDownload(url);
 };
 
