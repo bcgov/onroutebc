@@ -8,8 +8,8 @@ import { ErrorFallback } from "../../../../common/pages/ErrorFallback";
 import { List } from "../list/List";
 import { getApplicationsInProgress } from "../../../../features/permits/apiManager/permitsAPI";
 import { StartApplicationButton } from "../../../../features/permits/pages/TermOversize/form/VehicleDetails/customFields/StartApplicationButton";
-import { ActivePermitList } from "../permit-specific/ActivePermitList";
-import { ExpiredPermitList } from "../permit-specific/ExpiredPermitList";
+import { ActivePermitList } from "../permit-list/ActivePermitList";
+import { ExpiredPermitList } from "../permit-list/ExpiredPermitList";
 import { FIVE_MINUTES } from "../../../../common/constants/constants";
 
 export const ManageApplicationDashboard = React.memo(() => {

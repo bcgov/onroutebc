@@ -4,6 +4,8 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { useCallback } from "react";
+import { downloadReceiptPdf } from "../../apiManager/permitsAPI";
+import { openBlobInNewTab } from "../../helpers/openPdfInNewTab";
 
 const ACTIVE_OPTIONS = ["View Receipt"];
 const EXPIRED_OPTIONS = ["View Receipt"];
@@ -33,11 +35,24 @@ export const PermitRowOptions = ({
     setAnchorEl(null);
   };
 
+  const viewReceiptPdf = async (permitId: string) => {
+    if (permitId) {
+      try {
+        const { blobObj: blobObjWithoutType } = await downloadReceiptPdf(
+          permitId
+        );
+        openBlobInNewTab(blobObjWithoutType);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+  };
+
   const onClickOption = (event: React.MouseEvent<HTMLElement>) => {
     const selectedOption = event.currentTarget.outerText as string;
 
     if (selectedOption === "View Receipt") {
-      // Use permitId here to get the receipt.
+      viewReceiptPdf(permitId.toString());
     }
     setAnchorEl(null);
   };
