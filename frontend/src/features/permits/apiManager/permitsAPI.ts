@@ -215,6 +215,11 @@ export const getMotiPayTransactionUrl = async (
   });
 };
 
+/**
+ * Makes a payment transacation.
+ * @param transactionDetails 
+ * @returns A promise containing the response from API.
+ */
 export const postTransaction = async (
   transactionDetails: Transaction
 ): Promise<any> => {
