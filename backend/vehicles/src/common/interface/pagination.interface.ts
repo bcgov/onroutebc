@@ -17,19 +17,9 @@ export interface IPaginationOptions<CustomMetaType = IPaginationMeta> {
   page: number | string;
 
   /**
-   * a basic route for generating links (i.e., WITHOUT query params)
-   */
-  route?: string;
-
-  /**
    * For transforming the default meta data to a custom type
    */
-  metaTransformer?: (meta: IPaginationMeta) => CustomMetaType;
-
-  /**
-   * routingLabels for append in links (limit or/and page)
-   */
-  routingLabels?: IPaginationOptionsRoutingLabels;
+  metaTransformer?: (metadata: IPaginationMeta) => CustomMetaType;
 
   /**
    * @default PaginationTypeEnum.LIMIT
@@ -65,7 +55,7 @@ export interface IPaginationMeta {
   /**
    * the amount of items on this specific page
    */
-  itemCount: number;
+  currentItemCount: number;
   /**
    * the total amount of items
    */
@@ -84,33 +74,3 @@ export interface IPaginationMeta {
   currentPage: number;
 }
 
-export interface IPaginationLinks {
-  /**
-   * a link to the "first" page
-   */
-  first?: string;
-  /**
-   * a link to the "previous" page
-   */
-  previous?: string;
-  /**
-   * a link to the "next" page
-   */
-  next?: string;
-  /**
-   * a link to the "last" page
-   */
-  last?: string;
-}
-
-export interface IPaginationOptionsRoutingLabels {
-  /**
-   * the limit text to append in router string
-   */
-  limitLabel?: string;
-
-  /**
-   * the page text to append in router string
-   */
-  pageLabel?: string;
-}

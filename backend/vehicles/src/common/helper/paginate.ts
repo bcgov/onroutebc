@@ -17,16 +17,6 @@ const DEFAULT_LIMIT = 10;
 const DEFAULT_PAGE = 1;
 
 export async function paginate<T, CustomMetaType = IPaginationMeta>(
-  repository: Repository<T>,
-  options: IPaginationOptions<CustomMetaType>,
-  searchOptions?: FindOptionsWhere<T> | FindManyOptions<T>,
-): Promise<PaginationDto<T, CustomMetaType>>;
-export async function paginate<T, CustomMetaType = IPaginationMeta>(
-  queryBuilder: SelectQueryBuilder<T>,
-  options: IPaginationOptions<CustomMetaType>,
-): Promise<PaginationDto<T, CustomMetaType>>;
-
-export async function paginate<T, CustomMetaType = IPaginationMeta>(
   repositoryOrQueryBuilder: Repository<T> | SelectQueryBuilder<T>,
   options: IPaginationOptions<CustomMetaType>,
   searchOptions?: FindOptionsWhere<T> | FindManyOptions<T>,
@@ -45,17 +35,16 @@ export async function paginate<T, CustomMetaType = IPaginationMeta>(
 
 function resolveOptions(
   options: IPaginationOptions<any>,
-): [number, number, string, PaginationTypeEnum, boolean, TypeORMCacheType] {
+): [number, number, PaginationTypeEnum, boolean, TypeORMCacheType] {
   const page = resolveNumericOption(options, 'page', DEFAULT_PAGE);
   const limit = resolveNumericOption(options, 'limit', DEFAULT_LIMIT);
-  const route = options.route;
   const paginationType =
     options.paginationType || PaginationTypeEnum.LIMIT_AND_OFFSET;
   const countQueries =
     typeof options.countQueries !== 'undefined' ? options.countQueries : true;
   const cacheQueries = options.cacheQueries || false;
 
-  return [page, limit, route, paginationType, countQueries, cacheQueries];
+  return [page, limit, paginationType, countQueries, cacheQueries];
 }
 
 function resolveNumericOption(
@@ -80,7 +69,7 @@ async function paginateRepository<T, CustomMetaType = IPaginationMeta>(
   options: IPaginationOptions<CustomMetaType>,
   searchOptions?: FindOptionsWhere<T> | FindManyOptions<T>,
 ): Promise<PaginationDto<T, CustomMetaType>> {
-  const [page, limit, route, paginationType, countQueries] =
+  const [page, limit, paginationType, countQueries] =
     resolveOptions(options);
 
   if (page < 1) {
@@ -89,9 +78,7 @@ async function paginateRepository<T, CustomMetaType = IPaginationMeta>(
       totalItems: 0,
       currentPage: page,
       limit,
-      route,
       metaTransformer: options.metaTransformer,
-      routingLabels: options.routingLabels,
     });
   }
 
@@ -117,9 +104,7 @@ async function paginateRepository<T, CustomMetaType = IPaginationMeta>(
     totalItems: total,
     currentPage: page,
     limit,
-    route,
     metaTransformer: options.metaTransformer,
-    routingLabels: options.routingLabels,
   });
 }
 
@@ -127,7 +112,7 @@ async function paginateQueryBuilder<T, CustomMetaType = IPaginationMeta>(
   queryBuilder: SelectQueryBuilder<T>,
   options: IPaginationOptions<CustomMetaType>,
 ): Promise<PaginationDto<T, CustomMetaType>> {
-  const [page, limit, route, paginationType, countQueries, cacheOption] =
+  const [page, limit, paginationType, countQueries, cacheOption] =
     resolveOptions(options);
 
   const promises: [Promise<T[]>, Promise<number> | undefined] = [
@@ -151,9 +136,7 @@ async function paginateQueryBuilder<T, CustomMetaType = IPaginationMeta>(
     totalItems: total,
     currentPage: page,
     limit,
-    route,
     metaTransformer: options.metaTransformer,
-    routingLabels: options.routingLabels,
   });
 }
 

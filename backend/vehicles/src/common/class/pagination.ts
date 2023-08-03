@@ -1,5 +1,4 @@
 import {
-  IPaginationLinks,
   IPaginationMeta,
   
 } from '../interface/pagination.interface';
@@ -17,9 +16,5 @@ export class PaginationDto<
      * associated meta information (e.g., counts)
      */
     public readonly meta: T,
-    /**
-     * associated links
-     */
-    public readonly links?: IPaginationLinks,
   ) {}
 }

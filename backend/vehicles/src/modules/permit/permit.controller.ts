@@ -39,7 +39,6 @@ import {
   IPaginationOptions,
 } from 'src/common/interface/pagination.interface';
 import { PaginationDto } from 'src/common/class/pagination';
-import { createRoute } from 'src/common/helper/pagination.helper';
 
 @ApiBearerAuth()
 @ApiTags('Permit')
@@ -131,11 +130,9 @@ export class PermitController {
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit = 1,
   ): Promise<PaginationDto<Permit, IPaginationMeta>> {
-    const route = createRoute(request);
     const options: IPaginationOptions = {
       limit,
       page,
-      route,
     };
 
     const currentUser = request.user as IUserJWT;
