@@ -109,7 +109,7 @@ services:
       CDOGS_CLIENT_ID: ${CDOGS_CLIENT_ID}
       CDOGS_CLIENT_SECRET: ${CDOGS_CLIENT_SECRET}
       CDOGS_URL: ${CDOGS_URL}
-      ACCESS_API_URL: ${ACCESS_API_URL}
+      ACCESS_API_URL: "http://vehicles-api:5000"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5001/"]
       interval: 1m30s
