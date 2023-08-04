@@ -93,37 +93,10 @@ export class PermitController {
    */
   @ApiQuery({ name: 'companyId', required: true })
   @ApiQuery({ name: 'expired', required: false, example: 'true' })
-  @Roles(Role.READ_PERMIT)
-  @Get('user')
-  async getUserPermit(
-    @Req() request: Request,
-    @Query('companyId') companyId: number,
-    @Query('expired') expired: string,
-  ): Promise<ReadPermitDto[]> {
-    const currentUser = request.user as IUserJWT;
-    const userGuid =
-      currentUser.identity_provider === IDP.BCEID
-        ? currentUser.bceid_user_guid
-        : null;
-    return await this.permitService.findUserPermit(
-      userGuid,
-      companyId,
-      expired,
-    );
-  }
-
-  /**
-   * Get Permits of Logged in user
-   * @Query companyId Company id of logged in user
-   * @param status if true get active permits else get others
-   *
-   */
-  @ApiQuery({ name: 'companyId', required: true })
-  @ApiQuery({ name: 'expired', required: false, example: 'true' })
   @ApiQuery({ name: 'page', required: false, example: '1' })
   @ApiQuery({ name: 'limit', required: false, example: '10' })
   @Roles(Role.READ_PERMIT)
-  @Get('user/paginated')
+  @Get('user')
   async getPaginatedUserPermit(
     @Req() request: Request,
     @Query('companyId') companyId: number,
@@ -141,7 +114,7 @@ export class PermitController {
       currentUser.identity_provider === IDP.BCEID
         ? currentUser.bceid_user_guid
         : null;
-    return await this.permitService.findPaginatedUserPermit(
+    return await this.permitService.findUserPermit(
       options,
       userGuid,
       companyId,
