@@ -174,6 +174,8 @@ export class PaymentService {
     currentUser: IUserJWT,
     transaction: CreateTransactionDto,
   ): Promise<ReadTransactionDto> {
+
+    console.log('transaction',transaction);
     // Retrieve the existing transaction from the database based on the provided transaction order number.
     const existingTransaction = await this.findOneTransaction(
       transaction.transactionOrderNumber,
@@ -190,6 +192,8 @@ export class PaymentService {
       CreateTransactionDto,
       Transaction,
     );
+    
+    console.log('newTransaction',newTransaction);
 
     // If the updated transaction is approved, issue a permit using the application service.
     if (newTransaction.approved) {

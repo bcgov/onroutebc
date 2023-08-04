@@ -325,6 +325,7 @@ export class ApplicationService {
   ) {
     let success = '';
     let failure = '';
+    console.log('transactionDetails',transactionDetails);
     const tempPermit = await this.findOne(applicationId);
     // Check if a PDF document already exists for the permit.
     // It's important that a PDF does not get overwritten.
@@ -381,6 +382,8 @@ export class ApplicationService {
           receiptNo,
         },
       };
+
+      console.log('dopsRequestData',dopsRequestData);
 
       const generatedReceiptDocumentPromise = this.generateDocument(
         currentUser,
