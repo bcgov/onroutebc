@@ -16,6 +16,14 @@ export class ReadPermitDto {
 
   @AutoMap()
   @ApiProperty({
+    description: 'Id of the permit.',
+    example: 74,
+    required: false,
+  })
+  permitId: number;
+
+  @AutoMap()
+  @ApiProperty({
     enum: PermitType,
     description: 'Friendly name for the permit type.',
     example: PermitType.TERM_OVERSIZE,

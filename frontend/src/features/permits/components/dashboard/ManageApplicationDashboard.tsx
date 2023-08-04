@@ -8,31 +8,21 @@ import { ErrorFallback } from "../../../../common/pages/ErrorFallback";
 import { List } from "../list/List";
 import { getApplicationsInProgress } from "../../../../features/permits/apiManager/permitsAPI";
 import { StartApplicationButton } from "../../../../features/permits/pages/TermOversize/form/VehicleDetails/customFields/StartApplicationButton";
+import { ActivePermitList } from "../permit-list/ActivePermitList";
+import { ExpiredPermitList } from "../permit-list/ExpiredPermitList";
+import { FIVE_MINUTES } from "../../../../common/constants/constants";
 
 export const ManageApplicationDashboard = React.memo(() => {
-
   const keepPreviousData = true;
-  const staleTime = 5000;
 
   const applicationInProgressQuery = useQuery({
     queryKey: ["applicationInProgress"],
     queryFn: getApplicationsInProgress,
     keepPreviousData: keepPreviousData,
-    staleTime: staleTime,
+    staleTime: FIVE_MINUTES,
   });
 
-  const {
-    data,
-    isLoading,
-    isError,
-    error,
-    //refetch,
-  } = useQuery({
-    queryKey: ["applicationInProgress"],
-    queryFn: getApplicationsInProgress,
-    keepPreviousData: true,
-    staleTime: 5000,
-  });
+  const { data, isLoading, isError, error } = applicationInProgressQuery;
 
   if (isLoading) {
     return <Loading />;
@@ -50,8 +40,8 @@ export const ManageApplicationDashboard = React.memo(() => {
   const tabs = [
     {
       label: "Applications in Progress",
-      component: (data?.length === 0) ? 
-        (
+      component:
+        data?.length === 0 ? (
           <div
             style={{
               padding: "20px 0px",
@@ -60,12 +50,13 @@ export const ManageApplicationDashboard = React.memo(() => {
             }}
           >
             <div>
-              <img src="No_Data_Graphic.svg"
-              style={{
-                width: "124px",
-                height: "112px",
-                marginTop: "80px",
-              }}
+              <img
+                src="No_Data_Graphic.svg"
+                style={{
+                  width: "124px",
+                  height: "112px",
+                  marginTop: "80px",
+                }}
               />
             </div>
             <div>
@@ -82,15 +73,21 @@ export const ManageApplicationDashboard = React.memo(() => {
     },
     {
       label: "Active Permits",
-      component: <>TODO</>,
+      component: <ActivePermitList />,
     },
     {
       label: "Expired Permits",
-      component: <>TODO</>,
+      component: <ExpiredPermitList />,
     },
   ];
 
-  return <TabLayout bannerText="Permits" bannerButton={<StartApplicationButton/>} componentList={tabs} />;
+  return (
+    <TabLayout
+      bannerText="Permits"
+      bannerButton={<StartApplicationButton />}
+      componentList={tabs}
+    />
+  );
 });
 
 ManageApplicationDashboard.displayName = "ManageApplicationDashboard";

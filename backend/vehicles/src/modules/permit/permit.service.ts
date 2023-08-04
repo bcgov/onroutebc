@@ -13,6 +13,7 @@ import { IUserJWT } from '../../common/interface/user-jwt.interface';
 import { Response } from 'express';
 import { ReadFileDto } from '../common/dto/response/read-file.dto';
 import { PermitStatus } from 'src/common/enum/permit-status.enum';
+import { Receipt } from '../payment/entities/receipt.entity';
 import {
   IPaginationMeta,
   IPaginationOptions,
@@ -28,6 +29,8 @@ export class PermitService {
     private permitRepository: Repository<Permit>,
     @InjectRepository(PermitType)
     private permitTypeRepository: Repository<PermitType>,
+    @InjectRepository(Receipt)
+    private receiptRepository: Repository<Receipt>,
     private readonly dopsService: DopsService,
   ) {}
 
@@ -58,6 +61,15 @@ export class PermitService {
       where: { permitId: permitId },
       relations: {
         permitData: true,
+      },
+    });
+  }
+
+  private async findOneWithTransactions(permitId: string): Promise<Permit> {
+    return this.permitRepository.findOne({
+      where: { permitId: permitId },
+      relations: {
+        transactions: true,
       },
     });
   }
@@ -173,43 +185,60 @@ export class PermitService {
     return this.classMapper.mapArrayAsync(permits, Permit, ReadPermitDto);
   }
 
-  /**
-   * Finds permits for user.
-   * @param userGUID if present get permits for this user
-   *  @param companyId if present get permits for this company
-   * @param expired if true get expired premits else get active permits
-   *
-   */
-  public async findPaginatedUserPermit(
-    options: IPaginationOptions,
-    userGUID: string,
-    companyId: number,
-    expired: string,
-  ): Promise<PaginationDto<Permit, IPaginationMeta>> {
-    const permits = this.permitRepository
-      .createQueryBuilder('permit')
-      .innerJoinAndSelect('permit.permitData', 'permitData')
-      .where('permit.permitNumber IS NOT NULL')
-      .andWhere('permit.companyId = :companyId', {
-        companyId: companyId,
-      })
-      .andWhere(userGUID ? 'permit.userGuid = :userGUID' : '1=1', {
-        userGUID: userGUID,
-      })
-      .andWhere(
-        expired === 'true'
-          ? '(permit.permitStatus IN (:...expiredStatus)OR(permit.permitStatus = :activeStatus AND permitData.expiryDate < :expiryDate))'
-          : '(permit.permitStatus = :activeStatus AND permitData.expiryDate >= :expiryDate)',
-        {
-          expiredStatus: Object.values(PermitStatus).filter(
-            (x) => x != PermitStatus.ISSUED && x != PermitStatus.SUPERSEDED,
-          ),
-          activeStatus: PermitStatus.ISSUED,
-          expiryDate: new Date(),
-        },
-      );
+  async findReceipt(permit: Permit): Promise<Receipt> {
+    if (!permit.transactions || permit.transactions.length === 0) {
+      throw new Error('No transactions associated with this permit');
+    }
 
-    // return this.classMapper.mapArrayAsync(permits, Permit, ReadPermitDto);
-    return await paginate(permits, options);
+    // Find the latest transaction for the permit, but not necessarily an approved transaction
+    let latestTransaction = permit.transactions[0];
+    let latestSubmitDate = latestTransaction.transactionSubmitDate;
+    permit.transactions.forEach((transaction) => {
+      if (
+        new Date(transaction.transactionSubmitDate) >=
+        new Date(latestSubmitDate)
+      ) {
+        latestSubmitDate = transaction.transactionSubmitDate;
+        latestTransaction = transaction;
+      }
+    });
+
+    const receipt = await this.receiptRepository.findOne({
+      where: {
+        transactionId: latestTransaction.transactionId,
+      },
+    });
+
+    if (!receipt) {
+      throw new Error(
+        "No receipt generated for this permit's latest transaction",
+      );
+    }
+    return receipt;
+  }
+
+  /**
+   * Finds a receipt PDF document associated with a specific permit ID.
+   * @param currentUser - The current User Details.
+   * @param permitId - The ID of the permit for which to find the receipt PDF document.
+   * @returns A Promise resolving to a ReadFileDto object representing the found PDF document.
+   */
+  public async findReceiptPDF(
+    currentUser: IUserJWT,
+    permitId: string,
+    res?: Response,
+  ): Promise<ReadFileDto> {
+    const permit = await this.findOneWithTransactions(permitId);
+    const receipt = await this.findReceipt(permit);
+
+    const file: ReadFileDto = null;
+    await this.dopsService.download(
+      currentUser,
+      receipt.receiptDocumentId,
+      FileDownloadModes.PROXY,
+      res,
+      permit.companyId,
+    );
+    return file;
   }
 }

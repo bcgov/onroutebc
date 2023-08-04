@@ -24,6 +24,8 @@ export type OnRouteBCContextType = {
   userDetails?: UserDetailContext;
   setCompanyId?: Dispatch<SetStateAction<number | undefined>>;
   companyId?: number;
+  setCompanyLegalName?: Dispatch<SetStateAction<string | undefined>>;
+  companyLegalName?: string;
 };
 
 const defaultBehaviour: OnRouteBCContextType = {};
