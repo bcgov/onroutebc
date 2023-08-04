@@ -181,12 +181,8 @@ export class PermitController {
     @Res() res: Response,
   ): Promise<void> {
     const currentUser = request.user as IUserJWT;
-    
-    await this.permitService.findReceiptPDF(
-      currentUser,
-      permitId,
-      res,
-    );
+
+    await this.permitService.findReceiptPDF(currentUser, permitId, res);
     res.status(200);
   }
 }

@@ -5,8 +5,10 @@ import {
 } from '../../../common/interface/permit.template.interface';
 import { FullNames } from '../interface/fullNames.interface';
 import { ReadCompanyDto } from 'src/modules/company-user-management/company/dto/response/read-company.dto';
-import { convertUtcToPt } from 'src/common/helper/convertUtcToPt.helper';
-
+import {
+  convertUtcToPt,
+  dateFormat,
+} from '../../../common/helper/date-time.helper';
 /**
  * Formats the permit data so that it can be used in the templated word documents
  * @param permit
@@ -44,21 +46,21 @@ export const formatTemplateData = (
   template.permitNumber = permit.permitNumber || '';
   template.permitType = permit.permitType;
   template.createdDateTime = convertUtcToPt(
-    permit.createdDateTime.toString(),
-    'MMM. D, YYYY, hh:mm a',
+    permit.createdDateTime,
+    'MMM. D, YYYY, hh:mm a Z',
   );
   template.updatedDateTime = convertUtcToPt(
-    permit.updatedDateTime.toString(),
-    'MMM. D, YYYY, hh:mm a',
+    permit.updatedDateTime,
+    'MMM. D, YYYY, hh:mm a Z',
   );
 
   // Start & Expiry date
-  template.permitData.startDate = convertUtcToPt(
-    template.permitData.startDate.toString(),
+  template.permitData.startDate = dateFormat(
+    template.permitData.startDate,
     'MMM. D, YYYY',
   );
-  template.permitData.expiryDate = convertUtcToPt(
-    template.permitData.expiryDate.toString(),
+  template.permitData.expiryDate = dateFormat(
+    template.permitData.expiryDate,
     'MMM. D, YYYY',
   );
 

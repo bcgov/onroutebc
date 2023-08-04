@@ -11,11 +11,7 @@ import { Receipt } from './entities/receipt.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([
-      Transaction,
-      PermitTransaction,
-      Receipt,
-    ]),
+    TypeOrmModule.forFeature([Transaction, PermitTransaction, Receipt]),
     PermitModule,
   ],
   controllers: [PaymentController],

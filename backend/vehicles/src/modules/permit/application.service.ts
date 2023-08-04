@@ -105,12 +105,9 @@ export class ApplicationService {
       CreateApplicationDto,
       Permit,
     );
-    const applicationData: Permit = {
-      ...permitApplication,
-      createdDateTime: new Date(),
-      updatedDateTime: new Date(),
-    };
-    const savedPermitEntity = await this.permitRepository.save(applicationData);
+    const savedPermitEntity = await this.permitRepository.save(
+      permitApplication,
+    );
     const refreshedPermitEntity = await this.findOne(
       savedPermitEntity.permitId,
     );
