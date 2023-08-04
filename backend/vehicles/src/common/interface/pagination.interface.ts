@@ -50,7 +50,6 @@ export type TypeORMCacheType =
       milliseconds: number;
     };
 
-
 export interface IPaginationMeta {
   /**
    * the amount of items on this specific page
@@ -73,4 +72,3 @@ export interface IPaginationMeta {
    */
   currentPage: number;
 }
-

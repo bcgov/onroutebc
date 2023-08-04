@@ -158,8 +158,8 @@ export class PermitService {
     userGUID: string,
     companyId: number,
     expired: string,
-  ): Promise<PaginationDto<Permit, IPaginationMeta>>  {
-    const permits =  this.permitRepository
+  ): Promise<PaginationDto<Permit, IPaginationMeta>> {
+    const permits = this.permitRepository
       .createQueryBuilder('permit')
       .innerJoinAndSelect('permit.permitData', 'permitData')
       .where('permit.permitNumber IS NOT NULL')
@@ -182,7 +182,7 @@ export class PermitService {
         },
       );
 
-      return await paginate(permits, options);
+    return await paginate(permits, options);
   }
 
   async findReceipt(permit: Permit): Promise<Receipt> {

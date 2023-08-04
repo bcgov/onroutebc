@@ -1,12 +1,6 @@
-import {
-  IPaginationMeta,
-  
-} from '../interface/pagination.interface';
+import { IPaginationMeta } from '../interface/pagination.interface';
 
-export class PaginationDto<
-  PaginationObject,
-  T  = IPaginationMeta,
-> {
+export class PaginationDto<PaginationObject, T = IPaginationMeta> {
   constructor(
     /**
      * a list of items to be returned

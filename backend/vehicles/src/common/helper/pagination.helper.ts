@@ -1,12 +1,7 @@
-import {
-  IPaginationMeta,
-} from '../interface/pagination.interface';
+import { IPaginationMeta } from '../interface/pagination.interface';
 import { PaginationDto } from '../class/pagination';
 
-export const createPaginationObject = <
-  T,
-  CustomMetaType = IPaginationMeta,
->({
+export const createPaginationObject = <T, CustomMetaType = IPaginationMeta>({
   items,
   totalItems,
   currentPage,
@@ -23,7 +18,7 @@ export const createPaginationObject = <
   const totalPages =
     totalItems !== undefined ? Math.ceil(totalItems / limit) : undefined;
 
-    const metadata: IPaginationMeta = {
+  const metadata: IPaginationMeta = {
     totalItems,
     currentItemCount: items.length,
     itemsPerPage: limit,
@@ -40,4 +35,3 @@ export const createPaginationObject = <
   // @ts-ignore
   return new PaginationDto<T, CustomMetaType>(items, metadata);
 };
-
