@@ -2,7 +2,7 @@ import { Height } from "@mui/icons-material";
 import { Box, Button, Container, Grid, Typography, Divider} from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
-export const Unauthorized = () => {
+export const UniversalUnauthorized = () => {
   const navigate = useNavigate();
   return (
     <Container className="feature-container" sx={{ paddingTop: "24px" }}>
@@ -21,16 +21,13 @@ export const Unauthorized = () => {
           <Typography variant="h4" sx={{ color: "#313132" }}>Unauthorized access</Typography>
         </Box>
         <Box className="success__block success__block--info">
-
+          <Divider/>
+          <p style={{ margin: '20px 0'}}>
           <Typography variant="body1" sx={{ color: "#313132"}}>
-            <div style={{ width: '60%', margin: '0 auto'}}>
-              <Divider/>
-              <p style={{ margin: '20px 0'}}>
-                You do not have the necessary authorization to view this page. Please contact your administrator.
-              </p>
-              <Divider/>
-            </div>        
+            You do not have the necessary authorization to view this page.       
           </Typography>
+          </p>
+          <Divider/>
         </Box>      
       </Box>
     </Box>

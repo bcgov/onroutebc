@@ -16,6 +16,12 @@ import { ManageApplications } from "../features/permits/ManageApplications";
 import { SuccessPage } from "../features/permits/pages/SuccessPage/SuccessPage";
 import { PaymentRedirect } from "../features/permits/pages/Payment/PaymentRedirect";
 import { PaymentFailureRedirect } from "../features/permits/pages/Payment/PaymentFailureRedirect";
+import { Unauthorized } from "../common/pages/Unauthorized";
+import { Loading } from "../common/pages/Loading";
+import { UniversalUnauthorized } from "../common/pages/UniversalUnauthorized";
+import { Unexpected } from "../common/pages/Unexpected";
+
+
 
 export const AppRoutes = () => {
   return (
@@ -24,6 +30,14 @@ export const AppRoutes = () => {
       <Route path={routes.WELCOME} element={<WelcomePage />} />
       <Route path={routes.SEARCH_PPC} element={<> TODO </>} />
       <Route path="*" element={<NotFound />} />
+      
+      {/* only for test error pages, need to be deleted */}
+      <Route path="notfound" element={<NotFound />} />
+      <Route path="unauthorized" element={<Unauthorized />} />
+      <Route path="universalunauthorized" element={<UniversalUnauthorized />} />
+      <Route path="loading" element={<Loading />} />
+      <Route path="unexpected" element={<Unexpected />} />
+
       {/* Protected Routes */}
       <Route element={<ProtectedRoutes requiredRole={ROLES.READ_VEHICLE} />}>
         <Route path={routes.MANAGE_VEHICLES}>
