@@ -1,8 +1,6 @@
-import { Box, Button, Container, Divider, Grid, Typography } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { Box, Container, Divider, Typography } from "@mui/material";
 
 export const NotFound = () => {
-  const navigate = useNavigate();
   return (
     <Container className="feature-container" sx={{ paddingTop: "24px" }}>   
     <Box className="success feature-container">

@@ -1,6 +1,4 @@
-import { Height } from "@mui/icons-material";
-import { Box, Button, Container, Grid, Typography, Divider} from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { Box, Container, Typography, Divider} from "@mui/material";
 
 export const Unexpected = () => {
   return (
