@@ -185,7 +185,7 @@ export class PaymentService {
     );
 
     // Map the updated transaction data (CreateTransactionDto) to a new Transaction object.
-    const newTransaction = this.classMapper.map(
+    const newTransaction = await this.classMapper.mapAsync(
       transaction,
       CreateTransactionDto,
       Transaction,
@@ -222,7 +222,13 @@ export class PaymentService {
     }
 
     // Return the updated transaction data (ReadTransactionDto).
-    return newTransaction;
+    return await this.classMapper.mapAsync(
+      await this.transactionRepository.findOne({
+        where: { transactionId: existingTransaction.transactionId },
+      }),
+      Transaction,
+      ReadTransactionDto,
+    );
   }
 
   /**
