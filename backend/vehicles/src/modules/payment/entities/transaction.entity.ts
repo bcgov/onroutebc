@@ -112,7 +112,7 @@ export class Transaction extends Base {
     name: 'TRANSACTION_SUBMIT_DATE',
     nullable: false,
   })
-  transactionSubmitDate: string;
+  transactionSubmitDate: Date;
 
   @AutoMap()
   @ApiProperty({
@@ -127,7 +127,7 @@ export class Transaction extends Base {
     nullable: false,
     type: 'date',
   })
-  transactionDate: string;
+  transactionDate: Date;
 
   @AutoMap()
   @ApiProperty({

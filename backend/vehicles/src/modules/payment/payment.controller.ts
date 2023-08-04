@@ -1,12 +1,4 @@
-import { 
-  Body, 
-  Controller, 
-  Get, 
-  Param, 
-  Post, 
-  Query, 
-  Req,
-} from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query, Req } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiCreatedResponse,
@@ -61,12 +53,17 @@ export class PaymentController {
       transactionAmount,
     );
 
-    const permitTransactions = await this.paymentService.createTransaction(permitIdArray, paymentDetails);
+    const permitTransactions = await this.paymentService.createTransaction(
+      permitIdArray,
+      paymentDetails,
+    );
 
     return this.paymentService.generateUrl(
-      paymentDetails, 
-      permitTransactions.map(permitTransaction => permitTransaction.permitId),
-      permitTransactions.map(permitTransaction => permitTransaction.transactionId),
+      paymentDetails,
+      permitTransactions.map((permitTransaction) => permitTransaction.permitId),
+      permitTransactions.map(
+        (permitTransaction) => permitTransaction.transactionId,
+      ),
     );
   }
 
