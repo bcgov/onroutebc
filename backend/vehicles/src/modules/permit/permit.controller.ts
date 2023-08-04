@@ -39,6 +39,7 @@ import {
   IPaginationOptions,
 } from 'src/common/interface/pagination.interface';
 import { PaginationDto } from 'src/common/class/pagination';
+import { LessThenPipe } from 'src/common/class/customs.transform';
 
 @ApiBearerAuth()
 @ApiTags('Permit')
@@ -128,7 +129,7 @@ export class PermitController {
     @Query('companyId') companyId: number,
     @Query('expired') expired: string,
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
-    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit = 1,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe, LessThenPipe) limit = 10,
   ): Promise<PaginationDto<Permit, IPaginationMeta>> {
     const options: IPaginationOptions = {
       limit,
