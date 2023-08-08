@@ -11,7 +11,7 @@ export const UniversalUnauthorized = () => {
             height="168"
             width="178"
             src="/Error_Screen_Graphic.svg"
-            alt="Profile Set-up Successful"
+            alt="Unauthorized"
           />
         </Box>
         <Box className="success__block success__block--success-msg">
