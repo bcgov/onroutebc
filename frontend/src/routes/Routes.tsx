@@ -16,12 +16,6 @@ import { ManageApplications } from "../features/permits/ManageApplications";
 import { SuccessPage } from "../features/permits/pages/SuccessPage/SuccessPage";
 import { PaymentRedirect } from "../features/permits/pages/Payment/PaymentRedirect";
 import { PaymentFailureRedirect } from "../features/permits/pages/Payment/PaymentFailureRedirect";
-import { Unauthorized } from "../common/pages/Unauthorized";
-import { Loading } from "../common/pages/Loading";
-import { UniversalUnauthorized } from "../common/pages/UniversalUnauthorized";
-import { Unexpected } from "../common/pages/Unexpected";
-
-
 
 export const AppRoutes = () => {
   return (
