@@ -15,7 +15,6 @@
     "@mui/x-date-pickers": "^6.5.0",
     "@tanstack/react-query": "^4.29.7",
     "axios": "^1.4.0",
-    "canvas": "^2.11.2",
     "dayjs": "^1.11.7",
     "i18next": "^22.5.0",
     "lottie-web": "^5.12.2",
