@@ -14,6 +14,12 @@ import { Response } from 'express';
 import { ReadFileDto } from '../common/dto/response/read-file.dto';
 import { PermitStatus } from 'src/common/enum/permit-status.enum';
 import { Receipt } from '../payment/entities/receipt.entity';
+import {
+  IPaginationMeta,
+  IPaginationOptions,
+} from 'src/common/interface/pagination.interface';
+import { PaginationDto } from 'src/common/class/pagination';
+import { paginate } from 'src/common/helper/paginate';
 
 @Injectable()
 export class PermitService {
@@ -148,11 +154,12 @@ export class PermitService {
    *
    */
   public async findUserPermit(
+    options: IPaginationOptions,
     userGUID: string,
     companyId: number,
     expired: string,
-  ): Promise<ReadPermitDto[]> {
-    const permits = await this.permitRepository
+  ): Promise<PaginationDto<Permit, IPaginationMeta>> {
+    const permits = this.permitRepository
       .createQueryBuilder('permit')
       .innerJoinAndSelect('permit.permitData', 'permitData')
       .where('permit.permitNumber IS NOT NULL')
@@ -173,10 +180,9 @@ export class PermitService {
           activeStatus: PermitStatus.ISSUED,
           expiryDate: new Date(),
         },
-      )
-      .getMany();
+      );
 
-    return this.classMapper.mapArrayAsync(permits, Permit, ReadPermitDto);
+    return await paginate(permits, options);
   }
 
   async findReceipt(permit: Permit): Promise<Receipt> {

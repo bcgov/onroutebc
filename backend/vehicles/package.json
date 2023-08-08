@@ -66,6 +66,7 @@
     "handlebars": "^4.7.7",
     "jwks-rsa": "^3.0.1",
     "mssql": "^9.1.1",
+    "nestjs-typeorm-paginate": "^4.0.4",
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.1",
     "pg": "^8.11.0",
