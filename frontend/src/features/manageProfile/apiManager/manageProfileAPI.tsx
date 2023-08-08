@@ -8,7 +8,12 @@ import {
 } from "../../../common/apiManager/httpRequestHandler";
 import { UserContextType } from "../../../common/authentication/types";
 import { replaceEmptyValuesWithNull } from "../../../common/helpers/util";
-import { CompanyProfile, CompanyAndUserRequest, UserInformation } from "../types/manageProfile";
+import {
+  CompanyProfile,
+  CompanyAndUserRequest,
+  UserInformation,
+} from "../types/manageProfile";
+import { PaginatedResponse, ReadCompanyUser } from "../types/userManagement";
 import { MANAGE_PROFILE_API } from "./endpoints/endpoints";
 
 export const getCompanyInfo = async (): Promise<CompanyProfile> => {
@@ -17,7 +22,9 @@ export const getCompanyInfo = async (): Promise<CompanyProfile> => {
 };
 
 export const getMyInfo = async (): Promise<UserInformation> => {
-  const url = `${MANAGE_PROFILE_API.MY_INFO}/${getUserGuidFromSession()}?companyId=${getCompanyIdFromSession()}`;
+  const url = `${
+    MANAGE_PROFILE_API.MY_INFO
+  }/${getUserGuidFromSession()}?companyId=${getCompanyIdFromSession()}`;
   return httpGETRequest(url).then((response) => response.data);
 };
 
@@ -33,14 +40,12 @@ export const updateCompanyInfo = async ({
   );
 };
 
-export const updateMyInfo = async ({
-  myInfo,
-}: {
-  myInfo: UserInformation;
-}) => {
+export const updateMyInfo = async ({ myInfo }: { myInfo: UserInformation }) => {
   return await httpPUTRequest(
-    `${MANAGE_PROFILE_API.COMPANIES}/${getCompanyIdFromSession()}/users/${getUserGuidFromSession()}`,
-    replaceEmptyValuesWithNull(myInfo),
+    `${
+      MANAGE_PROFILE_API.COMPANIES
+    }/${getCompanyIdFromSession()}/users/${getUserGuidFromSession()}`,
+    replaceEmptyValuesWithNull(myInfo)
   );
 };
 
@@ -72,5 +77,18 @@ export const getUserContext = (): Promise<UserContextType> => {
 export const getUserRolesByCompanyId = (): Promise<string[]> => {
   return httpGETRequest(
     `${VEHICLES_URL}/users/roles?companyId=${getCompanyIdFromSession()}`
+  ).then((response) => response.data);
+};
+
+/**
+ * Retrieves the users of a company by companyId
+ * @returns a promise containing the users.
+ */
+export const getCompanyUsers = ({
+  page = 1,
+  limit = 10,
+} = {}): Promise<ReadCompanyUser> => {
+  return httpGETRequest(
+    `${VEHICLES_URL}/users?companyId=${getCompanyIdFromSession()}`
   ).then((response) => response.data);
 };
