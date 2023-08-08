@@ -14,6 +14,12 @@ import { Response } from 'express';
 import { ReadFileDto } from '../common/dto/response/read-file.dto';
 import { PermitStatus } from 'src/common/enum/permit-status.enum';
 import { Receipt } from '../payment/entities/receipt.entity';
+import {
+  IPaginationMeta,
+  IPaginationOptions,
+} from 'src/common/interface/pagination.interface';
+import { PaginationDto } from 'src/common/class/pagination';
+import { paginate } from 'src/common/helper/paginate';
 
 @Injectable()
 export class PermitService {
@@ -148,11 +154,12 @@ export class PermitService {
    *
    */
   public async findUserPermit(
+    options: IPaginationOptions,
     userGUID: string,
     companyId: number,
     expired: string,
-  ): Promise<ReadPermitDto[]> {
-    const permits = await this.permitRepository
+  ): Promise<PaginationDto<Permit, IPaginationMeta>> {
+    const permits = this.permitRepository
       .createQueryBuilder('permit')
       .innerJoinAndSelect('permit.permitData', 'permitData')
       .where('permit.permitNumber IS NOT NULL')
@@ -173,35 +180,39 @@ export class PermitService {
           activeStatus: PermitStatus.ISSUED,
           expiryDate: new Date(),
         },
-      )
-      .getMany();
+      );
 
-    return this.classMapper.mapArrayAsync(permits, Permit, ReadPermitDto);
+    return await paginate(permits, options);
   }
 
   async findReceipt(permit: Permit): Promise<Receipt> {
     if (!permit.transactions || permit.transactions.length === 0) {
-      throw new Error("No transactions associated with this permit");
+      throw new Error('No transactions associated with this permit');
     }
 
     // Find the latest transaction for the permit, but not necessarily an approved transaction
     let latestTransaction = permit.transactions[0];
     let latestSubmitDate = latestTransaction.transactionSubmitDate;
-    permit.transactions.forEach(transaction => {
-      if (new Date(transaction.transactionSubmitDate) >= new Date(latestSubmitDate)) {
+    permit.transactions.forEach((transaction) => {
+      if (
+        new Date(transaction.transactionSubmitDate) >=
+        new Date(latestSubmitDate)
+      ) {
         latestSubmitDate = transaction.transactionSubmitDate;
         latestTransaction = transaction;
-      };
+      }
     });
 
     const receipt = await this.receiptRepository.findOne({
       where: {
         transactionId: latestTransaction.transactionId,
-      }
+      },
     });
 
     if (!receipt) {
-      throw new Error("No receipt generated for this permit's latest transaction");
+      throw new Error(
+        "No receipt generated for this permit's latest transaction",
+      );
     }
     return receipt;
   }
@@ -217,10 +228,10 @@ export class PermitService {
     permitId: string,
     res?: Response,
   ): Promise<ReadFileDto> {
-    const permit = await this.findOneWithTransactions(permitId);    
+    const permit = await this.findOneWithTransactions(permitId);
     const receipt = await this.findReceipt(permit);
 
-    let file: ReadFileDto = null;
+    const file: ReadFileDto = null;
     await this.dopsService.download(
       currentUser,
       receipt.receiptDocumentId,

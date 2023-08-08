@@ -28,6 +28,7 @@ const envPath = path.resolve(process.cwd() + '/../../');
     ConfigModule.forRoot({ envFilePath: `${envPath}/.env` }),
     TypeOrmModule.forRoot({
       type: process.env.DB_TYPE === 'mssql' ? 'mssql' : 'postgres',
+      useUTC: true,
       host:
         process.env.DB_TYPE === 'mssql'
           ? process.env.MSSQL_HOST
@@ -48,7 +49,7 @@ const envPath = path.resolve(process.cwd() + '/../../');
         process.env.DB_TYPE === 'mssql'
           ? process.env.MSSQL_SA_PASSWORD
           : process.env.POSTGRESQL_PASSWORD,
-      options: { encrypt: process.env.MSSQL_ENCRYPT === 'true' },
+      options: { encrypt: process.env.MSSQL_ENCRYPT === 'true', useUTC: true },
       autoLoadEntities: true, // Auto load all entities regiestered by typeorm forFeature method.
       synchronize: false, // This changes the DB schema to match changes to entities, which we might not want.
       logging: false,

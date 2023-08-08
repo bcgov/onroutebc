@@ -43,6 +43,7 @@ import { IFile } from '../../common/interface/file.interface';
 import { ReadTransactionDto } from '../payment/dto/response/read-transaction.dto';
 import { Transaction } from '../payment/entities/transaction.entity';
 import { Receipt } from '../payment/entities/receipt.entity';
+import { convertUtcToPt } from '../../common/helper/date-time.helper';
 
 @Injectable()
 export class ApplicationService {
@@ -105,12 +106,9 @@ export class ApplicationService {
       CreateApplicationDto,
       Permit,
     );
-    const applicationData: Permit = {
-      ...permitApplication,
-      createdDateTime: new Date(),
-      updatedDateTime: new Date(),
-    };
-    const savedPermitEntity = await this.permitRepository.save(applicationData);
+    const savedPermitEntity = await this.permitRepository.save(
+      permitApplication,
+    );
     const refreshedPermitEntity = await this.findOne(
       savedPermitEntity.permitId,
     );
@@ -370,13 +368,16 @@ export class ApplicationService {
 
       //Generate receipt number for the permit to be created in database.
       const receiptNo = await this.generateReceiptNumber();
-
       dopsRequestData = {
         templateName: TemplateName.PAYMENT_RECEIPT,
         generatedDocumentFileName: `Receipt_No_${receiptNo}`,
         templateData: {
           ...permitDataForTemplate,
           ...transactionDetails,
+          transactionDate: convertUtcToPt(
+            transactionDetails.transactionDate,
+            'MMM. D, YYYY, hh:mm a Z',
+          ),
           receiptNo,
         },
       };
