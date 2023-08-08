@@ -30,14 +30,6 @@ export const AppRoutes = () => {
       <Route path={routes.WELCOME} element={<WelcomePage />} />
       <Route path={routes.SEARCH_PPC} element={<> TODO </>} />
       <Route path="*" element={<NotFound />} />
-      
-      {/* only for test error pages, need to be deleted */}
-      <Route path="notfound" element={<NotFound />} />
-      <Route path="unauthorized" element={<Unauthorized />} />
-      <Route path="universalunauthorized" element={<UniversalUnauthorized />} />
-      <Route path="loading" element={<Loading />} />
-      <Route path="unexpected" element={<Unexpected />} />
-
       {/* Protected Routes */}
       <Route element={<ProtectedRoutes requiredRole={ROLES.READ_VEHICLE} />}>
         <Route path={routes.MANAGE_VEHICLES}>
