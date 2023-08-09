@@ -10,6 +10,7 @@ import OnRouteBCContext, {
   UserDetailContext,
 } from "../../../common/authentication/OnRouteBCContext";
 import { UserContextType } from "../../../common/authentication/types";
+import { applyWhenNotNullable } from "../../../common/helpers/util";
 
 /**
  * Fetches company info of current user.
@@ -39,8 +40,9 @@ export const useUserContext = () => {
     onSuccess: (userContextResponseBody: UserContextType) => {
       const { user, associatedCompanies } = userContextResponseBody;
       if (user?.userGUID) {
-        const companyId = associatedCompanies[0].companyId;
-        const legalName = associatedCompanies[0].legalName;
+        const company = associatedCompanies?.length ? associatedCompanies[0] : undefined;
+        const companyId = company?.companyId;
+        const legalName = company?.legalName;
         setCompanyId?.(() => companyId);
         setCompanyLegalName?.(() => legalName);
         const userDetails = {
@@ -58,7 +60,10 @@ export const useUserContext = () => {
 
         // Setting the companyId to sessionStorage so that it can be
         // used outside of react components.
-        sessionStorage.setItem("onRouteBC.user.companyId", companyId.toString());
+        applyWhenNotNullable(
+          (id: number) => sessionStorage.setItem("onRouteBC.user.companyId", id.toString()), 
+          companyId
+        );
       }
     },
     retry: false,
