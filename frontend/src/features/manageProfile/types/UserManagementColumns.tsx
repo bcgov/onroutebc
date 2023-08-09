@@ -1,92 +1,55 @@
 import { MRT_ColumnDef } from "material-react-table";
-import Link from "@mui/material/Link";
-import { ReadPermitDto } from "../../types/permit";
-import { PermitChip } from "./PermitChip";
-import { downloadPermitApplicationPdf } from "../../apiManager/permitsAPI";
-import { openBlobInNewTab } from "../../helpers/openPdfInNewTab";
-
+import { BCeIDAuthGroup, ReadCompanyUser } from "./userManagement";
 
 /**
- * Opens the permit PDF in a new tab.
- * @param permitId The permitId of the permit.
+ * Translates the userAuthGroup code into a more meaningful text for the user.
+ * @param userAuthGroup The userAuthGroup of the user
+ * @returns A user-friendly text for the user auth group.
  */
-const viewPermitPdf = async (permitId: string) => {
-  try {
-    const { blobObj: blobObjWithoutType } = await downloadPermitApplicationPdf(
-      permitId
-    );
-    openBlobInNewTab(blobObjWithoutType);
-  } catch (err) {
-    console.error(err);
+const translateUserAuth = (userAuthGroup: BCeIDAuthGroup): string => {
+  if (!userAuthGroup) return "";
+  switch (userAuthGroup) {
+    case BCeIDAuthGroup.CVCLIENT:
+      return "Permit Applicant";
+    default:
+      return "Administrator";
   }
 };
 
 /**
  * A boolean indicating if a small badge has to be displayed beside the Permit Number.
  */
-const shouldShowChip = (permitStatus: string) => {
-  return permitStatus === "PENDING";
+const shouldShowChip = (userStatus: string) => {
+  return userStatus === "PENDING";
 };
 
 /**
- * The column definition for Permits.
+ * The column definition for User Management Table.
  */
-export const PermitsColumnDefinition: MRT_ColumnDef<ReadPermitDto>[] = [
-  {
-    accessorKey: "permitNumber",
-    header: "Permit #",
-    enableSorting: false,
-    size: 500,
-    accessorFn: (row) => row.permitNumber,
-    Cell: (props: { cell: any; row: any }) => {
-      return (
-        <>
-          <Link
-            component="button"
-            variant="body2"
-            onClick={() => viewPermitPdf(props.row.original.permitId)}
-          >
-            {props.cell.getValue()}
-          </Link>
-          {shouldShowChip(props.row.original.permitStatus) && (
-            <PermitChip permitStatus={props.row.original.permitStatus} />
-          )}
-        </>
-      );
+export const UserManagementColumnsDefinition: MRT_ColumnDef<ReadCompanyUser>[] =
+  [
+    {
+      accessorKey: "userName",
+      header: "BCeID Username",
+      Cell: (props: { row: any }) => {
+        return (
+          <>{shouldShowChip(props.row.original.userStatus) && "  Pending"}</>
+        );
+      },
     },
-  },
-  {
-    accessorKey: "permitType",
-    header: "Permit Type",
-    enableSorting: false,
-  },
-  {
-    accessorFn: (row) => `${row.permitData.vehicleDetails?.unitNumber || ""}`,
-    id: "unitNumber",
-    header: "Unit #",
-    enableSorting: false,
-  },
-  {
-    accessorKey: "permitData.vehicleDetails.plate",
-    header: "Plate",
-    enableSorting: false,
-  },
-  {
-    accessorKey: "permitData.startDate",
-    header: "Permit Start Date",
-  },
-  {
-    accessorKey: "permitData.expiryDate",
-    header: "Permit End Date",
-  },
-  {
-    accessorFn: (row) =>
-      `${row.permitData.contactDetails?.firstName} ${row.permitData.contactDetails?.lastName} `,
-    id: "application",
-    header: "Applicant",
-    enableSorting: false,
-  },
-];
-
-export const PermitsNotFoundColumnDefinition: MRT_ColumnDef<ReadPermitDto>[] =
-  PermitsColumnDefinition;
+    {
+      accessorKey: "firstName",
+      header: "First Name",
+    },
+    {
+      accessorKey: "lastName",
+      header: "Last Name",
+    },
+    {
+      accessorKey: "userAuthGroup",
+      header: "User Group",
+      Cell: (props: { cell: any }) => {
+        return <>{translateUserAuth(props.cell.getValue())}</>;
+      },
+    },
+  ];

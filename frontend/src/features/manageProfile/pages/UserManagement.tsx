@@ -1,19 +1,19 @@
 import { Box } from "@mui/material";
 import { UseQueryResult } from "@tanstack/react-query";
+import { RowSelectionState } from "@tanstack/table-core";
 import MaterialReactTable, {
   MRT_GlobalFilterTextField,
   MRT_Row,
   MRT_TableInstance,
 } from "material-react-table";
-import { RowSelectionState } from "@tanstack/table-core";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { SnackBarContext } from "../../../App";
-import { ReadPermitDto } from "../../permits/types/permit";
-import { PermitsColumnDefinition } from "../../permits/components/permit-list/Columns";
 import { NoRecordsFound } from "../../../common/components/table/NoRecordsFound";
-import { PermitRowOptions } from "../../permits/components/permit-list/PermitRowOptions";
 import { BC_COLOURS } from "../../../themes/bcGovStyles";
 import { Trash } from "../../manageVehicles/components/options/Trash";
+import { UserManagementRowOptions } from "../components/user-management/UserManagementRowOptions";
+import { UserManagementColumnsDefinition } from "../types/UserManagementColumns";
+import { ReadCompanyUser } from "../types/userManagement";
 
 /**
  * User Management Component for CV Client.
@@ -22,7 +22,7 @@ export const UserManagement = ({
   query,
   isExpired = false,
 }: {
-  query: UseQueryResult<ReadPermitDto[]>;
+  query: UseQueryResult<ReadCompanyUser[]>;
   isExpired?: boolean;
 }) => {
   const { data, isError, isInitialLoading } = query;
@@ -49,7 +49,7 @@ export const UserManagement = ({
 
   return (
     <MaterialReactTable
-      columns={PermitsColumnDefinition}
+      columns={UserManagementColumnsDefinition}
       data={data ?? []}
       state={{
         showAlertBanner: isError,
@@ -76,22 +76,19 @@ export const UserManagement = ({
         ({
           row,
         }: {
-          table: MRT_TableInstance<ReadPermitDto>;
-          row: MRT_Row<ReadPermitDto>;
+          table: MRT_TableInstance<ReadCompanyUser>;
+          row: MRT_Row<ReadCompanyUser>;
         }) => {
           return (
             <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-              <PermitRowOptions
-                isExpired={isExpired}
-                permitId={row.original.permitId}
-              />
+              <UserManagementRowOptions userGUID={row.original.userGUID} />
             </Box>
           );
         },
         []
       )}
       renderTopToolbar={useCallback(
-        ({ table }: { table: MRT_TableInstance<ReadPermitDto> }) => (
+        ({ table }: { table: MRT_TableInstance<ReadCompanyUser> }) => (
           <Box
             sx={{
               display: "flex",

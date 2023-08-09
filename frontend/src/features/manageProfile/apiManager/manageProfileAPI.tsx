@@ -13,7 +13,7 @@ import {
   CompanyAndUserRequest,
   UserInformation,
 } from "../types/manageProfile";
-import { PaginatedResponse, ReadCompanyUser } from "../types/userManagement";
+import { ReadCompanyUser } from "../types/userManagement";
 import { MANAGE_PROFILE_API } from "./endpoints/endpoints";
 
 export const getCompanyInfo = async (): Promise<CompanyProfile> => {

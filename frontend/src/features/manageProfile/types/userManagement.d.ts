@@ -1,16 +1,24 @@
-export type PaginatedResponse<T> = {
-  items: T[];
-  meta: PageMetadata;
-};
+/**
+ * The types of user auth groups for BCeID users.
+ */
+export enum BCeIDAuthGroup {
+  PUBLIC = "PUBLIC",
+  CVCLIENT = "CVCLIENT",
+  ORGADMIN = "ORGADMIN",
+}
 
-export type PageMetadata = {
-  currentPage: number;
-  currentItemCount: number;
-  itemsPerPage: number;
-  totalPages?: number;
-  totalItems?: number;
-};
+/**
+ * The types of user statuses for BCeID users.
+ */
+export enum BCeIDUserStatus {
+  ACTIVE = "ACTIVE",
+  DISABLED = "DISABLED",
+  PENDING = "PENDING",
+}
 
+/**
+ * Company User object response from the GET API.
+ */
 export type ReadCompanyUser = {
   firstName: string;
   lastName: string;
@@ -20,8 +28,8 @@ export type ReadCompanyUser = {
   email: string;
   city: string;
   userGUID: string;
-  userAuthGroup: "PUBLIC" | "CVCLIENT" | "ORGADMIN";
-  statusCode: "ACTIVE" | "DISABLED";
+  userAuthGroup: BCeIDAuthGroup;
+  statusCode: BCeIDUserStatus;
   userName: string;
   phone1Extension: string;
   phone2Extension: string;
