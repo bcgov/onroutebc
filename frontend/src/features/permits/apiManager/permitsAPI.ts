@@ -242,11 +242,11 @@ export const getPermits = async ({
   }
   const permits = await httpGETRequest(permitsURL)
     .then((response) => {
-      const resppp = getDefaultRequiredVal(
+      const paginatedResponseObject = getDefaultRequiredVal(
         {},
         response.data
       ) as PaginatedResponse<ReadPermitDto>;
-      return resppp.items as ReadPermitDto[];
+      return paginatedResponseObject.items;
     })
     .then((permits) =>
       permits.map((permit) => {
