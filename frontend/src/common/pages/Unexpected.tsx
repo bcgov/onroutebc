@@ -1,8 +1,9 @@
-import { Box, Container, Divider, Typography } from "@mui/material";
+import { Box, Container, Typography, Divider} from "@mui/material";
 
-export const NotFound = () => {
+export const Unexpected = () => {
   return (
-    <Container className="feature-container" sx={{ paddingTop: "24px" }}>   
+    <Container className="feature-container" sx={{ paddingTop: "24px" }}>
+
     <Box className="success feature-container">
       <Box className="success__container">
         <Box className="success__block success__block--success-img">
@@ -14,16 +15,20 @@ export const NotFound = () => {
           />
         </Box>
         <Box className="success__block success__block--success-msg">
-          <Typography variant="h4" sx={{ color: "#313132" }}>Page not found</Typography>
+          <Typography variant="h4" sx={{ color: "#313132" }}>Unexpected error</Typography>
         </Box>
         <Box className="success__block success__block--info">
-          <Divider/>
-          <p style={{ margin: '20px 0'}}>
+
           <Typography variant="body1" sx={{ color: "#313132"}}>
-              Please visit <a href="/">onRoutBC</a>.         
+            <div style={{ width: '100%', margin: '0 auto'}}>
+              <Divider/>
+              <p style={{ margin: '20px 0'}}>
+                Please refresh to continue. If the error persists
+                <p><a href="/">contact us</a>.</p>
+              </p>
+              <Divider/>
+            </div>        
           </Typography>
-          </p>
-          <Divider/>
         </Box>      
       </Box>
     </Box>

@@ -7,6 +7,8 @@ import {
   Param,
   Query,
   Res,
+  DefaultValuePipe,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { PermitService } from './permit.service';
 import { ExceptionDto } from '../../common/exception/exception.dto';
@@ -31,6 +33,13 @@ import { ReadFileDto } from '../common/dto/response/read-file.dto';
 import { Roles } from 'src/common/decorator/roles.decorator';
 import { Role } from 'src/common/enum/roles.enum';
 import { IDP } from 'src/common/enum/idp.enum';
+import { Permit } from './entities/permit.entity';
+import {
+  IPaginationMeta,
+  IPaginationOptions,
+} from 'src/common/interface/pagination.interface';
+import { PaginationDto } from 'src/common/class/pagination';
+import { LessThenPipe } from 'src/common/class/customs.transform';
 
 @ApiBearerAuth()
 @ApiTags('Permit')
@@ -84,19 +93,30 @@ export class PermitController {
    */
   @ApiQuery({ name: 'companyId', required: true })
   @ApiQuery({ name: 'expired', required: false, example: 'true' })
+  @ApiQuery({ name: 'page', required: false, example: '1' })
+  @ApiQuery({ name: 'limit', required: false, example: '10' })
   @Roles(Role.READ_PERMIT)
   @Get('user')
-  async getUserPermit(
+  async getPaginatedUserPermit(
     @Req() request: Request,
     @Query('companyId') companyId: number,
     @Query('expired') expired: string,
-  ): Promise<ReadPermitDto[]> {
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe, LessThenPipe)
+    limit = 10,
+  ): Promise<PaginationDto<ReadPermitDto, IPaginationMeta>> {
+    const options: IPaginationOptions = {
+      limit,
+      page,
+    };
+
     const currentUser = request.user as IUserJWT;
     const userGuid =
       currentUser.identity_provider === IDP.BCEID
         ? currentUser.bceid_user_guid
         : null;
     return await this.permitService.findUserPermit(
+      options,
       userGuid,
       companyId,
       expired,
