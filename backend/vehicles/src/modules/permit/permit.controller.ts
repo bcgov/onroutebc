@@ -104,7 +104,7 @@ export class PermitController {
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe, LessThenPipe)
     limit = 10,
-  ): Promise<PaginationDto<Permit, IPaginationMeta>> {
+  ): Promise<PaginationDto<ReadPermitDto, IPaginationMeta>> {
     const options: IPaginationOptions = {
       limit,
       page,
