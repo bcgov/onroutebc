@@ -1,8 +1,9 @@
-import { Box, Container, Divider, Typography } from "@mui/material";
+import { Box, Container, Typography, Divider} from "@mui/material";
 
-export const NotFound = () => {
+export const UniversalUnauthorized = () => {
   return (
-    <Container className="feature-container" sx={{ paddingTop: "24px" }}>   
+    <Container className="feature-container" sx={{ paddingTop: "24px" }}>
+
     <Box className="success feature-container">
       <Box className="success__container">
         <Box className="success__block success__block--success-img">
@@ -10,17 +11,17 @@ export const NotFound = () => {
             height="168"
             width="178"
             src="/Error_Screen_Graphic.svg"
-            alt="Profile Set-up Successful"
+            alt="Unauthorized"
           />
         </Box>
         <Box className="success__block success__block--success-msg">
-          <Typography variant="h4" sx={{ color: "#313132" }}>Page not found</Typography>
+          <Typography variant="h4" sx={{ color: "#313132" }}>Unauthorized access</Typography>
         </Box>
         <Box className="success__block success__block--info">
           <Divider/>
           <p style={{ margin: '20px 0'}}>
           <Typography variant="body1" sx={{ color: "#313132"}}>
-              Please visit <a href="/">onRoutBC</a>.         
+            You do not have the necessary authorization to view this page.       
           </Typography>
           </p>
           <Divider/>

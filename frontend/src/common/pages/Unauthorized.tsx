@@ -1,37 +1,36 @@
-import { Button, Container, Grid, Typography } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { Box, Container, Typography, Divider} from "@mui/material";
 
 export const Unauthorized = () => {
-  const navigate = useNavigate();
   return (
     <Container className="feature-container" sx={{ paddingTop: "24px" }}>
-      <Grid
-        container
-        direction="row"
-        justifyContent="center"
-        alignItems="center"
-      >
-        <Grid container item xs={6} justifyContent="center">
-          <Typography variant="h4" align="center">
-            Unauthorized
-          </Typography>
-          <Typography variant="h5" align="center" margin={"20px"}>
-            You do not have the necessary authorization to view this page. Click
-            the button below to go back
-          </Typography>
 
-          <Grid item>
-            <Button
-              variant="contained"
-              onClick={() => {
-                navigate("/");
-              }}
-            >
-              Go to home page
-            </Button>
-          </Grid>
-        </Grid>
-      </Grid>
+    <Box className="success feature-container">
+      <Box className="success__container">
+        <Box className="success__block success__block--success-img">
+          <img
+            height="168"
+            width="178"
+            src="/Error_Screen_Graphic.svg"
+            alt="Profile Set-up Successful"
+          />
+        </Box>
+        <Box className="success__block success__block--success-msg">
+          <Typography variant="h4" sx={{ color: "#313132" }}>Unauthorized access</Typography>
+        </Box>
+        <Box className="success__block success__block--info">
+
+          <Typography variant="body1" sx={{ color: "#313132"}}>
+            <div style={{ width: '60%', margin: '0 auto'}}>
+              <Divider/>
+              <p style={{ margin: '20px 0'}}>
+                You do not have the necessary authorization to view this page. Please contact your administrator.
+              </p>
+              <Divider/>
+            </div>        
+          </Typography>
+        </Box>      
+      </Box>
+    </Box>
     </Container>
   );
 };
