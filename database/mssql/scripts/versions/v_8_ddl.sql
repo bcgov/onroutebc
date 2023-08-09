@@ -15,6 +15,16 @@ SET @VersionDescription = 'Creation of full text search index on ORBC_PERMIT_DAT
 
 INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [DDL_FILE_SHA1], [RELEASE_DATE]) VALUES (8, @VersionDescription, '$(FILE_HASH)', getutcdate())
 
+CREATE SEQUENCE [dbo].[ORBC_TRANSACTION_NUMBER_SEQ] 
+ AS [bigint]
+ START WITH 1
+ INCREMENT BY 1
+ MINVALUE 1
+ MAXVALUE 9999999999
+ CACHE 
+GO  
+
+
 COMMIT
 
 
