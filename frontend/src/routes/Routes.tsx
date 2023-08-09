@@ -16,13 +16,14 @@ import { ManageApplications } from "../features/permits/ManageApplications";
 import { SuccessPage } from "../features/permits/pages/SuccessPage/SuccessPage";
 import { PaymentRedirect } from "../features/permits/pages/Payment/PaymentRedirect";
 import { PaymentFailureRedirect } from "../features/permits/pages/Payment/PaymentFailureRedirect";
+import { SearchPage } from "../features/permits/pages/Search/SearchPage";
 
 export const AppRoutes = () => {
   return (
     <Routes>
       <Route path={routes.HOME} element={<InitialLandingPage />} />
       <Route path={routes.WELCOME} element={<WelcomePage />} />
-      <Route path={routes.SEARCH_PPC} element={<> TODO </>} />
+      <Route path={routes.SEARCH_PPC} element={<SearchPage />} />
       <Route path="*" element={<NotFound />} />
       {/* Protected Routes */}
       <Route element={<ProtectedRoutes requiredRole={ROLES.READ_VEHICLE} />}>
