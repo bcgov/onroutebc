@@ -1,13 +1,18 @@
 @import "../../../../themes/orbcStyles.scss";
 
 .logout-button {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
   cursor: pointer;
-  border-radius: 4px;
-  background-color: $white;
-  color: $bc-black;
+  background-color: transparent;
+  color: $white;
   padding: 0.5rem 0.75rem;
   border: none;
   font-family: "BCSans", "Noto Sans", Verdana, Arial, sans-serif;
+  height: 100%;
+  font-size: 1rem;
+  font-weight: 600;
 
   &:focus {
     outline: none;
@@ -15,5 +20,6 @@
   
   &__icon {
     margin-right: 0.5rem;
+    height: 1.5rem;
   }
 }

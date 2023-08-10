@@ -1,133 +1,124 @@
 @use "../../../themes/orbcStyles";
 
-header {
-  background-color: orbcStyles.$bc-primary-blue;
-  border-bottom: 2px solid orbcStyles.$bc-gold;
-  padding: 0 30px 0 30px;
-  color: orbcStyles.$white;
-  display: flex;
-  height: 65px;
-  top: 0;
-  //position: sticky;
-  //width: 100%;
-  -webkit-box-shadow: 0 6px 8px -4px #b3b1b3;
-  -moz-box-shadow: 0 6px 8px -4px #b3b1b3;
-  box-shadow: 0 6px 8px -4px #b3b1b3;
-}
+.header {
+  &__main {
+    background-color: orbcStyles.$bc-primary-blue;
+    border-bottom: 2px solid orbcStyles.$bc-gold;
+    padding: 0 1rem;
+    color: orbcStyles.$white;
+    display: flex;
+    justify-content: space-between;
+    height: 65px;
+    -webkit-box-shadow: 0 6px 8px -4px #b3b1b3;
+    -moz-box-shadow: 0 6px 8px -4px #b3b1b3;
+    box-shadow: 0 6px 8px -4px #b3b1b3;
 
-header h1 {
-  //font-family: ‘BCSans’, ‘Noto Sans’, Verdana, Arial, sans-serif;
-  font-weight: normal; /* 400 */
-  margin: 5px 5px 0 18px;
-  visibility: hidden;
-}
+    &--test {
+      background-color: orange;
+    }
 
-header .other {
-  display: flex;
-  justify-content: end;
-  align-items: center;
-  flex-grow: 1;
-  /* border-style: dotted;
-  border-width: 1px;
-  border-color: lightgrey; */
-}
+    &--uat {
+      background-color: purple;
+    }
 
-header a .menu-icon {
-  color: orbcStyles.$white;
-  font-size: 1.4em;
-  font-style: bold;
-  line-height: 1;
-  /* border-style: solid;
-  border-width: 1px;
-  border-color: orbcStyles.$bc-gold; */
-  padding: 5px;
-  -webkit-font-smoothing: antialiased;
-}
+    &--dev {
+      background-color: green;
+    }
 
-header .nav-btn {
-  display: block;
-  width: auto;
-  //padding-right: 60px;
-  margin-right: 20px;
-  cursor: pointer;
-}
+    &--default {
+      background-color: orbcStyles.$bc-primary-blue;
+    }
 
-.user-section {
-  display: none;
+    .brand-section {
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-start;
+    }
 
-  &--mobile {
-    display: block;
-    padding: 0rem 1rem;
-    font-size: 0.813rem;
+    .options-section {
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-end;
 
-    .user-section-info {
-      margin-bottom: 0.5rem;
+      .auth-section {
+        display: flex;
+        flex-direction: row;
+      }
+    }
+
+    .other {
+      display: none;
+
+      .nav-btn {
+        display: none;
+        width: auto;
+        margin: 0 0 0 auto;
+        cursor: pointer;
+      }
+    }
+  
+    .user-section {
+      display: flex;
     }
   }
-}
 
-.navigation-main {
-  display: none;
-  position: sticky;
-  top: 65px;
-  color: orbcStyles.$bc-gold;
-  background-color: orbcStyles.$bc-background-blue;
-  width: 100%;
-  // -webkit-box-shadow: 0 6px 8px -4px #b3b1b3;
-  // -moz-box-shadow: 0 6px 8px -4px #b3b1b3;
-  // box-shadow: 0 6px 8px -4px #b3b1b3;
-}
+  :focus {
+    outline: 2px solid orbcStyles.$focus-blue;
+    outline-offset: -12px;
+  }
 
-.navigation-main .list-container {
-  margin-right: 60px;
-  padding: 10px 0 10px 0;
-}
+  .navbar {
+    display: none;
+    position: sticky;
+    top: 65px;
+    color: orbcStyles.$bc-gold;
+    background-color: orbcStyles.$bc-background-blue;
+    width: 100%;
 
-.navigation-main .list-container ul {
-  display: flex;
-  flex-direction: column;
-  margin: 0;
-  color: orbcStyles.$white;
-  list-style: none;
-  padding-left: 60px;
-  //margin-left: -25px;
-  /* border-style: dotted;
-  border-width: 1px;
-  border-color: red; */
-}
+    &--normal {
+      display: block;
 
-.navigation-main .list-container ul li {
-  margin: 5px 0;
-  height: 100%;
-}
+      .user-section {
+        display: none;
+      }
+    }
 
-.navigation-main .list-container ul li a {
-  display: flex;
-  font-size: 0.813em;
-  font-weight: normal; /* 400 */
-  color: orbcStyles.$white;
-  padding: 0 15px 0 15px;
-  text-decoration: none;
+    &--mobile {
+      display: none;
+    }
+  
+    &__links {
+      padding: 0;
+      height: 40px;
 
-  /* border-style: dotted;
-  border-width: 1px;
-  border-color: green; */
-}
+      ul {
+        display: flex;
+        flex-direction: row;
+        height: 100%;
+        margin: 0;
+        color: orbcStyles.$white;
+        list-style: none;
+        padding-left: 1rem;
 
-.navigation-main .list-container ul li a:hover {
-  text-decoration: underline;
-}
+        li {
+          margin: 0;
+          height: 100%;
 
-.navigation-main .list-container ul .active {
-  //text-decoration: underline;
-  font-weight: bold;
-  background-color: orbcStyles.$bc-background-light-grey;
-  color: orbcStyles.$bc-background-blue;
-}
-
-.nav-container :focus {
-  outline: 2px solid orbcStyles.$focus-blue;
-  outline-offset: -12px;
+          a {
+            display: flex;
+            font-size: 0.813em;
+            font-weight: normal; /* 400 */
+            color: orbcStyles.$white;
+            padding: 0 1rem;
+            text-decoration: none;
+            border-right: 1px solid #9b9b9b;
+            height: 100%;
+            align-items: center;
+          }
+        }
+      }
+    }
+  }
 }
 
 /*
@@ -135,58 +126,101 @@ header .nav-btn {
   but, in general, should be made for the three different classes of screen
   size: phone, tablet, full. 
 */
+@media (width < 768px) {
+  .header {
+    &__main {
+      .user-section {
+        display: none;
+      }
 
-@media screen and (min-width: 768px) {
-  .navigation-main {
-    display: block;
-  }
+      .other {
+        display: flex;
+        justify-content: end;
+        align-items: center;
+        flex-grow: 1;
+  
+        a .menu-icon {
+          color: orbcStyles.$white;
+          font-size: 1.4em;
+          font-style: bold;
+          line-height: 1;
+          padding: 5px;
+          -webkit-font-smoothing: antialiased;
+        }
+  
+        .nav-btn {
+          display: block;
+          width: auto;
+          margin-right: 20px;
+          cursor: pointer;
+        }
+      }
+    }
 
-  .navigation-main .list-container {
-    padding: 0px 0 0px 0;
-    height: 40px;
-  }
-
-  .navigation-main .list-container ul {
-    flex-direction: row;
-    height: 100%;
-  }
-
-  .navigation-main .list-container ul li {
-    margin: 0;
-  }
-
-  .navigation-main .list-container ul li a {
-    border-right: 1px solid #9b9b9b;
-    height: 100%;
-    align-items: center;
-  }
-
-  header .nav-btn {
-    display: none;
-    width: auto;
-    margin: 0 0 0 auto;
-    cursor: pointer;
-  }
-
-  .user-section {
-    display: block;
-
-    &--mobile {
+    .navbar {
       display: none;
+
+      &--normal {
+        display: none;
+      }
+
+      &--mobile {
+        display: block;
+
+        .user-section {
+          display: none;
+  
+          &--mobile {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            margin: 0;
+          }
+        }
+      }
+
+      &__links {
+        padding: 0.6em 0;
+        height: 100%;
+    
+        ul {
+          flex-direction: column;
+          margin: 0;
+          padding: 0 1rem;
+    
+          li {
+            margin: 5px 0;
+    
+            a {
+              border: none;
+              
+              &:hover {
+                text-decoration: underline;
+              }
+            }
+          }
+    
+          .active {
+            font-weight: bold;
+            background-color: orbcStyles.$bc-background-light-grey;
+            color: orbcStyles.$bc-background-blue;
+          }
+        }
+      }
     }
   }
 }
 
-@media screen and (min-width: 768px) and (max-width: 899px) {
-  header h1 {
-    font-size: calc(7px + 2.2vw);
-    visibility: visible;
-  }
-}
-
-@media screen and (min-width: 900px) {
-  header h1 {
-    font-size: 2em;
-    visibility: visible;
+@media (width < 360px) {
+  .header {
+    &__main {
+      .other {
+        .nav-btn {
+          .menu-icon {
+            font-size: 1rem;
+          }
+        }
+      }
+    }
   }
 }
