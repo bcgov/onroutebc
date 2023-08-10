@@ -102,7 +102,7 @@ export class PaymentService {
 
     const seq: number = parseInt(
       await callDatabaseSequence(
-        'dbo.ORBC_TRANSACTION_NUMBER_SEQ',
+        'permit.ORBC_TRANSACTION_NUMBER_SEQ',
         this.dataSource,
       ),
     );
