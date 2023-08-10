@@ -47,7 +47,7 @@ export class PaymentController {
   ): Promise<MotiPayDetailsDto> {
     const permitIdArray: number[] = permitIds.split(',').map(Number);
 
-    const paymentDetails = this.paymentService.forwardTransactionDetails(
+    const paymentDetails = await this.paymentService.forwardTransactionDetails(
       paymentMethodId,
       transactionSubmitDate,
       transactionAmount,
