@@ -1,5 +1,5 @@
 import { MRT_ColumnDef } from "material-react-table";
-import { BCeIDAuthGroup, ReadCompanyUser } from "./userManagement";
+import { BCeIDAuthGroup, ReadCompanyUser } from "./userManagement.d";
 
 /**
  * Translates the userAuthGroup code into a more meaningful text for the user.
@@ -33,7 +33,7 @@ export const UserManagementColumnsDefinition: MRT_ColumnDef<ReadCompanyUser>[] =
       header: "BCeID Username",
       Cell: (props: { row: any }) => {
         return (
-          <>{shouldShowChip(props.row.original.userStatus) && "  Pending"}</>
+          <>{props.row.original.userName}{shouldShowChip(props.row.original.userStatus) && "  Pending"}</>
         );
       },
     },

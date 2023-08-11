@@ -1,5 +1,5 @@
 import { Box } from "@mui/material";
-import { UseQueryResult } from "@tanstack/react-query";
+import { UseQueryResult, useQuery } from "@tanstack/react-query";
 import { RowSelectionState } from "@tanstack/table-core";
 import MaterialReactTable, {
   MRT_GlobalFilterTextField,
@@ -14,18 +14,19 @@ import { Trash } from "../../manageVehicles/components/options/Trash";
 import { UserManagementRowOptions } from "../components/user-management/UserManagementRowOptions";
 import { UserManagementColumnsDefinition } from "../types/UserManagementColumns";
 import { ReadCompanyUser } from "../types/userManagement";
+import { getCompanyUsers } from "../apiManager/manageProfileAPI";
+import { FIVE_MINUTES } from "../../../common/constants/constants";
 
 /**
  * User Management Component for CV Client.
  */
-export const UserManagement = ({
-  query,
-  isExpired = false,
-}: {
-  query: UseQueryResult<ReadCompanyUser[]>;
-  isExpired?: boolean;
-}) => {
-  const { data, isError, isInitialLoading } = query;
+export const UserManagement = () => {
+  const { data, isError, isInitialLoading } = useQuery({
+    queryKey: ["companyUsers"],
+    queryFn: getCompanyUsers,
+    keepPreviousData: true,
+    staleTime: FIVE_MINUTES,
+  });
   const snackBar = useContext(SnackBarContext);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
@@ -62,11 +63,13 @@ export const UserManagement = ({
       selectAllMode="page"
       // Enable checkboxes for row selection
       enableRowSelection={true}
+      onRowSelectionChange={setRowSelection}
       enableStickyHeader
       positionActionsColumn="last"
       // Disable the default column actions so that we can use our custom actions
       enableColumnActions={false}
       enableRowActions={true}
+      getRowId={(originalRow: ReadCompanyUser) => originalRow.userGUID}
       displayColumnDefOptions={{
         "mrt-row-actions": {
           header: "",
@@ -87,16 +90,14 @@ export const UserManagement = ({
         },
         []
       )}
-      renderTopToolbar={useCallback(
+      renderToolbarInternalActions={useCallback(
         ({ table }: { table: MRT_TableInstance<ReadCompanyUser> }) => (
           <Box
             sx={{
               display: "flex",
-              padding: "20px 0px",
               backgroundColor: "white",
             }}
           >
-            <MRT_GlobalFilterTextField table={table} />
             <Trash onClickTrash={onClickTrashIcon} />
           </Box>
         ),
@@ -145,22 +146,6 @@ export const UserManagement = ({
       }
       // Top toolbar
       muiTopToolbarProps={{ sx: { zIndex: 0 } }}
-      // Search Bar
-      positionGlobalFilter="left"
-      initialState={{ showGlobalFilter: true }} //show the search bar by default
-      muiSearchTextFieldProps={{
-        placeholder: "Search",
-        sx: {
-          minWidth: "300px",
-          backgroundColor: "white",
-        },
-        variant: "outlined",
-        inputProps: {
-          sx: {
-            padding: "10px",
-          },
-        },
-      }}
       // Row Header
       muiTableHeadRowProps={{
         sx: {

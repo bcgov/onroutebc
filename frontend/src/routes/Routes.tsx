@@ -16,6 +16,7 @@ import { ManageApplications } from "../features/permits/ManageApplications";
 import { SuccessPage } from "../features/permits/pages/SuccessPage/SuccessPage";
 import { PaymentRedirect } from "../features/permits/pages/Payment/PaymentRedirect";
 import { PaymentFailureRedirect } from "../features/permits/pages/Payment/PaymentFailureRedirect";
+import { AddUserDashboard } from "../features/manageProfile/pages/AddUserDashboard";
 
 export const AppRoutes = () => {
   return (
@@ -64,6 +65,9 @@ export const AppRoutes = () => {
       </Route>
       <Route element={<ProtectedRoutes requiredRole={ROLES.READ_ORG} />}>
         <Route path={routes.MANAGE_PROFILES} element={<ManageProfiles />} />
+      </Route>
+      <Route element={<ProtectedRoutes requiredRole={ROLES.WRITE_USER} />}>
+        <Route path={routes.ADD_USER} element={<AddUserDashboard />} />
       </Route>
       <Route element={<ProtectedRoutes requiredRole={ROLES.WRITE_PERMIT} />}>
         <Route

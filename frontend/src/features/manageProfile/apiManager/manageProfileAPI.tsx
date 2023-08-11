@@ -84,10 +84,7 @@ export const getUserRolesByCompanyId = (): Promise<string[]> => {
  * Retrieves the users of a company by companyId
  * @returns a promise containing the users.
  */
-export const getCompanyUsers = ({
-  page = 1,
-  limit = 10,
-} = {}): Promise<ReadCompanyUser> => {
+export const getCompanyUsers = (): Promise<ReadCompanyUser[]> => {
   return httpGETRequest(
     `${VEHICLES_URL}/users?companyId=${getCompanyIdFromSession()}`
   ).then((response) => response.data);

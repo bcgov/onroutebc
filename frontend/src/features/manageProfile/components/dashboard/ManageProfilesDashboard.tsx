@@ -8,6 +8,22 @@ import { getCompanyInfo } from "../../apiManager/manageProfileAPI";
 import { Loading } from "../../../../common/pages/Loading";
 import { ErrorFallback } from "../../../../common/pages/ErrorFallback";
 import { MyInfo } from "../../pages/MyInfo";
+import { UserManagement } from "../../pages/UserManagement";
+import { DoesUserHaveRoleWithContext } from "../../../../common/authentication/util";
+import { ROLES } from "../../../../common/authentication/types";
+import Button from "@mui/material/Button";
+import { useNavigate } from "react-router";
+
+/**
+ * Returns a boolean indicating if the logged in user is a CV Client Admin.
+ * @returns A boolean value.
+ */
+const isCVClientAdmin = (): boolean => {
+  return Boolean(
+    DoesUserHaveRoleWithContext(ROLES.PUBLIC_USER_ADMIN) ||
+      DoesUserHaveRoleWithContext(ROLES.PUBLIC_ORG_ADMIN)
+  );
+};
 
 export const ManageProfilesDashboard = React.memo(() => {
   const {
@@ -22,6 +38,8 @@ export const ManageProfilesDashboard = React.memo(() => {
     keepPreviousData: true,
     staleTime: 5000,
   });
+
+  const navigate = useNavigate();
 
   if (isLoading) {
     return <Loading />;
@@ -45,17 +63,40 @@ export const ManageProfilesDashboard = React.memo(() => {
       label: "My Information",
       component: <MyInfo />,
     },
-    {
-      label: "User Management",
-      component: <>TODO</>,
-    },
-    {
-      label: "Payment Information",
-      component: <>TODO</>,
-    },
   ];
 
-  return <TabLayout bannerText="Profile" componentList={tabs} />;
+  if (isCVClientAdmin()) {
+    tabs.push({
+      label: "User Management",
+      component: <UserManagement />,
+    });
+  }
+
+  tabs.push({
+    label: "Payment Information",
+    component: <>TODO</>,
+  });
+
+  return (
+    <TabLayout
+      bannerText="Profile"
+      componentList={tabs}
+      bannerButton={
+        isCVClientAdmin() ? (
+          <Button
+            variant="contained"
+            onClick={() => navigate('/add-user')}
+            sx={{
+              marginTop: "45px",
+              height: "50px",
+            }}
+          >
+            Add User
+          </Button>
+        ) : undefined
+      }
+    />
+  );
 });
 
 ManageProfilesDashboard.displayName = "ManageProfilesDashboard";
