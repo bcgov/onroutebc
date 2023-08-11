@@ -1,21 +1,20 @@
 import { Box } from "@mui/material";
-import { UseQueryResult, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { RowSelectionState } from "@tanstack/table-core";
 import MaterialReactTable, {
-  MRT_GlobalFilterTextField,
   MRT_Row,
   MRT_TableInstance,
 } from "material-react-table";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { SnackBarContext } from "../../../App";
 import { NoRecordsFound } from "../../../common/components/table/NoRecordsFound";
+import { FIVE_MINUTES } from "../../../common/constants/constants";
 import { BC_COLOURS } from "../../../themes/bcGovStyles";
 import { Trash } from "../../manageVehicles/components/options/Trash";
+import { getCompanyUsers } from "../apiManager/manageProfileAPI";
 import { UserManagementRowOptions } from "../components/user-management/UserManagementRowOptions";
 import { UserManagementColumnsDefinition } from "../types/UserManagementColumns";
 import { ReadCompanyUser } from "../types/userManagement";
-import { getCompanyUsers } from "../apiManager/manageProfileAPI";
-import { FIVE_MINUTES } from "../../../common/constants/constants";
 
 /**
  * User Management Component for CV Client.
@@ -62,9 +61,15 @@ export const UserManagement = () => {
       renderEmptyRowsFallback={() => <NoRecordsFound />}
       selectAllMode="page"
       // Enable checkboxes for row selection
-      enableRowSelection={true}
+      enableRowSelection={(row: MRT_Row<ReadCompanyUser>): boolean => {
+        if (row?.original?.userAuthGroup !== "CVCLIENT") {
+          return false;
+        }
+        return true;
+      }}
       onRowSelectionChange={setRowSelection}
       enableStickyHeader
+      enablePagination={false}
       positionActionsColumn="last"
       // Disable the default column actions so that we can use our custom actions
       enableColumnActions={false}
