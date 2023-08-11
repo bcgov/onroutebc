@@ -181,11 +181,22 @@ export class PermitService {
           expiryDate: new Date(),
         },
       );
-      
-      const permit: PaginationDto<Permit, IPaginationMeta> = await paginate(permits, options);
-      const readPermitDto: ReadPermitDto [] = await this.classMapper.mapArrayAsync(permit.items,Permit, ReadPermitDto);
-      const readPermitDtoItems: PaginationDto<ReadPermitDto, IPaginationMeta> = new PaginationDto<ReadPermitDto, IPaginationMeta>(readPermitDto, permit.meta)
-    return  readPermitDtoItems;
+
+    const permit: PaginationDto<Permit, IPaginationMeta> = await paginate(
+      permits,
+      options,
+    );
+    const readPermitDto: ReadPermitDto[] = await this.classMapper.mapArrayAsync(
+      permit.items,
+      Permit,
+      ReadPermitDto,
+    );
+    const readPermitDtoItems: PaginationDto<ReadPermitDto, IPaginationMeta> =
+      new PaginationDto<ReadPermitDto, IPaginationMeta>(
+        readPermitDto,
+        permit.meta,
+      );
+    return readPermitDtoItems;
   }
 
   async findReceipt(permit: Permit): Promise<Receipt> {

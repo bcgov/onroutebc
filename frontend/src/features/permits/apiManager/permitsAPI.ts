@@ -17,11 +17,16 @@ import {
   PermitApplicationInProgress,
 } from "../types/application";
 import { DATE_FORMATS, toLocal } from "../../../common/helpers/formatDate";
-import { APPLICATION_UPDATE_STATUS_API, PAYMENT_API, PERMITS_API } from "./endpoints/endpoints";
+import {
+  APPLICATION_UPDATE_STATUS_API,
+  PAYMENT_API,
+  PERMITS_API,
+} from "./endpoints/endpoints";
 import { mapApplicationToApplicationRequestData } from "../helpers/mappers";
 import { PermitTransaction, Transaction } from "../types/payment";
 import { VEHICLES_URL } from "../../../common/apiManager/endpoints/endpoints";
 import { ReadPermitDto } from "../types/permit";
+import { PaginatedResponse } from "../../../common/types/common";
 
 /**
  * A record containing permit keys and full forms.
@@ -227,11 +232,6 @@ export const getMotiPayTransactionUrl = async (
   });
 };
 
-/**
- * Makes a payment transacation.
- * @param transactionDetails 
- * @returns A promise containing the response from API.
- */
 export const postTransaction = async (
   transactionDetails: Transaction
 ): Promise<any> => {
@@ -244,10 +244,10 @@ export const postTransaction = async (
  * @param expired If set to true, expired permits will be retrieved.
  * @returns A list of permits.
  */
-export const getPermits = async ({ expired = false } = {}): Promise<
-  ReadPermitDto[]
-> => {
-  const companyId = getCompanyIdFromSession();
+export const getPermits = async ({
+  expired = false,
+} = {}): Promise<ReadPermitDto[]> => {
+  const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
   let permitsURL = `${VEHICLES_URL}/permits/user`;
   const queryParams = [];
   if (companyId) {
@@ -259,9 +259,16 @@ export const getPermits = async ({ expired = false } = {}): Promise<
   if (queryParams.length > 0) {
     permitsURL += `?${queryParams.join("&")}`;
   }
-  const permits = await httpGETRequest(permitsURL).then((response) =>
-    (getDefaultRequiredVal([], response.data) as ReadPermitDto[]).map(
-      (permit) => {
+  const permits = await httpGETRequest(permitsURL)
+    .then((response) => {
+      const paginatedResponseObject = getDefaultRequiredVal(
+        {},
+        response.data
+      ) as PaginatedResponse<ReadPermitDto>;
+      return paginatedResponseObject.items;
+    })
+    .then((permits) =>
+      permits.map((permit) => {
         return {
           ...permit,
           createdDateTime: toLocal(
@@ -284,9 +291,8 @@ export const getPermits = async ({ expired = false } = {}): Promise<
             ),
           },
         } as ReadPermitDto;
-      }
-    )
-  );
+      })
+    );
   return permits;
 };
 
