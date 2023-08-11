@@ -47,8 +47,10 @@ const getEnv = () => {
 export const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const username = getLoginUsernameFromSession();
+
+  const isIdir = user?.profile?.identity_provider === "idir";
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
@@ -134,7 +136,9 @@ export const Header = () => {
         <div className="options-section">
           {isAuthenticated ? (
             <div className="auth-section">
-              <SearchButton onClick={toggleFilter} />
+              {isIdir ? (
+                <SearchButton onClick={toggleFilter} />
+              ) : null}
               <UserSection username={username} />
             </div>
           ) : null}
