@@ -27,21 +27,17 @@ const SEARCH_BY_COMPANY_OPTIONS = [
 ];
 
 const getDefaultFindBy = (findBy?: string | null) => {
-  switch (findBy) {
-    case "company":
-      return "company";
-    default:
-      return "permit";
+  if (findBy === "company") {
+    return "company";
   }
+  return "permit";
 };
 
 const getSearchByOptions = (findBy: string | null) => {
-  switch (findBy) {
-    case "company":
-      return SEARCH_BY_COMPANY_OPTIONS;
-    default:
-      return SEARCH_BY_PERMIT_OPTIONS;
+  if (findBy === "company") {
+    return SEARCH_BY_COMPANY_OPTIONS;
   }
+  return SEARCH_BY_PERMIT_OPTIONS;
 };
 
 const getDefaultSearchBy = (findBy?: string | null, searchBy?: string | null) => {

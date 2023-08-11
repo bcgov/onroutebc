@@ -36,6 +36,63 @@ const getEnv = () => {
   }
 };
 
+const Navbar = ({
+  isAuthenticated,
+  isMobile = false,
+}: {
+  isAuthenticated: boolean;
+  isMobile?: boolean;
+}) => {
+  const username = getLoginUsernameFromSession();
+  const navbarClassName = isMobile ? "mobile" : "normal";
+  return (
+    <nav
+      className={`navbar navbar--${navbarClassName}`}
+    >
+      <div className="navbar__links">
+        <ul>
+          <li>
+            <NavLink to={routes.HOME}>
+              Home
+            </NavLink>
+          </li>
+          {isAuthenticated && (
+            <>
+              {DoesUserHaveRoleWithContext(ROLES.WRITE_PERMIT) && (
+                <li>
+                  <NavLink to={routes.APPLICATIONS}>
+                    Permits
+                  </NavLink>
+                </li>
+              )}
+              {DoesUserHaveRoleWithContext(ROLES.READ_VEHICLE) && (
+                <li>
+                  <NavLink to={routes.MANAGE_VEHICLES}>
+                    Vehicle Inventory
+                  </NavLink>
+                </li>
+              )}
+              {DoesUserHaveRoleWithContext(ROLES.READ_ORG) && (
+                <li>
+                  <NavLink to={routes.MANAGE_PROFILES}>
+                    Profile
+                  </NavLink>
+                </li>
+              )}
+            </>
+          )}
+          {isAuthenticated && (
+            <li className={`user-section user-section--${navbarClassName}`}>
+              <UserSectionInfo username={username} />
+              <LogoutButton />
+            </li>
+          )}
+        </ul>
+      </div>
+    </nav>
+  );
+};
+
 /*
  * The Header component includes the BC Gov banner and Navigation bar
  * and is responsive for mobile
@@ -49,7 +106,6 @@ export const Header = () => {
   const [filterOpen, setFilterOpen] = useState(false);
   const { isAuthenticated, user } = useAuth();
   const username = getLoginUsernameFromSession();
-
   const isIdir = user?.profile?.identity_provider === "idir";
 
   const toggleMenu = () => {
@@ -69,60 +125,6 @@ export const Header = () => {
       </a>
     </div>
   );
-
-  const Navbar = ({
-    isMobile = false,
-  }: {
-    isMobile?: boolean;
-  }) => {
-    const navbarClassName = isMobile ? "mobile" : "normal";
-    return (
-      <nav
-        className={`navbar navbar--${navbarClassName}`}
-      >
-        <div className="navbar__links">
-          <ul>
-            <li>
-              <NavLink to={routes.HOME}>
-                Home
-              </NavLink>
-            </li>
-            {isAuthenticated && (
-              <>
-                {DoesUserHaveRoleWithContext(ROLES.WRITE_PERMIT) && (
-                  <li>
-                    <NavLink to={routes.APPLICATIONS}>
-                      Permits
-                    </NavLink>
-                  </li>
-                )}
-                {DoesUserHaveRoleWithContext(ROLES.READ_VEHICLE) && (
-                  <li>
-                    <NavLink to={routes.MANAGE_VEHICLES}>
-                      Vehicle Inventory
-                    </NavLink>
-                  </li>
-                )}
-                {DoesUserHaveRoleWithContext(ROLES.READ_ORG) && (
-                  <li>
-                    <NavLink to={routes.MANAGE_PROFILES}>
-                      Profile
-                    </NavLink>
-                  </li>
-                )}
-              </>
-            )}
-            {isAuthenticated && (
-              <li className={`user-section user-section--${navbarClassName}`}>
-                <UserSectionInfo username={username} />
-                <LogoutButton />
-              </li>
-            )}
-          </ul>
-        </div>
-      </nav>
-    );
-  };
 
   return (
     <div className="header">
@@ -145,9 +147,9 @@ export const Header = () => {
           <NavButton />
         </div>
       </header>
-      <Navbar />
+      <Navbar isAuthenticated={isAuthenticated} />
       {menuOpen ? (
-        <Navbar isMobile={true} />
+        <Navbar isAuthenticated={isAuthenticated} isMobile={true} />
       ) : null}
       {filterOpen ? (
         <SearchFilter />
