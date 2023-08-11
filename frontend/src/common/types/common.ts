@@ -8,6 +8,7 @@ import {
   Trailer,
 } from "../../features/manageVehicles/types/managevehicles";
 import { Application } from "../../features/permits/types/application";
+import { SearchFilter } from "./searchFilter";
 
 export interface ApiErrorResponse {
   status: number;
@@ -23,4 +24,5 @@ export type ORBC_FormTypes =
   | Trailer
   | Application
   | UserInformation
-  | CompanyAndUserRequest;
+  | CompanyAndUserRequest
+  | SearchFilter;

@@ -1,6 +1,8 @@
 @use "../../../themes/orbcStyles";
 
 .header {
+  position: relative;
+
   &__main {
     background-color: orbcStyles.$bc-primary-blue;
     border-bottom: 2px solid orbcStyles.$bc-gold;
@@ -69,8 +71,8 @@
 
   .navbar {
     display: none;
-    position: sticky;
-    top: 65px;
+    position: relative;
+    top: 0;
     color: orbcStyles.$bc-gold;
     background-color: orbcStyles.$bc-background-blue;
     width: 100%;

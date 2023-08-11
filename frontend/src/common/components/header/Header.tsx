@@ -14,6 +14,7 @@ import { UserSection } from "./components/UserSection";
 import { UserSectionInfo } from "./components/UserSectionInfo";
 import { getLoginUsernameFromSession } from "../../apiManager/httpRequestHandler";
 import { SearchButton } from "./components/SearchButton";
+import { SearchFilter } from "./components/SearchFilter";
 
 const getEnv = () => {
   const env =
@@ -45,12 +46,23 @@ const getEnv = () => {
  */
 export const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [filterOpen, setFilterOpen] = useState(false);
   const { isAuthenticated } = useAuth();
   const username = getLoginUsernameFromSession();
 
+  const toggleMenu = () => {
+    setMenuOpen(!menuOpen);
+    setFilterOpen(false);
+  };
+
+  const toggleFilter = () => {
+    setFilterOpen(!filterOpen);
+    setMenuOpen(false);
+  };
+
   const NavButton = () => (
     <div className="other">
-      <a className="nav-btn" onClick={() => setMenuOpen(!menuOpen)}>
+      <a className="nav-btn" onClick={toggleMenu}>
         <FontAwesomeIcon id="menu" className="menu-icon" icon={faBars} />
       </a>
     </div>
@@ -122,7 +134,7 @@ export const Header = () => {
         <div className="options-section">
           {isAuthenticated ? (
             <div className="auth-section">
-              <SearchButton />
+              <SearchButton onClick={toggleFilter} />
               <UserSection username={username} />
             </div>
           ) : null}
@@ -132,6 +144,9 @@ export const Header = () => {
       <Navbar />
       {menuOpen ? (
         <Navbar isMobile={true} />
+      ) : null}
+      {filterOpen ? (
+        <SearchFilter />
       ) : null}
     </div>
   );
