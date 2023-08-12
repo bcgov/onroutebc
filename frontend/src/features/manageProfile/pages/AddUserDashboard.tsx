@@ -6,6 +6,8 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 // import "../../../../common/components/dashboard/Dashboard.scss";
 import { BC_COLOURS } from "../../../themes/bcGovStyles";
+import { Banner } from "../../../common/components/dashboard/Banner";
+import UserGroupsAndPermissionsModal from "../components/user-management/UserGroupsAndPermissionsModal";
 
 export const AddUserDashboard = React.memo(() => {
   const navigate = useNavigate();
@@ -23,7 +25,7 @@ export const AddUserDashboard = React.memo(() => {
           borderColor: "divider",
         }}
       >
-        Add User
+        <Banner bannerText="Add User" extendHeight={true} />
       </Box>
       <Box
         className="layout-box"
@@ -107,6 +109,9 @@ export const AddUserDashboard = React.memo(() => {
         </Typography>
         {/* Form Component */}
       </Box>
+      <UserGroupsAndPermissionsModal isOpen={true} onClickClose={() => {
+        console.log('close')
+      }}/>
     </>
   );
 });

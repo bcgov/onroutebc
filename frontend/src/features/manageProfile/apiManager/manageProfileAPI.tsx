@@ -5,6 +5,7 @@ import {
   httpPUTRequest,
   getCompanyIdFromSession,
   getUserGuidFromSession,
+  httpDELETERequest,
 } from "../../../common/apiManager/httpRequestHandler";
 import { UserContextType } from "../../../common/authentication/types";
 import { replaceEmptyValuesWithNull } from "../../../common/helpers/util";
@@ -88,4 +89,16 @@ export const getCompanyUsers = (): Promise<ReadCompanyUser[]> => {
   return httpGETRequest(
     `${VEHICLES_URL}/users?companyId=${getCompanyIdFromSession()}`
   ).then((response) => response.data);
+};
+
+/**
+ * Deletes a user of the company by companyId
+ * @returns a promise containing the users.
+ */
+export const deleteCompanyUsers = (
+  userName: string
+) => {
+  return httpDELETERequest(
+    `${VEHICLES_URL}/companies/${getCompanyIdFromSession()}/pending-users/${userName}`
+  );
 };
