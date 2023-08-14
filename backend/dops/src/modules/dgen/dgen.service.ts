@@ -10,6 +10,7 @@ import { CreateGeneratedDocumentDto } from './dto/request/create-generated-docum
 import { Response } from 'express';
 import { Readable } from 'stream';
 import { ExternalDocument } from './entities/external-document.entity';
+import * as ExternalDocumentEnum from '../../enum/external-document.enum';
 import { HttpService } from '@nestjs/axios';
 import { lastValueFrom } from 'rxjs';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
@@ -130,7 +131,7 @@ export class DgenService {
   }
 
   private async fetchDocumentsToMerge(
-    documentsToMerge: import('c:/Users/praju/aot-workspace/onroutebc/backend/dops/src/enum/external-document.enum').ExternalDocument[],
+    documentsToMerge: ExternalDocumentEnum.ExternalDocument[],
     documentBufferList: Buffer[],
   ) {
     await Promise.all(
