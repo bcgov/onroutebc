@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { AutoMap } from '@automapper/classes';
 import { Allow, IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
 import { TemplateName } from '../../../../enum/template-name.enum';
+import { ExternalDocument } from '../../../../enum/external-document.enum';
 
 export class CreateGeneratedDocumentDto {
   @AutoMap()
@@ -109,4 +110,17 @@ export class CreateGeneratedDocumentDto {
   })
   @IsString()
   generatedDocumentFileName: string;
+
+  @AutoMap()
+  @ApiProperty({
+    enum: ExternalDocument,
+    example: [ExternalDocument.CVSE1000],
+    description:
+      'The documents that need to be merged with the Generated Document.',
+  })
+  @IsOptional()
+  @IsEnum(ExternalDocument, {
+    each: true,
+  })
+  documentsToMerge?: ExternalDocument[];
 }

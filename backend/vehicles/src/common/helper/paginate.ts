@@ -69,7 +69,7 @@ async function paginateRepository<T, CustomMetaType = IPaginationMeta>(
   options: IPaginationOptions<CustomMetaType>,
   searchOptions?: FindOptionsWhere<T> | FindManyOptions<T>,
 ): Promise<PaginationDto<T, CustomMetaType>> {
-  const [page, limit, paginationType, countQueries] = resolveOptions(options);
+  const [page, limit, countQueries] = resolveOptions(options);
 
   if (page < 1) {
     return createPaginationObject<T, CustomMetaType>({
