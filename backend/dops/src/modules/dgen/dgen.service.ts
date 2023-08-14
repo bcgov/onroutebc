@@ -1,6 +1,5 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-
 import { Repository } from 'typeorm';
 import { DocumentTemplate } from './entities/document-template.entity';
 import { TemplateName } from '../../enum/template-name.enum';
@@ -10,14 +9,25 @@ import { IUserJWT } from '../../interface/user-jwt.interface';
 import { CreateGeneratedDocumentDto } from './dto/request/create-generated-document.dto';
 import { Response } from 'express';
 import { Readable } from 'stream';
+import { ExternalDocument } from './entities/external-document.entity';
+import { HttpService } from '@nestjs/axios';
+import { lastValueFrom } from 'rxjs';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
+import { PDFDocument } from 'pdf-lib';
 
 @Injectable()
 export class DgenService {
   constructor(
     @InjectRepository(DocumentTemplate)
     private documentTemplateRepository: Repository<DocumentTemplate>,
+    @InjectRepository(ExternalDocument)
+    private externalDocumentRepository: Repository<ExternalDocument>,
     private readonly cdogsService: CdogsService,
     private readonly dmsService: DmsService,
+    private readonly httpService: HttpService,
+    @Inject(CACHE_MANAGER)
+    private readonly cacheManager: Cache,
   ) {}
 
   /**
@@ -71,6 +81,14 @@ export class DgenService {
       currentUser,
       createGeneratedDocumentDto,
     );
+    const documentBufferList: Buffer[] = [generatedDocument.buffer];
+    const documentsToMerge = createGeneratedDocumentDto.documentsToMerge;
+    if (documentsToMerge?.length) {
+      await this.fetchDocumentsToMerge(documentsToMerge, documentBufferList);
+      const mergedDocument = await this.mergeDocuments(documentBufferList);
+      generatedDocument.buffer = Buffer.from(mergedDocument);
+      generatedDocument.size = mergedDocument.length;
+    }
 
     const dmsObject = await this.dmsService.create(
       currentUser,
@@ -98,5 +116,55 @@ export class DgenService {
     stream.on('error', () => {
       throw new Error('An error occurred while reading the file.');
     });
+  }
+
+  private async mergeDocuments(documentBufferList: Buffer[]) {
+    const mergedPdf = await PDFDocument.create();
+    for (const pdfBuffer of documentBufferList) {
+      const pdf = await PDFDocument.load(pdfBuffer);
+      const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
+      copiedPages.forEach((page) => mergedPdf.addPage(page));
+    }
+    const mergedDocument = await mergedPdf.save();
+    return mergedDocument;
+  }
+
+  private async fetchDocumentsToMerge(
+    documentsToMerge: import('c:/Users/praju/aot-workspace/onroutebc/backend/dops/src/enum/external-document.enum').ExternalDocument[],
+    documentBufferList: Buffer[],
+  ) {
+    await Promise.all(
+      documentsToMerge.map(async (externalDocument) => {
+        const documentFromCache: Buffer = await this.cacheManager.get(
+          externalDocument,
+        );
+        if (!documentFromCache) {
+          const externalDocumentDetails =
+            await this.externalDocumentRepository.findOne({
+              where: {
+                documentName: externalDocument,
+              },
+            });
+
+          const resExternalDocs = await lastValueFrom(
+            this.httpService.get(externalDocumentDetails.documentLocation, {
+              responseType: 'arraybuffer',
+            }),
+          );
+
+          const externalDocumentBuffer = Buffer.from(
+            resExternalDocs.data as string,
+            'binary',
+          );
+
+          await this.cacheManager.set(
+            externalDocument,
+            externalDocumentBuffer,
+            10000,
+          );
+          documentBufferList.push(externalDocumentBuffer);
+        }
+      }),
+    );
   }
 }
