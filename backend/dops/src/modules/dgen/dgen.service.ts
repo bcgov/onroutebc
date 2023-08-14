@@ -161,9 +161,11 @@ export class DgenService {
           await this.cacheManager.set(
             externalDocument,
             externalDocumentBuffer,
-            10000,
+            600000,
           );
           documentBufferList.push(externalDocumentBuffer);
+        } else {
+          documentBufferList.push(documentFromCache);
         }
       }),
     );
