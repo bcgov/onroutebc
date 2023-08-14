@@ -86,9 +86,13 @@ export class DgenService {
     const documentsToMerge = createGeneratedDocumentDto.documentsToMerge;
     if (documentsToMerge?.length) {
       await this.fetchDocumentsToMerge(documentsToMerge, documentBufferList);
-      const mergedDocument = await this.mergeDocuments(documentBufferList);
-      generatedDocument.buffer = Buffer.from(mergedDocument);
-      generatedDocument.size = mergedDocument.length;
+      try {
+        const mergedDocument = await this.mergeDocuments(documentBufferList);
+        generatedDocument.buffer = Buffer.from(mergedDocument);
+        generatedDocument.size = mergedDocument.length;
+      } catch (err) {
+        console.log('Error while trying to merge files', err);
+      }
     }
 
     const dmsObject = await this.dmsService.create(
