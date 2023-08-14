@@ -137,8 +137,15 @@ export class PermitController {
   async getPermitData(
     @Query('searchColumn') searchColumn: string,
     @Query('searchString') searchString: string,
-  ): Promise<ReadPermitDto[]> {
-    return this.permitService.findPermit(searchColumn, searchString);
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe, LessThenPipe)
+    limit = 10,
+  ): Promise<PaginationDto<ReadPermitDto, IPaginationMeta>> {
+    const options: IPaginationOptions = {
+      limit,
+      page,
+    };
+    return this.permitService.findPermit(options, searchColumn, searchString);
   }
 
   @AuthOnly()
