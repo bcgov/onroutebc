@@ -33,7 +33,6 @@ import { ReadFileDto } from '../common/dto/response/read-file.dto';
 import { Roles } from 'src/common/decorator/roles.decorator';
 import { Role } from 'src/common/enum/roles.enum';
 import { IDP } from 'src/common/enum/idp.enum';
-import { Permit } from './entities/permit.entity';
 import {
   IPaginationMeta,
   IPaginationOptions,
