@@ -1,3 +1,5 @@
+import { v4 as uuidv4 } from 'uuid';
+
 /**
  * Remove all the null, undefined and empty fields (including arrays).
  * @param obj The object to remove empty values from.
@@ -112,8 +114,6 @@ export const getDefaultRequiredVal = <T>(fallbackDefault: T, ...defaultVals: (T 
  * @returns The unique error correlation id.
  */
 export const generateErrorCorrelationId = () => {
-  const timestamp = new Date().getTime(); // Get current timestamp in milliseconds
-  const random = Math.floor(Math.random() * 1000000)
-  const correlationId = `${timestamp}-${random}`;
+  const correlationId = uuidv4(); // Generate a UUID as an error correlation id
   return correlationId;
 };

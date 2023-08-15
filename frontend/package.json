@@ -29,6 +29,7 @@
     "react-oidc-context": "^2.2.2",
     "react-router-dom": "^6.11.0",
     "sass": "^1.62.1",
+    "uuid": "^9.0.0",
     "validator": "^13.9.0"
   },
   "scripts": {
