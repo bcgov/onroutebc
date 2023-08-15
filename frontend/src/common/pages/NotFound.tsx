@@ -1,28 +1,13 @@
 import { Box, Container, Divider, Typography } from "@mui/material";
-import { getUserSessionDetailsFromSession } from "../apiManager/httpRequestHandler";
-import { generateErrorCorrelationId } from "../helpers/util";
 import { useEffect, useState } from "react";
 import { useAddOrbcError } from "../apiManager/hooks";
-import { OrbcError } from "../types/common";
 import { ERROR_TYPES_ENUM } from "../constants/constants";
+import { logError } from "../helpers/errorLogger";
 
 export const NotFound = () => {
 const addOrbcError = useAddOrbcError();
 useEffect(() => {
-  const corelationId = generateErrorCorrelationId();
-  const userSession = getUserSessionDetailsFromSession();
-  const utcTime = new Date().toISOString();
-  const orbcError = {
-    errorTypeId: ERROR_TYPES_ENUM.NOT_FOUND.toString(),
-    errorOccuredTime: utcTime,
-    sessionId: userSession.sid,
-    userGuid: userSession.bceid_user_guid,
-    corelationId: corelationId,
-  } as unknown as OrbcError;
-  addOrbcError.mutateAsync({
-    ...orbcError
-  });
-
+  logError(addOrbcError, ERROR_TYPES_ENUM.NOT_FOUND.toString());
 }, []);
 
   return (

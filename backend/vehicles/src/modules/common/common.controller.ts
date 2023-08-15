@@ -1,6 +1,5 @@
 import {
   Controller,
-  Get,
   Post,
   Body,
   Req,
@@ -58,7 +57,6 @@ export class CommonController {
     @Req() request: Request,
     @Body() createErrorDto: CreateErrorDto,
   ) {
-    const currentUser = request.user as IUserJWT;
     return await this.commonService.createOrbcError(
       createErrorDto
     );

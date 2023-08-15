@@ -1,29 +1,14 @@
 import { Box, Container, Typography, Divider} from "@mui/material";
 import { useAddOrbcError } from "../apiManager/hooks";
 import { useEffect } from "react";
-import { generateErrorCorrelationId } from "../helpers/util";
-import { getUserSessionDetailsFromSession } from "../apiManager/httpRequestHandler";
-import { OrbcError } from "../types/common";
 import { ERROR_TYPES_ENUM } from "../constants/constants";
+import { logError } from "../helpers/errorLogger";
 
 export const UniversalUnauthorized = () => {
-    const addOrbcError = useAddOrbcError();
-    useEffect(() => {
-      const corelationId = generateErrorCorrelationId();
-      const userSession = getUserSessionDetailsFromSession();
-      const utcTime = new Date().toISOString();
-      const orbcError = {
-        errorTypeId: ERROR_TYPES_ENUM.UNEXPECTED.toString(),
-        errorOccuredTime: utcTime,
-        sessionId: userSession.sid,
-        userGuid: userSession.bceid_user_guid,
-        corelationId: corelationId,
-      } as OrbcError;
-      addOrbcError.mutateAsync({
-        ...orbcError
-      });
-    
-    }, []);
+  const addOrbcError = useAddOrbcError();
+  useEffect(() => {
+    logError(addOrbcError, ERROR_TYPES_ENUM.UNIVERSAL_UNAUTHORIZED.toString());
+  }, []);
   return (
     <Container className="feature-container" sx={{ paddingTop: "24px" }}>
 

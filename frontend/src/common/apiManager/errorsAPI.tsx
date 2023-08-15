@@ -1,7 +1,7 @@
 import { replaceEmptyValuesWithNull } from "../helpers/util";
 import { OrbcError } from "../types/common";
 import { VEHICLES_URL } from "./endpoints/endpoints";
-import { getCompanyIdFromSession, httpPOSTRequest } from "./httpRequestHandler";
+import { httpPOSTRequest } from "./httpRequestHandler";
 
 
 /**

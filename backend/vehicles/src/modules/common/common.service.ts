@@ -61,7 +61,7 @@ export class CommonService {
       await queryRunner.commitTransaction();
     } catch (err) {
       await queryRunner.rollbackTransaction();
-      throw new InternalServerErrorException(); // TODO: Handle the typeorm Error handling
+      throw new InternalServerErrorException();
     } finally {
       await queryRunner.release();
     }
