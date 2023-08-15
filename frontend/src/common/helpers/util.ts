@@ -104,9 +104,16 @@ export const getDefaultRequiredVal = <T>(fallbackDefault: T, ...defaultVals: (T 
   return defaultVals.find(val => val != null) ?? fallbackDefault;
 };
 
+/**
+ * Generate a unique error correlation id associated with a session and an error.
+ * 
+ * Eg. 1692137189693-929464
+ * 
+ * @returns The unique error correlation id.
+ */
 export const generateErrorCorrelationId = () => {
   const timestamp = new Date().getTime(); // Get current timestamp in milliseconds
-  const random = Math.floor(Math.random() * 1000000); // Generate a random number between 0 and 999999
+  const random = Math.floor(Math.random() * 1000000)
   const correlationId = `${timestamp}-${random}`;
   return correlationId;
 };

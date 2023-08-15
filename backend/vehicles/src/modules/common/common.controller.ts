@@ -10,7 +10,6 @@ import { ApiBadRequestResponse, ApiBearerAuth, ApiCreatedResponse, ApiInternalSe
 import { ReadErrorDto } from './dto/response/read-error.dto';
 import { AuthOnly } from 'src/common/decorator/auth-only.decorator';
 import { CreateErrorDto } from './dto/request/create-error.dto';
-import { IUserJWT } from 'src/common/interface/user-jwt.interface';
 import { Request } from 'express';
 import { ExceptionDto } from 'src/common/exception/exception.dto';
 

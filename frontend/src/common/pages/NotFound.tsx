@@ -1,5 +1,5 @@
 import { Box, Container, Divider, Typography } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useAddOrbcError } from "../apiManager/hooks";
 import { ERROR_TYPES_ENUM } from "../constants/constants";
 import { logError } from "../helpers/errorLogger";

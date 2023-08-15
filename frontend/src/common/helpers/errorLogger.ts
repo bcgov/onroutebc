@@ -1,4 +1,3 @@
-import { useAddOrbcError } from "../apiManager/hooks";
 import { getUserSessionDetailsFromSession } from "../apiManager/httpRequestHandler";
 import { OrbcError } from "../types/common";
 import { generateErrorCorrelationId } from "./util";
