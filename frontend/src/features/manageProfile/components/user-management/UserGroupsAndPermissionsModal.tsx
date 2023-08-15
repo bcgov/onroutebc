@@ -1,12 +1,11 @@
 import {
   faCircleCheck,
-  faUserGroup,
   faCircleXmark,
+  faUserGroup,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import CloseIcon from "@mui/icons-material/Close";
 import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import IconButton from "@mui/material/IconButton";
@@ -20,7 +19,7 @@ import TableRow from "@mui/material/TableRow";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 
 /**
- *  A stateless confirmation dialog box for Delete Operations.
+ *  A stateless modal that displays the user groups and permissions for CV Clients.
  */
 export default function UserGroupsAndPermissionsModal({
   isOpen,
@@ -68,8 +67,7 @@ export default function UserGroupsAndPermissionsModal({
         <DialogContent>
           <TableContainer>
             <Table
-              // sx={{ minWidth: 650 }}
-              aria-label="simple table"
+              aria-label="groups and permissions table"
             >
               <TableHead>
                 <TableRow>
@@ -243,7 +241,6 @@ export default function UserGroupsAndPermissionsModal({
             </Table>
           </TableContainer>
         </DialogContent>
-        <DialogActions></DialogActions>
       </Dialog>
     </div>
   );

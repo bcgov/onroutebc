@@ -14,6 +14,7 @@ import { Trash } from "../../manageVehicles/components/options/Trash";
 import {
   getCompanyUsers,
   deleteCompanyUsers,
+  getCompanyPendingUsers,
 } from "../apiManager/manageProfileAPI";
 import { UserManagementRowOptions } from "../components/user-management/UserManagementRowOptions";
 import { UserManagementColumnsDefinition } from "../types/UserManagementColumns";
@@ -26,7 +27,7 @@ import DeleteConfirmationDialog from "../../manageVehicles/components/list/Confi
 export const UserManagement = () => {
   const query = useQuery({
     queryKey: ["companyUsers"],
-    queryFn: getCompanyUsers,
+    queryFn: getCompanyPendingUsers,
     keepPreviousData: true,
     staleTime: FIVE_MINUTES,
   });

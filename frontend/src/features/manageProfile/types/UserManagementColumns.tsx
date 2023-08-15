@@ -1,5 +1,7 @@
 import { MRT_ColumnDef } from "material-react-table";
 import { BCeIDAuthGroup, ReadCompanyUser } from "./userManagement.d";
+import { UserManagementChip } from "../components/user-management/UserManagementChip";
+import { Stack } from "@mui/material";
 
 /**
  * Translates the userAuthGroup code into a more meaningful text for the user.
@@ -20,7 +22,7 @@ const translateUserAuth = (userAuthGroup: BCeIDAuthGroup): string => {
  * A boolean indicating if a small badge has to be displayed beside the Permit Number.
  */
 const shouldShowChip = (userStatus: string) => {
-  return userStatus === "PENDING";
+  return userStatus === "PENDING" || true;
 };
 
 /**
@@ -33,7 +35,14 @@ export const UserManagementColumnsDefinition: MRT_ColumnDef<ReadCompanyUser>[] =
       header: "BCeID Username",
       Cell: (props: { row: any }) => {
         return (
-          <>{props.row.original.userName}{shouldShowChip(props.row.original.userStatus) && "  Pending"}</>
+          <>
+            <Stack direction="row">
+              <span>{props.row.original.userName}</span>
+              {shouldShowChip(props.row.original.userStatus) && (
+                <UserManagementChip />
+              )}
+            </Stack>
+          </>
         );
       },
     },

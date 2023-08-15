@@ -36,3 +36,11 @@ export type ReadCompanyUser = {
   provinceCode: string;
   countryCode: string;
 };
+
+/**
+ * 
+ */
+export type BCeIDAddUserRequest = {
+  userName: string;
+  userAuthGroup: BCeIDAuthGroup;
+}

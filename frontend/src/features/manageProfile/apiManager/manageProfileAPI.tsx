@@ -14,7 +14,7 @@ import {
   CompanyAndUserRequest,
   UserInformation,
 } from "../types/manageProfile";
-import { ReadCompanyUser } from "../types/userManagement";
+import { BCeIDAddUserRequest, ReadCompanyUser } from "../types/userManagement";
 import { MANAGE_PROFILE_API } from "./endpoints/endpoints";
 
 export const getCompanyInfo = async (): Promise<CompanyProfile> => {
@@ -92,12 +92,34 @@ export const getCompanyUsers = (): Promise<ReadCompanyUser[]> => {
 };
 
 /**
+ * Retrieves the users of a company by companyId
+ * @returns a promise containing the users.
+ */
+export const getCompanyPendingUsers = (): Promise<ReadCompanyUser[]> => {
+  return httpGETRequest(
+    `${VEHICLES_URL}/companies/${getCompanyIdFromSession()}/pending-users`
+  ).then((response) => response.data);
+};
+
+/**
+ * Adds a user to a company.
+ * @param addUserRequest The request object containing the user details
+ * @returns A Promise containing the response from the API.
+ */
+export const addUserToCompany = async (addUserRequest: BCeIDAddUserRequest) => {
+  return await httpPOSTRequest(
+    `${
+      MANAGE_PROFILE_API.COMPANIES
+    }/${getCompanyIdFromSession()}/pending-users`,
+    replaceEmptyValuesWithNull(addUserRequest)
+  );
+};
+
+/**
  * Deletes a user of the company by companyId
  * @returns a promise containing the users.
  */
-export const deleteCompanyUsers = (
-  userName: string
-) => {
+export const deleteCompanyUsers = (userName: string) => {
   return httpDELETERequest(
     `${VEHICLES_URL}/companies/${getCompanyIdFromSession()}/pending-users/${userName}`
   );
