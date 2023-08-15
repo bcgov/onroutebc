@@ -103,3 +103,10 @@ export const getDefaultNullableVal = <T>(...defaultVals: (T | null | undefined)[
 export const getDefaultRequiredVal = <T>(fallbackDefault: T, ...defaultVals: (T | null | undefined)[]): T => {
   return defaultVals.find(val => val != null) ?? fallbackDefault;
 };
+
+export const generateErrorCorrelationId = () => {
+  const timestamp = new Date().getTime(); // Get current timestamp in milliseconds
+  const random = Math.floor(Math.random() * 1000000); // Generate a random number between 0 and 999999
+  const correlationId = `${timestamp}-${random}`;
+  return correlationId;
+};

@@ -106,6 +106,13 @@ export const getCompanyEmailFromSession = (): string | undefined => {
   );
 };
 
+export const getUserSessionDetailsFromSession = (): any => {
+  const parsedSessionObject = getUserStorage();
+  if (!parsedSessionObject) return "";
+  return parsedSessionObject.profile;
+};
+
+
 /**
  * A generic HTTP GET Request
  * @param url The URL of the resource.

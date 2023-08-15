@@ -14,6 +14,15 @@ export interface ApiErrorResponse {
   errorMessage: string; // array?
 }
 
+export interface OrbcError {
+  status: number;
+  errorTypeId: string;
+  errorOccuredTime: string;
+  sessionId: string;
+  userGuid: string;
+  corelationId: string;
+}
+
 /**
  * The types of onRouteBC forms that are supported by the custom form components
  */

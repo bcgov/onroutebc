@@ -9,12 +9,14 @@ import { ContactProfile } from './profiles/contact.profile';
 import { CommonService } from './common.service';
 import { HttpModule } from '@nestjs/axios';
 import { DopsService } from './dops.service';
+import { CommonController } from './common.controller';
+import { OrbcError } from './entities/error.entity';
 
 @Global()
 @Module({
   imports: [
     HttpModule,
-    TypeOrmModule.forFeature([Country, Province, Address, Contact]),
+    TypeOrmModule.forFeature([Country, Province, Address, Contact, OrbcError]),
   ],
   providers: [AddressProfile, ContactProfile, CommonService, DopsService],
   exports: [
@@ -24,5 +26,6 @@ import { DopsService } from './dops.service';
     CommonService,
     DopsService,
   ],
+  controllers: [CommonController],
 })
 export class CommonModule {}
