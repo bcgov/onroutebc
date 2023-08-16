@@ -33,6 +33,7 @@ import UserGroupsAndPermissionsModal from "../components/user-management/UserGro
 import { BCeIDAddUserRequest, BCeIDAuthGroup } from "../types/userManagement.d";
 import "./AddUserDashboard.scss";
 import { BCEID_PROFILE_TABS } from "../types/manageProfile.d";
+import { AxiosError } from "axios";
 
 /**
  * BCeID User - Add User Page.
@@ -66,6 +67,24 @@ export const AddUserDashboard = React.memo(() => {
    */
   const addUserMutation = useMutation({
     mutationFn: addUserToCompany,
+    onError: async (error) => {
+      const { response } = error as AxiosError;
+      if (response?.status === 400) {
+        setSnackBar({
+          message: "Cannot add user; Check if the user already has been added",
+          showSnackbar: true,
+          setShowSnackbar: () => true,
+          alertType: "error",
+        });
+      } else {
+        setSnackBar({
+          message: "An unexpected error occurred.",
+          showSnackbar: true,
+          setShowSnackbar: () => true,
+          alertType: "error",
+        });
+      }
+    },
     onSuccess: async (response) => {
       if (response.status === 201) {
         setSnackBar({
@@ -78,13 +97,6 @@ export const AddUserDashboard = React.memo(() => {
           state: {
             selectedTab: BCEID_PROFILE_TABS.USER_MANAGEMENT_ORGADMIN,
           },
-        });
-      } else if (response.status === 400) {
-        setSnackBar({
-          message: "Cannot add user; Check if the user already has been added",
-          showSnackbar: true,
-          setShowSnackbar: () => true,
-          alertType: "error",
         });
       } else {
         setSnackBar({
