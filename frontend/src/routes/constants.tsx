@@ -8,7 +8,7 @@ export const ADD_TRAILER = "add-trailer";
 
 //Manage Profile
 export const MANAGE_PROFILES = "manage-profiles";
-export const ADD_USER = "add-user";
+export const ADD_USER = `/${MANAGE_PROFILES}/add-user`;
 
 //Permits
 export const PERMITS = "permits";

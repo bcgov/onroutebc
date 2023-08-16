@@ -33,6 +33,7 @@ import { addUserToCompany } from "../apiManager/manageProfileAPI";
 import UserGroupsAndPermissionsModal from "../components/user-management/UserGroupsAndPermissionsModal";
 import { BCeIDAddUserRequest, BCeIDAuthGroup } from "../types/userManagement.d";
 import "./AddUserDashboard.scss";
+import { BCEID_PROFILE_TABS } from "../types/manageProfile.d";
 
 /**
  * BCeID User - Add User Page.
@@ -54,7 +55,9 @@ export const AddUserDashboard = React.memo(() => {
   const { setSnackBar } = useContext(SnackBarContext);
 
   const onClickBreadCrumb = () => {
-    navigate("../");
+    navigate("/manage-profiles", { state: {
+      selectedTab: BCEID_PROFILE_TABS.USER_MANAGEMENT_ORGADMIN
+    }});
   };
 
   const addUserMutation = useMutation({
@@ -78,16 +81,17 @@ export const AddUserDashboard = React.memo(() => {
         showSnackbar: true,
         setShowSnackbar: () => true,
       });
-      navigate("../");
+      navigate("/manage-profiles", { state: {
+        selectedTab: BCEID_PROFILE_TABS.USER_MANAGEMENT_ORGADMIN
+      }});
     },
   });
 
   /**
-   *
+   * Adds a new user to the company.
    */
   const onClickAddUser = (data: FieldValues) => {
-    console.log('data::', data);
-    // addUserMutation.mutate(data as BCeIDAddUserRequest);
+    addUserMutation.mutate(data as BCeIDAddUserRequest);
   };
 
   return (

@@ -22,7 +22,7 @@ const translateUserAuth = (userAuthGroup: BCeIDAuthGroup): string => {
  * A boolean indicating if a small badge has to be displayed beside the Permit Number.
  */
 const shouldShowChip = (userStatus: string) => {
-  return userStatus === "PENDING" || true;
+  return userStatus === "PENDING";
 };
 
 /**

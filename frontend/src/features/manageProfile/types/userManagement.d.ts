@@ -44,3 +44,4 @@ export type BCeIDAddUserRequest = {
   userName: string;
   userAuthGroup: BCeIDAuthGroup;
 }
+
