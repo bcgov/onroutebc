@@ -12,8 +12,6 @@ const getOptions = (isExpired: boolean): string[] => {
   return ACTIVE_OPTIONS;
 };
 
-const ITEM_HEIGHT = 48;
-
 export const PermitRowOptions = ({
   isExpired,
   permitId,
