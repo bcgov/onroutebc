@@ -13,7 +13,6 @@ import { BC_COLOURS } from "../../../themes/bcGovStyles";
 import DeleteConfirmationDialog from "../../manageVehicles/components/list/ConfirmationDialog";
 import { Trash } from "../../manageVehicles/components/options/Trash";
 import {
-  deleteCompanyUsers,
   getCompanyUsers
 } from "../apiManager/manageProfileAPI";
 import { UserManagementTableRowActions } from "../components/user-management/UserManagementRowOptions";
@@ -42,37 +41,11 @@ export const UserManagement = () => {
   }, []);
 
   /**
-   * Function that deletes a vehicle once the user confirms the delete action
-   * in the confirmation dialog.
+   * Function that deletes one or more users.
    */
   const onConfirmDelete = async () => {
-    const userNames: string[] = Object.keys(rowSelection);
-
-    deleteCompanyUsers(userNames[0]).then((response) => {
-      if (response.status === 200) {
-        const responseBody = response.data;
-        setIsDeleteDialogOpen(() => false);
-        if (responseBody.failure.length > 0) {
-          snackBar.setSnackBar({
-            message: "An unexpected error occurred.",
-            showSnackbar: true,
-            setShowSnackbar: () => true,
-            alertType: "error",
-          });
-        } else {
-          snackBar.setSnackBar({
-            message: "Vehicle Deleted",
-            showSnackbar: true,
-            setShowSnackbar: () => true,
-            alertType: "info",
-          });
-        }
-        setRowSelection(() => {
-          return {};
-        });
-        query.refetch();
-      }
-    });
+    // Uncomment this line -const userNames: string[] = Object.keys(rowSelection);
+    // For implementation.
   };
 
   /**

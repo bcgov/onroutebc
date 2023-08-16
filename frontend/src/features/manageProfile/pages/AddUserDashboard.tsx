@@ -79,24 +79,20 @@ export const AddUserDashboard = React.memo(() => {
             selectedTab: BCEID_PROFILE_TABS.USER_MANAGEMENT_ORGADMIN,
           },
         });
+      } else if (response.status === 400) {
+        setSnackBar({
+          message: "Cannot add user; Check if the user already has been added",
+          showSnackbar: true,
+          setShowSnackbar: () => true,
+          alertType: "error",
+        });
       } else {
-        // Error handling
-        if (response.status >= 500) {
-          setSnackBar({
-            message: "Something went wrong.",
-            showSnackbar: true,
-            setShowSnackbar: () => true,
-            alertType: "error",
-          });
-        } else if (response.status === 400) {
-          setSnackBar({
-            message:
-              "The user cannot be added. Check if the user already has been added",
-            showSnackbar: true,
-            setShowSnackbar: () => true,
-            alertType: "error",
-          });
-        }
+        setSnackBar({
+          message: "An unexpected error occurred.",
+          showSnackbar: true,
+          setShowSnackbar: () => true,
+          alertType: "error",
+        });
       }
     },
   });

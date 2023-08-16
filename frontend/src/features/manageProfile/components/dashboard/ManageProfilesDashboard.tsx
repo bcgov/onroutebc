@@ -20,15 +20,12 @@ import { ADD_USER } from "../../../../routes/constants";
 
 /**
  * Returns a boolean indicating if the logged in user is a BCeID org admin.
- * 
+ *
  * @param userRoles The array of roles from the context.
  * @returns A boolean value.
  */
 export const isBCeIDOrgAdmin = (userRoles: string[]): boolean => {
-  return Boolean(
-    DoesUserHaveRole(userRoles, ROLES.PUBLIC_USER_ADMIN) ||
-      DoesUserHaveRole(userRoles, ROLES.PUBLIC_ORG_ADMIN)
-  );
+  return Boolean(DoesUserHaveRole(userRoles, ROLES.PUBLIC_ORG_ADMIN));
 };
 
 export const ManageProfilesDashboard = React.memo(() => {
