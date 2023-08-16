@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { OnRouteBCTableRowActions } from "../../../../common/components/table/OnRouteBCTableRowActions";
+import { EDIT_USER } from "../../../../routes/constants";
 
 const OPTIONS = ["Edit"];
 
@@ -12,7 +13,7 @@ export const UserManagementTableRowActions = ({
 
   const onClickCallback = (selectedOption: string) => {
     if (selectedOption === "Edit") {
-      navigate(`/edit-user`, {
+      navigate(EDIT_USER, {
         state: {
           userGUID,
         },

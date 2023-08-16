@@ -12,9 +12,7 @@ import { FIVE_MINUTES } from "../../../common/constants/constants";
 import { BC_COLOURS } from "../../../themes/bcGovStyles";
 import DeleteConfirmationDialog from "../../manageVehicles/components/list/ConfirmationDialog";
 import { Trash } from "../../manageVehicles/components/options/Trash";
-import {
-  getCompanyUsers
-} from "../apiManager/manageProfileAPI";
+import { getCompanyUsers } from "../apiManager/manageProfileAPI";
 import { UserManagementTableRowActions } from "../components/user-management/UserManagementRowOptions";
 import { UserManagementColumnsDefinition } from "../types/UserManagementColumns";
 import { BCeIDUserStatus, ReadCompanyUser } from "../types/userManagement.d";
@@ -125,7 +123,7 @@ export const UserManagement = () => {
           []
         )}
         renderToolbarInternalActions={useCallback(
-          ({ table }: { table: MRT_TableInstance<ReadCompanyUser> }) => (
+          () => (
             <Box
               sx={{
                 display: "flex",

@@ -68,6 +68,7 @@ export const AppRoutes = () => {
       </Route>
       <Route element={<ProtectedRoutes requiredRole={ROLES.WRITE_USER} />}>
         <Route path={routes.ADD_USER} element={<AddUserDashboard />} />
+        <Route path={routes.EDIT_USER} element={<>Edit User</>} />
       </Route>
       <Route element={<ProtectedRoutes requiredRole={ROLES.WRITE_PERMIT} />}>
         <Route
