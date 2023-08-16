@@ -130,20 +130,50 @@ export class PermitService {
   }
 
   async findPermit(
+    options: IPaginationOptions,
     searchColumn: string,
     searchString: string,
-  ): Promise<ReadPermitDto[]> {
-    searchString = '"*' + searchString + '*"';
-    const permits = await this.permitRepository
+  ): Promise<PaginationDto<ReadPermitDto, IPaginationMeta>> {
+    const permits = this.permitRepository
       .createQueryBuilder('permit')
       .innerJoinAndSelect('permit.permitData', 'permitData')
-      .where(
-        `CONTAINS(permitData.permitData,'Near((${searchColumn},${searchString}), 0, True)')`,
-      )
-      .andWhere('permit.permitNumber IS NOT NULL')
-      .getMany();
-
-    return this.classMapper.mapArrayAsync(permits, Permit, ReadPermitDto);
+      .where('permit.permitNumber IS NOT NULL');
+    if (searchColumn.toLowerCase() === 'plate') {
+      permits.andWhere(
+        `JSON_VALUE(permitData.permitData, '$.vehicleDetails.plate') like '%${searchString}%'`,
+      );
+    }
+    if (searchColumn.toLowerCase() === 'permitnumber') {
+      permits.andWhere(`permit.permitNumber like '%${searchString}%'`);
+    }
+    if (searchColumn.toLowerCase() === 'clientnumber') {
+      permits.andWhere(
+        `JSON_VALUE(permitData.permitData, '$.clientNumber') like '%${searchString}%'`,
+      );
+    }
+    if (searchColumn.toLowerCase() === 'companyname') {
+      permits.andWhere(
+        `JSON_VALUE(permitData.permitData, '$.companyName') like '%${searchString}%'`,
+      );
+    }
+    if (searchColumn.toLowerCase() === 'applicationnumber') {
+      permits.andWhere(`permit.applicationNumber like '%${searchString}%'`);
+    }
+    const permit: PaginationDto<Permit, IPaginationMeta> = await paginate(
+      permits,
+      options,
+    );
+    const readPermitDto: ReadPermitDto[] = await this.classMapper.mapArrayAsync(
+      permit.items,
+      Permit,
+      ReadPermitDto,
+    );
+    const readPermitDtoItems: PaginationDto<ReadPermitDto, IPaginationMeta> =
+      new PaginationDto<ReadPermitDto, IPaginationMeta>(
+        readPermitDto,
+        permit.meta,
+      );
+    return readPermitDtoItems;
   }
 
   /**

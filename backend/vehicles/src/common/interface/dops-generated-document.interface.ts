@@ -5,4 +5,5 @@ export interface DopsGeneratedDocument {
   templateVersion?: number;
   templateData: object;
   generatedDocumentFileName: string;
+  documentsToMerge?: string[];
 }

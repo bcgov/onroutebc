@@ -33,7 +33,6 @@ import { ReadFileDto } from '../common/dto/response/read-file.dto';
 import { Roles } from 'src/common/decorator/roles.decorator';
 import { Role } from 'src/common/enum/roles.enum';
 import { IDP } from 'src/common/enum/idp.enum';
-import { Permit } from './entities/permit.entity';
 import {
   IPaginationMeta,
   IPaginationOptions,
@@ -138,8 +137,15 @@ export class PermitController {
   async getPermitData(
     @Query('searchColumn') searchColumn: string,
     @Query('searchString') searchString: string,
-  ): Promise<ReadPermitDto[]> {
-    return this.permitService.findPermit(searchColumn, searchString);
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe, LessThenPipe)
+    limit = 10,
+  ): Promise<PaginationDto<ReadPermitDto, IPaginationMeta>> {
+    const options: IPaginationOptions = {
+      limit,
+      page,
+    };
+    return this.permitService.findPermit(options, searchColumn, searchString);
   }
 
   @AuthOnly()
