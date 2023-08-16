@@ -50,7 +50,7 @@ export const ManageProfilesDashboard = React.memo(() => {
 
   const { state: stateFromNavigation } = useLocation();
   let selectedTab = BCEID_PROFILE_TABS.COMPANY_INFORMATION;
-  if (stateFromNavigation && stateFromNavigation.selectedTab) {
+  if (stateFromNavigation?.selectedTab) {
     selectedTab = stateFromNavigation.selectedTab;
   }
 

@@ -10,16 +10,15 @@ import { SnackBarContext } from "../../../App";
 import { NoRecordsFound } from "../../../common/components/table/NoRecordsFound";
 import { FIVE_MINUTES } from "../../../common/constants/constants";
 import { BC_COLOURS } from "../../../themes/bcGovStyles";
+import DeleteConfirmationDialog from "../../manageVehicles/components/list/ConfirmationDialog";
 import { Trash } from "../../manageVehicles/components/options/Trash";
 import {
-  getCompanyUsers,
   deleteCompanyUsers,
-  getCompanyPendingUsers,
+  getCompanyUsers
 } from "../apiManager/manageProfileAPI";
 import { UserManagementTableRowActions } from "../components/user-management/UserManagementRowOptions";
 import { UserManagementColumnsDefinition } from "../types/UserManagementColumns";
 import { BCeIDUserStatus, ReadCompanyUser } from "../types/userManagement.d";
-import DeleteConfirmationDialog from "../../manageVehicles/components/list/ConfirmationDialog";
 
 /**
  * User Management Component for CV Client.

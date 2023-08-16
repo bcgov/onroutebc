@@ -10,12 +10,11 @@ import {
   Link,
   Radio,
   RadioGroup,
-  Typography
+  Typography,
 } from "@mui/material";
 import Stack from "@mui/material/Stack";
 import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
-// import "../../../../common/components/dashboard/Dashboard.scss";
 import { useMutation } from "@tanstack/react-query";
 import {
   Controller,
@@ -50,40 +49,55 @@ export const AddUserDashboard = React.memo(() => {
     reValidateMode: "onBlur",
   });
 
-  const { setValue, handleSubmit, register } = formMethods;
+  const { handleSubmit } = formMethods;
 
   const { setSnackBar } = useContext(SnackBarContext);
 
   const onClickBreadCrumb = () => {
-    navigate("/manage-profiles", { state: {
-      selectedTab: BCEID_PROFILE_TABS.USER_MANAGEMENT_ORGADMIN
-    }});
+    navigate("/manage-profiles", {
+      state: {
+        selectedTab: BCEID_PROFILE_TABS.USER_MANAGEMENT_ORGADMIN,
+      },
+    });
   };
 
+  /**
+   * The add user mutation hook.
+   */
   const addUserMutation = useMutation({
     mutationFn: addUserToCompany,
     onSuccess: async (response) => {
-      // if (hasValidationErrors(response.status)) {
-      //   const { error } = response.data;
-      //   const firstErrMsg = getFirstValidationError(getDefaultRequiredVal([], error));
-      //   if (firstErrMsg) {
-      //     setSnackBar({
-      //       message: firstErrMsg,
-      //       showSnackbar: true,
-      //       setShowSnackbar: () => true,
-      //       alertType: "error",
-      //     });
-      //   }
-      // }
-      setSnackBar({
-        alertType: "success",
-        message: "User Added",
-        showSnackbar: true,
-        setShowSnackbar: () => true,
-      });
-      navigate("/manage-profiles", { state: {
-        selectedTab: BCEID_PROFILE_TABS.USER_MANAGEMENT_ORGADMIN
-      }});
+      if (response.status === 201) {
+        setSnackBar({
+          alertType: "success",
+          message: "User Added",
+          showSnackbar: true,
+          setShowSnackbar: () => true,
+        });
+        navigate("/manage-profiles", {
+          state: {
+            selectedTab: BCEID_PROFILE_TABS.USER_MANAGEMENT_ORGADMIN,
+          },
+        });
+      } else {
+        // Error handling
+        if (response.status >= 500) {
+          setSnackBar({
+            message: "Something went wrong.",
+            showSnackbar: true,
+            setShowSnackbar: () => true,
+            alertType: "error",
+          });
+        } else if (response.status === 400) {
+          setSnackBar({
+            message:
+              "The user cannot be added. Check if the user already has been added",
+            showSnackbar: true,
+            setShowSnackbar: () => true,
+            alertType: "error",
+          });
+        }
+      }
     },
   });
 
@@ -183,8 +197,6 @@ export const AddUserDashboard = React.memo(() => {
               }}
             />
           </Stack>
-
-          {/* Form Component */}
         </Box>
         <Divider variant="middle" />
         <Box
@@ -238,20 +250,8 @@ export const AddUserDashboard = React.memo(() => {
                       <FormControl>
                         <RadioGroup
                           {...field}
-                          // defaultValue={BCeIDAuthGroup.CVCLIENT}
                           value={field.value}
                           aria-labelledby="radio-buttons-group-label"
-                          // name="radio-buttons-group"
-                          // onChange={(x) => {
-                          //   setValue(
-                          //     "userAuthGroup",
-                          //     x.target.value as BCeIDAuthGroup
-                          //   );
-                          // }}
-                          // {...register("userAuthGroup", {
-                          //   required: { value: true, message: requiredMessage() },
-
-                          // })}
                         >
                           <FormControlLabel
                             value={BCeIDAuthGroup.ORGADMIN}
@@ -292,7 +292,6 @@ export const AddUserDashboard = React.memo(() => {
                   );
                 }}
               ></Controller>
-
               <Stack direction="row">
                 <Button
                   key="cancel-add-user-button"

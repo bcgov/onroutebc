@@ -13,6 +13,8 @@ const translateUserAuth = (userAuthGroup: BCeIDAuthGroup): string => {
   switch (userAuthGroup) {
     case BCeIDAuthGroup.CVCLIENT:
       return "Permit Applicant";
+    case BCeIDAuthGroup.ORGADMIN:
+    case BCeIDAuthGroup.PUBLIC:
     default:
       return "Administrator";
   }
