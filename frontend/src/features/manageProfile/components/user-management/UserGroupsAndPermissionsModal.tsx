@@ -19,6 +19,24 @@ import TableRow from "@mui/material/TableRow";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 
 /**
+ * Reusable green check icon.
+ */
+const GreenCheckIcon = () => (
+  <span>
+    <FontAwesomeIcon color={BC_COLOURS.bc_green} icon={faCircleCheck} />
+  </span>
+);
+
+/**
+ * Reusable red x mark icon.
+ */
+const RedXMarkIcon = () => (
+  <span>
+    <FontAwesomeIcon color={BC_COLOURS.bc_red} icon={faCircleXmark} />
+  </span>
+);
+
+/**
  *  A stateless modal that displays the user groups and permissions for CV Clients.
  */
 export default function UserGroupsAndPermissionsModal({
@@ -66,9 +84,7 @@ export default function UserGroupsAndPermissionsModal({
         </DialogTitle>
         <DialogContent>
           <TableContainer>
-            <Table
-              aria-label="groups and permissions table"
-            >
+            <Table aria-label="groups and permissions table">
               <TableHead>
                 <TableRow>
                   <TableCell>
@@ -96,22 +112,14 @@ export default function UserGroupsAndPermissionsModal({
                     <Stack spacing={2}>
                       <span>&nbsp;</span>
                       <span>
-                        <FontAwesomeIcon
-                          color={BC_COLOURS.bc_green}
-                          icon={faCircleCheck}
-                        />
+                        <GreenCheckIcon />
                       </span>
                     </Stack>
                   </TableCell>
                   <TableCell align="center">
                     <Stack spacing={2}>
                       <span>&nbsp;</span>
-                      <span>
-                        <FontAwesomeIcon
-                          color={BC_COLOURS.bc_green}
-                          icon={faCircleCheck}
-                        />
-                      </span>
+                      <GreenCheckIcon />
                     </Stack>
                   </TableCell>
                 </TableRow>
@@ -127,23 +135,13 @@ export default function UserGroupsAndPermissionsModal({
                   <TableCell align="center">
                     <Stack spacing={2}>
                       <span>&nbsp;</span>
-                      <span>
-                        <FontAwesomeIcon
-                          color={BC_COLOURS.bc_green}
-                          icon={faCircleCheck}
-                        />
-                      </span>
+                      <GreenCheckIcon />
                     </Stack>
                   </TableCell>
                   <TableCell align="center">
                     <Stack spacing={2}>
                       <span>&nbsp;</span>
-                      <span>
-                        <FontAwesomeIcon
-                          color={BC_COLOURS.bc_green}
-                          icon={faCircleCheck}
-                        />
-                      </span>
+                      <GreenCheckIcon />
                     </Stack>
                   </TableCell>
                 </TableRow>
@@ -160,35 +158,15 @@ export default function UserGroupsAndPermissionsModal({
                   <TableCell align="center">
                     <Stack spacing={2}>
                       <span>&nbsp;</span>
-                      <span>
-                        <FontAwesomeIcon
-                          color={BC_COLOURS.bc_green}
-                          icon={faCircleCheck}
-                        />
-                      </span>
-                      <span>
-                        <FontAwesomeIcon
-                          color={BC_COLOURS.bc_green}
-                          icon={faCircleCheck}
-                        />
-                      </span>
+                      <GreenCheckIcon />
+                      <GreenCheckIcon />
                     </Stack>
                   </TableCell>
                   <TableCell align="center">
                     <Stack spacing={2}>
                       <span>&nbsp;</span>
-                      <span>
-                        <FontAwesomeIcon
-                          color={BC_COLOURS.bc_green}
-                          icon={faCircleCheck}
-                        />
-                      </span>
-                      <span>
-                        <FontAwesomeIcon
-                          color={BC_COLOURS.bc_red}
-                          icon={faCircleXmark}
-                        />
-                      </span>
+                      <GreenCheckIcon />
+                      <RedXMarkIcon />
                     </Stack>
                   </TableCell>
                 </TableRow>
@@ -205,35 +183,15 @@ export default function UserGroupsAndPermissionsModal({
                   <TableCell align="center">
                     <Stack spacing={2}>
                       <span>&nbsp;</span>
-                      <span>
-                        <FontAwesomeIcon
-                          color={BC_COLOURS.bc_green}
-                          icon={faCircleCheck}
-                        />
-                      </span>
-                      <span>
-                        <FontAwesomeIcon
-                          color={BC_COLOURS.bc_green}
-                          icon={faCircleCheck}
-                        />
-                      </span>
+                      <GreenCheckIcon />
+                      <GreenCheckIcon />
                     </Stack>
                   </TableCell>
                   <TableCell align="center">
                     <Stack spacing={2}>
                       <span>&nbsp;</span>
-                      <span>
-                        <FontAwesomeIcon
-                          color={BC_COLOURS.bc_red}
-                          icon={faCircleXmark}
-                        />
-                      </span>
-                      <span>
-                        <FontAwesomeIcon
-                          color={BC_COLOURS.bc_green}
-                          icon={faCircleCheck}
-                        />
-                      </span>
+                      <RedXMarkIcon />
+                      <GreenCheckIcon />
                     </Stack>
                   </TableCell>
                 </TableRow>
