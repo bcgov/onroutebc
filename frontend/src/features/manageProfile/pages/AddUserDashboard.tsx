@@ -2,32 +2,37 @@ import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   Box,
-  Typography,
-  Divider,
-  Link,
-  OutlinedInput,
-  RadioGroup,
-  FormControlLabel,
-  Radio,
   Button,
+  Divider,
+  FormControl,
+  FormControlLabel,
+  FormHelperText,
+  Link,
+  Radio,
+  RadioGroup,
+  Typography
 } from "@mui/material";
-import React, { useContext, useState } from "react";
 import Stack from "@mui/material/Stack";
+import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 // import "../../../../common/components/dashboard/Dashboard.scss";
-import { BC_COLOURS } from "../../../themes/bcGovStyles";
+import { useMutation } from "@tanstack/react-query";
+import {
+  Controller,
+  FieldValues,
+  FormProvider,
+  useForm,
+} from "react-hook-form";
+import { SnackBarContext } from "../../../App";
 import { Banner } from "../../../common/components/dashboard/Banner";
-import UserGroupsAndPermissionsModal from "../components/user-management/UserGroupsAndPermissionsModal";
-import { CustomOutlinedInput } from "../../../common/components/form/subFormComponents/CustomOutlinedInput";
 import { CustomFormComponent } from "../../../common/components/form/CustomFormComponents";
 import { requiredMessage } from "../../../common/helpers/validationMessages";
-import { FormProvider, useForm } from "react-hook-form";
+import { CustomInputHTMLAttributes } from "../../../common/types/formElements";
+import { BC_COLOURS } from "../../../themes/bcGovStyles";
+import { addUserToCompany } from "../apiManager/manageProfileAPI";
+import UserGroupsAndPermissionsModal from "../components/user-management/UserGroupsAndPermissionsModal";
 import { BCeIDAddUserRequest, BCeIDAuthGroup } from "../types/userManagement.d";
 import "./AddUserDashboard.scss";
-import { CustomInputHTMLAttributes } from "../../../common/types/formElements";
-import { useMutation } from "@tanstack/react-query";
-import { addUserToCompany } from "../apiManager/manageProfileAPI";
-import { SnackBarContext } from "../../../App";
 
 /**
  * BCeID User - Add User Page.
@@ -38,8 +43,13 @@ export const AddUserDashboard = React.memo(() => {
     useState<boolean>(false);
 
   const formMethods = useForm<BCeIDAddUserRequest>({
+    defaultValues: {
+      userAuthGroup: BCeIDAuthGroup.CVCLIENT,
+    },
     reValidateMode: "onBlur",
   });
+
+  const { setValue, handleSubmit, register } = formMethods;
 
   const { setSnackBar } = useContext(SnackBarContext);
 
@@ -64,12 +74,9 @@ export const AddUserDashboard = React.memo(() => {
       // }
       setSnackBar({
         alertType: "success",
-        message: "Changes Saved",
+        message: "User Added",
         showSnackbar: true,
         setShowSnackbar: () => true,
-        anchorOrigin: {
-          horizontal: 'center'
-        }
       });
       navigate("../");
     },
@@ -78,9 +85,9 @@ export const AddUserDashboard = React.memo(() => {
   /**
    *
    */
-  const onClickAddUser = () => {
-    console.log(formMethods.getValues());
-    addUserMutation.mutate(formMethods.getValues());
+  const onClickAddUser = (data: FieldValues) => {
+    console.log('data::', data);
+    // addUserMutation.mutate(data as BCeIDAddUserRequest);
   };
 
   return (
@@ -157,9 +164,7 @@ export const AddUserDashboard = React.memo(() => {
               >
                 User ID
               </Typography>
-              <br />
             </Stack>
-
             <CustomFormComponent
               type="input"
               feature="add-user"
@@ -168,6 +173,7 @@ export const AddUserDashboard = React.memo(() => {
                 name: "userName",
                 rules: {
                   required: { value: true, message: requiredMessage() },
+                  minLength: 3,
                 },
                 label: "BCeID User ID",
               }}
@@ -217,49 +223,71 @@ export const AddUserDashboard = React.memo(() => {
               </Typography>
             </Stack>
             <Stack spacing={2}>
-              <RadioGroup
-                aria-labelledby="radio-buttons-group-label"
-                name="radio-buttons-group"
-                onChange={(x) => {
-                  formMethods.setValue(
-                    "userAuthGroup",
-                    x.target.value as BCeIDAuthGroup
-                  );
-                  console.log(formMethods.getValues());
+              <Controller
+                name="userAuthGroup"
+                rules={{
+                  required: { value: true, message: requiredMessage() },
                 }}
-              >
-                <FormControlLabel
-                  value={BCeIDAuthGroup.ORGADMIN}
-                  control={
-                    <Radio
-                      key={`radio-save-vehicle-yes`}
-                      inputProps={
-                        {
-                          "data-testid": "save-vehicle-yes",
-                        } as CustomInputHTMLAttributes
-                      }
-                    />
-                  }
-                  label="Administrator"
-                />
-                <FormControlLabel
-                  value={BCeIDAuthGroup.CVCLIENT}
-                  control={
-                    <Radio
-                      key={`radio-save-vehicle-no`}
-                      inputProps={
-                        {
-                          "data-testid": "save-vehicle-no",
-                        } as CustomInputHTMLAttributes
-                      }
-                    />
-                  }
-                  label="Permit Applicant"
-                />
-                {/* <Box sx={{ display: "flex" }}>
-                
-              </Box> */}
-              </RadioGroup>
+                render={({ field, fieldState: { invalid } }) => {
+                  return (
+                    <>
+                      <FormControl>
+                        <RadioGroup
+                          {...field}
+                          // defaultValue={BCeIDAuthGroup.CVCLIENT}
+                          value={field.value}
+                          aria-labelledby="radio-buttons-group-label"
+                          // name="radio-buttons-group"
+                          // onChange={(x) => {
+                          //   setValue(
+                          //     "userAuthGroup",
+                          //     x.target.value as BCeIDAuthGroup
+                          //   );
+                          // }}
+                          // {...register("userAuthGroup", {
+                          //   required: { value: true, message: requiredMessage() },
+
+                          // })}
+                        >
+                          <FormControlLabel
+                            value={BCeIDAuthGroup.ORGADMIN}
+                            control={
+                              <Radio
+                                key={`radio-bceid-administrator`}
+                                inputProps={
+                                  {
+                                    "data-testid": "save-vehicle-yes",
+                                  } as CustomInputHTMLAttributes
+                                }
+                              />
+                            }
+                            label="Administrator"
+                          />
+                          <FormControlLabel
+                            value={BCeIDAuthGroup.CVCLIENT}
+                            control={
+                              <Radio
+                                key={`radio-bceid-permit-applicant`}
+                                inputProps={
+                                  {
+                                    "data-testid": "save-vehicle-no",
+                                  } as CustomInputHTMLAttributes
+                                }
+                              />
+                            }
+                            label="Permit Applicant"
+                          />
+                        </RadioGroup>
+                        {invalid && (
+                          <FormHelperText>
+                            You must assign a user group
+                          </FormHelperText>
+                        )}
+                      </FormControl>
+                    </>
+                  );
+                }}
+              ></Controller>
 
               <Stack direction="row">
                 <Button
@@ -272,14 +300,15 @@ export const AddUserDashboard = React.memo(() => {
                 >
                   Cancel
                 </Button>
-                <Button variant="contained" onClick={onClickAddUser}>
+                <Button
+                  variant="contained"
+                  onClick={handleSubmit(onClickAddUser)}
+                >
                   Add User
                 </Button>
               </Stack>
             </Stack>
           </Stack>
-
-          {/* Form Component */}
         </Box>
       </FormProvider>
 

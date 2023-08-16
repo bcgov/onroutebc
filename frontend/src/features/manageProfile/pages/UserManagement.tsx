@@ -27,7 +27,7 @@ import DeleteConfirmationDialog from "../../manageVehicles/components/list/Confi
 export const UserManagement = () => {
   const query = useQuery({
     queryKey: ["companyUsers"],
-    queryFn: getCompanyPendingUsers,
+    queryFn: getCompanyUsers,
     keepPreviousData: true,
     staleTime: FIVE_MINUTES,
   });

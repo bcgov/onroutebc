@@ -65,7 +65,7 @@ export const ManageProfilesDashboard = React.memo(() => {
     },
   ];
 
-  if (isCVClientAdmin()) {
+  if (isCVClientAdmin() ) {
     tabs.push({
       label: "User Management",
       component: <UserManagement />,
