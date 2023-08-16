@@ -16,7 +16,7 @@ import {
   deleteCompanyUsers,
   getCompanyPendingUsers,
 } from "../apiManager/manageProfileAPI";
-import { UserManagementRowOptions } from "../components/user-management/UserManagementRowOptions";
+import { UserManagementTableRowActions } from "../components/user-management/UserManagementRowOptions";
 import { UserManagementColumnsDefinition } from "../types/UserManagementColumns";
 import { BCeIDUserStatus, ReadCompanyUser } from "../types/userManagement.d";
 import DeleteConfirmationDialog from "../../manageVehicles/components/list/ConfirmationDialog";
@@ -141,7 +141,9 @@ export const UserManagement = () => {
             if (row.original.statusCode === BCeIDUserStatus.ACTIVE) {
               return (
                 <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-                  <UserManagementRowOptions userGUID={row.original.userGUID} />
+                  <UserManagementTableRowActions
+                    userGUID={row.original.userGUID}
+                  />
                 </Box>
               );
             } else {
