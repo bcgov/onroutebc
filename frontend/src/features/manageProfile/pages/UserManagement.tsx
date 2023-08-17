@@ -14,8 +14,8 @@ import DeleteConfirmationDialog from "../../manageVehicles/components/list/Confi
 import { Trash } from "../../manageVehicles/components/options/Trash";
 import { getCompanyUsers } from "../apiManager/manageProfileAPI";
 import { UserManagementTableRowActions } from "../components/user-management/UserManagementRowOptions";
-import { BCeIDAuthGroup, BCeIDUserStatus, ReadCompanyUser } from "../types/userManagement.d";
 import { UserManagementColumnsDefinition } from "../types/UserManagementColumns";
+import { BCeIDUserStatus, ReadCompanyUser } from "../types/userManagement.d";
 
 /**
  * User Management Component for CV Client.
@@ -44,6 +44,7 @@ export const UserManagement = () => {
   const onConfirmDelete = async () => {
     // Uncomment this line -const userNames: string[] = Object.keys(rowSelection);
     // For implementation.
+    setIsDeleteDialogOpen(() => false);
   };
 
   /**
