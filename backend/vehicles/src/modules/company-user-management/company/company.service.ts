@@ -110,7 +110,7 @@ export class CompanyService {
 
       user.companyUsers = [newCompanyUser];
       user = await queryRunner.manager.save(user);
-
+      user.companyUsers = [newCompanyUser]; //To populate Company User Auth Group
       newUser = await this.classMapper.mapAsync(user, User, ReadUserDto);
       await queryRunner.commitTransaction();
     } catch (err) {

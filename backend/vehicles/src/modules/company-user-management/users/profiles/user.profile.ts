@@ -110,7 +110,7 @@ export class UsersProfile extends AutomapperProfile {
         forMember(
           (d) => d.userAuthGroup,
           mapFrom((s) => {
-            if (s.companyUsers?.length) {
+            if (s.companyUsers?.length && s.companyUsers[0]?.userAuthGroup) {
               //the logic to be revisited if the application decide to support
               //one user id multiple companies
               return s.companyUsers[0]?.userAuthGroup;
