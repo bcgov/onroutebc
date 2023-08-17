@@ -212,13 +212,12 @@ export class UsersService {
         undefined,
         companyId?.at(0),
       );
- 
+
       pendingUsersList = await this.classMapper.mapArrayAsync(
         pendingUser,
         ReadPendingUserDto,
         ReadUserDto,
       );
-
     }
     // Map the retrieved user entities to ReadUserDto objects
 

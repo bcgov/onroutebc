@@ -108,9 +108,22 @@ export class UsersProfile extends AutomapperProfile {
         ),
         forSelf(Contact, (source) => source.userContact),
         forMember(
+          (d) => d.userAuthGroup,
+          mapFrom((s) => {
+            if (s.companyUsers?.length) {
+              //the logic to be revisited if the application decide to support
+              //one user id multiple companies
+              return s.companyUsers[0]?.userAuthGroup;
+            } else {
+              return s.userAuthGroup;
+            }
+          }),
+        ),
+        forMember(
           (d) => d.phone1Extension,
           mapFrom((s) => s.userContact.extension1),
         ),
+
         forMember(
           (d) => d.phone2Extension,
           mapFrom((s) => s.userContact.extension2),

@@ -60,7 +60,6 @@ export const createRedCompanyAdminUserDtoMock: CreateUserDto = {
 };
 
 export const updateRedCompanyAdminUserDtoMock: UpdateUserDto = {
-  userAuthGroup: constants.RED_COMPANY_ADMIN_USER_AUTH_GROUP,
   ...updateRedCompanyAdminContactDtoMock,
 };
 
@@ -68,7 +67,7 @@ export const readRedCompanyAdminUserDtoMock: ReadUserDto = {
   userGUID: constants.RED_COMPANY_ADMIN_USER_GUID,
   userName: constants.RED_COMPANY_ADMIN_USER_NAME,
   userAuthGroup: constants.RED_COMPANY_ADMIN_USER_AUTH_GROUP,
-  statusCode: constants.RED_COMPANY_ADMIN_USER_STATUS,  
+  statusCode: constants.RED_COMPANY_ADMIN_USER_STATUS,
   createdDateTime: baseDtoMock.createdDateTime,
   ...readRedCompanyAdminContactDtoMock,
 };
@@ -101,7 +100,6 @@ export const createRedCompanyCvClientUserDtoMock: CreateUserDto = {
 };
 
 export const updateRedCompanyCvClientUserDtoMock: UpdateUserDto = {
-  userAuthGroup: constants.RED_COMPANY_CVCLIENT_USER_AUTH_GROUP,
   ...updateRedCompanyCvClientContactDtoMock,
 };
 
@@ -143,7 +141,6 @@ export const createBlueCompanyAdminUserDtoMock: CreateUserDto = {
 };
 
 export const updateBlueCompanyAdminUserDtoMock: UpdateUserDto = {
-  userAuthGroup: constants.BLUE_COMPANY_ADMIN_USER_AUTH_GROUP,
   ...updateBlueCompanyAdminContactDtoMock,
 };
 
@@ -180,7 +177,6 @@ export const createBlueCompanyCvClientUserDtoMock: CreateUserDto = {
 };
 
 export const updateBlueCompanyCvClientUserDtoMock: UpdateUserDto = {
-  userAuthGroup: constants.BLUE_COMPANY_CVCLIENT_USER_AUTH_GROUP,
   ...updateBlueCompanyCvClientContactDtoMock,
 };
 
@@ -221,7 +217,6 @@ export const createSysAdminStaffUserDtoMock: CreateUserDto = {
 };
 
 export const updateSysAdminStaffUserDtoMock: UpdateUserDto = {
-  userAuthGroup: constants.SYS_ADMIN_STAFF_USER_AUTH_GROUP,
   ...updateSysAdminStaffContactDtoMock,
 };
 
