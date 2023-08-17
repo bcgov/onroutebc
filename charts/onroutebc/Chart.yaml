@@ -1,0 +1,20 @@
+---
+apiVersion: v2
+name: onRouteBC
+description: Helm chart for onRouteBC
+type: application
+version: 0.0.1
+appVersion: "1.16.0"
+dependencies: # A list of the chart requirements (optional)
+  - name: service
+    version: 0.0.1
+    repository: "file://../service"
+    alias: frontend
+  - name: service
+    version: 0.0.1
+    repository: "file://../service"
+    alias: vehicles
+  - name: service
+    version: 0.0.1
+    repository: "file://../service"
+    alias: dops
