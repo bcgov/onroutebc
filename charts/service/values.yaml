@@ -1,0 +1,89 @@
+# Default values for backend microservices.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+domain: apps.silver.devops.gov.bc.ca
+serviceAccountName:
+
+configmap:
+  script:
+  env:
+
+secret:
+  stringdata:
+
+replicaCount: 1
+
+image:
+  repository: ghcr.io/bcgov/onroutebc/frontend
+  pullPolicy: Always
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "latest"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+podAnnotations: {}
+
+autoscaling:
+  enabled: true
+  minReplicas: 3
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 100
+  # targetMemoryUtilizationPercentage: 80
+
+container:
+  resources:
+    limits:
+      cpu: 75m
+      memory: 150Mi
+    requests:
+      cpu: 25m
+      memory: 50Mi
+  ports: 
+    - name: 3000-tcp
+      containerPort: 3000
+      protocol: TCP
+  readinessProbe:
+    httpGet:
+      path: /
+      port: 3000
+      scheme: HTTP
+    initialDelaySeconds: 15
+    periodSeconds: 30
+    timeoutSeconds: 1
+  livenessProbe:
+    successThreshold: 1
+    failureThreshold: 3
+    httpGet:
+      path: /
+      port: 3000
+      scheme: HTTP
+    initialDelaySeconds: 15
+    periodSeconds: 30
+    timeoutSeconds: 5
+
+service:
+  type: ClusterIP
+  ports:
+    name: 3000-tcp
+    protocol: TCP
+    port: 80
+    targetPort: 3000
+
+route:
+  enabled: true
+  annotations: {}
+  #hostname: service
+  targetport: 3000-tcp
+
+imagestream:
+  enabled: true
+
+volumes:
+
+vault:
+  enabled: false
+  zone: ""
+  secrets: []
+  entrypoint: ""

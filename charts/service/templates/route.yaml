@@ -1,0 +1,24 @@
+{{- if .Values.route.enabled -}}
+{{- $fullName := include "service.fullname" . -}}
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  labels:
+    {{- include "service.labels" . | nindent 4 }}
+  {{- with .Values.route.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  name: {{ include "service.fullname" . }}
+spec:
+  host: {{ include "service.hostname" . }}
+  port:
+    targetPort: {{ .Values.route.targetport }} 
+  to:
+    kind: Service
+    name: {{ include "service.fullname" . }}
+    weight: 100
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+{{- end }}
