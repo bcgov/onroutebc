@@ -145,7 +145,6 @@ export const EditUserForm = memo(
               >
                 User Details
               </Typography>
-              {/* {!isLoading && <EditUserForm userInfo={userInfo} />} */}
               <div className="my-info-form">
                 <CustomFormComponent
                   type="input"
