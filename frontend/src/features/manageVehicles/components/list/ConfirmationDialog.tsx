@@ -5,7 +5,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import Typography from "@mui/material/Typography";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faTrashCan } from "@fortawesome/free-solid-svg-icons";
 
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 
@@ -53,7 +53,7 @@ export default function DeleteConfirmationDialog({
             color: BC_COLOURS.bc_red,
           }}
         >
-          <FontAwesomeIcon icon={faTrash} /> &nbsp;
+          <FontAwesomeIcon icon={faTrashCan} /> &nbsp;
           <strong>Delete {title}(s)? </strong>
         </DialogTitle>
         <DialogContent dividers>

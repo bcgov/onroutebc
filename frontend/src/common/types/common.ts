@@ -3,6 +3,7 @@ import {
   CompanyProfile,
   UserInformation,
 } from "../../features/manageProfile/types/manageProfile";
+import { BCeIDAddUserRequest } from "../../features/manageProfile/types/userManagement";
 import {
   PowerUnit,
   Trailer,
@@ -23,7 +24,8 @@ export type ORBC_FormTypes =
   | Trailer
   | Application
   | UserInformation
-  | CompanyAndUserRequest;
+  | CompanyAndUserRequest
+  | BCeIDAddUserRequest;
 
 /**
  * A generic paginated response structure for all the paginated responses from APIs.
