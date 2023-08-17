@@ -65,15 +65,15 @@ export class CompanyUsersController {
     isArray: true,
   })
   @ApiParam({ name: 'companyId', required: true })
-  @ApiQuery({ name: 'pengingUser', required: false, example: false })
+  @ApiQuery({ name: 'includePendingUser', required: false, example: false })
   @Roles(Role.READ_SELF, Role.READ_USER)
   @Get()
   async findAllCompanyUsers(
     @Req() request: Request,
     @Param('companyId') companyId: number,
-    @Query('pengingUser') pendingUserString?: string,
+    @Query('pengingUser') includePendingUser?: string,
   ) {
-    const pendingUser = pendingUserString === 'true';
+    const pendingUser = includePendingUser === 'true';
     return await this.userService.findUsersDto(
       undefined,
       [companyId],
