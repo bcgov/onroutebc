@@ -19,4 +19,10 @@ export class ReadPendingUserDto extends CreatePendingUserDto {
     description: 'Created Date and Time',
   })
   createdDateTime: string;
+
+  @AutoMap()
+  @ApiProperty({
+    description: 'Updated Date and Time',
+  })
+  updatedDateTime: string;
 }

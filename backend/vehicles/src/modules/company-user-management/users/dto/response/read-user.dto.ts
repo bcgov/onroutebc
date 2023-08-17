@@ -43,4 +43,10 @@ export class ReadUserDto extends ReadContactDto {
     description: 'Created Date and Time',
   })
   createdDateTime: string;
+
+  @AutoMap()
+  @ApiProperty({
+    description: 'Updated Date and Time',
+  })
+  updatedDateTime: string;
 }

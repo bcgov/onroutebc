@@ -69,6 +69,7 @@ export const readRedCompanyAdminUserDtoMock: ReadUserDto = {
   userAuthGroup: constants.RED_COMPANY_ADMIN_USER_AUTH_GROUP,
   statusCode: constants.RED_COMPANY_ADMIN_USER_STATUS,
   createdDateTime: baseDtoMock.createdDateTime,
+  updatedDateTime: baseDtoMock.updatedDateTime,
   ...readRedCompanyAdminContactDtoMock,
 };
 
@@ -113,6 +114,7 @@ export const readRedCompanyCvClientUserDtoMock: ReadUserDto = {
   userAuthGroup: constants.RED_COMPANY_CVCLIENT_USER_AUTH_GROUP,
   statusCode: constants.RED_COMPANY_CVCLIENT_USER_STATUS,
   createdDateTime: baseDtoMock.createdDateTime,
+  updatedDateTime: baseDtoMock.updatedDateTime,
   ...readRedCompanyCvClientContactDtoMock,
 };
 
@@ -150,6 +152,7 @@ export const readBlueCompanyAdminUserDtoMock: ReadUserDto = {
   userAuthGroup: constants.BLUE_COMPANY_ADMIN_USER_AUTH_GROUP,
   statusCode: constants.BLUE_COMPANY_ADMIN_USER_STATUS,
   createdDateTime: baseDtoMock.createdDateTime,
+  updatedDateTime: baseDtoMock.updatedDateTime,
   ...readBlueCompanyAdminContactDtoMock,
 };
 
@@ -190,6 +193,7 @@ export const readBlueCompanyCvClientUserDtoMock: ReadUserDto = {
   userAuthGroup: constants.BLUE_COMPANY_CVCLIENT_USER_AUTH_GROUP,
   statusCode: constants.BLUE_COMPANY_CVCLIENT_USER_STATUS,
   createdDateTime: baseDtoMock.createdDateTime,
+  updatedDateTime: baseDtoMock.updatedDateTime,
   ...readBlueCompanyCvClientContactDtoMock,
 };
 
@@ -230,6 +234,7 @@ export const readSysAdminStaffUserDtoMock: ReadUserDto = {
   userAuthGroup: constants.SYS_ADMIN_STAFF_USER_AUTH_GROUP,
   statusCode: constants.SYS_ADMIN_STAFF_USER_STATUS,
   createdDateTime: baseDtoMock.createdDateTime,
+  updatedDateTime: baseDtoMock.updatedDateTime,
   ...readSysAdminStaffContactDtoMock,
 };
 

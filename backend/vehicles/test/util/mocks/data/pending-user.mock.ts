@@ -25,6 +25,7 @@ export const createRedCompanyPendingUserDtoMock: CreatePendingUserDto = {
 export const readRedCompanyPendingUserDtoMock: ReadPendingUserDto = {
   companyId: constants.RED_COMPANY_ID,
   createdDateTime: baseDtoMock.createdDateTime,
+  updatedDateTime: baseDtoMock.updatedDateTime,
   ...createRedCompanyPendingUserDtoMock,
 };
 
@@ -46,6 +47,7 @@ export const createBlueCompanyPendingUserDtoMock: CreatePendingUserDto = {
 export const readBlueCompanyPendingUserDtoMock: ReadPendingUserDto = {
   companyId: constants.BLUE_COMPANY_ID,
   createdDateTime: baseDtoMock.createdDateTime,
+  updatedDateTime: baseDtoMock.updatedDateTime,
   ...createBlueCompanyPendingUserDtoMock,
 };
 
