@@ -5,7 +5,7 @@ on:
     paths:
       - 'charts/**'
     branches:
-      - feature/helm
+      - main
 
 jobs:
   release:
