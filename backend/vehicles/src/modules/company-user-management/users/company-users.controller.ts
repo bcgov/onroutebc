@@ -71,7 +71,7 @@ export class CompanyUsersController {
   async findAllCompanyUsers(
     @Req() request: Request,
     @Param('companyId') companyId: number,
-    @Query('pengingUser') includePendingUser?: string,
+    @Query('includePendingUser') includePendingUser?: string,
   ) {
     const pendingUser = includePendingUser === 'true';
     return await this.userService.findUsersDto(
