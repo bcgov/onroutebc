@@ -15,10 +15,7 @@ import { PermitType } from "../../types/application";
 export const TermOversizePay = () => {
   const { applicationData } = useContext(ApplicationContext);
   const calculatedFee = Number(
-    getDefaultRequiredVal(
-      "30",
-      applicationData?.permitData?.feeSummary,
-    )
+    applicationData?.permitData?.permitDuration
   );
 
   useEffect(() => {

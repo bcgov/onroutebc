@@ -10,7 +10,7 @@ import { PermitType } from "../../../types/application";
 export const FeeSummaryBanner = () => {
   const { applicationData } = useContext(ApplicationContext);
   const calculatedFee = Number(
-    getDefaultRequiredVal("30", applicationData?.permitData.feeSummary)
+    applicationData?.permitData.permitDuration
   );
   
   return (
