@@ -15,7 +15,7 @@ import { Trash } from "../../manageVehicles/components/options/Trash";
 import { getCompanyUsers } from "../apiManager/manageProfileAPI";
 import { UserManagementTableRowActions } from "../components/user-management/UserManagementRowOptions";
 import { UserManagementColumnsDefinition } from "../types/UserManagementColumns";
-import { BCeIDUserStatus, ReadCompanyUser } from "../types/userManagement.d";
+import { BCeIDAuthGroup, BCeIDUserStatus, ReadCompanyUser } from "../types/userManagement.d";
 
 /**
  * User Management Component for CV Client.
@@ -24,7 +24,7 @@ export const UserManagement = () => {
   const query = useQuery({
     queryKey: ["companyUsers"],
     queryFn: getCompanyUsers,
-    keepPreviousData: true,
+    // keepPreviousData: true,
     staleTime: FIVE_MINUTES,
   });
   const { data, isError, isInitialLoading } = query;
@@ -83,7 +83,7 @@ export const UserManagement = () => {
         selectAllMode="page"
         // Enable checkboxes for row selection
         enableRowSelection={(row: MRT_Row<ReadCompanyUser>): boolean => {
-          if (row?.original?.userAuthGroup !== "CVCLIENT") {
+          if (row?.original?.userAuthGroup !== BCeIDAuthGroup.CVCLIENT) {
             return false;
           }
           return true;

@@ -13,7 +13,7 @@ export const UserManagementTableRowActions = ({
 
   const onClickCallback = (selectedOption: string) => {
     if (selectedOption === "Edit") {
-      navigate(EDIT_USER, {
+      navigate(`${EDIT_USER}/${userGUID}`, {
         state: {
           userGUID,
         },
