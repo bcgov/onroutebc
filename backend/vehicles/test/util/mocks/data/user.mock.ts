@@ -1,4 +1,4 @@
-import { baseEntityMock } from './base.mock';
+import { baseDtoMock, baseEntityMock } from './base.mock';
 import { User } from '../../../../src/modules/company-user-management/users/entities/user.entity';
 import * as constants from './test-data.constants';
 import { ReadUserDto } from '../../../../src/modules/company-user-management/users/dto/response/read-user.dto';
@@ -68,7 +68,8 @@ export const readRedCompanyAdminUserDtoMock: ReadUserDto = {
   userGUID: constants.RED_COMPANY_ADMIN_USER_GUID,
   userName: constants.RED_COMPANY_ADMIN_USER_NAME,
   userAuthGroup: constants.RED_COMPANY_ADMIN_USER_AUTH_GROUP,
-  statusCode: constants.RED_COMPANY_ADMIN_USER_STATUS,
+  statusCode: constants.RED_COMPANY_ADMIN_USER_STATUS,  
+  createdDateTime: baseDtoMock.createdDateTime,
   ...readRedCompanyAdminContactDtoMock,
 };
 
@@ -113,6 +114,7 @@ export const readRedCompanyCvClientUserDtoMock: ReadUserDto = {
   userName: constants.RED_COMPANY_CVCLIENT_USER_NAME,
   userAuthGroup: constants.RED_COMPANY_CVCLIENT_USER_AUTH_GROUP,
   statusCode: constants.RED_COMPANY_CVCLIENT_USER_STATUS,
+  createdDateTime: baseDtoMock.createdDateTime,
   ...readRedCompanyCvClientContactDtoMock,
 };
 
@@ -150,6 +152,7 @@ export const readBlueCompanyAdminUserDtoMock: ReadUserDto = {
   userName: constants.BLUE_COMPANY_ADMIN_USER_NAME,
   userAuthGroup: constants.BLUE_COMPANY_ADMIN_USER_AUTH_GROUP,
   statusCode: constants.BLUE_COMPANY_ADMIN_USER_STATUS,
+  createdDateTime: baseDtoMock.createdDateTime,
   ...readBlueCompanyAdminContactDtoMock,
 };
 
@@ -190,6 +193,7 @@ export const readBlueCompanyCvClientUserDtoMock: ReadUserDto = {
   userName: constants.BLUE_COMPANY_CVCLIENT_USER_NAME,
   userAuthGroup: constants.BLUE_COMPANY_CVCLIENT_USER_AUTH_GROUP,
   statusCode: constants.BLUE_COMPANY_CVCLIENT_USER_STATUS,
+  createdDateTime: baseDtoMock.createdDateTime,
   ...readBlueCompanyCvClientContactDtoMock,
 };
 
@@ -230,6 +234,7 @@ export const readSysAdminStaffUserDtoMock: ReadUserDto = {
   userName: constants.SYS_ADMIN_STAFF_USER_NAME,
   userAuthGroup: constants.SYS_ADMIN_STAFF_USER_AUTH_GROUP,
   statusCode: constants.SYS_ADMIN_STAFF_USER_STATUS,
+  createdDateTime: baseDtoMock.createdDateTime,
   ...readSysAdminStaffContactDtoMock,
 };
 

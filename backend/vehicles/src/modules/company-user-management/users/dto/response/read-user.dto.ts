@@ -37,4 +37,10 @@ export class ReadUserDto extends ReadContactDto {
     example: UserStatus.ACTIVE,
   })
   statusCode: UserStatus;
+
+  @AutoMap()
+  @ApiProperty({
+    description: 'Created Date and Time',
+  })
+  createdDateTime: string;
 }

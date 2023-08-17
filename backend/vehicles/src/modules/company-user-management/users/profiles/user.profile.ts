@@ -3,6 +3,7 @@ import {
   createMap,
   forMember,
   forSelf,
+  fromValue,
   mapFrom,
   Mapper,
   mapWithArguments,
@@ -16,6 +17,7 @@ import { ReadUserDto } from '../dto/response/read-user.dto';
 import { UpdateUserDto } from '../dto/request/update-user.dto';
 import { IdirUser } from '../entities/idir.user.entity';
 import { ReadUserOrbcStatusDto } from '../dto/response/read-user-orbc-status.dto';
+import { ReadPendingUserDto } from '../../pending-users/dto/response/read-pending-user.dto';
 
 @Injectable()
 export class UsersProfile extends AutomapperProfile {
@@ -183,6 +185,13 @@ export class UsersProfile extends AutomapperProfile {
           (d) => d.user.statusCode,
           mapFrom((s) => s.statusCode),
         ),
+      );
+
+      createMap(
+        mapper,
+        ReadPendingUserDto,
+        ReadUserDto,
+        forMember((d) => d.statusCode, fromValue('PENDING')),
       );
     };
   }
