@@ -22,6 +22,7 @@ import { UserAuthGroup } from 'src/common/enum/user-auth-group.enum';
 import { PendingIdirUser } from '../pending-idir-users/entities/pending-idir-user.entity';
 import { IdirUser } from './entities/idir.user.entity';
 import { PendingIdirUsersService } from '../pending-idir-users/pending-idir-users.service';
+import { ReadPendingUserDto } from '../pending-users/dto/response/read-pending-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -201,19 +202,31 @@ export class UsersService {
   async findUsersDto(
     userGUID?: string,
     companyId?: number[],
+    pendingUser?: boolean,
   ): Promise<ReadUserDto[]> {
     // Find user entities based on the provided filtering criteria
     const userDetails = await this.findUsersEntity(userGUID, companyId);
+    let pendingUsersList: ReadUserDto[] = [];
+    if (pendingUser?.valueOf() && companyId?.length) {
+      const pendingUser = await this.pendingUsersService.findPendingUsersDto(
+        undefined,
+        companyId?.at(0),
+      );
 
+      pendingUsersList = await this.classMapper.mapArrayAsync(
+        pendingUser,
+        ReadPendingUserDto,
+        ReadUserDto,
+      );
+    }
     // Map the retrieved user entities to ReadUserDto objects
+
     const readUserDto = await this.classMapper.mapArrayAsync(
       userDetails,
       User,
       ReadUserDto,
     );
-
-    // Return the array of ReadUserDto objects
-    return readUserDto;
+    return readUserDto.concat(pendingUsersList);
   }
 
   /**
