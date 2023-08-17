@@ -1,7 +1,8 @@
-import { MRT_ColumnDef } from "material-react-table";
-import { BCeIDAuthGroup, ReadCompanyUser } from "./userManagement.d";
-import { UserManagementChip } from "../components/user-management/UserManagementChip";
 import { Stack } from "@mui/material";
+import { MRT_ColumnDef } from "material-react-table";
+import { DATE_FORMATS, toLocal } from "../../../common/helpers/formatDate";
+import { UserManagementChip } from "../components/user-management/UserManagementChip";
+import { BCeIDAuthGroup, ReadCompanyUser } from "./userManagement.d";
 
 /**
  * Translates the userAuthGroup code into a more meaningful text for the user.
@@ -61,6 +62,13 @@ export const UserManagementColumnsDefinition: MRT_ColumnDef<ReadCompanyUser>[] =
       header: "User Group",
       Cell: (props: { cell: any }) => {
         return <>{translateUserAuth(props.cell.getValue())}</>;
+      },
+    },
+    {
+      accessorKey: "createdDateTime",
+      header: "Date Created",
+      Cell: (props: { cell: any }) => {
+        return <>{toLocal(props.cell.getValue(), DATE_FORMATS.DATEONLY_SHORT_NAME)}</>;
       },
     },
   ];

@@ -1,42 +1,42 @@
 import {
-  Box,
-  Button,
-  Divider,
-  FormControl,
-  FormControlLabel,
-  FormHelperText,
-  Link,
-  Radio,
-  RadioGroup,
-  Stack,
-  Typography,
+    Box,
+    Button,
+    FormControl,
+    FormControlLabel,
+    FormHelperText,
+    Link,
+    Radio,
+    RadioGroup,
+    Stack,
+    Typography
 } from "@mui/material";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { memo, useState } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { memo, useContext, useState } from "react";
 import {
-  Controller,
-  FieldValues,
-  FormProvider,
-  useForm,
+    Controller,
+    FieldValues,
+    FormProvider,
+    useForm,
 } from "react-hook-form";
 import isEmail from "validator/lib/isEmail";
 
 import { useNavigate } from "react-router-dom";
+import { SnackBarContext } from "../../../../../App";
 import { CountryAndProvince } from "../../../../../common/components/form/CountryAndProvince";
 import { CustomFormComponent } from "../../../../../common/components/form/CustomFormComponents";
 import { formatPhoneNumber } from "../../../../../common/components/form/subFormComponents/PhoneNumberInput";
 import {
-  applyWhenNotNullable,
-  getDefaultRequiredVal,
+    applyWhenNotNullable,
+    getDefaultRequiredVal,
 } from "../../../../../common/helpers/util";
 import {
-  invalidCityLength,
-  invalidEmail,
-  invalidExtensionLength,
-  invalidFirstNameLength,
-  invalidLastNameLength,
-  invalidPhoneLength,
-  requiredMessage,
+    invalidCityLength,
+    invalidEmail,
+    invalidExtensionLength,
+    invalidFirstNameLength,
+    invalidLastNameLength,
+    invalidPhoneLength,
+    requiredMessage,
 } from "../../../../../common/helpers/validationMessages";
 import { CustomInputHTMLAttributes } from "../../../../../common/types/formElements";
 import { MANAGE_PROFILES } from "../../../../../routes/constants";
@@ -44,11 +44,11 @@ import { BC_COLOURS } from "../../../../../themes/bcGovStyles";
 import { updateUserInfo } from "../../../apiManager/manageProfileAPI";
 import { BCEID_PROFILE_TABS } from "../../../types/manageProfile.d";
 import {
-  BCeIDAuthGroup,
-  ReadCompanyUser,
+    BCeIDAuthGroup,
+    ReadCompanyUser,
 } from "../../../types/userManagement.d";
-import "../myInfo/MyInfoForm.scss";
 import UserGroupsAndPermissionsModal from "../../user-management/UserGroupsAndPermissionsModal";
+import "../myInfo/MyInfoForm.scss";
 
 /**
  * Edit User form for User Management.
@@ -71,7 +71,7 @@ export const EditUserForm = memo(
         userAuthGroup: BCeIDAuthGroup.ORGADMIN,
       },
     });
-    const { invalidateQueries } = useQueryClient();
+    const { setSnackBar } = useContext(SnackBarContext);
 
     const { handleSubmit } = formMethods;
     const [isUserGroupsModalOpen, setIsUserGroupsModalOpen] =
@@ -88,9 +88,23 @@ export const EditUserForm = memo(
 
     const updateUserInfoMutation = useMutation({
       mutationFn: updateUserInfo,
+      onError: () => {
+        setSnackBar({
+          message: "An unexpected error occurred.",
+          showSnackbar: true,
+          setShowSnackbar: () => true,
+          alertType: "error",
+        });
+      },
       onSuccess: (response) => {
         if (response.status === 200) {
-        //   invalidateQueries(["userByuserGUID"]);
+          setSnackBar({
+            alertType: "success",
+            message: "Changes Saved",
+            showSnackbar: true,
+            setShowSnackbar: () => true,
+          });
+
           navigate(`/${MANAGE_PROFILES}`, {
             state: { selectedTab: BCEID_PROFILE_TABS.USER_MANAGEMENT_ORGADMIN },
           });
@@ -101,6 +115,7 @@ export const EditUserForm = memo(
     const onUpdateUserInfo = (data: FieldValues) => {
       updateUserInfoMutation.mutate({
         userInfo: data as ReadCompanyUser,
+        userGUID: userInfo?.userGUID as string,
       });
     };
 

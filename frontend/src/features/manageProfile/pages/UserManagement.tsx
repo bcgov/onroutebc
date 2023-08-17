@@ -14,8 +14,8 @@ import DeleteConfirmationDialog from "../../manageVehicles/components/list/Confi
 import { Trash } from "../../manageVehicles/components/options/Trash";
 import { getCompanyUsers } from "../apiManager/manageProfileAPI";
 import { UserManagementTableRowActions } from "../components/user-management/UserManagementRowOptions";
-import { UserManagementColumnsDefinition } from "../types/UserManagementColumns";
 import { BCeIDAuthGroup, BCeIDUserStatus, ReadCompanyUser } from "../types/userManagement.d";
+import { UserManagementColumnsDefinition } from "../types/UserManagementColumns";
 
 /**
  * User Management Component for CV Client.
@@ -82,12 +82,7 @@ export const UserManagement = () => {
         renderEmptyRowsFallback={() => <NoRecordsFound />}
         selectAllMode="page"
         // Enable checkboxes for row selection
-        enableRowSelection={(row: MRT_Row<ReadCompanyUser>): boolean => {
-          if (row?.original?.userAuthGroup !== BCeIDAuthGroup.CVCLIENT) {
-            return false;
-          }
-          return true;
-        }}
+        enableRowSelection={true}
         onRowSelectionChange={setRowSelection}
         enableStickyHeader
         enablePagination={false}

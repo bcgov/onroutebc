@@ -87,7 +87,7 @@ export const getUserRolesByCompanyId = (): Promise<string[]> => {
  */
 export const getCompanyUsers = (): Promise<ReadCompanyUser[]> => {
   return httpGETRequest(
-    `${VEHICLES_URL}/users?companyId=${getCompanyIdFromSession()}`
+    `${VEHICLES_URL}/companies/${getCompanyIdFromSession()}/users?includePendingUser=true`
   ).then((response) => response.data);
 };
 
@@ -139,19 +139,21 @@ export const getCompanyUserByUserGUID = (
 };
 
 /**
- * 
- * @param userInfo The updated user info object. 
+ *
+ * @param userInfo The updated user info object.
  * @returns A Promise with the API response.
  */
 export const updateUserInfo = async ({
   userInfo,
+  userGUID,
 }: {
   userInfo: ReadCompanyUser;
+  userGUID: string;
 }) => {
   return await httpPUTRequest(
     `${
       MANAGE_PROFILE_API.COMPANIES
-    }/${getCompanyIdFromSession()}/users/${getUserGuidFromSession()}`,
+    }/${getCompanyIdFromSession()}/users/${userGUID}`,
     replaceEmptyValuesWithNull(userInfo)
   );
 };
