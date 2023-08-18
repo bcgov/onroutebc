@@ -1,5 +1,4 @@
 import React, { Dispatch, SetStateAction } from "react";
-import { BCeIDAuthGroup } from "../../features/manageProfile/types/userManagement";
 
 /**
  * The user details to be set in the context.
