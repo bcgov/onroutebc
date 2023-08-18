@@ -5,10 +5,16 @@ import {
   httpPUTRequest,
   getCompanyIdFromSession,
   getUserGuidFromSession,
+  httpDELETERequest,
 } from "../../../common/apiManager/httpRequestHandler";
-import { UserContextType } from "../../../common/authentication/types";
+import { BCeIDUserContextType } from "../../../common/authentication/types";
 import { replaceEmptyValuesWithNull } from "../../../common/helpers/util";
-import { CompanyProfile, CompanyAndUserRequest, UserInformation } from "../types/manageProfile";
+import {
+  CompanyProfile,
+  CompanyAndUserRequest,
+  UserInformation,
+} from "../types/manageProfile";
+import { BCeIDAddUserRequest, ReadCompanyUser } from "../types/userManagement";
 import { MANAGE_PROFILE_API } from "./endpoints/endpoints";
 
 export const getCompanyInfo = async (): Promise<CompanyProfile> => {
@@ -37,14 +43,12 @@ export const updateCompanyInfo = async ({
   );
 };
 
-export const updateMyInfo = async ({
-  myInfo,
-}: {
-  myInfo: UserInformation;
-}) => {
+export const updateMyInfo = async ({ myInfo }: { myInfo: UserInformation }) => {
   return await httpPUTRequest(
-    `${MANAGE_PROFILE_API.COMPANIES}/${getCompanyIdFromSession()}/users/${getUserGuidFromSession()}`,
-    replaceEmptyValuesWithNull(myInfo),
+    `${
+      MANAGE_PROFILE_API.COMPANIES
+    }/${getCompanyIdFromSession()}/users/${getUserGuidFromSession()}`,
+    replaceEmptyValuesWithNull(myInfo)
   );
 };
 
@@ -65,7 +69,7 @@ export const createOnRouteBCProfile = async (
 /**
  * Retrieve the company and user details post login.
  */
-export const getUserContext = (): Promise<UserContextType> => {
+export const getUserContext = (): Promise<BCeIDUserContextType> => {
   const url = `${VEHICLES_URL}/users/user-context`;
   return httpPOSTRequest(url, {}).then((response) => response.data);
 };
@@ -80,4 +84,90 @@ export const getUserRolesByCompanyId = (): Promise<string[]> => {
     url += `?companyId=${companyId}`;
   }
   return httpGETRequest(url).then((response) => response.data);
+};
+
+/**
+ * Retrieves the roles of an IDIR user (i.e., OnRouteBC staff).
+ */
+export const getIDIRUserRoles = (): Promise<string[]> => {
+  return httpGETRequest(`${VEHICLES_URL}/users/roles`).then(
+    (response) => response.data
+  );
+};
+
+/**
+ * Retrieves the users of a company by companyId
+ * @returns a promise containing the users.
+ */
+export const getCompanyUsers = (): Promise<ReadCompanyUser[]> => {
+  return httpGETRequest(
+    `${VEHICLES_URL}/companies/${getCompanyIdFromSession()}/users?includePendingUser=true`
+  ).then((response) => response.data);
+};
+
+/**
+ * Retrieves the users of a company by companyId
+ * @returns a promise containing the users.
+ */
+export const getCompanyPendingUsers = (): Promise<ReadCompanyUser[]> => {
+  return httpGETRequest(
+    `${VEHICLES_URL}/companies/${getCompanyIdFromSession()}/pending-users`
+  ).then((response) => response.data);
+};
+
+/**
+ * Adds a user to a company.
+ * @param addUserRequest The request object containing the user details
+ * @returns A Promise containing the response from the API.
+ */
+export const addUserToCompany = async (addUserRequest: BCeIDAddUserRequest) => {
+  return await httpPOSTRequest(
+    `${
+      MANAGE_PROFILE_API.COMPANIES
+    }/${getCompanyIdFromSession()}/pending-users`,
+    replaceEmptyValuesWithNull(addUserRequest)
+  );
+};
+
+/**
+ * Deletes a user of the company by companyId
+ * @returns a promise containing the users.
+ */
+export const deleteCompanyUsers = (userName: string) => {
+  return httpDELETERequest(
+    `${VEHICLES_URL}/companies/${getCompanyIdFromSession()}/pending-users/${userName}`
+  );
+};
+
+/**
+ * Retrieves a users of a company by the user's userGUID.
+ * (For admin's user management operations)
+ * @returns a promise containing the user.
+ */
+export const getCompanyUserByUserGUID = (
+  userGUID: string
+): Promise<ReadCompanyUser> => {
+  return httpGETRequest(`${VEHICLES_URL}/users/${userGUID}`).then(
+    (response) => response.data
+  );
+};
+
+/**
+ *
+ * @param userInfo The updated user info object.
+ * @returns A Promise with the API response.
+ */
+export const updateUserInfo = async ({
+  userInfo,
+  userGUID,
+}: {
+  userInfo: ReadCompanyUser;
+  userGUID: string;
+}) => {
+  return await httpPUTRequest(
+    `${
+      MANAGE_PROFILE_API.COMPANIES
+    }/${getCompanyIdFromSession()}/users/${userGUID}`,
+    replaceEmptyValuesWithNull(userInfo)
+  );
 };

@@ -46,7 +46,7 @@ export const CustomSnackbar = ({
       <Alert
         onClose={handleClose}
         severity={alertType}
-        sx={{ width: "100%" }}
+        sx={{ width: "100%", borderRadius: "40px" }}
       >
         {message}
       </Alert>

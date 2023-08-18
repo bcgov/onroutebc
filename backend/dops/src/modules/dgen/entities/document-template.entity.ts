@@ -16,7 +16,6 @@ export class DocumentTemplate extends Base {
    * Template name
    */
   @AutoMap()
-  @AutoMap()
   @Column({
     type: 'simple-enum',
     enum: TemplateName,

@@ -6,6 +6,7 @@ USAGE="-u USER -p PASS -s SERVER -d DATABASE"
 parse_options "${USAGE}" ${@}
 
 echo "Deleting existing sample data"
+sqlcmd -C -U ${USER} -P "${PASS}" -S ${SERVER} -d ${DATABASE} -Q "DELETE FROM dops.ORBC_EXTERNAL_DOCUMENT"
 sqlcmd -C -U ${USER} -P "${PASS}" -S ${SERVER} -d ${DATABASE} -Q "DELETE FROM dops.ORBC_DOCUMENT"
 sqlcmd -C -U ${USER} -P "${PASS}" -S ${SERVER} -d ${DATABASE} -Q "DELETE FROM dops.ORBC_DOCUMENT_TEMPLATE"
 sqlcmd -C -U ${USER} -P "${PASS}" -S ${SERVER} -d ${DATABASE} -Q "DELETE FROM dbo.ORBC_TRAILER"
@@ -27,4 +28,5 @@ sqlcmd -C -U ${USER} -P "${PASS}" -S ${SERVER} -d ${DATABASE} -i ${SCRIPT_DIR}/s
 sqlcmd -C -U ${USER} -P "${PASS}" -S ${SERVER} -d ${DATABASE} -i ${SCRIPT_DIR}/sampledata/dbo.ORBC_TRAILER.Table.sql
 sqlcmd -C -U ${USER} -P "${PASS}" -S ${SERVER} -d ${DATABASE} -i ${SCRIPT_DIR}/sampledata/dops.ORBC_DOCUMENT_TEMPLATE.Table.sql
 sqlcmd -C -U ${USER} -P "${PASS}" -S ${SERVER} -d ${DATABASE} -i ${SCRIPT_DIR}/sampledata/dops.ORBC_DOCUMENT.Table.sql
+sqlcmd -C -U ${USER} -P "${PASS}" -S ${SERVER} -d ${DATABASE} -i ${SCRIPT_DIR}/sampledata/dops.ORBC_EXTERNAL_DOCUMENT.Table.sql
 echo "Finished loading sample data"

@@ -3,6 +3,8 @@ import {
   createMap,
   forMember,
   forSelf,
+  fromValue,
+  ignore,
   mapFrom,
   Mapper,
   mapWithArguments,
@@ -16,6 +18,7 @@ import { ReadUserDto } from '../dto/response/read-user.dto';
 import { UpdateUserDto } from '../dto/request/update-user.dto';
 import { IdirUser } from '../entities/idir.user.entity';
 import { ReadUserOrbcStatusDto } from '../dto/response/read-user-orbc-status.dto';
+import { ReadPendingUserDto } from '../../pending-users/dto/response/read-pending-user.dto';
 
 @Injectable()
 export class UsersProfile extends AutomapperProfile {
@@ -65,11 +68,7 @@ export class UsersProfile extends AutomapperProfile {
       );
 
       /**
-       * The mapping is between UpdateUserDto to User mapping. In the mapping,
-       * there are also four forMember calls. The first one maps the userGUID
-       * property of the destination object to the userGUID property of the
-       * source object using mapWithArguments. The remaining forMember calls are
-       * similar to those in the CreateUserDto to User mapping.
+       * The mapping is between UpdateUserDto to User mapping.
        */
       createMap(
         mapper,
@@ -87,6 +86,7 @@ export class UsersProfile extends AutomapperProfile {
             return this.mapper.map(s, CreateContactDto, Contact);
           }),
         ),
+        forMember((d) => d.userAuthGroup, ignore()),
       );
 
       /**
@@ -106,9 +106,22 @@ export class UsersProfile extends AutomapperProfile {
         ),
         forSelf(Contact, (source) => source.userContact),
         forMember(
+          (d) => d.userAuthGroup,
+          mapFrom((s) => {
+            if (s.companyUsers?.length && s.companyUsers[0]?.userAuthGroup) {
+              //the logic to be revisited if the application decide to support
+              //one user id multiple companies
+              return s.companyUsers[0]?.userAuthGroup;
+            } else {
+              return s.userAuthGroup;
+            }
+          }),
+        ),
+        forMember(
           (d) => d.phone1Extension,
           mapFrom((s) => s.userContact.extension1),
         ),
+
         forMember(
           (d) => d.phone2Extension,
           mapFrom((s) => s.userContact.extension2),
@@ -183,6 +196,13 @@ export class UsersProfile extends AutomapperProfile {
           (d) => d.user.statusCode,
           mapFrom((s) => s.statusCode),
         ),
+      );
+
+      createMap(
+        mapper,
+        ReadPendingUserDto,
+        ReadUserDto,
+        forMember((d) => d.statusCode, fromValue('PENDING')),
       );
     };
   }

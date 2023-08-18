@@ -1,12 +1,15 @@
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import "./SearchPage.scss";
+import "./IDIRWelcome.scss";
 
-export const SearchPage = () => {
+/**
+ * A react component containing the Search PPC Dashboard.
+ */
+export const IDIRWelcome = () => {
   return (
-    <div className="search-page">
-      <div className="search-page__container">
+    <div className="idir-welcome-page">
+      <div className="idir-welcome-page__container">
         <div className="graphic"></div>
         <h2 className="welcome-title">
           Welcome to onRouteBC!

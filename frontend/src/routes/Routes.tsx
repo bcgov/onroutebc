@@ -16,15 +16,28 @@ import { ManageApplications } from "../features/permits/ManageApplications";
 import { SuccessPage } from "../features/permits/pages/SuccessPage/SuccessPage";
 import { PaymentRedirect } from "../features/permits/pages/Payment/PaymentRedirect";
 import { PaymentFailureRedirect } from "../features/permits/pages/Payment/PaymentFailureRedirect";
-import { SearchPage } from "../features/permits/pages/Search/SearchPage";
+import { AddUserDashboard } from "../features/manageProfile/pages/AddUserDashboard";
+import { EditUserDashboard } from "../features/manageProfile/pages/EditUserDashboard";
+import { IDIRSearchResultsDashboard } from "../features/idir/search/pages/IDIRSearchResultsDashboard";
+import { IDIRWelcome } from "../features/idir/IDIRWelcome";
 
 export const AppRoutes = () => {
   return (
     <Routes>
       <Route path={routes.HOME} element={<InitialLandingPage />} />
       <Route path={routes.WELCOME} element={<WelcomePage />} />
-      <Route path={routes.SEARCH_PPC} element={<SearchPage />} />
       <Route path="*" element={<NotFound />} />
+
+      {/* IDIR Routes */}
+      <Route element={<ProtectedRoutes requiredRole={ROLES.READ_PERMIT} />}>
+        <Route path={routes.IDIR_WELCOME} element={<IDIRWelcome />} />
+        <Route
+          path={routes.SEARCH_RESULTS}
+          element={<IDIRSearchResultsDashboard />}
+        />
+      </Route>
+
+      {/* BCeID Routes */}
       {/* Protected Routes */}
       <Route element={<ProtectedRoutes requiredRole={ROLES.READ_VEHICLE} />}>
         <Route path={routes.MANAGE_VEHICLES}>
@@ -65,6 +78,10 @@ export const AppRoutes = () => {
       </Route>
       <Route element={<ProtectedRoutes requiredRole={ROLES.READ_ORG} />}>
         <Route path={routes.MANAGE_PROFILES} element={<ManageProfiles />} />
+      </Route>
+      <Route element={<ProtectedRoutes requiredRole={ROLES.WRITE_USER} />}>
+        <Route path={routes.ADD_USER} element={<AddUserDashboard />} />
+        <Route path={`${routes.EDIT_USER}/:userGUID`} element={<EditUserDashboard />} />
       </Route>
       <Route element={<ProtectedRoutes requiredRole={ROLES.WRITE_PERMIT} />}>
         <Route

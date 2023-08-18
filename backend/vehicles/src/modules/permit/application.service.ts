@@ -358,6 +358,13 @@ export class ApplicationService {
         templateName: TemplateName.PERMIT_TROS,
         generatedDocumentFileName: permitDataForTemplate.permitNumber,
         templateData: permitDataForTemplate,
+        documentsToMerge: permitDataForTemplate.permitData.commodities.map(
+          (commodity) => {
+            if (commodity.checked) {
+              return commodity.condition;
+            }
+          },
+        ),
       };
 
       const generatedPermitDocumentPromise = this.generateDocument(
