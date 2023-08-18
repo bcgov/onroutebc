@@ -1,5 +1,5 @@
 import { Controller, Post, Body, Param, Put } from '@nestjs/common';
-import { Req } from '@nestjs/common/decorators';
+import { Get, Query, Req } from '@nestjs/common/decorators';
 
 import {
   ApiBadRequestResponse,
@@ -9,6 +9,8 @@ import {
   ApiMethodNotAllowedResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
+  ApiParam,
+  ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
 import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
@@ -46,6 +48,38 @@ import { UpdateUserStatusDto } from './dto/request/update-user-status.dto';
 @Controller('companies/:companyId/users')
 export class CompanyUsersController {
   constructor(private readonly userService: UsersService) {}
+
+  /**
+   * A GET method defined with the @Get() decorator and a route of
+   * companies/:companyId/users that retrieves a list of users associated with
+   * the company ID
+   *
+   * @param companyId The company Id.
+   * @param pendingUser Optional Query Param to include pending Users.
+   *
+   * @returns The user list with response object {@link ReadUserDto}.
+   */
+  @ApiOkResponse({
+    description: 'The User Resource List',
+    type: ReadUserDto,
+    isArray: true,
+  })
+  @ApiParam({ name: 'companyId', required: true })
+  @ApiQuery({ name: 'includePendingUser', required: false, example: false })
+  @Roles(Role.READ_SELF, Role.READ_USER)
+  @Get()
+  async findAllCompanyUsers(
+    @Req() request: Request,
+    @Param('companyId') companyId: number,
+    @Query('pengingUser') includePendingUser?: string,
+  ) {
+    const pendingUser = includePendingUser === 'true';
+    return await this.userService.findUsersDto(
+      undefined,
+      [companyId],
+      pendingUser,
+    );
+  }
 
   /**
    * A POST method defined with the @Post() decorator and a route of
