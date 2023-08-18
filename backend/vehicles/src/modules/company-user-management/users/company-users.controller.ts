@@ -133,7 +133,13 @@ export class CompanyUsersController {
     @Param('userGUID') userGUID: string,
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<ReadUserDto> {
-    const user = await this.userService.update(userGUID, updateUserDto);
+    const currentUser = request.user as IUserJWT;
+    const user = await this.userService.update(
+      userGUID,
+      updateUserDto,
+      companyId,
+      currentUser,
+    );
     if (!user) {
       throw new DataNotFoundException();
     }

@@ -4,6 +4,7 @@ import {
   forMember,
   forSelf,
   fromValue,
+  ignore,
   mapFrom,
   Mapper,
   mapWithArguments,
@@ -67,11 +68,7 @@ export class UsersProfile extends AutomapperProfile {
       );
 
       /**
-       * The mapping is between UpdateUserDto to User mapping. In the mapping,
-       * there are also four forMember calls. The first one maps the userGUID
-       * property of the destination object to the userGUID property of the
-       * source object using mapWithArguments. The remaining forMember calls are
-       * similar to those in the CreateUserDto to User mapping.
+       * The mapping is between UpdateUserDto to User mapping.
        */
       createMap(
         mapper,
@@ -89,6 +86,7 @@ export class UsersProfile extends AutomapperProfile {
             return this.mapper.map(s, CreateContactDto, Contact);
           }),
         ),
+        forMember((d) => d.userAuthGroup, ignore()),
       );
 
       /**

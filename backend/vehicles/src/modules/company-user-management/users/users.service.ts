@@ -1,6 +1,11 @@
 import { Mapper } from '@automapper/core';
 import { InjectMapper } from '@automapper/nestjs';
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpStatus,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository, UpdateResult } from 'typeorm';
 import { User } from './entities/user.entity';
@@ -23,6 +28,9 @@ import { PendingIdirUser } from '../pending-idir-users/entities/pending-idir-use
 import { IdirUser } from './entities/idir.user.entity';
 import { PendingIdirUsersService } from '../pending-idir-users/pending-idir-users.service';
 import { ReadPendingUserDto } from '../pending-users/dto/response/read-pending-user.dto';
+import { BadRequestExceptionDto } from '../../../common/exception/badRequestException.dto';
+import { ExceptionDto } from '../../../common/exception/exception.dto';
+import { IDP } from '../../../common/enum/idp.enum';
 
 @Injectable()
 export class UsersService {
@@ -109,14 +117,18 @@ export class UsersService {
    * @param userGUID The user GUID.
    * @param updateUserDto Request object of type {@link UpdateUserDto} for
    * updating a user.
-   *
+   * @param companyId The CompanyId.
+   * @param currentUser The details of the current authorized user.
    * @returns The updated user details as a promise of type {@link ReadUserDto}.
    */
   async update(
     userGUID: string,
     updateUserDto: UpdateUserDto,
+    companyId: number,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    currentUser?: IUserJWT,
   ): Promise<ReadUserDto> {
-    const userDetails = await this.findUsersEntity(userGUID);
+    const userDetails = await this.findUsersEntity(userGUID, [companyId]);
 
     if (!userDetails?.length) {
       throw new DataNotFoundException();
@@ -128,6 +140,53 @@ export class UsersService {
       }),
     });
     user.userContact.contactId = userDetails[0]?.userContact?.contactId;
+
+    //Searching with UserGuid will only return one result at max
+    const currentAuthGroup = userDetails.at(0).companyUsers.at(0).userAuthGroup;
+    //A CV user's auth group should not be allowed to be downgraded from CVADMIN
+    //if they are the last remaining CVADMIN of the Company
+    if (
+      currentAuthGroup === UserAuthGroup.COMPANY_ADMINISTRATOR &&
+      currentAuthGroup !== updateUserDto.userAuthGroup
+    ) {
+
+      //Find all employees of the company
+      const employees = await this.findUsersEntity(undefined, [companyId]);
+
+      //Verify if there are more than one CVAdmin
+      const secondCVAdmin = employees.filter(
+        (employee) =>
+          employee.userGUID != userDetails.at(0).userGUID &&
+          employee.companyUsers.at(0).userAuthGroup ===
+            UserAuthGroup.COMPANY_ADMINISTRATOR,
+      );
+
+      //Throw BadRequestException if only one CVAdmin exists for the company.
+      if (!secondCVAdmin?.length) {
+        const badRequestExceptionDto = new BadRequestExceptionDto();
+        badRequestExceptionDto.field = 'userAuthGroup';
+        badRequestExceptionDto.message = [
+          'This operation is not allowed as a company should have atlease one CVAdmin at any given moment.',
+        ];
+        const exceptionDto = new ExceptionDto(
+          HttpStatus.BAD_REQUEST,
+          'Bad Request',
+          [badRequestExceptionDto],
+        );
+        throw new BadRequestException(exceptionDto);
+      }
+    }
+
+    // Should be allowed to update userAuthGroupID if current user is an
+    // IDIR(PPC Clerk) or CVAdmin
+    if (
+      (currentAuthGroup === UserAuthGroup.COMPANY_ADMINISTRATOR ||
+        currentUser.identity_provider === IDP.IDIR) &&
+      currentAuthGroup !== updateUserDto.userAuthGroup
+    ) {
+      user.companyUsers = userDetails.at(0).companyUsers;
+      user.companyUsers.at(0).userAuthGroup = updateUserDto.userAuthGroup;
+    }
     await this.userRepository.save(user);
     const userListDto = await this.findUsersDto(user.userGUID);
     return userListDto[0];

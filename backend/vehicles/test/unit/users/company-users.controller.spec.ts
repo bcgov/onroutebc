@@ -90,6 +90,8 @@ describe('CompanyUsersController', () => {
       expect(userService.update).toHaveBeenCalledWith(
         constants.RED_COMPANY_CVCLIENT_USER_GUID,
         updateRedCompanyCvClientUserDtoMock,
+        constants.RED_COMPANY_ID,
+        request.user,
       );
     });
     it('should throw DataNotFoundException when user not found', async () => {
