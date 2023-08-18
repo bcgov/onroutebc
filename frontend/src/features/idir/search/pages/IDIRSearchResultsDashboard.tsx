@@ -12,10 +12,7 @@ import { SearchByFilter, SearchEntity, SearchFields } from "../types/types";
  */
 const getBannerText = (searchFields: SearchFields): string => {
   if (!searchFields?.searchValue) return "";
-  const {
-    searchByFilter,
-    searchValue,
-  } = searchFields;
+  const { searchByFilter, searchValue } = searchFields;
   if (searchByFilter === SearchByFilter.PERMIT_NUMBER) {
     return `Search Results: Permit # ${searchValue}`;
   }
@@ -27,11 +24,11 @@ const getBannerText = (searchFields: SearchFields): string => {
  */
 export const IDIRSearchResultsDashboard = memo(() => {
   const [searchParams] = useSearchParams();
-  const searchFields : SearchFields = {
+  const searchFields: SearchFields = {
     searchByFilter: searchParams.get("searchEntity") as SearchByFilter,
     searchEntity: searchParams.get("searchEntity") as SearchEntity,
-    searchValue: searchParams.get("searchValue") as string
-  }
+    searchValue: searchParams.get("searchValue") as string,
+  };
 
   return (
     <>
@@ -50,7 +47,7 @@ export const IDIRSearchResultsDashboard = memo(() => {
         id={`layout-tabpanel-search-results`}
         aria-labelledby={`layout-tab-search-results`}
       >
-        <IDIRSearchResults searchParams={searchFields}/>
+        <IDIRSearchResults searchParams={searchFields} />
       </div>
     </>
   );

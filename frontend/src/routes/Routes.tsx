@@ -28,13 +28,13 @@ export const AppRoutes = () => {
       <Route path="*" element={<NotFound />} />
 
       {/* IDIR Routes */}
-      <Route element={<ProtectedRoutes requiredRole={ROLES.READ_PERMIT}/>}>
-      <Route path={routes.IDIR_WELCOME} element={<IDIRWelcome />} />
-        <Route path={routes.SEARCH_RESULTS} element={<IDIRSearchResultsDashboard />} />
+      <Route element={<ProtectedRoutes requiredRole={ROLES.READ_PERMIT} />}>
+        <Route path={routes.IDIR_WELCOME} element={<IDIRWelcome />} />
+        <Route
+          path={routes.SEARCH_RESULTS}
+          element={<IDIRSearchResultsDashboard />}
+        />
       </Route>
-
-      
-      
 
       {/* BCeID Routes */}
       {/* Protected Routes */}
