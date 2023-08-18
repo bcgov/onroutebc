@@ -18,7 +18,7 @@ export interface CompanyMetadata {
 /**
  * User Context object type
  */
-export interface UserContextType {
+export interface BCeIDUserContextType {
   associatedCompanies: CompanyMetadata[];
   pendingCompanies: CompanyMetadata[];
   user?: {
@@ -42,7 +42,7 @@ export interface UserContextType {
 
 /**
  * The set of user roles.
- * 
+ *
  * Cross verify with the roles enum in the backend for any modifications.
  */
 export enum ROLES {
@@ -66,4 +66,21 @@ export enum ROLES {
   WRITE_SELF = "ORBC-WRITE-SELF",
   WRITE_USER = "ORBC-WRITE-USER",
   WRITE_VEHICLE = "ORBC-WRITE-VEHICLE",
+}
+
+/**
+ * User Context object type
+ */
+export interface IDIRUserContextType {
+  associatedCompanies: [];
+  pendingCompanies: [];
+  user?: {
+    userAuthGroup?: string;
+    statusCode?: string;
+    userGUID?: string;
+    userName?: string;
+    firstName?: string;
+    lastName?: string;
+    email?: string;
+  };
 }

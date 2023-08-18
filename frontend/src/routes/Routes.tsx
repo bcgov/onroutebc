@@ -18,14 +18,26 @@ import { PaymentRedirect } from "../features/permits/pages/Payment/PaymentRedire
 import { PaymentFailureRedirect } from "../features/permits/pages/Payment/PaymentFailureRedirect";
 import { AddUserDashboard } from "../features/manageProfile/pages/AddUserDashboard";
 import { EditUserDashboard } from "../features/manageProfile/pages/EditUserDashboard";
+import { IDIRSearchResultsDashboard } from "../features/idir/search/pages/IDIRSearchResultsDashboard";
+import { IDIRWelcome } from "../features/idir/IDIRWelcome";
 
 export const AppRoutes = () => {
   return (
     <Routes>
       <Route path={routes.HOME} element={<InitialLandingPage />} />
       <Route path={routes.WELCOME} element={<WelcomePage />} />
-      <Route path={routes.SEARCH_PPC} element={<> TODO </>} />
       <Route path="*" element={<NotFound />} />
+
+      {/* IDIR Routes */}
+      <Route element={<ProtectedRoutes requiredRole={ROLES.READ_PERMIT} />}>
+        <Route path={routes.IDIR_WELCOME} element={<IDIRWelcome />} />
+        <Route
+          path={routes.SEARCH_RESULTS}
+          element={<IDIRSearchResultsDashboard />}
+        />
+      </Route>
+
+      {/* BCeID Routes */}
       {/* Protected Routes */}
       <Route element={<ProtectedRoutes requiredRole={ROLES.READ_VEHICLE} />}>
         <Route path={routes.MANAGE_VEHICLES}>

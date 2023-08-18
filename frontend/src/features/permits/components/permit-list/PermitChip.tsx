@@ -1,7 +1,7 @@
 import { OnRouteBCChip } from "../../../../common/components/table/OnRouteBCChip";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 
-type EXPIRED_PERMIT_STATUS = "VOIDED" | "REVOKED" | "EXPIRED";
+export type EXPIRED_PERMIT_STATUS = "VOIDED" | "REVOKED" | "EXPIRED";
 
 /**
  * Returns the colors associated with the badge.

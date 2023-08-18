@@ -176,6 +176,7 @@ export const CreateProfileSteps = React.memo(() => {
           phone2Extension: responseBody.adminUser?.phone2Extension,
           email: responseBody.adminUser?.email,
           fax: responseBody.adminUser?.fax,
+          userAuthGroup: responseBody.adminUser?.userAuthGroup
         };
         setUserDetails?.(() => userDetails);
         setCompanyId?.(() => companyId);
