@@ -3,6 +3,7 @@ import {
   CompanyProfile,
   UserInformation,
 } from "../../features/manageProfile/types/manageProfile";
+import { BCeIDAddUserRequest } from "../../features/manageProfile/types/userManagement";
 import {
   PowerUnit,
   Trailer,
@@ -32,4 +33,30 @@ export type ORBC_FormTypes =
   | Trailer
   | Application
   | UserInformation
-  | CompanyAndUserRequest;
+  | CompanyAndUserRequest
+  | BCeIDAddUserRequest;
+
+/**
+ * A generic paginated response structure for all the paginated responses from APIs.
+ */
+export type PaginatedResponse<T> = {
+  /**
+   * An array of items containing the response T.
+   */
+  items: T[];
+  /**
+   * Metadata about a page.
+   */
+  meta: PageMetadata;
+};
+
+/**
+ * The metadata containing info about a page in the paginated response.
+ */
+export type PageMetadata = {
+  currentPage: number;
+  currentItemCount: number;
+  itemsPerPage: number;
+  totalPages?: number;
+  totalItems?: number;
+};

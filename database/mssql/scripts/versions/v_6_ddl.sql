@@ -43,6 +43,7 @@ GO
 ALTER TABLE [dops].[ORBC_DOCUMENT] CHECK CONSTRAINT [ORBC_DOCUMENT_COMPANY_ID_FK]
 GO
 
+
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Surrogate primary key for the document metadata record' , @level0type=N'SCHEMA',@level0name=N'dops', @level1type=N'TABLE',@level1name=N'ORBC_DOCUMENT', @level2type=N'COLUMN',@level2name=N'ID'
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The uuid representing the object in S3' , @level0type=N'SCHEMA',@level0name=N'dops', @level1type=N'TABLE',@level1name=N'ORBC_DOCUMENT', @level2type=N'COLUMN',@level2name=N'S3_OBJECT_ID'
@@ -68,6 +69,58 @@ GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time the record was created or last updated.' , @level0type=N'SCHEMA',@level0name=N'dops', @level1type=N'TABLE',@level1name=N'ORBC_DOCUMENT', @level2type=N'COLUMN',@level2name=N'DB_LAST_UPDATE_TIMESTAMP'
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Table recording metadata of documents stored in OCIO S3 Storage via COMS ' , @level0type=N'SCHEMA',@level0name=N'dops', @level1type=N'TABLE',@level1name=N'ORBC_DOCUMENT'
+GO
+
+CREATE TABLE [dops].[ORBC_EXTERNAL_DOCUMENT](
+	[ID] [bigint] IDENTITY(1,1) NOT NULL,
+	[DOCUMENT_NAME] [varchar](50) NOT NULL,
+	[DOCUMENT_DESCRIPTION] [varchar](200) NULL,
+	[DOCUMENT_LOCATION] [varchar](200) NOT NULL,
+	[DOCUMENT_MIME_TYPE] [varchar](200) NOT NULL,
+	[DOCUMENT_VERSION_ID] [int] NOT NULL,
+	[CONCURRENCY_CONTROL_NUMBER] [int] NULL,
+	[DB_CREATE_USERID] [varchar](63) NOT NULL,
+	[DB_CREATE_TIMESTAMP] [datetime2](7) NOT NULL,
+	[DB_LAST_UPDATE_USERID] [varchar](63) NOT NULL,
+	[DB_LAST_UPDATE_TIMESTAMP] [datetime2](7) NOT NULL,
+ CONSTRAINT [PK_ORBC_EXTERNAL_DOCUMENTS] PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dops].[ORBC_EXTERNAL_DOCUMENT]
+ADD CONSTRAINT ORBC_EXTERNAL_DOCUMENT_UK UNIQUE (DOCUMENT_NAME, DOCUMENT_VERSION_ID);
+
+ALTER TABLE [dops].[ORBC_EXTERNAL_DOCUMENT] ADD  CONSTRAINT [ORBC_EXTERNAL_DOCUMENT_DB_CREATE_USERID_DEF]  DEFAULT (user_name()) FOR [DB_CREATE_USERID]
+GO
+ALTER TABLE [dops].[ORBC_EXTERNAL_DOCUMENT] ADD  CONSTRAINT [ORBC_EXTERNAL_DOCUMENT_DB_CREATE_TIMESTAMP_DEF]  DEFAULT (getutcdate()) FOR [DB_CREATE_TIMESTAMP]
+GO
+ALTER TABLE [dops].[ORBC_EXTERNAL_DOCUMENT] ADD  CONSTRAINT [ORBC_EXTERNAL_DOCUMENT_DB_LAST_UPDATE_USERID_DEF]  DEFAULT (user_name()) FOR [DB_LAST_UPDATE_USERID]
+GO
+ALTER TABLE [dops].[ORBC_EXTERNAL_DOCUMENT] ADD  CONSTRAINT [ORBC_EXTERNAL_DOCUMENT_DB_LAST_UPDATE_TIMESTAMP_DEF]  DEFAULT (getutcdate()) FOR [DB_LAST_UPDATE_TIMESTAMP]
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Surrogate primary key for the document metadata record' , @level0type=N'SCHEMA',@level0name=N'dops', @level1type=N'TABLE',@level1name=N'ORBC_EXTERNAL_DOCUMENT', @level2type=N'COLUMN',@level2name=N'ID'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The Document Name' , @level0type=N'SCHEMA',@level0name=N'dops', @level1type=N'TABLE',@level1name=N'ORBC_EXTERNAL_DOCUMENT', @level2type=N'COLUMN',@level2name=N'DOCUMENT_NAME'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The URL to the external Document' , @level0type=N'SCHEMA',@level0name=N'dops', @level1type=N'TABLE',@level1name=N'ORBC_EXTERNAL_DOCUMENT', @level2type=N'COLUMN',@level2name=N'DOCUMENT_LOCATION'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The document MIME Type' , @level0type=N'SCHEMA',@level0name=N'dops', @level1type=N'TABLE',@level1name=N'ORBC_EXTERNAL_DOCUMENT', @level2type=N'COLUMN',@level2name=N'DOCUMENT_MIME_TYPE'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The document version Id' , @level0type=N'SCHEMA',@level0name=N'dops', @level1type=N'TABLE',@level1name=N'ORBC_EXTERNAL_DOCUMENT', @level2type=N'COLUMN',@level2name=N'DOCUMENT_VERSION_ID'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user or proxy account that created the record.' , @level0type=N'SCHEMA',@level0name=N'dops', @level1type=N'TABLE',@level1name=N'ORBC_EXTERNAL_DOCUMENT', @level2type=N'COLUMN',@level2name=N'DB_CREATE_USERID'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time the record was created.' , @level0type=N'SCHEMA',@level0name=N'dops', @level1type=N'TABLE',@level1name=N'ORBC_EXTERNAL_DOCUMENT', @level2type=N'COLUMN',@level2name=N'DB_CREATE_TIMESTAMP'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user or proxy account that created or last updated the record.' , @level0type=N'SCHEMA',@level0name=N'dops', @level1type=N'TABLE',@level1name=N'ORBC_EXTERNAL_DOCUMENT', @level2type=N'COLUMN',@level2name=N'DB_LAST_UPDATE_USERID'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time the record was created or last updated.' , @level0type=N'SCHEMA',@level0name=N'dops', @level1type=N'TABLE',@level1name=N'ORBC_EXTERNAL_DOCUMENT', @level2type=N'COLUMN',@level2name=N'DB_LAST_UPDATE_TIMESTAMP'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Table recording metadata of documents external to ORBC' , @level0type=N'SCHEMA',@level0name=N'dops', @level1type=N'TABLE',@level1name=N'ORBC_EXTERNAL_DOCUMENT'
 GO
 
 DECLARE @VersionDescription VARCHAR(255)
