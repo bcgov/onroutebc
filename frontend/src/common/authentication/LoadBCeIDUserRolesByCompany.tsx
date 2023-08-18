@@ -10,6 +10,7 @@ import { useUserRolesByCompanyId } from "../../features/manageProfile/apiManager
  * and hence only has to be executed after the conditions are met.
  */
 export const LoadBCeIDUserRolesByCompany = () => {
+  console.log('Loading roles by companyId')
   useUserRolesByCompanyId();
   return null;
 };

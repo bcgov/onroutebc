@@ -25,6 +25,9 @@ export const WELCOME = "welcome";
 export const USER_INFO = "user-info";
 
 //IDIR
-export const SEARCH_PPC = "search-ppc";
+const IDIR = "idir";
+export const IDIR_WELCOME = `/${IDIR}/welcome`;
+export const SEARCH_RESULTS = `/${IDIR}/search-results`;
+
 // Payment
 export const PAYMENT_REDIRECT = "payment"

@@ -10,6 +10,8 @@ import { LoadBCeIDUserContext } from "../common/authentication/LoadBCeIDUserCont
 import { LoadIDIRUserContext } from "../common/authentication/LoadIDIRUserContext";
 import { LoadIDIRUserRoles } from "../common/authentication/LoadIDIRUserRoles";
 
+const isIDIR = (identityProvider: string) => identityProvider === "idir";
+
 export const ProtectedRoutes = ({
   requiredRole,
 }: {
@@ -20,7 +22,9 @@ export const ProtectedRoutes = ({
     isLoading: isAuthLoading,
     user: userFromToken,
   } = useAuth();
-  const { userRoles, companyId } = useContext(OnRouteBCContext);
+  const { userRoles, companyId, idirUserDetails } =
+    useContext(OnRouteBCContext);
+  const userIDP = userFromToken?.profile?.identity_provider as string;
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -39,8 +43,7 @@ export const ProtectedRoutes = ({
   }
 
   if (isAuthenticated) {
-    if (userFromToken?.profile?.identity_provider === "idir") {
-      console.log('Loading IDIR');
+    if (isIDIR(userIDP) && !idirUserDetails?.userAuthGroup) {
       return (
         <>
           <LoadIDIRUserContext />
@@ -48,23 +51,25 @@ export const ProtectedRoutes = ({
         </>
       );
     }
-    if (!companyId) {
-      return (
-        <>
-          <LoadBCeIDUserContext />
-          <Loading />
-        </>
-      );
+    if (!isIDIR(userIDP)) {
+      if (!companyId) {
+        return (
+          <>
+            <LoadBCeIDUserContext />
+            <Loading />
+          </>
+        );
+      }
+      if (!userRoles) {
+        return (
+          <>
+            <LoadBCeIDUserRolesByCompany />
+            <Loading />
+          </>
+        );
+      }
     }
-    if (!userRoles) {
-      console.log('Loading BCeID');
-      return (
-        <>
-          <LoadBCeIDUserRolesByCompany />
-          <Loading />
-        </>
-      );
-    }
+
     if (!DoesUserHaveRole(userRoles, requiredRole)) {
       return <Navigate to={UNAUTHORIZED} state={{ from: location }} replace />;
     }

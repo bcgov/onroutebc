@@ -5,10 +5,12 @@ import { SearchByFilter, SearchFields } from "../types/types";
 import { Banner } from "../../../../common/components/dashboard/Banner";
 import { IDIRSearchResults } from "../components/IDIRSearchResults";
 
-const getBannerText = ({
-  searchByFilter,
-  searchValue,
-}: SearchFields): string => {
+const getBannerText = (searchFields: SearchFields): string => {
+  if (!searchFields?.searchValue) return "";
+  const {
+    searchByFilter,
+    searchValue,
+  } = searchFields;
   if (searchByFilter === SearchByFilter.PERMIT_NUMBER) {
     return `Search Results: Permit # ${searchValue}`;
   }
@@ -19,7 +21,8 @@ const getBannerText = ({
  * React component to render the vehicle inventory
  */
 export const IDIRSearchResultsDashboard = memo(() => {
-  const { state: stateFromNavigation } = useLocation();
+  const { state : stateFromNavigation } = useLocation();
+
   return (
     <>
       <Box

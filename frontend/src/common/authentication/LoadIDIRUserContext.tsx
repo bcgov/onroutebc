@@ -1,4 +1,4 @@
-import { useIDIRUserContext } from "../../features/manageProfile/apiManager/hooks";
+import { useUserContext } from "../../features/manageProfile/apiManager/hooks";
 
 /*
  * A simple component that merely calls a react query hook.
@@ -10,6 +10,6 @@ import { useIDIRUserContext } from "../../features/manageProfile/apiManager/hook
  * from any protected route.
  */
 export const LoadIDIRUserContext = () => {
-  useIDIRUserContext();
+  useUserContext();
   return null;
 };

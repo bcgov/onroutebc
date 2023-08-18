@@ -17,6 +17,8 @@ import { SuccessPage } from "../features/permits/pages/SuccessPage/SuccessPage";
 import { PaymentRedirect } from "../features/permits/pages/Payment/PaymentRedirect";
 import { PaymentFailureRedirect } from "../features/permits/pages/Payment/PaymentFailureRedirect";
 import { AddUserDashboard } from "../features/manageProfile/pages/AddUserDashboard";
+import { IDIRSearchResultsDashboard } from "../features/idir/search/pages/IDIRSearchResultsDashboard";
+import { IDIRWelcome } from "../features/idir/IDIRWelcome";
 
 export const AppRoutes = () => {
   return (
@@ -26,9 +28,12 @@ export const AppRoutes = () => {
       <Route path="*" element={<NotFound />} />
 
       {/* IDIR Routes */}
-      <Route element={<ProtectedRoutes />}>
-        <Route path={routes.SEARCH_PPC} element={<> TODO </>} />
+      <Route element={<ProtectedRoutes requiredRole={ROLES.READ_PERMIT}/>}>
+      <Route path={routes.IDIR_WELCOME} element={<IDIRWelcome />} />
+        <Route path={routes.SEARCH_RESULTS} element={<IDIRSearchResultsDashboard />} />
       </Route>
+
+      
       
 
       {/* BCeID Routes */}

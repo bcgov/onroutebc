@@ -26,7 +26,7 @@ export const LoginRedirect = () => {
   useEffect(() => {
     if (isAuthenticated && !isLoading) {
       if (userFromToken?.profile?.identity_provider === "idir") {
-        navigate(routes.SEARCH_PPC);
+        navigate(routes.IDIR_WELCOME);
       } else {
         const userContextData: BCeIDUserContextType | undefined =
           queryClient.getQueryData<BCeIDUserContextType>(["userContext"]);
