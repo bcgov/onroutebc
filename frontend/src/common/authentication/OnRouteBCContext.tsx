@@ -25,7 +25,7 @@ export interface BCeIDUserDetailContext {
   phone2Extension: string;
   email: string;
   fax: string;
-  userAuthGroup: BCeIDAuthGroup;
+  userAuthGroup: string;
 }
 
 /**
