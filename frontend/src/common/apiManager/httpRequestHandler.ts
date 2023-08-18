@@ -112,7 +112,6 @@ export const getUserSessionDetailsFromSession = (): any => {
   return parsedSessionObject.profile;
 };
 
-
 /**
  * A generic HTTP GET Request
  * @param url The URL of the resource.

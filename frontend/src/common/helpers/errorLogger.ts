@@ -1,9 +1,8 @@
 import { getUserSessionDetailsFromSession } from "../apiManager/httpRequestHandler";
 import { OrbcError } from "../types/common";
-import { generateErrorCorrelationId } from "./util";
 
 export const logError = (addOrbcError: any, errorTpyeId: string) => {
-    const corelationId = generateErrorCorrelationId();
+    const storedCorrelationId = sessionStorage.getItem('correlationId');
     const userSession = getUserSessionDetailsFromSession();
     const utcTime = new Date().toISOString();
     const orbcError = {
@@ -11,7 +10,7 @@ export const logError = (addOrbcError: any, errorTpyeId: string) => {
     errorOccuredTime: utcTime,
     sessionId: userSession.sid,
     userGuid: userSession.bceid_user_guid,
-    corelationId: corelationId,
+    corelationId: storedCorrelationId,
   } as unknown as OrbcError;
   addOrbcError.mutateAsync({
     ...orbcError

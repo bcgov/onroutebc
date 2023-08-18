@@ -16,6 +16,9 @@ import OnRouteBCContext, {
   UserDetailContext,
 } from "./common/authentication/OnRouteBCContext";
 
+import { v4 as uuidv4 } from 'uuid';
+import axios from "axios";
+
 const authority =
   import.meta.env.VITE_AUTH0_ISSUER_URL || envConfig.VITE_AUTH0_ISSUER_URL;
 
@@ -39,6 +42,14 @@ export const SnackBarContext = createContext({
 });
 
 const App = () => {
+  axios.interceptors.request.use((config) => {
+    const correlationId = uuidv4();
+    config.headers['X-Correlation-ID'] = correlationId;
+    // Store the correlation ID in session storage
+    sessionStorage.setItem('correlationId', correlationId);
+    return config;
+  });
+
   const queryClient = new QueryClient();
 
   // Globally used SnackBar component
