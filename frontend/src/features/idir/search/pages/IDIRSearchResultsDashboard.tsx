@@ -1,9 +1,9 @@
-import { memo } from "react";
 import { Box } from "@mui/material";
-import { useLocation } from "react-router-dom";
-import { SearchByFilter, SearchFields } from "../types/types";
+import { memo } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Banner } from "../../../../common/components/dashboard/Banner";
 import { IDIRSearchResults } from "../components/IDIRSearchResults";
+import { SearchByFilter, SearchEntity, SearchFields } from "../types/types";
 
 const getBannerText = (searchFields: SearchFields): string => {
   if (!searchFields?.searchValue) return "";
@@ -21,7 +21,12 @@ const getBannerText = (searchFields: SearchFields): string => {
  * React component to render the vehicle inventory
  */
 export const IDIRSearchResultsDashboard = memo(() => {
-  const { state : stateFromNavigation } = useLocation();
+  const [searchParams] = useSearchParams();
+  const searchpp : SearchFields = {
+    searchByFilter: searchParams.get("searchEntity") as SearchByFilter,
+    searchEntity: searchParams.get("searchEntity") as SearchEntity,
+    searchValue: searchParams.get("searchValue") as string
+  }
 
   return (
     <>
@@ -32,7 +37,7 @@ export const IDIRSearchResultsDashboard = memo(() => {
           borderColor: "divider",
         }}
       >
-        <Banner bannerText={getBannerText(stateFromNavigation)} />
+        <Banner bannerText={getBannerText(searchpp)} />
       </Box>
       <div
         className="tabpanel-container"
@@ -40,7 +45,7 @@ export const IDIRSearchResultsDashboard = memo(() => {
         id={`layout-tabpanel-search-results`}
         aria-labelledby={`layout-tab-search-results`}
       >
-        <IDIRSearchResults />
+        <IDIRSearchResults searchParams={searchpp}/>
       </div>
     </>
   );
