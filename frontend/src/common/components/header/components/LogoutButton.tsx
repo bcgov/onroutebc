@@ -11,7 +11,7 @@ export const LogoutButton = () => {
     <button
       className="logout-button"
       onClick={() => {
-        sessionStorage.removeItem("onRoutebcP.user.context");
+        sessionStorage.removeItem("onRouteBC.user.companyId");
         removeUser();
         signoutRedirect({
           extraQueryParams: {
