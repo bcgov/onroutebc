@@ -202,6 +202,14 @@ CREATE SEQUENCE [permit].[ORBC_RECEIPT_NUMBER_SEQ]
  CACHE 
 GO
 
+CREATE SEQUENCE [permit].[ORBC_TRANSACTION_NUMBER_SEQ] 
+ AS [bigint]
+ START WITH 9999990000
+ INCREMENT BY 1
+ MINVALUE 1
+ MAXVALUE 9999999999
+ CACHE 
+GO 
 
 DECLARE @VersionDescription VARCHAR(255)
 SET @VersionDescription = 'Initial creation of entities for Permit Payment'
