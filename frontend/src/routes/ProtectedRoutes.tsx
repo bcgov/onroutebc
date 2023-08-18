@@ -40,6 +40,7 @@ export const ProtectedRoutes = ({
 
   if (isAuthenticated) {
     if (userFromToken?.profile?.identity_provider === "idir") {
+      console.log('Loading IDIR');
       return (
         <>
           <LoadIDIRUserContext />
@@ -56,6 +57,7 @@ export const ProtectedRoutes = ({
       );
     }
     if (!userRoles) {
+      console.log('Loading BCeID');
       return (
         <>
           <LoadBCeIDUserRolesByCompany />

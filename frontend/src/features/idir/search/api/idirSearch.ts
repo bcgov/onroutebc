@@ -14,6 +14,6 @@ export const getDataBySearch = ({
   searchByFilter,
   searchValue,
 }: SearchFields): Promise<PaginatedResponse<ReadPermitDto>> => {
-  const url = `${VEHICLES_URL}/${searchEntity}?${searchByFilter}=${searchValue}`;
+  const url = `${VEHICLES_URL}/${searchEntity}/ppc/search?searchColumn=${searchByFilter}&searchString=${searchValue}`;
   return httpGETRequest(url).then((response) => response.data);
 };

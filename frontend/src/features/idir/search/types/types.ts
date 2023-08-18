@@ -2,9 +2,9 @@
  * The entity searched for.
  */
 export enum SearchEntity {
-  PERMIT = "permit",
-  COMPANY = "company",
-  APPLICATION = "application",
+  PERMIT = "permits",
+  COMPANY = "companies",
+  APPLICATION = "applications",
 }
 
 /**

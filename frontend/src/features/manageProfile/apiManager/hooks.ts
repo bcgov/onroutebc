@@ -124,7 +124,7 @@ export const useUserRolesByCompanyId = () => {
 export const useIDIRUserRoles = () => {
   const { setUserRoles } = useContext(OnRouteBCContext);
   return useQuery({
-    queryKey: ["userRoles"],
+    queryKey: ["userIDIRRoles"],
     refetchInterval: FIVE_MINUTES,
     queryFn: getIDIRUserRoles,
     onSuccess: (userRolesResponseBody: string[]) => {
