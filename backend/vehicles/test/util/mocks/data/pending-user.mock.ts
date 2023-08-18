@@ -1,4 +1,4 @@
-import { baseDtoMock, baseEntityMock } from './base.mock';
+import { baseEntityMock } from './base.mock';
 import { UserAuthGroup } from '../../../../src/common/enum/user-auth-group.enum';
 import { PendingUser } from '../../../../src/modules/company-user-management/pending-users/entities/pending-user.entity';
 import { UpdatePendingUserDto } from '../../../../src/modules/company-user-management/pending-users/dto/request/update-pending-user.dto';
@@ -24,8 +24,6 @@ export const createRedCompanyPendingUserDtoMock: CreatePendingUserDto = {
 
 export const readRedCompanyPendingUserDtoMock: ReadPendingUserDto = {
   companyId: constants.RED_COMPANY_ID,
-  createdDateTime: baseDtoMock.createdDateTime,
-  updatedDateTime: baseDtoMock.updatedDateTime,
   ...createRedCompanyPendingUserDtoMock,
 };
 
@@ -46,8 +44,6 @@ export const createBlueCompanyPendingUserDtoMock: CreatePendingUserDto = {
 };
 export const readBlueCompanyPendingUserDtoMock: ReadPendingUserDto = {
   companyId: constants.BLUE_COMPANY_ID,
-  createdDateTime: baseDtoMock.createdDateTime,
-  updatedDateTime: baseDtoMock.updatedDateTime,
   ...createBlueCompanyPendingUserDtoMock,
 };
 
