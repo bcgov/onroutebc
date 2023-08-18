@@ -5,6 +5,11 @@ import { Banner } from "../../../../common/components/dashboard/Banner";
 import { IDIRSearchResults } from "../components/IDIRSearchResults";
 import { SearchByFilter, SearchEntity, SearchFields } from "../types/types";
 
+/**
+ * Returns a banner text based on the search criteria.
+ * @param searchFields The search parameters.
+ * @returns Empty string or an appropriate banner text.
+ */
 const getBannerText = (searchFields: SearchFields): string => {
   if (!searchFields?.searchValue) return "";
   const {
@@ -18,11 +23,11 @@ const getBannerText = (searchFields: SearchFields): string => {
 };
 
 /**
- * React component to render the vehicle inventory
+ * React component to render the search results by an IDIR user.
  */
 export const IDIRSearchResultsDashboard = memo(() => {
   const [searchParams] = useSearchParams();
-  const searchpp : SearchFields = {
+  const searchFields : SearchFields = {
     searchByFilter: searchParams.get("searchEntity") as SearchByFilter,
     searchEntity: searchParams.get("searchEntity") as SearchEntity,
     searchValue: searchParams.get("searchValue") as string
@@ -37,7 +42,7 @@ export const IDIRSearchResultsDashboard = memo(() => {
           borderColor: "divider",
         }}
       >
-        <Banner bannerText={getBannerText(searchpp)} />
+        <Banner bannerText={getBannerText(searchFields)} />
       </Box>
       <div
         className="tabpanel-container"
@@ -45,7 +50,7 @@ export const IDIRSearchResultsDashboard = memo(() => {
         id={`layout-tabpanel-search-results`}
         aria-labelledby={`layout-tab-search-results`}
       >
-        <IDIRSearchResults searchParams={searchpp}/>
+        <IDIRSearchResults searchParams={searchFields}/>
       </div>
     </>
   );

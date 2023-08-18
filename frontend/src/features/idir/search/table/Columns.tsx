@@ -4,7 +4,10 @@ import {
   EXPIRED_PERMIT_STATUS,
   PermitChip,
 } from "../../../permits/components/permit-list/PermitChip";
-import { hasPermitExpired, viewPermitPdf } from "../../../permits/helpers/permitPDFHelper";
+import {
+  hasPermitExpired,
+  viewPermitPdf,
+} from "../../../permits/helpers/permitPDFHelper";
 import { ReadPermitDto } from "../../../permits/types/permit";
 
 /*
@@ -18,8 +21,8 @@ export const PermitSearchResultColumnDef: MRT_ColumnDef<ReadPermitDto>[] = [
   {
     accessorKey: "permitNumber",
     header: "Permit #",
+    enableSorting: false,
     Cell: (props: { cell: any; row: any }) => {
-      console.log("props.row::", props.row);
       const permit = props.row.original as ReadPermitDto;
       const {
         permitId,
@@ -52,26 +55,26 @@ export const PermitSearchResultColumnDef: MRT_ColumnDef<ReadPermitDto>[] = [
   {
     accessorKey: "permitType",
     header: "Permit Type",
+    enableSorting: false,
   },
   {
     accessorKey: "permitData.commodities",
     header: "Commodity",
-    Cell: (props: { cell: any; row: any }) => {
-      const permit = props.row.original as ReadPermitDto;
-      const {
-        permitData: { commodities },
-      } = permit;
-      return <>{commodities[0]}</>;
-    },
+    enableSorting: false,
+    // For TROS permits, commodities is not a concern.
+    // Other permits will require implementation here.
+    Cell: () => <>NA</>,
   },
   {
     accessorKey: "permitData.vehicleDetails.plate",
     header: "Plate",
+    enableSorting: false,
   },
-  //   {
-  //     accessorKey: "permitData.companyName",
-  //     header: "Company Name",
-  //   },
+  {
+    accessorKey: "permitData.companyName",
+    header: "Company Name",
+    enableSorting: false,
+  },
   {
     accessorKey: "permitData.startDate",
     header: "Permit Start Date",
