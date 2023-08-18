@@ -5,14 +5,9 @@ import {
   Box,
   Button,
   Divider,
-  FormControl,
-  FormControlLabel,
-  FormHelperText,
   Link,
-  Radio,
-  RadioGroup,
   Stack,
-  Typography,
+  Typography
 } from "@mui/material";
 import { useMutation } from "@tanstack/react-query";
 import {
@@ -39,7 +34,6 @@ import {
   invalidPhoneLength,
   requiredMessage,
 } from "../../../../../common/helpers/validationMessages";
-import { CustomInputHTMLAttributes } from "../../../../../common/types/formElements";
 import { MANAGE_PROFILES } from "../../../../../routes/constants";
 import { BC_COLOURS } from "../../../../../themes/bcGovStyles";
 import { updateUserInfo } from "../../../apiManager/manageProfileAPI";
@@ -50,6 +44,7 @@ import {
 } from "../../../types/userManagement.d";
 import UserGroupsAndPermissionsModal from "../../user-management/UserGroupsAndPermissionsModal";
 import "../myInfo/MyInfoForm.scss";
+import { UserAuthRadioGroup } from "./UserAuthRadioGroup";
 
 /**
  * Edit User form for User Management.
@@ -361,53 +356,9 @@ export const EditUserForm = memo(
                   rules={{
                     required: { value: true, message: requiredMessage() },
                   }}
-                  render={({ field, fieldState: { invalid } }) => {
-                    return (
-                      <>
-                        <FormControl>
-                          <RadioGroup
-                            {...field}
-                            value={field.value}
-                            aria-labelledby="radio-buttons-group-label"
-                          >
-                            <FormControlLabel
-                              value={BCeIDAuthGroup.ORGADMIN}
-                              control={
-                                <Radio
-                                  key={`radio-bceid-administrator`}
-                                  inputProps={
-                                    {
-                                      "data-testid": "save-vehicle-yes",
-                                    } as CustomInputHTMLAttributes
-                                  }
-                                />
-                              }
-                              label="Administrator"
-                            />
-                            <FormControlLabel
-                              value={BCeIDAuthGroup.CVCLIENT}
-                              control={
-                                <Radio
-                                  key={`radio-bceid-permit-applicant`}
-                                  inputProps={
-                                    {
-                                      "data-testid": "save-vehicle-no",
-                                    } as CustomInputHTMLAttributes
-                                  }
-                                />
-                              }
-                              label="Permit Applicant"
-                            />
-                          </RadioGroup>
-                          {invalid && (
-                            <FormHelperText>
-                              You must assign a user group
-                            </FormHelperText>
-                          )}
-                        </FormControl>
-                      </>
-                    );
-                  }}
+                  render={({ field, fieldState }) => (
+                    <UserAuthRadioGroup field={field} fieldState={fieldState} />
+                  )}
                 ></Controller>
                 <Stack direction="row" spacing={2}>
                   <Button

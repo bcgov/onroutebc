@@ -4,36 +4,31 @@ import {
   Box,
   Button,
   Divider,
-  FormControl,
-  FormControlLabel,
-  FormHelperText,
   Link,
-  Radio,
-  RadioGroup,
-  Typography,
+  Typography
 } from "@mui/material";
 import Stack from "@mui/material/Stack";
-import React, { useContext, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
+import { AxiosError } from "axios";
+import React, { useContext, useState } from "react";
 import {
   Controller,
   FieldValues,
   FormProvider,
   useForm,
 } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 import { SnackBarContext } from "../../../App";
 import { Banner } from "../../../common/components/dashboard/Banner";
 import { CustomFormComponent } from "../../../common/components/form/CustomFormComponents";
 import { requiredMessage } from "../../../common/helpers/validationMessages";
-import { CustomInputHTMLAttributes } from "../../../common/types/formElements";
 import { BC_COLOURS } from "../../../themes/bcGovStyles";
 import { addUserToCompany } from "../apiManager/manageProfileAPI";
+import { UserAuthRadioGroup } from "../components/forms/userManagement/UserAuthRadioGroup";
 import UserGroupsAndPermissionsModal from "../components/user-management/UserGroupsAndPermissionsModal";
+import { BCEID_PROFILE_TABS } from "../types/manageProfile.d";
 import { BCeIDAddUserRequest, BCeIDAuthGroup } from "../types/userManagement.d";
 import "./AddUserDashboard.scss";
-import { BCEID_PROFILE_TABS } from "../types/manageProfile.d";
-import { AxiosError } from "axios";
 
 /**
  * BCeID User - Add User Page.
@@ -252,53 +247,9 @@ export const AddUserDashboard = React.memo(() => {
                 rules={{
                   required: { value: true, message: requiredMessage() },
                 }}
-                render={({ field, fieldState: { invalid } }) => {
-                  return (
-                    <>
-                      <FormControl>
-                        <RadioGroup
-                          {...field}
-                          value={field.value}
-                          aria-labelledby="radio-buttons-group-label"
-                        >
-                          <FormControlLabel
-                            value={BCeIDAuthGroup.ORGADMIN}
-                            control={
-                              <Radio
-                                key={`radio-bceid-administrator`}
-                                inputProps={
-                                  {
-                                    "data-testid": "save-vehicle-yes",
-                                  } as CustomInputHTMLAttributes
-                                }
-                              />
-                            }
-                            label="Administrator"
-                          />
-                          <FormControlLabel
-                            value={BCeIDAuthGroup.CVCLIENT}
-                            control={
-                              <Radio
-                                key={`radio-bceid-permit-applicant`}
-                                inputProps={
-                                  {
-                                    "data-testid": "save-vehicle-no",
-                                  } as CustomInputHTMLAttributes
-                                }
-                              />
-                            }
-                            label="Permit Applicant"
-                          />
-                        </RadioGroup>
-                        {invalid && (
-                          <FormHelperText>
-                            You must assign a user group
-                          </FormHelperText>
-                        )}
-                      </FormControl>
-                    </>
-                  );
-                }}
+                render={({ field, fieldState }) => (
+                  <UserAuthRadioGroup field={field} fieldState={fieldState} />
+                )}
               ></Controller>
               <Stack direction="row">
                 <Button
