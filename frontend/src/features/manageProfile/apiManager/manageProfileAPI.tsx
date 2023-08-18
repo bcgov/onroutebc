@@ -96,7 +96,7 @@ export const getIDIRUserRoles = (): Promise<string[]> => {
  */
 export const getCompanyUsers = (): Promise<ReadCompanyUser[]> => {
   return httpGETRequest(
-    `${VEHICLES_URL}/users?companyId=${getCompanyIdFromSession()}`
+    `${VEHICLES_URL}/companies/${getCompanyIdFromSession()}/users?includePendingUser=true`
   ).then((response) => response.data);
 };
 
@@ -131,5 +131,38 @@ export const addUserToCompany = async (addUserRequest: BCeIDAddUserRequest) => {
 export const deleteCompanyUsers = (userName: string) => {
   return httpDELETERequest(
     `${VEHICLES_URL}/companies/${getCompanyIdFromSession()}/pending-users/${userName}`
+  );
+};
+
+/**
+ * Retrieves a users of a company by the user's userGUID.
+ * (For admin's user management operations)
+ * @returns a promise containing the user.
+ */
+export const getCompanyUserByUserGUID = (
+  userGUID: string
+): Promise<ReadCompanyUser> => {
+  return httpGETRequest(`${VEHICLES_URL}/users/${userGUID}`).then(
+    (response) => response.data
+  );
+};
+
+/**
+ *
+ * @param userInfo The updated user info object.
+ * @returns A Promise with the API response.
+ */
+export const updateUserInfo = async ({
+  userInfo,
+  userGUID,
+}: {
+  userInfo: ReadCompanyUser;
+  userGUID: string;
+}) => {
+  return await httpPUTRequest(
+    `${
+      MANAGE_PROFILE_API.COMPANIES
+    }/${getCompanyIdFromSession()}/users/${userGUID}`,
+    replaceEmptyValuesWithNull(userInfo)
   );
 };

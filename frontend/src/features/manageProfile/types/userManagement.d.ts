@@ -1,3 +1,5 @@
+import { UserInformation } from "./manageProfile";
+
 /**
  * The types of user auth groups for BCeID users.
  */
@@ -19,26 +21,14 @@ export enum BCeIDUserStatus {
 /**
  * Company User object response from the GET API.
  */
-export type ReadCompanyUser = {
-  firstName: string;
-  lastName: string;
-  phone1: string;
-  phone2: string;
-  fax: string;
-  email: string;
-  city: string;
-  userGUID: string;
+export interface ReadCompanyUser extends UserInformation {
   userAuthGroup: BCeIDAuthGroup;
-  statusCode: BCeIDUserStatus;
-  userName: string;
-  phone1Extension: string;
-  phone2Extension: string;
-  provinceCode: string;
-  countryCode: string;
-};
+  createdDateTime: string;
+  updatedDateTime: string;
+}
 
 /**
- * 
+ * The BCeID add user request object.
  */
 export type BCeIDAddUserRequest = {
   userName: string;

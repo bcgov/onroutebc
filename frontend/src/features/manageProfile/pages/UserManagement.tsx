@@ -24,7 +24,7 @@ export const UserManagement = () => {
   const query = useQuery({
     queryKey: ["companyUsers"],
     queryFn: getCompanyUsers,
-    keepPreviousData: true,
+    // keepPreviousData: true,
     staleTime: FIVE_MINUTES,
   });
   const { data, isError, isInitialLoading } = query;
@@ -44,6 +44,7 @@ export const UserManagement = () => {
   const onConfirmDelete = async () => {
     // Uncomment this line -const userNames: string[] = Object.keys(rowSelection);
     // For implementation.
+    setIsDeleteDialogOpen(() => false);
   };
 
   /**
@@ -82,12 +83,7 @@ export const UserManagement = () => {
         renderEmptyRowsFallback={() => <NoRecordsFound />}
         selectAllMode="page"
         // Enable checkboxes for row selection
-        enableRowSelection={(row: MRT_Row<ReadCompanyUser>): boolean => {
-          if (row?.original?.userAuthGroup !== "CVCLIENT") {
-            return false;
-          }
-          return true;
-        }}
+        enableRowSelection={true}
         onRowSelectionChange={setRowSelection}
         enableStickyHeader
         enablePagination={false}
