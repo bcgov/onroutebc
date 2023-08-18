@@ -6,6 +6,7 @@ import MaterialReactTable, {
   MRT_TableInstance,
 } from "material-react-table";
 import { useCallback, useContext, useEffect, useState } from "react";
+import { useAuth } from "react-oidc-context";
 import { SnackBarContext } from "../../../App";
 import { NoRecordsFound } from "../../../common/components/table/NoRecordsFound";
 import { FIVE_MINUTES } from "../../../common/constants/constants";
@@ -24,11 +25,11 @@ export const UserManagement = () => {
   const query = useQuery({
     queryKey: ["companyUsers"],
     queryFn: getCompanyUsers,
-    // keepPreviousData: true,
     staleTime: FIVE_MINUTES,
   });
   const { data, isError, isInitialLoading } = query;
   const snackBar = useContext(SnackBarContext);
+  const { user: userFromToken } = useAuth();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   /**
@@ -83,7 +84,12 @@ export const UserManagement = () => {
         renderEmptyRowsFallback={() => <NoRecordsFound />}
         selectAllMode="page"
         // Enable checkboxes for row selection
-        enableRowSelection={true}
+        enableRowSelection={(row: MRT_Row<ReadCompanyUser>): boolean => {
+          if (row?.original?.userGUID === userFromToken?.profile?.bceid_user_guid) {
+            return false;
+          }
+          return true;
+        }}
         onRowSelectionChange={setRowSelection}
         enableStickyHeader
         enablePagination={false}
