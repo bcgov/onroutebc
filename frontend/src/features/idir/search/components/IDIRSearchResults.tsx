@@ -1,42 +1,44 @@
-import { memo, useCallback, useMemo, useState } from "react";
-import MaterialReactTable, {
-  MRT_ColumnDef,
-  MRT_Row,
-  MRT_TableInstance,
-} from "material-react-table";
-import "./List.scss";
-import { Box, FormControlLabel, Switch, Tooltip } from "@mui/material";
+import { Box, FormControlLabel, Switch } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
+import MaterialReactTable, {
+    MRT_ColumnDef,
+    MRT_Row,
+    MRT_TableInstance,
+} from "material-react-table";
+import { memo, useCallback, useContext, useMemo, useState } from "react";
 import { useLocation } from "react-router-dom";
-import dayjs from "dayjs";
-import { IDIRPermitSearchRowActions } from "./IDIRPermitSearchRowActions";
-import { PermitSearchResultColumnDef } from "../table/Columns";
-import { getDataBySearch } from "../api/idirSearch";
-import { ReadPermitDto } from "../../../permits/types/permit";
-import { SearchByFilter, SearchEntity } from "../types/types";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
+import { hasPermitExpired } from "../../../permits/helpers/permitPDFHelper";
+import { ReadPermitDto } from "../../../permits/types/permit";
+import { getDataBySearch } from "../api/idirSearch";
+import { PermitSearchResultColumnDef } from "../table/Columns";
+import { SearchByFilter, SearchEntity } from "../types/types";
+import { IDIRPermitSearchRowActions } from "./IDIRPermitSearchRowActions";
+import "./List.scss";
+import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 
 /**
- * Returns a boolean to indicate if a permit has expired.
- * @param expiryDate The expiry date of the permit
- * @returns boolean indicating if the permit has expired.
+ * Function to decide whether to show row actions icon or not.
+ * @param userAuthGroup The auth group the user belongs to.
+ * @returns boolean
  */
-const hasPermitExpired = (expiryDate: string): boolean => {
-  if (!expiryDate) return false;
-  return dayjs().isAfter(expiryDate, "date");
-};
+const shouldShowRowActions = (userAuthGroup: string | undefined) : boolean => {
+    if (!userAuthGroup) return false;
+    // Check if the user has PPC role to confirm
+    return userAuthGroup === "PPC_CLERK";
+}
 
 /*
  *
- * The List component uses Material React Table (MRT)
+ * The search results component uses Material React Table (MRT)
  * For detailed documentation, see here:
  * https://www.material-react-table.com/docs/getting-started/usage
  *
  *
  */
-/* eslint-disable react/prop-types */
 export const IDIRSearchResults = memo(() => {
   const { state: stateFromNavigation } = useLocation();
+  const { userDetails } = useContext(OnRouteBCContext);
   const [isActiveRecordsOnly, setIsActiveRecordsOnly] =
     useState<boolean>(false);
   const { data, isLoading, isError } = useQuery(
@@ -112,7 +114,6 @@ export const IDIRSearchResults = memo(() => {
           showAlertBanner: isError,
           showProgressBars: isLoading,
           sorting: [{ id: "createdDateTime", desc: true }],
-          columnVisibility: { powerUnitId: false, trailerId: false },
         }}
         // Disable the default column actions so that we can use our custom actions
         enableColumnActions={false}
@@ -135,14 +136,19 @@ export const IDIRSearchResults = memo(() => {
             const isExpired = hasPermitExpired(
               row.original.permitData.expiryDate
             );
-            return (
+            if (shouldShowRowActions(userDetails?.userAuthGroup)) {
+                return (
               <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
                 <IDIRPermitSearchRowActions
                   isExpired={isExpired}
                   permitNumber={row.original.permitNumber}
+                  permitId={row.original.permitId}
                 />
               </Box>
             );
+            } else {
+                return <></>;
+            }
           },
           []
         )}

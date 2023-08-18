@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { OnRouteBCTableRowActions } from "../../../../common/components/table/OnRouteBCTableRowActions";
-import ResendDialog from "./ResendDialog";
+import PermitResendDialog from "./PermitResendDialog";
+import { viewReceiptPdf } from "../../../permits/helpers/permitPDFHelper";
 
 const ACTIVE_OPTIONS = ["Amend", "View Receipt", "Resend", "Void"];
 const EXPIRED_OPTIONS = ["View Receipt", "Resend"];
@@ -18,11 +19,16 @@ const getOptions = (isExpired: boolean): string[] => {
  * Component for row actions on IDIR Search Permit.
  */
 export const IDIRPermitSearchRowActions = ({
+  permitId,
   isExpired,
   permitNumber,
   email,
   fax,
 }: {
+  /**
+   * The permit id.
+   */
+  permitId: number;
   /**
    * Has the permit expired?
    */
@@ -48,7 +54,10 @@ export const IDIRPermitSearchRowActions = ({
    */
   const onSelectOption = (selectedOption: string) => {
     if (selectedOption === "Resend") {
+      // For implementation
       setIsResendOpen(() => true);
+    } else if (selectedOption === "View Receipt") {
+      viewReceiptPdf(permitId.toString());
     }
   };
 
@@ -59,7 +68,7 @@ export const IDIRPermitSearchRowActions = ({
         options={getOptions(isExpired)}
         key={`idir-search-row-${permitNumber}`}
       />
-      <ResendDialog
+      <PermitResendDialog
         isOpen={isResendOpen}
         onClickCancel={() => setIsResendOpen(false)}
         onClickResend={() => setIsResendOpen(false)}

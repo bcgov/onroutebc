@@ -1,22 +1,11 @@
 import { Link } from "@mui/material";
-import dayjs from "dayjs";
 import { MRT_ColumnDef } from "material-react-table";
-import { viewPermitPdf } from "../../../permits/components/permit-list/Columns";
 import {
-    EXPIRED_PERMIT_STATUS,
-    PermitChip,
+  EXPIRED_PERMIT_STATUS,
+  PermitChip,
 } from "../../../permits/components/permit-list/PermitChip";
+import { hasPermitExpired, viewPermitPdf } from "../../../permits/helpers/permitPDFHelper";
 import { ReadPermitDto } from "../../../permits/types/permit";
-
-/**
- * Returns a boolean to indicate if a permit has expired.
- * @param expiryDate The expiry date of the permit
- * @returns boolean indicating if the permit has expired.
- */
-export const hasPermitExpired = (expiryDate: string): boolean => {
-  if (!expiryDate) return false;
-  return dayjs().isAfter(expiryDate, "date");
-};
 
 /*
  *
@@ -80,7 +69,7 @@ export const PermitSearchResultColumnDef: MRT_ColumnDef<ReadPermitDto>[] = [
     header: "Plate",
   },
   //   {
-  //     accessorKey: "permitData",
+  //     accessorKey: "permitData.companyName",
   //     header: "Company Name",
   //   },
   {

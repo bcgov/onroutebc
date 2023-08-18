@@ -5,15 +5,21 @@ import { Loading } from "../common/pages/Loading";
 import { useContext, useEffect } from "react";
 import OnRouteBCContext from "../common/authentication/OnRouteBCContext";
 import { DoesUserHaveRole } from "../common/authentication/util";
-import { LoadUserRolesByCompany } from "../common/authentication/LoadUserRolesByCompany";
-import { LoadUserContext } from "../common/authentication/LoadUserContext";
+import { LoadBCeIDUserRolesByCompany } from "../common/authentication/LoadBCeIDUserRolesByCompany";
+import { LoadBCeIDUserContext } from "../common/authentication/LoadBCeIDUserContext";
+import { LoadIDIRUserContext } from "../common/authentication/LoadIDIRUserContext";
+import { LoadIDIRUserRoles } from "../common/authentication/LoadIDIRUserRoles";
 
 export const ProtectedRoutes = ({
   requiredRole,
 }: {
   requiredRole?: string;
 }) => {
-  const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
+  const {
+    isAuthenticated,
+    isLoading: isAuthLoading,
+    user: userFromToken,
+  } = useAuth();
   const { userRoles, companyId } = useContext(OnRouteBCContext);
   const location = useLocation();
   const navigate = useNavigate();
@@ -33,10 +39,18 @@ export const ProtectedRoutes = ({
   }
 
   if (isAuthenticated) {
+    if (userFromToken?.profile?.identity_provider === "idir") {
+      return (
+        <>
+          <LoadIDIRUserContext />
+          <LoadIDIRUserRoles />
+        </>
+      );
+    }
     if (!companyId) {
       return (
         <>
-          <LoadUserContext />
+          <LoadBCeIDUserContext />
           <Loading />
         </>
       );
@@ -44,7 +58,7 @@ export const ProtectedRoutes = ({
     if (!userRoles) {
       return (
         <>
-          <LoadUserRolesByCompany />
+          <LoadBCeIDUserRolesByCompany />
           <Loading />
         </>
       );

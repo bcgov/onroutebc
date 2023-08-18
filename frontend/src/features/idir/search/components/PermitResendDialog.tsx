@@ -1,10 +1,6 @@
 import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-    FormLabel,
-    Grid,
-    OutlinedInput
-} from "@mui/material";
+import { FormLabel, Grid, OutlinedInput } from "@mui/material";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -15,9 +11,9 @@ import { useState } from "react";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 
 /**
- *  A stateless confirmation dialog box for Delete Operations.
+ *  A dialog box for resending permit by email or fax.
  */
-export default function ResendDialog({
+export default function PermitResendDialog({
   isOpen,
   onClickResend,
   onClickCancel,
@@ -30,7 +26,7 @@ export default function ResendDialog({
    */
   isOpen: boolean;
   /**
-   * A callback function on clicking delete button.
+   * A callback function on clicking resend button.
    * @returns void
    */
   onClickResend?: () => void;

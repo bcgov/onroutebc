@@ -23,8 +23,15 @@ export const AppRoutes = () => {
     <Routes>
       <Route path={routes.HOME} element={<InitialLandingPage />} />
       <Route path={routes.WELCOME} element={<WelcomePage />} />
-      <Route path={routes.SEARCH_PPC} element={<> TODO </>} />
       <Route path="*" element={<NotFound />} />
+
+      {/* IDIR Routes */}
+      <Route element={<ProtectedRoutes />}>
+        <Route path={routes.SEARCH_PPC} element={<> TODO </>} />
+      </Route>
+      
+
+      {/* BCeID Routes */}
       {/* Protected Routes */}
       <Route element={<ProtectedRoutes requiredRole={ROLES.READ_VEHICLE} />}>
         <Route path={routes.MANAGE_VEHICLES}>

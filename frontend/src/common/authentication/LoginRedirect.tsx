@@ -4,7 +4,7 @@ import { useAuth } from "react-oidc-context";
 import { useNavigate } from "react-router-dom";
 import * as routes from "../../routes/constants";
 import { HomePage } from "../../features/homePage/HomePage";
-import { UserContextType } from "./types";
+import { BCeIDUserContextType } from "./types";
 import { Loading } from "../pages/Loading";
 import { useUserContext } from "../../features/manageProfile/apiManager/hooks";
 
@@ -28,8 +28,8 @@ export const LoginRedirect = () => {
       if (userFromToken?.profile?.identity_provider === "idir") {
         navigate(routes.SEARCH_PPC);
       } else {
-        const userContextData: UserContextType | undefined =
-          queryClient.getQueryData<UserContextType>(["userContext"]);
+        const userContextData: BCeIDUserContextType | undefined =
+          queryClient.getQueryData<BCeIDUserContextType>(["userContext"]);
         if (userContextData) {
           const { associatedCompanies, pendingCompanies, user } =
             userContextData;

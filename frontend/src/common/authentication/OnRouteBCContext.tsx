@@ -1,9 +1,21 @@
 import React, { Dispatch, SetStateAction } from "react";
+import { BCeIDAuthGroup } from "../../features/manageProfile/types/userManagement";
 
 /**
  * The user details to be set in the context.
  */
-export type UserDetailContext = {
+export type IDIRUserDetailContext = {
+  firstName: string;
+  lastName: string;
+  userName: string;
+  email: string;
+  userAuthGroup: string;
+};
+
+/**
+ * The user details to be set in the context.
+ */
+export interface BCeIDUserDetailContext {
   firstName: string;
   lastName: string;
   userName: string;
@@ -13,19 +25,23 @@ export type UserDetailContext = {
   phone2Extension: string;
   email: string;
   fax: string;
-};
+  userAuthGroup: BCeIDAuthGroup;
+}
+
 /**
  * The data and functions to in the react context.
  */
 export type OnRouteBCContextType = {
   setUserRoles?: Dispatch<SetStateAction<string[] | undefined>>;
   userRoles?: string[];
-  setUserDetails?: Dispatch<SetStateAction<UserDetailContext | undefined>>;
-  userDetails?: UserDetailContext;
+  setUserDetails?: Dispatch<SetStateAction<BCeIDUserDetailContext | undefined>>;
+  userDetails?: BCeIDUserDetailContext;
   setCompanyId?: Dispatch<SetStateAction<number | undefined>>;
   companyId?: number;
   setCompanyLegalName?: Dispatch<SetStateAction<string | undefined>>;
   companyLegalName?: string;
+  idirUserDetails?: IDIRUserDetailContext;
+  setIDIRUserDetails?: Dispatch<SetStateAction<IDIRUserDetailContext | undefined>>;
 };
 
 const defaultBehaviour: OnRouteBCContextType = {};

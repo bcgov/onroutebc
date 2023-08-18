@@ -13,7 +13,8 @@ import {
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider } from "react-oidc-context";
 import OnRouteBCContext, {
-  UserDetailContext,
+  BCeIDUserDetailContext,
+  IDIRUserDetailContext,
 } from "./common/authentication/OnRouteBCContext";
 
 const authority =
@@ -51,9 +52,14 @@ const App = () => {
 
   const [userRoles, setUserRoles] = useState<string[] | undefined>();
   const [companyId, setCompanyId] = useState<number | undefined>();
-  const [companyLegalName, setCompanyLegalName] = useState<string | undefined>();
+  const [companyLegalName, setCompanyLegalName] = useState<
+    string | undefined
+  >();
   const [userDetails, setUserDetails] = useState<
-    UserDetailContext | undefined
+    BCeIDUserDetailContext | undefined
+  >();
+  const [idirUserDetails, setIDIRUserDetails] = useState<
+    IDIRUserDetailContext | undefined
   >();
 
   // Needed the following usestate and useffect code so that the snackbar would disapear/close
@@ -76,7 +82,9 @@ const App = () => {
                 userDetails,
                 setUserDetails,
                 companyLegalName,
-                setCompanyLegalName
+                setCompanyLegalName,
+                idirUserDetails,
+                setIDIRUserDetails,
               };
             }, [userRoles, companyId, userDetails])}
           >

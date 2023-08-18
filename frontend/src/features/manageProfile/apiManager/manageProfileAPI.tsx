@@ -7,7 +7,7 @@ import {
   getUserGuidFromSession,
   httpDELETERequest,
 } from "../../../common/apiManager/httpRequestHandler";
-import { UserContextType } from "../../../common/authentication/types";
+import { BCeIDUserContextType } from "../../../common/authentication/types";
 import { replaceEmptyValuesWithNull } from "../../../common/helpers/util";
 import {
   CompanyProfile,
@@ -67,7 +67,7 @@ export const createOnRouteBCProfile = async (
 /**
  * Retrieve the company and user details post login.
  */
-export const getUserContext = (): Promise<UserContextType> => {
+export const getUserContext = (): Promise<BCeIDUserContextType> => {
   const url = `${VEHICLES_URL}/users/user-context`;
   return httpPOSTRequest(url, {}).then((response) => response.data);
 };
@@ -79,6 +79,15 @@ export const getUserRolesByCompanyId = (): Promise<string[]> => {
   return httpGETRequest(
     `${VEHICLES_URL}/users/roles?companyId=${getCompanyIdFromSession()}`
   ).then((response) => response.data);
+};
+
+/**
+ * Retrieves the roles of an IDIR user (i.e., OnRouteBC staff).
+ */
+export const getIDIRUserRoles = (): Promise<string[]> => {
+  return httpGETRequest(`${VEHICLES_URL}/users/roles`).then(
+    (response) => response.data
+  );
 };
 
 /**

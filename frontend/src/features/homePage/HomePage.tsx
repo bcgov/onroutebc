@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { useAuth } from "react-oidc-context";
-import { LoadUserRolesByCompany } from "../../common/authentication/LoadUserRolesByCompany";
+import { LoadBCeIDUserRolesByCompany } from "../../common/authentication/LoadBCeIDUserRolesByCompany";
 import OnRouteBCContext from "../../common/authentication/OnRouteBCContext";
 
 export const HomePage = React.memo(() => {
@@ -13,7 +13,7 @@ export const HomePage = React.memo(() => {
 
   return (
     <>
-      <LoadUserRolesByCompany />
+      <LoadBCeIDUserRolesByCompany />
       <div style={{ padding: "0px 60px", height: "100vh" }}>
         {isAuthenticated && userDetails && (
           <div>{`Hello ${userDetails?.firstName} ${userDetails?.lastName}`}</div>

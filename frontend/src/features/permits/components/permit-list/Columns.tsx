@@ -1,25 +1,8 @@
-import { MRT_ColumnDef } from "material-react-table";
 import Link from "@mui/material/Link";
+import { MRT_ColumnDef } from "material-react-table";
+import { viewPermitPdf } from "../../helpers/permitPDFHelper";
 import { ReadPermitDto } from "../../types/permit";
 import { PermitChip } from "./PermitChip";
-import { downloadPermitApplicationPdf } from "../../apiManager/permitsAPI";
-import { openBlobInNewTab } from "../../helpers/openPdfInNewTab";
-
-
-/**
- * Opens the permit PDF in a new tab.
- * @param permitId The permitId of the permit.
- */
-export const viewPermitPdf = async (permitId: string) => {
-  try {
-    const { blobObj: blobObjWithoutType } = await downloadPermitApplicationPdf(
-      permitId
-    );
-    openBlobInNewTab(blobObjWithoutType);
-  } catch (err) {
-    console.error(err);
-  }
-};
 
 /**
  * A boolean indicating if a small badge has to be displayed beside the Permit Number.
