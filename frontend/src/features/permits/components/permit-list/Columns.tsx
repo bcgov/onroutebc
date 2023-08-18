@@ -10,7 +10,7 @@ import { openBlobInNewTab } from "../../helpers/openPdfInNewTab";
  * Opens the permit PDF in a new tab.
  * @param permitId The permitId of the permit.
  */
-const viewPermitPdf = async (permitId: string) => {
+export const viewPermitPdf = async (permitId: string) => {
   try {
     const { blobObj: blobObjWithoutType } = await downloadPermitApplicationPdf(
       permitId
