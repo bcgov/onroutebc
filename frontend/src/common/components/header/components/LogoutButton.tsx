@@ -5,13 +5,14 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRightFromBracket } from "@fortawesome/free-solid-svg-icons";
 
 export const LogoutButton = () => {
-  const { signoutRedirect, user } = useAuth();
+  const { signoutRedirect, user, removeUser } = useAuth();
 
   return (
     <button
       className="logout-button"
       onClick={() => {
-        sessionStorage.removeItem("onRoutebc.user.context");
+        sessionStorage.removeItem("onRoutebcP.user.context");
+        removeUser();
         signoutRedirect({
           extraQueryParams: {
             redirect_uri: window.location.origin + "/",
