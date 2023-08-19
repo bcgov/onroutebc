@@ -12,37 +12,53 @@ import {
 
 import "./SearchFilter.scss";
 import { Controller, FieldValues, FormProvider, useForm } from "react-hook-form";
-import { FindByOption, SearchByOption, SearchFilter as SearchFilterType } from "../../../types/searchFilter";
 import { CustomSelectDisplayProps } from "../../../types/formElements";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { getDefaultRequiredVal } from "../../../helpers/util";
+import { SearchByFilter, SearchEntity, SearchFields } from "../../../../features/idir/search/types/types";
+import { SEARCH_RESULTS } from "../../../../routes/constants";
 
 const SEARCH_BY_PERMIT_OPTIONS = [
-  { label: "Permit Number", value: "permit" }, 
+  { label: "Permit Number", value: "permitNumber" }, 
   { label: "Plate Number", value: "plate" },
 ];
 
 const SEARCH_BY_COMPANY_OPTIONS = [
-  { label: "Company Name", value: "company" },
+  { label: "Company Name", value: "companyName" },
+  { label: "onRouteBC Client Number", value: "onRouteBCClientNumber" },
 ];
 
-const getDefaultFindBy = (findBy?: string | null) => {
-  if (findBy === "company") {
-    return "company";
+const SEARCH_BY_APPLICATION_OPTIONS = [
+  { label: "Application Number", value: "applicationNumber" },
+];
+
+const getDefaultSearchEntity = (searchEntity?: string | null) => {
+  switch (searchEntity) {
+    case "companies":
+      return "companies";
+    case "applications":
+      return "applications";
+    case "permits":
+    default:
+      return "permits";
   }
-  return "permit";
 };
 
-const getSearchByOptions = (findBy: string | null) => {
-  if (findBy === "company") {
-    return SEARCH_BY_COMPANY_OPTIONS;
+const getSearchByOptions = (searchEntity?: string | null) => {
+  switch (searchEntity) {
+    case "companies":
+      return SEARCH_BY_COMPANY_OPTIONS;
+    case "applications":
+      return SEARCH_BY_APPLICATION_OPTIONS;
+    case "permits":
+    default:
+      return SEARCH_BY_PERMIT_OPTIONS;
   }
-  return SEARCH_BY_PERMIT_OPTIONS;
 };
 
-const getDefaultSearchBy = (findBy?: string | null, searchBy?: string | null) => {
-  const defaultFindBy = getDefaultFindBy(findBy);
-  const searchByOptions = getSearchByOptions(defaultFindBy).map(option => option.value);
+const getDefaultSearchBy = (searchEntity?: string | null, searchBy?: string | null) => {
+  const defaultSearchEntity = getDefaultSearchEntity(searchEntity);
+  const searchByOptions = getSearchByOptions(defaultSearchEntity).map(option => option.value);
   return getDefaultRequiredVal(
     searchByOptions[0],
     searchByOptions.find(option => option === searchBy)
@@ -51,33 +67,34 @@ const getDefaultSearchBy = (findBy?: string | null, searchBy?: string | null) =>
 
 export const SearchFilter = () => {
   const [searchParams] = useSearchParams();
-  const findBy = getDefaultFindBy(searchParams.get("findBy"));
-  const [searchByOptions, setSearchByOptions] = useState(getSearchByOptions(findBy));
-  const searchBy = getDefaultSearchBy(findBy, searchParams.get("searchBy"));
+  const navigate = useNavigate();
+  const searchEntity = getDefaultSearchEntity(searchParams.get("searchEntity"));
+  const [searchByOptions, setSearchByOptions] = useState(getSearchByOptions(searchEntity));
+  const searchBy = getDefaultSearchBy(searchEntity, searchParams.get("searchByFilter"));
   const searchValue = getDefaultRequiredVal("", searchParams.get("searchValue"));
   const defaultSearchFilter = { 
-    findBy,
-    searchBy,
+    searchEntity,
+    searchByFilter: searchBy,
     searchValue,
-  } as SearchFilterType;
+  } as SearchFields;
 
-  const formMethods = useForm<SearchFilterType>({
+  const formMethods = useForm<SearchFields>({
     defaultValues: defaultSearchFilter,
     reValidateMode: "onBlur",
   });
   
   const { handleSubmit, setValue, control } = formMethods;
 
-  const handleFindByChange = (findBy: string) => {
-    setValue("findBy", findBy as FindByOption);
-    const updatedSearchByOptions = getSearchByOptions(findBy);
+  const handleSearchEntityChange = (searchEntity: string) => {
+    setValue("searchEntity", searchEntity as SearchEntity);
+    const updatedSearchByOptions = getSearchByOptions(searchEntity);
     setSearchByOptions(updatedSearchByOptions);
-    setValue("searchBy", updatedSearchByOptions[0].value as SearchByOption<FindByOption>);
+    setValue("searchByFilter", updatedSearchByOptions[0].value as SearchByFilter);
   };
 
   const handleSearchByChange = (event: SelectChangeEvent) => {
     const searchBy = event.target.value;
-    setValue("searchBy", searchBy as SearchByOption<FindByOption>);
+    setValue("searchByFilter", searchBy as SearchByFilter);
   };
 
   const handleSearchValueChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -86,7 +103,12 @@ export const SearchFilter = () => {
   };
 
   const onSubmit = (data: FieldValues) => {
-    console.log(data);
+    console.log(data); //
+    const searchFields = Object.entries(data)
+      .map(([key, value]) => `${key}=${value}`)
+      .join("&");
+    
+    navigate(`${SEARCH_RESULTS}?${searchFields}`);
   };
 
   return (
@@ -97,17 +119,17 @@ export const SearchFilter = () => {
             <p className="option-label">Find</p>
             <Controller
               control={control}
-              name="findBy"
+              name="searchEntity"
               render={({ field: { value } }) => (
                 <RadioGroup
                   className="find-by"
                   defaultValue={value}
                   value={value}
-                  onChange={(e) => handleFindByChange(e.target.value)}
+                  onChange={(e) => handleSearchEntityChange(e.target.value)}
                 >
                   <FormControlLabel
                     label="Permit"
-                    value="permit"
+                    value="permits"
                     control={
                       <Radio 
                         key="find-by-permit"
@@ -116,10 +138,19 @@ export const SearchFilter = () => {
                   />
                   <FormControlLabel
                     label="Company"
-                    value="company"
+                    value="companies"
                     control={
                       <Radio 
                         key="find-by-company"
+                      />
+                    }
+                  />
+                  <FormControlLabel
+                    label="Application"
+                    value="applications"
+                    control={
+                      <Radio 
+                        key="find-by-application"
                       />
                     }
                   />
@@ -132,7 +163,7 @@ export const SearchFilter = () => {
             <div className="search-by">
               <Controller
                 control={control}
-                name="searchBy"
+                name="searchByFilter"
                 render={({ field: { value } }) => (
                   <Select
                     className="search-by__select"
