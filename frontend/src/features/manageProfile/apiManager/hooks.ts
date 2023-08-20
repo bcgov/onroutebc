@@ -42,6 +42,7 @@ export const useUserContext = () => {
     setUserDetails,
     setCompanyLegalName,
     setIDIRUserDetails,
+    setOnRouteBCClientNumber
   } = useContext(OnRouteBCContext);
   const { isAuthenticated, user: userFromToken } = useAuth();
   return useQuery({
@@ -73,8 +74,10 @@ export const useUserContext = () => {
         if (user?.userGUID) {
           const companyId = associatedCompanies[0].companyId;
           const legalName = associatedCompanies[0].legalName;
+          const clientNumber = associatedCompanies[0].clientNumber;
           setCompanyId?.(() => companyId);
           setCompanyLegalName?.(() => legalName);
+          setOnRouteBCClientNumber?.(() => clientNumber);
           const userDetails = {
             firstName: user.firstName,
             lastName: user.lastName,
