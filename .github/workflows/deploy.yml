@@ -106,7 +106,7 @@ jobs:
             ${{secrets.VAULT_ENVIRONMENT}}/data/auth0-${{inputs.vault_zone}}      AUTH0_ISSUER_URL                | VAULT_AUTH0_ISSUER_URL;
             ${{secrets.VAULT_ENVIRONMENT}}/data/auth0-${{inputs.vault_zone}}      AUTH0_AUDIENCE                  | VAULT_AUTH0_AUDIENCE;
             ${{secrets.VAULT_ENVIRONMENT}}/data/auth0-${{inputs.vault_zone}}      AUTH0_IGNORE_EXP                | VAULT_AUTH0_IGNORE_EXP;
-            ${{secrets.VAULT_ENVIRONMENT}}/data/auth0-${{inputs.vault_zone}}      SITEMINDER_LOG_OFF_URL          | SITEMINDER_LOG_OFF_URL;
+            ${{secrets.VAULT_ENVIRONMENT}}/data/auth0-${{inputs.vault_zone}}      SITEMINDER_LOG_OFF_URL          | VAULT_SITEMINDER_LOG_OFF_URL;
             ${{secrets.VAULT_ENVIRONMENT}}/data/dops-${{inputs.vault_zone}}       DOPS_S3_ACCESS_TYPE             | VAULT_DOPS_S3_ACCESS_TYPE;
             ${{secrets.VAULT_ENVIRONMENT}}/data/dops-${{inputs.vault_zone}}       DOPS_S3_ACCESSKEYID             | VAULT_DOPS_S3_ACCESSKEYID;
             ${{secrets.VAULT_ENVIRONMENT}}/data/dops-${{inputs.vault_zone}}       DOPS_S3_BUCKET                  | VAULT_DOPS_S3_BUCKET;
@@ -145,6 +145,7 @@ jobs:
             -p AUTH0_ISSUER_URL=${{steps.vault.outputs.VAULT_AUTH0_ISSUER_URL}}
             -p AUTH0_AUDIENCE=${{steps.vault.outputs.VAULT_AUTH0_AUDIENCE}}
             -p AUTH0_IGNORE_EXP=${{steps.vault.outputs.VAULT_AUTH0_IGNORE_EXP}}
+            -p SITEMINDER_LOG_OFF_URL=${{steps.vault.outputs.VAULT_SITEMINDER_LOG_OFF_URL}}
             -p DOPS_S3_ACCESS_TYPE=${{steps.vault.outputs.VAULT_DOPS_S3_ACCESS_TYPE}}
             -p DOPS_S3_ACCESSKEYID=${{steps.vault.outputs.VAULT_DOPS_S3_ACCESSKEYID}}
             -p DOPS_S3_BUCKET=${{steps.vault.outputs.VAULT_DOPS_S3_BUCKET}}

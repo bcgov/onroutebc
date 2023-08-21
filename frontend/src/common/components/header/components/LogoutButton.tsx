@@ -6,6 +6,9 @@ import { faArrowRightFromBracket } from "@fortawesome/free-solid-svg-icons";
 
 export const LogoutButton = () => {
   const { signoutRedirect, user, removeUser } = useAuth();
+  const siteMinderLogOffURL =
+    import.meta.env.VITE_SITEMINDER_LOG_OFF_URL ||
+    envConfig.VITE_SITEMINDER_LOG_OFF_URL;
 
   return (
     <button
@@ -15,15 +18,15 @@ export const LogoutButton = () => {
         removeUser();
         signoutRedirect({
           extraQueryParams: {
-            redirect_uri: `https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=${window.location.origin}`,
+            redirect_uri: `${siteMinderLogOffURL}?retnow=1&returl=${window.location.origin}`,
             kc_idp_hint: user?.profile?.identity_provider as string,
           },
         });
       }}
     >
-      <FontAwesomeIcon 
+      <FontAwesomeIcon
         className="logout-button__icon"
-        icon={faArrowRightFromBracket} 
+        icon={faArrowRightFromBracket}
       />
       Logout
     </button>
