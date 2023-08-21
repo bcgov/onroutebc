@@ -106,6 +106,7 @@ jobs:
             ${{secrets.VAULT_ENVIRONMENT}}/data/auth0-${{inputs.vault_zone}}      AUTH0_ISSUER_URL                | VAULT_AUTH0_ISSUER_URL;
             ${{secrets.VAULT_ENVIRONMENT}}/data/auth0-${{inputs.vault_zone}}      AUTH0_AUDIENCE                  | VAULT_AUTH0_AUDIENCE;
             ${{secrets.VAULT_ENVIRONMENT}}/data/auth0-${{inputs.vault_zone}}      AUTH0_IGNORE_EXP                | VAULT_AUTH0_IGNORE_EXP;
+            ${{secrets.VAULT_ENVIRONMENT}}/data/auth0-${{inputs.vault_zone}}      SITEMINDER_LOG_OFF_URL          | SITEMINDER_LOG_OFF_URL;
             ${{secrets.VAULT_ENVIRONMENT}}/data/dops-${{inputs.vault_zone}}       DOPS_S3_ACCESS_TYPE             | VAULT_DOPS_S3_ACCESS_TYPE;
             ${{secrets.VAULT_ENVIRONMENT}}/data/dops-${{inputs.vault_zone}}       DOPS_S3_ACCESSKEYID             | VAULT_DOPS_S3_ACCESSKEYID;
             ${{secrets.VAULT_ENVIRONMENT}}/data/dops-${{inputs.vault_zone}}       DOPS_S3_BUCKET                  | VAULT_DOPS_S3_BUCKET;
