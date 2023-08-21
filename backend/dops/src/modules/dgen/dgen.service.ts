@@ -31,6 +31,8 @@ export class DgenService {
     private readonly cacheManager: Cache,
   ) {}
 
+  private readonly _dopsCVSEFormsCacheTTLms =
+    process.env.DOPS_CVSE_FORMS_CACHE_TTL_MS;
   /**
    * Find all templates registered in ORBC_DOCUMENT_TEMPLATE
    * @returns A list of templates of type {@link DocumentTemplate}
@@ -82,12 +84,20 @@ export class DgenService {
       currentUser,
       createGeneratedDocumentDto,
     );
-    const documentBufferList: Buffer[] = [generatedDocument.buffer];
+    const documentBufferMap = new Map<string, Buffer>();
+    documentBufferMap.set('PERMIT', generatedDocument.buffer);
     const documentsToMerge = createGeneratedDocumentDto.documentsToMerge;
     if (documentsToMerge?.length) {
-      await this.fetchDocumentsToMerge(documentsToMerge, documentBufferList);
+      await this.fetchDocumentsToMerge(documentsToMerge, documentBufferMap);
+      const documentsToStringArray = documentsToMerge.map((document) =>
+        document.toString(),
+      );
+      documentsToStringArray.unshift('PERMIT');
       try {
-        const mergedDocument = await this.mergeDocuments(documentBufferList);
+        const mergedDocument = await this.mergeDocuments(
+          documentsToStringArray,
+          documentBufferMap,
+        );
         generatedDocument.buffer = Buffer.from(mergedDocument);
         generatedDocument.size = mergedDocument.length;
       } catch (err) {
@@ -123,10 +133,13 @@ export class DgenService {
     });
   }
 
-  private async mergeDocuments(documentBufferList: Buffer[]) {
+  private async mergeDocuments(
+    documentsToMerge: string[],
+    documentBufferMap: Map<string, Buffer>,
+  ): Promise<Uint8Array> {
     const mergedPdf = await PDFDocument.create();
-    for (const pdfBuffer of documentBufferList) {
-      const pdf = await PDFDocument.load(pdfBuffer);
+    for (const document of documentsToMerge) {
+      const pdf = await PDFDocument.load(documentBufferMap.get(document));
       const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
       copiedPages.forEach((page) => mergedPdf.addPage(page));
     }
@@ -136,7 +149,7 @@ export class DgenService {
 
   private async fetchDocumentsToMerge(
     documentsToMerge: ExternalDocumentEnum.ExternalDocument[],
-    documentBufferList: Buffer[],
+    documentBufferMap: Map<string, Buffer>,
   ) {
     await Promise.all(
       documentsToMerge.map(async (externalDocument) => {
@@ -165,11 +178,11 @@ export class DgenService {
           await this.cacheManager.set(
             externalDocument,
             externalDocumentBuffer,
-            600000,
+            +this._dopsCVSEFormsCacheTTLms,
           );
-          documentBufferList.push(externalDocumentBuffer);
+          documentBufferMap.set(externalDocument, externalDocumentBuffer);
         } else {
-          documentBufferList.push(documentFromCache);
+          documentBufferMap.set(externalDocument, documentFromCache);
         }
       }),
     );
