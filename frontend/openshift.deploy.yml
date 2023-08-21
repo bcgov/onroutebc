@@ -72,7 +72,7 @@ parameters:
     description: The CDOGS API url 
     required: true
   - name: DOPS_CVSE_FORMS_CACHE_TTL_MS
-    description: The cache time to time for CVSE FORMS in DOPS
+    description: The cache time to live for CVSE FORMS in DOPS in Milliseconds
     required: true
   - name: DOPS_S3_ACCESS_TYPE
     description: The key to switch between COMS or Direct access
