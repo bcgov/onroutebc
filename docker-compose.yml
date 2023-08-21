@@ -135,6 +135,7 @@ services:
         VITE_API_VEHICLE_URL: ${VITE_API_VEHICLE_URL}
         VITE_AUTH0_ISSUER_URL: ${VITE_AUTH0_ISSUER_URL}
         VITE_AUTH0_AUDIENCE: ${VITE_AUTH0_AUDIENCE}
+        VITE_SITEMINDER_LOG_OFF_URL: ${VITE_SITEMINDER_LOG_OFF_URL}
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000"]
       interval: 1m30s

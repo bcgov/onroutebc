@@ -15,7 +15,7 @@ export const LogoutButton = () => {
         removeUser();
         signoutRedirect({
           extraQueryParams: {
-            redirect_uri: window.location.origin + "/",
+            redirect_uri: `https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=${window.location.origin}`,
             kc_idp_hint: user?.profile?.identity_provider as string,
           },
         });
