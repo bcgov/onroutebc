@@ -319,6 +319,8 @@ export class UsersService {
       userName,
     );
 
+    console.log('pendingCompanies::', pendingCompanies);
+
     if (pendingCompanies?.length) {
       for (const pendingCompany of pendingCompanies) {
         userExistsDto.pendingCompanies.push(

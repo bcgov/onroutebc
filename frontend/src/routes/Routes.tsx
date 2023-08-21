@@ -20,6 +20,7 @@ import { AddUserDashboard } from "../features/manageProfile/pages/AddUserDashboa
 import { EditUserDashboard } from "../features/manageProfile/pages/EditUserDashboard";
 import { IDIRSearchResultsDashboard } from "../features/idir/search/pages/IDIRSearchResultsDashboard";
 import { IDIRWelcome } from "../features/idir/IDIRWelcome";
+import { UserInfoWizard } from "../features/wizard/UserInfoWizard";
 
 export const AppRoutes = () => {
   return (
@@ -115,6 +116,7 @@ export const AppRoutes = () => {
         <Route path={routes.PAYMENT_REDIRECT} element={<PaymentRedirect />} />
       </Route>
       <Route path={routes.CREATE_PROFILE} element={<CreateProfileWizard />} />
+      <Route path={routes.USER_INFO} element={<UserInfoWizard />} />
     </Routes>
   );
 };
