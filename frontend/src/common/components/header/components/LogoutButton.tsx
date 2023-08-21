@@ -19,7 +19,6 @@ export const LogoutButton = () => {
         signoutRedirect({
           extraQueryParams: {
             redirect_uri: `${siteMinderLogOffURL}?retnow=1&returl=${window.location.origin}`,
-            kc_idp_hint: user?.profile?.identity_provider as string,
           },
         });
       }}
