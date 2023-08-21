@@ -31,6 +31,8 @@ export class DgenService {
     private readonly cacheManager: Cache,
   ) {}
 
+  private readonly _dopsCVSEFormsCacheTTLms =
+    process.env.DOPS_CVSE_FORMS_CACHE_TTL_MS;
   /**
    * Find all templates registered in ORBC_DOCUMENT_TEMPLATE
    * @returns A list of templates of type {@link DocumentTemplate}
@@ -165,7 +167,7 @@ export class DgenService {
           await this.cacheManager.set(
             externalDocument,
             externalDocumentBuffer,
-            600000,
+            +this._dopsCVSEFormsCacheTTLms,
           );
           documentBufferList.push(externalDocumentBuffer);
         } else {

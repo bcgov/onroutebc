@@ -30,6 +30,9 @@ parameters:
   - name: AUTH0_IGNORE_EXP
     description: The boolean flag to ignore the JWT expiration
     required: true
+  - name: DOPS_CVSE_FORMS_CACHE_TTL_MS
+    description: The cache time to time for CVSE FORMS in DOPS
+    required: true
   - name: DOPS_S3_ACCESS_TYPE
     description: The key to switch between COMS or Direct access
     required: true
