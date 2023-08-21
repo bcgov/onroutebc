@@ -140,6 +140,14 @@ export const getDefaultValues = (
   ),
   documentId: getDefaultRequiredVal("", applicationData?.documentId),
   permitData: {
+    companyName: getDefaultRequiredVal(
+      "",
+      applicationData?.permitData?.companyName
+    ),
+    clientNumber: getDefaultRequiredVal(
+      "",
+      applicationData?.permitData?.clientNumber
+    ),
     startDate: applyWhenNotNullable(
       (date) => dayjs(date),
       applicationData?.permitData?.startDate,
