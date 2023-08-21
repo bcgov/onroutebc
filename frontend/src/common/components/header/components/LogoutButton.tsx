@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRightFromBracket } from "@fortawesome/free-solid-svg-icons";
 
 export const LogoutButton = () => {
-  const { signoutRedirect, user, removeUser } = useAuth();
+  const { signoutRedirect, removeUser } = useAuth();
   const siteMinderLogOffURL =
     import.meta.env.VITE_SITEMINDER_LOG_OFF_URL ||
     envConfig.VITE_SITEMINDER_LOG_OFF_URL;
