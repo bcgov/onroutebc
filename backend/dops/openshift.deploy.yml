@@ -136,6 +136,7 @@ objects:
       auth0-ignore-exp: "${AUTH0_IGNORE_EXP}"
       auth0-ignore-exp: "${AUTH0_IGNORE_EXP}"
       dops-cvse-forms-cache-ttl-ms: "${DOPS_CVSE_FORMS_CACHE_TTL_MS}"
+      dops-s3-access-type: "${DOPS_S3_ACCESS_TYPE}"
       dops-s3-accesskeyid: "${DOPS_S3_ACCESSKEYID}"
       dops-s3-bucket: "${DOPS_S3_BUCKET}"
       dops-s3-presigned-url-expiry: "${DOPS_S3_PRESIGNED_URL_EXPIRY}"
