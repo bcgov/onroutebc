@@ -166,6 +166,7 @@ jobs:
             -p MOTIPAY_MERCHANT_ID=${{steps.vault.outputs.VAULT_MOTIPAY_MERCHANT_ID}}
             -p MOTIPAY_BASE_URL=${{steps.vault.outputs.VAULT_MOTIPAY_BASE_URL}}
             ${{ matrix.parameters }}
-          penetration_test: ${{ github.event_name != 'pull_request'}}
+          # penetration_test: ${{ github.event_name != 'pull_request'}}
+          penetration_test: true
           penetration_test_fail: fail
           penetration_test_issue: true
