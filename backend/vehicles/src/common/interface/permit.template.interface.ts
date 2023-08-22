@@ -25,6 +25,8 @@ export interface PermitData {
   vehicleDetails?: VehicleDetails;
   commodities: Commodities[];
   mailingAddress: MailingAddress;
+  companyName: string;
+  clientNumber: string;
 }
 
 interface MailingAddress {
