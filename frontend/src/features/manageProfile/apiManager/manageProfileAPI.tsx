@@ -23,9 +23,11 @@ export const getCompanyInfo = async (): Promise<CompanyProfile> => {
 };
 
 export const getMyInfo = async (): Promise<UserInformation> => {
-  const url = `${
-    MANAGE_PROFILE_API.MY_INFO
-  }/${getUserGuidFromSession()}?companyId=${getCompanyIdFromSession()}`;
+  const companyId = getCompanyIdFromSession();
+  let url = `${MANAGE_PROFILE_API.MY_INFO}/${getUserGuidFromSession()}`;
+  if (companyId) {
+    url += `?companyId=${companyId}`;
+  }
   return httpGETRequest(url).then((response) => response.data);
 };
 
@@ -92,9 +94,12 @@ export const getUserContext = (): Promise<BCeIDUserContextType> => {
  * Retrieves the roles of the user w.r.t a company.
  */
 export const getUserRolesByCompanyId = (): Promise<string[]> => {
-  return httpGETRequest(
-    `${VEHICLES_URL}/users/roles?companyId=${getCompanyIdFromSession()}`
-  ).then((response) => response.data);
+  const companyId = getCompanyIdFromSession();
+  let url = `${VEHICLES_URL}/users/roles`;
+  if (companyId) {
+    url += `?companyId=${companyId}`;
+  }
+  return httpGETRequest(url).then((response) => response.data);
 };
 
 /**

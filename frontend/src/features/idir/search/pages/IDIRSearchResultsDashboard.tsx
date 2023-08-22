@@ -3,7 +3,12 @@ import { memo } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Banner } from "../../../../common/components/dashboard/Banner";
 import { IDIRSearchResults } from "../components/IDIRSearchResults";
-import { SearchByFilter, SearchEntity, SearchFields } from "../types/types";
+import { 
+  SEARCH_BY_FILTERS, 
+  SearchByFilter, 
+  SearchEntity, 
+  SearchFields, 
+} from "../types/types";
 
 /**
  * Returns a banner text based on the search criteria.
@@ -13,7 +18,7 @@ import { SearchByFilter, SearchEntity, SearchFields } from "../types/types";
 const getBannerText = (searchFields: SearchFields): string => {
   if (!searchFields?.searchValue) return "";
   const { searchByFilter, searchValue } = searchFields;
-  if (searchByFilter === SearchByFilter.PERMIT_NUMBER) {
+  if (searchByFilter === SEARCH_BY_FILTERS.PERMIT_NUMBER) {
     return `Search Results: Permit # ${searchValue}`;
   }
   return "";
@@ -25,7 +30,7 @@ const getBannerText = (searchFields: SearchFields): string => {
 export const IDIRSearchResultsDashboard = memo(() => {
   const [searchParams] = useSearchParams();
   const searchFields: SearchFields = {
-    searchByFilter: searchParams.get("searchEntity") as SearchByFilter,
+    searchByFilter: searchParams.get("searchByFilter") as SearchByFilter,
     searchEntity: searchParams.get("searchEntity") as SearchEntity,
     searchValue: searchParams.get("searchValue") as string,
   };
