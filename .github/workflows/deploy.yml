@@ -171,3 +171,4 @@ jobs:
           penetration_test_fail: fail
           penetration_test_issue: true
           token: ${{ secrets.GITHUB_TOKEN }}
+          penetration_test_issue_title: ${{ matrix.name }}
