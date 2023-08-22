@@ -1,23 +1,24 @@
 import { Alert, Box, Button, Typography } from "@mui/material";
+import { useMutation } from "@tanstack/react-query";
 import React, { useContext, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { FieldValues, FormProvider, useForm } from "react-hook-form";
+import { SnackBarContext } from "../../App";
+import { LoadBCeIDUserContext } from "../../common/authentication/LoadBCeIDUserContext";
+import { LoadBCeIDUserRolesByCompany } from "../../common/authentication/LoadBCeIDUserRolesByCompany";
+import OnRouteBCContext from "../../common/authentication/OnRouteBCContext";
 import { Banner } from "../../common/components/dashboard/Banner";
+import { getDefaultRequiredVal } from "../../common/helpers/util";
 import { ErrorFallback } from "../../common/pages/ErrorFallback";
+import { createMyOnRouteBCUserProfile } from "../manageProfile/apiManager/manageProfileAPI";
 import { ReusableUserInfoForm } from "../manageProfile/components/forms/common/ReusableUserInfoForm";
 import { UserInformation } from "../manageProfile/types/manageProfile";
 import { BCeIDAuthGroup } from "../manageProfile/types/userManagement.d";
-import { createMyOnRouteBCUserProfile } from "../manageProfile/apiManager/manageProfileAPI";
-import { useMutation } from "@tanstack/react-query";
-import OnRouteBCContext from "../../common/authentication/OnRouteBCContext";
-import {
-  useUserContext,
-  useUserRolesByCompanyId,
-} from "../manageProfile/apiManager/hooks";
-import { getDefaultRequiredVal } from "../../common/helpers/util";
-import { SnackBarContext } from "../../App";
 import { OnRouteBCProfileCreated } from "./pages/OnRouteBCProfileCreated";
 
+/**
+ * 
+ */
 export const UserInfoWizard = React.memo(() => {
   const formMethods = useForm<
     Omit<UserInformation, "statusCode" | "userName" | "userGUID">
@@ -25,17 +26,6 @@ export const UserInfoWizard = React.memo(() => {
     defaultValues: {
       // Remove this userAuthGroup once backend integrates the auth group.
       userAuthGroup: BCeIDAuthGroup.CVCLIENT as string,
-      firstName: "",
-      lastName: "",
-      email: "",
-      phone1: "",
-      phone1Extension: "",
-      phone2: "",
-      phone2Extension: "",
-      fax: "",
-      countryCode: "",
-      provinceCode: "",
-      city: "",
     },
   });
 
@@ -61,9 +51,7 @@ export const UserInfoWizard = React.memo(() => {
           userAuthGroup: responseBody.userAuthGroup,
         };
         setIsProfileCreated(() => true);
-        // setUserDetails?.(() => userDetails);
-        useUserContext();
-        useUserRolesByCompanyId();
+        setUserDetails?.(() => userDetails);
       } else if (response.status === 400) {
         const { error } = response.data;
         const firstErrMsg = getDefaultRequiredVal([], error);
@@ -97,6 +85,8 @@ export const UserInfoWizard = React.memo(() => {
   if (isProfileCreated) {
     return (
       <>
+        <LoadBCeIDUserContext />
+        <LoadBCeIDUserRolesByCompany />
         <OnRouteBCProfileCreated />
       </>
     );

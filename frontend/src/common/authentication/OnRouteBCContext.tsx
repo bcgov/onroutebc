@@ -19,11 +19,11 @@ export interface BCeIDUserDetailContext {
   lastName: string;
   userName: string;
   phone1: string;
-  phone1Extension: string;
-  phone2: string;
-  phone2Extension: string;
+  phone1Extension?: string;
+  phone2?: string;
+  phone2Extension?: string;
   email: string;
-  fax: string;
+  fax?: string;
   userAuthGroup: string;
 }
 
