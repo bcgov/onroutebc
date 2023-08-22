@@ -170,3 +170,4 @@ jobs:
           penetration_test: true
           penetration_test_fail: fail
           penetration_test_issue: true
+          token: ${{ secrets.GITHUB_TOKEN }}
