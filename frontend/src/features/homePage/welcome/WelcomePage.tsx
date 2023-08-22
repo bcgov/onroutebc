@@ -40,7 +40,7 @@ const WelcomeCompanyName = ({
 export const WelcomePage = React.memo(() => {
   const navigate = useNavigate();
   const companyNameFromToken = getCompanyNameFromSession();
-  const { companyLegalName: companyNameFromContext, userDetails } =
+  const { companyLegalName: companyNameFromContext } =
     useContext(OnRouteBCContext);
 
   return (
