@@ -59,6 +59,9 @@ parameters:
   - name: AUTH0_IGNORE_EXP
     description: The boolean flag to ignore the JWT expiration
     required: true
+  - name: SITEMINDER_LOG_OFF_URL
+    description: The siteminder log off url
+    required: true
   - name: CDOGS_CLIENT_ID
     description: The keycloak client ID for common hosted CDOGS
     required: true
@@ -148,7 +151,8 @@ objects:
             "VITE_DEPLOY_ENVIRONMENT":"${ZONE}",
             "VITE_API_VEHICLE_URL":"https://${NAME}-${ZONE}-backend-vehicles.${DOMAIN}",
             "VITE_AUTH0_ISSUER_URL":"${AUTH0_ISSUER_URL}",
-            "VITE_AUTH0_AUDIENCE":"${AUTH0_AUDIENCE}"
+            "VITE_AUTH0_AUDIENCE":"${AUTH0_AUDIENCE}",
+            "VITE_SITEMINDER_LOG_OFF_URL": "${SITEMINDER_LOG_OFF_URL}",
           };
         })();
   - apiVersion: v1
