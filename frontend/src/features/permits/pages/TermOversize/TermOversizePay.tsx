@@ -9,17 +9,12 @@ import { ProgressBar } from "../../components/progressBar/ProgressBar";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { ErrorFallback } from "../../../../common/pages/ErrorFallback";
 import { getMotiPayTransactionUrl } from "../../apiManager/permitsAPI";
-import { permitTypeDisplayText } from "../../helpers/mappers";
+import { feeSummaryDisplayText, permitTypeDisplayText } from "../../helpers/mappers";
 import { PermitType } from "../../types/application";
 
 export const TermOversizePay = () => {
   const { applicationData } = useContext(ApplicationContext);
-  const calculatedFee = Number(
-    getDefaultRequiredVal(
-      "30",
-      applicationData?.permitData?.feeSummary,
-    )
-  );
+  const calculatedFee = feeSummaryDisplayText(applicationData);
 
   useEffect(() => {
     window.scrollTo(0, 0);
