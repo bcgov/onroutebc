@@ -53,6 +53,22 @@ export const updateMyInfo = async ({ myInfo }: { myInfo: UserInformation }) => {
 };
 
 /**
+ * For use in the Profile Wizard
+ * @param param0
+ * @returns
+ */
+export const createMyOnRouteBCUserProfile = async ({
+  myInfo,
+}: {
+  myInfo: Omit<UserInformation, "statusCode" | "userName" | "userGUID">;
+}) => {
+  return await httpPOSTRequest(
+    `${MANAGE_PROFILE_API.COMPANIES}/${getCompanyIdFromSession()}/users`,
+    replaceEmptyValuesWithNull(myInfo)
+  );
+};
+
+/**
  * Creates an onRouteBC profile.
  * @param onRouteBCProfileRequestObject The request object containing the profile details
  * @returns A Promise containing the response from the API.
