@@ -24,7 +24,7 @@ import "./List.scss";
 const shouldShowRowActions = (userAuthGroup: string | undefined): boolean => {
   if (!userAuthGroup) return false;
   // Check if the user has PPC role to confirm
-  return userAuthGroup === "PPC_CLERK";
+  return userAuthGroup === "PPC_CLERK" || userAuthGroup === "EOFFICER";
 };
 
 /*
@@ -45,7 +45,7 @@ export const IDIRSearchResults = memo(
     searchParams: SearchFields;
   }) => {
     const { searchValue, searchByFilter, searchEntity } = searchParams;
-    const { userDetails } = useContext(OnRouteBCContext);
+    const { idirUserDetails } = useContext(OnRouteBCContext);
     const [isActiveRecordsOnly, setIsActiveRecordsOnly] =
       useState<boolean>(false);
     const { data, isLoading, isError } = useQuery(
@@ -140,13 +140,14 @@ export const IDIRSearchResults = memo(
               const isExpired = hasPermitExpired(
                 row.original.permitData.expiryDate
               );
-              if (shouldShowRowActions(userDetails?.userAuthGroup)) {
+              if (shouldShowRowActions(idirUserDetails?.userAuthGroup)) {
                 return (
                   <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
                     <IDIRPermitSearchRowActions
                       isExpired={isExpired}
                       permitNumber={row.original.permitNumber}
                       permitId={row.original.permitId}
+                      userAuthGroup={idirUserDetails?.userAuthGroup}
                     />
                   </Box>
                 );

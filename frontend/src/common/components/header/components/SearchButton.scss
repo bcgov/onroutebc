@@ -1,0 +1,22 @@
+@import "../../../../themes/orbcStyles.scss";
+
+.search-button {
+  background-color: $bc-gold;
+  height: 100%;
+  padding: 0 1em;
+  border: none;
+  font-size: 1.5rem;
+  margin-right: 1rem;
+  cursor: pointer;
+
+  &:focus {
+    outline: none;
+  }
+}
+
+@media (width < 360px) {
+  .search-button {
+    font-size: 1rem;
+    margin-right: 0.5rem;
+  }
+}

@@ -6,15 +6,15 @@ export const MANAGE_VEHICLES = "manage-vehicles";
 export const ADD_POWER_UNIT = "add-powerunit";
 export const ADD_TRAILER = "add-trailer";
 
-//Manage Profile
+// Manage Profile
 export const MANAGE_PROFILES = "manage-profiles";
 export const ADD_USER = `/${MANAGE_PROFILES}/add-user`;
 export const EDIT_USER = `/${MANAGE_PROFILES}/edit-user`;
 
-//Permits
+// Permits
 export const PERMITS = "permits";
 
-//Applications
+// Applications
 export const APPLICATIONS = "applications";
 export const APPLICATIONS_SUCCESS = "success";
 export const APPLICATIONS_FAILURE = "failure";
@@ -24,7 +24,7 @@ export const CREATE_PROFILE = "create-profile";
 export const WELCOME = "welcome";
 export const USER_INFO = "user-info";
 
-//IDIR
+// IDIR
 const IDIR = "idir";
 export const IDIR_WELCOME = `/${IDIR}/welcome`;
 export const SEARCH_RESULTS = `/${IDIR}/search-results`;
