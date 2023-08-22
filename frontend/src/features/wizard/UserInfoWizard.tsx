@@ -17,7 +17,8 @@ import { BCeIDAuthGroup } from "../manageProfile/types/userManagement.d";
 import { OnRouteBCProfileCreated } from "./pages/OnRouteBCProfileCreated";
 
 /**
- * 
+ * User Info wizard displays a user information form
+ * when an invited user logs in for the first time.
  */
 export const UserInfoWizard = React.memo(() => {
   const formMethods = useForm<

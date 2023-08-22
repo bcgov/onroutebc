@@ -36,7 +36,11 @@ export const OnRouteBCProfileCreated = memo(
             </Typography>
           </div>
           <div className="profile-created__block profile-created__block--apply-permit">
-            <Button variant="contained" color="primary">
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => navigate("/applications")}
+            >
               Apply for a permit
             </Button>
           </div>
