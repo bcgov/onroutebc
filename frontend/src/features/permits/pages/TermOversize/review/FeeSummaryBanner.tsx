@@ -4,14 +4,12 @@ import { useContext } from "react";
 import "./FeeSummaryBanner.scss";
 import { ApplicationContext } from "../../../context/ApplicationContext";
 import { getDefaultRequiredVal } from "../../../../../common/helpers/util";
-import { permitTypeDisplayText } from "../../../helpers/mappers";
+import { feeSummaryDisplayText, permitTypeDisplayText } from "../../../helpers/mappers";
 import { PermitType } from "../../../types/application";
 
 export const FeeSummaryBanner = () => {
   const { applicationData } = useContext(ApplicationContext);
-  const calculatedFee = Number(
-    applicationData?.permitData.permitDuration
-  );
+  const calculatedFee = feeSummaryDisplayText(applicationData);
   
   return (
     <Box className="fee-summary-banner">
