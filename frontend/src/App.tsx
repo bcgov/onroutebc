@@ -35,6 +35,9 @@ const oidcConfig = {
   revokeTokensOnSignout: true,
 };
 
+/**
+ * The Snackbar Context for the application.
+ */
 export const SnackBarContext = createContext({
   setSnackBar: (() => undefined) as Dispatch<SnackBarOptions>,
 });
