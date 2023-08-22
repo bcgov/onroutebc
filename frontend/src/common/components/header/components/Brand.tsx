@@ -7,16 +7,23 @@ export const Brand = () => {
   const { companyLegalName } = useContext(OnRouteBCContext);
   return (
     <div className="brand">
-      <a href={routes.HOME}>
+      <a
+        className="brand__logo"
+        href={routes.HOME}
+      >
         <img
           src="https://developer.gov.bc.ca/static/BCID_H_rgb_rev-20eebe74aef7d92e02732a18b6aa6bbb.svg"
           alt="Go to the onRouteBC Home Page"
-          height="50px"
         />
       </a>
-      <h1>
-        onRouteBC {companyLegalName && <strong>{companyLegalName}</strong>}
+      <h1 className="brand__title">
+        onRouteBC
       </h1>
+      {companyLegalName ? (
+        <p className="brand__company">
+          {companyLegalName}
+        </p>
+      ) : null}
     </div>
   );
 };

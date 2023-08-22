@@ -69,7 +69,7 @@ export const useUserContext = () => {
           setIDIRUserDetails?.(() => userDetails);
         }
       } else {
-        const { user, associatedCompanies } =
+        const { user, associatedCompanies, pendingCompanies } =
           userContextResponseBody as BCeIDUserContextType;
         if (user?.userGUID) {
           const companyId = associatedCompanies[0].companyId;
@@ -94,6 +94,15 @@ export const useUserContext = () => {
 
           // Setting the companyId to sessionStorage so that it can be
           // used outside of react components.
+          sessionStorage.setItem(
+            "onRouteBC.user.companyId",
+            companyId.toString()
+          );
+        }
+        if (pendingCompanies.length > 0) {
+          const { companyId, legalName } = pendingCompanies[0];
+          setCompanyId?.(() => companyId);
+          setCompanyLegalName?.(() => legalName);
           sessionStorage.setItem(
             "onRouteBC.user.companyId",
             companyId.toString()

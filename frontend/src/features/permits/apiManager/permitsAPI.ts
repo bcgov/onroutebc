@@ -77,7 +77,16 @@ export const updateTermOversize = async (
 export const getApplicationsInProgress = async (): Promise<
   PermitApplicationInProgress[]
 > => {
-  const applicationsUrl = `${VEHICLES_URL}/permits/applications?companyId=${getCompanyIdFromSession()}&userGUID=${getUserGuidFromSession()}&status=IN_PROGRESS`;
+  const companyId = getCompanyIdFromSession();
+  const userGuid = getUserGuidFromSession();
+  let applicationsUrl = `${VEHICLES_URL}/permits/applications?status=IN_PROGRESS`;
+  if (companyId) {
+    applicationsUrl += `&companyId=${companyId}`;
+  }
+  if (userGuid) {
+    applicationsUrl += `&userGUID=${userGuid}`;
+  }
+
   const applications = await httpGETRequest(applicationsUrl).then((response) =>
     (
       getDefaultRequiredVal([], response.data) as PermitApplicationInProgress[]
@@ -118,8 +127,11 @@ export const getApplicationsInProgress = async (): Promise<
 export const getApplicationInProgressById = (
   permitId: string | undefined
 ): Promise<ApplicationResponse | undefined> => {
-  const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
-  const url = `${VEHICLES_URL}/permits/applications/${permitId}?companyId=${companyId}`;
+  const companyId = getCompanyIdFromSession();
+  let url = `${VEHICLES_URL}/permits/applications/${permitId}`;
+  if (companyId) {
+    url += `?companyId=${companyId}`;
+  }
   return httpGETRequest(url).then((response) => response.data);
 };
 
@@ -236,9 +248,16 @@ export const getPermits = async ({
   expired = false,
 } = {}): Promise<ReadPermitDto[]> => {
   const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
-  let permitsURL = `${VEHICLES_URL}/permits/user?companyId=${companyId}`;
+  let permitsURL = `${VEHICLES_URL}/permits/user`;
+  const queryParams = [];
+  if (companyId) {
+    queryParams.push(`companyId=${companyId}`);
+  }
   if (expired) {
-    permitsURL += `&expired=${expired}`;
+    queryParams.push(`expired=${expired}`);
+  }
+  if (queryParams.length > 0) {
+    permitsURL += `?${queryParams.join("&")}`;
   }
   const permits = await httpGETRequest(permitsURL)
     .then((response) => {

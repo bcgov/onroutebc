@@ -5,13 +5,15 @@ import { viewReceiptPdf } from "../../../permits/helpers/permitPDFHelper";
 
 const ACTIVE_OPTIONS = ["Amend", "View Receipt", "Resend", "Void"];
 const EXPIRED_OPTIONS = ["View Receipt", "Resend"];
+const MINIMAL_OPTIONS = ["View Receipt"];
 
 /**
  * Returns options for the row actions.
  * @param isExpired Has the permit expired?
  * @returns string[]
  */
-const getOptions = (isExpired: boolean): string[] => {
+const getOptions = (isExpired: boolean, userAuthGroup?: string): string[] => {
+  if (userAuthGroup === "EOFFICER") return MINIMAL_OPTIONS;
   return isExpired ? EXPIRED_OPTIONS : ACTIVE_OPTIONS;
 };
 
@@ -24,6 +26,7 @@ export const IDIRPermitSearchRowActions = ({
   permitNumber,
   email,
   fax,
+  userAuthGroup,
 }: {
   /**
    * The permit id.
@@ -45,6 +48,10 @@ export const IDIRPermitSearchRowActions = ({
    * The fax number (for use in resend dialog)
    */
   fax?: string;
+  /**
+   * The auth group for the current user (eg. PPC_CLERK or EOFFICER)
+   */
+  userAuthGroup?: string;
 }) => {
   const [isResendOpen, setIsResendOpen] = useState<boolean>(false);
 
@@ -65,7 +72,7 @@ export const IDIRPermitSearchRowActions = ({
     <>
       <OnRouteBCTableRowActions
         onSelectOption={onSelectOption}
-        options={getOptions(isExpired)}
+        options={getOptions(isExpired, userAuthGroup)}
         key={`idir-search-row-${permitNumber}`}
       />
       <PermitResendDialog
