@@ -127,7 +127,7 @@ jobs:
             ${{secrets.VAULT_ENVIRONMENT}}/data/payment-${{inputs.vault_zone}}    MOTIPAY_MERCHANT_ID             | VAULT_MOTIPAY_MERCHANT_ID;
             ${{secrets.VAULT_ENVIRONMENT}}/data/payment-${{inputs.vault_zone}}    MOTIPAY_BASE_URL                | VAULT_MOTIPAY_BASE_URL;
       
-      - uses: bcgov-nr/action-deployer-openshift@v1.0.5
+      - uses: bcgov-nr/action-deployer-openshift@feat/zapIssues
         with:
           file: ${{ matrix.file }}
           oc_namespace: ${{inputs.environmnet }}
@@ -167,5 +167,5 @@ jobs:
             -p MOTIPAY_BASE_URL=${{steps.vault.outputs.VAULT_MOTIPAY_BASE_URL}}
             ${{ matrix.parameters }}
           penetration_test: ${{ github.event_name != 'pull_request'}}
-          penetration_test_fail: true
-
+          penetration_test_fail: fail
+          penetration_test_issue: true
