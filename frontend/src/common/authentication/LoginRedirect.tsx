@@ -37,7 +37,7 @@ export const LoginRedirect = () => {
           if (!user?.userGUID) {
             // The user is in pending companies => Redirect them to User Info Page.
             if (pendingCompanies.length > 0) {
-              navigate(routes.USER_INFO);
+              navigate(routes.WELCOME);
             }
             // The user and company does not exist => Redirect them to Add new company page.
             else if (associatedCompanies.length < 1) {

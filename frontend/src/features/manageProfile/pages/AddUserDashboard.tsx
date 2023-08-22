@@ -207,6 +207,7 @@ export const AddUserDashboard = React.memo(() => {
           sx={{
             display: "flex",
             paddingTop: "24px",
+            paddingBottom: "80px", // Needs long term fix
             backgroundColor: BC_COLOURS.white,
           }}
         >
