@@ -45,7 +45,7 @@ jobs:
           - package: backend/vehicles
             triggers: ('backend/vehicles/')
           - package: backend/dops
-            triggers: ('backend/dops/')            
+            triggers: ('backend/dops/')
           - package: frontend
             triggers: ('frontend/')
     steps:
