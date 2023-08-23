@@ -15,6 +15,7 @@ import { PermitSearchResultColumnDef } from "../table/Columns";
 import { SearchFields } from "../types/types";
 import { IDIRPermitSearchRowActions } from "./IDIRPermitSearchRowActions";
 import "./List.scss";
+import { USER_AUTH_GROUP } from "../../../manageProfile/types/userManagement.d";
 
 /**
  * Function to decide whether to show row actions icon or not.
@@ -24,7 +25,8 @@ import "./List.scss";
 const shouldShowRowActions = (userAuthGroup: string | undefined): boolean => {
   if (!userAuthGroup) return false;
   // Check if the user has PPC role to confirm
-  return userAuthGroup === "PPC_CLERK" || userAuthGroup === "EOFFICER";
+  return userAuthGroup === USER_AUTH_GROUP.PPCCLERK 
+    || userAuthGroup === USER_AUTH_GROUP.EOFFICER;
 };
 
 /*

@@ -49,7 +49,7 @@ export const IDIRPermitSearchRowActions = ({
    */
   fax?: string;
   /**
-   * The auth group for the current user (eg. PPC_CLERK or EOFFICER)
+   * The auth group for the current user (eg. PPCCLERK or EOFFICER)
    */
   userAuthGroup?: string;
 }) => {

@@ -30,7 +30,7 @@ import { BC_COLOURS } from "../../../../../themes/bcGovStyles";
 import { updateUserInfo } from "../../../apiManager/manageProfileAPI";
 import { BCEID_PROFILE_TABS } from "../../../types/manageProfile.d";
 import {
-  BCeIDAuthGroup,
+  BCEID_AUTH_GROUP,
   ReadCompanyUser,
 } from "../../../types/userManagement.d";
 import UserGroupsAndPermissionsModal from "../../user-management/UserGroupsAndPermissionsModal";
@@ -60,7 +60,7 @@ export const EditUserForm = memo(
         countryCode: getDefaultRequiredVal("", userInfo?.countryCode),
         provinceCode: getDefaultRequiredVal("", userInfo?.provinceCode),
         city: getDefaultRequiredVal("", userInfo?.city),
-        userAuthGroup: BCeIDAuthGroup.ORGADMIN,
+        userAuthGroup: BCEID_AUTH_GROUP.ORGADMIN,
       },
     });
     const { handleSubmit } = formMethods;
