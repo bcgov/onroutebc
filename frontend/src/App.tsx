@@ -52,6 +52,9 @@ const App = () => {
 
   const [userRoles, setUserRoles] = useState<string[] | undefined>();
   const [companyId, setCompanyId] = useState<number | undefined>();
+  const [onRouteBCClientNumber, setOnRouteBCClientNumber] = useState<
+    string | undefined
+  >();
   const [companyLegalName, setCompanyLegalName] = useState<
     string | undefined
   >();
@@ -85,6 +88,8 @@ const App = () => {
                 setCompanyLegalName,
                 idirUserDetails,
                 setIDIRUserDetails,
+                onRouteBCClientNumber,
+                setOnRouteBCClientNumber,
               };
             }, [userRoles, companyId, userDetails])}
           >

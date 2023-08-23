@@ -34,6 +34,7 @@ import { LeaveApplicationDialog } from "../../components/dialog/LeaveApplication
 import { areApplicationDataEqual } from "../../helpers/equality";
 import { useDefaultApplicationFormData } from "../../hooks/useDefaultApplicationFormData";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
+import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 
 /**
  * The first step in creating and submitting a TROS Application.
@@ -64,6 +65,7 @@ export const TermOversizeForm = () => {
 
   const submitTermOversizeMutation = useSaveTermOversizeMutation();
   const snackBar = useContext(SnackBarContext);
+  const { companyLegalName, onRouteBCClientNumber } = useContext(OnRouteBCContext);
 
   // Show leave application dialog
   const [showLeaveApplicationDialog, setShowLeaveApplicationDialog] = useState<boolean>(false); 
@@ -79,6 +81,8 @@ export const TermOversizeForm = () => {
       applicationNumber: applicationContext.applicationData?.applicationNumber,
       permitData: {
         ...data.permitData,
+        companyName: companyLegalName,
+        clientNumber: onRouteBCClientNumber,
         vehicleDetails: {
           ...data.permitData.vehicleDetails,
           // Convert year to number here, as React doesn't accept valueAsNumber prop for input component

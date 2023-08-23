@@ -33,6 +33,8 @@ export interface BCeIDUserDetailContext {
 export type OnRouteBCContextType = {
   setUserRoles?: Dispatch<SetStateAction<string[] | undefined>>;
   userRoles?: string[];
+  setOnRouteBCClientNumber?: Dispatch<SetStateAction<string | undefined>>;
+  onRouteBCClientNumber?: string;
   setUserDetails?: Dispatch<SetStateAction<BCeIDUserDetailContext | undefined>>;
   userDetails?: BCeIDUserDetailContext;
   setCompanyId?: Dispatch<SetStateAction<number | undefined>>;
