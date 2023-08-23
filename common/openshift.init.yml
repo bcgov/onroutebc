@@ -30,6 +30,9 @@ parameters:
   - name: AUTH0_IGNORE_EXP
     description: The boolean flag to ignore the JWT expiration
     required: true
+  - name: SITEMINDER_LOG_OFF_URL
+    description: The siteminder log off url
+    required: true
   - name: DOPS_CVSE_FORMS_CACHE_TTL_MS
     description: The cache time to live for CVSE FORMS in DOPS in Milliseconds
     required: true
