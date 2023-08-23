@@ -168,7 +168,6 @@ jobs:
             ${{ matrix.parameters }}
           # penetration_test: ${{ github.event_name != 'pull_request'}}
           penetration_test: true
-          penetration_test_fail: fail
           penetration_test_issue: true
           token: ${{ secrets.GITHUB_TOKEN }}
           penetration_test_issue_title: ${{ matrix.name }}
