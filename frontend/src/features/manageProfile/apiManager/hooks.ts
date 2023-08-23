@@ -42,6 +42,7 @@ export const useUserContext = () => {
     setUserDetails,
     setCompanyLegalName,
     setIDIRUserDetails,
+    setOnRouteBCClientNumber
   } = useContext(OnRouteBCContext);
   const { isAuthenticated, user: userFromToken } = useAuth();
   return useQuery({
@@ -68,13 +69,15 @@ export const useUserContext = () => {
           setIDIRUserDetails?.(() => userDetails);
         }
       } else {
-        const { user, associatedCompanies } =
+        const { user, associatedCompanies, pendingCompanies } =
           userContextResponseBody as BCeIDUserContextType;
         if (user?.userGUID) {
           const companyId = associatedCompanies[0].companyId;
           const legalName = associatedCompanies[0].legalName;
+          const clientNumber = associatedCompanies[0].clientNumber;
           setCompanyId?.(() => companyId);
           setCompanyLegalName?.(() => legalName);
+          setOnRouteBCClientNumber?.(() => clientNumber);
           const userDetails = {
             firstName: user.firstName,
             lastName: user.lastName,
@@ -91,6 +94,15 @@ export const useUserContext = () => {
 
           // Setting the companyId to sessionStorage so that it can be
           // used outside of react components.
+          sessionStorage.setItem(
+            "onRouteBC.user.companyId",
+            companyId.toString()
+          );
+        }
+        if (pendingCompanies.length > 0) {
+          const { companyId, legalName } = pendingCompanies[0];
+          setCompanyId?.(() => companyId);
+          setCompanyLegalName?.(() => legalName);
           sessionStorage.setItem(
             "onRouteBC.user.companyId",
             companyId.toString()

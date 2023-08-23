@@ -2,10 +2,40 @@
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  margin: 0 10px 0 0;
-  padding-left: 30px;
-  // width: 200px;
-  /* border-style: dotted;
-  border-width: 1px;
-  border-color: lightgrey; */
+  margin: 0 0.5rem 0 0;
+  height: 100%;
+
+  &__logo {
+    img {
+      height: 50px;
+    }
+  }
+
+  &__title {
+    margin: 0;
+    font-weight: 600;
+  }
+
+  &__company {
+    border-left: 1px solid #9b9b9b;
+    font-size: 1.5vw;
+    padding-left: 1rem;
+    margin-left: 1rem;
+  }
+}
+
+@media (width < 1000px) {
+  .brand {
+    &__company {
+      display: none;
+    }
+  }
+}
+
+@media (width < 530px) {
+  .brand {
+    &__title {
+      display: none;
+    }
+  }
 }

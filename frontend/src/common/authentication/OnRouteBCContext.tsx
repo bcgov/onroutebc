@@ -19,11 +19,11 @@ export interface BCeIDUserDetailContext {
   lastName: string;
   userName: string;
   phone1: string;
-  phone1Extension: string;
-  phone2: string;
-  phone2Extension: string;
+  phone1Extension?: string;
+  phone2?: string;
+  phone2Extension?: string;
   email: string;
-  fax: string;
+  fax?: string;
   userAuthGroup: string;
 }
 
@@ -33,6 +33,8 @@ export interface BCeIDUserDetailContext {
 export type OnRouteBCContextType = {
   setUserRoles?: Dispatch<SetStateAction<string[] | undefined>>;
   userRoles?: string[];
+  setOnRouteBCClientNumber?: Dispatch<SetStateAction<string | undefined>>;
+  onRouteBCClientNumber?: string;
   setUserDetails?: Dispatch<SetStateAction<BCeIDUserDetailContext | undefined>>;
   userDetails?: BCeIDUserDetailContext;
   setCompanyId?: Dispatch<SetStateAction<number | undefined>>;

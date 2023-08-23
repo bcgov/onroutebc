@@ -20,7 +20,7 @@ export const NotFound = () => {
           <Divider/>
           <p style={{ margin: '20px 0'}}>
           <Typography variant="body1" sx={{ color: "#313132"}}>
-              Please visit <a href="/">onRoutBC</a>.         
+              Please visit <a href="/">onRouteBC</a>.         
           </Typography>
           </p>
           <Divider/>

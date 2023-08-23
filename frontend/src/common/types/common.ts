@@ -1,3 +1,4 @@
+import { SearchFields } from "../../features/idir/search/types/types";
 import {
   CompanyAndUserRequest,
   CompanyProfile,
@@ -25,7 +26,8 @@ export type ORBC_FormTypes =
   | Application
   | UserInformation
   | CompanyAndUserRequest
-  | BCeIDAddUserRequest;
+  | BCeIDAddUserRequest
+  | SearchFields;
 
 /**
  * A generic paginated response structure for all the paginated responses from APIs.
