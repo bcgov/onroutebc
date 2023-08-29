@@ -84,19 +84,6 @@ export class PermitController {
     return this.permitService.findByPermitNumber(permitNumber);
   }
 
-  @ApiOkResponse({
-    description: 'The Permit Resource',
-    type: ReadPermitDto,
-    isArray: true,
-  })
-  @Public()
-  @Get("/:permitId")
-  async getByPermitId(
-    @Param('permitId') permitId: string,
-  ): Promise<ReadPermitDto> {
-    return this.permitService.findByPermitId(permitId);
-  }
-
   /**
    * Get Permits of Logged in user
    * @Query companyId Company id of logged in user
@@ -223,5 +210,20 @@ export class PermitController {
 
     await this.permitService.findReceiptPDF(currentUser, permitId, res);
     res.status(200);
+  }
+
+  @AuthOnly()
+  @ApiOkResponse({
+    description: 'The Permit Resource',
+    type: ReadPermitDto,
+    isArray: true,
+  })
+  @Public()
+  @Get("/:permitId")
+  async getByPermitId(
+    @Param('permitId') permitId: string,
+  ): Promise<ReadPermitDto> {
+    console.log("PermitId");
+    return this.permitService.findByPermitId(permitId);
   }
 }

@@ -29,7 +29,7 @@ import { Transaction } from '../payment/entities/transaction.entity';
     ]),
     CompanyModule,
   ],
-  controllers: [PermitController, ApplicationController],
+  controllers: [ApplicationController, PermitController],
   providers: [
     PermitService,
     ApplicationService,
