@@ -31,7 +31,10 @@ export const CompanyInfo = ({
   return (
     <>
       {isEditting ? <Header /> : null}
-      <CompanyBanner companyInfo={companyInfoData} />
+      <CompanyBanner
+        companyName={companyInfoData?.legalName}
+        clientNumber={companyInfoData?.clientNumber}
+      />
       {isEditting ? (
         <CompanyInfoForm
           companyInfo={companyInfoData}

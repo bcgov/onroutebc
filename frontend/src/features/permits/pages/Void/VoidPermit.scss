@@ -1,0 +1,14 @@
+@import "../../../../themes/orbcStyles.scss";
+
+.void-permit {
+  display: flex;
+  flex-direction: column;
+  background-color: $white;
+
+  &__title {
+    font-weight: 600;
+    font-size: 1.5rem;
+    background-color: $bc-background-light-grey;
+    padding: 2em 10%;
+  }
+}

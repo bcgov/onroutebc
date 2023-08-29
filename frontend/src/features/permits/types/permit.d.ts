@@ -111,4 +111,5 @@ interface TermOversizeApplication {
   mailingAddress: MailingAddress;
   feeSummary: string;
   companyName?: string;
+  clientNumber?: string;
 }

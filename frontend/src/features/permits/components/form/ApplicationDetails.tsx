@@ -101,7 +101,10 @@ export const ApplicationDetails = ({
           <Box></Box>
         )}
       </div>
-      <CompanyBanner companyInfo={companyInfoQuery.data} />
+      <CompanyBanner 
+        companyName={companyInfoQuery.data?.legalName}
+        clientNumber={companyInfoQuery.data?.clientNumber}
+      />
       <CompanyInformation companyInfo={companyInfoQuery.data} />
     </>
   );

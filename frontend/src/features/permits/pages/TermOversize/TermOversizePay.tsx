@@ -14,7 +14,10 @@ import { PermitType } from "../../types/application";
 
 export const TermOversizePay = () => {
   const { applicationData } = useContext(ApplicationContext);
-  const calculatedFee = feeSummaryDisplayText(applicationData);
+  const calculatedFee = feeSummaryDisplayText(
+    applicationData?.permitData?.feeSummary, 
+    applicationData?.permitData?.permitDuration
+  );
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -84,7 +87,7 @@ const ApplicationSummary = () => {
   );
 };
 
-const FeeSummary = ({ calculatedFee }: { calculatedFee: number }) => {
+const FeeSummary = ({ calculatedFee }: { calculatedFee: string }) => {
   const { applicationData } = useContext(ApplicationContext);
   if (!applicationData?.permitId)
     return <ErrorFallback error={"Application data not found"} />;
@@ -151,7 +154,9 @@ const FeeSummary = ({ calculatedFee }: { calculatedFee: number }) => {
             <Typography variant="h6">
               {permitTypeDisplayText(applicationData?.permitType)}
             </Typography>
-            <Typography variant="h6">${calculatedFee}.00</Typography>
+            <Typography variant="h6">
+              {calculatedFee}
+            </Typography>
           </Box>
           <Box
             sx={{
@@ -162,7 +167,9 @@ const FeeSummary = ({ calculatedFee }: { calculatedFee: number }) => {
             }}
           >
             <Typography variant="h4">Total (CAD)</Typography>
-            <Typography variant="h4">${calculatedFee}.00</Typography>
+            <Typography variant="h4">
+              {calculatedFee}
+            </Typography>
           </Box>
         </Box>
 

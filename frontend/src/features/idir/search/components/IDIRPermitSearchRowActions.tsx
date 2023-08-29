@@ -2,8 +2,12 @@ import { useState } from "react";
 import { OnRouteBCTableRowActions } from "../../../../common/components/table/OnRouteBCTableRowActions";
 import PermitResendDialog from "./PermitResendDialog";
 import { viewReceiptPdf } from "../../../permits/helpers/permitPDFHelper";
+import { useNavigate } from "react-router-dom";
+import * as routes from "../../../../routes/constants";
+import { USER_AUTH_GROUP } from "../../../manageProfile/types/userManagement.d";
 
-const ACTIVE_OPTIONS = ["Amend", "View Receipt", "Resend", "Void"];
+const ACTIVE_OPTIONS = ["Amend", "View Receipt", "Resend"];
+const SYSADMIN_ONLY_OPTIONS = ["Void"];
 const EXPIRED_OPTIONS = ["View Receipt", "Resend"];
 const MINIMAL_OPTIONS = ["View Receipt"];
 
@@ -13,8 +17,12 @@ const MINIMAL_OPTIONS = ["View Receipt"];
  * @returns string[]
  */
 const getOptions = (isExpired: boolean, userAuthGroup?: string): string[] => {
-  if (userAuthGroup === "EOFFICER") return MINIMAL_OPTIONS;
-  return isExpired ? EXPIRED_OPTIONS : ACTIVE_OPTIONS;
+  if (userAuthGroup === USER_AUTH_GROUP.EOFFICER) {
+    return MINIMAL_OPTIONS;
+  }
+  if (isExpired) return EXPIRED_OPTIONS;
+  return userAuthGroup === USER_AUTH_GROUP.SYSADMIN ? 
+    [...ACTIVE_OPTIONS, ...SYSADMIN_ONLY_OPTIONS] : ACTIVE_OPTIONS;
 };
 
 /**
@@ -54,6 +62,7 @@ export const IDIRPermitSearchRowActions = ({
   userAuthGroup?: string;
 }) => {
   const [isResendOpen, setIsResendOpen] = useState<boolean>(false);
+  const navigate = useNavigate();
 
   /**
    * Function to handle user selection from the options.
@@ -65,6 +74,8 @@ export const IDIRPermitSearchRowActions = ({
       setIsResendOpen(() => true);
     } else if (selectedOption === "View Receipt") {
       viewReceiptPdf(permitId.toString());
+    } else if (selectedOption === "Void") {
+      navigate(`/${routes.PERMITS}/${permitId}/${routes.PERMIT_VOID}`);
     }
   };
 

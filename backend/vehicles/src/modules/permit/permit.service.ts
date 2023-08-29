@@ -75,6 +75,18 @@ export class PermitService {
   }
 
   /**
+   * Find single permit with associated data by permit id.
+   * @param permitId permit id
+   * @returns permit with data
+   */
+  public async findByPermitId(
+    permitId: string,
+  ): Promise<ReadPermitDto> {
+    const permit = await this.findOne(permitId);
+    return this.classMapper.mapAsync(permit, Permit, ReadPermitDto);
+  }  
+
+  /**
    * Finds permits by permit number.
    * @param permitNumber partial or full permit number to search
    * @returns an array of permits

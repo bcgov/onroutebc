@@ -21,6 +21,7 @@ import { EditUserDashboard } from "../features/manageProfile/pages/EditUserDashb
 import { IDIRSearchResultsDashboard } from "../features/idir/search/pages/IDIRSearchResultsDashboard";
 import { IDIRWelcome } from "../features/idir/IDIRWelcome";
 import { UserInfoWizard } from "../features/wizard/UserInfoWizard";
+import { VoidPermit } from "../features/permits/pages/Void/VoidPermit";
 
 export const AppRoutes = () => {
   return (
@@ -111,6 +112,12 @@ export const AppRoutes = () => {
             element={<PaymentFailureRedirect />}
           />
         </Route>
+      </Route>
+      <Route element={<ProtectedRoutes requiredRole={ROLES.WRITE_PERMIT} />}>
+        <Route 
+          path={`${routes.PERMITS}/:permitId/${routes.PERMIT_VOID}`}
+          element={<VoidPermit />} 
+        />
       </Route>
       <Route element={<ProtectedRoutes requiredRole={ROLES.WRITE_PERMIT} />}>
         <Route path={routes.PAYMENT_REDIRECT} element={<PaymentRedirect />} />

@@ -25,8 +25,12 @@ import { USER_AUTH_GROUP } from "../../../manageProfile/types/userManagement.d";
 const shouldShowRowActions = (userAuthGroup: string | undefined): boolean => {
   if (!userAuthGroup) return false;
   // Check if the user has PPC role to confirm
-  return userAuthGroup === USER_AUTH_GROUP.PPCCLERK 
-    || userAuthGroup === USER_AUTH_GROUP.EOFFICER;
+  const allowableAuthGroups = [
+    USER_AUTH_GROUP.PPCCLERK,
+    USER_AUTH_GROUP.EOFFICER,
+    USER_AUTH_GROUP.SYSADMIN,
+  ] as string[];
+  return allowableAuthGroups.includes(userAuthGroup);
 };
 
 /*

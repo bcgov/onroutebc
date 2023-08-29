@@ -240,6 +240,27 @@ export const postTransaction = async (
 };
 
 /**
+ * Get permit by permit id
+ * @param permitId Permit id of the permit to be retrieved.
+ * @returns Permit information if found, or undefined
+ */
+export const getPermit = async (permitId: string): Promise<ReadPermitDto | undefined> => {
+  const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
+  let permitsURL = `${VEHICLES_URL}/permits/${permitId}`;
+  const queryParams = [];
+  if (companyId) {
+    queryParams.push(`companyId=${companyId}`);
+  }
+  if (queryParams.length > 0) {
+    permitsURL += `?${queryParams.join("&")}`;
+  }
+
+  const response = await httpGETRequest(permitsURL);
+  if (!response.data) return undefined;
+  return response.data as ReadPermitDto;
+};
+
+/**
  * Retrieve the list of active or expired permits.
  * @param expired If set to true, expired permits will be retrieved.
  * @returns A list of permits.

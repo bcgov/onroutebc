@@ -1,6 +1,7 @@
 import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import {
   getApplicationInProgressById,
+  getPermit,
   getPermitTransaction,
   postTransaction,
   submitTermOversize,
@@ -11,6 +12,7 @@ import { useState } from "react";
 import { mapApplicationResponseToApplication } from "../helpers/mappers";
 import { PermitTransaction } from "../types/payment";
 import { AxiosError } from "axios";
+import { ReadPermitDto } from "../types/permit";
 
 /**
  * A custom react query mutation hook that saves the application data to the backend API
@@ -76,6 +78,33 @@ export const useApplicationDetailsQuery = (permitId?: string) => {
     query,
     applicationData,
     setApplicationData,
+  };
+};
+
+/**
+ * A custom react query hook that get permit details from the backend API
+ * The hook gets permit details by its permit id
+ * @param permitId permit id for the permit
+ * @returns permit details, or error if failed
+ */
+export const usePermitDetailsQuery = (permitId: string) => {
+  const [permit, setPermit] = useState<ReadPermitDto | undefined>(undefined);
+  
+  const query = useQuery({
+    queryKey: ["permit"],
+    queryFn: () => getPermit(permitId),
+    retry: false,
+    refetchOnMount: "always",
+    refetchOnWindowFocus: false, // prevent unnecessary multiple queries on page showing up in foreground
+    onSuccess: (permitDetails) => {
+      setPermit(permitDetails);
+    },
+  });
+
+  return {
+    query,
+    permit,
+    setPermit,
   };
 };
 

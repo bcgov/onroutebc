@@ -9,7 +9,10 @@ import { PermitType } from "../../../types/application";
 
 export const FeeSummaryBanner = () => {
   const { applicationData } = useContext(ApplicationContext);
-  const calculatedFee = feeSummaryDisplayText(applicationData);
+  const calculatedFee = feeSummaryDisplayText(
+    applicationData?.permitData?.feeSummary,
+    applicationData?.permitData?.permitDuration
+  );
   
   return (
     <Box className="fee-summary-banner">
@@ -36,7 +39,7 @@ export const FeeSummaryBanner = () => {
           variant="h6"
           data-testid="fee-summary-price"
         >
-          ${calculatedFee}.00
+          {calculatedFee}
         </Typography>
       </Box>
       <Box className="fee-summary-banner__footer">
@@ -45,7 +48,7 @@ export const FeeSummaryBanner = () => {
           variant="h4"
           data-testid="fee-summary-total"
         >
-          ${calculatedFee}.00
+          {calculatedFee}
         </Typography>
       </Box>
     </Box>

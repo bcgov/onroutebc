@@ -84,6 +84,19 @@ export class PermitController {
     return this.permitService.findByPermitNumber(permitNumber);
   }
 
+  @ApiOkResponse({
+    description: 'The Permit Resource',
+    type: ReadPermitDto,
+    isArray: true,
+  })
+  @Public()
+  @Get("/:permitId")
+  async getByPermitId(
+    @Param('permitId') permitId: string,
+  ): Promise<ReadPermitDto> {
+    return this.permitService.findByPermitId(permitId);
+  }
+
   /**
    * Get Permits of Logged in user
    * @Query companyId Company id of logged in user

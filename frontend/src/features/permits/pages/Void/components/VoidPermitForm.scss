@@ -1,0 +1,116 @@
+@import "../../../../../themes/orbcStyles.scss";
+
+.void-permit__form {
+  padding: 0 10%;
+
+  .form-section {
+    display: flex;
+    flex-direction: row;
+    padding: 2em 0;
+    border-bottom: 1px solid $bc-border-grey;
+
+    &--reason {
+      margin-top: 0.5em;
+    }
+
+    &__label {
+      font-weight: 600;
+      font-size: 1.2rem;
+      width: 40%;
+    }
+
+    &__input-area {
+      width: 60%;
+
+      .void-input {
+        &--reason {
+          width: 55%;
+          border: 2px solid $bc-text-box-border-grey;
+          border-radius: 2px;
+        }
+
+        &--revoke, &--refund {
+          display: flex;
+          flex-direction: row;
+          margin-top: 1em;
+
+          .radio-label {
+            margin-right: 2em;
+          }
+        }
+
+        &--email {
+          max-width: 375px;
+
+          .custom-form-control {
+            margin: 0;
+          }
+        }
+
+        &--fax {
+          max-width: 375px;
+
+          .custom-form-control {
+            margin: 1em 0 0 0;
+          }
+        }
+      }
+
+      .bc-gov-alertbanner {
+        margin: 0;
+      }
+
+      .fee-summary {
+        &__header {
+          display: flex;
+          flex-direction: row;
+          background-color: $banner-grey;
+          color: $bc-primary-blue;
+          font-size: 1.2rem;
+          font-weight: 600;
+          justify-content: space-between;
+          width: 55%;
+          padding: 1em;
+        }
+      }
+
+      .void-permit-button {
+        &--cancel {
+          background-color: $bc-background-light-grey;
+          color: $bc-black;
+          margin-right: 1em;
+          border: none;
+        }
+
+        &--void {
+          font-weight: 600;
+        }
+      }
+    }
+
+    &--disabled {
+      color: $disabled-colour;
+
+      .form-section {
+        &__input-area {
+          .fee-summary {
+            &__header {
+              color: $disabled-colour;
+            }
+
+            .radio-label {
+              &__text {
+                color: $disabled-colour;
+              }
+            }
+
+            .radio {
+              color: $disabled-colour;
+              border-color: $disabled-colour;
+            }
+          }
+        }
+      }
+    }
+  }
+}
