@@ -5,6 +5,7 @@ import {
   HttpException,
   Inject,
   Injectable,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ApplicationStatus } from 'src/common/enum/application-status.enum';
@@ -78,6 +79,23 @@ export class ApplicationService {
     createApplicationDto: CreateApplicationDto,
     currentUser: IUserJWT,
   ): Promise<ReadApplicationDto> {
+
+        //If permit id exists assign it to null to create new application.
+        //Existing permit id also implies that this new application is an amendment.
+        if (createApplicationDto.permitId) {
+          const permit = await this.findOne(createApplicationDto.permitId);
+          //to check if there is already an appliation in database
+          const count = await this.checkApplicationInProgress(permit.originalPermitId);
+          // If an application already exists throw error. 
+          //As there should not be multiple amendment applications for one permit
+          if(count > 0)
+          throw new InternalServerErrorException('An application already exists for this permit.');
+          createApplicationDto.revision = permit.revision + 1;
+          createApplicationDto.previousRevision = createApplicationDto.permitId;
+          createApplicationDto.permitId = null;
+          createApplicationDto.originalPermitId = permit.originalPermitId;
+        }
+
     createApplicationDto.permitStatus = ApplicationStatus.IN_PROGRESS;
     //Assign Permit Application Origin
     if (currentUser.identity_provider == IDP.IDIR)
@@ -93,14 +111,6 @@ export class ApplicationService {
       createApplicationDto.permitId,
     );
     createApplicationDto.applicationNumber = applicationNumber;
-    //If permit id exists assign it to null to create new application.
-    if (createApplicationDto.permitId) {
-      const permit = await this.findOne(createApplicationDto.permitId);
-      createApplicationDto.revision = permit.revision + 1;
-      createApplicationDto.previousRevision = createApplicationDto.permitId;
-      createApplicationDto.permitId = null;
-    }
-
     const permitApplication = this.classMapper.map(
       createApplicationDto,
       CreateApplicationDto,
@@ -571,11 +581,7 @@ export class ApplicationService {
         seq = permit.permitNumber.substring(3, 11);
         rnd = permit.permitNumber.substring(12, 15);
       } else {
-        seq = await callDatabaseSequence(
-          'permit.ORBC_PERMIT_NUMBER_SEQ',
-          this.dataSource,
-        );
-        rnd = randomInt(100, 1000);
+        throw new InternalServerErrorException('Permit number does not exist');
       }
       source = await this.getPermitApplicationOrigin(
         permit.permitApplicationOrigin,
@@ -689,5 +695,15 @@ export class ApplicationService {
     const receiptNumber = String(String(source) + '-' + String(seq));
 
     return receiptNumber;
+  }
+
+  async checkApplicationInProgress(originalPermitId: string): Promise<number>
+  {
+    const count = await this.permitRepository.createQueryBuilder('permit')
+    .where('permit.originalPermitId = :originalPermitId',{originalPermitId: originalPermitId})
+    .andWhere('permit.permitStatus IN (:...applicationStatus)',{applicationStatus: Object.values(ApplicationStatus).filter(
+      (x) => x != ApplicationStatus.CANCELLED && x != ApplicationStatus.REJECTED && x != ApplicationStatus.ISSUED,
+    ),}).getCount();
+    return count;
   }
 }

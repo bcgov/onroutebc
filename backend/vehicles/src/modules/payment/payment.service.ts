@@ -108,7 +108,10 @@ export class PaymentService {
     );
     const trnNum = seq.toString(16);
     // const trnNum = 'T' + currDate.getTime().toString().substring(4);
-    const transactionNumber = 'T' + trnNum.padStart(9, '0').toUpperCase();
+    const currentDate = new Date();
+    const milliseconds = currentDate.getMilliseconds();
+    const transactionNumber =
+      'T' + trnNum.padStart(9, '0').toUpperCase() + String(milliseconds);
 
     const { motiPayHash, hashExpiry } = this.queryHash(
       'P',

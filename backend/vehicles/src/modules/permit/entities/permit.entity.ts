@@ -25,6 +25,14 @@ export class Permit extends Base {
   @PrimaryGeneratedColumn({ type: 'bigint', name: 'ID' })
   permitId: string;
 
+  @AutoMap()
+  @ApiProperty({
+    example: '1',
+    description: 'Identifier for original permit for a revisions',
+  })
+  @Column({ type: 'bigint', name: 'ORIGINAL_ID', nullable: true })
+  originalPermitId: string;
+
   @AutoMap(() => PermitData)
   @OneToOne(() => PermitData, (PermitData) => PermitData.permit, {
     cascade: true,

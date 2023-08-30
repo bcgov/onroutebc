@@ -42,7 +42,7 @@ export class Transaction extends Base {
     description: 'Represents the auth code of a transaction.',
   })
   @Column({
-    length: '10',
+    length: '30',
     name: 'TRANSACTION_ORDER_NUMBER',
     nullable: false,
   })
