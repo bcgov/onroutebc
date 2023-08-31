@@ -1,98 +1,62 @@
-import { useEffect, useState } from "react";
-import { Controller, FormProvider, useForm } from "react-hook-form";
+import { Controller, FormProvider } from "react-hook-form";
+import isEmail from "validator/lib/isEmail";
+import { useNavigate } from "react-router-dom";
+import { Button, FormControlLabel, Radio, RadioGroup } from "@mui/material";
 
 import "./VoidPermitForm.scss";
-import { getDefaultRequiredVal } from "../../../../../common/helpers/util";
 import { WarningBcGovBanner } from "../../../../../common/components/banners/AlertBanners";
-import { Button, FormControlLabel, Radio, RadioGroup } from "@mui/material";
 import { feeSummaryDisplayText } from "../../../helpers/mappers";
 import { CustomFormComponent } from "../../../../../common/components/form/CustomFormComponents";
 import { invalidEmail, invalidPhoneLength, requiredMessage } from "../../../../../common/helpers/validationMessages";
-import isEmail from "validator/lib/isEmail";
-import { useNavigate } from "react-router-dom";
-
-interface VoidFormData {
-  permitId: string;
-  reason?: string;
-  revoke: boolean;
-  refund: boolean;
-  email?: string;
-  fax?: string;
-}
+import { useVoidPermitForm } from "../hooks/useVoidPermitForm";
+import { VoidPermitHeader } from "./VoidPermitHeader";
+import { ReadPermitDto } from "../../../types/permit";
+import { SEARCH_RESULTS } from "../../../../../routes/constants";
 
 const getDisabledClassName = (disabled: boolean, enabledClassName: string, prefix: string) => {
   return disabled ? `${prefix}--disabled` : enabledClassName;
 };
 
 const FEATURE = "void-permit";
+const searchRoute = `${SEARCH_RESULTS}?searchEntity=permits`;
 
 export const VoidPermitForm = ({
-  permitId,
-  email,
-  fax,
-  feeSummary,
-  permitDuration,
+  permit,
 }: {
-  permitId: string;
-  email?: string;
-  fax?: string;
-  feeSummary?: string;
-  permitDuration?: number;
+  permit?: ReadPermitDto,
 }) => {
   const navigate = useNavigate();
-  const [shouldRevoke, setShouldRevoke] = useState(false);
-  const [shouldRefund, setShouldRefund] = useState(false);
-  const defaultFormData = {
-    permitId,
-    reason: "",
-    revoke: shouldRevoke,
-    refund: shouldRefund,
-    email: getDefaultRequiredVal("", email),
-    fax: getDefaultRequiredVal("", fax),
-  };
+  const {
+    shouldRevoke,
+    formMethods,
+    handleReasonChange,
+    handleRevokeChange,
+    handleRefundChange,
+    setVoidPermitData,
+    next,
+  } = useVoidPermitForm();
 
-  const feeDisplayText = feeSummaryDisplayText(feeSummary, permitDuration);
+  const feeDisplayText = feeSummaryDisplayText(
+    permit?.permitData?.feeSummary, 
+    permit?.permitData?.permitDuration
+  );
 
-  const formMethods = useForm<VoidFormData>({
-    defaultValues: defaultFormData,
-    reValidateMode: "onBlur",
-  });
-
-  const { handleSubmit, setValue, control, getValues } = formMethods;
-
-  useEffect(() => {
-    setValue("email", getDefaultRequiredVal("", email));
-  }, [email]);
-
-  useEffect(() => {
-    setValue("fax", getDefaultRequiredVal("", fax));
-  }, [fax]);
-
-  const handleRevokeChange = (revokeOption: string) => {
-    const updatedRevoke = revokeOption === "true";
-    setShouldRevoke(updatedRevoke);
-    setValue("revoke", updatedRevoke);
-    if (updatedRevoke) {
-      handleRefundChange("false");
-    }
-  };
-
-  const handleRefundChange = (refundOption: string) => {
-    const updatedRefund = refundOption === "true";
-    setShouldRefund(updatedRefund);
-    setValue("refund", updatedRefund);
-  };
+  const { control, getValues, handleSubmit } = formMethods;
 
   const handleCancel = () => {
-    navigate(-1);
+    navigate(searchRoute);
   };
 
   const handleVoid = () => {
-    console.log(getValues()); //
+    const formValues = getValues();
+    setVoidPermitData(formValues);
+    console.log(formValues); //
+    next();
   };
 
   return (
     <FormProvider {...formMethods}>
+      <VoidPermitHeader permit={permit} />
       <div className="void-permit__form">
         <div className="form-section form-section--reason">
           <div className="form-section__label">
@@ -108,7 +72,7 @@ export const VoidPermitForm = ({
                   className="void-input void-input--reason"
                   rows={3}
                   defaultValue={value}
-                  onChange={(e) => setValue("reason", e.target.value)}
+                  onChange={(e) => handleReasonChange(e.target.value)}
                 >
                 </textarea>
               )}

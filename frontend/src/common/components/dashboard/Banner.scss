@@ -1,0 +1,26 @@
+.layout-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 1.5rem;
+  padding-bottom: 0.25rem;
+
+  &--extend {
+    padding-top: 2.5rem;
+    padding-bottom: 2.5rem;
+  }
+
+  &__text-section {
+    display: flex;
+    justify-content: space-between;
+
+    .banner-button {
+      display: flex;
+      align-items: center;
+    }
+  }
+
+  .banner-subtext {
+    margin-top: -1rem;
+  }
+}

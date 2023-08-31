@@ -5,10 +5,9 @@
   flex-direction: column;
   background-color: $white;
 
-  &__title {
-    font-weight: 600;
-    font-size: 1.5rem;
+  .layout-banner {
     background-color: $bc-background-light-grey;
-    padding: 2em 10%;
+    padding-left: 10%;
+    padding-right: 10%;
   }
 }
