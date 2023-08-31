@@ -1,0 +1,78 @@
+@import "../../../../themes/orbcStyles.scss";
+
+.search-filter {
+  position: relative;
+  top: 0;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  background-color: $white;
+  border-bottom: 2px solid $bc-gold;
+  padding: 1rem 0;
+
+  .filter {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    max-width: 600px;
+
+    &__option {
+      display: flex;
+
+      .option-label {
+        font-weight: 600;
+        margin-right: 1em;
+      }
+
+      &--find {
+        flex-direction: row;
+        align-items: center;
+
+        .find-by {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+        }
+      }
+
+      &--search {
+        flex-direction: column;
+        align-items: flex-start;
+
+        .search-by {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+
+          &__value {
+            margin: 0 1rem;
+          }
+
+          &__search {
+            background-color: $bc-background-light-grey;
+            color: $bc-black;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (width < 600px) {
+  .search-filter {
+    .filter {
+      &__option {
+        &--search {
+          .search-by {
+            flex-direction: column;
+            align-items: flex-start;
+            
+            &__value {
+              margin: 0.5rem 0;
+            }
+          }
+        }
+      }
+    }
+  }
+}

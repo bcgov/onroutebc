@@ -1,6 +1,5 @@
 import { OnRouteBCTableRowActions } from "../../../../common/components/table/OnRouteBCTableRowActions";
-import { downloadReceiptPdf } from "../../apiManager/permitsAPI";
-import { openBlobInNewTab } from "../../helpers/openPdfInNewTab";
+import { viewReceiptPdf } from "../../helpers/permitPDFHelper";
 
 const ACTIVE_OPTIONS = ["View Receipt"];
 const EXPIRED_OPTIONS = ["View Receipt"];
@@ -19,22 +18,6 @@ export const PermitRowOptions = ({
   isExpired: boolean;
   permitId: number;
 }) => {
-  /**
-   * Opens the receipt pdf in a new tab.
-   * @param permitId The permit id.
-   */
-  const viewReceiptPdf = async (permitId: string) => {
-    if (permitId) {
-      try {
-        const { blobObj: blobObjWithoutType } = await downloadReceiptPdf(
-          permitId
-        );
-        openBlobInNewTab(blobObjWithoutType);
-      } catch (err) {
-        console.error(err);
-      }
-    }
-  };
 
   /**
    * Action handler upon a select event.

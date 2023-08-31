@@ -4,7 +4,7 @@ import { useAuth } from "react-oidc-context";
 import { useNavigate } from "react-router-dom";
 import * as routes from "../../routes/constants";
 import { HomePage } from "../../features/homePage/HomePage";
-import { UserContextType } from "./types";
+import { BCeIDUserContextType } from "./types";
 import { Loading } from "../pages/Loading";
 import { useUserContext } from "../../features/manageProfile/apiManager/hooks";
 
@@ -26,10 +26,10 @@ export const LoginRedirect = () => {
   useEffect(() => {
     if (isAuthenticated && !isLoading) {
       if (userFromToken?.profile?.identity_provider === "idir") {
-        navigate(routes.SEARCH_PPC);
+        navigate(routes.IDIR_WELCOME);
       } else {
-        const userContextData: UserContextType | undefined =
-          queryClient.getQueryData<UserContextType>(["userContext"]);
+        const userContextData: BCeIDUserContextType | undefined =
+          queryClient.getQueryData<BCeIDUserContextType>(["userContext"]);
         if (userContextData) {
           const { associatedCompanies, pendingCompanies, user } =
             userContextData;
@@ -37,7 +37,7 @@ export const LoginRedirect = () => {
           if (!user?.userGUID) {
             // The user is in pending companies => Redirect them to User Info Page.
             if (pendingCompanies.length > 0) {
-              navigate(routes.USER_INFO);
+              navigate(routes.WELCOME);
             }
             // The user and company does not exist => Redirect them to Add new company page.
             else if (associatedCompanies.length < 1) {

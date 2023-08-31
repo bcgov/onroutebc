@@ -17,14 +17,28 @@ import { SuccessPage } from "../features/permits/pages/SuccessPage/SuccessPage";
 import { PaymentRedirect } from "../features/permits/pages/Payment/PaymentRedirect";
 import { PaymentFailureRedirect } from "../features/permits/pages/Payment/PaymentFailureRedirect";
 import { AddUserDashboard } from "../features/manageProfile/pages/AddUserDashboard";
+import { EditUserDashboard } from "../features/manageProfile/pages/EditUserDashboard";
+import { IDIRSearchResultsDashboard } from "../features/idir/search/pages/IDIRSearchResultsDashboard";
+import { IDIRWelcome } from "../features/idir/IDIRWelcome";
+import { UserInfoWizard } from "../features/wizard/UserInfoWizard";
 
 export const AppRoutes = () => {
   return (
     <Routes>
       <Route path={routes.HOME} element={<InitialLandingPage />} />
       <Route path={routes.WELCOME} element={<WelcomePage />} />
-      <Route path={routes.SEARCH_PPC} element={<> TODO </>} />
       <Route path="*" element={<NotFound />} />
+
+      {/* IDIR Routes */}
+      <Route element={<ProtectedRoutes requiredRole={ROLES.READ_PERMIT} />}>
+        <Route path={routes.IDIR_WELCOME} element={<IDIRWelcome />} />
+        <Route
+          path={routes.SEARCH_RESULTS}
+          element={<IDIRSearchResultsDashboard />}
+        />
+      </Route>
+
+      {/* BCeID Routes */}
       {/* Protected Routes */}
       <Route element={<ProtectedRoutes requiredRole={ROLES.READ_VEHICLE} />}>
         <Route path={routes.MANAGE_VEHICLES}>
@@ -68,7 +82,7 @@ export const AppRoutes = () => {
       </Route>
       <Route element={<ProtectedRoutes requiredRole={ROLES.WRITE_USER} />}>
         <Route path={routes.ADD_USER} element={<AddUserDashboard />} />
-        <Route path={routes.EDIT_USER} element={<>Edit User</>} />
+        <Route path={`${routes.EDIT_USER}/:userGUID`} element={<EditUserDashboard />} />
       </Route>
       <Route element={<ProtectedRoutes requiredRole={ROLES.WRITE_PERMIT} />}>
         <Route
@@ -102,6 +116,7 @@ export const AppRoutes = () => {
         <Route path={routes.PAYMENT_REDIRECT} element={<PaymentRedirect />} />
       </Route>
       <Route path={routes.CREATE_PROFILE} element={<CreateProfileWizard />} />
+      <Route path={routes.USER_INFO} element={<UserInfoWizard />} />
     </Routes>
   );
 };

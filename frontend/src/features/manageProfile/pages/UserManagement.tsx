@@ -6,6 +6,7 @@ import MaterialReactTable, {
   MRT_TableInstance,
 } from "material-react-table";
 import { useCallback, useContext, useEffect, useState } from "react";
+import { useAuth } from "react-oidc-context";
 import { SnackBarContext } from "../../../App";
 import { NoRecordsFound } from "../../../common/components/table/NoRecordsFound";
 import { FIVE_MINUTES } from "../../../common/constants/constants";
@@ -24,11 +25,11 @@ export const UserManagement = () => {
   const query = useQuery({
     queryKey: ["companyUsers"],
     queryFn: getCompanyUsers,
-    keepPreviousData: true,
     staleTime: FIVE_MINUTES,
   });
   const { data, isError, isInitialLoading } = query;
   const snackBar = useContext(SnackBarContext);
+  const { user: userFromToken } = useAuth();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   /**
@@ -44,6 +45,7 @@ export const UserManagement = () => {
   const onConfirmDelete = async () => {
     // Uncomment this line -const userNames: string[] = Object.keys(rowSelection);
     // For implementation.
+    setIsDeleteDialogOpen(() => false);
   };
 
   /**
@@ -83,7 +85,7 @@ export const UserManagement = () => {
         selectAllMode="page"
         // Enable checkboxes for row selection
         enableRowSelection={(row: MRT_Row<ReadCompanyUser>): boolean => {
-          if (row?.original?.userAuthGroup !== "CVCLIENT") {
+          if (row?.original?.userGUID === userFromToken?.profile?.bceid_user_guid) {
             return false;
           }
           return true;

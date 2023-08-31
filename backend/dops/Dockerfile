@@ -1,5 +1,5 @@
 # Build container
-FROM node:18.17.0-alpine AS builder
+FROM node:18.17.1-alpine AS builder
 
 # Set the working directory to /app inside the container
 WORKDIR /app
@@ -18,7 +18,7 @@ RUN npm prune --production
 
 
 # Deployment container
-FROM node:18.17.0-alpine
+FROM node:18.17.1-alpine
 RUN npm cache clean --force
 
 # Create and Assign permissions to npm folder
@@ -45,6 +45,7 @@ ENV MSSQL_ENCRYPT ${MSSQL_ENCRYPT}
 ENV AUTH0_ISSUER_URL ${AUTH0_ISSUER_URL}
 ENV AUTH0_AUDIENCE ${AUTH0_AUDIENCE}
 ENV AUTH0_IGNORE_EXP ${AUTH0_IGNORE_EXP}
+ENV DOPS_CVSE_FORMS_CACHE_TTL_MS ${DOPS_CVSE_FORMS_CACHE_TTL_MS}
 ENV DOPS_S3_ACCESS_TYPE ${DOPS_S3_ACCESS_TYPE}
 ENV DOPS_S3_ACCESSKEYID ${DOPS_S3_ACCESSKEYID}
 ENV DOPS_S3_BUCKET ${DOPS_S3_BUCKET}
