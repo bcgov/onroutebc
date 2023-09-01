@@ -10,7 +10,7 @@ import { Banner } from "../../../../common/components/dashboard/Banner";
 import { VoidPermitContext } from "./context/VoidPermitContext";
 import { SEARCH_RESULTS } from "../../../../routes/constants";
 import { VoidPermitDto } from "./types/VoidPermitDto";
-import { RefundPermitStep } from "./RefundPermitStep";
+import { FinishVoid } from "./FinishVoid";
 import { Breadcrumb } from "./components/Breadcrumb";
 
 const searchRoute = `${SEARCH_RESULTS}?searchEntity=permits`;
@@ -42,11 +42,11 @@ export const VoidPermit = () => {
       onClick: () => setCurrentLink(0),
     },
     {
-      text: "Refund Permit",
+      text: "Finish Voiding",
     },
   ];
 
-  const getBannerText = () => currentLink === 0 ? "Void Permit" : "Refund Permit";
+  const getBannerText = () => currentLink === 0 ? "Void Permit" : "Finish Voiding";
 
   const {
     query: permitQuery,
@@ -57,7 +57,6 @@ export const VoidPermit = () => {
     permitId,
     reason: "",
     revoke: false,
-    refund: true,
     email: permit?.permitData?.contactDetails?.email,
     fax: permit?.permitData?.contactDetails?.fax,
   });
@@ -80,7 +79,7 @@ export const VoidPermit = () => {
       <VoidPermitForm key="void-permit" permit={permit} />
     ),
     (
-      <RefundPermitStep key="refund-permit" />
+      <FinishVoid key="finish-void" />
     ),
   ];
   

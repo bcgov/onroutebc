@@ -10,7 +10,6 @@ import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { ErrorFallback } from "../../../../common/pages/ErrorFallback";
 import { getMotiPayTransactionUrl } from "../../apiManager/permitsAPI";
 import { feeSummaryDisplayText, permitTypeDisplayText } from "../../helpers/mappers";
-import { PermitType } from "../../types/application";
 
 export const TermOversizePay = () => {
   const { applicationData } = useContext(ApplicationContext);
@@ -44,7 +43,7 @@ export const TermOversizePay = () => {
 const ApplicationSummary = () => {
   const { applicationData } = useContext(ApplicationContext);
   const applicationName = permitTypeDisplayText(
-    getDefaultRequiredVal("", applicationData?.permitType) as PermitType
+    getDefaultRequiredVal("", applicationData?.permitType)
   );
 
   return (

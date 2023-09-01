@@ -7,8 +7,21 @@ import {
   VehicleTypes,
   VehicleTypesAsString,
 } from "../../manageVehicles/types/managevehicles";
-import { Application, ApplicationRequestData, ApplicationResponse, PermitType } from "../types/application";
-import { DATE_FORMATS, dayjsToLocalStr, dayjsToUtcStr, now, toLocalDayjs, utcToLocalDayjs } from "../../../common/helpers/formatDate";
+
+import { 
+  Application, 
+  ApplicationRequestData, 
+  ApplicationResponse,
+} from "../types/application";
+
+import { 
+  DATE_FORMATS, 
+  dayjsToLocalStr, 
+  dayjsToUtcStr, 
+  now, 
+  toLocalDayjs, 
+  utcToLocalDayjs,
+} from "../../../common/helpers/formatDate";
 
 /**
  * This helper function is used to get the vehicle object that matches the vin prop
@@ -134,7 +147,7 @@ export const vehicleTypeDisplayText = (vehicleType: VehicleTypesAsString) => {
  * @param permitType Permit type (eg. TROS, STOS, etc)
  * @returns display text for the permit type
  */
-export const permitTypeDisplayText = (permitType: PermitType) => {
+export const permitTypeDisplayText = (permitType?: string) => {
   switch (permitType) {
     case "TROS":
       return "Oversize: Term";
@@ -155,5 +168,6 @@ export const feeSummaryDisplayText = (feeSummary?: string | null, duration?: num
   const feeFromSummary = applyWhenNotNullable((numericStr) => Number(numericStr).toFixed(2), feeSummary);
   const feeFromDuration = applyWhenNotNullable((num) => num.toFixed(2), duration);
   const fee = getDefaultRequiredVal("0.00", feeFromSummary, feeFromDuration);
-  return `$${fee}`;
+  const numericFee = Number(fee);
+  return numericFee >= 0 ? `$${fee}` : `-$${(numericFee * -1).toFixed(2)}`;
 };

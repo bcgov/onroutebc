@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from "react";
+import { useEffect, useContext } from "react";
 import { useForm } from "react-hook-form";
 
 import { getDefaultRequiredVal } from "../../../../../common/helpers/util";
@@ -11,13 +11,11 @@ export const useVoidPermitForm = () => {
     setVoidPermitData,
     next,
   } = useContext(VoidPermitContext);
-  const [shouldRevoke, setShouldRevoke] = useState(voidPermitData.revoke);
 
   const defaultFormData = {
     permitId: voidPermitData.permitId,
     reason: getDefaultRequiredVal("", voidPermitData.reason),
-    revoke: shouldRevoke,
-    refund: voidPermitData.refund,
+    revoke: voidPermitData.revoke,
     email: getDefaultRequiredVal("", voidPermitData.email),
     fax: getDefaultRequiredVal("", voidPermitData.fax),
   };
@@ -41,26 +39,9 @@ export const useVoidPermitForm = () => {
     setValue("reason", reason);
   };
 
-  const handleRevokeChange = (revokeOption: string) => {
-    const updatedRevoke = revokeOption === "true";
-    setShouldRevoke(updatedRevoke);
-    setValue("revoke", updatedRevoke);
-    if (updatedRevoke) {
-      handleRefundChange("false");
-    }
-  };
-
-  const handleRefundChange = (refundOption: string) => {
-    const updatedRefund = refundOption === "true";
-    setValue("refund", updatedRefund);
-  };
-
   return {
-    shouldRevoke,
     formMethods,
     handleReasonChange,
-    handleRevokeChange,
-    handleRefundChange,
     setVoidPermitData,
     next,
   };

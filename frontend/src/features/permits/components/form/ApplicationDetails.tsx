@@ -8,7 +8,6 @@ import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../../common/
 import { CompanyInformation } from "./CompanyInformation";
 import "./ApplicationDetails.scss";
 import { permitTypeDisplayText } from "../../helpers/mappers";
-import { PermitType } from "../../types/application";
 
 export const ApplicationDetails = ({
   permitType,
@@ -23,7 +22,7 @@ export const ApplicationDetails = ({
 }) => {
   const companyInfoQuery = useCompanyInfoQuery();
   const applicationName = permitTypeDisplayText(
-    getDefaultRequiredVal("", permitType) as PermitType
+    getDefaultRequiredVal("", permitType)
   );
 
   return (

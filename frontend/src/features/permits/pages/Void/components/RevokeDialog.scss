@@ -1,0 +1,75 @@
+@import "../../../../../themes/orbcStyles.scss";
+
+.revoke-dialog {
+  &__header {
+    padding: 1rem;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    background-color: $bc-background-light-grey;
+  }
+
+  &__icon {
+    .icon {
+      color: $bc-messages-red-text;
+      height: 2rem;
+    }
+  }
+
+  &__title {
+    font-weight: 600;
+    font-size: 1.2rem;
+    margin-left: 0.5em;
+    color: $bc-messages-red-text;
+  }
+
+  &__body {
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .revoke-form {
+    &__label {
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    &__reason {
+      border: 1.5px solid $bc-text-box-border-grey;
+      border-radius: 2px;
+      resize: none;
+      margin: 1em 0;
+      width: 99%;
+    }
+
+    &__msg {
+      padding-bottom: 1em;
+    }
+
+    &__btns {
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-end;
+      width: 100%;
+
+      .revoke-permit-button {
+        &--cancel {
+          margin-right: 1.5rem;
+          cursor: pointer;
+          background-color: $bc-background-light-grey;
+          color: $bc-black;
+          border: none;
+        }
+
+        &--revoke {
+          color: $white;
+          background-color: $bc-red;
+          font-weight: 600;
+          cursor: pointer;
+        }
+      }
+    }
+  }
+}

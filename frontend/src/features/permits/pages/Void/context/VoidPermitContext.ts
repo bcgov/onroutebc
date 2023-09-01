@@ -11,8 +11,8 @@ interface VoidPermitContextType {
 export const VoidPermitContext = createContext<VoidPermitContextType>({
   voidPermitData: {
     permitId: "",
+    reason: "",
     revoke: false,
-    refund: true,
   },
   setVoidPermitData: () => undefined,
   next: () => undefined,

@@ -5,7 +5,6 @@ import "./FeeSummaryBanner.scss";
 import { ApplicationContext } from "../../../context/ApplicationContext";
 import { getDefaultRequiredVal } from "../../../../../common/helpers/util";
 import { feeSummaryDisplayText, permitTypeDisplayText } from "../../../helpers/mappers";
-import { PermitType } from "../../../types/application";
 
 export const FeeSummaryBanner = () => {
   const { applicationData } = useContext(ApplicationContext);
@@ -32,7 +31,7 @@ export const FeeSummaryBanner = () => {
           data-testid="fee-summary-permit-type"
         >
           {permitTypeDisplayText(
-            getDefaultRequiredVal("", applicationData?.permitType) as PermitType
+            getDefaultRequiredVal("", applicationData?.permitType)
           )}
         </Typography>
         <Typography 

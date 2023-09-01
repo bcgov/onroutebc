@@ -3,7 +3,6 @@ import { Box, Typography } from "@mui/material";
 import "./VoidPermitHeader.scss";
 import { ReadPermitDto } from "../../../types/permit";
 import { permitTypeDisplayText } from "../../../helpers/mappers";
-import { PermitType } from "../../../types/application";
 import { DATE_FORMATS, toLocal } from "../../../../../common/helpers/formatDate";
 import { CompanyBanner } from "../../../../../common/components/banners/CompanyBanner";
 
@@ -19,7 +18,7 @@ export const VoidPermitHeader = ({
         data-testid="void-permit-title"
         variant="h1"
       >
-        {permitTypeDisplayText(permit.permitType as PermitType)}
+        {permitTypeDisplayText(permit.permitType)}
       </Typography>
 
       <Box className="permit-number">

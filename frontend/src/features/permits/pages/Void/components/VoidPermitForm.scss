@@ -24,19 +24,9 @@
 
       .void-input {
         &--reason {
-          width: 55%;
-          border: 2px solid $bc-text-box-border-grey;
+          border: 1.5px solid $bc-text-box-border-grey;
           border-radius: 2px;
-        }
-
-        &--revoke, &--refund {
-          display: flex;
-          flex-direction: row;
-          margin-top: 1em;
-
-          .radio-label {
-            margin-right: 2em;
-          }
+          resize: none;
         }
 
         &--email {
@@ -56,59 +46,112 @@
         }
       }
 
-      .bc-gov-alertbanner {
-        margin: 0;
+      .reason-container {
+        display: flex;
+        flex-direction: row;
+        align-items: flex-start;
+
+        &__left {
+          display: flex;
+          flex-direction: column;
+          width: 60%;
+          margin-right: 2rem;
+
+          .fee-summary {
+            display: flex;
+            flex-direction: column;
+            background-color: $banner-grey;
+            color: $bc-primary-blue;
+            padding: 1em;
+            margin-top: 2em;
+
+            &__title {
+              font-weight: 600;
+              font-size: 1.2rem;
+            }
+
+            &__table {
+              display: flex;
+              flex-direction: column;
+
+              .table-row {
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+                font-size: 1rem;
+                border-bottom: 1px solid $bc-border-grey;
+                padding: 1em 0;
+
+                &--header {
+                  font-weight: 600;
+                  padding: 2em 0 1em 0;
+                }
+
+                &--total {
+                  border-bottom: none;
+                  font-weight: 600;
+                  font-size: 1.2rem;
+                  padding: 1em 0 0 0;
+                }
+              }
+            }
+          }
+        }
+
+        &__right {
+          display: flex;
+          flex-direction: column;
+          width: 40%;
+
+          .revoke {
+            display: flex;
+            flex-direction: column;
+            
+            &__header {
+              background-color: $bc-messages-red-text;
+              color: $white;
+              padding: 1em;
+              font-weight: 600;
+              font-size: 1.2rem;
+            }
+
+            &__body {
+              background-color: $bc-messages-red-background;
+              padding: 1em;
+            }
+
+            &__msg {
+              &--bold {
+                font-weight: 600;
+              }
+            }
+
+            &__btn {
+              color: $white;
+              background-color: $bc-red;
+              font-weight: 600;
+              cursor: pointer;
+              margin-top: 1em;
+              width: 100%;
+            }
+          }
+        }
       }
 
-      .fee-summary {
-        &__header {
-          display: flex;
-          flex-direction: row;
-          background-color: $banner-grey;
-          color: $bc-primary-blue;
-          font-size: 1.2rem;
-          font-weight: 600;
-          justify-content: space-between;
-          width: 55%;
-          padding: 1em;
-        }
+      .bc-gov-alertbanner {
+        margin: 0;
       }
 
       .void-permit-button {
         &--cancel {
           background-color: $bc-background-light-grey;
           color: $bc-black;
-          margin-right: 1em;
+          margin-right: 1.5em;
           border: none;
         }
 
-        &--void {
+        &--continue {
           font-weight: 600;
-        }
-      }
-    }
-
-    &--disabled {
-      color: $disabled-colour;
-
-      .form-section {
-        &__input-area {
-          .fee-summary {
-            &__header {
-              color: $disabled-colour;
-            }
-
-            .radio-label {
-              &__text {
-                color: $disabled-colour;
-              }
-            }
-
-            .radio {
-              color: $disabled-colour;
-              border-color: $disabled-colour;
-            }
-          }
         }
       }
     }

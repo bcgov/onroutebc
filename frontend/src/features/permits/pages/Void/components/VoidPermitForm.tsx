@@ -1,21 +1,18 @@
 import { Controller, FormProvider } from "react-hook-form";
 import isEmail from "validator/lib/isEmail";
 import { useNavigate } from "react-router-dom";
-import { Button, FormControlLabel, Radio, RadioGroup } from "@mui/material";
+import { Button } from "@mui/material";
+import { useState } from "react";
 
 import "./VoidPermitForm.scss";
-import { WarningBcGovBanner } from "../../../../../common/components/banners/AlertBanners";
-import { feeSummaryDisplayText } from "../../../helpers/mappers";
+import { feeSummaryDisplayText, permitTypeDisplayText } from "../../../helpers/mappers";
 import { CustomFormComponent } from "../../../../../common/components/form/CustomFormComponents";
 import { invalidEmail, invalidPhoneLength, requiredMessage } from "../../../../../common/helpers/validationMessages";
 import { useVoidPermitForm } from "../hooks/useVoidPermitForm";
 import { VoidPermitHeader } from "./VoidPermitHeader";
 import { ReadPermitDto } from "../../../types/permit";
 import { SEARCH_RESULTS } from "../../../../../routes/constants";
-
-const getDisabledClassName = (disabled: boolean, enabledClassName: string, prefix: string) => {
-  return disabled ? `${prefix}--disabled` : enabledClassName;
-};
+import { RevokeDialog } from "./RevokeDialog";
 
 const FEATURE = "void-permit";
 const searchRoute = `${SEARCH_RESULTS}?searchEntity=permits`;
@@ -26,12 +23,10 @@ export const VoidPermitForm = ({
   permit?: ReadPermitDto,
 }) => {
   const navigate = useNavigate();
+  const [openRevokeDialog, setOpenRevokeDialog] = useState<boolean>(false);
   const {
-    shouldRevoke,
     formMethods,
     handleReasonChange,
-    handleRevokeChange,
-    handleRefundChange,
     setVoidPermitData,
     next,
   } = useVoidPermitForm();
@@ -47,146 +42,25 @@ export const VoidPermitForm = ({
     navigate(searchRoute);
   };
 
-  const handleVoid = () => {
+  const handleContinue = () => {
     const formValues = getValues();
     setVoidPermitData(formValues);
     console.log(formValues); //
     next();
   };
 
+  const handleOpenRevokeDialog = () => {
+    setOpenRevokeDialog(true);
+  };
+
+  const handleCancelRevoke = () => {
+    setOpenRevokeDialog(false);
+  };
+
   return (
     <FormProvider {...formMethods}>
       <VoidPermitHeader permit={permit} />
       <div className="void-permit__form">
-        <div className="form-section form-section--reason">
-          <div className="form-section__label">
-            Reason for Voiding
-          </div>
-          <div className="form-section__input-area">
-            <Controller
-              name="reason"
-              control={control}
-              render={({ field: { value }}) => (
-                <textarea 
-                  name="reason" 
-                  className="void-input void-input--reason"
-                  rows={3}
-                  defaultValue={value}
-                  onChange={(e) => handleReasonChange(e.target.value)}
-                >
-                </textarea>
-              )}
-            />
-          </div>
-        </div>
-        <div className="form-section form-section--revoke">
-          <div className="form-section__label">
-            Revoke Permit?
-          </div>
-          <div className="form-section__input-area">
-            <WarningBcGovBanner 
-              description="Revoking a permit is a severe action that cannot be reversed." 
-            />
-            <Controller
-              control={control}
-              name="revoke"
-              render={({ field: { value } }) => (
-                <RadioGroup
-                  className="void-input void-input--revoke"
-                  defaultValue={value}
-                  value={value}
-                  onChange={(e) => handleRevokeChange(e.target.value)}
-                >
-                  <FormControlLabel
-                    className="radio-label"
-                    label="Yes"
-                    value={true}
-                    control={
-                      <Radio 
-                        key="revoke-permit-yes"
-                      />
-                    }
-                  />
-                  <FormControlLabel
-                    className="radio-label"
-                    label="No"
-                    value={false}
-                    control={
-                      <Radio 
-                        key="revoke-permit-no"
-                      />
-                    }
-                  />
-                </RadioGroup>
-              )}
-            />
-          </div>
-        </div>
-        <div className={`form-section ${getDisabledClassName(shouldRevoke, "form-section--refund", "form-section")}`}>
-          <div className="form-section__label">
-            Refund Permit Fees?
-          </div>
-          <div className="form-section__input-area">
-            <div className="fee-summary">
-              <div className="fee-summary__header">
-                <div className="fee-summary__title">
-                  Fee Summary
-                </div>
-                <div 
-                  className="fee-summary__amount"
-                  data-testid="fee-summary-amount"
-                >
-                  {feeDisplayText}
-                </div>
-              </div>
-              <Controller
-                control={control}
-                name="refund"
-                render={({ field: { value } }) => (
-                  <RadioGroup
-                    className="void-input void-input--refund"
-                    defaultValue={value}
-                    value={value}
-                    onChange={(e) => handleRefundChange(e.target.value)}
-                  >
-                    <FormControlLabel
-                      className="radio-label"
-                      label={
-                        <span className="radio-label__text">
-                          Refund
-                        </span>
-                      }
-                      value={true}
-                      control={
-                        <Radio 
-                          key="refund-permit-yes"
-                          className="radio"
-                          disabled={shouldRevoke}
-                        />
-                      }
-                    />
-                    <FormControlLabel
-                      className="radio-label"
-                      label={
-                        <span className="radio-label__text">
-                          {"Don't Refund"}
-                        </span>
-                      }
-                      value={false}
-                      control={
-                        <Radio 
-                          key="refund-permit-no"
-                          className="radio"
-                          disabled={shouldRevoke}
-                        />
-                      }
-                    />
-                  </RadioGroup>
-                )}
-              />
-            </div>
-          </div>
-        </div>
         <div className="form-section form-section--send">
           <div className="form-section__label">
             Send Permit and Receipt to
@@ -228,6 +102,78 @@ export const VoidPermitForm = ({
             />
           </div>
         </div>
+
+        <div className="form-section form-section--reason">
+          <div className="form-section__label">
+            Reason for Voiding
+          </div>
+          <div className="form-section__input-area">
+            <div className="reason-container">
+              <div className="reason-container__left">
+                <Controller
+                  name="reason"
+                  control={control}
+                  render={({ field: { value }}) => (
+                    <textarea 
+                      name="reason" 
+                      className="void-input void-input--reason"
+                      rows={6}
+                      defaultValue={value}
+                      onChange={(e) => handleReasonChange(e.target.value)}
+                    >
+                    </textarea>
+                  )}
+                />
+                <div className="fee-summary">
+                  <div className="fee-summary__title">
+                    Fee Summary
+                  </div>
+                  <div className="fee-summary__table">
+                    <div className="table-row table-row--header">
+                      <div className="table-row__th">Description</div>
+                      <div className="table-row__th">Amount</div>
+                    </div>
+                    <div className="table-row">
+                      <div className="table-row__td">
+                        {permitTypeDisplayText(permit?.permitType)}
+                      </div>
+                      <div className="table-row__td">
+                        {feeDisplayText}
+                      </div>
+                    </div>
+                    <div className="table-row table-row--total">
+                      <div className="table-row__tf">
+                        Total (CAD)
+                      </div>
+                      <div className="table-row__tf">
+                        {feeDisplayText}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="reason-container__right">
+                <div className="revoke">
+                  <div className="revoke__header">
+                    Revoke this permit?
+                  </div>
+                  <div className="revoke__body">
+                    <div className="revoke__msg">
+                      Revoking a permit is a severe action that <span className="revoke__msg--bold">cannot be reversed.</span> There are <span className="revoke__msg--bold">no refunds</span> for revoked permits.
+                    </div>
+                    <Button 
+                      className="revoke__btn"
+                      onClick={handleOpenRevokeDialog}
+                    >
+                      Revoke Permit
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
         <div className="form-section form-section--submit">
           <div className="form-section__label"></div>
           <div className="form-section__input-area">
@@ -243,18 +189,26 @@ export const VoidPermitForm = ({
               Cancel
             </Button>
             <Button
-              key="submit-void-button"
-              aria-label="Void Permit"
+              key="continue-void-button"
+              aria-label="Continue"
               variant="contained"
               color="primary"
-              onClick={handleSubmit(handleVoid)}
-              className="void-permit-button void-permit-button--void"
-              data-testid="submit-void-permit-button"
+              onClick={handleSubmit(handleContinue)}
+              className="void-permit-button void-permit-button--continue"
+              data-testid="continue-void-permit-button"
             >
-              Void Permit
+              Continue
             </Button>
           </div>
         </div>
+
+        {openRevokeDialog ? (
+          <RevokeDialog
+            voidPermitData={getValues()}
+            showDialog={openRevokeDialog}
+            onClose={handleCancelRevoke}
+          />
+        ) : null}
       </div>
     </FormProvider>    
   );
