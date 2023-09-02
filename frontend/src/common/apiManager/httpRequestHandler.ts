@@ -42,6 +42,14 @@ const getAccessToken = () => {
 };
 
 /**
+ * Retrieves the correlation Id.
+ * @returns A string containing the correlation id.
+ */
+const getCorrelationId = () => {
+  return sessionStorage.getItem("correlationid");
+};
+
+/**
  * Retrieves the companyId from the session.
  * @returns string | null
  */
@@ -143,6 +151,7 @@ export const httpPOSTRequest = (url: string, data: any) => {
     headers: {
       "Content-Type": "application/json",
       Authorization: getAccessToken(),
+      "X-Correlation-ID": getCorrelationId(),
     },
   });
 };
@@ -158,6 +167,7 @@ export const httpPUTRequest = (url: string, data: any) => {
     headers: {
       "Content-Type": "application/json",
       Authorization: getAccessToken(),
+      "X-Correlation-ID": getCorrelationId(),
     },
   });
 };
@@ -171,6 +181,7 @@ export const httpDELETERequest = (url: string) => {
   return axios.delete(url, {
     headers: {
       Authorization: getAccessToken(),
+      "X-Correlation-ID": getCorrelationId(),
     },
   });
 };
