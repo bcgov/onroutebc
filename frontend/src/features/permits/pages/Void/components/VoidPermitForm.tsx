@@ -5,7 +5,6 @@ import { Button } from "@mui/material";
 import { useState } from "react";
 
 import "./VoidPermitForm.scss";
-import { feeSummaryDisplayText, permitTypeDisplayText } from "../../../helpers/mappers";
 import { CustomFormComponent } from "../../../../../common/components/form/CustomFormComponents";
 import { invalidEmail, invalidPhoneLength, requiredMessage } from "../../../../../common/helpers/validationMessages";
 import { useVoidPermitForm } from "../hooks/useVoidPermitForm";
@@ -13,6 +12,7 @@ import { VoidPermitHeader } from "./VoidPermitHeader";
 import { ReadPermitDto } from "../../../types/permit";
 import { SEARCH_RESULTS } from "../../../../../routes/constants";
 import { RevokeDialog } from "./RevokeDialog";
+import { FeeSummary } from "./FeeSummary";
 
 const FEATURE = "void-permit";
 const searchRoute = `${SEARCH_RESULTS}?searchEntity=permits`;
@@ -30,11 +30,6 @@ export const VoidPermitForm = ({
     setVoidPermitData,
     next,
   } = useVoidPermitForm();
-
-  const feeDisplayText = feeSummaryDisplayText(
-    permit?.permitData?.feeSummary, 
-    permit?.permitData?.permitDuration
-  );
 
   const { control, getValues, handleSubmit } = formMethods;
 
@@ -124,33 +119,11 @@ export const VoidPermitForm = ({
                     </textarea>
                   )}
                 />
-                <div className="fee-summary">
-                  <div className="fee-summary__title">
-                    Fee Summary
-                  </div>
-                  <div className="fee-summary__table">
-                    <div className="table-row table-row--header">
-                      <div className="table-row__th">Description</div>
-                      <div className="table-row__th">Amount</div>
-                    </div>
-                    <div className="table-row">
-                      <div className="table-row__td">
-                        {permitTypeDisplayText(permit?.permitType)}
-                      </div>
-                      <div className="table-row__td">
-                        {feeDisplayText}
-                      </div>
-                    </div>
-                    <div className="table-row table-row--total">
-                      <div className="table-row__tf">
-                        Total (CAD)
-                      </div>
-                      <div className="table-row__tf">
-                        {feeDisplayText}
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                <FeeSummary
+                  permitType={permit?.permitType}
+                  feeSummary={permit?.permitData?.feeSummary}
+                  permitDuration={permit?.permitData?.permitDuration}
+                />
               </div>
               <div className="reason-container__right">
                 <div className="revoke">

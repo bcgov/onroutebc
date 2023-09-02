@@ -79,7 +79,7 @@ export const VoidPermit = () => {
       <VoidPermitForm key="void-permit" permit={permit} />
     ),
     (
-      <FinishVoid key="finish-void" />
+      <FinishVoid key="finish-void" permit={permit} />
     ),
   ];
   
