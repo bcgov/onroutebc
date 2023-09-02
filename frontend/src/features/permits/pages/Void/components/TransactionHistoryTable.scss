@@ -1,0 +1,41 @@
+@import "../../../../../themes/orbcStyles.scss";
+
+.transaction-history-table {
+  display: flex;
+  flex-direction: row;
+  border: 1px solid $bc-border-grey;
+
+  &__col {
+    display: flex;
+    flex-direction: column;
+
+    &--permit {
+      width: 25%;
+    }
+    
+    &--payment {
+      width: 35%;
+    }
+
+    &--transaction {
+      width: 20%;
+    }
+
+    &--amount {
+      width: 20%;
+      text-align: end;
+    }
+
+    .table-row {
+      padding: 1em;
+      border-bottom: 1px solid $bc-border-grey;
+      font-size: 0.9rem;
+
+      &--header {
+        background-color: $bc-background-light-grey;
+        font-weight: 600;
+        font-size: 1rem;
+      }
+    }
+  }
+}

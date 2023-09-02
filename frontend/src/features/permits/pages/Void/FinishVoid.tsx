@@ -10,6 +10,7 @@ import { ReadPermitDto } from "../../types/permit";
 import { permitTypeDisplayText } from "../../helpers/mappers";
 import { FeeSummary } from "./components/FeeSummary";
 import { requiredMessage } from "../../../../common/helpers/validationMessages";
+import { TransactionHistoryTable } from "./components/TransactionHistoryTable";
 
 export const FinishVoid = ({
   permit,
@@ -29,6 +30,18 @@ export const FinishVoid = ({
     value: 2,
     label: "Icepay - Mastercard (Debit)",
   }; // hardcoded value
+
+  const fakeTransactionHistory = [
+    {
+      permitNumber: "P2-004008617-873-R1",
+    },
+    {
+      permitNumber: "P2-004008617-873",
+      paymentMethod: 2,
+      transactionId: "214096360",
+      amount: 30,
+    },
+  ];
 
   const formMethods = useForm<RefundVoidDto>({
     defaultValues: {
@@ -78,7 +91,9 @@ export const FinishVoid = ({
           <div className="void-info__header">
             Transaction History
           </div>
-          <div className="transaction-history-table"></div>
+          <TransactionHistoryTable
+            transactionHistory={fakeTransactionHistory}
+          />
         </div>
         <div className="void-info void-info--send">
           <div className="void-info__header">
