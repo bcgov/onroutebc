@@ -39,6 +39,8 @@ import {
 } from 'src/common/interface/pagination.interface';
 import { PaginationDto } from 'src/common/class/pagination';
 import { LessThenPipe } from 'src/common/class/customs.transform';
+import { Permit } from './entities/permit.entity';
+import { PermitHistoryDto } from './dto/response/permit-history.dto';
 
 @ApiBearerAuth()
 @ApiTags('Permit')
@@ -82,6 +84,20 @@ export class PermitController {
     @Query('permitNumber') permitNumber: string,
   ): Promise<ReadPermitDto[]> {
     return this.permitService.findByPermitNumber(permitNumber);
+  }
+
+
+  @ApiOkResponse({
+    description: 'The Permit Resource to get revision and payment history.',
+    type: Permit,
+    isArray: true,
+  })
+  @Public()
+  @Get('history')
+  async getPermitHisory(
+    @Query('originalId') originalId: string,
+  ): Promise<PermitHistoryDto[]> {
+    return this.permitService.findPermitHistory(originalId);
   }
 
   /**

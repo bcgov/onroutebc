@@ -20,6 +20,7 @@ import {
 } from 'src/common/interface/pagination.interface';
 import { PaginationDto } from 'src/common/class/pagination';
 import { paginate } from 'src/common/helper/paginate';
+import { PermitHistoryDto } from './dto/response/permit-history.dto';
 
 @Injectable()
 export class PermitService {
@@ -284,5 +285,20 @@ export class PermitService {
       permit.companyId,
     );
     return file;
+  }
+
+  public async findPermitHistory(
+    originalPermitId: string
+  ):Promise<PermitHistoryDto[]>{
+
+    const permits = await this.permitRepository
+    .createQueryBuilder('permit')
+    .innerJoinAndSelect('permit.transactions', 'transaction')
+    .where('permit.permitNumber IS NOT NULL')
+    .andWhere('permit.originalPermitId = :originalPermitId', {
+      originalPermitId: originalPermitId
+    })
+    .getMany()
+    return this.classMapper.mapArrayAsync(permits, Permit, PermitHistoryDto);
   }
 }

@@ -176,6 +176,18 @@ export class Permit extends Base {
   })
   documentId: string;
 
+  @AutoMap()
+  @ApiProperty({
+    example: 'A2-00000002-120',
+    description: 'Unique formatted permit application number.',
+  })
+  @Column({
+    length: '3000',
+    name: 'COMMENT',
+    nullable: true,
+  })
+  comment: string;
+
   @ManyToMany(() => Transaction, (transaction) => transaction.permits)
   transactions?: Transaction[];
 }
