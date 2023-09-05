@@ -69,6 +69,12 @@ parameters:
   - name: CDOGS_URL
     description: The CDOGS API url 
     required: true
+   - name: CFS_PRIVATE_KEY
+    description: The CFS Private Key For SFTP
+    required: true
+  - name: CFS_PASSPHRASE
+    description: The CFS Private Key Passphrase For SFTP
+    required: true
   - name: CHES_TOKEN_URL
     description: The keycloak url for common hosted CHES
     required: true    
