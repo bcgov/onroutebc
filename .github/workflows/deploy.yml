@@ -81,7 +81,10 @@ jobs:
             overwrite: true
           - name: backend/dops
             file: backend/dops/openshift.deploy.yml
-            overwrite: true            
+            overwrite: true 
+          - name: backend/sftp
+            file: backend/sftp/openshift.deploy.yml
+            overwrite: true           
           - name: frontend
             file: frontend/openshift.deploy.yml
             overwrite: true
@@ -123,6 +126,8 @@ jobs:
             ${{secrets.VAULT_ENVIRONMENT}}/data/cdogs-${{inputs.vault_zone}}      CDOGS_CLIENT_SECRET             | VAULT_CDOGS_CLIENT_SECRET;
             ${{secrets.VAULT_ENVIRONMENT}}/data/cdogs-${{inputs.vault_zone}}      CDOGS_TOKEN_URL                 | VAULT_CDOGS_TOKEN_URL;
             ${{secrets.VAULT_ENVIRONMENT}}/data/cdogs-${{inputs.vault_zone}}      CDOGS_URL                       | VAULT_CDOGS_URL;
+            ${{secrets.VAULT_ENVIRONMENT}}/data/cfs-${{inputs.vault_zone}}        CFS_PRIVATE_KEY                 | VAULT_CFS_PRIVATE_KEY;
+            ${{secrets.VAULT_ENVIRONMENT}}/data/cfs-${{inputs.vault_zone}}        CFS_PASSPHRASE                  | VAULT_CFS_PASSPHRASE;
             ${{secrets.VAULT_ENVIRONMENT}}/data/be-api-${{inputs.vault_zone}}     NODE_ENV                        | VAULT_NODE_ENV;
             ${{secrets.VAULT_ENVIRONMENT}}/data/payment-${{inputs.vault_zone}}    MOTIPAY_API_KEY                 | VAULT_MOTIPAY_API_KEY;
             ${{secrets.VAULT_ENVIRONMENT}}/data/payment-${{inputs.vault_zone}}    MOTIPAY_MERCHANT_ID             | VAULT_MOTIPAY_MERCHANT_ID;
@@ -163,6 +168,8 @@ jobs:
             -p CDOGS_CLIENT_SECRET=${{steps.vault.outputs.VAULT_CDOGS_CLIENT_SECRET}}
             -p CDOGS_TOKEN_URL=${{steps.vault.outputs.VAULT_CDOGS_TOKEN_URL}}
             -p CDOGS_URL=${{steps.vault.outputs.VAULT_CDOGS_URL}}
+            -p CFS_PRIVATE_KEY=${{steps.vault.outputs.VAULT_CFS_PRIVATE_KEY}}
+            -p CFS_PASSPHRASE=${{steps.vault.outputs.VAULT_CFS_PASSPHRASE}}
             -p NODE_ENV=${{steps.vault.outputs.VAULT_NODE_ENV}}
             -p MOTIPAY_API_KEY=${{steps.vault.outputs.VAULT_MOTIPAY_API_KEY}}
             -p MOTIPAY_MERCHANT_ID=${{steps.vault.outputs.VAULT_MOTIPAY_MERCHANT_ID}}
