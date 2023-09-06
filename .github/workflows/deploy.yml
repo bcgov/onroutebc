@@ -168,7 +168,7 @@ jobs:
             -p CDOGS_CLIENT_SECRET=${{steps.vault.outputs.VAULT_CDOGS_CLIENT_SECRET}}
             -p CDOGS_TOKEN_URL=${{steps.vault.outputs.VAULT_CDOGS_TOKEN_URL}}
             -p CDOGS_URL=${{steps.vault.outputs.VAULT_CDOGS_URL}}
-            -p CFS_PRIVATE_KEY=${{steps.vault.outputs.VAULT_CFS_PRIVATE_KEY}}
+            -p CFS_PRIVATE_KEY='${{steps.vault.outputs.VAULT_CFS_PRIVATE_KEY}}'
             -p CFS_PASSPHRASE=${{steps.vault.outputs.VAULT_CFS_PASSPHRASE}}
             -p NODE_ENV=${{steps.vault.outputs.VAULT_NODE_ENV}}
             -p MOTIPAY_API_KEY=${{steps.vault.outputs.VAULT_MOTIPAY_API_KEY}}
