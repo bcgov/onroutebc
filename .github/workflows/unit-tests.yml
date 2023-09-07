@@ -34,7 +34,7 @@ jobs:
           - dir: backend/dops
             sonar_projectKey: bcgov_onroutebc_backend
             token: SONAR_TOKEN_BACKEND
-             - dir: backend/sftp
+          - dir: backend/sftp
             sonar_projectKey: bcgov_onroutebc_backend
             token: SONAR_TOKEN_BACKEND            
           - dir: frontend
