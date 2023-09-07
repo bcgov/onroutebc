@@ -59,14 +59,14 @@ parameters:
   - name: AUTH0_IGNORE_EXP
     description: The boolean flag to ignore the JWT expiration
     required: true
+  - name: SITEMINDER_LOG_OFF_URL
+    description: The siteminder log off url
+    required: true
   - name: CFS_PRIVATE_KEY
     description: The private key to connect to cfs sftp server
     required: true
   - name: CFS_PASSPHRASE
     description: The passphrase for cfs_private_key
-    required: true
-  - name: SITEMINDER_LOG_OFF_URL
-    description: The siteminder log off url
     required: true
 objects:
   - apiVersion: v1

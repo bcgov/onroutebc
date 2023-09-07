@@ -62,6 +62,12 @@ parameters:
   - name: SITEMINDER_LOG_OFF_URL
     description: The siteminder log off url
     required: true
+  - name: CFS_PRIVATE_KEY
+    description: The private key to connect to cfs sftp server
+    required: true
+  - name: CFS_PASSPHRASE
+    description: The passphrase for cfs_private_key
+    required: true
   - name: DOPS_CVSE_FORMS_CACHE_TTL_MS
     description: The cache time to live for CVSE FORMS in DOPS in Milliseconds
     required: true
