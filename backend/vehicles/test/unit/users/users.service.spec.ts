@@ -182,7 +182,7 @@ describe('UsersService', () => {
         constants.RED_COMPANY_CVCLIENT_USER_GUID,
         updateRedCompanyCvClientUserDtoMock,
         constants.RED_COMPANY_ID,
-        request.user as IUserJWT        
+        request.user as IUserJWT,
       );
 
       expect(typeof retUser).toBe('object');
@@ -200,7 +200,7 @@ describe('UsersService', () => {
           constants.RED_COMPANY_CVCLIENT_USER_GUID,
           updateRedCompanyCvClientUserDtoMock,
           constants.RED_COMPANY_ID,
-          undefined    
+          undefined,
         );
       }).rejects.toThrow(DataNotFoundException);
     });

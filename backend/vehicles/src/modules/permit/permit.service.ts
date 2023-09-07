@@ -288,17 +288,16 @@ export class PermitService {
   }
 
   public async findPermitHistory(
-    originalPermitId: string
-  ):Promise<PermitHistoryDto[]>{
-
+    originalPermitId: string,
+  ): Promise<PermitHistoryDto[]> {
     const permits = await this.permitRepository
-    .createQueryBuilder('permit')
-    .innerJoinAndSelect('permit.transactions', 'transaction')
-    .where('permit.permitNumber IS NOT NULL')
-    .andWhere('permit.originalPermitId = :originalPermitId', {
-      originalPermitId: originalPermitId
-    })
-    .getMany()
+      .createQueryBuilder('permit')
+      .innerJoinAndSelect('permit.transactions', 'transaction')
+      .where('permit.permitNumber IS NOT NULL')
+      .andWhere('permit.originalPermitId = :originalPermitId', {
+        originalPermitId: originalPermitId,
+      })
+      .getMany();
     return this.classMapper.mapArrayAsync(permits, Permit, PermitHistoryDto);
   }
 }

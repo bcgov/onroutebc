@@ -86,7 +86,6 @@ export class PermitController {
     return this.permitService.findByPermitNumber(permitNumber);
   }
 
-
   @ApiOkResponse({
     description: 'The Permit Resource to get revision and payment history.',
     type: Permit,
