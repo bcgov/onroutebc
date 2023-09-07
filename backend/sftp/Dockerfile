@@ -54,7 +54,7 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
 
 # Expose Port
-EXPOSE 5001
+EXPOSE 5002
 
 # Start the app
 CMD ["npm", "run", "start:prod"]

@@ -144,7 +144,7 @@ objects:
       auth0-audience: "${AUTH0_AUDIENCE}"
       auth0-ignore-exp: "${AUTH0_IGNORE_EXP}"
       auth0-ignore-exp: "${AUTH0_IGNORE_EXP}"
-      cfs-private-ket: "{CFS_PRIVATE_KEY}"
+      cfs-private-key: "{CFS_PRIVATE_KEY}"
       cfs-passphrase: "{CFS_PASSPHRASE}"
       access-api-url: "https://${NAME}-${ZONE}-backend-vehicles.${DOMAIN}"
   - apiVersion: v1
@@ -271,7 +271,7 @@ objects:
                       name: ${NAME}-${ZONE}-${COMPONENT}
                       key: access-api-url
               ports:
-                - containerPort: 5001
+                - containerPort: 5002
                   protocol: TCP
               resources:
                 requests:
@@ -283,7 +283,7 @@ objects:
               readinessProbe:
                 httpGet:
                   path: /
-                  port: 5001
+                  port: 5002
                   scheme: HTTP
                 initialDelaySeconds: 60
                 periodSeconds: 15
@@ -293,7 +293,7 @@ objects:
                 failureThreshold: 3
                 httpGet:
                   path: /
-                  port: 5001
+                  port: 5002
                   scheme: HTTP
                 initialDelaySeconds: 60
                 periodSeconds: 30
@@ -306,10 +306,10 @@ objects:
       name: ${NAME}-${ZONE}-${COMPONENT}
     spec:
       ports:
-        - name: 5001-tcp
+        - name: 5002-tcp
           protocol: TCP
           port: 80
-          targetPort: 5001
+          targetPort: 5002
       selector:
         deploymentconfig: ${NAME}-${ZONE}-${COMPONENT}
   - apiVersion: route.openshift.io/v1
@@ -321,7 +321,7 @@ objects:
     spec:
       host: ${NAME}-${ZONE}-${COMPONENT}.${DOMAIN}
       port:
-        targetPort: 5001-tcp
+        targetPort: 5002-tcp
       to:
         kind: Service
         name: ${NAME}-${ZONE}-${COMPONENT}
