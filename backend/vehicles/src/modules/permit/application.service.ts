@@ -45,6 +45,7 @@ import { ReadTransactionDto } from '../payment/dto/response/read-transaction.dto
 import { Transaction } from '../payment/entities/transaction.entity';
 import { Receipt } from '../payment/entities/receipt.entity';
 import { convertUtcToPt } from '../../common/helper/date-time.helper';
+import { PermitStatus } from 'src/common/enum/permit-status.enum';
 
 @Injectable()
 export class ApplicationService {
@@ -416,11 +417,28 @@ export class ApplicationService {
           permitData: true,
         },
       });
-
       permitEntity.permitStatus = ApplicationStatus.ISSUED;
       permitEntity.permitNumber = permitNumber;
       permitEntity.documentId = generatedDocuments.at(0).dmsId;
       await queryRunner.manager.save(permitEntity);
+      const oldPermitEntity = await this.permitRepository.createQueryBuilder()
+      .where('originalPermitId= :originalPermitId',{originalPermitId: permitEntity.originalPermitId})
+      .andWhere('permit.permitStatus = :permitStatus',{permitStatus: PermitStatus.ISSUED})
+      .getMany();
+      //In case of amendment, move old permit(s)(ideally there should only be one) to SUPERSEDED status  
+      if (oldPermitEntity.length > 0)
+      {
+        const ids = oldPermitEntity.map(({ permitId }) => permitId)
+        await this.permitRepository.createQueryBuilder('Permit')
+        .update()
+        .set({
+          permitStatus: ApplicationStatus.SUPERSEDED
+        })
+        .whereInIds(ids)
+        .returning(['permitId'])
+        .execute();
+   
+      }
       const receiptEntity: Receipt = new Receipt();
       const transaction = await this.findOneTransactionByOrderNumber(
         transactionDetails.transactionOrderNumber,
