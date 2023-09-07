@@ -40,12 +40,14 @@ jobs:
       packages: write
     strategy:
       matrix:
-        package: [backend/vehicles, backend/dops, frontend]
+        package: [backend/vehicles, backend/dops, backend/sftp, frontend]
         include:
           - package: backend/vehicles
             triggers: ('backend/vehicles/')
           - package: backend/dops
             triggers: ('backend/dops/')
+          - package: backend/sftp
+            triggers: ('backend/sftp/')
           - package: frontend
             triggers: ('frontend/')
     steps:
