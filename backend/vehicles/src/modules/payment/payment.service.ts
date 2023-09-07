@@ -108,9 +108,9 @@ export class PaymentService {
     );
     const trnNum = seq.toString(16);
     // const trnNum = 'T' + currDate.getTime().toString().substring(4);
-    const currentDate = new Date();
-    const iso = currentDate.toISOString();
-    const transactionNumber = 'T' + trnNum.padStart(9, '0').toUpperCase() + iso;
+    const currentDate = Date.now();
+    const transactionNumber =
+      'T' + trnNum.padStart(9, '0').toUpperCase() + String(currentDate);
 
     const { motiPayHash, hashExpiry } = this.queryHash(
       'P',
