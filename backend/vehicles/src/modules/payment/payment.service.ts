@@ -220,11 +220,17 @@ export class PaymentService {
         applicationId,
         transactionDetails,
       );
-      const  oldPermitEntity = await this.applicationService.findParentPermit(applicationId);
+      const oldPermitEntity = await this.applicationService.findParentPermit(
+        applicationId,
+      );
       //In case of amendment, move old permit(s)(ideally there should only be one) to SUPERSEDED status
       if (oldPermitEntity.length > 0) {
         const ids = oldPermitEntity.map(({ permitId }) => permitId);
-        await this.applicationService.updateApplicationStatus(ids,ApplicationStatus.SUPERSEDED,currentUser);
+        await this.applicationService.updateApplicationStatus(
+          ids,
+          ApplicationStatus.SUPERSEDED,
+          currentUser,
+        );
       }
     }
 

@@ -80,11 +80,10 @@ export class ApplicationService {
     createApplicationDto: CreateApplicationDto,
     currentUser: IUserJWT,
   ): Promise<ReadApplicationDto> {
-    const id = createApplicationDto.permitId
+    const id = createApplicationDto.permitId;
     //If permit id exists assign it to null to create new application.
     //Existing permit id also implies that this new application is an amendment.
     if (id) {
-      console.log('Inside create application service');
       const permit = await this.findOne(id);
       //to check if there is already an appliation in database
       const count = await this.checkApplicationInProgress(
@@ -100,7 +99,6 @@ export class ApplicationService {
       createApplicationDto.previousRevision = id;
       createApplicationDto.permitId = null;
       createApplicationDto.originalPermitId = permit.originalPermitId;
-      console.log(createApplicationDto.originalPermitId)
     }
 
     createApplicationDto.permitStatus = ApplicationStatus.IN_PROGRESS;
@@ -128,7 +126,6 @@ export class ApplicationService {
     );
     // In case of new application assign original permit ID
     if (id === undefined || id === null) {
-      console.log('assign original id for new permit')
       await this.permitRepository
         .createQueryBuilder()
         .update()
@@ -349,7 +346,6 @@ export class ApplicationService {
     applicationId: string,
     transactionDetails?: IReceipt,
   ) {
-    console.log('TransactionDetails: ',transactionDetails);
     let success = '';
     let failure = '';
     const tempPermit = await this.findOne(applicationId);
@@ -496,7 +492,7 @@ export class ApplicationService {
 
     return resultDto;
   }
-  async findParentPermit(permitId: string):Promise<Permit[]> {
+  async findParentPermit(permitId: string): Promise<Permit[]> {
     const permit = await this.findOne(permitId);
     const allPermits = await this.permitRepository
       .createQueryBuilder('permit')
@@ -506,9 +502,9 @@ export class ApplicationService {
       .andWhere('permit.permitStatus = :permitStatus', {
         permitStatus: PermitStatus.ISSUED,
       })
-      .andWhere('permit.permitId != :permitId',{permitId: permitId})
+      .andWhere('permit.permitId != :permitId', { permitId: permitId })
       .getMany();
-      return allPermits;
+    return allPermits;
   }
 
   private async generateDocument(
