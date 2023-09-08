@@ -171,7 +171,7 @@ export class PaymentService {
     return {
       url: '',
       transactionOrderNumber: transactionNumber,
-      transactionAmount: transactionAmount,
+      transactionAmount: Math.abs(transactionAmount),
       transactionType: transactionType,
       transactionSubmitDate: transactionSubmitDate,
       paymentMethodId: paymentMethodId,
