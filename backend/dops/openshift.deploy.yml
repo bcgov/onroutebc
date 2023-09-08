@@ -121,6 +121,12 @@ parameters:
   - name: MOTIPAY_BASE_URL
     description: Base URL for MOTI Pay
     required: true
+  - name: CFS_PRIVATE_KEY
+    description: Dummy? - The CFS Private Key For SFTP
+    required: false
+  - name: CFS_PASSPHRASE
+    description: Dummy? - The CFS Private Key Passphrase For SFTP
+    required: false
 objects:
   - apiVersion: v1
     kind: ConfigMap

@@ -68,6 +68,12 @@ parameters:
   - name: SITEMINDER_LOG_OFF_URL
     description: The siteminder log off url
     required: true
+  - name: CFS_PRIVATE_KEY
+    description: Dummy? - The CFS Private Key For SFTP
+    required: false
+  - name: CFS_PASSPHRASE
+    description: Dummy? - The CFS Private Key Passphrase For SFTP
+    required: false
 objects:
   - apiVersion: v1
     kind: ConfigMap
