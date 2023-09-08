@@ -70,10 +70,48 @@ parameters:
     required: true
   - name: CFS_PRIVATE_KEY
     description: Dummy? - The CFS Private Key For SFTP
-    required: false
   - name: CFS_PASSPHRASE
     description: Dummy? - The CFS Private Key Passphrase For SFTP
-    required: false
+  - name: DOPS_CVSE_FORMS_CACHE_TTL_MS
+    description: Dummy?
+  - name: CHES_CLIENT_ID
+    description: Dummy?
+  - name: CHES_CLIENT_SECRET
+    description: Dummy?
+  - name: CDOGS_CLIENT_SECRET
+    description: Dummy?
+  - name: MOTIPAY_MERCHANT_ID
+    description: Dummy?
+  - name: CDOGS_URL
+    description: Dummy?
+  - name: MOTIPAY_BASE_URL
+    description: Dummy?
+  - name: DOPS_S3_ACCESS_TYPE
+    description: Dummy?
+  - name: DOPS_S3_PRESIGNED_URL_EXPIRY
+    description: Dummy?
+  - name: DOPS_S3_KEY
+    description: Dummy?
+  - name: CDOGS_CLIENT_ID
+    description: Dummy?
+  - name: DOPS_S3_ACCESSKEYID
+    description: Dummy?
+  - name: DOPS_S3_SECRETACCESSKEY
+    description: Dummy?
+  - name: CHES_TOKEN_URL
+    description: Dummy?
+  - name: CDOGS_TOKEN_URL
+    description: Dummy?
+  - name: MOTIPAY_API_KEY
+    description: Dummy?
+  - name: DOPS_S3_BUCKET
+    description: Dummy?
+  - name: DOPS_S3_ENDPOINT
+    description: Dummy?
+  - name: CHES_URL
+    description: Dummy?
+  - name: NODE_ENV
+    description: Dummy?
 objects:
   - apiVersion: v1
     kind: ConfigMap
