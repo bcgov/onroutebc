@@ -444,7 +444,7 @@ export class ApplicationService {
       receiptEntity.receiptDocumentId = generatedDocuments.at(1).dmsId;
       await queryRunner.manager.save(receiptEntity);
       // In case of amendment move the parent permit to SUPERSEDED Status.
-      if (tempPermit.previousRevision != 0) {
+      if (tempPermit.previousRevision != null || tempPermit.previousRevision != undefined) {
         const parentPermit = await this.findOne(
           String(tempPermit.previousRevision),
         );
@@ -501,20 +501,6 @@ export class ApplicationService {
     };
 
     return resultDto;
-  }
-  async findParentPermit(permitId: string): Promise<Permit[]> {
-    const permit = await this.findOne(permitId);
-    const allPermits = await this.permitRepository
-      .createQueryBuilder('permit')
-      .where('permit.originalPermitId = :originalPermitId', {
-        originalPermitId: permit.originalPermitId,
-      })
-      .andWhere('permit.permitStatus = :permitStatus', {
-        permitStatus: PermitStatus.ISSUED,
-      })
-      .andWhere('permit.permitId != :permitId', { permitId: permitId })
-      .getMany();
-    return allPermits;
   }
 
   private async generateDocument(
