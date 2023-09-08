@@ -286,7 +286,9 @@ export class ApplicationService {
     let permitApprovalSource: PermitApprovalSourceEnum = null;
     if (applicationIds.length === 1) {
       if (applicationStatus === ApplicationStatus.ISSUED)
-        return await this.issuePermit(currentUser, applicationIds[0]);
+        throw new ForbiddenException(
+          'Status Change to ISSUE permit is prohibited on this endpoint.',
+        );
       else if (
         applicationStatus === ApplicationStatus.APPROVED ||
         applicationStatus === ApplicationStatus.AUTO_APPROVED
@@ -301,7 +303,7 @@ export class ApplicationService {
       applicationStatus != ApplicationStatus.CANCELLED
     ) {
       throw new ForbiddenException(
-        'Bulk status update is only allowed for Cancellation',
+        'Bulk status update is only allowed for Cancellation.',
       );
     }
     const updateResult = await this.permitRepository
@@ -441,6 +443,14 @@ export class ApplicationService {
       receiptEntity.receiptNumber = receiptNo;
       receiptEntity.receiptDocumentId = generatedDocuments.at(1).dmsId;
       await queryRunner.manager.save(receiptEntity);
+      // In case of amendment move the parent permit to SUPERSEDED Status.
+      if (tempPermit.previousRevision != 0) {
+        const parentPermit = await this.findOne(
+          String(tempPermit.previousRevision),
+        );
+        parentPermit.permitStatus = ApplicationStatus.SUPERSEDED;
+        await queryRunner.manager.save(parentPermit);
+      }
       await queryRunner.commitTransaction();
       success = applicationId;
       try {

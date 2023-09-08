@@ -155,7 +155,8 @@ export class ApplicationController {
    * @param updateApplicationStatusDto
    */
   @ApiOkResponse({
-    description: 'The Permit Application Resource',
+    description:
+      'The Permit Application Resource. Bulk staus updates are only allowed for Cancellation. Application/Permit Status change to ISSUE is prohibited on this endpoint.',
     type: ResultDto,
   })
   //TODO Assign role. Should have a different role like @Roles(Role.WRITE_PERMIT_STATUS) .
@@ -174,18 +175,5 @@ export class ApplicationController {
       throw new DataNotFoundException();
     }
     return result;
-  }
-
-  @ApiCreatedResponse({
-    description: 'The Permit Application Resource',
-    type: ResultDto,
-  })
-  @Post('/issue')
-  async issuePermit(@Req() request: Request): Promise<ResultDto> {
-    const currentUser = request.user as IUserJWT;
-    return await this.applicationService.issuePermit(
-      currentUser,
-      request.body.applicationId,
-    );
   }
 }
