@@ -15,6 +15,7 @@ import { ApplicationService } from '../permit/application.service';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
 import { IReceipt } from 'src/common/interface/receipt.interface';
 import { callDatabaseSequence } from 'src/common/helper/database.helper';
+import { ApplicationStatus } from 'src/common/enum/application-status.enum';
 
 @Injectable()
 export class PaymentService {
@@ -202,7 +203,6 @@ export class PaymentService {
       CreateTransactionDto,
       Transaction,
     );
-
     // If the updated transaction is approved, issue a permit using the application service.
     if (newTransaction.approved) {
       // Extract relevant transaction details for issuing the permit.
@@ -220,6 +220,12 @@ export class PaymentService {
         applicationId,
         transactionDetails,
       );
+      const  oldPermitEntity = await this.applicationService.findParentPermit(applicationId);
+      //In case of amendment, move old permit(s)(ideally there should only be one) to SUPERSEDED status
+      if (oldPermitEntity.length > 0) {
+        const ids = oldPermitEntity.map(({ permitId }) => permitId);
+        await this.applicationService.updateApplicationStatus(ids,ApplicationStatus.SUPERSEDED,currentUser);
+      }
     }
 
     // Update the existing transaction record in the database with the new transaction data.

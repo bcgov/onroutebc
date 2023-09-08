@@ -80,10 +80,12 @@ export class ApplicationService {
     createApplicationDto: CreateApplicationDto,
     currentUser: IUserJWT,
   ): Promise<ReadApplicationDto> {
+    const id = createApplicationDto.permitId
     //If permit id exists assign it to null to create new application.
     //Existing permit id also implies that this new application is an amendment.
-    if (createApplicationDto.permitId) {
-      const permit = await this.findOne(createApplicationDto.permitId);
+    if (id) {
+      console.log('Inside create application service');
+      const permit = await this.findOne(id);
       //to check if there is already an appliation in database
       const count = await this.checkApplicationInProgress(
         permit.originalPermitId,
@@ -95,9 +97,10 @@ export class ApplicationService {
           'An application already exists for this permit.',
         );
       createApplicationDto.revision = permit.revision + 1;
-      createApplicationDto.previousRevision = createApplicationDto.permitId;
+      createApplicationDto.previousRevision = id;
       createApplicationDto.permitId = null;
       createApplicationDto.originalPermitId = permit.originalPermitId;
+      console.log(createApplicationDto.originalPermitId)
     }
 
     createApplicationDto.permitStatus = ApplicationStatus.IN_PROGRESS;
@@ -112,7 +115,7 @@ export class ApplicationService {
     //Generate appliction number for the application to be created in database.
     const applicationNumber = await this.generateApplicationNumber(
       currentUser.identity_provider,
-      createApplicationDto.permitId,
+      id,
     );
     createApplicationDto.applicationNumber = applicationNumber;
     const permitApplication = this.classMapper.map(
@@ -124,7 +127,8 @@ export class ApplicationService {
       permitApplication,
     );
     // In case of new application assign original permit ID
-    if (!createApplicationDto.permitId) {
+    if (id === undefined || id === null) {
+      console.log('assign original id for new permit')
       await this.permitRepository
         .createQueryBuilder()
         .update()
@@ -313,7 +317,6 @@ export class ApplicationService {
         }),
       })
       .whereInIds(applicationIds)
-      .andWhere('permitNumber is null')
       .returning(['permitId'])
       .execute();
 
@@ -346,6 +349,7 @@ export class ApplicationService {
     applicationId: string,
     transactionDetails?: IReceipt,
   ) {
+    console.log('TransactionDetails: ',transactionDetails);
     let success = '';
     let failure = '';
     const tempPermit = await this.findOne(applicationId);
@@ -433,28 +437,6 @@ export class ApplicationService {
       permitEntity.permitNumber = permitNumber;
       permitEntity.documentId = generatedDocuments.at(0).dmsId;
       await queryRunner.manager.save(permitEntity);
-      const oldPermitEntity = await this.permitRepository
-        .createQueryBuilder()
-        .where('originalPermitId= :originalPermitId', {
-          originalPermitId: permitEntity.originalPermitId,
-        })
-        .andWhere('permit.permitStatus = :permitStatus', {
-          permitStatus: PermitStatus.ISSUED,
-        })
-        .getMany();
-      //In case of amendment, move old permit(s)(ideally there should only be one) to SUPERSEDED status
-      if (oldPermitEntity.length > 0) {
-        const ids = oldPermitEntity.map(({ permitId }) => permitId);
-        await this.permitRepository
-          .createQueryBuilder('Permit')
-          .update()
-          .set({
-            permitStatus: ApplicationStatus.SUPERSEDED,
-          })
-          .whereInIds(ids)
-          .returning(['permitId'])
-          .execute();
-      }
       const receiptEntity: Receipt = new Receipt();
       const transaction = await this.findOneTransactionByOrderNumber(
         transactionDetails.transactionOrderNumber,
@@ -464,7 +446,6 @@ export class ApplicationService {
       receiptEntity.receiptDocumentId = generatedDocuments.at(1).dmsId;
       await queryRunner.manager.save(receiptEntity);
       await queryRunner.commitTransaction();
-
       success = applicationId;
       try {
         const emailData: IssuePermitEmailData = {
@@ -514,6 +495,20 @@ export class ApplicationService {
     };
 
     return resultDto;
+  }
+  async findParentPermit(permitId: string):Promise<Permit[]> {
+    const permit = await this.findOne(permitId);
+    const allPermits = await this.permitRepository
+      .createQueryBuilder('permit')
+      .where('permit.originalPermitId = :originalPermitId', {
+        originalPermitId: permit.originalPermitId,
+      })
+      .andWhere('permit.permitStatus = :permitStatus', {
+        permitStatus: PermitStatus.ISSUED,
+      })
+      .andWhere('permit.permitId != :permitId',{permitId: permitId})
+      .getMany();
+      return allPermits;
   }
 
   private async generateDocument(
