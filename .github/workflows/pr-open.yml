@@ -40,7 +40,7 @@ jobs:
       packages: write
     strategy:
       matrix:
-        package: [backend/vehicles, backend/dops, backend/dops, frontend]
+        package: [backend/vehicles, backend/dops, frontend]
         include:
           - package: backend/vehicles
             triggers: ('backend/vehicles/')
