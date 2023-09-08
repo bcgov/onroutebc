@@ -74,7 +74,7 @@ jobs:
       max-parallel: 1
       fail-fast: true
       matrix:
-        name: [init, backend/vehicles, backend/dops, frontend]
+        name: [init, backend/vehicles, backend/dops, backend/sftp, frontend]
         include:
           - name: backend/vehicles
             file: backend/vehicles/openshift.deploy.yml
