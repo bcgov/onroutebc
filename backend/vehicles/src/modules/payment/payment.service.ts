@@ -164,6 +164,7 @@ export class PaymentService {
     const hash = await this.createHash(transactionAmount.toString());
     const transactionNumber = hash.transactionNumber;
     let transactionType: string = null;
+    //transactionType (P) is for Payment, (R) is for refund
     if (transactionAmount >= 0) transactionType = 'P';
     else transactionType = 'R';
 
