@@ -163,7 +163,9 @@ export class PaymentService {
     // Generate the hash and other necessary values for the transaction
     const hash = await this.createHash(transactionAmount.toString());
     const transactionNumber = hash.transactionNumber;
-    const transactionType = 'P';
+    let transactionType: string = null;
+    if (transactionAmount >= 0) transactionType = 'P';
+    else transactionType = 'R';
 
     return {
       url: '',

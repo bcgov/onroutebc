@@ -444,7 +444,10 @@ export class ApplicationService {
       receiptEntity.receiptDocumentId = generatedDocuments.at(1).dmsId;
       await queryRunner.manager.save(receiptEntity);
       // In case of amendment move the parent permit to SUPERSEDED Status.
-      if (tempPermit.previousRevision != null || tempPermit.previousRevision != undefined) {
+      if (
+        tempPermit.previousRevision != null ||
+        tempPermit.previousRevision != undefined
+      ) {
         const parentPermit = await this.findOne(
           String(tempPermit.previousRevision),
         );
