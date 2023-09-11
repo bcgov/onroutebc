@@ -26,6 +26,14 @@ export class CreateApplicationDto {
 
   @AutoMap()
   @ApiProperty({
+    description: 'Id of the original permit.',
+    example: '',
+    required: false,
+  })
+  originalPermitId: string;
+
+  @AutoMap()
+  @ApiProperty({
     example: 'A2-00000002-120',
     description: 'Unique formatted permit application number.',
   })

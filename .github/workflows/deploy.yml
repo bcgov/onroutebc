@@ -106,6 +106,8 @@ jobs:
             ${{secrets.VAULT_ENVIRONMENT}}/data/auth0-${{inputs.vault_zone}}      AUTH0_ISSUER_URL                | VAULT_AUTH0_ISSUER_URL;
             ${{secrets.VAULT_ENVIRONMENT}}/data/auth0-${{inputs.vault_zone}}      AUTH0_AUDIENCE                  | VAULT_AUTH0_AUDIENCE;
             ${{secrets.VAULT_ENVIRONMENT}}/data/auth0-${{inputs.vault_zone}}      AUTH0_IGNORE_EXP                | VAULT_AUTH0_IGNORE_EXP;
+            ${{secrets.VAULT_ENVIRONMENT}}/data/auth0-${{inputs.vault_zone}}      SITEMINDER_LOG_OFF_URL          | VAULT_SITEMINDER_LOG_OFF_URL;
+            ${{secrets.VAULT_ENVIRONMENT}}/data/dops-${{inputs.vault_zone}}       DOPS_CVSE_FORMS_CACHE_TTL_MS    | VAULT_DOPS_CVSE_FORMS_CACHE_TTL_MS;
             ${{secrets.VAULT_ENVIRONMENT}}/data/dops-${{inputs.vault_zone}}       DOPS_S3_ACCESS_TYPE             | VAULT_DOPS_S3_ACCESS_TYPE;
             ${{secrets.VAULT_ENVIRONMENT}}/data/dops-${{inputs.vault_zone}}       DOPS_S3_ACCESSKEYID             | VAULT_DOPS_S3_ACCESSKEYID;
             ${{secrets.VAULT_ENVIRONMENT}}/data/dops-${{inputs.vault_zone}}       DOPS_S3_BUCKET                  | VAULT_DOPS_S3_BUCKET;
@@ -126,7 +128,7 @@ jobs:
             ${{secrets.VAULT_ENVIRONMENT}}/data/payment-${{inputs.vault_zone}}    MOTIPAY_MERCHANT_ID             | VAULT_MOTIPAY_MERCHANT_ID;
             ${{secrets.VAULT_ENVIRONMENT}}/data/payment-${{inputs.vault_zone}}    MOTIPAY_BASE_URL                | VAULT_MOTIPAY_BASE_URL;
       
-      - uses: bcgov-nr/action-deployer-openshift@v1.0.5
+      - uses: bcgov-nr/action-deployer-openshift@v1.3.0
         with:
           file: ${{ matrix.file }}
           oc_namespace: ${{inputs.environmnet }}
@@ -144,6 +146,8 @@ jobs:
             -p AUTH0_ISSUER_URL=${{steps.vault.outputs.VAULT_AUTH0_ISSUER_URL}}
             -p AUTH0_AUDIENCE=${{steps.vault.outputs.VAULT_AUTH0_AUDIENCE}}
             -p AUTH0_IGNORE_EXP=${{steps.vault.outputs.VAULT_AUTH0_IGNORE_EXP}}
+            -p SITEMINDER_LOG_OFF_URL=${{steps.vault.outputs.VAULT_SITEMINDER_LOG_OFF_URL}}
+            -p DOPS_CVSE_FORMS_CACHE_TTL_MS=${{steps.vault.outputs.VAULT_DOPS_CVSE_FORMS_CACHE_TTL_MS}}
             -p DOPS_S3_ACCESS_TYPE=${{steps.vault.outputs.VAULT_DOPS_S3_ACCESS_TYPE}}
             -p DOPS_S3_ACCESSKEYID=${{steps.vault.outputs.VAULT_DOPS_S3_ACCESSKEYID}}
             -p DOPS_S3_BUCKET=${{steps.vault.outputs.VAULT_DOPS_S3_BUCKET}}
@@ -164,4 +168,5 @@ jobs:
             -p MOTIPAY_MERCHANT_ID=${{steps.vault.outputs.VAULT_MOTIPAY_MERCHANT_ID}}
             -p MOTIPAY_BASE_URL=${{steps.vault.outputs.VAULT_MOTIPAY_BASE_URL}}
             ${{ matrix.parameters }}
-          penetration_test: false
+          penetration_test: ${{ github.event_name != 'pull_request'}}
+          penetration_test_issue: ${{ matrix.name }}

@@ -10,6 +10,7 @@ export const getDefaultUserDetails = () => ({
     phone2Extension: "234",
     email: "my.company@mycompany.co",
     fax: "604-123-4569",
+    userAuthGroup: "ORGADMIN"
   },
 });
 
@@ -25,5 +26,6 @@ export const getEmptyUserDetails = () => ({
     phone2Extension: "",
     email: "",
     fax: "",
+    userAuthGroup: "",
   },
 });

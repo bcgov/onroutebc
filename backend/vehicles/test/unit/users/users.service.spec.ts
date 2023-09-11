@@ -44,6 +44,8 @@ import { IdirUser } from 'src/modules/company-user-management/users/entities/idi
 import { PendingIdirUser } from 'src/modules/company-user-management/pending-idir-users/entities/pending-idir-user.entity';
 import { PendingIdirUsersService } from 'src/modules/company-user-management/pending-idir-users/pending-idir-users.service';
 import { pendingIdirUserEntityMock } from 'test/util/mocks/data/pending-idir-user.mock';
+import { Request } from 'express';
+import { IUserJWT } from '../../../src/common/interface/user-jwt.interface';
 
 interface SelectQueryBuilderParameters {
   userGUID?: string;
@@ -173,9 +175,14 @@ describe('UsersService', () => {
 
       findUsersEntityMock(params, USER_LIST);
 
+      const request = createMock<Request>();
+      request.user = redCompanyCvClientUserJWTMock;
+
       const retUser = await service.update(
         constants.RED_COMPANY_CVCLIENT_USER_GUID,
         updateRedCompanyCvClientUserDtoMock,
+        constants.RED_COMPANY_ID,
+        request.user as IUserJWT,
       );
 
       expect(typeof retUser).toBe('object');
@@ -192,6 +199,8 @@ describe('UsersService', () => {
         await service.update(
           constants.RED_COMPANY_CVCLIENT_USER_GUID,
           updateRedCompanyCvClientUserDtoMock,
+          constants.RED_COMPANY_ID,
+          undefined,
         );
       }).rejects.toThrow(DataNotFoundException);
     });

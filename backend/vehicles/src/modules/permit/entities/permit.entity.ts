@@ -25,6 +25,14 @@ export class Permit extends Base {
   @PrimaryGeneratedColumn({ type: 'bigint', name: 'ID' })
   permitId: string;
 
+  @AutoMap()
+  @ApiProperty({
+    example: '1',
+    description: 'Identifier for original permit for a revisions',
+  })
+  @Column({ type: 'bigint', name: 'ORIGINAL_ID', nullable: true })
+  originalPermitId: string;
+
   @AutoMap(() => PermitData)
   @OneToOne(() => PermitData, (PermitData) => PermitData.permit, {
     cascade: true,
@@ -167,6 +175,18 @@ export class Permit extends Base {
     nullable: true,
   })
   documentId: string;
+
+  @AutoMap()
+  @ApiProperty({
+    example: 'A2-00000002-120',
+    description: 'Unique formatted permit application number.',
+  })
+  @Column({
+    length: '3000',
+    name: 'COMMENT',
+    nullable: true,
+  })
+  comment: string;
 
   @ManyToMany(() => Transaction, (transaction) => transaction.permits)
   transactions?: Transaction[];

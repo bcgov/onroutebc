@@ -98,6 +98,7 @@ services:
       AUTH0_ISSUER_URL: ${AUTH0_ISSUER_URL}
       AUTH0_AUDIENCE: ${AUTH0_AUDIENCE}
       AUTH0_IGNORE_EXP: ${AUTH0_IGNORE_EXP}
+      DOPS_CVSE_FORMS_CACHE_TTL_MS: ${DOPS_CVSE_FORMS_CACHE_TTL_MS}
       DOPS_S3_ACCESS_TYPE: ${DOPS_S3_ACCESS_TYPE}
       DOPS_S3_ACCESSKEYID: ${DOPS_S3_ACCESSKEYID}
       DOPS_S3_BUCKET: ${DOPS_S3_BUCKET}
@@ -135,6 +136,7 @@ services:
         VITE_API_VEHICLE_URL: ${VITE_API_VEHICLE_URL}
         VITE_AUTH0_ISSUER_URL: ${VITE_AUTH0_ISSUER_URL}
         VITE_AUTH0_AUDIENCE: ${VITE_AUTH0_AUDIENCE}
+        VITE_SITEMINDER_LOG_OFF_URL: ${VITE_SITEMINDER_LOG_OFF_URL}
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000"]
       interval: 1m30s
@@ -150,3 +152,36 @@ services:
     volumes:
       - ./frontend:/app:z
       - /app/node_modules
+  sftp-api:
+    container_name: sftp-api
+    build:
+      context: ./backend/sftp/
+      dockerfile: Dockerfile
+    environment:
+      NODE_ENV: development
+      DB_TYPE: ${DB_TYPE}
+      MSSQL_HOST: sql-server-db
+      MSSQL_PORT: ${MSSQL_PORT}
+      MSSQL_DB: ${MSSQL_DB}
+      MSSQL_SA_USER: ${MSSQL_SA_USER}
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD}
+      MSSQL_ENCRYPT: ${MSSQL_ENCRYPT}
+      AUTH0_ISSUER_URL: ${AUTH0_ISSUER_URL}
+      AUTH0_AUDIENCE: ${AUTH0_AUDIENCE}
+      AUTH0_IGNORE_EXP: ${AUTH0_IGNORE_EXP}
+      CFS_PRIVATE_KEY: ${CFS_PRIVATE_KEY}
+      CFS_PASSPHRASE: ${CFS_PASSPHRASE}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5002/"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    depends_on:
+      sql-server-db:
+        condition: service_healthy
+    hostname: sftp-api
+    links:
+      - sql-server-db
+    ports:
+      - "5002:5002"

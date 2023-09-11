@@ -5,16 +5,26 @@ import { Loading } from "../common/pages/Loading";
 import { useContext, useEffect } from "react";
 import OnRouteBCContext from "../common/authentication/OnRouteBCContext";
 import { DoesUserHaveRole } from "../common/authentication/util";
-import { LoadUserRolesByCompany } from "../common/authentication/LoadUserRolesByCompany";
-import { LoadUserContext } from "../common/authentication/LoadUserContext";
+import { LoadBCeIDUserRolesByCompany } from "../common/authentication/LoadBCeIDUserRolesByCompany";
+import { LoadBCeIDUserContext } from "../common/authentication/LoadBCeIDUserContext";
+import { LoadIDIRUserContext } from "../common/authentication/LoadIDIRUserContext";
+import { LoadIDIRUserRoles } from "../common/authentication/LoadIDIRUserRoles";
+
+const isIDIR = (identityProvider: string) => identityProvider === "idir";
 
 export const ProtectedRoutes = ({
   requiredRole,
 }: {
   requiredRole?: string;
 }) => {
-  const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
-  const { userRoles, companyId } = useContext(OnRouteBCContext);
+  const {
+    isAuthenticated,
+    isLoading: isAuthLoading,
+    user: userFromToken,
+  } = useAuth();
+  const { userRoles, companyId, idirUserDetails } =
+    useContext(OnRouteBCContext);
+  const userIDP = userFromToken?.profile?.identity_provider as string;
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -33,22 +43,33 @@ export const ProtectedRoutes = ({
   }
 
   if (isAuthenticated) {
-    if (!companyId) {
+    if (isIDIR(userIDP) && !idirUserDetails?.userAuthGroup) {
       return (
         <>
-          <LoadUserContext />
-          <Loading />
+          <LoadIDIRUserContext />
+          <LoadIDIRUserRoles />
         </>
       );
     }
-    if (!userRoles) {
-      return (
-        <>
-          <LoadUserRolesByCompany />
-          <Loading />
-        </>
-      );
+    if (!isIDIR(userIDP)) {
+      if (!companyId) {
+        return (
+          <>
+            <LoadBCeIDUserContext />
+            <Loading />
+          </>
+        );
+      }
+      if (!userRoles) {
+        return (
+          <>
+            <LoadBCeIDUserRolesByCompany />
+            <Loading />
+          </>
+        );
+      }
     }
+
     if (!DoesUserHaveRole(userRoles, requiredRole)) {
       return <Navigate to={UNAUTHORIZED} state={{ from: location }} replace />;
     }

@@ -7,19 +7,21 @@ import { InjectMapper } from '@automapper/nestjs';
 import { Mapper } from '@automapper/core';
 import { Transaction } from './entities/transaction.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { PermitTransaction } from './entities/permit-transaction.entity';
 import { ReadPermitTransactionDto } from './dto/response/read-permit-transaction.dto';
 import { MotiPayDetailsDto } from './dto/response/read-moti-pay-details.dto';
 import { ApplicationService } from '../permit/application.service';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
 import { IReceipt } from 'src/common/interface/receipt.interface';
+import { callDatabaseSequence } from 'src/common/helper/database.helper';
 
 @Injectable()
 export class PaymentService {
   constructor(
     @InjectRepository(PermitTransaction)
     private permitTransactionRepository: Repository<PermitTransaction>,
+    private dataSource: DataSource,
     @InjectRepository(Transaction)
     private transactionRepository: Repository<Transaction>,
     @InjectMapper() private readonly classMapper: Mapper,
@@ -92,13 +94,23 @@ export class PaymentService {
    * @param {string} transactionAmount - The amount of the transaction.
    * @returns {object} An object containing the transaction number, hash expiry, and hash.
    */
-  private createHash = (transactionAmount: string): IPayment => {
+  private async createHash(transactionAmount: string): Promise<IPayment> {
     // Get the current date and time
-    const currDate = new Date();
+    //const currDate = new Date();
 
     // TODO: Generate a unique transaction number based on the current timestamp
-    const trnNum = 'T' + currDate.getTime().toString().substring(4);
-    const transactionNumber = trnNum;
+
+    const seq: number = parseInt(
+      await callDatabaseSequence(
+        'permit.ORBC_TRANSACTION_NUMBER_SEQ',
+        this.dataSource,
+      ),
+    );
+    const trnNum = seq.toString(16);
+    // const trnNum = 'T' + currDate.getTime().toString().substring(4);
+    const currentDate = Date.now();
+    const transactionNumber =
+      'T' + trnNum.padStart(9, '0').toUpperCase() + String(currentDate);
 
     const { motiPayHash, hashExpiry } = this.queryHash(
       'P',
@@ -111,7 +123,7 @@ export class PaymentService {
       motipayHashExpiry: hashExpiry,
       motipayHash: motiPayHash,
     };
-  };
+  }
 
   generateUrl = (
     details: MotiPayDetailsDto,
@@ -142,15 +154,19 @@ export class PaymentService {
    * @param {number} transactionAmount - The amount of the transaction.
    * @returns {string} The URL containing transaction details for the payment gateway.
    */
-  forwardTransactionDetails = (
+  async forwardTransactionDetails(
     paymentMethodId: number,
     transactionSubmitDate: string,
     transactionAmount: number,
-  ): MotiPayDetailsDto => {
+  ): Promise<MotiPayDetailsDto> {
     // Generate the hash and other necessary values for the transaction
-    const hash = this.createHash(transactionAmount.toString());
+    const hash = await this.createHash(transactionAmount.toString());
     const transactionNumber = hash.transactionNumber;
-    const transactionType = 'P';
+    //let transactionType: string = null;
+    //transactionType (P) is for Payment, (R) is for refund
+   // if (transactionAmount >= 0) transactionType = 'P';
+  //else transactionType = 'R';
+  const transactionType = 'P';
 
     return {
       url: '',
@@ -160,7 +176,7 @@ export class PaymentService {
       transactionSubmitDate: transactionSubmitDate,
       paymentMethodId: paymentMethodId,
     };
-  };
+  }
 
   /**
    * Updates a transaction in the system based on the provided data.
@@ -190,7 +206,6 @@ export class PaymentService {
       CreateTransactionDto,
       Transaction,
     );
-
     // If the updated transaction is approved, issue a permit using the application service.
     if (newTransaction.approved) {
       // Extract relevant transaction details for issuing the permit.

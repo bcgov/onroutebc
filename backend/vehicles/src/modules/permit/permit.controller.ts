@@ -33,13 +33,14 @@ import { ReadFileDto } from '../common/dto/response/read-file.dto';
 import { Roles } from 'src/common/decorator/roles.decorator';
 import { Role } from 'src/common/enum/roles.enum';
 import { IDP } from 'src/common/enum/idp.enum';
-import { Permit } from './entities/permit.entity';
 import {
   IPaginationMeta,
   IPaginationOptions,
 } from 'src/common/interface/pagination.interface';
 import { PaginationDto } from 'src/common/class/pagination';
 import { LessThenPipe } from 'src/common/class/customs.transform';
+import { Permit } from './entities/permit.entity';
+import { PermitHistoryDto } from './dto/response/permit-history.dto';
 
 @ApiBearerAuth()
 @ApiTags('Permit')
@@ -85,6 +86,19 @@ export class PermitController {
     return this.permitService.findByPermitNumber(permitNumber);
   }
 
+  @ApiOkResponse({
+    description: 'The Permit Resource to get revision and payment history.',
+    type: Permit,
+    isArray: true,
+  })
+  @Public()
+  @Get('history')
+  async getPermitHisory(
+    @Query('originalId') originalId: string,
+  ): Promise<PermitHistoryDto[]> {
+    return this.permitService.findPermitHistory(originalId);
+  }
+
   /**
    * Get Permits of Logged in user
    * @Query companyId Company id of logged in user
@@ -104,7 +118,7 @@ export class PermitController {
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe, LessThenPipe)
     limit = 10,
-  ): Promise<PaginationDto<Permit, IPaginationMeta>> {
+  ): Promise<PaginationDto<ReadPermitDto, IPaginationMeta>> {
     const options: IPaginationOptions = {
       limit,
       page,
@@ -138,8 +152,15 @@ export class PermitController {
   async getPermitData(
     @Query('searchColumn') searchColumn: string,
     @Query('searchString') searchString: string,
-  ): Promise<ReadPermitDto[]> {
-    return this.permitService.findPermit(searchColumn, searchString);
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe, LessThenPipe)
+    limit = 10,
+  ): Promise<PaginationDto<ReadPermitDto, IPaginationMeta>> {
+    const options: IPaginationOptions = {
+      limit,
+      page,
+    };
+    return this.permitService.findPermit(options, searchColumn, searchString);
   }
 
   @AuthOnly()

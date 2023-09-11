@@ -110,4 +110,5 @@ interface TermOversizeApplication {
   commodities: Commodities[];
   mailingAddress: MailingAddress;
   feeSummary: string;
+  companyName?: string;
 }

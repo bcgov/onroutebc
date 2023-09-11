@@ -86,17 +86,27 @@ const getSectionNameByField = (field: string) => {
   }
 };
 
-const isSubmissionSuccessful = (status: number) => status === 201 || status === 200;
+const isSubmissionSuccessful = (status: number) =>
+  status === 201 || status === 200;
 const hasValidationErrors = (status: number) => status === 400;
-const getFirstValidationError = (errors: { field: string, message: string[] }[]) => {
+const getFirstValidationError = (
+  errors: { field: string; message: string[] }[]
+) => {
   if (errors.length === 0 || errors[0].message.length === 0) return undefined;
-  return `${getSectionNameByField(errors[0].field)} validation error: ${errors[0].message[0]}`;
+  return `${getSectionNameByField(errors[0].field)} validation error: ${
+    errors[0].message[0]
+  }`;
 };
 
 export const CreateProfileSteps = React.memo(() => {
   const queryClient = useQueryClient();
   const steps = ["Company Information", "My Information"];
-  const { setCompanyId, setUserDetails } = useContext(OnRouteBCContext);
+  const {
+    setCompanyId,
+    setUserDetails,
+    setCompanyLegalName,
+    setOnRouteBCClientNumber,
+  } = useContext(OnRouteBCContext);
   const { setSnackBar } = useContext(SnackBarContext);
 
   const { user } = useAuth();
@@ -112,7 +122,7 @@ export const CreateProfileSteps = React.memo(() => {
   const formMethods = useForm<CompanyAndUserRequest>({
     defaultValues: {
       legalName: getDefaultRequiredVal(
-        "", 
+        "",
         user?.profile?.bceid_business_name as string
       ),
       mailingAddress: {
@@ -123,10 +133,7 @@ export const CreateProfileSteps = React.memo(() => {
         city: "",
         postalCode: "",
       },
-      email: getDefaultRequiredVal(
-        "", 
-        user?.profile?.email
-      ),
+      email: getDefaultRequiredVal("", user?.profile?.email),
       phone: "",
       extension: "",
       fax: "",
@@ -166,6 +173,8 @@ export const CreateProfileSteps = React.memo(() => {
       if (isSubmissionSuccessful(response.status)) {
         const responseBody = response.data;
         const companyId = responseBody["companyId"];
+        const companyName = responseBody["legalName"];
+        const clientNumber = responseBody["clientNumber"];
         const userDetails = {
           firstName: responseBody.adminUser?.firstName,
           lastName: responseBody.adminUser?.lastName,
@@ -176,20 +185,24 @@ export const CreateProfileSteps = React.memo(() => {
           phone2Extension: responseBody.adminUser?.phone2Extension,
           email: responseBody.adminUser?.email,
           fax: responseBody.adminUser?.fax,
+          userAuthGroup: responseBody.adminUser?.userAuthGroup,
         };
         setUserDetails?.(() => userDetails);
         setCompanyId?.(() => companyId);
-        
+        setCompanyLegalName?.(() => companyName);
+        setOnRouteBCClientNumber?.(() => clientNumber);
+
         // Setting the companyId in the sessionStorage so that it can be used
         // used outside of react components;
-        sessionStorage.setItem('onRouteBC.user.companyId', companyId);
-
+        sessionStorage.setItem("onRouteBC.user.companyId", companyId);
 
         setClientNumber(() => responseBody["clientNumber"]);
         queryClient.invalidateQueries(["userContext"]);
       } else if (hasValidationErrors(response.status)) {
         const { error } = response.data;
-        const firstErrMsg = getFirstValidationError(getDefaultRequiredVal([], error));
+        const firstErrMsg = getFirstValidationError(
+          getDefaultRequiredVal([], error)
+        );
         if (firstErrMsg) {
           setSnackBar({
             message: firstErrMsg,
@@ -300,7 +313,7 @@ export const CreateProfileSteps = React.memo(() => {
                 <hr></hr>
                 <CompanyBanner
                   legalName={getDefaultRequiredVal(
-                    "", 
+                    "",
                     user?.profile?.bceid_business_name as string
                   )}
                 />

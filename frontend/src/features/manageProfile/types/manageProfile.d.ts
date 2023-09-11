@@ -35,8 +35,10 @@ export interface CompanyProfile {
 }
 
 export interface UserInformation extends Contact {
-  fax?: string;
   userAuthGroup: string;
+  userGUID: string;
+  userName: string;
+  statusCode: string;
 }
 
 export interface CompanyAndUserRequest {
@@ -50,4 +52,15 @@ export interface CompanyAndUserRequest {
   fax?: string;
   primaryContact: Contact;
   adminUser: UserInformation;
+}
+
+/**
+ * The tabs on the user profile management page.
+ */
+export enum BCEID_PROFILE_TABS {
+  COMPANY_INFORMATION = 0,
+  MY_INFORMATION = 1,
+  USER_MANAGEMENT_ORGADMIN = 2,
+  PAYMENT_INFORMATION_CVCLIENT = 2,
+  PAYMENT_INFORMATION_ORGADMIN = 3,
 }

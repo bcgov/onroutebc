@@ -144,3 +144,12 @@ export const permitTypeDisplayText = (permitType: PermitType) => {
       return "";
   }
 };
+
+/**
+ * Gets display text for fee summary.
+ * @param applicationData Application Data
+ * @returns display text for the fee summary
+ */
+export const feeSummaryDisplayText = (applicationData: Application |  undefined) => {
+  return Number(applicationData?.permitData?.permitDuration);
+};

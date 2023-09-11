@@ -1,12 +1,7 @@
 @import "../../../../themes/orbcStyles.scss";
 
 .user-section {
-  position: relative;
-
-  &__logout {
-    position: relative;
-    z-index: 3;
-    text-align: right;
-    padding: 0;
-  }
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }

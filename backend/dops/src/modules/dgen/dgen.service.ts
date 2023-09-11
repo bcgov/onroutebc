@@ -1,6 +1,5 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-
 import { Repository } from 'typeorm';
 import { DocumentTemplate } from './entities/document-template.entity';
 import { TemplateName } from '../../enum/template-name.enum';
@@ -10,16 +9,30 @@ import { IUserJWT } from '../../interface/user-jwt.interface';
 import { CreateGeneratedDocumentDto } from './dto/request/create-generated-document.dto';
 import { Response } from 'express';
 import { Readable } from 'stream';
+import { ExternalDocument } from './entities/external-document.entity';
+import * as ExternalDocumentEnum from '../../enum/external-document.enum';
+import { HttpService } from '@nestjs/axios';
+import { lastValueFrom } from 'rxjs';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
+import { PDFDocument } from 'pdf-lib';
 
 @Injectable()
 export class DgenService {
   constructor(
     @InjectRepository(DocumentTemplate)
     private documentTemplateRepository: Repository<DocumentTemplate>,
+    @InjectRepository(ExternalDocument)
+    private externalDocumentRepository: Repository<ExternalDocument>,
     private readonly cdogsService: CdogsService,
     private readonly dmsService: DmsService,
+    private readonly httpService: HttpService,
+    @Inject(CACHE_MANAGER)
+    private readonly cacheManager: Cache,
   ) {}
 
+  private readonly _dopsCVSEFormsCacheTTLms =
+    process.env.DOPS_CVSE_FORMS_CACHE_TTL_MS;
   /**
    * Find all templates registered in ORBC_DOCUMENT_TEMPLATE
    * @returns A list of templates of type {@link DocumentTemplate}
@@ -71,6 +84,26 @@ export class DgenService {
       currentUser,
       createGeneratedDocumentDto,
     );
+    const documentBufferMap = new Map<string, Buffer>();
+    documentBufferMap.set('PERMIT', generatedDocument.buffer);
+    const documentsToMerge = createGeneratedDocumentDto.documentsToMerge;
+    if (documentsToMerge?.length) {
+      await this.fetchDocumentsToMerge(documentsToMerge, documentBufferMap);
+      const documentsToStringArray = documentsToMerge.map((document) =>
+        document.toString(),
+      );
+      documentsToStringArray.unshift('PERMIT');
+      try {
+        const mergedDocument = await this.mergeDocuments(
+          documentsToStringArray,
+          documentBufferMap,
+        );
+        generatedDocument.buffer = Buffer.from(mergedDocument);
+        generatedDocument.size = mergedDocument.length;
+      } catch (err) {
+        console.log('Error while trying to merge files', err);
+      }
+    }
 
     const dmsObject = await this.dmsService.create(
       currentUser,
@@ -98,5 +131,60 @@ export class DgenService {
     stream.on('error', () => {
       throw new Error('An error occurred while reading the file.');
     });
+  }
+
+  private async mergeDocuments(
+    documentsToMerge: string[],
+    documentBufferMap: Map<string, Buffer>,
+  ): Promise<Uint8Array> {
+    const mergedPdf = await PDFDocument.create();
+    for (const document of documentsToMerge) {
+      const pdf = await PDFDocument.load(documentBufferMap.get(document));
+      const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
+      copiedPages.forEach((page) => mergedPdf.addPage(page));
+    }
+    const mergedDocument = await mergedPdf.save();
+    return mergedDocument;
+  }
+
+  private async fetchDocumentsToMerge(
+    documentsToMerge: ExternalDocumentEnum.ExternalDocument[],
+    documentBufferMap: Map<string, Buffer>,
+  ) {
+    await Promise.all(
+      documentsToMerge.map(async (externalDocument) => {
+        const documentFromCache: Buffer = await this.cacheManager.get(
+          externalDocument,
+        );
+        if (!documentFromCache) {
+          const externalDocumentDetails =
+            await this.externalDocumentRepository.findOne({
+              where: {
+                documentName: externalDocument,
+              },
+            });
+
+          const resExternalDocs = await lastValueFrom(
+            this.httpService.get(externalDocumentDetails.documentLocation, {
+              responseType: 'arraybuffer',
+            }),
+          );
+
+          const externalDocumentBuffer = Buffer.from(
+            resExternalDocs.data as string,
+            'binary',
+          );
+
+          await this.cacheManager.set(
+            externalDocument,
+            externalDocumentBuffer,
+            +this._dopsCVSEFormsCacheTTLms,
+          );
+          documentBufferMap.set(externalDocument, externalDocumentBuffer);
+        } else {
+          documentBufferMap.set(externalDocument, documentFromCache);
+        }
+      }),
+    );
   }
 }
