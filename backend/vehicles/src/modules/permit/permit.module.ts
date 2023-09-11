@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { PermitService } from './permit.service';
 import { PermitController } from './permit.controller';
 

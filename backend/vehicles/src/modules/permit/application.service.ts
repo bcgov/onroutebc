@@ -6,6 +6,7 @@ import {
   Inject,
   Injectable,
   InternalServerErrorException,
+  forwardRef,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ApplicationStatus } from 'src/common/enum/application-status.enum';
@@ -62,6 +63,7 @@ export class ApplicationService {
     private readonly cacheManager: Cache,
     private companyService: CompanyService,
     private readonly emailService: EmailService,
+    @Inject(forwardRef(() => PermitService))
     private readonly permitService: PermitService,
     @InjectRepository(Transaction)
     private transactionRepository: Repository<Transaction>,
@@ -731,7 +733,9 @@ export class ApplicationService {
           (x) =>
             x != ApplicationStatus.CANCELLED &&
             x != ApplicationStatus.REJECTED &&
-            x != ApplicationStatus.ISSUED,
+            x != ApplicationStatus.ISSUED &&
+            x != ApplicationStatus.REVOKED &&
+            x != ApplicationStatus.VOIDED,
         ),
       })
       .getCount();

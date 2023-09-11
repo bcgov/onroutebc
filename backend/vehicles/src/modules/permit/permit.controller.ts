@@ -41,6 +41,8 @@ import { PaginationDto } from 'src/common/class/pagination';
 import { LessThenPipe } from 'src/common/class/customs.transform';
 import { Permit } from './entities/permit.entity';
 import { PermitHistoryDto } from './dto/response/permit-history.dto';
+import { ApplicationStatus } from 'src/common/enum/application-status.enum';
+import { UpdateResult } from 'typeorm';
 
 @ApiBearerAuth()
 @ApiTags('Permit')
@@ -225,5 +227,21 @@ export class PermitController {
 
     await this.permitService.findReceiptPDF(currentUser, permitId, res);
     res.status(200);
+  }
+
+  @Post('/:permitId/void')
+  async voidpermit(
+    @Req() request: Request,
+    @Param('permitId') permitId: string,
+    @Body('status')
+    status: ApplicationStatus.REVOKED | ApplicationStatus.VOIDED,
+  ): Promise<UpdateResult> {
+    const currentUser = request.user as IUserJWT;
+    const permit = await this.permitService.voidPermit(
+      permitId,
+      status,
+      currentUser,
+    );
+    return permit;
   }
 }

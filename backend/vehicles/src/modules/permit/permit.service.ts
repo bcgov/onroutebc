@@ -1,8 +1,14 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+  forwardRef,
+} from '@nestjs/common';
 import { Mapper } from '@automapper/core';
 import { InjectMapper } from '@automapper/nestjs';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Like, Repository } from 'typeorm';
+import { Like, Repository, UpdateResult } from 'typeorm';
 import { CreatePermitDto } from './dto/request/create-permit.dto';
 import { ReadPermitDto } from './dto/response/read-permit.dto';
 import { Permit } from './entities/permit.entity';
@@ -21,6 +27,8 @@ import {
 import { PaginationDto } from 'src/common/class/pagination';
 import { paginate } from 'src/common/helper/paginate';
 import { PermitHistoryDto } from './dto/response/permit-history.dto';
+import { ApplicationStatus } from 'src/common/enum/application-status.enum';
+import { ApplicationService } from './application.service';
 
 @Injectable()
 export class PermitService {
@@ -33,6 +41,8 @@ export class PermitService {
     @InjectRepository(Receipt)
     private receiptRepository: Repository<Receipt>,
     private readonly dopsService: DopsService,
+    @Inject(forwardRef(() => ApplicationService))
+    private readonly applicationService: ApplicationService,
   ) {}
 
   async create(createPermitDto: CreatePermitDto): Promise<ReadPermitDto> {
@@ -299,5 +309,69 @@ export class PermitService {
       })
       .getMany();
     return this.classMapper.mapArrayAsync(permits, Permit, PermitHistoryDto);
+  }
+
+  /**
+   *
+   * @param permitId ex: 1
+   * @param status ex: VOIDED|REVOKED
+   * Description: This method will update the permit status for given permit id and will set it to either REVOKED or VOIDED stauts.
+   */
+  public async voidPermit(
+    permitId: string,
+    status: ApplicationStatus.REVOKED | ApplicationStatus.VOIDED,
+    currentUser: IUserJWT,
+  ): Promise<UpdateResult> {
+    const permit = await this.findOne(permitId);
+    if (!permit)
+      throw new NotFoundException('Permit id ' + permitId + ' not found.');
+    if (permit.permitStatus != ApplicationStatus.ISSUED)
+      throw new InternalServerErrorException(
+        'Cannot void a permit in ' + permit.permitStatus + ' status',
+      );
+    const applicationCount = 0;
+    await this.applicationService.checkApplicationInProgress(
+      permit.originalPermitId,
+    );
+    if (applicationCount > 0) {
+      throw new InternalServerErrorException(
+        'An application exists for this permit. Please cancel application before voiding permit.',
+      );
+    }
+    permit.permitStatus = ApplicationStatus.SUPERSEDED;
+    // to create new permit
+    let newPermit = permit;
+    newPermit.permitId = null;
+    newPermit.permitStatus = status;
+    newPermit.revision = permit.revision + 1;
+    newPermit.previousRevision = +permitId;
+    const applicationNumber =
+      await this.applicationService.generateApplicationNumber(
+        currentUser.identity_provider,
+        permitId,
+      );
+    newPermit.applicationNumber = applicationNumber;
+    /* Create application to generate permit id. 
+    this permit id will be used to generate permit number based this id's application number.*/
+    newPermit = await this.permitRepository.save(newPermit);
+    const permitNumber = await this.applicationService.generatePermitNumber(
+      newPermit.permitId,
+    );
+    newPermit.permitNumber = permitNumber;
+    // Save new permit
+    const updateNewPermit = await this.permitRepository
+      .createQueryBuilder()
+      .update()
+      .set({ permitStatus: status })
+      .where('permitId = :permitId', { permitId: newPermit.permitId })
+      .execute();
+    //Update old permit status to SUPERSEDED.
+    await this.permitRepository
+      .createQueryBuilder()
+      .update()
+      .set({ permitStatus: ApplicationStatus.SUPERSEDED })
+      .where('permitId = :permitId', { permitId: permitId })
+      .execute();
+    return updateNewPermit;
   }
 }
