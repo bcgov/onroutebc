@@ -1,7 +1,7 @@
 {
-  "name": "onroutebc-dops-api",
+  "name": "onroutebc-sftp-api",
   "version": "0.0.1",
-  "description": "OnRouteBC Document Operations (DOPS) api.",
+  "description": "OnRouteBC SFTP  api.",
   "main": "index.js",
   "scripts": {
     "prebuild": "rimraf dist",

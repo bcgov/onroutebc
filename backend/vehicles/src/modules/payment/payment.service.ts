@@ -108,7 +108,9 @@ export class PaymentService {
     );
     const trnNum = seq.toString(16);
     // const trnNum = 'T' + currDate.getTime().toString().substring(4);
-    const transactionNumber = 'T' + trnNum.padStart(9, '0').toUpperCase();
+    const currentDate = Date.now();
+    const transactionNumber =
+      'T' + trnNum.padStart(9, '0').toUpperCase() + String(currentDate);
 
     const { motiPayHash, hashExpiry } = this.queryHash(
       'P',
@@ -160,7 +162,11 @@ export class PaymentService {
     // Generate the hash and other necessary values for the transaction
     const hash = await this.createHash(transactionAmount.toString());
     const transactionNumber = hash.transactionNumber;
-    const transactionType = 'P';
+    //let transactionType: string = null;
+    //transactionType (P) is for Payment, (R) is for refund
+   // if (transactionAmount >= 0) transactionType = 'P';
+  //else transactionType = 'R';
+  const transactionType = 'P';
 
     return {
       url: '',
@@ -200,7 +206,6 @@ export class PaymentService {
       CreateTransactionDto,
       Transaction,
     );
-
     // If the updated transaction is approved, issue a permit using the application service.
     if (newTransaction.approved) {
       // Extract relevant transaction details for issuing the permit.

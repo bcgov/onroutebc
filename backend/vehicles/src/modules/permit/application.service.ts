@@ -5,6 +5,7 @@ import {
   HttpException,
   Inject,
   Injectable,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ApplicationStatus } from 'src/common/enum/application-status.enum';
@@ -78,6 +79,27 @@ export class ApplicationService {
     createApplicationDto: CreateApplicationDto,
     currentUser: IUserJWT,
   ): Promise<ReadApplicationDto> {
+    const id = createApplicationDto.permitId;
+    //If permit id exists assign it to null to create new application.
+    //Existing permit id also implies that this new application is an amendment.
+    if (id) {
+      const permit = await this.findOne(id);
+      //to check if there is already an appliation in database
+      const count = await this.checkApplicationInProgress(
+        permit.originalPermitId,
+      );
+      // If an application already exists throw error.
+      //As there should not be multiple amendment applications for one permit
+      if (count > 0)
+        throw new InternalServerErrorException(
+          'An application already exists for this permit.',
+        );
+      createApplicationDto.revision = permit.revision + 1;
+      createApplicationDto.previousRevision = id;
+      createApplicationDto.permitId = null;
+      createApplicationDto.originalPermitId = permit.originalPermitId;
+    }
+
     createApplicationDto.permitStatus = ApplicationStatus.IN_PROGRESS;
     //Assign Permit Application Origin
     if (currentUser.identity_provider == IDP.IDIR)
@@ -90,17 +112,9 @@ export class ApplicationService {
     //Generate appliction number for the application to be created in database.
     const applicationNumber = await this.generateApplicationNumber(
       currentUser.identity_provider,
-      createApplicationDto.permitId,
+      id,
     );
     createApplicationDto.applicationNumber = applicationNumber;
-    //If permit id exists assign it to null to create new application.
-    if (createApplicationDto.permitId) {
-      const permit = await this.findOne(createApplicationDto.permitId);
-      createApplicationDto.revision = permit.revision + 1;
-      createApplicationDto.previousRevision = createApplicationDto.permitId;
-      createApplicationDto.permitId = null;
-    }
-
     const permitApplication = this.classMapper.map(
       createApplicationDto,
       CreateApplicationDto,
@@ -109,6 +123,15 @@ export class ApplicationService {
     const savedPermitEntity = await this.permitRepository.save(
       permitApplication,
     );
+    // In case of new application assign original permit ID
+    if (id === undefined || id === null) {
+      await this.permitRepository
+        .createQueryBuilder()
+        .update()
+        .set({ originalPermitId: savedPermitEntity.permitId })
+        .where('permitId = :permitId', { permitId: savedPermitEntity.permitId })
+        .execute();
+    }
     const refreshedPermitEntity = await this.findOne(
       savedPermitEntity.permitId,
     );
@@ -262,7 +285,9 @@ export class ApplicationService {
     let permitApprovalSource: PermitApprovalSourceEnum = null;
     if (applicationIds.length === 1) {
       if (applicationStatus === ApplicationStatus.ISSUED)
-        return await this.issuePermit(currentUser, applicationIds[0]);
+        throw new ForbiddenException(
+          'Status Change to ISSUE permit is prohibited on this endpoint.',
+        );
       else if (
         applicationStatus === ApplicationStatus.APPROVED ||
         applicationStatus === ApplicationStatus.AUTO_APPROVED
@@ -277,7 +302,7 @@ export class ApplicationService {
       applicationStatus != ApplicationStatus.CANCELLED
     ) {
       throw new ForbiddenException(
-        'Bulk status update is only allowed for Cancellation',
+        'Bulk status update is only allowed for Cancellation.',
       );
     }
     const updateResult = await this.permitRepository
@@ -290,7 +315,6 @@ export class ApplicationService {
         }),
       })
       .whereInIds(applicationIds)
-      .andWhere('permitNumber is null')
       .returning(['permitId'])
       .execute();
 
@@ -406,7 +430,6 @@ export class ApplicationService {
           permitData: true,
         },
       });
-
       permitEntity.permitStatus = ApplicationStatus.ISSUED;
       permitEntity.permitNumber = permitNumber;
       permitEntity.documentId = generatedDocuments.at(0).dmsId;
@@ -419,8 +442,18 @@ export class ApplicationService {
       receiptEntity.receiptNumber = receiptNo;
       receiptEntity.receiptDocumentId = generatedDocuments.at(1).dmsId;
       await queryRunner.manager.save(receiptEntity);
+      // In case of amendment move the parent permit to SUPERSEDED Status.
+      if (
+        tempPermit.previousRevision != null ||
+        tempPermit.previousRevision != undefined
+      ) {
+        const parentPermit = await this.findOne(
+          String(tempPermit.previousRevision),
+        );
+        parentPermit.permitStatus = ApplicationStatus.SUPERSEDED;
+        await queryRunner.manager.save(parentPermit);
+      }
       await queryRunner.commitTransaction();
-
       success = applicationId;
       try {
         const emailData: IssuePermitEmailData = {
@@ -571,11 +604,7 @@ export class ApplicationService {
         seq = permit.permitNumber.substring(3, 11);
         rnd = permit.permitNumber.substring(12, 15);
       } else {
-        seq = await callDatabaseSequence(
-          'permit.ORBC_PERMIT_NUMBER_SEQ',
-          this.dataSource,
-        );
-        rnd = randomInt(100, 1000);
+        throw new InternalServerErrorException('Permit number does not exist');
       }
       source = await this.getPermitApplicationOrigin(
         permit.permitApplicationOrigin,
@@ -689,5 +718,23 @@ export class ApplicationService {
     const receiptNumber = String(String(source) + '-' + String(seq));
 
     return receiptNumber;
+  }
+
+  async checkApplicationInProgress(originalPermitId: string): Promise<number> {
+    const count = await this.permitRepository
+      .createQueryBuilder('permit')
+      .where('permit.originalPermitId = :originalPermitId', {
+        originalPermitId: originalPermitId,
+      })
+      .andWhere('permit.permitStatus IN (:...applicationStatus)', {
+        applicationStatus: Object.values(ApplicationStatus).filter(
+          (x) =>
+            x != ApplicationStatus.CANCELLED &&
+            x != ApplicationStatus.REJECTED &&
+            x != ApplicationStatus.ISSUED,
+        ),
+      })
+      .getCount();
+    return count;
   }
 }
