@@ -9,6 +9,8 @@ import { TemplateFile } from './interface/template-file.interface';
 import { FILE_ENCODING_TYPE } from './constants/dops.constant';
 import { S3Service } from './modules/common/s3.service';
 import { createFile } from './helper/file.helper';
+import { addToCache } from './helper/cache.helper';
+import * as fs from 'fs';
 
 @Injectable()
 export class AppService {
@@ -46,6 +48,17 @@ export class AppService {
     );
     await this.cacheManager.set(CacheKey.DOCUMENT_TEMPLATE, templateFiles);
 
+    const assetsPath =
+      process.env.NODE_ENV === 'local' ? './src/assets/' : './dist/assets/';
+
+    await addToCache(
+      this.cacheManager,
+      CacheKey.PAYMENT_AND_REFUND_DETAILED_REPORT,
+      this.convertFiletoString(
+        assetsPath + 'templates/payment-refund-detailed.report.hbs',
+      ),
+    );
+
     const endDateTime = new Date();
     const processingTime = endDateTime.getTime() - startDateTime.getTime();
     console.info(
@@ -53,5 +66,14 @@ export class AppService {
         `End time: ${endDateTime.toISOString()},` +
         `Processing time: ${processingTime}ms`,
     );
+  }
+
+  private convertFiletoString(filePath: string, encode?: string) {
+    const file = fs.readFileSync(filePath, 'utf-8');
+    if (encode) {
+      return Buffer.from(file).toString('base64');
+    } else {
+      return Buffer.from(file).toString();
+    }
   }
 }

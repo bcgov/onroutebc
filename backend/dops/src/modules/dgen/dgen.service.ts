@@ -1,4 +1,8 @@
-import { Inject, Injectable } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { DocumentTemplate } from './entities/document-template.entity';
@@ -16,6 +20,13 @@ import { lastValueFrom } from 'rxjs';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { PDFDocument } from 'pdf-lib';
+import { getFromCache } from '../../helper/cache.helper';
+import * as Handlebars from 'handlebars';
+import { CacheKey } from '../../enum/cache-key.enum';
+import { CreateGeneratedReportDto } from './dto/request/create-generated-report.dto';
+import puppeteer, { Browser } from 'puppeteer';
+import { IFile } from '../../interface/file.interface';
+import { ReportTemplate } from '../../enum/report-template.enum';
 
 @Injectable()
 export class DgenService {
@@ -186,5 +197,90 @@ export class DgenService {
         }
       }),
     );
+  }
+
+  async generateReport(
+    currentUser: IUserJWT,
+    createGeneratedReportDto: CreateGeneratedReportDto,
+    res: Response,
+  ) {
+    const template = await getFromCache(
+      this.cacheManager,
+      this.getCacheKeyforReport(createGeneratedReportDto.reportTemplate),
+    );
+
+    if (!template?.length) {
+      throw new InternalServerErrorException('Template not found');
+    }
+    const compiledTemplate = Handlebars.compile(template);
+
+    const htmlBody = compiledTemplate({
+      ...createGeneratedReportDto.reportData,
+    });
+
+    const generatedDocument: IFile = {
+      originalname: createGeneratedReportDto.generatedDocumentFileName,
+      encoding: undefined,
+      mimetype: 'application/pdf',
+      buffer: undefined,
+      size: undefined,
+    };
+
+    let browser: Browser;
+    try {
+      const browser = await puppeteer.launch({ headless: 'new' });
+      const page = await browser.newPage();
+      await page.setContent(htmlBody);
+      await page.emulateMediaType('print');
+      generatedDocument.buffer = await page.pdf({
+        format: 'letter',
+        displayHeaderFooter: true,
+        printBackground: true,
+        landscape: true,
+        headerTemplate: `
+        <div style="color: lightgray; border-top: solid lightgray 1px; font-size: 10px; padding-top: 5px; text-align: center; width: 100%;">
+          <span>This is a test message</span> - <span class="pageNumber"></span>
+        </div>
+      `,
+        margin: { top: 100, bottom: 60 },
+      });
+      generatedDocument.size = generatedDocument.buffer.length;
+    } catch (err) {
+      throw new InternalServerErrorException(err);
+    } finally {
+      if (browser) {
+        await browser.close();
+      }
+    }
+
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename=${createGeneratedReportDto.generatedDocumentFileName}`,
+    );
+    res.setHeader('Content-Length', generatedDocument.size);
+    res.setHeader('Content-Type', generatedDocument.mimetype);
+    const stream = new Readable();
+    stream.push(generatedDocument.buffer);
+    stream.push(null); // indicates end-of-file basically - the end of the stream
+    stream.pipe(res);
+    /*Wait for the stream to end before sending the response status and
+        headers. This ensures that the client receives a complete response and
+        prevents any issues with partial responses or response headers being
+        sent prematurely.*/
+    stream.on('end', () => {
+      return null;
+    });
+    stream.on('error', () => {
+      throw new Error('An error occurred while reading the file.');
+    });
+  }
+
+  getCacheKeyforReport(reportName: ReportTemplate): CacheKey {
+    switch (reportName) {
+      case ReportTemplate.PAYMENT_AND_REFUND_DETAILED_REPORT:
+        return CacheKey.PAYMENT_AND_REFUND_DETAILED_REPORT;
+      default:
+        throw new Error('Invalid Report name');
+    }
   }
 }

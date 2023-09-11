@@ -26,6 +26,9 @@ import { DgenService } from './dgen.service';
 import { IDP } from '../../enum/idp.enum';
 import { Roles } from '../../decorator/roles.decorator';
 import { Role } from '../../enum/roles.enum';
+import { CreateGeneratedReportDto } from './dto/request/create-generated-report.dto';
+import { AuthOnly } from '../../decorator/auth-only.decorator';
+import { ReportTemplate } from '../../enum/report-template.enum';
 
 @ApiTags('Document Generator (DGEN)')
 @ApiBadRequestResponse({
@@ -79,6 +82,28 @@ export class DgenController {
       res,
       companyId,
     );
+
+    res.status(201);
+  }
+
+  @AuthOnly()
+  @Post('/report/render')
+  async generateReport(
+    @Req() request: Request,
+    @Res() res: Response,
+    @Body() createGeneratedReportDto: CreateGeneratedReportDto,
+  ) {
+    const currentUser = request.user as IUserJWT;
+    if (
+      createGeneratedReportDto.reportTemplate ===
+      ReportTemplate.PAYMENT_AND_REFUND_DETAILED_REPORT
+    ) {
+      await this.dgenService.generateReport(
+        currentUser,
+        createGeneratedReportDto,
+        res,
+      );
+    }
     res.status(201);
   }
 }
