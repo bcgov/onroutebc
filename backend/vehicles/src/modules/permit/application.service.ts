@@ -45,7 +45,6 @@ import { ReadTransactionDto } from '../payment/dto/response/read-transaction.dto
 import { Transaction } from '../payment/entities/transaction.entity';
 import { Receipt } from '../payment/entities/receipt.entity';
 import { convertUtcToPt } from '../../common/helper/date-time.helper';
-import { PermitStatus } from 'src/common/enum/permit-status.enum';
 
 @Injectable()
 export class ApplicationService {

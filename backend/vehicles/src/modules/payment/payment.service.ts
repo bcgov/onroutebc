@@ -15,7 +15,6 @@ import { ApplicationService } from '../permit/application.service';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
 import { IReceipt } from 'src/common/interface/receipt.interface';
 import { callDatabaseSequence } from 'src/common/helper/database.helper';
-import { ApplicationStatus } from 'src/common/enum/application-status.enum';
 
 @Injectable()
 export class PaymentService {
