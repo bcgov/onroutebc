@@ -58,10 +58,11 @@ CREATE TABLE [dbo].[ORBC_COMPANY](
 	[COMPANY_ID] [int] IDENTITY(1,1) NOT NULL,
 	[COMPANY_GUID] [char](32) NULL,
 	[CLIENT_NUMBER] [char](13) NULL,
-	[LEGAL_NAME] [nvarchar](100) NOT NULL,
+	[TPS_CLIENT_HASH] [varchar](64) NULL,
+	[LEGAL_NAME] [nvarchar](500) NOT NULL,
 	[COMPANY_DIRECTORY] [varchar](10) NOT NULL,
 	[MAILING_ADDRESS_ID] [int] NOT NULL,
-	[PHONE] [varchar](20) NOT NULL,
+	[PHONE] [varchar](20) NULL,
 	[EXTENSION] [varchar](5) NULL,
 	[FAX] [varchar](20) NULL,
 	[EMAIL] [varchar](50) NULL,
@@ -666,6 +667,8 @@ GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'GUID of the company record, which typically comes from Business BCeID' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_COMPANY', @level2type=N'COLUMN',@level2name=N'COMPANY_GUID'
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Unique client-facing client number' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_COMPANY', @level2type=N'COLUMN',@level2name=N'CLIENT_NUMBER'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'SHA-256 hash of the TPS client ID, for those clients who were imported from TPS.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_COMPANY', @level2type=N'COLUMN',@level2name=N'TPS_CLIENT_HASH'
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Legal name of the company' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_COMPANY', @level2type=N'COLUMN',@level2name=N'LEGAL_NAME'
 GO

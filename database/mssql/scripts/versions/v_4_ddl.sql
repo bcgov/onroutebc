@@ -18,11 +18,13 @@ CREATE TABLE [permit].[ORBC_PERMIT](
 	[APPLICATION_ORIGIN_ID] [varchar](8) NULL,
 	[APPLICATION_NUMBER] [varchar](19) NULL,
 	[PERMIT_NUMBER] [varchar](19) NULL,
+	[TPS_PERMIT_NUMBER] [varchar](9) NULL,
 	[REVISION] [tinyint] NULL,
 	[PREVIOUS_REV_ID] [bigint] NULL,
 	[OWNER_USER_GUID] [char](32) NULL,
 	[PERMIT_STATUS_ID] [varchar](20) NULL,
 	[PERMIT_ISSUE_DATE_TIME] [datetime2](7) NULL,
+	[PERMIT_VOID_DATE_TIME] [datetime2](7) NULL,
 	[DOCUMENT_ID] [varchar](10) NULL,
 	[COMMENT] [nvarchar](3000),
 	[CONCURRENCY_CONTROL_NUMBER] [int] NULL,
@@ -170,8 +172,7 @@ SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [permit].[ORBC_VT_PERMIT_TYPE](
 	[PERMIT_TYPE_ID] [varchar](10) NOT NULL,
-	[NAME] [nvarchar](50) NULL,
-	[DESCRIPTION] [nvarchar](250) NULL,
+	[NAME] [nvarchar](60) NULL,
 	[CONCURRENCY_CONTROL_NUMBER] [int] NULL,
 	[DB_CREATE_USERID] [varchar](63) NOT NULL,
 	[DB_CREATE_TIMESTAMP] [datetime2](7) NOT NULL,
@@ -341,9 +342,51 @@ INSERT [permit].[ORBC_VT_PERMIT_STATUS] ([PERMIT_STATUS_ID], [NAME], [DESCRIPTIO
 GO
 INSERT [permit].[ORBC_VT_PERMIT_STATUS] ([PERMIT_STATUS_ID], [NAME], [DESCRIPTION], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'WAITING_PAYMENT', N'Waiting Payment', NULL, NULL, N'dbo', GETUTCDATE(), N'dbo', GETUTCDATE())
 GO
-INSERT [permit].[ORBC_VT_PERMIT_TYPE] ([PERMIT_TYPE_ID], [NAME], [DESCRIPTION], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'STOS', N'Single Trip Oversize', NULL, NULL, N'dbo', GETUTCDATE(), N'dbo', GETUTCDATE())
+INSERT [permit].[ORBC_VT_PERMIT_TYPE] ([PERMIT_TYPE_ID], [NAME], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'EPTOP', N'Extra-Provincial Temporary Operating', NULL, N'dbo', CAST(N'2023-08-08T21:30:23.6400000' AS DateTime2), N'dbo', CAST(N'2023-08-08T21:30:23.6400000' AS DateTime2))
 GO
-INSERT [permit].[ORBC_VT_PERMIT_TYPE] ([PERMIT_TYPE_ID], [NAME], [DESCRIPTION], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'TROS', N'Oversize: Term', NULL, NULL, N'dbo', GETUTCDATE(), N'dbo', GETUTCDATE())
+INSERT [permit].[ORBC_VT_PERMIT_TYPE] ([PERMIT_TYPE_ID], [NAME], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'HC', N'Highway Crossing', NULL, N'dbo', CAST(N'2023-08-08T21:30:19.8133333' AS DateTime2), N'dbo', CAST(N'2023-08-08T21:30:19.8133333' AS DateTime2))
+GO
+INSERT [permit].[ORBC_VT_PERMIT_TYPE] ([PERMIT_TYPE_ID], [NAME], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'LCV', N'Long Combination Vehicle', NULL, N'dbo', CAST(N'2023-08-08T21:29:58.5933333' AS DateTime2), N'dbo', CAST(N'2023-08-08T21:29:58.5933333' AS DateTime2))
+GO
+INSERT [permit].[ORBC_VT_PERMIT_TYPE] ([PERMIT_TYPE_ID], [NAME], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'MFP', N'Motive Fuel User', NULL, N'dbo', CAST(N'2023-08-08T21:30:46.9433333' AS DateTime2), N'dbo', CAST(N'2023-08-08T21:30:46.9433333' AS DateTime2))
+GO
+INSERT [permit].[ORBC_VT_PERMIT_TYPE] ([PERMIT_TYPE_ID], [NAME], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'NRQBS', N'Quarterly Non Resident Reg. / Ins. - Bus', NULL, N'dbo', CAST(N'2023-08-08T21:30:52.5533333' AS DateTime2), N'dbo', CAST(N'2023-08-08T21:30:52.5533333' AS DateTime2))
+GO
+INSERT [permit].[ORBC_VT_PERMIT_TYPE] ([PERMIT_TYPE_ID], [NAME], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'NRQCL', N'Non Resident Quarterly Conditional License', NULL, N'dbo', CAST(N'2023-08-08T21:31:35.2800000' AS DateTime2), N'dbo', CAST(N'2023-08-08T21:31:35.2800000' AS DateTime2))
+GO
+INSERT [permit].[ORBC_VT_PERMIT_TYPE] ([PERMIT_TYPE_ID], [NAME], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'NRQCV', N'Quarterly Non Resident Reg. / Ins. - Comm Vehicle', NULL, N'dbo', CAST(N'2023-08-08T21:30:43.4133333' AS DateTime2), N'dbo', CAST(N'2023-08-08T21:30:43.4133333' AS DateTime2))
+GO
+INSERT [permit].[ORBC_VT_PERMIT_TYPE] ([PERMIT_TYPE_ID], [NAME], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'NRQFT', N'Non Resident Quarterly Farm Tractor', NULL, N'dbo', CAST(N'2023-08-08T21:30:33.6366667' AS DateTime2), N'dbo', CAST(N'2023-08-08T21:30:33.6366667' AS DateTime2))
+GO
+INSERT [permit].[ORBC_VT_PERMIT_TYPE] ([PERMIT_TYPE_ID], [NAME], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'NRQFV', N'Quarterly Non Resident Reg. / Ins. - Farm Vehicle', NULL, N'dbo', CAST(N'2023-08-08T21:30:59.7500000' AS DateTime2), N'dbo', CAST(N'2023-08-08T21:30:59.7500000' AS DateTime2))
+GO
+INSERT [permit].[ORBC_VT_PERMIT_TYPE] ([PERMIT_TYPE_ID], [NAME], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'NRQXP', N'Non Resident Quarterly X Plated', NULL, N'dbo', CAST(N'2023-08-08T21:31:22.7833333' AS DateTime2), N'dbo', CAST(N'2023-08-08T21:31:22.7833333' AS DateTime2))
+GO
+INSERT [permit].[ORBC_VT_PERMIT_TYPE] ([PERMIT_TYPE_ID], [NAME], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'NRSBS', N'Single Trip Non-Resident Registration / Insurance -Buses', NULL, N'dbo', CAST(N'2023-08-08T21:30:54.8166667' AS DateTime2), N'dbo', CAST(N'2023-08-08T21:30:54.8166667' AS DateTime2))
+GO
+INSERT [permit].[ORBC_VT_PERMIT_TYPE] ([PERMIT_TYPE_ID], [NAME], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'NRSCL', N'Non Resident Single Trip Conditional License', NULL, N'dbo', CAST(N'2023-08-08T21:31:26.5666667' AS DateTime2), N'dbo', CAST(N'2023-08-08T21:31:26.5666667' AS DateTime2))
+GO
+INSERT [permit].[ORBC_VT_PERMIT_TYPE] ([PERMIT_TYPE_ID], [NAME], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'NRSCV', N'Single Trip Non-Resident Reg. / Ins. - Commercial Vehicle', NULL, N'dbo', CAST(N'2023-08-08T21:30:37.7833333' AS DateTime2), N'dbo', CAST(N'2023-08-08T21:30:37.7833333' AS DateTime2))
+GO
+INSERT [permit].[ORBC_VT_PERMIT_TYPE] ([PERMIT_TYPE_ID], [NAME], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'NRSFT', N'Non Resident Farm Tractor Single Trip', NULL, N'dbo', CAST(N'2023-08-08T21:30:28.4766667' AS DateTime2), N'dbo', CAST(N'2023-08-08T21:30:28.4766667' AS DateTime2))
+GO
+INSERT [permit].[ORBC_VT_PERMIT_TYPE] ([PERMIT_TYPE_ID], [NAME], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'NRSFV', N'Single Trip Non Resident Reg. / Ins. - Farm Vehicle', NULL, N'dbo', CAST(N'2023-08-08T21:31:07.1566667' AS DateTime2), N'dbo', CAST(N'2023-08-08T21:31:07.1566667' AS DateTime2))
+GO
+INSERT [permit].[ORBC_VT_PERMIT_TYPE] ([PERMIT_TYPE_ID], [NAME], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'NRSXP', N'Non Resident Single Trip X Plated Vehicle', NULL, N'dbo', CAST(N'2023-08-08T21:31:20.0300000' AS DateTime2), N'dbo', CAST(N'2023-08-08T21:31:20.0300000' AS DateTime2))
+GO
+INSERT [permit].[ORBC_VT_PERMIT_TYPE] ([PERMIT_TYPE_ID], [NAME], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'RIG', N'Rig Move', NULL, N'dbo', CAST(N'2023-08-08T21:31:10.8766667' AS DateTime2), N'dbo', CAST(N'2023-08-08T21:31:10.8766667' AS DateTime2))
+GO
+INSERT [permit].[ORBC_VT_PERMIT_TYPE] ([PERMIT_TYPE_ID], [NAME], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'STOS', N'Single Trip Oversize', NULL, N'dbo', CAST(N'2023-08-08T19:54:54.9633333' AS DateTime2), N'dbo', CAST(N'2023-08-08T19:54:54.9633333' AS DateTime2))
+GO
+INSERT [permit].[ORBC_VT_PERMIT_TYPE] ([PERMIT_TYPE_ID], [NAME], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'STOW', N'Single Trip Over Weight', NULL, N'dbo', CAST(N'2023-08-08T21:31:13.9966667' AS DateTime2), N'dbo', CAST(N'2023-08-08T21:31:13.9966667' AS DateTime2))
+GO
+INSERT [permit].[ORBC_VT_PERMIT_TYPE] ([PERMIT_TYPE_ID], [NAME], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'STWS', N'Single Trip Overweight Oversize', NULL, N'dbo', CAST(N'2023-08-08T21:30:50.2200000' AS DateTime2), N'dbo', CAST(N'2023-08-08T21:30:50.2200000' AS DateTime2))
+GO
+INSERT [permit].[ORBC_VT_PERMIT_TYPE] ([PERMIT_TYPE_ID], [NAME], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'TRAX', N'Term Axle Overweight', NULL, N'dbo', CAST(N'2023-08-08T21:29:54.3600000' AS DateTime2), N'dbo', CAST(N'2023-08-08T21:29:54.3600000' AS DateTime2))
+GO
+INSERT [permit].[ORBC_VT_PERMIT_TYPE] ([PERMIT_TYPE_ID], [NAME], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'TROS', N'Term Oversize', NULL, N'dbo', CAST(N'2023-08-08T19:54:54.9666667' AS DateTime2), N'dbo', CAST(N'2023-08-08T19:54:54.9666667' AS DateTime2))
+GO
+INSERT [permit].[ORBC_VT_PERMIT_TYPE] ([PERMIT_TYPE_ID], [NAME], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'TROW', N'Term Overweight', NULL, N'dbo', CAST(N'2023-08-08T21:30:06.2533333' AS DateTime2), N'dbo', CAST(N'2023-08-08T21:30:06.2533333' AS DateTime2))
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Surrogate primary key for the permit metadata record' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT', @level2type=N'COLUMN',@level2name=N'ID'
@@ -362,11 +405,15 @@ EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Unique formatt
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Unique formatted permit number, recorded once the permit is approved and issued' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT', @level2type=N'COLUMN',@level2name=N'PERMIT_NUMBER'
 GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Original permit number for permits which have been imported from TPS, null otherwise' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT', @level2type=N'COLUMN',@level2name=N'TPS_PERMIT_NUMBER'
+GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Revision of the permit, begins with zero and increments by 1 for each subsequent revision' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT', @level2type=N'COLUMN',@level2name=N'REVISION'
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID of the previous permit revision metadata record, if this permit revision is greater than zero' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT', @level2type=N'COLUMN',@level2name=N'PREVIOUS_REV_ID'
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time when permit was issued' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT', @level2type=N'COLUMN',@level2name=N'PERMIT_ISSUE_DATE_TIME'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Timestamp of when the permit was voided or revoked. Should be non-null if the permit status is VOIDED or REVOKED.' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT', @level2type=N'COLUMN',@level2name=N'PERMIT_VOID_DATE_TIME'
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID of the document/PDF that references the Document Management System (DMS)' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT', @level2type=N'COLUMN',@level2name=N'DOCUMENT_ID'
 GO
@@ -509,8 +556,6 @@ GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Unique ID of the permit type' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_VT_PERMIT_TYPE', @level2type=N'COLUMN',@level2name=N'PERMIT_TYPE_ID'
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Friendly name for the permit type' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_VT_PERMIT_TYPE', @level2type=N'COLUMN',@level2name=N'NAME'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Long description of the permit type' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_VT_PERMIT_TYPE', @level2type=N'COLUMN',@level2name=N'DESCRIPTION'
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Application code is responsible for retrieving the row and then incrementing the value of the CONCURRENCY_CONTROL_NUMBER column by one prior to issuing an update. If this is done then the update will succeed, provided that the row was not updated by any other transactions in the period between the read and the update operations.' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_VT_PERMIT_TYPE', @level2type=N'COLUMN',@level2name=N'CONCURRENCY_CONTROL_NUMBER'
 GO
