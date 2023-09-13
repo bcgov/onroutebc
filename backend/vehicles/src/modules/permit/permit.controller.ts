@@ -43,6 +43,9 @@ import { Permit } from './entities/permit.entity';
 import { PermitHistoryDto } from './dto/response/permit-history.dto';
 import { ApplicationStatus } from 'src/common/enum/application-status.enum';
 import { UpdateResult } from 'typeorm';
+import { ResultDto } from './dto/response/result.dto';
+import { IReceipt } from 'src/common/interface/receipt.interface';
+import { VoidPermitDto } from './dto/request/void-permit.dto';
 
 @ApiBearerAuth()
 @ApiTags('Permit')
@@ -233,15 +236,15 @@ export class PermitController {
   async voidpermit(
     @Req() request: Request,
     @Param('permitId') permitId: string,
-    @Body('status')
-    status: ApplicationStatus.REVOKED | ApplicationStatus.VOIDED,
-  ): Promise<UpdateResult> {
+    @Body()
+    voidPermitDto: VoidPermitDto,
+  ): Promise<ResultDto> {
+    console.log(voidPermitDto);
     const currentUser = request.user as IUserJWT;
     const permit = await this.permitService.voidPermit(
       permitId,
-      status,
-      currentUser,
-    );
+      voidPermitDto,
+      currentUser);
     return permit;
   }
 }

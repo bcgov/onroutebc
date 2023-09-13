@@ -1,4 +1,5 @@
 import {
+  HttpException,
   Inject,
   Injectable,
   InternalServerErrorException,
@@ -8,7 +9,7 @@ import {
 import { Mapper } from '@automapper/core';
 import { InjectMapper } from '@automapper/nestjs';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Like, Repository, UpdateResult } from 'typeorm';
+import { DataSource, Like, Repository, UpdateResult } from 'typeorm';
 import { CreatePermitDto } from './dto/request/create-permit.dto';
 import { ReadPermitDto } from './dto/response/read-permit.dto';
 import { Permit } from './entities/permit.entity';
@@ -29,6 +30,19 @@ import { paginate } from 'src/common/helper/paginate';
 import { PermitHistoryDto } from './dto/response/permit-history.dto';
 import { ApplicationStatus } from 'src/common/enum/application-status.enum';
 import { ApplicationService } from './application.service';
+import { IReceipt } from 'src/common/interface/receipt.interface';
+import { formatTemplateData } from './helpers/formatTemplateData.helper';
+import { CompanyService } from '../company-user-management/company/company.service';
+import { DopsGeneratedDocument } from 'src/common/interface/dops-generated-document.interface';
+import { TemplateName } from 'src/common/enum/template-name.enum';
+import { convertUtcToPt } from 'src/common/helper/date-time.helper';
+import { IFile } from 'src/common/interface/file.interface';
+import { IssuePermitEmailData } from 'src/common/interface/issue-permit-email-data.interface';
+import { AttachementEmailData } from 'src/common/interface/attachment-email-data.interface';
+import { EmailService } from '../email/email.service';
+import { EmailTemplate } from 'src/common/enum/email-template.enum';
+import { ResultDto } from './dto/response/result.dto';
+import { VoidPermitDto } from './dto/request/void-permit.dto';
 
 @Injectable()
 export class PermitService {
@@ -40,7 +54,10 @@ export class PermitService {
     private permitTypeRepository: Repository<PermitType>,
     @InjectRepository(Receipt)
     private receiptRepository: Repository<Receipt>,
+    private dataSource: DataSource,
     private readonly dopsService: DopsService,
+    private companyService: CompanyService,
+    private readonly emailService: EmailService,
     @Inject(forwardRef(() => ApplicationService))
     private readonly applicationService: ApplicationService,
   ) {}
@@ -319,59 +336,199 @@ export class PermitService {
    */
   public async voidPermit(
     permitId: string,
-    status: ApplicationStatus.REVOKED | ApplicationStatus.VOIDED,
+    voidPermitDto: VoidPermitDto,
     currentUser: IUserJWT,
-  ): Promise<UpdateResult> {
+  ): Promise<ResultDto> {
+    const transactionDetails: IReceipt = {transactionAmount: voidPermitDto.transactionAmount,
+      transactionDate: voidPermitDto.transactionDate,
+      transactionOrderNumber: voidPermitDto.transactionOrderNumber,
+      paymentMethod: voidPermitDto.paymentMethod
+      
+    }
     const permit = await this.findOne(permitId);
+    /**
+     * If permit not found raise error.
+     */
     if (!permit)
       throw new NotFoundException('Permit id ' + permitId + ' not found.');
+    /**
+     * If permit is not active, raise error.
+     */
     if (permit.permitStatus != ApplicationStatus.ISSUED)
       throw new InternalServerErrorException(
         'Cannot void a permit in ' + permit.permitStatus + ' status',
       );
-    const applicationCount = 0;
-    await this.applicationService.checkApplicationInProgress(
-      permit.originalPermitId,
-    );
+    /**
+     * If application in progress for permit then raise error.
+     */
+    const applicationCount =
+      await this.applicationService.checkApplicationInProgress(
+        permit.originalPermitId,
+      );
     if (applicationCount > 0) {
       throw new InternalServerErrorException(
         'An application exists for this permit. Please cancel application before voiding permit.',
       );
     }
-    permit.permitStatus = ApplicationStatus.SUPERSEDED;
-    // to create new permit
-    let newPermit = permit;
-    newPermit.permitId = null;
-    newPermit.permitStatus = status;
-    newPermit.revision = permit.revision + 1;
-    newPermit.previousRevision = +permitId;
     const applicationNumber =
       await this.applicationService.generateApplicationNumber(
         currentUser.identity_provider,
         permitId,
       );
-    newPermit.applicationNumber = applicationNumber;
-    /* Create application to generate permit id. 
-    this permit id will be used to generate permit number based this id's application number.*/
-    newPermit = await this.permitRepository.save(newPermit);
-    const permitNumber = await this.applicationService.generatePermitNumber(
-      newPermit.permitId,
+    let success = '';
+    let failure = '';
+
+    const companyInfo = await this.companyService.findOne(permit.companyId);
+
+    const fullNames = await this.applicationService.getFullNamesFromCache(
+      permit,
     );
-    newPermit.permitNumber = permitNumber;
-    // Save new permit
-    const updateNewPermit = await this.permitRepository
-      .createQueryBuilder()
-      .update()
-      .set({ permitStatus: status })
-      .where('permitId = :permitId', { permitId: newPermit.permitId })
-      .execute();
-    //Update old permit status to SUPERSEDED.
-    await this.permitRepository
-      .createQueryBuilder()
-      .update()
-      .set({ permitStatus: ApplicationStatus.SUPERSEDED })
-      .where('permitId = :permitId', { permitId: permitId })
-      .execute();
-    return updateNewPermit;
+    const permitDataForTemplate = formatTemplateData(
+      permit,
+      fullNames,
+      companyInfo,
+    );
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      let dopsRequestData: DopsGeneratedDocument = {
+        templateName: TemplateName.PERMIT_TROS,
+        generatedDocumentFileName: permitDataForTemplate.permitNumber,
+        templateData: permitDataForTemplate,
+        documentsToMerge: permitDataForTemplate.permitData.commodities.map(
+          (commodity) => {
+            if (commodity.checked) {
+              return commodity.condition;
+            }
+          },
+        ),
+      };
+
+      const generatedPermitDocumentPromise =
+        this.applicationService.generateDocument(
+          currentUser,
+          dopsRequestData,
+          companyInfo.companyId,
+        );
+
+      //Generate receipt number for the permit to be created in database.
+      const receiptNo = await this.applicationService.generateReceiptNumber();
+      dopsRequestData = {
+        templateName: TemplateName.PAYMENT_RECEIPT,
+        generatedDocumentFileName: `Receipt_No_${receiptNo}`,
+        templateData: {
+          ...permitDataForTemplate,
+          ...transactionDetails
+          ,
+          transactionDate: convertUtcToPt(
+            new Date(),
+            'MMM. D, YYYY, hh:mm a Z',
+          ),
+          receiptNo,
+        },
+      };
+
+      const generatedReceiptDocumentPromise =
+        this.applicationService.generateDocument(
+          currentUser,
+          dopsRequestData,
+          companyInfo.companyId,
+        );
+
+      const generatedDocuments: IFile[] = await Promise.all([
+        generatedPermitDocumentPromise,
+        generatedReceiptDocumentPromise,
+      ]);
+      permit.permitStatus = ApplicationStatus.SUPERSEDED;
+      // to create new permit
+      let newPermit = permit;
+      newPermit.permitId = null;
+      newPermit.permitStatus = voidPermitDto.status;
+      newPermit.revision = permit.revision + 1;
+      newPermit.previousRevision = +permitId;
+      newPermit.documentId = generatedDocuments.at(0).dmsId;
+
+      newPermit.applicationNumber = applicationNumber;
+      /* Create application to generate permit id. 
+      this permit id will be used to generate permit number based this id's application number.*/
+      newPermit = await queryRunner.manager.save(newPermit);
+
+      const receiptEntity: Receipt = new Receipt();
+      const transaction =
+        await this.applicationService.findOneTransactionByOrderNumber(
+          transactionDetails.transactionOrderNumber,
+        );
+      receiptEntity.transactionId = transaction.transactionId;
+      receiptEntity.receiptNumber = receiptNo;
+      receiptEntity.receiptDocumentId = generatedDocuments.at(1).dmsId;
+      await queryRunner.manager.save(receiptEntity);
+      /* const permitNumber = await this.applicationService.generatePermitNumber(
+        newPermit.permitId,
+      );
+      newPermit.permitNumber = permitNumber;*/
+      // Save new permit
+      await queryRunner.manager
+        .createQueryBuilder()
+        .update('Permit')
+        .set({ permitStatus: voidPermitDto.status })
+        .where('permitId = :permitId', { permitId: newPermit.permitId })
+        .execute();
+      //Update old permit status to SUPERSEDED.
+      await queryRunner.manager
+        .createQueryBuilder()
+        .update('Permit')
+        .set({ permitStatus: ApplicationStatus.SUPERSEDED })
+        .where('permitId = :permitId', { permitId: permitId })
+        .execute();
+      await queryRunner.commitTransaction();
+      success = permit.permitId;
+
+      try {
+        const emailData: IssuePermitEmailData = {
+          companyName: companyInfo.legalName,
+        };
+
+        const attachments: AttachementEmailData[] = [
+          {
+            filename: newPermit.permitNumber + '.pdf',
+            contentType: 'application/pdf',
+            encoding: 'base64',
+            content: generatedDocuments.at(0).buffer.toString('base64'),
+          },
+          {
+            filename: `Receipt_No_${receiptNo}.pdf`,
+            contentType: 'application/pdf',
+            encoding: 'base64',
+            content: generatedDocuments.at(1).buffer.toString('base64'),
+          },
+        ];
+
+        void this.emailService.sendEmailMessage(
+          EmailTemplate.ISSUE_PERMIT,
+          emailData,
+          'onRouteBC Permits - ' + companyInfo.legalName,
+          [
+            permitDataForTemplate.permitData?.contactDetails?.email,
+            companyInfo.email,
+          ],
+          attachments,
+        );
+      } catch (error: unknown) {
+        console.log('Error in Email Service', error);
+      }
+    } catch (err) {
+      await queryRunner.rollbackTransaction();
+      console.log(err);
+      success = '';
+      failure = permitId;
+    } finally {
+      await queryRunner.release();
+    }
+    const resultDto: ResultDto = {
+      success: [success],
+      failure: [failure],
+    };
+    return resultDto;
   }
 }

@@ -392,6 +392,7 @@ export class ApplicationService {
           },
         ),
       };
+      console.log('Dops Data Permit ', dopsRequestData);
 
       const generatedPermitDocumentPromise = this.generateDocument(
         currentUser,
@@ -415,6 +416,8 @@ export class ApplicationService {
         },
       };
 
+      console.log('Dops Data receipt ', dopsRequestData);
+
       const generatedReceiptDocumentPromise = this.generateDocument(
         currentUser,
         dopsRequestData,
@@ -425,6 +428,8 @@ export class ApplicationService {
         generatedPermitDocumentPromise,
         generatedReceiptDocumentPromise,
       ]);
+
+      console.log('Generate documents: ', generatedDocuments);
 
       const permitEntity = await this.permitRepository.findOne({
         where: [{ applicationNumber: tempPermit.applicationNumber }],
@@ -507,7 +512,7 @@ export class ApplicationService {
     return resultDto;
   }
 
-  private async generateDocument(
+  async generateDocument(
     currentUser: IUserJWT,
     dopsRequestData: DopsGeneratedDocument,
     companyId?: number,
@@ -526,7 +531,7 @@ export class ApplicationService {
    * @param permit
    * @returns a json object of the full names
    */
-  private async getFullNamesFromCache(permit: Permit): Promise<FullNames> {
+  async getFullNamesFromCache(permit: Permit): Promise<FullNames> {
     const permitData = JSON.parse(permit.permitData.permitData) as PermitData;
 
     const vehicleTypeName = await getFromCache(
