@@ -21,9 +21,10 @@ export class CreateGeneratedReportDto {
       issuedBy: 'Self Issued and PPC',
       runDate: 'Jul. 17, 2023, 09:00 PM, PDT',
       permitType: 'All Permit Types',
-      paymentMethod: 'Cash, Cheque, Icepay - Mastercard, Icepay - Mastercard '+
-      '(Debit), Icepay - Visa, Icepay - Visa (Debit), Web - Mastercard (Debit), Web - Visa (Debit), PoS - ' +
-      'Mastercard (Debit), PoS - Visa (Debit), PoS - Mastercard',
+      paymentMethod:
+        'Cash, Cheque, Icepay - Mastercard, Icepay - Mastercard ' +
+        '(Debit), Icepay - Visa, Icepay - Visa (Debit), Web - Mastercard (Debit), Web - Visa (Debit), PoS - ' +
+        'Mastercard (Debit), PoS - Visa (Debit), PoS - Mastercard',
       timePeriod: 'Jul. 17, 2023, 09:00 PM, PDT – Jul. 18, 2023, 09:00 PM, PDT',
       payments: [
         {

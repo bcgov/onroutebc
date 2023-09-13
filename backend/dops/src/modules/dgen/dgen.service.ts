@@ -232,18 +232,17 @@ export class DgenService {
       const page = await browser.newPage();
       await page.setContent(htmlBody);
       await page.emulateMediaType('print');
-      
+
       generatedDocument.buffer = await page.pdf({
         format: 'letter',
-      //  displayHeaderFooter: true,
+        displayHeaderFooter: true,
         printBackground: true,
         landscape: true,
-      //   headerTemplate: `
-      //   <div style="color: lightgray; border-top: solid lightgray 1px; font-size: 10px; padding-top: 5px; text-align: center; width: 100%;">
-      //     <span>This is a test message</span> - <span class="pageNumber"></span>
-      //   </div>
-      // `,
-      //   margin: { top: 100, bottom: 10 },
+        footerTemplate: `
+        <div style="color: black; font-size: 6.0pt; text-align: right; width: 100%; margin-right: 32pt;">
+          <span>Page </span><span class="pageNumber"></span><span> of </span><span class="totalPages"></span> 
+        </div>
+       `,
       });
       generatedDocument.size = generatedDocument.buffer.length;
     } catch (err) {
