@@ -229,6 +229,15 @@ export class PermitController {
     res.status(200);
   }
 
+  /**
+   * A POST method defined with the @Post() decorator and a route of /:permitId/void
+   * that Voids or revokes a permit for given @param permitId by changing it's status to VOIDED|REVOKED.
+   * @param request
+   * @param permitId
+   * @param voidPermitDto
+   * @returns The id of new voided/revoked permit a in response object {@link ResultDto}
+   *
+   */
   @Post('/:permitId/void')
   async voidpermit(
     @Req() request: Request,
