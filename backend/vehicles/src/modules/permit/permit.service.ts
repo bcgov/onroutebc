@@ -1,5 +1,4 @@
 import {
-  HttpException,
   Inject,
   Injectable,
   InternalServerErrorException,
@@ -9,7 +8,7 @@ import {
 import { Mapper } from '@automapper/core';
 import { InjectMapper } from '@automapper/nestjs';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Like, Repository, UpdateResult } from 'typeorm';
+import { DataSource, Like, Repository } from 'typeorm';
 import { CreatePermitDto } from './dto/request/create-permit.dto';
 import { ReadPermitDto } from './dto/response/read-permit.dto';
 import { Permit } from './entities/permit.entity';

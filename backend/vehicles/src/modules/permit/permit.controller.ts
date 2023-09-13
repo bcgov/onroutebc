@@ -41,10 +41,7 @@ import { PaginationDto } from 'src/common/class/pagination';
 import { LessThenPipe } from 'src/common/class/customs.transform';
 import { Permit } from './entities/permit.entity';
 import { PermitHistoryDto } from './dto/response/permit-history.dto';
-import { ApplicationStatus } from 'src/common/enum/application-status.enum';
-import { UpdateResult } from 'typeorm';
 import { ResultDto } from './dto/response/result.dto';
-import { IReceipt } from 'src/common/interface/receipt.interface';
 import { VoidPermitDto } from './dto/request/void-permit.dto';
 
 @ApiBearerAuth()
