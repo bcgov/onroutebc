@@ -9,4 +9,6 @@ export enum ApplicationStatus {
   WAITING_PAYMENT = 'WAITING_PAYMENT',
   ISSUED = 'ISSUED',
   SUPERSEDED = 'SUPERSEDED',
+  REVOKED = 'REVOKED',
+  VOIDED = 'VOIDED',
 }

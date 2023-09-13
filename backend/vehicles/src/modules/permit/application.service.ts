@@ -6,6 +6,7 @@ import {
   Inject,
   Injectable,
   InternalServerErrorException,
+  forwardRef,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ApplicationStatus } from 'src/common/enum/application-status.enum';
@@ -62,6 +63,7 @@ export class ApplicationService {
     private readonly cacheManager: Cache,
     private companyService: CompanyService,
     private readonly emailService: EmailService,
+    @Inject(forwardRef(() => PermitService))
     private readonly permitService: PermitService,
     @InjectRepository(Transaction)
     private transactionRepository: Repository<Transaction>,
@@ -390,7 +392,6 @@ export class ApplicationService {
           },
         ),
       };
-
       const generatedPermitDocumentPromise = this.generateDocument(
         currentUser,
         dopsRequestData,
@@ -505,7 +506,7 @@ export class ApplicationService {
     return resultDto;
   }
 
-  private async generateDocument(
+  async generateDocument(
     currentUser: IUserJWT,
     dopsRequestData: DopsGeneratedDocument,
     companyId?: number,
@@ -524,7 +525,7 @@ export class ApplicationService {
    * @param permit
    * @returns a json object of the full names
    */
-  private async getFullNamesFromCache(permit: Permit): Promise<FullNames> {
+  async getFullNamesFromCache(permit: Permit): Promise<FullNames> {
     const permitData = JSON.parse(permit.permitData.permitData) as PermitData;
 
     const vehicleTypeName = await getFromCache(
@@ -731,7 +732,9 @@ export class ApplicationService {
           (x) =>
             x != ApplicationStatus.CANCELLED &&
             x != ApplicationStatus.REJECTED &&
-            x != ApplicationStatus.ISSUED,
+            x != ApplicationStatus.ISSUED &&
+            x != ApplicationStatus.REVOKED &&
+            x != ApplicationStatus.VOIDED,
         ),
       })
       .getCount();
