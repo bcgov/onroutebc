@@ -241,7 +241,8 @@ export class PermitController {
     const permit = await this.permitService.voidPermit(
       permitId,
       voidPermitDto,
-      currentUser);
+      currentUser,
+    );
     return permit;
   }
 }

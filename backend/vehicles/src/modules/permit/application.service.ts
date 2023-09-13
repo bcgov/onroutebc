@@ -392,8 +392,6 @@ export class ApplicationService {
           },
         ),
       };
-      console.log('Dops Data Permit ', dopsRequestData);
-
       const generatedPermitDocumentPromise = this.generateDocument(
         currentUser,
         dopsRequestData,
@@ -416,8 +414,6 @@ export class ApplicationService {
         },
       };
 
-      console.log('Dops Data receipt ', dopsRequestData);
-
       const generatedReceiptDocumentPromise = this.generateDocument(
         currentUser,
         dopsRequestData,
@@ -428,8 +424,6 @@ export class ApplicationService {
         generatedPermitDocumentPromise,
         generatedReceiptDocumentPromise,
       ]);
-
-      console.log('Generate documents: ', generatedDocuments);
 
       const permitEntity = await this.permitRepository.findOne({
         where: [{ applicationNumber: tempPermit.applicationNumber }],

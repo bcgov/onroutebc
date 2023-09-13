@@ -338,12 +338,12 @@ export class PermitService {
     voidPermitDto: VoidPermitDto,
     currentUser: IUserJWT,
   ): Promise<ResultDto> {
-    const transactionDetails: IReceipt = {transactionAmount: voidPermitDto.transactionAmount,
+    const transactionDetails: IReceipt = {
+      transactionAmount: voidPermitDto.transactionAmount,
       transactionDate: voidPermitDto.transactionDate,
       transactionOrderNumber: voidPermitDto.transactionOrderNumber,
-      paymentMethod: voidPermitDto.paymentMethod
-      
-    }
+      paymentMethod: voidPermitDto.paymentMethod,
+    };
     const permit = await this.findOne(permitId);
     /**
      * If permit not found raise error.
@@ -418,8 +418,7 @@ export class PermitService {
         generatedDocumentFileName: `Receipt_No_${receiptNo}`,
         templateData: {
           ...permitDataForTemplate,
-          ...transactionDetails
-          ,
+          ...transactionDetails,
           transactionDate: convertUtcToPt(
             new Date(),
             'MMM. D, YYYY, hh:mm a Z',

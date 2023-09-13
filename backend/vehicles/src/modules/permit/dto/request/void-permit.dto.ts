@@ -4,8 +4,8 @@ import { IsNumber } from 'class-validator';
 import { ApplicationStatus } from 'src/common/enum/application-status.enum';
 
 export class VoidPermitDto {
-    @AutoMap()
-    @ApiProperty({
+  @AutoMap()
+  @ApiProperty({
     description: 'Revoke or void status for permit.',
     example: ApplicationStatus.REVOKED,
     required: false,
@@ -15,7 +15,7 @@ export class VoidPermitDto {
   @AutoMap()
   @ApiProperty({
     description: 'Permit Transaction ID.',
-    example:'T000000A0W',
+    example: 'T000000A0W',
     required: false,
   })
   transactionOrderNumber: string;
@@ -23,24 +23,24 @@ export class VoidPermitDto {
   @AutoMap()
   @ApiProperty({
     description: 'Permit Transaction Date.',
-    example:'2023-07-10T15:49:36.582Z',
+    example: '2023-07-10T15:49:36.582Z',
     required: false,
   })
   transactionDate: Date;
 
   @AutoMap()
-    @IsNumber()
-    @ApiProperty({
-      description: 'Permit Transaction Amount.',
-      example:30,
-      required: false,
-    })
-    transactionAmount: number;
+  @IsNumber()
+  @ApiProperty({
+    description: 'Permit Transaction Amount.',
+    example: 30,
+    required: false,
+  })
+  transactionAmount: number;
 
   @AutoMap()
   @ApiProperty({
     description: 'Permit Transaction Method.',
-    example:'CC',
+    example: 'CC',
     required: false,
   })
   paymentMethod: string;
