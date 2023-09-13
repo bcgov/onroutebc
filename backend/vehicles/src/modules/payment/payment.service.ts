@@ -164,9 +164,9 @@ export class PaymentService {
     const transactionNumber = hash.transactionNumber;
     //let transactionType: string = null;
     //transactionType (P) is for Payment, (R) is for refund
-   // if (transactionAmount >= 0) transactionType = 'P';
-  //else transactionType = 'R';
-  const transactionType = 'P';
+    // if (transactionAmount >= 0) transactionType = 'P';
+    //else transactionType = 'R';
+    const transactionType = 'P';
 
     return {
       url: '',

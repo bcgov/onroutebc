@@ -10,8 +10,4 @@ export class PermitType {
   @AutoMap()
   @Column({ name: 'NAME', nullable: true })
   name: string;
-
-  @AutoMap()
-  @Column({ name: 'DESCRIPTION', nullable: true })
-  description: string;
 }
