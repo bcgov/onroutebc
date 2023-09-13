@@ -149,7 +149,6 @@ export class UsersService {
       currentAuthGroup === UserAuthGroup.COMPANY_ADMINISTRATOR &&
       currentAuthGroup !== updateUserDto.userAuthGroup
     ) {
-
       //Find all employees of the company
       const employees = await this.findUsersEntity(undefined, [companyId]);
 

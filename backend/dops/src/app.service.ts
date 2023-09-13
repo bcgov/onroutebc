@@ -59,6 +59,14 @@ export class AppService {
       ),
     );
 
+    await addToCache(
+      this.cacheManager,
+      CacheKey.PAYMENT_AND_REFUND_SUMMARY_REPORT,
+      this.convertFiletoString(
+        assetsPath + 'templates/payment-refund-summary.report.hbs',
+      ),
+    );
+
     const endDateTime = new Date();
     const processingTime = endDateTime.getTime() - startDateTime.getTime();
     console.info(

@@ -86,7 +86,10 @@ export class DgenController {
     res.status(201);
   }
 
-  @AuthOnly()
+  @Roles(
+    Role.ORBC_FINANCIAL_TRANSACTION_REPORT_SELF,
+    Role.ORBC_FINANCIAL_TRANSACTION_REPORT_ALL,
+  )
   @Post('/report/render')
   async generateReport(
     @Req() request: Request,
@@ -94,16 +97,11 @@ export class DgenController {
     @Body() createGeneratedReportDto: CreateGeneratedReportDto,
   ) {
     const currentUser = request.user as IUserJWT;
-    if (
-      createGeneratedReportDto.reportTemplate ===
-      ReportTemplate.PAYMENT_AND_REFUND_DETAILED_REPORT
-    ) {
-      await this.dgenService.generateReport(
-        currentUser,
-        createGeneratedReportDto,
-        res,
-      );
-    }
+    await this.dgenService.generateReport(
+      currentUser,
+      createGeneratedReportDto,
+      res,
+    );
     res.status(201);
   }
 }

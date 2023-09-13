@@ -279,6 +279,8 @@ export class DgenService {
     switch (reportName) {
       case ReportTemplate.PAYMENT_AND_REFUND_DETAILED_REPORT:
         return CacheKey.PAYMENT_AND_REFUND_DETAILED_REPORT;
+      case ReportTemplate.PAYMENT_AND_REFUND_SUMMARY_REPORT:
+        return CacheKey.PAYMENT_AND_REFUND_SUMMARY_REPORT;
       default:
         throw new Error('Invalid Report name');
     }
