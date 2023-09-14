@@ -4,7 +4,6 @@ SET QUOTED_IDENTIFIER ON
 GO
 SET NOCOUNT ON
 GO
-BEGIN TRANSACTION
 
 -- Include all SQL to upgrade database version here.
 -- Include updates to lookup table data that should go into prod, but do not include any test data.
@@ -17,5 +16,3 @@ DECLARE @VersionDescription VARCHAR(255)
 SET @VersionDescription = '*** Enter description of DB change here ***'
 
 INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [DDL_FILE_SHA1], [RELEASE_DATE]) VALUES (/*<<REPLACE VERSION NUMBER HERE>>*/, @VersionDescription, '$(FILE_HASH)', getutcdate())
-
-COMMIT

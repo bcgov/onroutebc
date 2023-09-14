@@ -4,7 +4,6 @@ SET QUOTED_IDENTIFIER ON
 GO
 SET NOCOUNT ON
 GO
-BEGIN TRANSACTION
 
 DROP TABLE [dbo].[ORBC_COMPANY_USER]
 DROP TABLE [dbo].[ORBC_PENDING_USER]
@@ -33,5 +32,3 @@ DECLARE @VersionDescription VARCHAR(255)
 SET @VersionDescription = 'Reverting initial creation of schema entities for manage profile feature'
 
 INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [DDL_FILE_SHA1], [RELEASE_DATE]) VALUES (2, @VersionDescription, '$(FILE_HASH)', getutcdate())
-
-COMMIT

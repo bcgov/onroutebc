@@ -7,7 +7,6 @@ SET QUOTED_IDENTIFIER ON
 GO
 SET NOCOUNT ON
 GO
-BEGIN TRANSACTION
 
 CREATE TABLE [dops].[ORBC_DOCUMENT_TEMPLATE](
 	[TEMPLATE_ID] [int] IDENTITY(1,1) NOT NULL,
@@ -33,5 +32,3 @@ DECLARE @VersionDescription VARCHAR(255)
 SET @VersionDescription = 'Initial creation of entities for generating a document'
 
 INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [DDL_FILE_SHA1], [RELEASE_DATE]) VALUES (5, @VersionDescription, '$(FILE_HASH)', getutcdate())
-
-COMMIT
