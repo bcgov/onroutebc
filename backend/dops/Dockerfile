@@ -23,6 +23,7 @@ RUN npm cache clean --force
 
 # Create and Assign permissions to npm folder
 RUN mkdir /.npm && chmod 777 /.npm
+RUN mkdir /.cache && chmod 777 /.cache
 
 # Set the working directory to /app inside the deployment container
 WORKDIR /app
@@ -63,6 +64,7 @@ ENV ACCESS_API_URL ${ACCESS_API_URL}
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/.cache ./dist/.cache
 
 # Expose Port
 EXPOSE 5001
