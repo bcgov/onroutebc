@@ -64,7 +64,7 @@ ENV ACCESS_API_URL ${ACCESS_API_URL}
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/.cache ./dist/.cache
+COPY --from=builder /app/.cache /.cache
 
 # Expose Port
 EXPOSE 5001
