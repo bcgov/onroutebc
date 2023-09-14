@@ -8,15 +8,8 @@ CREATE FULLTEXT CATALOG PermitDataFTCat AS DEFAULT
 GO
 CREATE FULLTEXT INDEX ON [permit].[ORBC_PERMIT_DATA](PERMIT_DATA) KEY INDEX PK_ORBC_PERMIT_DATA;
 GO
-BEGIN TRANSACTION
-
 
 DECLARE @VersionDescription VARCHAR(255)
 SET @VersionDescription = 'Creation of full text search index on ORBC_PERMIT_DATA table.'
 
 INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [DDL_FILE_SHA1], [RELEASE_DATE]) VALUES (8, @VersionDescription, '$(FILE_HASH)', getutcdate())
-
-
-COMMIT
-
-
