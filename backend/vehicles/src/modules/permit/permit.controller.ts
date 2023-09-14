@@ -41,6 +41,8 @@ import { PaginationDto } from 'src/common/class/pagination';
 import { LessThenPipe } from 'src/common/class/customs.transform';
 import { Permit } from './entities/permit.entity';
 import { PermitHistoryDto } from './dto/response/permit-history.dto';
+import { ResultDto } from './dto/response/result.dto';
+import { VoidPermitDto } from './dto/request/void-permit.dto';
 
 @ApiBearerAuth()
 @ApiTags('Permit')
@@ -225,5 +227,31 @@ export class PermitController {
 
     await this.permitService.findReceiptPDF(currentUser, permitId, res);
     res.status(200);
+  }
+
+  /**
+   * A POST method defined with the @Post() decorator and a route of /:permitId/void
+   * that Voids or revokes a permit for given @param permitId by changing it's status to VOIDED|REVOKED.
+   * @param request
+   * @param permitId
+   * @param voidPermitDto
+   * @returns The id of new voided/revoked permit a in response object {@link ResultDto}
+   *
+   */
+  @Post('/:permitId/void')
+  async voidpermit(
+    @Req() request: Request,
+    @Param('permitId') permitId: string,
+    @Body()
+    voidPermitDto: VoidPermitDto,
+  ): Promise<ResultDto> {
+    console.log(voidPermitDto);
+    const currentUser = request.user as IUserJWT;
+    const permit = await this.permitService.voidPermit(
+      permitId,
+      voidPermitDto,
+      currentUser,
+    );
+    return permit;
   }
 }
