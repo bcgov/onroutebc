@@ -22,7 +22,7 @@ export const useVoidPermitForm = () => {
 
   const formMethods = useForm<VoidPermitDto>({
     defaultValues: defaultFormData,
-    reValidateMode: "onBlur",
+    reValidateMode: "onChange",
   });
 
   const { setValue } = formMethods;
@@ -35,13 +35,8 @@ export const useVoidPermitForm = () => {
     setValue("fax", getDefaultRequiredVal("", voidPermitData.fax));
   }, [voidPermitData.fax]);
 
-  const handleReasonChange = (reason: string) => {
-    setValue("reason", reason);
-  };
-
   return {
     formMethods,
-    handleReasonChange,
     setVoidPermitData,
     next,
   };

@@ -1,11 +1,11 @@
 import { Controller, FormProvider } from "react-hook-form";
 import isEmail from "validator/lib/isEmail";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@mui/material";
+import { Button, FormControl, FormHelperText } from "@mui/material";
 import { useState } from "react";
 
 import "./VoidPermitForm.scss";
-import { CustomFormComponent } from "../../../../../common/components/form/CustomFormComponents";
+import { CustomFormComponent, getErrorMessage } from "../../../../../common/components/form/CustomFormComponents";
 import { invalidEmail, invalidPhoneLength, requiredMessage } from "../../../../../common/helpers/validationMessages";
 import { useVoidPermitForm } from "../hooks/useVoidPermitForm";
 import { VoidPermitHeader } from "./VoidPermitHeader";
@@ -26,12 +26,17 @@ export const VoidPermitForm = ({
   const [openRevokeDialog, setOpenRevokeDialog] = useState<boolean>(false);
   const {
     formMethods,
-    handleReasonChange,
     setVoidPermitData,
     next,
   } = useVoidPermitForm();
 
-  const { control, getValues, handleSubmit } = formMethods;
+  const { 
+    control, 
+    getValues, 
+    handleSubmit, 
+    register, 
+    formState: { errors },
+  } = formMethods;
 
   const handleCancel = () => {
     navigate(searchRoute);
@@ -50,6 +55,13 @@ export const VoidPermitForm = ({
 
   const handleCancelRevoke = () => {
     setOpenRevokeDialog(false);
+  };
+
+  const voidReasonRules = {
+    required: {
+      value: true,
+      message: requiredMessage(),
+    },
   };
 
   return (
@@ -108,15 +120,26 @@ export const VoidPermitForm = ({
                 <Controller
                   name="reason"
                   control={control}
-                  render={({ field: { value }}) => (
-                    <textarea 
-                      name="reason" 
-                      className="void-input void-input--reason"
-                      rows={6}
-                      defaultValue={value}
-                      onChange={(e) => handleReasonChange(e.target.value)}
-                    >
-                    </textarea>
+                  rules={voidReasonRules}
+                  render={({ field: { value }, fieldState: { invalid }}) => (
+                    <FormControl error={invalid}>
+                      <textarea 
+                        className={`void-input void-input--reason ${invalid ? "void-input--err" : ""}`}
+                        rows={6}
+                        defaultValue={value}
+                        {...register("reason", voidReasonRules)}
+                      >
+                      </textarea>
+                      {invalid ? (
+                        <FormHelperText 
+                          className="void-input__err"
+                          error
+                        >
+                          {getErrorMessage(errors, "reason")}
+                        </FormHelperText>
+                      ) : null}
+                    </FormControl>
+                    
                   )}
                 />
                 <FeeSummary
