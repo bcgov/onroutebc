@@ -75,6 +75,7 @@ RUN apk add --no-cache \
      
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
+RUN npm install puppeteer@21.0.3
 # Expose Port
 EXPOSE 5001
 
