@@ -228,7 +228,7 @@ export class DgenService {
 
     let browser: Browser;
     try {
-      const browser = await puppeteer.launch({ headless: 'new' });
+      const browser = await puppeteer.launch({ headless: 'new',args: ['--no-sandbox', '--disable-setuid-sandbox'], });
       const page = await browser.newPage();
       await page.setContent(htmlBody);
       await page.emulateMediaType('print');

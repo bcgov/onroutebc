@@ -60,12 +60,11 @@ ENV CDOGS_CLIENT_SECRET ${CDOGS_CLIENT_SECRET}
 ENV CDOGS_URL ${CDOGS_URL}
 ENV ACCESS_API_URL ${ACCESS_API_URL}
 
+
 # Copy production files from build
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
-#COPY --from=builder /app/.cache /.cache
-
 
 RUN apk add --no-cache \
       chromium \
@@ -74,15 +73,12 @@ RUN apk add --no-cache \
       harfbuzz \
       ca-certificates \
       ttf-freefont 
-     # nodejs \
-      #yarn
-
+     
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
-
-RUN npm install puppeteer
 
 # Expose Port
 EXPOSE 5001
+
 
 # Start the app
 CMD ["npm", "run", "start:prod"]
