@@ -235,6 +235,7 @@ export class DgenService {
           '--disable-setuid-sandbox',
           '--disable-dev-shm-usage',
         ],
+        ignoreDefaultArgs: ['--disable-extensions'],
       });
       const page = await browser.newPage();
       await page.setContent(htmlBody);
