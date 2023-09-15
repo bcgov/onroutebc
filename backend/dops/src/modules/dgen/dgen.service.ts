@@ -257,7 +257,7 @@ export class DgenService {
       });
       generatedDocument.size = generatedDocument.buffer.length;
     } catch (err) {
-      console.log(err);
+      console.log("error on pup",err);
       throw new InternalServerErrorException(err);
     } finally {
       if (browser) {
