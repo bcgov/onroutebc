@@ -27,6 +27,7 @@ import { PermitTransaction, Transaction } from "../types/payment";
 import { VEHICLES_URL } from "../../../common/apiManager/endpoints/endpoints";
 import { ReadPermitDto } from "../types/permit";
 import { PaginatedResponse } from "../../../common/types/common";
+import { PERMIT_STATUSES } from "../types/PermitStatus";
 
 /**
  * A record containing permit keys and full forms.
@@ -141,7 +142,7 @@ export const getApplicationInProgressById = (
  * @returns A Promise with the API response.
  */
 export const deleteApplications = async (applicationIds: Array<string>) => {
-  const requestBody = { applicationIds, applicationStatus: "CANCELLED" };
+  const requestBody = { applicationIds, applicationStatus: PERMIT_STATUSES.CANCELLED };
   return await httpPOSTRequest(
     `${APPLICATION_UPDATE_STATUS_API}`,
     replaceEmptyValuesWithNull(requestBody)

@@ -15,6 +15,7 @@ import {
 import { TROS_COMMODITIES } from "../constants/termOversizeConstants";
 import { now } from "../../../common/helpers/formatDate";
 import { Address } from "../../manageProfile/types/manageProfile";
+import { PERMIT_STATUSES } from "../types/PermitStatus";
 
 /**
  * Get default values for contact details, or populate with existing contact details and/or user details
@@ -120,7 +121,7 @@ export const getDefaultValues = (
   permitNumber: getDefaultRequiredVal("", applicationData?.permitNumber),
   permitType: getDefaultRequiredVal("TROS", applicationData?.permitType),
   permitStatus: getDefaultRequiredVal(
-    "IN_PROGRESS",
+    PERMIT_STATUSES.IN_PROGRESS,
     applicationData?.permitStatus
   ),
   createdDateTime: applyWhenNotNullable(
