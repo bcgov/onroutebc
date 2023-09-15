@@ -229,11 +229,11 @@ export class DgenService {
     let browser: Browser;
     try {
       const browser = await puppeteer.launch({
-        headless: false,
+        headless: 'new',
         args: [
           '--no-sandbox',
           '--disable-setuid-sandbox',
-          // '--disable-dev-shm-usage',
+          '--disable-dev-shm-usage',
           // '--disable-gpu',
           // '--no-first-run',
           // '--no-zygote',
@@ -257,6 +257,7 @@ export class DgenService {
       });
       generatedDocument.size = generatedDocument.buffer.length;
     } catch (err) {
+      console.log(err);
       throw new InternalServerErrorException(err);
     } finally {
       if (browser) {
