@@ -30,7 +30,7 @@ while test -f "${SCRIPT_DIR}/versions/v_${NEXTVER}_ddl.sql"; do
     echo "Next migration file to check: ${SCRIPT_DIR}/versions/v_${NEXTVER}_ddl.sql"
 done
 
-# Test the revert scripts, ensure tests still pass
+echo "Testing the revert scripts to ensure tests still pass..."
 # Set NEXTVER to the current database version
 ((NEXTVER=NEXTVER-1))
 while test -f "${SCRIPT_DIR}/versions/revert/v_${NEXTVER}_ddl_revert.sql"; do
@@ -45,13 +45,13 @@ while test -f "${SCRIPT_DIR}/versions/revert/v_${NEXTVER}_ddl_revert.sql"; do
     echo "Next migration file to check: ${SCRIPT_DIR}/versions/v_${NEXTVER}_ddl.sql"
 done
 
-# Test the full migrate db schema script
+echo "Testing the full migrate db schema script..."
 ${SCRIPT_DIR}/utility/migrate-db-current.sh -u ${MSSQL_SA_USER} -p "${MSSQL_SA_PASSWORD}" -s ${MSSQL_HOST} -d ${UNIT_TEST_DB_NAME}
 
-# Test the full revert db schema script
+echo "Testing the full revert db schema script..."
 ${SCRIPT_DIR}/utility/revert-db-complete.sh -u ${MSSQL_SA_USER} -p "${MSSQL_SA_PASSWORD}" -s ${MSSQL_HOST} -d ${UNIT_TEST_DB_NAME}
 
-# Test the full reset script (including sample data)
+echo "Testing the full reset script (including sample data)..."
 ${SCRIPT_DIR}/utility/migrate-db-current.sh -u ${MSSQL_SA_USER} -p "${MSSQL_SA_PASSWORD}" -s ${MSSQL_HOST} -d ${UNIT_TEST_DB_NAME}
 export TEST_MOTI_USER=${MSSQL_SA_USER}
 export TEST_MOTI_PASSWORD="${MSSQL_SA_PASSWORD}"

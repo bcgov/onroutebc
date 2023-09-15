@@ -4,7 +4,6 @@ SET QUOTED_IDENTIFIER ON
 GO
 SET NOCOUNT ON
 GO
-BEGIN TRANSACTION
 
 CREATE TABLE [dbo].[ORBC_POWER_UNIT](
 	[POWER_UNIT_ID] [bigint] IDENTITY(1,1) NOT NULL,
@@ -28,10 +27,7 @@ CREATE TABLE [dbo].[ORBC_POWER_UNIT](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
+
 CREATE TABLE [dbo].[ORBC_TRAILER](
 	[TRAILER_ID] [bigint] IDENTITY(1,1) NOT NULL,
 	[UNIT_NUMBER] [nvarchar](10) NULL,
@@ -53,10 +49,7 @@ CREATE TABLE [dbo].[ORBC_TRAILER](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
+
 CREATE TABLE [dbo].[ORBC_VT_COUNTRY](
 	[COUNTRY_CODE] [char](2) NOT NULL,
 	[COUNTRY_NAME] [varchar](50) NOT NULL,
@@ -72,10 +65,7 @@ CREATE TABLE [dbo].[ORBC_VT_COUNTRY](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
+
 CREATE TABLE [dbo].[ORBC_VT_POWER_UNIT_TYPE](
 	[TYPE_CODE] [char](7) NOT NULL,
 	[TYPE] [nvarchar](150) NOT NULL,
@@ -93,10 +83,7 @@ CREATE TABLE [dbo].[ORBC_VT_POWER_UNIT_TYPE](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
+
 CREATE TABLE [dbo].[ORBC_VT_PROVINCE](
 	[PROVINCE_ID] [char](5) NOT NULL,
 	[PROVINCE_CODE] [char](2) NOT NULL,
@@ -114,10 +101,7 @@ CREATE TABLE [dbo].[ORBC_VT_PROVINCE](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
+
 CREATE TABLE [dbo].[ORBC_VT_TRAILER_TYPE](
 	[TYPE_CODE] [char](7) NOT NULL,
 	[TYPE] [nvarchar](150) NOT NULL,
@@ -135,11 +119,13 @@ CREATE TABLE [dbo].[ORBC_VT_TRAILER_TYPE](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+
 INSERT [dbo].[ORBC_VT_COUNTRY] ([COUNTRY_CODE], [COUNTRY_NAME], [SORT_ORDER], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'CA', N'Canada', 1, NULL, N'dbo', GETUTCDATE(), N'dbo', GETUTCDATE())
 INSERT [dbo].[ORBC_VT_COUNTRY] ([COUNTRY_CODE], [COUNTRY_NAME], [SORT_ORDER], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'MX', N'Mexico', 3, NULL, N'dbo', GETUTCDATE(), N'dbo', GETUTCDATE())
 INSERT [dbo].[ORBC_VT_COUNTRY] ([COUNTRY_CODE], [COUNTRY_NAME], [SORT_ORDER], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'US', N'United States', 2, NULL, N'dbo', GETUTCDATE(), N'dbo', GETUTCDATE())
 INSERT [dbo].[ORBC_VT_COUNTRY] ([COUNTRY_CODE], [COUNTRY_NAME], [SORT_ORDER], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'XX', N'Others', 99, NULL, N'dbo', GETUTCDATE(), N'dbo', GETUTCDATE());
 GO
+
 INSERT [dbo].[ORBC_VT_POWER_UNIT_TYPE] ([TYPE_CODE], [TYPE], [DESCRIPTION], [SORT_ORDER], [IS_ACTIVE], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'BUSCRUM', N'Buses/Crummies', N'A motor vehicle used to transport persons, when such transportation is not undertaken for compensation or gain.', NULL, 1, NULL, N'dbo', GETUTCDATE(), N'dbo', GETUTCDATE())
 INSERT [dbo].[ORBC_VT_POWER_UNIT_TYPE] ([TYPE_CODE], [TYPE], [DESCRIPTION], [SORT_ORDER], [IS_ACTIVE], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'BUSTRLR', N'Intercity Buses (Pulling Pony Trailers)', N'Intercity Buses are vehicles designed to carry more than 15 passengers and equipped with facilities to allow extended travel without stopping.', NULL, 1, NULL, N'dbo', GETUTCDATE(), N'dbo', GETUTCDATE())
 INSERT [dbo].[ORBC_VT_POWER_UNIT_TYPE] ([TYPE_CODE], [TYPE], [DESCRIPTION], [SORT_ORDER], [IS_ACTIVE], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'CONCRET', N'Concrete Pumper Trucks', N'Concrete Pumper Trucks are used to pump concrete from a cement mixer truck to where the concrete is actually needed. They travel on the highway at their equipped weight with no load.', NULL, 1, NULL, N'dbo', GETUTCDATE(), N'dbo', GETUTCDATE())
@@ -167,6 +153,7 @@ INSERT [dbo].[ORBC_VT_POWER_UNIT_TYPE] ([TYPE_CODE], [TYPE], [DESCRIPTION], [SOR
 INSERT [dbo].[ORBC_VT_POWER_UNIT_TYPE] ([TYPE_CODE], [TYPE], [DESCRIPTION], [SORT_ORDER], [IS_ACTIVE], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'TRKTRAC', N'Truck Tractors', N'Truck Tractor is a motor vehicle, having a net weight of more than 4,000 kg, that is equipped with a fifth-wheel coupler or a centre rotatable log bunk mounted on a bolster affixed to the vehicles chassis, and includes an auto carrier with an underslung fifth wheel coupler and a truck tractor with a load box.', NULL, 1, NULL, N'dbo', GETUTCDATE(), N'dbo', GETUTCDATE())
 INSERT [dbo].[ORBC_VT_POWER_UNIT_TYPE] ([TYPE_CODE], [TYPE], [DESCRIPTION], [SORT_ORDER], [IS_ACTIVE], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'PUTAXIS', N'Taxis', N'', NULL, 1, NULL, N'dbo', GETUTCDATE(), N'dbo', GETUTCDATE())
 GO
+
 INSERT [dbo].[ORBC_VT_PROVINCE] ([PROVINCE_ID], [PROVINCE_CODE], [PROVINCE_NAME], [COUNTRY_CODE], [SORT_ORDER], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'CA-AB', N'AB', N'Alberta', N'CA', 1, NULL, N'dbo', GETUTCDATE(), N'dbo', GETUTCDATE())
 INSERT [dbo].[ORBC_VT_PROVINCE] ([PROVINCE_ID], [PROVINCE_CODE], [PROVINCE_NAME], [COUNTRY_CODE], [SORT_ORDER], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'CA-BC', N'BC', N'British Columbia', N'CA', 1, NULL, N'dbo', GETUTCDATE(), N'dbo', GETUTCDATE())
 INSERT [dbo].[ORBC_VT_PROVINCE] ([PROVINCE_ID], [PROVINCE_CODE], [PROVINCE_NAME], [COUNTRY_CODE], [SORT_ORDER], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'CA-MB', N'MB', N'Manitoba', N'CA', 1, NULL, N'dbo', GETUTCDATE(), N'dbo', GETUTCDATE())
@@ -234,6 +221,7 @@ INSERT [dbo].[ORBC_VT_PROVINCE] ([PROVINCE_ID], [PROVINCE_CODE], [PROVINCE_NAME]
 INSERT [dbo].[ORBC_VT_PROVINCE] ([PROVINCE_ID], [PROVINCE_CODE], [PROVINCE_NAME], [COUNTRY_CODE], [SORT_ORDER], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'MX-XX', N'XX', N'Others', N'MX', 3, NULL, N'dbo', GETUTCDATE(), N'dbo', GETUTCDATE())
 INSERT [dbo].[ORBC_VT_PROVINCE] ([PROVINCE_ID], [PROVINCE_CODE], [PROVINCE_NAME], [COUNTRY_CODE], [SORT_ORDER], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'XX-XX', N'XX', N'Others', N'XX', 99, NULL, N'dbo', GETUTCDATE(), N'dbo', GETUTCDATE())
 GO
+
 INSERT [dbo].[ORBC_VT_TRAILER_TYPE] ([TYPE_CODE], [TYPE], [DESCRIPTION], [SORT_ORDER], [IS_ACTIVE], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'BOOSTER', N'Boosters', N'A Booster is similar to a jeep, but it is used behind a load.', NULL, 1, NULL, N'dbo', GETUTCDATE(), N'dbo', GETUTCDATE())
 INSERT [dbo].[ORBC_VT_TRAILER_TYPE] ([TYPE_CODE], [TYPE], [DESCRIPTION], [SORT_ORDER], [IS_ACTIVE], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'DBTRBTR', N'Tandem/Tridem Drive B-Train (Super B-Train)', N'B-trains for wood chip residual.', NULL, 1, NULL, N'dbo', GETUTCDATE(), N'dbo', GETUTCDATE())
 INSERT [dbo].[ORBC_VT_TRAILER_TYPE] ([TYPE_CODE], [TYPE], [DESCRIPTION], [SORT_ORDER], [IS_ACTIVE], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'DOLLIES', N'Dollies', N'See Commercial Transport Procedures Manual chapter 5.3 for details.', NULL, 1, NULL, N'dbo', GETUTCDATE(), N'dbo', GETUTCDATE())
@@ -287,222 +275,119 @@ INSERT [dbo].[ORBC_VT_TRAILER_TYPE] ([TYPE_CODE], [TYPE], [DESCRIPTION], [SORT_O
 INSERT [dbo].[ORBC_VT_TRAILER_TYPE] ([TYPE_CODE], [TYPE], [DESCRIPTION], [SORT_ORDER], [IS_ACTIVE], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'PMHWAAX', N'Park Model Homes with Attached Axles', N'', NULL, 1, NULL, N'dbo', GETUTCDATE(), N'dbo', GETUTCDATE())
 INSERT [dbo].[ORBC_VT_TRAILER_TYPE] ([TYPE_CODE], [TYPE], [DESCRIPTION], [SORT_ORDER], [IS_ACTIVE], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'STINGAT', N'Stinger Steered Automobile Transporters', N'See Commercial Transport Procedures Manual chapter 5.3 for details.', NULL, 1, NULL, N'dbo', GETUTCDATE(), N'dbo', GETUTCDATE())
 GO
+
 ALTER TABLE [dbo].[ORBC_POWER_UNIT] ADD  CONSTRAINT [DF_ORBC_POWER_UNIT_DB_CREATE_USERID]  DEFAULT (user_name()) FOR [DB_CREATE_USERID]
-GO
 ALTER TABLE [dbo].[ORBC_POWER_UNIT] ADD  CONSTRAINT [DF_ORBC_POWER_UNIT_DB_CREATE_TIMESTAMP]  DEFAULT (getutcdate()) FOR [DB_CREATE_TIMESTAMP]
-GO
 ALTER TABLE [dbo].[ORBC_POWER_UNIT] ADD  CONSTRAINT [DF_ORBC_POWER_UNIT_DB_LAST_UPDATE_USERID]  DEFAULT (user_name()) FOR [DB_LAST_UPDATE_USERID]
-GO
 ALTER TABLE [dbo].[ORBC_POWER_UNIT] ADD  CONSTRAINT [DF_ORBC_POWER_UNIT_DB_LAST_UPDATE_TIMESTAMP]  DEFAULT (getutcdate()) FOR [DB_LAST_UPDATE_TIMESTAMP]
-GO
 ALTER TABLE [dbo].[ORBC_TRAILER] ADD  CONSTRAINT [DF_ORBC_TRAILER_DB_CREATE_USERID]  DEFAULT (user_name()) FOR [DB_CREATE_USERID]
-GO
 ALTER TABLE [dbo].[ORBC_TRAILER] ADD  CONSTRAINT [DF_ORBC_TRAILER_DB_CREATE_TIMESTAMP]  DEFAULT (getutcdate()) FOR [DB_CREATE_TIMESTAMP]
-GO
 ALTER TABLE [dbo].[ORBC_TRAILER] ADD  CONSTRAINT [DF_ORBC_TRAILER_DB_LAST_UPDATE_USERID]  DEFAULT (user_name()) FOR [DB_LAST_UPDATE_USERID]
-GO
 ALTER TABLE [dbo].[ORBC_TRAILER] ADD  CONSTRAINT [DF_ORBC_TRAILER_DB_LAST_UPDATE_TIMESTAMP]  DEFAULT (getutcdate()) FOR [DB_LAST_UPDATE_TIMESTAMP]
-GO
 ALTER TABLE [dbo].[ORBC_VT_COUNTRY] ADD  CONSTRAINT [DF_ORBC_VT_COUNTRY_DB_CREATE_USERID]  DEFAULT (user_name()) FOR [DB_CREATE_USERID]
-GO
 ALTER TABLE [dbo].[ORBC_VT_COUNTRY] ADD  CONSTRAINT [DF_ORBC_VT_COUNTRY_DB_CREATE_TIMESTAMP]  DEFAULT (getutcdate()) FOR [DB_CREATE_TIMESTAMP]
-GO
 ALTER TABLE [dbo].[ORBC_VT_COUNTRY] ADD  CONSTRAINT [DF_ORBC_VT_COUNTRY_DB_LAST_UPDATE_USERID]  DEFAULT (user_name()) FOR [DB_LAST_UPDATE_USERID]
-GO
 ALTER TABLE [dbo].[ORBC_VT_COUNTRY] ADD  CONSTRAINT [DF_ORBC_VT_COUNTRY_DB_LAST_UPDATE_TIMESTAMP]  DEFAULT (getutcdate()) FOR [DB_LAST_UPDATE_TIMESTAMP]
-GO
 ALTER TABLE [dbo].[ORBC_VT_POWER_UNIT_TYPE] ADD  CONSTRAINT [DF_ORBC_VT_POWER_UNIT_TYPE_IS_ACTIVE]  DEFAULT ((1)) FOR [IS_ACTIVE]
-GO
 ALTER TABLE [dbo].[ORBC_VT_POWER_UNIT_TYPE] ADD  CONSTRAINT [DF_ORBC_VT_POWER_UNIT_TYPE_DB_CREATE_USERID]  DEFAULT (user_name()) FOR [DB_CREATE_USERID]
-GO
 ALTER TABLE [dbo].[ORBC_VT_POWER_UNIT_TYPE] ADD  CONSTRAINT [DF_ORBC_VT_POWER_UNIT_TYPE_DB_CREATE_TIMESTAMP]  DEFAULT (getutcdate()) FOR [DB_CREATE_TIMESTAMP]
-GO
 ALTER TABLE [dbo].[ORBC_VT_POWER_UNIT_TYPE] ADD  CONSTRAINT [DF_ORBC_VT_POWER_UNIT_TYPE_DB_LAST_UPDATE_USERID]  DEFAULT (user_name()) FOR [DB_LAST_UPDATE_USERID]
-GO
 ALTER TABLE [dbo].[ORBC_VT_POWER_UNIT_TYPE] ADD  CONSTRAINT [DF_ORBC_VT_POWER_UNIT_TYPE_DB_LAST_UPDATE_TIMESTAMP]  DEFAULT (getutcdate()) FOR [DB_LAST_UPDATE_TIMESTAMP]
-GO
 ALTER TABLE [dbo].[ORBC_VT_PROVINCE] ADD  CONSTRAINT [DF_ORBC_VT_PROVINCE_DB_CREATE_USERID]  DEFAULT (user_name()) FOR [DB_CREATE_USERID]
-GO
 ALTER TABLE [dbo].[ORBC_VT_PROVINCE] ADD  CONSTRAINT [DF_ORBC_VT_PROVINCE_DB_CREATE_TIMESTAMP]  DEFAULT (getutcdate()) FOR [DB_CREATE_TIMESTAMP]
-GO
 ALTER TABLE [dbo].[ORBC_VT_PROVINCE] ADD  CONSTRAINT [DF_ORBC_VT_PROVINCE_DB_LAST_UPDATE_USERID]  DEFAULT (user_name()) FOR [DB_LAST_UPDATE_USERID]
-GO
 ALTER TABLE [dbo].[ORBC_VT_PROVINCE] ADD  CONSTRAINT [DF_ORBC_VT_PROVINCE_DB_LAST_UPDATE_TIMESTAMP]  DEFAULT (getutcdate()) FOR [DB_LAST_UPDATE_TIMESTAMP]
-GO
 ALTER TABLE [dbo].[ORBC_VT_TRAILER_TYPE] ADD  CONSTRAINT [DF_ORBC_VT_TRAILER_TYPE_IS_ACTIVE]  DEFAULT ((1)) FOR [IS_ACTIVE]
-GO
 ALTER TABLE [dbo].[ORBC_VT_TRAILER_TYPE] ADD  CONSTRAINT [DF_ORBC_VT_TRAILER_TYPE_DB_CREATE_USERID]  DEFAULT (user_name()) FOR [DB_CREATE_USERID]
-GO
 ALTER TABLE [dbo].[ORBC_VT_TRAILER_TYPE] ADD  CONSTRAINT [DF_ORBC_VT_TRAILER_TYPE_DB_CREATE_TIMESTAMP]  DEFAULT (getutcdate()) FOR [DB_CREATE_TIMESTAMP]
-GO
 ALTER TABLE [dbo].[ORBC_VT_TRAILER_TYPE] ADD  CONSTRAINT [DF_ORBC_VT_TRAILER_TYPE_DB_LAST_UPDATE_USERID]  DEFAULT (user_name()) FOR [DB_LAST_UPDATE_USERID]
-GO
 ALTER TABLE [dbo].[ORBC_VT_TRAILER_TYPE] ADD  CONSTRAINT [DF_ORBC_VT_TRAILER_TYPE_DB_LAST_UPDATE_TIMESTAMP]  DEFAULT (getutcdate()) FOR [DB_LAST_UPDATE_TIMESTAMP]
-GO
 ALTER TABLE [dbo].[ORBC_POWER_UNIT]  WITH CHECK ADD  CONSTRAINT [FK_ORBC_POWER_UNIT_POWER_UNIT_TYPE] FOREIGN KEY([POWER_UNIT_TYPE_CODE])
 REFERENCES [dbo].[ORBC_VT_POWER_UNIT_TYPE] ([TYPE_CODE])
-GO
 ALTER TABLE [dbo].[ORBC_POWER_UNIT] CHECK CONSTRAINT [FK_ORBC_POWER_UNIT_POWER_UNIT_TYPE]
-GO
 ALTER TABLE [dbo].[ORBC_POWER_UNIT]  WITH CHECK ADD  CONSTRAINT [FK_ORBC_POWER_UNIT_PROVINCE] FOREIGN KEY([PROVINCE_ID])
 REFERENCES [dbo].[ORBC_VT_PROVINCE] ([PROVINCE_ID])
-GO
 ALTER TABLE [dbo].[ORBC_POWER_UNIT] CHECK CONSTRAINT [FK_ORBC_POWER_UNIT_PROVINCE]
-GO
 ALTER TABLE [dbo].[ORBC_TRAILER]  WITH CHECK ADD  CONSTRAINT [FK_ORBC_TRAILER_PROVINCE] FOREIGN KEY([PROVINCE_ID])
 REFERENCES [dbo].[ORBC_VT_PROVINCE] ([PROVINCE_ID])
-GO
 ALTER TABLE [dbo].[ORBC_TRAILER] CHECK CONSTRAINT [FK_ORBC_TRAILER_PROVINCE]
-GO
 ALTER TABLE [dbo].[ORBC_TRAILER]  WITH CHECK ADD  CONSTRAINT [FK_ORBC_TRAILER_TRAILER_TYPE] FOREIGN KEY([TRAILER_TYPE_CODE])
 REFERENCES [dbo].[ORBC_VT_TRAILER_TYPE] ([TYPE_CODE])
-GO
 ALTER TABLE [dbo].[ORBC_TRAILER] CHECK CONSTRAINT [FK_ORBC_TRAILER_TRAILER_TYPE]
 GO
+
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Unique identifier for this vehicle record in a company inventory.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_POWER_UNIT', @level2type=N'COLUMN',@level2name=N'POWER_UNIT_ID'
-GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Number or code that the company uses to refer to the vehicle.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_POWER_UNIT', @level2type=N'COLUMN',@level2name=N'UNIT_NUMBER'
-GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'License plate.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_POWER_UNIT', @level2type=N'COLUMN',@level2name=N'PLATE'
-GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Canadian province or US state of registration of the vehicle.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_POWER_UNIT', @level2type=N'COLUMN',@level2name=N'PROVINCE_ID'
-GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Year of manufacture of the vehicle.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_POWER_UNIT', @level2type=N'COLUMN',@level2name=N'YEAR'
-GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Make (manufacturer) of the vehicle.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_POWER_UNIT', @level2type=N'COLUMN',@level2name=N'MAKE'
-GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Short vehicle identification number (last 6 characters) for the power unit.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_POWER_UNIT', @level2type=N'COLUMN',@level2name=N'VIN'
-GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Licensed gross vehicle weight of the power unit.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_POWER_UNIT', @level2type=N'COLUMN',@level2name=N'LICENSED_GVW'
-GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Type of the power unit.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_POWER_UNIT', @level2type=N'COLUMN',@level2name=N'POWER_UNIT_TYPE_CODE'
-GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Size of the steer axle tires (width).' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_POWER_UNIT', @level2type=N'COLUMN',@level2name=N'STEER_AXLE_TIRE_SIZE'
-GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Application code is responsible for retrieving the row and then incrementing the value of the CONCURRENCY_CONTROL_NUMBER column by one prior to issuing an update. If this is done then the update will succeed, provided that the row was not updated by any other transactions in the period between the read and the update operations.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_POWER_UNIT', @level2type=N'COLUMN',@level2name=N'CONCURRENCY_CONTROL_NUMBER'
-GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user or proxy account that created the record.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_POWER_UNIT', @level2type=N'COLUMN',@level2name=N'DB_CREATE_USERID'
-GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time the record was created.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_POWER_UNIT', @level2type=N'COLUMN',@level2name=N'DB_CREATE_TIMESTAMP'
-GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user or proxy account that created or last updated the record.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_POWER_UNIT', @level2type=N'COLUMN',@level2name=N'DB_LAST_UPDATE_USERID'
-GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time the record was created or last updated.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_POWER_UNIT', @level2type=N'COLUMN',@level2name=N'DB_LAST_UPDATE_TIMESTAMP'
-GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Represents a power unit added to a company''s vehicle inventory.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_POWER_UNIT'
-GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Unique identifier for this vehicle record in a company inventory.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_TRAILER', @level2type=N'COLUMN',@level2name=N'TRAILER_ID'
-GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Number or code that the company uses to refer to the vehicle.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_TRAILER', @level2type=N'COLUMN',@level2name=N'UNIT_NUMBER'
-GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'License plate.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_TRAILER', @level2type=N'COLUMN',@level2name=N'PLATE'
-GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Canadian province or US state of registration of the vehicle.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_TRAILER', @level2type=N'COLUMN',@level2name=N'PROVINCE_ID'
-GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Year of manufacture of the vehicle.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_TRAILER', @level2type=N'COLUMN',@level2name=N'YEAR'
-GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Make (manufacturer) of the vehicle.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_TRAILER', @level2type=N'COLUMN',@level2name=N'MAKE'
-GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Short vehicle identification number (last 6 characters) for the trailer.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_TRAILER', @level2type=N'COLUMN',@level2name=N'VIN'
-GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Type of the trailer.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_TRAILER', @level2type=N'COLUMN',@level2name=N'TRAILER_TYPE_CODE'
-GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Width in metres of the empty trailer.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_TRAILER', @level2type=N'COLUMN',@level2name=N'EMPTY_TRAILER_WIDTH'
-GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Application code is responsible for retrieving the row and then incrementing the value of the CONCURRENCY_CONTROL_NUMBER column by one prior to issuing an update. If this is done then the update will succeed, provided that the row was not updated by any other transactions in the period between the read and the update operations.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_TRAILER', @level2type=N'COLUMN',@level2name=N'CONCURRENCY_CONTROL_NUMBER'
-GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user or proxy account that created the record.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_TRAILER', @level2type=N'COLUMN',@level2name=N'DB_CREATE_USERID'
-GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time the record was created.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_TRAILER', @level2type=N'COLUMN',@level2name=N'DB_CREATE_TIMESTAMP'
-GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user or proxy account that created or last updated the record.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_TRAILER', @level2type=N'COLUMN',@level2name=N'DB_LAST_UPDATE_USERID'
-GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time the record was created or last updated.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_TRAILER', @level2type=N'COLUMN',@level2name=N'DB_LAST_UPDATE_TIMESTAMP'
-GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Represents a trailer added to a company''s vehicle inventory.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_TRAILER'
-GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Unique country identifier.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_COUNTRY', @level2type=N'COLUMN',@level2name=N'COUNTRY_CODE'
-GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Common name of the country.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_COUNTRY', @level2type=N'COLUMN',@level2name=N'COUNTRY_NAME'
-GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Order that the country should be displayed in user interfaces.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_COUNTRY', @level2type=N'COLUMN',@level2name=N'SORT_ORDER'
-GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Application code is responsible for retrieving the row and then incrementing the value of the CONCURRENCY_CONTROL_NUMBER column by one prior to issuing an update. If this is done then the update will succeed, provided that the row was not updated by any other transactions in the period between the read and the update operations.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_COUNTRY', @level2type=N'COLUMN',@level2name=N'CONCURRENCY_CONTROL_NUMBER'
-GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user or proxy account that created the record.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_COUNTRY', @level2type=N'COLUMN',@level2name=N'DB_CREATE_USERID'
-GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time the record was created.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_COUNTRY', @level2type=N'COLUMN',@level2name=N'DB_CREATE_TIMESTAMP'
-GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user or proxy account that created or last updated the record.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_COUNTRY', @level2type=N'COLUMN',@level2name=N'DB_LAST_UPDATE_USERID'
-GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time the record was created or last updated.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_COUNTRY', @level2type=N'COLUMN',@level2name=N'DB_LAST_UPDATE_TIMESTAMP'
-GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'A lookup table of countries to be presented in dropdown lists etc.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_COUNTRY'
-GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Unique identifier of the power unit type.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_POWER_UNIT_TYPE', @level2type=N'COLUMN',@level2name=N'TYPE_CODE'
-GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Short description of the power unit type.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_POWER_UNIT_TYPE', @level2type=N'COLUMN',@level2name=N'TYPE'
-GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Long description of the power unit type.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_POWER_UNIT_TYPE', @level2type=N'COLUMN',@level2name=N'DESCRIPTION'
-GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Order that the type should be presented in user interfaces.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_POWER_UNIT_TYPE', @level2type=N'COLUMN',@level2name=N'SORT_ORDER'
-GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Whether the power unit type is currently active in onRouteBC - 1 indicates yes, 0 indicates no.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_POWER_UNIT_TYPE', @level2type=N'COLUMN',@level2name=N'IS_ACTIVE'
-GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Application code is responsible for retrieving the row and then incrementing the value of the CONCURRENCY_CONTROL_NUMBER column by one prior to issuing an update. If this is done then the update will succeed, provided that the row was not updated by any other transactions in the period between the read and the update operations.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_POWER_UNIT_TYPE', @level2type=N'COLUMN',@level2name=N'CONCURRENCY_CONTROL_NUMBER'
-GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user or proxy account that created the record.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_POWER_UNIT_TYPE', @level2type=N'COLUMN',@level2name=N'DB_CREATE_USERID'
-GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time the record was created.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_POWER_UNIT_TYPE', @level2type=N'COLUMN',@level2name=N'DB_CREATE_TIMESTAMP'
-GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user or proxy account that created or last updated the record.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_POWER_UNIT_TYPE', @level2type=N'COLUMN',@level2name=N'DB_LAST_UPDATE_USERID'
-GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time the record was created or last updated.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_POWER_UNIT_TYPE', @level2type=N'COLUMN',@level2name=N'DB_LAST_UPDATE_TIMESTAMP'
-GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Lookup table containing all valid types of power unit in ORBC' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_POWER_UNIT_TYPE'
-GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Unique ID of the province/state and country combination' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_PROVINCE', @level2type=N'COLUMN',@level2name=N'PROVINCE_ID'
-GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'2-character short code for the Canadian province or US state.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_PROVINCE', @level2type=N'COLUMN',@level2name=N'PROVINCE_CODE'
-GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Common name of the Canadian province or US state.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_PROVINCE', @level2type=N'COLUMN',@level2name=N'PROVINCE_NAME'
-GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Country in which the province or state is a jurisdiction (Canada or USA).' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_PROVINCE', @level2type=N'COLUMN',@level2name=N'COUNTRY_CODE'
-GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Order that the province or state should be displayed in user interfaces.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_PROVINCE', @level2type=N'COLUMN',@level2name=N'SORT_ORDER'
-GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Application code is responsible for retrieving the row and then incrementing the value of the CONCURRENCY_CONTROL_NUMBER column by one prior to issuing an update. If this is done then the update will succeed, provided that the row was not updated by any other transactions in the period between the read and the update operations.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_PROVINCE', @level2type=N'COLUMN',@level2name=N'CONCURRENCY_CONTROL_NUMBER'
-GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user or proxy account that created the record.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_PROVINCE', @level2type=N'COLUMN',@level2name=N'DB_CREATE_USERID'
-GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time the record was created.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_PROVINCE', @level2type=N'COLUMN',@level2name=N'DB_CREATE_TIMESTAMP'
-GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user or proxy account that created or last updated the record.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_PROVINCE', @level2type=N'COLUMN',@level2name=N'DB_LAST_UPDATE_USERID'
-GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time the record was created or last updated.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_PROVINCE', @level2type=N'COLUMN',@level2name=N'DB_LAST_UPDATE_TIMESTAMP'
-GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Lookup table containing all valid canadian provinces, us states, and other countries available to the ORBC application' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_PROVINCE'
-GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Unique identifier of the trailer type.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_TRAILER_TYPE', @level2type=N'COLUMN',@level2name=N'TYPE_CODE'
-GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Short description of the trailer type.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_TRAILER_TYPE', @level2type=N'COLUMN',@level2name=N'TYPE'
-GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Long description of the trailer type.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_TRAILER_TYPE', @level2type=N'COLUMN',@level2name=N'DESCRIPTION'
-GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Order that the type should be presented in user interfaces.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_TRAILER_TYPE', @level2type=N'COLUMN',@level2name=N'SORT_ORDER'
-GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Whether the trailer type is currently active in onRouteBC - 1 indicates yes, 0 indicates no.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_TRAILER_TYPE', @level2type=N'COLUMN',@level2name=N'IS_ACTIVE'
-GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Application code is responsible for retrieving the row and then incrementing the value of the CONCURRENCY_CONTROL_NUMBER column by one prior to issuing an update. If this is done then the update will succeed, provided that the row was not updated by any other transactions in the period between the read and the update operations.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_TRAILER_TYPE', @level2type=N'COLUMN',@level2name=N'CONCURRENCY_CONTROL_NUMBER'
-GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user or proxy account that created the record.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_TRAILER_TYPE', @level2type=N'COLUMN',@level2name=N'DB_CREATE_USERID'
-GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time the record was created.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_TRAILER_TYPE', @level2type=N'COLUMN',@level2name=N'DB_CREATE_TIMESTAMP'
-GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user or proxy account that created or last updated the record.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_TRAILER_TYPE', @level2type=N'COLUMN',@level2name=N'DB_LAST_UPDATE_USERID'
-GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time the record was created or last updated.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_TRAILER_TYPE', @level2type=N'COLUMN',@level2name=N'DB_LAST_UPDATE_TIMESTAMP'
-GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Lookup table containing all valid types of trailer in ORBC' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_VT_TRAILER_TYPE'
 GO
 
@@ -510,5 +395,3 @@ DECLARE @VersionDescription VARCHAR(255)
 SET @VersionDescription = 'Initial creation of schema entities for manage vehicles feature'
 
 INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [DDL_FILE_SHA1], [RELEASE_DATE]) VALUES (2, @VersionDescription, '$(FILE_HASH)', getutcdate())
-
-COMMIT
