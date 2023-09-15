@@ -239,7 +239,6 @@ export class DgenService {
           // '--no-zygote',
           // '--single-process',
         ],
-        ignoreDefaultArgs: ['--disable-extensions'],
       });
       const page = await browser.newPage();
       await page.setContent(htmlBody);
