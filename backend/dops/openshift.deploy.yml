@@ -21,7 +21,7 @@ parameters:
   - name: CPU_REQUEST
     value: "25m"
   - name: MEMORY_REQUEST
-    value: "50Mi"
+    value: "200Mi"
   - name: CPU_LIMIT
     value: "75m"
   - name: MEMORY_LIMIT
