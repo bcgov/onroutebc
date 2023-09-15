@@ -21,11 +21,11 @@ parameters:
   - name: CPU_REQUEST
     value: "25m"
   - name: MEMORY_REQUEST
-    value: "200Mi"
+    value: "50Mi"
   - name: CPU_LIMIT
     value: "75m"
   - name: MEMORY_LIMIT
-    value: "700Mi"
+    value: "150Mi"
   - name: MIN_REPLICAS
     description: The minimum amount of replicas for the horizontal pod autoscaler.
     value: "3"
