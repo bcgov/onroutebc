@@ -28,6 +28,7 @@ import { VEHICLES_URL } from "../../../common/apiManager/endpoints/endpoints";
 import { ReadPermitDto } from "../types/permit";
 import { PaginatedResponse } from "../../../common/types/common";
 import { PERMIT_STATUSES } from "../types/PermitStatus";
+import { PermitHistory } from "../types/PermitHistory";
 
 /**
  * A record containing permit keys and full forms.
@@ -329,5 +330,22 @@ export const getPermitTransaction = async (transactionOrderNumber: string) => {
     return undefined;
   } catch (err) {
     return undefined;
+  }
+};
+
+export const getPermitHistory = async (originalPermitId?: string) => {
+  try {
+    if (!originalPermitId) return [];
+    
+    const response = await httpGETRequest(
+      `${VEHICLES_URL}/permits/history?originalId=${originalPermitId}`
+    );
+
+    if (response.status === 200) {
+      return response.data as PermitHistory[];
+    }
+    return [];
+  } catch (err) {
+    return [];
   }
 };

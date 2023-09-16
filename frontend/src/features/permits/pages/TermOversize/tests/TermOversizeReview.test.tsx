@@ -68,6 +68,7 @@ import { VehicleDetails } from "../../../types/application";
 import { permitTypeDisplayText, vehicleTypeDisplayText } from "../../../helpers/mappers";
 import { VehicleTypesAsString } from "../../../../manageVehicles/types/managevehicles";
 import { getDefaultRequiredVal } from "../../../../../common/helpers/util";
+import { calculateFeeByDuration } from "../../../helpers/feeSummary";
 
 beforeAll(() => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -324,7 +325,7 @@ describe("Review and Confirm Application Details", () => {
         ...defaultApplicationData,
         permitData: {
           ...defaultApplicationData.permitData,
-          feeSummary: `${defaultApplicationData.permitData.permitDuration}`,
+          feeSummary: `${calculateFeeByDuration(defaultApplicationData.permitData.permitDuration)}`,
         }
       };
       renderTestComponent(applicationData);

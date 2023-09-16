@@ -16,6 +16,7 @@ import { TROS_COMMODITIES } from "../constants/termOversizeConstants";
 import { now } from "../../../common/helpers/formatDate";
 import { Address } from "../../manageProfile/types/manageProfile";
 import { PERMIT_STATUSES } from "../types/PermitStatus";
+import { calculateFeeByDuration } from "./feeSummary";
 
 /**
  * Get default values for contact details, or populate with existing contact details and/or user details
@@ -99,6 +100,14 @@ export const getDefaultVehicleDetails = (vehicleDetails?: VehicleDetails) => ({
   saveVehicle: getDefaultRequiredVal(false, vehicleDetails?.saveVehicle),
 });
 
+export const getDurationOrDefault = (applicationData?: Application): number => {
+  return applyWhenNotNullable(
+    (duration) => +duration,
+    applicationData?.permitData?.permitDuration,
+    30
+  );
+};
+
 /**
  * Gets default values for the application data, or populate with values from existing application data and company id/user details.
  * @param applicationData existing application data, if any
@@ -154,11 +163,7 @@ export const getDefaultValues = (
       applicationData?.permitData?.startDate,
       now()
     ),
-    permitDuration: applyWhenNotNullable(
-      (duration) => +duration,
-      applicationData?.permitData?.permitDuration,
-      30
-    ),
+    permitDuration: getDurationOrDefault(applicationData),
     expiryDate: applyWhenNotNullable(
       (date) => dayjs(date),
       applicationData?.permitData?.expiryDate,
@@ -185,7 +190,7 @@ export const getDefaultValues = (
       applicationData?.permitData?.vehicleDetails
     ),
     feeSummary: getDefaultRequiredVal(
-      "30",
+      `${calculateFeeByDuration(getDurationOrDefault(applicationData))}`,
       applicationData?.permitData?.feeSummary
     ),
   },

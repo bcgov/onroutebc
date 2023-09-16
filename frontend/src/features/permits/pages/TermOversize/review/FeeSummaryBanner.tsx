@@ -4,7 +4,8 @@ import { useContext } from "react";
 import "./FeeSummaryBanner.scss";
 import { ApplicationContext } from "../../../context/ApplicationContext";
 import { getDefaultRequiredVal } from "../../../../../common/helpers/util";
-import { feeSummaryDisplayText, permitTypeDisplayText } from "../../../helpers/mappers";
+import { permitTypeDisplayText } from "../../../helpers/mappers";
+import { feeSummaryDisplayText } from "../../../helpers/feeSummary";
 
 export const FeeSummaryBanner = () => {
   const { applicationData } = useContext(ApplicationContext);

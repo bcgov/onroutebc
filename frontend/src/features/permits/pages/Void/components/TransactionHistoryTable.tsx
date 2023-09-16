@@ -1,5 +1,5 @@
 import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../../../common/helpers/util";
-import { feeSummaryDisplayText } from "../../../helpers/mappers";
+import { feeSummaryDisplayText } from "../../../helpers/feeSummary";
 import "./TransactionHistoryTable.scss";
 
 export const TransactionHistoryTable = ({
@@ -70,7 +70,7 @@ export const TransactionHistoryTable = ({
         <div className="table-row table-row--header">Amount (CAD)</div>
         {amounts.map((amount, i) => (
           <div 
-          key={`${permitNumbers[i]}-amount`} 
+            key={`${permitNumbers[i]}-amount`} 
             className="table-row"
           >
             {feeSummaryDisplayText(

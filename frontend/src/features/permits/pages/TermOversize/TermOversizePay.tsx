@@ -9,7 +9,8 @@ import { ProgressBar } from "../../components/progressBar/ProgressBar";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { ErrorFallback } from "../../../../common/pages/ErrorFallback";
 import { getMotiPayTransactionUrl } from "../../apiManager/permitsAPI";
-import { feeSummaryDisplayText, permitTypeDisplayText } from "../../helpers/mappers";
+import { permitTypeDisplayText } from "../../helpers/mappers";
+import { feeSummaryDisplayText } from "../../helpers/feeSummary";
 
 export const TermOversizePay = () => {
   const { applicationData } = useContext(ApplicationContext);

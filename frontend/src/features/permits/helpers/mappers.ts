@@ -1,5 +1,5 @@
 import { Dayjs } from "dayjs";
-import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../common/helpers/util";
+import { applyWhenNotNullable } from "../../../common/helpers/util";
 import {
   PowerUnit,
   Trailer,
@@ -156,18 +156,4 @@ export const permitTypeDisplayText = (permitType?: string) => {
     default:
       return "";
   }
-};
-
-/**
- * Gets full display text for fee summary.
- * @param feeSummary fee summary field for a permit (if exists)
- * @param duration duration field for a permit (if exists)
- * @returns display text for the fee summary (currency amount to 2 decimal places)
- */
-export const feeSummaryDisplayText = (feeSummary?: string | null, duration?: number | null) => {
-  const feeFromSummary = applyWhenNotNullable((numericStr) => Number(numericStr).toFixed(2), feeSummary);
-  const feeFromDuration = applyWhenNotNullable((num) => num.toFixed(2), duration);
-  const fee = getDefaultRequiredVal("0.00", feeFromSummary, feeFromDuration);
-  const numericFee = Number(fee);
-  return numericFee >= 0 ? `$${fee}` : `-$${(numericFee * -1).toFixed(2)}`;
 };

@@ -2,6 +2,7 @@ import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import {
   getApplicationInProgressById,
   getPermit,
+  getPermitHistory,
   getPermitTransaction,
   postTransaction,
   submitTermOversize,
@@ -13,6 +14,7 @@ import { mapApplicationResponseToApplication } from "../helpers/mappers";
 import { PermitTransaction } from "../types/payment";
 import { AxiosError } from "axios";
 import { ReadPermitDto } from "../types/permit";
+import { PermitHistory } from "../types/PermitHistory";
 
 /**
  * A custom react query mutation hook that saves the application data to the backend API
@@ -187,5 +189,32 @@ export const usePermitTransactionQuery = (
   return {
     query,
     permitTransaction,
+  };
+};
+
+/**
+ * A custom react query hook that get permit history from the backend API
+ * The hook gets permit history by its original permit id
+ * @param originalPermitId original permit id for the permit
+ * @returns list of permit history, or error if failed
+ */
+export const usePermitHistoryQuery = (originalPermitId?: string) => {
+  const [permitHistory, setPermitHistory] = useState<PermitHistory[]>([]);
+  
+  const query = useQuery({
+    queryKey: ["permitHistory"],
+    queryFn: () => getPermitHistory(originalPermitId),
+    enabled: originalPermitId != null,
+    retry: false,
+    refetchOnMount: "always",
+    refetchOnWindowFocus: false, // prevent unnecessary multiple queries on page showing up in foreground
+    onSuccess: (permitHistoryData) => {
+      setPermitHistory(permitHistoryData);
+    },
+  });
+
+  return {
+    query,
+    permitHistory,
   };
 };
