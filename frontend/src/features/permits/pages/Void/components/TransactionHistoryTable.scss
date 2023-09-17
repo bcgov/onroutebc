@@ -1,41 +1,52 @@
 @import "../../../../../themes/orbcStyles.scss";
 
 .transaction-history-table {
-  display: flex;
-  flex-direction: row;
+  width: 100%;
   border: 1px solid $bc-border-grey;
 
-  &__col {
-    display: flex;
-    flex-direction: column;
+  & &__header {
+    background-color: $bc-background-light-grey;
 
     &--permit {
-      width: 25%;
+      padding-left: 1rem;
+      padding-right: 0.5rem;
     }
-    
+
     &--payment {
-      width: 35%;
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
     }
 
     &--transaction {
-      width: 20%;
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
     }
 
     &--amount {
-      width: 20%;
-      text-align: end;
+      padding-left: 0.5rem;
+      padding-right: 1rem;
+    }
+  }
+
+  & &__data {
+    &--permit {
+      padding-left: 1rem;
+      padding-right: 0.5rem;
     }
 
-    .table-row {
-      padding: 1em;
-      border-bottom: 1px solid $bc-border-grey;
-      font-size: 0.9rem;
+    &--payment {
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
+    }
 
-      &--header {
-        background-color: $bc-background-light-grey;
-        font-weight: 600;
-        font-size: 1rem;
-      }
+    &--transaction {
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
+    }
+
+    &--amount {
+      padding-left: 0.5rem;
+      padding-right: 1rem;
     }
   }
 }

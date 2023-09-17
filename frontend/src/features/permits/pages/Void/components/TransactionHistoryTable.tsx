@@ -1,30 +1,92 @@
+import { useMemo } from "react";
 import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../../../common/helpers/util";
-import { feeSummaryDisplayText } from "../../../helpers/feeSummary";
+import { feeSummaryDisplayText, isTransactionTypeRefund } from "../../../helpers/feeSummary";
+import { PermitHistory } from "../../../types/PermitHistory";
 import "./TransactionHistoryTable.scss";
+import MaterialReactTable, { MRT_ColumnDef } from "material-react-table";
 
 export const TransactionHistoryTable = ({
-  transactionHistory,
+  permitHistory,
 }: {
-  transactionHistory: {
-    permitNumber: string;
-    paymentMethod?: number;
-    transactionId?: string;
-    amount?: number;
-  }[];
+  permitHistory: PermitHistory[];
 }) => {
-  const permitNumbers = transactionHistory.map(transaction => transaction.permitNumber);
-  const paymentMethods = transactionHistory.map(transaction => transaction.paymentMethod);
-  const transactionIds = transactionHistory.map(transaction => transaction.transactionId);
-  const amounts = transactionHistory.map(transaction => transaction.amount);
+  const columns = useMemo<MRT_ColumnDef<PermitHistory>[]>(() => [
+    {
+      accessorKey: "permitNumber",
+      header: "Permit #",
+      muiTableHeadCellProps: {
+        className: "transaction-history-table__header transaction-history-table__header--permit",
+      },
+      muiTableBodyCellProps: {
+        className: "transaction-history-table__data transaction-history-table__data--permit",
+      },
+      size: 150,
+      enableSorting: false,
+      enableColumnActions: false,
+    },
+    {
+      accessorFn: (originalRow) => 
+        getPaymentMethodText(originalRow.paymentMethod),
+      id: "paymentMethod",
+      header: "Payment Method",
+      muiTableHeadCellProps: {
+        className: "transaction-history-table__header transaction-history-table__header--payment",
+      },
+      muiTableBodyCellProps: {
+        className: "transaction-history-table__data transaction-history-table__data--payment",
+      },
+      size: 200,
+      enableSorting: false,
+      enableColumnActions: false,
+    },
+    {
+      accessorFn: (originalRow) => 
+        getDefaultRequiredVal("NA", `${originalRow.providerTransactionId}`),
+      id: "providerTransactionId",
+      header: "Transaction ID",
+      muiTableHeadCellProps: {
+        className: "transaction-history-table__header transaction-history-table__header--transaction",
+      },
+      muiTableBodyCellProps: {
+        className: "transaction-history-table__data transaction-history-table__data--transaction",
+      },
+      size: 100,
+      enableSorting: false,
+      enableColumnActions: false,
+    },
+    {
+      accessorFn: (originalRow) => {
+        const amount = isTransactionTypeRefund(originalRow.transactionType) 
+          ? -1 * originalRow.transactionAmount : originalRow.transactionAmount;
+        
+        return feeSummaryDisplayText(
+          applyWhenNotNullable((val) => `${val}`, amount)
+        );
+      },
+      header: "Amount (CAD)",
+      muiTableHeadCellProps: {
+        className: "transaction-history-table__header transaction-history-table__header--amount",
+        align: "right",
+      },
+      muiTableBodyCellProps: {
+        className: "transaction-history-table__data transaction-history-table__data--amount",
+        align: "right",
+      },
+      id: "transactionAmount",
+      size: 50,
+      enableSorting: false,
+      enableColumnActions: false,
+    },
+  ], []);
 
   const availablePaymentMethods = [
     {
-      value: 2,
+      value: "CC",
       label: "Icepay - Mastercard (Debit)",
     },
   ]; // hardcoded
 
-  const getPaymentMethodText = (payMethod?: number) => {
+  const getPaymentMethodText = (payMethod?: string) => {
     return getDefaultRequiredVal(
       "NA",
       availablePaymentMethods.find(method => method.value === payMethod)?.label
@@ -32,53 +94,17 @@ export const TransactionHistoryTable = ({
   };
 
   return (
-    <div className="transaction-history-table">
-      <div className="transaction-history-table__col transaction-history-table__col--permit">
-        <div className="table-row table-row--header">Permit #</div>
-        {permitNumbers.map(permitNumber => (
-          <div 
-            key={permitNumber} 
-            className="table-row"
-          >
-            {permitNumber}
-          </div>
-        ))}
-      </div>
-      <div className="transaction-history-table__col transaction-history-table__col--payment">
-        <div className="table-row table-row--header">Payment Method</div>
-        {paymentMethods.map((paymentMethod, i) => (
-          <div 
-            key={`${permitNumbers[i]}-payment-method`} 
-            className="table-row"
-          >
-            {getPaymentMethodText(paymentMethod)}
-          </div>
-        ))}
-      </div>
-      <div className="transaction-history-table__col transaction-history-table__col--transaction">
-        <div className="table-row table-row--header">Transaction ID</div>
-        {transactionIds.map((transactionId, i) => (
-          <div 
-          key={`${permitNumbers[i]}-transaction-id`} 
-            className="table-row"
-          >
-            {getDefaultRequiredVal("NA", transactionId)}
-          </div>
-        ))}
-      </div>
-      <div className="transaction-history-table__col transaction-history-table__col--amount">
-        <div className="table-row table-row--header">Amount (CAD)</div>
-        {amounts.map((amount, i) => (
-          <div 
-            key={`${permitNumbers[i]}-amount`} 
-            className="table-row"
-          >
-            {feeSummaryDisplayText(
-              applyWhenNotNullable((val) => `${val}`, amount)
-            )}
-          </div>
-        ))}
-      </div>
-    </div>
+    <MaterialReactTable
+      columns={columns}
+      data={permitHistory}
+      enablePagination={false}
+      enableTopToolbar={false}
+      enableBottomToolbar={false}
+      enableRowActions={false}
+      enableColumnActions={false}
+      muiTableProps={{
+        className: "transaction-history-table",
+      }}
+    />
   );
 };

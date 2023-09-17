@@ -178,8 +178,8 @@ export class Permit extends Base {
 
   @AutoMap()
   @ApiProperty({
-    example: 'A2-00000002-120',
-    description: 'Unique formatted permit application number.',
+    example: 'This permit was amended because of so-and-so reason',
+    description: 'Comment/Reason for modifying a permit.',
   })
   @Column({
     length: '3000',

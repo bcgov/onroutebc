@@ -9,18 +9,27 @@ export class PermitHistoryDto {
       'Unique formatted permit number, recorded once the permit is approved and issued.',
   })
   permitNumber: string;
+
   @AutoMap()
   @ApiProperty({
-    example: '',
-    description: '',
+    example: 'This permit was amended because of so-and-so reason.',
+    description: 'Any comment/reason that was made for modification of the permit',
   })
   comment: string;
+
   @AutoMap()
   @ApiProperty({
     example: '30.00',
     description: 'Represents the amount of the transaction.',
   })
   transactionAmount: number;
+
+  @AutoMap()
+  @ApiProperty({
+    example: 'P',
+    description: 'Represents the transaction type used for the transaction (i.e. P, R, VP, VR, PA, PAC, Q)',
+  })
+  transactionType: string;
 
   @AutoMap()
   @ApiProperty({

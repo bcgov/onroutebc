@@ -69,6 +69,12 @@ export class PermitProfile extends AutomapperProfile {
           }),
         ),
         forMember(
+          (d) => d.transactionType,
+          mapWithArguments((s) => {
+            return s.transactions[0].transactionType;
+          }),
+        ),
+        forMember(
           (d) => d.transactionOrderNumber,
           mapWithArguments((s) => {
             return s.transactions[0].transactionOrderNumber;

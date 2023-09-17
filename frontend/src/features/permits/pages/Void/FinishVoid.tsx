@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Controller, FormProvider, useForm } from "react-hook-form";
 import { Button, FormControl, FormControlLabel, FormHelperText, FormLabel, MenuItem, OutlinedInput, Radio, RadioGroup, Select } from "@mui/material";
 
@@ -11,6 +11,8 @@ import { permitTypeDisplayText } from "../../helpers/mappers";
 import { FeeSummary } from "./components/FeeSummary";
 import { requiredMessage } from "../../../../common/helpers/validationMessages";
 import { TransactionHistoryTable } from "./components/TransactionHistoryTable";
+import { usePermitHistoryQuery } from "../../hooks/hooks";
+import { calculateNetAmount } from "../../helpers/feeSummary";
 
 export const FinishVoid = ({
   permit,
@@ -25,28 +27,35 @@ export const FinishVoid = ({
     },
   } = useContext(VoidPermitContext);
 
-  const [shouldUsePrevPaymentMethod, setShouldUsePrevPaymentMethod] = useState<boolean>(true);
-  const paymentMethod = {
-    value: 2,
-    label: "Icepay - Mastercard (Debit)",
-  }; // hardcoded value
+  const { 
+    query: permitHistoryQuery, 
+    permitHistory, 
+  } = usePermitHistoryQuery(permit?.originalPermitId);
 
-  const fakeTransactionHistory = [
+  const transactionHistory = permitHistoryQuery.isInitialLoading
+    ? [] : permitHistory;
+
+  const amountToRefund = -1 * calculateNetAmount(transactionHistory);
+
+  const [shouldUsePrevPaymentMethod, setShouldUsePrevPaymentMethod] = useState<boolean>(true);
+
+  const paymentOptions = [
     {
-      permitNumber: "P2-004008617-873-R1",
+      value: "CC",
+      label: "Icepay - Mastercard (Debit)",
     },
-    {
-      permitNumber: "P2-004008617-873",
-      paymentMethod: 2,
-      transactionId: "214096360",
-      amount: 30,
-    },
-  ];
+  ]; // hardcoded options
+
+  const getPrevPaymentMethod = () => {
+    if (!permitHistory) return "";
+    if (permitHistory.length === 0) return "";
+    return permitHistory[0].paymentMethod;
+  };
 
   const formMethods = useForm<RefundVoidDto>({
     defaultValues: {
       shouldUsePrevPaymentMethod,
-      paymentMethod: paymentMethod.value,
+      paymentMethod: getPrevPaymentMethod(),
       transactionId: "",
     },
     reValidateMode: "onChange",
@@ -61,6 +70,12 @@ export const FinishVoid = ({
     register,
     clearErrors,
   } = formMethods;
+
+  useEffect(() => {
+    if (permitHistory.length > 0) {
+      setValue("paymentMethod", permitHistory[0].paymentMethod);
+    }
+  }, [permitHistory, permitHistory.length]);
 
   const handleRefundMethodChange = (shouldUsePrev: string) => {
     const usePrev = shouldUsePrev === "true";
@@ -92,7 +107,7 @@ export const FinishVoid = ({
             Transaction History
           </div>
           <TransactionHistoryTable
-            transactionHistory={fakeTransactionHistory}
+            permitHistory={transactionHistory}
           />
         </div>
         <div className="void-info void-info--send">
@@ -168,11 +183,16 @@ export const FinishVoid = ({
                             <Select
                               className="refund-payment__input refund-payment__input--method"
                               disabled={true}
-                              defaultValue={value}
+                              value={value}
                             >
-                              <MenuItem value={paymentMethod.value}>
-                                {paymentMethod.label}
-                              </MenuItem>
+                              {paymentOptions.map(paymentMethod => (
+                                <MenuItem 
+                                  key={paymentMethod.value}
+                                  value={paymentMethod.value}
+                                >
+                                  {paymentMethod.label}
+                                </MenuItem>
+                              ))}
                             </Select>
                           </FormControl>
                         )}
@@ -243,8 +263,7 @@ export const FinishVoid = ({
           </div>
           <FeeSummary
             permitType={permit?.permitType}
-            permitDuration={permit?.permitData?.permitDuration}
-            feeSummary={permit?.permitData?.feeSummary}
+            feeSummary={`${amountToRefund}`}
           />
           <div className="footer">
             <Button 

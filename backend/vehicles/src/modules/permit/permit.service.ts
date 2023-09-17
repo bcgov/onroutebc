@@ -335,6 +335,7 @@ export class PermitService {
       .andWhere('permit.originalPermitId = :originalPermitId', {
         originalPermitId: originalPermitId,
       })
+      .orderBy('transaction.transactionSubmitDate', 'DESC')
       .getMany();
     return this.classMapper.mapArrayAsync(permits, Permit, PermitHistoryDto);
   }

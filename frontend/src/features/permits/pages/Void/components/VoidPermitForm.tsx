@@ -13,6 +13,8 @@ import { ReadPermitDto } from "../../../types/permit";
 import { SEARCH_RESULTS } from "../../../../../routes/constants";
 import { RevokeDialog } from "./RevokeDialog";
 import { FeeSummary } from "./FeeSummary";
+import { usePermitHistoryQuery } from "../../../hooks/hooks";
+import { calculateNetAmount } from "../../../helpers/feeSummary";
 
 const FEATURE = "void-permit";
 const searchRoute = `${SEARCH_RESULTS}?searchEntity=permits`;
@@ -29,6 +31,14 @@ export const VoidPermitForm = ({
     setVoidPermitData,
     next,
   } = useVoidPermitForm();
+
+  const { 
+    query: permitHistoryQuery, 
+    permitHistory, 
+  } = usePermitHistoryQuery(permit?.originalPermitId);
+
+  const amountToRefund = permitHistoryQuery.isInitialLoading 
+    ? 0 : -1 * calculateNetAmount(permitHistory);
 
   const { 
     control, 
@@ -139,13 +149,11 @@ export const VoidPermitForm = ({
                         </FormHelperText>
                       ) : null}
                     </FormControl>
-                    
                   )}
                 />
                 <FeeSummary
                   permitType={permit?.permitType}
-                  feeSummary={permit?.permitData?.feeSummary}
-                  permitDuration={permit?.permitData?.permitDuration}
+                  feeSummary={`${amountToRefund}`}
                 />
               </div>
               <div className="reason-container__right">

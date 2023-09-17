@@ -50,3 +50,15 @@ export interface PermitTransaction {
   permitId: string;
   transactionId: number;
 }
+
+export const TRANSACTION_TYPES = {
+  P: "P",
+  R: "R",
+  VP: "VP", 
+  VR: "VR", 
+  PA: "PA", 
+  PAC: "PAC", 
+  Q: "Q",
+} as const;
+
+export type TransactionType = typeof TRANSACTION_TYPES[keyof typeof TRANSACTION_TYPES];

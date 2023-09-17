@@ -1,4 +1,6 @@
 import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../common/helpers/util";
+import { PermitHistory } from "../types/PermitHistory";
+import { TRANSACTION_TYPES, TransactionType } from "../types/payment.d";
 
 /**
  * Calculates the fee for a permit only by its duration.
@@ -21,4 +23,27 @@ export const feeSummaryDisplayText = (feeSummary?: string | null, duration?: num
   const fee = getDefaultRequiredVal("0.00", feeFromSummary, feeFromDuration);
   const numericFee = Number(fee);
   return numericFee >= 0 ? `$${fee}` : `-$${(numericFee * -1).toFixed(2)}`;
+};
+
+/**
+ * Determines whether or not the transaction type of a transaction was a refund.
+ * @param transactionType Transaction type of a transaction
+ * @returns whether or not the transaction type was a refund
+ */
+export const isTransactionTypeRefund = (transactionType: TransactionType) => {
+  return transactionType === TRANSACTION_TYPES.R;
+};
+
+/**
+ * Calculates the net amount from the history of transactions for a permit.
+ * A positive amount represents the net amount that was paid for a permit, and
+ * a negative amount represents the net amount that was refunded for a permit, and
+ * a 0 amount means that the permit is completely paid with no amount outstanding.
+ * @param permitHistory List of history objects that make up the history of a permit
+ * @returns total net amount resulting from the history of transactions for the permit
+ */
+export const calculateNetAmount = (permitHistory: PermitHistory[]) => {
+  return permitHistory.map(permit => isTransactionTypeRefund(permit.transactionType) 
+    ? -1 * permit.transactionAmount 
+    : permit.transactionAmount).reduce((prev, curr) => prev + curr, 0);
 };

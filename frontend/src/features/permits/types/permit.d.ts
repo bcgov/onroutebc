@@ -25,6 +25,10 @@ type ReplaceDayjsWithString<T> = {
  */
 interface PartialPermitType {
   permitId: number;
+  originalPermitId: string;
+  revision: number;
+  previousRevision?: number | null;
+  comment?: string | null;
   permitStatus: PermitStatus;
   companyId: number;
   userGuid?: string | null;
