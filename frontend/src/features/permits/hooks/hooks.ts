@@ -90,7 +90,7 @@ export const useApplicationDetailsQuery = (permitId?: string) => {
  * @returns permit details, or error if failed
  */
 export const usePermitDetailsQuery = (permitId: string) => {
-  const [permit, setPermit] = useState<ReadPermitDto | undefined>(undefined);
+  const [permit, setPermit] = useState<ReadPermitDto | null>(null);
   
   const query = useQuery({
     queryKey: ["permit"],

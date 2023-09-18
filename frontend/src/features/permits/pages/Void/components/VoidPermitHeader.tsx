@@ -9,7 +9,7 @@ import { CompanyBanner } from "../../../../../common/components/banners/CompanyB
 export const VoidPermitHeader = ({
   permit,
 }: {
-  permit?: ReadPermitDto;
+  permit: ReadPermitDto | null;
 }) => {
   return permit ? (
     <div className="void-permit__header">

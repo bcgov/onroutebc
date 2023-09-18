@@ -17,7 +17,7 @@ import { calculateNetAmount } from "../../helpers/feeSummary";
 export const FinishVoid = ({
   permit,
 }: {
-  permit?: ReadPermitDto;
+  permit: ReadPermitDto | null;
 }) => {
   const { 
     voidPermitData: {

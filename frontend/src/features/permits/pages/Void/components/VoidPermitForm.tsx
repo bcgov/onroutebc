@@ -22,7 +22,7 @@ const searchRoute = `${SEARCH_RESULTS}?searchEntity=permits`;
 export const VoidPermitForm = ({
   permit,
 }: {
-  permit?: ReadPermitDto,
+  permit: ReadPermitDto | null,
 }) => {
   const navigate = useNavigate();
   const [openRevokeDialog, setOpenRevokeDialog] = useState<boolean>(false);
