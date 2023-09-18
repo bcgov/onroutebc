@@ -209,9 +209,6 @@ objects:
             - image: ${NAME}-${ZONE}-${COMPONENT}:${IMAGE_TAG}
               imagePullPolicy: Always
               name: ${NAME}
-              securityContext:
-                capabilities:
-                  add: ["SYS_ADMIN"]
               env:
                 - name: DB_TYPE
                   valueFrom:
