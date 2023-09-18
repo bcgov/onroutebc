@@ -19,4 +19,4 @@ END CATCH
 DECLARE @VersionDescription VARCHAR(255)
 SET @VersionDescription = 'Reverting Creation of Full Text Search Index on ORBC_PERMIT_DATA table.'
 
-INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [DDL_FILE_SHA1], [RELEASE_DATE]) VALUES (7, @VersionDescription, '$(FILE_HASH)', getutcdate())
+INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [RELEASE_DATE]) VALUES (7, @VersionDescription, getutcdate())

@@ -24,16 +24,9 @@ if [[ ORBC_DB_VERSION -ne ${VERSION} ]]; then
     exit
 fi
 
-if test -f "${SCRIPT_DIR}/versions/revert/v_${VERSION}_ddl_revert.sql"; then
-    echo "Executing ${SCRIPT_DIR}/versions/revert/v_${VERSION}_ddl_revert.sql"
-    # The FILE_HASH is saved to the database as a verification that the DDL was not altered
-    # from what is present in the git repository.
-    FILE_HASH=($(sha1sum ${SCRIPT_DIR}/versions/revert/v_${VERSION}_ddl_revert.sql))
-    sqlcmd -C -U ${USER} -P "${PASS}" -S ${SERVER} -d ${DATABASE} -v FILE_HASH=${FILE_HASH} -i ${SCRIPT_DIR}/versions/revert/v_${VERSION}_ddl_revert.sql
-else
-    echo "ERROR: migration file ${SCRIPT_DIR}/versions/revert/v_${VERSION}_ddl_revert.sql not found."
-    exit
-fi
+REVERT_SCRIPT=$(sqlcmd -C -U ${USER} -P ${PASS} -S ${SERVER} -v DB_NAME=${DATABASE} -y 0 -i ${SCRIPT_DIR}/get-orbc-db-revert-script.sql)
+printf "${REVERT_SCRIPT}" | base64 -di > ${SCRIPT_DIR}/tmp/revert.tmp.sql
+sqlcmd -C -U ${USER} -P "${PASS}" -S ${SERVER} -d ${DATABASE} -i ${SCRIPT_DIR}/tmp/revert.tmp.sql
 
 ((NEW_DB_VERSION=${VERSION}-1))
 echo "Reverted database to version ${NEW_DB_VERSION}"

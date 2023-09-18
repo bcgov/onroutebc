@@ -9,7 +9,8 @@ CREATE TABLE [dbo].[ORBC_SYS_VERSION](
 	[MIGRATION_ID] [int] IDENTITY(1,1) NOT NULL,
 	[VERSION_ID] [int] NOT NULL,
 	[DESCRIPTION] [varchar](255) NULL,
-	[DDL_FILE_SHA1] [varchar](40) NULL,
+	[UPDATE_SCRIPT] [nvarchar](max) NULL,
+	[REVERT_SCRIPT] [nvarchar](max) NULL,
 	[RELEASE_DATE] [datetime2](7) NULL,
 	[DB_CREATE_USERID] [varchar](63) NOT NULL,
 	[DB_CREATE_TIMESTAMP] [datetime2](7) NOT NULL,
@@ -31,7 +32,6 @@ GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Unique ID of the migration - refers to either a schema update or a revert of a schema update.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_SYS_VERSION', @level2type=N'COLUMN',@level2name=N'MIGRATION_ID'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Version number of the database schema.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_SYS_VERSION', @level2type=N'COLUMN',@level2name=N'VERSION_ID'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Description of what was changed in the schema version update or revert.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_SYS_VERSION', @level2type=N'COLUMN',@level2name=N'DESCRIPTION'
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'SHA1 hash of the DDL that was used to implement the migration (version update or revert).' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_SYS_VERSION', @level2type=N'COLUMN',@level2name=N'DDL_FILE_SHA1'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Date and time of the version update or revert.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_SYS_VERSION', @level2type=N'COLUMN',@level2name=N'RELEASE_DATE'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user or proxy account that created the record.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_SYS_VERSION', @level2type=N'COLUMN',@level2name=N'DB_CREATE_USERID'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time the record was created.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_SYS_VERSION', @level2type=N'COLUMN',@level2name=N'DB_CREATE_TIMESTAMP'
@@ -43,4 +43,4 @@ GO
 DECLARE @VersionDescription VARCHAR(255)
 SET @VersionDescription = 'Initialize versions system table'
 
-INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [DDL_FILE_SHA1], [RELEASE_DATE]) VALUES (1, @VersionDescription, '$(FILE_HASH)', getutcdate())
+INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [UPDATE_SCRIPT], [REVERT_SCRIPT], [RELEASE_DATE]) VALUES (1, @VersionDescription, '$(UPDATE_SCRIPT)', '$(REVERT_SCRIPT)', getutcdate())

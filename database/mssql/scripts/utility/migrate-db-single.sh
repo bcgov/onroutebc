@@ -28,13 +28,25 @@ fi
 
 if test -f "${SCRIPT_DIR}/versions/v_${VERSION}_ddl.sql"; then
     echo "Executing ${SCRIPT_DIR}/versions/v_${VERSION}_ddl.sql"
-    # The FILE_HASH is saved to the database as a verification that the DDL was not altered
-    # from what is present in the git repository.
-    FILE_HASH=($(sha1sum ${SCRIPT_DIR}/versions/v_${VERSION}_ddl.sql))
-    sqlcmd -C -U ${USER} -P "${PASS}" -S ${SERVER} -d ${DATABASE} -v FILE_HASH=${FILE_HASH} -i ${SCRIPT_DIR}/versions/v_${VERSION}_ddl.sql
+    # Set update and revert scripts to base64-encoded variables to be inserted
+    # into the DB. Update script is for reference, revert script will be used
+    # when the DB needs to be rolled back one version.
+
+    # The reason we export the variables instead of passing them using the -v flag
+    # on the sqlcmd line is because = signs are stripped when sending variables
+    # through sqlcmd, whereas they are maintained when using global env variables.
+    # The stripping of the = signs causes problems with base64 decoding because
+    # the padding is represented by =. Bash base64 can still decode but it generates
+    # an error, and may not always be reliable.
+    export UPDATE_SCRIPT=$(base64 -w 0 <${SCRIPT_DIR}/versions/v_${VERSION}_ddl.sql)
+    export REVERT_SCRIPT=$(base64 -w 0 <${SCRIPT_DIR}/versions/revert/v_${VERSION}_ddl_revert.sql)
+    sqlcmd -C -U ${USER} -P "${PASS}" -S ${SERVER} -d ${DATABASE} -i ${SCRIPT_DIR}/versions/v_${VERSION}_ddl.sql
+    unset UPDATE_SCRIPT
+    unset REVERT_SCRIPT
 else
     echo "ERROR: migration file ${SCRIPT_DIR}/versions/v_${VERSION}_ddl.sql not found."
     exit
 fi
+
 
 echo "Upgraded database to version ${VERSION}"

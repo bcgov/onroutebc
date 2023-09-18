@@ -24,6 +24,10 @@ COPY ./configure-db.sh /usr/config/
 RUN mkdir -p /usr/config/test/
 COPY ./test/ /usr/config/test/
 
+# Create tmp dir for scripts when reverting
+RUN mkdir -p /usr/config/tmp
+RUN chmod 777 /usr/config/tmp
+
 EXPOSE ${MSSQL_PORT}
 RUN mkdir -p -m 770 /var/opt/mssql && chown -R mssql. /var/opt/mssql
 USER mssql

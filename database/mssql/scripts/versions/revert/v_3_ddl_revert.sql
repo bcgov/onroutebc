@@ -31,4 +31,4 @@ DROP SCHEMA [access]
 DECLARE @VersionDescription VARCHAR(255)
 SET @VersionDescription = 'Reverting initial creation of schema entities for manage profile feature'
 
-INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [DDL_FILE_SHA1], [RELEASE_DATE]) VALUES (2, @VersionDescription, '$(FILE_HASH)', getutcdate())
+INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [RELEASE_DATE]) VALUES (2, @VersionDescription, getutcdate())

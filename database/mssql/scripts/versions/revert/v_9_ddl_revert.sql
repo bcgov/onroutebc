@@ -12,4 +12,4 @@ DROP SCHEMA [tps]
 DECLARE @VersionDescription VARCHAR(255)
 SET @VersionDescription = 'Reverting creation of tables to store TPS migration staging data.'
 
-INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [DDL_FILE_SHA1], [RELEASE_DATE]) VALUES (8, @VersionDescription, '$(FILE_HASH)', getutcdate())
+INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [RELEASE_DATE]) VALUES (8, @VersionDescription, getutcdate())
