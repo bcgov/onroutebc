@@ -1,0 +1,465 @@
+<html>
+
+<head>
+  <style>
+    @font-face {
+      font-family: "Cambria Math";
+      panose-1: 2 4 5 3 5 4 6 3 2 4;
+    }
+
+    @font-face {
+      font-family: Calibri;
+      panose-1: 2 15 5 2 2 2 4 3 2 4;
+    }
+
+    @font-face {
+      font-family: "BC Sans";
+      panose-1: 0 0 0 0 0 0 0 0 0 0;
+    }
+
+    /* Print styles */
+    @media print {
+      @page {
+        size: 792pt 612pt;
+        margin: 14.15pt 42.51pt 19.85pt 42.51pt;
+      }
+    }
+
+    body {
+      margin: 0pt;
+    }
+
+    .p-normal {
+      margin: 0cm;
+      font-size: 12.0pt;
+      font-family: "BC Sans";
+    }
+
+    .header-col-1 {
+      width: 375.65pt;
+    }
+
+    .header-col-2 {
+      width: 177.2pt;
+    }
+
+    .header-col-3 {
+      width: 153.55pt;
+    }
+
+    .header-table-cell {
+      padding: 2.85pt 0pt 5.65pt 0pt;
+    }
+
+    .header-table-cell-bottom-border {
+      border-bottom: solid;
+      border-width: 1.0pt;
+    }
+
+    .table {
+      width: 706.55pt;
+      border-collapse: collapse;
+      border: none;
+      text-align: start;
+    }
+
+    .table-header {
+      background: #D9D9D9;
+      padding: 2.85pt;
+      height: 1.55pt;
+      text-align: left;
+    }
+
+    .table-header p {
+      margin: 0;
+      font-size: 7.0pt;
+      font-family: "BC Sans";
+      color: black;
+    }
+
+    .table-row {
+      height: 13.7pt;
+      page-break-inside: avoid;
+      page-break-after: auto;
+    }
+
+    .table-row p {
+      margin: 0;
+      font-size: 7.0pt;
+      font-family: "BC Sans";
+    }
+
+    .table-cell {
+      padding: 2.85pt;
+    }
+
+    .table-cell-right {
+      text-align: right;
+    }
+
+    .table-cell-top-left {
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .table-cell-background {
+      background: #D9D9D9;
+    }
+
+    .table-cell-bottom-border {
+      border-bottom: solid;
+      border-color: #BFBFBF;
+      border-width: 1.0pt;
+    }
+
+    .bold {
+      font-weight: bold;
+    }
+
+    /*Report Specific*/
+    .payment-method {
+      width: 296.55pt;
+    }
+
+    .user {
+      width: 228.05pt;
+    }
+
+    .amount {
+      width: 184.15pt;
+    }
+
+    .summary-payment-payment-method {
+      width: 162.8pt;
+    }
+
+    .summary-payment-payment {
+      width: 181.2pt;
+    }
+
+    .summary-payment-refund {
+      width: 181.2pt;
+    }
+
+    .summary-payment-deposit {
+      width: 181.2pt;
+    }
+
+    .summary-permit-permit-type {
+      width: 539.65pt;
+    }
+
+    .summary-permit-count {
+      width: 170.1pt;
+    }
+  </style>
+</head>
+
+<body>
+
+  <table class="table">
+    <thead>
+      <tr>
+        <td>
+
+
+          <!-- Start of Header -->
+          <div class="header" style="display:inline-block;">
+            <table class="table">
+              <tbody>
+                <tr class="table-row">
+                  <td class="header-table-cell header-col-1 bold header-table-cell-bottom-border">
+                    <p style='font-size:14.0pt'>onRouteBC Payment and Refund Summary</p>
+                  </td>
+                  <td class="header-table-cell header-col-2 header-table-cell-bottom-border"></td>
+                  <td class="header-table-cell header-col-3 table-cell-right header-table-cell-bottom-border">
+                    <p><span class="bold">Run Date: </span>
+                      {{runDate}}
+                    </p>
+                  </td>
+                </tr>
+                <tr class="table-row">
+                  <td class="header-table-cell header-col-1 header-table-cell-bottom-border table-cell-top-left">
+                    <p><span class="bold">Issued By: </span>{{issuedBy}}</p>
+                  </td>
+                  <td colspan=2
+                    class="header-table-cell header-col-2 header-table-cell-bottom-border table-cell-top-left">
+                    <p><span class="bold">Time Period: </span>{{timePeriod}}</p>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            </br>
+          </div>
+          <!-- End of Header -->
+
+        </td>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr>
+        <td>
+
+          <!-- Start of  Content -->
+          <div class="content">
+
+            {{#if payments}}
+            <p class="p-normal"><span style='font-size:10.0pt;font-weight:bold;'>Payments</span></p>
+
+            </br>
+
+            <table class="table">
+              <thead>
+                <tr class="table-header">
+                  <th class="table-cell payment-method bold">
+                    <p>PAYMENT METHOD</p>
+                  </th>
+                  <th class="table-cell user bold">
+                    <p>USER</p>
+                  </th>
+                  <th class="table-cell amount bold table-cell-right">
+                    <p>AMOUNT</p>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {{#each payments}}
+                {{#if this.subTotalAmount}}
+                <tr class="table-row">
+                  <td class="table-cell table-cell-background payment-method bold">
+                    <p>SUB TOTAL</p>
+                  </td>
+                  <td class="table-cell table-cell-background user">
+                  </td>
+                  <td class="table-cell table-cell-background amount table-cell-right bold">
+                    <p>{{this.subTotalAmount}}</p>
+                  </td>
+                </tr>
+                {{else if this.totalAmount}}
+                <tr class="table-row"></tr>
+                <tr class="table-row">
+                  <td class="table-cell table-cell-background payment-method bold">
+                    <p style="font-size:10.0pt">TOTAL AMOUNT</p>
+                  </td>
+                  <td class="table-cell table-cell-background user">
+                  </td>
+                  <td class="table-cell table-cell-background amount table-cell-right bold">
+                    <p style="font-size:10.0pt">{{this.totalAmount}}</p>
+                  </td>
+                </tr>
+                {{else}}
+                <tr class="table-row">
+                  <td class="table-cell payment-method">
+                    <p>{{this.paymentMethod}}</p>
+                  </td>
+                  <td class="table-cell user">
+                    <p>{{this.user}}</p>
+                  </td>
+                  <td class="table-cell amount table-cell-right">
+                    <p>{{this.amount}}</p>
+                  </td>
+                </tr>
+                {{/if}}
+                {{/each}}
+
+              </tbody>
+            </table>
+            {{/if}}
+
+
+            {{#if refunds}}
+            <div style="page-break-before: always;">
+
+
+              <p class="p-normal"><span style='font-size:10.0pt;font-weight:bold;'>Refunds</span></p>
+
+              </br>
+
+              <table class="table">
+                <thead>
+                  <tr class="table-header">
+                    <th class="table-cell payment-method bold">
+                      <p>PAYMENT METHOD</p>
+                    </th>
+                    <th class="table-cell user bold">
+                      <p>USER</p>
+                    </th>
+                    <th class="table-cell amount bold table-cell-right">
+                      <p>AMOUNT</p>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {{#each refunds}}
+                  {{#if this.subTotalAmount}}
+                  <tr class="table-row">
+                    <td class="table-cell table-cell-background payment-method bold">
+                      <p>SUB TOTAL</p>
+                    </td>
+                    <td class="table-cell table-cell-background user">
+                    </td>
+                    <td class="table-cell table-cell-background amount table-cell-right bold">
+                      <p>-{{this.subTotalAmount}}</p>
+                    </td>
+                  </tr>
+                  {{else if this.totalAmount}}
+                  <tr class="table-row"></tr>
+                  <tr class="table-row">
+                    <td class="table-cell table-cell-background payment-method bold">
+                      <p style="font-size:10.0pt">TOTAL REFUNDS</p>
+                    </td>
+                    <td class="table-cell table-cell-background user">
+                    </td>
+                    <td class="table-cell table-cell-background amount table-cell-right bold">
+                      <p style="font-size:10.0pt">-{{this.totalAmount}}</p>
+                    </td>
+                  </tr>
+                  {{else}}
+                  <tr class="table-row">
+                    <td class="table-cell payment-method">
+                      <p>{{this.paymentMethod}}</p>
+                    </td>
+                    <td class="table-cell user">
+                      <p>{{this.user}}</p>
+                    </td>
+                    <td class="table-cell amount table-cell-right">
+                      <p>-{{this.amount}}</p>
+                    </td>
+                  </tr>
+                  {{/if}}
+                  {{/each}}
+
+                </tbody>
+              </table>
+              {{/if}}
+            </div>
+
+
+            {{#if summaryPayments}}
+            <div style="page-break-before: always;">
+              <table class="table">
+                <thead>
+                  <tr class="table-header">
+                    <th class="table-cell summary-payment-payment-method bold">
+                      <p>PAYMENT METHOD</p>
+                    </th>
+                    <th class="table-cell table-cell-right summary-payment-payment bold">
+                      <p>PAYMENT</p>
+                    </th>
+                    <th class="table-cell table-cell-right summary-payment-refund bold">
+                      <p>REFUND</p>
+                    </th>
+                    <th class="table-cell table-cell-right summary-payment-deposit bold">
+                      <p>DEPOSIT</p>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {{#each summaryPayments}}
+                  {{#if this.subTotalPaymentAmount}}
+                  <tr class="table-row">
+                    <td class="table-cell table-cell-background summary-payment-payment-method bold">
+                      <p>TOTAL</p>
+                    </td>
+                    <td class="table-cell table-cell-background summary-payment-payment table-cell-right bold">
+                      <p>{{this.subTotalPaymentAmount}}</p>
+                    </td>
+
+                    <td class="table-cell table-cell-background summary-payment-refund table-cell-right bold">
+                      <p>-{{this.subTotalRefundAmount}}</p>
+                    </td>
+                    <td class="table-cell table-cell-background summary-payment-deposit table-cell-right bold">
+                      <p>{{this.subTotalDepositAmount}}</p>
+                    </td>
+                  </tr>
+                  {{else if this.grandTotalAmount}}
+                  <tr class="table-row"></tr>
+                  <tr class="table-row">
+                    <td class="table-cell table-cell-background summary-payment-payment-method bold">
+                      <p style="font-size:10.0pt">GRAND TOTAL</p>
+                    </td>
+                    <td class="table-cell table-cell-background summary-payment-payment">
+                    </td>
+                    <td class="table-cell table-cell-background summary-payment-refund">
+                    </td>
+                    <td class="table-cell table-cell-background summary-payment-deposit table-cell-right">
+                      <p style="font-size:10.0pt">{{this.grandTotalAmount}}</p>
+                    </td>
+                  </tr>
+                  {{else}}
+                  <tr class="table-row">
+                    <td class="table-cell table-cell-bottom-border summary-payment-payment-method">
+                      <p>{{this.paymentMethod}}</p>
+                    </td>
+                    <td class="table-cell table-cell-right table-cell-bottom-border summary-payment-payment">
+                      <p>{{this.payment}}</p>
+                    </td>
+                    <td class="table-cell table-cell-right table-cell-bottom-border summary-payment-refund">
+                      <p>-{{this.refund}}</p>
+                    </td>
+                    <td class="table-cell table-cell-right table-cell-bottom-border summary-payment-deposit">
+                      <p>{{this.deposit}}</p>
+                    </td>
+                  </tr>
+                  {{/if}}
+                  {{/each}}
+
+                </tbody>
+              </table>
+              {{/if}}
+            </div>
+
+
+
+            {{#if summaryPermits}}
+            <div style="page-break-before: always;">
+              <table class="table">
+                <thead>
+                  <tr class="table-header">
+                    <th class="table-cell summary-permit-permit-type bold">
+                      <p>PERMIT TYPE</p>
+                    </th>
+                    <th class="table-cell table-cell-right summary-permit-count bold">
+                      <p>COUNT</p>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {{#each summaryPermits}}
+                  {{#if this.totalPermits}}
+                  <tr class="table-row"></tr>
+                  <tr class="table-row"></tr>
+                  <tr class="table-row">
+                    <td class="table-cell table-cell-background summary-permit-permit-type bold">
+                      <p style="font-size:10.0pt">TOTAL PERMITS</p>
+                    </td>
+                    <td class="table-cell table-cell-background summary-permit-count table-cell-right">
+                      <p style="font-size:10.0pt">{{this.totalPermits}}</p>
+                    </td>
+                  </tr>
+                  {{else}}
+                  <tr class="table-row">
+                    <td class="table-cell table-cell-bottom-border summary-permit-permit-type">
+                      <p>{{this.permitType}}</p>
+                    </td>
+                    <td class="table-cell table-cell-right table-cell-bottom-border summary-permit-count">
+                      <p>{{this.permitCount}}</p>
+                    </td>
+                  </tr>
+                  {{/if}}
+                  {{/each}}
+                </tbody>
+              </table>
+              {{/if}}
+            </div>
+
+          </div>
+          <!-- End of Content -->
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</body>
+
+</html>
