@@ -13,7 +13,7 @@ sqlcmd_loc=$( type -p sqlcmd )
 if [[ -f ${SCRIPT_DIR}/utility/orbc-db-functions.sh ]]; then
   source ${SCRIPT_DIR}/utility/orbc-db-functions.sh
 
-  get_orbc_db_version ${USER:-$MSSQL_MOTI_USER} "${PASS:-$MSSQL_MOTI_PASSWORD}" "${SERVER:-$MSSQL_MOTI_HOST}" ${DATABASE:-$MSSQL_MOTI_DB}
+  get_orbc_db_version ${MSSQL_MOTI_USER} "${MSSQL_MOTI_PASSWORD}" "${MSSQL_MOTI_HOST}" ${MSSQL_MOTI_DB}
   if (( $? > 0 )); then
     echo "Could not retrieve onRouteBC database version"
   else

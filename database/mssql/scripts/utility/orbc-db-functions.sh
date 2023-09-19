@@ -3,7 +3,7 @@
 # Echoes to the user how to set the database connection parameters
 function echo_param_usage {
   echo "You can override the database connection details with the following parameters passed to the script:"
-  echo "    [-u USER] [-p PASS] [-s SERVER] [-d DATABASE]"
+  echo "    [-u ORBC_USER] [-p ORBC_PASS] [-s ORBC_SERVER] [-d ORBC_DATABASE]"
   echo "If parameters are not supplied, the connection details will be read from the following environment variables:"
   echo "    MSSQL_MOTI_USER  MSSQL_MOTI_PASSWORD  MSSQL_MOTI_HOST  MSSQL_MOTI_DB"
 }
