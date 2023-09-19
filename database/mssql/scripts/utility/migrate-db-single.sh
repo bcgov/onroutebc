@@ -20,7 +20,8 @@ if (( $? > 0 )); then
 fi
 
 if (( orbc_db_version < orbc_max_db_version )); then
-  echo "You are about to migrate the ORBC database at ${SERVER:-$MSSQL_MOTI_HOST} from version ${orbc_db_version} to version $(( $orbc_db_version+1 ))"
+  echo "You are about to migrate the ${DATABASE:-$MSSQL_MOTI_DB} database on ${SERVER:-$MSSQL_MOTI_HOST} as user ${USER:-$MSSQL_MOTI_USER} from version ${orbc_db_version} to version $(( $orbc_db_version+1 ))"
+  echo_param_usage
   read -p "Are you sure you want to migrate the database? [yes | no] "
   if [[ "${REPLY}" == "yes" ]]; then
     migrate_db_single ${USER:-$MSSQL_MOTI_USER} "${PASS:-$MSSQL_MOTI_PASSWORD}" "${SERVER:-$MSSQL_MOTI_HOST}" ${DATABASE:-$MSSQL_MOTI_DB}
@@ -30,8 +31,8 @@ if (( orbc_db_version < orbc_max_db_version )); then
       echo "Migrated ORBC database to version $(( $orbc_db_version+1 ))"
     fi
   else
-    echo "User cancelled."
+    echo "User cancelled"
   fi
 else
-  echo "There are no higher database versions available"
+  echo "There are no higher database versions available (db currently at version ${orbc_db_version})"
 fi

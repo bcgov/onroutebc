@@ -1,8 +1,17 @@
 #!/bin/bash
 
+# Echoes to the user how to set the database connection parameters
+function echo_param_usage {
+  echo "You can override the database connection details with the following parameters passed to the script:"
+  echo "    [-u USER] [-p PASS] [-s SERVER] [-d DATABASE]"
+  echo "If parameters are not supplied, the connection details will be read from the following environment variables:"
+  echo "    MSSQL_MOTI_USER  MSSQL_MOTI_PASSWORD  MSSQL_MOTI_HOST  MSSQL_MOTI_DB"
+}
+
 # Retrieve the version of the ORBC database from the version history table.
 # If the version history table does not exist then a value of zero (0) will
-# be returned.
+# be returned from the SQL query.
+# Sets the database version to a global var named orbc_db_version.
 function get_orbc_db_version {
   orbc_db_version=$( sqlcmd -C -U ${1} -P "${2}" -S ${3} -v DB_NAME=${4} -b -h -1 -i ${SCRIPT_DIR}/get-orbc-db-version.sql )
   if (( $? > 0 )); then
@@ -11,8 +20,7 @@ function get_orbc_db_version {
   else
     # Valid output from sqlcmd is an integer with leading spaces; coax into 
     # something better resembling an int for output purposes.
-    (( orbc_db_version=orbc_db_version+0 ))
-    echo "ORBC DB Version: ${orbc_db_version}"
+    orbc_db_version=$(( orbc_db_version+0 ))
   fi
 }
 
@@ -26,7 +34,6 @@ function get_max_db_version {
     (( nextver=nextver+1 ))
   done
   orbc_max_db_version=$(( nextver-1 ))
-  echo "Maximum ORBC db version is ${orbc_max_db_version}"
 }
 
 # Reverts all versions of the database, using the revert script that was stored
@@ -158,7 +165,7 @@ function migrate_db_current {
 
   local nextver=$(( orbc_db_version+1 ))
 
-  echo "Initial migration files to look for: ${SCRIPT_DIR}/versions/v_${nextver}_ddl.sql and ${SCRIPT_DIR}/versions/revert/v_${nextver}_ddl_revert.sql"
+  #echo "Initial migration files to look for: ${SCRIPT_DIR}/versions/v_${nextver}_ddl.sql and ${SCRIPT_DIR}/versions/revert/v_${nextver}_ddl_revert.sql"
 
   while [[ -f "${SCRIPT_DIR}/versions/v_${nextver}_ddl.sql" ]] && [[ -f "${SCRIPT_DIR}/versions/revert/v_${nextver}_ddl_revert.sql" ]]; do
     migrate_db_single ${1} "${2}" ${3} ${4}
@@ -168,7 +175,7 @@ function migrate_db_current {
     fi
 
     (( nextver=nextver+1 ))
-    echo "Next migration files to check: ${SCRIPT_DIR}/versions/v_${nextver}_ddl.sql and ${SCRIPT_DIR}/versions/revert/v_${nextver}_ddl_revert.sql"
+    #echo "Next migration files to check: ${SCRIPT_DIR}/versions/v_${nextver}_ddl.sql and ${SCRIPT_DIR}/versions/revert/v_${nextver}_ddl_revert.sql"
   done
 
   echo "ORBC database migrated to version ${orbc_max_db_version}"

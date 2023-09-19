@@ -22,7 +22,8 @@ if (( $? > 0 )); then
 fi
 
 if (( orbc_db_version > 0 )); then
-  echo "You are about to completely revert the ORBC database at ${SERVER:-$MSSQL_MOTI_HOST} from version ${orbc_db_version} to version 0 (empty state)"
+  echo "You are about to completely revert the ${DATABASE:-$MSSQL_MOTI_DB} database on ${SERVER:-$MSSQL_MOTI_HOST} as user ${USER:-$MSSQL_MOTI_USER} from version ${orbc_db_version} to version 0 (empty state)"
+  echo_param_usage
   echo "THIS IS A DESTRUCTIVE OPERATION!"
   read -p "Are you sure you want to completely revert the database? [yes | no] "
 

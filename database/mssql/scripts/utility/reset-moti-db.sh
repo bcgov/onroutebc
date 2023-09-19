@@ -31,13 +31,19 @@ source ${SCRIPT_DIR}/utility/orbc-db-functions.sh
 # Citrix VPN in order for the connection to be established.
 
 if [[ $1 != "force" ]]; then
-  echo "You are about to completely reset the ORBC database at ${MSSQL_MOTI_HOST}"
+  echo "You are about to completely reset the ${TEST_MOTI_DB:-$MSSQL_MOTI_DB} database on ${TEST_MOTI_HOST:-$MSSQL_MOTI_HOST} as user ${TEST_MOTI_USER:-$MSSQL_MOTI_USER}."
+  echo "This involves reverting the database to a clean state (losing all data), and rebuilding the database to the most current version available."
+  if [[ ${MSSQL_RUN_TESTS} -eq 1 ]]; then
+    echo "Sample data will be loaded into the database once it has been rebuilt."
+  else
+    echo "Sample data will *NOT* be loaded into the database once it has been rebuilt (set the MSSQL_RUN_TESTS variable to 1 to enable sample data)."
+  fi
   echo "THIS IS A DESTRUCTIVE OPERATION!"
   read -p "Are you sure you want to completely reset the database? [yes | no] "
 fi
 
 if [[ "${REPLY}" == "yes" ]] || [[ $1 == "force" ]]; then
-  echo "Beginning full reset of ORBC database ${TEST_MOTI_DB:-$MSSQL_MOTI_DB} on ${TEST_MOTI_HOST:-$MSSQL_MOTI_HOST}..."
+  echo "Beginning full reset of the ${TEST_MOTI_DB:-$MSSQL_MOTI_DB} database on ${TEST_MOTI_HOST:-$MSSQL_MOTI_HOST} as user ${TEST_MOTI_USER:-$MSSQL_MOTI_USER}"
 
   revert_db_complete ${TEST_MOTI_USER:-$MSSQL_MOTI_USER} "${TEST_MOTI_PASSWORD:-$MSSQL_MOTI_PASSWORD}" "${TEST_MOTI_HOST:-$MSSQL_MOTI_HOST}" ${TEST_MOTI_DB:-$MSSQL_MOTI_DB}
   if (( $? > 0 )); then

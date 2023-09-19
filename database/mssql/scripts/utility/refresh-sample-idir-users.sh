@@ -6,7 +6,7 @@ USAGE="-u USER -p PASS -s SERVER -d DATABASE"
 parse_options "${USAGE}" ${@}
 
 # Clear out all records from the pending IDIR users table
-sqlcmd -C -U ${USER} -P "${PASS}" -S ${SERVER} -d ${DATABASE} -Q "DELETE FROM dbo.ORBC_PENDING_IDIR_USER"
+sqlcmd -C -U ${USER} -P "${PASS}" -S ${SERVER} -d ${DATABASE} -Q "SET NOCOUNT ON; DELETE FROM dbo.ORBC_PENDING_IDIR_USER"
 
 (
 # SAMPLE_PENDING_IDIR_USERS environment variable must be a string representing an array

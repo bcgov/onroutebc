@@ -19,7 +19,7 @@ echo "Creating ${UNIT_TEST_DB_NAME} database."
 echo "Executing migration scripts and testing in sequence ..."
 nextver=1
 
-echo "Initial migration file: ${SCRIPT_DIR}/versions/v_${nextver}_ddl.sql"
+#echo "Initial migration file: ${SCRIPT_DIR}/versions/v_${nextver}_ddl.sql"
 
 while test -f "${SCRIPT_DIR}/versions/v_${nextver}_ddl.sql"; do
     migrate_db_single ${MSSQL_SA_USER} "${MSSQL_SA_PASSWORD}" "${MSSQL_HOST}" ${UNIT_TEST_DB_NAME}
@@ -30,7 +30,7 @@ while test -f "${SCRIPT_DIR}/versions/v_${nextver}_ddl.sql"; do
         ${TESTS_DIR}/v_${nextver}_test.sh -u ${MSSQL_SA_USER} -p "${MSSQL_SA_PASSWORD}" -s ${MSSQL_HOST} -d ${UNIT_TEST_DB_NAME}
     fi
     (( nextver=nextver+1 ))
-    echo "Next migration file to check: ${SCRIPT_DIR}/versions/v_${nextver}_ddl.sql"
+    #echo "Next migration file to check: ${SCRIPT_DIR}/versions/v_${nextver}_ddl.sql"
 done
 
 echo "Testing the revert scripts to ensure tests still pass..."
@@ -45,7 +45,7 @@ while test -f "${SCRIPT_DIR}/versions/revert/v_${nextver}_ddl_revert.sql"; do
         echo "Running test ${TESTS_DIR}/v_${nextver}_test.sh"
         ${TESTS_DIR}/v_${nextver}_test.sh -u ${MSSQL_SA_USER} -p "${MSSQL_SA_PASSWORD}" -s ${MSSQL_HOST} -d ${UNIT_TEST_DB_NAME}
     fi
-    echo "Next migration file to check: ${SCRIPT_DIR}/versions/v_${nextver}_ddl.sql"
+    #echo "Next migration file to check: ${SCRIPT_DIR}/versions/v_${nextver}_ddl.sql"
 done
 
 echo "Testing the full migrate db schema script..."
