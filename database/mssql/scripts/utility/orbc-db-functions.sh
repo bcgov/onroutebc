@@ -77,7 +77,7 @@ function revert_db_single {
   REVERT_SCRIPT=$( sqlcmd -C -U ${1} -P "${2}" -S ${3} -v DB_NAME=${4} -b -y 0 -i ${SCRIPT_DIR}/get-orbc-db-revert-script.sql )
   if (( $? == 0 )); then
     printf "${REVERT_SCRIPT}" | base64 -di > ${SCRIPT_DIR}/tmp/revert.tmp.sql
-    sqlcmd -C -U ${1} -P "${2}" -S ${3} -d ${4} -i ${SCRIPT_DIR}/tmp/revert.tmp.sql
+    sqlcmd -C -U ${1} -P "${2}" -S ${3} -d ${4} -b -i ${SCRIPT_DIR}/tmp/revert.tmp.sql
 
     if (( $? == 0 )); then
       echo "Reverted ORBC database version."

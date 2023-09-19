@@ -5,8 +5,20 @@ GO
 SET NOCOUNT ON
 GO
 
-DROP TABLE [dops].[ORBC_DOCUMENT_TEMPLATE]
-DROP SCHEMA [dops]
+SET XACT_ABORT ON
+
+BEGIN TRY
+  BEGIN TRANSACTION
+    DROP TABLE [dops].[ORBC_DOCUMENT_TEMPLATE]
+    DROP SCHEMA [dops]
+  COMMIT
+END TRY
+
+BEGIN CATCH
+  IF @@TRANCOUNT > 0 
+    ROLLBACK;
+  THROW
+END CATCH
 
 DECLARE @VersionDescription VARCHAR(255)
 SET @VersionDescription = 'Reverting initial creation of entities for document generation feature'
