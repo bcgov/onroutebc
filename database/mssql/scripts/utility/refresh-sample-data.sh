@@ -29,4 +29,7 @@ sqlcmd -C -U ${USER} -P "${PASS}" -S ${SERVER} -d ${DATABASE} -i ${SCRIPT_DIR}/s
 sqlcmd -C -U ${USER} -P "${PASS}" -S ${SERVER} -d ${DATABASE} -i ${SCRIPT_DIR}/sampledata/dops.ORBC_DOCUMENT_TEMPLATE.Table.sql
 sqlcmd -C -U ${USER} -P "${PASS}" -S ${SERVER} -d ${DATABASE} -i ${SCRIPT_DIR}/sampledata/dops.ORBC_DOCUMENT.Table.sql
 sqlcmd -C -U ${USER} -P "${PASS}" -S ${SERVER} -d ${DATABASE} -i ${SCRIPT_DIR}/sampledata/dops.ORBC_EXTERNAL_DOCUMENT.Table.sql
+
+${SCRIPT_DIR}/utility/refresh-sample-idir-users.sh -u ${USER} -p "${PASS}" -s ${SERVER} -d ${DATABASE}
+
 echo "Finished loading sample data"
