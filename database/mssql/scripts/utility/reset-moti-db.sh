@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source ${SCRIPT_DIR}/utility/orbc-db-functions.sh
+
 # Resets the database schema in the MOTI hosted database from the schema
 # DDL files in the versions/ directory. This involves reverting the schema
 # using the revert sql files to get to a clean (empty) database state, then
@@ -28,10 +30,33 @@
 # installed in /opt/mssql-tools/bin/. Note you must be connected to the BC Gov
 # Citrix VPN in order for the connection to be established.
 
-echo "Beginning reset of ORBC database..."
+if [[ $1 != "force" ]]; then
+  echo "You are about to completely reset the ORBC database at ${MSSQL_MOTI_HOST}"
+  echo "THIS IS A DESTRUCTIVE OPERATION!"
+  read -p "Are you sure you want to completely reset the database? [yes | no] "
+fi
 
-${SCRIPT_DIR}/utility/revert-db-complete.sh -u ${TEST_MOTI_USER:=$MSSQL_MOTI_USER} -p "${TEST_MOTI_PASSWORD:=$MSSQL_MOTI_PASSWORD}" -s ${TEST_MOTI_HOST:=$MSSQL_MOTI_HOST} -d ${TEST_MOTI_DB:=$MSSQL_MOTI_DB}
-${SCRIPT_DIR}/utility/migrate-db-current.sh -u ${TEST_MOTI_USER:=$MSSQL_MOTI_USER} -p "${TEST_MOTI_PASSWORD:=$MSSQL_MOTI_PASSWORD}" -s ${TEST_MOTI_HOST:=$MSSQL_MOTI_HOST} -d ${TEST_MOTI_DB:=$MSSQL_MOTI_DB}
-${SCRIPT_DIR}/utility/refresh-sample-data.sh -u ${TEST_MOTI_USER:=$MSSQL_MOTI_USER} -p "${TEST_MOTI_PASSWORD:=$MSSQL_MOTI_PASSWORD}" -s ${TEST_MOTI_HOST:=$MSSQL_MOTI_HOST} -d ${TEST_MOTI_DB:=$MSSQL_MOTI_DB}
+if [[ "${REPLY}" == "yes" ]] || [[ $1 == "force" ]]; then
+  echo "Beginning full reset of ORBC database ${TEST_MOTI_DB:-$MSSQL_MOTI_DB} on ${TEST_MOTI_HOST:-$MSSQL_MOTI_HOST}..."
 
-echo "Finished reset of ORBC database."
+  revert_db_complete ${TEST_MOTI_USER:-$MSSQL_MOTI_USER} "${TEST_MOTI_PASSWORD:-$MSSQL_MOTI_PASSWORD}" "${TEST_MOTI_HOST:-$MSSQL_MOTI_HOST}" ${TEST_MOTI_DB:-$MSSQL_MOTI_DB}
+  if (( $? > 0 )); then
+    echo "Error reverting ORBC database; exiting."
+    exit 1
+  fi
+
+  migrate_db_current ${TEST_MOTI_USER:-$MSSQL_MOTI_USER} "${TEST_MOTI_PASSWORD:-$MSSQL_MOTI_PASSWORD}" "${TEST_MOTI_HOST:-$MSSQL_MOTI_HOST}" ${TEST_MOTI_DB:-$MSSQL_MOTI_DB}
+  if (( $? > 0 )); then
+    echo "Error migrating ORBC database to most current; exiting."
+    exit 1
+  fi
+
+  if [[ ${MSSQL_RUN_TESTS} -eq 1 ]]; then
+    ${SCRIPT_DIR}/utility/refresh-sample-data.sh -u ${TEST_MOTI_USER:-$MSSQL_MOTI_USER} -p "${TEST_MOTI_PASSWORD:-$MSSQL_MOTI_PASSWORD}" -s ${TEST_MOTI_HOST:-$MSSQL_MOTI_HOST} -d ${TEST_MOTI_DB:-$MSSQL_MOTI_DB}
+  fi
+
+  echo "Finished reset of ORBC database."
+else
+  echo "User cancelled"
+  exit 1
+fi

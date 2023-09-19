@@ -1,32 +1,33 @@
 #!/bin/bash
 
-# Retrieve arguments
+source ${SCRIPT_DIR}/utility/orbc-db-functions.sh
 source ${SCRIPT_DIR}/utility/getopt.sh
-USAGE="-v VERSION -u USER -p PASS -s SERVER -d DATABASE"
+
+# Retrieve arguments
+USAGE="[-u USER] [-p PASS] [-s SERVER] [-d DATABASE]"
 parse_options "${USAGE}" ${@}
 
-# Reverts a single version upgrade to the MOTI database. The version to
-# revert from must be supplied as a parameter to this script, as do the
-# connection details and credentials.
-# Example: 'revert-db-single.sh -v 3 -u <user> -p <pass> -s <server> -d <database>'
-# will revert the database from version 3 to version 2.
-
-# Retrieve the version of the ORBC database from the version history table.
-# If the version history table does not exist then a value of zero (0) will
-# be returned.
-ORBC_DB_VERSION=$(sqlcmd -C -U ${USER} -P ${PASS} -S ${SERVER} -v DB_NAME=${DATABASE} -h -1 -i ${SCRIPT_DIR}/get-orbc-db-version.sql)
-
-echo "ORBC DB Version: ${ORBC_DB_VERSION}"
-
-# Exit script if current database version does not match the version to revert.
-if [[ ORBC_DB_VERSION -ne ${VERSION} ]]; then
-    echo "ERROR: the current database version must match the version to revert."
-    exit
+get_orbc_db_version ${USER:-$MSSQL_MOTI_USER} "${PASS:-$MSSQL_MOTI_PASSWORD}" "${SERVER:-$MSSQL_MOTI_HOST}" ${DATABASE:-$MSSQL_MOTI_DB}
+if (( $? > 0 )); then
+  echo "Could not retrieve orbc db version, exiting revert script."
+  exit 1
 fi
 
-REVERT_SCRIPT=$(sqlcmd -C -U ${USER} -P ${PASS} -S ${SERVER} -v DB_NAME=${DATABASE} -y 0 -i ${SCRIPT_DIR}/get-orbc-db-revert-script.sql)
-printf "${REVERT_SCRIPT}" | base64 -di > ${SCRIPT_DIR}/tmp/revert.tmp.sql
-sqlcmd -C -U ${USER} -P "${PASS}" -S ${SERVER} -d ${DATABASE} -i ${SCRIPT_DIR}/tmp/revert.tmp.sql
-
-((NEW_DB_VERSION=${VERSION}-1))
-echo "Reverted database to version ${NEW_DB_VERSION}"
+if (( orbc_db_version > 0 )); then
+  echo "You are about to revert the ORBC database at ${SERVER:-$MSSQL_MOTI_HOST} from version ${orbc_db_version} to version $(( $orbc_db_version-1 ))"
+  echo "THIS IS A DESTRUCTIVE OPERATION!"
+  read -p "Are you sure you want to revert the database? [yes | no] "
+  
+  if [[ "${REPLY}" == "yes" ]]; then
+    revert_db_single ${USER:-$MSSQL_MOTI_USER} "${PASS:-$MSSQL_MOTI_PASSWORD}" "${SERVER:-$MSSQL_MOTI_HOST}" ${DATABASE:-$MSSQL_MOTI_DB}
+    if (( $? > 0 )); then
+      echo "Could not revert database version."
+    else
+      echo "Reverted ORBC database to version $(( $orbc_db_version-1 ))"
+    fi
+  else
+    echo "User cancelled."
+  fi
+else
+  echo "ORBC database already at version zero; nothing to revert."
+fi
