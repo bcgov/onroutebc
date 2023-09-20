@@ -64,6 +64,8 @@ ENV ACCESS_API_URL ${ACCESS_API_URL}
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
+# Copy uid_entrypoint from builder stage
+COPY --from=builder /app/uid_entrypoint /
 
 RUN apk add --no-cache \
       chromium \
@@ -89,7 +91,7 @@ USER dopsuser
 
 COPY uid_entrypoint /
 RUN chmod g=u /etc/passwd && chmod 775 /uid_entrypoint
-ENTRYPOINT ["uid_entrypoint.sh"]
+ENTRYPOINT ["uid_entrypoint"]
 
 # Start the app
 CMD ["npm", "run", "start:prod"]
