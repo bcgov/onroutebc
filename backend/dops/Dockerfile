@@ -78,6 +78,19 @@ ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 # Expose Port
 EXPOSE 5001
 
+# Add Chrome as a user
+RUN addgroup -S dopsuser && adduser -S -g dopsuser dopsuser \
+    && mkdir -p /home/dopsuser/Downloads \
+    && chown -R dopsuser:dopsuser /home/dopsuser \
+    && chown -R dopsuser:dopsuser /app
+
+# Run Chrome as non-privileged
+USER dopsuser
+
+COPY uid_entrypoint /
+RUN chmod g=u /etc/passwd && chmod 775 /uid_entrypoint
+ENTRYPOINT ["uid_entrypoint"]
+
 # Start the app
 CMD ["npm", "run", "start:prod"]
 
