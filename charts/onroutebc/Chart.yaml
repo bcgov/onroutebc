@@ -3,18 +3,14 @@ apiVersion: v2
 name: onRouteBC
 description: Helm chart for onRouteBC
 type: application
-version: 0.0.1
+version: 1.0.0
 appVersion: "1.16.0"
 dependencies: # A list of the chart requirements (optional)
-  - name: service
-    version: 0.0.1
-    repository: "file://../service"
+  - name: component
+    version: 1.0.0
+    repository: "file:///home/ubuntu/action-deployer-helm/charts/component"
     alias: frontend
-  - name: service
-    version: 0.0.1
-    repository: "file://../service"
+  - name: component
+    version: 1.0.0
+    repository: "file:///home/ubuntu/action-deployer-helm/charts/component"
     alias: vehicles
-  - name: service
-    version: 0.0.1
-    repository: "file://../service"
-    alias: dops

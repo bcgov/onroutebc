@@ -67,6 +67,7 @@ COPY --from=builder /app/dist ./dist
 
 RUN apk add --no-cache \
       chromium \
+      curl \
       nss \
       freetype \
       harfbuzz \
