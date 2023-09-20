@@ -78,6 +78,8 @@ ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 # Expose Port
 EXPOSE 5001
 
+USER 1001
+
 # Start the app
 CMD ["npm", "run", "start:prod"]
 
