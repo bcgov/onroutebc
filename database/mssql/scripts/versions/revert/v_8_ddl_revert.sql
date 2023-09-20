@@ -5,7 +5,6 @@ GO
 SET NOCOUNT ON
 GO
 
-SET XACT_ABORT ON
 -- Add TRY CATCH as a TEMP solution untill Full Text Search is installed in DB.
 BEGIN TRY
   DROP FULLTEXT INDEX ON [permit].[ORBC_PERMIT_DATA]
