@@ -64,8 +64,6 @@ ENV ACCESS_API_URL ${ACCESS_API_URL}
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
-# Copy uid_entrypoint from builder stage
-COPY --from=builder /app/uid_entrypoint /
 
 RUN apk add --no-cache \
       chromium \
@@ -79,18 +77,6 @@ ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
 # Expose Port
 EXPOSE 5001
-
-# Add Chrome as a user
-RUN addgroup -S dopsuser && adduser -S -g dopsuser dopsuser \
-    && mkdir -p /home/dopsuser/Downloads \
-    && chown -R dopsuser:dopsuser /home/dopsuser \
-    && chown -R dopsuser:dopsuser /app
-
-# Run Chrome as non-privileged
-USER dopsuser
-
-RUN chmod g=u /etc/passwd && chmod 775 /uid_entrypoint
-ENTRYPOINT ["uid_entrypoint"]
 
 # Start the app
 CMD ["npm", "run", "start:prod"]
