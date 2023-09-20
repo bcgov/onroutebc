@@ -31,4 +31,4 @@ ADD CONSTRAINT UK_ORBC_DOCUMENT_TEMPLATE UNIQUE (TEMPLATE_NAME, TEMPLATE_VERSION
 DECLARE @VersionDescription VARCHAR(255)
 SET @VersionDescription = 'Initial creation of entities for generating a document'
 
-INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [DDL_FILE_SHA1], [RELEASE_DATE]) VALUES (5, @VersionDescription, '$(FILE_HASH)', getutcdate())
+INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [UPDATE_SCRIPT], [REVERT_SCRIPT], [RELEASE_DATE]) VALUES (5, @VersionDescription, '$(UPDATE_SCRIPT)', '$(REVERT_SCRIPT)', getutcdate())

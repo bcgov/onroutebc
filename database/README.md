@@ -22,7 +22,7 @@ DDL statements to update the database are grouped together into a single SQL fil
 
 ### Versions Table
 
-When a single DDL version (SQL file with one or more DDL statements) is executed against the database, a record is added to the ORBC_SYS_VERSION table. The record indicates the version number, a description of the change, the timestamp of when the DDL was executed, and the SHA-1 hash of the SQL file itself. The current version of the database can be retrieved by querying the ORBC_SYS_VERSION table for the version number corresponding to the most recent execution timestamp (i.e. the most recent DDL that was run).
+When a single DDL version (SQL file with one or more DDL statements) is executed against the database, a record is added to the ORBC_SYS_VERSION table. The record indicates the version number, a description of the change, the timestamp of when the DDL was executed, and the actual DDL version and revert scripts themselves, stored as base64 strings. The current version of the database can be retrieved by querying the ORBC_SYS_VERSION table for the version number corresponding to the most recent execution timestamp (i.e. the most recent DDL that was run).
 
 ### Reverting Versions
 
@@ -56,7 +56,7 @@ On build of the Docker container, the `configure-db.sh` script is automatically 
 * Executes each version SQL that it finds in the `/database/mssql/scripts/versions/` directory in sequence, starting at version 1 (see [above](#version-sql-file-naming-convention) for file naming conventions).
 * Loads the database with sample data (see [below](#sample-data) for details).
 
-`configure-db.sh` calls utility scripts in the `/database/mssql/scripts/utility/` directory to perform upgrade and revert actions. These utility scripts can be executed manually from a terminal in the running Docker container if needed. The utility scripts are well commented so refer to the scripts themselves for information on how they are used.
+`configure-db.sh` calls utility scripts in the `/database/mssql/scripts/utility/` directory to perform upgrade and revert actions. These utility scripts can be executed manually from a terminal in the running Docker container if needed. The utility scripts are well commented so refer to the scripts themselves for information on how they are used. You can also refer to the file at /onroutebc/database/mssql/scripts/db-scripts-instructions.md for more detailed information.
 
 > The SQL DDL files are executed using the sqlcmd program in the SQL Server Docker container.
 
@@ -104,17 +104,7 @@ Depending on the nature of the database change you may be able to make the datab
 
 ## Updating the MOTI Hosted Database
 
-Once the onRouteBC application is deployed into OpenShift (dev, test, or prod) it points to the hosted MOTI database, not the local Docker instance. The hosted MOTI database is not automatically rebuilt when the application is deployed, so this step is manual.
-
-A script has been created which performs a complete database refresh (schema plus sample data); this is intended to be run against the MOTI hosted dev database whenever changes are made or whenever the data becomes corrupt or cluttered in dev. The script is:
-
-    /database/mssql/scripts/utility/reset-moti-db.sh
-
-The script is intended to be executed from the SQL Server Docker container shell, and requires 4 environment variables which are automatically set from the `.env` secrets file in a developer's environment in the repository root. Refer to the comments in the `reset-moti-db.sh` file for the most up-to-date information about these environment variables and how to run the script.
-
-> If you are running the script from the shell of your local Docker SQL Server instance, you must be connected to the BC Gov VPN or you won't be able to reach the hosted MOTI DB.
-
-For test and production, the database updates are expected to be individually executed and manually performed by members of the MOTI DBA team. However, the same DDL SQL scripts should be used and the utility scripts can also likely be employed for convenience and consistency.
+This content has been moved into its own document at /onroutebc/database/mssql/scripts/db-scripts-instructions.md.
 
 ## Sample Data
 
