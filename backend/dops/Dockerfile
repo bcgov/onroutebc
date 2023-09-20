@@ -89,7 +89,7 @@ USER dopsuser
 
 COPY uid_entrypoint /
 RUN chmod g=u /etc/passwd && chmod 775 /uid_entrypoint
-ENTRYPOINT ["uid_entrypoint"]
+ENTRYPOINT ["uid_entrypoint.sh"]
 
 # Start the app
 CMD ["npm", "run", "start:prod"]
