@@ -92,6 +92,12 @@ export class PermitProfile extends AutomapperProfile {
             return s.comment;
           }),
         ),
+        forMember(
+          (d) => d.cardType,
+          mapWithArguments((s) => {
+            return s.transactions[0].cardType;
+          }),
+        ),
       );
     };
   }

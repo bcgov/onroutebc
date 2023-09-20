@@ -49,7 +49,14 @@ export class PermitHistoryDto {
   @AutoMap()
   @ApiProperty({
     example: 'CC',
-    description: 'Represents the payment method of a transaction.',
+    description: 'Represents the payment method of a transaction from Bambora.',
   })
   paymentMethod: string;
+
+  @AutoMap()
+  @ApiProperty({
+    example: 'VI',
+    description: 'Represents the card type used by a transaction.',
+  })
+  cardType: string;
 }

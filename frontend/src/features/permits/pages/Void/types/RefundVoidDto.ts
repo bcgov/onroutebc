@@ -1,5 +1,7 @@
+import { RefundMethod } from "../../../types/PaymentMethod";
+
 export interface RefundVoidDto {
   shouldUsePrevPaymentMethod: boolean;
-  paymentMethod: string; // should later change this to enum
+  refundMethod: RefundMethod;
   transactionId?: string;
 }

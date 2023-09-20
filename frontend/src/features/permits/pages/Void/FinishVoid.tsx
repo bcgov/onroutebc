@@ -13,6 +13,14 @@ import { requiredMessage } from "../../../../common/helpers/validationMessages";
 import { TransactionHistoryTable } from "./components/TransactionHistoryTable";
 import { usePermitHistoryQuery } from "../../hooks/hooks";
 import { calculateNetAmount } from "../../helpers/feeSummary";
+import { REFUND_METHODS, getRefundMethodByCardType, refundMethodDisplayText } from "../../types/PaymentMethod";
+
+const refundOptions = Object.values(REFUND_METHODS).map(refundMethod => ({
+  value: refundMethod,
+  label: refundMethodDisplayText(refundMethod),
+}));
+
+const DEFAULT_REFUND_METHOD = REFUND_METHODS.Cheque;
 
 export const FinishVoid = ({
   permit,
@@ -39,23 +47,16 @@ export const FinishVoid = ({
 
   const [shouldUsePrevPaymentMethod, setShouldUsePrevPaymentMethod] = useState<boolean>(true);
 
-  const paymentOptions = [
-    {
-      value: "CC",
-      label: "Icepay - Mastercard (Debit)",
-    },
-  ]; // hardcoded options
-
-  const getPrevPaymentMethod = () => {
-    if (!permitHistory) return "";
-    if (permitHistory.length === 0) return "";
-    return permitHistory[0].paymentMethod;
+  const getRefundMethodForPrevPayMethod = () => {
+    if (!permitHistory || permitHistory.length === 0) return DEFAULT_REFUND_METHOD;
+    const cardType = permitHistory[0].cardType;
+    return getRefundMethodByCardType(cardType);
   };
 
   const formMethods = useForm<RefundVoidDto>({
     defaultValues: {
       shouldUsePrevPaymentMethod,
-      paymentMethod: getPrevPaymentMethod(),
+      refundMethod: getRefundMethodForPrevPayMethod(),
       transactionId: "",
     },
     reValidateMode: "onChange",
@@ -72,15 +73,15 @@ export const FinishVoid = ({
   } = formMethods;
 
   useEffect(() => {
-    if (permitHistory.length > 0) {
-      setValue("paymentMethod", permitHistory[0].paymentMethod);
-    }
+    const refundMethod = getRefundMethodForPrevPayMethod();
+    setValue("refundMethod", refundMethod);
   }, [permitHistory, permitHistory.length]);
 
   const handleRefundMethodChange = (shouldUsePrev: string) => {
     const usePrev = shouldUsePrev === "true";
     setShouldUsePrevPaymentMethod(usePrev);
     setValue("shouldUsePrevPaymentMethod", usePrev);
+    setValue("refundMethod", usePrev ? getRefundMethodForPrevPayMethod() : REFUND_METHODS.Cheque);
     clearErrors("transactionId");
   };
 
@@ -173,7 +174,7 @@ export const FinishVoid = ({
                     />
                     <div className="refund-payment">
                       <Controller
-                        name="paymentMethod"
+                        name="refundMethod"
                         control={control}
                         render={({ field: { value }}) => (
                           <FormControl className="refund-payment__info refund-payment__info--method">
@@ -185,12 +186,12 @@ export const FinishVoid = ({
                               disabled={true}
                               value={value}
                             >
-                              {paymentOptions.map(paymentMethod => (
+                              {refundOptions.map(refundOption => (
                                 <MenuItem 
-                                  key={paymentMethod.value}
-                                  value={paymentMethod.value}
+                                  key={refundOption.value}
+                                  value={refundOption.value}
                                 >
-                                  {paymentMethod.label}
+                                  {refundOption.label}
                                 </MenuItem>
                               ))}
                             </Select>

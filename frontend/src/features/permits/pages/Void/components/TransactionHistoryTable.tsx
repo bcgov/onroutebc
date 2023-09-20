@@ -4,6 +4,7 @@ import { feeSummaryDisplayText, isTransactionTypeRefund } from "../../../helpers
 import { PermitHistory } from "../../../types/PermitHistory";
 import "./TransactionHistoryTable.scss";
 import MaterialReactTable, { MRT_ColumnDef } from "material-react-table";
+import { getPaymentMethod, paymentMethodDisplayText } from "../../../types/PaymentMethod";
 
 export const TransactionHistoryTable = ({
   permitHistory,
@@ -25,8 +26,13 @@ export const TransactionHistoryTable = ({
       enableColumnActions: false,
     },
     {
-      accessorFn: (originalRow) => 
-        getPaymentMethodText(originalRow.paymentMethod),
+      accessorFn: (originalRow) => {
+        const paymentMethod = getPaymentMethod(originalRow.paymentMethod, originalRow.cardType);
+        return getDefaultRequiredVal(
+          "NA",
+          applyWhenNotNullable(paymentMethodDisplayText, paymentMethod),
+        );
+      },
       id: "paymentMethod",
       header: "Payment Method",
       muiTableHeadCellProps: {
@@ -78,20 +84,6 @@ export const TransactionHistoryTable = ({
       enableColumnActions: false,
     },
   ], []);
-
-  const availablePaymentMethods = [
-    {
-      value: "CC",
-      label: "Icepay - Mastercard (Debit)",
-    },
-  ]; // hardcoded
-
-  const getPaymentMethodText = (payMethod?: string) => {
-    return getDefaultRequiredVal(
-      "NA",
-      availablePaymentMethods.find(method => method.value === payMethod)?.label
-    );
-  };
 
   return (
     <MaterialReactTable
