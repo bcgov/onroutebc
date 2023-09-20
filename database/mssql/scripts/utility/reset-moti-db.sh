@@ -36,7 +36,7 @@ if [[ $1 != "force" ]]; then
   if [[ ${MSSQL_RUN_TESTS} -eq 1 ]]; then
     echo "Sample data will be loaded into the database once it has been rebuilt."
   else
-    echo "Sample data will *NOT* be loaded into the database once it has been rebuilt (set the MSSQL_RUN_TESTS variable to 1 to enable sample data)."
+    echo "To load sample data into the database once it has been rebuilt set the MSSQL_LOAD_SAMPLE_DATA environment variable to 1."
   fi
   echo "THIS IS A DESTRUCTIVE OPERATION!"
   read -p "Are you sure you want to completely reset the database? [yes | no] "
