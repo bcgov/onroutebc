@@ -5,5 +5,17 @@ GO
 SET NOCOUNT ON
 GO
 
--- Note since we are reverting to version zero, there is no longer a version table to update
-DROP TABLE [dbo].[ORBC_SYS_VERSION]
+SET XACT_ABORT ON
+
+BEGIN TRY
+  BEGIN TRANSACTION
+    -- Note since we are reverting to version zero, there is no longer a version table to update
+    DROP TABLE [dbo].[ORBC_SYS_VERSION]
+  COMMIT
+END TRY
+
+BEGIN CATCH
+  IF @@TRANCOUNT > 0 
+    ROLLBACK;
+  THROW
+END CATCH
