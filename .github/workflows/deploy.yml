@@ -74,13 +74,16 @@ jobs:
       max-parallel: 1
       fail-fast: true
       matrix:
-        name: [init, backend/vehicles, backend/dops, frontend]
+        name: [init, backend/vehicles, backend/dops, backend/sftp, frontend]
         include:
           - name: backend/vehicles
             file: backend/vehicles/openshift.deploy.yml
             overwrite: true
           - name: backend/dops
             file: backend/dops/openshift.deploy.yml
+            overwrite: true
+          - name: backend/sftp
+            file: backend/sftp/openshift.deploy.yml
             overwrite: true            
           - name: frontend
             file: frontend/openshift.deploy.yml
@@ -127,6 +130,11 @@ jobs:
             ${{secrets.VAULT_ENVIRONMENT}}/data/payment-${{inputs.vault_zone}}    MOTIPAY_API_KEY                 | VAULT_MOTIPAY_API_KEY;
             ${{secrets.VAULT_ENVIRONMENT}}/data/payment-${{inputs.vault_zone}}    MOTIPAY_MERCHANT_ID             | VAULT_MOTIPAY_MERCHANT_ID;
             ${{secrets.VAULT_ENVIRONMENT}}/data/payment-${{inputs.vault_zone}}    MOTIPAY_BASE_URL                | VAULT_MOTIPAY_BASE_URL;
+            ${{secrets.VAULT_ENVIRONMENT}}/data/payment-${{inputs.vault_zone}}    CFS_SFTP_USERNAME               | VAULT_CFS_SFTP_USERNAME;
+			      ${{secrets.VAULT_ENVIRONMENT}}/data/payment-${{inputs.vault_zone}}    CFS_SFTP_HOST                   | VAULT_CFS_SFTP_HOST;
+			      ${{secrets.VAULT_ENVIRONMENT}}/data/payment-${{inputs.vault_zone}}    CFS_SFTP_PORT                   | VAULT_CFS_SFTP_PORT;
+			      ${{secrets.VAULT_ENVIRONMENT}}/data/payment-${{inputs.vault_zone}}    CFS_PRIVATE_KEY                 | VAULT_CFS_PRIVATE_KEY;
+			      ${{secrets.VAULT_ENVIRONMENT}}/data/payment-${{inputs.vault_zone}}    CFS_PASSPHRASE                  | VAULT_CFS_PASSPHRASE;
       
       - uses: bcgov-nr/action-deployer-openshift@v1.3.0
         with:
@@ -167,6 +175,11 @@ jobs:
             -p MOTIPAY_API_KEY=${{steps.vault.outputs.VAULT_MOTIPAY_API_KEY}}
             -p MOTIPAY_MERCHANT_ID=${{steps.vault.outputs.VAULT_MOTIPAY_MERCHANT_ID}}
             -p MOTIPAY_BASE_URL=${{steps.vault.outputs.VAULT_MOTIPAY_BASE_URL}}
+            -p CFS_SFTP_USERNAME=${{steps.vault.outputs.VAULT_CFS_SFTP_USERNAME}}
+	          -p CFS_SFTP_HOST=${{steps.vault.outputs.VAULT_CFS_SFTP_HOST}}
+	          -p CFS_SFTP_PORT=${{steps.vault.outputs.VAULT_CFS_SFTP_PORT}}
+	          -p CFS_PRIVATE_KEY=${{steps.vault.outputs.VAULT_CFS_PRIVATE_KEY}}
+	          -p CFS_PASSPHRASE=${{steps.vault.outputs.VAULT_CFS_PASSPHRASE}}
             ${{ matrix.parameters }}
           penetration_test: ${{ github.event_name != 'pull_request'}}
           penetration_test_issue: ${{ matrix.name }}

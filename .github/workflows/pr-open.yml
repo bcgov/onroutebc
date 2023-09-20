@@ -29,6 +29,7 @@ jobs:
             Any successful deployments (not always required) will be available below.
             [Backend - Vehicles](https://${{ env.PREFIX }}-backend-vehicles.${{ env.DOMAIN }}/) available
             [Backend - DOPS](https://${{ env.PREFIX }}-backend-dops.${{ env.DOMAIN }}/) available
+            [Backend - SFTP](https://${{ env.PREFIX }}-backend-sftp.${{ env.DOMAIN }}/) available
             [Frontend](https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}/) available
 
             Once merged, code will be promoted and handed off to following workflow run.
@@ -40,12 +41,14 @@ jobs:
       packages: write
     strategy:
       matrix:
-        package: [backend/vehicles, backend/dops, frontend]
+        package: [backend/vehicles, backend/dops, backend/sftp,  frontend]
         include:
           - package: backend/vehicles
             triggers: ('backend/vehicles/')
           - package: backend/dops
             triggers: ('backend/dops/')
+          - package: backend/sftp
+            triggers: ('backend/sftp/')
           - package: frontend
             triggers: ('frontend/')
     steps:

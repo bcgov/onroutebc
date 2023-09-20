@@ -91,6 +91,21 @@ parameters:
     required: true  
   - name: MOTIPAY_BASE_URL
     description: Base URL for MOTI Pay
+    required: true
+  - name: CFS_PRIVATE_KEY
+    description: ORBC private key for CFS
+    required: true
+	- name: CFS_PASSPHRASE
+    description: Passphrase for ORBC private key
+    required: true
+	- name: CFS_SFTP_USERNAME
+    description: CFA username
+    required: true
+	- name: CFS_SFTP_HOST
+    description: CFS host.
+    required: true
+	- name: CFS_SFTP_PORT
+    description: CFS sftp port
     required: true   
 objects:
   - apiVersion: networking.k8s.io/v1
