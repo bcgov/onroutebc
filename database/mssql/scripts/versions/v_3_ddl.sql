@@ -785,4 +785,7 @@ GO
 DECLARE @VersionDescription VARCHAR(255)
 SET @VersionDescription = 'Initial creation of schema entities for manage profile feature'
 
+DECLARE @VersionDescription VARCHAR(255)
+SET @VersionDescription = 'Initial creation of schema entities for manage profile feature'
+
 INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [UPDATE_SCRIPT], [REVERT_SCRIPT], [RELEASE_DATE]) VALUES (3, @VersionDescription, '$(UPDATE_SCRIPT)', '$(REVERT_SCRIPT)', getutcdate())
