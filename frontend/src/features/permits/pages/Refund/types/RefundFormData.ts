@@ -1,6 +1,6 @@
 import { RefundMethod } from "../../../types/PaymentMethod";
 
-export interface RefundVoidDto {
+export interface RefundFormData {
   shouldUsePrevPaymentMethod: boolean;
   refundMethod: RefundMethod;
   transactionId?: string;

@@ -12,9 +12,9 @@ import { VoidPermitHeader } from "./VoidPermitHeader";
 import { ReadPermitDto } from "../../../types/permit";
 import { SEARCH_RESULTS } from "../../../../../routes/constants";
 import { RevokeDialog } from "./RevokeDialog";
-import { FeeSummary } from "./FeeSummary";
 import { usePermitHistoryQuery } from "../../../hooks/hooks";
 import { calculateNetAmount } from "../../../helpers/feeSummary";
+import { FeeSummary } from "../../../components/feeSummary/FeeSummary";
 
 const FEATURE = "void-permit";
 const searchRoute = `${SEARCH_RESULTS}?searchEntity=permits`;

@@ -1,9 +1,10 @@
 import { useMemo } from "react";
+import MaterialReactTable, { MRT_ColumnDef } from "material-react-table";
+
+import "./TransactionHistoryTable.scss";
 import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../../../common/helpers/util";
 import { feeSummaryDisplayText, isTransactionTypeRefund } from "../../../helpers/feeSummary";
 import { PermitHistory } from "../../../types/PermitHistory";
-import "./TransactionHistoryTable.scss";
-import MaterialReactTable, { MRT_ColumnDef } from "material-react-table";
 import { getPaymentMethod, paymentMethodDisplayText } from "../../../types/PaymentMethod";
 
 export const TransactionHistoryTable = ({

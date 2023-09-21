@@ -1,12 +1,12 @@
 @import "../../../../themes/orbcStyles.scss";
 
-.finish-void {
+.refund-page {
   padding: 0 10%;
   display: flex;
   flex-direction: row;
   margin-bottom: 3rem;
 
-  .finish-void-section {
+  &__section {
     display: flex;
     flex-direction: column;
 
@@ -20,7 +20,7 @@
       margin-left: 2rem;
     }
 
-    .void-info {
+    .refund-info {
       padding: 2rem 0;
       border-bottom: 1px solid $bc-border-grey;
 
@@ -110,29 +110,35 @@
 
       &--fee-summary {
         padding: 0;
+        border-bottom: none;
 
-        .header {
-          padding: 1rem;
-          background-color: $bc-black;
-          color: $white;
-          font-weight: 600;
+        .refund-fee-summary {
+          border-radius: 4px;
+          overflow: hidden;
+          
+          &__header {
+            padding: 1rem;
+            background-color: $bc-black;
+            color: $white;
+            font-weight: 600;
+          }
 
           &__title {
             font-size: 1.5rem;
           }
-        }
-
-        .fee-summary {
-          margin: 0;
-        }
-
-        .footer {
-          padding: 1rem;
-          background-color: $banner-grey;
-
-          .finish-btn {
-            font-weight: 600;
-            width: 100%;
+  
+          .fee-summary {
+            margin: 0;
+          }
+  
+          &__footer {
+            padding: 1rem;
+            background-color: $banner-grey;
+  
+            .finish-btn {
+              font-weight: 600;
+              width: 100%;
+            }
           }
         }
       }
