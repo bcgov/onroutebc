@@ -1,12 +1,10 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
 import { Entity, Column, OneToMany, PrimaryColumn } from 'typeorm';
-import { Base } from '../../../common/entities/base.entity';
-
 import { Trailer } from '../../trailers/entities/trailer.entity';
 
 @Entity({ name: 'ORBC_VT_TRAILER_TYPE' })
-export class TrailerType extends Base {
+export class TrailerType {
   @AutoMap()
   @ApiProperty({
     example: 'BOOSTER',
