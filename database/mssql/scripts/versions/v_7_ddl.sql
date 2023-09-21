@@ -5,6 +5,42 @@ GO
 SET NOCOUNT ON
 GO
 
+
+CREATE TABLE [permit].[ORBC_VT_TRANSACTION_TYPE](
+	[ID] [varchar](3) NOT NULL,
+	[DESCRIPTION] [varchar] (50) NULL,
+	[CONCURRENCY_CONTROL_NUMBER] [int] NULL,
+	[DB_CREATE_USERID] [varchar](63) NOT NULL,
+	[DB_CREATE_TIMESTAMP] [datetime2](7) NOT NULL,
+	[DB_LAST_UPDATE_USERID] [varchar](63) NOT NULL,
+	[DB_LAST_UPDATE_TIMESTAMP] [datetime2](7) NOT NULL,
+ CONSTRAINT [PK_ORBC_VT_TRANSACTION_TYPE] PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [permit].[ORBC_VT_TRANSACTION_TYPE] ADD  CONSTRAINT [ORBC_TRANSACTION_TYPE_DB_CREATE_USERID_DEF]  DEFAULT (user_name()) FOR [DB_CREATE_USERID]
+ALTER TABLE [permit].[ORBC_VT_TRANSACTION_TYPE] ADD  CONSTRAINT [ORBC_TRANSACTION_TYPE_DB_CREATE_TIMESTAMP_DEF]  DEFAULT (getutcdate()) FOR [DB_CREATE_TIMESTAMP]
+ALTER TABLE [permit].[ORBC_VT_TRANSACTION_TYPE] ADD  CONSTRAINT [ORBC_TRANSACTION_TYPE_DB_LAST_UPDATE_USERID_DEF]  DEFAULT (user_name()) FOR [DB_LAST_UPDATE_USERID]
+ALTER TABLE [permit].[ORBC_VT_TRANSACTION_TYPE] ADD  CONSTRAINT [ORBC_TRANSACTION_TYPE_DB_LAST_UPDATE_TIMESTAMP_DEF]  DEFAULT (getutcdate()) FOR [DB_LAST_UPDATE_TIMESTAMP]
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The Transaction Type mirroring Bambora values' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1Name=N'ORBC_VT_TRANSACTION_TYPE', @level2type=N'COLUMN',@level2name=N'ID'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The description of Transaction Type.' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1Name=N'ORBC_VT_TRANSACTION_TYPE', @level2type=N'COLUMN',@level2name=N'DESCRIPTION'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Application code is responsible for retrieving the row and then incrementing the value of the CONCURRENCY_CONTROL_NUMBER column by one prior to issuing an update. If this is done then the update will succeed, provided that the row was not updated by any other transactions in the period between the read and the update operations.' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1Name=N'ORBC_VT_TRANSACTION_TYPE', @level2type=N'COLUMN',@level2name=N'CONCURRENCY_CONTROL_NUMBER'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user or proxy account that created or last updated the record.' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1Name=N'ORBC_VT_TRANSACTION_TYPE', @level2type=N'COLUMN',@level2name=N'DB_LAST_UPDATE_USERID'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time the record was created.' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1Name=N'ORBC_VT_TRANSACTION_TYPE', @level2type=N'COLUMN',@level2name=N'DB_CREATE_TIMESTAMP'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user or proxy account that created the record.' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1Name=N'ORBC_VT_TRANSACTION_TYPE', @level2type=N'COLUMN',@level2name=N'DB_CREATE_USERID'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time the record was created or last updated.' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1Name=N'ORBC_VT_TRANSACTION_TYPE', @level2type=N'COLUMN',@level2name=N'DB_LAST_UPDATE_TIMESTAMP'
+GO
+
+INSERT [permit].[ORBC_VT_TRANSACTION_TYPE] ([ID], [DESCRIPTION], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'P', N'Payment Transaction', N'dbo', GETUTCDATE(), N'dbo', GETUTCDATE())
+INSERT [permit].[ORBC_VT_TRANSACTION_TYPE] ([ID], [DESCRIPTION], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'R', N'Refund Transaction', N'dbo', GETUTCDATE(), N'dbo', GETUTCDATE())
+INSERT [permit].[ORBC_VT_TRANSACTION_TYPE] ([ID], [DESCRIPTION], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'Z', N'Zero Amount Transaction', N'dbo', GETUTCDATE(), N'dbo', GETUTCDATE())
+GO
+
 CREATE TABLE [permit].[ORBC_VT_PAYMENT_METHOD](
 	[PAYMENT_METHOD_ID] [int] IDENTITY(1,1) NOT NULL,
 	[NAME] [varchar] (20) NOT NULL,
@@ -27,7 +63,7 @@ SET IDENTITY_INSERT [permit].[ORBC_VT_PAYMENT_METHOD] OFF
 
 CREATE TABLE [permit].[ORBC_TRANSACTION](
 	[TRANSACTION_ID] [bigint] IDENTITY(20000000,1) NOT NULL,
-	[TRANSACTION_TYPE] [varchar] (3) NOT NULL,
+	[TRANSACTION_TYPE_ID] [varchar] (3) NOT NULL,
 	[TRANSACTION_ORDER_NUMBER] [varchar](30) NOT NULL,
 	[PROVIDER_TRANSACTION_ID] [bigint] NULL,
 	[TRANSACTION_AMOUNT] [decimal] (9, 2) NULL,
@@ -102,6 +138,8 @@ ALTER TABLE [permit].[ORBC_RECEIPT] ADD  CONSTRAINT [ORBC_RECEIPT_DB_LAST_UPDATE
 ALTER TABLE [permit].[ORBC_RECEIPT] ADD  CONSTRAINT [ORBC_RECEIPT_DB_LAST_UPDATE_TIMESTAMP_DEF]  DEFAULT (getutcdate()) FOR [DB_LAST_UPDATE_TIMESTAMP]
 ALTER TABLE [permit].[ORBC_TRANSACTION]  WITH CHECK ADD  CONSTRAINT [ORBC_TRANSACTION_PAYMENT_METHOD_FK] FOREIGN KEY([PAYMENT_METHOD_ID])
 REFERENCES [permit].[ORBC_VT_PAYMENT_METHOD] ([PAYMENT_METHOD_ID])
+ALTER TABLE [permit].[ORBC_TRANSACTION]  WITH CHECK ADD  CONSTRAINT [ORBC_TRANSACTION_TYPE_ID_FK] FOREIGN KEY([TRANSACTION_TYPE_ID])
+REFERENCES [permit].[ORBC_VT_TRANSACTION_TYPE] ([ID])
 ALTER TABLE [permit].[ORBC_PERMIT_TRANSACTION]  WITH CHECK ADD  CONSTRAINT [ORBC_PERMIT_TRANSACTION_PERMIT_ID_FK] FOREIGN KEY([PERMIT_ID])
 REFERENCES [permit].[ORBC_PERMIT] ([ID])
 ALTER TABLE [permit].[ORBC_PERMIT_TRANSACTION]  WITH CHECK ADD  CONSTRAINT [ORBC_PERMIT_TRANSACTION_TRANSACTION_ID_FK] FOREIGN KEY([TRANSACTION_ID])
@@ -114,7 +152,7 @@ EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Primary key fo
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Payment method name' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_VT_PAYMENT_METHOD', @level2type=N'COLUMN',@level2name=N'NAME'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Payment method description' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_VT_PAYMENT_METHOD', @level2type=N'COLUMN',@level2name=N'DESCRIPTION'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Primary key for the transaction metadata record' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_TRANSACTION', @level2type=N'COLUMN',@level2name=N'TRANSACTION_ID'
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The original value sent to indicate the type of transaction to perform' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_TRANSACTION', @level2type=N'COLUMN',@level2name=N'TRANSACTION_TYPE'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The original value sent to indicate the type of transaction to perform' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_TRANSACTION', @level2type=N'COLUMN',@level2name=N'TRANSACTION_TYPE_ID'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The value of trnOrderNumber submitted in the transaction request' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_TRANSACTION', @level2type=N'COLUMN',@level2name=N'TRANSACTION_ORDER_NUMBER'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Bambora-assigned eight-digit unique id number used to identify an individual transaction' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_TRANSACTION', @level2type=N'COLUMN',@level2name=N'PROVIDER_TRANSACTION_ID'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The amount of the transaction' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_TRANSACTION', @level2type=N'COLUMN',@level2name=N'TRANSACTION_AMOUNT'
