@@ -2,7 +2,7 @@ import { Box, Button, Typography } from "@mui/material";
 import { useContext, useEffect } from "react";
 import dayjs from "dayjs";
 
-import "./TermOversize.scss";
+import "./TermOversizePay.scss";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { ApplicationContext } from "../../context/ApplicationContext";
 import { ProgressBar } from "../../components/progressBar/ProgressBar";

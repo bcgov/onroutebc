@@ -1,0 +1,36 @@
+@import "../../../../../../themes/orbcStyles.scss";
+
+.fee-summary-banner {
+  background-color: $banner-grey;
+  color: $bc-primary-blue;
+  padding: 1.5rem;
+
+  &__title {
+    padding-bottom: 0.5rem;
+  }
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    font-weight: 600;
+    padding: 1rem 0;
+
+    h6 {
+      font-weight: 600;
+    }
+  }
+
+  &__body {
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem 0;
+    border-top: 2px solid $bc-text-box-border-grey;
+    border-bottom: 2px solid $bc-text-box-border-grey;
+  }
+
+  &__footer {
+    display: flex;
+    justify-content: space-between;
+    padding-top: 1rem;
+  }
+}

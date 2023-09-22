@@ -1,0 +1,15 @@
+@import "../../../../themes/orbcStyles.scss";
+
+.payment {
+  padding: 0 3.75rem;
+  background-color: white;
+  min-height: calc(100vh - 390px);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  &--fee-summary {
+    padding: 1.5rem;
+    max-width: 488px;
+  }
+}

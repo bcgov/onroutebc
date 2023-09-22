@@ -1,6 +1,6 @@
 import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import {
-  getApplicationInProgressById,
+  getApplicationByPermitId,
   getPermit,
   getPermitHistory,
   getPermitTransaction,
@@ -58,7 +58,7 @@ export const useApplicationDetailsQuery = (permitId?: string) => {
   
   const query = useQuery({
     queryKey: ["termOversize"],
-    queryFn: () => getApplicationInProgressById(permitId),
+    queryFn: () => getApplicationByPermitId(permitId),
     retry: false,
     refetchOnMount: "always", // always fetch when component is mounted (ApplicationDashboard page)
     refetchOnWindowFocus: false, // prevent unnecessary multiple queries on page showing up in foreground

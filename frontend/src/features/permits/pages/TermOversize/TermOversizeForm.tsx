@@ -1,32 +1,10 @@
-import { FormProvider, FieldValues } from "react-hook-form";
-import { Box, Button, useMediaQuery, useTheme } from "@mui/material";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSave } from "@fortawesome/free-solid-svg-icons";
+import { FieldValues } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { Application, VehicleDetails as VehicleDetailsType } from "../../types/application";
-import { ContactDetails } from "../../components/form/ContactDetails";
-import { ApplicationDetails } from "../../components/form/ApplicationDetails";
-import { VehicleDetails } from "./form/VehicleDetails/VehicleDetails";
 import { useContext, useState } from "react";
-import { BC_COLOURS } from "../../../../themes/bcGovStyles";
-import { PERMIT_LEFT_COLUMN_WIDTH } from "../../../../themes/orbcStyles";
+
+import { Application, VehicleDetails as VehicleDetailsType } from "../../types/application";
 import { ApplicationContext } from "../../context/ApplicationContext";
-import { PermitDetails } from "./form/PermitDetails";
 import { ProgressBar } from "../../components/progressBar/ProgressBar";
-import { ScrollButton } from "../../components/scrollButton/ScrollButton";
-import {
-  useAddPowerUnitMutation,
-  useUpdatePowerUnitMutation,
-  useAddTrailerMutation,
-  useUpdateTrailerMutation,
-  useVehiclesQuery,
-  usePowerUnitTypesQuery,
-  useTrailerTypesQuery,
-} from "../../../manageVehicles/apiManager/hooks";
-import {
-  PowerUnit,
-  Trailer,
-} from "../../../manageVehicles/types/managevehicles";
 import { mapVinToVehicleObject } from "../../helpers/mappers";
 import { useSaveTermOversizeMutation } from "../../hooks/hooks";
 import { SnackBarContext } from "../../../../App";
@@ -35,6 +13,19 @@ import { areApplicationDataEqual } from "../../helpers/equality";
 import { useDefaultApplicationFormData } from "../../hooks/useDefaultApplicationFormData";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
+import {
+  useAddPowerUnitMutation,
+  useUpdatePowerUnitMutation,
+  useAddTrailerMutation,
+  useUpdateTrailerMutation,
+  useVehiclesQuery,
+} from "../../../manageVehicles/apiManager/hooks";
+
+import {
+  PowerUnit,
+  Trailer,
+} from "../../../manageVehicles/types/managevehicles";
+import { PermitForm } from "./components/form/PermitForm";
 
 /**
  * The first step in creating and submitting a TROS Application.
@@ -43,10 +34,6 @@ import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext
 export const TermOversizeForm = () => {
   //The name of this feature that is used for id's, keys, and associating form components
   const FEATURE = "term-oversize";
-
-  // Styling / responsiveness
-  const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.down("lg"));
 
   // Context to hold all of the application data related to the TROS application
   const applicationContext = useContext(ApplicationContext);
@@ -159,13 +146,9 @@ export const TermOversizeForm = () => {
 
   // Queries used to populate select options for vehicle details
   const allVehiclesQuery = useVehiclesQuery();
-  const powerUnitTypesQuery = usePowerUnitTypesQuery();
-  const trailerTypesQuery = useTrailerTypesQuery();
 
   // Vehicle details that have been fetched by vehicle details queries
   const fetchedVehicles = getDefaultRequiredVal([], allVehiclesQuery.data);
-  const fetchedPowerUnitTypes = getDefaultRequiredVal([], powerUnitTypesQuery.data);
-  const fetchedTrailerTypes = getDefaultRequiredVal([], trailerTypesQuery.data);
 
   const handleSaveVehicle = (vehicleData?: VehicleDetailsType) => {
     // Check if the "add/update vehicle" checkbox was checked by the user
@@ -266,6 +249,24 @@ export const TermOversizeForm = () => {
   return (
     <>
       <ProgressBar />
+      <PermitForm 
+        feature={FEATURE}
+        onLeave={handleLeaveApplication}
+        onSave={() => onSaveApplication()}
+        onContinue={handleSubmit(onContinue)}
+        isAmendAction={false}
+        formMethods={formMethods}
+        permitType={termOversizeDefaultValues.permitType}
+        applicationNumber={termOversizeDefaultValues.applicationNumber}
+        createdDateTime={termOversizeDefaultValues.createdDateTime}
+        updatedDateTime={termOversizeDefaultValues.updatedDateTime}
+        permitStartDate={termOversizeDefaultValues.permitData.startDate}
+        permitDuration={termOversizeDefaultValues.permitData.permitDuration}
+        permitCommodities={termOversizeDefaultValues.permitData.commodities}
+        vehicleDetails={termOversizeDefaultValues.permitData.vehicleDetails}
+        vehicleChoices={fetchedVehicles}
+      />
+      {/*
       <Box
         className="layout-box"
         sx={{
@@ -299,65 +300,13 @@ export const TermOversizeForm = () => {
           </FormProvider>
         </Box>
 
-        <Box
-          sx={{
-            position: "fixed",
-            height: "100px",
-            top: "calc(100vh - 100px)",
-            backgroundColor: BC_COLOURS.white,
-            width: "100vw",
-            display: "flex",
-            alignItems: "center",
-            marginLeft: "-60px",
-            marginRight: matches ? "80px" : "60px",
-            paddingRight: "30px",
-            justifyContent: "space-between",
-            borderTop: `1px solid ${BC_COLOURS.bc_text_box_border_grey}`,
-          }}
-        >
-          <Button
-            key="leave-application-button"
-            aria-label="leave"
-            variant="contained"
-            color="secondary"
-            onClick={handleLeaveApplication}
-            data-testid="leave-application-button"
-            sx={{
-              marginLeft: matches
-                ? "20px"
-                : `calc(${PERMIT_LEFT_COLUMN_WIDTH} + 60px)`,
-            }}
-          >
-            Leave
-          </Button>
-          <Box>
-            <Button
-              key="save-TROS-button"
-              aria-label="save"
-              variant="contained"
-              color="tertiary"
-              sx={{ marginLeft: "-420px", marginTop: "40px", display: "flex", alignItems: "center", gap: "10px"}}
-              onClick={() => onSaveApplication()}
-              data-testid="save-application-button"
-            >
-              <FontAwesomeIcon icon={faSave} />
-              Save
-            </Button>
-            <Button
-              key="submit-TROS-button"
-              aria-label="Submit"
-              variant="contained"
-              color="primary"
-              onClick={handleSubmit(onContinue)}
-              sx={{ marginLeft: "-260px", marginTop: "-72px" }}
-              data-testid="continue-application-button"
-            >
-              Continue
-            </Button>
-            <ScrollButton />
-          </Box>
-        </Box>
+        <FormActions 
+          onLeave={handleLeaveApplication}
+          onSave={() => onSaveApplication()}
+          onContinue={handleSubmit(onContinue)}
+        />
       </Box>
+      */}
       <LeaveApplicationDialog
         onLeaveUnsaved={handleLeaveUnsaved}
         onContinueEditing={handleStayOnApplication}

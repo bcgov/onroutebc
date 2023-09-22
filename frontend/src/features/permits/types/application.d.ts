@@ -27,6 +27,8 @@ type PermitApprovalSource = "AUTO" | "PPC" | "TPS";
  */
 export interface Application {
   permitId?: string;
+  originalPermitId?: string;
+  comment?: string;
   permitStatus?: PermitStatus;
   companyId: number;
   userGuid?: string | null;

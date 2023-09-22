@@ -12,18 +12,23 @@ import { permitTypeDisplayText } from "../../helpers/mappers";
 export const ApplicationDetails = ({
   permitType,
   applicationNumber,
+  permitNumber,
   createdDateTime,
   updatedDateTime,
 }: {
-  permitType?: string,
-  applicationNumber?: string,
-  createdDateTime?: Dayjs,
-  updatedDateTime?: Dayjs,
+  permitType?: string;
+  applicationNumber?: string;
+  permitNumber?: string;
+  createdDateTime?: Dayjs;
+  updatedDateTime?: Dayjs;
 }) => {
   const companyInfoQuery = useCompanyInfoQuery();
   const applicationName = permitTypeDisplayText(
     getDefaultRequiredVal("", permitType)
   );
+
+  const validApplicationNumber = () => applicationNumber && applicationNumber !== "";
+  const validPermitNumber = () => permitNumber && permitNumber !== "";
 
   return (
     <>
@@ -35,7 +40,7 @@ export const ApplicationDetails = ({
         >
           {applicationName}
         </Typography>
-        {(applicationNumber && applicationNumber !== "") ? (
+        {(validApplicationNumber() || validPermitNumber()) ? (
           <Box>
             <Typography
               className="application-number"
@@ -45,14 +50,14 @@ export const ApplicationDetails = ({
                 className="application-number__label" 
                 component="span"
               >
-                Application #:
+                {validApplicationNumber() ? "Application #:" : "Permit #:"}
               </Box>
               <Box
                 className="application-number__number"
                 component="span"
                 data-testid="application-number"
               >
-                {applicationNumber}
+                {validApplicationNumber() ? applicationNumber : permitNumber}
               </Box>
             </Typography>
             <Box className="application-details__audit-dates">

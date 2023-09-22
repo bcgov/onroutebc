@@ -10,11 +10,11 @@ import { ApplicationDetails } from "../../components/form/ApplicationDetails";
 import { ApplicationContext } from "../../context/ApplicationContext";
 import { Application } from "../../types/application";
 import { useSaveTermOversizeMutation } from "../../hooks/hooks";
-import { ReviewContactDetails } from "./review/ReviewContactDetails";
-import { ReviewFeeSummary } from "./review/ReviewFeeSummary";
-import { ReviewPermitDetails } from "./review/ReviewPermitDetails";
-import { ReviewVehicleInfo } from "./review/ReviewVehicleInfo";
 import { ProgressBar } from "../../components/progressBar/ProgressBar";
+import { ReviewContactDetails } from "./components/review/ReviewContactDetails";
+import { ReviewPermitDetails } from "./components/review/ReviewPermitDetails";
+import { ReviewVehicleInfo } from "./components/review/ReviewVehicleInfo";
+import { ReviewFeeSummary } from "./components/review/ReviewFeeSummary";
 
 export const TermOversizeReview = () => {
   const { applicationData, setApplicationData, back, next } =

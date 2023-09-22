@@ -122,19 +122,25 @@ export const getApplicationsInProgress = async (): Promise<
 };
 
 /**
- * Fetch in-progress application by its permit id.
+ * Fetch application by its permit id.
  * @param permitId permit id of the application to fetch
- * @returns ApplicationResponse data as response, or undefined if fetch failed
+ * @returns ApplicationResponse data as response, or null if fetch failed
  */
-export const getApplicationInProgressById = (
-  permitId: string | undefined
-): Promise<ApplicationResponse | undefined> => {
-  const companyId = getCompanyIdFromSession();
-  let url = `${VEHICLES_URL}/permits/applications/${permitId}`;
-  if (companyId) {
-    url += `?companyId=${companyId}`;
+export const getApplicationByPermitId = async (
+  permitId?: string
+): Promise<ApplicationResponse | null> => {
+  try {
+    const companyId = getCompanyIdFromSession();
+    let url = `${VEHICLES_URL}/permits/applications/${permitId}`;
+    if (companyId) {
+      url += `?companyId=${companyId}`;
+    }
+
+    const response = await httpGETRequest(url);
+    return response.data;
+  } catch (err) {
+    return null;
   }
-  return httpGETRequest(url).then((response) => response.data);
 };
 
 /**

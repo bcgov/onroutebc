@@ -1,0 +1,14 @@
+@use "../../../../../../themes/orbcStyles.scss";
+
+@include orbcStyles.permit-main-box-style(".review-fee-summary");
+@include orbcStyles.permit-left-box-style(".review-fee-summary__header");
+@include orbcStyles.permit-right-box-style(".review-fee-summary__body");
+
+.review-fee-summary {
+  &__body {
+    .fee-summary-wrapper {
+      gap: 2.5rem;
+      padding-top: 1.5rem;
+    }
+  }
+}
