@@ -2,33 +2,35 @@ import { Box, Typography } from "@mui/material";
 import { Dayjs } from "dayjs";
 
 import { CompanyBanner } from "../../../../common/components/banners/CompanyBanner";
-import { useCompanyInfoQuery } from "../../../manageProfile/apiManager/hooks";
 import { DATE_FORMATS, dayjsToLocalStr } from "../../../../common/helpers/formatDate";
 import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { CompanyInformation } from "./CompanyInformation";
 import "./ApplicationDetails.scss";
 import { permitTypeDisplayText } from "../../helpers/mappers";
+import { CompanyProfile } from "../../../manageProfile/types/manageProfile";
 
 export const ApplicationDetails = ({
   permitType,
-  applicationNumber,
-  permitNumber,
+  infoNumberType = "application",
+  infoNumber,
   createdDateTime,
   updatedDateTime,
+  companyInfo,
 }: {
   permitType?: string;
-  applicationNumber?: string;
-  permitNumber?: string;
+  infoNumberType?: "application" | "permit";
+  infoNumber?: string;
   createdDateTime?: Dayjs;
   updatedDateTime?: Dayjs;
+  companyInfo?: CompanyProfile;
 }) => {
-  const companyInfoQuery = useCompanyInfoQuery();
+  //const companyInfoQuery = useCompanyInfoQuery();
   const applicationName = permitTypeDisplayText(
     getDefaultRequiredVal("", permitType)
   );
 
-  const validApplicationNumber = () => applicationNumber && applicationNumber !== "";
-  const validPermitNumber = () => permitNumber && permitNumber !== "";
+  const validInfoNumber = () => infoNumber && infoNumber !== "";
+  const isPermitNumber = () => infoNumberType === "permit";
 
   return (
     <>
@@ -40,7 +42,7 @@ export const ApplicationDetails = ({
         >
           {applicationName}
         </Typography>
-        {(validApplicationNumber() || validPermitNumber()) ? (
+        {validInfoNumber() ? (
           <Box>
             <Typography
               className="application-number"
@@ -50,14 +52,14 @@ export const ApplicationDetails = ({
                 className="application-number__label" 
                 component="span"
               >
-                {validApplicationNumber() ? "Application #:" : "Permit #:"}
+                {isPermitNumber() ? "Permit #:" : "Application #:"}
               </Box>
               <Box
                 className="application-number__number"
                 component="span"
                 data-testid="application-number"
               >
-                {validApplicationNumber() ? applicationNumber : permitNumber}
+                {infoNumber}
               </Box>
             </Typography>
             <Box className="application-details__audit-dates">
@@ -106,10 +108,10 @@ export const ApplicationDetails = ({
         )}
       </div>
       <CompanyBanner 
-        companyName={companyInfoQuery.data?.legalName}
-        clientNumber={companyInfoQuery.data?.clientNumber}
+        companyName={companyInfo?.legalName}
+        clientNumber={companyInfo?.clientNumber}
       />
-      <CompanyInformation companyInfo={companyInfoQuery.data} />
+      <CompanyInformation companyInfo={companyInfo} />
     </>
   );
 };

@@ -1,5 +1,4 @@
 import { Box } from "@mui/material";
-import { FormProvider, UseFormReturn } from "react-hook-form";
 import { Dayjs } from "dayjs";
 
 import "./PermitForm.scss";
@@ -8,19 +7,18 @@ import { ApplicationDetails } from "../../../../components/form/ApplicationDetai
 import { ContactDetails } from "../../../../components/form/ContactDetails";
 import { PermitDetails } from "./PermitDetails";
 import { VehicleDetails } from "./VehicleDetails/VehicleDetails";
-import { getDefaultRequiredVal } from "../../../../../../common/helpers/util";
-import { PowerUnit, Trailer } from "../../../../../manageVehicles/types/managevehicles";
+import { CompanyProfile } from "../../../../../manageProfile/types/manageProfile.d";
 import { 
-  Application, 
+  PowerUnit, 
+  Trailer, 
+  VehicleType, 
+} from "../../../../../manageVehicles/types/managevehicles.d";
+
+import { 
   Commodities, 
   PermitType, 
   VehicleDetails as VehicleDetailsType, 
 } from "../../../../types/application.d";
-
-import { 
-  usePowerUnitTypesQuery, 
-  useTrailerTypesQuery,
-} from "../../../../../manageVehicles/apiManager/hooks";
 
 interface PermitFormProps {
   feature: string;
@@ -29,7 +27,6 @@ interface PermitFormProps {
   onCancel?: () => void;
   onContinue: () => Promise<void>;
   isAmendAction: boolean;
-  formMethods: UseFormReturn<Application>;
   permitType: PermitType;
   applicationNumber?: string;
   permitNumber?: string;
@@ -39,48 +36,41 @@ interface PermitFormProps {
   permitDuration: number;
   permitCommodities: Commodities[];
   vehicleDetails?: VehicleDetailsType;
-  vehicleChoices: (PowerUnit | Trailer)[];
+  vehicleOptions: (PowerUnit | Trailer)[];
+  powerUnitTypes: VehicleType[];
+  trailerTypes: VehicleType[];
+  children?: React.ReactNode;
+  companyInfo?: CompanyProfile;
 }
 
 export const PermitForm = (props: PermitFormProps) => {
-  // Queries used to populate select options for vehicle details
-  const powerUnitTypesQuery = usePowerUnitTypesQuery();
-  const trailerTypesQuery = useTrailerTypesQuery();
-
-  // Vehicle details that have been fetched by vehicle details queries
-  const fetchedPowerUnitTypes = getDefaultRequiredVal([], powerUnitTypesQuery.data);
-  const fetchedTrailerTypes = getDefaultRequiredVal([], trailerTypesQuery.data);
-
   return (
     <Box className="permit-form layout-box">
       <Box className="permit-form__form">
-        <FormProvider {...props.formMethods}>
-          <ApplicationDetails
-            permitType={props.permitType}
-            applicationNumber={props.isAmendAction ? undefined : props.applicationNumber}
-            permitNumber={props.isAmendAction ? props.permitNumber : undefined}
-            createdDateTime={props.createdDateTime}
-            updatedDateTime={props.updatedDateTime}
-          />
-          <ContactDetails feature={props.feature} />
-          <PermitDetails
-            feature={props.feature}
-            defaultStartDate={props.permitStartDate}
-            defaultDuration={props.permitDuration}
-            commodities={props.permitCommodities}
-            applicationNumber={props.applicationNumber}
-          />
-          <VehicleDetails
-            feature={props.feature}
-            vehicleData={props.vehicleDetails}
-            vehicleOptions={props.vehicleChoices}
-            powerUnitTypes={fetchedPowerUnitTypes}
-            trailerTypes={fetchedTrailerTypes}
-          />
-          {props.isAmendAction ? (
-            <></>
-          ) : null}
-        </FormProvider>
+        <ApplicationDetails
+          permitType={props.permitType}
+          infoNumber={props.isAmendAction ? props.permitNumber : props.applicationNumber}
+          infoNumberType={props.isAmendAction ? "permit" : "application"}
+          createdDateTime={props.createdDateTime}
+          updatedDateTime={props.updatedDateTime}
+          companyInfo={props.companyInfo}
+        />
+        <ContactDetails feature={props.feature} />
+        <PermitDetails
+          feature={props.feature}
+          defaultStartDate={props.permitStartDate}
+          defaultDuration={props.permitDuration}
+          commodities={props.permitCommodities}
+          applicationNumber={props.applicationNumber}
+        />
+        <VehicleDetails
+          feature={props.feature}
+          vehicleData={props.vehicleDetails}
+          vehicleOptions={props.vehicleOptions}
+          powerUnitTypes={props.powerUnitTypes}
+          trailerTypes={props.trailerTypes}
+        />
+        {props.children}
       </Box>
 
       <FormActions 

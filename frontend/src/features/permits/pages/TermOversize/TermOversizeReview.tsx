@@ -15,13 +15,15 @@ import { ReviewContactDetails } from "./components/review/ReviewContactDetails";
 import { ReviewPermitDetails } from "./components/review/ReviewPermitDetails";
 import { ReviewVehicleInfo } from "./components/review/ReviewVehicleInfo";
 import { ReviewFeeSummary } from "./components/review/ReviewFeeSummary";
+import { useCompanyInfoQuery } from "../../../manageProfile/apiManager/hooks";
 
 export const TermOversizeReview = () => {
   const { applicationData, setApplicationData, back, next } =
     useContext(ApplicationContext);
 
+  const companyQuery = useCompanyInfoQuery();
   const methods = useForm<Application>();
-
+  
   // For the confirmation checkboxes
   const [isChecked, setIsChecked] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -64,9 +66,11 @@ export const TermOversizeReview = () => {
           />
           <ApplicationDetails
             permitType={applicationData?.permitType}
-            applicationNumber={applicationData?.applicationNumber}
+            infoNumberType="application"
+            infoNumber={applicationData?.applicationNumber}
             createdDateTime={applicationData?.createdDateTime}
             updatedDateTime={applicationData?.updatedDateTime}
+            companyInfo={companyQuery.data}
           />
           <ReviewContactDetails values={applicationData} />
           <ReviewPermitDetails values={applicationData} />

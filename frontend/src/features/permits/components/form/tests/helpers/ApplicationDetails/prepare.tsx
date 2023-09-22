@@ -68,9 +68,11 @@ export const renderTestComponent = (
   return renderWithClient(
     <ApplicationDetails
       permitType={permitType}
-      applicationNumber={applicationNumber}
+      infoNumberType="application"
+      infoNumber={applicationNumber}
       createdDateTime={createdDt}
       updatedDateTime={updatedDt}
+      companyInfo={defaultCompanyInfo}
     />
   );
 };
