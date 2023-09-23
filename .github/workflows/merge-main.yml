@@ -1,13 +1,9 @@
-name: Merge to Main
+name: Merge
 
 on:
-  push:
-    branches:
-      - main
-      - feature/deploy.yml
-    paths-ignore:
-      - ".github/ISSUE_TEMPLATE/*"
-      - "**.md"
+  workflow_run:
+    workflows: [PR Closed]
+    types: [completed]
   workflow_dispatch:
 
 concurrency:
