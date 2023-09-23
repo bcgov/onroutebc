@@ -66,7 +66,6 @@ jobs:
     with:
       environment: 'dev'
       imagetag: ${{ github.event.number }}
-      penetration_test: false
       vault_zone: 'dev'
       zone: ${{ github.event.number }}
     secrets: inherit
