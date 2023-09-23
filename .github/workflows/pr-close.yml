@@ -1,4 +1,4 @@
-name: Pull Request Closed
+name: PR Closed
 
 on:
   pull_request:
