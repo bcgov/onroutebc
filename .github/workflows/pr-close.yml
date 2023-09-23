@@ -22,6 +22,7 @@ jobs:
 
           # Remove old build runs, build pods and deployment pods
           oc delete all,pvc,secret,configmap -l app=${{ github.event.repository.name }}-${{ github.event.number }}
+
       - name: Authenticate and set context
         uses: redhat-actions/oc-login@v1
         with:

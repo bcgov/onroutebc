@@ -33,6 +33,7 @@ jobs:
 
             Once merged, code will be promoted and handed off to following workflow run.
             [Main Merge Workflow](https://github.com/${{ github.repository }}/actions/workflows/merge-main.yml)
+
   builds:
     name: Builds
     runs-on: ubuntu-22.04
@@ -41,27 +42,18 @@ jobs:
     strategy:
       matrix:
         package: [backend/vehicles, backend/dops, frontend]
-        include:
-          - package: backend/vehicles
-            triggers: ('backend/vehicles/')
-          - package: backend/dops
-            triggers: ('backend/dops/')
-          - package: frontend
-            triggers: ('frontend/')
     steps:
       - uses: actions/checkout@v4
-      
       - uses: bcgov-nr/action-builder-ghcr@v1.1.2
         with:
           package: ${{ matrix.package }}
           tag: ${{ github.event.number }}
           tag_fallback: test
           token: ${{ secrets.GITHUB_TOKEN }}
-          triggers: ${{ matrix.triggers }}
+          triggers: ( '${{ matrix.package }}/')
       
   deploys:
-    needs: 
-      - builds
+    needs: [builds]
     uses: ./.github/workflows/deploy.yml
     with:
       environment: 'dev'
