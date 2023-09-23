@@ -12,7 +12,5 @@
 
 # Devops:
 Dockerfile @devin-aot @cberg-aot
-Dockerfile @devin-aot @cberg-aot
-Dockerfile @devin-aot @cberg-aot
 docker-compose.yml @devin-aot @cberg-aot
 /.github/** @devin-aot @cberg-aot
