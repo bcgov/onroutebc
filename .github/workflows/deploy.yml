@@ -57,7 +57,7 @@ on:
         type: string
 jobs:
   deployments:
-    name: Deployments
+    name: Deploy
     environment: ${{inputs.environment}}
     runs-on: ubuntu-22.04
     strategy:
