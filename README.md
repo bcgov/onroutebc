@@ -1,16 +1,19 @@
-# OnRouteBC - Provincial Commercial Vehicle Permitting Solution
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=bcgov_onroutebc&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=bcgov_onroutebc)
+[![Merge](https://github.com/bcgov/onroutebc/actions/workflows/merge-main.yml/badge.svg)](https://github.com/bcgov/onroutebc/actions/workflows/merge.yml)
+[![Analysis](https://github.com/bcgov/onroutebc/actions/workflows/unit-tests.yml/badge.svg)](https://github.com/bcgov/onroutebc/actions/workflows/analysis.yml)
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](./LICENSE)
-[![Lifecycle:Experimental](https://img.shields.io/badge/Lifecycle-Experimental-339999)](<Redirect-URL>)
+[![Issues](https://img.shields.io/github/issues/bcgov/onroutebc)](/../../issues)
+[![Pull Requests](https://img.shields.io/github/issues-pr/bcgov/onroutebc)](/../../pulls)
+[![License](https://img.shields.io/github/license/bcgov/onroutebc.svg)](/LICENSE)
+[![Lifecycle](https://img.shields.io/badge/Lifecycle-Experimental-339999)](https://github.com/bcgov/repomountie/blob/master/doc/lifecycle-badges.md)
+
+# OnRouteBC - Provincial Commercial Vehicle Permitting Solution
 
 ## Summary
 
 The solution will have all commercial vehicle permit types available for application online and automate the approval and routing process for most permit applications. In addition onRouteBC will provide workflow tools to accommodate more complex functions such as Extraordinary Load (EL) approvals and bridge analysis. The project will include data migration from the legacy system and will leverage external systems to deliver some of the functionality required.
 
-
 ## Third-Party Products/Libraries used and the licenses they are covered by
-<!--- product/library and path to the LICENSE --->
-<!--- Example: <library_name> - [![GitHub](<shield_icon_link>)](<path_to_library_LICENSE>) --->
 
 ## Project Status
 - [x] Development
