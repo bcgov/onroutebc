@@ -73,7 +73,7 @@ export class TrailersProfile extends AutomapperProfile {
         ),
 
         forMember(
-          (d) => d.upatedUserGuid,
+          (d) => d.updatedUserGuid,
           mapWithArguments((source, { userGUID }) => {
             return userGUID;
           }),
@@ -117,7 +117,7 @@ export class TrailersProfile extends AutomapperProfile {
         UpdateTrailerDto,
         Trailer,
         forMember(
-          (d) => d.upatedUserGuid,
+          (d) => d.updatedUserGuid,
           mapWithArguments((source, { userGUID }) => {
             return userGUID;
           }),

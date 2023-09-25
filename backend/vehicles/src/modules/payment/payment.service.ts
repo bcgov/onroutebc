@@ -292,7 +292,7 @@ export class PaymentService {
           createdUserGuid: currentUser.userGUID,
           updatedUser: currentUser.userName,
           updatedDateTime: new Date(),
-          upatedUserGuid: currentUser.userGUID,
+          updatedUserGuid: currentUser.userGUID,
           updatedUserDirectory: directory,
         })
         .execute();

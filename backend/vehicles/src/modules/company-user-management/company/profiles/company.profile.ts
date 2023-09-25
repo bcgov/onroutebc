@@ -68,7 +68,7 @@ export class CompanyProfile extends AutomapperProfile {
         ),
 
         forMember(
-          (d) => d.upatedUserGuid,
+          (d) => d.updatedUserGuid,
           mapWithArguments((source, { userGUID }) => {
             return userGUID;
           }),
@@ -141,7 +141,7 @@ export class CompanyProfile extends AutomapperProfile {
         UpdateCompanyDto,
         Company,
         forMember(
-          (d) => d.upatedUserGuid,
+          (d) => d.updatedUserGuid,
           mapWithArguments((source, { userGUID }) => {
             return userGUID;
           }),

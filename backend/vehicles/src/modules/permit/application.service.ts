@@ -333,7 +333,7 @@ export class ApplicationService {
         ...(permitApprovalSource && {
           permitApprovalSource: permitApprovalSource,
         }),
-        upatedUserGuid: currentUser.userGUID,
+        updatedUserGuid: currentUser.userGUID,
         updatedUser: currentUser.userName,
         updatedUserDirectory: directory,
         updatedDateTime: new Date(),
@@ -456,7 +456,7 @@ export class ApplicationService {
       permitEntity.permitStatus = ApplicationStatus.ISSUED;
       permitEntity.permitNumber = permitNumber;
       permitEntity.documentId = generatedDocuments.at(0).dmsId;
-      (permitEntity.upatedUserGuid = currentUser.userGUID),
+      (permitEntity.updatedUserGuid = currentUser.userGUID),
         (permitEntity.updatedUser = currentUser.userName),
         (permitEntity.updatedDateTime = new Date());
       permitEntity.updatedUserDirectory = getDirectory(currentUser);
@@ -472,7 +472,7 @@ export class ApplicationService {
         (receiptEntity.createdUser = currentUser.userName),
         (receiptEntity.createdDateTime = new Date());
       receiptEntity.createdUserDirectory = getDirectory(currentUser);
-      (receiptEntity.upatedUserGuid = currentUser.userGUID),
+      (receiptEntity.updatedUserGuid = currentUser.userGUID),
         (receiptEntity.updatedUser = currentUser.userName),
         (receiptEntity.updatedDateTime = new Date());
       receiptEntity.updatedUserDirectory = getDirectory(currentUser);

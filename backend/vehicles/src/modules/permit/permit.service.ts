@@ -459,7 +459,7 @@ export class PermitService {
       newPermit.revision = permit.revision + 1;
       newPermit.previousRevision = +permitId;
       newPermit.documentId = generatedDocuments.at(0).dmsId;
-      (newPermit.upatedUserGuid = currentUser.userGUID),
+      (newPermit.updatedUserGuid = currentUser.userGUID),
         (newPermit.updatedUser = currentUser.userName),
         (newPermit.updatedDateTime = new Date());
       newPermit.updatedUserDirectory = directory;
@@ -481,7 +481,7 @@ export class PermitService {
         (receiptEntity.createdUser = currentUser.userName),
         (receiptEntity.createdDateTime = new Date());
       receiptEntity.createdUserDirectory = directory;
-      (receiptEntity.upatedUserGuid = currentUser.userGUID),
+      (receiptEntity.updatedUserGuid = currentUser.userGUID),
         (receiptEntity.updatedUser = currentUser.userName),
         (receiptEntity.updatedDateTime = new Date());
       receiptEntity.updatedUserDirectory = directory;

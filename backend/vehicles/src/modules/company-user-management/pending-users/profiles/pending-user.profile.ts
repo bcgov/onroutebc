@@ -62,7 +62,7 @@ export class PendingUsersProfile extends AutomapperProfile {
         ),
 
         forMember(
-          (d) => d.upatedUserGuid,
+          (d) => d.updatedUserGuid,
           mapWithArguments((source, { userGUID }) => {
             return userGUID;
           }),
@@ -110,7 +110,7 @@ export class PendingUsersProfile extends AutomapperProfile {
           }),
         ),
         forMember(
-          (d) => d.upatedUserGuid,
+          (d) => d.updatedUserGuid,
           mapWithArguments((source, { userGUID }) => {
             return userGUID;
           }),

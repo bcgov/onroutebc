@@ -215,7 +215,7 @@ export class UsersService {
     const user = new User();
     user.userGUID = userGUID;
     user.statusCode = statusCode;
-    user.upatedUserGuid = currentUser.userGUID;
+    user.updatedUserGuid = currentUser.userGUID;
     (user.updatedDateTime = new Date()),
       (user.updatedUser = currentUser.userName),
       (user.updatedUserDirectory = directory);

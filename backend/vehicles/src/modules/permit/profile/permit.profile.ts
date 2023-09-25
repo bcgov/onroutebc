@@ -57,7 +57,7 @@ export class PermitProfile extends AutomapperProfile {
         ),
 
         forMember(
-          (d) => d.upatedUserGuid,
+          (d) => d.updatedUserGuid,
           mapWithArguments((source, { userGUID }) => {
             return userGUID;
           }),

@@ -64,7 +64,7 @@ export class Base {
     name: 'APP_LAST_UPDATE_USER_GUID',
     nullable: true,
   })
-  upatedUserGuid: string;
+  updatedUserGuid: string;
 
   @AutoMap()
   @ApiProperty({ description: 'Resource Update Date' })

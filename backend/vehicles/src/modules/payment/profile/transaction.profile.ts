@@ -25,7 +25,7 @@ export class TransactionProfile extends AutomapperProfile {
         CreateTransactionDto,
         Transaction,
         forMember(
-          (d) => d.upatedUserGuid,
+          (d) => d.updatedUserGuid,
           mapWithArguments((source, { userGUID }) => {
             return userGUID;
           }),
