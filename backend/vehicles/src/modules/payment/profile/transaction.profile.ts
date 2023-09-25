@@ -1,4 +1,9 @@
-import { Mapper, createMap } from '@automapper/core';
+import {
+  Mapper,
+  createMap,
+  forMember,
+  mapWithArguments,
+} from '@automapper/core';
 import { AutomapperProfile, InjectMapper } from '@automapper/nestjs';
 import { Injectable } from '@nestjs/common';
 import { Transaction } from '../entities/transaction.entity';
@@ -15,7 +20,36 @@ export class TransactionProfile extends AutomapperProfile {
   override get profile() {
     return (mapper: Mapper) => {
       createMap(mapper, Transaction, ReadTransactionDto);
-      createMap(mapper, CreateTransactionDto, Transaction);
+      createMap(
+        mapper,
+        CreateTransactionDto,
+        Transaction,
+        forMember(
+          (d) => d.upatedUserGuid,
+          mapWithArguments((source, { userGUID }) => {
+            return userGUID;
+          }),
+        ),
+        forMember(
+          (d) => d.updatedUser,
+          mapWithArguments((source, { userName }) => {
+            return userName;
+          }),
+        ),
+        forMember(
+          (d) => d.updatedUserDirectory,
+          mapWithArguments((source, { directory }) => {
+            return directory;
+          }),
+        ),
+
+        forMember(
+          (d) => d.updatedDateTime,
+          mapWithArguments((source, { timestamp }) => {
+            return timestamp;
+          }),
+        ),
+      );
       createMap(mapper, Transaction, ReadPermitTransactionDto);
     };
   }

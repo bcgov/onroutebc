@@ -43,6 +43,7 @@ import { Permit } from './entities/permit.entity';
 import { PermitHistoryDto } from './dto/response/permit-history.dto';
 import { ResultDto } from './dto/response/result.dto';
 import { VoidPermitDto } from './dto/request/void-permit.dto';
+import { getDirectory } from 'src/common/helper/auth.helper';
 
 @ApiBearerAuth()
 @ApiTags('Permit')
@@ -72,7 +73,9 @@ export class PermitController {
     @Req() request: Request,
     @Body() createPermitDto: CreatePermitDto,
   ): Promise<ReadPermitDto> {
-    return this.permitService.create(createPermitDto);
+    const currentUser = request.user as IUserJWT;
+    const directory = getDirectory(currentUser);
+    return this.permitService.create(createPermitDto, currentUser, directory);
   }
 
   @ApiOkResponse({
@@ -247,10 +250,12 @@ export class PermitController {
   ): Promise<ResultDto> {
     console.log(voidPermitDto);
     const currentUser = request.user as IUserJWT;
+    const directory = getDirectory(currentUser);
     const permit = await this.permitService.voidPermit(
       permitId,
       voidPermitDto,
       currentUser,
+      directory,
     );
     return permit;
   }

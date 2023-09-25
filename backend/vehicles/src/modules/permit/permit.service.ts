@@ -42,6 +42,7 @@ import { EmailService } from '../email/email.service';
 import { EmailTemplate } from 'src/common/enum/email-template.enum';
 import { ResultDto } from './dto/response/result.dto';
 import { VoidPermitDto } from './dto/request/void-permit.dto';
+import { Directory } from 'src/common/enum/directory.enum';
 
 @Injectable()
 export class PermitService {
@@ -61,11 +62,22 @@ export class PermitService {
     private readonly applicationService: ApplicationService,
   ) {}
 
-  async create(createPermitDto: CreatePermitDto): Promise<ReadPermitDto> {
+  async create(
+    createPermitDto: CreatePermitDto,
+    currentUser: IUserJWT,
+    directory: Directory,
+  ): Promise<ReadPermitDto> {
     const permitEntity = await this.classMapper.mapAsync(
       createPermitDto,
       CreatePermitDto,
       Permit,
+      {
+        extraArgs: () => ({
+          userName: currentUser.userName,
+          directory: directory,
+          userGUID: currentUser.userGUID,
+        }),
+      },
     );
 
     const savedPermitEntity = await this.permitRepository.save(permitEntity);
@@ -337,6 +349,7 @@ export class PermitService {
     permitId: string,
     voidPermitDto: VoidPermitDto,
     currentUser: IUserJWT,
+    directory: Directory,
   ): Promise<ResultDto> {
     const transactionDetails: IReceipt = {
       transactionAmount: voidPermitDto.transactionAmount,
@@ -446,6 +459,10 @@ export class PermitService {
       newPermit.revision = permit.revision + 1;
       newPermit.previousRevision = +permitId;
       newPermit.documentId = generatedDocuments.at(0).dmsId;
+      (newPermit.upatedUserGuid = currentUser.userGUID),
+        (newPermit.updatedUser = currentUser.userName),
+        (newPermit.updatedDateTime = new Date());
+      newPermit.updatedUserDirectory = directory;
 
       newPermit.applicationNumber = applicationNumber;
       /* Create application to generate permit id. 
@@ -460,6 +477,14 @@ export class PermitService {
       receiptEntity.transactionId = transaction.transactionId;
       receiptEntity.receiptNumber = receiptNo;
       receiptEntity.receiptDocumentId = generatedDocuments.at(1).dmsId;
+      (receiptEntity.createdUserGuid = currentUser.userGUID),
+        (receiptEntity.createdUser = currentUser.userName),
+        (receiptEntity.createdDateTime = new Date());
+      receiptEntity.createdUserDirectory = directory;
+      (receiptEntity.upatedUserGuid = currentUser.userGUID),
+        (receiptEntity.updatedUser = currentUser.userName),
+        (receiptEntity.updatedDateTime = new Date());
+      receiptEntity.updatedUserDirectory = directory;
       await queryRunner.manager.save(receiptEntity);
       /* const permitNumber = await this.applicationService.generatePermitNumber(
         newPermit.permitId,

@@ -46,6 +46,8 @@ import { ReadTransactionDto } from '../payment/dto/response/read-transaction.dto
 import { Transaction } from '../payment/entities/transaction.entity';
 import { Receipt } from '../payment/entities/receipt.entity';
 import { convertUtcToPt } from '../../common/helper/date-time.helper';
+import { Directory } from 'src/common/enum/directory.enum';
+import { getDirectory } from 'src/common/helper/auth.helper';
 
 @Injectable()
 export class ApplicationService {
@@ -80,6 +82,7 @@ export class ApplicationService {
   async create(
     createApplicationDto: CreateApplicationDto,
     currentUser: IUserJWT,
+    directory: Directory,
   ): Promise<ReadApplicationDto> {
     const id = createApplicationDto.permitId;
     //If permit id exists assign it to null to create new application.
@@ -121,6 +124,14 @@ export class ApplicationService {
       createApplicationDto,
       CreateApplicationDto,
       Permit,
+      {
+        extraArgs: () => ({
+          userName: currentUser.userName,
+          userGUID: currentUser.userGUID,
+          directory: directory,
+          timestamp: new Date(),
+        }),
+      },
     );
     const savedPermitEntity = await this.permitRepository.save(
       permitApplication,
@@ -241,6 +252,8 @@ export class ApplicationService {
   async update(
     applicationNumber: string,
     updateApplicationDto: UpdateApplicationDto,
+    currentUser: IUserJWT,
+    directory: Directory,
   ): Promise<ReadApplicationDto> {
     const existingApplication = await this.findByApplicationNumber(
       applicationNumber,
@@ -254,6 +267,10 @@ export class ApplicationService {
         extraArgs: () => ({
           permitId: existingApplication.permitId,
           permitDataId: existingApplication.permitData.permitDataId,
+          userName: currentUser.userName,
+          userGUID: currentUser.userGUID,
+          directory: directory,
+          timestamp: new Date(),
         }),
       },
     );
@@ -283,6 +300,7 @@ export class ApplicationService {
     applicationIds: string[],
     applicationStatus: ApplicationStatus,
     currentUser: IUserJWT,
+    directory: Directory,
   ): Promise<ResultDto> {
     let permitApprovalSource: PermitApprovalSourceEnum = null;
     if (applicationIds.length === 1) {
@@ -315,6 +333,10 @@ export class ApplicationService {
         ...(permitApprovalSource && {
           permitApprovalSource: permitApprovalSource,
         }),
+        upatedUserGuid: currentUser.userGUID,
+        updatedUser: currentUser.userName,
+        updatedUserDirectory: directory,
+        updatedDateTime: new Date(),
       })
       .whereInIds(applicationIds)
       .returning(['permitId'])
@@ -434,6 +456,10 @@ export class ApplicationService {
       permitEntity.permitStatus = ApplicationStatus.ISSUED;
       permitEntity.permitNumber = permitNumber;
       permitEntity.documentId = generatedDocuments.at(0).dmsId;
+      (permitEntity.upatedUserGuid = currentUser.userGUID),
+        (permitEntity.updatedUser = currentUser.userName),
+        (permitEntity.updatedDateTime = new Date());
+      permitEntity.updatedUserDirectory = getDirectory(currentUser);
       await queryRunner.manager.save(permitEntity);
       const receiptEntity: Receipt = new Receipt();
       const transaction = await this.findOneTransactionByOrderNumber(
@@ -442,6 +468,14 @@ export class ApplicationService {
       receiptEntity.transactionId = transaction.transactionId;
       receiptEntity.receiptNumber = receiptNo;
       receiptEntity.receiptDocumentId = generatedDocuments.at(1).dmsId;
+      (receiptEntity.createdUserGuid = currentUser.userGUID),
+        (receiptEntity.createdUser = currentUser.userName),
+        (receiptEntity.createdDateTime = new Date());
+      receiptEntity.createdUserDirectory = getDirectory(currentUser);
+      (receiptEntity.upatedUserGuid = currentUser.userGUID),
+        (receiptEntity.updatedUser = currentUser.userName),
+        (receiptEntity.updatedDateTime = new Date());
+      receiptEntity.updatedUserDirectory = getDirectory(currentUser);
       await queryRunner.manager.save(receiptEntity);
       // In case of amendment move the parent permit to SUPERSEDED Status.
       if (

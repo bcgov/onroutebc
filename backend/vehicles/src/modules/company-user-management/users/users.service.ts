@@ -80,6 +80,7 @@ export class UsersService {
           userName: currentUser.userName,
           directory: directory,
           userGUID: currentUser.userGUID,
+          timestamp: new Date(),
         }),
       });
 
@@ -125,6 +126,7 @@ export class UsersService {
     userGUID: string,
     updateUserDto: UpdateUserDto,
     companyId: number,
+    directory: Directory,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     currentUser?: IUserJWT,
   ): Promise<ReadUserDto> {
@@ -136,7 +138,10 @@ export class UsersService {
 
     const user = this.classMapper.map(updateUserDto, UpdateUserDto, User, {
       extraArgs: () => ({
-        userGUID: userGUID,
+        userName: currentUser.userName,
+        directory: directory,
+        userGUID: currentUser.userGUID,
+        timestamp: new Date(),
       }),
     });
     user.userContact.contactId = userDetails[0]?.userContact?.contactId;
@@ -204,10 +209,16 @@ export class UsersService {
   async updateStatus(
     userGUID: string,
     statusCode: UserStatus,
+    directory: Directory,
+    currentUser?: IUserJWT,
   ): Promise<UpdateResult> {
     const user = new User();
     user.userGUID = userGUID;
     user.statusCode = statusCode;
+    user.upatedUserGuid = currentUser.userGUID;
+    (user.updatedDateTime = new Date()),
+      (user.updatedUser = currentUser.userName),
+      (user.updatedUserDirectory = directory);
     return await this.userRepository.update({ userGUID }, user);
   }
 
