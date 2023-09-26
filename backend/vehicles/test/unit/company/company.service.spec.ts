@@ -15,7 +15,6 @@ import {
   dataSourceMockFactory,
 } from '../../util/mocks/factory/dataSource.factory.mock';
 import { UsersProfile } from '../../../src/modules/company-user-management/users/profiles/user.profile';
-import { Directory } from '../../../src/common/enum/directory.enum';
 import { AddressProfile } from '../../../src/modules/common/profiles/address.profile';
 import { ContactProfile } from '../../../src/modules/common/profiles/contact.profile';
 import {
@@ -33,6 +32,7 @@ import * as constants from '../../util/mocks/data/test-data.constants';
 import {
   blueCompanyAdminUserJWTMock,
   redCompanyAdminUserJWTMock,
+  redCompanyCvClientUserJWTMock,
 } from '../../util/mocks/data/jwt.mock';
 import * as databaseHelper from 'src/common/helper/database.helper';
 import { EmailService } from '../../../src/modules/email/email.service';
@@ -153,6 +153,7 @@ describe('CompanyService', () => {
         constants.RED_COMPANY_ID,
         updateRedCompanyDtoMock,
         constants.RED_COMPANY_DIRECOTRY,
+        redCompanyCvClientUserJWTMock,
       );
 
       expect(typeof retCompany).toBe('object');
@@ -167,7 +168,8 @@ describe('CompanyService', () => {
         await service.update(
           COMPANY_ID_99,
           updateRedCompanyDtoMock,
-          Directory.BBCEID,
+          constants.RED_COMPANY_DIRECOTRY,
+          redCompanyCvClientUserJWTMock,
         );
       }).rejects.toThrow(DataNotFoundException);
     });

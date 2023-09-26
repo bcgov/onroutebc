@@ -142,6 +142,7 @@ describe('CompanyController', () => {
         extension: null,
       });
       const retCompany = await controller.update(
+        request,
         constants.RED_COMPANY_ID,
         updateRedCompanyDtoMock,
       );
@@ -153,7 +154,11 @@ describe('CompanyController', () => {
       request.user = redCompanyAdminUserJWTMock;
       companyService.update.mockResolvedValue(undefined);
       await expect(async () => {
-        await controller.update(COMPANY_ID_99, updateRedCompanyDtoMock);
+        await controller.update(
+          request,
+          COMPANY_ID_99,
+          updateRedCompanyDtoMock,
+        );
       }).rejects.toThrow(DataNotFoundException);
     });
   });

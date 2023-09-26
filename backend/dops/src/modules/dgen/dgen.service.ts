@@ -27,6 +27,7 @@ import { CreateGeneratedReportDto } from './dto/request/create-generated-report.
 import puppeteer, { Browser } from 'puppeteer';
 import { IFile } from '../../interface/file.interface';
 import { ReportTemplate } from '../../enum/report-template.enum';
+import { getDirectory } from 'src/helper/auth.helper';
 
 @Injectable()
 export class DgenService {
@@ -119,6 +120,7 @@ export class DgenService {
     const dmsObject = await this.dmsService.create(
       currentUser,
       generatedDocument,
+      getDirectory(currentUser),
       companyId,
     );
     res.setHeader('x-orbc-dms-id', dmsObject.documentId);
@@ -259,7 +261,7 @@ export class DgenService {
       });
       generatedDocument.size = generatedDocument.buffer.length;
     } catch (err) {
-      console.log("error on pup",err);
+      console.log('error on pup', err);
       throw new InternalServerErrorException(err);
     } finally {
       if (browser) {

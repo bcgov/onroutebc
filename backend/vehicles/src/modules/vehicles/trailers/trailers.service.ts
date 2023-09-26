@@ -8,6 +8,8 @@ import { ReadTrailerDto } from './dto/response/read-trailer.dto';
 import { UpdateTrailerDto } from './dto/request/update-trailer.dto';
 import { Trailer } from './entities/trailer.entity';
 import { DeleteDto } from 'src/modules/common/dto/response/delete.dto';
+import { IUserJWT } from 'src/common/interface/user-jwt.interface';
+import { Directory } from 'src/common/enum/directory.enum';
 
 @Injectable()
 export class TrailersService {
@@ -20,13 +22,21 @@ export class TrailersService {
   async create(
     companyId: number,
     trailer: CreateTrailerDto,
+    currentUser: IUserJWT,
+    directory: Directory,
   ): Promise<ReadTrailerDto> {
     const newTrailer = this.classMapper.map(
       trailer,
       CreateTrailerDto,
       Trailer,
       {
-        extraArgs: () => ({ companyId: companyId }),
+        extraArgs: () => ({
+          companyId: companyId,
+          userName: currentUser.userName,
+          directory: directory,
+          userGUID: currentUser.userGUID,
+          timestamp: new Date(),
+        }),
       },
     );
     return this.classMapper.mapAsync(
@@ -71,11 +81,21 @@ export class TrailersService {
     companyId: number,
     trailerId: string,
     updateTrailerDto: UpdateTrailerDto,
+    currentUser: IUserJWT,
+    directory: Directory,
   ): Promise<ReadTrailerDto> {
     const newTrailer = this.classMapper.map(
       updateTrailerDto,
       UpdateTrailerDto,
       Trailer,
+      {
+        extraArgs: () => ({
+          userName: currentUser.userName,
+          directory: directory,
+          userGUID: currentUser.userGUID,
+          timestamp: new Date(),
+        }),
+      },
     );
 
     await this.trailerRepository.update(

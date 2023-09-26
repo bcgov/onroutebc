@@ -60,6 +60,57 @@ export class UsersProfile extends AutomapperProfile {
           }),
         ),
         forMember(
+          (d) => d.createdUserGuid,
+          mapWithArguments((source, { userGUID }) => {
+            return userGUID;
+          }),
+        ),
+        forMember(
+          (d) => d.createdUser,
+          mapWithArguments((source, { userName }) => {
+            return userName;
+          }),
+        ),
+        forMember(
+          (d) => d.createdUserDirectory,
+          mapWithArguments((source, { directory }) => {
+            return directory;
+          }),
+        ),
+
+        forMember(
+          (d) => d.createdDateTime,
+          mapWithArguments((source, { timestamp }) => {
+            return timestamp;
+          }),
+        ),
+
+        forMember(
+          (d) => d.updatedUserGuid,
+          mapWithArguments((source, { userGUID }) => {
+            return userGUID;
+          }),
+        ),
+        forMember(
+          (d) => d.updatedUser,
+          mapWithArguments((source, { userName }) => {
+            return userName;
+          }),
+        ),
+        forMember(
+          (d) => d.updatedUserDirectory,
+          mapWithArguments((source, { directory }) => {
+            return directory;
+          }),
+        ),
+
+        forMember(
+          (d) => d.updatedDateTime,
+          mapWithArguments((source, { timestamp }) => {
+            return timestamp;
+          }),
+        ),
+        forMember(
           (d) => d.userContact,
           mapFrom((s) => {
             return this.mapper.map(s, CreateContactDto, Contact);
@@ -81,9 +132,81 @@ export class UsersProfile extends AutomapperProfile {
           }),
         ),
         forMember(
+          (d) => d.updatedUserGuid,
+          mapWithArguments((source, { userGUID }) => {
+            return userGUID;
+          }),
+        ),
+        forMember(
+          (d) => d.updatedUser,
+          mapWithArguments((source, { userName }) => {
+            return userName;
+          }),
+        ),
+        forMember(
+          (d) => d.updatedUserDirectory,
+          mapWithArguments((source, { directory }) => {
+            return directory;
+          }),
+        ),
+        forMember(
+          (d) => d.updatedDateTime,
+          mapWithArguments((source, { timestamp }) => {
+            return timestamp;
+          }),
+        ),
+        forMember(
           (d) => d.userContact,
           mapFrom((s) => {
             return this.mapper.map(s, CreateContactDto, Contact);
+          }),
+        ),
+        forMember(
+          (d) => d.userContact.createdUser,
+          mapWithArguments((source, { userName }) => {
+            return userName;
+          }),
+        ),
+        forMember(
+          (d) => d.userContact.createdDateTime,
+          mapWithArguments((source, { timestamp }) => {
+            return timestamp;
+          }),
+        ),
+        forMember(
+          (d) => d.userContact.createdUserDirectory,
+          mapWithArguments((source, { directory }) => {
+            return directory;
+          }),
+        ),
+        forMember(
+          (d) => d.userContact.createdUserGuid,
+          mapWithArguments((source, { userGUID }) => {
+            return userGUID;
+          }),
+        ),
+        forMember(
+          (d) => d.userContact.updatedUser,
+          mapWithArguments((source, { userName }) => {
+            return userName;
+          }),
+        ),
+        forMember(
+          (d) => d.userContact.updatedDateTime,
+          mapWithArguments((source, { timestamp }) => {
+            return timestamp;
+          }),
+        ),
+        forMember(
+          (d) => d.userContact.updatedUserDirectory,
+          mapWithArguments((source, { directory }) => {
+            return directory;
+          }),
+        ),
+        forMember(
+          (d) => d.userContact.updatedUserGuid,
+          mapWithArguments((source, { userGUID }) => {
+            return userGUID;
           }),
         ),
         forMember((d) => d.userAuthGroup, ignore()),
