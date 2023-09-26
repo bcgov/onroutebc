@@ -25,6 +25,58 @@ export class PermitProfile extends AutomapperProfile {
         CreatePermitDto,
         Permit,
         forMember(
+          (d) => d.permitData.createdUserGuid,
+          mapWithArguments((source, { userGUID }) => {
+            return userGUID;
+          }),
+        ),
+        forMember(
+          (d) => d.permitData.createdUser,
+          mapWithArguments((source, { userName }) => {
+            return userName;
+          }),
+        ),
+
+        forMember(
+          (d) => d.permitData.createdUserDirectory,
+          mapWithArguments((source, { directory }) => {
+            return directory;
+          }),
+        ),
+
+        forMember(
+          (d) => d.permitData.createdDateTime,
+          mapWithArguments((source, { timestamp }) => {
+            return timestamp;
+          }),
+        ),
+        forMember(
+          (d) => d.permitData.updatedUserGuid,
+          mapWithArguments((source, { userGUID }) => {
+            return userGUID;
+          }),
+        ),
+        forMember(
+          (d) => d.permitData.updatedUser,
+          mapWithArguments((source, { userName }) => {
+            return userName;
+          }),
+        ),
+
+        forMember(
+          (d) => d.permitData.updatedUserDirectory,
+          mapWithArguments((source, { directory }) => {
+            return directory;
+          }),
+        ),
+
+        forMember(
+          (d) => d.permitData.updatedDateTime,
+          mapWithArguments((source, { timestamp }) => {
+            return timestamp;
+          }),
+        ),
+        forMember(
           (d) => d.permitData?.permitData,
           mapFrom((s) => {
             return s.permitData ? JSON.stringify(s.permitData) : undefined;
