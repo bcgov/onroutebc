@@ -23,7 +23,7 @@ import {
   PERMITS_API,
 } from "./endpoints/endpoints";
 import { mapApplicationToApplicationRequestData } from "../helpers/mappers";
-import { PermitTransaction, Transaction } from "../types/payment";
+import { PermitTransaction, Transaction, TransactionDto } from "../types/payment";
 import { VEHICLES_URL } from "../../../common/apiManager/endpoints/endpoints";
 import { ReadPermitDto } from "../types/permit";
 import { PaginatedResponse } from "../../../common/types/common";
@@ -219,28 +219,41 @@ export const downloadReceiptPdf = async (permitId: string) => {
 };
 
 /**
- * Generates a URL for making a payment transaction with Moti Pay.
+ * Start making a payment transaction with Moti Pay.
+ * @param {number} paymentMethodId - Id of payment method to use (currently hardcoded to 1).
+ * @param {string} transactionSubmitDate - The datetime when this transaction is started.
  * @param {number} transactionAmount - The amount of the transaction.
- * @returns {Promise<any>} - A Promise that resolves to the transaction URL.
+ * @param {string[]} permitIds - The permit ids that this transaction will pay for.
+ * @returns {Promise<TransactionDto>} - A Promise that resolves to the submitted transaction with URL.
  */
-export const getMotiPayTransactionUrl = async (
+export const startTransaction = async (
   paymentMethodId: number,
   transactionSubmitDate: string,
   transactionAmount: number,
   permitIds: string[]
-): Promise<any> => {
+): Promise<TransactionDto | null> => {
   const url =
     `${PAYMENT_API}?` +
     `paymentMethodId=${paymentMethodId}` +
     `&transactionSubmitDate=${transactionSubmitDate}` +
     `&transactionAmount=${transactionAmount}` +
     `&permitIds=${permitIds.toString()}`;
-  return httpGETRequest(url).then((response) => {
-    return response.data.url;
-  });
+  
+  try {
+    const response = await httpGETRequest(url);
+    return response.data as TransactionDto;
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
 };
 
-export const postTransaction = async (
+/**
+ * Completes the transaction after payment is successful.
+ * @param transactionDetails - The complete transaction details to be submitted after payment
+ * @returns Promise that resolves to a successful transaction.
+ */
+export const completeTransaction = async (
   transactionDetails: Transaction
 ): Promise<any> => {
   const url = `${PAYMENT_API}`;
@@ -323,20 +336,6 @@ export const getPermits = async ({
       })
     );
   return permits;
-};
-
-export const getPermitTransaction = async (transactionOrderNumber: string) => {
-  try {
-    const response = await httpGETRequest(
-      `${PAYMENT_API}/${transactionOrderNumber}/permit`
-    );
-    if (response.status === 200) {
-      return response.data as PermitTransaction;
-    }
-    return undefined;
-  } catch (err) {
-    return undefined;
-  }
 };
 
 export const getPermitHistory = async (originalPermitId?: string) => {

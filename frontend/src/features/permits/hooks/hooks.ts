@@ -1,20 +1,20 @@
 import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import { AxiosError } from "axios";
+
+import { Application } from "../types/application";
+import { mapApplicationResponseToApplication } from "../helpers/mappers";
+import { ReadPermitDto } from "../types/permit";
+import { PermitHistory } from "../types/PermitHistory";
 import {
   getApplicationByPermitId,
   getPermit,
   getPermitHistory,
-  getPermitTransaction,
-  postTransaction,
+  completeTransaction,
   submitTermOversize,
   updateTermOversize,
+  startTransaction,
 } from "../apiManager/permitsAPI";
-import { Application } from "../types/application";
-import { useState } from "react";
-import { mapApplicationResponseToApplication } from "../helpers/mappers";
-import { PermitTransaction } from "../types/payment";
-import { AxiosError } from "axios";
-import { ReadPermitDto } from "../types/permit";
-import { PermitHistory } from "../types/PermitHistory";
 
 /**
  * A custom react query mutation hook that saves the application data to the backend API
@@ -110,7 +110,73 @@ export const usePermitDetailsQuery = (permitId: string) => {
   };
 };
 
-export const usePostTransaction = (
+/**
+ * Custom hook that starts a transaction.
+ * @param paymentMethodId - Id of payment method to use (currently hardcoded to 1).
+ * @param transactionSubmitDate - The datetime when this transaction is started.
+ * @param transactionAmount - The amount of the transaction.
+ * @param permitIds - The permit ids that this transaction will pay for.
+ * @returns The queried transaction object (if there is one), as well as method to enable querying
+ */
+export const useStartTransaction = (
+  paymentMethodId: number,
+  transactionSubmitDate: string,
+  transactionAmount: number,
+  permitIds: string[]
+) => {
+  const [enableQuery, setEnableQuery] = useState<boolean>(false);
+
+  const query = useQuery({
+    queryKey: ["transaction"],
+    queryFn: () => startTransaction(
+      paymentMethodId, 
+      transactionSubmitDate, 
+      transactionAmount, 
+      permitIds
+    ),
+    enabled: enableQuery, // only query when enableQuery is true
+    retry: false,
+    refetchOnMount: "always",
+    refetchOnWindowFocus: false, // prevent unnecessary multiple queries on page showing up in foreground
+  });
+
+  /*
+  // Use this once the backend has been updated to use POST instead of GET
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: () => startTransaction(
+      paymentMethodId, 
+      transactionSubmitDate, 
+      transactionAmount, 
+      permitIds
+    ),
+    retry: false,
+    onSuccess: (transactionData) => {
+      queryClient.invalidateQueries(["transaction"]);
+      queryClient.setQueryData(["transaction"], transactionData);
+      setTransaction(transactionData);
+    },
+    onError: (err: unknown) => {
+      console.error(err);
+    },
+  });
+  */
+
+  return {
+    query,
+    // mutation,
+    setEnableQuery,
+  };
+};
+
+/**
+ * A custom hook that completes the transaction.
+ * @param messageText Message text that indicates the result of the transaction
+ * @param paymentStatus Payment status signifying the result of the transaction (1 - success, 0 - failed)
+ * @returns The mutation object, whether or not payment was approved, and the message to display
+ */
+export const useCompleteTransaction = (
   messageText: string,
   paymentStatus: number
 ) => {
@@ -139,7 +205,7 @@ export const usePostTransaction = (
   };
 
   const mutation = useMutation({
-    mutationFn: postTransaction,
+    mutationFn: completeTransaction,
     retry: false,
     onSuccess: (response) => {
       if (response.status === 201) {
@@ -160,35 +226,6 @@ export const usePostTransaction = (
     message,
     setPaymentApproved,
     setMessage,
-  };
-};
-
-/**
- * Custom hook for retrieving permit transaction data, which includes permit and transaction info
- * @param transactionOrderNumber Transaction order number for the transaction
- * @returns Associated permit transaction data
- */
-export const usePermitTransactionQuery = (
-  transactionOrderNumber: string,
-  paymentApproved: boolean,
-) => {
-  const [permitTransaction, setPermitTransaction] = useState<PermitTransaction | undefined>(undefined);
-
-  const query = useQuery({
-    queryKey: ["permitTransaction"],
-    queryFn: () => getPermitTransaction(transactionOrderNumber),
-    enabled: paymentApproved,
-    retry: false,
-    refetchOnMount: "always",
-    refetchOnWindowFocus: false,
-    onSuccess: (permitTransaction) => {
-      setPermitTransaction(permitTransaction);
-    },
-  });
-
-  return {
-    query,
-    permitTransaction,
   };
 };
 

@@ -3,42 +3,36 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleCheck } from "@fortawesome/free-regular-svg-icons";
 
 import "./ReviewVehicleInfo.scss";
-import { Application } from "../../../../types/application";
+import { VehicleDetails } from "../../../../types/application";
 import { mapTypeCodeToObject, vehicleTypeDisplayText } from "../../../../helpers/mappers";
-import { VehicleTypesAsString } from "../../../../../manageVehicles/types/managevehicles";
+import { VehicleType, VehicleTypesAsString } from "../../../../../manageVehicles/types/managevehicles";
 import {
   formatCountry,
   formatProvince,
 } from "../../../../../../common/helpers/formatCountryProvince";
 
-import {
-  usePowerUnitTypesQuery,
-  useTrailerTypesQuery,
-} from "../../../../../manageVehicles/apiManager/hooks";
-
-
 export const ReviewVehicleInfo = ({
-  values,
+  vehicleDetails,
+  vehicleWasSaved,
+  powerUnitTypes,
+  trailerTypes,
 }: {
-  values: Application | undefined;
+  vehicleDetails?: VehicleDetails;
+  vehicleWasSaved?: boolean;
+  powerUnitTypes?: VehicleType[];
+  trailerTypes?: VehicleType[];
 }) => {
-  const powerUnitTypesQuery = usePowerUnitTypesQuery();
-  const trailerTypesQuery = useTrailerTypesQuery();
-
   const DisplayVehicleType = () => {
-    const vehicleTypeCode = values?.permitData.vehicleDetails?.vehicleType;
+    const vehicleTypeCode = vehicleDetails?.vehicleType;
     if (!vehicleTypeCode) return "";
     return vehicleTypeDisplayText(vehicleTypeCode as VehicleTypesAsString);
   };
 
   const DisplayVehicleSubType = () => {
-    const code = values?.permitData.vehicleDetails?.vehicleSubType;
-    const vehicleTypeCode = values?.permitData.vehicleDetails?.vehicleType;
+    const code = vehicleDetails?.vehicleSubType;
+    const vehicleTypeCode = vehicleDetails?.vehicleType;
 
     if (!code || !vehicleTypeCode) return "";
-
-    const powerUnitTypes = powerUnitTypesQuery.data;
-    const trailerTypes = trailerTypesQuery.data;
 
     const typeObject = mapTypeCodeToObject(
       code,
@@ -66,7 +60,7 @@ export const ReviewVehicleInfo = ({
             className="info-section__data"
             data-testid="review-vehicle-unit-number"
           >
-            {values?.permitData.vehicleDetails?.unitNumber}
+            {vehicleDetails?.unitNumber}
           </Typography>
           <Typography className="info-section__label">
             VIN <span className="info-section__label--indicator">(last 6 digits)</span>
@@ -75,7 +69,7 @@ export const ReviewVehicleInfo = ({
             className="info-section__data"
             data-testid="review-vehicle-vin"
           >
-            {values?.permitData.vehicleDetails?.vin}
+            {vehicleDetails?.vin}
           </Typography>
           <Typography className="info-section__label">
             Plate
@@ -84,7 +78,7 @@ export const ReviewVehicleInfo = ({
             className="info-section__data"
             data-testid="review-vehicle-plate"
           >
-            {values?.permitData.vehicleDetails?.plate}
+            {vehicleDetails?.plate}
           </Typography>
           <Typography className="info-section__label">
             Make
@@ -93,7 +87,7 @@ export const ReviewVehicleInfo = ({
             className="info-section__data"
             data-testid="review-vehicle-make"
           >
-            {values?.permitData.vehicleDetails?.make}
+            {vehicleDetails?.make}
           </Typography>
           <Typography className="info-section__label">
             Year
@@ -102,7 +96,7 @@ export const ReviewVehicleInfo = ({
             className="info-section__data"
             data-testid="review-vehicle-year"
           >
-            {values?.permitData.vehicleDetails?.year}
+            {vehicleDetails?.year}
           </Typography>
           <Typography className="info-section__label">
             Country
@@ -111,7 +105,7 @@ export const ReviewVehicleInfo = ({
             className="info-section__data"
             data-testid="review-vehicle-country"
           >
-            {formatCountry(values?.permitData.vehicleDetails?.countryCode)}
+            {formatCountry(vehicleDetails?.countryCode)}
           </Typography>
           <Typography className="info-section__label">
             Province / State
@@ -121,8 +115,8 @@ export const ReviewVehicleInfo = ({
             data-testid="review-vehicle-province"
           >
             {formatProvince(
-              values?.permitData.vehicleDetails?.countryCode,
-              values?.permitData.vehicleDetails?.provinceCode
+              vehicleDetails?.countryCode,
+              vehicleDetails?.provinceCode
             )}
           </Typography>
           <Typography className="info-section__label">
@@ -143,7 +137,7 @@ export const ReviewVehicleInfo = ({
           >
             {DisplayVehicleSubType()}
           </Typography>
-          {values?.permitData.vehicleDetails?.saveVehicle && (
+          {vehicleWasSaved && (
             <Typography className="info-section__msg">
               <FontAwesomeIcon className="icon" icon={faCircleCheck} />
               <span data-testid="review-vehicle-saved-msg">

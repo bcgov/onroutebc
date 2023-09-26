@@ -4,7 +4,7 @@ import { Navigate, useSearchParams } from "react-router-dom";
 import { getMotiPaymentDetails } from "../../helpers/payment";
 import { MotiPaymentDetails, Transaction } from "../../types/payment";
 import { Loading } from "../../../../common/pages/Loading";
-import { usePostTransaction } from "../../hooks/hooks";
+import { useCompleteTransaction } from "../../hooks/hooks";
 
 /**
  * React component that handles the payment redirect and displays the payment status.
@@ -12,7 +12,7 @@ import { usePostTransaction } from "../../hooks/hooks";
  * Otherwise, it displays the payment status message.
  */
 export const PaymentRedirect = () => {
-  const postedTransaction = useRef(false);
+  const completedTransaction = useRef(false);
   const [searchParams] = useSearchParams();
   const permitIds = searchParams.get("permitIds");
   const transactionIds = searchParams.get("transactionIds");
@@ -20,20 +20,20 @@ export const PaymentRedirect = () => {
   const transaction = mapTransactionDetails(paymentDetails);
 
   const { 
-    mutation: postTransactionMutation,
+    mutation: completeTransactionMutation,
     paymentApproved,
     message,
     setPaymentApproved,
-  } = usePostTransaction(
+  } = useCompleteTransaction(
     paymentDetails.messageText,
     paymentDetails.trnApproved
   );
 
   useEffect(() => {
-    if (postedTransaction.current === false) {
+    if (completedTransaction.current === false) {
       if (paymentDetails.trnApproved > 0) {
-        postTransactionMutation.mutate(transaction);
-        postedTransaction.current = true;
+        completeTransactionMutation.mutate(transaction);
+        completedTransaction.current = true;
       } else {
         setPaymentApproved(false);
       }
@@ -80,7 +80,7 @@ const mapTransactionDetails = (
     transactionDate: motiResponse.trnDate,
     cvdId: Number(motiResponse.cvdId),
     paymentMethod: motiResponse.paymentMethod,
-    paymentMethodId: 1, // TODO: change once different payment methods are implemented, currently 1 == MOTI Pay
+    paymentMethodId: 1, // currently hardcoded to 1 == MOTI Pay
     messageId: motiResponse.messageId,
     messageText: motiResponse.messageText,
   };

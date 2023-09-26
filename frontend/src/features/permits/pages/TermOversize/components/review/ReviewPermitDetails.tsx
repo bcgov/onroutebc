@@ -1,16 +1,23 @@
 import { Box, Typography } from "@mui/material";
+import { Dayjs } from "dayjs";
 
 import "./ReviewPermitDetails.scss";
 import { PermitExpiryDateBanner } from "../../../../../../common/components/banners/PermitExpiryDateBanner";
-import { Application } from "../../../../types/application";
+import { Commodities } from "../../../../types/application";
 import { ReviewConditionsTable } from "./ReviewConditionsTable";
 import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../../../../common/helpers/util";
 import { DATE_FORMATS, dayjsToLocalStr } from "../../../../../../common/helpers/formatDate";
 
 export const ReviewPermitDetails = ({
-  values,
+  startDate,
+  permitDuration,
+  expiryDate,
+  conditions,
 }: {
-  values: Application | undefined;
+  startDate?: Dayjs;
+  permitDuration?: number;
+  expiryDate?: Dayjs;
+  conditions?: Commodities[];
 }) => {
   return (
     <Box className="review-permit-details">
@@ -30,7 +37,7 @@ export const ReviewPermitDetails = ({
           >
             {applyWhenNotNullable(
               (dayJsObject) => dayjsToLocalStr(dayJsObject, DATE_FORMATS.DATEONLY_SLASH),
-              values?.permitData?.startDate,
+              startDate,
               ""
             )}
           </Typography>
@@ -41,14 +48,14 @@ export const ReviewPermitDetails = ({
             className="permit-dates__data"
             data-testid="permit-duration"
           >
-            {getDefaultRequiredVal(30, values?.permitData.permitDuration)} Days
+            {getDefaultRequiredVal(30, permitDuration)} Days
           </Typography>
         </Box>
         <Box className="permit-expiry-banner">
           <PermitExpiryDateBanner
             expiryDate={applyWhenNotNullable(
               (dayJsObject) => dayjsToLocalStr(dayJsObject, DATE_FORMATS.SHORT),
-              values?.permitData?.expiryDate,
+              expiryDate,
               ""
             )}
           />
@@ -57,7 +64,7 @@ export const ReviewPermitDetails = ({
           <Typography variant="h3">
             Selected commodities and their respective CVSE forms.
           </Typography>
-          <ReviewConditionsTable values={values} />
+          <ReviewConditionsTable conditions={conditions} />
         </Box>
       </Box>
     </Box>

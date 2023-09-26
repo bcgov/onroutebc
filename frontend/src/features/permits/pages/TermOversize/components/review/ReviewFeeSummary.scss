@@ -9,6 +9,10 @@
     .fee-summary-wrapper {
       gap: 2.5rem;
       padding-top: 1.5rem;
+
+      .fee-summary-banner {
+        max-width: 690px;
+      }
     }
   }
 }

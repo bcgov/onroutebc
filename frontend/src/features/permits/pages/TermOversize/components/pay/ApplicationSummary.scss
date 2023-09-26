@@ -1,0 +1,20 @@
+@import "../../../../../../themes/orbcStyles.scss";
+
+.application-summary {
+  padding-bottom: 2.5rem;
+  border-bottom: 1px solid $bc-text-box-border-grey;
+
+  h1 {
+    margin-right: 12.5rem;
+    margin-top: 0;
+    padding-top: 0;
+    border-bottom: none;
+  }
+
+  h2 {
+    display: block;
+    border-bottom: none;
+    padding-bottom: 0.5rem;
+    padding-top: 0.5rem;
+  }
+}

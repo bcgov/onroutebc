@@ -41,7 +41,7 @@ export interface Transaction {
   transactionDate: string;
   cvdId: number;
   paymentMethod: string;
-  paymentMethodId: number; // TODO: what is this?
+  paymentMethodId: number;
   messageId: string;
   messageText: string;
 }
@@ -59,6 +59,16 @@ export const TRANSACTION_TYPES = {
   PA: "PA", 
   PAC: "PAC", 
   Q: "Q",
+  Z: "Z",
 } as const;
 
 export type TransactionType = typeof TRANSACTION_TYPES[keyof typeof TRANSACTION_TYPES];
+
+export interface TransactionDto {
+  paymentMethodId: string;
+  transactionAmount: string;
+  transactionOrderNumber: string;
+  transactionSubmitDate: string;
+  transactionType: TransactionType;
+  url?: string;
+}

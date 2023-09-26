@@ -27,10 +27,16 @@ export const FeeSummary = ({
           <div className="table-row__th">Amount</div>
         </div>
         <div className="table-row">
-          <div className="table-row__td">
+          <div 
+            className="table-row__td"
+            data-testid="fee-summary-permit-type"
+          >
             {permitTypeDisplayText(permitType)}
           </div>
-          <div className="table-row__td">
+          <div 
+            className="table-row__td"
+            data-testid="fee-summary-price"
+          >
             {feeDisplayText}
           </div>
         </div>
@@ -38,7 +44,10 @@ export const FeeSummary = ({
           <div className="table-row__tf">
             Total (CAD)
           </div>
-          <div className="table-row__tf">
+          <div 
+            className="table-row__tf"
+            data-testid="fee-summary-total"
+          >
             {feeDisplayText}
           </div>
         </div>

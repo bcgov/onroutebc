@@ -10,14 +10,17 @@ import {
   Checkbox,
 } from "@mui/material";
 
-import { Commodities, Application } from "../../../../types/application";
+import { Commodities } from "../../../../types/application";
 import "./ReviewConditionsTable.scss";
+import { getDefaultRequiredVal } from "../../../../../../common/helpers/util";
 
 export const ReviewConditionsTable = ({
-  values,
+  conditions,
 }: {
-  values: Application | undefined;
+  conditions?: Commodities[];
 }) => {
+  const commodities = getDefaultRequiredVal([], conditions);
+
   return (
     <TableContainer>
       <Table className="review-conditions-table" aria-label="simple table">
@@ -28,7 +31,7 @@ export const ReviewConditionsTable = ({
           </TableRow>
         </TableHead>
         <TableBody>
-          {values?.permitData.commodities.map((row: Commodities) => {
+          {commodities.map((row: Commodities) => {
             return (
               <TableRow
                 className="review-conditions-table__row"

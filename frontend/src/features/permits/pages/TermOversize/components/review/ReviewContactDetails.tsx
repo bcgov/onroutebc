@@ -1,7 +1,7 @@
 import { Box, Typography } from "@mui/material";
 
 import "./ReviewContactDetails.scss";
-import { Application } from "../../../../types/application";
+import { ContactDetails } from "../../../../types/application";
 import { getDefaultRequiredVal } from "../../../../../../common/helpers/util";
 
 const nameDisplay = (firstName?: string, lastName?: string) => {
@@ -19,9 +19,9 @@ const phoneDisplay = (phone?: string, ext?: string) => {
 };
 
 export const ReviewContactDetails = ({
-  values,
+  contactDetails,
 }: {
-  values: Application | undefined;
+  contactDetails?: ContactDetails,
 }) => {
   return (
     <Box className="review-contact-details">
@@ -42,8 +42,8 @@ export const ReviewContactDetails = ({
               data-testid="review-contact-details-name"
             >
               {nameDisplay(
-                values?.permitData?.contactDetails?.firstName,
-                values?.permitData?.contactDetails?.lastName
+                contactDetails?.firstName,
+                contactDetails?.lastName
               )}
             </span>
           </Typography>
@@ -54,12 +54,12 @@ export const ReviewContactDetails = ({
               data-testid="review-contact-details-phone1"
             >
               {phoneDisplay(
-                values?.permitData.contactDetails?.phone1, 
-                values?.permitData.contactDetails?.phone1Extension
+                contactDetails?.phone1, 
+                contactDetails?.phone1Extension
               )}
             </span>
           </Typography>
-          {values?.permitData.contactDetails?.phone2 ? (
+          {contactDetails?.phone2 ? (
             <Typography className="contact-details__detail">
               <span className="contact-details__label">Alternate Phone:</span>
               <span 
@@ -67,8 +67,8 @@ export const ReviewContactDetails = ({
                 data-testid="review-contact-details-phone2"
               >
                 {phoneDisplay(
-                  values?.permitData.contactDetails?.phone2, 
-                  values?.permitData.contactDetails?.phone2Extension
+                  contactDetails?.phone2, 
+                  contactDetails?.phone2Extension
                 )}
               </span>
             </Typography>
@@ -79,10 +79,10 @@ export const ReviewContactDetails = ({
               className="contact-details__data"
               data-testid="review-contact-details-email"
             >
-              {values?.permitData.contactDetails?.email}
+              {contactDetails?.email}
             </span>
           </Typography>
-          {values?.permitData?.contactDetails?.fax ? (
+          {contactDetails?.fax ? (
             <Typography className="contact-details__detail">
               <span className="contact-details__label">Fax:</span>
               <span 
@@ -90,7 +90,7 @@ export const ReviewContactDetails = ({
                 data-testid="review-contact-details-fax"
               >
                 {phoneDisplay(
-                  values?.permitData.contactDetails?.fax
+                  contactDetails?.fax
                 )}
               </span>
             </Typography>
