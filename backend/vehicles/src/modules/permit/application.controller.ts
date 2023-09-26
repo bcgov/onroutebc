@@ -32,7 +32,6 @@ import { UpdateApplicationStatusDto } from './dto/request/update-application-sta
 import { ResultDto } from './dto/response/result.dto';
 import { Roles } from 'src/common/decorator/roles.decorator';
 import { Role } from 'src/common/enum/roles.enum';
-import { getDirectory } from 'src/common/helper/auth.helper';
 
 @ApiBearerAuth()
 @ApiTags('Permit Application')
@@ -67,12 +66,7 @@ export class ApplicationController {
     @Body() createApplication: CreateApplicationDto,
   ): Promise<ReadApplicationDto> {
     const currentUser = request.user as IUserJWT;
-    const directory = getDirectory(currentUser);
-    return await this.applicationService.create(
-      createApplication,
-      currentUser,
-      directory,
-    );
+    return await this.applicationService.create(createApplication, currentUser);
   }
 
   /**
@@ -144,13 +138,9 @@ export class ApplicationController {
     @Param('applicationNumber') applicationNumber: string,
     @Body() updateApplicationDto: UpdateApplicationDto,
   ): Promise<ReadApplicationDto> {
-    const currentUser = request.user as IUserJWT;
-    const directory = getDirectory(currentUser);
     const application = await this.applicationService.update(
       applicationNumber,
       updateApplicationDto,
-      currentUser,
-      directory,
     );
 
     if (!application) {
@@ -176,12 +166,10 @@ export class ApplicationController {
     @Body() updateApplicationStatusDto: UpdateApplicationStatusDto,
   ): Promise<ResultDto> {
     const currentUser = request.user as IUserJWT; // TODO: consider security with passing JWT token to DMS microservice
-    const directory = getDirectory(currentUser);
     const result = await this.applicationService.updateApplicationStatus(
       updateApplicationStatusDto.applicationIds,
       updateApplicationStatusDto.applicationStatus,
       currentUser,
-      directory,
     );
     if (!result) {
       throw new DataNotFoundException();

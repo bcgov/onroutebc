@@ -15,7 +15,6 @@ import { ApplicationService } from '../permit/application.service';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
 import { IReceipt } from 'src/common/interface/receipt.interface';
 import { callDatabaseSequence } from 'src/common/helper/database.helper';
-import { Directory } from 'src/common/enum/directory.enum';
 
 @Injectable()
 export class PaymentService {
@@ -190,7 +189,6 @@ export class PaymentService {
   async updateTransaction(
     currentUser: IUserJWT,
     transaction: CreateTransactionDto,
-    directory: Directory,
   ): Promise<ReadTransactionDto> {
     // Retrieve the existing transaction from the database based on the provided transaction order number.
     const existingTransaction = await this.findOneTransaction(
@@ -207,14 +205,6 @@ export class PaymentService {
       transaction,
       CreateTransactionDto,
       Transaction,
-      {
-        extraArgs: () => ({
-          userName: currentUser.userName,
-          directory: directory,
-          userGUID: currentUser.userGUID,
-          timestamp: new Date(),
-        }),
-      },
     );
     // If the updated transaction is approved, issue a permit using the application service.
     if (newTransaction.approved) {
@@ -265,8 +255,6 @@ export class PaymentService {
   async createTransaction(
     permitIds: number[],
     paymentDetails: MotiPayDetailsDto,
-    directory: Directory,
-    currentUser: IUserJWT,
   ) {
     const permitTransactions: Pick<
       PermitTransaction,
@@ -286,14 +274,6 @@ export class PaymentService {
           transactionType: paymentDetails.transactionType,
           transactionSubmitDate: paymentDetails.transactionSubmitDate,
           paymentMethodId: paymentDetails.paymentMethodId,
-          createdDateTime: new Date(),
-          createdUser: currentUser.userName,
-          createdUserDirectory: directory,
-          createdUserGuid: currentUser.userGUID,
-          updatedUser: currentUser.userName,
-          updatedDateTime: new Date(),
-          updatedUserGuid: currentUser.userGUID,
-          updatedUserDirectory: directory,
         })
         .execute();
 
@@ -308,14 +288,6 @@ export class PaymentService {
       const permitTransaction = {
         permitId: id,
         transactionId: transaction.transactionId,
-        createdDateTime: new Date(),
-        createdUser: currentUser.userName,
-        createdUserDirectory: directory,
-        createdUserGuid: currentUser.userGUID,
-        updatedUser: currentUser.userName,
-        updatedDateTime: new Date(),
-        updatedUserGuid: currentUser.userGUID,
-        updatedUserDirectory: directory,
       };
 
       // Save the association of the permit with the transaction in the permitTransaction table.

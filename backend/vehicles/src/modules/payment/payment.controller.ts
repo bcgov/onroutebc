@@ -16,7 +16,6 @@ import { ReadTransactionDto } from './dto/response/read-transaction.dto';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
 import { Request } from 'express';
 import { ReadPermitTransactionDto } from './dto/response/read-permit-transaction.dto';
-import { getDirectory } from 'src/common/helper/auth.helper';
 
 @ApiBearerAuth()
 @ApiTags('Payment')
@@ -41,14 +40,11 @@ export class PaymentController {
   })
   @Get()
   async forwardTransactionDetails(
-    @Req() request: Request,
     @Query('paymentMethodId') paymentMethodId: number,
     @Query('transactionSubmitDate') transactionSubmitDate: string,
     @Query('transactionAmount') transactionAmount: number,
     @Query('permitIds') permitIds: string,
   ): Promise<MotiPayDetailsDto> {
-    const currentUser = request.user as IUserJWT;
-    const directory = getDirectory(currentUser);
     const permitIdArray: number[] = permitIds.split(',').map(Number);
 
     const paymentDetails = await this.paymentService.forwardTransactionDetails(
@@ -60,8 +56,6 @@ export class PaymentController {
     const permitTransactions = await this.paymentService.createTransaction(
       permitIdArray,
       paymentDetails,
-      directory,
-      currentUser,
     );
 
     return this.paymentService.generateUrl(
@@ -83,12 +77,10 @@ export class PaymentController {
     @Body() createTransactionDto: CreateTransactionDto,
   ) {
     const currentUser = request.user as IUserJWT;
-    const directory = getDirectory(currentUser);
 
     return await this.paymentService.updateTransaction(
       currentUser,
       createTransactionDto,
-      directory,
     );
   }
 
