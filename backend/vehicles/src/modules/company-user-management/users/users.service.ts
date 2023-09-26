@@ -216,9 +216,9 @@ export class UsersService {
     user.userGUID = userGUID;
     user.statusCode = statusCode;
     user.updatedUserGuid = currentUser.userGUID;
-    (user.updatedDateTime = new Date()),
-      (user.updatedUser = currentUser.userName),
-      (user.updatedUserDirectory = directory);
+    user.updatedDateTime = new Date();
+    user.updatedUser = currentUser.userName;
+    user.updatedUserDirectory = directory;
     return await this.userRepository.update({ userGUID }, user);
   }
 
