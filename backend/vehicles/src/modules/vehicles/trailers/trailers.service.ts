@@ -39,7 +39,6 @@ export class TrailersService {
         }),
       },
     );
-    console.log('New railer is: ',newTrailer);
     return this.classMapper.mapAsync(
       await this.trailerRepository.save(newTrailer),
       Trailer,

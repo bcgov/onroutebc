@@ -91,6 +91,7 @@ describe('CompanyUsersController', () => {
         constants.RED_COMPANY_CVCLIENT_USER_GUID,
         updateRedCompanyCvClientUserDtoMock,
         constants.RED_COMPANY_ID,
+        getDirectory(redCompanyAdminUserJWTMock),
         request.user,
       );
     });

@@ -45,7 +45,7 @@ export class BaseDto {
     description: 'Updated User GUID',
     example: '06267945F2EB4E31B585932F78B76269',
   })
-  upatedUserGuid: string;
+  updatedUserGuid: string;
 
   @AutoMap()
   @ApiProperty({

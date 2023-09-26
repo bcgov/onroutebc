@@ -1,10 +1,6 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  Column,
-  CreateDateColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 
 export class Base {
   @AutoMap()
@@ -68,7 +64,7 @@ export class Base {
     name: 'APP_LAST_UPDATE_USER_GUID',
     nullable: true,
   })
-  upatedUserGuid: string;
+  updatedUserGuid: string;
 
   @AutoMap()
   @ApiProperty({ description: 'Resource Update Date' })

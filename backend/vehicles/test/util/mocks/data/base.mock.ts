@@ -14,7 +14,7 @@ export const baseEntityMock: Base = {
   createdUserGuid: CREATED_USER,
   createdDateTime: CREATED_DATE_TIME,
   updatedUser: UPDATED_USER,
-  upatedUserGuid: UPDATED_USER,
+  updatedUserGuid: UPDATED_USER,
   updatedUserDirectory: UPDATED_USER,
   updatedDateTime: UPDATED_DATE_TIME,
 };
@@ -25,7 +25,7 @@ export const baseDtoMock: BaseDto = {
   createdUserGuid: CREATED_USER,
   createdDateTime: CURRENT_DATE_ISO_STRING,
   updatedUser: UPDATED_USER,
-  upatedUserGuid: UPDATED_USER,
+  updatedUserGuid: UPDATED_USER,
   updatedUserDirectory: UPDATED_USER,
   updatedDateTime: CURRENT_DATE_ISO_STRING,
 };
