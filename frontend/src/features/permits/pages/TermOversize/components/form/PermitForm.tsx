@@ -8,6 +8,7 @@ import { ContactDetails } from "../../../../components/form/ContactDetails";
 import { PermitDetails } from "./PermitDetails";
 import { VehicleDetails } from "./VehicleDetails/VehicleDetails";
 import { CompanyProfile } from "../../../../../manageProfile/types/manageProfile.d";
+import { PermitType } from "../../../../types/PermitType";
 import { 
   PowerUnit, 
   Trailer, 
@@ -15,8 +16,7 @@ import {
 } from "../../../../../manageVehicles/types/managevehicles.d";
 
 import { 
-  Commodities, 
-  PermitType, 
+  Commodities,
   VehicleDetails as VehicleDetailsType, 
 } from "../../../../types/application.d";
 

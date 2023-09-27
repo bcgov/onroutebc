@@ -1,3 +1,12 @@
+import { DATE_FORMATS, toLocal } from "../../../common/helpers/formatDate";
+import { mapApplicationToApplicationRequestData } from "../helpers/mappers";
+import { Transaction, TransactionDto } from "../types/payment";
+import { VEHICLES_URL } from "../../../common/apiManager/endpoints/endpoints";
+import { ReadPermitDto } from "../types/permit";
+import { PaginatedResponse } from "../../../common/types/common";
+import { PERMIT_STATUSES } from "../types/PermitStatus";
+import { PermitHistory } from "../types/PermitHistory";
+import { getPermitTypeName } from "../types/PermitType";
 import {
   getCompanyIdFromSession,
   httpGETRequest,
@@ -11,32 +20,18 @@ import {
   getDefaultRequiredVal,
   replaceEmptyValuesWithNull,
 } from "../../../common/helpers/util";
+
 import {
   Application,
   ApplicationResponse,
   PermitApplicationInProgress,
 } from "../types/application";
-import { DATE_FORMATS, toLocal } from "../../../common/helpers/formatDate";
+
 import {
   APPLICATION_UPDATE_STATUS_API,
   PAYMENT_API,
   PERMITS_API,
 } from "./endpoints/endpoints";
-import { mapApplicationToApplicationRequestData } from "../helpers/mappers";
-import { PermitTransaction, Transaction, TransactionDto } from "../types/payment";
-import { VEHICLES_URL } from "../../../common/apiManager/endpoints/endpoints";
-import { ReadPermitDto } from "../types/permit";
-import { PaginatedResponse } from "../../../common/types/common";
-import { PERMIT_STATUSES } from "../types/PermitStatus";
-import { PermitHistory } from "../types/PermitHistory";
-
-/**
- * A record containing permit keys and full forms.
- */
-const permitAbbreviations: Record<string, string> = {
-  TROS: "Term Oversize",
-  STOS: "Single Trip Oversize",
-};
 
 /**
  * Submits a new term oversize application.
@@ -95,7 +90,7 @@ export const getApplicationsInProgress = async (): Promise<
     ).map((application) => {
       return {
         ...application,
-        permitType: permitAbbreviations[application.permitType],
+        permitType: getPermitTypeName(application.permitType) as string,
         createdDateTime: toLocal(
           application.createdDateTime,
           DATE_FORMATS.DATETIME_LONG_TZ

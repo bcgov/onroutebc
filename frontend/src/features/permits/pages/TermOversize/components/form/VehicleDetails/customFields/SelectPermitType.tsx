@@ -6,6 +6,7 @@ import {
 } from "@mui/material";
 
 import { SELECT_FIELD_STYLE } from "../../../../../../../../themes/orbcStyles";
+import { PERMIT_TYPES } from "../../../../../../types/PermitType";
 
 export const SelectPermitType = ({
   label,
@@ -22,7 +23,7 @@ export const SelectPermitType = ({
   <FormControl margin="normal">
     <FormLabel sx={SELECT_FIELD_STYLE.FORM_LABEL}>{label}</FormLabel>
     <Select
-      defaultValue="tros"
+      defaultValue={PERMIT_TYPES.TROS}
       onChange={onChange}
       MenuProps={SELECT_FIELD_STYLE.MENU_PROPS}
       sx={[

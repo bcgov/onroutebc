@@ -1,4 +1,5 @@
 import { DATE_FORMATS, dayjsToLocalStr } from "../../../../../common/helpers/formatDate";
+import { permitTypeDisplayText } from "../../../types/PermitType";
 import { 
   closeMockServer, 
   createdAt, 
@@ -9,13 +10,13 @@ import {
   resetMockServer, 
   updatedAt,
 } from "./helpers/ApplicationDetails/prepare";
+
 import { 
   applicationNumber, 
   createdDate, 
   title, 
   updatedDate,
 } from "./helpers/ApplicationDetails/access";
-import { permitTypeDisplayText } from "../../../helpers/mappers";
 
 beforeAll(() => {
   listenToMockServer();

@@ -3,10 +3,10 @@ import { Dispatch, SetStateAction } from "react";
 
 import "./ReviewFeeSummary.scss";
 import { ConfirmationCheckboxes } from "./ConfirmationCheckboxes";
-import { PermitType } from "../../../../types/application";
 import { calculateFeeByDuration } from "../../../../helpers/feeSummary";
 import { getDefaultRequiredVal } from "../../../../../../common/helpers/util";
 import { FeeSummary } from "../../../../components/feeSummary/FeeSummary";
+import { PermitType } from "../../../../types/PermitType";
 
 export const ReviewFeeSummary = ({
   isSubmitted,
@@ -36,7 +36,7 @@ export const ReviewFeeSummary = ({
             permitType={permitType}
             feeSummary={`${calculatedFee}`}
           />
-          
+
           <ConfirmationCheckboxes
             isSubmitted={isSubmitted}
             isChecked={isChecked}

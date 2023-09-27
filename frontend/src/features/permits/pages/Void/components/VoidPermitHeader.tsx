@@ -2,9 +2,9 @@ import { Box, Typography } from "@mui/material";
 
 import "./VoidPermitHeader.scss";
 import { ReadPermitDto } from "../../../types/permit";
-import { permitTypeDisplayText } from "../../../helpers/mappers";
 import { DATE_FORMATS, toLocal } from "../../../../../common/helpers/formatDate";
 import { CompanyBanner } from "../../../../../common/components/banners/CompanyBanner";
+import { permitTypeDisplayText } from "../../../types/PermitType";
 
 export const VoidPermitHeader = ({
   permit,

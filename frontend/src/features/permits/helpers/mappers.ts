@@ -141,19 +141,3 @@ export const vehicleTypeDisplayText = (vehicleType: VehicleTypesAsString) => {
   }
   return "Power Unit";
 };
-
-/**
- * Gets display text for permit type.
- * @param permitType Permit type (eg. TROS, STOS, etc)
- * @returns display text for the permit type
- */
-export const permitTypeDisplayText = (permitType?: string) => {
-  switch (permitType) {
-    case "TROS":
-      return "Oversize: Term";
-    case "STOS":
-      return "Oversize: Single Trip";
-    default:
-      return "";
-  }
-};

@@ -1,5 +1,7 @@
 import { Dayjs } from "dayjs";
+
 import { PermitStatus, PERMIT_STATUSES } from "./PermitStatus";
+import { PermitType } from "./PermitType";
 
 /**
  * A type that replaces all direct entries with Dayjs types to string types.
@@ -15,8 +17,6 @@ import { PermitStatus, PERMIT_STATUSES } from "./PermitStatus";
 type ReplaceDayjsWithString<T> = {
   [K in keyof T]: T[K] extends Dayjs ? string : (T[K] extends (Dayjs | undefined) ? (string | undefined) : T[K]);
 };
-
-export type PermitType = "STOS" | "TROS";
 
 type PermitApplicationOrigin = "ONLINE" | "PPC";
 

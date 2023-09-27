@@ -14,7 +14,7 @@ import {
 } from "@mui/material";
 
 import "./RefundPage.scss";
-import { permitTypeDisplayText } from "../../helpers/mappers";
+import { permitTypeDisplayText } from "../../types/PermitType";
 import { RefundFormData } from "./types/RefundFormData";
 import { REFUND_METHODS, getRefundMethodByCardType, refundMethodDisplayText } from "../../types/PaymentMethod";
 import { requiredMessage } from "../../../../common/helpers/validationMessages";

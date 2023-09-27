@@ -32,19 +32,20 @@ export const StartApplicationButton = () => {
   return (
     <Stack direction="row" spacing={2}>
       <Box 
-      sx={{ display: "flex", gap: "40px" }}
+        sx={{ display: "flex", gap: "40px" }}
       >
-      <SelectPermitType
-            value={chooseFrom}
-            label={"Select Permit Type"}
-            onChange={handleChooseFrom}
-            menuItems={PERMIT_TYPE_CHOOSE_FROM_OPTIONS.map((data) => (
-              <MenuItem key={data.value} value={data.value} selected={data.label === "Select"}>
-                {data.label}
-              </MenuItem>
-            ))}
-            width={"180px"}
-          />
+        <SelectPermitType
+          value={chooseFrom}
+          label={"Select Permit Type"}
+          onChange={handleChooseFrom}
+          menuItems={PERMIT_TYPE_CHOOSE_FROM_OPTIONS.map((data) => (
+            <MenuItem key={data.value} value={data.value} selected={data.label === "Select"}>
+              {data.label}
+            </MenuItem>
+          ))}
+          width={"180px"}
+        />
+
         <Button
           variant="contained"
           onClick={handleStartButtonClicked}
@@ -55,7 +56,7 @@ export const StartApplicationButton = () => {
         >
           Start Application
         </Button>
-        </Box>
+      </Box>
     </Stack>
   );
 };

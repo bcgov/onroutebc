@@ -1,5 +1,5 @@
 import { feeSummaryDisplayText } from "../../helpers/feeSummary";
-import { permitTypeDisplayText } from "../../helpers/mappers";
+import { permitTypeDisplayText } from "../../types/PermitType";
 import "./FeeSummary.scss";
 
 export const FeeSummary = ({

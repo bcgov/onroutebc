@@ -5,6 +5,7 @@ import { MANAGE_PROFILE_API } from "../../../../../../manageProfile/apiManager/e
 import { renderWithClient } from "../../../../../../../common/helpers/testHelper";
 import { ApplicationDetails } from "../../../ApplicationDetails";
 import { Dayjs } from "dayjs";
+import { PERMIT_TYPES } from "../../../../../types/PermitType";
 
 export const defaultCompanyInfo = {
   companyId: 74,
@@ -36,7 +37,7 @@ export const province = "British Columbia";
 export const createdAt = utcToLocalDayjs("2023-06-14T09:00:00.000Z");
 export const updatedAt = utcToLocalDayjs("2023-06-15T13:00:00.000Z");
 export const defaultApplicationNumber = "ABC-123456";
-export const permitType = "TROS";
+export const permitType = PERMIT_TYPES.TROS;
 
 const server = setupServer(
   // Mock get company info

@@ -10,9 +10,10 @@ import { ReviewPermitDetails } from "./ReviewPermitDetails";
 import { ReviewVehicleInfo } from "./ReviewVehicleInfo";
 import { ReviewFeeSummary } from "./ReviewFeeSummary";
 import { ReviewActions } from "./ReviewActions";
-import { Commodities, ContactDetails, PermitType, VehicleDetails } from "../../../../types/application";
+import { Commodities, ContactDetails, VehicleDetails } from "../../../../types/application";
 import { CompanyProfile } from "../../../../../manageProfile/types/manageProfile";
 import { VehicleType } from "../../../../../manageVehicles/types/managevehicles";
+import { PermitType } from "../../../../types/PermitType";
 
 interface PermitReviewProps {
   permitType?: PermitType;

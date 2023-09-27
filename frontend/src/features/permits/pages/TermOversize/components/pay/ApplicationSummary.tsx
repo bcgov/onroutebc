@@ -2,8 +2,8 @@ import { Box, Typography } from "@mui/material";
 
 import "./ApplicationSummary.scss";
 import { getDefaultRequiredVal } from "../../../../../../common/helpers/util";
-import { PermitType } from "../../../../types/application";
-import { permitTypeDisplayText } from "../../../../helpers/mappers";
+import { PermitType } from "../../../../types/PermitType";
+import { permitTypeDisplayText } from "../../../../types/PermitType";
 
 export const ApplicationSummary = ({
   permitType,

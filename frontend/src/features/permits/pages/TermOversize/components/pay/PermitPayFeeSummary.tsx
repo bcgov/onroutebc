@@ -1,7 +1,7 @@
 import { Box, Button, Typography } from "@mui/material";
 
 import "./PermitPayFeeSummary.scss";
-import { PermitType } from "../../../../types/application";
+import { PermitType } from "../../../../types/PermitType";
 import { FeeSummary } from "../../../../components/feeSummary/FeeSummary";
 
 export const PermitPayFeeSummary = ({ 

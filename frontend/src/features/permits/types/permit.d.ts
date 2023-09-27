@@ -1,5 +1,7 @@
 import { Dayjs } from "dayjs";
+
 import { PermitStatus } from "./PermitStatus";
+import { PermitType } from "./PermitType";
 
 /**
  * A type that replaces all direct entries with Dayjs types to string types.
@@ -32,7 +34,7 @@ interface PartialPermitType {
   permitStatus: PermitStatus;
   companyId: number;
   userGuid?: string | null;
-  permitType: string;
+  permitType: PermitType;
   applicationNumber: string;
   permitNumber: string;
   permitApprovalSource: string;

@@ -6,7 +6,7 @@ import { DATE_FORMATS, dayjsToLocalStr } from "../../../../common/helpers/format
 import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { CompanyInformation } from "./CompanyInformation";
 import "./ApplicationDetails.scss";
-import { permitTypeDisplayText } from "../../helpers/mappers";
+import { permitTypeDisplayText } from "../../types/PermitType";
 import { CompanyProfile } from "../../../manageProfile/types/manageProfile";
 
 export const ApplicationDetails = ({
@@ -24,7 +24,6 @@ export const ApplicationDetails = ({
   updatedDateTime?: Dayjs;
   companyInfo?: CompanyProfile;
 }) => {
-  //const companyInfoQuery = useCompanyInfoQuery();
   const applicationName = permitTypeDisplayText(
     getDefaultRequiredVal("", permitType)
   );
