@@ -134,10 +134,12 @@ export class CompanyUsersController {
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<ReadUserDto> {
     const currentUser = request.user as IUserJWT;
+    const directory = getDirectory(currentUser);
     const user = await this.userService.update(
       userGUID,
       updateUserDto,
       companyId,
+      directory,
       currentUser,
     );
     if (!user) {
@@ -169,9 +171,13 @@ export class CompanyUsersController {
     @Param('userGUID') userGUID: string,
     @Body() updateUserStatusDto: UpdateUserStatusDto,
   ): Promise<object> {
+    const currentUser = request.user as IUserJWT;
+    const directory = getDirectory(currentUser);
     const updateResult = await this.userService.updateStatus(
       userGUID,
       updateUserStatusDto.statusCode,
+      directory,
+      currentUser,
     );
     if (updateResult.affected === 0) {
       throw new DataNotFoundException();

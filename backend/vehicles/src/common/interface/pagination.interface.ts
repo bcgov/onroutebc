@@ -46,7 +46,7 @@ export type TypeORMCacheType =
   | boolean
   | number
   | {
-      id: any;
+      id: unknown;
       milliseconds: number;
     };
 

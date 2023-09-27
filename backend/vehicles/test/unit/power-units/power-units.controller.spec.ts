@@ -10,6 +10,11 @@ import {
 } from '../../util/mocks/data/power-unit.mock';
 import { powerUnitsServiceMock } from '../../util/mocks/service/power-units.service.mock';
 import { deleteDtoMock } from '../../util/mocks/data/delete-dto.mock';
+import { createMock } from '@golevelup/ts-jest';
+import { Request } from 'express';
+import { redCompanyCvClientUserJWTMock } from 'test/util/mocks/data/jwt.mock';
+import { IUserJWT } from 'src/common/interface/user-jwt.interface';
+import { getDirectory } from 'src/common/helper/auth.helper';
 
 const POWER_UNIT_ID_1 = '1';
 const POWER_UNIT_ID_2 = '2';
@@ -35,8 +40,11 @@ describe('PowerUnitsController', () => {
 
   describe('Power unit controller create function', () => {
     it('should create a power unit', async () => {
+      const request = createMock<Request>();
+      request.user = redCompanyCvClientUserJWTMock;
+      const currentUser = request.user as IUserJWT;
       const retPowerUnit = await controller.create(
-        null,
+        request,
         COMPANY_ID_1,
         createPowerUnitDtoMock,
       );
@@ -45,6 +53,8 @@ describe('PowerUnitsController', () => {
       expect(powerUnitsServiceMock.create).toHaveBeenCalledWith(
         COMPANY_ID_1,
         createPowerUnitDtoMock,
+        currentUser,
+        getDirectory(currentUser),
       );
     });
   });
@@ -78,8 +88,12 @@ describe('PowerUnitsController', () => {
 
   describe('Power unit controller update function', () => {
     it('should update the power unit', async () => {
+      const request = createMock<Request>();
+      request.user = redCompanyCvClientUserJWTMock;
+      const currentUser = request.user as IUserJWT;
+
       const retPowerUnit = await controller.update(
-        null,
+        request,
         COMPANY_ID_1,
         POWER_UNIT_ID_1,
         updatePowerUnitDtoMock,
@@ -93,13 +107,17 @@ describe('PowerUnitsController', () => {
         COMPANY_ID_1,
         POWER_UNIT_ID_1,
         updatePowerUnitDtoMock,
+        currentUser,
+        getDirectory(currentUser),
       );
     });
 
     it('should thrown a DataNotFoundException if the power unit does not exist', async () => {
       await expect(async () => {
+        const request = createMock<Request>();
+        request.user = redCompanyCvClientUserJWTMock;
         await controller.update(
-          null,
+          request,
           COMPANY_ID_1,
           POWER_UNIT_ID_2,
           updatePowerUnitDtoMock,

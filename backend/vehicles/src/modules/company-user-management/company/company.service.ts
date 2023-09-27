@@ -78,6 +78,9 @@ export class CompanyService {
             directory: directory,
             companyGUID: currentUser.bceid_business_guid,
             accountSource: currentUser.accountSource,
+            userName: currentUser.userName,
+            userGUID: currentUser.userGUID,
+            timestamp: new Date(),
           }),
         },
       );
@@ -98,6 +101,7 @@ export class CompanyService {
             userName: currentUser.userName,
             directory: directory,
             userGUID: currentUser.userGUID,
+            timestamp: new Date(),
           }),
         },
       );
@@ -303,6 +307,7 @@ export class CompanyService {
     companyId: number,
     updateCompanyDto: UpdateCompanyDto,
     directory: Directory,
+    currentUser: IUserJWT,
   ): Promise<ReadCompanyDto> {
     const company = await this.companyRepository.findOne({
       where: { companyId: companyId },
@@ -331,6 +336,9 @@ export class CompanyService {
           directory: directory,
           mailingAddressId: mailingAddressId,
           contactId: contactId,
+          userName: currentUser.userName,
+          userGUID: currentUser.userGUID,
+          timestamp: new Date(),
         }),
       },
     );

@@ -32,6 +32,8 @@ import { Roles } from '../../../common/decorator/roles.decorator';
 import { Role } from '../../../common/enum/roles.enum';
 import { DeleteDto } from 'src/modules/common/dto/response/delete.dto';
 import { DeleteTrailerDto } from './dto/request/delete-trailer.dto';
+import { IUserJWT } from 'src/common/interface/user-jwt.interface';
+import { getDirectory } from 'src/common/helper/auth.helper';
 
 @ApiTags('Vehicles - Trailers')
 @ApiBadRequestResponse({
@@ -66,7 +68,14 @@ export class TrailersController {
     @Param('companyId') companyId: number,
     @Body() createTrailerDto: CreateTrailerDto,
   ) {
-    return this.trailersService.create(companyId, createTrailerDto);
+    const currentUser = request.user as IUserJWT;
+    const directory = getDirectory(currentUser);
+    return this.trailersService.create(
+      companyId,
+      createTrailerDto,
+      currentUser,
+      directory,
+    );
   }
 
   @ApiOkResponse({
@@ -112,11 +121,15 @@ export class TrailersController {
     @Param('trailerId') trailerId: string,
     @Body() updateTrailerDto: UpdateTrailerDto,
   ): Promise<ReadTrailerDto> {
+    const currentUser = request.user as IUserJWT;
+    const directory = getDirectory(currentUser);
     await this.checkVehicleCompanyContext(companyId, trailerId);
     const trailer = await this.trailersService.update(
       companyId,
       trailerId,
       updateTrailerDto,
+      currentUser,
+      directory,
     );
     if (!trailer) {
       throw new DataNotFoundException();
