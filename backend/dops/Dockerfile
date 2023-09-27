@@ -1,24 +1,19 @@
-# Build container
-FROM node:18.17.1-alpine AS builder
+# Build static files
+# Node Bullseye has npm
+FROM node:20.7.0-bullseye-slim AS build
 
-# Set the working directory to /app inside the container
+# Install packages, build and keep only prod packages
 WORKDIR /app
-
-# Copy app files
 COPY . ./
+RUN npm ci --ignore-scripts --no-update-notifier
+# RUN addgroup -S pptruser && adduser -S -G pptruser pptruser \
+#     && chown -R pptruser:pptruser /home/pptruser \
+#     && chown -R pptruser:pptruser /app
 
-# Create and Assign permissions to npm folder
-RUN mkdir /.npm && chmod 777 /.npm
-
-# Add user so we don't need --no-sandbox.
-RUN addgroup -S pptruser && adduser -S -G pptruser pptruser \
-   # && mkdir -p /home/pptruser/Downloads /app \
-    && chown -R pptruser:pptruser /home/pptruser \
-    && chown -R pptruser:pptruser /app
-
+RUN blorf
 
 # Run everything after as non-privileged user.
-USER pptruser
+# USER pptruser
 
 # Install packages, build and keep only prod packages
 RUN npm ci
@@ -71,9 +66,9 @@ ENV CDOGS_URL ${CDOGS_URL}
 ENV ACCESS_API_URL ${ACCESS_API_URL}
 
 # Copy production files from build
-COPY --from=builder /app/package*.json ./
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/dist ./dist
+COPY --from=build /app/package*.json ./
+COPY --from=build /app/node_modules ./node_modules
+COPY --from=build /app/dist ./dist
 
 RUN apk add --no-cache \
       chromium \
