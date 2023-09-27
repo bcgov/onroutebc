@@ -144,10 +144,10 @@ export class PaymentService {
 
   /**
    * Creates a Transaction in ORBC System.
-   *
-   * @param createTransactionDto - The createTransactionDto object of type {@link CreateTransactionDto} for
-   * creating a new Transaction.
-   * @returns {string} The Transaction Order Number.
+   * @param currentUser - The current user object of type {@link IUserJWT}
+   * @param createTransactionDto - The createTransactionDto object of type
+   *                                {@link CreateTransactionDto} for creating a new Transaction.
+   * @returns {ReadTransactionDto} The created transaction of type {@link ReadTransactionDto}.
    */
   async createTransactions(
     currentUser: IUserJWT,
@@ -257,11 +257,11 @@ export class PaymentService {
   }
 
   /**
-   * Creates a Purchase Transaction in ORBC System.
-   *
-   * @param createTransactionDto - The createTransactionDto object of type {@link CreateTransactionDto} for
-   * creating a new Transaction.
-   * @returns {string} The Transaction Order Number.
+   * Updates details returned by Payment Gateway in ORBC System.
+   * @param currentUser - The current user object of type {@link IUserJWT}
+   * @param updatePaymentGatewayTransactionDto - The UpdatePaymentGatewayTransactionDto object of type
+   *                                {@link UpdatePaymentGatewayTransactionDto} for updating the payment gateway details.
+   * @returns {ReadTransactionDto} The updated payment gateway of type {@link ReadPaymentGatewayTransactionDto}.
    */
   async updateTransactions(
     currentUser: IUserJWT,

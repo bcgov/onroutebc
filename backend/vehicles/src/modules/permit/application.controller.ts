@@ -195,13 +195,12 @@ export class ApplicationController {
     /**Bulk issuance would require changes in issuePermit service method with
      *  respect to Document generation etc. At the moment, it is not handled and
      *  only single permit Id must be passed.
-     * 
+     *
      */
-      const result = await this.applicationService.issuePermit(
-        currentUser,
-        issuePermitDto.applicationIds[0],
-      );
-      return result;
-    
+    const result = await this.applicationService.issuePermit(
+      currentUser,
+      issuePermitDto.applicationIds[0],
+    );
+    return result;
   }
 }

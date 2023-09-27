@@ -55,8 +55,8 @@ export class PaymentController {
   }
 
   @ApiOkResponse({
-    description: 'The Transaction Resource',
-    type: ReadTransactionDto,
+    description: 'The Payment Gateway Transaction Resource',
+    type: ReadPaymentGatewayTransactionDto,
   })
   @Put(':transactionId/payment-gateway')
   async updateTransactionDetails(

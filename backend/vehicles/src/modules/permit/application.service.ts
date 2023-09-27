@@ -357,7 +357,7 @@ export class ApplicationService {
   /**
    * This function is responsible for issuing a permit based on a given application.
    * It performs various operations, including generating a permit number, calling the PDF generation service, and updating the permit record in the database.
-   * @param currentUser // TODO: protect endpoint
+   * @param currentUser
    * @param applicationId applicationId to identify the application to be issued. It is the same as permitId.
    * @returns a resultDto that describes if the transaction was successful or if it failed
    */
