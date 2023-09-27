@@ -207,8 +207,6 @@ objects:
         spec:
           containers:
             - image: ${NAME}-${ZONE}-${COMPONENT}:${IMAGE_TAG}
-              securityContext:
-                allowPrivilegeEscalation: true
                 capabilities:
                   add: ["NET_BIND_SERVICE"]            
               imagePullPolicy: Always
