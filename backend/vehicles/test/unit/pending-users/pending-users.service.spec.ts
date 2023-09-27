@@ -16,6 +16,8 @@ import {
 import { createQueryBuilderMock } from '../../util/mocks/factory/dataSource.factory.mock';
 import { UserAuthGroup } from '../../../src/common/enum/user-auth-group.enum';
 import * as constants from '../../util/mocks/data/test-data.constants';
+import { redCompanyCvClientUserJWTMock } from 'test/util/mocks/data/jwt.mock';
+import { getDirectory } from 'src/common/helper/auth.helper';
 
 interface SelectQueryBuilderParameters {
   userName?: string;
@@ -70,6 +72,8 @@ describe('PendingUsersService', () => {
       const retPendingUser = await service.create(
         constants.RED_COMPANY_ID,
         createRedCompanyPendingUserDtoMock,
+        getDirectory(redCompanyCvClientUserJWTMock),
+        redCompanyCvClientUserJWTMock,
       );
       expect(typeof retPendingUser).toBe('object');
       expect(retPendingUser.companyId).toBe(constants.RED_COMPANY_ID);
@@ -89,6 +93,8 @@ describe('PendingUsersService', () => {
         constants.RED_COMPANY_ID,
         constants.RED_COMPANY_PENDING_USER_NAME,
         updateRedCompanyPendingUserDtoMock,
+        getDirectory(redCompanyCvClientUserJWTMock),
+        redCompanyCvClientUserJWTMock,
       );
       expect(typeof retPendingUser).toBe('object');
       expect(retPendingUser.companyId).toBe(constants.RED_COMPANY_ID);

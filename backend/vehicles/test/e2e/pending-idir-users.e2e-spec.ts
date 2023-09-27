@@ -13,6 +13,8 @@ import {
   readPendingIdirUserMock,
 } from 'test/util/mocks/data/pending-idir-user.mock';
 import { PendingIdirUsersModule } from 'src/modules/company-user-management/pending-idir-users/pending-idir-users.module';
+import { TestUserMiddleware } from './test-user.middleware';
+import { redCompanyAdminUserJWTMock } from 'test/util/mocks/data/jwt.mock';
 
 const repo = createMock<Repository<PendingIdirUser>>();
 
@@ -34,6 +36,8 @@ describe('PendingUsers (e2e)', () => {
       .compile();
 
     app = moduleFixture.createNestApplication();
+    TestUserMiddleware.testUser = redCompanyAdminUserJWTMock;
+    app.use(TestUserMiddleware.prototype.use.bind(TestUserMiddleware));
     await app.init();
   });
 

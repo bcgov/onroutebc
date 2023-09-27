@@ -1,8 +1,7 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
-import { BaseDto } from './base.dto';
 
-export class CountryDto extends BaseDto {
+export class CountryDto {
   @AutoMap()
   @ApiProperty({
     example: 'CA',
