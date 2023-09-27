@@ -1,7 +1,12 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
+import { TransactionType } from '../../../../common/enum/transaction-type.enum';
+import { PaymentMethodType } from '../../../../common/enum/payment-method-type.enum';
+import { ReadApplicationTransactionDto } from './read-application-transaction.dto';
+import { Type } from 'class-transformer';
+import { PaymentGatewayTransactionDto } from '../common/payment-gateway-transaction.dto';
 
-export class ReadTransactionDto {
+export class ReadTransactionDto extends PaymentGatewayTransactionDto {
   @AutoMap()
   @ApiProperty({
     example: '1',
@@ -11,11 +16,35 @@ export class ReadTransactionDto {
 
   @AutoMap()
   @ApiProperty({
-    example: 'P',
+    enum: TransactionType,
+    example: TransactionType.PURCHASE,
     description:
-      'Represents the original value sent to indicate the type of transaction to perform (i.e. P, R, VP, VR, PA, PAC, Q).',
+      'Represents the original value sent to indicate the type of transaction to perform.',
   })
-  transactionType: string;
+  transactionTypeId: TransactionType;
+
+  @AutoMap()
+  @ApiProperty({
+    enum: TransactionType,
+    example: PaymentMethodType.WEB,
+    description: 'The identifier of the user selected payment method.',
+  })
+  paymentMethodId: PaymentMethodType;
+
+  @AutoMap()
+  @ApiProperty({
+    example: '30.00',
+    description: 'Represents the total amount of the transaction.',
+  })
+  totalTransactionAmount: number;
+
+  @AutoMap()
+  @ApiProperty({
+    example: '2023-09-25T16:17:51.110Z',
+    description:
+      'Represents the date and time that the transaction was submitted.',
+  })
+  transactionSubmitDate: string;
 
   @AutoMap()
   @ApiProperty({
@@ -26,70 +55,11 @@ export class ReadTransactionDto {
 
   @AutoMap()
   @ApiProperty({
-    example: '30.00',
-    description: 'Represents the amount of the transaction.',
+    description: 'The transaction details specific to application/permit.',
+    type: [ReadApplicationTransactionDto],
   })
-  transactionAmount: number;
-
-  @AutoMap()
-  @ApiProperty({
-    example: '1',
-    description:
-      'Represents the approval result of a transaction. 0 = Transaction refused, 1 = Transaction approved',
-  })
-  approved: number;
-
-  @AutoMap()
-  @ApiProperty({
-    example: 'TEST',
-    description:
-      'Represents the auth code of a transaction. If the transaction is approved this parameter will contain a unique bank-issued code.',
-  })
-  authCode: string;
-
-  @AutoMap()
-  @ApiProperty({
-    example: 'VI',
-    description: 'Represents the type of card used in the transaction.',
-  })
-  cardType: string;
-
-  @AutoMap()
-  @ApiProperty({
-    example: '6/23/2023 10:57:28 PM',
-    description:
-      'Represents the date and time that the transaction was processed.',
-  })
-  transactionDate: string;
-
-  @AutoMap()
-  @ApiProperty({
-    example: '1',
-    description: 'Represents the card cvd match status.',
-  })
-  cvdId: number;
-
-  @AutoMap()
-  @ApiProperty({
-    example: 'CC',
-    description: 'Represents the payment method of a transaction.',
-  })
-  paymentMethod: string;
-
-  @AutoMap()
-  @ApiProperty({
-    example: 1,
-    description: 'The identifier of the user selected payment method.',
-  })
-  paymentMethodId: number;
-
-  @AutoMap()
-  @ApiProperty({
-    example: '111',
-    description:
-      'References a detailed approved/declined transaction response message.',
-  })
-  messageId: string;
+  @Type(() => ReadApplicationTransactionDto)
+  applicationDetails: ReadApplicationTransactionDto[];
 
   @AutoMap()
   @ApiProperty({
@@ -97,5 +67,5 @@ export class ReadTransactionDto {
     description:
       'Represents basic approved/declined message for a transaction.',
   })
-  messageText: string;
+  url: string;
 }

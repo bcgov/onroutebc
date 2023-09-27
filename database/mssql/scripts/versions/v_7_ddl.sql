@@ -64,19 +64,19 @@ SET IDENTITY_INSERT [permit].[ORBC_VT_PAYMENT_METHOD] OFF
 CREATE TABLE [permit].[ORBC_TRANSACTION](
 	[TRANSACTION_ID] [bigint] IDENTITY(20000000,1) NOT NULL,
 	[TRANSACTION_TYPE_ID] [varchar] (3) NOT NULL,
+	[PAYMENT_METHOD_ID] [int] NOT NULL,
+	[TOTAL_TRANSACTION_AMOUNT] [decimal] (9, 2) NOT NULL,
+	[TRANSACTION_SUBMIT_DATE] [datetime2](7) NOT NULL,
 	[TRANSACTION_ORDER_NUMBER] [varchar](30) NOT NULL,
-	[PROVIDER_TRANSACTION_ID] [bigint] NULL,
-	[TRANSACTION_AMOUNT] [decimal] (9, 2) NULL,
-	[TRANSACTION_APPROVED] [tinyint] NULL CHECK (TRANSACTION_APPROVED BETWEEN 0 AND 1),
-	[AUTH_CODE] [varchar] (32) NULL,
-	[TRANSACTION_CARD_TYPE] [nvarchar](2) NULL,
-	[TRANSACTION_SUBMIT_DATE] [datetime2](7) NULL,
-	[TRANSACTION_DATE] [datetime2](7) NULL,
-	[CVD_ID] [tinyint] NULL CHECK (CVD_ID BETWEEN 1 AND 6),
-	[PAYMENT_METHOD] [varchar] (2) NULL,
-	[PAYMENT_METHOD_ID] [int] NULL,
-	[MESSAGE_ID] [int] NULL,
-	[MESSAGE_TEXT] [varchar](100) NULL,
+	[PG_TRANSACTION_ID] [bigint] NULL,
+	[PG_TRANSACTION_APPROVED] [tinyint] NULL CHECK (PG_TRANSACTION_APPROVED BETWEEN 0 AND 1),
+	[PG_AUTH_CODE] [varchar] (32) NULL,
+	[PG_TRANSACTION_CARD_TYPE] [nvarchar](2) NULL,
+	[PG_TRANSACTION_DATE] [datetime2](7) NULL,
+	[PG_CVD_ID] [tinyint] NULL CHECK (PG_CVD_ID BETWEEN 1 AND 6),
+	[PG_PAYMENT_METHOD] [varchar] (2) NULL,	
+	[PG_MESSAGE_ID] [int] NULL,
+	[PG_MESSAGE_TEXT] [varchar](100) NULL,
 	[CONCURRENCY_CONTROL_NUMBER] [int] NULL,
 	[DB_CREATE_USERID] [varchar](63) NULL,
 	[DB_CREATE_TIMESTAMP] [datetime2](7) NULL,
@@ -106,6 +106,7 @@ CREATE TABLE [permit].[ORBC_RECEIPT](
 ) ON [PRIMARY]
 GO
 
+ALTER TABLE [permit].[ORBC_TRANSACTION] ADD  CONSTRAINT [ORBC_TRANSACTION_TRX_SUBMIT_DATE_DEF]  DEFAULT (getutcdate()) FOR [TRANSACTION_SUBMIT_DATE]
 ALTER TABLE [permit].[ORBC_TRANSACTION] ADD  CONSTRAINT [ORBC_TRANSACTION_DB_CREATE_USERID_DEF]  DEFAULT (user_name()) FOR [DB_CREATE_USERID]
 ALTER TABLE [permit].[ORBC_TRANSACTION] ADD  CONSTRAINT [ORBC_TRANSACTION_DB_CREATE_TIMESTAMP_DEF]  DEFAULT (getutcdate()) FOR [DB_CREATE_TIMESTAMP]
 ALTER TABLE [permit].[ORBC_TRANSACTION] ADD  CONSTRAINT [ORBC_TRANSACTION_DB_LAST_UPDATE_USERID_DEF]  DEFAULT (user_name()) FOR [DB_LAST_UPDATE_USERID]
@@ -116,6 +117,7 @@ CREATE TABLE [permit].[ORBC_PERMIT_TRANSACTION](
 	[ID] [bigint] IDENTITY(1,1) NOT NULL,
 	[PERMIT_ID] [bigint] NOT NULL,
 	[TRANSACTION_ID] [bigint] NOT NULL,
+	[TRANSACTION_AMOUNT] [decimal] (9, 2) NOT NULL,
 	[CONCURRENCY_CONTROL_NUMBER] [int] NULL,
 	[DB_CREATE_USERID] [varchar](63) NULL,
 	[DB_CREATE_TIMESTAMP] [datetime2](7) NULL,
@@ -154,20 +156,21 @@ EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Payment method
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Primary key for the transaction metadata record' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_TRANSACTION', @level2type=N'COLUMN',@level2name=N'TRANSACTION_ID'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The original value sent to indicate the type of transaction to perform' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_TRANSACTION', @level2type=N'COLUMN',@level2name=N'TRANSACTION_TYPE_ID'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The value of trnOrderNumber submitted in the transaction request' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_TRANSACTION', @level2type=N'COLUMN',@level2name=N'TRANSACTION_ORDER_NUMBER'
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Bambora-assigned eight-digit unique id number used to identify an individual transaction' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_TRANSACTION', @level2type=N'COLUMN',@level2name=N'PROVIDER_TRANSACTION_ID'
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The amount of the transaction' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_TRANSACTION', @level2type=N'COLUMN',@level2name=N'TRANSACTION_AMOUNT'
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Transaction approved or refused identifier' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_TRANSACTION', @level2type=N'COLUMN',@level2name=N'TRANSACTION_APPROVED'
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'If the transaction is approved this parameter will contain a unique bank-issued code' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_TRANSACTION', @level2type=N'COLUMN',@level2name=N'AUTH_CODE'
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The type of card used in the transaction' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_TRANSACTION', @level2type=N'COLUMN',@level2name=N'TRANSACTION_CARD_TYPE'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Bambora-assigned eight-digit unique id number used to identify an individual transaction' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_TRANSACTION', @level2type=N'COLUMN',@level2name=N'PG_TRANSACTION_ID'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The total amount of the transaction' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_TRANSACTION', @level2type=N'COLUMN',@level2name=N'TOTAL_TRANSACTION_AMOUNT'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Transaction approved or refused identifier' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_TRANSACTION', @level2type=N'COLUMN',@level2name=N'PG_TRANSACTION_APPROVED'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'If the transaction is approved this parameter will contain a unique bank-issued code' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_TRANSACTION', @level2type=N'COLUMN',@level2name=N'PG_AUTH_CODE'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The type of card used in the transaction' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_TRANSACTION', @level2type=N'COLUMN',@level2name=N'PG_TRANSACTION_CARD_TYPE'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time that user submitted the transaction' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_TRANSACTION', @level2type=N'COLUMN',@level2name=N'TRANSACTION_SUBMIT_DATE'
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time that the transaction was processed' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_TRANSACTION', @level2type=N'COLUMN',@level2name=N'TRANSACTION_DATE'
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Card verification match ID' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_TRANSACTION', @level2type=N'COLUMN',@level2name=N'CVD_ID'
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'2 characters that Bambora sends back references interac online transaction or credit card transaction' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_TRANSACTION', @level2type=N'COLUMN',@level2name=N'PAYMENT_METHOD'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time that the transaction was processed' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_TRANSACTION', @level2type=N'COLUMN',@level2name=N'PG_TRANSACTION_DATE'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Card verification match ID' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_TRANSACTION', @level2type=N'COLUMN',@level2name=N'PG_CVD_ID'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'2 characters that Bambora sends back references interac online transaction or credit card transaction' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_TRANSACTION', @level2type=N'COLUMN',@level2name=N'PG_PAYMENT_METHOD'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Payment method identifier of the user selected payment method' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_TRANSACTION', @level2type=N'COLUMN',@level2name=N'PAYMENT_METHOD_ID'
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The message id references a detailed approved/declined transaction response message' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_TRANSACTION', @level2type=N'COLUMN',@level2name=N'MESSAGE_ID'
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'A basic approved/declined message which may be displayed to the customer on a confirmation page' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_TRANSACTION', @level2type=N'COLUMN',@level2name=N'MESSAGE_TEXT'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The message id references a detailed approved/declined transaction response message' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_TRANSACTION', @level2type=N'COLUMN',@level2name=N'PG_MESSAGE_ID'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'A basic approved/declined message which may be displayed to the customer on a confirmation page' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_TRANSACTION', @level2type=N'COLUMN',@level2name=N'PG_MESSAGE_TEXT'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Permit ID relates to a transaction' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT_TRANSACTION', @level2type=N'COLUMN',@level2name=N'PERMIT_ID'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Transaction ID relates to a permit' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT_TRANSACTION', @level2type=N'COLUMN',@level2name=N'TRANSACTION_ID'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The amount of the transaction' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT_TRANSACTION', @level2type=N'COLUMN',@level2name=N'TRANSACTION_AMOUNT'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Receipt ID for a payment transaction' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_RECEIPT', @level2type=N'COLUMN',@level2name=N'RECEIPT_ID'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Receipt number for a payment transaction' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_RECEIPT', @level2type=N'COLUMN',@level2name=N'RECEIPT_NUMBER'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Transaction ID of the payment receipt' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_RECEIPT', @level2type=N'COLUMN',@level2name=N'TRANSACTION_ID'

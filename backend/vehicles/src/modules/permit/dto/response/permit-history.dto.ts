@@ -1,5 +1,6 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
+import { TransactionType } from '../../../../common/enum/transaction-type.enum';
 
 export class PermitHistoryDto {
   @AutoMap()
@@ -35,12 +36,21 @@ export class PermitHistoryDto {
     description:
       'Bambora-assigned eight-digit unique id number used to identify an individual transaction.',
   })
-  providerTransactionId: number;
+  pgTransactionId: string;
 
   @AutoMap()
   @ApiProperty({
     example: 'CC',
     description: 'Represents the payment method of a transaction.',
   })
-  paymentMethod: string;
+  pgPaymentMethod: string;
+
+  @AutoMap()
+  @ApiProperty({
+    enum: TransactionType,
+    example: TransactionType.PURCHASE,
+    description:
+      'Represents the original value sent to indicate the type of transaction to perform.',
+  })
+  transactionTypeId: TransactionType;
 }

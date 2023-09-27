@@ -93,12 +93,14 @@ export class PermitService {
   }
 
   private async findOneWithTransactions(permitId: string): Promise<Permit> {
-    return this.permitRepository.findOne({
-      where: { permitId: permitId },
-      relations: {
-        transactions: true,
-      },
-    });
+    //TODO Praveen!
+    return null;
+    // return this.permitRepository.findOne({
+    //   where: { permitId: permitId },
+    //   relations: {
+    //     transactions: true,
+    //   },
+    // });
   }
 
   /**
@@ -257,35 +259,37 @@ export class PermitService {
   }
 
   async findReceipt(permit: Permit): Promise<Receipt> {
-    if (!permit.transactions || permit.transactions.length === 0) {
-      throw new Error('No transactions associated with this permit');
-    }
+    //TODO Praveen!
+    return null;
+    // if (!permit.transactions || permit.transactions.length === 0) {
+    //   throw new Error('No transactions associated with this permit');
+    // }
 
-    // Find the latest transaction for the permit, but not necessarily an approved transaction
-    let latestTransaction = permit.transactions[0];
-    let latestSubmitDate = latestTransaction.transactionSubmitDate;
-    permit.transactions.forEach((transaction) => {
-      if (
-        new Date(transaction.transactionSubmitDate) >=
-        new Date(latestSubmitDate)
-      ) {
-        latestSubmitDate = transaction.transactionSubmitDate;
-        latestTransaction = transaction;
-      }
-    });
+    // // Find the latest transaction for the permit, but not necessarily an approved transaction
+    // let latestTransaction = permit.transactions[0];
+    // let latestSubmitDate = latestTransaction.transactionSubmitDate;
+    // permit.transactions.forEach((transaction) => {
+    //   if (
+    //     new Date(transaction.transactionSubmitDate) >=
+    //     new Date(latestSubmitDate)
+    //   ) {
+    //     latestSubmitDate = transaction.transactionSubmitDate;
+    //     latestTransaction = transaction;
+    //   }
+    // });
 
-    const receipt = await this.receiptRepository.findOne({
-      where: {
-        transactionId: latestTransaction.transactionId,
-      },
-    });
+    // const receipt = await this.receiptRepository.findOne({
+    //   where: {
+    //     transactionId: latestTransaction.transactionId,
+    //   },
+    // });
 
-    if (!receipt) {
-      throw new Error(
-        "No receipt generated for this permit's latest transaction",
-      );
-    }
-    return receipt;
+    // if (!receipt) {
+    //   throw new Error(
+    //     "No receipt generated for this permit's latest transaction",
+    //   );
+    // }
+    // return receipt;
   }
 
   /**
@@ -318,13 +322,26 @@ export class PermitService {
   ): Promise<PermitHistoryDto[]> {
     const permits = await this.permitRepository
       .createQueryBuilder('permit')
-      .innerJoinAndSelect('permit.transactions', 'transaction')
+      .innerJoinAndSelect('permit.permitTransactions', 'permitTransactions')
+      .innerJoinAndSelect('permitTransactions.transaction', 'transaction')
       .where('permit.permitNumber IS NOT NULL')
       .andWhere('permit.originalPermitId = :originalPermitId', {
         originalPermitId: originalPermitId,
       })
       .getMany();
-    return this.classMapper.mapArrayAsync(permits, Permit, PermitHistoryDto);
+
+    return permits.flatMap((permit) =>
+      permit.permitTransactions.map((permitTransaction) => ({
+        permitNumber: permit.permitNumber,
+        comment: permit.comment,
+        transactionOrderNumber:
+          permitTransaction.transaction.transactionOrderNumber,
+        transactionAmount: permitTransaction.transactionAmount,
+        transactionTypeId: permitTransaction.transaction.transactionTypeId,
+        pgPaymentMethod: permitTransaction.transaction.pgPaymentMethod,
+        pgTransactionId: permitTransaction.transaction.pgTransactionId,
+      })),
+    ) as PermitHistoryDto[];
   }
 
   /**
