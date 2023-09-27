@@ -13,7 +13,6 @@ import { Transaction } from './entities/transaction.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository, UpdateResult } from 'typeorm';
 import { PermitTransaction } from './entities/permit-transaction.entity';
-import { ApplicationService } from '../permit/application.service';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
 import { callDatabaseSequence } from 'src/common/helper/database.helper';
 import { Permit } from '../permit/entities/permit.entity';
@@ -22,6 +21,7 @@ import { PaymentMethodType } from '../../common/enum/payment-method-type.enum';
 import { TransactionType } from '../../common/enum/transaction-type.enum';
 import { UpdatePaymentGatewayTransactionDto } from './dto/request/read-payment-gateway-transaction.dto';
 import { ReadPaymentGatewayTransactionDto } from './dto/response/read-payment-gateway-transaction.dto';
+import { Receipt } from './entities/receipt.entity';
 
 @Injectable()
 export class PaymentService {
@@ -30,7 +30,6 @@ export class PaymentService {
     @InjectRepository(Transaction)
     private transactionRepository: Repository<Transaction>,
     @InjectMapper() private readonly classMapper: Mapper,
-    private applicationService: ApplicationService,
   ) {}
 
   private generateHashExpiry = (currDate?: Date) => {
@@ -125,6 +124,25 @@ export class PaymentService {
   }
 
   /**
+   * Generate Receipt Number
+   */
+  async generateReceiptNumber(): Promise<string> {
+    const currentDate = new Date();
+    const year = currentDate.getFullYear();
+    const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+    const day = String(currentDate.getDate()).padStart(2, '0');
+    const dateString = `${year}${month}${day}`;
+    const source = dateString;
+    const seq = await callDatabaseSequence(
+      'permit.ORBC_RECEIPT_NUMBER_SEQ',
+      this.dataSource,
+    );
+    const receiptNumber = String(String(source) + '-' + String(seq));
+
+    return receiptNumber;
+  }
+
+  /**
    * Creates a Transaction in ORBC System.
    *
    * @param createTransactionDto - The createTransactionDto object of type {@link CreateTransactionDto} for
@@ -205,6 +223,17 @@ export class PaymentService {
         url = this.generateUrl(createdTransaction);
       }
 
+      if (
+        createdTransaction.transactionTypeId == TransactionType.REFUND ||
+        createdTransaction.transactionTypeId == TransactionType.ZERO_AMOUNT
+      ) {
+        const receiptNumber = await this.generateReceiptNumber();
+        const receipt = new Receipt();
+        receipt.receiptNumber = receiptNumber;
+        receipt.transaction = createdTransaction;
+        await queryRunner.manager.save(receipt);
+      }
+
       readTransactionDto = await this.classMapper.mapAsync(
         createdTransaction,
         Transaction,
@@ -257,6 +286,17 @@ export class PaymentService {
         throw new NotFoundException('TransactionId not found');
       }
 
+      transactionToUpdate.permitTransactions.forEach((permitTransaction) => {
+        if (
+          permitTransaction.permit.permitStatus !=
+          ApplicationStatus.WAITING_PAYMENT
+        ) {
+          throw new BadRequestException(
+            `${permitTransaction.permit.permitId} not in valid status!`,
+          );
+        }
+      });
+
       const updateTransactionTemp = await this.classMapper.mapAsync(
         updatePaymentGatewayTransactionDto,
         UpdatePaymentGatewayTransactionDto,
@@ -273,7 +313,7 @@ export class PaymentService {
         throw new InternalServerErrorException('Error updating transaction');
       }
 
-      if (updateTransactionTemp.pgApproved) {
+      if (updateTransactionTemp.pgApproved === 1) {
         for (const permitTransaction of transactionToUpdate.permitTransactions) {
           updateResult = await queryRunner.manager.update(
             Permit,
@@ -292,6 +332,14 @@ export class PaymentService {
         where: { transactionId: transactionId },
         relations: ['permitTransactions', 'permitTransactions.permit'],
       });
+
+      if (updateTransactionTemp.pgApproved === 1) {
+        const receiptNumber = await this.generateReceiptNumber();
+        const receipt = new Receipt();
+        receipt.receiptNumber = receiptNumber;
+        receipt.transaction = updatedTransaction;
+        await queryRunner.manager.save(receipt);
+      }
 
       await queryRunner.commitTransaction();
     } catch (err) {

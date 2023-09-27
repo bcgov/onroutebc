@@ -199,7 +199,7 @@ export class Transaction extends Base {
   })
   pgMessageText: string;
 
-  @OneToOne(() => Receipt, (receipt) => receipt.transactionId)
+  @OneToOne(() => Receipt, (receipt) => receipt.transaction)
   receipt: Receipt;
 
   @OneToMany(

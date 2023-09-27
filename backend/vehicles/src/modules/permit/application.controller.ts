@@ -32,6 +32,7 @@ import { UpdateApplicationStatusDto } from './dto/request/update-application-sta
 import { ResultDto } from './dto/response/result.dto';
 import { Roles } from 'src/common/decorator/roles.decorator';
 import { Role } from 'src/common/enum/roles.enum';
+import { IssuePermitDto } from './dto/request/issue-permit.dto';
 
 @ApiBearerAuth()
 @ApiTags('Permit Application')
@@ -175,5 +176,32 @@ export class ApplicationController {
       throw new DataNotFoundException();
     }
     return result;
+  }
+
+  /**
+   * A POST method defined with the @Post() decorator and a route of /:applicationId/issue
+   * that issues a ermit for given @param applicationId..
+   * @param request
+   * @param issuePermitDto
+   * @returns The id of new voided/revoked permit a in response object {@link ResultDto}
+   *
+   */
+  @Post('/issue')
+  async issuePermit(
+    @Req() request: Request,
+    @Body() issuePermitDto: IssuePermitDto,
+  ): Promise<ResultDto> {
+    const currentUser = request.user as IUserJWT;
+    /**Bulk issuance would require changes in issuePermit service method with
+     *  respect to Document generation etc. At the moment, it is not handled and
+     *  only single permit Id must be passed.
+     * 
+     */
+      const result = await this.applicationService.issuePermit(
+        currentUser,
+        issuePermitDto.applicationIds[0],
+      );
+      return result;
+    
   }
 }

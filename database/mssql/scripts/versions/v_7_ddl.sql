@@ -110,7 +110,7 @@ CREATE TABLE [permit].[ORBC_RECEIPT](
 	[RECEIPT_ID] [bigint] IDENTITY(1,1) NOT NULL,
 	[RECEIPT_NUMBER] [varchar](19) NOT NULL,
 	[TRANSACTION_ID] [bigint] NOT NULL,
-	[RECEIPT_DOCUMENT_ID] [varchar](10) NOT NULL,
+	[RECEIPT_DOCUMENT_ID] [varchar](10) NULL,
 	[APP_CREATE_TIMESTAMP] [datetime2](7) DEFAULT (getutcdate()),
 	[APP_CREATE_USERID] [nvarchar](30) DEFAULT (user_name()),
 	[APP_CREATE_USER_GUID] [char](32) NULL,

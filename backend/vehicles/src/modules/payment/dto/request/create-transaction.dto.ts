@@ -20,7 +20,7 @@ export class CreateTransactionDto extends PaymentGatewayTransactionDto {
 
   @AutoMap()
   @ApiProperty({
-    enum: TransactionType,
+    enum: PaymentMethodType,
     example: PaymentMethodType.WEB,
     description: 'The identifier of the user selected payment method.',
   })
