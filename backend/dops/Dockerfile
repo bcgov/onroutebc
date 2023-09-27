@@ -10,6 +10,16 @@ COPY . ./
 # Create and Assign permissions to npm folder
 RUN mkdir /.npm && chmod 777 /.npm
 
+# Add user so we don't need --no-sandbox.
+RUN addgroup -S pptruser && adduser -S -G pptruser pptruser \
+   # && mkdir -p /home/pptruser/Downloads /app \
+    && chown -R pptruser:pptruser /home/pptruser \
+    && chown -R pptruser:pptruser /app
+
+
+# Run everything after as non-privileged user.
+USER pptruser
+
 # Install packages, build and keep only prod packages
 RUN npm ci
 RUN npm run build
@@ -79,18 +89,6 @@ ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
 
 # Expose Port
 EXPOSE 5001
-
-# USER 1001
-
-# Add user so we don't need --no-sandbox.
-RUN addgroup -S pptruser && adduser -S -G pptruser pptruser \
-   # && mkdir -p /home/pptruser/Downloads /app \
-    && chown -R pptruser:pptruser /home/pptruser \
-    && chown -R pptruser:pptruser /app
-
-
-# Run everything after as non-privileged user.
-USER pptruser
 
 # Start the app
 CMD ["npm", "run", "start:prod"]
