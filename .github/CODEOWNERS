@@ -1,5 +1,5 @@
 # Default codeowners:
-* @john-fletcher-aot @gchauhan-aot @praju-aot @krishnan-aot @devin-aot
+* @john-fletcher-aot @gchauhan-aot @praju-aot @krishnan-aot
 
 # Frontend:
 /frontend/** @krishnan-aot
