@@ -170,13 +170,16 @@ export class CompanyController {
   @Roles(Role.WRITE_ORG)
   @Put(':companyId')
   async update(
+    @Req() request: Request,
     @Param('companyId') companyId: number,
     @Body() updateCompanyDto: UpdateCompanyDto,
   ): Promise<ReadCompanyDto> {
+    const currentUser = request.user as IUserJWT;
     const retCompany = await this.companyService.update(
       companyId,
       updateCompanyDto,
       Directory.BBCEID,
+      currentUser,
     );
     if (!retCompany) {
       throw new DataNotFoundException();

@@ -46,6 +46,8 @@ import { PendingIdirUsersService } from 'src/modules/company-user-management/pen
 import { pendingIdirUserEntityMock } from 'test/util/mocks/data/pending-idir-user.mock';
 import { Request } from 'express';
 import { IUserJWT } from '../../../src/common/interface/user-jwt.interface';
+import { Directory } from 'src/common/enum/directory.enum';
+import { getDirectory } from 'src/common/helper/auth.helper';
 
 interface SelectQueryBuilderParameters {
   userGUID?: string;
@@ -182,6 +184,7 @@ describe('UsersService', () => {
         constants.RED_COMPANY_CVCLIENT_USER_GUID,
         updateRedCompanyCvClientUserDtoMock,
         constants.RED_COMPANY_ID,
+        getDirectory(redCompanyCvClientUserJWTMock),
         request.user as IUserJWT,
       );
 
@@ -221,6 +224,8 @@ describe('UsersService', () => {
       const retUpdateResult = await service.updateStatus(
         constants.BLUE_COMPANY_CVCLIENT_USER_GUID,
         UserStatus.DISABLED,
+        Directory.BCEID,
+        redCompanyCvClientUserJWTMock,
       );
       expect(typeof retUpdateResult).toBe('object');
       expect(retUpdateResult.affected).toBe(1);

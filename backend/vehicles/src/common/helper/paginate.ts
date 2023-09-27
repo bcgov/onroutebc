@@ -34,7 +34,7 @@ export async function paginate<T, CustomMetaType = IPaginationMeta>(
 }
 
 function resolveOptions(
-  options: IPaginationOptions<any>,
+  options: IPaginationOptions<unknown>,
 ): [number, number, PaginationTypeEnum, boolean, TypeORMCacheType] {
   const page = resolveNumericOption(options, 'page', DEFAULT_PAGE);
   const limit = resolveNumericOption(options, 'limit', DEFAULT_LIMIT);
@@ -48,7 +48,7 @@ function resolveOptions(
 }
 
 function resolveNumericOption(
-  options: IPaginationOptions<any>,
+  options: IPaginationOptions<unknown>,
   key: 'page' | 'limit',
   defaultValue: number,
 ): number {
