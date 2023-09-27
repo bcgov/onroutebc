@@ -64,6 +64,7 @@ ENV ACCESS_API_URL ${ACCESS_API_URL}
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
+COPY --from=builder /.cache ./.cache
 
 
 
