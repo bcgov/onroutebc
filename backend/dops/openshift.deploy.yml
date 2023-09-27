@@ -207,6 +207,7 @@ objects:
         spec:
           containers:
             - image: ${NAME}-${ZONE}-${COMPONENT}:${IMAGE_TAG}
+              securityContext:
                 capabilities:
                   add: ["NET_BIND_SERVICE"]            
               imagePullPolicy: Always
