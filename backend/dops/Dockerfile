@@ -173,18 +173,18 @@ ENV ACCESS_API_URL ${ACCESS_API_URL}
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
-# Packages
-RUN apt-get update && \
-    apt-get install -y \
-        ca-certificates \
-        curl \
-        fonts-freefont-ttf \
-        libfreetype6 \
-        libharfbuzz0b \
-        libnss3
+# # Packages
+# RUN apt-get update && \
+#     apt-get install -y \
+#         ca-certificates \
+#         curl \
+#         fonts-freefont-ttf \
+#         libfreetype6 \
+#         libharfbuzz0b \
+#         libnss3
 
 # Expose port - mostly a convention, for readability
 EXPOSE 3000
 
 # Start up command
-ENTRYPOINT  ["node", "dist/main"]
+ENTRYPOINT  ["/root/.nvm/versions/node/v16.14.0/bin/node", "dist/main"]
