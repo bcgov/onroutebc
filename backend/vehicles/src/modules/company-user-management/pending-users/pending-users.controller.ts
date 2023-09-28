@@ -6,6 +6,7 @@ import {
   Param,
   Put,
   Delete,
+  Req,
 } from '@nestjs/common';
 
 import {
@@ -24,6 +25,9 @@ import { CreatePendingUserDto } from './dto/request/create-pending-user.dto';
 import { UpdatePendingUserDto } from './dto/request/update-pending-user.dto';
 import { ReadPendingUserDto } from './dto/response/read-pending-user.dto';
 import { PendingUsersService } from './pending-users.service';
+import { IUserJWT } from 'src/common/interface/user-jwt.interface';
+import { Request } from 'express';
+import { getDirectory } from 'src/common/helper/auth.helper';
 
 @ApiTags('Company and User Management - Pending User')
 @ApiBadRequestResponse({
@@ -66,10 +70,18 @@ export class PendingUsersController {
   })
   @Post()
   async create(
+    @Req() request: Request,
     @Param('companyId') companyId: number,
     @Body() createUserDto: CreatePendingUserDto,
   ) {
-    return await this.pendingUserService.create(companyId, createUserDto);
+    const currentUser = request.user as IUserJWT;
+    const directory = getDirectory(currentUser);
+    return await this.pendingUserService.create(
+      companyId,
+      createUserDto,
+      directory,
+      currentUser,
+    );
   }
 
   /**
@@ -148,14 +160,19 @@ export class PendingUsersController {
   })
   @Put(':userName')
   async update(
+    @Req() request: Request,
     @Param('companyId') companyId: number,
     @Param('userName') userName: string,
     @Body() updatePendingUserDto: UpdatePendingUserDto,
   ): Promise<ReadPendingUserDto> {
+    const currentUser = request.user as IUserJWT;
+    const directory = getDirectory(currentUser);
     const pendingUser = await this.pendingUserService.update(
       companyId,
       userName,
       updatePendingUserDto,
+      directory,
+      currentUser,
     );
     if (!pendingUser) {
       throw new DataNotFoundException();

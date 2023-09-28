@@ -17,6 +17,8 @@ import {
   updatePowerUnitDtoMock,
 } from '../util/mocks/data/power-unit.mock';
 import { deleteDtoFailureMock } from 'test/util/mocks/data/delete-dto.mock';
+import { TestUserMiddleware } from './test-user.middleware';
+import { redCompanyCvClientUserJWTMock } from 'test/util/mocks/data/jwt.mock';
 
 describe('Power Units (e2e)', () => {
   let app: INestApplication;
@@ -36,6 +38,8 @@ describe('Power Units (e2e)', () => {
       .compile();
 
     app = moduleFixture.createNestApplication();
+    TestUserMiddleware.testUser = redCompanyCvClientUserJWTMock;
+    app.use(TestUserMiddleware.prototype.use.bind(TestUserMiddleware));
     await app.init();
   });
 

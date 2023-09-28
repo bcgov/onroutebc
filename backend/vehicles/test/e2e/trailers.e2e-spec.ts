@@ -16,6 +16,8 @@ import {
   updateTrailerDtoMock,
 } from '../util/mocks/data/trailer.mock';
 import { deleteDtoFailureMock } from 'test/util/mocks/data/delete-dto.mock';
+import { TestUserMiddleware } from './test-user.middleware';
+import { redCompanyCvClientUserJWTMock } from 'test/util/mocks/data/jwt.mock';
 
 describe('Trailers (e2e)', () => {
   let app: INestApplication;
@@ -35,6 +37,8 @@ describe('Trailers (e2e)', () => {
       .compile();
 
     app = moduleFixture.createNestApplication();
+    TestUserMiddleware.testUser = redCompanyCvClientUserJWTMock;
+    app.use(TestUserMiddleware.prototype.use.bind(TestUserMiddleware));
     await app.init();
   });
 

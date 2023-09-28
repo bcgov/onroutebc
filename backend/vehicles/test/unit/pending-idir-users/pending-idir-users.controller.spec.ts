@@ -11,6 +11,8 @@ import {
   pendingIdirUserEntityMock,
   readPendingIdirUserMock,
 } from 'test/util/mocks/data/pending-idir-user.mock';
+import { getDirectory } from 'src/common/helper/auth.helper';
+import { IUserJWT } from 'src/common/interface/user-jwt.interface';
 
 let pendingIdirUserService: DeepMocked<PendingIdirUsersService>;
 
@@ -44,14 +46,20 @@ describe('PendingIdirUsersController', () => {
     it('should create a company', async () => {
       const request = createMock<Request>();
       request.user = sysAdminStaffUserJWTMock;
+      const currentUser = request.user as IUserJWT;
       pendingIdirUserService.create.mockResolvedValue(readPendingIdirUserMock);
-      const retPendingUser = await controller.create(createPendingIdirUserMock);
+      const retPendingUser = await controller.create(
+        request,
+        createPendingIdirUserMock,
+      );
       expect(typeof retPendingUser).toBe('object');
       expect(retPendingUser.userName).toEqual(
         constants.SYS_ADMIN_STAFF_USER_NAME,
       );
       expect(pendingIdirUserService.create).toHaveBeenCalledWith(
         createPendingIdirUserMock,
+        getDirectory(currentUser),
+        currentUser,
       );
     });
   });
