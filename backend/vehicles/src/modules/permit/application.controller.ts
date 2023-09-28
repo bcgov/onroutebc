@@ -69,7 +69,11 @@ export class ApplicationController {
   ): Promise<ReadApplicationDto> {
     const currentUser = request.user as IUserJWT;
     const directory = getDirectory(currentUser);
-    return await this.applicationService.create(createApplication, currentUser,directory);
+    return await this.applicationService.create(
+      createApplication,
+      currentUser,
+      directory,
+    );
   }
 
   /**
@@ -142,7 +146,7 @@ export class ApplicationController {
     @Body() updateApplicationDto: UpdateApplicationDto,
   ): Promise<ReadApplicationDto> {
     const currentUser = request.user as IUserJWT;
-    const directory =  getDirectory(currentUser);
+    const directory = getDirectory(currentUser);
     const application = await this.applicationService.update(
       applicationNumber,
       updateApplicationDto,
@@ -173,12 +177,12 @@ export class ApplicationController {
     @Body() updateApplicationStatusDto: UpdateApplicationStatusDto,
   ): Promise<ResultDto> {
     const currentUser = request.user as IUserJWT; // TODO: consider security with passing JWT token to DMS microservice
-    const directory =  getDirectory(currentUser);
+    const directory = getDirectory(currentUser);
     const result = await this.applicationService.updateApplicationStatus(
       updateApplicationStatusDto.applicationIds,
       updateApplicationStatusDto.applicationStatus,
       currentUser,
-      directory
+      directory,
     );
     if (!result) {
       throw new DataNotFoundException();

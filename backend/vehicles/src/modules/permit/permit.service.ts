@@ -46,7 +46,6 @@ import { CreateTransactionDto } from '../payment/dto/request/create-transaction.
 import { TransactionType } from '../../common/enum/transaction-type.enum';
 import { Transaction } from '../payment/entities/transaction.entity';
 import { Directory } from 'src/common/enum/directory.enum';
-import { getDirectory } from 'src/common/helper/auth.helper';
 
 @Injectable()
 export class PermitService {
@@ -65,7 +64,11 @@ export class PermitService {
     private paymentService: PaymentService,
   ) {}
 
-  async create(createPermitDto: CreatePermitDto, currentUser: IUserJWT, directory: Directory): Promise<ReadPermitDto> {
+  async create(
+    createPermitDto: CreatePermitDto,
+    currentUser: IUserJWT,
+    directory: Directory,
+  ): Promise<ReadPermitDto> {
     const permitEntity = await this.classMapper.mapAsync(
       createPermitDto,
       CreatePermitDto,
@@ -77,7 +80,7 @@ export class PermitService {
           userGUID: currentUser.userGUID,
           timestamp: new Date(),
         }),
-      }
+      },
     );
 
     const savedPermitEntity = await this.permitRepository.save(permitEntity);
@@ -331,7 +334,7 @@ export class PermitService {
     permitId: string,
     voidPermitDto: VoidPermitDto,
     currentUser: IUserJWT,
-    directory: Directory
+    directory: Directory,
   ): Promise<ResultDto> {
     const permit = await this.findOne(permitId);
     /**
@@ -483,11 +486,13 @@ export class PermitService {
         {
           receiptId: fetchedTransaction.receipt.receiptId,
         },
-        { receiptDocumentId: generatedDocuments.at(1).dmsId,
+        {
+          receiptDocumentId: generatedDocuments.at(1).dmsId,
           updatedDateTime: new Date(),
           updatedUser: currentUser.userName,
           updatedUserDirectory: directory,
-          updatedUserGuid: currentUser.userGUID, },
+          updatedUserGuid: currentUser.userGUID,
+        },
       );
 
       /* const permitNumber = await this.applicationService.generatePermitNumber(
@@ -498,22 +503,26 @@ export class PermitService {
       await queryRunner.manager
         .createQueryBuilder()
         .update('Permit')
-        .set({ permitStatus: voidPermitDto.status,
+        .set({
+          permitStatus: voidPermitDto.status,
           updatedDateTime: new Date(),
           updatedUser: currentUser.userName,
           updatedUserDirectory: directory,
-          updatedUserGuid: currentUser.userGUID, })
+          updatedUserGuid: currentUser.userGUID,
+        })
         .where('permitId = :permitId', { permitId: newPermit.permitId })
         .execute();
       //Update old permit status to SUPERSEDED.
       await queryRunner.manager
         .createQueryBuilder()
         .update('Permit')
-        .set({ permitStatus: ApplicationStatus.SUPERSEDED,
+        .set({
+          permitStatus: ApplicationStatus.SUPERSEDED,
           updatedDateTime: new Date(),
           updatedUser: currentUser.userName,
           updatedUserDirectory: directory,
-          updatedUserGuid: currentUser.userGUID, })
+          updatedUserGuid: currentUser.userGUID,
+        })
         .where('permitId = :permitId', { permitId: permitId })
         .execute();
       await queryRunner.commitTransaction();

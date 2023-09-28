@@ -126,32 +126,36 @@ export class TransactionProfile extends AutomapperProfile {
         ),
       );
 
-      createMap(mapper, UpdatePaymentGatewayTransactionDto, Transaction,
-      forMember(
-        (d) => d.updatedUserGuid,
-        mapWithArguments((source, { userGUID }) => {
-          return userGUID;
-        }),
-      ),
-      forMember(
-        (d) => d.updatedUser,
-        mapWithArguments((source, { userName }) => {
-          return userName;
-        }),
-      ),
-      forMember(
-        (d) => d.updatedUserDirectory,
-        mapWithArguments((source, { directory }) => {
-          return directory;
-        }),
-      ),
+      createMap(
+        mapper,
+        UpdatePaymentGatewayTransactionDto,
+        Transaction,
+        forMember(
+          (d) => d.updatedUserGuid,
+          mapWithArguments((source, { userGUID }) => {
+            return userGUID;
+          }),
+        ),
+        forMember(
+          (d) => d.updatedUser,
+          mapWithArguments((source, { userName }) => {
+            return userName;
+          }),
+        ),
+        forMember(
+          (d) => d.updatedUserDirectory,
+          mapWithArguments((source, { directory }) => {
+            return directory;
+          }),
+        ),
 
-      forMember(
-        (d) => d.updatedDateTime,
-        mapWithArguments((source, { timestamp }) => {
-          return timestamp;
-        }),
-      ),);
+        forMember(
+          (d) => d.updatedDateTime,
+          mapWithArguments((source, { timestamp }) => {
+            return timestamp;
+          }),
+        ),
+      );
 
       createMap(mapper, Transaction, ReadPaymentGatewayTransactionDto);
     };

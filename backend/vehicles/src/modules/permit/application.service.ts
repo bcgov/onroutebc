@@ -131,7 +131,7 @@ export class ApplicationService {
           timestamp: new Date(),
           directory: directory,
         }),
-      }
+      },
     );
     const savedPermitEntity = await this.permitRepository.save(
       permitApplication,
@@ -286,7 +286,7 @@ export class ApplicationService {
           userName: currentUser.userName,
           userGUID: currentUser.userGUID,
           timestamp: new Date(),
-          directory: directory, 
+          directory: directory,
         }),
       },
     );
@@ -379,7 +379,11 @@ export class ApplicationService {
    * @param applicationId applicationId to identify the application to be issued. It is the same as permitId.
    * @returns a resultDto that describes if the transaction was successful or if it failed
    */
-  async issuePermit(currentUser: IUserJWT, applicationId: string, directory: Directory) {
+  async issuePermit(
+    currentUser: IUserJWT,
+    applicationId: string,
+    directory: Directory,
+  ) {
     let success = '';
     let failure = '';
     const fetchedApplication = await this.findOneWithSuccessfulTransaction(
@@ -499,7 +503,8 @@ export class ApplicationService {
             fetchedApplication.permitTransactions[0].transaction.receipt
               .receiptId,
         },
-        { receiptDocumentId: generatedDocuments.at(1).dmsId,
+        {
+          receiptDocumentId: generatedDocuments.at(1).dmsId,
           updatedDateTime: new Date(),
           updatedUser: currentUser.userName,
           updatedUserDirectory: directory,
@@ -517,11 +522,13 @@ export class ApplicationService {
           {
             permitId: fetchedApplication.previousRevision,
           },
-          { permitStatus: ApplicationStatus.SUPERSEDED,
+          {
+            permitStatus: ApplicationStatus.SUPERSEDED,
             updatedDateTime: new Date(),
             updatedUser: currentUser.userName,
             updatedUserDirectory: directory,
-            updatedUserGuid: currentUser.userGUID,},
+            updatedUserGuid: currentUser.userGUID,
+          },
         );
       }
       await queryRunner.commitTransaction();

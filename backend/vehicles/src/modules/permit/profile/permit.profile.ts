@@ -1,5 +1,11 @@
 import { AutomapperProfile, InjectMapper } from '@automapper/nestjs';
-import { createMap, forMember, mapFrom, Mapper, mapWithArguments } from '@automapper/core';
+import {
+  createMap,
+  forMember,
+  mapFrom,
+  Mapper,
+  mapWithArguments,
+} from '@automapper/core';
 import { Injectable } from '@nestjs/common';
 import { Permit } from '../entities/permit.entity';
 import { CreatePermitDto } from '../dto/request/create-permit.dto';

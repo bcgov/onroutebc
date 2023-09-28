@@ -353,12 +353,13 @@ export class PaymentService {
           updateResult = await queryRunner.manager.update(
             Permit,
             { permitId: permitTransaction.permit.permitId },
-            { permitStatus: ApplicationStatus.PAYMENT_COMPLETE,
+            {
+              permitStatus: ApplicationStatus.PAYMENT_COMPLETE,
               updatedDateTime: new Date(),
               updatedUser: currentUser.userName,
               updatedUserGuid: currentUser.userGUID,
               updatedUserDirectory: directory,
-       },
+            },
           );
           if (!updateResult?.affected) {
             throw new InternalServerErrorException(
