@@ -1,15 +1,13 @@
 # Build static files
-# Node Bullseye has npm
 FROM node:18.7.0-slim AS build
-
-# Install packages, build and keep only prod packages
 WORKDIR /app
 COPY . ./
 RUN npm i && \
     npm run build && \
     npm prune --production
 
-FROM linuxserver/chromium
+# https://github.com/astefanutti/decktape/blob/master/Dockerfile
+FROM node:18-alpine3.15
 
 ENV NODE_ENV production
 
@@ -43,12 +41,36 @@ ENV ACCESS_API_URL ${ACCESS_API_URL}
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
-RUN groupadd app
-RUN useradd --uid 1001 --gid 1001 -m app
+# ARG CHROMIUM_VERSION=115.0.5790.170-r0
+ENV TERM xterm-color
+
+RUN <<EOF cat > /etc/apk/repositories
+http://dl-cdn.alpinelinux.org/alpine/edge/main
+http://dl-cdn.alpinelinux.org/alpine/edge/community
+http://dl-cdn.alpinelinux.org/alpine/edge/testing
+EOF
+
+# Chromium, CA certificates, fonts
+# https://git.alpinelinux.org/cgit/aports/log/community/chromium
+    # chromium=${CHROMIUM_VERSION} \
+RUN apk update && apk upgrade && \
+    apk add --no-cache \
+    ca-certificates \
+    libstdc++ \
+    font-noto-emoji \
+    freetype \
+    harfbuzz \
+    nss \
+    ttf-freefont \
+    wqy-zenhei && \
+    # /etc/fonts/conf.d/44-wqy-zenhei.conf overrides 'monospace' matching FreeMono.ttf in /etc/fonts/conf.d/69-unifont.conf
+    mv /etc/fonts/conf.d/44-wqy-zenhei.conf /etc/fonts/conf.d/74-wqy-zenhei.conf && \
+    rm -rf /var/cache/apk/*
 
 WORKDIR /app
 COPY --from=build --chown=app /app/node_modules ./node_modules
 COPY --from=build --chown=app /app/dist ./dist
 
-USER app
-CMD ["node", "dist/main", "--chrome-arg=--no-sandbox"]
+USER node
+
+ENTRYPOINT ["node", "dist/main", "--chrome-arg=--no-sandbox"]
