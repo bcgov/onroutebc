@@ -4,39 +4,14 @@ FROM node:20.7.0-bullseye-slim AS build
 
 # Install packages, build and keep only prod packages
 WORKDIR /app
-COPY . ./
+COPY *.json ./
+COPY ./src ./src
 RUN npm ci --ignore-scripts --no-update-notifier
-# RUN addgroup -S pptruser && adduser -S -G pptruser pptruser \
-#     && chown -R pptruser:pptruser /home/pptruser \
-#     && chown -R pptruser:pptruser /app
-
-RUN blorf
-
-# Run everything after as non-privileged user.
-# USER pptruser
-
-# Install packages, build and keep only prod packages
-RUN npm ci
 RUN npm run build
 RUN npm prune --production
 
-
-
-# Deployment container
-FROM node:18.17.1-alpine
-RUN npm cache clean --force
-
-# Create and Assign permissions to npm folder
-RUN mkdir /.npm && chmod 777 /.npm
-RUN mkdir /.cache && chmod 777 /.cache
-
-# Set the working directory to /app inside the deployment container
-WORKDIR /app
-
-# Set node to production
-ENV NODE_ENV production
-
-# Set environment variables
+# Deploy container
+FROM node:20.7.0-bullseye-slim AS deploy
 ENV DB_TYPE ${DB_TYPE}
 ENV POSTGRESQL_HOST ${POSTGRESQL_HOST}
 ENV POSTGRESQL_USER ${POSTGRESQL_USER}
@@ -64,27 +39,30 @@ ENV CDOGS_CLIENT_ID ${CDOGS_CLIENT_ID}
 ENV CDOGS_CLIENT_SECRET ${CDOGS_CLIENT_SECRET}
 ENV CDOGS_URL ${CDOGS_URL}
 ENV ACCESS_API_URL ${ACCESS_API_URL}
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
-# Copy production files from build
+# Packages
+RUN apt update && \
+    apt install -y \
+        ca-certificates \
+        chromium \
+        curl \
+        fonts-freefont-ttf \
+        libfreetype6 \
+        libharfbuzz0b \
+        libnss3
+
+# Copy over app
+WORKDIR /app
 COPY --from=build /app/package*.json ./
 COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/dist ./dist
 
-RUN apk add --no-cache \
-      chromium \
-      curl \
-      nss \
-      freetype \
-      harfbuzz \
-      ca-certificates \
-      ttf-freefont 
-     
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
-    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
-
-# Expose Port
+# Ports, health check and non-root user
 EXPOSE 5001
+HEALTHCHECK --interval=30s --timeout=3s CMD curl -f http://localhost/:5001
+USER node
 
 # Start the app
-CMD ["npm", "run", "start:prod"]
-
+CMD ["--max-old-space-size=500", "/app/dist/main"]
