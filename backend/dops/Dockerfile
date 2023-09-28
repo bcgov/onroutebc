@@ -67,6 +67,9 @@ RUN apk update && apk upgrade && \
     mv /etc/fonts/conf.d/44-wqy-zenhei.conf /etc/fonts/conf.d/74-wqy-zenhei.conf && \
     rm -rf /var/cache/apk/*
 
+# ARG CHROMIUM_VERSION=115.0.5790.170-r0
+RUN apk add --no-cache chromium
+
 WORKDIR /app
 COPY --from=build --chown=app /app/node_modules ./node_modules
 COPY --from=build --chown=app /app/dist ./dist
