@@ -1,31 +1,35 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import * as CryptoJS from 'crypto-js';
-import { IPayment } from '../../common/interface/payment.interface';
 import { CreateTransactionDto } from './dto/request/create-transaction.dto';
 import { ReadTransactionDto } from './dto/response/read-transaction.dto';
 import { InjectMapper } from '@automapper/nestjs';
 import { Mapper } from '@automapper/core';
 import { Transaction } from './entities/transaction.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, Repository, UpdateResult } from 'typeorm';
 import { PermitTransaction } from './entities/permit-transaction.entity';
-import { ReadPermitTransactionDto } from './dto/response/read-permit-transaction.dto';
-import { MotiPayDetailsDto } from './dto/response/read-moti-pay-details.dto';
-import { ApplicationService } from '../permit/application.service';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
-import { IReceipt } from 'src/common/interface/receipt.interface';
 import { callDatabaseSequence } from 'src/common/helper/database.helper';
+import { Permit } from '../permit/entities/permit.entity';
+import { ApplicationStatus } from '../../common/enum/application-status.enum';
+import { PaymentMethodType } from '../../common/enum/payment-method-type.enum';
+import { TransactionType } from '../../common/enum/transaction-type.enum';
+import { UpdatePaymentGatewayTransactionDto } from './dto/request/read-payment-gateway-transaction.dto';
+import { ReadPaymentGatewayTransactionDto } from './dto/response/read-payment-gateway-transaction.dto';
+import { Receipt } from './entities/receipt.entity';
 
 @Injectable()
 export class PaymentService {
   constructor(
-    @InjectRepository(PermitTransaction)
-    private permitTransactionRepository: Repository<PermitTransaction>,
     private dataSource: DataSource,
     @InjectRepository(Transaction)
     private transactionRepository: Repository<Transaction>,
     @InjectMapper() private readonly classMapper: Mapper,
-    private applicationService: ApplicationService,
   ) {}
 
   private generateHashExpiry = (currDate?: Date) => {
@@ -49,32 +53,31 @@ export class PaymentService {
     return `${year}${monthPadded}${dayPadded}${hoursPadded}${minutesPadded}`;
   };
 
-  private queryHash = (
-    transactionType: string,
-    transactionNumber: string,
-    transactionAmount: string,
-    permitIds?: number[],
-    transactionIds?: string[],
-  ) => {
+  private queryHash = (transaction: Transaction) => {
+    const permitIds = transaction.permitTransactions.map(
+      (permitTransaction) => {
+        return permitTransaction.permit.permitId;
+      },
+    );
+
     // Construct the URL with the transaction details for the payment gateway
-    const redirectUrl =
-      permitIds && transactionIds
-        ? `${process.env.MOTIPAY_REDIRECT}` +
-          encodeURIComponent(
-            `?permitIds=${permitIds.join(
-              ',',
-            )}&transactionIds=${transactionIds.join(',')}`,
-          )
-        : `${process.env.MOTIPAY_REDIRECT}`;
+    const redirectUrl = permitIds
+      ? `${process.env.MOTIPAY_REDIRECT}` +
+        encodeURIComponent(
+          `?permitIds=${permitIds.join(',')}&transactionId=${
+            transaction.transactionId
+          }`,
+        )
+      : `${process.env.MOTIPAY_REDIRECT}`;
 
     // There should be a better way of doing this which is not as rigid - something like
     // dynamically removing the hashValue param from the actual query string instead of building
     // it up manually below, but this is sufficient for now.
     const queryString =
       `merchant_id=${process.env.MOTIPAY_MERCHANT_ID}` +
-      `&trnType=${transactionType}` +
-      `&trnOrderNumber=${transactionNumber}` +
-      `&trnAmount=${transactionAmount}` +
+      `&trnType=${transaction.transactionTypeId}` +
+      `&trnOrderNumber=${transaction.transactionOrderNumber}` +
+      `&trnAmount=${transaction.totalTransactionAmount}` +
       `&approvedPage=${redirectUrl}` +
       `&declinedPage=${redirectUrl}`;
 
@@ -88,18 +91,23 @@ export class PaymentService {
     return { queryString, motiPayHash, hashExpiry };
   };
 
+  generateUrl(transaction: Transaction): string {
+    // Construct the URL with the transaction details for the payment gateway
+    const { queryString, motiPayHash } = this.queryHash(transaction);
+
+    const url =
+      `${process.env.MOTIPAY_BASE_URL}?` +
+      `${queryString}` +
+      `&hashValue=${motiPayHash}`;
+    return url;
+  }
+
   /**
-   * Generates a hash and other necessary values for a transaction.
+   * Generates a transaction Order Number for ORBC and for forwarding to the payment gateway.
    *
-   * @param {string} transactionAmount - The amount of the transaction.
-   * @returns {object} An object containing the transaction number, hash expiry, and hash.
+   * @returns {string} The Transaction Order Number.
    */
-  private async createHash(transactionAmount: string): Promise<IPayment> {
-    // Get the current date and time
-    //const currDate = new Date();
-
-    // TODO: Generate a unique transaction number based on the current timestamp
-
+  async generateTransactionOrderNumber(): Promise<string> {
     const seq: number = parseInt(
       await callDatabaseSequence(
         'permit.ORBC_TRANSACTION_NUMBER_SEQ',
@@ -109,221 +117,259 @@ export class PaymentService {
     const trnNum = seq.toString(16);
     // const trnNum = 'T' + currDate.getTime().toString().substring(4);
     const currentDate = Date.now();
-    const transactionNumber =
+    const transactionOrderNumber =
       'T' + trnNum.padStart(9, '0').toUpperCase() + String(currentDate);
 
-    const { motiPayHash, hashExpiry } = this.queryHash(
-      'P',
-      transactionNumber,
-      transactionAmount,
-    );
-
-    return {
-      transactionNumber: transactionNumber,
-      motipayHashExpiry: hashExpiry,
-      motipayHash: motiPayHash,
-    };
-  }
-
-  generateUrl = (
-    details: MotiPayDetailsDto,
-    permitIds: number[],
-    transactionIds: string[],
-  ) => {
-    // Construct the URL with the transaction details for the payment gateway
-    const { queryString, motiPayHash } = this.queryHash(
-      details.transactionType,
-      details.transactionOrderNumber,
-      `${details.transactionAmount}`,
-      permitIds,
-      transactionIds,
-    );
-
-    return {
-      ...details,
-      url:
-        `${process.env.MOTIPAY_BASE_URL}?` +
-        `${queryString}` +
-        `&hashValue=${motiPayHash}`,
-    };
-  };
-
-  /**
-   * Generates a URL with transaction details for forwarding the user to the payment gateway.
-   *
-   * @param {number} transactionAmount - The amount of the transaction.
-   * @returns {string} The URL containing transaction details for the payment gateway.
-   */
-  async forwardTransactionDetails(
-    paymentMethodId: number,
-    transactionSubmitDate: string,
-    transactionAmount: number,
-  ): Promise<MotiPayDetailsDto> {
-    // Generate the hash and other necessary values for the transaction
-    const hash = await this.createHash(transactionAmount.toString());
-    const transactionNumber = hash.transactionNumber;
-    //let transactionType: string = null;
-    //transactionType (P) is for Payment, (R) is for refund
-    // if (transactionAmount >= 0) transactionType = 'P';
-    //else transactionType = 'R';
-    const transactionType = 'P';
-
-    return {
-      url: '',
-      transactionOrderNumber: transactionNumber,
-      transactionAmount: transactionAmount,
-      transactionType: transactionType,
-      transactionSubmitDate: transactionSubmitDate,
-      paymentMethodId: paymentMethodId,
-    };
+    return transactionOrderNumber;
   }
 
   /**
-   * Updates a transaction in the system based on the provided data.
-   *
-   * @param {IUserJWT} currentUser - The current user making the update request (JWT user object).
-   * @param {CreateTransactionDto} transaction - The data representing the updated transaction (CreateTransactionDto).
-   * @returns {ReadTransactionDto} A promise that resolves to the updated transaction data (ReadTransactionDto).
-   * @throws HttpException with status 500 if the transaction update fails.
+   * Generate Receipt Number
    */
-  async updateTransaction(
+  async generateReceiptNumber(): Promise<string> {
+    const currentDate = new Date();
+    const year = currentDate.getFullYear();
+    const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+    const day = String(currentDate.getDate()).padStart(2, '0');
+    const dateString = `${year}${month}${day}`;
+    const source = dateString;
+    const seq = await callDatabaseSequence(
+      'permit.ORBC_RECEIPT_NUMBER_SEQ',
+      this.dataSource,
+    );
+    const receiptNumber = String(String(source) + '-' + String(seq));
+
+    return receiptNumber;
+  }
+
+  /**
+   * Creates a Transaction in ORBC System.
+   * @param currentUser - The current user object of type {@link IUserJWT}
+   * @param createTransactionDto - The createTransactionDto object of type
+   *                                {@link CreateTransactionDto} for creating a new Transaction.
+   * @returns {ReadTransactionDto} The created transaction of type {@link ReadTransactionDto}.
+   */
+  async createTransactions(
     currentUser: IUserJWT,
-    transaction: CreateTransactionDto,
+    createTransactionDto: CreateTransactionDto,
   ): Promise<ReadTransactionDto> {
-    // Retrieve the existing transaction from the database based on the provided transaction order number.
-    const existingTransaction = await this.findOneTransaction(
-      transaction.transactionOrderNumber,
-    );
-
-    // Find the corresponding permit transaction for the existing transaction.
-    const existingPermitTransaction = await this.findOnePermitTransaction(
-      existingTransaction.transactionId,
-    );
-
-    // Map the updated transaction data (CreateTransactionDto) to a new Transaction object.
-    const newTransaction = await this.classMapper.mapAsync(
-      transaction,
-      CreateTransactionDto,
-      Transaction,
-    );
-    // If the updated transaction is approved, issue a permit using the application service.
-    if (newTransaction.approved) {
-      // Extract relevant transaction details for issuing the permit.
-      const applicationId = existingPermitTransaction.permitId.toString();
-      const transactionDetails: IReceipt = {
-        transactionOrderNumber: newTransaction.transactionOrderNumber,
-        transactionAmount: newTransaction.transactionAmount,
-        transactionDate: newTransaction.transactionDate,
-        paymentMethod: newTransaction.paymentMethod,
-      };
-
-      // Call the application service to issue the permit.
-      await this.applicationService.issuePermit(
-        currentUser,
-        applicationId,
-        transactionDetails,
+    const totalTransactionAmount =
+      createTransactionDto.applicationDetails?.reduce(
+        (accumulator, item) => accumulator + item.transactionAmount,
+        0,
       );
+    const transactionOrderNumber = await this.generateTransactionOrderNumber();
+    let readTransactionDto: ReadTransactionDto;
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      let newTransaction = await this.classMapper.mapAsync(
+        createTransactionDto,
+        CreateTransactionDto,
+        Transaction,
+        {
+          extraArgs: () => ({
+            transactionOrderNumber: transactionOrderNumber,
+            totalTransactionAmount: totalTransactionAmount,
+          }),
+        },
+      );
+
+      newTransaction = await queryRunner.manager.save(newTransaction);
+
+      for (const application of createTransactionDto.applicationDetails) {
+        const existingApplication = await queryRunner.manager.findOne(Permit, {
+          where: { permitId: application.applicationId },
+        });
+        if (
+          newTransaction.paymentMethodId == PaymentMethodType.WEB &&
+          newTransaction.transactionTypeId == TransactionType.PURCHASE &&
+          existingApplication.permitStatus != ApplicationStatus.IN_PROGRESS
+        ) {
+          throw new BadRequestException('Application should be in Progress!!');
+        }
+
+        let newPermitTransactions = new PermitTransaction();
+        newPermitTransactions.transaction = newTransaction;
+        newPermitTransactions.permit = existingApplication;
+        newPermitTransactions.transactionAmount = application.transactionAmount;
+        newPermitTransactions = await queryRunner.manager.save(
+          newPermitTransactions,
+        );
+
+        if (
+          newTransaction.paymentMethodId == PaymentMethodType.WEB &&
+          newTransaction.transactionTypeId == TransactionType.PURCHASE
+        ) {
+          existingApplication.permitStatus = ApplicationStatus.WAITING_PAYMENT;
+
+          await queryRunner.manager.save(existingApplication);
+        }
+      }
+      const createdTransaction = await queryRunner.manager.findOne(
+        Transaction,
+        {
+          where: { transactionId: newTransaction.transactionId },
+          relations: ['permitTransactions', 'permitTransactions.permit'],
+        },
+      );
+
+      let url: string = undefined;
+      if (
+        createdTransaction.paymentMethodId == PaymentMethodType.WEB &&
+        createdTransaction.transactionTypeId == TransactionType.PURCHASE
+      ) {
+        url = this.generateUrl(createdTransaction);
+      }
+
+      if (
+        createdTransaction.transactionTypeId == TransactionType.REFUND ||
+        createdTransaction.transactionTypeId == TransactionType.ZERO_AMOUNT
+      ) {
+        const receiptNumber = await this.generateReceiptNumber();
+        const receipt = new Receipt();
+        receipt.receiptNumber = receiptNumber;
+        receipt.transaction = createdTransaction;
+        await queryRunner.manager.save(receipt);
+      }
+
+      readTransactionDto = await this.classMapper.mapAsync(
+        createdTransaction,
+        Transaction,
+        ReadTransactionDto,
+        {
+          extraArgs: () => ({
+            url: url,
+          }),
+        },
+      );
+
+      await queryRunner.commitTransaction();
+    } catch (err) {
+      await queryRunner.rollbackTransaction();
+      throw new InternalServerErrorException(); // TODO: Handle the typeorm Error handling
+    } finally {
+      await queryRunner.release();
     }
 
-    // Update the existing transaction record in the database with the new transaction data.
-    const updatedTransaction = await this.transactionRepository.update(
-      { transactionId: existingTransaction.transactionId },
-      newTransaction,
-    );
-
-    // Check if the transaction update was successful, if not, throw an exception.
-    if (!updatedTransaction.affected) {
-      throw new HttpException('Error updating transaction', 500);
-    }
-
-    // Return the updated transaction data (ReadTransactionDto).
-    return await this.classMapper.mapAsync(
-      await this.transactionRepository.findOne({
-        where: { transactionId: existingTransaction.transactionId },
-      }),
-      Transaction,
-      ReadTransactionDto,
-    );
+    return readTransactionDto;
   }
 
   /**
-   * Creates new transactions and associates them with the provided permit IDs and payment details.
-   * TODO: Should be one transaction with many permits?
-   * @param permitIds - An array of permit IDs to associate with the new transactions.
-   * @param paymentDetails - The payment details to be added to each new transaction.
+   * Updates details returned by Payment Gateway in ORBC System.
+   * @param currentUser - The current user object of type {@link IUserJWT}
+   * @param updatePaymentGatewayTransactionDto - The UpdatePaymentGatewayTransactionDto object of type
+   *                                {@link UpdatePaymentGatewayTransactionDto} for updating the payment gateway details.
+   * @returns {ReadTransactionDto} The updated payment gateway of type {@link ReadPaymentGatewayTransactionDto}.
    */
-  async createTransaction(
-    permitIds: number[],
-    paymentDetails: MotiPayDetailsDto,
-  ) {
-    const permitTransactions: Pick<
-      PermitTransaction,
-      'permitId' | 'transactionId'
-    >[] = [];
-
-    // Loop through each permit ID to create a new transaction and associate it with the permit.
-    for (const id of permitIds) {
-      // Create a new transaction record in the transaction table with the provided payment details.
-      await this.transactionRepository
-        .createQueryBuilder()
-        .insert()
-        .values({
-          //permits: [permit],
-          transactionOrderNumber: paymentDetails.transactionOrderNumber,
-          transactionAmount: paymentDetails.transactionAmount,
-          transactionType: paymentDetails.transactionType,
-          transactionSubmitDate: paymentDetails.transactionSubmitDate,
-          paymentMethodId: paymentDetails.paymentMethodId,
-        })
-        .execute();
-
-      // Retrieve the newly created transaction from the database based on the order number.
-      // NOTE: this could potentially cause a problem in the future if multiple transactions have same order number
-      // since we're using same paymentDetails.transactionOrderNumber for multiple permit ids
-      const transaction = await this.findOneTransaction(
-        paymentDetails.transactionOrderNumber,
+  async updateTransactions(
+    currentUser: IUserJWT,
+    transactionId: string,
+    updatePaymentGatewayTransactionDto: UpdatePaymentGatewayTransactionDto,
+  ): Promise<ReadPaymentGatewayTransactionDto> {
+    let updatedTransaction: Transaction;
+    let updateResult: UpdateResult;
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      const transactionToUpdate = await queryRunner.manager.findOne(
+        Transaction,
+        {
+          where: { transactionId: transactionId },
+          relations: ['permitTransactions', 'permitTransactions.permit'],
+        },
       );
 
-      // Prepare the data to associate the permit with the newly created transaction.
-      const permitTransaction = {
-        permitId: id,
-        transactionId: transaction.transactionId,
-      };
+      if (!transactionToUpdate) {
+        throw new NotFoundException('TransactionId not found');
+      }
 
-      // Save the association of the permit with the transaction in the permitTransaction table.
-      await this.permitTransactionRepository.save(permitTransaction);
+      transactionToUpdate.permitTransactions.forEach((permitTransaction) => {
+        if (
+          permitTransaction.permit.permitStatus !=
+          ApplicationStatus.WAITING_PAYMENT
+        ) {
+          throw new BadRequestException(
+            `${permitTransaction.permit.permitId} not in valid status!`,
+          );
+        }
+      });
 
-      permitTransactions.push(permitTransaction);
+      const updateTransactionTemp = await this.classMapper.mapAsync(
+        updatePaymentGatewayTransactionDto,
+        UpdatePaymentGatewayTransactionDto,
+        Transaction,
+      );
+
+      updateResult = await queryRunner.manager.update(
+        Transaction,
+        { transactionId: transactionId },
+        updateTransactionTemp,
+      );
+
+      if (!updateResult?.affected) {
+        throw new InternalServerErrorException('Error updating transaction');
+      }
+
+      if (updateTransactionTemp.pgApproved === 1) {
+        for (const permitTransaction of transactionToUpdate.permitTransactions) {
+          updateResult = await queryRunner.manager.update(
+            Permit,
+            { permitId: permitTransaction.permit.permitId },
+            { permitStatus: ApplicationStatus.PAYMENT_COMPLETE },
+          );
+          if (!updateResult?.affected) {
+            throw new InternalServerErrorException(
+              'Error updating permit status',
+            );
+          }
+        }
+      }
+
+      updatedTransaction = await queryRunner.manager.findOne(Transaction, {
+        where: { transactionId: transactionId },
+        relations: ['permitTransactions', 'permitTransactions.permit'],
+      });
+
+      if (updateTransactionTemp.pgApproved === 1) {
+        const receiptNumber = await this.generateReceiptNumber();
+        const receipt = new Receipt();
+        receipt.receiptNumber = receiptNumber;
+        receipt.transaction = updatedTransaction;
+        await queryRunner.manager.save(receipt);
+      }
+
+      await queryRunner.commitTransaction();
+    } catch (err) {
+      await queryRunner.rollbackTransaction();
+      throw new InternalServerErrorException(); // TODO: Handle the typeorm Error handling
+    } finally {
+      await queryRunner.release();
     }
 
-    return permitTransactions;
+    const readTransactionDto = await this.classMapper.mapAsync(
+      updatedTransaction,
+      Transaction,
+      ReadPaymentGatewayTransactionDto,
+    );
+
+    return readTransactionDto;
   }
 
-  async findOneTransaction(
-    transactionOrderNumber: string,
-  ): Promise<ReadTransactionDto> {
+  async findTransaction(transactionId: string): Promise<ReadTransactionDto> {
     return this.classMapper.mapAsync(
-      await this.transactionRepository.findOne({
-        where: {
-          transactionOrderNumber: transactionOrderNumber,
-        },
-      }),
+      await this.findTransactionEntity(transactionId),
       Transaction,
       ReadTransactionDto,
     );
   }
 
-  async findOnePermitTransaction(
-    transactionId: string,
-  ): Promise<ReadPermitTransactionDto> {
-    return this.classMapper.mapAsync(
-      await this.permitTransactionRepository.findOne({
-        where: {
-          transactionId: transactionId,
-        },
-      }),
-      PermitTransaction,
-      ReadPermitTransactionDto,
-    );
+  async findTransactionEntity(transactionId: string): Promise<Transaction> {
+    return await this.transactionRepository.findOne({
+      where: { transactionId: transactionId },
+      relations: ['permitTransactions', 'permitTransactions.permit'],
+    });
   }
 }

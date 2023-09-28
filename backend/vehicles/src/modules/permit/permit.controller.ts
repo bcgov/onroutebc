@@ -39,7 +39,6 @@ import {
 } from 'src/common/interface/pagination.interface';
 import { PaginationDto } from 'src/common/class/pagination';
 import { LessThenPipe } from 'src/common/class/customs.transform';
-import { Permit } from './entities/permit.entity';
 import { PermitHistoryDto } from './dto/response/permit-history.dto';
 import { ResultDto } from './dto/response/result.dto';
 import { VoidPermitDto } from './dto/request/void-permit.dto';
@@ -90,7 +89,7 @@ export class PermitController {
 
   @ApiOkResponse({
     description: 'The Permit Resource to get revision and payment history.',
-    type: Permit,
+    type: PermitHistoryDto,
     isArray: true,
   })
   @Public()

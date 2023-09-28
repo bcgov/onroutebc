@@ -43,7 +43,7 @@ export const isTransactionTypeRefund = (transactionType: TransactionType) => {
  * @returns total net amount resulting from the history of transactions for the permit
  */
 export const calculateNetAmount = (permitHistory: PermitHistory[]) => {
-  return permitHistory.map(permit => isTransactionTypeRefund(permit.transactionType) 
+  return permitHistory.map(permit => isTransactionTypeRefund(permit.transactionTypeId) 
     ? -1 * permit.transactionAmount 
     : permit.transactionAmount).reduce((prev, curr) => prev + curr, 0);
 };

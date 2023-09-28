@@ -15,6 +15,7 @@ import { PermitApprovalSource } from './entities/permit-approval-source.entity';
 import { CompanyModule } from '../company-user-management/company/company.module';
 import { Receipt } from '../payment/entities/receipt.entity';
 import { Transaction } from '../payment/entities/transaction.entity';
+import { PaymentModule } from '../payment/payment.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { Transaction } from '../payment/entities/transaction.entity';
       Receipt,
     ]),
     CompanyModule,
+    PaymentModule,
   ],
   controllers: [ApplicationController, PermitController],
   providers: [

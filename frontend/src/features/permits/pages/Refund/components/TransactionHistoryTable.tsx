@@ -28,7 +28,7 @@ export const TransactionHistoryTable = ({
     },
     {
       accessorFn: (originalRow) => {
-        const paymentMethod = getPaymentMethod(originalRow.paymentMethod, originalRow.cardType);
+        const paymentMethod = getPaymentMethod(originalRow.pgPaymentMethod, originalRow.pgCardType);
         return getDefaultRequiredVal(
           "NA",
           applyWhenNotNullable(paymentMethodDisplayText, paymentMethod),
@@ -48,7 +48,7 @@ export const TransactionHistoryTable = ({
     },
     {
       accessorFn: (originalRow) => 
-        getDefaultRequiredVal("NA", `${originalRow.providerTransactionId}`),
+        getDefaultRequiredVal("NA", `${originalRow.pgTransactionId}`),
       id: "providerTransactionId",
       header: "Transaction ID",
       muiTableHeadCellProps: {
@@ -63,7 +63,7 @@ export const TransactionHistoryTable = ({
     },
     {
       accessorFn: (originalRow) => {
-        const amount = isTransactionTypeRefund(originalRow.transactionType) 
+        const amount = isTransactionTypeRefund(originalRow.transactionTypeId) 
           ? -1 * originalRow.transactionAmount : originalRow.transactionAmount;
         
         return feeSummaryDisplayText(

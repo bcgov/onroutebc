@@ -1,11 +1,20 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber } from 'class-validator';
+import {
+  IsEnum,
+  IsNumber,
+  IsOptional,
+  IsPositive,
+  IsString,
+  Length,
+} from 'class-validator';
 import { ApplicationStatus } from 'src/common/enum/application-status.enum';
+import { PaymentMethodType } from '../../../../common/enum/payment-method-type.enum';
 
 export class VoidPermitDto {
   @AutoMap()
   @ApiProperty({
+    enum: ApplicationStatus,
     description: 'Revoke or void status for permit.',
     example: ApplicationStatus.REVOKED,
     required: false,
@@ -16,32 +25,43 @@ export class VoidPermitDto {
   @ApiProperty({
     description: 'Permit Transaction ID.',
     example: 'T000000A0W',
-    required: false,
   })
-  transactionOrderNumber: string;
+  pgTransactionId: string;
 
   @AutoMap()
   @ApiProperty({
-    description: 'Permit Transaction Date.',
-    example: '2023-07-10T15:49:36.582Z',
-    required: false,
+    enum: PaymentMethodType,
+    example: PaymentMethodType.WEB,
+    description: 'The identifier of the user selected payment method.',
   })
-  transactionDate: Date;
+  @IsEnum(PaymentMethodType)
+  paymentMethodId: PaymentMethodType;
 
   @AutoMap()
-  @IsNumber()
   @ApiProperty({
-    description: 'Permit Transaction Amount.',
+    description: 'Payment Transaction Amount.',
     example: 30,
-    required: false,
   })
+  @IsNumber()
+  @IsPositive()
   transactionAmount: number;
 
   @AutoMap()
   @ApiProperty({
-    description: 'Permit Transaction Method.',
-    example: 'CC',
+    description: 'Payment Transaction Date.',
+    example: '2023-07-10T15:49:36.582Z',
     required: false,
   })
-  paymentMethod: string;
+  @IsOptional()
+  @IsString()
+  pgTransactionDate: string;
+
+  @AutoMap()
+  @ApiProperty({
+    example: 'CC',
+    description: 'Represents the payment method of a transaction.',
+  })
+  @IsString()
+  @Length(1, 2)
+  pgPaymentMethod: string;
 }

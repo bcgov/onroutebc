@@ -29,7 +29,6 @@ import { paginate } from 'src/common/helper/paginate';
 import { PermitHistoryDto } from './dto/response/permit-history.dto';
 import { ApplicationStatus } from 'src/common/enum/application-status.enum';
 import { ApplicationService } from './application.service';
-import { IReceipt } from 'src/common/interface/receipt.interface';
 import { formatTemplateData } from './helpers/formatTemplateData.helper';
 import { CompanyService } from '../company-user-management/company/company.service';
 import { DopsGeneratedDocument } from 'src/common/interface/dops-generated-document.interface';
@@ -42,6 +41,10 @@ import { EmailService } from '../email/email.service';
 import { EmailTemplate } from 'src/common/enum/email-template.enum';
 import { ResultDto } from './dto/response/result.dto';
 import { VoidPermitDto } from './dto/request/void-permit.dto';
+import { PaymentService } from '../payment/payment.service';
+import { CreateTransactionDto } from '../payment/dto/request/create-transaction.dto';
+import { TransactionType } from '../../common/enum/transaction-type.enum';
+import { Transaction } from '../payment/entities/transaction.entity';
 
 @Injectable()
 export class PermitService {
@@ -51,14 +54,13 @@ export class PermitService {
     private permitRepository: Repository<Permit>,
     @InjectRepository(PermitType)
     private permitTypeRepository: Repository<PermitType>,
-    @InjectRepository(Receipt)
-    private receiptRepository: Repository<Receipt>,
     private dataSource: DataSource,
     private readonly dopsService: DopsService,
     private companyService: CompanyService,
     private readonly emailService: EmailService,
     @Inject(forwardRef(() => ApplicationService))
     private readonly applicationService: ApplicationService,
+    private paymentService: PaymentService,
   ) {}
 
   async create(createPermitDto: CreatePermitDto): Promise<ReadPermitDto> {
@@ -88,15 +90,6 @@ export class PermitService {
       where: { permitId: permitId },
       relations: {
         permitData: true,
-      },
-    });
-  }
-
-  private async findOneWithTransactions(permitId: string): Promise<Permit> {
-    return this.permitRepository.findOne({
-      where: { permitId: permitId },
-      relations: {
-        transactions: true,
       },
     });
   }
@@ -268,38 +261,6 @@ export class PermitService {
     return readPermitDtoItems;
   }
 
-  async findReceipt(permit: Permit): Promise<Receipt> {
-    if (!permit.transactions || permit.transactions.length === 0) {
-      throw new Error('No transactions associated with this permit');
-    }
-
-    // Find the latest transaction for the permit, but not necessarily an approved transaction
-    let latestTransaction = permit.transactions[0];
-    let latestSubmitDate = latestTransaction.transactionSubmitDate;
-    permit.transactions.forEach((transaction) => {
-      if (
-        new Date(transaction.transactionSubmitDate) >=
-        new Date(latestSubmitDate)
-      ) {
-        latestSubmitDate = transaction.transactionSubmitDate;
-        latestTransaction = transaction;
-      }
-    });
-
-    const receipt = await this.receiptRepository.findOne({
-      where: {
-        transactionId: latestTransaction.transactionId,
-      },
-    });
-
-    if (!receipt) {
-      throw new Error(
-        "No receipt generated for this permit's latest transaction",
-      );
-    }
-    return receipt;
-  }
-
   /**
    * Finds a receipt PDF document associated with a specific permit ID.
    * @param currentUser - The current User Details.
@@ -310,19 +271,29 @@ export class PermitService {
     currentUser: IUserJWT,
     permitId: string,
     res?: Response,
-  ): Promise<ReadFileDto> {
-    const permit = await this.findOneWithTransactions(permitId);
-    const receipt = await this.findReceipt(permit);
+  ): Promise<void> {
+    const permit = await this.permitRepository
+      .createQueryBuilder('permit')
+      .innerJoinAndSelect('permit.permitTransactions', 'permitTransactions')
+      .innerJoinAndSelect('permitTransactions.transaction', 'transaction')
+      .innerJoinAndSelect('transaction.receipt', 'receipt')
+      .where('permit.permitId = :permitId', {
+        permitId: permitId,
+      })
+      .andWhere('receipt.receiptNumber IS NOT NULL')
+      .getOne();
 
-    const file: ReadFileDto = null;
+    if (!permit) {
+      throw new NotFoundException('Receipt Not Found!');
+    }
+
     await this.dopsService.download(
       currentUser,
-      receipt.receiptDocumentId,
+      permit.permitTransactions[0].transaction.receipt.receiptDocumentId,
       FileDownloadModes.PROXY,
       res,
       permit.companyId,
     );
-    return file;
   }
 
   public async findPermitHistory(
@@ -330,14 +301,29 @@ export class PermitService {
   ): Promise<PermitHistoryDto[]> {
     const permits = await this.permitRepository
       .createQueryBuilder('permit')
-      .innerJoinAndSelect('permit.transactions', 'transaction')
+      .innerJoinAndSelect('permit.permitTransactions', 'permitTransactions')
+      .innerJoinAndSelect('permitTransactions.transaction', 'transaction')
       .where('permit.permitNumber IS NOT NULL')
       .andWhere('permit.originalPermitId = :originalPermitId', {
         originalPermitId: originalPermitId,
       })
       .orderBy('transaction.transactionSubmitDate', 'DESC')
       .getMany();
-    return this.classMapper.mapArrayAsync(permits, Permit, PermitHistoryDto);
+
+    return permits.flatMap((permit) =>
+      permit.permitTransactions.map((permitTransaction) => ({
+        permitNumber: permit.permitNumber,
+        comment: permit.comment,
+        transactionOrderNumber:
+          permitTransaction.transaction.transactionOrderNumber,
+        transactionAmount: permitTransaction.transactionAmount,
+        transactionTypeId: permitTransaction.transaction.transactionTypeId,
+        pgPaymentMethod: permitTransaction.transaction.pgPaymentMethod,
+        pgTransactionId: permitTransaction.transaction.pgTransactionId,
+        pgCardType: permitTransaction.transaction.pgCardType,
+        commentUsername: permit.createdUser,
+      })),
+    ) as PermitHistoryDto[];
   }
 
   /**
@@ -351,12 +337,6 @@ export class PermitService {
     voidPermitDto: VoidPermitDto,
     currentUser: IUserJWT,
   ): Promise<ResultDto> {
-    const transactionDetails: IReceipt = {
-      transactionAmount: voidPermitDto.transactionAmount,
-      transactionDate: voidPermitDto.transactionDate,
-      transactionOrderNumber: voidPermitDto.transactionOrderNumber,
-      paymentMethod: voidPermitDto.paymentMethod,
-    };
     const permit = await this.findOne(permitId);
     /**
      * If permit not found raise error.
@@ -404,6 +384,34 @@ export class PermitService {
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
+      const createTransactionDto = new CreateTransactionDto();
+      createTransactionDto.pgTransactionId = voidPermitDto.pgTransactionId;
+      createTransactionDto.pgPaymentMethod = voidPermitDto.pgPaymentMethod;
+      createTransactionDto.paymentMethodId = voidPermitDto.paymentMethodId;
+      createTransactionDto.transactionTypeId =
+        voidPermitDto.transactionAmount === 0
+          ? TransactionType.ZERO_AMOUNT
+          : TransactionType.REFUND;
+      createTransactionDto.applicationDetails = [
+        {
+          applicationId: permitId,
+          transactionAmount: voidPermitDto.transactionAmount,
+        },
+      ];
+      const transactionDto = await this.paymentService.createTransactions(
+        currentUser,
+        createTransactionDto,
+      );
+
+      const fetchedTransaction = await queryRunner.manager.findOne(
+        Transaction,
+        {
+          where: { transactionId: transactionDto.transactionId },
+          relations: ['receipt'],
+        },
+      );
+      const receiptNo = fetchedTransaction.receipt.receiptNumber;
+
       let dopsRequestData: DopsGeneratedDocument = {
         templateName: TemplateName.PERMIT_TROS,
         generatedDocumentFileName: permitDataForTemplate.permitNumber,
@@ -424,19 +432,19 @@ export class PermitService {
           companyInfo.companyId,
         );
 
-      //Generate receipt number for the permit to be created in database.
-      const receiptNo = await this.applicationService.generateReceiptNumber();
       dopsRequestData = {
         templateName: TemplateName.PAYMENT_RECEIPT,
         generatedDocumentFileName: `Receipt_No_${receiptNo}`,
         templateData: {
           ...permitDataForTemplate,
-          ...transactionDetails,
+          transactionOrderNumber: fetchedTransaction.transactionOrderNumber,
+          transactionAmount: fetchedTransaction.totalTransactionAmount,
+          paymentMethod: fetchedTransaction.pgPaymentMethod,
           transactionDate: convertUtcToPt(
-            new Date(),
+            fetchedTransaction.transactionSubmitDate,
             'MMM. D, YYYY, hh:mm a Z',
           ),
-          receiptNo,
+          receiptNo: receiptNo,
         },
       };
 
@@ -465,15 +473,14 @@ export class PermitService {
       this permit id will be used to generate permit number based this id's application number.*/
       newPermit = await queryRunner.manager.save(newPermit);
 
-      const receiptEntity: Receipt = new Receipt();
-      const transaction =
-        await this.applicationService.findOneTransactionByOrderNumber(
-          transactionDetails.transactionOrderNumber,
-        );
-      receiptEntity.transactionId = transaction.transactionId;
-      receiptEntity.receiptNumber = receiptNo;
-      receiptEntity.receiptDocumentId = generatedDocuments.at(1).dmsId;
-      await queryRunner.manager.save(receiptEntity);
+      await queryRunner.manager.update(
+        Receipt,
+        {
+          receiptId: fetchedTransaction.receipt.receiptId,
+        },
+        { receiptDocumentId: generatedDocuments.at(1).dmsId },
+      );
+
       /* const permitNumber = await this.applicationService.generatePermitNumber(
         newPermit.permitId,
       );

@@ -78,7 +78,7 @@ export const RefundPage = ({
 
   const getRefundMethodForPrevPayMethod = () => {
     if (!permitHistory || permitHistory.length === 0) return DEFAULT_REFUND_METHOD;
-    const cardType = permitHistory[0].cardType;
+    const cardType = permitHistory[0].pgCardType;
     return getRefundMethodByCardType(cardType);
   };
 
