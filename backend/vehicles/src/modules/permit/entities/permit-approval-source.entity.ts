@@ -3,7 +3,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Column, Entity, PrimaryColumn } from 'typeorm';
 import { PermitApprovalSource as PermitApprovalSourceEnum } from 'src/common/enum/permit-approval-source.enum';
 
-@Entity({ name: 'permit.ORBC_VT_PERMIT_APPROVAL_SOURCE' })
+@Entity({ name: 'permit.ORBC_PERMIT_APPROVAL_SOURCE_TYPE' })
 export class PermitApprovalSource {
   @AutoMap()
   @ApiProperty({

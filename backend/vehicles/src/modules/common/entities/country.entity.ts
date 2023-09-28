@@ -3,7 +3,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Entity, Column, OneToMany, PrimaryColumn } from 'typeorm';
 import { Province } from './province.entity';
 
-@Entity({ name: 'ORBC_VT_COUNTRY' })
+@Entity({ name: 'ORBC_COUNTRY_TYPE' })
 export class Country {
   @AutoMap()
   @ApiProperty({ example: 'CA', description: 'Country Code' })

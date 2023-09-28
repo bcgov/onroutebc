@@ -3,7 +3,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Entity, Column, OneToMany, PrimaryColumn } from 'typeorm';
 import { Trailer } from '../../trailers/entities/trailer.entity';
 
-@Entity({ name: 'ORBC_VT_TRAILER_TYPE' })
+@Entity({ name: 'ORBC_TRAILER_TYPE' })
 export class TrailerType {
   @AutoMap()
   @ApiProperty({

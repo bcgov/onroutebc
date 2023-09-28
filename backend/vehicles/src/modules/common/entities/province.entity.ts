@@ -14,7 +14,7 @@ import { Address } from './address.entity';
 import { PowerUnit } from '../../vehicles/power-units/entities/power-unit.entity';
 import { Trailer } from '../../vehicles/trailers/entities/trailer.entity';
 
-@Entity({ name: 'ORBC_VT_PROVINCE' })
+@Entity({ name: 'ORBC_PROVINCE_TYPE' })
 export class Province {
   @AutoMap()
   @ApiProperty({ example: 'CA-BC', description: 'Province ID' })

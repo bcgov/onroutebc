@@ -1,7 +1,7 @@
 import { Entity, Column, PrimaryColumn } from 'typeorm';
 import { AutoMap } from '@automapper/classes';
 
-@Entity({ name: 'permit.ORBC_VT_PAYMENT_METHOD' })
+@Entity({ name: 'permit.ORBC_PAYMENT_METHOD_TYPE' })
 export class PaymentMethod {
   @AutoMap()
   @PrimaryColumn({ name: 'PAYMENT_METHOD_ID' })
