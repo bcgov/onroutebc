@@ -187,4 +187,4 @@ ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 EXPOSE 3000
 
 # Start up command
-ENTRYPOINT  ["/root/.nvm/versions/node/v16.14.0/bin/node", "dist/main"]
+ENTRYPOINT  ["/root/.nvm/versions/node/v16.14.0/bin/node", "/app/dist/main"]
