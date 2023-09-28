@@ -43,8 +43,12 @@ ENV ACCESS_API_URL ${ACCESS_API_URL}
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
-WORKDIR /app
-COPY --from=build /app/node_modules ./node_modules
-COPY --from=build /app/dist ./dist
+RUN groupadd app
+RUN useradd --uid 1001 --gid 1001 -m app
 
+WORKDIR /app
+COPY --from=build --chown=app /app/node_modules ./node_modules
+COPY --from=build --chown=app /app/dist ./dist
+
+USER app
 CMD ["node", "dist/main"]
