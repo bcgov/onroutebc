@@ -7,7 +7,7 @@ RUN npm i && \
     npm prune --production
 
 # https://github.com/astefanutti/decktape/blob/master/Dockerfile
-FROM node:18-alpine3.18
+FROM node:18.18-alpine3.18
 
 ENV NODE_ENV production
 
