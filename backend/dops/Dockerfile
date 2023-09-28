@@ -135,9 +135,10 @@ RUN mkdir -p /root/.local/share/fonts \
 
 RUN npm config set user 0
 RUN npm config set unsafe-perm true
-RUN npm ci --only=prod && \
-    npm list rimraf && \
-    npm run build
+COPY . ./
+RUN npm i
+RUN npm run build
+RUN npm prune --production
 
 # Set node to production 
 ENV NODE_ENV production
@@ -173,25 +174,17 @@ ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
 # Packages
-RUN apt update && \
-    apt install -y \
+RUN apt-get update && \
+    apt-get install -y \
         ca-certificates \
-        chromium \
         curl \
         fonts-freefont-ttf \
         libfreetype6 \
         libharfbuzz0b \
         libnss3
 
-# Install packages, build and keep only prod packages
-WORKDIR /
-COPY . ./
-RUN npm i
-RUN npm run build
-RUN npm prune --production
-
 # Expose port - mostly a convention, for readability
 EXPOSE 3000
 
 # Start up command
-ENTRYPOINT  ["node", "dist/src/main"]
+ENTRYPOINT  ["node", "dist/main"]
