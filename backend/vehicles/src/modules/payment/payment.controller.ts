@@ -16,6 +16,7 @@ import { IUserJWT } from 'src/common/interface/user-jwt.interface';
 import { Request } from 'express';
 import { UpdatePaymentGatewayTransactionDto } from './dto/request/read-payment-gateway-transaction.dto';
 import { ReadPaymentGatewayTransactionDto } from './dto/response/read-payment-gateway-transaction.dto';
+import { getDirectory } from 'src/common/helper/auth.helper';
 
 @ApiBearerAuth()
 @ApiTags('Payment')
@@ -45,10 +46,12 @@ export class PaymentController {
     @Body() createTransactionDto: CreateTransactionDto,
   ): Promise<ReadTransactionDto> {
     const currentUser = request.user as IUserJWT;
+    const directory = getDirectory(currentUser);
 
     const paymentDetails = await this.paymentService.createTransactions(
       currentUser,
       createTransactionDto,
+      directory,
     );
 
     return paymentDetails;
@@ -66,11 +69,13 @@ export class PaymentController {
     updatePaymentGatewayTransactionDto: UpdatePaymentGatewayTransactionDto,
   ): Promise<ReadPaymentGatewayTransactionDto> {
     const currentUser = request.user as IUserJWT;
+    const directory = getDirectory(currentUser);
 
     const paymentDetails = await this.paymentService.updateTransactions(
       currentUser,
       transactionId,
       updatePaymentGatewayTransactionDto,
+      directory,
     );
 
     return paymentDetails;

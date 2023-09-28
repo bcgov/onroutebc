@@ -47,6 +47,7 @@ import { ReadTransactionDto } from '../payment/dto/response/read-transaction.dto
 import { Transaction } from '../payment/entities/transaction.entity';
 import { Receipt } from '../payment/entities/receipt.entity';
 import { convertUtcToPt } from '../../common/helper/date-time.helper';
+import { Directory } from 'src/common/enum/directory.enum';
 
 @Injectable()
 export class ApplicationService {
@@ -81,6 +82,7 @@ export class ApplicationService {
   async create(
     createApplicationDto: CreateApplicationDto,
     currentUser: IUserJWT,
+    directory: Directory,
   ): Promise<ReadApplicationDto> {
     const id = createApplicationDto.permitId;
     //If permit id exists assign it to null to create new application.
@@ -122,6 +124,14 @@ export class ApplicationService {
       createApplicationDto,
       CreateApplicationDto,
       Permit,
+      {
+        extraArgs: () => ({
+          userName: currentUser.userName,
+          userGUID: currentUser.userGUID,
+          timestamp: new Date(),
+          directory: directory,
+        }),
+      }
     );
     const savedPermitEntity = await this.permitRepository.save(
       permitApplication,
@@ -258,6 +268,8 @@ export class ApplicationService {
   async update(
     applicationNumber: string,
     updateApplicationDto: UpdateApplicationDto,
+    currentUser: IUserJWT,
+    directory: Directory,
   ): Promise<ReadApplicationDto> {
     const existingApplication = await this.findByApplicationNumber(
       applicationNumber,
@@ -271,14 +283,15 @@ export class ApplicationService {
         extraArgs: () => ({
           permitId: existingApplication.permitId,
           permitDataId: existingApplication.permitData.permitDataId,
+          userName: currentUser.userName,
+          userGUID: currentUser.userGUID,
+          timestamp: new Date(),
+          directory: directory, 
         }),
       },
     );
 
-    const applicationData: Permit = {
-      ...newApplication,
-      updatedDateTime: new Date(),
-    };
+    const applicationData: Permit = newApplication;
     await this.permitRepository.save(applicationData);
     return this.classMapper.mapAsync(
       await this.findByApplicationNumber(applicationNumber),
@@ -300,6 +313,7 @@ export class ApplicationService {
     applicationIds: string[],
     applicationStatus: ApplicationStatus,
     currentUser: IUserJWT,
+    directory: Directory,
   ): Promise<ResultDto> {
     let permitApprovalSource: PermitApprovalSourceEnum = null;
     if (applicationIds.length === 1) {
@@ -332,6 +346,10 @@ export class ApplicationService {
         ...(permitApprovalSource && {
           permitApprovalSource: permitApprovalSource,
         }),
+        updatedUser: currentUser.userName,
+        updatedDateTime: new Date(),
+        updatedUserDirectory: directory,
+        updatedUserGuid: currentUser.userGUID,
       })
       .whereInIds(applicationIds)
       .returning(['permitId'])
@@ -361,7 +379,7 @@ export class ApplicationService {
    * @param applicationId applicationId to identify the application to be issued. It is the same as permitId.
    * @returns a resultDto that describes if the transaction was successful or if it failed
    */
-  async issuePermit(currentUser: IUserJWT, applicationId: string) {
+  async issuePermit(currentUser: IUserJWT, applicationId: string, directory: Directory) {
     let success = '';
     let failure = '';
     const fetchedApplication = await this.findOneWithSuccessfulTransaction(
@@ -467,6 +485,10 @@ export class ApplicationService {
           permitStatus: fetchedApplication.permitStatus,
           permitNumber: fetchedApplication.permitNumber,
           documentId: generatedDocuments.at(0).dmsId,
+          updatedDateTime: new Date(),
+          updatedUser: currentUser.userName,
+          updatedUserDirectory: directory,
+          updatedUserGuid: currentUser.userGUID,
         },
       );
 
@@ -477,7 +499,12 @@ export class ApplicationService {
             fetchedApplication.permitTransactions[0].transaction.receipt
               .receiptId,
         },
-        { receiptDocumentId: generatedDocuments.at(1).dmsId },
+        { receiptDocumentId: generatedDocuments.at(1).dmsId,
+          updatedDateTime: new Date(),
+          updatedUser: currentUser.userName,
+          updatedUserDirectory: directory,
+          updatedUserGuid: currentUser.userGUID,
+        },
       );
 
       // In case of amendment move the parent permit to SUPERSEDED Status.
@@ -490,7 +517,11 @@ export class ApplicationService {
           {
             permitId: fetchedApplication.previousRevision,
           },
-          { permitStatus: ApplicationStatus.SUPERSEDED },
+          { permitStatus: ApplicationStatus.SUPERSEDED,
+            updatedDateTime: new Date(),
+            updatedUser: currentUser.userName,
+            updatedUserDirectory: directory,
+            updatedUserGuid: currentUser.userGUID,},
         );
       }
       await queryRunner.commitTransaction();
