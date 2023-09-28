@@ -6,6 +6,8 @@ import { Repository } from 'typeorm';
 import { PendingIdirUser } from './entities/pending-idir-user.entity';
 import { CreatePendingIdirUserDto } from './dto/request/create-pending-idir-user.dto';
 import { ReadPendingIdirUserDto } from './dto/response/read-pending-idir-user.dto';
+import { Directory } from 'src/common/enum/directory.enum';
+import { IUserJWT } from 'src/common/interface/user-jwt.interface';
 
 @Injectable()
 export class PendingIdirUsersService {
@@ -25,11 +27,21 @@ export class PendingIdirUsersService {
    */
   async create(
     createPendingIdirUserDto: CreatePendingIdirUserDto,
+    directory: Directory,
+    currentUser: IUserJWT,
   ): Promise<ReadPendingIdirUserDto> {
     const newPendingIdirUserDto = this.classMapper.map(
       createPendingIdirUserDto,
       CreatePendingIdirUserDto,
       PendingIdirUser,
+      {
+        extraArgs: () => ({
+          userName: currentUser.userName,
+          directory: directory,
+          userGUID: currentUser.userGUID,
+          timestamp: new Date(),
+        }),
+      },
     );
     const idirUser = await this.pendingIdirUserRepository.save(
       newPendingIdirUserDto,

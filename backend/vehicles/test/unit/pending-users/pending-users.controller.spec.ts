@@ -14,6 +14,7 @@ import {
   updateRedCompanyPendingUserDtoMock,
 } from '../../util/mocks/data/pending-user.mock';
 import { UserAuthGroup } from '../../../src/common/enum/user-auth-group.enum';
+import { getDirectory } from 'src/common/helper/auth.helper';
 
 const COMPANY_ID_99 = 99;
 let pendingUserService: DeepMocked<PendingUsersService>;
@@ -50,6 +51,7 @@ describe('PendingUsersController', () => {
         readRedCompanyPendingUserDtoMock,
       );
       const retPendingUser = await controller.create(
+        request,
         constants.RED_COMPANY_ID,
         createRedCompanyPendingUserDtoMock,
       );
@@ -61,6 +63,8 @@ describe('PendingUsersController', () => {
       expect(pendingUserService.create).toHaveBeenCalledWith(
         constants.RED_COMPANY_ID,
         createRedCompanyPendingUserDtoMock,
+        getDirectory(redCompanyAdminUserJWTMock),
+        redCompanyAdminUserJWTMock,
       );
     });
   });
@@ -120,6 +124,7 @@ describe('PendingUsersController', () => {
         userAuthGroup: UserAuthGroup.COMPANY_ADMINISTRATOR,
       });
       const retPendingUsers = await controller.update(
+        request,
         constants.RED_COMPANY_ID,
         constants.RED_COMPANY_PENDING_USER_NAME,
         updateRedCompanyPendingUserDtoMock,
@@ -137,6 +142,7 @@ describe('PendingUsersController', () => {
       pendingUserService.update.mockResolvedValue(undefined);
       await expect(async () => {
         await controller.update(
+          request,
           COMPANY_ID_99,
           constants.RED_COMPANY_PENDING_USER_NAME,
           updateRedCompanyPendingUserDtoMock,

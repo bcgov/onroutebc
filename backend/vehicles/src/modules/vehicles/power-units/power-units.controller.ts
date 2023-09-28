@@ -32,6 +32,8 @@ import { Roles } from '../../../common/decorator/roles.decorator';
 import { Role } from '../../../common/enum/roles.enum';
 import { DeleteDto } from 'src/modules/common/dto/response/delete.dto';
 import { DeletePowerUnitDto } from './dto/request/delete-power-units.dto';
+import { IUserJWT } from 'src/common/interface/user-jwt.interface';
+import { getDirectory } from 'src/common/helper/auth.helper';
 
 @ApiTags('Vehicles - Power Units')
 @ApiBadRequestResponse({
@@ -66,8 +68,14 @@ export class PowerUnitsController {
     @Param('companyId') companyId: number,
     @Body() createPowerUnitDto: CreatePowerUnitDto,
   ) {
-    //const currentUser = request.user as IUserJWT;
-    return await this.powerUnitsService.create(companyId, createPowerUnitDto);
+    const currentUser = request.user as IUserJWT;
+    const directory = getDirectory(currentUser);
+    return await this.powerUnitsService.create(
+      companyId,
+      createPowerUnitDto,
+      currentUser,
+      directory,
+    );
   }
 
   @ApiOkResponse({
@@ -115,12 +123,15 @@ export class PowerUnitsController {
     @Param('powerUnitId') powerUnitId: string,
     @Body() updatePowerUnitDto: UpdatePowerUnitDto,
   ): Promise<ReadPowerUnitDto> {
-    //const currentUser = request.user as IUserJWT;
+    const currentUser = request.user as IUserJWT;
+    const directory = getDirectory(currentUser);
     await this.checkVehicleCompanyContext(companyId, powerUnitId);
     const powerUnit = await this.powerUnitsService.update(
       companyId,
       powerUnitId,
       updatePowerUnitDto,
+      currentUser,
+      directory,
     );
     if (!powerUnit) {
       throw new DataNotFoundException();

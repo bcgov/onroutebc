@@ -47,6 +47,57 @@ export class TrailersProfile extends AutomapperProfile {
         CreateTrailerDto,
         Trailer,
         forMember(
+          (d) => d.createdUserGuid,
+          mapWithArguments((source, { userGUID }) => {
+            return userGUID;
+          }),
+        ),
+        forMember(
+          (d) => d.createdUser,
+          mapWithArguments((source, { userName }) => {
+            return userName;
+          }),
+        ),
+        forMember(
+          (d) => d.createdUserDirectory,
+          mapWithArguments((source, { directory }) => {
+            return directory;
+          }),
+        ),
+
+        forMember(
+          (d) => d.createdDateTime,
+          mapWithArguments((source, { timestamp }) => {
+            return timestamp;
+          }),
+        ),
+
+        forMember(
+          (d) => d.updatedUserGuid,
+          mapWithArguments((source, { userGUID }) => {
+            return userGUID;
+          }),
+        ),
+        forMember(
+          (d) => d.updatedUser,
+          mapWithArguments((source, { userName }) => {
+            return userName;
+          }),
+        ),
+        forMember(
+          (d) => d.updatedUserDirectory,
+          mapWithArguments((source, { directory }) => {
+            return directory;
+          }),
+        ),
+
+        forMember(
+          (d) => d.updatedDateTime,
+          mapWithArguments((source, { timestamp }) => {
+            return timestamp;
+          }),
+        ),
+        forMember(
           (d) => d.province.provinceId,
           mapFrom((s) => getProvinceId(s.countryCode, s.provinceCode)),
         ),
@@ -65,6 +116,31 @@ export class TrailersProfile extends AutomapperProfile {
         mapper,
         UpdateTrailerDto,
         Trailer,
+        forMember(
+          (d) => d.updatedUserGuid,
+          mapWithArguments((source, { userGUID }) => {
+            return userGUID;
+          }),
+        ),
+        forMember(
+          (d) => d.updatedUser,
+          mapWithArguments((source, { userName }) => {
+            return userName;
+          }),
+        ),
+        forMember(
+          (d) => d.updatedUserDirectory,
+          mapWithArguments((source, { directory }) => {
+            return directory;
+          }),
+        ),
+
+        forMember(
+          (d) => d.updatedDateTime,
+          mapWithArguments((source, { timestamp }) => {
+            return timestamp;
+          }),
+        ),
         forMember(
           (d) => d.province.provinceId,
           mapFrom((s) => getProvinceId(s.countryCode, s.provinceCode)),
