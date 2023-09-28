@@ -41,9 +41,10 @@ services:
 
   vehicles-api:
     container_name: vehicles-api
-    build:
-      context: ./backend/vehicles/
-      dockerfile: Dockerfile
+    image: node:18.17.1-alpine
+    volumes: ["./backend/vehicles:/app"]
+    working_dir: "/app"
+    entrypoint: sh -c "npm i && npm run start:dev"
     environment:
       NODE_ENV: development
       DB_TYPE: ${DB_TYPE}
@@ -84,9 +85,10 @@ services:
 
   dops-api:
     container_name: dops-api
-    build:
-      context: ./backend/dops/
-      dockerfile: Dockerfile
+    image: node:18.17.1-alpine
+    volumes: ["./backend/dops:/app"]
+    working_dir: "/app"
+    entrypoint: sh -c "npm i && npm run start:dev"
     environment:
       NODE_ENV: development
       DB_TYPE: ${DB_TYPE}
@@ -129,15 +131,10 @@ services:
 
   frontend:
     container_name: frontend
-    build:
-      context: ./frontend/
-      dockerfile: Dockerfile
-      args:
-        VITE_DEPLOY_ENVIRONMENT: ${VITE_DEPLOY_ENVIRONMENT}
-        VITE_API_VEHICLE_URL: ${VITE_API_VEHICLE_URL}
-        VITE_AUTH0_ISSUER_URL: ${VITE_AUTH0_ISSUER_URL}
-        VITE_AUTH0_AUDIENCE: ${VITE_AUTH0_AUDIENCE}
-        VITE_SITEMINDER_LOG_OFF_URL: ${VITE_SITEMINDER_LOG_OFF_URL}
+    image: node:18.17.1-alpine
+    volumes: ["./frontend:/app"]
+    working_dir: "/app"
+    entrypoint: sh -c "npm i && npm run start"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000"]
       interval: 1m30s
@@ -150,7 +147,4 @@ services:
       - dops-api
     ports:
       - "3000:3000"
-    volumes:
-      - ./frontend:/app:z
-      - /app/node_modules
       

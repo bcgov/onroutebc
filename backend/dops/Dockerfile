@@ -15,8 +15,6 @@ RUN npm ci
 RUN npm run build
 RUN npm prune --production
 
-
-
 # Deployment container
 FROM node:18.17.1-alpine
 RUN npm cache clean --force
