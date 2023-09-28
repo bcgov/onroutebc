@@ -77,7 +77,8 @@ RUN npm init -y &&  \
     # Add user so we don't need --no-sandbox.
     # same layer as npm install to keep re-chowned files from using up several hundred MBs more space
     && groupadd -r pptruser && useradd -r -g pptruser -G audio,video pptruser \
-    && mkdir -p /home/pptruser/Downloads \
+    && mkdir -p "/.config/chromium/Crash Reports/pending/" \
+    && chown -R pptruser:pptruser "/.config/chromium/Crash Reports/pending/" \
     && chown -R pptruser:pptruser /home/pptruser \
     && chown -R pptruser:pptruser /node_modules \
     && chown -R pptruser:pptruser /package.json \
