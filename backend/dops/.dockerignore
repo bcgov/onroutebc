@@ -1,3 +1,8 @@
+**/.cache/
+**/build/
+**/dist/
 **/node_modules/
-build
-dist
+**/test/
+*.md
+*.yml
+*.yaml
