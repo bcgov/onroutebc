@@ -12,7 +12,7 @@ const envPath = path.resolve(process.cwd() + '/../../');
 @Module({
   imports: [
     ConfigModule.forRoot({ envFilePath: `${envPath}/.env` }),
-    /*  SftpModule.forRoot(
+      SftpModule.forRoot(
     {
       host: process.env.CFS_SFTP_HOST,
       port: process.env.CFS_SFTP_PORT,
@@ -20,11 +20,9 @@ const envPath = path.resolve(process.cwd() + '/../../');
       //password: 'pass',
       privateKey: process.env.CFS_PRIVATE_KEY,
       passphrase: process.env.CFS_PASSPHRASE, 
-      debug: console.log
-    
     },
     false,
-  ),*/
+  ),
   ],
   controllers: [AppController],
   providers: [AppService],

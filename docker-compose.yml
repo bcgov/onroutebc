@@ -125,7 +125,17 @@ services:
       - sql-server-db
     ports:
       - "5001:5001"
+  sftp:
+    image: atmoz/sftp
+    container_name: sftp-server
+    hostname: localhost #192.168.1.72
+    volumes:
+        #- C:/Users/chauh/.ssh/id_rsa.pub:/home/foo/.ssh/keys/id_rsa.pub:ro
+        - C:/Users/chauh/.ssh/ssh_key_demo.pub:/home/foo/.ssh/keys/ssh_key_demo.pub:ro
+    ports:
+        - "2222:22"
 
+    command: foo:pass:::upload
   sftp-api:
     container_name: sftp-api
     build:
