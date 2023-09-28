@@ -51,4 +51,4 @@ COPY --from=build --chown=app /app/node_modules ./node_modules
 COPY --from=build --chown=app /app/dist ./dist
 
 USER app
-CMD ["node", "dist/main"]
+CMD ["node", "dist/main", "--chrome-arg=--no-sandbox"]
