@@ -14,11 +14,6 @@ on:
         default: 'test'
         required: true
         type: string
-      penetration_test:
-        description: 'If penetration test is required'
-        default: false
-        required: true
-        type: boolean
       vault_zone:
         description: 'Which vault zone to use'
         default: 'dev'
@@ -46,11 +41,6 @@ on:
         default: 'test'
         required: true
         type: string
-      penetration_test:
-        description: 'If penetration test is required'
-        default: false
-        required: true
-        type: boolean
       vault_zone:
         description: 'Which vault zone to use'
         default: 'dev'
@@ -168,5 +158,3 @@ jobs:
             -p MOTIPAY_MERCHANT_ID=${{steps.vault.outputs.VAULT_MOTIPAY_MERCHANT_ID}}
             -p MOTIPAY_BASE_URL=${{steps.vault.outputs.VAULT_MOTIPAY_BASE_URL}}
             ${{ matrix.parameters }}
-          penetration_test: ${{ github.event_name != 'pull_request'}}
-          penetration_test_issue: ${{ matrix.name }}

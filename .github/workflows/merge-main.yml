@@ -69,7 +69,6 @@ jobs:
     with:
       environment: 'test'
       imagetag: 'latest'  # we promote AFTER successful deploy of candidate
-      penetration_test: true
       vault_zone: 'test'
       zone: 'test'
     secrets: inherit
@@ -192,7 +191,6 @@ jobs:
     with:
       environment: 'prod'
       imagetag: 'test'
-      penetration_test: false
       vault_zone: 'prod'
       zone: 'prod'
     secrets: inherit
