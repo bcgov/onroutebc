@@ -1,3 +1,5 @@
+import { BamboraPaymentMethod, CardType } from "./PaymentMethod";
+
 export interface MotiPaymentDetails {
   authCode: string;
   avsAddrMatch: string;
@@ -6,12 +8,12 @@ export interface MotiPaymentDetails {
   avsPostalMatch: string;
   avsProcessed: string;
   avsResult: string;
-  cardType: string;
+  cardType: CardType;
   cvdId: number;
   trnApproved: number;
   messageId: string;
   messageText: string;
-  paymentMethod: string;
+  paymentMethod: BamboraPaymentMethod;
   ref1: string;
   ref2: string;
   ref3: string;
@@ -64,11 +66,43 @@ export const TRANSACTION_TYPES = {
 
 export type TransactionType = typeof TRANSACTION_TYPES[keyof typeof TRANSACTION_TYPES];
 
-export interface TransactionDto {
+export interface PaymentGatewayData {
+  pgTransactionId: string;
+  pgApproved: number;
+  pgAuthCode: string;
+  pgCardType: CardType;
+  pgTransactionDate: string;
+  pgCvdId: number;
+  pgPaymentMethod: BamboraPaymentMethod;
+  pgMessageId: number;
+  pgMessageText: string;
+}
+
+export interface StartTransactionRequestData extends Partial<PaymentGatewayData> {
+  transactionTypeId: TransactionType;
   paymentMethodId: string;
-  transactionAmount: string;
-  transactionOrderNumber: string;
+  applicationDetails: {
+    applicationId: string;
+    transactionAmount: number;
+  }[];
+}
+
+export interface StartTransactionResponseData extends Partial<PaymentGatewayData> {
+  transactionId: string;
+  transactionTypeId: TransactionType;
+  paymentMethodId: string;
+  totalTransactionAmount: number;
   transactionSubmitDate: string;
-  transactionType: TransactionType;
+  transactionOrderNumber: string;
+  applicationDetails: {
+    applicationId: string;
+    transactionAmount: number;
+  }[];
   url?: string;
+}
+
+export type CompleteTransactionRequestData = PaymentGatewayData;
+
+export interface CompleteTransactionResponseData extends PaymentGatewayData {
+  transactionid: string;
 }

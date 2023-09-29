@@ -2,9 +2,14 @@ import { useEffect, useRef } from "react";
 import { Navigate, useSearchParams } from "react-router-dom";
 
 import { getMotiPaymentDetails } from "../../helpers/payment";
-import { MotiPaymentDetails, Transaction } from "../../types/payment";
+import { CompleteTransactionRequestData, MotiPaymentDetails } from "../../types/payment";
 import { Loading } from "../../../../common/pages/Loading";
-import { useCompleteTransaction } from "../../hooks/hooks";
+import { useCompleteTransaction, useIssuePermits } from "../../hooks/hooks";
+import { getDefaultRequiredVal } from "../../../../common/helpers/util";
+
+const getPermitIdsArray = (permitIds?: string | null) => {
+  return getDefaultRequiredVal("", permitIds).split(",").filter(id => id !== "");
+};
 
 /**
  * React component that handles the payment redirect and displays the payment status.
@@ -13,9 +18,10 @@ import { useCompleteTransaction } from "../../hooks/hooks";
  */
 export const PaymentRedirect = () => {
   const completedTransaction = useRef(false);
+  const issuedPermit = useRef(false);
   const [searchParams] = useSearchParams();
   const permitIds = searchParams.get("permitIds");
-  const transactionIds = searchParams.get("transactionIds");
+  const transactionId = searchParams.get("transactionId");
   const paymentDetails = getMotiPaymentDetails(searchParams);
   const transaction = mapTransactionDetails(paymentDetails);
 
@@ -25,20 +31,38 @@ export const PaymentRedirect = () => {
     message,
     setPaymentApproved,
   } = useCompleteTransaction(
+    getDefaultRequiredVal("", transactionId),
+    transaction,
     paymentDetails.messageText,
     paymentDetails.trnApproved
   );
 
+  const {
+    mutation: issuePermitsMutation,
+    issueResults,
+  } = useIssuePermits();
+
   useEffect(() => {
     if (completedTransaction.current === false) {
       if (paymentDetails.trnApproved > 0) {
-        completeTransactionMutation.mutate(transaction);
+        completeTransactionMutation.mutate();
         completedTransaction.current = true;
       } else {
         setPaymentApproved(false);
       }
     }
   }, [paymentDetails.trnApproved]);
+
+  useEffect(() => {
+    if (issuedPermit.current === false) {
+      const permitIdsArray = getPermitIdsArray(permitIds);
+      if (paymentApproved === true && permitIdsArray.length > 0) {
+        // Issue permit
+        issuePermitsMutation.mutate(permitIdsArray);
+        issuedPermit.current = true;
+      }
+    }
+  }, [paymentApproved, permitIds]);
 
   if (paymentApproved === false) {
     return (
@@ -49,15 +73,19 @@ export const PaymentRedirect = () => {
     );
   }
   
-  if (paymentApproved === true && permitIds && transactionIds) {
-    const permitIdsArray = permitIds.split(",").filter(id => id !== "");
-    const transactionIdsArray = transactionIds.split(",").filter(id => id !== "");
-    if (permitIdsArray.length !== 1 || transactionIdsArray.length !== 1) {
-      return <Loading />;
+  if (issueResults) {
+    if (issueResults.success.length === 0) {
+      const permitIssueFailedMsg = `Permit issue failed for ids ${issueResults.failure.join(",")}`;
+      return (
+        <Navigate 
+          to={`/applications/failure/${permitIssueFailedMsg}`}
+          replace={true}
+        />
+      );
     }
     return (
       <Navigate 
-        to={`/applications/success/${permitIdsArray[0]}`}
+        to={`/applications/success/${issueResults.success[0]}`}
         replace={true}
       />
     );
@@ -68,20 +96,16 @@ export const PaymentRedirect = () => {
 
 const mapTransactionDetails = (
   motiResponse: MotiPaymentDetails
-): Transaction => {
+): CompleteTransactionRequestData => {
   return {
-    transactionType: motiResponse.trnType,
-    transactionOrderNumber: motiResponse.trnOrderNumber,
-    providerTransactionId: Number(motiResponse.trnId),
-    transactionAmount: Number(motiResponse.trnAmount),
-    approved: Number(motiResponse.trnApproved),
-    authCode: motiResponse.authCode,
-    cardType: motiResponse.cardType,
-    transactionDate: motiResponse.trnDate,
-    cvdId: Number(motiResponse.cvdId),
-    paymentMethod: motiResponse.paymentMethod,
-    paymentMethodId: 1, // currently hardcoded to 1 == MOTI Pay
-    messageId: motiResponse.messageId,
-    messageText: motiResponse.messageText,
+    pgTransactionId: motiResponse.trnId,
+    pgApproved: Number(motiResponse.trnApproved),
+    pgAuthCode: motiResponse.authCode,
+    pgCardType: motiResponse.cardType,
+    pgTransactionDate: motiResponse.trnDate,
+    pgCvdId: Number(motiResponse.cvdId),
+    pgPaymentMethod: motiResponse.paymentMethod,
+    pgMessageId: Number(motiResponse.messageId),
+    pgMessageText: motiResponse.messageText,
   };
 };

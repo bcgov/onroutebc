@@ -1,12 +1,18 @@
 import { DATE_FORMATS, toLocal } from "../../../common/helpers/formatDate";
 import { mapApplicationToApplicationRequestData } from "../helpers/mappers";
-import { Transaction, TransactionDto } from "../types/payment";
 import { VEHICLES_URL } from "../../../common/apiManager/endpoints/endpoints";
-import { ReadPermitDto } from "../types/permit";
+import { IssuePermitsResponse, ReadPermitDto } from "../types/permit";
 import { PaginatedResponse } from "../../../common/types/common";
 import { PERMIT_STATUSES } from "../types/PermitStatus";
 import { PermitHistory } from "../types/PermitHistory";
 import { getPermitTypeName } from "../types/PermitType";
+import { 
+  CompleteTransactionRequestData, 
+  CompleteTransactionResponseData, 
+  StartTransactionRequestData, 
+  StartTransactionResponseData, 
+} from "../types/payment";
+
 import {
   getCompanyIdFromSession,
   httpGETRequest,
@@ -17,6 +23,7 @@ import {
 } from "../../../common/apiManager/httpRequestHandler";
 
 import {
+  applyWhenNotNullable,
   getDefaultRequiredVal,
   replaceEmptyValuesWithNull,
 } from "../../../common/helpers/util";
@@ -215,28 +222,18 @@ export const downloadReceiptPdf = async (permitId: string) => {
 
 /**
  * Start making a payment transaction with Moti Pay.
- * @param {number} paymentMethodId - Id of payment method to use (currently hardcoded to 1).
- * @param {string} transactionSubmitDate - The datetime when this transaction is started.
- * @param {number} transactionAmount - The amount of the transaction.
- * @param {string[]} permitIds - The permit ids that this transaction will pay for.
- * @returns {Promise<TransactionDto>} - A Promise that resolves to the submitted transaction with URL.
+ * @param {StartTransactionRequestData} requestData - Payment information that is to be submitted.
+ * @returns {Promise<StartTransactionResponseData>} - A Promise that resolves to the submitted transaction with URL.
  */
 export const startTransaction = async (
-  paymentMethodId: number,
-  transactionSubmitDate: string,
-  transactionAmount: number,
-  permitIds: string[]
-): Promise<TransactionDto | null> => {
-  const url =
-    `${PAYMENT_API}?` +
-    `paymentMethodId=${paymentMethodId}` +
-    `&transactionSubmitDate=${transactionSubmitDate}` +
-    `&transactionAmount=${transactionAmount}` +
-    `&permitIds=${permitIds.toString()}`;
-  
+  requestData: StartTransactionRequestData
+): Promise<StartTransactionResponseData | null> => {
   try {
-    const response = await httpGETRequest(url);
-    return response.data as TransactionDto;
+    const response = await httpPOSTRequest(PAYMENT_API, replaceEmptyValuesWithNull(requestData));
+    if (response.status !== 201) {
+      return null;
+    }
+    return response.data as StartTransactionResponseData;
   } catch (err) {
     console.error(err);
     return null;
@@ -245,14 +242,61 @@ export const startTransaction = async (
 
 /**
  * Completes the transaction after payment is successful.
+ * @param transactionId - The id for the transaction to be completed
  * @param transactionDetails - The complete transaction details to be submitted after payment
  * @returns Promise that resolves to a successful transaction.
  */
 export const completeTransaction = async (
-  transactionDetails: Transaction
-): Promise<any> => {
-  const url = `${PAYMENT_API}`;
-  return await httpPOSTRequest(url, transactionDetails);
+  transactionId: string,
+  transactionDetails: CompleteTransactionRequestData
+): Promise<CompleteTransactionResponseData | null> => {
+  try {
+    const response = await httpPUTRequest(
+      `${PAYMENT_API}/${transactionId}/payment-gateway`,
+      transactionDetails
+    );
+    if (response.status !== 200) {
+      return null;
+    }
+    return response.data as CompleteTransactionResponseData;
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+};
+
+/**
+ * Issues the permits indicated by the application/permit ids.
+ * @param ids Application/permit ids for the permits to be issued.
+ * @returns Successful and failed permit ids that were issued.
+ */
+export const issuePermits = async (
+  ids: string[],
+): Promise<IssuePermitsResponse> => {
+  try {
+    const companyId = getCompanyIdFromSession();
+    const response = await httpPOSTRequest(
+      PERMITS_API.ISSUE_PERMIT, 
+      replaceEmptyValuesWithNull({ 
+        applicationIds: [...ids], 
+        companyId: applyWhenNotNullable((companyId) => Number(companyId), companyId),
+      })
+    );
+    
+    if (response.status !== 201) {
+      return {
+        success: [],
+        failure: [...ids],
+      };
+    }
+    return response.data as IssuePermitsResponse;
+  } catch (err) {
+    console.error(err);
+    return {
+      success: [],
+      failure: [...ids],
+    };
+  }
 };
 
 /**

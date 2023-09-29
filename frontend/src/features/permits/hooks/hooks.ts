@@ -4,8 +4,14 @@ import { AxiosError } from "axios";
 
 import { Application } from "../types/application";
 import { mapApplicationResponseToApplication } from "../helpers/mappers";
-import { ReadPermitDto } from "../types/permit";
+import { IssuePermitsResponse, ReadPermitDto } from "../types/permit";
 import { PermitHistory } from "../types/PermitHistory";
+import { 
+  CompleteTransactionRequestData, 
+  StartTransactionResponseData, 
+  TransactionType, 
+} from "../types/payment";
+
 import {
   getApplicationByPermitId,
   getPermit,
@@ -14,6 +20,7 @@ import {
   submitTermOversize,
   updateTermOversize,
   startTransaction,
+  issuePermits,
 } from "../apiManager/permitsAPI";
 
 /**
@@ -112,45 +119,28 @@ export const usePermitDetailsQuery = (permitId: string) => {
 
 /**
  * Custom hook that starts a transaction.
- * @param paymentMethodId - Id of payment method to use (currently hardcoded to 1).
- * @param transactionSubmitDate - The datetime when this transaction is started.
- * @param transactionAmount - The amount of the transaction.
- * @param permitIds - The permit ids that this transaction will pay for.
- * @returns The queried transaction object (if there is one), as well as method to enable querying
+ * @param transactionType - The type of transaction (eg. P, R, Z, etc)
+ * @param paymentMethodId - Payment method used (currently hardcoded to "1" - Web)
+ * @param applicationDetails - Details for the applications to start transaction for (application id and amount).
+ * @returns The mutation object, as well as the transaction that was started (if there is one, or undefined if there's an error).
  */
 export const useStartTransaction = (
-  paymentMethodId: number,
-  transactionSubmitDate: string,
-  transactionAmount: number,
-  permitIds: string[]
+  transactionType: TransactionType,
+  paymentMethodId: string,
+  applicationDetails: {
+    applicationId: string;
+    transactionAmount: number;
+  }[]
 ) => {
-  const [enableQuery, setEnableQuery] = useState<boolean>(false);
-
-  const query = useQuery({
-    queryKey: ["transaction"],
-    queryFn: () => startTransaction(
-      paymentMethodId, 
-      transactionSubmitDate, 
-      transactionAmount, 
-      permitIds
-    ),
-    enabled: enableQuery, // only query when enableQuery is true
-    retry: false,
-    refetchOnMount: "always",
-    refetchOnWindowFocus: false, // prevent unnecessary multiple queries on page showing up in foreground
-  });
-
-  /*
-  // Use this once the backend has been updated to use POST instead of GET
+  const [transaction, setTransaction] = useState<StartTransactionResponseData | null | undefined>(undefined);
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
-    mutationFn: () => startTransaction(
-      paymentMethodId, 
-      transactionSubmitDate, 
-      transactionAmount, 
-      permitIds
-    ),
+    mutationFn: () => startTransaction({
+      transactionTypeId: transactionType,
+      paymentMethodId,
+      applicationDetails: [...applicationDetails],
+    }),
     retry: false,
     onSuccess: (transactionData) => {
       queryClient.invalidateQueries(["transaction"]);
@@ -159,24 +149,27 @@ export const useStartTransaction = (
     },
     onError: (err: unknown) => {
       console.error(err);
+      setTransaction(undefined);
     },
   });
-  */
 
   return {
-    query,
-    // mutation,
-    setEnableQuery,
+    mutation,
+    transaction,
   };
 };
 
 /**
  * A custom hook that completes the transaction.
+ * @param transactionId The transaction id of the transaction to complete
+ * @param transactionDetails Details for the transaction to complete
  * @param messageText Message text that indicates the result of the transaction
  * @param paymentStatus Payment status signifying the result of the transaction (1 - success, 0 - failed)
  * @returns The mutation object, whether or not payment was approved, and the message to display
  */
 export const useCompleteTransaction = (
+  transactionId: string,
+  transactionDetails: CompleteTransactionRequestData,
   messageText: string,
   paymentStatus: number
 ) => {
@@ -205,10 +198,10 @@ export const useCompleteTransaction = (
   };
 
   const mutation = useMutation({
-    mutationFn: completeTransaction,
+    mutationFn: () => completeTransaction(transactionId, transactionDetails),
     retry: false,
     onSuccess: (response) => {
-      if (response.status === 201) {
+      if (response != null) {
         queryClient.invalidateQueries(["transactions"]);
         onTransactionResult(messageText, paymentStatus === 1);
       } else {
@@ -253,5 +246,33 @@ export const usePermitHistoryQuery = (originalPermitId?: string) => {
   return {
     query,
     permitHistory,
+  };
+};
+
+/**
+ * Custom hook that issues the permits indicated by the application/permit ids.
+ * @param ids Application/permit ids for the permits to be issued.
+ * @returns Mutation object, and the issued results response.
+ */
+export const useIssuePermits = () => {
+  const [issueResults, setIssueResults] = useState<IssuePermitsResponse | undefined>(undefined);
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: issuePermits,
+    retry: false,
+    onSuccess: (issueResponseData) => {
+      queryClient.invalidateQueries(["termOversize", "permit"]);
+      setIssueResults(issueResponseData);
+    },
+    onError: (err: unknown) => {
+      console.error(err);
+      setIssueResults(undefined);
+    },
+  });
+
+  return {
+    mutation,
+    issueResults,
   };
 };

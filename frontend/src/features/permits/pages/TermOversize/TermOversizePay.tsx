@@ -10,7 +10,7 @@ import { PermitPayFeeSummary } from "./components/pay/PermitPayFeeSummary";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { Loading } from "../../../../common/pages/Loading";
 import { useStartTransaction } from "../../hooks/hooks";
-import { DATE_FORMATS, dayjsToUtcStr, nowUtc } from "../../../../common/helpers/formatDate";
+import { TRANSACTION_TYPES } from "../../types/payment.d";
 
 export const TermOversizePay = () => {
   const { applicationData } = useContext(ApplicationContext);
@@ -24,13 +24,17 @@ export const TermOversizePay = () => {
   );
 
   const { 
-    query, 
-    setEnableQuery, 
+    mutation: startTransactionMutation, 
+    transaction, 
   } = useStartTransaction(
-    1, // Hardcoded value for Web/MotiPay, still need to implement payment method (ie payBC, manual, etc)
-    dayjsToUtcStr(nowUtc(), DATE_FORMATS.ISO8601),
-    calculatedFee,
-    [applicationData.permitId]
+    TRANSACTION_TYPES.P,
+    "1", // Hardcoded value for Web/MotiPay, still need to implement payment method (ie payBC, manual, etc)
+    [
+      {
+        applicationId: applicationData?.permitId,
+        transactionAmount: calculatedFee,
+      }
+    ]
   );
 
   useEffect(() => {
@@ -38,14 +42,14 @@ export const TermOversizePay = () => {
   }, []);
   
   const handlePay = () => {
-    setEnableQuery(true);
+    startTransactionMutation.mutate();
   };
 
-  if (typeof query.data !== "undefined") {
-    if (!query.data?.url) {
+  if (typeof transaction !== "undefined") {
+    if (!transaction?.url) {
       console.error("Invalid transaction url");
     } else {
-      window.open(query.data.url, "_self");
+      window.open(transaction.url, "_self");
     }
   }
 
