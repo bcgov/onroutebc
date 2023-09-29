@@ -367,10 +367,10 @@ export class PermitService {
         currentUser.identity_provider,
         permitId,
       );
-      const permitNumber =
-      await this.applicationService.generatePermitNumber(null,
-        permitId,
-      );
+    const permitNumber = await this.applicationService.generatePermitNumber(
+      null,
+      permitId,
+    );
     let success = '';
     let failure = '';
 
@@ -468,7 +468,7 @@ export class PermitService {
       // to create new permit
       let newPermit = permit;
       newPermit.permitId = null;
-      newPermit.permitNumber= permitNumber;
+      newPermit.permitNumber = permitNumber;
       newPermit.permitStatus = voidPermitDto.status;
       newPermit.revision = permit.revision + 1;
       newPermit.previousRevision = +permitId;
@@ -482,19 +482,23 @@ export class PermitService {
       newPermit.updatedUserDirectory = directory;
       newPermit.updatedUserGuid = currentUser.userGUID;
       newPermit.applicationNumber = applicationNumber;
-     // newPermit.permitData = permit.permitData;
+      // newPermit.permitData = permit.permitData;
       /* Create application to generate permit id. 
       this permit id will be used to generate permit number based this id's application number.*/
-     const newPermitInsert = await queryRunner.manager.insert(Permit,newPermit);
-    const newIds = Array.from(
-      newPermitInsert?.raw as [
-        {
-          ID: string;
-        },
-      ],
-    );
-    const ids = newIds?.map((permit) => permit.ID);
-      newPermit = await queryRunner.manager.findOne(Permit,{where: { permitId: ids[0] },
+      const newPermitInsert = await queryRunner.manager.insert(
+        Permit,
+        newPermit,
+      );
+      const newIds = Array.from(
+        newPermitInsert?.raw as [
+          {
+            ID: string;
+          },
+        ],
+      );
+      const ids = newIds?.map((permit) => permit.ID);
+      newPermit = await queryRunner.manager.findOne(Permit, {
+        where: { permitId: ids[0] },
       });
       const permitData = new PermitData();
       permitData.permitData = permit.permitData.permitData;

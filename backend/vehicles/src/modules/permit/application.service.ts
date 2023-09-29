@@ -405,7 +405,7 @@ export class ApplicationService {
       );
     }
 
-    const permitNumber = await this.generatePermitNumber(applicationId,null);
+    const permitNumber = await this.generatePermitNumber(applicationId, null);
     //Generate receipt number for the permit to be created in database.
     const receiptNumber =
       fetchedApplication.permitTransactions[0].transaction.receipt
@@ -736,8 +736,11 @@ export class ApplicationService {
    * @param oldPermitId
    * @returns permitNumber
    */
-  async generatePermitNumber(permitId: string, oldPermitId: string): Promise<string> {
-    const id = permitId?permitId:oldPermitId;
+  async generatePermitNumber(
+    permitId: string,
+    oldPermitId: string,
+  ): Promise<string> {
+    const id = permitId ? permitId : oldPermitId;
     const permit = await this.findOne(id);
     let approvalSourceId: number;
     let rnd;
