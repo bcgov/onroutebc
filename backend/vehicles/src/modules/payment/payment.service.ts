@@ -273,6 +273,7 @@ export class PaymentService {
 
       await queryRunner.commitTransaction();
     } catch (err) {
+      console.log(err);
       await queryRunner.rollbackTransaction();
       throw new InternalServerErrorException(); // TODO: Handle the typeorm Error handling
     } finally {

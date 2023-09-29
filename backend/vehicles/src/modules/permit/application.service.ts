@@ -405,7 +405,7 @@ export class ApplicationService {
       );
     }
 
-    const permitNumber = await this.generatePermitNumber(applicationId);
+    const permitNumber = await this.generatePermitNumber(applicationId,null);
     //Generate receipt number for the permit to be created in database.
     const receiptNumber =
       fetchedApplication.permitTransactions[0].transaction.receipt
@@ -731,24 +731,26 @@ export class ApplicationService {
   }
 
   /**
-   * Generate permit number for a permit application.
+   * Generate permit number for a permit application. only one (i.e. permitId or oldPermitId) should be present at a time.
    * @param permitId
+   * @param oldPermitId
    * @returns permitNumber
    */
-  async generatePermitNumber(permitId: string): Promise<string> {
-    const permit = await this.findOne(permitId);
+  async generatePermitNumber(permitId: string, oldPermitId: string): Promise<string> {
+    const id = permitId?permitId:oldPermitId;
+    const permit = await this.findOne(id);
     let approvalSourceId: number;
     let rnd;
     let seq: string;
     const approvalSource = await this.permitApprovalSourceRepository.find({
       where: { id: permit.permitApprovalSource },
     });
-    if (!approvalSourceId) {
+    if (approvalSourceId === undefined || approvalSourceId === null) {
       approvalSourceId = 9;
     } else {
       approvalSourceId = approvalSource[0].code;
     }
-    if (permit.revision == 0) {
+    if (permitId) {
       seq = await callDatabaseSequence(
         'permit.ORBC_PERMIT_NUMBER_SEQ',
         this.dataSource,
@@ -757,8 +759,8 @@ export class ApplicationService {
       const { randomInt } = await import('crypto');
       rnd = randomInt(100, 1000);
     } else {
-      seq = permit.applicationNumber.substring(3, 15);
-      rnd = 'A' + String(permit.revision).padStart(2, '0');
+      seq = permit.permitNumber.substring(3, 15);
+      rnd = 'A' + String(permit.revision + 1).padStart(2, '0');
     }
     const permitNumber =
       'P' + String(approvalSourceId) + '-' + String(seq) + '-' + String(rnd);
