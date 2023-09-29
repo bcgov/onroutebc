@@ -56,7 +56,7 @@ export class IdirUser extends Base {
     type: 'simple-enum',
     enum: UserStatus,
     length: 10,
-    name: 'STATUS_CODE',
+    name: 'USER_STATUS_TYPE',
     default: UserStatus.ACTIVE,
     nullable: false,
   })
@@ -71,7 +71,7 @@ export class IdirUser extends Base {
     type: 'simple-enum',
     enum: UserAuthGroup,
     length: 10,
-    name: 'USER_AUTH_GROUP_ID',
+    name: 'USER_AUTH_GROUP_TYPE',
     nullable: false,
   })
   userAuthGroup: UserAuthGroup;

@@ -7,7 +7,7 @@ import { Province } from './province.entity';
 export class Country {
   @AutoMap()
   @ApiProperty({ example: 'CA', description: 'Country Code' })
-  @PrimaryColumn({ length: 2, name: 'COUNTRY_CODE', nullable: false })
+  @PrimaryColumn({ length: 2, name: 'COUNTRY_TYPE', nullable: false })
   countryCode: string;
 
   @AutoMap()

@@ -21,7 +21,7 @@ export class PendingIdirUser extends Base {
     type: 'simple-enum',
     enum: UserAuthGroup,
     length: 10,
-    name: 'USER_AUTH_GROUP_ID',
+    name: 'USER_AUTH_GROUP_TYPE',
     nullable: false,
   })
   userAuthGroup: UserAuthGroup;

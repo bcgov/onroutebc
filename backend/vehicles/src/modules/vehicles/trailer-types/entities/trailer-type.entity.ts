@@ -10,7 +10,7 @@ export class TrailerType {
     example: 'BOOSTER',
     description: 'Unique identifier of the trailer type.',
   })
-  @PrimaryColumn({ length: 7, name: 'TYPE_CODE', nullable: false })
+  @PrimaryColumn({ length: 7, name: 'TRAILER_TYPE', nullable: false })
   typeCode: string;
 
   @AutoMap()

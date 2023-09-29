@@ -14,7 +14,7 @@ export class PermitApplicationOrigin {
     type: 'simple-enum',
     enum: PermitApplicationOriginEnum,
     length: 8,
-    name: 'ID',
+    name: 'PERMIT_APPLICATION_ORIGIN_TYPE',
     nullable: false,
   })
   id: PermitApplicationOriginEnum;

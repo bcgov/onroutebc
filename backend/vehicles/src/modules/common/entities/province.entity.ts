@@ -18,7 +18,7 @@ import { Trailer } from '../../vehicles/trailers/entities/trailer.entity';
 export class Province {
   @AutoMap()
   @ApiProperty({ example: 'CA-BC', description: 'Province ID' })
-  @PrimaryColumn({ length: 5, name: 'PROVINCE_ID', nullable: false })
+  @PrimaryColumn({ length: 5, name: 'PROVINCE_TYPE', nullable: false })
   provinceId: string;
 
   @AutoMap()
@@ -41,7 +41,7 @@ export class Province {
 
   @AutoMap()
   @ManyToOne(() => Country, (Country) => Country.provinces, { eager: true })
-  @JoinColumn({ name: 'COUNTRY_CODE' })
+  @JoinColumn({ name: 'COUNTRY_TYPE' })
   country: Country;
 
   @AutoMap(() => [PowerUnit])

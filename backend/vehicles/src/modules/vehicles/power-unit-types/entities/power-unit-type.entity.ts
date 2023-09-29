@@ -10,7 +10,7 @@ export class PowerUnitType {
     example: 'CONCRET',
     description: 'Unique identifier of the power unit type.',
   })
-  @PrimaryColumn({ length: 7, name: 'TYPE_CODE', nullable: false })
+  @PrimaryColumn({ length: 7, name: 'POWER_UNIT_TYPE', nullable: false })
   typeCode: string;
 
   @AutoMap()

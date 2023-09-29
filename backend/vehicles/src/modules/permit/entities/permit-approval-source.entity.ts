@@ -14,7 +14,7 @@ export class PermitApprovalSource {
     type: 'simple-enum',
     enum: PermitApprovalSourceEnum,
     length: 8,
-    name: 'ID',
+    name: 'PERMIT_APPROVAL_SOURCE_TYPE',
     nullable: false,
   })
   id: PermitApprovalSourceEnum;
