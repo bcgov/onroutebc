@@ -22,6 +22,7 @@ import { TransactionType } from '../../common/enum/transaction-type.enum';
 import { UpdatePaymentGatewayTransactionDto } from './dto/request/read-payment-gateway-transaction.dto';
 import { ReadPaymentGatewayTransactionDto } from './dto/response/read-payment-gateway-transaction.dto';
 import { Receipt } from './entities/receipt.entity';
+import { Directory } from 'src/common/enum/directory.enum';
 
 @Injectable()
 export class PaymentService {
@@ -152,6 +153,7 @@ export class PaymentService {
   async createTransactions(
     currentUser: IUserJWT,
     createTransactionDto: CreateTransactionDto,
+    directory: Directory,
   ): Promise<ReadTransactionDto> {
     const totalTransactionAmount =
       createTransactionDto.applicationDetails?.reduce(
@@ -172,6 +174,10 @@ export class PaymentService {
           extraArgs: () => ({
             transactionOrderNumber: transactionOrderNumber,
             totalTransactionAmount: totalTransactionAmount,
+            userName: currentUser.userName,
+            userGUID: currentUser.userGUID,
+            timestamp: new Date(),
+            directory: directory,
           }),
         },
       );
@@ -193,6 +199,14 @@ export class PaymentService {
         let newPermitTransactions = new PermitTransaction();
         newPermitTransactions.transaction = newTransaction;
         newPermitTransactions.permit = existingApplication;
+        newPermitTransactions.createdDateTime = new Date();
+        newPermitTransactions.createdUser = currentUser.userName;
+        newPermitTransactions.createdUserDirectory = directory;
+        newPermitTransactions.createdUserGuid = currentUser.userGUID;
+        newPermitTransactions.updatedDateTime = new Date();
+        newPermitTransactions.updatedUser = currentUser.userName;
+        newPermitTransactions.updatedUserDirectory = directory;
+        newPermitTransactions.updatedUserGuid = currentUser.userGUID;
         newPermitTransactions.transactionAmount = application.transactionAmount;
         newPermitTransactions = await queryRunner.manager.save(
           newPermitTransactions,
@@ -203,6 +217,10 @@ export class PaymentService {
           newTransaction.transactionTypeId == TransactionType.PURCHASE
         ) {
           existingApplication.permitStatus = ApplicationStatus.WAITING_PAYMENT;
+          existingApplication.updatedDateTime = new Date();
+          existingApplication.updatedUser = currentUser.userName;
+          existingApplication.updatedUserDirectory = directory;
+          existingApplication.updatedUserGuid = currentUser.userGUID;
 
           await queryRunner.manager.save(existingApplication);
         }
@@ -231,6 +249,14 @@ export class PaymentService {
         const receipt = new Receipt();
         receipt.receiptNumber = receiptNumber;
         receipt.transaction = createdTransaction;
+        receipt.createdDateTime = new Date();
+        receipt.createdUser = currentUser.userName;
+        receipt.createdUserDirectory = directory;
+        receipt.createdUserGuid = currentUser.userGUID;
+        receipt.updatedDateTime = new Date();
+        receipt.updatedUser = currentUser.userName;
+        receipt.updatedUserDirectory = directory;
+        receipt.updatedUserGuid = currentUser.userGUID;
         await queryRunner.manager.save(receipt);
       }
 
@@ -247,6 +273,7 @@ export class PaymentService {
 
       await queryRunner.commitTransaction();
     } catch (err) {
+      console.log(err);
       await queryRunner.rollbackTransaction();
       throw new InternalServerErrorException(); // TODO: Handle the typeorm Error handling
     } finally {
@@ -267,6 +294,7 @@ export class PaymentService {
     currentUser: IUserJWT,
     transactionId: string,
     updatePaymentGatewayTransactionDto: UpdatePaymentGatewayTransactionDto,
+    directory: Directory,
   ): Promise<ReadPaymentGatewayTransactionDto> {
     let updatedTransaction: Transaction;
     let updateResult: UpdateResult;
@@ -301,6 +329,14 @@ export class PaymentService {
         updatePaymentGatewayTransactionDto,
         UpdatePaymentGatewayTransactionDto,
         Transaction,
+        {
+          extraArgs: () => ({
+            userName: currentUser.userName,
+            userGUID: currentUser.userGUID,
+            timestamp: new Date(),
+            directory: directory,
+          }),
+        },
       );
 
       updateResult = await queryRunner.manager.update(
@@ -318,7 +354,13 @@ export class PaymentService {
           updateResult = await queryRunner.manager.update(
             Permit,
             { permitId: permitTransaction.permit.permitId },
-            { permitStatus: ApplicationStatus.PAYMENT_COMPLETE },
+            {
+              permitStatus: ApplicationStatus.PAYMENT_COMPLETE,
+              updatedDateTime: new Date(),
+              updatedUser: currentUser.userName,
+              updatedUserGuid: currentUser.userGUID,
+              updatedUserDirectory: directory,
+            },
           );
           if (!updateResult?.affected) {
             throw new InternalServerErrorException(
@@ -338,6 +380,15 @@ export class PaymentService {
         const receipt = new Receipt();
         receipt.receiptNumber = receiptNumber;
         receipt.transaction = updatedTransaction;
+        receipt.receiptNumber = receiptNumber;
+        receipt.createdDateTime = new Date();
+        receipt.createdUser = currentUser.userName;
+        receipt.createdUserDirectory = directory;
+        receipt.createdUserGuid = currentUser.userGUID;
+        receipt.updatedDateTime = new Date();
+        receipt.updatedUser = currentUser.userName;
+        receipt.updatedUserDirectory = directory;
+        receipt.updatedUserGuid = currentUser.userGUID;
         await queryRunner.manager.save(receipt);
       }
 

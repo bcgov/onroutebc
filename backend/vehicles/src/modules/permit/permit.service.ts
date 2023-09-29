@@ -45,6 +45,8 @@ import { PaymentService } from '../payment/payment.service';
 import { CreateTransactionDto } from '../payment/dto/request/create-transaction.dto';
 import { TransactionType } from '../../common/enum/transaction-type.enum';
 import { Transaction } from '../payment/entities/transaction.entity';
+import { Directory } from 'src/common/enum/directory.enum';
+import { PermitData } from './entities/permit-data.entity';
 
 @Injectable()
 export class PermitService {
@@ -63,11 +65,23 @@ export class PermitService {
     private paymentService: PaymentService,
   ) {}
 
-  async create(createPermitDto: CreatePermitDto): Promise<ReadPermitDto> {
+  async create(
+    createPermitDto: CreatePermitDto,
+    currentUser: IUserJWT,
+    directory: Directory,
+  ): Promise<ReadPermitDto> {
     const permitEntity = await this.classMapper.mapAsync(
       createPermitDto,
       CreatePermitDto,
       Permit,
+      {
+        extraArgs: () => ({
+          userName: currentUser.userName,
+          directory: directory,
+          userGUID: currentUser.userGUID,
+          timestamp: new Date(),
+        }),
+      },
     );
 
     const savedPermitEntity = await this.permitRepository.save(permitEntity);
@@ -336,6 +350,7 @@ export class PermitService {
     permitId: string,
     voidPermitDto: VoidPermitDto,
     currentUser: IUserJWT,
+    directory: Directory,
   ): Promise<ResultDto> {
     const permit = await this.findOne(permitId);
     /**
@@ -367,6 +382,10 @@ export class PermitService {
         currentUser.identity_provider,
         permitId,
       );
+    const permitNumber = await this.applicationService.generatePermitNumber(
+      null,
+      permitId,
+    );
     let success = '';
     let failure = '';
 
@@ -401,6 +420,7 @@ export class PermitService {
       const transactionDto = await this.paymentService.createTransactions(
         currentUser,
         createTransactionDto,
+        directory,
       );
 
       const fetchedTransaction = await queryRunner.manager.findOne(
@@ -463,22 +483,62 @@ export class PermitService {
       // to create new permit
       let newPermit = permit;
       newPermit.permitId = null;
+      newPermit.permitNumber = permitNumber;
       newPermit.permitStatus = voidPermitDto.status;
       newPermit.revision = permit.revision + 1;
       newPermit.previousRevision = +permitId;
       newPermit.documentId = generatedDocuments.at(0).dmsId;
-
+      newPermit.createdDateTime = new Date();
+      newPermit.createdUser = currentUser.userName;
+      newPermit.createdUserDirectory = directory;
+      newPermit.createdUserGuid = currentUser.userGUID;
+      newPermit.updatedDateTime = new Date();
+      newPermit.updatedUser = currentUser.userName;
+      newPermit.updatedUserDirectory = directory;
+      newPermit.updatedUserGuid = currentUser.userGUID;
       newPermit.applicationNumber = applicationNumber;
+      // newPermit.permitData = permit.permitData;
       /* Create application to generate permit id. 
       this permit id will be used to generate permit number based this id's application number.*/
-      newPermit = await queryRunner.manager.save(newPermit);
-
+      const newPermitInsert = await queryRunner.manager.insert(
+        Permit,
+        newPermit,
+      );
+      const newIds = Array.from(
+        newPermitInsert?.raw as [
+          {
+            ID: string;
+          },
+        ],
+      );
+      const ids = newIds?.map((permit) => permit.ID);
+      newPermit = await queryRunner.manager.findOne(Permit, {
+        where: { permitId: ids[0] },
+      });
+      const permitData = new PermitData();
+      permitData.permitData = permit.permitData.permitData;
+      permitData.permit = newPermit;
+      permitData.createdDateTime = new Date();
+      permitData.createdUser = currentUser.userName;
+      permitData.createdUserDirectory = directory;
+      permitData.createdUserGuid = currentUser.userGUID;
+      permitData.updatedDateTime = new Date();
+      permitData.updatedUser = currentUser.userName;
+      permitData.updatedUserDirectory = directory;
+      permitData.updatedUserGuid = currentUser.userGUID;
+      await queryRunner.manager.insert(PermitData, permitData);
       await queryRunner.manager.update(
         Receipt,
         {
           receiptId: fetchedTransaction.receipt.receiptId,
         },
-        { receiptDocumentId: generatedDocuments.at(1).dmsId },
+        {
+          receiptDocumentId: generatedDocuments.at(1).dmsId,
+          updatedDateTime: new Date(),
+          updatedUser: currentUser.userName,
+          updatedUserDirectory: directory,
+          updatedUserGuid: currentUser.userGUID,
+        },
       );
 
       /* const permitNumber = await this.applicationService.generatePermitNumber(
@@ -486,17 +546,30 @@ export class PermitService {
       );
       newPermit.permitNumber = permitNumber;*/
       // Save new permit
+
       await queryRunner.manager
         .createQueryBuilder()
         .update('Permit')
-        .set({ permitStatus: voidPermitDto.status })
-        .where('permitId = :permitId', { permitId: newPermit.permitId })
+        .set({
+          permitStatus: voidPermitDto.status,
+          updatedDateTime: new Date(),
+          updatedUser: currentUser.userName,
+          updatedUserDirectory: directory,
+          updatedUserGuid: currentUser.userGUID,
+        })
+        .where('permitId in (:permitId)', { permitId: ids[0] })
         .execute();
       //Update old permit status to SUPERSEDED.
       await queryRunner.manager
         .createQueryBuilder()
         .update('Permit')
-        .set({ permitStatus: ApplicationStatus.SUPERSEDED })
+        .set({
+          permitStatus: ApplicationStatus.SUPERSEDED,
+          updatedDateTime: new Date(),
+          updatedUser: currentUser.userName,
+          updatedUserDirectory: directory,
+          updatedUserGuid: currentUser.userGUID,
+        })
         .where('permitId = :permitId', { permitId: permitId })
         .execute();
       await queryRunner.commitTransaction();
