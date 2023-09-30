@@ -418,7 +418,7 @@ export class PermitService {
       const receiptNo = fetchedTransaction.receipt.receiptNumber;
 
       let dopsRequestData: DopsGeneratedDocument = {
-        templateName: TemplateName.PERMIT_TROS,
+        templateName: TemplateName.PERMIT_TROS_VOID,
         generatedDocumentFileName: permitDataForTemplate.permitNumber,
         templateData: permitDataForTemplate,
         documentsToMerge: permitDataForTemplate.permitData.commodities.map(
