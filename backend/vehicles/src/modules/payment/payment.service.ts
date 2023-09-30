@@ -11,7 +11,7 @@ import { InjectMapper } from '@automapper/nestjs';
 import { Mapper } from '@automapper/core';
 import { Transaction } from './entities/transaction.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository, UpdateResult } from 'typeorm';
+import { DataSource, QueryRunner, Repository, UpdateResult } from 'typeorm';
 import { PermitTransaction } from './entities/permit-transaction.entity';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
 import { callDatabaseSequence } from 'src/common/helper/database.helper';
@@ -154,6 +154,7 @@ export class PaymentService {
     currentUser: IUserJWT,
     createTransactionDto: CreateTransactionDto,
     directory: Directory,
+    nestedQueryRunner?: QueryRunner,
   ): Promise<ReadTransactionDto> {
     const totalTransactionAmount =
       createTransactionDto.applicationDetails?.reduce(
@@ -162,9 +163,12 @@ export class PaymentService {
       );
     const transactionOrderNumber = await this.generateTransactionOrderNumber();
     let readTransactionDto: ReadTransactionDto;
-    const queryRunner = this.dataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
+    const queryRunner =
+      nestedQueryRunner || this.dataSource.createQueryRunner();
+    if (!nestedQueryRunner) {
+      await queryRunner.connect();
+      await queryRunner.startTransaction();
+    }
     try {
       let newTransaction = await this.classMapper.mapAsync(
         createTransactionDto,
@@ -270,14 +274,18 @@ export class PaymentService {
           }),
         },
       );
-
-      await queryRunner.commitTransaction();
+      if (!nestedQueryRunner) {
+        await queryRunner.commitTransaction();
+      }
     } catch (err) {
-      console.log(err);
-      await queryRunner.rollbackTransaction();
+      if (!nestedQueryRunner) {
+        await queryRunner.rollbackTransaction();
+      }
       throw new InternalServerErrorException(); // TODO: Handle the typeorm Error handling
     } finally {
-      await queryRunner.release();
+      if (!nestedQueryRunner) {
+        await queryRunner.release();
+      }
     }
 
     return readTransactionDto;
