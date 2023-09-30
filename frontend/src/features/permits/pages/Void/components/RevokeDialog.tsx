@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
 
 import "./RevokeDialog.scss";
-import { VoidPermitDto } from "../types/VoidPermitDto";
+import { VoidPermitFormData } from "../types/VoidPermit";
 import { requiredMessage } from "../../../../../common/helpers/validationMessages";
 import { getErrorMessage } from "../../../../../common/components/form/CustomFormComponents";
 
@@ -12,12 +12,14 @@ export const RevokeDialog = ({
   voidPermitData,
   showDialog,
   onClose,
+  onRevoke,
 }: {
-  voidPermitData: VoidPermitDto;
+  voidPermitData: VoidPermitFormData;
   showDialog: boolean;
   onClose: () => void;
+  onRevoke: (revokeData: VoidPermitFormData) => void;
 }) => {
-  const formMethods = useForm<VoidPermitDto>({
+  const formMethods = useForm<VoidPermitFormData>({
     defaultValues: {
       ...voidPermitData,
       revoke: true,
@@ -39,6 +41,7 @@ export const RevokeDialog = ({
     const revokeFormData = getValues();
     console.log("Revoke"); //
     console.log(revokeFormData); //
+    onRevoke(revokeFormData);
   };
 
   const revokeReasonRules = {

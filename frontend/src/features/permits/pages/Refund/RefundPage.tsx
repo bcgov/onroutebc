@@ -22,6 +22,7 @@ import { getErrorMessage } from "../../../../common/components/form/CustomFormCo
 import { PermitHistory } from "../../types/PermitHistory";
 import { TransactionHistoryTable } from "./components/TransactionHistoryTable";
 import { FeeSummary } from "../../components/feeSummary/FeeSummary";
+import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 
 type PermitAction = "void" | "revoke" | "amend";
 
@@ -82,10 +83,22 @@ export const RefundPage = ({
     return getRefundMethodByCardType(cardType);
   };
 
+  const getRefundCardType = () => {
+    if (!permitHistory || permitHistory.length === 0) return "";
+    return getDefaultRequiredVal("", permitHistory[0].pgCardType);
+  };
+
+  const getRefundOnlineMethod = () => {
+    if (!permitHistory || permitHistory.length === 0) return "";
+    return getDefaultRequiredVal("", permitHistory[0].pgPaymentMethod);
+  };
+
   const formMethods = useForm<RefundFormData>({
     defaultValues: {
       shouldUsePrevPaymentMethod,
       refundMethod: getRefundMethodForPrevPayMethod(),
+      refundCardType: getRefundCardType(),
+      refundOnlineMethod: getRefundOnlineMethod(),
       transactionId: "",
     },
     reValidateMode: "onChange",
@@ -104,6 +117,8 @@ export const RefundPage = ({
   useEffect(() => {
     const refundMethod = getRefundMethodForPrevPayMethod();
     setValue("refundMethod", refundMethod);
+    setValue("refundCardType", getRefundCardType());
+    setValue("refundOnlineMethod", getRefundOnlineMethod());
   }, [permitHistory, permitHistory.length]);
 
   const handleRefundMethodChange = (shouldUsePrev: string) => {
@@ -111,6 +126,8 @@ export const RefundPage = ({
     setShouldUsePrevPaymentMethod(usePrev);
     setValue("shouldUsePrevPaymentMethod", usePrev);
     setValue("refundMethod", usePrev ? getRefundMethodForPrevPayMethod() : REFUND_METHODS.Cheque);
+    setValue("refundCardType", usePrev ? getRefundCardType() : "");
+    setValue("refundOnlineMethod", usePrev ? getRefundOnlineMethod() : "");
     clearErrors("transactionId");
   };
 

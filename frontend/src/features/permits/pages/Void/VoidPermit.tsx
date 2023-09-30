@@ -9,7 +9,7 @@ import "./VoidPermit.scss";
 import { Banner } from "../../../../common/components/dashboard/Banner";
 import { VoidPermitContext } from "./context/VoidPermitContext";
 import { SEARCH_RESULTS } from "../../../../routes/constants";
-import { VoidPermitDto } from "./types/VoidPermitDto";
+import { VoidPermitFormData } from "./types/VoidPermit";
 import { FinishVoid } from "./FinishVoid";
 import { Breadcrumb } from "./components/Breadcrumb";
 import { SEARCH_BY_FILTERS, SEARCH_ENTITIES } from "../../../idir/search/types/types";
@@ -52,7 +52,7 @@ export const VoidPermit = () => {
     permit
   } = usePermitDetailsQuery(permitId);
 
-  const [voidPermitData, setVoidPermitData] = useState<VoidPermitDto>({
+  const [voidPermitData, setVoidPermitData] = useState<VoidPermitFormData>({
     permitId,
     reason: "",
     revoke: false,
@@ -110,10 +110,18 @@ export const VoidPermit = () => {
 
   const pages = [
     (
-      <VoidPermitForm key="void-permit" permit={permit} />
+      <VoidPermitForm 
+        key="void-permit" 
+        permit={permit} 
+        onRevokeSuccess={() => navigate(fullSearchRoute)}
+      />
     ),
     (
-      <FinishVoid key="finish-void" permit={permit} />
+      <FinishVoid
+        key="finish-void"
+        permit={permit}
+        onSuccess={() => navigate(fullSearchRoute)}
+      />
     ),
   ];
   

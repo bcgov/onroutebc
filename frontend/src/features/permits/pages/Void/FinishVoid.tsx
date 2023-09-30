@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 
 import { VoidPermitContext } from "./context/VoidPermitContext";
 import { RefundFormData } from "../Refund/types/RefundFormData";
@@ -6,19 +6,23 @@ import { ReadPermitDto } from "../../types/permit";
 import { usePermitHistoryQuery } from "../../hooks/hooks";
 import { calculateNetAmount } from "../../helpers/feeSummary";
 import { RefundPage } from "../Refund/RefundPage";
+import { mapToVoidRequestData } from "./helpers/mapper";
+import { useVoidPermit } from "./hooks/useVoidPermit";
 
 export const FinishVoid = ({
   permit,
+  onSuccess,
 }: {
   permit: ReadPermitDto | null;
+  onSuccess: () => void;
 }) => {
-  const { 
-    voidPermitData: {
-      email,
-      fax,
-      reason,
-    },
-  } = useContext(VoidPermitContext);
+  const { voidPermitData } = useContext(VoidPermitContext);
+
+  const {
+    email,
+    fax,
+    reason,
+  } = voidPermitData;
 
   const { 
     query: permitHistoryQuery, 
@@ -28,10 +32,27 @@ export const FinishVoid = ({
   const transactionHistory = permitHistoryQuery.isInitialLoading
     ? [] : permitHistory;
 
-  const amountToRefund = -1 * calculateNetAmount(transactionHistory);  
+  const amountToRefund = -1 * calculateNetAmount(transactionHistory);
+
+  const { 
+    mutation: voidPermitMutation,
+    voidResults,
+  } = useVoidPermit();
+
+  useEffect(() => {
+    if (voidResults && voidResults.success.length > 0) {
+      // Navigate back to search page
+      onSuccess();
+    }
+  }, [voidResults]);
 
   const handleFinish = (refundData: RefundFormData) => {
     console.log(refundData); //
+    const requestData = mapToVoidRequestData(voidPermitData, refundData, -1 * amountToRefund);
+    voidPermitMutation.mutate({
+      permitId: voidPermitData.permitId,
+      voidData: requestData,
+    });
   };
 
   return (

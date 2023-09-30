@@ -406,6 +406,7 @@ export class PermitService {
       const createTransactionDto = new CreateTransactionDto();
       createTransactionDto.pgTransactionId = voidPermitDto.pgTransactionId;
       createTransactionDto.pgPaymentMethod = voidPermitDto.pgPaymentMethod;
+      createTransactionDto.pgCardType = voidPermitDto.pgCardType;
       createTransactionDto.paymentMethodId = voidPermitDto.paymentMethodId;
       createTransactionDto.transactionTypeId =
         voidPermitDto.transactionAmount === 0
@@ -483,6 +484,7 @@ export class PermitService {
       // to create new permit
       let newPermit = permit;
       newPermit.permitId = null;
+      newPermit.comment = voidPermitDto.comment;
       newPermit.permitNumber = permitNumber;
       newPermit.permitStatus = voidPermitDto.status;
       newPermit.revision = permit.revision + 1;

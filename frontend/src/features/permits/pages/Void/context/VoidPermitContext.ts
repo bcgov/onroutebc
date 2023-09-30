@@ -1,9 +1,9 @@
 import { createContext } from "react";
-import { VoidPermitDto } from "../types/VoidPermitDto";
+import { VoidPermitFormData } from "../types/VoidPermit";
 
 interface VoidPermitContextType {
-  voidPermitData: VoidPermitDto;
-  setVoidPermitData: (data: VoidPermitDto) => void;
+  voidPermitData: VoidPermitFormData;
+  setVoidPermitData: (data: VoidPermitFormData) => void;
   next: () => void;
   back: () => void;
 }

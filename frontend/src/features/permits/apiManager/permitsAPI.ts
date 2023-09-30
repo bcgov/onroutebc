@@ -39,6 +39,7 @@ import {
   PAYMENT_API,
   PERMITS_API,
 } from "./endpoints/endpoints";
+import { RevokePermitRequestData, VoidPermitRequestData, VoidPermitResponseData } from "../pages/Void/types/VoidPermit";
 
 /**
  * Submits a new term oversize application.
@@ -391,5 +392,38 @@ export const getPermitHistory = async (originalPermitId?: string) => {
     return [];
   } catch (err) {
     return [];
+  }
+};
+
+/**
+ * Void or revoke a permit.
+ * @param permitId Id of the permit to void or revoke.
+ * @param voidData Void or revoke data to be sent to backend.
+ * @returns Response data containing successfully voided/revoked permit ids, as well as failed ones.
+ */
+export const voidPermit = async (voidPermitParams: {
+  permitId: string, 
+  voidData: VoidPermitRequestData | RevokePermitRequestData
+}) => {
+  const { permitId, voidData } = voidPermitParams;
+  try {
+    const response = await httpPOSTRequest(
+      `${PERMITS_API.BASE}/${permitId}/void`,
+      replaceEmptyValuesWithNull(voidData)
+    );
+
+    if (response.status === 201) {
+      return response.data as VoidPermitResponseData;
+    }
+    return {
+      success: [],
+      failure: [permitId],
+    };
+  } catch (err) {
+    console.error(err);
+    return {
+      success: [],
+      failure: [permitId],
+    };
   }
 };

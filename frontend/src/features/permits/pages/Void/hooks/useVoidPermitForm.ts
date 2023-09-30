@@ -2,7 +2,7 @@ import { useEffect, useContext } from "react";
 import { useForm } from "react-hook-form";
 
 import { getDefaultRequiredVal } from "../../../../../common/helpers/util";
-import { VoidPermitDto } from "../types/VoidPermitDto";
+import { VoidPermitFormData } from "../types/VoidPermit";
 import { VoidPermitContext } from "../context/VoidPermitContext";
 
 export const useVoidPermitForm = () => {
@@ -20,7 +20,7 @@ export const useVoidPermitForm = () => {
     fax: getDefaultRequiredVal("", voidPermitData.fax),
   };
 
-  const formMethods = useForm<VoidPermitDto>({
+  const formMethods = useForm<VoidPermitFormData>({
     defaultValues: defaultFormData,
     reValidateMode: "onChange",
   });
@@ -36,6 +36,7 @@ export const useVoidPermitForm = () => {
   }, [voidPermitData.fax]);
 
   return {
+    permitId: voidPermitData.permitId,
     formMethods,
     setVoidPermitData,
     next,

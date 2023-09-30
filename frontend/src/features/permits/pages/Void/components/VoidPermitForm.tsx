@@ -2,7 +2,7 @@ import { Controller, FormProvider } from "react-hook-form";
 import isEmail from "validator/lib/isEmail";
 import { useNavigate } from "react-router-dom";
 import { Button, FormControl, FormHelperText } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import "./VoidPermitForm.scss";
 import { CustomFormComponent, getErrorMessage } from "../../../../../common/components/form/CustomFormComponents";
@@ -15,19 +15,25 @@ import { RevokeDialog } from "./RevokeDialog";
 import { usePermitHistoryQuery } from "../../../hooks/hooks";
 import { calculateNetAmount } from "../../../helpers/feeSummary";
 import { FeeSummary } from "../../../components/feeSummary/FeeSummary";
+import { VoidPermitFormData } from "../types/VoidPermit";
+import { useVoidPermit } from "../hooks/useVoidPermit";
+import { mapToRevokeRequestData } from "../helpers/mapper";
 
 const FEATURE = "void-permit";
 const searchRoute = `${SEARCH_RESULTS}?searchEntity=permits`;
 
 export const VoidPermitForm = ({
   permit,
+  onRevokeSuccess,
 }: {
-  permit: ReadPermitDto | null,
+  permit: ReadPermitDto | null;
+  onRevokeSuccess: () => void;
 }) => {
   const navigate = useNavigate();
   const [openRevokeDialog, setOpenRevokeDialog] = useState<boolean>(false);
   const {
     formMethods,
+    permitId,
     setVoidPermitData,
     next,
   } = useVoidPermitForm();
@@ -36,6 +42,18 @@ export const VoidPermitForm = ({
     query: permitHistoryQuery, 
     permitHistory, 
   } = usePermitHistoryQuery(permit?.originalPermitId);
+
+  const {
+    mutation: revokePermitMutation,
+    voidResults,
+  } = useVoidPermit();
+
+  useEffect(() => {
+    if (voidResults && voidResults.success.length > 0) {
+      setOpenRevokeDialog(false);
+      onRevokeSuccess();
+    }
+  }, [voidResults]);
 
   const amountToRefund = permitHistoryQuery.isInitialLoading 
     ? 0 : -1 * calculateNetAmount(permitHistory);
@@ -65,6 +83,13 @@ export const VoidPermitForm = ({
 
   const handleCancelRevoke = () => {
     setOpenRevokeDialog(false);
+  };
+
+  const handleRevoke = (revokeData: VoidPermitFormData) => {
+    revokePermitMutation.mutate({
+      permitId,
+      voidData: mapToRevokeRequestData(revokeData),
+    });
   };
 
   const voidReasonRules = {
@@ -211,6 +236,7 @@ export const VoidPermitForm = ({
             voidPermitData={getValues()}
             showDialog={openRevokeDialog}
             onClose={handleCancelRevoke}
+            onRevoke={handleRevoke}
           />
         ) : null}
       </div>

@@ -121,12 +121,14 @@ interface TermOversizeApplication {
   clientNumber?: string;
 }
 
+export interface PermitsActionResponse {
+  success: string[];
+  failure: string[];
+}
+
 export interface IssuePermitRequest {
   applicationIds: string[];
   companyId?: number;
 }
 
-export interface IssuePermitsResponse {
-  success: string[];
-  failure: string[];
-}
+export type IssuePermitsResponse = PermitsActionResponse;
