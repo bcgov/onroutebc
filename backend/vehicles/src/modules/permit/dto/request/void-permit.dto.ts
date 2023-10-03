@@ -25,7 +25,7 @@ export class VoidPermitDto {
   @AutoMap()
   @ApiProperty({
     description: 'Permit Transaction ID.',
-    example: 'T000000A0W',
+    example: '10000148',
     required: false,
   })
   @IsOptional()
