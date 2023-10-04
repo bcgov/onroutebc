@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, useMemo } from "react";
 
 import { VoidPermitForm } from "./components/VoidPermitForm";
 import { NotFound } from "../../../../common/pages/NotFound";
@@ -20,6 +20,7 @@ import { Unexpected } from "../../../../common/pages/Unexpected";
 import { isPermitInactive } from "../../types/PermitStatus";
 import { hasPermitExpired } from "../../helpers/permitPDFHelper";
 import { ReadPermitDto } from "../../types/permit";
+import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 
 const searchRoute = `${SEARCH_RESULTS}?searchEntity=${SEARCH_ENTITIES.PERMIT}`
   + `&searchByFilter=${SEARCH_BY_FILTERS.PERMIT_NUMBER}`;
@@ -31,29 +32,20 @@ const isVoidable = (permit: ReadPermitDto) => {
 
 export const VoidPermit = () => {
   const navigate = useNavigate();
+  const { permitId } = useParams();
+  const [currentLink, setCurrentLink] = useState(0);
+  const getBannerText = () => currentLink === 0 ? "Void Permit" : "Finish Voiding";
 
   // Must be SYSADMIN to access this page
   const { idirUserDetails } = useContext(OnRouteBCContext);
-  if (idirUserDetails?.userAuthGroup !== USER_AUTH_GROUP.SYSADMIN) {
-    return <Unauthorized />;
-  }
-
-  const { permitId } = useParams();
-  if (!permitId) {
-    return <NotFound />;
-  }
-
-  const [currentLink, setCurrentLink] = useState(0);
-
-  const getBannerText = () => currentLink === 0 ? "Void Permit" : "Finish Voiding";
-
+  
   const {
     query: permitQuery,
     permit
   } = usePermitDetailsQuery(permitId);
 
   const [voidPermitData, setVoidPermitData] = useState<VoidPermitFormData>({
-    permitId,
+    permitId: getDefaultRequiredVal("", permitId),
     reason: "",
     revoke: false,
     email: permit?.permitData?.contactDetails?.email,
@@ -71,8 +63,18 @@ export const VoidPermit = () => {
     permit?.permitData?.contactDetails?.fax,
   ]);
 
+  // If user is not SYSADMIN, show unauthorized page
+  if (idirUserDetails?.userAuthGroup !== USER_AUTH_GROUP.SYSADMIN) {
+    return <Unauthorized />;
+  }
+
+  // If permitId is not provided in the route, show not found page
+  if (!permitId) {
+    return <NotFound />;
+  }
+
   // When querying permit details hasn't finished, show loading
-  if (permitQuery.isLoading) return <Loading />;
+  if (typeof permit === "undefined") return <Loading />;
 
   // When permit is not available, show not found
   if (!permit) return <NotFound />;
@@ -127,12 +129,12 @@ export const VoidPermit = () => {
   
   return (
     <VoidPermitContext.Provider
-      value={{
+      value={useMemo(() => ({
         voidPermitData,
         setVoidPermitData,
         back: () => setCurrentLink(0),
         next: () => setCurrentLink(1),
-      }}
+      }), [voidPermitData])}
     >
       {permitQuery.isLoading ? (
         <Loading />

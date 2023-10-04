@@ -143,6 +143,32 @@ export class PaymentService {
     return receiptNumber;
   }
 
+  private isWebTransactionPurchase(
+    paymentMethod: PaymentMethodType, 
+    transactionType: TransactionType
+  ) {
+    return paymentMethod == PaymentMethodType.WEB &&
+      transactionType == TransactionType.PURCHASE;
+  }
+
+  private assertApplicationInProgress(
+    paymentMethod: PaymentMethodType, 
+    transactionType: TransactionType, 
+    permitStatus: ApplicationStatus,
+  ) {
+    if (
+      this.isWebTransactionPurchase(paymentMethod, transactionType) &&
+      permitStatus != ApplicationStatus.IN_PROGRESS
+    ) {
+      throw new BadRequestException('Application should be in Progress!!');
+    }
+  }
+
+  private isRefundOrZero(transactionType: TransactionType) {
+    return transactionType == TransactionType.REFUND ||
+      transactionType == TransactionType.ZERO_AMOUNT;
+  }
+
   /**
    * Creates a Transaction in ORBC System.
    * @param currentUser - The current user object of type {@link IUserJWT}
@@ -192,13 +218,12 @@ export class PaymentService {
         const existingApplication = await queryRunner.manager.findOne(Permit, {
           where: { permitId: application.applicationId },
         });
-        if (
-          newTransaction.paymentMethodId == PaymentMethodType.WEB &&
-          newTransaction.transactionTypeId == TransactionType.PURCHASE &&
-          existingApplication.permitStatus != ApplicationStatus.IN_PROGRESS
-        ) {
-          throw new BadRequestException('Application should be in Progress!!');
-        }
+
+        this.assertApplicationInProgress(
+          newTransaction.paymentMethodId,
+          newTransaction.transactionTypeId,
+          existingApplication.permitStatus
+        );
 
         let newPermitTransactions = new PermitTransaction();
         newPermitTransactions.transaction = newTransaction;
@@ -216,10 +241,10 @@ export class PaymentService {
           newPermitTransactions,
         );
 
-        if (
-          newTransaction.paymentMethodId == PaymentMethodType.WEB &&
-          newTransaction.transactionTypeId == TransactionType.PURCHASE
-        ) {
+        if (this.isWebTransactionPurchase(
+          newTransaction.paymentMethodId, 
+          newTransaction.transactionTypeId
+        )) {
           existingApplication.permitStatus = ApplicationStatus.WAITING_PAYMENT;
           existingApplication.updatedDateTime = new Date();
           existingApplication.updatedUser = currentUser.userName;
@@ -229,6 +254,7 @@ export class PaymentService {
           await queryRunner.manager.save(existingApplication);
         }
       }
+
       const createdTransaction = await queryRunner.manager.findOne(
         Transaction,
         {
@@ -238,17 +264,14 @@ export class PaymentService {
       );
 
       let url: string = undefined;
-      if (
-        createdTransaction.paymentMethodId == PaymentMethodType.WEB &&
-        createdTransaction.transactionTypeId == TransactionType.PURCHASE
-      ) {
+      if (this.isWebTransactionPurchase(
+        createdTransaction.paymentMethodId,
+        createdTransaction.transactionTypeId
+      )) {
         url = this.generateUrl(createdTransaction);
       }
 
-      if (
-        createdTransaction.transactionTypeId == TransactionType.REFUND ||
-        createdTransaction.transactionTypeId == TransactionType.ZERO_AMOUNT
-      ) {
+      if (this.isRefundOrZero(createdTransaction.transactionTypeId)) {
         const receiptNumber = await this.generateReceiptNumber();
         const receipt = new Receipt();
         receipt.receiptNumber = receiptNumber;
@@ -281,7 +304,7 @@ export class PaymentService {
       if (!nestedQueryRunner) {
         await queryRunner.rollbackTransaction();
       }
-      throw new InternalServerErrorException(); // TODO: Handle the typeorm Error handling
+      throw new InternalServerErrorException(); // Should handle the typeorm Error handling
     } finally {
       if (!nestedQueryRunner) {
         await queryRunner.release();
@@ -403,7 +426,7 @@ export class PaymentService {
       await queryRunner.commitTransaction();
     } catch (err) {
       await queryRunner.rollbackTransaction();
-      throw new InternalServerErrorException(); // TODO: Handle the typeorm Error handling
+      throw new InternalServerErrorException(); // Should handle the typeorm Error handling
     } finally {
       await queryRunner.release();
     }

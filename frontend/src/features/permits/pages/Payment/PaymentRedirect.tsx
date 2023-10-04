@@ -42,6 +42,13 @@ export const PaymentRedirect = () => {
     issueResults,
   } = useIssuePermits();
 
+  const issueFailed = () => {
+    if (!issueResults) return false; // since issue results might not be ready yet
+    return issueResults.success.length === 0 
+      || (issueResults.success.length === 1 && issueResults.success[0] === "")
+      || (issueResults.failure.length > 0 && issueResults.failure[0] !== "");
+  };
+
   useEffect(() => {
     if (completedTransaction.current === false) {
       if (paymentDetails.trnApproved > 0) {
@@ -74,7 +81,7 @@ export const PaymentRedirect = () => {
   }
   
   if (issueResults) {
-    if (issueResults.success.length === 0) {
+    if (issueFailed()) {
       const permitIssueFailedMsg = `Permit issue failed for ids ${issueResults.failure.join(",")}`;
       return (
         <Navigate 

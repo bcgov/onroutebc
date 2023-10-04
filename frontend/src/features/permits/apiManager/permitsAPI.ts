@@ -305,7 +305,8 @@ export const issuePermits = async (
  * @param permitId Permit id of the permit to be retrieved.
  * @returns Permit information if found, or undefined
  */
-export const getPermit = async (permitId: string): Promise<ReadPermitDto | null> => {
+export const getPermit = async (permitId?: string): Promise<ReadPermitDto | null> => {
+  if (!permitId) return null;
   const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
   let permitsURL = `${VEHICLES_URL}/permits/${permitId}`;
   const queryParams = [];

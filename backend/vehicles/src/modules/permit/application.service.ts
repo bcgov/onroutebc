@@ -452,7 +452,7 @@ export class ApplicationService {
         generatedDocumentFileName: `Receipt_No_${receiptNumber}`,
         templateData: {
           ...permitDataForTemplate,
-          //TODO transaction details needs to be reworked to support multiple permits
+          // transaction details still needs to be reworked to support multiple permits
           transactionOrderNumber:
             fetchedApplication.permitTransactions[0].transaction
               .transactionOrderNumber,
@@ -742,17 +742,16 @@ export class ApplicationService {
   ): Promise<string> {
     const id = permitId ? permitId : oldPermitId;
     const permit = await this.findOne(id);
-    let approvalSourceId: number;
-    let rnd;
+    // let rnd;
     let seq: string;
+    /*
     const approvalSource = await this.permitApprovalSourceRepository.find({
       where: { id: permit.permitApprovalSource },
     });
-    if (approvalSourceId === undefined || approvalSourceId === null) {
-      approvalSourceId = 9;
-    } else {
-      approvalSourceId = approvalSource[0].code;
-    }
+    */
+    const approvalSourceId = 9;
+    // approvalSourceId = approvalSource[0].code;
+    let rnd: number | string;
     if (permitId) {
       seq = await callDatabaseSequence(
         'permit.ORBC_PERMIT_NUMBER_SEQ',

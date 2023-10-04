@@ -25,111 +25,111 @@ export class ApplicationProfile extends AutomapperProfile {
         CreateApplicationDto,
         Permit,
         forMember(
-          (d) => d.createdUserGuid,
-          mapWithArguments((source, { userGUID }) => {
+          (permit) => permit.createdUserGuid,
+          mapWithArguments((_, { userGUID }) => {
             return userGUID;
           }),
         ),
         forMember(
-          (d) => d.createdUser,
-          mapWithArguments((source, { userName }) => {
+          (permit) => permit.createdUser,
+          mapWithArguments((_, { userName }) => {
             return userName;
           }),
         ),
         forMember(
-          (d) => d.createdUserDirectory,
-          mapWithArguments((source, { directory }) => {
+          (permit) => permit.createdUserDirectory,
+          mapWithArguments((_, { directory }) => {
             return directory;
           }),
         ),
 
         forMember(
-          (d) => d.createdDateTime,
-          mapWithArguments((source, { timestamp }) => {
+          (permit) => permit.createdDateTime,
+          mapWithArguments((_, { timestamp }) => {
             return timestamp;
           }),
         ),
 
         forMember(
-          (d) => d.updatedUserGuid,
-          mapWithArguments((source, { userGUID }) => {
+          (permit) => permit.updatedUserGuid,
+          mapWithArguments((_, { userGUID }) => {
             return userGUID;
           }),
         ),
         forMember(
-          (d) => d.updatedUser,
-          mapWithArguments((source, { userName }) => {
+          (permit) => permit.updatedUser,
+          mapWithArguments((_, { userName }) => {
             return userName;
           }),
         ),
         forMember(
-          (d) => d.updatedUserDirectory,
-          mapWithArguments((source, { directory }) => {
+          (permit) => permit.updatedUserDirectory,
+          mapWithArguments((_, { directory }) => {
             return directory;
           }),
         ),
 
         forMember(
-          (d) => d.updatedDateTime,
-          mapWithArguments((source, { timestamp }) => {
+          (permit) => permit.updatedDateTime,
+          mapWithArguments((_, { timestamp }) => {
             return timestamp;
           }),
         ),
 
         forMember(
-          (d) => d.permitData.createdUserGuid,
-          mapWithArguments((source, { userGUID }) => {
+          (permit) => permit.permitData.createdUserGuid,
+          mapWithArguments((_, { userGUID }) => {
             return userGUID;
           }),
         ),
         forMember(
-          (d) => d.permitData.createdUser,
-          mapWithArguments((source, { userName }) => {
+          (permit) => permit.permitData.createdUser,
+          mapWithArguments((_, { userName }) => {
             return userName;
           }),
         ),
         forMember(
-          (d) => d.permitData.createdUserDirectory,
-          mapWithArguments((source, { directory }) => {
+          (permit) => permit.permitData.createdUserDirectory,
+          mapWithArguments((_, { directory }) => {
             return directory;
           }),
         ),
 
         forMember(
-          (d) => d.permitData.createdDateTime,
-          mapWithArguments((source, { timestamp }) => {
+          (permit) => permit.permitData.createdDateTime,
+          mapWithArguments((_, { timestamp }) => {
             return timestamp;
           }),
         ),
 
         forMember(
-          (d) => d.permitData.updatedUserGuid,
-          mapWithArguments((source, { userGUID }) => {
+          (permit) => permit.permitData.updatedUserGuid,
+          mapWithArguments((_, { userGUID }) => {
             return userGUID;
           }),
         ),
         forMember(
-          (d) => d.permitData.updatedUser,
-          mapWithArguments((source, { userName }) => {
+          (permit) => permit.permitData.updatedUser,
+          mapWithArguments((_, { userName }) => {
             return userName;
           }),
         ),
         forMember(
-          (d) => d.permitData.updatedUserDirectory,
-          mapWithArguments((source, { directory }) => {
+          (permit) => permit.permitData.updatedUserDirectory,
+          mapWithArguments((_, { directory }) => {
             return directory;
           }),
         ),
 
         forMember(
-          (d) => d.permitData.updatedDateTime,
-          mapWithArguments((source, { timestamp }) => {
+          (permit) => permit.permitData.updatedDateTime,
+          mapWithArguments((_, { timestamp }) => {
             return timestamp;
           }),
         ),
 
         forMember(
-          (d) => d.permitData?.permitData,
+          (permit) => permit.permitData?.permitData,
           mapFrom((s) => {
             return s.permitData ? JSON.stringify(s.permitData) : undefined;
           }),
@@ -156,51 +156,51 @@ export class ApplicationProfile extends AutomapperProfile {
         Permit,
         forMember(
           (d) => d.updatedUserGuid,
-          mapWithArguments((source, { userGUID }) => {
+          mapWithArguments((updateApplicationDto, { userGUID }) => {
             return userGUID;
           }),
         ),
         forMember(
           (d) => d.updatedUser,
-          mapWithArguments((source, { userName }) => {
+          mapWithArguments((updateApplicationDto, { userName }) => {
             return userName;
           }),
         ),
         forMember(
           (d) => d.updatedUserDirectory,
-          mapWithArguments((source, { directory }) => {
+          mapWithArguments((updateApplicationDto, { directory }) => {
             return directory;
           }),
         ),
 
         forMember(
           (d) => d.updatedDateTime,
-          mapWithArguments((source, { timestamp }) => {
+          mapWithArguments((updateApplicationDto, { timestamp }) => {
             return timestamp;
           }),
         ),
         forMember(
           (d) => d.permitData.updatedUserGuid,
-          mapWithArguments((source, { userGUID }) => {
+          mapWithArguments((updateApplicationDto, { userGUID }) => {
             return userGUID;
           }),
         ),
         forMember(
           (d) => d.permitData.updatedUser,
-          mapWithArguments((source, { userName }) => {
+          mapWithArguments((updateApplicationDto, { userName }) => {
             return userName;
           }),
         ),
         forMember(
           (d) => d.permitData.updatedUserDirectory,
-          mapWithArguments((source, { directory }) => {
+          mapWithArguments((updateApplicationDto, { directory }) => {
             return directory;
           }),
         ),
 
         forMember(
           (d) => d.permitData.updatedDateTime,
-          mapWithArguments((source, { timestamp }) => {
+          mapWithArguments((updateApplicationDto, { timestamp }) => {
             return timestamp;
           }),
         ),
@@ -212,19 +212,19 @@ export class ApplicationProfile extends AutomapperProfile {
         ),
         forMember(
           (d) => d.permitId,
-          mapWithArguments((source, { permitId }) => {
+          mapWithArguments((updateApplicationDto, { permitId }) => {
             return permitId;
           }),
         ),
         forMember(
           (d) => d.previousRevision,
-          mapWithArguments((source, { previousRevision }) => {
+          mapWithArguments((updateApplicationDto, { previousRevision }) => {
             return previousRevision;
           }),
         ),
         forMember(
           (d) => d.permitData.permitDataId,
-          mapWithArguments((source, { permitDataId }) => {
+          mapWithArguments((updateApplicationDto, { permitDataId }) => {
             return permitDataId;
           }),
         ),

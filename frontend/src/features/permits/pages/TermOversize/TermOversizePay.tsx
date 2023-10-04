@@ -15,10 +15,6 @@ import { TRANSACTION_TYPES } from "../../types/payment.d";
 export const TermOversizePay = () => {
   const { applicationData } = useContext(ApplicationContext);
 
-  if (!applicationData?.permitId) {
-    return <Loading />;
-  }
-
   const calculatedFee = calculateFeeByDuration(
     getDefaultRequiredVal(0, applicationData?.permitData?.permitDuration)
   );
@@ -26,23 +22,28 @@ export const TermOversizePay = () => {
   const { 
     mutation: startTransactionMutation, 
     transaction, 
-  } = useStartTransaction(
-    TRANSACTION_TYPES.P,
-    "1", // Hardcoded value for Web/MotiPay, still need to implement payment method (ie payBC, manual, etc)
-    [
-      {
-        applicationId: applicationData?.permitId,
-        transactionAmount: calculatedFee,
-      }
-    ]
-  );
+  } = useStartTransaction();
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
   
   const handlePay = () => {
-    startTransactionMutation.mutate();
+    if (!applicationData?.permitId) {
+      console.error("Invalid permit id");
+      return;
+    }
+    
+    startTransactionMutation.mutate({
+      transactionTypeId: TRANSACTION_TYPES.P,
+      paymentMethodId: "1", // Hardcoded value for Web/MotiPay, still need to implement payment method (ie payBC, manual, etc)
+      applicationDetails: [
+        {
+          applicationId: applicationData?.permitId,
+          transactionAmount: calculatedFee,
+        }
+      ],
+    });
   };
 
   if (typeof transaction !== "undefined") {
@@ -51,6 +52,10 @@ export const TermOversizePay = () => {
     } else {
       window.open(transaction.url, "_self");
     }
+  }
+
+  if (!applicationData?.permitId) {
+    return <Loading />;
   }
 
   return (

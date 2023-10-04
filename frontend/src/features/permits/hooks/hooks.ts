@@ -8,8 +8,7 @@ import { IssuePermitsResponse, ReadPermitDto } from "../types/permit";
 import { PermitHistory } from "../types/PermitHistory";
 import { 
   CompleteTransactionRequestData, 
-  StartTransactionResponseData, 
-  TransactionType, 
+  StartTransactionResponseData,
 } from "../types/payment";
 
 import {
@@ -96,12 +95,14 @@ export const useApplicationDetailsQuery = (permitId?: string) => {
  * @param permitId permit id for the permit
  * @returns permit details, or error if failed
  */
-export const usePermitDetailsQuery = (permitId: string) => {
-  const [permit, setPermit] = useState<ReadPermitDto | null>(null);
+export const usePermitDetailsQuery = (permitId?: string) => {
+  const [permit, setPermit] = useState<ReadPermitDto | null | undefined>(undefined);
   
+  const invalidPermitId = !permitId;
   const query = useQuery({
     queryKey: ["permit"],
     queryFn: () => getPermit(permitId),
+    enabled: !invalidPermitId,
     retry: false,
     refetchOnMount: "always",
     refetchOnWindowFocus: false, // prevent unnecessary multiple queries on page showing up in foreground
@@ -119,28 +120,14 @@ export const usePermitDetailsQuery = (permitId: string) => {
 
 /**
  * Custom hook that starts a transaction.
- * @param transactionType - The type of transaction (eg. P, R, Z, etc)
- * @param paymentMethodId - Payment method used (currently hardcoded to "1" - Web)
- * @param applicationDetails - Details for the applications to start transaction for (application id and amount).
  * @returns The mutation object, as well as the transaction that was started (if there is one, or undefined if there's an error).
  */
-export const useStartTransaction = (
-  transactionType: TransactionType,
-  paymentMethodId: string,
-  applicationDetails: {
-    applicationId: string;
-    transactionAmount: number;
-  }[]
-) => {
+export const useStartTransaction = () => {
   const [transaction, setTransaction] = useState<StartTransactionResponseData | null | undefined>(undefined);
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
-    mutationFn: () => startTransaction({
-      transactionTypeId: transactionType,
-      paymentMethodId,
-      applicationDetails: [...applicationDetails],
-    }),
+    mutationFn: startTransaction,
     retry: false,
     onSuccess: (transactionData) => {
       queryClient.invalidateQueries(["transaction"]);
