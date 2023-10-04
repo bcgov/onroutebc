@@ -25,104 +25,104 @@ export class PermitProfile extends AutomapperProfile {
         Permit,
         forMember(
           (d) => d.createdUserGuid,
-          mapWithArguments((source, { userGUID }) => {
+          mapWithArguments((createPermitDto, { userGUID }) => {
             return userGUID;
           }),
         ),
         forMember(
           (d) => d.createdUser,
-          mapWithArguments((source, { userName }) => {
+          mapWithArguments((createPermitDto, { userName }) => {
             return userName;
           }),
         ),
         forMember(
           (d) => d.createdUserDirectory,
-          mapWithArguments((source, { directory }) => {
+          mapWithArguments((createPermitDto, { directory }) => {
             return directory;
           }),
         ),
 
         forMember(
           (d) => d.createdDateTime,
-          mapWithArguments((source, { timestamp }) => {
+          mapWithArguments((createPermitDto, { timestamp }) => {
             return timestamp;
           }),
         ),
 
         forMember(
           (d) => d.updatedUserGuid,
-          mapWithArguments((source, { userGUID }) => {
+          mapWithArguments((createPermitDto, { userGUID }) => {
             return userGUID;
           }),
         ),
         forMember(
           (d) => d.updatedUser,
-          mapWithArguments((source, { userName }) => {
+          mapWithArguments((createPermitDto, { userName }) => {
             return userName;
           }),
         ),
         forMember(
           (d) => d.updatedUserDirectory,
-          mapWithArguments((source, { directory }) => {
+          mapWithArguments((createPermitDto, { directory }) => {
             return directory;
           }),
         ),
 
         forMember(
           (d) => d.updatedDateTime,
-          mapWithArguments((source, { timestamp }) => {
+          mapWithArguments((createPermitDto, { timestamp }) => {
             return timestamp;
           }),
         ),
 
         forMember(
           (d) => d.permitData.createdUserGuid,
-          mapWithArguments((source, { userGUID }) => {
+          mapWithArguments((createPermitDto, { userGUID }) => {
             return userGUID;
           }),
         ),
         forMember(
           (d) => d.permitData.createdUser,
-          mapWithArguments((source, { userName }) => {
+          mapWithArguments((createPermitDto, { userName }) => {
             return userName;
           }),
         ),
         forMember(
           (d) => d.permitData.createdUserDirectory,
-          mapWithArguments((source, { directory }) => {
+          mapWithArguments((createPermitDto, { directory }) => {
             return directory;
           }),
         ),
 
         forMember(
           (d) => d.permitData.createdDateTime,
-          mapWithArguments((source, { timestamp }) => {
+          mapWithArguments((createPermitDto, { timestamp }) => {
             return timestamp;
           }),
         ),
 
         forMember(
           (d) => d.permitData.updatedUserGuid,
-          mapWithArguments((source, { userGUID }) => {
+          mapWithArguments((createPermitDto, { userGUID }) => {
             return userGUID;
           }),
         ),
         forMember(
           (d) => d.permitData.updatedUser,
-          mapWithArguments((source, { userName }) => {
+          mapWithArguments((createPermitDto, { userName }) => {
             return userName;
           }),
         ),
         forMember(
           (d) => d.permitData.updatedUserDirectory,
-          mapWithArguments((source, { directory }) => {
+          mapWithArguments((createPermitDto, { directory }) => {
             return directory;
           }),
         ),
 
         forMember(
           (d) => d.permitData.updatedDateTime,
-          mapWithArguments((source, { timestamp }) => {
+          mapWithArguments((createPermitDto, { timestamp }) => {
             return timestamp;
           }),
         ),

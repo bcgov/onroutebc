@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { useState, useEffect, useContext, useMemo } from "react";
+import { useState, useEffect, useContext } from "react";
 
 import { VoidPermitForm } from "./components/VoidPermitForm";
 import { NotFound } from "../../../../common/pages/NotFound";
@@ -63,25 +63,6 @@ export const VoidPermit = () => {
     permit?.permitData?.contactDetails?.fax,
   ]);
 
-  // If user is not SYSADMIN, show unauthorized page
-  if (idirUserDetails?.userAuthGroup !== USER_AUTH_GROUP.SYSADMIN) {
-    return <Unauthorized />;
-  }
-
-  // If permitId is not provided in the route, show not found page
-  if (!permitId) {
-    return <NotFound />;
-  }
-
-  // When querying permit details hasn't finished, show loading
-  if (typeof permit === "undefined") return <Loading />;
-
-  // When permit is not available, show not found
-  if (!permit) return <NotFound />;
-
-  // If permit is not voidable, show unexpected error page
-  if (!isVoidable(permit)) return <Unexpected />;
-
   const getBasePermitNumber = () => {
     if (!permit?.permitNumber) return "";
     return permit.permitNumber.substring(0, 11);
@@ -110,6 +91,32 @@ export const VoidPermit = () => {
     },
   ];
 
+  const contextData = {
+    voidPermitData,
+    setVoidPermitData,
+    back: () => setCurrentLink(0),
+    next: () => setCurrentLink(1),
+  };
+
+  // If user is not SYSADMIN, show unauthorized page
+  if (idirUserDetails?.userAuthGroup !== USER_AUTH_GROUP.SYSADMIN) {
+    return <Unauthorized />;
+  }
+
+  // If permitId is not provided in the route, show not found page
+  if (!permitId) {
+    return <NotFound />;
+  }
+
+  // When querying permit details hasn't finished, show loading
+  if (typeof permit === "undefined") return <Loading />;
+
+  // When permit is not available, show not found
+  if (!permit) return <NotFound />;
+
+  // If permit is not voidable, show unexpected error page
+  if (!isVoidable(permit)) return <Unexpected />;
+
   const pages = [
     (
       <VoidPermitForm 
@@ -129,12 +136,7 @@ export const VoidPermit = () => {
   
   return (
     <VoidPermitContext.Provider
-      value={useMemo(() => ({
-        voidPermitData,
-        setVoidPermitData,
-        back: () => setCurrentLink(0),
-        next: () => setCurrentLink(1),
-      }), [voidPermitData])}
+      value={contextData}
     >
       {permitQuery.isLoading ? (
         <Loading />

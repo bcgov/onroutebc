@@ -740,17 +740,14 @@ export class ApplicationService {
     permitId: string,
     oldPermitId: string,
   ): Promise<string> {
-    const id = permitId ? permitId : oldPermitId;
+    const id = !permitId ? oldPermitId : permitId;
     const permit = await this.findOne(id);
-    // let rnd;
     let seq: string;
-    /*
     const approvalSource = await this.permitApprovalSourceRepository.find({
       where: { id: permit.permitApprovalSource },
     });
-    */
-    const approvalSourceId = 9;
-    // approvalSourceId = approvalSource[0].code;
+    const approvalSourceCode = approvalSource[0].code;
+    const approvalSourceId = 9; 
     let rnd: number | string;
     if (permitId) {
       seq = await callDatabaseSequence(
