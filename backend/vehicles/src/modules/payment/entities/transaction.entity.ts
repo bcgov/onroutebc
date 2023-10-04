@@ -158,7 +158,7 @@ export class Transaction extends Base {
     description: 'The identifier of the user selected payment method.',
   })
   @Column({
-    name: 'PAYMENT_METHOD_ID',
+    name: 'PAYMENT_METHOD_TYPE',
     nullable: false,
   })
   paymentMethodId: number;
