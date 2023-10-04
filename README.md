@@ -1,8 +1,8 @@
 <!-- PROJECT SHIELDS -->
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=bcgov_onroutebc&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=bcgov_onroutebc)
-[![Merge to Main](https://github.com/bcgov/onroutebc/actions/workflows/merge-main.yml/badge.svg)](https://github.com/bcgov/onroutebc/actions/workflows/merge-main.yml)
-[![Unit Tests and Analysis](https://github.com/bcgov/onroutebc/actions/workflows/unit-tests.yml/badge.svg)](https://github.com/bcgov/onroutebc/actions/workflows/unit-tests.yml)
+[![Merge](https://github.com/bcgov/onroutebc/actions/workflows/merge.yml/badge.svg)](https://github.com/bcgov/onroutebc/actions/workflows/merge.yml)
+[![Analysis](https://github.com/bcgov/onroutebc/actions/workflows/analysis.yml/badge.svg)](https://github.com/bcgov/onroutebc/actions/workflows/analysis.yml)
 
 [![Issues](https://img.shields.io/github/issues/bcgov/onroutebc)](/../../issues)
 [![Pull Requests](https://img.shields.io/github/issues-pr/bcgov/onroutebc)](/../../pulls)
