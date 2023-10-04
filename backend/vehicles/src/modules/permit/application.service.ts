@@ -743,10 +743,6 @@ export class ApplicationService {
     const id = !permitId ? oldPermitId : permitId;
     const permit = await this.findOne(id);
     let seq: string;
-    const approvalSource = await this.permitApprovalSourceRepository.find({
-      where: { id: permit.permitApprovalSource },
-    });
-    const approvalSourceCode = approvalSource[0].code;
     const approvalSourceId = 9; 
     let rnd: number | string;
     if (permitId) {

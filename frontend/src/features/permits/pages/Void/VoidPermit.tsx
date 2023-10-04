@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, useMemo } from "react";
 
 import { VoidPermitForm } from "./components/VoidPermitForm";
 import { NotFound } from "../../../../common/pages/NotFound";
@@ -91,12 +91,12 @@ export const VoidPermit = () => {
     },
   ];
 
-  const contextData = {
+  const contextData = useMemo(() => ({
     voidPermitData,
     setVoidPermitData,
     back: () => setCurrentLink(0),
     next: () => setCurrentLink(1),
-  };
+  }), [voidPermitData]);
 
   // If user is not SYSADMIN, show unauthorized page
   if (idirUserDetails?.userAuthGroup !== USER_AUTH_GROUP.SYSADMIN) {
