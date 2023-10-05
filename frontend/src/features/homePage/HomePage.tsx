@@ -3,12 +3,13 @@ import { useAuth } from "react-oidc-context";
 import { LoadBCeIDUserRolesByCompany } from "../../common/authentication/LoadBCeIDUserRolesByCompany";
 import OnRouteBCContext from "../../common/authentication/OnRouteBCContext";
 import { LoadIDIRUserRoles } from "../../common/authentication/LoadIDIRUserRoles";
+import { IDPS } from "../../common/types/idp";
 
 /**
  * @param identityProvider The identity provider from the user token.
  * @returns Boolean indicating if a logged in user is an IDIR.
  */
-const isIDIRUser = (identityProvider: string) => identityProvider === "idir";
+const isIDIRUser = (identityProvider: string) => identityProvider === IDPS.IDIR;
 
 export const HomePage = React.memo(() => {
   const { isAuthenticated, user: userFromToken } = useAuth();

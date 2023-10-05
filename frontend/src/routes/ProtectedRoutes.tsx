@@ -9,8 +9,9 @@ import { LoadBCeIDUserRolesByCompany } from "../common/authentication/LoadBCeIDU
 import { LoadBCeIDUserContext } from "../common/authentication/LoadBCeIDUserContext";
 import { LoadIDIRUserContext } from "../common/authentication/LoadIDIRUserContext";
 import { LoadIDIRUserRoles } from "../common/authentication/LoadIDIRUserRoles";
+import { IDPS } from "../common/types/idp";
 
-const isIDIR = (identityProvider: string) => identityProvider === "idir";
+const isIDIR = (identityProvider: string) => identityProvider === IDPS.IDIR;
 
 export const ProtectedRoutes = ({
   requiredRole,

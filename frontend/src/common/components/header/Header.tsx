@@ -15,6 +15,7 @@ import { UserSectionInfo } from "./components/UserSectionInfo";
 import { getLoginUsernameFromSession } from "../../apiManager/httpRequestHandler";
 import { SearchButton } from "./components/SearchButton";
 import { SearchFilter } from "./components/SearchFilter";
+import { IDPS } from "../../types/idp";
 
 const getEnv = () => {
   const env =
@@ -106,7 +107,7 @@ export const Header = () => {
   const [filterOpen, setFilterOpen] = useState(false);
   const { isAuthenticated, user } = useAuth();
   const username = getLoginUsernameFromSession();
-  const isIdir = user?.profile?.identity_provider === "idir";
+  const isIdir = user?.profile?.identity_provider === IDPS.IDIR;
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);

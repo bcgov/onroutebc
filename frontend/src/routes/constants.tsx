@@ -1,3 +1,5 @@
+import { IDPS } from "../common/types/idp";
+
 export const HOME = "/";
 export const UNAUTHORIZED = "unauthorized";
 
@@ -27,9 +29,8 @@ export const WELCOME = "welcome";
 export const USER_INFO = "user-info";
 
 // IDIR
-const IDIR = "idir";
-export const IDIR_WELCOME = `/${IDIR}/welcome`;
-export const SEARCH_RESULTS = `/${IDIR}/search-results`;
+export const IDIR_WELCOME = `/${IDPS.IDIR}/welcome`;
+export const SEARCH_RESULTS = `/${IDPS.IDIR}/search-results`;
 
 // Payment
 export const PAYMENT_REDIRECT = "payment"
