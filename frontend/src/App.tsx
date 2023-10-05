@@ -16,9 +16,9 @@ import OnRouteBCContext, {
   BCeIDUserDetailContext,
   IDIRUserDetailContext,
 } from "./common/authentication/OnRouteBCContext";
-import { NavIconSideBar } from "./common/components/naviconsidebar/NavIconSideBar";
-import { NavIconHomeButton } from "./common/components/naviconsidebar/NavIconHomeButton";
-import { NavIconReportButton } from "./common/components/naviconsidebar/NavIconReportButton";
+import { NavIconSideBar } from "./common/components/navIconSideBar/NavIconSideBar";
+import { NavIconHomeButton } from "./common/components/navIconSideBar/NavIconHomeButton";
+import { NavIconReportButton } from "./common/components/navIconSideBar/NavIconReportButton";
 
 const authority =
   import.meta.env.VITE_AUTH0_ISSUER_URL || envConfig.VITE_AUTH0_ISSUER_URL;
