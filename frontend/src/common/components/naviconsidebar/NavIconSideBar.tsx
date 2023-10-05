@@ -1,5 +1,5 @@
 
-import { IDP } from '../../enum/idp.enum'
+import {IDPS} from '../../types/idp'
 import './NavIconSideBar.scss'
 import { useAuth } from 'react-oidc-context'
 
@@ -13,7 +13,7 @@ interface NavIconSideBarProps {
 export const NavIconSideBar = (props: NavIconSideBarProps) => {
   const { children } = props;
   const { user } = useAuth()
-  const isIdir = user?.profile?.identity_provider === IDP.IDIR
+  const isIdir = user?.profile?.identity_provider === IDPS.IDIR
 
   return (
     <div className="nav-icon-side-bar">
