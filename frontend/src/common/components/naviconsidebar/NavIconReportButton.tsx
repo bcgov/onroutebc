@@ -1,4 +1,3 @@
-import './NavIconReportButton.scss'
 import { Box, IconButton, Tooltip } from "@mui/material";
 import { Note } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
