@@ -1,4 +1,5 @@
-import { Box, IconButton, Tooltip } from "@mui/material";
+import './NavIconReportButton.scss'
+import { IconButton, Tooltip } from "@mui/material";
 import { Note } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import * as routes from "../../../routes/constants";
@@ -14,8 +15,7 @@ export const NavIconReportButton = () => {
     const { t } = useTranslation()
 
     return (
-        <div className="nav-icon-report-button">
-        <Box sx={{ border: '1px solid #003366', backgroundColor: '#003366', width: '45px' }}>
+        <div className="nav-icon-report-button-container">
             <Tooltip arrow placement="left" title={t(`${translationPrefix}.report-button`)}>
                 <IconButton
                     size="medium"
@@ -25,7 +25,6 @@ export const NavIconReportButton = () => {
                     <Note />
                 </IconButton>
             </Tooltip>
-        </Box>
         </div>
     )
-  }
+}
