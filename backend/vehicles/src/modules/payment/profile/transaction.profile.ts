@@ -114,15 +114,19 @@ export class TransactionProfile extends AutomapperProfile {
         ),
         forMember(
           (d) => d.transactionOrderNumber,
-          mapWithArguments((createTransactionDto, { transactionOrderNumber }) => {
-            return transactionOrderNumber;
-          }),
+          mapWithArguments(
+            (createTransactionDto, { transactionOrderNumber }) => {
+              return transactionOrderNumber;
+            },
+          ),
         ),
         forMember(
           (d) => d.totalTransactionAmount,
-          mapWithArguments((createTransactionDto, { totalTransactionAmount }) => {
-            return totalTransactionAmount;
-          }),
+          mapWithArguments(
+            (createTransactionDto, { totalTransactionAmount }) => {
+              return totalTransactionAmount;
+            },
+          ),
         ),
       );
 

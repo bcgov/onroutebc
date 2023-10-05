@@ -237,15 +237,13 @@ export class PermitController {
     type: ReadPermitDto,
     isArray: true,
   })
-  @Public()
-  @Get("/:permitId")
+  @Get('/:permitId')
   async getByPermitId(
     @Param('permitId') permitId: string,
   ): Promise<ReadPermitDto> {
-    console.log("PermitId");
     return this.permitService.findByPermitId(permitId);
   }
-  
+
   /**
    * A POST method defined with the @Post() decorator and a route of /:permitId/void
    * that Voids or revokes a permit for given @param permitId by changing it's status to VOIDED|REVOKED.
@@ -262,7 +260,6 @@ export class PermitController {
     @Body()
     voidPermitDto: VoidPermitDto,
   ): Promise<ResultDto> {
-    console.log(voidPermitDto);
     const currentUser = request.user as IUserJWT;
     const directory = getDirectory(currentUser);
     const permit = await this.permitService.voidPermit(

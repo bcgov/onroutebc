@@ -144,16 +144,18 @@ export class PaymentService {
   }
 
   private isWebTransactionPurchase(
-    paymentMethod: PaymentMethodType, 
-    transactionType: TransactionType
+    paymentMethod: PaymentMethodType,
+    transactionType: TransactionType,
   ) {
-    return paymentMethod == PaymentMethodType.WEB &&
-      transactionType == TransactionType.PURCHASE;
+    return (
+      paymentMethod == PaymentMethodType.WEB &&
+      transactionType == TransactionType.PURCHASE
+    );
   }
 
   private assertApplicationInProgress(
-    paymentMethod: PaymentMethodType, 
-    transactionType: TransactionType, 
+    paymentMethod: PaymentMethodType,
+    transactionType: TransactionType,
     permitStatus: ApplicationStatus,
   ) {
     if (
@@ -165,8 +167,10 @@ export class PaymentService {
   }
 
   private isRefundOrZero(transactionType: TransactionType) {
-    return transactionType == TransactionType.REFUND ||
-      transactionType == TransactionType.ZERO_AMOUNT;
+    return (
+      transactionType == TransactionType.REFUND ||
+      transactionType == TransactionType.ZERO_AMOUNT
+    );
   }
 
   /**
@@ -222,7 +226,7 @@ export class PaymentService {
         this.assertApplicationInProgress(
           newTransaction.paymentMethodId,
           newTransaction.transactionTypeId,
-          existingApplication.permitStatus
+          existingApplication.permitStatus,
         );
 
         let newPermitTransactions = new PermitTransaction();
@@ -241,10 +245,12 @@ export class PaymentService {
           newPermitTransactions,
         );
 
-        if (this.isWebTransactionPurchase(
-          newTransaction.paymentMethodId, 
-          newTransaction.transactionTypeId
-        )) {
+        if (
+          this.isWebTransactionPurchase(
+            newTransaction.paymentMethodId,
+            newTransaction.transactionTypeId,
+          )
+        ) {
           existingApplication.permitStatus = ApplicationStatus.WAITING_PAYMENT;
           existingApplication.updatedDateTime = new Date();
           existingApplication.updatedUser = currentUser.userName;
@@ -264,10 +270,12 @@ export class PaymentService {
       );
 
       let url: string = undefined;
-      if (this.isWebTransactionPurchase(
-        createdTransaction.paymentMethodId,
-        createdTransaction.transactionTypeId
-      )) {
+      if (
+        this.isWebTransactionPurchase(
+          createdTransaction.paymentMethodId,
+          createdTransaction.transactionTypeId,
+        )
+      ) {
         url = this.generateUrl(createdTransaction);
       }
 

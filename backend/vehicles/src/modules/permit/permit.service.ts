@@ -114,12 +114,10 @@ export class PermitService {
    * @param permitId permit id
    * @returns permit with data
    */
-  public async findByPermitId(
-    permitId: string,
-  ): Promise<ReadPermitDto> {
+  public async findByPermitId(permitId: string): Promise<ReadPermitDto> {
     const permit = await this.findOne(permitId);
     return this.classMapper.mapAsync(permit, Permit, ReadPermitDto);
-  }  
+  }
 
   /**
    * Finds permits by permit number.
@@ -484,7 +482,10 @@ export class PermitService {
       );
 
       let dopsRequestData: DopsGeneratedDocument = {
-        templateName: TemplateName.PERMIT_TROS_VOID,
+        templateName:
+          voidPermitDto.status == ApplicationStatus.VOIDED
+            ? TemplateName.PERMIT_TROS_VOID
+            : TemplateName.PERMIT_TROS_REVOKED,
         generatedDocumentFileName: permitDataForTemplate.permitNumber,
         templateData: permitDataForTemplate,
         documentsToMerge: permitDataForTemplate.permitData.commodities.map(

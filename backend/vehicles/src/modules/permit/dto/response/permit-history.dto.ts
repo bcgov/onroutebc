@@ -14,7 +14,8 @@ export class PermitHistoryDto {
   @AutoMap()
   @ApiProperty({
     example: 'This permit was amended because of so-and-so reason.',
-    description: 'Any comment/reason that was made for modification of the permit',
+    description:
+      'Any comment/reason that was made for modification of the permit',
   })
   comment: string;
 
