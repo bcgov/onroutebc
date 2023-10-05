@@ -10,7 +10,6 @@ import { Injectable } from '@nestjs/common';
 import { Permit } from '../entities/permit.entity';
 import { CreatePermitDto } from '../dto/request/create-permit.dto';
 import { ReadPermitDto } from '../dto/response/read-permit.dto';
-import { PermitHistoryDto } from '../dto/response/permit-history.dto';
 
 @Injectable()
 export class PermitProfile extends AutomapperProfile {
@@ -24,6 +23,110 @@ export class PermitProfile extends AutomapperProfile {
         mapper,
         CreatePermitDto,
         Permit,
+        forMember(
+          (d) => d.createdUserGuid,
+          mapWithArguments((createPermitDto, { userGUID }) => {
+            return userGUID;
+          }),
+        ),
+        forMember(
+          (d) => d.createdUser,
+          mapWithArguments((createPermitDto, { userName }) => {
+            return userName;
+          }),
+        ),
+        forMember(
+          (d) => d.createdUserDirectory,
+          mapWithArguments((createPermitDto, { directory }) => {
+            return directory;
+          }),
+        ),
+
+        forMember(
+          (d) => d.createdDateTime,
+          mapWithArguments((createPermitDto, { timestamp }) => {
+            return timestamp;
+          }),
+        ),
+
+        forMember(
+          (d) => d.updatedUserGuid,
+          mapWithArguments((createPermitDto, { userGUID }) => {
+            return userGUID;
+          }),
+        ),
+        forMember(
+          (d) => d.updatedUser,
+          mapWithArguments((createPermitDto, { userName }) => {
+            return userName;
+          }),
+        ),
+        forMember(
+          (d) => d.updatedUserDirectory,
+          mapWithArguments((createPermitDto, { directory }) => {
+            return directory;
+          }),
+        ),
+
+        forMember(
+          (d) => d.updatedDateTime,
+          mapWithArguments((createPermitDto, { timestamp }) => {
+            return timestamp;
+          }),
+        ),
+
+        forMember(
+          (d) => d.permitData.createdUserGuid,
+          mapWithArguments((createPermitDto, { userGUID }) => {
+            return userGUID;
+          }),
+        ),
+        forMember(
+          (d) => d.permitData.createdUser,
+          mapWithArguments((createPermitDto, { userName }) => {
+            return userName;
+          }),
+        ),
+        forMember(
+          (d) => d.permitData.createdUserDirectory,
+          mapWithArguments((createPermitDto, { directory }) => {
+            return directory;
+          }),
+        ),
+
+        forMember(
+          (d) => d.permitData.createdDateTime,
+          mapWithArguments((createPermitDto, { timestamp }) => {
+            return timestamp;
+          }),
+        ),
+
+        forMember(
+          (d) => d.permitData.updatedUserGuid,
+          mapWithArguments((createPermitDto, { userGUID }) => {
+            return userGUID;
+          }),
+        ),
+        forMember(
+          (d) => d.permitData.updatedUser,
+          mapWithArguments((createPermitDto, { userName }) => {
+            return userName;
+          }),
+        ),
+        forMember(
+          (d) => d.permitData.updatedUserDirectory,
+          mapWithArguments((createPermitDto, { directory }) => {
+            return directory;
+          }),
+        ),
+
+        forMember(
+          (d) => d.permitData.updatedDateTime,
+          mapWithArguments((createPermitDto, { timestamp }) => {
+            return timestamp;
+          }),
+        ),
+
         forMember(
           (d) => d.permitData?.permitData,
           mapFrom((s) => {
@@ -42,48 +145,6 @@ export class PermitProfile extends AutomapperProfile {
             return s.permitData?.permitData
               ? (JSON.parse(s.permitData?.permitData) as JSON)
               : undefined;
-          }),
-        ),
-      );
-      // ToDo: revisit the maper for multiple transaction.
-      createMap(
-        mapper,
-        Permit,
-        PermitHistoryDto,
-        forMember(
-          (d) => d.paymentMethod,
-          mapWithArguments((s) => {
-            return s.transactions[0].paymentMethod;
-          }),
-        ),
-        forMember(
-          (d) => d.providerTransactionId,
-          mapWithArguments((s) => {
-            return s.transactions[0].providerTransactionId;
-          }),
-        ),
-        forMember(
-          (d) => d.transactionAmount,
-          mapWithArguments((s) => {
-            return s.transactions[0].transactionAmount;
-          }),
-        ),
-        forMember(
-          (d) => d.transactionOrderNumber,
-          mapWithArguments((s) => {
-            return s.transactions[0].transactionOrderNumber;
-          }),
-        ),
-        forMember(
-          (d) => d.permitNumber,
-          mapWithArguments((s) => {
-            return s.permitNumber;
-          }),
-        ),
-        forMember(
-          (d) => d.comment,
-          mapWithArguments((s) => {
-            return s.comment;
           }),
         ),
       );

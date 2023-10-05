@@ -1,3 +1,18 @@
+import { DATE_FORMATS, toLocal } from "../../../common/helpers/formatDate";
+import { mapApplicationToApplicationRequestData } from "../helpers/mappers";
+import { VEHICLES_URL } from "../../../common/apiManager/endpoints/endpoints";
+import { IssuePermitsResponse, ReadPermitDto } from "../types/permit";
+import { PaginatedResponse } from "../../../common/types/common";
+import { PERMIT_STATUSES } from "../types/PermitStatus";
+import { PermitHistory } from "../types/PermitHistory";
+import { getPermitTypeName } from "../types/PermitType";
+import { 
+  CompleteTransactionRequestData, 
+  CompleteTransactionResponseData, 
+  StartTransactionRequestData, 
+  StartTransactionResponseData, 
+} from "../types/payment";
+
 import {
   getCompanyIdFromSession,
   httpGETRequest,
@@ -8,33 +23,23 @@ import {
 } from "../../../common/apiManager/httpRequestHandler";
 
 import {
+  applyWhenNotNullable,
   getDefaultRequiredVal,
   replaceEmptyValuesWithNull,
 } from "../../../common/helpers/util";
+
 import {
   Application,
   ApplicationResponse,
   PermitApplicationInProgress,
 } from "../types/application";
-import { DATE_FORMATS, toLocal } from "../../../common/helpers/formatDate";
+
 import {
   APPLICATION_UPDATE_STATUS_API,
   PAYMENT_API,
   PERMITS_API,
 } from "./endpoints/endpoints";
-import { mapApplicationToApplicationRequestData } from "../helpers/mappers";
-import { PermitTransaction, Transaction } from "../types/payment";
-import { VEHICLES_URL } from "../../../common/apiManager/endpoints/endpoints";
-import { ReadPermitDto } from "../types/permit";
-import { PaginatedResponse } from "../../../common/types/common";
-
-/**
- * A record containing permit keys and full forms.
- */
-const permitAbbreviations: Record<string, string> = {
-  TROS: "Term Oversize",
-  STOS: "Single Trip Oversize",
-};
+import { RevokePermitRequestData, VoidPermitRequestData, VoidPermitResponseData } from "../pages/Void/types/VoidPermit";
 
 /**
  * Submits a new term oversize application.
@@ -93,7 +98,7 @@ export const getApplicationsInProgress = async (): Promise<
     ).map((application) => {
       return {
         ...application,
-        permitType: permitAbbreviations[application.permitType],
+        permitType: getPermitTypeName(application.permitType) as string,
         createdDateTime: toLocal(
           application.createdDateTime,
           DATE_FORMATS.DATETIME_LONG_TZ
@@ -120,19 +125,25 @@ export const getApplicationsInProgress = async (): Promise<
 };
 
 /**
- * Fetch in-progress application by its permit id.
+ * Fetch application by its permit id.
  * @param permitId permit id of the application to fetch
- * @returns ApplicationResponse data as response, or undefined if fetch failed
+ * @returns ApplicationResponse data as response, or null if fetch failed
  */
-export const getApplicationInProgressById = (
-  permitId: string | undefined
-): Promise<ApplicationResponse | undefined> => {
-  const companyId = getCompanyIdFromSession();
-  let url = `${VEHICLES_URL}/permits/applications/${permitId}`;
-  if (companyId) {
-    url += `?companyId=${companyId}`;
+export const getApplicationByPermitId = async (
+  permitId?: string
+): Promise<ApplicationResponse | null> => {
+  try {
+    const companyId = getCompanyIdFromSession();
+    let url = `${VEHICLES_URL}/permits/applications/${permitId}`;
+    if (companyId) {
+      url += `?companyId=${companyId}`;
+    }
+
+    const response = await httpGETRequest(url);
+    return response.data;
+  } catch (err) {
+    return null;
   }
-  return httpGETRequest(url).then((response) => response.data);
 };
 
 /**
@@ -141,7 +152,7 @@ export const getApplicationInProgressById = (
  * @returns A Promise with the API response.
  */
 export const deleteApplications = async (applicationIds: Array<string>) => {
-  const requestBody = { applicationIds, applicationStatus: "CANCELLED" };
+  const requestBody = { applicationIds, applicationStatus: PERMIT_STATUSES.CANCELLED };
   return await httpPOSTRequest(
     `${APPLICATION_UPDATE_STATUS_API}`,
     replaceEmptyValuesWithNull(requestBody)
@@ -211,32 +222,104 @@ export const downloadReceiptPdf = async (permitId: string) => {
 };
 
 /**
- * Generates a URL for making a payment transaction with Moti Pay.
- * @param {number} transactionAmount - The amount of the transaction.
- * @returns {Promise<any>} - A Promise that resolves to the transaction URL.
+ * Start making a payment transaction with Moti Pay.
+ * @param {StartTransactionRequestData} requestData - Payment information that is to be submitted.
+ * @returns {Promise<StartTransactionResponseData>} - A Promise that resolves to the submitted transaction with URL.
  */
-export const getMotiPayTransactionUrl = async (
-  paymentMethodId: number,
-  transactionSubmitDate: string,
-  transactionAmount: number,
-  permitIds: string[]
-): Promise<any> => {
-  const url =
-    `${PAYMENT_API}?` +
-    `paymentMethodId=${paymentMethodId}` +
-    `&transactionSubmitDate=${transactionSubmitDate}` +
-    `&transactionAmount=${transactionAmount}` +
-    `&permitIds=${permitIds.toString()}`;
-  return httpGETRequest(url).then((response) => {
-    return response.data.url;
-  });
+export const startTransaction = async (
+  requestData: StartTransactionRequestData
+): Promise<StartTransactionResponseData | null> => {
+  try {
+    const response = await httpPOSTRequest(PAYMENT_API, replaceEmptyValuesWithNull(requestData));
+    if (response.status !== 201) {
+      return null;
+    }
+    return response.data as StartTransactionResponseData;
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
 };
 
-export const postTransaction = async (
-  transactionDetails: Transaction
-): Promise<any> => {
-  const url = `${PAYMENT_API}`;
-  return await httpPOSTRequest(url, transactionDetails);
+/**
+ * Completes the transaction after payment is successful.
+ * @param transactionId - The id for the transaction to be completed
+ * @param transactionDetails - The complete transaction details to be submitted after payment
+ * @returns Promise that resolves to a successful transaction.
+ */
+export const completeTransaction = async (
+  transactionId: string,
+  transactionDetails: CompleteTransactionRequestData
+): Promise<CompleteTransactionResponseData | null> => {
+  try {
+    const response = await httpPUTRequest(
+      `${PAYMENT_API}/${transactionId}/payment-gateway`,
+      transactionDetails
+    );
+    if (response.status !== 200) {
+      return null;
+    }
+    return response.data as CompleteTransactionResponseData;
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+};
+
+/**
+ * Issues the permits indicated by the application/permit ids.
+ * @param ids Application/permit ids for the permits to be issued.
+ * @returns Successful and failed permit ids that were issued.
+ */
+export const issuePermits = async (
+  ids: string[],
+): Promise<IssuePermitsResponse> => {
+  try {
+    const companyId = getCompanyIdFromSession();
+    const response = await httpPOSTRequest(
+      PERMITS_API.ISSUE_PERMIT, 
+      replaceEmptyValuesWithNull({ 
+        applicationIds: [...ids], 
+        companyId: applyWhenNotNullable((companyId) => Number(companyId), companyId),
+      })
+    );
+    
+    if (response.status !== 201) {
+      return {
+        success: [],
+        failure: [...ids],
+      };
+    }
+    return response.data as IssuePermitsResponse;
+  } catch (err) {
+    console.error(err);
+    return {
+      success: [],
+      failure: [...ids],
+    };
+  }
+};
+
+/**
+ * Get permit by permit id
+ * @param permitId Permit id of the permit to be retrieved.
+ * @returns Permit information if found, or undefined
+ */
+export const getPermit = async (permitId?: string): Promise<ReadPermitDto | null> => {
+  if (!permitId) return null;
+  const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
+  let permitsURL = `${VEHICLES_URL}/permits/${permitId}`;
+  const queryParams = [];
+  if (companyId) {
+    queryParams.push(`companyId=${companyId}`);
+  }
+  if (queryParams.length > 0) {
+    permitsURL += `?${queryParams.join("&")}`;
+  }
+
+  const response = await httpGETRequest(permitsURL);
+  if (!response.data) return null;
+  return response.data as ReadPermitDto;
 };
 
 /**
@@ -296,16 +379,52 @@ export const getPermits = async ({
   return permits;
 };
 
-export const getPermitTransaction = async (transactionOrderNumber: string) => {
+export const getPermitHistory = async (originalPermitId?: string) => {
   try {
+    if (!originalPermitId) return [];
+    
     const response = await httpGETRequest(
-      `${PAYMENT_API}/${transactionOrderNumber}/permit`
+      `${VEHICLES_URL}/permits/history?originalId=${originalPermitId}`
     );
+
     if (response.status === 200) {
-      return response.data as PermitTransaction;
+      return response.data as PermitHistory[];
     }
-    return undefined;
+    return [];
   } catch (err) {
-    return undefined;
+    return [];
+  }
+};
+
+/**
+ * Void or revoke a permit.
+ * @param permitId Id of the permit to void or revoke.
+ * @param voidData Void or revoke data to be sent to backend.
+ * @returns Response data containing successfully voided/revoked permit ids, as well as failed ones.
+ */
+export const voidPermit = async (voidPermitParams: {
+  permitId: string, 
+  voidData: VoidPermitRequestData | RevokePermitRequestData
+}) => {
+  const { permitId, voidData } = voidPermitParams;
+  try {
+    const response = await httpPOSTRequest(
+      `${PERMITS_API.BASE}/${permitId}/void`,
+      replaceEmptyValuesWithNull(voidData)
+    );
+
+    if (response.status === 201) {
+      return response.data as VoidPermitResponseData;
+    }
+    return {
+      success: [],
+      failure: [permitId],
+    };
+  } catch (err) {
+    console.error(err);
+    return {
+      success: [],
+      failure: [permitId],
+    };
   }
 };

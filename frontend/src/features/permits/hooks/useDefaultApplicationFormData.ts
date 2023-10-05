@@ -154,5 +154,6 @@ export const useDefaultApplicationFormData = (applicationData?: Application) => 
     defaultApplicationDataValues,
     setDefaultApplicationDataValues,
     formMethods,
+    companyInfo: companyInfoQuery.data,
   };
 };

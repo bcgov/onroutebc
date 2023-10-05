@@ -13,6 +13,8 @@ export const EDIT_USER = `/${MANAGE_PROFILES}/edit-user`;
 
 // Permits
 export const PERMITS = "permits";
+export const PERMIT_VOID = "void";
+export const PERMIT_AMEND = "amend";
 
 // Applications
 export const APPLICATIONS = "applications";

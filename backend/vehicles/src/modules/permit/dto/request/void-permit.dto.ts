@@ -1,11 +1,21 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber } from 'class-validator';
+import {
+  IsEnum,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Length,
+  Min,
+  MinLength,
+} from 'class-validator';
 import { ApplicationStatus } from 'src/common/enum/application-status.enum';
+import { PaymentMethodType } from '../../../../common/enum/payment-method-type.enum';
 
 export class VoidPermitDto {
   @AutoMap()
   @ApiProperty({
+    enum: ApplicationStatus,
     description: 'Revoke or void status for permit.',
     example: ApplicationStatus.REVOKED,
     required: false,
@@ -15,33 +25,68 @@ export class VoidPermitDto {
   @AutoMap()
   @ApiProperty({
     description: 'Permit Transaction ID.',
-    example: 'T000000A0W',
+    example: '10000148',
     required: false,
   })
-  transactionOrderNumber: string;
+  @IsOptional()
+  pgTransactionId: string;
 
   @AutoMap()
   @ApiProperty({
-    description: 'Permit Transaction Date.',
-    example: '2023-07-10T15:49:36.582Z',
-    required: false,
+    enum: PaymentMethodType,
+    example: PaymentMethodType.WEB,
+    description: 'The identifier of the user selected payment method.',
   })
-  transactionDate: Date;
+  @IsEnum(PaymentMethodType)
+  paymentMethodId: PaymentMethodType;
 
   @AutoMap()
-  @IsNumber()
   @ApiProperty({
-    description: 'Permit Transaction Amount.',
+    description: 'Payment Transaction Amount.',
     example: 30,
-    required: false,
   })
+  @IsNumber()
+  @Min(0)
   transactionAmount: number;
 
   @AutoMap()
   @ApiProperty({
-    description: 'Permit Transaction Method.',
-    example: 'CC',
+    description: 'Payment Transaction Date.',
+    example: '2023-07-10T15:49:36.582Z',
     required: false,
   })
-  paymentMethod: string;
+  @IsOptional()
+  @IsString()
+  pgTransactionDate: string;
+
+  @AutoMap()
+  @ApiProperty({
+    example: 'CC',
+    description: 'Represents the payment method of a transaction.',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  @Length(1, 2)
+  pgPaymentMethod: string;
+
+  @AutoMap()
+  @ApiProperty({
+    example: 'VI',
+    description: 'Represents the card type used for the transaction.',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  @Length(1, 2)
+  pgCardType: string;
+
+  @AutoMap()
+  @ApiProperty({
+    example: 'This permit was voided because of so-and-so reason',
+    description: 'Comment/Reason for voiding or revoking a permit.',
+  })
+  @IsString()
+  @MinLength(1)
+  comment: string;
 }

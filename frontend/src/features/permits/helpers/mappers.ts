@@ -7,8 +7,21 @@ import {
   VehicleTypes,
   VehicleTypesAsString,
 } from "../../manageVehicles/types/managevehicles";
-import { Application, ApplicationRequestData, ApplicationResponse, PermitType } from "../types/application";
-import { DATE_FORMATS, dayjsToLocalStr, dayjsToUtcStr, now, toLocalDayjs, utcToLocalDayjs } from "../../../common/helpers/formatDate";
+
+import { 
+  Application, 
+  ApplicationRequestData, 
+  ApplicationResponse,
+} from "../types/application";
+
+import { 
+  DATE_FORMATS, 
+  dayjsToLocalStr, 
+  dayjsToUtcStr, 
+  now, 
+  toLocalDayjs, 
+  utcToLocalDayjs,
+} from "../../../common/helpers/formatDate";
 
 /**
  * This helper function is used to get the vehicle object that matches the vin prop
@@ -127,29 +140,4 @@ export const vehicleTypeDisplayText = (vehicleType: VehicleTypesAsString) => {
     return "Trailer";
   }
   return "Power Unit";
-};
-
-/**
- * Gets display text for permit type.
- * @param permitType Permit type (eg. TROS, STOS, etc)
- * @returns display text for the permit type
- */
-export const permitTypeDisplayText = (permitType: PermitType) => {
-  switch (permitType) {
-    case "TROS":
-      return "Oversize: Term";
-    case "STOS":
-      return "Oversize: Single Trip";
-    default:
-      return "";
-  }
-};
-
-/**
- * Gets display text for fee summary.
- * @param applicationData Application Data
- * @returns display text for the fee summary
- */
-export const feeSummaryDisplayText = (applicationData: Application |  undefined) => {
-  return Number(applicationData?.permitData?.permitDuration);
 };

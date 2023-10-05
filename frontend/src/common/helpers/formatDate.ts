@@ -16,8 +16,10 @@ export const DATE_FORMATS = {
   SHORT: "LL",
   LONG: "MMM. DD, YYYY, hh:mm a z",
   DATEONLY_SHORT_NAME: "MMM D, YYYY",
+  DATEONLY_ABBR_MONTH: "MMM. D, YYYY",
   DATETIME_LONG_TZ: "MMM D, YYYY, h:mm A z",
   DATEONLY_SLASH: "MM/DD/YYYY",
+  ISO8601: "YYYY-MM-DDTHH:mm:ss.SSS[Z]",
 };
 
 /**

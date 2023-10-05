@@ -1,0 +1,23 @@
+.permit-pay-fee-summary {
+  & &__pay {
+    max-width: 30.5rem;
+
+    .fee-summary {
+      margin-bottom: 2em;
+    }
+  }
+
+  & &__pay-btn {
+    width: 100%;
+    font-weight: 600;
+  }
+
+  & &__contact {
+    margin-top: 2.5rem;
+    margin-bottom: 10.75rem;
+
+    .pay-contact {
+      font-weight: 700;
+    }
+  }
+}

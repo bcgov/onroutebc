@@ -1,7 +1,6 @@
 import { Link } from "@mui/material";
 import { MRT_ColumnDef } from "material-react-table";
 import {
-  EXPIRED_PERMIT_STATUS,
   PermitChip,
 } from "../../../permits/components/permit-list/PermitChip";
 import {
@@ -9,6 +8,7 @@ import {
   viewPermitPdf,
 } from "../../../permits/helpers/permitPDFHelper";
 import { ReadPermitDto } from "../../../permits/types/permit";
+import { PERMIT_EXPIRED } from "../../../permits/types/PermitStatus";
 
 /*
  *
@@ -29,14 +29,7 @@ export const PermitSearchResultColumnDef: MRT_ColumnDef<ReadPermitDto>[] = [
         permitStatus,
         permitData: { expiryDate },
       } = permit;
-      let permitChip = undefined;
-      if (permitStatus === "REVOKED" || permitChip == "VOIDED") {
-        permitChip = (
-          <PermitChip permitStatus={permitStatus as EXPIRED_PERMIT_STATUS} />
-        );
-      } else if (hasPermitExpired(expiryDate)) {
-        permitChip = <PermitChip permitStatus="EXPIRED" />;
-      }
+      
       return (
         <>
           <Link
@@ -46,7 +39,11 @@ export const PermitSearchResultColumnDef: MRT_ColumnDef<ReadPermitDto>[] = [
           >
             {props.cell.getValue()}
           </Link>
-          {permitChip}
+          {hasPermitExpired(expiryDate) ? (
+            <PermitChip permitStatus={PERMIT_EXPIRED} />
+          ) : (
+            <PermitChip permitStatus={permitStatus} />
+          )}
         </>
       );
     },

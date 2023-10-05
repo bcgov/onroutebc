@@ -1,0 +1,13 @@
+@import "../../../../themes/orbcStyles.scss";
+
+.void-permit {
+  display: flex;
+  flex-direction: column;
+  background-color: $white;
+
+  .layout-banner {
+    background-color: $bc-background-light-grey;
+    padding-left: 10%;
+    padding-right: 10%;
+  }
+}

@@ -188,6 +188,6 @@ export const attestationErrorMsg = async () => {
 };
 
 export const proceedToPay = async (user: UserEvent) => {
-  const payBtn = await screen.findByTestId("proceed-pay-btn");
+  const payBtn = await screen.findByTestId("continue-btn");
   await user.click(payBtn);
 };

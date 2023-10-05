@@ -4,7 +4,7 @@ import {
   Column,
   PrimaryGeneratedColumn,
   OneToOne,
-  JoinTable,
+  JoinColumn,
 } from 'typeorm';
 import { AutoMap } from '@automapper/classes';
 import { Base } from '../../common/entities/base.entity';
@@ -35,17 +35,6 @@ export class Receipt extends Base {
 
   @AutoMap()
   @ApiProperty({
-    example: '10000203',
-    description: 'Represents the ID of a transaction.',
-  })
-  @Column({
-    name: 'TRANSACTION_ID',
-    nullable: false,
-  })
-  transactionId: string;
-
-  @AutoMap()
-  @ApiProperty({
     description: 'Receipt Document ID used to retrieve the PDF of the receipt',
   })
   @Column({
@@ -54,13 +43,7 @@ export class Receipt extends Base {
   })
   receiptDocumentId: string;
 
-  @OneToOne(() => Transaction, (transaction) => transaction.transactionId)
-  @JoinTable({
-    name: 'permit.ORBC_TRANSACTION',
-    joinColumn: {
-      name: 'transactionId',
-      referencedColumnName: 'transactionId',
-    },
-  })
+  @OneToOne(() => Transaction, (transaction) => transaction.receipt)
+  @JoinColumn({ name: 'TRANSACTION_ID' })
   transaction: Transaction;
 }

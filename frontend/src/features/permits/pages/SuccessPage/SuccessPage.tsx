@@ -1,19 +1,9 @@
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import { useEffect } from "react";
-import "./SuccessPage.scss";
 import { useNavigate, useParams } from "react-router-dom";
-import { downloadPermitApplicationPdf, downloadReceiptPdf } from "../../apiManager/permitsAPI";
 
-const downloadFile = (blob: Blob, filename: string) => {
-  const objUrl = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = objUrl;
-  link.setAttribute('download', `${filename}`); // Set the desired file name
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  URL.revokeObjectURL(objUrl);
-};
+import "./SuccessPage.scss";
+import { viewPermitPdf, viewReceiptPdf } from "../../helpers/permitPDFHelper";
 
 export const SuccessPage = () => {
   useEffect(() => {
@@ -23,30 +13,15 @@ export const SuccessPage = () => {
   const navigate = useNavigate();
   const { permitId } = useParams();
 
-  const viewPermitPdfByPermitId = async (permitId: string) => {
-    try {
-      const { blobObj, filename } = await downloadPermitApplicationPdf(permitId);      
-      // Create an object URL for the response
-      downloadFile(blobObj, filename);
-    } catch (err) {
-      console.error(err);
+  const viewPermits = async () => {
+    if (permitId) {
+      return await viewPermitPdf(permitId);
     }
   };
 
-  const viewPermitPdf = async () => {
+  const viewReceipt = async () => {
     if (permitId) {
-      return await viewPermitPdfByPermitId(permitId);
-    }
-  };
-
-  const viewReceiptPdf = async () => {
-    if (permitId) {
-      try {
-        const { blobObj, filename } = await downloadReceiptPdf(permitId);
-        downloadFile(blobObj, filename);
-      } catch (err) {
-        console.error(err);
-      }
+      return await viewReceiptPdf(permitId);
     }
   };
 
@@ -62,19 +37,18 @@ export const SuccessPage = () => {
           />
         </Box>
         <Box className="success__block success__block--success-msg">
-          <Typography variant="h4">Success</Typography>
+          Success
         </Box>
         <Box className="success__block success__block--info">
-          <Typography variant="body1">
-            The permit has been sent to the email/fax
-            provided.
-          </Typography>
+          The permit(s) and receipt have been sent to the email/fax
+          provided.
         </Box>
         <Box className="success__block success__block--apply-permit">
           <Button
             variant="contained"
             color="primary"
             onClick={() => navigate("/applications")}
+            className="success-btn"
           >
             Apply for a new permit
           </Button>
@@ -82,20 +56,21 @@ export const SuccessPage = () => {
         <Box className="success__block success__block--view-permits">
           <Button
             variant="contained"
-            color="secondary"
-            onClick={viewPermitPdf}
+            color="tertiary"
+            onClick={viewPermits}
             disabled={!permitId}
+            className="success-btn success-btn--view-permits"
           >
-            Download Permit
+            View Permits
           </Button>
           <Button
-            sx={{ marginLeft: "24px" }}
+            className="success-btn success-btn--view-receipt"
             variant="contained"
-            color="secondary"
-            onClick={viewReceiptPdf}
+            color="tertiary"
+            onClick={viewReceipt}
             disabled={!permitId}
           >
-            View Receipts
+            View Receipt
           </Button>
         </Box>
       </Box>

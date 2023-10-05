@@ -1,6 +1,14 @@
 import { Dayjs } from "dayjs";
 import { waitFor } from "@testing-library/react";
+
 import { DATE_FORMATS, dayjsToLocalStr } from "../../../../../common/helpers/formatDate";
+import { formatCountry, formatProvince } from "../../../../../common/helpers/formatCountryProvince";
+import { VehicleDetails } from "../../../types/application";
+import { vehicleTypeDisplayText } from "../../../helpers/mappers";
+import { VehicleTypesAsString } from "../../../../manageVehicles/types/managevehicles";
+import { getDefaultRequiredVal } from "../../../../../common/helpers/util";
+import { calculateFeeByDuration } from "../../../helpers/feeSummary";
+import { permitTypeDisplayText } from "../../../types/PermitType";
 import { 
   applicationCreatedDate,
   applicationHeaderTitle,
@@ -49,6 +57,7 @@ import {
   vehicleVIN,
   vehicleYear,
 } from "./helpers/TermOversizeReview/access";
+
 import { 
   closeMockServer,
   companyInfo,
@@ -63,11 +72,6 @@ import {
   vehicleDetails,
   vehicleSubtypes,
 } from "./helpers/TermOversizeReview/prepare";
-import { formatCountry, formatProvince } from "../../../../../common/helpers/formatCountryProvince";
-import { VehicleDetails } from "../../../types/application";
-import { permitTypeDisplayText, vehicleTypeDisplayText } from "../../../helpers/mappers";
-import { VehicleTypesAsString } from "../../../../manageVehicles/types/managevehicles";
-import { getDefaultRequiredVal } from "../../../../../common/helpers/util";
 
 beforeAll(() => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -324,7 +328,7 @@ describe("Review and Confirm Application Details", () => {
         ...defaultApplicationData,
         permitData: {
           ...defaultApplicationData.permitData,
-          feeSummary: `${defaultApplicationData.permitData.permitDuration}`,
+          feeSummary: `${calculateFeeByDuration(defaultApplicationData.permitData.permitDuration)}`,
         }
       };
       renderTestComponent(applicationData);

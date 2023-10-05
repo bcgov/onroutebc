@@ -1,4 +1,7 @@
 import { Box } from "@mui/material";
+import { AxiosError } from "axios";
+import { useParams } from "react-router-dom";
+
 import "../../../../common/components/dashboard/Dashboard.scss";
 import { Banner } from "../../../../common/components/dashboard/Banner";
 import { TermOversizeForm } from "../../pages/TermOversize/TermOversizeForm";
@@ -8,17 +11,28 @@ import { TermOversizeReview } from "../../pages/TermOversize/TermOversizeReview"
 import { useMultiStepForm } from "../../hooks/useMultiStepForm";
 import { useCompanyInfoQuery } from "../../../manageProfile/apiManager/hooks";
 import { Loading } from "../../../../common/pages/Loading";
-import { AxiosError } from "axios";
 import { Unauthorized } from "../../../../common/pages/Unauthorized";
 import { ErrorFallback } from "../../../../common/pages/ErrorFallback";
-import { useParams } from "react-router-dom";
 import { useApplicationDetailsQuery } from "../../hooks/hooks";
 
-export enum ApplicationStep {
-  Form = "Form",
-  Review = "Review",
-  Pay = "Pay",
-}
+export const APPLICATION_STEPS = {
+  Form: "Form",
+  Review: "Review",
+  Pay: "Pay",
+} as const;
+
+export type ApplicationStep = typeof APPLICATION_STEPS[keyof typeof APPLICATION_STEPS];
+
+const displayHeaderText = (stepKey: ApplicationStep) => {
+  switch (stepKey) {
+    case APPLICATION_STEPS.Form:
+      return "Permit Application";
+    case APPLICATION_STEPS.Review:
+      return "Review and Confirm Details";
+    case APPLICATION_STEPS.Pay:
+      return "Pay for Permit";
+  }
+};
 
 export const ApplicationDashboard = () => {
   const companyInfoQuery = useCompanyInfoQuery();
@@ -32,34 +46,16 @@ export const ApplicationDashboard = () => {
   } = useApplicationDetailsQuery(applicationNumber);
 
   const {
-    //steps,
     currentStepIndex,
     step,
-    //isFirstStep,
-    //isLastStep,
     back,
     next,
     goTo,
   } = useMultiStepForm([
-    
-    <TermOversizeForm key={ApplicationStep.Form} />,
-    <TermOversizeReview key={ApplicationStep.Review} />,
-    <TermOversizePay key={ApplicationStep.Pay} />,
-    
+    <TermOversizeForm key={APPLICATION_STEPS.Form} />,
+    <TermOversizeReview key={APPLICATION_STEPS.Review} />,
+    <TermOversizePay key={APPLICATION_STEPS.Pay} />,
   ]);
-
-  const displayHeaderText = () => {
-    switch (step.key) {
-      case ApplicationStep.Form:
-        return "Permit Application";
-      case ApplicationStep.Review:
-        return "Review and Confirm Details";
-      case ApplicationStep.Pay:
-        return "Pay for Permit";
-      default:
-        return "";
-    }
-  };
 
   if (companyInfoQuery.isLoading) {
     return <Loading />;
@@ -100,7 +96,10 @@ export const ApplicationDashboard = () => {
           borderColor: "divider",
         }}
       >
-        <Banner bannerText={displayHeaderText()} extendHeight={true} />
+        <Banner
+          bannerText={displayHeaderText(step.key as ApplicationStep)}
+          extendHeight={true}
+        />
       </Box>
 
       {step}

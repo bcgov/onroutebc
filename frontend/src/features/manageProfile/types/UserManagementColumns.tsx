@@ -2,7 +2,7 @@ import { Stack } from "@mui/material";
 import { MRT_ColumnDef } from "material-react-table";
 import { DATE_FORMATS, toLocal } from "../../../common/helpers/formatDate";
 import { UserManagementChip } from "../components/user-management/UserManagementChip";
-import { BCeIDAuthGroup, ReadCompanyUser } from "./userManagement.d";
+import { BCEID_AUTH_GROUP, BCeIDAuthGroup, ReadCompanyUser } from "./userManagement.d";
 
 /**
  * Translates the userAuthGroup code into a more meaningful text for the user.
@@ -12,10 +12,10 @@ import { BCeIDAuthGroup, ReadCompanyUser } from "./userManagement.d";
 const translateUserAuth = (userAuthGroup: BCeIDAuthGroup): string => {
   if (!userAuthGroup) return "";
   switch (userAuthGroup) {
-    case BCeIDAuthGroup.CVCLIENT:
+    case BCEID_AUTH_GROUP.CVCLIENT:
       return "Permit Applicant";
-    case BCeIDAuthGroup.ORGADMIN:
-    case BCeIDAuthGroup.PUBLIC:
+    case BCEID_AUTH_GROUP.ORGADMIN:
+    case BCEID_AUTH_GROUP.PUBLIC:
     default:
       return "Administrator";
   }
