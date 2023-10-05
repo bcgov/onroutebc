@@ -40,5 +40,9 @@
   "profile.company-info": "Company Information",
   "profile.my-info": "My Information",
   "profile.user-management": "User Management",
-  "profile.payment-info": "Payment Information"
+  "profile.payment-info": "Payment Information",
+
+  "navigation.button-bar.home-button": "Home",
+  "navigation.button-bar.report-button": "Reports"
+  
 }
