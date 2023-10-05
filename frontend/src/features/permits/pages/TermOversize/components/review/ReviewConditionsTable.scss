@@ -1,0 +1,33 @@
+@import "../../../../../../themes/orbcStyles.scss";
+
+.review-conditions-table {
+  min-width: 650px;
+
+  & &__header {
+    font-weight: 600;
+    padding: 1em 0;
+  }
+
+  &__row {
+    .condition-link {
+      color: $bc-text-links-blue;
+
+      &__icon {
+        margin-left: 0.5em;
+      }
+    }
+
+    td {
+      padding: 1em 0;
+    }
+
+    &:last-child th, &:last-child td {
+      border: 0;
+    }
+
+    .checkbox {
+      padding: 0;
+      margin-right: 0.5em;
+    }
+  }
+}

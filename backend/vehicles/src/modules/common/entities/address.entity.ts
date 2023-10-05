@@ -48,7 +48,7 @@ export class Address extends Base {
    */
   @AutoMap(() => Province)
   @ManyToOne(() => Province, (Province) => Province.contacts, { eager: true })
-  @JoinColumn({ name: 'PROVINCE_ID' })
+  @JoinColumn({ name: 'PROVINCE_TYPE' })
   province: Province;
 
   /**

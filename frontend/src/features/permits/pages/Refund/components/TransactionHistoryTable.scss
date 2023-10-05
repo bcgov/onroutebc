@@ -1,0 +1,52 @@
+@import "../../../../../themes/orbcStyles.scss";
+
+.transaction-history-table {
+  width: 100%;
+  border: 1px solid $bc-border-grey;
+
+  & &__header {
+    background-color: $bc-background-light-grey;
+
+    &--permit {
+      padding-left: 1rem;
+      padding-right: 0.5rem;
+    }
+
+    &--payment {
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
+    }
+
+    &--transaction {
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
+    }
+
+    &--amount {
+      padding-left: 0.5rem;
+      padding-right: 1rem;
+    }
+  }
+
+  & &__data {
+    &--permit {
+      padding-left: 1rem;
+      padding-right: 0.5rem;
+    }
+
+    &--payment {
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
+    }
+
+    &--transaction {
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
+    }
+
+    &--amount {
+      padding-left: 0.5rem;
+      padding-right: 1rem;
+    }
+  }
+}

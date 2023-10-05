@@ -1,6 +1,7 @@
-import { Box, Grid } from "@mui/material";
-import "./Dashboard.scss";
 import { ReactNode } from "react";
+import { Box, Grid } from "@mui/material";
+
+import "./Banner.scss";
 
 /**
  * The Banner component is a common component that is used to display a banner in a dashboard
@@ -23,17 +24,16 @@ export const Banner = ({
   extendHeight?: boolean;
 }) => (
   <div
-    className="layout-banner"
-    style={extendHeight ? { paddingBottom: "39px", paddingTop: "39px" } : {}}
+    className={`layout-banner ${extendHeight ? "layout-banner--extend" : ""}`}
   >
     <Grid container>
       <Grid
         xs={12}
         item
-        sx={{ display: "flex", justifyContent: "space-between" }}
+        className="layout-banner__text-section"
       >
         <h2>{bannerText}</h2>
-        <Box sx={{ display: "flex", alignItems: "center" }}>
+        <Box className="banner-button">
           {bannerButton ? bannerButton : null}
         </Box>
       </Grid>

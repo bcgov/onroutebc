@@ -1,3 +1,5 @@
+import { USER_AUTH_GROUP } from "../../../../../../manageProfile/types/userManagement.d";
+
 export const getDefaultUserDetails = () => ({
   companyId: 74,
   userDetails: {
@@ -10,7 +12,7 @@ export const getDefaultUserDetails = () => ({
     phone2Extension: "234",
     email: "my.company@mycompany.co",
     fax: "604-123-4569",
-    userAuthGroup: "ORGADMIN"
+    userAuthGroup: USER_AUTH_GROUP.ORGADMIN,
   },
 });
 

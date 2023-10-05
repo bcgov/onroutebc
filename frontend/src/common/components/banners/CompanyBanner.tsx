@@ -1,13 +1,14 @@
 import { Typography } from "@mui/material";
 
 import "./CompanyBanner.scss";
-import { CompanyProfile } from "../../../features/manageProfile/types/manageProfile";
 import { getDefaultRequiredVal } from "../../helpers/util";
 
 export const CompanyBanner = ({
-  companyInfo,
+  companyName,
+  clientNumber,
 }: {
-  companyInfo?: CompanyProfile;
+  companyName?: string;
+  clientNumber?: string;
 }) => {
   return (
     <div className="company-banner">
@@ -22,7 +23,7 @@ export const CompanyBanner = ({
           variant="h4"
           data-testid="company-banner-name"
         >
-          {getDefaultRequiredVal("", companyInfo?.legalName)}
+          {getDefaultRequiredVal("", companyName)}
         </Typography>
       </div>
       <div className="company-banner__client-number">
@@ -36,7 +37,7 @@ export const CompanyBanner = ({
           variant="h4"
           data-testid="company-banner-client"
         >
-          {getDefaultRequiredVal("", companyInfo?.clientNumber)}
+          {getDefaultRequiredVal("", clientNumber)}
         </Typography>
       </div>
     </div>

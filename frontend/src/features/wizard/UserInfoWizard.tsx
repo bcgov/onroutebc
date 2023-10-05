@@ -13,7 +13,7 @@ import { ErrorFallback } from "../../common/pages/ErrorFallback";
 import { createMyOnRouteBCUserProfile } from "../manageProfile/apiManager/manageProfileAPI";
 import { ReusableUserInfoForm } from "../manageProfile/components/forms/common/ReusableUserInfoForm";
 import { UserInformation } from "../manageProfile/types/manageProfile";
-import { BCeIDAuthGroup } from "../manageProfile/types/userManagement.d";
+import { BCEID_AUTH_GROUP } from "../manageProfile/types/userManagement.d";
 import { OnRouteBCProfileCreated } from "./pages/OnRouteBCProfileCreated";
 
 /**
@@ -26,7 +26,7 @@ export const UserInfoWizard = React.memo(() => {
   >({
     defaultValues: {
       // Remove this userAuthGroup once backend integrates the auth group.
-      userAuthGroup: BCeIDAuthGroup.CVCLIENT as string,
+      userAuthGroup: BCEID_AUTH_GROUP.CVCLIENT as string,
     },
   });
 

@@ -1,0 +1,31 @@
+@use "../../../../../../themes/orbcStyles.scss";
+
+@include orbcStyles.permit-main-box-style(".review-vehicle-info");
+@include orbcStyles.permit-left-box-style(".review-vehicle-info__header");
+@include orbcStyles.permit-right-box-style(".review-vehicle-info__body");
+
+.review-vehicle-info {
+  &__body {
+    .info-section {
+      gap: 2.5rem;
+      padding-top: 1.5rem;
+
+      &__label {
+        font-weight: 600;
+
+        &--indicator {
+          font-weight: 500;
+        }
+      }
+
+      &__msg {
+        font-weight: 600;
+        color: orbcStyles.$bc-green;
+
+        .icon {
+          margin-right: 0.5em;
+        }
+      }
+    }
+  }
+}

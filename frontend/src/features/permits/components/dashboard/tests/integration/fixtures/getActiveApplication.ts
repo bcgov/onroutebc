@@ -7,6 +7,7 @@ import { getDefaultUserDetails } from "./getUserDetails";
 import { getDefaultPowerUnits } from "./getVehicleInfo";
 import { getDefaultCompanyInfo } from "./getCompanyInfo";
 import { TROS_COMMODITIES } from "../../../../../constants/termOversizeConstants";
+import { PERMIT_TYPES } from "../../../../../types/PermitType";
 
 const activeApplicationSource = factory({
   application: {
@@ -132,7 +133,7 @@ export const getDefaultApplication = () => {
   return {
     companyId,
     userGuid: "AB1CD2EFAB34567CD89012E345FA678B",
-    permitType: "TROS",
+    permitType: PERMIT_TYPES.TROS,
     permitData: {
       startDate,
       permitDuration: 30,

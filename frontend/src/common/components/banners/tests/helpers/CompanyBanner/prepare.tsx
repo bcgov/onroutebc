@@ -30,7 +30,8 @@ export const defaultCompanyInfo = {
 export const renderTestComponent = (companyInfo?: CompanyProfile) => {
   return render(
     <CompanyBanner
-      companyInfo={companyInfo}
+      companyName={companyInfo?.legalName}
+      clientNumber={companyInfo?.clientNumber}
     />
   );
 };

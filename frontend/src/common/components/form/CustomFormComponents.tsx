@@ -179,8 +179,14 @@ export const CustomFormComponent = <T extends ORBC_FormTypes>({
         rules={rules}
         render={({ fieldState: { invalid } }) => (
           <>
-            <FormControl margin="normal" error={invalid} sx={{ width: "100%" }}>
+            <FormControl 
+              className="custom-form-control"
+              margin="normal" 
+              error={invalid} 
+              sx={{ width: "100%" }}
+            >
               <FormLabel
+                className="custom-form-control__label"
                 id={`${feature}-${name}-label`}
                 sx={{ fontWeight: "bold", marginBottom: "8px" }}
               >
@@ -196,7 +202,11 @@ export const CustomFormComponent = <T extends ORBC_FormTypes>({
               </FormLabel>
               {renderSubFormComponent(invalid)}
               {invalid && (
-                <FormHelperText data-testid={`alert-${name}`} error>
+                <FormHelperText 
+                  className="custom-form-control__helper-text"
+                  data-testid={`alert-${name}`} 
+                  error
+                >
                   {i18options?.inValidMessage_i18
                     ? t(i18options?.inValidMessage_i18, {
                         fieldName: label,

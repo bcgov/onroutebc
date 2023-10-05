@@ -24,6 +24,7 @@ import { CompanyAndUserRequest } from "../../../manageProfile/types/manageProfil
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { SnackBarContext } from "../../../../App";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
+import { BCEID_AUTH_GROUP } from "../../../manageProfile/types/userManagement.d";
 
 const CompanyBanner = ({ legalName }: { legalName: string }) => {
   return (
@@ -138,7 +139,7 @@ export const CreateProfileSteps = React.memo(() => {
       extension: "",
       fax: "",
       adminUser: {
-        userAuthGroup: "ORGADMIN",
+        userAuthGroup: BCEID_AUTH_GROUP.ORGADMIN,
         firstName: "",
         lastName: "",
         email: "",

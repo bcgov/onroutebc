@@ -2,10 +2,41 @@ import { useState } from "react";
 import { OnRouteBCTableRowActions } from "../../../../common/components/table/OnRouteBCTableRowActions";
 import PermitResendDialog from "./PermitResendDialog";
 import { viewReceiptPdf } from "../../../permits/helpers/permitPDFHelper";
+import { useNavigate } from "react-router-dom";
+import * as routes from "../../../../routes/constants";
+import { USER_AUTH_GROUP } from "../../../manageProfile/types/userManagement.d";
 
-const ACTIVE_OPTIONS = ["Amend", "View Receipt", "Resend", "Void"];
-const EXPIRED_OPTIONS = ["View Receipt", "Resend"];
-const MINIMAL_OPTIONS = ["View Receipt"];
+interface PermitAction {
+  actionName: string;
+  isAuthorized: (isExpired: boolean, userAuthGroup?: string) => boolean;
+}
+
+const PERMIT_ACTIONS: PermitAction[]  = [
+  {
+    actionName: "Amend",
+    isAuthorized: (isExpired: boolean, userAuthGroup?: string) => 
+      !isExpired && (
+        userAuthGroup === USER_AUTH_GROUP.PPCCLERK || userAuthGroup === USER_AUTH_GROUP.SYSADMIN
+      ),
+  },
+  {
+    actionName: "View Receipt",
+    isAuthorized: (_: boolean, userAuthGroup?: string) => 
+      userAuthGroup === USER_AUTH_GROUP.PPCCLERK 
+      || userAuthGroup === USER_AUTH_GROUP.SYSADMIN 
+      || userAuthGroup === USER_AUTH_GROUP.EOFFICER,
+  },
+  {
+    actionName: "Resend",
+    isAuthorized: (_: boolean, userAuthGroup?: string) =>
+      userAuthGroup === USER_AUTH_GROUP.PPCCLERK || userAuthGroup === USER_AUTH_GROUP.SYSADMIN,
+  },
+  {
+    actionName: "Void",
+    isAuthorized: (isExpired: boolean, userAuthGroup?: string) =>
+      !isExpired && userAuthGroup === USER_AUTH_GROUP.SYSADMIN,
+  },
+];
 
 /**
  * Returns options for the row actions.
@@ -13,8 +44,9 @@ const MINIMAL_OPTIONS = ["View Receipt"];
  * @returns string[]
  */
 const getOptions = (isExpired: boolean, userAuthGroup?: string): string[] => {
-  if (userAuthGroup === "EOFFICER") return MINIMAL_OPTIONS;
-  return isExpired ? EXPIRED_OPTIONS : ACTIVE_OPTIONS;
+  return PERMIT_ACTIONS
+    .filter(action => action.isAuthorized(isExpired, userAuthGroup))
+    .map(action => action.actionName);
 };
 
 /**
@@ -22,7 +54,7 @@ const getOptions = (isExpired: boolean, userAuthGroup?: string): string[] => {
  */
 export const IDIRPermitSearchRowActions = ({
   permitId,
-  isExpired,
+  isPermitInactive,
   permitNumber,
   email,
   fax,
@@ -33,9 +65,9 @@ export const IDIRPermitSearchRowActions = ({
    */
   permitId: number;
   /**
-   * Has the permit expired?
+   * Is the permit inactive (voided/superseded/revoked) or expired?
    */
-  isExpired: boolean;
+  isPermitInactive: boolean;
   /**
    * The permit number
    */
@@ -49,11 +81,12 @@ export const IDIRPermitSearchRowActions = ({
    */
   fax?: string;
   /**
-   * The auth group for the current user (eg. PPC_CLERK or EOFFICER)
+   * The auth group for the current user (eg. PPCCLERK or EOFFICER)
    */
   userAuthGroup?: string;
 }) => {
   const [isResendOpen, setIsResendOpen] = useState<boolean>(false);
+  const navigate = useNavigate();
 
   /**
    * Function to handle user selection from the options.
@@ -65,6 +98,8 @@ export const IDIRPermitSearchRowActions = ({
       setIsResendOpen(() => true);
     } else if (selectedOption === "View Receipt") {
       viewReceiptPdf(permitId.toString());
+    } else if (selectedOption === "Void") {
+      navigate(`/${routes.PERMITS}/${permitId}/${routes.PERMIT_VOID}`);
     }
   };
 
@@ -72,7 +107,7 @@ export const IDIRPermitSearchRowActions = ({
     <>
       <OnRouteBCTableRowActions
         onSelectOption={onSelectOption}
-        options={getOptions(isExpired, userAuthGroup)}
+        options={getOptions(isPermitInactive, userAuthGroup)}
         key={`idir-search-row-${permitNumber}`}
       />
       <PermitResendDialog

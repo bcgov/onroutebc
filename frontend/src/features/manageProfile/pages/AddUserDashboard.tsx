@@ -27,7 +27,7 @@ import { addUserToCompany } from "../apiManager/manageProfileAPI";
 import { UserAuthRadioGroup } from "../components/forms/userManagement/UserAuthRadioGroup";
 import UserGroupsAndPermissionsModal from "../components/user-management/UserGroupsAndPermissionsModal";
 import { BCEID_PROFILE_TABS } from "../types/manageProfile.d";
-import { BCeIDAddUserRequest, BCeIDAuthGroup } from "../types/userManagement.d";
+import { BCeIDAddUserRequest, BCEID_AUTH_GROUP } from "../types/userManagement.d";
 import "./AddUserDashboard.scss";
 
 /**
@@ -40,7 +40,7 @@ export const AddUserDashboard = React.memo(() => {
 
   const formMethods = useForm<BCeIDAddUserRequest>({
     defaultValues: {
-      userAuthGroup: BCeIDAuthGroup.CVCLIENT,
+      userAuthGroup: BCEID_AUTH_GROUP.CVCLIENT,
     },
     reValidateMode: "onBlur",
   });

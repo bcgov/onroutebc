@@ -6,7 +6,7 @@ import {
   RadioGroup,
 } from "@mui/material";
 import { CustomInputHTMLAttributes } from "../../../../../common/types/formElements";
-import { BCeIDAuthGroup } from "../../../types/userManagement.d";
+import { BCEID_AUTH_GROUP } from "../../../types/userManagement.d";
 import "../myInfo/MyInfoForm.scss";
 import {
   ControllerFieldState,
@@ -33,7 +33,7 @@ export const UserAuthRadioGroup = ({
         aria-labelledby="radio-buttons-group-label"
       >
         <FormControlLabel
-          value={BCeIDAuthGroup.ORGADMIN}
+          value={BCEID_AUTH_GROUP.ORGADMIN}
           control={
             <Radio
               key={`radio-bceid-administrator`}
@@ -47,7 +47,7 @@ export const UserAuthRadioGroup = ({
           label="Administrator"
         />
         <FormControlLabel
-          value={BCeIDAuthGroup.CVCLIENT}
+          value={BCEID_AUTH_GROUP.CVCLIENT}
           control={
             <Radio
               key={`radio-bceid-permit-applicant`}

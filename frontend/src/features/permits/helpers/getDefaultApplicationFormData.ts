@@ -2,19 +2,23 @@ import dayjs from "dayjs";
 
 import { getUserGuidFromSession } from "../../../common/apiManager/httpRequestHandler";
 import { BCeIDUserDetailContext } from "../../../common/authentication/OnRouteBCContext";
+import { TROS_COMMODITIES } from "../constants/termOversizeConstants";
+import { now } from "../../../common/helpers/formatDate";
+import { Address } from "../../manageProfile/types/manageProfile";
+import { PERMIT_STATUSES } from "../types/PermitStatus";
+import { calculateFeeByDuration } from "./feeSummary";
+import { PERMIT_TYPES } from "../types/PermitType";
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
 } from "../../../common/helpers/util";
+
 import {
   Application,
   ContactDetails,
   MailingAddress,
   VehicleDetails,
 } from "../types/application";
-import { TROS_COMMODITIES } from "../constants/termOversizeConstants";
-import { now } from "../../../common/helpers/formatDate";
-import { Address } from "../../manageProfile/types/manageProfile";
 
 /**
  * Get default values for contact details, or populate with existing contact details and/or user details
@@ -98,6 +102,14 @@ export const getDefaultVehicleDetails = (vehicleDetails?: VehicleDetails) => ({
   saveVehicle: getDefaultRequiredVal(false, vehicleDetails?.saveVehicle),
 });
 
+export const getDurationOrDefault = (applicationData?: Application): number => {
+  return applyWhenNotNullable(
+    (duration) => +duration,
+    applicationData?.permitData?.permitDuration,
+    30
+  );
+};
+
 /**
  * Gets default values for the application data, or populate with values from existing application data and company id/user details.
  * @param applicationData existing application data, if any
@@ -118,9 +130,9 @@ export const getDefaultValues = (
   userGuid: getUserGuidFromSession(),
   permitId: getDefaultRequiredVal("", applicationData?.permitId),
   permitNumber: getDefaultRequiredVal("", applicationData?.permitNumber),
-  permitType: getDefaultRequiredVal("TROS", applicationData?.permitType),
+  permitType: getDefaultRequiredVal(PERMIT_TYPES.TROS, applicationData?.permitType),
   permitStatus: getDefaultRequiredVal(
-    "IN_PROGRESS",
+    PERMIT_STATUSES.IN_PROGRESS,
     applicationData?.permitStatus
   ),
   createdDateTime: applyWhenNotNullable(
@@ -153,11 +165,7 @@ export const getDefaultValues = (
       applicationData?.permitData?.startDate,
       now()
     ),
-    permitDuration: applyWhenNotNullable(
-      (duration) => +duration,
-      applicationData?.permitData?.permitDuration,
-      30
-    ),
+    permitDuration: getDurationOrDefault(applicationData),
     expiryDate: applyWhenNotNullable(
       (date) => dayjs(date),
       applicationData?.permitData?.expiryDate,
@@ -184,7 +192,7 @@ export const getDefaultValues = (
       applicationData?.permitData?.vehicleDetails
     ),
     feeSummary: getDefaultRequiredVal(
-      "30",
+      `${calculateFeeByDuration(getDurationOrDefault(applicationData))}`,
       applicationData?.permitData?.feeSummary
     ),
   },

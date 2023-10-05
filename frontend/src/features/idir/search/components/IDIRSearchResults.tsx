@@ -15,6 +15,8 @@ import { PermitSearchResultColumnDef } from "../table/Columns";
 import { SearchFields } from "../types/types";
 import { IDIRPermitSearchRowActions } from "./IDIRPermitSearchRowActions";
 import "./List.scss";
+import { USER_AUTH_GROUP } from "../../../manageProfile/types/userManagement.d";
+import { isPermitInactive } from "../../../permits/types/PermitStatus";
 
 /**
  * Function to decide whether to show row actions icon or not.
@@ -24,7 +26,12 @@ import "./List.scss";
 const shouldShowRowActions = (userAuthGroup: string | undefined): boolean => {
   if (!userAuthGroup) return false;
   // Check if the user has PPC role to confirm
-  return userAuthGroup === "PPC_CLERK" || userAuthGroup === "EOFFICER";
+  const allowableAuthGroups = [
+    USER_AUTH_GROUP.PPCCLERK,
+    USER_AUTH_GROUP.EOFFICER,
+    USER_AUTH_GROUP.SYSADMIN,
+  ] as string[];
+  return allowableAuthGroups.includes(userAuthGroup);
 };
 
 /*
@@ -46,8 +53,8 @@ export const IDIRSearchResults = memo(
   }) => {
     const { searchValue, searchByFilter, searchEntity } = searchParams;
     const { idirUserDetails } = useContext(OnRouteBCContext);
-    const [isActiveRecordsOnly, setIsActiveRecordsOnly] =
-      useState<boolean>(false);
+    const [isActiveRecordsOnly, setIsActiveRecordsOnly] = useState<boolean>(false);
+
     const { data, isLoading, isError } = useQuery(
       ["search-entity", searchValue, searchByFilter, searchEntity],
       () =>
@@ -75,7 +82,8 @@ export const IDIRSearchResults = memo(
       if (isActiveRecordsOnly) {
         // Returns unexpired permits
         return initialData.filter(
-          ({ permitData: { expiryDate } }) => !hasPermitExpired(expiryDate)
+          ({ permitStatus, permitData: { expiryDate } }) => 
+            !hasPermitExpired(expiryDate) && !isPermitInactive(permitStatus)
         );
       }
       return initialData;
@@ -137,14 +145,15 @@ export const IDIRSearchResults = memo(
               table: MRT_TableInstance<ReadPermitDto>;
               row: MRT_Row<ReadPermitDto>;
             }) => {
-              const isExpired = hasPermitExpired(
+              const isInactive = hasPermitExpired(
                 row.original.permitData.expiryDate
-              );
+              ) || isPermitInactive(row.original.permitStatus);
+
               if (shouldShowRowActions(idirUserDetails?.userAuthGroup)) {
                 return (
                   <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
                     <IDIRPermitSearchRowActions
-                      isExpired={isExpired}
+                      isPermitInactive={isInactive}
                       permitNumber={row.original.permitNumber}
                       permitId={row.original.permitId}
                       userAuthGroup={idirUserDetails?.userAuthGroup}

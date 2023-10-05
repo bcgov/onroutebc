@@ -3,14 +3,15 @@ import {
   Entity,
   Column,
   PrimaryGeneratedColumn,
-  ManyToMany,
-  JoinTable,
   OneToOne,
+  OneToMany,
 } from 'typeorm';
 import { AutoMap } from '@automapper/classes';
 import { Base } from '../../common/entities/base.entity';
-import { Permit } from 'src/modules/permit/entities/permit.entity';
 import { Receipt } from './receipt.entity';
+import { PaymentMethodType } from '../../../common/enum/payment-method-type.enum';
+import { TransactionType } from '../../../common/enum/transaction-type.enum';
+import { PermitTransaction } from './permit-transaction.entity';
 
 @Entity({ name: 'permit.ORBC_TRANSACTION' })
 export class Transaction extends Base {
@@ -24,16 +25,60 @@ export class Transaction extends Base {
 
   @AutoMap()
   @ApiProperty({
-    example: 'P',
+    example: TransactionType.PURCHASE,
     description:
       'Represents the original value sent to indicate the type of transaction to perform (i.e. P, R, VP, VR, PA, PAC, Q).',
   })
   @Column({
+    type: 'simple-enum',
+    enum: TransactionType,
     length: '3',
     name: 'TRANSACTION_TYPE',
     nullable: false,
   })
-  transactionType: string;
+  transactionTypeId: TransactionType;
+
+  @AutoMap()
+  @ApiProperty({
+    example: PaymentMethodType.WEB,
+    description: 'The identifier of the user selected payment method.',
+  })
+  @Column({
+    type: 'simple-enum',
+    enum: PaymentMethodType,
+    name: 'PAYMENT_METHOD_TYPE',
+    nullable: false,
+  })
+  paymentMethodId: PaymentMethodType;
+
+  @AutoMap()
+  @ApiProperty({
+    example: '30.00',
+    description: 'Represents the total amount of the transaction.',
+  })
+  @Column({
+    type: 'decimal',
+    precision: 9,
+    scale: 2,
+    name: 'TOTAL_TRANSACTION_AMOUNT',
+    nullable: false,
+  })
+  totalTransactionAmount: number;
+
+  @AutoMap()
+  @ApiProperty({
+    example: '2023-07-06T14:49:53.508Z',
+    description:
+      'Represents the date and time that the transaction was submitted (user clicks Pay Now).',
+  })
+  @Column({
+    insert: false,
+    update: false,
+    default: () => 'GETUTCDATETIME()',
+    name: 'TRANSACTION_SUBMIT_DATE',
+    nullable: false,
+  })
+  transactionSubmitDate: Date;
 
   // TODO: Max length is 10?
   @AutoMap()
@@ -54,19 +99,8 @@ export class Transaction extends Base {
     description:
       'Bambora-assigned eight-digit unique id number used to identify an individual transaction.',
   })
-  @Column({ type: 'bigint', name: 'PROVIDER_TRANSACTION_ID' })
-  providerTransactionId: number;
-
-  @AutoMap()
-  @ApiProperty({
-    example: '30.00',
-    description: 'Represents the amount of the transaction.',
-  })
-  @Column({
-    name: 'TRANSACTION_AMOUNT',
-    nullable: false,
-  })
-  transactionAmount: number;
+  @Column({ type: 'bigint', name: 'PG_TRANSACTION_ID' })
+  pgTransactionId: string;
 
   @AutoMap()
   @ApiProperty({
@@ -74,8 +108,8 @@ export class Transaction extends Base {
     description:
       'Represents the approval result of a transaction. 0 = Transaction refused, 1 = Transaction approved',
   })
-  @Column({ type: 'int', name: 'TRANSACTION_APPROVED', nullable: false })
-  approved: number;
+  @Column({ type: 'int', name: 'PG_TRANSACTION_APPROVED', nullable: false })
+  pgApproved: number;
 
   @AutoMap()
   @ApiProperty({
@@ -85,10 +119,10 @@ export class Transaction extends Base {
   })
   @Column({
     length: '32',
-    name: 'AUTH_CODE',
+    name: 'PG_AUTH_CODE',
     nullable: false,
   })
-  authCode: string;
+  pgAuthCode: string;
 
   @AutoMap()
   @ApiProperty({
@@ -97,22 +131,10 @@ export class Transaction extends Base {
   })
   @Column({
     length: '2',
-    name: 'TRANSACTION_CARD_TYPE',
+    name: 'PG_TRANSACTION_CARD_TYPE',
     nullable: false,
   })
-  cardType: string;
-
-  @AutoMap()
-  @ApiProperty({
-    example: '2023-07-06T14:49:53.508Z',
-    description:
-      'Represents the date and time that the transaction was submitted (user clicks Pay Now).',
-  })
-  @Column({
-    name: 'TRANSACTION_SUBMIT_DATE',
-    nullable: false,
-  })
-  transactionSubmitDate: Date;
+  pgCardType: string;
 
   @AutoMap()
   @ApiProperty({
@@ -123,11 +145,10 @@ export class Transaction extends Base {
   @Column({
     insert: false,
     update: false,
-    name: 'TRANSACTION_DATE',
+    name: 'PG_TRANSACTION_DATE',
     nullable: false,
-    type: 'date',
   })
-  transactionDate: Date;
+  pgTransactionDate: Date;
 
   @AutoMap()
   @ApiProperty({
@@ -135,10 +156,10 @@ export class Transaction extends Base {
     description: 'Represents the card cvd match status.',
   })
   @Column({
-    name: 'CVD_ID',
+    name: 'PG_CVD_ID',
     nullable: false,
   })
-  cvdId: number;
+  pgCvdId: number;
 
   @AutoMap()
   @ApiProperty({
@@ -147,21 +168,10 @@ export class Transaction extends Base {
   })
   @Column({
     length: '2',
-    name: 'PAYMENT_METHOD',
+    name: 'PG_PAYMENT_METHOD',
     nullable: false,
   })
-  paymentMethod: string;
-
-  @AutoMap()
-  @ApiProperty({
-    example: 1,
-    description: 'The identifier of the user selected payment method.',
-  })
-  @Column({
-    name: 'PAYMENT_METHOD_ID',
-    nullable: false,
-  })
-  paymentMethodId: number;
+  pgPaymentMethod: string;
 
   @AutoMap()
   @ApiProperty({
@@ -170,11 +180,11 @@ export class Transaction extends Base {
       'References a detailed approved/declined transaction response message.',
   })
   @Column({
-    name: 'MESSAGE_ID',
+    name: 'PG_MESSAGE_ID',
     nullable: false,
     type: 'int',
   })
-  messageId: string;
+  pgMessageId: string;
 
   @AutoMap()
   @ApiProperty({
@@ -184,29 +194,17 @@ export class Transaction extends Base {
   })
   @Column({
     length: '100',
-    name: 'MESSAGE_TEXT',
+    name: 'PG_MESSAGE_TEXT',
     nullable: false,
   })
-  messageText: string;
+  pgMessageText: string;
 
-  // TODO: Implement many to many relationship for permits and transactions
-  // Many permits can be associated with a transaction
-  // Many transactions can be associated with a permit (example: cancelled, paid, refund, etc)
-
-  @ManyToMany(() => Permit, (permit) => permit.transactions)
-  @JoinTable({
-    name: 'permit.ORBC_PERMIT_TRANSACTION',
-    joinColumn: {
-      name: 'TRANSACTION_ID',
-      referencedColumnName: 'transactionId',
-    },
-    inverseJoinColumn: {
-      name: 'PERMIT_ID',
-      referencedColumnName: 'permitId',
-    },
-  })
-  permits: Permit[];
-
-  @OneToOne(() => Receipt, (receipt) => receipt.transactionId)
+  @OneToOne(() => Receipt, (receipt) => receipt.transaction)
   receipt: Receipt;
+
+  @OneToMany(
+    () => PermitTransaction,
+    (permitTransaction) => permitTransaction.transaction,
+  )
+  public permitTransactions: PermitTransaction[];
 }

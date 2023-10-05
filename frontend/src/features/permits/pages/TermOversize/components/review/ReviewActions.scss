@@ -1,0 +1,22 @@
+@import "../../../../../../themes/orbcStyles.scss";
+
+.review-actions {
+  background-color: $bc-white;
+  padding-top: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  & &__btn {
+    &--edit {
+      margin-right: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.625rem;
+    }
+
+    &--continue {
+      font-weight: 600;
+    }
+  }
+}

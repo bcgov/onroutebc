@@ -1,0 +1,24 @@
+@import "../../../../../themes/orbcStyles.scss";
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  background-color: $white;
+  padding: 2em 10%;
+
+  & &__link {
+    color: $bc-text-links-blue;
+    cursor: pointer;
+    text-decoration: underline;
+
+    &--current {
+      text-decoration: none;
+      color: $bc-black;
+      cursor: auto;
+    }
+  }
+
+  & &__right {
+    margin: 0 1rem;
+  }
+}

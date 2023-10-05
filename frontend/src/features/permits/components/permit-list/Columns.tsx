@@ -5,13 +5,6 @@ import { ReadPermitDto } from "../../types/permit";
 import { PermitChip } from "./PermitChip";
 
 /**
- * A boolean indicating if a small badge has to be displayed beside the Permit Number.
- */
-const shouldShowPermitChip = (permitStatus: string) => {
-  return permitStatus === "VOIDED" || permitStatus === "REVOKED";
-};
-
-/**
  * The column definition for Permits.
  */
 export const PermitsColumnDefinition: MRT_ColumnDef<ReadPermitDto>[] = [
@@ -31,9 +24,7 @@ export const PermitsColumnDefinition: MRT_ColumnDef<ReadPermitDto>[] = [
           >
             {props.cell.getValue()}
           </Link>
-          {shouldShowPermitChip(props.row.original.permitStatus) && (
-            <PermitChip permitStatus={props.row.original.permitStatus} />
-          )}
+          <PermitChip permitStatus={props.row.original.permitStatus} />
         </>
       );
     },

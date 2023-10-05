@@ -1,0 +1,131 @@
+@import "../../../../../themes/orbcStyles.scss";
+
+.void-permit__form {
+  padding: 0 10%;
+
+  .form-section {
+    display: flex;
+    flex-direction: row;
+    padding: 2em 0;
+    border-bottom: 1px solid $bc-border-grey;
+
+    &--reason {
+      margin-top: 0.5em;
+    }
+
+    &__label {
+      font-weight: 600;
+      font-size: 1.2rem;
+      width: 40%;
+    }
+
+    &__input-area {
+      width: 60%;
+
+      .void-input {
+        &--reason {
+          border: 1.5px solid $bc-text-box-border-grey;
+          border-radius: 4px;
+          resize: none;
+        }
+
+        &--email {
+          max-width: 375px;
+
+          .custom-form-control {
+            margin: 0;
+          }
+        }
+
+        &--fax {
+          max-width: 375px;
+
+          .custom-form-control {
+            margin: 1em 0 0 0;
+          }
+        }
+
+        &--err {
+          border: 2px solid $bc-red;
+
+          &:focus {
+            outline: transparent;
+          }
+        }
+
+        &__err {
+          color: $bc-red;
+        }
+      }
+
+      .reason-container {
+        display: flex;
+        flex-direction: row;
+        align-items: flex-start;
+
+        &__left {
+          display: flex;
+          flex-direction: column;
+          width: 60%;
+          margin-right: 2rem;
+        }
+
+        &__right {
+          display: flex;
+          flex-direction: column;
+          width: 40%;
+
+          .revoke {
+            display: flex;
+            flex-direction: column;
+            
+            &__header {
+              background-color: $bc-messages-red-text;
+              color: $white;
+              padding: 1em;
+              font-weight: 600;
+              font-size: 1.2rem;
+            }
+
+            &__body {
+              background-color: $bc-messages-red-background;
+              padding: 1em;
+            }
+
+            &__msg {
+              &--bold {
+                font-weight: 600;
+              }
+            }
+
+            &__btn {
+              color: $white;
+              background-color: $bc-red;
+              font-weight: 600;
+              cursor: pointer;
+              margin-top: 1em;
+              width: 100%;
+            }
+          }
+        }
+      }
+
+      .bc-gov-alertbanner {
+        margin: 0;
+      }
+
+      .void-permit-button {
+        &--cancel {
+          background-color: $bc-background-light-grey;
+          color: $bc-black;
+          margin-right: 1.5em;
+          border: none;
+        }
+
+        &--continue {
+          font-weight: 600;
+        }
+      }
+    }
+  }
+}

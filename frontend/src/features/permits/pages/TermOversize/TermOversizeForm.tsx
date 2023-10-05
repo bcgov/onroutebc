@@ -1,40 +1,18 @@
-import { FormProvider, FieldValues } from "react-hook-form";
-import { Box, Button, useMediaQuery, useTheme } from "@mui/material";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSave } from "@fortawesome/free-solid-svg-icons";
+import { FieldValues, FormProvider } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { Application, VehicleDetails as VehicleDetailsType } from "../../types/application";
-import { ContactDetails } from "../../components/form/ContactDetails";
-import { ApplicationDetails } from "../../components/form/ApplicationDetails";
-import { VehicleDetails } from "./form/VehicleDetails/VehicleDetails";
 import { useContext, useState } from "react";
-import { BC_COLOURS } from "../../../../themes/bcGovStyles";
-import { PERMIT_LEFT_COLUMN_WIDTH } from "../../../../themes/orbcStyles";
+
+import { Application } from "../../types/application.d";
 import { ApplicationContext } from "../../context/ApplicationContext";
-import { PermitDetails } from "./form/PermitDetails";
 import { ProgressBar } from "../../components/progressBar/ProgressBar";
-import { ScrollButton } from "../../components/scrollButton/ScrollButton";
-import {
-  useAddPowerUnitMutation,
-  useUpdatePowerUnitMutation,
-  useAddTrailerMutation,
-  useUpdateTrailerMutation,
-  useVehiclesQuery,
-  usePowerUnitTypesQuery,
-  useTrailerTypesQuery,
-} from "../../../manageVehicles/apiManager/hooks";
-import {
-  PowerUnit,
-  Trailer,
-} from "../../../manageVehicles/types/managevehicles";
-import { mapVinToVehicleObject } from "../../helpers/mappers";
 import { useSaveTermOversizeMutation } from "../../hooks/hooks";
 import { SnackBarContext } from "../../../../App";
 import { LeaveApplicationDialog } from "../../components/dialog/LeaveApplicationDialog";
 import { areApplicationDataEqual } from "../../helpers/equality";
 import { useDefaultApplicationFormData } from "../../hooks/useDefaultApplicationFormData";
-import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
+import { PermitForm } from "./components/form/PermitForm";
+import { usePermitVehicleManagement } from "../../hooks/usePermitVehicleManagement";
 
 /**
  * The first step in creating and submitting a TROS Application.
@@ -43,10 +21,6 @@ import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext
 export const TermOversizeForm = () => {
   //The name of this feature that is used for id's, keys, and associating form components
   const FEATURE = "term-oversize";
-
-  // Styling / responsiveness
-  const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.down("lg"));
 
   // Context to hold all of the application data related to the TROS application
   const applicationContext = useContext(ApplicationContext);
@@ -59,6 +33,7 @@ export const TermOversizeForm = () => {
   const { 
     defaultApplicationDataValues: termOversizeDefaultValues,
     formMethods,
+    companyInfo,
   } = useDefaultApplicationFormData(
     applicationContext?.applicationData
   );
@@ -66,6 +41,13 @@ export const TermOversizeForm = () => {
   const submitTermOversizeMutation = useSaveTermOversizeMutation();
   const snackBar = useContext(SnackBarContext);
   const { companyLegalName, onRouteBCClientNumber } = useContext(OnRouteBCContext);
+
+  const {
+    handleSaveVehicle,
+    vehicleOptions,
+    powerUnitTypes,
+    trailerTypes,
+  } = usePermitVehicleManagement();
 
   // Show leave application dialog
   const [showLeaveApplicationDialog, setShowLeaveApplicationDialog] = useState<boolean>(false); 
@@ -150,102 +132,7 @@ export const TermOversizeForm = () => {
       onSaveFailure();
     }
   };
-
-  // Mutations used to add/update vehicle details
-  const addPowerUnitMutation = useAddPowerUnitMutation();
-  const updatePowerUnitMutation = useUpdatePowerUnitMutation();
-  const addTrailerMutation = useAddTrailerMutation();
-  const updateTrailerMutation = useUpdateTrailerMutation();
-
-  // Queries used to populate select options for vehicle details
-  const allVehiclesQuery = useVehiclesQuery();
-  const powerUnitTypesQuery = usePowerUnitTypesQuery();
-  const trailerTypesQuery = useTrailerTypesQuery();
-
-  // Vehicle details that have been fetched by vehicle details queries
-  const fetchedVehicles = getDefaultRequiredVal([], allVehiclesQuery.data);
-  const fetchedPowerUnitTypes = getDefaultRequiredVal([], powerUnitTypesQuery.data);
-  const fetchedTrailerTypes = getDefaultRequiredVal([], trailerTypesQuery.data);
-
-  const handleSaveVehicle = (vehicleData?: VehicleDetailsType) => {
-    // Check if the "add/update vehicle" checkbox was checked by the user
-    if (!vehicleData?.saveVehicle) return;
-
-    // Get the vehicle info from the form
-    const vehicle = vehicleData;
-
-    // Check if the vehicle that is to be saved was created from an existing vehicle
-    const existingVehicle = mapVinToVehicleObject(
-      fetchedVehicles,
-      vehicle.vin
-    );
-
-    const transformByVehicleType = (vehicleFormData: VehicleDetailsType, existingVehicle?: PowerUnit | Trailer): PowerUnit | Trailer => {
-      const defaultPowerUnit: PowerUnit = {
-        powerUnitId: "",
-        unitNumber: "",
-        vin: vehicleFormData.vin,
-        plate: vehicleFormData.plate,
-        make: vehicleFormData.make,
-        year: vehicleFormData.year,
-        countryCode: vehicleFormData.countryCode,
-        provinceCode: vehicleFormData.provinceCode,
-        powerUnitTypeCode: vehicleFormData.vehicleSubType,
-      };
-
-      const defaultTrailer: Trailer = {
-        trailerId: "",
-        unitNumber: "",
-        vin: vehicleFormData.vin,
-        plate: vehicleFormData.plate,
-        make: vehicleFormData.make,
-        year: vehicleFormData.year,
-        countryCode: vehicleFormData.countryCode,
-        provinceCode: vehicleFormData.provinceCode,
-        trailerTypeCode: vehicleFormData.vehicleSubType,
-      };
-
-      switch (vehicleFormData.vehicleType) {
-        case "trailer":
-          return {
-            ...defaultTrailer,
-            trailerId: getDefaultRequiredVal("", (existingVehicle as Trailer)?.trailerId),
-            unitNumber: getDefaultRequiredVal("", existingVehicle?.unitNumber),
-          } as Trailer;
-        case "powerUnit":
-        default:
-          return {
-            ...defaultPowerUnit,
-            unitNumber: getDefaultRequiredVal("", existingVehicle?.unitNumber),
-            powerUnitId: getDefaultRequiredVal("", (existingVehicle as PowerUnit)?.powerUnitId),
-          } as PowerUnit;
-      }
-    };
-
-    // If the vehicle type is a power unit then create a power unit object
-    if (vehicle.vehicleType === "powerUnit") {
-      const powerUnit = transformByVehicleType(vehicle, existingVehicle) as PowerUnit;
-
-      // Either send a PUT or POST request based on powerUnitID
-      if (powerUnit.powerUnitId) {
-        updatePowerUnitMutation.mutate({
-          powerUnit,
-          powerUnitId: powerUnit.powerUnitId,
-        });
-      } else {
-        addPowerUnitMutation.mutate(powerUnit);
-      }
-    } else if (vehicle.vehicleType === "trailer") {
-      const trailer = transformByVehicleType(vehicle, existingVehicle) as Trailer;
-      
-      if (trailer.trailerId) {
-        updateTrailerMutation.mutate({ trailer, trailerId: trailer.trailerId });
-      } else {
-        addTrailerMutation.mutate(trailer);
-      }
-    }
-  };
-
+  
   // Whenever "Leave" button is clicked
   const handleLeaveApplication = () => {
     if (!isApplicationSaved()) {
@@ -266,98 +153,30 @@ export const TermOversizeForm = () => {
   return (
     <>
       <ProgressBar />
-      <Box
-        className="layout-box"
-        sx={{
-          paddingTop: "24px",
-          backgroundColor: BC_COLOURS.white,
-        }}
-      >
-        <Box sx={{ paddingBottom: "80px" }}>
-          <FormProvider {...formMethods}>
-            <ApplicationDetails
-              permitType={termOversizeDefaultValues.permitType}
-              applicationNumber={termOversizeDefaultValues.applicationNumber}
-              createdDateTime={termOversizeDefaultValues.createdDateTime}
-              updatedDateTime={termOversizeDefaultValues.updatedDateTime}
-            />
-            <ContactDetails feature={FEATURE} />
-            <PermitDetails 
-              feature={FEATURE}
-              defaultStartDate={termOversizeDefaultValues.permitData.startDate}
-              defaultDuration={termOversizeDefaultValues.permitData.permitDuration}
-              commodities={termOversizeDefaultValues.permitData.commodities}
-              applicationNumber={termOversizeDefaultValues.applicationNumber}
-            />
-            <VehicleDetails
-              feature={FEATURE}
-              vehicleData={termOversizeDefaultValues.permitData.vehicleDetails}
-              vehicleOptions={fetchedVehicles}
-              powerUnitTypes={fetchedPowerUnitTypes}
-              trailerTypes={fetchedTrailerTypes}
-            />
-          </FormProvider>
-        </Box>
 
-        <Box
-          sx={{
-            position: "fixed",
-            height: "100px",
-            top: "calc(100vh - 100px)",
-            backgroundColor: BC_COLOURS.white,
-            width: "100vw",
-            display: "flex",
-            alignItems: "center",
-            marginLeft: "-60px",
-            marginRight: matches ? "80px" : "60px",
-            paddingRight: "30px",
-            justifyContent: "space-between",
-            borderTop: `1px solid ${BC_COLOURS.bc_text_box_border_grey}`,
-          }}
-        >
-          <Button
-            key="leave-application-button"
-            aria-label="leave"
-            variant="contained"
-            color="secondary"
-            onClick={handleLeaveApplication}
-            data-testid="leave-application-button"
-            sx={{
-              marginLeft: matches
-                ? "20px"
-                : `calc(${PERMIT_LEFT_COLUMN_WIDTH} + 60px)`,
-            }}
-          >
-            Leave
-          </Button>
-          <Box>
-            <Button
-              key="save-TROS-button"
-              aria-label="save"
-              variant="contained"
-              color="tertiary"
-              sx={{ marginLeft: "-420px", marginTop: "40px", display: "flex", alignItems: "center", gap: "10px"}}
-              onClick={() => onSaveApplication()}
-              data-testid="save-application-button"
-            >
-              <FontAwesomeIcon icon={faSave} />
-              Save
-            </Button>
-            <Button
-              key="submit-TROS-button"
-              aria-label="Submit"
-              variant="contained"
-              color="primary"
-              onClick={handleSubmit(onContinue)}
-              sx={{ marginLeft: "-260px", marginTop: "-72px" }}
-              data-testid="continue-application-button"
-            >
-              Continue
-            </Button>
-            <ScrollButton />
-          </Box>
-        </Box>
-      </Box>
+      <FormProvider {...formMethods}>
+        <PermitForm 
+          feature={FEATURE}
+          onLeave={handleLeaveApplication}
+          onSave={() => onSaveApplication()}
+          onContinue={handleSubmit(onContinue)}
+          isAmendAction={false}
+          permitType={termOversizeDefaultValues.permitType}
+          applicationNumber={termOversizeDefaultValues.applicationNumber}
+          permitNumber={termOversizeDefaultValues.permitNumber}
+          createdDateTime={termOversizeDefaultValues.createdDateTime}
+          updatedDateTime={termOversizeDefaultValues.updatedDateTime}
+          permitStartDate={termOversizeDefaultValues.permitData.startDate}
+          permitDuration={termOversizeDefaultValues.permitData.permitDuration}
+          permitCommodities={termOversizeDefaultValues.permitData.commodities}
+          vehicleDetails={termOversizeDefaultValues.permitData.vehicleDetails}
+          vehicleOptions={vehicleOptions}
+          powerUnitTypes={powerUnitTypes}
+          trailerTypes={trailerTypes}
+          companyInfo={companyInfo}
+        />
+      </FormProvider>
+      
       <LeaveApplicationDialog
         onLeaveUnsaved={handleLeaveUnsaved}
         onContinueEditing={handleStayOnApplication}
