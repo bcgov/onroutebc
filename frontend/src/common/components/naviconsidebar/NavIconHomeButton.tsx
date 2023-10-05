@@ -17,7 +17,7 @@ export const NavIconHomeButton = () => {
           <IconButton
             size="medium"
             color="secondary"
-            onClick={() => {navigate(routes.HOME)}}
+            onClick={() => {navigate(routes.IDIR_WELCOME)}}
           >
             <Home />
           </IconButton>
