@@ -42,7 +42,7 @@ export class TransactionProfile extends AutomapperProfile {
         forMember(
           (d) => d.url,
           mapWithArguments((source, { url }) => {
-            return url ? `${url}` : undefined;
+            return url;
           }),
         ),
         forMember(
@@ -63,70 +63,66 @@ export class TransactionProfile extends AutomapperProfile {
         Transaction,
         forMember(
           (d) => d.createdUserGuid,
-          mapWithArguments((createTransactionDto, { userGUID }) => {
+          mapWithArguments((source, { userGUID }) => {
             return userGUID;
           }),
         ),
         forMember(
           (d) => d.createdUser,
-          mapWithArguments((createTransactionDto, { userName }) => {
+          mapWithArguments((source, { userName }) => {
             return userName;
           }),
         ),
         forMember(
           (d) => d.createdUserDirectory,
-          mapWithArguments((createTransactionDto, { directory }) => {
+          mapWithArguments((source, { directory }) => {
             return directory;
           }),
         ),
 
         forMember(
           (d) => d.createdDateTime,
-          mapWithArguments((createTransactionDto, { timestamp }) => {
+          mapWithArguments((source, { timestamp }) => {
             return timestamp;
           }),
         ),
 
         forMember(
           (d) => d.updatedUserGuid,
-          mapWithArguments((createTransactionDto, { userGUID }) => {
+          mapWithArguments((source, { userGUID }) => {
             return userGUID;
           }),
         ),
         forMember(
           (d) => d.updatedUser,
-          mapWithArguments((createTransactionDto, { userName }) => {
+          mapWithArguments((source, { userName }) => {
             return userName;
           }),
         ),
         forMember(
           (d) => d.updatedUserDirectory,
-          mapWithArguments((createTransactionDto, { directory }) => {
+          mapWithArguments((source, { directory }) => {
             return directory;
           }),
         ),
 
         forMember(
           (d) => d.updatedDateTime,
-          mapWithArguments((createTransactionDto, { timestamp }) => {
+          mapWithArguments((source, { timestamp }) => {
             return timestamp;
           }),
         ),
         forMember(
           (d) => d.transactionOrderNumber,
-          mapWithArguments(
-            (createTransactionDto, { transactionOrderNumber }) => {
-              return transactionOrderNumber;
-            },
-          ),
+          mapWithArguments((source, { transactionOrderNumber }) => {
+            return transactionOrderNumber;
+          }),
         ),
         forMember(
           (d) => d.totalTransactionAmount,
-          mapWithArguments(
-            (createTransactionDto, { totalTransactionAmount }) => {
-              return totalTransactionAmount;
-            },
-          ),
+          mapWithArguments((source, { totalTransactionAmount }) => {
+            return totalTransactionAmount;
+          }),
         ),
       );
 
@@ -136,26 +132,26 @@ export class TransactionProfile extends AutomapperProfile {
         Transaction,
         forMember(
           (transaction) => transaction.updatedUserGuid,
-          mapWithArguments((_, { userGUID }) => {
+          mapWithArguments((source, { userGUID }) => {
             return userGUID;
           }),
         ),
         forMember(
           (transaction) => transaction.updatedUser,
-          mapWithArguments((_, { userName }) => {
+          mapWithArguments((source, { userName }) => {
             return userName;
           }),
         ),
         forMember(
           (transaction) => transaction.updatedUserDirectory,
-          mapWithArguments((_, { directory }) => {
+          mapWithArguments((source, { directory }) => {
             return directory;
           }),
         ),
 
         forMember(
           (transaction) => transaction.updatedDateTime,
-          mapWithArguments((_, { timestamp }) => {
+          mapWithArguments((source, { timestamp }) => {
             return timestamp;
           }),
         ),
