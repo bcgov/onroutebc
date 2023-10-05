@@ -412,6 +412,7 @@ export class PermitService {
       newPermit.permitStatus = voidPermitDto.status;
       newPermit.revision = permit.revision + 1;
       newPermit.previousRevision = +permitId;
+      newPermit.comment = voidPermitDto.comment;
       newPermit = Object.assign(newPermit, userMetadata);
 
       let permitData = new PermitData();
