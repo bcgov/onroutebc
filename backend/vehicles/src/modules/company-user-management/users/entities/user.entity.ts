@@ -53,7 +53,7 @@ export class User extends Base {
     type: 'simple-enum',
     enum: UserAuthGroup,
     length: 10,
-    name: 'USER_AUTH_GROUP_ID',
+    name: 'USER_AUTH_GROUP_TYPE',
     nullable: true,
   })
   userAuthGroup: UserAuthGroup;
@@ -67,7 +67,7 @@ export class User extends Base {
     type: 'simple-enum',
     enum: UserStatus,
     length: 10,
-    name: 'STATUS_CODE',
+    name: 'USER_STATUS_TYPE',
     default: 'ACTIVE',
     nullable: false,
   })

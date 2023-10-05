@@ -374,11 +374,11 @@ export class UsersService {
    */
   async getRolesForUser(userGUID: string, companyId = 0): Promise<Role[]> {
     const queryResult = (await this.userRepository.query(
-      'SELECT ROLE_ID FROM access.ORBC_GET_ROLES_FOR_USER_FN(@0,@1)',
+      'SELECT ROLE_TYPE FROM access.ORBC_GET_ROLES_FOR_USER_FN(@0,@1)',
       [userGUID, companyId],
-    )) as [{ ROLE_ID: Role }];
+    )) as [{ ROLE_TYPE: Role }];
 
-    const roles = queryResult.map((r) => r.ROLE_ID);
+    const roles = queryResult.map((r) => r.ROLE_TYPE);
 
     return roles;
   }

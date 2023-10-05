@@ -33,7 +33,7 @@ export class Transaction extends Base {
     type: 'simple-enum',
     enum: TransactionType,
     length: '3',
-    name: 'TRANSACTION_TYPE_ID',
+    name: 'TRANSACTION_TYPE',
     nullable: false,
   })
   transactionTypeId: TransactionType;
@@ -46,7 +46,7 @@ export class Transaction extends Base {
   @Column({
     type: 'simple-enum',
     enum: PaymentMethodType,
-    name: 'PAYMENT_METHOD_ID',
+    name: 'PAYMENT_METHOD_TYPE',
     nullable: false,
   })
   paymentMethodId: PaymentMethodType;

@@ -82,7 +82,7 @@ export class Permit extends Base {
     type: 'simple-enum',
     enum: PermitType,
     length: 10,
-    name: 'PERMIT_TYPE_ID',
+    name: 'PERMIT_TYPE',
     nullable: true,
   })
   permitType: PermitType;
@@ -97,7 +97,7 @@ export class Permit extends Base {
     type: 'simple-enum',
     enum: PermitApprovalSource,
     length: 8,
-    name: 'PERMIT_APPROVAL_SOURCE_ID',
+    name: 'PERMIT_APPROVAL_SOURCE_TYPE',
     nullable: true,
   })
   permitApprovalSource: PermitApprovalSource;
@@ -112,7 +112,7 @@ export class Permit extends Base {
     type: 'simple-enum',
     enum: PermitApplicationOrigin,
     length: 8,
-    name: 'APPLICATION_ORIGIN_ID',
+    name: 'PERMIT_APPLICATION_ORIGIN_TYPE',
     nullable: true,
   })
   permitApplicationOrigin: PermitApplicationOrigin;
@@ -150,7 +150,7 @@ export class Permit extends Base {
   })
   @Column({
     length: 20,
-    name: 'PERMIT_STATUS_ID',
+    name: 'PERMIT_STATUS_TYPE',
     nullable: true,
   })
   permitStatus: ApplicationStatus;

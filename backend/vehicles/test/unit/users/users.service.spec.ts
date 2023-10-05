@@ -235,10 +235,10 @@ describe('UsersService', () => {
   describe('User service getRolesForUser function', () => {
     it('should get the user Roles', async () => {
       repo.query.mockResolvedValue([
-        { ROLE_ID: Role.READ_SELF },
-        { ROLE_ID: Role.READ_USER },
-        { ROLE_ID: Role.WRITE_SELF },
-        { ROLE_ID: Role.WRITE_USER },
+        { ROLE_TYPE: Role.READ_SELF },
+        { ROLE_TYPE: Role.READ_USER },
+        { ROLE_TYPE: Role.WRITE_SELF },
+        { ROLE_TYPE: Role.WRITE_USER },
       ]);
 
       const retUserRoles = await service.getRolesForUser(
