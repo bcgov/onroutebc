@@ -3,6 +3,7 @@ import Button from "@mui/material/Button";
 import { LoginRedirect } from "./LoginRedirect";
 import { Box, Container, Typography } from "@mui/material";
 import { Loading } from "../pages/Loading";
+import { IDPS } from "../types/idp";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const LoginOptions = ({ auth }: any) => (
@@ -13,7 +14,7 @@ const LoginOptions = ({ auth }: any) => (
         variant="contained"
         onClick={() => {
           auth.signinRedirect({
-            extraQueryParams: { kc_idp_hint: "bceidboth" },
+            extraQueryParams: { kc_idp_hint: IDPS.BCEID },
           });
         }}
         sx={{ width: "200px" }}
@@ -27,7 +28,7 @@ const LoginOptions = ({ auth }: any) => (
         variant="contained"
         onClick={() => {
           auth.signinRedirect({
-            extraQueryParams: { kc_idp_hint: "idir" },
+            extraQueryParams: { kc_idp_hint: IDPS.IDIR },
           });
         }}
         sx={{ width: "200px" }}

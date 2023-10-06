@@ -17,6 +17,7 @@ import {
 } from "../../../common/authentication/types";
 import { BCeIDAuthGroup } from "../types/userManagement";
 import { useAuth } from "react-oidc-context";
+import { IDPS } from "../../../common/types/idp";
 
 /**
  * Fetches company info of current user.
@@ -55,7 +56,7 @@ export const useUserContext = () => {
     ) => {
       if (
         isAuthenticated &&
-        userFromToken?.profile?.identity_provider === "idir"
+        userFromToken?.profile?.identity_provider === IDPS.IDIR
       ) {
         const { user } = userContextResponseBody as IDIRUserContextType;
         if (user?.userGUID) {

@@ -16,6 +16,9 @@ import OnRouteBCContext, {
   BCeIDUserDetailContext,
   IDIRUserDetailContext,
 } from "./common/authentication/OnRouteBCContext";
+import { NavIconSideBar } from "./common/components/naviconsidebar/NavIconSideBar";
+import { NavIconHomeButton } from "./common/components/naviconsidebar/NavIconHomeButton";
+import { NavIconReportButton } from "./common/components/naviconsidebar/NavIconReportButton";
 
 const authority =
   import.meta.env.VITE_AUTH0_ISSUER_URL || envConfig.VITE_AUTH0_ISSUER_URL;
@@ -104,6 +107,10 @@ const App = () => {
                 alertType={snackBar.alertType}
               />
               <Router>
+                <NavIconSideBar>
+                  <NavIconHomeButton />
+                  <NavIconReportButton />
+                </NavIconSideBar>
                 <Header />
                 <AppRoutes />
               </Router>

@@ -7,6 +7,7 @@ import { HomePage } from "../../features/homePage/HomePage";
 import { BCeIDUserContextType } from "./types";
 import { Loading } from "../pages/Loading";
 import { useUserContext } from "../../features/manageProfile/apiManager/hooks";
+import { IDPS } from "../types/idp";
 
 /*
  * Redirects user to their correct page after loading their
@@ -25,7 +26,7 @@ export const LoginRedirect = () => {
    */
   useEffect(() => {
     if (isAuthenticated && !isLoading) {
-      if (userFromToken?.profile?.identity_provider === "idir") {
+      if (userFromToken?.profile?.identity_provider === IDPS.IDIR) {
         navigate(routes.IDIR_WELCOME);
       } else {
         const userContextData: BCeIDUserContextType | undefined =
