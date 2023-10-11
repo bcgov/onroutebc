@@ -143,8 +143,6 @@ export class Transaction extends Base {
       'Represents the date and time that the transaction was processed.',
   })
   @Column({
-    insert: false,
-    update: false,
     name: 'PG_TRANSACTION_DATE',
     nullable: false,
   })
