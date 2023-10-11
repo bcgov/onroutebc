@@ -105,7 +105,7 @@ export const PaymentRedirect = () => {
 const mapTransactionDetails = (
   motiResponse: MotiPaymentDetails
 ): CompleteTransactionRequestData => {
-  const dateFormat = 'MM/DD/YYYY h:mm:ss A'
+  const dateFormat = 'YYYY-MM-DD HH:mm:ss'
   return {
     pgTransactionId: motiResponse.trnId,
     pgApproved: Number(motiResponse.trnApproved),
