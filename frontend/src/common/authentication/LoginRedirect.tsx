@@ -3,7 +3,6 @@ import { useEffect } from "react";
 import { useAuth } from "react-oidc-context";
 import { useNavigate } from "react-router-dom";
 import * as routes from "../../routes/constants";
-import { HomePage } from "../../features/homePage/HomePage";
 import { BCeIDUserContextType } from "./types";
 import { Loading } from "../pages/Loading";
 import { useUserContext } from "../../features/manageProfile/apiManager/hooks";
