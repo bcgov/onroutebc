@@ -52,11 +52,6 @@ const Navbar = ({
     >
       <div className="navbar__links">
         <ul>
-          <li>
-            <NavLink to={routes.HOME}>
-              Home
-            </NavLink>
-          </li>
           {isAuthenticated && (
             <>
               {DoesUserHaveRoleWithContext(ROLES.WRITE_PERMIT) && (

@@ -47,7 +47,7 @@ export const LoginRedirect = () => {
           }
           // The user and company exist
           else if (associatedCompanies.length) {
-            navigate(routes.HOME);
+            navigate(routes.APPLICATIONS);
           }
           // User exists but company does not exist. This is not a possible scenario.
           else if (!associatedCompanies.length) {
@@ -68,8 +68,6 @@ export const LoginRedirect = () => {
   }
 
   return (
-    <>
-      <HomePage></HomePage>
-    </>
-  );
+    <></>
+  )
 };

@@ -11,6 +11,10 @@ import { IDPS } from "../../common/types/idp";
  */
 const isIDIRUser = (identityProvider: string) => identityProvider === IDPS.IDIR;
 
+/**
+ * @deprecated - no longer displaying this component, as the default tab is "/application",
+ * but leaving this around to preserve role and/or identity provider info
+ */
 export const HomePage = React.memo(() => {
   const { isAuthenticated, user: userFromToken } = useAuth();
   const userIDP = userFromToken?.profile?.identity_provider as string;
