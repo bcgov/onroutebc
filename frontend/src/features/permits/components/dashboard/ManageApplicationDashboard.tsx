@@ -68,16 +68,16 @@ export const ManageApplicationDashboard = React.memo(() => {
         ),
     },
     {
-      label: "Applications in Review",
-      component: <>TODO</>,
-    },
-    {
       label: "Active Permits",
       component: <ActivePermitList />,
     },
     {
       label: "Expired Permits",
       component: <ExpiredPermitList />,
+    },
+    {
+      label: "Applications in Review",
+      component: <>TODO</>,
     },
   ];
 
