@@ -13,6 +13,29 @@ flowchart TD
     7 --> 8((End))
 ```
 
+The following diagram outlines the flow executed on the same schedule as the SSIS / data migration flow above. This is to be executed from the ORBC environment (backend pod or new pod, TBD)
+
+```mermaid
+flowchart TD
+    1((Start)) --> 2[Retrieve oldest\ncompleted process ID]
+    2 --> 3{A new process\nexists?}
+    3 --> |No| 4((End))
+    3 --> |Yes| 5[Get next permit\nfor process ID]
+    5 --> 6{Next permit\nexists?}
+    6 --> |No| 2
+    6 --> |Yes| 7{Permit already\nexists in ORBC?}
+    7 --> |Yes|5
+    7 --> |No| 8[Move permit data\ninto ORBC tables]
+    8 --> 9[Upload permit\nPDF to S3]
+    9 --> 10[Update processes table\nto show migrated\nby ORBC]
+    10 --> 5
+```
+
+### Notes
+* Retrieving the oldest completed process ID will get the process ID of the record from the ETL processes table that has the oldest END_DATE, and which has a ETL_STATUS code of 0 (meaning no errors), and which has an ORBC_COMPLETE status flag of 0 (meaning ORBC has not yet processed this run).
+* The ORBC routine needs to check that the permit does not already exist in ORBC because we have to be able to handle error scenarios where we get duplicate permit entries from SSIS. This could be due to a run that failed partway through, or due to a change made in TPS that we are not interested in capturing such as an update to the permit notes field.
+* The final step where ORBC updates the process table involves setting the ORBC_COMPLETE flag to 1 for that process.
+
 ## Sequence
 The following diagram outlines the sequence of steps between SSIS (ETL tool), the onRouteBC database, and the TPS database.
 
