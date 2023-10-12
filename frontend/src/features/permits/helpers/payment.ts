@@ -1,4 +1,4 @@
-import { MotiPaymentDetails } from "../types/payment";
+import { PayBCPaymentDetails } from "../types/payment";
 import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../common/helpers/util";
 import { 
   BAMBORA_PAYMENT_METHODS, 
@@ -8,14 +8,14 @@ import {
 } from "../types/PaymentMethod";
 
 /**
- * Extracts MotiPaymentDetails from the query parameters of a URL.
+ * Extracts PayBCPaymentDetails from the query parameters of a URL.
  *
  * @param {URLSearchParams} params - The object containing URL query parameters.
- * @returns {MotiPaymentDetails} The extracted MotiPaymentDetails object.
+ * @returns {PayBCPaymentDetails} The extracted PayBCPaymentDetails object.
  */
-export const getMotiPaymentDetails = (params: URLSearchParams): MotiPaymentDetails => {
-  // Extract the query parameters and assign them to the corresponding properties of MotiPaymentDetails
-  const motiPaymentDetails: MotiPaymentDetails = {
+export const getPayBCPaymentDetails = (params: URLSearchParams): PayBCPaymentDetails => {
+  // Extract the query parameters and assign them to the corresponding properties of PayBCPaymentDetails
+  const payBCPaymentDetails: PayBCPaymentDetails = {
     authCode: getDefaultRequiredVal("", params.get("authCode")),
     avsAddrMatch: getDefaultRequiredVal("", params.get("avsAddrMatch")),
     avsId: getDefaultRequiredVal("", params.get("avsId")),
@@ -46,5 +46,5 @@ export const getMotiPaymentDetails = (params: URLSearchParams): MotiPaymentDetai
     trnType: getDefaultRequiredVal("", params.get("trnType")),
   };
 
-  return motiPaymentDetails;
+  return payBCPaymentDetails;
 };

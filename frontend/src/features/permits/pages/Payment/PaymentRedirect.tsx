@@ -1,8 +1,8 @@
 import { useEffect, useRef } from "react";
 import { Navigate, useSearchParams } from "react-router-dom";
 
-import { getMotiPaymentDetails } from "../../helpers/payment";
-import { CompleteTransactionRequestData, MotiPaymentDetails } from "../../types/payment";
+import { getPayBCPaymentDetails } from "../../helpers/payment";
+import { CompleteTransactionRequestData, PayBCPaymentDetails } from "../../types/payment";
 import { Loading } from "../../../../common/pages/Loading";
 import { useCompleteTransaction, useIssuePermits } from "../../hooks/hooks";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
@@ -22,7 +22,7 @@ export const PaymentRedirect = () => {
   const [searchParams] = useSearchParams();
   const permitIds = searchParams.get("permitIds");
   const transactionId = searchParams.get("transactionId");
-  const paymentDetails = getMotiPaymentDetails(searchParams);
+  const paymentDetails = getPayBCPaymentDetails(searchParams);
   const transaction = mapTransactionDetails(paymentDetails);
 
   const { 
@@ -102,7 +102,7 @@ export const PaymentRedirect = () => {
 };
 
 const mapTransactionDetails = (
-  motiResponse: MotiPaymentDetails
+  motiResponse: PayBCPaymentDetails
 ): CompleteTransactionRequestData => {
   return {
     pgTransactionId: motiResponse.trnId,

@@ -113,14 +113,14 @@ parameters:
   - name: NODE_ENV
     description: The NODE Environment
     required: true
-  - name: MOTIPAY_API_KEY
-    description: API Key for MOTI Pay
+  - name: PAYBC_API_KEY
+    description: API Key for PayBC
     required: true
-  - name: MOTIPAY_MERCHANT_ID
-    description: Merchant ID for MOTI Pay
+  - name: PAYBC_REF_NUMBER
+    description: Reference Number for PayBC
     required: true
-  - name: MOTIPAY_BASE_URL
-    description: Base URL for MOTI Pay
+  - name: PAYBC_BASE_URL
+    description: Base URL for PayBC
     required: true
 objects:
   - apiVersion: v1
@@ -144,7 +144,7 @@ objects:
       vehicles-url: "https://${NAME}-${ZONE}-backend-vehicles.${DOMAIN}"
       front-end-url: "https://${NAME}-${ZONE}-frontend.${DOMAIN}"
       node-env: "${NODE_ENV}"  
-      moti-pay-redirect: "https://${NAME}-${ZONE}-frontend.${DOMAIN}/payment"
+      paybc-redirect: "https://${NAME}-${ZONE}-frontend.${DOMAIN}/payment"
   - apiVersion: v1
     kind: Secret
     metadata:
@@ -156,9 +156,9 @@ objects:
       database-password: "${DATABASE_PASSWORD}"
       ches-client-id: "${CHES_CLIENT_ID}"
       ches-client-secret: "${CHES_CLIENT_SECRET}"
-      moti-pay-api-key: "${MOTIPAY_API_KEY}"
-      moti-pay-merchant-id: "${MOTIPAY_MERCHANT_ID}"
-      moti-pay-base-url: "${MOTIPAY_BASE_URL}"
+      paybc-api-key: "${PAYBC_API_KEY}"
+      paybc-ref-number: "${PAYBC_REF_NUMBER}"
+      paybc-base-url: "${PAYBC_BASE_URL}"
   - apiVersion: v1
     kind: ImageStream
     metadata:
@@ -298,26 +298,26 @@ objects:
                     configMapKeyRef:
                       name: ${NAME}-${ZONE}-${COMPONENT}
                       key: node-env
-                - name: MOTIPAY_API_KEY
+                - name: PAYBC_API_KEY
                   valueFrom:
                     secretKeyRef:
                       name: ${NAME}-${ZONE}-${COMPONENT}
-                      key: moti-pay-api-key
-                - name: MOTIPAY_MERCHANT_ID
+                      key: paybc-api-key
+                - name: PAYBC_REF_NUMBER
                   valueFrom:
                     secretKeyRef:
                       name: ${NAME}-${ZONE}-${COMPONENT}
-                      key: moti-pay-merchant-id
-                - name: MOTIPAY_BASE_URL
+                      key: paybc-ref-number
+                - name: PAYBC_BASE_URL
                   valueFrom:
                     secretKeyRef:
                       name: ${NAME}-${ZONE}-${COMPONENT}
-                      key: moti-pay-base-url
-                - name: MOTIPAY_REDIRECT
+                      key: paybc-base-url
+                - name: PAYBC_REDIRECT
                   valueFrom:
                     configMapKeyRef:
                       name: ${NAME}-${ZONE}-${COMPONENT}
-                      key: moti-pay-redirect
+                      key: paybc-redirect
               ports:
                 - containerPort: 5000
                   protocol: TCP
