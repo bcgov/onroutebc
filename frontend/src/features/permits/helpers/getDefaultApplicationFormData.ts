@@ -19,6 +19,7 @@ import {
   MailingAddress,
   VehicleDetails,
 } from "../types/application";
+import { ReadPermitDto } from "../types/permit";
 
 /**
  * Get default values for contact details, or populate with existing contact details and/or user details
@@ -102,7 +103,7 @@ export const getDefaultVehicleDetails = (vehicleDetails?: VehicleDetails) => ({
   saveVehicle: getDefaultRequiredVal(false, vehicleDetails?.saveVehicle),
 });
 
-export const getDurationOrDefault = (applicationData?: Application): number => {
+export const getDurationOrDefault = (applicationData?: Application | ReadPermitDto): number => {
   return applyWhenNotNullable(
     (duration) => +duration,
     applicationData?.permitData?.permitDuration,
@@ -123,11 +124,13 @@ export const getDefaultValues = (
   userDetails?: BCeIDUserDetailContext
 ) => ({
   companyId: +getDefaultRequiredVal(0, companyId),
+  originalPermitId: getDefaultRequiredVal("", applicationData?.originalPermitId),
+  comment: getDefaultRequiredVal("", applicationData?.comment),
   applicationNumber: getDefaultRequiredVal(
     "",
     applicationData?.applicationNumber
   ),
-  userGuid: getUserGuidFromSession(),
+  userGuid: getDefaultRequiredVal("", applicationData?.userGuid, getUserGuidFromSession()),
   permitId: getDefaultRequiredVal("", applicationData?.permitId),
   permitNumber: getDefaultRequiredVal("", applicationData?.permitNumber),
   permitType: getDefaultRequiredVal(PERMIT_TYPES.TROS, applicationData?.permitType),

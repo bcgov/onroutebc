@@ -22,6 +22,7 @@ import { IDIRSearchResultsDashboard } from "../features/idir/search/pages/IDIRSe
 import { IDIRWelcome } from "../features/idir/IDIRWelcome";
 import { UserInfoWizard } from "../features/wizard/UserInfoWizard";
 import { VoidPermit } from "../features/permits/pages/Void/VoidPermit";
+import { AmendPermit } from "../features/permits/pages/Amend/AmendPermit";
 
 export const AppRoutes = () => {
   return (
@@ -117,6 +118,10 @@ export const AppRoutes = () => {
         <Route 
           path={`${routes.PERMITS}/:permitId/${routes.PERMIT_VOID}`}
           element={<VoidPermit />} 
+        />
+        <Route 
+          path={`${routes.PERMITS}/:permitId/${routes.PERMIT_AMEND}`}
+          element={<AmendPermit />}
         />
       </Route>
       <Route element={<ProtectedRoutes requiredRole={ROLES.WRITE_PERMIT} />}>

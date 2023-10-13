@@ -2,25 +2,22 @@ import { Dayjs } from "dayjs";
 
 import { PermitStatus, PERMIT_STATUSES } from "./PermitStatus";
 import { PermitType } from "./PermitType";
+import { ReplaceDayjsWithString } from "./utility";
 
-/**
- * A type that replaces all direct entries with Dayjs types to string types.
- * 
- * eg. T = { a: Dayjs, b: number } 
- * 
- * then ReplaceDayjsWithString = { a: string, b: number }
- * 
- * eg. T = { a?: Dayjs, b: number }, 
- * 
- * then ReplaceDayjsWithString = { a?: string, b: number }
- */
-type ReplaceDayjsWithString<T> = {
-  [K in keyof T]: T[K] extends Dayjs ? string : (T[K] extends (Dayjs | undefined) ? (string | undefined) : T[K]);
-};
+export const PERMIT_APPLICATION_ORIGINS = {
+  ONLINE: "ONLINE",
+  PPC: "PPC",
+} as const;
 
-type PermitApplicationOrigin = "ONLINE" | "PPC";
+export type PermitApplicationOrigin = typeof PERMIT_APPLICATION_ORIGINS[keyof typeof PERMIT_APPLICATION_ORIGINS];
 
-type PermitApprovalSource = "AUTO" | "PPC" | "TPS";
+export const PERMIT_APPROVAL_SOURCES = {
+  AUTO: "AUTO",
+  PPC: "PPC",
+  TPS: "TPS",
+} as const;
+
+export type PermitApprovalSource = typeof PERMIT_APPROVAL_SOURCES[keyof typeof PERMIT_APPROVAL_SOURCES];
 
 /**
  * A base permit type. This is an incomplete object and meant to be extended for use.
@@ -28,7 +25,7 @@ type PermitApprovalSource = "AUTO" | "PPC" | "TPS";
 export interface Application {
   permitId?: string;
   originalPermitId?: string;
-  comment?: string;
+  comment?: string | null;
   permitStatus?: PermitStatus;
   companyId: number;
   userGuid?: string | null;
@@ -37,8 +34,8 @@ export interface Application {
   permitNumber?: string;
   permitApplicationOrigin?: PermitApplicationOrigin;
   permitApprovalSource?: PermitApprovalSource;
-  revision?: number;
-  previousRevision?: string;
+  revision?: number | null;
+  previousRevision?: string | null;
   createdDateTime?: Dayjs;
   updatedDateTime?: Dayjs;
   permitData: TermOversizeApplication;

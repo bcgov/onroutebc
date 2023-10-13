@@ -1,12 +1,17 @@
-import { useState, useEffect, useContext, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
+import { useForm } from "react-hook-form";
 
 import { Application, Commodities } from "../types/application";
-import OnRouteBCContext from "../../../common/authentication/OnRouteBCContext"; 
-import { useForm } from "react-hook-form";
-import { getDefaultContactDetails, getDefaultMailingAddress, getDefaultValues, getDefaultVehicleDetails } from "../helpers/getDefaultApplicationFormData";
-import { useCompanyInfoQuery } from "../../manageProfile/apiManager/hooks";
+import { BCeIDUserDetailContext } from "../../../common/authentication/OnRouteBCContext"; 
 import { areCommoditiesEqual } from "../helpers/equality";
 import { getDefaultRequiredVal } from "../../../common/helpers/util";
+import { CompanyProfile } from "../../manageProfile/types/manageProfile";
+import { 
+  getDefaultContactDetails, 
+  getDefaultMailingAddress, 
+  getDefaultValues, 
+  getDefaultVehicleDetails,
+} from "../helpers/getDefaultApplicationFormData";
 
 /**
  * Custom hook used to fetch application data and populate the form, as well as fetching current company id and user details.
@@ -14,10 +19,12 @@ import { getDefaultRequiredVal } from "../../../common/helpers/util";
  * @param applicationData Application data received to fill out the form, preferrably from ApplicationContext/backend
  * @returns current companyId, user details, default application data values, its setter method, and methods to manage the form
  */
-export const useDefaultApplicationFormData = (applicationData?: Application) => {
-  const { companyId, userDetails } = useContext(OnRouteBCContext);
-  const companyInfoQuery = useCompanyInfoQuery();
-
+export const useDefaultApplicationFormData = (
+  applicationData?: Application,
+  companyId?: number,
+  userDetails?: BCeIDUserDetailContext,
+  companyInfo?: CompanyProfile,
+) => {
   // initialize the entire form data with default values
   // Use default values (saved data from the TROS application context, or empty values)
   const [defaultApplicationDataValues, setDefaultApplicationDataValues] = useState<Application>(
@@ -53,12 +60,12 @@ export const useDefaultApplicationFormData = (applicationData?: Application) => 
     applicationData?.permitData?.mailingAddress?.countryCode,
     applicationData?.permitData?.mailingAddress?.provinceCode,
     applicationData?.permitData?.mailingAddress?.postalCode,
-    companyInfoQuery.data?.mailingAddress?.addressLine1,
-    companyInfoQuery.data?.mailingAddress?.addressLine2,
-    companyInfoQuery.data?.mailingAddress?.city,
-    companyInfoQuery.data?.mailingAddress?.countryCode,
-    companyInfoQuery.data?.mailingAddress?.provinceCode,
-    companyInfoQuery.data?.mailingAddress?.postalCode,
+    companyInfo?.mailingAddress?.addressLine1,
+    companyInfo?.mailingAddress?.addressLine2,
+    companyInfo?.mailingAddress?.city,
+    companyInfo?.mailingAddress?.countryCode,
+    companyInfo?.mailingAddress?.provinceCode,
+    companyInfo?.mailingAddress?.postalCode,
   ];
 
   // update vehicle details form fields whenever these values are updated
@@ -137,7 +144,7 @@ export const useDefaultApplicationFormData = (applicationData?: Application) => 
   useEffect(() => {
     setValue(
       "permitData.mailingAddress",
-      getDefaultMailingAddress(applicationData?.permitData?.mailingAddress, companyInfoQuery.data?.mailingAddress)
+      getDefaultMailingAddress(applicationData?.permitData?.mailingAddress, companyInfo?.mailingAddress)
     );
   }, mailingAddressDepArray);
 
@@ -154,6 +161,5 @@ export const useDefaultApplicationFormData = (applicationData?: Application) => 
     defaultApplicationDataValues,
     setDefaultApplicationDataValues,
     formMethods,
-    companyInfo: companyInfoQuery.data,
   };
 };

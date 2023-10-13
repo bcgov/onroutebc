@@ -428,3 +428,17 @@ export const voidPermit = async (voidPermitParams: {
     };
   }
 };
+
+/**
+ * Amend a permit.
+ * @param permit permit data for permit to be amended
+ * @returns response with amended permit data, or error if failed
+ */
+export const amendPermit = async (permit: ReadPermitDto) => {
+  return await httpPOSTRequest(
+    PERMITS_API.SUBMIT_TERM_OVERSIZE_PERMIT,
+    replaceEmptyValuesWithNull({
+      ...permit,
+    })
+  );
+};

@@ -1,3 +1,5 @@
+import { useFormContext } from "react-hook-form";
+import { useEffect, useState } from "react";
 import {
   Box,
   FormControl,
@@ -9,8 +11,6 @@ import {
   SelectChangeEvent,
   Typography,
 } from "@mui/material";
-import { useFormContext } from "react-hook-form";
-import { useEffect, useState } from "react";
 
 import { CountryAndProvince } from "../../../../../../../common/components/form/CountryAndProvince";
 import { CustomFormComponent } from "../../../../../../../common/components/form/CustomFormComponents";
@@ -45,6 +45,17 @@ import {
   requiredMessage 
 } from "../../../../../../../common/helpers/validationMessages";
 
+const selectedVehicleSubtype = (vehicle: Vehicle) => {
+  switch (vehicle.vehicleType) {
+    case "powerUnit":
+      return (vehicle as PowerUnit).powerUnitTypeCode;
+    case "trailer":
+      return (vehicle as Trailer).trailerTypeCode;
+    default:
+      return "";
+  }
+};
+
 export const VehicleDetails = ({ 
   feature, 
   vehicleData,
@@ -64,6 +75,12 @@ export const VehicleDetails = ({
     marginLeft: "8px",
   };
 
+  const emptyVehicleSubtype = {
+    "typeCode": "",
+    "type": "",
+    "description": "",
+  };
+
   const { setValue, resetField } = useFormContext();
 
   // Choose vehicle based on either Unit Number or Plate
@@ -71,7 +88,47 @@ export const VehicleDetails = ({
   // Radio button value to decide if the user wants to save the vehicle in inventory
   const [saveVehicle, setSaveVehicle] = useState(false);
   // Options for the vehicle subtype field (based on vehicle type)
-  const [subtypeOptions, setSubtypeOptions] = useState<VehicleType[]>([]);
+  const [subtypeOptions, setSubtypeOptions] = useState<VehicleType[]>([emptyVehicleSubtype]);
+  const [selectedType, setSelectedType] = useState<string | undefined>();
+  const [selectedSubtype, setSelectedSubtype] = useState<string>("");
+  const [selectedVehicle, setSelectedVehicle] = useState<VehicleDetailsType | undefined>();
+
+  useEffect(() => {
+    // Update subtype options when vehicle type changes
+    const subtypes = getEligibleSubtypeOptions(selectedType);
+    setSubtypeOptions(subtypes);
+    setValue(
+      "permitData.vehicleDetails.vehicleType", 
+      getDefaultRequiredVal("", selectedType)
+    );
+  }, [selectedType, powerUnitTypes, trailerTypes]);
+
+  useEffect(() => {
+    if (subtypeOptions.length === 0) {
+      setSubtypeOptions([emptyVehicleSubtype]);
+    } else {
+      // Set selected subtype option to the first option in the list of options
+      const firstSubtypeOption = subtypeOptions[0].typeCode;
+      if (subtypeOptions.map(subtypeOption => subtypeOption.typeCode).includes(selectedSubtype)) {
+        setValue("permitData.vehicleDetails.vehicleSubType", selectedSubtype);
+      } else {
+        setValue("permitData.vehicleDetails.vehicleSubType", firstSubtypeOption);
+      }
+    }
+  }, [subtypeOptions, selectedSubtype]);
+
+  // Whenever context changes, set selected Vehicle details
+  useEffect(() => {
+    setSelectedVehicle(vehicleData);
+  }, [vehicleData]);
+
+  useEffect(() => {
+    if (!selectedVehicle || !selectedVehicle.vin) {
+      clearVehicle();
+    } else {
+      setNewVehicle(selectedVehicle);
+    }
+  }, [selectedVehicle]);
 
   // Returns correct subtype options based on vehicle type
   const getSubtypeOptions = (vehicleType: string) => {
@@ -81,13 +138,13 @@ export const VehicleDetails = ({
     if (vehicleType === "trailer") {
       return [...trailerTypes];
     }
-    return [];
+    return [emptyVehicleSubtype];
   };
 
   // Returns eligible subset of subtype options to be used by select field for vehicle subtype
   const getEligibleSubtypeOptions = (vehicleType?: string) => {
     if (vehicleType !== "powerUnit" && vehicleType !== "trailer") {
-      return [];
+      return [emptyVehicleSubtype];
     }
 
     // Sort vehicle subtypes alphabetically
@@ -108,24 +165,6 @@ export const VehicleDetails = ({
     return eligibleVehicleSubtypes
   };
 
-  // Update subtype options whenever application data (from context) is updated with new values,
-  // or when powerUnitTypes/trailerTypes are queried from backend
-  useEffect(() => {
-    const subtypes = getEligibleSubtypeOptions(
-      getDefaultRequiredVal("", vehicleData?.vehicleType)
-    );
-    setSubtypeOptions(subtypes);
-  }, [vehicleData?.vehicleType, powerUnitTypes, trailerTypes]);
-
-  // Resets vehicle subtype field when vehicle type changes
-  const resetSubtype = (updatedVehicleType?: string) => {
-    // Update subtype options when vehicle type changes
-    const subtypes = getEligibleSubtypeOptions(updatedVehicleType);
-    setSubtypeOptions(subtypes);
-
-    resetField("permitData.vehicleDetails.vehicleSubType", { defaultValue: "" });
-  };
-
   // Clears vehicle details fields
   const clearVehicle = () => {
     // Must reset each specific field this way
@@ -136,8 +175,20 @@ export const VehicleDetails = ({
     resetField("permitData.vehicleDetails.year", { defaultValue: "" });
     resetField("permitData.vehicleDetails.countryCode", { defaultValue: "" });
     resetField("permitData.vehicleDetails.provinceCode", { defaultValue: "" });
-    resetField("permitData.vehicleDetails.vehicleType", { defaultValue: "" });
-    resetSubtype("");
+    setSelectedType(undefined);
+  };
+
+  // Set new vehicle selection
+  const setNewVehicle = (vehicle: VehicleDetailsType) => {
+    setValue("permitData.vehicleDetails.unitNumber", vehicle.unitNumber);
+    setValue("permitData.vehicleDetails.vin", vehicle.vin);
+    setValue("permitData.vehicleDetails.plate", vehicle.plate);
+    setValue("permitData.vehicleDetails.make", vehicle.make);
+    setValue("permitData.vehicleDetails.year", vehicle.year);
+    setValue("permitData.vehicleDetails.countryCode", vehicle.countryCode);
+    setValue("permitData.vehicleDetails.provinceCode", vehicle.provinceCode);
+    setSelectedType(vehicle.vehicleType);
+    setSelectedSubtype(vehicle.vehicleSubType);
   };
 
   // Whenever a new vehicle is selected
@@ -145,20 +196,9 @@ export const VehicleDetails = ({
     const vehicle = mapVinToVehicleObject(vehicleOptions, selectedVehicle.vin);
     if (!vehicle) {
       // vehicle selection is invalid
-      clearVehicle();
+      setSelectedVehicle(undefined);
       return;
     }
-
-    const selectedVehicleSubtype = (vehicle: Vehicle) => {
-      switch (vehicle.vehicleType) {
-        case "powerUnit":
-          return (vehicle as PowerUnit).powerUnitTypeCode;
-        case "trailer":
-          return (vehicle as Trailer).trailerTypeCode;
-        default:
-          return "";
-      }
-    };
 
     // Prepare form fields with values from selected vehicle
     const vehicleDetails = {
@@ -169,15 +209,10 @@ export const VehicleDetails = ({
       year: vehicle.year,
       countryCode: vehicle.countryCode,
       provinceCode: vehicle.provinceCode,
-      vehicleType: vehicle.vehicleType,
+      vehicleType: getDefaultRequiredVal("", vehicle.vehicleType),
       vehicleSubType: selectedVehicleSubtype(vehicle)
     };
-    
-    clearVehicle();
-    setSubtypeOptions(
-      getEligibleSubtypeOptions(vehicle.vehicleType)
-    );
-    setValue("permitData.vehicleDetails", vehicleDetails);
+    setSelectedVehicle(vehicleDetails);
   };
 
   // Set the 'Save to Inventory' radio button to false on render
@@ -198,9 +233,7 @@ export const VehicleDetails = ({
   // Reset the vehicle subtype field whenever a different vehicle type is selected
   const handleChangeVehicleType = (event: SelectChangeEvent) => {
     const updatedVehicleType = event.target.value as string;
-    setValue("permitData.vehicleDetails.vehicleType", updatedVehicleType);
-
-    resetSubtype(updatedVehicleType);
+    setSelectedType(updatedVehicleType);
   };
 
   return (

@@ -20,6 +20,7 @@ import {
   updateTermOversize,
   startTransaction,
   issuePermits,
+  amendPermit,
 } from "../apiManager/permitsAPI";
 
 /**
@@ -262,4 +263,21 @@ export const useIssuePermits = () => {
     mutation,
     issueResults,
   };
+};
+
+/**
+ * A custom react query mutation hook that requests the backend API to amend the permit.
+ */
+export const useAmendPermit = () => {
+  return useMutation({
+    mutationFn: (data: ReadPermitDto) => {
+      return amendPermit(data);
+    },
+    onSuccess: (response) => {
+      if (response.status === 200 || response.status === 201) {
+        return response;
+      }
+      return undefined;
+    },
+  });
 };

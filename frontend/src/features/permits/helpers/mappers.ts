@@ -1,4 +1,6 @@
 import { Dayjs } from "dayjs";
+
+import { ReadPermitDto } from "../types/permit";
 import { applyWhenNotNullable } from "../../../common/helpers/util";
 import {
   PowerUnit,
@@ -140,4 +142,28 @@ export const vehicleTypeDisplayText = (vehicleType: VehicleTypesAsString) => {
     return "Trailer";
   }
   return "Power Unit";
+};
+
+/**
+ * Get a cloned permit.
+ * @param permit Permit to clone
+ * @returns Cloned permit with same fields and nested fields as old permit, but different reference
+ */
+export const clonePermit = (permit: ReadPermitDto): ReadPermitDto => {
+  return {
+    ...permit,
+    permitData: {
+      ...permit.permitData,
+      contactDetails: permit.permitData.contactDetails ? {
+        ...permit.permitData.contactDetails,
+      } : undefined,
+      vehicleDetails: permit.permitData.vehicleDetails ? {
+        ...permit.permitData.vehicleDetails,
+      } : undefined,
+      commodities: [...permit.permitData.commodities],
+      mailingAddress: {
+        ...permit.permitData.mailingAddress,
+      },
+    },
+  };
 };

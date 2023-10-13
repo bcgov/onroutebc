@@ -2,25 +2,8 @@ import { Dayjs } from "dayjs";
 
 import { PermitStatus } from "./PermitStatus";
 import { PermitType } from "./PermitType";
-
-/**
- * A type that replaces all direct entries with Dayjs types to string types.
- *
- * eg. T = { a: Dayjs, b: number }
- *
- * then ReplaceDayjsWithString = { a: string, b: number }
- *
- * eg. T = { a?: Dayjs, b: number },
- *
- * then ReplaceDayjsWithString = { a?: string, b: number }
- */
-type ReplaceDayjsWithString<T> = {
-  [K in keyof T]: T[K] extends Dayjs
-    ? string
-    : T[K] extends Dayjs | undefined
-    ? string | undefined
-    : T[K];
-};
+import { ReplaceDayjsWithString } from "./utility";
+import { PermitApplicationOrigin, PermitApprovalSource } from "./application";
 
 /**
  * A partial permit type. This is an incomplete type and meant to be extended for use.
@@ -37,8 +20,8 @@ interface PartialPermitType {
   permitType: PermitType;
   applicationNumber: string;
   permitNumber: string;
-  permitApprovalSource: string;
-  permitApplicationOrigin: string;
+  permitApprovalSource: PermitApprovalSource;
+  permitApplicationOrigin: PermitApplicationOrigin;
   documentId?: string;
 }
 
