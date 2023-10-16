@@ -6,7 +6,7 @@ import { CompleteTransactionRequestData, PayBCPaymentDetails } from "../../types
 import { Loading } from "../../../../common/pages/Loading";
 import { useCompleteTransaction, useIssuePermits } from "../../hooks/hooks";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
-import { toUtc } from "../../../../common/helpers/formatDate";
+import { DATE_FORMATS, toUtc } from "../../../../common/helpers/formatDate";
 
 const getPermitIdsArray = (permitIds?: string | null) => {
   return getDefaultRequiredVal("", permitIds).split(",").filter(id => id !== "");
@@ -105,13 +105,12 @@ export const PaymentRedirect = () => {
 const mapTransactionDetails = (
   motiResponse: PayBCPaymentDetails
 ): CompleteTransactionRequestData => {
-  const dateFormat = 'YYYY-MM-DD HH:mm:ss'
   return {
     pgTransactionId: motiResponse.trnId,
     pgApproved: Number(motiResponse.trnApproved),
     pgAuthCode: motiResponse.authCode,
     pgCardType: motiResponse.cardType,
-    pgTransactionDate: toUtc(motiResponse.trnDate, dateFormat),
+    pgTransactionDate: toUtc(motiResponse.trnDate, DATE_FORMATS.ISO8601),
     pgCvdId: Number(motiResponse.cvdId),
     pgPaymentMethod: motiResponse.paymentMethod,
     pgMessageId: Number(motiResponse.messageId),
