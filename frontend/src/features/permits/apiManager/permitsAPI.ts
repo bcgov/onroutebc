@@ -323,6 +323,34 @@ export const getPermit = async (permitId?: string): Promise<ReadPermitDto | null
 };
 
 /**
+ * Get current application for amendment, if there is one
+ * @param originalId Original permit id of the permit that is amended.
+ * @returns Permit application information, if any
+ */
+export const getCurrentAmendmentApplication = async (
+  originalId?: string
+): Promise<ReadPermitDto | null> => {
+  if (!originalId) return null;
+  const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
+  let permitsURL = `${VEHICLES_URL}/permits/applications/${originalId}`;
+  const queryParams = [`amendment=true`];
+  if (companyId) {
+    queryParams.push(`companyId=${companyId}`);
+  }
+  if (queryParams.length > 0) {
+    permitsURL += `?${queryParams.join("&")}`;
+  }
+
+  try {
+    const response = await httpGETRequest(permitsURL);
+    if (!response.data) return null;
+    return response.data as ReadPermitDto;
+  } catch (err) {
+    return null;
+  }
+};
+
+/**
  * Retrieve the list of active or expired permits.
  * @param expired If set to true, expired permits will be retrieved.
  * @returns A list of permits.
@@ -441,4 +469,20 @@ export const amendPermit = async (permit: ReadPermitDto) => {
       ...permit,
     })
   );
+};
+
+/**
+ * Modify amendment application.
+ * @param application amendment application data to be modified
+ * @param applicationNumber application number of the amendment application
+ * @returns response with amended permit data, or error if failed
+ */
+export const modifyAmendmentApplication = async ({
+  application,
+  applicationNumber,
+}: {
+  application: Application;
+  applicationNumber: string;
+}) => {
+  return await updateTermOversize(application, applicationNumber);
 };

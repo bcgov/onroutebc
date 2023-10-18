@@ -8,7 +8,7 @@ import { hasPermitExpired } from "../../helpers/permitPDFHelper";
 import { Banner } from "../../../../common/components/dashboard/Banner";
 import { useMultiStepForm } from "../../hooks/useMultiStepForm";
 import { AmendPermitContext } from "./context/AmendPermitContext";
-import { usePermitDetailsQuery } from "../../hooks/hooks";
+import { useAmendmentApplicationQuery, usePermitDetailsQuery, usePermitHistoryQuery } from "../../hooks/hooks";
 import { Loading } from "../../../../common/pages/Loading";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { USER_AUTH_GROUP } from "../../../manageProfile/types/userManagement.d";
@@ -63,25 +63,30 @@ export const AmendPermit = () => {
   const { idirUserDetails } = useContext(OnRouteBCContext);
   const navigate = useNavigate();
 
-  // Query for permit data whenever this page is rendered
+  // Query for permit data whenever this page is rendered, for the permit id
   const { permit } = usePermitDetailsQuery(permitId);
 
-  // Original permit to use for comparison (of which fields changed in the Review page)
-  const [originalPermit, setOriginalPermit] = useState<ReadPermitDto | null | undefined>(permit);
+  // Get original permit id for the permit
+  const originalPermitId = permit?.originalPermitId;
+
+  // Get permit history for original permit id
+  const { permitHistory } = usePermitHistoryQuery(originalPermitId);
+
+  // Get latest amendment application, if any
+  const { amendmentApplication } = useAmendmentApplicationQuery(originalPermitId);
 
   // Permit form data, populated whenever permit is fetched
   const [permitFormData, setPermitFormData] = useState<AmendPermitFormData>(
-    getPermitFormDefaultValues(permit)
+    getPermitFormDefaultValues(amendmentApplication ? amendmentApplication : permit)
   );
 
-  // Set the original permit to the current permit whenever the permit is updated
   useEffect(() => {
-    if (typeof originalPermit === "undefined" && typeof permit !== "undefined") {
-      setOriginalPermit(permit);
-    }
-
-    setPermitFormData(getPermitFormDefaultValues(permit));
-  }, [permit]);
+    setPermitFormData(
+      getPermitFormDefaultValues(
+        amendmentApplication ? amendmentApplication : permit
+      )
+    );
+  }, [amendmentApplication, permit]);
 
   const {
     currentStepIndex,
@@ -134,7 +139,12 @@ export const AmendPermit = () => {
     });
   };
 
-  if (typeof permit === "undefined") {
+  const isLoadingState = () => {
+    return typeof permit === "undefined" 
+      || typeof amendmentApplication === "undefined";
+  };
+
+  if (isLoadingState()) {
     return <Loading />;
   }
 
@@ -153,9 +163,9 @@ export const AmendPermit = () => {
   return (
     <AmendPermitContext.Provider
       value={{
-        permit: originalPermit,
-        setPermit: setOriginalPermit,
-        updatedPermitFormData: permitFormData,
+        permit,
+        permitFormData,
+        permitHistory,
         setPermitFormData,
         next,
         back,

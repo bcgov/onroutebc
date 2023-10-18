@@ -21,6 +21,8 @@ import {
   startTransaction,
   issuePermits,
   amendPermit,
+  getCurrentAmendmentApplication,
+  modifyAmendmentApplication,
 } from "../apiManager/permitsAPI";
 
 /**
@@ -269,15 +271,75 @@ export const useIssuePermits = () => {
  * A custom react query mutation hook that requests the backend API to amend the permit.
  */
 export const useAmendPermit = () => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (data: ReadPermitDto) => {
       return amendPermit(data);
     },
     onSuccess: (response) => {
+      queryClient.invalidateQueries({
+        queryKey: ["permit"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["amendmentApplication"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["permitHistory"],
+      });
+
       if (response.status === 200 || response.status === 201) {
         return response;
       }
       return undefined;
     },
   });
+};
+
+export const useModifyAmendmentApplication = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: modifyAmendmentApplication,
+    onSuccess: (response) => {
+      queryClient.invalidateQueries({
+        queryKey: ["permit"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["amendmentApplication"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["permitHistory"],
+      });
+      if (response.status === 200 || response.status === 201) {
+        return response;
+      }
+      return undefined;
+    },
+  });
+};
+
+/**
+ * A custom react query hook that gets the current amendment application, if there is one.
+ * @param originalPermitId Original permit id of the permit that is being amended.
+ * @returns Current application used for amendment, or null/undefined
+ */
+export const useAmendmentApplicationQuery = (originalPermitId?: string) => {
+  const [amendmentApplication, setAmendmentApplication] = useState<ReadPermitDto | null | undefined>(undefined);
+  
+  const isIdInvalid = !originalPermitId;
+  const query = useQuery({
+    queryKey: ["amendmentApplication"],
+    queryFn: () => getCurrentAmendmentApplication(originalPermitId),
+    enabled: !isIdInvalid,
+    retry: false,
+    refetchOnMount: "always",
+    refetchOnWindowFocus: false, // prevent unnecessary multiple queries on page showing up in foreground
+    onSuccess: (application) => {
+      setAmendmentApplication(application);
+    },
+  });
+
+  return {
+    query,
+    amendmentApplication,
+  };
 };

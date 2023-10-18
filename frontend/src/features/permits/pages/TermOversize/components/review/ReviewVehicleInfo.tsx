@@ -10,17 +10,22 @@ import {
   formatCountry,
   formatProvince,
 } from "../../../../../../common/helpers/formatCountryProvince";
+import { DiffChip } from "./DiffChip";
 
 export const ReviewVehicleInfo = ({
   vehicleDetails,
   vehicleWasSaved,
   powerUnitTypes,
   trailerTypes,
+  showChangedFields = false,
+  oldFields,
 }: {
   vehicleDetails?: VehicleDetails;
   vehicleWasSaved?: boolean;
   powerUnitTypes?: VehicleType[];
   trailerTypes?: VehicleType[];
+  showChangedFields?: boolean;
+  oldFields?: VehicleDetails;
 }) => {
   const DisplayVehicleType = () => {
     const vehicleTypeCode = vehicleDetails?.vehicleType;
@@ -44,6 +49,82 @@ export const ReviewVehicleInfo = ({
     return typeObject?.type;
   };
 
+  const changedFields = showChangedFields ? {
+    unit: (vehicleDetails?.unitNumber && !oldFields?.unitNumber) 
+      || (!vehicleDetails?.unitNumber && oldFields?.unitNumber)
+      || (
+        vehicleDetails?.unitNumber 
+        && oldFields?.unitNumber 
+        && vehicleDetails.unitNumber !== oldFields.unitNumber
+      ),
+    vin: (vehicleDetails?.vin && !oldFields?.vin) 
+      || (!vehicleDetails?.vin && oldFields?.vin)
+      || (
+        vehicleDetails?.vin 
+        && oldFields?.vin 
+        && vehicleDetails.vin !== oldFields.vin
+      ),
+    plate: (vehicleDetails?.plate && !oldFields?.plate) 
+      || (!vehicleDetails?.plate && oldFields?.plate)
+      || (
+        vehicleDetails?.plate 
+        && oldFields?.plate 
+        && vehicleDetails.plate !== oldFields.plate
+      ),
+    make: (vehicleDetails?.make && !oldFields?.make) 
+      || (!vehicleDetails?.make && oldFields?.make)
+      || (
+        vehicleDetails?.make 
+        && oldFields?.make 
+        && vehicleDetails.make !== oldFields.make
+      ),
+    year: (vehicleDetails?.year && !oldFields?.year) 
+      || (!vehicleDetails?.year && oldFields?.year)
+      || (
+        vehicleDetails?.year 
+        && oldFields?.year 
+        && vehicleDetails.year !== oldFields.year
+      ),
+    country: (vehicleDetails?.countryCode && !oldFields?.countryCode) 
+      || (!vehicleDetails?.countryCode && oldFields?.countryCode)
+      || (
+        vehicleDetails?.countryCode 
+        && oldFields?.countryCode 
+        && vehicleDetails.countryCode !== oldFields.countryCode
+      ),
+    province: (vehicleDetails?.provinceCode && !oldFields?.provinceCode) 
+      || (!vehicleDetails?.provinceCode && oldFields?.provinceCode)
+      || (
+        vehicleDetails?.provinceCode 
+        && oldFields?.provinceCode 
+        && vehicleDetails.provinceCode !== oldFields.provinceCode
+      ),
+    type: (vehicleDetails?.vehicleType && !oldFields?.vehicleType) 
+      || (!vehicleDetails?.vehicleType && oldFields?.vehicleType)
+      || (
+        vehicleDetails?.vehicleType 
+        && oldFields?.vehicleType 
+        && vehicleDetails.vehicleType !== oldFields.vehicleType
+      ),
+    subtype: (vehicleDetails?.vehicleSubType && !oldFields?.vehicleSubType) 
+      || (!vehicleDetails?.vehicleSubType && oldFields?.vehicleSubType)
+      || (
+        vehicleDetails?.vehicleSubType 
+        && oldFields?.vehicleSubType 
+        && vehicleDetails.vehicleSubType !== oldFields.vehicleSubType
+      ),
+  } : {
+    unit: false,
+    vin: false,
+    plate: false,
+    make: false,
+    year: false,
+    country: false,
+    province: false,
+    type: false,
+    subtype: false,
+  };
+
   return (
     <Box className="review-vehicle-info">
       <Box className="review-vehicle-info__header">
@@ -54,7 +135,10 @@ export const ReviewVehicleInfo = ({
       <Box className="review-vehicle-info__body">
         <Box className="info-section">
           <Typography className="info-section__label">
-            Unit #
+            <span className="info-section__label-text">Unit #</span>
+            {changedFields.unit ? (
+              <DiffChip />
+            ) : null}
           </Typography>
           <Typography 
             className="info-section__data"
@@ -64,6 +148,9 @@ export const ReviewVehicleInfo = ({
           </Typography>
           <Typography className="info-section__label">
             VIN <span className="info-section__label--indicator">(last 6 digits)</span>
+            {changedFields.vin ? (
+              <DiffChip />
+            ) : null}
           </Typography>
           <Typography 
             className="info-section__data"
@@ -72,7 +159,10 @@ export const ReviewVehicleInfo = ({
             {vehicleDetails?.vin}
           </Typography>
           <Typography className="info-section__label">
-            Plate
+            <span className="info-section__label-text">Plate</span>
+            {changedFields.plate ? (
+              <DiffChip />
+            ) : null}
           </Typography>
           <Typography 
             className="info-section__data"
@@ -81,7 +171,10 @@ export const ReviewVehicleInfo = ({
             {vehicleDetails?.plate}
           </Typography>
           <Typography className="info-section__label">
-            Make
+            <span className="info-section__label-text">Make</span>
+            {changedFields.make ? (
+              <DiffChip />
+            ) : null}
           </Typography>
           <Typography 
             className="info-section__data"
@@ -90,7 +183,10 @@ export const ReviewVehicleInfo = ({
             {vehicleDetails?.make}
           </Typography>
           <Typography className="info-section__label">
-            Year
+            <span className="info-section__label-text">Year</span>
+            {changedFields.year ? (
+              <DiffChip />
+            ) : null}
           </Typography>
           <Typography 
             className="info-section__data"
@@ -99,7 +195,10 @@ export const ReviewVehicleInfo = ({
             {vehicleDetails?.year}
           </Typography>
           <Typography className="info-section__label">
-            Country
+            <span className="info-section__label-text">Country</span>
+            {changedFields.country ? (
+              <DiffChip />
+            ) : null}
           </Typography>
           <Typography 
             className="info-section__data"
@@ -108,7 +207,12 @@ export const ReviewVehicleInfo = ({
             {formatCountry(vehicleDetails?.countryCode)}
           </Typography>
           <Typography className="info-section__label">
-            Province / State
+            <span className="info-section__label-text">
+              Province / State
+            </span>
+            {changedFields.province ? (
+              <DiffChip />
+            ) : null}
           </Typography>
           <Typography 
             className="info-section__data"
@@ -120,7 +224,10 @@ export const ReviewVehicleInfo = ({
             )}
           </Typography>
           <Typography className="info-section__label">
-            Vehicle Type
+            <span className="info-section__label-text">Vehicle Type</span>
+            {changedFields.type ? (
+              <DiffChip />
+            ) : null}
           </Typography>
           <Typography 
             className="info-section__data"
@@ -129,7 +236,10 @@ export const ReviewVehicleInfo = ({
             {DisplayVehicleType()}
           </Typography>
           <Typography className="info-section__label">
-            Vehicle Sub-type
+            <span className="info-section__label-text">Vehicle Sub-type</span>
+            {changedFields.subtype ? (
+              <DiffChip />
+            ) : null}
           </Typography>
           <Typography 
             className="info-section__data"

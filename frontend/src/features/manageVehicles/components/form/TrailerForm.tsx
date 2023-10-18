@@ -37,12 +37,14 @@ interface TrailerFormProps {
    * If valid and available, the form will be in an editable state.
    */
   trailerId?: string;
+  
+  companyId: string;
 }
 
 /**
  * @returns React component containing the form for adding or editing a power unit.
  */
-export const TrailerForm = ({ trailer }: TrailerFormProps) => {
+export const TrailerForm = ({ trailer, companyId }: TrailerFormProps) => {
   // Default values to register with React Hook Forms
   // If data was passed to this component, then use that data, otherwise use empty or undefined values
   const trailerDefaultValues = {
@@ -92,6 +94,7 @@ export const TrailerForm = ({ trailer }: TrailerFormProps) => {
           // need to explicitly convert form values to number here (since we can't use valueAsNumber prop)
           year: !isNaN(Number(data.year)) ? Number(data.year) : data.year,
         },
+        companyId,
       });
       if (result.status === 200) {
         snackBar.setSnackBar({
@@ -105,10 +108,14 @@ export const TrailerForm = ({ trailer }: TrailerFormProps) => {
     } else {
       const trailerToBeAdded = data as Trailer;
       const result = await addTrailerMutation.mutateAsync({
-        ...trailerToBeAdded,
-        // need to explicitly convert form values to number here (since we can't use valueAsNumber prop)
-        year: !isNaN(Number(data.year)) ? Number(data.year) : data.year,
+        trailer: {
+          ...trailerToBeAdded,
+          // need to explicitly convert form values to number here (since we can't use valueAsNumber prop)
+          year: !isNaN(Number(data.year)) ? Number(data.year) : data.year,
+        },
+        companyId,
       });
+
       if (result.status === 200 || result.status === 201) {
         snackBar.setSnackBar({
           showSnackbar: true,

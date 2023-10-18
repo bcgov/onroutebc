@@ -7,18 +7,43 @@ import { Commodities } from "../../../../types/application";
 import { ReviewConditionsTable } from "./ReviewConditionsTable";
 import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../../../../common/helpers/util";
 import { DATE_FORMATS, dayjsToLocalStr } from "../../../../../../common/helpers/formatDate";
+import { DiffChip } from "./DiffChip";
 
 export const ReviewPermitDetails = ({
   startDate,
   permitDuration,
   expiryDate,
   conditions,
+  showChangedFields = false,
+  oldStartDate,
+  oldDuration,
 }: {
   startDate?: Dayjs;
   permitDuration?: number;
   expiryDate?: Dayjs;
   conditions?: Commodities[];
+  showChangedFields?: boolean;
+  oldStartDate?: Dayjs;
+  oldDuration?: number;
 }) => {
+  const changedFields = showChangedFields ? {
+    startDate: applyWhenNotNullable(
+      (dayJsObject) => dayjsToLocalStr(dayJsObject, DATE_FORMATS.DATEONLY_SLASH),
+      startDate,
+      ""
+    ) !== applyWhenNotNullable(
+      (dayJsObject) => dayjsToLocalStr(dayJsObject, DATE_FORMATS.DATEONLY_SLASH),
+      oldStartDate,
+      ""
+    ),
+    duration: (permitDuration && !oldDuration) 
+      || (!permitDuration && oldDuration)
+      || (permitDuration && oldDuration && permitDuration !== oldDuration),
+  } : {
+    startDate: false,
+    duration: false,
+  };
+
   return (
     <Box className="review-permit-details">
       <Box className="review-permit-details__header">
@@ -29,7 +54,12 @@ export const ReviewPermitDetails = ({
       <Box className="review-permit-details__body">
         <Box className="permit-dates">
           <Typography className="permit-dates__label">
-            Start Date:
+            <span className="permit-dates__label-text">
+              Start Date
+            </span>
+            {changedFields.startDate ? (
+              <DiffChip />
+            ) : null}
           </Typography>
           <Typography 
             className="permit-dates__data"
@@ -42,7 +72,12 @@ export const ReviewPermitDetails = ({
             )}
           </Typography>
           <Typography className="permit-dates__label">
-            Permit Duration:
+            <span className="permit-dates__label-text">
+              Permit Duration
+            </span>
+            {changedFields.duration ? (
+              <DiffChip />
+            ) : null}
           </Typography>
           <Typography 
             className="permit-dates__data"

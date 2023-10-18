@@ -9,23 +9,22 @@ import {
   Vehicle,
 } from "../types/managevehicles";
 
+import { replaceEmptyValuesWithNull } from "../../../common/helpers/util";
+import { VEHICLES_URL } from "../../../common/apiManager/endpoints/endpoints";
 import {
   httpPOSTRequest,
   httpPUTRequest,
-  getCompanyIdFromSession,
   httpGETRequest,
 } from "../../../common/apiManager/httpRequestHandler";
-import { replaceEmptyValuesWithNull } from "../../../common/helpers/util";
-import { VEHICLES_URL } from "../../../common/apiManager/endpoints/endpoints";
 
 /**
  * Fetch*
  * All Power Unit and Trailer Data
  * @return An array of combined PowerUnit and Trailers
  */
-export const getAllVehicles = async (): Promise<(PowerUnit | Trailer)[]> => {
-  const powerUnits = await getAllPowerUnits();
-  const trailers = await getAllTrailers();
+export const getAllVehicles = async (companyId: string): Promise<(PowerUnit | Trailer)[]> => {
+  const powerUnits = await getAllPowerUnits(companyId);
+  const trailers = await getAllTrailers(companyId);
 
   powerUnits.forEach((p: PowerUnit) => {
     p.vehicleType = "powerUnit";
@@ -45,8 +44,8 @@ export const getAllVehicles = async (): Promise<(PowerUnit | Trailer)[]> => {
  * All Power Unit Data
  * @return {*}  {Promise<void>}
  */
-export const getAllPowerUnits = async (): Promise<PowerUnit[]> => {
-  const url = `${VEHICLES_URL}/companies/${getCompanyIdFromSession()}/vehicles/powerUnits`;
+export const getAllPowerUnits = async (companyId: string): Promise<PowerUnit[]> => {
+  const url = `${VEHICLES_URL}/companies/${companyId}/vehicles/powerUnits`;
   return httpGETRequest(url).then((response) => response.data);
 };
 
@@ -55,8 +54,8 @@ export const getAllPowerUnits = async (): Promise<PowerUnit[]> => {
  * @param powerUnitId The powerUnitId
  * @returns A Promise<Response> containing the API response.
  */
-export const getPowerUnit = async (powerUnitId: string): Promise<PowerUnit> => {
-  const url = `${VEHICLES_URL}/companies/${getCompanyIdFromSession()}/vehicles/powerUnits/${powerUnitId}`;
+export const getPowerUnit = async (powerUnitId: string, companyId: string): Promise<PowerUnit> => {
+  const url = `${VEHICLES_URL}/companies/${companyId}/vehicles/powerUnits/${powerUnitId}`;
   return httpGETRequest(url).then((response) => response.data);
 };
 
@@ -74,8 +73,14 @@ export const getPowerUnitTypes = async (): Promise<Array<VehicleType>> => {
  * @param {PowerUnit} powerUnit The power unit to be added
  * @returns Promise containing the response from the create powerUnit API.
  */
-export const addPowerUnit = async (powerUnit: PowerUnit) => {
-  const url = `${VEHICLES_URL}/companies/${getCompanyIdFromSession()}/vehicles/powerUnits`;
+export const addPowerUnit = async ({
+  powerUnit, 
+  companyId,
+}: {
+  powerUnit: PowerUnit;
+  companyId: string;
+}) => {
+  const url = `${VEHICLES_URL}/companies/${companyId}/vehicles/powerUnits`;
   return await httpPOSTRequest(url, replaceEmptyValuesWithNull(powerUnit));
 };
 
@@ -87,11 +92,13 @@ export const addPowerUnit = async (powerUnit: PowerUnit) => {
 export const updatePowerUnit = async ({
   powerUnit,
   powerUnitId,
+  companyId,
 }: {
   powerUnit: UpdatePowerUnit;
   powerUnitId: string;
+  companyId: string;
 }) => {
-  const url = `${VEHICLES_URL}/companies/${getCompanyIdFromSession()}/vehicles/powerUnits/${powerUnitId}`;
+  const url = `${VEHICLES_URL}/companies/${companyId}/vehicles/powerUnits/${powerUnitId}`;
   return await httpPUTRequest(url, replaceEmptyValuesWithNull(powerUnit));
 };
 
@@ -99,8 +106,8 @@ export const updatePowerUnit = async ({
  * Fetch All Trailer Data
  * @return {Promise<Trailer[]>}  An array of trailers.
  */
-export const getAllTrailers = async (): Promise<Trailer[]> => {
-  const url = `${VEHICLES_URL}/companies/${getCompanyIdFromSession()}/vehicles/trailers`;
+export const getAllTrailers = async (companyId: string): Promise<Trailer[]> => {
+  const url = `${VEHICLES_URL}/companies/${companyId}/vehicles/trailers`;
   return httpGETRequest(url).then((response) => response.data);
 };
 
@@ -109,8 +116,8 @@ export const getAllTrailers = async (): Promise<Trailer[]> => {
  * @param trailerId The trailer to be retrieved.
  * @returns A Promise<Trailer> with data from the API.
  */
-export const getTrailer = async (trailerId: string): Promise<Trailer> => {
-  const url = `${VEHICLES_URL}/companies/${getCompanyIdFromSession()}/vehicles/trailers/${trailerId}`;
+export const getTrailer = async (trailerId: string, companyId: string): Promise<Trailer> => {
+  const url = `${VEHICLES_URL}/companies/${companyId}/vehicles/trailers/${trailerId}`;
   return httpGETRequest(url).then((response) => response.data);
 };
 
@@ -121,9 +128,10 @@ export const getTrailer = async (trailerId: string): Promise<Trailer> => {
  */
 export const getVehicleById = async (
   vehicleId: string,
-  vehicleType: VehicleTypesAsString
+  vehicleType: VehicleTypesAsString,
+  companyId: string,
 ): Promise<Vehicle> => {
-  let url = `${VEHICLES_URL}/companies/${getCompanyIdFromSession()}/vehicles`;
+  let url = `${VEHICLES_URL}/companies/${companyId}/vehicles`;
   if (vehicleType === "powerUnit") {
     url += `/powerUnits/${vehicleId}`;
   } else {
@@ -146,8 +154,14 @@ export const getTrailerTypes = async (): Promise<Array<VehicleType>> => {
  * @param {Trailer} trailer The trailer to be added
  * @returns Promise containing the response from the create trailer API.
  */
-export const addTrailer = async (trailer: Trailer) => {
-  const url = `${VEHICLES_URL}/companies/${getCompanyIdFromSession()}/vehicles/trailers`;
+export const addTrailer = async ({
+  trailer,
+  companyId,
+}: {
+  trailer: Trailer; 
+  companyId: string;
+}) => {
+  const url = `${VEHICLES_URL}/companies/${companyId}/vehicles/trailers`;
   return await httpPOSTRequest(url, replaceEmptyValuesWithNull(trailer));
 };
 
@@ -160,11 +174,13 @@ export const addTrailer = async (trailer: Trailer) => {
 export const updateTrailer = async ({
   trailerId,
   trailer,
+  companyId,
 }: {
   trailerId: string;
   trailer: UpdateTrailer;
+  companyId: string;
 }) => {
-  const url = `${VEHICLES_URL}/companies/${getCompanyIdFromSession()}/vehicles/trailers/${trailerId}`;
+  const url = `${VEHICLES_URL}/companies/${companyId}/vehicles/trailers/${trailerId}`;
   return await httpPUTRequest(url, replaceEmptyValuesWithNull(trailer));
 };
 
@@ -176,15 +192,16 @@ export const updateTrailer = async ({
  */
 export const deleteVehicles = async (
   vehicleIds: Array<string>,
-  vehicleType: VehicleTypesAsString
+  vehicleType: VehicleTypesAsString,
+  companyId: string,
 ) => {
   let url: string | null = null;
   let requestBody: { powerUnits: Array<string> } | { trailers: Array<string> };
   if (vehicleType === "powerUnit") {
-    url = `${VEHICLES_URL}/companies/${getCompanyIdFromSession()}/vehicles/powerUnits/delete-requests`;
+    url = `${VEHICLES_URL}/companies/${companyId}/vehicles/powerUnits/delete-requests`;
     requestBody = { powerUnits: vehicleIds };
   } else {
-    url = `${VEHICLES_URL}/companies/${getCompanyIdFromSession()}/vehicles/trailers/delete-requests`;
+    url = `${VEHICLES_URL}/companies/${companyId}/vehicles/trailers/delete-requests`;
     requestBody = { trailers: vehicleIds };
   }
   return await httpPOSTRequest(url, replaceEmptyValuesWithNull(requestBody));

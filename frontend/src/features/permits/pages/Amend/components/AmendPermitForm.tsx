@@ -2,7 +2,7 @@ import { useContext } from "react";
 import { FieldValues, FormProvider } from "react-hook-form";
 
 import "./AmendPermitForm.scss";
-import { useAmendPermit as useAmendPermitMutation } from "../../../hooks/hooks";
+import { useAmendPermit as useAmendPermitMutation, useModifyAmendmentApplication } from "../../../hooks/hooks";
 import { usePermitVehicleManagement } from "../../../hooks/usePermitVehicleManagement";
 import { useAmendPermit } from "../hooks/useAmendPermit";
 import { SnackBarContext } from "../../../../../App";
@@ -10,28 +10,32 @@ import { AmendPermitContext } from "../context/AmendPermitContext";
 import { PermitForm } from "../../TermOversize/components/form/PermitForm";
 import { ReadPermitDto } from "../../../types/permit";
 import { useCompanyInfoDetailsQuery } from "../../../../manageProfile/apiManager/hooks";
+import { Breadcrumb } from "../../../../../common/components/breadcrumb/Breadcrumb";
+import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../../../common/helpers/util";
 import { 
   AmendPermitFormData, 
   mapFormDataToPermit, 
   mapPermitToFormData,
 } from "../types/AmendPermitFormData";
-import { Breadcrumb } from "../../../../../common/components/breadcrumb/Breadcrumb";
 
 export const AmendPermitForm = () => {
   const { 
-    updatedPermitFormData, 
+    permit,
+    permitFormData, 
     setPermitFormData,
+    currentStepIndex,
     next,
     goHome,
     getLinks,
   } = useContext(AmendPermitContext);
 
-  const { formData, formMethods } = useAmendPermit(updatedPermitFormData);
+  const { formData, formMethods } = useAmendPermit(currentStepIndex === 0, permitFormData);
 
   //The name of this feature that is used for id's, keys, and associating form components
   const FEATURE = "amend-permit";
 
   const amendPermitMutation = useAmendPermitMutation();
+  const modifyAmendmentMutation = useModifyAmendmentApplication();
   const snackBar = useContext(SnackBarContext);
 
   const {
@@ -39,7 +43,7 @@ export const AmendPermitForm = () => {
     vehicleOptions,
     powerUnitTypes,
     trailerTypes,
-  } = usePermitVehicleManagement();
+  } = usePermitVehicleManagement(`${formData.companyId}`);
 
   const { handleSubmit, getValues } = formMethods;
 
@@ -47,7 +51,7 @@ export const AmendPermitForm = () => {
   const companyInfo = companyInfoQuery.data;
 
   // Helper method to return form field values as an ReadPermitDto object
-  const permitFormData = (data: FieldValues) => {
+  const transformPermitFormData = (data: FieldValues) => {
     return {
       ...data,
       permitData: {
@@ -64,7 +68,7 @@ export const AmendPermitForm = () => {
 
   // When "Continue" button is clicked
   const onContinue = async (data: FieldValues) => {
-    const permitToBeAmended = permitFormData(data);
+    const permitToBeAmended = transformPermitFormData(data);
     const vehicleData = permitToBeAmended.permitData.vehicleDetails;
     handleSaveVehicle(vehicleData);
 
@@ -78,7 +82,7 @@ export const AmendPermitForm = () => {
     snackBar.setSnackBar({
       showSnackbar: true,
       setShowSnackbar: () => true,
-      message: `Permit ${responseData.permitNumber} amended successfully.`,
+      message: `Amendment application ${responseData.applicationNumber} created/updated.`,
       alertType: "success",
     });
 
@@ -95,10 +99,24 @@ export const AmendPermitForm = () => {
   };
 
   const onSaveApplication = async (additionalSuccessAction?: () => void) => {
-    const permitToBeAmended = permitFormData(getValues());
-    console.log(mapFormDataToPermit(permitToBeAmended));
-    /*
-    const response = await amendPermitMutation.mutateAsync(
+    const permitToBeAmended = transformPermitFormData(getValues());
+    const shouldUpdateApplication = permitToBeAmended.permitId !== permit?.permitId;
+    const response = shouldUpdateApplication ? await modifyAmendmentMutation.mutateAsync({
+      applicationNumber: permitToBeAmended.applicationNumber,
+      application: {
+        ...permitToBeAmended,
+        permitId: `${permitToBeAmended.permitId}`,
+        previousRevision: applyWhenNotNullable(
+          (prevRev) => `${prevRev}`,
+          permitToBeAmended.previousRevision
+        ),
+        permitData: {
+          ...permitToBeAmended.permitData,
+          companyName: getDefaultRequiredVal("", permitToBeAmended.permitData.companyName),
+          clientNumber: getDefaultRequiredVal("", permitToBeAmended.permitData.clientNumber),
+        }
+      },
+    }) : await amendPermitMutation.mutateAsync(
       mapFormDataToPermit(permitToBeAmended)
     );
     
@@ -109,7 +127,6 @@ export const AmendPermitForm = () => {
     } else {
       onSaveFailure();
     }
-    */
   };
 
   return (

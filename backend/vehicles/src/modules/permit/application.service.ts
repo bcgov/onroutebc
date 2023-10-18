@@ -48,6 +48,7 @@ import { Transaction } from '../payment/entities/transaction.entity';
 import { Receipt } from '../payment/entities/receipt.entity';
 import { convertUtcToPt } from '../../common/helper/date-time.helper';
 import { Directory } from 'src/common/enum/directory.enum';
+import { ReadPermitDto } from './dto/response/read-permit.dto';
 
 @Injectable()
 export class ApplicationService {
@@ -779,6 +780,34 @@ export class ApplicationService {
       }),
       Transaction,
       ReadTransactionDto,
+    );
+  }
+
+  async findCurrentAmendmentApplication(originalPermitId: string): Promise<ReadPermitDto> {
+    const application = await this.permitRepository
+      .createQueryBuilder('permit')
+      .innerJoinAndSelect('permit.permitData', 'permitData')
+      .where('permit.originalPermitId = :originalPermitId', {
+        originalPermitId: originalPermitId,
+      })
+      .andWhere('permit.permitStatus IN (:...applicationStatus)', {
+        applicationStatus: Object.values(ApplicationStatus).filter(
+          (x) =>
+            x != ApplicationStatus.CANCELLED &&
+            x != ApplicationStatus.REJECTED &&
+            x != ApplicationStatus.ISSUED &&
+            x != ApplicationStatus.REVOKED &&
+            x != ApplicationStatus.VOIDED &&
+            x != ApplicationStatus.SUPERSEDED,
+        ),
+      })
+      .orderBy('permit.revision', 'DESC')
+      .getOne();
+
+    return await this.classMapper.mapAsync(
+      application,
+      Permit,
+      ReadPermitDto,
     );
   }
 

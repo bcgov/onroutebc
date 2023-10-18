@@ -11,4 +11,5 @@ export interface PermitHistory {
   pgPaymentMethod: BamboraPaymentMethod | null;
   pgCardType: CardType | null;
   transactionTypeId: TransactionType;
+  permitId: number;
 }

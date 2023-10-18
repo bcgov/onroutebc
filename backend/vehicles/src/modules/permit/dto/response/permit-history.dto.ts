@@ -70,4 +70,11 @@ export class PermitHistoryDto {
       'Represents the original value sent to indicate the type of transaction to perform.',
   })
   transactionTypeId: TransactionType;
+
+  @AutoMap()
+  @ApiProperty({
+    example: 1,
+    description: 'Represents the id of a permit.',
+  })
+  permitId: number;
 }

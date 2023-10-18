@@ -2,11 +2,12 @@ import { createContext } from "react";
 
 import { ReadPermitDto } from "../../../types/permit";
 import { AmendPermitFormData } from "../types/AmendPermitFormData";
+import { PermitHistory } from "../../../types/PermitHistory";
 
 interface AmendPermitContextType {
   permit?: ReadPermitDto | null;
-  updatedPermitFormData?: AmendPermitFormData | null;
-  setPermit: (permit?: ReadPermitDto | null) => void;
+  permitFormData?: AmendPermitFormData | null;
+  permitHistory: PermitHistory[];
   setPermitFormData: (formData: AmendPermitFormData) => void;
   back: () => void;
   next: () => void;
@@ -18,7 +19,7 @@ interface AmendPermitContextType {
 }
 
 export const AmendPermitContext = createContext<AmendPermitContextType>({
-  setPermit: () => undefined,
+  permitHistory: [],
   setPermitFormData: () => undefined,
   back: () => undefined,
   next: () => undefined,

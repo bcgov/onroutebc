@@ -14,6 +14,7 @@ import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext
 import { PermitForm } from "./components/form/PermitForm";
 import { usePermitVehicleManagement } from "../../hooks/usePermitVehicleManagement";
 import { useCompanyInfoQuery } from "../../../manageProfile/apiManager/hooks";
+import { applyWhenNotNullable } from "../../../../common/helpers/util";
 
 /**
  * The first step in creating and submitting a TROS Application.
@@ -54,7 +55,9 @@ export const TermOversizeForm = () => {
     vehicleOptions,
     powerUnitTypes,
     trailerTypes,
-  } = usePermitVehicleManagement();
+  } = usePermitVehicleManagement(
+    applyWhenNotNullable(companyIdNum => `${companyIdNum}`, companyId, "0")
+  );
 
   // Show leave application dialog
   const [showLeaveApplicationDialog, setShowLeaveApplicationDialog] = useState<boolean>(false); 

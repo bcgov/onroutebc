@@ -16,11 +16,13 @@ import { getVehicleById } from "../../apiManager/vehiclesAPI";
 import { PowerUnit, Trailer } from "../../types/managevehicles";
 import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { DATE_FORMATS, toLocal } from "../../../../common/helpers/formatDate";
+import { getCompanyIdFromSession } from "../../../../common/apiManager/httpRequestHandler";
 
 export const EditVehicleDashboard = React.memo(
   ({ editVehicleMode }: { editVehicleMode: VEHICLE_TYPES_ENUM }) => {
     const navigate = useNavigate();
     const { vehicleId } = useParams();
+    const companyId = getDefaultRequiredVal("0", getCompanyIdFromSession());
 
     const isEditPowerUnit = (editVehicleMode: VEHICLE_TYPES_ENUM) => 
       editVehicleMode === VEHICLE_TYPES_ENUM.POWER_UNIT;
@@ -34,7 +36,8 @@ export const EditVehicleDashboard = React.memo(
           vehicleId as string,
           isEditPowerUnit(editVehicleMode)
             ? "powerUnit"
-            : "trailer"
+            : "trailer",
+          companyId
         ),
       { retry: false, enabled: true }
     );
@@ -167,10 +170,10 @@ export const EditVehicleDashboard = React.memo(
               "Trailer Details"}
           </Typography>
           {!isLoading && editVehicleMode === VEHICLE_TYPES_ENUM.POWER_UNIT && (
-            <PowerUnitForm powerUnit={vehicleToEdit as PowerUnit} />
+            <PowerUnitForm powerUnit={vehicleToEdit as PowerUnit} companyId={companyId} />
           )}
           {!isLoading && editVehicleMode === VEHICLE_TYPES_ENUM.TRAILER && (
-            <TrailerForm trailer={vehicleToEdit as Trailer} />
+            <TrailerForm trailer={vehicleToEdit as Trailer} companyId={companyId} />
           )}
         </Box>
       </>

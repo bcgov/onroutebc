@@ -6,12 +6,14 @@ import {
   getDefaultForPermitForm, 
 } from "../types/AmendPermitFormData";
 
-export const useAmendPermit = (updatedPermitFormData?: AmendPermitFormData | null) => {
+export const useAmendPermit = (
+  repopulateFormData: boolean,
+  updatedPermitFormData?: AmendPermitFormData | null
+) => {
   const formData = getDefaultForPermitForm(updatedPermitFormData);
 
   // Register default values with react-hook-form
   const formMethods = useForm<AmendPermitFormData>({
-    // defaultValues: getDefaultForPermitForm(permitRef.current),
     defaultValues: formData,
     reValidateMode: "onBlur",
   });
@@ -20,7 +22,7 @@ export const useAmendPermit = (updatedPermitFormData?: AmendPermitFormData | nul
 
   useEffect(() => {
     reset(getDefaultForPermitForm(updatedPermitFormData));
-  }, [updatedPermitFormData]);
+  }, [updatedPermitFormData, repopulateFormData]);
 
   return {
     formData,
