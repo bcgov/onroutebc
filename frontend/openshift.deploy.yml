@@ -120,6 +120,9 @@ parameters:
     required: true  
   - name: PAYBC_BASE_URL
     description: Base URL for PayBC
+    required: true
+  - name: GL_CODE
+    description: Gl code for PayBC
     required: true    
 objects:
   - apiVersion: v1

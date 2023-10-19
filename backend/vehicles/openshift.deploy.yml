@@ -122,6 +122,9 @@ parameters:
   - name: PAYBC_BASE_URL
     description: Base URL for PayBC
     required: true
+    - name: GL_CODE
+    description: Gl code for PayBC
+    required: true
 objects:
   - apiVersion: v1
     kind: ConfigMap
@@ -159,6 +162,7 @@ objects:
       paybc-api-key: "${PAYBC_API_KEY}"
       paybc-ref-number: "${PAYBC_REF_NUMBER}"
       paybc-base-url: "${PAYBC_BASE_URL}"
+      gl-code: "${GL_CODE}"
   - apiVersion: v1
     kind: ImageStream
     metadata:
@@ -318,6 +322,11 @@ objects:
                     configMapKeyRef:
                       name: ${NAME}-${ZONE}-${COMPONENT}
                       key: paybc-redirect
+                - name: GL_CODE
+                  valueFrom:
+                    configMapKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: gl-code
               ports:
                 - containerPort: 5000
                   protocol: TCP

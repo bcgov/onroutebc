@@ -86,7 +86,7 @@ export class PaymentService {
     `&glDate=${date}` +
     `&paymentMethod=CC` +
     `&currency=CAD` +
-    `&revenue=1:${process.env.glcode}:${transaction.totalTransactionAmount}`;
+    `&revenue=1:039.18ACE.14691.8928.1800000.000000.0000:${transaction.totalTransactionAmount}`;
 
     // Generate the hash using the query string and the MD5 algorithm
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access

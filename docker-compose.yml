@@ -66,6 +66,7 @@ services:
       PAYBC_REF_NUMBER: ${PAYBC_REF_NUMBER}
       PAYBC_BASE_URL: ${PAYBC_BASE_URL}
       PAYBC_REDIRECT: ${PAYBC_REDIRECT}
+      GL_CODE: ${GL_CODE}
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5000/"]
       interval: 1m30s
