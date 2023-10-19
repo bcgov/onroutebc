@@ -149,9 +149,6 @@ export const PowerUnitForm = ({ powerUnit }: PowerUnitFormProps) => {
               label: "Unit #",
               width: formFieldStyle.width,
             }}
-            i18options={{
-              label_i18: "vehicle.power-unit.unit-number",
-            }}
           />
 
           <CustomFormComponent
@@ -165,9 +162,6 @@ export const PowerUnitForm = ({ powerUnit }: PowerUnitFormProps) => {
               },
               label: "Make",
               width: formFieldStyle.width,
-            }}
-            i18options={{
-              label_i18: "vehicle.power-unit.make",
             }}
           />
 
@@ -217,9 +211,6 @@ export const PowerUnitForm = ({ powerUnit }: PowerUnitFormProps) => {
               },
               label: "Plate",
               width: formFieldStyle.width,
-            }}
-            i18options={{
-              label_i18: "vehicle.power-unit.plate",
             }}
           />
 
