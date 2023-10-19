@@ -114,11 +114,11 @@ export const getPermitFormDefaultValues = (permit?: ReadPermitDto | null): Amend
       permitData: {
         ...permit.permitData,
         startDate: applyWhenNotNullable(
-          (startAt) => utcToLocalDayjs(startAt),
+          (startAt) => toLocalDayjs(startAt),
           permit.permitData?.startDate,
         ),
         expiryDate: applyWhenNotNullable(
-          (endAt) => utcToLocalDayjs(endAt),
+          (endAt) => toLocalDayjs(endAt),
           permit.permitData?.expiryDate
         ),
         companyName: getDefaultRequiredVal("", permit.permitData?.companyName),
