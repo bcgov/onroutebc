@@ -71,22 +71,22 @@ export class PaymentService {
         )
       : `${process.env.PAYBC_REDIRECT}`;
 
-      const date = new Date().toISOString().split('T')[0];
+    const date = new Date().toISOString().split('T')[0];
 
     // There should be a better way of doing this which is not as rigid - something like
     // dynamically removing the hashValue param from the actual query string instead of building
     // it up manually below, but this is sufficient for now.
     const queryString =
-    `pbcRefNumber=${process.env.PAYBC_REF_NUMBER}` +
-    `&description=DirectSale` +
-    `&trnNumber=${transaction.transactionOrderNumber}` +
-    `&trnAmount=${transaction.totalTransactionAmount}` +
-    `&redirectUri=${redirectUrl}` +
-    `&trnDate=${date}` +
-    `&glDate=${date}` +
-    `&paymentMethod=CC` +
-    `&currency=CAD` +
-    `&revenue=1:039.18ACE.14691.8928.1800000.000000.0000:${transaction.totalTransactionAmount}`;
+      `pbcRefNumber=${process.env.PAYBC_REF_NUMBER}` +
+      `&description=DirectSale` +
+      `&trnNumber=${transaction.transactionOrderNumber}` +
+      `&trnAmount=${transaction.totalTransactionAmount}` +
+      `&redirectUri=${redirectUrl}` +
+      `&trnDate=${date}` +
+      `&glDate=${date}` +
+      `&paymentMethod=CC` +
+      `&currency=CAD` +
+      `&revenue=1:039.18ACE.14691.8928.1800000.000000.0000:${transaction.totalTransactionAmount}`;
 
     // Generate the hash using the query string and the MD5 algorithm
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
