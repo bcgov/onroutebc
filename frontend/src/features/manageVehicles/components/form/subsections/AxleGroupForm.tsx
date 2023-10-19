@@ -1,5 +1,4 @@
 import { useFormContext } from "react-hook-form";
-import { useTranslation } from "react-i18next";
 import "./VehicleForm.scss";
 import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
@@ -30,20 +29,18 @@ interface AxleGroupFormProps {
  * @returns A react component with axle group form fields.
  */
 export const AxleGroupForm = ({ axleGroup }: AxleGroupFormProps) => {
-  const translationPrefix = "vehicle.axle-group";
   const { register } = useFormContext();
 
   const boldTextStyle = {
     fontWeight: "bold",
   };
 
-  const { t } = useTranslation();
   return (
     <div id="axle-group-form">
       <div>
         <FormControl margin="normal">
           <FormLabel id="axle-front-group-radiogroup" sx={boldTextStyle}>
-            {t(`${translationPrefix}.axle-front-group`)}
+            Axle Front Group
           </FormLabel>
           <RadioGroup
             row
@@ -56,17 +53,17 @@ export const AxleGroupForm = ({ axleGroup }: AxleGroupFormProps) => {
             <FormControlLabel
               value={AxleFrontGroup.Single}
               control={<Radio />}
-              label={t(`${translationPrefix}.axle-front-group.single`)}
+              label="Single"
             />
             <FormControlLabel
               value={AxleFrontGroup.Tandem}
               control={<Radio />}
-              label={t(`${translationPrefix}.axle-front-group.tandem`)}
+              label="Tandem"
             />
             <FormControlLabel
               value={AxleFrontGroup.Tridem}
               control={<Radio />}
-              label={t(`${translationPrefix}.axle-front-group.tridem`)}
+              label="Tridem"
             />
           </RadioGroup>
         </FormControl>
@@ -74,7 +71,7 @@ export const AxleGroupForm = ({ axleGroup }: AxleGroupFormProps) => {
       <div>
         <FormControl margin="normal">
           <FormLabel id="axle-type-front-radiogroup" sx={boldTextStyle}>
-            {t(`${translationPrefix}.axle-type-front`)}
+            Axle Type Front
           </FormLabel>
           <RadioGroup
             row
@@ -87,12 +84,12 @@ export const AxleGroupForm = ({ axleGroup }: AxleGroupFormProps) => {
             <FormControlLabel
               value={AxleType.Steering}
               control={<Radio />}
-              label={t(`${translationPrefix}.axle-type.steering`)}
+              label="Steering"
             />
             <FormControlLabel
               value={AxleType.Drive}
               control={<Radio />}
-              label={t(`${translationPrefix}.axle-type.drive`)}
+              label="Drive"
             />
           </RadioGroup>
         </FormControl>
@@ -100,7 +97,7 @@ export const AxleGroupForm = ({ axleGroup }: AxleGroupFormProps) => {
       <div>
         <FormControl margin="normal">
           <FormLabel id="axle-type-rear-radiogroup" sx={boldTextStyle}>
-            {t(`${translationPrefix}.axle-type-rear`)}
+            Axle Type Rear
           </FormLabel>
           <RadioGroup
             row
@@ -113,12 +110,12 @@ export const AxleGroupForm = ({ axleGroup }: AxleGroupFormProps) => {
             <FormControlLabel
               value={AxleType.Steering}
               control={<Radio />}
-              label={t(`${translationPrefix}.axle-type.steering`)}
+              label="Steering"
             />
             <FormControlLabel
               value={AxleType.Drive}
               control={<Radio />}
-              label={t(`${translationPrefix}.axle-type.drive`)}
+              label="Drive"
             />
           </RadioGroup>
         </FormControl>
@@ -127,7 +124,7 @@ export const AxleGroupForm = ({ axleGroup }: AxleGroupFormProps) => {
         {/* <FormLabel>{t('vehicle.axle-group.axle-group-number')}</FormLabel> */}
         <FormControl margin="normal">
           <FormLabel id="axle-group-number-label" sx={boldTextStyle}>
-            {t("vehicle.axle-group.axle-group-number")}
+            Axle Group Number
           </FormLabel>
           <OutlinedInput
             aria-labelledby="axle-group-number-label"
@@ -138,7 +135,7 @@ export const AxleGroupForm = ({ axleGroup }: AxleGroupFormProps) => {
       <div>
         <FormControl margin="normal">
           <FormLabel id="axle-group-spacing-label" sx={boldTextStyle}>
-            {t("vehicle.axle-group.axle-group-spacing")}
+            Axle Group Spacing
           </FormLabel>
           <OutlinedInput
             aria-labelledby="axle-group-spacing-label"
@@ -150,7 +147,7 @@ export const AxleGroupForm = ({ axleGroup }: AxleGroupFormProps) => {
       <div>
         <FormControl margin="normal">
           <FormLabel id="interaxle-spread-front-label" sx={boldTextStyle}>
-            {t("vehicle.axle-group.interaxle-spread-front")}
+            Interaxle Spread Front (m)
           </FormLabel>
           <OutlinedInput
             aria-labelledby="interaxle-spread-front-label"
@@ -162,7 +159,7 @@ export const AxleGroupForm = ({ axleGroup }: AxleGroupFormProps) => {
       <div>
         <FormControl margin="normal">
           <FormLabel id="interaxle-spread-rear-label" sx={boldTextStyle}>
-            {t("vehicle.axle-group.interaxle-spread-rear")}
+            Interaxle Spread Rear (m)
           </FormLabel>
           <OutlinedInput
             aria-labelledby="interaxle-spread-rear-label"
@@ -174,7 +171,7 @@ export const AxleGroupForm = ({ axleGroup }: AxleGroupFormProps) => {
       <div>
         <FormControl margin="normal">
           <FormLabel id="interaxle-spread-front-label" sx={boldTextStyle}>
-            {t("vehicle.axle-group.interaxle-spread-front")}
+            Number of Tires Front
           </FormLabel>
           <OutlinedInput
             aria-labelledby="interaxle-spread-front-label"
@@ -186,7 +183,7 @@ export const AxleGroupForm = ({ axleGroup }: AxleGroupFormProps) => {
       <div>
         <FormControl margin="normal">
           <FormLabel id="number-of-tires-rear-label" sx={boldTextStyle}>
-            {t("vehicle.axle-group.number-of-tires-rear")}
+            Number of Tires Rear
           </FormLabel>
           <OutlinedInput
             aria-labelledby="number-of-tires-rear-label"
