@@ -67,7 +67,7 @@ export const getErrorMessage = (errors: any, fieldPath: string): string => {
  * @param options These options are used to customize the component through styles, validation rules, and TanStack React Query integration
  * @param name The name of the field, which is the Unique name of your input.
  * @param rules Validation rules such as required, min, max, etc
- * @param label Text to label the field. Must be identical to the value in i18/translations/en.json if integrating with i18
+ * @param label Text to label the field.
  * @param inputProps MUI component attributes applied to the html input element.
  * @param width Width of the MUI Box container that contains all of the code for the form component. Defaults t0 520px
  * @param customHelperText Non-bold text to appear in parenthesis beside the label
