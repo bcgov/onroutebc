@@ -6,7 +6,6 @@ import {
   RegisterOptions,
   useFormContext,
 } from "react-hook-form";
-import { useTranslation } from "react-i18next";
 import { ORBC_FormTypes } from "../../types/common";
 import { CustomDatePicker } from "./subFormComponents/CustomDatePicker";
 import { CustomOutlinedInput } from "./subFormComponents/CustomOutlinedInput";
@@ -20,7 +19,6 @@ export interface CustomFormComponentProps<T extends FieldValues> {
   type: "input" | "select" | "phone" | "datePicker";
   feature: string;
   options: CustomFormOptionsProps<T>;
-  i18options?: InternationalOptionsProps;
   menuOptions?: JSX.Element[];
   className?: string;
   disabled?: boolean;
@@ -38,15 +36,6 @@ interface CustomFormOptionsProps<T extends FieldValues> {
   width?: string;
   customHelperText?: string;
   inputType?: "number"; // currently only support number, add "date", "email" and other types later
-}
-
-/**
- * Optional Internationalization properties
- */
-interface InternationalOptionsProps {
-  label_i18?: string;
-  inValidMessage_i18?: string;
-  inValidMessage_fieldName_i18?: string;
 }
 
 /**
@@ -81,7 +70,6 @@ export const getErrorMessage = (errors: any, fieldPath: string): string => {
  * @param label Text to label the field. Must be identical to the value in i18/translations/en.json if integrating with i18
  * @param inputProps MUI component attributes applied to the html input element.
  * @param width Width of the MUI Box container that contains all of the code for the form component. Defaults t0 520px
- * @param i18options Optional Internationalization integration using i18
  * @param customHelperText Non-bold text to appear in parenthesis beside the label
  * @param menuOptions Menu items array for MUI Select component
  *
@@ -99,7 +87,6 @@ export const CustomFormComponent = <T extends ORBC_FormTypes>({
     customHelperText,
     inputType, // currently only used for "input" types, add for "select" types later
   },
-  i18options,
   menuOptions,
   className,
   disabled,
@@ -109,7 +96,6 @@ export const CustomFormComponent = <T extends ORBC_FormTypes>({
     control,
     formState: { errors },
   } = useFormContext();
-  const { t } = useTranslation();
 
   /**
    * Function to check the rules object for either required or required: { value: true}
@@ -190,7 +176,7 @@ export const CustomFormComponent = <T extends ORBC_FormTypes>({
                 id={`${feature}-${name}-label`}
                 sx={{ fontWeight: "bold", marginBottom: "8px" }}
               >
-                {i18options?.label_i18 ? t(i18options?.label_i18) : label}
+                {label}
                 {!isRequired() && (
                   <span style={{ fontWeight: "normal" }}> (optional)</span>
                 )}
@@ -207,11 +193,7 @@ export const CustomFormComponent = <T extends ORBC_FormTypes>({
                   data-testid={`alert-${name}`} 
                   error
                 >
-                  {i18options?.inValidMessage_i18
-                    ? t(i18options?.inValidMessage_i18, {
-                        fieldName: label,
-                      })
-                    : getErrorMessage(errors, name)}
+                  {getErrorMessage(errors, name)}
                 </FormHelperText>
               )}
             </FormControl>

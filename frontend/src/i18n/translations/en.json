@@ -32,13 +32,7 @@
   "vehicle.axle-group.interaxle-spread-front": "Interaxle Spread Front (m)",
   "vehicle.axle-group.interaxle-spread-rear": "Interaxle Spread Rear (m)",
   "vehicle.axle-group.number-of-tires-front": "Number of Tires Front",
-  "vehicle.axle-group.number-of-tires-rear": "Number of Tires Rear",
+  "vehicle.axle-group.number-of-tires-rear": "v",
   "vehicle.form.add-axle-group": "Add Axle Group",
-  "vehicle.form.submit": "Add Vehicle",
-
-  "profile.dashboard.profile": "Profile",
-  "profile.company-info": "Company Information",
-  "profile.my-info": "My Information",
-  "profile.user-management": "User Management",
-  "profile.payment-info": "Payment Information"
+  "vehicle.form.submit": "Add Vehicle"
 }

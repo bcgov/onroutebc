@@ -11,7 +11,3 @@ import "vitest-canvas-mock";
     VITE_API_VEHICLE_URL: "http://localhost:5000",
   };
 })();
-
-vi.mock("react-i18next", () => ({
-  useTranslation: () => ({ t: (key: any) => key }),
-}));
