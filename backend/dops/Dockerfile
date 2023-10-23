@@ -53,17 +53,6 @@ RUN npm ci --only=prod && \
     npm list rimraf && \
     npm run build
 
-
-
-# Create and Assign permissions to npm folder
-RUN mkdir /.npm && chmod 777 /.npm
-
-# Install packages, build and keep only prod packages
-RUN npm ci
-RUN npm run build
-RUN npm prune --production
-
-
 # Set node to production
 ENV NODE_ENV production
 
