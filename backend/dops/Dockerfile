@@ -89,5 +89,5 @@ ENV ACCESS_API_URL ${ACCESS_API_URL}
 EXPOSE 5001
 
 # Start up command
-ENTRYPOINT  ["node", "dist/src/main"]
+CMD ["npm", "run", "start:prod"]
 
