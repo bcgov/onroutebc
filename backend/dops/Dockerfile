@@ -1,19 +1,19 @@
 # Build container
-FROM ubuntu:latest as builder
+FROM node:16.14.0 as builder
 
 
 RUN apt-get update
-ENV NODE_VERSION=16.14.0
-RUN apt install -y curl
-RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
-ENV NVM_DIR=/root/.nvm
-RUN . "$NVM_DIR/nvm.sh" && nvm install ${NODE_VERSION}
-RUN . "$NVM_DIR/nvm.sh" && nvm use v${NODE_VERSION}
-RUN . "$NVM_DIR/nvm.sh" && nvm alias default v${NODE_VERSION}
-RUN chmod -R 777 /root/.nvm/versions/node/v${NODE_VERSION}
-RUN echo $PATH
-ENV PATH="/root/.nvm/versions/node/v${NODE_VERSION}/bin/:${PATH}"
-RUN echo $PATH
+# ENV NODE_VERSION=16.14.0
+# RUN apt install -y curl
+# RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+# ENV NVM_DIR=/root/.nvm
+# RUN . "$NVM_DIR/nvm.sh" && nvm install ${NODE_VERSION}
+# RUN . "$NVM_DIR/nvm.sh" && nvm use v${NODE_VERSION}
+# RUN . "$NVM_DIR/nvm.sh" && nvm alias default v${NODE_VERSION}
+# RUN chmod -R 777 /root/.nvm/versions/node/v${NODE_VERSION}
+# RUN echo $PATH
+# ENV PATH="/root/.nvm/versions/node/v${NODE_VERSION}/bin/:${PATH}"
+# RUN echo $PATH
 
 # Install packages, build and keep only prod packages
 WORKDIR /app
@@ -91,4 +91,4 @@ ENV ACCESS_API_URL ${ACCESS_API_URL}
 EXPOSE 5001
 
 # # Start up command
-ENTRYPOINT  ["bash"]
+ENTRYPOINT  ["node","dist/main"]
