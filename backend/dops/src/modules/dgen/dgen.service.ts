@@ -231,18 +231,12 @@ export class DgenService {
     let browser: Browser;
     try {
       const browser = await puppeteer.launch({
+        args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage', '--disable-gpu'],
+        executablePath: '/usr/bin/google-chrome-stable',
         headless: 'new',
-        //executablePath: 'usr/bin/chromium-browser',
-        args: [
-          '--no-sandbox',
-          '--disable-setuid-sandbox',
-          '--disable-dev-shm-usage',
-          '--enable-gpu',
-          // '--no-first-run',
-          // '--no-zygote',
-          // '--single-process',
-        ],
-        ignoreDefaultArgs: ['--disable-extensions'],
+        env: {
+          ELECTRON_DISABLE_SANDBOX: '1',
+        },
       });
       const page = await browser.newPage();
       await page.setContent(htmlBody);
