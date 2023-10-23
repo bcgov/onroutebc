@@ -7,7 +7,6 @@ import Popper from "@mui/material/Popper";
 import MenuItem from "@mui/material/MenuItem";
 import MenuList from "@mui/material/MenuList";
 import Stack from "@mui/material/Stack";
-import { useTranslation } from "react-i18next";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 
@@ -30,16 +29,14 @@ export const AddVehicleButton = () => {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const anchorRef = React.useRef<HTMLButtonElement>(null);
 
-  const { t } = useTranslation();
-
   const options = [
     {
       vehicleMode: VEHICLE_TYPES_ENUM.POWER_UNIT,
-      translationKey: "vehicle.power-unit",
+      labelValue: "Power Unit"
     },
     {
       vehicleMode: VEHICLE_TYPES_ENUM.TRAILER,
-      translationKey: "vehicle.trailer",
+      labelValue: "Trailer"
     },
   ];
 
@@ -133,7 +130,7 @@ export const AddVehicleButton = () => {
                     onKeyDown={handleListKeyDown}
                   >
                     {options.map((option, index) => {
-                      const { vehicleMode, translationKey } = option;
+                      const { vehicleMode, labelValue } = option;
                       return (
                         <MenuItem
                           key={vehicleMode}
@@ -141,7 +138,7 @@ export const AddVehicleButton = () => {
                             handleMenuItemClick(event, index, vehicleMode)
                           }
                         >
-                          {t(translationKey)}
+                          {labelValue}
                         </MenuItem>
                       );
                     })}
