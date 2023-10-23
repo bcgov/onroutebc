@@ -350,7 +350,7 @@ objects:
                 timeoutSeconds: 5
               livenessProbe:
                 successThreshold: 1
-                failureThreshold: 3
+                failureThreshold: 200
                 httpGet:
                   path: /
                   port: 5001
