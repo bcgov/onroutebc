@@ -11,7 +11,9 @@ RUN . "$NVM_DIR/nvm.sh" && nvm install ${NODE_VERSION}
 RUN . "$NVM_DIR/nvm.sh" && nvm use v${NODE_VERSION}
 RUN . "$NVM_DIR/nvm.sh" && nvm alias default v${NODE_VERSION}
 RUN chmod -R 777 /.nvm/versions/node/v${NODE_VERSION}
+RUN echo $PATH
 ENV PATH="/.nvm/versions/node/v${NODE_VERSION}/bin/:${PATH}"
+RUN echo $PATH
 
 # Install packages, build and keep only prod packages
 WORKDIR /app
@@ -31,6 +33,7 @@ WORKDIR /app
 
 # Copy app files
 COPY . ./
+
 
 # Install Chrome version 114
 ENV CHROME_VERSION="114.0.5735.133-1"
@@ -87,6 +90,5 @@ ENV ACCESS_API_URL ${ACCESS_API_URL}
 # Expose Port
 EXPOSE 5001
 
-# Start up command
-CMD ["npm", "run", "start:prod"]
-
+# # Start up command
+ENTRYPOINT  ["bash"]
