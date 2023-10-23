@@ -6,13 +6,13 @@ RUN apt-get update
 ENV NODE_VERSION=16.14.0
 RUN apt install -y curl
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
-ENV NVM_DIR=/.nvm
+ENV NVM_DIR=$HOME/.nvm
 RUN . "$NVM_DIR/nvm.sh" && nvm install ${NODE_VERSION}
 RUN . "$NVM_DIR/nvm.sh" && nvm use v${NODE_VERSION}
 RUN . "$NVM_DIR/nvm.sh" && nvm alias default v${NODE_VERSION}
-RUN chmod -R 777 /.nvm/versions/node/v${NODE_VERSION}
+RUN chmod -R 777 $HOME/.nvm/versions/node/v${NODE_VERSION}
 RUN echo $PATH
-ENV PATH="/.nvm/versions/node/v${NODE_VERSION}/bin/:${PATH}"
+ENV PATH="$HOME/.nvm/versions/node/v${NODE_VERSION}/bin/:${PATH}"
 RUN echo $PATH
 
 # Install packages, build and keep only prod packages
@@ -42,10 +42,10 @@ RUN wget --no-verbose -O /tmp/chrome.deb https://dl.google.com/linux/chrome/deb/
   && rm /tmp/chrome.deb
 
 # Set up directories and adjust permissions
-RUN mkdir -p /.local/share/fonts \
-  && mkdir -p /.config/puppeteer \
-  && chmod -R 777 /.local \
-  && chmod -R 777 /.config \
+RUN mkdir -p $HOME/.local/share/fonts \
+  && mkdir -p $HOME/.config/puppeteer \
+  && chmod -R 777 $HOME/.local \
+  && chmod -R 777 $HOME/.config \
   && mkdir -p /.local \
   && chmod -R 777 /.local
 
