@@ -91,4 +91,4 @@ ENV ACCESS_API_URL ${ACCESS_API_URL}
 EXPOSE 5001
 
 # # Start up command
-ENTRYPOINT  ["node", "dist/main"]
+ENTRYPOINT  ["bash"]
