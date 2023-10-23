@@ -32,12 +32,15 @@ WORKDIR /app
 # Copy app files
 COPY . ./
 
+# Install Nodejs
+RUN apt install -y curl \
+&& curl -sL https://deb.nodesource.com/setup_4.x | bash \
+&& apt install -y nodejs
 
 # Install Chrome version 114
 ENV CHROME_VERSION="114.0.5735.133-1"
 RUN wget --no-verbose -O /tmp/chrome.deb https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_${CHROME_VERSION}_amd64.deb \
   && apt install -y /tmp/chrome.deb \
-  && apt install -y nodejs \
   && rm /tmp/chrome.deb
 
 # Set up directories and adjust permissions
