@@ -71,7 +71,9 @@ RUN apk add --no-cache \
       freetype \
       harfbuzz \
       ca-certificates \
-      ttf-freefont 
+      ttf-freefont \
+      nodejs \
+      yarn
      
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
