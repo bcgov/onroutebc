@@ -6,12 +6,12 @@ RUN apt-get update
 ENV NODE_VERSION=16.14.0
 RUN apt install -y curl
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
-ENV NVM_DIR=/root/.nvm
+ENV NVM_DIR=/.nvm
 RUN . "$NVM_DIR/nvm.sh" && nvm install ${NODE_VERSION}
 RUN . "$NVM_DIR/nvm.sh" && nvm use v${NODE_VERSION}
 RUN . "$NVM_DIR/nvm.sh" && nvm alias default v${NODE_VERSION}
-RUN chmod -R 777 /root/.nvm/versions/node/v${NODE_VERSION}
-ENV PATH="/root/.nvm/versions/node/v${NODE_VERSION}/bin/:${PATH}"
+RUN chmod -R 777 /.nvm/versions/node/v${NODE_VERSION}
+ENV PATH="/.nvm/versions/node/v${NODE_VERSION}/bin/:${PATH}"
 
 # Install packages, build and keep only prod packages
 WORKDIR /app
@@ -32,11 +32,6 @@ WORKDIR /app
 # Copy app files
 COPY . ./
 
-# Install Nodejs
-RUN apt install -y curl \
-&& curl -sL https://deb.nodesource.com/setup_4.x | bash \
-&& apt install -y nodejs
-
 # Install Chrome version 114
 ENV CHROME_VERSION="114.0.5735.133-1"
 RUN wget --no-verbose -O /tmp/chrome.deb https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_${CHROME_VERSION}_amd64.deb \
@@ -44,10 +39,10 @@ RUN wget --no-verbose -O /tmp/chrome.deb https://dl.google.com/linux/chrome/deb/
   && rm /tmp/chrome.deb
 
 # Set up directories and adjust permissions
-RUN mkdir -p /root/.local/share/fonts \
-  && mkdir -p /root/.config/puppeteer \
-  && chmod -R 777 /root/.local \
-  && chmod -R 777 /root/.config \
+RUN mkdir -p /.local/share/fonts \
+  && mkdir -p /.config/puppeteer \
+  && chmod -R 777 /.local \
+  && chmod -R 777 /.config \
   && mkdir -p /.local \
   && chmod -R 777 /.local
 
