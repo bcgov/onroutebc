@@ -12,12 +12,13 @@ import { CustomDatePicker } from "./subFormComponents/CustomDatePicker";
 import { CustomOutlinedInput } from "./subFormComponents/CustomOutlinedInput";
 import { CustomSelect } from "./subFormComponents/CustomSelect";
 import { PhoneNumberInput } from "./subFormComponents/PhoneNumberInput";
+import { CustomTextArea } from "./subFormComponents/CustomTextArea";
 
 /**
  * Properties of onRouteBC custom form components
  */
 export interface CustomFormComponentProps<T extends FieldValues> {
-  type: "input" | "select" | "phone" | "datePicker";
+  type: "input" | "select" | "phone" | "datePicker" | "textarea";
   feature: string;
   options: CustomFormOptionsProps<T>;
   i18options?: InternationalOptionsProps;
@@ -164,6 +165,18 @@ export const CustomFormComponent = <T extends ORBC_FormTypes>({
             rules={rules}
             inputProps={inputProps}
             invalid={invalid}
+          />
+        );
+      case "textarea":
+        return (
+          <CustomTextArea
+            feature={feature}
+            name={name}
+            rules={rules}
+            inputProps={inputProps}
+            invalid={invalid}
+            disabled={disabled}
+            readOnly={readOnly}
           />
         );
       default:

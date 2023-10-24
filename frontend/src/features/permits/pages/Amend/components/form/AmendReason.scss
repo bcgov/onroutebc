@@ -1,0 +1,28 @@
+@import "../../../../../../themes/orbcStyles.scss";
+
+.amend-reason {
+  display: flex;
+  padding: 3rem 0;
+  border-top: 1px solid $bc-text-box-border-grey;
+
+  &__label {
+    font-weight: bold;
+    color: $bc-black;
+    font-size: 1.25rem;
+    min-width: 25rem;
+    max-width: 25rem;
+  }
+
+  &__input {
+    min-width: 37.5rem;
+    max-width: calc(100% - 25rem);
+    
+    .custom-form-control {
+      margin-top: 0;
+
+      &__label {
+        margin: 0;
+      }
+    }
+  }
+}

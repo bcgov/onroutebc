@@ -336,6 +336,7 @@ export class PermitService {
         pgCardType: permitTransaction.transaction.pgCardType,
         commentUsername: permit.createdUser,
         permitId: +permit.permitId,
+        transactionSubmitDate: permitTransaction.transaction.transactionSubmitDate,
       })),
     ) as PermitHistoryDto[];
   }

@@ -1,5 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 
+import "./AmendPermitReview.scss";
 import { AmendPermitContext } from "../context/AmendPermitContext";
 import { useCompanyInfoDetailsQuery } from "../../../../manageProfile/apiManager/hooks";
 import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../../../common/helpers/util";
@@ -7,6 +8,7 @@ import { usePowerUnitTypesQuery, useTrailerTypesQuery } from "../../../../manage
 import { PermitReview } from "../../TermOversize/components/review/PermitReview";
 import { Breadcrumb } from "../../../../../common/components/breadcrumb/Breadcrumb";
 import { getPermitFormDefaultValues } from "../types/AmendPermitFormData";
+import { ReviewReason } from "./review/ReviewReason";
 
 export const AmendPermitReview = () => {
   const {
@@ -38,9 +40,9 @@ export const AmendPermitReview = () => {
   }, []);
 
   const oldFields = getPermitFormDefaultValues(permit);
-
+  
   return (
-    <>
+    <div className="amend-permit-review">
       <Breadcrumb links={getLinks()} />
 
       <PermitReview
@@ -77,7 +79,11 @@ export const AmendPermitReview = () => {
             clientNumber: getDefaultRequiredVal("", oldFields.permitData.clientNumber),
           },
         }}
-      />
-    </>
+      >
+        {permitFormData?.comment ? (
+          <ReviewReason reason={permitFormData.comment} />
+        ) : null}
+      </PermitReview>
+    </div>
   );
 };

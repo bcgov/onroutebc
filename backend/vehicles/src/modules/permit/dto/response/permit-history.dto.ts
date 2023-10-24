@@ -21,7 +21,7 @@ export class PermitHistoryDto {
 
   @AutoMap()
   @ApiProperty({
-    example: 'This permit was amended because of so-and-so reason.',
+    example: 'ALNAME',
     description: 'The username of user that amended/voided the permit',
   })
   commentUsername: string;
@@ -77,4 +77,11 @@ export class PermitHistoryDto {
     description: 'Represents the id of a permit.',
   })
   permitId: number;
+
+  @AutoMap()
+  @ApiProperty({
+    example: '2023-01-01 10:00:00.000000',
+    description: 'Represents the date that the transaction for the permit was submitted.',
+  })
+  transactionSubmitDate: Date;
 }

@@ -158,4 +158,12 @@ export class CreateApplicationDto {
     },
   })
   permitData: JSON;
+
+  @AutoMap()
+  @ApiProperty({
+    description: "Amendment reason or comment.",
+    example: "This application was amended because of so-and-so reason.",
+    required: false,
+  })
+  comment: string;
 }

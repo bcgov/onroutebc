@@ -21,6 +21,7 @@ import { AmendPermitForm } from "./components/AmendPermitForm";
 import { AmendPermitFormData, getPermitFormDefaultValues } from "./types/AmendPermitFormData";
 import { SEARCH_RESULTS } from "../../../../routes/constants";
 import { SEARCH_BY_FILTERS, SEARCH_ENTITIES } from "../../../idir/search/types/types";
+import { applyWhenNotNullable } from "../../../../common/helpers/util";
 
 export const AMEND_PERMIT_STEPS = {
   Amend: "Amend",
@@ -77,13 +78,21 @@ export const AmendPermit = () => {
 
   // Permit form data, populated whenever permit is fetched
   const [permitFormData, setPermitFormData] = useState<AmendPermitFormData>(
-    getPermitFormDefaultValues(amendmentApplication ? amendmentApplication : permit)
+    getPermitFormDefaultValues(
+      amendmentApplication ? amendmentApplication : applyWhenNotNullable(p => ({
+        ...p,
+        comment: "",
+      }), permit)
+    )
   );
 
   useEffect(() => {
     setPermitFormData(
       getPermitFormDefaultValues(
-        amendmentApplication ? amendmentApplication : permit
+        amendmentApplication ? amendmentApplication : applyWhenNotNullable(p => ({
+          ...p,
+          comment: "",
+        }), permit)
       )
     );
   }, [amendmentApplication, permit]);

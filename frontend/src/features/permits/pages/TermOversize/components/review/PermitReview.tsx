@@ -94,13 +94,13 @@ export const PermitReview = (props: PermitReviewProps) => {
           permitDuration={props.permitDuration}
         />
 
+        {props.children}
+        
         <ReviewActions
           onEdit={props.onEdit}
           onContinue={props.onContinue}
           continueBtnText={props.continueBtnText}
         />
-
-        {props.children}
       </Box>
     </Box>
   );

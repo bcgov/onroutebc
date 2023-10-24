@@ -12,6 +12,9 @@ import { ReadPermitDto } from "../../../types/permit";
 import { useCompanyInfoDetailsQuery } from "../../../../manageProfile/apiManager/hooks";
 import { Breadcrumb } from "../../../../../common/components/breadcrumb/Breadcrumb";
 import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../../../common/helpers/util";
+import { dayjsToUtcStr, nowUtc } from "../../../../../common/helpers/formatDate";
+import { AmendRevisionHistory } from "./form/AmendRevisionHistory";
+import { AmendReason } from "./form/AmendReason";
 import { 
   AmendPermitFormData, 
   mapFormDataToPermit, 
@@ -22,6 +25,7 @@ export const AmendPermitForm = () => {
   const { 
     permit,
     permitFormData, 
+    permitHistory,
     setPermitFormData,
     currentStepIndex,
     next,
@@ -129,6 +133,18 @@ export const AmendPermitForm = () => {
     }
   };
 
+  const revisionHistory = permitHistory
+    .filter(history => history.comment && history.transactionSubmitDate)
+    .map(history => ({
+      permitId: history.permitId,
+      comment: getDefaultRequiredVal("", history.comment),
+      name: history.commentUsername,
+      revisionDateTime: getDefaultRequiredVal(
+        dayjsToUtcStr(nowUtc()), 
+        history.transactionSubmitDate
+      ),
+    }));
+
   return (
     <div className="amend-permit-form">
       <Breadcrumb links={getLinks()} />
@@ -152,7 +168,10 @@ export const AmendPermitForm = () => {
           powerUnitTypes={powerUnitTypes}
           trailerTypes={trailerTypes}
           companyInfo={companyInfo}
-        />
+        >
+          <AmendRevisionHistory revisionHistory={revisionHistory} />
+          <AmendReason feature={FEATURE} />
+        </PermitForm>
       </FormProvider>
     </div>
   );

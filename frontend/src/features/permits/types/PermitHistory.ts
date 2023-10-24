@@ -12,4 +12,5 @@ export interface PermitHistory {
   pgCardType: CardType | null;
   transactionTypeId: TransactionType;
   permitId: number;
+  transactionSubmitDate: string | null;
 }
