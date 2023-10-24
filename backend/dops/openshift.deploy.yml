@@ -358,6 +358,8 @@ objects:
                 initialDelaySeconds: 60
                 periodSeconds: 30
                 timeoutSeconds: 5
+              securityContext:
+                allowPrivilegeEscalation: true
   - apiVersion: v1
     kind: Service
     metadata:
