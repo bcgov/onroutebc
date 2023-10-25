@@ -1,3 +1,4 @@
+import "./AmendRevision.scss";
 import { DATE_FORMATS, toLocal } from "../../../../../../common/helpers/formatDate";
 
 export const AmendRevision = ({
@@ -13,10 +14,16 @@ export const AmendRevision = ({
   return (
     <div className="amend-revision">
       <div className="amend-revision__info">
-        <span data-testid={`amend-revision-permit-${revision.permitId}-by`}>
+        <span 
+          className="amend-revision__name"
+          data-testid={`amend-revision-permit-${revision.permitId}-by`}
+        >
           {revision.name}
         </span>,
-        <span data-testid={`amend-revision-permit-${revision.permitId}-at`}>
+        <span 
+          className="amend-revision__date"
+          data-testid={`amend-revision-permit-${revision.permitId}-at`}
+        >
           {toLocal(revision.revisionDateTime, DATE_FORMATS.LONG)}
         </span>
       </div>

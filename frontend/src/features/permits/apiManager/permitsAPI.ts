@@ -247,11 +247,12 @@ export const startTransaction = async (
  * @param transactionDetails - The complete transaction details to be submitted after payment
  * @returns Promise that resolves to a successful transaction.
  */
-export const completeTransaction = async (
+export const completeTransaction = async (transactionData: {
   transactionId: string,
   transactionDetails: CompleteTransactionRequestData
-): Promise<CompleteTransactionResponseData | null> => {
+}): Promise<CompleteTransactionResponseData | null> => {
   try {
+    const { transactionId, transactionDetails } = transactionData;
     const response = await httpPUTRequest(
       `${PAYMENT_API}/${transactionId}/payment-gateway`,
       transactionDetails

@@ -14,6 +14,8 @@ import { Application, Commodities, ContactDetails, VehicleDetails } from "../../
 import { CompanyProfile } from "../../../../../manageProfile/types/manageProfile";
 import { VehicleType } from "../../../../../manageVehicles/types/managevehicles";
 import { PermitType } from "../../../../types/PermitType";
+import { calculateFeeByDuration } from "../../../../helpers/feeSummary";
+import { getDefaultRequiredVal } from "../../../../../../common/helpers/util";
 
 interface PermitReviewProps {
   permitType?: PermitType;
@@ -41,9 +43,16 @@ interface PermitReviewProps {
   onContinue: () => Promise<void>;
   showChangedFields?: boolean;
   oldFields?: Partial<Application> | null;
+  calculatedFee?: string;
 }
 
 export const PermitReview = (props: PermitReviewProps) => {
+  const feeSummary = props.calculatedFee ? 
+    props.calculatedFee :
+    `${calculateFeeByDuration(
+      getDefaultRequiredVal(0, props.permitDuration)
+    )}`;
+
   return (
     <Box className="permit-review layout-box">
       <Box className="permit-review__container">
@@ -91,7 +100,7 @@ export const PermitReview = (props: PermitReviewProps) => {
           isChecked={props.allChecked}
           setIsChecked={props.setAllChecked}
           permitType={props.permitType}
-          permitDuration={props.permitDuration}
+          fee={feeSummary}
         />
 
         {props.children}

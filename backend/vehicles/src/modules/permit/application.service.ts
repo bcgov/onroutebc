@@ -399,7 +399,7 @@ export class ApplicationService {
     if (fetchedApplication.documentId) {
       throw new HttpException('Document already exists', 409);
     } else if (
-      fetchedApplication.permitStatus != ApplicationStatus.PAYMENT_COMPLETE
+      fetchedApplication.permitStatus == ApplicationStatus.WAITING_PAYMENT
     ) {
       throw new BadRequestException(
         'Application must be ready for issuance with payment complete status!',
@@ -824,7 +824,8 @@ export class ApplicationService {
             x != ApplicationStatus.REJECTED &&
             x != ApplicationStatus.ISSUED &&
             x != ApplicationStatus.REVOKED &&
-            x != ApplicationStatus.VOIDED,
+            x != ApplicationStatus.VOIDED &&
+            x != ApplicationStatus.SUPERSEDED,
         ),
       })
       .getCount();

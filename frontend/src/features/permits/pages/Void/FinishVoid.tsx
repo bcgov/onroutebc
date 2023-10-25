@@ -47,7 +47,6 @@ export const FinishVoid = ({
   }, [voidResults]);
 
   const handleFinish = (refundData: RefundFormData) => {
-    console.log(refundData); //
     const requestData = mapToVoidRequestData(voidPermitData, refundData, -1 * amountToRefund);
     voidPermitMutation.mutate({
       permitId: voidPermitData.permitId,

@@ -6,10 +6,7 @@ import { Application } from "../types/application";
 import { mapApplicationResponseToApplication } from "../helpers/mappers";
 import { IssuePermitsResponse, ReadPermitDto } from "../types/permit";
 import { PermitHistory } from "../types/PermitHistory";
-import { 
-  CompleteTransactionRequestData, 
-  StartTransactionResponseData,
-} from "../types/payment";
+import { StartTransactionResponseData } from "../types/payment";
 
 import {
   getApplicationByPermitId,
@@ -151,15 +148,11 @@ export const useStartTransaction = () => {
 
 /**
  * A custom hook that completes the transaction.
- * @param transactionId The transaction id of the transaction to complete
- * @param transactionDetails Details for the transaction to complete
  * @param messageText Message text that indicates the result of the transaction
  * @param paymentStatus Payment status signifying the result of the transaction (1 - success, 0 - failed)
  * @returns The mutation object, whether or not payment was approved, and the message to display
  */
 export const useCompleteTransaction = (
-  transactionId: string,
-  transactionDetails: CompleteTransactionRequestData,
   messageText: string,
   paymentStatus: number
 ) => {
@@ -188,7 +181,7 @@ export const useCompleteTransaction = (
   };
 
   const mutation = useMutation({
-    mutationFn: () => completeTransaction(transactionId, transactionDetails),
+    mutationFn: completeTransaction,
     retry: false,
     onSuccess: (response) => {
       if (response != null) {

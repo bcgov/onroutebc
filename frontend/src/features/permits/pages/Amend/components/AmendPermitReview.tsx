@@ -9,11 +9,13 @@ import { PermitReview } from "../../TermOversize/components/review/PermitReview"
 import { Breadcrumb } from "../../../../../common/components/breadcrumb/Breadcrumb";
 import { getPermitFormDefaultValues } from "../types/AmendPermitFormData";
 import { ReviewReason } from "./review/ReviewReason";
+import { calculateAmountToRefund } from "../../../helpers/feeSummary";
 
 export const AmendPermitReview = () => {
   const {
     permit,
     permitFormData,
+    permitHistory,
     back,
     next,
     getLinks,
@@ -40,6 +42,11 @@ export const AmendPermitReview = () => {
   }, []);
 
   const oldFields = getPermitFormDefaultValues(permit);
+
+  const amountToRefund = -1 * calculateAmountToRefund(
+    permitHistory, 
+    getDefaultRequiredVal(0, permitFormData?.permitData?.permitDuration)
+  );
   
   return (
     <div className="amend-permit-review">
@@ -79,6 +86,7 @@ export const AmendPermitReview = () => {
             clientNumber: getDefaultRequiredVal("", oldFields.permitData.clientNumber),
           },
         }}
+        calculatedFee={`${amountToRefund}`}
       >
         {permitFormData?.comment ? (
           <ReviewReason reason={permitFormData.comment} />

@@ -101,8 +101,8 @@ export interface StartTransactionResponseData extends Partial<PaymentGatewayData
   url?: string;
 }
 
-export type CompleteTransactionRequestData = PaymentGatewayData;
+export type CompleteTransactionRequestData = Partial<PaymentGatewayData>;
 
-export interface CompleteTransactionResponseData extends PaymentGatewayData {
+export interface CompleteTransactionResponseData extends Partial<PaymentGatewayData> {
   transactionid: string;
 }

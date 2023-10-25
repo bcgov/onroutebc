@@ -7,7 +7,7 @@ export interface PermitHistory {
   commentUsername: string;
   transactionAmount: number;
   transactionOrderNumber: string;
-  pgTransactionId: string;
+  pgTransactionId: string | null;
   pgPaymentMethod: BamboraPaymentMethod | null;
   pgCardType: CardType | null;
   transactionTypeId: TransactionType;

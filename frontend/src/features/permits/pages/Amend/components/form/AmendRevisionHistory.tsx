@@ -1,3 +1,6 @@
+import { Typography } from "@mui/material";
+
+import "./AmendRevisionHistory.scss";
 import { AmendRevision } from "./AmendRevision";
 
 export const AmendRevisionHistory = ({
@@ -12,9 +15,12 @@ export const AmendRevisionHistory = ({
 }) => {
   return revisionHistory.length > 0 ? (
     <div className="amend-revision-history">
-      <div className="amend-revision-history__label">
+      <Typography 
+        variant="h3" 
+        className="amend-revision-history__label"
+      >
         Revision History
-      </div>
+      </Typography>
       <div className="amend-revision-history__revisions">
         {revisionHistory.map(revision => (
           <AmendRevision key={revision.permitId} revision={revision} />
