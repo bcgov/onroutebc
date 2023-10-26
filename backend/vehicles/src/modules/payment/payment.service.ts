@@ -74,8 +74,6 @@ export class PaymentService {
         }`
       : `${process.env.PAYBC_REDIRECT}`
 
-    console.log('redirectUrl', redirectUrl)
-
     const date = new Date().toISOString().split('T')[0];
 
     // There should be a better way of doing this which is not as rigid - something like
