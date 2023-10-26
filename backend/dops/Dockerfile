@@ -9,7 +9,7 @@ COPY . ./
 
 
 RUN apk add --no-cache --update \
-      chromium@100.0.0 \
+      chromium \
       nss \
       freetype \
       harfbuzz \
@@ -51,7 +51,7 @@ ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 EXPOSE 5001
 
 # Puppeteer v13.5.0 works with Chromium 100.
-RUN yarn add puppeteer@13.5.0
+RUN yarn add puppeteer@21.4.0
 
 # Add user so we don't need --no-sandbox.
 RUN addgroup -S pptruser && adduser -S -G pptruser pptruser \
