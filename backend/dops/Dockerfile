@@ -55,7 +55,7 @@ RUN npm ci --only=prod && \
     npm list rimraf && \
     npm run build
 
-# Set node to production
+# Set node to production 
 ENV NODE_ENV production
 
 # Set environment variables
