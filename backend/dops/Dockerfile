@@ -21,7 +21,9 @@ RUN npm prune --production
 FROM ghcr.io/puppeteer/puppeteer:21.4.1
 
 # Create and Assign permissions to npm folder
+USER root
 RUN npm config set cache /home/pptruser/.npm --global
+USER pptruser
 
 # Set the working directory to /app inside the deployment container
 WORKDIR /app
