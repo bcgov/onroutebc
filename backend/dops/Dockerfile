@@ -14,8 +14,12 @@ RUN apk add --no-cache --update \
       freetype \
       harfbuzz \
       ca-certificates \
-      ttf-freefont \
-      nodejs \
+      ttf-freefont 
+
+RUN apk add --no-cache --update \
+      nodejs 
+
+RUN apk add --no-cache --update \
       yarn
 
 RUN npm cache clean --force
