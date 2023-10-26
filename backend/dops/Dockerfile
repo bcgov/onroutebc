@@ -18,7 +18,7 @@ RUN apk add --no-cache --update \
       nodejs \
       yarn \
       nodejs\
-      npm \
+      npm 
 
 RUN npm cache clean --force
 # Create and Assign permissions to npm folder
