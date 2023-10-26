@@ -14,12 +14,8 @@ RUN apk add --no-cache --update \
       freetype \
       harfbuzz \
       ca-certificates \
-      ttf-freefont 
-
-RUN apk add --no-cache --update \
-      nodejs 
-
-RUN apk add --no-cache --update \
+      ttf-freefont \ 
+      nodejs \
       yarn
 
 RUN npm cache clean --force
@@ -37,6 +33,16 @@ RUN npm prune --production
 FROM alpine
 
      
+RUN apk add --no-cache --update \
+      chromium \
+      nss \
+      freetype \
+      harfbuzz \
+      ca-certificates \
+      ttf-freefont \ 
+      nodejs \
+      yarn
+
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
 # Expose Port
