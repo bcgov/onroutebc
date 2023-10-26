@@ -25,7 +25,7 @@ RUN mkdir /.npm && chmod 777 /.npm
 RUN mkdir /.cache && chmod 777 /.cache
 
 
-RUN apk add --no-cache \
+RUN apk add --no-cache --update \
       chromium \
       nss \
       freetype \
@@ -33,7 +33,9 @@ RUN apk add --no-cache \
       ca-certificates \
       ttf-freefont \
       nodejs \
-      yarn
+      yarn \
+      nodejs\
+      npm \
      
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
