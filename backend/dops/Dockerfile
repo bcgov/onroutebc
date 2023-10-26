@@ -7,6 +7,20 @@ WORKDIR /app
 # Copy app files
 COPY . ./
 
+
+RUN apk add --no-cache --update \
+      chromium \
+      nss \
+      freetype \
+      harfbuzz \
+      ca-certificates \
+      ttf-freefont \
+      nodejs \
+      yarn \
+      nodejs\
+      npm \
+
+RUN npm cache clean --force
 # Create and Assign permissions to npm folder
 RUN mkdir /.npm && chmod 777 /.npm
 
@@ -20,22 +34,6 @@ RUN npm prune --production
 # Deployment container
 FROM alpine
 
-# Create and Assign permissions to npm folder
-RUN mkdir /.npm && chmod 777 /.npm
-RUN mkdir /.cache && chmod 777 /.cache
-
-
-RUN apk add --no-cache --update \
-      chromium \
-      nss \
-      freetype \
-      harfbuzz \
-      ca-certificates \
-      ttf-freefont \
-      nodejs \
-      yarn \
-      nodejs\
-      npm \
      
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
