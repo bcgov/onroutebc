@@ -1,16 +1,26 @@
 import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import { AxiosError } from "axios";
+
+import { Application } from "../types/application";
+import { mapApplicationResponseToApplication } from "../helpers/mappers";
+import { IssuePermitsResponse, ReadPermitDto } from "../types/permit";
+import { PermitHistory } from "../types/PermitHistory";
+import { 
+  CompleteTransactionRequestData, 
+  StartTransactionResponseData,
+} from "../types/payment";
+
 import {
-  getApplicationInProgressById,
-  getPermitTransaction,
-  postTransaction,
+  getApplicationByPermitId,
+  getPermit,
+  getPermitHistory,
+  completeTransaction,
   submitTermOversize,
   updateTermOversize,
+  startTransaction,
+  issuePermits,
 } from "../apiManager/permitsAPI";
-import { Application } from "../types/application";
-import { useState } from "react";
-import { mapApplicationResponseToApplication } from "../helpers/mappers";
-import { PermitTransaction } from "../types/payment";
-import { AxiosError } from "axios";
 
 /**
  * A custom react query mutation hook that saves the application data to the backend API
@@ -54,7 +64,7 @@ export const useApplicationDetailsQuery = (permitId?: string) => {
   
   const query = useQuery({
     queryKey: ["termOversize"],
-    queryFn: () => getApplicationInProgressById(permitId),
+    queryFn: () => getApplicationByPermitId(permitId),
     retry: false,
     refetchOnMount: "always", // always fetch when component is mounted (ApplicationDashboard page)
     refetchOnWindowFocus: false, // prevent unnecessary multiple queries on page showing up in foreground
@@ -79,7 +89,74 @@ export const useApplicationDetailsQuery = (permitId?: string) => {
   };
 };
 
-export const usePostTransaction = (
+/**
+ * A custom react query hook that get permit details from the backend API
+ * The hook gets permit details by its permit id
+ * @param permitId permit id for the permit
+ * @returns permit details, or error if failed
+ */
+export const usePermitDetailsQuery = (permitId?: string) => {
+  const [permit, setPermit] = useState<ReadPermitDto | null | undefined>(undefined);
+  
+  const invalidPermitId = !permitId;
+  const query = useQuery({
+    queryKey: ["permit"],
+    queryFn: () => getPermit(permitId),
+    enabled: !invalidPermitId,
+    retry: false,
+    refetchOnMount: "always",
+    refetchOnWindowFocus: false, // prevent unnecessary multiple queries on page showing up in foreground
+    onSuccess: (permitDetails) => {
+      setPermit(permitDetails);
+    },
+  });
+
+  return {
+    query,
+    permit,
+    setPermit,
+  };
+};
+
+/**
+ * Custom hook that starts a transaction.
+ * @returns The mutation object, as well as the transaction that was started (if there is one, or undefined if there's an error).
+ */
+export const useStartTransaction = () => {
+  const [transaction, setTransaction] = useState<StartTransactionResponseData | null | undefined>(undefined);
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: startTransaction,
+    retry: false,
+    onSuccess: (transactionData) => {
+      queryClient.invalidateQueries(["transaction"]);
+      queryClient.setQueryData(["transaction"], transactionData);
+      setTransaction(transactionData);
+    },
+    onError: (err: unknown) => {
+      console.error(err);
+      setTransaction(undefined);
+    },
+  });
+
+  return {
+    mutation,
+    transaction,
+  };
+};
+
+/**
+ * A custom hook that completes the transaction.
+ * @param transactionId The transaction id of the transaction to complete
+ * @param transactionDetails Details for the transaction to complete
+ * @param messageText Message text that indicates the result of the transaction
+ * @param paymentStatus Payment status signifying the result of the transaction (1 - success, 0 - failed)
+ * @returns The mutation object, whether or not payment was approved, and the message to display
+ */
+export const useCompleteTransaction = (
+  transactionId: string,
+  transactionDetails: CompleteTransactionRequestData,
   messageText: string,
   paymentStatus: number
 ) => {
@@ -108,10 +185,10 @@ export const usePostTransaction = (
   };
 
   const mutation = useMutation({
-    mutationFn: postTransaction,
+    mutationFn: () => completeTransaction(transactionId, transactionDetails),
     retry: false,
     onSuccess: (response) => {
-      if (response.status === 201) {
+      if (response != null) {
         queryClient.invalidateQueries(["transactions"]);
         onTransactionResult(messageText, paymentStatus === 1);
       } else {
@@ -133,30 +210,56 @@ export const usePostTransaction = (
 };
 
 /**
- * Custom hook for retrieving permit transaction data, which includes permit and transaction info
- * @param transactionOrderNumber Transaction order number for the transaction
- * @returns Associated permit transaction data
+ * A custom react query hook that get permit history from the backend API
+ * The hook gets permit history by its original permit id
+ * @param originalPermitId original permit id for the permit
+ * @returns list of permit history, or error if failed
  */
-export const usePermitTransactionQuery = (
-  transactionOrderNumber: string,
-  paymentApproved: boolean,
-) => {
-  const [permitTransaction, setPermitTransaction] = useState<PermitTransaction | undefined>(undefined);
-
+export const usePermitHistoryQuery = (originalPermitId?: string) => {
+  const [permitHistory, setPermitHistory] = useState<PermitHistory[]>([]);
+  
   const query = useQuery({
-    queryKey: ["permitTransaction"],
-    queryFn: () => getPermitTransaction(transactionOrderNumber),
-    enabled: paymentApproved,
+    queryKey: ["permitHistory"],
+    queryFn: () => getPermitHistory(originalPermitId),
+    enabled: originalPermitId != null,
     retry: false,
     refetchOnMount: "always",
-    refetchOnWindowFocus: false,
-    onSuccess: (permitTransaction) => {
-      setPermitTransaction(permitTransaction);
+    refetchOnWindowFocus: false, // prevent unnecessary multiple queries on page showing up in foreground
+    onSuccess: (permitHistoryData) => {
+      setPermitHistory(permitHistoryData);
     },
   });
 
   return {
     query,
-    permitTransaction,
+    permitHistory,
+  };
+};
+
+/**
+ * Custom hook that issues the permits indicated by the application/permit ids.
+ * @param ids Application/permit ids for the permits to be issued.
+ * @returns Mutation object, and the issued results response.
+ */
+export const useIssuePermits = () => {
+  const [issueResults, setIssueResults] = useState<IssuePermitsResponse | undefined>(undefined);
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: issuePermits,
+    retry: false,
+    onSuccess: (issueResponseData) => {
+      queryClient.invalidateQueries(["termOversize", "permit"]);
+      setIssueResults(issueResponseData);
+    },
+    onError: (err: unknown) => {
+      console.error(err);
+      setIssueResults(undefined);
+    },
+  });
+
+  return {
+    mutation,
+    issueResults,
   };
 };

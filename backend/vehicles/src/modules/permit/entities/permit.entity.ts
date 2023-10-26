@@ -4,7 +4,7 @@ import {
   Column,
   PrimaryGeneratedColumn,
   OneToOne,
-  ManyToMany,
+  OneToMany,
 } from 'typeorm';
 import { AutoMap } from '@automapper/classes';
 import { Base } from '../../common/entities/base.entity';
@@ -13,7 +13,7 @@ import { PermitData } from './permit-data.entity';
 import { PermitApplicationOrigin } from '../../../common/enum/permit-application-origin.enum';
 import { PermitApprovalSource } from '../../../common/enum/permit-approval-source.enum';
 import { ApplicationStatus } from 'src/common/enum/application-status.enum';
-import { Transaction } from 'src/modules/payment/entities/transaction.entity';
+import { PermitTransaction } from '../../payment/entities/permit-transaction.entity';
 
 @Entity({ name: 'permit.ORBC_PERMIT' })
 export class Permit extends Base {
@@ -24,6 +24,14 @@ export class Permit extends Base {
   })
   @PrimaryGeneratedColumn({ type: 'bigint', name: 'ID' })
   permitId: string;
+
+  @AutoMap()
+  @ApiProperty({
+    example: '1',
+    description: 'Identifier for original permit for a revisions',
+  })
+  @Column({ type: 'bigint', name: 'ORIGINAL_ID', nullable: true })
+  originalPermitId: string;
 
   @AutoMap(() => PermitData)
   @OneToOne(() => PermitData, (PermitData) => PermitData.permit, {
@@ -74,7 +82,7 @@ export class Permit extends Base {
     type: 'simple-enum',
     enum: PermitType,
     length: 10,
-    name: 'PERMIT_TYPE_ID',
+    name: 'PERMIT_TYPE',
     nullable: true,
   })
   permitType: PermitType;
@@ -89,7 +97,7 @@ export class Permit extends Base {
     type: 'simple-enum',
     enum: PermitApprovalSource,
     length: 8,
-    name: 'PERMIT_APPROVAL_SOURCE_ID',
+    name: 'PERMIT_APPROVAL_SOURCE_TYPE',
     nullable: true,
   })
   permitApprovalSource: PermitApprovalSource;
@@ -104,7 +112,7 @@ export class Permit extends Base {
     type: 'simple-enum',
     enum: PermitApplicationOrigin,
     length: 8,
-    name: 'APPLICATION_ORIGIN_ID',
+    name: 'PERMIT_APPLICATION_ORIGIN_TYPE',
     nullable: true,
   })
   permitApplicationOrigin: PermitApplicationOrigin;
@@ -142,7 +150,7 @@ export class Permit extends Base {
   })
   @Column({
     length: 20,
-    name: 'PERMIT_STATUS_ID',
+    name: 'PERMIT_STATUS_TYPE',
     nullable: true,
   })
   permitStatus: ApplicationStatus;
@@ -168,6 +176,21 @@ export class Permit extends Base {
   })
   documentId: string;
 
-  @ManyToMany(() => Transaction, (transaction) => transaction.permits)
-  transactions?: Transaction[];
+  @AutoMap()
+  @ApiProperty({
+    example: 'This permit was amended because of so-and-so reason',
+    description: 'Comment/Reason for modifying a permit.',
+  })
+  @Column({
+    length: '3000',
+    name: 'COMMENT',
+    nullable: true,
+  })
+  comment: string;
+
+  @OneToMany(
+    () => PermitTransaction,
+    (permitTransaction) => permitTransaction.permit,
+  )
+  public permitTransactions: PermitTransaction[];
 }

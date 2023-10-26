@@ -5,10 +5,15 @@ import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
-import { ApplicationStep } from "../dashboard/ApplicationDashboard";
+import { APPLICATION_STEPS } from "../dashboard/ApplicationDashboard";
 import { ApplicationContext } from "../../context/ApplicationContext";
 
 export const ProgressBar = () => {
+  const applicationSteps = Object.values(APPLICATION_STEPS);
+  const indexForm = applicationSteps.indexOf(APPLICATION_STEPS.Form);
+  const indexReview = applicationSteps.indexOf(APPLICATION_STEPS.Review);
+  const indexPay = applicationSteps.indexOf(APPLICATION_STEPS.Pay);
+
   const { currentStepIndex, goTo } = useContext(ApplicationContext);
 
   const navigate = useNavigate();
@@ -16,12 +21,6 @@ export const ProgressBar = () => {
   const handleNavigateBack = () => {
     navigate("../");
   };
-
-  const indexForm = Object.keys(ApplicationStep).indexOf(ApplicationStep.Form);
-  const indexReview = Object.keys(ApplicationStep).indexOf(
-    ApplicationStep.Review
-  );
-  const indexPay = Object.keys(ApplicationStep).indexOf(ApplicationStep.Pay);
 
   return (
     <Box

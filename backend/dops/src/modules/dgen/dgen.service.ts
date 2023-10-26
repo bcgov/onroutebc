@@ -1,4 +1,8 @@
-import { Inject, Injectable } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { DocumentTemplate } from './entities/document-template.entity';
@@ -16,6 +20,14 @@ import { lastValueFrom } from 'rxjs';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { PDFDocument } from 'pdf-lib';
+import { getFromCache } from '../../helper/cache.helper';
+import * as Handlebars from 'handlebars';
+import { CacheKey } from '../../enum/cache-key.enum';
+import { CreateGeneratedReportDto } from './dto/request/create-generated-report.dto';
+import puppeteer, { Browser } from 'puppeteer';
+import { IFile } from '../../interface/file.interface';
+import { ReportTemplate } from '../../enum/report-template.enum';
+import { getDirectory } from 'src/helper/auth.helper';
 
 @Injectable()
 export class DgenService {
@@ -31,6 +43,8 @@ export class DgenService {
     private readonly cacheManager: Cache,
   ) {}
 
+  private readonly _dopsCVSEFormsCacheTTLms =
+    process.env.DOPS_CVSE_FORMS_CACHE_TTL_MS;
   /**
    * Find all templates registered in ORBC_DOCUMENT_TEMPLATE
    * @returns A list of templates of type {@link DocumentTemplate}
@@ -82,12 +96,20 @@ export class DgenService {
       currentUser,
       createGeneratedDocumentDto,
     );
-    const documentBufferList: Buffer[] = [generatedDocument.buffer];
+    const documentBufferMap = new Map<string, Buffer>();
+    documentBufferMap.set('PERMIT', generatedDocument.buffer);
     const documentsToMerge = createGeneratedDocumentDto.documentsToMerge;
     if (documentsToMerge?.length) {
-      await this.fetchDocumentsToMerge(documentsToMerge, documentBufferList);
+      await this.fetchDocumentsToMerge(documentsToMerge, documentBufferMap);
+      const documentsToStringArray = documentsToMerge.map((document) =>
+        document.toString(),
+      );
+      documentsToStringArray.unshift('PERMIT');
       try {
-        const mergedDocument = await this.mergeDocuments(documentBufferList);
+        const mergedDocument = await this.mergeDocuments(
+          documentsToStringArray,
+          documentBufferMap,
+        );
         generatedDocument.buffer = Buffer.from(mergedDocument);
         generatedDocument.size = mergedDocument.length;
       } catch (err) {
@@ -98,6 +120,7 @@ export class DgenService {
     const dmsObject = await this.dmsService.create(
       currentUser,
       generatedDocument,
+      getDirectory(currentUser),
       companyId,
     );
     res.setHeader('x-orbc-dms-id', dmsObject.documentId);
@@ -123,10 +146,13 @@ export class DgenService {
     });
   }
 
-  private async mergeDocuments(documentBufferList: Buffer[]) {
+  private async mergeDocuments(
+    documentsToMerge: string[],
+    documentBufferMap: Map<string, Buffer>,
+  ): Promise<Uint8Array> {
     const mergedPdf = await PDFDocument.create();
-    for (const pdfBuffer of documentBufferList) {
-      const pdf = await PDFDocument.load(pdfBuffer);
+    for (const document of documentsToMerge) {
+      const pdf = await PDFDocument.load(documentBufferMap.get(document));
       const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
       copiedPages.forEach((page) => mergedPdf.addPage(page));
     }
@@ -136,7 +162,7 @@ export class DgenService {
 
   private async fetchDocumentsToMerge(
     documentsToMerge: ExternalDocumentEnum.ExternalDocument[],
-    documentBufferList: Buffer[],
+    documentBufferMap: Map<string, Buffer>,
   ) {
     await Promise.all(
       documentsToMerge.map(async (externalDocument) => {
@@ -165,13 +191,114 @@ export class DgenService {
           await this.cacheManager.set(
             externalDocument,
             externalDocumentBuffer,
-            600000,
+            +this._dopsCVSEFormsCacheTTLms,
           );
-          documentBufferList.push(externalDocumentBuffer);
+          documentBufferMap.set(externalDocument, externalDocumentBuffer);
         } else {
-          documentBufferList.push(documentFromCache);
+          documentBufferMap.set(externalDocument, documentFromCache);
         }
       }),
     );
+  }
+
+  async generateReport(
+    currentUser: IUserJWT,
+    createGeneratedReportDto: CreateGeneratedReportDto,
+    res: Response,
+  ) {
+    const template = await getFromCache(
+      this.cacheManager,
+      this.getCacheKeyforReport(createGeneratedReportDto.reportTemplate),
+    );
+
+    if (!template?.length) {
+      throw new InternalServerErrorException('Template not found');
+    }
+    const compiledTemplate = Handlebars.compile(template);
+
+    const htmlBody = compiledTemplate({
+      ...createGeneratedReportDto.reportData,
+    });
+
+    const generatedDocument: IFile = {
+      originalname: createGeneratedReportDto.generatedDocumentFileName,
+      encoding: undefined,
+      mimetype: 'application/pdf',
+      buffer: undefined,
+      size: undefined,
+    };
+
+    let browser: Browser;
+    try {
+      const browser = await puppeteer.launch({
+        headless: 'new',
+        //executablePath: 'usr/bin/chromium-browser',
+        args: [
+          '--no-sandbox',
+          '--disable-setuid-sandbox',
+          '--disable-dev-shm-usage',
+          '--enable-gpu',
+          // '--no-first-run',
+          // '--no-zygote',
+          // '--single-process',
+        ],
+        ignoreDefaultArgs: ['--disable-extensions'],
+      });
+      const page = await browser.newPage();
+      await page.setContent(htmlBody);
+      await page.emulateMediaType('print');
+
+      generatedDocument.buffer = await page.pdf({
+        format: 'letter',
+        displayHeaderFooter: true,
+        printBackground: true,
+        landscape: true,
+        footerTemplate: `
+        <div style="color: black; font-size: 6.0pt; text-align: right; width: 100%; margin-right: 32pt;">
+          <span>Page </span><span class="pageNumber"></span><span> of </span><span class="totalPages"></span> 
+        </div>
+       `,
+      });
+      generatedDocument.size = generatedDocument.buffer.length;
+    } catch (err) {
+      console.log('error on pup', err);
+      throw new InternalServerErrorException(err);
+    } finally {
+      if (browser) {
+        await browser.close();
+      }
+    }
+
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename=${createGeneratedReportDto.generatedDocumentFileName}`,
+    );
+    res.setHeader('Content-Length', generatedDocument.size);
+    res.setHeader('Content-Type', generatedDocument.mimetype);
+    const stream = new Readable();
+    stream.push(generatedDocument.buffer);
+    stream.push(null); // indicates end-of-file basically - the end of the stream
+    stream.pipe(res);
+    /*Wait for the stream to end before sending the response status and
+        headers. This ensures that the client receives a complete response and
+        prevents any issues with partial responses or response headers being
+        sent prematurely.*/
+    stream.on('end', () => {
+      return null;
+    });
+    stream.on('error', () => {
+      throw new Error('An error occurred while reading the file.');
+    });
+  }
+
+  getCacheKeyforReport(reportName: ReportTemplate): CacheKey {
+    switch (reportName) {
+      case ReportTemplate.PAYMENT_AND_REFUND_DETAILED_REPORT:
+        return CacheKey.PAYMENT_AND_REFUND_DETAILED_REPORT;
+      case ReportTemplate.PAYMENT_AND_REFUND_SUMMARY_REPORT:
+        return CacheKey.PAYMENT_AND_REFUND_SUMMARY_REPORT;
+      default:
+        throw new Error('Invalid Report name');
+    }
   }
 }

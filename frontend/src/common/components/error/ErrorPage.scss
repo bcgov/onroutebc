@@ -1,0 +1,45 @@
+@import "../../../themes/orbcStyles.scss";
+
+.error-page {
+  padding: 1.5rem;
+  padding-bottom: 0;
+  margin: 0 auto;
+  width: 100%;
+  max-width: 1200px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  height: calc(100vh - 179px);
+
+  &__wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    margin: 2em 0;
+    max-width: 640px;
+  }
+
+  &__img {
+    margin: 1em 0;
+  }
+
+  &__title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: $bc-black;
+    margin: 1em 0;
+  }
+
+  &__msg {
+    color: $bc-black;
+    margin: 1em 0;
+    text-align: center;
+
+    .msg {
+      margin: 1.25rem 1rem;
+    }
+  }
+}

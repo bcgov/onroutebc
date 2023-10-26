@@ -44,6 +44,10 @@ import { IdirUser } from 'src/modules/company-user-management/users/entities/idi
 import { PendingIdirUser } from 'src/modules/company-user-management/pending-idir-users/entities/pending-idir-user.entity';
 import { PendingIdirUsersService } from 'src/modules/company-user-management/pending-idir-users/pending-idir-users.service';
 import { pendingIdirUserEntityMock } from 'test/util/mocks/data/pending-idir-user.mock';
+import { Request } from 'express';
+import { IUserJWT } from '../../../src/common/interface/user-jwt.interface';
+import { Directory } from 'src/common/enum/directory.enum';
+import { getDirectory } from 'src/common/helper/auth.helper';
 
 interface SelectQueryBuilderParameters {
   userGUID?: string;
@@ -173,9 +177,15 @@ describe('UsersService', () => {
 
       findUsersEntityMock(params, USER_LIST);
 
+      const request = createMock<Request>();
+      request.user = redCompanyCvClientUserJWTMock;
+
       const retUser = await service.update(
         constants.RED_COMPANY_CVCLIENT_USER_GUID,
         updateRedCompanyCvClientUserDtoMock,
+        constants.RED_COMPANY_ID,
+        getDirectory(redCompanyCvClientUserJWTMock),
+        request.user as IUserJWT,
       );
 
       expect(typeof retUser).toBe('object');
@@ -192,6 +202,8 @@ describe('UsersService', () => {
         await service.update(
           constants.RED_COMPANY_CVCLIENT_USER_GUID,
           updateRedCompanyCvClientUserDtoMock,
+          constants.RED_COMPANY_ID,
+          undefined,
         );
       }).rejects.toThrow(DataNotFoundException);
     });
@@ -212,6 +224,8 @@ describe('UsersService', () => {
       const retUpdateResult = await service.updateStatus(
         constants.BLUE_COMPANY_CVCLIENT_USER_GUID,
         UserStatus.DISABLED,
+        Directory.BCEID,
+        redCompanyCvClientUserJWTMock,
       );
       expect(typeof retUpdateResult).toBe('object');
       expect(retUpdateResult.affected).toBe(1);
@@ -221,10 +235,10 @@ describe('UsersService', () => {
   describe('User service getRolesForUser function', () => {
     it('should get the user Roles', async () => {
       repo.query.mockResolvedValue([
-        { ROLE_ID: Role.READ_SELF },
-        { ROLE_ID: Role.READ_USER },
-        { ROLE_ID: Role.WRITE_SELF },
-        { ROLE_ID: Role.WRITE_USER },
+        { ROLE_TYPE: Role.READ_SELF },
+        { ROLE_TYPE: Role.READ_USER },
+        { ROLE_TYPE: Role.WRITE_SELF },
+        { ROLE_TYPE: Role.WRITE_USER },
       ]);
 
       const retUserRoles = await service.getRolesForUser(

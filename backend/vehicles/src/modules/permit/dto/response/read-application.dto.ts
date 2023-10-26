@@ -16,6 +16,34 @@ export class ReadApplicationDto {
 
   @AutoMap()
   @ApiProperty({
+    example: '1',
+    description: 'Id of the original permit for a revision',
+  })
+  originalPermitId: string;
+
+  @AutoMap()
+  @ApiProperty({
+    example: '1',
+    description: 'Revision number for a permit.',
+  })
+  revision: number;
+
+  @AutoMap()
+  @ApiProperty({
+    example: '1',
+    description: 'Previous permit id for a revised permit.',
+  })
+  previousRevision: number;
+
+  @AutoMap()
+  @ApiProperty({
+    example: 'This permit was amended because of so-and-so reason',
+    description: 'Comment/Reason for modifying a permit.',
+  })
+  comment: string;
+
+  @AutoMap()
+  @ApiProperty({
     description: 'Satus of Permit/Permit Application',
     example: ApplicationStatus.IN_PROGRESS,
     required: false,

@@ -10,6 +10,11 @@ import {
 } from '../../util/mocks/data/trailer.mock';
 import { trailersServiceMock } from '../../util/mocks/service/trailers.service.mock';
 import { deleteDtoMock } from '../../util/mocks/data/delete-dto.mock';
+import { createMock } from '@golevelup/ts-jest';
+import { Request } from 'express';
+import { redCompanyCvClientUserJWTMock } from 'test/util/mocks/data/jwt.mock';
+import { IUserJWT } from 'src/common/interface/user-jwt.interface';
+import { getDirectory } from 'src/common/helper/auth.helper';
 
 const TRAILER_ID_1 = '1';
 const TRAILER_ID_2 = '2';
@@ -32,8 +37,11 @@ describe('TrailersController', () => {
   });
   describe('Trailer controller create function', () => {
     it('should create trailer', async () => {
+      const request = createMock<Request>();
+      request.user = redCompanyCvClientUserJWTMock;
+      const currentUser = request.user as IUserJWT;
       const retTrailer = await controller.create(
-        null,
+        request,
         COMPANY_ID_1,
         createTrailerDtoMock,
       );
@@ -42,6 +50,8 @@ describe('TrailersController', () => {
       expect(trailersServiceMock.create).toHaveBeenCalledWith(
         COMPANY_ID_1,
         createTrailerDtoMock,
+        currentUser,
+        getDirectory(currentUser),
       );
     });
   });
@@ -75,8 +85,12 @@ describe('TrailersController', () => {
 
   describe('Trailer controller update function', () => {
     it('should update the trailer', async () => {
+      const request = createMock<Request>();
+      request.user = redCompanyCvClientUserJWTMock;
+      const currentUser = request.user as IUserJWT;
+
       const retTrailer = await controller.update(
-        null,
+        request,
         COMPANY_ID_1,
         TRAILER_ID_1,
         updateTrailerDtoMock,
@@ -87,13 +101,17 @@ describe('TrailersController', () => {
         COMPANY_ID_1,
         TRAILER_ID_1,
         updateTrailerDtoMock,
+        currentUser,
+        getDirectory(currentUser),
       );
     });
 
     it('should thrown a DataNotFoundException if the trailer is not found', async () => {
       await expect(async () => {
+        const request = createMock<Request>();
+        request.user = redCompanyCvClientUserJWTMock;
         await controller.update(
-          null,
+          request,
           COMPANY_ID_1,
           TRAILER_ID_2,
           updateTrailerDtoMock,

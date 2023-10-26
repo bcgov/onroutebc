@@ -35,8 +35,10 @@ export interface CompanyProfile {
 }
 
 export interface UserInformation extends Contact {
-  fax?: string;
   userAuthGroup: string;
+  userGUID: string;
+  userName: string;
+  statusCode: string;
 }
 
 export interface CompanyAndUserRequest {

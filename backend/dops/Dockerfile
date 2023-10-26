@@ -1,5 +1,5 @@
 # Build container
-FROM node:18.17.0-alpine AS builder
+FROM node:18.17.1-alpine AS builder
 
 # Set the working directory to /app inside the container
 WORKDIR /app
@@ -18,11 +18,12 @@ RUN npm prune --production
 
 
 # Deployment container
-FROM node:18.17.0-alpine
+FROM node:18.17.1-alpine
 RUN npm cache clean --force
 
 # Create and Assign permissions to npm folder
 RUN mkdir /.npm && chmod 777 /.npm
+RUN mkdir /.cache && chmod 777 /.cache
 
 # Set the working directory to /app inside the deployment container
 WORKDIR /app
@@ -45,6 +46,7 @@ ENV MSSQL_ENCRYPT ${MSSQL_ENCRYPT}
 ENV AUTH0_ISSUER_URL ${AUTH0_ISSUER_URL}
 ENV AUTH0_AUDIENCE ${AUTH0_AUDIENCE}
 ENV AUTH0_IGNORE_EXP ${AUTH0_IGNORE_EXP}
+ENV DOPS_CVSE_FORMS_CACHE_TTL_MS ${DOPS_CVSE_FORMS_CACHE_TTL_MS}
 ENV DOPS_S3_ACCESS_TYPE ${DOPS_S3_ACCESS_TYPE}
 ENV DOPS_S3_ACCESSKEYID ${DOPS_S3_ACCESSKEYID}
 ENV DOPS_S3_BUCKET ${DOPS_S3_BUCKET}
@@ -62,6 +64,16 @@ ENV ACCESS_API_URL ${ACCESS_API_URL}
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
+
+RUN apk add --no-cache \
+      chromium \
+      nss \
+      freetype \
+      harfbuzz \
+      ca-certificates \
+      ttf-freefont 
+     
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
 # Expose Port
 EXPOSE 5001

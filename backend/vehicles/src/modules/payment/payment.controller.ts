@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Query, Req } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Req } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiCreatedResponse,
@@ -10,12 +10,13 @@ import {
 } from '@nestjs/swagger';
 import { ExceptionDto } from '../../common/exception/exception.dto';
 import { PaymentService } from './payment.service';
-import { MotiPayDetailsDto } from './dto/response/read-moti-pay-details.dto';
 import { CreateTransactionDto } from './dto/request/create-transaction.dto';
 import { ReadTransactionDto } from './dto/response/read-transaction.dto';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
 import { Request } from 'express';
-import { ReadPermitTransactionDto } from './dto/response/read-permit-transaction.dto';
+import { UpdatePaymentGatewayTransactionDto } from './dto/request/read-payment-gateway-transaction.dto';
+import { ReadPaymentGatewayTransactionDto } from './dto/response/read-payment-gateway-transaction.dto';
+import { getDirectory } from 'src/common/helper/auth.helper';
 
 @ApiBearerAuth()
 @ApiTags('Payment')
@@ -35,69 +36,60 @@ import { ReadPermitTransactionDto } from './dto/response/read-permit-transaction
 export class PaymentController {
   constructor(private readonly paymentService: PaymentService) {}
 
-  @ApiOkResponse({
-    description: 'The MOTI Pay Resource',
-  })
-  @Get()
-  async forwardTransactionDetails(
-    @Query('paymentMethodId') paymentMethodId: number,
-    @Query('transactionSubmitDate') transactionSubmitDate: string,
-    @Query('transactionAmount') transactionAmount: number,
-    @Query('permitIds') permitIds: string,
-  ): Promise<MotiPayDetailsDto> {
-    const permitIdArray: number[] = permitIds.split(',').map(Number);
-
-    const paymentDetails = await this.paymentService.forwardTransactionDetails(
-      paymentMethodId,
-      transactionSubmitDate,
-      transactionAmount,
-    );
-
-    const permitTransactions = await this.paymentService.createTransaction(
-      permitIdArray,
-      paymentDetails,
-    );
-
-    return this.paymentService.generateUrl(
-      paymentDetails,
-      permitTransactions.map((permitTransaction) => permitTransaction.permitId),
-      permitTransactions.map(
-        (permitTransaction) => permitTransaction.transactionId,
-      ),
-    );
-  }
-
   @ApiCreatedResponse({
     description: 'The Transaction Resource',
     type: ReadTransactionDto,
   })
   @Post()
-  async updateTransaction(
+  async createTransactionDetails(
     @Req() request: Request,
     @Body() createTransactionDto: CreateTransactionDto,
-  ) {
+  ): Promise<ReadTransactionDto> {
     const currentUser = request.user as IUserJWT;
+    const directory = getDirectory(currentUser);
 
-    return await this.paymentService.updateTransaction(
+    const paymentDetails = await this.paymentService.createTransactions(
       currentUser,
       createTransactionDto,
+      directory,
     );
+
+    return paymentDetails;
   }
 
   @ApiOkResponse({
-    description: 'The Permit Transaction Resource',
-    type: ReadPermitTransactionDto,
+    description: 'The Payment Gateway Transaction Resource',
+    type: ReadPaymentGatewayTransactionDto,
   })
-  @Get('/:transactionOrderNumber/permit')
-  async getPermitTransaction(
+  @Put(':transactionId/payment-gateway')
+  async updateTransactionDetails(
     @Req() request: Request,
-    @Param('transactionOrderNumber') transactionOrderNumber: string,
-  ): Promise<ReadPermitTransactionDto> {
-    const transaction = await this.paymentService.findOneTransaction(
-      transactionOrderNumber,
+    @Param('transactionId') transactionId: string,
+    @Body()
+    updatePaymentGatewayTransactionDto: UpdatePaymentGatewayTransactionDto,
+  ): Promise<ReadPaymentGatewayTransactionDto> {
+    const currentUser = request.user as IUserJWT;
+    const directory = getDirectory(currentUser);
+
+    const paymentDetails = await this.paymentService.updateTransactions(
+      currentUser,
+      transactionId,
+      updatePaymentGatewayTransactionDto,
+      directory,
     );
-    return await this.paymentService.findOnePermitTransaction(
-      transaction.transactionId,
-    );
+
+    return paymentDetails;
+  }
+
+  @ApiOkResponse({
+    description: 'The Read Transaction Resource',
+    type: ReadTransactionDto,
+  })
+  @Get(':transactionId')
+  async findTransaction(
+    @Req() request: Request,
+    @Param('transactionId') transactionId: string,
+  ): Promise<ReadTransactionDto> {
+    return await this.paymentService.findTransaction(transactionId);
   }
 }

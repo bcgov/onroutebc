@@ -1,5 +1,8 @@
 import { Dayjs } from "dayjs";
 
+import { PermitStatus } from "./PermitStatus";
+import { PermitType } from "./PermitType";
+
 /**
  * A type that replaces all direct entries with Dayjs types to string types.
  *
@@ -24,10 +27,14 @@ type ReplaceDayjsWithString<T> = {
  */
 interface PartialPermitType {
   permitId: number;
-  permitStatus: string;
+  originalPermitId: string;
+  revision: number;
+  previousRevision?: number | null;
+  comment?: string | null;
+  permitStatus: PermitStatus;
   companyId: number;
   userGuid?: string | null;
-  permitType: string;
+  permitType: PermitType;
   applicationNumber: string;
   permitNumber: string;
   permitApprovalSource: string;
@@ -110,4 +117,18 @@ interface TermOversizeApplication {
   commodities: Commodities[];
   mailingAddress: MailingAddress;
   feeSummary: string;
+  companyName?: string;
+  clientNumber?: string;
 }
+
+export interface PermitsActionResponse {
+  success: string[];
+  failure: string[];
+}
+
+export interface IssuePermitRequest {
+  applicationIds: string[];
+  companyId?: number;
+}
+
+export type IssuePermitsResponse = PermitsActionResponse;

@@ -7,7 +7,7 @@ import { Loading } from "../../../../common/pages/Loading";
 import { ErrorFallback } from "../../../../common/pages/ErrorFallback";
 import { List } from "../list/List";
 import { getApplicationsInProgress } from "../../../../features/permits/apiManager/permitsAPI";
-import { StartApplicationButton } from "../../../../features/permits/pages/TermOversize/form/VehicleDetails/customFields/StartApplicationButton";
+import { StartApplicationButton } from "../../pages/TermOversize/components/form/VehicleDetails/customFields/StartApplicationButton";
 import { ActivePermitList } from "../permit-list/ActivePermitList";
 import { ExpiredPermitList } from "../permit-list/ExpiredPermitList";
 import { FIVE_MINUTES } from "../../../../common/constants/constants";
@@ -68,16 +68,16 @@ export const ManageApplicationDashboard = React.memo(() => {
         ),
     },
     {
-      label: "Applications in Review",
-      component: <>TODO</>,
-    },
-    {
       label: "Active Permits",
       component: <ActivePermitList />,
     },
     {
       label: "Expired Permits",
       component: <ExpiredPermitList />,
+    },
+    {
+      label: "Applications in Review",
+      component: <>TODO</>,
     },
   ];
 

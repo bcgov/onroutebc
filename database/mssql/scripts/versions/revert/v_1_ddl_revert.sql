@@ -4,10 +4,18 @@ SET QUOTED_IDENTIFIER ON
 GO
 SET NOCOUNT ON
 GO
-BEGIN TRANSACTION
 
-DROP TABLE [dbo].[ORBC_SYS_VERSION]
+SET XACT_ABORT ON
 
--- Note since we are reverting to version zero, there is no longer a version table to update
+BEGIN TRY
+  BEGIN TRANSACTION
+    -- Note since we are reverting to version zero, there is no longer a version table to update
+    DROP TABLE [dbo].[ORBC_SYS_VERSION]
+  COMMIT
+END TRY
 
-COMMIT
+BEGIN CATCH
+  IF @@TRANCOUNT > 0 
+    ROLLBACK;
+  THROW
+END CATCH

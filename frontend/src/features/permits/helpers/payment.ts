@@ -1,4 +1,11 @@
 import { MotiPaymentDetails } from "../types/payment";
+import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../common/helpers/util";
+import { 
+  BAMBORA_PAYMENT_METHODS, 
+  BamboraPaymentMethod, 
+  CARD_TYPES, 
+  CardType, 
+} from "../types/PaymentMethod";
 
 /**
  * Extracts MotiPaymentDetails from the query parameters of a URL.
@@ -9,34 +16,34 @@ import { MotiPaymentDetails } from "../types/payment";
 export const getMotiPaymentDetails = (params: URLSearchParams): MotiPaymentDetails => {
   // Extract the query parameters and assign them to the corresponding properties of MotiPaymentDetails
   const motiPaymentDetails: MotiPaymentDetails = {
-    authCode: params.get("authCode") ?? "",
-    avsAddrMatch: params.get("avsAddrMatch") ?? "",
-    avsId: params.get("avsId") ?? "",
-    avsMessage: params.get("avsMessage") ?? "",
-    avsPostalMatch: params.get("avsPostalMatch") ?? "",
-    avsProcessed: params.get("avsProcessed") ?? "",
-    avsResult: params.get("avsResult") ?? "",
-    cardType: params.get("cardType") ?? "",
-    cvdId: Number(params.get("cvdId") ?? ""),
-    trnApproved: Number(params.get("trnApproved") ?? ""),
-    messageId: params.get("messageId") ?? "",
-    messageText: params.get("messageText") ?? "",
-    paymentMethod: params.get("paymentMethod") ?? "",
-    ref1: params.get("ref1") ?? "",
-    ref2: params.get("ref2") ?? "",
-    ref3: params.get("ref3") ?? "",
-    ref4: params.get("ref4") ?? "",
-    ref5: params.get("ref5") ?? "",
-    responseType: params.get("responseType") ?? "",
-    trnAmount: Number(params.get("trnAmount") ?? ""),
-    trnCustomerName: params.get("trnCustomerName") ?? "",
-    trnDate: params.get("trnDate") ?? "",
-    trnEmailAddress: params.get("trnEmailAddress") ?? "",
-    trnId: params.get("trnId") ?? "",
-    trnLanguage: params.get("trnLanguage") ?? "",
-    trnOrderNumber: params.get("trnOrderNumber") ?? "",
-    trnPhoneNumber: params.get("trnPhoneNumber") ?? "",
-    trnType: params.get("trnType") ?? "",
+    authCode: getDefaultRequiredVal("", params.get("authCode")),
+    avsAddrMatch: getDefaultRequiredVal("", params.get("avsAddrMatch")),
+    avsId: getDefaultRequiredVal("", params.get("avsId")),
+    avsMessage: getDefaultRequiredVal("", params.get("avsMessage")),
+    avsPostalMatch: getDefaultRequiredVal("", params.get("avsPostalMatch")),
+    avsProcessed: getDefaultRequiredVal("", params.get("avsProcessed")),
+    avsResult: getDefaultRequiredVal("", params.get("avsResult")),
+    cardType: getDefaultRequiredVal(CARD_TYPES.VI, params.get("cardType")) as CardType,
+    cvdId: applyWhenNotNullable((cvdId) => Number(cvdId), params.get("cvdId"), 0),
+    trnApproved: applyWhenNotNullable((trnApproved) => Number(trnApproved), params.get("trnApproved"), 0),
+    messageId: getDefaultRequiredVal("", params.get("messageId")),
+    messageText: getDefaultRequiredVal("", params.get("messageText")),
+    paymentMethod: getDefaultRequiredVal(BAMBORA_PAYMENT_METHODS.CC, params.get("paymentMethod")) as BamboraPaymentMethod,
+    ref1: getDefaultRequiredVal("", params.get("ref1")),
+    ref2: getDefaultRequiredVal("", params.get("ref2")),
+    ref3: getDefaultRequiredVal("", params.get("ref3")),
+    ref4: getDefaultRequiredVal("", params.get("ref4")),
+    ref5: getDefaultRequiredVal("", params.get("ref5")),
+    responseType: getDefaultRequiredVal("", params.get("responseType")),
+    trnAmount: applyWhenNotNullable((trnAmount) => Number(trnAmount), params.get("trnAmount"), 0),
+    trnCustomerName: getDefaultRequiredVal("", params.get("trnCustomerName")),
+    trnDate: getDefaultRequiredVal("", params.get("trnDate")),
+    trnEmailAddress: getDefaultRequiredVal("", params.get("trnEmailAddress")),
+    trnId: getDefaultRequiredVal("", params.get("trnId")),
+    trnLanguage: getDefaultRequiredVal("", params.get("trnLanguage")),
+    trnOrderNumber: getDefaultRequiredVal("", params.get("trnOrderNumber")),
+    trnPhoneNumber: getDefaultRequiredVal("", params.get("trnPhoneNumber")),
+    trnType: getDefaultRequiredVal("", params.get("trnType")),
   };
 
   return motiPaymentDetails;

@@ -1,53 +1,72 @@
 import { OnRouteBCChip } from "../../../../common/components/table/OnRouteBCChip";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
-
-type EXPIRED_PERMIT_STATUS = "VOIDED" | "REVOKED" | "EXPIRED";
+import { 
+  PERMIT_EXPIRED, 
+  PERMIT_STATUSES, 
+  isPermitInactive,
+} from "../../types/PermitStatus";
 
 /**
  * Returns the colors associated with the badge.
- * NOTE: If the permit status is one of VOIDED or REVOKED, a small badge has to be displayed
+ * NOTE: If the permit is inactive or expired, a small badge has to be displayed
  * beside the permit number.
- * @param permitStatus One of "VOIDED" | "REVOKED" | "EXPIRED"
+ * @param permitStatus string representing the permit status
  * @returns An object containing the text and background colors
  */
 const getColors = (
-  permitStatus: EXPIRED_PERMIT_STATUS
-): { background: string; color: string } => {
+  permitStatus?: string
+): { background: string; color: string } | undefined => {
   switch (permitStatus) {
-    case "VOIDED":
+    case PERMIT_STATUSES.VOIDED:
       return {
         background: BC_COLOURS.focus_blue,
         color: BC_COLOURS.white,
       };
-    case "REVOKED":
+    case PERMIT_STATUSES.REVOKED:
       return {
         background: BC_COLOURS.bc_messages_red_text,
         color: BC_COLOURS.white,
       };
-    case "EXPIRED":
+    case PERMIT_STATUSES.SUPERSEDED:
+      return {
+        background: BC_COLOURS.bc_border_grey,
+        color: BC_COLOURS.bc_black,
+      };
+    case PERMIT_EXPIRED:
       return {
         background: BC_COLOURS.bc_messages_red_background,
         color: BC_COLOURS.bc_messages_red_text,
       };
+    default:
+      return undefined;
   }
 };
 
 /**
- * Returns the text corresponding to a
- * @param permitStatus One of "VOIDED" | "REVOKED" | "EXPIRED"
- * @returns
+ * Returns the text corresponding to the status of a permit.
+ * @param permitStatus string representing the permit status
+ * @returns Display text string corresponding to permit status
  */
-const getTextForBadge = (permitStatus: EXPIRED_PERMIT_STATUS): string => {
+const getTextForBadge = (permitStatus?: string): string => {
   switch (permitStatus) {
-    case "VOIDED":
+    case PERMIT_STATUSES.VOIDED:
       return "Void";
-    case "REVOKED":
+    case PERMIT_STATUSES.REVOKED:
       return "Revoked";
-    case "EXPIRED":
+    case PERMIT_STATUSES.SUPERSEDED:
+      return "Superseded";
+    case PERMIT_EXPIRED:
       return "Expired";
     default:
       return "";
   }
+};
+
+/**
+ * A boolean indicating if a small badge has to be displayed beside the Permit Number.
+ */
+const shouldShowPermitChip = (permitStatus?: string) => {
+  return isPermitInactive(permitStatus) || permitStatus === PERMIT_EXPIRED;
 };
 
 /**
@@ -56,16 +75,21 @@ const getTextForBadge = (permitStatus: EXPIRED_PERMIT_STATUS): string => {
 export const PermitChip = ({
   permitStatus,
 }: {
-  permitStatus: EXPIRED_PERMIT_STATUS;
+  permitStatus?: string;
 }) => {
-  return (
+  if (!shouldShowPermitChip(permitStatus)) {
+    return null;
+  }
+
+  const chipColours = getColors(permitStatus);
+  return chipColours ? (
     <>
       <OnRouteBCChip
-        {...getColors(permitStatus)}
+        {...chipColours}
         message={getTextForBadge(permitStatus)}
       />
     </>
-  );
+  ) : null;
 };
 
 PermitChip.displayName = "PermitChip";

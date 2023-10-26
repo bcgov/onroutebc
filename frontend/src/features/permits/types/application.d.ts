@@ -1,5 +1,8 @@
 import { Dayjs } from "dayjs";
 
+import { PermitStatus, PERMIT_STATUSES } from "./PermitStatus";
+import { PermitType } from "./PermitType";
+
 /**
  * A type that replaces all direct entries with Dayjs types to string types.
  * 
@@ -15,16 +18,17 @@ type ReplaceDayjsWithString<T> = {
   [K in keyof T]: T[K] extends Dayjs ? string : (T[K] extends (Dayjs | undefined) ? (string | undefined) : T[K]);
 };
 
-export type PermitType = "STOS" | "TROS";
 type PermitApplicationOrigin = "ONLINE" | "PPC";
+
 type PermitApprovalSource = "AUTO" | "PPC" | "TPS";
-export type PermitStatus = "APPROVED" | "AUTO_APPROVED" | "CANCELLED" | "IN_PROGRESS" | "REJECTED" | "UNDER_REVIEW" | "WAITING_APPROVAL" | "WAITING_PAYMENT" | "ISSUED";
 
 /**
  * A base permit type. This is an incomplete object and meant to be extended for use.
  */
 export interface Application {
   permitId?: string;
+  originalPermitId?: string;
+  comment?: string;
   permitStatus?: PermitStatus;
   companyId: number;
   userGuid?: string | null;
@@ -109,6 +113,8 @@ export interface TermOversizeApplication {
   commodities: Commodities[];
   mailingAddress: MailingAddress;
   feeSummary?: string;
+  companyName: string;
+  clientNumber: string;
 }
 
 export interface PermitApplicationInProgress {
@@ -120,7 +126,7 @@ export interface PermitApplicationInProgress {
   permitData: ReplaceDayjsWithString<TermOversizeApplication>;
   permitId: string
   permitNumber?: string | null;
-  permitStatus: "IN_PROGRESS";
+  permitStatus: typeof PERMIT_STATUSES.IN_PROGRESS;
   permitType: PermitType;
   updatedDateTime: string;
   userGuid: string;

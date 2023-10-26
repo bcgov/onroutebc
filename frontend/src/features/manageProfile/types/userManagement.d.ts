@@ -1,11 +1,31 @@
+import { UserInformation } from "./manageProfile";
+
+/**
+ * All user auth groups
+ */
+export const USER_AUTH_GROUP = {
+  ANONYMOUS: "ANONYMOUS",
+  CVCLIENT: "CVCLIENT",
+  IDIRBASIC: "IDIRBASIC",
+  ORGADMIN: "ORGADMIN",
+  PPCCLERK: "PPCCLERK",
+  PUBLIC: "PUBLIC",
+  SYSADMIN: "SYSADMIN",
+  EOFFICER: "EOFFICER",
+} as const;
+
+export type UserAuthGroup = typeof USER_AUTH_GROUP[keyof typeof USER_AUTH_GROUP];
+
 /**
  * The types of user auth groups for BCeID users.
  */
-export enum BCeIDAuthGroup {
-  PUBLIC = "PUBLIC",
-  CVCLIENT = "CVCLIENT",
-  ORGADMIN = "ORGADMIN",
-}
+export const BCEID_AUTH_GROUP = {
+  PUBLIC: USER_AUTH_GROUP.PUBLIC,
+  CVCLIENT: USER_AUTH_GROUP.CVCLIENT,
+  ORGADMIN: USER_AUTH_GROUP.ORGADMIN,
+} as const;
+
+export type BCeIDAuthGroup = typeof BCEID_AUTH_GROUP[keyof typeof BCEID_AUTH_GROUP];
 
 /**
  * The types of user statuses for BCeID users.
@@ -19,26 +39,14 @@ export enum BCeIDUserStatus {
 /**
  * Company User object response from the GET API.
  */
-export type ReadCompanyUser = {
-  firstName: string;
-  lastName: string;
-  phone1: string;
-  phone2: string;
-  fax: string;
-  email: string;
-  city: string;
-  userGUID: string;
+export interface ReadCompanyUser extends UserInformation {
   userAuthGroup: BCeIDAuthGroup;
-  statusCode: BCeIDUserStatus;
-  userName: string;
-  phone1Extension: string;
-  phone2Extension: string;
-  provinceCode: string;
-  countryCode: string;
-};
+  createdDateTime: string;
+  updatedDateTime: string;
+}
 
 /**
- * 
+ * The BCeID add user request object.
  */
 export type BCeIDAddUserRequest = {
   userName: string;

@@ -1,17 +1,16 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
 import { Entity, Column, OneToMany, PrimaryColumn } from 'typeorm';
-import { Base } from '../../../common/entities/base.entity';
 import { PowerUnit } from '../../power-units/entities/power-unit.entity';
 
-@Entity({ name: 'ORBC_VT_POWER_UNIT_TYPE' })
-export class PowerUnitType extends Base {
+@Entity({ name: 'ORBC_POWER_UNIT_TYPE' })
+export class PowerUnitType {
   @AutoMap()
   @ApiProperty({
     example: 'CONCRET',
     description: 'Unique identifier of the power unit type.',
   })
-  @PrimaryColumn({ length: 7, name: 'TYPE_CODE', nullable: false })
+  @PrimaryColumn({ length: 7, name: 'POWER_UNIT_TYPE', nullable: false })
   typeCode: string;
 
   @AutoMap()

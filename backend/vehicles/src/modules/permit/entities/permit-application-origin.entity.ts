@@ -1,11 +1,10 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
-import { Base } from 'src/modules/common/entities/base.entity';
 import { Column, Entity, PrimaryColumn } from 'typeorm';
 import { PermitApplicationOrigin as PermitApplicationOriginEnum } from 'src/common/enum/permit-application-origin.enum';
 
-@Entity({ name: 'permit.ORBC_VT_PERMIT_APPLICATION_ORIGIN' })
-export class PermitApplicationOrigin extends Base {
+@Entity({ name: 'permit.ORBC_PERMIT_APPLICATION_ORIGIN_TYPE' })
+export class PermitApplicationOrigin {
   @AutoMap()
   @ApiProperty({
     example: 'ONLINE',
@@ -15,7 +14,7 @@ export class PermitApplicationOrigin extends Base {
     type: 'simple-enum',
     enum: PermitApplicationOriginEnum,
     length: 8,
-    name: 'ID',
+    name: 'PERMIT_APPLICATION_ORIGIN_TYPE',
     nullable: false,
   })
   id: PermitApplicationOriginEnum;

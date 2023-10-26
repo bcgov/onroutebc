@@ -13,4 +13,16 @@ export class ReadPendingUserDto extends CreatePendingUserDto {
     example: '1',
   })
   companyId: number;
+
+  @AutoMap()
+  @ApiProperty({
+    description: 'Created Date and Time',
+  })
+  createdDateTime: string;
+
+  @AutoMap()
+  @ApiProperty({
+    description: 'Updated Date and Time',
+  })
+  updatedDateTime: string;
 }

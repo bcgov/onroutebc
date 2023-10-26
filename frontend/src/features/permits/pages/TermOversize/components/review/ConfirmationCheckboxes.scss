@@ -1,0 +1,16 @@
+@import "../../../../../../themes/orbcStyles.scss";
+
+.confirmation-checkboxes {
+  & &__checkbox {
+    padding-left: 0;
+    color: $bc-primary-blue;
+
+    &--invalid {
+      color: $bc-red;
+    }
+  }
+
+  & &__error {
+    color: $bc-red;
+  }
+}

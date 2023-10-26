@@ -2,9 +2,15 @@ import { useEffect, useRef } from "react";
 import { Navigate, useSearchParams } from "react-router-dom";
 
 import { getMotiPaymentDetails } from "../../helpers/payment";
-import { MotiPaymentDetails, Transaction } from "../../types/payment";
+import { CompleteTransactionRequestData, MotiPaymentDetails } from "../../types/payment";
 import { Loading } from "../../../../common/pages/Loading";
-import { usePostTransaction } from "../../hooks/hooks";
+import { useCompleteTransaction, useIssuePermits } from "../../hooks/hooks";
+import { getDefaultRequiredVal } from "../../../../common/helpers/util";
+import { DATE_FORMATS, toUtc } from "../../../../common/helpers/formatDate";
+
+const getPermitIdsArray = (permitIds?: string | null) => {
+  return getDefaultRequiredVal("", permitIds).split(",").filter(id => id !== "");
+};
 
 /**
  * React component that handles the payment redirect and displays the payment status.
@@ -12,33 +18,59 @@ import { usePostTransaction } from "../../hooks/hooks";
  * Otherwise, it displays the payment status message.
  */
 export const PaymentRedirect = () => {
-  const postedTransaction = useRef(false);
+  const completedTransaction = useRef(false);
+  const issuedPermit = useRef(false);
   const [searchParams] = useSearchParams();
   const permitIds = searchParams.get("permitIds");
-  const transactionIds = searchParams.get("transactionIds");
+  const transactionId = searchParams.get("transactionId");
   const paymentDetails = getMotiPaymentDetails(searchParams);
   const transaction = mapTransactionDetails(paymentDetails);
 
   const { 
-    mutation: postTransactionMutation,
+    mutation: completeTransactionMutation,
     paymentApproved,
     message,
     setPaymentApproved,
-  } = usePostTransaction(
+  } = useCompleteTransaction(
+    getDefaultRequiredVal("", transactionId),
+    transaction,
     paymentDetails.messageText,
     paymentDetails.trnApproved
   );
 
+  const {
+    mutation: issuePermitsMutation,
+    issueResults,
+  } = useIssuePermits();
+
+  const issueFailed = () => {
+    if (!issueResults) return false; // since issue results might not be ready yet
+    return issueResults.success.length === 0 
+      || (issueResults.success.length === 1 && issueResults.success[0] === "")
+      || (issueResults.failure.length > 0 && issueResults.failure[0] !== "");
+  };
+
   useEffect(() => {
-    if (postedTransaction.current === false) {
+    if (completedTransaction.current === false) {
       if (paymentDetails.trnApproved > 0) {
-        postTransactionMutation.mutate(transaction);
-        postedTransaction.current = true;
+        completeTransactionMutation.mutate();
+        completedTransaction.current = true;
       } else {
         setPaymentApproved(false);
       }
     }
   }, [paymentDetails.trnApproved]);
+
+  useEffect(() => {
+    if (issuedPermit.current === false) {
+      const permitIdsArray = getPermitIdsArray(permitIds);
+      if (paymentApproved === true && permitIdsArray.length > 0) {
+        // Issue permit
+        issuePermitsMutation.mutate(permitIdsArray);
+        issuedPermit.current = true;
+      }
+    }
+  }, [paymentApproved, permitIds]);
 
   if (paymentApproved === false) {
     return (
@@ -49,15 +81,19 @@ export const PaymentRedirect = () => {
     );
   }
   
-  if (paymentApproved === true && permitIds && transactionIds) {
-    const permitIdsArray = permitIds.split(",").filter(id => id !== "");
-    const transactionIdsArray = transactionIds.split(",").filter(id => id !== "");
-    if (permitIdsArray.length !== 1 || transactionIdsArray.length !== 1) {
-      return <Loading />;
+  if (issueResults) {
+    if (issueFailed()) {
+      const permitIssueFailedMsg = `Permit issue failed for ids ${issueResults.failure.join(",")}`;
+      return (
+        <Navigate 
+          to={`/applications/failure/${permitIssueFailedMsg}`}
+          replace={true}
+        />
+      );
     }
     return (
       <Navigate 
-        to={`/applications/success/${permitIdsArray[0]}`}
+        to={`/applications/success/${issueResults.success[0]}`}
         replace={true}
       />
     );
@@ -68,20 +104,16 @@ export const PaymentRedirect = () => {
 
 const mapTransactionDetails = (
   motiResponse: MotiPaymentDetails
-): Transaction => {
+): CompleteTransactionRequestData => {
   return {
-    transactionType: motiResponse.trnType,
-    transactionOrderNumber: motiResponse.trnOrderNumber,
-    providerTransactionId: Number(motiResponse.trnId),
-    transactionAmount: Number(motiResponse.trnAmount),
-    approved: Number(motiResponse.trnApproved),
-    authCode: motiResponse.authCode,
-    cardType: motiResponse.cardType,
-    transactionDate: motiResponse.trnDate,
-    cvdId: Number(motiResponse.cvdId),
-    paymentMethod: motiResponse.paymentMethod,
-    paymentMethodId: 1, // TODO: change once different payment methods are implemented, currently 1 == MOTI Pay
-    messageId: motiResponse.messageId,
-    messageText: motiResponse.messageText,
+    pgTransactionId: motiResponse.trnId,
+    pgApproved: Number(motiResponse.trnApproved),
+    pgAuthCode: motiResponse.authCode,
+    pgCardType: motiResponse.cardType,
+    pgTransactionDate: toUtc(motiResponse.trnDate, DATE_FORMATS.ISO8601),
+    pgCvdId: Number(motiResponse.cvdId),
+    pgPaymentMethod: motiResponse.paymentMethod,
+    pgMessageId: Number(motiResponse.messageId),
+    pgMessageText: motiResponse.messageText,
   };
 };

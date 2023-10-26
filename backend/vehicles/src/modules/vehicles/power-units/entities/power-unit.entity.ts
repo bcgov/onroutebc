@@ -38,7 +38,7 @@ export class PowerUnit extends Base {
 
   @AutoMap(() => Province)
   @ManyToOne(() => Province, (Province) => Province.powerUnits)
-  @JoinColumn({ name: 'PROVINCE_ID' })
+  @JoinColumn({ name: 'PROVINCE_TYPE' })
   province: Province;
 
   @AutoMap()
@@ -82,7 +82,7 @@ export class PowerUnit extends Base {
 
   @AutoMap(() => PowerUnitType)
   @ManyToOne(() => PowerUnitType, (powerUnitType) => powerUnitType.powerUnits)
-  @JoinColumn({ name: 'POWER_UNIT_TYPE_CODE' })
+  @JoinColumn({ name: 'POWER_UNIT_TYPE' })
   powerUnitType: PowerUnitType;
 
   @AutoMap()

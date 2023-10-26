@@ -1,0 +1,11 @@
+@import "../../../../../../themes/orbcStyles.scss";
+
+.permit-review {
+  padding-top: 1.5rem;
+  background-color: $bc-white;
+
+  &__container {
+    padding-bottom: 5rem;
+    margin-top: -2.5rem;
+  }
+}

@@ -1,0 +1,10 @@
+@import "../../../../../../themes/orbcStyles.scss";
+
+.permit-form {
+  padding-top: 1.5rem;
+  background-color: $bc-white;
+
+  &__form {
+    padding-bottom: 5rem;
+  }
+}

@@ -1,0 +1,31 @@
+@use "../../../../../../themes/orbcStyles.scss";
+
+@include orbcStyles.permit-main-box-style(".review-permit-details");
+@include orbcStyles.permit-left-box-style(".review-permit-details__header");
+@include orbcStyles.permit-right-box-style(".review-permit-details__body");
+
+.review-permit-details {
+  &__body {
+    .permit-dates {
+      gap: 40px;
+      padding-top: 24px;
+
+      &__label {
+        font-weight: 600;
+      }
+    }
+
+    .permit-expiry-banner {
+      width: 90%;
+    }
+  }
+}
+
+@media (width < 370px) {
+  .review-permit-details {
+    &__body {
+      max-width: 100%;
+      min-width: 100%;
+    }
+  }
+}

@@ -7,7 +7,6 @@ import {
   OneToMany,
   PrimaryColumn,
 } from 'typeorm';
-import { Base } from './base.entity';
 import { Country } from './country.entity';
 import { AutoMap } from '@automapper/classes';
 import { Contact } from './contact.entity';
@@ -15,11 +14,11 @@ import { Address } from './address.entity';
 import { PowerUnit } from '../../vehicles/power-units/entities/power-unit.entity';
 import { Trailer } from '../../vehicles/trailers/entities/trailer.entity';
 
-@Entity({ name: 'ORBC_VT_PROVINCE' })
-export class Province extends Base {
+@Entity({ name: 'ORBC_PROVINCE_TYPE' })
+export class Province {
   @AutoMap()
   @ApiProperty({ example: 'CA-BC', description: 'Province ID' })
-  @PrimaryColumn({ length: 5, name: 'PROVINCE_ID', nullable: false })
+  @PrimaryColumn({ length: 5, name: 'PROVINCE_TYPE', nullable: false })
   provinceId: string;
 
   @AutoMap()
@@ -42,7 +41,7 @@ export class Province extends Base {
 
   @AutoMap()
   @ManyToOne(() => Country, (Country) => Country.provinces, { eager: true })
-  @JoinColumn({ name: 'COUNTRY_CODE' })
+  @JoinColumn({ name: 'COUNTRY_TYPE' })
   country: Country;
 
   @AutoMap(() => [PowerUnit])

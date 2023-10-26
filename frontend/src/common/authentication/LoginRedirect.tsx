@@ -3,10 +3,10 @@ import { useEffect } from "react";
 import { useAuth } from "react-oidc-context";
 import { useNavigate } from "react-router-dom";
 import * as routes from "../../routes/constants";
-import { HomePage } from "../../features/homePage/HomePage";
-import { UserContextType } from "./types";
+import { BCeIDUserContextType } from "./types";
 import { Loading } from "../pages/Loading";
 import { useUserContext } from "../../features/manageProfile/apiManager/hooks";
+import { IDPS } from "../types/idp";
 
 /*
  * Redirects user to their correct page after loading their
@@ -25,11 +25,11 @@ export const LoginRedirect = () => {
    */
   useEffect(() => {
     if (isAuthenticated && !isLoading) {
-      if (userFromToken?.profile?.identity_provider === "idir") {
-        navigate(routes.SEARCH_PPC);
+      if (userFromToken?.profile?.identity_provider === IDPS.IDIR) {
+        navigate(routes.IDIR_WELCOME);
       } else {
-        const userContextData: UserContextType | undefined =
-          queryClient.getQueryData<UserContextType>(["userContext"]);
+        const userContextData: BCeIDUserContextType | undefined =
+          queryClient.getQueryData<BCeIDUserContextType>(["userContext"]);
         if (userContextData) {
           const { associatedCompanies, pendingCompanies, user } =
             userContextData;
@@ -37,7 +37,7 @@ export const LoginRedirect = () => {
           if (!user?.userGUID) {
             // The user is in pending companies => Redirect them to User Info Page.
             if (pendingCompanies.length > 0) {
-              navigate(routes.USER_INFO);
+              navigate(routes.WELCOME);
             }
             // The user and company does not exist => Redirect them to Add new company page.
             else if (associatedCompanies.length < 1) {
@@ -46,7 +46,7 @@ export const LoginRedirect = () => {
           }
           // The user and company exist
           else if (associatedCompanies.length) {
-            navigate(routes.HOME);
+            navigate(routes.APPLICATIONS);
           }
           // User exists but company does not exist. This is not a possible scenario.
           else if (!associatedCompanies.length) {
@@ -67,8 +67,6 @@ export const LoginRedirect = () => {
   }
 
   return (
-    <>
-      <HomePage></HomePage>
-    </>
-  );
+    <></>
+  )
 };
