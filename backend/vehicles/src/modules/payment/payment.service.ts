@@ -28,6 +28,7 @@ import {
   PAYBC_PAYMENT_METHOD,
   PAYMENT_CURRENCY,
 } from '../../common/constants/vehicles.constant';
+import { validateHash } from 'src/common/helper/validateHash.helper';
 
 @Injectable()
 export class PaymentService {
@@ -354,7 +355,20 @@ export class PaymentService {
     transactionId: string,
     updatePaymentGatewayTransactionDto: UpdatePaymentGatewayTransactionDto,
     directory: Directory,
+    queryString: string,
   ): Promise<ReadPaymentGatewayTransactionDto> {
+
+    const query = queryString.substring(
+      0,
+      queryString.indexOf('hashValue=') - 1,
+    );
+    const hashValue = queryString.substring(
+      queryString.indexOf('hashValue=') + 10,
+      queryString.length,
+    );
+    const validHash = validateHash(query,hashValue);
+    if (validHash)
+    {
     let updatedTransaction: Transaction;
     let updateResult: UpdateResult;
     const queryRunner = this.dataSource.createQueryRunner();
@@ -466,6 +480,10 @@ export class PaymentService {
     );
 
     return readTransactionDto;
+    }
+    else {
+      throw new InternalServerErrorException('Invalid Hash');
+    }
   }
 
   async findTransaction(transactionId: string): Promise<ReadTransactionDto> {

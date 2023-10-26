@@ -15,6 +15,7 @@ import {
   ApiMethodNotAllowedResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
+  ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
 import { ExceptionDto } from '../../common/exception/exception.dto';
@@ -26,8 +27,6 @@ import { Request } from 'express';
 import { UpdatePaymentGatewayTransactionDto } from './dto/request/read-payment-gateway-transaction.dto';
 import { ReadPaymentGatewayTransactionDto } from './dto/response/read-payment-gateway-transaction.dto';
 import { getDirectory } from 'src/common/helper/auth.helper';
-import { Public } from 'src/common/decorator/public.decorator';
-import { validateHash } from 'src/common/helper/validateHash.helper';
 
 @ApiBearerAuth()
 @ApiTags('Payment')
@@ -72,10 +71,12 @@ export class PaymentController {
     description: 'The Payment Gateway Transaction Resource',
     type: ReadPaymentGatewayTransactionDto,
   })
+  @ApiQuery({ name: 'queryString', required: true })
   @Put(':transactionId/payment-gateway')
   async updateTransactionDetails(
     @Req() request: Request,
     @Param('transactionId') transactionId: string,
+    @Query('queryString') queryString: string,
     @Body()
     updatePaymentGatewayTransactionDto: UpdatePaymentGatewayTransactionDto,
   ): Promise<ReadPaymentGatewayTransactionDto> {
@@ -87,6 +88,7 @@ export class PaymentController {
       transactionId,
       updatePaymentGatewayTransactionDto,
       directory,
+      queryString,
     );
 
     return paymentDetails;
@@ -102,20 +104,5 @@ export class PaymentController {
     @Param('transactionId') transactionId: string,
   ): Promise<ReadTransactionDto> {
     return await this.paymentService.findTransaction(transactionId);
-  }
-
-  @Public()
-  @Get()
-  validateHash(@Query('queryString') queryString: string) {
-    const query = queryString.substring(
-      0,
-      queryString.indexOf('hashValue=') - 1,
-    );
-    const hashValue = queryString.substring(
-      queryString.indexOf('hashValue=') + 10,
-      queryString.length,
-    );
-    validateHash(query, hashValue);
-    return validateHash(query, hashValue);
   }
 }
