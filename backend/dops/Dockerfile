@@ -19,7 +19,6 @@ RUN npm prune --production
 
 # Deployment container
 FROM alpine
-RUN npm cache clean --force
 
 # Create and Assign permissions to npm folder
 RUN mkdir /.npm && chmod 777 /.npm
