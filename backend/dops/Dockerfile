@@ -1,23 +1,11 @@
 # Build container
-FROM alpine AS builder
+FROM node:alpine AS builder
 
 # Set the working directory to /app inside the container
 WORKDIR /app
 
 # Copy app files
 COPY . ./
-
-
-RUN apk add --no-cache --update \
-      chromium \
-      nss \
-      freetype \
-      harfbuzz \
-      ca-certificates \
-      ttf-freefont \ 
-      nodejs \
-      npm \
-      yarn
 
 RUN npm cache clean --force
 # Create and Assign permissions to npm folder
@@ -28,39 +16,11 @@ RUN npm ci
 RUN npm run build
 RUN npm prune --production
 
-
-
 # Deployment container
-FROM alpine
-
-     
-RUN apk add --no-cache \
-      chromium \
-      nss \
-      freetype \
-      harfbuzz \
-      ca-certificates \
-      ttf-freefont \ 
-      nodejs \
-      npm \
-      yarn
-
-ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+FROM ghcr.io/puppeteer/puppeteer:21.4.1
 
 # Expose Port
 EXPOSE 5001
-
-# Puppeteer v13.5.0 works with Chromium 100.
-RUN yarn add puppeteer@21.4.0
-
-# Add user so we don't need --no-sandbox.
-RUN addgroup -S pptruser && adduser -S -G pptruser pptruser \
-    && mkdir -p /home/pptruser/Downloads /app \
-    && chown -R pptruser:pptruser /home/pptruser \
-    && chown -R pptruser:pptruser /app
-
-# Run everything after as non-privileged user.
-USER pptruser
 
 # Set the working directory to /app inside the deployment container
 WORKDIR /app
