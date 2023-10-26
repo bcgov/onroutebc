@@ -1,3 +1,5 @@
+import * as CryptoJS from 'crypto-js';
+
 export const validateHash = (
   queryString: string,
   hashvalue: string,

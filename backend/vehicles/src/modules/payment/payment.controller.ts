@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Param, Post, Put, Req } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Put,
+  Query,
+  Req,
+} from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiCreatedResponse,
@@ -17,6 +26,8 @@ import { Request } from 'express';
 import { UpdatePaymentGatewayTransactionDto } from './dto/request/read-payment-gateway-transaction.dto';
 import { ReadPaymentGatewayTransactionDto } from './dto/response/read-payment-gateway-transaction.dto';
 import { getDirectory } from 'src/common/helper/auth.helper';
+import { Public } from 'src/common/decorator/public.decorator';
+import { validateHash } from 'src/common/helper/validateHash.helper';
 
 @ApiBearerAuth()
 @ApiTags('Payment')
@@ -91,5 +102,20 @@ export class PaymentController {
     @Param('transactionId') transactionId: string,
   ): Promise<ReadTransactionDto> {
     return await this.paymentService.findTransaction(transactionId);
+  }
+
+  @Public()
+  @Get()
+  validateHash(@Query('queryString') queryString: string) {
+    const query = queryString.substring(
+      0,
+      queryString.indexOf('hashValue=') - 1,
+    );
+    const hashValue = queryString.substring(
+      queryString.indexOf('hashValue=') + 10,
+      queryString.length,
+    );
+    validateHash(query, hashValue);
+    return validateHash(query, hashValue);
   }
 }

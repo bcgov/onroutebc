@@ -23,6 +23,11 @@ import { UpdatePaymentGatewayTransactionDto } from './dto/request/read-payment-g
 import { ReadPaymentGatewayTransactionDto } from './dto/response/read-payment-gateway-transaction.dto';
 import { Receipt } from './entities/receipt.entity';
 import { Directory } from 'src/common/enum/directory.enum';
+import {
+  PAYMENT_DESCRIPTION,
+  PAYBC_PAYMENT_METHOD,
+  PAYMENT_CURRENCY,
+} from '../../common/constants/vehicles.constant';
 
 @Injectable()
 export class PaymentService {
@@ -61,15 +66,22 @@ export class PaymentService {
       },
     );
 
-    // Construct the URL with the transaction details for the payment gateway
     const redirectUrl = permitIds
+      ? `${process.env.PAYBC_REDIRECT}` +
+        `?path=${permitIds.join(';')},transactionId=${
+          transaction.transactionId
+        }`
+      : `${process.env.PAYBC_REDIRECT}`;
+
+    // Construct the URL with the transaction details for the payment gateway
+    /* const redirectUrl = permitIds
       ? `${process.env.PAYBC_REDIRECT}` +
         encodeURIComponent(
           `?permitIds=${permitIds.join(',')}&transactionId=${
             transaction.transactionId
           }`,
         )
-      : `${process.env.PAYBC_REDIRECT}`;
+      : `${process.env.PAYBC_REDIRECT}`;*/
 
     const date = new Date().toISOString().split('T')[0];
 
@@ -78,17 +90,17 @@ export class PaymentService {
     // it up manually below, but this is sufficient for now.
     const queryString =
       `pbcRefNumber=${process.env.PAYBC_REF_NUMBER}` +
-      `&description=DirectSale` +
+      `&description=${PAYMENT_DESCRIPTION}` +
       `&trnNumber=${transaction.transactionOrderNumber}` +
       `&trnAmount=${transaction.totalTransactionAmount}` +
       `&redirectUri=${redirectUrl}` +
       `&trnDate=${date}` +
       `&glDate=${date}` +
-      `&paymentMethod=CC` +
-      `&currency=CAD` +
+      `&paymentMethod=${PAYBC_PAYMENT_METHOD}` +
+      `&currency=${PAYMENT_CURRENCY}` +
       `&revenue=1:${process.env.GL_CODE}:${transaction.totalTransactionAmount}`;
 
-      console.log('Query string: ', queryString+process.env.PAYBC_API_KEY)
+    console.log('Query string: ', queryString + process.env.PAYBC_API_KEY);
 
     // Generate the hash using the query string and the MD5 algorithm
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
