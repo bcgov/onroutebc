@@ -19,8 +19,10 @@ RUN npm prune --production
 # Deployment container
 FROM ghcr.io/puppeteer/puppeteer:21.4.1
 
-# Expose Port
-EXPOSE 5001
+RUN npm cache clean --force
+
+# Create and Assign permissions to npm folder
+RUN mkdir /.npm && chmod 777 /.npm
 
 # Set the working directory to /app inside the deployment container
 WORKDIR /app
@@ -61,6 +63,9 @@ ENV ACCESS_API_URL ${ACCESS_API_URL}
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
+
+# Expose Port
+EXPOSE 5001
 
 # Start the app
 CMD ["npm", "run", "start:prod"]
