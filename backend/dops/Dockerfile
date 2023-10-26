@@ -16,7 +16,7 @@ RUN apk add --no-cache --update \
       ca-certificates \
       ttf-freefont \ 
       nodejs \
-      nodejs-npm \
+      npm \
       yarn
 
 RUN npm cache clean --force
@@ -34,7 +34,7 @@ RUN npm prune --production
 FROM alpine
 
      
-RUN apk add --no-cache --update \
+RUN apk add --no-cache \
       chromium \
       nss \
       freetype \
@@ -42,7 +42,7 @@ RUN apk add --no-cache --update \
       ca-certificates \
       ttf-freefont \ 
       nodejs \
-      nodejs-npm \
+      npm \
       yarn
 
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
