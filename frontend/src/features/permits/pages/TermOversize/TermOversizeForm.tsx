@@ -15,6 +15,7 @@ import { PermitForm } from "./components/form/PermitForm";
 import { usePermitVehicleManagement } from "../../hooks/usePermitVehicleManagement";
 import { useCompanyInfoQuery } from "../../../manageProfile/apiManager/hooks";
 import { applyWhenNotNullable } from "../../../../common/helpers/util";
+import { TROS_PERMIT_DURATIONS } from "../../constants/termOversizeConstants";
 
 /**
  * The first step in creating and submitting a TROS Application.
@@ -184,6 +185,7 @@ export const TermOversizeForm = () => {
           powerUnitTypes={powerUnitTypes}
           trailerTypes={trailerTypes}
           companyInfo={companyInfo}
+          durationOptions={TROS_PERMIT_DURATIONS}
         />
       </FormProvider>
       

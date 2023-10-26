@@ -2,7 +2,7 @@ import { useContext } from "react";
 import { FieldValues, FormProvider } from "react-hook-form";
 
 import "./AmendPermitForm.scss";
-import { useAmendPermit as useAmendPermitMutation, useModifyAmendmentApplication } from "../../../hooks/hooks";
+import { TROS_PERMIT_DURATIONS } from "../../../constants/termOversizeConstants";
 import { usePermitVehicleManagement } from "../../../hooks/usePermitVehicleManagement";
 import { useAmendPermit } from "../hooks/useAmendPermit";
 import { SnackBarContext } from "../../../../../App";
@@ -20,6 +20,11 @@ import {
   mapFormDataToPermit, 
   mapPermitToFormData,
 } from "../types/AmendPermitFormData";
+
+import { 
+  useAmendPermit as useAmendPermitMutation, 
+  useModifyAmendmentApplication,
+} from "../../../hooks/hooks";
 
 export const AmendPermitForm = () => {
   const { 
@@ -145,6 +150,11 @@ export const AmendPermitForm = () => {
       ),
     }));
 
+  const permitOldDuration = getDefaultRequiredVal(30, permit?.permitData?.permitDuration);
+  const durationOptions = TROS_PERMIT_DURATIONS.filter(
+    duration => duration.value <= permitOldDuration
+  );
+
   return (
     <div className="amend-permit-form">
       <Breadcrumb links={getLinks()} />
@@ -168,6 +178,7 @@ export const AmendPermitForm = () => {
           powerUnitTypes={powerUnitTypes}
           trailerTypes={trailerTypes}
           companyInfo={companyInfo}
+          durationOptions={durationOptions}
         >
           <AmendRevisionHistory revisionHistory={revisionHistory} />
           <AmendReason feature={FEATURE} />

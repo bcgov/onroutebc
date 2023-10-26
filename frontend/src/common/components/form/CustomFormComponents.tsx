@@ -165,6 +165,8 @@ export const CustomFormComponent = <T extends ORBC_FormTypes>({
             rules={rules}
             inputProps={inputProps}
             invalid={invalid}
+            disabled={disabled}
+            readOnly={readOnly}
           />
         );
       case "textarea":
