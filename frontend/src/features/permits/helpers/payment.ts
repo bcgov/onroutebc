@@ -6,6 +6,7 @@ import {
   CARD_TYPES, 
   CardType, 
 } from "../types/PaymentMethod";
+import { parseRedirectUriPath } from "../pages/Payment/PaymentRedirect";
 
 /**
  * Extracts PayBCPaymentDetails from the query parameters of a URL.
@@ -15,6 +16,11 @@ import {
  */
 export const getPayBCPaymentDetails = (params: URLSearchParams): PayBCPaymentDetails => {
   // Extract the query parameters and assign them to the corresponding properties of PayBCPaymentDetails
+  
+  console.log('URLSearchParams', params.toString())
+  const path = getDefaultRequiredVal("", params.get("path"))
+  const {permitIds, transactionId, trnApproved} = parseRedirectUriPath(path)
+
   const payBCPaymentDetails: PayBCPaymentDetails = {
     authCode: getDefaultRequiredVal("", params.get("authCode")),
     avsAddrMatch: getDefaultRequiredVal("", params.get("avsAddrMatch")),
@@ -24,9 +30,9 @@ export const getPayBCPaymentDetails = (params: URLSearchParams): PayBCPaymentDet
     avsProcessed: getDefaultRequiredVal("", params.get("avsProcessed")),
     avsResult: getDefaultRequiredVal("", params.get("avsResult")),
     cardType: getDefaultRequiredVal(CARD_TYPES.VI, params.get("cardType")) as CardType,
-    cvdId: applyWhenNotNullable((cvdId) => Number(cvdId), params.get("cvdId"), 0),
-    trnApproved: applyWhenNotNullable((trnApproved) => Number(trnApproved), params.get("trnApproved"), 0),
-    messageId: getDefaultRequiredVal("", params.get("messageId")),
+    cvdId: 1, //applyWhenNotNullable((cvdId) => Number(cvdId), params.get("cvdId"), 0),
+    trnApproved: trnApproved,
+    messageId: '1', //getDefaultRequiredVal("", params.get("messageId")),
     messageText: getDefaultRequiredVal("", params.get("messageText")),
     paymentMethod: getDefaultRequiredVal(BAMBORA_PAYMENT_METHODS.CC, params.get("paymentMethod")) as BamboraPaymentMethod,
     ref1: getDefaultRequiredVal("", params.get("ref1")),

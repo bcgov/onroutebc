@@ -67,22 +67,13 @@ export class PaymentService {
       },
     );
 
+    // Construct the URL with the transaction details for the payment gateway
     const redirectUrl = permitIds
       ? `${process.env.PAYBC_REDIRECT}` +
-        `?path=${permitIds.join(';')},transactionId=${
+        `?path=${permitIds.join(',')};transactionId=${
           transaction.transactionId
         }`
-      : `${process.env.PAYBC_REDIRECT}`;
-
-    // Construct the URL with the transaction details for the payment gateway
-    /* const redirectUrl = permitIds
-      ? `${process.env.PAYBC_REDIRECT}` +
-        encodeURIComponent(
-          `?permitIds=${permitIds.join(',')}&transactionId=${
-            transaction.transactionId
-          }`,
-        )
-      : `${process.env.PAYBC_REDIRECT}`;*/
+      : `${process.env.PAYBC_REDIRECT}`
 
     const date = new Date().toISOString().split('T')[0];
 
@@ -105,6 +96,7 @@ export class PaymentService {
 
     // Generate the hash using the query string and the MD5 algorithm
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+    
     const payBCHash: string = CryptoJS.MD5(
       `${queryString}${process.env.PAYBC_API_KEY}`,
     ).toString();
