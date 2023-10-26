@@ -1,30 +1,73 @@
-FROM node:18@sha256:cd7fa8f136023f7500490e410ba70dd3982ccca21805264f2a260a3a97be7376
+# Build container
+FROM node:alpine AS builder
 
-# Install latest chrome dev package and fonts to support major charsets (Chinese, Japanese, Arabic, Hebrew, Thai and a few others)
-# Note: this installs the necessary libs to make the bundled version of Chrome that Puppeteer
-# installs, work.
-RUN apt-get update \
-    && apt-get install -y wget gnupg \
-    && wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | gpg --dearmor -o /usr/share/keyrings/googlechrome-linux-keyring.gpg \
-    && sh -c 'echo "deb [arch=amd64 signed-by=/usr/share/keyrings/googlechrome-linux-keyring.gpg] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list' \
-    && apt-get update \
-    && apt-get install -y google-chrome-stable fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-khmeros fonts-kacst fonts-freefont-ttf libxss1 dbus dbus-x11 \
-      --no-install-recommends \
-    && service dbus start \
-    && rm -rf /var/lib/apt/lists/* \
-    && groupadd -r pptruser && useradd -rm -g pptruser -G audio,video pptruser
+# Set the working directory to /app inside the container
+WORKDIR /app
 
-USER pptruser
+# Copy app files
+COPY . ./
 
-WORKDIR /home/pptruser
+RUN npm cache clean --force
+# Create and Assign permissions to npm folder
+RUN mkdir /.npm && chmod 777 /.npm
 
-COPY puppeteer-browsers-latest.tgz puppeteer-latest.tgz puppeteer-core-latest.tgz ./
+# Install packages, build and keep only prod packages
+RUN npm ci
+RUN npm run build
+RUN npm prune --production
 
-ENV DBUS_SESSION_BUS_ADDRESS autolaunch:
+# Deployment container
+FROM ghcr.io/puppeteer/puppeteer:21.4.1
+USER root
 
-# Install @puppeteer/browsers, puppeteer and puppeteer-core into /home/pptruser/node_modules.
-RUN npm i ./puppeteer-browsers-latest.tgz ./puppeteer-core-latest.tgz ./puppeteer-latest.tgz \
-    && rm ./puppeteer-browsers-latest.tgz ./puppeteer-core-latest.tgz ./puppeteer-latest.tgz \
-    && (node -e "require('child_process').execSync(require('puppeteer').executablePath() + ' --credits', {stdio: 'inherit'})" > THIRD_PARTY_NOTICES)
+RUN npm cache clean --force
 
-CMD ["google-chrome-stable"]
+# Create and Assign permissions to npm folder
+RUN mkdir /.npm && chmod 777 /.npm
+
+# Set the working directory to /app inside the deployment container
+WORKDIR /app
+
+# Set node to production
+ENV NODE_ENV production
+
+# Set environment variables
+ENV DB_TYPE ${DB_TYPE}
+ENV POSTGRESQL_HOST ${POSTGRESQL_HOST}
+ENV POSTGRESQL_USER ${POSTGRESQL_USER}
+ENV POSTGRESQL_PASSWORD ${POSTGRESQL_PASSWORD}
+ENV POSTGRESQL_DATABASE ${POSTGRESQL_DATABASE}
+ENV MSSQL_HOST ${MSSQL_HOST}
+ENV MSSQL_PORT ${MSSQL_PORT}
+ENV MSSQL_DB ${MSSQL_DB}
+ENV MSSQL_SA_USER ${MSSQL_SA_USER}
+ENV MSSQL_SA_PASSWORD ${MSSQL_SA_PASSWORD}
+ENV MSSQL_ENCRYPT ${MSSQL_ENCRYPT}
+ENV AUTH0_ISSUER_URL ${AUTH0_ISSUER_URL}
+ENV AUTH0_AUDIENCE ${AUTH0_AUDIENCE}
+ENV AUTH0_IGNORE_EXP ${AUTH0_IGNORE_EXP}
+ENV DOPS_CVSE_FORMS_CACHE_TTL_MS ${DOPS_CVSE_FORMS_CACHE_TTL_MS}
+ENV DOPS_S3_ACCESS_TYPE ${DOPS_S3_ACCESS_TYPE}
+ENV DOPS_S3_ACCESSKEYID ${DOPS_S3_ACCESSKEYID}
+ENV DOPS_S3_BUCKET ${DOPS_S3_BUCKET}
+ENV DOPS_S3_PRESIGNED_URL_EXPIRY ${DOPS_S3_PRESIGNED_URL_EXPIRY}
+ENV DOPS_S3_ENDPOINT ${DOPS_S3_ENDPOINT}
+ENV DOPS_S3_KEY ${DOPS_S3_KEY}
+ENV DOPS_S3_SECRETACCESSKEY ${DOPS_S3_SECRETACCESSKEY}
+ENV CDOGS_TOKEN_URL ${CDOGS_TOKEN_URL}
+ENV CDOGS_CLIENT_ID ${CDOGS_CLIENT_ID}
+ENV CDOGS_CLIENT_SECRET ${CDOGS_CLIENT_SECRET}
+ENV CDOGS_URL ${CDOGS_URL}
+ENV ACCESS_API_URL ${ACCESS_API_URL}
+
+# Copy production files from build
+COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/dist ./dist
+
+# Expose Port
+EXPOSE 5001
+
+# Start the app
+CMD ["npm", "run", "start:prod"]
+
