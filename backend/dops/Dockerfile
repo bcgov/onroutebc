@@ -52,7 +52,7 @@ RUN mkdir -p /root/.local/share/fonts \
 RUN npm config set user 0
 RUN npm config set unsafe-perm true
 RUN npm ci --only=prod && \
-    npm list rimraf && \
+    npm install rimraf && \
     npm run build
 
 # Set node to production
