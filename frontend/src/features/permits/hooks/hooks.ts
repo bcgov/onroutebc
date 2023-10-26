@@ -156,10 +156,12 @@ export const useStartTransaction = () => {
  */
 export const useCompleteTransaction = (
   transactionId: string,
+  transactionQueryString: string,
   transactionDetails: CompleteTransactionRequestData,
   messageText: string,
   paymentStatus: number
 ) => {
+  console.log('transactionQueryString', transactionQueryString)
   const queryClient = useQueryClient();
   const [paymentApproved, setPaymentApproved] = useState<boolean | undefined>(undefined);
   const [message, setMessage] = useState<string>(messageText);
@@ -185,7 +187,7 @@ export const useCompleteTransaction = (
   };
 
   const mutation = useMutation({
-    mutationFn: () => completeTransaction(transactionId, transactionDetails),
+    mutationFn: () => completeTransaction(transactionId, transactionQueryString, transactionDetails),
     retry: false,
     onSuccess: (response) => {
       if (response != null) {
