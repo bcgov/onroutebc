@@ -9,7 +9,7 @@ COPY . ./
 
 
 RUN apk add --no-cache --update \
-      chromium \
+      chromium@100 \
       nss \
       freetype \
       harfbuzz \
