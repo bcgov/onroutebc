@@ -1,0 +1,269 @@
+---
+global:
+  repository: bcgov/onroutebc # the repository where the images are stored.
+  registry: ghcr.io # the registry where the images are stored. override during runtime for other registry at global level or individual level.
+  secrets:
+    annotation:
+      helm.sh/policy: "keep"
+  domain: "apps.silver.devops.gov.bc.ca" # it is required, apps.silver.devops.gov.bc.ca for silver cluster
+  openshiftImageRegistry: "image-registry.openshift-image-registry.svc:5000"
+
+frontend:
+  enabled: true
+  deployment: # can be either a statefulSet or a deployment not both
+    enabled: true
+  statefulSet: # can be either a statefulSet or a deployment not both
+    enabled: false
+  secret:
+    enabled: false
+  configmap:
+    enabled: true
+    data:
+      config.js: |-
+        const envConfig = (() => {
+          return {
+            "VITE_DEPLOY_ENVIRONMENT":"Experiment",
+            "VITE_API_VEHICLE_URL":"https://{{.Release.Name}}-vehicles.{{.Values.global.domain}}",
+            "VITE_AUTH0_ISSUER_URL":"https://dev.loginproxy.gov.bc.ca/auth/realms/standard",
+            "VITE_AUTH0_AUDIENCE":"on-route-bc-direct-4598",
+            "VITE_SITEMINDER_LOG_OFF_URL": "https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi",
+          };
+        })();
+  containers:
+    - name: frontend
+      registry: '{{ .Values.global.registry }}'
+      repository: '{{ .Values.global.repository }}' # example, it includes registry and repository
+      image: frontend
+      tag: latest
+      ports:
+        - name: http
+          containerPort: 3000
+          protocol: TCP
+      resources: # this is optional
+        limits:
+          cpu: 75m
+          memory: 150Mi
+        requests:
+          cpu: 25m
+          memory: 50Mi
+      volumeMounts:
+        - name: config
+          mountPath: "/usr/share/nginx/html/config.js"
+          subPath: config.js
+  ingress:
+    annotations: 
+      route.openshift.io/termination: "edge"
+    enabled: true
+    hosts: 
+      - host: "onroutebc-experiment-frontend.apps.silver.devops.gov.bc.ca"
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+    tls:
+      - {}
+  service:
+    enabled: true
+    type: ClusterIP
+    ports:
+      - name: 3000-tcp
+        protocol: TCP
+        port: 80
+        targetPort: 3000
+  serviceAccount:
+    name: c28f0c-vault
+  vault:
+    enabled: true
+    entrypoint: "nginx -g 'daemon off;'"
+    resources: # this is optional
+      limits:
+        cpu: 100m
+        memory: 200Mi
+      requests:
+        cpu: 75m
+        memory: 100Mi
+    role: c28f0c-nonprod
+    secretPaths:
+      - auth0-dev
+      - be-api-dev
+  volumes:
+    - name: config
+      configMap:
+        name: "{{ .Release.Name}}-frontend"
+
+vehicles:
+  enabled: true
+  deployment: # can be either a statefulSet or a deployment not both
+    enabled: true
+  statefulSet: # can be either a statefulSet or a deployment not both
+    enabled: false
+  secret:
+    enabled: false
+  configmap:
+    enabled: true
+    data:
+      DOPS_URL: "https://{{.Release.Name}}-dops.apps.silver.devops.gov.bc.ca"
+      FRONTEND_URL: "https://{{.Release.Name}}-frontend.apps.silver.devops.gov.bc.ca"
+      PAYBC_REDIRECT: "https://{{.Release.Name}}-frontend.apps.silver.devops.gov.bc.ca/payment"
+      VEHICLES_URL: "https://onroutebc-experiment-vehicles.apps.silver.devops.gov.bc.ca"
+
+  containers:
+    - name: vehicles
+      registry: '{{ .Values.global.registry }}'
+      repository: '{{ .Values.global.repository }}' # example, it includes registry and repository
+      image: backend/vehicles
+      tag: latest
+      ports:
+        - name: vehicles-api
+          containerPort: 5000
+          protocol: TCP
+      readinessProbe:
+        httpGet:
+          path: /
+          port: 5000
+          scheme: HTTP
+        initialDelaySeconds: 60
+        periodSeconds: 15
+        timeoutSeconds: 5
+      livenessProbe:
+        successThreshold: 1
+        failureThreshold: 3
+        httpGet:
+          path: /
+          port: 5000
+          scheme: HTTP
+        initialDelaySeconds: 60
+        periodSeconds: 30
+        timeoutSeconds: 5
+      resources: # this is optional
+        limits:
+          cpu: 75m
+          memory: 150Mi
+        requests:
+          cpu: 25m
+          memory: 50Mi
+      envFrom:
+        configMapRef: onroutebc-experiment-vehicles
+  ingress:
+    annotations: 
+      route.openshift.io/termination: "edge"
+    enabled: true
+    hosts: 
+      - host: "onroutebc-experiment-vehicles.apps.silver.devops.gov.bc.ca"
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+    tls:
+      - {}
+  service:
+    enabled: true
+    type: ClusterIP
+    ports:
+      - name: 5000-tcp
+        protocol: TCP
+        port: 80
+        targetPort: 5000
+  serviceAccount:
+    name: c28f0c-vault
+  vault:
+    enabled: true
+    entrypoint: "npm run start:prod"
+    resources: # this is optional
+      limits:
+        cpu: 100m
+        memory: 200Mi
+      requests:
+        cpu: 75m
+        memory: 100Mi
+    role: c28f0c-nonprod
+    secretPaths:
+      - auth0-dev
+      - ches-dev
+      - mssql-dev
+      - payment-dev
+
+dops:
+  enabled: true
+  deployment: # can be either a statefulSet or a deployment not both
+    enabled: true
+  statefulSet: # can be either a statefulSet or a deployment not both
+    enabled: false
+  secret:
+    enabled: false
+  configmap:
+    enabled: true
+    data:
+      ACCESS_API_URL: "https://onroutebc-experiment-dops.apps.silver.devops.gov.bc.ca"
+  containers:
+    - name: dops
+      registry: '{{ .Values.global.registry }}'
+      repository: '{{ .Values.global.repository }}' # example, it includes registry and repository
+      image: backend/dops
+      tag: latest
+      ports:
+        - name: dops-api
+          containerPort: 5001
+          protocol: TCP
+      readinessProbe:
+        httpGet:
+          path: /
+          port: 5001
+          scheme: HTTP
+        initialDelaySeconds: 60
+        periodSeconds: 15
+        timeoutSeconds: 5
+      livenessProbe:
+        successThreshold: 1
+        failureThreshold: 3
+        httpGet:
+          path: /
+          port: 5001
+          scheme: HTTP
+        initialDelaySeconds: 60
+        periodSeconds: 30
+        timeoutSeconds: 5
+      resources: # this is optional
+        limits:
+          cpu: 75m
+          memory: 150Mi
+        requests:
+          cpu: 25m
+          memory: 50Mi
+      envFrom:
+        configMapRef: onroutebc-experiment-dops
+  ingress:
+    annotations: 
+      route.openshift.io/termination: "edge"
+    enabled: true
+    hosts: 
+      - host: "onroutebc-experiment-dops.apps.silver.devops.gov.bc.ca"
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+    tls:
+      - {}
+  service:
+    enabled: true
+    type: ClusterIP
+    ports:
+      - name: 5001-tcp
+        protocol: TCP
+        port: 80
+        targetPort: 5001
+  serviceAccount:
+    name: c28f0c-vault
+  vault:
+    enabled: true
+    entrypoint: "npm run start:prod"
+    resources: # this is optional
+      limits:
+        cpu: 100m
+        memory: 200Mi
+      requests:
+        cpu: 75m
+        memory: 100Mi
+    role: c28f0c-nonprod
+    secretPaths:
+      - auth0-dev
+      - ches-dev
+      - mssql-dev
+      - payment-dev
