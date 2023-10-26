@@ -16,9 +16,7 @@ RUN apk add --no-cache --update \
       ca-certificates \
       ttf-freefont \
       nodejs \
-      yarn \
-      nodejs\
-      npm 
+      yarn
 
 RUN npm cache clean --force
 # Create and Assign permissions to npm folder
