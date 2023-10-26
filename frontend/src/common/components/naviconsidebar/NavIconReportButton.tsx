@@ -17,7 +17,7 @@ export const NavIconReportButton = () => {
                 <IconButton
                     size="medium"
                     color="secondary"
-                    onClick={() => {navigate(routes.IDIR_WELCOME)}}
+                    onClick={() => {navigate(routes.REPORTS)}}
                 >
                     <Note />
                 </IconButton>

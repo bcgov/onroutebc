@@ -22,6 +22,7 @@ import { IDIRSearchResultsDashboard } from "../features/idir/search/pages/IDIRSe
 import { IDIRWelcome } from "../features/idir/IDIRWelcome";
 import { UserInfoWizard } from "../features/wizard/UserInfoWizard";
 import { VoidPermit } from "../features/permits/pages/Void/VoidPermit";
+import { IDIRReportsDashboard } from "../features/idir/search/pages/IDIRReportsDashboard";
 
 export const AppRoutes = () => {
   return (
@@ -29,6 +30,10 @@ export const AppRoutes = () => {
       <Route path={routes.HOME} element={<InitialLandingPage />} />
       <Route path={routes.WELCOME} element={<WelcomePage />} />
       <Route path="*" element={<NotFound />} />
+      <Route
+          path={routes.REPORTS}
+          element={<IDIRReportsDashboard />}
+        />
 
       {/* IDIR Routes */}
       <Route element={<ProtectedRoutes requiredRole={ROLES.READ_PERMIT} />}>
