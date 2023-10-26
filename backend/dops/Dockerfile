@@ -19,9 +19,6 @@ RUN npm prune --production
 # Deployment container
 FROM ghcr.io/puppeteer/puppeteer:21.4.1
 
-# Create and Assign permissions to npm folder
-RUN mkdir /root/.npm && chmod 777 /root/.npm
-RUN npm config set cache /root/.npm --global
 # Expose Port
 EXPOSE 5001
 

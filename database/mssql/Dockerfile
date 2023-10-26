@@ -6,8 +6,8 @@ USER root
 RUN apt-get update && \
     apt-get install -y software-properties-common && \
     rm -rf /var/lib/apt/lists/*
-RUN add-apt-repository "$(wget -qO- https://packages.microsoft.com/config/ubuntu/18.04/mssql-server-2017.list)" && \
-    apt-get install -y mssql-server-fts 
+RUN add-apt-repository "$(wget -qO- https://packages.microsoft.com/config/ubuntu/18.04/mssql-server-2017.list)" 
+RUN apt-get install -y mssql-server-fts 
 
 ENV ACCEPT_EULA Y
 
