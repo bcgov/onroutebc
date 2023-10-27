@@ -68,17 +68,11 @@ export class PaymentService {
     );
 
     // Construct the URL with the transaction details for the payment gateway
-    /*
     const redirectUrl = permitIds
       ? `${process.env.PAYBC_REDIRECT}` +
         `?path=${permitIds.join(',')};transactionId=${
           transaction.transactionId
         }`
-      : `${process.env.PAYBC_REDIRECT}`*/
-
-      const redirectUrl = permitIds
-      ? `${process.env.PAYBC_REDIRECT}` +
-        `?path=${permitIds.join(',')}`
       : `${process.env.PAYBC_REDIRECT}`
 
     const date = new Date().toISOString().split('T')[0];
@@ -96,7 +90,6 @@ export class PaymentService {
       `&glDate=${date}` +
       `&paymentMethod=${PAYBC_PAYMENT_METHOD}` +
       `&currency=${PAYMENT_CURRENCY}` +
-      `&ref2=${transaction.transactionId}` +
       `&revenue=1:${process.env.GL_CODE}:${transaction.totalTransactionAmount}`;
 
     // Generate the hash using the query string and the MD5 algorithm

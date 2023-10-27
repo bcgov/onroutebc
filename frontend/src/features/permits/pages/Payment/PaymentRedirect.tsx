@@ -8,17 +8,14 @@ import { useCompleteTransaction, useIssuePermits } from "../../hooks/hooks";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { DATE_FORMATS, toUtc } from "../../../../common/helpers/formatDate";
 
-
-const PERMIT_ID_DELIM = ','
-const PATH_DELIM = '?'
 const getPermitIdsArray = (permitIds?: string | null) => {
-  return getDefaultRequiredVal("", permitIds).split(PERMIT_ID_DELIM).filter(id => id !== "")
+  return getDefaultRequiredVal("", permitIds).split(";").filter(id => id !== "")
 }
 
 export const parseRedirectUriPath = (path?: string | null) => {
-  const foo = path?.split(PATH_DELIM)
+  const foo = path?.split(';')
   let permitIds = ''
-  //let transactionId = ''
+  let transactionId = ''
   let trnApproved = 0
   if (foo && foo[0]) {
     //permitIds = foo[0].split(',')
@@ -26,21 +23,21 @@ export const parseRedirectUriPath = (path?: string | null) => {
   }
 
   if (foo && foo[1]) {
-    trnApproved = parseInt(foo[1].split('=')?.[1])
-    //const foo2 = foo[1].split('?')
-    //transactionId = foo2[0].split('=')?.[1]
-    //if (foo2 && foo2[1]) {
-    //  trnApproved = parseInt(foo2[1].split('=')?.[1])
-    //}
+    const foo2 = foo[1].split('?')
+    transactionId = foo2[0].split('=')?.[1]
+    if (foo2 && foo2[1]) {
+      trnApproved = parseInt(foo2[1].split('=')?.[1])
+    }
   }
-  return {permitIds, trnApproved}
+  return {permitIds, transactionId, trnApproved}
 }
 
-const exportPathFromSearchParams = (params: URLSearchParams, trnApproved: number) => {
+const exportPathFromSearchParams = (params: URLSearchParams) => {
   const localParams = new URLSearchParams(params)
   localParams.delete('path')
   return localParams.toString()
 }
+
 
 /**
  * React component that handles the payment redirect and displays the payment status.
@@ -53,13 +50,10 @@ export const PaymentRedirect = () => {
   const [searchParams] = useSearchParams()
   const paymentDetails = getPayBCPaymentDetails(searchParams)
   const transaction = mapTransactionDetails(paymentDetails)
-  const transactionId = getDefaultRequiredVal("", searchParams?.get("ref2"))
 
   const path = getDefaultRequiredVal("", searchParams.get("path"))
-  //const {permitIds, transactionId, trnApproved} = parseRedirectUriPath(path)
-  //const trnApproved = 
-  const {permitIds, trnApproved} = parseRedirectUriPath(path)
-  const transactionQueryString = exportPathFromSearchParams(searchParams, trnApproved)
+  const {permitIds, transactionId, trnApproved} = parseRedirectUriPath(path)
+  const transactionQueryString = exportPathFromSearchParams(searchParams)
   
   console.log('searchParams', searchParams.toString())
   console.log('permitIds', permitIds)

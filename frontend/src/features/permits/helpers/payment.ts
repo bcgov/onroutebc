@@ -19,7 +19,7 @@ export const getPayBCPaymentDetails = (params: URLSearchParams): PayBCPaymentDet
   
   console.log('URLSearchParams', params.toString())
   const path = getDefaultRequiredVal("", params.get("path"))
-  const {permitIds, trnApproved} = parseRedirectUriPath(path)
+  const {permitIds, transactionId, trnApproved} = parseRedirectUriPath(path)
 
   const payBCPaymentDetails: PayBCPaymentDetails = {
     authCode: getDefaultRequiredVal("", params.get("authCode")),
