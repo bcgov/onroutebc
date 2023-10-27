@@ -7,6 +7,7 @@ import {
   Put,
   Query,
   Req,
+  Res,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -23,10 +24,13 @@ import { PaymentService } from './payment.service';
 import { CreateTransactionDto } from './dto/request/create-transaction.dto';
 import { ReadTransactionDto } from './dto/response/read-transaction.dto';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import { UpdatePaymentGatewayTransactionDto } from './dto/request/read-payment-gateway-transaction.dto';
 import { ReadPaymentGatewayTransactionDto } from './dto/response/read-payment-gateway-transaction.dto';
 import { getDirectory } from 'src/common/helper/auth.helper';
+import { CreatePaymentDetailedReportDto } from './dto/request/create-payment-detailed-report.dto';
+import { ReadFileDto } from '../common/dto/response/read-file.dto';
+import { CreatePaymentSummaryReportDto } from './dto/request/create-payment-summary-report.dto';
 
 @ApiBearerAuth()
 @ApiTags('Payment')
@@ -104,5 +108,45 @@ export class PaymentController {
     @Param('transactionId') transactionId: string,
   ): Promise<ReadTransactionDto> {
     return await this.paymentService.findTransaction(transactionId);
+  }
+
+  @ApiCreatedResponse({
+    description: 'The DOPS file Resource with the presigned resource',
+    type: ReadFileDto,
+  })
+  @Post('/report/detailed')
+  async createPaymentDetailedReport(
+    @Req() request: Request,
+    @Body() createPaymentDetailedReportDto: CreatePaymentDetailedReportDto,
+    @Res() res: Response,
+  ): Promise<void> {
+    const currentUser = request.user as IUserJWT;
+
+    await this.paymentService.createPaymentDetailedReport(
+      currentUser,
+      createPaymentDetailedReportDto,
+      res,
+    );
+    res.status(200);
+  }
+
+  @ApiCreatedResponse({
+    description: 'The DOPS file Resource with the presigned resource',
+    type: ReadFileDto,
+  })
+  @Post('/report/summary')
+  async createPaymentSummaryReport(
+    @Req() request: Request,
+    @Body() createPaymentSummaryReportDto: CreatePaymentSummaryReportDto,
+    @Res() res: Response,
+  ): Promise<void> {
+    const currentUser = request.user as IUserJWT;
+
+    await this.paymentService.createPaymentDetailedReport(
+      currentUser,
+      null,
+      res,
+    );
+    res.status(200);
   }
 }
