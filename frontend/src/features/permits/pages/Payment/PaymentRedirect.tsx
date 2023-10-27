@@ -19,11 +19,11 @@ export const parseRedirectUriPath = (path?: string | null) => {
   const splitPath = path?.split(PATH_DELIM)
   let permitIds = ''
   let trnApproved = 0
-  if (splitPath && splitPath[0]) {
+  if (splitPath?.[0]) {
     permitIds = splitPath[0]
   }
 
-  if (splitPath && splitPath[1]) {
+  if (splitPath?.[1]) {
     trnApproved = parseInt(splitPath[1]?.split('=')?.[1])
   }
   
