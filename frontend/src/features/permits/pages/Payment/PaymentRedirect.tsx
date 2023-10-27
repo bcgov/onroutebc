@@ -16,20 +16,17 @@ const getPermitIdsArray = (permitIds?: string | null) => {
 }
 
 export const parseRedirectUriPath = (path?: string | null) => {
-  const foo = path?.split(PATH_DELIM)
+  const splitPath = path?.split(PATH_DELIM)
   let permitIds = ''
   let trnApproved = 0
-  if (foo && foo[0]) {
-    permitIds = foo[0]
+  if (splitPath && splitPath[0]) {
+    permitIds = splitPath[0]
   }
 
-  if (foo && foo[1]) {
-    //const foo2 = foo[1].split('?')
-    //transactionId = foo2[0].split('=')?.[1]
-    //if (foo && foo2[1]) {
-    trnApproved = parseInt(foo[1].split('=')?.[1])
-    //}
+  if (splitPath && splitPath[1]) {
+    trnApproved = parseInt(splitPath[1]?.split('=')?.[1])
   }
+  
   return {permitIds, trnApproved}
 }
 
