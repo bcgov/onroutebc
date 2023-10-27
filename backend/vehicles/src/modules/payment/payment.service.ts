@@ -70,9 +70,7 @@ export class PaymentService {
     // Construct the URL with the transaction details for the payment gateway
     const redirectUrl = permitIds
       ? `${process.env.PAYBC_REDIRECT}` +
-        `?path=${permitIds.join(',')};transactionId=${
-          transaction.transactionId
-        }`
+        `?path=${permitIds.join(',')}`
       : `${process.env.PAYBC_REDIRECT}`
 
     const date = new Date().toISOString().split('T')[0];
@@ -90,7 +88,8 @@ export class PaymentService {
       `&glDate=${date}` +
       `&paymentMethod=${PAYBC_PAYMENT_METHOD}` +
       `&currency=${PAYMENT_CURRENCY}` +
-      `&revenue=1:${process.env.GL_CODE}:${transaction.totalTransactionAmount}`;
+      `&revenue=1:${process.env.GL_CODE}:${transaction.totalTransactionAmount}` +
+      `&ref2=${transaction.transactionId}`
 
     // Generate the hash using the query string and the MD5 algorithm
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
