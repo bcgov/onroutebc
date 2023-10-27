@@ -75,6 +75,18 @@ RUN apk add --no-cache \
      
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
+
+# Set up directories and adjust permissions
+RUN mkdir -p /root/.local/share/fonts \
+  && mkdir -p /root/.config/puppeteer \
+  && chmod -R 777 /root/.local \
+  && chmod -R 777 /root/.config \
+  && mkdir -p /.local \
+  && chmod -R 777 /.local
+
+RUN npm config set user 0
+RUN npm config set unsafe-perm true
+
 # Expose Port
 EXPOSE 5001
 
