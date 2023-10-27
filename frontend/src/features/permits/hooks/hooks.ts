@@ -161,7 +161,6 @@ export const useCompleteTransaction = (
   messageText: string,
   paymentStatus: number
 ) => {
-  console.log('transactionQueryString', transactionQueryString)
   const queryClient = useQueryClient();
   const [paymentApproved, setPaymentApproved] = useState<boolean | undefined>(undefined);
   const [message, setMessage] = useState<string>(messageText);

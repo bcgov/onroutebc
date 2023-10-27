@@ -17,7 +17,7 @@ import { parseRedirectUriPath } from "../pages/Payment/PaymentRedirect";
 export const getPayBCPaymentDetails = (params: URLSearchParams): PayBCPaymentDetails => {
   // Extract the query parameters and assign them to the corresponding properties of PayBCPaymentDetails
   const path = getDefaultRequiredVal("", params.get("path"))
-  const {permitIds, trnApproved} = parseRedirectUriPath(path)
+  const {trnApproved} = parseRedirectUriPath(path)
 
   const payBCPaymentDetails: PayBCPaymentDetails = {
     authCode: getDefaultRequiredVal("", params.get("authCode")),
