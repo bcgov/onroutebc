@@ -17,7 +17,10 @@ import { IUserJWT } from 'src/common/interface/user-jwt.interface';
 import { callDatabaseSequence } from 'src/common/helper/database.helper';
 import { Permit } from '../permit/entities/permit.entity';
 import { ApplicationStatus } from '../../common/enum/application-status.enum';
-import { PaymentMethodType } from '../../common/enum/payment-method-type.enum';
+import {
+  PaymentMethodType,
+  PaymentMethodTypeReport,
+} from '../../common/enum/payment-method-type.enum';
 import { TransactionType } from '../../common/enum/transaction-type.enum';
 import { UpdatePaymentGatewayTransactionDto } from './dto/request/read-payment-gateway-transaction.dto';
 import { ReadPaymentGatewayTransactionDto } from './dto/response/read-payment-gateway-transaction.dto';
@@ -28,6 +31,7 @@ import { CreatePaymentDetailedReportDto } from './dto/request/create-payment-det
 import { DopsService } from '../common/dops.service';
 import { DopsGeneratedReport } from '../../common/interface/dops-generated-report.interface';
 import { ReportTemplate } from '../../common/enum/report-template.enum';
+import { convertUtcToPt } from '../../common/helper/date-time.helper';
 
 @Injectable()
 export class PaymentService {
@@ -474,18 +478,37 @@ export class PaymentService {
     createPaymentDetailedReportDto: CreatePaymentDetailedReportDto,
     res: Response,
   ): Promise<void> {
+    const paymentMethods: string[] = [
+      'Cash',
+      'Cheque',
+      'Icepay - Mastercard',
+      'Icepay - Mastercard',
+      '(Debit), Icepay - Visa',
+      'Icepay - Visa (Debit)',
+      'Web - Mastercard (Debit)',
+      'Web - Visa (Debit)',
+      'PoS - Mastercard (Debit)',
+      'PoS - Visa (Debit), PoS - Mastercard',
+    ];
     const generateReportData: DopsGeneratedReport = {
       reportTemplate: ReportTemplate.PAYMENT_AND_REFUND_DETAILED_REPORT,
       reportData: {
-        issuedBy: 'Self Issued and PPC',
-        runDate: 'Jul. 17, 2023, 09:00 PM, PDT',
+        issuedBy: createPaymentDetailedReportDto.issuedBy.join(', '),
+        runDate: convertUtcToPt(new Date(), 'MMM. D, YYYY, hh:mm A Z'),
         permitType: 'All Permit Types',
         paymentMethod:
-          'Cash, Cheque, Icepay - Mastercard, Icepay - Mastercard ' +
-          '(Debit), Icepay - Visa, Icepay - Visa (Debit), Web - Mastercard (Debit), Web - Visa (Debit), PoS - ' +
-          'Mastercard (Debit), PoS - Visa (Debit), PoS - Mastercard',
-        timePeriod:
-          'Jul. 17, 2023, 09:00 PM, PDT – Jul. 18, 2023, 09:00 PM, PDT',
+          createPaymentDetailedReportDto.paymentMethodType.includes(
+            PaymentMethodTypeReport.ALL,
+          )
+            ? 'All Payment Methods'
+            : paymentMethods.join(', '),
+        timePeriod: `${convertUtcToPt(
+          createPaymentDetailedReportDto.fromDateTime,
+          'MMM. D, YYYY, hh:mm A Z',
+        )} – ${convertUtcToPt(
+          createPaymentDetailedReportDto.toDateTime,
+          'MMM. D, YYYY, hh:mm A Z',
+        )}`,
         payments: [
           {
             issuedOn: 'Jul. 17, 2023, 09:00 PM, PDT',
