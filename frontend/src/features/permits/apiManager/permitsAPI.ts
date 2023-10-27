@@ -255,7 +255,7 @@ export const completeTransaction = async (
 ): Promise<CompleteTransactionResponseData | null> => {
   try {
     const response = await httpPUTRequest(
-      `${PAYMENT_API}/${transactionId}/payment-gateway?queryString="${transactionQueryString}"`,
+      `${PAYMENT_API}/${transactionId}/payment-gateway?queryString=${transactionQueryString}`,
       transactionDetails
     );
     if (response.status !== 200) {
