@@ -37,8 +37,8 @@ const exportPathFromSearchParams = (params: URLSearchParams, trnApproved: number
   const localParams = new URLSearchParams(params)
   localParams.delete('path')
   let updatedPath = localParams.toString()
-  updatedPath = `trnApproved=${trnApproved}&` + updatedPath
-  console.log('updatedPath ', updatedPath)
+  updatedPath = encodeURIComponent(`trnApproved=${trnApproved}&` + updatedPath)
+  console.log('encodedPath ', updatedPath)
   return updatedPath
 }
 
