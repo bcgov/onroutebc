@@ -23,6 +23,11 @@ import { UpdatePaymentGatewayTransactionDto } from './dto/request/read-payment-g
 import { ReadPaymentGatewayTransactionDto } from './dto/response/read-payment-gateway-transaction.dto';
 import { Receipt } from './entities/receipt.entity';
 import { Directory } from 'src/common/enum/directory.enum';
+import { Response } from 'express';
+import { CreatePaymentDetailedReportDto } from './dto/request/create-payment-detailed-report.dto';
+import { DopsService } from '../common/dops.service';
+import { DopsGeneratedReport } from '../../common/interface/dops-generated-report.interface';
+import { ReportTemplate } from '../../common/enum/report-template.enum';
 
 @Injectable()
 export class PaymentService {
@@ -31,6 +36,7 @@ export class PaymentService {
     @InjectRepository(Transaction)
     private transactionRepository: Repository<Transaction>,
     @InjectMapper() private readonly classMapper: Mapper,
+    private readonly dopsService: DopsService,
   ) {}
 
   private generateHashExpiry = (currDate?: Date) => {
@@ -461,5 +467,96 @@ export class PaymentService {
       where: { transactionId: transactionId },
       relations: ['permitTransactions', 'permitTransactions.permit'],
     });
+  }
+
+  async createPaymentDetailedReport(
+    currentUser: IUserJWT,
+    createPaymentDetailedReportDto: CreatePaymentDetailedReportDto,
+    res: Response,
+  ): Promise<void> {
+    const generateReportData: DopsGeneratedReport = {
+      reportTemplate: ReportTemplate.PAYMENT_AND_REFUND_DETAILED_REPORT,
+      reportData: {
+        issuedBy: 'Self Issued and PPC',
+        runDate: 'Jul. 17, 2023, 09:00 PM, PDT',
+        permitType: 'All Permit Types',
+        paymentMethod:
+          'Cash, Cheque, Icepay - Mastercard, Icepay - Mastercard ' +
+          '(Debit), Icepay - Visa, Icepay - Visa (Debit), Web - Mastercard (Debit), Web - Visa (Debit), PoS - ' +
+          'Mastercard (Debit), PoS - Visa (Debit), PoS - Mastercard',
+        timePeriod:
+          'Jul. 17, 2023, 09:00 PM, PDT – Jul. 18, 2023, 09:00 PM, PDT',
+        payments: [
+          {
+            issuedOn: 'Jul. 17, 2023, 09:00 PM, PDT',
+            providerTransactionId: '73582422238',
+            orbcTransactionId: 'OR-678904512857',
+            paymentMethod: 'Cash',
+            receiptNo: '45098721098',
+            permitNo: 'P2-72106199-468',
+            permitType: 'STOW',
+            user: 'ANPETRIC',
+            amount: '$90.00',
+          },
+          {
+            paymentMethod: 'Cash',
+            subTotalAmount: '$90.00',
+          },
+          {
+            paymentMethod: 'Cash',
+            totalAmount: '$90.00',
+          },
+        ],
+        refunds: [
+          {
+            issuedOn: 'Jul. 17, 2023, 09:00 PM, PDT',
+            providerTransactionId: '73582422238',
+            orbcTransactionId: 'OR-678904512857',
+            paymentMethod: 'Cheque',
+            receiptNo: '51961102630',
+            permitNo: 'P2-15348742-610',
+            permitType: 'TROS',
+            user: 'KOPARKIN',
+            amount: '$10.00',
+          },
+          {
+            paymentMethod: 'Cheque',
+            subTotalAmount: '$190.00',
+          },
+          {
+            paymentMethod: 'Credit Card',
+            totalAmount: '$190.00',
+          },
+        ],
+        summaryPayments: [
+          {
+            paymentMethod: 'Cheque',
+            payment: '$190',
+            refund: '$190',
+            deposit: '$190',
+          },
+          {
+            subTotalPaymentAmount: '$190.00',
+            subTotalRefundAmount: '$190.00',
+            subTotalDepositAmount: '$190.00',
+          },
+          {
+            grandTotalAmount: '$190.00',
+          },
+        ],
+        summaryPermits: [
+          {
+            permitType: 'TROS',
+            permitCount: '1',
+          },
+          {
+            totalPermits: '1',
+          },
+        ],
+      },
+      generatedDocumentFileName: 'Sample',
+    };
+
+    await this.dopsService.generateReport(currentUser, generateReportData, res);
   }
 }
