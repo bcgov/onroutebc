@@ -11,6 +11,7 @@ import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { Response } from 'express';
 import { FileDownloadModes } from '../../common/enum/file-download-modes.enum';
 import { ReadFileDto } from './dto/response/read-file.dto';
+import { DopsGeneratedReport } from '../../common/interface/dops-generated-report.interface';
 
 @Injectable()
 export class DopsService {
@@ -168,5 +169,64 @@ export class DopsService {
       data.on('end', () => resolve(Buffer.concat(chunks)));
       data.on('error', (err) => reject(err));
     });
+  }
+
+  /**
+   * Generates a report from predefined template via DOPS.
+   * @param currentUser - The current user details of type {@link IUserJWT}
+   * @param dopsGeneratedDocument - The template details and data of type
+   *               {@link DopsGeneratedDocument}.
+   * @param res - An optional Response object.
+   * @returns A Promise that resolves to an object of type {@link IFile}. Null
+   * is returned if Response object was passed as a parameter.
+   */
+  async generateReport(
+    currentUser: IUserJWT,
+    dopsGeneratedReport: DopsGeneratedReport,
+    res?: Response,
+  ): Promise<IFile> {
+    // Construct the URL for the request
+    const url = process.env.DOPS_URL + `/dgen/report/render`;
+
+    const reqConfig: AxiosRequestConfig = {
+      headers: {
+        Authorization: currentUser.access_token,
+        'Content-Type': 'application/json',
+      },
+      responseType: 'stream',
+    };
+
+    // Calls the DOPS service, which converts the the template document into a pdf
+    const dopsResponse = await lastValueFrom(
+      this.httpService.post(url, dopsGeneratedReport, reqConfig),
+    )
+      .then((response) => {
+        return response;
+      })
+      .catch((error) => {
+        console.log('generate Document error: ', error);
+        throw error;
+      });
+
+    if (res) {
+      this.convertAxiosToExpress(dopsResponse, res);
+      const responseData = dopsResponse.data as NodeJS.ReadableStream;
+      responseData.pipe(res);
+      return null;
+    }
+    const file = await this.createFile(
+      dopsResponse.data as NodeJS.ReadableStream,
+    );
+
+    const generatedDocument: IFile = {
+      originalname: dopsGeneratedReport.generatedDocumentFileName,
+      encoding: dopsResponse.headers['Content-Transfer-Encoding'] as string,
+      mimetype: dopsResponse.headers['Content-Type'] as string,
+      buffer: file,
+      size: dopsResponse.headers['Content-Length'] as number,
+      dmsId: dopsResponse.headers['x-orbc-dms-id'] as string,
+    };
+
+    return generatedDocument;
   }
 }
