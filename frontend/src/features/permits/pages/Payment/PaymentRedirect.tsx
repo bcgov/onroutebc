@@ -36,10 +36,8 @@ export const parseRedirectUriPath = (path?: string | null) => {
 const exportPathFromSearchParams = (params: URLSearchParams, trnApproved: number) => {
   const localParams = new URLSearchParams(params)
   localParams.delete('path')
-  let updatedPath = localParams.toString()
-  updatedPath = encodeURIComponent(`trnApproved=${trnApproved}&` + updatedPath)
-  console.log('encodedPath ', updatedPath)
-  return updatedPath
+  const updatedPath = localParams.toString()
+  return encodeURIComponent(`trnApproved=${trnApproved}&` + updatedPath)
 }
 
 /**
@@ -60,13 +58,6 @@ export const PaymentRedirect = () => {
   const transactionQueryString = exportPathFromSearchParams(searchParams, trnApproved)
   const transactionId = getDefaultRequiredVal("", searchParams.get("ref2"))
   
-  console.log('searchParams', searchParams.toString())
-  console.log('permitIds', permitIds)
-  console.log('transactionId', transactionId)
-  console.log('paymentDetails', paymentDetails)
-  console.log('transaction', transaction)
-  console.log('trnApproved', trnApproved)
-
   const { 
     mutation: completeTransactionMutation,
     paymentApproved,
@@ -91,7 +82,7 @@ export const PaymentRedirect = () => {
     return issueResults.success.length === 0 
       || (issueResults.success.length === 1 && issueResults.success[0] === "")
       || (issueResults.failure.length > 0 && issueResults.failure[0] !== "");
-  };
+  }
 
   useEffect(() => {
     if (completedTransaction.current === false) {
@@ -148,23 +139,12 @@ export const PaymentRedirect = () => {
     );
   } 
 
-  return <Loading />;
+  return <Loading />
 };
 
 const mapTransactionDetails = (
   paymentResponse: PayBCPaymentDetails
 ): CompleteTransactionRequestData => {
-  console.log({
-    pgTransactionId: paymentResponse.trnId,
-    pgApproved: Number(paymentResponse.trnApproved),
-    pgAuthCode: paymentResponse.authCode,
-    pgCardType: paymentResponse.cardType,
-    pgTransactionDate: toUtc(paymentResponse.trnDate, DATE_FORMATS.ISO8601),
-    pgCvdId: Number(paymentResponse.cvdId),
-    pgPaymentMethod: paymentResponse.paymentMethod,
-    pgMessageId: Number(paymentResponse.messageId),
-    pgMessageText: paymentResponse.messageText,
-  })
   return {
     pgTransactionId: paymentResponse.trnId,
     pgApproved: Number(paymentResponse.trnApproved),
@@ -175,5 +155,5 @@ const mapTransactionDetails = (
     pgPaymentMethod: paymentResponse.paymentMethod,
     pgMessageId: Number(paymentResponse.messageId),
     pgMessageText: paymentResponse.messageText,
-  };
-};
+  }
+}
