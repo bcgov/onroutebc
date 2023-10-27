@@ -92,8 +92,6 @@ export class PaymentService {
       `&currency=${PAYMENT_CURRENCY}` +
       `&revenue=1:${process.env.GL_CODE}:${transaction.totalTransactionAmount}`;
 
-    console.log('Query string: ', queryString + process.env.PAYBC_API_KEY);
-
     // Generate the hash using the query string and the MD5 algorithm
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
     
