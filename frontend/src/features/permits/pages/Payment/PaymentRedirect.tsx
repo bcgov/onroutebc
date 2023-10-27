@@ -32,6 +32,12 @@ export const parseRedirectUriPath = (path?: string | null) => {
   return {permitIds, transactionId, trnApproved}
 }
 
+const exportPathFromSearchParams = (params: URLSearchParams) => {
+  const localParams = new URLSearchParams(params)
+  localParams.delete('path')
+  return localParams.toString()
+}
+
 
 /**
  * React component that handles the payment redirect and displays the payment status.
@@ -42,14 +48,12 @@ export const PaymentRedirect = () => {
   const completedTransaction = useRef(false)
   const issuedPermit = useRef(false)
   const [searchParams] = useSearchParams()
-  //const permitIds = searchParams.get("permitIds");
-  //const permitIds = searchParams.get("path");
-  //const transactionId = searchParams.get("transactionId");
   const paymentDetails = getPayBCPaymentDetails(searchParams)
   const transaction = mapTransactionDetails(paymentDetails)
 
   const path = getDefaultRequiredVal("", searchParams.get("path"))
   const {permitIds, transactionId, trnApproved} = parseRedirectUriPath(path)
+  const transactionQueryString = exportPathFromSearchParams(searchParams)
   
   console.log('searchParams', searchParams.toString())
   console.log('permitIds', permitIds)
@@ -65,6 +69,7 @@ export const PaymentRedirect = () => {
     setPaymentApproved,
   } = useCompleteTransaction(
     getDefaultRequiredVal('', transactionId),
+    transactionQueryString,
     transaction,
     paymentDetails.messageText,
     paymentDetails.trnApproved
