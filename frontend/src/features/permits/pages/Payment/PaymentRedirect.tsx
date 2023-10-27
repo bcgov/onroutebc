@@ -50,7 +50,6 @@ export const PaymentRedirect = () => {
   const transaction = mapTransactionDetails(paymentDetails)
 
   const path = getDefaultRequiredVal("", searchParams.get("path"))
-
   const {permitIds, trnApproved} = parseRedirectUriPath(path)
   const transactionQueryString = exportPathFromSearchParams(searchParams, trnApproved)
   const transactionId = getDefaultRequiredVal("", searchParams.get("ref2"))
@@ -74,7 +73,6 @@ export const PaymentRedirect = () => {
   } = useIssuePermits()
 
   const issueFailed = () => {
-    console.log('issueFailed? ', issueResults)
     if (!issueResults) return false; // since issue results might not be ready yet
     return issueResults.success.length === 0 
       || (issueResults.success.length === 1 && issueResults.success[0] === "")
@@ -84,24 +82,19 @@ export const PaymentRedirect = () => {
   useEffect(() => {
     if (completedTransaction.current === false) {
       if (paymentDetails.trnApproved > 0) {
-        console.log('call completeTransactionMutation.mutate()')
         completeTransactionMutation.mutate();
         completedTransaction.current = true;
       } else {
-        console.log('setting paymentApproved false')
         setPaymentApproved(false);
       }
     }
   }, [paymentDetails.trnApproved])
 
   useEffect(() => {
-    console.log('issuedPermit', issuedPermit)
     if (issuedPermit.current === false) {
       const permitIdsArray = getPermitIdsArray(permitIds)
-      console.log('permitIdsArray', permitIdsArray)
       if (paymentApproved === true && permitIdsArray.length > 0) {
         // Issue permit
-        console.log('issue permit')
         issuePermitsMutation.mutate(permitIdsArray)
         issuedPermit.current = true
       }
@@ -109,7 +102,6 @@ export const PaymentRedirect = () => {
   }, [paymentApproved, permitIds])
 
   if (paymentApproved === false) {
-    console.log('paymentApproved === false')
     return (
       <Navigate 
         to={`/applications/failure/${message}`}
