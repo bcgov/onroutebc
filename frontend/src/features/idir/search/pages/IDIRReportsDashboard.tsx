@@ -5,6 +5,8 @@ import {
   Checkbox,
   FormGroup,
   FormControlLabel,
+  Paper,
+  Radio,
 } from "@mui/material";
 import { memo, useState } from "react";
 import { Banner } from "../../../../common/components/dashboard/Banner";
@@ -22,6 +24,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { useUpdatePowerUnitMutation } from "../../../manageVehicles/apiManager/hooks";
 import { getPaymentAndRefundSummary } from "../api/reports";
 import { openBlobInNewTab } from "../../../permits/helpers/permitPDFHelper";
+import { pointer } from "@testing-library/user-event/dist/types/pointer";
 
 enum REPORT_MODE {
   SUMMARY,
@@ -87,13 +90,139 @@ export const IDIRReportsDashboard = memo(() => {
             />
           }
         >
-          <Stack>
-            <span>Radio one</span>
-            <span style={{ width: "528px" }}>Radio two</span>
+          <Stack sx={{ width: "528px" }} spacing={3}>
+            <Paper
+              sx={{
+                height: "75px",
+                background:
+                  reportMode === REPORT_MODE.SUMMARY
+                    ? BC_COLOURS.bc_messages_blue_background
+                    : null,
+                border: "1px solid #313132",
+                cursor: "pointer",
+              }}
+              onClick={() => {
+                setReportMode(() => REPORT_MODE.SUMMARY);
+              }}
+            >
+              <FormControlLabel
+                control={<Radio checked={reportMode === REPORT_MODE.SUMMARY} />}
+                label={<strong>Payment and Refund Summary</strong>}
+              />
+            </Paper>
+            <Paper
+              sx={{
+                height: "75px",
+                background:
+                  reportMode === REPORT_MODE.DETAIL
+                    ? BC_COLOURS.bc_messages_blue_background
+                    : null,
+                border:
+                  reportMode === REPORT_MODE.DETAIL
+                    ? `1px solid ${BC_COLOURS.bc_black}`
+                    : `1px solid ${BC_COLOURS.bc_text_box_border_grey}`,
+                cursor: "pointer",
+              }}
+              onClick={() => {
+                setReportMode(() => REPORT_MODE.DETAIL);
+              }}
+            >
+              <FormControlLabel
+                control={<Radio checked={reportMode === REPORT_MODE.DETAIL} />}
+                label={<strong>Payment and Refund Detail</strong>}
+              />
+            </Paper>
           </Stack>
           {reportMode === REPORT_MODE.SUMMARY && (
             <Stack style={{ width: "900px" }} spacing={2}>
               <h2>Payment and Refund Summary</h2>
+              <Divider
+                flexItem
+                orientation="horizontal"
+                color={BC_COLOURS.bc_border_grey}
+              />
+              <FormGroup>
+                <br />
+                <span>
+                  <strong>Issued By</strong>
+                </span>
+                <Stack direction="row" spacing={5}>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={true}
+                        sx={{ marginLeft: "0px", paddingLeft: "0px" }}
+                        name="issuedBy"
+                      />
+                    }
+                    label="Self Issued"
+                  />
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={true}
+                        sx={{ marginLeft: "0px", paddingLeft: "0px" }}
+                        name="issuedBy"
+                      />
+                    }
+                    label="PPC"
+                  />
+                </Stack>
+                <Stack direction="row" spacing="2">
+                  <FormControlLabel
+                    control={
+                      <LocalizationProvider dateAdapter={AdapterDayjs}>
+                        <DesktopDateTimePicker />
+                        {/* <DateTimePicker disableFuture openTo="hours"/> */}
+                        {/* <DateTimePicker
+                  label={<strong>From</strong>}
+                  views={['year', 'month', 'day', 'hours', 'minutes']}
+                  // slotProps={{
+                  //   textField: {
+                  //     helperText: "Select a from date time",
+                  //   },
+                  // }}
+                /> */}
+                      </LocalizationProvider>
+                    }
+                    label={<strong>From</strong>}
+                  />
+                  <FormControlLabel
+                    control={
+                      <LocalizationProvider dateAdapter={AdapterDayjs}>
+                        <DesktopDateTimePicker />
+                        {/* <DateTimePicker disableFuture openTo="hours"/> */}
+                        {/* <DateTimePicker
+                  label={<strong>From</strong>}
+                  views={['year', 'month', 'day', 'hours', 'minutes']}
+                  // slotProps={{
+                  //   textField: {
+                  //     helperText: "Select a from date time",
+                  //   },
+                  // }}
+                /> */}
+                      </LocalizationProvider>
+                    }
+                    label={<strong>To</strong>}
+                  />
+                </Stack>
+              </FormGroup>
+              <Stack direction="row">
+                <Button
+                  key="view-report-button"
+                  aria-label="View Report"
+                  variant="contained"
+                  color="primary"
+                  onClick={onClickViewReport}
+                >
+                  View Report
+                </Button>
+              </Stack>
+            </Stack>
+          )}
+          {reportMode === REPORT_MODE.DETAIL && (
+            <Stack style={{ width: "900px" }} spacing={2}>
+              <h2>Payment and Refund Detail</h2>
               <Divider
                 flexItem
                 orientation="horizontal"
