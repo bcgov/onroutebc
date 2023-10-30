@@ -42,6 +42,7 @@ const sample = {
 
 /**
  * Component for Payment and Refund Detail form
+ * 
  */
 export const PaymentAndRefundDetail = () => {
   const [permitType, setPermitType] = useState<string[]>(["ALL"]);
