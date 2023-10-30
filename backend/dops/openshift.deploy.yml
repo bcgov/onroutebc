@@ -11,7 +11,7 @@ parameters:
     description: Component name
     value: backend-dops
   - name: ZONE
-    description: Deployment zone, e.g. pr-### or prod
+    description: Deployment zone, e.g. pr-###or prod
     required: true
   - name: IMAGE_TAG
     description: Image tag to use
