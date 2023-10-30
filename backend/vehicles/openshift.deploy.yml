@@ -324,7 +324,7 @@ objects:
                       key: paybc-redirect
                 - name: GL_CODE
                   valueFrom:
-                    configMapKeyRef:
+                    secretKeyRef:
                       name: ${NAME}-${ZONE}-${COMPONENT}
                       key: gl-code
               ports:
