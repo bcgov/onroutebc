@@ -70,12 +70,12 @@ export const PaymentAndRefundSummary = () => {
         issuedBy,
       };
       console.log("requestObj::", requestObj);
-      //   const { blobObj: blobObjWithoutType } = await getPaymentAndRefundSummary({
-      //     fromDateTime: fromDateTime.toISOString(),
-      //     toDateTime: toDateTime.toISOString(),
-      //     issuedBy,
-      //   });
-      //   openBlobInNewTab(blobObjWithoutType);
+        const { blobObj: blobObjWithoutType } = await getPaymentAndRefundSummary({
+          fromDateTime: fromDateTime.toISOString(),
+          toDateTime: toDateTime.toISOString(),
+          issuedBy,
+        });
+        openBlobInNewTab(blobObjWithoutType);
     } catch (err) {
       console.error(err);
     }

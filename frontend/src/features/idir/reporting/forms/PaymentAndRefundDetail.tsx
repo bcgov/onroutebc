@@ -67,10 +67,10 @@ export const PaymentAndRefundDetail = () => {
         requestObj.users = users;
       }
       console.log("requestObj::", requestObj);
-      //   const { blobObj: blobObjWithoutType } = await getPaymentAndRefundDetail(
-      //     requestObj
-      //   );
-      //   openBlobInNewTab(blobObjWithoutType);
+        const { blobObj: blobObjWithoutType } = await getPaymentAndRefundDetail(
+          requestObj
+        );
+        openBlobInNewTab(blobObjWithoutType);
     } catch (err) {
       console.error(err);
     }
