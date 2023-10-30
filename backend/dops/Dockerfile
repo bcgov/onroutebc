@@ -16,8 +16,6 @@ ENV PATH="/root/.nvm/versions/node/v${NODE_VERSION}/bin/:${PATH}"
 RUN echo $PATH
 
 # Install packages, build and keep only prod packages
-WORKDIR /app
-COPY . ./
 RUN apt-get update -y
 RUN apt-get install -y gconf-service libasound2 libatk1.0-0 libc6 \
     libcairo2 libcups2 libdbus-1-3 libexpat1 libfontconfig1 libgcc1 \
@@ -101,16 +99,6 @@ RUN apk add --no-cache \
       ttf-freefont 
      
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
-
-
-# Add user so we don't need --no-sandbox.
-RUN addgroup -S pptruser && adduser -S -G pptruser pptruser \
-    && mkdir -p /home/pptruser/Downloads /app \
-    && chown -R pptruser:pptruser /home/pptruser \
-    && chown -R pptruser:pptruser /app
-
-# Run everything after as non-privileged user.
-USER pptruser
 
 # Expose Port
 EXPOSE 5001
