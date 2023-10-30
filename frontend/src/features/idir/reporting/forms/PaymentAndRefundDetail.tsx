@@ -23,6 +23,15 @@ import { getPaymentAndRefundSummary } from "../../search/api/reports";
 import { openBlobInNewTab } from "../../../permits/helpers/permitPDFHelper";
 import { useState } from "react";
 
+const sample = {
+  issuedBy: ["SELF"],
+  paymentMethodType: ["ALL"],
+  permitType: ["ALL"],
+  fromDateTime: "2023-10-11T23:26:51.170Z",
+  toDateTime: "2023-10-27T23:26:51.170Z",
+  users: ["ORBCTST1"],
+};
+
 export const PaymentAndRefundDetail = () => {
   /**
    * Opens the report in a new tab.
@@ -30,8 +39,8 @@ export const PaymentAndRefundDetail = () => {
   const onClickViewReport = async () => {
     try {
       const { blobObj: blobObjWithoutType } = await getPaymentAndRefundSummary({
-        from: "2023-10-25T21:00Z",
-        to: "2023-10-25T21:00Z",
+        fromDateTime: "2023-10-25T21:00Z",
+        toDateTime: "2023-10-25T21:00Z",
         issuedBy: ["SELF", "PPC"],
       });
       openBlobInNewTab(blobObjWithoutType);
@@ -246,20 +255,18 @@ export const PaymentAndRefundDetail = () => {
             />
           </Stack>
           <Stack direction="row">
-        <Button
-          key="view-report-button"
-          aria-label="View Report"
-          variant="contained"
-          color="primary"
-          onClick={onClickViewReport}
-        >
-          View Report
-        </Button>
-      </Stack>
+            <Button
+              key="view-report-button"
+              aria-label="View Report"
+              variant="contained"
+              color="primary"
+              onClick={onClickViewReport}
+            >
+              View Report
+            </Button>
+          </Stack>
         </Stack>
-        
       </FormGroup>
-      
     </Stack>
   );
 };

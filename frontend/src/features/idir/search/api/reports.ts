@@ -1,7 +1,5 @@
 import { VEHICLES_URL } from "../../../../common/apiManager/endpoints/endpoints";
-import {
-    httpPOSTRequestStream
-} from "../../../../common/apiManager/httpRequestHandler";
+import { httpPOSTRequestStream } from "../../../../common/apiManager/httpRequestHandler";
 import { getFileNameFromHeaders } from "../../../permits/apiManager/permitsAPI";
 
 /**
@@ -9,8 +7,8 @@ import { getFileNameFromHeaders } from "../../../permits/apiManager/permitsAPI";
  */
 export type PaymentAndRefundSummaryRequest = {
   issuedBy: string[];
-  from: string;
-  to: string;
+  fromDateTime: string;
+  toDateTime: string;
 };
 
 /**
@@ -18,8 +16,8 @@ export type PaymentAndRefundSummaryRequest = {
  */
 export interface PaymentAndRefundDetailRequest
   extends PaymentAndRefundSummaryRequest {
-  permitTypes: string[];
-  paymentMethods: string[];
+  permitType: string[];
+  paymentMethodType: string[];
   users: string[];
 }
 
@@ -62,7 +60,7 @@ const streamDownloadWithHTTPPost = async (url: string, requestBody: any) => {
 export const getPaymentAndRefundSummary = async (
   requestObject: PaymentAndRefundSummaryRequest
 ) => {
-  const url = `${VEHICLES_URL}/payment/reports/summary`;
+  const url = `${VEHICLES_URL}/payment/report/summary`;
   return await streamDownloadWithHTTPPost(url, requestObject);
 };
 
@@ -74,6 +72,6 @@ export const getPaymentAndRefundSummary = async (
 export const getPaymentAndRefundDetail = async (
   requestObject: PaymentAndRefundDetailRequest
 ) => {
-  const url = `${VEHICLES_URL}/payment/reports/detail`;
+  const url = `${VEHICLES_URL}/payment/report/detailed`;
   return await streamDownloadWithHTTPPost(url, requestObject);
 };
