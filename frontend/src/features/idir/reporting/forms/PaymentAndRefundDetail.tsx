@@ -41,13 +41,9 @@ const sample = {
 };
 
 export const PaymentAndRefundDetail = () => {
-  const [requestObject, setRequestObject] =
-    useState<PaymentAndRefundDetailRequest>();
-  const [permitType, setPermitType] = useState<string[]>([]);
-  const [paymentMethod, setPaymentMethod] = useState<string[]>([]);
-  const [users, setUsers] = useState<string[]>([]);
-  const [selfIssued, setSelfIssued] = useState<boolean>(true);
-  const [ppcIssued, setPPCIssued] = useState<boolean>(true);
+  const [permitType, setPermitType] = useState<string[]>(["ALL"]);
+  const [paymentMethodType, setPaymentMethodType] = useState<string[]>(["ALL"]);
+  const [users, setUsers] = useState<string[]>(["ALL"]);
   const [issuedBy, setIssuedBy] = useState<string[]>(["SELF", "PPC"]);
   const [fromDateTime, setFromDateTime] = useState<Dayjs>(
     dayjs().subtract(1, "day").set("h", 21).set("m", 0).set("s", 0).set("ms", 0)
@@ -64,10 +60,12 @@ export const PaymentAndRefundDetail = () => {
         fromDateTime: fromDateTime.toISOString(),
         toDateTime: toDateTime.toISOString(),
         issuedBy,
-        paymentMethodType: paymentMethod,
+        paymentMethodType: paymentMethodType,
         permitType,
-        users,
       };
+      if (issuedBy.includes("PPC")) {
+        requestObj.users = users;
+      }
       console.log("requestObj::", requestObj);
       //   const { blobObj: blobObjWithoutType } = await getPaymentAndRefundDetail(
       //     requestObj
@@ -79,6 +77,30 @@ export const PaymentAndRefundDetail = () => {
   };
 
   const permitTypes = ["ALL", "TROS"];
+
+  const ppcList = [
+    {
+      name: "All Users",
+      userGUID: "ALL",
+      username: "ALL",
+    },
+    {
+      name: "Krishnan Subramanian",
+      userGUID: "XYZ123",
+      username: "KRSUBRAM",
+    },
+  ];
+
+  const permitTypes2 = [
+    {
+      label: "All Permit Types",
+      value: "ALL",
+    },
+    {
+      label: "Term Oversize Permit",
+      value: "TROS",
+    },
+  ];
   const paymentMethods = [
     {
       key: "All Payment Methods",
@@ -98,23 +120,20 @@ export const PaymentAndRefundDetail = () => {
     },
   ];
 
-  const handleChange = (event: SelectChangeEvent<typeof permitType>) => {
+  const onSelectPermitType = (event: SelectChangeEvent<typeof permitType>) => {
     const {
       target: { value },
     } = event;
-    setUsers(
-      // On autofill we get a stringified value.
-      typeof value === "string" ? value.split(",") : value
-    );
+    setPermitType(() => (typeof value === "string" ? value.split(",") : value));
   };
 
   const onSelectUser = (event: SelectChangeEvent<typeof users>) => {
     const {
       target: { value },
     } = event;
-    setPermitType(
+    setUsers(
       // On autofill we get a stringified value.
-      typeof value === "string" ? value.split(",") : value
+      () => (typeof value === "string" ? value.split(",") : value)
     );
   };
 
@@ -124,9 +143,9 @@ export const PaymentAndRefundDetail = () => {
     const {
       target: { value },
     } = event;
-    setPaymentMethod(
+    setPaymentMethodType(
       // On autofill we get a stringified value.
-      typeof value === "string" ? value.split(",") : value
+      () => (typeof value === "string" ? value.split(",") : value)
     );
   };
   return (
@@ -145,8 +164,26 @@ export const PaymentAndRefundDetail = () => {
           <FormControlLabel
             control={
               <Checkbox
-                onChange={() => setSelfIssued((prevState) => !prevState)}
-                checked={selfIssued}
+                onChange={(
+                  _event: React.ChangeEvent<HTMLInputElement>,
+                  checked: boolean
+                ) => {
+                  if (checked) {
+                    setIssuedBy(() => [...issuedBy, "SELF"]);
+                  } else {
+                    setIssuedBy(() =>
+                      issuedBy.filter((value) => value !== "SELF")
+                    );
+                  }
+                  //   const issuedBy = getValues("issuedBy");
+                  //   if (checked) {
+                  //     issuedBy.push("SELF");
+                  //   } else {
+                  //     delete issuedBy[issuedBy.indexOf("SELF")];
+                  //   }
+                  //   setValue("issuedBy", issuedBy);
+                }}
+                checked={issuedBy.includes("SELF")}
                 sx={{ marginLeft: "0px", paddingLeft: "0px" }}
                 name="issuedBy"
               />
@@ -156,8 +193,19 @@ export const PaymentAndRefundDetail = () => {
           <FormControlLabel
             control={
               <Checkbox
-                onChange={() => setPPCIssued((prevState) => !prevState)}
-                checked={ppcIssued}
+                onChange={(
+                  _event: React.ChangeEvent<HTMLInputElement>,
+                  checked: boolean
+                ) => {
+                  if (checked) {
+                    setIssuedBy(() => [...issuedBy, "PPC"]);
+                  } else {
+                    setIssuedBy(() =>
+                      issuedBy.filter((value) => value !== "PPC")
+                    );
+                  }
+                }}
+                checked={issuedBy.includes("PPC")}
                 sx={{ marginLeft: "0px", paddingLeft: "0px" }}
                 name="issuedBy"
               />
@@ -168,8 +216,11 @@ export const PaymentAndRefundDetail = () => {
         <br />
         <Stack spacing={2}>
           <Stack direction="row">
-            <FormControl sx={{ width: "274px" }}>
-             <FormLabel
+            <FormControl
+              sx={{ width: "274px" }}
+              disabled={issuedBy.length === 0}
+            >
+              <FormLabel
                 className="custom-form-control__label"
                 id="payment-method-select"
                 sx={{ fontWeight: "bold", marginBottom: "8px" }}
@@ -180,26 +231,30 @@ export const PaymentAndRefundDetail = () => {
                 labelId="demo-multiple-name-label"
                 id="demo-multiple-name"
                 multiple
-                onChange={handleChange}
+                onChange={onSelectPermitType}
                 renderValue={(selected) => selected.join(", ")}
                 input={<OutlinedInput label="Permit Type" />}
                 value={permitType}
+                // inputProps={{ shrink: "false" }}
               >
-                {permitTypes.map((permitType) => (
-                  <MenuItem key={permitType} value={permitType}>
-                    <Checkbox checked={permitType.indexOf(permitType) > -1} />
-                    <ListItemText primary={permitType} />
-                  </MenuItem>
-                ))}
+                {permitTypes2.map(({ label, value }) => {
+                  return (
+                    <MenuItem key={label} value={value}>
+                      <Checkbox checked={permitType.indexOf(value) > -1} />
+                      <ListItemText primary={label} />
+                    </MenuItem>
+                  );
+                })}
               </Select>
             </FormControl>
           </Stack>
 
-          <Stack >
+          <Stack>
             <FormControl
               sx={{ width: "274px" }}
               className="custom-form-control"
               margin="normal"
+              disabled={issuedBy.length === 0}
             >
               <FormLabel
                 className="custom-form-control__label"
@@ -215,11 +270,11 @@ export const PaymentAndRefundDetail = () => {
                 onChange={onSelectPaymentMethod}
                 renderValue={(selected) => selected.join(", ")}
                 input={<OutlinedInput label="Payment Method" />}
-                value={paymentMethod}
+                value={paymentMethodType}
               >
                 {paymentMethods.map(({ key, value }) => (
                   <MenuItem key={key} value={value}>
-                    <Checkbox checked={permitType.indexOf(key) > -1} />
+                    <Checkbox checked={paymentMethodType.indexOf(value) > -1} />
                     <ListItemText primary={value} />
                   </MenuItem>
                 ))}
@@ -232,6 +287,7 @@ export const PaymentAndRefundDetail = () => {
               sx={{ width: "274px" }}
               className="custom-form-control"
               margin="normal"
+              disabled={!issuedBy.includes("PPC")}
             >
               <FormLabel
                 className="custom-form-control__label"
@@ -247,7 +303,7 @@ export const PaymentAndRefundDetail = () => {
                 // labelId="demo-multiple-name-label"
                 id="demo-multiple-name"
                 multiple
-                onChange={handleChange}
+                onChange={onSelectUser}
                 renderValue={(selected) => selected.join(", ")}
                 input={<OutlinedInput label="Users" />}
                 defaultValue={["All Users"]}
@@ -258,10 +314,10 @@ export const PaymentAndRefundDetail = () => {
                   "aria-label": "users-select",
                 }}
               >
-                {["All Users"].map((user) => (
-                  <MenuItem key={user} value={user}>
-                    <Checkbox checked={users.indexOf(user) > -1} />
-                    <ListItemText primary={user} />
+                {ppcList.map(({ name, userGUID, username }) => (
+                  <MenuItem key={userGUID} value={username}>
+                    <Checkbox checked={users.indexOf(username) > -1} />
+                    <ListItemText primary={name} />
                   </MenuItem>
                 ))}
               </Select>
@@ -273,6 +329,7 @@ export const PaymentAndRefundDetail = () => {
                 className="custom-form-control"
                 margin="normal"
                 sx={{ width: "100%" }}
+                disabled={issuedBy.length === 0}
               >
                 <FormLabel
                   className="custom-form-control__label"
@@ -312,6 +369,7 @@ export const PaymentAndRefundDetail = () => {
                 className="custom-form-control"
                 margin="normal"
                 sx={{ width: "100%" }}
+                disabled={issuedBy.length === 0}
               >
                 <FormLabel
                   className="custom-form-control__label"
@@ -363,6 +421,7 @@ export const PaymentAndRefundDetail = () => {
             labelPlacement="top"
           /> */}
           </Stack>
+          <br />
           <Stack direction="row">
             <Button
               key="view-report-button"

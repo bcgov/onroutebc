@@ -18,7 +18,7 @@ export interface PaymentAndRefundDetailRequest
   extends PaymentAndRefundSummaryRequest {
   permitType: string[];
   paymentMethodType: string[];
-  users: string[];
+  users?: string[];
 }
 
 const streamDownloadWithHTTPPost = async (url: string, requestBody: any) => {
