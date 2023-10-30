@@ -155,5 +155,5 @@ jobs:
             -p PAYBC_API_KEY=${{steps.vault.outputs.VAULT_PAYBC_API_KEY}}
             -p PAYBC_REF_NUMBER=${{steps.vault.outputs.VAULT_PAYBC_REF_NUMBER}}
             -p PAYBC_BASE_URL=${{steps.vault.outputs.VAULT_PAYBC_BASE_URL}}
-            -p GL_CODE=${{steps.vault.outputs.VAULT_GL_CODE}
+            -p GL_CODE=${{steps.vault.outputs.VAULT_GL_CODE}}
             ${{ matrix.parameters }}
