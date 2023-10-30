@@ -4,7 +4,7 @@ import {
   FormControlLabel,
   Paper,
   Radio,
-  Stack
+  Stack,
 } from "@mui/material";
 import { memo, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -58,7 +58,7 @@ export const IDIRReportsDashboard = memo(() => {
               flexItem
               orientation="vertical"
               color={BC_COLOURS.bc_border_grey}
-              sx={{ height: '1121px'}}
+              sx={{ height: "1121px" }}
             />
           }
         >
@@ -72,6 +72,10 @@ export const IDIRReportsDashboard = memo(() => {
                     : null,
                 border: "1px solid #313132",
                 cursor: "pointer",
+                // alignItems: "center",
+                // justifyContent:"center",
+                paddingLeft: "24px",
+                paddingTop: "24px",
               }}
               onClick={() => {
                 setReportMode(() => REPORT_MODE.SUMMARY);
@@ -94,6 +98,8 @@ export const IDIRReportsDashboard = memo(() => {
                     ? `1px solid ${BC_COLOURS.bc_black}`
                     : `1px solid ${BC_COLOURS.bc_text_box_border_grey}`,
                 cursor: "pointer",
+                paddingLeft: "24px",
+                paddingTop: "24px",
               }}
               onClick={() => {
                 setReportMode(() => REPORT_MODE.DETAIL);
