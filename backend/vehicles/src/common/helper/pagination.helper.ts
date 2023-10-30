@@ -32,6 +32,7 @@ export const createPaginationObject = <T, CustomMetaType = IPaginationMeta>({
       metaTransformer(metadata),
     );
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   return new PaginationDto<T, CustomMetaType>(items, metadata);
 };

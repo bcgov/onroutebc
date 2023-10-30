@@ -5,6 +5,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   Req,
   Res,
 } from '@nestjs/common';
@@ -15,6 +16,7 @@ import {
   ApiMethodNotAllowedResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
+  ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
 import { ExceptionDto } from '../../common/exception/exception.dto';
@@ -73,10 +75,12 @@ export class PaymentController {
     description: 'The Payment Gateway Transaction Resource',
     type: ReadPaymentGatewayTransactionDto,
   })
+  @ApiQuery({ name: 'queryString', required: true })
   @Put(':transactionId/payment-gateway')
   async updateTransactionDetails(
     @Req() request: Request,
     @Param('transactionId') transactionId: string,
+    @Query('queryString') queryString: string,
     @Body()
     updatePaymentGatewayTransactionDto: UpdatePaymentGatewayTransactionDto,
   ): Promise<ReadPaymentGatewayTransactionDto> {
@@ -88,6 +92,7 @@ export class PaymentController {
       transactionId,
       updatePaymentGatewayTransactionDto,
       directory,
+      queryString,
     );
 
     return paymentDetails;

@@ -36,7 +36,7 @@ export const TermOversizePay = () => {
     
     startTransactionMutation.mutate({
       transactionTypeId: TRANSACTION_TYPES.P,
-      paymentMethodId: "1", // Hardcoded value for Web/MotiPay, still need to implement payment method (ie payBC, manual, etc)
+      paymentMethodId: "1", // Hardcoded value for Web/PayBC, still need to implement payment method (ie payBC, manual, etc)
       applicationDetails: [
         {
           applicationId: applicationData?.permitId,
