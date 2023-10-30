@@ -40,6 +40,9 @@ const sample = {
   users: ["ORBCTST1"],
 };
 
+/**
+ * Component for Payment and Refund Detail form
+ */
 export const PaymentAndRefundDetail = () => {
   const [permitType, setPermitType] = useState<string[]>(["ALL"]);
   const [paymentMethodType, setPaymentMethodType] = useState<string[]>(["ALL"]);
