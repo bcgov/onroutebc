@@ -32,6 +32,7 @@ import { DopsService } from '../common/dops.service';
 import { DopsGeneratedReport } from '../../common/interface/dops-generated-report.interface';
 import { ReportTemplate } from '../../common/enum/report-template.enum';
 import { convertUtcToPt } from '../../common/helper/date-time.helper';
+import { CreatePaymentSummaryReportDto } from './dto/request/create-payment-summary-report.dto';
 
 @Injectable()
 export class PaymentService {
@@ -582,4 +583,97 @@ export class PaymentService {
 
     await this.dopsService.generateReport(currentUser, generateReportData, res);
   }
+
+  async createPaymentSummaryReport(
+    currentUser: IUserJWT,
+    createPaymentSummaryReportDto: CreatePaymentSummaryReportDto,
+    res: Response,
+  ): Promise<void> {
+    const generateReportData: DopsGeneratedReport = {
+      reportTemplate: ReportTemplate.PAYMENT_AND_REFUND_SUMMARY_REPORT,
+      reportData: {
+        issuedBy: createPaymentSummaryReportDto.issuedBy.join(', '),
+        runDate: convertUtcToPt(new Date(), 'MMM. D, YYYY, hh:mm A Z'),
+        permitType: 'All Permit Types',       
+        timePeriod: `${convertUtcToPt(
+          createPaymentSummaryReportDto.fromDateTime,
+          'MMM. D, YYYY, hh:mm A Z',
+        )} – ${convertUtcToPt(
+          createPaymentSummaryReportDto.toDateTime,
+          'MMM. D, YYYY, hh:mm A Z',
+        )}`,
+        payments: [
+          {
+            issuedOn: 'Jul. 17, 2023, 09:00 PM, PDT',
+            providerTransactionId: '73582422238',
+            orbcTransactionId: 'OR-678904512857',
+            paymentMethod: 'Cash',
+            receiptNo: '45098721098',
+            permitNo: 'P2-72106199-468',
+            permitType: 'STOW',
+            user: 'ANPETRIC',
+            amount: '$90.00',
+          },
+          {
+            paymentMethod: 'Cash',
+            subTotalAmount: '$90.00',
+          },
+          {
+            paymentMethod: 'Cash',
+            totalAmount: '$90.00',
+          },
+        ],
+        refunds: [
+          {
+            issuedOn: 'Jul. 17, 2023, 09:00 PM, PDT',
+            providerTransactionId: '73582422238',
+            orbcTransactionId: 'OR-678904512857',
+            paymentMethod: 'Cheque',
+            receiptNo: '51961102630',
+            permitNo: 'P2-15348742-610',
+            permitType: 'TROS',
+            user: 'KOPARKIN',
+            amount: '$10.00',
+          },
+          {
+            paymentMethod: 'Cheque',
+            subTotalAmount: '$190.00',
+          },
+          {
+            paymentMethod: 'Credit Card',
+            totalAmount: '$190.00',
+          },
+        ],
+        summaryPayments: [
+          {
+            paymentMethod: 'Cheque',
+            payment: '$190',
+            refund: '$190',
+            deposit: '$190',
+          },
+          {
+            subTotalPaymentAmount: '$190.00',
+            subTotalRefundAmount: '$190.00',
+            subTotalDepositAmount: '$190.00',
+          },
+          {
+            grandTotalAmount: '$190.00',
+          },
+        ],
+        summaryPermits: [
+          {
+            permitType: 'TROS',
+            permitCount: '1',
+          },
+          {
+            totalPermits: '1',
+          },
+        ],
+      },
+      generatedDocumentFileName: 'Sample',
+    };
+
+    await this.dopsService.generateReport(currentUser, generateReportData, res);
+  }
+
 }

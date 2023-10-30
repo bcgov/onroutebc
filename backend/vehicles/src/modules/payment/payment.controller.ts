@@ -137,9 +137,9 @@ export class PaymentController {
   ): Promise<void> {
     const currentUser = request.user as IUserJWT;
 
-    await this.paymentService.createPaymentDetailedReport(
+    await this.paymentService.createPaymentSummaryReport(
       currentUser,
-      null,
+      createPaymentSummaryReportDto,
       res,
     );
     res.status(200);
