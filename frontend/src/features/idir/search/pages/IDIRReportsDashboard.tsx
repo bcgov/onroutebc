@@ -58,6 +58,7 @@ export const IDIRReportsDashboard = memo(() => {
               flexItem
               orientation="vertical"
               color={BC_COLOURS.bc_border_grey}
+              sx={{ height: '1121px'}}
             />
           }
         >

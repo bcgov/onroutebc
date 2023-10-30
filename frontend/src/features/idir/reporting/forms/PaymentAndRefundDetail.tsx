@@ -19,7 +19,7 @@ import {
   LocalizationProvider,
 } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { getPaymentAndRefundSummary } from "../../search/api/reports";
+import { PaymentAndRefundDetailRequest, getPaymentAndRefundSummary } from "../../search/api/reports";
 import { openBlobInNewTab } from "../../../permits/helpers/permitPDFHelper";
 import { useState } from "react";
 
@@ -33,6 +33,8 @@ const sample = {
 };
 
 export const PaymentAndRefundDetail = () => {
+
+    const [requestObject, setRequestObject] = useState<PaymentAndRefundDetailRequest>();
   /**
    * Opens the report in a new tab.
    */
