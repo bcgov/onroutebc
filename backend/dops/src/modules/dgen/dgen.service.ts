@@ -231,8 +231,12 @@ export class DgenService {
     let browser: Browser;
     try {
       const browser = await puppeteer.launch({
-        args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage', '--disable-gpu'],
-        executablePath: '/usr/bin/google-chrome-stable',
+        args: [
+          '--no-sandbox',
+          '--disable-setuid-sandbox',
+          '--disable-dev-shm-usage',
+          '--disable-gpu',
+        ],
         headless: 'new',
         env: {
           ELECTRON_DISABLE_SANDBOX: '1',

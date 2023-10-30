@@ -359,7 +359,11 @@ objects:
                 periodSeconds: 30
                 timeoutSeconds: 5
               securityContext:
+<<<<<<< HEAD
                 allowPrivilegeEscalation: true  
+=======
+                allowPrivilegeEscalation: true
+>>>>>>> main
   - apiVersion: v1
     kind: Service
     metadata:

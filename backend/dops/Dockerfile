@@ -87,6 +87,31 @@ ENV CDOGS_CLIENT_SECRET ${CDOGS_CLIENT_SECRET}
 ENV CDOGS_URL ${CDOGS_URL}
 ENV ACCESS_API_URL ${ACCESS_API_URL}
 
+# Copy production files from build
+COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/dist ./dist
+
+RUN apk add --no-cache \
+      chromium \
+      nss \
+      freetype \
+      harfbuzz \
+      ca-certificates \
+      ttf-freefont 
+     
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+
+
+# Add user so we don't need --no-sandbox.
+RUN addgroup -S pptruser && adduser -S -G pptruser pptruser \
+    && mkdir -p /home/pptruser/Downloads /app \
+    && chown -R pptruser:pptruser /home/pptruser \
+    && chown -R pptruser:pptruser /app
+
+# Run everything after as non-privileged user.
+USER pptruser
+
 # Expose Port
 EXPOSE 5001
 
