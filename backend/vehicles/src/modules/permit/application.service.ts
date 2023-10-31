@@ -419,11 +419,18 @@ export class ApplicationService {
 
     const fullNames = await this.getFullNamesFromCache(fetchedApplication);
 
+    const revisionHistory = await this.permitRepository.find({
+      where: [{ originalPermitId: fetchedApplication.originalPermitId }],
+      order: { permitId: 'DESC' },
+    });
+
+    fetchedApplication.permitIssueDateTime = new Date();
     // Provide the permit json data required to populate the .docx template that is used to generate a PDF
     const permitDataForTemplate = formatTemplateData(
       fetchedApplication,
       fullNames,
       companyInfo,
+      revisionHistory,
     );
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
@@ -489,6 +496,7 @@ export class ApplicationService {
           permitStatus: fetchedApplication.permitStatus,
           permitNumber: fetchedApplication.permitNumber,
           documentId: generatedDocuments.at(0).dmsId,
+          permitIssueDateTime: fetchedApplication.permitIssueDateTime,
           updatedDateTime: new Date(),
           updatedUser: currentUser.userName,
           updatedUserDirectory: directory,

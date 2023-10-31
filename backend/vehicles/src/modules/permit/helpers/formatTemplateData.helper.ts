@@ -9,6 +9,7 @@ import {
   convertUtcToPt,
   dateFormat,
 } from '../../../common/helper/date-time.helper';
+import { ApplicationStatus } from '../../../common/enum/application-status.enum';
 /**
  * Formats the permit data so that it can be used in the templated word documents
  * @param permit
@@ -20,6 +21,7 @@ export const formatTemplateData = (
   permit: Permit,
   fullNames: FullNames,
   companyInfo: ReadCompanyDto,
+  revisitionHisotry: Permit[],
 ) => {
   // Create a new template object that includes the formatted values used in the templated word documents
   const template: PermitTemplateData = {
@@ -30,12 +32,7 @@ export const formatTemplateData = (
     updatedDateTime: '',
     companyName: '',
     clientNumber: '',
-    revisions: [
-      {
-        timeStamp: '',
-        description: 'N/A',
-      },
-    ],
+    revisions: [],
     permitData: null,
   };
 
@@ -84,6 +81,25 @@ export const formatTemplateData = (
   // Format Fee Summary
   template.permitData.feeSummary =
     template.permitData.permitDuration.toString(); // TODO: get from frontend
+
+  revisitionHisotry.forEach((revision) => {
+    if (
+      revision.permitStatus == ApplicationStatus.ISSUED ||
+      revision.permitStatus == ApplicationStatus.VOIDED ||
+      revision.permitStatus == ApplicationStatus.REVOKED ||
+      revision.permitId === permit.permitId
+    ) {
+      template.revisions.push({
+        timeStamp: convertUtcToPt(
+          revision.permitId === permit.permitId
+            ? permit.permitIssueDateTime
+            : revision.permitIssueDateTime,
+          'MMM. D, YYYY, hh:mm a Z',
+        ),
+        description: revision.comment,
+      });
+    }
+  });
 
   return template;
 };
