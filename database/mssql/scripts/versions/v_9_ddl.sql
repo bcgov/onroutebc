@@ -112,6 +112,8 @@ CREATE TABLE [tps].[ORBC_TPS_MIGRATED_CLIENTS](
 	[GUID] [nvarchar](64) NULL,
 	[REGION] [nchar](1) NULL,
 	[NEW_CLIENT_NUMBER] [char](13) NULL,
+	[LCV] [nvarchar](10) NULL,
+	[NOFEE] [nvarchar](10) NULL,
 	[ETL_PROCESS_ID] [varchar](38) NULL,
 	[PROCESSED] [bit] NULL,
 	[PROCESSED_DATE] [datetime2](7) NULL,
