@@ -1,5 +1,5 @@
 export interface IPayment {
   transactionNumber: string;
-  motipayHashExpiry: string;
-  motipayHash: string;
+  payBCHashExpiry: string;
+  PayBCHash: string;
 }
