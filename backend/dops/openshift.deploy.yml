@@ -112,14 +112,17 @@ parameters:
   - name: NODE_ENV
     description: The NODE Environment
     required: true
-  - name: MOTIPAY_API_KEY
-    description: API Key for MOTI Pay
+  - name: PAYBC_API_KEY
+    description: API Key for  PayBC
     required: true
-  - name: MOTIPAY_MERCHANT_ID
-    description: Merchant ID for MOTI Pay
+  - name: PAYBC_REF_NUMBER
+    description: Reference Number for PayBC
     required: true
-  - name: MOTIPAY_BASE_URL
-    description: Base URL for MOTI Pay
+  - name: PAYBC_BASE_URL
+    description: Base URL for PayBC
+    required: true
+  - name: GL_CODE
+    description: Gl code for PayBC
     required: true
 objects:
   - apiVersion: v1
