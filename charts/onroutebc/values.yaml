@@ -50,6 +50,7 @@ frontend:
         - name: config
           mountPath: "/usr/share/nginx/html/config.js"
           subPath: config.js
+
   ingress:
     annotations: 
       route.openshift.io/termination: "edge"
@@ -71,20 +72,6 @@ frontend:
         targetPort: 3000
   serviceAccount:
     name: c28f0c-vault
-  vault:
-    enabled: true
-    entrypoint: "nginx -g 'daemon off;'"
-    resources: # this is optional
-      limits:
-        cpu: 100m
-        memory: 200Mi
-      requests:
-        cpu: 75m
-        memory: 100Mi
-    role: c28f0c-nonprod
-    secretPaths:
-      - auth0-dev
-      - be-api-dev
   volumes:
     - name: config
       configMap:
@@ -108,6 +95,10 @@ vehicles:
 
   containers:
     - name: vehicles
+      command:
+        - "sh"
+        - "-c"
+        - "source /vault/auth0-dev && source /vault/ches-dev && source /vault/mssql-dev && source /vault/payment-dev && npm run start:prod"
       registry: '{{ .Values.global.registry }}'
       repository: '{{ .Values.global.repository }}' # example, it includes registry and repository
       image: backend/vehicles
@@ -166,7 +157,6 @@ vehicles:
     name: c28f0c-vault
   vault:
     enabled: true
-    entrypoint: "npm run start:prod"
     resources: # this is optional
       limits:
         cpu: 100m
@@ -195,6 +185,10 @@ dops:
       ACCESS_API_URL: "https://onroutebc-experiment-dops.apps.silver.devops.gov.bc.ca"
   containers:
     - name: dops
+      command:
+        - "sh"
+        - "-c"
+        - "source /vault/auth0-dev && source /vault/ches-dev && source /vault/mssql-dev && source /vault/payment-dev && npm run start:prod"
       registry: '{{ .Values.global.registry }}'
       repository: '{{ .Values.global.repository }}' # example, it includes registry and repository
       image: backend/dops
@@ -253,7 +247,6 @@ dops:
     name: c28f0c-vault
   vault:
     enabled: true
-    entrypoint: "npm run start:prod"
     resources: # this is optional
       limits:
         cpu: 100m
