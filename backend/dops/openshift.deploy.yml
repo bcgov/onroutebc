@@ -19,19 +19,19 @@ parameters:
   - name: DOMAIN
     value: apps.silver.devops.gov.bc.ca
   - name: CPU_REQUEST
-    value: "50m"
+    value: "1"
   - name: MEMORY_REQUEST
-    value: "100Mi"
+    value: "2Gi"
   - name: CPU_LIMIT
-    value: "150m"
+    value: "2"
   - name: MEMORY_LIMIT
-    value: "300Mi"
+    value: "4Gi"
   - name: MIN_REPLICAS
     description: The minimum amount of replicas for the horizontal pod autoscaler.
-    value: "3"
+    value: "1"
   - name: MAX_REPLICAS
     description: The maximum amount of replicas for the horizontal pod autoscaler.
-    value: "5"
+    value: "1"
   - name: REGISTRY
     description: Container registry to import from (internal is image-registry.openshift-image-registry.svc:5000)
     value: ghcr.io
@@ -353,7 +353,7 @@ objects:
                 timeoutSeconds: 5
               livenessProbe:
                 successThreshold: 1
-                failureThreshold: 3
+                failureThreshold: 200
                 httpGet:
                   path: /
                   port: 5001

@@ -1,5 +1,32 @@
-# Build container.
-FROM node:18.17.1-alpine AS builder
+# Build container
+FROM ubuntu:latest as builder
+
+
+RUN apt-get update
+ENV NODE_VERSION=16.14.0
+RUN apt install -y curl
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+ENV NVM_DIR=/root/.nvm
+RUN . "$NVM_DIR/nvm.sh" && nvm install ${NODE_VERSION}
+RUN . "$NVM_DIR/nvm.sh" && nvm use v${NODE_VERSION}
+RUN . "$NVM_DIR/nvm.sh" && nvm alias default v${NODE_VERSION}
+RUN chmod -R 777 /root/.nvm/versions/node/v${NODE_VERSION}
+RUN echo $PATH
+ENV PATH="/root/.nvm/versions/node/v${NODE_VERSION}/bin/:${PATH}"
+RUN echo $PATH
+
+# Install packages, build and keep only prod packages
+WORKDIR /app
+COPY . ./
+RUN apt-get update -y
+RUN apt-get install -y gconf-service libasound2 libatk1.0-0 libc6 \
+    libcairo2 libcups2 libdbus-1-3 libexpat1 libfontconfig1 libgcc1 \
+    libgconf-2-4 libgdk-pixbuf2.0-0 libglib2.0-0 libgtk-3-0 libnspr4 \
+    libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 \
+    libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 \
+    libxi6 libxrandr2 libxrender1 libxss1 libxtst6 ca-certificates \
+    fonts-liberation libappindicator1 libnss3 lsb-release xdg-utils \
+    wget libgbm-dev gnupg gnupg2 gnupg1
 
 # Set the working directory to /app inside the container
 WORKDIR /app
@@ -7,26 +34,26 @@ WORKDIR /app
 # Copy app files
 COPY . ./
 
-# Create and Assign permissions to npm folder
-RUN mkdir /.npm && chmod 777 /.npm
 
-# Install packages, build and keep only prod packages
-RUN npm ci
-RUN npm run build
-RUN npm prune --production
+# Install Chrome version 114
+ENV CHROME_VERSION="114.0.5735.133-1"
+RUN wget --no-verbose -O /tmp/chrome.deb https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_${CHROME_VERSION}_amd64.deb \
+  && apt install -y /tmp/chrome.deb \
+  && rm /tmp/chrome.deb
 
+# Set up directories and adjust permissions
+RUN mkdir -p /root/.local/share/fonts \
+  && mkdir -p /root/.config/puppeteer \
+  && chmod -R 777 /root/.local \
+  && chmod -R 777 /root/.config \
+  && mkdir -p /.local \
+  && chmod -R 777 /.local
 
-
-# Deployment container
-FROM node:18.17.1-alpine
-RUN npm cache clean --force
-
-# Create and Assign permissions to npm folder
-RUN mkdir /.npm && chmod 777 /.npm
-RUN mkdir /.cache && chmod 777 /.cache
-
-# Set the working directory to /app inside the deployment container
-WORKDIR /app
+RUN npm config set user 0
+RUN npm config set unsafe-perm true
+RUN npm ci --only=prod && \
+    npm list rimraf && \
+    npm run build
 
 # Set node to production
 ENV NODE_ENV production
@@ -60,34 +87,8 @@ ENV CDOGS_CLIENT_SECRET ${CDOGS_CLIENT_SECRET}
 ENV CDOGS_URL ${CDOGS_URL}
 ENV ACCESS_API_URL ${ACCESS_API_URL}
 
-# Copy production files from build
-COPY --from=builder /app/package*.json ./
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/dist ./dist
-
-RUN apk add --no-cache \
-      chromium \
-      nss \
-      freetype \
-      harfbuzz \
-      ca-certificates \
-      ttf-freefont 
-     
-ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
-
-
-# Add user so we don't need --no-sandbox.
-RUN addgroup -S pptruser && adduser -S -G pptruser pptruser \
-    && mkdir -p /home/pptruser/Downloads /app \
-    && chown -R pptruser:pptruser /home/pptruser \
-    && chown -R pptruser:pptruser /app
-
-# Run everything after as non-privileged user.
-USER pptruser
-
 # Expose Port
 EXPOSE 5001
 
-# Start the app
-CMD ["npm", "run", "start:prod"]
-
+# # Start up command
+ENTRYPOINT  ["node", "dist/main"]

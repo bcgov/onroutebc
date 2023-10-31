@@ -237,6 +237,7 @@ export class DgenService {
           '--disable-dev-shm-usage',
           '--disable-gpu',
         ],
+        executablePath: '/usr/bin/google-chrome-stable',
         headless: 'new',
         env: {
           ELECTRON_DISABLE_SANDBOX: '1',
