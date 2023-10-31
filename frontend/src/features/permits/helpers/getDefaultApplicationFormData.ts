@@ -4,7 +4,7 @@ import { getUserGuidFromSession } from "../../../common/apiManager/httpRequestHa
 import { BCeIDUserDetailContext } from "../../../common/authentication/OnRouteBCContext";
 import { TROS_COMMODITIES } from "../constants/termOversizeConstants";
 import { now } from "../../../common/helpers/formatDate";
-import { Address } from "../../manageProfile/types/manageProfile";
+import { Address, CompanyProfile } from "../../manageProfile/types/manageProfile";
 import { PERMIT_STATUSES } from "../types/PermitStatus";
 import { calculateFeeByDuration } from "./feeSummary";
 import { PERMIT_TYPES } from "../types/PermitType";
@@ -121,7 +121,8 @@ export const getDurationOrDefault = (applicationData?: Application | ReadPermitD
 export const getDefaultValues = (
   applicationData?: Application,
   companyId?: number,
-  userDetails?: BCeIDUserDetailContext
+  userDetails?: BCeIDUserDetailContext,
+  companyInfo?: CompanyProfile
 ) => ({
   companyId: +getDefaultRequiredVal(0, companyId),
   originalPermitId: getDefaultRequiredVal("", applicationData?.originalPermitId),
@@ -189,7 +190,8 @@ export const getDefaultValues = (
     ),
     // Default values are updated from companyInfo query in the ContactDetails common component
     mailingAddress: getDefaultMailingAddress(
-      applicationData?.permitData?.mailingAddress
+      applicationData?.permitData?.mailingAddress,
+      companyInfo?.mailingAddress,
     ),
     vehicleDetails: getDefaultVehicleDetails(
       applicationData?.permitData?.vehicleDetails

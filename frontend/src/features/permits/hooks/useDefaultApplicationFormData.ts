@@ -28,7 +28,7 @@ export const useDefaultApplicationFormData = (
   // initialize the entire form data with default values
   // Use default values (saved data from the TROS application context, or empty values)
   const [defaultApplicationDataValues, setDefaultApplicationDataValues] = useState<Application>(
-    getDefaultValues(applicationData, companyId, userDetails) 
+    getDefaultValues(applicationData, companyId, userDetails, companyInfo) 
   );
 
   // Update contact details form fields whenever these values are updated
@@ -118,7 +118,7 @@ export const useDefaultApplicationFormData = (
 
   useEffect(() => {
     setDefaultApplicationDataValues(
-      getDefaultValues(applicationData, companyId, userDetails)
+      getDefaultValues(applicationData, companyId, userDetails, companyInfo)
     );
   }, applicationFormDataDepArray);
 

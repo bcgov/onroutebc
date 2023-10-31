@@ -43,6 +43,7 @@ export const TermOversizeForm = () => {
     applicationContext?.applicationData,
     companyId,
     userDetails,
+    companyInfoQuery.data,
   );
 
   const companyInfo = companyInfoQuery.data;
