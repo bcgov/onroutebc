@@ -98,7 +98,7 @@ vehicles:
       command:
         - "sh"
         - "-c"
-        - "source /vault/auth0-dev && source /vault/ches-dev && source /vault/mssql-dev && source /vault/payment-dev && npm run start:prod"
+        - "source /vault/secrets/auth0-dev && source /vault/secrets/ches-dev && source /vault/secrets/mssql-dev && source /vault/secrets/payment-dev && npm run start:prod"
       registry: '{{ .Values.global.registry }}'
       repository: '{{ .Values.global.repository }}' # example, it includes registry and repository
       image: backend/vehicles
@@ -132,8 +132,6 @@ vehicles:
         requests:
           cpu: 25m
           memory: 50Mi
-      envFrom:
-        configMapRef: onroutebc-experiment-vehicles
   ingress:
     annotations: 
       route.openshift.io/termination: "edge"
@@ -188,7 +186,7 @@ dops:
       command:
         - "sh"
         - "-c"
-        - "source /vault/auth0-dev && source /vault/ches-dev && source /vault/mssql-dev && source /vault/payment-dev && npm run start:prod"
+        - "source /vault/secrets/auth0-dev && source /vault/secrets/ches-dev && source /vault/secrets/mssql-dev && source /vault/secrets/payment-dev && npm run start:prod"
       registry: '{{ .Values.global.registry }}'
       repository: '{{ .Values.global.repository }}' # example, it includes registry and repository
       image: backend/dops
@@ -222,8 +220,6 @@ dops:
         requests:
           cpu: 25m
           memory: 50Mi
-      envFrom:
-        configMapRef: onroutebc-experiment-dops
   ingress:
     annotations: 
       route.openshift.io/termination: "edge"
