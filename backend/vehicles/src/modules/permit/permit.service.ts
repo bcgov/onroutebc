@@ -412,6 +412,7 @@ export class PermitService {
       newPermit.permitNumber = permitNumber;
       newPermit.applicationNumber = applicationNumber;
       newPermit.permitStatus = voidPermitDto.status;
+      newPermit.permitIssueDateTime = new Date();
       newPermit.revision = permit.revision + 1;
       newPermit.previousRevision = +permitId;
       newPermit.comment = voidPermitDto.comment;
@@ -478,10 +479,17 @@ export class PermitService {
       const fullNames = await this.applicationService.getFullNamesFromCache(
         newPermit,
       );
+
+      const revisionHistory = await queryRunner.manager.find(Permit, {
+        where: { originalPermitId: permit.originalPermitId },
+        order: { permitId: 'DESC' },
+      });
+
       const permitDataForTemplate = formatTemplateData(
         newPermit,
         fullNames,
         companyInfo,
+        revisionHistory,
       );
 
       let dopsRequestData: DopsGeneratedDocument = {

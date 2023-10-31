@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "2969d29e-2da4-42b8-8824-b4cb96060c0f",
+		"_postman_id": "8c583016-fc45-4a0d-b001-242e9b22eaf5",
 		"name": "onRouteBC Payment Process - PayBC",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "11120889"
@@ -13,17 +13,20 @@
 					"listen": "prerequest",
 					"script": {
 						"exec": [
+							"const moment = require('moment');\r",
 							"let trnNum = 'T-' + (new Date()).getTime();\r",
 							"pm.environment.set('transaction_number', trnNum);\r",
+							"pm.environment.set('transaction_date', moment().format(\"YYYY-MM-DD\"));\r",
 							"\r",
 							"// There should be a better way of doing this which is not as rigid - something like\r",
 							"// dynamically removing the hashValue param from the actual query string instead of building\r",
 							"// it up manually below, but this is sufficient for now.\r",
-							"let queryString = pm.variables.replaceIn(\"pbcRefNumber={{paybc_ref_number}}&description={{paybc_description}}&trnNumber={{transaction_number}}&trnAmount={{transaction_amount}}&redirectUri={{paybc_redirect_uri}}{{paybc_api_key}}\");\r",
+							"let queryString = pm.variables.replaceIn(\"pbcRefNumber={{paybc_ref_number}}&description={{paybc_description}}&trnNumber={{transaction_number}}&trnAmount={{transaction_amount}}&redirectUri={{paybc_redirect_uri}}&trnDate={{transaction_date}}&glDate={{transaction_date}}&paymentMethod=CC&currency=CAD&revenue=1:{{gl_code}}:{{transaction_amount}}{{paybc_api_key}}\");\r",
 							"\r",
 							"let hash = CryptoJS.MD5(queryString).toString();\r",
 							"pm.collectionVariables.set('paybc_hash', hash);\r",
-							"console.log(hash);"
+							"console.log(hash);\r",
+							"console.log(pm.variables.replaceIn(\"{{paybc_api_key}}\"));"
 						],
 						"type": "text/javascript"
 					}
@@ -46,7 +49,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{paybc_base_url}}?pbcRefNumber={{paybc_ref_number}}&description={{paybc_description}}&trnNumber={{transaction_number}}&trnAmount={{transaction_amount}}&redirectUri={{paybc_redirect_uri}}&hashValue={{paybc_hash}}",
+					"raw": "{{paybc_base_url}}?pbcRefNumber={{paybc_ref_number}}&description={{paybc_description}}&trnNumber={{transaction_number}}&trnAmount={{transaction_amount}}&redirectUri={{paybc_redirect_uri}}&trnDate={{transaction_date}}&glDate={{transaction_date}}&paymentMethod=CC&currency=CAD&revenue=1:{{gl_code}}:{{transaction_amount}}&hashValue={{paybc_hash}}",
 					"host": [
 						"{{paybc_base_url}}"
 					],
@@ -70,6 +73,26 @@
 						{
 							"key": "redirectUri",
 							"value": "{{paybc_redirect_uri}}"
+						},
+						{
+							"key": "trnDate",
+							"value": "{{transaction_date}}"
+						},
+						{
+							"key": "glDate",
+							"value": "{{transaction_date}}"
+						},
+						{
+							"key": "paymentMethod",
+							"value": "CC"
+						},
+						{
+							"key": "currency",
+							"value": "CAD"
+						},
+						{
+							"key": "revenue",
+							"value": "1:{{gl_code}}:{{transaction_amount}}"
 						},
 						{
 							"key": "hashValue",
@@ -162,7 +185,8 @@
 					"script": {
 						"exec": [
 							"const redirectUri = pm.response.headers.find(h => h.key === \"Location\").value;\r",
-							"pm.collectionVariables.set('paybc_redirect_to_orbc_1', redirectUri);"
+							"pm.collectionVariables.set('paybc_redirect_to_orbc_1', redirectUri);\r",
+							""
 						],
 						"type": "text/javascript"
 					}
@@ -269,12 +293,7 @@
 							"    </table>\r",
 							"  </div>`;\r",
 							"\r",
-							"pm.visualizer.set(template, paramsJson.params);\r",
-							"\r",
-							"// Set environment variables for CFS to retrieve\r",
-							"pm.environment.set('bambora_auth_code', paramsJson.params.find(p => p.key === 'authCode').value);\r",
-							"pm.environment.set('paybc_order_number', paramsJson.params.find(p => p.key === 'trnOrderId').value);\r",
-							"pm.environment.set('paybc_receipt_number', paramsJson.params.find(p => p.key === 'receiptNumber').value);"
+							"pm.visualizer.set(template, paramsJson.params);"
 						],
 						"type": "text/javascript"
 					}

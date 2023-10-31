@@ -19,13 +19,13 @@ parameters:
   - name: DOMAIN
     value: apps.silver.devops.gov.bc.ca
   - name: CPU_REQUEST
-    value: "25m"
+    value: "50m"
   - name: MEMORY_REQUEST
-    value: "50Mi"
+    value: "100Mi"
   - name: CPU_LIMIT
-    value: "75m"
+    value: "150m"
   - name: MEMORY_LIMIT
-    value: "150Mi"
+    value: "300Mi"
   - name: MIN_REPLICAS
     description: The minimum amount of replicas for the horizontal pod autoscaler.
     value: "3"
@@ -112,14 +112,17 @@ parameters:
   - name: NODE_ENV
     description: The NODE Environment
     required: true
-  - name: MOTIPAY_API_KEY
-    description: API Key for MOTI Pay
+  - name: PAYBC_API_KEY
+    description: API Key for  PayBC
     required: true
-  - name: MOTIPAY_MERCHANT_ID
-    description: Merchant ID for MOTI Pay
+  - name: PAYBC_REF_NUMBER
+    description: Reference Number for PayBC
     required: true
-  - name: MOTIPAY_BASE_URL
-    description: Base URL for MOTI Pay
+  - name: PAYBC_BASE_URL
+    description: Base URL for PayBC
+    required: true
+  - name: GL_CODE
+    description: Gl code for PayBC
     required: true
 objects:
   - apiVersion: v1
@@ -358,6 +361,8 @@ objects:
                 initialDelaySeconds: 60
                 periodSeconds: 30
                 timeoutSeconds: 5
+              securityContext:
+                allowPrivilegeEscalation: true
   - apiVersion: v1
     kind: Service
     metadata:

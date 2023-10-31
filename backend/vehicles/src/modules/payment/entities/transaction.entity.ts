@@ -138,13 +138,11 @@ export class Transaction extends Base {
 
   @AutoMap()
   @ApiProperty({
-    example: '6/23/2023 10:57:28 PM',
+    example: '2023-10-11T23:26:51.170Z',
     description:
       'Represents the date and time that the transaction was processed.',
   })
   @Column({
-    insert: false,
-    update: false,
     name: 'PG_TRANSACTION_DATE',
     nullable: false,
   })

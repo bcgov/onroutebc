@@ -302,9 +302,6 @@ export const VehicleDetails = ({
             label: "Plate",
             width: formFieldStyle.width,
           }}
-          i18options={{
-            label_i18: "vehicle.power-unit.plate",
-          }}
         />
 
         <CustomFormComponent
@@ -318,9 +315,6 @@ export const VehicleDetails = ({
             },
             label: "Make",
             width: formFieldStyle.width,
-          }}
-          i18options={{
-            label_i18: "vehicle.power-unit.make",
           }}
         />
 

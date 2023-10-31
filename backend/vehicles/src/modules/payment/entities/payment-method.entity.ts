@@ -8,10 +8,10 @@ export class PaymentMethod {
   permitTypeId: string;
 
   @AutoMap()
-  @Column({ name: 'NAME', nullable: true })
+  @Column({ name: 'NAME', nullable: false, length: 20 })
   name: string;
 
   @AutoMap()
-  @Column({ name: 'DESCRIPTION', nullable: true })
+  @Column({ name: 'DESCRIPTION', nullable: true, length: 50 })
   description: string;
 }
