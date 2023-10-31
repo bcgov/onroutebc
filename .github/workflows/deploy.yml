@@ -111,9 +111,10 @@ jobs:
             ${{secrets.VAULT_ENVIRONMENT}}/data/cdogs-${{inputs.vault_zone}}      CDOGS_TOKEN_URL                 | VAULT_CDOGS_TOKEN_URL;
             ${{secrets.VAULT_ENVIRONMENT}}/data/cdogs-${{inputs.vault_zone}}      CDOGS_URL                       | VAULT_CDOGS_URL;
             ${{secrets.VAULT_ENVIRONMENT}}/data/be-api-${{inputs.vault_zone}}     NODE_ENV                        | VAULT_NODE_ENV;
-            ${{secrets.VAULT_ENVIRONMENT}}/data/payment-${{inputs.vault_zone}}    MOTIPAY_API_KEY                 | VAULT_MOTIPAY_API_KEY;
-            ${{secrets.VAULT_ENVIRONMENT}}/data/payment-${{inputs.vault_zone}}    MOTIPAY_MERCHANT_ID             | VAULT_MOTIPAY_MERCHANT_ID;
-            ${{secrets.VAULT_ENVIRONMENT}}/data/payment-${{inputs.vault_zone}}    MOTIPAY_BASE_URL                | VAULT_MOTIPAY_BASE_URL;
+            ${{secrets.VAULT_ENVIRONMENT}}/data/payment-${{inputs.vault_zone}}    PAYBC_API_KEY                   | VAULT_PAYBC_API_KEY;
+            ${{secrets.VAULT_ENVIRONMENT}}/data/payment-${{inputs.vault_zone}}    PAYBC_REF_NUMBER                | VAULT_PAYBC_REF_NUMBER;
+            ${{secrets.VAULT_ENVIRONMENT}}/data/payment-${{inputs.vault_zone}}    PAYBC_BASE_URL                  | VAULT_PAYBC_BASE_URL;
+            ${{secrets.VAULT_ENVIRONMENT}}/data/payment-${{inputs.vault_zone}}    GL_CODE                         | VAULT_GL_CODE;
       
       - uses: bcgov-nr/action-deployer-openshift@v1.3.0
         with:
@@ -151,7 +152,8 @@ jobs:
             -p CDOGS_TOKEN_URL=${{steps.vault.outputs.VAULT_CDOGS_TOKEN_URL}}
             -p CDOGS_URL=${{steps.vault.outputs.VAULT_CDOGS_URL}}
             -p NODE_ENV=${{steps.vault.outputs.VAULT_NODE_ENV}}
-            -p MOTIPAY_API_KEY=${{steps.vault.outputs.VAULT_MOTIPAY_API_KEY}}
-            -p MOTIPAY_MERCHANT_ID=${{steps.vault.outputs.VAULT_MOTIPAY_MERCHANT_ID}}
-            -p MOTIPAY_BASE_URL=${{steps.vault.outputs.VAULT_MOTIPAY_BASE_URL}}
+            -p PAYBC_API_KEY=${{steps.vault.outputs.VAULT_PAYBC_API_KEY}}
+            -p PAYBC_REF_NUMBER=${{steps.vault.outputs.VAULT_PAYBC_REF_NUMBER}}
+            -p PAYBC_BASE_URL=${{steps.vault.outputs.VAULT_PAYBC_BASE_URL}}
+            -p GL_CODE=${{steps.vault.outputs.VAULT_GL_CODE}}
             ${{ matrix.parameters }}

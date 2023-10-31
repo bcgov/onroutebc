@@ -1,4 +1,4 @@
-# Build container
+# Build container.
 FROM node:18.17.1-alpine AS builder
 
 # Set the working directory to /app inside the container
@@ -74,6 +74,16 @@ RUN apk add --no-cache \
       ttf-freefont 
      
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+
+
+# Add user so we don't need --no-sandbox.
+RUN addgroup -S pptruser && adduser -S -G pptruser pptruser \
+    && mkdir -p /home/pptruser/Downloads /app \
+    && chown -R pptruser:pptruser /home/pptruser \
+    && chown -R pptruser:pptruser /app
+
+# Run everything after as non-privileged user.
+USER pptruser
 
 # Expose Port
 EXPOSE 5001

@@ -137,10 +137,10 @@ describe('Users (e2e)', () => {
   describe('/users/roles?companyId=1 GET', () => {
     it('should return the ORBC userContext.', async () => {
       repo.query.mockResolvedValue([
-        { ROLE_ID: Role.READ_SELF },
-        { ROLE_ID: Role.READ_USER },
-        { ROLE_ID: Role.WRITE_SELF },
-        { ROLE_ID: Role.WRITE_USER },
+        { ROLE_TYPE: Role.READ_SELF },
+        { ROLE_TYPE: Role.READ_USER },
+        { ROLE_TYPE: Role.WRITE_SELF },
+        { ROLE_TYPE: Role.WRITE_USER },
       ]);
 
       const response = await request(app.getHttpServer())
