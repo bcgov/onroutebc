@@ -237,7 +237,7 @@ export const PaymentAndRefundDetail = () => {
                 multiple
                 onChange={onSelectPermitType}
                 renderValue={(selected) => selected.join(", ")}
-                input={<OutlinedInput label="Permit Type" />}
+                input={<OutlinedInput />}
                 value={permitType}
                 // inputProps={{ shrink: "false" }}
               >
@@ -273,7 +273,7 @@ export const PaymentAndRefundDetail = () => {
                 multiple
                 onChange={onSelectPaymentMethod}
                 renderValue={(selected) => selected.join(", ")}
-                input={<OutlinedInput label="Payment Method" />}
+                input={<OutlinedInput />}
                 value={paymentMethodType}
               >
                 {paymentMethods.map(({ key, value }) => (
@@ -309,7 +309,7 @@ export const PaymentAndRefundDetail = () => {
                 multiple
                 onChange={onSelectUser}
                 renderValue={(selected) => selected.join(", ")}
-                input={<OutlinedInput label="Users" />}
+                input={<OutlinedInput />}
                 defaultValue={["All Users"]}
                 value={users}
                 aria-labelledby="users-select"

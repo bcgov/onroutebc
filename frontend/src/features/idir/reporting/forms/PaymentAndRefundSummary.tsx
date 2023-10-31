@@ -166,6 +166,7 @@ export const PaymentAndRefundSummary = () => {
             className="custom-form-control"
             margin="normal"
             sx={{ width: "100%" }}
+            disabled={issuedBy.length === 0}
           >
             <FormLabel
               className="custom-form-control__label"
@@ -204,6 +205,7 @@ export const PaymentAndRefundSummary = () => {
             className="custom-form-control"
             margin="normal"
             sx={{ width: "100%" }}
+            disabled={issuedBy.length === 0}
           >
             <FormLabel
               className="custom-form-control__label"
@@ -254,7 +256,7 @@ export const PaymentAndRefundSummary = () => {
             labelPlacement="top"
           /> */}
       </Stack>
-
+      <br />
       <Stack direction="row">
         <Button
           disabled={issuedBy.length === 0}

@@ -78,6 +78,24 @@ export const bcGovTheme = createTheme({
     },
   },
   components: {
+    MuiCheckbox: {
+      styleOverrides: {
+        root: {
+          "&.Mui-checked": {
+            color: BC_COLOURS.bc_black,
+          },
+        },
+      },
+    },
+    MuiRadio: {
+      styleOverrides: {
+        root: {
+          "&.Mui-checked": {
+            color: BC_COLOURS.bc_black,
+          },
+        },
+      },
+    },
     MuiTooltip: {
       styleOverrides: {
         tooltip: {
