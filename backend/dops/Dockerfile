@@ -1,5 +1,5 @@
 # Build container
-FROM ubuntu:latest as builder
+FROM ubuntu:latest
 
 
 RUN apt-get update
@@ -84,11 +84,6 @@ ENV CDOGS_CLIENT_ID ${CDOGS_CLIENT_ID}
 ENV CDOGS_CLIENT_SECRET ${CDOGS_CLIENT_SECRET}
 ENV CDOGS_URL ${CDOGS_URL}
 ENV ACCESS_API_URL ${ACCESS_API_URL}
-
-# Copy production files from build
-COPY --from=builder /app/package*.json ./
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/dist ./dist
 
 RUN apk add --no-cache \
       chromium \
