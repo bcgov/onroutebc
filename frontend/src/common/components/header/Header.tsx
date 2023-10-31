@@ -143,8 +143,8 @@ export const Header = () => {
           <NavButton />
         </div>
       </header>
-      <Navbar isAuthenticated={isAuthenticated} />
-      {menuOpen ? (
+      {!isIdir && <Navbar isAuthenticated={isAuthenticated} />}
+      {!isIdir && menuOpen ? (
         <Navbar isAuthenticated={isAuthenticated} isMobile={true} />
       ) : null}
       {filterOpen ? (

@@ -42,7 +42,7 @@ const sample = {
 
 /**
  * Component for Payment and Refund Detail form
- * 
+ *
  */
 export const PaymentAndRefundDetail = () => {
   const [permitType, setPermitType] = useState<string[]>(["ALL"]);
@@ -71,10 +71,10 @@ export const PaymentAndRefundDetail = () => {
         requestObj.users = users;
       }
       console.log("requestObj::", requestObj);
-        const { blobObj: blobObjWithoutType } = await getPaymentAndRefundDetail(
-          requestObj
-        );
-        openBlobInNewTab(blobObjWithoutType);
+      const { blobObj: blobObjWithoutType } = await getPaymentAndRefundDetail(
+        requestObj
+      );
+      openBlobInNewTab(blobObjWithoutType);
     } catch (err) {
       console.error(err);
     }
@@ -89,9 +89,24 @@ export const PaymentAndRefundDetail = () => {
       username: "ALL",
     },
     {
-      name: "Krishnan Subramanian",
-      userGUID: "XYZ123",
+      name: "KRSUBRAM",
+      userGUID: "KRSUBRAMXYZ123",
       username: "KRSUBRAM",
+    },
+    {
+      name: "ANPETRIC",
+      userGUID: "ANPETRICXYZ123",
+      username: "ANPETRIC",
+    },
+    {
+      name: "BABEL",
+      userGUID: "BABELXYZ123",
+      username: "BABEL",
+    },
+    {
+      name: "GERIDEOU",
+      userGUID: "GERIDEOUXYZ123",
+      username: "GERIDEOU",
     },
   ];
 
@@ -101,14 +116,26 @@ export const PaymentAndRefundDetail = () => {
       value: "ALL",
     },
     {
-      label: "Term Oversize Permit",
+      label: "TROS",
       value: "TROS",
+    },
+    {
+      label: "TROW",
+      value: "TROW",
     },
   ];
   const paymentMethods = [
     {
       key: "All Payment Methods",
       value: "ALL",
+    },
+    {
+      key: "PPC - Mastercard",
+      value: "PPCMC",
+    },
+    {
+      key: "PPC - Visa",
+      value: "PPCVI",
     },
     {
       key: "Web - AMEX",
@@ -236,7 +263,17 @@ export const PaymentAndRefundDetail = () => {
                 id="demo-multiple-name"
                 multiple
                 onChange={onSelectPermitType}
-                renderValue={(selected) => selected.join(", ")}
+                renderValue={(selected) => {
+                  const selectedLabels: string[] = [];
+                  selected.forEach((selectedValue) => {
+                    selectedLabels.push(
+                      permitTypes2.find(({ value }) => value === selectedValue)
+                        ?.label as string
+                    );
+                  });
+                  return selectedLabels.join(", ");
+                  // return selected.join(", ");
+                }}
                 input={<OutlinedInput />}
                 value={permitType}
                 // inputProps={{ shrink: "false" }}
@@ -272,14 +309,28 @@ export const PaymentAndRefundDetail = () => {
                 id="demo-multiple-payment-method"
                 multiple
                 onChange={onSelectPaymentMethod}
-                renderValue={(selected) => selected.join(", ")}
+                renderValue={(selected) => {
+                  const selectedLabels: string[] = [];
+                  selected.forEach((selectedValue) => {
+                    console.log("selectedValue::", selectedValue);
+                    selectedLabels.push(
+                      paymentMethods.find(
+                        ({ value }) => value === selectedValue
+                      )?.key as string
+                    );
+                  });
+
+                  return selectedLabels.join(", ");
+                  // return selected.join(", ");
+                }}
+                // renderValue={(selected) => selected.join(", ")}
                 input={<OutlinedInput />}
                 value={paymentMethodType}
               >
                 {paymentMethods.map(({ key, value }) => (
                   <MenuItem key={key} value={value}>
                     <Checkbox checked={paymentMethodType.indexOf(value) > -1} />
-                    <ListItemText primary={value} />
+                    <ListItemText primary={key} />
                   </MenuItem>
                 ))}
               </Select>
@@ -308,7 +359,21 @@ export const PaymentAndRefundDetail = () => {
                 id="demo-multiple-name"
                 multiple
                 onChange={onSelectUser}
-                renderValue={(selected) => selected.join(", ")}
+                // renderValue={(selected) => selected.join(", ")}
+                renderValue={(selected) => {
+                  const selectedLabels: string[] = [];
+                  selected.forEach((selectedValue) => {
+                    console.log("selectedValue::", selectedValue);
+                    selectedLabels.push(
+                      ppcList.find(
+                        ({ username }) => username === selectedValue
+                      )?.name as string
+                    );
+                  });
+
+                  return selectedLabels.join(", ");
+                  // return selected.join(", ");
+                }}
                 input={<OutlinedInput />}
                 defaultValue={["All Users"]}
                 value={users}
@@ -432,6 +497,7 @@ export const PaymentAndRefundDetail = () => {
               aria-label="View Report"
               variant="contained"
               color="primary"
+              disabled={issuedBy.length === 0}
               onClick={onClickViewReport}
             >
               View Report
