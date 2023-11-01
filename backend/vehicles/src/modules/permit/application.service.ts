@@ -407,7 +407,7 @@ export class ApplicationService {
     }
 
     const newApplication = (applicationId === fetchedApplication.originalPermitId?applicationId: null);
-    const oldApplication = (applicationId === fetchedApplication.originalPermitId?null: fetchedApplication.originalPermitId);
+    const oldApplication = (applicationId === fetchedApplication.originalPermitId?null: fetchedApplication.previousRevision.toString());
 
     const permitNumber = await this.generatePermitNumber(newApplication, oldApplication);
     //Generate receipt number for the permit to be created in database.
