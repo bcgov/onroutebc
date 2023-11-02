@@ -38,6 +38,7 @@ import {
   PAYMENT_CURRENCY,
 } from '../../common/constants/vehicles.constant';
 import { validateHash } from 'src/common/helper/validateHash.helper';
+import { CreatePaymentSummaryReportDto } from './dto/request/create-payment-summary-report.dto';
 
 @Injectable()
 export class PaymentService {
