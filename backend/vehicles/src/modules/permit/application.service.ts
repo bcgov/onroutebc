@@ -406,10 +406,19 @@ export class ApplicationService {
       );
     }
 
-    const newApplication = (applicationId === fetchedApplication.originalPermitId?applicationId: null);
-    const oldApplication = (applicationId === fetchedApplication.originalPermitId?null: fetchedApplication.previousRevision.toString());
+    const newApplication =
+      applicationId === fetchedApplication.originalPermitId
+        ? applicationId
+        : null;
+    const oldApplication =
+      applicationId === fetchedApplication.originalPermitId
+        ? null
+        : fetchedApplication.previousRevision.toString();
 
-    const permitNumber = await this.generatePermitNumber(newApplication, oldApplication);
+    const permitNumber = await this.generatePermitNumber(
+      newApplication,
+      oldApplication,
+    );
     //Generate receipt number for the permit to be created in database.
     const receiptNumber =
       fetchedApplication.permitTransactions[0].transaction.receipt
@@ -794,7 +803,9 @@ export class ApplicationService {
     );
   }
 
-  async findCurrentAmendmentApplication(originalPermitId: string): Promise<ReadPermitDto> {
+  async findCurrentAmendmentApplication(
+    originalPermitId: string,
+  ): Promise<ReadPermitDto> {
     const application = await this.permitRepository
       .createQueryBuilder('permit')
       .innerJoinAndSelect('permit.permitData', 'permitData')
@@ -815,11 +826,7 @@ export class ApplicationService {
       .orderBy('permit.revision', 'DESC')
       .getOne();
 
-    return await this.classMapper.mapAsync(
-      application,
-      Permit,
-      ReadPermitDto,
-    );
+    return await this.classMapper.mapAsync(application, Permit, ReadPermitDto);
   }
 
   async checkApplicationInProgress(originalPermitId: string): Promise<number> {
