@@ -16,13 +16,15 @@ export const ApplicationDetails = ({
   createdDateTime,
   updatedDateTime,
   companyInfo,
+  isAmendAction = false,
 }: {
   permitType?: string;
   infoNumberType?: "application" | "permit";
   infoNumber?: string;
   createdDateTime?: Dayjs;
   updatedDateTime?: Dayjs;
-  companyInfo?: CompanyProfile;
+  companyInfo?: CompanyProfile | null;
+  isAmendAction?: boolean;
 }) => {
   const applicationName = permitTypeDisplayText(
     getDefaultRequiredVal("", permitType)
@@ -30,6 +32,7 @@ export const ApplicationDetails = ({
 
   const validInfoNumber = () => infoNumber && infoNumber !== "";
   const isPermitNumber = () => infoNumberType === "permit";
+  const labelText = `${isAmendAction ? "Amending " : ""}${isPermitNumber() ? "Permit #:" : "Application #:"}`;
 
   return (
     <>
@@ -51,7 +54,7 @@ export const ApplicationDetails = ({
                 className="application-number__label" 
                 component="span"
               >
-                {isPermitNumber() ? "Permit #:" : "Application #:"}
+                {labelText}
               </Box>
               <Box
                 className="application-number__number"

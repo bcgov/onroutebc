@@ -1,0 +1,11 @@
+.amend-revision {
+  margin-bottom: 1rem;
+
+  & &__date {
+    margin-left: 0.25rem;
+  }
+
+  & &__info {
+    margin-bottom: 0.25rem;
+  }
+}

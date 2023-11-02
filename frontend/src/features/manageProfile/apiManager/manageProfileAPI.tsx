@@ -22,6 +22,16 @@ export const getCompanyInfo = async (): Promise<CompanyProfile> => {
   return httpGETRequest(url).then((response) => response.data);
 };
 
+export const getCompanyInfoById = async (companyId: number): Promise<CompanyProfile | null> => {
+  try {
+    const response = await httpGETRequest(`${MANAGE_PROFILE_API.COMPANIES}/${companyId}`);
+    return response.data;
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+};
+
 export const getMyInfo = async (): Promise<UserInformation> => {
   const companyId = getCompanyIdFromSession();
   let url = `${MANAGE_PROFILE_API.MY_INFO}/${getUserGuidFromSession()}`;

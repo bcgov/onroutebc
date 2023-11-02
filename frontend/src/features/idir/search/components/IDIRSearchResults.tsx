@@ -1,15 +1,16 @@
 import { Box, FormControlLabel, Switch } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
+import { memo, useCallback, useContext, useMemo, useState } from "react";
 import MaterialReactTable, {
   MRT_ColumnDef,
   MRT_Row,
   MRT_TableInstance,
 } from "material-react-table";
-import { memo, useCallback, useContext, useMemo, useState } from "react";
+
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { hasPermitExpired } from "../../../permits/helpers/permitPDFHelper";
-import { ReadPermitDto } from "../../../permits/types/permit";
+import { Permit } from "../../../permits/types/permit";
 import { getDataBySearch } from "../api/idirSearch";
 import { PermitSearchResultColumnDef } from "../table/Columns";
 import { SearchFields } from "../types/types";
@@ -67,7 +68,7 @@ export const IDIRSearchResults = memo(
     );
 
     // Column definitions for the table
-    const columns = useMemo<MRT_ColumnDef<ReadPermitDto>[]>(
+    const columns = useMemo<MRT_ColumnDef<Permit>[]>(
       () => PermitSearchResultColumnDef,
       []
     );
@@ -75,9 +76,9 @@ export const IDIRSearchResults = memo(
     /**
      *
      * @param initialData The initial data to filter by the active data toggle.
-     * @returns ReadPermitDto[] containing the data to be displayed in table.
+     * @returns Permit[] containing the data to be displayed in table.
      */
-    const getFilteredData = (initialData: ReadPermitDto[]): ReadPermitDto[] => {
+    const getFilteredData = (initialData: Permit[]): Permit[] => {
       if (!initialData.length) return [];
       if (isActiveRecordsOnly) {
         // Returns unexpired permits
@@ -142,8 +143,8 @@ export const IDIRSearchResults = memo(
             ({
               row,
             }: {
-              table: MRT_TableInstance<ReadPermitDto>;
-              row: MRT_Row<ReadPermitDto>;
+              table: MRT_TableInstance<Permit>;
+              row: MRT_Row<Permit>;
             }) => {
               const isInactive = hasPermitExpired(
                 row.original.permitData.expiryDate

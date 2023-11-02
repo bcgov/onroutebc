@@ -13,6 +13,9 @@ import { useDefaultApplicationFormData } from "../../hooks/useDefaultApplication
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { PermitForm } from "./components/form/PermitForm";
 import { usePermitVehicleManagement } from "../../hooks/usePermitVehicleManagement";
+import { useCompanyInfoQuery } from "../../../manageProfile/apiManager/hooks";
+import { applyWhenNotNullable } from "../../../../common/helpers/util";
+import { TROS_PERMIT_DURATIONS } from "../../constants/termOversizeConstants";
 
 /**
  * The first step in creating and submitting a TROS Application.
@@ -25,6 +28,9 @@ export const TermOversizeForm = () => {
   // Context to hold all of the application data related to the TROS application
   const applicationContext = useContext(ApplicationContext);
 
+  const { companyId, userDetails } = useContext(OnRouteBCContext);
+  const companyInfoQuery = useCompanyInfoQuery();
+
   // Use a custom hook that performs the following whenever page is rendered (or when application context is updated/changed):
   // 1. Get all data needed to generate default values for the application form (from application context, company, user details)
   // 2. Generate those default values and register them to the form
@@ -33,10 +39,14 @@ export const TermOversizeForm = () => {
   const { 
     defaultApplicationDataValues: termOversizeDefaultValues,
     formMethods,
-    companyInfo,
   } = useDefaultApplicationFormData(
-    applicationContext?.applicationData
+    applicationContext?.applicationData,
+    companyId,
+    userDetails,
+    companyInfoQuery.data,
   );
+
+  const companyInfo = companyInfoQuery.data;
 
   const submitTermOversizeMutation = useSaveTermOversizeMutation();
   const snackBar = useContext(SnackBarContext);
@@ -47,7 +57,9 @@ export const TermOversizeForm = () => {
     vehicleOptions,
     powerUnitTypes,
     trailerTypes,
-  } = usePermitVehicleManagement();
+  } = usePermitVehicleManagement(
+    applyWhenNotNullable(companyIdNum => `${companyIdNum}`, companyId, "0")
+  );
 
   // Show leave application dialog
   const [showLeaveApplicationDialog, setShowLeaveApplicationDialog] = useState<boolean>(false); 
@@ -174,6 +186,7 @@ export const TermOversizeForm = () => {
           powerUnitTypes={powerUnitTypes}
           trailerTypes={trailerTypes}
           companyInfo={companyInfo}
+          durationOptions={TROS_PERMIT_DURATIONS}
         />
       </FormProvider>
       

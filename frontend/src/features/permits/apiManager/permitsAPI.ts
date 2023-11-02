@@ -1,7 +1,7 @@
 import { DATE_FORMATS, toLocal } from "../../../common/helpers/formatDate";
 import { mapApplicationToApplicationRequestData } from "../helpers/mappers";
 import { VEHICLES_URL } from "../../../common/apiManager/endpoints/endpoints";
-import { IssuePermitsResponse, ReadPermitDto } from "../types/permit";
+import { IssuePermitsResponse, Permit } from "../types/permit";
 import { PaginatedResponse } from "../../../common/types/common";
 import { PERMIT_STATUSES } from "../types/PermitStatus";
 import { PermitHistory } from "../types/PermitHistory";
@@ -248,12 +248,18 @@ export const startTransaction = async (
  * @param transactionDetails - The complete transaction details to be submitted after payment
  * @returns Promise that resolves to a successful transaction.
  */
-export const completeTransaction = async (
+export const completeTransaction = async (transactionData: {
   transactionId: string,
   transactionQueryString: string,
   transactionDetails: CompleteTransactionRequestData
-): Promise<CompleteTransactionResponseData | null> => {
+}): Promise<CompleteTransactionResponseData | null> => {
   try {
+    const { 
+      transactionId, 
+      transactionDetails,
+      transactionQueryString,
+    } = transactionData;
+    
     const response = await httpPUTRequest(
       `${PAYMENT_API}/${transactionId}/payment-gateway?queryString=${transactionQueryString}`,
       transactionDetails
@@ -307,7 +313,7 @@ export const issuePermits = async (
  * @param permitId Permit id of the permit to be retrieved.
  * @returns Permit information if found, or undefined
  */
-export const getPermit = async (permitId?: string): Promise<ReadPermitDto | null> => {
+export const getPermit = async (permitId?: string): Promise<Permit | null> => {
   if (!permitId) return null;
   const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
   let permitsURL = `${VEHICLES_URL}/permits/${permitId}`;
@@ -321,7 +327,35 @@ export const getPermit = async (permitId?: string): Promise<ReadPermitDto | null
 
   const response = await httpGETRequest(permitsURL);
   if (!response.data) return null;
-  return response.data as ReadPermitDto;
+  return response.data as Permit;
+};
+
+/**
+ * Get current application for amendment, if there is one
+ * @param originalId Original permit id of the permit that is amended.
+ * @returns Permit application information, if any
+ */
+export const getCurrentAmendmentApplication = async (
+  originalId?: string
+): Promise<Permit | null> => {
+  if (!originalId) return null;
+  const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
+  let permitsURL = `${VEHICLES_URL}/permits/applications/${originalId}`;
+  const queryParams = [`amendment=true`];
+  if (companyId) {
+    queryParams.push(`companyId=${companyId}`);
+  }
+  if (queryParams.length > 0) {
+    permitsURL += `?${queryParams.join("&")}`;
+  }
+
+  try {
+    const response = await httpGETRequest(permitsURL);
+    if (!response.data) return null;
+    return response.data as Permit;
+  } catch (err) {
+    return null;
+  }
 };
 
 /**
@@ -331,7 +365,7 @@ export const getPermit = async (permitId?: string): Promise<ReadPermitDto | null
  */
 export const getPermits = async ({
   expired = false,
-} = {}): Promise<ReadPermitDto[]> => {
+} = {}): Promise<Permit[]> => {
   const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
   let permitsURL = `${VEHICLES_URL}/permits/user`;
   const queryParams = [];
@@ -349,7 +383,7 @@ export const getPermits = async ({
       const paginatedResponseObject = getDefaultRequiredVal(
         {},
         response.data
-      ) as PaginatedResponse<ReadPermitDto>;
+      ) as PaginatedResponse<Permit>;
       return paginatedResponseObject.items;
     })
     .then((permits) =>
@@ -375,7 +409,7 @@ export const getPermits = async ({
               DATE_FORMATS.DATEONLY_SHORT_NAME
             ),
           },
-        } as ReadPermitDto;
+        } as Permit;
       })
     );
   return permits;
@@ -429,4 +463,34 @@ export const voidPermit = async (voidPermitParams: {
       failure: [permitId],
     };
   }
+};
+
+/**
+ * Amend a permit.
+ * @param permit permit data for permit to be amended
+ * @returns response with amended permit data, or error if failed
+ */
+export const amendPermit = async (permit: Permit) => {
+  return await httpPOSTRequest(
+    PERMITS_API.SUBMIT_TERM_OVERSIZE_PERMIT,
+    replaceEmptyValuesWithNull({
+      ...permit,
+    })
+  );
+};
+
+/**
+ * Modify amendment application.
+ * @param application amendment application data to be modified
+ * @param applicationNumber application number of the amendment application
+ * @returns response with amended permit data, or error if failed
+ */
+export const modifyAmendmentApplication = async ({
+  application,
+  applicationNumber,
+}: {
+  application: Application;
+  applicationNumber: string;
+}) => {
+  return await updateTermOversize(application, applicationNumber);
 };

@@ -84,7 +84,7 @@ export const closeMockServer = () => {
 export const renderTestPowerUnitForm = (powerUnit?: PowerUnit) => {
   const user = userEvent.setup();
   const component = renderWithClient(
-    <PowerUnitForm powerUnit={powerUnit} />
+    <PowerUnitForm powerUnit={powerUnit} companyId="1" />
   );
 
   return { user, component };
@@ -93,7 +93,7 @@ export const renderTestPowerUnitForm = (powerUnit?: PowerUnit) => {
 export const renderTestTrailerForm = (trailer?: Trailer) => {
   const user = userEvent.setup();
   const component = renderWithClient(
-    <TrailerForm trailer={trailer} />
+    <TrailerForm trailer={trailer} companyId="1" />
   );
 
   return { user, component };

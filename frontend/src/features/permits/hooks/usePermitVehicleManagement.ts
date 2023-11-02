@@ -12,7 +12,7 @@ import {
   useVehiclesQuery, 
 } from "../../manageVehicles/apiManager/hooks";
 
-export const usePermitVehicleManagement = () => {
+export const usePermitVehicleManagement = (companyId: string) => {
   // Mutations used to add/update vehicle details
   const addPowerUnitMutation = useAddPowerUnitMutation();
   const updatePowerUnitMutation = useUpdatePowerUnitMutation();
@@ -20,7 +20,7 @@ export const usePermitVehicleManagement = () => {
   const updateTrailerMutation = useUpdateTrailerMutation();
 
   // Queries used to populate select options for vehicle details
-  const allVehiclesQuery = useVehiclesQuery();
+  const allVehiclesQuery = useVehiclesQuery(companyId);
   const powerUnitTypesQuery = usePowerUnitTypesQuery();
   const trailerTypesQuery = useTrailerTypesQuery();
 
@@ -96,17 +96,28 @@ export const usePermitVehicleManagement = () => {
         updatePowerUnitMutation.mutate({
           powerUnit,
           powerUnitId: powerUnit.powerUnitId,
+          companyId,
         });
       } else {
-        addPowerUnitMutation.mutate(powerUnit);
+        addPowerUnitMutation.mutate({
+          powerUnit,
+          companyId,
+        });
       }
     } else if (vehicle.vehicleType === "trailer") {
       const trailer = transformByVehicleType(vehicle, existingVehicle) as Trailer;
       
       if (trailer.trailerId) {
-        updateTrailerMutation.mutate({ trailer, trailerId: trailer.trailerId });
+        updateTrailerMutation.mutate({ 
+          trailer, 
+          trailerId: trailer.trailerId,
+          companyId,
+        });
       } else {
-        addTrailerMutation.mutate(trailer);
+        addTrailerMutation.mutate({
+          trailer,
+          companyId,
+        });
       }
     }
   };

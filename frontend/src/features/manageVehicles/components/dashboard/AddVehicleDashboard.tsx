@@ -11,6 +11,8 @@ import { Banner } from "../../../../common/components/dashboard/Banner";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { InfoBcGovBanner } from "../../../../common/components/banners/AlertBanners";
 import { useNavigate } from "react-router-dom";
+import { getCompanyIdFromSession } from "../../../../common/apiManager/httpRequestHandler";
+import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 
 export const AddVehicleDashboard = React.memo(
   ({ addVehicleMode }: { addVehicleMode: VEHICLE_TYPES_ENUM }) => {
@@ -19,6 +21,8 @@ export const AddVehicleDashboard = React.memo(
     const handleShowAddVehicle = () => {
       navigate("../");
     };
+
+    const companyId = getDefaultRequiredVal("0", getCompanyIdFromSession());
 
     return (
       <>
@@ -117,9 +121,11 @@ export const AddVehicleDashboard = React.memo(
             {addVehicleMode === VEHICLE_TYPES_ENUM.TRAILER && "Trailer Details"}
           </Typography>
           {addVehicleMode === VEHICLE_TYPES_ENUM.POWER_UNIT && (
-            <PowerUnitForm />
+            <PowerUnitForm companyId={companyId} />
           )}
-          {addVehicleMode === VEHICLE_TYPES_ENUM.TRAILER && <TrailerForm />}
+          {addVehicleMode === VEHICLE_TYPES_ENUM.TRAILER && (
+            <TrailerForm companyId={companyId} />
+          )}
         </Box>
       </>
     );

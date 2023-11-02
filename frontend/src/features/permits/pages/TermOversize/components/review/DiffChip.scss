@@ -1,0 +1,11 @@
+@import "../../../../../../themes/orbcStyles.scss";
+
+.diff-chip {
+  border-radius: 1rem;
+  font-size: 0.8rem;
+  font-weight: normal;
+  padding: 0.25rem 0.5rem;
+  color: $bc-messages-green-text;
+  background-color: $bc-messages-green-background;
+  margin-left: 1rem;
+}

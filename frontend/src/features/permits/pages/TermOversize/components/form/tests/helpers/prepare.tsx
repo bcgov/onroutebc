@@ -73,6 +73,11 @@ export const renderTestComponent = (startDate: Dayjs, duration: number, commodit
         defaultStartDate={startDate}
         defaultDuration={duration}
         commodities={commodities}
+        durationOptions={allDurations.map(duration => ({
+          label: duration.text,
+          value: duration.days,
+        }))}
+        disableStartDate={false}
       />
     </TestFormWrapper>
   );

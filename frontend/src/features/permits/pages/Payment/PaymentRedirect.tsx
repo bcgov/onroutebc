@@ -60,9 +60,6 @@ export const PaymentRedirect = () => {
     message,
     setPaymentApproved,
   } = useCompleteTransaction(
-    getDefaultRequiredVal('', transactionId),
-    transactionQueryString,
-    transaction,
     paymentDetails.messageText,
     paymentDetails.trnApproved
   )
@@ -82,7 +79,11 @@ export const PaymentRedirect = () => {
   useEffect(() => {
     if (completedTransaction.current === false) {
       if (paymentDetails.trnApproved > 0) {
-        completeTransactionMutation.mutate();
+        completeTransactionMutation.mutate({
+          transactionId: getDefaultRequiredVal("", transactionId),
+          transactionQueryString,
+          transactionDetails: transaction,
+        });
         completedTransaction.current = true;
       } else {
         setPaymentApproved(false);
