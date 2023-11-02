@@ -1,6 +1,6 @@
 import { Permit } from "../../../types/permit";
 import { getDefaultValues } from "../../../helpers/getDefaultApplicationFormData";
-import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../../../common/helpers/util";
+import { applyWhenNotNullable, areValuesDifferent, getDefaultRequiredVal } from "../../../../../common/helpers/util";
 import { Application, PERMIT_APPLICATION_ORIGINS, PERMIT_APPROVAL_SOURCES } from "../../../types/application.d";
 import { areApplicationDataEqual } from "../../../helpers/equality";
 import { transformApplicationToPermit, transformPermitToApplication } from "../../../helpers/mappers";
@@ -122,51 +122,35 @@ export const arePermitsEqual = (
   return permit1.permitId === permit2.permitId
     && permit1.originalPermitId === permit2.originalPermitId
     && permit1.revision === permit2.revision
-    && (
-      (!permit1.previousRevision && !permit2.previousRevision)
-      || (permit1.previousRevision === permit2.previousRevision)
-    )
-    && (
-      (!permit1.comment && !permit2.comment)
-      || (permit1.comment === permit2.comment)
-    )
+    && !areValuesDifferent(permit1.previousRevision, permit2.previousRevision)
+    && !areValuesDifferent(permit1.comment, permit2.comment)
     && permit1.permitStatus === permit2.permitStatus
     && permit1.companyId === permit2.companyId
-    && (
-      (!permit1.userGuid && !permit2.userGuid)
-      || (permit1.userGuid === permit2.userGuid)
-    )
+    && !areValuesDifferent(permit1.userGuid, permit2.userGuid)
     && permit1.permitType === permit2.permitType
     && permit1.applicationNumber === permit2.applicationNumber
     && permit1.permitNumber === permit2.permitNumber
     && permit1.permitApprovalSource === permit2.permitApprovalSource
     && permit1.permitApplicationOrigin === permit2.permitApplicationOrigin
-    && (
-      (!permit1.documentId && !permit2.documentId)
-      || (permit1.documentId === permit2.documentId)
-    )
-    && (
-      (!permit1.createdDateTime && !permit2.createdDateTime) 
-      || (
-        applyWhenNotNullable(
-          dt => dayjsToLocalStr(dt, DATE_FORMATS.DATETIME),
-          permit1.createdDateTime
-        ) === applyWhenNotNullable(
-          dt => dayjsToLocalStr(dt, DATE_FORMATS.DATETIME),
-          permit2.createdDateTime
-        )
+    && !areValuesDifferent(permit1.documentId, permit2.documentId)
+    && !areValuesDifferent(
+      applyWhenNotNullable(
+        dt => dayjsToLocalStr(dt, DATE_FORMATS.DATETIME),
+        permit1.createdDateTime
+      ),
+      applyWhenNotNullable(
+        dt => dayjsToLocalStr(dt, DATE_FORMATS.DATETIME),
+        permit2.createdDateTime
       )
     )
-    && (
-      (!permit1.updatedDateTime && !permit2.updatedDateTime) 
-      || (
-        applyWhenNotNullable(
-          dt => dayjsToLocalStr(dt, DATE_FORMATS.DATETIME),
-          permit1.updatedDateTime
-        ) === applyWhenNotNullable(
-          dt => dayjsToLocalStr(dt, DATE_FORMATS.DATETIME),
-          permit2.updatedDateTime
-        )
+    && !areValuesDifferent(
+      applyWhenNotNullable(
+        dt => dayjsToLocalStr(dt, DATE_FORMATS.DATETIME),
+        permit1.updatedDateTime
+      ), 
+      applyWhenNotNullable(
+        dt => dayjsToLocalStr(dt, DATE_FORMATS.DATETIME),
+        permit2.updatedDateTime
       )
     )
     && areApplicationDataEqual({
