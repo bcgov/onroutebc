@@ -1,4 +1,4 @@
-import { MotiPaymentDetails } from "../types/payment";
+import { PayBCPaymentDetails } from "../types/payment";
 import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../common/helpers/util";
 import { 
   BAMBORA_PAYMENT_METHODS, 
@@ -6,16 +6,20 @@ import {
   CARD_TYPES, 
   CardType, 
 } from "../types/PaymentMethod";
+import { parseRedirectUriPath } from "../pages/Payment/PaymentRedirect";
 
 /**
- * Extracts MotiPaymentDetails from the query parameters of a URL.
+ * Extracts PayBCPaymentDetails from the query parameters of a URL.
  *
  * @param {URLSearchParams} params - The object containing URL query parameters.
- * @returns {MotiPaymentDetails} The extracted MotiPaymentDetails object.
+ * @returns {PayBCPaymentDetails} The extracted PayBCPaymentDetails object.
  */
-export const getMotiPaymentDetails = (params: URLSearchParams): MotiPaymentDetails => {
-  // Extract the query parameters and assign them to the corresponding properties of MotiPaymentDetails
-  const motiPaymentDetails: MotiPaymentDetails = {
+export const getPayBCPaymentDetails = (params: URLSearchParams): PayBCPaymentDetails => {
+  // Extract the query parameters and assign them to the corresponding properties of PayBCPaymentDetails
+  const path = getDefaultRequiredVal("", params.get("path"))
+  const {trnApproved} = parseRedirectUriPath(path)
+
+  const payBCPaymentDetails: PayBCPaymentDetails = {
     authCode: getDefaultRequiredVal("", params.get("authCode")),
     avsAddrMatch: getDefaultRequiredVal("", params.get("avsAddrMatch")),
     avsId: getDefaultRequiredVal("", params.get("avsId")),
@@ -24,9 +28,9 @@ export const getMotiPaymentDetails = (params: URLSearchParams): MotiPaymentDetai
     avsProcessed: getDefaultRequiredVal("", params.get("avsProcessed")),
     avsResult: getDefaultRequiredVal("", params.get("avsResult")),
     cardType: getDefaultRequiredVal(CARD_TYPES.VI, params.get("cardType")) as CardType,
-    cvdId: applyWhenNotNullable((cvdId) => Number(cvdId), params.get("cvdId"), 0),
-    trnApproved: applyWhenNotNullable((trnApproved) => Number(trnApproved), params.get("trnApproved"), 0),
-    messageId: getDefaultRequiredVal("", params.get("messageId")),
+    cvdId: 1, // applyWhenNotNullable((cvdId) => Number(cvdId), params.get("cvdId"), 0),
+    trnApproved: trnApproved,
+    messageId: '1', // getDefaultRequiredVal("", params.get("messageId")),
     messageText: getDefaultRequiredVal("", params.get("messageText")),
     paymentMethod: getDefaultRequiredVal(BAMBORA_PAYMENT_METHODS.CC, params.get("paymentMethod")) as BamboraPaymentMethod,
     ref1: getDefaultRequiredVal("", params.get("ref1")),
@@ -39,12 +43,12 @@ export const getMotiPaymentDetails = (params: URLSearchParams): MotiPaymentDetai
     trnCustomerName: getDefaultRequiredVal("", params.get("trnCustomerName")),
     trnDate: getDefaultRequiredVal("", params.get("trnDate")),
     trnEmailAddress: getDefaultRequiredVal("", params.get("trnEmailAddress")),
-    trnId: getDefaultRequiredVal("", params.get("trnId")),
+    trnId: getDefaultRequiredVal("", params.get("trnOrderId")),
     trnLanguage: getDefaultRequiredVal("", params.get("trnLanguage")),
     trnOrderNumber: getDefaultRequiredVal("", params.get("trnOrderNumber")),
     trnPhoneNumber: getDefaultRequiredVal("", params.get("trnPhoneNumber")),
     trnType: getDefaultRequiredVal("", params.get("trnType")),
   };
 
-  return motiPaymentDetails;
+  return payBCPaymentDetails;
 };

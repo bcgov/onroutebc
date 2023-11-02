@@ -107,11 +107,11 @@ const App = () => {
                 alertType={snackBar.alertType}
               />
               <Router>
+                <Header />
                 <NavIconSideBar>
                   <NavIconHomeButton />
                   <NavIconReportButton />
                 </NavIconSideBar>
-                <Header />
                 <AppRoutes />
               </Router>
               <Footer />

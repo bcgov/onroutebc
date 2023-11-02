@@ -244,16 +244,18 @@ export const startTransaction = async (
 /**
  * Completes the transaction after payment is successful.
  * @param transactionId - The id for the transaction to be completed
+ * @param transactionQueryString - the queryString with the hashValue to be validated
  * @param transactionDetails - The complete transaction details to be submitted after payment
  * @returns Promise that resolves to a successful transaction.
  */
 export const completeTransaction = async (
   transactionId: string,
+  transactionQueryString: string,
   transactionDetails: CompleteTransactionRequestData
 ): Promise<CompleteTransactionResponseData | null> => {
   try {
     const response = await httpPUTRequest(
-      `${PAYMENT_API}/${transactionId}/payment-gateway`,
+      `${PAYMENT_API}/${transactionId}/payment-gateway?queryString=${transactionQueryString}`,
       transactionDetails
     );
     if (response.status !== 200) {

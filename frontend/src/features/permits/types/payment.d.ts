@@ -1,6 +1,6 @@
 import { BamboraPaymentMethod, CardType } from "./PaymentMethod";
 
-export interface MotiPaymentDetails {
+export interface PayBCPaymentDetails {
   authCode: string;
   avsAddrMatch: string;
   avsId: string;
