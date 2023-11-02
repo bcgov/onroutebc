@@ -1,9 +1,8 @@
 @use "../../../themes/orbcStyles";
 
 .nav-icon-side-bar {
-    position: -webkit-sticky; /* Safari */
-    position: sticky;
+    position: fixed;
     left: 0;
-    top: 400px;
-    width: 50px;
+    top: 50vh;
+    width: 3.125rem;
 }
