@@ -11,7 +11,6 @@ import { VoidPermitContext } from "./context/VoidPermitContext";
 import { SEARCH_RESULTS } from "../../../../routes/constants";
 import { VoidPermitFormData } from "./types/VoidPermit";
 import { FinishVoid } from "./FinishVoid";
-import { Breadcrumb } from "./components/Breadcrumb";
 import { SEARCH_BY_FILTERS, SEARCH_ENTITIES } from "../../../idir/search/types/types";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { USER_AUTH_GROUP } from "../../../manageProfile/types/userManagement.d";
@@ -19,13 +18,14 @@ import { Unauthorized } from "../../../../common/pages/Unauthorized";
 import { Unexpected } from "../../../../common/pages/Unexpected";
 import { isPermitInactive } from "../../types/PermitStatus";
 import { hasPermitExpired } from "../../helpers/permitPDFHelper";
-import { ReadPermitDto } from "../../types/permit";
+import { Permit } from "../../types/permit";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
+import { Breadcrumb } from "../../../../common/components/breadcrumb/Breadcrumb";
 
 const searchRoute = `${SEARCH_RESULTS}?searchEntity=${SEARCH_ENTITIES.PERMIT}`
   + `&searchByFilter=${SEARCH_BY_FILTERS.PERMIT_NUMBER}`;
 
-const isVoidable = (permit: ReadPermitDto) => {
+const isVoidable = (permit: Permit) => {
   return !isPermitInactive(permit.permitStatus) 
     && !hasPermitExpired(permit.permitData.expiryDate);
 };

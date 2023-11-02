@@ -40,7 +40,11 @@ interface PermitFormProps {
   powerUnitTypes: VehicleType[];
   trailerTypes: VehicleType[];
   children?: React.ReactNode;
-  companyInfo?: CompanyProfile;
+  companyInfo?: CompanyProfile | null;
+  durationOptions: {
+    value: number;
+    label: string;
+  }[];
 }
 
 export const PermitForm = (props: PermitFormProps) => {
@@ -54,6 +58,7 @@ export const PermitForm = (props: PermitFormProps) => {
           createdDateTime={props.createdDateTime}
           updatedDateTime={props.updatedDateTime}
           companyInfo={props.companyInfo}
+          isAmendAction={props.isAmendAction}
         />
         <ContactDetails feature={props.feature} />
         <PermitDetails
@@ -62,6 +67,8 @@ export const PermitForm = (props: PermitFormProps) => {
           defaultDuration={props.permitDuration}
           commodities={props.permitCommodities}
           applicationNumber={props.applicationNumber}
+          durationOptions={props.durationOptions}
+          disableStartDate={props.isAmendAction}
         />
         <VehicleDetails
           feature={props.feature}

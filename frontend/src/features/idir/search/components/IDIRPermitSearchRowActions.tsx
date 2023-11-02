@@ -100,8 +100,10 @@ export const IDIRPermitSearchRowActions = ({
       viewReceiptPdf(permitId.toString());
     } else if (selectedOption === "Void") {
       navigate(`/${routes.PERMITS}/${permitId}/${routes.PERMIT_VOID}`);
+    } else if (selectedOption === "Amend") {
+      navigate(`/${routes.PERMITS}/${permitId}/${routes.PERMIT_AMEND}`);
     }
-  };
+  }
 
   return (
     <>

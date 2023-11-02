@@ -1,0 +1,21 @@
+@import "../../../../../../themes/orbcStyles.scss";
+
+.amend-revision-history {
+  display: flex;
+  padding: 3rem 0rem;
+  border-top: 1px solid $bc-text-box-border-grey;
+
+  & &__label {
+    font-weight: bold;
+    color: $bc-black;
+    font-size: 1.25rem;
+    min-width: 25rem;
+    max-width: 25rem;
+    padding-top: 0;
+  }
+
+  & &__revisions {
+    min-width: 37.5rem;
+    max-width: calc(100% - 25rem);
+  }
+}

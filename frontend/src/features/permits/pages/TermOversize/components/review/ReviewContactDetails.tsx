@@ -2,7 +2,8 @@ import { Box, Typography } from "@mui/material";
 
 import "./ReviewContactDetails.scss";
 import { ContactDetails } from "../../../../types/application";
-import { getDefaultRequiredVal } from "../../../../../../common/helpers/util";
+import { areValuesDifferent, getDefaultRequiredVal } from "../../../../../../common/helpers/util";
+import { DiffChip } from "./DiffChip";
 
 const nameDisplay = (firstName?: string, lastName?: string) => {
   if (!firstName) return getDefaultRequiredVal("", lastName);
@@ -20,9 +21,39 @@ const phoneDisplay = (phone?: string, ext?: string) => {
 
 export const ReviewContactDetails = ({
   contactDetails,
+  showChangedFields = false,
+  oldFields = undefined,
 }: {
-  contactDetails?: ContactDetails,
+  contactDetails?: ContactDetails;
+  showChangedFields?: boolean;
+  oldFields?: ContactDetails;
 }) => {
+  const changedFields = showChangedFields ? {
+    name: nameDisplay(
+      contactDetails?.firstName, contactDetails?.lastName
+    ) !== nameDisplay(
+      oldFields?.firstName, oldFields?.lastName
+    ),
+    phone1: phoneDisplay(
+      contactDetails?.phone1, contactDetails?.phone1Extension
+    ) !== phoneDisplay(
+      oldFields?.phone1, oldFields?.phone1Extension
+    ),
+    phone2: phoneDisplay(
+      contactDetails?.phone2, contactDetails?.phone2Extension
+    ) !== phoneDisplay(
+      oldFields?.phone2, oldFields?.phone2Extension
+    ),
+    email: areValuesDifferent(contactDetails?.email, oldFields?.email),
+    fax: areValuesDifferent(contactDetails?.fax, oldFields?.fax), 
+  } : {
+    name: false,
+    phone1: false,
+    phone2: false,
+    email: false,
+    fax: false,
+  };
+
   return (
     <Box className="review-contact-details">
       <Box className="review-contact-details__header">
@@ -46,6 +77,9 @@ export const ReviewContactDetails = ({
                 contactDetails?.lastName
               )}
             </span>
+            {changedFields.name ? (
+              <DiffChip />
+            ) : null}
           </Typography>
           <Typography className="contact-details__detail">
             <span className="contact-details__label">Primary Phone:</span>
@@ -58,6 +92,9 @@ export const ReviewContactDetails = ({
                 contactDetails?.phone1Extension
               )}
             </span>
+            {changedFields.phone1 ? (
+              <DiffChip />
+            ) : null}
           </Typography>
           {contactDetails?.phone2 ? (
             <Typography className="contact-details__detail">
@@ -71,6 +108,9 @@ export const ReviewContactDetails = ({
                   contactDetails?.phone2Extension
                 )}
               </span>
+              {changedFields.phone2 ? (
+                <DiffChip />
+              ) : null}
             </Typography>
           ) : null}
           <Typography className="contact-details__detail">
@@ -81,6 +121,9 @@ export const ReviewContactDetails = ({
             >
               {contactDetails?.email}
             </span>
+            {changedFields.email ? (
+              <DiffChip />
+            ) : null}
           </Typography>
           {contactDetails?.fax ? (
             <Typography className="contact-details__detail">
@@ -93,6 +136,9 @@ export const ReviewContactDetails = ({
                   contactDetails?.fax
                 )}
               </span>
+              {changedFields.fax ? (
+                <DiffChip />
+              ) : null}
             </Typography>
           ) : null}
         </Box>
