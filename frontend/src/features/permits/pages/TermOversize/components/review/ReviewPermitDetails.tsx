@@ -5,7 +5,7 @@ import "./ReviewPermitDetails.scss";
 import { PermitExpiryDateBanner } from "../../../../../../common/components/banners/PermitExpiryDateBanner";
 import { Commodities } from "../../../../types/application";
 import { ReviewConditionsTable } from "./ReviewConditionsTable";
-import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../../../../common/helpers/util";
+import { applyWhenNotNullable, areValuesDifferent, getDefaultRequiredVal } from "../../../../../../common/helpers/util";
 import { DATE_FORMATS, dayjsToLocalStr } from "../../../../../../common/helpers/formatDate";
 import { DiffChip } from "./DiffChip";
 
@@ -36,9 +36,7 @@ export const ReviewPermitDetails = ({
       oldStartDate,
       ""
     ),
-    duration: (permitDuration && !oldDuration) 
-      || (!permitDuration && oldDuration)
-      || (permitDuration && oldDuration && permitDuration !== oldDuration),
+    duration: areValuesDifferent(permitDuration, oldDuration),
   } : {
     startDate: false,
     duration: false,

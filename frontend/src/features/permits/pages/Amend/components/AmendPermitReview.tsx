@@ -7,7 +7,7 @@ import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../../../comm
 import { usePowerUnitTypesQuery, useTrailerTypesQuery } from "../../../../manageVehicles/apiManager/hooks";
 import { PermitReview } from "../../TermOversize/components/review/PermitReview";
 import { Breadcrumb } from "../../../../../common/components/breadcrumb/Breadcrumb";
-import { getPermitFormDefaultValues } from "../types/AmendPermitFormData";
+import { getDefaultFormDataFromPermit } from "../types/AmendPermitFormData";
 import { ReviewReason } from "./review/ReviewReason";
 import { calculateAmountToRefund } from "../../../helpers/feeSummary";
 
@@ -41,7 +41,7 @@ export const AmendPermitReview = () => {
     window.scrollTo(0, 0);
   }, []);
 
-  const oldFields = getPermitFormDefaultValues(permit);
+  const oldFields = getDefaultFormDataFromPermit(permit);
 
   const amountToRefund = -1 * calculateAmountToRefund(
     permitHistory, 

@@ -107,7 +107,7 @@ export const VehicleDetails = ({
   }, [vehicleData]);
 
   useEffect(() => {
-    if (!selectedVehicle || !selectedVehicle.vin) {
+    if (!selectedVehicle?.vin) {
       clearVehicle();
     } else {
       setNewVehicle(selectedVehicle);

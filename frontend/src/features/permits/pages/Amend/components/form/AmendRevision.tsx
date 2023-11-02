@@ -19,8 +19,7 @@ export const AmendRevision = ({
           data-testid={`amend-revision-permit-${revision.permitId}-by`}
         >
           {revision.name}
-        </span>,
-        <span 
+        </span>, <span 
           className="amend-revision__date"
           data-testid={`amend-revision-permit-${revision.permitId}-at`}
         >

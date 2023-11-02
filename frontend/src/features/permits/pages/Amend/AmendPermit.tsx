@@ -1,8 +1,8 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Box } from "@mui/material";
 
-import { ReadPermitDto } from "../../types/permit";
+import { Permit } from "../../types/permit";
 import { PERMIT_STATUSES, isPermitInactive } from "../../types/PermitStatus";
 import { hasPermitExpired } from "../../helpers/permitPDFHelper";
 import { Banner } from "../../../../common/components/dashboard/Banner";
@@ -18,7 +18,7 @@ import { Unexpected } from "../../../../common/pages/Unexpected";
 import { AmendPermitReview } from "./components/AmendPermitReview";
 import { AmendPermitFinish } from "./components/AmendPermitFinish";
 import { AmendPermitForm } from "./components/AmendPermitForm";
-import { AmendPermitFormData, getPermitFormDefaultValues } from "./types/AmendPermitFormData";
+import { AmendPermitFormData, getDefaultFormDataFromPermit } from "./types/AmendPermitFormData";
 import { SEARCH_RESULTS } from "../../../../routes/constants";
 import { SEARCH_BY_FILTERS, SEARCH_ENTITIES } from "../../../idir/search/types/types";
 import { applyWhenNotNullable } from "../../../../common/helpers/util";
@@ -47,7 +47,7 @@ const displayHeaderText = (stepKey: AmendPermitStep) => {
  * @param permit Permit to amend
  * @returns whether or not the permit is amendable
  */
-const isAmendable = (permit: ReadPermitDto) => {
+const isAmendable = (permit: Permit) => {
   return permit.permitStatus === PERMIT_STATUSES.ISSUED 
     || (!isPermitInactive(permit.permitStatus) && !hasPermitExpired(permit.permitData.expiryDate));
 };
@@ -76,24 +76,30 @@ export const AmendPermit = () => {
   // Get latest amendment application, if any
   const { amendmentApplication } = useAmendmentApplicationQuery(originalPermitId);
 
+  const permitFormDefaultValues = () => {
+    if (amendmentApplication) {
+      return getDefaultFormDataFromPermit(amendmentApplication);
+    }
+
+    return getDefaultFormDataFromPermit(
+      applyWhenNotNullable(
+        p => ({
+          ...p,
+          comment: "",
+        }), 
+        permit
+      )
+    );
+  };
+
   // Permit form data, populated whenever permit is fetched
   const [permitFormData, setPermitFormData] = useState<AmendPermitFormData>(
-    getPermitFormDefaultValues(
-      amendmentApplication ? amendmentApplication : applyWhenNotNullable(p => ({
-        ...p,
-        comment: "",
-      }), permit)
-    )
+    permitFormDefaultValues()
   );
 
   useEffect(() => {
     setPermitFormData(
-      getPermitFormDefaultValues(
-        amendmentApplication ? amendmentApplication : applyWhenNotNullable(p => ({
-          ...p,
-          comment: "",
-        }), permit)
-      )
+      permitFormDefaultValues()
     );
   }, [amendmentApplication, permit]);
 
@@ -153,6 +159,32 @@ export const AmendPermit = () => {
       || typeof amendmentApplication === "undefined";
   };
 
+  const contextData = useMemo(() => ({
+    permit,
+    permitFormData,
+    permitHistory,
+    setPermitFormData,
+    next,
+    back,
+    goTo,
+    currentStepIndex,
+    getLinks,
+    goHome,
+    afterFinishAmend: goHomeSuccess,
+  }), [
+    permit,
+    permitFormData,
+    permitHistory,
+    setPermitFormData,
+    next,
+    back,
+    goTo,
+    currentStepIndex,
+    getLinks,
+    goHome,
+    goHomeSuccess,
+  ]);
+
   if (isLoadingState()) {
     return <Loading />;
   }
@@ -171,19 +203,7 @@ export const AmendPermit = () => {
 
   return (
     <AmendPermitContext.Provider
-      value={{
-        permit,
-        permitFormData,
-        permitHistory,
-        setPermitFormData,
-        next,
-        back,
-        goTo,
-        currentStepIndex,
-        getLinks,
-        goHome,
-        afterFinishAmend: goHomeSuccess,
-      }}
+      value={contextData}
     >
       <Box
         className="layout-box"

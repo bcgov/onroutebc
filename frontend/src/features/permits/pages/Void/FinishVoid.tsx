@@ -2,7 +2,7 @@ import { useContext, useEffect } from "react";
 
 import { VoidPermitContext } from "./context/VoidPermitContext";
 import { RefundFormData } from "../Refund/types/RefundFormData";
-import { ReadPermitDto } from "../../types/permit";
+import { Permit } from "../../types/permit";
 import { usePermitHistoryQuery } from "../../hooks/hooks";
 import { calculateNetAmount } from "../../helpers/feeSummary";
 import { RefundPage } from "../Refund/RefundPage";
@@ -13,7 +13,7 @@ export const FinishVoid = ({
   permit,
   onSuccess,
 }: {
-  permit: ReadPermitDto | null;
+  permit: Permit | null;
   onSuccess: () => void;
 }) => {
   const { voidPermitData } = useContext(VoidPermitContext);

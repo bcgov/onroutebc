@@ -4,7 +4,7 @@ import { AxiosError } from "axios";
 
 import { Application } from "../types/application";
 import { mapApplicationResponseToApplication } from "../helpers/mappers";
-import { IssuePermitsResponse, ReadPermitDto } from "../types/permit";
+import { IssuePermitsResponse, Permit } from "../types/permit";
 import { PermitHistory } from "../types/PermitHistory";
 import { StartTransactionResponseData } from "../types/payment";
 
@@ -96,7 +96,7 @@ export const useApplicationDetailsQuery = (permitId?: string) => {
  * @returns permit details, or error if failed
  */
 export const usePermitDetailsQuery = (permitId?: string) => {
-  const [permit, setPermit] = useState<ReadPermitDto | null | undefined>(undefined);
+  const [permit, setPermit] = useState<Permit | null | undefined>(undefined);
   
   const invalidPermitId = !permitId;
   const query = useQuery({
@@ -266,7 +266,7 @@ export const useIssuePermits = () => {
 export const useAmendPermit = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (data: ReadPermitDto) => {
+    mutationFn: (data: Permit) => {
       return amendPermit(data);
     },
     onSuccess: (response) => {
@@ -316,7 +316,7 @@ export const useModifyAmendmentApplication = () => {
  * @returns Current application used for amendment, or null/undefined
  */
 export const useAmendmentApplicationQuery = (originalPermitId?: string) => {
-  const [amendmentApplication, setAmendmentApplication] = useState<ReadPermitDto | null | undefined>(undefined);
+  const [amendmentApplication, setAmendmentApplication] = useState<Permit | null | undefined>(undefined);
   
   const isIdInvalid = !originalPermitId;
   const query = useQuery({

@@ -6,11 +6,12 @@ import "./ReviewVehicleInfo.scss";
 import { VehicleDetails } from "../../../../types/application";
 import { mapTypeCodeToObject, vehicleTypeDisplayText } from "../../../../helpers/mappers";
 import { VehicleType, VehicleTypesAsString } from "../../../../../manageVehicles/types/managevehicles";
+import { DiffChip } from "./DiffChip";
+import { areValuesDifferent } from "../../../../../../common/helpers/util";
 import {
   formatCountry,
   formatProvince,
 } from "../../../../../../common/helpers/formatCountryProvince";
-import { DiffChip } from "./DiffChip";
 
 export const ReviewVehicleInfo = ({
   vehicleDetails,
@@ -50,69 +51,15 @@ export const ReviewVehicleInfo = ({
   };
 
   const changedFields = showChangedFields ? {
-    unit: (vehicleDetails?.unitNumber && !oldFields?.unitNumber) 
-      || (!vehicleDetails?.unitNumber && oldFields?.unitNumber)
-      || (
-        vehicleDetails?.unitNumber 
-        && oldFields?.unitNumber 
-        && vehicleDetails.unitNumber !== oldFields.unitNumber
-      ),
-    vin: (vehicleDetails?.vin && !oldFields?.vin) 
-      || (!vehicleDetails?.vin && oldFields?.vin)
-      || (
-        vehicleDetails?.vin 
-        && oldFields?.vin 
-        && vehicleDetails.vin !== oldFields.vin
-      ),
-    plate: (vehicleDetails?.plate && !oldFields?.plate) 
-      || (!vehicleDetails?.plate && oldFields?.plate)
-      || (
-        vehicleDetails?.plate 
-        && oldFields?.plate 
-        && vehicleDetails.plate !== oldFields.plate
-      ),
-    make: (vehicleDetails?.make && !oldFields?.make) 
-      || (!vehicleDetails?.make && oldFields?.make)
-      || (
-        vehicleDetails?.make 
-        && oldFields?.make 
-        && vehicleDetails.make !== oldFields.make
-      ),
-    year: (vehicleDetails?.year && !oldFields?.year) 
-      || (!vehicleDetails?.year && oldFields?.year)
-      || (
-        vehicleDetails?.year 
-        && oldFields?.year 
-        && vehicleDetails.year !== oldFields.year
-      ),
-    country: (vehicleDetails?.countryCode && !oldFields?.countryCode) 
-      || (!vehicleDetails?.countryCode && oldFields?.countryCode)
-      || (
-        vehicleDetails?.countryCode 
-        && oldFields?.countryCode 
-        && vehicleDetails.countryCode !== oldFields.countryCode
-      ),
-    province: (vehicleDetails?.provinceCode && !oldFields?.provinceCode) 
-      || (!vehicleDetails?.provinceCode && oldFields?.provinceCode)
-      || (
-        vehicleDetails?.provinceCode 
-        && oldFields?.provinceCode 
-        && vehicleDetails.provinceCode !== oldFields.provinceCode
-      ),
-    type: (vehicleDetails?.vehicleType && !oldFields?.vehicleType) 
-      || (!vehicleDetails?.vehicleType && oldFields?.vehicleType)
-      || (
-        vehicleDetails?.vehicleType 
-        && oldFields?.vehicleType 
-        && vehicleDetails.vehicleType !== oldFields.vehicleType
-      ),
-    subtype: (vehicleDetails?.vehicleSubType && !oldFields?.vehicleSubType) 
-      || (!vehicleDetails?.vehicleSubType && oldFields?.vehicleSubType)
-      || (
-        vehicleDetails?.vehicleSubType 
-        && oldFields?.vehicleSubType 
-        && vehicleDetails.vehicleSubType !== oldFields.vehicleSubType
-      ),
+    unit: areValuesDifferent(vehicleDetails?.unitNumber, oldFields?.unitNumber),
+    vin: areValuesDifferent(vehicleDetails?.vin, oldFields?.vin),
+    plate: areValuesDifferent(vehicleDetails?.plate, oldFields?.plate),
+    make: areValuesDifferent(vehicleDetails?.make, oldFields?.make),
+    year: areValuesDifferent(vehicleDetails?.year, oldFields?.year),
+    country: areValuesDifferent(vehicleDetails?.countryCode, oldFields?.countryCode),
+    province: areValuesDifferent(vehicleDetails?.provinceCode, oldFields?.provinceCode),
+    type: areValuesDifferent(vehicleDetails?.vehicleType, oldFields?.vehicleType),
+    subtype: areValuesDifferent(vehicleDetails?.vehicleSubType, oldFields?.vehicleSubType),
   } : {
     unit: false,
     vin: false,

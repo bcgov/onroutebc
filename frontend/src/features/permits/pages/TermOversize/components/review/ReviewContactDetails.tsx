@@ -2,7 +2,7 @@ import { Box, Typography } from "@mui/material";
 
 import "./ReviewContactDetails.scss";
 import { ContactDetails } from "../../../../types/application";
-import { getDefaultRequiredVal } from "../../../../../../common/helpers/util";
+import { areValuesDifferent, getDefaultRequiredVal } from "../../../../../../common/helpers/util";
 import { DiffChip } from "./DiffChip";
 
 const nameDisplay = (firstName?: string, lastName?: string) => {
@@ -44,12 +44,8 @@ export const ReviewContactDetails = ({
     ) !== phoneDisplay(
       oldFields?.phone2, oldFields?.phone2Extension
     ),
-    email: (contactDetails?.email && !oldFields?.email) 
-      || (!contactDetails?.email && oldFields?.email)
-      || (contactDetails?.email && oldFields?.email && contactDetails.email !== oldFields.email),
-    fax: (contactDetails?.fax && !oldFields?.fax) 
-      || (!contactDetails?.fax && oldFields?.fax)
-      || (contactDetails?.fax && oldFields?.fax && contactDetails.fax !== oldFields.fax),
+    email: areValuesDifferent(contactDetails?.email, oldFields?.email),
+    fax: areValuesDifferent(contactDetails?.fax, oldFields?.fax), 
   } : {
     name: false,
     phone1: false,

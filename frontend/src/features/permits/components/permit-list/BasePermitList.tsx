@@ -6,11 +6,12 @@ import MaterialReactTable, {
   MRT_TableInstance
 } from "material-react-table";
 import { useCallback, useContext, useEffect } from "react";
+
 import { SnackBarContext } from "../../../../App";
 import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import "../../../manageVehicles/components/list/List.scss";
-import { ReadPermitDto } from "../../types/permit";
+import { Permit } from "../../types/permit";
 import { PermitsColumnDefinition } from "./Columns";
 import { PermitRowOptions } from "./PermitRowOptions";
 
@@ -22,7 +23,7 @@ export const BasePermitList = ({
   query,
   isExpired = false,
 }: {
-  query: UseQueryResult<ReadPermitDto[]>;
+  query: UseQueryResult<Permit[]>;
   isExpired?: boolean;
 }) => {
   const { data, isError, isInitialLoading } = query;
@@ -64,8 +65,8 @@ export const BasePermitList = ({
         ({
           row,
         }: {
-          table: MRT_TableInstance<ReadPermitDto>;
-          row: MRT_Row<ReadPermitDto>;
+          table: MRT_TableInstance<Permit>;
+          row: MRT_Row<Permit>;
         }) => {
           return (
             <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
@@ -79,7 +80,7 @@ export const BasePermitList = ({
         []
       )}
       renderTopToolbar={useCallback(
-        ({ table }: { table: MRT_TableInstance<ReadPermitDto> }) => (
+        ({ table }: { table: MRT_TableInstance<Permit> }) => (
           <Box
             sx={{
               display: "flex",

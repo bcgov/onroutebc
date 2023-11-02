@@ -8,6 +8,7 @@ import { Address, CompanyProfile } from "../../manageProfile/types/manageProfile
 import { PERMIT_STATUSES } from "../types/PermitStatus";
 import { calculateFeeByDuration } from "./feeSummary";
 import { PERMIT_TYPES } from "../types/PermitType";
+import { Permit } from "../types/permit";
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
@@ -19,7 +20,6 @@ import {
   MailingAddress,
   VehicleDetails,
 } from "../types/application";
-import { ReadPermitDto } from "../types/permit";
 
 /**
  * Get default values for contact details, or populate with existing contact details and/or user details
@@ -103,7 +103,7 @@ export const getDefaultVehicleDetails = (vehicleDetails?: VehicleDetails) => ({
   saveVehicle: getDefaultRequiredVal(false, vehicleDetails?.saveVehicle),
 });
 
-export const getDurationOrDefault = (applicationData?: Application | ReadPermitDto): number => {
+export const getDurationOrDefault = (applicationData?: Application | Permit): number => {
   return applyWhenNotNullable(
     (duration) => +duration,
     applicationData?.permitData?.permitDuration,

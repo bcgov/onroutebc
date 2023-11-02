@@ -1,117 +1,55 @@
-import { Dayjs } from "dayjs";
-
-import { PermitStatus } from "./PermitStatus";
-import { PermitType } from "./PermitType";
 import { ReplaceDayjsWithString } from "./utility";
-import { PermitApplicationOrigin, PermitApprovalSource } from "./application";
+import { 
+  PartialApplication,
+  PermitData,
+} from "./application";
 
 /**
- * A partial permit type. This is an incomplete type and meant to be extended for use.
+ * A partial permit type that consists of all common fields used for a permit. 
+ * This is an incomplete type and meant to be extended for use.
  */
-interface PartialPermitType {
-  permitId: number;
-  originalPermitId: string;
-  revision: number;
+interface PartialPermit extends Omit<
+  Required<PartialApplication>, 
+  "previousRevision" | "comment" | "userGuid" | "documentId" | "permitId"
+> {
   previousRevision?: number | null;
   comment?: string | null;
-  permitStatus: PermitStatus;
-  companyId: number;
   userGuid?: string | null;
-  permitType: PermitType;
-  applicationNumber: string;
-  permitNumber: string;
-  permitApprovalSource: PermitApprovalSource;
-  permitApplicationOrigin: PermitApplicationOrigin;
   documentId?: string;
+  permitId: number;
 }
 
 /**
- * The response object structure from the permit API.
+ * The request/response object structure to describe the permit object,
+ * and used with the permit API.
+ * 
+ * This type is mostly used as a data transfer object (DTO) to pass permit objects
+ * between frontend and backend, and also used on the frontend for permit-related logic.
  */
-export interface ReadPermitDto extends PartialPermitType {
-  permitIssueDateTime?: string;
+export interface Permit extends PartialPermit {
+  permitIssueDateTime?: string | null;
   createdDateTime: string;
   updatedDateTime: string;
-  permitData: ReplaceDayjsWithString<TermOversizeApplication>;
+  permitData: ReplaceDayjsWithString<PermitData>;
 }
 
 /**
- * Type that replaces all Dayjs types inside direct TermOversizeApplication entries to string types
- *
- * eg. TermOversizeApplication = { c?: Dayjs },
- *
- * and T = { a: number, b: TermOversizeApplication },
- *
- * then TransformPermitData = { a: number, b: { c?: string } }
+ * Type used to describe the response object from void/revoke/amend actions.
  */
-type TransformPermitData<T> = {
-  [K in keyof T]: T[K] extends TermOversizeApplication
-    ? ReplaceDayjsWithString<TermOversizeApplication>
-    : T[K];
-};
-
-interface MailingAddress {
-  addressLine1: string;
-  addressLine2?: string;
-  city: string;
-  provinceCode: string;
-  countryCode: string;
-  postalCode: string;
-}
-
-interface ContactDetails {
-  firstName: string;
-  lastName: string;
-  phone1: string;
-  phone1Extension?: string;
-  phone2?: string;
-  phone2Extension?: string;
-  email: string;
-  fax?: string;
-}
-
-interface VehicleDetails {
-  vin: string;
-  plate: string;
-  make: string;
-  year: number | null;
-  countryCode: string;
-  provinceCode: string;
-  vehicleType: string;
-  vehicleSubType: string;
-  saveVehicle?: boolean;
-  unitNumber?: string | undefined;
-}
-
-interface Commodities {
-  description: string;
-  condition: string;
-  conditionLink: string;
-  checked: boolean;
-  disabled?: boolean;
-}
-
-interface TermOversizeApplication {
-  startDate: Dayjs;
-  permitDuration: number; //days
-  expiryDate: Dayjs;
-  contactDetails?: ContactDetails;
-  vehicleDetails?: VehicleDetails;
-  commodities: Commodities[];
-  mailingAddress: MailingAddress;
-  feeSummary: string;
-  companyName?: string;
-  clientNumber?: string;
-}
-
 export interface PermitsActionResponse {
   success: string[];
   failure: string[];
 }
 
+/**
+ * Type used to describe the request payload object for issuing permits.
+ */
 export interface IssuePermitRequest {
   applicationIds: string[];
   companyId?: number;
 }
 
+/**
+ * Type used to describe the response object for issuing permits.
+ */
 export type IssuePermitsResponse = PermitsActionResponse;

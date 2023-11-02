@@ -1,7 +1,7 @@
 import { DATE_FORMATS, toLocal } from "../../../common/helpers/formatDate";
 import { mapApplicationToApplicationRequestData } from "../helpers/mappers";
 import { VEHICLES_URL } from "../../../common/apiManager/endpoints/endpoints";
-import { IssuePermitsResponse, ReadPermitDto } from "../types/permit";
+import { IssuePermitsResponse, Permit } from "../types/permit";
 import { PaginatedResponse } from "../../../common/types/common";
 import { PERMIT_STATUSES } from "../types/PermitStatus";
 import { PermitHistory } from "../types/PermitHistory";
@@ -313,7 +313,7 @@ export const issuePermits = async (
  * @param permitId Permit id of the permit to be retrieved.
  * @returns Permit information if found, or undefined
  */
-export const getPermit = async (permitId?: string): Promise<ReadPermitDto | null> => {
+export const getPermit = async (permitId?: string): Promise<Permit | null> => {
   if (!permitId) return null;
   const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
   let permitsURL = `${VEHICLES_URL}/permits/${permitId}`;
@@ -327,7 +327,7 @@ export const getPermit = async (permitId?: string): Promise<ReadPermitDto | null
 
   const response = await httpGETRequest(permitsURL);
   if (!response.data) return null;
-  return response.data as ReadPermitDto;
+  return response.data as Permit;
 };
 
 /**
@@ -337,7 +337,7 @@ export const getPermit = async (permitId?: string): Promise<ReadPermitDto | null
  */
 export const getCurrentAmendmentApplication = async (
   originalId?: string
-): Promise<ReadPermitDto | null> => {
+): Promise<Permit | null> => {
   if (!originalId) return null;
   const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
   let permitsURL = `${VEHICLES_URL}/permits/applications/${originalId}`;
@@ -352,7 +352,7 @@ export const getCurrentAmendmentApplication = async (
   try {
     const response = await httpGETRequest(permitsURL);
     if (!response.data) return null;
-    return response.data as ReadPermitDto;
+    return response.data as Permit;
   } catch (err) {
     return null;
   }
@@ -365,7 +365,7 @@ export const getCurrentAmendmentApplication = async (
  */
 export const getPermits = async ({
   expired = false,
-} = {}): Promise<ReadPermitDto[]> => {
+} = {}): Promise<Permit[]> => {
   const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
   let permitsURL = `${VEHICLES_URL}/permits/user`;
   const queryParams = [];
@@ -383,7 +383,7 @@ export const getPermits = async ({
       const paginatedResponseObject = getDefaultRequiredVal(
         {},
         response.data
-      ) as PaginatedResponse<ReadPermitDto>;
+      ) as PaginatedResponse<Permit>;
       return paginatedResponseObject.items;
     })
     .then((permits) =>
@@ -409,7 +409,7 @@ export const getPermits = async ({
               DATE_FORMATS.DATEONLY_SHORT_NAME
             ),
           },
-        } as ReadPermitDto;
+        } as Permit;
       })
     );
   return permits;
@@ -470,7 +470,7 @@ export const voidPermit = async (voidPermitParams: {
  * @param permit permit data for permit to be amended
  * @returns response with amended permit data, or error if failed
  */
-export const amendPermit = async (permit: ReadPermitDto) => {
+export const amendPermit = async (permit: Permit) => {
   return await httpPOSTRequest(
     PERMITS_API.SUBMIT_TERM_OVERSIZE_PERMIT,
     replaceEmptyValuesWithNull({

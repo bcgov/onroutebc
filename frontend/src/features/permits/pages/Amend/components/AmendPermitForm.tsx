@@ -8,7 +8,7 @@ import { useAmendPermit } from "../hooks/useAmendPermit";
 import { SnackBarContext } from "../../../../../App";
 import { AmendPermitContext } from "../context/AmendPermitContext";
 import { PermitForm } from "../../TermOversize/components/form/PermitForm";
-import { ReadPermitDto } from "../../../types/permit";
+import { Permit } from "../../../types/permit";
 import { useCompanyInfoDetailsQuery } from "../../../../manageProfile/apiManager/hooks";
 import { Breadcrumb } from "../../../../../common/components/breadcrumb/Breadcrumb";
 import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../../../common/helpers/util";
@@ -59,7 +59,7 @@ export const AmendPermitForm = () => {
   const companyInfoQuery = useCompanyInfoDetailsQuery(formData.companyId);
   const companyInfo = companyInfoQuery.data;
 
-  // Helper method to return form field values as an ReadPermitDto object
+  // Helper method to return form field values as an Permit object
   const transformPermitFormData = (data: FieldValues) => {
     return {
       ...data,
@@ -87,7 +87,7 @@ export const AmendPermitForm = () => {
 
   const isSavePermitSuccessful = (status: number) => status === 200 || status === 201;
 
-  const onSaveSuccess = (responseData: ReadPermitDto) => {
+  const onSaveSuccess = (responseData: Permit) => {
     snackBar.setSnackBar({
       showSnackbar: true,
       setShowSnackbar: () => true,
@@ -111,7 +111,7 @@ export const AmendPermitForm = () => {
     const permitToBeAmended = transformPermitFormData(getValues());
     const shouldUpdateApplication = permitToBeAmended.permitId !== permit?.permitId;
     const response = shouldUpdateApplication ? await modifyAmendmentMutation.mutateAsync({
-      applicationNumber: permitToBeAmended.applicationNumber,
+      applicationNumber: getDefaultRequiredVal("", permitToBeAmended.applicationNumber),
       application: {
         ...permitToBeAmended,
         permitId: `${permitToBeAmended.permitId}`,
@@ -126,12 +126,12 @@ export const AmendPermitForm = () => {
         }
       },
     }) : await amendPermitMutation.mutateAsync(
-      mapFormDataToPermit(permitToBeAmended)
+      mapFormDataToPermit(permitToBeAmended) as Permit
     );
     
     if (isSavePermitSuccessful(response.status)) {
       const responseData = response.data;
-      onSaveSuccess(responseData as ReadPermitDto);
+      onSaveSuccess(responseData as Permit);
       additionalSuccessAction?.();
     } else {
       onSaveFailure();

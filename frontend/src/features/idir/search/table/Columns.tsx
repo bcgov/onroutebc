@@ -1,14 +1,13 @@
 import { Link } from "@mui/material";
 import { MRT_ColumnDef } from "material-react-table";
-import {
-  PermitChip,
-} from "../../../permits/components/permit-list/PermitChip";
+
+import { Permit } from "../../../permits/types/permit";
+import { PERMIT_EXPIRED } from "../../../permits/types/PermitStatus";
+import { PermitChip } from "../../../permits/components/permit-list/PermitChip";
 import {
   hasPermitExpired,
   viewPermitPdf,
 } from "../../../permits/helpers/permitPDFHelper";
-import { ReadPermitDto } from "../../../permits/types/permit";
-import { PERMIT_EXPIRED } from "../../../permits/types/PermitStatus";
 
 /*
  *
@@ -17,13 +16,13 @@ import { PERMIT_EXPIRED } from "../../../permits/types/PermitStatus";
  * https://www.material-react-table.com/docs/api/column-options
  *
  */
-export const PermitSearchResultColumnDef: MRT_ColumnDef<ReadPermitDto>[] = [
+export const PermitSearchResultColumnDef: MRT_ColumnDef<Permit>[] = [
   {
     accessorKey: "permitNumber",
     header: "Permit #",
     enableSorting: false,
     Cell: (props: { cell: any; row: any }) => {
-      const permit = props.row.original as ReadPermitDto;
+      const permit = props.row.original as Permit;
       const {
         permitId,
         permitStatus,

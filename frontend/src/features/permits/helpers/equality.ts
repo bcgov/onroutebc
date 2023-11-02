@@ -1,12 +1,12 @@
 import { getDefaultRequiredVal } from "../../../common/helpers/util";
+import { DATE_FORMATS, dayjsToLocalStr } from "../../../common/helpers/formatDate";
 import {
-  TermOversizeApplication,
+  PermitData,
   Commodities,
   VehicleDetails as VehicleDetailsType,
   ContactDetails as ContactDetailsType,
   MailingAddress,
 } from "../types/application";
-import { DATE_FORMATS, dayjsToLocalStr } from "../../../common/helpers/formatDate";
 
 /**
  * Compare whether or not two mailing addresses are equal.
@@ -101,7 +101,7 @@ const areVehicleDetailsEqual = (vehicleDetails1?: VehicleDetailsType, vehicleDet
  * @param data2 second application data info
  * @returns true when application data are equivalent, false otherwise
  */
-export const areApplicationDataEqual = (data1: TermOversizeApplication, data2: TermOversizeApplication) => {
+export const areApplicationDataEqual = (data1: PermitData, data2: PermitData) => {
   return data1.permitDuration === data2.permitDuration
     && dayjsToLocalStr(data1.startDate, DATE_FORMATS.DATEONLY) === dayjsToLocalStr(data2.startDate, DATE_FORMATS.DATEONLY)
     && dayjsToLocalStr(data1.expiryDate, DATE_FORMATS.DATEONLY) === dayjsToLocalStr(data2.expiryDate, DATE_FORMATS.DATEONLY)
