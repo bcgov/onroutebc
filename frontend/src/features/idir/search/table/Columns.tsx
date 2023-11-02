@@ -4,6 +4,8 @@ import { MRT_ColumnDef } from "material-react-table";
 import { Permit } from "../../../permits/types/permit";
 import { PERMIT_EXPIRED } from "../../../permits/types/PermitStatus";
 import { PermitChip } from "../../../permits/components/permit-list/PermitChip";
+import { applyWhenNotNullable } from "../../../../common/helpers/util";
+import { DATE_FORMATS, toLocal } from "../../../../common/helpers/formatDate";
 import {
   hasPermitExpired,
   viewPermitPdf,
@@ -82,9 +84,18 @@ export const PermitSearchResultColumnDef: MRT_ColumnDef<Permit>[] = [
     enableSorting: true,
   },
   {
-    accessorKey: "createdDateTime",
+    accessorKey: "permitIssueDateTime",
     header: "Issue Date",
     enableSorting: true,
     sortDescFirst: true,
+    accessorFn: (originalRow) => {
+      const { permitIssueDateTime } = originalRow;
+      const issueDate = applyWhenNotNullable(
+        dt => toLocal(dt, DATE_FORMATS.DATEONLY),
+        permitIssueDateTime,
+        "NA"
+      );
+      return issueDate;
+    },
   },
 ];
