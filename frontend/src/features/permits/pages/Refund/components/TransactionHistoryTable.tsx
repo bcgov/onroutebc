@@ -48,7 +48,10 @@ export const TransactionHistoryTable = ({
     },
     {
       accessorFn: (originalRow) => 
-        getDefaultRequiredVal("NA", `${originalRow.pgTransactionId}`),
+        getDefaultRequiredVal(
+          "NA", 
+          originalRow.pgTransactionId
+        ),
       id: "providerTransactionId",
       header: "Transaction ID",
       muiTableHeadCellProps: {

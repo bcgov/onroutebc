@@ -9,7 +9,7 @@ import { CustomFormComponent, getErrorMessage } from "../../../../../common/comp
 import { invalidEmail, invalidPhoneLength, requiredMessage } from "../../../../../common/helpers/validationMessages";
 import { useVoidPermitForm } from "../hooks/useVoidPermitForm";
 import { VoidPermitHeader } from "./VoidPermitHeader";
-import { ReadPermitDto } from "../../../types/permit";
+import { Permit } from "../../../types/permit";
 import { SEARCH_RESULTS } from "../../../../../routes/constants";
 import { RevokeDialog } from "./RevokeDialog";
 import { usePermitHistoryQuery } from "../../../hooks/hooks";
@@ -26,7 +26,7 @@ export const VoidPermitForm = ({
   permit,
   onRevokeSuccess,
 }: {
-  permit: ReadPermitDto | null;
+  permit: Permit | null;
   onRevokeSuccess: () => void;
 }) => {
   const navigate = useNavigate();

@@ -4,10 +4,11 @@ import { getUserGuidFromSession } from "../../../common/apiManager/httpRequestHa
 import { BCeIDUserDetailContext } from "../../../common/authentication/OnRouteBCContext";
 import { TROS_COMMODITIES } from "../constants/termOversizeConstants";
 import { now } from "../../../common/helpers/formatDate";
-import { Address } from "../../manageProfile/types/manageProfile";
+import { Address, CompanyProfile } from "../../manageProfile/types/manageProfile";
 import { PERMIT_STATUSES } from "../types/PermitStatus";
 import { calculateFeeByDuration } from "./feeSummary";
 import { PERMIT_TYPES } from "../types/PermitType";
+import { Permit } from "../types/permit";
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
@@ -102,7 +103,7 @@ export const getDefaultVehicleDetails = (vehicleDetails?: VehicleDetails) => ({
   saveVehicle: getDefaultRequiredVal(false, vehicleDetails?.saveVehicle),
 });
 
-export const getDurationOrDefault = (applicationData?: Application): number => {
+export const getDurationOrDefault = (applicationData?: Application | Permit): number => {
   return applyWhenNotNullable(
     (duration) => +duration,
     applicationData?.permitData?.permitDuration,
@@ -120,14 +121,17 @@ export const getDurationOrDefault = (applicationData?: Application): number => {
 export const getDefaultValues = (
   applicationData?: Application,
   companyId?: number,
-  userDetails?: BCeIDUserDetailContext
+  userDetails?: BCeIDUserDetailContext,
+  companyInfo?: CompanyProfile
 ) => ({
   companyId: +getDefaultRequiredVal(0, companyId),
+  originalPermitId: getDefaultRequiredVal("", applicationData?.originalPermitId),
+  comment: getDefaultRequiredVal("", applicationData?.comment),
   applicationNumber: getDefaultRequiredVal(
     "",
     applicationData?.applicationNumber
   ),
-  userGuid: getUserGuidFromSession(),
+  userGuid: getDefaultRequiredVal("", applicationData?.userGuid, getUserGuidFromSession()),
   permitId: getDefaultRequiredVal("", applicationData?.permitId),
   permitNumber: getDefaultRequiredVal("", applicationData?.permitNumber),
   permitType: getDefaultRequiredVal(PERMIT_TYPES.TROS, applicationData?.permitType),
@@ -186,7 +190,8 @@ export const getDefaultValues = (
     ),
     // Default values are updated from companyInfo query in the ContactDetails common component
     mailingAddress: getDefaultMailingAddress(
-      applicationData?.permitData?.mailingAddress
+      applicationData?.permitData?.mailingAddress,
+      companyInfo?.mailingAddress,
     ),
     vehicleDetails: getDefaultVehicleDetails(
       applicationData?.permitData?.vehicleDetails
