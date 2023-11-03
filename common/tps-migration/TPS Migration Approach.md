@@ -21,14 +21,15 @@ flowchart TD
     2 --> 3{A new process\nexists?}
     3 --> |No| 4((End))
     3 --> |Yes| 5[Get next permit\nfor process ID]
-    5 --> 6{Next permit\nexists?}
-    6 --> |No| 2
-    6 --> |Yes| 7{Permit already\nexists in ORBC?}
-    7 --> |Yes|5
-    7 --> |No| 8[Move permit data\ninto ORBC tables]
-    8 --> 9[Upload permit\nPDF to S3]
-    9 --> 10[Update processes table\nto show migrated\nby ORBC]
-    10 --> 5
+    5 --> 6{Any more\npermits?}
+    6 --> |No| 6.5[Update processes table\nto show migrated\nby ORBC]
+    6.5 --> 2
+    6 --> |Yes| 7{Next\npermit already\nexists in ORBC?}
+    7 --> |Yes| 7.5[Delete permit\nfrom temp\ntable]
+    7.5 --> 5
+    7 --> |No| 8[Upload permit\nPDF to S3]
+    8 --> 9[Move permit data\ninto ORBC tables]
+    9 --> 7.5
 ```
 
 ### Notes
