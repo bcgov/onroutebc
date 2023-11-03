@@ -3,6 +3,8 @@ export enum PaymentMethodType {
   WEB_AM = '2',
   WEB_MC = '3',
   WEB_VI = '4',
+  WEB_PV = '5',
+  WEB_MD = '6',
 }
 
 export enum ExtendedPaymentMethodType {

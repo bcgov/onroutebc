@@ -4,12 +4,9 @@ import { AxiosError } from "axios";
 
 import { Application } from "../types/application";
 import { mapApplicationResponseToApplication } from "../helpers/mappers";
-import { IssuePermitsResponse, ReadPermitDto } from "../types/permit";
+import { IssuePermitsResponse, Permit } from "../types/permit";
 import { PermitHistory } from "../types/PermitHistory";
-import { 
-  CompleteTransactionRequestData, 
-  StartTransactionResponseData,
-} from "../types/payment";
+import { StartTransactionResponseData } from "../types/payment";
 
 import {
   getApplicationByPermitId,
@@ -20,6 +17,9 @@ import {
   updateTermOversize,
   startTransaction,
   issuePermits,
+  amendPermit,
+  getCurrentAmendmentApplication,
+  modifyAmendmentApplication,
 } from "../apiManager/permitsAPI";
 
 /**
@@ -96,7 +96,7 @@ export const useApplicationDetailsQuery = (permitId?: string) => {
  * @returns permit details, or error if failed
  */
 export const usePermitDetailsQuery = (permitId?: string) => {
-  const [permit, setPermit] = useState<ReadPermitDto | null | undefined>(undefined);
+  const [permit, setPermit] = useState<Permit | null | undefined>(undefined);
   
   const invalidPermitId = !permitId;
   const query = useQuery({
@@ -148,16 +148,11 @@ export const useStartTransaction = () => {
 
 /**
  * A custom hook that completes the transaction.
- * @param transactionId The transaction id of the transaction to complete
- * @param transactionDetails Details for the transaction to complete
  * @param messageText Message text that indicates the result of the transaction
  * @param paymentStatus Payment status signifying the result of the transaction (1 - success, 0 - failed)
  * @returns The mutation object, whether or not payment was approved, and the message to display
  */
 export const useCompleteTransaction = (
-  transactionId: string,
-  transactionQueryString: string,
-  transactionDetails: CompleteTransactionRequestData,
   messageText: string,
   paymentStatus: number
 ) => {
@@ -186,7 +181,7 @@ export const useCompleteTransaction = (
   };
 
   const mutation = useMutation({
-    mutationFn: () => completeTransaction(transactionId, transactionQueryString, transactionDetails),
+    mutationFn: completeTransaction,
     retry: false,
     onSuccess: (response) => {
       if (response != null) {
@@ -262,5 +257,82 @@ export const useIssuePermits = () => {
   return {
     mutation,
     issueResults,
+  };
+};
+
+/**
+ * A custom react query mutation hook that requests the backend API to amend the permit.
+ */
+export const useAmendPermit = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: Permit) => {
+      return amendPermit(data);
+    },
+    onSuccess: (response) => {
+      queryClient.invalidateQueries({
+        queryKey: ["permit"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["amendmentApplication"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["permitHistory"],
+      });
+
+      if (response.status === 200 || response.status === 201) {
+        return response;
+      }
+      return undefined;
+    },
+  });
+};
+
+export const useModifyAmendmentApplication = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: modifyAmendmentApplication,
+    onSuccess: (response) => {
+      queryClient.invalidateQueries({
+        queryKey: ["permit"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["amendmentApplication"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["permitHistory"],
+      });
+      if (response.status === 200 || response.status === 201) {
+        return response;
+      }
+      return undefined;
+    },
+  });
+};
+
+/**
+ * A custom react query hook that gets the current amendment application, if there is one.
+ * @param originalPermitId Original permit id of the permit that is being amended.
+ * @returns Current application used for amendment, or null/undefined
+ */
+export const useAmendmentApplicationQuery = (originalPermitId?: string) => {
+  const [amendmentApplication, setAmendmentApplication] = useState<Permit | null | undefined>(undefined);
+  
+  const isIdInvalid = !originalPermitId;
+  const query = useQuery({
+    queryKey: ["amendmentApplication"],
+    queryFn: () => getCurrentAmendmentApplication(originalPermitId),
+    enabled: !isIdInvalid,
+    retry: false,
+    refetchOnMount: "always",
+    refetchOnWindowFocus: false, // prevent unnecessary multiple queries on page showing up in foreground
+    onSuccess: (application) => {
+      setAmendmentApplication(application);
+    },
+  });
+
+  return {
+    query,
+    amendmentApplication,
   };
 };

@@ -8,7 +8,6 @@ import { PermitExpiryDateBanner } from "../../../../../../common/components/bann
 import { CustomFormComponent } from "../../../../../../common/components/form/CustomFormComponents";
 import { PHONE_WIDTH } from "../../../../../../themes/bcGovStyles";
 import { ConditionsTable } from "./ConditionsTable";
-import { TROS_PERMIT_DURATIONS } from "../../../../constants/termOversizeConstants";
 import { requiredMessage } from "../../../../../../common/helpers/validationMessages";
 import { Commodities } from "../../../../types/application";
 import {
@@ -24,12 +23,19 @@ export const PermitDetails = ({
   defaultDuration,
   commodities,
   applicationNumber,
+  durationOptions,
+  disableStartDate,
 }: { 
-  feature: string, 
-  defaultStartDate: Dayjs,
-  defaultDuration: number,
-  commodities: Commodities[],
-  applicationNumber?: string,
+  feature: string;
+  defaultStartDate: Dayjs;
+  defaultDuration: number;
+  commodities: Commodities[];
+  applicationNumber?: string;
+  durationOptions: {
+    value: number;
+    label: string;
+  }[];
+  disableStartDate?: boolean;
 }) => {
   const { watch, register, setValue } = useFormContext();
   
@@ -81,6 +87,8 @@ export const PermitDetails = ({
               label: "Start Date",
               width: PHONE_WIDTH,
             }}
+            disabled={disableStartDate}
+            readOnly={disableStartDate}
           />
           <CustomFormComponent
             type="select"
@@ -93,7 +101,7 @@ export const PermitDetails = ({
               label: "Permit Duration",
               width: PHONE_WIDTH,
             }}
-            menuOptions={TROS_PERMIT_DURATIONS.map((data) => (
+            menuOptions={durationOptions.map((data) => (
               <MenuItem key={data.value} value={data.value}>
                 {data.label}
               </MenuItem>

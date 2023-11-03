@@ -1,13 +1,13 @@
 import Link from "@mui/material/Link";
 import { MRT_ColumnDef } from "material-react-table";
 import { viewPermitPdf } from "../../helpers/permitPDFHelper";
-import { ReadPermitDto } from "../../types/permit";
+import { Permit } from "../../types/permit";
 import { PermitChip } from "./PermitChip";
 
 /**
  * The column definition for Permits.
  */
-export const PermitsColumnDefinition: MRT_ColumnDef<ReadPermitDto>[] = [
+export const PermitsColumnDefinition: MRT_ColumnDef<Permit>[] = [
   {
     accessorKey: "permitNumber",
     header: "Permit #",
@@ -62,5 +62,5 @@ export const PermitsColumnDefinition: MRT_ColumnDef<ReadPermitDto>[] = [
   },
 ];
 
-export const PermitsNotFoundColumnDefinition: MRT_ColumnDef<ReadPermitDto>[] =
+export const PermitsNotFoundColumnDefinition: MRT_ColumnDef<Permit>[] =
   PermitsColumnDefinition;

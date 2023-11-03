@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+
 import {
   addPowerUnit,
   addTrailer,
@@ -14,19 +15,19 @@ import {
  * Fetches all vehicles.
  * @returns An array of vehicles (both Powerunits and Trailers)
  */
-export const useVehiclesQuery = () => {
+export const useVehiclesQuery = (companyId: string) => {
   return useQuery({
     queryKey: ["vehicles"],
-    queryFn: getAllVehicles,
+    queryFn: () => getAllVehicles(companyId),
     retry: false,
     refetchOnWindowFocus: false, // prevents unnecessary queries performed whenever page shows in foreground
   });
 };
 
-export const useVehicleByIdQuery = (powerUnitId: string) => {
+export const useVehicleByIdQuery = (powerUnitId: string, companyId: string) => {
   return useQuery(
     ["powerUnitById", powerUnitId],
-    () => getPowerUnit(powerUnitId),
+    () => getPowerUnit(powerUnitId, companyId),
     { retry: false }
   );
 };

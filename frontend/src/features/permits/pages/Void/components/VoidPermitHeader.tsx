@@ -1,7 +1,7 @@
 import { Box, Typography } from "@mui/material";
 
 import "./VoidPermitHeader.scss";
-import { ReadPermitDto } from "../../../types/permit";
+import { Permit } from "../../../types/permit";
 import { DATE_FORMATS, toLocal } from "../../../../../common/helpers/formatDate";
 import { CompanyBanner } from "../../../../../common/components/banners/CompanyBanner";
 import { permitTypeDisplayText } from "../../../types/PermitType";
@@ -9,7 +9,7 @@ import { permitTypeDisplayText } from "../../../types/PermitType";
 export const VoidPermitHeader = ({
   permit,
 }: {
-  permit: ReadPermitDto | null;
+  permit: Permit | null;
 }) => {
   return permit ? (
     <div className="void-permit__header">

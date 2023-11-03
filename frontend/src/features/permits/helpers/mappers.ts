@@ -1,4 +1,6 @@
 import { Dayjs } from "dayjs";
+
+import { Permit } from "../types/permit";
 import { applyWhenNotNullable } from "../../../common/helpers/util";
 import {
   PowerUnit,
@@ -140,4 +142,115 @@ export const vehicleTypeDisplayText = (vehicleType: VehicleTypesAsString) => {
     return "Trailer";
   }
   return "Power Unit";
+};
+
+/**
+ * Get a cloned permit.
+ * @param permit Permit to clone
+ * @returns Cloned permit with same fields and nested fields as old permit, but different reference
+ */
+export const clonePermit = (permit: Permit): Permit => {
+  return {
+    ...permit,
+    permitData: {
+      ...permit.permitData,
+      contactDetails: permit.permitData.contactDetails ? {
+        ...permit.permitData.contactDetails,
+      } : undefined,
+      vehicleDetails: permit.permitData.vehicleDetails ? {
+        ...permit.permitData.vehicleDetails,
+      } : undefined,
+      commodities: [...permit.permitData.commodities],
+      mailingAddress: {
+        ...permit.permitData.mailingAddress,
+      },
+    },
+  };
+};
+
+/**
+ * Transform a Permit object into an Application object.
+ * @param permit Permit object to transform
+ * @returns Transformed Application object
+ */
+export const transformPermitToApplication = (permit: Permit) => {
+  return {
+    ...permit,
+    permitId: `${permit.permitId}`,
+    previousRevision: applyWhenNotNullable(
+      (prevRev) => `${prevRev}`,
+      permit.previousRevision
+    ),
+    createdDateTime: applyWhenNotNullable(
+      (datetimeStr: string): Dayjs => utcToLocalDayjs(datetimeStr),
+      permit.createdDateTime,
+    ),
+    updatedDateTime: applyWhenNotNullable(
+      (datetimeStr: string): Dayjs => utcToLocalDayjs(datetimeStr),
+      permit.updatedDateTime,
+    ),
+    permitData: {
+      ...permit.permitData,
+      startDate: applyWhenNotNullable(
+        (datetimeStr: string): Dayjs => toLocalDayjs(datetimeStr),
+        permit.permitData.startDate,
+        now()
+      ),
+      expiryDate: applyWhenNotNullable(
+        (datetimeStr: string): Dayjs => toLocalDayjs(datetimeStr),
+        permit.permitData.expiryDate,
+        now()
+      ),
+    }
+  };
+};
+
+/**
+ * Transform an Application object into a Permit object. Some permit fields may not be required.
+ * @param application Application object to transform
+ * @returns Transformed Permit object
+ */
+export const transformApplicationToPermit = (
+  application: Application
+): Omit<
+  Permit, 
+  "originalPermitId" | 
+  "applicationNumber" |
+  "permitNumber" | 
+  "permitApplicationOrigin" |
+  "permitApprovalSource" |
+  "revision"
+> & Pick<
+  Application,
+  "originalPermitId" | 
+  "applicationNumber" |
+  "permitNumber" | 
+  "permitApplicationOrigin" |
+  "permitApprovalSource" |
+  "revision"
+> => {
+  return {
+    ...application,
+    permitId: applyWhenNotNullable(
+      id => +id,
+      application.permitId,
+    ),
+    previousRevision: applyWhenNotNullable(
+      prevRev => +prevRev,
+      application.previousRevision,
+    ),
+    createdDateTime: applyWhenNotNullable(
+      dayjsToUtcStr,
+      application.createdDateTime,
+    ),
+    updatedDateTime: applyWhenNotNullable(
+      dayjsToUtcStr,
+      application.updatedDateTime,
+    ),
+    permitData: {
+      ...application.permitData,
+      startDate: dayjsToLocalStr(application.permitData.startDate, DATE_FORMATS.DATEONLY),
+      expiryDate: dayjsToLocalStr(application.permitData.expiryDate, DATE_FORMATS.DATEONLY),
+    }
+  };
 };
