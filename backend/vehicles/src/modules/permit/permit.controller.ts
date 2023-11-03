@@ -270,4 +270,15 @@ export class PermitController {
     );
     return permit;
   }
+
+  /**
+   * A GET method defined with the @Get() decorator and a route of /types
+   * that returns all available permit types from cache.
+   * @returns
+   */
+  @Get('types/list')
+  async getPermitTypes(): Promise<string> {
+    const permitTypes = await this.permitService.getPermitType();
+    return permitTypes;
+  }
 }
