@@ -134,7 +134,7 @@ export class ApplicationController {
     @Param('permitId') permitId: string,
     @Query('amendment') amendment?: boolean,
   ): Promise<ReadApplicationDto | ReadPermitDto> {
-    return !amendment 
+    return !amendment
       ? this.applicationService.findApplication(permitId)
       : this.applicationService.findCurrentAmendmentApplication(permitId);
   }
