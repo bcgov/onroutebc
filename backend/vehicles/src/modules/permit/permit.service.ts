@@ -52,6 +52,7 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { CacheKey } from 'src/common/enum/cache-key.enum';
 import { getMapFromCache } from 'src/common/helper/cache.helper';
 import { Cache } from 'cache-manager';
+import { PermitIssuedBy } from '../../common/enum/permit-issued-by.enum';
 
 @Injectable()
 export class PermitService {
@@ -419,7 +420,11 @@ export class PermitService {
       newPermit.permitNumber = permitNumber;
       newPermit.applicationNumber = applicationNumber;
       newPermit.permitStatus = voidPermitDto.status;
-      newPermit.permitIssueDateTime = new Date();
+      (newPermit.permitIssuedBy =
+        directory == Directory.IDIR
+          ? PermitIssuedBy.PPC
+          : PermitIssuedBy.SELF_ISSUED),
+        (newPermit.permitIssueDateTime = new Date());
       newPermit.revision = permit.revision + 1;
       newPermit.previousRevision = +permitId;
       newPermit.comment = voidPermitDto.comment;
