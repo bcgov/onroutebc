@@ -423,7 +423,7 @@ export class PermitService {
       (newPermit.permitIssuedBy =
         directory == Directory.IDIR
           ? PermitIssuedBy.PPC
-          : PermitIssuedBy.SELF_ISSUED),
+          : PermitIssuedBy.SELF_ISSUED);
         (newPermit.permitIssueDateTime = new Date());
       newPermit.revision = permit.revision + 1;
       newPermit.previousRevision = +permitId;
