@@ -14,6 +14,7 @@ import { PermitApplicationOrigin } from '../../../common/enum/permit-application
 import { PermitApprovalSource } from '../../../common/enum/permit-approval-source.enum';
 import { ApplicationStatus } from 'src/common/enum/application-status.enum';
 import { PermitTransaction } from '../../payment/entities/permit-transaction.entity';
+import { PermitIssuedBy } from '../../../common/enum/permit-issued-by.enum';
 
 @Entity({ name: 'permit.ORBC_PERMIT' })
 export class Permit extends Base {
@@ -74,6 +75,14 @@ export class Permit extends Base {
 
   @AutoMap()
   @ApiProperty({
+    example: '1',
+    description: 'GUID of the user requesting the permit.',
+  })
+  @Column({ length: 32, name: 'ISSUER_USER_GUID', nullable: true })
+  issuerUserGuid: string;
+
+  @AutoMap()
+  @ApiProperty({
     enum: PermitType,
     description: 'Friendly name for the permit type',
     example: PermitType.TERM_OVERSIZE,
@@ -101,6 +110,21 @@ export class Permit extends Base {
     nullable: true,
   })
   permitApprovalSource: PermitApprovalSource;
+
+  @AutoMap()
+  @ApiProperty({
+    enum: PermitIssuedBy,
+    example: PermitIssuedBy.PPC,
+    description: 'Permit issued by indicator',
+  })
+  @Column({
+    type: 'simple-enum',
+    enum: PermitIssuedBy,
+    length: 8,
+    name: 'PERMIT_ISSUED_BY_TYPE',
+    nullable: true,
+  })
+  permitIssuedBy: PermitIssuedBy;
 
   @AutoMap()
   @ApiProperty({

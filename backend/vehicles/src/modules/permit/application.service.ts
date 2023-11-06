@@ -49,6 +49,7 @@ import { Receipt } from '../payment/entities/receipt.entity';
 import { convertUtcToPt } from '../../common/helper/date-time.helper';
 import { Directory } from 'src/common/enum/directory.enum';
 import { ReadPermitDto } from './dto/response/read-permit.dto';
+import { PermitIssuedBy } from '../../common/enum/permit-issued-by.enum';
 
 @Injectable()
 export class ApplicationService {
@@ -509,6 +510,11 @@ export class ApplicationService {
           permitStatus: fetchedApplication.permitStatus,
           permitNumber: fetchedApplication.permitNumber,
           documentId: generatedDocuments.at(0).dmsId,
+          issuerUserGuid: currentUser.userGUID,
+          permitIssuedBy:
+            directory == Directory.IDIR
+              ? PermitIssuedBy.PPC
+              : PermitIssuedBy.SELF_ISSUED,
           permitIssueDateTime: fetchedApplication.permitIssueDateTime,
           updatedDateTime: new Date(),
           updatedUser: currentUser.userName,
