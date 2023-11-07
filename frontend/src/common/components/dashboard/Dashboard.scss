@@ -1,5 +1,5 @@
 .tabpanel-container {
-  padding: 0 3.75rem;
+  padding: 0 8.551vw;
   overflow: hidden;
   background-color: white;
   min-height: calc(100vh - 306px);
@@ -7,15 +7,36 @@
 }
 
 .layout-box {
-  padding: 0 3.75rem;
+  padding: 0 8.551vw;
+}
+
+.MuiTabs-scrollButtons.Mui-disabled {
+  display: none;
 }
 
 @media screen and (max-width: 768px) {
   .tabpanel-container {
-    padding: 0 1.25rem;
+    padding: 0 5.5rem;
   }
 
   .layout-box {
-    padding: 0 1.25rem;
+    padding: 0 5.5rem;
+  }
+}
+
+@media (width < 600px) {
+  .MuiTabs-flexContainer {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+@media (width < 420px) {
+  .tabpanel-container {
+    padding: 0 1rem;
+  }
+
+  .layout-box {
+    padding: 0 1rem;
   }
 }

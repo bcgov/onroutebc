@@ -1,0 +1,24 @@
+.start-application {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+
+  & &__btn {
+    margin-left: 1.5rem;
+    margin-bottom: 0.625rem;
+    padding: 0 2rem;
+    font-size: 1rem;
+    font-weight: bold;
+  }
+}
+
+@media (width < 768px) {
+  .start-application {
+    flex-direction: column;
+
+    & &__btn {
+      margin-left: 0;
+      width: 100%;
+    }
+  }
+}

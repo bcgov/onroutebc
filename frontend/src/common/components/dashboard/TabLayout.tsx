@@ -57,6 +57,7 @@ const DisplayTabs = ({
 }) => {
   return (
     <Tabs
+      className="display-tabs"
       value={value}
       onChange={handleChange}
       variant="scrollable"

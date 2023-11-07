@@ -4,6 +4,8 @@
   align-items: center;
   margin: 0 0.5rem 0 0;
   height: 100%;
+  max-width: 60vw;
+  overflow: hidden;
 
   &__logo {
     img {
@@ -26,6 +28,8 @@
 
 @media (width < 1000px) {
   .brand {
+    max-width: 44.95vw;
+
     &__company {
       display: none;
     }
@@ -34,6 +38,8 @@
 
 @media (width < 530px) {
   .brand {
+    max-width: 100%;
+    
     &__title {
       display: none;
     }

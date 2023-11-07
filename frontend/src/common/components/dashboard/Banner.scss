@@ -24,3 +24,11 @@
     margin-top: -1rem;
   }
 }
+
+@media (width < 600px) {
+  .layout-banner {
+    & &__text-section {
+      flex-direction: column;
+    }
+  }
+}
