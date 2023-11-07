@@ -49,6 +49,7 @@ import { Receipt } from '../payment/entities/receipt.entity';
 import { convertUtcToPt } from '../../common/helper/date-time.helper';
 import { Directory } from 'src/common/enum/directory.enum';
 import { ReadPermitDto } from './dto/response/read-permit.dto';
+import { PermitIssuedBy } from '../../common/enum/permit-issued-by.enum';
 
 @Injectable()
 export class ApplicationService {
@@ -406,10 +407,19 @@ export class ApplicationService {
       );
     }
 
-    const newApplication = (applicationId === fetchedApplication.originalPermitId?applicationId: null);
-    const oldApplication = (applicationId === fetchedApplication.originalPermitId?null: fetchedApplication.previousRevision.toString());
+    const newApplication =
+      applicationId === fetchedApplication.originalPermitId
+        ? applicationId
+        : null;
+    const oldApplication =
+      applicationId === fetchedApplication.originalPermitId
+        ? null
+        : fetchedApplication.previousRevision.toString();
 
-    const permitNumber = await this.generatePermitNumber(newApplication, oldApplication);
+    const permitNumber = await this.generatePermitNumber(
+      newApplication,
+      oldApplication,
+    );
     //Generate receipt number for the permit to be created in database.
     const receiptNumber =
       fetchedApplication.permitTransactions[0].transaction.receipt
@@ -500,6 +510,11 @@ export class ApplicationService {
           permitStatus: fetchedApplication.permitStatus,
           permitNumber: fetchedApplication.permitNumber,
           documentId: generatedDocuments.at(0).dmsId,
+          issuerUserGuid: currentUser.userGUID,
+          permitIssuedBy:
+            directory == Directory.IDIR
+              ? PermitIssuedBy.PPC
+              : PermitIssuedBy.SELF_ISSUED,
           permitIssueDateTime: fetchedApplication.permitIssueDateTime,
           updatedDateTime: new Date(),
           updatedUser: currentUser.userName,
@@ -794,7 +809,9 @@ export class ApplicationService {
     );
   }
 
-  async findCurrentAmendmentApplication(originalPermitId: string): Promise<ReadPermitDto> {
+  async findCurrentAmendmentApplication(
+    originalPermitId: string,
+  ): Promise<ReadPermitDto> {
     const application = await this.permitRepository
       .createQueryBuilder('permit')
       .innerJoinAndSelect('permit.permitData', 'permitData')
@@ -815,11 +832,7 @@ export class ApplicationService {
       .orderBy('permit.revision', 'DESC')
       .getOne();
 
-    return await this.classMapper.mapAsync(
-      application,
-      Permit,
-      ReadPermitDto,
-    );
+    return await this.classMapper.mapAsync(application, Permit, ReadPermitDto);
   }
 
   async checkApplicationInProgress(originalPermitId: string): Promise<number> {

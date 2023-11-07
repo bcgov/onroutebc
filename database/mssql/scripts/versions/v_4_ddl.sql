@@ -14,6 +14,8 @@ CREATE TABLE [permit].[ORBC_PERMIT](
 	[COMPANY_ID] [int] NULL,
 	[PERMIT_TYPE] [varchar](10) NULL,
 	[PERMIT_APPROVAL_SOURCE_TYPE] [varchar](8) NULL,
+	[PERMIT_ISSUED_BY_TYPE] [varchar](15) NULL,
+	[ISSUER_USER_GUID] [char](32) NULL,
 	[PERMIT_APPLICATION_ORIGIN_TYPE] [varchar](8) NULL,
 	[APPLICATION_NUMBER] [varchar](19) NULL,
 	[PERMIT_NUMBER] [varchar](19) NULL,
@@ -23,7 +25,6 @@ CREATE TABLE [permit].[ORBC_PERMIT](
 	[OWNER_USER_GUID] [char](32) NULL,
 	[PERMIT_STATUS_TYPE] [varchar](20) NULL,
 	[PERMIT_ISSUE_DATE_TIME] [datetime2](7) NULL,
-	[PERMIT_VOID_DATE_TIME] [datetime2](7) NULL,
 	[DOCUMENT_ID] [varchar](10) NULL,
 	[COMMENT] [nvarchar](3000),
 	[APP_CREATE_TIMESTAMP] [datetime2](7) DEFAULT (getutcdate()),
@@ -157,6 +158,21 @@ CREATE TABLE [permit].[ORBC_PERMIT_APPROVAL_SOURCE_TYPE](
 ) ON [PRIMARY]
 GO
 
+CREATE TABLE [permit].[ORBC_PERMIT_ISSUED_BY_TYPE](
+	[PERMIT_ISSUED_BY_TYPE] [varchar](15) NOT NULL,
+	[DESCRIPTION] [nvarchar](50) NULL,
+	[CONCURRENCY_CONTROL_NUMBER] [int] NULL,
+	[DB_CREATE_USERID] [varchar](63) NOT NULL,
+	[DB_CREATE_TIMESTAMP] [datetime2](7) NOT NULL,
+	[DB_LAST_UPDATE_USERID] [varchar](63) NOT NULL,
+	[DB_LAST_UPDATE_TIMESTAMP] [datetime2](7) NOT NULL,
+ CONSTRAINT [PK_ORBC_PERMIT_ISSUED_BY_TYPE] PRIMARY KEY CLUSTERED 
+(
+	[PERMIT_ISSUED_BY_TYPE] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
 CREATE TABLE [permit].[ORBC_PERMIT_STATUS_TYPE](
 	[PERMIT_STATUS_TYPE] [varchar](20) NOT NULL,
 	[NAME] [nvarchar](50) NULL,
@@ -216,6 +232,10 @@ ALTER TABLE [permit].[ORBC_PERMIT_APPROVAL_SOURCE_TYPE] ADD  CONSTRAINT [DF_ORBC
 ALTER TABLE [permit].[ORBC_PERMIT_APPROVAL_SOURCE_TYPE] ADD  CONSTRAINT [DF_ORBC_PERMIT_APPROVAL_SOURCE_TYPE_DB_CREATE_TIMESTAMP]  DEFAULT (getutcdate()) FOR [DB_CREATE_TIMESTAMP]
 ALTER TABLE [permit].[ORBC_PERMIT_APPROVAL_SOURCE_TYPE] ADD  CONSTRAINT [DF_ORBC_PERMIT_APPROVAL_SOURCE_TYPE_DB_LAST_UPDATE_USERID]  DEFAULT (user_name()) FOR [DB_LAST_UPDATE_USERID]
 ALTER TABLE [permit].[ORBC_PERMIT_APPROVAL_SOURCE_TYPE] ADD  CONSTRAINT [DF_ORBC_PERMIT_APPROVAL_SOURCE_TYPE_DB_LAST_UPDATE_TIMESTAMP]  DEFAULT (getutcdate()) FOR [DB_LAST_UPDATE_TIMESTAMP]
+ALTER TABLE [permit].[ORBC_PERMIT_ISSUED_BY_TYPE] ADD  CONSTRAINT [DF_ORBC_PERMIT_ISSUED_BY_TYPE_DB_CREATE_USERID]  DEFAULT (user_name()) FOR [DB_CREATE_USERID]
+ALTER TABLE [permit].[ORBC_PERMIT_ISSUED_BY_TYPE] ADD  CONSTRAINT [DF_ORBC_PERMIT_ISSUED_BY_TYPE_DB_CREATE_TIMESTAMP]  DEFAULT (getutcdate()) FOR [DB_CREATE_TIMESTAMP]
+ALTER TABLE [permit].[ORBC_PERMIT_ISSUED_BY_TYPE] ADD  CONSTRAINT [DF_ORBC_PERMIT_ISSUED_BY_TYPE_DB_LAST_UPDATE_USERID]  DEFAULT (user_name()) FOR [DB_LAST_UPDATE_USERID]
+ALTER TABLE [permit].[ORBC_PERMIT_ISSUED_BY_TYPE] ADD  CONSTRAINT [DF_ORBC_PERMIT_ISSUED_BY_TYPE_DB_LAST_UPDATE_TIMESTAMP]  DEFAULT (getutcdate()) FOR [DB_LAST_UPDATE_TIMESTAMP]
 ALTER TABLE [permit].[ORBC_PERMIT_STATUS_TYPE] ADD  CONSTRAINT [DF_ORBC_PERMIT_STATUS_TYPE_DB_CREATE_USERID]  DEFAULT (user_name()) FOR [DB_CREATE_USERID]
 ALTER TABLE [permit].[ORBC_PERMIT_STATUS_TYPE] ADD  CONSTRAINT [DF_ORBC_PERMIT_STATUS_TYPE_DB_CREATE_TIMESTAMP]  DEFAULT (getutcdate()) FOR [DB_CREATE_TIMESTAMP]
 ALTER TABLE [permit].[ORBC_PERMIT_STATUS_TYPE] ADD  CONSTRAINT [DF_ORBC_PERMIT_STATUS_TYPE_DB_LAST_UPDATE_USERID]  DEFAULT (user_name()) FOR [DB_LAST_UPDATE_USERID]
@@ -232,6 +252,8 @@ REFERENCES [permit].[ORBC_PERMIT_APPLICATION_ORIGIN_TYPE] ([PERMIT_APPLICATION_O
 ALTER TABLE [permit].[ORBC_PERMIT] CHECK CONSTRAINT [FK_ORBC_PERMIT_PERMIT_APPLICATION_ORIGIN]
 ALTER TABLE [permit].[ORBC_PERMIT]  WITH CHECK ADD  CONSTRAINT [FK_ORBC_PERMIT_PERMIT_APPROVAL_SOURCE] FOREIGN KEY([PERMIT_APPROVAL_SOURCE_TYPE])
 REFERENCES [permit].[ORBC_PERMIT_APPROVAL_SOURCE_TYPE] ([PERMIT_APPROVAL_SOURCE_TYPE])
+ALTER TABLE [permit].[ORBC_PERMIT]  WITH CHECK ADD  CONSTRAINT [FK_ORBC_PERMIT_PERMIT_ISSUED_BY] FOREIGN KEY([PERMIT_ISSUED_BY_TYPE])
+REFERENCES [permit].[ORBC_PERMIT_ISSUED_BY_TYPE] ([PERMIT_ISSUED_BY_TYPE])
 ALTER TABLE [permit].[ORBC_PERMIT] CHECK CONSTRAINT [FK_ORBC_PERMIT_PERMIT_APPROVAL_SOURCE]
 ALTER TABLE [permit].[ORBC_PERMIT]  WITH CHECK ADD  CONSTRAINT [FK_ORBC_PERMIT_PERMIT_TYPE] FOREIGN KEY([PERMIT_TYPE])
 REFERENCES [permit].[ORBC_PERMIT_TYPE] ([PERMIT_TYPE])
@@ -251,6 +273,9 @@ ALTER TABLE [permit].[ORBC_PERMIT_STATE] CHECK CONSTRAINT [FK_ORBC_PERMIT_STATE_
 ALTER TABLE [permit].[ORBC_PERMIT]  WITH CHECK ADD  CONSTRAINT [FK_ORBC_PERMIT_OWNER_USER_GUID] FOREIGN KEY([OWNER_USER_GUID])
 REFERENCES [dbo].[ORBC_USER] ([USER_GUID])
 ALTER TABLE [permit].[ORBC_PERMIT] CHECK CONSTRAINT [FK_ORBC_PERMIT_OWNER_USER_GUID]
+ALTER TABLE [permit].[ORBC_PERMIT]  WITH CHECK ADD  CONSTRAINT [FK_ORBC_PERMIT_ISSUER_USER_GUID] FOREIGN KEY([ISSUER_USER_GUID])
+REFERENCES [dbo].[ORBC_USER] ([USER_GUID])
+ALTER TABLE [permit].[ORBC_PERMIT] CHECK CONSTRAINT [FK_ORBC_PERMIT_ISSUER_USER_GUID]
 ALTER TABLE [permit].[ORBC_PERMIT]  WITH CHECK ADD  CONSTRAINT [FK_ORBC_PERMIT_PERMIT_STATUS_TYPE] FOREIGN KEY([PERMIT_STATUS_TYPE])
 REFERENCES [permit].[ORBC_PERMIT_STATUS_TYPE] ([PERMIT_STATUS_TYPE])
 ALTER TABLE [permit].[ORBC_PERMIT] CHECK CONSTRAINT [FK_ORBC_PERMIT_PERMIT_STATUS_TYPE]
@@ -261,6 +286,8 @@ INSERT [permit].[ORBC_PERMIT_APPLICATION_ORIGIN_TYPE] ([PERMIT_APPLICATION_ORIGI
 INSERT [permit].[ORBC_PERMIT_APPROVAL_SOURCE_TYPE] ([PERMIT_APPROVAL_SOURCE_TYPE], [DESCRIPTION], [CODE], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'AUTO', N'Auto Approved Online by Carrier', 2, NULL, N'dbo', GETUTCDATE(), N'dbo', GETUTCDATE())
 INSERT [permit].[ORBC_PERMIT_APPROVAL_SOURCE_TYPE] ([PERMIT_APPROVAL_SOURCE_TYPE], [DESCRIPTION], [CODE], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'PPC', N'Approved by PPC', 1, NULL, N'dbo', GETUTCDATE(), N'dbo', GETUTCDATE())
 INSERT [permit].[ORBC_PERMIT_APPROVAL_SOURCE_TYPE] ([PERMIT_APPROVAL_SOURCE_TYPE], [DESCRIPTION], [CODE], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'TPS', N'Imported from TPS', 0, NULL, N'dbo', GETUTCDATE(), N'dbo', GETUTCDATE())
+INSERT [permit].[ORBC_PERMIT_ISSUED_BY_TYPE] ([PERMIT_ISSUED_BY_TYPE], [DESCRIPTION], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'SELF_ISSUED', N'Issued by Self', NULL, N'dbo', GETUTCDATE(), N'dbo', GETUTCDATE())
+INSERT [permit].[ORBC_PERMIT_ISSUED_BY_TYPE] ([PERMIT_ISSUED_BY_TYPE], [DESCRIPTION], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'PPC', N'Issued by PPC', NULL, N'dbo', GETUTCDATE(), N'dbo', GETUTCDATE())
 INSERT [permit].[ORBC_PERMIT_STATUS_TYPE] ([PERMIT_STATUS_TYPE], [NAME], [DESCRIPTION], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'APPROVED', N'Approved', NULL, NULL, N'dbo', GETUTCDATE(), N'dbo', GETUTCDATE())
 INSERT [permit].[ORBC_PERMIT_STATUS_TYPE] ([PERMIT_STATUS_TYPE], [NAME], [DESCRIPTION], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'AUTO_APPROVED', N'Auto Approved', NULL, NULL, N'dbo', GETUTCDATE(), N'dbo', GETUTCDATE())
 INSERT [permit].[ORBC_PERMIT_STATUS_TYPE] ([PERMIT_STATUS_TYPE], [NAME], [DESCRIPTION], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'CANCELLED', N'Cancelled', NULL, NULL, N'dbo', GETUTCDATE(), N'dbo', GETUTCDATE())
@@ -304,6 +331,7 @@ EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID of the orig
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Foreign key to the ORBC_COMPANY table, represents the company requesting the permit' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT', @level2type=N'COLUMN',@level2name=N'COMPANY_ID'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Foreign key to the permit type table, represents the type of permit this record refers to' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT', @level2type=N'COLUMN',@level2name=N'PERMIT_TYPE'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Foreign key to the permit approval source table, identifying which system gave final approval to the permit' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT', @level2type=N'COLUMN',@level2name=N'PERMIT_APPROVAL_SOURCE_TYPE'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Foreign key to the permit issued by table, identifying which user category issued the permit' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT', @level2type=N'COLUMN',@level2name=N'PERMIT_ISSUED_BY_TYPE'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Foreign key to the permit application source table, identifying the system that the permit application originated from' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT', @level2type=N'COLUMN',@level2name=N'PERMIT_APPLICATION_ORIGIN_TYPE'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Unique formatted permit application number' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT', @level2type=N'COLUMN',@level2name=N'APPLICATION_NUMBER'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Unique formatted permit number, recorded once the permit is approved and issued' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT', @level2type=N'COLUMN',@level2name=N'PERMIT_NUMBER'
@@ -311,7 +339,6 @@ EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Original permi
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Revision of the permit, begins with zero and increments by 1 for each subsequent revision' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT', @level2type=N'COLUMN',@level2name=N'REVISION'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID of the previous permit revision metadata record, if this permit revision is greater than zero' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT', @level2type=N'COLUMN',@level2name=N'PREVIOUS_REV_ID'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time when permit was issued' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT', @level2type=N'COLUMN',@level2name=N'PERMIT_ISSUE_DATE_TIME'
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Timestamp of when the permit was voided or revoked. Should be non-null if the permit status is VOIDED or REVOKED.' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT', @level2type=N'COLUMN',@level2name=N'PERMIT_VOID_DATE_TIME'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID of the document/PDF that references the Document Management System (DMS)' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT', @level2type=N'COLUMN',@level2name=N'DOCUMENT_ID'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Current status of the permit or permit application.' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT', @level2type=N'COLUMN',@level2name=N'PERMIT_STATUS_TYPE'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Application code is responsible for retrieving the row and then incrementing the value of the CONCURRENCY_CONTROL_NUMBER column by one prior to issuing an update. If this is done then the update will succeed, provided that the row was not updated by any other transactions in the period between the read and the update operations.' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT', @level2type=N'COLUMN',@level2name=N'CONCURRENCY_CONTROL_NUMBER'
@@ -372,6 +399,14 @@ EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and t
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user or proxy account that created or last updated the record.' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT_APPROVAL_SOURCE_TYPE', @level2type=N'COLUMN',@level2name=N'DB_LAST_UPDATE_USERID'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time the record was created or last updated.' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT_APPROVAL_SOURCE_TYPE', @level2type=N'COLUMN',@level2name=N'DB_LAST_UPDATE_TIMESTAMP'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Definition of all possible sources of permit approvals' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT_APPROVAL_SOURCE_TYPE'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Unique identifier for the permit approval source' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT_ISSUED_BY_TYPE', @level2type=N'COLUMN',@level2name=N'PERMIT_ISSUED_BY_TYPE'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Longer-form text description of the permit approval source' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT_ISSUED_BY_TYPE', @level2type=N'COLUMN',@level2name=N'DESCRIPTION'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Application code is responsible for retrieving the row and then incrementing the value of the CONCURRENCY_CONTROL_NUMBER column by one prior to issuing an update. If this is done then the update will succeed, provided that the row was not updated by any other transactions in the period between the read and the update operations.' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT_ISSUED_BY_TYPE', @level2type=N'COLUMN',@level2name=N'CONCURRENCY_CONTROL_NUMBER'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user or proxy account that created the record.' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT_ISSUED_BY_TYPE', @level2type=N'COLUMN',@level2name=N'DB_CREATE_USERID'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time the record was created.' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT_ISSUED_BY_TYPE', @level2type=N'COLUMN',@level2name=N'DB_CREATE_TIMESTAMP'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user or proxy account that created or last updated the record.' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT_ISSUED_BY_TYPE', @level2type=N'COLUMN',@level2name=N'DB_LAST_UPDATE_USERID'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time the record was created or last updated.' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT_ISSUED_BY_TYPE', @level2type=N'COLUMN',@level2name=N'DB_LAST_UPDATE_TIMESTAMP'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Definition of all possible sources of permit approvals' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT_ISSUED_BY_TYPE'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Unique id of the permit status' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT_STATUS_TYPE', @level2type=N'COLUMN',@level2name=N'PERMIT_STATUS_TYPE'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Friendly name of the permit status' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT_STATUS_TYPE', @level2type=N'COLUMN',@level2name=N'NAME'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Long description of the permit status' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT_STATUS_TYPE', @level2type=N'COLUMN',@level2name=N'DESCRIPTION'
