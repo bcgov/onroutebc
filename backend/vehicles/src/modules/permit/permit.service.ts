@@ -420,11 +420,11 @@ export class PermitService {
       newPermit.permitNumber = permitNumber;
       newPermit.applicationNumber = applicationNumber;
       newPermit.permitStatus = voidPermitDto.status;
-      (newPermit.permitIssuedBy =
+      newPermit.permitIssuedBy =
         directory == Directory.IDIR
           ? PermitIssuedBy.PPC
-          : PermitIssuedBy.SELF_ISSUED);
-        (newPermit.permitIssueDateTime = new Date());
+          : PermitIssuedBy.SELF_ISSUED;
+      newPermit.permitIssueDateTime = new Date();
       newPermit.revision = permit.revision + 1;
       newPermit.previousRevision = +permitId;
       newPermit.comment = voidPermitDto.comment;
