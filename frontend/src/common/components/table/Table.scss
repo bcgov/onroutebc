@@ -1,0 +1,21 @@
+@import "../../../themes/orbcStyles.scss";
+
+.table-container {
+  //padding: 0px 60px;
+  overflow: hidden;
+  background-color: white;
+  height: calc(100vh - 306px);
+
+  .column-link {
+    color: $bc-text-links-blue;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .table-container {
+    //padding: 0px 60px;
+    overflow: hidden;
+    background-color: white;
+    height: calc(100vh - 267px);
+  }
+}

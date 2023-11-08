@@ -2,6 +2,8 @@ import { IconButton } from "@mui/material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashCan } from "@fortawesome/free-solid-svg-icons";
 
+import "./Trash.scss";
+
 export const Trash = ({
   onClickTrash,
 }: {
@@ -13,8 +15,8 @@ export const Trash = ({
 }) => {
   return (
     <IconButton
+      className="trash-btn"
       type="button"
-      sx={{ p: "10px 10px" }}
       aria-label="delete"
       disabled={false}
       onClick={() => {

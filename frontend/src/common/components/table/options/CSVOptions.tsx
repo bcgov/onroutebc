@@ -1,5 +1,5 @@
 import { OnRouteBCTableRowActions } from "../../../../common/components/table/OnRouteBCTableRowActions";
-import "./Options.scss";
+import "./CSVOptions.scss";
 
 const options = ["Import CSV", "Export CSV"];
 

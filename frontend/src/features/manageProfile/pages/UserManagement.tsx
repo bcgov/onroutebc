@@ -1,18 +1,19 @@
 import { Box } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import { RowSelectionState } from "@tanstack/table-core";
+import { useCallback, useContext, useEffect, useState } from "react";
+import { useAuth } from "react-oidc-context";
 import MaterialReactTable, {
   MRT_Row,
   MRT_TableInstance,
 } from "material-react-table";
-import { useCallback, useContext, useEffect, useState } from "react";
-import { useAuth } from "react-oidc-context";
+
 import { SnackBarContext } from "../../../App";
 import { NoRecordsFound } from "../../../common/components/table/NoRecordsFound";
 import { FIVE_MINUTES } from "../../../common/constants/constants";
 import { BC_COLOURS } from "../../../themes/bcGovStyles";
-import DeleteConfirmationDialog from "../../manageVehicles/components/list/ConfirmationDialog";
-import { Trash } from "../../manageVehicles/components/options/Trash";
+import { DeleteConfirmationDialog } from "../../../common/components/dialog/DeleteConfirmationDialog";
+import { Trash } from "../../../common/components/table/options/Trash";
 import { getCompanyUsers } from "../apiManager/manageProfileAPI";
 import { UserManagementTableRowActions } from "../components/user-management/UserManagementRowOptions";
 import { UserManagementColumnsDefinition } from "../types/UserManagementColumns";

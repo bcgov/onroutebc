@@ -1,0 +1,8 @@
+@import "../../../themes/orbcStyles.scss";
+
+.delete-confirmation-dialog {
+  & &__title {
+    background-color: $bc-background-light-grey;
+    color: $bc-red;
+  }
+}

@@ -1,3 +1,7 @@
+import { RowSelectionState } from "@tanstack/table-core";
+import { Box, IconButton, Tooltip } from "@mui/material";
+import { UseQueryResult } from "@tanstack/react-query";
+import { Delete, ContentCopy } from "@mui/icons-material";
 import {
   memo,
   useCallback,
@@ -6,22 +10,19 @@ import {
   useMemo,
   useState,
 } from "react";
+
 import MaterialReactTable, {
   MRT_ColumnDef,
   MRT_GlobalFilterTextField,
   MRT_Row,
   MRT_TableInstance,
 } from "material-react-table";
-import { RowSelectionState } from "@tanstack/table-core";
-import "../../../manageVehicles/components/list/List.scss";
-import { Box, IconButton, Tooltip } from "@mui/material";
-import { Filter } from "../../../../features/manageVehicles/components/options/Filter";
-import { Trash } from "../../../../features/manageVehicles/components/options/Trash";
-import { CSVOptions } from "../../../../features/manageVehicles/components/options/CSVOptions";
-import { Delete, ContentCopy } from "@mui/icons-material";
+
+import "./List.scss";
+import { Trash } from "../../../../common/components/table/options/Trash";
+import { CSVOptions } from "../../../../common/components/table/options/CSVOptions";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
-import { UseQueryResult } from "@tanstack/react-query";
-import DeleteConfirmationDialog from "../../../manageVehicles/components/list/ConfirmationDialog";
+import { DeleteConfirmationDialog } from "../../../../common/components/dialog/DeleteConfirmationDialog";
 import { SnackBarContext } from "../../../../App";
 import { ApplicationInProgress, PermitApplicationInProgress} from "../../types/application";
 import { ApplicationInProgressColumnDefinition } from "./Columns";
@@ -210,7 +211,6 @@ export const List = memo(
                 }}
               >
                 <MRT_GlobalFilterTextField table={table} />
-                <Filter />
                 <Trash onClickTrash={onClickTrashIcon} />
                 <CSVOptions />
               </Box>

@@ -7,12 +7,12 @@ import Typography from "@mui/material/Typography";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashCan } from "@fortawesome/free-solid-svg-icons";
 
-import { BC_COLOURS } from "../../../../themes/bcGovStyles";
+import "./DeleteConfirmationDialog.scss";
 
 /**
  *  A stateless confirmation dialog box for Delete Operations.
  */
-export default function DeleteConfirmationDialog({
+export const DeleteConfirmationDialog = ({
   isOpen,
   onClickDelete,
   onClickCancel,
@@ -38,29 +38,30 @@ export default function DeleteConfirmationDialog({
    * @returns string
    */
   caption: string
-}) {
+}) => {
   const title = caption;
+
   return (
     <div>
       <Dialog
+        className="delete-confirmation-dialog"
         onClose={onClickCancel}
         aria-labelledby="confirmation-dialog-title"
         open={isOpen}
       >
         <DialogTitle
-          sx={{
-            background: BC_COLOURS.bc_background_light_grey,
-            color: BC_COLOURS.bc_red,
-          }}
+          className="delete-confirmation-dialog__title"
         >
           <FontAwesomeIcon icon={faTrashCan} /> &nbsp;
           <strong>Delete {title}(s)? </strong>
         </DialogTitle>
+
         <DialogContent dividers>
           <Typography gutterBottom>
             Are you sure you want to delete this? This action cannot be undone.
           </Typography>
         </DialogContent>
+
         <DialogActions>
           <Button variant="contained" color="secondary" onClick={onClickCancel}>
             Cancel
@@ -72,4 +73,4 @@ export default function DeleteConfirmationDialog({
       </Dialog>
     </div>
   );
-}
+};
