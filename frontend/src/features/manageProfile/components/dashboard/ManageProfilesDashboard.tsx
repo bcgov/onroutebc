@@ -82,10 +82,12 @@ export const ManageProfilesDashboard = React.memo(() => {
     });
   }
 
+  /**
+   * TODO: Enable Payment Information page navigation when page is ready
   tabs.push({
     label: "Payment Information",
     component: <>TODO</>,
-  });
+  });*/
 
   return (
     <TabLayout
