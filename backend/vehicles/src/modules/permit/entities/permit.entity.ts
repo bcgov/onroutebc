@@ -120,7 +120,7 @@ export class Permit extends Base {
   @Column({
     type: 'simple-enum',
     enum: PermitIssuedBy,
-    length: 8,
+    length: 15,
     name: 'PERMIT_ISSUED_BY_TYPE',
     nullable: true,
   })
