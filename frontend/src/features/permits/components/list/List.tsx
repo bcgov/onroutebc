@@ -1,7 +1,7 @@
 import { RowSelectionState } from "@tanstack/table-core";
 import { Box, IconButton, Tooltip } from "@mui/material";
 import { UseQueryResult } from "@tanstack/react-query";
-import { Delete, ContentCopy } from "@mui/icons-material";
+import { Delete } from "@mui/icons-material";
 import {
   memo,
   useCallback,
@@ -20,7 +20,6 @@ import MaterialReactTable, {
 
 import "./List.scss";
 import { Trash } from "../../../../common/components/table/options/Trash";
-import { CSVOptions } from "../../../../common/components/table/options/CSVOptions";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { DeleteConfirmationDialog } from "../../../../common/components/dialog/DeleteConfirmationDialog";
 import { SnackBarContext } from "../../../../App";
@@ -161,40 +160,31 @@ export const List = memo(
           }}
           renderRowActions={useCallback(
             ({
-              table,
               row,
             }: {
               table: MRT_TableInstance<ApplicationInProgress>;
               row: MRT_Row<ApplicationInProgress>;
             }) => (
               <Box sx={{justifyContent: "flex-end", display: "flex"}}>
-                <Tooltip arrow placement="top" title="Make a copy">
-                  <IconButton
-                    disabled={false}
-                    onClick={() => table.setEditingRow(row)}
-                  >
-                    <ContentCopy />
-                  </IconButton>
-                </Tooltip>
                 <Tooltip arrow placement="top" title="Delete">
-                      <IconButton
-                        color="error"
-                        onClick={() => {
-                          setIsDeleteDialogOpen(() => true);
-                          setRowSelection(() => {
-                            const newObject: { [key: string]: boolean } = {};
-                            // Setting the selected row to false so that
-                            // the row appears unchecked.
-                            newObject[
-                              row.original.permitId as string
-                            ] = false;
-                            return newObject;
-                          });
-                        }}
-                        disabled={false}
-                      >
-                        <Delete />
-                      </IconButton>
+                  <IconButton
+                    color="error"
+                    onClick={() => {
+                      setIsDeleteDialogOpen(() => true);
+                      setRowSelection(() => {
+                        const newObject: { [key: string]: boolean } = {};
+                        // Setting the selected row to false so that
+                        // the row appears unchecked.
+                        newObject[
+                          row.original.permitId as string
+                        ] = false;
+                        return newObject;
+                      });
+                    }}
+                    disabled={false}
+                  >
+                    <Delete />
+                  </IconButton>
                 </Tooltip>
               </Box>
             ),
@@ -212,7 +202,6 @@ export const List = memo(
               >
                 <MRT_GlobalFilterTextField table={table} />
                 <Trash onClickTrash={onClickTrashIcon} />
-                <CSVOptions />
               </Box>
             ),
             []
