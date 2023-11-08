@@ -76,10 +76,12 @@ export const ManageApplicationDashboard = React.memo(() => {
       label: "Expired Permits",
       component: <ExpiredPermitList />,
     },
+    /**
+     * Enable Applications in Review page navigation when page is ready
     {
       label: "Applications in Review",
       component: <>TODO</>,
-    },
+    },*/
   ];
 
   return (
