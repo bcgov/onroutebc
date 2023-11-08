@@ -61,10 +61,12 @@ export const ManageVehiclesDashboard = memo(() => {
       label: "Trailer",
       component: <List vehicleType="trailer" query={trailerQuery} companyId={companyId} />,
     },
+    /** 
+     * TODO: Enable Vehicle Configuration page navigation when page is ready
     {
       label: "Vehicle Configuration",
       component: <>TODO</>,
-    },
+    },*/
   ];
 
   return (
