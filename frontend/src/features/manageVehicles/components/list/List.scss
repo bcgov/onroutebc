@@ -3,6 +3,7 @@
   overflow: hidden;
   background-color: white;
   height: calc(100vh - 306px);
+  padding-bottom: 100px;
 }
 
 @media screen and (max-width: 768px) {
@@ -11,5 +12,6 @@
     overflow: hidden;
     background-color: white;
     height: calc(100vh - 267px);
+    padding-bottom: 100px;
   }
 }
