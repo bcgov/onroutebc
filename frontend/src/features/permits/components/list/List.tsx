@@ -67,6 +67,8 @@ export const List = memo(
     const snackBar = useContext(SnackBarContext);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
+    const hasNoRowsSelected = Object.keys(rowSelection).length === 0;
+
     /**
      * Callback function for clicking on the Trash icon above the Table.
      */
@@ -165,7 +167,7 @@ export const List = memo(
               table: MRT_TableInstance<ApplicationInProgress>;
               row: MRT_Row<ApplicationInProgress>;
             }) => (
-              <Box sx={{justifyContent: "flex-end", display: "flex"}}>
+              <Box className="table-container__row-actions">
                 <Tooltip arrow placement="top" title="Delete">
                   <IconButton
                     color="error"
@@ -193,18 +195,12 @@ export const List = memo(
           // Render a custom options Bar (inclues search, filter, trash, and csv options)
           renderTopToolbar={useCallback(
             ({ table }: { table: MRT_TableInstance<ApplicationInProgress> }) => (
-              <Box
-                sx={{
-                  display: "flex",
-                  padding: "20px 0px",
-                  backgroundColor: "white",
-                }}
-              >
+              <Box className="table-container__top-toolbar">
                 <MRT_GlobalFilterTextField table={table} />
-                <Trash onClickTrash={onClickTrashIcon} />
+                <Trash onClickTrash={onClickTrashIcon} disabled={hasNoRowsSelected} />
               </Box>
             ),
-            []
+            [hasNoRowsSelected]
           )}
           /*
            *
@@ -255,16 +251,11 @@ export const List = memo(
           positionGlobalFilter="left"
           initialState={{ showGlobalFilter: true }} //show the search bar by default
           muiSearchTextFieldProps={{
+            className: "top-toolbar-search",
             placeholder: "Search",
-            sx: {
-              minWidth: "300px",
-              backgroundColor: "white",
-            },
             variant: "outlined",
             inputProps: {
-              sx: {
-                padding: "10px",
-              },
+              className: "search-input",
             },
           }}
           // Row Header

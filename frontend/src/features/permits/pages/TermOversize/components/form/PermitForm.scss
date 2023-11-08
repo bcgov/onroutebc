@@ -2,9 +2,16 @@
 
 .permit-form {
   padding-top: 1.5rem;
+  padding-bottom: 10rem;
   background-color: $bc-white;
 
   &__form {
     padding-bottom: 5rem;
+  }
+}
+
+@media (width < 576px) {
+  .permit-form {
+    padding-bottom: 287px;
   }
 }

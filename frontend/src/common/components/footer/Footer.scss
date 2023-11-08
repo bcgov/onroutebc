@@ -5,32 +5,51 @@ footer {
   border-top: 2px solid orbcStyles.$bc-gold;
   color: orbcStyles.$white;
   font-family: ‘BCSans’, ‘Noto Sans’, Verdana, Arial, sans-serif;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  padding: 0 8.551vw;
+
+  .container {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+    min-height: 46px;
+  }
+
+  ul {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin: 0;
+    color: orbcStyles.$white;
+    list-style: none;
+    align-items: center;
+    height: 100%;
+    padding: 0;
+
+    li {
+      a {
+        font-size: 0.813em;
+        font-weight: normal; /* 400 */
+        color: orbcStyles.$white;
+        border-right: 1px solid #4b5e7e;
+        padding-left: 5px;
+        padding-right: 5px;
+      }
+    }
+  }
 }
 
-footer .container {
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-  text-align: center;
-  min-height: 46px;
+@media (width < 768px) {
+  .footer {
+    padding: 0 5.5rem;
+  }
 }
 
-footer ul {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  margin: 0;
-  color: orbcStyles.$white;
-  list-style: none;
-  align-items: center;
-  height: 100%;
-}
-
-footer ul li a {
-  font-size: 0.813em;
-  font-weight: normal; /* 400 */
-  color: orbcStyles.$white;
-  border-right: 1px solid #4b5e7e;
-  padding-left: 5px;
-  padding-right: 5px;
+@media (width < 420px) {
+  .footer {
+    padding: 0 1rem;
+  }
 }
