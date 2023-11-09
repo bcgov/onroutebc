@@ -56,7 +56,7 @@ const App = () => {
     alertType: "info",
   });
 
-  const [userRoles, setUserRoles] = useState<string[] | undefined>();
+  const [userRoles, setUserRoles] = useState<string[] | null | undefined>();
   const [companyId, setCompanyId] = useState<number | undefined>();
   const [onRouteBCClientNumber, setOnRouteBCClientNumber] = useState<
     string | undefined

@@ -13,11 +13,9 @@ interface PermitAction {
 
 const PERMIT_ACTIONS: PermitAction[]  = [
   {
-    actionName: "Amend",
-    isAuthorized: (isExpired: boolean, userAuthGroup?: string) => 
-      !isExpired && (
-        userAuthGroup === USER_AUTH_GROUP.PPCCLERK || userAuthGroup === USER_AUTH_GROUP.SYSADMIN
-      ),
+    actionName: "Resend",
+    isAuthorized: (_: boolean, userAuthGroup?: string) =>
+      userAuthGroup === USER_AUTH_GROUP.PPCCLERK || userAuthGroup === USER_AUTH_GROUP.SYSADMIN,
   },
   {
     actionName: "View Receipt",
@@ -27,12 +25,14 @@ const PERMIT_ACTIONS: PermitAction[]  = [
       || userAuthGroup === USER_AUTH_GROUP.EOFFICER,
   },
   {
-    actionName: "Resend",
-    isAuthorized: (_: boolean, userAuthGroup?: string) =>
-      userAuthGroup === USER_AUTH_GROUP.PPCCLERK || userAuthGroup === USER_AUTH_GROUP.SYSADMIN,
+    actionName: "Amend",
+    isAuthorized: (isExpired: boolean, userAuthGroup?: string) => 
+      !isExpired && (
+        userAuthGroup === USER_AUTH_GROUP.PPCCLERK || userAuthGroup === USER_AUTH_GROUP.SYSADMIN
+      ),
   },
   {
-    actionName: "Void",
+    actionName: "Void/Revoke",
     isAuthorized: (isExpired: boolean, userAuthGroup?: string) =>
       !isExpired && userAuthGroup === USER_AUTH_GROUP.SYSADMIN,
   },
@@ -98,7 +98,7 @@ export const IDIRPermitSearchRowActions = ({
       setIsResendOpen(() => true);
     } else if (selectedOption === "View Receipt") {
       viewReceiptPdf(permitId.toString());
-    } else if (selectedOption === "Void") {
+    } else if (selectedOption === "Void/Revoke") {
       navigate(`/${routes.PERMITS}/${permitId}/${routes.PERMIT_VOID}`);
     } else if (selectedOption === "Amend") {
       navigate(`/${routes.PERMITS}/${permitId}/${routes.PERMIT_AMEND}`);
