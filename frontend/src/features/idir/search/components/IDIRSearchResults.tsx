@@ -126,7 +126,7 @@ export const IDIRSearchResults = memo(
             isLoading,
             showAlertBanner: isError,
             showProgressBars: isLoading,
-            sorting: [{ id: "createdDateTime", desc: true }],
+            sorting: [{ id: "permitIssueDateTime", desc: true }],
           }}
           // Disable the default column actions so that we can use our custom actions
           enableColumnActions={false}

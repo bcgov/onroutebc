@@ -1,33 +1,21 @@
 import { useQuery } from "@tanstack/react-query";
-import { useEffect } from "react";
 
 import "./ActivePermitList.scss";
 import { InfoBcGovBanner } from "../../../../common/components/banners/AlertBanners";
 import { FIVE_MINUTES } from "../../../../common/constants/constants";
 import { getPermits } from "../../apiManager/permitsAPI";
 import { BasePermitList } from "./BasePermitList";
-import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 
 /**
  * A wrapper with the query to load the table with active permits.
  */
-export const ActivePermitList = ({
-  setNumFetchedPermits,
-}: {
-  setNumFetchedPermits: (numFetchedPermits: number) => void;
-}) => {
+export const ActivePermitList = () => {
   const query = useQuery({
     queryKey: ["activePermits"],
     queryFn: () => getPermits(),
     keepPreviousData: true,
     staleTime: FIVE_MINUTES,
   });
-
-  const numFetchedPermits = getDefaultRequiredVal(0, query.data?.length);
-
-  useEffect(() => {
-    setNumFetchedPermits(numFetchedPermits);
-  }, [numFetchedPermits]);
 
   return (
     <div className="table-container">
