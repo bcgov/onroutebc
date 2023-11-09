@@ -11,7 +11,9 @@ export const PermitsColumnDefinition: MRT_ColumnDef<Permit>[] = [
   {
     accessorKey: "permitNumber",
     header: "Permit #",
-    enableSorting: false,
+    enableSorting: true,
+    enableMultiSort: false,
+    sortingFn: 'alphanumeric',
     size: 500,
     accessorFn: (row) => row.permitNumber,
     Cell: (props: { cell: any; row: any }) => {
@@ -32,33 +34,47 @@ export const PermitsColumnDefinition: MRT_ColumnDef<Permit>[] = [
   {
     accessorKey: "permitType",
     header: "Permit Type",
-    enableSorting: false,
+    enableSorting: true,
+    enableMultiSort: false,
+    sortingFn: 'alphanumeric'
   },
   {
     accessorFn: (row) => `${row.permitData.vehicleDetails?.unitNumber || ""}`,
     id: "unitNumber",
     header: "Unit #",
-    enableSorting: false,
+    enableSorting: true,
+    enableMultiSort: false,
+    sortingFn: 'alphanumeric'
   },
   {
     accessorKey: "permitData.vehicleDetails.plate",
     header: "Plate",
-    enableSorting: false,
+    enableSorting: true,
+    enableMultiSort: false,
+    sortingFn: 'alphanumeric'
   },
   {
     accessorKey: "permitData.startDate",
     header: "Permit Start Date",
+    enableSorting: true,
+    enableMultiSort: false,
+    sortingFn: 'datetime'
   },
   {
     accessorKey: "permitData.expiryDate",
     header: "Permit End Date",
+    enableSorting: true,
+    enableMultiSort: false,
+    sortingFn: 'datetime'
   },
   {
     accessorFn: (row) =>
       `${row.permitData.contactDetails?.firstName} ${row.permitData.contactDetails?.lastName} `,
     id: "application",
     header: "Applicant",
-    enableSorting: false,
+    enableSorting: true,
+    enableMultiSort: false,
+    sortingFn: 'alphanumericCaseSensitive'
   },
 ];
 
