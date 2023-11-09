@@ -101,7 +101,7 @@ export const BasePermitList = ({
       muiTablePaperProps={{
         sx: {
           border: "none",
-          boxShadow: "none",
+          boxShadow: "none"
         },
       }}
       // Column widths
