@@ -1,11 +1,21 @@
 @import "../../../../themes/orbcStyles.scss";
 
 .payment {
-  padding: 0 3.75rem;
+  padding: 0 8.551vw;;
   background-color: $bc-white;
-  min-height: calc(100vh - 390px);
-  height: 100%;
   display: flex;
   flex-direction: column;
   padding-top: 1.5rem;
+}
+
+@media (width < 768px) {
+  .payment {
+    padding: 0 5.5rem;
+  }
+}
+
+@media (width < 420px) {
+  .payment {
+    padding: 0 1rem;
+  }
 }

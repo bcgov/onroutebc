@@ -14,7 +14,7 @@
     }
   } 
 
-  &#{&}--disabled {
+  &#{&}#{&}--disabled {
     color: $disabled-colour;
 
     &:hover {

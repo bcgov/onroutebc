@@ -28,6 +28,7 @@ export const SelectPermitType = ({
     >
       {label}
     </FormLabel>
+    
     <Select
       className="select-permit-type__input"
       defaultValue={PERMIT_TYPES.TROS}

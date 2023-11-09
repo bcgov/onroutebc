@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 
@@ -25,6 +25,9 @@ export const ManageApplicationDashboard = React.memo(() => {
 
   const { data, isLoading, isError, error } = applicationInProgressQuery;
 
+  const [numActivePermits, setNumActivePermits] = useState<number>(0);
+  const [numExpiredPermits, setNumExpiredPermits] = useState<number>(0);
+
   if (isLoading) {
     return <Loading />;
   }
@@ -41,6 +44,7 @@ export const ManageApplicationDashboard = React.memo(() => {
   const tabs = [
     {
       label: "Applications in Progress",
+      count: data?.length,
       component:
         data?.length === 0 ? (
           <div
@@ -70,11 +74,13 @@ export const ManageApplicationDashboard = React.memo(() => {
     },
     {
       label: "Active Permits",
-      component: <ActivePermitList />,
+      count: numActivePermits,
+      component: <ActivePermitList setNumFetchedPermits={setNumActivePermits} />,
     },
     {
       label: "Expired Permits",
-      component: <ExpiredPermitList />,
+      count: numExpiredPermits,
+      component: <ExpiredPermitList setNumFetchedPermits={setNumExpiredPermits} />,
     },
     /**
      * Enable Applications in Review page navigation when page is ready

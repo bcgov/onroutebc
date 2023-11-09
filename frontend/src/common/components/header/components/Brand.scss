@@ -1,3 +1,5 @@
+@import "../../../../themes/orbcStyles.scss";
+
 .brand {
   display: flex;
   justify-content: flex-start;
@@ -6,6 +8,7 @@
   height: 100%;
   max-width: 60vw;
   overflow: hidden;
+  color: $white;
 
   &__logo {
     img {
@@ -15,12 +18,13 @@
 
   &__title {
     margin: 0;
-    font-weight: 600;
+    font-size: 2rem;
+    font-weight: bold;
   }
 
   &__company {
     border-left: 1px solid #9b9b9b;
-    font-size: 1.5vw;
+    font-size: 1.25rem;
     padding-left: 1rem;
     margin-left: 1rem;
   }

@@ -116,6 +116,15 @@
             border-right: 1px solid #9b9b9b;
             height: 100%;
             align-items: center;
+            
+            &.active {
+              background-color: orbcStyles.$bc-background-light-grey;
+              color: orbcStyles.$bc-background-blue;
+            }
+
+            &:focus {
+              outline-offset: 0;
+            }
           }
         }
       }

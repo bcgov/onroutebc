@@ -5,10 +5,13 @@
   flex-direction: row;
   align-items: center;
   padding: 0.5rem 0.75rem;
+  font-size: 1rem;
+  font-weight: bold;
 
   &__avatar {
     margin-right: 0.5rem;
-    height: 2rem;
+    font-size: 1.5rem;
+    color: $bc-background-light-grey;
   }
 
   &__username {

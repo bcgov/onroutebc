@@ -12,13 +12,49 @@
   padding: 0 8.551vw;
 }
 
-.MuiTabs-scrollButtons.Mui-disabled {
-  display: none;
-}
-
 .display-tabs {
-  .MuiTab-root.Mui-selected {
-    color: $bc-text-links-blue;
+  /* Override to hide disabled scroll buttons */
+  .MuiTabs-scrollButtons.Mui-disabled {
+    display: none;
+  }
+
+  /* Override built-in MUI underline style */
+  .MuiTabs-indicator {
+    display: none;
+  }
+
+  .display-tab {
+    margin-right: 2.5rem;
+    padding: 0;
+
+    .tab {
+      display: flex;
+      align-items: center;
+      
+      &__label {
+        margin-right: 0;
+        color: $bc-black;
+        opacity: 1;
+        padding: 0.875rem 0;
+      }
+  
+      &__count {
+        font-size: 0.875rem;
+        color: $bc-black;
+        background-color: $bc-border-grey;
+        margin-left: 1rem;
+      }
+    }
+
+    &.Mui-selected {
+      .tab {
+        /* Only underline the tab label when selected */
+        &__label {
+          color: $bc-text-links-blue;
+          border-bottom: 2px solid $bc-text-links-blue;
+        }
+      }
+    }
   }
 }
 

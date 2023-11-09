@@ -7,7 +7,6 @@ import MaterialReactTable, {
   MRT_TableInstance
 } from "material-react-table";
 
-import "../list/List.scss";
 import { SnackBarContext } from "../../../../App";
 import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
@@ -94,10 +93,10 @@ export const BasePermitList = ({
         []
       )}
       /*
-       *
-       * STYLES
-       *
-       */
+      *
+      * STYLES
+      *
+      */
       // Main table container
       muiTablePaperProps={{
         sx: {

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Tabs, Tab } from "@mui/material";
+import { Box, Tabs, Tab, Chip } from "@mui/material";
 
 import "./Dashboard.scss";
 import { Banner } from "./Banner";
@@ -12,6 +12,7 @@ interface TabPanelProps {
 
 interface ComponentProps {
   label: string;
+  count?: number;
   component: JSX.Element;
 }
 
@@ -64,13 +65,25 @@ const DisplayTabs = ({
       scrollButtons="auto"
       aria-label="scrollable profile tabs"
     >
-      {componentList.map(({ label }, index) => {
+      {componentList.map(({ label, count }, index) => {
         return (
           <Tab
             key={label}
-            label={label}
+            className="display-tab"
+            label={(
+              <div className="tab">
+                <div className="tab__label">
+                  {label}
+                </div>
+                {count ? (
+                  <Chip 
+                    className="tab__count"
+                    label={count} 
+                  />
+                ) : null}
+              </div>
+            )}
             {...TabProps(index)}
-            //sx={{ px: 0, marginRight: "40px", fontWeight: 700 }}
           />
         );
       })}
@@ -117,9 +130,11 @@ export const TabLayout = React.memo(
     selectedTabIndex = 0,
   }: TabLayoutProps) => {
     const [value, setValue] = useState<number>(selectedTabIndex);
-    const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+
+    const handleChange = (_: React.SyntheticEvent, newValue: number) => {
       setValue(newValue);
     };
+
     return (
       <>
         <Box
@@ -130,12 +145,14 @@ export const TabLayout = React.memo(
           }}
         >
           <Banner bannerText={bannerText} bannerButton={bannerButton} />
+
           <DisplayTabs
             value={value}
             handleChange={handleChange}
             componentList={componentList}
           />
         </Box>
+
         <DisplayTabPanels value={value} componentList={componentList} />
       </>
     );
