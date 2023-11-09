@@ -138,6 +138,7 @@ export const BasePermitList = ({
       // Search Bar
       positionGlobalFilter="left"
       initialState={{ showGlobalFilter: true }} //show the search bar by default
+      globalFilterFn="contains" // use contains vs the default fuzzy filter fn
       muiSearchTextFieldProps={{
         placeholder: "Search",
         sx: {
