@@ -2,45 +2,77 @@ name: PR Closed
 
 on:
   pull_request:
-    types:
-      - closed
+    branches: [main]
+    types: [closed]
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  # PR open and close use the same group, allowing only one at a time
+  group: pr-${{ github.workflow }}-${{ github.event.number }}
   cancel-in-progress: true
 
 jobs:
   # Clean up OpenShift when PR closed, no conditions
   cleanup-openshift:
     name: Cleanup OpenShift
+    env:
+      name: ${{ github.event.repository.name }}-${{ github.event.number }}
     runs-on: ubuntu-22.04
+    timeout-minutes: 10
     steps:
       - name: Remove OpenShift artifacts
         run: |
-          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
-          oc project ${{ secrets.OC_NAMESPACE }}
+          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ vars.OC_SERVER }}
+          oc project ${{ vars.OC_NAMESPACE }}
 
-          # Remove old build runs, build pods and deployment pods
-          oc delete all,pvc,secret,configmap -l app=${{ github.event.repository.name }}-${{ github.event.number }}
+          # If found, then remove
+          helm status ${{ env.name }} && helm uninstall --no-hooks ${{ env.name }} || \
+            echo "Not found: ${{ env.name }}"
 
-      - name: Authenticate and set context
-        uses: redhat-actions/oc-login@v1
-        with:
-          openshift_server_url: ${{ secrets.OC_SERVER }}
-          openshift_token: ${{ secrets.OC_TOKEN }}
-          namespace: ${{ secrets.OC_NAMESPACE }}
-  
-  image-promotion-test:
-    name: Image Promotions
+          # Remove Bitnami Crunchy PVCs
+          oc delete pvc data-${{ github.event.repository.name }}-${{ github.event.number }}-bitnami-pg-0
+
+  semver:
+    name: Semantic Version
     if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main'
+    outputs:
+      tag: ${{ steps.semver.outputs.tag }}
     runs-on: ubuntu-22.04
+    timeout-minutes: 1
+    steps:
+      - uses: actions/checkout@v4
+      - name: Conventional Changelog Update
+        uses: TriPSs/conventional-changelog-action@v4
+        id: semver
+        with:
+          git-branch: refs/heads/${{ github.head_ref }}
+          git-push: "false"
+          github-token: ${{ github.token }}
+          skip-commit: "true"
+          skip-on-empty: "false"
+          skip-version-file: "true"
+
+      - name: Create Tags
+        if: ${{ steps.semver.outputs.tag != '' }}
+        run: |
+          git tag ${{ steps.changelog.outputs.tag }}
+          git push origin --tag
+
+  # If merged into main, then handle any image promotions
+  tag-images:
+    name: Tag Images
+    if: ${{ needs.semver.outputs.tag != '' }}
+    needs: [semver]
+    runs-on: ubuntu-22.04
+    permissions:
+      packages: write
     strategy:
       matrix:
-        package: [backend/vehicles, backend/dops, frontend]
+        package: [migrations, backend, frontend]
+    timeout-minutes: 2
     steps:
       - uses: shrink/actions-docker-registry-tag@v3
         with:
           registry: ghcr.io
           repository: ${{ github.repository }}/${{ matrix.package }}
           target: ${{ github.event.number }}
-          tags: latest
+          tags: ${{ needs.semver.outputs.tag }}
