@@ -7,9 +7,9 @@ import {
 
 import "./SelectPermitType.scss";
 import { SELECT_FIELD_STYLE } from "../../../../../../themes/orbcStyles";
-import { PERMIT_TYPES } from "../../../../types/PermitType";
 
 export const SelectPermitType = ({
+  value,
   label,
   onChange,
   menuItems,
@@ -28,10 +28,10 @@ export const SelectPermitType = ({
     >
       {label}
     </FormLabel>
-    
+
     <Select
       className="select-permit-type__input"
-      defaultValue={PERMIT_TYPES.TROS}
+      value={value}
       onChange={onChange}
       MenuProps={{
         ...SELECT_FIELD_STYLE.MENU_PROPS,

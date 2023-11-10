@@ -6,19 +6,17 @@ import "./Filter.scss";
 
 export const Filter = () => {
   return (
-    <>
-      <Button
-        className="filter-btn"
-        aria-label="filter"
-        id="filter-button"
-        variant="contained"
-        color="tertiary"
-        aria-haspopup="true"
-        startIcon={<FontAwesomeIcon icon={faFilter} />}
-        disabled={true}
-      >
-        Filter
-      </Button>
-    </>
+    <Button
+      className="filter-btn"
+      aria-label="filter"
+      id="filter-button"
+      variant="contained"
+      color="tertiary"
+      aria-haspopup="true"
+      startIcon={<FontAwesomeIcon icon={faFilter} />}
+      disabled={true}
+    >
+      Filter
+    </Button>
   );
 };
