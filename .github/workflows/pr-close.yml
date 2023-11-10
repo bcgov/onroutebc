@@ -68,7 +68,7 @@ jobs:
       packages: write
     strategy:
       matrix:
-        package: [migrations, backend, frontend]
+        package: [backend/dops, backend/vehicles, frontend]
     timeout-minutes: 2
     steps:
       - uses: shrink/actions-docker-registry-tag@v3
