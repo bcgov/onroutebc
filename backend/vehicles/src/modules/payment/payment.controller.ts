@@ -25,7 +25,7 @@ import { CreateTransactionDto } from './dto/request/create-transaction.dto';
 import { ReadTransactionDto } from './dto/response/read-transaction.dto';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
 import { Request, Response } from 'express';
-import { UpdatePaymentGatewayTransactionDto } from './dto/request/read-payment-gateway-transaction.dto';
+import { UpdatePaymentGatewayTransactionDto } from './dto/request/update-payment-gateway-transaction.dto';
 import { ReadPaymentGatewayTransactionDto } from './dto/response/read-payment-gateway-transaction.dto';
 import { getDirectory } from 'src/common/helper/auth.helper';
 import { CreatePaymentDetailedReportDto } from './dto/request/create-payment-detailed-report.dto';
@@ -73,7 +73,7 @@ export class PaymentController {
 
   @ApiOkResponse({
     description: 'The Payment Gateway Transaction Resource',
-    type: ReadPaymentGatewayTransactionDto,
+    type: UpdatePaymentGatewayTransactionDto,
   })
   @ApiQuery({ name: 'queryString', required: true })
   @Put(':transactionId/payment-gateway')
