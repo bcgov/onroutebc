@@ -364,121 +364,127 @@ export class PaymentService {
       queryString.length,
     );
     const validHash = validateHash(query, hashValue);
-    if (validHash) {
-      let updatedTransaction: Transaction;
-      let updateResult: UpdateResult;
-      const queryRunner = this.dataSource.createQueryRunner();
-      await queryRunner.connect();
-      await queryRunner.startTransaction();
-      try {
-        const transactionToUpdate = await queryRunner.manager.findOne(
-          Transaction,
-          {
-            where: { transactionId: transactionId },
-            relations: ['permitTransactions', 'permitTransactions.permit'],
-          },
-        );
-
-        if (!transactionToUpdate) {
-          throw new NotFoundException('TransactionId not found');
-        }
-
-        transactionToUpdate.permitTransactions.forEach((permitTransaction) => {
-          if (
-            permitTransaction.permit.permitStatus !=
-            ApplicationStatus.WAITING_PAYMENT
-          ) {
-            throw new BadRequestException(
-              `${permitTransaction.permit.permitId} not in valid status!`,
-            );
-          }
-        });
-
-        const updateTransactionTemp = await this.classMapper.mapAsync(
-          updatePaymentGatewayTransactionDto,
-          UpdatePaymentGatewayTransactionDto,
-          Transaction,
-          {
-            extraArgs: () => ({
-              userName: currentUser.userName,
-              userGUID: currentUser.userGUID,
-              timestamp: new Date(),
-              directory: directory,
-            }),
-          },
-        );
-
-        updateResult = await queryRunner.manager.update(
-          Transaction,
-          { transactionId: transactionId },
-          updateTransactionTemp,
-        );
-
-        if (!updateResult?.affected) {
-          throw new InternalServerErrorException('Error updating transaction');
-        }
-
-        if (updateTransactionTemp.pgApproved === 1) {
-          for (const permitTransaction of transactionToUpdate.permitTransactions) {
-            updateResult = await queryRunner.manager.update(
-              Permit,
-              { permitId: permitTransaction.permit.permitId },
-              {
-                permitStatus: ApplicationStatus.PAYMENT_COMPLETE,
-                updatedDateTime: new Date(),
-                updatedUser: currentUser.userName,
-                updatedUserGuid: currentUser.userGUID,
-                updatedUserDirectory: directory,
-              },
-            );
-            if (!updateResult?.affected) {
-              throw new InternalServerErrorException(
-                'Error updating permit status',
-              );
-            }
-          }
-        }
-
-        updatedTransaction = await queryRunner.manager.findOne(Transaction, {
-          where: { transactionId: transactionId },
-          relations: ['permitTransactions', 'permitTransactions.permit'],
-        });
-
-        if (updateTransactionTemp.pgApproved === 1) {
-          const receiptNumber = await this.generateReceiptNumber();
-          const receipt = new Receipt();
-          receipt.receiptNumber = receiptNumber;
-          receipt.transaction = updatedTransaction;
-          receipt.receiptNumber = receiptNumber;
-          receipt.createdDateTime = new Date();
-          receipt.createdUser = currentUser.userName;
-          receipt.createdUserDirectory = directory;
-          receipt.createdUserGuid = currentUser.userGUID;
-          receipt.updatedDateTime = new Date();
-          receipt.updatedUser = currentUser.userName;
-          receipt.updatedUserDirectory = directory;
-          receipt.updatedUserGuid = currentUser.userGUID;
-          await queryRunner.manager.save(receipt);
-        }
-
-        await queryRunner.commitTransaction();
-      } catch (err) {
-        await queryRunner.rollbackTransaction();
-        throw new InternalServerErrorException(); // Should handle the typeorm Error handling
-      } finally {
-        await queryRunner.release();
-      }
-
-      const readTransactionDto = await this.classMapper.mapAsync(
-        updatedTransaction,
-        Transaction,
-        ReadPaymentGatewayTransactionDto,
-      );
-
-      return readTransactionDto;
-    } else {
+    const validDto = this.validateUpdateTransactionDto(
+      updatePaymentGatewayTransactionDto,
+      queryString,
+    );
+    if (!validHash) {
       throw new InternalServerErrorException('Invalid Hash');
     }
+    if (!validDto) {
+      throw new InternalServerErrorException('Invalid Transaction Data');
+    }
+    let updatedTransaction: Transaction;
+    let updateResult: UpdateResult;
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      const transactionToUpdate = await queryRunner.manager.findOne(
+        Transaction,
+        {
+          where: { transactionId: transactionId },
+          relations: ['permitTransactions', 'permitTransactions.permit'],
+        },
+      );
+
+      if (!transactionToUpdate) {
+        throw new NotFoundException('TransactionId not found');
+      }
+
+      transactionToUpdate.permitTransactions.forEach((permitTransaction) => {
+        if (
+          permitTransaction.permit.permitStatus !=
+          ApplicationStatus.WAITING_PAYMENT
+        ) {
+          throw new BadRequestException(
+            `${permitTransaction.permit.permitId} not in valid status!`,
+          );
+        }
+      });
+
+      const updateTransactionTemp = await this.classMapper.mapAsync(
+        updatePaymentGatewayTransactionDto,
+        UpdatePaymentGatewayTransactionDto,
+        Transaction,
+        {
+          extraArgs: () => ({
+            userName: currentUser.userName,
+            userGUID: currentUser.userGUID,
+            timestamp: new Date(),
+            directory: directory,
+          }),
+        },
+      );
+
+      updateResult = await queryRunner.manager.update(
+        Transaction,
+        { transactionId: transactionId },
+        updateTransactionTemp,
+      );
+
+      if (!updateResult?.affected) {
+        throw new InternalServerErrorException('Error updating transaction');
+      }
+
+      if (updateTransactionTemp.pgApproved === 1) {
+        for (const permitTransaction of transactionToUpdate.permitTransactions) {
+          updateResult = await queryRunner.manager.update(
+            Permit,
+            { permitId: permitTransaction.permit.permitId },
+            {
+              permitStatus: ApplicationStatus.PAYMENT_COMPLETE,
+              updatedDateTime: new Date(),
+              updatedUser: currentUser.userName,
+              updatedUserGuid: currentUser.userGUID,
+              updatedUserDirectory: directory,
+            },
+          );
+          if (!updateResult?.affected) {
+            throw new InternalServerErrorException(
+              'Error updating permit status',
+            );
+          }
+        }
+      }
+
+      updatedTransaction = await queryRunner.manager.findOne(Transaction, {
+        where: { transactionId: transactionId },
+        relations: ['permitTransactions', 'permitTransactions.permit'],
+      });
+
+      if (updateTransactionTemp.pgApproved === 1) {
+        const receiptNumber = await this.generateReceiptNumber();
+        const receipt = new Receipt();
+        receipt.receiptNumber = receiptNumber;
+        receipt.transaction = updatedTransaction;
+        receipt.receiptNumber = receiptNumber;
+        receipt.createdDateTime = new Date();
+        receipt.createdUser = currentUser.userName;
+        receipt.createdUserDirectory = directory;
+        receipt.createdUserGuid = currentUser.userGUID;
+        receipt.updatedDateTime = new Date();
+        receipt.updatedUser = currentUser.userName;
+        receipt.updatedUserDirectory = directory;
+        receipt.updatedUserGuid = currentUser.userGUID;
+        await queryRunner.manager.save(receipt);
+      }
+
+      await queryRunner.commitTransaction();
+    } catch (err) {
+      await queryRunner.rollbackTransaction();
+      throw new InternalServerErrorException(); // Should handle the typeorm Error handling
+    } finally {
+      await queryRunner.release();
+    }
+
+    const readTransactionDto = await this.classMapper.mapAsync(
+      updatedTransaction,
+      Transaction,
+      ReadPaymentGatewayTransactionDto,
+    );
+
+    return readTransactionDto;
   }
 
   async findTransaction(transactionId: string): Promise<ReadTransactionDto> {
@@ -604,5 +610,35 @@ export class PaymentService {
     };
 
     await this.dopsService.generateReport(currentUser, generateReportData, res);
+  }
+
+  validateUpdateTransactionDto(
+    updatePaymentGatewayTransactionDto: UpdatePaymentGatewayTransactionDto,
+    queryString: string,
+  ): boolean {
+    const params = new URLSearchParams(queryString);
+    const trnApproved = updatePaymentGatewayTransactionDto.pgApproved;
+    const messageText = updatePaymentGatewayTransactionDto.pgMessageText;
+    const trnOrderId = updatePaymentGatewayTransactionDto.pgTransactionId;
+    const trnAmount = params.get('trnAmount');
+    const paymentMethod = updatePaymentGatewayTransactionDto.pgPaymentMethod;
+    const cardType = updatePaymentGatewayTransactionDto.pgCardType;
+    const authCode = updatePaymentGatewayTransactionDto.pgAuthCode;
+    const trnDate = params.get('trnDate');
+    const ref2 = params.get('ref2');
+    const pbcTxnNumber = params.get('pbcTxnNumber');
+    const hashValue = params.get('hashValue');
+    const query =
+      `trnApproved=${trnApproved}` +
+      `&messageText=${messageText}` +
+      `&trnOrderId=${trnOrderId}` +
+      `&trnAmount=${trnAmount}` +
+      `&paymentMethod=${paymentMethod}` +
+      `&cardType=${cardType}` +
+      `&authCode=${authCode}` +
+      `&trnDate=${trnDate}` +
+      `&ref2=${ref2}` +
+      `&pbcTxnNumber=${pbcTxnNumber}`;
+    return validateHash(query, hashValue);
   }
 }
