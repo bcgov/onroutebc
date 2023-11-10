@@ -1,7 +1,7 @@
 import { VEHICLES_URL } from "../../../../common/apiManager/endpoints/endpoints";
 import { httpGETRequest } from "../../../../common/apiManager/httpRequestHandler";
 import { PaginatedResponse } from "../../../../common/types/common";
-import { ReadPermitDto } from "../../../permits/types/permit";
+import { Permit } from "../../../permits/types/permit";
 import { SearchFields } from "../types/types";
 
 /**
@@ -13,7 +13,7 @@ export const getDataBySearch = ({
   searchEntity,
   searchByFilter,
   searchValue,
-}: SearchFields): Promise<PaginatedResponse<ReadPermitDto>> => {
+}: SearchFields): Promise<PaginatedResponse<Permit>> => {
   const url = `${VEHICLES_URL}/${searchEntity}/ppc/search?searchColumn=${searchByFilter}&searchString=${searchValue}`;
   return httpGETRequest(url).then((response) => response.data);
 };

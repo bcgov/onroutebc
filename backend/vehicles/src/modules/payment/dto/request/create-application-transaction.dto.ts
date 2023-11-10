@@ -1,6 +1,6 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsNumberString, IsPositive } from 'class-validator';
+import { IsNumber, IsNumberString, Min } from 'class-validator';
 
 export class CreateApplicationTransactionDto {
   @AutoMap()
@@ -17,6 +17,6 @@ export class CreateApplicationTransactionDto {
     description: 'Represents the amount of the transaction.',
   })
   @IsNumber()
-  @IsPositive()
+  @Min(0)
   transactionAmount: number;
 }

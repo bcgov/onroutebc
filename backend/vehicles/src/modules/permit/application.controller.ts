@@ -34,6 +34,7 @@ import { Roles } from 'src/common/decorator/roles.decorator';
 import { Role } from 'src/common/enum/roles.enum';
 import { IssuePermitDto } from './dto/request/issue-permit.dto';
 import { getDirectory } from 'src/common/helper/auth.helper';
+import { ReadPermitDto } from './dto/response/read-permit.dto';
 
 @ApiBearerAuth()
 @ApiTags('Permit Application')
@@ -125,13 +126,17 @@ export class ApplicationController {
     isArray: true,
   })
   @ApiQuery({ name: 'companyId', required: false })
+  @ApiQuery({ name: 'amendment', required: false })
   @Roles(Role.READ_PERMIT)
   @Get(':permitId')
   async findOneApplication(
     @Req() request: Request,
     @Param('permitId') permitId: string,
-  ): Promise<ReadApplicationDto> {
-    return this.applicationService.findApplication(permitId);
+    @Query('amendment') amendment?: boolean,
+  ): Promise<ReadApplicationDto | ReadPermitDto> {
+    return !amendment
+      ? this.applicationService.findApplication(permitId)
+      : this.applicationService.findCurrentAmendmentApplication(permitId);
   }
 
   @ApiOkResponse({

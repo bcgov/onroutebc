@@ -29,6 +29,8 @@ export interface CustomDatePickerProps<T extends FieldValues> {
   inputProps: RegisterOptions;
   invalid: boolean;
   field?: ControllerRenderProps<FieldValues, Path<T>>;
+  disabled?: boolean;
+  readOnly?: boolean;
 }
 
 /**
@@ -101,6 +103,8 @@ export const CustomDatePicker = <T extends ORBC_FormTypes>(
       <DatePicker
         ref={ref}
         value={value}
+        disabled={props.disabled}
+        readOnly={props.readOnly}
         onChange={onChange}
         disablePast
         maxDate={maxDate}

@@ -47,3 +47,15 @@ export const calculateNetAmount = (permitHistory: PermitHistory[]) => {
     ? -1 * permit.transactionAmount 
     : permit.transactionAmount).reduce((prev, curr) => prev + curr, 0);
 };
+
+/**
+ * Calculates the amount that needs to be refunded (or paid if amount is negative) for a permit given a new duration period.
+ * @param permitHistory List of history objects that make up the history of a permit and its transactions
+ * @param currDuration Current (updated) duration of the permit
+ * @returns Amount that needs to be refunded, or if negative then the amount that still needs to be paid
+ */
+export const calculateAmountToRefund = (permitHistory: PermitHistory[], currDuration: number) => {
+  const netPaid = calculateNetAmount(permitHistory);
+  const feeForCurrDuration = calculateFeeByDuration(currDuration);
+  return netPaid - feeForCurrDuration;
+};

@@ -48,6 +48,11 @@ import { Transaction } from '../payment/entities/transaction.entity';
 import { Directory } from 'src/common/enum/directory.enum';
 import { PermitData } from './entities/permit-data.entity';
 import { Base } from '../common/entities/base.entity';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { CacheKey } from 'src/common/enum/cache-key.enum';
+import { getMapFromCache } from 'src/common/helper/cache.helper';
+import { Cache } from 'cache-manager';
+import { PermitIssuedBy } from '../../common/enum/permit-issued-by.enum';
 
 @Injectable()
 export class PermitService {
@@ -64,6 +69,8 @@ export class PermitService {
     @Inject(forwardRef(() => ApplicationService))
     private readonly applicationService: ApplicationService,
     private paymentService: PaymentService,
+    @Inject(CACHE_MANAGER)
+    private readonly cacheManager: Cache,
   ) {}
 
   async create(
@@ -335,6 +342,9 @@ export class PermitService {
         pgTransactionId: permitTransaction.transaction.pgTransactionId,
         pgCardType: permitTransaction.transaction.pgCardType,
         commentUsername: permit.createdUser,
+        permitId: +permit.permitId,
+        transactionSubmitDate:
+          permitTransaction.transaction.transactionSubmitDate,
       })),
     ) as PermitHistoryDto[];
   }
@@ -410,6 +420,10 @@ export class PermitService {
       newPermit.permitNumber = permitNumber;
       newPermit.applicationNumber = applicationNumber;
       newPermit.permitStatus = voidPermitDto.status;
+      newPermit.permitIssuedBy =
+        directory == Directory.IDIR
+          ? PermitIssuedBy.PPC
+          : PermitIssuedBy.SELF_ISSUED;
       newPermit.permitIssueDateTime = new Date();
       newPermit.revision = permit.revision + 1;
       newPermit.previousRevision = +permitId;
@@ -620,5 +634,9 @@ export class PermitService {
       failure: [failure],
     };
     return resultDto;
+  }
+
+  async getPermitType(): Promise<string> {
+    return await getMapFromCache(this.cacheManager, CacheKey.PERMIT_TYPE);
   }
 }

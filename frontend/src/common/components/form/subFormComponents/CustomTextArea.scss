@@ -1,0 +1,15 @@
+@import "../../../../themes/orbcStyles.scss";
+
+.custom-text-area {
+  border: 1.5px solid $bc-text-box-border-grey;
+  border-radius: 4px;
+  resize: none;
+
+  &--err {
+    border: 2px solid $bc-red;
+
+    &:focus {
+      outline: transparent;
+    }
+  }
+}

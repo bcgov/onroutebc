@@ -11,7 +11,7 @@ import {
 export const CompanyInformation = ({
   companyInfo,
 }: {
-  companyInfo?: CompanyProfile;
+  companyInfo?: CompanyProfile | null;
 }) => {
   return (
     <Box sx={PERMIT_MAIN_BOX_STYLE}>

@@ -1,23 +1,27 @@
 import { useQuery } from "@tanstack/react-query";
+import { useAuth } from "react-oidc-context";
+import { useContext } from "react";
+
+import { FIVE_MINUTES } from "../../../common/constants/constants";
+import { BCeIDAuthGroup } from "../types/userManagement";
+import { IDPS } from "../../../common/types/idp";
 import {
   getCompanyInfo,
+  getCompanyInfoById,
   getIDIRUserRoles,
   getUserContext,
   getUserRolesByCompanyId,
 } from "./manageProfileAPI";
-import { FIVE_MINUTES } from "../../../common/constants/constants";
-import { useContext } from "react";
+
 import OnRouteBCContext, {
   BCeIDUserDetailContext,
   IDIRUserDetailContext,
 } from "../../../common/authentication/OnRouteBCContext";
+
 import {
   BCeIDUserContextType,
   IDIRUserContextType,
 } from "../../../common/authentication/types";
-import { BCeIDAuthGroup } from "../types/userManagement";
-import { useAuth } from "react-oidc-context";
-import { IDPS } from "../../../common/types/idp";
 
 /**
  * Fetches company info of current user.
@@ -27,6 +31,21 @@ export const useCompanyInfoQuery = () => {
   return useQuery({
     queryKey: ["companyInfo"],
     queryFn: getCompanyInfo,
+    refetchInterval: FIVE_MINUTES,
+    refetchOnWindowFocus: false, // fixes issue where a query is run everytime the screen is brought to foreground
+    retry: false,
+  });
+};
+
+/**
+ * Fetches company info of specific company.
+ * @returns company info or error if failed
+ */
+export const useCompanyInfoDetailsQuery = (companyId: number) => {
+  return useQuery({
+    queryKey: ["companyInfo"],
+    queryFn: () => getCompanyInfoById(companyId),
+    enabled: !!companyId,
     refetchInterval: FIVE_MINUTES,
     refetchOnWindowFocus: false, // fixes issue where a query is run everytime the screen is brought to foreground
     retry: false,

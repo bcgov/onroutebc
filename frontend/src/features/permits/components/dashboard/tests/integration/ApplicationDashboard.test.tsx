@@ -39,7 +39,6 @@ import {
   errMsgForVIN,
   errMsgForVehicleCountry,
   errMsgForVehicleSubtype,
-  errMsgForVehicleType,
   errMsgForVehicleYear,
   fillVehicleInfo,
   getSavedApplication,
@@ -283,7 +282,6 @@ describe("Vehicle Details", () => {
     expect([requiredMsg, emptyYearMsg]).toContain(vehicleYearErrDisplay.textContent);
     expect(await errMsgForVehicleCountry()).toHaveTextContent(requiredMsg);
     expect(await errMsgForVehicleSubtype()).toHaveTextContent(requiredMsg);
-    expect(await errMsgForVehicleType()).toHaveTextContent(requiredMsg);
   });
 
   it("should add new vehicle to inventory if user chooses to", async () => {

@@ -1,15 +1,16 @@
-import { TabLayout } from "../../../../common/components/dashboard/TabLayout";
-import { AddVehicleButton } from "./AddVehicleButton";
-
-import { List } from "../list/List";
-
-import "./ManageVehiclesDashboard.scss";
+import { useLocation } from "react-router-dom";
 import { memo } from "react";
 import { useQuery } from "@tanstack/react-query";
+
+import { TabLayout } from "../../../../common/components/dashboard/TabLayout";
+import { AddVehicleButton } from "./AddVehicleButton";
+import { List } from "../list/List";
+import "./ManageVehiclesDashboard.scss";
 import { getAllPowerUnits, getAllTrailers } from "../../apiManager/vehiclesAPI";
 import { DoesUserHaveRoleWithContext } from "../../../../common/authentication/util";
 import { ROLES } from "../../../../common/authentication/types";
-import { useLocation } from "react-router-dom";
+import { getCompanyIdFromSession } from "../../../../common/apiManager/httpRequestHandler";
+import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 
 /**
  * Returns the selected tab index (if there is one)
@@ -35,17 +36,18 @@ const useTabIndexFromURL = (): number => {
 export const ManageVehiclesDashboard = memo(() => {
   const keepPreviousData = true;
   const staleTime = 5000;
+  const companyId = getDefaultRequiredVal("0", getCompanyIdFromSession());
 
   const powerUnitQuery = useQuery({
     queryKey: ["powerUnits"],
-    queryFn: getAllPowerUnits,
+    queryFn: () => getAllPowerUnits(companyId),
     keepPreviousData: keepPreviousData,
     staleTime: staleTime,
   });
 
   const trailerQuery = useQuery({
     queryKey: ["trailers"],
-    queryFn: getAllTrailers,
+    queryFn: () => getAllTrailers(companyId),
     keepPreviousData: keepPreviousData,
     staleTime: staleTime,
   });
@@ -53,16 +55,18 @@ export const ManageVehiclesDashboard = memo(() => {
   const tabs = [
     {
       label: "Power Unit",
-      component: <List vehicleType="powerUnit" query={powerUnitQuery} />,
+      component: <List vehicleType="powerUnit" query={powerUnitQuery} companyId={companyId} />,
     },
     {
       label: "Trailer",
-      component: <List vehicleType="trailer" query={trailerQuery} />,
+      component: <List vehicleType="trailer" query={trailerQuery} companyId={companyId} />,
     },
+    /** 
+     * TODO: Enable Vehicle Configuration page navigation when page is ready
     {
       label: "Vehicle Configuration",
       component: <>TODO</>,
-    },
+    },*/
   ];
 
   return (

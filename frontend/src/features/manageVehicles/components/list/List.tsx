@@ -63,9 +63,11 @@ export const List = memo(
   ({
     vehicleType,
     query,
+    companyId,
   }: {
     vehicleType: VehicleTypesAsString;
     query: UseQueryResult<VehicleTypes[]>;
+    companyId: string;
   }) => {
     // Data, fetched from backend API
     const {
@@ -99,7 +101,7 @@ export const List = memo(
     const onConfirmDelete = async () => {
       const vehicleIds: string[] = Object.keys(rowSelection);
 
-      const response = await deleteVehicles(vehicleIds, vehicleType);
+      const response = await deleteVehicles(vehicleIds, vehicleType, companyId);
       if (response.status === 200) {
         const responseBody = response.data;
         setIsDeleteDialogOpen(() => false);

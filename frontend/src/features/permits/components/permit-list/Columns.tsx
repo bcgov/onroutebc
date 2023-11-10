@@ -1,17 +1,19 @@
 import Link from "@mui/material/Link";
 import { MRT_ColumnDef } from "material-react-table";
 import { viewPermitPdf } from "../../helpers/permitPDFHelper";
-import { ReadPermitDto } from "../../types/permit";
+import { Permit } from "../../types/permit";
 import { PermitChip } from "./PermitChip";
 
 /**
  * The column definition for Permits.
  */
-export const PermitsColumnDefinition: MRT_ColumnDef<ReadPermitDto>[] = [
+export const PermitsColumnDefinition: MRT_ColumnDef<Permit>[] = [
   {
     accessorKey: "permitNumber",
     header: "Permit #",
-    enableSorting: false,
+    enableSorting: true,
+    enableMultiSort: false,
+    sortingFn: 'alphanumeric',
     size: 500,
     accessorFn: (row) => row.permitNumber,
     Cell: (props: { cell: any; row: any }) => {
@@ -32,35 +34,49 @@ export const PermitsColumnDefinition: MRT_ColumnDef<ReadPermitDto>[] = [
   {
     accessorKey: "permitType",
     header: "Permit Type",
-    enableSorting: false,
+    enableSorting: true,
+    enableMultiSort: false,
+    sortingFn: 'alphanumeric'
   },
   {
     accessorFn: (row) => `${row.permitData.vehicleDetails?.unitNumber || ""}`,
     id: "unitNumber",
     header: "Unit #",
-    enableSorting: false,
+    enableSorting: true,
+    enableMultiSort: false,
+    sortingFn: 'alphanumeric'
   },
   {
     accessorKey: "permitData.vehicleDetails.plate",
     header: "Plate",
-    enableSorting: false,
+    enableSorting: true,
+    enableMultiSort: false,
+    sortingFn: 'alphanumeric'
   },
   {
     accessorKey: "permitData.startDate",
     header: "Permit Start Date",
+    enableSorting: true,
+    enableMultiSort: false,
+    sortingFn: 'datetime'
   },
   {
     accessorKey: "permitData.expiryDate",
     header: "Permit End Date",
+    enableSorting: true,
+    enableMultiSort: false,
+    sortingFn: 'datetime'
   },
   {
     accessorFn: (row) =>
       `${row.permitData.contactDetails?.firstName} ${row.permitData.contactDetails?.lastName} `,
     id: "application",
     header: "Applicant",
-    enableSorting: false,
+    enableSorting: true,
+    enableMultiSort: false,
+    sortingFn: 'alphanumericCaseSensitive'
   },
 ];
 
-export const PermitsNotFoundColumnDefinition: MRT_ColumnDef<ReadPermitDto>[] =
+export const PermitsNotFoundColumnDefinition: MRT_ColumnDef<Permit>[] =
   PermitsColumnDefinition;

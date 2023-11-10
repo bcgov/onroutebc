@@ -48,6 +48,8 @@ import { Transaction } from '../payment/entities/transaction.entity';
 import { Receipt } from '../payment/entities/receipt.entity';
 import { convertUtcToPt } from '../../common/helper/date-time.helper';
 import { Directory } from 'src/common/enum/directory.enum';
+import { ReadPermitDto } from './dto/response/read-permit.dto';
+import { PermitIssuedBy } from '../../common/enum/permit-issued-by.enum';
 
 @Injectable()
 export class ApplicationService {
@@ -398,14 +400,26 @@ export class ApplicationService {
     if (fetchedApplication.documentId) {
       throw new HttpException('Document already exists', 409);
     } else if (
-      fetchedApplication.permitStatus != ApplicationStatus.PAYMENT_COMPLETE
+      fetchedApplication.permitStatus == ApplicationStatus.WAITING_PAYMENT
     ) {
       throw new BadRequestException(
         'Application must be ready for issuance with payment complete status!',
       );
     }
 
-    const permitNumber = await this.generatePermitNumber(applicationId, null);
+    const newApplication =
+      applicationId === fetchedApplication.originalPermitId
+        ? applicationId
+        : null;
+    const oldApplication =
+      applicationId === fetchedApplication.originalPermitId
+        ? null
+        : fetchedApplication.previousRevision.toString();
+
+    const permitNumber = await this.generatePermitNumber(
+      newApplication,
+      oldApplication,
+    );
     //Generate receipt number for the permit to be created in database.
     const receiptNumber =
       fetchedApplication.permitTransactions[0].transaction.receipt
@@ -496,6 +510,11 @@ export class ApplicationService {
           permitStatus: fetchedApplication.permitStatus,
           permitNumber: fetchedApplication.permitNumber,
           documentId: generatedDocuments.at(0).dmsId,
+          issuerUserGuid: currentUser.userGUID,
+          permitIssuedBy:
+            directory == Directory.IDIR
+              ? PermitIssuedBy.PPC
+              : PermitIssuedBy.SELF_ISSUED,
           permitIssueDateTime: fetchedApplication.permitIssueDateTime,
           updatedDateTime: new Date(),
           updatedUser: currentUser.userName,
@@ -790,6 +809,32 @@ export class ApplicationService {
     );
   }
 
+  async findCurrentAmendmentApplication(
+    originalPermitId: string,
+  ): Promise<ReadPermitDto> {
+    const application = await this.permitRepository
+      .createQueryBuilder('permit')
+      .innerJoinAndSelect('permit.permitData', 'permitData')
+      .where('permit.originalPermitId = :originalPermitId', {
+        originalPermitId: originalPermitId,
+      })
+      .andWhere('permit.permitStatus IN (:...applicationStatus)', {
+        applicationStatus: Object.values(ApplicationStatus).filter(
+          (x) =>
+            x != ApplicationStatus.CANCELLED &&
+            x != ApplicationStatus.REJECTED &&
+            x != ApplicationStatus.ISSUED &&
+            x != ApplicationStatus.REVOKED &&
+            x != ApplicationStatus.VOIDED &&
+            x != ApplicationStatus.SUPERSEDED,
+        ),
+      })
+      .orderBy('permit.revision', 'DESC')
+      .getOne();
+
+    return await this.classMapper.mapAsync(application, Permit, ReadPermitDto);
+  }
+
   async checkApplicationInProgress(originalPermitId: string): Promise<number> {
     const count = await this.permitRepository
       .createQueryBuilder('permit')
@@ -803,7 +848,8 @@ export class ApplicationService {
             x != ApplicationStatus.REJECTED &&
             x != ApplicationStatus.ISSUED &&
             x != ApplicationStatus.REVOKED &&
-            x != ApplicationStatus.VOIDED,
+            x != ApplicationStatus.VOIDED &&
+            x != ApplicationStatus.SUPERSEDED,
         ),
       })
       .getCount();
