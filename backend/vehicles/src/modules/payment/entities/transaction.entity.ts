@@ -52,8 +52,6 @@ export class Transaction extends Base {
   })
   paymentMethodId: PaymentMethodType;
 
-
-  
   @AutoMap()
   @ApiProperty({
     example: PaymentType.VISA,
@@ -65,7 +63,7 @@ export class Transaction extends Base {
     name: 'PAYMENT_TYPE',
     nullable: true,
   })
-  paymentType: PaymentType ;
+  paymentType: PaymentType;
 
   @AutoMap()
   @ApiProperty({

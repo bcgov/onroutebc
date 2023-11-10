@@ -1,6 +1,12 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
-import { ArrayMinSize, IsArray, IsEnum, IsOptional, ValidateNested } from 'class-validator';
+import {
+  ArrayMinSize,
+  IsArray,
+  IsEnum,
+  IsOptional,
+  ValidateNested,
+} from 'class-validator';
 import { TransactionType } from '../../../../common/enum/transaction-type.enum';
 import { PaymentMethodType } from '../../../../common/enum/payment-method-type.enum';
 import { CreateApplicationTransactionDto } from './create-application-transaction.dto';
