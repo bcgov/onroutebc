@@ -29,7 +29,8 @@ jobs:
             echo "Not found: ${{ env.name }}"
 
           # Remove Bitnami Crunchy PVCs
-          oc delete pvc data-${{ github.event.repository.name }}-${{ github.event.number }}-bitnami-pg-0
+          oc delete pvc data-${{ github.event.repository.name }}-${{ github.event.number }}-bitnami-pg-0 || \
+            echo "$@"
 
   semver:
     name: Semantic Version
