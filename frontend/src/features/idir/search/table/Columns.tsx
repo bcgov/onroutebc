@@ -91,7 +91,7 @@ export const PermitSearchResultColumnDef: MRT_ColumnDef<Permit>[] = [
     accessorFn: (originalRow) => {
       const { permitIssueDateTime } = originalRow;
       const issueDate = applyWhenNotNullable(
-        dt => toLocal(dt, DATE_FORMATS.DATEONLY),
+        dt => toLocal(dt, DATE_FORMATS.DATEONLY_ABBR_MONTH),
         permitIssueDateTime,
         "NA"
       );
