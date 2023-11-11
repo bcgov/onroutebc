@@ -8,6 +8,7 @@ import MaterialReactTable, {
   MRT_TableInstance,
 } from "material-react-table";
 
+import "./UserManagement.scss";
 import { SnackBarContext } from "../../../App";
 import { NoRecordsFound } from "../../../common/components/table/NoRecordsFound";
 import { FIVE_MINUTES } from "../../../common/constants/constants";
@@ -33,6 +34,8 @@ export const UserManagement = () => {
   const { user: userFromToken } = useAuth();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
+  const hasNoRowsSelected = Object.keys(rowSelection).length === 0;
+
   /**
    * Callback function for clicking on the Trash icon above the Table.
    */
@@ -71,7 +74,7 @@ export const UserManagement = () => {
   }, [isError]);
 
   return (
-    <>
+    <div className="table-container">
       <MaterialReactTable
         columns={UserManagementColumnsDefinition}
         data={data ?? []}
@@ -128,15 +131,12 @@ export const UserManagement = () => {
         renderToolbarInternalActions={useCallback(
           () => (
             <Box
-              sx={{
-                display: "flex",
-                backgroundColor: "white",
-              }}
+              className="table-container__toolbar-internal-actions"
             >
-              <Trash onClickTrash={onClickTrashIcon} />
+              <Trash onClickTrash={onClickTrashIcon} disabled={hasNoRowsSelected} />
             </Box>
           ),
-          []
+          [hasNoRowsSelected]
         )}
         /*
          *
@@ -194,6 +194,6 @@ export const UserManagement = () => {
         onClickCancel={onCancelDelete}
         caption="user"
       />
-    </>
+    </div>
   );
 };

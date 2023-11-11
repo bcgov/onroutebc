@@ -1,17 +1,18 @@
 import { BrowserRouter as Router } from "react-router-dom";
 import { AppRoutes } from "./routes/Routes";
+import { ThemeProvider } from "@mui/material/styles";
+import { createContext, Dispatch, useEffect, useMemo, useState } from "react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { AuthProvider } from "react-oidc-context";
 
+import "./App.scss";
 import { Header } from "./common/components/header/Header";
 import { Footer } from "./common/components/footer/Footer";
-import { ThemeProvider } from "@mui/material/styles";
 import { bcGovTheme } from "./themes/bcGovTheme";
-import { createContext, Dispatch, useEffect, useMemo, useState } from "react";
 import {
   CustomSnackbar,
   SnackBarOptions,
 } from "./common/components/snackbar/CustomSnackBar";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { AuthProvider } from "react-oidc-context";
 import OnRouteBCContext, {
   BCeIDUserDetailContext,
   IDIRUserDetailContext,
@@ -106,14 +107,16 @@ const App = () => {
                 message={snackBar.message}
                 alertType={snackBar.alertType}
               />
-              <Router>
-                <Header />
-                <NavIconSideBar>
-                  <NavIconHomeButton />
-                  <NavIconReportButton />
-                </NavIconSideBar>
-                <AppRoutes />
-              </Router>
+              <div className="page-section">
+                <Router>
+                  <Header />
+                  <NavIconSideBar>
+                    <NavIconHomeButton />
+                    <NavIconReportButton />
+                  </NavIconSideBar>
+                  <AppRoutes />
+                </Router>
+              </div>
               <Footer />
             </SnackBarContext.Provider>
           </OnRouteBCContext.Provider>

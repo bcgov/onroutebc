@@ -89,6 +89,8 @@ export const List = memo(
     const snackBar = useContext(SnackBarContext);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
+    const hasNoRowsSelected = Object.keys(rowSelection).length === 0;
+
     /**
      * Callback function for clicking on the Trash icon above the Table.
      */
@@ -268,22 +270,16 @@ export const List = memo(
           // Render a custom options Bar (inclues search, filter, trash, and csv options)
           renderTopToolbar={useCallback(
             ({ table }: { table: MRT_TableInstance<VehicleTypes> }) => (
-              <Box
-                sx={{
-                  display: "flex",
-                  padding: "20px 0px",
-                  backgroundColor: "white",
-                }}
-              >
+              <Box className="table-container__top-toolbar">
                 <MRT_GlobalFilterTextField table={table} />
                 <Filter />
                 {DoesUserHaveRoleWithContext(ROLES.WRITE_VEHICLE) && (
-                  <Trash onClickTrash={onClickTrashIcon} />
+                  <Trash onClickTrash={onClickTrashIcon} disabled={hasNoRowsSelected} />
                 )}
                 <CSVOptions />
               </Box>
             ),
-            []
+            [hasNoRowsSelected]
           )}
           /*
            *

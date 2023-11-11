@@ -1,7 +1,7 @@
 import { Typography } from "@mui/material";
 import { useState } from "react";
 
-import { BC_COLOURS } from "../../../themes/bcGovStyles";
+import "./CompanyInfo.scss";
 import { CompanyInfoForm } from "../components/forms/companyInfo/CompanyInfoForm";
 import { DisplayInfo } from "./DisplayCompanyInfo";
 import { CompanyBanner } from "../../../common/components/banners/CompanyBanner";
@@ -10,8 +10,8 @@ import { CompanyProfile } from "../types/manageProfile";
 const Header = () => {
   return (
     <Typography
+      className="company-info-page__header"
       variant="h4"
-      sx={{ color: BC_COLOURS.bc_black, marginTop: "20px" }}
     >
       Edit Company Information
     </Typography>
@@ -29,7 +29,7 @@ export const CompanyInfo = ({
   const [isEditting, setIsEditting] = useState(false);
 
   return (
-    <>
+    <div className="company-info-page">
       {isEditting ? <Header /> : null}
       <CompanyBanner
         companyName={companyInfoData?.legalName}
@@ -46,7 +46,7 @@ export const CompanyInfo = ({
           setIsEditting={setIsEditting}
         />
       )}
-    </>
+    </div>
   );
 };
 

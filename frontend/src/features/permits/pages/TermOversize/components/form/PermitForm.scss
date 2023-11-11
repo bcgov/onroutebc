@@ -1,17 +1,17 @@
 @import "../../../../../../themes/orbcStyles.scss";
 
 .permit-form {
-  padding-top: 1.5rem;
-  padding-bottom: 10rem;
-  background-color: $bc-white;
-
-  &__form {
-    padding-bottom: 5rem;
+  &#{&} {
+    padding-top: 1.5rem;
+    padding-bottom: 10rem;
+    background-color: $bc-white;
   }
 }
 
 @media (width < 576px) {
   .permit-form {
-    padding-bottom: 287px;
+    &#{&} {
+      padding-bottom: 18rem;
+    }
   }
 }
