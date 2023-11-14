@@ -2,7 +2,21 @@ import { useNavigate } from "react-router-dom";
 import { OnRouteBCTableRowActions } from "../../../../common/components/table/OnRouteBCTableRowActions";
 import { EDIT_USER } from "../../../../routes/constants";
 
-const OPTIONS = ["Edit"];
+const USER_MANAGEMENT_OPTION_TYPES = {
+  EDIT: "edit",
+} as const;
+
+type UserManagementOptionType = typeof USER_MANAGEMENT_OPTION_TYPES[keyof typeof USER_MANAGEMENT_OPTION_TYPES];
+
+const USER_MANAGEMENT_OPTIONS: {
+  label: string;
+  value: UserManagementOptionType;
+}[] = [
+  { 
+    label: "Edit",
+    value: USER_MANAGEMENT_OPTION_TYPES.EDIT,
+  },
+];
 
 export const UserManagementTableRowActions = ({
   userGUID,
@@ -12,7 +26,7 @@ export const UserManagementTableRowActions = ({
   const navigate = useNavigate();
 
   const onClickCallback = (selectedOption: string) => {
-    if (selectedOption === "Edit") {
+    if (selectedOption === USER_MANAGEMENT_OPTION_TYPES.EDIT) {
       navigate(`${EDIT_USER}/${userGUID}`, {
         state: {
           userGUID,
@@ -22,11 +36,9 @@ export const UserManagementTableRowActions = ({
   };
 
   return (
-    <>
-      <OnRouteBCTableRowActions
-        onSelectOption={onClickCallback}
-        options={OPTIONS}
-      />
-    </>
+    <OnRouteBCTableRowActions
+      onSelectOption={onClickCallback}
+      options={USER_MANAGEMENT_OPTIONS}
+    />
   );
 };

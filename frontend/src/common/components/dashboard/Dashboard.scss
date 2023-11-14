@@ -1,5 +1,7 @@
+@import "../../../themes/orbcStyles.scss";
+
 .tabpanel-container {
-  padding: 0 3.75rem;
+  padding: 0 8.551vw;
   overflow: hidden;
   background-color: white;
   min-height: calc(100vh - 306px);
@@ -7,15 +9,122 @@
 }
 
 .layout-box {
-  padding: 0 3.75rem;
+  padding: 0 8.551vw;
+}
+
+.dashboard-page {
+  & &__banner {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+  }
+
+  & &__breadcrumb {
+    display: flex;
+    height: 3.75rem;
+    align-items: center;
+    background-color: $white;
+
+    .breadcrumb-link {
+      &--parent {
+        color: $bc-text-links-blue;
+        cursor: pointer;
+        margin-right: 0.5rem;
+        text-decoration: underline;
+      }
+    }
+
+    .breadcrumb-icon {
+      margin-right: 0.5rem;
+    }
+  }
+
+  & &__info-banner {
+    display: flex;
+    align-items: center;
+    background-color: $white;
+  }
+
+  & &__form {
+    display: flex;
+    padding-top: 1.5rem;
+    background-color: $white;
+
+    h2 {
+      padding-top: 0;
+      margin-top: 0;
+      margin-right: 12.5rem;
+    }
+  }
+}
+
+.display-tabs {
+  /* Override to hide disabled scroll buttons */
+  .MuiTabs-scrollButtons.Mui-disabled {
+    display: none;
+  }
+
+  /* Override built-in MUI underline style */
+  .MuiTabs-indicator {
+    display: none;
+  }
+
+  .display-tab {
+    margin-right: 2.5rem;
+    padding: 0;
+
+    .tab {
+      display: flex;
+      align-items: center;
+      
+      &__label {
+        margin-right: 0;
+        color: $bc-black;
+        opacity: 1;
+        padding: 0.875rem 0;
+      }
+  
+      &__count {
+        font-size: 0.875rem;
+        color: $bc-black;
+        background-color: $bc-border-grey;
+        margin-left: 1rem;
+      }
+    }
+
+    &.Mui-selected {
+      .tab {
+        /* Only underline the tab label when selected */
+        &__label {
+          color: $bc-text-links-blue;
+          border-bottom: 2px solid $bc-text-links-blue;
+        }
+      }
+    }
+  }
 }
 
 @media screen and (max-width: 768px) {
   .tabpanel-container {
-    padding: 0 1.25rem;
+    padding: 0 5.5rem;
   }
 
   .layout-box {
-    padding: 0 1.25rem;
+    padding: 0 5.5rem;
+  }
+}
+
+@media (width < 600px) {
+  .MuiTabs-flexContainer {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+@media (width < 420px) {
+  .tabpanel-container {
+    padding: 0 1rem;
+  }
+
+  .layout-box {
+    padding: 0 1rem;
   }
 }

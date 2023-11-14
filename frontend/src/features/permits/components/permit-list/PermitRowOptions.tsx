@@ -1,14 +1,32 @@
 import { OnRouteBCTableRowActions } from "../../../../common/components/table/OnRouteBCTableRowActions";
 import { viewReceiptPdf } from "../../helpers/permitPDFHelper";
 
-const ACTIVE_OPTIONS = ["View Receipt"];
-const EXPIRED_OPTIONS = ["View Receipt"];
+const PERMIT_ACTION_OPTION_TYPES = {
+  VIEW_RECEIPT: "viewReceipt",
+} as const;
 
-const getOptions = (isExpired: boolean): string[] => {
-  if (isExpired) {
-    return EXPIRED_OPTIONS;
+type PermitActionOptionType = typeof PERMIT_ACTION_OPTION_TYPES[keyof typeof PERMIT_ACTION_OPTION_TYPES];
+
+const getOptionLabel = (optionType: PermitActionOptionType): string => {
+  if (optionType === PERMIT_ACTION_OPTION_TYPES.VIEW_RECEIPT) {
+    return "View Receipt";
   }
-  return ACTIVE_OPTIONS;
+
+  return "";
+};
+
+const ALL_OPTIONS = [
+  {
+    label: getOptionLabel(PERMIT_ACTION_OPTION_TYPES.VIEW_RECEIPT),
+    value: PERMIT_ACTION_OPTION_TYPES.VIEW_RECEIPT,
+  },
+];
+
+const getOptions = (isExpired: boolean) => {
+  if (isExpired) {
+    return ALL_OPTIONS;
+  }
+  return ALL_OPTIONS;
 };
 
 export const PermitRowOptions = ({
@@ -24,17 +42,15 @@ export const PermitRowOptions = ({
    * @param selectedOption The option that was selected.
    */
   const onSelectOptionCallback = (selectedOption: string) => {
-    if (selectedOption === "View Receipt") {
+    if (selectedOption === PERMIT_ACTION_OPTION_TYPES.VIEW_RECEIPT) {
       viewReceiptPdf(permitId.toString());
     }
   };
 
   return (
-    <>
-      <OnRouteBCTableRowActions
-        onSelectOption={onSelectOptionCallback}
-        options={getOptions(isExpired)}
-      />
-    </>
+    <OnRouteBCTableRowActions
+      onSelectOption={onSelectOptionCallback}
+      options={getOptions(isExpired)}
+    />
   );
 };

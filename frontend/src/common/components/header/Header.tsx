@@ -140,7 +140,9 @@ export const Header = () => {
               <UserSection username={username} />
             </div>
           ) : null}
-          <NavButton />
+          {isAuthenticated ? (
+            <NavButton />
+          ) : null}
         </div>
       </header>
       <Navbar isAuthenticated={isAuthenticated} />

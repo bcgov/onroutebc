@@ -1,4 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
+
+import "./ExpiredPermitList.scss";
 import { TEN_MINUTES } from "../../../../common/constants/constants";
 import { getPermits } from "../../apiManager/permitsAPI";
 import { BasePermitList } from "./BasePermitList";

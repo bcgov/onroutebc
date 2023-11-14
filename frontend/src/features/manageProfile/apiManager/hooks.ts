@@ -161,8 +161,8 @@ export const useIDIRUserRoles = () => {
     queryKey: ["userIDIRRoles"],
     refetchInterval: FIVE_MINUTES,
     queryFn: getIDIRUserRoles,
-    onSuccess: (userRolesResponseBody: string[]) => {
-      setUserRoles?.(() => userRolesResponseBody);
+    onSuccess: (userRoles: string[] | null) => {
+      setUserRoles?.(() => userRoles);
     },
     retry: true,
   });
