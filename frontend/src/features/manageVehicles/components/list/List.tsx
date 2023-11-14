@@ -1,6 +1,6 @@
 import { RowSelectionState } from "@tanstack/table-core";
 import { Box, IconButton, Tooltip } from "@mui/material";
-import { Delete, Edit, ContentCopy } from "@mui/icons-material";
+import { Delete, Edit } from "@mui/icons-material";
 import { UseQueryResult } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import {
@@ -20,9 +20,7 @@ import MaterialReactTable, {
 } from "material-react-table";
 
 import "./List.scss";
-import { Filter } from "../../../../common/components/table/options/Filter";
 import { Trash } from "../../../../common/components/table/options/Trash";
-import { CSVOptions } from "../../../../common/components/table/options/CSVOptions";
 import { DeleteConfirmationDialog } from "../../../../common/components/dialog/DeleteConfirmationDialog";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { PowerUnitColumnDefinition, TrailerColumnDefinition } from "./Columns";
@@ -229,17 +227,6 @@ export const List = memo(
                         <Edit />
                       </IconButton>
                     </Tooltip>
-                    <Tooltip arrow placement="top" title="Copy">
-                      <span>
-                        {/*tslint:disable-next-line*/}
-                        <IconButton
-                          onClick={() => table.setEditingRow(row)}
-                          disabled={true}
-                        >
-                          <ContentCopy />
-                        </IconButton>
-                      </span>
-                    </Tooltip>
                     <Tooltip arrow placement="top" title="Delete">
                       {/*tslint:disable-next-line*/}
                       <IconButton
@@ -267,16 +254,14 @@ export const List = memo(
             ),
             []
           )}
-          // Render a custom options Bar (inclues search, filter, trash, and csv options)
+          // Render a custom options Bar (inclues search and trash)
           renderTopToolbar={useCallback(
             ({ table }: { table: MRT_TableInstance<VehicleTypes> }) => (
               <Box className="table-container__top-toolbar">
                 <MRT_GlobalFilterTextField table={table} />
-                <Filter />
                 {DoesUserHaveRoleWithContext(ROLES.WRITE_VEHICLE) && (
                   <Trash onClickTrash={onClickTrashIcon} disabled={hasNoRowsSelected} />
                 )}
-                <CSVOptions />
               </Box>
             ),
             [hasNoRowsSelected]
