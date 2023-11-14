@@ -26,6 +26,7 @@ import { SnackBarContext } from "../../../../App";
 import { ApplicationInProgress, PermitApplicationInProgress} from "../../types/application";
 import { ApplicationInProgressColumnDefinition } from "./Columns";
 import { deleteApplications } from "../../apiManager/permitsAPI";
+import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
 
 /**
  * Dynamically set the column
@@ -160,6 +161,7 @@ export const List = memo(
               header: "",
             },
           }}
+          renderEmptyRowsFallback={() => <NoRecordsFound />}
           renderRowActions={useCallback(
             ({
               row,
@@ -249,7 +251,9 @@ export const List = memo(
           muiTopToolbarProps={{ sx: { zIndex: 0 } }}
           // Search Bar
           positionGlobalFilter="left"
-          initialState={{ showGlobalFilter: true }} //show the search bar by default
+          initialState={{ 
+            showGlobalFilter: true 
+          }} //show the search bar by default
           muiSearchTextFieldProps={{
             className: "top-toolbar-search",
             placeholder: "Search",

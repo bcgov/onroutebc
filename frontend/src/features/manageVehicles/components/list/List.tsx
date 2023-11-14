@@ -35,6 +35,7 @@ import {
   PowerUnit,
   Trailer,
 } from "../../types/managevehicles";
+import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
 
 /**
  * Dynamically set the column based on vehicle type
@@ -193,6 +194,7 @@ export const List = memo(
               header: "",
             },
           }}
+          renderEmptyRowsFallback={() => <NoRecordsFound />}
           renderRowActions={useCallback(
             ({
               table,
