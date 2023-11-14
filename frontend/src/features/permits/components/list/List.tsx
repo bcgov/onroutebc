@@ -192,7 +192,7 @@ export const List = memo(
             ),
             []
           )}
-          // Render a custom options Bar (inclues search, filter, trash, and csv options)
+          // Render a custom options Bar (inclues search and trash)
           renderTopToolbar={useCallback(
             ({ table }: { table: MRT_TableInstance<ApplicationInProgress> }) => (
               <Box className="table-container__top-toolbar">
