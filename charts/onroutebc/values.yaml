@@ -6,7 +6,11 @@ global:
     annotation:
       helm.sh/policy: "keep"
   domain: "apps.silver.devops.gov.bc.ca" # it is required, apps.silver.devops.gov.bc.ca for silver cluster
+  license: "c28f0c"
+  role: "dev"
   openshiftImageRegistry: "image-registry.openshift-image-registry.svc:5000"
+  vault:
+    role: "non-prod"
 
 frontend:
   enabled: true
@@ -24,7 +28,7 @@ frontend:
           return {
             "VITE_DEPLOY_ENVIRONMENT":"Prod",
             "VITE_API_VEHICLE_URL":"https://{{.Release.Name}}-vehicles.{{.Values.global.domain}}",
-            "VITE_AUTH0_ISSUER_URL":"https://prod.loginproxy.gov.bc.ca/auth/realms/standard",
+            "VITE_AUTH0_ISSUER_URL":"https://{{.Values.global.role}}.loginproxy.gov.bc.ca/auth/realms/standard",
             "VITE_AUTH0_AUDIENCE":"on-route-bc-direct-4598",
             "VITE_SITEMINDER_LOG_OFF_URL": "https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi",
           };
@@ -56,7 +60,7 @@ frontend:
       route.openshift.io/termination: "edge"
     enabled: true
     hosts: 
-      - host: "onroutebc-experiment-frontend.apps.silver.devops.gov.bc.ca"
+      - host: "{{.Release.Name}}-frontend.apps.silver.devops.gov.bc.ca"
         paths:
           - path: /
             pathType: ImplementationSpecific
@@ -71,7 +75,7 @@ frontend:
         port: 80
         targetPort: 3000
   serviceAccount:
-    name: c28f0c-vault
+    name: {{ .Values.global.license }}-vault
   volumes:
     - name: config
       configMap:
@@ -91,14 +95,14 @@ vehicles:
       DOPS_URL: "https://{{.Release.Name}}-dops.apps.silver.devops.gov.bc.ca"
       FRONTEND_URL: "https://{{.Release.Name}}-frontend.apps.silver.devops.gov.bc.ca"
       PAYBC_REDIRECT: "https://{{.Release.Name}}-frontend.apps.silver.devops.gov.bc.ca/payment"
-      VEHICLES_URL: "https://onroutebc-experiment-vehicles.apps.silver.devops.gov.bc.ca"
+      VEHICLES_URL: "https://{{.Release.Name}}-vehicles.apps.silver.devops.gov.bc.ca"
 
   containers:
     - name: vehicles
       command:
         - "sh"
         - "-c"
-        - "source /vault/secrets/auth0-prod && source /vault/secrets/ches-prod && source /vault/secrets/mssql-prod && source /vault/secrets/payment-prod && npm run start:prod"
+        - "source /vault/secrets/auth0-{{.Values.global.role}} && source /vault/secrets/ches-{{.Values.global.role}} && source /vault/secrets/mssql-{{.Values.global.role}} && source /vault/secrets/payment-{{.Values.global.role}} && npm run start:prod"
       registry: '{{ .Values.global.registry }}'
       repository: '{{ .Values.global.repository }}' # example, it includes registry and repository
       image: backend/vehicles
@@ -137,7 +141,7 @@ vehicles:
       route.openshift.io/termination: "edge"
     enabled: true
     hosts: 
-      - host: "onroutebc-experiment-vehicles.apps.silver.devops.gov.bc.ca"
+      - host: "{{.Release.Name}}-vehicles.apps.silver.devops.gov.bc.ca"
         paths:
           - path: /
             pathType: ImplementationSpecific
@@ -152,7 +156,7 @@ vehicles:
         port: 80
         targetPort: 5000
   serviceAccount:
-    name: c28f0c-vault
+    name: {{ .Values.global.license }}-vault
   vault:
     enabled: true
     resources: # this is optional
@@ -162,12 +166,12 @@ vehicles:
       requests:
         cpu: 75m
         memory: 100Mi
-    role: c28f0c-prod
+    role: {{.Values.global.vault.role}}
     secretPaths:
-      - auth0-prod
-      - ches-prod
-      - mssql-prod
-      - payment-prod
+      - auth0-{{.Values.global.role}}
+      - ches-{{.Values.global.role}}
+      - mssql-{{.Values.global.role}}
+      - payment-{{.Values.global.role}}
 
 dops:
   enabled: true
@@ -180,13 +184,13 @@ dops:
   configmap:
     enabled: true
     data:
-      ACCESS_API_URL: "https://onroutebc-experiment-dops.apps.silver.devops.gov.bc.ca"
+      ACCESS_API_URL: "https://{{.Release.Name}}-dops.apps.silver.devops.gov.bc.ca"
   containers:
     - name: dops
       command:
         - "sh"
         - "-c"
-        - "source /vault/secrets/auth0-prod && source /vault/secrets/ches-prod && source /vault/secrets/mssql-prod && source /vault/secrets/payment-prod && npm run start:prod"
+        - "source /vault/secrets/auth0-{{.Values.global.role}} && source /vault/secrets/ches-{{.Values.global.role}} && source /vault/secrets/mssql-{{.Values.global.role}} && source /vault/secrets/payment-{{.Values.global.role}} && npm run start:prod"
       registry: '{{ .Values.global.registry }}'
       repository: '{{ .Values.global.repository }}' # example, it includes registry and repository
       image: backend/dops
@@ -225,7 +229,7 @@ dops:
       route.openshift.io/termination: "edge"
     enabled: true
     hosts: 
-      - host: "onroutebc-experiment-dops.apps.silver.devops.gov.bc.ca"
+      - host: "{{.Release.Name}}-dops.apps.silver.devops.gov.bc.ca"
         paths:
           - path: /
             pathType: ImplementationSpecific
@@ -240,7 +244,7 @@ dops:
         port: 80
         targetPort: 5001
   serviceAccount:
-    name: c28f0c-vault
+    name: {{ .Values.global.license }}-vault
   vault:
     enabled: true
     resources: # this is optional
@@ -250,9 +254,9 @@ dops:
       requests:
         cpu: 75m
         memory: 100Mi
-    role: c28f0c-nonprod
+    role: {{.Values.global.vault.role}}
     secretPaths:
-      - auth0-prod
-      - ches-prod
-      - mssql-prod
-      - payment-prod
+      - auth0-{{.Values.global.role}}
+      - ches-{{.Values.global.role}}
+      - mssql-{{.Values.global.role}}
+      - payment-{{.Values.global.role}}
