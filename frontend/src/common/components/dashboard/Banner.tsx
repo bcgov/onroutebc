@@ -32,13 +32,18 @@ export const Banner = ({
         item
         className="layout-banner__text-section"
       >
-        <h2>{bannerText}</h2>
-        <Box className="banner-button">
-          {bannerButton ? bannerButton : null}
-        </Box>
+        <h2 className="layout-banner__text">
+          {bannerText}
+        </h2>
+        
+        {bannerButton ? (
+          <Box className="layout-banner__button">
+            {bannerButton}
+          </Box>
+        ) : null}
       </Grid>
       <Grid xs item>
-        <div className="banner-subtext">
+        <div className="layout-banner__subtext">
           <div>{bannerSubtext}</div>
         </div>
       </Grid>
