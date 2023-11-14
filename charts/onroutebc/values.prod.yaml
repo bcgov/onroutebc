@@ -22,9 +22,9 @@ frontend:
       config.js: |-
         const envConfig = (() => {
           return {
-            "VITE_DEPLOY_ENVIRONMENT":"Experiment",
+            "VITE_DEPLOY_ENVIRONMENT":"Prod",
             "VITE_API_VEHICLE_URL":"https://{{.Release.Name}}-vehicles.{{.Values.global.domain}}",
-            "VITE_AUTH0_ISSUER_URL":"https://dev.loginproxy.gov.bc.ca/auth/realms/standard",
+            "VITE_AUTH0_ISSUER_URL":"https://prod.loginproxy.gov.bc.ca/auth/realms/standard",
             "VITE_AUTH0_AUDIENCE":"on-route-bc-direct-4598",
             "VITE_SITEMINDER_LOG_OFF_URL": "https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi",
           };
@@ -98,7 +98,7 @@ vehicles:
       command:
         - "sh"
         - "-c"
-        - "source /vault/secrets/auth0-dev && source /vault/secrets/ches-dev && source /vault/secrets/mssql-dev && source /vault/secrets/payment-dev && npm run start:prod"
+        - "source /vault/secrets/auth0-prod && source /vault/secrets/ches-prod && source /vault/secrets/mssql-prod && source /vault/secrets/payment-prod && npm run start:prod"
       registry: '{{ .Values.global.registry }}'
       repository: '{{ .Values.global.repository }}' # example, it includes registry and repository
       image: backend/vehicles
@@ -162,12 +162,12 @@ vehicles:
       requests:
         cpu: 75m
         memory: 100Mi
-    role: c28f0c-nonprod
+    role: c28f0c-prod
     secretPaths:
-      - auth0-dev
-      - ches-dev
-      - mssql-dev
-      - payment-dev
+      - auth0-prod
+      - ches-prod
+      - mssql-prod
+      - payment-prod
 
 dops:
   enabled: true
@@ -186,7 +186,7 @@ dops:
       command:
         - "sh"
         - "-c"
-        - "source /vault/secrets/auth0-dev && source /vault/secrets/ches-dev && source /vault/secrets/mssql-dev && source /vault/secrets/payment-dev && npm run start:prod"
+        - "source /vault/secrets/auth0-prod && source /vault/secrets/ches-prod && source /vault/secrets/mssql-prod && source /vault/secrets/payment-prod && npm run start:prod"
       registry: '{{ .Values.global.registry }}'
       repository: '{{ .Values.global.repository }}' # example, it includes registry and repository
       image: backend/dops
@@ -252,7 +252,7 @@ dops:
         memory: 100Mi
     role: c28f0c-nonprod
     secretPaths:
-      - auth0-dev
-      - ches-dev
-      - mssql-dev
-      - payment-dev
+      - auth0-prod
+      - ches-prod
+      - mssql-prod
+      - payment-prod

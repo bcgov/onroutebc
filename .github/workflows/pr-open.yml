@@ -75,3 +75,4 @@ jobs:
     with:
       autoscaling: false
       target: ${{ github.event.number }}
+      values: values.dev.yaml

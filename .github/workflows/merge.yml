@@ -17,6 +17,7 @@ jobs:
     with:
       tag: ${{ github.ref_name }}
       target: test
+      values: values.test.yaml
 
   integration-e2e:
     name: Integration and E2E Tests
@@ -33,3 +34,4 @@ jobs:
     with:
       tag: ${{ github.ref_name }}
       target: prod
+      values: values.prod.yaml
