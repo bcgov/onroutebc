@@ -1,18 +1,20 @@
 import { Box } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import { RowSelectionState } from "@tanstack/table-core";
+import { useCallback, useContext, useEffect, useState } from "react";
+import { useAuth } from "react-oidc-context";
 import MaterialReactTable, {
   MRT_Row,
   MRT_TableInstance,
 } from "material-react-table";
-import { useCallback, useContext, useEffect, useState } from "react";
-import { useAuth } from "react-oidc-context";
+
+import "./UserManagement.scss";
 import { SnackBarContext } from "../../../App";
 import { NoRecordsFound } from "../../../common/components/table/NoRecordsFound";
 import { FIVE_MINUTES } from "../../../common/constants/constants";
 import { BC_COLOURS } from "../../../themes/bcGovStyles";
-import DeleteConfirmationDialog from "../../manageVehicles/components/list/ConfirmationDialog";
-import { Trash } from "../../manageVehicles/components/options/Trash";
+import { DeleteConfirmationDialog } from "../../../common/components/dialog/DeleteConfirmationDialog";
+import { Trash } from "../../../common/components/table/options/Trash";
 import { getCompanyUsers } from "../apiManager/manageProfileAPI";
 import { UserManagementTableRowActions } from "../components/user-management/UserManagementRowOptions";
 import { UserManagementColumnsDefinition } from "../types/UserManagementColumns";
@@ -32,6 +34,8 @@ export const UserManagement = () => {
   const { user: userFromToken } = useAuth();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
+  const hasNoRowsSelected = Object.keys(rowSelection).length === 0;
+
   /**
    * Callback function for clicking on the Trash icon above the Table.
    */
@@ -70,7 +74,7 @@ export const UserManagement = () => {
   }, [isError]);
 
   return (
-    <>
+    <div className="table-container">
       <MaterialReactTable
         columns={UserManagementColumnsDefinition}
         data={data ?? []}
@@ -127,15 +131,12 @@ export const UserManagement = () => {
         renderToolbarInternalActions={useCallback(
           () => (
             <Box
-              sx={{
-                display: "flex",
-                backgroundColor: "white",
-              }}
+              className="table-container__toolbar-internal-actions"
             >
-              <Trash onClickTrash={onClickTrashIcon} />
+              <Trash onClickTrash={onClickTrashIcon} disabled={hasNoRowsSelected} />
             </Box>
           ),
-          []
+          [hasNoRowsSelected]
         )}
         /*
          *
@@ -193,6 +194,6 @@ export const UserManagement = () => {
         onClickCancel={onCancelDelete}
         caption="user"
       />
-    </>
+    </div>
   );
 };

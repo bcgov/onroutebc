@@ -1,4 +1,26 @@
-.margin-top-zero {
-  margin-top: 0px;
-  width: 528px;
+@use "../../../common/components/dashboard/Dashboard.scss";
+@import "../../../themes/orbcStyles.scss";
+
+.dashboard-page {
+  &#{&}--add-user &__form {
+    h2 {
+      border-bottom: none;
+    }
+
+    &--user-id {
+      padding-bottom: 3rem;
+
+      .user-id {
+        &__input {
+          margin-top: 0;
+          width: 33rem;
+        }
+      }
+    }
+  
+    &--user-group {
+      padding-top: 3rem;
+      padding-bottom: 3rem;
+    }
+  }
 }

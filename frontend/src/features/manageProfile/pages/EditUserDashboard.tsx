@@ -7,19 +7,17 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
+
+import "./EditUserDashboard.scss";
 import { Banner } from "../../../common/components/dashboard/Banner";
-import "../../../common/components/dashboard/Dashboard.scss";
+import { getCompanyUserByUserGUID } from "../apiManager/manageProfileAPI";
+import { EditUserForm } from "../components/forms/userManagement/EditUser";
+import { BCEID_PROFILE_TABS } from "../types/manageProfile.d";
 import { DATE_FORMATS, toLocal } from "../../../common/helpers/formatDate";
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
 } from "../../../common/helpers/util";
-import { BC_COLOURS } from "../../../themes/bcGovStyles";
-import {
-  getCompanyUserByUserGUID
-} from "../apiManager/manageProfileAPI";
-import { EditUserForm } from "../components/forms/userManagement/EditUser";
-import { BCEID_PROFILE_TABS } from "../types/manageProfile.d";
 
 /**
  * The edit user page for the BCeID org admin
@@ -43,13 +41,9 @@ export const EditUserDashboard = React.memo(() => {
   };
 
   return (
-    <>
+    <div className="dashboard-page dashboard-page--edit-user">
       <Box
-        className="layout-box"
-        sx={{
-          borderBottom: 1,
-          borderColor: "divider",
-        }}
+        className="dashboard-page__banner layout-box"
       >
         <Banner
           bannerText={`Edit User: ${userInfo?.firstName} ${" "} ${
@@ -86,49 +80,39 @@ export const EditUserDashboard = React.memo(() => {
           extendHeight={true}
         />
       </Box>
+
       <Box
-        className="layout-box"
-        sx={{
-          display: "flex",
-          height: "60px",
-          alignItems: "center",
-          backgroundColor: BC_COLOURS.white,
-        }}
+        className="dashboard-page__breadcrumb layout-box"
       >
         <Typography
+          className="breadcrumb-link breadcrumb-link--parent"
           onClick={onClickBreadcrumb}
-          sx={{
-            color: BC_COLOURS.bc_text_links_blue,
-            cursor: "pointer",
-            marginRight: "8px",
-            textDecoration: "underline",
-          }}
         >
           Profile
         </Typography>
+
         <FontAwesomeIcon
+          className="breadcrumb-icon"
           icon={faChevronRight}
-          style={{ marginLeft: "8px", marginRight: "8px" }}
         />
+
         <Typography
+          className="breadcrumb-link breadcrumb-link--parent"
           onClick={onClickBreadcrumb}
-          style={{
-            color: BC_COLOURS.bc_text_links_blue,
-            cursor: "pointer",
-            textDecoration: "underline",
-          }}
         >
           User Management
         </Typography>
+
         <FontAwesomeIcon
+          className="breadcrumb-icon"
           icon={faChevronRight}
-          style={{ marginLeft: "8px", marginRight: "8px" }}
         />
+
         <Typography>Edit User</Typography>
       </Box>
 
       {!isLoading && <EditUserForm userInfo={userInfo} />}
-    </>
+    </div>
   );
 });
 

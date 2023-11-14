@@ -17,6 +17,7 @@ import { MyInfo } from "../../pages/MyInfo";
 import { UserManagement } from "../../pages/UserManagement";
 import { BCEID_PROFILE_TABS } from "../../types/manageProfile.d";
 import { ADD_USER } from "../../../../routes/constants";
+import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 
 /**
  * Returns a boolean indicating if the logged in user is a BCeID org admin.
@@ -42,8 +43,9 @@ export const ManageProfilesDashboard = React.memo(() => {
   });
 
   const navigate = useNavigate();
-  const { userRoles = [] } = useContext(OnRouteBCContext);
-  const isBCeIDAdmin = isBCeIDOrgAdmin(userRoles);
+  const { userRoles } = useContext(OnRouteBCContext);
+  const populatedUserRoles = getDefaultRequiredVal([], userRoles);
+  const isBCeIDAdmin = isBCeIDOrgAdmin(populatedUserRoles);
 
   const { state: stateFromNavigation } = useLocation();
   let selectedTab = BCEID_PROFILE_TABS.COMPANY_INFORMATION;

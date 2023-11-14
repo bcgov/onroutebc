@@ -23,12 +23,16 @@ import { IDIRWelcome } from "../features/idir/IDIRWelcome";
 import { UserInfoWizard } from "../features/wizard/UserInfoWizard";
 import { VoidPermit } from "../features/permits/pages/Void/VoidPermit";
 import { AmendPermit } from "../features/permits/pages/Amend/AmendPermit";
+import { Unauthorized } from "../common/pages/Unauthorized";
+import { UniversalUnauthorized } from "../common/pages/UniversalUnauthorized";
 
 export const AppRoutes = () => {
   return (
     <Routes>
       <Route path={routes.HOME} element={<InitialLandingPage />} />
       <Route path={routes.WELCOME} element={<WelcomePage />} />
+      <Route path={routes.UNAUTHORIZED} element={<Unauthorized />} />
+      <Route path={routes.UNIVERSAL_UNAUTHORIZED} element={<UniversalUnauthorized />} />
       <Route path="*" element={<NotFound />} />
 
       {/* IDIR Routes */}

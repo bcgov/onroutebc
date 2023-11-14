@@ -1,6 +1,6 @@
 import { useAuth } from "react-oidc-context";
 import { useLocation, Navigate, Outlet, useNavigate } from "react-router-dom";
-import { HOME, UNAUTHORIZED } from "./constants";
+import { HOME, UNAUTHORIZED, UNIVERSAL_UNAUTHORIZED } from "./constants";
 import { Loading } from "../common/pages/Loading";
 import { useContext, useEffect } from "react";
 import OnRouteBCContext from "../common/authentication/OnRouteBCContext";
@@ -45,6 +45,11 @@ export const ProtectedRoutes = ({
 
   if (isAuthenticated) {
     if (isIDIR(userIDP) && !idirUserDetails?.userAuthGroup) {
+      if (typeof userRoles !== "undefined" && !userRoles) {
+        // user roles is null, indicating an error occurred fetching roles (eg. user with no roles, 403)
+        return <Navigate to={UNIVERSAL_UNAUTHORIZED} state={{ from: location }} replace />;
+      }
+      
       return (
         <>
           <LoadIDIRUserContext />

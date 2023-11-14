@@ -1,0 +1,24 @@
+@import "../../../../../../themes/orbcStyles.scss";
+
+.select-permit-type {
+  font-size: 1rem;
+  color: $bc-black;
+
+  & &__label {
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+  }
+
+  & &__input {
+    background-color: $white;
+    width: 15.25rem;
+
+    fieldset {
+      border: 2px solid $bc-text-box-border-grey;
+    }
+
+    .Mui-focused fieldset {
+      border: 2px solid $focus-blue;
+    }
+  }
+}

@@ -1,5 +1,21 @@
 .amend-permit-review {
   .breadcrumb {
-    padding: 2em 4em;
+    padding: 2em 8.551vw;
+  }
+}
+
+@media (width < 768px) {
+  .amend-permit-review {
+    .breadcrumb {
+      padding: 2em 5.5rem;
+    }
+  }
+}
+
+@media (width < 420px) {
+  .amend-permit-review {
+    .breadcrumb {
+      padding: 2em 1rem;
+    }
   }
 }

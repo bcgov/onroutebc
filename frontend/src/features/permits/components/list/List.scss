@@ -1,0 +1,30 @@
+@use "../../../../common/components/table/Table.scss";
+@import "../../../../themes/orbcStyles.scss";
+
+.table-container {
+  & &__row-actions {
+    justify-content: flex-end;
+    display: flex;
+  }
+
+  & &__top-toolbar {
+    display: flex;
+    padding: 1.25rem 0;
+    background-color: $white;
+    align-items: center;
+
+    .top-toolbar-search {
+      min-width: 300px;
+      background-color: $white;
+      
+      .search-input {
+        padding: 0.625rem;
+      }
+    }
+
+    .trash-btn {
+      margin-left: 0.5rem;
+      padding: 0.75rem 0.865rem;
+    }
+  }
+}

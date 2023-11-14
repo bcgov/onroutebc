@@ -26,7 +26,7 @@ export const SuccessPage = () => {
   };
 
   return (
-    <Box className="success feature-container">
+    <Box className="success">
       <Box className="success__container">
         <Box className="success__block success__block--success-img">
           <img
