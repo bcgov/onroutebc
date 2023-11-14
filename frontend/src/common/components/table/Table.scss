@@ -1,0 +1,18 @@
+@import "../../../themes/orbcStyles.scss";
+
+.table-container {
+  overflow: hidden;
+  background-color: $white;
+  padding-bottom: 6.25rem;
+
+  .column-link {
+    color: $bc-text-links-blue;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .table-container {
+    overflow: hidden;
+    background-color: $white;
+  }
+}

@@ -1,0 +1,29 @@
+@import "../../../themes/orbcStyles.scss";
+
+.nav-button {
+  width: 4rem;
+  height: 4rem;
+  background-color: $bc-black;
+  color: $bc-white;
+  border: none;
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &__hover-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 3rem;
+    height: 3rem;
+    background-color: $bc-black;
+    color: $bc-white;
+    border-radius: 0.25rem;
+
+    &:hover {
+      color: $bc-black;
+      background-color: $bc-white;
+    }
+  }
+}

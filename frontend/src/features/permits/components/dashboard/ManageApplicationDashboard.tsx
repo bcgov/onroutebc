@@ -1,13 +1,14 @@
 import React from "react";
-import { TabLayout } from "../../../../common/components/dashboard/TabLayout";
 import { useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
+
+import { TabLayout } from "../../../../common/components/dashboard/TabLayout";
 import { Unauthorized } from "../../../../common/pages/Unauthorized";
 import { Loading } from "../../../../common/pages/Loading";
 import { ErrorFallback } from "../../../../common/pages/ErrorFallback";
 import { List } from "../list/List";
 import { getApplicationsInProgress } from "../../../../features/permits/apiManager/permitsAPI";
-import { StartApplicationButton } from "../../pages/TermOversize/components/form/VehicleDetails/customFields/StartApplicationButton";
+import { StartApplication } from "../../pages/TermOversize/components/dashboard/StartApplication";
 import { ActivePermitList } from "../permit-list/ActivePermitList";
 import { ExpiredPermitList } from "../permit-list/ExpiredPermitList";
 import { FIVE_MINUTES } from "../../../../common/constants/constants";
@@ -40,6 +41,7 @@ export const ManageApplicationDashboard = React.memo(() => {
   const tabs = [
     {
       label: "Applications in Progress",
+      count: data?.length,
       component:
         data?.length === 0 ? (
           <div
@@ -86,7 +88,7 @@ export const ManageApplicationDashboard = React.memo(() => {
   return (
     <TabLayout
       bannerText="Permits"
-      bannerButton={<StartApplicationButton />}
+      bannerButton={<StartApplication />}
       componentList={tabs}
     />
   );

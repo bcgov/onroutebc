@@ -2,6 +2,7 @@ import { IDPS } from "../common/types/idp";
 
 export const HOME = "/";
 export const UNAUTHORIZED = "unauthorized";
+export const UNIVERSAL_UNAUTHORIZED = "universal-unauthorized";
 
 // Manage Vehicles
 export const MANAGE_VEHICLES = "manage-vehicles";

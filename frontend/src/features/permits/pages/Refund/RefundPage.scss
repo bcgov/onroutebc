@@ -1,7 +1,7 @@
 @import "../../../../themes/orbcStyles.scss";
 
 .refund-page {
-  padding: 0 10%;
+  padding: 0 8.551vw;
   display: flex;
   flex-direction: row;
   margin-bottom: 3rem;
@@ -143,5 +143,17 @@
         }
       }
     }
+  }
+}
+
+@media (width < 768px) {
+  .refund-page {
+    padding: 0 5.5rem;
+  }
+}
+
+@media (width < 420px) {
+  .refund-page {
+    padding: 0 1rem;
   }
 }

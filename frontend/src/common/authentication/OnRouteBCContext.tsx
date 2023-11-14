@@ -31,8 +31,8 @@ export interface BCeIDUserDetailContext {
  * The data and functions to in the react context.
  */
 export type OnRouteBCContextType = {
-  setUserRoles?: Dispatch<SetStateAction<string[] | undefined>>;
-  userRoles?: string[];
+  setUserRoles?: Dispatch<SetStateAction<string[] | null | undefined>>;
+  userRoles?: string[] | null;
   setOnRouteBCClientNumber?: Dispatch<SetStateAction<string | undefined>>;
   onRouteBCClientNumber?: string;
   setUserDetails?: Dispatch<SetStateAction<BCeIDUserDetailContext | undefined>>;

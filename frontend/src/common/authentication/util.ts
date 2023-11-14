@@ -16,7 +16,7 @@ import OnRouteBCContext from "./OnRouteBCContext";
  * @returns A boolean indicating if the user has the role to access a page.
  */
 export const DoesUserHaveRole = (
-  userRoles: string[] | undefined,
+  userRoles: string[] | null | undefined,
   requiredRole: string | undefined
 ) => {
   return (
