@@ -1,17 +1,17 @@
 ---
 global:
+  license: "c28f0c"
   repository: bcgov/onroutebc # the repository where the images are stored.
   registry: ghcr.io # the registry where the images are stored. override during runtime for other registry at global level or individual level.
+  tag: latest # global tag for deployments where each service is using images at the same tag (dev,tet,prod,latest,etc)
+  zone: dev # Deployment zone - dev/test/prod
   secrets:
     annotation:
       helm.sh/policy: "keep"
   domain: "apps.silver.devops.gov.bc.ca" # it is required, apps.silver.devops.gov.bc.ca for silver cluster
-  license: "c28f0c"
-  role: "dev"
   openshiftImageRegistry: "image-registry.openshift-image-registry.svc:5000"
   vault:
-    role: "non-prod"
-
+    role: "nonprod"
 frontend:
   enabled: true
   deployment: # can be either a statefulSet or a deployment not both
@@ -28,7 +28,7 @@ frontend:
           return {
             "VITE_DEPLOY_ENVIRONMENT":"Prod",
             "VITE_API_VEHICLE_URL":"https://{{.Release.Name}}-vehicles.{{.Values.global.domain}}",
-            "VITE_AUTH0_ISSUER_URL":"https://{{.Values.global.role}}.loginproxy.gov.bc.ca/auth/realms/standard",
+            "VITE_AUTH0_ISSUER_URL":"https://{{.Values.global.zone}}.loginproxy.gov.bc.ca/auth/realms/standard",
             "VITE_AUTH0_AUDIENCE":"on-route-bc-direct-4598",
             "VITE_SITEMINDER_LOG_OFF_URL": "https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi",
           };
@@ -38,7 +38,7 @@ frontend:
       registry: '{{ .Values.global.registry }}'
       repository: '{{ .Values.global.repository }}' # example, it includes registry and repository
       image: frontend
-      tag: latest
+      tag: "{{tpl .Values.global.tag .}}"
       ports:
         - name: http
           containerPort: 3000
@@ -75,7 +75,7 @@ frontend:
         port: 80
         targetPort: 3000
   serviceAccount:
-    name: {{ .Values.global.license }}-vault
+    name: "{{ .Values.global.license }}-vault"
   volumes:
     - name: config
       configMap:
@@ -102,11 +102,11 @@ vehicles:
       command:
         - "sh"
         - "-c"
-        - "source /vault/secrets/auth0-{{.Values.global.role}} && source /vault/secrets/ches-{{.Values.global.role}} && source /vault/secrets/mssql-{{.Values.global.role}} && source /vault/secrets/payment-{{.Values.global.role}} && npm run start:prod"
+        - "source /vault/secrets/auth0-{{.Values.global.zone}} && source /vault/secrets/ches-{{.Values.global.zone}} && source /vault/secrets/mssql-{{.Values.global.zone}} && source /vault/secrets/payment-{{.Values.global.zone}} && npm run start:prod"
       registry: '{{ .Values.global.registry }}'
       repository: '{{ .Values.global.repository }}' # example, it includes registry and repository
       image: backend/vehicles
-      tag: latest
+      tag: "{{tpl .Values.global.tag .}}"
       ports:
         - name: vehicles-api
           containerPort: 5000
@@ -156,7 +156,7 @@ vehicles:
         port: 80
         targetPort: 5000
   serviceAccount:
-    name: {{ .Values.global.license }}-vault
+    name: "{{ .Values.global.license }}-vault"
   vault:
     enabled: true
     resources: # this is optional
@@ -166,12 +166,13 @@ vehicles:
       requests:
         cpu: 75m
         memory: 100Mi
-    role: {{.Values.global.vault.role}}
+    role: "{{.Values.global.vault.role}}"
+    license: "{{.Values.global.license}}"
     secretPaths:
-      - auth0-{{.Values.global.role}}
-      - ches-{{.Values.global.role}}
-      - mssql-{{.Values.global.role}}
-      - payment-{{.Values.global.role}}
+      - auth0-{{.Values.global.zone}}
+      - ches-{{.Values.global.zone}}
+      - mssql-{{.Values.global.zone}}
+      - payment-{{.Values.global.zone}}
 
 dops:
   enabled: true
@@ -190,11 +191,11 @@ dops:
       command:
         - "sh"
         - "-c"
-        - "source /vault/secrets/auth0-{{.Values.global.role}} && source /vault/secrets/ches-{{.Values.global.role}} && source /vault/secrets/mssql-{{.Values.global.role}} && source /vault/secrets/payment-{{.Values.global.role}} && npm run start:prod"
+        - "source /vault/secrets/auth0-{{.Values.global.zone}} && source /vault/secrets/ches-{{.Values.global.zone}} && source /vault/secrets/mssql-{{.Values.global.zone}} && source /vault/secrets/payment-{{.Values.global.zone}} && npm run start:prod"
       registry: '{{ .Values.global.registry }}'
       repository: '{{ .Values.global.repository }}' # example, it includes registry and repository
       image: backend/dops
-      tag: latest
+      tag: "{{tpl .Values.global.tag .}}"
       ports:
         - name: dops-api
           containerPort: 5001
@@ -244,7 +245,7 @@ dops:
         port: 80
         targetPort: 5001
   serviceAccount:
-    name: {{ .Values.global.license }}-vault
+    name: "{{ .Values.global.license }}-vault"
   vault:
     enabled: true
     resources: # this is optional
@@ -254,9 +255,10 @@ dops:
       requests:
         cpu: 75m
         memory: 100Mi
-    role: {{.Values.global.vault.role}}
+    role: "{{.Values.global.vault.role}}"
+    license: "{{.Values.global.license}}"
     secretPaths:
-      - auth0-{{.Values.global.role}}
-      - ches-{{.Values.global.role}}
-      - mssql-{{.Values.global.role}}
-      - payment-{{.Values.global.role}}
+      - auth0-{{.Values.global.zone}}
+      - ches-{{.Values.global.zone}}
+      - mssql-{{.Values.global.zone}}
+      - payment-{{.Values.global.zone}}
