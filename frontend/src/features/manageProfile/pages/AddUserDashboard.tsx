@@ -31,6 +31,7 @@ import { UserAuthRadioGroup } from "../components/forms/userManagement/UserAuthR
 import UserGroupsAndPermissionsModal from "../components/user-management/UserGroupsAndPermissionsModal";
 import { BCEID_PROFILE_TABS } from "../types/manageProfile.d";
 import { BCeIDAddUserRequest, BCEID_AUTH_GROUP } from "../types/userManagement.d";
+import { PROFILE_ROUTES } from "../../../routes/constants";
 
 /**
  * BCeID User - Add User Page.
@@ -52,7 +53,7 @@ export const AddUserDashboard = React.memo(() => {
   const { setSnackBar } = useContext(SnackBarContext);
 
   const onClickBreadCrumb = () => {
-    navigate("/manage-profiles", {
+    navigate(PROFILE_ROUTES.MANAGE, {
       state: {
         selectedTab: BCEID_PROFILE_TABS.USER_MANAGEMENT_ORGADMIN,
       },
@@ -90,7 +91,7 @@ export const AddUserDashboard = React.memo(() => {
           showSnackbar: true,
           setShowSnackbar: () => true,
         });
-        navigate("/manage-profiles", {
+        navigate(PROFILE_ROUTES.MANAGE, {
           state: {
             selectedTab: BCEID_PROFILE_TABS.USER_MANAGEMENT_ORGADMIN,
           },

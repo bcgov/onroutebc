@@ -1,18 +1,20 @@
 import { useForm, FormProvider, FieldValues } from "react-hook-form";
 import { Box, Button, MenuItem } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import { useContext } from "react";
+
 import "./VehicleForm.scss";
 import { PowerUnit, VehicleType } from "../../types/managevehicles";
 import { CountryAndProvince } from "../../../../common/components/form/CountryAndProvince";
 import { CustomFormComponent } from "../../../../common/components/form/CustomFormComponents";
+import { SnackBarContext } from "../../../../App";
+import { getDefaultRequiredVal, getDefaultNullableVal } from "../../../../common/helpers/util";
 import {
   useAddPowerUnitMutation,
   usePowerUnitTypesQuery,
   useUpdatePowerUnitMutation,
 } from "../../apiManager/hooks";
-import { useNavigate } from "react-router-dom";
-import { useContext } from "react";
-import { SnackBarContext } from "../../../../App";
-import { getDefaultRequiredVal, getDefaultNullableVal } from "../../../../common/helpers/util";
+
 import { 
   invalidNumber, 
   invalidPlateLength, 
@@ -20,6 +22,7 @@ import {
   invalidYearMin, 
   requiredMessage 
 } from "../../../../common/helpers/validationMessages";
+import { VEHICLES_ROUTES } from "../../../../routes/constants";
 
 /**
  * Props used by the power unit form.
@@ -99,6 +102,7 @@ export const PowerUnitForm = ({ powerUnit, companyId }: PowerUnitFormProps) => {
         },
         companyId,
       });
+
       if (result.status === 200) {
         snackBar.setSnackBar({
           showSnackbar: true,
@@ -106,7 +110,8 @@ export const PowerUnitForm = ({ powerUnit, companyId }: PowerUnitFormProps) => {
           message: "Changes Saved",
           alertType: "info",
         });
-        navigate("../");
+
+        navigate(VEHICLES_ROUTES.MANAGE);
       }
     } else {
       const powerUnitToBeAdded = data as PowerUnit;
@@ -128,7 +133,8 @@ export const PowerUnitForm = ({ powerUnit, companyId }: PowerUnitFormProps) => {
           message: "Power unit has been added successfully",
           alertType: "success"
         });
-        navigate("../");
+        
+        navigate(VEHICLES_ROUTES.MANAGE);
       }
     }
   };
@@ -137,7 +143,7 @@ export const PowerUnitForm = ({ powerUnit, companyId }: PowerUnitFormProps) => {
    * Changed view to the main Vehicle Inventory page
    */
   const handleClose = () => {
-    navigate("../");
+    navigate(VEHICLES_ROUTES.MANAGE);
   };
 
   /**

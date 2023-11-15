@@ -16,6 +16,7 @@ import { usePermitVehicleManagement } from "../../hooks/usePermitVehicleManageme
 import { useCompanyInfoQuery } from "../../../manageProfile/apiManager/hooks";
 import { applyWhenNotNullable } from "../../../../common/helpers/util";
 import { TROS_PERMIT_DURATIONS } from "../../constants/termOversizeConstants";
+import { APPLICATIONS_ROUTES } from "../../../../routes/constants";
 
 /**
  * The first step in creating and submitting a TROS Application.
@@ -150,12 +151,12 @@ export const TermOversizeForm = () => {
     if (!isApplicationSaved()) {
       setShowLeaveApplicationDialog(true);
     } else {
-      navigate("../applications");
+      navigate(APPLICATIONS_ROUTES.BASE);
     }
   };
 
   const handleLeaveUnsaved = () => {
-    navigate("../applications");
+    navigate(APPLICATIONS_ROUTES.BASE);
   };
 
   const handleStayOnApplication = () => {

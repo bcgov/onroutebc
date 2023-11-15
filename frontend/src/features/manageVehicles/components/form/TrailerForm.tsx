@@ -1,23 +1,24 @@
 import { useForm, FormProvider, FieldValues } from "react-hook-form";
 import { Box, Button, MenuItem } from "@mui/material";
-import * as routes from "../../../../routes/constants";
+import { useNavigate } from "react-router-dom";
+import { useContext } from "react";
+
 import "./VehicleForm.scss";
-// import { AxleGroupForm } from "./AxleGroupForm";
 import { Trailer, VehicleType } from "../../types/managevehicles";
 import { CountryAndProvince } from "../../../../common/components/form/CountryAndProvince";
 import { CustomFormComponent } from "../../../../common/components/form/CustomFormComponents";
+import { SnackBarContext } from "../../../../App";
 import {
   useAddTrailerMutation,
   useTrailerTypesQuery,
   useUpdateTrailerMutation,
 } from "../../apiManager/hooks";
-import { useNavigate } from "react-router-dom";
-import { useContext } from "react";
-import { SnackBarContext } from "../../../../App";
+
 import {
   getDefaultRequiredVal,
   getDefaultNullableVal,
 } from "../../../../common/helpers/util";
+
 import {
   invalidNumber,
   invalidPlateLength,
@@ -25,6 +26,7 @@ import {
   invalidYearMin,
   requiredMessage,
 } from "../../../../common/helpers/validationMessages";
+import { VEHICLES_ROUTES } from "../../../../routes/constants";
 
 /**
  * Props used by the power unit form.
@@ -103,7 +105,7 @@ export const TrailerForm = ({ trailer, companyId }: TrailerFormProps) => {
           message: "Changes Saved",
           alertType: "info",
         });
-        navigate(`/${routes.MANAGE_VEHICLES}#trailer`);
+        navigate(VEHICLES_ROUTES.TRAILER_TAB);
       }
     } else {
       const trailerToBeAdded = data as Trailer;
@@ -123,7 +125,7 @@ export const TrailerForm = ({ trailer, companyId }: TrailerFormProps) => {
           message: "Trailer has been added successfully",
           alertType: "success",
         });
-        navigate(`/${routes.MANAGE_VEHICLES}#trailer`);
+        navigate(VEHICLES_ROUTES.TRAILER_TAB);
       }
     }
   };
@@ -132,7 +134,7 @@ export const TrailerForm = ({ trailer, companyId }: TrailerFormProps) => {
    * Changed view to the main Vehicle Inventory page
    */
   const handleClose = () => {
-    navigate(`/${routes.MANAGE_VEHICLES}#trailer`);
+    navigate(VEHICLES_ROUTES.TRAILER_TAB);
   };
 
   /**

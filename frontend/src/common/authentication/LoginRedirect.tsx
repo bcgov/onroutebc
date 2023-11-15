@@ -2,11 +2,17 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useAuth } from "react-oidc-context";
 import { useNavigate } from "react-router-dom";
-import * as routes from "../../routes/constants";
+
 import { BCeIDUserContextType } from "./types";
 import { Loading } from "../pages/Loading";
 import { useUserContext } from "../../features/manageProfile/apiManager/hooks";
 import { IDPS } from "../types/idp";
+import { 
+  APPLICATIONS_ROUTES, 
+  CREATE_PROFILE_WIZARD_ROUTES, 
+  ERROR_ROUTES, 
+  IDIR_ROUTES,
+} from "../../routes/constants";
 
 /*
  * Redirects user to their correct page after loading their
@@ -26,7 +32,7 @@ export const LoginRedirect = () => {
   useEffect(() => {
     if (isAuthenticated && !isLoading) {
       if (userFromToken?.profile?.identity_provider === IDPS.IDIR) {
-        navigate(routes.IDIR_WELCOME);
+        navigate(IDIR_ROUTES.WELCOME);
       } else {
         const userContextData: BCeIDUserContextType | undefined =
           queryClient.getQueryData<BCeIDUserContextType>(["userContext"]);
@@ -37,21 +43,21 @@ export const LoginRedirect = () => {
           if (!user?.userGUID) {
             // The user is in pending companies => Redirect them to User Info Page.
             if (pendingCompanies.length > 0) {
-              navigate(routes.WELCOME);
+              navigate(CREATE_PROFILE_WIZARD_ROUTES.WELCOME);
             }
             // The user and company does not exist => Redirect them to Add new company page.
             else if (associatedCompanies.length < 1) {
-              navigate(routes.WELCOME);
+              navigate(CREATE_PROFILE_WIZARD_ROUTES.WELCOME);
             }
           }
           // The user and company exist
           else if (associatedCompanies.length) {
-            navigate(routes.APPLICATIONS);
+            navigate(APPLICATIONS_ROUTES.BASE);
           }
           // User exists but company does not exist. This is not a possible scenario.
           else if (!associatedCompanies.length) {
             // Error Page
-            navigate(routes.UNAUTHORIZED);
+            navigate(ERROR_ROUTES.UNAUTHORIZED);
           }
 
           // else if(pendingCompanies.length) (i.e., user exists and has invites from a company)

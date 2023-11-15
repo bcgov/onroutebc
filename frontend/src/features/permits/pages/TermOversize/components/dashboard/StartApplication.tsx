@@ -11,6 +11,7 @@ import "./StartApplication.scss";
 import { PERMIT_TYPE_CHOOSE_FROM_OPTIONS } from "../../../../constants/constants";
 import { SelectPermitType } from "./SelectPermitType";
 import { PERMIT_TYPES } from "../../../../types/PermitType";
+import { APPLICATIONS_ROUTES } from "../../../../../../routes/constants";
 
 /**
  *
@@ -27,7 +28,7 @@ export const StartApplication = () => {
   };
 
   const handleStartButtonClicked = () => {
-    navigate("/applications/permits");
+    navigate(APPLICATIONS_ROUTES.START_APPLICATION);
   };
 
   return (

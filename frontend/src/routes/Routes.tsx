@@ -1,4 +1,5 @@
 import { Routes, Route } from "react-router-dom";
+
 import * as routes from "./constants";
 import { InitialLandingPage } from "../features/homePage/InitialLandingPage";
 import { WelcomePage } from "../features/homePage/welcome/WelcomePage";
@@ -30,16 +31,16 @@ export const AppRoutes = () => {
   return (
     <Routes>
       <Route path={routes.HOME} element={<InitialLandingPage />} />
-      <Route path={routes.WELCOME} element={<WelcomePage />} />
-      <Route path={routes.UNAUTHORIZED} element={<Unauthorized />} />
-      <Route path={routes.UNIVERSAL_UNAUTHORIZED} element={<UniversalUnauthorized />} />
+      <Route path={routes.CREATE_PROFILE_WIZARD_ROUTES.WELCOME} element={<WelcomePage />} />
+      <Route path={routes.ERROR_ROUTES.UNAUTHORIZED} element={<Unauthorized />} />
+      <Route path={routes.ERROR_ROUTES.UNIVERSAL_UNAUTHORIZED} element={<UniversalUnauthorized />} />
       <Route path="*" element={<NotFound />} />
 
       {/* IDIR Routes */}
       <Route element={<ProtectedRoutes requiredRole={ROLES.READ_PERMIT} />}>
-        <Route path={routes.IDIR_WELCOME} element={<IDIRWelcome />} />
+        <Route path={routes.IDIR_ROUTES.WELCOME} element={<IDIRWelcome />} />
         <Route
-          path={routes.SEARCH_RESULTS}
+          path={routes.IDIR_ROUTES.SEARCH_RESULTS}
           element={<IDIRSearchResultsDashboard />}
         />
       </Route>
@@ -47,10 +48,10 @@ export const AppRoutes = () => {
       {/* BCeID Routes */}
       {/* Protected Routes */}
       <Route element={<ProtectedRoutes requiredRole={ROLES.READ_VEHICLE} />}>
-        <Route path={routes.MANAGE_VEHICLES}>
+        <Route path={routes.VEHICLES_ROUTES.MANAGE}>
           <Route index={true} element={<ManageVehicles />} />
           <Route
-            path="power-units/:vehicleId"
+            path={`${routes.VEHICLES_ROUTES.POWER_UNIT_DETAILS}/:vehicleId`}
             element={
               <EditVehicleDashboard
                 editVehicleMode={VEHICLE_TYPES_ENUM.POWER_UNIT}
@@ -58,7 +59,7 @@ export const AppRoutes = () => {
             }
           />
           <Route
-            path="trailers/:vehicleId"
+            path={`${routes.VEHICLES_ROUTES.TRAILER_DETAILS}/:vehicleId`}
             element={
               <EditVehicleDashboard
                 editVehicleMode={VEHICLE_TYPES_ENUM.TRAILER}
@@ -66,7 +67,7 @@ export const AppRoutes = () => {
             }
           />
           <Route
-            path={routes.ADD_POWER_UNIT}
+            path={routes.VEHICLES_ROUTES.ADD_POWER_UNIT}
             element={
               <AddVehicleDashboard
                 addVehicleMode={VEHICLE_TYPES_ENUM.POWER_UNIT}
@@ -74,7 +75,7 @@ export const AppRoutes = () => {
             }
           />
           <Route
-            path={routes.ADD_TRAILER}
+            path={routes.VEHICLES_ROUTES.ADD_TRAILER}
             element={
               <AddVehicleDashboard
                 addVehicleMode={VEHICLE_TYPES_ENUM.TRAILER}
@@ -84,55 +85,55 @@ export const AppRoutes = () => {
         </Route>
       </Route>
       <Route element={<ProtectedRoutes requiredRole={ROLES.READ_ORG} />}>
-        <Route path={routes.MANAGE_PROFILES} element={<ManageProfiles />} />
+        <Route path={routes.PROFILE_ROUTES.MANAGE} element={<ManageProfiles />} />
       </Route>
       <Route element={<ProtectedRoutes requiredRole={ROLES.WRITE_USER} />}>
-        <Route path={routes.ADD_USER} element={<AddUserDashboard />} />
-        <Route path={`${routes.EDIT_USER}/:userGUID`} element={<EditUserDashboard />} />
+        <Route path={routes.PROFILE_ROUTES.ADD_USER} element={<AddUserDashboard />} />
+        <Route path={`${routes.PROFILE_ROUTES.EDIT_USER}/:userGUID`} element={<EditUserDashboard />} />
       </Route>
       <Route element={<ProtectedRoutes requiredRole={ROLES.WRITE_PERMIT} />}>
         <Route
-          path={`${routes.APPLICATIONS}/${routes.PERMITS}`}
+          path={`${routes.APPLICATIONS_ROUTES.START_APPLICATION}`}
           element={<ManagePermits />}
         />
       </Route>
       <Route element={<ProtectedRoutes requiredRole={ROLES.WRITE_PERMIT} />}>
-        <Route path={routes.APPLICATIONS} element={<ManageApplications />} />
+        <Route path={routes.APPLICATIONS_ROUTES.BASE} element={<ManageApplications />} />
       </Route>
       <Route element={<ProtectedRoutes requiredRole={ROLES.WRITE_PERMIT} />}>
         <Route
-          path={`${routes.APPLICATIONS}/:applicationNumber`}
+          path={`${routes.APPLICATIONS_ROUTES.BASE}/:applicationNumber`}
           element={<ManagePermits />}
         />
       </Route>
       <Route element={<ProtectedRoutes requiredRole={ROLES.WRITE_PERMIT} />}>
-        <Route path={routes.APPLICATIONS}>
+        <Route path={routes.APPLICATIONS_ROUTES.BASE}>
           <Route index={true} element={<ManageApplications />} />
           <Route
-            path={`${routes.APPLICATIONS_SUCCESS}/:permitId`}
+            path={`${routes.APPLICATIONS_ROUTES.SUCCESS}/:permitId`}
             element={<SuccessPage />}
           />
           <Route
-            path={`${routes.APPLICATIONS_FAILURE}/:msg`}
+            path={`${routes.APPLICATIONS_ROUTES.FAILURE}/:msg`}
             element={<PaymentFailureRedirect />}
           />
         </Route>
       </Route>
       <Route element={<ProtectedRoutes requiredRole={ROLES.WRITE_PERMIT} />}>
         <Route 
-          path={`${routes.PERMITS}/:permitId/${routes.PERMIT_VOID}`}
+          path={`${routes.PERMITS_ROUTES.BASE}/:permitId/${routes.PERMITS_ROUTES.VOID}`}
           element={<VoidPermit />} 
         />
         <Route 
-          path={`${routes.PERMITS}/:permitId/${routes.PERMIT_AMEND}`}
+          path={`${routes.PERMITS_ROUTES.BASE}/:permitId/${routes.PERMITS_ROUTES.AMEND}`}
           element={<AmendPermit />}
         />
       </Route>
       <Route element={<ProtectedRoutes requiredRole={ROLES.WRITE_PERMIT} />}>
-        <Route path={routes.PAYMENT_REDIRECT} element={<PaymentRedirect />} />
+        <Route path={routes.PAYMENT_ROUTES.PAYMENT_REDIRECT} element={<PaymentRedirect />} />
       </Route>
-      <Route path={routes.CREATE_PROFILE} element={<CreateProfileWizard />} />
-      <Route path={routes.USER_INFO} element={<UserInfoWizard />} />
+      <Route path={routes.CREATE_PROFILE_WIZARD_ROUTES.CREATE} element={<CreateProfileWizard />} />
+      <Route path={routes.PROFILE_ROUTES.USER_INFO} element={<UserInfoWizard />} />
     </Routes>
   );
 };

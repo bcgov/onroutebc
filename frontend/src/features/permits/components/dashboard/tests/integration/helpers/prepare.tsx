@@ -7,7 +7,7 @@ import { renderWithClient } from "../../../../../../../common/helpers/testHelper
 import OnRouteBCContext, { OnRouteBCContextType } from "../../../../../../../common/authentication/OnRouteBCContext";
 import { bcGovTheme } from "../../../../../../../themes/bcGovTheme";
 import { ApplicationDashboard } from "../../../ApplicationDashboard";
-import { PERMITS_API } from "../../../../../apiManager/endpoints/endpoints";
+import { APPLICATIONS_API_ROUTES } from "../../../../../apiManager/endpoints/endpoints";
 import { dayjsToUtcStr, now } from "../../../../../../../common/helpers/formatDate";
 import { createApplication, getApplication, updateApplication } from "../fixtures/getActiveApplication";
 import { VEHICLES_API } from "../../../../../../manageVehicles/apiManager/endpoints/endpoints";
@@ -15,6 +15,8 @@ import { VEHICLES_URL } from "../../../../../../../common/apiManager/endpoints/e
 import { MANAGE_PROFILE_API } from "../../../../../../manageProfile/apiManager/endpoints/endpoints";
 import { getDefaultCompanyInfo } from "../fixtures/getCompanyInfo";
 import { getDefaultUserDetails } from "../fixtures/getUserDetails";
+import { getDefaultRequiredVal } from "../../../../../../../common/helpers/util";
+import { formatCountry, formatProvince } from "../../../../../../../common/helpers/formatCountryProvince";
 import { 
   createPowerUnit, 
   createTrailer, 
@@ -24,8 +26,6 @@ import {
   getDefaultTrailerTypes, 
   updatePowerUnit,
 } from "../fixtures/getVehicleInfo";
-import { getDefaultRequiredVal } from "../../../../../../../common/helpers/util";
-import { formatCountry, formatProvince } from "../../../../../../../common/helpers/formatCountryProvince";
 
 // Use some default user details values to give to the OnRouteBCContext context provider
 export const defaultUserDetails = getDefaultUserDetails();
@@ -35,7 +35,7 @@ export const companyInfo = getDefaultCompanyInfo();
 // Mock API endpoints
 const server = setupServer(
   // Mock creating/saving application
-  rest.post(PERMITS_API.SUBMIT_TERM_OVERSIZE_PERMIT, async (req, res, ctx) => {
+  rest.post(APPLICATIONS_API_ROUTES.CREATE, async (req, res, ctx) => {
     const reqBody = await req.json();
     const applicationData = { 
       ...reqBody,
@@ -49,7 +49,7 @@ const server = setupServer(
     }));
   }),
   // Mock updating/saving application
-  rest.put(`${PERMITS_API.SUBMIT_TERM_OVERSIZE_PERMIT}/:id`, async (req, res, ctx) => {
+  rest.put(`${APPLICATIONS_API_ROUTES.UPDATE}/:id`, async (req, res, ctx) => {
     const id = String(req.params.id);
     const reqBody = await req.json();
     const applicationData = {
@@ -68,7 +68,7 @@ const server = setupServer(
     }));
   }),
   // Mock getting application
-  rest.get(`${VEHICLES_URL}/permits/applications/:permitId`, (_, res, ctx) => {
+  rest.get(`${APPLICATIONS_API_ROUTES.GET}/:permitId`, (_, res, ctx) => {
     return res(ctx.json({
       // get application from mock application store (there's only 1 application or empty), since we're testing save/create/edit behaviour
       data: getApplication(), 

@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { APPLICATION_STEPS } from "../dashboard/ApplicationDashboard";
 import { ApplicationContext } from "../../context/ApplicationContext";
+import { APPLICATIONS_ROUTES } from "../../../../routes/constants";
 
 export const ProgressBar = () => {
   const applicationSteps = Object.values(APPLICATION_STEPS);
@@ -19,7 +20,7 @@ export const ProgressBar = () => {
   const navigate = useNavigate();
 
   const handleNavigateBack = () => {
-    navigate("../");
+    navigate(APPLICATIONS_ROUTES.BASE);
   };
 
   return (

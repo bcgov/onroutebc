@@ -26,16 +26,16 @@ import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { PowerUnitColumnDefinition, TrailerColumnDefinition } from "./Columns";
 import { deleteVehicles } from "../../apiManager/vehiclesAPI";
 import { SnackBarContext } from "../../../../App";
-import { MANAGE_VEHICLES } from "../../../../routes/constants";
+import { VEHICLES_ROUTES } from "../../../../routes/constants";
 import { DoesUserHaveRoleWithContext } from "../../../../common/authentication/util";
 import { ROLES } from "../../../../common/authentication/types";
+import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
 import {
   VehicleTypes,
   VehicleTypesAsString,
   PowerUnit,
   Trailer,
 } from "../../types/managevehicles";
-import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
 
 /**
  * Dynamically set the column based on vehicle type
@@ -212,13 +212,13 @@ export const List = memo(
                         onClick={() => {
                           if (vehicleType === "powerUnit") {
                             navigate(
-                              `/${MANAGE_VEHICLES}/power-units/${row.getValue(
+                              `${VEHICLES_ROUTES.POWER_UNIT_DETAILS}/${row.getValue(
                                 "powerUnitId"
                               )}`
                             );
                           } else if (vehicleType === "trailer") {
                             navigate(
-                              `/${MANAGE_VEHICLES}/trailers/${row.getValue(
+                              `${VEHICLES_ROUTES.TRAILER_DETAILS}/${row.getValue(
                                 "trailerId"
                               )}`
                             );

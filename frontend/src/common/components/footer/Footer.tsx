@@ -6,7 +6,7 @@ export const Footer = () => {
       <div className="container">
         <ul>
           <li>
-            <a href=".">Home</a>
+            <a href="https://onroutebc.gov.bc.ca">Home</a>
           </li>
           <li>
             <a href="https://www2.gov.bc.ca/gov/content/home/disclaimer">
@@ -29,7 +29,7 @@ export const Footer = () => {
             </a>
           </li>
           <li>
-            <a href="https://www2.gov.bc.ca/gov/content/home/get-help-with-government-services">
+            <a href="https://onroutebc.gov.bc.ca">
               Contact Us
             </a>
           </li>

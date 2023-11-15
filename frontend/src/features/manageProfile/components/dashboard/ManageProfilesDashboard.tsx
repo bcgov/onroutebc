@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import React, { useContext } from "react";
 import { useLocation, useNavigate } from "react-router";
+
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { ROLES } from "../../../../common/authentication/types";
 import { DoesUserHaveRole } from "../../../../common/authentication/util";
@@ -16,7 +17,7 @@ import { CompanyInfo } from "../../pages/CompanyInfo";
 import { MyInfo } from "../../pages/MyInfo";
 import { UserManagement } from "../../pages/UserManagement";
 import { BCEID_PROFILE_TABS } from "../../types/manageProfile.d";
-import { ADD_USER } from "../../../../routes/constants";
+import { PROFILE_ROUTES } from "../../../../routes/constants";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 
 /**
@@ -100,7 +101,7 @@ export const ManageProfilesDashboard = React.memo(() => {
         isBCeIDAdmin ? (
           <Button
             variant="contained"
-            onClick={() => navigate(ADD_USER)}
+            onClick={() => navigate(PROFILE_ROUTES.ADD_USER)}
             sx={{
               marginTop: "45px",
               height: "50px",

@@ -7,6 +7,7 @@ import { Loading } from "../../../../common/pages/Loading";
 import { useCompleteTransaction, useIssuePermits } from "../../hooks/hooks";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { DATE_FORMATS, toUtc } from "../../../../common/helpers/formatDate";
+import { APPLICATIONS_ROUTES } from "../../../../routes/constants";
 
 const PERMIT_ID_DELIM = ','
 const PATH_DELIM = '?'
@@ -105,7 +106,7 @@ export const PaymentRedirect = () => {
   if (paymentApproved === false) {
     return (
       <Navigate 
-        to={`/applications/failure/${message}`}
+        to={`${APPLICATIONS_ROUTES.FAILURE}/${message}`}
         replace={true}
       />
     )
@@ -116,14 +117,14 @@ export const PaymentRedirect = () => {
       const permitIssueFailedMsg = `Permit issue failed for ids ${issueResults.failure.join(",")}`;
       return (
         <Navigate 
-          to={`/applications/failure/${permitIssueFailedMsg}`}
+          to={`${APPLICATIONS_ROUTES.FAILURE}/${permitIssueFailedMsg}`}
           replace={true}
         />
       );
     }
     return (
       <Navigate 
-        to={`/applications/success/${issueResults.success[0]}`}
+        to={`${APPLICATIONS_ROUTES.SUCCESS}/${issueResults.success[0]}`}
         replace={true}
       />
     );

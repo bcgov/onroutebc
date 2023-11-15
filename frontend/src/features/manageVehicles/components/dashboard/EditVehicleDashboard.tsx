@@ -16,6 +16,7 @@ import { PowerUnit, Trailer } from "../../types/managevehicles";
 import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { DATE_FORMATS, toLocal } from "../../../../common/helpers/formatDate";
 import { getCompanyIdFromSession } from "../../../../common/apiManager/httpRequestHandler";
+import { VEHICLES_ROUTES } from "../../../../routes/constants";
 
 export const EditVehicleDashboard = React.memo(
   ({ editVehicleMode }: { editVehicleMode: VEHICLE_TYPES_ENUM }) => {
@@ -41,8 +42,12 @@ export const EditVehicleDashboard = React.memo(
       { retry: false, enabled: true }
     );
 
-    const handleShowAddVehicle = () => {
-      navigate("../");
+    const backToVehicleInventory = () => {
+      if (editVehicleMode === VEHICLE_TYPES_ENUM.TRAILER) {
+        navigate(VEHICLES_ROUTES.TRAILER_TAB);
+      } else {
+        navigate(VEHICLES_ROUTES.MANAGE);
+      }
     };
 
     return (
@@ -89,7 +94,7 @@ export const EditVehicleDashboard = React.memo(
         >
           <Typography
             className="breadcrumb-link breadcrumb-link--parent"
-            onClick={handleShowAddVehicle}
+            onClick={backToVehicleInventory}
           >
             Vehicle Inventory
           </Typography>
@@ -101,7 +106,7 @@ export const EditVehicleDashboard = React.memo(
 
           <Typography
             className="breadcrumb-link breadcrumb-link--parent"
-            onClick={handleShowAddVehicle}
+            onClick={backToVehicleInventory}
           >
             {editVehicleMode === VEHICLE_TYPES_ENUM.POWER_UNIT && "Power Unit"}
             {editVehicleMode === VEHICLE_TYPES_ENUM.TRAILER && "Trailer"}

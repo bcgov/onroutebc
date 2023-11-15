@@ -12,13 +12,18 @@ import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { VEHICLE_TYPES_ENUM } from "../form/constants";
 import { PowerUnitForm } from "../form/PowerUnitForm";
 import { TrailerForm } from "../form/TrailerForm";
+import { VEHICLES_ROUTES } from "../../../../routes/constants";
 
 export const AddVehicleDashboard = React.memo(
   ({ addVehicleMode }: { addVehicleMode: VEHICLE_TYPES_ENUM }) => {
     const navigate = useNavigate();
 
-    const handleShowAddVehicle = () => {
-      navigate("../");
+    const backToVehicleInventory = () => {
+      if (addVehicleMode === VEHICLE_TYPES_ENUM.TRAILER) {
+        navigate(VEHICLES_ROUTES.TRAILER_TAB);
+      } else {
+        navigate(VEHICLES_ROUTES.MANAGE);
+      }
     };
 
     const companyId = getDefaultRequiredVal("0", getCompanyIdFromSession());
@@ -41,7 +46,7 @@ export const AddVehicleDashboard = React.memo(
         >
           <Typography
             className="breadcrumb-link breadcrumb-link--parent"
-            onClick={handleShowAddVehicle}
+            onClick={backToVehicleInventory}
           >
             Vehicle Inventory
           </Typography>
@@ -53,7 +58,7 @@ export const AddVehicleDashboard = React.memo(
 
           <Typography
             className="breadcrumb-link breadcrumb-link--parent"
-            onClick={handleShowAddVehicle}
+            onClick={backToVehicleInventory}
           >
             {addVehicleMode === VEHICLE_TYPES_ENUM.POWER_UNIT && "Power Unit"}
             {addVehicleMode === VEHICLE_TYPES_ENUM.TRAILER && "Trailer"}

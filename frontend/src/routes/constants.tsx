@@ -1,37 +1,65 @@
 import { IDPS } from "../common/types/idp";
 
 export const HOME = "/";
-export const UNAUTHORIZED = "unauthorized";
-export const UNIVERSAL_UNAUTHORIZED = "universal-unauthorized";
+
+export const ERROR_ROUTES = {
+  UNAUTHORIZED: "/unauthorized",
+  UNIVERSAL_UNAUTHORIZED: "/universal-unauthorized",
+};
 
 // Manage Vehicles
-export const MANAGE_VEHICLES = "manage-vehicles";
-export const ADD_POWER_UNIT = "add-powerunit";
-export const ADD_TRAILER = "add-trailer";
+const VEHICLES_ROUTE_BASE = "/manage-vehicles";
+export const VEHICLES_ROUTES = {
+  MANAGE: VEHICLES_ROUTE_BASE,
+  ADD_POWER_UNIT: `${VEHICLES_ROUTE_BASE}/add-powerunit`,
+  ADD_TRAILER: `${VEHICLES_ROUTE_BASE}/add-trailer`,
+  TRAILER_TAB: `${VEHICLES_ROUTE_BASE}#trailer`,
+  POWER_UNIT_DETAILS: `${VEHICLES_ROUTE_BASE}/power-units`,
+  TRAILER_DETAILS: `${VEHICLES_ROUTE_BASE}/trailers`,
+};
 
 // Manage Profile
-export const MANAGE_PROFILES = "manage-profiles";
-export const ADD_USER = `/${MANAGE_PROFILES}/add-user`;
-export const EDIT_USER = `/${MANAGE_PROFILES}/edit-user`;
+const PROFILE_ROUTE_BASE = "/manage-profiles";
+export const PROFILE_ROUTES = {
+  MANAGE: PROFILE_ROUTE_BASE,
+  ADD_USER: `${PROFILE_ROUTE_BASE}/add-user`,
+  EDIT_USER: `${PROFILE_ROUTE_BASE}/edit-user`,
+  USER_INFO: "/user-info",
+};
 
 // Permits
-export const PERMITS = "permits";
-export const PERMIT_VOID = "void";
-export const PERMIT_AMEND = "amend";
+const PERMITS_ROUTE_BASE = "/permits";
+export const PERMITS_ROUTES = {
+  BASE: PERMITS_ROUTE_BASE,
+  VOID: "void",
+  AMEND: "amend",
+};
 
 // Applications
-export const APPLICATIONS = "applications";
-export const APPLICATIONS_SUCCESS = "success";
-export const APPLICATIONS_FAILURE = "failure";
+const APPLICATIONS_ROUTE_BASE = `/applications`;
+export const APPLICATIONS_ROUTES = {
+  BASE: APPLICATIONS_ROUTE_BASE,
+  START_APPLICATION: `${APPLICATIONS_ROUTE_BASE}/permits`,
+  SUCCESS: `${APPLICATIONS_ROUTE_BASE}/success`,
+  FAILURE: `${APPLICATIONS_ROUTE_BASE}/failure`,
+};
 
-// Wizard
-export const CREATE_PROFILE = "create-profile";
-export const WELCOME = "welcome";
-export const USER_INFO = "user-info";
+// Create Profile Wizard
+export const CREATE_PROFILE_WIZARD_ROUTES = {
+  CREATE: "/create-profile",
+  WELCOME: "/welcome",
+};
 
 // IDIR
-export const IDIR_WELCOME = `/${IDPS.IDIR}/welcome`;
-export const SEARCH_RESULTS = `/${IDPS.IDIR}/search-results`;
+const IDIR_ROUTE_BASE = `/${IDPS.IDIR}`;
+export const IDIR_ROUTES = {
+  WELCOME: `${IDIR_ROUTE_BASE}/welcome`,
+  SEARCH_RESULTS: `${IDIR_ROUTE_BASE}/search-results`,
+};
 
 // Payment
-export const PAYMENT_REDIRECT = "payment"
+const PAYMENT_ROUTE_BASE = "/payment";
+export const PAYMENT_ROUTES = {
+  BASE: PAYMENT_ROUTE_BASE,
+  PAYMENT_REDIRECT: PAYMENT_ROUTE_BASE,
+};

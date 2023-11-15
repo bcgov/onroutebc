@@ -1,8 +1,9 @@
 import { useAuth } from "react-oidc-context";
 import { useLocation, Navigate, Outlet, useNavigate } from "react-router-dom";
-import { HOME, UNAUTHORIZED, UNIVERSAL_UNAUTHORIZED } from "./constants";
-import { Loading } from "../common/pages/Loading";
 import { useContext, useEffect } from "react";
+
+import { HOME, ERROR_ROUTES } from "./constants";
+import { Loading } from "../common/pages/Loading";
 import OnRouteBCContext from "../common/authentication/OnRouteBCContext";
 import { DoesUserHaveRole } from "../common/authentication/util";
 import { LoadBCeIDUserRolesByCompany } from "../common/authentication/LoadBCeIDUserRolesByCompany";
@@ -23,9 +24,15 @@ export const ProtectedRoutes = ({
     isLoading: isAuthLoading,
     user: userFromToken,
   } = useAuth();
-  const { userRoles, companyId, idirUserDetails } =
-    useContext(OnRouteBCContext);
+
+  const { 
+    userRoles, 
+    companyId, 
+    idirUserDetails, 
+  } = useContext(OnRouteBCContext);
+
   const userIDP = userFromToken?.profile?.identity_provider as string;
+  
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -47,7 +54,13 @@ export const ProtectedRoutes = ({
     if (isIDIR(userIDP) && !idirUserDetails?.userAuthGroup) {
       if (typeof userRoles !== "undefined" && !userRoles) {
         // user roles is null, indicating an error occurred fetching roles (eg. user with no roles, 403)
-        return <Navigate to={UNIVERSAL_UNAUTHORIZED} state={{ from: location }} replace />;
+        return (
+          <Navigate 
+            to={ERROR_ROUTES.UNIVERSAL_UNAUTHORIZED}
+            state={{ from: location }} 
+            replace 
+          />
+        );
       }
       
       return (
@@ -77,10 +90,22 @@ export const ProtectedRoutes = ({
     }
 
     if (!DoesUserHaveRole(userRoles, requiredRole)) {
-      return <Navigate to={UNAUTHORIZED} state={{ from: location }} replace />;
+      return (
+        <Navigate 
+          to={ERROR_ROUTES.UNAUTHORIZED} 
+          state={{ from: location }} 
+          replace 
+        />
+      );
     }
     return <Outlet />;
   } else {
-    return <Navigate to={HOME} state={{ from: location }} replace />;
+    return (
+      <Navigate 
+        to={HOME} 
+        state={{ from: location }} 
+        replace 
+      />
+    );
   }
 };

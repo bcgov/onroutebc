@@ -1,5 +1,6 @@
 import { memo, useContext, useState } from "react";
-
+import { useMutation } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 import {
   Box,
   Button,
@@ -8,31 +9,23 @@ import {
   Stack,
   Typography
 } from "@mui/material";
-import { useMutation } from "@tanstack/react-query";
+
 import {
   Controller,
   FieldValues,
   FormProvider,
   useForm,
 } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+
 import { SnackBarContext } from "../../../../../App";
 import { formatPhoneNumber } from "../../../../../common/components/form/subFormComponents/PhoneNumberInput";
-import {
-  applyWhenNotNullable,
-  getDefaultRequiredVal,
-} from "../../../../../common/helpers/util";
-import {
-  requiredMessage
-} from "../../../../../common/helpers/validationMessages";
-import { MANAGE_PROFILES } from "../../../../../routes/constants";
+import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../../../common/helpers/util";
+import { requiredMessage } from "../../../../../common/helpers/validationMessages";
+import { PROFILE_ROUTES } from "../../../../../routes/constants";
 import { BC_COLOURS } from "../../../../../themes/bcGovStyles";
 import { updateUserInfo } from "../../../apiManager/manageProfileAPI";
 import { BCEID_PROFILE_TABS } from "../../../types/manageProfile.d";
-import {
-  BCEID_AUTH_GROUP,
-  ReadCompanyUser,
-} from "../../../types/userManagement.d";
+import { BCEID_AUTH_GROUP, ReadCompanyUser } from "../../../types/userManagement.d";
 import UserGroupsAndPermissionsModal from "../../user-management/UserGroupsAndPermissionsModal";
 import { ReusableUserInfoForm } from "../common/ReusableUserInfoForm";
 import "../myInfo/MyInfoForm.scss";
@@ -73,7 +66,7 @@ export const EditUserForm = memo(
      * On click handler for the breadcrumbs. Navigates to the parent pages.
      */
     const onClickBreadcrumb = () => {
-      navigate(`/${MANAGE_PROFILES}`, {
+      navigate(PROFILE_ROUTES.MANAGE, {
         state: {
           selectedTab: BCEID_PROFILE_TABS.USER_MANAGEMENT_ORGADMIN,
         },
@@ -102,7 +95,7 @@ export const EditUserForm = memo(
             setShowSnackbar: () => true,
           });
 
-          navigate(`/${MANAGE_PROFILES}`, {
+          navigate(PROFILE_ROUTES.MANAGE, {
             state: { selectedTab: BCEID_PROFILE_TABS.USER_MANAGEMENT_ORGADMIN },
           });
         }

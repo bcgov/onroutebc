@@ -1,6 +1,5 @@
 import { DATE_FORMATS, toLocal } from "../../../common/helpers/formatDate";
 import { mapApplicationToApplicationRequestData } from "../helpers/mappers";
-import { VEHICLES_URL } from "../../../common/apiManager/endpoints/endpoints";
 import { IssuePermitsResponse, Permit } from "../types/permit";
 import { PaginatedResponse } from "../../../common/types/common";
 import { PERMIT_STATUSES } from "../types/PermitStatus";
@@ -35,11 +34,16 @@ import {
 } from "../types/application";
 
 import {
-  APPLICATION_UPDATE_STATUS_API,
-  PAYMENT_API,
-  PERMITS_API,
+  APPLICATIONS_API_ROUTES,
+  PAYMENT_API_ROUTES,
+  PERMITS_API_ROUTES,
 } from "./endpoints/endpoints";
-import { RevokePermitRequestData, VoidPermitRequestData, VoidPermitResponseData } from "../pages/Void/types/VoidPermit";
+
+import { 
+  RevokePermitRequestData, 
+  VoidPermitRequestData, 
+  VoidPermitResponseData, 
+} from "../pages/Void/types/VoidPermit";
 
 /**
  * Submits a new term oversize application.
@@ -48,7 +52,7 @@ import { RevokePermitRequestData, VoidPermitRequestData, VoidPermitResponseData 
  */
 export const submitTermOversize = async (termOversizePermit: Application) => {
   return await httpPOSTRequest(
-    PERMITS_API.SUBMIT_TERM_OVERSIZE_PERMIT,
+    APPLICATIONS_API_ROUTES.CREATE,
     replaceEmptyValuesWithNull({
       // must convert application to ApplicationRequestData (dayjs fields to strings)
       ...mapApplicationToApplicationRequestData(termOversizePermit),
@@ -67,7 +71,7 @@ export const updateTermOversize = async (
   applicationNumber: string
 ) => {
   return await httpPUTRequest(
-    `${PERMITS_API.SUBMIT_TERM_OVERSIZE_PERMIT}/${applicationNumber}`,
+    `${APPLICATIONS_API_ROUTES.UPDATE}/${applicationNumber}`,
     replaceEmptyValuesWithNull({
       // must convert application to ApplicationRequestData (dayjs fields to strings)
       ...mapApplicationToApplicationRequestData(termOversizePermit),
@@ -84,7 +88,7 @@ export const getApplicationsInProgress = async (): Promise<
 > => {
   const companyId = getCompanyIdFromSession();
   const userGuid = getUserGuidFromSession();
-  let applicationsUrl = `${VEHICLES_URL}/permits/applications?status=IN_PROGRESS`;
+  let applicationsUrl = `${APPLICATIONS_API_ROUTES.IN_PROGRESS}`;
   if (companyId) {
     applicationsUrl += `&companyId=${companyId}`;
   }
@@ -134,7 +138,7 @@ export const getApplicationByPermitId = async (
 ): Promise<ApplicationResponse | null> => {
   try {
     const companyId = getCompanyIdFromSession();
-    let url = `${VEHICLES_URL}/permits/applications/${permitId}`;
+    let url = `${APPLICATIONS_API_ROUTES.GET}/${permitId}`;
     if (companyId) {
       url += `?companyId=${companyId}`;
     }
@@ -152,9 +156,13 @@ export const getApplicationByPermitId = async (
  * @returns A Promise with the API response.
  */
 export const deleteApplications = async (applicationIds: Array<string>) => {
-  const requestBody = { applicationIds, applicationStatus: PERMIT_STATUSES.CANCELLED };
+  const requestBody = { 
+    applicationIds, 
+    applicationStatus: PERMIT_STATUSES.CANCELLED, 
+  };
+
   return await httpPOSTRequest(
-    `${APPLICATION_UPDATE_STATUS_API}`,
+    `${APPLICATIONS_API_ROUTES.STATUS}`,
     replaceEmptyValuesWithNull(requestBody)
   );
 };
@@ -207,7 +215,7 @@ const streamDownload = async (url: string) => {
  * @returns A Promise of dms reference string.
  */
 export const downloadPermitApplicationPdf = async (permitId: string) => {
-  const url = `${PERMITS_API.BASE}/${permitId}/pdf?download=proxy`;
+  const url = `${PERMITS_API_ROUTES.BASE}/${permitId}/${PERMITS_API_ROUTES.DOWNLOAD}`;
   return await streamDownload(url);
 };
 
@@ -217,7 +225,7 @@ export const downloadPermitApplicationPdf = async (permitId: string) => {
  * @returns A Promise of dms reference string.
  */
 export const downloadReceiptPdf = async (permitId: string) => {
-  const url = `${PERMITS_API.BASE}/${permitId}/receipt`;
+  const url = `${PERMITS_API_ROUTES.BASE}/${permitId}/${PERMITS_API_ROUTES.RECEIPT}`;
   return await streamDownload(url);
 };
 
@@ -230,7 +238,7 @@ export const startTransaction = async (
   requestData: StartTransactionRequestData
 ): Promise<StartTransactionResponseData | null> => {
   try {
-    const response = await httpPOSTRequest(PAYMENT_API, replaceEmptyValuesWithNull(requestData));
+    const response = await httpPOSTRequest(PAYMENT_API_ROUTES.START, replaceEmptyValuesWithNull(requestData));
     if (response.status !== 201) {
       return null;
     }
@@ -261,7 +269,7 @@ export const completeTransaction = async (transactionData: {
     } = transactionData;
     
     const response = await httpPUTRequest(
-      `${PAYMENT_API}/${transactionId}/payment-gateway?queryString=${transactionQueryString}`,
+      `${PAYMENT_API_ROUTES.COMPLETE}/${transactionId}/${PAYMENT_API_ROUTES.PAYMENT_GATEWAY}?queryString=${transactionQueryString}`,
       transactionDetails
     );
     if (response.status !== 200) {
@@ -285,7 +293,7 @@ export const issuePermits = async (
   try {
     const companyId = getCompanyIdFromSession();
     const response = await httpPOSTRequest(
-      PERMITS_API.ISSUE_PERMIT, 
+      PERMITS_API_ROUTES.ISSUE,
       replaceEmptyValuesWithNull({ 
         applicationIds: [...ids], 
         companyId: applyWhenNotNullable((companyId) => Number(companyId), companyId),
@@ -316,7 +324,7 @@ export const issuePermits = async (
 export const getPermit = async (permitId?: string): Promise<Permit | null> => {
   if (!permitId) return null;
   const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
-  let permitsURL = `${VEHICLES_URL}/permits/${permitId}`;
+  let permitsURL = `${PERMITS_API_ROUTES.GET}/${permitId}`;
   const queryParams = [];
   if (companyId) {
     queryParams.push(`companyId=${companyId}`);
@@ -340,7 +348,7 @@ export const getCurrentAmendmentApplication = async (
 ): Promise<Permit | null> => {
   if (!originalId) return null;
   const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
-  let permitsURL = `${VEHICLES_URL}/permits/applications/${originalId}`;
+  let permitsURL = `${APPLICATIONS_API_ROUTES.GET}/${originalId}`;
   const queryParams = [`amendment=true`];
   if (companyId) {
     queryParams.push(`companyId=${companyId}`);
@@ -367,7 +375,7 @@ export const getPermits = async ({
   expired = false,
 } = {}): Promise<Permit[]> => {
   const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
-  let permitsURL = `${VEHICLES_URL}/permits/user`;
+  let permitsURL = `${PERMITS_API_ROUTES.GET_LIST}`;
   const queryParams = [];
   if (companyId) {
     queryParams.push(`companyId=${companyId}`);
@@ -420,7 +428,7 @@ export const getPermitHistory = async (originalPermitId?: string) => {
     if (!originalPermitId) return [];
     
     const response = await httpGETRequest(
-      `${VEHICLES_URL}/permits/history?originalId=${originalPermitId}`
+      `${PERMITS_API_ROUTES.HISTORY}?originalId=${originalPermitId}`
     );
 
     if (response.status === 200) {
@@ -445,7 +453,7 @@ export const voidPermit = async (voidPermitParams: {
   const { permitId, voidData } = voidPermitParams;
   try {
     const response = await httpPOSTRequest(
-      `${PERMITS_API.BASE}/${permitId}/void`,
+      `${PERMITS_API_ROUTES.BASE}/${permitId}/${PERMITS_API_ROUTES.VOID}`,
       replaceEmptyValuesWithNull(voidData)
     );
 
@@ -472,7 +480,7 @@ export const voidPermit = async (voidPermitParams: {
  */
 export const amendPermit = async (permit: Permit) => {
   return await httpPOSTRequest(
-    PERMITS_API.SUBMIT_TERM_OVERSIZE_PERMIT,
+    PERMITS_API_ROUTES.AMEND,
     replaceEmptyValuesWithNull({
       ...permit,
     })

@@ -4,7 +4,7 @@ import { setupServer } from "msw/node";
 import userEvent from "@testing-library/user-event";
 import { ThemeProvider } from "@mui/material/styles";
 
-import { PERMITS_API } from "../../../../../apiManager/endpoints/endpoints";
+import { APPLICATIONS_API_ROUTES } from "../../../../../apiManager/endpoints/endpoints";
 import { dayjsToUtcStr, now, toLocalDayjs } from "../../../../../../../common/helpers/formatDate";
 import { renderWithClient } from "../../../../../../../common/helpers/testHelper";
 import { Application } from "../../../../../types/application";
@@ -52,7 +52,7 @@ const server = setupServer(
       ...companyInfo,
     }));
   }),
-  rest.post(`${PERMITS_API.SUBMIT_TERM_OVERSIZE_PERMIT}`, async (req, res, ctx) => {
+  rest.post(`${APPLICATIONS_API_ROUTES.CREATE}`, async (req, res, ctx) => {
     const reqBody = await req.json();
     const applicationData = { 
       ...reqBody,
@@ -64,7 +64,7 @@ const server = setupServer(
       ...applicationData,
     }));
   }),
-  rest.put(`${PERMITS_API.SUBMIT_TERM_OVERSIZE_PERMIT}/:id`, async (req, res, ctx) => {
+  rest.put(`${APPLICATIONS_API_ROUTES.UPDATE}/:id`, async (req, res, ctx) => {
     const reqBody = await req.json();
     const applicationData = { 
       ...reqBody,

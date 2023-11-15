@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { Controller, FieldValues, FormProvider, useForm } from "react-hook-form";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { 
   RadioGroup, 
   FormControlLabel, 
@@ -11,12 +13,10 @@ import {
 } from "@mui/material";
 
 import "./SearchFilter.scss";
-import { Controller, FieldValues, FormProvider, useForm } from "react-hook-form";
 import { CustomSelectDisplayProps } from "../../../types/formElements";
-import { useNavigate, useSearchParams } from "react-router-dom";
 import { getDefaultRequiredVal } from "../../../helpers/util";
 import { SearchByFilter, SearchEntity, SearchFields } from "../../../../features/idir/search/types/types";
-import { SEARCH_RESULTS } from "../../../../routes/constants";
+import { IDIR_ROUTES } from "../../../../routes/constants";
 
 const SEARCH_BY_PERMIT_OPTIONS = [
   { label: "Permit Number", value: "permitNumber" }, 
@@ -107,7 +107,7 @@ export const SearchFilter = () => {
       .map(([key, value]) => `${key}=${value}`)
       .join("&");
     
-    navigate(`${SEARCH_RESULTS}?${searchFields}`);
+    navigate(`${IDIR_ROUTES.SEARCH_RESULTS}?${searchFields}`);
   };
 
   return (

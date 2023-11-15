@@ -10,7 +10,7 @@ import { invalidEmail, invalidPhoneLength, requiredMessage } from "../../../../.
 import { useVoidPermitForm } from "../hooks/useVoidPermitForm";
 import { VoidPermitHeader } from "./VoidPermitHeader";
 import { Permit } from "../../../types/permit";
-import { SEARCH_RESULTS } from "../../../../../routes/constants";
+import { IDIR_ROUTES } from "../../../../../routes/constants";
 import { RevokeDialog } from "./RevokeDialog";
 import { usePermitHistoryQuery } from "../../../hooks/hooks";
 import { calculateNetAmount } from "../../../helpers/feeSummary";
@@ -20,7 +20,7 @@ import { useVoidPermit } from "../hooks/useVoidPermit";
 import { mapToRevokeRequestData } from "../helpers/mapper";
 
 const FEATURE = "void-permit";
-const searchRoute = `${SEARCH_RESULTS}?searchEntity=permits`;
+const searchRoute = `${IDIR_ROUTES.SEARCH_RESULTS}?searchEntity=permits`;
 
 export const VoidPermitForm = ({
   permit,

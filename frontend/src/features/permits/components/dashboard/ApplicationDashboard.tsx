@@ -14,6 +14,8 @@ import { Loading } from "../../../../common/pages/Loading";
 import { Unauthorized } from "../../../../common/pages/Unauthorized";
 import { ErrorFallback } from "../../../../common/pages/ErrorFallback";
 import { useApplicationDetailsQuery } from "../../hooks/hooks";
+import { PERMIT_STATUSES } from "../../types/PermitStatus";
+import { NotFound } from "../../../../common/pages/NotFound";
 
 export const APPLICATION_STEPS = {
   Form: "Form",
@@ -44,6 +46,14 @@ export const ApplicationDashboard = () => {
     applicationData, 
     setApplicationData 
   } = useApplicationDetailsQuery(applicationNumber);
+
+  // Permit must be an application in order to allow application-related steps
+  // (ie. empty status for new application, or in progress or incomplete payment status)
+  const isValidApplicationStatus = () => {
+    return !applicationData?.permitStatus
+      || applicationData?.permitStatus === PERMIT_STATUSES.IN_PROGRESS
+      || applicationData?.permitStatus === PERMIT_STATUSES.WAITING_PAYMENT;
+  };
 
   const {
     currentStepIndex,
@@ -76,6 +86,11 @@ export const ApplicationDashboard = () => {
   // We need to check for isInitialLoading state instead (see https://tanstack.com/query/latest/docs/react/guides/disabling-queries)
   if (applicationDataQuery.isInitialLoading) {
     return <Loading />;
+  }
+
+  // If no longer a valid application, then we can no longer perform application-related steps
+  if (!isValidApplicationStatus()) {
+    return <NotFound />;
   }
 
   return (

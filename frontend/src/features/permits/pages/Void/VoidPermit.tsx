@@ -8,7 +8,7 @@ import { Loading } from "../../../../common/pages/Loading";
 import "./VoidPermit.scss";
 import { Banner } from "../../../../common/components/dashboard/Banner";
 import { VoidPermitContext } from "./context/VoidPermitContext";
-import { SEARCH_RESULTS } from "../../../../routes/constants";
+import { IDIR_ROUTES } from "../../../../routes/constants";
 import { VoidPermitFormData } from "./types/VoidPermit";
 import { FinishVoid } from "./FinishVoid";
 import { SEARCH_BY_FILTERS, SEARCH_ENTITIES } from "../../../idir/search/types/types";
@@ -22,7 +22,7 @@ import { Permit } from "../../types/permit";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { Breadcrumb } from "../../../../common/components/breadcrumb/Breadcrumb";
 
-const searchRoute = `${SEARCH_RESULTS}?searchEntity=${SEARCH_ENTITIES.PERMIT}`
+const searchRoute = `${IDIR_ROUTES.SEARCH_RESULTS}?searchEntity=${SEARCH_ENTITIES.PERMIT}`
   + `&searchByFilter=${SEARCH_BY_FILTERS.PERMIT_NUMBER}`;
 
 const isVoidable = (permit: Permit) => {
