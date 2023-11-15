@@ -2,7 +2,7 @@ name: PR Closed
 
 on:
   pull_request:
-    branches: [experiment]
+    branches: [experiment/helm_deployment_pipeline]
     types: [closed]
 
 concurrency:
