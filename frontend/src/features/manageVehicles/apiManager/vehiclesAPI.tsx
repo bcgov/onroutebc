@@ -39,26 +39,6 @@ export const getAllVehicles = async (companyId: string): Promise<(PowerUnit | Tr
   return allVehicles;
 };
 
-/**
- * Fetch*
- * All Power Unit Data by the given companyId along with its Type
- * @return {*}  {Promise<void>}
- */
-/*
-export const getAllPowerUnitsWithTypes = async (companyId: string): Promise<PowerUnit[]> => {
-  const powerUnits = await getAllPowerUnits(companyId)
-  const powerUnitTypes = await getPowerUnitTypes()
-  const data:any[] = []
-
-  powerUnits.forEach((p: PowerUnit) => {
-    const pu:any = Object.assign({}, p)
-    const puType = powerUnitTypes.filter((value) => {return value.typeCode === pu.powerUnitTypeCode})
-    pu.powerUnitType = puType?.at(0)?.type
-    data.push(pu)
-  })
-
-  return data
-}
 
 /**
  * Fetch*
@@ -123,27 +103,6 @@ export const updatePowerUnit = async ({
   return await httpPUTRequest(url, replaceEmptyValuesWithNull(powerUnit));
 };
 
-
-/**
- * Fetch*
- * All Trailer Data by the given companyId along with its Type
- * @return {*}  {Promise<void>}
- */
-/*
-export const getAllTrailersWithTypes = async (companyId: string): Promise<PowerUnit[]> => {
-  const trailers = await getAllTrailers(companyId)
-  const trailerTypes = await getTrailerTypes()
-  const data:any[] = []
-
-  trailers.forEach((t: Trailer) => {
-    const tu:any = Object.assign({}, t)
-    const tType = trailerTypes.filter((value) => {return value.typeCode === tu.trailerTypeCode})
-    tu.trailerType = tType?.at(0)?.type
-    data.push(tu)
-  })
-
-  return data
-}*/
 
 /**
  * Fetch All Trailer Data
