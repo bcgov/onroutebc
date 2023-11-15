@@ -44,6 +44,7 @@ export const getAllVehicles = async (companyId: string): Promise<(PowerUnit | Tr
  * All Power Unit Data by the given companyId along with its Type
  * @return {*}  {Promise<void>}
  */
+/*
 export const getAllPowerUnitsWithTypes = async (companyId: string): Promise<PowerUnit[]> => {
   const powerUnits = await getAllPowerUnits(companyId)
   const powerUnitTypes = await getPowerUnitTypes()
@@ -128,6 +129,7 @@ export const updatePowerUnit = async ({
  * All Trailer Data by the given companyId along with its Type
  * @return {*}  {Promise<void>}
  */
+/*
 export const getAllTrailersWithTypes = async (companyId: string): Promise<PowerUnit[]> => {
   const trailers = await getAllTrailers(companyId)
   const trailerTypes = await getTrailerTypes()
@@ -141,7 +143,7 @@ export const getAllTrailersWithTypes = async (companyId: string): Promise<PowerU
   })
 
   return data
-}
+}*/
 
 /**
  * Fetch All Trailer Data
