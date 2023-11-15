@@ -2,7 +2,7 @@ name: PR Closed
 
 on:
   pull_request:
-    branches: [main]
+    branches: [feat/helm_deployment_pipeline']
     types: [closed]
 
 concurrency:
@@ -34,7 +34,7 @@ jobs:
 
   semver:
     name: Semantic Version
-    if: github.event.pull_request.merged == false && github.event.pull_request.base.ref == 'helm_deployment_pipeline'
+    if: github.event.pull_request.merged == false && github.event.pull_request.base.ref == 'feat/helm_deployment_pipeline'
     outputs:
       tag: ${{ steps.semver.outputs.tag }}
     runs-on: ubuntu-22.04
