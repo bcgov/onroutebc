@@ -33,8 +33,8 @@ export const PowerUnitColumnDefinition: MRT_ColumnDef<VehicleTypes>[] = [
     filterVariant: "multi-select",
   },
   {
-    accessorKey: "powerUnitTypeCode",
-    header: "Vehicle Type",
+    accessorKey: "powerUnitType",
+    header: "Vehicle Sub-Type",
   },
   {
     accessorKey: "createdDateTime",
@@ -65,8 +65,8 @@ export const TrailerColumnDefinition: MRT_ColumnDef<VehicleTypes>[] = [
     filterVariant: "multi-select",
   },
   {
-    accessorKey: "trailerTypeCode",
-    header: "Vehicle Type",
+    accessorKey: "trailerType",
+    header: "Vehicle Sub-Type",
   },
   {
     accessorKey: "createdDateTime",

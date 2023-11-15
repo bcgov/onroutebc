@@ -40,7 +40,7 @@ import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFou
 /**
  * Dynamically set the column based on vehicle type
  * @param vehicleType Either "powerUnit" | "trailer"
- * @returns An array of column headers/accessor keys ofr Material React Table
+ * @returns An array of column headers/accessor keys for Material React Table
  */
 const getColumns = (
   vehicleType: VehicleTypesAsString
@@ -75,8 +75,7 @@ export const List = memo(
       data,
       isError,
       isFetching,
-      isLoading,
-      //refetch,
+      isLoading
     } = query;
 
     // Column definitions for the table
@@ -161,7 +160,6 @@ export const List = memo(
           data={data ?? []}
           columns={columns}
           // State variables and actions
-          //rowCount={rowCount}
           state={{
             isLoading,
             showAlertBanner: isError,
@@ -291,8 +289,6 @@ export const List = memo(
           muiTableContainerProps={{
             sx: {
               outline: "1px solid #DBDCDC",
-              //height: "calc(100vh - 160px)",
-              //minHeight: "30vh",
               height: "calc(100vh - 475px)",
             },
           }}

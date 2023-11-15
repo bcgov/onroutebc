@@ -6,7 +6,7 @@ import { TabLayout } from "../../../../common/components/dashboard/TabLayout";
 import { AddVehicleButton } from "./AddVehicleButton";
 import { List } from "../list/List";
 import "./ManageVehiclesDashboard.scss";
-import { getAllPowerUnits, getAllTrailers } from "../../apiManager/vehiclesAPI";
+import { getAllPowerUnits, getAllPowerUnitsWithTypes, getAllTrailers, getAllTrailersWithTypes } from "../../apiManager/vehiclesAPI";
 import { DoesUserHaveRoleWithContext } from "../../../../common/authentication/util";
 import { ROLES } from "../../../../common/authentication/types";
 import { getCompanyIdFromSession } from "../../../../common/apiManager/httpRequestHandler";
@@ -40,14 +40,16 @@ export const ManageVehiclesDashboard = memo(() => {
 
   const powerUnitQuery = useQuery({
     queryKey: ["powerUnits"],
-    queryFn: () => getAllPowerUnits(companyId),
+    //queryFn: () => getAllPowerUnits(companyId),
+    queryFn: () => getAllPowerUnitsWithTypes(companyId),
     keepPreviousData: keepPreviousData,
     staleTime: staleTime,
   });
 
   const trailerQuery = useQuery({
     queryKey: ["trailers"],
-    queryFn: () => getAllTrailers(companyId),
+    // queryFn: () => getAllTrailers(companyId),
+    queryFn: () => getAllTrailersWithTypes(companyId),
     keepPreviousData: keepPreviousData,
     staleTime: staleTime,
   });
@@ -60,13 +62,7 @@ export const ManageVehiclesDashboard = memo(() => {
     {
       label: "Trailer",
       component: <List vehicleType="trailer" query={trailerQuery} companyId={companyId} />,
-    },
-    /** 
-     * TODO: Enable Vehicle Configuration page navigation when page is ready
-    {
-      label: "Vehicle Configuration",
-      component: <>TODO</>,
-    },*/
+    }
   ];
 
   return (
