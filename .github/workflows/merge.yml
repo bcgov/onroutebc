@@ -3,6 +3,7 @@ name: Merge
 on:
   workflow_run:
     workflows: [PR Closed]
+    branches: [experiment/helm_deployment_pipeline]
     types: [completed]
 
 concurrency:
