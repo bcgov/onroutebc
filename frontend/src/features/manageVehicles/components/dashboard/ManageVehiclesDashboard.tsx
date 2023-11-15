@@ -6,7 +6,7 @@ import { TabLayout } from "../../../../common/components/dashboard/TabLayout";
 import { AddVehicleButton } from "./AddVehicleButton";
 import { List } from "../list/List";
 import "./ManageVehiclesDashboard.scss";
-import { getAllPowerUnits, getAllTrailers } from "../../apiManager/vehiclesAPI";
+import { getAllPowerUnits, getAllTrailers, getPowerUnitTypes, getTrailerTypes } from "../../apiManager/vehiclesAPI";
 import { DoesUserHaveRoleWithContext } from "../../../../common/authentication/util";
 import { ROLES } from "../../../../common/authentication/types";
 import { getCompanyIdFromSession } from "../../../../common/apiManager/httpRequestHandler";
@@ -19,12 +19,11 @@ import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 const useTabIndexFromURL = (): number => {
   const { hash: selectedTab } = useLocation();
   switch (selectedTab) {
-    case "#power-unit":
-      return 0;
     case "#trailer":
       return 1;
     case "#vehicle-configuration":
       return 2;
+    case "#power-unit":
     default:
       return 0;
   }
@@ -52,14 +51,36 @@ export const ManageVehiclesDashboard = memo(() => {
     staleTime: staleTime,
   });
 
+  const powerUnitTypesQuery = useQuery({
+    queryKey: ["powerUnitTypes"],
+    queryFn: () => getPowerUnitTypes(),
+    keepPreviousData: keepPreviousData,
+    staleTime: staleTime
+  })
+
+  const trailerTypesQuery = useQuery({
+    queryKey: ["trailerTypes"],
+    queryFn: () => getTrailerTypes(),
+    keepPreviousData: keepPreviousData,
+    staleTime: staleTime
+  })
+
   const tabs = [
     {
       label: "Power Unit",
-      component: <List vehicleType="powerUnit" query={powerUnitQuery} companyId={companyId} />,
+      component: <List
+        vehicleType="powerUnit"
+        query={powerUnitQuery}
+        companyId={companyId}
+      />,
     },
     {
       label: "Trailer",
-      component: <List vehicleType="trailer" query={trailerQuery} companyId={companyId} />,
+      component: <List
+        vehicleType="trailer"
+        query={trailerQuery}
+        companyId={companyId}
+      />,
     }
   ];
 

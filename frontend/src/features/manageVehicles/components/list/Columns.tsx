@@ -1,15 +1,11 @@
 import { MRT_ColumnDef } from "material-react-table";
 import { VehicleTypes } from "../../types/managevehicles";
 
-/*
- *
+/**
  * The Columns Options are from Material React Table.
  * For a list of options, see here:
  * https://www.material-react-table.com/docs/api/column-options
- *
- *
  */
-
 export const PowerUnitColumnDefinition: MRT_ColumnDef<VehicleTypes>[] = [
   {
     accessorKey: "powerUnitId",

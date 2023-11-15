@@ -1,7 +1,7 @@
 import { RowSelectionState } from "@tanstack/table-core";
 import { Box, IconButton, Tooltip } from "@mui/material";
 import { Delete, Edit } from "@mui/icons-material";
-import { UseQueryResult } from "@tanstack/react-query";
+import { UseQueryResult, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import {
   memo,
@@ -34,6 +34,7 @@ import {
   VehicleTypesAsString,
   PowerUnit,
   Trailer,
+  VehicleType,
 } from "../../types/managevehicles";
 import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
 
@@ -88,6 +89,30 @@ export const List = memo(
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
     const hasNoRowsSelected = Object.keys(rowSelection).length === 0;
+    const queryClient = useQueryClient();
+    const vehicleTypes:VehicleType[] | undefined = queryClient.getQueryData<VehicleType[]>([`${vehicleType}Types`])
+
+    const colTypeCodes = columns.filter((item) => item.accessorKey === `${vehicleType}TypeCode`)
+    const newColumns = columns.filter((item) => item.accessorKey !== `${vehicleType}TypeCode`)
+
+    const transformVehicleCode = (code:string) => {
+      const val = vehicleTypes?.filter((value) => value.typeCode === code)
+      return val?.at(0)?.type || ''
+    }
+
+    if (colTypeCodes?.length === 1) {
+      const colTypeCode = colTypeCodes?.at(0)
+      if (colTypeCode) {
+        // eslint-disable-next-line react/display-name
+        colTypeCode.Cell = ({cell}) => {
+          return <div>{transformVehicleCode(cell.getValue<string>())}</div>
+        }
+
+        const colDate = newColumns?.pop()
+        newColumns.push(colTypeCode)
+        if (colDate) newColumns.push(colDate)
+      }
+    }
 
     /**
      * Callback function for clicking on the Trash icon above the Table.
@@ -158,7 +183,7 @@ export const List = memo(
         <MaterialReactTable
           // Required Props
           data={data ?? []}
-          columns={columns}
+          columns={newColumns}
           // State variables and actions
           state={{
             isLoading,
@@ -195,7 +220,6 @@ export const List = memo(
           renderEmptyRowsFallback={() => <NoRecordsFound />}
           renderRowActions={useCallback(
             ({
-              table,
               row,
             }: {
               table: MRT_TableInstance<VehicleTypes>;
