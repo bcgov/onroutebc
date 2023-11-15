@@ -2,7 +2,7 @@ name: PR
 
 on:
   pull_request:
-    branches: [main]
+    branches: [experiment/helm_deployment_pipeline]
   workflow_dispatch:
 
 concurrency:
