@@ -20,6 +20,21 @@ on:
         required: false
         type: string
         default: ${{ github.event.number }}
+      license:
+        description: 'BC Gov LICENSE_PLATE of deployment env'
+        required: true
+        type: string
+        default: "DEFINE_ME"
+      vault_role:
+        description: "nonprod/prod"
+        required: true
+        type: string
+        default: "nonprod"
+      zone:
+        description: "Deployment zone - dev/test/prod"
+        required: true
+        type: string
+        default: "dev"
 
       ### Usually a bad idea / not recommended
       directory:

@@ -77,5 +77,5 @@ jobs:
       target: ${{ github.event.number }}
       values: values.yaml
       license: c28f0c
-      zone: dev
       vault_role: nonprod
+      zone: dev
