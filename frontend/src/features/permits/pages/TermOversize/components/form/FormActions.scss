@@ -2,19 +2,25 @@
 
 .tros-form-actions {
   position: fixed;
-  bottom: 0;
+  bottom: 46px;
   left: 0;
   right: 0;
   background-color: $bc-white;
   display: flex;
   align-items: center;
-  padding: 2rem 3.75rem;
+  padding: 2rem 8.551vw;
   justify-content: space-between;
   border-top: 1px solid $bc-text-box-border-grey;
 
   & &__section {
     display: flex;
     align-items: center;
+
+    .scroll-btn {
+      position: fixed;
+      bottom: 12.5rem;
+      right: 1.25rem;
+    }
   }
 
   & &__btn {
@@ -35,11 +41,11 @@
 
 @media (width < 768px) {
   .tros-form-actions {
-    padding: 2rem 1.25rem;
+    padding: 2rem 5.5rem;
   }
 }
 
-@media (width < 440px) {
+@media (width < 576px) {
   .tros-form-actions {
     flex-direction: column;
     align-items: center;
@@ -47,6 +53,12 @@
     & &__section {
       flex-direction: column;
       align-items: center;
+
+      .scroll-btn {
+        position: fixed;
+        bottom: 20.5rem;
+        right: 1.25rem;
+      }
 
       &--main {
         margin-top: 1em;

@@ -12,7 +12,7 @@
   font-family: "BCSans", "Noto Sans", Verdana, Arial, sans-serif;
   height: 100%;
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: bold;
 
   &:focus {
     outline: none;
@@ -20,6 +20,5 @@
   
   &__icon {
     margin-right: 0.5rem;
-    height: 1.5rem;
   }
 }

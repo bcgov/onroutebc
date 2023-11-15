@@ -1,3 +1,8 @@
+import { RowSelectionState } from "@tanstack/table-core";
+import { Box, IconButton, Tooltip } from "@mui/material";
+import { Delete, Edit } from "@mui/icons-material";
+import { UseQueryResult } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 import {
   memo,
   useCallback,
@@ -6,35 +11,31 @@ import {
   useMemo,
   useState,
 } from "react";
+
 import MaterialReactTable, {
   MRT_ColumnDef,
   MRT_GlobalFilterTextField,
   MRT_Row,
   MRT_TableInstance,
 } from "material-react-table";
-import { RowSelectionState } from "@tanstack/table-core";
+
 import "./List.scss";
-import { Box, IconButton, Tooltip } from "@mui/material";
+import { Trash } from "../../../../common/components/table/options/Trash";
+import { DeleteConfirmationDialog } from "../../../../common/components/dialog/DeleteConfirmationDialog";
+import { BC_COLOURS } from "../../../../themes/bcGovStyles";
+import { PowerUnitColumnDefinition, TrailerColumnDefinition } from "./Columns";
+import { deleteVehicles } from "../../apiManager/vehiclesAPI";
+import { SnackBarContext } from "../../../../App";
+import { MANAGE_VEHICLES } from "../../../../routes/constants";
+import { DoesUserHaveRoleWithContext } from "../../../../common/authentication/util";
+import { ROLES } from "../../../../common/authentication/types";
 import {
   VehicleTypes,
   VehicleTypesAsString,
   PowerUnit,
   Trailer,
 } from "../../types/managevehicles";
-import { Filter } from "../options/Filter";
-import { Trash } from "../options/Trash";
-import { CSVOptions } from "../options/CSVOptions";
-import { Delete, Edit, ContentCopy } from "@mui/icons-material";
-import { BC_COLOURS } from "../../../../themes/bcGovStyles";
-import { UseQueryResult } from "@tanstack/react-query";
-import { PowerUnitColumnDefinition, TrailerColumnDefinition } from "./Columns";
-import { deleteVehicles } from "../../apiManager/vehiclesAPI";
-import DeleteConfirmationDialog from "./ConfirmationDialog";
-import { useNavigate } from "react-router-dom";
-import { SnackBarContext } from "../../../../App";
-import { MANAGE_VEHICLES } from "../../../../routes/constants";
-import { DoesUserHaveRoleWithContext } from "../../../../common/authentication/util";
-import { ROLES } from "../../../../common/authentication/types";
+import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
 
 /**
  * Dynamically set the column based on vehicle type
@@ -87,6 +88,8 @@ export const List = memo(
     const snackBar = useContext(SnackBarContext);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
+    const hasNoRowsSelected = Object.keys(rowSelection).length === 0;
+
     /**
      * Callback function for clicking on the Trash icon above the Table.
      */
@@ -191,6 +194,7 @@ export const List = memo(
               header: "",
             },
           }}
+          renderEmptyRowsFallback={() => <NoRecordsFound />}
           renderRowActions={useCallback(
             ({
               table,
@@ -225,17 +229,6 @@ export const List = memo(
                         <Edit />
                       </IconButton>
                     </Tooltip>
-                    <Tooltip arrow placement="top" title="Copy">
-                      <span>
-                        {/*tslint:disable-next-line*/}
-                        <IconButton
-                          onClick={() => table.setEditingRow(row)}
-                          disabled={true}
-                        >
-                          <ContentCopy />
-                        </IconButton>
-                      </span>
-                    </Tooltip>
                     <Tooltip arrow placement="top" title="Delete">
                       {/*tslint:disable-next-line*/}
                       <IconButton
@@ -263,25 +256,17 @@ export const List = memo(
             ),
             []
           )}
-          // Render a custom options Bar (inclues search, filter, trash, and csv options)
+          // Render a custom options Bar (inclues search and trash)
           renderTopToolbar={useCallback(
             ({ table }: { table: MRT_TableInstance<VehicleTypes> }) => (
-              <Box
-                sx={{
-                  display: "flex",
-                  padding: "20px 0px",
-                  backgroundColor: "white",
-                }}
-              >
+              <Box className="table-container__top-toolbar">
                 <MRT_GlobalFilterTextField table={table} />
-                <Filter />
                 {DoesUserHaveRoleWithContext(ROLES.WRITE_VEHICLE) && (
-                  <Trash onClickTrash={onClickTrashIcon} />
+                  <Trash onClickTrash={onClickTrashIcon} disabled={hasNoRowsSelected} />
                 )}
-                <CSVOptions />
               </Box>
             ),
-            []
+            [hasNoRowsSelected]
           )}
           /*
            *

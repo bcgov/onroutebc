@@ -1,0 +1,25 @@
+@import "../../../../themes/orbcStyles.scss";
+
+.trash-btn {
+  padding: 0.625rem 0.625rem;
+  font-size: 1.5rem;
+
+  &#{&}--active {
+    color: $bc-black;
+
+    &:hover {
+      color: $bc-black;
+      background-color: $bc-background-light-grey;
+      border-radius: 0.25rem;
+    }
+  } 
+
+  &#{&}#{&}--disabled {
+    color: $disabled-colour;
+
+    &:hover {
+      color: $disabled-colour;
+      background-color: transparent;
+    }
+  }
+}

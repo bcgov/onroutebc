@@ -1,0 +1,17 @@
+@import "../../../../themes/orbcStyles.scss";
+
+.scroll-btn {
+  &#{&} {
+    background-color: $white;
+    color: $bc-black;
+    border-radius: 0.25rem;
+    font-size: 1.5rem;
+    padding: 0.75rem 1rem;
+    min-width: auto;
+  }
+
+  &#{&}:hover {
+    background-color: $bc-background-light-grey;
+    font-weight: bold;
+  }
+}

@@ -3,7 +3,7 @@ import { Typography } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 
-import { BC_COLOURS } from "../../../themes/bcGovStyles";
+import "./MyInfo.scss";
 import { UserInfoBanner } from "../../../common/components/banners/UserInfoBanner";
 import { DisplayMyInfo } from "./DisplayMyInfo";
 import { getMyInfo } from "../apiManager/manageProfileAPI";
@@ -14,11 +14,8 @@ import { MyInfoForm } from "../components/forms/myInfo/MyInfoForm";
 
 const Header = () => (
   <Typography
+    className="my-info-page__header"
     variant="h4"
-    sx={{
-      color: BC_COLOURS.bc_black,
-      marginTop: "20px",
-    }}
   >
     Edit My Information
   </Typography>
@@ -52,7 +49,7 @@ export const MyInfo = memo(() => {
   }
 
   return (
-    <>
+    <div className="my-info-page">
       {isEditing ? <Header /> : null}
       <UserInfoBanner userInfo={myInfo} />
       {isEditing ? (
@@ -60,7 +57,7 @@ export const MyInfo = memo(() => {
       ) : (
         <DisplayMyInfo myInfo={myInfo} setIsEditing={setIsEditing} />
       )}
-    </>
+    </div>
   );
 });
 

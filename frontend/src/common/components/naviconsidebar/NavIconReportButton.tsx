@@ -1,27 +1,19 @@
-import './NavIconReportButton.scss'
-import { IconButton, Tooltip } from "@mui/material";
-import { Note } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
+
 import * as routes from "../../../routes/constants";
+import { NavButton } from "./NavButton";
+import { NAV_BUTTON_TYPES } from "./types/NavButtonType";
 
 /**
  * Displays the navigation icon for Reports on the NavIconSideBar
  */
 export const NavIconReportButton = () => {
-    
-    const navigate = useNavigate()
+  const navigate = useNavigate();
 
-    return (
-        <div className="nav-icon-report-button-container">
-            <Tooltip arrow placement="left" title="Reports">
-                <IconButton
-                    size="medium"
-                    color="secondary"
-                    onClick={() => {navigate(routes.IDIR_WELCOME)}}
-                >
-                    <Note />
-                </IconButton>
-            </Tooltip>
-        </div>
-    )
+  return (
+    <NavButton
+      type={NAV_BUTTON_TYPES.REPORT}
+      onClick={() => navigate(routes.IDIR_WELCOME)}
+    />
+  );
 }

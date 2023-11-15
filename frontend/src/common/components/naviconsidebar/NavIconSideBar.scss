@@ -1,9 +1,10 @@
 @use "../../../themes/orbcStyles";
 
 .nav-icon-side-bar {
-    position: -webkit-sticky; /* Safari */
-    position: sticky;
-    left: 0;
-    top: 400px;
-    width: 50px;
+  position: fixed;
+  left: 1.5rem;
+  top: calc(50vh - 4rem);
+  width: 4rem;
+  border-radius: 0.5rem;
+  overflow: hidden;
 }
