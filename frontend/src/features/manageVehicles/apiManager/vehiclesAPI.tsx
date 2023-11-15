@@ -26,9 +26,6 @@ export const getAllVehicles = async (companyId: string): Promise<(PowerUnit | Tr
   const powerUnits = await getAllPowerUnits(companyId);
   const trailers = await getAllTrailers(companyId);
 
-  console.log('powerUnits', powerUnits)
-  console.log('trailers', trailers)
-
   powerUnits.forEach((p: PowerUnit) => {
     p.vehicleType = "powerUnit";
   });
@@ -42,11 +39,16 @@ export const getAllVehicles = async (companyId: string): Promise<(PowerUnit | Tr
   return allVehicles;
 };
 
+/**
+ * Fetch*
+ * All Power Unit Data by the given companyId along with its Type
+ * @return {*}  {Promise<void>}
+ */
 export const getAllPowerUnitsWithTypes = async (companyId: string): Promise<PowerUnit[]> => {
   const powerUnits = await getAllPowerUnits(companyId)
   const powerUnitTypes = await getPowerUnitTypes()
   const data:any[] = []
-  
+
   powerUnits.forEach((p: PowerUnit) => {
     const pu:any = Object.assign({}, p)
     const puType = powerUnitTypes.filter((value) => {return value.typeCode === pu.powerUnitTypeCode})
@@ -121,6 +123,11 @@ export const updatePowerUnit = async ({
 };
 
 
+/**
+ * Fetch*
+ * All Trailer Data by the given companyId along with its Type
+ * @return {*}  {Promise<void>}
+ */
 export const getAllTrailersWithTypes = async (companyId: string): Promise<PowerUnit[]> => {
   const trailers = await getAllTrailers(companyId)
   const trailerTypes = await getTrailerTypes()
