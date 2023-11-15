@@ -19,7 +19,7 @@ jobs:
       values: values.yaml
       license: c28f0c
       vault_role: nonprod
-      zone: dev
+      zone: test
 
   integration-e2e:
     name: Integration and E2E Tests
@@ -36,3 +36,6 @@ jobs:
     with:
       target: prod
       values: values.yaml
+      license: c28f0c
+      vault_role: prod
+      zone: prod
