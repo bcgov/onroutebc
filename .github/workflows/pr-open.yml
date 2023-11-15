@@ -45,7 +45,7 @@ jobs:
             - [Analysis Workflow](https://github.com/${{ github.repository }}/actions/workflows/analysis.yml)
 
             After merge, new images are promoted to:
-            - [Merge Workflow](https://github.com/${{ github.repository }}/actions/workflows/merge-main.yml)
+            - [Merge Workflow](https://github.com/${{ github.repository }}/actions/workflows/merge.yml)
 
   # https://github.com/bcgov-nr/action-builder-ghcr
   builds:
