@@ -6,7 +6,7 @@ import { TabLayout } from "../../../../common/components/dashboard/TabLayout";
 import { AddVehicleButton } from "./AddVehicleButton";
 import { List } from "../list/List";
 import "./ManageVehiclesDashboard.scss";
-import { getAllPowerUnits, getAllPowerUnitsWithTypes, getAllTrailers, getAllTrailersWithTypes } from "../../apiManager/vehiclesAPI";
+import { getAllPowerUnitsWithTypes, getAllTrailersWithTypes } from "../../apiManager/vehiclesAPI";
 import { DoesUserHaveRoleWithContext } from "../../../../common/authentication/util";
 import { ROLES } from "../../../../common/authentication/types";
 import { getCompanyIdFromSession } from "../../../../common/apiManager/httpRequestHandler";
@@ -40,7 +40,6 @@ export const ManageVehiclesDashboard = memo(() => {
 
   const powerUnitQuery = useQuery({
     queryKey: ["powerUnits"],
-    //queryFn: () => getAllPowerUnits(companyId),
     queryFn: () => getAllPowerUnitsWithTypes(companyId),
     keepPreviousData: keepPreviousData,
     staleTime: staleTime,
@@ -48,7 +47,6 @@ export const ManageVehiclesDashboard = memo(() => {
 
   const trailerQuery = useQuery({
     queryKey: ["trailers"],
-    // queryFn: () => getAllTrailers(companyId),
     queryFn: () => getAllTrailersWithTypes(companyId),
     keepPreviousData: keepPreviousData,
     staleTime: staleTime,
