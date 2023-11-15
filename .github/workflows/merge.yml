@@ -15,9 +15,11 @@ jobs:
     uses: ./.github/workflows/.deploy.yml
     secrets: inherit
     with:
-      tag: ${{ github.ref_name }}
       target: test
-      values: values.test.yaml
+      values: values.yaml
+      license: c28f0c
+      vault_role: nonprod
+      zone: dev
 
   integration-e2e:
     name: Integration and E2E Tests
@@ -32,6 +34,5 @@ jobs:
     uses: ./.github/workflows/.deploy.yml
     secrets: inherit
     with:
-      tag: ${{ github.ref_name }}
       target: prod
-      values: values.prod.yaml
+      values: values.yaml
