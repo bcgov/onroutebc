@@ -36,11 +36,16 @@ import {
   Trailer,
 } from "../../types/managevehicles";
 import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
+import {
+  usePowerUnitTypesQuery,
+  useTrailerTypesQuery,
+} from "../../apiManager/hooks";
+import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 
 /**
  * Dynamically set the column based on vehicle type
  * @param vehicleType Either "powerUnit" | "trailer"
- * @returns An array of column headers/accessor keys ofr Material React Table
+ * @returns An array of column headers/accessor keys for Material React Table
  */
 const getColumns = (
   vehicleType: VehicleTypesAsString,
@@ -71,13 +76,7 @@ export const List = memo(
     companyId: string;
   }) => {
     // Data, fetched from backend API
-    const {
-      data,
-      isError,
-      isFetching,
-      isLoading,
-      //refetch,
-    } = query;
+    const { data, isError, isFetching, isLoading } = query;
 
     // Column definitions for the table
     const columns = useMemo<MRT_ColumnDef<VehicleTypes>[]>(
@@ -89,6 +88,48 @@ export const List = memo(
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
     const hasNoRowsSelected = Object.keys(rowSelection).length === 0;
+
+    const powerUnitTypesQuery = usePowerUnitTypesQuery();
+    const trailerTypesQuery = useTrailerTypesQuery();
+    const fetchedPowerUnitTypes = getDefaultRequiredVal(
+      [],
+      powerUnitTypesQuery.data,
+    );
+    const fetchedTrailerTypes = getDefaultRequiredVal(
+      [],
+      trailerTypesQuery.data,
+    );
+
+    const colTypeCodes = columns.filter(
+      (item) => item.accessorKey === `${vehicleType}TypeCode`,
+    );
+    const newColumns = columns.filter(
+      (item) => item.accessorKey !== `${vehicleType}TypeCode`,
+    );
+
+    const transformVehicleCode = (code: string) => {
+      let val;
+      if (vehicleType === "powerUnit") {
+        val = fetchedPowerUnitTypes?.filter((value) => value.typeCode === code);
+      } else {
+        val = fetchedTrailerTypes?.filter((value) => value.typeCode === code);
+      }
+      return val?.at(0)?.type || "";
+    };
+
+    if (colTypeCodes?.length === 1) {
+      const colTypeCode = colTypeCodes?.at(0);
+      if (colTypeCode) {
+        // eslint-disable-next-line react/display-name
+        colTypeCode.Cell = ({ cell }) => {
+          return <div>{transformVehicleCode(cell.getValue<string>())}</div>;
+        };
+
+        const colDate = newColumns?.pop();
+        newColumns.push(colTypeCode);
+        if (colDate) newColumns.push(colDate);
+      }
+    }
 
     /**
      * Callback function for clicking on the Trash icon above the Table.
@@ -159,9 +200,8 @@ export const List = memo(
         <MaterialReactTable
           // Required Props
           data={data ?? []}
-          columns={columns}
+          columns={newColumns}
           // State variables and actions
-          //rowCount={rowCount}
           state={{
             isLoading,
             showAlertBanner: isError,
@@ -197,7 +237,6 @@ export const List = memo(
           renderEmptyRowsFallback={() => <NoRecordsFound />}
           renderRowActions={useCallback(
             ({
-              table,
               row,
             }: {
               table: MRT_TableInstance<VehicleTypes>;
@@ -294,8 +333,6 @@ export const List = memo(
           muiTableContainerProps={{
             sx: {
               outline: "1px solid #DBDCDC",
-              //height: "calc(100vh - 160px)",
-              //minHeight: "30vh",
               height: "calc(100vh - 475px)",
             },
           }}
