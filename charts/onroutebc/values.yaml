@@ -1,13 +1,17 @@
 ---
 global:
+  license: "c28f0c"
   repository: bcgov/onroutebc # the repository where the images are stored.
   registry: ghcr.io # the registry where the images are stored. override during runtime for other registry at global level or individual level.
+  tag: latest # global tag for deployments where each service is using images at the same tag (dev,tet,prod,latest,etc)
+  zone: dev # Deployment zone - dev/test/prod
   secrets:
     annotation:
       helm.sh/policy: "keep"
   domain: "apps.silver.devops.gov.bc.ca" # it is required, apps.silver.devops.gov.bc.ca for silver cluster
   openshiftImageRegistry: "image-registry.openshift-image-registry.svc:5000"
-
+  vault:
+    role: "nonprod"
 frontend:
   enabled: true
   deployment: # can be either a statefulSet or a deployment not both
@@ -22,9 +26,9 @@ frontend:
       config.js: |-
         const envConfig = (() => {
           return {
-            "VITE_DEPLOY_ENVIRONMENT":"Experiment",
+            "VITE_DEPLOY_ENVIRONMENT":"Prod",
             "VITE_API_VEHICLE_URL":"https://{{.Release.Name}}-vehicles.{{.Values.global.domain}}",
-            "VITE_AUTH0_ISSUER_URL":"https://dev.loginproxy.gov.bc.ca/auth/realms/standard",
+            "VITE_AUTH0_ISSUER_URL":"https://{{.Values.global.zone}}.loginproxy.gov.bc.ca/auth/realms/standard",
             "VITE_AUTH0_AUDIENCE":"on-route-bc-direct-4598",
             "VITE_SITEMINDER_LOG_OFF_URL": "https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi",
           };
@@ -34,7 +38,7 @@ frontend:
       registry: '{{ .Values.global.registry }}'
       repository: '{{ .Values.global.repository }}' # example, it includes registry and repository
       image: frontend
-      tag: latest
+      tag: "{{tpl .Values.global.tag .}}"
       ports:
         - name: http
           containerPort: 3000
@@ -56,7 +60,7 @@ frontend:
       route.openshift.io/termination: "edge"
     enabled: true
     hosts: 
-      - host: "onroutebc-experiment-frontend.apps.silver.devops.gov.bc.ca"
+      - host: "{{.Release.Name}}-frontend.apps.silver.devops.gov.bc.ca"
         paths:
           - path: /
             pathType: ImplementationSpecific
@@ -71,7 +75,7 @@ frontend:
         port: 80
         targetPort: 3000
   serviceAccount:
-    name: c28f0c-vault
+    name: "{{ .Values.global.license }}-vault"
   volumes:
     - name: config
       configMap:
@@ -91,18 +95,18 @@ vehicles:
       DOPS_URL: "https://{{.Release.Name}}-dops.apps.silver.devops.gov.bc.ca"
       FRONTEND_URL: "https://{{.Release.Name}}-frontend.apps.silver.devops.gov.bc.ca"
       PAYBC_REDIRECT: "https://{{.Release.Name}}-frontend.apps.silver.devops.gov.bc.ca/payment"
-      VEHICLES_URL: "https://onroutebc-experiment-vehicles.apps.silver.devops.gov.bc.ca"
+      VEHICLES_URL: "https://{{.Release.Name}}-vehicles.apps.silver.devops.gov.bc.ca"
 
   containers:
     - name: vehicles
       command:
         - "sh"
         - "-c"
-        - "source /vault/secrets/auth0-dev && source /vault/secrets/ches-dev && source /vault/secrets/mssql-dev && source /vault/secrets/payment-dev && npm run start:prod"
+        - "source /vault/secrets/auth0-{{.Values.global.zone}} && source /vault/secrets/ches-{{.Values.global.zone}} && source /vault/secrets/mssql-{{.Values.global.zone}} && source /vault/secrets/payment-{{.Values.global.zone}} && npm run start:prod"
       registry: '{{ .Values.global.registry }}'
       repository: '{{ .Values.global.repository }}' # example, it includes registry and repository
       image: backend/vehicles
-      tag: latest
+      tag: "{{tpl .Values.global.tag .}}"
       ports:
         - name: vehicles-api
           containerPort: 5000
@@ -137,7 +141,7 @@ vehicles:
       route.openshift.io/termination: "edge"
     enabled: true
     hosts: 
-      - host: "onroutebc-experiment-vehicles.apps.silver.devops.gov.bc.ca"
+      - host: "{{.Release.Name}}-vehicles.apps.silver.devops.gov.bc.ca"
         paths:
           - path: /
             pathType: ImplementationSpecific
@@ -152,7 +156,7 @@ vehicles:
         port: 80
         targetPort: 5000
   serviceAccount:
-    name: c28f0c-vault
+    name: "{{ .Values.global.license }}-vault"
   vault:
     enabled: true
     resources: # this is optional
@@ -162,12 +166,13 @@ vehicles:
       requests:
         cpu: 75m
         memory: 100Mi
-    role: c28f0c-nonprod
+    role: "{{.Values.global.vault.role}}"
+    license: "{{.Values.global.license}}"
     secretPaths:
-      - auth0-dev
-      - ches-dev
-      - mssql-dev
-      - payment-dev
+      - auth0-{{.Values.global.zone}}
+      - ches-{{.Values.global.zone}}
+      - mssql-{{.Values.global.zone}}
+      - payment-{{.Values.global.zone}}
 
 dops:
   enabled: true
@@ -180,17 +185,17 @@ dops:
   configmap:
     enabled: true
     data:
-      ACCESS_API_URL: "https://onroutebc-experiment-dops.apps.silver.devops.gov.bc.ca"
+      ACCESS_API_URL: "https://{{.Release.Name}}-dops.apps.silver.devops.gov.bc.ca"
   containers:
     - name: dops
       command:
         - "sh"
         - "-c"
-        - "source /vault/secrets/auth0-dev && source /vault/secrets/ches-dev && source /vault/secrets/mssql-dev && source /vault/secrets/payment-dev && npm run start:prod"
+        - "source /vault/secrets/auth0-{{.Values.global.zone}} && source /vault/secrets/ches-{{.Values.global.zone}} && source /vault/secrets/mssql-{{.Values.global.zone}} && source /vault/secrets/payment-{{.Values.global.zone}} && npm run start:prod"
       registry: '{{ .Values.global.registry }}'
       repository: '{{ .Values.global.repository }}' # example, it includes registry and repository
       image: backend/dops
-      tag: latest
+      tag: "{{tpl .Values.global.tag .}}"
       ports:
         - name: dops-api
           containerPort: 5001
@@ -225,7 +230,7 @@ dops:
       route.openshift.io/termination: "edge"
     enabled: true
     hosts: 
-      - host: "onroutebc-experiment-dops.apps.silver.devops.gov.bc.ca"
+      - host: "{{.Release.Name}}-dops.apps.silver.devops.gov.bc.ca"
         paths:
           - path: /
             pathType: ImplementationSpecific
@@ -240,7 +245,7 @@ dops:
         port: 80
         targetPort: 5001
   serviceAccount:
-    name: c28f0c-vault
+    name: "{{ .Values.global.license }}-vault"
   vault:
     enabled: true
     resources: # this is optional
@@ -250,9 +255,10 @@ dops:
       requests:
         cpu: 75m
         memory: 100Mi
-    role: c28f0c-nonprod
+    role: "{{.Values.global.vault.role}}"
+    license: "{{.Values.global.license}}"
     secretPaths:
-      - auth0-dev
-      - ches-dev
-      - mssql-dev
-      - payment-dev
+      - auth0-{{.Values.global.zone}}
+      - ches-{{.Values.global.zone}}
+      - mssql-{{.Values.global.zone}}
+      - payment-{{.Values.global.zone}}
