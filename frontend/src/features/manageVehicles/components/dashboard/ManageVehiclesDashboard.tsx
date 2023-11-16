@@ -54,20 +54,24 @@ export const ManageVehiclesDashboard = memo(() => {
   const tabs = [
     {
       label: "Power Unit",
-      component: <List
-        vehicleType="powerUnit"
-        query={powerUnitQuery}
-        companyId={companyId}
-      />,
+      component: (
+        <List
+          vehicleType="powerUnit"
+          query={powerUnitQuery}
+          companyId={companyId}
+        />
+      ),
     },
     {
       label: "Trailer",
-      component: <List
-        vehicleType="trailer"
-        query={trailerQuery}
-        companyId={companyId}
-      />,
-    }
+      component: (
+        <List
+          vehicleType="trailer"
+          query={trailerQuery}
+          companyId={companyId}
+        />
+      ),
+    },
   ];
 
   return (

@@ -41,7 +41,6 @@ export const getAllVehicles = async (
   return allVehicles;
 };
 
-
 /**
  * Fetch*
  * All Power Unit Data
@@ -109,7 +108,6 @@ export const updatePowerUnit = async ({
   const url = `${VEHICLES_URL}/companies/${companyId}/vehicles/powerUnits/${powerUnitId}`;
   return await httpPUTRequest(url, replaceEmptyValuesWithNull(powerUnit));
 };
-
 
 /**
  * Fetch All Trailer Data

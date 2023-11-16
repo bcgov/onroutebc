@@ -33,10 +33,13 @@ import {
   VehicleTypes,
   VehicleTypesAsString,
   PowerUnit,
-  Trailer
+  Trailer,
 } from "../../types/managevehicles";
 import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
-import { usePowerUnitTypesQuery, useTrailerTypesQuery } from "../../apiManager/hooks";
+import {
+  usePowerUnitTypesQuery,
+  useTrailerTypesQuery,
+} from "../../apiManager/hooks";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 
 /**
@@ -73,12 +76,7 @@ export const List = memo(
     companyId: string;
   }) => {
     // Data, fetched from backend API
-    const {
-      data,
-      isError,
-      isFetching,
-      isLoading
-    } = query;
+    const { data, isError, isFetching, isLoading } = query;
 
     // Column definitions for the table
     const columns = useMemo<MRT_ColumnDef<VehicleTypes>[]>(
@@ -90,36 +88,46 @@ export const List = memo(
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
     const hasNoRowsSelected = Object.keys(rowSelection).length === 0;
-   
-    const powerUnitTypesQuery = usePowerUnitTypesQuery()
-    const trailerTypesQuery = useTrailerTypesQuery()
-    const fetchedPowerUnitTypes = getDefaultRequiredVal([], powerUnitTypesQuery.data)
-    const fetchedTrailerTypes = getDefaultRequiredVal([], trailerTypesQuery.data)
 
-    const colTypeCodes = columns.filter((item) => item.accessorKey === `${vehicleType}TypeCode`)
-    const newColumns = columns.filter((item) => item.accessorKey !== `${vehicleType}TypeCode`)
+    const powerUnitTypesQuery = usePowerUnitTypesQuery();
+    const trailerTypesQuery = useTrailerTypesQuery();
+    const fetchedPowerUnitTypes = getDefaultRequiredVal(
+      [],
+      powerUnitTypesQuery.data,
+    );
+    const fetchedTrailerTypes = getDefaultRequiredVal(
+      [],
+      trailerTypesQuery.data,
+    );
 
-    const transformVehicleCode = (code:string) => {
-      let val
-      if (vehicleType === 'powerUnit') {
-        val = fetchedPowerUnitTypes?.filter((value) => value.typeCode === code)
+    const colTypeCodes = columns.filter(
+      (item) => item.accessorKey === `${vehicleType}TypeCode`,
+    );
+    const newColumns = columns.filter(
+      (item) => item.accessorKey !== `${vehicleType}TypeCode`,
+    );
+
+    const transformVehicleCode = (code: string) => {
+      let val;
+      if (vehicleType === "powerUnit") {
+        val = fetchedPowerUnitTypes?.filter((value) => value.typeCode === code);
       } else {
-        val = fetchedTrailerTypes?.filter((value) => value.typeCode === code)
+        val = fetchedTrailerTypes?.filter((value) => value.typeCode === code);
       }
-      return val?.at(0)?.type || ''
-    }
+      return val?.at(0)?.type || "";
+    };
 
     if (colTypeCodes?.length === 1) {
-      const colTypeCode = colTypeCodes?.at(0)
+      const colTypeCode = colTypeCodes?.at(0);
       if (colTypeCode) {
         // eslint-disable-next-line react/display-name
-        colTypeCode.Cell = ({cell}) => {
-          return <div>{transformVehicleCode(cell.getValue<string>())}</div>
-        }
+        colTypeCode.Cell = ({ cell }) => {
+          return <div>{transformVehicleCode(cell.getValue<string>())}</div>;
+        };
 
-        const colDate = newColumns?.pop()
-        newColumns.push(colTypeCode)
-        if (colDate) newColumns.push(colDate)
+        const colDate = newColumns?.pop();
+        newColumns.push(colTypeCode);
+        if (colDate) newColumns.push(colDate);
       }
     }
 
