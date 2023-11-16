@@ -19,10 +19,12 @@ import {
   DateTimePicker,
   DesktopDateTimePicker,
   LocalizationProvider,
+  pickersLayoutClasses,
 } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import {
   PaymentAndRefundDetailRequest,
+  PaymentMethodTypeSubObject,
   getPaymentAndRefundDetail,
   getPaymentAndRefundSummary,
 } from "../../search/api/reports";
@@ -30,6 +32,7 @@ import { openBlobInNewTab } from "../../../permits/helpers/permitPDFHelper";
 import { useState } from "react";
 import dayjs, { Dayjs } from "dayjs";
 import { SELECT_FIELD_STYLE } from "../../../../themes/orbcStyles";
+import { getPaymentMethodAndTypes } from "../../../../common/types/payment";
 
 const sample = {
   issuedBy: ["SELF"],
@@ -46,7 +49,7 @@ const sample = {
  */
 export const PaymentAndRefundDetail = () => {
   const [permitType, setPermitType] = useState<string[]>(["ALL"]);
-  const [paymentMethodType, setPaymentMethodType] = useState<string[]>(["ALL"]);
+  const [paymentMethodType, setPaymentMethodType] = useState<string[]>(["All Payment Methods"]);
   const [users, setUsers] = useState<string[]>(["ALL"]);
   const [issuedBy, setIssuedBy] = useState<string[]>(["SELF", "PPC"]);
   const [fromDateTime, setFromDateTime] = useState<Dayjs>(
@@ -59,22 +62,43 @@ export const PaymentAndRefundDetail = () => {
    * Opens the report in a new tab.
    */
   const onClickViewReport = async () => {
+    console.log("paymentMethodType::", paymentMethodType);
     try {
       const requestObj: PaymentAndRefundDetailRequest = {
         fromDateTime: fromDateTime.toISOString(),
         toDateTime: toDateTime.toISOString(),
         issuedBy,
-        paymentMethodType: paymentMethodType,
+        // paymentMethodType: paymentMethodType,
+        // paymentMethods: paymentMethods.filter(({ display, paymentMethodTypeId, paymentTypeId}) => {
+        //   const retArray: PaymentMethodTypeSubObject[] = [];
+        //   paymentMethodType.forEach((type) => {
+        //     const sss = paymentMethods.find((paymentMethod) => paymentMethod.display === type );
+        //     retArray.push({
+        //       paymentMethodTypeId: sss?.paymentMethodTypeId as string,
+        //       paymentTypeId: sss?.paymentTypeId
+        //     })
+        //   });
+        //   return retArray;
+
+        // }),
+        paymentMethods: paymentMethods
+          .filter(({ display }) => paymentMethodType.includes(display))
+          .map(({ paymentMethodTypeId, paymentType }) => {
+            return {
+              paymentMethodTypeId,
+              paymentType,
+            };
+          }),
         permitType,
       };
       if (issuedBy.includes("PPC")) {
         requestObj.users = users;
       }
       console.log("requestObj::", requestObj);
-      const { blobObj: blobObjWithoutType } = await getPaymentAndRefundDetail(
-        requestObj
-      );
-      openBlobInNewTab(blobObjWithoutType);
+      // const { blobObj: blobObjWithoutType } = await getPaymentAndRefundDetail(
+      //   requestObj
+      // );
+      // openBlobInNewTab(blobObjWithoutType);
     } catch (err) {
       console.error(err);
     }
@@ -124,32 +148,9 @@ export const PaymentAndRefundDetail = () => {
       value: "TROW",
     },
   ];
-  const paymentMethods = [
-    {
-      key: "All Payment Methods",
-      value: "ALL",
-    },
-    {
-      key: "PPC - Mastercard",
-      value: "PPCMC",
-    },
-    {
-      key: "PPC - Visa",
-      value: "PPCVI",
-    },
-    {
-      key: "Web - AMEX",
-      value: "WEBAM",
-    },
-    {
-      key: "Web - Visa",
-      value: "WEBVI",
-    },
-    {
-      key: "Web - Mastercard",
-      value: "WEBMC",
-    },
-  ];
+  const paymentMethods = getPaymentMethodAndTypes();
+
+  // console.log(paymentMethods);
 
   const onSelectPermitType = (event: SelectChangeEvent<typeof permitType>) => {
     const {
@@ -176,7 +177,9 @@ export const PaymentAndRefundDetail = () => {
     } = event;
     setPaymentMethodType(
       // On autofill we get a stringified value.
-      () => (typeof value === "string" ? value.split(",") : value)
+      () => {
+        return typeof value === "string" ? value.split(",") : value;
+      }
     );
   };
   return (
@@ -315,8 +318,8 @@ export const PaymentAndRefundDetail = () => {
                     console.log("selectedValue::", selectedValue);
                     selectedLabels.push(
                       paymentMethods.find(
-                        ({ value }) => value === selectedValue
-                      )?.key as string
+                        ({ display }) => display === selectedValue
+                      )?.display as string
                     );
                   });
 
@@ -327,12 +330,16 @@ export const PaymentAndRefundDetail = () => {
                 input={<OutlinedInput />}
                 value={paymentMethodType}
               >
-                {paymentMethods.map(({ key, value }) => (
-                  <MenuItem key={key} value={value}>
-                    <Checkbox checked={paymentMethodType.indexOf(value) > -1} />
-                    <ListItemText primary={key} />
-                  </MenuItem>
-                ))}
+                {paymentMethods.map(
+                  ({ display, paymentMethodTypeId, paymentType }) => (
+                    <MenuItem key={display} value={display}>
+                      <Checkbox
+                        checked={paymentMethodType.indexOf(display) > -1}
+                      />
+                      <ListItemText primary={display} />
+                    </MenuItem>
+                  )
+                )}
               </Select>
             </FormControl>
           </Stack>
@@ -365,9 +372,8 @@ export const PaymentAndRefundDetail = () => {
                   selected.forEach((selectedValue) => {
                     console.log("selectedValue::", selectedValue);
                     selectedLabels.push(
-                      ppcList.find(
-                        ({ username }) => username === selectedValue
-                      )?.name as string
+                      ppcList.find(({ username }) => username === selectedValue)
+                        ?.name as string
                     );
                   });
 
@@ -419,6 +425,14 @@ export const PaymentAndRefundDetail = () => {
                       .set("ms", 0)}
                     //   label={<strong>From</strong>}
                     format="YYYY/MM/DD hh:mm A"
+                    slotProps={{
+                      digitalClockItem: {
+                        sx: {
+                          width: '76px'
+                        }
+                      }
+                     
+                    }}
                     onChange={(value: Dayjs | null) => {
                       setFromDateTime(() => value as Dayjs);
                     }}

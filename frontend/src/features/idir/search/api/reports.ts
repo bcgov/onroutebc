@@ -11,13 +11,19 @@ export type PaymentAndRefundSummaryRequest = {
   toDateTime: string;
 };
 
+export interface PaymentMethodTypeSubObject {
+  paymentMethodTypeId: string;
+  paymentType?: string;
+}
+
 /**
  * The request object type for payment and refund detail
  */
 export interface PaymentAndRefundDetailRequest
   extends PaymentAndRefundSummaryRequest {
   permitType: string[];
-  paymentMethodType: string[];
+  paymentMethodType?: string[];
+  paymentMethods: PaymentMethodTypeSubObject [] | ["ALL"];
   users?: string[];
 }
 
