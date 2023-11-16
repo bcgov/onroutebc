@@ -36,6 +36,8 @@ import { UserStatus } from '../../src/common/enum/user-status.enum';
 import { IdirUser } from 'src/modules/company-user-management/users/entities/idir.user.entity';
 import { PendingIdirUser } from 'src/modules/company-user-management/pending-idir-users/entities/pending-idir-user.entity';
 import { PendingIdirUsersService } from 'src/modules/company-user-management/pending-idir-users/pending-idir-users.service';
+import { readRedCompanyPendingUserDtoMock } from 'test/util/mocks/data/pending-user.mock';
+import { readRedCompanyDtoMock } from 'test/util/mocks/data/company.mock';
 
 let repo: DeepMocked<Repository<User>>;
 let repoIdirUser: DeepMocked<Repository<IdirUser>>;
@@ -113,6 +115,14 @@ describe('Company Users (e2e)', () => {
 
   describe('/companies/1/users CREATE', () => {
     it('should create a new User.', async () => {
+      jest
+        .spyOn(pendingUsersServiceMock, 'findPendingUsersDto')
+        .mockImplementation(() =>
+          Promise.resolve([readRedCompanyPendingUserDtoMock]),
+        );
+      jest
+        .spyOn(companyServiceMock, 'findOneByCompanyGuid')
+        .mockReturnValue(Promise.resolve(readRedCompanyDtoMock));
       const response = await request(app.getHttpServer())
         .post('/companies/1/users')
         .send(createRedCompanyAdminUserDtoMock)

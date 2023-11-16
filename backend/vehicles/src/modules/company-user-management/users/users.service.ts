@@ -71,6 +71,23 @@ export class UsersService {
     currentUser: IUserJWT,
   ): Promise<ReadUserDto> {
     let newUser: ReadUserDto;
+    //Comment Begin: Business BCeID validation.
+    //In case of busines bceid, validate that the user's bceid matches the company bceid.
+    //If matches then create user else throw error.
+    if (currentUser.bceid_business_guid) {
+      const company = await this.companyService.findOneByCompanyGuid(
+        currentUser.bceid_business_guid,
+      );
+      const pendingUser = await this.pendingUsersService.findPendingUsersDto(
+        currentUser.userName,
+      );
+      if (pendingUser.some((e) => e.companyId != company.companyId)) {
+        throw new InternalServerErrorException(
+          'User not invited for this company.',
+        );
+      }
+    }
+    //Comment End: Business BCeID validation end
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
