@@ -39,3 +39,4 @@ jobs:
       license: c28f0c
       vault_role: prod
       zone: prod
+
