@@ -3,7 +3,9 @@ import { UserEvent } from "@testing-library/user-event/dist/types/setup/setup";
 import { VehicleTypesAsString } from "../../../../types/managevehicles";
 
 export const clickSubmit = async (user: UserEvent) => {
-  const submitButton = await screen.findByRole("button", { name: /Add To Inventory/i });
+  const submitButton = await screen.findByRole("button", {
+    name: /Add To Inventory/i,
+  });
   await user.click(submitButton);
 };
 
@@ -87,9 +89,17 @@ export const vinErrorDisplay = async () => {
   return await screen.findByTestId("alert-vin");
 };
 
-export const replaceValueForInput = async (user: UserEvent, input: HTMLElement, offset: number, newVal: string) => {
+export const replaceValueForInput = async (
+  user: UserEvent,
+  input: HTMLElement,
+  offset: number,
+  newVal: string,
+) => {
   await user.click(input);
-  await user.pointer([{target: input, offset: 0, keys: '[MouseLeft>]'}, { offset }]);
+  await user.pointer([
+    { target: input, offset: 0, keys: "[MouseLeft>]" },
+    { offset },
+  ]);
   await user.paste(newVal);
 };
 
@@ -97,7 +107,11 @@ export const submitErrorsDisplay = async () => {
   return await screen.findByTestId("alert", { exact: false });
 };
 
-export const chooseOption = async (user: UserEvent, select: HTMLElement, optionText: string) => {
+export const chooseOption = async (
+  user: UserEvent,
+  select: HTMLElement,
+  optionText: string,
+) => {
   await user.click(select);
   const option = await screen.findByText(optionText);
   await user.click(option);
@@ -119,7 +133,11 @@ export interface PowerUnitDetail extends VehicleFormDetail {
   newTireSize: string;
 }
 
-export const submitVehicleForm = async (user: UserEvent, vehicleType: VehicleTypesAsString, details: VehicleFormDetail) => {
+export const submitVehicleForm = async (
+  user: UserEvent,
+  vehicleType: VehicleTypesAsString,
+  details: VehicleFormDetail,
+) => {
   const unitNumber = await unitNumberInput();
   const make = await makeInput();
   const year = await yearInput();
@@ -138,8 +156,18 @@ export const submitVehicleForm = async (user: UserEvent, vehicleType: VehicleTyp
     const licensedGvw = await licensedGvwInput();
     const steerAxleTireSize = await steerAxleTireSizeInput();
     const subtype = await powerUnitTypeCodeSelect();
-    await replaceValueForInput(user, licensedGvw, 1, `${powerUnitDetails.newGvw}`);
-    await replaceValueForInput(user, steerAxleTireSize, 0, powerUnitDetails.newTireSize);
+    await replaceValueForInput(
+      user,
+      licensedGvw,
+      1,
+      `${powerUnitDetails.newGvw}`,
+    );
+    await replaceValueForInput(
+      user,
+      steerAxleTireSize,
+      0,
+      powerUnitDetails.newTireSize,
+    );
     await chooseOption(user, subtype, details.newSubtype);
   } else {
     const subtype = await trailerTypeCodeSelect();

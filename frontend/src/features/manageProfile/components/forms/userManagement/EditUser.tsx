@@ -1,13 +1,6 @@
 import { memo, useContext, useState } from "react";
 
-import {
-  Box,
-  Button,
-  Divider,
-  Link,
-  Stack,
-  Typography
-} from "@mui/material";
+import { Box, Button, Divider, Link, Stack, Typography } from "@mui/material";
 import { useMutation } from "@tanstack/react-query";
 import {
   Controller,
@@ -22,9 +15,7 @@ import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
 } from "../../../../../common/helpers/util";
-import {
-  requiredMessage
-} from "../../../../../common/helpers/validationMessages";
+import { requiredMessage } from "../../../../../common/helpers/validationMessages";
 import { MANAGE_PROFILES } from "../../../../../routes/constants";
 import { BC_COLOURS } from "../../../../../themes/bcGovStyles";
 import { updateUserInfo } from "../../../apiManager/manageProfileAPI";
@@ -216,7 +207,7 @@ export const EditUserForm = memo(
         </Box>
       </FormProvider>
     );
-  }
+  },
 );
 
 EditUserForm.displayName = "EditUserForm";

@@ -12,13 +12,25 @@ export const sendPermitToEmailMsg = async () => {
   return await screen.findByText(/The permit will be sent to the email/i);
 };
 
-export const replaceValueForInput = async (user: UserEvent, input: HTMLElement, offset: number, newVal: string) => {
+export const replaceValueForInput = async (
+  user: UserEvent,
+  input: HTMLElement,
+  offset: number,
+  newVal: string,
+) => {
   await user.click(input);
-  await user.pointer([{target: input, offset: 0, keys: '[MouseLeft>]'}, { offset }]);
+  await user.pointer([
+    { target: input, offset: 0, keys: "[MouseLeft>]" },
+    { offset },
+  ]);
   await user.paste(newVal);
 };
 
-export const chooseOption = async (user: UserEvent, select: HTMLElement, optionText: string) => {
+export const chooseOption = async (
+  user: UserEvent,
+  select: HTMLElement,
+  optionText: string,
+) => {
   await user.click(select);
   const option = await screen.findByText(optionText, { selector: "li" });
   await user.click(option);
@@ -98,15 +110,21 @@ export const errMsgForVehicleYear = async () => {
 };
 
 export const errMsgForVehicleCountry = async () => {
-  return await screen.findByTestId("alert-permitData.vehicleDetails.countryCode");
+  return await screen.findByTestId(
+    "alert-permitData.vehicleDetails.countryCode",
+  );
 };
 
 export const errMsgForVehicleType = async () => {
-  return await screen.findByTestId("alert-permitData.vehicleDetails.vehicleType");
+  return await screen.findByTestId(
+    "alert-permitData.vehicleDetails.vehicleType",
+  );
 };
 
 export const errMsgForVehicleSubtype = async () => {
-  return await screen.findByTestId("alert-permitData.vehicleDetails.vehicleSubType");
+  return await screen.findByTestId(
+    "alert-permitData.vehicleDetails.vehicleSubType",
+  );
 };
 
 export const vinInput = async () => {
@@ -126,19 +144,27 @@ export const vehicleYearInput = async () => {
 };
 
 export const vehicleCountrySelect = async () => {
-  return await screen.findByTestId("select-permitData.vehicleDetails.countryCode");
+  return await screen.findByTestId(
+    "select-permitData.vehicleDetails.countryCode",
+  );
 };
 
 export const vehicleProvinceSelect = async () => {
-  return await screen.findByTestId("select-permitData.vehicleDetails.provinceCode");
+  return await screen.findByTestId(
+    "select-permitData.vehicleDetails.provinceCode",
+  );
 };
 
 export const vehicleTypeSelect = async () => {
-  return await screen.findByTestId("select-permitData.vehicleDetails.vehicleType");
+  return await screen.findByTestId(
+    "select-permitData.vehicleDetails.vehicleType",
+  );
 };
 
 export const vehicleSubtypeSelect = async () => {
-  return await screen.findByTestId("select-permitData.vehicleDetails.vehicleSubType");
+  return await screen.findByTestId(
+    "select-permitData.vehicleDetails.vehicleSubType",
+  );
 };
 
 export const openVehicleSubtypeSelect = async (user: UserEvent) => {
@@ -146,7 +172,10 @@ export const openVehicleSubtypeSelect = async (user: UserEvent) => {
   await user.click(subtypeSelect);
 };
 
-export const chooseSaveVehicleToInventory = async (user: UserEvent, save: boolean) => {
+export const chooseSaveVehicleToInventory = async (
+  user: UserEvent,
+  save: boolean,
+) => {
   if (save) {
     const saveOption = await screen.findByTestId("save-vehicle-yes");
     await user.click(saveOption);
@@ -173,9 +202,14 @@ export const vehicleOptions = async (vehicleType: VehicleTypesAsString) => {
   return await screen.findAllByTestId(`select-vehicle-option-${vehicleType}`);
 };
 
-export const subtypeOptions = async (shownSubtypes: string[], excludedSubtypes: string[]) => {
+export const subtypeOptions = async (
+  shownSubtypes: string[],
+  excludedSubtypes: string[],
+) => {
   const subtypeOptions = await vehicleSubtypeOptions();
-  const subtypeOptionsText = subtypeOptions.map(option => option.textContent ?? "");
+  const subtypeOptionsText = subtypeOptions.map(
+    (option) => option.textContent ?? "",
+  );
   const properOptions = subtypeOptionsText.filter((optionText) => {
     return shownSubtypes.includes(optionText);
   });
@@ -209,7 +243,10 @@ type VehicleDetail = {
   saveVehicle: boolean;
 };
 
-export const fillVehicleInfo = async (user: UserEvent, vehicle: VehicleDetail) => {
+export const fillVehicleInfo = async (
+  user: UserEvent,
+  vehicle: VehicleDetail,
+) => {
   const vinTextField = await vinInput();
   const plateTextField = await plateInput();
   const makeTextField = await makeInput();

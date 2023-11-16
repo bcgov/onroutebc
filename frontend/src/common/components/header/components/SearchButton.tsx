@@ -3,16 +3,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import "./SearchButton.scss";
 
-export const SearchButton = ({
-  onClick,
-}: {
-  onClick: () => void;
-}) => {
+export const SearchButton = ({ onClick }: { onClick: () => void }) => {
   return (
-    <button 
-      className="search-button"
-      onClick={onClick}
-    >
+    <button className="search-button" onClick={onClick}>
       <FontAwesomeIcon icon={faSearch} />
     </button>
   );

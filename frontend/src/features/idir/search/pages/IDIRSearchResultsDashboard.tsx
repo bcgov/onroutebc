@@ -3,11 +3,11 @@ import { memo } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Banner } from "../../../../common/components/dashboard/Banner";
 import { IDIRSearchResults } from "../components/IDIRSearchResults";
-import { 
-  SEARCH_BY_FILTERS, 
-  SearchByFilter, 
-  SearchEntity, 
-  SearchFields, 
+import {
+  SEARCH_BY_FILTERS,
+  SearchByFilter,
+  SearchEntity,
+  SearchFields,
 } from "../types/types";
 
 /**

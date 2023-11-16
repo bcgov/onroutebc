@@ -16,12 +16,20 @@ import { CountryAndProvince } from "../../../../../../../common/components/form/
 import { CustomFormComponent } from "../../../../../../../common/components/form/CustomFormComponents";
 import { InfoBcGovBanner } from "../../../../../../../common/components/banners/AlertBanners";
 import { VehicleDetails as VehicleDetailsType } from "../../../../../types/application";
-import { PowerUnit, Trailer, Vehicle, VehicleType } from "../../../../../../manageVehicles/types/managevehicles";
+import {
+  PowerUnit,
+  Trailer,
+  Vehicle,
+  VehicleType,
+} from "../../../../../../manageVehicles/types/managevehicles";
 import { mapVinToVehicleObject } from "../../../../../helpers/mappers";
 import { getDefaultRequiredVal } from "../../../../../../../common/helpers/util";
 import { sortVehicleSubTypes } from "../../../../../helpers/sorter";
 import { removeIneligibleVehicleSubTypes } from "../../../../../helpers/removeIneligibleVehicles";
-import { TROS_INELIGIBLE_POWERUNITS, TROS_INELIGIBLE_TRAILERS } from "../../../../../constants/termOversizeConstants";
+import {
+  TROS_INELIGIBLE_POWERUNITS,
+  TROS_INELIGIBLE_TRAILERS,
+} from "../../../../../constants/termOversizeConstants";
 import { CustomInputHTMLAttributes } from "../../../../../../../common/types/formElements";
 import { SelectUnitOrPlate } from "./customFields/SelectUnitOrPlate";
 import { SelectVehicleDropdown } from "./customFields/SelectVehicleDropdown";
@@ -37,12 +45,12 @@ import {
   VEHICLE_TYPES,
 } from "../../../../../constants/constants";
 
-import { 
-  invalidNumber, 
-  invalidPlateLength, 
-  invalidVINLength, 
-  invalidYearMin, 
-  requiredMessage 
+import {
+  invalidNumber,
+  invalidPlateLength,
+  invalidVINLength,
+  invalidYearMin,
+  requiredMessage,
 } from "../../../../../../../common/helpers/validationMessages";
 
 const selectedVehicleSubtype = (vehicle: Vehicle) => {
@@ -56,13 +64,13 @@ const selectedVehicleSubtype = (vehicle: Vehicle) => {
   }
 };
 
-export const VehicleDetails = ({ 
-  feature, 
+export const VehicleDetails = ({
+  feature,
   vehicleData,
   vehicleOptions,
   powerUnitTypes,
   trailerTypes,
-}: { 
+}: {
   feature: string;
   vehicleData?: VehicleDetailsType;
   vehicleOptions: (PowerUnit | Trailer)[];
@@ -76,9 +84,9 @@ export const VehicleDetails = ({
   };
 
   const emptyVehicleSubtype = {
-    "typeCode": "",
-    "type": "",
-    "description": "",
+    typeCode: "",
+    type: "",
+    description: "",
   };
 
   const DEFAULT_VEHICLE_TYPE = "powerUnit";
@@ -92,8 +100,12 @@ export const VehicleDetails = ({
   // Radio button value to decide if the user wants to save the vehicle in inventory
   const [saveVehicle, setSaveVehicle] = useState(false);
   // Options for the vehicle subtype field (based on vehicle type)
-  const [subtypeOptions, setSubtypeOptions] = useState<VehicleType[]>([emptyVehicleSubtype]);
-  const [selectedVehicle, setSelectedVehicle] = useState<VehicleDetailsType | undefined>();
+  const [subtypeOptions, setSubtypeOptions] = useState<VehicleType[]>([
+    emptyVehicleSubtype,
+  ]);
+  const [selectedVehicle, setSelectedVehicle] = useState<
+    VehicleDetailsType | undefined
+  >();
 
   useEffect(() => {
     // Update subtype options when vehicle type changes
@@ -133,8 +145,8 @@ export const VehicleDetails = ({
 
     // Sort vehicle subtypes alphabetically
     const sortedVehicles = sortVehicleSubTypes(
-      vehicleType, 
-      getSubtypeOptions(vehicleType)
+      vehicleType,
+      getSubtypeOptions(vehicleType),
     );
 
     // Temporary method to remove ineligible vehicles as per TROS policy.
@@ -143,10 +155,10 @@ export const VehicleDetails = ({
       sortedVehicles,
       vehicleType,
       TROS_INELIGIBLE_POWERUNITS,
-      TROS_INELIGIBLE_TRAILERS
+      TROS_INELIGIBLE_TRAILERS,
     );
 
-    return eligibleVehicleSubtypes
+    return eligibleVehicleSubtypes;
   };
 
   // Clears vehicle details fields
@@ -159,8 +171,12 @@ export const VehicleDetails = ({
     resetField("permitData.vehicleDetails.year", { defaultValue: "" });
     resetField("permitData.vehicleDetails.countryCode", { defaultValue: "" });
     resetField("permitData.vehicleDetails.provinceCode", { defaultValue: "" });
-    resetField("permitData.vehicleDetails.vehicleType", { defaultValue: DEFAULT_VEHICLE_TYPE });
-    resetField("permitData.vehicleDetails.vehicleSubType", { defaultValue: "" });
+    resetField("permitData.vehicleDetails.vehicleType", {
+      defaultValue: DEFAULT_VEHICLE_TYPE,
+    });
+    resetField("permitData.vehicleDetails.vehicleSubType", {
+      defaultValue: "",
+    });
   };
 
   // Set new vehicle selection
@@ -173,7 +189,10 @@ export const VehicleDetails = ({
     setValue("permitData.vehicleDetails.countryCode", vehicle.countryCode);
     setValue("permitData.vehicleDetails.provinceCode", vehicle.provinceCode);
     setValue("permitData.vehicleDetails.vehicleType", vehicle.vehicleType);
-    setValue("permitData.vehicleDetails.vehicleSubType", vehicle.vehicleSubType);
+    setValue(
+      "permitData.vehicleDetails.vehicleSubType",
+      vehicle.vehicleSubType,
+    );
   };
 
   // Whenever a new vehicle is selected
@@ -195,7 +214,7 @@ export const VehicleDetails = ({
       countryCode: vehicle.countryCode,
       provinceCode: vehicle.provinceCode,
       vehicleType: getDefaultRequiredVal("", vehicle.vehicleType),
-      vehicleSubType: selectedVehicleSubtype(vehicle)
+      vehicleSubType: selectedVehicleSubtype(vehicle),
     };
     setSelectedVehicle(vehicleDetails);
   };
@@ -295,8 +314,8 @@ export const VehicleDetails = ({
           feature={feature}
           options={{
             name: "permitData.vehicleDetails.plate",
-            rules: { 
-              required: { value: true, message: requiredMessage() }, 
+            rules: {
+              required: { value: true, message: requiredMessage() },
               maxLength: { value: 10, message: invalidPlateLength(10) },
             },
             label: "Plate",
@@ -309,9 +328,9 @@ export const VehicleDetails = ({
           feature={feature}
           options={{
             name: "permitData.vehicleDetails.make",
-            rules: { 
-              required: { value: true, message: requiredMessage() }, 
-              maxLength: 20 
+            rules: {
+              required: { value: true, message: requiredMessage() },
+              maxLength: 20,
             },
             label: "Make",
             width: formFieldStyle.width,
@@ -328,8 +347,7 @@ export const VehicleDetails = ({
               maxLength: 4,
               validate: {
                 isNumber: (v) => !isNaN(v) || invalidNumber(),
-                lessThan1950: (v) =>
-                  parseInt(v) > 1950 || invalidYearMin(1950),
+                lessThan1950: (v) => parseInt(v) > 1950 || invalidYearMin(1950),
               },
             },
             inputType: "number",
@@ -362,8 +380,8 @@ export const VehicleDetails = ({
             width: formFieldStyle.width,
           }}
           menuOptions={VEHICLE_TYPES.map((data) => (
-            <MenuItem 
-              key={data.value} 
+            <MenuItem
+              key={data.value}
               value={data.value}
               data-testid="vehicle-type-menu-item"
             >
@@ -384,8 +402,8 @@ export const VehicleDetails = ({
             width: formFieldStyle.width,
           }}
           menuOptions={subtypeOptions.map((subtype) => (
-            <MenuItem 
-              key={subtype.typeCode} 
+            <MenuItem
+              key={subtype.typeCode}
               value={subtype.typeCode}
               data-testid="subtype-menu-item"
             >
@@ -409,25 +427,33 @@ export const VehicleDetails = ({
             onChange={(x) => handleSaveVehicleRadioBtns(x.target.value)}
           >
             <Box sx={{ display: "flex" }}>
-              <FormControlLabel 
-                value={true} 
+              <FormControlLabel
+                value={true}
                 control={
                   <Radio
                     key={`radio-save-vehicle-yes`}
-                    inputProps={{"data-testid": "save-vehicle-yes"} as CustomInputHTMLAttributes}
+                    inputProps={
+                      {
+                        "data-testid": "save-vehicle-yes",
+                      } as CustomInputHTMLAttributes
+                    }
                   />
                 }
                 label="Yes"
               />
-              <FormControlLabel 
-                value={false} 
+              <FormControlLabel
+                value={false}
                 control={
                   <Radio
                     key={`radio-save-vehicle-no`}
-                    inputProps={{"data-testid": "save-vehicle-no"} as CustomInputHTMLAttributes}
+                    inputProps={
+                      {
+                        "data-testid": "save-vehicle-no",
+                      } as CustomInputHTMLAttributes
+                    }
                   />
                 }
-                label="No" 
+                label="No"
               />
             </Box>
           </RadioGroup>

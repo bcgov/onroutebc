@@ -7,21 +7,20 @@ import { useSaveTermOversizeMutation } from "../../hooks/hooks";
 import { ProgressBar } from "../../components/progressBar/ProgressBar";
 import { useCompanyInfoQuery } from "../../../manageProfile/apiManager/hooks";
 import { PermitReview } from "./components/review/PermitReview";
-import { usePowerUnitTypesQuery, useTrailerTypesQuery } from "../../../manageVehicles/apiManager/hooks";
+import {
+  usePowerUnitTypesQuery,
+  useTrailerTypesQuery,
+} from "../../../manageVehicles/apiManager/hooks";
 
 export const TermOversizeReview = () => {
-  const { 
-    applicationData, 
-    setApplicationData, 
-    back, 
-    next, 
-  } = useContext(ApplicationContext);
+  const { applicationData, setApplicationData, back, next } =
+    useContext(ApplicationContext);
 
   const companyQuery = useCompanyInfoQuery();
   const powerUnitTypesQuery = usePowerUnitTypesQuery();
   const trailerTypesQuery = useTrailerTypesQuery();
   const methods = useForm<Application>();
-  
+
   // For the confirmation checkboxes
   const [isChecked, setIsChecked] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -34,9 +33,8 @@ export const TermOversizeReview = () => {
     if (!isChecked) return;
 
     if (applicationData) {
-      const response = await submitTermOversizeMutation.mutateAsync(
-        applicationData
-      );
+      const response =
+        await submitTermOversizeMutation.mutateAsync(applicationData);
       const data = response.data;
       setApplicationData(data);
     }
@@ -74,7 +72,9 @@ export const TermOversizeReview = () => {
           powerUnitTypes={powerUnitTypesQuery.data}
           trailerTypes={trailerTypesQuery.data}
           vehicleDetails={applicationData?.permitData?.vehicleDetails}
-          vehicleWasSaved={applicationData?.permitData?.vehicleDetails?.saveVehicle}
+          vehicleWasSaved={
+            applicationData?.permitData?.vehicleDetails?.saveVehicle
+          }
         />
       </FormProvider>
     </>

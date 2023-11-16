@@ -1,6 +1,10 @@
 import validationMessages from "../constants/validation_messages.json";
 
-const replacePlaceholders = (messageTemplate: string, placeholders: string[], ...args: (string | number | boolean)[]) => {
+const replacePlaceholders = (
+  messageTemplate: string,
+  placeholders: string[],
+  ...args: (string | number | boolean)[]
+) => {
   let errMsg = messageTemplate;
   placeholders.forEach((placeholderText, index) => {
     errMsg = errMsg.replaceAll(placeholderText, `${args[index]}`);
@@ -10,10 +14,13 @@ const replacePlaceholders = (messageTemplate: string, placeholders: string[], ..
 
 export const requiredMessage = () => validationMessages.required.defaultMessage;
 export const invalidNumber = () => validationMessages.NaN.defaultMessage;
-export const invalidCountryCode = () => validationMessages.country.defaultMessage;
-export const invalidProvinceCode = () => validationMessages.province.defaultMessage;
+export const invalidCountryCode = () =>
+  validationMessages.country.defaultMessage;
+export const invalidProvinceCode = () =>
+  validationMessages.province.defaultMessage;
 export const invalidDate = () => validationMessages.date.defaultMessage;
-export const invalidPastStartDate = () => validationMessages.date.start.past.defaultMessage;
+export const invalidPastStartDate = () =>
+  validationMessages.date.start.past.defaultMessage;
 
 export const invalidMaxStartDate = (max: number) => {
   const { messageTemplate, placeholders } = validationMessages.date.start.max;
@@ -42,7 +49,8 @@ export const invalidCityLength = (min: number, max: number) => {
   return replacePlaceholders(messageTemplate, placeholders, min, max);
 };
 
-export const invalidPostalCode = () => validationMessages.postalCode.defaultMessage;
+export const invalidPostalCode = () =>
+  validationMessages.postalCode.defaultMessage;
 
 export const invalidFirstNameLength = (min: number, max: number) => {
   const { messageTemplate, placeholders } = validationMessages.firstName.length;

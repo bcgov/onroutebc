@@ -1,9 +1,9 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { 
-  faExclamationCircle, 
-  faExclamationTriangle, 
-  faInfoCircle, 
-  faCheckCircle, 
+import {
+  faExclamationCircle,
+  faExclamationTriangle,
+  faInfoCircle,
+  faCheckCircle,
 } from "@fortawesome/free-solid-svg-icons";
 
 import "./AlertBanners.scss";

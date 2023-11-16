@@ -7,7 +7,8 @@ export const SEARCH_ENTITIES = {
   APPLICATION: "applications",
 } as const;
 
-export type SearchEntity = typeof SEARCH_ENTITIES[keyof typeof SEARCH_ENTITIES];
+export type SearchEntity =
+  (typeof SEARCH_ENTITIES)[keyof typeof SEARCH_ENTITIES];
 
 /**
  * The search by filter.
@@ -20,7 +21,8 @@ export const SEARCH_BY_FILTERS = {
   APPLICATION_NUMBER: "applicationNumber",
 } as const;
 
-export type SearchByFilter = typeof SEARCH_BY_FILTERS[keyof typeof SEARCH_BY_FILTERS];
+export type SearchByFilter =
+  (typeof SEARCH_BY_FILTERS)[keyof typeof SEARCH_BY_FILTERS];
 
 /**
  * The Search values from the form.

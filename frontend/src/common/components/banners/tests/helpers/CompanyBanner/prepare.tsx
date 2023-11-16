@@ -32,6 +32,6 @@ export const renderTestComponent = (companyInfo?: CompanyProfile) => {
     <CompanyBanner
       companyName={companyInfo?.legalName}
       clientNumber={companyInfo?.clientNumber}
-    />
+    />,
   );
 };

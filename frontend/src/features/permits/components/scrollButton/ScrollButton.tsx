@@ -7,7 +7,7 @@ import "./ScrollButton.scss";
 
 export const ScrollButton = () => {
   const [isVisible, setIsVisible] = useState(false);
-  
+
   const scrollToTop = () => {
     window.scrollTo(0, 0);
   };
@@ -39,9 +39,7 @@ export const ScrollButton = () => {
       color="secondary"
       onClick={scrollToTop}
     >
-      <FontAwesomeIcon
-        icon={faChevronUp}
-      />
+      <FontAwesomeIcon icon={faChevronUp} />
     </Button>
   ) : (
     <></>

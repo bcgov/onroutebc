@@ -2,7 +2,9 @@ import { screen } from "@testing-library/react";
 import { UserEvent } from "@testing-library/user-event/dist/types/setup/setup";
 
 export const reviewConfirmWarning = async () => {
-  return await screen.findByText("Please review and confirm that the information below is correct.");
+  return await screen.findByText(
+    "Please review and confirm that the information below is correct.",
+  );
 };
 
 export const companyInfoHeaderTitle = async () => {
@@ -173,14 +175,19 @@ export const attestationCheckboxes = async () => {
   return await screen.findAllByTestId("permit-attestation-checkbox");
 };
 
-export const checkAttestations = async (user: UserEvent, attestations: number[]) => {
+export const checkAttestations = async (
+  user: UserEvent,
+  attestations: number[],
+) => {
   const checkboxes = await attestationCheckboxes();
-  await Promise.all(attestations.map(async (attestation) => {
-    if (attestation >= 0 && attestation < checkboxes.length) {
-      return await user.click(checkboxes[attestation]);
-    }
-    return Promise.resolve();
-  }));
+  await Promise.all(
+    attestations.map(async (attestation) => {
+      if (attestation >= 0 && attestation < checkboxes.length) {
+        return await user.click(checkboxes[attestation]);
+      }
+      return Promise.resolve();
+    }),
+  );
 };
 
 export const attestationErrorMsg = async () => {

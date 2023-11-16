@@ -1,5 +1,8 @@
 import { getDefaultRequiredVal } from "../../../common/helpers/util";
-import { DATE_FORMATS, dayjsToLocalStr } from "../../../common/helpers/formatDate";
+import {
+  DATE_FORMATS,
+  dayjsToLocalStr,
+} from "../../../common/helpers/formatDate";
 import {
   PermitData,
   Commodities,
@@ -14,19 +17,22 @@ import {
  * @param mailingAddress2 second mailing address info
  * @returns true when mailing addresses are equivalent, false otherwise
  */
-const areMailingAddressesEqual = (mailingAddress1?: MailingAddress, mailingAddress2?: MailingAddress) => {
+const areMailingAddressesEqual = (
+  mailingAddress1?: MailingAddress,
+  mailingAddress2?: MailingAddress,
+) => {
   if (!mailingAddress1 && !mailingAddress2) return true; // considered equal when both are undefined
   if (!mailingAddress1 || !mailingAddress2) return false; // considered not equal when only one is undefined
 
-  return mailingAddress1.addressLine1 === mailingAddress2.addressLine1
-    && mailingAddress1.city === mailingAddress2.city
-    && mailingAddress1.provinceCode === mailingAddress2.provinceCode
-    && mailingAddress1.countryCode === mailingAddress2.countryCode
-    && mailingAddress1.postalCode === mailingAddress2.postalCode
-    && (
-      (!mailingAddress1.addressLine2 && !mailingAddress2.addressLine2) 
-      || (mailingAddress1.addressLine2 === mailingAddress2.addressLine2)
-    );
+  return (
+    mailingAddress1.addressLine1 === mailingAddress2.addressLine1 &&
+    mailingAddress1.city === mailingAddress2.city &&
+    mailingAddress1.provinceCode === mailingAddress2.provinceCode &&
+    mailingAddress1.countryCode === mailingAddress2.countryCode &&
+    mailingAddress1.postalCode === mailingAddress2.postalCode &&
+    ((!mailingAddress1.addressLine2 && !mailingAddress2.addressLine2) ||
+      mailingAddress1.addressLine2 === mailingAddress2.addressLine2)
+  );
 };
 
 /**
@@ -35,7 +41,10 @@ const areMailingAddressesEqual = (mailingAddress1?: MailingAddress, mailingAddre
  * @param contactDetails2 second contact details info
  * @returns true when contact details are equivalent, false otherwise
  */
-const areContactDetailsEqual = (contactDetails1?: ContactDetailsType, contactDetails2?: ContactDetailsType) => {
+const areContactDetailsEqual = (
+  contactDetails1?: ContactDetailsType,
+  contactDetails2?: ContactDetailsType,
+) => {
   if (!contactDetails1 && !contactDetails2) return true; // considered equal when both are undefined
   if (!contactDetails1 || !contactDetails2) return false; // considered not equal when only one is undefined
 
@@ -54,10 +63,17 @@ const areContactDetailsEqual = (contactDetails1?: ContactDetailsType, contactDet
  * @param list2 second commodities list
  * @returns true when commodities lists are equivalent, false otherwise
  */
-export const areCommoditiesEqual = (list1: Commodities[], list2: Commodities[]) => {
+export const areCommoditiesEqual = (
+  list1: Commodities[],
+  list2: Commodities[],
+) => {
   // Instead of comparing arrays directly (as items can be in different orders), transform them into maps and compare key-value pairs
-  const commodityMap1 = new Map(list1.map(commodity1 => [commodity1.condition, commodity1]));
-  const commodityMap2 = new Map(list2.map(commodity2 => [commodity2.condition, commodity2]));
+  const commodityMap1 = new Map(
+    list1.map((commodity1) => [commodity1.condition, commodity1]),
+  );
+  const commodityMap2 = new Map(
+    list2.map((commodity2) => [commodity2.condition, commodity2]),
+  );
 
   // Compare all key-value pairs of first commodities map with key-value pairs of second commodities map
   for (const [condition, commodity] of commodityMap1) {
@@ -82,7 +98,10 @@ export const areCommoditiesEqual = (list1: Commodities[], list2: Commodities[]) 
  * @param vehicleDetails2 second vehicle details info
  * @returns true when vehicle details are equivalent, false otherwise
  */
-const areVehicleDetailsEqual = (vehicleDetails1?: VehicleDetailsType, vehicleDetails2?: VehicleDetailsType) => {
+const areVehicleDetailsEqual = (
+  vehicleDetails1?: VehicleDetailsType,
+  vehicleDetails2?: VehicleDetailsType,
+) => {
   if (!vehicleDetails1 && !vehicleDetails2) return true; // considered equal when both are undefined
   if (!vehicleDetails1 || !vehicleDetails2) return false; // considered not equal when only one is undefined
 
@@ -101,14 +120,23 @@ const areVehicleDetailsEqual = (vehicleDetails1?: VehicleDetailsType, vehicleDet
  * @param data2 second application data info
  * @returns true when application data are equivalent, false otherwise
  */
-export const areApplicationDataEqual = (data1: PermitData, data2: PermitData) => {
-  return data1.permitDuration === data2.permitDuration
-    && dayjsToLocalStr(data1.startDate, DATE_FORMATS.DATEONLY) === dayjsToLocalStr(data2.startDate, DATE_FORMATS.DATEONLY)
-    && dayjsToLocalStr(data1.expiryDate, DATE_FORMATS.DATEONLY) === dayjsToLocalStr(data2.expiryDate, DATE_FORMATS.DATEONLY)
-    && areContactDetailsEqual(data1.contactDetails, data2.contactDetails)
-    && areVehicleDetailsEqual(data1.vehicleDetails, data2.vehicleDetails)
-    && areCommoditiesEqual(data1.commodities, data2.commodities)
-    && areMailingAddressesEqual(data1.mailingAddress, data2.mailingAddress)
-    && ((!data1.companyName && !data2.companyName) || (data1.companyName === data2.companyName))
-    && ((!data1.clientNumber && !data2.clientNumber) || (data1.clientNumber === data2.clientNumber));
+export const areApplicationDataEqual = (
+  data1: PermitData,
+  data2: PermitData,
+) => {
+  return (
+    data1.permitDuration === data2.permitDuration &&
+    dayjsToLocalStr(data1.startDate, DATE_FORMATS.DATEONLY) ===
+      dayjsToLocalStr(data2.startDate, DATE_FORMATS.DATEONLY) &&
+    dayjsToLocalStr(data1.expiryDate, DATE_FORMATS.DATEONLY) ===
+      dayjsToLocalStr(data2.expiryDate, DATE_FORMATS.DATEONLY) &&
+    areContactDetailsEqual(data1.contactDetails, data2.contactDetails) &&
+    areVehicleDetailsEqual(data1.vehicleDetails, data2.vehicleDetails) &&
+    areCommoditiesEqual(data1.commodities, data2.commodities) &&
+    areMailingAddressesEqual(data1.mailingAddress, data2.mailingAddress) &&
+    ((!data1.companyName && !data2.companyName) ||
+      data1.companyName === data2.companyName) &&
+    ((!data1.clientNumber && !data2.clientNumber) ||
+      data1.clientNumber === data2.clientNumber)
+  );
 };
