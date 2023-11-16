@@ -131,6 +131,13 @@ export class TransactionProfile extends AutomapperProfile {
         UpdatePaymentGatewayTransactionDto,
         Transaction,
         forMember(
+          (d) => d.paymentType,
+          mapFrom((s) => {
+            //Temp stub for Release 1 to map card type returned by gateway to ORBC payment types
+            return s.pgCardType;
+          }),
+        ),
+        forMember(
           (transaction) => transaction.updatedUserGuid,
           mapWithArguments((source, { userGUID }) => {
             return userGUID;

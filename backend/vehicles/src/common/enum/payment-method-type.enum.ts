@@ -3,7 +3,7 @@ export enum PaymentMethodType {
   ICEPAY = 'ICEPAY',
   ACCOUNT = 'ACCOUNT',
   GA = 'GA',
-  CASH = 'CASH5',
+  CASH = 'CASH',
   CHEQUE = 'CHEQUE',
   POS = 'POS',
 }
