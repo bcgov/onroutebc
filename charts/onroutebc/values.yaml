@@ -26,7 +26,7 @@ frontend:
       config.js: |-
         const envConfig = (() => {
           return {
-            "VITE_DEPLOY_ENVIRONMENT":"Prod",
+            "VITE_DEPLOY_ENVIRONMENT":"{{.Values.global.zone}}",
             "VITE_API_VEHICLE_URL":"https://{{.Release.Name}}-vehicles.{{.Values.global.domain}}",
             "VITE_AUTH0_ISSUER_URL":"https://{{.Values.global.zone}}.loginproxy.gov.bc.ca/auth/realms/standard",
             "VITE_AUTH0_AUDIENCE":"on-route-bc-direct-4598",
