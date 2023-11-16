@@ -30,13 +30,14 @@
     "validator": "^13.9.0"
   },
   "scripts": {
-    "start": "vite",
     "build": "tsc && vite build",
+    "format": "prettier --write \"src/**/*.hbs\" \"src/**/*.ts\" \"test/**/*.ts\"",
+    "lint": "eslint src",
     "serve-vite": "vite preview",
+    "start": "vite",
     "test": "vitest watch --reporter verbose",
     "test:no-watch": "vitest run",
-    "test:cov": "vitest run --coverage",
-    "lint": "eslint src"
+    "test:cov": "vitest run --coverage"
   },
   "browserslist": {
     "production": [
