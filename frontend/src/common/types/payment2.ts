@@ -14,14 +14,14 @@ export type PaymentMode = {
   paymentType?: PaymentType;
 };
 
-export type PaymentMethodsAndIds = {
+export type PaymentMethodsAndTypes = {
   display: string;
   paymentMethodTypeId: PaymentMethodType;
   paymentType?: PaymentType;
   description?: string;
 };
 
-export const consolidatedArray: PaymentMethodsAndIds[] = [
+export const PaymentMethodsAndTypesArray: PaymentMethodsAndTypes[] = [
   {
     display: "Credit Account",
     paymentMethodTypeId: "ACCOUNT",
@@ -115,7 +115,7 @@ export const consolidatedArray: PaymentMethodsAndIds[] = [
   },
 ];
 
-export const consolidatedRecord: Record<string, PaymentMode> = {
+export const PaymentMethodAndTypeRecord: Record<string, PaymentMode> = {
   "Credit Account": {
     paymentMethodTypeId: "ACCOUNT",
   },

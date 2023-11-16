@@ -33,7 +33,8 @@ import { useState } from "react";
 import dayjs, { Dayjs } from "dayjs";
 import { SELECT_FIELD_STYLE } from "../../../../themes/orbcStyles";
 import { getPaymentMethodAndTypes } from "../../../../common/types/payment";
-import './style.scss';
+import "./style.scss";
+import { PaymentMethodAndTypeRecord } from "../../../../common/types/payment2";
 
 const sample = {
   issuedBy: ["SELF"],
@@ -50,19 +51,28 @@ const sample = {
  */
 export const PaymentAndRefundDetail = () => {
   const [permitType, setPermitType] = useState<string[]>(["ALL"]);
-  const [paymentMethodType, setPaymentMethodType] = useState<string[]>(["All Payment Methods"]);
+  const [paymentMethodType, setPaymentMethodType] = useState<string[]>([
+    "All Payment Methods",
+  ]);
   const [users, setUsers] = useState<string[]>(["ALL"]);
   const [issuedBy, setIssuedBy] = useState<string[]>(["SELF", "PPC"]);
   const [fromDateTime, setFromDateTime] = useState<Dayjs>(
-    dayjs().subtract(1, "day").set("h", 21).set("m", 0).set("s", 0).set("ms", 0)
+    dayjs()
+      .subtract(1, "day")
+      .set("h", 21)
+      .set("m", 0)
+      .set("s", 0)
+      .set("ms", 0),
   );
   const [toDateTime, setToDateTime] = useState<Dayjs>(
-    dayjs().set("h", 20).set("m", 59).set("s", 59).set("ms", 999)
+    dayjs().set("h", 20).set("m", 59).set("s", 59).set("ms", 999),
   );
   /**
    * Opens the report in a new tab.
    */
   const onClickViewReport = async () => {
+    console.log(PaymentMethodAndTypeRecord);
+
     console.log("paymentMethodType::", paymentMethodType);
     try {
       const requestObj: PaymentAndRefundDetailRequest = {
@@ -82,14 +92,27 @@ export const PaymentAndRefundDetail = () => {
         //   return retArray;
 
         // }),
-        paymentMethods: paymentMethods
-          .filter(({ display }) => paymentMethodType.includes(display))
-          .map(({ paymentMethodTypeId, paymentType }) => {
+        // paymentMethods: paymentMethods
+        //   .filter(({ display }) => paymentMethodType.includes(display))
+        //   .map(({ paymentMethodTypeId, paymentType }) => {
+        //     return {
+        //       paymentMethodTypeId,
+        //       paymentType,
+        //     };
+        //   }),
+        paymentMethods: paymentMethodType.map((key: string) => {
+          const { paymentMethodTypeId, paymentType } =
+            PaymentMethodAndTypeRecord[key];
+          if (paymentType) {
             return {
               paymentMethodTypeId,
               paymentType,
             };
-          }),
+          }
+          return {
+            paymentMethodTypeId
+          }
+        }),
         permitType,
       };
       if (issuedBy.includes("PPC")) {
@@ -166,12 +189,12 @@ export const PaymentAndRefundDetail = () => {
     } = event;
     setUsers(
       // On autofill we get a stringified value.
-      () => (typeof value === "string" ? value.split(",") : value)
+      () => (typeof value === "string" ? value.split(",") : value),
     );
   };
 
   const onSelectPaymentMethod = (
-    event: SelectChangeEvent<typeof permitType>
+    event: SelectChangeEvent<typeof permitType>,
   ) => {
     const {
       target: { value },
@@ -180,7 +203,7 @@ export const PaymentAndRefundDetail = () => {
       // On autofill we get a stringified value.
       () => {
         return typeof value === "string" ? value.split(",") : value;
-      }
+      },
     );
   };
   return (
@@ -201,13 +224,13 @@ export const PaymentAndRefundDetail = () => {
               <Checkbox
                 onChange={(
                   _event: React.ChangeEvent<HTMLInputElement>,
-                  checked: boolean
+                  checked: boolean,
                 ) => {
                   if (checked) {
                     setIssuedBy(() => [...issuedBy, "SELF"]);
                   } else {
                     setIssuedBy(() =>
-                      issuedBy.filter((value) => value !== "SELF")
+                      issuedBy.filter((value) => value !== "SELF"),
                     );
                   }
                   //   const issuedBy = getValues("issuedBy");
@@ -230,13 +253,13 @@ export const PaymentAndRefundDetail = () => {
               <Checkbox
                 onChange={(
                   _event: React.ChangeEvent<HTMLInputElement>,
-                  checked: boolean
+                  checked: boolean,
                 ) => {
                   if (checked) {
                     setIssuedBy(() => [...issuedBy, "PPC"]);
                   } else {
                     setIssuedBy(() =>
-                      issuedBy.filter((value) => value !== "PPC")
+                      issuedBy.filter((value) => value !== "PPC"),
                     );
                   }
                 }}
@@ -272,7 +295,7 @@ export const PaymentAndRefundDetail = () => {
                   selected.forEach((selectedValue) => {
                     selectedLabels.push(
                       permitTypes2.find(({ value }) => value === selectedValue)
-                        ?.label as string
+                        ?.label as string,
                     );
                   });
                   return selectedLabels.join(", ");
@@ -313,34 +336,33 @@ export const PaymentAndRefundDetail = () => {
                 id="demo-multiple-payment-method"
                 multiple
                 onChange={onSelectPaymentMethod}
-                renderValue={(selected) => {
-                  const selectedLabels: string[] = [];
-                  selected.forEach((selectedValue) => {
-                    console.log("selectedValue::", selectedValue);
-                    selectedLabels.push(
-                      paymentMethods.find(
-                        ({ display }) => display === selectedValue
-                      )?.display as string
-                    );
-                  });
+                // renderValue={(selected) => {
+                //   const selectedLabels: string[] = [];
+                //   selected.forEach((selectedValue) => {
+                //     console.log("selectedValue::", selectedValue);
+                //     selectedLabels.push(
+                //       paymentMethods.find(
+                //         ({ display }) => display === selectedValue,
+                //       )?.display as string,
+                //     );
+                //   });
 
-                  return selectedLabels.join(", ");
-                  // return selected.join(", ");
-                }}
-                // renderValue={(selected) => selected.join(", ")}
+                //   return selectedLabels.join(", ");
+                //   // return selected.join(", ");
+                // }}
+                renderValue={(selected) => selected.join(", ")}
                 input={<OutlinedInput />}
                 value={paymentMethodType}
               >
-                {paymentMethods.map(
-                  ({ display, paymentMethodTypeId, paymentType }) => (
-                    <MenuItem key={display} value={display}>
-                      <Checkbox
-                        checked={paymentMethodType.indexOf(display) > -1}
-                      />
-                      <ListItemText primary={display} />
-                    </MenuItem>
-                  )
-                )}
+                {[
+                  "All Payment Methods",
+                  ...Object.keys(PaymentMethodAndTypeRecord),
+                ].map((key) => (
+                  <MenuItem key={key} value={key}>
+                    <Checkbox checked={paymentMethodType.indexOf(key) > -1} />
+                    <ListItemText primary={key} />
+                  </MenuItem>
+                ))}
               </Select>
             </FormControl>
           </Stack>
@@ -374,7 +396,7 @@ export const PaymentAndRefundDetail = () => {
                     console.log("selectedValue::", selectedValue);
                     selectedLabels.push(
                       ppcList.find(({ username }) => username === selectedValue)
-                        ?.name as string
+                        ?.name as string,
                     );
                   });
 
@@ -429,10 +451,9 @@ export const PaymentAndRefundDetail = () => {
                     slotProps={{
                       digitalClockSectionItem: {
                         sx: {
-                          width: '76px'
-                        }
+                          width: "76px",
+                        },
                       },
-                     
                     }}
                     onChange={(value: Dayjs | null) => {
                       setFromDateTime(() => value as Dayjs);
