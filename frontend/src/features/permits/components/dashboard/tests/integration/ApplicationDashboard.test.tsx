@@ -1,28 +1,32 @@
 import { waitFor } from "@testing-library/react";
 
 import { formatPhoneNumber } from "../../../../../../common/components/form/subFormComponents/PhoneNumberInput";
-import { 
+import {
   findPowerUnit,
-  getAllPowerUnitTypes, 
-  getAllPowerUnits, 
-  getAllTrailers, 
+  getAllPowerUnitTypes,
+  getAllPowerUnits,
+  getAllTrailers,
   resetVehicleSource,
 } from "./fixtures/getVehicleInfo";
 import { getEmptyUserDetails } from "./fixtures/getUserDetails";
 import { resetApplicationSource } from "./fixtures/getActiveApplication";
-import { DATE_FORMATS, dayjsToLocalStr, utcToLocalDayjs } from "../../../../../../common/helpers/formatDate";
-import { 
-  closeMockServer, 
-  companyInfo, 
-  defaultUserDetails, 
-  getVehicleDetails, 
-  listenToMockServer, 
-  newApplicationNumber, 
-  renderTestComponent, 
+import {
+  DATE_FORMATS,
+  dayjsToLocalStr,
+  utcToLocalDayjs,
+} from "../../../../../../common/helpers/formatDate";
+import {
+  closeMockServer,
+  companyInfo,
+  defaultUserDetails,
+  getVehicleDetails,
+  listenToMockServer,
+  newApplicationNumber,
+  renderTestComponent,
   resetMockServer,
 } from "./helpers/prepare";
 import { getDefaultRequiredVal } from "../../../../../../common/helpers/util";
-import { 
+import {
   applicationCreatedDateDisplay,
   applicationNumberDisplay,
   applicationUpdatedDateDisplay,
@@ -42,25 +46,28 @@ import {
   errMsgForVehicleYear,
   fillVehicleInfo,
   getSavedApplication,
-  inputWithValue, 
-  makeInput, 
-  openVehicleSelect, 
-  openVehicleSubtypeSelect, 
-  plateInput, 
-  replaceValueForInput, 
-  saveApplication, 
-  sendPermitToEmailMsg, 
-  unitNumberOrPlateSelect, 
+  inputWithValue,
+  makeInput,
+  openVehicleSelect,
+  openVehicleSubtypeSelect,
+  plateInput,
+  replaceValueForInput,
+  saveApplication,
+  sendPermitToEmailMsg,
+  unitNumberOrPlateSelect,
   vehicleCountrySelect,
-  vehicleOptions, 
-  vehicleProvinceSelect, 
-  vehicleSelect, 
+  vehicleOptions,
+  vehicleProvinceSelect,
+  vehicleSelect,
   vehicleSubtypeSelect,
   vehicleTypeSelect,
   vehicleYearInput,
   vinInput,
 } from "./helpers/access";
-import { formatCountry, formatProvince } from "../../../../../../common/helpers/formatCountryProvince";
+import {
+  formatCountry,
+  formatProvince,
+} from "../../../../../../common/helpers/formatCountryProvince";
 import { assertVehicleSubtypeOptions } from "./helpers/assert";
 
 const {
@@ -129,9 +136,19 @@ describe("Application Contact Details", () => {
 
     // Act - change various input field values and save application
     const newFirstName = "Myfirstname";
-    await replaceValueForInput(user, firstNameInput, firstName.length, newFirstName);
+    await replaceValueForInput(
+      user,
+      firstNameInput,
+      firstName.length,
+      newFirstName,
+    );
     const newLastName = "Mylastname";
-    await replaceValueForInput(user, lastNameInput, lastName.length, newLastName);
+    await replaceValueForInput(
+      user,
+      lastNameInput,
+      lastName.length,
+      newLastName,
+    );
     const newPhone1 = formatPhoneNumber("778-123-4567");
     await replaceValueForInput(user, phone1Input, phone1.length, newPhone1);
     const newPhone2 = formatPhoneNumber("778-123-4568");
@@ -184,7 +201,9 @@ describe("Application Header", () => {
       newApplicationNumber,
       applicationData?.applicationNumber,
     );
-    expect(await applicationNumberDisplay()).toHaveTextContent(expectedApplicationNumber);
+    expect(await applicationNumberDisplay()).toHaveTextContent(
+      expectedApplicationNumber,
+    );
   });
 
   it("should display proper created datetime after creating application", async () => {
@@ -201,10 +220,12 @@ describe("Application Header", () => {
       applicationData?.createdDateTime,
     );
     const formattedDt = dayjsToLocalStr(
-      utcToLocalDayjs(expectedCreatedDt), 
-      DATE_FORMATS.LONG
+      utcToLocalDayjs(expectedCreatedDt),
+      DATE_FORMATS.LONG,
     );
-    expect(await applicationCreatedDateDisplay()).toHaveTextContent(formattedDt);
+    expect(await applicationCreatedDateDisplay()).toHaveTextContent(
+      formattedDt,
+    );
   });
 
   it("should display proper updated datetime after updating application", async () => {
@@ -221,10 +242,12 @@ describe("Application Header", () => {
       applicationData?.updatedDateTime,
     );
     const formattedDt = dayjsToLocalStr(
-      utcToLocalDayjs(expectedUpdatedDt), 
-      DATE_FORMATS.LONG
+      utcToLocalDayjs(expectedUpdatedDt),
+      DATE_FORMATS.LONG,
     );
-    expect(await applicationUpdatedDateDisplay()).toHaveTextContent(formattedDt);
+    expect(await applicationUpdatedDateDisplay()).toHaveTextContent(
+      formattedDt,
+    );
   });
 
   it("should display company information", async () => {
@@ -279,7 +302,9 @@ describe("Vehicle Details", () => {
     expect(await errMsgForPlate()).toHaveTextContent(requiredMsg);
     expect(await errMsgForMake()).toHaveTextContent(requiredMsg);
     const vehicleYearErrDisplay = await errMsgForVehicleYear();
-    expect([requiredMsg, emptyYearMsg]).toContain(vehicleYearErrDisplay.textContent);
+    expect([requiredMsg, emptyYearMsg]).toContain(
+      vehicleYearErrDisplay.textContent,
+    );
     expect(await errMsgForVehicleCountry()).toHaveTextContent(requiredMsg);
     expect(await errMsgForVehicleSubtype()).toHaveTextContent(requiredMsg);
   });
@@ -287,29 +312,39 @@ describe("Vehicle Details", () => {
   it("should add new vehicle to inventory if user chooses to", async () => {
     // Arrange
     const { user } = renderTestComponent(defaultUserDetails);
-    const { formDetails, additionalInfo: { originalVehicles } } = getVehicleDetails("create", true);
-    
+    const {
+      formDetails,
+      additionalInfo: { originalVehicles },
+    } = getVehicleDetails("create", true);
+
     // Act
     await fillVehicleInfo(user, formDetails);
 
     // Assert
     await waitFor(() => {
-      expect(getAllPowerUnits().length).toBeGreaterThan(originalVehicles.length);
+      expect(getAllPowerUnits().length).toBeGreaterThan(
+        originalVehicles.length,
+      );
     });
   });
 
   it("should not add new vehicle to inventory if user chooses not to", async () => {
     // Arrange
     const { user } = renderTestComponent(defaultUserDetails);
-    const { formDetails, additionalInfo: { originalVehicles } } = getVehicleDetails("create", false);
-    
+    const {
+      formDetails,
+      additionalInfo: { originalVehicles },
+    } = getVehicleDetails("create", false);
+
     // Act
     await fillVehicleInfo(user, formDetails);
 
     // Assert
     await waitFor(() => {
-      expect(getAllPowerUnits().length).toBeGreaterThan(originalVehicles.length);
-    }).catch(err => {
+      expect(getAllPowerUnits().length).toBeGreaterThan(
+        originalVehicles.length,
+      );
+    }).catch((err) => {
       expect(err).not.toBeUndefined();
     });
   });
@@ -317,14 +352,14 @@ describe("Vehicle Details", () => {
   it("should update vehicle in inventory if user chooses to", async () => {
     // Arrange
     const { user } = renderTestComponent(defaultUserDetails);
-    const { 
-      formDetails, 
-      additionalInfo: { 
+    const {
+      formDetails,
+      additionalInfo: {
         updatedProvinceAbbr,
-        vehicleUsed: { vin }
-      } 
+        vehicleUsed: { vin },
+      },
     } = getVehicleDetails("update", true);
-    
+
     // Act
     await fillVehicleInfo(user, formDetails);
 
@@ -338,14 +373,14 @@ describe("Vehicle Details", () => {
   it("should not update vehicle in inventory if user chooses not to", async () => {
     // Arrange
     const { user } = renderTestComponent(defaultUserDetails);
-    const { 
-      formDetails, 
-      additionalInfo: { 
+    const {
+      formDetails,
+      additionalInfo: {
         updatedProvinceAbbr,
-        vehicleUsed: { vin }
-      } 
+        vehicleUsed: { vin },
+      },
     } = getVehicleDetails("update", false);
-    
+
     // Act
     await fillVehicleInfo(user, formDetails);
 
@@ -353,7 +388,7 @@ describe("Vehicle Details", () => {
     await waitFor(() => {
       const updatedVehicle = findPowerUnit(vin);
       expect(updatedVehicle?.provinceCode).toBe(updatedProvinceAbbr);
-    }).catch(err => {
+    }).catch((err) => {
       expect(err).not.toBeUndefined();
     });
   });
@@ -408,7 +443,10 @@ describe("Vehicle Details", () => {
   it("should filter vehicle options by typing in unit number", async () => {
     // Arrange
     const { user } = renderTestComponent(defaultUserDetails);
-    const unitNumber = getDefaultRequiredVal("", getAllTrailers()[0].unitNumber);
+    const unitNumber = getDefaultRequiredVal(
+      "",
+      getAllTrailers()[0].unitNumber,
+    );
     const unitNumberOrPlate = await unitNumberOrPlateSelect();
     await chooseOption(user, unitNumberOrPlate, "Unit Number");
 
@@ -431,8 +469,9 @@ describe("Vehicle Details", () => {
     const unitNumber = getDefaultRequiredVal("", vehicle.unitNumber);
     const vehicleSubtype = getDefaultRequiredVal(
       "",
-      getAllPowerUnitTypes()
-        .find(subtype => subtype.typeCode === vehicle.powerUnitTypeCode)?.type
+      getAllPowerUnitTypes().find(
+        (subtype) => subtype.typeCode === vehicle.powerUnitTypeCode,
+      )?.type,
     );
 
     // Act
@@ -455,7 +494,9 @@ describe("Vehicle Details", () => {
     expect(make).toHaveValue(vehicle.make);
     expect(year).toHaveValue(vehicle.year);
     expect(country).toHaveTextContent(formatCountry(vehicle.countryCode));
-    expect(province).toHaveTextContent(formatProvince(vehicle.countryCode, vehicle.provinceCode));
+    expect(province).toHaveTextContent(
+      formatProvince(vehicle.countryCode, vehicle.provinceCode),
+    );
     expect(type).toHaveTextContent("Power Unit");
     expect(subtype).toHaveTextContent(vehicleSubtype);
   });

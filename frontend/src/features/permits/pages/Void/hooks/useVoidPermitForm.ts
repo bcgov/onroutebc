@@ -6,11 +6,8 @@ import { VoidPermitFormData } from "../types/VoidPermit";
 import { VoidPermitContext } from "../context/VoidPermitContext";
 
 export const useVoidPermitForm = () => {
-  const { 
-    voidPermitData, 
-    setVoidPermitData,
-    next,
-  } = useContext(VoidPermitContext);
+  const { voidPermitData, setVoidPermitData, next } =
+    useContext(VoidPermitContext);
 
   const defaultFormData = {
     permitId: voidPermitData.permitId,

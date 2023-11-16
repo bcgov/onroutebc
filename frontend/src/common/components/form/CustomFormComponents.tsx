@@ -172,7 +172,7 @@ export const CustomFormComponent = <T extends ORBC_FormTypes>({
     }
   };
   return (
-    <Box sx={ className ? null : { width }} className={className}>
+    <Box sx={className ? null : { width }} className={className}>
       <Controller
         key={`controller-${feature}-${name}`}
         name={name}
@@ -180,10 +180,10 @@ export const CustomFormComponent = <T extends ORBC_FormTypes>({
         rules={rules}
         render={({ fieldState: { invalid } }) => (
           <>
-            <FormControl 
+            <FormControl
               className="custom-form-control"
-              margin="normal" 
-              error={invalid} 
+              margin="normal"
+              error={invalid}
               sx={{ width: "100%" }}
             >
               <FormLabel
@@ -203,9 +203,9 @@ export const CustomFormComponent = <T extends ORBC_FormTypes>({
               </FormLabel>
               {renderSubFormComponent(invalid)}
               {invalid && (
-                <FormHelperText 
+                <FormHelperText
                   className="custom-form-control__helper-text"
-                  data-testid={`alert-${name}`} 
+                  data-testid={`alert-${name}`}
                   error
                 >
                   {getErrorMessage(errors, name)}

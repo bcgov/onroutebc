@@ -1,13 +1,13 @@
 import { PERMIT_STATUSES } from "../../../types/PermitStatus";
 import { RefundFormData } from "../../Refund/types/RefundFormData";
-import { 
-  RevokePermitRequestData, 
-  VoidPermitFormData, 
+import {
+  RevokePermitRequestData,
+  VoidPermitFormData,
   VoidPermitRequestData,
 } from "../types/VoidPermit";
 
 export const mapToRevokeRequestData = (
-  voidPermitFormData: VoidPermitFormData
+  voidPermitFormData: VoidPermitFormData,
 ): RevokePermitRequestData => {
   return {
     status: PERMIT_STATUSES.REVOKED,
@@ -18,7 +18,7 @@ export const mapToRevokeRequestData = (
 };
 
 export const mapToVoidRequestData = (
-  voidPermitFormData: VoidPermitFormData, 
+  voidPermitFormData: VoidPermitFormData,
   refundData: RefundFormData,
   amountToRefund: number,
 ): VoidPermitRequestData => {
@@ -27,8 +27,12 @@ export const mapToVoidRequestData = (
     pgTransactionId: refundData.transactionId,
     paymentMethodId: "1", // hardcoded to "1" - Web
     transactionAmount: amountToRefund,
-    pgPaymentMethod: refundData.refundOnlineMethod ? refundData.refundOnlineMethod : undefined,
-    pgCardType: refundData.refundCardType ? refundData.refundCardType : undefined,
+    pgPaymentMethod: refundData.refundOnlineMethod
+      ? refundData.refundOnlineMethod
+      : undefined,
+    pgCardType: refundData.refundCardType
+      ? refundData.refundCardType
+      : undefined,
     comment: voidPermitFormData.reason,
   };
 };

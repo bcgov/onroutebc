@@ -5,7 +5,8 @@ const PERMIT_ACTION_OPTION_TYPES = {
   VIEW_RECEIPT: "viewReceipt",
 } as const;
 
-type PermitActionOptionType = typeof PERMIT_ACTION_OPTION_TYPES[keyof typeof PERMIT_ACTION_OPTION_TYPES];
+type PermitActionOptionType =
+  (typeof PERMIT_ACTION_OPTION_TYPES)[keyof typeof PERMIT_ACTION_OPTION_TYPES];
 
 const getOptionLabel = (optionType: PermitActionOptionType): string => {
   if (optionType === PERMIT_ACTION_OPTION_TYPES.VIEW_RECEIPT) {
@@ -36,7 +37,6 @@ export const PermitRowOptions = ({
   isExpired: boolean;
   permitId: number;
 }) => {
-
   /**
    * Action handler upon a select event.
    * @param selectedOption The option that was selected.

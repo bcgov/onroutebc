@@ -40,7 +40,7 @@ export const OnRouteBCTableRowActions = ({
   const handleClick = useCallback((event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   }, []);
-  
+
   const handleClose = () => {
     setAnchorEl(null);
   };

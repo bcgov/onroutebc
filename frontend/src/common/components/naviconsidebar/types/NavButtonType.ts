@@ -6,7 +6,8 @@ export const NAV_BUTTON_TYPES = {
   REPORT: "report",
 } as const;
 
-export type NavButtonType = typeof NAV_BUTTON_TYPES[keyof typeof NAV_BUTTON_TYPES];
+export type NavButtonType =
+  (typeof NAV_BUTTON_TYPES)[keyof typeof NAV_BUTTON_TYPES];
 
 export const getNavButtonTitle = (type: NavButtonType): string => {
   if (type === NAV_BUTTON_TYPES.HOME) {

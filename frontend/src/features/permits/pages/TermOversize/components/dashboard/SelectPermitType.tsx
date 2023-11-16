@@ -19,15 +19,8 @@ export const SelectPermitType = ({
   onChange: (event: SelectChangeEvent) => void;
   menuItems: JSX.Element[] | undefined;
 }) => (
-  <FormControl 
-    margin="normal"
-    className="select-permit-type"
-  >
-    <FormLabel
-      className="select-permit-type__label"
-    >
-      {label}
-    </FormLabel>
+  <FormControl margin="normal" className="select-permit-type">
+    <FormLabel className="select-permit-type__label">{label}</FormLabel>
 
     <Select
       className="select-permit-type__input"

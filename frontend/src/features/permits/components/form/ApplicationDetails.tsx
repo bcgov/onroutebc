@@ -2,8 +2,14 @@ import { Box, Typography } from "@mui/material";
 import { Dayjs } from "dayjs";
 
 import { CompanyBanner } from "../../../../common/components/banners/CompanyBanner";
-import { DATE_FORMATS, dayjsToLocalStr } from "../../../../common/helpers/formatDate";
-import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../../common/helpers/util";
+import {
+  DATE_FORMATS,
+  dayjsToLocalStr,
+} from "../../../../common/helpers/formatDate";
+import {
+  applyWhenNotNullable,
+  getDefaultRequiredVal,
+} from "../../../../common/helpers/util";
 import { CompanyInformation } from "./CompanyInformation";
 import "./ApplicationDetails.scss";
 import { permitTypeDisplayText } from "../../types/PermitType";
@@ -27,12 +33,14 @@ export const ApplicationDetails = ({
   isAmendAction?: boolean;
 }) => {
   const applicationName = permitTypeDisplayText(
-    getDefaultRequiredVal("", permitType)
+    getDefaultRequiredVal("", permitType),
   );
 
   const validInfoNumber = () => infoNumber && infoNumber !== "";
   const isPermitNumber = () => infoNumberType === "permit";
-  const labelText = `${isAmendAction ? "Amending " : ""}${isPermitNumber() ? "Permit #:" : "Application #:"}`;
+  const labelText = `${isAmendAction ? "Amending " : ""}${
+    isPermitNumber() ? "Permit #:" : "Application #:"
+  }`;
 
   return (
     <>
@@ -46,14 +54,8 @@ export const ApplicationDetails = ({
         </Typography>
         {validInfoNumber() ? (
           <Box>
-            <Typography
-              className="application-number"
-              variant="h2"
-            >
-              <Box 
-                className="application-number__label" 
-                component="span"
-              >
+            <Typography className="application-number" variant="h2">
+              <Box className="application-number__label" component="span">
                 {labelText}
               </Box>
               <Box
@@ -66,40 +68,34 @@ export const ApplicationDetails = ({
             </Typography>
             <Box className="application-details__audit-dates">
               <Typography className="audit-date audit-date--created">
-                <Box 
-                  className="audit-date__label"
-                  component="span"
-                >
+                <Box className="audit-date__label" component="span">
                   Date Created:
                 </Box>
-                <Box 
-                  className="audit-date__date" 
+                <Box
+                  className="audit-date__date"
                   component="span"
                   data-testid="application-created-date"
                 >
                   {applyWhenNotNullable(
                     (dayjsObj) => dayjsToLocalStr(dayjsObj, DATE_FORMATS.LONG),
                     createdDateTime,
-                    ""
+                    "",
                   )}
                 </Box>
               </Typography>
               <Typography className="audit-date audit-date--updated">
-                <Box 
-                  className="audit-date__label"
-                  component="span"
-                >
+                <Box className="audit-date__label" component="span">
                   Last Updated:
                 </Box>
-                <Box 
-                  className="audit-date__date" 
+                <Box
+                  className="audit-date__date"
                   component="span"
                   data-testid="application-updated-date"
                 >
                   {applyWhenNotNullable(
                     (dayjsObj) => dayjsToLocalStr(dayjsObj, DATE_FORMATS.LONG),
                     updatedDateTime,
-                    ""
+                    "",
                   )}
                 </Box>
               </Typography>
@@ -109,7 +105,7 @@ export const ApplicationDetails = ({
           <Box></Box>
         )}
       </div>
-      <CompanyBanner 
+      <CompanyBanner
         companyName={companyInfo?.legalName}
         clientNumber={companyInfo?.clientNumber}
       />

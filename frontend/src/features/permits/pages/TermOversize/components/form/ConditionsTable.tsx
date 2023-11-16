@@ -25,11 +25,15 @@ export const ConditionsTable = ({
   const { control, setValue, resetField } = useFormContext();
   const [allOptions, setAllOptions] = useState<Commodities[]>([]);
 
-  const getOptions = (applicationWasCreated: boolean, existingCommodities: Commodities[]) => {
-    const isMustSelectOption = (commodity: Commodities) => 
-      commodity.condition === "CVSE-1000" || commodity.condition === "CVSE-1070";
+  const getOptions = (
+    applicationWasCreated: boolean,
+    existingCommodities: Commodities[],
+  ) => {
+    const isMustSelectOption = (commodity: Commodities) =>
+      commodity.condition === "CVSE-1000" ||
+      commodity.condition === "CVSE-1070";
 
-    const defaultOptions = TROS_COMMODITIES.map(commodity => ({
+    const defaultOptions = TROS_COMMODITIES.map((commodity) => ({
       ...commodity,
       // must-select options are checked and disabled (for toggling) by default
       checked: isMustSelectOption(commodity),
@@ -38,14 +42,16 @@ export const ConditionsTable = ({
 
     if (!applicationWasCreated) return defaultOptions; // return default options for new application (not created one)
     // Application exists at this point, thus select all commodities that were selected in the application
-    return defaultOptions.map(defaultCommodity => {
-      const existingCommodity = existingCommodities.find(c => 
-        c.condition === defaultCommodity.condition
+    return defaultOptions.map((defaultCommodity) => {
+      const existingCommodity = existingCommodities.find(
+        (c) => c.condition === defaultCommodity.condition,
       );
 
       return {
         ...defaultCommodity,
-        checked: existingCommodity ? existingCommodity.checked : defaultCommodity.checked,
+        checked: existingCommodity
+          ? existingCommodity.checked
+          : defaultCommodity.checked,
       };
     });
   };
@@ -53,7 +59,10 @@ export const ConditionsTable = ({
   useEffect(() => {
     const updatedCommodities = getOptions(applicationWasCreated, commodities);
     resetField("permitData.commodities", { defaultValue: [] }); // reset all options
-    setValue("permitData.commodities", updatedCommodities.filter(c => c.checked)); // select the commodities in the existing application
+    setValue(
+      "permitData.commodities",
+      updatedCommodities.filter((c) => c.checked),
+    ); // select the commodities in the existing application
     setAllOptions(updatedCommodities);
   }, [applicationWasCreated, commodities]);
 
@@ -67,7 +76,10 @@ export const ConditionsTable = ({
 
     setAllOptions(newOptions);
     resetField("permitData.commodities", { defaultValue: [] }); // reset all options first
-    setValue("permitData.commodities", newOptions.filter(option => option.checked)); // then select the newly selected options
+    setValue(
+      "permitData.commodities",
+      newOptions.filter((option) => option.checked),
+    ); // then select the newly selected options
 
     return newOptions;
   }

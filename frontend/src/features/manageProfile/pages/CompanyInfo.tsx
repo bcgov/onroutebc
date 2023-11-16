@@ -9,10 +9,7 @@ import { CompanyProfile } from "../types/manageProfile";
 
 const Header = () => {
   return (
-    <Typography
-      className="company-info-page__header"
-      variant="h4"
-    >
+    <Typography className="company-info-page__header" variant="h4">
       Edit Company Information
     </Typography>
   );
