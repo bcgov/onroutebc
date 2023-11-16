@@ -30,9 +30,11 @@ export const SelectUnitOrPlate = ({
     <Select
       value={value}
       onChange={onChange}
-      SelectDisplayProps={{
-        "data-testid": "select-unit-or-plate"
-      } as CustomSelectDisplayProps}
+      SelectDisplayProps={
+        {
+          "data-testid": "select-unit-or-plate",
+        } as CustomSelectDisplayProps
+      }
       MenuProps={{
         ...SELECT_FIELD_STYLE.MENU_PROPS,
       }}

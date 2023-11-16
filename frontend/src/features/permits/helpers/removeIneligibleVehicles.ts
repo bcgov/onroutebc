@@ -17,14 +17,16 @@ export const removeIneligibleVehicleSubTypes = (
   vehicles: VehicleType[],
   vehicleType: "powerUnit" | "trailer",
   ineligiblePowerUnits: VehicleType[],
-  ineligibleTrailers: VehicleType[]
+  ineligibleTrailers: VehicleType[],
 ) => {
   let ineligibleList: VehicleType[] = [];
   if (vehicleType === "powerUnit") ineligibleList = ineligiblePowerUnits;
   if (vehicleType === "trailer") ineligibleList = ineligibleTrailers;
 
-  const filteredVehicles = vehicles.filter(vehicle => {
-    return !ineligibleList.some(ineligible => vehicle.typeCode === ineligible.typeCode);
+  const filteredVehicles = vehicles.filter((vehicle) => {
+    return !ineligibleList.some(
+      (ineligible) => vehicle.typeCode === ineligible.typeCode,
+    );
   });
 
   return filteredVehicles;
@@ -40,17 +42,17 @@ export const removeIneligibleVehicleSubTypes = (
 export const removeIneligibleVehicles = (
   vehicles: Vehicle[],
   ineligiblePowerUnits: VehicleType[],
-  ineligibleTrailers: VehicleType[]
+  ineligibleTrailers: VehicleType[],
 ) => {
-  const filteredVehicles = vehicles.filter(vehicle => {
+  const filteredVehicles = vehicles.filter((vehicle) => {
     if (vehicle.vehicleType === "powerUnit") {
       const powerUnit = vehicle as PowerUnit;
-      return !ineligiblePowerUnits.some(ineligible => {
+      return !ineligiblePowerUnits.some((ineligible) => {
         return powerUnit.powerUnitTypeCode === ineligible.typeCode;
       });
     } else if (vehicle.vehicleType === "trailer") {
       const trailer = vehicle as Trailer;
-      return !ineligibleTrailers.some(ineligible => {
+      return !ineligibleTrailers.some((ineligible) => {
         return trailer.trailerTypeCode === ineligible.typeCode;
       });
     } else {

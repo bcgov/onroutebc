@@ -22,16 +22,17 @@ export interface CustomTextAreaProps<T extends FieldValues> {
 }
 
 export const CustomTextArea = <T extends ORBC_FormTypes>(
-  props: CustomTextAreaProps<T>
+  props: CustomTextAreaProps<T>,
 ): JSX.Element => {
   const { register } = useFormContext();
 
   return (
-    <textarea 
-      className={`custom-text-area custom-text-area--${props.name} ${props.invalid ? "custom-text-area--err" : ""}`}
+    <textarea
+      className={`custom-text-area custom-text-area--${props.name} ${
+        props.invalid ? "custom-text-area--err" : ""
+      }`}
       rows={6}
       {...register(props.name, props.rules)}
-    >
-    </textarea>
+    ></textarea>
   );
 };

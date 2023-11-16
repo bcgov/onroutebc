@@ -9,7 +9,7 @@ import { CustomOutlinedInputProps } from "./CustomOutlinedInput";
  * that automatically changes the format of the phone number as the user types
  */
 export const PhoneNumberInput = <T extends ORBC_FormTypes>(
-  props: CustomOutlinedInputProps<T>
+  props: CustomOutlinedInputProps<T>,
 ): JSX.Element => {
   const { register, setValue } = useFormContext();
 
@@ -66,12 +66,12 @@ export const formatPhoneNumber = (input?: string): string => {
   if (cvLength < 11)
     return `(${currentValue.slice(0, 3)}) ${currentValue.slice(
       3,
-      6
+      6,
     )}-${currentValue.slice(6, 10)}`;
 
   // returns: "+x (xxx) xxx-xxxx"
   return `+${currentValue.slice(0, 1)} (${currentValue.slice(
     1,
-    4
+    4,
   )}) ${currentValue.slice(4, 7)}-${currentValue.slice(7, 11)}`;
 };

@@ -2,11 +2,11 @@ import isEmail from "validator/lib/isEmail";
 
 import "./CompanyContactDetailsForm.scss";
 import { CustomFormComponent } from "../../../../../../common/components/form/CustomFormComponents";
-import { 
-  invalidEmail, 
-  invalidExtensionLength, 
-  invalidPhoneLength, 
-  requiredMessage 
+import {
+  invalidEmail,
+  invalidExtensionLength,
+  invalidPhoneLength,
+  requiredMessage,
 } from "../../../../../../common/helpers/validationMessages";
 
 export const CompanyContactDetailsForm = ({ feature }: { feature: string }) => (
@@ -16,7 +16,7 @@ export const CompanyContactDetailsForm = ({ feature }: { feature: string }) => (
       feature={feature}
       options={{
         name: "email",
-        rules: { 
+        rules: {
           required: { value: true, message: requiredMessage() },
           validate: {
             validateEmail: (email: string) => isEmail(email) || invalidEmail(),
@@ -37,9 +37,9 @@ export const CompanyContactDetailsForm = ({ feature }: { feature: string }) => (
           rules: {
             required: { value: true, message: requiredMessage() },
             validate: {
-              validatePhone: (phone: string) => 
-                (phone.length >= 10 && phone.length <= 20) 
-                  || invalidPhoneLength(10, 20),
+              validatePhone: (phone: string) =>
+                (phone.length >= 10 && phone.length <= 20) ||
+                invalidPhoneLength(10, 20),
             },
           },
           label: "Phone Number",
@@ -52,13 +52,14 @@ export const CompanyContactDetailsForm = ({ feature }: { feature: string }) => (
         feature={feature}
         options={{
           name: "extension",
-          rules: { 
+          rules: {
             required: false,
             validate: {
-              validateExt: (ext?: string) => 
-                (ext == null || ext === "")
-                  || (ext != null && ext !== "" && ext.length <= 5) 
-                  || invalidExtensionLength(5),
+              validateExt: (ext?: string) =>
+                ext == null ||
+                ext === "" ||
+                (ext != null && ext !== "" && ext.length <= 5) ||
+                invalidExtensionLength(5),
             },
           },
           label: "Ext",
@@ -71,13 +72,17 @@ export const CompanyContactDetailsForm = ({ feature }: { feature: string }) => (
       feature={feature}
       options={{
         name: "fax",
-        rules: { 
+        rules: {
           required: false,
           validate: {
             validateFax: (fax?: string) =>
-              (fax == null || fax === "")
-                || (fax != null && fax !== "" && fax.length >= 10 && fax.length <= 20)
-                || invalidPhoneLength(10, 20),
+              fax == null ||
+              fax === "" ||
+              (fax != null &&
+                fax !== "" &&
+                fax.length >= 10 &&
+                fax.length <= 20) ||
+              invalidPhoneLength(10, 20),
           },
         },
         label: "Fax",

@@ -43,7 +43,7 @@ import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFou
  * @returns An array of column headers/accessor keys ofr Material React Table
  */
 const getColumns = (
-  vehicleType: VehicleTypesAsString
+  vehicleType: VehicleTypesAsString,
 ): MRT_ColumnDef<VehicleTypes>[] => {
   if (vehicleType === "powerUnit") {
     return PowerUnitColumnDefinition;
@@ -82,7 +82,7 @@ export const List = memo(
     // Column definitions for the table
     const columns = useMemo<MRT_ColumnDef<VehicleTypes>[]>(
       () => getColumns(vehicleType),
-      []
+      [],
     );
 
     const snackBar = useContext(SnackBarContext);
@@ -213,14 +213,14 @@ export const List = memo(
                           if (vehicleType === "powerUnit") {
                             navigate(
                               `/${MANAGE_VEHICLES}/power-units/${row.getValue(
-                                "powerUnitId"
-                              )}`
+                                "powerUnitId",
+                              )}`,
                             );
                           } else if (vehicleType === "trailer") {
                             navigate(
                               `/${MANAGE_VEHICLES}/trailers/${row.getValue(
-                                "trailerId"
-                              )}`
+                                "trailerId",
+                              )}`,
                             );
                           }
                         }}
@@ -254,7 +254,7 @@ export const List = memo(
                 )}
               </Box>
             ),
-            []
+            [],
           )}
           // Render a custom options Bar (inclues search and trash)
           renderTopToolbar={useCallback(
@@ -262,11 +262,14 @@ export const List = memo(
               <Box className="table-container__top-toolbar">
                 <MRT_GlobalFilterTextField table={table} />
                 {DoesUserHaveRoleWithContext(ROLES.WRITE_VEHICLE) && (
-                  <Trash onClickTrash={onClickTrashIcon} disabled={hasNoRowsSelected} />
+                  <Trash
+                    onClickTrash={onClickTrashIcon}
+                    disabled={hasNoRowsSelected}
+                  />
                 )}
               </Box>
             ),
-            [hasNoRowsSelected]
+            [hasNoRowsSelected],
           )}
           /*
            *
@@ -343,7 +346,7 @@ export const List = memo(
         />
       </div>
     );
-  }
+  },
 );
 
 List.displayName = "List";

@@ -16,24 +16,22 @@ export const TermOversizePay = () => {
   const { applicationData } = useContext(ApplicationContext);
 
   const calculatedFee = calculateFeeByDuration(
-    getDefaultRequiredVal(0, applicationData?.permitData?.permitDuration)
+    getDefaultRequiredVal(0, applicationData?.permitData?.permitDuration),
   );
 
-  const { 
-    mutation: startTransactionMutation, 
-    transaction, 
-  } = useStartTransaction();
+  const { mutation: startTransactionMutation, transaction } =
+    useStartTransaction();
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
-  
+
   const handlePay = () => {
     if (!applicationData?.permitId) {
       console.error("Invalid permit id");
       return;
     }
-    
+
     startTransactionMutation.mutate({
       transactionTypeId: TRANSACTION_TYPES.P,
       paymentMethodId: "1", // Hardcoded value for Web/PayBC, still need to implement payment method (ie payBC, manual, etc)
@@ -41,7 +39,7 @@ export const TermOversizePay = () => {
         {
           applicationId: applicationData?.permitId,
           transactionAmount: calculatedFee,
-        }
+        },
       ],
     });
   };
@@ -68,7 +66,7 @@ export const TermOversizePay = () => {
           applicationNumber={applicationData?.applicationNumber}
         />
 
-        <PermitPayFeeSummary 
+        <PermitPayFeeSummary
           calculatedFee={calculatedFee}
           permitType={applicationData?.permitType}
           onPay={handlePay}

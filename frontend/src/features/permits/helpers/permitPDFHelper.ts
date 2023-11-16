@@ -1,5 +1,8 @@
 import dayjs from "dayjs";
-import { downloadPermitApplicationPdf, downloadReceiptPdf } from "../apiManager/permitsAPI";
+import {
+  downloadPermitApplicationPdf,
+  downloadReceiptPdf,
+} from "../apiManager/permitsAPI";
 
 /**
  * Opens the PDF in a new browser tab.
@@ -8,21 +11,20 @@ import { downloadPermitApplicationPdf, downloadReceiptPdf } from "../apiManager/
  */
 export const openBlobInNewTab = (blob: Blob) => {
   const objUrl = URL.createObjectURL(
-    new Blob([blob], { type: "application/pdf" })
+    new Blob([blob], { type: "application/pdf" }),
   );
   window.open(objUrl, "_blank");
 };
 
 /**
-   * Opens the receipt pdf in a new tab.
-   * @param permitId The permit id.
-   */
+ * Opens the receipt pdf in a new tab.
+ * @param permitId The permit id.
+ */
 export const viewReceiptPdf = async (permitId: string) => {
   if (permitId) {
     try {
-      const { blobObj: blobObjWithoutType } = await downloadReceiptPdf(
-        permitId
-      );
+      const { blobObj: blobObjWithoutType } =
+        await downloadReceiptPdf(permitId);
       openBlobInNewTab(blobObjWithoutType);
     } catch (err) {
       console.error(err);
@@ -36,9 +38,8 @@ export const viewReceiptPdf = async (permitId: string) => {
  */
 export const viewPermitPdf = async (permitId: string) => {
   try {
-    const { blobObj: blobObjWithoutType } = await downloadPermitApplicationPdf(
-      permitId
-    );
+    const { blobObj: blobObjWithoutType } =
+      await downloadPermitApplicationPdf(permitId);
     openBlobInNewTab(blobObjWithoutType);
   } catch (err) {
     console.error(err);

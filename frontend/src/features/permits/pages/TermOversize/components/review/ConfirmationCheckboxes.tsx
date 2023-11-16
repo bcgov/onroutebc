@@ -46,31 +46,34 @@ export const ConfirmationCheckboxes = ({
 
   return (
     <Box className="confirmation-checkboxes">
-      <Typography 
-        className="confirmation-checkboxes__header" 
-        variant="h3"
-      >
+      <Typography className="confirmation-checkboxes__header" variant="h3">
         Please read the following carefully and check all to proceed.
       </Typography>
-      {checked.map(x => (
+      {checked.map((x) => (
         <Box key={x.description}>
           <Checkbox
             className={
-              "confirmation-checkboxes__checkbox " + 
-              `${isSubmitted && !x.checked ? "confirmation-checkboxes__checkbox--invalid" : ""}`
+              "confirmation-checkboxes__checkbox " +
+              `${
+                isSubmitted && !x.checked
+                  ? "confirmation-checkboxes__checkbox--invalid"
+                  : ""
+              }`
             }
             key={x.description}
             checked={x.checked}
             onChange={() => handleCheck(x.description)}
-            inputProps={{
-              "data-testid": "permit-attestation-checkbox"
-            } as CustomInputHTMLAttributes}
+            inputProps={
+              {
+                "data-testid": "permit-attestation-checkbox",
+              } as CustomInputHTMLAttributes
+            }
           />
           {x.description}
         </Box>
       ))}
       {isSubmitted && !isChecked ? (
-        <Typography 
+        <Typography
           className="confirmation-checkboxes__error"
           data-testid="permit-attestation-checkbox-error"
         >

@@ -91,7 +91,7 @@ const isSubmissionSuccessful = (status: number) =>
   status === 201 || status === 200;
 const hasValidationErrors = (status: number) => status === 400;
 const getFirstValidationError = (
-  errors: { field: string; message: string[] }[]
+  errors: { field: string; message: string[] }[],
 ) => {
   if (errors.length === 0 || errors[0].message.length === 0) return undefined;
   return `${getSectionNameByField(errors[0].field)} validation error: ${
@@ -124,7 +124,7 @@ export const CreateProfileSteps = React.memo(() => {
     defaultValues: {
       legalName: getDefaultRequiredVal(
         "",
-        user?.profile?.bceid_business_name as string
+        user?.profile?.bceid_business_name as string,
       ),
       mailingAddress: {
         addressLine1: "",
@@ -202,7 +202,7 @@ export const CreateProfileSteps = React.memo(() => {
       } else if (hasValidationErrors(response.status)) {
         const { error } = response.data;
         const firstErrMsg = getFirstValidationError(
-          getDefaultRequiredVal([], error)
+          getDefaultRequiredVal([], error),
         );
         if (firstErrMsg) {
           setSnackBar({
@@ -315,7 +315,7 @@ export const CreateProfileSteps = React.memo(() => {
                 <CompanyBanner
                   legalName={getDefaultRequiredVal(
                     "",
-                    user?.profile?.bceid_business_name as string
+                    user?.profile?.bceid_business_name as string,
                   )}
                 />
                 <CompanyInformationWizardForm />

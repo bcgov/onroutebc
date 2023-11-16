@@ -1,20 +1,23 @@
-import { DATE_FORMATS, dayjsToLocalStr } from "../../../../../common/helpers/formatDate";
+import {
+  DATE_FORMATS,
+  dayjsToLocalStr,
+} from "../../../../../common/helpers/formatDate";
 import { permitTypeDisplayText } from "../../../types/PermitType";
-import { 
-  closeMockServer, 
-  createdAt, 
+import {
+  closeMockServer,
+  createdAt,
   defaultApplicationNumber,
-  listenToMockServer, 
-  permitType, 
-  renderTestComponent, 
-  resetMockServer, 
+  listenToMockServer,
+  permitType,
+  renderTestComponent,
+  resetMockServer,
   updatedAt,
 } from "./helpers/ApplicationDetails/prepare";
 
-import { 
-  applicationNumber, 
-  createdDate, 
-  title, 
+import {
+  applicationNumber,
+  createdDate,
+  title,
   updatedDate,
 } from "./helpers/ApplicationDetails/access";
 
@@ -45,12 +48,23 @@ describe("Application Details Display", () => {
 
   it("properly displays non-empty application details info", async () => {
     // Arrange and act
-    renderTestComponent(permitType, defaultApplicationNumber, createdAt, updatedAt);
+    renderTestComponent(
+      permitType,
+      defaultApplicationNumber,
+      createdAt,
+      updatedAt,
+    );
 
     // Assert
     expect(await title()).toHaveTextContent(permitTypeDisplayText(permitType));
-    expect(await applicationNumber()).toHaveTextContent(defaultApplicationNumber);
-    expect(await createdDate()).toHaveTextContent(dayjsToLocalStr(createdAt, DATE_FORMATS.LONG));
-    expect(await updatedDate()).toHaveTextContent(dayjsToLocalStr(updatedAt, DATE_FORMATS.LONG));
+    expect(await applicationNumber()).toHaveTextContent(
+      defaultApplicationNumber,
+    );
+    expect(await createdDate()).toHaveTextContent(
+      dayjsToLocalStr(createdAt, DATE_FORMATS.LONG),
+    );
+    expect(await updatedDate()).toHaveTextContent(
+      dayjsToLocalStr(updatedAt, DATE_FORMATS.LONG),
+    );
   });
 });

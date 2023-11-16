@@ -76,9 +76,7 @@ export const FormActions = ({
           Continue
         </Button>
 
-        {enableScroll ? (
-          <ScrollButton />
-        ) : null}
+        {enableScroll ? <ScrollButton /> : null}
       </Box>
     </Box>
   );

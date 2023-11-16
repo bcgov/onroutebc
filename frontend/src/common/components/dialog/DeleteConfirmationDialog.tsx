@@ -37,7 +37,7 @@ export const DeleteConfirmationDialog = ({
    * A caption string showing on title of the Dialog box.
    * @returns string
    */
-  caption: string
+  caption: string;
 }) => {
   const title = caption;
 
@@ -49,23 +49,16 @@ export const DeleteConfirmationDialog = ({
         aria-labelledby="confirmation-dialog-title"
         open={isOpen}
       >
-        <DialogTitle
-          className="delete-confirmation-dialog__title"
-        >
+        <DialogTitle className="delete-confirmation-dialog__title">
           <span className="delete-confirmation-dialog__icon">
             <FontAwesomeIcon icon={faTrashCan} />
-          </span> &nbsp;
+          </span>{" "}
+          &nbsp;
           <strong>Delete {title}(s)? </strong>
         </DialogTitle>
 
-        <DialogContent
-          className="delete-confirmation-dialog__content"
-          dividers
-        >
-          <Typography 
-            className="delete-confirmation-dialog__msg" 
-            gutterBottom
-          >
+        <DialogContent className="delete-confirmation-dialog__content" dividers>
+          <Typography className="delete-confirmation-dialog__msg" gutterBottom>
             Are you sure you want to delete this? This action cannot be undone.
           </Typography>
         </DialogContent>
@@ -73,8 +66,8 @@ export const DeleteConfirmationDialog = ({
         <DialogActions className="delete-confirmation-dialog__actions">
           <Button
             className="delete-confirmation-btn delete-confirmation-btn--cancel"
-            variant="contained" 
-            color="secondary" 
+            variant="contained"
+            color="secondary"
             onClick={onClickCancel}
           >
             Cancel
@@ -82,8 +75,8 @@ export const DeleteConfirmationDialog = ({
 
           <Button
             className="delete-confirmation-btn delete-confirmation-btn--delete"
-            variant="contained" 
-            color="error" 
+            variant="contained"
+            color="error"
             onClick={onClickDelete}
           >
             Delete

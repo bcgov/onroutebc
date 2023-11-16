@@ -1,22 +1,25 @@
 import { VehicleTypesAsString } from "../../../../types/managevehicles";
-import { 
+import {
   PowerUnitDetail,
   VehicleFormDetail,
-  countrySelect, 
-  licensedGvwInput, 
-  makeInput, 
-  plateInput, 
-  powerUnitTypeCodeSelect, 
-  provinceSelect, 
-  steerAxleTireSizeInput, 
-  submitErrorsDisplay, 
-  trailerTypeCodeSelect, 
-  unitNumberInput, 
-  vinInput, 
+  countrySelect,
+  licensedGvwInput,
+  makeInput,
+  plateInput,
+  powerUnitTypeCodeSelect,
+  provinceSelect,
+  steerAxleTireSizeInput,
+  submitErrorsDisplay,
+  trailerTypeCodeSelect,
+  unitNumberInput,
+  vinInput,
   yearInput,
 } from "./access";
 
-export const assertSuccessfulSubmit = async (vehicleType: VehicleTypesAsString, vehicleDetails: VehicleFormDetail) => {
+export const assertSuccessfulSubmit = async (
+  vehicleType: VehicleTypesAsString,
+  vehicleDetails: VehicleFormDetail,
+) => {
   const unitNumber = await unitNumberInput();
   const make = await makeInput();
   const year = await yearInput();

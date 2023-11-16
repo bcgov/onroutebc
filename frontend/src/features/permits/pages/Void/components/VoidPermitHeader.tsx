@@ -2,15 +2,14 @@ import { Box, Typography } from "@mui/material";
 
 import "./VoidPermitHeader.scss";
 import { Permit } from "../../../types/permit";
-import { DATE_FORMATS, toLocal } from "../../../../../common/helpers/formatDate";
+import {
+  DATE_FORMATS,
+  toLocal,
+} from "../../../../../common/helpers/formatDate";
 import { CompanyBanner } from "../../../../../common/components/banners/CompanyBanner";
 import { permitTypeDisplayText } from "../../../types/PermitType";
 
-export const VoidPermitHeader = ({
-  permit,
-}: {
-  permit: Permit | null;
-}) => {
+export const VoidPermitHeader = ({ permit }: { permit: Permit | null }) => {
   return permit ? (
     <div className="void-permit__header">
       <Typography
@@ -22,10 +21,7 @@ export const VoidPermitHeader = ({
       </Typography>
 
       <Box className="permit-number">
-        <Box
-          component="span"
-          className="permit-number__label"
-        >
+        <Box component="span" className="permit-number__label">
           Voiding Permit #:
         </Box>
         <Box
@@ -36,15 +32,10 @@ export const VoidPermitHeader = ({
           {permit.permitNumber}
         </Box>
       </Box>
-      
-      <Box
-        className="permit-info"
-      >
+
+      <Box className="permit-info">
         <Box className="permit-info--start">
-          <Box
-            component="span"
-            className="permit-info__label"
-          >
+          <Box component="span" className="permit-info__label">
             Permit Start Date:
           </Box>
           <Box
@@ -52,14 +43,14 @@ export const VoidPermitHeader = ({
             className="permit-info__value"
             data-testid="void-permit-start-date"
           >
-            {toLocal(permit.permitData.startDate, DATE_FORMATS.DATEONLY_ABBR_MONTH)}
+            {toLocal(
+              permit.permitData.startDate,
+              DATE_FORMATS.DATEONLY_ABBR_MONTH,
+            )}
           </Box>
         </Box>
         <Box className="permit-info--end">
-          <Box
-            component="span"
-            className="permit-info__label"
-          >
+          <Box component="span" className="permit-info__label">
             Permit End Date:
           </Box>
           <Box
@@ -67,15 +58,15 @@ export const VoidPermitHeader = ({
             className="permit-info__value"
             data-testid="void-permit-end-date"
           >
-            {toLocal(permit.permitData.expiryDate, DATE_FORMATS.DATEONLY_ABBR_MONTH)}
+            {toLocal(
+              permit.permitData.expiryDate,
+              DATE_FORMATS.DATEONLY_ABBR_MONTH,
+            )}
           </Box>
         </Box>
         {permit.permitData.vehicleDetails?.plate ? (
           <Box className="permit-info--plate">
-            <Box
-              component="span"
-              className="permit-info__label"
-            >
+            <Box component="span" className="permit-info__label">
               Plate #:
             </Box>
             <Box
@@ -88,7 +79,7 @@ export const VoidPermitHeader = ({
           </Box>
         ) : null}
       </Box>
-      
+
       {permit.permitData.clientNumber && permit.permitData.companyName ? (
         <CompanyBanner
           companyName={permit.permitData.companyName}

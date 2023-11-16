@@ -15,8 +15,8 @@ export type ReplaceDayjsWithString<T> = {
   [K in keyof T]: T[K] extends Dayjs
     ? string
     : T[K] extends Dayjs | undefined
-    ? string | undefined
-    : T[K];
+      ? string | undefined
+      : T[K];
 };
 
 /**
@@ -32,8 +32,11 @@ export type ReplaceDayjsWithString<T> = {
  * then DateStringToDayjs = { a?: Dayjs, b: number }
  */
 export type DateStringToDayjs<T, Fields> = {
-  [K in keyof T]: K extends Fields 
-    ? T[K] extends string ? Dayjs : T[K] extends string | undefined
-      ? Dayjs | undefined : T[K]
+  [K in keyof T]: K extends Fields
+    ? T[K] extends string
+      ? Dayjs
+      : T[K] extends string | undefined
+        ? Dayjs | undefined
+        : T[K]
     : T[K];
 };
