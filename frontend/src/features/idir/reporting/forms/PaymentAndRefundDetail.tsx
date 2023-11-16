@@ -33,6 +33,7 @@ import { useState } from "react";
 import dayjs, { Dayjs } from "dayjs";
 import { SELECT_FIELD_STYLE } from "../../../../themes/orbcStyles";
 import { getPaymentMethodAndTypes } from "../../../../common/types/payment";
+import './style.scss';
 
 const sample = {
   issuedBy: ["SELF"],
@@ -426,11 +427,11 @@ export const PaymentAndRefundDetail = () => {
                     //   label={<strong>From</strong>}
                     format="YYYY/MM/DD hh:mm A"
                     slotProps={{
-                      digitalClockItem: {
+                      digitalClockSectionItem: {
                         sx: {
                           width: '76px'
                         }
-                      }
+                      },
                      
                     }}
                     onChange={(value: Dayjs | null) => {

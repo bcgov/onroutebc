@@ -1,14 +1,23 @@
+export type PaymentMethodType =
+  | "ACCOUNT"
+  | "GA"
+  | "CASH"
+  | "CHEQUE"
+  | "POS"
+  | "WEB"
+  | "ICEPAY";
+
+export type PaymentType = "AM" | "PV" | "MC" | "MD" | "VI";
+
+export type PaymentMode = {
+  paymentMethodTypeId: PaymentMethodType;
+  paymentType?: PaymentType;
+};
+
 export type PaymentMethodsAndIds = {
   display: string;
-  paymentMethodTypeId:
-    | "ACCOUNT"
-    | "GA"
-    | "CASH"
-    | "CHEQUE"
-    | "POS"
-    | "WEB"
-    | "ICEPAY";
-  paymentType?: "AM" | "PV" | "MC" | "MD" | "VI";
+  paymentMethodTypeId: PaymentMethodType;
+  paymentType?: PaymentType;
   description?: string;
 };
 
@@ -105,3 +114,78 @@ export const consolidatedArray: PaymentMethodsAndIds[] = [
     paymentMethodTypeId: "POS",
   },
 ];
+
+export const consolidatedRecord: Record<string, PaymentMode> = {
+  "Credit Account": {
+    paymentMethodTypeId: "ACCOUNT",
+  },
+  "GA Payment": {
+    paymentMethodTypeId: "GA",
+  },
+  Cash: {
+    paymentMethodTypeId: "CASH",
+  },
+  Cheque: {
+    paymentMethodTypeId: "CHEQUE",
+  },
+  "Web - AMEX": {
+    paymentMethodTypeId: "WEB",
+    paymentType: "AM",
+  },
+  "Web - Mastercard": {
+    paymentMethodTypeId: "WEB",
+    paymentType: "MC",
+  },
+  "Web - Visa": {
+    paymentMethodTypeId: "WEB",
+    paymentType: "VI",
+  },
+  "Web - Visa (Debit)": {
+    paymentMethodTypeId: "WEB",
+    paymentType: "PV",
+  },
+  "Web - Mastercard (Debit)": {
+    paymentMethodTypeId: "WEB",
+    paymentType: "MD",
+  },
+  "IcePay - AMEX": {
+    paymentMethodTypeId: "ICEPAY",
+    paymentType: "AM",
+  },
+  "IcePay - Mastercard": {
+    paymentMethodTypeId: "ICEPAY",
+    paymentType: "MC",
+  },
+  "IcePay - Visa": {
+    paymentMethodTypeId: "ICEPAY",
+    paymentType: "VI",
+  },
+  "IcePay - Visa (Debit)": {
+    paymentMethodTypeId: "ICEPAY",
+    paymentType: "PV",
+  },
+  "IcePay - Mastercard (Debit)": {
+    paymentMethodTypeId: "ICEPAY",
+    paymentType: "MD",
+  },
+  "PoS - AMEX": {
+    paymentMethodTypeId: "POS",
+    paymentType: "AM",
+  },
+  "PoS - Mastercard": {
+    paymentMethodTypeId: "POS",
+    paymentType: "MC",
+  },
+  "PoS - Visa": {
+    paymentMethodTypeId: "POS",
+    paymentType: "VI",
+  },
+  "PoS - Visa (Debit)": {
+    paymentMethodTypeId: "POS",
+    paymentType: "PV",
+  },
+  "PoS - Mastercard (Debit)": {
+    paymentMethodTypeId: "POS",
+    paymentType: "MD",
+  },
+};
