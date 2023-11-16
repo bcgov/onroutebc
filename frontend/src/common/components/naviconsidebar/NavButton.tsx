@@ -2,7 +2,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import "./NavButton.scss";
 import { getDefaultRequiredVal } from "../../helpers/util";
-import { NavButtonType, getIcon, getNavButtonTitle } from "./types/NavButtonType";
+import {
+  NavButtonType,
+  getIcon,
+  getNavButtonTitle,
+} from "./types/NavButtonType";
 
 export const NavButton = ({
   type,
@@ -20,10 +24,10 @@ export const NavButton = ({
   const title = getNavButtonTitle(type);
 
   return (
-    <button 
+    <button
       type="button"
       title={title}
-      className={`nav-button ${buttonClassName} ${additionalClasses}`} 
+      className={`nav-button ${buttonClassName} ${additionalClasses}`}
       onClick={onClick}
     >
       <div className="nav-button__hover-container">

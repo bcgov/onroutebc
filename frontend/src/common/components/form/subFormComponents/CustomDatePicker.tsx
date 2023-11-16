@@ -12,10 +12,10 @@ import {
 import { ORBC_FormTypes } from "../../../types/common";
 import { DatePicker, DateValidationError } from "@mui/x-date-pickers";
 import { useState, useEffect } from "react";
-import { 
-  invalidDate, 
-  invalidMaxStartDate, 
-  invalidPastStartDate 
+import {
+  invalidDate,
+  invalidMaxStartDate,
+  invalidPastStartDate,
 } from "../../../helpers/validationMessages";
 import { now } from "../../../helpers/formatDate";
 
@@ -39,7 +39,7 @@ export interface CustomDatePickerProps<T extends FieldValues> {
  *
  */
 export const CustomDatePicker = <T extends ORBC_FormTypes>(
-  props: CustomDatePickerProps<T>
+  props: CustomDatePickerProps<T>,
 ): JSX.Element => {
   const {
     trigger,

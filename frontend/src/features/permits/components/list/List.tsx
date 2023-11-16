@@ -23,16 +23,19 @@ import { Trash } from "../../../../common/components/table/options/Trash";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { DeleteConfirmationDialog } from "../../../../common/components/dialog/DeleteConfirmationDialog";
 import { SnackBarContext } from "../../../../App";
-import { ApplicationInProgress, PermitApplicationInProgress} from "../../types/application";
+import {
+  ApplicationInProgress,
+  PermitApplicationInProgress,
+} from "../../types/application";
 import { ApplicationInProgressColumnDefinition } from "./Columns";
 import { deleteApplications } from "../../apiManager/permitsAPI";
+import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
 
 /**
  * Dynamically set the column
  * @returns An array of column headers/accessor keys ofr Material React Table
  */
-const getColumns = (
-): MRT_ColumnDef<ApplicationInProgress>[] => {
+const getColumns = (): MRT_ColumnDef<ApplicationInProgress>[] => {
   return ApplicationInProgressColumnDefinition;
 };
 
@@ -46,22 +49,13 @@ const getColumns = (
  */
 /* eslint-disable react/prop-types */
 export const List = memo(
-  ({
-    query,
-  }: {
-    query: UseQueryResult<ApplicationInProgress[]>;
-  }) => {
+  ({ query }: { query: UseQueryResult<ApplicationInProgress[]> }) => {
     // Data, fetched from backend API
-    const {
-      data,
-      isError,
-      isFetching,
-      isLoading,
-    } = query;
+    const { data, isError, isFetching, isLoading } = query;
 
     const columns = useMemo<MRT_ColumnDef<ApplicationInProgress>[]>(
       () => getColumns(),
-      []
+      [],
     );
 
     const snackBar = useContext(SnackBarContext);
@@ -99,7 +93,6 @@ export const List = memo(
             alertType: "info",
             setShowSnackbar: () => true,
             showSnackbar: true,
-            
           });
         }
         setRowSelection(() => {
@@ -108,7 +101,7 @@ export const List = memo(
         query.refetch();
       }
     };
-    
+
     useEffect(() => {
       if (isError) {
         snackBar.setSnackBar({
@@ -154,12 +147,13 @@ export const List = memo(
             const applicationRow = originalRow as PermitApplicationInProgress;
             return applicationRow.permitId;
           }}
-          enableRowActions={true} 
+          enableRowActions={true}
           displayColumnDefOptions={{
             "mrt-row-actions": {
               header: "",
             },
           }}
+          renderEmptyRowsFallback={() => <NoRecordsFound />}
           renderRowActions={useCallback(
             ({
               row,
@@ -177,9 +171,7 @@ export const List = memo(
                         const newObject: { [key: string]: boolean } = {};
                         // Setting the selected row to false so that
                         // the row appears unchecked.
-                        newObject[
-                          row.original.permitId as string
-                        ] = false;
+                        newObject[row.original.permitId as string] = false;
                         return newObject;
                       });
                     }}
@@ -190,17 +182,24 @@ export const List = memo(
                 </Tooltip>
               </Box>
             ),
-            []
+            [],
           )}
-          // Render a custom options Bar (inclues search, filter, trash, and csv options)
+          // Render a custom options Bar (inclues search and trash)
           renderTopToolbar={useCallback(
-            ({ table }: { table: MRT_TableInstance<ApplicationInProgress> }) => (
+            ({
+              table,
+            }: {
+              table: MRT_TableInstance<ApplicationInProgress>;
+            }) => (
               <Box className="table-container__top-toolbar">
                 <MRT_GlobalFilterTextField table={table} />
-                <Trash onClickTrash={onClickTrashIcon} disabled={hasNoRowsSelected} />
+                <Trash
+                  onClickTrash={onClickTrashIcon}
+                  disabled={hasNoRowsSelected}
+                />
               </Box>
             ),
-            [hasNoRowsSelected]
+            [hasNoRowsSelected],
           )}
           /*
            *
@@ -235,7 +234,6 @@ export const List = memo(
               zIndex: 0,
             },
           }}
-          
           // Alert banner
           muiToolbarAlertBannerProps={
             isError
@@ -249,7 +247,9 @@ export const List = memo(
           muiTopToolbarProps={{ sx: { zIndex: 0 } }}
           // Search Bar
           positionGlobalFilter="left"
-          initialState={{ showGlobalFilter: true }} //show the search bar by default
+          initialState={{
+            showGlobalFilter: true,
+          }} //show the search bar by default
           muiSearchTextFieldProps={{
             className: "top-toolbar-search",
             placeholder: "Search",
@@ -260,8 +260,8 @@ export const List = memo(
           }}
           // Row Header
           muiTableHeadRowProps={{
-            sx: { 
-              backgroundColor: BC_COLOURS.bc_background_light_grey 
+            sx: {
+              backgroundColor: BC_COLOURS.bc_background_light_grey,
             },
           }}
         />
@@ -273,7 +273,7 @@ export const List = memo(
         />
       </div>
     );
-  }
+  },
 );
 
 List.displayName = "List";

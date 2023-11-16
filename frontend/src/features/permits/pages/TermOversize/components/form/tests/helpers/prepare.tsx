@@ -25,24 +25,27 @@ export const commodities = [...TROS_COMMODITIES];
 export const defaultDuration = 30;
 export const emptyCommodities: Commodities[] = [];
 export const allDurations = [
-  {text: "30 Days", days: 30},
-  {text: "60 Days", days: 60},
-  {text: "90 Days", days: 90},
-  {text: "120 Days", days: 120},
-  {text: "150 Days", days: 150},
-  {text: "180 Days", days: 180},
-  {text: "210 Days", days: 210},
-  {text: "240 Days", days: 240},
-  {text: "270 Days", days: 270},
-  {text: "300 Days", days: 300},
-  {text: "330 Days", days: 330},
-  {text: "1 Year", days: 365},
+  { text: "30 Days", days: 30 },
+  { text: "60 Days", days: 60 },
+  { text: "90 Days", days: 90 },
+  { text: "120 Days", days: 120 },
+  { text: "150 Days", days: 150 },
+  { text: "180 Days", days: 180 },
+  { text: "210 Days", days: 210 },
+  { text: "240 Days", days: 240 },
+  { text: "270 Days", days: 270 },
+  { text: "300 Days", days: 300 },
+  { text: "330 Days", days: 330 },
+  { text: "1 Year", days: 365 },
 ];
 
 export const requiredCommodityIndices = commodities
-  .map((commodity, i) => 
-    commodity.condition === "CVSE-1000" || commodity.condition === "CVSE-1070" ? i : -1
-  ).filter(i => i >= 0);
+  .map((commodity, i) =>
+    commodity.condition === "CVSE-1000" || commodity.condition === "CVSE-1070"
+      ? i
+      : -1,
+  )
+  .filter((i) => i >= 0);
 
 const TestFormWrapper = (props: React.PropsWithChildren) => {
   const formMethods = useForm({
@@ -52,19 +55,20 @@ const TestFormWrapper = (props: React.PropsWithChildren) => {
         permitDuration: 30,
         expiryDate: currentDt,
         commodities: [],
-      }
+      },
     },
     reValidateMode: "onBlur",
   });
 
-  return (
-    <FormProvider {...formMethods}>
-      {props.children}
-    </FormProvider>
-  );
+  return <FormProvider {...formMethods}>{props.children}</FormProvider>;
 };
 
-export const renderTestComponent = (startDate: Dayjs, duration: number, commodities: Commodities[], userEventOptions?: Options) => {
+export const renderTestComponent = (
+  startDate: Dayjs,
+  duration: number,
+  commodities: Commodities[],
+  userEventOptions?: Options,
+) => {
   const user = userEvent.setup(userEventOptions);
   const renderedComponent = render(
     <TestFormWrapper>
@@ -73,18 +77,23 @@ export const renderTestComponent = (startDate: Dayjs, duration: number, commodit
         defaultStartDate={startDate}
         defaultDuration={duration}
         commodities={commodities}
-        durationOptions={allDurations.map(duration => ({
+        durationOptions={allDurations.map((duration) => ({
           label: duration.text,
           value: duration.days,
         }))}
         disableStartDate={false}
       />
-    </TestFormWrapper>
+    </TestFormWrapper>,
   );
 
   return { user, renderedComponent };
 };
 
 export const renderDefaultTestComponent = (userEventOptions?: Options) => {
-  return renderTestComponent(currentDt, defaultDuration, emptyCommodities, userEventOptions);
+  return renderTestComponent(
+    currentDt,
+    defaultDuration,
+    emptyCommodities,
+    userEventOptions,
+  );
 };

@@ -24,7 +24,7 @@ export const PERMIT_TYPES = {
   TROW: "TROW",
 } as const;
 
-export type PermitType = typeof PERMIT_TYPES[keyof typeof PERMIT_TYPES];
+export type PermitType = (typeof PERMIT_TYPES)[keyof typeof PERMIT_TYPES];
 
 /**
  * Returns the name/description of the permit type.

@@ -10,18 +10,18 @@ import {
   VehicleTypesAsString,
 } from "../../manageVehicles/types/managevehicles";
 
-import { 
-  Application, 
-  ApplicationRequestData, 
+import {
+  Application,
+  ApplicationRequestData,
   ApplicationResponse,
 } from "../types/application";
 
-import { 
-  DATE_FORMATS, 
-  dayjsToLocalStr, 
-  dayjsToUtcStr, 
-  now, 
-  toLocalDayjs, 
+import {
+  DATE_FORMATS,
+  dayjsToLocalStr,
+  dayjsToUtcStr,
+  now,
+  toLocalDayjs,
   utcToLocalDayjs,
 } from "../../../common/helpers/formatDate";
 
@@ -34,7 +34,7 @@ import {
  */
 export const mapVinToVehicleObject = (
   vehicles: VehicleTypes[] | undefined,
-  vin: string
+  vin: string,
 ): PowerUnit | Trailer | undefined => {
   if (!vehicles) return undefined;
 
@@ -59,7 +59,7 @@ export const mapTypeCodeToObject = (
   typeCode: string,
   vehicleType: string,
   powerUnitTypes: VehicleType[] | undefined,
-  trailerTypes: VehicleType[] | undefined
+  trailerTypes: VehicleType[] | undefined,
 ) => {
   let typeObject = undefined;
 
@@ -81,7 +81,9 @@ export const mapTypeCodeToObject = (
  * @param response ApplicationResponse object received as response data from backend
  * @returns converted Application object that can be used by form fields and the front-end app
  */
-export const mapApplicationResponseToApplication = (response: ApplicationResponse): Application => {
+export const mapApplicationResponseToApplication = (
+  response: ApplicationResponse,
+): Application => {
   return {
     ...response,
     createdDateTime: applyWhenNotNullable(
@@ -97,14 +99,14 @@ export const mapApplicationResponseToApplication = (response: ApplicationRespons
       startDate: applyWhenNotNullable(
         (datetimeStr: string): Dayjs => toLocalDayjs(datetimeStr),
         response.permitData.startDate,
-        now()
+        now(),
       ),
       expiryDate: applyWhenNotNullable(
         (datetimeStr: string): Dayjs => toLocalDayjs(datetimeStr),
         response.permitData.expiryDate,
-        now()
+        now(),
       ),
-    }
+    },
   };
 };
 
@@ -113,22 +115,24 @@ export const mapApplicationResponseToApplication = (response: ApplicationRespons
  * @param data Application form data
  * @returns ApplicationRequestData object that's used for payload to request to backend
  */
-export const mapApplicationToApplicationRequestData = (data: Application): ApplicationRequestData => {
+export const mapApplicationToApplicationRequestData = (
+  data: Application,
+): ApplicationRequestData => {
   return {
     ...data,
-    createdDateTime: applyWhenNotNullable(
-      dayjsToUtcStr,
-      data.createdDateTime,
-    ),
-    updatedDateTime: applyWhenNotNullable(
-      dayjsToUtcStr,
-      data.updatedDateTime,
-    ),
+    createdDateTime: applyWhenNotNullable(dayjsToUtcStr, data.createdDateTime),
+    updatedDateTime: applyWhenNotNullable(dayjsToUtcStr, data.updatedDateTime),
     permitData: {
       ...data.permitData,
-      startDate: dayjsToLocalStr(data.permitData.startDate, DATE_FORMATS.DATEONLY),
-      expiryDate: dayjsToLocalStr(data.permitData.expiryDate, DATE_FORMATS.DATEONLY),
-    }
+      startDate: dayjsToLocalStr(
+        data.permitData.startDate,
+        DATE_FORMATS.DATEONLY,
+      ),
+      expiryDate: dayjsToLocalStr(
+        data.permitData.expiryDate,
+        DATE_FORMATS.DATEONLY,
+      ),
+    },
   };
 };
 
@@ -154,12 +158,16 @@ export const clonePermit = (permit: Permit): Permit => {
     ...permit,
     permitData: {
       ...permit.permitData,
-      contactDetails: permit.permitData.contactDetails ? {
-        ...permit.permitData.contactDetails,
-      } : undefined,
-      vehicleDetails: permit.permitData.vehicleDetails ? {
-        ...permit.permitData.vehicleDetails,
-      } : undefined,
+      contactDetails: permit.permitData.contactDetails
+        ? {
+            ...permit.permitData.contactDetails,
+          }
+        : undefined,
+      vehicleDetails: permit.permitData.vehicleDetails
+        ? {
+            ...permit.permitData.vehicleDetails,
+          }
+        : undefined,
       commodities: [...permit.permitData.commodities],
       mailingAddress: {
         ...permit.permitData.mailingAddress,
@@ -179,7 +187,7 @@ export const transformPermitToApplication = (permit: Permit) => {
     permitId: `${permit.permitId}`,
     previousRevision: applyWhenNotNullable(
       (prevRev) => `${prevRev}`,
-      permit.previousRevision
+      permit.previousRevision,
     ),
     createdDateTime: applyWhenNotNullable(
       (datetimeStr: string): Dayjs => utcToLocalDayjs(datetimeStr),
@@ -194,14 +202,14 @@ export const transformPermitToApplication = (permit: Permit) => {
       startDate: applyWhenNotNullable(
         (datetimeStr: string): Dayjs => toLocalDayjs(datetimeStr),
         permit.permitData.startDate,
-        now()
+        now(),
       ),
       expiryDate: applyWhenNotNullable(
         (datetimeStr: string): Dayjs => toLocalDayjs(datetimeStr),
         permit.permitData.expiryDate,
-        now()
+        now(),
       ),
-    }
+    },
   };
 };
 
@@ -211,32 +219,30 @@ export const transformPermitToApplication = (permit: Permit) => {
  * @returns Transformed Permit object
  */
 export const transformApplicationToPermit = (
-  application: Application
+  application: Application,
 ): Omit<
-  Permit, 
-  "originalPermitId" | 
-  "applicationNumber" |
-  "permitNumber" | 
-  "permitApplicationOrigin" |
-  "permitApprovalSource" |
-  "revision"
-> & Pick<
-  Application,
-  "originalPermitId" | 
-  "applicationNumber" |
-  "permitNumber" | 
-  "permitApplicationOrigin" |
-  "permitApprovalSource" |
-  "revision"
-> => {
+  Permit,
+  | "originalPermitId"
+  | "applicationNumber"
+  | "permitNumber"
+  | "permitApplicationOrigin"
+  | "permitApprovalSource"
+  | "revision"
+> &
+  Pick<
+    Application,
+    | "originalPermitId"
+    | "applicationNumber"
+    | "permitNumber"
+    | "permitApplicationOrigin"
+    | "permitApprovalSource"
+    | "revision"
+  > => {
   return {
     ...application,
-    permitId: applyWhenNotNullable(
-      id => +id,
-      application.permitId,
-    ),
+    permitId: applyWhenNotNullable((id) => +id, application.permitId),
     previousRevision: applyWhenNotNullable(
-      prevRev => +prevRev,
+      (prevRev) => +prevRev,
       application.previousRevision,
     ),
     createdDateTime: applyWhenNotNullable(
@@ -249,8 +255,14 @@ export const transformApplicationToPermit = (
     ),
     permitData: {
       ...application.permitData,
-      startDate: dayjsToLocalStr(application.permitData.startDate, DATE_FORMATS.DATEONLY),
-      expiryDate: dayjsToLocalStr(application.permitData.expiryDate, DATE_FORMATS.DATEONLY),
-    }
+      startDate: dayjsToLocalStr(
+        application.permitData.startDate,
+        DATE_FORMATS.DATEONLY,
+      ),
+      expiryDate: dayjsToLocalStr(
+        application.permitData.expiryDate,
+        DATE_FORMATS.DATEONLY,
+      ),
+    },
   };
 };

@@ -30,7 +30,7 @@ export const PermitSearchResultColumnDef: MRT_ColumnDef<Permit>[] = [
         permitStatus,
         permitData: { expiryDate },
       } = permit;
-      
+
       return (
         <>
           <Link
@@ -91,9 +91,9 @@ export const PermitSearchResultColumnDef: MRT_ColumnDef<Permit>[] = [
     accessorFn: (originalRow) => {
       const { permitIssueDateTime } = originalRow;
       const issueDate = applyWhenNotNullable(
-        dt => toLocal(dt, DATE_FORMATS.DATEONLY_ABBR_MONTH),
+        (dt) => toLocal(dt, DATE_FORMATS.DATEONLY_ABBR_MONTH),
         permitIssueDateTime,
-        "NA"
+        "NA",
       );
       return issueDate;
     },

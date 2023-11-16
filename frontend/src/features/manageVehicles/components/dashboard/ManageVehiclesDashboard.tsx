@@ -19,12 +19,11 @@ import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 const useTabIndexFromURL = (): number => {
   const { hash: selectedTab } = useLocation();
   switch (selectedTab) {
-    case "#power-unit":
-      return 0;
     case "#trailer":
       return 1;
     case "#vehicle-configuration":
       return 2;
+    case "#power-unit":
     default:
       return 0;
   }
@@ -55,18 +54,24 @@ export const ManageVehiclesDashboard = memo(() => {
   const tabs = [
     {
       label: "Power Unit",
-      component: <List vehicleType="powerUnit" query={powerUnitQuery} companyId={companyId} />,
+      component: (
+        <List
+          vehicleType="powerUnit"
+          query={powerUnitQuery}
+          companyId={companyId}
+        />
+      ),
     },
     {
       label: "Trailer",
-      component: <List vehicleType="trailer" query={trailerQuery} companyId={companyId} />,
+      component: (
+        <List
+          vehicleType="trailer"
+          query={trailerQuery}
+          companyId={companyId}
+        />
+      ),
     },
-    /** 
-     * TODO: Enable Vehicle Configuration page navigation when page is ready
-    {
-      label: "Vehicle Configuration",
-      component: <>TODO</>,
-    },*/
   ];
 
   return (

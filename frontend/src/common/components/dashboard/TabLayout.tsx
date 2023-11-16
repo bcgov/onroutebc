@@ -70,19 +70,12 @@ const DisplayTabs = ({
           <Tab
             key={label}
             className="display-tab"
-            label={(
+            label={
               <div className="tab">
-                <div className="tab__label">
-                  {label}
-                </div>
-                {count ? (
-                  <Chip 
-                    className="tab__count"
-                    label={count} 
-                  />
-                ) : null}
+                <div className="tab__label">{label}</div>
+                {count ? <Chip className="tab__count" label={count} /> : null}
               </div>
-            )}
+            }
             {...TabProps(index)}
           />
         );
@@ -156,7 +149,7 @@ export const TabLayout = React.memo(
         <DisplayTabPanels value={value} componentList={componentList} />
       </>
     );
-  }
+  },
 );
 
 TabLayout.displayName = "TabLayout";

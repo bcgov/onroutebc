@@ -1,27 +1,27 @@
 import { vi } from "vitest";
 import {
   chooseOption,
-  clickSubmit, 
-  countrySelect, 
-  emptyTrailerWidthInput, 
-  makeInput, 
-  numericInputs, 
-  plateInput, 
-  provinceSelect, 
-  selectOptionsAndButtons, 
-  submitVehicleForm, 
-  textInputs, 
-  trailerTypeCodeSelect, 
-  unitNumberInput, 
-  vinInput, 
+  clickSubmit,
+  countrySelect,
+  emptyTrailerWidthInput,
+  makeInput,
+  numericInputs,
+  plateInput,
+  provinceSelect,
+  selectOptionsAndButtons,
+  submitVehicleForm,
+  textInputs,
+  trailerTypeCodeSelect,
+  unitNumberInput,
+  vinInput,
   yearInput,
 } from "./helpers/access";
-import { 
-  closeMockServer, 
-  defaultTrailerSubtypes, 
-  listenToMockServer, 
-  renderTestTrailerForm, 
-  resetMockServer, 
+import {
+  closeMockServer,
+  defaultTrailerSubtypes,
+  listenToMockServer,
+  renderTestTrailerForm,
+  resetMockServer,
   trailerDetails,
 } from "./helpers/prepare";
 import { assertSuccessfulSubmit } from "./helpers/assert";
@@ -96,7 +96,7 @@ describe("Trailer Form Submission", () => {
   it("should successfully submit form without errors shown on ui", async () => {
     // Arrange
     const { user } = renderTestTrailerForm();
-    
+
     // Act
     await submitVehicleForm(user, "trailer", trailerDetails);
 

@@ -3,11 +3,11 @@ import isPostalCode from "validator/lib/isPostalCode";
 import "./CompanyInfoGeneralForm.scss";
 import { CountryAndProvince } from "../../../../../../common/components/form/CountryAndProvince";
 import { CustomFormComponent } from "../../../../../../common/components/form/CustomFormComponents";
-import { 
-  invalidAddressLength, 
-  invalidCityLength, 
-  invalidPostalCode, 
-  requiredMessage 
+import {
+  invalidAddressLength,
+  invalidCityLength,
+  invalidPostalCode,
+  requiredMessage,
 } from "../../../../../../common/helpers/validationMessages";
 
 export const CompanyInfoGeneralForm = ({ feature }: { feature: string }) => (
@@ -20,9 +20,9 @@ export const CompanyInfoGeneralForm = ({ feature }: { feature: string }) => (
         rules: {
           required: { value: true, message: requiredMessage() },
           validate: {
-            validateAddress1: (address1: string) => 
-              (address1.length >= 1 && address1.length <= 150) 
-                || invalidAddressLength(1, 150),
+            validateAddress1: (address1: string) =>
+              (address1.length >= 1 && address1.length <= 150) ||
+              invalidAddressLength(1, 150),
           },
         },
         label: "Address (Line 1)",
@@ -35,13 +35,17 @@ export const CompanyInfoGeneralForm = ({ feature }: { feature: string }) => (
       feature={feature}
       options={{
         name: "mailingAddress.addressLine2",
-        rules: { 
+        rules: {
           required: false,
           validate: {
             validateAddress2: (address2?: string) =>
-              (address2 == null || address2 === "")
-                || (address2 != null && address2 !== "" && address2.length >= 1 && address2.length <= 100)
-                || invalidAddressLength(1, 100),
+              address2 == null ||
+              address2 === "" ||
+              (address2 != null &&
+                address2 !== "" &&
+                address2.length >= 1 &&
+                address2.length <= 100) ||
+              invalidAddressLength(1, 100),
           },
         },
         label: "Address (Line 2)",
@@ -67,8 +71,8 @@ export const CompanyInfoGeneralForm = ({ feature }: { feature: string }) => (
             required: { value: true, message: requiredMessage() },
             validate: {
               validateCity: (city: string) =>
-                (city.length >= 1 && city.length <= 100)
-                  || invalidCityLength(1, 100),
+                (city.length >= 1 && city.length <= 100) ||
+                invalidCityLength(1, 100),
             },
           },
           label: "City",
@@ -84,8 +88,10 @@ export const CompanyInfoGeneralForm = ({ feature }: { feature: string }) => (
             required: { value: true, message: requiredMessage() },
             validate: {
               validatePostalCode: (postalCode: string) =>
-                (postalCode.length >= 5 && postalCode.length <= 7 && isPostalCode(postalCode, "any")) 
-                  || invalidPostalCode(),
+                (postalCode.length >= 5 &&
+                  postalCode.length <= 7 &&
+                  isPostalCode(postalCode, "any")) ||
+                invalidPostalCode(),
             },
           },
           label: "Postal / Zip Code",

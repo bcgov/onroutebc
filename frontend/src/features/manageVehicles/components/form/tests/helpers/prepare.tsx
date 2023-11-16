@@ -29,44 +29,62 @@ export const defaultTrailerSubtypes = [
 const server = setupServer(
   // Mock getting power unit types
   rest.get(VEHICLES_API.POWER_UNIT_TYPES, async (_, res, ctx) => {
-    return res(ctx.json([
-      ...defaultPowerUnitSubtypes,
-    ]));
+    return res(ctx.json([...defaultPowerUnitSubtypes]));
   }),
   // Mock getting trailer types
   rest.get(VEHICLES_API.TRAILER_TYPES, async (_, res, ctx) => {
-    return res(ctx.json([
-      ...defaultTrailerSubtypes,
-    ]));
+    return res(ctx.json([...defaultTrailerSubtypes]));
   }),
   // Mock creating power unit vehicle
-  rest.post(`${VEHICLES_URL}/companies/:companyId/vehicles/powerUnits`, async (req, res, ctx) => {
-    const reqBody = await req.json();
-    return res(ctx.status(201), ctx.json({
-      ...reqBody,
-    }));
-  }),
+  rest.post(
+    `${VEHICLES_URL}/companies/:companyId/vehicles/powerUnits`,
+    async (req, res, ctx) => {
+      const reqBody = await req.json();
+      return res(
+        ctx.status(201),
+        ctx.json({
+          ...reqBody,
+        }),
+      );
+    },
+  ),
   // Mock updating power unit vehicle
-  rest.put(`${VEHICLES_URL}/companies/:companyId/vehicles/powerUnits/:powerUnitId`, async (req, res, ctx) => {
-    const reqBody = await req.json();
-    return res(ctx.json({
-      ...reqBody,
-    }));
-  }),
+  rest.put(
+    `${VEHICLES_URL}/companies/:companyId/vehicles/powerUnits/:powerUnitId`,
+    async (req, res, ctx) => {
+      const reqBody = await req.json();
+      return res(
+        ctx.json({
+          ...reqBody,
+        }),
+      );
+    },
+  ),
   // Mock creating trailer vehicle
-  rest.post(`${VEHICLES_URL}/companies/:companyId/vehicles/trailers`, async (req, res, ctx) => {
-    const reqBody = await req.json();
-    return res(ctx.status(201), ctx.json({
-      ...reqBody,
-    }));
-  }),
+  rest.post(
+    `${VEHICLES_URL}/companies/:companyId/vehicles/trailers`,
+    async (req, res, ctx) => {
+      const reqBody = await req.json();
+      return res(
+        ctx.status(201),
+        ctx.json({
+          ...reqBody,
+        }),
+      );
+    },
+  ),
   // Mock updating trailer vehicle
-  rest.put(`${VEHICLES_URL}/companies/:companyId/vehicles/trailers/:trailerId`, async (req, res, ctx) => {
-    const reqBody = await req.json();
-    return res(ctx.json({
-      ...reqBody,
-    }));
-  }),
+  rest.put(
+    `${VEHICLES_URL}/companies/:companyId/vehicles/trailers/:trailerId`,
+    async (req, res, ctx) => {
+      const reqBody = await req.json();
+      return res(
+        ctx.json({
+          ...reqBody,
+        }),
+      );
+    },
+  ),
 );
 
 export const listenToMockServer = () => {
@@ -84,7 +102,7 @@ export const closeMockServer = () => {
 export const renderTestPowerUnitForm = (powerUnit?: PowerUnit) => {
   const user = userEvent.setup();
   const component = renderWithClient(
-    <PowerUnitForm powerUnit={powerUnit} companyId="1" />
+    <PowerUnitForm powerUnit={powerUnit} companyId="1" />,
   );
 
   return { user, component };
@@ -93,7 +111,7 @@ export const renderTestPowerUnitForm = (powerUnit?: PowerUnit) => {
 export const renderTestTrailerForm = (trailer?: Trailer) => {
   const user = userEvent.setup();
   const component = renderWithClient(
-    <TrailerForm trailer={trailer} companyId="1" />
+    <TrailerForm trailer={trailer} companyId="1" />,
   );
 
   return { user, component };

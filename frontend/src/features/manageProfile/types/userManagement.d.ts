@@ -14,7 +14,8 @@ export const USER_AUTH_GROUP = {
   EOFFICER: "EOFFICER",
 } as const;
 
-export type UserAuthGroup = typeof USER_AUTH_GROUP[keyof typeof USER_AUTH_GROUP];
+export type UserAuthGroup =
+  (typeof USER_AUTH_GROUP)[keyof typeof USER_AUTH_GROUP];
 
 /**
  * The types of user auth groups for BCeID users.
@@ -25,7 +26,8 @@ export const BCEID_AUTH_GROUP = {
   ORGADMIN: USER_AUTH_GROUP.ORGADMIN,
 } as const;
 
-export type BCeIDAuthGroup = typeof BCEID_AUTH_GROUP[keyof typeof BCEID_AUTH_GROUP];
+export type BCeIDAuthGroup =
+  (typeof BCEID_AUTH_GROUP)[keyof typeof BCEID_AUTH_GROUP];
 
 /**
  * The types of user statuses for BCeID users.
@@ -51,5 +53,4 @@ export interface ReadCompanyUser extends UserInformation {
 export type BCeIDAddUserRequest = {
   userName: string;
   userAuthGroup: BCeIDAuthGroup;
-}
-
+};

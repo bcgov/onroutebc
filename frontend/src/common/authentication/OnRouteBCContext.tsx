@@ -42,7 +42,9 @@ export type OnRouteBCContextType = {
   setCompanyLegalName?: Dispatch<SetStateAction<string | undefined>>;
   companyLegalName?: string;
   idirUserDetails?: IDIRUserDetailContext;
-  setIDIRUserDetails?: Dispatch<SetStateAction<IDIRUserDetailContext | undefined>>;
+  setIDIRUserDetails?: Dispatch<
+    SetStateAction<IDIRUserDetailContext | undefined>
+  >;
 };
 
 const defaultBehaviour: OnRouteBCContextType = {};

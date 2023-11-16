@@ -13,30 +13,18 @@ export const CompanyBanner = ({
   return (
     <div className="company-banner">
       <div className="company-banner__company-name">
-        <Typography 
-          variant="h5"
-          data-testid="company-banner-name-label"
-        >
+        <Typography variant="h5" data-testid="company-banner-name-label">
           COMPANY NAME
         </Typography>
-        <Typography
-          variant="h4"
-          data-testid="company-banner-name"
-        >
+        <Typography variant="h4" data-testid="company-banner-name">
           {getDefaultRequiredVal("", companyName)}
         </Typography>
       </div>
       <div className="company-banner__client-number">
-        <Typography 
-          variant="h5"
-          data-testid="company-banner-client-label"
-        >
+        <Typography variant="h5" data-testid="company-banner-client-label">
           onRouteBC CLIENT NUMBER
         </Typography>
-        <Typography
-          variant="h4"
-          data-testid="company-banner-client"
-        >
+        <Typography variant="h4" data-testid="company-banner-client">
           {getDefaultRequiredVal("", clientNumber)}
         </Typography>
       </div>

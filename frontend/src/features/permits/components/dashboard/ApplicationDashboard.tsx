@@ -21,7 +21,8 @@ export const APPLICATION_STEPS = {
   Pay: "Pay",
 } as const;
 
-export type ApplicationStep = typeof APPLICATION_STEPS[keyof typeof APPLICATION_STEPS];
+export type ApplicationStep =
+  (typeof APPLICATION_STEPS)[keyof typeof APPLICATION_STEPS];
 
 const displayHeaderText = (stepKey: ApplicationStep) => {
   switch (stepKey) {
@@ -39,19 +40,13 @@ export const ApplicationDashboard = () => {
   const { applicationNumber } = useParams(); // Get application number from route, if there is one (for edit applications)
 
   // Query for the application data whenever this page is rendered
-  const { 
-    query: applicationDataQuery, 
-    applicationData, 
-    setApplicationData 
+  const {
+    query: applicationDataQuery,
+    applicationData,
+    setApplicationData,
   } = useApplicationDetailsQuery(applicationNumber);
 
-  const {
-    currentStepIndex,
-    step,
-    back,
-    next,
-    goTo,
-  } = useMultiStepForm([
+  const { currentStepIndex, step, back, next, goTo } = useMultiStepForm([
     <TermOversizeForm key={APPLICATION_STEPS.Form} />,
     <TermOversizeReview key={APPLICATION_STEPS.Review} />,
     <TermOversizePay key={APPLICATION_STEPS.Pay} />,
