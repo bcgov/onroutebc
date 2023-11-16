@@ -127,17 +127,26 @@ export const getTrailer = async (trailerId: string, companyId: string): Promise<
  * @returns A Promise<Vehicle> with data from the API.
  */
 export const getVehicleById = async (
-  vehicleId: string,
-  vehicleType: VehicleTypesAsString,
   companyId: string,
-): Promise<Vehicle> => {
+  vehicleType: VehicleTypesAsString,
+  vehicleId?: string,
+): Promise<Vehicle | null> => {
+  if (!vehicleId) return null;
+  
   let url = `${VEHICLES_URL}/companies/${companyId}/vehicles`;
   if (vehicleType === "powerUnit") {
     url += `/powerUnits/${vehicleId}`;
   } else {
     url += `/trailers/${vehicleId}`;
   }
-  return httpGETRequest(url).then((response) => response.data);
+
+  try {
+    const response = await httpGETRequest(url);
+    return response.data;
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
 };
 
 /**

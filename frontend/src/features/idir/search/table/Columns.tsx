@@ -84,7 +84,7 @@ export const PermitSearchResultColumnDef: MRT_ColumnDef<Permit>[] = [
     enableSorting: true,
   },
   {
-    accessorKey: "permitIssueDateTime",
+    id: "permitIssueDateTime",
     header: "Issue Date",
     enableSorting: true,
     sortDescFirst: true,

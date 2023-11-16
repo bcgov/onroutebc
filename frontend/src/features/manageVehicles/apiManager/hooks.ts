@@ -1,12 +1,14 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 
+import { Vehicle, VehicleTypesAsString } from "../types/managevehicles";
 import {
   addPowerUnit,
   addTrailer,
   getAllVehicles,
-  getPowerUnit,
   getPowerUnitTypes,
   getTrailerTypes,
+  getVehicleById,
   updatePowerUnit,
   updateTrailer,
 } from "./vehiclesAPI";
@@ -24,12 +26,29 @@ export const useVehiclesQuery = (companyId: string) => {
   });
 };
 
-export const useVehicleByIdQuery = (powerUnitId: string, companyId: string) => {
-  return useQuery(
-    ["powerUnitById", powerUnitId],
-    () => getPowerUnit(powerUnitId, companyId),
-    { retry: false }
-  );
+export const useVehicleByIdQuery = (
+  companyId: string, 
+  vehicleType: VehicleTypesAsString, 
+  vehicleId?: string
+) => {
+  const [vehicle, setVehicle] = useState<Vehicle | null | undefined>();
+
+  const query = useQuery({
+    queryKey: ["vehicle"],
+    queryFn: () => getVehicleById(companyId, vehicleType, vehicleId),
+    retry: false,
+    refetchOnMount: "always", // always fetch when component is mounted
+    refetchOnWindowFocus: false, // prevent unnecessary multiple queries on page showing up in foreground
+    enabled: !!vehicleId, // does not perform the query at all if vehicle id is empty
+    onSuccess: (vehicleData) => {
+      setVehicle(vehicleData);
+    },
+  });
+
+  return {
+    vehicleByIdQuery: query,
+    vehicle,
+  };
 };
 
 /**

@@ -133,7 +133,7 @@ export const PowerUnitForm = ({ powerUnit, companyId }: PowerUnitFormProps) => {
           message: "Power unit has been added successfully",
           alertType: "success"
         });
-        
+
         navigate(VEHICLES_ROUTES.MANAGE);
       }
     }

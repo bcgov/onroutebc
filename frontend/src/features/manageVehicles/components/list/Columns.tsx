@@ -1,5 +1,8 @@
 import { MRT_ColumnDef } from "material-react-table";
+
 import { VehicleTypes } from "../../types/managevehicles";
+import { applyWhenNotNullable } from "../../../../common/helpers/util";
+import { DATE_FORMATS, toLocal } from "../../../../common/helpers/formatDate";
 
 /*
  *
@@ -37,8 +40,17 @@ export const PowerUnitColumnDefinition: MRT_ColumnDef<VehicleTypes>[] = [
     header: "Vehicle Type",
   },
   {
-    accessorKey: "createdDateTime",
+    id: "createdDateTime",
     header: "Date Created",
+    accessorFn: (originalRow) => {
+      const { createdDateTime } = originalRow;
+      const createdDtLocal = applyWhenNotNullable(
+        dt => toLocal(dt, DATE_FORMATS.LONG),
+        createdDateTime,
+        ""
+      );
+      return createdDtLocal;
+    },
   },
 ];
 
@@ -69,7 +81,16 @@ export const TrailerColumnDefinition: MRT_ColumnDef<VehicleTypes>[] = [
     header: "Vehicle Type",
   },
   {
-    accessorKey: "createdDateTime",
+    id: "createdDateTime",
     header: "Date Created",
+    accessorFn: (originalRow) => {
+      const { createdDateTime } = originalRow;
+      const createdDtLocal = applyWhenNotNullable(
+        dt => toLocal(dt, DATE_FORMATS.LONG),
+        createdDateTime,
+        ""
+      );
+      return createdDtLocal;
+    },
   },
 ];

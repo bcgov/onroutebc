@@ -1,6 +1,5 @@
 import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
 import { Box, Typography } from "@mui/material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
@@ -11,12 +10,14 @@ import { InfoBcGovBanner } from "../../../../common/components/banners/AlertBann
 import { VEHICLE_TYPES_ENUM } from "../form/constants";
 import { PowerUnitForm } from "../form/PowerUnitForm";
 import { TrailerForm } from "../form/TrailerForm";
-import { getVehicleById } from "../../apiManager/vehiclesAPI";
 import { PowerUnit, Trailer } from "../../types/managevehicles";
 import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { DATE_FORMATS, toLocal } from "../../../../common/helpers/formatDate";
 import { getCompanyIdFromSession } from "../../../../common/apiManager/httpRequestHandler";
 import { VEHICLES_ROUTES } from "../../../../routes/constants";
+import { useVehicleByIdQuery } from "../../apiManager/hooks";
+import { Loading } from "../../../../common/pages/Loading";
+import { Unexpected } from "../../../../common/pages/Unexpected";
 
 export const EditVehicleDashboard = React.memo(
   ({ editVehicleMode }: { editVehicleMode: VEHICLE_TYPES_ENUM }) => {
@@ -29,17 +30,10 @@ export const EditVehicleDashboard = React.memo(
     const isEditTrailer = (editVehicleMode: VEHICLE_TYPES_ENUM) => 
       editVehicleMode === VEHICLE_TYPES_ENUM.TRAILER;
     
-    const { data: vehicleToEdit, isLoading } = useQuery(
-      ["vehicleById", vehicleId],
-      () =>
-        getVehicleById(
-          vehicleId as string,
-          isEditPowerUnit(editVehicleMode)
-            ? "powerUnit"
-            : "trailer",
-          companyId
-        ),
-      { retry: false, enabled: true }
+    const { vehicle: vehicleToEdit } = useVehicleByIdQuery(
+      companyId,
+      isEditPowerUnit(editVehicleMode) ? "powerUnit" : "trailer",
+      vehicleId
     );
 
     const backToVehicleInventory = () => {
@@ -49,6 +43,14 @@ export const EditVehicleDashboard = React.memo(
         navigate(VEHICLES_ROUTES.MANAGE);
       }
     };
+
+    if (typeof vehicleToEdit === "undefined") {
+      return <Loading />;
+    }
+
+    if (!vehicleToEdit) {
+      return <Unexpected />;
+    }
 
     return (
       <div className="dashboard-page">
@@ -144,11 +146,16 @@ export const EditVehicleDashboard = React.memo(
             {editVehicleMode === VEHICLE_TYPES_ENUM.TRAILER &&
               "Trailer Details"}
           </Typography>
-          {!isLoading && editVehicleMode === VEHICLE_TYPES_ENUM.POWER_UNIT && (
-            <PowerUnitForm powerUnit={vehicleToEdit as PowerUnit} companyId={companyId} />
-          )}
-          {!isLoading && editVehicleMode === VEHICLE_TYPES_ENUM.TRAILER && (
-            <TrailerForm trailer={vehicleToEdit as Trailer} companyId={companyId} />
+          {isEditPowerUnit(editVehicleMode) ? (
+            <PowerUnitForm 
+              powerUnit={vehicleToEdit as PowerUnit} 
+              companyId={companyId} 
+            />
+          ) : (
+            <TrailerForm 
+              trailer={vehicleToEdit as Trailer} 
+              companyId={companyId} 
+            />
           )}
         </Box>
       </div>
