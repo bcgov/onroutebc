@@ -18,26 +18,19 @@ export const FinishVoid = ({
 }) => {
   const { voidPermitData } = useContext(VoidPermitContext);
 
-  const {
-    email,
-    fax,
-    reason,
-  } = voidPermitData;
+  const { email, fax, reason } = voidPermitData;
 
-  const { 
-    query: permitHistoryQuery, 
-    permitHistory, 
-  } = usePermitHistoryQuery(permit?.originalPermitId);
+  const { query: permitHistoryQuery, permitHistory } = usePermitHistoryQuery(
+    permit?.originalPermitId,
+  );
 
   const transactionHistory = permitHistoryQuery.isInitialLoading
-    ? [] : permitHistory;
+    ? []
+    : permitHistory;
 
   const amountToRefund = -1 * calculateNetAmount(transactionHistory);
 
-  const { 
-    mutation: voidPermitMutation,
-    voidResults,
-  } = useVoidPermit();
+  const { mutation: voidPermitMutation, voidResults } = useVoidPermit();
 
   useEffect(() => {
     if (voidResults && voidResults.success.length > 0) {
@@ -47,7 +40,11 @@ export const FinishVoid = ({
   }, [voidResults]);
 
   const handleFinish = (refundData: RefundFormData) => {
-    const requestData = mapToVoidRequestData(voidPermitData, refundData, -1 * amountToRefund);
+    const requestData = mapToVoidRequestData(
+      voidPermitData,
+      refundData,
+      -1 * amountToRefund,
+    );
     voidPermitMutation.mutate({
       permitId: voidPermitData.permitId,
       voidData: requestData,
@@ -55,7 +52,7 @@ export const FinishVoid = ({
   };
 
   return (
-    <RefundPage 
+    <RefundPage
       permitHistory={transactionHistory}
       amountToRefund={amountToRefund}
       email={email}

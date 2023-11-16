@@ -28,13 +28,13 @@ const getUserStorage = () => {
 const getAccessToken = () => {
   const parsedSessionObject = getDefaultRequiredVal(
     { token_type: "", access_token: "" },
-    getUserStorage()
+    getUserStorage(),
   );
   const tokenType = String(
-    getDefaultRequiredVal("", parsedSessionObject["token_type"])
+    getDefaultRequiredVal("", parsedSessionObject["token_type"]),
   );
   const accessToken = String(
-    getDefaultRequiredVal("", parsedSessionObject["access_token"])
+    getDefaultRequiredVal("", parsedSessionObject["access_token"]),
   );
   return tokenType.trim() !== "" && accessToken.trim() !== ""
     ? `${parsedSessionObject["token_type"]} ${parsedSessionObject["access_token"]}`
@@ -64,7 +64,7 @@ export const getCompanyIdFromSession = (): string | null => {
 export const getUserGuidFromSession = (): string | null => {
   const parsedSessionObject = getDefaultRequiredVal(
     { profile: { bceid_user_guid: "" } },
-    getUserStorage()
+    getUserStorage(),
   );
 
   return parsedSessionObject.profile?.bceid_user_guid ?? null;
@@ -77,11 +77,11 @@ export const getUserGuidFromSession = (): string | null => {
 export const getCompanyNameFromSession = (): string | undefined => {
   const parsedSessionObject = getDefaultRequiredVal(
     { profile: { bceid_business_name: "" } },
-    getUserStorage()
+    getUserStorage(),
   );
 
   return getDefaultNullableVal(
-    parsedSessionObject.profile?.bceid_business_name
+    parsedSessionObject.profile?.bceid_business_name,
   );
 };
 
@@ -93,7 +93,7 @@ export const getLoginUsernameFromSession = (): string => {
   const parsedSessionObject = getUserStorage();
   if (!parsedSessionObject) return "";
   return getDefaultRequiredVal(
-    "", 
+    "",
     parsedSessionObject.profile?.bceid_username,
     parsedSessionObject.profile?.idir_username,
   );
@@ -106,12 +106,10 @@ export const getLoginUsernameFromSession = (): string => {
 export const getCompanyEmailFromSession = (): string | undefined => {
   const parsedSessionObject = getDefaultRequiredVal(
     { profile: { email: "" } },
-    getUserStorage()
+    getUserStorage(),
   );
 
-  return getDefaultNullableVal(
-    parsedSessionObject.profile?.email
-  );
+  return getDefaultNullableVal(parsedSessionObject.profile?.email);
 };
 
 /**
@@ -135,7 +133,7 @@ export const httpGETRequest = (url: string) => {
 export const httpGETRequestStream = (url: string) => {
   return fetch(url, {
     headers: {
-      "Authorization": getAccessToken(),
+      Authorization: getAccessToken(),
     },
   });
 };

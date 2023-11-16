@@ -36,7 +36,7 @@ export const TermOversizeForm = () => {
   // 2. Generate those default values and register them to the form
   // 3. Listens for changes to application context (which happens when application is fetched/submitted/updated)
   // 4. Updates form default values when application context data values change
-  const { 
+  const {
     defaultApplicationDataValues: termOversizeDefaultValues,
     formMethods,
   } = useDefaultApplicationFormData(
@@ -50,19 +50,17 @@ export const TermOversizeForm = () => {
 
   const submitTermOversizeMutation = useSaveTermOversizeMutation();
   const snackBar = useContext(SnackBarContext);
-  const { companyLegalName, onRouteBCClientNumber } = useContext(OnRouteBCContext);
+  const { companyLegalName, onRouteBCClientNumber } =
+    useContext(OnRouteBCContext);
 
-  const {
-    handleSaveVehicle,
-    vehicleOptions,
-    powerUnitTypes,
-    trailerTypes,
-  } = usePermitVehicleManagement(
-    applyWhenNotNullable(companyIdNum => `${companyIdNum}`, companyId, "0")
-  );
+  const { handleSaveVehicle, vehicleOptions, powerUnitTypes, trailerTypes } =
+    usePermitVehicleManagement(
+      applyWhenNotNullable((companyIdNum) => `${companyIdNum}`, companyId, "0"),
+    );
 
   // Show leave application dialog
-  const [showLeaveApplicationDialog, setShowLeaveApplicationDialog] = useState<boolean>(false); 
+  const [showLeaveApplicationDialog, setShowLeaveApplicationDialog] =
+    useState<boolean>(false);
 
   const { handleSubmit, getValues } = formMethods;
 
@@ -80,10 +78,11 @@ export const TermOversizeForm = () => {
         vehicleDetails: {
           ...data.permitData.vehicleDetails,
           // Convert year to number here, as React doesn't accept valueAsNumber prop for input component
-          year: !isNaN(Number(data.permitData.vehicleDetails.year)) ? 
-            Number(data.permitData.vehicleDetails.year) : data.permitData.vehicleDetails.year
-        }
-      }
+          year: !isNaN(Number(data.permitData.vehicleDetails.year))
+            ? Number(data.permitData.vehicleDetails.year)
+            : data.permitData.vehicleDetails.year,
+        },
+      },
     } as Application;
   };
 
@@ -94,7 +93,10 @@ export const TermOversizeForm = () => {
     if (!savedData) return false;
 
     // Check if all current form field values match field values already saved in application context
-    return areApplicationDataEqual(currentFormData.permitData, savedData.permitData);
+    return areApplicationDataEqual(
+      currentFormData.permitData,
+      savedData.permitData,
+    );
   };
 
   // When "Continue" button is clicked
@@ -107,13 +109,16 @@ export const TermOversizeForm = () => {
     await onSaveApplication(() => applicationContext?.next());
   };
 
-  const isSaveTermOversizeSuccessful = (status: number) => status === 200 || status === 201;
+  const isSaveTermOversizeSuccessful = (status: number) =>
+    status === 200 || status === 201;
 
   const onSaveSuccess = (responseData: Application, status: number) => {
     snackBar.setSnackBar({
       showSnackbar: true,
       setShowSnackbar: () => true,
-      message: `Application ${responseData.applicationNumber} ${status === 201 ? "created" : "updated"}.`,
+      message: `Application ${responseData.applicationNumber} ${
+        status === 201 ? "created" : "updated"
+      }.`,
       alertType: "success",
     });
 
@@ -133,9 +138,9 @@ export const TermOversizeForm = () => {
   const onSaveApplication = async (additionalSuccessAction?: () => void) => {
     const termOverSizeToBeAdded = applicationFormData(getValues());
     const response = await submitTermOversizeMutation.mutateAsync(
-      termOverSizeToBeAdded
+      termOverSizeToBeAdded,
     );
-    
+
     if (isSaveTermOversizeSuccessful(response.status)) {
       const responseData = response.data;
       onSaveSuccess(responseData as Application, response.status);
@@ -144,7 +149,7 @@ export const TermOversizeForm = () => {
       onSaveFailure();
     }
   };
-  
+
   // Whenever "Leave" button is clicked
   const handleLeaveApplication = () => {
     if (!isApplicationSaved()) {
@@ -167,7 +172,7 @@ export const TermOversizeForm = () => {
       <ProgressBar />
 
       <FormProvider {...formMethods}>
-        <PermitForm 
+        <PermitForm
           feature={FEATURE}
           onLeave={handleLeaveApplication}
           onSave={() => onSaveApplication()}
@@ -189,7 +194,7 @@ export const TermOversizeForm = () => {
           durationOptions={TROS_PERMIT_DURATIONS}
         />
       </FormProvider>
-      
+
       <LeaveApplicationDialog
         onLeaveUnsaved={handleLeaveUnsaved}
         onContinueEditing={handleStayOnApplication}

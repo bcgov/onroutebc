@@ -14,7 +14,7 @@ interface AmendPermitContextType {
   goTo: (index: number) => void;
   goHome: () => void;
   afterFinishAmend: () => void;
-  getLinks: () => { text: string; onClick?: () => void; }[];
+  getLinks: () => { text: string; onClick?: () => void }[];
   currentStepIndex: number;
 }
 

@@ -31,13 +31,14 @@
     "validator": "^13.9.0"
   },
   "scripts": {
-    "start": "vite",
     "build": "tsc && vite build",
+    "format": "prettier --write \"src/**/*.{ts,tsx}\"",
+    "lint": "eslint \"src/**/*.{ts,tsx}\" --fix",
     "serve-vite": "vite preview",
+    "start": "vite",
     "test": "vitest watch --reporter verbose",
     "test:no-watch": "vitest run",
-    "test:cov": "vitest run --coverage",
-    "lint": "eslint src"
+    "test:cov": "vitest run --coverage"
   },
   "browserslist": {
     "production": [
@@ -70,11 +71,14 @@
     "@vitest/coverage-v8": "^0.32.0",
     "c8": "^8.0.0",
     "eslint": "^8.39.0",
+    "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-jsx-a11y": "^6.4.1",
+    "eslint-plugin-prettier": "^5.0.0",
     "eslint-plugin-react": "^7.32.2",
     "jsdom": "^22.1.0",
     "msw": "^1.2.2",
+    "prettier": "^3.0.0",
     "typescript": "^5.0.4",
     "vite": "^4.3.8",
     "vite-plugin-eslint": "^1.8.1",

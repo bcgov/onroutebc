@@ -47,9 +47,15 @@ export const ProtectedRoutes = ({
     if (isIDIR(userIDP) && !idirUserDetails?.userAuthGroup) {
       if (typeof userRoles !== "undefined" && !userRoles) {
         // user roles is null, indicating an error occurred fetching roles (eg. user with no roles, 403)
-        return <Navigate to={UNIVERSAL_UNAUTHORIZED} state={{ from: location }} replace />;
+        return (
+          <Navigate
+            to={UNIVERSAL_UNAUTHORIZED}
+            state={{ from: location }}
+            replace
+          />
+        );
       }
-      
+
       return (
         <>
           <LoadIDIRUserContext />

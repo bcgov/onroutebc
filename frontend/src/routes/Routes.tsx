@@ -33,7 +33,10 @@ export const AppRoutes = () => {
       <Route path={routes.HOME} element={<InitialLandingPage />} />
       <Route path={routes.WELCOME} element={<WelcomePage />} />
       <Route path={routes.UNAUTHORIZED} element={<Unauthorized />} />
-      <Route path={routes.UNIVERSAL_UNAUTHORIZED} element={<UniversalUnauthorized />} />
+      <Route
+        path={routes.UNIVERSAL_UNAUTHORIZED}
+        element={<UniversalUnauthorized />}
+      />
       <Route path="*" element={<NotFound />} />
       <Route
           path={routes.REPORTS}
@@ -93,7 +96,10 @@ export const AppRoutes = () => {
       </Route>
       <Route element={<ProtectedRoutes requiredRole={ROLES.WRITE_USER} />}>
         <Route path={routes.ADD_USER} element={<AddUserDashboard />} />
-        <Route path={`${routes.EDIT_USER}/:userGUID`} element={<EditUserDashboard />} />
+        <Route
+          path={`${routes.EDIT_USER}/:userGUID`}
+          element={<EditUserDashboard />}
+        />
       </Route>
       <Route element={<ProtectedRoutes requiredRole={ROLES.WRITE_PERMIT} />}>
         <Route
@@ -124,11 +130,11 @@ export const AppRoutes = () => {
         </Route>
       </Route>
       <Route element={<ProtectedRoutes requiredRole={ROLES.WRITE_PERMIT} />}>
-        <Route 
+        <Route
           path={`${routes.PERMITS}/:permitId/${routes.PERMIT_VOID}`}
-          element={<VoidPermit />} 
+          element={<VoidPermit />}
         />
-        <Route 
+        <Route
           path={`${routes.PERMITS}/:permitId/${routes.PERMIT_AMEND}`}
           element={<AmendPermit />}
         />

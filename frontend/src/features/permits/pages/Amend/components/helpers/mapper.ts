@@ -4,7 +4,7 @@ import { RefundFormData } from "../../../Refund/types/RefundFormData";
 export const mapToAmendRequestData = (
   refundData: RefundFormData,
   amountToRefund: number,
-  permitId: string
+  permitId: string,
 ) => {
   const isZeroAmount = Math.abs(amountToRefund) < 0.000001;
   const reqData = {
@@ -24,8 +24,12 @@ export const mapToAmendRequestData = (
 
   return {
     pgTransactionId: refundData.transactionId,
-    pgCardType: refundData.refundCardType ? refundData.refundCardType : undefined,
-    pgPaymentMethod: refundData.refundOnlineMethod ? refundData.refundOnlineMethod : undefined,
+    pgCardType: refundData.refundCardType
+      ? refundData.refundCardType
+      : undefined,
+    pgPaymentMethod: refundData.refundOnlineMethod
+      ? refundData.refundOnlineMethod
+      : undefined,
     ...reqData,
   };
 };

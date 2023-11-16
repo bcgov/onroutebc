@@ -89,7 +89,9 @@ export const UserManagement = () => {
         selectAllMode="page"
         // Enable checkboxes for row selection
         enableRowSelection={(row: MRT_Row<ReadCompanyUser>): boolean => {
-          if (row?.original?.userGUID === userFromToken?.profile?.bceid_user_guid) {
+          if (
+            row?.original?.userGUID === userFromToken?.profile?.bceid_user_guid
+          ) {
             return false;
           }
           return true;
@@ -126,17 +128,18 @@ export const UserManagement = () => {
               return <></>;
             }
           },
-          []
+          [],
         )}
         renderToolbarInternalActions={useCallback(
           () => (
-            <Box
-              className="table-container__toolbar-internal-actions"
-            >
-              <Trash onClickTrash={onClickTrashIcon} disabled={hasNoRowsSelected} />
+            <Box className="table-container__toolbar-internal-actions">
+              <Trash
+                onClickTrash={onClickTrashIcon}
+                disabled={hasNoRowsSelected}
+              />
             </Box>
           ),
-          [hasNoRowsSelected]
+          [hasNoRowsSelected],
         )}
         /*
          *

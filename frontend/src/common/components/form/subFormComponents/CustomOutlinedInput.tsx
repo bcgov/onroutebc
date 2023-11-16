@@ -28,7 +28,7 @@ export interface CustomOutlinedInputProps<T extends FieldValues> {
  *
  */
 export const CustomOutlinedInput = <T extends ORBC_FormTypes>(
-  props: CustomOutlinedInputProps<T>
+  props: CustomOutlinedInputProps<T>,
 ): JSX.Element => {
   const { register } = useFormContext();
 

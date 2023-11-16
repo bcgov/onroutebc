@@ -1,12 +1,15 @@
 import { UserEvent } from "@testing-library/user-event/dist/types/setup/setup";
-import { Matcher, screen, waitFor } from "@testing-library/react"
+import { Matcher, screen, waitFor } from "@testing-library/react";
 
 import { getDefaultRequiredVal } from "../../../../../../../../common/helpers/util";
 import { commodities, requiredCommodityIndices } from "./prepare";
 
-export const openDurationSelect = async (user: UserEvent, durationSelectText?: string) => {
+export const openDurationSelect = async (
+  user: UserEvent,
+  durationSelectText?: string,
+) => {
   const durationSelect = await screen.findByText(
-    getDefaultRequiredVal("30 Days", durationSelectText)
+    getDefaultRequiredVal("30 Days", durationSelectText),
   );
   await user.click(durationSelect);
 };
@@ -15,7 +18,10 @@ export const durationOption = async (durationOptionText: string) => {
   return await screen.findByText(durationOptionText, { selector: "li" });
 };
 
-export const selectDurationOption = async (user: UserEvent, durationOptionText: string) => {
+export const selectDurationOption = async (
+  user: UserEvent,
+  durationOptionText: string,
+) => {
   const option = await durationOption(durationOptionText);
   await user.click(option);
 };
@@ -44,8 +50,11 @@ export const selectNextMonth = async (user: UserEvent) => {
 
 export const dateOptions = async () => {
   const dateCells = await screen.findAllByRole("gridcell");
-  return dateCells.filter(cell => 
-    cell.textContent && Number(cell.textContent) >= 1 && Number(cell.textContent) <= 31
+  return dateCells.filter(
+    (cell) =>
+      cell.textContent &&
+      Number(cell.textContent) >= 1 &&
+      Number(cell.textContent) <= 31,
   );
 };
 
@@ -60,8 +69,12 @@ export const nextMonthDateOptions = async () => {
   return await dateOptions();
 };
 
-export const selectDayFromDateOptions = async (user: UserEvent, day: number, dateOptions: HTMLElement[]) => {
-  const option = dateOptions.find(cell => cell.textContent === String(day));
+export const selectDayFromDateOptions = async (
+  user: UserEvent,
+  day: number,
+  dateOptions: HTMLElement[],
+) => {
+  const option = dateOptions.find((cell) => cell.textContent === String(day));
   if (option) {
     await user.click(option);
   }
@@ -93,18 +106,23 @@ const commodityCheckbox = async (label: Matcher) => {
 
 export const requiredCommodityCheckboxes = async () => {
   return await Promise.all(
-    commodities.filter((_, i) => requiredCommodityIndices.includes(i))
-      .map(async (commodity) => await commodityCheckbox(commodity.description))
+    commodities
+      .filter((_, i) => requiredCommodityIndices.includes(i))
+      .map(async (commodity) => await commodityCheckbox(commodity.description)),
   );
 };
 
 export const optionalCommodityCheckboxes = async () => {
   return await Promise.all(
-    commodities.filter((_, i) => !requiredCommodityIndices.includes(i))
-      .map(async (commodity) => await commodityCheckbox(commodity.description))
+    commodities
+      .filter((_, i) => !requiredCommodityIndices.includes(i))
+      .map(async (commodity) => await commodityCheckbox(commodity.description)),
   );
 };
 
-export const toggleCheckbox = async (user: UserEvent, checkbox: HTMLElement) => {
+export const toggleCheckbox = async (
+  user: UserEvent,
+  checkbox: HTMLElement,
+) => {
   await user.click(checkbox);
 };

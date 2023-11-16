@@ -11,7 +11,9 @@ export const Trash = ({
   onClickTrash: () => void;
   disabled?: boolean;
 }) => {
-  const additionalClasses = disabled ? "trash-btn--disabled" : "trash-btn--active";
+  const additionalClasses = disabled
+    ? "trash-btn--disabled"
+    : "trash-btn--active";
 
   return (
     <IconButton

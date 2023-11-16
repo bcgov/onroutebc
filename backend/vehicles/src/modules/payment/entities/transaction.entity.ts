@@ -12,6 +12,7 @@ import { Receipt } from './receipt.entity';
 import { PaymentMethodType } from '../../../common/enum/payment-method-type.enum';
 import { TransactionType } from '../../../common/enum/transaction-type.enum';
 import { PermitTransaction } from './permit-transaction.entity';
+import { PaymentType } from '../../../common/enum/payment-type.enum';
 
 @Entity({ name: 'permit.ORBC_TRANSACTION' })
 export class Transaction extends Base {
@@ -50,6 +51,19 @@ export class Transaction extends Base {
     nullable: false,
   })
   paymentMethodId: PaymentMethodType;
+
+  @AutoMap()
+  @ApiProperty({
+    example: PaymentType.VISA,
+    description: 'The identifier of the user selected payment type.',
+  })
+  @Column({
+    type: 'simple-enum',
+    enum: PaymentType,
+    name: 'PAYMENT_TYPE',
+    nullable: true,
+  })
+  paymentType: PaymentType;
 
   @AutoMap()
   @ApiProperty({

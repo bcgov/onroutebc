@@ -17,15 +17,15 @@ import {
   PERMIT_RIGHT_BOX_STYLE,
 } from "../../../../../../themes/orbcStyles";
 
-export const PermitDetails = ({ 
-  feature, 
+export const PermitDetails = ({
+  feature,
   defaultStartDate,
   defaultDuration,
   commodities,
   applicationNumber,
   durationOptions,
   disableStartDate,
-}: { 
+}: {
   feature: string;
   defaultStartDate: Dayjs;
   defaultDuration: number;
@@ -38,7 +38,7 @@ export const PermitDetails = ({
   disableStartDate?: boolean;
 }) => {
   const { watch, register, setValue } = useFormContext();
-  
+
   // watch() is subscribed to fields, and will always have the latest values from the fields
   // thus, no need to use this in useState and useEffect
   const startDate = watch("permitData.startDate");
@@ -131,7 +131,9 @@ export const PermitDetails = ({
           />
           <ConditionsTable
             commodities={commodities}
-            applicationWasCreated={applicationNumber != null && applicationNumber !== ""}
+            applicationWasCreated={
+              applicationNumber != null && applicationNumber !== ""
+            }
           />
         </Box>
       </Box>

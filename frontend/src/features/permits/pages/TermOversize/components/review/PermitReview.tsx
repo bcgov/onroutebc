@@ -10,7 +10,12 @@ import { ReviewPermitDetails } from "./ReviewPermitDetails";
 import { ReviewVehicleInfo } from "./ReviewVehicleInfo";
 import { ReviewFeeSummary } from "./ReviewFeeSummary";
 import { ReviewActions } from "./ReviewActions";
-import { Application, Commodities, ContactDetails, VehicleDetails } from "../../../../types/application";
+import {
+  Application,
+  Commodities,
+  ContactDetails,
+  VehicleDetails,
+} from "../../../../types/application";
 import { CompanyProfile } from "../../../../../manageProfile/types/manageProfile";
 import { VehicleType } from "../../../../../manageVehicles/types/managevehicles";
 import { PermitType } from "../../../../types/PermitType";
@@ -47,11 +52,11 @@ interface PermitReviewProps {
 }
 
 export const PermitReview = (props: PermitReviewProps) => {
-  const feeSummary = props.calculatedFee ? 
-    props.calculatedFee :
-    `${calculateFeeByDuration(
-      getDefaultRequiredVal(0, props.permitDuration)
-    )}`;
+  const feeSummary = props.calculatedFee
+    ? props.calculatedFee
+    : `${calculateFeeByDuration(
+        getDefaultRequiredVal(0, props.permitDuration),
+      )}`;
 
   return (
     <Box className="permit-review layout-box">
@@ -64,14 +69,16 @@ export const PermitReview = (props: PermitReviewProps) => {
         <ApplicationDetails
           permitType={props.permitType}
           infoNumberType={props.isAmendAction ? "permit" : "application"}
-          infoNumber={props.isAmendAction ? props.permitNumber : props.applicationNumber}
+          infoNumber={
+            props.isAmendAction ? props.permitNumber : props.applicationNumber
+          }
           createdDateTime={props.createdDateTime}
           updatedDateTime={props.updatedDateTime}
           companyInfo={props.companyInfo}
         />
 
-        <ReviewContactDetails 
-          contactDetails={props.contactDetails} 
+        <ReviewContactDetails
+          contactDetails={props.contactDetails}
           showChangedFields={props.showChangedFields}
           oldFields={props.oldFields?.permitData?.contactDetails}
         />
@@ -86,7 +93,7 @@ export const PermitReview = (props: PermitReviewProps) => {
           oldDuration={props.oldFields?.permitData?.permitDuration}
         />
 
-        <ReviewVehicleInfo 
+        <ReviewVehicleInfo
           powerUnitTypes={props.powerUnitTypes}
           trailerTypes={props.trailerTypes}
           vehicleDetails={props.vehicleDetails}
@@ -104,7 +111,7 @@ export const PermitReview = (props: PermitReviewProps) => {
         />
 
         {props.children}
-        
+
         <ReviewActions
           onEdit={props.onEdit}
           onContinue={props.onContinue}

@@ -13,10 +13,7 @@ import { ErrorFallback } from "../../../common/pages/ErrorFallback";
 import { MyInfoForm } from "../components/forms/myInfo/MyInfoForm";
 
 const Header = () => (
-  <Typography
-    className="my-info-page__header"
-    variant="h4"
-  >
+  <Typography className="my-info-page__header" variant="h4">
     Edit My Information
   </Typography>
 );

@@ -6,11 +6,12 @@ export const Unexpected = () => {
   return (
     <ErrorPage
       errorTitle="Unexpected Error"
-      msgNode={(
+      msgNode={
         <>
-          Please refresh to continue. If the error persists, <Link to="/">contact us</Link>.
+          Please refresh to continue. If the error persists,{" "}
+          <Link to="/">contact us</Link>.
         </>
-      )}
+      }
     />
   );
 };

@@ -2,7 +2,10 @@ import { Box, Typography } from "@mui/material";
 
 import "./ApplicationSummary.scss";
 import { getDefaultRequiredVal } from "../../../../../../common/helpers/util";
-import { PermitType, permitTypeDisplayText } from "../../../../types/PermitType";
+import {
+  PermitType,
+  permitTypeDisplayText,
+} from "../../../../types/PermitType";
 
 export const ApplicationSummary = ({
   permitType,
@@ -12,7 +15,7 @@ export const ApplicationSummary = ({
   applicationNumber?: string;
 }) => {
   const applicationName = permitTypeDisplayText(
-    getDefaultRequiredVal("", permitType)
+    getDefaultRequiredVal("", permitType),
   );
 
   const applicationNumberExists = () =>
@@ -20,17 +23,9 @@ export const ApplicationSummary = ({
 
   return (
     <Box className="application-summary">
-      <Typography
-        variant={"h1"}
-      >
-        {applicationName}
-      </Typography>
+      <Typography variant={"h1"}>{applicationName}</Typography>
       {applicationNumberExists() ? (
-        <Typography
-          variant="h2"
-        >
-          Application # {applicationNumber}
-        </Typography>
+        <Typography variant="h2">Application # {applicationNumber}</Typography>
       ) : (
         <></>
       )}
