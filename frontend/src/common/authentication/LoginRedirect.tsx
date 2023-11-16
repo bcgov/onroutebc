@@ -72,7 +72,5 @@ export const LoginRedirect = () => {
     return <Loading />;
   }
 
-  return (
-    <></>
-  )
+  return <></>;
 };

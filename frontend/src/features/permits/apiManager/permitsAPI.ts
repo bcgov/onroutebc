@@ -5,11 +5,11 @@ import { PaginatedResponse } from "../../../common/types/common";
 import { PERMIT_STATUSES } from "../types/PermitStatus";
 import { PermitHistory } from "../types/PermitHistory";
 import { getPermitTypeName } from "../types/PermitType";
-import { 
-  CompleteTransactionRequestData, 
-  CompleteTransactionResponseData, 
-  StartTransactionRequestData, 
-  StartTransactionResponseData, 
+import {
+  CompleteTransactionRequestData,
+  CompleteTransactionResponseData,
+  StartTransactionRequestData,
+  StartTransactionResponseData,
 } from "../types/payment";
 
 import {
@@ -39,10 +39,10 @@ import {
   PERMITS_API_ROUTES,
 } from "./endpoints/endpoints";
 
-import { 
-  RevokePermitRequestData, 
-  VoidPermitRequestData, 
-  VoidPermitResponseData, 
+import {
+  RevokePermitRequestData,
+  VoidPermitRequestData,
+  VoidPermitResponseData,
 } from "../pages/Void/types/VoidPermit";
 
 /**
@@ -56,7 +56,7 @@ export const submitTermOversize = async (termOversizePermit: Application) => {
     replaceEmptyValuesWithNull({
       // must convert application to ApplicationRequestData (dayjs fields to strings)
       ...mapApplicationToApplicationRequestData(termOversizePermit),
-    })
+    }),
   );
 };
 
@@ -68,14 +68,14 @@ export const submitTermOversize = async (termOversizePermit: Application) => {
  */
 export const updateTermOversize = async (
   termOversizePermit: Application,
-  applicationNumber: string
+  applicationNumber: string,
 ) => {
   return await httpPUTRequest(
     `${APPLICATIONS_API_ROUTES.UPDATE}/${applicationNumber}`,
     replaceEmptyValuesWithNull({
       // must convert application to ApplicationRequestData (dayjs fields to strings)
       ...mapApplicationToApplicationRequestData(termOversizePermit),
-    })
+    }),
   );
 };
 
@@ -105,25 +105,25 @@ export const getApplicationsInProgress = async (): Promise<
         permitType: getPermitTypeName(application.permitType) as string,
         createdDateTime: toLocal(
           application.createdDateTime,
-          DATE_FORMATS.DATETIME_LONG_TZ
+          DATE_FORMATS.DATETIME_LONG_TZ,
         ),
         updatedDateTime: toLocal(
           application.updatedDateTime,
-          DATE_FORMATS.DATETIME_LONG_TZ
+          DATE_FORMATS.DATETIME_LONG_TZ,
         ),
         permitData: {
           ...application.permitData,
           startDate: toLocal(
             application.permitData.startDate,
-            DATE_FORMATS.DATEONLY_SHORT_NAME
+            DATE_FORMATS.DATEONLY_SHORT_NAME,
           ),
           expiryDate: toLocal(
             application.permitData.startDate,
-            DATE_FORMATS.DATEONLY_SHORT_NAME
+            DATE_FORMATS.DATEONLY_SHORT_NAME,
           ),
         },
       } as PermitApplicationInProgress;
-    })
+    }),
   );
   return applications;
 };
@@ -134,7 +134,7 @@ export const getApplicationsInProgress = async (): Promise<
  * @returns ApplicationResponse data as response, or null if fetch failed
  */
 export const getApplicationByPermitId = async (
-  permitId?: string
+  permitId?: string,
 ): Promise<ApplicationResponse | null> => {
   try {
     const companyId = getCompanyIdFromSession();
@@ -235,7 +235,7 @@ export const downloadReceiptPdf = async (permitId: string) => {
  * @returns {Promise<StartTransactionResponseData>} - A Promise that resolves to the submitted transaction with URL.
  */
 export const startTransaction = async (
-  requestData: StartTransactionRequestData
+  requestData: StartTransactionRequestData,
 ): Promise<StartTransactionResponseData | null> => {
   try {
     const response = await httpPOSTRequest(PAYMENT_API_ROUTES.START, replaceEmptyValuesWithNull(requestData));
@@ -257,17 +257,14 @@ export const startTransaction = async (
  * @returns Promise that resolves to a successful transaction.
  */
 export const completeTransaction = async (transactionData: {
-  transactionId: string,
-  transactionQueryString: string,
-  transactionDetails: CompleteTransactionRequestData
+  transactionId: string;
+  transactionQueryString: string;
+  transactionDetails: CompleteTransactionRequestData;
 }): Promise<CompleteTransactionResponseData | null> => {
   try {
-    const { 
-      transactionId, 
-      transactionDetails,
-      transactionQueryString,
-    } = transactionData;
-    
+    const { transactionId, transactionDetails, transactionQueryString } =
+      transactionData;
+
     const response = await httpPUTRequest(
       `${PAYMENT_API_ROUTES.COMPLETE}/${transactionId}/${PAYMENT_API_ROUTES.PAYMENT_GATEWAY}?queryString=${transactionQueryString}`,
       transactionDetails
@@ -299,7 +296,7 @@ export const issuePermits = async (
         companyId: applyWhenNotNullable((companyId) => Number(companyId), companyId),
       })
     );
-    
+
     if (response.status !== 201) {
       return {
         success: [],
@@ -344,7 +341,7 @@ export const getPermit = async (permitId?: string): Promise<Permit | null> => {
  * @returns Permit application information, if any
  */
 export const getCurrentAmendmentApplication = async (
-  originalId?: string
+  originalId?: string,
 ): Promise<Permit | null> => {
   if (!originalId) return null;
   const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
@@ -371,9 +368,9 @@ export const getCurrentAmendmentApplication = async (
  * @param expired If set to true, expired permits will be retrieved.
  * @returns A list of permits.
  */
-export const getPermits = async ({
-  expired = false,
-} = {}): Promise<Permit[]> => {
+export const getPermits = async ({ expired = false } = {}): Promise<
+  Permit[]
+> => {
   const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
   let permitsURL = `${PERMITS_API_ROUTES.GET_LIST}`;
   const queryParams = [];
@@ -390,7 +387,7 @@ export const getPermits = async ({
     .then((response) => {
       const paginatedResponseObject = getDefaultRequiredVal(
         {},
-        response.data
+        response.data,
       ) as PaginatedResponse<Permit>;
       return paginatedResponseObject.items;
     })
@@ -400,25 +397,25 @@ export const getPermits = async ({
           ...permit,
           createdDateTime: toLocal(
             permit.createdDateTime,
-            DATE_FORMATS.DATETIME_LONG_TZ
+            DATE_FORMATS.DATETIME_LONG_TZ,
           ),
           updatedDateTime: toLocal(
             permit.updatedDateTime,
-            DATE_FORMATS.DATETIME_LONG_TZ
+            DATE_FORMATS.DATETIME_LONG_TZ,
           ),
           permitData: {
             ...permit.permitData,
             startDate: toLocal(
               permit.permitData.startDate,
-              DATE_FORMATS.DATEONLY_SHORT_NAME
+              DATE_FORMATS.DATEONLY_SHORT_NAME,
             ),
             expiryDate: toLocal(
               permit.permitData.expiryDate,
-              DATE_FORMATS.DATEONLY_SHORT_NAME
+              DATE_FORMATS.DATEONLY_SHORT_NAME,
             ),
           },
         } as Permit;
-      })
+      }),
     );
   return permits;
 };
@@ -426,7 +423,7 @@ export const getPermits = async ({
 export const getPermitHistory = async (originalPermitId?: string) => {
   try {
     if (!originalPermitId) return [];
-    
+
     const response = await httpGETRequest(
       `${PERMITS_API_ROUTES.HISTORY}?originalId=${originalPermitId}`
     );
@@ -447,8 +444,8 @@ export const getPermitHistory = async (originalPermitId?: string) => {
  * @returns Response data containing successfully voided/revoked permit ids, as well as failed ones.
  */
 export const voidPermit = async (voidPermitParams: {
-  permitId: string, 
-  voidData: VoidPermitRequestData | RevokePermitRequestData
+  permitId: string;
+  voidData: VoidPermitRequestData | RevokePermitRequestData;
 }) => {
   const { permitId, voidData } = voidPermitParams;
   try {
@@ -483,7 +480,7 @@ export const amendPermit = async (permit: Permit) => {
     PERMITS_API_ROUTES.AMEND,
     replaceEmptyValuesWithNull({
       ...permit,
-    })
+    }),
   );
 };
 

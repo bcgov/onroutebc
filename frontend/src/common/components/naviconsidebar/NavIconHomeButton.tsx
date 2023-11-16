@@ -1,4 +1,3 @@
-
 import { useNavigate } from "react-router-dom";
 
 import { IDIR_ROUTES } from "../../../routes/constants";
@@ -12,9 +11,9 @@ export const NavIconHomeButton = () => {
   const navigate = useNavigate();
 
   return (
-    <NavButton 
+    <NavButton
       type={NAV_BUTTON_TYPES.HOME}
       onClick={() => navigate(IDIR_ROUTES.WELCOME)}
     />
   );
-}
+};

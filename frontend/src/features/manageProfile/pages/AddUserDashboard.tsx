@@ -4,14 +4,7 @@ import React, { useContext, useState } from "react";
 import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useNavigate } from "react-router-dom";
-import {
-  Box,
-  Button,
-  Divider,
-  Link,
-  Typography,
-  Stack,
-} from "@mui/material";
+import { Box, Button, Divider, Link, Typography, Stack } from "@mui/material";
 
 import {
   Controller,
@@ -116,15 +109,11 @@ export const AddUserDashboard = React.memo(() => {
 
   return (
     <div className="dashboard-page dashboard-page--add-user">
-      <Box
-        className="dashboard-page__banner layout-box"
-      >
+      <Box className="dashboard-page__banner layout-box">
         <Banner bannerText="Add User" extendHeight={true} />
       </Box>
 
-      <Box
-        className="dashboard-page__breadcrumb layout-box"
-      >
+      <Box className="dashboard-page__breadcrumb layout-box">
         <Typography
           className="breadcrumb-link breadcrumb-link--parent"
           onClick={onClickBreadCrumb}
@@ -132,10 +121,7 @@ export const AddUserDashboard = React.memo(() => {
           Profile
         </Typography>
 
-        <FontAwesomeIcon
-          className="breadcrumb-icon"
-          icon={faChevronRight}
-        />
+        <FontAwesomeIcon className="breadcrumb-icon" icon={faChevronRight} />
 
         <Typography
           className="breadcrumb-link breadcrumb-link--parent"
@@ -149,24 +135,16 @@ export const AddUserDashboard = React.memo(() => {
           User Management
         </Typography>
 
-        <FontAwesomeIcon
-          className="breadcrumb-icon"
-          icon={faChevronRight}
-        />
+        <FontAwesomeIcon className="breadcrumb-icon" icon={faChevronRight} />
 
         <Typography>Add User</Typography>
       </Box>
 
       <FormProvider {...formMethods}>
-        <Box
-          className="dashboard-page__form dashboard-page__form--user-id layout-box"
-        >
+        <Box className="dashboard-page__form dashboard-page__form--user-id layout-box">
           <Stack className="user-id" direction="row" spacing={16}>
             <Stack>
-              <Typography
-                className="user-id__label"
-                variant={"h2"}
-              >
+              <Typography className="user-id__label" variant={"h2"}>
                 User ID
               </Typography>
             </Stack>
@@ -189,20 +167,12 @@ export const AddUserDashboard = React.memo(() => {
 
         <Divider variant="middle" />
 
-        <Box
-          className="dashboard-page__form dashboard-page__form--user-group layout-box"
-        >
+        <Box className="dashboard-page__form dashboard-page__form--user-group layout-box">
           <Stack direction="row">
             <Stack>
-              <Typography
-                variant={"h2"}
-              >
-                Assign User Group
-              </Typography>
+              <Typography variant={"h2"}>Assign User Group</Typography>
 
-              <Typography
-                variant={"h2"}
-              >
+              <Typography variant={"h2"}>
                 <Link
                   component="button"
                   variant="body2"

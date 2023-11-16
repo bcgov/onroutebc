@@ -22,7 +22,9 @@ import {
  * All Power Unit and Trailer Data
  * @return An array of combined PowerUnit and Trailers
  */
-export const getAllVehicles = async (companyId: string): Promise<(PowerUnit | Trailer)[]> => {
+export const getAllVehicles = async (
+  companyId: string,
+): Promise<(PowerUnit | Trailer)[]> => {
   const powerUnits = await getAllPowerUnits(companyId);
   const trailers = await getAllTrailers(companyId);
 
@@ -44,7 +46,9 @@ export const getAllVehicles = async (companyId: string): Promise<(PowerUnit | Tr
  * All Power Unit Data
  * @return {*}  {Promise<void>}
  */
-export const getAllPowerUnits = async (companyId: string): Promise<PowerUnit[]> => {
+export const getAllPowerUnits = async (
+  companyId: string,
+): Promise<PowerUnit[]> => {
   const url = `${VEHICLES_URL}/companies/${companyId}/vehicles/powerUnits`;
   return httpGETRequest(url).then((response) => response.data);
 };
@@ -54,7 +58,10 @@ export const getAllPowerUnits = async (companyId: string): Promise<PowerUnit[]> 
  * @param powerUnitId The powerUnitId
  * @returns A Promise<Response> containing the API response.
  */
-export const getPowerUnit = async (powerUnitId: string, companyId: string): Promise<PowerUnit> => {
+export const getPowerUnit = async (
+  powerUnitId: string,
+  companyId: string,
+): Promise<PowerUnit> => {
   const url = `${VEHICLES_URL}/companies/${companyId}/vehicles/powerUnits/${powerUnitId}`;
   return httpGETRequest(url).then((response) => response.data);
 };
@@ -74,7 +81,7 @@ export const getPowerUnitTypes = async (): Promise<Array<VehicleType>> => {
  * @returns Promise containing the response from the create powerUnit API.
  */
 export const addPowerUnit = async ({
-  powerUnit, 
+  powerUnit,
   companyId,
 }: {
   powerUnit: PowerUnit;
@@ -116,7 +123,10 @@ export const getAllTrailers = async (companyId: string): Promise<Trailer[]> => {
  * @param trailerId The trailer to be retrieved.
  * @returns A Promise<Trailer> with data from the API.
  */
-export const getTrailer = async (trailerId: string, companyId: string): Promise<Trailer> => {
+export const getTrailer = async (
+  trailerId: string,
+  companyId: string,
+): Promise<Trailer> => {
   const url = `${VEHICLES_URL}/companies/${companyId}/vehicles/trailers/${trailerId}`;
   return httpGETRequest(url).then((response) => response.data);
 };
@@ -167,7 +177,7 @@ export const addTrailer = async ({
   trailer,
   companyId,
 }: {
-  trailer: Trailer; 
+  trailer: Trailer;
   companyId: string;
 }) => {
   const url = `${VEHICLES_URL}/companies/${companyId}/vehicles/trailers`;

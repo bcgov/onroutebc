@@ -11,7 +11,10 @@ import { VoidPermitContext } from "./context/VoidPermitContext";
 import { IDIR_ROUTES } from "../../../../routes/constants";
 import { VoidPermitFormData } from "./types/VoidPermit";
 import { FinishVoid } from "./FinishVoid";
-import { SEARCH_BY_FILTERS, SEARCH_ENTITIES } from "../../../idir/search/types/types";
+import {
+  SEARCH_BY_FILTERS,
+  SEARCH_ENTITIES,
+} from "../../../idir/search/types/types";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { USER_AUTH_GROUP } from "../../../manageProfile/types/userManagement.d";
 import { Unauthorized } from "../../../../common/pages/Unauthorized";
@@ -26,23 +29,23 @@ const searchRoute = `${IDIR_ROUTES.SEARCH_RESULTS}?searchEntity=${SEARCH_ENTITIE
   + `&searchByFilter=${SEARCH_BY_FILTERS.PERMIT_NUMBER}`;
 
 const isVoidable = (permit: Permit) => {
-  return !isPermitInactive(permit.permitStatus) 
-    && !hasPermitExpired(permit.permitData.expiryDate);
+  return (
+    !isPermitInactive(permit.permitStatus) &&
+    !hasPermitExpired(permit.permitData.expiryDate)
+  );
 };
 
 export const VoidPermit = () => {
   const navigate = useNavigate();
   const { permitId } = useParams();
   const [currentLink, setCurrentLink] = useState(0);
-  const getBannerText = () => currentLink === 0 ? "Void Permit" : "Finish Voiding";
+  const getBannerText = () =>
+    currentLink === 0 ? "Void Permit" : "Finish Voiding";
 
   // Must be SYSADMIN to access this page
   const { idirUserDetails } = useContext(OnRouteBCContext);
-  
-  const {
-    query: permitQuery,
-    permit
-  } = usePermitDetailsQuery(permitId);
+
+  const { query: permitQuery, permit } = usePermitDetailsQuery(permitId);
 
   const [voidPermitData, setVoidPermitData] = useState<VoidPermitFormData>({
     permitId: getDefaultRequiredVal("", permitId),
@@ -69,34 +72,40 @@ export const VoidPermit = () => {
   };
   const fullSearchRoute = `${searchRoute}&searchValue=${getBasePermitNumber()}`;
 
-  const getLinks = () => currentLink === 0 ? [
-    {
-      text: "Search",
-      onClick: () => navigate(fullSearchRoute),
-    },
-    {
-      text: "Void Permit",
-    },
-  ] : [
-    {
-      text: "Search",
-      onClick: () => navigate(fullSearchRoute),
-    },
-    {
-      text: "Void Permit",
-      onClick: () => setCurrentLink(0),
-    },
-    {
-      text: "Finish Voiding",
-    },
-  ];
+  const getLinks = () =>
+    currentLink === 0
+      ? [
+          {
+            text: "Search",
+            onClick: () => navigate(fullSearchRoute),
+          },
+          {
+            text: "Void Permit",
+          },
+        ]
+      : [
+          {
+            text: "Search",
+            onClick: () => navigate(fullSearchRoute),
+          },
+          {
+            text: "Void Permit",
+            onClick: () => setCurrentLink(0),
+          },
+          {
+            text: "Finish Voiding",
+          },
+        ];
 
-  const contextData = useMemo(() => ({
-    voidPermitData,
-    setVoidPermitData,
-    back: () => setCurrentLink(0),
-    next: () => setCurrentLink(1),
-  }), [voidPermitData]);
+  const contextData = useMemo(
+    () => ({
+      voidPermitData,
+      setVoidPermitData,
+      back: () => setCurrentLink(0),
+      next: () => setCurrentLink(1),
+    }),
+    [voidPermitData],
+  );
 
   // If user is not SYSADMIN, show unauthorized page
   if (idirUserDetails?.userAuthGroup !== USER_AUTH_GROUP.SYSADMIN) {
@@ -118,26 +127,20 @@ export const VoidPermit = () => {
   if (!isVoidable(permit)) return <Unexpected />;
 
   const pages = [
-    (
-      <VoidPermitForm 
-        key="void-permit" 
-        permit={permit} 
-        onRevokeSuccess={() => navigate(fullSearchRoute)}
-      />
-    ),
-    (
-      <FinishVoid
-        key="finish-void"
-        permit={permit}
-        onSuccess={() => navigate(fullSearchRoute)}
-      />
-    ),
+    <VoidPermitForm
+      key="void-permit"
+      permit={permit}
+      onRevokeSuccess={() => navigate(fullSearchRoute)}
+    />,
+    <FinishVoid
+      key="finish-void"
+      permit={permit}
+      onSuccess={() => navigate(fullSearchRoute)}
+    />,
   ];
-  
+
   return (
-    <VoidPermitContext.Provider
-      value={contextData}
-    >
+    <VoidPermitContext.Provider value={contextData}>
       {permitQuery.isLoading ? (
         <Loading />
       ) : (

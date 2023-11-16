@@ -13,7 +13,8 @@ const PERMIT_ACTION_TYPES = {
   VOID_REVOKE: "voidRevoke",
 } as const;
 
-type PermitActionType = typeof PERMIT_ACTION_TYPES[keyof typeof PERMIT_ACTION_TYPES];
+type PermitActionType =
+  (typeof PERMIT_ACTION_TYPES)[keyof typeof PERMIT_ACTION_TYPES];
 
 const permitActionLabel = (actionType: PermitActionType) => {
   switch (actionType) {
@@ -35,25 +36,26 @@ interface PermitAction {
   isAuthorized: (isExpired: boolean, userAuthGroup?: string) => boolean;
 }
 
-const PERMIT_ACTIONS: PermitAction[]  = [
+const PERMIT_ACTIONS: PermitAction[] = [
   {
     action: PERMIT_ACTION_TYPES.RESEND,
     isAuthorized: (_: boolean, userAuthGroup?: string) =>
-      userAuthGroup === USER_AUTH_GROUP.PPCCLERK || userAuthGroup === USER_AUTH_GROUP.SYSADMIN,
+      userAuthGroup === USER_AUTH_GROUP.PPCCLERK ||
+      userAuthGroup === USER_AUTH_GROUP.SYSADMIN,
   },
   {
     action: PERMIT_ACTION_TYPES.VIEW_RECEIPT,
-    isAuthorized: (_: boolean, userAuthGroup?: string) => 
-      userAuthGroup === USER_AUTH_GROUP.PPCCLERK 
-      || userAuthGroup === USER_AUTH_GROUP.SYSADMIN 
-      || userAuthGroup === USER_AUTH_GROUP.EOFFICER,
+    isAuthorized: (_: boolean, userAuthGroup?: string) =>
+      userAuthGroup === USER_AUTH_GROUP.PPCCLERK ||
+      userAuthGroup === USER_AUTH_GROUP.SYSADMIN ||
+      userAuthGroup === USER_AUTH_GROUP.EOFFICER,
   },
   {
     action: PERMIT_ACTION_TYPES.AMEND,
-    isAuthorized: (isExpired: boolean, userAuthGroup?: string) => 
-      !isExpired && (
-        userAuthGroup === USER_AUTH_GROUP.PPCCLERK || userAuthGroup === USER_AUTH_GROUP.SYSADMIN
-      ),
+    isAuthorized: (isExpired: boolean, userAuthGroup?: string) =>
+      !isExpired &&
+      (userAuthGroup === USER_AUTH_GROUP.PPCCLERK ||
+        userAuthGroup === USER_AUTH_GROUP.SYSADMIN),
   },
   {
     action: PERMIT_ACTION_TYPES.VOID_REVOKE,
@@ -68,12 +70,12 @@ const PERMIT_ACTIONS: PermitAction[]  = [
  * @returns string[]
  */
 const getOptions = (isExpired: boolean, userAuthGroup?: string) => {
-  return PERMIT_ACTIONS
-    .filter(action => action.isAuthorized(isExpired, userAuthGroup))
-    .map(({ action }) => ({
-      label: permitActionLabel(action),
-      value: action,
-    }));
+  return PERMIT_ACTIONS.filter((action) =>
+    action.isAuthorized(isExpired, userAuthGroup),
+  ).map(({ action }) => ({
+    label: permitActionLabel(action),
+    value: action,
+  }));
 };
 
 /**
@@ -130,7 +132,7 @@ export const IDIRPermitSearchRowActions = ({
     } else if (selectedOption === PERMIT_ACTION_TYPES.AMEND) {
       navigate(`${routes.PERMITS_ROUTES.BASE}/${permitId}/${routes.PERMITS_ROUTES.AMEND}`);
     }
-  }
+  };
 
   return (
     <>

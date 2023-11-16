@@ -25,7 +25,7 @@ const getEnv = () => {
   const env =
     import.meta.env.VITE_DEPLOY_ENVIRONMENT ||
     envConfig.VITE_DEPLOY_ENVIRONMENT;
-  
+
   switch (!isNaN(Number(env)) || env) {
     case "test":
       return "test";
@@ -51,9 +51,7 @@ const Navbar = ({
   const username = getLoginUsernameFromSession();
   const navbarClassName = isMobile ? "mobile" : "normal";
   return (
-    <nav
-      className={`navbar navbar--${navbarClassName}`}
-    >
+    <nav className={`navbar navbar--${navbarClassName}`}>
       <div className="navbar__links">
         <ul>
           {isAuthenticated && (
@@ -138,24 +136,18 @@ export const Header = () => {
         <div className="options-section">
           {isAuthenticated ? (
             <div className="auth-section">
-              {isIdir ? (
-                <SearchButton onClick={toggleFilter} />
-              ) : null}
+              {isIdir ? <SearchButton onClick={toggleFilter} /> : null}
               <UserSection username={username} />
             </div>
           ) : null}
-          {isAuthenticated ? (
-            <NavButton />
-          ) : null}
+          {isAuthenticated ? <NavButton /> : null}
         </div>
       </header>
       <Navbar isAuthenticated={isAuthenticated} />
       {menuOpen ? (
         <Navbar isAuthenticated={isAuthenticated} isMobile={true} />
       ) : null}
-      {filterOpen ? (
-        <SearchFilter />
-      ) : null}
+      {filterOpen ? <SearchFilter /> : null}
     </div>
   );
 };

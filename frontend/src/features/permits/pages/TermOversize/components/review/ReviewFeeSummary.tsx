@@ -26,10 +26,7 @@ export const ReviewFeeSummary = ({
       </Box>
       <Box className="review-fee-summary__body">
         <Box className="fee-summary-wrapper">
-          <FeeSummary
-            permitType={permitType}
-            feeSummary={fee}
-          />
+          <FeeSummary permitType={permitType} feeSummary={fee} />
 
           <ConfirmationCheckboxes
             isSubmitted={isSubmitted}

@@ -15,9 +15,9 @@ import { getDefaultApplication } from "../../../../../components/dashboard/tests
 import { MANAGE_PROFILE_API } from "../../../../../../manageProfile/apiManager/endpoints/endpoints";
 import { getDefaultCompanyInfo } from "../../../../../components/dashboard/tests/integration/fixtures/getCompanyInfo";
 import { VEHICLES_API } from "../../../../../../manageVehicles/apiManager/endpoints/endpoints";
-import { 
-  getDefaultPowerUnitTypes, 
-  getDefaultTrailerTypes, 
+import {
+  getDefaultPowerUnitTypes,
+  getDefaultTrailerTypes,
 } from "../../../../../components/dashboard/tests/integration/fixtures/getVehicleInfo";
 
 export const newApplicationNumber = "A1-00000001-800-R01";
@@ -32,12 +32,12 @@ export const defaultApplicationData = {
     ...permitData,
     startDate: toLocalDayjs(permitData.startDate),
     expiryDate: toLocalDayjs(permitData.expiryDate),
-  }
+  },
 } as Application;
 
 export const companyInfo = getDefaultCompanyInfo();
 export const companyInfoTitle = "Company Information";
-export const companyInfoDescription = 
+export const companyInfoDescription =
   "If the Company Mailing Address is incorrect, please contact your onRouteBC Administrator.";
 export const companyMailAddrTitle = "Company Mailing Address";
 export const contactInfoTitle = "Contact Information";
@@ -75,20 +75,24 @@ const server = setupServer(
     }));
   }),
   rest.get(VEHICLES_API.POWER_UNIT_TYPES, async (_, res, ctx) => {
-    return res(ctx.json([
-      ...getDefaultPowerUnitTypes() // get power unit types from mock vehicle store
-    ]));
+    return res(
+      ctx.json([
+        ...getDefaultPowerUnitTypes(), // get power unit types from mock vehicle store
+      ]),
+    );
   }),
   rest.get(VEHICLES_API.TRAILER_TYPES, async (_, res, ctx) => {
-    return res(ctx.json([
-      ...getDefaultTrailerTypes() // get trailer types from mock vehicle store
-    ]));
+    return res(
+      ctx.json([
+        ...getDefaultTrailerTypes(), // get trailer types from mock vehicle store
+      ]),
+    );
   }),
 );
 
 export const listenToMockServer = () => {
   server.listen();
-}
+};
 
 export const resetMockServer = () => {
   server.resetHandlers();
@@ -99,26 +103,30 @@ export const closeMockServer = () => {
 };
 
 const ComponentWithWrapper = ({
-  applicationData 
+  applicationData,
 }: {
-  applicationData: Application
+  applicationData: Application;
 }) => {
   const [stepIndex, setStepIndex] = useState(0);
-  const [testApplicationData, setTestApplicationData] = useState(applicationData);
-  const next = () => setStepIndex(currentStepIndex => currentStepIndex + 1);
-  const back = () => setStepIndex(currentStepIndex => currentStepIndex - 1);
+  const [testApplicationData, setTestApplicationData] =
+    useState(applicationData);
+  const next = () => setStepIndex((currentStepIndex) => currentStepIndex + 1);
+  const back = () => setStepIndex((currentStepIndex) => currentStepIndex - 1);
   const goTo = (stepIndex: number) => setStepIndex(stepIndex);
   return (
     <ThemeProvider theme={bcGovTheme}>
       <ApplicationContext.Provider
-        value={useMemo(() => ({
-          applicationData: testApplicationData,
-          setApplicationData: setTestApplicationData,
-          next,
-          back,
-          goTo,
-          currentStepIndex: stepIndex,
-        }), [testApplicationData, stepIndex])}
+        value={useMemo(
+          () => ({
+            applicationData: testApplicationData,
+            setApplicationData: setTestApplicationData,
+            next,
+            back,
+            goTo,
+            currentStepIndex: stepIndex,
+          }),
+          [testApplicationData, stepIndex],
+        )}
       >
         <TermOversizeReview />
       </ApplicationContext.Provider>
@@ -129,7 +137,7 @@ const ComponentWithWrapper = ({
 export const renderTestComponent = (applicationData: Application) => {
   const user = userEvent.setup();
   const component = renderWithClient(
-    <ComponentWithWrapper applicationData={applicationData} />
+    <ComponentWithWrapper applicationData={applicationData} />,
   );
 
   return { user, component };

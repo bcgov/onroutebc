@@ -62,7 +62,7 @@ export const ProtectedRoutes = ({
           />
         );
       }
-      
+
       return (
         <>
           <LoadIDIRUserContext />

@@ -5,8 +5,15 @@ import { Button, FormControl, FormHelperText } from "@mui/material";
 import { useEffect, useState } from "react";
 
 import "./VoidPermitForm.scss";
-import { CustomFormComponent, getErrorMessage } from "../../../../../common/components/form/CustomFormComponents";
-import { invalidEmail, invalidPhoneLength, requiredMessage } from "../../../../../common/helpers/validationMessages";
+import {
+  CustomFormComponent,
+  getErrorMessage,
+} from "../../../../../common/components/form/CustomFormComponents";
+import {
+  invalidEmail,
+  invalidPhoneLength,
+  requiredMessage,
+} from "../../../../../common/helpers/validationMessages";
 import { useVoidPermitForm } from "../hooks/useVoidPermitForm";
 import { VoidPermitHeader } from "./VoidPermitHeader";
 import { Permit } from "../../../types/permit";
@@ -31,22 +38,14 @@ export const VoidPermitForm = ({
 }) => {
   const navigate = useNavigate();
   const [openRevokeDialog, setOpenRevokeDialog] = useState<boolean>(false);
-  const {
-    formMethods,
-    permitId,
-    setVoidPermitData,
-    next,
-  } = useVoidPermitForm();
+  const { formMethods, permitId, setVoidPermitData, next } =
+    useVoidPermitForm();
 
-  const { 
-    query: permitHistoryQuery, 
-    permitHistory, 
-  } = usePermitHistoryQuery(permit?.originalPermitId);
+  const { query: permitHistoryQuery, permitHistory } = usePermitHistoryQuery(
+    permit?.originalPermitId,
+  );
 
-  const {
-    mutation: revokePermitMutation,
-    voidResults,
-  } = useVoidPermit();
+  const { mutation: revokePermitMutation, voidResults } = useVoidPermit();
 
   useEffect(() => {
     if (voidResults && voidResults.success.length > 0) {
@@ -55,14 +54,15 @@ export const VoidPermitForm = ({
     }
   }, [voidResults]);
 
-  const amountToRefund = permitHistoryQuery.isInitialLoading 
-    ? 0 : -1 * calculateNetAmount(permitHistory);
+  const amountToRefund = permitHistoryQuery.isInitialLoading
+    ? 0
+    : -1 * calculateNetAmount(permitHistory);
 
-  const { 
-    control, 
-    getValues, 
-    handleSubmit, 
-    register, 
+  const {
+    control,
+    getValues,
+    handleSubmit,
+    register,
     formState: { errors },
   } = formMethods;
 
@@ -104,9 +104,7 @@ export const VoidPermitForm = ({
       <VoidPermitHeader permit={permit} />
       <div className="void-permit__form">
         <div className="form-section form-section--send">
-          <div className="form-section__label">
-            Send Permit and Receipt to
-          </div>
+          <div className="form-section__label">Send Permit and Receipt to</div>
           <div className="form-section__input-area">
             <CustomFormComponent
               type="input"
@@ -129,13 +127,17 @@ export const VoidPermitForm = ({
               feature={FEATURE}
               options={{
                 name: "fax",
-                rules: { 
+                rules: {
                   required: false,
                   validate: {
                     validateFax: (fax?: string) =>
-                      (fax == null || fax === "")
-                        || (fax != null && fax !== "" && fax.length >= 10 && fax.length <= 20)
-                        || invalidPhoneLength(10, 20),
+                      fax == null ||
+                      fax === "" ||
+                      (fax != null &&
+                        fax !== "" &&
+                        fax.length >= 10 &&
+                        fax.length <= 20) ||
+                      invalidPhoneLength(10, 20),
                   },
                 },
                 label: "Fax",
@@ -146,9 +148,7 @@ export const VoidPermitForm = ({
         </div>
 
         <div className="form-section form-section--reason">
-          <div className="form-section__label">
-            Reason for Voiding
-          </div>
+          <div className="form-section__label">Reason for Voiding</div>
           <div className="form-section__input-area">
             <div className="reason-container">
               <div className="reason-container__left">
@@ -156,20 +156,18 @@ export const VoidPermitForm = ({
                   name="reason"
                   control={control}
                   rules={voidReasonRules}
-                  render={({ field: { value }, fieldState: { invalid }}) => (
+                  render={({ field: { value }, fieldState: { invalid } }) => (
                     <FormControl error={invalid}>
-                      <textarea 
-                        className={`void-input void-input--reason ${invalid ? "void-input--err" : ""}`}
+                      <textarea
+                        className={`void-input void-input--reason ${
+                          invalid ? "void-input--err" : ""
+                        }`}
                         rows={6}
                         defaultValue={value}
                         {...register("reason", voidReasonRules)}
-                      >
-                      </textarea>
+                      ></textarea>
                       {invalid ? (
-                        <FormHelperText 
-                          className="void-input__err"
-                          error
-                        >
+                        <FormHelperText className="void-input__err" error>
                           {getErrorMessage(errors, "reason")}
                         </FormHelperText>
                       ) : null}
@@ -183,14 +181,18 @@ export const VoidPermitForm = ({
               </div>
               <div className="reason-container__right">
                 <div className="revoke">
-                  <div className="revoke__header">
-                    Revoke this permit?
-                  </div>
+                  <div className="revoke__header">Revoke this permit?</div>
                   <div className="revoke__body">
                     <div className="revoke__msg">
-                      Revoking a permit is a severe action that <span className="revoke__msg--bold">cannot be reversed.</span> There are <span className="revoke__msg--bold">no refunds</span> for revoked permits.
+                      Revoking a permit is a severe action that{" "}
+                      <span className="revoke__msg--bold">
+                        cannot be reversed.
+                      </span>{" "}
+                      There are{" "}
+                      <span className="revoke__msg--bold">no refunds</span> for
+                      revoked permits.
                     </div>
-                    <Button 
+                    <Button
                       className="revoke__btn"
                       onClick={handleOpenRevokeDialog}
                     >
@@ -202,7 +204,7 @@ export const VoidPermitForm = ({
             </div>
           </div>
         </div>
-        
+
         <div className="form-section form-section--submit">
           <div className="form-section__label"></div>
           <div className="form-section__input-area">
@@ -240,6 +242,6 @@ export const VoidPermitForm = ({
           />
         ) : null}
       </div>
-    </FormProvider>    
+    </FormProvider>
   );
 };

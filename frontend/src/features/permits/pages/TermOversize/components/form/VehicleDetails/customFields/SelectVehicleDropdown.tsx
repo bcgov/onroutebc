@@ -65,7 +65,7 @@ export const SelectVehicleDropdown = ({
   const eligibleVehicles = removeIneligibleVehicles(
     sortedVehicles,
     TROS_INELIGIBLE_POWERUNITS,
-    TROS_INELIGIBLE_TRAILERS
+    TROS_INELIGIBLE_TRAILERS,
   );
 
   return (
@@ -74,7 +74,7 @@ export const SelectVehicleDropdown = ({
       <Autocomplete
         id="tros-select-vehicle"
         onChange={(_, value: Vehicle | null | undefined, reason) => {
-          if (!value || (reason === "clear")) {
+          if (!value || reason === "clear") {
             handleClearVehicle();
           } else {
             handleSelectVehicle(value);
@@ -98,11 +98,12 @@ export const SelectVehicleDropdown = ({
         ]}
         renderOption={(props, option) => {
           if (!option) return "";
-          const vehicleType = option.vehicleType === "powerUnit" ? "powerUnit" : "trailer";
+          const vehicleType =
+            option.vehicleType === "powerUnit" ? "powerUnit" : "trailer";
           return (
-            <li 
-              {...props} 
-              key={option.vin} 
+            <li
+              {...props}
+              key={option.vin}
               data-testid={`select-vehicle-option-${vehicleType}`}
             >
               {chooseFrom == "plate" ? option.plate : option.unitNumber}
@@ -110,14 +111,14 @@ export const SelectVehicleDropdown = ({
           );
         }}
         renderInput={(params) => (
-          <TextField 
-            sx={{ padding: 0 }} 
+          <TextField
+            sx={{ padding: 0 }}
             {...{
-              ...params, 
+              ...params,
               inputProps: {
-                ...params.inputProps, 
-                "data-testid": "select-vehicle-autocomplete"
-              }
+                ...params.inputProps,
+                "data-testid": "select-vehicle-autocomplete",
+              },
             }}
           />
         )}

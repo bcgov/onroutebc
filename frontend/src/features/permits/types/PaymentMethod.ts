@@ -22,7 +22,8 @@ export const PAYMENT_METHODS = {
   WebVisaDebit: "WebVisaDebit",
 } as const;
 
-export type PaymentMethod = typeof PAYMENT_METHODS[keyof typeof PAYMENT_METHODS];
+export type PaymentMethod =
+  (typeof PAYMENT_METHODS)[keyof typeof PAYMENT_METHODS];
 
 export const REFUND_METHODS = {
   Cheque: "Cheque",
@@ -35,7 +36,7 @@ export const REFUND_METHODS = {
   PPCVisaDebit: "PPCVisaDebit",
 } as const;
 
-export type RefundMethod = typeof REFUND_METHODS[keyof typeof REFUND_METHODS];
+export type RefundMethod = (typeof REFUND_METHODS)[keyof typeof REFUND_METHODS];
 
 export const paymentMethodDisplayText = (paymentMethod: PaymentMethod) => {
   switch (paymentMethod) {
@@ -105,14 +106,19 @@ export const refundMethodDisplayText = (refundMethod: RefundMethod) => {
   }
 };
 
-export const mapPaymentMethodToRefundMethods = (paymentMethod: PaymentMethod, useCreditAccount?: boolean): RefundMethod => {
+export const mapPaymentMethodToRefundMethods = (
+  paymentMethod: PaymentMethod,
+  useCreditAccount?: boolean,
+): RefundMethod => {
   switch (paymentMethod) {
-    case PAYMENT_METHODS.Cash: 
+    case PAYMENT_METHODS.Cash:
     case PAYMENT_METHODS.Cheque:
     case PAYMENT_METHODS.GA:
       return REFUND_METHODS.Cheque;
     case PAYMENT_METHODS.CreditAccount:
-      return useCreditAccount ? REFUND_METHODS.CreditAccount : REFUND_METHODS.Cheque;
+      return useCreditAccount
+        ? REFUND_METHODS.CreditAccount
+        : REFUND_METHODS.Cheque;
     case PAYMENT_METHODS.IcepayAMEX:
     case PAYMENT_METHODS.PoSAMEX:
     case PAYMENT_METHODS.WebAMEX:
@@ -144,7 +150,8 @@ export const BAMBORA_PAYMENT_METHODS = {
   IO: "IO", // Interac Online Transaction
 } as const;
 
-export type BamboraPaymentMethod = typeof BAMBORA_PAYMENT_METHODS[keyof typeof BAMBORA_PAYMENT_METHODS];
+export type BamboraPaymentMethod =
+  (typeof BAMBORA_PAYMENT_METHODS)[keyof typeof BAMBORA_PAYMENT_METHODS];
 
 export const CARD_TYPES = {
   VI: "VI", // Visa
@@ -155,13 +162,13 @@ export const CARD_TYPES = {
   IO: "IO", // Interac Online
 } as const;
 
-export type CardType = typeof CARD_TYPES[keyof typeof CARD_TYPES];
+export type CardType = (typeof CARD_TYPES)[keyof typeof CARD_TYPES];
 
 // Incomplete, needs to confirm and change database schema for payment methods
 // since it's insufficient to determine payment method through Bambora payment method and card type alone
 export const getPaymentMethod = (
-  payMethod?: BamboraPaymentMethod | null, 
-  cardType?: CardType | null
+  payMethod?: BamboraPaymentMethod | null,
+  cardType?: CardType | null,
 ): PaymentMethod | undefined => {
   if (payMethod !== BAMBORA_PAYMENT_METHODS.CC) {
     return undefined; // Could be either cash, cheque, GA, Credit Account, or Interac/Debit
@@ -180,11 +187,13 @@ export const getPaymentMethod = (
     case CARD_TYPES.VI:
       return PAYMENT_METHODS.WebVisa;
     default:
-      return undefined; // unknown value for Interac payment 
+      return undefined; // unknown value for Interac payment
   }
 };
 
-export const getRefundMethodByCardType = (cardType?: CardType | null): RefundMethod => {
+export const getRefundMethodByCardType = (
+  cardType?: CardType | null,
+): RefundMethod => {
   switch (cardType) {
     case CARD_TYPES.AM:
       return REFUND_METHODS.PPCAMEX;

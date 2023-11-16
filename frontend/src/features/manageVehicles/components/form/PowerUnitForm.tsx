@@ -8,21 +8,25 @@ import { PowerUnit, VehicleType } from "../../types/managevehicles";
 import { CountryAndProvince } from "../../../../common/components/form/CountryAndProvince";
 import { CustomFormComponent } from "../../../../common/components/form/CustomFormComponents";
 import { SnackBarContext } from "../../../../App";
-import { getDefaultRequiredVal, getDefaultNullableVal } from "../../../../common/helpers/util";
+import { VEHICLES_ROUTES } from "../../../../routes/constants";
+import {
+  getDefaultRequiredVal,
+  getDefaultNullableVal,
+} from "../../../../common/helpers/util";
+
 import {
   useAddPowerUnitMutation,
   usePowerUnitTypesQuery,
   useUpdatePowerUnitMutation,
 } from "../../apiManager/hooks";
 
-import { 
-  invalidNumber, 
-  invalidPlateLength, 
-  invalidVINLength, 
-  invalidYearMin, 
-  requiredMessage 
+import {
+  invalidNumber,
+  invalidPlateLength,
+  invalidVINLength,
+  invalidYearMin,
+  requiredMessage,
 } from "../../../../common/helpers/validationMessages";
-import { VEHICLES_ROUTES } from "../../../../routes/constants";
 
 /**
  * Props used by the power unit form.
@@ -84,8 +88,13 @@ export const PowerUnitForm = ({ powerUnit, companyId }: PowerUnitFormProps) => {
    */
   const onAddOrUpdateVehicle = async (data: FieldValues) => {
     // return input as a number if it's a valid number value, or original value if invalid number
-    const convertToNumberIfValid = (str?: string | null, valueToReturnWhenInvalid?: 0 | string | null) => {
-      return str != null && str !== "" && !isNaN(Number(str)) ? Number(str) : valueToReturnWhenInvalid;
+    const convertToNumberIfValid = (
+      str?: string | null,
+      valueToReturnWhenInvalid?: 0 | string | null,
+    ) => {
+      return str != null && str !== "" && !isNaN(Number(str))
+        ? Number(str)
+        : valueToReturnWhenInvalid;
     };
 
     if (powerUnit?.powerUnitId) {
@@ -98,7 +107,10 @@ export const PowerUnitForm = ({ powerUnit, companyId }: PowerUnitFormProps) => {
           /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
           year: convertToNumberIfValid(data.year, data.year as string) as any,
           /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-          licensedGvw: convertToNumberIfValid(data.licensedGvw, data.licensedGvw as string) as any,
+          licensedGvw: convertToNumberIfValid(
+            data.licensedGvw,
+            data.licensedGvw as string,
+          ) as any,
         },
         companyId,
       });
@@ -120,8 +132,12 @@ export const PowerUnitForm = ({ powerUnit, companyId }: PowerUnitFormProps) => {
           ...powerUnitToBeAdded,
           // need to explicitly convert form values to number here (since we can't use valueAsNumber prop)
           year: !isNaN(Number(data.year)) ? Number(data.year) : data.year,
-          licensedGvw: data.licensedGvw != null && data.licensedGvw !== "" && !isNaN(Number(data.licensedGvw)) ?
-            Number(data.licensedGvw) : data.licensedGvw
+          licensedGvw:
+            data.licensedGvw != null &&
+            data.licensedGvw !== "" &&
+            !isNaN(Number(data.licensedGvw))
+              ? Number(data.licensedGvw)
+              : data.licensedGvw,
         },
         companyId,
       });
@@ -131,7 +147,7 @@ export const PowerUnitForm = ({ powerUnit, companyId }: PowerUnitFormProps) => {
           showSnackbar: true,
           setShowSnackbar: () => true,
           message: "Power unit has been added successfully",
-          alertType: "success"
+          alertType: "success",
         });
 
         navigate(VEHICLES_ROUTES.MANAGE);
@@ -171,9 +187,9 @@ export const PowerUnitForm = ({ powerUnit, companyId }: PowerUnitFormProps) => {
             feature={FEATURE}
             options={{
               name: "make",
-              rules: { 
-                required: { value: true, message: requiredMessage() }, 
-                maxLength: 20 
+              rules: {
+                required: { value: true, message: requiredMessage() },
+                maxLength: 20,
               },
               label: "Make",
               width: formFieldStyle.width,
@@ -190,7 +206,8 @@ export const PowerUnitForm = ({ powerUnit, companyId }: PowerUnitFormProps) => {
                 maxLength: 4,
                 validate: {
                   isNumber: (v) => !isNaN(v) || invalidNumber(),
-                  lessThan1950: v => parseInt(v) > 1950 || invalidYearMin(1950),
+                  lessThan1950: (v) =>
+                    parseInt(v) > 1950 || invalidYearMin(1950),
                 },
               },
               inputType: "number",
@@ -220,9 +237,9 @@ export const PowerUnitForm = ({ powerUnit, companyId }: PowerUnitFormProps) => {
             feature={FEATURE}
             options={{
               name: "plate",
-              rules: { 
-                required: { value: true, message: requiredMessage() }, 
-                maxLength: { value: 10, message: invalidPlateLength(10) }
+              rules: {
+                required: { value: true, message: requiredMessage() },
+                maxLength: { value: 10, message: invalidPlateLength(10) },
               },
               label: "Plate",
               width: formFieldStyle.width,

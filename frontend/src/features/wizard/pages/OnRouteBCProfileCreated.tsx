@@ -57,7 +57,7 @@ export const OnRouteBCProfileCreated = memo(
         </div>
       </div>
     );
-  }
+  },
 );
 
 OnRouteBCProfileCreated.displayName = "OnRouteBCProfileCreated";

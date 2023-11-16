@@ -1,11 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import {
-  Box,
-  MenuItem,
-  SelectChangeEvent,
-  Button,
-} from "@mui/material";
+import { Box, MenuItem, SelectChangeEvent, Button } from "@mui/material";
 
 import "./StartApplication.scss";
 import { PERMIT_TYPE_CHOOSE_FROM_OPTIONS } from "../../../../constants/constants";

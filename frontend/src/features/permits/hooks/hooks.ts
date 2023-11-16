@@ -55,13 +55,15 @@ export const useSaveTermOversizeMutation = () => {
  * @returns appropriate Application data, or error if failed
  */
 export const useApplicationDetailsQuery = (permitId?: string) => {
-  const [applicationData, setApplicationData] = useState<Application | undefined>(undefined);
-  
+  const [applicationData, setApplicationData] = useState<
+    Application | undefined
+  >(undefined);
+
   // Currently, creating new application route doesn't contain permitId
   // ie. route === "/applications/permits" instead of "/applications/:permitId"
   // Thus we need to do a check
   const isPermitIdValid = permitId != null && !isNaN(Number(permitId));
-  
+
   const query = useQuery({
     queryKey: ["termOversize"],
     queryFn: () => getApplicationByPermitId(permitId),
@@ -75,9 +77,7 @@ export const useApplicationDetailsQuery = (permitId?: string) => {
         setApplicationData(undefined);
       } else {
         // if found, convert to ApplicationResponse object to Application (date string values to Dayjs objects to be used for date inputs)
-        setApplicationData(
-          mapApplicationResponseToApplication(application)
-        );
+        setApplicationData(mapApplicationResponseToApplication(application));
       }
     },
   });
@@ -97,7 +97,7 @@ export const useApplicationDetailsQuery = (permitId?: string) => {
  */
 export const usePermitDetailsQuery = (permitId?: string) => {
   const [permit, setPermit] = useState<Permit | null | undefined>(undefined);
-  
+
   const invalidPermitId = !permitId;
   const query = useQuery({
     queryKey: ["permit"],
@@ -123,7 +123,9 @@ export const usePermitDetailsQuery = (permitId?: string) => {
  * @returns The mutation object, as well as the transaction that was started (if there is one, or undefined if there's an error).
  */
 export const useStartTransaction = () => {
-  const [transaction, setTransaction] = useState<StartTransactionResponseData | null | undefined>(undefined);
+  const [transaction, setTransaction] = useState<
+    StartTransactionResponseData | null | undefined
+  >(undefined);
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
@@ -154,12 +156,14 @@ export const useStartTransaction = () => {
  */
 export const useCompleteTransaction = (
   messageText: string,
-  paymentStatus: number
+  paymentStatus: number,
 ) => {
   const queryClient = useQueryClient();
-  const [paymentApproved, setPaymentApproved] = useState<boolean | undefined>(undefined);
+  const [paymentApproved, setPaymentApproved] = useState<boolean | undefined>(
+    undefined,
+  );
   const [message, setMessage] = useState<string>(messageText);
-  
+
   const onTransactionResult = (message: string, paymentApproved: boolean) => {
     setMessage(message);
     setPaymentApproved(paymentApproved);
@@ -172,8 +176,8 @@ export const useCompleteTransaction = (
     }
     if (err.response) {
       onTransactionResult(
-        `Payment approved but error in ORBC Backend: ${err.response.data.message}`, 
-        false
+        `Payment approved but error in ORBC Backend: ${err.response.data.message}`,
+        false,
       );
     } else {
       onTransactionResult("Request Error", false);
@@ -213,7 +217,7 @@ export const useCompleteTransaction = (
  */
 export const usePermitHistoryQuery = (originalPermitId?: string) => {
   const [permitHistory, setPermitHistory] = useState<PermitHistory[]>([]);
-  
+
   const query = useQuery({
     queryKey: ["permitHistory"],
     queryFn: () => getPermitHistory(originalPermitId),
@@ -238,7 +242,9 @@ export const usePermitHistoryQuery = (originalPermitId?: string) => {
  * @returns Mutation object, and the issued results response.
  */
 export const useIssuePermits = () => {
-  const [issueResults, setIssueResults] = useState<IssuePermitsResponse | undefined>(undefined);
+  const [issueResults, setIssueResults] = useState<
+    IssuePermitsResponse | undefined
+  >(undefined);
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
@@ -316,8 +322,10 @@ export const useModifyAmendmentApplication = () => {
  * @returns Current application used for amendment, or null/undefined
  */
 export const useAmendmentApplicationQuery = (originalPermitId?: string) => {
-  const [amendmentApplication, setAmendmentApplication] = useState<Permit | null | undefined>(undefined);
-  
+  const [amendmentApplication, setAmendmentApplication] = useState<
+    Permit | null | undefined
+  >(undefined);
+
   const isIdInvalid = !originalPermitId;
   const query = useQuery({
     queryKey: ["amendmentApplication"],

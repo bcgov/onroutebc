@@ -7,13 +7,14 @@ const USER_MANAGEMENT_OPTION_TYPES = {
   EDIT: "edit",
 } as const;
 
-type UserManagementOptionType = typeof USER_MANAGEMENT_OPTION_TYPES[keyof typeof USER_MANAGEMENT_OPTION_TYPES];
+type UserManagementOptionType =
+  (typeof USER_MANAGEMENT_OPTION_TYPES)[keyof typeof USER_MANAGEMENT_OPTION_TYPES];
 
 const USER_MANAGEMENT_OPTIONS: {
   label: string;
   value: UserManagementOptionType;
 }[] = [
-  { 
+  {
     label: "Edit",
     value: USER_MANAGEMENT_OPTION_TYPES.EDIT,
   },

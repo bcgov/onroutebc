@@ -1,31 +1,31 @@
 import { vi } from "vitest";
 import {
   chooseOption,
-  clickSubmit, 
-  countrySelect, 
-  licensedGvwInput, 
-  makeInput, 
-  numericInputs, 
-  plateInput, 
-  powerUnitTypeCodeSelect, 
-  provinceSelect, 
-  replaceValueForInput, 
-  selectOptionsAndButtons, 
+  clickSubmit,
+  countrySelect,
+  licensedGvwInput,
+  makeInput,
+  numericInputs,
+  plateInput,
+  powerUnitTypeCodeSelect,
+  provinceSelect,
+  replaceValueForInput,
+  selectOptionsAndButtons,
   steerAxleTireSizeInput,
-  submitVehicleForm, 
-  textInputs, 
-  unitNumberInput, 
-  vinErrorDisplay, 
-  vinInput, 
+  submitVehicleForm,
+  textInputs,
+  unitNumberInput,
+  vinErrorDisplay,
+  vinInput,
   yearInput,
 } from "./helpers/access";
 
-import { 
-  closeMockServer, 
-  defaultPowerUnitSubtypes, 
-  listenToMockServer, 
-  powerUnitDetails, 
-  renderTestPowerUnitForm, 
+import {
+  closeMockServer,
+  defaultPowerUnitSubtypes,
+  listenToMockServer,
+  powerUnitDetails,
+  renderTestPowerUnitForm,
   resetMockServer,
 } from "./helpers/prepare";
 import { assertSuccessfulSubmit } from "./helpers/assert";
@@ -144,7 +144,7 @@ describe("Power Unit Form Submission", () => {
   it("should successfully submit form without errors shown on ui", async () => {
     // Arrange
     const { user } = renderTestPowerUnitForm();
-    
+
     // Act
     await submitVehicleForm(user, "powerUnit", powerUnitDetails);
 

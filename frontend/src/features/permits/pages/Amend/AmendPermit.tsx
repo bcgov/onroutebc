@@ -8,7 +8,11 @@ import { hasPermitExpired } from "../../helpers/permitPDFHelper";
 import { Banner } from "../../../../common/components/dashboard/Banner";
 import { useMultiStepForm } from "../../hooks/useMultiStepForm";
 import { AmendPermitContext } from "./context/AmendPermitContext";
-import { useAmendmentApplicationQuery, usePermitDetailsQuery, usePermitHistoryQuery } from "../../hooks/hooks";
+import {
+  useAmendmentApplicationQuery,
+  usePermitDetailsQuery,
+  usePermitHistoryQuery,
+} from "../../hooks/hooks";
 import { Loading } from "../../../../common/pages/Loading";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { USER_AUTH_GROUP } from "../../../manageProfile/types/userManagement.d";
@@ -18,9 +22,15 @@ import { Unexpected } from "../../../../common/pages/Unexpected";
 import { AmendPermitReview } from "./components/AmendPermitReview";
 import { AmendPermitFinish } from "./components/AmendPermitFinish";
 import { AmendPermitForm } from "./components/AmendPermitForm";
-import { AmendPermitFormData, getDefaultFormDataFromPermit } from "./types/AmendPermitFormData";
+import {
+  AmendPermitFormData,
+  getDefaultFormDataFromPermit,
+} from "./types/AmendPermitFormData";
 import { IDIR_ROUTES } from "../../../../routes/constants";
-import { SEARCH_BY_FILTERS, SEARCH_ENTITIES } from "../../../idir/search/types/types";
+import {
+  SEARCH_BY_FILTERS,
+  SEARCH_ENTITIES,
+} from "../../../idir/search/types/types";
 import { applyWhenNotNullable } from "../../../../common/helpers/util";
 
 export const AMEND_PERMIT_STEPS = {
@@ -29,7 +39,8 @@ export const AMEND_PERMIT_STEPS = {
   Finish: "Finish",
 } as const;
 
-export type AmendPermitStep = typeof AMEND_PERMIT_STEPS[keyof typeof AMEND_PERMIT_STEPS];
+export type AmendPermitStep =
+  (typeof AMEND_PERMIT_STEPS)[keyof typeof AMEND_PERMIT_STEPS];
 
 const displayHeaderText = (stepKey: AmendPermitStep) => {
   switch (stepKey) {
@@ -48,12 +59,18 @@ const displayHeaderText = (stepKey: AmendPermitStep) => {
  * @returns whether or not the permit is amendable
  */
 const isAmendable = (permit: Permit) => {
-  return permit.permitStatus === PERMIT_STATUSES.ISSUED 
-    || (!isPermitInactive(permit.permitStatus) && !hasPermitExpired(permit.permitData.expiryDate));
+  return (
+    permit.permitStatus === PERMIT_STATUSES.ISSUED ||
+    (!isPermitInactive(permit.permitStatus) &&
+      !hasPermitExpired(permit.permitData.expiryDate))
+  );
 };
 
 const isAmendableByUser = (authGroup?: string) => {
-  return authGroup === USER_AUTH_GROUP.PPCCLERK || authGroup === USER_AUTH_GROUP.SYSADMIN;
+  return (
+    authGroup === USER_AUTH_GROUP.PPCCLERK ||
+    authGroup === USER_AUTH_GROUP.SYSADMIN
+  );
 };
 
 const searchRoute = `${IDIR_ROUTES.SEARCH_RESULTS}?searchEntity=${SEARCH_ENTITIES.PERMIT}`
@@ -74,7 +91,8 @@ export const AmendPermit = () => {
   const { permitHistory } = usePermitHistoryQuery(originalPermitId);
 
   // Get latest amendment application, if any
-  const { amendmentApplication } = useAmendmentApplicationQuery(originalPermitId);
+  const { amendmentApplication } =
+    useAmendmentApplicationQuery(originalPermitId);
 
   const permitFormDefaultValues = () => {
     if (amendmentApplication) {
@@ -83,33 +101,25 @@ export const AmendPermit = () => {
 
     return getDefaultFormDataFromPermit(
       applyWhenNotNullable(
-        p => ({
+        (p) => ({
           ...p,
           comment: "",
-        }), 
-        permit
-      )
+        }),
+        permit,
+      ),
     );
   };
 
   // Permit form data, populated whenever permit is fetched
   const [permitFormData, setPermitFormData] = useState<AmendPermitFormData>(
-    permitFormDefaultValues()
+    permitFormDefaultValues(),
   );
 
   useEffect(() => {
-    setPermitFormData(
-      permitFormDefaultValues()
-    );
+    setPermitFormData(permitFormDefaultValues());
   }, [amendmentApplication, permit]);
 
-  const {
-    currentStepIndex,
-    step,
-    back,
-    next,
-    goTo,
-  } = useMultiStepForm([
+  const { currentStepIndex, step, back, next, goTo } = useMultiStepForm([
     <AmendPermitForm key={AMEND_PERMIT_STEPS.Amend} />,
     <AmendPermitReview key={AMEND_PERMIT_STEPS.Review} />,
     <AmendPermitFinish key={AMEND_PERMIT_STEPS.Finish} />,
@@ -143,7 +153,9 @@ export const AmendPermit = () => {
   ];
 
   const getLinks = () => {
-    const filteredLinks = allLinks.filter((_, index) => index <= currentStepIndex + 1);
+    const filteredLinks = allLinks.filter(
+      (_, index) => index <= currentStepIndex + 1,
+    );
     return filteredLinks.map((link, index) => {
       if (index === currentStepIndex + 1) {
         return {
@@ -155,35 +167,40 @@ export const AmendPermit = () => {
   };
 
   const isLoadingState = () => {
-    return typeof permit === "undefined" 
-      || typeof amendmentApplication === "undefined";
+    return (
+      typeof permit === "undefined" ||
+      typeof amendmentApplication === "undefined"
+    );
   };
 
-  const contextData = useMemo(() => ({
-    permit,
-    permitFormData,
-    permitHistory,
-    setPermitFormData,
-    next,
-    back,
-    goTo,
-    currentStepIndex,
-    getLinks,
-    goHome,
-    afterFinishAmend: goHomeSuccess,
-  }), [
-    permit,
-    permitFormData,
-    permitHistory,
-    setPermitFormData,
-    next,
-    back,
-    goTo,
-    currentStepIndex,
-    getLinks,
-    goHome,
-    goHomeSuccess,
-  ]);
+  const contextData = useMemo(
+    () => ({
+      permit,
+      permitFormData,
+      permitHistory,
+      setPermitFormData,
+      next,
+      back,
+      goTo,
+      currentStepIndex,
+      getLinks,
+      goHome,
+      afterFinishAmend: goHomeSuccess,
+    }),
+    [
+      permit,
+      permitFormData,
+      permitHistory,
+      setPermitFormData,
+      next,
+      back,
+      goTo,
+      currentStepIndex,
+      getLinks,
+      goHome,
+      goHomeSuccess,
+    ],
+  );
 
   if (isLoadingState()) {
     return <Loading />;
@@ -202,9 +219,7 @@ export const AmendPermit = () => {
   }
 
   return (
-    <AmendPermitContext.Provider
-      value={contextData}
-    >
+    <AmendPermitContext.Provider value={contextData}>
       <Box
         className="layout-box"
         sx={{

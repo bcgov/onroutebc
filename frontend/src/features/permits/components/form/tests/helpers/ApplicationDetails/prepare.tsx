@@ -42,10 +42,12 @@ export const permitType = PERMIT_TYPES.TROS;
 const server = setupServer(
   // Mock get company info
   rest.get(`${MANAGE_PROFILE_API.COMPANIES}/:companyId`, (_, res, ctx) => {
-    return res(ctx.json({
-      ...defaultCompanyInfo,
-    }));
-  })
+    return res(
+      ctx.json({
+        ...defaultCompanyInfo,
+      }),
+    );
+  }),
 );
 
 export const listenToMockServer = () => {
@@ -61,10 +63,10 @@ export const closeMockServer = () => {
 };
 
 export const renderTestComponent = (
-  permitType?: string, 
-  applicationNumber?: string, 
-  createdDt?: Dayjs, 
-  updatedDt?: Dayjs
+  permitType?: string,
+  applicationNumber?: string,
+  createdDt?: Dayjs,
+  updatedDt?: Dayjs,
 ) => {
   return renderWithClient(
     <ApplicationDetails
@@ -74,6 +76,6 @@ export const renderTestComponent = (
       createdDateTime={createdDt}
       updatedDateTime={updatedDt}
       companyInfo={defaultCompanyInfo}
-    />
+    />,
   );
 };

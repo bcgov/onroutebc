@@ -1,15 +1,18 @@
 import { getDefaultRequiredVal } from "../../../common/helpers/util";
 import { VehicleDetails } from "../types/application.d";
-import { PowerUnit, Trailer } from "../../manageVehicles/types/managevehicles.d";
+import {
+  PowerUnit,
+  Trailer,
+} from "../../manageVehicles/types/managevehicles.d";
 import { mapVinToVehicleObject } from "../helpers/mappers";
-import { 
-  useAddPowerUnitMutation, 
-  useAddTrailerMutation, 
-  usePowerUnitTypesQuery, 
-  useTrailerTypesQuery, 
-  useUpdatePowerUnitMutation, 
+import {
+  useAddPowerUnitMutation,
+  useAddTrailerMutation,
+  usePowerUnitTypesQuery,
+  useTrailerTypesQuery,
+  useUpdatePowerUnitMutation,
   useUpdateTrailerMutation,
-  useVehiclesQuery, 
+  useVehiclesQuery,
 } from "../../manageVehicles/apiManager/hooks";
 
 export const usePermitVehicleManagement = (companyId: string) => {
@@ -26,7 +29,10 @@ export const usePermitVehicleManagement = (companyId: string) => {
 
   // Vehicle details that have been fetched by vehicle details queries
   const fetchedVehicles = getDefaultRequiredVal([], allVehiclesQuery.data);
-  const fetchedPowerUnitTypes = getDefaultRequiredVal([], powerUnitTypesQuery.data);
+  const fetchedPowerUnitTypes = getDefaultRequiredVal(
+    [],
+    powerUnitTypesQuery.data,
+  );
   const fetchedTrailerTypes = getDefaultRequiredVal([], trailerTypesQuery.data);
 
   const handleSaveVehicle = (vehicleData?: VehicleDetails) => {
@@ -37,14 +43,11 @@ export const usePermitVehicleManagement = (companyId: string) => {
     const vehicle = vehicleData;
 
     // Check if the vehicle that is to be saved was created from an existing vehicle
-    const existingVehicle = mapVinToVehicleObject(
-      fetchedVehicles,
-      vehicle.vin
-    );
+    const existingVehicle = mapVinToVehicleObject(fetchedVehicles, vehicle.vin);
 
     const transformByVehicleType = (
       vehicleFormData: VehicleDetails,
-      existingVehicle?: PowerUnit | Trailer
+      existingVehicle?: PowerUnit | Trailer,
     ): PowerUnit | Trailer => {
       const defaultPowerUnit: PowerUnit = {
         powerUnitId: "",
@@ -74,7 +77,10 @@ export const usePermitVehicleManagement = (companyId: string) => {
         case "trailer":
           return {
             ...defaultTrailer,
-            trailerId: getDefaultRequiredVal("", (existingVehicle as Trailer)?.trailerId),
+            trailerId: getDefaultRequiredVal(
+              "",
+              (existingVehicle as Trailer)?.trailerId,
+            ),
             unitNumber: getDefaultRequiredVal("", existingVehicle?.unitNumber),
           } as Trailer;
         case "powerUnit":
@@ -82,14 +88,20 @@ export const usePermitVehicleManagement = (companyId: string) => {
           return {
             ...defaultPowerUnit,
             unitNumber: getDefaultRequiredVal("", existingVehicle?.unitNumber),
-            powerUnitId: getDefaultRequiredVal("", (existingVehicle as PowerUnit)?.powerUnitId),
+            powerUnitId: getDefaultRequiredVal(
+              "",
+              (existingVehicle as PowerUnit)?.powerUnitId,
+            ),
           } as PowerUnit;
       }
     };
 
     // If the vehicle type is a power unit then create a power unit object
     if (vehicle.vehicleType === "powerUnit") {
-      const powerUnit = transformByVehicleType(vehicle, existingVehicle) as PowerUnit;
+      const powerUnit = transformByVehicleType(
+        vehicle,
+        existingVehicle,
+      ) as PowerUnit;
 
       // Either send a PUT or POST request based on powerUnitID
       if (powerUnit.powerUnitId) {
@@ -105,11 +117,14 @@ export const usePermitVehicleManagement = (companyId: string) => {
         });
       }
     } else if (vehicle.vehicleType === "trailer") {
-      const trailer = transformByVehicleType(vehicle, existingVehicle) as Trailer;
-      
+      const trailer = transformByVehicleType(
+        vehicle,
+        existingVehicle,
+      ) as Trailer;
+
       if (trailer.trailerId) {
-        updateTrailerMutation.mutate({ 
-          trailer, 
+        updateTrailerMutation.mutate({
+          trailer,
           trailerId: trailer.trailerId,
           companyId,
         });

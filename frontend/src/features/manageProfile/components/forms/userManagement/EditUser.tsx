@@ -1,15 +1,7 @@
 import { memo, useContext, useState } from "react";
+import { Box, Button, Divider, Link, Stack, Typography } from "@mui/material";
 import { useMutation } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
-import {
-  Box,
-  Button,
-  Divider,
-  Link,
-  Stack,
-  Typography
-} from "@mui/material";
-
+import { useNavigate } from "react-router";
 import {
   Controller,
   FieldValues,
@@ -19,7 +11,6 @@ import {
 
 import { SnackBarContext } from "../../../../../App";
 import { formatPhoneNumber } from "../../../../../common/components/form/subFormComponents/PhoneNumberInput";
-import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../../../common/helpers/util";
 import { requiredMessage } from "../../../../../common/helpers/validationMessages";
 import { PROFILE_ROUTES } from "../../../../../routes/constants";
 import { BC_COLOURS } from "../../../../../themes/bcGovStyles";
@@ -30,6 +21,10 @@ import UserGroupsAndPermissionsModal from "../../user-management/UserGroupsAndPe
 import { ReusableUserInfoForm } from "../common/ReusableUserInfoForm";
 import "../myInfo/MyInfoForm.scss";
 import { UserAuthRadioGroup } from "./UserAuthRadioGroup";
+import {
+  applyWhenNotNullable,
+  getDefaultRequiredVal,
+} from "../../../../../common/helpers/util";
 
 /**
  * Edit User form for User Management.
@@ -209,7 +204,7 @@ export const EditUserForm = memo(
         </Box>
       </FormProvider>
     );
-  }
+  },
 );
 
 EditUserForm.displayName = "EditUserForm";

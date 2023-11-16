@@ -16,4 +16,4 @@ export const NavIconReportButton = () => {
       onClick={() => navigate(IDIR_ROUTES.WELCOME)}
     />
   );
-}
+};

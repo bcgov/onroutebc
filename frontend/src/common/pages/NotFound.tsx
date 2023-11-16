@@ -5,13 +5,13 @@ import { HOME } from "../../routes/constants";
 
 export const NotFound = () => {
   return (
-    <ErrorPage 
+    <ErrorPage
       errorTitle="Page not found"
-      msgNode={(
+      msgNode={
         <>
           Please visit <Link to={HOME}>onRouteBC</Link>.
         </>
-      )}
+      }
     />
   );
 };
