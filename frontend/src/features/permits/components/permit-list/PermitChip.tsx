@@ -1,8 +1,8 @@
 import { OnRouteBCChip } from "../../../../common/components/table/OnRouteBCChip";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
-import { 
-  PERMIT_EXPIRED, 
-  PERMIT_STATUSES, 
+import {
+  PERMIT_EXPIRED,
+  PERMIT_STATUSES,
   isPermitInactive,
 } from "../../types/PermitStatus";
 
@@ -14,7 +14,7 @@ import {
  * @returns An object containing the text and background colors
  */
 const getColors = (
-  permitStatus?: string
+  permitStatus?: string,
 ): { background: string; color: string } | undefined => {
   switch (permitStatus) {
     case PERMIT_STATUSES.VOIDED:
@@ -72,11 +72,7 @@ const shouldShowPermitChip = (permitStatus?: string) => {
 /**
  * A simple chip component to be displayed beside the permit number.
  */
-export const PermitChip = ({
-  permitStatus,
-}: {
-  permitStatus?: string;
-}) => {
+export const PermitChip = ({ permitStatus }: { permitStatus?: string }) => {
   if (!shouldShowPermitChip(permitStatus)) {
     return null;
   }
@@ -84,10 +80,7 @@ export const PermitChip = ({
   const chipColours = getColors(permitStatus);
   return chipColours ? (
     <>
-      <OnRouteBCChip
-        {...chipColours}
-        message={getTextForBadge(permitStatus)}
-      />
+      <OnRouteBCChip {...chipColours} message={getTextForBadge(permitStatus)} />
     </>
   ) : null;
 };

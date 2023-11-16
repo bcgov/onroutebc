@@ -4,13 +4,13 @@ import { ErrorPage } from "../components/error/ErrorPage";
 
 export const NotFound = () => {
   return (
-    <ErrorPage 
+    <ErrorPage
       errorTitle="Page not found"
-      msgNode={(
+      msgNode={
         <>
           Please visit <Link to="/">onRouteBC</Link>.
         </>
-      )}
+      }
     />
   );
 };

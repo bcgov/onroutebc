@@ -19,14 +19,10 @@ export const ErrorPage = ({
           src="/Error_Screen_Graphic.svg"
           alt="Error Screen Graphic"
         />
-        <div className="error-page__title">
-          {errorTitle}
-        </div>
+        <div className="error-page__title">{errorTitle}</div>
         <div className="error-page__msg">
           <Divider />
-          <p className="msg">
-            {msgNode}
-          </p>
+          <p className="msg">{msgNode}</p>
           <Divider />
         </div>
       </div>

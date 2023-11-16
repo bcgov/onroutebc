@@ -13,7 +13,10 @@ import { PowerUnitForm } from "../form/PowerUnitForm";
 import { TrailerForm } from "../form/TrailerForm";
 import { getVehicleById } from "../../apiManager/vehiclesAPI";
 import { PowerUnit, Trailer } from "../../types/managevehicles";
-import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../../common/helpers/util";
+import {
+  applyWhenNotNullable,
+  getDefaultRequiredVal,
+} from "../../../../common/helpers/util";
 import { DATE_FORMATS, toLocal } from "../../../../common/helpers/formatDate";
 import { getCompanyIdFromSession } from "../../../../common/apiManager/httpRequestHandler";
 
@@ -23,22 +26,20 @@ export const EditVehicleDashboard = React.memo(
     const { vehicleId } = useParams();
     const companyId = getDefaultRequiredVal("0", getCompanyIdFromSession());
 
-    const isEditPowerUnit = (editVehicleMode: VEHICLE_TYPES_ENUM) => 
+    const isEditPowerUnit = (editVehicleMode: VEHICLE_TYPES_ENUM) =>
       editVehicleMode === VEHICLE_TYPES_ENUM.POWER_UNIT;
-    const isEditTrailer = (editVehicleMode: VEHICLE_TYPES_ENUM) => 
+    const isEditTrailer = (editVehicleMode: VEHICLE_TYPES_ENUM) =>
       editVehicleMode === VEHICLE_TYPES_ENUM.TRAILER;
-    
+
     const { data: vehicleToEdit, isLoading } = useQuery(
       ["vehicleById", vehicleId],
       () =>
         getVehicleById(
           vehicleId as string,
-          isEditPowerUnit(editVehicleMode)
-            ? "powerUnit"
-            : "trailer",
-          companyId
+          isEditPowerUnit(editVehicleMode) ? "powerUnit" : "trailer",
+          companyId,
         ),
-      { retry: false, enabled: true }
+      { retry: false, enabled: true },
     );
 
     const handleShowAddVehicle = () => {
@@ -47,35 +48,39 @@ export const EditVehicleDashboard = React.memo(
 
     return (
       <div className="dashboard-page">
-        <Box
-          className="dashboard-page__banner layout-box"
-        >
-          {(isEditPowerUnit(editVehicleMode) || isEditTrailer(editVehicleMode)) && (
+        <Box className="dashboard-page__banner layout-box">
+          {(isEditPowerUnit(editVehicleMode) ||
+            isEditTrailer(editVehicleMode)) && (
             <Banner
-              bannerText={`Edit ${isEditPowerUnit(editVehicleMode) ? "Power Unit" : "Trailer"}`}
+              bannerText={`Edit ${
+                isEditPowerUnit(editVehicleMode) ? "Power Unit" : "Trailer"
+              }`}
               // Replace with a grid structure
               bannerSubtext={
                 <div>
                   <strong>Date Created:</strong>
                   &nbsp;
                   {applyWhenNotNullable(
-                    (dateTimeStr: string) => toLocal(dateTimeStr, DATE_FORMATS.SHORT),
+                    (dateTimeStr: string) =>
+                      toLocal(dateTimeStr, DATE_FORMATS.SHORT),
                     vehicleToEdit?.createdDateTime,
-                    ""
+                    "",
                   )}
                   &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
                   <strong>Last Updated:</strong>&nbsp;{" "}
                   {getDefaultRequiredVal(
                     "",
                     applyWhenNotNullable(
-                      (dateTimeStr: string) => toLocal(dateTimeStr, DATE_FORMATS.SHORT),
-                      vehicleToEdit?.updatedDateTime
+                      (dateTimeStr: string) =>
+                        toLocal(dateTimeStr, DATE_FORMATS.SHORT),
+                      vehicleToEdit?.updatedDateTime,
                     ),
                     applyWhenNotNullable(
-                      (dateTimeStr: string) => toLocal(dateTimeStr, DATE_FORMATS.SHORT),
+                      (dateTimeStr: string) =>
+                        toLocal(dateTimeStr, DATE_FORMATS.SHORT),
                       vehicleToEdit?.createdDateTime,
-                      ""
-                    )
+                      "",
+                    ),
                   )}
                 </div>
               }
@@ -84,9 +89,7 @@ export const EditVehicleDashboard = React.memo(
           )}
         </Box>
 
-        <Box
-          className="dashboard-page__breadcrumb layout-box"
-        >
+        <Box className="dashboard-page__breadcrumb layout-box">
           <Typography
             className="breadcrumb-link breadcrumb-link--parent"
             onClick={handleShowAddVehicle}
@@ -94,10 +97,7 @@ export const EditVehicleDashboard = React.memo(
             Vehicle Inventory
           </Typography>
 
-          <FontAwesomeIcon
-            className="breadcrumb-icon"
-            icon={faChevronRight}
-          />
+          <FontAwesomeIcon className="breadcrumb-icon" icon={faChevronRight} />
 
           <Typography
             className="breadcrumb-link breadcrumb-link--parent"
@@ -107,10 +107,7 @@ export const EditVehicleDashboard = React.memo(
             {editVehicleMode === VEHICLE_TYPES_ENUM.TRAILER && "Trailer"}
           </Typography>
 
-          <FontAwesomeIcon
-            className="breadcrumb-icon"
-            icon={faChevronRight}
-          />
+          <FontAwesomeIcon className="breadcrumb-icon" icon={faChevronRight} />
 
           <Typography>
             {editVehicleMode === VEHICLE_TYPES_ENUM.POWER_UNIT &&
@@ -119,36 +116,36 @@ export const EditVehicleDashboard = React.memo(
           </Typography>
         </Box>
 
-        <Box
-          className="dashboard-page__info-banner layout-box"
-        >
+        <Box className="dashboard-page__info-banner layout-box">
           <InfoBcGovBanner
             width="880px"
             description="Please note, unless stated otherwise, all fields are mandatory."
           />
         </Box>
 
-        <Box
-          className="dashboard-page__form layout-box"
-        >
-          <Typography
-            variant={"h2"}
-          >
+        <Box className="dashboard-page__form layout-box">
+          <Typography variant={"h2"}>
             {editVehicleMode === VEHICLE_TYPES_ENUM.POWER_UNIT &&
               "Power Unit Details"}
             {editVehicleMode === VEHICLE_TYPES_ENUM.TRAILER &&
               "Trailer Details"}
           </Typography>
           {!isLoading && editVehicleMode === VEHICLE_TYPES_ENUM.POWER_UNIT && (
-            <PowerUnitForm powerUnit={vehicleToEdit as PowerUnit} companyId={companyId} />
+            <PowerUnitForm
+              powerUnit={vehicleToEdit as PowerUnit}
+              companyId={companyId}
+            />
           )}
           {!isLoading && editVehicleMode === VEHICLE_TYPES_ENUM.TRAILER && (
-            <TrailerForm trailer={vehicleToEdit as Trailer} companyId={companyId} />
+            <TrailerForm
+              trailer={vehicleToEdit as Trailer}
+              companyId={companyId}
+            />
           )}
         </Box>
       </div>
     );
-  }
+  },
 );
 
 EditVehicleDashboard.displayName = "EditVehicleDashboard";

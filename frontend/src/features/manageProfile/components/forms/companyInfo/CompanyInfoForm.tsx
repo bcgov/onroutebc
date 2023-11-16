@@ -11,7 +11,10 @@ import { CompanyPrimaryContactForm } from "./subForms/CompanyPrimaryContactForm"
 import { formatPhoneNumber } from "../../../../../common/components/form/subFormComponents/PhoneNumberInput";
 import { InfoBcGovBanner } from "../../../../../common/components/banners/AlertBanners";
 import { CompanyProfile } from "../../../types/manageProfile";
-import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../../../common/helpers/util";
+import {
+  applyWhenNotNullable,
+  getDefaultRequiredVal,
+} from "../../../../../common/helpers/util";
 import { getCompanyEmailFromSession } from "../../../../../common/apiManager/httpRequestHandler";
 
 /**
@@ -36,28 +39,69 @@ export const CompanyInfoForm = memo(
         clientNumber: getDefaultRequiredVal("", companyInfo?.clientNumber),
         legalName: getDefaultRequiredVal("", companyInfo?.legalName),
         mailingAddress: {
-          addressLine1: getDefaultRequiredVal("", companyInfo?.mailingAddress?.addressLine1),
-          addressLine2: getDefaultRequiredVal("", companyInfo?.mailingAddress?.addressLine2),
+          addressLine1: getDefaultRequiredVal(
+            "",
+            companyInfo?.mailingAddress?.addressLine1,
+          ),
+          addressLine2: getDefaultRequiredVal(
+            "",
+            companyInfo?.mailingAddress?.addressLine2,
+          ),
           city: getDefaultRequiredVal("", companyInfo?.mailingAddress?.city),
-          provinceCode: getDefaultRequiredVal("", companyInfo?.mailingAddress?.provinceCode),
-          countryCode: getDefaultRequiredVal("", companyInfo?.mailingAddress?.countryCode),
-          postalCode: getDefaultRequiredVal("", companyInfo?.mailingAddress?.postalCode),
+          provinceCode: getDefaultRequiredVal(
+            "",
+            companyInfo?.mailingAddress?.provinceCode,
+          ),
+          countryCode: getDefaultRequiredVal(
+            "",
+            companyInfo?.mailingAddress?.countryCode,
+          ),
+          postalCode: getDefaultRequiredVal(
+            "",
+            companyInfo?.mailingAddress?.postalCode,
+          ),
         },
         email: getDefaultRequiredVal("", companyEmail, companyInfo?.email),
         phone: applyWhenNotNullable(formatPhoneNumber, companyInfo?.phone, ""),
         extension: getDefaultRequiredVal("", companyInfo?.extension),
         fax: applyWhenNotNullable(formatPhoneNumber, companyInfo?.fax, ""),
         primaryContact: {
-          firstName: getDefaultRequiredVal("", companyInfo?.primaryContact?.firstName),
-          lastName: getDefaultRequiredVal("", companyInfo?.primaryContact?.lastName),
-          phone1: applyWhenNotNullable(formatPhoneNumber, companyInfo?.primaryContact?.phone1, ""),
-          phone1Extension: getDefaultRequiredVal("", companyInfo?.primaryContact?.phone1Extension),
-          phone2: applyWhenNotNullable(formatPhoneNumber, companyInfo?.primaryContact?.phone2, ""),
-          phone2Extension: getDefaultRequiredVal("", companyInfo?.primaryContact?.phone2Extension),
+          firstName: getDefaultRequiredVal(
+            "",
+            companyInfo?.primaryContact?.firstName,
+          ),
+          lastName: getDefaultRequiredVal(
+            "",
+            companyInfo?.primaryContact?.lastName,
+          ),
+          phone1: applyWhenNotNullable(
+            formatPhoneNumber,
+            companyInfo?.primaryContact?.phone1,
+            "",
+          ),
+          phone1Extension: getDefaultRequiredVal(
+            "",
+            companyInfo?.primaryContact?.phone1Extension,
+          ),
+          phone2: applyWhenNotNullable(
+            formatPhoneNumber,
+            companyInfo?.primaryContact?.phone2,
+            "",
+          ),
+          phone2Extension: getDefaultRequiredVal(
+            "",
+            companyInfo?.primaryContact?.phone2Extension,
+          ),
           email: getDefaultRequiredVal("", companyInfo?.primaryContact?.email),
           city: getDefaultRequiredVal("", companyInfo?.primaryContact?.city),
-          provinceCode: getDefaultRequiredVal("", companyInfo?.primaryContact?.provinceCode),
-          countryCode: getDefaultRequiredVal("", companyInfo?.primaryContact?.countryCode),
+          provinceCode: getDefaultRequiredVal(
+            "",
+            companyInfo?.primaryContact?.provinceCode,
+          ),
+          countryCode: getDefaultRequiredVal(
+            "",
+            companyInfo?.primaryContact?.countryCode,
+          ),
         },
       },
     });
@@ -126,7 +170,7 @@ export const CompanyInfoForm = memo(
         </div>
       </div>
     );
-  }
+  },
 );
 
 CompanyInfoForm.displayName = "CompanyInfoForm";

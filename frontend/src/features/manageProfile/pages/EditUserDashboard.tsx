@@ -1,9 +1,6 @@
 import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  Box,
-  Typography
-} from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -29,7 +26,7 @@ export const EditUserDashboard = React.memo(() => {
   const { data: userInfo, isLoading } = useQuery(
     ["userByuserGUID", userGUID],
     () => getCompanyUserByUserGUID(userGUID as string),
-    { retry: false, enabled: true, staleTime: Infinity }
+    { retry: false, enabled: true, staleTime: Infinity },
   );
 
   const onClickBreadcrumb = () => {
@@ -42,13 +39,9 @@ export const EditUserDashboard = React.memo(() => {
 
   return (
     <div className="dashboard-page dashboard-page--edit-user">
-      <Box
-        className="dashboard-page__banner layout-box"
-      >
+      <Box className="dashboard-page__banner layout-box">
         <Banner
-          bannerText={`Edit User: ${userInfo?.firstName} ${" "} ${
-            userInfo?.lastName
-          }`}
+          bannerText={`Edit User: ${userInfo?.firstName} ${" "} ${userInfo?.lastName}`}
           bannerSubtext={
             <div>
               <strong>Date Created:</strong>
@@ -57,7 +50,7 @@ export const EditUserDashboard = React.memo(() => {
                 (dateTimeStr: string) =>
                   toLocal(dateTimeStr, DATE_FORMATS.SHORT),
                 userInfo?.createdDateTime,
-                ""
+                "",
               )}
               &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
               <strong>Last Updated:</strong>&nbsp;{" "}
@@ -66,14 +59,14 @@ export const EditUserDashboard = React.memo(() => {
                 applyWhenNotNullable(
                   (dateTimeStr: string) =>
                     toLocal(dateTimeStr, DATE_FORMATS.SHORT),
-                  userInfo?.updatedDateTime
+                  userInfo?.updatedDateTime,
                 ),
                 applyWhenNotNullable(
                   (dateTimeStr: string) =>
                     toLocal(dateTimeStr, DATE_FORMATS.SHORT),
                   userInfo?.createdDateTime,
-                  ""
-                )
+                  "",
+                ),
               )}
             </div>
           }
@@ -81,9 +74,7 @@ export const EditUserDashboard = React.memo(() => {
         />
       </Box>
 
-      <Box
-        className="dashboard-page__breadcrumb layout-box"
-      >
+      <Box className="dashboard-page__breadcrumb layout-box">
         <Typography
           className="breadcrumb-link breadcrumb-link--parent"
           onClick={onClickBreadcrumb}
@@ -91,10 +82,7 @@ export const EditUserDashboard = React.memo(() => {
           Profile
         </Typography>
 
-        <FontAwesomeIcon
-          className="breadcrumb-icon"
-          icon={faChevronRight}
-        />
+        <FontAwesomeIcon className="breadcrumb-icon" icon={faChevronRight} />
 
         <Typography
           className="breadcrumb-link breadcrumb-link--parent"
@@ -103,10 +91,7 @@ export const EditUserDashboard = React.memo(() => {
           User Management
         </Typography>
 
-        <FontAwesomeIcon
-          className="breadcrumb-icon"
-          icon={faChevronRight}
-        />
+        <FontAwesomeIcon className="breadcrumb-icon" icon={faChevronRight} />
 
         <Typography>Edit User</Typography>
       </Box>

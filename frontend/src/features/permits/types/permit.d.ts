@@ -1,17 +1,15 @@
 import { ReplaceDayjsWithString } from "./utility";
-import { 
-  PartialApplication,
-  PermitData,
-} from "./application";
+import { PartialApplication, PermitData } from "./application";
 
 /**
- * A partial permit type that consists of all common fields used for a permit. 
+ * A partial permit type that consists of all common fields used for a permit.
  * This is an incomplete type and meant to be extended for use.
  */
-interface PartialPermit extends Omit<
-  Required<PartialApplication>, 
-  "previousRevision" | "comment" | "userGuid" | "documentId" | "permitId"
-> {
+interface PartialPermit
+  extends Omit<
+    Required<PartialApplication>,
+    "previousRevision" | "comment" | "userGuid" | "documentId" | "permitId"
+  > {
   previousRevision?: number | null;
   comment?: string | null;
   userGuid?: string | null;
@@ -22,7 +20,7 @@ interface PartialPermit extends Omit<
 /**
  * The request/response object structure to describe the permit object,
  * and used with the permit API.
- * 
+ *
  * This type is mostly used as a data transfer object (DTO) to pass permit objects
  * between frontend and backend, and also used on the frontend for permit-related logic.
  */

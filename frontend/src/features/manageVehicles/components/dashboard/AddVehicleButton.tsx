@@ -32,11 +32,11 @@ export const AddVehicleButton = () => {
   const options = [
     {
       vehicleMode: VEHICLE_TYPES_ENUM.POWER_UNIT,
-      labelValue: "Power Unit"
+      labelValue: "Power Unit",
     },
     {
       vehicleMode: VEHICLE_TYPES_ENUM.TRAILER,
-      labelValue: "Trailer"
+      labelValue: "Trailer",
     },
   ];
 
@@ -59,7 +59,7 @@ export const AddVehicleButton = () => {
   const handleMenuItemClick = (
     _event: React.MouseEvent<HTMLLIElement, MouseEvent>,
     _index: number,
-    vehicleMode: VEHICLE_TYPES_ENUM
+    vehicleMode: VEHICLE_TYPES_ENUM,
   ) => {
     if (vehicleMode === VEHICLE_TYPES_ENUM.POWER_UNIT) {
       navigate(`/${MANAGE_VEHICLES}/${ADD_POWER_UNIT}`);
@@ -102,7 +102,8 @@ export const AddVehicleButton = () => {
           aria-haspopup="true"
           onClick={handleToggle}
         >
-          Add Vehicle <FontAwesomeIcon className="dash-downarrow" icon={faChevronDown} />
+          Add Vehicle{" "}
+          <FontAwesomeIcon className="dash-downarrow" icon={faChevronDown} />
         </Button>
         <Popper
           open={isMenuOpen}

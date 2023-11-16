@@ -8,10 +8,10 @@ import CountriesAndStates from "../../constants/countries_and_states.json";
 import { DEFAULT_WIDTH } from "../../../themes/bcGovStyles";
 import { CustomFormComponent } from "./CustomFormComponents";
 import { ORBC_FormTypes } from "../../types/common";
-import { 
-  invalidCountryCode, 
-  invalidProvinceCode, 
-  requiredMessage 
+import {
+  invalidCountryCode,
+  invalidProvinceCode,
+  requiredMessage,
 } from "../../helpers/validationMessages";
 
 /**
@@ -63,12 +63,10 @@ export const CountryAndProvince = <T extends ORBC_FormTypes>({
   countryClassName,
   provinceClassName,
 }: CountryAndProvinceProps): JSX.Element => {
-  const {
-    resetField,
-    watch,
-  } = useFormContext();
+  const { resetField, watch } = useFormContext();
 
-  const countrySupportsProvinces = (country: string) => COUNTRIES_THAT_SUPPORT_PROVINCE.includes(country);
+  const countrySupportsProvinces = (country: string) =>
+    COUNTRIES_THAT_SUPPORT_PROVINCE.includes(country);
 
   const countrySelected = watch(countryField);
 
@@ -81,9 +79,7 @@ export const CountryAndProvince = <T extends ORBC_FormTypes>({
    * @param country string
    */
   const handleDisplayProvince = (country: string) => {
-    if (
-      !countrySupportsProvinces(country)
-    ) {
+    if (!countrySupportsProvinces(country)) {
       // If country does not support province, as per API spec, set country to province too
       // even though the field is hidden.
       setShouldDisplayProvince(() => false);
@@ -110,7 +106,7 @@ export const CountryAndProvince = <T extends ORBC_FormTypes>({
    */
   const getProvinces = useCallback(function (selectedCountry: string) {
     return CountriesAndStates.filter(
-      (country) => country.code === selectedCountry
+      (country) => country.code === selectedCountry,
     ).flatMap((country) => country.states);
   }, []);
 
@@ -120,10 +116,10 @@ export const CountryAndProvince = <T extends ORBC_FormTypes>({
       message: requiredMessage(),
     },
     validate: {
-      validateCountry: (country?: string) => 
-        (!isCountryRequired && (country == null || country === "")) 
-          || (country != null && country !== "" && /^[A-Z]{2}$/.test(country)) 
-          || invalidCountryCode(),
+      validateCountry: (country?: string) =>
+        (!isCountryRequired && (country == null || country === "")) ||
+        (country != null && country !== "" && /^[A-Z]{2}$/.test(country)) ||
+        invalidCountryCode(),
     },
     onChange: onChangeCountry,
   };
@@ -135,9 +131,9 @@ export const CountryAndProvince = <T extends ORBC_FormTypes>({
     },
     validate: {
       validateProvince: (province?: string) =>
-        (!isProvinceRequired && (province == null || province === ""))
-          || (province != null && province !== "" && /^[A-Z]{2}$/.test(province)) 
-          || invalidProvinceCode(),
+        (!isProvinceRequired && (province == null || province === "")) ||
+        (province != null && province !== "" && /^[A-Z]{2}$/.test(province)) ||
+        invalidProvinceCode(),
     },
   };
 

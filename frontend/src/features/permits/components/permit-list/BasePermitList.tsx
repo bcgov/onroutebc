@@ -4,7 +4,7 @@ import { UseQueryResult } from "@tanstack/react-query";
 import MaterialReactTable, {
   MRT_GlobalFilterTextField,
   MRT_Row,
-  MRT_TableInstance
+  MRT_TableInstance,
 } from "material-react-table";
 
 import { SnackBarContext } from "../../../../App";
@@ -16,7 +16,7 @@ import { PermitRowOptions } from "./PermitRowOptions";
 
 /**
  * A permit list component with common functionalities that can be shared by
- * wrapping components. 
+ * wrapping components.
  */
 export const BasePermitList = ({
   query,
@@ -76,7 +76,7 @@ export const BasePermitList = ({
             </Box>
           );
         },
-        []
+        [],
       )}
       renderTopToolbar={useCallback(
         ({ table }: { table: MRT_TableInstance<Permit> }) => (
@@ -90,18 +90,18 @@ export const BasePermitList = ({
             <MRT_GlobalFilterTextField table={table} />
           </Box>
         ),
-        []
+        [],
       )}
       /*
-      *
-      * STYLES
-      *
-      */
+       *
+       * STYLES
+       *
+       */
       // Main table container
       muiTablePaperProps={{
         sx: {
           border: "none",
-          boxShadow: "none"
+          boxShadow: "none",
         },
       }}
       // Column widths

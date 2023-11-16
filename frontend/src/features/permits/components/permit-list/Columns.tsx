@@ -13,7 +13,7 @@ export const PermitsColumnDefinition: MRT_ColumnDef<Permit>[] = [
     header: "Permit #",
     enableSorting: true,
     enableMultiSort: false,
-    sortingFn: 'alphanumeric',
+    sortingFn: "alphanumeric",
     size: 500,
     accessorFn: (row) => row.permitNumber,
     Cell: (props: { cell: any; row: any }) => {
@@ -36,7 +36,7 @@ export const PermitsColumnDefinition: MRT_ColumnDef<Permit>[] = [
     header: "Permit Type",
     enableSorting: true,
     enableMultiSort: false,
-    sortingFn: 'alphanumeric'
+    sortingFn: "alphanumeric",
   },
   {
     accessorFn: (row) => `${row.permitData.vehicleDetails?.unitNumber || ""}`,
@@ -44,28 +44,28 @@ export const PermitsColumnDefinition: MRT_ColumnDef<Permit>[] = [
     header: "Unit #",
     enableSorting: true,
     enableMultiSort: false,
-    sortingFn: 'alphanumeric'
+    sortingFn: "alphanumeric",
   },
   {
     accessorKey: "permitData.vehicleDetails.plate",
     header: "Plate",
     enableSorting: true,
     enableMultiSort: false,
-    sortingFn: 'alphanumeric'
+    sortingFn: "alphanumeric",
   },
   {
     accessorKey: "permitData.startDate",
     header: "Permit Start Date",
     enableSorting: true,
     enableMultiSort: false,
-    sortingFn: 'datetime'
+    sortingFn: "datetime",
   },
   {
     accessorKey: "permitData.expiryDate",
     header: "Permit End Date",
     enableSorting: true,
     enableMultiSort: false,
-    sortingFn: 'datetime'
+    sortingFn: "datetime",
   },
   {
     accessorFn: (row) =>
@@ -74,7 +74,7 @@ export const PermitsColumnDefinition: MRT_ColumnDef<Permit>[] = [
     header: "Applicant",
     enableSorting: true,
     enableMultiSort: false,
-    sortingFn: 'alphanumericCaseSensitive'
+    sortingFn: "alphanumericCaseSensitive",
   },
 ];
 

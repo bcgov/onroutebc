@@ -2,7 +2,11 @@ import { factory, nullable, primaryKey } from "@mswjs/data";
 import dayjs from "dayjs";
 
 import { ApplicationRequestData } from "../../../../../types/application";
-import { DATE_FORMATS, dayjsToLocalStr, now } from "../../../../../../../common/helpers/formatDate";
+import {
+  DATE_FORMATS,
+  dayjsToLocalStr,
+  now,
+} from "../../../../../../../common/helpers/formatDate";
 import { getDefaultUserDetails } from "./getUserDetails";
 import { getDefaultPowerUnits } from "./getVehicleInfo";
 import { getDefaultCompanyInfo } from "./getCompanyInfo";
@@ -62,22 +66,25 @@ const activeApplicationSource = factory({
       },
       feeSummary: nullable(String),
     },
-  }
+  },
 });
 
 export const createApplication = (application: ApplicationRequestData) => {
-  return activeApplicationSource.application.create({...application});
+  return activeApplicationSource.application.create({ ...application });
 };
-export const updateApplication = (application: ApplicationRequestData, applicationNumber: string) => {
+export const updateApplication = (
+  application: ApplicationRequestData,
+  applicationNumber: string,
+) => {
   return activeApplicationSource.application.update({
     where: {
       applicationNumber: {
-        equals: applicationNumber
-      }
+        equals: applicationNumber,
+      },
     },
     data: {
-      ...application
-    }
+      ...application,
+    },
   });
 };
 export const getApplication = () => {
@@ -89,9 +96,9 @@ export const resetApplicationSource = () => {
   activeApplicationSource.application.deleteMany({
     where: {
       applicationNumber: {
-        contains: ""
-      }
-    }
+        contains: "",
+      },
+    },
   });
 };
 
@@ -124,7 +131,7 @@ export const getDefaultApplication = () => {
     unitNumber: vehicle.unitNumber,
   };
   const commodities = [
-    TROS_COMMODITIES[0], 
+    TROS_COMMODITIES[0],
     TROS_COMMODITIES[1],
     { ...TROS_COMMODITIES[2], checked: true },
   ];

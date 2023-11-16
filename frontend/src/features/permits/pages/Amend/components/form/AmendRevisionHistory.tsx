@@ -15,17 +15,14 @@ export const AmendRevisionHistory = ({
 }) => {
   return revisionHistory.length > 0 ? (
     <div className="amend-revision-history">
-      <Typography 
-        variant="h3" 
-        className="amend-revision-history__label"
-      >
+      <Typography variant="h3" className="amend-revision-history__label">
         Revision History
       </Typography>
       <div className="amend-revision-history__revisions">
-        {revisionHistory.map(revision => (
+        {revisionHistory.map((revision) => (
           <AmendRevision key={revision.permitId} revision={revision} />
         ))}
       </div>
     </div>
-  ): null;
+  ) : null;
 };

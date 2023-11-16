@@ -4,14 +4,14 @@ import isEmail from "validator/lib/isEmail";
 import "./UserInformationWizardForm.scss";
 import { CustomFormComponent } from "../../../common/components/form/CustomFormComponents";
 import { CountryAndProvince } from "../../../common/components/form/CountryAndProvince";
-import { 
-  invalidCityLength, 
-  invalidEmail, 
-  invalidExtensionLength, 
-  invalidFirstNameLength, 
-  invalidLastNameLength, 
-  invalidPhoneLength, 
-  requiredMessage 
+import {
+  invalidCityLength,
+  invalidEmail,
+  invalidExtensionLength,
+  invalidFirstNameLength,
+  invalidLastNameLength,
+  invalidPhoneLength,
+  requiredMessage,
 } from "../../../common/helpers/validationMessages";
 
 /**
@@ -34,8 +34,8 @@ export const UserInformationWizardForm = memo(() => {
             required: { value: true, message: requiredMessage() },
             validate: {
               validateFirstName: (firstName: string) =>
-                (firstName.length >= 1 && firstName.length <= 100)
-                  || invalidFirstNameLength(1, 100),
+                (firstName.length >= 1 && firstName.length <= 100) ||
+                invalidFirstNameLength(1, 100),
             },
           },
           label: "First Name",
@@ -51,8 +51,8 @@ export const UserInformationWizardForm = memo(() => {
             required: { value: true, message: requiredMessage() },
             validate: {
               validateLastName: (lastName: string) =>
-                (lastName.length >= 1 && lastName.length <= 100)
-                  || invalidLastNameLength(1, 100),
+                (lastName.length >= 1 && lastName.length <= 100) ||
+                invalidLastNameLength(1, 100),
             },
           },
           label: "Last Name",
@@ -89,8 +89,8 @@ export const UserInformationWizardForm = memo(() => {
               },
               validate: {
                 validatePhone1: (phone: string) =>
-                  (phone.length >= 10 && phone.length <= 20)
-                    || invalidPhoneLength(10, 20),
+                  (phone.length >= 10 && phone.length <= 20) ||
+                  invalidPhoneLength(10, 20),
               },
             },
             label: "Primary Phone",
@@ -102,13 +102,14 @@ export const UserInformationWizardForm = memo(() => {
           feature={FEATURE}
           options={{
             name: "adminUser.phone1Extension",
-            rules: { 
+            rules: {
               required: false,
               validate: {
                 validateExt1: (ext?: string) =>
-                  (ext == null || ext === "")
-                    || (ext != null && ext !== "" && ext.length <= 5)
-                    || invalidExtensionLength(5),
+                  ext == null ||
+                  ext === "" ||
+                  (ext != null && ext !== "" && ext.length <= 5) ||
+                  invalidExtensionLength(5),
               },
             },
             label: "Ext",
@@ -122,13 +123,17 @@ export const UserInformationWizardForm = memo(() => {
           feature={FEATURE}
           options={{
             name: "adminUser.phone2",
-            rules: { 
+            rules: {
               required: false,
               validate: {
                 validatePhone2: (phone2?: string) =>
-                  (phone2 == null || phone2 === "")
-                    || (phone2 != null && phone2 !== "" && phone2.length >= 10 && phone2.length <= 20)
-                    || invalidPhoneLength(10, 20),
+                  phone2 == null ||
+                  phone2 === "" ||
+                  (phone2 != null &&
+                    phone2 !== "" &&
+                    phone2.length >= 10 &&
+                    phone2.length <= 20) ||
+                  invalidPhoneLength(10, 20),
               },
             },
             label: "Alternate Phone",
@@ -140,13 +145,14 @@ export const UserInformationWizardForm = memo(() => {
           feature={FEATURE}
           options={{
             name: "adminUser.phone2Extension",
-            rules: { 
+            rules: {
               required: false,
               validate: {
                 validateExt2: (ext?: string) =>
-                  (ext == null || ext === "")
-                    || (ext != null && ext !== "" && ext.length <= 5)
-                    || invalidExtensionLength(5),
+                  ext == null ||
+                  ext === "" ||
+                  (ext != null && ext !== "" && ext.length <= 5) ||
+                  invalidExtensionLength(5),
               },
             },
             label: "Ext",
@@ -159,13 +165,17 @@ export const UserInformationWizardForm = memo(() => {
         feature={FEATURE}
         options={{
           name: "adminUser.fax",
-          rules: { 
+          rules: {
             required: false,
             validate: {
               validateFax: (fax?: string) =>
-                (fax == null || fax === "")
-                  || (fax != null && fax !== "" && fax.length >= 10 && fax.length <= 20)
-                  || invalidPhoneLength(10, 20),
+                fax == null ||
+                fax === "" ||
+                (fax != null &&
+                  fax !== "" &&
+                  fax.length >= 10 &&
+                  fax.length <= 20) ||
+                invalidPhoneLength(10, 20),
             },
           },
           label: "Fax",
@@ -190,8 +200,8 @@ export const UserInformationWizardForm = memo(() => {
             required: { value: true, message: requiredMessage() },
             validate: {
               validateCity: (city: string) =>
-                (city.length >= 1 && city.length <= 100)
-                  || invalidCityLength(1, 100),
+                (city.length >= 1 && city.length <= 100) ||
+                invalidCityLength(1, 100),
             },
           },
           label: "City",
