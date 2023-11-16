@@ -75,17 +75,15 @@ export class UsersService {
     //In case of busines bceid, validate that the user's bceid matches the company bceid.
     //If matches then create user else throw error.
     if (currentUser.bceid_business_guid) {
-      const company = await this.companyService.findOne(companyId);
-      console.log(
-        'user business guid ',
-        currentUser.bceid_business_guid.trim(),
+      const company = await this.companyService.findOneByCompanyGuid(
+        currentUser.bceid_business_guid,
       );
-      console.log('company guid ', company.companyGUID.trim());
-      if (
-        currentUser.bceid_business_guid.trim() != company.companyGUID.trim()
-      ) {
+      const pendingUser = await this.pendingUsersService.findPendingUsersDto(
+        currentUser.userName,
+      );
+      if (pendingUser.some((e) => e.companyId != company.companyId)) {
         throw new InternalServerErrorException(
-          'User business guid should match company guid.',
+          'User not invited for this company.',
         );
       }
     }
