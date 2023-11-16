@@ -1,15 +1,20 @@
-.table-container {
-  //padding: 0px 60px;
-  overflow: hidden;
-  background-color: white;
-  height: calc(100vh - 306px);
-}
+@use "../../../../common/components/table/Table.scss";
+@import "../../../../themes/orbcStyles.scss";
 
-@media screen and (max-width: 768px) {
-  .table-container {
-    //padding: 0px 60px;
-    overflow: hidden;
-    background-color: white;
-    height: calc(100vh - 267px);
+.table-container {
+  & &__top-toolbar {
+    display: flex;
+    padding: 1.25rem 0;
+    background-color: $white;
+    align-items: center;
+
+    .filter-btn {
+      margin-left: 0.5rem;
+    }
+    
+    .trash-btn {
+      margin-left: 0.5rem;
+      padding: 0.75rem 0.865rem;
+    }
   }
 }

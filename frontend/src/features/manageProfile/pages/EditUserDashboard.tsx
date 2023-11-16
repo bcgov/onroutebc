@@ -1,25 +1,20 @@
 import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  Box,
-  Typography
-} from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
+
+import "./EditUserDashboard.scss";
 import { Banner } from "../../../common/components/dashboard/Banner";
-import "../../../common/components/dashboard/Dashboard.scss";
+import { getCompanyUserByUserGUID } from "../apiManager/manageProfileAPI";
+import { EditUserForm } from "../components/forms/userManagement/EditUser";
+import { BCEID_PROFILE_TABS } from "../types/manageProfile.d";
 import { DATE_FORMATS, toLocal } from "../../../common/helpers/formatDate";
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
 } from "../../../common/helpers/util";
-import { BC_COLOURS } from "../../../themes/bcGovStyles";
-import {
-  getCompanyUserByUserGUID
-} from "../apiManager/manageProfileAPI";
-import { EditUserForm } from "../components/forms/userManagement/EditUser";
-import { BCEID_PROFILE_TABS } from "../types/manageProfile.d";
 
 /**
  * The edit user page for the BCeID org admin
@@ -31,7 +26,7 @@ export const EditUserDashboard = React.memo(() => {
   const { data: userInfo, isLoading } = useQuery(
     ["userByuserGUID", userGUID],
     () => getCompanyUserByUserGUID(userGUID as string),
-    { retry: false, enabled: true, staleTime: Infinity }
+    { retry: false, enabled: true, staleTime: Infinity },
   );
 
   const onClickBreadcrumb = () => {
@@ -43,18 +38,10 @@ export const EditUserDashboard = React.memo(() => {
   };
 
   return (
-    <>
-      <Box
-        className="layout-box"
-        sx={{
-          borderBottom: 1,
-          borderColor: "divider",
-        }}
-      >
+    <div className="dashboard-page dashboard-page--edit-user">
+      <Box className="dashboard-page__banner layout-box">
         <Banner
-          bannerText={`Edit User: ${userInfo?.firstName} ${" "} ${
-            userInfo?.lastName
-          }`}
+          bannerText={`Edit User: ${userInfo?.firstName} ${" "} ${userInfo?.lastName}`}
           bannerSubtext={
             <div>
               <strong>Date Created:</strong>
@@ -63,7 +50,7 @@ export const EditUserDashboard = React.memo(() => {
                 (dateTimeStr: string) =>
                   toLocal(dateTimeStr, DATE_FORMATS.SHORT),
                 userInfo?.createdDateTime,
-                ""
+                "",
               )}
               &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
               <strong>Last Updated:</strong>&nbsp;{" "}
@@ -72,63 +59,45 @@ export const EditUserDashboard = React.memo(() => {
                 applyWhenNotNullable(
                   (dateTimeStr: string) =>
                     toLocal(dateTimeStr, DATE_FORMATS.SHORT),
-                  userInfo?.updatedDateTime
+                  userInfo?.updatedDateTime,
                 ),
                 applyWhenNotNullable(
                   (dateTimeStr: string) =>
                     toLocal(dateTimeStr, DATE_FORMATS.SHORT),
                   userInfo?.createdDateTime,
-                  ""
-                )
+                  "",
+                ),
               )}
             </div>
           }
           extendHeight={true}
         />
       </Box>
-      <Box
-        className="layout-box"
-        sx={{
-          display: "flex",
-          height: "60px",
-          alignItems: "center",
-          backgroundColor: BC_COLOURS.white,
-        }}
-      >
+
+      <Box className="dashboard-page__breadcrumb layout-box">
         <Typography
+          className="breadcrumb-link breadcrumb-link--parent"
           onClick={onClickBreadcrumb}
-          sx={{
-            color: BC_COLOURS.bc_text_links_blue,
-            cursor: "pointer",
-            marginRight: "8px",
-            textDecoration: "underline",
-          }}
         >
           Profile
         </Typography>
-        <FontAwesomeIcon
-          icon={faChevronRight}
-          style={{ marginLeft: "8px", marginRight: "8px" }}
-        />
+
+        <FontAwesomeIcon className="breadcrumb-icon" icon={faChevronRight} />
+
         <Typography
+          className="breadcrumb-link breadcrumb-link--parent"
           onClick={onClickBreadcrumb}
-          style={{
-            color: BC_COLOURS.bc_text_links_blue,
-            cursor: "pointer",
-            textDecoration: "underline",
-          }}
         >
           User Management
         </Typography>
-        <FontAwesomeIcon
-          icon={faChevronRight}
-          style={{ marginLeft: "8px", marginRight: "8px" }}
-        />
+
+        <FontAwesomeIcon className="breadcrumb-icon" icon={faChevronRight} />
+
         <Typography>Edit User</Typography>
       </Box>
 
       {!isLoading && <EditUserForm userInfo={userInfo} />}
-    </>
+    </div>
   );
 });
 

@@ -22,7 +22,7 @@ export const removeEmptyValues = (obj: object): object => {
           key,
           typeof value === "object" ? removeEmptyValues(value) : value,
         ];
-      })
+      }),
   );
 };
 
@@ -42,66 +42,73 @@ export const removeEmptyValues = (obj: object): object => {
 export const replaceEmptyValuesWithNull = (obj: object): object | null => {
   if (Array.isArray(obj)) {
     return obj.map((item) => replaceEmptyValuesWithNull(item));
-  } 
-  else if (typeof obj === 'object' && obj !== null) {
+  } else if (typeof obj === "object" && obj !== null) {
     // acc is a shorthand name for the accumulator object that's being built up by the reduce function
-    return Object.entries(obj).reduce((acc : any, [key, value]) => {
+    return Object.entries(obj).reduce((acc: any, [key, value]) => {
       acc[key] = replaceEmptyValuesWithNull(value);
       return acc;
     }, {});
-  } 
-  else {
-    return obj === undefined || obj === '' ? null : obj;
+  } else {
+    return obj === undefined || obj === "" ? null : obj;
   }
-}
+};
 
 /**
  * Apply a function to an input value only when the input is non-nullable/undefined.
- * 
+ *
  * Eg. applyWhenNotNullable(someFn, "abc", "") === someFn("abc")
- * 
+ *
  * Eg. applyWhenNotNullable(someFn, null, 123) === 123
- * 
+ *
  * @param applyFn Function to apply when inputVal is non-nullable
  * @param inputVal Potentially nullable/undefined input value
  * @param explicitDefaultVal Explicit (optional) default value to return when input is nullable
- * 
- * @returns Result of applyFn, or explicitDefaultVal 
+ *
+ * @returns Result of applyFn, or explicitDefaultVal
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const applyWhenNotNullable = <T>(applyFn: (val: T) => any, inputVal?: T | null, explicitDefaultVal?: any) => {
+export const applyWhenNotNullable = <T>(
+  applyFn: (val: T) => any,
+  inputVal?: T | null,
+  explicitDefaultVal?: any,
+) => {
   return inputVal != null ? applyFn(inputVal) : explicitDefaultVal;
 };
 
 /**
  * Get the first non-null/undefined value from a list of provided values (ordered from nullable to non-nullable).
- * 
+ *
  * Eg. getDefaultNullableVal(undefined, 0) === 0
- * 
+ *
  * Eg. getDefaultNullableVal(undefined, null, null) === undefined
- * 
+ *
  * @param defaultVals List of provided possibly nullable values (ordered from nullable to non-nullable)
- * 
+ *
  * @returns The first non-nullable value from defaultVals, or undefined if there are no non-nullable values.
  */
-export const getDefaultNullableVal = <T>(...defaultVals: (T | null | undefined)[]): T | undefined => {
-  return defaultVals.find(val => val != null) ?? undefined;
+export const getDefaultNullableVal = <T>(
+  ...defaultVals: (T | null | undefined)[]
+): T | undefined => {
+  return defaultVals.find((val) => val != null) ?? undefined;
 };
 
 /**
  * Get the first non-nullable value from a list of provided values (ordered from nullable to non-nullable).
- * 
+ *
  * Eg. getDefaultRequiredVal(0, undefined, null) === 0
- * 
+ *
  * Eg. getDefaultRequiredVal("", null, undefined, "somestr") === "somestr"
- * 
+ *
  * @param fallbackDefault Required non-nullable default value to return if all other provided default values are null/undefined
  * @param defaultVals List of provided possibly nullable values (ordered from nullable to non-nullable)
- * 
+ *
  * @returns The first non-nullable value from defaultVals, or fallbackDefault if there are no non-nullable values.
  */
-export const getDefaultRequiredVal = <T>(fallbackDefault: T, ...defaultVals: (T | null | undefined)[]): T => {
-  return defaultVals.find(val => val != null) ?? fallbackDefault;
+export const getDefaultRequiredVal = <T>(
+  fallbackDefault: T,
+  ...defaultVals: (T | null | undefined)[]
+): T => {
+  return defaultVals.find((val) => val != null) ?? fallbackDefault;
 };
 
 /**
@@ -110,14 +117,13 @@ export const getDefaultRequiredVal = <T>(fallbackDefault: T, ...defaultVals: (T 
  * @param val2 Second nullable value to be compared
  * @returns boolean value indicating if values are different.
  */
-export const areValuesDifferent = <T>(val1?: T | null, val2?: T | null): boolean => {
+export const areValuesDifferent = <T>(
+  val1?: T | null,
+  val2?: T | null,
+): boolean => {
   if (!val1 && !val2) return false; // both empty === equal
 
-  if (
-    (val1 && !val2) 
-    || (!val1 && val2) 
-    || (val1 && val2 && val1 !== val2)
-  ) {
+  if ((val1 && !val2) || (!val1 && val2) || (val1 && val2 && val1 !== val2)) {
     return true; // one empty, or both non-empty but different === different
   }
 

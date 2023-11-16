@@ -11,7 +11,7 @@ import {
  */
 export const sortVehicleSubTypes = (
   vehicleType: string,
-  options: VehicleType[] | undefined
+  options: VehicleType[] | undefined,
 ) => {
   if (!vehicleType || !options) return [];
   const sorted = [...options]; // make copy of original array (original shouldn't be changed)
@@ -33,7 +33,7 @@ export const sortVehicleSubTypes = (
  */
 export const sortVehicles = (
   chooseFrom: string,
-  options: Vehicle[] | undefined
+  options: Vehicle[] | undefined,
 ) => {
   if (!chooseFrom || !options) return [];
 

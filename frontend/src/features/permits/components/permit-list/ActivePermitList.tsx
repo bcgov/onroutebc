@@ -1,4 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
+
+import "./ActivePermitList.scss";
 import { InfoBcGovBanner } from "../../../../common/components/banners/AlertBanners";
 import { FIVE_MINUTES } from "../../../../common/constants/constants";
 import { getPermits } from "../../apiManager/permitsAPI";

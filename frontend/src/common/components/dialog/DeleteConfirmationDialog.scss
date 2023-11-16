@@ -1,0 +1,57 @@
+@import "../../../themes/orbcStyles.scss";
+
+.delete-confirmation-dialog {
+  & &__title {
+    background-color: $bc-background-light-grey;
+    color: $bc-red;
+    font-size: 1.5rem;
+    font-weight: bold;
+    padding: 2rem 1.5rem;
+  }
+
+  & &__icon {
+    padding: 0.375rem 0.75rem;
+    border-radius: 50%;
+    background-color: $bc-red;
+    color: $bc-messages-red-background;
+  }
+
+  & &__content {
+    border-bottom: none;
+  }
+
+  & &__msg {
+    font-size: 1.25rem;
+  }
+
+  & &__actions {
+    padding: 0 1.5rem 1.5rem 1.5rem;
+  }
+
+  .delete-confirmation-btn {
+    font-size: 1rem;
+
+    &--cancel {
+      margin-right: 1rem;
+      padding: 0.875rem 1rem;
+      box-shadow: none;
+      color: $bc-black;
+      border: 2px solid transparent;
+
+      &:hover {
+        border: 2px solid $bc-text-box-border-grey;
+        background-color: $bc-background-light-grey;
+        box-shadow: none;
+      }
+    }
+
+    &--delete {
+      font-weight: bold;
+      padding: 0.875rem 2rem;
+
+      &:hover {
+        background-color: $bc-messages-red-text;
+      }
+    }
+  }
+}

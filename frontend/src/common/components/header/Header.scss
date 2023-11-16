@@ -6,7 +6,7 @@
   &__main {
     background-color: orbcStyles.$bc-primary-blue;
     border-bottom: 2px solid orbcStyles.$bc-gold;
-    padding: 0 1rem;
+    padding: 0 8.551vw;
     color: orbcStyles.$white;
     display: flex;
     justify-content: space-between;
@@ -100,7 +100,7 @@
         margin: 0;
         color: orbcStyles.$white;
         list-style: none;
-        padding-left: 1rem;
+        padding-left: 8.551vw;
 
         li {
           margin: 0;
@@ -116,6 +116,15 @@
             border-right: 1px solid #9b9b9b;
             height: 100%;
             align-items: center;
+            
+            &.active {
+              background-color: orbcStyles.$bc-background-light-grey;
+              color: orbcStyles.$bc-background-blue;
+            }
+
+            &:focus {
+              outline-offset: 0;
+            }
           }
         }
       }
@@ -131,6 +140,8 @@
 @media (width < 768px) {
   .header {
     &__main {
+      padding: 0 5.5rem;
+
       .user-section {
         display: none;
       }
@@ -188,7 +199,7 @@
         ul {
           flex-direction: column;
           margin: 0;
-          padding: 0 1rem;
+          padding: 0 5.5rem;
     
           li {
             margin: 5px 0;
@@ -213,9 +224,11 @@
   }
 }
 
-@media (width < 360px) {
+@media (width < 420px) {
   .header {
     &__main {
+      padding: 0 1rem;
+
       .other {
         .nav-btn {
           .menu-icon {

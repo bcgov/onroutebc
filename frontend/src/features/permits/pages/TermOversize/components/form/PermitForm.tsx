@@ -9,15 +9,15 @@ import { PermitDetails } from "./PermitDetails";
 import { VehicleDetails } from "./VehicleDetails/VehicleDetails";
 import { CompanyProfile } from "../../../../../manageProfile/types/manageProfile.d";
 import { PermitType } from "../../../../types/PermitType";
-import { 
-  PowerUnit, 
-  Trailer, 
-  VehicleType, 
+import {
+  PowerUnit,
+  Trailer,
+  VehicleType,
 } from "../../../../../manageVehicles/types/managevehicles.d";
 
-import { 
+import {
   Commodities,
-  VehicleDetails as VehicleDetailsType, 
+  VehicleDetails as VehicleDetailsType,
 } from "../../../../types/application.d";
 
 interface PermitFormProps {
@@ -53,7 +53,9 @@ export const PermitForm = (props: PermitFormProps) => {
       <Box className="permit-form__form">
         <ApplicationDetails
           permitType={props.permitType}
-          infoNumber={props.isAmendAction ? props.permitNumber : props.applicationNumber}
+          infoNumber={
+            props.isAmendAction ? props.permitNumber : props.applicationNumber
+          }
           infoNumberType={props.isAmendAction ? "permit" : "application"}
           createdDateTime={props.createdDateTime}
           updatedDateTime={props.updatedDateTime}
@@ -80,7 +82,7 @@ export const PermitForm = (props: PermitFormProps) => {
         {props.children}
       </Box>
 
-      <FormActions 
+      <FormActions
         onLeave={props.onLeave}
         onSave={props.onSave}
         onCancel={props.onCancel}

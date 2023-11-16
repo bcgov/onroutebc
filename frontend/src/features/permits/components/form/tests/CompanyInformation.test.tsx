@@ -1,20 +1,20 @@
-import { 
-  companyInfoDescription, 
-  companyInfoTitle, 
-  companyMailAddrTitle, 
-  country, 
-  defaultCompanyInfo, 
-  province, 
+import {
+  companyInfoDescription,
+  companyInfoTitle,
+  companyMailAddrTitle,
+  country,
+  defaultCompanyInfo,
+  province,
   renderTestComponent,
 } from "./helpers/CompanyInformation/prepare";
 
-import { 
-  headerDescription, 
-  headerTitle, 
-  mailAddrCityPostal, 
-  mailAddrCountry, 
-  mailAddrLine1, 
-  mailAddrProvince, 
+import {
+  headerDescription,
+  headerTitle,
+  mailAddrCityPostal,
+  mailAddrCountry,
+  mailAddrLine1,
+  mailAddrProvince,
   mailAddrTitle,
 } from "./helpers/CompanyInformation/access";
 
@@ -34,15 +34,14 @@ describe("CompanyInformation display", () => {
     renderTestComponent(defaultCompanyInfo);
 
     // Assert
-    const {
-      addressLine1,
-      city,
-      postalCode,
-    } = defaultCompanyInfo.mailingAddress;
+    const { addressLine1, city, postalCode } =
+      defaultCompanyInfo.mailingAddress;
     expect(await mailAddrTitle()).toHaveTextContent(companyMailAddrTitle);
     expect(await mailAddrLine1()).toHaveTextContent(addressLine1);
     expect(await mailAddrCountry()).toHaveTextContent(country);
     expect(await mailAddrProvince()).toHaveTextContent(province);
-    expect(await mailAddrCityPostal()).toHaveTextContent(`${city} ${postalCode}`);
+    expect(await mailAddrCityPostal()).toHaveTextContent(
+      `${city} ${postalCode}`,
+    );
   });
 });

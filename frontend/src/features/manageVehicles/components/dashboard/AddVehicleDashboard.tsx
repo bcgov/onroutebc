@@ -1,18 +1,17 @@
 import React from "react";
-import { VEHICLE_TYPES_ENUM } from "../form/constants";
-import { PowerUnitForm } from "../form/PowerUnitForm";
-import { TrailerForm } from "../form/TrailerForm";
+import { useNavigate } from "react-router-dom";
 import { Box, Typography } from "@mui/material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
 
-import "../../../../common/components/dashboard/Dashboard.scss";
+import "./AddVehicleDashboard.scss";
 import { Banner } from "../../../../common/components/dashboard/Banner";
-import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { InfoBcGovBanner } from "../../../../common/components/banners/AlertBanners";
-import { useNavigate } from "react-router-dom";
 import { getCompanyIdFromSession } from "../../../../common/apiManager/httpRequestHandler";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
+import { VEHICLE_TYPES_ENUM } from "../form/constants";
+import { PowerUnitForm } from "../form/PowerUnitForm";
+import { TrailerForm } from "../form/TrailerForm";
 
 export const AddVehicleDashboard = React.memo(
   ({ addVehicleMode }: { addVehicleMode: VEHICLE_TYPES_ENUM }) => {
@@ -25,14 +24,8 @@ export const AddVehicleDashboard = React.memo(
     const companyId = getDefaultRequiredVal("0", getCompanyIdFromSession());
 
     return (
-      <>
-        <Box
-          className="layout-box"
-          sx={{
-            borderBottom: 1,
-            borderColor: "divider",
-          }}
-        >
+      <div className="dashboard-page">
+        <Box className="dashboard-page__banner layout-box">
           {addVehicleMode === VEHICLE_TYPES_ENUM.POWER_UNIT && (
             <Banner bannerText={"Add Power Unit"} extendHeight={true} />
           )}
@@ -40,45 +33,27 @@ export const AddVehicleDashboard = React.memo(
             <Banner bannerText={"Add Trailer"} extendHeight={true} />
           )}
         </Box>
-        <Box
-          className="layout-box"
-          sx={{
-            display: "flex",
-            height: "60px",
-            alignItems: "center",
-            backgroundColor: BC_COLOURS.white,
-          }}
-        >
+
+        <Box className="dashboard-page__breadcrumb layout-box">
           <Typography
+            className="breadcrumb-link breadcrumb-link--parent"
             onClick={handleShowAddVehicle}
-            sx={{
-              color: BC_COLOURS.bc_text_links_blue,
-              cursor: "pointer",
-              marginRight: "8px",
-              textDecoration: "underline",
-            }}
           >
             Vehicle Inventory
           </Typography>
-          <FontAwesomeIcon
-            icon={faChevronRight}
-            style={{ marginLeft: "8px", marginRight: "8px" }}
-          />
+
+          <FontAwesomeIcon className="breadcrumb-icon" icon={faChevronRight} />
+
           <Typography
+            className="breadcrumb-link breadcrumb-link--parent"
             onClick={handleShowAddVehicle}
-            style={{
-              color: BC_COLOURS.bc_text_links_blue,
-              cursor: "pointer",
-              textDecoration: "underline",
-            }}
           >
             {addVehicleMode === VEHICLE_TYPES_ENUM.POWER_UNIT && "Power Unit"}
             {addVehicleMode === VEHICLE_TYPES_ENUM.TRAILER && "Trailer"}
           </Typography>
-          <FontAwesomeIcon
-            icon={faChevronRight}
-            style={{ marginLeft: "8px", marginRight: "8px" }}
-          />
+
+          <FontAwesomeIcon className="breadcrumb-icon" icon={faChevronRight} />
+
           <Typography>
             {addVehicleMode === VEHICLE_TYPES_ENUM.POWER_UNIT &&
               "Add Power Unit"}
@@ -86,36 +61,15 @@ export const AddVehicleDashboard = React.memo(
           </Typography>
         </Box>
 
-        <Box
-          className="layout-box"
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            backgroundColor: BC_COLOURS.white,
-          }}
-        >
+        <Box className="dashboard-page__info-banner layout-box">
           <InfoBcGovBanner
             width="880px"
             description="Please note, unless stated otherwise, all fields are mandatory."
           />
         </Box>
 
-        <Box
-          className="layout-box"
-          sx={{
-            display: "flex",
-            paddingTop: "24px",
-            backgroundColor: BC_COLOURS.white,
-          }}
-        >
-          <Typography
-            variant={"h2"}
-            sx={{
-              marginRight: "200px",
-              marginTop: "0px",
-              paddingTop: "0px",
-            }}
-          >
+        <Box className="dashboard-page__form layout-box">
+          <Typography variant={"h2"}>
             {addVehicleMode === VEHICLE_TYPES_ENUM.POWER_UNIT &&
               "Power Unit Details"}
             {addVehicleMode === VEHICLE_TYPES_ENUM.TRAILER && "Trailer Details"}
@@ -127,9 +81,9 @@ export const AddVehicleDashboard = React.memo(
             <TrailerForm companyId={companyId} />
           )}
         </Box>
-      </>
+      </div>
     );
-  }
+  },
 );
 
 AddVehicleDashboard.displayName = "AddVehicleDashboard";

@@ -37,7 +37,7 @@ interface TrailerFormProps {
    * If valid and available, the form will be in an editable state.
    */
   trailerId?: string;
-  
+
   companyId: string;
 }
 

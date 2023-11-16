@@ -6,41 +6,42 @@ import { calculateAmountToRefund } from "../../../helpers/feeSummary";
 import { RefundPage } from "../../Refund/RefundPage";
 import { RefundFormData } from "../../Refund/types/RefundFormData";
 import { Breadcrumb } from "../../../../../common/components/breadcrumb/Breadcrumb";
-import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../../../common/helpers/util";
+import {
+  applyWhenNotNullable,
+  getDefaultRequiredVal,
+} from "../../../../../common/helpers/util";
 import { mapToAmendRequestData } from "./helpers/mapper";
 import { useIssuePermits, useStartTransaction } from "../../../hooks/hooks";
 
 export const AmendPermitFinish = () => {
-  const { 
-    permit,
-    permitFormData, 
-    permitHistory,
-    getLinks,
-    afterFinishAmend,
-  } = useContext(AmendPermitContext);
+  const { permit, permitFormData, permitHistory, getLinks, afterFinishAmend } =
+    useContext(AmendPermitContext);
 
-  const permitId = applyWhenNotNullable(id => `${id}`, permitFormData?.permitId, "");
-
-  const amountToRefund = -1 * calculateAmountToRefund(
-    permitHistory,
-    getDefaultRequiredVal(0, permitFormData?.permitData?.permitDuration)
+  const permitId = applyWhenNotNullable(
+    (id) => `${id}`,
+    permitFormData?.permitId,
+    "",
   );
 
-  const {
-    mutation: startTransactionMutation,
-    transaction,
-  } = useStartTransaction();
+  const amountToRefund =
+    -1 *
+    calculateAmountToRefund(
+      permitHistory,
+      getDefaultRequiredVal(0, permitFormData?.permitData?.permitDuration),
+    );
 
-  const {
-    mutation: issuePermitMutation,
-    issueResults,
-  } = useIssuePermits();
+  const { mutation: startTransactionMutation, transaction } =
+    useStartTransaction();
+
+  const { mutation: issuePermitMutation, issueResults } = useIssuePermits();
 
   const issueFailed = () => {
     if (!issueResults) return false; // since issue results might not be ready yet
-    return issueResults.success.length === 0 
-      || (issueResults.success.length === 1 && issueResults.success[0] === "")
-      || (issueResults.failure.length > 0 && issueResults.failure[0] !== "");
+    return (
+      issueResults.success.length === 0 ||
+      (issueResults.success.length === 1 && issueResults.success[0] === "") ||
+      (issueResults.failure.length > 0 && issueResults.failure[0] !== "")
+    );
   };
 
   useEffect(() => {
@@ -71,11 +72,11 @@ export const AmendPermitFinish = () => {
 
   const handleFinish = (refundData: RefundFormData) => {
     const requestData = mapToAmendRequestData(
-      refundData, 
-      -1 * amountToRefund, 
-      permitId
+      refundData,
+      -1 * amountToRefund,
+      permitId,
     );
-    
+
     startTransactionMutation.mutate(requestData);
   };
 
@@ -83,7 +84,7 @@ export const AmendPermitFinish = () => {
     <div className="amend-permit-finish">
       <Breadcrumb links={getLinks()} />
 
-      <RefundPage 
+      <RefundPage
         permitHistory={permitHistory}
         amountToRefund={amountToRefund}
         permitNumber={permit?.permitNumber}

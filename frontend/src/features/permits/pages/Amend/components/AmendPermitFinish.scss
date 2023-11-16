@@ -5,10 +5,34 @@
   padding-bottom: 3rem;
 
   .breadcrumb {
-    padding: 2em 3.75rem;
+    padding: 2em 8.551vw;
   }
 
   .refund-page {
-    padding: 0 3.75rem;
+    padding: 0 8.551vw;
+  }
+}
+
+@media (width < 768px) {
+  .amend-permit-finish {
+    .breadcrumb {
+      padding: 2em 5.5rem;
+    }
+
+    .refund-page {
+      padding: 0 5.5rem;
+    }
+  }
+}
+
+@media (width < 420px) {
+  .amend-permit-finish {
+    .breadcrumb {
+      padding: 2em 1rem;
+    }
+
+    .refund-page {
+      padding: 0 1rem;
+    }
   }
 }

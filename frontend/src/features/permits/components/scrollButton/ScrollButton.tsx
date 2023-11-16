@@ -1,13 +1,17 @@
-import { Button, useMediaQuery, useTheme } from "@mui/material";
+import { Button } from "@mui/material";
 import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronUp } from "@fortawesome/free-solid-svg-icons";
 
+import "./ScrollButton.scss";
+
 export const ScrollButton = () => {
   const [isVisible, setIsVisible] = useState(false);
+
   const scrollToTop = () => {
     window.scrollTo(0, 0);
   };
+
   const listenToScroll = () => {
     const heightToHideFrom = 600;
     const winScroll =
@@ -20,32 +24,22 @@ export const ScrollButton = () => {
       setIsVisible(false);
     }
   };
+
   useEffect(() => {
     window.addEventListener("scroll", listenToScroll);
     return () => window.removeEventListener("scroll", listenToScroll);
   }, []);
 
-  const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.down("lg"));
-
   return isVisible ? (
     <Button
+      className="scroll-btn"
       key="to-top-button"
       aria-label="To Top"
       variant="contained"
       color="secondary"
       onClick={scrollToTop}
-      sx={{
-        position: "fixed",
-        bottom: 120,
-        right: matches ? 20 : 60,
-        width: "20px",
-      }}
     >
-      <FontAwesomeIcon
-        icon={faChevronUp}
-        style={{ marginLeft: "8px", marginRight: "8px" }}
-      />
+      <FontAwesomeIcon icon={faChevronUp} />
     </Button>
   ) : (
     <></>

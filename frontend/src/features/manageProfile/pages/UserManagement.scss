@@ -1,0 +1,9 @@
+@use "../../../common/components/table/Table.scss";
+@import "../../../themes/orbcStyles.scss";
+
+.table-container {
+  & &__toolbar-internal-actions {
+    display: flex;
+    background-color: $white;
+  }
+}

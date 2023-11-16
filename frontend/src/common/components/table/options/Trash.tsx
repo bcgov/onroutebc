@@ -2,21 +2,25 @@ import { IconButton } from "@mui/material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashCan } from "@fortawesome/free-solid-svg-icons";
 
+import "./Trash.scss";
+
 export const Trash = ({
   onClickTrash,
+  disabled,
 }: {
-  /**
-   * A callback function on clicking the trash icon.
-   * @returns void
-   */
   onClickTrash: () => void;
+  disabled?: boolean;
 }) => {
+  const additionalClasses = disabled
+    ? "trash-btn--disabled"
+    : "trash-btn--active";
+
   return (
     <IconButton
+      className={`trash-btn ${additionalClasses}`}
       type="button"
-      sx={{ p: "10px 10px" }}
       aria-label="delete"
-      disabled={false}
+      disabled={disabled}
       onClick={() => {
         onClickTrash();
       }}

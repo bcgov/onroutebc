@@ -27,11 +27,7 @@ export const Banner = ({
     className={`layout-banner ${extendHeight ? "layout-banner--extend" : ""}`}
   >
     <Grid container>
-      <Grid
-        xs={12}
-        item
-        className="layout-banner__text-section"
-      >
+      <Grid xs={12} item className="layout-banner__text-section">
         <h2>{bannerText}</h2>
         <Box className="banner-button">
           {bannerButton ? bannerButton : null}

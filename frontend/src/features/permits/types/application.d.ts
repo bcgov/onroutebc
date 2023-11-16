@@ -9,7 +9,8 @@ export const PERMIT_APPLICATION_ORIGINS = {
   PPC: "PPC",
 } as const;
 
-export type PermitApplicationOrigin = typeof PERMIT_APPLICATION_ORIGINS[keyof typeof PERMIT_APPLICATION_ORIGINS];
+export type PermitApplicationOrigin =
+  (typeof PERMIT_APPLICATION_ORIGINS)[keyof typeof PERMIT_APPLICATION_ORIGINS];
 
 export const PERMIT_APPROVAL_SOURCES = {
   AUTO: "AUTO",
@@ -17,10 +18,11 @@ export const PERMIT_APPROVAL_SOURCES = {
   TPS: "TPS",
 } as const;
 
-export type PermitApprovalSource = typeof PERMIT_APPROVAL_SOURCES[keyof typeof PERMIT_APPROVAL_SOURCES];
+export type PermitApprovalSource =
+  (typeof PERMIT_APPROVAL_SOURCES)[keyof typeof PERMIT_APPROVAL_SOURCES];
 
 /**
- * A partial permit type that consists of all common fields used for a permit. 
+ * A partial permit type that consists of all common fields used for a permit.
  * This is an incomplete type and meant to be extended for use.
  */
 interface PartialApplication {
@@ -55,21 +57,27 @@ export interface Application extends PartialApplication {
 
 /**
  * Type that replaces all Dayjs types inside direct PermitData entries to string types
- * 
- * eg. PermitData = { c?: Dayjs }, 
- * 
+ *
+ * eg. PermitData = { c?: Dayjs },
+ *
  * and T = { a: number, b: PermitData },
- * 
+ *
  * then TransformPermitData = { a: number, b: { c?: string } }
  */
 type TransformPermitData<T> = {
-  [K in keyof T]: T[K] extends PermitData ? ReplaceDayjsWithString<PermitData> : T[K];
+  [K in keyof T]: T[K] extends PermitData
+    ? ReplaceDayjsWithString<PermitData>
+    : T[K];
 };
 
 // These two types are used to transform an application data response object (with strings as date fields) to Application type (with Dayjs as date fields)
 // and vice versa (Application type to application data request data object with strings as date fields)
-export type ApplicationResponse = TransformPermitData<ReplaceDayjsWithString<Application>>;
-export type ApplicationRequestData = TransformPermitData<ReplaceDayjsWithString<Application>>;
+export type ApplicationResponse = TransformPermitData<
+  ReplaceDayjsWithString<Application>
+>;
+export type ApplicationRequestData = TransformPermitData<
+  ReplaceDayjsWithString<Application>
+>;
 
 export interface MailingAddress {
   addressLine1: string;
@@ -125,20 +133,19 @@ export interface PermitData {
   clientNumber?: string;
 }
 
-export interface PermitApplicationInProgress extends Omit<
-  ReplaceDayjsWithString<
-    Required<Application>
-  >,
-  "originalPermitId" | 
-  "comment" |
-  "permitApplicationOrigin" | 
-  "permitApprovalSource" | 
-  "permitNumber" | 
-  "permitStatus" | 
-  "documentId" |
-  "revision" |
-  "previousRevision"
-> {
+export interface PermitApplicationInProgress
+  extends Omit<
+    ReplaceDayjsWithString<Required<Application>>,
+    | "originalPermitId"
+    | "comment"
+    | "permitApplicationOrigin"
+    | "permitApprovalSource"
+    | "permitNumber"
+    | "permitStatus"
+    | "documentId"
+    | "revision"
+    | "previousRevision"
+  > {
   permitApplicationOrigin?: PermitApplicationOrigin | null;
   permitApprovalSource?: PermitApprovalSource | null;
   permitData: ReplaceDayjsWithString<PermitData>;

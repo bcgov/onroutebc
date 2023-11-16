@@ -1,23 +1,19 @@
-import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  Box,
-  Button,
-  Divider,
-  Link,
-  Typography
-} from "@mui/material";
-import Stack from "@mui/material/Stack";
 import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import React, { useContext, useState } from "react";
+import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useNavigate } from "react-router-dom";
+import { Box, Button, Divider, Link, Typography, Stack } from "@mui/material";
+
 import {
   Controller,
   FieldValues,
   FormProvider,
   useForm,
 } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+
+import "./AddUserDashboard.scss";
 import { SnackBarContext } from "../../../App";
 import { Banner } from "../../../common/components/dashboard/Banner";
 import { CustomFormComponent } from "../../../common/components/form/CustomFormComponents";
@@ -27,8 +23,10 @@ import { addUserToCompany } from "../apiManager/manageProfileAPI";
 import { UserAuthRadioGroup } from "../components/forms/userManagement/UserAuthRadioGroup";
 import UserGroupsAndPermissionsModal from "../components/user-management/UserGroupsAndPermissionsModal";
 import { BCEID_PROFILE_TABS } from "../types/manageProfile.d";
-import { BCeIDAddUserRequest, BCEID_AUTH_GROUP } from "../types/userManagement.d";
-import "./AddUserDashboard.scss";
+import {
+  BCeIDAddUserRequest,
+  BCEID_AUTH_GROUP,
+} from "../types/userManagement.d";
 
 /**
  * BCeID User - Add User Page.
@@ -112,41 +110,23 @@ export const AddUserDashboard = React.memo(() => {
   };
 
   return (
-    <>
-      <Box
-        className="layout-box"
-        sx={{
-          borderBottom: 1,
-          borderColor: "divider",
-        }}
-      >
+    <div className="dashboard-page dashboard-page--add-user">
+      <Box className="dashboard-page__banner layout-box">
         <Banner bannerText="Add User" extendHeight={true} />
       </Box>
-      <Box
-        className="layout-box"
-        sx={{
-          display: "flex",
-          height: "60px",
-          alignItems: "center",
-          backgroundColor: BC_COLOURS.white,
-        }}
-      >
+
+      <Box className="dashboard-page__breadcrumb layout-box">
         <Typography
+          className="breadcrumb-link breadcrumb-link--parent"
           onClick={onClickBreadCrumb}
-          sx={{
-            color: BC_COLOURS.bc_text_links_blue,
-            cursor: "pointer",
-            marginRight: "8px",
-            textDecoration: "underline",
-          }}
         >
           Profile
         </Typography>
-        <FontAwesomeIcon
-          icon={faChevronRight}
-          style={{ marginLeft: "8px", marginRight: "8px" }}
-        />
+
+        <FontAwesomeIcon className="breadcrumb-icon" icon={faChevronRight} />
+
         <Typography
+          className="breadcrumb-link breadcrumb-link--parent"
           onClick={onClickBreadCrumb}
           style={{
             color: BC_COLOURS.bc_text_links_blue,
@@ -156,40 +136,25 @@ export const AddUserDashboard = React.memo(() => {
         >
           User Management
         </Typography>
-        <FontAwesomeIcon
-          icon={faChevronRight}
-          style={{ marginLeft: "8px", marginRight: "8px" }}
-        />
+
+        <FontAwesomeIcon className="breadcrumb-icon" icon={faChevronRight} />
+
         <Typography>Add User</Typography>
       </Box>
 
       <FormProvider {...formMethods}>
-        <Box
-          className="layout-box"
-          sx={{
-            display: "flex",
-            paddingTop: "24px",
-            backgroundColor: BC_COLOURS.white,
-          }}
-        >
-          <Stack direction="row" spacing={16}>
+        <Box className="dashboard-page__form dashboard-page__form--user-id layout-box">
+          <Stack className="user-id" direction="row" spacing={16}>
             <Stack>
-              <Typography
-                variant={"h2"}
-                sx={{
-                  marginRight: "200px",
-                  marginTop: "0px",
-                  paddingTop: "0px",
-                  borderBottom: "0px",
-                }}
-              >
+              <Typography className="user-id__label" variant={"h2"}>
                 User ID
               </Typography>
             </Stack>
+
             <CustomFormComponent
               type="input"
               feature="add-user"
-              className="margin-top-zero"
+              className="user-id__input"
               options={{
                 name: "userName",
                 rules: {
@@ -201,38 +166,15 @@ export const AddUserDashboard = React.memo(() => {
             />
           </Stack>
         </Box>
+
         <Divider variant="middle" />
-        <Box
-          className="layout-box"
-          sx={{
-            display: "flex",
-            paddingTop: "24px",
-            paddingBottom: "80px", // Needs long term fix
-            backgroundColor: BC_COLOURS.white,
-          }}
-        >
+
+        <Box className="dashboard-page__form dashboard-page__form--user-group layout-box">
           <Stack direction="row">
             <Stack>
-              <Typography
-                variant={"h2"}
-                sx={{
-                  marginRight: "200px",
-                  marginTop: "0px",
-                  paddingTop: "0px",
-                  borderBottom: "0px",
-                }}
-              >
-                Assign User Group
-              </Typography>
-              <Typography
-                variant={"h2"}
-                sx={{
-                  marginRight: "200px",
-                  marginTop: "0px",
-                  paddingTop: "0px",
-                  borderBottom: "0px",
-                }}
-              >
+              <Typography variant={"h2"}>Assign User Group</Typography>
+
+              <Typography variant={"h2"}>
                 <Link
                   component="button"
                   variant="body2"
@@ -279,7 +221,7 @@ export const AddUserDashboard = React.memo(() => {
         isOpen={isUserGroupsModalOpen}
         onClickClose={() => setIsUserGroupsModalOpen(() => false)}
       />
-    </>
+    </div>
   );
 });
 

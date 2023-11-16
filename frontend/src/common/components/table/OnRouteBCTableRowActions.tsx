@@ -24,7 +24,10 @@ export const OnRouteBCTableRowActions = ({
   /**
    * The options to be shown in the menu.
    */
-  options: string[];
+  options: {
+    label: string;
+    value: string;
+  }[];
 
   /**
    * Disables the row action icon if set to true. Defaults to false.
@@ -33,9 +36,11 @@ export const OnRouteBCTableRowActions = ({
 }) => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
+
   const handleClick = useCallback((event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   }, []);
+
   const handleClose = () => {
     setAnchorEl(null);
   };
@@ -46,7 +51,7 @@ export const OnRouteBCTableRowActions = ({
    * @param event The click event containing the target value.
    */
   const onClickOption = (event: React.MouseEvent<HTMLElement>) => {
-    const selectedOption = event.currentTarget.outerText as string;
+    const selectedOption = event.currentTarget.dataset.optionValue as string;
     onSelectOption(selectedOption);
     setAnchorEl(null);
   };
@@ -81,11 +86,11 @@ export const OnRouteBCTableRowActions = ({
       >
         {options.map((option) => (
           <MenuItem
-            key={`option-${option}`}
+            key={`option-${option.value}`}
             onClick={onClickOption}
-            option-value={option}
+            data-option-value={option.value}
           >
-            {option}
+            {option.label}
           </MenuItem>
         ))}
       </Menu>

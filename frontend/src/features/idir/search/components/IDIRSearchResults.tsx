@@ -54,7 +54,8 @@ export const IDIRSearchResults = memo(
   }) => {
     const { searchValue, searchByFilter, searchEntity } = searchParams;
     const { idirUserDetails } = useContext(OnRouteBCContext);
-    const [isActiveRecordsOnly, setIsActiveRecordsOnly] = useState<boolean>(false);
+    const [isActiveRecordsOnly, setIsActiveRecordsOnly] =
+      useState<boolean>(false);
 
     const { data, isLoading, isError } = useQuery(
       ["search-entity", searchValue, searchByFilter, searchEntity],
@@ -64,13 +65,13 @@ export const IDIRSearchResults = memo(
           searchEntity,
           searchValue,
         }),
-      { retry: false, enabled: true, refetchInterval: false }
+      { retry: false, enabled: true, refetchInterval: false },
     );
 
     // Column definitions for the table
     const columns = useMemo<MRT_ColumnDef<Permit>[]>(
       () => PermitSearchResultColumnDef,
-      []
+      [],
     );
 
     /**
@@ -83,8 +84,8 @@ export const IDIRSearchResults = memo(
       if (isActiveRecordsOnly) {
         // Returns unexpired permits
         return initialData.filter(
-          ({ permitStatus, permitData: { expiryDate } }) => 
-            !hasPermitExpired(expiryDate) && !isPermitInactive(permitStatus)
+          ({ permitStatus, permitData: { expiryDate } }) =>
+            !hasPermitExpired(expiryDate) && !isPermitInactive(permitStatus),
         );
       }
       return initialData;
@@ -110,7 +111,7 @@ export const IDIRSearchResults = memo(
                       color="primary"
                       checked={isActiveRecordsOnly}
                       onChange={(
-                        event: React.ChangeEvent<HTMLInputElement>
+                        event: React.ChangeEvent<HTMLInputElement>,
                       ) => {
                         setIsActiveRecordsOnly(() => event.target.checked);
                       }}
@@ -126,7 +127,7 @@ export const IDIRSearchResults = memo(
             isLoading,
             showAlertBanner: isError,
             showProgressBars: isLoading,
-            sorting: [{ id: "createdDateTime", desc: true }],
+            sorting: [{ id: "permitIssueDateTime", desc: true }],
           }}
           // Disable the default column actions so that we can use our custom actions
           enableColumnActions={false}
@@ -146,9 +147,9 @@ export const IDIRSearchResults = memo(
               table: MRT_TableInstance<Permit>;
               row: MRT_Row<Permit>;
             }) => {
-              const isInactive = hasPermitExpired(
-                row.original.permitData.expiryDate
-              ) || isPermitInactive(row.original.permitStatus);
+              const isInactive =
+                hasPermitExpired(row.original.permitData.expiryDate) ||
+                isPermitInactive(row.original.permitStatus);
 
               if (shouldShowRowActions(idirUserDetails?.userAuthGroup)) {
                 return (
@@ -165,7 +166,7 @@ export const IDIRSearchResults = memo(
                 return <></>;
               }
             },
-            []
+            [],
           )}
           /*
            *
@@ -231,7 +232,7 @@ export const IDIRSearchResults = memo(
         />
       </div>
     );
-  }
+  },
 );
 
 IDIRSearchResults.displayName = "SearchResults";

@@ -2,6 +2,7 @@ import { IDPS } from "../common/types/idp";
 
 export const HOME = "/";
 export const UNAUTHORIZED = "unauthorized";
+export const UNIVERSAL_UNAUTHORIZED = "universal-unauthorized";
 
 // Manage Vehicles
 export const MANAGE_VEHICLES = "manage-vehicles";
@@ -33,4 +34,4 @@ export const IDIR_WELCOME = `/${IDPS.IDIR}/welcome`;
 export const SEARCH_RESULTS = `/${IDPS.IDIR}/search-results`;
 
 // Payment
-export const PAYMENT_REDIRECT = "payment"
+export const PAYMENT_REDIRECT = "payment";

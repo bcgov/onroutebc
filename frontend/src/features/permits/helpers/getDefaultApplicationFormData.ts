@@ -4,7 +4,10 @@ import { getUserGuidFromSession } from "../../../common/apiManager/httpRequestHa
 import { BCeIDUserDetailContext } from "../../../common/authentication/OnRouteBCContext";
 import { TROS_COMMODITIES } from "../constants/termOversizeConstants";
 import { now } from "../../../common/helpers/formatDate";
-import { Address, CompanyProfile } from "../../manageProfile/types/manageProfile";
+import {
+  Address,
+  CompanyProfile,
+} from "../../manageProfile/types/manageProfile";
 import { PERMIT_STATUSES } from "../types/PermitStatus";
 import { calculateFeeByDuration } from "./feeSummary";
 import { PERMIT_TYPES } from "../types/PermitType";
@@ -31,7 +34,7 @@ import {
 export const getDefaultContactDetails = (
   isNewApplication: boolean,
   contactDetails?: ContactDetails,
-  userDetails?: BCeIDUserDetailContext
+  userDetails?: BCeIDUserDetailContext,
 ) => {
   if (isNewApplication) {
     return {
@@ -65,7 +68,7 @@ export const getDefaultContactDetails = (
  */
 export const getDefaultMailingAddress = (
   mailingAddress?: MailingAddress,
-  alternateAddress?: Address
+  alternateAddress?: Address,
 ) =>
   mailingAddress
     ? {
@@ -103,11 +106,13 @@ export const getDefaultVehicleDetails = (vehicleDetails?: VehicleDetails) => ({
   saveVehicle: getDefaultRequiredVal(false, vehicleDetails?.saveVehicle),
 });
 
-export const getDurationOrDefault = (applicationData?: Application | Permit): number => {
+export const getDurationOrDefault = (
+  applicationData?: Application | Permit,
+): number => {
   return applyWhenNotNullable(
     (duration) => +duration,
     applicationData?.permitData?.permitDuration,
-    30
+    30,
   );
 };
 
@@ -122,71 +127,81 @@ export const getDefaultValues = (
   applicationData?: Application,
   companyId?: number,
   userDetails?: BCeIDUserDetailContext,
-  companyInfo?: CompanyProfile
+  companyInfo?: CompanyProfile,
 ) => ({
   companyId: +getDefaultRequiredVal(0, companyId),
-  originalPermitId: getDefaultRequiredVal("", applicationData?.originalPermitId),
+  originalPermitId: getDefaultRequiredVal(
+    "",
+    applicationData?.originalPermitId,
+  ),
   comment: getDefaultRequiredVal("", applicationData?.comment),
   applicationNumber: getDefaultRequiredVal(
     "",
-    applicationData?.applicationNumber
+    applicationData?.applicationNumber,
   ),
-  userGuid: getDefaultRequiredVal("", applicationData?.userGuid, getUserGuidFromSession()),
+  userGuid: getDefaultRequiredVal(
+    "",
+    applicationData?.userGuid,
+    getUserGuidFromSession(),
+  ),
   permitId: getDefaultRequiredVal("", applicationData?.permitId),
   permitNumber: getDefaultRequiredVal("", applicationData?.permitNumber),
-  permitType: getDefaultRequiredVal(PERMIT_TYPES.TROS, applicationData?.permitType),
+  permitType: getDefaultRequiredVal(
+    PERMIT_TYPES.TROS,
+    applicationData?.permitType,
+  ),
   permitStatus: getDefaultRequiredVal(
     PERMIT_STATUSES.IN_PROGRESS,
-    applicationData?.permitStatus
+    applicationData?.permitStatus,
   ),
   createdDateTime: applyWhenNotNullable(
     (date) => dayjs(date),
     applicationData?.createdDateTime,
-    now()
+    now(),
   ),
   updatedDateTime: applyWhenNotNullable(
     (date) => dayjs(date),
     applicationData?.updatedDateTime,
-    now()
+    now(),
   ),
   revision: getDefaultRequiredVal(0, applicationData?.revision),
   previousRevision: getDefaultRequiredVal(
     "",
-    applicationData?.previousRevision
+    applicationData?.previousRevision,
   ),
   documentId: getDefaultRequiredVal("", applicationData?.documentId),
   permitData: {
     companyName: getDefaultRequiredVal(
       "",
-      applicationData?.permitData?.companyName
+      applicationData?.permitData?.companyName,
     ),
     clientNumber: getDefaultRequiredVal(
       "",
-      applicationData?.permitData?.clientNumber
+      applicationData?.permitData?.clientNumber,
     ),
     startDate: applyWhenNotNullable(
       (date) => dayjs(date),
       applicationData?.permitData?.startDate,
-      now()
+      now(),
     ),
     permitDuration: getDurationOrDefault(applicationData),
     expiryDate: applyWhenNotNullable(
       (date) => dayjs(date),
       applicationData?.permitData?.expiryDate,
-      now()
+      now(),
     ),
     commodities: getDefaultRequiredVal(
       [TROS_COMMODITIES[0], TROS_COMMODITIES[1]],
       applyWhenNotNullable(
         (commodities) => commodities.map((commodity) => ({ ...commodity })),
-        applicationData?.permitData?.commodities
-      )
+        applicationData?.permitData?.commodities,
+      ),
     ),
     contactDetails: getDefaultContactDetails(
       getDefaultRequiredVal("", applicationData?.applicationNumber).trim() ===
         "",
       applicationData?.permitData?.contactDetails,
-      userDetails
+      userDetails,
     ),
     // Default values are updated from companyInfo query in the ContactDetails common component
     mailingAddress: getDefaultMailingAddress(
@@ -194,11 +209,11 @@ export const getDefaultValues = (
       companyInfo?.mailingAddress,
     ),
     vehicleDetails: getDefaultVehicleDetails(
-      applicationData?.permitData?.vehicleDetails
+      applicationData?.permitData?.vehicleDetails,
     ),
     feeSummary: getDefaultRequiredVal(
       `${calculateFeeByDuration(getDurationOrDefault(applicationData))}`,
-      applicationData?.permitData?.feeSummary
+      applicationData?.permitData?.feeSummary,
     ),
   },
 });

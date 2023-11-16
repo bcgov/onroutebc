@@ -28,7 +28,7 @@ export const useVehicleByIdQuery = (powerUnitId: string, companyId: string) => {
   return useQuery(
     ["powerUnitById", powerUnitId],
     () => getPowerUnit(powerUnitId, companyId),
-    { retry: false }
+    { retry: false },
   );
 };
 

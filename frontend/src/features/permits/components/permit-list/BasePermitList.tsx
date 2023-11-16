@@ -1,23 +1,22 @@
 import { Box } from "@mui/material";
+import { useCallback, useContext, useEffect } from "react";
 import { UseQueryResult } from "@tanstack/react-query";
 import MaterialReactTable, {
   MRT_GlobalFilterTextField,
   MRT_Row,
-  MRT_TableInstance
+  MRT_TableInstance,
 } from "material-react-table";
-import { useCallback, useContext, useEffect } from "react";
 
 import { SnackBarContext } from "../../../../App";
 import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
-import "../../../manageVehicles/components/list/List.scss";
 import { Permit } from "../../types/permit";
 import { PermitsColumnDefinition } from "./Columns";
 import { PermitRowOptions } from "./PermitRowOptions";
 
 /**
  * A permit list component with common functionalities that can be shared by
- * wrapping components. 
+ * wrapping components.
  */
 export const BasePermitList = ({
   query,
@@ -77,7 +76,7 @@ export const BasePermitList = ({
             </Box>
           );
         },
-        []
+        [],
       )}
       renderTopToolbar={useCallback(
         ({ table }: { table: MRT_TableInstance<Permit> }) => (
@@ -91,7 +90,7 @@ export const BasePermitList = ({
             <MRT_GlobalFilterTextField table={table} />
           </Box>
         ),
-        []
+        [],
       )}
       /*
        *
@@ -102,7 +101,7 @@ export const BasePermitList = ({
       muiTablePaperProps={{
         sx: {
           border: "none",
-          boxShadow: "none"
+          boxShadow: "none",
         },
       }}
       // Column widths
@@ -139,6 +138,7 @@ export const BasePermitList = ({
       // Search Bar
       positionGlobalFilter="left"
       initialState={{ showGlobalFilter: true }} //show the search bar by default
+      globalFilterFn="contains" // use contains vs the default fuzzy filter fn
       muiSearchTextFieldProps={{
         placeholder: "Search",
         sx: {

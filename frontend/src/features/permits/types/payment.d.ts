@@ -56,15 +56,16 @@ export interface PermitTransaction {
 export const TRANSACTION_TYPES = {
   P: "P",
   R: "R",
-  VP: "VP", 
-  VR: "VR", 
-  PA: "PA", 
-  PAC: "PAC", 
+  VP: "VP",
+  VR: "VR",
+  PA: "PA",
+  PAC: "PAC",
   Q: "Q",
   Z: "Z",
 } as const;
 
-export type TransactionType = typeof TRANSACTION_TYPES[keyof typeof TRANSACTION_TYPES];
+export type TransactionType =
+  (typeof TRANSACTION_TYPES)[keyof typeof TRANSACTION_TYPES];
 
 export interface PaymentGatewayData {
   pgTransactionId: string;
@@ -78,7 +79,8 @@ export interface PaymentGatewayData {
   pgMessageText: string;
 }
 
-export interface StartTransactionRequestData extends Partial<PaymentGatewayData> {
+export interface StartTransactionRequestData
+  extends Partial<PaymentGatewayData> {
   transactionTypeId: TransactionType;
   paymentMethodId: string;
   applicationDetails: {
@@ -87,7 +89,8 @@ export interface StartTransactionRequestData extends Partial<PaymentGatewayData>
   }[];
 }
 
-export interface StartTransactionResponseData extends Partial<PaymentGatewayData> {
+export interface StartTransactionResponseData
+  extends Partial<PaymentGatewayData> {
   transactionId: string;
   transactionTypeId: TransactionType;
   paymentMethodId: string;
@@ -103,6 +106,7 @@ export interface StartTransactionResponseData extends Partial<PaymentGatewayData
 
 export type CompleteTransactionRequestData = Partial<PaymentGatewayData>;
 
-export interface CompleteTransactionResponseData extends Partial<PaymentGatewayData> {
+export interface CompleteTransactionResponseData
+  extends Partial<PaymentGatewayData> {
   transactionid: string;
 }

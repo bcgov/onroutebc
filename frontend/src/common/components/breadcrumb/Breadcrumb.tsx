@@ -16,7 +16,7 @@ export const Breadcrumb = ({
   return (
     <Box className="breadcrumb">
       {links.map((link, i) => {
-        const isCurrent = i === (links.length - 1);
+        const isCurrent = i === links.length - 1;
         return isCurrent ? (
           <Typography
             key={link.text}

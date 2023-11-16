@@ -1,9 +1,25 @@
 .amend-permit-form {
   .breadcrumb {
-    padding: 2em 4em;
+    padding: 2em 8.551vw;
   }
 
   .tros-form-actions {
     justify-content: flex-end;
+  }
+}
+
+@media (width < 768px) {
+  .amend-permit-form {
+    .breadcrumb {
+      padding: 2em 5.5rem;
+    }
+  }
+}
+
+@media (width < 420px) {
+  .amend-permit-form {
+    .breadcrumb {
+      padding: 2em 1rem;
+    }
   }
 }

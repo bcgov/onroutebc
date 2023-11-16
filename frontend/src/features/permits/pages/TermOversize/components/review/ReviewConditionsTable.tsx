@@ -26,8 +26,12 @@ export const ReviewConditionsTable = ({
       <Table className="review-conditions-table" aria-label="simple table">
         <TableHead>
           <TableRow>
-            <TableCell className="review-conditions-table__header">Description</TableCell>
-            <TableCell className="review-conditions-table__header">Conditions</TableCell>
+            <TableCell className="review-conditions-table__header">
+              Description
+            </TableCell>
+            <TableCell className="review-conditions-table__header">
+              Conditions
+            </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -51,15 +55,18 @@ export const ReviewConditionsTable = ({
                 </TableCell>
 
                 <TableCell component="td" scope="row">
-                  <a 
-                    href={row.conditionLink} 
+                  <a
+                    href={row.conditionLink}
                     className="condition-link"
                     data-testid="permit-condition-link"
                   >
                     <span data-testid="permit-condition-code">
                       {row.condition}
                     </span>
-                    <FontAwesomeIcon className="condition-link__icon" icon={faArrowUpRightFromSquare} />
+                    <FontAwesomeIcon
+                      className="condition-link__icon"
+                      icon={faArrowUpRightFromSquare}
+                    />
                   </a>
                 </TableCell>
               </TableRow>

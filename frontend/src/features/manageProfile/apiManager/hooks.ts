@@ -62,7 +62,7 @@ export const useUserContext = () => {
     setUserDetails,
     setCompanyLegalName,
     setIDIRUserDetails,
-    setOnRouteBCClientNumber
+    setOnRouteBCClientNumber,
   } = useContext(OnRouteBCContext);
   const { isAuthenticated, user: userFromToken } = useAuth();
   return useQuery({
@@ -71,7 +71,7 @@ export const useUserContext = () => {
     cacheTime: 500,
     refetchOnMount: "always",
     onSuccess: (
-      userContextResponseBody: BCeIDUserContextType | IDIRUserContextType
+      userContextResponseBody: BCeIDUserContextType | IDIRUserContextType,
     ) => {
       if (
         isAuthenticated &&
@@ -116,7 +116,7 @@ export const useUserContext = () => {
           // used outside of react components.
           sessionStorage.setItem(
             "onRouteBC.user.companyId",
-            companyId.toString()
+            companyId.toString(),
           );
         }
         if (pendingCompanies.length > 0) {
@@ -125,7 +125,7 @@ export const useUserContext = () => {
           setCompanyLegalName?.(() => legalName);
           sessionStorage.setItem(
             "onRouteBC.user.companyId",
-            companyId.toString()
+            companyId.toString(),
           );
         }
       }
@@ -161,8 +161,8 @@ export const useIDIRUserRoles = () => {
     queryKey: ["userIDIRRoles"],
     refetchInterval: FIVE_MINUTES,
     queryFn: getIDIRUserRoles,
-    onSuccess: (userRolesResponseBody: string[]) => {
-      setUserRoles?.(() => userRolesResponseBody);
+    onSuccess: (userRoles: string[] | null) => {
+      setUserRoles?.(() => userRoles);
     },
     retry: true,
   });

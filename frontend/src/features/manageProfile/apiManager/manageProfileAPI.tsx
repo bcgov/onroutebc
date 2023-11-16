@@ -22,9 +22,13 @@ export const getCompanyInfo = async (): Promise<CompanyProfile> => {
   return httpGETRequest(url).then((response) => response.data);
 };
 
-export const getCompanyInfoById = async (companyId: number): Promise<CompanyProfile | null> => {
+export const getCompanyInfoById = async (
+  companyId: number,
+): Promise<CompanyProfile | null> => {
   try {
-    const response = await httpGETRequest(`${MANAGE_PROFILE_API.COMPANIES}/${companyId}`);
+    const response = await httpGETRequest(
+      `${MANAGE_PROFILE_API.COMPANIES}/${companyId}`,
+    );
     return response.data;
   } catch (err) {
     console.error(err);
@@ -49,7 +53,7 @@ export const updateCompanyInfo = async ({
 }) => {
   return await httpPUTRequest(
     `${MANAGE_PROFILE_API.COMPANIES}/${getCompanyIdFromSession()}`,
-    replaceEmptyValuesWithNull(companyInfo)
+    replaceEmptyValuesWithNull(companyInfo),
   );
 };
 
@@ -58,7 +62,7 @@ export const updateMyInfo = async ({ myInfo }: { myInfo: UserInformation }) => {
     `${
       MANAGE_PROFILE_API.COMPANIES
     }/${getCompanyIdFromSession()}/users/${getUserGuidFromSession()}`,
-    replaceEmptyValuesWithNull(myInfo)
+    replaceEmptyValuesWithNull(myInfo),
   );
 };
 
@@ -74,7 +78,7 @@ export const createMyOnRouteBCUserProfile = async ({
 }) => {
   return await httpPOSTRequest(
     `${MANAGE_PROFILE_API.COMPANIES}/${getCompanyIdFromSession()}/users`,
-    replaceEmptyValuesWithNull(myInfo)
+    replaceEmptyValuesWithNull(myInfo),
   );
 };
 
@@ -84,11 +88,11 @@ export const createMyOnRouteBCUserProfile = async ({
  * @returns A Promise containing the response from the API.
  */
 export const createOnRouteBCProfile = async (
-  onRouteBCProfileRequestObject: CompanyAndUserRequest
+  onRouteBCProfileRequestObject: CompanyAndUserRequest,
 ) => {
   return await httpPOSTRequest(
     `${MANAGE_PROFILE_API.COMPANIES}`,
-    replaceEmptyValuesWithNull(onRouteBCProfileRequestObject)
+    replaceEmptyValuesWithNull(onRouteBCProfileRequestObject),
   );
 };
 
@@ -115,10 +119,20 @@ export const getUserRolesByCompanyId = (): Promise<string[]> => {
 /**
  * Retrieves the roles of an IDIR user (i.e., OnRouteBC staff).
  */
-export const getIDIRUserRoles = (): Promise<string[]> => {
-  return httpGETRequest(`${VEHICLES_URL}/users/roles`).then(
-    (response) => response.data
-  );
+export const getIDIRUserRoles = async (): Promise<string[] | null> => {
+  try {
+    const response = await httpGETRequest(`${VEHICLES_URL}/users/roles`);
+    if (response.status === 200) {
+      return response.data as string[];
+    }
+
+    // Error status code, return null for roles
+    return null;
+  } catch (err) {
+    // If error, return null for roles
+    console.error(err);
+    return null;
+  }
 };
 
 /**
@@ -127,7 +141,7 @@ export const getIDIRUserRoles = (): Promise<string[]> => {
  */
 export const getCompanyUsers = (): Promise<ReadCompanyUser[]> => {
   return httpGETRequest(
-    `${VEHICLES_URL}/companies/${getCompanyIdFromSession()}/users?includePendingUser=true`
+    `${VEHICLES_URL}/companies/${getCompanyIdFromSession()}/users?includePendingUser=true`,
   ).then((response) => response.data);
 };
 
@@ -137,7 +151,7 @@ export const getCompanyUsers = (): Promise<ReadCompanyUser[]> => {
  */
 export const getCompanyPendingUsers = (): Promise<ReadCompanyUser[]> => {
   return httpGETRequest(
-    `${VEHICLES_URL}/companies/${getCompanyIdFromSession()}/pending-users`
+    `${VEHICLES_URL}/companies/${getCompanyIdFromSession()}/pending-users`,
   ).then((response) => response.data);
 };
 
@@ -151,7 +165,7 @@ export const addUserToCompany = async (addUserRequest: BCeIDAddUserRequest) => {
     `${
       MANAGE_PROFILE_API.COMPANIES
     }/${getCompanyIdFromSession()}/pending-users`,
-    replaceEmptyValuesWithNull(addUserRequest)
+    replaceEmptyValuesWithNull(addUserRequest),
   );
 };
 
@@ -161,7 +175,7 @@ export const addUserToCompany = async (addUserRequest: BCeIDAddUserRequest) => {
  */
 export const deleteCompanyUsers = (userName: string) => {
   return httpDELETERequest(
-    `${VEHICLES_URL}/companies/${getCompanyIdFromSession()}/pending-users/${userName}`
+    `${VEHICLES_URL}/companies/${getCompanyIdFromSession()}/pending-users/${userName}`,
   );
 };
 
@@ -171,10 +185,10 @@ export const deleteCompanyUsers = (userName: string) => {
  * @returns a promise containing the user.
  */
 export const getCompanyUserByUserGUID = (
-  userGUID: string
+  userGUID: string,
 ): Promise<ReadCompanyUser> => {
   return httpGETRequest(`${VEHICLES_URL}/users/${userGUID}`).then(
-    (response) => response.data
+    (response) => response.data,
   );
 };
 
@@ -194,6 +208,6 @@ export const updateUserInfo = async ({
     `${
       MANAGE_PROFILE_API.COMPANIES
     }/${getCompanyIdFromSession()}/users/${userGUID}`,
-    replaceEmptyValuesWithNull(userInfo)
+    replaceEmptyValuesWithNull(userInfo),
   );
 };
