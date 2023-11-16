@@ -1,7 +1,7 @@
 import { RowSelectionState } from "@tanstack/table-core";
 import { Box, IconButton, Tooltip } from "@mui/material";
 import { Delete, Edit } from "@mui/icons-material";
-import { UseQueryResult, useQueryClient } from "@tanstack/react-query";
+import { UseQueryResult } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import {
   memo,
@@ -33,8 +33,7 @@ import {
   VehicleTypes,
   VehicleTypesAsString,
   PowerUnit,
-  Trailer,
-  VehicleType,
+  Trailer
 } from "../../types/managevehicles";
 import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
 import { usePowerUnitTypesQuery, useTrailerTypesQuery } from "../../apiManager/hooks";
