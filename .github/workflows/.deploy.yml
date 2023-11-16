@@ -57,7 +57,7 @@ jobs:
   # https://github.com/bcgov-nr/action-deployer-openshift
   deploys:
     name: Helm
-    environment: ${{ github.event.number || github.event.release.tag_name }}
+    environment: ${{ github.event.number || github.event.release.tag_name || inputs.zone}}
     runs-on: ubuntu-22.04
     timeout-minutes: ${{ inputs.timeout-minutes }}
     steps:
