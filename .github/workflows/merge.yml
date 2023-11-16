@@ -1,10 +1,8 @@
 name: Merge
 
 on:
-  workflow_run:
-    workflows: [PR Closed]
-    branches: [experiment/helm_deployment_pipeline]
-    types: [completed]
+  push:
+    tags: [v*]
 
 concurrency:
   group: ${{ github.workflow }}
