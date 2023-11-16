@@ -3,6 +3,7 @@ name: Merge
 on:
   push:
     tags: [v*]
+    branches: [experiment/helm_deployment_pipeline]
 
 concurrency:
   group: ${{ github.workflow }}
