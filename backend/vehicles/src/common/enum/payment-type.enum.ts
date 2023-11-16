@@ -1,5 +1,5 @@
 export enum PaymentType {
-  AMEX = 'AX',
+  AMEX = 'AM',
   DEBIT = 'DB',
   MASTERCARD = 'MC',
   VISA = 'VI',
