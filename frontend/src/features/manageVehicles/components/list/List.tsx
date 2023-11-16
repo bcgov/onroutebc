@@ -37,6 +37,8 @@ import {
   VehicleType,
 } from "../../types/managevehicles";
 import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
+import { usePowerUnitTypesQuery, useTrailerTypesQuery } from "../../apiManager/hooks";
+import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 
 /**
  * Dynamically set the column based on vehicle type
@@ -89,14 +91,22 @@ export const List = memo(
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
     const hasNoRowsSelected = Object.keys(rowSelection).length === 0;
-    const queryClient = useQueryClient();
-    const vehicleTypes:VehicleType[] | undefined = queryClient.getQueryData<VehicleType[]>([`${vehicleType}Types`])
+   
+    const powerUnitTypesQuery = usePowerUnitTypesQuery()
+    const trailerTypesQuery = useTrailerTypesQuery()
+    const fetchedPowerUnitTypes = getDefaultRequiredVal([], powerUnitTypesQuery.data)
+    const fetchedTrailerTypes = getDefaultRequiredVal([], trailerTypesQuery.data)
 
     const colTypeCodes = columns.filter((item) => item.accessorKey === `${vehicleType}TypeCode`)
     const newColumns = columns.filter((item) => item.accessorKey !== `${vehicleType}TypeCode`)
 
     const transformVehicleCode = (code:string) => {
-      const val = vehicleTypes?.filter((value) => value.typeCode === code)
+      let val
+      if (vehicleType === 'powerUnit') {
+        val = fetchedPowerUnitTypes?.filter((value) => value.typeCode === code)
+      } else {
+        val = fetchedTrailerTypes?.filter((value) => value.typeCode === code)
+      }
       return val?.at(0)?.type || ''
     }
 
