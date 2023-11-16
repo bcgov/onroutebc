@@ -31,8 +31,8 @@
   },
   "scripts": {
     "build": "tsc && vite build",
-    "format": "prettier --write \"src/**/*.ts\" \"src/**/*.tsx\"",
-    "lint": "eslint src",
+    "format": "prettier --write \"src/**/*.{ts,tsx}\"",
+    "lint": "eslint \"src/**/*.{ts,tsx}\" --fix",
     "serve-vite": "vite preview",
     "start": "vite",
     "test": "vitest watch --reporter verbose",
