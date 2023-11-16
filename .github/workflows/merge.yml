@@ -12,6 +12,7 @@ concurrency:
 jobs:
   deploys-test:
     name: Deploys (test)
+    environment: test
     uses: ./.github/workflows/.deploy.yml
     secrets: inherit
     with:
@@ -23,6 +24,7 @@ jobs:
 
   integration-e2e:
     name: Integration and E2E Tests
+    environment: test
     needs: [deploys-test]
     uses: ./.github/workflows/.tests.yml
     with:
@@ -30,6 +32,7 @@ jobs:
 
   deploys-prod:
     name: Deploys (prod)
+    environment: prod
     needs: [integration-e2e]
     uses: ./.github/workflows/.deploy.yml
     secrets: inherit
@@ -39,4 +42,3 @@ jobs:
       license: c28f0c
       vault_role: prod
       zone: prod
-
