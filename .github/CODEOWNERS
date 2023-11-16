@@ -1,8 +1,8 @@
 # Default codeowners:
-* @john-fletcher-aot @gchauhan-aot @praju-aot @krishnan-aot @zgong-gov
+* @john-fletcher-aot @gchauhan-aot @praju-aot @krishnan-aot
 
 # Frontend:
-/frontend/** @krishnan-aot @erikataot @zgong-gov
+/frontend/** @krishnan-aot
 
 # Backend:
 /backend/**  @gchauhan-aot @praju-aot
