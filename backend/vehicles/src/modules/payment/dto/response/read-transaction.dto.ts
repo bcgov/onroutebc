@@ -5,7 +5,7 @@ import { PaymentMethodType } from '../../../../common/enum/payment-method-type.e
 import { ReadApplicationTransactionDto } from './read-application-transaction.dto';
 import { Type } from 'class-transformer';
 import { PaymentGatewayTransactionDto } from '../common/payment-gateway-transaction.dto';
-import { PaymentType } from '../../../../common/enum/payment-type.enum';
+import { PaymentCardType } from '../../../../common/enum/payment-card-type.enum';
 
 export class ReadTransactionDto extends PaymentGatewayTransactionDto {
   @AutoMap()
@@ -34,11 +34,11 @@ export class ReadTransactionDto extends PaymentGatewayTransactionDto {
 
   @AutoMap()
   @ApiProperty({
-    enum: PaymentType,
-    example: PaymentType.VISA,
+    enum: PaymentCardType,
+    example: PaymentCardType.VISA,
     description: 'The identifier of the user selected payment type.',
   })
-  paymentTypeCode: PaymentType;
+  paymentCardTypeCode: PaymentCardType;
 
   @AutoMap()
   @ApiProperty({
