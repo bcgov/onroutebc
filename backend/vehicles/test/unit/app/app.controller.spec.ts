@@ -48,7 +48,7 @@ describe('AppController', () => {
         },
         {
           provide: PaymentService,
-          useValue: powerUnitTypeServiceMock,
+          useValue: paymentServiceMock,
         },
       ],
     }).compile();
