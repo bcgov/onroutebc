@@ -348,7 +348,7 @@ SELECT
 		'"startDate":"', i.START_DATE, '",',
 		'"expiryDate":"', i.END_DATE, '",',
 		'"permitDuration":', DATEDIFF(day, i.START_DATE, i.END_DATE) + 1, ',',
-		'"vehicle":{',
+		'"vehicleDetails":{',
 			'"plate":"', i.PLATE, '",',
 			'"vin":"', i.VIN, '"',
 		'}}')

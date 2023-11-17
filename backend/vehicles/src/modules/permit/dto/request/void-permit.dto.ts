@@ -38,7 +38,7 @@ export class VoidPermitDto {
     description: 'The identifier of the user selected payment method.',
   })
   @IsEnum(PaymentMethodType)
-  paymentMethodId: PaymentMethodType;
+  paymentMethodTypeCode: PaymentMethodType;
 
   @AutoMap()
   @ApiProperty({
