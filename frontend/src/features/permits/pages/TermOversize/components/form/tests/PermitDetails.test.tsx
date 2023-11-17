@@ -2,22 +2,22 @@ import { PointerEventsCheckLevel } from "@testing-library/user-event";
 import dayjs from "dayjs";
 
 import { DATE_FORMATS } from "../../../../../../../common/helpers/formatDate";
-import { 
+import {
   commoditiesInfoBox,
   commodityConditionLabel,
   commodityDescriptionLabel,
   dateOptions,
-  durationOption, 
-  expiryDateElement, 
-  invalidFutureDateMessageElement, 
-  invalidPastDateMessageElement, 
+  durationOption,
+  expiryDateElement,
+  invalidFutureDateMessageElement,
+  invalidPastDateMessageElement,
   lastMonthButton,
   nextMonthDateOptions,
-  openDurationSelect, 
-  openStartDateSelect, 
-  optionalCommodityCheckboxes, 
-  requiredCommodityCheckboxes, 
-  selectDayFromDateOptions, 
+  openDurationSelect,
+  openStartDateSelect,
+  optionalCommodityCheckboxes,
+  requiredCommodityCheckboxes,
+  selectDayFromDateOptions,
   selectDurationOption,
   selectNextMonth,
   toggleCheckbox,
@@ -51,9 +51,9 @@ describe("Permit Details duration", () => {
 
     // Assert - all options are available
     const durationOptions = await Promise.all(
-      allDurations.map(async (duration) => await durationOption(duration.text))
+      allDurations.map(async (duration) => await durationOption(duration.text)),
     );
-    durationOptions.forEach(option => {
+    durationOptions.forEach((option) => {
       expect(option).toBeVisible();
     });
   });
@@ -63,12 +63,15 @@ describe("Permit Details duration", () => {
     const { user } = renderDefaultTestComponent();
 
     // Act
-    const { text: durationText, days: durationDays } = allDurations[allDurations.length - 1];
+    const { text: durationText, days: durationDays } =
+      allDurations[allDurations.length - 1];
     await openDurationSelect(user);
     await selectDurationOption(user, durationText);
 
     // Assert
-    const expectedExpiry = dayjs(currentDt).add(durationDays - 1, "day").format(DATE_FORMATS.SHORT);
+    const expectedExpiry = dayjs(currentDt)
+      .add(durationDays - 1, "day")
+      .format(DATE_FORMATS.SHORT);
     expect(await expiryDateElement(expectedExpiry)).toBeVisible();
   });
 });
@@ -83,12 +86,14 @@ describe("Permit Details start date", () => {
 
     // Assert
     const datesThisMonth = await dateOptions();
-    const thisMonthBeforeTodayOptions = datesThisMonth
-      .filter(option => Number(option.textContent) < day);
+    const thisMonthBeforeTodayOptions = datesThisMonth.filter(
+      (option) => Number(option.textContent) < day,
+    );
 
-    const disabledOptions = thisMonthBeforeTodayOptions
-      .filter(option => option.hasAttribute("disabled"));
-    
+    const disabledOptions = thisMonthBeforeTodayOptions.filter((option) =>
+      option.hasAttribute("disabled"),
+    );
+
     expect(await lastMonthButton()).toBeDisabled();
     expect(disabledOptions.length).toBe(day - 1);
   });
@@ -99,23 +104,27 @@ describe("Permit Details start date", () => {
 
     // Act
     await openStartDateSelect(user);
-    
+
     // Assert
     if (maxFutureMonth > thisMonth) {
       await selectNextMonth(user);
 
       const datesNextMonth = await nextMonthDateOptions();
-      const datesAfterMaxFutureDay = datesNextMonth
-        .filter(option => Number(option.textContent) > maxFutureDay);
-      const disabledOptions = datesAfterMaxFutureDay
-        .filter(option => option.hasAttribute("disabled"));
+      const datesAfterMaxFutureDay = datesNextMonth.filter(
+        (option) => Number(option.textContent) > maxFutureDay,
+      );
+      const disabledOptions = datesAfterMaxFutureDay.filter((option) =>
+        option.hasAttribute("disabled"),
+      );
       expect(disabledOptions.length).toBe(daysInFutureMonth - maxFutureDay);
     } else {
       const datesThisMonth = await dateOptions();
-      const datesAfterMaxFutureDay = datesThisMonth
-        .filter(option => Number(option.textContent) > maxFutureDay);
-      const disabledOptions = datesAfterMaxFutureDay
-        .filter(option => option.hasAttribute("disabled"));
+      const datesAfterMaxFutureDay = datesThisMonth.filter(
+        (option) => Number(option.textContent) > maxFutureDay,
+      );
+      const disabledOptions = datesAfterMaxFutureDay.filter((option) =>
+        option.hasAttribute("disabled"),
+      );
       expect(disabledOptions.length).toBe(daysInFutureMonth - maxFutureDay);
     }
   });
@@ -126,51 +135,67 @@ describe("Permit Details start date", () => {
 
     // Act
     await openStartDateSelect(user);
-    
+
     // Assert
     if (maxFutureMonth > thisMonth) {
       // First find this month's active days
       const thisMonthDates = await dateOptions();
-      const remainingDaysThisMonth = thisMonthDates
-        .filter(option => Number(option.textContent) >= day);
-      
-      const activeDatesThisMonth = remainingDaysThisMonth
-        .filter(option => !option.hasAttribute("disabled"));
-      
+      const remainingDaysThisMonth = thisMonthDates.filter(
+        (option) => Number(option.textContent) >= day,
+      );
+
+      const activeDatesThisMonth = remainingDaysThisMonth.filter(
+        (option) => !option.hasAttribute("disabled"),
+      );
+
       expect(activeDatesThisMonth.length).toBe(daysInCurrMonth - day + 1);
 
       // Next, check active dates for next month
       await selectNextMonth(user);
       const nextMonthDates = await nextMonthDateOptions();
-      const availableDatesNextMonth = nextMonthDates
-        .filter(option => Number(option.textContent) <= maxFutureDay);
-      
-      const activeDatesNextMonth = availableDatesNextMonth
-        .filter(option => !option.hasAttribute("disabled"));
-      
+      const availableDatesNextMonth = nextMonthDates.filter(
+        (option) => Number(option.textContent) <= maxFutureDay,
+      );
+
+      const activeDatesNextMonth = availableDatesNextMonth.filter(
+        (option) => !option.hasAttribute("disabled"),
+      );
+
       expect(activeDatesNextMonth.length).toBe(maxFutureDay);
     } else {
       const datesThisMonth = await dateOptions();
-      const availableDates = datesThisMonth
-        .filter(option => Number(option.textContent) >= day && Number(option.textContent) <= maxFutureDay);
-      
-      const activeDates = availableDates
-        .filter(option => !option.hasAttribute("disabled"));
-      
+      const availableDates = datesThisMonth.filter(
+        (option) =>
+          Number(option.textContent) >= day &&
+          Number(option.textContent) <= maxFutureDay,
+      );
+
+      const activeDates = availableDates.filter(
+        (option) => !option.hasAttribute("disabled"),
+      );
+
       expect(activeDates.length).toBe(1 + 14); // today and next 14 days
     }
   });
 
   it("should display error message for invalid past start dates", async () => {
     // Arrange and Act
-    renderTestComponent(dayjs(currentDt).subtract(1, "day"), defaultDuration, emptyCommodities);
+    renderTestComponent(
+      dayjs(currentDt).subtract(1, "day"),
+      defaultDuration,
+      emptyCommodities,
+    );
     // Assert
     expect(await invalidPastDateMessageElement()).toBeVisible();
   });
 
   it("should display error message for invalid future start dates (more than 14 days from today)", async () => {
     // Arrange and Act
-    renderTestComponent(dayjs(currentDt).add(15, "day"), defaultDuration, emptyCommodities);
+    renderTestComponent(
+      dayjs(currentDt).add(15, "day"),
+      defaultDuration,
+      emptyCommodities,
+    );
 
     // Assert
     expect(await invalidFutureDateMessageElement()).toBeVisible();
@@ -192,7 +217,9 @@ describe("Permit Details start date", () => {
     }
 
     // Assert
-    const expectedExpiry = dayjs(tomorrow).add(defaultDuration - 1, "day").format(DATE_FORMATS.SHORT);
+    const expectedExpiry = dayjs(tomorrow)
+      .add(defaultDuration - 1, "day")
+      .format(DATE_FORMATS.SHORT);
     expect(await expiryDateElement(expectedExpiry)).toBeVisible();
   });
 });
@@ -211,17 +238,26 @@ describe("Permit Details commodities", () => {
     renderTestComponent(currentDt, defaultDuration, commodities);
 
     // Assert - All commodities are present
-    await Promise.all(commodities.map(async (commodity) => await commodityDescriptionLabel(commodity.description)));
-    await Promise.all(commodities.map(async (commodity) => await commodityConditionLabel(commodity.condition)));
+    await Promise.all(
+      commodities.map(
+        async (commodity) =>
+          await commodityDescriptionLabel(commodity.description),
+      ),
+    );
+    await Promise.all(
+      commodities.map(
+        async (commodity) => await commodityConditionLabel(commodity.condition),
+      ),
+    );
 
     // Assert - Required commodities are checked and disabled
     const requiredCheckboxes = await requiredCommodityCheckboxes();
     const nonRequiredCheckboxes = await optionalCommodityCheckboxes();
-    requiredCheckboxes.forEach(checkbox => {
+    requiredCheckboxes.forEach((checkbox) => {
       expect(checkbox).toBeChecked();
       expect(checkbox).toBeDisabled();
     });
-    nonRequiredCheckboxes.forEach(checkbox => {
+    nonRequiredCheckboxes.forEach((checkbox) => {
       expect(checkbox).not.toBeChecked();
       expect(checkbox).not.toBeDisabled();
     });
@@ -229,36 +265,49 @@ describe("Permit Details commodities", () => {
 
   it("should be able to select non-required commodities", async () => {
     // Arrange
-    const { user } = renderTestComponent(currentDt, defaultDuration, commodities);
+    const { user } = renderTestComponent(
+      currentDt,
+      defaultDuration,
+      commodities,
+    );
 
     const nonRequiredCheckboxes = await optionalCommodityCheckboxes();
 
     // Act
-    await Promise.all(nonRequiredCheckboxes.map(async (checkbox) => {
-      await toggleCheckbox(user, checkbox);
-    }));
+    await Promise.all(
+      nonRequiredCheckboxes.map(async (checkbox) => {
+        await toggleCheckbox(user, checkbox);
+      }),
+    );
 
     // Assert
-    nonRequiredCheckboxes.forEach(checkbox => {
+    nonRequiredCheckboxes.forEach((checkbox) => {
       expect(checkbox).toBeChecked();
     });
   });
 
   it("should not be able to deselect required commodities", async () => {
     // Arrange
-    const { user } = renderTestComponent(currentDt, defaultDuration, commodities, {
-      pointerEventsCheck: PointerEventsCheckLevel.Never,
-    });
+    const { user } = renderTestComponent(
+      currentDt,
+      defaultDuration,
+      commodities,
+      {
+        pointerEventsCheck: PointerEventsCheckLevel.Never,
+      },
+    );
 
     const requiredCheckboxes = await requiredCommodityCheckboxes();
 
     // Act
-    await Promise.all(requiredCheckboxes.map(async (checkbox) => {
-      await toggleCheckbox(user, checkbox);
-    }));
+    await Promise.all(
+      requiredCheckboxes.map(async (checkbox) => {
+        await toggleCheckbox(user, checkbox);
+      }),
+    );
 
     // Assert
-    requiredCheckboxes.forEach(checkbox => {
+    requiredCheckboxes.forEach((checkbox) => {
       expect(checkbox).toBeChecked();
     });
   });

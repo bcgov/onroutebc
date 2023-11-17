@@ -9,7 +9,7 @@ export const formatCountry = (countryCode?: string) => {
   if (!countryCode) return "";
 
   const countryName = CountriesAndStates.filter(
-    (country: any) => country.code === countryCode
+    (country: any) => country.code === countryCode,
   );
   return countryName[0].name;
 };
@@ -24,11 +24,11 @@ export const formatProvince = (countryCode?: string, provinceCode?: string) => {
   if (!countryCode || !provinceCode) return "";
 
   const countries = CountriesAndStates.filter(
-    (country: any) => country.code === countryCode
+    (country: any) => country.code === countryCode,
   ).flatMap((country: any) => country.states);
 
   const provinceName = countries.filter(
-    (province: any) => province.code === provinceCode
+    (province: any) => province.code === provinceCode,
   );
 
   if (!provinceName[0]) return "";

@@ -25,9 +25,7 @@ export const AddVehicleDashboard = React.memo(
 
     return (
       <div className="dashboard-page">
-        <Box
-          className="dashboard-page__banner layout-box"
-        >
+        <Box className="dashboard-page__banner layout-box">
           {addVehicleMode === VEHICLE_TYPES_ENUM.POWER_UNIT && (
             <Banner bannerText={"Add Power Unit"} extendHeight={true} />
           )}
@@ -36,9 +34,7 @@ export const AddVehicleDashboard = React.memo(
           )}
         </Box>
 
-        <Box
-          className="dashboard-page__breadcrumb layout-box"
-        >
+        <Box className="dashboard-page__breadcrumb layout-box">
           <Typography
             className="breadcrumb-link breadcrumb-link--parent"
             onClick={handleShowAddVehicle}
@@ -46,10 +42,7 @@ export const AddVehicleDashboard = React.memo(
             Vehicle Inventory
           </Typography>
 
-          <FontAwesomeIcon
-            className="breadcrumb-icon"
-            icon={faChevronRight}
-          />
+          <FontAwesomeIcon className="breadcrumb-icon" icon={faChevronRight} />
 
           <Typography
             className="breadcrumb-link breadcrumb-link--parent"
@@ -59,10 +52,7 @@ export const AddVehicleDashboard = React.memo(
             {addVehicleMode === VEHICLE_TYPES_ENUM.TRAILER && "Trailer"}
           </Typography>
 
-          <FontAwesomeIcon
-            className="breadcrumb-icon"
-            icon={faChevronRight}
-          />
+          <FontAwesomeIcon className="breadcrumb-icon" icon={faChevronRight} />
 
           <Typography>
             {addVehicleMode === VEHICLE_TYPES_ENUM.POWER_UNIT &&
@@ -71,21 +61,15 @@ export const AddVehicleDashboard = React.memo(
           </Typography>
         </Box>
 
-        <Box
-          className="dashboard-page__info-banner layout-box"
-        >
+        <Box className="dashboard-page__info-banner layout-box">
           <InfoBcGovBanner
             width="880px"
             description="Please note, unless stated otherwise, all fields are mandatory."
           />
         </Box>
 
-        <Box
-          className="dashboard-page__form layout-box"
-        >
-          <Typography
-            variant={"h2"}
-          >
+        <Box className="dashboard-page__form layout-box">
+          <Typography variant={"h2"}>
             {addVehicleMode === VEHICLE_TYPES_ENUM.POWER_UNIT &&
               "Power Unit Details"}
             {addVehicleMode === VEHICLE_TYPES_ENUM.TRAILER && "Trailer Details"}
@@ -99,7 +83,7 @@ export const AddVehicleDashboard = React.memo(
         </Box>
       </div>
     );
-  }
+  },
 );
 
 AddVehicleDashboard.displayName = "AddVehicleDashboard";

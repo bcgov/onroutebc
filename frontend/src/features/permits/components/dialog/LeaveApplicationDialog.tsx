@@ -23,19 +23,18 @@ export const LeaveApplicationDialog = ({
     >
       <div className="leave-application-dialog__title">
         <div className="leave-application-dialog__icon">
-          <FontAwesomeIcon className="warning-icon" icon={faTriangleExclamation} />
+          <FontAwesomeIcon
+            className="warning-icon"
+            icon={faTriangleExclamation}
+          />
         </div>
-        <strong>
-          Are you sure you want to leave?
-        </strong>
+        <strong>Are you sure you want to leave?</strong>
       </div>
       <div className="leave-application-dialog__content">
         <p>
           You have unsaved changes. If you leave, all your changes will be lost.
         </p>
-        <p>
-          This action cannot be undone.
-        </p>
+        <p>This action cannot be undone.</p>
       </div>
       <div className="leave-application-dialog__actions">
         <Button

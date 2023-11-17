@@ -22,7 +22,7 @@ import {
   PaymentMethodTypeReport,
 } from '../../common/enum/payment-method-type.enum';
 import { TransactionType } from '../../common/enum/transaction-type.enum';
-import { UpdatePaymentGatewayTransactionDto } from './dto/request/read-payment-gateway-transaction.dto';
+
 import { ReadPaymentGatewayTransactionDto } from './dto/response/read-payment-gateway-transaction.dto';
 import { Receipt } from './entities/receipt.entity';
 import { Directory } from 'src/common/enum/directory.enum';
@@ -38,6 +38,7 @@ import {
   PAYMENT_CURRENCY,
 } from '../../common/constants/vehicles.constant';
 import { validateHash } from 'src/common/helper/validateHash.helper';
+import { UpdatePaymentGatewayTransactionDto } from './dto/request/update-payment-gateway-transaction.dto';
 
 @Injectable()
 export class PaymentService {

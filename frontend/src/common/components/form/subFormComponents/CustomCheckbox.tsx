@@ -19,7 +19,7 @@ export interface CustomCheckboxProps<T extends FieldValues> {
   checked: boolean;
   handleOnChange: (
     event: ChangeEvent<HTMLInputElement>,
-    checked: boolean
+    checked: boolean,
   ) => void;
 }
 
@@ -28,7 +28,7 @@ export interface CustomCheckboxProps<T extends FieldValues> {
  *
  */
 export const CustomCheckbox = <T extends ORBC_FormTypes>(
-  props: CustomCheckboxProps<T>
+  props: CustomCheckboxProps<T>,
 ): JSX.Element => {
   const { control, register } = useFormContext();
   return (

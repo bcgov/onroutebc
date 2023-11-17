@@ -1,5 +1,11 @@
 import { Controller, FormProvider, useForm } from "react-hook-form";
-import { Button, Dialog, FormControl, FormHelperText, FormLabel } from "@mui/material";
+import {
+  Button,
+  Dialog,
+  FormControl,
+  FormHelperText,
+  FormLabel,
+} from "@mui/material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
 
@@ -27,9 +33,9 @@ export const RevokeDialog = ({
     reValidateMode: "onChange",
   });
 
-  const { 
-    control, 
-    handleSubmit, 
+  const {
+    control,
+    handleSubmit,
     getValues,
     register,
     formState: { errors },
@@ -48,21 +54,14 @@ export const RevokeDialog = ({
     required: {
       value: true,
       message: requiredMessage(),
-    }
+    },
   };
 
   return (
-    <Dialog 
-      className="revoke-dialog"
-      open={showDialog}
-      onClose={handleCancel}
-    >
+    <Dialog className="revoke-dialog" open={showDialog} onClose={handleCancel}>
       <div className="revoke-dialog__header">
         <div className="revoke-dialog__icon">
-          <FontAwesomeIcon
-            className="icon"
-            icon={faExclamationCircle}
-          />
+          <FontAwesomeIcon className="icon" icon={faExclamationCircle} />
         </div>
         <span className="revoke-dialog__title">
           Are you sure you want to revoke this permit?
@@ -71,30 +70,31 @@ export const RevokeDialog = ({
       <div className="revoke-dialog__body revoke-form">
         <FormProvider {...formMethods}>
           <div className="revoke-form__msg">
-            Revoking a permit is a severe action that cannot be reversed. There are no refunds for revoked permits.
+            Revoking a permit is a severe action that cannot be reversed. There
+            are no refunds for revoked permits.
           </div>
           <Controller
             name="reason"
             control={control}
             rules={revokeReasonRules}
             render={({ field: { value }, fieldState: { invalid } }) => (
-              <FormControl 
+              <FormControl
                 className="revoke-control revoke-control--reason"
                 error={invalid}
               >
-                <FormLabel className="revoke-control__label">Reason for revoking</FormLabel>
-                <textarea 
-                  className={`revoke-control__input ${invalid ? "revoke-control__input--err" : ""}`}
+                <FormLabel className="revoke-control__label">
+                  Reason for revoking
+                </FormLabel>
+                <textarea
+                  className={`revoke-control__input ${
+                    invalid ? "revoke-control__input--err" : ""
+                  }`}
                   rows={6}
                   defaultValue={value}
                   {...register("reason", revokeReasonRules)}
-                >
-                </textarea>
+                ></textarea>
                 {invalid ? (
-                  <FormHelperText 
-                    className="revoke-control__err"
-                    error
-                  >
+                  <FormHelperText className="revoke-control__err" error>
                     {getErrorMessage(errors, "reason")}
                   </FormHelperText>
                 ) : null}

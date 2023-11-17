@@ -34,4 +34,4 @@ export const IDIR_WELCOME = `/${IDPS.IDIR}/welcome`;
 export const SEARCH_RESULTS = `/${IDPS.IDIR}/search-results`;
 
 // Payment
-export const PAYMENT_REDIRECT = "payment"
+export const PAYMENT_REDIRECT = "payment";

@@ -39,20 +39,14 @@ export const DisplayInfo = memo(
           <Typography>
             {formatProvince(
               companyInfo?.mailingAddress.countryCode,
-              companyInfo?.mailingAddress.provinceCode
+              companyInfo?.mailingAddress.provinceCode,
             )}
           </Typography>
           <Typography>{`${companyInfo?.mailingAddress.city} ${companyInfo?.mailingAddress.postalCode}`}</Typography>
 
           <Typography variant="h3">Company Contact Details</Typography>
           <Typography>
-            Email: {
-              getDefaultRequiredVal(
-                "",
-                companyEmail,
-                companyInfo?.email
-              )
-            }
+            Email: {getDefaultRequiredVal("", companyEmail, companyInfo?.email)}
           </Typography>
           <Typography>{`Phone: ${formatPhoneNumber(companyInfo?.phone)} ${
             companyInfo?.extension ? `Ext: ${companyInfo?.extension}` : ""
@@ -66,15 +60,11 @@ export const DisplayInfo = memo(
           <Typography variant="h3">Company Primary Contact</Typography>
           <Typography>{`${companyInfo?.primaryContact.firstName} ${companyInfo?.primaryContact.lastName}`}</Typography>
           <Typography>
-            Email: {
-              getDefaultRequiredVal(
-                "", 
-                companyInfo?.primaryContact?.email
-              )
-            }
+            Email:{" "}
+            {getDefaultRequiredVal("", companyInfo?.primaryContact?.email)}
           </Typography>
           <Typography>{`Primary Phone: ${formatPhoneNumber(
-            companyInfo?.primaryContact.phone1
+            companyInfo?.primaryContact.phone1,
           )} ${
             companyInfo?.primaryContact.phone1Extension
               ? `Ext: ${companyInfo?.primaryContact.phone1Extension}`
@@ -86,7 +76,7 @@ export const DisplayInfo = memo(
           <Typography>
             {formatProvince(
               companyInfo?.primaryContact.countryCode,
-              companyInfo?.primaryContact.provinceCode
+              companyInfo?.primaryContact.provinceCode,
             )}
           </Typography>
           <Typography>{companyInfo?.primaryContact.city}</Typography>
@@ -106,7 +96,7 @@ export const DisplayInfo = memo(
         )}
       </div>
     );
-  }
+  },
 );
 
 DisplayInfo.displayName = "DisplayInfo";

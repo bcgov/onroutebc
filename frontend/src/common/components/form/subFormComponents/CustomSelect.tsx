@@ -58,9 +58,11 @@ export const CustomSelect = <T extends ORBC_FormTypes>({
           }
         }
       }}
-      SelectDisplayProps={{
-        "data-testid": `select-${name}`
-      } as CustomSelectDisplayProps}
+      SelectDisplayProps={
+        {
+          "data-testid": `select-${name}`,
+        } as CustomSelectDisplayProps
+      }
     >
       {menuOptions}
     </Select>

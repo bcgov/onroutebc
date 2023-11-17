@@ -18,16 +18,12 @@ export const NavIconSideBar = (props: NavIconSideBarProps) => {
   const { isAuthenticated, user } = useAuth();
   const { idirUserDetails } = useContext(OnRouteBCContext);
   const isIdir = user?.profile?.identity_provider === IDPS.IDIR;
-  const isEofficer = idirUserDetails?.userAuthGroup === USER_AUTH_GROUP.EOFFICER;
+  const isEofficer =
+    idirUserDetails?.userAuthGroup === USER_AUTH_GROUP.EOFFICER;
 
   const shouldShowSideBar = isAuthenticated && isIdir && !isEofficer;
 
   return shouldShowSideBar ? (
-    <div className="nav-icon-side-bar">
-      {children}
-    </div>
-  ): null;
-}
-
-
-  
+    <div className="nav-icon-side-bar">{children}</div>
+  ) : null;
+};

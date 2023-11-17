@@ -1,7 +1,7 @@
-import { 
-  BamboraPaymentMethod, 
-  CardType, 
-  RefundMethod, 
+import {
+  BamboraPaymentMethod,
+  CardType,
+  RefundMethod,
 } from "../../../types/PaymentMethod";
 
 export interface RefundFormData {

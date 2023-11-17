@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { 
-  RadioGroup, 
-  FormControlLabel, 
+import {
+  RadioGroup,
+  FormControlLabel,
   Radio,
   MenuItem,
   Select,
@@ -11,15 +11,24 @@ import {
 } from "@mui/material";
 
 import "./SearchFilter.scss";
-import { Controller, FieldValues, FormProvider, useForm } from "react-hook-form";
+import {
+  Controller,
+  FieldValues,
+  FormProvider,
+  useForm,
+} from "react-hook-form";
 import { CustomSelectDisplayProps } from "../../../types/formElements";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { getDefaultRequiredVal } from "../../../helpers/util";
-import { SearchByFilter, SearchEntity, SearchFields } from "../../../../features/idir/search/types/types";
+import {
+  SearchByFilter,
+  SearchEntity,
+  SearchFields,
+} from "../../../../features/idir/search/types/types";
 import { SEARCH_RESULTS } from "../../../../routes/constants";
 
 const SEARCH_BY_PERMIT_OPTIONS = [
-  { label: "Permit Number", value: "permitNumber" }, 
+  { label: "Permit Number", value: "permitNumber" },
   { label: "Plate Number", value: "plate" },
 ];
 
@@ -56,12 +65,17 @@ const getSearchByOptions = (searchEntity?: string | null) => {
   }
 };
 
-const getDefaultSearchBy = (searchEntity?: string | null, searchBy?: string | null) => {
+const getDefaultSearchBy = (
+  searchEntity?: string | null,
+  searchBy?: string | null,
+) => {
   const defaultSearchEntity = getDefaultSearchEntity(searchEntity);
-  const searchByOptions = getSearchByOptions(defaultSearchEntity).map(option => option.value);
+  const searchByOptions = getSearchByOptions(defaultSearchEntity).map(
+    (option) => option.value,
+  );
   return getDefaultRequiredVal(
     searchByOptions[0],
-    searchByOptions.find(option => option === searchBy)
+    searchByOptions.find((option) => option === searchBy),
   );
 };
 
@@ -69,10 +83,18 @@ export const SearchFilter = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const searchEntity = getDefaultSearchEntity(searchParams.get("searchEntity"));
-  const [searchByOptions, setSearchByOptions] = useState(getSearchByOptions(searchEntity));
-  const searchBy = getDefaultSearchBy(searchEntity, searchParams.get("searchByFilter"));
-  const searchValue = getDefaultRequiredVal("", searchParams.get("searchValue"));
-  const defaultSearchFilter = { 
+  const [searchByOptions, setSearchByOptions] = useState(
+    getSearchByOptions(searchEntity),
+  );
+  const searchBy = getDefaultSearchBy(
+    searchEntity,
+    searchParams.get("searchByFilter"),
+  );
+  const searchValue = getDefaultRequiredVal(
+    "",
+    searchParams.get("searchValue"),
+  );
+  const defaultSearchFilter = {
     searchEntity,
     searchByFilter: searchBy,
     searchValue,
@@ -82,14 +104,17 @@ export const SearchFilter = () => {
     defaultValues: defaultSearchFilter,
     reValidateMode: "onBlur",
   });
-  
+
   const { handleSubmit, setValue, control } = formMethods;
 
   const handleSearchEntityChange = (searchEntity: string) => {
     setValue("searchEntity", searchEntity as SearchEntity);
     const updatedSearchByOptions = getSearchByOptions(searchEntity);
     setSearchByOptions(updatedSearchByOptions);
-    setValue("searchByFilter", updatedSearchByOptions[0].value as SearchByFilter);
+    setValue(
+      "searchByFilter",
+      updatedSearchByOptions[0].value as SearchByFilter,
+    );
   };
 
   const handleSearchByChange = (event: SelectChangeEvent) => {
@@ -97,7 +122,9 @@ export const SearchFilter = () => {
     setValue("searchByFilter", searchBy as SearchByFilter);
   };
 
-  const handleSearchValueChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSearchValueChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     const searchValue = event.target.value;
     setValue("searchValue", searchValue);
   };
@@ -106,7 +133,7 @@ export const SearchFilter = () => {
     const searchFields = Object.entries(data)
       .map(([key, value]) => `${key}=${value}`)
       .join("&");
-    
+
     navigate(`${SEARCH_RESULTS}?${searchFields}`);
   };
 
@@ -129,29 +156,17 @@ export const SearchFilter = () => {
                   <FormControlLabel
                     label="Permit"
                     value="permits"
-                    control={
-                      <Radio 
-                        key="find-by-permit"
-                      />
-                    }
+                    control={<Radio key="find-by-permit" />}
                   />
                   <FormControlLabel
                     label="Company"
                     value="companies"
-                    control={
-                      <Radio 
-                        key="find-by-company"
-                      />
-                    }
+                    control={<Radio key="find-by-company" />}
                   />
                   <FormControlLabel
                     label="Application"
                     value="applications"
-                    control={
-                      <Radio 
-                        key="find-by-application"
-                      />
-                    }
+                    control={<Radio key="find-by-application" />}
                   />
                 </RadioGroup>
               )}
@@ -169,13 +184,15 @@ export const SearchFilter = () => {
                     defaultValue={value}
                     value={value}
                     onChange={handleSearchByChange}
-                    SelectDisplayProps={{
-                      "data-testid": `select-search-by`
-                    } as CustomSelectDisplayProps}
+                    SelectDisplayProps={
+                      {
+                        "data-testid": `select-search-by`,
+                      } as CustomSelectDisplayProps
+                    }
                   >
                     {searchByOptions.map((option) => (
-                      <MenuItem 
-                        key={option.value} 
+                      <MenuItem
+                        key={option.value}
                         value={option.value}
                         data-testid="search-by-menu-item"
                       >
@@ -195,10 +212,10 @@ export const SearchFilter = () => {
                     value={value}
                     onChange={handleSearchValueChange}
                   />
-                )} 
+                )}
               />
-              
-              <Button 
+
+              <Button
                 className="search-by__search"
                 variant="contained"
                 color="primary"

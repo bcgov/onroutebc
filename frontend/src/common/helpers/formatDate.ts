@@ -40,7 +40,7 @@ export const nowUtc = () => dayjs.utc();
  * @param formatStr datetime format to display the datetime in (default ISO-8601)
  * @returns datetime string representing local datetime in the format specified
  */
-export const dayjsToLocalStr = (dayjsObj: Dayjs, formatStr?: string) => 
+export const dayjsToLocalStr = (dayjsObj: Dayjs, formatStr?: string) =>
   dayjs(dayjsObj).local().format(formatStr);
 
 /**
@@ -49,7 +49,7 @@ export const dayjsToLocalStr = (dayjsObj: Dayjs, formatStr?: string) =>
  * @param formatStr datetime format to display the datetime in (default ISO-8601)
  * @returns datetime string representing UTC datetime in the format specified
  */
-export const dayjsToUtcStr = (dayjsObj: Dayjs, formatStr?: string) => 
+export const dayjsToUtcStr = (dayjsObj: Dayjs, formatStr?: string) =>
   dayjs(dayjsObj).utc().format(formatStr);
 
 /**
@@ -72,7 +72,7 @@ export const toLocal = (dateTimeStr: string, formatStr?: string) =>
 
 /**
  * Get local DayJS object for a given UTC datetime string
- * @param dateTimeStr UTC datetime string 
+ * @param dateTimeStr UTC datetime string
  * @returns DayJS object representing the local datetime
  */
 export const utcToLocalDayjs = (dateTimeStr: string) =>
@@ -83,16 +83,14 @@ export const utcToLocalDayjs = (dateTimeStr: string) =>
  * @param dateTimeStr local datetime string
  * @returns DayJS object representing the local datetime
  */
-export const toLocalDayjs = (dateTimeStr: string) =>
-  dayjs(dateTimeStr);
+export const toLocalDayjs = (dateTimeStr: string) => dayjs(dateTimeStr);
 
 /**
  * Get UTC DayJS object for any given datetime string
  * @param dateTimeStr UTC datetime string
  * @returns DayJS object representing the UTC datetime
  */
-export const toUtcDayjs = (dateTimeStr: string) =>
-  dayjs(dateTimeStr).utc();
+export const toUtcDayjs = (dateTimeStr: string) => dayjs(dateTimeStr).utc();
 
 /**
  * Get datetime string in a specified format for a given timezone.
@@ -101,5 +99,11 @@ export const toUtcDayjs = (dateTimeStr: string) =>
  * @param ianaId IANA identifier for the specified timezone to interpret datetimeStr in (default represents local timezone)
  * @returns datetime string in a specified format for a specified timezone
  */
-export const toTimeZone = (datetimeStr: string, formatStr?: string, ianaId?: string) =>
-  ianaId ? dayjs(datetimeStr).tz(ianaId).format(formatStr) : toLocal(datetimeStr, formatStr);
+export const toTimeZone = (
+  datetimeStr: string,
+  formatStr?: string,
+  ianaId?: string,
+) =>
+  ianaId
+    ? dayjs(datetimeStr).tz(ianaId).format(formatStr)
+    : toLocal(datetimeStr, formatStr);

@@ -1,15 +1,21 @@
 import { Dayjs } from "dayjs";
 import { waitFor } from "@testing-library/react";
 
-import { DATE_FORMATS, dayjsToLocalStr } from "../../../../../common/helpers/formatDate";
-import { formatCountry, formatProvince } from "../../../../../common/helpers/formatCountryProvince";
+import {
+  DATE_FORMATS,
+  dayjsToLocalStr,
+} from "../../../../../common/helpers/formatDate";
+import {
+  formatCountry,
+  formatProvince,
+} from "../../../../../common/helpers/formatCountryProvince";
 import { VehicleDetails } from "../../../types/application";
 import { vehicleTypeDisplayText } from "../../../helpers/mappers";
 import { VehicleTypesAsString } from "../../../../manageVehicles/types/managevehicles";
 import { getDefaultRequiredVal } from "../../../../../common/helpers/util";
 import { calculateFeeByDuration } from "../../../helpers/feeSummary";
 import { permitTypeDisplayText } from "../../../types/PermitType";
-import { 
+import {
   applicationCreatedDate,
   applicationHeaderTitle,
   applicationNumber,
@@ -19,32 +25,32 @@ import {
   checkAttestations,
   companyClientLabel,
   companyClientNumber,
-  companyInfoHeaderDescription, 
-  companyInfoHeaderTitle, 
-  companyMailAddrCityPostal, 
-  companyMailAddrCountry, 
-  companyMailAddrHeaderTitle, 
-  companyMailAddrLine1, 
-  companyMailAddrProvince, 
-  companyName, 
-  companyNameLabel, 
-  contactInfoEmail, 
-  contactInfoFax, 
-  contactInfoHeaderTitle, 
-  contactInfoName, 
-  contactInfoPhone1, 
-  contactInfoPhone2, 
-  feeSummaryPermitType, 
-  feeSummaryPrice, 
-  feeSummaryTotal, 
-  permitConditionCodes, 
-  permitConditionDescriptions, 
-  permitConditionLinks, 
-  permitConditions, 
-  permitDuration, 
-  permitExpiryDate, 
-  permitStartDate, 
-  proceedToPay, 
+  companyInfoHeaderDescription,
+  companyInfoHeaderTitle,
+  companyMailAddrCityPostal,
+  companyMailAddrCountry,
+  companyMailAddrHeaderTitle,
+  companyMailAddrLine1,
+  companyMailAddrProvince,
+  companyName,
+  companyNameLabel,
+  contactInfoEmail,
+  contactInfoFax,
+  contactInfoHeaderTitle,
+  contactInfoName,
+  contactInfoPhone1,
+  contactInfoPhone2,
+  feeSummaryPermitType,
+  feeSummaryPrice,
+  feeSummaryTotal,
+  permitConditionCodes,
+  permitConditionDescriptions,
+  permitConditionLinks,
+  permitConditions,
+  permitDuration,
+  permitExpiryDate,
+  permitStartDate,
+  proceedToPay,
   reviewConfirmWarning,
   vehicleCountry,
   vehicleMake,
@@ -58,15 +64,15 @@ import {
   vehicleYear,
 } from "./helpers/TermOversizeReview/access";
 
-import { 
+import {
   closeMockServer,
   companyInfo,
-  companyInfoDescription, 
-  companyInfoTitle, 
-  companyMailAddrTitle, 
-  contactInfoTitle, 
-  defaultApplicationData, 
-  listenToMockServer, 
+  companyInfoDescription,
+  companyInfoTitle,
+  companyMailAddrTitle,
+  contactInfoTitle,
+  defaultApplicationData,
+  listenToMockServer,
   renderTestComponent,
   resetMockServer,
   vehicleDetails,
@@ -103,11 +109,24 @@ describe("Review and Confirm Application Details", () => {
       renderTestComponent(defaultApplicationData);
 
       // Assert
-      const { applicationNumber: applicationNo, createdDateTime, updatedDateTime, permitType } = defaultApplicationData;
-      expect(await applicationHeaderTitle()).toHaveTextContent(permitTypeDisplayText(permitType));
-      expect(await applicationNumber()).toHaveTextContent(applicationNo as string);
-      expect(await applicationCreatedDate()).toHaveTextContent(dayjsToLocalStr(createdDateTime as Dayjs, DATE_FORMATS.LONG));
-      expect(await applicationUpdatedDate()).toHaveTextContent(dayjsToLocalStr(updatedDateTime as Dayjs, DATE_FORMATS.LONG));
+      const {
+        applicationNumber: applicationNo,
+        createdDateTime,
+        updatedDateTime,
+        permitType,
+      } = defaultApplicationData;
+      expect(await applicationHeaderTitle()).toHaveTextContent(
+        permitTypeDisplayText(permitType),
+      );
+      expect(await applicationNumber()).toHaveTextContent(
+        applicationNo as string,
+      );
+      expect(await applicationCreatedDate()).toHaveTextContent(
+        dayjsToLocalStr(createdDateTime as Dayjs, DATE_FORMATS.LONG),
+      );
+      expect(await applicationUpdatedDate()).toHaveTextContent(
+        dayjsToLocalStr(updatedDateTime as Dayjs, DATE_FORMATS.LONG),
+      );
     });
 
     it("should display proper company info in company banner", async () => {
@@ -118,7 +137,9 @@ describe("Review and Confirm Application Details", () => {
       const { legalName, clientNumber } = companyInfo;
       expect(await companyNameLabel()).toHaveTextContent("COMPANY NAME");
       expect(await companyName()).toHaveTextContent(legalName);
-      expect(await companyClientLabel()).toHaveTextContent("onRouteBC CLIENT NUMBER");
+      expect(await companyClientLabel()).toHaveTextContent(
+        "onRouteBC CLIENT NUMBER",
+      );
       expect(await companyClientNumber()).toHaveTextContent(clientNumber);
     });
 
@@ -127,8 +148,12 @@ describe("Review and Confirm Application Details", () => {
       renderTestComponent(defaultApplicationData);
 
       // Assert
-      expect(await companyInfoHeaderTitle()).toHaveTextContent(companyInfoTitle);
-      expect(await companyInfoHeaderDescription()).toHaveTextContent(companyInfoDescription);
+      expect(await companyInfoHeaderTitle()).toHaveTextContent(
+        companyInfoTitle,
+      );
+      expect(await companyInfoHeaderDescription()).toHaveTextContent(
+        companyInfoDescription,
+      );
     });
 
     it("should display proper company mailing address info", async () => {
@@ -136,14 +161,19 @@ describe("Review and Confirm Application Details", () => {
       renderTestComponent(defaultApplicationData);
 
       // Assert
-      const { addressLine1, city, countryCode, postalCode, provinceCode } = companyInfo.mailingAddress;
+      const { addressLine1, city, countryCode, postalCode, provinceCode } =
+        companyInfo.mailingAddress;
       const country = formatCountry(countryCode);
       const province = formatProvince(countryCode, provinceCode);
-      expect(await companyMailAddrHeaderTitle()).toHaveTextContent(companyMailAddrTitle);
+      expect(await companyMailAddrHeaderTitle()).toHaveTextContent(
+        companyMailAddrTitle,
+      );
       expect(await companyMailAddrLine1()).toHaveTextContent(addressLine1);
       expect(await companyMailAddrCountry()).toHaveTextContent(country);
       expect(await companyMailAddrProvince()).toHaveTextContent(province);
-      expect(await companyMailAddrCityPostal()).toHaveTextContent(`${city} ${postalCode}`);
+      expect(await companyMailAddrCityPostal()).toHaveTextContent(
+        `${city} ${postalCode}`,
+      );
     });
 
     it("should display proper full contact info in the permit", async () => {
@@ -154,21 +184,37 @@ describe("Review and Confirm Application Details", () => {
       renderTestComponent(defaultApplicationData);
 
       // Assert
-      expect(await contactInfoHeaderTitle()).toHaveTextContent(contactInfoTitle);
-      expect(await contactInfoName()).toHaveTextContent(`${fullContactInfo.firstName} ${fullContactInfo.lastName}`);
-      expect(await contactInfoPhone1()).toHaveTextContent(`${fullContactInfo.phone1} Ext: ${fullContactInfo.phone1Extension}`);
-      expect(await contactInfoPhone2()).toHaveTextContent(`${fullContactInfo.phone2} Ext: ${fullContactInfo.phone2Extension}`);
-      expect(await contactInfoEmail()).toHaveTextContent(`${fullContactInfo.email}`);
-      expect(await contactInfoFax()).toHaveTextContent(`${fullContactInfo.fax}`);
+      expect(await contactInfoHeaderTitle()).toHaveTextContent(
+        contactInfoTitle,
+      );
+      expect(await contactInfoName()).toHaveTextContent(
+        `${fullContactInfo.firstName} ${fullContactInfo.lastName}`,
+      );
+      expect(await contactInfoPhone1()).toHaveTextContent(
+        `${fullContactInfo.phone1} Ext: ${fullContactInfo.phone1Extension}`,
+      );
+      expect(await contactInfoPhone2()).toHaveTextContent(
+        `${fullContactInfo.phone2} Ext: ${fullContactInfo.phone2Extension}`,
+      );
+      expect(await contactInfoEmail()).toHaveTextContent(
+        `${fullContactInfo.email}`,
+      );
+      expect(await contactInfoFax()).toHaveTextContent(
+        `${fullContactInfo.fax}`,
+      );
     });
 
     it("should display proper partial contact info in the permit", async () => {
       // Arrange and Act
       const partialContactInfo = {
-        firstName: defaultApplicationData.permitData.contactDetails?.firstName as string,
-        lastName: defaultApplicationData.permitData.contactDetails?.lastName as string,
-        email: defaultApplicationData.permitData.contactDetails?.email as string,
-        phone1: defaultApplicationData.permitData.contactDetails?.phone1 as string,
+        firstName: defaultApplicationData.permitData.contactDetails
+          ?.firstName as string,
+        lastName: defaultApplicationData.permitData.contactDetails
+          ?.lastName as string,
+        email: defaultApplicationData.permitData.contactDetails
+          ?.email as string,
+        phone1: defaultApplicationData.permitData.contactDetails
+          ?.phone1 as string,
         phone1Extension: undefined,
         phone2: undefined,
         phone2Extension: undefined,
@@ -180,17 +226,25 @@ describe("Review and Confirm Application Details", () => {
           ...defaultApplicationData.permitData,
           contactDetails: {
             ...partialContactInfo,
-          }
-        }
+          },
+        },
       };
       renderTestComponent(applicationData);
 
       // Assert
-      expect(await contactInfoHeaderTitle()).toHaveTextContent(contactInfoTitle);
-      expect(await contactInfoName()).toHaveTextContent(`${partialContactInfo.firstName} ${partialContactInfo.lastName}`);
-      expect(await contactInfoPhone1()).toHaveTextContent(`${partialContactInfo.phone1}`);
+      expect(await contactInfoHeaderTitle()).toHaveTextContent(
+        contactInfoTitle,
+      );
+      expect(await contactInfoName()).toHaveTextContent(
+        `${partialContactInfo.firstName} ${partialContactInfo.lastName}`,
+      );
+      expect(await contactInfoPhone1()).toHaveTextContent(
+        `${partialContactInfo.phone1}`,
+      );
       expect(async () => await contactInfoPhone2()).rejects.toThrow();
-      expect(await contactInfoEmail()).toHaveTextContent(`${partialContactInfo.email}`);
+      expect(await contactInfoEmail()).toHaveTextContent(
+        `${partialContactInfo.email}`,
+      );
       expect(async () => await contactInfoFax()).rejects.toThrow();
     });
 
@@ -199,8 +253,15 @@ describe("Review and Confirm Application Details", () => {
       renderTestComponent(defaultApplicationData);
 
       // Assert
-      const { startDate, expiryDate, permitDuration: duration } = defaultApplicationData.permitData;
-      const startDateStr = dayjsToLocalStr(startDate, DATE_FORMATS.DATEONLY_SLASH);
+      const {
+        startDate,
+        expiryDate,
+        permitDuration: duration,
+      } = defaultApplicationData.permitData;
+      const startDateStr = dayjsToLocalStr(
+        startDate,
+        DATE_FORMATS.DATEONLY_SLASH,
+      );
       const expiryDateStr = dayjsToLocalStr(expiryDate, DATE_FORMATS.SHORT);
       expect(await permitStartDate()).toHaveTextContent(startDateStr);
       expect(await permitDuration()).toHaveTextContent(`${duration} Days`);
@@ -213,9 +274,9 @@ describe("Review and Confirm Application Details", () => {
 
       // Assert
       const commodities = defaultApplicationData.permitData.commodities;
-      const descriptions = commodities.map(c => c.description);
-      const links = commodities.map(c => c.conditionLink);
-      const conditions = commodities.map(c => c.condition);
+      const descriptions = commodities.map((c) => c.description);
+      const links = commodities.map((c) => c.conditionLink);
+      const conditions = commodities.map((c) => c.condition);
       const commodityRows = await permitConditions();
       const commodityDescriptions = await permitConditionDescriptions();
       const commodityLinks = await permitConditionLinks();
@@ -227,24 +288,24 @@ describe("Review and Confirm Application Details", () => {
       commodityDescriptions.forEach((desc) => {
         expect(descriptions).toContain(desc.textContent);
       });
-      const descriptionText = commodityDescriptions.map(d => d.textContent);
-      descriptions.forEach(d => {
+      const descriptionText = commodityDescriptions.map((d) => d.textContent);
+      descriptions.forEach((d) => {
         expect(descriptionText).toContain(d);
       });
-      
+
       commodityLinks.forEach((link) => {
         expect(links).toContain(link.getAttribute("href"));
       });
-      const linkHrefs = commodityLinks.map(l => l.getAttribute("href"));
-      links.forEach(l => {
+      const linkHrefs = commodityLinks.map((l) => l.getAttribute("href"));
+      links.forEach((l) => {
         expect(linkHrefs).toContain(l);
       });
-      
+
       commodityConditions.forEach((cond) => {
         expect(conditions).toContain(cond.textContent);
       });
-      const conditionCodes = commodityConditions.map(c => c.textContent);
-      conditions.forEach(c => {
+      const conditionCodes = commodityConditions.map((c) => c.textContent);
+      conditions.forEach((c) => {
         expect(conditionCodes).toContain(c);
       });
     });
@@ -254,24 +315,27 @@ describe("Review and Confirm Application Details", () => {
       renderTestComponent(defaultApplicationData);
 
       // Assert
-      const { 
-        unitNumber, 
-        vin, 
-        plate, 
-        make, 
-        year, 
-        countryCode, 
-        provinceCode, 
-        vehicleType, 
-        vehicleSubType
+      const {
+        unitNumber,
+        vin,
+        plate,
+        make,
+        year,
+        countryCode,
+        provinceCode,
+        vehicleType,
+        vehicleSubType,
       } = defaultApplicationData.permitData.vehicleDetails as VehicleDetails;
       const unit = getDefaultRequiredVal("", unitNumber);
       const country = formatCountry(countryCode);
       const province = formatProvince(countryCode, provinceCode);
-      const vehicleTypeStr = vehicleTypeDisplayText(vehicleType as VehicleTypesAsString);
+      const vehicleTypeStr = vehicleTypeDisplayText(
+        vehicleType as VehicleTypesAsString,
+      );
       const vehicleSubtypeStr = getDefaultRequiredVal(
         "",
-        vehicleSubtypes.find(subtype => subtype.typeCode === vehicleSubType)?.type
+        vehicleSubtypes.find((subtype) => subtype.typeCode === vehicleSubType)
+          ?.type,
       );
       expect(await vehicleUnitNumber()).toHaveTextContent(unit);
       expect(await vehicleVIN()).toHaveTextContent(vin);
@@ -282,7 +346,9 @@ describe("Review and Confirm Application Details", () => {
       expect(await vehicleProvince()).toHaveTextContent(province);
       expect(await vehicleTypeDisplay()).toHaveTextContent(vehicleTypeStr);
       await waitFor(async () => {
-        expect(await vehicleSubtypeDisplay()).toHaveTextContent(vehicleSubtypeStr);
+        expect(await vehicleSubtypeDisplay()).toHaveTextContent(
+          vehicleSubtypeStr,
+        );
       });
     });
 
@@ -295,13 +361,15 @@ describe("Review and Confirm Application Details", () => {
           vehicleDetails: {
             ...vehicleDetails,
             saveVehicle: true,
-          }
-        }
+          },
+        },
       };
       renderTestComponent(applicationData);
 
       // Assert
-      expect(await vehicleSavedMsg()).toHaveTextContent("This vehicle has been added/updated to your Vehicle Inventory.");
+      expect(await vehicleSavedMsg()).toHaveTextContent(
+        "This vehicle has been added/updated to your Vehicle Inventory.",
+      );
     });
 
     it("should not display indication message if vehicle was not saved to inventory", async () => {
@@ -313,8 +381,8 @@ describe("Review and Confirm Application Details", () => {
           vehicleDetails: {
             ...vehicleDetails,
             saveVehicle: false,
-          }
-        }
+          },
+        },
       };
       renderTestComponent(applicationData);
 
@@ -328,13 +396,18 @@ describe("Review and Confirm Application Details", () => {
         ...defaultApplicationData,
         permitData: {
           ...defaultApplicationData.permitData,
-          feeSummary: `${calculateFeeByDuration(defaultApplicationData.permitData.permitDuration)}`,
-        }
+          feeSummary: `${calculateFeeByDuration(
+            defaultApplicationData.permitData.permitDuration,
+          )}`,
+        },
       };
       renderTestComponent(applicationData);
 
       // Assert
-      const { permitType, permitData: { feeSummary } } = applicationData;
+      const {
+        permitType,
+        permitData: { feeSummary },
+      } = applicationData;
       const permitTypeStr = permitTypeDisplayText(permitType);
       expect(await feeSummaryPermitType()).toHaveTextContent(permitTypeStr);
       expect(await feeSummaryPrice()).toHaveTextContent(`$${feeSummary}.00`);
@@ -360,7 +433,9 @@ describe("Review and Confirm Application Details", () => {
       await proceedToPay(user);
 
       // Assert
-      expect(await attestationErrorMsg()).toHaveTextContent("Checkbox selection is required");
+      expect(await attestationErrorMsg()).toHaveTextContent(
+        "Checkbox selection is required",
+      );
     });
 
     it("should not show error message when all attestation checkboxes are checked", async () => {

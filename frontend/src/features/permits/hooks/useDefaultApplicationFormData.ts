@@ -2,14 +2,14 @@ import { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 
 import { Application, Commodities } from "../types/application";
-import { BCeIDUserDetailContext } from "../../../common/authentication/OnRouteBCContext"; 
+import { BCeIDUserDetailContext } from "../../../common/authentication/OnRouteBCContext";
 import { areCommoditiesEqual } from "../helpers/equality";
 import { getDefaultRequiredVal } from "../../../common/helpers/util";
 import { CompanyProfile } from "../../manageProfile/types/manageProfile";
-import { 
-  getDefaultContactDetails, 
-  getDefaultMailingAddress, 
-  getDefaultValues, 
+import {
+  getDefaultContactDetails,
+  getDefaultMailingAddress,
+  getDefaultValues,
   getDefaultVehicleDetails,
 } from "../helpers/getDefaultApplicationFormData";
 
@@ -27,9 +27,10 @@ export const useDefaultApplicationFormData = (
 ) => {
   // initialize the entire form data with default values
   // Use default values (saved data from the TROS application context, or empty values)
-  const [defaultApplicationDataValues, setDefaultApplicationDataValues] = useState<Application>(
-    getDefaultValues(applicationData, companyId, userDetails, companyInfo) 
-  );
+  const [defaultApplicationDataValues, setDefaultApplicationDataValues] =
+    useState<Application>(
+      getDefaultValues(applicationData, companyId, userDetails, companyInfo),
+    );
 
   // Update contact details form fields whenever these values are updated
   const contactDetailsDepArray = [
@@ -84,12 +85,20 @@ export const useDefaultApplicationFormData = (
 
   // Recommended way of making deep comparisons (for arrays/objects) in dependency arrays
   // https://stackoverflow.com/questions/59467758/passing-array-to-useeffect-dependency-list
-  const commoditiesRef = useRef<Commodities[] | undefined>(applicationData?.permitData?.commodities);
-  const incomingCommodities = getDefaultRequiredVal([], applicationData?.permitData?.commodities);
-  if (!areCommoditiesEqual( // areCommoditiesEqual is a custom equality helper function to deep compare arrays of objects
-    incomingCommodities,
-    getDefaultRequiredVal([], commoditiesRef.current),
-  )) {
+  const commoditiesRef = useRef<Commodities[] | undefined>(
+    applicationData?.permitData?.commodities,
+  );
+  const incomingCommodities = getDefaultRequiredVal(
+    [],
+    applicationData?.permitData?.commodities,
+  );
+  if (
+    !areCommoditiesEqual(
+      // areCommoditiesEqual is a custom equality helper function to deep compare arrays of objects
+      incomingCommodities,
+      getDefaultRequiredVal([], commoditiesRef.current),
+    )
+  ) {
     commoditiesRef.current = incomingCommodities;
   }
 
@@ -118,7 +127,7 @@ export const useDefaultApplicationFormData = (
 
   useEffect(() => {
     setDefaultApplicationDataValues(
-      getDefaultValues(applicationData, companyId, userDetails, companyInfo)
+      getDefaultValues(applicationData, companyId, userDetails, companyInfo),
     );
   }, applicationFormDataDepArray);
 
@@ -134,24 +143,28 @@ export const useDefaultApplicationFormData = (
     setValue(
       "permitData.contactDetails",
       getDefaultContactDetails(
-        getDefaultRequiredVal("", applicationData?.applicationNumber).trim() === "",
-        applicationData?.permitData?.contactDetails, 
-        userDetails
-      )
+        getDefaultRequiredVal("", applicationData?.applicationNumber).trim() ===
+          "",
+        applicationData?.permitData?.contactDetails,
+        userDetails,
+      ),
     );
   }, contactDetailsDepArray);
 
   useEffect(() => {
     setValue(
       "permitData.mailingAddress",
-      getDefaultMailingAddress(applicationData?.permitData?.mailingAddress, companyInfo?.mailingAddress)
+      getDefaultMailingAddress(
+        applicationData?.permitData?.mailingAddress,
+        companyInfo?.mailingAddress,
+      ),
     );
   }, mailingAddressDepArray);
 
   useEffect(() => {
     setValue(
-      "permitData.vehicleDetails", 
-      getDefaultVehicleDetails(applicationData?.permitData?.vehicleDetails)
+      "permitData.vehicleDetails",
+      getDefaultVehicleDetails(applicationData?.permitData?.vehicleDetails),
     );
   }, vehicleDetailsDepArray);
 

@@ -21,7 +21,7 @@ export const bcGovTheme = createTheme({
       textTransform: "none",
     },
     fontFamily: ["BCSans", "Noto Sans", "Verdana", "Arial", "sans-serif"].join(
-      ","
+      ",",
     ),
     fontSize: 16,
     body1: {
