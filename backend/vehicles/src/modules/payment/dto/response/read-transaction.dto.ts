@@ -30,7 +30,7 @@ export class ReadTransactionDto extends PaymentGatewayTransactionDto {
     example: PaymentMethodType.WEB,
     description: 'The identifier of the user selected payment method.',
   })
-  paymentMethodId: PaymentMethodType;
+  paymentMethodTypeCode: PaymentMethodType;
 
   @AutoMap()
   @ApiProperty({
@@ -38,7 +38,7 @@ export class ReadTransactionDto extends PaymentGatewayTransactionDto {
     example: PaymentType.VISA,
     description: 'The identifier of the user selected payment type.',
   })
-  paymentType: PaymentType;
+  paymentTypeCode: PaymentType;
 
   @AutoMap()
   @ApiProperty({

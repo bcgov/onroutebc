@@ -8,6 +8,7 @@ import { PermitService } from './modules/permit/permit.service';
 import * as fs from 'fs';
 import { CacheKey } from './common/enum/cache-key.enum';
 import { addToCache, createCacheMap } from './common/helper/cache.helper';
+import { PaymentService } from './modules/payment/payment.service';
 
 @Injectable()
 export class AppService {
@@ -18,6 +19,7 @@ export class AppService {
     private powerUnitTypeService: PowerUnitTypesService,
     private trailerTypeService: TrailerTypesService,
     private commonService: CommonService,
+    private paymentService: PaymentService,
   ) {}
 
   getHello(): string {
@@ -66,6 +68,21 @@ export class AppService {
     vehicleTypesMap.set('trailer', 'Trailer');
 
     await addToCache(this.cacheManager, CacheKey.VEHICLE_TYPE, vehicleTypesMap);
+
+    const paymentMethods =
+      await this.paymentService.findAllPaymentMethodEntities();
+    await addToCache(
+      this.cacheManager,
+      CacheKey.PAYMENT_METHOD,
+      createCacheMap(paymentMethods, 'paymentMethodTypeCode', 'name'),
+    );
+
+    const paymentTypes = await this.paymentService.findAllPaymentTypeEntities();
+    await addToCache(
+      this.cacheManager,
+      CacheKey.PAYMENT_TYPE,
+      createCacheMap(paymentTypes, 'paymentTypeCode', 'name'),
+    );
 
     const assetsPath =
       process.env.NODE_ENV === 'local'
