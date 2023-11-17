@@ -71,11 +71,11 @@ jobs:
           oc project ${{ vars.oc_namespace }}
 
           # Interrupt any previous jobs (status = pending-upgrade)
-          PREVIOUS=$(helm status ${{ github.event.repository.name }}-${{ inputs.target }}-experiment -o json | jq .info.status || true)
+          PREVIOUS=$(helm status ${{ github.event.repository.name }}-${{ inputs.target }} -o json | jq .info.status || true)
           if [[ ${PREVIOUS} =~ pending ]]; then
             echo "Rollback triggered"
-            helm rollback ${{ github.event.repository.name }}-${{ inputs.target }}-experiment || \
-              helm uninstall ${{ github.event.repository.name }}-${{ inputs.target }}-experiment
+            helm rollback ${{ github.event.repository.name }}-${{ inputs.target }} || \
+              helm uninstall ${{ github.event.repository.name }}-${{ inputs.target }}
           fi
 
           # Deploy Helm Chart
@@ -87,7 +87,7 @@ jobs:
             --set-string global.license=${{inputs.license}} \
             --set-string global.zone=${{inputs.zone}} \
             --set-string global.vault.role=${{inputs.vault_role}} \
-            --install --wait --atomic ${{ github.event.repository.name }}-${{ inputs.target }}-experiment \
+            --install --wait --atomic ${{ github.event.repository.name }}-${{ inputs.target }} \
             --timeout ${{ inputs.timeout-minutes }}m \
             --values ${{ inputs.values }} .
 

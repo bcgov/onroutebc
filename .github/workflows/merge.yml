@@ -3,7 +3,6 @@ name: Merge
 on:
   push:
     tags: [v*]
-    branches: [experiment/helm_deployment_pipeline]
 
 concurrency:
   group: ${{ github.workflow }}
@@ -27,15 +26,51 @@ jobs:
     uses: ./.github/workflows/.tests.yml
     with:
       target: test
-
+  
+  promote-images-test:
+    name: Promote Images - Test
+    needs: [deploys-test, integration-e2e]
+    runs-on: ubuntu-22.04
+    permissions:
+      packages: write
+    strategy:
+      matrix:
+        package: [backend/dops, backend/vehicles, frontend]
+    timeout-minutes: 2
+    steps:
+      - uses: shrink/actions-docker-registry-tag@v3
+        with:
+          registry: ghcr.io
+          repository: ${{ github.repository }}/${{ matrix.package }}
+          target: latest
+          tags: test
+  
   deploys-prod:
     name: Deploys (prod)
     needs: [integration-e2e]
     uses: ./.github/workflows/.deploy.yml
     secrets: inherit
     with:
-      target: prod
+      target: test
       values: values.yaml
       license: c28f0c
       vault_role: prod
       zone: prod
+  
+  promote-images-prod:
+    name: Promote Images - Prod
+    needs: [deploys-prod]
+    runs-on: ubuntu-22.04
+    permissions:
+      packages: write
+    strategy:
+      matrix:
+        package: [backend/dops, backend/vehicles, frontend]
+    timeout-minutes: 2
+    steps:
+      - uses: shrink/actions-docker-registry-tag@v3
+        with:
+          registry: ghcr.io
+          repository: ${{ github.repository }}/${{ matrix.package }}
+          target: test
+          tags: prod  #Promote images AFTER successful deploy

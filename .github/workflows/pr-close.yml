@@ -2,7 +2,7 @@ name: PR Closed
 
 on:
   pull_request:
-    branches: [experiment/helm_deployment_pipeline]
+    branches: [main]
     types: [closed]
 
 concurrency:
@@ -34,7 +34,7 @@ jobs:
 
   semver:
     name: Semantic Version
-    if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'experiment/helm_deployment_pipeline'
+    if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main'
     outputs:
       tag: ${{ steps.semver.outputs.tag }}
     runs-on: ubuntu-22.04
@@ -76,4 +76,4 @@ jobs:
           registry: ghcr.io
           repository: ${{ github.repository }}/${{ matrix.package }}
           target: ${{ github.event.number }}
-          tags: ${{ needs.semver.outputs.tag }}
+          tags: latest
