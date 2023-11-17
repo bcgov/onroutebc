@@ -50,7 +50,7 @@ export class Transaction extends Base {
     name: 'PAYMENT_METHOD_TYPE',
     nullable: false,
   })
-  paymentMethodId: PaymentMethodType;
+  paymentMethodTypeCode: PaymentMethodType;
 
   @AutoMap()
   @ApiProperty({
@@ -63,7 +63,7 @@ export class Transaction extends Base {
     name: 'PAYMENT_TYPE',
     nullable: true,
   })
-  paymentType: PaymentType;
+  paymentTypeCode: PaymentType;
 
   @AutoMap()
   @ApiProperty({

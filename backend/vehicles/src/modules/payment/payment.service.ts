@@ -40,6 +40,8 @@ import {
 import { validateHash } from 'src/common/helper/validateHash.helper';
 import { CreatePaymentSummaryReportDto } from './dto/request/create-payment-summary-report.dto';
 import { UpdatePaymentGatewayTransactionDto } from './dto/request/update-payment-gateway-transaction.dto';
+import { PaymentMethod } from './entities/payment-method.entity';
+import { PaymentType } from './entities/payment-type.entity';
 
 @Injectable()
 export class PaymentService {
@@ -47,6 +49,10 @@ export class PaymentService {
     private dataSource: DataSource,
     @InjectRepository(Transaction)
     private transactionRepository: Repository<Transaction>,
+    @InjectRepository(PaymentMethod)
+    private paymentMethodRepository: Repository<PaymentMethod>,
+    @InjectRepository(PaymentType)
+    private paymentTypeRepository: Repository<PaymentType>,
     @InjectMapper() private readonly classMapper: Mapper,
     private readonly dopsService: DopsService,
   ) {}
@@ -245,7 +251,7 @@ export class PaymentService {
         });
 
         this.assertApplicationInProgress(
-          newTransaction.paymentMethodId,
+          newTransaction.paymentMethodTypeCode,
           newTransaction.transactionTypeId,
           existingApplication.permitStatus,
         );
@@ -268,7 +274,7 @@ export class PaymentService {
 
         if (
           this.isWebTransactionPurchase(
-            newTransaction.paymentMethodId,
+            newTransaction.paymentMethodTypeCode,
             newTransaction.transactionTypeId,
           )
         ) {
@@ -293,7 +299,7 @@ export class PaymentService {
       let url: string = undefined;
       if (
         this.isWebTransactionPurchase(
-          createdTransaction.paymentMethodId,
+          createdTransaction.paymentMethodTypeCode,
           createdTransaction.transactionTypeId,
         )
       ) {
@@ -527,12 +533,12 @@ export class PaymentService {
         issuedBy: createPaymentDetailedReportDto.issuedBy.join(', '),
         runDate: convertUtcToPt(new Date(), 'MMM. D, YYYY, hh:mm A Z'),
         permitType: 'All Permit Types',
-        paymentMethod:
-          createPaymentDetailedReportDto.paymentMethodType.includes(
-            PaymentMethodTypeReport.ALL,
-          )
-            ? 'All Payment Methods'
-            : paymentMethods.join(', '),
+        // paymentMethod:
+        //   createPaymentDetailedReportDto.paymentMethodType.includes(
+        //     PaymentMethodTypeReport.ALL,
+        //   )
+        //     ? 'All Payment Methods'
+        //     : paymentMethods.join(', '),
         timePeriod: `${convertUtcToPt(
           createPaymentDetailedReportDto.fromDateTime,
           'MMM. D, YYYY, hh:mm A Z',
@@ -1006,5 +1012,13 @@ export class PaymentService {
       `&ref2=${ref2}` +
       `&pbcTxnNumber=${pbcTxnNumber}`;
     return validateHash(query, hashValue);
+  }
+
+  async findAllPaymentMethodEntities(): Promise<PaymentMethod[]> {
+    return await this.paymentMethodRepository.find();
+  }
+
+  async findAllPaymentTypeEntities(): Promise<PaymentType[]> {
+    return await this.paymentTypeRepository.find();
   }
 }
