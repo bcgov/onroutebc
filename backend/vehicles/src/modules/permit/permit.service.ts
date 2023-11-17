@@ -458,7 +458,7 @@ export class PermitService {
       createTransactionDto.pgTransactionId = voidPermitDto.pgTransactionId;
       createTransactionDto.pgPaymentMethod = voidPermitDto.pgPaymentMethod;
       createTransactionDto.pgCardType = voidPermitDto.pgCardType;
-      createTransactionDto.paymentMethodId = voidPermitDto.paymentMethodId;
+      createTransactionDto.paymentMethodTypeCode = voidPermitDto.paymentMethodTypeCode;
       createTransactionDto.transactionTypeId =
         voidPermitDto.transactionAmount === 0
           ? TransactionType.ZERO_AMOUNT

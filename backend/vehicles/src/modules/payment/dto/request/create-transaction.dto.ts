@@ -9,10 +9,11 @@ import {
 } from 'class-validator';
 import { TransactionType } from '../../../../common/enum/transaction-type.enum';
 import { PaymentMethodType } from '../../../../common/enum/payment-method-type.enum';
-import { CreateApplicationTransactionDto } from './create-application-transaction.dto';
+
 import { Type } from 'class-transformer';
 import { PaymentGatewayTransactionDto } from '../common/payment-gateway-transaction.dto';
 import { PaymentType } from '../../../../common/enum/payment-type.enum';
+import { CreateApplicationTransactionDto } from './create-application-transaction.dto copy';
 
 export class CreateTransactionDto extends PaymentGatewayTransactionDto {
   @AutoMap()
@@ -32,7 +33,7 @@ export class CreateTransactionDto extends PaymentGatewayTransactionDto {
     description: 'The identifier of the user selected payment method.',
   })
   @IsEnum(PaymentMethodType)
-  paymentMethodId: PaymentMethodType;
+  paymentMethodTypeCode: PaymentMethodType;
 
   @AutoMap()
   @ApiProperty({
@@ -43,7 +44,7 @@ export class CreateTransactionDto extends PaymentGatewayTransactionDto {
   })
   @IsOptional()
   @IsEnum(PaymentType)
-  paymentType?: PaymentType;
+  paymentTypeCode?: PaymentType;
 
   @AutoMap()
   @ApiProperty({
