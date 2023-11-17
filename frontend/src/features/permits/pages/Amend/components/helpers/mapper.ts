@@ -10,7 +10,7 @@ export const mapToAmendRequestData = (
   const isZeroAmount = Math.abs(amountToRefund) < 0.000001;
   const reqData = {
     transactionTypeId: isZeroAmount ? TRANSACTION_TYPES.Z : TRANSACTION_TYPES.R,
-    paymentMethodTypeCode: PAYMENT_METHOD_TYPE_CODE.Web, // hardcoded to "WEB" - Web
+    paymentMethodTypeCode: PAYMENT_METHOD_TYPE_CODE.WEB, // hardcoded to "WEB" - Web
     applicationDetails: [
       {
         applicationId: permitId,

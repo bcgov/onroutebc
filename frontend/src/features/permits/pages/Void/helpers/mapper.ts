@@ -12,7 +12,7 @@ export const mapToRevokeRequestData = (
 ): RevokePermitRequestData => {
   return {
     status: PERMIT_STATUSES.REVOKED,
-    paymentMethodTypeCode: PAYMENT_METHOD_TYPE_CODE.Web, // hardcoded to "WEB" - Web
+    paymentMethodTypeCode: PAYMENT_METHOD_TYPE_CODE.WEB, // hardcoded to "WEB" - Web
     transactionAmount: 0,
     comment: voidPermitFormData.reason,
   };
@@ -26,7 +26,7 @@ export const mapToVoidRequestData = (
   return {
     status: PERMIT_STATUSES.VOIDED,
     pgTransactionId: refundData.transactionId,
-    paymentMethodTypeCode: PAYMENT_METHOD_TYPE_CODE.Web, // hardcoded to "WEB" - Web
+    paymentMethodTypeCode: PAYMENT_METHOD_TYPE_CODE.WEB, // hardcoded to "WEB" - Web
     transactionAmount: amountToRefund,
     pgPaymentMethod: refundData.refundOnlineMethod
       ? refundData.refundOnlineMethod

@@ -1,3 +1,4 @@
+import { PaymentMethodTypeCode } from "../../../common/types/paymentMethods";
 import { BamboraPaymentMethod, CardType } from "./PaymentMethod";
 
 export interface PayBCPaymentDetails {
@@ -43,7 +44,7 @@ export interface Transaction {
   transactionDate: string;
   cvdId: number;
   paymentMethod: string;
-  paymentMethodTypeCode: string;
+  paymentMethodTypeCode: PaymentMethodTypeCode;
   messageId: string;
   messageText: string;
 }
@@ -82,7 +83,7 @@ export interface PaymentGatewayData {
 export interface StartTransactionRequestData
   extends Partial<PaymentGatewayData> {
   transactionTypeId: TransactionType;
-  paymentMethodTypeCode: string;
+  paymentMethodTypeCode: PaymentMethodTypeCode;
   applicationDetails: {
     applicationId: string;
     transactionAmount: number;
@@ -93,7 +94,7 @@ export interface StartTransactionResponseData
   extends Partial<PaymentGatewayData> {
   transactionId: string;
   transactionTypeId: TransactionType;
-  paymentMethodTypeCode: string;
+  paymentMethodTypeCode: PaymentMethodTypeCode;
   totalTransactionAmount: number;
   transactionSubmitDate: string;
   transactionOrderNumber: string;
