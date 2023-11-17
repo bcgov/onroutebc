@@ -1,12 +1,10 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
-import {  
-  IsEnum,
-} from 'class-validator';
+import { IsEnum, IsOptional } from 'class-validator';
 import { PaymentMethodTypeReport } from '../../../../common/enum/payment-method-type.enum';
 import { PaymentType } from '../../../../common/enum/payment-type.enum';
 
-export class PaymentMethod {
+export class PaymentMethodDto {
   @AutoMap()
   @ApiProperty({
     example: PaymentMethodTypeReport.WEB,
@@ -23,6 +21,7 @@ export class PaymentMethod {
     description: 'The payment types.',
     required: false,
   })
+  @IsOptional()
   @IsEnum(PaymentType)
   paymentTypeCode?: PaymentType;
 }

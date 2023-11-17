@@ -532,12 +532,12 @@ export class PaymentService {
         issuedBy: createPaymentDetailedReportDto.issuedBy.join(', '),
         runDate: convertUtcToPt(new Date(), 'MMM. D, YYYY, hh:mm A Z'),
         permitType: 'All Permit Types',
-        paymentMethod:
-          createPaymentDetailedReportDto.paymentMethodType.includes(
-            PaymentMethodTypeReport.ALL,
-          )
-            ? 'All Payment Methods'
-            : paymentMethods.join(', '),
+        // paymentMethod:
+        //   createPaymentDetailedReportDto.paymentMethodType.includes(
+        //     PaymentMethodTypeReport.ALL,
+        //   )
+        //     ? 'All Payment Methods'
+        //     : paymentMethods.join(', '),
         timePeriod: `${convertUtcToPt(
           createPaymentDetailedReportDto.fromDateTime,
           'MMM. D, YYYY, hh:mm A Z',
