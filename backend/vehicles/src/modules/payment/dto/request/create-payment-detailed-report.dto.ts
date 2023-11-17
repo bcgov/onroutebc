@@ -1,15 +1,17 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
-import { PaymentMethodTypeReport } from '../../../../common/enum/payment-method-type.enum';
 import {
   ArrayMinSize,
   IsArray,
   IsDateString,
   IsEnum,
   IsOptional,
+  ValidateNested,
 } from 'class-validator';
 import { PaymentReportIssuedBy } from '../../../../common/enum/payment-report-issued-by.enum';
 import { PermitTypeReport } from '../../../../common/enum/permit-type.enum';
+import { PaymentMethodDto } from '../common/payment-method.dto';
+import { Type } from 'class-transformer';
 
 export class CreatePaymentDetailedReportDto {
   @AutoMap()
@@ -25,14 +27,15 @@ export class CreatePaymentDetailedReportDto {
 
   @AutoMap()
   @ApiProperty({
-    example: [PaymentMethodTypeReport.ALL],
-    enum: PaymentMethodTypeReport,
-    description: 'The payment method types to include in the report.',
-    isArray: true,
+    description: 'The payment method details selected by user.',
+    required: true,
+    type: [PaymentMethodDto],
   })
-  @IsEnum(PaymentMethodTypeReport, { each: true })
+  @IsArray()
+  @ValidateNested({ each: true })
   @ArrayMinSize(1)
-  paymentMethodType: PaymentMethodTypeReport[];
+  @Type(() => PaymentMethodDto)
+  paymentMethod: PaymentMethodDto[];
 
   @AutoMap()
   @ApiProperty({

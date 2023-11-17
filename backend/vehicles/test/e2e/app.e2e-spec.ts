@@ -9,11 +9,13 @@ import { PowerUnitTypesService } from 'src/modules/vehicles/power-unit-types/pow
 import { TrailerTypesService } from 'src/modules/vehicles/trailer-types/trailer-types.service';
 import { CommonService } from 'src/modules/common/common.service';
 import { PermitService } from 'src/modules/permit/permit.service';
+import { PaymentService } from '../../src/modules/payment/payment.service';
 
 let permitServiceMock: DeepMocked<PermitService>;
 let powerUnitTypeServiceMock: DeepMocked<PowerUnitTypesService>;
 let trailerTypeServiceMock: DeepMocked<TrailerTypesService>;
 let commonServiceMock: DeepMocked<CommonService>;
+let paymentServiceMock: DeepMocked<PaymentService>;
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
@@ -23,6 +25,7 @@ describe('AppController (e2e)', () => {
     powerUnitTypeServiceMock = createMock<PowerUnitTypesService>();
     trailerTypeServiceMock = createMock<TrailerTypesService>();
     commonServiceMock = createMock<CommonService>();
+    paymentServiceMock = createMock<PaymentService>();
 
     const moduleFixture = await Test.createTestingModule({
       controllers: [AppController],
@@ -44,6 +47,10 @@ describe('AppController (e2e)', () => {
         {
           provide: CommonService,
           useValue: commonServiceMock,
+        },
+        {
+          provide: PaymentService,
+          useValue: paymentServiceMock,
         },
       ],
     }).compile();
