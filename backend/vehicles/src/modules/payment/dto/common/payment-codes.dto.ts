@@ -4,7 +4,7 @@ import { IsEnum, IsOptional } from 'class-validator';
 import { PaymentMethodTypeReport } from '../../../../common/enum/payment-method-type.enum';
 import { PaymentCardType } from '../../../../common/enum/payment-card-type.enum';
 
-export class PaymentMethodDto {
+export class PaymentCodesDto {
   @AutoMap()
   @ApiProperty({
     example: PaymentMethodTypeReport.WEB,
