@@ -11,7 +11,7 @@
   "GA Payment": {
     "paymentMethodTypeCode": "GA"
   },
-  "IcePay - AMEX": {
+  "IcePay - Amex": {
     "paymentMethodTypeCode": "ICEPAY",
     "paymentTypeCode": "AM"
   },
@@ -31,7 +31,7 @@
     "paymentMethodTypeCode": "ICEPAY",
     "paymentTypeCode": "PV"
   },
-  "PoS - AMEX": {
+  "PoS - Amex": {
     "paymentMethodTypeCode": "POS",
     "paymentTypeCode": "AM"
   },
@@ -55,7 +55,7 @@
     "paymentMethodTypeCode": "POS",
     "paymentTypeCode": "PV"
   },
-  "Web - AMEX": {
+  "Web - Amex": {
     "paymentMethodTypeCode": "WEB",
     "paymentTypeCode": "AM"
   },

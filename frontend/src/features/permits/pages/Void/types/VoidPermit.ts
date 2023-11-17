@@ -13,7 +13,7 @@ export interface VoidPermitFormData {
 export interface VoidPermitRequestData {
   status: Extract<PermitStatus, "VOIDED">;
   pgTransactionId?: string;
-  paymentMethodId: string; // hardcoded to "1" - Web
+  paymentMethodTypeCode: string; // hardcoded to "WEB" - Web
   transactionAmount: number;
   pgTransactionDate?: string;
   pgPaymentMethod?: BamboraPaymentMethod;
@@ -23,7 +23,7 @@ export interface VoidPermitRequestData {
 
 export interface RevokePermitRequestData {
   status: Extract<PermitStatus, "REVOKED">;
-  paymentMethodId: string; // hardcoded to "1" - Web
+  paymentMethodTypeCode: string; // hardcoded to "WEB" - Web
   pgPaymentMethod?: BamboraPaymentMethod;
   transactionAmount: 0;
   comment: string;

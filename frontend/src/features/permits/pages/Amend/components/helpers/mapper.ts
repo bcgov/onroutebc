@@ -1,3 +1,4 @@
+import { PAYMENT_METHOD_TYPE_CODE } from "../../../../../../common/types/paymentMethods";
 import { TRANSACTION_TYPES } from "../../../../types/payment.d";
 import { RefundFormData } from "../../../Refund/types/RefundFormData";
 
@@ -9,7 +10,7 @@ export const mapToAmendRequestData = (
   const isZeroAmount = Math.abs(amountToRefund) < 0.000001;
   const reqData = {
     transactionTypeId: isZeroAmount ? TRANSACTION_TYPES.Z : TRANSACTION_TYPES.R,
-    paymentMethodId: "1", // hardcoded to "1" - Web
+    paymentMethodTypeCode: PAYMENT_METHOD_TYPE_CODE.Web, // hardcoded to "WEB" - Web
     applicationDetails: [
       {
         applicationId: permitId,

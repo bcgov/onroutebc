@@ -43,7 +43,7 @@ export interface Transaction {
   transactionDate: string;
   cvdId: number;
   paymentMethod: string;
-  paymentMethodId: number;
+  paymentMethodTypeCode: string;
   messageId: string;
   messageText: string;
 }
@@ -82,7 +82,7 @@ export interface PaymentGatewayData {
 export interface StartTransactionRequestData
   extends Partial<PaymentGatewayData> {
   transactionTypeId: TransactionType;
-  paymentMethodId: string;
+  paymentMethodTypeCode: string;
   applicationDetails: {
     applicationId: string;
     transactionAmount: number;
@@ -93,7 +93,7 @@ export interface StartTransactionResponseData
   extends Partial<PaymentGatewayData> {
   transactionId: string;
   transactionTypeId: TransactionType;
-  paymentMethodId: string;
+  paymentMethodTypeCode: string;
   totalTransactionAmount: number;
   transactionSubmitDate: string;
   transactionOrderNumber: string;

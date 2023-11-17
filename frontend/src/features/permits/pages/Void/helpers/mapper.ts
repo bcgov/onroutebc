@@ -1,3 +1,4 @@
+import { PAYMENT_METHOD_TYPE_CODE } from "../../../../../common/types/paymentMethods";
 import { PERMIT_STATUSES } from "../../../types/PermitStatus";
 import { RefundFormData } from "../../Refund/types/RefundFormData";
 import {
@@ -11,7 +12,7 @@ export const mapToRevokeRequestData = (
 ): RevokePermitRequestData => {
   return {
     status: PERMIT_STATUSES.REVOKED,
-    paymentMethodId: "1", // hardcoded to "1" - Web
+    paymentMethodTypeCode: PAYMENT_METHOD_TYPE_CODE.Web, // hardcoded to "WEB" - Web
     transactionAmount: 0,
     comment: voidPermitFormData.reason,
   };
@@ -25,7 +26,7 @@ export const mapToVoidRequestData = (
   return {
     status: PERMIT_STATUSES.VOIDED,
     pgTransactionId: refundData.transactionId,
-    paymentMethodId: "1", // hardcoded to "1" - Web
+    paymentMethodTypeCode: PAYMENT_METHOD_TYPE_CODE.Web, // hardcoded to "WEB" - Web
     transactionAmount: amountToRefund,
     pgPaymentMethod: refundData.refundOnlineMethod
       ? refundData.refundOnlineMethod
