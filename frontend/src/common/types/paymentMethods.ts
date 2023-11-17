@@ -15,9 +15,9 @@ export type PaymentMethodTypeAsEnum =
  * The payment types (contains different card types)
  */
 export const PAYMENT_TYPE = {
-  AMEX: { ccc: "AMEX" },
+  AMEX: "AMEX",
   VISA_DEBIT: "Visa (Debit)",
-  VISA: "Cheque",
+  VISA: "Visa",
   MASTERCARD: "Mastercard",
   MASTERCARD_DEBIT: "Mastercard (Debit)",
   DEBIT: "Debit",
