@@ -81,7 +81,7 @@ export class AppService {
     await addToCache(
       this.cacheManager,
       CacheKey.PAYMENT_TYPE,
-      createCacheMap(paymentTypes, 'paymentTypeCode', 'name'),
+      createCacheMap(paymentTypes, 'paymentCardTypeCode', 'name'),
     );
 
     const assetsPath =
