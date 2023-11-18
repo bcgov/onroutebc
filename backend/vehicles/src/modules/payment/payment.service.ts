@@ -17,10 +17,7 @@ import { IUserJWT } from 'src/common/interface/user-jwt.interface';
 import { callDatabaseSequence } from 'src/common/helper/database.helper';
 import { Permit } from '../permit/entities/permit.entity';
 import { ApplicationStatus } from '../../common/enum/application-status.enum';
-import {
-  PaymentMethodType,
-  PaymentMethodTypeReport,
-} from '../../common/enum/payment-method-type.enum';
+import { PaymentMethodType as PaymentMethodTypeEnum } from '../../common/enum/payment-method-type.enum';
 import { TransactionType } from '../../common/enum/transaction-type.enum';
 
 import { ReadPaymentGatewayTransactionDto } from './dto/response/read-payment-gateway-transaction.dto';
@@ -39,8 +36,8 @@ import {
 } from '../../common/constants/vehicles.constant';
 import { validateHash } from 'src/common/helper/validateHash.helper';
 import { UpdatePaymentGatewayTransactionDto } from './dto/request/update-payment-gateway-transaction.dto';
-import { PaymentMethod } from './entities/payment-method.entity';
-import { PaymentType } from './entities/payment-type.entity';
+import { PaymentCardType } from './entities/payment-card-type.entity';
+import { PaymentMethodType } from './entities/payment-method-type.entity';
 
 @Injectable()
 export class PaymentService {
@@ -48,10 +45,10 @@ export class PaymentService {
     private dataSource: DataSource,
     @InjectRepository(Transaction)
     private transactionRepository: Repository<Transaction>,
-    @InjectRepository(PaymentMethod)
-    private paymentMethodRepository: Repository<PaymentMethod>,
-    @InjectRepository(PaymentType)
-    private paymentTypeRepository: Repository<PaymentType>,
+    @InjectRepository(PaymentMethodType)
+    private paymentMethodTypeRepository: Repository<PaymentMethodType>,
+    @InjectRepository(PaymentCardType)
+    private paymentCardTypeRepository: Repository<PaymentCardType>,
     @InjectMapper() private readonly classMapper: Mapper,
     private readonly dopsService: DopsService,
   ) {}
@@ -170,17 +167,17 @@ export class PaymentService {
   }
 
   private isWebTransactionPurchase(
-    paymentMethod: PaymentMethodType,
+    paymentMethod: PaymentMethodTypeEnum,
     transactionType: TransactionType,
   ) {
     return (
-      paymentMethod == PaymentMethodType.WEB &&
+      paymentMethod == PaymentMethodTypeEnum.WEB &&
       transactionType == TransactionType.PURCHASE
     );
   }
 
   private assertApplicationInProgress(
-    paymentMethod: PaymentMethodType,
+    paymentMethod: PaymentMethodTypeEnum,
     transactionType: TransactionType,
     permitStatus: ApplicationStatus,
   ) {
@@ -649,11 +646,11 @@ export class PaymentService {
     return validateHash(query, hashValue);
   }
 
-  async findAllPaymentMethodEntities(): Promise<PaymentMethod[]> {
-    return await this.paymentMethodRepository.find();
+  async findAllPaymentMethodEntities(): Promise<PaymentMethodType[]> {
+    return await this.paymentMethodTypeRepository.find();
   }
 
-  async findAllPaymentTypeEntities(): Promise<PaymentType[]> {
-    return await this.paymentTypeRepository.find();
+  async findAllPaymentTypeEntities(): Promise<PaymentCardType[]> {
+    return await this.paymentCardTypeRepository.find();
   }
 }
