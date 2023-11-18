@@ -24,13 +24,13 @@ import { CompanyService } from '../company/company.service';
 import { Role } from '../../../common/enum/roles.enum';
 import { IUserJWT } from '../../../common/interface/user-jwt.interface';
 import { UserAuthGroup } from 'src/common/enum/user-auth-group.enum';
-import { PendingIdirUser } from '../pending-idir-users/entities/pending-idir-user.entity';
-import { IdirUser } from './entities/idir.user.entity';
 import { PendingIdirUsersService } from '../pending-idir-users/pending-idir-users.service';
 import { ReadPendingUserDto } from '../pending-users/dto/response/read-pending-user.dto';
 import { BadRequestExceptionDto } from '../../../common/exception/badRequestException.dto';
 import { ExceptionDto } from '../../../common/exception/exception.dto';
 import { IDP } from '../../../common/enum/idp.enum';
+import { IdirUser } from './entities/idir.user.entity';
+import { PendingIdirUser } from '../pending-idir-users/entities/pending-idir-user.entity';
 
 @Injectable()
 export class UsersService {
@@ -74,7 +74,6 @@ export class UsersService {
     //Comment Begin: Business BCeID validation.
     //In case of busines bceid, validate that the user's bceid matches the company bceid.
     //If matches then create user else throw error.
-    console.log('current user is ',currentUser)
     if (currentUser.bceid_business_guid) {
       const company = await this.companyService.findOneByCompanyGuid(
         currentUser.bceid_business_guid,
