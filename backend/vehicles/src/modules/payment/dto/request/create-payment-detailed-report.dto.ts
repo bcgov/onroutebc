@@ -10,8 +10,8 @@ import {
 } from 'class-validator';
 import { PaymentReportIssuedBy } from '../../../../common/enum/payment-report-issued-by.enum';
 import { PermitTypeReport } from '../../../../common/enum/permit-type.enum';
-import { PaymentMethodDto } from '../common/payment-method.dto';
 import { Type } from 'class-transformer';
+import { PaymentCodesDto } from '../common/payment-codes.dto';
 
 export class CreatePaymentDetailedReportDto {
   @AutoMap()
@@ -29,13 +29,13 @@ export class CreatePaymentDetailedReportDto {
   @ApiProperty({
     description: 'The payment method details selected by user.',
     required: true,
-    type: [PaymentMethodDto],
+    type: [PaymentCodesDto],
   })
   @IsArray()
   @ValidateNested({ each: true })
   @ArrayMinSize(1)
-  @Type(() => PaymentMethodDto)
-  paymentMethod: PaymentMethodDto[];
+  @Type(() => PaymentCodesDto)
+  paymentCodes: PaymentCodesDto[];
 
   @AutoMap()
   @ApiProperty({
