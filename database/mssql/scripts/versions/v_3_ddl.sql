@@ -117,6 +117,7 @@ CREATE TABLE [dbo].[ORBC_COMPANY_USER](
 	[COMPANY_ID] [int] NOT NULL,
 	[USER_GUID] [char](32) NOT NULL,
 	[USER_AUTH_GROUP_TYPE] [varchar](10) NOT NULL,
+	[USER_STATUS_TYPE] [varchar](10) NOT NULL,
 	[APP_CREATE_TIMESTAMP] [datetime2](7) DEFAULT (getutcdate()),
 	[APP_CREATE_USERID] [nvarchar](30) DEFAULT (user_name()),
 	[APP_CREATE_USER_GUID] [char](32) NULL,
@@ -245,7 +246,6 @@ CREATE TABLE [dbo].[ORBC_USER](
 	[USER_GUID] [char](32) NOT NULL,
 	[USERNAME] [nvarchar](50) NOT NULL,
 	[USER_DIRECTORY] [varchar](10) NOT NULL,
-	[USER_STATUS_TYPE] [varchar](10) NOT NULL,
 	[CONTACT_ID] [int] NOT NULL,
 	[USER_AUTH_GROUP_TYPE] [varchar](10) NULL,
 	[APP_CREATE_TIMESTAMP] [datetime2](7) DEFAULT (getutcdate()),
@@ -349,6 +349,7 @@ ALTER TABLE [dbo].[ORBC_COMPANY] ADD  CONSTRAINT [DF_ORBC_COMPANY_DB_LAST_UPDATE
 ALTER TABLE [dbo].[ORBC_COMPANY] ADD  CONSTRAINT [DF_ORBC_COMPANY_DB_LAST_UPDATE_TIMESTAMP]  DEFAULT (getutcdate()) FOR [DB_LAST_UPDATE_TIMESTAMP]
 ALTER TABLE [dbo].[ORBC_COMPANY] ADD  CONSTRAINT [DF_ORBC_COMPANY_ACCOUNT_REGION]  DEFAULT ('B') FOR [ACCOUNT_REGION]
 ALTER TABLE [dbo].[ORBC_COMPANY] ADD  CONSTRAINT [DF_ORBC_COMPANY_ACCOUNT_SOURCE]  DEFAULT ('3') FOR [ACCOUNT_SOURCE]
+ALTER TABLE [dbo].[ORBC_COMPANY_USER] ADD  CONSTRAINT [DF_ORBC_COMPANY_USER_USER_STATUS_TYPE]  DEFAULT ('ACTIVE') FOR [USER_STATUS_TYPE]
 ALTER TABLE [dbo].[ORBC_COMPANY_USER] ADD  CONSTRAINT [DF_ORBC_MM_COMPANY_USER_DB_CREATE_USERID]  DEFAULT (user_name()) FOR [DB_CREATE_USERID]
 ALTER TABLE [dbo].[ORBC_COMPANY_USER] ADD  CONSTRAINT [DF_ORBC_MM_COMPANY_USER_DB_CREATE_TIMESTAMP]  DEFAULT (getutcdate()) FOR [DB_CREATE_TIMESTAMP]
 ALTER TABLE [dbo].[ORBC_COMPANY_USER] ADD  CONSTRAINT [DF_ORBC_MM_COMPANY_USER_DB_LAST_UPDATE_USERID]  DEFAULT (user_name()) FOR [DB_LAST_UPDATE_USERID]
@@ -365,7 +366,6 @@ ALTER TABLE [dbo].[ORBC_PENDING_USER] ADD  CONSTRAINT [DF_ORBC_PENDING_USER_DB_C
 ALTER TABLE [dbo].[ORBC_PENDING_USER] ADD  CONSTRAINT [DF_ORBC_PENDING_USER_DB_CREATE_TIMESTAMP]  DEFAULT (getutcdate()) FOR [DB_CREATE_TIMESTAMP]
 ALTER TABLE [dbo].[ORBC_PENDING_USER] ADD  CONSTRAINT [DF_ORBC_PENDING_USER_DB_LAST_UPDATE_USERID]  DEFAULT (user_name()) FOR [DB_LAST_UPDATE_USERID]
 ALTER TABLE [dbo].[ORBC_PENDING_USER] ADD  CONSTRAINT [DF_ORBC_PENDING_USER_DB_LAST_UPDATE_TIMESTAMP]  DEFAULT (getutcdate()) FOR [DB_LAST_UPDATE_TIMESTAMP]
-ALTER TABLE [dbo].[ORBC_USER] ADD  CONSTRAINT [DF_ORBC_USER_USER_STATUS_TYPE]  DEFAULT ('ACTIVE') FOR [USER_STATUS_TYPE]
 ALTER TABLE [dbo].[ORBC_USER] ADD  CONSTRAINT [DF_ORBC_USER_DB_CREATE_USERID]  DEFAULT (user_name()) FOR [DB_CREATE_USERID]
 ALTER TABLE [dbo].[ORBC_USER] ADD  CONSTRAINT [DF_ORBC_USER_DB_CREATE_TIMESTAMP]  DEFAULT (getutcdate()) FOR [DB_CREATE_TIMESTAMP]
 ALTER TABLE [dbo].[ORBC_USER] ADD  CONSTRAINT [DF_ORBC_USER_DB_LAST_UPDATE_USERID]  DEFAULT (user_name()) FOR [DB_LAST_UPDATE_USERID]
@@ -414,6 +414,9 @@ ALTER TABLE [dbo].[ORBC_COMPANY_USER] CHECK CONSTRAINT [FK_ORBC_COMPANY_USER_USE
 ALTER TABLE [dbo].[ORBC_COMPANY_USER]  WITH CHECK ADD  CONSTRAINT [FK_ORBC_COMPANY_USER_USER_AUTH_GROUP] FOREIGN KEY([USER_AUTH_GROUP_TYPE])
 REFERENCES [access].[ORBC_USER_AUTH_GROUP_TYPE] ([USER_AUTH_GROUP_TYPE])
 ALTER TABLE [dbo].[ORBC_COMPANY_USER] CHECK CONSTRAINT [FK_ORBC_COMPANY_USER_USER_AUTH_GROUP]
+ALTER TABLE [dbo].[ORBC_COMPANY_USER]  WITH CHECK ADD  CONSTRAINT [FK_ORBC_COMPANY_USER_USER_STATUS] FOREIGN KEY([USER_STATUS_TYPE])
+REFERENCES [dbo].[ORBC_USER_STATUS_TYPE] ([USER_STATUS_TYPE])
+ALTER TABLE [dbo].[ORBC_COMPANY_USER] CHECK CONSTRAINT [FK_ORBC_COMPANY_USER_USER_STATUS]
 ALTER TABLE [dbo].[ORBC_CONTACT]  WITH CHECK ADD  CONSTRAINT [FK_ORBC_CONTACT_PROVINCE] FOREIGN KEY([PROVINCE_TYPE])
 REFERENCES [dbo].[ORBC_PROVINCE_TYPE] ([PROVINCE_TYPE])
 ALTER TABLE [dbo].[ORBC_CONTACT] CHECK CONSTRAINT [FK_ORBC_CONTACT_PROVINCE]
@@ -435,12 +438,9 @@ ALTER TABLE [dbo].[ORBC_USER] CHECK CONSTRAINT [FK_ORBC_USER_CONTACT]
 ALTER TABLE [dbo].[ORBC_USER]  WITH CHECK ADD  CONSTRAINT [FK_ORBC_USER_DIRECTORY] FOREIGN KEY([USER_DIRECTORY])
 REFERENCES [dbo].[ORBC_DIRECTORY_TYPE] ([DIRECTORY_TYPE])
 ALTER TABLE [dbo].[ORBC_USER] CHECK CONSTRAINT [FK_ORBC_USER_DIRECTORY]
-ALTER TABLE [dbo].[ORBC_USER]  WITH CHECK ADD  CONSTRAINT [FK_ORBC_USER_USER_STATUS] FOREIGN KEY([USER_STATUS_TYPE])
-REFERENCES [dbo].[ORBC_USER_STATUS_TYPE] ([USER_STATUS_TYPE])
 ALTER TABLE [dbo].[ORBC_USER]  WITH CHECK ADD  CONSTRAINT [FK_ORBC_USER_USER_AUTH_GROUP] FOREIGN KEY([USER_AUTH_GROUP_TYPE])
 REFERENCES [access].[ORBC_USER_AUTH_GROUP_TYPE] ([USER_AUTH_GROUP_TYPE])
 ALTER TABLE [dbo].[ORBC_USER] CHECK CONSTRAINT [FK_ORBC_USER_USER_AUTH_GROUP]
-ALTER TABLE [dbo].[ORBC_USER] CHECK CONSTRAINT [FK_ORBC_USER_USER_STATUS]
 GO
 
 INSERT [access].[ORBC_USER_AUTH_GROUP_TYPE] ([USER_AUTH_GROUP_TYPE], [DISPLAY_NAME], [DESCRIPTION], [CONCURRENCY_CONTROL_NUMBER], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'ANONYMOUS', N'Anonymous', N'Anonymous (not logged in) user', NULL, N'dbo', GETUTCDATE(), N'dbo', GETUTCDATE())
@@ -622,6 +622,7 @@ EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Unique surroga
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID of the company' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_COMPANY_USER', @level2type=N'COLUMN',@level2name=N'COMPANY_ID'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'GUID of the user' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_COMPANY_USER', @level2type=N'COLUMN',@level2name=N'USER_GUID'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID of the authorization group the user belongs to for the company' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_COMPANY_USER', @level2type=N'COLUMN',@level2name=N'USER_AUTH_GROUP_TYPE'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'User''s current status in the onRouteBC system, FK into the user status table' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_COMPANY_USER', @level2type=N'COLUMN',@level2name=N'USER_STATUS_TYPE'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Application code is responsible for retrieving the row and then incrementing the value of the CONCURRENCY_CONTROL_NUMBER column by one prior to issuing an update. If this is done then the update will succeed, provided that the row was not updated by any other transactions in the period between the read and the update operations.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_COMPANY_USER', @level2type=N'COLUMN',@level2name=N'CONCURRENCY_CONTROL_NUMBER'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The user or proxy account that created the record.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_COMPANY_USER', @level2type=N'COLUMN',@level2name=N'DB_CREATE_USERID'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time the record was created.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_COMPANY_USER', @level2type=N'COLUMN',@level2name=N'DB_CREATE_TIMESTAMP'
@@ -663,7 +664,6 @@ EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'A user who has
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'GUID of the user, coming from bceid or bcsc' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_USER', @level2type=N'COLUMN',@level2name=N'USER_GUID'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'User''s username as set in bceid or bcsc' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_USER', @level2type=N'COLUMN',@level2name=N'USERNAME'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Origin of the user, whether bceid, business bceid, or bcsc (FK to directory table)' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_USER', @level2type=N'COLUMN',@level2name=N'USER_DIRECTORY'
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'User''s current status in the onRouteBC system, FK into the user status table' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_USER', @level2type=N'COLUMN',@level2name=N'USER_STATUS_TYPE'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID of the contact record associated with this user (FK to the contact table)' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_USER', @level2type=N'COLUMN',@level2name=N'CONTACT_ID'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Authorization group of the user outside the context of a company. For public users this will be a limited group, for internal (IDIR) staff users this could grant more privileges, e.g. for all companies.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_USER', @level2type=N'COLUMN',@level2name=N'USER_AUTH_GROUP_TYPE'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Application code is responsible for retrieving the row and then incrementing the value of the CONCURRENCY_CONTROL_NUMBER column by one prior to issuing an update. If this is done then the update will succeed, provided that the row was not updated by any other transactions in the period between the read and the update operations.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_USER', @level2type=N'COLUMN',@level2name=N'CONCURRENCY_CONTROL_NUMBER'

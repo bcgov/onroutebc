@@ -10,6 +10,7 @@ import { AutoMap } from '@automapper/classes';
 import { Company } from '../../company/entities/company.entity';
 import { User } from './user.entity';
 import { UserAuthGroup } from '../../../../common/enum/user-auth-group.enum';
+import { UserStatus } from 'src/common/enum/user-status.enum';
 
 @Entity({ name: 'ORBC_COMPANY_USER' })
 export class CompanyUser extends Base {
@@ -51,4 +52,19 @@ export class CompanyUser extends Base {
   @ManyToOne(() => User, (user) => user.companyUsers)
   @JoinColumn({ name: 'USER_GUID' })
   public user: User;
+
+  /**
+   * The status of the user in the system. It is an enum of UserStatus type and
+   * has a default value of 'ACTIVE'.
+   */
+  @AutoMap()
+  @Column({
+    type: 'simple-enum',
+    enum: UserStatus,
+    length: 10,
+    name: 'USER_STATUS_TYPE',
+    default: 'ACTIVE',
+    nullable: false,
+  })
+  statusCode: UserStatus;
 }

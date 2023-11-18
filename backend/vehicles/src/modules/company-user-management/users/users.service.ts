@@ -74,6 +74,7 @@ export class UsersService {
     //Comment Begin: Business BCeID validation.
     //In case of busines bceid, validate that the user's bceid matches the company bceid.
     //If matches then create user else throw error.
+    console.log('current user is ',currentUser)
     if (currentUser.bceid_business_guid) {
       const company = await this.companyService.findOneByCompanyGuid(
         currentUser.bceid_business_guid,
@@ -231,7 +232,10 @@ export class UsersService {
   ): Promise<UpdateResult> {
     const user = new User();
     user.userGUID = userGUID;
-    user.statusCode = statusCode;
+    const index = user.companyUsers.findIndex(
+      (i) => i.user.userGUID === userGUID,
+    );
+    user.companyUsers[index].statusCode = statusCode;
     user.updatedUserGuid = currentUser.userGUID;
     user.updatedDateTime = new Date();
     user.updatedUser = currentUser.userName;
