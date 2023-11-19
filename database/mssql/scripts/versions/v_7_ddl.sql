@@ -65,8 +65,8 @@ CREATE TABLE [permit].[ORBC_PAYMENT_METHOD_TYPE](
 ) ON [PRIMARY]
 GO
 
-CREATE TABLE [permit].[ORBC_PAYMENT_TYPE](
-	[PAYMENT_TYPE] [varchar] (5) NOT NULL,
+CREATE TABLE [permit].[ORBC_PAYMENT_CARD_TYPE](
+	[PAYMENT_CARD_TYPE] [varchar] (5) NOT NULL,
 	[NAME] [varchar] (20) NOT NULL,
 	[DESCRIPTION] [varchar] (50) NULL,
 	[APP_CREATE_TIMESTAMP] [datetime2](7) DEFAULT (getutcdate()),
@@ -82,9 +82,9 @@ CREATE TABLE [permit].[ORBC_PAYMENT_TYPE](
 	[DB_CREATE_TIMESTAMP] [datetime2](7) NULL,
 	[DB_LAST_UPDATE_USERID] [varchar](63) NULL,
 	[DB_LAST_UPDATE_TIMESTAMP] [datetime2](7) NULL,
- CONSTRAINT [ORBC_PAYMENT_TYPE_PK] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [ORBC_PAYMENT_CARD_TYPE_PK] PRIMARY KEY CLUSTERED 
 (
-	[PAYMENT_TYPE] ASC
+	[PAYMENT_CARD_TYPE] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
@@ -93,7 +93,7 @@ CREATE TABLE [permit].[ORBC_TRANSACTION](
 	[TRANSACTION_ID] [bigint] IDENTITY(20000000,1) NOT NULL,
 	[TRANSACTION_TYPE] [varchar] (3) NOT NULL,
 	[PAYMENT_METHOD_TYPE] [varchar] (15) NOT NULL,
-	[PAYMENT_TYPE] [varchar] (5) NULL,
+	[PAYMENT_CARD_TYPE] [varchar] (5) NULL,
 	[TOTAL_TRANSACTION_AMOUNT] [decimal] (9, 2) NOT NULL,
 	[TRANSACTION_SUBMIT_DATE] [datetime2](7) NOT NULL,
 	[TRANSACTION_ORDER_NUMBER] [varchar](30) NOT NULL,
@@ -184,12 +184,11 @@ CREATE TABLE [permit].[ORBC_PERMIT_TRANSACTION](
 GO
 
 
-INSERT [permit].[ORBC_PAYMENT_TYPE] ([PAYMENT_TYPE], [NAME], [DESCRIPTION], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'AM', N'Amex', N'AMEX', N'dbo', GETUTCDATE(), N'dbo', GETUTCDATE())
-INSERT [permit].[ORBC_PAYMENT_TYPE] ([PAYMENT_TYPE], [NAME], [DESCRIPTION], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'DB', N'Debit', N'Debit', N'dbo', GETUTCDATE(), N'dbo', GETUTCDATE())
-INSERT [permit].[ORBC_PAYMENT_TYPE] ([PAYMENT_TYPE], [NAME], [DESCRIPTION], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'MC', N'Mastercard', N'Mastercard', N'dbo', GETUTCDATE(), N'dbo', GETUTCDATE())
-INSERT [permit].[ORBC_PAYMENT_TYPE] ([PAYMENT_TYPE], [NAME], [DESCRIPTION], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'VI', N'Visa', N'Visa', N'dbo', GETUTCDATE(), N'dbo', GETUTCDATE())
-INSERT [permit].[ORBC_PAYMENT_TYPE] ([PAYMENT_TYPE], [NAME], [DESCRIPTION], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'PV', N'Visa (Debit)', N'Visa (Debit)', N'dbo', GETUTCDATE(), N'dbo', GETUTCDATE())
-INSERT [permit].[ORBC_PAYMENT_TYPE] ([PAYMENT_TYPE], [NAME], [DESCRIPTION], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'MD', N'Mastercard (Debit)', N'Mastercard (Debit)', N'dbo', GETUTCDATE(), N'dbo', GETUTCDATE())
+INSERT [permit].[ORBC_PAYMENT_CARD_TYPE] ([PAYMENT_CARD_TYPE], [NAME], [DESCRIPTION], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'AM', N'Amex', N'AMEX', N'dbo', GETUTCDATE(), N'dbo', GETUTCDATE())
+INSERT [permit].[ORBC_PAYMENT_CARD_TYPE] ([PAYMENT_CARD_TYPE], [NAME], [DESCRIPTION], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'MC', N'Mastercard', N'Mastercard', N'dbo', GETUTCDATE(), N'dbo', GETUTCDATE())
+INSERT [permit].[ORBC_PAYMENT_CARD_TYPE] ([PAYMENT_CARD_TYPE], [NAME], [DESCRIPTION], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'VI', N'Visa', N'Visa', N'dbo', GETUTCDATE(), N'dbo', GETUTCDATE())
+INSERT [permit].[ORBC_PAYMENT_CARD_TYPE] ([PAYMENT_CARD_TYPE], [NAME], [DESCRIPTION], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'PV', N'Visa (Debit)', N'Visa (Debit)', N'dbo', GETUTCDATE(), N'dbo', GETUTCDATE())
+INSERT [permit].[ORBC_PAYMENT_CARD_TYPE] ([PAYMENT_CARD_TYPE], [NAME], [DESCRIPTION], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'MD', N'Mastercard (Debit)', N'Mastercard (Debit)', N'dbo', GETUTCDATE(), N'dbo', GETUTCDATE())
 
 INSERT [permit].[ORBC_PAYMENT_METHOD_TYPE] ([PAYMENT_METHOD_TYPE], [NAME], [DESCRIPTION], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'WEB', N'Web', NULL, N'dbo', GETUTCDATE(), N'dbo', GETUTCDATE())
 INSERT [permit].[ORBC_PAYMENT_METHOD_TYPE] ([PAYMENT_METHOD_TYPE], [NAME], [DESCRIPTION], [DB_CREATE_USERID], [DB_CREATE_TIMESTAMP], [DB_LAST_UPDATE_USERID], [DB_LAST_UPDATE_TIMESTAMP]) VALUES (N'ICEPAY', N'IcePay', NULL, N'dbo', GETUTCDATE(), N'dbo', GETUTCDATE())
@@ -210,8 +209,8 @@ ALTER TABLE [permit].[ORBC_RECEIPT] ADD  CONSTRAINT [ORBC_RECEIPT_DB_LAST_UPDATE
 ALTER TABLE [permit].[ORBC_RECEIPT] ADD  CONSTRAINT [ORBC_RECEIPT_DB_LAST_UPDATE_TIMESTAMP_DEF]  DEFAULT (getutcdate()) FOR [DB_LAST_UPDATE_TIMESTAMP]
 ALTER TABLE [permit].[ORBC_TRANSACTION]  WITH CHECK ADD  CONSTRAINT [ORBC_TRANSACTION_PAYMENT_METHOD_FK] FOREIGN KEY([PAYMENT_METHOD_TYPE])
 REFERENCES [permit].[ORBC_PAYMENT_METHOD_TYPE] ([PAYMENT_METHOD_TYPE])
-ALTER TABLE [permit].[ORBC_TRANSACTION]  WITH CHECK ADD  CONSTRAINT [ORBC_TRANSACTION_PAYMENT_TYPE_FK] FOREIGN KEY([PAYMENT_TYPE])
-REFERENCES [permit].[ORBC_PAYMENT_TYPE] ([PAYMENT_TYPE])
+ALTER TABLE [permit].[ORBC_TRANSACTION]  WITH CHECK ADD  CONSTRAINT [ORBC_TRANSACTION_CARD_TYPE_FK] FOREIGN KEY([PAYMENT_CARD_TYPE])
+REFERENCES [permit].[ORBC_PAYMENT_CARD_TYPE] ([PAYMENT_CARD_TYPE])
 ALTER TABLE [permit].[ORBC_TRANSACTION]  WITH CHECK ADD  CONSTRAINT [ORBC_TRANSACTION_TYPE_FK] FOREIGN KEY([TRANSACTION_TYPE])
 REFERENCES [permit].[ORBC_TRANSACTION_TYPE] ([TRANSACTION_TYPE])
 ALTER TABLE [permit].[ORBC_PERMIT_TRANSACTION]  WITH CHECK ADD  CONSTRAINT [ORBC_PERMIT_TRANSACTION_PERMIT_ID_FK] FOREIGN KEY([PERMIT_ID])
@@ -225,6 +224,9 @@ GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Primary key for payment method metadata record' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PAYMENT_METHOD_TYPE', @level2type=N'COLUMN',@level2name=N'PAYMENT_METHOD_TYPE'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Payment method name' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PAYMENT_METHOD_TYPE', @level2type=N'COLUMN',@level2name=N'NAME'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Payment method description' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PAYMENT_METHOD_TYPE', @level2type=N'COLUMN',@level2name=N'DESCRIPTION'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Primary key for card type metadata record' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PAYMENT_CARD_TYPE', @level2type=N'COLUMN',@level2name=N'PAYMENT_CARD_TYPE'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Card name' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PAYMENT_CARD_TYPE', @level2type=N'COLUMN',@level2name=N'NAME'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Card description' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PAYMENT_CARD_TYPE', @level2type=N'COLUMN',@level2name=N'DESCRIPTION'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Primary key for the transaction metadata record' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_TRANSACTION', @level2type=N'COLUMN',@level2name=N'TRANSACTION_ID'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The original value sent to indicate the type of transaction to perform' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_TRANSACTION', @level2type=N'COLUMN',@level2name=N'TRANSACTION_TYPE'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The value of trnOrderNumber submitted in the transaction request' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_TRANSACTION', @level2type=N'COLUMN',@level2name=N'TRANSACTION_ORDER_NUMBER'
@@ -238,6 +240,7 @@ EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and t
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Card verification match ID' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_TRANSACTION', @level2type=N'COLUMN',@level2name=N'PG_CVD_ID'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'2 characters that Bambora sends back references interac online transaction or credit card transaction' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_TRANSACTION', @level2type=N'COLUMN',@level2name=N'PG_PAYMENT_METHOD'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Payment method identifier of the user selected payment method' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_TRANSACTION', @level2type=N'COLUMN',@level2name=N'PAYMENT_METHOD_TYPE'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Card identifier of the user selected payment card' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_TRANSACTION', @level2type=N'COLUMN',@level2name=N'PAYMENT_CARD_TYPE'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The message id references a detailed approved/declined transaction response message' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_TRANSACTION', @level2type=N'COLUMN',@level2name=N'PG_MESSAGE_ID'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'A basic approved/declined message which may be displayed to the customer on a confirmation page' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_TRANSACTION', @level2type=N'COLUMN',@level2name=N'PG_MESSAGE_TEXT'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Permit ID relates to a transaction' , @level0type=N'SCHEMA',@level0name=N'permit', @level1type=N'TABLE',@level1name=N'ORBC_PERMIT_TRANSACTION', @level2type=N'COLUMN',@level2name=N'PERMIT_ID'

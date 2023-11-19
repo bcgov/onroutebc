@@ -6,10 +6,18 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { TransactionProfile } from './profile/transaction.profile';
 import { PermitTransaction } from './entities/permit-transaction.entity';
 import { Receipt } from './entities/receipt.entity';
+import { PaymentCardType } from './entities/payment-card-type.entity';
+import { PaymentMethodType } from './entities/payment-method-type.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Transaction, PermitTransaction, Receipt]),
+    TypeOrmModule.forFeature([
+      Transaction,
+      PermitTransaction,
+      Receipt,
+      PaymentCardType,
+      PaymentMethodType,
+    ]),
   ],
   controllers: [PaymentController],
   providers: [PaymentService, TransactionProfile],

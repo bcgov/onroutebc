@@ -17,10 +17,7 @@ import { IUserJWT } from 'src/common/interface/user-jwt.interface';
 import { callDatabaseSequence } from 'src/common/helper/database.helper';
 import { Permit } from '../permit/entities/permit.entity';
 import { ApplicationStatus } from '../../common/enum/application-status.enum';
-import {
-  PaymentMethodType,
-  PaymentMethodTypeReport,
-} from '../../common/enum/payment-method-type.enum';
+import { PaymentMethodType as PaymentMethodTypeEnum } from '../../common/enum/payment-method-type.enum';
 import { TransactionType } from '../../common/enum/transaction-type.enum';
 
 import { ReadPaymentGatewayTransactionDto } from './dto/response/read-payment-gateway-transaction.dto';
@@ -39,6 +36,8 @@ import {
 } from '../../common/constants/vehicles.constant';
 import { validateHash } from 'src/common/helper/validateHash.helper';
 import { UpdatePaymentGatewayTransactionDto } from './dto/request/update-payment-gateway-transaction.dto';
+import { PaymentCardType } from './entities/payment-card-type.entity';
+import { PaymentMethodType } from './entities/payment-method-type.entity';
 
 @Injectable()
 export class PaymentService {
@@ -46,6 +45,10 @@ export class PaymentService {
     private dataSource: DataSource,
     @InjectRepository(Transaction)
     private transactionRepository: Repository<Transaction>,
+    @InjectRepository(PaymentMethodType)
+    private paymentMethodTypeRepository: Repository<PaymentMethodType>,
+    @InjectRepository(PaymentCardType)
+    private paymentCardTypeRepository: Repository<PaymentCardType>,
     @InjectMapper() private readonly classMapper: Mapper,
     private readonly dopsService: DopsService,
   ) {}
@@ -164,17 +167,17 @@ export class PaymentService {
   }
 
   private isWebTransactionPurchase(
-    paymentMethod: PaymentMethodType,
+    paymentMethod: PaymentMethodTypeEnum,
     transactionType: TransactionType,
   ) {
     return (
-      paymentMethod == PaymentMethodType.WEB &&
+      paymentMethod == PaymentMethodTypeEnum.WEB &&
       transactionType == TransactionType.PURCHASE
     );
   }
 
   private assertApplicationInProgress(
-    paymentMethod: PaymentMethodType,
+    paymentMethod: PaymentMethodTypeEnum,
     transactionType: TransactionType,
     permitStatus: ApplicationStatus,
   ) {
@@ -244,7 +247,7 @@ export class PaymentService {
         });
 
         this.assertApplicationInProgress(
-          newTransaction.paymentMethodId,
+          newTransaction.paymentMethodTypeCode,
           newTransaction.transactionTypeId,
           existingApplication.permitStatus,
         );
@@ -267,7 +270,7 @@ export class PaymentService {
 
         if (
           this.isWebTransactionPurchase(
-            newTransaction.paymentMethodId,
+            newTransaction.paymentMethodTypeCode,
             newTransaction.transactionTypeId,
           )
         ) {
@@ -292,7 +295,7 @@ export class PaymentService {
       let url: string = undefined;
       if (
         this.isWebTransactionPurchase(
-          createdTransaction.paymentMethodId,
+          createdTransaction.paymentMethodTypeCode,
           createdTransaction.transactionTypeId,
         )
       ) {
@@ -526,12 +529,12 @@ export class PaymentService {
         issuedBy: createPaymentDetailedReportDto.issuedBy.join(', '),
         runDate: convertUtcToPt(new Date(), 'MMM. D, YYYY, hh:mm A Z'),
         permitType: 'All Permit Types',
-        paymentMethod:
-          createPaymentDetailedReportDto.paymentMethodType.includes(
-            PaymentMethodTypeReport.ALL,
-          )
-            ? 'All Payment Methods'
-            : paymentMethods.join(', '),
+        // paymentMethod:
+        //   createPaymentDetailedReportDto.paymentMethodType.includes(
+        //     PaymentMethodTypeReport.ALL,
+        //   )
+        //     ? 'All Payment Methods'
+        //     : paymentMethods.join(', '),
         timePeriod: `${convertUtcToPt(
           createPaymentDetailedReportDto.fromDateTime,
           'MMM. D, YYYY, hh:mm A Z',
@@ -641,5 +644,13 @@ export class PaymentService {
       `&ref2=${ref2}` +
       `&pbcTxnNumber=${pbcTxnNumber}`;
     return validateHash(query, hashValue);
+  }
+
+  async findAllPaymentMethodEntities(): Promise<PaymentMethodType[]> {
+    return await this.paymentMethodTypeRepository.find();
+  }
+
+  async findAllPaymentTypeEntities(): Promise<PaymentCardType[]> {
+    return await this.paymentCardTypeRepository.find();
   }
 }
