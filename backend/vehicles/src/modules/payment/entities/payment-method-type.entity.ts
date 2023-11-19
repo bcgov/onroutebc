@@ -2,7 +2,7 @@ import { Entity, Column, PrimaryColumn } from 'typeorm';
 import { AutoMap } from '@automapper/classes';
 
 @Entity({ name: 'permit.ORBC_PAYMENT_METHOD_TYPE' })
-export class PaymentMethod {
+export class PaymentMethodType {
   @AutoMap()
   @PrimaryColumn({ name: 'PAYMENT_METHOD_TYPE', length: 20, nullable: false })
   paymentMethodTypeCode: string;
