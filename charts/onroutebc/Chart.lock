@@ -1,0 +1,12 @@
+dependencies:
+- name: component
+  repository: https://bcgov.github.io/helm-service
+  version: 0.0.18
+- name: component
+  repository: https://bcgov.github.io/helm-service
+  version: 0.0.18
+- name: component
+  repository: https://bcgov.github.io/helm-service
+  version: 0.0.18
+digest: sha256:1edd648b1f303afa92173217e91c9ad2526db8e607d75887cc5ca966528e7f81
+generated: "2023-11-15T10:18:01.628641726-08:00"
