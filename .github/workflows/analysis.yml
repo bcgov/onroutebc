@@ -14,10 +14,10 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  name: Autobuild
-  uses: github/codeql-action/autobuild@v2
-
   codeql:
+    name: Autobuild
+    uses: github/codeql-action/autobuild@v2
+
     name: CodeQL
     if: github.event_name != 'pull_request' || !github.event.pull_request.draft
     runs-on: ubuntu-22.04
