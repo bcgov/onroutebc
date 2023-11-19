@@ -81,6 +81,7 @@ jobs:
           # Deploy Helm Chart
           helm dependency update
           helm upgrade \
+            --force \
             --set global.autoscaling=${{ inputs.autoscaling }} \
             --set-string global.repository=${{ github.repository }} \
             --set-string global.tag=${{ inputs.target }} \
