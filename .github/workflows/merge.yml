@@ -1,8 +1,8 @@
 name: Merge
 
 on:
-  push:
-    tags: [v*]
+  workflows: [PR Closed]
+    types: [completed]
 
 concurrency:
   group: ${{ github.workflow }}
