@@ -1,7 +1,8 @@
 name: Merge
 
 on:
-  workflows: [PR Closed]
+  workflow_run:
+    workflows: [PR Closed]
     types: [completed]
 
 concurrency:
