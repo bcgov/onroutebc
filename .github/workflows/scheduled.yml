@@ -1,0 +1,113 @@
+name: Scheduled
+
+on:
+  schedule: [cron: "0 11 * * 6"] # 3 AM PST = 12 PM UDT, Saturdays
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  zap_scan:
+    runs-on: ubuntu-latest
+    name: Penetration Tests
+    env:
+      DOMAIN: apps.silver.devops.gov.bc.ca
+      PREFIX: ${{ github.event.repository.name }}-test
+    strategy:
+      matrix:
+        name: [backend, frontend]
+    steps:
+      - name: ZAP Scan
+        uses: zaproxy/action-full-scan@v0.8.0
+        with:
+          allow_issue_writing: true
+          artifact_name: "zap_${{ matrix.name }}"
+          cmd_options: "-a"
+          issue_title: "ZAP: ${{ matrix.name }}"
+          target: https://${{ env.PREFIX }}-${{ matrix.name }}.${{ env.DOMAIN }}
+
+  generate-schema-spy:
+    name: Generate SchemaSpy Documentation
+    runs-on: ubuntu-22.04
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: default
+          POSTGRES_USER: default
+          POSTGRES_PASSWORD: default
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: joshuaavalon/flyway-action@v3.0.0
+        name: Generate SchemaSpy docs for node backend
+        with:
+          url: jdbc:postgresql://postgres:5432/default
+          user: default
+          password: default
+        env:
+          FLYWAY_VALIDATE_MIGRATION_NAMING: true
+          FLYWAY_LOCATIONS: filesystem:./migrations
+          FLYWAY_DEFAULT_SCHEMA: "users"
+
+      - name: Create Output Folder
+        run: |
+          mkdir output
+          chmod a+rwx -R output
+
+      - name: Run Schemaspy
+        run: docker run --network host -v "$PWD/output:/output" schemaspy/schemaspy:6.2.4 -t pgsql -db default -host 127.0.0.1 -port 5432 -u default -p default -schemas users
+      - name: Deploy to Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: output
+          target-folder: schemaspy
+
+  ageOutPRs:
+    name: PR Env Purge
+    env:
+      # https://tecadmin.net/getting-yesterdays-date-in-bash/
+      CUTOFF: "1 week ago"
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Clean up Helm Releases
+        run: |
+          # Clean up Helm Releases
+
+          # Login to OpenShift (NOTE: project command is a safeguard)
+          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ vars.OC_SERVER }}
+          oc project ${{ vars.OC_NAMESPACE }}
+
+          # Echos
+          echo "Delete stale Helm releases"
+          echo "Cutoff: ${{ env.CUTOFF }}"
+
+          # Before date, list of releases
+          BEFORE=$(date +%s -d "${{ env.CUTOFF }}")
+          RELEASES=$(helm ls -aq)
+
+          # If releases, then iterate
+          [ -z "${RELEASES}" ]|| for r in ${RELEASES[@]}; do
+
+            # Get last update and convert the date
+            UPDATED=$(date "+%s" -d <<< echo $(helm status $r -o json | jq -r .info.last_deployed))
+
+            # Compare to cutoff and delete as necessary
+            if [[ ${UPDATED} < ${BEFORE} ]]; then
+              echo -e "\nOlder than cutoff: ${r}"
+              helm uninstall --no-hooks ${r}
+            else
+              echo -e "\nNewer than cutoff: ${r}"
+              echo "No need to delete"
+            fi
+          done

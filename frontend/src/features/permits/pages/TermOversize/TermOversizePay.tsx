@@ -11,6 +11,7 @@ import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { Loading } from "../../../../common/pages/Loading";
 import { useStartTransaction } from "../../hooks/hooks";
 import { TRANSACTION_TYPES } from "../../types/payment.d";
+import { PAYMENT_METHOD_TYPE_CODE } from "../../../../common/types/paymentMethods";
 
 export const TermOversizePay = () => {
   const { applicationData } = useContext(ApplicationContext);
@@ -34,7 +35,7 @@ export const TermOversizePay = () => {
 
     startTransactionMutation.mutate({
       transactionTypeId: TRANSACTION_TYPES.P,
-      paymentMethodId: "1", // Hardcoded value for Web/PayBC, still need to implement payment method (ie payBC, manual, etc)
+      paymentMethodTypeCode: PAYMENT_METHOD_TYPE_CODE.WEB, // Hardcoded value for Web/PayBC, still need to implement payment method (ie payBC, manual, etc)
       applicationDetails: [
         {
           applicationId: applicationData?.permitId,

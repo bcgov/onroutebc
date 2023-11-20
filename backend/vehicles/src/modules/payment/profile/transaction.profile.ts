@@ -12,7 +12,7 @@ import { ReadTransactionDto } from '../dto/response/read-transaction.dto';
 import { CreateTransactionDto } from '../dto/request/create-transaction.dto';
 import { PermitTransaction } from '../entities/permit-transaction.entity';
 import { ReadApplicationTransactionDto } from '../dto/response/read-application-transaction.dto';
-import { UpdatePaymentGatewayTransactionDto } from '../dto/request/read-payment-gateway-transaction.dto';
+import { UpdatePaymentGatewayTransactionDto } from '../dto/request/update-payment-gateway-transaction.dto';
 import { ReadPaymentGatewayTransactionDto } from '../dto/response/read-payment-gateway-transaction.dto';
 
 @Injectable()
@@ -130,6 +130,13 @@ export class TransactionProfile extends AutomapperProfile {
         mapper,
         UpdatePaymentGatewayTransactionDto,
         Transaction,
+        forMember(
+          (d) => d.paymentCardTypeCode,
+          mapFrom((s) => {
+            //Temp stub for Release 1 to map card type returned by gateway to ORBC payment types
+            return s.pgCardType;
+          }),
+        ),
         forMember(
           (transaction) => transaction.updatedUserGuid,
           mapWithArguments((source, { userGUID }) => {

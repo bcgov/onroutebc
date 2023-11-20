@@ -1,11 +1,19 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
-import { ArrayMinSize, IsArray, IsEnum, ValidateNested } from 'class-validator';
+import {
+  ArrayMinSize,
+  IsArray,
+  IsEnum,
+  IsOptional,
+  ValidateNested,
+} from 'class-validator';
 import { TransactionType } from '../../../../common/enum/transaction-type.enum';
 import { PaymentMethodType } from '../../../../common/enum/payment-method-type.enum';
-import { CreateApplicationTransactionDto } from './create-application-transaction.dto';
+
 import { Type } from 'class-transformer';
 import { PaymentGatewayTransactionDto } from '../common/payment-gateway-transaction.dto';
+import { CreateApplicationTransactionDto } from './create-application-transaction.dto copy';
+import { PaymentCardType } from '../../../../common/enum/payment-card-type.enum';
 
 export class CreateTransactionDto extends PaymentGatewayTransactionDto {
   @AutoMap()
@@ -25,7 +33,18 @@ export class CreateTransactionDto extends PaymentGatewayTransactionDto {
     description: 'The identifier of the user selected payment method.',
   })
   @IsEnum(PaymentMethodType)
-  paymentMethodId: PaymentMethodType;
+  paymentMethodTypeCode: PaymentMethodType;
+
+  @AutoMap()
+  @ApiProperty({
+    enum: PaymentCardType,
+    example: PaymentCardType.VISA,
+    description: 'The identifier of the user selected payment type.',
+    required: false,
+  })
+  @IsOptional()
+  @IsEnum(PaymentCardType)
+  paymentCardTypeCode?: PaymentCardType;
 
   @AutoMap()
   @ApiProperty({
