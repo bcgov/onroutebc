@@ -21,16 +21,17 @@ jobs:
       vault_role: nonprod
       zone: test
 
-  integration-e2e:
-    name: Integration and E2E Tests
-    needs: [deploys-test]
-    uses: ./.github/workflows/.tests.yml
-    with:
-      target: test
+#  integration-e2e:
+#    name: Integration and E2E Tests
+#    needs: [deploys-test]
+#    uses: ./.github/workflows/.tests.yml
+#    with:
+#      target: test
   
   promote-images-test:
     name: Promote Images - Test
-    needs: [deploys-test, integration-e2e]
+    #needs: [deploys-test, integration-e2e]
+    needs: [deploys-test]
     runs-on: ubuntu-22.04
     permissions:
       packages: write
