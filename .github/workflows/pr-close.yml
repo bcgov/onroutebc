@@ -57,6 +57,7 @@ jobs:
         #force overwrite instead of failing
         run: |
           git tag ${{ steps.changelog.outputs.tag }} --force 
+
           git push origin --tag
 
   # If merged into main, then handle any image promotions
