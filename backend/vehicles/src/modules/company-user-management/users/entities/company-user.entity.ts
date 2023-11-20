@@ -20,6 +20,12 @@ export class CompanyUser extends Base {
   @AutoMap()
   @PrimaryGeneratedColumn({ type: 'int', name: 'COMPANY_USER_ID' })
   companyUserId: number;
+  /**
+   *  A primary column representing the unique identifier for the user in ORBC.
+   */
+  @AutoMap()
+  @Column({ length: 32, name: 'USER_GUID', nullable: false })
+  userGUID: string;
 
   /**
    * A property that represents the user's auth group, which is an enum of type

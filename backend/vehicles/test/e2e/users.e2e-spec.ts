@@ -27,6 +27,7 @@ import { PendingUsersService } from '../../src/modules/company-user-management/p
 import {
   idirUserEntityMock,
   readRedCompanyAdminUserDtoMock,
+  readRedCompanyCvClientUserDtoMock,
   redCompanyAdminUserEntityMock,
   redCompanyCvClientUserEntityMock,
 } from '../util/mocks/data/user.mock';
@@ -167,7 +168,10 @@ describe('Users (e2e)', () => {
         .get('/users')
         .expect(200);
 
-      expect(response.body).toContainEqual(readRedCompanyAdminUserDtoMock);
+      expect(response.body).toContainEqual([
+        readRedCompanyAdminUserDtoMock,
+        readRedCompanyCvClientUserDtoMock,
+      ]);
     });
   });
 

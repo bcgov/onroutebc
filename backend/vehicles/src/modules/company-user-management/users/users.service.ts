@@ -106,12 +106,16 @@ export class UsersService {
       newCompanyUser.company.companyId = companyId;
       newCompanyUser.user = user;
       newCompanyUser.userAuthGroup = createUserDto.userAuthGroup;
-
       user.companyUsers = [newCompanyUser];
       user = await queryRunner.manager.save(user);
-
+      user = await this.userRepository.findOne({
+        where: { userGUID: user.userGUID },
+        relations: {
+          userContact: true,
+          companyUsers: true,
+        },
+      });
       newUser = await this.classMapper.mapAsync(user, User, ReadUserDto);
-
       await queryRunner.manager.delete(PendingUser, {
         companyId: companyId,
         userName: currentUser.userName,
@@ -231,10 +235,10 @@ export class UsersService {
   ): Promise<UpdateResult> {
     const user = new User();
     user.userGUID = userGUID;
-    const index = user.companyUsers.findIndex(
+    const companyUser = user.companyUsers.filter(
       (i) => i.user.userGUID === userGUID,
     );
-    user.companyUsers[index].statusCode = statusCode;
+    companyUser[0].statusCode = statusCode;
     user.updatedUserGuid = currentUser.userGUID;
     user.updatedDateTime = new Date();
     user.updatedUser = currentUser.userName;
@@ -252,7 +256,7 @@ export class UsersService {
    *
    * @returns A Promise that resolves to an array of {@link User} entities.
    */
-  private async findUsersEntity(userGUID?: string, companyId?: number[]) {
+  async findUsersEntity(userGUID?: string, companyId?: number[]) {
     // Construct the query builder to retrieve user entities and associated data
     return await this.userRepository
       .createQueryBuilder('user')
@@ -301,7 +305,6 @@ export class UsersService {
         undefined,
         companyId?.at(0),
       );
-
       pendingUsersList = await this.classMapper.mapArrayAsync(
         pendingUser,
         ReadPendingUserDto,
@@ -309,7 +312,6 @@ export class UsersService {
       );
     }
     // Map the retrieved user entities to ReadUserDto objects
-
     const readUserDto = await this.classMapper.mapArrayAsync(
       userDetails,
       User,
@@ -344,7 +346,6 @@ export class UsersService {
         companyUsers: true,
       },
     });
-
     const pendingCompanies = await this.pendingUsersService.findPendingUsersDto(
       userName,
     );

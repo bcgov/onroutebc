@@ -231,15 +231,30 @@ export class UsersProfile extends AutomapperProfile {
         forMember(
           (d) => d.userAuthGroup,
           mapFrom((s) => {
-            if (s.companyUsers?.length && s.companyUsers[0]?.userAuthGroup) {
-              //the logic to be revisited if the application decide to support
-              //one user id multiple companies
-              return s.companyUsers[0]?.userAuthGroup;
-            } else {
-              return s.userAuthGroup;
+            if (s.companyUsers?.length) {
+              const companyUser = s.companyUsers.filter((i) => {
+                return i.userGUID === s.userGUID;
+              });
+              if (companyUser[0].userAuthGroup) {
+                return companyUser[0].userAuthGroup;
+              } else {
+                return s.userAuthGroup;
+              }
+            } else return s.userAuthGroup;
+          }),
+        ),
+        forMember(
+          (d) => d.statusCode,
+          mapFrom((s) => {
+            if (s.companyUsers?.length) {
+              const companyUser = s.companyUsers.filter((i) => {
+                return i.userGUID === s.userGUID;
+              });
+              return companyUser[0].statusCode;
             }
           }),
         ),
+
         forMember(
           (d) => d.phone1Extension,
           mapFrom((s) => s.userContact.extension1),
