@@ -1,6 +1,6 @@
-import { PaymentMethodTypeCode } from "../../../../../common/types/paymentMethods";
-import { BamboraPaymentMethod, CardType } from "../../../types/PaymentMethod";
-import { PermitStatus } from "../../../types/PermitStatus";
+import { PaymentCardTypeCode, PaymentMethodTypeCode } from "../../../../../common/types/paymentMethods";
+import { BamboraPaymentMethod } from "../../../types/PaymentMethod";
+import { PermitStatus, PERMIT_STATUSES } from "../../../types/PermitStatus";
 import { PermitsActionResponse } from "../../../types/permit";
 
 export interface VoidPermitFormData {
@@ -12,18 +12,18 @@ export interface VoidPermitFormData {
 }
 
 export interface VoidPermitRequestData {
-  status: Extract<PermitStatus, "VOIDED">;
+  status: Extract<PermitStatus, typeof PERMIT_STATUSES.VOIDED>;
   pgTransactionId?: string;
-  paymentMethodTypeCode: PaymentMethodTypeCode; // hardcoded to "WEB" - Web
+  paymentMethodTypeCode: PaymentMethodTypeCode;
   transactionAmount: number;
   pgTransactionDate?: string;
   pgPaymentMethod?: BamboraPaymentMethod;
-  pgCardType?: CardType;
+  pgCardType?: PaymentCardTypeCode;
   comment: string;
 }
 
 export interface RevokePermitRequestData {
-  status: Extract<PermitStatus, "REVOKED">;
+  status: Extract<PermitStatus, typeof PERMIT_STATUSES.REVOKED>;
   paymentMethodTypeCode: PaymentMethodTypeCode; // hardcoded to "WEB" - Web
   pgPaymentMethod?: BamboraPaymentMethod;
   transactionAmount: 0;
