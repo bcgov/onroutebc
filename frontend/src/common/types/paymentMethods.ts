@@ -206,3 +206,11 @@ export const getPaymentMethod = (
     PAYMENT_CARD_TYPE_DISPLAY[paymentCard],
   );
 };
+
+export const PAYMENT_GATEWAY_METHODS = {
+  CC: "CC", // Credit Card Transaction
+  IO: "IO", // Interac Online Transaction
+} as const;
+
+export type PaymentGatewayMethod =
+  (typeof PAYMENT_GATEWAY_METHODS)[keyof typeof PAYMENT_GATEWAY_METHODS];

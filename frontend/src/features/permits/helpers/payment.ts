@@ -1,14 +1,14 @@
 import { PayBCPaymentDetails } from "../types/payment";
 import { parseRedirectUriPath } from "../pages/Payment/PaymentRedirect";
+import { 
+  PAYMENT_GATEWAY_METHODS, 
+  PaymentGatewayMethod, 
+} from "../../../common/types/paymentMethods";
+
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
 } from "../../../common/helpers/util";
-
-import {
-  BAMBORA_PAYMENT_METHODS,
-  BamboraPaymentMethod,
-} from "../types/PaymentMethod";
 
 /**
  * Extracts PayBCPaymentDetails from the query parameters of a URL.
@@ -37,9 +37,9 @@ export const getPayBCPaymentDetails = (
     messageId: "1", // getDefaultRequiredVal("", params.get("messageId")),
     messageText: getDefaultRequiredVal("", params.get("messageText")),
     paymentMethod: getDefaultRequiredVal(
-      BAMBORA_PAYMENT_METHODS.CC,
+      PAYMENT_GATEWAY_METHODS.CC,
       params.get("paymentMethod"),
-    ) as BamboraPaymentMethod,
+    ) as PaymentGatewayMethod,
     ref1: getDefaultRequiredVal("", params.get("ref1")),
     ref2: getDefaultRequiredVal("", params.get("ref2")),
     ref3: getDefaultRequiredVal("", params.get("ref3")),

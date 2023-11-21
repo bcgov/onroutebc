@@ -1,5 +1,8 @@
-import { PaymentCardTypeCode, PaymentMethodTypeCode } from "../../../common/types/paymentMethods";
-import { BamboraPaymentMethod } from "./PaymentMethod";
+import { 
+  PaymentCardTypeCode, 
+  PaymentMethodTypeCode,
+  PaymentGatewayMethod,
+} from "../../../common/types/paymentMethods";
 
 export interface PayBCPaymentDetails {
   authCode: string;
@@ -14,7 +17,7 @@ export interface PayBCPaymentDetails {
   trnApproved: number;
   messageId: string;
   messageText: string;
-  paymentMethod: BamboraPaymentMethod;
+  paymentMethod: PaymentGatewayMethod;
   ref1: string;
   ref2: string;
   ref3: string;
@@ -53,7 +56,7 @@ export interface PaymentGatewayData {
   pgCardType: PaymentCardTypeCode;
   pgTransactionDate: string;
   pgCvdId: number;
-  pgPaymentMethod: BamboraPaymentMethod;
+  pgPaymentMethod: PaymentGatewayMethod;
   pgMessageId: number;
   pgMessageText: string;
 }
