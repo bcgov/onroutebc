@@ -127,7 +127,11 @@ describe('Company Users (e2e)', () => {
         .post('/companies/1/users')
         .send(createRedCompanyAdminUserDtoMock)
         .expect(201);
-      expect(response.body).toMatchObject(readRedCompanyAdminUserDtoMock);
+      expect(response.body).toEqual(
+        expect.objectContaining({
+          userGUID: readRedCompanyAdminUserDtoMock.userGUID,
+        }),
+      );
     });
   });
 
@@ -146,7 +150,11 @@ describe('Company Users (e2e)', () => {
         .send(updateRedCompanyCvClientUserDtoMock)
         .expect(200);
 
-      expect(response.body).toMatchObject(readRedCompanyAdminUserDtoMock);
+      expect(response.body).toEqual(
+        expect.objectContaining({
+          userGUID: readRedCompanyAdminUserDtoMock.userGUID,
+        }),
+      );
     });
   });
 

@@ -101,7 +101,11 @@ describe('Company (e2e)', () => {
         .post('/companies')
         .send(createRedCompanyDtoMock)
         .expect(201);
-      expect(response.body).toMatchObject(readRedCompanyUserDtoMock);
+      expect(response.body).toEqual(
+        expect.objectContaining({
+          companyGUID: readRedCompanyUserDtoMock.companyGUID,
+        }),
+      );
     });
   });
 

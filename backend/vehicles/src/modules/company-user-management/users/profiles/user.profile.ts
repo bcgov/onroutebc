@@ -231,11 +231,14 @@ export class UsersProfile extends AutomapperProfile {
         forMember(
           (d) => d.userAuthGroup,
           mapFrom((s) => {
-            if (s.companyUsers?.length) {
+            if (
+              s.companyUsers?.length > 0 &&
+              s.companyUsers[0]?.userAuthGroup
+            ) {
               const companyUser = s.companyUsers.filter((i) => {
                 return i.userGUID === s.userGUID;
               });
-              if (companyUser[0].userAuthGroup) {
+              if (companyUser?.length) {
                 return companyUser[0].userAuthGroup;
               } else {
                 return s.userAuthGroup;
@@ -250,7 +253,7 @@ export class UsersProfile extends AutomapperProfile {
               const companyUser = s.companyUsers.filter((i) => {
                 return i.userGUID === s.userGUID;
               });
-              return companyUser[0].statusCode;
+              if (companyUser?.length) return companyUser[0].statusCode;
             }
           }),
         ),

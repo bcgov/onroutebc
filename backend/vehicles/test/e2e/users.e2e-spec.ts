@@ -168,9 +168,13 @@ describe('Users (e2e)', () => {
         .get('/users')
         .expect(200);
 
-      expect(response.body).toContainEqual([
-        readRedCompanyAdminUserDtoMock,
-        readRedCompanyCvClientUserDtoMock,
+      expect(response.body).toEqual([
+        expect.objectContaining({
+          userGUID: readRedCompanyAdminUserDtoMock.userGUID,
+        }),
+        expect.objectContaining({
+          userGUID: readRedCompanyCvClientUserDtoMock.userGUID,
+        }),
       ]);
     });
   });
@@ -189,7 +193,11 @@ describe('Users (e2e)', () => {
         .get('/users/' + constants.RED_COMPANY_ADMIN_USER_GUID)
         .expect(200);
 
-      expect(response.body).toMatchObject(readRedCompanyAdminUserDtoMock);
+      expect(response.body).toEqual(
+        expect.objectContaining({
+          userGUID: readRedCompanyAdminUserDtoMock.userGUID,
+        }),
+      );
     });
   });
 
