@@ -30,6 +30,7 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { getFromCache } from '../../../common/helper/cache.helper';
 import { CacheKey } from '../../../common/enum/cache-key.enum';
+import { UserStatus } from 'src/common/enum/user-status.enum';
 
 @Injectable()
 export class CompanyService {
@@ -111,6 +112,7 @@ export class CompanyService {
       newCompanyUser.company.companyId = newCompany.companyId;
       newCompanyUser.user = user;
       newCompanyUser.userAuthGroup = UserAuthGroup.COMPANY_ADMINISTRATOR;
+      newCompanyUser.statusCode = UserStatus.ACTIVE;
 
       user.companyUsers = [newCompanyUser];
       user = await queryRunner.manager.save(user);

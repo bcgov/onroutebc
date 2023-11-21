@@ -108,13 +108,6 @@ export class UsersService {
       newCompanyUser.userAuthGroup = createUserDto.userAuthGroup;
       user.companyUsers = [newCompanyUser];
       user = await queryRunner.manager.save(user);
-      user = await this.userRepository.findOne({
-        where: { userGUID: user.userGUID },
-        relations: {
-          userContact: true,
-          companyUsers: true,
-        },
-      });
       newUser = await this.classMapper.mapAsync(user, User, ReadUserDto);
       await queryRunner.manager.delete(PendingUser, {
         companyId: companyId,
@@ -235,10 +228,8 @@ export class UsersService {
   ): Promise<UpdateResult> {
     const user = new User();
     user.userGUID = userGUID;
-    const companyUser = user.companyUsers.filter(
-      (i) => i.user.userGUID === userGUID,
-    );
-    companyUser[0].statusCode = statusCode;
+    user.companyUsers = [new CompanyUser()];
+    user.companyUsers[0].statusCode = statusCode;
     user.updatedUserGuid = currentUser.userGUID;
     user.updatedDateTime = new Date();
     user.updatedUser = currentUser.userName;
