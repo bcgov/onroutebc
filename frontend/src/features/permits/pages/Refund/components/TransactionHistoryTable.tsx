@@ -4,6 +4,7 @@ import MaterialReactTable, { MRT_ColumnDef } from "material-react-table";
 import "./TransactionHistoryTable.scss";
 import { PermitHistory } from "../../../types/PermitHistory";
 import { getPaymentMethod } from "../../../../../common/types/paymentMethods";
+import { TRANSACTION_TYPES } from "../../../types/payment.d";
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
@@ -38,6 +39,10 @@ export const TransactionHistoryTable = ({
       },
       {
         accessorFn: (originalRow) => {
+          if (originalRow.transactionTypeId === TRANSACTION_TYPES.Z) {
+            return "NA";
+          }
+
           return getPaymentMethod(
             originalRow.paymentMethodTypeCode,
             originalRow.paymentCardTypeCode,
@@ -59,7 +64,7 @@ export const TransactionHistoryTable = ({
       },
       {
         accessorFn: (originalRow) =>
-          getDefaultRequiredVal("NA", originalRow.pgTransactionId),
+          getDefaultRequiredVal(originalRow.transactionOrderNumber, originalRow.pgTransactionId),
         id: "providerTransactionId",
         header: "Transaction ID",
         muiTableHeadCellProps: {
