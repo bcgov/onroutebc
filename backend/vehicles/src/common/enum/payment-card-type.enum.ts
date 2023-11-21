@@ -4,4 +4,5 @@ export enum PaymentCardType {
   VISA = 'VI',
   VISA_DEBIT = 'PV',
   MASTERCARD_DEBIT = 'MD',
+  DEBIT = 'DB',
 }

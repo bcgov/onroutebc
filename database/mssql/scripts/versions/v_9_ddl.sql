@@ -343,17 +343,17 @@ INSERT INTO
 SELECT 
 	p.ID,
 	CONCAT( 
-		'{"companyName":"', c.LEGAL_NAME, '",',
-		'"clientNumber":"', c.CLIENT_NUMBER, '",',
+		'{"companyName":"', STRING_ESCAPE(c.LEGAL_NAME, 'json'), '",',
+		'"clientNumber":"', STRING_ESCAPE(c.CLIENT_NUMBER, 'json'), '",',
 		'"startDate":"', i.START_DATE, '",',
 		'"expiryDate":"', i.END_DATE, '",',
 		'"permitDuration":', DATEDIFF(day, i.START_DATE, i.END_DATE) + 1, ',',
 		'"vehicleDetails":{',
-			'"plate":"', i.PLATE, '",',
-			'"vin":"', i.VIN, '"',
+			'"plate":"', STRING_ESCAPE(i.PLATE, 'json'), '",',
+			'"vin":"', STRING_ESCAPE(i.VIN, 'json'), '"',
 		'}}')
 FROM
-	tps.ORBC_TPS_MIGRATED_PERMITS i,
+	Inserted i,
 	permit.ORBC_PERMIT p,
 	dbo.ORBC_COMPANY c
 WHERE
