@@ -1,4 +1,5 @@
-import { BamboraPaymentMethod, CardType } from "./PaymentMethod";
+import { PaymentCardTypeCode, PaymentMethodTypeCode } from "../../../common/types/paymentMethods";
+import { BamboraPaymentMethod } from "./PaymentMethod";
 import { TransactionType } from "./payment";
 
 export interface PermitHistory {
@@ -9,7 +10,8 @@ export interface PermitHistory {
   transactionOrderNumber: string;
   pgTransactionId: string | null;
   pgPaymentMethod: BamboraPaymentMethod | null;
-  pgCardType: CardType | null;
+  paymentCardTypeCode: PaymentCardTypeCode | null;
+  paymentMethodTypeCode: PaymentMethodTypeCode;
   transactionTypeId: TransactionType;
   permitId: number;
   transactionSubmitDate: string | null;

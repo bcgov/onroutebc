@@ -2,15 +2,16 @@ import { useEffect, useRef } from "react";
 import { Navigate, useSearchParams } from "react-router-dom";
 
 import { getPayBCPaymentDetails } from "../../helpers/payment";
-import {
-  CompleteTransactionRequestData,
-  PayBCPaymentDetails,
-} from "../../types/payment";
 import { Loading } from "../../../../common/pages/Loading";
 import { useCompleteTransaction, useIssuePermits } from "../../hooks/hooks";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { DATE_FORMATS, toUtc } from "../../../../common/helpers/formatDate";
 import { APPLICATIONS_ROUTES } from "../../../../routes/constants";
+import { PaymentCardTypeCode } from "../../../../common/types/paymentMethods";
+import {
+  CompleteTransactionRequestData,
+  PayBCPaymentDetails,
+} from "../../types/payment";
 
 const PERMIT_ID_DELIM = ",";
 const PATH_DELIM = "?";
@@ -148,15 +149,24 @@ export const PaymentRedirect = () => {
 const mapTransactionDetails = (
   paymentResponse: PayBCPaymentDetails,
 ): CompleteTransactionRequestData => {
-  return {
+  const isValidCardType = paymentResponse.cardType !== "";
+  const transactionDetails = {
     pgTransactionId: paymentResponse.trnId,
     pgApproved: Number(paymentResponse.trnApproved),
     pgAuthCode: paymentResponse.authCode,
-    pgCardType: paymentResponse.cardType,
     pgTransactionDate: toUtc(paymentResponse.trnDate, DATE_FORMATS.ISO8601),
     pgCvdId: Number(paymentResponse.cvdId),
     pgPaymentMethod: paymentResponse.paymentMethod,
     pgMessageId: Number(paymentResponse.messageId),
     pgMessageText: paymentResponse.messageText,
+  };
+
+  if (!isValidCardType) {
+    return transactionDetails;
+  }
+
+  return {
+    ...transactionDetails,
+    pgCardType: paymentResponse.cardType as PaymentCardTypeCode,
   };
 };
