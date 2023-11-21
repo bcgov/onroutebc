@@ -123,15 +123,27 @@ export class UsersController {
     isArray: true,
   })
   @ApiQuery({ name: 'companyId', required: false })
+  @ApiQuery({ name: 'permitIssuerPPCUser', required: false })
   @Roles(Role.READ_USER)
   @Get()
   async findAll(
     @Req() request: Request,
     @Query('companyId') companyId?: number,
+    @Query('permitIssuerPPCUser') permitIssuerPPCUser?: boolean,
   ): Promise<ReadUserDto[]> {
     const currentUser = request.user as IUserJWT;
-    if (currentUser.identity_provider === IDP.IDIR && !companyId) {
+    if (
+      currentUser.identity_provider === IDP.IDIR &&
+      !companyId &&
+      !permitIssuerPPCUser
+    ) {
       throw new BadRequestException();
+    } else if (
+      currentUser.identity_provider === IDP.IDIR &&
+      !companyId &&
+      permitIssuerPPCUser
+    ) {
+      return await this.userService.findPermitIssuerPPCUser();
     }
 
     const companyIdList = companyId
