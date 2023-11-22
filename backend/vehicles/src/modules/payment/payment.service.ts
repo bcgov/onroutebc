@@ -51,6 +51,7 @@ import { PermitTypeReport } from '../../common/enum/permit-type.enum';
 import { IPaymentReportDataDetails } from '../../common/interface/payment-report-data-details.interface';
 import { IPaymentReportData } from '../../common/interface/payment-report-data.interface';
 import { PermitType } from '../permit/entities/permit-type.entity';
+import { CreatePaymentSummaryReportDto } from './dto/request/create-payment-summary-report.dto';
 
 @Injectable()
 export class PaymentService {
@@ -690,99 +691,6 @@ export class PaymentService {
     }
   }
 
-  async createPaymentDetailedReport(
-    currentUser: IUserJWT,
-    createPaymentDetailedReportDto: CreatePaymentDetailedReportDto,
-    res: Response,
-  ): Promise<void> {
-    const paymentCodes: IPaymentCode[] =
-      await this.getConsolidatedPaymentMethodFromDto(
-        createPaymentDetailedReportDto,
-      );
-
-    const permitTypes: PermitTypeReport[] =
-      createPaymentDetailedReportDto.permitType;
-
-    permitTypes.sort((a, b) => a.valueOf().localeCompare(b.valueOf()));
-
-    const formatSummaryPermitDopsInput =
-      await this.formatPermitSummaryForDopsInput(
-        paymentCodes,
-        permitTypes,
-        createPaymentDetailedReportDto,
-      );
-
-    const purchasePaymentMethodAmountMap = new Map<string, number>();
-
-    const purchasePaymentDetails: IPaymentReportData[] =
-      await this.getTransactionDetailsFromDb(
-        TransactionType.PURCHASE,
-        paymentCodes,
-        permitTypes,
-        createPaymentDetailedReportDto,
-        purchasePaymentMethodAmountMap,
-      );
-
-    const paymentDopsInput = this.formatTransactionDataForDopsInput(
-      purchasePaymentDetails,
-    );
-
-    const refundPaymentMethodAmountMap = new Map<string, number>();
-
-    const refundDetails: IPaymentReportData[] =
-      await this.getTransactionDetailsFromDb(
-        TransactionType.REFUND,
-        paymentCodes,
-        permitTypes,
-        createPaymentDetailedReportDto,
-        refundPaymentMethodAmountMap,
-      );
-
-    const refundDopsInput =
-      this.formatTransactionDataForDopsInput(refundDetails);
-
-    const formatSummaryPaymentDopsInput = this.formatPaymentSummaryForDopsInput(
-      paymentCodes,
-      purchasePaymentMethodAmountMap,
-      refundPaymentMethodAmountMap,
-    );
-
-    const generateReportData: DopsGeneratedReport = {
-      reportTemplate: ReportTemplate.PAYMENT_AND_REFUND_DETAILED_REPORT,
-      reportData: {
-        issuedBy: createPaymentDetailedReportDto.issuedBy.join(', '),
-        runDate: convertUtcToPt(new Date(), 'MMM. D, YYYY, hh:mm A Z'),
-        permitType: permitTypes.some(
-          (permitType) => permitType === PermitTypeReport.ALL,
-        )
-          ? 'All Permit Types'
-          : permitTypes.join(', '),
-        paymentMethod: paymentCodes.some(
-          (paymentCode) =>
-            paymentCode.paymentMethodTypeCode === PaymentMethodTypeReport.ALL,
-        )
-          ? 'All Payment Methods'
-          : paymentCodes
-              .map((code) => code.consolidatedPaymentMethod)
-              .join(', '),
-        timePeriod: `${convertUtcToPt(
-          createPaymentDetailedReportDto.fromDateTime,
-          'MMM. D, YYYY, hh:mm A Z',
-        )} – ${convertUtcToPt(
-          createPaymentDetailedReportDto.toDateTime,
-          'MMM. D, YYYY, hh:mm A Z',
-        )}`,
-        payments: paymentDopsInput,
-        refunds: refundDopsInput,
-        summaryPayments: formatSummaryPaymentDopsInput,
-        summaryPermits: formatSummaryPermitDopsInput,
-      },
-      generatedDocumentFileName: 'Sample',
-    };
-
-    await this.dopsService.generateReport(currentUser, generateReportData, res);
-  }
-
   private async formatPermitSummaryForDopsInput(
     paymentCodes: IPaymentCode[],
     permitTypes: PermitTypeReport[],
@@ -991,5 +899,225 @@ export class PaymentService {
 
   async findAllPaymentCardTypeEntities(): Promise<PaymentCardType[]> {
     return await this.paymentCardTypeRepository.find();
+  }
+
+  async createPaymentDetailedReport(
+    currentUser: IUserJWT,
+    createPaymentDetailedReportDto: CreatePaymentDetailedReportDto,
+    res: Response,
+  ): Promise<void> {
+    const paymentCodes: IPaymentCode[] =
+      await this.getConsolidatedPaymentMethodFromDto(
+        createPaymentDetailedReportDto,
+      );
+
+    const permitTypes: PermitTypeReport[] =
+      createPaymentDetailedReportDto.permitType;
+
+    permitTypes.sort((a, b) => a.valueOf().localeCompare(b.valueOf()));
+
+    const formatSummaryPermitDopsInput =
+      await this.formatPermitSummaryForDopsInput(
+        paymentCodes,
+        permitTypes,
+        createPaymentDetailedReportDto,
+      );
+
+    const purchasePaymentMethodAmountMap = new Map<string, number>();
+
+    const purchasePaymentDetails: IPaymentReportData[] =
+      await this.getTransactionDetailsFromDb(
+        TransactionType.PURCHASE,
+        paymentCodes,
+        permitTypes,
+        createPaymentDetailedReportDto,
+        purchasePaymentMethodAmountMap,
+      );
+
+    const paymentDopsInput = this.formatTransactionDataForDopsInput(
+      purchasePaymentDetails,
+    );
+
+    const refundPaymentMethodAmountMap = new Map<string, number>();
+
+    const refundDetails: IPaymentReportData[] =
+      await this.getTransactionDetailsFromDb(
+        TransactionType.REFUND,
+        paymentCodes,
+        permitTypes,
+        createPaymentDetailedReportDto,
+        refundPaymentMethodAmountMap,
+      );
+
+    const refundDopsInput =
+      this.formatTransactionDataForDopsInput(refundDetails);
+
+    const formatSummaryPaymentDopsInput = this.formatPaymentSummaryForDopsInput(
+      paymentCodes,
+      purchasePaymentMethodAmountMap,
+      refundPaymentMethodAmountMap,
+    );
+
+    const generateReportData: DopsGeneratedReport = {
+      reportTemplate: ReportTemplate.PAYMENT_AND_REFUND_DETAILED_REPORT,
+      reportData: {
+        issuedBy: createPaymentDetailedReportDto.issuedBy.join(', '),
+        runDate: convertUtcToPt(new Date(), 'MMM. D, YYYY, hh:mm A Z'),
+        permitType: permitTypes.some(
+          (permitType) => permitType === PermitTypeReport.ALL,
+        )
+          ? 'All Permit Types'
+          : permitTypes.join(', '),
+        paymentMethod: paymentCodes.some(
+          (paymentCode) =>
+            paymentCode.paymentMethodTypeCode === PaymentMethodTypeReport.ALL,
+        )
+          ? 'All Payment Methods'
+          : paymentCodes
+              .map((code) => code.consolidatedPaymentMethod)
+              .join(', '),
+        timePeriod: `${convertUtcToPt(
+          createPaymentDetailedReportDto.fromDateTime,
+          'MMM. D, YYYY, hh:mm A Z',
+        )} – ${convertUtcToPt(
+          createPaymentDetailedReportDto.toDateTime,
+          'MMM. D, YYYY, hh:mm A Z',
+        )}`,
+        payments: paymentDopsInput,
+        refunds: refundDopsInput,
+        summaryPayments: formatSummaryPaymentDopsInput,
+        summaryPermits: formatSummaryPermitDopsInput,
+      },
+      generatedDocumentFileName: 'Sample',
+    };
+
+    await this.dopsService.generateReport(currentUser, generateReportData, res);
+  }
+
+  async createPaymentSummaryReport(
+    currentUser: IUserJWT,
+    createPaymentSummaryReportDto: CreatePaymentSummaryReportDto,
+    res: Response,
+  ): Promise<void> {
+    // const formatSummaryPermitDopsInput =
+    //   await this.formatPermitSummaryForDopsInput(
+    //     paymentCodes,
+    //     permitTypes,
+    //     createPaymentDetailedReportDto,
+    //   );
+
+    // const purchasePaymentMethodAmountMap = new Map<string, number>();
+
+    // const purchasePaymentDetails: IPaymentReportData[] =
+    //   await this.getTransactionDetailsFromDb(
+    //     TransactionType.PURCHASE,
+    //     paymentCodes,
+    //     permitTypes,
+    //     createPaymentDetailedReportDto,
+    //     purchasePaymentMethodAmountMap,
+    //   );
+
+    // const paymentDopsInput = this.formatTransactionDataForDopsInput(
+    //   purchasePaymentDetails,
+    // );
+
+    // const refundPaymentMethodAmountMap = new Map<string, number>();
+
+    // const refundDetails: IPaymentReportData[] =
+    //   await this.getTransactionDetailsFromDb(
+    //     TransactionType.REFUND,
+    //     paymentCodes,
+    //     permitTypes,
+    //     createPaymentDetailedReportDto,
+    //     refundPaymentMethodAmountMap,
+    //   );
+
+    // const refundDopsInput =
+    //   this.formatTransactionDataForDopsInput(refundDetails);
+
+    // const formatSummaryPaymentDopsInput = this.formatPaymentSummaryForDopsInput(
+    //   paymentCodes,
+    //   purchasePaymentMethodAmountMap,
+    //   refundPaymentMethodAmountMap,
+    // );
+
+    const generateReportData: DopsGeneratedReport = {
+      reportTemplate: ReportTemplate.PAYMENT_AND_REFUND_SUMMARY_REPORT,
+      reportData: {
+        issuedBy: createPaymentSummaryReportDto.issuedBy.join(', '),
+        runDate: convertUtcToPt(new Date(), 'MMM. D, YYYY, hh:mm A Z'),
+        timePeriod: `${convertUtcToPt(
+          createPaymentSummaryReportDto.fromDateTime,
+          'MMM. D, YYYY, hh:mm A Z',
+        )} – ${convertUtcToPt(
+          createPaymentSummaryReportDto.toDateTime,
+          'MMM. D, YYYY, hh:mm A Z',
+        )}`,
+        // payments: paymentDopsInput,
+        // refunds: refundDopsInput,
+        // summaryPayments: formatSummaryPaymentDopsInput,
+        // summaryPermits: formatSummaryPermitDopsInput,
+      },
+      generatedDocumentFileName: 'Sample',
+    };
+
+    await this.dopsService.generateReport(currentUser, generateReportData, res);
+  }
+
+  async findTransactionDataForSummaryReports(
+    transactionType: TransactionType,
+    paymentCode: IPaymentCode,
+    permitTypes: PermitTypeReport[],
+    createPaymentDetailedReportDto: CreatePaymentDetailedReportDto,
+  ): Promise<IPaymentReportData> {
+    const queryBuilder = this.transactionRepository.createQueryBuilder('trans');
+
+    queryBuilder
+      .select('trans.paymentMethodTypeCode', 'paymentMethod')
+      .addSelect('permitTransactions.transactionAmount', 'amount');
+
+    queryBuilder
+      .innerJoin('trans.permitTransactions', 'permitTransactions')
+      .innerJoin('permitTransactions.permit', 'permit');
+
+    queryBuilder.where('trans.transactionTypeId = :transactionType', {
+      transactionType: transactionType,
+    });
+
+    queryBuilder.andWhere('permit.permitStatus = :permitStatus', {
+      permitStatus: ApplicationStatus.ISSUED,
+    });
+
+    queryBuilder.andWhere('permit.permitIssueDateTime >= :fromDateTime', {
+      fromDateTime: createPaymentDetailedReportDto.fromDateTime,
+    });
+    queryBuilder.andWhere('permit.permitIssueDateTime < :toDateTime', {
+      toDateTime: createPaymentDetailedReportDto.toDateTime,
+    });
+
+    if (createPaymentDetailedReportDto.issuedBy?.length) {
+      queryBuilder.andWhere('permit.permitIssuedBy IN (:...issuedBy)', {
+        issuedBy: createPaymentDetailedReportDto.issuedBy,
+      });
+    }
+
+    queryBuilder.orderBy('permit.permitIssueDateTime');
+
+    const paymentReportDataCollection: IPaymentReportDataDetails[] =
+      await queryBuilder.getRawMany();
+
+    let subtotal = 0;
+
+    paymentReportDataCollection.forEach((paymentReportData) => {
+      subtotal += paymentReportData.amount;
+    });
+
+    const paymentReportData: IPaymentReportData = {
+      paymentReportData: paymentReportDataCollection,
+      totalAmount: subtotal,
+      paymentMethod: undefined,
+    };
+
+    return paymentReportData;
   }
 }
