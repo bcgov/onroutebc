@@ -233,7 +233,7 @@
                   <td class="table-cell table-cell-background user">
                   </td>
                   <td class="table-cell table-cell-background amount table-cell-right bold">
-                    <p>{{this.subTotalAmount}}</p>
+                    <p>${{this.subTotalAmount}}</p>
                   </td>
                 </tr>
                 {{else if this.totalAmount}}
@@ -245,7 +245,7 @@
                   <td class="table-cell table-cell-background user">
                   </td>
                   <td class="table-cell table-cell-background amount table-cell-right bold">
-                    <p style="font-size:10.0pt">{{this.totalAmount}}</p>
+                    <p style="font-size:10.0pt">${{this.totalAmount}}</p>
                   </td>
                 </tr>
                 {{else}}
@@ -257,7 +257,7 @@
                     <p>{{this.user}}</p>
                   </td>
                   <td class="table-cell amount table-cell-right">
-                    <p>{{this.amount}}</p>
+                    <p>${{this.amount}}</p>
                   </td>
                 </tr>
                 {{/if}}
@@ -312,7 +312,7 @@
                     <td class="table-cell table-cell-background user">
                     </td>
                     <td class="table-cell table-cell-background amount table-cell-right bold">
-                      <p style="font-size:10.0pt">-{{this.totalAmount}}</p>
+                      <p style="font-size:10.0pt">-${{this.totalAmount}}</p>
                     </td>
                   </tr>
                   {{else}}
@@ -324,7 +324,7 @@
                       <p>{{this.user}}</p>
                     </td>
                     <td class="table-cell amount table-cell-right">
-                      <p>-{{this.amount}}</p>
+                      <p>-${{this.amount}}</p>
                     </td>
                   </tr>
                   {{/if}}
@@ -363,14 +363,14 @@
                       <p>TOTAL</p>
                     </td>
                     <td class="table-cell table-cell-background summary-payment-payment table-cell-right bold">
-                      <p>{{this.subTotalPaymentAmount}}</p>
+                      <p>${{this.subTotalPaymentAmount}}</p>
                     </td>
 
                     <td class="table-cell table-cell-background summary-payment-refund table-cell-right bold">
-                      <p>-{{this.subTotalRefundAmount}}</p>
+                      <p>-${{this.subTotalRefundAmount}}</p>
                     </td>
                     <td class="table-cell table-cell-background summary-payment-deposit table-cell-right bold">
-                      <p>{{this.subTotalDepositAmount}}</p>
+                      <p>${{this.subTotalDepositAmount}}</p>
                     </td>
                   </tr>
                   {{else if this.grandTotalAmount}}
@@ -383,8 +383,8 @@
                     </td>
                     <td class="table-cell table-cell-background summary-payment-refund">
                     </td>
-                    <td class="table-cell table-cell-background summary-payment-deposit table-cell-right">
-                      <p style="font-size:10.0pt">{{this.grandTotalAmount}}</p>
+                    <td class="table-cell table-cell-background summary-payment-deposit table-cell-right bold">
+                      <p style="font-size:10.0pt">${{this.grandTotalAmount}}</p>
                     </td>
                   </tr>
                   {{else}}
@@ -393,13 +393,13 @@
                       <p>{{this.paymentMethod}}</p>
                     </td>
                     <td class="table-cell table-cell-right table-cell-bottom-border summary-payment-payment">
-                      <p>{{this.payment}}</p>
+                      <p>${{this.payment}}</p>
                     </td>
                     <td class="table-cell table-cell-right table-cell-bottom-border summary-payment-refund">
-                      <p>-{{this.refund}}</p>
+                      <p>-${{this.refund}}</p>
                     </td>
                     <td class="table-cell table-cell-right table-cell-bottom-border summary-payment-deposit">
-                      <p>{{this.deposit}}</p>
+                      <p>${{this.deposit}}</p>
                     </td>
                   </tr>
                   {{/if}}
