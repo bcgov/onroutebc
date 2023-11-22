@@ -1,11 +1,14 @@
 import { Box, FormControlLabel, Switch } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import { memo, useCallback, useContext, useMemo, useState } from "react";
-import MaterialReactTable, {
+
+import {
   MRT_ColumnDef,
   MRT_Row,
   MRT_TableInstance,
-} from "material-react-table";
+  MaterialReactTable,
+  useMaterialReactTable 
+} from 'material-react-table'
 
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";

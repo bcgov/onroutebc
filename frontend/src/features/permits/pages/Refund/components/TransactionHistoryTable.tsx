@@ -1,5 +1,10 @@
 import { useMemo } from "react";
-import MaterialReactTable, { MRT_ColumnDef } from "material-react-table";
+
+import {
+  MRT_ColumnDef,
+  MaterialReactTable, 
+  useMaterialReactTable 
+} from 'material-react-table'
 
 import "./TransactionHistoryTable.scss";
 import { PermitHistory } from "../../../types/PermitHistory";

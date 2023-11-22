@@ -3,10 +3,13 @@ import { useQuery } from "@tanstack/react-query";
 import { RowSelectionState } from "@tanstack/table-core";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { useAuth } from "react-oidc-context";
-import MaterialReactTable, {
+
+import {
+  MaterialReactTable,
   MRT_Row,
   MRT_TableInstance,
-} from "material-react-table";
+  useMaterialReactTable 
+} from 'material-react-table'
 
 import "./UserManagement.scss";
 import { SnackBarContext } from "../../../App";

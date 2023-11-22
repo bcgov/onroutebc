@@ -11,11 +11,13 @@ import {
   useState,
 } from "react";
 
-import MaterialReactTable, {
+import {
   MRT_ColumnDef,
   MRT_GlobalFilterTextField,
   MRT_Row,
   MRT_TableInstance,
+  MaterialReactTable, 
+  useMaterialReactTable
 } from "material-react-table";
 
 import "./List.scss";

@@ -1,11 +1,14 @@
 import { Box } from "@mui/material";
 import { useCallback, useContext, useEffect } from "react";
 import { UseQueryResult } from "@tanstack/react-query";
-import MaterialReactTable, {
+
+import {
   MRT_GlobalFilterTextField,
   MRT_Row,
   MRT_TableInstance,
-} from "material-react-table";
+  MaterialReactTable,
+  useMaterialReactTable
+} from 'material-react-table'
 
 import { SnackBarContext } from "../../../../App";
 import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
