@@ -2,19 +2,18 @@ import { useMemo } from "react";
 import MaterialReactTable, { MRT_ColumnDef } from "material-react-table";
 
 import "./TransactionHistoryTable.scss";
+import { PermitHistory } from "../../../types/PermitHistory";
+import { getPaymentMethod } from "../../../../../common/types/paymentMethods";
+import { TRANSACTION_TYPES } from "../../../types/payment.d";
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
 } from "../../../../../common/helpers/util";
+
 import {
   feeSummaryDisplayText,
   isTransactionTypeRefund,
 } from "../../../helpers/feeSummary";
-import { PermitHistory } from "../../../types/PermitHistory";
-import {
-  getPaymentMethod,
-  paymentMethodDisplayText,
-} from "../../../types/PaymentMethod";
 
 export const TransactionHistoryTable = ({
   permitHistory,
@@ -40,13 +39,13 @@ export const TransactionHistoryTable = ({
       },
       {
         accessorFn: (originalRow) => {
-          const paymentMethod = getPaymentMethod(
-            originalRow.pgPaymentMethod,
-            originalRow.pgCardType,
-          );
-          return getDefaultRequiredVal(
-            "NA",
-            applyWhenNotNullable(paymentMethodDisplayText, paymentMethod),
+          if (originalRow.transactionTypeId === TRANSACTION_TYPES.Z) {
+            return "NA";
+          }
+
+          return getPaymentMethod(
+            originalRow.paymentMethodTypeCode,
+            originalRow.paymentCardTypeCode,
           );
         },
         id: "paymentMethod",
@@ -65,7 +64,7 @@ export const TransactionHistoryTable = ({
       },
       {
         accessorFn: (originalRow) =>
-          getDefaultRequiredVal("NA", originalRow.pgTransactionId),
+          getDefaultRequiredVal(originalRow.transactionOrderNumber, originalRow.pgTransactionId),
         id: "providerTransactionId",
         header: "Transaction ID",
         muiTableHeadCellProps: {

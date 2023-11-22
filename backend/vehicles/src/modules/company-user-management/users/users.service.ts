@@ -504,4 +504,25 @@ export class UsersService {
 
     return userDetails;
   }
+
+  async findPermitIssuerPPCUser(): Promise<ReadUserDto[]> {
+    const subQueryBuilder = this.idirUserRepository
+      .createQueryBuilder()
+      .select('ISSUER_USER_GUID')
+      .from('permit.ORBC_PERMIT_ISSUED_PPC_USER_VW', 'vw');
+
+    // Find user entities based on the provided filtering criteria
+    const userDetails = await this.idirUserRepository
+      .createQueryBuilder('idirUser')
+      .where('idirUser.userGUID IN (' + subQueryBuilder.getQuery() + ' )')
+      .getMany();
+
+    // Map the retrieved user entities to ReadUserDto objects
+    const readUserDto: ReadUserDto[] = await this.classMapper.mapArrayAsync(
+      userDetails,
+      IdirUser,
+      ReadUserDto,
+    );
+    return readUserDto;
+  }
 }

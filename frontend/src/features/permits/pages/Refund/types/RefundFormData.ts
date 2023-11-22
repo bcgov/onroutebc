@@ -1,13 +1,8 @@
-import {
-  BamboraPaymentMethod,
-  CardType,
-  RefundMethod,
-} from "../../../types/PaymentMethod";
+import { BamboraPaymentMethod } from "../../../types/PaymentMethod";
 
 export interface RefundFormData {
   shouldUsePrevPaymentMethod: boolean;
-  refundMethod: RefundMethod;
+  refundMethod: string;
   refundOnlineMethod: BamboraPaymentMethod | "";
-  refundCardType: CardType | "";
   transactionId?: string;
 }

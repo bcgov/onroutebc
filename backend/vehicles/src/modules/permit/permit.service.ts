@@ -340,7 +340,9 @@ export class PermitService {
         transactionTypeId: permitTransaction.transaction.transactionTypeId,
         pgPaymentMethod: permitTransaction.transaction.pgPaymentMethod,
         pgTransactionId: permitTransaction.transaction.pgTransactionId,
-        pgCardType: permitTransaction.transaction.pgCardType,
+        paymentCardTypeCode: permitTransaction.transaction.paymentCardTypeCode,
+        paymentMethodTypeCode:
+          permitTransaction.transaction.paymentMethodTypeCode,
         commentUsername: permit.createdUser,
         permitId: +permit.permitId,
         transactionSubmitDate:

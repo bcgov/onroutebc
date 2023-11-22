@@ -1,19 +1,19 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
 import { ArrayMinSize, IsDateString, IsEnum } from 'class-validator';
-import { PaymentReportIssuedBy } from '../../../../common/enum/payment-report-issued-by.enum';
+import { PermitIssuedBy } from '../../../../common/enum/permit-issued-by.enum';
 
 export class CreatePaymentSummaryReportDto {
   @AutoMap()
   @ApiProperty({
-    enum: PaymentReportIssuedBy,
-    example: [PaymentReportIssuedBy.SELF],
+    enum: PermitIssuedBy,
+    example: [PermitIssuedBy.SELF_ISSUED],
     description: 'Permit Issued By value.',
     isArray: true,
   })
-  @IsEnum(PaymentReportIssuedBy, { each: true })
+  @IsEnum(PermitIssuedBy, { each: true })
   @ArrayMinSize(1)
-  issuedBy: PaymentReportIssuedBy[];
+  issuedBy: PermitIssuedBy[];
 
   @AutoMap()
   @ApiProperty({

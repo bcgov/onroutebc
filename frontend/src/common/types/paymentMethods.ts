@@ -4,7 +4,7 @@
 export const PAYMENT_METHOD_TYPE_CODE = {
   CASH: "CASH",
   CHEQUE: "CHEQUE",
-  CREDIT_ACCOUNT: "ACCOUNT",
+  ACCOUNT: "ACCOUNT",
   GA: "GA",
   ICEPAY: "ICEPAY",
   POS: "POS",
@@ -23,7 +23,7 @@ export type PaymentMethodTypeCode =
 export const PAYMENT_METHOD_TYPE_DISPLAY = {
   CASH: "Cash",
   CHEQUE: "Cheque",
-  CREDIT_ACCOUNT: "Credit Account",
+  ACCOUNT: "Credit Account",
   GA: "GA Payment",
   ICEPAY: "IcePay",
   POS: "PoS",
@@ -37,12 +37,12 @@ export type PaymentMethodTypeDisplay =
   (typeof PAYMENT_METHOD_TYPE_DISPLAY)[keyof typeof PAYMENT_METHOD_TYPE_DISPLAY];
 
 export const PAYMENT_CARD_TYPE_CODE = {
-  VISA: "VI", // Visa
-  MASTERCARD: "MC", // MasterCard
-  AMEX: "AM", // American Express
-  VISA_DEBIT: "PV", // Visa Debit
-  MASTERCARD_DEBIT: "MD", // Debit MasterCard
-  DEBIT: "DB", // Debit
+  VI: "VI", // Visa
+  MC: "MC", // MasterCard
+  AM: "AM", // American Express
+  PV: "PV", // Visa Debit
+  MD: "MD", // Debit MasterCard
+  DB: "DB", // Debit
 } as const;
 
 export type PaymentCardTypeCode =
@@ -52,16 +52,31 @@ export type PaymentCardTypeCode =
  * The card types
  */
 export const PAYMENT_CARD_TYPE_DISPLAY = {
-  AMEX: "Amex",
-  VISA_DEBIT: "Visa (Debit)",
-  VISA: "Visa",
-  MASTERCARD: "Mastercard",
-  MASTERCARD_DEBIT: "Mastercard (Debit)",
-  DEBIT: "Debit",
+  AM: "Amex",
+  PV: "Visa (Debit)",
+  VI: "Visa",
+  MC: "Mastercard",
+  MD: "Mastercard (Debit)",
+  DB: "Debit",
 } as const;
 
 export type PaymentCardTypeDisplay =
   (typeof PAYMENT_CARD_TYPE_DISPLAY)[keyof typeof PAYMENT_CARD_TYPE_DISPLAY];
+
+export const PAYMENT_METHODS_WITH_CARD: PaymentMethodTypeCode[] = [
+  PAYMENT_METHOD_TYPE_CODE.ICEPAY, 
+  PAYMENT_METHOD_TYPE_CODE.WEB, 
+  PAYMENT_METHOD_TYPE_CODE.POS,
+];
+
+export type PaymentMethodWithCard = Extract<
+  PaymentMethodTypeCode, 
+  typeof PAYMENT_METHOD_TYPE_CODE.ICEPAY | 
+  typeof PAYMENT_METHOD_TYPE_CODE.WEB | 
+  typeof PAYMENT_METHOD_TYPE_CODE.POS
+>;
+
+export type PaymentMethodDisplayWithCard = typeof PAYMENT_METHOD_TYPE_DISPLAY[PaymentMethodWithCard];
 
 /**
  * An object containing the paymentMethodTypeCode and paymentCardTypeCode values.
@@ -94,74 +109,74 @@ export const CONSOLIDATED_PAYMENT_METHODS: Record<
     paymentMethodTypeCode: PAYMENT_METHOD_TYPE_CODE.CHEQUE,
   },
   "Credit Account": {
-    paymentMethodTypeCode: PAYMENT_METHOD_TYPE_CODE.CREDIT_ACCOUNT,
+    paymentMethodTypeCode: PAYMENT_METHOD_TYPE_CODE.ACCOUNT,
   },
   "GA Payment": {
     paymentMethodTypeCode: PAYMENT_METHOD_TYPE_CODE.GA,
   },
   "IcePay - Amex": {
     paymentMethodTypeCode: PAYMENT_METHOD_TYPE_CODE.ICEPAY,
-    paymentCardTypeCode: PAYMENT_CARD_TYPE_CODE.AMEX,
+    paymentCardTypeCode: PAYMENT_CARD_TYPE_CODE.AM,
   },
   "IcePay - Mastercard": {
     paymentMethodTypeCode: PAYMENT_METHOD_TYPE_CODE.ICEPAY,
-    paymentCardTypeCode: PAYMENT_CARD_TYPE_CODE.MASTERCARD,
+    paymentCardTypeCode: PAYMENT_CARD_TYPE_CODE.MC,
   },
   "IcePay - Mastercard (Debit)": {
     paymentMethodTypeCode: PAYMENT_METHOD_TYPE_CODE.ICEPAY,
-    paymentCardTypeCode: PAYMENT_CARD_TYPE_CODE.MASTERCARD_DEBIT,
+    paymentCardTypeCode: PAYMENT_CARD_TYPE_CODE.MD,
   },
   "IcePay - Visa": {
     paymentMethodTypeCode: PAYMENT_METHOD_TYPE_CODE.ICEPAY,
-    paymentCardTypeCode: PAYMENT_CARD_TYPE_CODE.VISA,
+    paymentCardTypeCode: PAYMENT_CARD_TYPE_CODE.VI,
   },
   "IcePay - Visa (Debit)": {
     paymentMethodTypeCode: PAYMENT_METHOD_TYPE_CODE.ICEPAY,
-    paymentCardTypeCode: PAYMENT_CARD_TYPE_CODE.VISA_DEBIT,
+    paymentCardTypeCode: PAYMENT_CARD_TYPE_CODE.PV,
   },
   "PoS - Amex": {
     paymentMethodTypeCode: PAYMENT_METHOD_TYPE_CODE.POS,
-    paymentCardTypeCode: PAYMENT_CARD_TYPE_CODE.AMEX,
+    paymentCardTypeCode: PAYMENT_CARD_TYPE_CODE.AM,
   },
   "PoS - Debit": {
     paymentMethodTypeCode: PAYMENT_METHOD_TYPE_CODE.POS,
-    paymentCardTypeCode: PAYMENT_CARD_TYPE_CODE.DEBIT,
+    paymentCardTypeCode: PAYMENT_CARD_TYPE_CODE.DB,
   },
   "PoS - Mastercard": {
     paymentMethodTypeCode: PAYMENT_METHOD_TYPE_CODE.POS,
-    paymentCardTypeCode: PAYMENT_CARD_TYPE_CODE.MASTERCARD,
+    paymentCardTypeCode: PAYMENT_CARD_TYPE_CODE.MC,
   },
   "PoS - Mastercard (Debit)": {
     paymentMethodTypeCode: PAYMENT_METHOD_TYPE_CODE.POS,
-    paymentCardTypeCode: PAYMENT_CARD_TYPE_CODE.MASTERCARD_DEBIT,
+    paymentCardTypeCode: PAYMENT_CARD_TYPE_CODE.MD,
   },
   "PoS - Visa": {
     paymentMethodTypeCode: PAYMENT_METHOD_TYPE_CODE.POS,
-    paymentCardTypeCode: PAYMENT_CARD_TYPE_CODE.VISA,
+    paymentCardTypeCode: PAYMENT_CARD_TYPE_CODE.VI,
   },
   "PoS - Visa (Debit)": {
     paymentMethodTypeCode: PAYMENT_METHOD_TYPE_CODE.POS,
-    paymentCardTypeCode: PAYMENT_CARD_TYPE_CODE.VISA_DEBIT,
+    paymentCardTypeCode: PAYMENT_CARD_TYPE_CODE.PV,
   },
   "Web - Amex": {
     paymentMethodTypeCode: PAYMENT_METHOD_TYPE_CODE.WEB,
-    paymentCardTypeCode: PAYMENT_CARD_TYPE_CODE.AMEX,
+    paymentCardTypeCode: PAYMENT_CARD_TYPE_CODE.AM,
   },
   "Web - Mastercard": {
     paymentMethodTypeCode: PAYMENT_METHOD_TYPE_CODE.WEB,
-    paymentCardTypeCode: PAYMENT_CARD_TYPE_CODE.MASTERCARD,
+    paymentCardTypeCode: PAYMENT_CARD_TYPE_CODE.MC,
   },
   "Web - Mastercard (Debit)": {
     paymentMethodTypeCode: PAYMENT_METHOD_TYPE_CODE.WEB,
-    paymentCardTypeCode: PAYMENT_CARD_TYPE_CODE.MASTERCARD_DEBIT,
+    paymentCardTypeCode: PAYMENT_CARD_TYPE_CODE.MD,
   },
   "Web - Visa": {
     paymentMethodTypeCode: PAYMENT_METHOD_TYPE_CODE.WEB,
-    paymentCardTypeCode: PAYMENT_CARD_TYPE_CODE.VISA,
+    paymentCardTypeCode: PAYMENT_CARD_TYPE_CODE.VI,
   },
   "Web - Visa (Debit)": {
     paymentMethodTypeCode: PAYMENT_METHOD_TYPE_CODE.WEB,
-    paymentCardTypeCode: PAYMENT_CARD_TYPE_CODE.VISA_DEBIT,
+    paymentCardTypeCode: PAYMENT_CARD_TYPE_CODE.PV,
   },
 };
 
@@ -174,6 +189,20 @@ export const CONSOLIDATED_PAYMENT_METHODS: Record<
  * @returns string
  */
 export const getConsolidatedPaymentMethod = (
-  paymentMethod: Extract<PaymentMethodTypeDisplay, "IcePay" | "Web" | "PoS">,
+  paymentMethod: PaymentMethodDisplayWithCard,
   paymentCard: PaymentCardTypeDisplay,
 ): string => paymentMethod + " - " + paymentCard;
+
+export const getPaymentMethod = (
+  paymentMethod: PaymentMethodTypeCode,
+  paymentCard?: PaymentCardTypeCode | null,
+): string => {
+  if (!paymentCard || !PAYMENT_METHODS_WITH_CARD.includes(paymentMethod)) {
+    return PAYMENT_METHOD_TYPE_DISPLAY[paymentMethod];
+  }
+
+  return getConsolidatedPaymentMethod(
+    PAYMENT_METHOD_TYPE_DISPLAY[paymentMethod] as PaymentMethodDisplayWithCard,
+    PAYMENT_CARD_TYPE_DISPLAY[paymentCard],
+  );
+};

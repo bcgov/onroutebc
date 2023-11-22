@@ -1,4 +1,4 @@
 export enum PermitIssuedBy {
-  SELF_ISSUED = 'SELF-ISSUED',
+  SELF_ISSUED = 'SELF_ISSUED',
   PPC = 'PPC',
 }
