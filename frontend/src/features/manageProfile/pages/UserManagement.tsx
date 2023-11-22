@@ -76,6 +76,129 @@ export const UserManagement = () => {
     }
   }, [isError]);
 
+  const table = useMaterialReactTable({
+    columns: UserManagementColumnsDefinition,
+    data: data ?? [],
+    state: {
+      showAlertBanner: isError,
+      showProgressBars: isInitialLoading,
+      columnVisibility: { applicationId: true },
+      isLoading: isInitialLoading,
+      rowSelection: rowSelection,
+    },
+    renderEmptyRowsFallback: () => <NoRecordsFound />,
+    selectAllMode: "page",
+    // Enable checkboxes for row selection
+    enableRowSelection: (row: MRT_Row<ReadCompanyUser>): boolean => {
+      if (
+        row?.original?.userGUID === userFromToken?.profile?.bceid_user_guid
+      ) {
+        return false;
+      }
+      return true;
+    },
+    onRowSelectionChange: setRowSelection,
+    enableStickyHeader: true,
+    enablePagination: false,
+    positionActionsColumn: "last",
+    enableColumnActions: false,
+    enableRowActions: true,
+    getRowId: (originalRow: ReadCompanyUser) => originalRow.userName,
+    displayColumnDefOptions: {
+      "mrt-row-actions": {
+        header: "",
+      },
+    },
+    renderRowActions: useCallback(
+      ({
+        row,
+      }: {
+        table: MRT_TableInstance<ReadCompanyUser>;
+        row: MRT_Row<ReadCompanyUser>;
+      }) => {
+        if (row.original.statusCode === BCeIDUserStatus.ACTIVE) {
+          return (
+            <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+              <UserManagementTableRowActions
+                userGUID={row.original.userGUID}
+              />
+            </Box>
+          );
+        } else {
+          return <></>;
+        }
+      },
+      [],
+    ),
+    renderToolbarInternalActions: useCallback(
+      () => (
+        <Box className="table-container__toolbar-internal-actions">
+          <Trash
+            onClickTrash={onClickTrashIcon}
+            disabled={hasNoRowsSelected}
+          />
+        </Box>
+      ),
+      [hasNoRowsSelected],
+    ),
+    // Main table container
+    muiTablePaperProps: {
+      sx: {
+        border: "none",
+        boxShadow: "none",
+      },
+    },
+    // Column widths
+    defaultColumn: {
+      size: 50,
+      maxSize: 200,
+      minSize: 25,
+    },
+    // Cell/Body container
+    muiTableContainerProps: {
+      sx: {
+        height: "calc(100vh - 475px)",
+        outline: "1px solid #DBDCDC",
+      },
+    },
+    // Pagination
+    muiBottomToolbarProps: {
+      sx: {
+        backgroundColor: BC_COLOURS.bc_background_light_grey,
+        zIndex: 0,
+      },
+    },
+    // Alert banner
+    muiToolbarAlertBannerProps:
+      isError
+        ? {
+            color: "error",
+            children: "Error loading data",
+          }
+        : undefined
+    ,
+    // Top toolbar
+    muiTopToolbarProps: { sx: { zIndex: 0 } },
+    // Row Header
+    muiTableHeadRowProps: {
+      sx: {
+        backgroundColor: BC_COLOURS.bc_background_light_grey,
+      },
+    }
+  });
+
+  return (
+    <div className="table-container">
+      <MaterialReactTable table={table} />
+      <DeleteConfirmationDialog
+        onClickDelete={onConfirmDelete}
+        isOpen={isDeleteDialogOpen}
+        onClickCancel={onCancelDelete}
+        caption="user"
+      />
+    </div>
+  )
+
   return (
     <div className="table-container">
       <MaterialReactTable

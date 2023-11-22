@@ -114,6 +114,25 @@ export const TransactionHistoryTable = ({
     [],
   );
 
+  const table = useMaterialReactTable({
+    columns: columns,
+    data: permitHistory,
+    enablePagination: false,
+    enableTopToolbar: false,
+    enableBottomToolbar: false,
+    enableRowActions: false,
+    enableColumnActions: false,
+    muiTableProps: {
+      className: "transaction-history-table",
+    }
+  });
+
+  return (
+    <MaterialReactTable table={table} />
+  );
+
+
+  /*
   return (
     <MaterialReactTable
       columns={columns}
@@ -127,5 +146,5 @@ export const TransactionHistoryTable = ({
         className: "transaction-history-table",
       }}
     />
-  );
+  );*/
 };

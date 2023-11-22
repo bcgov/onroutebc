@@ -30,6 +30,115 @@ export const BasePermitList = ({
 }) => {
   const { data, isError, isInitialLoading } = query;
   const snackBar = useContext(SnackBarContext);
+  const table = useMaterialReactTable({
+    columns: PermitsColumnDefinition,
+    data: data ?? [],
+    initialState: {
+      showGlobalFilter: true
+    },
+    state: {
+      showAlertBanner: isError,
+      showProgressBars: isInitialLoading,
+      columnVisibility: {applicationId: true},
+      isLoading: isInitialLoading
+    },
+    renderEmptyRowsFallback: () => <NoRecordsFound />,
+    selectAllMode:"page",
+    enableStickyHeader: true,
+    enableColumnActions: false,
+    enableRowActions: true,
+    positionActionsColumn: "last",
+    positionGlobalFilter: "left",
+    globalFilterFn: "contains",
+    displayColumnDefOptions: {
+      "mrt-row-actions": {
+        header: "",
+      },
+    },
+    renderRowActions: useCallback(
+      ({
+        row,
+      }: {
+        table: MRT_TableInstance<Permit>;
+        row: MRT_Row<Permit>;
+      }) => {
+        return (
+          <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+            <PermitRowOptions
+              isExpired={isExpired}
+              permitId={row.original.permitId}
+            />
+          </Box>
+        );
+      },
+      [],
+    ),
+    renderTopToolbar: useCallback(
+      ({ table }: { table: MRT_TableInstance<Permit> }) => (
+        <Box
+          sx={{
+            display: "flex",
+            padding: "20px 0px",
+            backgroundColor: "white",
+          }}
+        >
+          <MRT_GlobalFilterTextField table={table} />
+        </Box>
+      ),
+      [],
+    ),
+    muiTablePaperProps: {
+      sx: {
+        border: "none",
+        boxShadow: "none",
+      },
+    },
+    defaultColumn: {
+      size: 50,
+      maxSize: 200,
+      minSize: 25,
+    },
+    muiTableContainerProps: {
+      sx: {
+        height: "calc(100vh - 475px)",
+        outline: "1px solid #DBDCDC",
+      },
+    },
+    muiBottomToolbarProps: {
+      sx: {
+        backgroundColor: BC_COLOURS.bc_background_light_grey,
+        zIndex: 0,
+      },
+    },
+    muiToolbarAlertBannerProps:
+      isError ? {
+        color: "error",
+        children: "Error loading data",
+      } : undefined
+    ,
+    muiTopToolbarProps: { sx: { zIndex: 0 } },
+    muiSearchTextFieldProps: {
+      placeholder: "Search",
+      sx: {
+        minWidth: "300px",
+        backgroundColor: "white",
+      },
+      variant: "outlined",
+      inputProps: {
+        sx: {
+          padding: "10px",
+        },
+      },
+    },
+    // Row Header
+    muiTableHeadRowProps: {
+      sx: {
+        backgroundColor: BC_COLOURS.bc_background_light_grey,
+      },
+    }
+
+  });
+
   useEffect(() => {
     if (isError) {
       snackBar.setSnackBar({
@@ -40,6 +149,14 @@ export const BasePermitList = ({
       });
     }
   }, [isError]);
+
+  return (
+    <MaterialReactTable table={table} />
+  )
+};
+
+
+  /*
 
   return (
     <MaterialReactTable
@@ -95,11 +212,7 @@ export const BasePermitList = ({
         ),
         [],
       )}
-      /*
-       *
-       * STYLES
-       *
-       */
+
       // Main table container
       muiTablePaperProps={{
         sx: {
@@ -163,4 +276,4 @@ export const BasePermitList = ({
       }}
     />
   );
-};
+};*/

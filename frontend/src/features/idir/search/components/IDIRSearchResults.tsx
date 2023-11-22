@@ -93,7 +93,140 @@ export const IDIRSearchResults = memo(
       }
       return initialData;
     };
+    
+    const table = useMaterialReactTable({
+      data: getFilteredData(data?.items ?? []),
+      columns: columns,
+      enableTopToolbar: true,
+      renderToolbarInternalActions: () => <></>,
+      renderTopToolbarCustomActions: () => {
+        return (
+          <Box sx={{ display: "flex", gap: "1rem", p: "4px" }}>
+            <FormControlLabel
+              value="end"
+              control={
+                <Switch
+                  color="primary"
+                  checked={isActiveRecordsOnly}
+                  onChange={(
+                    event: React.ChangeEvent<HTMLInputElement>,
+                  ) => {
+                    setIsActiveRecordsOnly(() => event.target.checked);
+                  }}
+                />
+              }
+              label="Active Permits Only"
+              labelPlacement="end"
+            />
+          </Box>
+        );
+      },
+      initialState: {
+        sorting: [{ id: "permitIssueDateTime", desc: true }],
+      },
+      state: {
+        isLoading,
+        showAlertBanner: isError,
+        showProgressBars: isLoading
+      },
+      enableColumnActions: false,
+      enableRowActions: true,
+      selectAllMode: "page",
+      enableStickyHeader: true,
+      positionActionsColumn: "last",
+      displayColumnDefOptions: {
+        "mrt-row-actions": {
+          header: "",
+        },
+      },
+      renderRowActions: useCallback(
+        ({
+          row,
+        }: {
+          table: MRT_TableInstance<Permit>;
+          row: MRT_Row<Permit>;
+        }) => {
+          const isInactive =
+            hasPermitExpired(row.original.permitData.expiryDate) ||
+            isPermitInactive(row.original.permitStatus);
 
+          if (shouldShowRowActions(idirUserDetails?.userAuthGroup)) {
+            return (
+              <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+                <IDIRPermitSearchRowActions
+                  isPermitInactive={isInactive}
+                  permitNumber={row.original.permitNumber}
+                  permitId={row.original.permitId}
+                  userAuthGroup={idirUserDetails?.userAuthGroup}
+                />
+              </Box>
+            );
+          } else {
+            return <></>;
+          }
+        },
+        [],
+      ),
+      muiTablePaperProps: {
+        sx: {
+          border: "none",
+          boxShadow: "none",
+        },
+      },
+      defaultColumn: {
+        maxSize: 200, //allow columns to get larger than default
+        minSize: 25,
+        size: 50,
+      },
+      muiTableContainerProps: {
+        sx: {
+          outline: "1px solid #DBDCDC",
+          height: "calc(100vh - 475px)",
+        },
+      },
+      muiBottomToolbarProps: {
+        sx: {
+          zIndex: 0, // resolve z-index conflict with sliding panel
+          backgroundColor: BC_COLOURS.bc_background_light_grey,
+        },
+      },
+      muiTopToolbarProps: { sx: { zIndex: 0 } }, // resolve z-index conflict with sliding panel
+      muiToolbarAlertBannerProps:
+        isError
+          ? {
+              color: "error",
+              children: "Error loading data",
+            }
+          : undefined
+      ,
+      muiSearchTextFieldProps: {
+        placeholder: "Search",
+        sx: {
+          minWidth: "300px",
+          backgroundColor: "white",
+        },
+        variant: "outlined",
+        inputProps: {
+          sx: {
+            padding: "10px",
+          },
+        },
+      },
+      muiTableHeadRowProps: {
+        sx: { backgroundColor: BC_COLOURS.bc_background_light_grey },
+      }
+
+    })
+
+    return (
+      <div className="table-container">
+        <MaterialReactTable table={table} />
+      </div>
+    )
+  },
+);
+
+    /*
     return (
       <div className="table-container">
         <MaterialReactTable
@@ -172,12 +305,7 @@ export const IDIRSearchResults = memo(
             },
             [],
           )}
-          /*
-           *
-           * STYLES
-           *
-           */
-
+          
           // Main table container
           muiTablePaperProps={{
             sx: {
@@ -238,5 +366,6 @@ export const IDIRSearchResults = memo(
     );
   },
 );
+*/
 
 IDIRSearchResults.displayName = "SearchResults";
