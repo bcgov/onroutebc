@@ -1,15 +1,14 @@
 import { PayBCPaymentDetails } from "../types/payment";
+import { parseRedirectUriPath } from "../pages/Payment/PaymentRedirect";
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
 } from "../../../common/helpers/util";
+
 import {
   BAMBORA_PAYMENT_METHODS,
   BamboraPaymentMethod,
-  CARD_TYPES,
-  CardType,
 } from "../types/PaymentMethod";
-import { parseRedirectUriPath } from "../pages/Payment/PaymentRedirect";
 
 /**
  * Extracts PayBCPaymentDetails from the query parameters of a URL.
@@ -32,10 +31,7 @@ export const getPayBCPaymentDetails = (
     avsPostalMatch: getDefaultRequiredVal("", params.get("avsPostalMatch")),
     avsProcessed: getDefaultRequiredVal("", params.get("avsProcessed")),
     avsResult: getDefaultRequiredVal("", params.get("avsResult")),
-    cardType: getDefaultRequiredVal(
-      CARD_TYPES.VI,
-      params.get("cardType"),
-    ) as CardType,
+    cardType: getDefaultRequiredVal("", params.get("cardType")),
     cvdId: 1, // applyWhenNotNullable((cvdId) => Number(cvdId), params.get("cvdId"), 0),
     trnApproved: trnApproved,
     messageId: "1", // getDefaultRequiredVal("", params.get("messageId")),

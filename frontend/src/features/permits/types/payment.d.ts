@@ -1,5 +1,5 @@
-import { PaymentMethodTypeCode } from "../../../common/types/paymentMethods";
-import { BamboraPaymentMethod, CardType } from "./PaymentMethod";
+import { PaymentCardTypeCode, PaymentMethodTypeCode } from "../../../common/types/paymentMethods";
+import { BamboraPaymentMethod } from "./PaymentMethod";
 
 export interface PayBCPaymentDetails {
   authCode: string;
@@ -9,7 +9,7 @@ export interface PayBCPaymentDetails {
   avsPostalMatch: string;
   avsProcessed: string;
   avsResult: string;
-  cardType: CardType;
+  cardType: string;
   cvdId: number;
   trnApproved: number;
   messageId: string;
@@ -32,28 +32,6 @@ export interface PayBCPaymentDetails {
   trnType: string;
 }
 
-export interface Transaction {
-  //transactionId: number;
-  transactionType: string;
-  transactionOrderNumber: string;
-  providerTransactionId: number;
-  transactionAmount: number;
-  approved: number;
-  authCode: string;
-  cardType: string;
-  transactionDate: string;
-  cvdId: number;
-  paymentMethod: string;
-  paymentMethodTypeCode: PaymentMethodTypeCode;
-  messageId: string;
-  messageText: string;
-}
-
-export interface PermitTransaction {
-  permitId: string;
-  transactionId: number;
-}
-
 export const TRANSACTION_TYPES = {
   P: "P",
   R: "R",
@@ -72,7 +50,7 @@ export interface PaymentGatewayData {
   pgTransactionId: string;
   pgApproved: number;
   pgAuthCode: string;
-  pgCardType: CardType;
+  pgCardType: PaymentCardTypeCode;
   pgTransactionDate: string;
   pgCvdId: number;
   pgPaymentMethod: BamboraPaymentMethod;
@@ -84,6 +62,7 @@ export interface StartTransactionRequestData
   extends Partial<PaymentGatewayData> {
   transactionTypeId: TransactionType;
   paymentMethodTypeCode: PaymentMethodTypeCode;
+  paymentCardTypeCode?: PaymentCardTypeCode;
   applicationDetails: {
     applicationId: string;
     transactionAmount: number;
@@ -95,6 +74,7 @@ export interface StartTransactionResponseData
   transactionId: string;
   transactionTypeId: TransactionType;
   paymentMethodTypeCode: PaymentMethodTypeCode;
+  paymentCardTypeCode?: PaymentCardTypeCode | null;
   totalTransactionAmount: number;
   transactionSubmitDate: string;
   transactionOrderNumber: string;
@@ -109,5 +89,5 @@ export type CompleteTransactionRequestData = Partial<PaymentGatewayData>;
 
 export interface CompleteTransactionResponseData
   extends Partial<PaymentGatewayData> {
-  transactionid: string;
+  transactionId: string;
 }

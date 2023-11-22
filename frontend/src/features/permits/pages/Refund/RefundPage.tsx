@@ -16,17 +16,19 @@ import {
 import "./RefundPage.scss";
 import { permitTypeDisplayText } from "../../types/PermitType";
 import { RefundFormData } from "./types/RefundFormData";
-import {
-  REFUND_METHODS,
-  getRefundMethodByCardType,
-  refundMethodDisplayText,
-} from "../../types/PaymentMethod";
 import { requiredMessage } from "../../../../common/helpers/validationMessages";
 import { getErrorMessage } from "../../../../common/components/form/CustomFormComponents";
 import { PermitHistory } from "../../types/PermitHistory";
 import { TransactionHistoryTable } from "./components/TransactionHistoryTable";
 import { FeeSummary } from "../../components/feeSummary/FeeSummary";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
+import { TRANSACTION_TYPES } from "../../types/payment.d";
+import { 
+  CONSOLIDATED_PAYMENT_METHODS, 
+  PAYMENT_METHODS_WITH_CARD,
+  PAYMENT_METHOD_TYPE_DISPLAY,
+  getPaymentMethod, 
+} from "../../../../common/types/paymentMethods";
 
 type PermitAction = "void" | "revoke" | "amend";
 
@@ -56,12 +58,8 @@ const transactionIdRules = {
   },
 };
 
-const refundOptions = Object.values(REFUND_METHODS).map((refundMethod) => ({
-  value: refundMethod,
-  label: refundMethodDisplayText(refundMethod),
-}));
-
-const DEFAULT_REFUND_METHOD = REFUND_METHODS.Cheque;
+const refundOptions = Object.keys(CONSOLIDATED_PAYMENT_METHODS);
+const DEFAULT_REFUND_OPTION = PAYMENT_METHOD_TYPE_DISPLAY.CHEQUE;
 
 export const RefundPage = ({
   permitHistory,
@@ -84,19 +82,52 @@ export const RefundPage = ({
   amountToRefund: number;
   onFinish: (refundData: RefundFormData) => void;
 }) => {
-  const [shouldUsePrevPaymentMethod, setShouldUsePrevPaymentMethod] =
-    useState<boolean>(true);
-
-  const getRefundMethodForPrevPayMethod = () => {
+  // Get last valid transaction's payment method
+  // eg. zero dollar amounts (from amendment) is not considered valid payment method
+  // Also, if the transaction is of payment method type with an associated card type, then its card type must not be empty
+  const getPrevPaymentMethod = () => {
     if (!permitHistory || permitHistory.length === 0)
-      return DEFAULT_REFUND_METHOD;
-    const cardType = permitHistory[0].pgCardType;
-    return getRefundMethodByCardType(cardType);
+      return undefined;
+    
+    const prevValidTransaction = permitHistory.find(history => {
+      return history.transactionTypeId !== TRANSACTION_TYPES.Z 
+        && (
+          (
+            PAYMENT_METHODS_WITH_CARD.includes(history.paymentMethodTypeCode)
+            && !!history.paymentCardTypeCode
+          )
+          || (
+            !PAYMENT_METHODS_WITH_CARD.includes(history.paymentMethodTypeCode)
+            && !history.paymentCardTypeCode
+          )
+        );
+    });
+
+    if (!prevValidTransaction) return undefined;
+
+    return getPaymentMethod(
+      prevValidTransaction.paymentMethodTypeCode, 
+      prevValidTransaction.paymentCardTypeCode,
+    );
+  };
+
+  const getRefundMethodType = () => {
+    const prevPaymentMethod = getPrevPaymentMethod();
+
+    if (!prevPaymentMethod) 
+      return CONSOLIDATED_PAYMENT_METHODS[DEFAULT_REFUND_OPTION].paymentMethodTypeCode;
+
+    return CONSOLIDATED_PAYMENT_METHODS[prevPaymentMethod].paymentMethodTypeCode;
   };
 
   const getRefundCardType = () => {
-    if (!permitHistory || permitHistory.length === 0) return "";
-    return getDefaultRequiredVal("", permitHistory[0].pgCardType);
+    const prevPaymentMethod = getPrevPaymentMethod();
+
+    if (!prevPaymentMethod) {
+      return CONSOLIDATED_PAYMENT_METHODS[DEFAULT_REFUND_OPTION].paymentCardTypeCode;
+    }
+
+    return CONSOLIDATED_PAYMENT_METHODS[prevPaymentMethod].paymentCardTypeCode;
   };
 
   const getRefundOnlineMethod = () => {
@@ -104,11 +135,22 @@ export const RefundPage = ({
     return getDefaultRequiredVal("", permitHistory[0].pgPaymentMethod);
   };
 
+  const disableRefundCardSelection = !getPrevPaymentMethod() || !getRefundCardType();
+
+  // only show refund method selection (both card selection and cheque) when amount to refund is greater than 0
+  // we use a small epsilon since there may be decimal precision errors when doing decimal comparisons
+  const enableRefundMethodSelection = Math.abs(amountToRefund) > 0.0000001;
+
+  const [shouldUsePrevPaymentMethod, setShouldUsePrevPaymentMethod] =
+    useState<boolean>(!disableRefundCardSelection);
+
   const formMethods = useForm<RefundFormData>({
     defaultValues: {
       shouldUsePrevPaymentMethod,
-      refundMethod: getRefundMethodForPrevPayMethod(),
-      refundCardType: getRefundCardType(),
+      refundMethod: getPaymentMethod(
+        getRefundMethodType(), 
+        getRefundCardType(),
+      ),
       refundOnlineMethod: getRefundOnlineMethod(),
       transactionId: "",
     },
@@ -126,9 +168,10 @@ export const RefundPage = ({
   } = formMethods;
 
   useEffect(() => {
-    const refundMethod = getRefundMethodForPrevPayMethod();
-    setValue("refundMethod", refundMethod);
-    setValue("refundCardType", getRefundCardType());
+    const refundMethod = getRefundMethodType();
+    const refundCardType = getRefundCardType();
+    setShouldUsePrevPaymentMethod(!disableRefundCardSelection);
+    setValue("refundMethod", getPaymentMethod(refundMethod, refundCardType));
     setValue("refundOnlineMethod", getRefundOnlineMethod());
   }, [permitHistory, permitHistory.length]);
 
@@ -136,11 +179,6 @@ export const RefundPage = ({
     const usePrev = shouldUsePrev === "true";
     setShouldUsePrevPaymentMethod(usePrev);
     setValue("shouldUsePrevPaymentMethod", usePrev);
-    setValue(
-      "refundMethod",
-      usePrev ? getRefundMethodForPrevPayMethod() : REFUND_METHODS.Cheque,
-    );
-    setValue("refundCardType", usePrev ? getRefundCardType() : "");
     setValue("refundOnlineMethod", usePrev ? getRefundOnlineMethod() : "");
     clearErrors("transactionId");
   };
@@ -153,10 +191,6 @@ export const RefundPage = ({
   const showSendSection = permitAction === "void" || permitAction === "revoke";
   const showReasonSection =
     (permitAction === "void" || permitAction === "revoke") && reason;
-
-  // only show refund method selection when amount to refund is greater than 0
-  // we use a small epsilon since there may be decimal precision errors when doing decimal comparisons
-  const enableRefundSelection = Math.abs(amountToRefund) > 0.0000001;
 
   return (
     <div className="refund-page">
@@ -198,7 +232,7 @@ export const RefundPage = ({
         ) : null}
       </div>
       <div className="refund-page__section refund-page__section--right">
-        {enableRefundSelection ? (
+        {enableRefundMethodSelection ? (
           <div className="refund-info refund-info--refund-methods">
             <div className="refund-info__header">Choose a Refund Method</div>
             <FormProvider {...formMethods}>
@@ -212,84 +246,87 @@ export const RefundPage = ({
                     value={value}
                     onChange={(e) => handleRefundMethodChange(e.target.value)}
                   >
-                    <div
-                      className={`refund-method ${
-                        shouldUsePrevPaymentMethod
-                          ? "refund-method--active"
-                          : ""
-                      }`}
-                    >
-                      <FormControlLabel
-                        className="radio-label"
-                        label="Refund to Previous Payment Method"
-                        value={true}
-                        control={<Radio key="refund-by-prev-payment-method" />}
-                      />
-                      <div className="refund-payment">
-                        <Controller
-                          name="refundMethod"
-                          control={control}
-                          render={({ field: { value } }) => (
-                            <FormControl className="refund-payment__info refund-payment__info--method">
-                              <FormLabel className="refund-payment__label">
-                                Payment Method
-                              </FormLabel>
-                              <Select
-                                className="refund-payment__input refund-payment__input--method"
-                                disabled={true}
-                                value={value}
-                              >
-                                {refundOptions.map((refundOption) => (
-                                  <MenuItem
-                                    key={refundOption.value}
-                                    value={refundOption.value}
-                                  >
-                                    {refundOption.label}
-                                  </MenuItem>
-                                ))}
-                              </Select>
-                            </FormControl>
-                          )}
+                    {!disableRefundCardSelection ? (
+                      <div
+                        className={`refund-method ${
+                          shouldUsePrevPaymentMethod
+                            ? "refund-method--active"
+                            : ""
+                        }`}
+                      >
+                        <FormControlLabel
+                          className="radio-label"
+                          label="Refund to Previous Payment Method"
+                          value={true}
+                          control={<Radio key="refund-by-prev-payment-method" />}
                         />
-
-                        <Controller
-                          name="transactionId"
-                          control={control}
-                          rules={transactionIdRules}
-                          render={({
-                            field: { value },
-                            fieldState: { invalid },
-                          }) => (
-                            <FormControl
-                              className="refund-payment__info refund-payment__info--transaction"
-                              error={invalid}
-                            >
-                              <FormLabel className="refund-payment__label">
-                                Transaction ID
-                              </FormLabel>
-                              <OutlinedInput
-                                className={`refund-payment__input refund-payment__input--transaction ${
-                                  invalid ? "refund-payment__input--err" : ""
-                                }`}
-                                defaultValue={value}
-                                {...register(
-                                  "transactionId",
-                                  transactionIdRules,
-                                )}
-                              />
-                              {invalid ? (
-                                <FormHelperText
-                                  className="refund-payment__err"
-                                  error
+                        <div className="refund-payment">
+                          <Controller
+                            name="refundMethod"
+                            control={control}
+                            render={({ field: { value } }) => (
+                              <FormControl className="refund-payment__info refund-payment__info--method">
+                                <FormLabel className="refund-payment__label">
+                                  Payment Method
+                                </FormLabel>
+                                <Select
+                                  className="refund-payment__input refund-payment__input--method"
+                                  disabled={true}
+                                  value={value}
                                 >
-                                  {getErrorMessage(errors, "transactionId")}
-                                </FormHelperText>
-                              ) : null}
-                            </FormControl>
-                          )}
-                        />
+                                  {refundOptions.map((refundOption) => (
+                                    <MenuItem
+                                      key={refundOption}
+                                      value={refundOption}
+                                    >
+                                      {refundOption}
+                                    </MenuItem>
+                                  ))}
+                                </Select>
+                              </FormControl>
+                            )}
+                          />
+
+                          <Controller
+                            name="transactionId"
+                            control={control}
+                            rules={transactionIdRules}
+                            render={({
+                              field: { value },
+                              fieldState: { invalid },
+                            }) => (
+                              <FormControl
+                                className="refund-payment__info refund-payment__info--transaction"
+                                error={invalid}
+                              >
+                                <FormLabel className="refund-payment__label">
+                                  Transaction ID
+                                </FormLabel>
+                                <OutlinedInput
+                                  className={`refund-payment__input refund-payment__input--transaction ${
+                                    invalid ? "refund-payment__input--err" : ""
+                                  }`}
+                                  defaultValue={value}
+                                  {...register(
+                                    "transactionId",
+                                    transactionIdRules,
+                                  )}
+                                />
+                                {invalid ? (
+                                  <FormHelperText
+                                    className="refund-payment__err"
+                                    error
+                                  >
+                                    {getErrorMessage(errors, "transactionId")}
+                                  </FormHelperText>
+                                ) : null}
+                              </FormControl>
+                            )}
+                          />
+                        </div>
                       </div>
-                    </div>
+                    ) : null}
+
                     <div
                       className={`refund-method ${
                         !shouldUsePrevPaymentMethod
