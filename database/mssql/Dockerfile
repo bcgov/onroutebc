@@ -32,3 +32,7 @@ RUN mkdir -p -m 700 /usr/config/tmp && chown -R mssql: /usr/config/tmp
 USER mssql
 
 ENTRYPOINT ["./entrypoint.sh"]
+
+# Healthcheck
+HEALTHCHECK --interval=15s --timeout=5s --retries=3 \
+    CMD /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "$$SA_PASSWORD" -Q "SELECT 1"
