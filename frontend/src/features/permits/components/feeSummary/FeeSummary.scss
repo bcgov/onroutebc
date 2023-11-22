@@ -5,12 +5,13 @@
   flex-direction: column;
   background-color: $banner-grey;
   color: $bc-primary-blue;
-  padding: 1em;
-  margin-top: 2em;
+  padding: 1.5rem;
+  margin-top: 1.5rem;
+  border-radius: 0.25rem;
 
   &__title {
-    font-weight: 600;
-    font-size: 1.2rem;
+    font-weight: bold;
+    font-size: 1.5rem;
   }
 
   &__table {
@@ -26,14 +27,14 @@
       padding: 1em 0;
 
       &--header {
-        font-weight: 600;
+        font-weight: bold;
         padding: 2em 0 1em 0;
       }
 
       &--total {
         border-bottom: none;
-        font-weight: 600;
-        font-size: 1.2rem;
+        font-weight: bold;
+        font-size: 1.5rem;
         padding: 1em 0 0 0;
       }
     }

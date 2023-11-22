@@ -1,0 +1,34 @@
+@import "../../../../../../themes/orbcStyles.scss";
+
+.payment-failed-banner {
+  margin-top: 2.5rem;
+  color: $white;
+  background-color: $bc-messages-red-text;
+  max-width: 33rem;
+  border-radius: 0.5rem;
+
+  & &__container {
+    padding: 1.5rem;
+    display: flex;
+  }
+
+  & &__icon {
+    font-size: 1.5rem;
+    margin-right: 1rem;
+  }
+
+  & &__info {
+    display: flex;
+    flex-direction: column;
+  }
+
+  & &__title {
+    font-size: 1.125rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+  }
+
+  & &__msg {
+    font-size: 1rem;
+  }
+}

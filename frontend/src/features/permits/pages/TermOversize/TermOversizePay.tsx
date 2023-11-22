@@ -12,6 +12,7 @@ import { Loading } from "../../../../common/pages/Loading";
 import { useStartTransaction } from "../../hooks/hooks";
 import { TRANSACTION_TYPES } from "../../types/payment.d";
 import { PAYMENT_METHOD_TYPE_CODE } from "../../../../common/types/paymentMethods";
+import { PaymentFailedBanner } from "./components/pay/PaymentFailedBanner";
 
 export const TermOversizePay = () => {
   const { applicationData } = useContext(ApplicationContext);
@@ -26,6 +27,16 @@ export const TermOversizePay = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  useEffect(() => {
+    if (typeof transaction !== "undefined") {
+      if (!transaction?.url) {
+        console.error("Invalid transaction url");
+      } else {
+        window.open(transaction.url, "_self");
+      }
+    }
+  }, [transaction]);
 
   const handlePay = () => {
     if (!applicationData?.permitId) {
@@ -45,20 +56,12 @@ export const TermOversizePay = () => {
     });
   };
 
-  if (typeof transaction !== "undefined") {
-    if (!transaction?.url) {
-      console.error("Invalid transaction url");
-    } else {
-      window.open(transaction.url, "_self");
-    }
-  }
-
   if (!applicationData?.permitId) {
     return <Loading />;
   }
 
   return (
-    <>
+    <div className="pay-now-page">
       <ProgressBar />
 
       <Box className="payment">
@@ -67,12 +70,14 @@ export const TermOversizePay = () => {
           applicationNumber={applicationData?.applicationNumber}
         />
 
+        <PaymentFailedBanner />
+
         <PermitPayFeeSummary
           calculatedFee={calculatedFee}
           permitType={applicationData?.permitType}
           onPay={handlePay}
         />
       </Box>
-    </>
+    </div>
   );
 };
