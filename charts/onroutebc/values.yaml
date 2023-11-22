@@ -105,7 +105,7 @@ vehicles:
         - "source /vault/secrets/auth0-{{.Values.global.zone}} && source /vault/secrets/ches-{{.Values.global.zone}} && source /vault/secrets/mssql-{{.Values.global.zone}} && source /vault/secrets/payment-{{.Values.global.zone}} && npm run start:prod"
       registry: '{{ .Values.global.registry }}'
       repository: '{{ .Values.global.repository }}' # example, it includes registry and repository
-      image: backend/vehicles
+      image: vehicles
       tag: "{{tpl .Values.global.tag .}}"
       ports:
         - name: vehicles-api
@@ -194,7 +194,7 @@ dops:
         - "source /vault/secrets/auth0-{{.Values.global.zone}} && source /vault/secrets/ches-{{.Values.global.zone}} && source /vault/secrets/mssql-{{.Values.global.zone}} && source /vault/secrets/payment-{{.Values.global.zone}} && npm run start:prod"
       registry: '{{ .Values.global.registry }}'
       repository: '{{ .Values.global.repository }}' # example, it includes registry and repository
-      image: backend/dops
+      image: dops
       tag: "{{tpl .Values.global.tag .}}"
       ports:
         - name: dops-api
