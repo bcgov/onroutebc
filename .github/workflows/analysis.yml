@@ -81,13 +81,13 @@ jobs:
         dir: [vehicles, dops, frontend]
         include:
           - dir: dops
-            sonar_projectKey: bcgov_onroutebc_backend
+            sonar_projectKey: bcgov_onroutebc_dops
             token: SONAR_TOKEN_BACKEND
-            triggers: ('dops')
+            triggers: ('dops/')
           - dir: vehicles
-            sonar_projectKey: bcgov_onroutebc_backend
+            sonar_projectKey: bcgov_onroutebc_vehicles
             token: SONAR_TOKEN_BACKEND
-            triggers: ('dops')
+            triggers: ('vehicles/')
           - dir: frontend
             sonar_projectKey: bcgov_onroutebc_frontend
             token: SONAR_TOKEN_FRONTEND
