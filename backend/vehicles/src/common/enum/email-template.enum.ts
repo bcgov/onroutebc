@@ -1,4 +1,0 @@
-export enum EmailTemplate {
-  PROFILE_REGISTRATION = 'PROFILE_REGISTRATION',
-  ISSUE_PERMIT = 'ISSUE_PERMIT',
-}

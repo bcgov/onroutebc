@@ -4,7 +4,10 @@
 # Frontend:
 /frontend/** @krishnan-aot @erikataot @zgong-gov
 
-# Backend:
+# Vehicles:
+/backend/**  @gchauhan-aot @praju-aot
+
+# Dops:
 /backend/**  @gchauhan-aot @praju-aot
 
 # Database:
