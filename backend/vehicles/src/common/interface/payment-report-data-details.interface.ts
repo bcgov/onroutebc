@@ -1,3 +1,5 @@
+import { PermitTypeReport } from '../enum/permit-type.enum';
+
 export interface IPaymentReportDataDetails {
   paymentMethod: string;
   orbcTransactionId: string;

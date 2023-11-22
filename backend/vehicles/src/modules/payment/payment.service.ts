@@ -705,21 +705,12 @@ export class PaymentService {
 
     permitTypes.sort((a, b) => a.valueOf().localeCompare(b.valueOf()));
 
-    // await Promise.all(
-    //   paymentCodes.map(async (paymentCode: IPaymentCode) => {
-    //     const paymentReportData =
-    //       await this.findSummaryPermitDataForReports(paymentCode,permitTypes,createPaymentDetailedReportDto);
-
-    //     if (paymentReportData) {
-    //       refundPaymentMethodAmountMap.set(
-    //         paymentReportData?.paymentMethod,
-    //         paymentReportData?.totalAmount,
-    //       );
-
-    //       return paymentReportData;
-    //     }
-    //   }),
-    // );
+    const formatSummaryPermitDopsInput =
+      await this.formatPermitSummaryForDopsInput(
+        paymentCodes,
+        permitTypes,
+        createPaymentDetailedReportDto,
+      );
 
     const purchasePaymentMethodAmountMap = new Map<string, number>();
 
@@ -784,20 +775,53 @@ export class PaymentService {
         payments: paymentDopsInput,
         refunds: refundDopsInput,
         summaryPayments: formatSummaryPaymentDopsInput,
-        summaryPermits: [
-          {
-            permitType: 'TROS',
-            permitCount: '1',
-          },
-          {
-            totalPermits: '1',
-          },
-        ],
+        summaryPermits: formatSummaryPermitDopsInput,
       },
       generatedDocumentFileName: 'Sample',
     };
 
     await this.dopsService.generateReport(currentUser, generateReportData, res);
+  }
+
+  private async formatPermitSummaryForDopsInput(
+    paymentCodes: IPaymentCode[],
+    permitTypes: PermitTypeReport[],
+    createPaymentDetailedReportDto: CreatePaymentDetailedReportDto,
+  ) {
+    const summaryPermitDetailsFromDB = await Promise.all(
+      paymentCodes.map(async (paymentCode: IPaymentCode) => {
+        return await this.findSummaryPermitDataForReports(
+          paymentCode,
+          permitTypes,
+          createPaymentDetailedReportDto,
+        );
+      }),
+    );
+
+    const result = summaryPermitDetailsFromDB
+      .flat()
+      .filter((x) => x != undefined)
+      .reduce((acc, { permitType, permitCount }) => {
+        const key = permitType as unknown as string;
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/restrict-plus-operands
+        acc[key] = (acc[key] || 0) + permitCount;
+        return acc;
+      }, {});
+
+    const summaryPermitSubTotal = Object.entries(result).map(
+      ([permitType, permitCount]) => ({ permitType, permitCount }),
+    ) as [{ permitType: PermitTypeReport; permitCount: number }];
+
+    const totalPermits = summaryPermitSubTotal.reduce(
+      (acc, { permitType, permitCount }) => acc + permitCount,
+      0,
+    );
+
+    const formatSummaryPermitDopsInput = [];
+    formatSummaryPermitDopsInput.push(...summaryPermitSubTotal);
+    formatSummaryPermitDopsInput.push({ totalPermits: totalPermits });
+
+    return formatSummaryPermitDopsInput as unknown;
   }
 
   private formatPaymentSummaryForDopsInput(
