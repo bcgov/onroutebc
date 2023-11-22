@@ -70,17 +70,18 @@ export class AppService {
     await addToCache(this.cacheManager, CacheKey.VEHICLE_TYPE, vehicleTypesMap);
 
     const paymentMethods =
-      await this.paymentService.findAllPaymentMethodEntities();
+      await this.paymentService.findAllPaymentMethodTypeEntities();
     await addToCache(
       this.cacheManager,
-      CacheKey.PAYMENT_METHOD,
+      CacheKey.PAYMENT_METHOD_TYPE,
       createCacheMap(paymentMethods, 'paymentMethodTypeCode', 'name'),
     );
 
-    const paymentTypes = await this.paymentService.findAllPaymentTypeEntities();
+    const paymentTypes =
+      await this.paymentService.findAllPaymentCardTypeEntities();
     await addToCache(
       this.cacheManager,
-      CacheKey.PAYMENT_TYPE,
+      CacheKey.PAYMENT_CARD_TYPE,
       createCacheMap(paymentTypes, 'paymentCardTypeCode', 'name'),
     );
 

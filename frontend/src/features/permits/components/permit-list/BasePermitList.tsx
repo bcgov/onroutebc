@@ -42,6 +42,10 @@ export const BasePermitList = ({
     <MaterialReactTable
       columns={PermitsColumnDefinition}
       data={data ?? []}
+      initialState={{ 
+        showGlobalFilter: true,
+        sorting: [{ id: "permitData.expiryDate", desc: true }]
+      }}
       state={{
         showAlertBanner: isError,
         showProgressBars: isInitialLoading,
@@ -137,7 +141,6 @@ export const BasePermitList = ({
       muiTopToolbarProps={{ sx: { zIndex: 0 } }}
       // Search Bar
       positionGlobalFilter="left"
-      initialState={{ showGlobalFilter: true }} //show the search bar by default
       globalFilterFn="contains" // use contains vs the default fuzzy filter fn
       muiSearchTextFieldProps={{
         placeholder: "Search",

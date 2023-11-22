@@ -33,7 +33,7 @@ import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFou
 
 /**
  * Dynamically set the column
- * @returns An array of column headers/accessor keys ofr Material React Table
+ * @returns An array of column headers/accessor keys for Material React Table
  */
 const getColumns = (): MRT_ColumnDef<ApplicationInProgress>[] => {
   return ApplicationInProgressColumnDefinition;
