@@ -140,6 +140,7 @@ export class PaymentController {
     @Body() createPaymentSummaryReportDto: CreatePaymentSummaryReportDto,
     @Res() res: Response,
   ): Promise<void> {
+    
     const currentUser = request.user as IUserJWT;
 
     await this.paymentService.createPaymentSummaryReport(
