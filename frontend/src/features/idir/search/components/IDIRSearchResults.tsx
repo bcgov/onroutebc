@@ -122,6 +122,9 @@ export const IDIRSearchResults = memo(
               </Box>
             );
           }}
+          initialState={{
+            sorting: [{ id: "permitIssueDateTime", desc: true }],
+          }}
           state={{
             isLoading,
             showAlertBanner: isError,
