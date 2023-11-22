@@ -17,9 +17,9 @@ import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { useQuery } from "@tanstack/react-query";
 import dayjs, { Dayjs } from "dayjs";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ONE_HOUR } from "../../../../common/constants/constants";
-import { CONSOLIDATED_PAYMENT_METHODS } from "../../../../common/types/paymentMethods";
+import { ALL_CONSOLIDATED_PAYMENT_METHODS } from "../../../../common/types/paymentMethods";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { SELECT_FIELD_STYLE } from "../../../../themes/orbcStyles";
 import {
@@ -35,24 +35,39 @@ import "./style.scss";
  *
  */
 export const PaymentAndRefundDetail = () => {
-  const [permitType, setPermitType] = useState<string[]>(["ALL"]);
-  const [paymentMethodType, setPaymentMethodType] = useState<string[]>([
-    "All Payment Methods",
-  ]);
-  const [users, setUsers] = useState<string[]>(["ALL"]);
-
   // GET the permit types.
   const permitTypesQuery = useQuery({
     queryKey: ["permitTypes"],
     queryFn: () => getPermitTypes(),
+    select: (data) => {
+      return {
+        "All Permit Types": "ALL",
+        ...data,
+      };
+    },
     keepPreviousData: true,
     staleTime: ONE_HOUR,
   });
 
+  const { data: permitTypes, isLoading: isPermitTypeQueryLoading } =
+    permitTypesQuery;
+
+  const [selectedPermitTypes, setSelectedPermitTypes] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (permitTypes) {
+      setSelectedPermitTypes(() => Object.keys(permitTypes) as string[]);
+    }
+  }, [isPermitTypeQueryLoading]);
+
   // GET the list of users who have issued a permit.
   const permitIssuersQuery = usePermitIssuersQuery();
 
-  const ss = CONSOLIDATED_PAYMENT_METHODS;
+  const [selectedPaymentCodes, setSelectedPaymentCodes] = useState<string[]>([
+    "All Payment Methods",
+  ]);
+  const [users, setUsers] = useState<string[]>(["ALL"]);
+
   const [issuedBy, setIssuedBy] = useState<string[]>(["SELF", "PPC"]);
   const [fromDateTime, setFromDateTime] = useState<Dayjs>(
     dayjs()
@@ -74,9 +89,9 @@ export const PaymentAndRefundDetail = () => {
         fromDateTime: fromDateTime.toISOString(),
         toDateTime: toDateTime.toISOString(),
         issuedBy,
-        paymentCodes: paymentMethodType.map((key: string) => {
+        paymentCodes: selectedPaymentCodes.map((key: string) => {
           const { paymentMethodTypeCode, paymentCardTypeCode } =
-            CONSOLIDATED_PAYMENT_METHODS[key];
+            ALL_CONSOLIDATED_PAYMENT_METHODS[key];
           const paymentCodes: PaymentCodes = {
             paymentMethodTypeCode,
           };
@@ -85,7 +100,7 @@ export const PaymentAndRefundDetail = () => {
           }
           return paymentCodes;
         }),
-        permitType,
+        permitType: selectedPermitTypes,
       };
       if (issuedBy.includes("PPC")) {
         requestObj.users = users;
@@ -128,26 +143,52 @@ export const PaymentAndRefundDetail = () => {
     },
   ];
 
-  const permitTypes2 = [
-    {
-      label: "All Permit Types",
-      value: "ALL",
-    },
-    {
-      label: "TROS",
-      value: "TROS",
-    },
-    {
-      label: "TROW",
-      value: "TROW",
-    },
-  ];
+  const permitTypes2 = {
+    "All Permit Types": "ALL",
+    EPTOP: "Extra-Provincial Temporary Operating",
+    HC: "Highway Crossing",
+    LCV: "Long Combination Vehicle",
+    MFP: "Motive Fuel User",
+    NRQBS: "Quarterly Non Resident Reg. / Ins. - Bus",
+    NRQCL: "Non Resident Quarterly Conditional License",
+    NRQCV: "Quarterly Non Resident Reg. / Ins. - Comm Vehicle",
+    NRQFT: "Non Resident Quarterly Farm Tractor",
+    NRQFV: "Quarterly Non Resident Reg. / Ins. - Farm Vehicle",
+    NRQXP: "Non Resident Quarterly X Plated",
+    NRSBS: "Single Trip Non-Resident Registration / Insurance -Buses",
+    NRSCL: "Non Resident Single Trip Conditional License",
+    NRSCV: "Single Trip Non-Resident Reg. / Ins. - Commercial Vehicle",
+    NRSFT: "Non Resident Farm Tractor Single Trip",
+    NRSFV: "Single Trip Non Resident Reg. / Ins. - Farm Vehicle",
+    NRSXP: "Non Resident Single Trip X Plated Vehicle",
+    RIG: "Rig Move",
+    STOS: "Single Trip Oversize",
+    STOW: "Single Trip Over Weight",
+    STWS: "Single Trip Overweight Oversize",
+    TRAX: "Term Axle Overweight",
+    TROS: "Term Oversize",
+    TROW: "Term Overweight",
+  };
 
-  const onSelectPermitType = (event: SelectChangeEvent<typeof permitType>) => {
+  const onSelectPermitType = (
+    event: SelectChangeEvent<typeof selectedPermitTypes>,
+  ) => {
     const {
       target: { value },
     } = event;
-    setPermitType(() => (typeof value === "string" ? value.split(",") : value));
+    if (permitTypes) {
+      if (value === "All Permit Types") {
+        setSelectedPermitTypes(() => Object.keys(permitTypes) as string[]);
+      } else {
+        if (value.includes("All Permit Types")) {
+          // cosk
+          // value.split(",")
+        }
+        setSelectedPermitTypes(() =>
+          typeof value === "string" ? value.split(",") : value,
+        );
+      }
+    }
   };
 
   const onSelectUser = (event: SelectChangeEvent<typeof users>) => {
@@ -161,12 +202,12 @@ export const PaymentAndRefundDetail = () => {
   };
 
   const onSelectPaymentMethod = (
-    event: SelectChangeEvent<typeof permitType>,
+    event: SelectChangeEvent<typeof selectedPermitTypes>,
   ) => {
     const {
       target: { value },
     } = event;
-    setPaymentMethodType(
+    setSelectedPaymentCodes(
       // On autofill we get a stringified value.
       () => {
         return typeof value === "string" ? value.split(",") : value;
@@ -258,28 +299,34 @@ export const PaymentAndRefundDetail = () => {
                 multiple
                 onChange={onSelectPermitType}
                 renderValue={(selected) => {
-                  const selectedLabels: string[] = [];
-                  selected.forEach((selectedValue) => {
-                    selectedLabels.push(
-                      permitTypes2.find(({ value }) => value === selectedValue)
-                        ?.label as string,
-                    );
-                  });
-                  return selectedLabels.join(", ");
-                  // return selected.join(", ");
+                  if (selectedPermitTypes.includes("All Permit Types")) {
+                    return "All Permit Types";
+                  }
+                  // const selectedLabels: string[] = [];
+                  // selected.forEach((selectedValue) => {
+                  //   selectedLabels.push(
+                  //     permitTypes2.find(({ value }) => value === selectedValue)
+                  //       ?.label as string,
+                  //   );
+                  // });
+                  // return selectedLabels.join(", ");
+                  return selected.join(", ");
                 }}
                 input={<OutlinedInput />}
-                value={permitType}
+                value={selectedPermitTypes}
                 // inputProps={{ shrink: "false" }}
               >
-                {permitTypes2.map(({ label, value }) => {
-                  return (
-                    <MenuItem key={label} value={value}>
-                      <Checkbox checked={permitType.indexOf(value) > -1} />
-                      <ListItemText primary={label} />
-                    </MenuItem>
-                  );
-                })}
+                {permitTypes &&
+                  Object.keys(permitTypes).map((key) => {
+                    return (
+                      <MenuItem key={key} value={key}>
+                        <Checkbox
+                          checked={selectedPermitTypes.indexOf(key) > -1}
+                        />
+                        <ListItemText primary={key} />
+                      </MenuItem>
+                    );
+                  })}
               </Select>
             </FormControl>
           </Stack>
@@ -305,14 +352,13 @@ export const PaymentAndRefundDetail = () => {
                 onChange={onSelectPaymentMethod}
                 renderValue={(selected) => selected.join(", ")}
                 input={<OutlinedInput />}
-                value={paymentMethodType}
+                value={selectedPaymentCodes}
               >
-                {[
-                  "All Payment Methods",
-                  ...Object.keys(CONSOLIDATED_PAYMENT_METHODS),
-                ].map((key) => (
+                {Object.keys(ALL_CONSOLIDATED_PAYMENT_METHODS).map((key) => (
                   <MenuItem key={key} value={key}>
-                    <Checkbox checked={paymentMethodType.indexOf(key) > -1} />
+                    <Checkbox
+                      checked={selectedPaymentCodes.indexOf(key) > -1}
+                    />
                     <ListItemText primary={key} />
                   </MenuItem>
                 ))}

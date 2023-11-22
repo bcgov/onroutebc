@@ -64,19 +64,20 @@ export type PaymentCardTypeDisplay =
   (typeof PAYMENT_CARD_TYPE_DISPLAY)[keyof typeof PAYMENT_CARD_TYPE_DISPLAY];
 
 export const PAYMENT_METHODS_WITH_CARD: PaymentMethodTypeCode[] = [
-  PAYMENT_METHOD_TYPE_CODE.ICEPAY, 
-  PAYMENT_METHOD_TYPE_CODE.WEB, 
+  PAYMENT_METHOD_TYPE_CODE.ICEPAY,
+  PAYMENT_METHOD_TYPE_CODE.WEB,
   PAYMENT_METHOD_TYPE_CODE.POS,
 ];
 
 export type PaymentMethodWithCard = Extract<
-  PaymentMethodTypeCode, 
-  typeof PAYMENT_METHOD_TYPE_CODE.ICEPAY | 
-  typeof PAYMENT_METHOD_TYPE_CODE.WEB | 
-  typeof PAYMENT_METHOD_TYPE_CODE.POS
+  PaymentMethodTypeCode,
+  | typeof PAYMENT_METHOD_TYPE_CODE.ICEPAY
+  | typeof PAYMENT_METHOD_TYPE_CODE.WEB
+  | typeof PAYMENT_METHOD_TYPE_CODE.POS
 >;
 
-export type PaymentMethodDisplayWithCard = typeof PAYMENT_METHOD_TYPE_DISPLAY[PaymentMethodWithCard];
+export type PaymentMethodDisplayWithCard =
+  (typeof PAYMENT_METHOD_TYPE_DISPLAY)[PaymentMethodWithCard];
 
 /**
  * An object containing the paymentMethodTypeCode and paymentCardTypeCode values.
@@ -86,7 +87,7 @@ export type PaymentMethodAndCardTypeCodes = {
    * The payment method type code.
    * (not to be confused with PaymentMethodTypeDisplay)
    */
-  paymentMethodTypeCode: PaymentMethodTypeCode;
+  paymentMethodTypeCode: PaymentMethodTypeCode | "ALL";
   /**
    * The two letter card type code.
    * (not to be confused with PaymentCardTypeDisplay)
@@ -181,9 +182,23 @@ export const CONSOLIDATED_PAYMENT_METHODS: Record<
 };
 
 /**
+ * This is an additional consolidated payment methods that specifically includes
+ * an option called All Payment Methods.
+ */
+export const ALL_CONSOLIDATED_PAYMENT_METHODS: Record<
+  string,
+  PaymentMethodAndCardTypeCodes
+> = {
+  "All Payment Methods": {
+    paymentMethodTypeCode: "ALL",
+  },
+  ...CONSOLIDATED_PAYMENT_METHODS,
+};
+
+/**
  * Generates a key for the {@link CONSOLIDATED_PAYMENT_METHODS} object.
  * The key follows this format: "{paymentMethod} - {paymentCard}"
- * 
+ *
  * @param paymentMethod One of "IcePay" | "PoS" | "Web" {@link PAYMENT_METHOD_TYPE_DISPLAY}
  * @param paymentCard A value from {@link PaymentCardTypeDisplay}
  * @returns string

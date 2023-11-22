@@ -7,7 +7,6 @@ import {
   Stack,
 } from "@mui/material";
 import { memo, useState } from "react";
-import { useForm } from "react-hook-form";
 import { Banner } from "../../../../common/components/dashboard/Banner";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { PaymentAndRefundDetail } from "../../reporting/forms/PaymentAndRefundDetail";
@@ -22,12 +21,9 @@ enum REPORT_MODE {
  * React component to render the reports page by an IDIR user.
  */
 export const IDIRReportsDashboard = memo(() => {
-  const formMethods = useForm({
-    reValidateMode: "onBlur",
-  });
 
   const [reportMode, setReportMode] = useState<REPORT_MODE>(
-    REPORT_MODE.SUMMARY
+    REPORT_MODE.DETAIL
   );
 
   return (
