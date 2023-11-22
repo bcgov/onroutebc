@@ -8,16 +8,16 @@ appVersion: "1.16.0"
 dependencies: # A list of the chart requirements (optional)
   - name: component
     #repository: "https://bcgov.github.io/helm-service"
-    repository: "file:///home/ubuntu/helm-service/charts/component"
+    repository: "file:///home/ubuntu/helm-service/charts"
     alias: frontend
     version: 0.2.0
   - name: component
     #repository: "https://bcgov.github.io/helm-service"
-    repository: "file:///home/ubuntu/helm-service/charts/component"
+    repository: "file:///home/ubuntu/helm-service/charts"
     alias: vehicles
     version: 0.2.0
   - name: component
     #repository: "https://bcgov.github.io/helm-service"
-    repository: "file:///home/ubuntu/helm-service/charts/component"
+    repository: "file:///home/ubuntu/helm-service/charts"
     alias: dops
     version: 0.2.0
