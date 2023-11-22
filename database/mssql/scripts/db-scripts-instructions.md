@@ -1,10 +1,11 @@
 # onRouteBC Database Migration Scripts
 ## The Quick Version
-If you know what you're doing, have your environment already set up, and just want the list of commands here they are:
+If you know what you're doing, have your environment already set up with the git repository checked out to ~/tmp/, and just want the list of commands here they are:
 ```
+cd ~/tmp/onroutebc
 git restore *
-cd ~/tmp/onroutebc/database/mssql/scripts/utility
 git pull
+cd database/mssql/scripts/utility
 chmod u+x ./*.sh
 ./get-db-status.sh
 ```
