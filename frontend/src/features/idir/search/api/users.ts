@@ -1,25 +1,36 @@
 import { useQuery } from "@tanstack/react-query";
-import { httpGETRequest } from "../../../../common/apiManager/httpRequestHandler";
 import { VEHICLES_URL } from "../../../../common/apiManager/endpoints/endpoints";
+import { httpGETRequest } from "../../../../common/apiManager/httpRequestHandler";
+import { ONE_HOUR } from "../../../../common/constants/constants";
 
 /**
- * Gets the power unit types.
- * @returns Array<PowerUnitType>
+ *
  */
-export const getIDIRUsers = async (): Promise<Array<string>> => {
-  return httpGETRequest(`${VEHICLES_URL}/idir-users`).then(
-    (response) => response.data
-  );
+export type ReadUserDto = {
+  userGUID: string;
+  userName: string;
+};
+
+/**
+ *
+ * @returns
+ */
+export const getPermitIssuers = async (): Promise<Array<ReadUserDto>> => {
+  const url = new URL(`${VEHICLES_URL}/users`);
+  url.searchParams.set("permitIssuerPPCUser", `${true}`);
+  return httpGETRequest(url.toString()).then((response) => response.data);
 };
 
 /**
  * Fetches a list of vehicle subtypes for PowerUnit vehicles.
  * @returns List of vehicle subtypes for PowerUnit vehicles
  */
-export const useUsersQuery = () => {
+export const usePermitIssuersQuery = () => {
   return useQuery({
     queryKey: ["idirUsers"],
-    queryFn: getIDIRUsers,
+    queryFn: getPermitIssuers,
+    keepPreviousData: true,
+    staleTime: ONE_HOUR,
     retry: false,
     refetchOnWindowFocus: false, // prevents unnecessary queries
   });

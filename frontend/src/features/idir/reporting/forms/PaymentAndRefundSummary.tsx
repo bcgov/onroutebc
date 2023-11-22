@@ -2,30 +2,26 @@ import {
   Button,
   Checkbox,
   Divider,
+  FormControl,
   FormControlLabel,
   FormGroup,
-  Stack,
-  FormControl,
   FormLabel,
-  FormHelperText,
+  Stack
 } from "@mui/material";
-import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import {
   DateTimePicker,
-  DesktopDateTimePicker,
-  LocalizationProvider,
+  LocalizationProvider
 } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import dayjs, { Dayjs } from "dayjs";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { BC_COLOURS } from "../../../../themes/bcGovStyles";
+import { openBlobInNewTab } from "../../../permits/helpers/permitPDFHelper";
 import {
   PaymentAndRefundSummaryRequest,
   getPaymentAndRefundSummary,
 } from "../../search/api/reports";
-import { openBlobInNewTab } from "../../../permits/helpers/permitPDFHelper";
-import { Controller, FormProvider, useForm } from "react-hook-form";
-import { CustomCheckbox } from "../../../../common/components/form/subFormComponents/CustomCheckbox";
-import { useState } from "react";
-import { now } from "../../../../common/helpers/formatDate";
-import dayjs, { Dayjs } from "dayjs";
 
 const sample = {
   issuedBy: ["SELF"],

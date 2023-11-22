@@ -5,45 +5,30 @@ import {
   FormControl,
   FormControlLabel,
   FormGroup,
-  InputLabel,
+  FormLabel,
   ListItemText,
   MenuItem,
   OutlinedInput,
   Select,
   SelectChangeEvent,
   Stack,
-  FormLabel,
 } from "@mui/material";
-import { BC_COLOURS } from "../../../../themes/bcGovStyles";
-import {
-  DateTimePicker,
-  DesktopDateTimePicker,
-  LocalizationProvider,
-  pickersLayoutClasses,
-} from "@mui/x-date-pickers";
+import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { useQuery } from "@tanstack/react-query";
+import dayjs, { Dayjs } from "dayjs";
+import { useState } from "react";
+import { ONE_HOUR } from "../../../../common/constants/constants";
+import { CONSOLIDATED_PAYMENT_METHODS } from "../../../../common/types/paymentMethods";
+import { BC_COLOURS } from "../../../../themes/bcGovStyles";
+import { SELECT_FIELD_STYLE } from "../../../../themes/orbcStyles";
 import {
   PaymentAndRefundDetailRequest,
-  PaymentMethodTypeSubObject,
-  getPaymentAndRefundDetail,
-  getPaymentAndRefundSummary,
+  PaymentCodes,
+  getPermitTypes,
 } from "../../search/api/reports";
-import { openBlobInNewTab } from "../../../permits/helpers/permitPDFHelper";
-import { useState } from "react";
-import dayjs, { Dayjs } from "dayjs";
-import { SELECT_FIELD_STYLE } from "../../../../themes/orbcStyles";
-import { getPaymentMethodAndTypes } from "../../../../common/types/payment";
+import { usePermitIssuersQuery } from "../../search/api/users";
 import "./style.scss";
-import { PaymentMethodAndTypeRecord } from "../../../../common/types/payment2";
-
-const sample = {
-  issuedBy: ["SELF"],
-  paymentMethodType: ["ALL"],
-  permitType: ["ALL"],
-  fromDateTime: "2023-10-11T23:26:51.170Z",
-  toDateTime: "2023-10-27T23:26:51.170Z",
-  users: ["ORBCTST1"],
-};
 
 /**
  * Component for Payment and Refund Detail form
@@ -55,6 +40,19 @@ export const PaymentAndRefundDetail = () => {
     "All Payment Methods",
   ]);
   const [users, setUsers] = useState<string[]>(["ALL"]);
+
+  // GET the permit types.
+  const permitTypesQuery = useQuery({
+    queryKey: ["permitTypes"],
+    queryFn: () => getPermitTypes(),
+    keepPreviousData: true,
+    staleTime: ONE_HOUR,
+  });
+
+  // GET the list of users who have issued a permit.
+  const permitIssuersQuery = usePermitIssuersQuery();
+
+  const ss = CONSOLIDATED_PAYMENT_METHODS;
   const [issuedBy, setIssuedBy] = useState<string[]>(["SELF", "PPC"]);
   const [fromDateTime, setFromDateTime] = useState<Dayjs>(
     dayjs()
@@ -71,47 +69,21 @@ export const PaymentAndRefundDetail = () => {
    * Opens the report in a new tab.
    */
   const onClickViewReport = async () => {
-    console.log(PaymentMethodAndTypeRecord);
-
-    console.log("paymentMethodType::", paymentMethodType);
     try {
       const requestObj: PaymentAndRefundDetailRequest = {
         fromDateTime: fromDateTime.toISOString(),
         toDateTime: toDateTime.toISOString(),
         issuedBy,
-        // paymentMethodType: paymentMethodType,
-        // paymentMethods: paymentMethods.filter(({ display, paymentMethodTypeId, paymentTypeId}) => {
-        //   const retArray: PaymentMethodTypeSubObject[] = [];
-        //   paymentMethodType.forEach((type) => {
-        //     const sss = paymentMethods.find((paymentMethod) => paymentMethod.display === type );
-        //     retArray.push({
-        //       paymentMethodTypeId: sss?.paymentMethodTypeId as string,
-        //       paymentTypeId: sss?.paymentTypeId
-        //     })
-        //   });
-        //   return retArray;
-
-        // }),
-        // paymentMethods: paymentMethods
-        //   .filter(({ display }) => paymentMethodType.includes(display))
-        //   .map(({ paymentMethodTypeId, paymentType }) => {
-        //     return {
-        //       paymentMethodTypeId,
-        //       paymentType,
-        //     };
-        //   }),
-        paymentMethods: paymentMethodType.map((key: string) => {
-          const { paymentMethodTypeId, paymentType } =
-            PaymentMethodAndTypeRecord[key];
-          if (paymentType) {
-            return {
-              paymentMethodTypeId,
-              paymentType,
-            };
+        paymentCodes: paymentMethodType.map((key: string) => {
+          const { paymentMethodTypeCode, paymentCardTypeCode } =
+            CONSOLIDATED_PAYMENT_METHODS[key];
+          const paymentCodes: PaymentCodes = {
+            paymentMethodTypeCode,
+          };
+          if (paymentCardTypeCode) {
+            paymentCodes.paymentCardTypeCode = paymentCardTypeCode;
           }
-          return {
-            paymentMethodTypeId
-          }
+          return paymentCodes;
         }),
         permitType,
       };
@@ -127,8 +99,6 @@ export const PaymentAndRefundDetail = () => {
       console.error(err);
     }
   };
-
-  const permitTypes = ["ALL", "TROS"];
 
   const ppcList = [
     {
@@ -172,9 +142,6 @@ export const PaymentAndRefundDetail = () => {
       value: "TROW",
     },
   ];
-  const paymentMethods = getPaymentMethodAndTypes();
-
-  // console.log(paymentMethods);
 
   const onSelectPermitType = (event: SelectChangeEvent<typeof permitType>) => {
     const {
@@ -336,27 +303,13 @@ export const PaymentAndRefundDetail = () => {
                 id="demo-multiple-payment-method"
                 multiple
                 onChange={onSelectPaymentMethod}
-                // renderValue={(selected) => {
-                //   const selectedLabels: string[] = [];
-                //   selected.forEach((selectedValue) => {
-                //     console.log("selectedValue::", selectedValue);
-                //     selectedLabels.push(
-                //       paymentMethods.find(
-                //         ({ display }) => display === selectedValue,
-                //       )?.display as string,
-                //     );
-                //   });
-
-                //   return selectedLabels.join(", ");
-                //   // return selected.join(", ");
-                // }}
                 renderValue={(selected) => selected.join(", ")}
                 input={<OutlinedInput />}
                 value={paymentMethodType}
               >
                 {[
                   "All Payment Methods",
-                  ...Object.keys(PaymentMethodAndTypeRecord),
+                  ...Object.keys(CONSOLIDATED_PAYMENT_METHODS),
                 ].map((key) => (
                   <MenuItem key={key} value={key}>
                     <Checkbox checked={paymentMethodType.indexOf(key) > -1} />
@@ -393,7 +346,6 @@ export const PaymentAndRefundDetail = () => {
                 renderValue={(selected) => {
                   const selectedLabels: string[] = [];
                   selected.forEach((selectedValue) => {
-                    console.log("selectedValue::", selectedValue);
                     selectedLabels.push(
                       ppcList.find(({ username }) => username === selectedValue)
                         ?.name as string,
@@ -437,8 +389,6 @@ export const PaymentAndRefundDetail = () => {
                   From
                 </FormLabel>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  {/* <DesktopDateTimePicker /> */}
-                  {/* <DateTimePicker disableFuture openTo="hours"/> */}
                   <DateTimePicker
                     defaultValue={dayjs()
                       .subtract(1, "day")
@@ -446,7 +396,6 @@ export const PaymentAndRefundDetail = () => {
                       .set("m", 0)
                       .set("s", 0)
                       .set("ms", 0)}
-                    //   label={<strong>From</strong>}
                     format="YYYY/MM/DD hh:mm A"
                     slotProps={{
                       digitalClockSectionItem: {
@@ -460,11 +409,6 @@ export const PaymentAndRefundDetail = () => {
                     }}
                     disabled={issuedBy.length === 0}
                     views={["year", "month", "day", "hours", "minutes"]}
-                    // slotProps={{
-                    //   textField: {
-                    //     helperText: "Select a from date time",
-                    //   },
-                    // }}
                   />
                 </LocalizationProvider>
               </FormControl>
@@ -484,8 +428,6 @@ export const PaymentAndRefundDetail = () => {
                   To
                 </FormLabel>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  {/* <DesktopDateTimePicker /> */}
-                  {/* <DateTimePicker disableFuture openTo="hours"/> */}
                   <DateTimePicker
                     disabled={issuedBy.length === 0}
                     onChange={(value: Dayjs | null) => {
@@ -497,8 +439,6 @@ export const PaymentAndRefundDetail = () => {
                       .set("m", 59)
                       .set("s", 59)
                       .set("ms", 999)}
-                    // defaultValue={new Date(fromDateTime)}
-                    //   label={<strong>To</strong>}
                     views={["year", "month", "day", "hours", "minutes"]}
                     // slotProps={{
                     //   textField: {
@@ -509,22 +449,6 @@ export const PaymentAndRefundDetail = () => {
                 </LocalizationProvider>
               </FormControl>
             </>
-            {/* <FormControlLabel
-            disabled={issuedBy.length === 0}
-            control={
-              
-            }
-            label={<strong>From</strong>}
-            labelPlacement="top"
-          /> */}
-            {/* <FormControlLabel
-            disabled={issuedBy.length === 0}
-            control={
-              
-            }
-            label={<strong>To</strong>}
-            labelPlacement="top"
-          /> */}
           </Stack>
           <br />
           <Stack direction="row">
