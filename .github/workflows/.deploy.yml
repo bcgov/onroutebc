@@ -89,7 +89,7 @@ jobs:
             --set-string global.vault.role=${{inputs.vault_role}} \
             --install --wait --atomic ${{ github.event.repository.name }}-${{ inputs.target }} \
             --timeout ${{ inputs.timeout-minutes }}m \
-            -- force \
+            --force \
             --values ${{ inputs.values }} .
 
           # Remove old build runs, build pods and deployment pods
