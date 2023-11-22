@@ -100,7 +100,6 @@ export const IDIRSearchResults = memo(
           enableTopToolbar={true}
           // Empty Toolbar actions to prevent the default actions.
           renderToolbarInternalActions={() => <></>}
-          enableSorting
           renderTopToolbarCustomActions={() => {
             return (
               <Box sx={{ display: "flex", gap: "1rem", p: "4px" }}>
@@ -123,11 +122,13 @@ export const IDIRSearchResults = memo(
               </Box>
             );
           }}
+          initialState={{
+            sorting: [{ id: "permitIssueDateTime", desc: true }],
+          }}
           state={{
             isLoading,
             showAlertBanner: isError,
-            showProgressBars: isLoading,
-            sorting: [{ id: "permitIssueDateTime", desc: true }],
+            showProgressBars: isLoading
           }}
           // Disable the default column actions so that we can use our custom actions
           enableColumnActions={false}
