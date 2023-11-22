@@ -721,7 +721,7 @@ export class PaymentService {
     ) as [{ permitType: PermitTypeReport; permitCount: number }];
 
     const totalPermits = summaryPermitSubTotal.reduce(
-      (acc, { permitType, permitCount }) => acc + permitCount,
+      (acc, { permitCount }) => acc + permitCount,
       0,
     );
 
