@@ -9,7 +9,6 @@ global:
     annotation:
       helm.sh/policy: "keep"
   domain: "apps.silver.devops.gov.bc.ca" # it is required, apps.silver.devops.gov.bc.ca for silver cluster
-  openshiftImageRegistry: "image-registry.openshift-image-registry.svc:5000"
   vault:
     role: "nonprod"
 frontend:
