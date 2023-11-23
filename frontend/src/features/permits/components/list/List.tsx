@@ -16,8 +16,8 @@ import {
   MRT_GlobalFilterTextField,
   MRT_Row,
   MRT_TableInstance,
-  MaterialReactTable, 
-  useMaterialReactTable
+  MaterialReactTable,
+  useMaterialReactTable,
 } from "material-react-table";
 
 import "./List.scss";
@@ -176,11 +176,7 @@ export const List = memo(
       ),
       // Render a custom options Bar (inclues search and trash)
       renderTopToolbar: useCallback(
-        ({
-          table,
-        }: {
-          table: MRT_TableInstance<ApplicationInProgress>;
-        }) => (
+        ({ table }: { table: MRT_TableInstance<ApplicationInProgress> }) => (
           <Box className="table-container__top-toolbar">
             <MRT_GlobalFilterTextField table={table} />
             <Trash
@@ -198,12 +194,11 @@ export const List = memo(
         },
       },
       muiToolbarAlertBannerProps: isError
-          ? {
-              color: "error",
-              children: "Error loading data",
-            }
-          : undefined
-      ,
+        ? {
+            color: "error",
+            children: "Error loading data",
+          }
+        : undefined,
       initialState: {
         showGlobalFilter: true,
       }, //show the search bar by default

@@ -7,8 +7,8 @@ import {
   MRT_Row,
   MRT_TableInstance,
   MaterialReactTable,
-  useMaterialReactTable
-} from 'material-react-table'
+  useMaterialReactTable,
+} from "material-react-table";
 
 import { SnackBarContext } from "../../../../App";
 import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
@@ -31,29 +31,24 @@ export const BasePermitList = ({
 }) => {
   const { data, isError, isInitialLoading } = query;
   const snackBar = useContext(SnackBarContext);
-  
+
   const table = useMaterialReactTable({
     ...defaultTableOptions,
     columns: PermitsColumnDefinition,
     data: data ?? [],
     initialState: {
       showGlobalFilter: true,
-      sorting: [{ id: "permitData.expiryDate", desc: true }]
+      sorting: [{ id: "permitData.expiryDate", desc: true }],
     },
     state: {
       showAlertBanner: isError,
       showProgressBars: isInitialLoading,
-      columnVisibility: {applicationId: true},
-      isLoading: isInitialLoading
+      columnVisibility: { applicationId: true },
+      isLoading: isInitialLoading,
     },
     renderEmptyRowsFallback: () => <NoRecordsFound />,
     renderRowActions: useCallback(
-      ({
-        row,
-      }: {
-        table: MRT_TableInstance<Permit>;
-        row: MRT_Row<Permit>;
-      }) => {
+      ({ row }: { table: MRT_TableInstance<Permit>; row: MRT_Row<Permit> }) => {
         return (
           <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
             <PermitRowOptions
@@ -85,12 +80,12 @@ export const BasePermitList = ({
         outline: "1px solid #DBDCDC",
       },
     },
-    muiToolbarAlertBannerProps:
-      isError ? {
-        color: "error",
-        children: "Error loading data",
-      } : undefined
-    ,
+    muiToolbarAlertBannerProps: isError
+      ? {
+          color: "error",
+          children: "Error loading data",
+        }
+      : undefined,
     muiSearchTextFieldProps: {
       placeholder: "Search",
       sx: {
@@ -117,7 +112,5 @@ export const BasePermitList = ({
     }
   }, [isError]);
 
-  return (
-    <MaterialReactTable table={table} />
-  );
+  return <MaterialReactTable table={table} />;
 };

@@ -2,9 +2,9 @@ import { useMemo } from "react";
 
 import {
   MRT_ColumnDef,
-  MaterialReactTable, 
-  useMaterialReactTable 
-} from 'material-react-table'
+  MaterialReactTable,
+  useMaterialReactTable,
+} from "material-react-table";
 
 import "./TransactionHistoryTable.scss";
 import { PermitHistory } from "../../../types/PermitHistory";
@@ -70,7 +70,10 @@ export const TransactionHistoryTable = ({
       },
       {
         accessorFn: (originalRow) =>
-          getDefaultRequiredVal(originalRow.transactionOrderNumber, originalRow.pgTransactionId),
+          getDefaultRequiredVal(
+            originalRow.transactionOrderNumber,
+            originalRow.pgTransactionId,
+          ),
         id: "providerTransactionId",
         header: "Transaction ID",
         muiTableHeadCellProps: {
@@ -122,10 +125,8 @@ export const TransactionHistoryTable = ({
     enableRowActions: false,
     muiTableProps: {
       className: "transaction-history-table",
-    }
+    },
   });
 
-  return (
-    <MaterialReactTable table={table} />
-  );
+  return <MaterialReactTable table={table} />;
 };

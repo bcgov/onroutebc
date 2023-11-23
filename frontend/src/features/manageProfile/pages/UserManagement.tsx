@@ -8,8 +8,8 @@ import {
   MaterialReactTable,
   MRT_Row,
   MRT_TableInstance,
-  useMaterialReactTable 
-} from 'material-react-table'
+  useMaterialReactTable,
+} from "material-react-table";
 
 import "./UserManagement.scss";
 import { SnackBarContext } from "../../../App";
@@ -89,9 +89,7 @@ export const UserManagement = () => {
     },
     renderEmptyRowsFallback: () => <NoRecordsFound />,
     enableRowSelection: (row: MRT_Row<ReadCompanyUser>): boolean => {
-      if (
-        row?.original?.userGUID === userFromToken?.profile?.bceid_user_guid
-      ) {
+      if (row?.original?.userGUID === userFromToken?.profile?.bceid_user_guid) {
         return false;
       }
       return true;
@@ -113,9 +111,7 @@ export const UserManagement = () => {
         if (row.original.statusCode === BCeIDUserStatus.ACTIVE) {
           return (
             <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-              <UserManagementTableRowActions
-                userGUID={row.original.userGUID}
-              />
+              <UserManagementTableRowActions userGUID={row.original.userGUID} />
             </Box>
           );
         } else {
@@ -127,10 +123,7 @@ export const UserManagement = () => {
     renderToolbarInternalActions: useCallback(
       () => (
         <Box className="table-container__toolbar-internal-actions">
-          <Trash
-            onClickTrash={onClickTrashIcon}
-            disabled={hasNoRowsSelected}
-          />
+          <Trash onClickTrash={onClickTrashIcon} disabled={hasNoRowsSelected} />
         </Box>
       ),
       [hasNoRowsSelected],
@@ -143,14 +136,12 @@ export const UserManagement = () => {
       },
     },
     // Alert banner
-    muiToolbarAlertBannerProps:
-      isError
-        ? {
-            color: "error",
-            children: "Error loading data",
-          }
-        : undefined
-    ,
+    muiToolbarAlertBannerProps: isError
+      ? {
+          color: "error",
+          children: "Error loading data",
+        }
+      : undefined,
   });
 
   return (

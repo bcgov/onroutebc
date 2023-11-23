@@ -7,8 +7,8 @@ import {
   MRT_Row,
   MRT_TableInstance,
   MaterialReactTable,
-  useMaterialReactTable 
-} from 'material-react-table'
+  useMaterialReactTable,
+} from "material-react-table";
 
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
@@ -105,7 +105,7 @@ export const IDIRSearchResults = memo(
       state: {
         isLoading,
         showAlertBanner: isError,
-        showProgressBars: isLoading
+        showProgressBars: isLoading,
       },
       enableTopToolbar: true,
       renderToolbarInternalActions: () => <></>,
@@ -118,9 +118,7 @@ export const IDIRSearchResults = memo(
                 <Switch
                   color="primary"
                   checked={isActiveRecordsOnly}
-                  onChange={(
-                    event: React.ChangeEvent<HTMLInputElement>,
-                  ) => {
+                  onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                     setIsActiveRecordsOnly(() => event.target.checked);
                   }}
                 />
@@ -165,14 +163,12 @@ export const IDIRSearchResults = memo(
           height: "calc(100vh - 475px)",
         },
       },
-      muiToolbarAlertBannerProps:
-        isError
-          ? {
-              color: "error",
-              children: "Error loading data",
-            }
-          : undefined
-      ,
+      muiToolbarAlertBannerProps: isError
+        ? {
+            color: "error",
+            children: "Error loading data",
+          }
+        : undefined,
       muiSearchTextFieldProps: {
         placeholder: "Search",
         sx: {
@@ -186,13 +182,13 @@ export const IDIRSearchResults = memo(
           },
         },
       },
-    })
+    });
 
     return (
       <div className="table-container">
         <MaterialReactTable table={table} />
       </div>
-    )
+    );
   },
 );
 

@@ -279,9 +279,8 @@ export const List = memo(
                         const newObject: { [key: string]: boolean } = {};
                         // Setting the selected row to false so that
                         // the row appears unchecked.
-                        newObject[
-                          row.getValue(`${vehicleType}Id`) as string
-                        ] = false;
+                        newObject[row.getValue(`${vehicleType}Id`) as string] =
+                          false;
                         return newObject;
                       });
                     }}
@@ -341,14 +340,12 @@ export const List = memo(
       // Top toolbar
       //muiTopToolbarProps: { sx: { zIndex: 0 } }, // resolve z-index conflict with sliding panel
       // Alert banner
-      muiToolbarAlertBannerProps:
-        isError
-          ? {
-              color: "error",
-              children: "Error loading data",
-            }
-          : undefined
-      ,
+      muiToolbarAlertBannerProps: isError
+        ? {
+            color: "error",
+            children: "Error loading data",
+          }
+        : undefined,
       // Search Bar
       //positionGlobalFilter: "left",
       muiSearchTextFieldProps: {
@@ -366,7 +363,7 @@ export const List = memo(
       },
       // Row Header
       //muiTableHeadRowProps: {
-     //   sx: { backgroundColor: BC_COLOURS.bc_background_light_grey },
+      //   sx: { backgroundColor: BC_COLOURS.bc_background_light_grey },
       //}
     });
 
