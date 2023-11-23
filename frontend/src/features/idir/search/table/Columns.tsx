@@ -22,7 +22,9 @@ export const PermitSearchResultColumnDef: MRT_ColumnDef<Permit>[] = [
   {
     accessorKey: "permitNumber",
     header: "Permit #",
-    enableSorting: false,
+    enableSorting: true,
+    enableMultiSort: false,
+    sortingFn: "alphanumeric",
     Cell: (props: { cell: any; row: any }) => {
       const permit = props.row.original as Permit;
       const {
@@ -53,12 +55,16 @@ export const PermitSearchResultColumnDef: MRT_ColumnDef<Permit>[] = [
   {
     accessorKey: "permitType",
     header: "Permit Type",
-    enableSorting: false,
+    enableSorting: true,
+    enableMultiSort: false,
+    sortingFn: "alphanumeric",
   },
   {
     accessorKey: "permitData.commodities",
     header: "Commodity",
-    enableSorting: false,
+    enableSorting: true,
+    enableMultiSort: false,
+    sortingFn: "alphanumeric",
     // For TROS permits, commodities is not a concern.
     // Other permits will require implementation here.
     Cell: () => <>NA</>,
@@ -66,28 +72,38 @@ export const PermitSearchResultColumnDef: MRT_ColumnDef<Permit>[] = [
   {
     accessorKey: "permitData.vehicleDetails.plate",
     header: "Plate",
-    enableSorting: false,
+    enableSorting: true,
+    enableMultiSort: false,
+    sortingFn: "alphanumeric",
   },
   {
     accessorKey: "permitData.companyName",
     header: "Company Name",
-    enableSorting: false,
+    enableSorting: true,
+    enableMultiSort: false,
+    sortingFn: "alphanumeric",
   },
   {
     accessorKey: "permitData.startDate",
     header: "Permit Start Date",
     enableSorting: true,
+    enableMultiSort: false,
+    sortingFn: "datetime",
   },
   {
     accessorKey: "permitData.expiryDate",
     header: "Permit End Date",
     enableSorting: true,
+    enableMultiSort: false,
+    sortingFn: "datetime",
   },
   {
     accessorKey: "permitIssueDateTime",
     header: "Issue Date",
     enableSorting: true,
     sortDescFirst: true,
+    enableMultiSort: false,
+    sortingFn: "datetime",
     accessorFn: (originalRow) => {
       const { permitIssueDateTime } = originalRow;
       const issueDate = applyWhenNotNullable(
