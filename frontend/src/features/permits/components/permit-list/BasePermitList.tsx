@@ -37,7 +37,8 @@ export const BasePermitList = ({
     columns: PermitsColumnDefinition,
     data: data ?? [],
     initialState: {
-      showGlobalFilter: true
+      showGlobalFilter: true,
+      sorting: [{ id: "permitData.expiryDate", desc: true }]
     },
     state: {
       showAlertBanner: isError,
@@ -118,5 +119,5 @@ export const BasePermitList = ({
 
   return (
     <MaterialReactTable table={table} />
-  )
+  );
 };
