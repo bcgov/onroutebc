@@ -19,6 +19,7 @@ import {
   feeSummaryDisplayText,
   isTransactionTypeRefund,
 } from "../../../helpers/feeSummary";
+import { defaultTableOptions } from "../../../../../common/constants/defaultTableOptions";
 
 export const TransactionHistoryTable = ({
   permitHistory,
@@ -115,13 +116,10 @@ export const TransactionHistoryTable = ({
   );
 
   const table = useMaterialReactTable({
+    ...defaultTableOptions,
     columns: columns,
     data: permitHistory,
-    enablePagination: false,
-    enableTopToolbar: false,
-    enableBottomToolbar: false,
     enableRowActions: false,
-    enableColumnActions: false,
     muiTableProps: {
       className: "transaction-history-table",
     }
@@ -130,21 +128,4 @@ export const TransactionHistoryTable = ({
   return (
     <MaterialReactTable table={table} />
   );
-
-
-  /*
-  return (
-    <MaterialReactTable
-      columns={columns}
-      data={permitHistory}
-      enablePagination={false}
-      enableTopToolbar={false}
-      enableBottomToolbar={false}
-      enableRowActions={false}
-      enableColumnActions={false}
-      muiTableProps={{
-        className: "transaction-history-table",
-      }}
-    />
-  );*/
 };

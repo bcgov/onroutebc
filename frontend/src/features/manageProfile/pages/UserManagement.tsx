@@ -103,6 +103,7 @@ export const UserManagement = () => {
     positionActionsColumn: "last",
     enableColumnActions: false,
     enableRowActions: true,
+    enableSortingRemoval: false,
     getRowId: (originalRow: ReadCompanyUser) => originalRow.userName,
     displayColumnDefOptions: {
       "mrt-row-actions": {

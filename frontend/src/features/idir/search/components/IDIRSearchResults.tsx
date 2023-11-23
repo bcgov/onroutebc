@@ -21,6 +21,7 @@ import { IDIRPermitSearchRowActions } from "./IDIRPermitSearchRowActions";
 import "./List.scss";
 import { USER_AUTH_GROUP } from "../../../manageProfile/types/userManagement.d";
 import { isPermitInactive } from "../../../permits/types/PermitStatus";
+import { defaultTableOptions } from "../../../../common/constants/defaultTableOptions";
 
 /**
  * Function to decide whether to show row actions icon or not.
@@ -93,10 +94,19 @@ export const IDIRSearchResults = memo(
       }
       return initialData;
     };
-    
+
     const table = useMaterialReactTable({
+      ...defaultTableOptions,
       data: getFilteredData(data?.items ?? []),
       columns: columns,
+      initialState: {
+        sorting: [{ id: "permitIssueDateTime", desc: true }],
+      },
+      state: {
+        isLoading,
+        showAlertBanner: isError,
+        showProgressBars: isLoading
+      },
       enableTopToolbar: true,
       renderToolbarInternalActions: () => <></>,
       renderTopToolbarCustomActions: () => {
@@ -120,24 +130,6 @@ export const IDIRSearchResults = memo(
             />
           </Box>
         );
-      },
-      initialState: {
-        sorting: [{ id: "permitIssueDateTime", desc: true }],
-      },
-      state: {
-        isLoading,
-        showAlertBanner: isError,
-        showProgressBars: isLoading
-      },
-      enableColumnActions: false,
-      enableRowActions: true,
-      selectAllMode: "page",
-      enableStickyHeader: true,
-      positionActionsColumn: "last",
-      displayColumnDefOptions: {
-        "mrt-row-actions": {
-          header: "",
-        },
       },
       renderRowActions: useCallback(
         ({
@@ -167,30 +159,12 @@ export const IDIRSearchResults = memo(
         },
         [],
       ),
-      muiTablePaperProps: {
-        sx: {
-          border: "none",
-          boxShadow: "none",
-        },
-      },
-      defaultColumn: {
-        maxSize: 200, //allow columns to get larger than default
-        minSize: 25,
-        size: 50,
-      },
       muiTableContainerProps: {
         sx: {
           outline: "1px solid #DBDCDC",
           height: "calc(100vh - 475px)",
         },
       },
-      muiBottomToolbarProps: {
-        sx: {
-          zIndex: 0, // resolve z-index conflict with sliding panel
-          backgroundColor: BC_COLOURS.bc_background_light_grey,
-        },
-      },
-      muiTopToolbarProps: { sx: { zIndex: 0 } }, // resolve z-index conflict with sliding panel
       muiToolbarAlertBannerProps:
         isError
           ? {
@@ -212,10 +186,6 @@ export const IDIRSearchResults = memo(
           },
         },
       },
-      muiTableHeadRowProps: {
-        sx: { backgroundColor: BC_COLOURS.bc_background_light_grey },
-      }
-
     })
 
     return (
@@ -225,147 +195,5 @@ export const IDIRSearchResults = memo(
     )
   },
 );
-
-    /*
-    return (
-      <div className="table-container">
-        <MaterialReactTable
-          // Required Props
-          data={getFilteredData(data?.items ?? [])}
-          columns={columns}
-          enableTopToolbar={true}
-          // Empty Toolbar actions to prevent the default actions.
-          renderToolbarInternalActions={() => <></>}
-          renderTopToolbarCustomActions={() => {
-            return (
-              <Box sx={{ display: "flex", gap: "1rem", p: "4px" }}>
-                <FormControlLabel
-                  value="end"
-                  control={
-                    <Switch
-                      color="primary"
-                      checked={isActiveRecordsOnly}
-                      onChange={(
-                        event: React.ChangeEvent<HTMLInputElement>,
-                      ) => {
-                        setIsActiveRecordsOnly(() => event.target.checked);
-                      }}
-                    />
-                  }
-                  label="Active Permits Only"
-                  labelPlacement="end"
-                />
-              </Box>
-            );
-          }}
-          initialState={{
-            sorting: [{ id: "permitIssueDateTime", desc: true }],
-          }}
-          state={{
-            isLoading,
-            showAlertBanner: isError,
-            showProgressBars: isLoading
-          }}
-          // Disable the default column actions so that we can use our custom actions
-          enableColumnActions={false}
-          enableRowActions={true}
-          selectAllMode="page"
-          enableStickyHeader
-          positionActionsColumn="last"
-          displayColumnDefOptions={{
-            "mrt-row-actions": {
-              header: "",
-            },
-          }}
-          renderRowActions={useCallback(
-            ({
-              row,
-            }: {
-              table: MRT_TableInstance<Permit>;
-              row: MRT_Row<Permit>;
-            }) => {
-              const isInactive =
-                hasPermitExpired(row.original.permitData.expiryDate) ||
-                isPermitInactive(row.original.permitStatus);
-
-              if (shouldShowRowActions(idirUserDetails?.userAuthGroup)) {
-                return (
-                  <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-                    <IDIRPermitSearchRowActions
-                      isPermitInactive={isInactive}
-                      permitNumber={row.original.permitNumber}
-                      permitId={row.original.permitId}
-                      userAuthGroup={idirUserDetails?.userAuthGroup}
-                    />
-                  </Box>
-                );
-              } else {
-                return <></>;
-              }
-            },
-            [],
-          )}
-          
-          // Main table container
-          muiTablePaperProps={{
-            sx: {
-              border: "none",
-              boxShadow: "none",
-            },
-          }}
-          // Column widths
-          defaultColumn={{
-            maxSize: 200, //allow columns to get larger than default
-            minSize: 25,
-            size: 50,
-          }}
-          // Cell/Body container
-          muiTableContainerProps={{
-            sx: {
-              outline: "1px solid #DBDCDC",
-              height: "calc(100vh - 475px)",
-            },
-          }}
-          // Pagination
-          muiBottomToolbarProps={{
-            sx: {
-              zIndex: 0, // resolve z-index conflict with sliding panel
-              backgroundColor: BC_COLOURS.bc_background_light_grey,
-            },
-          }}
-          // Top toolbar
-          muiTopToolbarProps={{ sx: { zIndex: 0 } }} // resolve z-index conflict with sliding panel
-          // Alert banner
-          muiToolbarAlertBannerProps={
-            isError
-              ? {
-                  color: "error",
-                  children: "Error loading data",
-                }
-              : undefined
-          }
-          muiSearchTextFieldProps={{
-            placeholder: "Search",
-            sx: {
-              minWidth: "300px",
-              backgroundColor: "white",
-            },
-            variant: "outlined",
-            inputProps: {
-              sx: {
-                padding: "10px",
-              },
-            },
-          }}
-          // Row Header
-          muiTableHeadRowProps={{
-            sx: { backgroundColor: BC_COLOURS.bc_background_light_grey },
-          }}
-        />
-      </div>
-    );
-  },
-);
-*/
 
 IDIRSearchResults.displayName = "SearchResults";

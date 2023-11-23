@@ -43,6 +43,7 @@ import {
   useTrailerTypesQuery,
 } from "../../apiManager/hooks";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
+import { defaultTableOptions } from "../../../../common/constants/defaultTableOptions";
 
 /**
  * Dynamically set the column based on vehicle type
@@ -198,9 +199,10 @@ export const List = memo(
     // End snackbar code for error handling
 
     const table = useMaterialReactTable({
+      ...defaultTableOptions,
       data: data ?? [],
       columns: newColumns,
-      // State variables and actions
+      initialState: { showGlobalFilter: true },
       state: {
         isLoading,
         showAlertBanner: isError,
@@ -210,9 +212,10 @@ export const List = memo(
         rowSelection: rowSelection,
       },
       // Disable the default column actions so that we can use our custom actions
-      enableColumnActions: false,
+      //enableColumnActions: false,
       // Enable checkboxes for row selection
       enableRowSelection: true,
+      //enableSortingRemoval: false,
       // Row copy, delete, and edit options
       getRowId: (originalRow) => {
         if (vehicleType === "powerUnit") {
@@ -223,16 +226,16 @@ export const List = memo(
           return trailerRow.trailerId as string;
         }
       },
-      enableRowActions: true,
-      selectAllMode: "page",
+      //enableRowActions: true,
+      //selectAllMode: "page",
       onRowSelectionChange: setRowSelection,
-      enableStickyHeader: true,
-      positionActionsColumn: "last",
-      displayColumnDefOptions: {
-        "mrt-row-actions": {
-          header: "",
-        },
-      },
+      //enableStickyHeader: true,
+      //positionActionsColumn: "last",
+      //displayColumnDefOptions: {
+      //  "mrt-row-actions": {
+      ////    header: "",
+      //  },
+      //},
       renderEmptyRowsFallback: () => <NoRecordsFound />,
       renderRowActions: useCallback(
         ({
@@ -309,18 +312,18 @@ export const List = memo(
         [hasNoRowsSelected],
       ),
       // Main table container
-      muiTablePaperProps: {
-        sx: {
-          border: "none",
-          boxShadow: "none",
-        },
-      },
+      //muiTablePaperProps: {
+      //  sx: {
+      //    border: "none",
+      //    boxShadow: "none",
+      //  },
+      //},
       // Column widths
-      defaultColumn: {
-        maxSize: 200, //allow columns to get larger than default
-        minSize: 25,
-        size: 50,
-      },
+      //defaultColumn: {
+      //  maxSize: 200, //allow columns to get larger than default
+      //  minSize: 25,
+      //  size: 50,
+      //},
       // Cell/Body container
       muiTableContainerProps: {
         sx: {
@@ -329,14 +332,14 @@ export const List = memo(
         },
       },
       // Pagination
-      muiBottomToolbarProps: {
-        sx: {
-          zIndex: 0, // resolve z-index conflict with sliding panel
-          backgroundColor: BC_COLOURS.bc_background_light_grey,
-        },
-      },
+      //muiBottomToolbarProps: {
+      //  sx: {
+      //    zIndex: 0, // resolve z-index conflict with sliding panel
+      //    backgroundColor: BC_COLOURS.bc_background_light_grey,
+      //  },
+      //},
       // Top toolbar
-      muiTopToolbarProps: { sx: { zIndex: 0 } }, // resolve z-index conflict with sliding panel
+      //muiTopToolbarProps: { sx: { zIndex: 0 } }, // resolve z-index conflict with sliding panel
       // Alert banner
       muiToolbarAlertBannerProps:
         isError
@@ -347,8 +350,7 @@ export const List = memo(
           : undefined
       ,
       // Search Bar
-      positionGlobalFilter: "left",
-      initialState: { showGlobalFilter: true }, //show the search bar by default
+      //positionGlobalFilter: "left",
       muiSearchTextFieldProps: {
         placeholder: "Search",
         sx: {
@@ -363,9 +365,9 @@ export const List = memo(
         },
       },
       // Row Header
-      muiTableHeadRowProps: {
-        sx: { backgroundColor: BC_COLOURS.bc_background_light_grey },
-      }
+      //muiTableHeadRowProps: {
+     //   sx: { backgroundColor: BC_COLOURS.bc_background_light_grey },
+      //}
     });
 
     return (
