@@ -107,6 +107,16 @@ vehicles:
       repository: '{{ .Values.global.repository }}' # example, it includes registry and repository
       image: backend/vehicles
       tag: "{{tpl .Values.global.tag .}}"
+      env:
+        fromLocalConfigmap: 
+          - name: DOPS_URL 
+            key: DOPS_URL
+          - name: FRONTEND_URL
+            key: FRONTEND_URL
+          - name: VEHICLES_URL
+            key: VEHICLES_URL
+          - name: PAYBC_REDIRECT
+            key: PAYBC_REDIRECT
       ports:
         - name: vehicles-api
           containerPort: 5000
@@ -196,6 +206,10 @@ dops:
       repository: '{{ .Values.global.repository }}' # example, it includes registry and repository
       image: backend/dops
       tag: "{{tpl .Values.global.tag .}}"
+      env:
+        fromLocalConfigmap: 
+          - name: ACCESS_API_URL
+            key: ACCESS_API_URL
       ports:
         - name: dops-api
           containerPort: 5001
