@@ -194,7 +194,7 @@ dops:
   configmap:
     enabled: true
     data:
-      ACCESS_API_URL: "https://{{.Release.Name}}-dops.apps.silver.devops.gov.bc.ca"
+      ACCESS_API_URL: "https://{{.Release.Name}}-vehicles.apps.silver.devops.gov.bc.ca"
   containers:
     - name: dops
       command:
