@@ -1,5 +1,10 @@
 import { useMemo } from "react";
-import MaterialReactTable, { MRT_ColumnDef } from "material-react-table";
+
+import {
+  MRT_ColumnDef,
+  MaterialReactTable,
+  useMaterialReactTable,
+} from "material-react-table";
 
 import "./TransactionHistoryTable.scss";
 import { PermitHistory } from "../../../types/PermitHistory";
@@ -14,6 +19,7 @@ import {
   feeSummaryDisplayText,
   isTransactionTypeRefund,
 } from "../../../helpers/feeSummary";
+import { defaultTableOptions } from "../../../../../common/constants/defaultTableOptions";
 
 export const TransactionHistoryTable = ({
   permitHistory,
@@ -64,7 +70,10 @@ export const TransactionHistoryTable = ({
       },
       {
         accessorFn: (originalRow) =>
-          getDefaultRequiredVal(originalRow.transactionOrderNumber, originalRow.pgTransactionId),
+          getDefaultRequiredVal(
+            originalRow.transactionOrderNumber,
+            originalRow.pgTransactionId,
+          ),
         id: "providerTransactionId",
         header: "Transaction ID",
         muiTableHeadCellProps: {
@@ -109,18 +118,15 @@ export const TransactionHistoryTable = ({
     [],
   );
 
-  return (
-    <MaterialReactTable
-      columns={columns}
-      data={permitHistory}
-      enablePagination={false}
-      enableTopToolbar={false}
-      enableBottomToolbar={false}
-      enableRowActions={false}
-      enableColumnActions={false}
-      muiTableProps={{
-        className: "transaction-history-table",
-      }}
-    />
-  );
+  const table = useMaterialReactTable({
+    ...defaultTableOptions,
+    columns: columns,
+    data: permitHistory,
+    enableRowActions: false,
+    muiTableProps: {
+      className: "transaction-history-table",
+    },
+  });
+
+  return <MaterialReactTable table={table} />;
 };
