@@ -1,4 +1,7 @@
-import { PaymentCardTypeCode, PaymentMethodTypeCode } from "../../../common/types/paymentMethods";
+import {
+  PaymentCardTypeCode,
+  PaymentMethodTypeCode,
+} from "../../../common/types/paymentMethods";
 import { BamboraPaymentMethod } from "./PaymentMethod";
 import { TransactionType } from "./payment";
 
