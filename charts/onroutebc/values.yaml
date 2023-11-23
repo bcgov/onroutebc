@@ -9,7 +9,6 @@ global:
     annotation:
       helm.sh/policy: "keep"
   domain: "apps.silver.devops.gov.bc.ca" # it is required, apps.silver.devops.gov.bc.ca for silver cluster
-  openshiftImageRegistry: "image-registry.openshift-image-registry.svc:5000"
   vault:
     role: "nonprod"
 frontend:
@@ -105,7 +104,7 @@ vehicles:
         - "source /vault/secrets/auth0-{{.Values.global.zone}} && source /vault/secrets/ches-{{.Values.global.zone}} && source /vault/secrets/mssql-{{.Values.global.zone}} && source /vault/secrets/payment-{{.Values.global.zone}} && npm run start:prod"
       registry: '{{ .Values.global.registry }}'
       repository: '{{ .Values.global.repository }}' # example, it includes registry and repository
-      image: backend/vehicles
+      image: vehicles
       tag: "{{tpl .Values.global.tag .}}"
       env:
         fromLocalConfigmap: 
@@ -195,7 +194,7 @@ dops:
   configmap:
     enabled: true
     data:
-      ACCESS_API_URL: "https://{{.Release.Name}}-dops.apps.silver.devops.gov.bc.ca"
+      ACCESS_API_URL: "https://{{.Release.Name}}-vehicles.apps.silver.devops.gov.bc.ca"
   containers:
     - name: dops
       command:
@@ -204,7 +203,7 @@ dops:
         - "source /vault/secrets/auth0-{{.Values.global.zone}} && source /vault/secrets/mssql-{{.Values.global.zone}} && source /vault/secrets/cdogs-{{.Values.global.zone}} && source /vault/secrets/dops-{{.Values.global.zone}} && npm run start:prod"
       registry: '{{ .Values.global.registry }}'
       repository: '{{ .Values.global.repository }}' # example, it includes registry and repository
-      image: backend/dops
+      image: dops
       tag: "{{tpl .Values.global.tag .}}"
       env:
         fromLocalConfigmap: 
@@ -232,13 +231,15 @@ dops:
         initialDelaySeconds: 60
         periodSeconds: 30
         timeoutSeconds: 5
+      securityContext:
+        allowPrivilegeEscalation: true
       resources: # this is optional
         limits:
-          cpu: 75m
-          memory: 150Mi
+          cpu: 150m
+          memory: 300Mi
         requests:
-          cpu: 25m
-          memory: 50Mi
+          cpu: 75m
+          memory: 100Mi
   ingress:
     annotations: 
       route.openshift.io/termination: "edge"

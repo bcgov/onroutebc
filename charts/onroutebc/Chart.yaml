@@ -3,18 +3,18 @@ apiVersion: v2
 name: onRouteBC
 description: Helm chart for onRouteBC
 type: application
-version: 1.0.0
+version: 1.0.1
 appVersion: "1.16.0"
 dependencies: # A list of the chart requirements (optional)
   - name: component
     repository: "https://bcgov.github.io/helm-service"
     alias: frontend
-    version: 0.0.18
+    version: 0.2.0
   - name: component
     repository: "https://bcgov.github.io/helm-service"
     alias: vehicles
-    version: 0.0.18
+    version: 0.2.0
   - name: component
     repository: "https://bcgov.github.io/helm-service"
     alias: dops
-    version: 0.0.18
+    version: 0.2.0

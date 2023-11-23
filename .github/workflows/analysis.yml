@@ -78,7 +78,7 @@ jobs:
           - 5432:5432
     strategy:
       matrix:
-        dir: [backend/vehicles, backend/dops, frontend]
+        dir: [vehicles, dops, frontend]
         include:
           - dir: backend/dops
             sonar_projectKey: onroutebc_dops
