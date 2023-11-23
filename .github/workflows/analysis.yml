@@ -80,16 +80,16 @@ jobs:
       matrix:
         dir: [vehicles, dops, frontend]
         include:
-          - dir: dops
-            sonar_projectKey: bcgov_onroutebc_dops
-            token: SONAR_TOKEN_BACKEND
-            triggers: ('dops/')
-          - dir: vehicles
-            sonar_projectKey: bcgov_onroutebc_vehicles
-            token: SONAR_TOKEN_BACKEND
-            triggers: ('vehicles/')
+          - dir: backend/dops
+            sonar_projectKey: onroutebc_dops
+            token: SONAR_TOKEN_DOPS
+            triggers: ('backend/dops')
+          - dir: backend/vehicles
+            sonar_projectKey: onroutebc_vehicles
+            token: SONAR_TOKEN_VEHICLES
+            triggers: ('backend/dops')
           - dir: frontend
-            sonar_projectKey: bcgov_onroutebc_frontend
+            sonar_projectKey: onroutebc_frontend
             token: SONAR_TOKEN_FRONTEND
             triggers: ('frontend/')
     steps:
@@ -99,7 +99,7 @@ jobs:
             npm ci
             npm run test:cov
           dir: ${{ matrix.dir }}
-          node_version: "20"
+          node_version: "18"
           sonar_args: >
             -Dsonar.exclusions=**/coverage/**,**/node_modules/**,**/*spec.ts
             -Dsonar.organization=bcgov-sonarcloud

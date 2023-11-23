@@ -1,4 +1,7 @@
-import { PaymentCardTypeCode, PaymentMethodTypeCode } from "../../../../../common/types/paymentMethods";
+import {
+  PaymentCardTypeCode,
+  PaymentMethodTypeCode,
+} from "../../../../../common/types/paymentMethods";
 import { BamboraPaymentMethod } from "../../../types/PaymentMethod";
 import { PermitStatus, PERMIT_STATUSES } from "../../../types/PermitStatus";
 import { PermitsActionResponse } from "../../../types/permit";
