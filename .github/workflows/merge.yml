@@ -15,7 +15,7 @@ jobs:
     uses: ./.github/workflows/.deploy.yml
     secrets: inherit
     with:
-      target: test
+      target: latest
       values: values.yaml
       license: c28f0c
       vault_role: nonprod
