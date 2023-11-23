@@ -113,3 +113,5 @@ test-report.xml
 
 # VS Code settings and directories
 .vscode
+
+Chart.lock
