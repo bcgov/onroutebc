@@ -231,6 +231,8 @@ dops:
         initialDelaySeconds: 60
         periodSeconds: 30
         timeoutSeconds: 5
+      securityContext:
+        allowPrivilegeEscalation: true
       resources: # this is optional
         limits:
           cpu: 150m
