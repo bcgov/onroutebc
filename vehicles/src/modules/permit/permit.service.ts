@@ -232,7 +232,7 @@ export class PermitService {
   /**
    * Finds permits for user.
    * @param userGUID if present get permits for this user
-   *  @param companyId if present get permits for this company
+   * @param companyId if present get permits for this company
    * @param expired if true get expired premits else get active permits
    *
    */
@@ -353,10 +353,9 @@ export class PermitService {
   }
 
   /**
-   *
+   * 
    * @param permitId ex: 1
-   * @param status ex: VOIDED|REVOKED
-   * Description: This method will find the permit given the permit id and re-send the email to the given address.
+   * Description: This method will find the permit given the permit id and re-send the document via email to the given address.
    */
   public async resendPermit(
     permitId: string,
@@ -383,6 +382,9 @@ export class PermitService {
 
     let success = '';
     let failure = '';
+
+    // TODO: fetch Document?
+    // TODO: call email-service.ts?
 
     /*
     try {
