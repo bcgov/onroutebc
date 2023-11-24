@@ -12,8 +12,11 @@ import {
   TableRow,
 } from "@mui/material";
 
+import "./ConditionsTable.scss";
 import { Commodities } from "../../../../types/application";
 import { TROS_COMMODITIES } from "../../../../constants/termOversizeConstants";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowUpRightFromSquare } from "@fortawesome/free-solid-svg-icons";
 
 export const ConditionsTable = ({
   commodities,
@@ -85,23 +88,37 @@ export const ConditionsTable = ({
   }
 
   return (
-    <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 650 }} aria-label="simple table">
+    <TableContainer className="conditions-table" component={Paper}>
+      <Table 
+        className="conditions-table__table"
+        aria-label="simple table"
+      >
         <TableHead>
           <TableRow>
-            <TableCell sx={{ fontWeight: "bold" }}>Description</TableCell>
-            <TableCell sx={{ fontWeight: "bold" }}>Conditions</TableCell>
+            <TableCell 
+              className="conditions-table__header conditions-table__header--description"
+            >
+              Description
+            </TableCell>
+
+            <TableCell 
+              className="conditions-table__header conditions-table__header--conditions"
+            >
+              Conditions
+            </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {allOptions.map((row) => (
             <TableRow
               key={row.condition}
-              sx={{
-                "&:last-child td, &:last-child th": { border: 0 },
-              }}
+              className="conditions-table__row"
             >
-              <TableCell component="th" scope="row">
+              <TableCell
+                className="conditions-table__cell conditions-table__cell--checkbox"
+                component="th" 
+                scope="row"
+              >
                 <FormControlLabel
                   control={
                     <Controller
@@ -109,6 +126,7 @@ export const ConditionsTable = ({
                       render={() => {
                         return (
                           <Checkbox
+                            className={`conditions-table__checkbox ${row.disabled ? "conditions-table__checkbox--disabled" : ""}`}
                             key={row.condition}
                             checked={row.checked}
                             disabled={row.disabled}
@@ -124,8 +142,27 @@ export const ConditionsTable = ({
                 />
               </TableCell>
 
-              <TableCell component="th" scope="row">
-                {row.condition}
+              <TableCell 
+                className="conditions-table__cell conditions-table__cell--condition"
+                component="th" 
+                scope="row"
+              >
+                <a
+                  href={row.conditionLink}
+                  className="condition-link"
+                  data-testid="permit-condition-link"
+                >
+                  <span
+                    className="condition-link__link"
+                    data-testid="permit-condition-code"
+                  >
+                    {row.condition}
+                  </span>
+                  <FontAwesomeIcon
+                    className="condition-link__icon"
+                    icon={faArrowUpRightFromSquare}
+                  />
+                </a>
               </TableCell>
             </TableRow>
           ))}

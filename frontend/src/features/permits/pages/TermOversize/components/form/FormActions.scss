@@ -26,15 +26,31 @@
   & &__btn {
     position: relative;
 
+    &--leave {
+      background-color: $bc-background-light-grey;
+      padding: 0.875rem 1rem;
+      box-shadow: none;
+
+      &:hover {
+        background-color: $bc-background-light-grey;
+        border: 2px solid $bc-text-box-border-grey;
+        box-shadow: none;
+      }
+    }
+
     &--save {
       display: flex;
       align-items: center;
       gap: 0.5em;
+      padding: 0.875rem 1rem;
     }
 
     &--continue {
       margin-left: 1.5em;
       margin-top: 0;
+      padding: 0.875rem 2rem;
+      font-weight: bold;
+      background-color: $bc-primary-blue;
     }
   }
 }
