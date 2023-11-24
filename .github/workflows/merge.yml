@@ -15,6 +15,7 @@ jobs:
     uses: ./.github/workflows/.deploy.yml
     secrets: inherit
     with:
+      tag: test
       target: latest
       values: values.yaml
       license: c28f0c
@@ -53,6 +54,7 @@ jobs:
     uses: ./.github/workflows/.deploy.yml
     secrets: inherit
     with:
+      tag: prod
       target: test
       values: values.yaml
       license: c28f0c
