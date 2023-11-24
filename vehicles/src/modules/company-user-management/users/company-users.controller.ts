@@ -66,7 +66,7 @@ export class CompanyUsersController {
   })
   @ApiParam({ name: 'companyId', required: true })
   @ApiQuery({ name: 'includePendingUser', required: false, example: false })
-  @Roles(Role.READ_SELF, Role.READ_USER)
+  @Roles(Role.READ_SELF)
   @Get()
   async findAllCompanyUsers(
     @Req() request: Request,
@@ -125,7 +125,7 @@ export class CompanyUsersController {
     description: 'The User Resource',
     type: ReadUserDto,
   })
-  @Roles(Role.WRITE_SELF, Role.WRITE_USER)
+  @Roles(Role.WRITE_SELF)
   @Put(':userGUID')
   async update(
     @Req() request: Request,
@@ -163,7 +163,7 @@ export class CompanyUsersController {
   @ApiOkResponse({
     description: '{statusUpdated : true}',
   })
-  @Roles(Role.WRITE_SELF, Role.WRITE_USER)
+  @Roles(Role.WRITE_SELF)
   @Put(':userGUID/status')
   async updateStatus(
     @Req() request: Request,
