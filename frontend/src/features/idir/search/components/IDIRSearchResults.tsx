@@ -1,10 +1,13 @@
 import { Box, FormControlLabel, Switch } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import { memo, useCallback, useContext, useMemo, useState } from "react";
-import MaterialReactTable, {
+
+import {
   MRT_ColumnDef,
   MRT_Row,
   MRT_TableInstance,
+  MaterialReactTable,
+  useMaterialReactTable,
 } from "material-react-table";
 
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
@@ -18,6 +21,7 @@ import { IDIRPermitSearchRowActions } from "./IDIRPermitSearchRowActions";
 import "./List.scss";
 import { USER_AUTH_GROUP } from "../../../manageProfile/types/userManagement.d";
 import { isPermitInactive } from "../../../permits/types/PermitStatus";
+import { defaultTableOptions } from "../../../../common/constants/defaultTableOptions";
 
 /**
  * Function to decide whether to show row actions icon or not.
@@ -91,146 +95,98 @@ export const IDIRSearchResults = memo(
       return initialData;
     };
 
-    return (
-      <div className="table-container">
-        <MaterialReactTable
-          // Required Props
-          data={getFilteredData(data?.items ?? [])}
-          columns={columns}
-          enableTopToolbar={true}
-          // Empty Toolbar actions to prevent the default actions.
-          renderToolbarInternalActions={() => <></>}
-          renderTopToolbarCustomActions={() => {
+    const table = useMaterialReactTable({
+      ...defaultTableOptions,
+      data: getFilteredData(data?.items ?? []),
+      columns: columns,
+      initialState: {
+        sorting: [{ id: "permitIssueDateTime", desc: true }],
+      },
+      state: {
+        isLoading,
+        showAlertBanner: isError,
+        showProgressBars: isLoading,
+      },
+      enableTopToolbar: true,
+      renderToolbarInternalActions: () => <></>,
+      renderTopToolbarCustomActions: () => {
+        return (
+          <Box sx={{ display: "flex", gap: "1rem", p: "4px" }}>
+            <FormControlLabel
+              value="end"
+              control={
+                <Switch
+                  color="primary"
+                  checked={isActiveRecordsOnly}
+                  onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                    setIsActiveRecordsOnly(() => event.target.checked);
+                  }}
+                />
+              }
+              label="Active Permits Only"
+              labelPlacement="end"
+            />
+          </Box>
+        );
+      },
+      renderRowActions: useCallback(
+        ({
+          row,
+        }: {
+          table: MRT_TableInstance<Permit>;
+          row: MRT_Row<Permit>;
+        }) => {
+          const isInactive =
+            hasPermitExpired(row.original.permitData.expiryDate) ||
+            isPermitInactive(row.original.permitStatus);
+
+          if (shouldShowRowActions(idirUserDetails?.userAuthGroup)) {
             return (
-              <Box sx={{ display: "flex", gap: "1rem", p: "4px" }}>
-                <FormControlLabel
-                  value="end"
-                  control={
-                    <Switch
-                      color="primary"
-                      checked={isActiveRecordsOnly}
-                      onChange={(
-                        event: React.ChangeEvent<HTMLInputElement>,
-                      ) => {
-                        setIsActiveRecordsOnly(() => event.target.checked);
-                      }}
-                    />
-                  }
-                  label="Active Permits Only"
-                  labelPlacement="end"
+              <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+                <IDIRPermitSearchRowActions
+                  isPermitInactive={isInactive}
+                  permitNumber={row.original.permitNumber}
+                  permitId={row.original.permitId}
+                  userAuthGroup={idirUserDetails?.userAuthGroup}
                 />
               </Box>
             );
-          }}
-          initialState={{
-            sorting: [{ id: "permitIssueDateTime", desc: true }],
-          }}
-          state={{
-            isLoading,
-            showAlertBanner: isError,
-            showProgressBars: isLoading
-          }}
-          // Disable the default column actions so that we can use our custom actions
-          enableColumnActions={false}
-          enableRowActions={true}
-          selectAllMode="page"
-          enableStickyHeader
-          positionActionsColumn="last"
-          displayColumnDefOptions={{
-            "mrt-row-actions": {
-              header: "",
-            },
-          }}
-          renderRowActions={useCallback(
-            ({
-              row,
-            }: {
-              table: MRT_TableInstance<Permit>;
-              row: MRT_Row<Permit>;
-            }) => {
-              const isInactive =
-                hasPermitExpired(row.original.permitData.expiryDate) ||
-                isPermitInactive(row.original.permitStatus);
-
-              if (shouldShowRowActions(idirUserDetails?.userAuthGroup)) {
-                return (
-                  <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-                    <IDIRPermitSearchRowActions
-                      isPermitInactive={isInactive}
-                      permitNumber={row.original.permitNumber}
-                      permitId={row.original.permitId}
-                      userAuthGroup={idirUserDetails?.userAuthGroup}
-                    />
-                  </Box>
-                );
-              } else {
-                return <></>;
-              }
-            },
-            [],
-          )}
-          /*
-           *
-           * STYLES
-           *
-           */
-
-          // Main table container
-          muiTablePaperProps={{
-            sx: {
-              border: "none",
-              boxShadow: "none",
-            },
-          }}
-          // Column widths
-          defaultColumn={{
-            maxSize: 200, //allow columns to get larger than default
-            minSize: 25,
-            size: 50,
-          }}
-          // Cell/Body container
-          muiTableContainerProps={{
-            sx: {
-              outline: "1px solid #DBDCDC",
-              height: "calc(100vh - 475px)",
-            },
-          }}
-          // Pagination
-          muiBottomToolbarProps={{
-            sx: {
-              zIndex: 0, // resolve z-index conflict with sliding panel
-              backgroundColor: BC_COLOURS.bc_background_light_grey,
-            },
-          }}
-          // Top toolbar
-          muiTopToolbarProps={{ sx: { zIndex: 0 } }} // resolve z-index conflict with sliding panel
-          // Alert banner
-          muiToolbarAlertBannerProps={
-            isError
-              ? {
-                  color: "error",
-                  children: "Error loading data",
-                }
-              : undefined
+          } else {
+            return <></>;
           }
-          muiSearchTextFieldProps={{
-            placeholder: "Search",
-            sx: {
-              minWidth: "300px",
-              backgroundColor: "white",
-            },
-            variant: "outlined",
-            inputProps: {
-              sx: {
-                padding: "10px",
-              },
-            },
-          }}
-          // Row Header
-          muiTableHeadRowProps={{
-            sx: { backgroundColor: BC_COLOURS.bc_background_light_grey },
-          }}
-        />
+        },
+        [],
+      ),
+      muiTableContainerProps: {
+        sx: {
+          outline: "1px solid #DBDCDC",
+          height: "calc(100vh - 475px)",
+        },
+      },
+      muiToolbarAlertBannerProps: isError
+        ? {
+            color: "error",
+            children: "Error loading data",
+          }
+        : undefined,
+      muiSearchTextFieldProps: {
+        placeholder: "Search",
+        sx: {
+          minWidth: "300px",
+          backgroundColor: "white",
+        },
+        variant: "outlined",
+        inputProps: {
+          sx: {
+            padding: "10px",
+          },
+        },
+      },
+    });
+
+    return (
+      <div className="table-container">
+        <MaterialReactTable table={table} />
       </div>
     );
   },

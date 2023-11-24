@@ -1,5 +1,8 @@
 import { getDefaultRequiredVal } from "../../../../../common/helpers/util";
-import { CONSOLIDATED_PAYMENT_METHODS, PAYMENT_METHOD_TYPE_CODE } from "../../../../../common/types/paymentMethods";
+import {
+  CONSOLIDATED_PAYMENT_METHODS,
+  PAYMENT_METHOD_TYPE_CODE,
+} from "../../../../../common/types/paymentMethods";
 import { PERMIT_STATUSES } from "../../../types/PermitStatus";
 import { RefundFormData } from "../../Refund/types/RefundFormData";
 import {
@@ -31,12 +34,13 @@ export const mapToVoidRequestData = (
 
     const refundMethodTypeCode = getDefaultRequiredVal(
       PAYMENT_METHOD_TYPE_CODE.WEB,
-      CONSOLIDATED_PAYMENT_METHODS[refundData.refundMethod]?.paymentMethodTypeCode
+      CONSOLIDATED_PAYMENT_METHODS[refundData.refundMethod]
+        ?.paymentMethodTypeCode,
     );
 
-    return refundData.shouldUsePrevPaymentMethod ?
-      refundMethodTypeCode :
-      PAYMENT_METHOD_TYPE_CODE.CHEQUE;
+    return refundData.shouldUsePrevPaymentMethod
+      ? refundMethodTypeCode
+      : PAYMENT_METHOD_TYPE_CODE.CHEQUE;
   };
 
   const getRefundCardType = () => {
@@ -44,7 +48,8 @@ export const mapToVoidRequestData = (
       return undefined;
     }
 
-    return CONSOLIDATED_PAYMENT_METHODS[refundData.refundMethod]?.paymentCardTypeCode;
+    return CONSOLIDATED_PAYMENT_METHODS[refundData.refundMethod]
+      ?.paymentCardTypeCode;
   };
 
   return {
