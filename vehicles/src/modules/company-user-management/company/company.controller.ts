@@ -128,23 +128,23 @@ export class CompanyController {
     isArray: true,
   })
   @ApiQuery({ name: 'userGUID', required: false })
-  @Roles(Role.READ_SELF, Role.READ_ORG)
+  @Roles(Role.READ_ORG)
   @Get()
   async getCompanyMetadata(
     @Req() request: Request,
     @Query('userGUID') userGUID?: string,
   ): Promise<ReadCompanyMetadataDto[]> {
     const currentUser = request.user as IUserJWT;
-    const rolesExists = matchRoles([Role.READ_ORG], currentUser.roles);
+    // Only IDIR users can call this endpoint with an arbitrary
+    // userGUID - other users must use the userGUID from their own
+    // token.
     if (
-      userGUID &&
-      (!rolesExists ||
-        (rolesExists && currentUser.identity_provider !== IDP.IDIR))
+      userGUID && currentUser.identity_provider !== IDP.IDIR
     ) {
       throw new ForbiddenException();
     }
 
-    userGUID = userGUID ? userGUID : currentUser.userGUID;
+    userGUID = userGUID || currentUser.userGUID;
     const company = await this.companyService.findCompanyMetadataByUserGuid(
       userGUID,
     );
