@@ -66,7 +66,7 @@ export class PermitController {
     description: 'The Permit Resource',
     type: ReadPermitDto,
   })
-  @Public()
+  @Roles(Role.WRITE_PERMIT)
   @Post()
   async create(
     @Req() request: Request,
@@ -82,7 +82,7 @@ export class PermitController {
     type: ReadPermitDto,
     isArray: true,
   })
-  @Public()
+  @Roles(Role.READ_PERMIT)
   @Get()
   async get(
     @Query('permitNumber') permitNumber: string,
@@ -95,7 +95,7 @@ export class PermitController {
     type: PermitHistoryDto,
     isArray: true,
   })
-  @Public()
+  @Roles(Role.READ_PERMIT)
   @Get('history')
   async getPermitHisory(
     @Query('originalId') originalId: string,
@@ -141,7 +141,6 @@ export class PermitController {
     );
   }
 
-  @AuthOnly()
   @ApiOkResponse({
     description: 'The Search Permit Resource',
     type: ReadPermitDto,
@@ -152,6 +151,7 @@ export class PermitController {
    * @Query searchString: Value of key. ex: AB123D
    * The above example will search for a permit where plate is AB123D.
    */
+  @Roles(Role.STAFF)
   @Get('ppc/search')
   async getPermitData(
     @Query('searchColumn') searchColumn: string,
@@ -167,7 +167,6 @@ export class PermitController {
     return this.permitService.findPermit(options, searchColumn, searchString);
   }
 
-  @AuthOnly()
   @ApiCreatedResponse({
     description: 'The DOPS file Resource with the presigned resource',
     type: ReadFileDto,
@@ -182,6 +181,7 @@ export class PermitController {
       'If proxy is specified, the object contents will be available proxied through DMS.' +
       'If url is specified, expect an HTTP 201 cotaining the presigned URL as a JSON string in the response.',
   })
+  @Roles(Role.READ_PERMIT)
   @Get('/:permitId/pdf')
   async getPDF(
     @Req() request: Request,
@@ -214,11 +214,11 @@ export class PermitController {
     }
   }
 
-  @AuthOnly()
   @ApiCreatedResponse({
     description: 'The DOPS file Resource with the presigned resource',
     type: ReadFileDto,
   })
+  @Roles(Role.READ_PERMIT)
   @Get('/:permitId/receipt')
   async getReceiptPDF(
     @Req() request: Request,
@@ -231,12 +231,12 @@ export class PermitController {
     res.status(200);
   }
 
-  @AuthOnly()
   @ApiOkResponse({
     description: 'The Permit Resource',
     type: ReadPermitDto,
     isArray: true,
   })
+  @Roles(Role.READ_PERMIT)
   @Get('/:permitId')
   async getByPermitId(
     @Param('permitId') permitId: string,
@@ -253,6 +253,7 @@ export class PermitController {
    * @returns The id of new voided/revoked permit a in response object {@link ResultDto}
    *
    */
+  @Roles(Role.VOID_PERMIT)
   @Post('/:permitId/void')
   async voidpermit(
     @Req() request: Request,
@@ -276,6 +277,7 @@ export class PermitController {
    * that returns all available permit types from cache.
    * @returns
    */
+  @Public()
   @Get('types/list')
   async getPermitTypes(): Promise<string> {
     const permitTypes = await this.permitService.getPermitType();
