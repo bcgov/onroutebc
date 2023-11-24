@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 
 import "./ActivePermitList.scss";
-import { InfoBcGovBanner } from "../../../../common/components/banners/AlertBanners";
+import { InfoBcGovBanner } from "../../../../common/components/banners/InfoBcGovBanner";
 import { FIVE_MINUTES } from "../../../../common/constants/constants";
 import { getPermits } from "../../apiManager/permitsAPI";
 import { BasePermitList } from "./BasePermitList";
@@ -19,7 +19,9 @@ export const ActivePermitList = () => {
 
   return (
     <div className="table-container">
-      <InfoBcGovBanner description="Refunds and amendments can be requested over the phone by calling the Provincial Permit Centre at Toll-free: 1-800-559-9688. Please have your permit number ready." />
+      <InfoBcGovBanner
+        msg="Refunds and amendments can be requested over the phone by calling the Provincial Permit Centre at Toll-free: 1-800-559-9688. Please have your permit number ready." 
+      />
       <BasePermitList query={query} />
     </div>
   );

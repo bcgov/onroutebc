@@ -2,20 +2,17 @@ import { Box, MenuItem, Typography } from "@mui/material";
 import { useFormContext } from "react-hook-form";
 import dayjs, { Dayjs } from "dayjs";
 import { useEffect } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowUpRightFromSquare } from "@fortawesome/free-solid-svg-icons";
 
-import { InfoBcGovBanner } from "../../../../../../common/components/banners/AlertBanners";
+import "./PermitDetails.scss";
+import { InfoBcGovBanner } from "../../../../../../common/components/banners/InfoBcGovBanner";
 import { PermitExpiryDateBanner } from "../../../../../../common/components/banners/PermitExpiryDateBanner";
 import { CustomFormComponent } from "../../../../../../common/components/form/CustomFormComponents";
 import { PHONE_WIDTH } from "../../../../../../themes/bcGovStyles";
 import { ConditionsTable } from "./ConditionsTable";
 import { requiredMessage } from "../../../../../../common/helpers/validationMessages";
 import { Commodities } from "../../../../types/application";
-import {
-  PERMIT_MAIN_BOX_STYLE,
-  PERMIT_LEFT_BOX_STYLE,
-  PERMIT_LEFT_HEADER_STYLE,
-  PERMIT_RIGHT_BOX_STYLE,
-} from "../../../../../../themes/orbcStyles";
 
 export const PermitDetails = ({
   feature,
@@ -68,14 +65,15 @@ export const PermitDetails = ({
   }, [startDate, duration]);
 
   return (
-    <Box sx={PERMIT_MAIN_BOX_STYLE}>
-      <Box sx={PERMIT_LEFT_BOX_STYLE}>
-        <Typography variant={"h3"} sx={PERMIT_LEFT_HEADER_STYLE}>
+    <Box className="permit-details">
+      <Box className="permit-details__header">
+        <Typography variant={"h3"}>
           Permit Details
         </Typography>
       </Box>
-      <Box sx={PERMIT_RIGHT_BOX_STYLE}>
-        <Box sx={{ display: "flex", gap: "40px" }}>
+
+      <Box className="permit-details__body">
+        <Box className="permit-details__input-section">
           <CustomFormComponent
             type="datePicker"
             feature={feature}
@@ -90,6 +88,7 @@ export const PermitDetails = ({
             disabled={disableStartDate}
             readOnly={disableStartDate}
           />
+
           <CustomFormComponent
             type="select"
             feature={feature}
@@ -108,27 +107,46 @@ export const PermitDetails = ({
             ))}
           />
         </Box>
+
         <PermitExpiryDateBanner expiryDate={formattedExpiryDate} />
-        <Box>
-          <Typography variant="h3">
+
+        <Box className="permit-details__commodities">
+          <Typography 
+            variant="h3"
+            className="commodities-title"
+          >
             Select the commodities below and their respective CVSE forms.
           </Typography>
+
           <InfoBcGovBanner
-            description="The applicant is responsible for ensuring they are following the correct conditions for each commodity they carry."
-            htmlDescription={
-              <p
-                style={{
-                  fontWeight: "normal",
-                  fontSize: "16px",
-                  paddingTop: "4px",
-                }}
-              >
-                For Non-TAC vehicle permits or any further assistance please
-                contact the Provincial Permit Centre at{" "}
-                <b>Toll-free: 1-800-559-9688 or Email: ppcpermit@gov.bc.ca</b>
-              </p>
+            msg="The applicant is responsible for ensuring they are following Legislation, policies, standards and guidelines in the operation of a commercial transportation business in British Columbia."
+            additionalInfo={
+              <div className="commodities-info">
+                <div className="commodities-info__link">
+                  <a
+                    className="procedures-link"
+                    href="https://www2.gov.bc.ca/gov/content/transportation/vehicle-safety-enforcement/information-education/commercial-transport-procedures"
+                  >
+                    <span className="procedures-link__title">
+                      Commercial Transport Procedures - Province of British Columbia
+                    </span>
+                    
+                    <FontAwesomeIcon
+                      className="procedures-link__icon"
+                      icon={faArrowUpRightFromSquare}
+                    />
+                  </a>
+                </div>
+
+                <div className="commodities-info__contact-methods">
+                  For further assistance please contact the Provincial Permit Centre at{" "}
+                  <span className="contact-info contact-info--toll-free">Toll-free: 1-800-559-9688</span>{" "}or{" "}
+                  <span className="contact-info contact-info--email">Email: ppcpermit@gov.bc.ca</span>
+                </div>
+              </div>
             }
           />
+
           <ConditionsTable
             commodities={commodities}
             applicationWasCreated={

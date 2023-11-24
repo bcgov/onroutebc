@@ -1,0 +1,23 @@
+@import "../../../../themes/orbcStyles.scss";
+
+.progress-bar {
+  &#{&} {
+    display: flex;
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+    align-items: center;
+    background-color: $white;
+
+    .custom-link {
+      color: $bc-text-links-blue;
+      cursor: pointer;
+      margin-right: 0.5rem;
+      text-decoration: underline;
+    }
+
+    .chevron-right {
+      margin-left: 0.5rem;
+      margin-right: 0.5rem;
+    }
+  }
+}

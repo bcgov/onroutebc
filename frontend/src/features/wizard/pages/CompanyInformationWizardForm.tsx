@@ -5,7 +5,7 @@ import "./CompanyInformationWizardForm.scss";
 import { CompanyInfoGeneralForm } from "../../manageProfile/components/forms/companyInfo/subForms/CompanyInfoGeneralForm";
 import { CompanyContactDetailsForm } from "../../manageProfile/components/forms/companyInfo/subForms/CompanyContactDetailsForm";
 import { CompanyPrimaryContactForm } from "../../manageProfile/components/forms/companyInfo/subForms/CompanyPrimaryContactForm";
-import { InfoBcGovBanner } from "../../../common/components/banners/AlertBanners";
+import { InfoBcGovBanner } from "../../../common/components/banners/InfoBcGovBanner";
 
 /**
  * The User Information Form contains multiple subs forms including
@@ -30,7 +30,9 @@ export const CompanyInformationWizardForm = memo(() => {
         Company Primary Contact
       </Typography>
 
-      <InfoBcGovBanner description="The Company Primary Contact will be contacted for all onRouteBC client profile queries." />
+      <InfoBcGovBanner
+        msg="The Company Primary Contact will be contacted for all onRouteBC client profile queries." 
+      />
 
       <CompanyPrimaryContactForm feature={FEATURE} />
     </div>

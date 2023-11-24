@@ -6,7 +6,7 @@ import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
 
 import "./AddVehicleDashboard.scss";
 import { Banner } from "../../../../common/components/dashboard/Banner";
-import { InfoBcGovBanner } from "../../../../common/components/banners/AlertBanners";
+import { InfoBcGovBanner } from "../../../../common/components/banners/InfoBcGovBanner";
 import { getCompanyIdFromSession } from "../../../../common/apiManager/httpRequestHandler";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { VEHICLE_TYPES_ENUM } from "../form/constants";
@@ -68,8 +68,7 @@ export const AddVehicleDashboard = React.memo(
 
         <Box className="dashboard-page__info-banner layout-box">
           <InfoBcGovBanner
-            width="880px"
-            description="Please note, unless stated otherwise, all fields are mandatory."
+            msg="Please note, unless stated otherwise, all fields are mandatory."
           />
         </Box>
 

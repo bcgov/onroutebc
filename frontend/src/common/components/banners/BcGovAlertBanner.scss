@@ -1,0 +1,71 @@
+@use "../../../themes/orbcStyles";
+
+.bc-gov-alertbanner {
+  border: 1px solid transparent;
+  border-radius: 0.25rem;
+  font-weight: bold;
+  padding: 1.5rem;
+  display: flex;
+  align-items: flex-start;
+  width: fit-content;
+
+  &#{&}--error {
+    background-color: orbcStyles.$bc-messages-red-background;
+    border-color: #ebccd1;
+    color: orbcStyles.$bc-messages-red-text;
+
+    a {
+      color: #843534;
+    }
+  }
+
+  &#{&}--info {
+    background-color: orbcStyles.$bc-messages-blue-background;
+    color: orbcStyles.$bc-black;
+
+    a {
+      color: orbcStyles.$bc-text-links-blue;
+    }
+  }
+
+  &#{&}--success {
+    background-color: orbcStyles.$bc-messages-green-background;
+    border-color: #d6e9c6;
+    color: orbcStyles.$bc-messages-green-text;
+
+    a {
+      color: #2b542c;
+    }
+  }
+
+  &#{&}--warning {
+    background-color: orbcStyles.$bc-messages-gold-background;
+    border-color: #faebcc;
+    color: orbcStyles.$bc-messages-gold-text;
+
+    a {
+      color: #66512c;
+    }
+  }
+
+  & &__icon {
+    font-size: 1.5rem;
+    margin-right: 1rem;
+  }
+
+  & &__info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  & &__msg {
+    font-size: 1.125rem;
+    margin-block-start: 0;
+    margin-block-end: 0;
+  }
+
+  & &__additional-info {
+    margin-top: 0.5rem;
+  }
+}

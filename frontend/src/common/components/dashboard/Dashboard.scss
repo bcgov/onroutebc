@@ -41,6 +41,10 @@
     display: flex;
     align-items: center;
     background-color: $white;
+
+    .bc-gov-alertbanner {
+      width: 100%;
+    }
   }
 
   & &__form {

@@ -4,7 +4,7 @@ import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { BC_COLOURS } from "../../../../themes/bcGovStyles";
+import "./ProgressBar.scss";
 import { APPLICATION_STEPS } from "../dashboard/ApplicationDashboard";
 import { ApplicationContext } from "../../context/ApplicationContext";
 import { APPLICATIONS_ROUTES } from "../../../../routes/constants";
@@ -25,13 +25,7 @@ export const ProgressBar = () => {
 
   return (
     <Box
-      className="layout-box"
-      sx={{
-        display: "flex",
-        height: "60px",
-        alignItems: "center",
-        backgroundColor: BC_COLOURS.white,
-      }}
+      className="progress-bar layout-box"
     >
       <CustomLink onClick={handleNavigateBack} label={"Permits"} />
       <ChevronRight />
@@ -78,12 +72,7 @@ const CustomLink = ({
   label: string;
 }) => (
   <Typography
-    sx={{
-      color: BC_COLOURS.bc_text_links_blue,
-      cursor: "pointer",
-      marginRight: "8px",
-      textDecoration: "underline",
-    }}
+    className="custom-link"
     onClick={onClick}
   >
     {label}
@@ -93,6 +82,6 @@ const CustomLink = ({
 const ChevronRight = () => (
   <FontAwesomeIcon
     icon={faChevronRight}
-    style={{ marginLeft: "8px", marginRight: "8px" }}
+    className="chevron-right"
   />
 );

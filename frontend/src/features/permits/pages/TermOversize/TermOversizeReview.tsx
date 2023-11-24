@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 
+import "./TermOversizeReview.scss";
 import { ApplicationContext } from "../../context/ApplicationContext";
 import { Application } from "../../types/application";
 import { useSaveTermOversizeMutation } from "../../hooks/hooks";
@@ -46,7 +47,7 @@ export const TermOversizeReview = () => {
   }, []);
 
   return (
-    <>
+    <div className="term-oversize-review">
       <ProgressBar />
 
       <FormProvider {...methods}>
@@ -77,6 +78,6 @@ export const TermOversizeReview = () => {
           }
         />
       </FormProvider>
-    </>
+    </div>
   );
 };

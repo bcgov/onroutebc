@@ -1,0 +1,58 @@
+@use "../../../../../../themes/orbcStyles";
+
+@include orbcStyles.permit-main-box-style(".permit-details");
+@include orbcStyles.permit-left-box-style(".permit-details__header");
+@include orbcStyles.permit-right-box-style(".permit-details__body");
+
+.permit-details {
+  & &__input-section {
+    display: flex;
+    gap: 2.5rem;
+  }
+
+  & &__commodities {
+    margin-top: 1.5rem;
+    
+    .commodities-title {
+      padding: 0;
+    }
+
+    .bc-gov-alertbanner {
+      margin-top: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .commodities-info {
+      font-weight: normal;
+
+      &__link {
+        .procedures-link {
+          color: orbcStyles.$bc-text-links-blue;
+
+          &__title {
+            text-decoration: underline;
+          }
+
+          &__icon {
+            text-decoration: none;
+            margin-left: 0.5rem;
+          }
+
+          &:hover {
+            .procedures-link__title {
+              color: orbcStyles.$blue;
+            }
+          }
+        }
+      }
+
+      &__contact-methods {
+        margin-top: 0.5rem;
+
+        .contact-info {
+          font-weight: bold;
+        }
+      }
+    }
+  }
+}

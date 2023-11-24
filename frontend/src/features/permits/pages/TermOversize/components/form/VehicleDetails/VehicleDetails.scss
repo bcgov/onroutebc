@@ -1,0 +1,34 @@
+@use "../../../../../../../themes/orbcStyles";
+
+@include orbcStyles.permit-main-box-style(".vehicle-details");
+@include orbcStyles.permit-left-box-style(".vehicle-details__header");
+@include orbcStyles.permit-right-box-style(".vehicle-details__body");
+
+.vehicle-details {
+  border-bottom: none;
+
+  & &__info {
+    display: flex;
+    flex-direction: row-reverse;
+    margin-top: 1.5rem;
+
+    .bc-gov-alertbanner {
+      margin-left: 2.5rem;
+      height: fit-content;
+
+      .vehicle-inventory-info {
+        font-weight: normal;
+      }
+    }
+  }
+
+  & &__input-section {
+    display: flex;
+    flex-direction: column;
+
+    .vehicle-selection {
+      display: flex;
+      gap: 2.5rem;
+    }
+  }
+}

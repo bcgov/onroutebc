@@ -6,21 +6,21 @@ import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
 
 import "./EditVehicleDashboard.scss";
 import { Banner } from "../../../../common/components/dashboard/Banner";
-import { InfoBcGovBanner } from "../../../../common/components/banners/AlertBanners";
+import { InfoBcGovBanner } from "../../../../common/components/banners/InfoBcGovBanner";
 import { VEHICLE_TYPES_ENUM } from "../form/constants";
 import { PowerUnitForm } from "../form/PowerUnitForm";
 import { TrailerForm } from "../form/TrailerForm";
 import { PowerUnit, Trailer } from "../../types/managevehicles";
-import {
-  applyWhenNotNullable,
-  getDefaultRequiredVal,
-} from "../../../../common/helpers/util";
 import { DATE_FORMATS, toLocal } from "../../../../common/helpers/formatDate";
 import { getCompanyIdFromSession } from "../../../../common/apiManager/httpRequestHandler";
 import { VEHICLES_ROUTES } from "../../../../routes/constants";
 import { useVehicleByIdQuery } from "../../apiManager/hooks";
 import { Loading } from "../../../../common/pages/Loading";
 import { Unexpected } from "../../../../common/pages/Unexpected";
+import {
+  applyWhenNotNullable,
+  getDefaultRequiredVal,
+} from "../../../../common/helpers/util";
 
 export const EditVehicleDashboard = React.memo(
   ({ editVehicleMode }: { editVehicleMode: VEHICLE_TYPES_ENUM }) => {
@@ -127,8 +127,7 @@ export const EditVehicleDashboard = React.memo(
 
         <Box className="dashboard-page__info-banner layout-box">
           <InfoBcGovBanner
-            width="880px"
-            description="Please note, unless stated otherwise, all fields are mandatory."
+            msg="Please note, unless stated otherwise, all fields are mandatory."
           />
         </Box>
 
