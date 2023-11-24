@@ -52,6 +52,8 @@ import { IPaymentReportDataDetails } from '../../common/interface/payment-report
 import { IPaymentReportData } from '../../common/interface/payment-report-data.interface';
 import { PermitType } from '../permit/entities/permit-type.entity';
 import { CreatePaymentSummaryReportDto } from './dto/request/create-payment-summary-report.dto';
+import { PermitIssuedBy } from '../../common/enum/permit-issued-by.enum';
+import { IdirUser } from '../company-user-management/users/entities/idir.user.entity';
 
 @Injectable()
 export class PaymentService {
@@ -538,12 +540,22 @@ export class PaymentService {
       .addSelect('receipt.receiptNumber', 'receiptNo')
       .addSelect('permit.permitNumber', 'permitNo')
       .addSelect('permit.permitType', 'permitType')
-      .addSelect('permitTransactions.transactionAmount', 'amount');
+      .addSelect('permitTransactions.transactionAmount', 'amount')      
+      .addSelect(
+        `ISNULL(idirUser.userName,'${PermitIssuedBy.SELF_ISSUED}')`,
+        'user',
+      );;
 
     queryBuilder
       .innerJoin('trans.permitTransactions', 'permitTransactions')
       .innerJoin('trans.receipt', 'receipt')
-      .innerJoin('permitTransactions.permit', 'permit');
+      .innerJoin('permitTransactions.permit', 'permit')
+      .innerJoin('permitTransactions.permit', 'permit')
+      .leftJoin(
+        IdirUser,
+        'idirUser',
+        'permit.issuerUserGuid = idirUser.userGUID',
+      );;
 
     queryBuilder.where('trans.transactionTypeId = :transactionType', {
       transactionType: transactionType,
@@ -999,6 +1011,9 @@ export class PaymentService {
     createPaymentSummaryReportDto: CreatePaymentSummaryReportDto,
     res: Response,
   ): Promise<void> {
+
+    const asdad= await this.findTransactionDataForSummaryReports(TransactionType.PURCHASE,null,null,createPaymentSummaryReportDto);
+
     // const formatSummaryPermitDopsInput =
     //   await this.formatPermitSummaryForDopsInput(
     //     paymentCodes,
@@ -1068,17 +1083,26 @@ export class PaymentService {
     transactionType: TransactionType,
     paymentCode: IPaymentCode,
     permitTypes: PermitTypeReport[],
-    createPaymentDetailedReportDto: CreatePaymentDetailedReportDto,
+    createPaymentDetailedReportDto: CreatePaymentSummaryReportDto,
   ): Promise<IPaymentReportData> {
     const queryBuilder = this.transactionRepository.createQueryBuilder('trans');
 
     queryBuilder
       .select('trans.paymentMethodTypeCode', 'paymentMethod')
-      .addSelect('permitTransactions.transactionAmount', 'amount');
+      .addSelect('permitTransactions.transactionAmount', 'amount')
+      .addSelect(
+        `ISNULL(idirUser.userName,'${PermitIssuedBy.SELF_ISSUED}')`,
+        'user',
+      );
 
     queryBuilder
       .innerJoin('trans.permitTransactions', 'permitTransactions')
-      .innerJoin('permitTransactions.permit', 'permit');
+      .innerJoin('permitTransactions.permit', 'permit')
+      .leftJoin(
+        IdirUser,
+        'idirUser',
+        'permit.issuerUserGuid = idirUser.userGUID',
+      );
 
     queryBuilder.where('trans.transactionTypeId = :transactionType', {
       transactionType: transactionType,

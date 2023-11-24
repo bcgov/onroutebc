@@ -7,4 +7,5 @@ export interface IPaymentReportDataDetails {
   permitType: string;
   permitNo: string;
   issuedOn: string;
+  user: string;
 }
