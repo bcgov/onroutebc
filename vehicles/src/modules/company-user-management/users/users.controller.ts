@@ -165,7 +165,7 @@ export class UsersController {
     description: 'The User Resource',
     type: ReadUserDto,
   })
-  @Roles(Role.READ_SELF, Role.READ_USER)
+  @Roles(Role.READ_SELF)
   @Get(':userGUID')
   async findUserDetails(
     @Req() request: Request,
