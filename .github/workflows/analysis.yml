@@ -87,7 +87,7 @@ jobs:
           - dir: vehicles
             sonar_projectKey: onroutebc_vehicles
             token: SONAR_TOKEN_VEHICLES
-            triggers: ('dops')
+            triggers: ('vehicles')
           - dir: frontend
             sonar_projectKey: onroutebc_frontend
             token: SONAR_TOKEN_FRONTEND
