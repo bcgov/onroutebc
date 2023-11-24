@@ -94,7 +94,7 @@ export class UsersController {
     isArray: true,
   })
   @ApiQuery({ name: 'companyId', required: false })
-  @Roles(Role.READ_SELF, Role.READ_USER)
+  @Roles(Role.READ_SELF)
   @Get('/roles')
   async getRolesForUsers(
     @Req() request: Request,
