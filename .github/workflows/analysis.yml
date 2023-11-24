@@ -80,14 +80,14 @@ jobs:
       matrix:
         dir: [vehicles, dops, frontend]
         include:
-          - dir: backend/dops
+          - dir: dops
             sonar_projectKey: onroutebc_dops
             token: SONAR_TOKEN_DOPS
-            triggers: ('backend/dops')
-          - dir: backend/vehicles
+            triggers: ('dops')
+          - dir: vehicles
             sonar_projectKey: onroutebc_vehicles
             token: SONAR_TOKEN_VEHICLES
-            triggers: ('backend/dops')
+            triggers: ('dops')
           - dir: frontend
             sonar_projectKey: onroutebc_frontend
             token: SONAR_TOKEN_FRONTEND
