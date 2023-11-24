@@ -53,6 +53,7 @@ import { CacheKey } from 'src/common/enum/cache-key.enum';
 import { getMapFromCache } from 'src/common/helper/cache.helper';
 import { Cache } from 'cache-manager';
 import { PermitIssuedBy } from '../../common/enum/permit-issued-by.enum';
+import { ResendPermitDto } from './dto/request/resend-permit.dto';
 
 @Injectable()
 export class PermitService {
@@ -355,7 +356,86 @@ export class PermitService {
    *
    * @param permitId ex: 1
    * @param status ex: VOIDED|REVOKED
-   * Description: This method will update the permit status for given permit id and will set it to either REVOKED or VOIDED stauts.
+   * Description: This method will find the permit given the permit id and re-send the email to the given address.
+   */
+  public async resendPermit(
+    permitId: string,
+    resendPermitDto: ResendPermitDto,
+    currentUser: IUserJWT,
+    directory: Directory,
+  ): Promise<ResultDto> {
+    const permit = await this.findOne(permitId);
+    /**
+     * If permit not found raise error.
+     */
+    if (!permit) {
+      throw new NotFoundException('Permit id ' + permitId + ' not found.');
+    }
+
+    /**
+     * If permit is not active, raise error.
+     */
+    if (permit.permitStatus != ApplicationStatus.ISSUED) {
+        throw new InternalServerErrorException(
+        'Cannot void a permit in ' + permit.permitStatus + ' status',
+      );
+    }
+
+    let success = '';
+    let failure = '';
+
+    /*
+    try {
+      const emailData: IssuePermitEmailData = {
+        companyName: companyInfo.legalName,
+      };
+
+      const attachments: AttachementEmailData[] = [
+        {
+          filename: newPermit.permitNumber + '.pdf',
+          contentType: 'application/pdf',
+          encoding: 'base64',
+          content: generatedDocuments.at(0).buffer.toString('base64'),
+        },
+        {
+          filename: `Receipt_No_${fetchedTransaction.receipt.receiptNumber}.pdf`,
+          contentType: 'application/pdf',
+          encoding: 'base64',
+          content: generatedDocuments.at(1).buffer.toString('base64'),
+        },
+      ];
+
+      void this.emailService.sendEmailMessage(
+        EmailTemplate.ISSUE_PERMIT,
+        emailData,
+        'onRouteBC Permits - ' + companyInfo.legalName,
+        [
+          permitDataForTemplate.permitData?.contactDetails?.email,
+          companyInfo.email,
+        ],
+        attachments,
+      );
+    } catch (error: unknown) {
+      console.log('Error in Email Service', error);
+    }
+
+    */
+    
+
+    const resultDto: ResultDto = {
+      success: [success],
+      failure: [failure],
+    };
+
+    return resultDto;
+  }
+
+
+  /**
+   *
+   * @param permitId ex: 1
+   * @param status ex: VOIDED|REVOKED
+   * Description: This method will update the permit status for given permit id and will set it to either REVOKED or VOIDED status.
    */
   public async voidPermit(
     permitId: string,

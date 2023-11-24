@@ -43,6 +43,7 @@ import { PermitHistoryDto } from './dto/response/permit-history.dto';
 import { ResultDto } from './dto/response/result.dto';
 import { VoidPermitDto } from './dto/request/void-permit.dto';
 import { getDirectory } from 'src/common/helper/auth.helper';
+import { ResendPermitDto } from './dto/request/resend-permit.dto';
 
 @ApiBearerAuth()
 @ApiTags('Permit')
@@ -270,6 +271,34 @@ export class PermitController {
     );
     return permit;
   }
+
+  /**
+   * A POST method defined with the @Post() decorator and a route of /:permitId/resend
+   * will resend a permit for given @param permitId.
+   * @param request
+   * @param permitId
+   * @param resendPermitDto
+   * @returns The id of the permit a in response object {@link ResultDto}
+   *
+   */
+  @Post('/:permitId/resend')
+  async resendpermit(
+    @Req() request: Request,
+    @Param('permitId') permitId: string,
+    @Body()
+    resendPermitDto: ResendPermitDto,
+  ): Promise<ResultDto> {
+    const currentUser = request.user as IUserJWT;
+    const directory = getDirectory(currentUser);
+    const permit = await this.permitService.resendPermit(
+      permitId,
+      resendPermitDto,
+      currentUser,
+      directory,
+    );
+    return permit;
+  }
+
 
   /**
    * A GET method defined with the @Get() decorator and a route of /types
