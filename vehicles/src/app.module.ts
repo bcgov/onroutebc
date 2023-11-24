@@ -21,7 +21,7 @@ import { PermitModule } from './modules/permit/permit.module';
 import { EmailModule } from './modules/email/email.module';
 import { PaymentModule } from './modules/payment/payment.module';
 
-const envPath = path.resolve(process.cwd() + '/../../');
+const envPath = path.resolve(process.cwd() + '/../');
 
 @Module({
   imports: [
