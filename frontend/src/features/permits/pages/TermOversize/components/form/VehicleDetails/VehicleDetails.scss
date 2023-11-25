@@ -15,6 +15,7 @@
     .bc-gov-alertbanner {
       margin-left: 2.5rem;
       height: fit-content;
+      height: -moz-fit-content; /* For Firefox, Firefox Android */
 
       .vehicle-inventory-info {
         font-weight: normal;
@@ -29,6 +30,18 @@
     .vehicle-selection {
       display: flex;
       gap: 2.5rem;
+    }
+  }
+}
+
+@media (width < 1370px) {
+  .vehicle-details {
+    & &__info {
+      flex-direction: column;
+
+      .bc-gov-alertbanner {
+        margin-left: 0;
+      }
     }
   }
 }

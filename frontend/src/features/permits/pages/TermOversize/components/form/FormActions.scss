@@ -30,6 +30,19 @@
       background-color: $bc-background-light-grey;
       padding: 0.875rem 1rem;
       box-shadow: none;
+      margin-left: 25rem;
+
+      &:hover {
+        background-color: $bc-background-light-grey;
+        border: 2px solid $bc-text-box-border-grey;
+        box-shadow: none;
+      }
+    }
+
+    &--cancel {
+      background-color: $bc-background-light-grey;
+      padding: 0.875rem 1rem;
+      box-shadow: none;
 
       &:hover {
         background-color: $bc-background-light-grey;
@@ -51,6 +64,16 @@
       padding: 0.875rem 2rem;
       font-weight: bold;
       background-color: $bc-primary-blue;
+    }
+  }
+}
+
+@media (width < 1225px) {
+  .tros-form-actions {
+    & &__btn {
+      &--leave {
+        margin-left: 0;
+      }
     }
   }
 }
@@ -85,6 +108,10 @@
       &--continue {
         margin-left: 0;
         margin-top: 1em;
+      }
+
+      &--leave {
+        margin-left: 0;
       }
     }
   }
