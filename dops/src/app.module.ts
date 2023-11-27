@@ -13,7 +13,7 @@ import { CacheModule } from '@nestjs/cache-manager';
 import { DgenModule } from './modules/dgen/dgen.module';
 import { CommonModule } from './modules/common/common.module';
 
-const envPath = path.resolve(process.cwd() + '/../../');
+const envPath = path.resolve(process.cwd() + '/../');
 
 @Module({
   imports: [

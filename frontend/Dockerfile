@@ -44,3 +44,6 @@ RUN mkdir /app
 COPY --from=builder /app/build /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/nginx.conf
 CMD ["nginx", "-g", "daemon off;"]
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s CMD curl -f http://localhost/:3000
