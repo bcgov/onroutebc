@@ -2,7 +2,7 @@
 global:
   license: "c28f0c"
   labels: |
-    app.kubernetes.io/timestamp: "{{now | toString  }}"
+    app.kubernetes.io/timestamp: {{now | toString | nospace | regexFind "^[^=]+" }}
   repository: bcgov/onroutebc # the repository where the images are stored.
   registry: ghcr.io # the registry where the images are stored. override during runtime for other registry at global level or individual level.
   tag: latest # global tag for deployments where each service is using images at the same tag (dev,tet,prod,latest,etc)
