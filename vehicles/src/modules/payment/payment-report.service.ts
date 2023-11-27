@@ -516,7 +516,13 @@ export class PaymentReportService {
         summaryPaymentsAndRefunds: paymentAndRefundSummary,
         summaryPermits: permitSummary,
       },
-      generatedDocumentFileName: 'Sample',
+      generatedDocumentFileName: `PRD_${convertUtcToPt(
+        createPaymentDetailedReportDto.fromDateTime,
+        'DDMMYYYY',
+      )}_${convertUtcToPt(
+        createPaymentDetailedReportDto.toDateTime,
+        'DDMMYYYY',
+      )}`,
     };
 
     await this.dopsService.generateReport(currentUser, generateReportData, res);
@@ -565,7 +571,13 @@ export class PaymentReportService {
         summaryPaymentsAndRefunds: paymentAndRefundSummary,
         summaryPermits: permitSummary,
       },
-      generatedDocumentFileName: 'Sample',
+      generatedDocumentFileName: `PRS_${convertUtcToPt(
+        createPaymentSummaryReportDto.fromDateTime,
+        'DDMMYYYY',
+      )}_${convertUtcToPt(
+        createPaymentSummaryReportDto.toDateTime,
+        'DDMMYYYY',
+      )}`,
     };
 
     await this.dopsService.generateReport(currentUser, generateReportData, res);
@@ -586,7 +598,8 @@ export class PaymentReportService {
       .addSelect(
         `ISNULL(idirUser.userName,'${PermitIssuedBy.SELF_ISSUED}')`,
         'users',
-      ).distinct();
+      )
+      .distinct();
   }
 
   private getCondtionQueryBuilderForSummaryReports(
