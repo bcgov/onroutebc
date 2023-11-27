@@ -1,12 +1,12 @@
 dependencies:
 - name: component
-  repository: https://bcgov.github.io/helm-service
-  version: 0.2.1
+  repository: file:///home/ubuntu/helm-service/charts/component
+  version: 0.2.2
 - name: component
-  repository: https://bcgov.github.io/helm-service
-  version: 0.2.1
+  repository: file:///home/ubuntu/helm-service/charts/component
+  version: 0.2.2
 - name: component
-  repository: https://bcgov.github.io/helm-service
-  version: 0.2.1
-digest: sha256:83e164ace0dcc34008f0608718a1f3da893291e5a3004021277cedf5fbef5a0f
-generated: "2023-11-27T13:43:11.097973844-08:00"
+  repository: file:///home/ubuntu/helm-service/charts/component
+  version: 0.2.2
+digest: sha256:8003116d470fb48d8440d1a7d7f44a2d4f84fe78c13bc74e97b05e831134a5ff
+generated: "2023-11-27T14:43:24.360212758-08:00"
