@@ -4,10 +4,10 @@ FROM mcr.microsoft.com/mssql/server:2017-latest
 USER root
 
 RUN apt-get update && \
-    apt-get install -y software-properties-common && \
+    apt-get install -y software-properties-common  --no-install-recommends && \
     rm -rf /var/lib/apt/lists/*
 RUN add-apt-repository "$(wget -qO- https://packages.microsoft.com/config/ubuntu/18.04/mssql-server-2017.list)" && \
-    apt-get install -y mssql-server-fts 
+    apt-get install -y mssql-server-fts --no-install-recommends
 
 ENV ACCEPT_EULA Y
 
@@ -32,3 +32,7 @@ RUN mkdir -p -m 700 /usr/config/tmp && chown -R mssql: /usr/config/tmp
 USER mssql
 
 ENTRYPOINT ["./entrypoint.sh"]
+
+# Healthcheck
+HEALTHCHECK --interval=15s --timeout=5s --retries=3 \
+    CMD /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "$$SA_PASSWORD" -Q "SELECT 1"
