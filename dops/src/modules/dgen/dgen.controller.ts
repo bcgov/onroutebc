@@ -85,7 +85,7 @@ export class DgenController {
     res.status(201);
   }
 
-  @Roles(Role.GENERATE_TRANSACTION_REPORT)
+  @Roles(Role.GENERATE_REPORT)
   @Post('/report/render')
   async generateReport(
     @Req() request: Request,
