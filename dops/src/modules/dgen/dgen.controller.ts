@@ -86,7 +86,6 @@ export class DgenController {
   }
 
   @Roles(Role.GENERATE_TRANSACTION_REPORT)
-  @AuthOnly()
   @Post('/report/render')
   async generateReport(
     @Req() request: Request,
