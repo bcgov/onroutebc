@@ -48,7 +48,7 @@
     "@aws-sdk/client-s3": "^3.369.0",
     "@aws-sdk/lib-storage": "^3.370.0",
     "@aws-sdk/s3-request-presigner": "^3.370.0",
-    "@nestjs/axios": "^3.0.0",
+    "@nestjs/axios": "^3.0.1",
     "@nestjs/cache-manager": "^2.0.1",
     "@nestjs/cli": "^10.0.0",
     "@nestjs/common": "^9.4.3",
@@ -154,6 +154,9 @@
     "*.{js,ts}": "./node_modules/.bin/eslint --cache --fix"
   },
   "overrides": {
-    "minimist@<1.2.6": "1.2.6"
+    "minimist@<1.2.6": "1.2.6",
+    "@nestjs/axios": {
+      "axios": "^1.6.0"
+    }
   }
 }
