@@ -78,7 +78,7 @@ route:
   targetport: 3000-tcp
 
 imagestream:
-  enabled: true
+  enabled: false
 
 volumes:
 
