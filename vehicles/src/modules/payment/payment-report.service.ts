@@ -409,9 +409,7 @@ export class PaymentReportService {
             this.cacheManager,
             CacheKey.PAYMENT_METHOD_TYPE,
             paymentCode.paymentMethodTypeCode,
-          )) + paymentCodeDesc
-            ? ' - ' + paymentCodeDesc
-            : '',
+          )) + (paymentCodeDesc ? ' - ' + paymentCodeDesc : ''),
       };
 
       paymentCodes.push(paymentCodeTemp);

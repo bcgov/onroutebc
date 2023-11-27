@@ -28,6 +28,7 @@ import puppeteer, { Browser } from 'puppeteer';
 import { IFile } from '../../interface/file.interface';
 import { ReportTemplate } from '../../enum/report-template.enum';
 import { getDirectory } from 'src/helper/auth.helper';
+import { convertUtcToPt } from '../../helper/date-time.helper';
 
 @Injectable()
 export class DgenService {
@@ -307,7 +308,21 @@ export class DgenService {
         }
       },
     );
+
+    Handlebars.registerHelper('convertUtcToPt', function (utcDate: string) {
+      return convertUtcToPt(utcDate, 'MMM. D, YYYY, hh:mm A Z');
+    });
     /* eslint-enable */
+
+    Handlebars.registerHelper('formatAmount', function (amount: number) {
+      if (amount === 0) {
+        return '';
+      } else if (amount > 0) {
+        return `$${amount}`;
+      } else if (amount < 0) {
+        return `$${amount}`;
+      }
+    });
 
     interface SummaryPaymentsInterface {
       paymentMethod: string;
@@ -315,7 +330,6 @@ export class DgenService {
       refund?: number;
       deposit?: number;
     }
-
 
     Handlebars.registerHelper(
       'amountLookup',
