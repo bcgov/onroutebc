@@ -3,10 +3,11 @@ import { InjectMapper } from '@automapper/nestjs';
 import { Mapper } from '@automapper/core';
 import { Transaction } from './entities/transaction.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, SelectQueryBuilder } from 'typeorm';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
 import { ApplicationStatus } from '../../common/enum/application-status.enum';
 import { PaymentMethodTypeReport } from '../../common/enum/payment-method-type.enum';
+import { PaymentCardType as PaymentCardTypeEnum } from '../../common/enum/payment-card-type.enum';
 import { TransactionType } from '../../common/enum/transaction-type.enum';
 import { Response } from 'express';
 import { CreatePaymentDetailedReportDto } from './dto/request/create-payment-detailed-report.dto';
@@ -20,9 +21,6 @@ import { CacheKey } from '../../common/enum/cache-key.enum';
 import { getFromCache } from '../../common/helper/cache.helper';
 import { IPaymentCode } from '../../common/interface/payment-code.interface';
 import { PermitTypeReport } from '../../common/enum/permit-type.enum';
-import { IPaymentReportDataDetails } from '../../common/interface/payment-report-data-details.interface';
-import { IPaymentReportData } from '../../common/interface/payment-report-data.interface';
-import { PermitType } from '../permit/entities/permit-type.entity';
 import { CreatePaymentSummaryReportDto } from './dto/request/create-payment-summary-report.dto';
 import { PermitIssuedBy } from '../../common/enum/permit-issued-by.enum';
 import { IdirUser } from '../company-user-management/users/entities/idir.user.entity';
@@ -40,29 +38,69 @@ export class PaymentReportService {
     private readonly cacheManager: Cache,
   ) {}
 
-  async findTransactionDataForReports(
-    transactionType: TransactionType,
-    paymentCode: IPaymentCode,
-    permitTypes: PermitTypeReport[],
-    createPaymentDetailedReportDto: CreatePaymentDetailedReportDto,
-  ): Promise<IPaymentReportData> {
-    const queryBuilder = this.transactionRepository.createQueryBuilder('trans');
-
+  private getSelectQueryBuilderForDetailedReports(
+    queryBuilder: SelectQueryBuilder<Transaction>,
+  ) {
     queryBuilder
-      .select('permit.permitIssueDateTime', 'issuedOn')
+      .select(
+        `CONCAT_WS(' - ', paymentMethodType.name, paymentCardType.name )`,
+        'paymentMethod',
+      )
+      .addSelect('permit.permitIssueDateTime', 'issuedOn')
       .addSelect('trans.transactionOrderNumber', 'orbcTransactionId')
       .addSelect('trans.pgTransactionId', 'providerTransactionId')
-      .addSelect('trans.paymentMethodTypeCode', 'paymentMethod')
       .addSelect('receipt.receiptNumber', 'receiptNo')
       .addSelect('permit.permitNumber', 'permitNo')
       .addSelect('permit.permitType', 'permitType')
       .addSelect('permitTransactions.transactionAmount', 'amount')
       .addSelect(
         `ISNULL(idirUser.userName,'${PermitIssuedBy.SELF_ISSUED}')`,
-        'user',
+        'users',
       );
+  }
 
+  private getSelectQueryBuilderForPaymentAndRefundSummary(
+    queryBuilder: SelectQueryBuilder<Transaction>,
+  ) {
     queryBuilder
+      .select(
+        `CONCAT_WS(' - ', paymentMethodType.name, paymentCardType.name )`,
+        'paymentMethod',
+      )
+      .addSelect('trans.transactionTypeId', 'transactionType')
+      .addSelect(
+        `SUM(permitTransactions.transactionAmount) OVER (PARTITION BY trans.transactionTypeId, trans.paymentMethodTypeCode, trans.paymentCardTypeCode)`,
+        'amount',
+      )
+      .distinct();
+  }
+
+  private getSelectQueryBuilderForPermitSummary(
+    queryBuilder: SelectQueryBuilder<Transaction>,
+  ) {
+    queryBuilder
+      .select('permit.permitType', 'permitType')
+      .addSelect(
+        'COUNT(permit.permitType) OVER (PARTITION BY permit.permitType)',
+        'permitCount',
+      )
+      .distinct();
+  }
+
+  private getTargetQueryBuilderForReports(
+    queryBuilder: SelectQueryBuilder<Transaction>,
+  ) {
+    queryBuilder
+      .innerJoin(
+        PaymentMethodType,
+        'paymentMethodType',
+        'trans.paymentMethodTypeCode = paymentMethodType.paymentMethodTypeCode',
+      )
+      .leftJoin(
+        PaymentCardType,
+        'paymentCardType',
+        'trans.paymentCardTypeCode = paymentCardType.paymentCardTypeCode',
+      )
       .innerJoin('trans.permitTransactions', 'permitTransactions')
       .innerJoin('trans.receipt', 'receipt')
       .innerJoin('permitTransactions.permit', 'permit')
@@ -71,37 +109,43 @@ export class PaymentReportService {
         'idirUser',
         'permit.issuerUserGuid = idirUser.userGUID',
       );
+  }
 
-    queryBuilder.where('trans.transactionTypeId = :transactionType', {
-      transactionType: transactionType,
-    });
+  private getCondtionQueryBuilderForDetailedReports(
+    queryBuilder: SelectQueryBuilder<Transaction>,
+    transactionTypes: TransactionType[],
+    reportDto: CreatePaymentDetailedReportDto,
+    paymentMethodTypeCodes: PaymentMethodTypeReport[],
+    paymentCardTypeCodes: PaymentCardTypeEnum[],
+    permitTypes: PermitTypeReport[],
+  ) {
+    if (transactionTypes?.length) {
+      queryBuilder.where('trans.transactionTypeId IN (:...transactionTypes)', {
+        transactionTypes: transactionTypes,
+      });
+    }
 
     queryBuilder.andWhere('permit.permitStatus = :permitStatus', {
       permitStatus: ApplicationStatus.ISSUED,
     });
 
     queryBuilder.andWhere('permit.permitIssueDateTime >= :fromDateTime', {
-      fromDateTime: createPaymentDetailedReportDto.fromDateTime,
+      fromDateTime: reportDto.fromDateTime,
     });
     queryBuilder.andWhere('permit.permitIssueDateTime < :toDateTime', {
-      toDateTime: createPaymentDetailedReportDto.toDateTime,
+      toDateTime: reportDto.toDateTime,
     });
 
-    queryBuilder.andWhere(
-      'trans.paymentMethodTypeCode = :paymentMethodTypeCode',
-      { paymentMethodTypeCode: paymentCode.paymentMethodTypeCode },
-    );
-    if (paymentCode.paymentCardTypeCode) {
+    if (paymentMethodTypeCodes?.length) {
       queryBuilder.andWhere(
-        'trans.paymentCardTypeCode = :paymentCardTypeCode',
-        { paymentCardTypeCode: paymentCode.paymentCardTypeCode },
+        'trans.paymentMethodTypeCode IN (:...paymentMethodTypeCodes)',
+        { paymentMethodTypeCodes: paymentMethodTypeCodes },
       );
-    }
 
-    if (createPaymentDetailedReportDto.issuedBy?.length) {
-      queryBuilder.andWhere('permit.permitIssuedBy IN (:...issuedBy)', {
-        issuedBy: createPaymentDetailedReportDto.issuedBy,
-      });
+      queryBuilder.andWhere(
+        '(trans.paymentCardTypeCode IS NULL OR trans.paymentCardTypeCode IN (:...paymentCardTypeCodes))',
+        { paymentCardTypeCodes: paymentCardTypeCodes },
+      );
     }
 
     if (permitTypes?.length) {
@@ -112,251 +156,237 @@ export class PaymentReportService {
       });
     }
 
-    if (createPaymentDetailedReportDto.users?.length) {
-      queryBuilder.andWhere('permit.issuerUserGuid IN (:...issuerUserGuids)', {
-        issuerUserGuids: createPaymentDetailedReportDto.users,
-      });
+    if (reportDto.issuedBy?.length) {
+      if (
+        reportDto.issuedBy.includes(PermitIssuedBy.SELF_ISSUED) &&
+        !reportDto.issuedBy.includes(PermitIssuedBy.PPC)
+      ) {
+        queryBuilder.andWhere('permit.permitIssuedBy = :issuedBy', {
+          issuedBy: PermitIssuedBy.SELF_ISSUED,
+        });
+      } else if (
+        reportDto.issuedBy.includes(PermitIssuedBy.SELF_ISSUED) &&
+        reportDto.issuedBy.includes(PermitIssuedBy.PPC) &&
+        reportDto.users?.length
+      ) {
+        queryBuilder.andWhere(
+          '(permit.permitIssuedBy = :issuedBy OR permit.issuerUserGuid IN (:...issuerUserGuids))',
+          {
+            issuedBy: PermitIssuedBy.SELF_ISSUED,
+            issuerUserGuids: reportDto.users,
+          },
+        );
+      } else if (
+        reportDto.issuedBy.includes(PermitIssuedBy.PPC) &&
+        reportDto.users?.length
+      ) {
+        queryBuilder.andWhere(
+          'permit.issuerUserGuid IN (:...issuerUserGuids)',
+          {
+            issuerUserGuids: reportDto.users,
+          },
+        );
+      }
     }
+  }
 
-    queryBuilder.orderBy('permit.permitIssueDateTime');
+  async findTransactionDataForDetailedReports(
+    transactionTypes: TransactionType[],
+    createPaymentDetailedReportDto: CreatePaymentDetailedReportDto,
+    paymentMethodTypeCodes: PaymentMethodTypeReport[],
+    paymentCardTypeCodes: PaymentCardTypeEnum[],
+    permitTypes: PermitTypeReport[],
+  ): Promise<unknown> {
+    const queryBuilder = this.transactionRepository.createQueryBuilder('trans');
+
+    this.getSelectQueryBuilderForDetailedReports(queryBuilder);
+
+    this.getTargetQueryBuilderForReports(queryBuilder);
+
+    this.getCondtionQueryBuilderForDetailedReports(
+      queryBuilder,
+      transactionTypes,
+      createPaymentDetailedReportDto,
+      paymentMethodTypeCodes,
+      paymentCardTypeCodes,
+      permitTypes,
+    );
+
+    queryBuilder.orderBy('paymentMethod');
+    queryBuilder.addOrderBy('permit.permitIssueDateTime');
+
+    interface IPaymentReportDataDetails {
+      paymentMethod: string;
+      orbcTransactionId: string;
+      providerTransactionId: string;
+      amount: number; //To be changed to Decimal.js
+      receiptNo: string;
+      permitType: string;
+      permitNo: string;
+      issuedOn: string;
+      users: string;
+    }
 
     const paymentReportDataCollection: IPaymentReportDataDetails[] =
       await queryBuilder.getRawMany();
 
-    let subtotal = 0;
-
     if (paymentReportDataCollection?.length) {
-      const transformedPaymentReportDataCollection =
-        paymentReportDataCollection.map((paymentReportData) => {
-          subtotal += paymentReportData.amount;
-          return {
-            ...paymentReportData,
-            paymentMethod: paymentCode.consolidatedPaymentMethod,
-            issuedOn: convertUtcToPt(
-              paymentReportData.issuedOn,
-              'MMM. D, YYYY, hh:mm A Z',
-            ),
-          };
-        });
-
-      const paymentReportData: IPaymentReportData = {
-        paymentReportData: transformedPaymentReportDataCollection,
-        totalAmount: subtotal,
-        paymentMethod: paymentCode.consolidatedPaymentMethod,
-      };
-
-      return paymentReportData;
+      return paymentReportDataCollection as unknown;
     }
   }
 
-  async findSummaryPermitDataForReports(
-    paymentCode: IPaymentCode,
-    permitTypes: PermitTypeReport[],
-    createPaymentDetailedReportDto: CreatePaymentDetailedReportDto,
-  ) {
+  async findSummaryPaymentAndRefundDataForDetailedReports(
+    transactionType: TransactionType[],
+    reportDto: CreatePaymentDetailedReportDto | CreatePaymentSummaryReportDto,
+    paymentMethodTypeCodes?: PaymentMethodTypeReport[],
+    paymentCardTypeCodes?: PaymentCardTypeEnum[],
+    permitTypes?: PermitTypeReport[],
+  ): Promise<unknown> {
     const queryBuilder = this.transactionRepository.createQueryBuilder('trans');
 
-    queryBuilder
-      .select('permit.permitType', 'permitType')
-      .addSelect('COUNT(permit.permitType)', 'permitCount');
+    this.getSelectQueryBuilderForPaymentAndRefundSummary(queryBuilder);
 
-    queryBuilder
-      .innerJoin('trans.permitTransactions', 'permitTransactions')
-      .innerJoin('trans.receipt', 'receipt')
-      .innerJoin('permitTransactions.permit', 'permit');
+    this.getTargetQueryBuilderForReports(queryBuilder);
 
-    queryBuilder.andWhere('permit.permitStatus = :permitStatus', {
-      permitStatus: ApplicationStatus.ISSUED,
-    });
-
-    queryBuilder.andWhere('permit.permitIssueDateTime >= :fromDateTime', {
-      fromDateTime: createPaymentDetailedReportDto.fromDateTime,
-    });
-    queryBuilder.andWhere('permit.permitIssueDateTime < :toDateTime', {
-      toDateTime: createPaymentDetailedReportDto.toDateTime,
-    });
-
-    queryBuilder.andWhere(
-      'trans.paymentMethodTypeCode = :paymentMethodTypeCode',
-      { paymentMethodTypeCode: paymentCode.paymentMethodTypeCode },
-    );
-    if (paymentCode.paymentCardTypeCode) {
-      queryBuilder.andWhere(
-        'trans.paymentCardTypeCode = :paymentCardTypeCode',
-        { paymentCardTypeCode: paymentCode.paymentCardTypeCode },
+    if ('paymentCodes' in reportDto) {
+      this.getCondtionQueryBuilderForDetailedReports(
+        queryBuilder,
+        transactionType,
+        reportDto,
+        paymentMethodTypeCodes,
+        paymentCardTypeCodes,
+        permitTypes,
+      );
+    } else {
+      this.getCondtionQueryBuilderForSummaryReports(
+        queryBuilder,
+        transactionType,
+        reportDto,
       );
     }
 
-    if (createPaymentDetailedReportDto.issuedBy?.length) {
-      queryBuilder.andWhere('permit.permitIssuedBy IN (:...issuedBy)', {
-        issuedBy: createPaymentDetailedReportDto.issuedBy,
-      });
+    queryBuilder.orderBy('paymentMethod');
+    queryBuilder.addOrderBy('trans.transactionTypeId');
+
+    interface QueryResultInterface {
+      transactionType: TransactionType;
+      paymentMethod: string;
+      amount: number;
     }
 
-    if (permitTypes?.length) {
-      queryBuilder.andWhere('permit.permitType IN (:...permitTypes)', {
-        permitTypes: Object.values(permitTypes).filter(
-          (x) => x != PermitTypeReport.ALL,
-        ),
-      });
+    const queryResult: QueryResultInterface[] = await queryBuilder.getRawMany();
+
+    interface SummaryPaymentsInterface {
+      paymentMethod: string;
+      payment: number;
+      refund: number;
+      deposit: number;
     }
 
-    if (createPaymentDetailedReportDto.users?.length) {
-      queryBuilder.andWhere('permit.issuerUserGuid IN (:...issuerUserGuids)', {
-        issuerUserGuids: createPaymentDetailedReportDto.users,
-      });
-    }
-    queryBuilder.groupBy('permit.permitType');
-    queryBuilder.orderBy('permit.permitType');
+    // Create a map to store the payment methods and their corresponding payments, refunds, and deposits
+    const paymentMap = new Map<string, SummaryPaymentsInterface>();
 
-    const permitSummaryDetails = (await queryBuilder.getRawMany()) as [
-      { permitType: PermitType; permitCount: number },
-    ];
-
-    if (permitSummaryDetails?.length) {
-      return permitSummaryDetails;
-    }
-  }
-
-  private async formatPermitSummaryForDopsInput(
-    paymentCodes: IPaymentCode[],
-    permitTypes: PermitTypeReport[],
-    createPaymentDetailedReportDto: CreatePaymentDetailedReportDto,
-  ) {
-    const summaryPermitDetailsFromDB = await Promise.all(
-      paymentCodes.map(async (paymentCode: IPaymentCode) => {
-        return await this.findSummaryPermitDataForReports(
-          paymentCode,
-          permitTypes,
-          createPaymentDetailedReportDto,
-        );
-      }),
-    );
-
-    const result = summaryPermitDetailsFromDB
-      .flat()
-      .filter((x) => x != undefined)
-      .reduce((acc, { permitType, permitCount }) => {
-        const key = permitType as unknown as string;
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/restrict-plus-operands
-        acc[key] = (acc[key] || 0) + permitCount;
-        return acc;
-      }, {});
-
-    const summaryPermitSubTotal = Object.entries(result).map(
-      ([permitType, permitCount]) => ({ permitType, permitCount }),
-    ) as [{ permitType: PermitTypeReport; permitCount: number }];
-
-    const totalPermits = summaryPermitSubTotal.reduce(
-      (acc, { permitCount }) => acc + permitCount,
-      0,
-    );
-
-    const formatSummaryPermitDopsInput = [];
-    formatSummaryPermitDopsInput.push(...summaryPermitSubTotal);
-    formatSummaryPermitDopsInput.push({ totalPermits: totalPermits });
-
-    return formatSummaryPermitDopsInput as unknown;
-  }
-
-  private formatPaymentSummaryForDopsInput(
-    paymentCodes: IPaymentCode[],
-    purchasePaymentMethodAmountMap: Map<string, number>,
-    refundPaymentMethodAmountMap: Map<string, number>,
-  ) {
-    const formatSummaryPaymentDopsInput = [];
-    let subTotalPaymentAmount = 0;
-    let subTotalRefundAmount = 0;
-    let subTotalDepositAmount = 0;
-    for (const paymentCode of paymentCodes) {
-      if (
-        purchasePaymentMethodAmountMap.has(
-          paymentCode.consolidatedPaymentMethod,
-        ) ||
-        refundPaymentMethodAmountMap.has(paymentCode.consolidatedPaymentMethod)
-      ) {
-        let paymentAmount: number = purchasePaymentMethodAmountMap.get(
-          paymentCode.consolidatedPaymentMethod,
-        );
-        paymentAmount = paymentAmount || 0;
-        subTotalPaymentAmount += paymentAmount;
-        let refundAmount: number = refundPaymentMethodAmountMap.get(
-          paymentCode.consolidatedPaymentMethod,
-        );
-        refundAmount = refundAmount || 0;
-        subTotalRefundAmount += refundAmount;
-        const deposit: number = paymentAmount - refundAmount;
-        subTotalDepositAmount += deposit;
-        formatSummaryPaymentDopsInput.push({
-          paymentMethod: paymentCode.consolidatedPaymentMethod,
-          payment: paymentAmount,
-          refund: refundAmount,
+    queryResult.forEach((item) => {
+      const payment = item.transactionType === 'P' ? item.amount : null;
+      const refund = item.transactionType === 'R' ? item.amount : null;
+      const deposit = (payment || 0) - (refund || 0);
+      const summaryPayment = paymentMap.get(item.paymentMethod);
+      if (summaryPayment) {
+        // If the payment method already exists in the map, update the payment, refund, and deposit
+        summaryPayment.payment = payment || summaryPayment.payment;
+        summaryPayment.refund = refund || summaryPayment.refund;
+        summaryPayment.deposit =
+          (summaryPayment.payment || 0) - (summaryPayment.refund || 0);
+      } else {
+        // If the payment method does not exist in the map, add it
+        paymentMap.set(item.paymentMethod, {
+          paymentMethod: item.paymentMethod,
+          payment: payment,
+          refund: refund,
           deposit: deposit,
         });
       }
-    }
-
-    formatSummaryPaymentDopsInput.push({
-      subTotalPaymentAmount: subTotalPaymentAmount,
-      subTotalRefundAmount: subTotalRefundAmount,
-      subTotalDepositAmount: subTotalDepositAmount,
     });
-    formatSummaryPaymentDopsInput.push({
-      grandTotalAmount: subTotalDepositAmount,
-    });
-    return formatSummaryPaymentDopsInput as unknown;
-  }
 
-  private async getTransactionDetailsFromDb(
-    transactionType: TransactionType,
-    paymentCodes: IPaymentCode[],
-    permitTypes: PermitTypeReport[],
-    createPaymentDetailedReportDto: CreatePaymentDetailedReportDto,
-    refundPaymentMethodAmountMap: Map<string, number>,
-  ): Promise<IPaymentReportData[]> {
-    return await Promise.all(
-      paymentCodes.map(async (paymentCode: IPaymentCode) => {
-        const paymentReportData: IPaymentReportData =
-          await this.findTransactionDataForReports(
-            transactionType,
-            paymentCode,
-            permitTypes,
-            createPaymentDetailedReportDto,
-          );
+    // Convert the map values to an array
+    const summaryPayments = Array.from(paymentMap.values());
 
-        if (paymentReportData) {
-          refundPaymentMethodAmountMap.set(
-            paymentReportData?.paymentMethod,
-            paymentReportData?.totalAmount,
-          );
-
-          return paymentReportData;
-        }
-      }),
+    const totalPayment = summaryPayments.reduce(
+      (a, b) => a + (b.payment || 0),
+      0,
     );
+    const totalRefund = summaryPayments.reduce(
+      (a, b) => a + (b.refund || 0),
+      0,
+    );
+    const total = {
+      paymentMethod: 'totalAmount',
+      payment: totalPayment === 0 ? null : totalPayment,
+      refund: totalRefund === 0 ? null : totalRefund,
+      deposit: summaryPayments.reduce((a, b) => a + (b.deposit || 0), 0),
+    };
+
+    summaryPayments.push(total);
+
+    if (summaryPayments?.length) {
+      return summaryPayments as unknown;
+    }
   }
 
-  private formatTransactionDataForDopsInput(
-    paymentDetails: IPaymentReportData[],
-  ) {
-    let grandTotalAmount = 0;
-    const formatPaymentDopsInput = [];
-    if (paymentDetails?.some((element) => element !== undefined)) {
-      paymentDetails.forEach((paymentReportData) => {
-        if (paymentReportData) {
-          formatPaymentDopsInput.push(...paymentReportData.paymentReportData);
-          formatPaymentDopsInput.push({
-            paymentMethod: paymentReportData.paymentMethod,
-            subTotalAmount: paymentReportData.totalAmount,
-          });
+  async findSummaryPermitDataForDetailedReports(
+    transactionType: TransactionType[],
+    reportDto: CreatePaymentDetailedReportDto | CreatePaymentSummaryReportDto,
+    paymentMethodTypeCodes?: PaymentMethodTypeReport[],
+    paymentCardTypeCodes?: PaymentCardTypeEnum[],
+    permitTypes?: PermitTypeReport[],
+  ): Promise<unknown> {
+    const queryBuilder = this.transactionRepository.createQueryBuilder('trans');
 
-          grandTotalAmount += paymentReportData.totalAmount;
-        }
-      });
+    this.getSelectQueryBuilderForPermitSummary(queryBuilder);
 
-      formatPaymentDopsInput.push({ totalAmount: grandTotalAmount });
+    this.getTargetQueryBuilderForReports(queryBuilder);
+
+    if ('paymentCodes' in reportDto) {
+      this.getCondtionQueryBuilderForDetailedReports(
+        queryBuilder,
+        transactionType,
+        reportDto,
+        paymentMethodTypeCodes,
+        paymentCardTypeCodes,
+        permitTypes,
+      );
+    } else {
+      this.getCondtionQueryBuilderForSummaryReports(
+        queryBuilder,
+        transactionType,
+        reportDto,
+      );
     }
-    return formatPaymentDopsInput as unknown;
+
+    queryBuilder.orderBy('permitType');
+
+    interface QueryResultInterface {
+      permitType: string;
+      permitCount: number;
+    }
+
+    const queryResult: QueryResultInterface[] = await queryBuilder.getRawMany();
+
+    // Calculate the total permit count
+    const totalPermitCount = queryResult.reduce(
+      (total, item) => total + item.permitCount,
+      0,
+    );
+
+    // Append a new object with the total permit count
+    queryResult.push({
+      permitType: 'totalPermitCount',
+      permitCount: totalPermitCount,
+    });
+
+    if (queryResult?.length) {
+      return queryResult as unknown;
+    }
   }
 
   private async getConsolidatedPaymentMethodFromDto(
@@ -364,6 +394,13 @@ export class PaymentReportService {
   ) {
     const paymentCodes: IPaymentCode[] = [];
     for (const paymentCode of createPaymentDetailedReportDto.paymentCodes) {
+      const paymentCodeDesc = paymentCode.paymentCardTypeCode
+        ? await getFromCache(
+            this.cacheManager,
+            CacheKey.PAYMENT_CARD_TYPE,
+            paymentCode.paymentCardTypeCode,
+          )
+        : null;
       const paymentCodeTemp: IPaymentCode = {
         paymentMethodTypeCode: paymentCode.paymentMethodTypeCode,
         paymentCardTypeCode: paymentCode.paymentCardTypeCode,
@@ -372,13 +409,9 @@ export class PaymentReportService {
             this.cacheManager,
             CacheKey.PAYMENT_METHOD_TYPE,
             paymentCode.paymentMethodTypeCode,
-          )) +
-          ' - ' +
-          (await getFromCache(
-            this.cacheManager,
-            CacheKey.PAYMENT_CARD_TYPE,
-            paymentCode.paymentCardTypeCode,
-          )),
+          )) + paymentCodeDesc
+            ? ' - ' + paymentCodeDesc
+            : '',
       };
 
       paymentCodes.push(paymentCodeTemp);
@@ -405,48 +438,54 @@ export class PaymentReportService {
 
     permitTypes.sort((a, b) => a.valueOf().localeCompare(b.valueOf()));
 
-    const formatSummaryPermitDopsInput =
-      await this.formatPermitSummaryForDopsInput(
-        paymentCodes,
-        permitTypes,
+    const paymentMethodTypeCodes = [
+      ...new Set(
+        createPaymentDetailedReportDto?.paymentCodes.map(
+          (item) => item.paymentMethodTypeCode,
+        ),
+      ),
+    ];
+    const paymentCardTypeCodes: PaymentCardTypeEnum[] = [
+      ...new Set(
+        createPaymentDetailedReportDto?.paymentCodes.map(
+          (item) => item.paymentCardTypeCode,
+        ),
+      ),
+    ];
+
+    const paymentTransactions =
+      await this.findTransactionDataForDetailedReports(
+        [TransactionType.PURCHASE],
         createPaymentDetailedReportDto,
+        paymentMethodTypeCodes,
+        paymentCardTypeCodes,
+        permitTypes,
       );
 
-    const purchasePaymentMethodAmountMap = new Map<string, number>();
-
-    const purchasePaymentDetails: IPaymentReportData[] =
-      await this.getTransactionDetailsFromDb(
-        TransactionType.PURCHASE,
-        paymentCodes,
-        permitTypes,
-        createPaymentDetailedReportDto,
-        purchasePaymentMethodAmountMap,
-      );
-
-    const paymentDopsInput = this.formatTransactionDataForDopsInput(
-      purchasePaymentDetails,
+    const refundTransactions = await this.findTransactionDataForDetailedReports(
+      [TransactionType.REFUND],
+      createPaymentDetailedReportDto,
+      paymentMethodTypeCodes,
+      paymentCardTypeCodes,
+      permitTypes,
     );
 
-    const refundPaymentMethodAmountMap = new Map<string, number>();
-
-    const refundDetails: IPaymentReportData[] =
-      await this.getTransactionDetailsFromDb(
-        TransactionType.REFUND,
-        paymentCodes,
-        permitTypes,
+    const paymentAndRefundSummary =
+      await this.findSummaryPaymentAndRefundDataForDetailedReports(
+        [TransactionType.PURCHASE, TransactionType.REFUND],
         createPaymentDetailedReportDto,
-        refundPaymentMethodAmountMap,
+        paymentMethodTypeCodes,
+        paymentCardTypeCodes,
+        permitTypes,
       );
 
-    const refundDopsInput =
-      this.formatTransactionDataForDopsInput(refundDetails);
-
-    const formatSummaryPaymentDopsInput = this.formatPaymentSummaryForDopsInput(
-      paymentCodes,
-      purchasePaymentMethodAmountMap,
-      refundPaymentMethodAmountMap,
+    const permitSummary = await this.findSummaryPermitDataForDetailedReports(
+      [TransactionType.PURCHASE, TransactionType.REFUND],
+      createPaymentDetailedReportDto,
+      paymentMethodTypeCodes,
+      paymentCardTypeCodes,
+      permitTypes,
     );
-
     const generateReportData: DopsGeneratedReport = {
       reportTemplate: ReportTemplate.PAYMENT_AND_REFUND_DETAILED_REPORT,
       reportData: {
@@ -472,10 +511,10 @@ export class PaymentReportService {
           createPaymentDetailedReportDto.toDateTime,
           'MMM. D, YYYY, hh:mm A Z',
         )}`,
-        payments: paymentDopsInput,
-        refunds: refundDopsInput,
-        summaryPayments: formatSummaryPaymentDopsInput,
-        summaryPermits: formatSummaryPermitDopsInput,
+        payments: paymentTransactions,
+        refunds: refundTransactions,
+        summaryPaymentsAndRefunds: paymentAndRefundSummary,
+        summaryPermits: permitSummary,
       },
       generatedDocumentFileName: 'Sample',
     };
@@ -488,54 +527,26 @@ export class PaymentReportService {
     createPaymentSummaryReportDto: CreatePaymentSummaryReportDto,
     res: Response,
   ): Promise<void> {
-    const asdad = await this.findTransactionDataForSummaryReports(
-      TransactionType.PURCHASE,
-      null,
-      null,
+    const paymentTransactions = await this.findTransactionDataForSummaryReports(
+      [TransactionType.PURCHASE],
       createPaymentSummaryReportDto,
     );
 
-    // const formatSummaryPermitDopsInput =
-    //   await this.formatPermitSummaryForDopsInput(
-    //     paymentCodes,
-    //     permitTypes,
-    //     createPaymentDetailedReportDto,
-    //   );
+    const refundTransactions = await this.findTransactionDataForSummaryReports(
+      [TransactionType.REFUND],
+      createPaymentSummaryReportDto,
+    );
 
-    // const purchasePaymentMethodAmountMap = new Map<string, number>();
+    const paymentAndRefundSummary =
+      await this.findSummaryPaymentAndRefundDataForDetailedReports(
+        [TransactionType.PURCHASE, TransactionType.REFUND],
+        createPaymentSummaryReportDto,
+      );
 
-    // const purchasePaymentDetails: IPaymentReportData[] =
-    //   await this.getTransactionDetailsFromDb(
-    //     TransactionType.PURCHASE,
-    //     paymentCodes,
-    //     permitTypes,
-    //     createPaymentDetailedReportDto,
-    //     purchasePaymentMethodAmountMap,
-    //   );
-
-    // const paymentDopsInput = this.formatTransactionDataForDopsInput(
-    //   purchasePaymentDetails,
-    // );
-
-    // const refundPaymentMethodAmountMap = new Map<string, number>();
-
-    // const refundDetails: IPaymentReportData[] =
-    //   await this.getTransactionDetailsFromDb(
-    //     TransactionType.REFUND,
-    //     paymentCodes,
-    //     permitTypes,
-    //     createPaymentDetailedReportDto,
-    //     refundPaymentMethodAmountMap,
-    //   );
-
-    // const refundDopsInput =
-    //   this.formatTransactionDataForDopsInput(refundDetails);
-
-    // const formatSummaryPaymentDopsInput = this.formatPaymentSummaryForDopsInput(
-    //   paymentCodes,
-    //   purchasePaymentMethodAmountMap,
-    //   refundPaymentMethodAmountMap,
-    // );
+    const permitSummary = await this.findSummaryPermitDataForDetailedReports(
+      [TransactionType.PURCHASE, TransactionType.REFUND],
+      createPaymentSummaryReportDto,
+    );
 
     const generateReportData: DopsGeneratedReport = {
       reportTemplate: ReportTemplate.PAYMENT_AND_REFUND_SUMMARY_REPORT,
@@ -549,10 +560,10 @@ export class PaymentReportService {
           createPaymentSummaryReportDto.toDateTime,
           'MMM. D, YYYY, hh:mm A Z',
         )}`,
-        // payments: paymentDopsInput,
-        // refunds: refundDopsInput,
-        // summaryPayments: formatSummaryPaymentDopsInput,
-        // summaryPermits: formatSummaryPermitDopsInput,
+        payments: paymentTransactions,
+        refunds: refundTransactions,
+        summaryPaymentsAndRefunds: paymentAndRefundSummary,
+        summaryPermits: permitSummary,
       },
       generatedDocumentFileName: 'Sample',
     };
@@ -560,86 +571,84 @@ export class PaymentReportService {
     await this.dopsService.generateReport(currentUser, generateReportData, res);
   }
 
-  async findTransactionDataForSummaryReports(
-    transactionType: TransactionType,
-    paymentCode: IPaymentCode,
-    permitTypes: PermitTypeReport[],
-    createPaymentDetailedReportDto: CreatePaymentSummaryReportDto,
-  ): Promise<IPaymentReportData> {
-    const queryBuilder = this.transactionRepository.createQueryBuilder('trans');
-
+  private getSelectQueryBuilderForSummaryReports(
+    queryBuilder: SelectQueryBuilder<Transaction>,
+  ) {
     queryBuilder
       .select(
         `CONCAT_WS(' - ', paymentMethodType.name, paymentCardType.name )`,
         'paymentMethod',
       )
       .addSelect(
-        `ISNULL(idirUser.userName,'${PermitIssuedBy.SELF_ISSUED}')`,
-        'user',
-      )
-      .addSelect(
         `SUM(permitTransactions.transactionAmount) OVER (PARTITION BY trans.paymentMethodTypeCode, trans.paymentCardTypeCode, idirUser.userName)`,
         'amount',
       )
-      .distinct();
+      .addSelect(
+        `ISNULL(idirUser.userName,'${PermitIssuedBy.SELF_ISSUED}')`,
+        'users',
+      ).distinct();
+  }
 
-    queryBuilder
-      .innerJoin(
-        PaymentMethodType,
-        'paymentMethodType',
-        'trans.paymentMethodTypeCode = paymentMethodType.paymentMethodTypeCode',
-      )
-      .leftJoin(
-        PaymentCardType,
-        'paymentCardType',
-        'trans.paymentCardTypeCode = paymentCardType.paymentCardTypeCode',
-      )
-      .innerJoin('trans.permitTransactions', 'permitTransactions')
-      .innerJoin('permitTransactions.permit', 'permit')
-      .leftJoin(
-        IdirUser,
-        'idirUser',
-        'permit.issuerUserGuid = idirUser.userGUID',
-      );
-
-    queryBuilder.where('trans.transactionTypeId = :transactionType', {
-      transactionType: transactionType,
-    });
+  private getCondtionQueryBuilderForSummaryReports(
+    queryBuilder: SelectQueryBuilder<Transaction>,
+    transactionTypes: TransactionType[],
+    reportDto: CreatePaymentSummaryReportDto,
+  ) {
+    if (transactionTypes?.length) {
+      queryBuilder.where('trans.transactionTypeId IN (:...transactionTypes)', {
+        transactionTypes: transactionTypes,
+      });
+    }
 
     queryBuilder.andWhere('permit.permitStatus = :permitStatus', {
       permitStatus: ApplicationStatus.ISSUED,
     });
 
     queryBuilder.andWhere('permit.permitIssueDateTime >= :fromDateTime', {
-      fromDateTime: createPaymentDetailedReportDto.fromDateTime,
+      fromDateTime: reportDto.fromDateTime,
     });
     queryBuilder.andWhere('permit.permitIssueDateTime < :toDateTime', {
-      toDateTime: createPaymentDetailedReportDto.toDateTime,
+      toDateTime: reportDto.toDateTime,
     });
 
-    if (createPaymentDetailedReportDto.issuedBy?.length) {
-      queryBuilder.andWhere('permit.permitIssuedBy IN (:...issuedBy)', {
-        issuedBy: createPaymentDetailedReportDto.issuedBy,
+    if (reportDto.issuedBy?.length) {
+      queryBuilder.andWhere('permit.permitIssuedBy IN (:...permitIssuedBy)', {
+        permitIssuedBy: reportDto.issuedBy,
       });
     }
+  }
+
+  async findTransactionDataForSummaryReports(
+    transactionTypes: TransactionType[],
+    reportDto: CreatePaymentSummaryReportDto,
+  ): Promise<unknown> {
+    const queryBuilder = this.transactionRepository.createQueryBuilder('trans');
+
+    this.getSelectQueryBuilderForSummaryReports(queryBuilder);
+
+    this.getTargetQueryBuilderForReports(queryBuilder);
+
+    this.getCondtionQueryBuilderForSummaryReports(
+      queryBuilder,
+      transactionTypes,
+      reportDto,
+    );
 
     queryBuilder.orderBy('paymentMethod');
+    queryBuilder.addOrderBy('users');
+    queryBuilder.addOrderBy('amount');
+
+    interface IPaymentReportDataDetails {
+      paymentMethod: string;
+      amount: number; //To be changed to Decimal.js
+      users: string;
+    }
 
     const paymentReportDataCollection: IPaymentReportDataDetails[] =
       await queryBuilder.getRawMany();
 
-    let subtotal = 0;
-
-    paymentReportDataCollection.forEach((paymentReportData) => {
-      subtotal += paymentReportData.amount;
-    });
-
-    const paymentReportData: IPaymentReportData = {
-      paymentReportData: paymentReportDataCollection,
-      totalAmount: subtotal,
-      paymentMethod: undefined,
-    };
-
-    return paymentReportData;
+    if (paymentReportDataCollection?.length) {
+      return paymentReportDataCollection as unknown;
+    }
   }
 }

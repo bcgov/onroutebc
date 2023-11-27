@@ -214,6 +214,8 @@ export class DgenService {
     if (!template?.length) {
       throw new InternalServerErrorException('Template not found');
     }
+    this.registerHandleBarsHelpers();
+
     const compiledTemplate = Handlebars.compile(template);
 
     const htmlBody = compiledTemplate({
@@ -287,6 +289,61 @@ export class DgenService {
     stream.on('error', () => {
       throw new Error('An error occurred while reading the file.');
     });
+  }
+
+  private registerHandleBarsHelpers() {
+    /* eslint-disable */
+    Handlebars.registerHelper(
+      'displayPaymentMethodSubTotal',
+      function (options) {
+        const obj = options.data.root;
+        const current = this;
+        const index = options.data.index;
+        const next = obj.payments[index + 1];
+        if (next && next.paymentMethod !== current.paymentMethod) {
+          return options.fn(this);
+        } else if (!next) {
+          return options.fn(this);
+        }
+      },
+    );
+    /* eslint-enable */
+
+    interface SummaryPaymentsInterface {
+      paymentMethod: string;
+      payment?: number;
+      refund?: number;
+      deposit?: number;
+    }
+
+
+    Handlebars.registerHelper(
+      'amountLookup',
+      function (
+        summaryPayments: SummaryPaymentsInterface[],
+        field: string,
+        transactionType: string,
+      ) {
+        const lookup: Record<string, keyof SummaryPaymentsInterface> = {
+          payment: 'payment',
+          totalPayment: 'payment',
+          refund: 'refund',
+          totalRefund: 'refund',
+          deposit: 'deposit',
+        };
+
+        const property = lookup[transactionType];
+
+        if (property) {
+          const found = summaryPayments.find(
+            (x) =>
+              x.paymentMethod ===
+              (transactionType === 'totalPayment' ? 'totalAmount' : field),
+          );
+          return found ? found[property] : null;
+        }
+      },
+    );
   }
 
   getCacheKeyforReport(reportName: ReportTemplate): CacheKey {
