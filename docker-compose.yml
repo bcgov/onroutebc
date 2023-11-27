@@ -42,7 +42,7 @@ services:
   vehicles-api:
     container_name: vehicles-api
     build:
-      context: ./backend/vehicles/
+      context: ./vehicles/
       dockerfile: Dockerfile
     environment:
       NODE_ENV: development
@@ -86,7 +86,7 @@ services:
   dops-api:
     container_name: dops-api
     build:
-      context: ./backend/dops/
+      context: ./dops/
       dockerfile: Dockerfile
     environment:
       NODE_ENV: development

@@ -11,11 +11,13 @@ import {
   useState,
 } from "react";
 
-import MaterialReactTable, {
+import {
   MRT_ColumnDef,
   MRT_GlobalFilterTextField,
   MRT_Row,
   MRT_TableInstance,
+  MaterialReactTable,
+  useMaterialReactTable,
 } from "material-react-table";
 
 import "./List.scss";
@@ -30,10 +32,11 @@ import {
 import { ApplicationInProgressColumnDefinition } from "./Columns";
 import { deleteApplications } from "../../apiManager/permitsAPI";
 import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
+import { defaultTableOptions } from "../../../../common/constants/defaultTableOptions";
 
 /**
  * Dynamically set the column
- * @returns An array of column headers/accessor keys ofr Material React Table
+ * @returns An array of column headers/accessor keys for Material React Table
  */
 const getColumns = (): MRT_ColumnDef<ApplicationInProgress>[] => {
   return ApplicationInProgressColumnDefinition;
@@ -123,148 +126,95 @@ export const List = memo(
       setIsDeleteDialogOpen(() => false);
     }, []);
 
+    const table = useMaterialReactTable({
+      ...defaultTableOptions,
+      columns: columns,
+      data: data ?? [],
+      state: {
+        showAlertBanner: isError,
+        showProgressBars: isFetching,
+        columnVisibility: { applicationId: true },
+        rowSelection: rowSelection,
+        isLoading,
+      },
+      onRowSelectionChange: setRowSelection,
+      enableRowSelection: true,
+      getRowId: (originalRow) => {
+        const applicationRow = originalRow as PermitApplicationInProgress;
+        return applicationRow.permitId;
+      },
+      renderEmptyRowsFallback: () => <NoRecordsFound />,
+      renderRowActions: useCallback(
+        ({
+          row,
+        }: {
+          table: MRT_TableInstance<ApplicationInProgress>;
+          row: MRT_Row<ApplicationInProgress>;
+        }) => (
+          <Box className="table-container__row-actions">
+            <Tooltip arrow placement="top" title="Delete">
+              <IconButton
+                color="error"
+                onClick={() => {
+                  setIsDeleteDialogOpen(() => true);
+                  setRowSelection(() => {
+                    const newObject: { [key: string]: boolean } = {};
+                    // Setting the selected row to false so that
+                    // the row appears unchecked.
+                    newObject[row.original.permitId as string] = false;
+                    return newObject;
+                  });
+                }}
+                disabled={false}
+              >
+                <Delete />
+              </IconButton>
+            </Tooltip>
+          </Box>
+        ),
+        [],
+      ),
+      // Render a custom options Bar (inclues search and trash)
+      renderTopToolbar: useCallback(
+        ({ table }: { table: MRT_TableInstance<ApplicationInProgress> }) => (
+          <Box className="table-container__top-toolbar">
+            <MRT_GlobalFilterTextField table={table} />
+            <Trash
+              onClickTrash={onClickTrashIcon}
+              disabled={hasNoRowsSelected}
+            />
+          </Box>
+        ),
+        [hasNoRowsSelected],
+      ),
+      muiTableContainerProps: {
+        sx: {
+          height: "calc(100vh - 475px)",
+          outline: "1px solid #DBDCDC",
+        },
+      },
+      muiToolbarAlertBannerProps: isError
+        ? {
+            color: "error",
+            children: "Error loading data",
+          }
+        : undefined,
+      initialState: {
+        showGlobalFilter: true,
+      }, //show the search bar by default
+      muiSearchTextFieldProps: {
+        className: "top-toolbar-search",
+        placeholder: "Search",
+        variant: "outlined",
+        inputProps: {
+          className: "search-input",
+        },
+      },
+    });
+
     return (
       <div className="table-container">
-        <MaterialReactTable
-          columns={columns}
-          data={data ?? []}
-          state={{
-            showAlertBanner: isError,
-            showProgressBars: isFetching,
-            columnVisibility: { applicationId: true },
-            rowSelection: rowSelection,
-            isLoading,
-          }}
-          selectAllMode="page"
-          onRowSelectionChange={setRowSelection}
-          enableStickyHeader
-          positionActionsColumn="last"
-          // Disable the default column actions so that we can use our custom actions
-          enableColumnActions={false}
-          enableRowSelection={true}
-          // Row copy, delete, and edit options
-          getRowId={(originalRow) => {
-            const applicationRow = originalRow as PermitApplicationInProgress;
-            return applicationRow.permitId;
-          }}
-          enableRowActions={true}
-          displayColumnDefOptions={{
-            "mrt-row-actions": {
-              header: "",
-            },
-          }}
-          renderEmptyRowsFallback={() => <NoRecordsFound />}
-          renderRowActions={useCallback(
-            ({
-              row,
-            }: {
-              table: MRT_TableInstance<ApplicationInProgress>;
-              row: MRT_Row<ApplicationInProgress>;
-            }) => (
-              <Box className="table-container__row-actions">
-                <Tooltip arrow placement="top" title="Delete">
-                  <IconButton
-                    color="error"
-                    onClick={() => {
-                      setIsDeleteDialogOpen(() => true);
-                      setRowSelection(() => {
-                        const newObject: { [key: string]: boolean } = {};
-                        // Setting the selected row to false so that
-                        // the row appears unchecked.
-                        newObject[row.original.permitId as string] = false;
-                        return newObject;
-                      });
-                    }}
-                    disabled={false}
-                  >
-                    <Delete />
-                  </IconButton>
-                </Tooltip>
-              </Box>
-            ),
-            [],
-          )}
-          // Render a custom options Bar (inclues search and trash)
-          renderTopToolbar={useCallback(
-            ({
-              table,
-            }: {
-              table: MRT_TableInstance<ApplicationInProgress>;
-            }) => (
-              <Box className="table-container__top-toolbar">
-                <MRT_GlobalFilterTextField table={table} />
-                <Trash
-                  onClickTrash={onClickTrashIcon}
-                  disabled={hasNoRowsSelected}
-                />
-              </Box>
-            ),
-            [hasNoRowsSelected],
-          )}
-          /*
-           *
-           * STYLES
-           *
-           */
-
-          // Main table container
-          muiTablePaperProps={{
-            sx: {
-              border: "none",
-              boxShadow: "none",
-            },
-          }}
-          // Column widths
-          defaultColumn={{
-            size: 50,
-            maxSize: 200,
-            minSize: 25,
-          }}
-          // Cell/Body container
-          muiTableContainerProps={{
-            sx: {
-              height: "calc(100vh - 475px)",
-              outline: "1px solid #DBDCDC",
-            },
-          }}
-          // Pagination
-          muiBottomToolbarProps={{
-            sx: {
-              backgroundColor: BC_COLOURS.bc_background_light_grey,
-              zIndex: 0,
-            },
-          }}
-          // Alert banner
-          muiToolbarAlertBannerProps={
-            isError
-              ? {
-                  color: "error",
-                  children: "Error loading data",
-                }
-              : undefined
-          }
-          // Top toolbar
-          muiTopToolbarProps={{ sx: { zIndex: 0 } }}
-          // Search Bar
-          positionGlobalFilter="left"
-          initialState={{
-            showGlobalFilter: true,
-          }} //show the search bar by default
-          muiSearchTextFieldProps={{
-            className: "top-toolbar-search",
-            placeholder: "Search",
-            variant: "outlined",
-            inputProps: {
-              className: "search-input",
-            },
-          }}
-          // Row Header
-          muiTableHeadRowProps={{
-            sx: {
-              backgroundColor: BC_COLOURS.bc_background_light_grey,
-            },
-          }}
-        />
+        <MaterialReactTable table={table} />
         <DeleteConfirmationDialog
           onClickDelete={onConfirmApplicationDelete}
           isOpen={isDeleteDialogOpen}

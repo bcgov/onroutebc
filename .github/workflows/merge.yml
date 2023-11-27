@@ -15,7 +15,8 @@ jobs:
     uses: ./.github/workflows/.deploy.yml
     secrets: inherit
     with:
-      target: test
+      tag: test
+      target: latest
       values: values.yaml
       license: c28f0c
       vault_role: nonprod
@@ -37,7 +38,7 @@ jobs:
       packages: write
     strategy:
       matrix:
-        package: [backend/dops, backend/vehicles, frontend]
+        package: [dops, vehicles, frontend]
     timeout-minutes: 2
     steps:
       - uses: shrink/actions-docker-registry-tag@v3
@@ -53,6 +54,7 @@ jobs:
     uses: ./.github/workflows/.deploy.yml
     secrets: inherit
     with:
+      tag: prod
       target: test
       values: values.yaml
       license: c28f0c
@@ -67,7 +69,7 @@ jobs:
       packages: write
     strategy:
       matrix:
-        package: [backend/dops, backend/vehicles, frontend]
+        package: [dops, vehicles, frontend]
     timeout-minutes: 2
     steps:
       - uses: shrink/actions-docker-registry-tag@v3

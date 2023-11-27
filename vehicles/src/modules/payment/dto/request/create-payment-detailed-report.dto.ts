@@ -8,22 +8,22 @@ import {
   IsOptional,
   ValidateNested,
 } from 'class-validator';
-import { PaymentReportIssuedBy } from '../../../../common/enum/payment-report-issued-by.enum';
 import { PermitTypeReport } from '../../../../common/enum/permit-type.enum';
 import { Type } from 'class-transformer';
 import { PaymentCodesDto } from '../common/payment-codes.dto';
+import { PermitIssuedBy } from '../../../../common/enum/permit-issued-by.enum';
 
 export class CreatePaymentDetailedReportDto {
   @AutoMap()
   @ApiProperty({
-    enum: PaymentReportIssuedBy,
-    example: [PaymentReportIssuedBy.SELF],
+    enum: PermitIssuedBy,
+    example: [PermitIssuedBy.SELF_ISSUED],
     description: 'Permit Issued By value.',
     isArray: true,
   })
-  @IsEnum(PaymentReportIssuedBy, { each: true })
+  @IsEnum(PermitIssuedBy, { each: true })
   @ArrayMinSize(1)
-  issuedBy: PaymentReportIssuedBy[];
+  issuedBy: PermitIssuedBy[];
 
   @AutoMap()
   @ApiProperty({
@@ -66,8 +66,8 @@ export class CreatePaymentDetailedReportDto {
 
   @AutoMap()
   @ApiProperty({
-    example: ['ORBCTST1'],
-    description: 'PPC Staff user list',
+    example: ['6F9619FF8B86D011B42D00C04FC964FF'],
+    description: 'PPC Staff user guid list',
     required: false,
     isArray: true,
     type: String,
