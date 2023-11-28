@@ -17,7 +17,7 @@ export class CreatePaymentDetailedReportDto {
   @AutoMap()
   @ApiProperty({
     enum: PermitIssuedBy,
-    example: [PermitIssuedBy.SELF_ISSUED],
+    example: [PermitIssuedBy.SELF_ISSUED, PermitIssuedBy.PPC],
     description: 'Permit Issued By value.',
     isArray: true,
   })
@@ -39,7 +39,11 @@ export class CreatePaymentDetailedReportDto {
 
   @AutoMap()
   @ApiProperty({
-    example: [PermitTypeReport.ALL],
+    example: [
+      PermitTypeReport.ALL,
+      PermitTypeReport.TERM_OVERSIZE,
+      PermitTypeReport.SINGLE_TRIP_OVERSIZE,
+    ],
     enum: PermitTypeReport,
     description: 'The permit types to include in the report.',
     isArray: true,
@@ -50,7 +54,7 @@ export class CreatePaymentDetailedReportDto {
 
   @AutoMap()
   @ApiProperty({
-    example: '2023-10-11T23:26:51.170Z',
+    example: '2022-10-11T23:26:51.170Z',
     description: 'Include records in the report from the given date and time',
   })
   @IsDateString()
@@ -58,7 +62,7 @@ export class CreatePaymentDetailedReportDto {
 
   @AutoMap()
   @ApiProperty({
-    example: '2023-10-27T23:26:51.170Z',
+    example: '2025-10-27T23:26:51.170Z',
     description: 'Include records in the report till the given date and time',
   })
   @IsDateString()
