@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
-import { DgenService } from './modules/dgen/dgen.service';
+
 import { CacheKey } from './enum/cache-key.enum';
 import { DocumentTemplate } from './modules/dgen/entities/document-template.entity';
 import { DmsService } from './modules/dms/dms.service';
@@ -11,6 +11,7 @@ import { S3Service } from './modules/common/s3.service';
 import { createFile } from './helper/file.helper';
 import { addToCache } from './helper/cache.helper';
 import * as fs from 'fs';
+import { DgenService } from './modules/dgen/dgen.service';
 
 @Injectable()
 export class AppService {

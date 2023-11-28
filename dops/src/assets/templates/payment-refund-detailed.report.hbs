@@ -275,57 +275,10 @@
               </thead>
               <tbody>
                 {{#each payments}}
-                {{#if this.subTotalAmount}}
-                <tr class="table-row">
-                  <td class="table-cell table-cell-background issued-on">
-                  </td>
-                  <td class="table-cell table-cell-background provider-transaction-id">
-                  </td>
-                  <td class="table-cell table-cell-background orbc-transaction-id">
-                  </td>
-                  <td class="table-cell table-cell-background payment-method bold">
-                    <p>SUB TOTAL</p>
-                  </td>
-                  <td class="table-cell table-cell-background receipt-number">
-                  </td>
-                  <td class="table-cell table-cell-background permit-number">
-                  </td>
-                  <td class="table-cell table-cell-background permit-type">
-                  </td>
-                  <td class="table-cell table-cell-background user">
-                  </td>
-                  <td class="table-cell table-cell-background amount table-cell-right bold">
-                    <p>${{this.subTotalAmount}}</p>
-                  </td>
-                </tr>
-                {{else if this.totalAmount}}
-                <tr class="table-row"></tr>
-                <tr class="table-row">
-                  <td class="table-cell table-cell-background issued-on">
-                  </td>
-                  <td class="table-cell table-cell-background provider-transaction-id">
-                  </td>
-                  <td class="table-cell table-cell-background orbc-transaction-id">
-                  </td>
-                  <td class="table-cell table-cell-background payment-method bold">
-                    <p style="font-size:10.0pt">TOTAL AMOUNT</p>
-                  </td>
-                  <td class="table-cell table-cell-background receipt-number">
-                  </td>
-                  <td class="table-cell table-cell-background permit-number">
-                  </td>
-                  <td class="table-cell table-cell-background permit-type">
-                  </td>
-                  <td class="table-cell table-cell-background user">
-                  </td>
-                  <td class="table-cell table-cell-background amount table-cell-right bold">
-                    <p style="font-size:10.0pt">${{this.totalAmount}}</p>
-                  </td>
-                </tr>
-                {{else}}
+
                 <tr class="table-row">
                   <td class="table-cell issued-on">
-                    <p>{{this.issuedOn}}</p>
+                    <p>{{convertUtcToPt this.issuedOn}}</p>
                   </td>
                   <td class="table-cell provider-transaction-id">
                     <p>{{this.providerTransactionId}}</p>
@@ -346,10 +299,62 @@
                     <p>{{this.permitType}}</p>
                   </td>
                   <td class="table-cell user">
-                    <p>{{this.user}}</p>
+                    <p>{{this.users}}</p>
                   </td>
                   <td class="table-cell amount table-cell-right">
-                    <p>${{this.amount}}</p>
+                    <p>{{formatAmount this.amount}}</p>
+                  </td>
+                </tr>
+                {{#displayPaymentMethodSubTotal 'payment'}}
+                <tr class="table-row">
+                  <td class="table-cell table-cell-background issued-on">
+                  </td>
+                  <td class="table-cell table-cell-background provider-transaction-id">
+                  </td>
+                  <td class="table-cell table-cell-background orbc-transaction-id">
+                  </td>
+                  <td class="table-cell table-cell-background payment-method bold">
+                    <p>SUB TOTAL</p>
+                  </td>
+                  <td class="table-cell table-cell-background receipt-number">
+                  </td>
+                  <td class="table-cell table-cell-background permit-number">
+                  </td>
+                  <td class="table-cell table-cell-background permit-type">
+                  </td>
+                  <td class="table-cell table-cell-background user">
+                  </td>
+                  <td class="table-cell table-cell-background amount table-cell-right bold">
+                    <p>{{formatAmount (amountLookup ../summaryPaymentsAndRefunds this.paymentMethod 'payment')}}</p>
+                  </td>
+
+                </tr>
+                {{/displayPaymentMethodSubTotal}}
+                {{#if @last}}
+                <tr class="table-row"></tr>
+                <tr class="table-row">
+                  <td class="table-cell table-cell-background issued-on">
+                  </td>
+                  <td class="table-cell table-cell-background provider-transaction-id">
+                  </td>
+                  <td class="table-cell table-cell-background orbc-transaction-id">
+                  </td>
+                  <td class="table-cell table-cell-background payment-method bold">
+                    <p style="font-size:10.0pt">TOTAL AMOUNT</p>
+                  </td>
+                  <td class="table-cell table-cell-background receipt-number">
+                  </td>
+                  <td class="table-cell table-cell-background permit-number">
+                  </td>
+                  <td class="table-cell table-cell-background permit-type">
+                  </td>
+                  <td class="table-cell table-cell-background user">
+                  </td>
+                  <td class="table-cell table-cell-background amount table-cell-right bold">
+                    <p style="font-size:10.0pt">{{formatAmount (amountLookup ../summaryPaymentsAndRefunds
+                      this.paymentMethod
+                      'totalPayment')}}
+                    </p>
                   </td>
                 </tr>
                 {{/if}}
@@ -402,57 +407,9 @@
                 </thead>
                 <tbody>
                   {{#each refunds}}
-                  {{#if this.subTotalAmount}}
-                  <tr class="table-row">
-                    <td class="table-cell table-cell-background issued-on">
-                    </td>
-                    <td class="table-cell table-cell-background provider-transaction-id">
-                    </td>
-                    <td class="table-cell table-cell-background orbc-transaction-id">
-                    </td>
-                    <td class="table-cell table-cell-background payment-method bold">
-                      <p>SUB TOTAL</p>
-                    </td>
-                    <td class="table-cell table-cell-background receipt-number">
-                    </td>
-                    <td class="table-cell table-cell-background permit-number">
-                    </td>
-                    <td class="table-cell table-cell-background permit-type">
-                    </td>
-                    <td class="table-cell table-cell-background user">
-                    </td>
-                    <td class="table-cell table-cell-background amount table-cell-right bold">
-                      <p>-${{this.subTotalAmount}}</p>
-                    </td>
-                  </tr>
-                  {{else if this.totalAmount}}
-                  <tr class="table-row"></tr>
-                  <tr class="table-row">
-                    <td class="table-cell table-cell-background issued-on">
-                    </td>
-                    <td class="table-cell table-cell-background provider-transaction-id">
-                    </td>
-                    <td class="table-cell table-cell-background orbc-transaction-id">
-                    </td>
-                    <td class="table-cell table-cell-background payment-method bold">
-                      <p style="font-size:10.0pt">TOTAL REFUNDS</p>
-                    </td>
-                    <td class="table-cell table-cell-background receipt-number">
-                    </td>
-                    <td class="table-cell table-cell-background permit-number">
-                    </td>
-                    <td class="table-cell table-cell-background permit-type">
-                    </td>
-                    <td class="table-cell table-cell-background user">
-                    </td>
-                    <td class="table-cell table-cell-background amount table-cell-right bold">
-                      <p style="font-size:10.0pt">-${{this.totalAmount}}</p>
-                    </td>
-                  </tr>
-                  {{else}}
                   <tr class="table-row">
                     <td class="table-cell issued-on">
-                      <p>{{this.issuedOn}}</p>
+                      <p>{{convertUtcToPt this.issuedOn}}</p>
                     </td>
                     <td class="table-cell provider-transaction-id">
                       <p>{{this.providerTransactionId}}</p>
@@ -473,22 +430,75 @@
                       <p>{{this.permitType}}</p>
                     </td>
                     <td class="table-cell user">
-                      <p>{{this.user}}</p>
+                      <p>{{this.users}}</p>
                     </td>
                     <td class="table-cell amount table-cell-right">
-                      <p>-${{this.amount}}</p>
+                      <p>{{formatRefundAmount this.amount}}</p>
+                    </td>
+                  </tr>
+
+                  {{#displayPaymentMethodSubTotal 'refund'}}
+                  <tr class="table-row">
+                    <td class="table-cell table-cell-background issued-on">
+                    </td>
+                    <td class="table-cell table-cell-background provider-transaction-id">
+                    </td>
+                    <td class="table-cell table-cell-background orbc-transaction-id">
+                    </td>
+                    <td class="table-cell table-cell-background payment-method bold">
+                      <p>SUB TOTAL</p>
+                    </td>
+                    <td class="table-cell table-cell-background receipt-number">
+                    </td>
+                    <td class="table-cell table-cell-background permit-number">
+                    </td>
+                    <td class="table-cell table-cell-background permit-type">
+                    </td>
+                    <td class="table-cell table-cell-background user">
+                    </td>
+                    <td class="table-cell table-cell-background amount table-cell-right bold">
+                      <p>{{formatRefundAmount (amountLookup ../summaryPaymentsAndRefunds this.paymentMethod 'refund')}}
+                      </p>
+                    </td>
+
+                  </tr>
+                  {{/displayPaymentMethodSubTotal}}
+                  {{#if @last}}
+                  <tr class="table-row"></tr>
+                  <tr class="table-row">
+                    <td class="table-cell table-cell-background issued-on">
+                    </td>
+                    <td class="table-cell table-cell-background provider-transaction-id">
+                    </td>
+                    <td class="table-cell table-cell-background orbc-transaction-id">
+                    </td>
+                    <td class="table-cell table-cell-background payment-method bold">
+                      <p style="font-size:10.0pt">TOTAL AMOUNT</p>
+                    </td>
+                    <td class="table-cell table-cell-background receipt-number">
+                    </td>
+                    <td class="table-cell table-cell-background permit-number">
+                    </td>
+                    <td class="table-cell table-cell-background permit-type">
+                    </td>
+                    <td class="table-cell table-cell-background user">
+                    </td>
+                    <td class="table-cell table-cell-background amount table-cell-right bold">
+                      <p style="font-size:10.0pt">{{formatRefundAmount (amountLookup ../summaryPaymentsAndRefunds
+                        this.paymentMethod
+                        'totalRefund')}}
+                      </p>
                     </td>
                   </tr>
                   {{/if}}
                   {{/each}}
-
                 </tbody>
               </table>
               {{/if}}
             </div>
 
 
-            {{#if summaryPayments}}
+            {{#if summaryPaymentsAndRefunds}}
             <div style="page-break-before: always;">
               <table class="table">
                 <thead>
@@ -508,24 +518,23 @@
                   </tr>
                 </thead>
                 <tbody>
-                  {{#each summaryPayments}}
-                  {{#if this.subTotalPaymentAmount}}
+                  {{#each summaryPaymentsAndRefunds}}
+                  {{#if @last}}
                   <tr class="table-row">
                     <td class="table-cell table-cell-background summary-payment-payment-method bold">
                       <p>TOTAL</p>
                     </td>
                     <td class="table-cell table-cell-background summary-payment-payment table-cell-right bold">
-                      <p>${{this.subTotalPaymentAmount}}</p>
+                      <p>{{formatAmount this.payment}}</p>
                     </td>
 
                     <td class="table-cell table-cell-background summary-payment-refund table-cell-right bold">
-                      <p>-${{this.subTotalRefundAmount}}</p>
+                      <p>{{formatAmount this.refund}}</p>
                     </td>
                     <td class="table-cell table-cell-background summary-payment-deposit table-cell-right bold">
-                      <p>${{this.subTotalDepositAmount}}</p>
+                      <p>{{formatAmount this.deposit}}</p>
                     </td>
                   </tr>
-                  {{else if this.grandTotalAmount}}
                   <tr class="table-row"></tr>
                   <tr class="table-row">
                     <td class="table-cell table-cell-background summary-payment-payment-method bold">
@@ -536,7 +545,7 @@
                     <td class="table-cell table-cell-background summary-payment-refund">
                     </td>
                     <td class="table-cell table-cell-background summary-payment-deposit table-cell-right bold">
-                      <p style="font-size:10.0pt">${{this.grandTotalAmount}}</p>
+                      <p style="font-size:10.0pt">{{formatAmount this.deposit}}</p>
                     </td>
                   </tr>
                   {{else}}
@@ -545,13 +554,13 @@
                       <p>{{this.paymentMethod}}</p>
                     </td>
                     <td class="table-cell table-cell-right table-cell-bottom-border summary-payment-payment">
-                      <p>${{this.payment}}</p>
+                      <p>{{formatAmount this.payment}}</p>
                     </td>
                     <td class="table-cell table-cell-right table-cell-bottom-border summary-payment-refund">
-                      <p>-${{this.refund}}</p>
+                      <p>{{formatAmount this.refund}}</p>
                     </td>
                     <td class="table-cell table-cell-right table-cell-bottom-border summary-payment-deposit">
-                      <p>${{this.deposit}}</p>
+                      <p>{{formatAmount this.deposit}}</p>
                     </td>
                   </tr>
                   {{/if}}
@@ -579,7 +588,7 @@
                 </thead>
                 <tbody>
                   {{#each summaryPermits}}
-                  {{#if this.totalPermits}}
+                  {{#if @last}}
                   <tr class="table-row"></tr>
                   <tr class="table-row"></tr>
                   <tr class="table-row">
@@ -587,7 +596,7 @@
                       <p style="font-size:10.0pt">TOTAL PERMITS</p>
                     </td>
                     <td class="table-cell table-cell-background summary-permit-count table-cell-right">
-                      <p style="font-size:10.0pt">{{this.totalPermits}}</p>
+                      <p style="font-size:10.0pt">{{this.permitCount}}</p>
                     </td>
                   </tr>
                   {{else}}
