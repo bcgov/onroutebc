@@ -103,10 +103,7 @@ export const PowerUnitForm = ({ powerUnit, companyId }: PowerUnitFormProps) => {
           /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
           year: convertToNumberIfValid(data.year, data.year as string) as any,
           /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-          licensedGvw: convertToNumberIfValid(
-            data.licensedGvw,
-            data.licensedGvw as string,
-          ) as any,
+          licensedGvw: convertToNumberIfValid(data.licensedGvw, data.licensedGvw as string) as any,
         },
         companyId,
       });

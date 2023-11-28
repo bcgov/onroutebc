@@ -213,6 +213,7 @@ export const List = memo(
         rowSelection: rowSelection,
         isLoading,
       },
+      onRowSelectionChange: setRowSelection,
       getRowId: (originalRow) => {
         if (vehicleType === "powerUnit") {
           const powerUnitRow = originalRow as PowerUnit;
@@ -222,7 +223,6 @@ export const List = memo(
           return trailerRow.trailerId as string;
         }
       },
-      onRowSelectionChange: setRowSelection,
       renderEmptyRowsFallback: () => <NoRecordsFound />,
       renderRowActions: useCallback(
         ({
