@@ -1,5 +1,12 @@
 import { BC_COLOURS } from "../../themes/bcGovStyles";
 
+export const defaultTableStateOptions: any = {
+};
+
+export const defaultTableInitialStateOptions: any = {
+  showGlobalFilter: true,
+};
+
 export const defaultTableOptions: any = {
   defaultColumn: {
     maxSize: 200, //allow columns to get larger than default
@@ -11,14 +18,41 @@ export const defaultTableOptions: any = {
       header: "",
     },
   },
+  enableGlobalFilter: true,
+  globalFilterFn: "contains",
+  positionGlobalFilter: "left",
   enableColumnActions: false,
   enableRowActions: true,
-  enableStickyHeader: true,
-  enablePagination: false,
-  enableTopToolbar: false,
-  enableBottomToolbar: false,
+  enableRowSelection: true,
   enableSortingRemoval: false,
-  globalFilterFn: "contains",
+  enableStickyHeader: true,
+  enablePagination: true,
+  paginationDisplayMode: 'pages',
+  muiPaginationProps: {
+    color: 'secondary',
+    rowsPerPageOptions: [10, 20, 30],
+    shape: 'rounded',
+    variant: 'outlined',
+  },
+  muiSearchTextFieldProps: {
+    placeholder: "Search",
+    sx: {
+      minWidth: "300px",
+      backgroundColor: "white",
+    },
+    variant: "outlined",
+    inputProps: {
+      sx: {
+        padding: "10px",
+      },
+    },
+  },
+  muiTableContainerProps: {
+    sx: {
+      outline: "1px solid #DBDCDC",
+      height: "calc(100vh - 475px)",
+    },
+  },
   muiBottomToolbarProps: {
     sx: {
       zIndex: 0, // resolve z-index conflict with sliding panel
@@ -38,6 +72,5 @@ export const defaultTableOptions: any = {
   },
   muiTopToolbarProps: { sx: { zIndex: 0 } }, // resolve z-index conflict with sliding panel
   positionActionsColumn: "last",
-  positionGlobalFilter: "left",
   selectAllMode: "page",
 };
