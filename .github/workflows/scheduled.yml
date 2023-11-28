@@ -17,7 +17,7 @@ jobs:
       PREFIX: ${{ github.event.repository.name }}-test
     strategy:
       matrix:
-        name: [backend, frontend]
+        name: [dops, frontend, vehicles]
     steps:
       - name: ZAP Scan
         uses: zaproxy/action-full-scan@v0.8.0

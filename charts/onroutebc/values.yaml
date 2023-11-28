@@ -1,6 +1,8 @@
 ---
 global:
   license: "c28f0c"
+  podAnnotations: |
+    app.kubernetes.io/timestamp: {{now | toString }}
   repository: bcgov/onroutebc # the repository where the images are stored.
   registry: ghcr.io # the registry where the images are stored. override during runtime for other registry at global level or individual level.
   tag: latest # global tag for deployments where each service is using images at the same tag (dev,tet,prod,latest,etc)
@@ -9,7 +11,6 @@ global:
     annotation:
       helm.sh/policy: "keep"
   domain: "apps.silver.devops.gov.bc.ca" # it is required, apps.silver.devops.gov.bc.ca for silver cluster
-  openshiftImageRegistry: "image-registry.openshift-image-registry.svc:5000"
   vault:
     role: "nonprod"
 frontend:
@@ -105,8 +106,18 @@ vehicles:
         - "source /vault/secrets/auth0-{{.Values.global.zone}} && source /vault/secrets/ches-{{.Values.global.zone}} && source /vault/secrets/mssql-{{.Values.global.zone}} && source /vault/secrets/payment-{{.Values.global.zone}} && npm run start:prod"
       registry: '{{ .Values.global.registry }}'
       repository: '{{ .Values.global.repository }}' # example, it includes registry and repository
-      image: backend/vehicles
+      image: vehicles
       tag: "{{tpl .Values.global.tag .}}"
+      env:
+        fromLocalConfigmap: 
+          - name: DOPS_URL 
+            key: DOPS_URL
+          - name: FRONTEND_URL
+            key: FRONTEND_URL
+          - name: VEHICLES_URL
+            key: VEHICLES_URL
+          - name: PAYBC_REDIRECT
+            key: PAYBC_REDIRECT
       ports:
         - name: vehicles-api
           containerPort: 5000
@@ -185,17 +196,21 @@ dops:
   configmap:
     enabled: true
     data:
-      ACCESS_API_URL: "https://{{.Release.Name}}-dops.apps.silver.devops.gov.bc.ca"
+      ACCESS_API_URL: "https://{{.Release.Name}}-vehicles.apps.silver.devops.gov.bc.ca"
   containers:
     - name: dops
       command:
         - "sh"
         - "-c"
-        - "source /vault/secrets/auth0-{{.Values.global.zone}} && source /vault/secrets/ches-{{.Values.global.zone}} && source /vault/secrets/mssql-{{.Values.global.zone}} && source /vault/secrets/payment-{{.Values.global.zone}} && npm run start:prod"
+        - "source /vault/secrets/auth0-{{.Values.global.zone}} && source /vault/secrets/mssql-{{.Values.global.zone}} && source /vault/secrets/cdogs-{{.Values.global.zone}} && source /vault/secrets/dops-{{.Values.global.zone}} && npm run start:prod"
       registry: '{{ .Values.global.registry }}'
       repository: '{{ .Values.global.repository }}' # example, it includes registry and repository
-      image: backend/dops
+      image: dops
       tag: "{{tpl .Values.global.tag .}}"
+      env:
+        fromLocalConfigmap: 
+          - name: ACCESS_API_URL
+            key: ACCESS_API_URL
       ports:
         - name: dops-api
           containerPort: 5001
@@ -218,13 +233,15 @@ dops:
         initialDelaySeconds: 60
         periodSeconds: 30
         timeoutSeconds: 5
+      securityContext:
+        allowPrivilegeEscalation: true
       resources: # this is optional
         limits:
-          cpu: 75m
-          memory: 150Mi
+          cpu: 150m
+          memory: 300Mi
         requests:
-          cpu: 25m
-          memory: 50Mi
+          cpu: 75m
+          memory: 100Mi
   ingress:
     annotations: 
       route.openshift.io/termination: "edge"
@@ -259,6 +276,6 @@ dops:
     license: "{{.Values.global.license}}"
     secretPaths:
       - auth0-{{.Values.global.zone}}
-      - ches-{{.Values.global.zone}}
       - mssql-{{.Values.global.zone}}
-      - payment-{{.Values.global.zone}}
+      - cdogs-{{.Values.global.zone}}
+      - dops-{{.Values.global.zone}}

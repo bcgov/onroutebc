@@ -23,11 +23,11 @@ import { TransactionHistoryTable } from "./components/TransactionHistoryTable";
 import { FeeSummary } from "../../components/feeSummary/FeeSummary";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { TRANSACTION_TYPES } from "../../types/payment.d";
-import { 
-  CONSOLIDATED_PAYMENT_METHODS, 
+import {
+  CONSOLIDATED_PAYMENT_METHODS,
   PAYMENT_METHODS_WITH_CARD,
   PAYMENT_METHOD_TYPE_DISPLAY,
-  getPaymentMethod, 
+  getPaymentMethod,
 } from "../../../../common/types/paymentMethods";
 
 type PermitAction = "void" | "revoke" | "amend";
@@ -86,27 +86,22 @@ export const RefundPage = ({
   // eg. zero dollar amounts (from amendment) is not considered valid payment method
   // Also, if the transaction is of payment method type with an associated card type, then its card type must not be empty
   const getPrevPaymentMethod = () => {
-    if (!permitHistory || permitHistory.length === 0)
-      return undefined;
-    
-    const prevValidTransaction = permitHistory.find(history => {
-      return history.transactionTypeId !== TRANSACTION_TYPES.Z 
-        && (
-          (
-            PAYMENT_METHODS_WITH_CARD.includes(history.paymentMethodTypeCode)
-            && !!history.paymentCardTypeCode
-          )
-          || (
-            !PAYMENT_METHODS_WITH_CARD.includes(history.paymentMethodTypeCode)
-            && !history.paymentCardTypeCode
-          )
-        );
+    if (!permitHistory || permitHistory.length === 0) return undefined;
+
+    const prevValidTransaction = permitHistory.find((history) => {
+      return (
+        history.transactionTypeId !== TRANSACTION_TYPES.Z &&
+        ((PAYMENT_METHODS_WITH_CARD.includes(history.paymentMethodTypeCode) &&
+          !!history.paymentCardTypeCode) ||
+          (!PAYMENT_METHODS_WITH_CARD.includes(history.paymentMethodTypeCode) &&
+            !history.paymentCardTypeCode))
+      );
     });
 
     if (!prevValidTransaction) return undefined;
 
     return getPaymentMethod(
-      prevValidTransaction.paymentMethodTypeCode, 
+      prevValidTransaction.paymentMethodTypeCode,
       prevValidTransaction.paymentCardTypeCode,
     );
   };
@@ -114,17 +109,20 @@ export const RefundPage = ({
   const getRefundMethodType = () => {
     const prevPaymentMethod = getPrevPaymentMethod();
 
-    if (!prevPaymentMethod) 
-      return CONSOLIDATED_PAYMENT_METHODS[DEFAULT_REFUND_OPTION].paymentMethodTypeCode;
+    if (!prevPaymentMethod)
+      return CONSOLIDATED_PAYMENT_METHODS[DEFAULT_REFUND_OPTION]
+        .paymentMethodTypeCode;
 
-    return CONSOLIDATED_PAYMENT_METHODS[prevPaymentMethod].paymentMethodTypeCode;
+    return CONSOLIDATED_PAYMENT_METHODS[prevPaymentMethod]
+      .paymentMethodTypeCode;
   };
 
   const getRefundCardType = () => {
     const prevPaymentMethod = getPrevPaymentMethod();
 
     if (!prevPaymentMethod) {
-      return CONSOLIDATED_PAYMENT_METHODS[DEFAULT_REFUND_OPTION].paymentCardTypeCode;
+      return CONSOLIDATED_PAYMENT_METHODS[DEFAULT_REFUND_OPTION]
+        .paymentCardTypeCode;
     }
 
     return CONSOLIDATED_PAYMENT_METHODS[prevPaymentMethod].paymentCardTypeCode;
@@ -135,7 +133,8 @@ export const RefundPage = ({
     return getDefaultRequiredVal("", permitHistory[0].pgPaymentMethod);
   };
 
-  const disableRefundCardSelection = !getPrevPaymentMethod() || !getRefundCardType();
+  const disableRefundCardSelection =
+    !getPrevPaymentMethod() || !getRefundCardType();
 
   // only show refund method selection (both card selection and cheque) when amount to refund is greater than 0
   // we use a small epsilon since there may be decimal precision errors when doing decimal comparisons
@@ -148,7 +147,7 @@ export const RefundPage = ({
     defaultValues: {
       shouldUsePrevPaymentMethod,
       refundMethod: getPaymentMethod(
-        getRefundMethodType(), 
+        getRefundMethodType(),
         getRefundCardType(),
       ),
       refundOnlineMethod: getRefundOnlineMethod(),
@@ -258,7 +257,9 @@ export const RefundPage = ({
                           className="radio-label"
                           label="Refund to Previous Payment Method"
                           value={true}
-                          control={<Radio key="refund-by-prev-payment-method" />}
+                          control={
+                            <Radio key="refund-by-prev-payment-method" />
+                          }
                         />
                         <div className="refund-payment">
                           <Controller
