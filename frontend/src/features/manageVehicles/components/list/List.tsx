@@ -206,14 +206,12 @@ export const List = memo(
       },
       state: {
         ...defaultTableStateOptions,
-        isLoading,
         showAlertBanner: isError,
         showProgressBars: isFetching,
         sorting: [{ id: "createdDateTime", desc: true }],
         columnVisibility: { powerUnitId: false, trailerId: false },
         rowSelection: rowSelection,
       },
-      //enableRowSelection: true,
       getRowId: (originalRow) => {
         if (vehicleType === "powerUnit") {
           const powerUnitRow = originalRow as PowerUnit;
@@ -298,31 +296,12 @@ export const List = memo(
         ),
         [hasNoRowsSelected],
       ),
-      // muiTableContainerProps: {
-      //   sx: {
-      //     outline: "1px solid #DBDCDC",
-      //     height: "calc(100vh - 475px)",
-      //   },
-      // },
       muiToolbarAlertBannerProps: isError
         ? {
             color: "error",
             children: "Error loading data",
           }
         : undefined,
-      // muiSearchTextFieldProps: {
-      //   placeholder: "Search",
-      //   sx: {
-      //     minWidth: "300px",
-      //     backgroundColor: "white",
-      //   },
-      //   variant: "outlined",
-      //   inputProps: {
-      //     sx: {
-      //       padding: "10px",
-      //     },
-      //   },
-      // },
     });
 
     return (

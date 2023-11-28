@@ -126,23 +126,23 @@ export const List = memo(
       setIsDeleteDialogOpen(() => false);
     }, []);
 
+    console.log('List')
+
     const table = useMaterialReactTable({
       ...defaultTableOptions,
       columns: columns,
       data: data ?? [],
+      initialState: {
+        ...defaultTableInitialStateOptions
+      },
       state: {
         ...defaultTableStateOptions,
         showAlertBanner: isError,
         showProgressBars: isFetching,
         columnVisibility: { applicationId: true },
         rowSelection: rowSelection,
-        isLoading: true,
-      },
-      initialState: {
-        ...defaultTableInitialStateOptions
       },
       onRowSelectionChange: setRowSelection,
-      //enableRowSelection: true,
       getRowId: (originalRow) => {
         const applicationRow = originalRow as PermitApplicationInProgress;
         return applicationRow.permitId;

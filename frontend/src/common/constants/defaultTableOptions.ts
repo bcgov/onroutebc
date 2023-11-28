@@ -1,6 +1,7 @@
 import { BC_COLOURS } from "../../themes/bcGovStyles";
 
 export const defaultTableStateOptions: any = {
+  isLoading: true,
 };
 
 export const defaultTableInitialStateOptions: any = {
@@ -8,16 +9,6 @@ export const defaultTableInitialStateOptions: any = {
 };
 
 export const defaultTableOptions: any = {
-  defaultColumn: {
-    maxSize: 200, //allow columns to get larger than default
-    minSize: 25,
-    size: 50,
-  },
-  displayColumnDefOptions: {
-    "mrt-row-actions": {
-      header: "",
-    },
-  },
   enableGlobalFilter: true,
   globalFilterFn: "contains",
   positionGlobalFilter: "left",
@@ -28,9 +19,22 @@ export const defaultTableOptions: any = {
   enableStickyHeader: true,
   enablePagination: true,
   paginationDisplayMode: 'pages',
+  muiTopToolbarProps: { sx: { zIndex: 0 } }, // resolve z-index conflict with sliding panel
+  positionActionsColumn: "last",
+  selectAllMode: "page",
+  defaultColumn: {
+    maxSize: 200, //allow columns to get larger than default
+    minSize: 25,
+    size: 50,
+  },
+  displayColumnDefOptions: {
+    "mrt-row-actions": {
+      header: "",
+    },
+  },
   muiPaginationProps: {
     color: 'secondary',
-    rowsPerPageOptions: [10, 20, 30],
+    rowsPerPageOptions: [10, 20, 30, 40],
     shape: 'rounded',
     variant: 'outlined',
   },
@@ -70,7 +74,4 @@ export const defaultTableOptions: any = {
       boxShadow: "none",
     },
   },
-  muiTopToolbarProps: { sx: { zIndex: 0 } }, // resolve z-index conflict with sliding panel
-  positionActionsColumn: "last",
-  selectAllMode: "page",
 };
