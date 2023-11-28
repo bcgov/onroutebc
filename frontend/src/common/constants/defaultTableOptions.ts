@@ -1,7 +1,6 @@
 import { BC_COLOURS } from "../../themes/bcGovStyles";
 
 export const defaultTableStateOptions: any = {
-  isLoading: true,
 };
 
 export const defaultTableInitialStateOptions: any = {

@@ -32,7 +32,6 @@ export const BasePermitList = ({
   const { data, isError, isInitialLoading } = query;
   const snackBar = useContext(SnackBarContext);
 
-
   const table = useMaterialReactTable({
     ...defaultTableOptions,
     columns: PermitsColumnDefinition,
