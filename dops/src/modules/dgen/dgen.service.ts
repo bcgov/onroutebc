@@ -28,6 +28,7 @@ import puppeteer, { Browser } from 'puppeteer';
 import { IFile } from '../../interface/file.interface';
 import { ReportTemplate } from '../../enum/report-template.enum';
 import { getDirectory } from 'src/helper/auth.helper';
+import { convertUtcToPt } from '../../helper/date-time.helper';
 
 @Injectable()
 export class DgenService {
@@ -214,6 +215,8 @@ export class DgenService {
     if (!template?.length) {
       throw new InternalServerErrorException('Template not found');
     }
+    this.registerHandleBarsHelpers();
+
     const compiledTemplate = Handlebars.compile(template);
 
     const htmlBody = compiledTemplate({
@@ -287,6 +290,85 @@ export class DgenService {
     stream.on('error', () => {
       throw new Error('An error occurred while reading the file.');
     });
+  }
+
+  private registerHandleBarsHelpers() {
+    /* eslint-disable */
+    Handlebars.registerHelper(
+      'displayPaymentMethodSubTotal',
+      function (transactionType: string, options) {
+        const obj = options.data.root;
+        const current = this;
+        const index = options.data.index;
+        const next =
+          transactionType === 'payment'
+            ? obj.payments[index + 1]
+            : obj.refunds[index + 1];
+        if (next && next.paymentMethod !== current.paymentMethod) {
+          return options.fn(this);
+        } else if (!next) {
+          return options.fn(this);
+        }
+      },
+    );
+
+    Handlebars.registerHelper('convertUtcToPt', function (utcDate: string) {
+      return convertUtcToPt(utcDate, 'MMM. D, YYYY, hh:mm A Z');
+    });
+    /* eslint-enable */
+
+    Handlebars.registerHelper('formatRefundAmount', function (amount: number) {
+      if (amount === 0) {
+        return '';
+      } else {
+        return `-$${Math.abs(amount).toFixed(2)}`;
+      }
+    });
+
+    Handlebars.registerHelper('formatAmount', function (amount: number) {
+      if (amount === 0) {
+        return '';
+      } else if (amount > 0) {
+        return `$${amount.toFixed(2)}`;
+      } else if (amount < 0) {
+        return `-$${Math.abs(amount).toFixed(2)}`;
+      }
+    });
+
+    interface SummaryPaymentsInterface {
+      paymentMethod: string;
+      payment?: number;
+      refund?: number;
+      deposit?: number;
+    }
+
+    Handlebars.registerHelper(
+      'amountLookup',
+      function (
+        summaryPayments: SummaryPaymentsInterface[],
+        field: string,
+        transactionType: string,
+      ) {
+        const lookup: Record<string, keyof SummaryPaymentsInterface> = {
+          payment: 'payment',
+          totalPayment: 'payment',
+          refund: 'refund',
+          totalRefund: 'refund',
+          deposit: 'deposit',
+        };
+
+        const property = lookup[transactionType];
+
+        if (property) {
+          const found = summaryPayments.find(
+            (x) =>
+              x.paymentMethod ===
+              (transactionType === 'totalPayment' ? 'totalAmount' : field),
+          );
+          return found ? found[property] : null;
+        }
+      },
+    );
   }
 
   getCacheKeyforReport(reportName: ReportTemplate): CacheKey {
