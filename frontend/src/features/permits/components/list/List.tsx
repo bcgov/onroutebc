@@ -138,6 +138,7 @@ export const List = memo(
         showProgressBars: isFetching,
         columnVisibility: { applicationId: true },
         rowSelection: rowSelection,
+        isLoading,
       },
       onRowSelectionChange: setRowSelection,
       getRowId: (originalRow) => {
