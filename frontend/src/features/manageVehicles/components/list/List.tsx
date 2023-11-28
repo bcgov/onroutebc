@@ -89,7 +89,7 @@ export const List = memo(
     const snackBar = useContext(SnackBarContext);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
-    const hasNoRowsSelected = Object.keys(rowSelection).length === 0;
+    const hasNoRowsSelected = Object.keys(rowSelection)?.length === 0;
 
     const powerUnitTypesQuery = usePowerUnitTypesQuery();
     const trailerTypesQuery = useTrailerTypesQuery();
@@ -202,7 +202,7 @@ export const List = memo(
       data: data ?? [],
       columns: newColumns,
       initialState: {
-        ...defaultTableInitialStateOptions 
+        ...defaultTableInitialStateOptions,
       },
       state: {
         ...defaultTableStateOptions,

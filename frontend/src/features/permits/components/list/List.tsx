@@ -22,7 +22,6 @@ import {
 
 import "./List.scss";
 import { Trash } from "../../../../common/components/table/options/Trash";
-import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { DeleteConfirmationDialog } from "../../../../common/components/dialog/DeleteConfirmationDialog";
 import { SnackBarContext } from "../../../../App";
 import {
@@ -64,7 +63,7 @@ export const List = memo(
     const snackBar = useContext(SnackBarContext);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
-    const hasNoRowsSelected = Object.keys(rowSelection).length === 0;
+    const hasNoRowsSelected = Object.keys(rowSelection)?.length === 0;
 
     /**
      * Callback function for clicking on the Trash icon above the Table.
@@ -126,14 +125,12 @@ export const List = memo(
       setIsDeleteDialogOpen(() => false);
     }, []);
 
-    console.log('List')
-
     const table = useMaterialReactTable({
       ...defaultTableOptions,
       columns: columns,
       data: data ?? [],
       initialState: {
-        ...defaultTableInitialStateOptions
+        ...defaultTableInitialStateOptions,
       },
       state: {
         ...defaultTableStateOptions,
