@@ -158,13 +158,10 @@
   },
   "overrides": {
     "minimist@<1.2.6": "1.2.6",
-<<<<<<< HEAD:vehicles/package.json
     "@nestjs/axios": {
       "axios": "^1.6.0"
     },
     "semver@<6.3.1": "^6.3.1",
-=======
->>>>>>> 43399705 (Limit overrides to production deps):backend/dops/package.json
     "@jestjs/cli": {
       "semver@<7.5.2": "^7.5.2"
     },
