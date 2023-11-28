@@ -38,6 +38,7 @@ export const PowerUnitColumnDefinition: MRT_ColumnDef<VehicleTypes>[] = [
     accessorKey: "createdDateTime",
     header: "Date Created",
     Cell: (props: { cell: any; row: any }) => {
+      console.log(props.cell.getValue())
       const originalDate = props.cell.getValue()
       const formattedDate = applyWhenNotNullable(
         (dt) => toLocal(dt, DATE_FORMATS.DATEONLY_ABBR_MONTH),
@@ -82,5 +83,19 @@ export const TrailerColumnDefinition: MRT_ColumnDef<VehicleTypes>[] = [
   {
     accessorKey: "createdDateTime",
     header: "Date Created",
+    Cell: (props: { cell: any; row: any }) => {
+      console.log(props.cell.getValue())
+      const originalDate = props.cell.getValue()
+      const formattedDate = applyWhenNotNullable(
+        (dt) => toLocal(dt, DATE_FORMATS.DATEONLY_ABBR_MONTH),
+        originalDate,
+        "NA",
+      );
+      return (
+        <div>
+          {formattedDate}
+        </div>
+      );
+    },
   },
 ];
