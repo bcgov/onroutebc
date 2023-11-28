@@ -83,7 +83,7 @@ export const PermitSearchResultColumnDef: MRT_ColumnDef<Permit>[] = [
     header: "Permit Start Date",
     enableSorting: true,
     sortingFn: "datetime",
-    Cell: (props: { cell: any; row: any }) => {
+    Cell: (props: { cell: any }) => {
       const originalDate = props.cell.getValue()
       const formattedDate = applyWhenNotNullable(
         (dt) => toLocal(dt, DATE_FORMATS.DATEONLY_ABBR_MONTH),
@@ -102,7 +102,7 @@ export const PermitSearchResultColumnDef: MRT_ColumnDef<Permit>[] = [
     header: "Permit End Date",
     enableSorting: true,
     sortingFn: "datetime",
-    Cell: (props: { cell: any; row: any }) => {
+    Cell: (props: { cell: any }) => {
       const originalDate = props.cell.getValue()
       const formattedDate = applyWhenNotNullable(
         (dt) => toLocal(dt, DATE_FORMATS.DATEONLY_ABBR_MONTH),
