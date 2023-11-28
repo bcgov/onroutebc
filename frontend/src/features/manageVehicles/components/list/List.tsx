@@ -211,6 +211,7 @@ export const List = memo(
         sorting: [{ id: "createdDateTime", desc: true }],
         columnVisibility: { powerUnitId: false, trailerId: false },
         rowSelection: rowSelection,
+        isLoading,
       },
       getRowId: (originalRow) => {
         if (vehicleType === "powerUnit") {
