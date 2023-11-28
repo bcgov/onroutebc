@@ -26,7 +26,6 @@ import { Public } from '../../common/decorator/public.decorator';
 import { CreatePermitDto } from './dto/request/create-permit.dto';
 import { ReadPermitDto } from './dto/response/read-permit.dto';
 import { Request, Response } from 'express';
-import { AuthOnly } from 'src/common/decorator/auth-only.decorator';
 import { IUserJWT } from '../../common/interface/user-jwt.interface';
 import { FileDownloadModes } from '../../common/enum/file-download-modes.enum';
 import { ReadFileDto } from '../common/dto/response/read-file.dto';

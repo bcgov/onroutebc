@@ -34,7 +34,7 @@ import { Roles } from '../../../common/decorator/roles.decorator';
 import { Role } from '../../../common/enum/roles.enum';
 import { IUserJWT } from '../../../common/interface/user-jwt.interface';
 import { AuthOnly } from '../../../common/decorator/auth-only.decorator';
-import { getDirectory, matchRoles } from '../../../common/helper/auth.helper';
+import { getDirectory } from '../../../common/helper/auth.helper';
 import { IDP } from '../../../common/enum/idp.enum';
 
 @ApiTags('Company and User Management - Company')
@@ -138,9 +138,7 @@ export class CompanyController {
     // Only IDIR users can call this endpoint with an arbitrary
     // userGUID - other users must use the userGUID from their own
     // token.
-    if (
-      userGUID && currentUser.identity_provider !== IDP.IDIR
-    ) {
+    if (userGUID && currentUser.identity_provider !== IDP.IDIR) {
       throw new ForbiddenException();
     }
 
