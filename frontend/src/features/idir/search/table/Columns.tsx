@@ -23,7 +23,6 @@ export const PermitSearchResultColumnDef: MRT_ColumnDef<Permit>[] = [
     accessorKey: "permitNumber",
     header: "Permit #",
     enableSorting: true,
-    enableMultiSort: false,
     sortingFn: "alphanumeric",
     Cell: (props: { cell: any; row: any }) => {
       const permit = props.row.original as Permit;
@@ -56,14 +55,12 @@ export const PermitSearchResultColumnDef: MRT_ColumnDef<Permit>[] = [
     accessorKey: "permitType",
     header: "Permit Type",
     enableSorting: true,
-    enableMultiSort: false,
     sortingFn: "alphanumeric",
   },
   {
     accessorKey: "permitData.commodities",
     header: "Commodity",
     enableSorting: true,
-    enableMultiSort: false,
     sortingFn: "alphanumeric",
     // For TROS permits, commodities is not a concern.
     // Other permits will require implementation here.
@@ -73,45 +70,66 @@ export const PermitSearchResultColumnDef: MRT_ColumnDef<Permit>[] = [
     accessorKey: "permitData.vehicleDetails.plate",
     header: "Plate",
     enableSorting: true,
-    enableMultiSort: false,
     sortingFn: "alphanumeric",
   },
   {
     accessorKey: "permitData.companyName",
     header: "Company Name",
     enableSorting: true,
-    enableMultiSort: false,
     sortingFn: "alphanumeric",
   },
   {
     accessorKey: "permitData.startDate",
     header: "Permit Start Date",
     enableSorting: true,
-    enableMultiSort: false,
     sortingFn: "datetime",
+    Cell: (props: { cell: any; row: any }) => {
+      const originalDate = props.cell.getValue()
+      const formattedDate = applyWhenNotNullable(
+        (dt) => toLocal(dt, DATE_FORMATS.DATEONLY_ABBR_MONTH),
+        originalDate,
+        "NA",
+      );
+      return (
+        <div>
+          {formattedDate}
+        </div>
+      );
+    },
   },
   {
     accessorKey: "permitData.expiryDate",
     header: "Permit End Date",
     enableSorting: true,
-    enableMultiSort: false,
     sortingFn: "datetime",
+    Cell: (props: { cell: any; row: any }) => {
+      const originalDate = props.cell.getValue()
+      const formattedDate = applyWhenNotNullable(
+        (dt) => toLocal(dt, DATE_FORMATS.DATEONLY_ABBR_MONTH),
+        originalDate,
+        "NA",
+      );
+      return (
+        <div>
+          {formattedDate}
+        </div>
+      );
+    },
   },
   {
     accessorKey: "permitIssueDateTime",
     header: "Issue Date",
     enableSorting: true,
     sortDescFirst: true,
-    enableMultiSort: false,
     sortingFn: "datetime",
     accessorFn: (originalRow) => {
       const { permitIssueDateTime } = originalRow;
-      const issueDate = applyWhenNotNullable(
+      const formattedDate = applyWhenNotNullable(
         (dt) => toLocal(dt, DATE_FORMATS.DATEONLY_ABBR_MONTH),
         permitIssueDateTime,
         "NA",
       );
-      return issueDate;
+      return formattedDate;
     },
   },
 ];

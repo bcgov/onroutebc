@@ -21,7 +21,7 @@ import { getCompanyUsers } from "../apiManager/manageProfileAPI";
 import { UserManagementTableRowActions } from "../components/user-management/UserManagementRowOptions";
 import { UserManagementColumnsDefinition } from "../types/UserManagementColumns";
 import { BCeIDUserStatus, ReadCompanyUser } from "../types/userManagement.d";
-import { defaultTableOptions } from "../../../common/constants/defaultTableOptions";
+import { defaultTableInitialStateOptions, defaultTableOptions, defaultTableStateOptions } from "../../../common/constants/defaultTableOptions";
 
 /**
  * User Management Component for CV Client.
@@ -37,7 +37,7 @@ export const UserManagement = () => {
   const { user: userFromToken } = useAuth();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
-  const hasNoRowsSelected = Object.keys(rowSelection).length === 0;
+  const hasNoRowsSelected = Object.keys(rowSelection)?.length === 0;
 
   /**
    * Callback function for clicking on the Trash icon above the Table.
@@ -80,7 +80,11 @@ export const UserManagement = () => {
     ...defaultTableOptions,
     columns: UserManagementColumnsDefinition,
     data: data ?? [],
+    initialState: {
+      ...defaultTableInitialStateOptions,
+    },
     state: {
+      ...defaultTableStateOptions,
       showAlertBanner: isError,
       showProgressBars: isInitialLoading,
       columnVisibility: { applicationId: true },
@@ -96,11 +100,6 @@ export const UserManagement = () => {
     },
     onRowSelectionChange: setRowSelection,
     getRowId: (originalRow: ReadCompanyUser) => originalRow.userName,
-    displayColumnDefOptions: {
-      "mrt-row-actions": {
-        header: "",
-      },
-    },
     renderRowActions: useCallback(
       ({
         row,
@@ -128,14 +127,6 @@ export const UserManagement = () => {
       ),
       [hasNoRowsSelected],
     ),
-    // Cell/Body container
-    muiTableContainerProps: {
-      sx: {
-        height: "calc(100vh - 475px)",
-        outline: "1px solid #DBDCDC",
-      },
-    },
-    // Alert banner
     muiToolbarAlertBannerProps: isError
       ? {
           color: "error",

@@ -19,7 +19,7 @@ import {
   feeSummaryDisplayText,
   isTransactionTypeRefund,
 } from "../../../helpers/feeSummary";
-import { defaultTableOptions } from "../../../../../common/constants/defaultTableOptions";
+import { defaultTableInitialStateOptions, defaultTableOptions, defaultTableStateOptions } from "../../../../../common/constants/defaultTableOptions";
 
 export const TransactionHistoryTable = ({
   permitHistory,
@@ -122,6 +122,12 @@ export const TransactionHistoryTable = ({
     ...defaultTableOptions,
     columns: columns,
     data: permitHistory,
+    state: {
+      ...defaultTableStateOptions,
+    },
+    initialState: {
+      ...defaultTableInitialStateOptions,
+    },
     enableRowActions: false,
     muiTableProps: {
       className: "transaction-history-table",

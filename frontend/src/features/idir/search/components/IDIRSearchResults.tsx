@@ -11,7 +11,6 @@ import {
 } from "material-react-table";
 
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
-import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { hasPermitExpired } from "../../../permits/helpers/permitPDFHelper";
 import { Permit } from "../../../permits/types/permit";
 import { getDataBySearch } from "../api/idirSearch";
@@ -21,7 +20,7 @@ import { IDIRPermitSearchRowActions } from "./IDIRPermitSearchRowActions";
 import "./List.scss";
 import { USER_AUTH_GROUP } from "../../../manageProfile/types/userManagement.d";
 import { isPermitInactive } from "../../../permits/types/PermitStatus";
-import { defaultTableOptions } from "../../../../common/constants/defaultTableOptions";
+import { defaultTableInitialStateOptions, defaultTableOptions, defaultTableStateOptions } from "../../../../common/constants/defaultTableOptions";
 
 /**
  * Function to decide whether to show row actions icon or not.
@@ -100,14 +99,16 @@ export const IDIRSearchResults = memo(
       data: getFilteredData(data?.items ?? []),
       columns: columns,
       initialState: {
+        ...defaultTableInitialStateOptions,
         sorting: [{ id: "permitIssueDateTime", desc: true }],
       },
       state: {
+        ...defaultTableStateOptions,
         isLoading,
         showAlertBanner: isError,
         showProgressBars: isLoading,
       },
-      enableTopToolbar: true,
+      ///enableTopToolbar: true,
       renderToolbarInternalActions: () => <></>,
       renderTopToolbarCustomActions: () => {
         return (
@@ -157,31 +158,12 @@ export const IDIRSearchResults = memo(
         },
         [],
       ),
-      muiTableContainerProps: {
-        sx: {
-          outline: "1px solid #DBDCDC",
-          height: "calc(100vh - 475px)",
-        },
-      },
       muiToolbarAlertBannerProps: isError
         ? {
             color: "error",
             children: "Error loading data",
           }
         : undefined,
-      muiSearchTextFieldProps: {
-        placeholder: "Search",
-        sx: {
-          minWidth: "300px",
-          backgroundColor: "white",
-        },
-        variant: "outlined",
-        inputProps: {
-          sx: {
-            padding: "10px",
-          },
-        },
-      },
     });
 
     return (
