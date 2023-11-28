@@ -25,6 +25,7 @@ import { ExceptionDto } from '../../../common/exception/exception.dto';
 import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
 import { Roles } from 'src/common/decorator/roles.decorator';
 import { Role } from 'src/common/enum/roles.enum';
+import { AuthOnly } from '../../../common/decorator/auth-only.decorator';
 
 @ApiTags('Vehicles - Power Unit Types')
 @ApiBadRequestResponse({
@@ -63,7 +64,7 @@ export class PowerUnitTypesController {
     type: ReadPowerUnitTypeDto,
     isArray: true,
   })
-  @Roles(Role.READ_VEHICLE_TYPES)
+  @AuthOnly()
   @Get()
   async findAll(): Promise<ReadPowerUnitTypeDto[]> {
     return await this.powerUnitTypesService.findAll();
@@ -73,7 +74,7 @@ export class PowerUnitTypesController {
     description: 'The Power Unit Type Resource',
     type: ReadPowerUnitTypeDto,
   })
-  @Roles(Role.READ_VEHICLE_TYPES)
+  @AuthOnly()
   @Get(':typeCode')
   async findOne(
     @Param('typeCode') typeCode: string,
