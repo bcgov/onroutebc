@@ -125,8 +125,12 @@ export class PaymentReportService {
       });
     }
 
-    queryBuilder.andWhere('permit.permitStatus = :permitStatus', {
-      permitStatus: ApplicationStatus.ISSUED,
+    queryBuilder.andWhere('permit.permitStatus IN (:...permitStatus)', {
+      permitStatus: [
+        ApplicationStatus.ISSUED,
+        ApplicationStatus.REVOKED,
+        ApplicationStatus.VOIDED,
+      ],
     });
 
     queryBuilder.andWhere('permit.permitIssueDateTime >= :fromDateTime', {
@@ -611,8 +615,12 @@ export class PaymentReportService {
       });
     }
 
-    queryBuilder.andWhere('permit.permitStatus = :permitStatus', {
-      permitStatus: ApplicationStatus.ISSUED,
+    queryBuilder.andWhere('permit.permitStatus IN (:...permitStatus)', {
+      permitStatus: [
+        ApplicationStatus.ISSUED,
+        ApplicationStatus.REVOKED,
+        ApplicationStatus.VOIDED,
+      ],
     });
 
     queryBuilder.andWhere('permit.permitIssueDateTime >= :fromDateTime', {

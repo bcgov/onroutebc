@@ -305,7 +305,7 @@
                     <p>{{formatAmount this.amount}}</p>
                   </td>
                 </tr>
-                {{#displayPaymentMethodSubTotal}}
+                {{#displayPaymentMethodSubTotal 'payment'}}
                 <tr class="table-row">
                   <td class="table-cell table-cell-background issued-on">
                   </td>
@@ -433,11 +433,11 @@
                       <p>{{this.users}}</p>
                     </td>
                     <td class="table-cell amount table-cell-right">
-                      <p>{{formatAmount this.amount}}</p>
+                      <p>{{formatRefundAmount this.amount}}</p>
                     </td>
                   </tr>
 
-                  {{#displayPaymentMethodSubTotal}}
+                  {{#displayPaymentMethodSubTotal 'refund'}}
                   <tr class="table-row">
                     <td class="table-cell table-cell-background issued-on">
                     </td>
@@ -457,7 +457,8 @@
                     <td class="table-cell table-cell-background user">
                     </td>
                     <td class="table-cell table-cell-background amount table-cell-right bold">
-                      <p>{{formatAmount (amountLookup ../summaryPaymentsAndRefunds this.paymentMethod 'refund')}}</p>
+                      <p>{{formatRefundAmount (amountLookup ../summaryPaymentsAndRefunds this.paymentMethod 'refund')}}
+                      </p>
                     </td>
 
                   </tr>
@@ -483,7 +484,7 @@
                     <td class="table-cell table-cell-background user">
                     </td>
                     <td class="table-cell table-cell-background amount table-cell-right bold">
-                      <p style="font-size:10.0pt">{{formatAmount (amountLookup ../summaryPaymentsAndRefunds
+                      <p style="font-size:10.0pt">{{formatRefundAmount (amountLookup ../summaryPaymentsAndRefunds
                         this.paymentMethod
                         'totalRefund')}}
                       </p>

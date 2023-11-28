@@ -296,11 +296,14 @@ export class DgenService {
     /* eslint-disable */
     Handlebars.registerHelper(
       'displayPaymentMethodSubTotal',
-      function (options) {
+      function (transactionType: string, options) {
         const obj = options.data.root;
         const current = this;
         const index = options.data.index;
-        const next = obj.payments[index + 1];
+        const next =
+          transactionType === 'payment'
+            ? obj.payments[index + 1]
+            : obj.refunds[index + 1];
         if (next && next.paymentMethod !== current.paymentMethod) {
           return options.fn(this);
         } else if (!next) {
@@ -314,13 +317,21 @@ export class DgenService {
     });
     /* eslint-enable */
 
+    Handlebars.registerHelper('formatRefundAmount', function (amount: number) {
+      if (amount === 0) {
+        return '';
+      } else {
+        return `-$${Math.abs(amount).toFixed(2)}`;
+      }
+    });
+
     Handlebars.registerHelper('formatAmount', function (amount: number) {
       if (amount === 0) {
         return '';
       } else if (amount > 0) {
-        return `$${amount}`;
+        return `$${amount.toFixed(2)}`;
       } else if (amount < 0) {
-        return `$${amount}`;
+        return `-$${Math.abs(amount).toFixed(2)}`;
       }
     });
 
