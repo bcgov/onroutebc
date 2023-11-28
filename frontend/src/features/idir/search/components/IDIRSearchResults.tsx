@@ -108,7 +108,6 @@ export const IDIRSearchResults = memo(
         showAlertBanner: isError,
         showProgressBars: isLoading,
       },
-      ///enableTopToolbar: true,
       renderToolbarInternalActions: () => <></>,
       renderTopToolbarCustomActions: () => {
         return (
