@@ -31,6 +31,7 @@ import { getDirectory } from 'src/common/helper/auth.helper';
 import { CreatePaymentDetailedReportDto } from './dto/request/create-payment-detailed-report.dto';
 import { ReadFileDto } from '../common/dto/response/read-file.dto';
 import { CreatePaymentSummaryReportDto } from './dto/request/create-payment-summary-report.dto';
+import { PaymentReportService } from './payment-report.service';
 
 @ApiBearerAuth()
 @ApiTags('Payment')
@@ -48,7 +49,10 @@ import { CreatePaymentSummaryReportDto } from './dto/request/create-payment-summ
   type: ExceptionDto,
 })
 export class PaymentController {
-  constructor(private readonly paymentService: PaymentService) {}
+  constructor(
+    private readonly paymentService: PaymentService,
+    private readonly paymentReportService: PaymentReportService,
+  ) {}
 
   @ApiCreatedResponse({
     description: 'The Transaction Resource',
@@ -122,7 +126,7 @@ export class PaymentController {
   ): Promise<void> {
     const currentUser = request.user as IUserJWT;
 
-    await this.paymentService.createPaymentDetailedReport(
+    await this.paymentReportService.createPaymentDetailedReport(
       currentUser,
       createPaymentDetailedReportDto,
       res,
@@ -142,7 +146,7 @@ export class PaymentController {
   ): Promise<void> {
     const currentUser = request.user as IUserJWT;
 
-    await this.paymentService.createPaymentSummaryReport(
+    await this.paymentReportService.createPaymentSummaryReport(
       currentUser,
       createPaymentSummaryReportDto,
       res,
