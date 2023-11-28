@@ -22,12 +22,13 @@ import { Request, Response } from 'express';
 import { ReadGeneratedDocumentDto } from './dto/response/read-generated-document.dto';
 import { IUserJWT } from '../../interface/user-jwt.interface';
 import { CreateGeneratedDocumentDto } from './dto/request/create-generated-document.dto';
-import { DgenService } from './dgen.service';
+
 import { IDP } from '../../enum/idp.enum';
 import { Roles } from '../../decorator/roles.decorator';
 import { Role } from '../../enum/roles.enum';
 import { CreateGeneratedReportDto } from './dto/request/create-generated-report.dto';
 import { AuthOnly } from '../../decorator/auth-only.decorator';
+import { DgenService } from './dgen.service';
 
 @ApiTags('Document Generator (DGEN)')
 @ApiBadRequestResponse({

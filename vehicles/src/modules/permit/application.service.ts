@@ -651,22 +651,26 @@ export class ApplicationService {
       CacheKey.COUNTRY,
       permitData.vehicleDetails.countryCode,
     );
-    const mailingProvinceName = await getFromCache(
-      this.cacheManager,
-      CacheKey.PROVINCE,
-      permitData.vehicleDetails.provinceCode,
-    );
+    const mailingProvinceName = permitData.vehicleDetails.provinceCode
+      ? await getFromCache(
+          this.cacheManager,
+          CacheKey.PROVINCE,
+          permitData.vehicleDetails.provinceCode,
+        )
+      : null;
 
     const vehicleCountryName = await getFromCache(
       this.cacheManager,
       CacheKey.COUNTRY,
       permitData.mailingAddress.countryCode,
     );
-    const vehicleProvinceName = await getFromCache(
-      this.cacheManager,
-      CacheKey.PROVINCE,
-      permitData.mailingAddress.provinceCode,
-    );
+    const vehicleProvinceName = permitData.mailingAddress.provinceCode
+      ? await getFromCache(
+          this.cacheManager,
+          CacheKey.PROVINCE,
+          permitData.mailingAddress.provinceCode,
+        )
+      : null;
 
     const permitName = await getFromCache(
       this.cacheManager,
