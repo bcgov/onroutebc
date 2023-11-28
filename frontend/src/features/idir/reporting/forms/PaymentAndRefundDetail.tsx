@@ -27,7 +27,10 @@ import {
   PaymentCodes,
   getPermitTypes,
 } from "../../search/api/reports";
-import { usePermitIssuersQuery } from "../../search/api/users";
+import {
+  getPermitIssuers,
+  usePermitIssuersQuery,
+} from "../../search/api/users";
 import "./style.scss";
 
 /**
@@ -61,7 +64,17 @@ export const PaymentAndRefundDetail = () => {
   }, [isPermitTypeQueryLoading]);
 
   // GET the list of users who have issued a permit.
-  const permitIssuersQuery = usePermitIssuersQuery();
+  const permitIssuersQuery = useQuery({
+    queryKey: ["idirUsers"],
+    queryFn: getPermitIssuers,
+    select: (data) => {
+      return [{ userGUID: "All Users", userName: "All Users" }, ...data];
+    },
+    keepPreviousData: true,
+    staleTime: ONE_HOUR,
+    retry: false,
+    refetchOnWindowFocus: false, // prevents unnecessary queries
+  });
 
   const [selectedPaymentCodes, setSelectedPaymentCodes] = useState<string[]>([
     "All Payment Methods",
@@ -177,12 +190,48 @@ export const PaymentAndRefundDetail = () => {
       target: { value },
     } = event;
     if (permitTypes) {
+      const permitTypeKeys = Object.keys(permitTypes);
+      const totalPermitTypes = permitTypeKeys.length;
+      if (Array.isArray(value)) {
+        if (value.includes("All Permit Types")) {
+          if (value.length < totalPermitTypes) {
+            setSelectedPermitTypes(() => Object.keys(permitTypes) as string[]);
+          }
+          if (selectedPermitTypes.length < totalPermitTypes) {
+//
+          }
+        }
+      }
       if (value === "All Permit Types") {
         setSelectedPermitTypes(() => Object.keys(permitTypes) as string[]);
       } else {
+        console.log("value::", value);
+        console.log("typeof value::", typeof value);
+
+        /**
+         * value includes all =>
+         *    if (selectedPermitTypes.length < permitTypes.length) {
+         *      
+         * }
+         *
+         * */
+        //
+        /**
+         * if value does not include all
+         *    if
+         */
+
         if (value.includes("All Permit Types")) {
+          // value in
+          // Check if the length of the array = length of state
           // cosk
           // value.split(",")
+          // setSelectedPermitTypes(
+          //   () =>
+          //     Object.keys(permitTypes).filter(
+          //       (value) => value !== "All Permit Types",
+          //     ) as string[],
+          // );
         }
         setSelectedPermitTypes(() =>
           typeof value === "string" ? value.split(",") : value,

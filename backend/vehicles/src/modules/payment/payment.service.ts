@@ -52,7 +52,6 @@ import { PermitTypeReport } from '../../common/enum/permit-type.enum';
 import { IPaymentReportDataDetails } from '../../common/interface/payment-report-data-details.interface';
 import { IPaymentReportData } from '../../common/interface/payment-report-data.interface';
 import { PermitType } from '../permit/entities/permit-type.entity';
-import { CreatePaymentSummaryReportDto } from './dto/request/create-payment-summary-report.dto';
 
 @Injectable()
 export class PaymentService {
