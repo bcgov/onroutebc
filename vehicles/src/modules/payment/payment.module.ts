@@ -8,6 +8,7 @@ import { PermitTransaction } from './entities/permit-transaction.entity';
 import { Receipt } from './entities/receipt.entity';
 import { PaymentCardType } from './entities/payment-card-type.entity';
 import { PaymentMethodType } from './entities/payment-method-type.entity';
+import { PaymentReportService } from './payment-report.service';
 
 @Module({
   imports: [
@@ -20,7 +21,7 @@ import { PaymentMethodType } from './entities/payment-method-type.entity';
     ]),
   ],
   controllers: [PaymentController],
-  providers: [PaymentService, TransactionProfile],
+  providers: [PaymentService, TransactionProfile, PaymentReportService],
   exports: [PaymentService],
 })
 export class PaymentModule {}

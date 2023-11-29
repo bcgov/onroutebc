@@ -28,69 +28,62 @@ export class CreateGeneratedReportDto {
       timePeriod: 'Jul. 17, 2023, 09:00 PM, PDT – Jul. 18, 2023, 09:00 PM, PDT',
       payments: [
         {
-          issuedOn: 'Jul. 17, 2023, 09:00 PM, PDT',
+          issuedOn: '2023-11-11T23:26:51.170Z',
           providerTransactionId: '73582422238',
           orbcTransactionId: 'OR-678904512857',
           paymentMethod: 'Cash',
           receiptNo: '45098721098',
           permitNo: 'P2-72106199-468',
-          permitType: 'STOW',
-          user: 'ANPETRIC',
-          amount: '$90.00',
-        },
-        {
-          paymentMethod: 'Cash',
-          subTotalAmount: '$90.00',
-        },
-        {
-          paymentMethod: 'Cash',
-          totalAmount: '$90.00',
+          permitType: 'STOS',
+          users: 'ANPETRIC',
+          amount: '90.00',
         },
       ],
       refunds: [
         {
-          issuedOn: 'Jul. 17, 2023, 09:00 PM, PDT',
+          issuedOn: '2023-11-11T23:26:51.170Z',
           providerTransactionId: '73582422238',
           orbcTransactionId: 'OR-678904512857',
           paymentMethod: 'Cheque',
           receiptNo: '51961102630',
           permitNo: 'P2-15348742-610',
           permitType: 'TROS',
-          user: 'KOPARKIN',
-          amount: '$10.00',
-        },
-        {
-          paymentMethod: 'Cheque',
-          subTotalAmount: '$190.00',
-        },
-        {
-          paymentMethod: 'Credit Card',
-          totalAmount: '$190.00',
+          users: 'KOPARKIN',
+          amount: '10.00',
         },
       ],
-      summaryPayments: [
+      summaryPaymentsAndRefunds: [
+        {
+          paymentMethod: 'Cash',
+          payment: '90.00',
+          refund: null,
+          deposit: '90.00',
+        },
         {
           paymentMethod: 'Cheque',
-          payment: '$190',
-          refund: '$190',
-          deposit: '$190',
+          payment: null,
+          refund: '10.00',
+          deposit: '90.00',
         },
         {
-          subTotalPaymentAmount: '$190.00',
-          subTotalRefundAmount: '$190.00',
-          subTotalDepositAmount: '$190.00',
-        },
-        {
-          grandTotalAmount: '$190.00',
+          paymentMethod: 'totalAmount',
+          payment: '90.00',
+          refund: '10.00',
+          deposit: '80.00',
         },
       ],
       summaryPermits: [
+        {
+          permitType: 'STOS',
+          permitCount: '1',
+        },
         {
           permitType: 'TROS',
           permitCount: '1',
         },
         {
-          totalPermits: '1',
+          permitType: 'totalPermitCount',
+          permitCount: '2',
         },
       ],
     },
