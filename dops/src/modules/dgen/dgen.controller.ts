@@ -86,12 +86,7 @@ export class DgenController {
     res.status(201);
   }
 
-  //TODO: To be uncommented once FA/PPC/SYS Admin exists in higher enviornment.
-  //@Roles(
-  //   Role.ORBC_FINANCIAL_TRANSACTION_REPORT_SELF,
-  //   Role.ORBC_FINANCIAL_TRANSACTION_REPORT_ALL,
-  // )
-  @AuthOnly()
+  @Roles(Role.GENERATE_REPORT)
   @Post('/report/render')
   async generateReport(
     @Req() request: Request,

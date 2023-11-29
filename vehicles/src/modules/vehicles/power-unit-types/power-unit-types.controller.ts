@@ -23,6 +23,9 @@ import {
 import { ReadPowerUnitTypeDto } from './dto/response/read-power-unit-type.dto';
 import { ExceptionDto } from '../../../common/exception/exception.dto';
 import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
+import { Roles } from 'src/common/decorator/roles.decorator';
+import { Role } from 'src/common/enum/roles.enum';
+import { AuthOnly } from '../../../common/decorator/auth-only.decorator';
 
 @ApiTags('Vehicles - Power Unit Types')
 @ApiBadRequestResponse({
@@ -50,6 +53,7 @@ export class PowerUnitTypesController {
     description: 'The Power Unit Type Resource',
     type: ReadPowerUnitTypeDto,
   })
+  @Roles(Role.WRITE_VEHICLE_TYPES)
   @Post()
   create(@Body() createPowerUnitTypeDto: CreatePowerUnitTypeDto) {
     return this.powerUnitTypesService.create(createPowerUnitTypeDto);
@@ -60,6 +64,7 @@ export class PowerUnitTypesController {
     type: ReadPowerUnitTypeDto,
     isArray: true,
   })
+  @AuthOnly()
   @Get()
   async findAll(): Promise<ReadPowerUnitTypeDto[]> {
     return await this.powerUnitTypesService.findAll();
@@ -69,6 +74,7 @@ export class PowerUnitTypesController {
     description: 'The Power Unit Type Resource',
     type: ReadPowerUnitTypeDto,
   })
+  @AuthOnly()
   @Get(':typeCode')
   async findOne(
     @Param('typeCode') typeCode: string,
@@ -84,6 +90,7 @@ export class PowerUnitTypesController {
     description: 'The Power Unit Type Resource',
     type: ReadPowerUnitTypeDto,
   })
+  @Roles(Role.WRITE_VEHICLE_TYPES)
   @Put(':typeCode')
   async update(
     @Param('typeCode') typeCode: string,
@@ -99,6 +106,7 @@ export class PowerUnitTypesController {
     return powerUnitType;
   }
 
+  @Roles(Role.WRITE_VEHICLE_TYPES)
   @Delete(':typeCode')
   async remove(@Param('typeCode') typeCode: string) {
     const deleteResult = await this.powerUnitTypesService.remove(typeCode);

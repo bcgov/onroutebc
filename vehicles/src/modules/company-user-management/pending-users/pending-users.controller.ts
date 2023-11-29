@@ -27,6 +27,8 @@ import { ReadPendingUserDto } from './dto/response/read-pending-user.dto';
 import { PendingUsersService } from './pending-users.service';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
 import { Request } from 'express';
+import { Roles } from '../../../common/decorator/roles.decorator';
+import { Role } from '../../../common/enum/roles.enum';
 import { getDirectory } from 'src/common/helper/auth.helper';
 
 @ApiTags('Company and User Management - Pending User')
@@ -55,7 +57,6 @@ export class PendingUsersController {
    * A POST method defined with the @Post() decorator and a route of
    * company/:companyId/pending-user that creates a new pending user
    * associated with the company.
-   * TODO: Secure endpoints once login is implemented.
    *
    * @param companyId The company Id.
    * @param createPendingUserDto The http request object containing the pending user
@@ -68,6 +69,7 @@ export class PendingUsersController {
     description: 'The Pending User Resource',
     type: ReadPendingUserDto,
   })
+  @Roles(Role.WRITE_USER)
   @Post()
   async create(
     @Req() request: Request,
@@ -89,8 +91,6 @@ export class PendingUsersController {
    * company/:companyId/pending-user that retrieves a list of pending users
    * associated with the company
    *
-   * TODO: Secure endpoints once login is implemented.
-   *
    * @param companyId The company Id.
    *
    * @returns The list of pending users with response object as an array of
@@ -101,6 +101,7 @@ export class PendingUsersController {
     type: ReadPendingUserDto,
     isArray: true,
   })
+  @Roles(Role.READ_USER)
   @Get()
   async findAll(
     @Param('companyId') companyId: number,
@@ -113,8 +114,6 @@ export class PendingUsersController {
    * company/:companyId/pending-user/:userName that retrieves the pending user
    * associated with the company by user name
    *
-   * TODO: Secure endpoints once login is implemented.
-   *
    * @param companyId The company Id.
    * @param userName The userName of the pending user.
    *
@@ -124,6 +123,7 @@ export class PendingUsersController {
     description: 'The Pending User Resource',
     type: ReadPendingUserDto,
   })
+  @Roles(Role.READ_USER)
   @Get(':userName')
   async find(
     @Param('companyId') companyId: number,
@@ -145,8 +145,6 @@ export class PendingUsersController {
    * company/:companyId/pending-user/:userName that updates a pending user by
    * user name.
    *
-   * TODO: Secure endpoints once login is implemented.
-   *
    * @param companyId The company Id.
    * @param userName The user name of the pending user.
    * @param updatePendingUserDto The http request object of type
@@ -158,6 +156,7 @@ export class PendingUsersController {
     description: 'The Pending User Resource',
     type: ReadPendingUserDto,
   })
+  @Roles(Role.WRITE_USER)
   @Put(':userName')
   async update(
     @Req() request: Request,
@@ -188,6 +187,7 @@ export class PendingUsersController {
    * @param userName The user name of the pending user.
    * @returns true upon successful deletion.
    */
+  @Roles(Role.WRITE_USER)
   @Delete(':userName')
   async remove(
     @Param('companyId') companyId: number,
