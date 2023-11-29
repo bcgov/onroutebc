@@ -61,6 +61,14 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       userName = payload.bceid_username;
     }
 
+    //Remove when Basic and Personal BCeID needs to be accepted
+    if (
+      payload.identity_provider === IDP.BCEID &&
+      !payload.bceid_business_guid
+    ) {
+      throw new UnauthorizedException();
+    }
+
     if (req.headers['AuthOnly'] === 'false') {
       ({ roles, associatedCompanies } = await this.getUserDetails(
         access_token,
@@ -92,6 +100,27 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     payload: IUserJWT,
     associatedCompanies: number[],
   ) {
+    if (payload.identity_provider !== IDP.IDIR) {
+      const companiesForUsersResponse: AxiosResponse =
+        await this.authService.getCompaniesForUser(access_token);
+      associatedCompanies = (
+        companiesForUsersResponse.data as [
+          { companyId: number; clientNumber: string; legalName: string },
+        ]
+      ).map((company) => {
+        return company.companyId;
+      });
+
+      //Remove when one login Multiple Companies needs to be activated
+      companyId = associatedCompanies?.length
+        ? associatedCompanies?.at(0)
+        : companyId;
+
+      if (!associatedCompanies.includes(companyId)) {
+        throw new ForbiddenException();
+      }
+    }
+
     const accessApiResponse: AxiosResponse[] = await Promise.all([
       this.authService.getUserDetails(access_token, userGUID),
       this.authService.getRolesForUser(access_token, companyId),
@@ -109,19 +138,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     }
 
     const roles = accessApiResponse.at(1).data as Role[];
-    if (payload.identity_provider !== IDP.IDIR) {
-      associatedCompanies = (
-        accessApiResponse.at(2).data as [
-          { companyId: number; clientNumber: string; legalName: string },
-        ]
-      ).map((company) => {
-        return company.companyId;
-      });
 
-      if (!associatedCompanies.includes(companyId)) {
-        throw new ForbiddenException();
-      }
-    }
     return { roles, associatedCompanies };
   }
 }

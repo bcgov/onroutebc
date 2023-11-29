@@ -22,12 +22,10 @@ import { Request, Response } from 'express';
 import { ReadGeneratedDocumentDto } from './dto/response/read-generated-document.dto';
 import { IUserJWT } from '../../interface/user-jwt.interface';
 import { CreateGeneratedDocumentDto } from './dto/request/create-generated-document.dto';
-
 import { IDP } from '../../enum/idp.enum';
 import { Roles } from '../../decorator/roles.decorator';
 import { Role } from '../../enum/roles.enum';
 import { CreateGeneratedReportDto } from './dto/request/create-generated-report.dto';
-import { AuthOnly } from '../../decorator/auth-only.decorator';
 import { DgenService } from './dgen.service';
 
 @ApiTags('Document Generator (DGEN)')
@@ -86,26 +84,14 @@ export class DgenController {
     res.status(201);
   }
 
-  @ApiQuery({
-    name: 'companyId',
-    required: false,
-    example: '74',
-    description: 'Required when IDP is not IDIR .',
-  })
   @Roles(Role.GENERATE_REPORT)
   @Post('/report/render')
   async generateReport(
     @Req() request: Request,
     @Res() res: Response,
     @Body() createGeneratedReportDto: CreateGeneratedReportDto,
-    @Query('companyId') companyId?: number,
   ) {
     const currentUser = request.user as IUserJWT;
-    if (currentUser.identity_provider !== IDP.IDIR && !companyId) {
-      throw new BadRequestException(
-        'Company Id is manadatory for all IDP but IDIR',
-      );
-    }
     await this.dgenService.generateReport(
       currentUser,
       createGeneratedReportDto,

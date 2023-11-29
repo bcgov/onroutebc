@@ -66,6 +66,14 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       payload.accountSource = AccountSource.BCeID;
     }
 
+    //Remove when Basic and Personal BCeID needs to be accepted
+    if (
+      payload.identity_provider === IDP.BCEID &&
+      !payload.bceid_business_guid
+    ) {
+      throw new UnauthorizedException();
+    }
+
     if (req.headers['AuthOnly'] === 'false') {
       const user = await this.authService.validateUser(
         companyId,
@@ -75,10 +83,18 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       if (!user) {
         throw new UnauthorizedException();
       }
+
+      if (payload.identity_provider !== IDP.IDIR) {
+        associatedCompanies = await this.authService.getCompaniesForUser(
+          userGUID,
+        );
+        //Remove when one login Multiple Companies needs to be activated
+        companyId = associatedCompanies?.length
+          ? associatedCompanies?.at(0)
+          : companyId;
+      }
+
       roles = await this.authService.getRolesForUser(userGUID, companyId);
-      associatedCompanies = await this.authService.getCompaniesForUser(
-        userGUID,
-      );
     }
 
     const access_token = req.headers.authorization;
