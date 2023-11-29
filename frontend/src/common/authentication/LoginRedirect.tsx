@@ -31,7 +31,7 @@ export const LoginRedirect = () => {
         const userContextData: BCeIDUserContextType | undefined =
           queryClient.getQueryData<BCeIDUserContextType>(["userContext"]);
         if (userContextData) {
-          const { associatedCompanies, pendingCompanies, user } =
+          const { associatedCompanies, pendingCompanies, migratedCompanies, user } =
             userContextData;
           // If the user does not exist
           if (!user?.userGUID) {
@@ -40,8 +40,22 @@ export const LoginRedirect = () => {
               navigate(routes.WELCOME);
             }
             // The user and company does not exist => Redirect them to Add new company page.
-            else if (associatedCompanies.length < 1) {
+            else if (associatedCompanies.length < 1 && migratedCompanies.length < 1) {
               navigate(routes.WELCOME);
+            } else if (migratedCompanies.length === 1) {
+              // The downside of having associatedCompanies.length === 1 is 
+              // that it hinges on an implicit relationship. It has no consequences today
+              // but it could have in future. It's an unknown unknown.
+
+              
+              // Check if COMPANY_USERS has a link to a set of users
+              //      If yes, if the user is invited, then he goes to user info wizard (No confusion here)
+              //      If no, 
+                        // isMigratedClient => COMPANY EXISTS but no COMPANY_USER relationships or check ACCOUNT_SOURCE in COMPANY_TABLE? 
+                              // If yes, this is a migrated client and navigate to no challenge.
+                              // If no, the login is unauthorized.
+            } else {
+              navigate(routes.UNAUTHORIZED);
             }
           }
           // The user and company exist
