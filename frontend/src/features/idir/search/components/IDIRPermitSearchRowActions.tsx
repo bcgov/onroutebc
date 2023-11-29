@@ -128,9 +128,9 @@ export const IDIRPermitSearchRowActions = ({
     } else if (selectedOption === PERMIT_ACTION_TYPES.VIEW_RECEIPT) {
       viewReceiptPdf(permitId.toString());
     } else if (selectedOption === PERMIT_ACTION_TYPES.VOID_REVOKE) {
-      navigate(`${routes.PERMITS_ROUTES.BASE}/${permitId}/${routes.PERMITS_ROUTES.VOID}`);
+      navigate(`${routes.PERMITS_ROUTES.VOID(`${permitId}`)}`);
     } else if (selectedOption === PERMIT_ACTION_TYPES.AMEND) {
-      navigate(`${routes.PERMITS_ROUTES.BASE}/${permitId}/${routes.PERMITS_ROUTES.AMEND}`);
+      navigate(`${routes.PERMITS_ROUTES.AMEND(`${permitId}`)}`);
     }
   };
 

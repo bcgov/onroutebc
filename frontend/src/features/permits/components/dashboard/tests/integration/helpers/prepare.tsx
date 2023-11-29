@@ -4,11 +4,8 @@ import { setupServer } from "msw/node";
 import { rest } from "msw";
 
 import { renderWithClient } from "../../../../../../../common/helpers/testHelper";
-import OnRouteBCContext, {
-  OnRouteBCContextType,
-} from "../../../../../../../common/authentication/OnRouteBCContext";
 import { bcGovTheme } from "../../../../../../../themes/bcGovTheme";
-import { ApplicationDashboard } from "../../../ApplicationDashboard";
+import { ApplicationStepPage } from "../../../ApplicationStepPage";
 import { APPLICATIONS_API_ROUTES } from "../../../../../apiManager/endpoints/endpoints";
 import { dayjsToUtcStr, now } from "../../../../../../../common/helpers/formatDate";
 import { createApplication, getApplication, updateApplication } from "../fixtures/getActiveApplication";
@@ -19,6 +16,11 @@ import { getDefaultCompanyInfo } from "../fixtures/getCompanyInfo";
 import { getDefaultUserDetails } from "../fixtures/getUserDetails";
 import { getDefaultRequiredVal } from "../../../../../../../common/helpers/util";
 import { formatCountry, formatProvince } from "../../../../../../../common/helpers/formatCountryProvince";
+import { APPLICATION_STEPS } from "../../../../../../../routes/constants";
+import OnRouteBCContext, {
+  OnRouteBCContextType,
+} from "../../../../../../../common/authentication/OnRouteBCContext";
+
 import { 
   createPowerUnit, 
   createTrailer, 
@@ -208,7 +210,7 @@ export const ComponentWithWrapper = (userDetails: OnRouteBCContextType) => {
   return (
     <ThemeProvider theme={bcGovTheme}>
       <OnRouteBCContext.Provider value={userDetails}>
-        <ApplicationDashboard />
+        <ApplicationStepPage applicationStep={APPLICATION_STEPS.DETAILS} />
       </OnRouteBCContext.Provider>
     </ThemeProvider>
   );

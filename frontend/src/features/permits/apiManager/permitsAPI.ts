@@ -86,46 +86,51 @@ export const updateTermOversize = async (
 export const getApplicationsInProgress = async (): Promise<
   PermitApplicationInProgress[]
 > => {
-  const companyId = getCompanyIdFromSession();
-  const userGuid = getUserGuidFromSession();
-  let applicationsUrl = `${APPLICATIONS_API_ROUTES.IN_PROGRESS}`;
-  if (companyId) {
-    applicationsUrl += `&companyId=${companyId}`;
-  }
-  if (userGuid) {
-    applicationsUrl += `&userGUID=${userGuid}`;
-  }
+  try {
+    const companyId = getCompanyIdFromSession();
+    const userGuid = getUserGuidFromSession();
+    let applicationsUrl = `${APPLICATIONS_API_ROUTES.IN_PROGRESS}`;
+    if (companyId) {
+      applicationsUrl += `&companyId=${companyId}`;
+    }
+    if (userGuid) {
+      applicationsUrl += `&userGUID=${userGuid}`;
+    }
 
-  const applications = await httpGETRequest(applicationsUrl).then((response) =>
-    (
-      getDefaultRequiredVal([], response.data) as PermitApplicationInProgress[]
-    ).map((application) => {
-      return {
-        ...application,
-        permitType: getPermitTypeName(application.permitType) as string,
-        createdDateTime: toLocal(
-          application.createdDateTime,
-          DATE_FORMATS.DATETIME_LONG_TZ,
-        ),
-        updatedDateTime: toLocal(
-          application.updatedDateTime,
-          DATE_FORMATS.DATETIME_LONG_TZ,
-        ),
-        permitData: {
-          ...application.permitData,
-          startDate: toLocal(
-            application.permitData.startDate,
-            DATE_FORMATS.DATEONLY_SHORT_NAME,
+    const response = await httpGETRequest(applicationsUrl);
+    const applications =
+      (
+        getDefaultRequiredVal([], response.data) as PermitApplicationInProgress[]
+      ).map((application) => {
+        return {
+          ...application,
+          permitType: getPermitTypeName(application.permitType) as string,
+          createdDateTime: toLocal(
+            application.createdDateTime,
+            DATE_FORMATS.DATETIME_LONG_TZ,
           ),
-          expiryDate: toLocal(
-            application.permitData.startDate,
-            DATE_FORMATS.DATEONLY_SHORT_NAME,
+          updatedDateTime: toLocal(
+            application.updatedDateTime,
+            DATE_FORMATS.DATETIME_LONG_TZ,
           ),
-        },
-      } as PermitApplicationInProgress;
-    }),
-  );
-  return applications;
+          permitData: {
+            ...application.permitData,
+            startDate: toLocal(
+              application.permitData.startDate,
+              DATE_FORMATS.DATEONLY_SHORT_NAME,
+            ),
+            expiryDate: toLocal(
+              application.permitData.startDate,
+              DATE_FORMATS.DATEONLY_SHORT_NAME,
+            ),
+          },
+        } as PermitApplicationInProgress;
+      });
+    return applications;
+  } catch (err) {
+    console.error(err);
+    return [];
+  }
 };
 
 /**

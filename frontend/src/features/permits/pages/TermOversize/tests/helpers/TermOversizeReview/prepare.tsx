@@ -107,12 +107,8 @@ const ComponentWithWrapper = ({
 }: {
   applicationData: Application;
 }) => {
-  const [stepIndex, setStepIndex] = useState(0);
   const [testApplicationData, setTestApplicationData] =
     useState(applicationData);
-  const next = () => setStepIndex((currentStepIndex) => currentStepIndex + 1);
-  const back = () => setStepIndex((currentStepIndex) => currentStepIndex - 1);
-  const goTo = (stepIndex: number) => setStepIndex(stepIndex);
   return (
     <ThemeProvider theme={bcGovTheme}>
       <ApplicationContext.Provider
@@ -120,12 +116,8 @@ const ComponentWithWrapper = ({
           () => ({
             applicationData: testApplicationData,
             setApplicationData: setTestApplicationData,
-            next,
-            back,
-            goTo,
-            currentStepIndex: stepIndex,
           }),
-          [testApplicationData, stepIndex],
+          [testApplicationData],
         )}
       >
         <TermOversizeReview />

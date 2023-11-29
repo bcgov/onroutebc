@@ -1,10 +1,36 @@
 import { IDPS } from "../common/types/idp";
 
+export const ROUTE_PLACEHOLDERS = {
+  PERMIT_ID: "permitId",
+  ERROR_MSG: "msg",
+};
+
+/**
+ * Returns dynamic URI given a prefix segment, dynamic value, and placeholder value.
+ * Eg. /permits/1 or /permits/:permitId
+ * @param prefixUri URI part before the dynamic portion (eg. /permits)
+ * @param placeholderName Name of placeholder (eg. "permitId")
+ * @param value Actual dynamic value passed in (eg. "1")
+ * @returns Actual dynamic URI containing the dynamic or placeholder value
+ */
+const DYNAMIC_ROUTE_URI = (
+  prefixUri: string,
+  placeholderName: string,
+  value?: string | null
+) => {
+  if (!value) {
+    return `${prefixUri}/:${placeholderName}`;
+  }
+
+  return `${prefixUri}/${value}`;
+};
+
 export const HOME = "/";
 
 export const ERROR_ROUTES = {
   UNAUTHORIZED: "/unauthorized",
   UNIVERSAL_UNAUTHORIZED: "/universal-unauthorized",
+  UNEXPECTED: "/unexpected-error",
 };
 
 // Manage Vehicles
@@ -31,17 +57,35 @@ export const PROFILE_ROUTES = {
 const PERMITS_ROUTE_BASE = "/permits";
 export const PERMITS_ROUTES = {
   BASE: PERMITS_ROUTE_BASE,
-  VOID: "void",
-  AMEND: "amend",
+  SUCCESS: (permitId?: string) => 
+    `${DYNAMIC_ROUTE_URI(PERMITS_ROUTE_BASE, ROUTE_PLACEHOLDERS.PERMIT_ID, permitId)}/success`,
+  VOID: (permitId?: string) => 
+    `${DYNAMIC_ROUTE_URI(PERMITS_ROUTE_BASE, ROUTE_PLACEHOLDERS.PERMIT_ID, permitId)}/void`,
+  AMEND: (permitId?: string) => 
+    `${DYNAMIC_ROUTE_URI(PERMITS_ROUTE_BASE, ROUTE_PLACEHOLDERS.PERMIT_ID, permitId)}/amend`,
 };
 
 // Applications
 const APPLICATIONS_ROUTE_BASE = `/applications`;
+
+export const APPLICATION_STEPS = {
+  HOME: 0,
+  DETAILS: 1,
+  REVIEW: 2,
+  PAY: 3,
+} as const;
+
+export type ApplicationStep = typeof APPLICATION_STEPS[keyof typeof APPLICATION_STEPS];
+
 export const APPLICATIONS_ROUTES = {
   BASE: APPLICATIONS_ROUTE_BASE,
-  START_APPLICATION: `${APPLICATIONS_ROUTE_BASE}/permits`,
-  SUCCESS: `${APPLICATIONS_ROUTE_BASE}/success`,
-  FAILURE: `${APPLICATIONS_ROUTE_BASE}/failure`,
+  DETAILS: (permitId?: string) => 
+    `${DYNAMIC_ROUTE_URI(APPLICATIONS_ROUTE_BASE, ROUTE_PLACEHOLDERS.PERMIT_ID, permitId)}`,
+  START_APPLICATION: `${APPLICATIONS_ROUTE_BASE}/new`,
+  REVIEW: (permitId?: string) => 
+    `${DYNAMIC_ROUTE_URI(APPLICATIONS_ROUTE_BASE, ROUTE_PLACEHOLDERS.PERMIT_ID, permitId)}/review`,
+  PAY: (permitId?: string, failed?: boolean) => 
+    `${DYNAMIC_ROUTE_URI(APPLICATIONS_ROUTE_BASE, ROUTE_PLACEHOLDERS.PERMIT_ID, permitId)}/pay${failed ? "?paymentFailed=true" : ""}`,
 };
 
 // Create Profile Wizard

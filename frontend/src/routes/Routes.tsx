@@ -11,12 +11,11 @@ import { AddVehicleDashboard } from "../features/manageVehicles/components/dashb
 import { EditVehicleDashboard } from "../features/manageVehicles/components/dashboard/EditVehicleDashboard";
 import { VEHICLE_TYPES_ENUM } from "../features/manageVehicles/components/form/constants";
 import { CreateProfileWizard } from "../features/wizard/CreateProfileWizard";
-import { ManagePermits } from "../features/permits/ManagePermits";
+import { ApplicationSteps } from "../features/permits/ApplicationSteps";
 import { ROLES } from "../common/authentication/types";
-import { ManageApplications } from "../features/permits/ManageApplications";
+import { PermitDashboard } from "../features/permits/PermitDashboard";
 import { SuccessPage } from "../features/permits/pages/SuccessPage/SuccessPage";
 import { PaymentRedirect } from "../features/permits/pages/Payment/PaymentRedirect";
-import { PaymentFailureRedirect } from "../features/permits/pages/Payment/PaymentFailureRedirect";
 import { AddUserDashboard } from "../features/manageProfile/pages/AddUserDashboard";
 import { EditUserDashboard } from "../features/manageProfile/pages/EditUserDashboard";
 import { IDIRSearchResultsDashboard } from "../features/idir/search/pages/IDIRSearchResultsDashboard";
@@ -30,6 +29,7 @@ import { UniversalUnauthorized } from "../common/pages/UniversalUnauthorized";
 export const AppRoutes = () => {
   return (
     <Routes>
+      {/* Home and Error Routes */}
       <Route path={routes.HOME} element={<InitialLandingPage />} />
       <Route path={routes.CREATE_PROFILE_WIZARD_ROUTES.WELCOME} element={<WelcomePage />} />
       <Route path={routes.ERROR_ROUTES.UNAUTHORIZED} element={<Unauthorized />} />
@@ -84,54 +84,58 @@ export const AppRoutes = () => {
           />
         </Route>
       </Route>
+
       <Route element={<ProtectedRoutes requiredRole={ROLES.READ_ORG} />}>
         <Route path={routes.PROFILE_ROUTES.MANAGE} element={<ManageProfiles />} />
       </Route>
+
       <Route element={<ProtectedRoutes requiredRole={ROLES.WRITE_USER} />}>
         <Route path={routes.PROFILE_ROUTES.ADD_USER} element={<AddUserDashboard />} />
         <Route path={`${routes.PROFILE_ROUTES.EDIT_USER}/:userGUID`} element={<EditUserDashboard />} />
       </Route>
-      <Route element={<ProtectedRoutes requiredRole={ROLES.WRITE_PERMIT} />}>
-        <Route
-          path={`${routes.APPLICATIONS_ROUTES.START_APPLICATION}`}
-          element={<ManagePermits />}
-        />
-      </Route>
-      <Route element={<ProtectedRoutes requiredRole={ROLES.WRITE_PERMIT} />}>
-        <Route path={routes.APPLICATIONS_ROUTES.BASE} element={<ManageApplications />} />
-      </Route>
-      <Route element={<ProtectedRoutes requiredRole={ROLES.WRITE_PERMIT} />}>
-        <Route
-          path={`${routes.APPLICATIONS_ROUTES.BASE}/:applicationNumber`}
-          element={<ManagePermits />}
-        />
-      </Route>
+
       <Route element={<ProtectedRoutes requiredRole={ROLES.WRITE_PERMIT} />}>
         <Route path={routes.APPLICATIONS_ROUTES.BASE}>
-          <Route index={true} element={<ManageApplications />} />
+          <Route index={true} element={<PermitDashboard />} />
           <Route
-            path={`${routes.APPLICATIONS_ROUTES.SUCCESS}/:permitId`}
-            element={<SuccessPage />}
+            path={`${routes.APPLICATIONS_ROUTES.START_APPLICATION}`}
+            element={<ApplicationSteps applicationStep={routes.APPLICATION_STEPS.DETAILS} />}
           />
           <Route
-            path={`${routes.APPLICATIONS_ROUTES.FAILURE}/:msg`}
-            element={<PaymentFailureRedirect />}
-          />
+            path={`${routes.APPLICATIONS_ROUTES.DETAILS()}`}
+          >
+            <Route index={true} element={<ApplicationSteps applicationStep={routes.APPLICATION_STEPS.DETAILS} />} />
+            <Route
+              path={routes.APPLICATIONS_ROUTES.REVIEW()}
+              element={<ApplicationSteps applicationStep={routes.APPLICATION_STEPS.REVIEW}  />}
+            />
+            <Route
+              path={routes.APPLICATIONS_ROUTES.PAY()}
+              element={<ApplicationSteps applicationStep={routes.APPLICATION_STEPS.PAY} />}
+            />
+          </Route>
         </Route>
       </Route>
+
       <Route element={<ProtectedRoutes requiredRole={ROLES.WRITE_PERMIT} />}>
         <Route 
-          path={`${routes.PERMITS_ROUTES.BASE}/:permitId/${routes.PERMITS_ROUTES.VOID}`}
+          path={`${routes.PERMITS_ROUTES.VOID()}`}
           element={<VoidPermit />} 
         />
         <Route 
-          path={`${routes.PERMITS_ROUTES.BASE}/:permitId/${routes.PERMITS_ROUTES.AMEND}`}
+          path={`${routes.PERMITS_ROUTES.AMEND()}`}
           element={<AmendPermit />}
         />
+        <Route
+          path={`${routes.PERMITS_ROUTES.SUCCESS()}`}
+          element={<SuccessPage />}
+        />
       </Route>
+
       <Route element={<ProtectedRoutes requiredRole={ROLES.WRITE_PERMIT} />}>
         <Route path={routes.PAYMENT_ROUTES.PAYMENT_REDIRECT} element={<PaymentRedirect />} />
       </Route>
+
       <Route path={routes.CREATE_PROFILE_WIZARD_ROUTES.CREATE} element={<CreateProfileWizard />} />
       <Route path={routes.PROFILE_ROUTES.USER_INFO} element={<UserInfoWizard />} />
     </Routes>

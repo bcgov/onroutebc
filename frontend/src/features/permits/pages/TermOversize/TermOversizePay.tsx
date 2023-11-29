@@ -1,21 +1,30 @@
 import { Box } from "@mui/material";
 import { useContext, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 
 import "./TermOversizePay.scss";
 import { ApplicationContext } from "../../context/ApplicationContext";
-import { ProgressBar } from "../../components/progressBar/ProgressBar";
+import { ApplicationBreadcrumb } from "../../components/application-breadcrumb/ApplicationBreadcrumb";
 import { calculateFeeByDuration } from "../../helpers/feeSummary";
 import { ApplicationSummary } from "./components/pay/ApplicationSummary";
 import { PermitPayFeeSummary } from "./components/pay/PermitPayFeeSummary";
-import { getDefaultRequiredVal } from "../../../../common/helpers/util";
+import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { Loading } from "../../../../common/pages/Loading";
 import { useStartTransaction } from "../../hooks/hooks";
 import { TRANSACTION_TYPES } from "../../types/payment.d";
 import { PAYMENT_METHOD_TYPE_CODE } from "../../../../common/types/paymentMethods";
 import { PaymentFailedBanner } from "./components/pay/PaymentFailedBanner";
+import { APPLICATION_STEPS } from "../../../../routes/constants";
 
 export const TermOversizePay = () => {
   const { applicationData } = useContext(ApplicationContext);
+  const permitId = getDefaultRequiredVal("", applicationData?.permitId);
+  const [searchParams] = useSearchParams();
+  const paymentFailed = applyWhenNotNullable(
+    queryParam => queryParam === "true",
+    searchParams.get("paymentFailed"),
+    false
+  );
 
   const calculatedFee = calculateFeeByDuration(
     getDefaultRequiredVal(0, applicationData?.permitData?.permitDuration),
@@ -62,7 +71,10 @@ export const TermOversizePay = () => {
 
   return (
     <div className="pay-now-page">
-      <ProgressBar />
+      <ApplicationBreadcrumb
+        permitId={permitId}
+        applicationStep={APPLICATION_STEPS.PAY}
+      />
 
       <Box className="payment">
         <ApplicationSummary
@@ -70,7 +82,9 @@ export const TermOversizePay = () => {
           applicationNumber={applicationData?.applicationNumber}
         />
 
-        <PaymentFailedBanner />
+        {paymentFailed ? (
+          <PaymentFailedBanner />
+        ) : null}
 
         <PermitPayFeeSummary
           calculatedFee={calculatedFee}

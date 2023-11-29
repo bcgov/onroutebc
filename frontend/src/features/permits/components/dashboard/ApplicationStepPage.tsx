@@ -8,7 +8,6 @@ import { TermOversizeForm } from "../../pages/TermOversize/TermOversizeForm";
 import { ApplicationContext } from "../../context/ApplicationContext";
 import { TermOversizePay } from "../../pages/TermOversize/TermOversizePay";
 import { TermOversizeReview } from "../../pages/TermOversize/TermOversizeReview";
-import { useMultiStepForm } from "../../hooks/useMultiStepForm";
 import { useCompanyInfoQuery } from "../../../manageProfile/apiManager/hooks";
 import { Loading } from "../../../../common/pages/Loading";
 import { Unauthorized } from "../../../../common/pages/Unauthorized";
@@ -16,37 +15,36 @@ import { ErrorFallback } from "../../../../common/pages/ErrorFallback";
 import { useApplicationDetailsQuery } from "../../hooks/hooks";
 import { PERMIT_STATUSES } from "../../types/PermitStatus";
 import { NotFound } from "../../../../common/pages/NotFound";
-
-export const APPLICATION_STEPS = {
-  Form: "Form",
-  Review: "Review",
-  Pay: "Pay",
-} as const;
-
-export type ApplicationStep =
-  (typeof APPLICATION_STEPS)[keyof typeof APPLICATION_STEPS];
+import { APPLICATION_STEPS, ApplicationStep } from "../../../../routes/constants";
 
 const displayHeaderText = (stepKey: ApplicationStep) => {
   switch (stepKey) {
-    case APPLICATION_STEPS.Form:
+    case APPLICATION_STEPS.DETAILS:
       return "Permit Application";
-    case APPLICATION_STEPS.Review:
+    case APPLICATION_STEPS.REVIEW:
       return "Review and Confirm Details";
-    case APPLICATION_STEPS.Pay:
+    case APPLICATION_STEPS.PAY:
       return "Pay for Permit";
+    case APPLICATION_STEPS.HOME:
+    default:
+      return "Permits";
   }
 };
 
-export const ApplicationDashboard = () => {
+export const ApplicationStepPage = ({
+  applicationStep,
+}: {
+  applicationStep: ApplicationStep;
+}) => {
   const companyInfoQuery = useCompanyInfoQuery();
-  const { applicationNumber } = useParams(); // Get application number from route, if there is one (for edit applications)
+  const { permitId } = useParams(); // Get application number from route, if there is one (for edit applications)
 
   // Query for the application data whenever this page is rendered
   const {
     query: applicationDataQuery,
     applicationData,
     setApplicationData,
-  } = useApplicationDetailsQuery(applicationNumber);
+  } = useApplicationDetailsQuery(permitId);
 
   // Permit must be an application in order to allow application-related steps
   // (ie. empty status for new application, or in progress or incomplete payment status)
@@ -56,11 +54,16 @@ export const ApplicationDashboard = () => {
       || applicationData?.permitStatus === PERMIT_STATUSES.WAITING_PAYMENT;
   };
 
-  const { currentStepIndex, step, back, next, goTo } = useMultiStepForm([
-    <TermOversizeForm key={APPLICATION_STEPS.Form} />,
-    <TermOversizeReview key={APPLICATION_STEPS.Review} />,
-    <TermOversizePay key={APPLICATION_STEPS.Pay} />,
-  ]);
+  const renderApplicationStep = () => {
+    switch (applicationStep) {
+      case APPLICATION_STEPS.REVIEW:
+        return <TermOversizeReview />;
+      case APPLICATION_STEPS.PAY:
+        return <TermOversizePay />;
+      default:
+        return <TermOversizeForm />;
+    }
+  };
 
   if (companyInfoQuery.isLoading) {
     return <Loading />;
@@ -76,7 +79,7 @@ export const ApplicationDashboard = () => {
   }
 
   // Show loading screen while application data is being fetched
-  // Note: when creating a new application, applicationNumber will be undefined, and the query will not be performed
+  // Note: when creating a new application, permitId will be undefined, and the query will not be performed
   // since it's disabled on invalid application numbers, but isLoading will always be (stuck) in the true state
   // We need to check for isInitialLoading state instead (see https://tanstack.com/query/latest/docs/react/guides/disabling-queries)
   if (applicationDataQuery.isInitialLoading) {
@@ -93,10 +96,6 @@ export const ApplicationDashboard = () => {
       value={{
         applicationData,
         setApplicationData,
-        next,
-        back,
-        goTo,
-        currentStepIndex,
       }}
     >
       <Box
@@ -107,12 +106,12 @@ export const ApplicationDashboard = () => {
         }}
       >
         <Banner
-          bannerText={displayHeaderText(step.key as ApplicationStep)}
+          bannerText={displayHeaderText(applicationStep)}
           extendHeight={true}
         />
       </Box>
 
-      {step}
+      {renderApplicationStep()}
     </ApplicationContext.Provider>
   );
 };

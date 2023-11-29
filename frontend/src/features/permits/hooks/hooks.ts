@@ -20,7 +20,9 @@ import {
   amendPermit,
   getCurrentAmendmentApplication,
   modifyAmendmentApplication,
+  getApplicationsInProgress,
 } from "../apiManager/permitsAPI";
+import { FIVE_MINUTES } from "../../../common/constants/constants";
 
 /**
  * A custom react query mutation hook that saves the application data to the backend API
@@ -60,7 +62,7 @@ export const useApplicationDetailsQuery = (permitId?: string) => {
   >(undefined);
 
   // Currently, creating new application route doesn't contain permitId
-  // ie. route === "/applications/permits" instead of "/applications/:permitId"
+  // ie. route === "/applications/new" instead of "/applications/:permitId"
   // Thus we need to do a check
   const isPermitIdValid = permitId != null && !isNaN(Number(permitId));
 
@@ -342,5 +344,22 @@ export const useAmendmentApplicationQuery = (originalPermitId?: string) => {
   return {
     query,
     amendmentApplication,
+  };
+};
+
+/**
+ * A custom react query hook that fetches applications in progress.
+ * @returns List of applications in progress
+ */
+export const useApplicationsInProgressQuery = () => {
+  const applicationsInProgressQuery = useQuery({
+    queryKey: ["applicationInProgress"],
+    queryFn: getApplicationsInProgress,
+    keepPreviousData: true,
+    staleTime: FIVE_MINUTES,
+  });
+
+  return {
+    applicationsInProgressQuery,
   };
 };

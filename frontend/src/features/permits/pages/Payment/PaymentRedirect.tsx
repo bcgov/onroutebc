@@ -1,12 +1,12 @@
 import { useEffect, useRef } from "react";
-import { Navigate, useSearchParams } from "react-router-dom";
+import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
 
 import { getPayBCPaymentDetails } from "../../helpers/payment";
 import { Loading } from "../../../../common/pages/Loading";
 import { useCompleteTransaction, useIssuePermits } from "../../hooks/hooks";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { DATE_FORMATS, toUtc } from "../../../../common/helpers/formatDate";
-import { APPLICATIONS_ROUTES } from "../../../../routes/constants";
+import { APPLICATIONS_ROUTES, ERROR_ROUTES, PERMITS_ROUTES } from "../../../../routes/constants";
 import { PaymentCardTypeCode } from "../../../../common/types/paymentMethods";
 import {
   CompleteTransactionRequestData,
@@ -53,6 +53,7 @@ const exportPathFromSearchParams = (
  * Otherwise, it displays the payment status message.
  */
 export const PaymentRedirect = () => {
+  const navigate = useNavigate();
   const completedTransaction = useRef(false);
   const issuedPermit = useRef(false);
   const [searchParams] = useSearchParams();
@@ -70,7 +71,6 @@ export const PaymentRedirect = () => {
   const {
     mutation: completeTransactionMutation,
     paymentApproved,
-    message,
     setPaymentApproved,
   } = useCompleteTransaction(
     paymentDetails.messageText,
@@ -106,38 +106,35 @@ export const PaymentRedirect = () => {
   useEffect(() => {
     if (issuedPermit.current === false) {
       const permitIdsArray = getPermitIdsArray(permitIds);
-      if (paymentApproved === true && permitIdsArray.length > 0) {
-        // Issue permit
+
+      if (permitIdsArray.length === 0) {
+        // permit ids should not be empty, if so then something went wrong
+        navigate(ERROR_ROUTES.UNIVERSAL_UNAUTHORIZED, { replace: true });
+      } else if (paymentApproved === true) {
+        // Payment successful, proceed to issue permit
         issuePermitsMutation.mutate(permitIdsArray);
         issuedPermit.current = true;
+      } else if (paymentApproved === false) {
+        // Payment failed, redirect back to pay now page
+        navigate(APPLICATIONS_ROUTES.PAY(permitIdsArray[0], true), { 
+          replace: true, 
+        });
       }
     }
   }, [paymentApproved, permitIds]);
 
-  if (paymentApproved === false) {
-    return (
-      <Navigate 
-        to={`${APPLICATIONS_ROUTES.FAILURE}/${message}`}
-        replace={true}
-      />
-    )
-  }
-
   if (issueResults) {
     if (issueFailed()) {
-      const permitIssueFailedMsg = `Permit issue failed for ids ${issueResults.failure.join(
-        ",",
-      )}`;
       return (
         <Navigate 
-          to={`${APPLICATIONS_ROUTES.FAILURE}/${permitIssueFailedMsg}`}
+          to={`${ERROR_ROUTES.UNIVERSAL_UNAUTHORIZED}`}
           replace={true}
         />
       );
     }
     return (
       <Navigate 
-        to={`${APPLICATIONS_ROUTES.SUCCESS}/${issueResults.success[0]}`}
+        to={`${PERMITS_ROUTES.SUCCESS(issueResults.success[0])}`}
         replace={true}
       />
     );

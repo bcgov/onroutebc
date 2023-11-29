@@ -4,7 +4,7 @@ import { useContext, useState } from "react";
 
 import { Application } from "../../types/application.d";
 import { ApplicationContext } from "../../context/ApplicationContext";
-import { ProgressBar } from "../../components/progressBar/ProgressBar";
+import { ApplicationBreadcrumb } from "../../components/application-breadcrumb/ApplicationBreadcrumb";
 import { useSaveTermOversizeMutation } from "../../hooks/hooks";
 import { SnackBarContext } from "../../../../App";
 import { LeaveApplicationDialog } from "../../components/dialog/LeaveApplicationDialog";
@@ -14,16 +14,16 @@ import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext
 import { PermitForm } from "./components/form/PermitForm";
 import { usePermitVehicleManagement } from "../../hooks/usePermitVehicleManagement";
 import { useCompanyInfoQuery } from "../../../manageProfile/apiManager/hooks";
-import { applyWhenNotNullable } from "../../../../common/helpers/util";
+import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { TROS_PERMIT_DURATIONS } from "../../constants/termOversizeConstants";
-import { APPLICATIONS_ROUTES } from "../../../../routes/constants";
+import { APPLICATIONS_ROUTES, APPLICATION_STEPS } from "../../../../routes/constants";
 
 /**
  * The first step in creating and submitting a TROS Application.
  * @returns A form for users to create a Term Oversize Application
  */
 export const TermOversizeForm = () => {
-  //The name of this feature that is used for id's, keys, and associating form components
+  // The name of this feature that is used for id's, keys, and associating form components
   const FEATURE = "term-oversize";
 
   // Context to hold all of the application data related to the TROS application
@@ -107,7 +107,7 @@ export const TermOversizeForm = () => {
     handleSaveVehicle(vehicleData);
 
     // Save application before continuing
-    await onSaveApplication(() => applicationContext?.next());
+    await onSaveApplication((permitId) => navigate(APPLICATIONS_ROUTES.REVIEW(permitId)));
   };
 
   const isSaveTermOversizeSuccessful = (status: number) =>
@@ -124,6 +124,7 @@ export const TermOversizeForm = () => {
     });
 
     applicationContext?.setApplicationData(responseData);
+    return getDefaultRequiredVal("", responseData.permitId);
   };
 
   const onSaveFailure = () => {
@@ -136,7 +137,9 @@ export const TermOversizeForm = () => {
   };
 
   // Whenever application is to be saved (either through "Save" or "Continue")
-  const onSaveApplication = async (additionalSuccessAction?: () => void) => {
+  const onSaveApplication = async (
+    additionalSuccessAction?: (permitId: string) => void
+  ) => {
     const termOverSizeToBeAdded = applicationFormData(getValues());
     const response = await submitTermOversizeMutation.mutateAsync(
       termOverSizeToBeAdded,
@@ -144,8 +147,8 @@ export const TermOversizeForm = () => {
 
     if (isSaveTermOversizeSuccessful(response.status)) {
       const responseData = response.data;
-      onSaveSuccess(responseData as Application, response.status);
-      additionalSuccessAction?.();
+      const savedPermitId = onSaveSuccess(responseData as Application, response.status);
+      additionalSuccessAction?.(savedPermitId);
     } else {
       onSaveFailure();
     }
@@ -170,7 +173,9 @@ export const TermOversizeForm = () => {
 
   return (
     <>
-      <ProgressBar />
+      <ApplicationBreadcrumb
+        applicationStep={APPLICATION_STEPS.DETAILS}
+      />
 
       <FormProvider {...formMethods}>
         <PermitForm

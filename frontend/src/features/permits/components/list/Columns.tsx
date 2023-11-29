@@ -13,7 +13,7 @@ export const ApplicationInProgressColumnDefinition: MRT_ColumnDef<ApplicationInP
       Cell: (props: {cell: any, row: any}) => {
         return (
           <Link 
-            to={`${APPLICATIONS_ROUTES.BASE}/${props.row.original.permitId}`}
+            to={`${APPLICATIONS_ROUTES.DETAILS(`${props.row.original.permitId}`)}`}
             className="column-link column-link--application-details"
           >
             {props.cell.getValue()}
