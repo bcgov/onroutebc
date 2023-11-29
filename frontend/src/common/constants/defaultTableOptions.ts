@@ -1,5 +1,14 @@
 import { BC_COLOURS } from "../../themes/bcGovStyles";
 
+
+export const defaultTableStateOptions: any = {
+
+};
+
+export const defaultTableInitialStateOptions: any = {
+  showGlobalFilter: true,
+};
+
 export const defaultTableOptions: any = {
   defaultColumn: {
     maxSize: 200, //allow columns to get larger than default
@@ -13,6 +22,7 @@ export const defaultTableOptions: any = {
   },
   enableColumnActions: false,
   enableRowActions: true,
+  enableRowSelection: true,
   enableStickyHeader: true,
   enablePagination: false,
   enableTopToolbar: false,
