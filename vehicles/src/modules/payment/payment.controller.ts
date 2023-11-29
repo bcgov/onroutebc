@@ -32,6 +32,8 @@ import { CreatePaymentDetailedReportDto } from './dto/request/create-payment-det
 import { ReadFileDto } from '../common/dto/response/read-file.dto';
 import { CreatePaymentSummaryReportDto } from './dto/request/create-payment-summary-report.dto';
 import { PaymentReportService } from './payment-report.service';
+import { Roles } from '../../common/decorator/roles.decorator';
+import { Role } from '../../common/enum/roles.enum';
 
 @ApiBearerAuth()
 @ApiTags('Payment')
@@ -58,6 +60,7 @@ export class PaymentController {
     description: 'The Transaction Resource',
     type: ReadTransactionDto,
   })
+  @Roles(Role.WRITE_PAYMENT)
   @Post()
   async createTransactionDetails(
     @Req() request: Request,
@@ -80,6 +83,7 @@ export class PaymentController {
     type: UpdatePaymentGatewayTransactionDto,
   })
   @ApiQuery({ name: 'queryString', required: true })
+  @Roles(Role.WRITE_PAYMENT)
   @Put(':transactionId/payment-gateway')
   async updateTransactionDetails(
     @Req() request: Request,
@@ -106,6 +110,7 @@ export class PaymentController {
     description: 'The Read Transaction Resource',
     type: ReadTransactionDto,
   })
+  @Roles(Role.READ_PAYMENT)
   @Get(':transactionId')
   async findTransaction(
     @Req() request: Request,
@@ -118,6 +123,7 @@ export class PaymentController {
     description: 'The DOPS file Resource with the presigned resource',
     type: ReadFileDto,
   })
+  @Roles(Role.GENERATE_TRANSACTION_REPORT)
   @Post('/report/detailed')
   async createPaymentDetailedReport(
     @Req() request: Request,
@@ -138,6 +144,7 @@ export class PaymentController {
     description: 'The DOPS file Resource with the presigned resource',
     type: ReadFileDto,
   })
+  @Roles(Role.GENERATE_TRANSACTION_REPORT)
   @Post('/report/summary')
   async createPaymentSummaryReport(
     @Req() request: Request,
