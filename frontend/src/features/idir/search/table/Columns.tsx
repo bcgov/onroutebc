@@ -89,6 +89,19 @@ export const PermitSearchResultColumnDef: MRT_ColumnDef<Permit>[] = [
     enableSorting: true,
     enableMultiSort: false,
     sortingFn: "datetime",
+    Cell: (props: { cell: any }) => {
+      const originalDate = props.cell.getValue()
+      const formattedDate = applyWhenNotNullable(
+        (dt) => toLocal(dt, DATE_FORMATS.DATEONLY_ABBR_MONTH),
+        originalDate,
+        "NA",
+      );
+      return (
+        <div>
+          {formattedDate}
+        </div>
+      );
+    },
   },
   {
     accessorKey: "permitData.expiryDate",
@@ -96,6 +109,19 @@ export const PermitSearchResultColumnDef: MRT_ColumnDef<Permit>[] = [
     enableSorting: true,
     enableMultiSort: false,
     sortingFn: "datetime",
+    Cell: (props: { cell: any }) => {
+      const originalDate = props.cell.getValue()
+      const formattedDate = applyWhenNotNullable(
+        (dt) => toLocal(dt, DATE_FORMATS.DATEONLY_ABBR_MONTH),
+        originalDate,
+        "NA",
+      );
+      return (
+        <div>
+          {formattedDate}
+        </div>
+      );
+    },
   },
   {
     accessorKey: "permitIssueDateTime",
@@ -106,12 +132,12 @@ export const PermitSearchResultColumnDef: MRT_ColumnDef<Permit>[] = [
     sortingFn: "datetime",
     accessorFn: (originalRow) => {
       const { permitIssueDateTime } = originalRow;
-      const issueDate = applyWhenNotNullable(
+      const formattedDate = applyWhenNotNullable(
         (dt) => toLocal(dt, DATE_FORMATS.DATEONLY_ABBR_MONTH),
         permitIssueDateTime,
         "NA",
       );
-      return issueDate;
+      return formattedDate;
     },
   },
 ];
