@@ -97,9 +97,10 @@ jobs:
       - GitVersion
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      tag: ${{ github.ref_name }}
-    run: |
-      gh release create "${{ needs.GitVersion.outputs.fullSemVer }}" \
+    steps:
+      - name: Display GitVersion outputs
+        run: |
+          gh release create "${{ needs.GitVersion.outputs.fullSemVer }}" \
           --repo=${{ github.repository }} \
           --title="${{ github.repository }}-${{ needs.GitVersion.outputs.fullSemVer }}" \
           --generate-notes
