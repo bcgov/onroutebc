@@ -24,7 +24,7 @@ import {
 } from "../../search/api/reports";
 
 const sample = {
-  issuedBy: ["SELF"],
+  issuedBy: ["SELF_ISSUED"],
   fromDateTime: "2023-10-11T23:26:51.170Z",
   toDateTime: "2023-10-27T23:26:51.170Z",
 };
@@ -32,7 +32,7 @@ const sample = {
 export const PaymentAndRefundSummary = () => {
   const formMethods = useForm<PaymentAndRefundSummaryRequest>({
     defaultValues: {
-      issuedBy: ["SELF", "PPC"],
+      issuedBy: ["SELF_ISSUED", "PPC"],
       fromDateTime: "2023-10-25T21:00Z",
       toDateTime: "2023-10-26T20:59Z",
     },
@@ -41,12 +41,12 @@ export const PaymentAndRefundSummary = () => {
 
   const [requestObject, setRequestObject] =
     useState<PaymentAndRefundSummaryRequest>({
-      issuedBy: ["SELF", "PPC"],
+      issuedBy: ["SELF_ISSUED", "PPC"],
       fromDateTime: "2023-10-25T21:00Z",
       toDateTime: "2023-10-26T20:59Z",
     });
 
-  const [issuedBy, setIssuedBy] = useState<string[]>(["SELF", "PPC"]);
+  const [issuedBy, setIssuedBy] = useState<string[]>(["SELF_ISSUED", "PPC"]);
   const [fromDateTime, setFromDateTime] = useState<Dayjs>(
     dayjs().subtract(1, "day").set("h", 21).set("m", 0).set("s", 0).set("ms", 0)
   );
@@ -96,24 +96,24 @@ export const PaymentAndRefundSummary = () => {
           <FormControlLabel
             control={
               <Checkbox
-                checked={issuedBy.includes("SELF")}
+                checked={issuedBy.includes("SELF_ISSUED")}
                 sx={{ marginLeft: "0px", paddingLeft: "0px" }}
                 onChange={(
                   _event: React.ChangeEvent<HTMLInputElement>,
                   checked: boolean
                 ) => {
                   if (checked) {
-                    setIssuedBy(() => [...issuedBy, "SELF"]);
+                    setIssuedBy(() => [...issuedBy, "SELF_ISSUED"]);
                   } else {
                     setIssuedBy(() =>
-                      issuedBy.filter((value) => value !== "SELF")
+                      issuedBy.filter((value) => value !== "SELF_ISSUED")
                     );
                   }
                   //   const issuedBy = getValues("issuedBy");
                   //   if (checked) {
-                  //     issuedBy.push("SELF");
+                  //     issuedBy.push("SELF_ISSUED");
                   //   } else {
-                  //     delete issuedBy[issuedBy.indexOf("SELF")];
+                  //     delete issuedBy[issuedBy.indexOf("SELF_ISSUED")];
                   //   }
                   //   setValue("issuedBy", issuedBy);
                 }}
@@ -125,7 +125,7 @@ export const PaymentAndRefundSummary = () => {
         {/* <Controller
               name="issuedBy"
               control={control}
-              defaultValue={["SELF", "PPC"]}
+              defaultValue={["SELF_ISSUED", "PPC"]}
               render={({ field, fieldState: { invalid } }) => {
                 return (
                   
