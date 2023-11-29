@@ -188,7 +188,6 @@ export class PermitController {
     @Query('download') download: FileDownloadModes,
     @Res() res: Response,
   ): Promise<void> {
-    // TODO: Use IUserJWT / Exception handling
     const currentUser = request.user as IUserJWT;
 
     if (download === FileDownloadModes.PROXY) {
