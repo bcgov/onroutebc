@@ -198,8 +198,6 @@ export const List = memo(
     }, [isError]);
     // End snackbar code for error handling
 
-    console.log(data?.length)
-
     const table = useMaterialReactTable({
       ...defaultTableOptions,
       data: data ?? [],
