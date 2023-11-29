@@ -21,10 +21,7 @@ enum REPORT_MODE {
  * React component to render the reports page by an IDIR user.
  */
 export const IDIRReportsDashboard = memo(() => {
-
-  const [reportMode, setReportMode] = useState<REPORT_MODE>(
-    REPORT_MODE.DETAIL
-  );
+  const [reportMode, setReportMode] = useState<REPORT_MODE>(REPORT_MODE.DETAIL);
 
   return (
     <>
@@ -60,7 +57,14 @@ export const IDIRReportsDashboard = memo(() => {
         >
           <Stack sx={{ width: "528px" }} spacing={3}>
             <Paper
+              elevation={reportMode === REPORT_MODE.SUMMARY ? 5 : 0}
               sx={{
+                ":hover": {
+                  background:
+                    reportMode === REPORT_MODE.SUMMARY
+                      ? null
+                      : BC_COLOURS.bc_background_light_grey,
+                },
                 height: "75px",
                 background:
                   reportMode === REPORT_MODE.SUMMARY
@@ -83,7 +87,14 @@ export const IDIRReportsDashboard = memo(() => {
               />
             </Paper>
             <Paper
+              elevation={reportMode === REPORT_MODE.DETAIL ? 5 : 0}
               sx={{
+                ":hover": {
+                  background:
+                    reportMode === REPORT_MODE.DETAIL
+                      ? null
+                      : BC_COLOURS.bc_background_light_grey,
+                },
                 height: "75px",
                 background:
                   reportMode === REPORT_MODE.DETAIL

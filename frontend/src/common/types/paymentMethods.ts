@@ -9,6 +9,7 @@ export const PAYMENT_METHOD_TYPE_CODE = {
   ICEPAY: "ICEPAY",
   POS: "POS",
   WEB: "WEB",
+  NP: "NP",
 } as const;
 
 /**
@@ -28,6 +29,7 @@ export const PAYMENT_METHOD_TYPE_DISPLAY = {
   ICEPAY: "IcePay",
   POS: "PoS",
   WEB: "Web",
+  NP: "No Payment",
 } as const;
 
 /**
@@ -134,6 +136,9 @@ export const CONSOLIDATED_PAYMENT_METHODS: Record<
   "IcePay - Visa (Debit)": {
     paymentMethodTypeCode: PAYMENT_METHOD_TYPE_CODE.ICEPAY,
     paymentCardTypeCode: PAYMENT_CARD_TYPE_CODE.PV,
+  },
+  "No Payment": {
+    paymentMethodTypeCode: PAYMENT_METHOD_TYPE_CODE.NP,
   },
   "PoS - Amex": {
     paymentMethodTypeCode: PAYMENT_METHOD_TYPE_CODE.POS,
