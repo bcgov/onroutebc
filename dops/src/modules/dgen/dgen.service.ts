@@ -315,10 +315,11 @@ export class DgenService {
     Handlebars.registerHelper('convertUtcToPt', function (utcDate: string) {
       return convertUtcToPt(utcDate, 'MMM. D, YYYY, hh:mm A Z');
     });
-    /* eslint-enable */
 
     Handlebars.registerHelper('formatRefundAmount', function (amount: number) {
-      if (amount === 0) {
+      if (this.paymentMethod === 'No Payment') {
+        return '$0';
+      } else if (amount === 0) {
         return '';
       } else {
         return `-$${Math.abs(amount).toFixed(2)}`;
@@ -326,15 +327,17 @@ export class DgenService {
     });
 
     Handlebars.registerHelper('formatAmount', function (amount: number) {
-      if (amount === 0) {
+      if (this.paymentMethod === 'No Payment') {
+        return '$0';
+      } else if (amount === 0) {
         return '';
       } else if (amount > 0) {
-        return `$${amount.toFixed(2)}`;
+        return `$${Math.abs(amount).toFixed(2)}`;
       } else if (amount < 0) {
         return `-$${Math.abs(amount).toFixed(2)}`;
       }
     });
-
+    /* eslint-enable */
     interface SummaryPaymentsInterface {
       paymentMethod: string;
       payment?: number;
