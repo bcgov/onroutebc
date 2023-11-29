@@ -9,6 +9,7 @@ import {
   Res,
   DefaultValuePipe,
   ParseIntPipe,
+  BadRequestException,
 } from '@nestjs/common';
 import { PermitService } from './permit.service';
 import { ExceptionDto } from '../../common/exception/exception.dto';
@@ -180,6 +181,12 @@ export class PermitController {
       'If proxy is specified, the object contents will be available proxied through DMS.' +
       'If url is specified, expect an HTTP 201 cotaining the presigned URL as a JSON string in the response.',
   })
+  @ApiQuery({
+    name: 'companyId',
+    required: false,
+    example: '74',
+    description: 'Required when IDP is not IDIR .',
+  })
   @Roles(Role.READ_PERMIT)
   @Get('/:permitId/pdf')
   async getPDF(
@@ -187,9 +194,15 @@ export class PermitController {
     @Param('permitId') permitId: string,
     @Query('download') download: FileDownloadModes,
     @Res() res: Response,
+    @Query('companyId') companyId?: number,
   ): Promise<void> {
     // TODO: Use IUserJWT / Exception handling
     const currentUser = request.user as IUserJWT;
+    if (currentUser.identity_provider !== IDP.IDIR && !companyId) {
+      throw new BadRequestException(
+        'Company Id is manadatory for all IDP but IDIR',
+      );
+    }
 
     if (download === FileDownloadModes.PROXY) {
       await this.permitService.findPDFbyPermitId(
@@ -217,14 +230,26 @@ export class PermitController {
     description: 'The DOPS file Resource with the presigned resource',
     type: ReadFileDto,
   })
+  @ApiQuery({
+    name: 'companyId',
+    required: false,
+    example: '74',
+    description: 'Required when IDP is not IDIR .',
+  })
   @Roles(Role.READ_PERMIT)
   @Get('/:permitId/receipt')
   async getReceiptPDF(
     @Req() request: Request,
     @Param('permitId') permitId: string,
     @Res() res: Response,
+    @Query('companyId') companyId?: number,
   ): Promise<void> {
     const currentUser = request.user as IUserJWT;
+    if (currentUser.identity_provider !== IDP.IDIR && !companyId) {
+      throw new BadRequestException(
+        'Company Id is manadatory for all IDP but IDIR',
+      );
+    }
 
     await this.permitService.findReceiptPDF(currentUser, permitId, res);
     res.status(200);

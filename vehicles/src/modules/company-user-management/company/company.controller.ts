@@ -128,7 +128,7 @@ export class CompanyController {
     isArray: true,
   })
   @ApiQuery({ name: 'userGUID', required: false })
-  @Roles(Role.READ_ORG)
+  @Roles(Role.READ_SELF, Role.READ_ORG)
   @Get()
   async getCompanyMetadata(
     @Req() request: Request,
