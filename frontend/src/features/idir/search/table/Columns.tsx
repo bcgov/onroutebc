@@ -4,12 +4,11 @@ import { MRT_ColumnDef } from "material-react-table";
 import { Permit } from "../../../permits/types/permit";
 import { PERMIT_EXPIRED } from "../../../permits/types/PermitStatus";
 import { PermitChip } from "../../../permits/components/permit-list/PermitChip";
-import { applyWhenNotNullable } from "../../../../common/helpers/util";
-import { DATE_FORMATS, toLocal } from "../../../../common/helpers/formatDate";
 import {
   hasPermitExpired,
   viewPermitPdf,
 } from "../../../permits/helpers/permitPDFHelper";
+import { formatCellValuetoDatetime } from "../../../../common/constants/defaultTableOptions";
 
 /*
  *
@@ -90,12 +89,7 @@ export const PermitSearchResultColumnDef: MRT_ColumnDef<Permit>[] = [
     enableMultiSort: false,
     sortingFn: "datetime",
     Cell: (props: { cell: any }) => {
-      const originalDate = props.cell.getValue()
-      const formattedDate = applyWhenNotNullable(
-        (dt) => toLocal(dt, DATE_FORMATS.DATEONLY_ABBR_MONTH),
-        originalDate,
-        "NA",
-      );
+      const formattedDate = formatCellValuetoDatetime(props.cell.getValue())
       return (
         <div>
           {formattedDate}
@@ -110,12 +104,7 @@ export const PermitSearchResultColumnDef: MRT_ColumnDef<Permit>[] = [
     enableMultiSort: false,
     sortingFn: "datetime",
     Cell: (props: { cell: any }) => {
-      const originalDate = props.cell.getValue()
-      const formattedDate = applyWhenNotNullable(
-        (dt) => toLocal(dt, DATE_FORMATS.DATEONLY_ABBR_MONTH),
-        originalDate,
-        "NA",
-      );
+      const formattedDate = formatCellValuetoDatetime(props.cell.getValue())
       return (
         <div>
           {formattedDate}
@@ -132,11 +121,7 @@ export const PermitSearchResultColumnDef: MRT_ColumnDef<Permit>[] = [
     sortingFn: "datetime",
     accessorFn: (originalRow) => {
       const { permitIssueDateTime } = originalRow;
-      const formattedDate = applyWhenNotNullable(
-        (dt) => toLocal(dt, DATE_FORMATS.DATEONLY_ABBR_MONTH),
-        permitIssueDateTime,
-        "NA",
-      );
+      const formattedDate = formatCellValuetoDatetime(permitIssueDateTime)
       return formattedDate;
     },
   },

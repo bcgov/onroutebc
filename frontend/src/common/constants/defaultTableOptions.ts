@@ -1,4 +1,14 @@
 import { BC_COLOURS } from "../../themes/bcGovStyles";
+import { DATE_FORMATS, toLocal } from "../helpers/formatDate";
+import { applyWhenNotNullable } from "../helpers/util";
+
+export const formatCellValuetoDatetime = (rawDateTime: string | null | undefined) => {
+  return applyWhenNotNullable(
+    (dt) => toLocal(dt, DATE_FORMATS.DATEONLY_ABBR_MONTH),
+    rawDateTime,
+    "NA",
+  );
+}
 
 export const defaultTableStateOptions: any = {
 };
