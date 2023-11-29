@@ -91,3 +91,5 @@ EXPOSE 5001
 # Start the app
 CMD ["npm", "run", "start:prod"]
 
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s CMD curl -f http://localhost/:5001

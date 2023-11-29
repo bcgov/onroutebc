@@ -175,7 +175,7 @@ export class ApplicationController {
       'The Permit Application Resource. Bulk staus updates are only allowed for Cancellation. Application/Permit Status change to ISSUE is prohibited on this endpoint.',
     type: ResultDto,
   })
-  //TODO Assign role. Should have a different role like @Roles(Role.WRITE_PERMIT_STATUS) .
+  @Roles(Role.WRITE_PERMIT)
   @Post('status')
   async updateApplicationStatus(
     @Req() request: Request,
@@ -203,6 +203,7 @@ export class ApplicationController {
    * @returns The id of new voided/revoked permit a in response object {@link ResultDto}
    *
    */
+  @Roles(Role.WRITE_PERMIT)
   @Post('/issue')
   async issuePermit(
     @Req() request: Request,
