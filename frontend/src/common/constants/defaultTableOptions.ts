@@ -1,11 +1,10 @@
 import { BC_COLOURS } from "../../themes/bcGovStyles";
 
-
 export const defaultTableStateOptions: any = {
-
 };
 
 export const defaultTableInitialStateOptions: any = {
+  // property to enable global filter search box
   showGlobalFilter: true,
 };
 
@@ -20,17 +19,51 @@ export const defaultTableOptions: any = {
       header: "",
     },
   },
+  // global filter properties
   enableGlobalFilter: true,
   globalFilterFn: "contains",
   positionGlobalFilter: "left",
+  muiSearchTextFieldProps: {
+    placeholder: "Search",
+    sx: {
+      minWidth: "300px",
+      backgroundColor: "white",
+    },
+    variant: "outlined",
+    inputProps: {
+      sx: {
+        padding: "10px",
+      },
+    },
+  },
+
+  // action column properties
   positionActionsColumn: "last",
   enableColumnActions: false,
+
+  // row selection properties
   enableRowActions: true,
   enableRowSelection: true,
+
+  // sticky table header properties
+  //  docs recommend that a height is defined
   enableStickyHeader: true,
+  muiTableContainerProps: {
+    sx: {
+      outline: "1px solid #DBDCDC",
+      height: "calc(100vh - 475px)",
+    },
+  },
+
+  // pagination properties
   enablePagination: false,
   selectAllMode: "page",
   enableTopToolbar: true,
+  muiTableHeadRowProps: {
+    sx: {
+      backgroundColor: BC_COLOURS.bc_background_light_grey,
+    },
+  },
   enableBottomToolbar: true,
   enableSortingRemoval: false,
   muiBottomToolbarProps: {
@@ -45,39 +78,11 @@ export const defaultTableOptions: any = {
     shape: 'rounded',
     variant: 'outlined',
   },
-  muiTableContainerProps: {
-    sx: {
-      outline: "1px solid #DBDCDC",
-      height: "calc(100vh - 475px)",
-    },
-  },
-  muiTableHeadRowProps: {
-    sx: {
-      backgroundColor: BC_COLOURS.bc_background_light_grey,
-    },
-  },
   muiTablePaperProps: {
     sx: {
       border: "none",
       boxShadow: "none",
     },
   },
-  muiSearchTextFieldProps: {
-    placeholder: "Search",
-    sx: {
-      minWidth: "300px",
-      backgroundColor: "white",
-    },
-    variant: "outlined",
-    inputProps: {
-      sx: {
-        padding: "10px",
-      },
-    },
-  },
   muiTopToolbarProps: { sx: { zIndex: 0 } }, // resolve z-index conflict with sliding panel
-  //positionActionsColumn: "last",
-  //positionGlobalFilter: "left",
-  //selectAllMode: "page",
-
 };
