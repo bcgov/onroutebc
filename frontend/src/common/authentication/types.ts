@@ -15,7 +15,7 @@ export type CompanyMetadata = {
   legalName: string;
 };
 
-export type CompanyInformation = {
+export type ClientInformation = {
   mailingAddress: {
     addressLine1: string;
     addressLine2: string;
@@ -30,7 +30,7 @@ export type CompanyInformation = {
   extension: string;
 };
 
-export type MigratedCompany = CompanyInformation & CompanyMetadata;
+export type MigratedTPSClient = ClientInformation & CompanyMetadata;
 
 /**
  * User Context object type
@@ -38,7 +38,7 @@ export type MigratedCompany = CompanyInformation & CompanyMetadata;
 export interface BCeIDUserContextType {
   associatedCompanies: CompanyMetadata[];
   pendingCompanies: CompanyMetadata[];
-  migratedCompanies: MigratedCompany[];
+  migratedCompanies: MigratedTPSClient;
   user?: {
     userAuthGroup?: string;
     statusCode?: string;

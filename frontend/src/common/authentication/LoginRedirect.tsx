@@ -40,14 +40,14 @@ export const LoginRedirect = () => {
               navigate(routes.WELCOME);
             }
             // The user and company does not exist => Redirect them to Add new company page.
-            else if (associatedCompanies.length < 1 && migratedCompanies.length < 1) {
+            else if (associatedCompanies.length < 1 && !migratedCompanies.clientNumber) {
               navigate(routes.WELCOME);
-            } else if (migratedCompanies.length === 1) {
+            } else if (migratedCompanies.clientNumber) {
               // The downside of having associatedCompanies.length === 1 is 
               // that it hinges on an implicit relationship. It has no consequences today
               // but it could have in future. It's an unknown unknown.
 
-              
+
               // Check if COMPANY_USERS has a link to a set of users
               //      If yes, if the user is invited, then he goes to user info wizard (No confusion here)
               //      If no, 
