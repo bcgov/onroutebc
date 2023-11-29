@@ -39,9 +39,9 @@ export const PowerUnitColumnDefinition: MRT_ColumnDef<VehicleTypes>[] = [
     Cell: (props: { cell: any }) => {
       const formattedDate = formatCellValuetoDatetime(props.cell.getValue())
       return (
-        <div>
+        <span>
           {formattedDate}
-        </div>
+        </span>
       );
     },
   },
@@ -79,9 +79,9 @@ export const TrailerColumnDefinition: MRT_ColumnDef<VehicleTypes>[] = [
     Cell: (props: { cell: any }) => {
       const formattedDate = formatCellValuetoDatetime(props.cell.getValue())
       return (
-        <div>
+        <span>
           {formattedDate}
-        </div>
+        </span>
       );
     },
   },
