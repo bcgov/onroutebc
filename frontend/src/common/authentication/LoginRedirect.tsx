@@ -31,8 +31,12 @@ export const LoginRedirect = () => {
         const userContextData: BCeIDUserContextType | undefined =
           queryClient.getQueryData<BCeIDUserContextType>(["userContext"]);
         if (userContextData) {
-          const { associatedCompanies, pendingCompanies, migratedCompanies, user } =
-            userContextData;
+          const {
+            associatedCompanies,
+            pendingCompanies,
+            migratedTPSClient,
+            user,
+          } = userContextData;
           // If the user does not exist
           if (!user?.userGUID) {
             // The user is in pending companies => Redirect them to User Info Page.
@@ -40,20 +44,21 @@ export const LoginRedirect = () => {
               navigate(routes.WELCOME);
             }
             // The user and company does not exist => Redirect them to Add new company page.
-            else if (associatedCompanies.length < 1 && !migratedCompanies.clientNumber) {
+            else if (
+              associatedCompanies.length < 1 &&
+              !migratedTPSClient.clientNumber
+            ) {
               navigate(routes.WELCOME);
-            } else if (migratedCompanies.clientNumber) {
-              // The downside of having associatedCompanies.length === 1 is 
+            } else if (migratedTPSClient.clientNumber) {
+              // The downside of having associatedCompanies.length === 1 is
               // that it hinges on an implicit relationship. It has no consequences today
               // but it could have in future. It's an unknown unknown.
-
-
               // Check if COMPANY_USERS has a link to a set of users
               //      If yes, if the user is invited, then he goes to user info wizard (No confusion here)
-              //      If no, 
-                        // isMigratedClient => COMPANY EXISTS but no COMPANY_USER relationships or check ACCOUNT_SOURCE in COMPANY_TABLE? 
-                              // If yes, this is a migrated client and navigate to no challenge.
-                              // If no, the login is unauthorized.
+              //      If no,
+              // isMigratedClient => COMPANY EXISTS but no COMPANY_USER relationships or check ACCOUNT_SOURCE in COMPANY_TABLE?
+              // If yes, this is a migrated client and navigate to no challenge.
+              // If no, the login is unauthorized.
             } else {
               navigate(routes.UNAUTHORIZED);
             }

@@ -38,7 +38,7 @@ export type MigratedTPSClient = ClientInformation & CompanyMetadata;
 export interface BCeIDUserContextType {
   associatedCompanies: CompanyMetadata[];
   pendingCompanies: CompanyMetadata[];
-  migratedCompanies: MigratedTPSClient;
+  migratedTPSClient: MigratedTPSClient;
   user?: {
     userAuthGroup?: string;
     statusCode?: string;
