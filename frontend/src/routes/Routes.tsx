@@ -22,6 +22,7 @@ import { IDIRSearchResultsDashboard } from "../features/idir/search/pages/IDIRSe
 import { IDIRWelcome } from "../features/idir/IDIRWelcome";
 import { UserInfoWizard } from "../features/wizard/UserInfoWizard";
 import { VoidPermit } from "../features/permits/pages/Void/VoidPermit";
+import { IDIRReportsDashboard } from "../features/idir/search/pages/IDIRReportsDashboard";
 import { AmendPermit } from "../features/permits/pages/Amend/AmendPermit";
 import { Unauthorized } from "../common/pages/Unauthorized";
 import { UniversalUnauthorized } from "../common/pages/UniversalUnauthorized";
@@ -38,7 +39,7 @@ export const AppRoutes = () => {
       <Route path={routes.ERROR_ROUTES.UNEXPECTED} element={<UniversalUnexpected />} />
       <Route path={routes.ERROR_ROUTES.NOT_FOUND} element={<NotFound />} />
       <Route path="*" element={<NotFound />} />
-
+      
       {/* IDIR Routes */}
       <Route element={<ProtectedRoutes requiredRole={ROLES.READ_PERMIT} />}>
         <Route path={routes.IDIR_ROUTES.WELCOME} element={<IDIRWelcome />} />
@@ -46,6 +47,11 @@ export const AppRoutes = () => {
           path={routes.IDIR_ROUTES.SEARCH_RESULTS}
           element={<IDIRSearchResultsDashboard />}
         />
+        <Route
+          path={routes.IDIR_ROUTES.REPORTS}
+          element={<IDIRReportsDashboard />}
+        />
+
       </Route>
 
       {/* BCeID Routes */}

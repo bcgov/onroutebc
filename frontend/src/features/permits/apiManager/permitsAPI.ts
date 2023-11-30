@@ -172,7 +172,7 @@ export const deleteApplications = async (applicationIds: Array<string>) => {
   );
 };
 
-const getFileNameFromHeaders = (headers: Headers) => {
+export const getFileNameFromHeaders = (headers: Headers) => {
   const contentDisposition = headers.get("content-disposition");
   if (!contentDisposition) return undefined;
   const matchRegex = /filename=(.+)/;

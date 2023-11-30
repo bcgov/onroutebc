@@ -99,6 +99,7 @@ const IDIR_ROUTE_BASE = `/${IDPS.IDIR}`;
 export const IDIR_ROUTES = {
   WELCOME: `${IDIR_ROUTE_BASE}/welcome`,
   SEARCH_RESULTS: `${IDIR_ROUTE_BASE}/search-results`,
+  REPORTS: `${IDIR_ROUTE_BASE}/reports`,
 };
 
 // Payment
