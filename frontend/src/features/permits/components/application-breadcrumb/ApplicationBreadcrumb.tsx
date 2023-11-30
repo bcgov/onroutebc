@@ -1,4 +1,3 @@
-import { Box } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
 import { Breadcrumb } from "../../../../common/components/breadcrumb/Breadcrumb";
@@ -58,10 +57,6 @@ export const ApplicationBreadcrumb = ({
   };
 
   return (
-    <Box
-      className="application-breadcrumb layout-box"
-    >
-      <Breadcrumb links={getLinks()} />
-    </Box>
+    <Breadcrumb links={getLinks()} />
   );
 };

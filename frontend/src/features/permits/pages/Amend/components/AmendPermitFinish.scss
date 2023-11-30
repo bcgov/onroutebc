@@ -1,38 +1,15 @@
-@import "../../../../../themes/orbcStyles.scss";
+@use "../../../../../common/components/dashboard/Dashboard";
+@import "../../../../../themes/orbcStyles";
+
+@include Dashboard.layout-box-style("amend-permit-finish .breadcrumb");
+@include Dashboard.layout-box-style("amend-permit-finish .refund-page");
 
 .amend-permit-finish {
   background-color: $bc-white;
   padding-bottom: 3rem;
 
-  .breadcrumb {
-    padding: 2em 8.551vw;
-  }
-
   .refund-page {
-    padding: 0 8.551vw;
-  }
-}
-
-@media (width < 768px) {
-  .amend-permit-finish {
-    .breadcrumb {
-      padding: 2em 5.5rem;
-    }
-
-    .refund-page {
-      padding: 0 5.5rem;
-    }
-  }
-}
-
-@media (width < 420px) {
-  .amend-permit-finish {
-    .breadcrumb {
-      padding: 2em 1rem;
-    }
-
-    .refund-page {
-      padding: 0 1rem;
-    }
+    padding-top: 0;
+    padding-bottom: 0;
   }
 }

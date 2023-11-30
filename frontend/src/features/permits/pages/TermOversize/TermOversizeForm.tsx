@@ -2,6 +2,7 @@ import { FieldValues, FormProvider } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { useContext, useState } from "react";
 
+import "./TermOversizeForm.scss";
 import { Application } from "../../types/application.d";
 import { ApplicationContext } from "../../context/ApplicationContext";
 import { ApplicationBreadcrumb } from "../../components/application-breadcrumb/ApplicationBreadcrumb";
@@ -172,7 +173,7 @@ export const TermOversizeForm = () => {
   };
 
   return (
-    <>
+    <div className="application-form">
       <ApplicationBreadcrumb
         applicationStep={APPLICATION_STEPS.DETAILS}
       />
@@ -206,6 +207,6 @@ export const TermOversizeForm = () => {
         onContinueEditing={handleStayOnApplication}
         showDialog={showLeaveApplicationDialog}
       />
-    </>
+    </div>
   );
 };

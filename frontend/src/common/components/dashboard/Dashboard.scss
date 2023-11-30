@@ -132,3 +132,24 @@
     padding: 0 1rem;
   }
 }
+
+@mixin layout-box-style($layout-box) {
+  #{$layout-box} {
+    padding-left: 8.551vw;
+    padding-right: 8.551vw;
+  }
+
+  @media screen and (max-width: 768px) {
+    #{$layout-box} {
+      padding-left: 5.5rem;
+      padding-right: 5.5rem;
+    }
+  }
+
+  @media (width < 420px) {
+    #{$layout-box} {
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+  }
+}
