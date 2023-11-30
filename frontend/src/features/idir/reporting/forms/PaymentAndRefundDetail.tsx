@@ -7,8 +7,8 @@ import { SnackBarContext } from "../../../../App";
 import { ONE_HOUR } from "../../../../common/constants/constants";
 import {
   ALL_CONSOLIDATED_PAYMENT_METHODS,
-  CONSOLIDATED_PAYMENT_METHODS,
-  PaymentMethodAndCardTypeCodes,
+  AllPaymentMethodAndCardTypeCodes,
+  CONSOLIDATED_PAYMENT_METHODS
 } from "../../../../common/types/paymentMethods";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { openBlobInNewTab } from "../../../permits/helpers/permitPDFHelper";
@@ -120,19 +120,19 @@ export const PaymentAndRefundDetail = () => {
    * @returns The transformed payment codes aligned with API specification.
    */
   const transformSelectedPaymentMethods =
-    (): PaymentMethodAndCardTypeCodes[] => {
-      const paymentCodes: PaymentMethodAndCardTypeCodes[] = [];
+    (): AllPaymentMethodAndCardTypeCodes[] => {
+      const paymentCodes: AllPaymentMethodAndCardTypeCodes[] = [];
       if (isAllPaymentMethodsSelected) {
-        const { paymentMethodTypeCode, paymentCardTypeCode } =
+        const { paymentMethodTypeCode } =
           ALL_CONSOLIDATED_PAYMENT_METHODS["All Payment Methods"];
-        paymentCodes.push({ paymentMethodTypeCode, paymentCardTypeCode });
+        paymentCodes.push({ paymentMethodTypeCode });
       }
       return paymentCodes.concat(
         selectedPaymentMethods
           ? selectedPaymentMethods.map((key: string) => {
               const { paymentMethodTypeCode, paymentCardTypeCode } =
                 ALL_CONSOLIDATED_PAYMENT_METHODS[key];
-              const paymentCodes: PaymentMethodAndCardTypeCodes = {
+              const paymentCodes: AllPaymentMethodAndCardTypeCodes = {
                 paymentMethodTypeCode,
               };
               if (paymentCardTypeCode) {

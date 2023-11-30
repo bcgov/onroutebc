@@ -89,13 +89,18 @@ export type PaymentMethodAndCardTypeCodes = {
    * The payment method type code.
    * (not to be confused with PaymentMethodTypeDisplay)
    */
-  paymentMethodTypeCode: PaymentMethodTypeCode | "ALL";
+  paymentMethodTypeCode: PaymentMethodTypeCode;
   /**
    * The two letter card type code.
    * (not to be confused with PaymentCardTypeDisplay)
    */
   paymentCardTypeCode?: PaymentCardTypeCode;
 };
+
+export type AllPaymentMethodAndCardTypeCodes = PaymentMethodAndCardTypeCodes | {
+  paymentMethodTypeCode: "ALL",
+  paymentCardTypeCode?: undefined
+}
 
 /**
  * The following record contains key value pairs for Payment Methods
@@ -192,10 +197,11 @@ export const CONSOLIDATED_PAYMENT_METHODS: Record<
  */
 export const ALL_CONSOLIDATED_PAYMENT_METHODS: Record<
   string,
-  PaymentMethodAndCardTypeCodes
+  | AllPaymentMethodAndCardTypeCodes
 > = {
   "All Payment Methods": {
     paymentMethodTypeCode: "ALL",
+    paymentCardTypeCode: undefined
   },
   ...CONSOLIDATED_PAYMENT_METHODS,
 };

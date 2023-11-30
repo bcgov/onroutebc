@@ -1,5 +1,5 @@
 import { Dayjs } from "dayjs";
-import { PaymentMethodAndCardTypeCodes } from "../../../../common/types/paymentMethods";
+import { AllPaymentMethodAndCardTypeCodes } from "../../../../common/types/paymentMethods";
 
 /**
  * The report issued by enum values.
@@ -30,7 +30,7 @@ export type PaymentAndRefundSummaryRequest = {
 export interface PaymentAndRefundDetailRequest
   extends PaymentAndRefundSummaryRequest {
   permitType: string[];
-  paymentCodes: PaymentMethodAndCardTypeCodes[];
+  paymentCodes: AllPaymentMethodAndCardTypeCodes[];
   users?: string[];
 }
 
