@@ -42,6 +42,7 @@ import { SnackBarContext } from "../../../../App";
 import { IssuedByCheckBox } from "./subcomponents/IssuedByCheckBox";
 import { PermitTypeSelect } from "./subcomponents/PermitTypeSelect";
 import { PaymentMethodSelect } from "./subcomponents/PaymentMethodSelect";
+import { UserSelect } from "./subcomponents/UserSelect";
 
 /**
  * Component for Payment and Refund Detail form
@@ -227,27 +228,6 @@ export const PaymentAndRefundDetail = () => {
     }
   };
 
-  /**
-   * Updates the selected payment methods.
-   * @param event The select event containing the selected values.
-   */
-  const onSelectPaymentMethod = (event: SelectChangeEvent<string[]>) => {
-    const {
-      target: { value },
-    } = event;
-    if (value[value.length - 1] === "All Payment Methods") {
-      setValue(
-        "paymentMethods",
-        selectedPaymentMethods?.length ===
-          Object.keys(CONSOLIDATED_PAYMENT_METHODS).length
-          ? []
-          : Object.keys(CONSOLIDATED_PAYMENT_METHODS),
-      );
-      return;
-    }
-    setValue("paymentMethods", value as string[]);
-  };
-
   return (
     <FormProvider {...formMethods}>
       <Stack style={{ width: "900px" }} spacing={2}>
@@ -279,58 +259,10 @@ export const PaymentAndRefundDetail = () => {
 
             <Stack>
               <PaymentMethodSelect />
-              {/* <FormControl
-                sx={{ width: "274px" }}
-                className="custom-form-control"
-                margin="normal"
-                disabled={issuedBy.length === 0}
-              >
-                <FormLabel
-                  className="custom-form-control__label"
-                  id="payment-method-select-label"
-                  sx={{ fontWeight: "bold", marginBottom: "8px" }}
-                >
-                  Payment Method
-                </FormLabel>
-                <Select
-                  labelId="payment-method-select-label"
-                  id="payment-method-select"
-                  multiple
-                  onChange={onSelectPaymentMethod}
-                  renderValue={(selected) => {
-                    if (isAllPaymentMethodsSelected)
-                      return "All Payment Methods";
-                    return selected.join(", ");
-                  }}
-                  input={<OutlinedInput />}
-                  value={selectedPaymentMethods}
-                  MenuProps={{
-                    autoFocus: false,
-                  }}
-                >
-                  <MenuItem
-                    key={"All Payment Methods"}
-                    value={"All Payment Methods"}
-                  >
-                    <Checkbox checked={isAllPaymentMethodsSelected} />
-                    <ListItemText primary={"All Payment Methods"} />
-                  </MenuItem>
-                  {Object.keys(CONSOLIDATED_PAYMENT_METHODS).map((key) => (
-                    <MenuItem key={key} value={key}>
-                      <Checkbox
-                        checked={
-                          selectedPaymentMethods &&
-                          selectedPaymentMethods.indexOf(key) > -1
-                        }
-                      />
-                      <ListItemText primary={key} />
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl> */}
             </Stack>
             <Stack direction="row">
-              <FormControl
+              <UserSelect permitIssuers={permitIssuers} key="user-select-subcomponent"/>
+              {/* <FormControl
                 sx={{ width: "274px" }}
                 className="custom-form-control"
                 margin="normal"
@@ -380,7 +312,7 @@ export const PaymentAndRefundDetail = () => {
                       ))
                     : []}
                 </Select>
-              </FormControl>
+              </FormControl> */}
             </Stack>
             <Stack direction="row" spacing={3}>
               <>
