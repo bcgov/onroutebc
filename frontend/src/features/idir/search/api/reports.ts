@@ -1,9 +1,11 @@
+import { useQuery } from "@tanstack/react-query";
 import { VEHICLES_URL } from "../../../../common/apiManager/endpoints/endpoints";
 import {
   httpGETRequest,
   httpPOSTRequestStream,
 } from "../../../../common/apiManager/httpRequestHandler";
 import { getFileNameFromHeaders } from "../../../permits/apiManager/permitsAPI";
+import { ONE_HOUR } from "../../../../common/constants/constants";
 
 /**
  * The request object type for payment and refund summary
@@ -120,3 +122,22 @@ export const getPermitTypes = async (): Promise<Record<string, string>> => {
   const url = `${VEHICLES_URL}/permits/types/list`;
   return httpGETRequest(url.toString()).then((response) => response.data);
 };
+
+/**
+ * 
+ * @returns 
+ */
+export const usePermitTypesQuery = () => {
+  return useQuery({
+    queryKey: ["permitTypes"],
+    queryFn: () => getPermitTypes(),
+    // select: (data) => {
+    //   return {
+    //     "All Permit Types": "ALL",
+    //     ...data,
+    //   };
+    // },
+    keepPreviousData: true,
+    staleTime: ONE_HOUR,
+  });
+}

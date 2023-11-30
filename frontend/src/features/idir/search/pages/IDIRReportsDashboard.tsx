@@ -11,6 +11,7 @@ import { Banner } from "../../../../common/components/dashboard/Banner";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { PaymentAndRefundDetail } from "../../reporting/forms/PaymentAndRefundDetail";
 import { PaymentAndRefundSummary } from "../../reporting/forms/PaymentAndRefundSummary";
+import './dashboard.scss';
 
 enum REPORT_MODE {
   SUMMARY,
@@ -51,7 +52,7 @@ export const IDIRReportsDashboard = memo(() => {
               flexItem
               orientation="vertical"
               color={BC_COLOURS.bc_border_grey}
-              sx={{ height: "1121px" }}
+              sx={{ height: "961px" }}
             />
           }
         >

@@ -27,7 +27,7 @@ export const getPermitIssuers = async (): Promise<Array<ReadUserDto>> => {
  */
 export const usePermitIssuersQuery = () => {
   return useQuery({
-    queryKey: ["idirUsers"],
+    queryKey: ["permitIssuers"],
     queryFn: getPermitIssuers,
     keepPreviousData: true,
     staleTime: ONE_HOUR,
