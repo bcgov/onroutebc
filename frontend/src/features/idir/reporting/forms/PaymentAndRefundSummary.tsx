@@ -12,38 +12,36 @@ import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs, { Dayjs } from "dayjs";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { FormProvider, useForm } from "react-hook-form";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { openBlobInNewTab } from "../../../permits/helpers/permitPDFHelper";
+import { getPaymentAndRefundSummary } from "../api/reports";
 import {
-  getPaymentAndRefundSummary,
-} from "../api/reports";
-import { PaymentAndRefundSummaryRequest, ReportIssuedByType } from "../types/types";
-
-const sample = {
-  issuedBy: ["SELF_ISSUED"],
-  fromDateTime: "2023-10-11T23:26:51.170Z",
-  toDateTime: "2023-10-27T23:26:51.170Z",
-};
+  PaymentAndRefundSummaryFormData,
+  PaymentAndRefundSummaryRequest,
+  REPORT_ISSUED_BY,
+  ReportIssuedByType,
+} from "../types/types";
 
 export const PaymentAndRefundSummary = () => {
-  const formMethods = useForm<PaymentAndRefundSummaryRequest>({
+  const formMethods = useForm<PaymentAndRefundSummaryFormData>({
     defaultValues: {
       issuedBy: ["SELF_ISSUED", "PPC"],
-      fromDateTime: "2023-10-25T21:00Z",
-      toDateTime: "2023-10-26T20:59Z",
+      fromDateTime: dayjs()
+        .subtract(1, "day")
+        .set("h", 21)
+        .set("m", 0)
+        .set("s", 0)
+        .set("ms", 0),
+      toDateTime: dayjs().set("h", 20).set("m", 59).set("s", 59).set("ms", 999),
     },
     reValidateMode: "onBlur",
   });
 
-  const [requestObject, setRequestObject] =
-    useState<PaymentAndRefundSummaryRequest>({
-      issuedBy: ["SELF_ISSUED", "PPC"],
-      fromDateTime: "2023-10-25T21:00Z",
-      toDateTime: "2023-10-26T20:59Z",
-    });
-
-  const [issuedBy, setIssuedBy] = useState<ReportIssuedByType[]>(["SELF_ISSUED", "PPC"]);
+  const [issuedBy, setIssuedBy] = useState<ReportIssuedByType[]>([
+    REPORT_ISSUED_BY.SELF_ISSUED,
+    REPORT_ISSUED_BY.PPC,
+  ]);
   const [fromDateTime, setFromDateTime] = useState<Dayjs>(
     dayjs()
       .subtract(1, "day")
@@ -55,7 +53,7 @@ export const PaymentAndRefundSummary = () => {
   const [toDateTime, setToDateTime] = useState<Dayjs>(
     dayjs().set("h", 20).set("m", 59).set("s", 59).set("ms", 999),
   );
-  const { register, setValue, getValues, control } = formMethods;
+  const { setValue, getValues, control } = formMethods;
 
   /**
    * Opens the report in a new tab.
@@ -79,52 +77,51 @@ export const PaymentAndRefundSummary = () => {
     }
   };
 
-  console.log("issuedBy::", issuedBy);
-  //   console.log("getValues()::", getValues());
   return (
-    <Stack style={{ width: "900px" }} spacing={2}>
-      <h2>Payment and Refund Summary</h2>
-      <Divider
-        flexItem
-        orientation="horizontal"
-        color={BC_COLOURS.bc_border_grey}
-      />
+    <FormProvider {...formMethods}>
+      <Stack style={{ width: "900px" }} spacing={2}>
+        <h2>Payment and Refund Summary</h2>
+        <Divider
+          flexItem
+          orientation="horizontal"
+          color={BC_COLOURS.bc_border_grey}
+        />
 
-      <span>
-        <strong>Issued By</strong>
-      </span>
-      <Stack direction="row" spacing={5}>
-        <FormGroup>
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={issuedBy.includes("SELF_ISSUED")}
-                sx={{ marginLeft: "0px", paddingLeft: "0px" }}
-                onChange={(
-                  _event: React.ChangeEvent<HTMLInputElement>,
-                  checked: boolean,
-                ) => {
-                  if (checked) {
-                    setIssuedBy(() => [...issuedBy, "SELF_ISSUED"]);
-                  } else {
-                    setIssuedBy(() =>
-                      issuedBy.filter((value) => value !== "SELF_ISSUED"),
-                    );
-                  }
-                  //   const issuedBy = getValues("issuedBy");
-                  //   if (checked) {
-                  //     issuedBy.push("SELF_ISSUED");
-                  //   } else {
-                  //     delete issuedBy[issuedBy.indexOf("SELF_ISSUED")];
-                  //   }
-                  //   setValue("issuedBy", issuedBy);
-                }}
-              />
-            }
-            label="Self Issued"
-          />
-        </FormGroup>
-        {/* <Controller
+        <span>
+          <strong>Issued By</strong>
+        </span>
+        <Stack direction="row" spacing={5}>
+          <FormGroup>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={issuedBy.includes("SELF_ISSUED")}
+                  sx={{ marginLeft: "0px", paddingLeft: "0px" }}
+                  onChange={(
+                    _event: React.ChangeEvent<HTMLInputElement>,
+                    checked: boolean,
+                  ) => {
+                    if (checked) {
+                      setIssuedBy(() => [...issuedBy, "SELF_ISSUED"]);
+                    } else {
+                      setIssuedBy(() =>
+                        issuedBy.filter((value) => value !== "SELF_ISSUED"),
+                      );
+                    }
+                    //   const issuedBy = getValues("issuedBy");
+                    //   if (checked) {
+                    //     issuedBy.push("SELF_ISSUED");
+                    //   } else {
+                    //     delete issuedBy[issuedBy.indexOf("SELF_ISSUED")];
+                    //   }
+                    //   setValue("issuedBy", issuedBy);
+                  }}
+                />
+              }
+              label="Self Issued"
+            />
+          </FormGroup>
+          {/* <Controller
               name="issuedBy"
               control={control}
               defaultValue={["SELF_ISSUED", "PPC"]}
@@ -135,109 +132,109 @@ export const PaymentAndRefundSummary = () => {
               }}
             /> */}
 
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={issuedBy.includes("PPC")}
-              sx={{ marginLeft: "0px", paddingLeft: "0px" }}
-              name="issuedBy_PPC"
-              onChange={(
-                _event: React.ChangeEvent<HTMLInputElement>,
-                checked: boolean,
-              ) => {
-                if (checked) {
-                  setIssuedBy(() => [...issuedBy, "PPC"]);
-                } else {
-                  setIssuedBy(() =>
-                    issuedBy.filter((value) => value !== "PPC"),
-                  );
-                }
-              }}
-            />
-          }
-          label="PPC"
-        />
-      </Stack>
-      <Stack direction="row" spacing={3}>
-        <>
-          <FormControl
-            className="custom-form-control"
-            margin="normal"
-            sx={{ width: "100%" }}
-            disabled={issuedBy.length === 0}
-          >
-            <FormLabel
-              className="custom-form-control__label"
-              id={`label`}
-              sx={{ fontWeight: "bold", marginBottom: "8px" }}
-            >
-              From
-            </FormLabel>
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              {/* <DesktopDateTimePicker /> */}
-              {/* <DateTimePicker disableFuture openTo="hours"/> */}
-              <DateTimePicker
-                defaultValue={dayjs()
-                  .subtract(1, "day")
-                  .set("h", 21)
-                  .set("m", 0)
-                  .set("s", 0)
-                  .set("ms", 0)}
-                //   label={<strong>From</strong>}
-                onChange={(value: Dayjs | null) => {
-                  setFromDateTime(() => value as Dayjs);
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={issuedBy.includes("PPC")}
+                sx={{ marginLeft: "0px", paddingLeft: "0px" }}
+                name="issuedBy_PPC"
+                onChange={(
+                  _event: React.ChangeEvent<HTMLInputElement>,
+                  checked: boolean,
+                ) => {
+                  if (checked) {
+                    setIssuedBy(() => [...issuedBy, "PPC"]);
+                  } else {
+                    setIssuedBy(() =>
+                      issuedBy.filter((value) => value !== "PPC"),
+                    );
+                  }
                 }}
-                disabled={issuedBy.length === 0}
-                views={["year", "month", "day", "hours", "minutes"]}
-                // slotProps={{
-                //   textField: {
-                //     helperText: "Select a from date time",
-                //   },
-                // }}
               />
-            </LocalizationProvider>
-          </FormControl>
-        </>
-        <>
-          <FormControl
-            className="custom-form-control"
-            margin="normal"
-            sx={{ width: "100%" }}
-            disabled={issuedBy.length === 0}
-          >
-            <FormLabel
-              className="custom-form-control__label"
-              id={`label`}
-              sx={{ fontWeight: "bold", marginBottom: "8px" }}
+            }
+            label="PPC"
+          />
+        </Stack>
+        <Stack direction="row" spacing={3}>
+          <>
+            <FormControl
+              className="custom-form-control"
+              margin="normal"
+              sx={{ width: "100%" }}
+              disabled={issuedBy.length === 0}
             >
-              To
-            </FormLabel>
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              {/* <DesktopDateTimePicker /> */}
-              {/* <DateTimePicker disableFuture openTo="hours"/> */}
-              <DateTimePicker
-                disabled={issuedBy.length === 0}
-                onChange={(value: Dayjs | null) => {
-                  setToDateTime(() => value as Dayjs);
-                }}
-                defaultValue={dayjs()
-                  .set("h", 20)
-                  .set("m", 59)
-                  .set("s", 59)
-                  .set("ms", 999)}
-                // defaultValue={new Date(fromDateTime)}
-                //   label={<strong>To</strong>}
-                views={["year", "month", "day", "hours", "minutes"]}
-                // slotProps={{
-                //   textField: {
-                //     helperText: "Select a from date time",
-                //   },
-                // }}
-              />
-            </LocalizationProvider>
-          </FormControl>
-        </>
-        {/* <FormControlLabel
+              <FormLabel
+                className="custom-form-control__label"
+                id={`label`}
+                sx={{ fontWeight: "bold", marginBottom: "8px" }}
+              >
+                From
+              </FormLabel>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                {/* <DesktopDateTimePicker /> */}
+                {/* <DateTimePicker disableFuture openTo="hours"/> */}
+                <DateTimePicker
+                  defaultValue={dayjs()
+                    .subtract(1, "day")
+                    .set("h", 21)
+                    .set("m", 0)
+                    .set("s", 0)
+                    .set("ms", 0)}
+                  //   label={<strong>From</strong>}
+                  onChange={(value: Dayjs | null) => {
+                    setFromDateTime(() => value as Dayjs);
+                  }}
+                  disabled={issuedBy.length === 0}
+                  views={["year", "month", "day", "hours", "minutes"]}
+                  // slotProps={{
+                  //   textField: {
+                  //     helperText: "Select a from date time",
+                  //   },
+                  // }}
+                />
+              </LocalizationProvider>
+            </FormControl>
+          </>
+          <>
+            <FormControl
+              className="custom-form-control"
+              margin="normal"
+              sx={{ width: "100%" }}
+              disabled={issuedBy.length === 0}
+            >
+              <FormLabel
+                className="custom-form-control__label"
+                id={`label`}
+                sx={{ fontWeight: "bold", marginBottom: "8px" }}
+              >
+                To
+              </FormLabel>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                {/* <DesktopDateTimePicker /> */}
+                {/* <DateTimePicker disableFuture openTo="hours"/> */}
+                <DateTimePicker
+                  disabled={issuedBy.length === 0}
+                  onChange={(value: Dayjs | null) => {
+                    setToDateTime(() => value as Dayjs);
+                  }}
+                  defaultValue={dayjs()
+                    .set("h", 20)
+                    .set("m", 59)
+                    .set("s", 59)
+                    .set("ms", 999)}
+                  // defaultValue={new Date(fromDateTime)}
+                  //   label={<strong>To</strong>}
+                  views={["year", "month", "day", "hours", "minutes"]}
+                  // slotProps={{
+                  //   textField: {
+                  //     helperText: "Select a from date time",
+                  //   },
+                  // }}
+                />
+              </LocalizationProvider>
+            </FormControl>
+          </>
+          {/* <FormControlLabel
             disabled={issuedBy.length === 0}
             control={
               
@@ -245,7 +242,7 @@ export const PaymentAndRefundSummary = () => {
             label={<strong>From</strong>}
             labelPlacement="top"
           /> */}
-        {/* <FormControlLabel
+          {/* <FormControlLabel
             disabled={issuedBy.length === 0}
             control={
               
@@ -253,20 +250,21 @@ export const PaymentAndRefundSummary = () => {
             label={<strong>To</strong>}
             labelPlacement="top"
           /> */}
+        </Stack>
+        <br />
+        <Stack direction="row">
+          <Button
+            disabled={issuedBy.length === 0}
+            key="view-report-button"
+            aria-label="View Report"
+            variant="contained"
+            color="primary"
+            onClick={onClickViewReport}
+          >
+            View Report
+          </Button>
+        </Stack>
       </Stack>
-      <br />
-      <Stack direction="row">
-        <Button
-          disabled={issuedBy.length === 0}
-          key="view-report-button"
-          aria-label="View Report"
-          variant="contained"
-          color="primary"
-          onClick={onClickViewReport}
-        >
-          View Report
-        </Button>
-      </Stack>
-    </Stack>
+    </FormProvider>
   );
 };

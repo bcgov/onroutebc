@@ -2,6 +2,7 @@ import { Checkbox, FormControlLabel } from "@mui/material";
 import { useFormContext } from "react-hook-form";
 import {
     PaymentAndRefundDetailFormData,
+    PaymentAndRefundSummaryFormData,
     ReportIssuedByType
 } from "../../types/types";
 
@@ -20,7 +21,7 @@ export const IssuedByCheckBox = ({
   issuedByOption,
   label,
 }: IssuedByCheckBoxProps) => {
-  const { setValue, watch } = useFormContext<PaymentAndRefundDetailFormData>();
+  const { setValue, watch } = useFormContext<PaymentAndRefundSummaryFormData>();
   const issuedBy = watch("issuedBy");
   return (
     <>

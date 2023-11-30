@@ -43,13 +43,20 @@ export type ReadUserDtoForReport = {
 };
 
 /**
+ * The data type for the summary form.
+ */
+export type PaymentAndRefundSummaryFormData = {
+  fromDateTime: Dayjs;
+  toDateTime: Dayjs;
+  issuedBy: ReportIssuedByType[];
+};
+
+/**
  * The data type for the detail form.
  */
-export type PaymentAndRefundDetailFormData = {
-    permitType: string[];
-    paymentMethods?: string[];
-    users?: string[];
-    fromDateTime: Dayjs;
-    toDateTime: Dayjs;
-    issuedBy: ReportIssuedByType[];
-  };
+export interface PaymentAndRefundDetailFormData
+  extends PaymentAndRefundSummaryFormData {
+  permitType: string[];
+  paymentMethods?: string[];
+  users?: string[];
+}

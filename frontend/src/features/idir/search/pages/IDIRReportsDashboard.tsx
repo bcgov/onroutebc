@@ -64,7 +64,7 @@ const ReportOption = ({
  */
 export const IDIRReportsDashboard = memo(() => {
   const [reportMode, setReportMode] = useState<REPORT_TYPES>(
-    REPORT_TYPES.DETAIL,
+    REPORT_TYPES.SUMMARY,
   );
 
   return (
