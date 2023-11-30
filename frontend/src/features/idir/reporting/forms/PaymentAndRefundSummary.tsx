@@ -16,11 +16,14 @@ import {
 } from "../types/types";
 import { IssuedByCheckBox } from "./subcomponents/IssuedByCheckBox";
 import { ReportDateTimePickers } from "./subcomponents/ReportDateTimePickers";
+import { SnackBarContext } from "../../../../App";
+import { useContext } from "react";
 
 /**
  * Component for Payment and Refund Summary form
  */
 export const PaymentAndRefundSummary = () => {
+  const { setSnackBar } = useContext(SnackBarContext);
   const formMethods = useForm<PaymentAndRefundSummaryFormData>({
     defaultValues: {
       issuedBy: ["SELF_ISSUED", "PPC"],
@@ -60,6 +63,12 @@ export const PaymentAndRefundSummary = () => {
       openBlobInNewTab(blobObjWithoutType);
     } catch (err) {
       console.error(err);
+      setSnackBar({
+        message: "An unexpected error occurred.",
+        showSnackbar: true,
+        setShowSnackbar: () => true,
+        alertType: "error",
+      });
     }
   };
 
