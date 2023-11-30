@@ -59,19 +59,15 @@ export const PaymentAndRefundDetail = () => {
 
   const [selectedPermitTypes, setSelectedPermitTypes] = useState<string[]>([]);
 
-  const isAllPermitTypesSelected =
-    permitTypes &&
-    Object.keys(permitTypes).length === selectedPermitTypes.length;
+  // console.log("selectedPermitTypes::", selectedPermitTypes);
+  // console.log("isAllPermitTypesSelected::", isAllPermitTypesSelected);
 
-  console.log("selectedPermitTypes::", selectedPermitTypes);
-  console.log("isAllPermitTypesSelected::", isAllPermitTypesSelected);
-
-  useEffect(() => {
-    console.log("isPermitTypeQueryLoading::", isPermitTypeQueryLoading);
-    if (permitTypes) {
-      setSelectedPermitTypes(() => Object.keys(permitTypes) as string[]);
-    }
-  }, [isPermitTypeQueryLoading]);
+  // useEffect(() => {
+  //   console.log("isPermitTypeQueryLoading::", isPermitTypeQueryLoading);
+  //   if (permitTypes) {
+  //     setSelectedPermitTypes(() => Object.keys(permitTypes) as string[]);
+  //   }
+  // }, [isPermitTypeQueryLoading]);
 
   // console.log("selectedPermitTypes after useEffect::", selectedPermitTypes);
   // console.log("permitTypes after useEffect::", permitTypes);
@@ -82,14 +78,12 @@ export const PaymentAndRefundDetail = () => {
   const { data: permitIssuers, isLoading: ispermitIssuersQueryLoading } =
     permitIssuersQuery;
   const [selectedIssuers, setSelectedIssuers] = useState<string[]>([]);
-  const isAllUsersSelected =
-    permitIssuers && selectedIssuers.length === permitIssuers.length;
 
-  useEffect(() => {
-    if (permitIssuers) {
-      setSelectedPermitTypes(() => Object.keys(permitIssuers) as string[]);
-    }
-  }, [ispermitIssuersQueryLoading]);
+  // useEffect(() => {
+  //   if (permitIssuers) {
+  //     setSelectedPermitTypes(() => Object.keys(permitIssuers) as string[]);
+  //   }
+  // }, [ispermitIssuersQueryLoading]);
 
   // const [selectedPaymentCodes, setSelectedPaymentCodes] = useState<string[]>([
   //   "All Payment Methods",
@@ -118,14 +112,37 @@ export const PaymentAndRefundDetail = () => {
   const fromDateTimeForm = watch("fromDateTime");
   const toDateTimeForm = watch("toDateTime");
   const paymentMethodTypesForm = watch("paymentMethodTypes");
-  
+  const permitTypeForm = watch("permitType");
+  const usersForm = watch("users");
+
   const isAllPaymentMethodsSelected =
     Object.keys(CONSOLIDATED_PAYMENT_METHODS).length ===
     paymentMethodTypesForm?.length;
+
+  const isAllPermitTypesSelected =
+    permitTypes && Object.keys(permitTypes).length === permitTypeForm.length;
+
+  const isAllUsersSelected =
+    permitIssuers && selectedIssuers.length === permitIssuers.length;
+
+  useEffect(() => {
+    if (permitTypes) {
+      setValue("permitType", Object.keys(permitTypes) as string[]);
+    }
+  }, [isPermitTypeQueryLoading]);
+
+  useEffect(() => {
+    if (permitIssuers) {
+      setSelectedPermitTypes(() => Object.keys(permitIssuers) as string[]);
+    }
+  }, [ispermitIssuersQueryLoading]);
+
   console.log("issuedByForm::", issuedByForm);
   console.log("fromDateTimeForm::", fromDateTimeForm.toISOString());
   console.log("toDateTimeForm::", toDateTimeForm.toISOString());
   console.log("paymentMethodTypesForm::", paymentMethodTypesForm);
+  console.log("permitTypeForm::", permitTypeForm);
+  console.log("usersForm::", usersForm);
 
   const getSelectedPaymentCodes = (): PaymentCodes[] => {
     const paymentCodes: PaymentCodes[] = [];
@@ -135,24 +152,26 @@ export const PaymentAndRefundDetail = () => {
       paymentCodes.push({ paymentMethodTypeCode, paymentCardTypeCode });
     }
     return paymentCodes.concat(
-      paymentMethodTypesForm ? paymentMethodTypesForm.map((key: string) => {
-        const { paymentMethodTypeCode, paymentCardTypeCode } =
-          ALL_CONSOLIDATED_PAYMENT_METHODS[key];
-        const paymentCodes: PaymentCodes = {
-          paymentMethodTypeCode,
-        };
-        if (paymentCardTypeCode) {
-          paymentCodes.paymentCardTypeCode = paymentCardTypeCode;
-        }
-        return paymentCodes;
-      }): [],
+      paymentMethodTypesForm
+        ? paymentMethodTypesForm.map((key: string) => {
+            const { paymentMethodTypeCode, paymentCardTypeCode } =
+              ALL_CONSOLIDATED_PAYMENT_METHODS[key];
+            const paymentCodes: PaymentCodes = {
+              paymentMethodTypeCode,
+            };
+            if (paymentCardTypeCode) {
+              paymentCodes.paymentCardTypeCode = paymentCardTypeCode;
+            }
+            return paymentCodes;
+          })
+        : [],
     );
   };
 
   const getSelectedPermitTypes = (): string[] => {
     return isAllPermitTypesSelected
-      ? ["ALL"].concat(selectedPermitTypes)
-      : selectedPermitTypes;
+      ? ["ALL"].concat(permitTypeForm)
+      : permitTypeForm;
   };
 
   /**
@@ -190,14 +209,33 @@ export const PaymentAndRefundDetail = () => {
     );
   };
 
+  const onSelectPermitType = (event: SelectChangeEvent<string[]>) => {
+    const {
+      target: { value },
+    } = event;
+    if (permitTypes) {
+      const permitTypeKeys = Object.keys(permitTypes);
+      const totalPermitTypes = permitTypeKeys.length;
+      let newState: string[];
+      if (value[value.length - 1] === "ALL") {
+        newState =
+          permitTypeForm.length === totalPermitTypes ? [] : permitTypeKeys;
+      } else {
+        newState = value as string[];
+      }
+
+      setValue("permitType", newState);
+      // setSelectedPermitTypes(() => newState);
+      // onSelectCallback(newState);
+    }
+  };
+
   /**
    *
    * @param event
    * @returns
    */
-  const onSelectPaymentMethod = (
-    event: SelectChangeEvent<string[]>,
-  ) => {
+  const onSelectPaymentMethod = (event: SelectChangeEvent<string[]>) => {
     const {
       target: { value },
     } = event;
@@ -297,7 +335,7 @@ export const PaymentAndRefundDetail = () => {
                 >
                   Permit Type
                 </FormLabel>
-                {permitTypes && (
+                {/* {permitTypes && (
                   <SelectPermitTypes
                     key={"Select-Permit-Type"}
                     onSelectCallback={(value) => {
@@ -305,40 +343,40 @@ export const PaymentAndRefundDetail = () => {
                     }}
                     permitTypes={permitTypes ?? {}}
                   />
-                )}
-                {/* <Select
-                labelId="demo-multiple-name-label"
-                id="demo-multiple-name"
-                multiple
-                defaultValue={Object.keys(permitTypes ?? [])}
-                onChange={onSelectPermitType}
-                renderValue={(selected) => {
-                  // console.log("selectedPermitTypes::", selectedPermitTypes);
-                  if (isAllPermitTypesSelected) return "All Permit Types";
-                  return selected.join(", ");
-                }}
-                input={<OutlinedInput />}
-                value={selectedPermitTypes}
-                MenuProps={{
-                  autoFocus: false,
-                }}
-              >
-                <MenuItem key="All Permit Types" value="ALL">
-                  <Checkbox checked={isAllPermitTypesSelected} />
-                  <ListItemText primary={"All Permit Types"} />
-                </MenuItem>
-                {permitTypes &&
-                  Object.keys(permitTypes).map((key) => {
-                    return (
-                      <MenuItem key={key} value={key}>
-                        <Checkbox
-                          checked={selectedPermitTypes.indexOf(key) > -1}
-                        />
-                        <ListItemText primary={key} />
-                      </MenuItem>
-                    );
-                  })}
-              </Select> */}
+                )} */}
+                <Select
+                  labelId="demo-multiple-name-label"
+                  id="demo-multiple-name"
+                  multiple
+                  // defaultValue={Object.keys(permitTypes ?? [])}
+                  onChange={onSelectPermitType}
+                  renderValue={(selected) => {
+                    // console.log("selectedPermitTypes::", selectedPermitTypes);
+                    if (isAllPermitTypesSelected) return "All Permit Types";
+                    return selected.join(", ");
+                  }}
+                  input={<OutlinedInput />}
+                  value={permitTypeForm}
+                  MenuProps={{
+                    autoFocus: false,
+                  }}
+                >
+                  <MenuItem key="All Permit Types" value="ALL">
+                    <Checkbox checked={isAllPermitTypesSelected} />
+                    <ListItemText primary={"All Permit Types"} />
+                  </MenuItem>
+                  {permitTypes &&
+                    Object.keys(permitTypes).map((key) => {
+                      return (
+                        <MenuItem key={key} value={key}>
+                          <Checkbox
+                            checked={permitTypeForm.indexOf(key) > -1}
+                          />
+                          <ListItemText primary={key} />
+                        </MenuItem>
+                      );
+                    })}
+                </Select>
               </FormControl>
             </Stack>
 
@@ -383,7 +421,10 @@ export const PaymentAndRefundDetail = () => {
                   {Object.keys(CONSOLIDATED_PAYMENT_METHODS).map((key) => (
                     <MenuItem key={key} value={key}>
                       <Checkbox
-                        checked={paymentMethodTypesForm && paymentMethodTypesForm.indexOf(key) > -1}
+                        checked={
+                          paymentMethodTypesForm &&
+                          paymentMethodTypesForm.indexOf(key) > -1
+                        }
                       />
                       <ListItemText primary={key} />
                     </MenuItem>
