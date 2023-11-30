@@ -1,0 +1,21 @@
+@use "../../../../themes/orbcStyles";
+
+[class*="MuiList-root-MuiMultiSectionDigitalClockSection-root"] {
+  width: 76px;
+}
+
+.report-paper {
+  border: 1px solid orbcStyles.$bc_black;
+  cursor: pointer;
+  padding-left: 24px;
+  padding-top: 24px;
+  height: 75px;
+}
+
+.report-vertical-divider {
+  height: 961px;
+}
+
+.report-form-area {
+    width: 528px;
+}
