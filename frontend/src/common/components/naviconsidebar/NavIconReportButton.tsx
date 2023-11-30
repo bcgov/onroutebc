@@ -13,7 +13,7 @@ export const NavIconReportButton = () => {
   return (
     <NavButton
       type={NAV_BUTTON_TYPES.REPORT}
-      onClick={() => navigate(routes.IDIR_WELCOME)}
+      onClick={() => navigate(routes.REPORTS)}
     />
   );
 };
