@@ -9,7 +9,6 @@ import {
 import "./TransactionHistoryTable.scss";
 import { PermitHistory } from "../../../types/PermitHistory";
 import { getPaymentMethod } from "../../../../../common/types/paymentMethods";
-import { TRANSACTION_TYPES } from "../../../types/payment.d";
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
@@ -45,10 +44,6 @@ export const TransactionHistoryTable = ({
       },
       {
         accessorFn: (originalRow) => {
-          if (originalRow.transactionTypeId === TRANSACTION_TYPES.Z) {
-            return "NA";
-          }
-
           return getPaymentMethod(
             originalRow.paymentMethodTypeCode,
             originalRow.paymentCardTypeCode,

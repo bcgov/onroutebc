@@ -22,10 +22,11 @@ import { PermitHistory } from "../../types/PermitHistory";
 import { TransactionHistoryTable } from "./components/TransactionHistoryTable";
 import { FeeSummary } from "../../components/feeSummary/FeeSummary";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
-import { TRANSACTION_TYPES } from "../../types/payment.d";
+import { isZeroAmount } from "../../helpers/feeSummary";
 import {
   CONSOLIDATED_PAYMENT_METHODS,
   PAYMENT_METHODS_WITH_CARD,
+  PAYMENT_METHOD_TYPE_CODE,
   PAYMENT_METHOD_TYPE_DISPLAY,
   getPaymentMethod,
 } from "../../../../common/types/paymentMethods";
@@ -90,7 +91,7 @@ export const RefundPage = ({
 
     const prevValidTransaction = permitHistory.find((history) => {
       return (
-        history.transactionTypeId !== TRANSACTION_TYPES.Z &&
+        history.paymentMethodTypeCode !== PAYMENT_METHOD_TYPE_CODE.NP &&
         ((PAYMENT_METHODS_WITH_CARD.includes(history.paymentMethodTypeCode) &&
           !!history.paymentCardTypeCode) ||
           (!PAYMENT_METHODS_WITH_CARD.includes(history.paymentMethodTypeCode) &&
@@ -137,8 +138,7 @@ export const RefundPage = ({
     !getPrevPaymentMethod() || !getRefundCardType();
 
   // only show refund method selection (both card selection and cheque) when amount to refund is greater than 0
-  // we use a small epsilon since there may be decimal precision errors when doing decimal comparisons
-  const enableRefundMethodSelection = Math.abs(amountToRefund) > 0.0000001;
+  const enableRefundMethodSelection = !isZeroAmount(amountToRefund);
 
   const [shouldUsePrevPaymentMethod, setShouldUsePrevPaymentMethod] =
     useState<boolean>(!disableRefundCardSelection);

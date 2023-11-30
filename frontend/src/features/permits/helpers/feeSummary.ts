@@ -78,3 +78,12 @@ export const calculateAmountToRefund = (
   const feeForCurrDuration = calculateFeeByDuration(currDuration);
   return netPaid - feeForCurrDuration;
 };
+
+/**
+ * Determine whether or not an amount is considered to be zero (due to numerical approximation errors).
+ * @param amount Numerical amount (usually representing currency amount)
+ * @returns Whether or not the amount is considered to be zero
+ */
+export const isZeroAmount = (amount: number) => {
+  return Math.abs(amount) < 0.000001;
+};

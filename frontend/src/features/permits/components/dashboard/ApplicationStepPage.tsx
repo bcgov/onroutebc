@@ -44,6 +44,12 @@ export const ApplicationStepPage = ({
     setApplicationData,
   } = useApplicationDetailsQuery(permitId);
 
+  const isValidPermitId = () => {
+    if (!permitId) return false;
+    if (permitId.trim() === "") return false;
+    return !isNaN(Number(permitId.trim()));
+  };
+
   // Permit must be an application in order to allow application-related steps
   // (ie. empty status for new application, or in progress or incomplete payment status)
   const isValidApplicationStatus = () => {
@@ -62,6 +68,10 @@ export const ApplicationStepPage = ({
         return <TermOversizeForm />;
     }
   };
+
+  if (!isValidPermitId() && applicationStep !== APPLICATION_STEPS.DETAILS) {
+    return <Navigate to={ERROR_ROUTES.NOT_FOUND} />;
+  }
 
   if (companyInfoQuery.isLoading) {
     return <Loading />;

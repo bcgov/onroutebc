@@ -43,7 +43,6 @@ export const TRANSACTION_TYPES = {
   PA: "PA",
   PAC: "PAC",
   Q: "Q",
-  Z: "Z",
 } as const;
 
 export type TransactionType =

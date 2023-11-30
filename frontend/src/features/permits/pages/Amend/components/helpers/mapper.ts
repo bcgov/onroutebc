@@ -1,6 +1,7 @@
 import { getDefaultRequiredVal } from "../../../../../../common/helpers/util";
 import { TRANSACTION_TYPES } from "../../../../types/payment.d";
 import { RefundFormData } from "../../../Refund/types/RefundFormData";
+import { isZeroAmount } from "../../../../helpers/feeSummary";
 import {
   CONSOLIDATED_PAYMENT_METHODS,
   PAYMENT_METHOD_TYPE_CODE,
@@ -11,10 +12,10 @@ export const mapToAmendRequestData = (
   amountToRefund: number,
   permitId: string,
 ) => {
-  const isZeroAmount = Math.abs(amountToRefund) < 0.000001;
+  const isRefundZeroAmount = isZeroAmount(amountToRefund);
 
   const getRefundMethodType = () => {
-    if (isZeroAmount) return PAYMENT_METHOD_TYPE_CODE.WEB;
+    if (isRefundZeroAmount) return PAYMENT_METHOD_TYPE_CODE.NP;
 
     const refundMethodTypeCode = getDefaultRequiredVal(
       PAYMENT_METHOD_TYPE_CODE.WEB,
@@ -28,7 +29,7 @@ export const mapToAmendRequestData = (
   };
 
   const getRefundCardType = () => {
-    if (isZeroAmount || !refundData.shouldUsePrevPaymentMethod) {
+    if (isRefundZeroAmount || !refundData.shouldUsePrevPaymentMethod) {
       return undefined;
     }
 
@@ -37,7 +38,8 @@ export const mapToAmendRequestData = (
   };
 
   const reqData = {
-    transactionTypeId: isZeroAmount ? TRANSACTION_TYPES.Z : TRANSACTION_TYPES.R,
+    // Zero-dolloar amounts are considered "Purchases", as documented
+    transactionTypeId: isRefundZeroAmount ? TRANSACTION_TYPES.P : TRANSACTION_TYPES.R,
     paymentMethodTypeCode: getRefundMethodType(),
     applicationDetails: [
       {
@@ -47,7 +49,7 @@ export const mapToAmendRequestData = (
     ],
   };
 
-  if (isZeroAmount) {
+  if (isRefundZeroAmount) {
     return reqData;
   }
 

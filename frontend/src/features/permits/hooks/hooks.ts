@@ -7,7 +7,7 @@ import { mapApplicationResponseToApplication } from "../helpers/mappers";
 import { IssuePermitsResponse, Permit } from "../types/permit";
 import { PermitHistory } from "../types/PermitHistory";
 import { StartTransactionResponseData } from "../types/payment";
-
+import { FIVE_MINUTES } from "../../../common/constants/constants";
 import {
   getApplicationByPermitId,
   getPermit,
@@ -22,7 +22,6 @@ import {
   modifyAmendmentApplication,
   getApplicationsInProgress,
 } from "../apiManager/permitsAPI";
-import { FIVE_MINUTES } from "../../../common/constants/constants";
 
 /**
  * A custom react query mutation hook that saves the application data to the backend API

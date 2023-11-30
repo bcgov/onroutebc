@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import "./TermOversizeReview.scss";
 import { ApplicationContext } from "../../context/ApplicationContext";
@@ -11,7 +11,6 @@ import { useCompanyInfoQuery } from "../../../manageProfile/apiManager/hooks";
 import { PermitReview } from "./components/review/PermitReview";
 import { APPLICATIONS_ROUTES, APPLICATION_STEPS, ERROR_ROUTES } from "../../../../routes/constants";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
-import { Loading } from "../../../../common/pages/Loading";
 import {
   usePowerUnitTypesQuery,
   useTrailerTypesQuery,
@@ -21,7 +20,8 @@ export const TermOversizeReview = () => {
   const { applicationData, setApplicationData } =
     useContext(ApplicationContext);
 
-  const permitId = getDefaultRequiredVal("", applicationData?.permitId);
+  const routeParams = useParams();
+  const permitId = getDefaultRequiredVal("", routeParams.permitId);
 
   const navigate = useNavigate();
 
@@ -76,10 +76,6 @@ export const TermOversizeReview = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
-
-  if (!permitId) {
-    return <Loading />;
-  }
 
   return (
     <div className="term-oversize-review">
