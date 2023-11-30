@@ -41,6 +41,7 @@ import "./style.scss";
 import { SnackBarContext } from "../../../../App";
 import { IssuedByCheckBox } from "./subcomponents/IssuedByCheckBox";
 import { PermitTypeSelect } from "./subcomponents/PermitTypeSelect";
+import { PaymentMethodSelect } from "./subcomponents/PaymentMethodSelect";
 
 /**
  * Component for Payment and Refund Detail form
@@ -227,29 +228,6 @@ export const PaymentAndRefundDetail = () => {
   };
 
   /**
-   * Updates the selected permit types.
-   * @param event The select event containing the selected values.
-   */
-  // const onSelectPermitType = (event: SelectChangeEvent<string[]>) => {
-  //   const {
-  //     target: { value },
-  //   } = event;
-  //   if (permitTypes) {
-  //     const permitTypeKeys = Object.keys(permitTypes);
-  //     const totalPermitTypes = permitTypeKeys.length;
-  //     let newState: string[];
-  //     if (value[value.length - 1] === "ALL") {
-  //       newState =
-  //         selectedPermitTypes.length === totalPermitTypes ? [] : permitTypeKeys;
-  //     } else {
-  //       newState = value as string[];
-  //     }
-
-  //     setValue("permitType", newState);
-  //   }
-  // };
-
-  /**
    * Updates the selected payment methods.
    * @param event The select event containing the selected values.
    */
@@ -297,54 +275,11 @@ export const PaymentAndRefundDetail = () => {
           <Stack spacing={2}>
             <Stack direction="row">
               <PermitTypeSelect permitTypes={permitTypes} />
-              {/* <FormControl
-                sx={{ width: "274px" }}
-                disabled={issuedBy.length === 0}
-              >
-                <FormLabel
-                  className="custom-form-control__label"
-                  id="permit-type-select-label"
-                  sx={{ fontWeight: "bold", marginBottom: "8px" }}
-                >
-                  Permit Type
-                </FormLabel>
-                <Select
-                  labelId="permit-type-select-label"
-                  id="permit-type-select"
-                  multiple
-                  onChange={onSelectPermitType}
-                  renderValue={(selected) => {
-                    if (isAllPermitTypesSelected) return "All Permit Types";
-                    return selected.join(", ");
-                  }}
-                  displayEmpty
-                  input={<OutlinedInput />}
-                  value={selectedPermitTypes}
-                  MenuProps={{
-                    autoFocus: false,
-                  }}
-                >
-                  <MenuItem key="All Permit Types" value="ALL">
-                    <Checkbox checked={isAllPermitTypesSelected} />
-                    <ListItemText primary={"All Permit Types"} />
-                  </MenuItem>
-                  {permitTypes &&
-                    Object.keys(permitTypes).map((key) => {
-                      return (
-                        <MenuItem key={key} value={key}>
-                          <Checkbox
-                            checked={selectedPermitTypes.indexOf(key) > -1}
-                          />
-                          <ListItemText primary={key} />
-                        </MenuItem>
-                      );
-                    })}
-                </Select>
-              </FormControl> */}
             </Stack>
 
             <Stack>
-              <FormControl
+              <PaymentMethodSelect />
+              {/* <FormControl
                 sx={{ width: "274px" }}
                 className="custom-form-control"
                 margin="normal"
@@ -392,7 +327,7 @@ export const PaymentAndRefundDetail = () => {
                     </MenuItem>
                   ))}
                 </Select>
-              </FormControl>
+              </FormControl> */}
             </Stack>
             <Stack direction="row">
               <FormControl
