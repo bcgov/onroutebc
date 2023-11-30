@@ -31,6 +31,7 @@ import { openBlobInNewTab } from "../../../permits/helpers/permitPDFHelper";
 import { getPaymentAndRefundDetail, usePermitTypesQuery } from "../api/reports";
 import { getPermitIssuers } from "../api/users";
 import {
+  PaymentAndRefundDetailFormData,
   PaymentAndRefundDetailRequest,
   REPORT_ISSUED_BY,
   ReadUserDtoForReport,
@@ -38,18 +39,8 @@ import {
 } from "../types/types";
 import "./style.scss";
 import { SnackBarContext } from "../../../../App";
-
-/**
- * The data type for the detail form.
- */
-type PaymentAndRefundDetailFormData = {
-  permitType: string[];
-  paymentMethods?: string[];
-  users?: string[];
-  fromDateTime: Dayjs;
-  toDateTime: Dayjs;
-  issuedBy: ReportIssuedByType[];
-};
+import { IssuedByCheckBox } from "./subcomponents/IssuedByCheckBox";
+import { PermitTypeSelect } from "./subcomponents/PermitTypeSelect";
 
 /**
  * Component for Payment and Refund Detail form
@@ -239,24 +230,24 @@ export const PaymentAndRefundDetail = () => {
    * Updates the selected permit types.
    * @param event The select event containing the selected values.
    */
-  const onSelectPermitType = (event: SelectChangeEvent<string[]>) => {
-    const {
-      target: { value },
-    } = event;
-    if (permitTypes) {
-      const permitTypeKeys = Object.keys(permitTypes);
-      const totalPermitTypes = permitTypeKeys.length;
-      let newState: string[];
-      if (value[value.length - 1] === "ALL") {
-        newState =
-          selectedPermitTypes.length === totalPermitTypes ? [] : permitTypeKeys;
-      } else {
-        newState = value as string[];
-      }
+  // const onSelectPermitType = (event: SelectChangeEvent<string[]>) => {
+  //   const {
+  //     target: { value },
+  //   } = event;
+  //   if (permitTypes) {
+  //     const permitTypeKeys = Object.keys(permitTypes);
+  //     const totalPermitTypes = permitTypeKeys.length;
+  //     let newState: string[];
+  //     if (value[value.length - 1] === "ALL") {
+  //       newState =
+  //         selectedPermitTypes.length === totalPermitTypes ? [] : permitTypeKeys;
+  //     } else {
+  //       newState = value as string[];
+  //     }
 
-      setValue("permitType", newState);
-    }
-  };
+  //     setValue("permitType", newState);
+  //   }
+  // };
 
   /**
    * Updates the selected payment methods.
@@ -293,77 +284,33 @@ export const PaymentAndRefundDetail = () => {
             <strong>Issued By</strong>
           </span>
           <Stack direction="row" spacing={5}>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  onChange={(
-                    _event: React.ChangeEvent<HTMLInputElement>,
-                    checked: boolean,
-                  ) => {
-                    if (checked) {
-                      setValue("issuedBy", [
-                        ...issuedBy,
-                        REPORT_ISSUED_BY.SELF_ISSUED,
-                      ]);
-                    } else {
-                      setValue(
-                        "issuedBy",
-                        issuedBy.filter(
-                          (value) => value !== REPORT_ISSUED_BY.SELF_ISSUED,
-                        ),
-                      );
-                    }
-                  }}
-                  checked={issuedBy.includes(REPORT_ISSUED_BY.SELF_ISSUED)}
-                  sx={{ marginLeft: "0px", paddingLeft: "0px" }}
-                  name="issuedBy_SELF"
-                />
-              }
+            <IssuedByCheckBox
+              issuedByOption={REPORT_ISSUED_BY.SELF_ISSUED}
               label="Self Issued"
             />
-            <FormControlLabel
-              control={
-                <Checkbox
-                  onChange={(
-                    _event: React.ChangeEvent<HTMLInputElement>,
-                    checked: boolean,
-                  ) => {
-                    if (checked) {
-                      setValue("issuedBy", [...issuedBy, REPORT_ISSUED_BY.PPC]);
-                    } else {
-                      setValue(
-                        "issuedBy",
-                        issuedBy.filter(
-                          (value) => value !== REPORT_ISSUED_BY.PPC,
-                        ),
-                      );
-                    }
-                  }}
-                  checked={issuedBy.includes(REPORT_ISSUED_BY.PPC)}
-                  sx={{ marginLeft: "0px", paddingLeft: "0px" }}
-                  name="issuedBy_PPC"
-                />
-              }
+            <IssuedByCheckBox
+              issuedByOption={REPORT_ISSUED_BY.PPC}
               label="PPC"
             />
           </Stack>
           <br />
           <Stack spacing={2}>
             <Stack direction="row">
-              <FormControl
+              <PermitTypeSelect permitTypes={permitTypes} />
+              {/* <FormControl
                 sx={{ width: "274px" }}
                 disabled={issuedBy.length === 0}
               >
                 <FormLabel
                   className="custom-form-control__label"
-                  id="payment-method-select"
+                  id="permit-type-select-label"
                   sx={{ fontWeight: "bold", marginBottom: "8px" }}
                 >
                   Permit Type
                 </FormLabel>
                 <Select
-                  labelId="demo-multiple-name-label"
-                  id="demo-multiple-name"
+                  labelId="permit-type-select-label"
+                  id="permit-type-select"
                   multiple
                   onChange={onSelectPermitType}
                   renderValue={(selected) => {
@@ -393,7 +340,7 @@ export const PaymentAndRefundDetail = () => {
                       );
                     })}
                 </Select>
-              </FormControl>
+              </FormControl> */}
             </Stack>
 
             <Stack>

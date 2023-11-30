@@ -1,3 +1,4 @@
+import { Dayjs } from "dayjs";
 import { PaymentMethodAndCardTypeCodes } from "../../../../common/types/paymentMethods";
 
 /**
@@ -40,3 +41,15 @@ export type ReadUserDtoForReport = {
   userGUID: string;
   userName: string;
 };
+
+/**
+ * The data type for the detail form.
+ */
+export type PaymentAndRefundDetailFormData = {
+    permitType: string[];
+    paymentMethods?: string[];
+    users?: string[];
+    fromDateTime: Dayjs;
+    toDateTime: Dayjs;
+    issuedBy: ReportIssuedByType[];
+  };

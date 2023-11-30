@@ -18,7 +18,7 @@ import { openBlobInNewTab } from "../../../permits/helpers/permitPDFHelper";
 import {
   getPaymentAndRefundSummary,
 } from "../api/reports";
-import { PaymentAndRefundSummaryRequest } from "../types/types";
+import { PaymentAndRefundSummaryRequest, ReportIssuedByType } from "../types/types";
 
 const sample = {
   issuedBy: ["SELF_ISSUED"],
@@ -43,7 +43,7 @@ export const PaymentAndRefundSummary = () => {
       toDateTime: "2023-10-26T20:59Z",
     });
 
-  const [issuedBy, setIssuedBy] = useState<string[]>(["SELF_ISSUED", "PPC"]);
+  const [issuedBy, setIssuedBy] = useState<ReportIssuedByType[]>(["SELF_ISSUED", "PPC"]);
   const [fromDateTime, setFromDateTime] = useState<Dayjs>(
     dayjs()
       .subtract(1, "day")
