@@ -3,13 +3,13 @@ import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs, { Dayjs } from "dayjs";
 import { useFormContext } from "react-hook-form";
-import { PaymentAndRefundDetailFormData } from "../../types/types";
+import { PaymentAndRefundSummaryFormData } from "../../types/types";
 
 /**
  * The date time pickers for reports.
  */
 export const ReportDateTimePickers = () => {
-  const { setValue, watch } = useFormContext<PaymentAndRefundDetailFormData>();
+  const { setValue, watch } = useFormContext<PaymentAndRefundSummaryFormData>();
   const issuedBy = watch("issuedBy");
   return (
     <>

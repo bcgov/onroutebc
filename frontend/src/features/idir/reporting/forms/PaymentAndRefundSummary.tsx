@@ -1,17 +1,10 @@
 import {
   Button,
-  Checkbox,
   Divider,
-  FormControl,
-  FormControlLabel,
   FormGroup,
-  FormLabel,
-  Stack,
+  Stack
 } from "@mui/material";
-import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import dayjs, { Dayjs } from "dayjs";
-import { useState } from "react";
+import dayjs from "dayjs";
 import { FormProvider, useForm } from "react-hook-form";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { openBlobInNewTab } from "../../../permits/helpers/permitPDFHelper";
@@ -19,10 +12,14 @@ import { getPaymentAndRefundSummary } from "../api/reports";
 import {
   PaymentAndRefundSummaryFormData,
   PaymentAndRefundSummaryRequest,
-  REPORT_ISSUED_BY,
-  ReportIssuedByType,
+  REPORT_ISSUED_BY
 } from "../types/types";
+import { IssuedByCheckBox } from "./subcomponents/IssuedByCheckBox";
+import { ReportDateTimePickers } from "./subcomponents/ReportDateTimePickers";
 
+/**
+ * Component for Payment and Refund Summary form
+ */
 export const PaymentAndRefundSummary = () => {
   const formMethods = useForm<PaymentAndRefundSummaryFormData>({
     defaultValues: {
@@ -38,22 +35,11 @@ export const PaymentAndRefundSummary = () => {
     reValidateMode: "onBlur",
   });
 
-  const [issuedBy, setIssuedBy] = useState<ReportIssuedByType[]>([
-    REPORT_ISSUED_BY.SELF_ISSUED,
-    REPORT_ISSUED_BY.PPC,
-  ]);
-  const [fromDateTime, setFromDateTime] = useState<Dayjs>(
-    dayjs()
-      .subtract(1, "day")
-      .set("h", 21)
-      .set("m", 0)
-      .set("s", 0)
-      .set("ms", 0),
-  );
-  const [toDateTime, setToDateTime] = useState<Dayjs>(
-    dayjs().set("h", 20).set("m", 59).set("s", 59).set("ms", 999),
-  );
-  const { setValue, getValues, control } = formMethods;
+  const { watch } = formMethods;
+
+  const issuedBy = watch("issuedBy");
+  const fromDateTime = watch("fromDateTime");
+  const toDateTime = watch("toDateTime");
 
   /**
    * Opens the report in a new tab.
@@ -86,184 +72,38 @@ export const PaymentAndRefundSummary = () => {
           orientation="horizontal"
           color={BC_COLOURS.bc_border_grey}
         />
-
-        <span>
-          <strong>Issued By</strong>
-        </span>
-        <Stack direction="row" spacing={5}>
-          <FormGroup>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={issuedBy.includes("SELF_ISSUED")}
-                  sx={{ marginLeft: "0px", paddingLeft: "0px" }}
-                  onChange={(
-                    _event: React.ChangeEvent<HTMLInputElement>,
-                    checked: boolean,
-                  ) => {
-                    if (checked) {
-                      setIssuedBy(() => [...issuedBy, "SELF_ISSUED"]);
-                    } else {
-                      setIssuedBy(() =>
-                        issuedBy.filter((value) => value !== "SELF_ISSUED"),
-                      );
-                    }
-                    //   const issuedBy = getValues("issuedBy");
-                    //   if (checked) {
-                    //     issuedBy.push("SELF_ISSUED");
-                    //   } else {
-                    //     delete issuedBy[issuedBy.indexOf("SELF_ISSUED")];
-                    //   }
-                    //   setValue("issuedBy", issuedBy);
-                  }}
-                />
-              }
+        <FormGroup>
+          <span>
+            <strong>Issued By</strong>
+          </span>
+          <Stack direction="row" spacing={5}>
+            <IssuedByCheckBox
+              issuedByOption={REPORT_ISSUED_BY.SELF_ISSUED}
               label="Self Issued"
             />
-          </FormGroup>
-          {/* <Controller
-              name="issuedBy"
-              control={control}
-              defaultValue={["SELF_ISSUED", "PPC"]}
-              render={({ field, fieldState: { invalid } }) => {
-                return (
-                  
-                );
-              }}
-            /> */}
-
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={issuedBy.includes("PPC")}
-                sx={{ marginLeft: "0px", paddingLeft: "0px" }}
-                name="issuedBy_PPC"
-                onChange={(
-                  _event: React.ChangeEvent<HTMLInputElement>,
-                  checked: boolean,
-                ) => {
-                  if (checked) {
-                    setIssuedBy(() => [...issuedBy, "PPC"]);
-                  } else {
-                    setIssuedBy(() =>
-                      issuedBy.filter((value) => value !== "PPC"),
-                    );
-                  }
-                }}
-              />
-            }
-            label="PPC"
-          />
-        </Stack>
-        <Stack direction="row" spacing={3}>
-          <>
-            <FormControl
-              className="custom-form-control"
-              margin="normal"
-              sx={{ width: "100%" }}
+            <IssuedByCheckBox
+              issuedByOption={REPORT_ISSUED_BY.PPC}
+              label="PPC"
+            />
+          </Stack>
+          <br />
+          <Stack direction="row" spacing={3}>
+            <ReportDateTimePickers />
+          </Stack>
+          <br />
+          <Stack direction="row">
+            <Button
               disabled={issuedBy.length === 0}
+              key="view-report-button"
+              aria-label="View Report"
+              variant="contained"
+              color="primary"
+              onClick={onClickViewReport}
             >
-              <FormLabel
-                className="custom-form-control__label"
-                id={`label`}
-                sx={{ fontWeight: "bold", marginBottom: "8px" }}
-              >
-                From
-              </FormLabel>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                {/* <DesktopDateTimePicker /> */}
-                {/* <DateTimePicker disableFuture openTo="hours"/> */}
-                <DateTimePicker
-                  defaultValue={dayjs()
-                    .subtract(1, "day")
-                    .set("h", 21)
-                    .set("m", 0)
-                    .set("s", 0)
-                    .set("ms", 0)}
-                  //   label={<strong>From</strong>}
-                  onChange={(value: Dayjs | null) => {
-                    setFromDateTime(() => value as Dayjs);
-                  }}
-                  disabled={issuedBy.length === 0}
-                  views={["year", "month", "day", "hours", "minutes"]}
-                  // slotProps={{
-                  //   textField: {
-                  //     helperText: "Select a from date time",
-                  //   },
-                  // }}
-                />
-              </LocalizationProvider>
-            </FormControl>
-          </>
-          <>
-            <FormControl
-              className="custom-form-control"
-              margin="normal"
-              sx={{ width: "100%" }}
-              disabled={issuedBy.length === 0}
-            >
-              <FormLabel
-                className="custom-form-control__label"
-                id={`label`}
-                sx={{ fontWeight: "bold", marginBottom: "8px" }}
-              >
-                To
-              </FormLabel>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                {/* <DesktopDateTimePicker /> */}
-                {/* <DateTimePicker disableFuture openTo="hours"/> */}
-                <DateTimePicker
-                  disabled={issuedBy.length === 0}
-                  onChange={(value: Dayjs | null) => {
-                    setToDateTime(() => value as Dayjs);
-                  }}
-                  defaultValue={dayjs()
-                    .set("h", 20)
-                    .set("m", 59)
-                    .set("s", 59)
-                    .set("ms", 999)}
-                  // defaultValue={new Date(fromDateTime)}
-                  //   label={<strong>To</strong>}
-                  views={["year", "month", "day", "hours", "minutes"]}
-                  // slotProps={{
-                  //   textField: {
-                  //     helperText: "Select a from date time",
-                  //   },
-                  // }}
-                />
-              </LocalizationProvider>
-            </FormControl>
-          </>
-          {/* <FormControlLabel
-            disabled={issuedBy.length === 0}
-            control={
-              
-            }
-            label={<strong>From</strong>}
-            labelPlacement="top"
-          /> */}
-          {/* <FormControlLabel
-            disabled={issuedBy.length === 0}
-            control={
-              
-            }
-            label={<strong>To</strong>}
-            labelPlacement="top"
-          /> */}
-        </Stack>
-        <br />
-        <Stack direction="row">
-          <Button
-            disabled={issuedBy.length === 0}
-            key="view-report-button"
-            aria-label="View Report"
-            variant="contained"
-            color="primary"
-            onClick={onClickViewReport}
-          >
-            View Report
-          </Button>
-        </Stack>
+              View Report
+            </Button>
+          </Stack>
+        </FormGroup>
       </Stack>
     </FormProvider>
   );
