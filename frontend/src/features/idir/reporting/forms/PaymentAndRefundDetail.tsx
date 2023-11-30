@@ -43,6 +43,7 @@ import { IssuedByCheckBox } from "./subcomponents/IssuedByCheckBox";
 import { PermitTypeSelect } from "./subcomponents/PermitTypeSelect";
 import { PaymentMethodSelect } from "./subcomponents/PaymentMethodSelect";
 import { UserSelect } from "./subcomponents/UserSelect";
+import { ReportDateTimePickers } from "./subcomponents/ReportDateTimePickers";
 
 /**
  * Component for Payment and Refund Detail form
@@ -241,7 +242,8 @@ export const PaymentAndRefundDetail = () => {
               />
             </Stack>
             <Stack direction="row" spacing={3}>
-              <>
+              <ReportDateTimePickers />
+              {/* <>
                 <FormControl
                   className="custom-form-control"
                   margin="normal"
@@ -315,7 +317,7 @@ export const PaymentAndRefundDetail = () => {
                     />
                   </LocalizationProvider>
                 </FormControl>
-              </>
+              </> */}
             </Stack>
             <br />
             <Stack direction="row">
