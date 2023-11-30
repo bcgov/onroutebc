@@ -142,7 +142,7 @@ export const VoidPermit = () => {
         <Loading />
       ) : (
         <div className="void-permit">
-          <Banner bannerText={getBannerText()} extendHeight={true} />
+          <Banner bannerText={getBannerText()} />
           <Breadcrumb links={getLinks()} />
           {pages[currentLink]}
         </div>

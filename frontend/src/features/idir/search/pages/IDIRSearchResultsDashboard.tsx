@@ -45,8 +45,7 @@ export const IDIRSearchResultsDashboard = memo(() => {
         }}
       >
         <Banner 
-          bannerText={getBannerText(searchFields)} 
-          extendHeight={true} 
+          bannerText={getBannerText(searchFields)}
         />
       </Box>
       <div

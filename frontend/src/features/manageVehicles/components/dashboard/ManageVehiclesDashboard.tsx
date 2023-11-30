@@ -11,6 +11,7 @@ import { DoesUserHaveRoleWithContext } from "../../../../common/authentication/u
 import { ROLES } from "../../../../common/authentication/types";
 import { getCompanyIdFromSession } from "../../../../common/apiManager/httpRequestHandler";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
+import { VEHICLES_DASHBOARD_TABS } from "../../../../routes/constants";
 
 /**
  * Returns the selected tab index (if there is one)
@@ -19,11 +20,11 @@ import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 const useTabIndexFromURL = (): number => {
   const { hash: selectedTab } = useLocation();
   switch (selectedTab) {
-    case "#trailer":
+    case VEHICLES_DASHBOARD_TABS.TRAILER:
       return 1;
-    case "#vehicle-configuration":
+    case VEHICLES_DASHBOARD_TABS.VEHICLE_CONFIG:
       return 2;
-    case "#power-unit":
+    case VEHICLES_DASHBOARD_TABS.POWER_UNIT:
     default:
       return 0;
   }

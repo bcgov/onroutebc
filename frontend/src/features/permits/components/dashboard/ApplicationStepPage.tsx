@@ -105,7 +105,6 @@ export const ApplicationStepPage = ({
       >
         <Banner
           bannerText={displayHeaderText(applicationStep)}
-          extendHeight={true}
         />
       </Box>
 

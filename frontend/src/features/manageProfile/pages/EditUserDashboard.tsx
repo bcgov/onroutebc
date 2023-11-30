@@ -71,7 +71,6 @@ export const EditUserDashboard = React.memo(() => {
               )}
             </div>
           }
-          extendHeight={true}
         />
       </Box>
 

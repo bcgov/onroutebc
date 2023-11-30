@@ -228,7 +228,6 @@ export const AmendPermit = () => {
       >
         <Banner
           bannerText={displayHeaderText(step.key as AmendPermitStep)}
-          extendHeight={true}
         />
       </Box>
 

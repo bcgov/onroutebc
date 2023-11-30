@@ -32,10 +32,10 @@ export const AddVehicleDashboard = React.memo(
       <div className="dashboard-page">
         <Box className="dashboard-page__banner layout-box">
           {addVehicleMode === VEHICLE_TYPES_ENUM.POWER_UNIT && (
-            <Banner bannerText={"Add Power Unit"} extendHeight={true} />
+            <Banner bannerText="Add Power Unit" />
           )}
           {addVehicleMode === VEHICLE_TYPES_ENUM.TRAILER && (
-            <Banner bannerText={"Add Trailer"} extendHeight={true} />
+            <Banner bannerText="Add Trailer" />
           )}
         </Box>
 

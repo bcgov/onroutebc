@@ -92,7 +92,6 @@ export const EditVehicleDashboard = React.memo(
                   )}
                 </div>
               }
-              extendHeight={true}
             />
           )}
         </Box>

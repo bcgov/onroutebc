@@ -110,7 +110,7 @@ export const AddUserDashboard = React.memo(() => {
   return (
     <div className="dashboard-page dashboard-page--add-user">
       <Box className="dashboard-page__banner layout-box">
-        <Banner bannerText="Add User" extendHeight={true} />
+        <Banner bannerText="Add User" />
       </Box>
 
       <Box className="dashboard-page__breadcrumb layout-box">
