@@ -15,32 +15,57 @@ import {
 } from "@mui/material";
 import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { useQuery } from "@tanstack/react-query";
 import dayjs, { Dayjs } from "dayjs";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { FormProvider, useForm } from "react-hook-form";
+import { ONE_HOUR } from "../../../../common/constants/constants";
 import {
   ALL_CONSOLIDATED_PAYMENT_METHODS,
   CONSOLIDATED_PAYMENT_METHODS,
 } from "../../../../common/types/paymentMethods";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { SELECT_FIELD_STYLE } from "../../../../themes/orbcStyles";
+import { openBlobInNewTab } from "../../../permits/helpers/permitPDFHelper";
 import {
   PaymentAndRefundDetailRequest,
   PaymentCodes,
+  getPaymentAndRefundDetail,
   usePermitTypesQuery,
 } from "../../search/api/reports";
-import { usePermitIssuersQuery } from "../../search/api/users";
+import {
+  ReadUserDto,
+  getPermitIssuers
+} from "../../search/api/users";
 import "./style.scss";
-import { SelectPermitTypes } from "./subcomponents/SelectPermitType";
-import { FormProvider, useForm } from "react-hook-form";
 
-interface PaymentAndRefundDetailRequestDayJs {
+interface PaymentAndRefundDetailFormData {
   permitType: string[];
-  paymentMethodTypes?: string[];
+  paymentMethods?: string[];
   users?: string[];
   fromDateTime: Dayjs;
   toDateTime: Dayjs;
   issuedBy: string[];
 }
+
+// const ppcList: ReadUserDto[] = [
+//   {
+//     userGUID: "KRSUBRAMXYZ123",
+//     userName: "KRSUBRAM",
+//   },
+//   {
+//     userGUID: "ANPETRICXYZ123",
+//     userName: "ANPETRIC",
+//   },
+//   {
+//     userGUID: "BABELXYZ123",
+//     userName: "BABEL",
+//   },
+//   {
+//     userGUID: "GERIDEOUXYZ123",
+//     userName: "GERIDEOU",
+//   },
+// ];
 
 /**
  * Component for Payment and Refund Detail form
@@ -53,43 +78,34 @@ export const PaymentAndRefundDetail = () => {
   const { data: permitTypes, isLoading: isPermitTypeQueryLoading } =
     permitTypesQuery;
 
-  // const [selectedPermitTypes, setSelectedPermitTypes] = useState<string[]>(
-  //   permitTypes && Object.keys(permitTypes) ? Object.keys(permitTypes) : [],
-  // );
-
-  const [selectedPermitTypes, setSelectedPermitTypes] = useState<string[]>([]);
-
-  // console.log("selectedPermitTypes::", selectedPermitTypes);
-  // console.log("isAllPermitTypesSelected::", isAllPermitTypesSelected);
-
-  // useEffect(() => {
-  //   console.log("isPermitTypeQueryLoading::", isPermitTypeQueryLoading);
-  //   if (permitTypes) {
-  //     setSelectedPermitTypes(() => Object.keys(permitTypes) as string[]);
-  //   }
-  // }, [isPermitTypeQueryLoading]);
-
-  // console.log("selectedPermitTypes after useEffect::", selectedPermitTypes);
-  // console.log("permitTypes after useEffect::", permitTypes);
-
   // GET the list of users who have issued a permit.
-  const permitIssuersQuery = usePermitIssuersQuery();
+  const permitIssuersQuery = useQuery({
+    queryKey: ["permitIssuers"],
+    queryFn: getPermitIssuers,
+    /**
+     * Transform the data array { userName, userGUID }
+     * into an object with userName as the key and userGUID as the pair.
+     * This is a more efficient representation.
+     *
+     * @param data ReadUserDto array.
+     * @returns A record with userName as key and userGUID as value.
+     */
+    select: (data: ReadUserDto[]) => {
+      if (!data) return [];
+      return Object.fromEntries(
+        data.map(({ userGUID, userName }) => [userName, userGUID]),
+      ) as Record<string, string>;
+    },
+    keepPreviousData: true,
+    staleTime: ONE_HOUR,
+    retry: false,
+    refetchOnWindowFocus: false, // prevents unnecessary queries
+  });
 
   const { data: permitIssuers, isLoading: ispermitIssuersQueryLoading } =
     permitIssuersQuery;
-  const [selectedIssuers, setSelectedIssuers] = useState<string[]>([]);
 
-  // useEffect(() => {
-  //   if (permitIssuers) {
-  //     setSelectedPermitTypes(() => Object.keys(permitIssuers) as string[]);
-  //   }
-  // }, [ispermitIssuersQueryLoading]);
-
-  // const [selectedPaymentCodes, setSelectedPaymentCodes] = useState<string[]>([
-  //   "All Payment Methods",
-  // ]);
-
-  const formMethods = useForm<PaymentAndRefundDetailRequestDayJs>({
+  const formMethods = useForm<PaymentAndRefundDetailFormData>({
     defaultValues: {
       issuedBy: ["SELF_ISSUED", "PPC"],
       fromDateTime: dayjs()
@@ -99,50 +115,52 @@ export const PaymentAndRefundDetail = () => {
         .set("s", 0)
         .set("ms", 0),
       toDateTime: dayjs().set("h", 20).set("m", 59).set("s", 59).set("ms", 999),
-      paymentMethodTypes: Object.keys(CONSOLIDATED_PAYMENT_METHODS),
+      paymentMethods: Object.keys(CONSOLIDATED_PAYMENT_METHODS),
       permitType: Object.keys(permitTypes ?? []),
-      users: permitIssuers?.map(({ userGUID }) => userGUID),
+      users: Object.keys(permitIssuers ?? {}),
     },
     reValidateMode: "onBlur",
   });
 
-  const { watch, register, setValue } = formMethods;
+  const { watch, setValue } = formMethods;
 
-  const issuedByForm = watch("issuedBy");
-  const fromDateTimeForm = watch("fromDateTime");
-  const toDateTimeForm = watch("toDateTime");
-  const paymentMethodTypesForm = watch("paymentMethodTypes");
-  const permitTypeForm = watch("permitType");
-  const usersForm = watch("users");
+  const issuedBy = watch("issuedBy");
+  const fromDateTime = watch("fromDateTime");
+  const toDateTime = watch("toDateTime");
+  const selectedPaymentMethods = watch("paymentMethods");
+  const selectedPermitTypes = watch("permitType");
+  const selectedUsers = watch("users");
 
   const isAllPaymentMethodsSelected =
     Object.keys(CONSOLIDATED_PAYMENT_METHODS).length ===
-    paymentMethodTypesForm?.length;
+    selectedPaymentMethods?.length;
 
   const isAllPermitTypesSelected =
-    permitTypes && Object.keys(permitTypes).length === permitTypeForm.length;
+    permitTypes && Object.keys(permitTypes).length === selectedPermitTypes.length;
 
   const isAllUsersSelected =
-    permitIssuers && selectedIssuers.length === permitIssuers.length;
+    permitIssuers && Object.keys(permitIssuers).length === selectedUsers?.length;
 
   useEffect(() => {
     if (permitTypes) {
-      setValue("permitType", Object.keys(permitTypes) as string[]);
+      setValue("permitType", Object.keys(permitTypes));
     }
   }, [isPermitTypeQueryLoading]);
 
   useEffect(() => {
     if (permitIssuers) {
-      setSelectedPermitTypes(() => Object.keys(permitIssuers) as string[]);
+      console.log("users::", permitIssuers);
+      setValue("users", Object.keys(permitIssuers));
     }
   }, [ispermitIssuersQueryLoading]);
 
-  console.log("issuedByForm::", issuedByForm);
-  console.log("fromDateTimeForm::", fromDateTimeForm.toISOString());
-  console.log("toDateTimeForm::", toDateTimeForm.toISOString());
-  console.log("paymentMethodTypesForm::", paymentMethodTypesForm);
-  console.log("permitTypeForm::", permitTypeForm);
-  console.log("usersForm::", usersForm);
+  // console.log("issuedByForm::", issuedByForm);
+  // console.log("fromDateTimeForm::", fromDateTimeForm.toISOString());
+  // console.log("toDateTimeForm::", toDateTimeForm.toISOString());
+  // console.log("paymentMethodTypesForm::", paymentMethodTypesForm);
+  // console.log("permitTypeForm::", permitTypeForm);
+  // console.log("usersForm::", selectedUsers);
+  // console.log("isAllUsersSelected::", isAllUsersSelected);
 
   const getSelectedPaymentCodes = (): PaymentCodes[] => {
     const paymentCodes: PaymentCodes[] = [];
@@ -152,8 +170,8 @@ export const PaymentAndRefundDetail = () => {
       paymentCodes.push({ paymentMethodTypeCode, paymentCardTypeCode });
     }
     return paymentCodes.concat(
-      paymentMethodTypesForm
-        ? paymentMethodTypesForm.map((key: string) => {
+      selectedPaymentMethods
+        ? selectedPaymentMethods.map((key: string) => {
             const { paymentMethodTypeCode, paymentCardTypeCode } =
               ALL_CONSOLIDATED_PAYMENT_METHODS[key];
             const paymentCodes: PaymentCodes = {
@@ -170,8 +188,8 @@ export const PaymentAndRefundDetail = () => {
 
   const getSelectedPermitTypes = (): string[] => {
     return isAllPermitTypesSelected
-      ? ["ALL"].concat(permitTypeForm)
-      : permitTypeForm;
+      ? ["ALL"].concat(selectedPermitTypes)
+      : selectedPermitTypes;
   };
 
   /**
@@ -180,33 +198,41 @@ export const PaymentAndRefundDetail = () => {
   const onClickViewReport = async () => {
     try {
       const requestObj: PaymentAndRefundDetailRequest = {
-        fromDateTime: fromDateTimeForm.toISOString(),
-        toDateTime: toDateTimeForm.toISOString(),
-        issuedBy: issuedByForm,
+        fromDateTime: fromDateTime.toISOString(),
+        toDateTime: toDateTime.toISOString(),
+        issuedBy: issuedBy,
         paymentCodes: getSelectedPaymentCodes(),
         permitType: getSelectedPermitTypes(),
       };
-      if (issuedByForm.includes("PPC")) {
-        requestObj.users = selectedIssuers;
+      if (issuedBy.includes("PPC")) {
+        requestObj.users = selectedUsers;
       }
       console.log("requestObj::", requestObj);
-      // const { blobObj: blobObjWithoutType } = await getPaymentAndRefundDetail(
-      //   requestObj
-      // );
-      // openBlobInNewTab(blobObjWithoutType);
+      const { blobObj: blobObjWithoutType } = await getPaymentAndRefundDetail(
+        requestObj
+      );
+      openBlobInNewTab(blobObjWithoutType);
     } catch (err) {
       console.error(err);
     }
   };
 
-  const onSelectUser = (event: SelectChangeEvent<typeof selectedIssuers>) => {
+  const onSelectUser = (event: SelectChangeEvent<string[]>) => {
     const {
       target: { value },
     } = event;
-    setSelectedIssuers(
-      // On autofill we get a stringified value.
-      () => (typeof value === "string" ? value.split(",") : value),
-    );
+    if (permitIssuers) {
+      console.log('value::', value);
+      const userNames = Object.keys(permitIssuers);
+      const totalUsers = userNames.length;
+      let newState: string[];
+      if (value[value.length - 1] === "ALL") {
+        newState = selectedUsers?.length === totalUsers ? [] : userNames;
+      } else {
+        newState = value as string[];
+      }
+      setValue("users", newState);
+    }
   };
 
   const onSelectPermitType = (event: SelectChangeEvent<string[]>) => {
@@ -219,14 +245,12 @@ export const PaymentAndRefundDetail = () => {
       let newState: string[];
       if (value[value.length - 1] === "ALL") {
         newState =
-          permitTypeForm.length === totalPermitTypes ? [] : permitTypeKeys;
+          selectedPermitTypes.length === totalPermitTypes ? [] : permitTypeKeys;
       } else {
         newState = value as string[];
       }
 
       setValue("permitType", newState);
-      // setSelectedPermitTypes(() => newState);
-      // onSelectCallback(newState);
     }
   };
 
@@ -241,15 +265,15 @@ export const PaymentAndRefundDetail = () => {
     } = event;
     if (value[value.length - 1] === "All Payment Methods") {
       setValue(
-        "paymentMethodTypes",
-        paymentMethodTypesForm?.length ===
+        "paymentMethods",
+        selectedPaymentMethods?.length ===
           Object.keys(CONSOLIDATED_PAYMENT_METHODS).length
           ? []
           : Object.keys(CONSOLIDATED_PAYMENT_METHODS),
       );
       return;
     }
-    setValue("paymentMethodTypes", value as string[]);
+    setValue("paymentMethods", value as string[]);
   };
 
   return (
@@ -274,19 +298,15 @@ export const PaymentAndRefundDetail = () => {
                     checked: boolean,
                   ) => {
                     if (checked) {
-                      // setIssuedBy(() => [...issuedBy, "SELF_ISSUED"]);
-                      setValue("issuedBy", [...issuedByForm, "SELF_ISSUED"]);
+                      setValue("issuedBy", [...issuedBy, "SELF_ISSUED"]);
                     } else {
-                      // setIssuedBy(() =>
-                      //   issuedBy.filter((value) => value !== "SELF_ISSUED"),
-                      // );
                       setValue(
                         "issuedBy",
-                        issuedByForm.filter((value) => value !== "SELF_ISSUED"),
+                        issuedBy.filter((value) => value !== "SELF_ISSUED"),
                       );
                     }
                   }}
-                  checked={issuedByForm.includes("SELF_ISSUED")}
+                  checked={issuedBy.includes("SELF_ISSUED")}
                   sx={{ marginLeft: "0px", paddingLeft: "0px" }}
                   name="issuedBy_SELF"
                 />
@@ -301,19 +321,15 @@ export const PaymentAndRefundDetail = () => {
                     checked: boolean,
                   ) => {
                     if (checked) {
-                      // setIssuedBy(() => [...issuedBy, "PPC"]);
-                      setValue("issuedBy", [...issuedByForm, "PPC"]);
+                      setValue("issuedBy", [...issuedBy, "PPC"]);
                     } else {
-                      // setIssuedBy(() =>
-                      //   issuedBy.filter((value) => value !== "PPC"),
-                      // );
                       setValue(
                         "issuedBy",
-                        issuedByForm.filter((value) => value !== "PPC"),
+                        issuedBy.filter((value) => value !== "PPC"),
                       );
                     }
                   }}
-                  checked={issuedByForm.includes("PPC")}
+                  checked={issuedBy.includes("PPC")}
                   sx={{ marginLeft: "0px", paddingLeft: "0px" }}
                   name="issuedBy_PPC"
                 />
@@ -326,7 +342,7 @@ export const PaymentAndRefundDetail = () => {
             <Stack direction="row">
               <FormControl
                 sx={{ width: "274px" }}
-                disabled={issuedByForm.length === 0}
+                disabled={issuedBy.length === 0}
               >
                 <FormLabel
                   className="custom-form-control__label"
@@ -355,8 +371,9 @@ export const PaymentAndRefundDetail = () => {
                     if (isAllPermitTypesSelected) return "All Permit Types";
                     return selected.join(", ");
                   }}
+                  displayEmpty
                   input={<OutlinedInput />}
-                  value={permitTypeForm}
+                  value={selectedPermitTypes}
                   MenuProps={{
                     autoFocus: false,
                   }}
@@ -370,7 +387,7 @@ export const PaymentAndRefundDetail = () => {
                       return (
                         <MenuItem key={key} value={key}>
                           <Checkbox
-                            checked={permitTypeForm.indexOf(key) > -1}
+                            checked={selectedPermitTypes.indexOf(key) > -1}
                           />
                           <ListItemText primary={key} />
                         </MenuItem>
@@ -385,7 +402,7 @@ export const PaymentAndRefundDetail = () => {
                 sx={{ width: "274px" }}
                 className="custom-form-control"
                 margin="normal"
-                disabled={issuedByForm.length === 0}
+                disabled={issuedBy.length === 0}
               >
                 <FormLabel
                   className="custom-form-control__label"
@@ -395,7 +412,6 @@ export const PaymentAndRefundDetail = () => {
                   Payment Method
                 </FormLabel>
                 <Select
-                  {...register("paymentMethodTypes")}
                   labelId="payment-method-select-label"
                   id="payment-method-select"
                   multiple
@@ -406,7 +422,7 @@ export const PaymentAndRefundDetail = () => {
                     return selected.join(", ");
                   }}
                   input={<OutlinedInput />}
-                  value={paymentMethodTypesForm}
+                  value={selectedPaymentMethods}
                   MenuProps={{
                     autoFocus: false,
                   }}
@@ -422,8 +438,8 @@ export const PaymentAndRefundDetail = () => {
                     <MenuItem key={key} value={key}>
                       <Checkbox
                         checked={
-                          paymentMethodTypesForm &&
-                          paymentMethodTypesForm.indexOf(key) > -1
+                          selectedPaymentMethods &&
+                          selectedPaymentMethods.indexOf(key) > -1
                         }
                       />
                       <ListItemText primary={key} />
@@ -438,7 +454,7 @@ export const PaymentAndRefundDetail = () => {
                 sx={{ width: "274px" }}
                 className="custom-form-control"
                 margin="normal"
-                disabled={!issuedByForm.includes("PPC")}
+                disabled={!issuedBy.includes("PPC")}
               >
                 <FormLabel
                   className="custom-form-control__label"
@@ -447,49 +463,53 @@ export const PaymentAndRefundDetail = () => {
                 >
                   Users
                 </FormLabel>
-                {/* <InputLabel id="demo-multiple-name-label">
-                <strong>Users</strong>
-              </InputLabel> */}
                 <Select
                   // labelId="demo-multiple-name-label"
                   id="demo-multiple-name"
                   multiple
                   onChange={onSelectUser}
-                  // renderValue={(selected) => selected.join(", ")}
+                  displayEmpty
                   renderValue={(selected) => {
-                    // const selectedLabels: string[] = [];
-                    // selected.forEach((selectedValue) => {
-                    //   selectedLabels.push(
-                    //     ppcList.find(({ username }) => username === selectedValue)
-                    //       ?.name as string,
-                    //   );
-                    // });
-
-                    // return selectedLabels.join(", ");
+                    console.log("selected::", selected);
+                    if (isAllUsersSelected) return "All Users";
                     return selected.join(", ");
                   }}
                   input={<OutlinedInput />}
                   // defaultValue={["All Users"]}
-                  value={selectedIssuers}
+                  value={selectedUsers}
                   aria-labelledby="users-select"
                   sx={SELECT_FIELD_STYLE.SELECT_FIELDSET}
                   inputProps={{
                     "aria-label": "users-select",
                   }}
+                  MenuProps={{
+                    autoFocus: false,
+                  }}
                 >
-                  <MenuItem key="All Users" value="All Users">
+                  <MenuItem key="All Users" value="ALL">
                     <Checkbox checked={isAllUsersSelected} />
                     <ListItemText primary={"All Users"} />
                   </MenuItem>
-                  {permitIssuers &&
-                    permitIssuers.map(({ userGUID, userName }) => (
-                      <MenuItem key={userGUID} value={userGUID}>
+                  {/* {ppcList &&
+                    ppcList.map(({ userName }) => (
+                      <MenuItem key={userName} value={userName}>
                         <Checkbox
-                          checked={selectedIssuers.indexOf(userGUID) > -1}
+                          checked={
+                            usersForm && usersForm.indexOf(userName) > -1
+                          }
                         />
                         <ListItemText primary={userName} />
                       </MenuItem>
-                    ))}
+                    ))} */}
+                  {permitIssuers ?
+                    Object.keys(permitIssuers).map((key) => (
+                      <MenuItem key={key} value={key}>
+                        <Checkbox
+                          checked={selectedUsers && selectedUsers.indexOf(key) > -1}
+                        />
+                        <ListItemText primary={key} />
+                      </MenuItem>
+                    )): []}
                 </Select>
               </FormControl>
             </Stack>
@@ -499,7 +519,7 @@ export const PaymentAndRefundDetail = () => {
                   className="custom-form-control"
                   margin="normal"
                   sx={{ width: "274px" }}
-                  disabled={issuedByForm.length === 0}
+                  disabled={issuedBy.length === 0}
                 >
                   <FormLabel
                     className="custom-form-control__label"
@@ -510,7 +530,6 @@ export const PaymentAndRefundDetail = () => {
                   </FormLabel>
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <DateTimePicker
-                      // {...register("fromDateTime")}
                       defaultValue={dayjs()
                         .subtract(1, "day")
                         .set("h", 21)
@@ -528,7 +547,7 @@ export const PaymentAndRefundDetail = () => {
                       onChange={(value: Dayjs | null) => {
                         setValue("fromDateTime", value as Dayjs);
                       }}
-                      disabled={issuedByForm.length === 0}
+                      disabled={issuedBy.length === 0}
                       views={["year", "month", "day", "hours", "minutes"]}
                     />
                   </LocalizationProvider>
@@ -539,7 +558,7 @@ export const PaymentAndRefundDetail = () => {
                   className="custom-form-control"
                   margin="normal"
                   sx={{ width: "274px" }}
-                  disabled={issuedByForm.length === 0}
+                  disabled={issuedBy.length === 0}
                 >
                   <FormLabel
                     className="custom-form-control__label"
@@ -550,9 +569,8 @@ export const PaymentAndRefundDetail = () => {
                   </FormLabel>
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <DateTimePicker
-                      disabled={issuedByForm.length === 0}
+                      disabled={issuedBy.length === 0}
                       onChange={(value: Dayjs | null) => {
-                        // setToDateTime(() => value as Dayjs);
                         setValue("toDateTime", value as Dayjs);
                       }}
                       format="YYYY/MM/DD hh:mm A"
@@ -579,7 +597,7 @@ export const PaymentAndRefundDetail = () => {
                 aria-label="View Report"
                 variant="contained"
                 color="primary"
-                disabled={issuedByForm.length === 0}
+                disabled={issuedBy.length === 0}
                 onClick={onClickViewReport}
               >
                 View Report
