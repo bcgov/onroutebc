@@ -122,15 +122,8 @@ export const PaymentAndRefundDetail = () => {
     Object.keys(CONSOLIDATED_PAYMENT_METHODS).length ===
     selectedPaymentMethods.length;
 
-  const issuedByForm = watch('issuedBy');
-  const [fromDateTime, setFromDateTime] = useState<Dayjs>(
-    dayjs()
-      .subtract(1, "day")
-      .set("h", 21)
-      .set("m", 0)
-      .set("s", 0)
-      .set("ms", 0),
-  );
+  const issuedByForm = watch("issuedBy");
+  const fromDateTimeForm = watch("fromDateTime");
   const [toDateTime, setToDateTime] = useState<Dayjs>(
     dayjs().set("h", 20).set("m", 59).set("s", 59).set("ms", 999),
   );
@@ -169,7 +162,7 @@ export const PaymentAndRefundDetail = () => {
   const onClickViewReport = async () => {
     try {
       const requestObj: PaymentAndRefundDetailRequest = {
-        fromDateTime: fromDateTime.toISOString(),
+        fromDateTime: fromDateTimeForm.toISOString(),
         toDateTime: toDateTime.toISOString(),
         issuedBy: issuedByForm,
         paymentCodes: getSelectedPaymentCodes(),
@@ -221,7 +214,9 @@ export const PaymentAndRefundDetail = () => {
 
     setSelectedPaymentMethods(() => value as string[]);
   };
-  console.log('issuedByForm::', issuedByForm);
+  console.log("issuedByForm::", issuedByForm);
+  console.log("fromDateTimeForm::", fromDateTimeForm.toISOString());
+
   return (
     <FormProvider {...formMethods}>
       <Stack style={{ width: "900px" }} spacing={2}>
@@ -476,6 +471,7 @@ export const PaymentAndRefundDetail = () => {
                   </FormLabel>
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <DateTimePicker
+                      // {...register("fromDateTime")}
                       defaultValue={dayjs()
                         .subtract(1, "day")
                         .set("h", 21)
@@ -491,7 +487,7 @@ export const PaymentAndRefundDetail = () => {
                         },
                       }}
                       onChange={(value: Dayjs | null) => {
-                        setFromDateTime(() => value as Dayjs);
+                        setValue("fromDateTime", value as Dayjs);
                       }}
                       disabled={issuedByForm.length === 0}
                       views={["year", "month", "day", "hours", "minutes"]}
