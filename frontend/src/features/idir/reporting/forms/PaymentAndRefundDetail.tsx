@@ -31,6 +31,16 @@ import {
 import { usePermitIssuersQuery } from "../../search/api/users";
 import "./style.scss";
 import { SelectPermitTypes } from "./subcomponents/SelectPermitType";
+import { FormProvider, useForm } from "react-hook-form";
+
+interface PaymentAndRefundDetailRequestDayJs {
+  permitType: string[];
+  paymentMethodType?: string[];
+  users?: string[];
+  fromDateTime: Dayjs;
+  toDateTime: Dayjs;
+  issuedBy: string[];
+}
 
 /**
  * Component for Payment and Refund Detail form
@@ -85,6 +95,25 @@ export const PaymentAndRefundDetail = () => {
   //   "All Payment Methods",
   // ]);
 
+  const formMethods = useForm<PaymentAndRefundDetailRequestDayJs>({
+    defaultValues: {
+      issuedBy: ["SELF_ISSUED", "PPC"],
+      fromDateTime: dayjs()
+        .subtract(1, "day")
+        .set("h", 21)
+        .set("m", 0)
+        .set("s", 0)
+        .set("ms", 0),
+      toDateTime: dayjs().set("h", 20).set("m", 59).set("s", 59).set("ms", 999),
+      paymentMethodType: Object.keys(CONSOLIDATED_PAYMENT_METHODS),
+      permitType: Object.keys(permitTypes ?? []),
+      users: permitIssuers?.map(({ userGUID }) => userGUID),
+    },
+    reValidateMode: "onBlur",
+  });
+
+  const { watch, register, setValue } = formMethods;
+
   const [selectedPaymentMethods, setSelectedPaymentMethods] = useState<
     string[]
   >(Object.keys(CONSOLIDATED_PAYMENT_METHODS));
@@ -93,7 +122,7 @@ export const PaymentAndRefundDetail = () => {
     Object.keys(CONSOLIDATED_PAYMENT_METHODS).length ===
     selectedPaymentMethods.length;
 
-  const [issuedBy, setIssuedBy] = useState<string[]>(["SELF_ISSUED", "PPC"]);
+  const issuedByForm = watch('issuedBy');
   const [fromDateTime, setFromDateTime] = useState<Dayjs>(
     dayjs()
       .subtract(1, "day")
@@ -142,11 +171,11 @@ export const PaymentAndRefundDetail = () => {
       const requestObj: PaymentAndRefundDetailRequest = {
         fromDateTime: fromDateTime.toISOString(),
         toDateTime: toDateTime.toISOString(),
-        issuedBy,
+        issuedBy: issuedByForm,
         paymentCodes: getSelectedPaymentCodes(),
         permitType: getSelectedPermitTypes(),
       };
-      if (issuedBy.includes("PPC")) {
+      if (issuedByForm.includes("PPC")) {
         requestObj.users = selectedIssuers;
       }
       console.log("requestObj::", requestObj);
@@ -192,95 +221,100 @@ export const PaymentAndRefundDetail = () => {
 
     setSelectedPaymentMethods(() => value as string[]);
   };
+  console.log('issuedByForm::', issuedByForm);
   return (
-    <Stack style={{ width: "900px" }} spacing={2}>
-      <h2>Payment and Refund Detail</h2>
-      <Divider
-        flexItem
-        orientation="horizontal"
-        color={BC_COLOURS.bc_border_grey}
-      />
-      <FormGroup>
-        <span>
-          <strong>Issued By</strong>
-        </span>
-        <Stack direction="row" spacing={5}>
-          <FormControlLabel
-            control={
-              <Checkbox
-                onChange={(
-                  _event: React.ChangeEvent<HTMLInputElement>,
-                  checked: boolean,
-                ) => {
-                  if (checked) {
-                    setIssuedBy(() => [...issuedBy, "SELF_ISSUED"]);
-                  } else {
-                    setIssuedBy(() =>
-                      issuedBy.filter((value) => value !== "SELF_ISSUED"),
-                    );
-                  }
-                  //   const issuedBy = getValues("issuedBy");
-                  //   if (checked) {
-                  //     issuedBy.push("SELF_ISSUED");
-                  //   } else {
-                  //     delete issuedBy[issuedBy.indexOf("SELF_ISSUED")];
-                  //   }
-                  //   setValue("issuedBy", issuedBy);
-                }}
-                checked={issuedBy.includes("SELF_ISSUED")}
-                sx={{ marginLeft: "0px", paddingLeft: "0px" }}
-                name="issuedBy"
-              />
-            }
-            label="Self Issued"
-          />
-          <FormControlLabel
-            control={
-              <Checkbox
-                onChange={(
-                  _event: React.ChangeEvent<HTMLInputElement>,
-                  checked: boolean,
-                ) => {
-                  if (checked) {
-                    setIssuedBy(() => [...issuedBy, "PPC"]);
-                  } else {
-                    setIssuedBy(() =>
-                      issuedBy.filter((value) => value !== "PPC"),
-                    );
-                  }
-                }}
-                checked={issuedBy.includes("PPC")}
-                sx={{ marginLeft: "0px", paddingLeft: "0px" }}
-                name="issuedBy"
-              />
-            }
-            label="PPC"
-          />
-        </Stack>
-        <br />
-        <Stack spacing={2}>
-          <Stack direction="row">
-            <FormControl
-              sx={{ width: "274px" }}
-              disabled={issuedBy.length === 0}
-            >
-              <FormLabel
-                className="custom-form-control__label"
-                id="payment-method-select"
-                sx={{ fontWeight: "bold", marginBottom: "8px" }}
-              >
-                Permit Type
-              </FormLabel>
-              {permitTypes && (
-                <SelectPermitTypes
-                  key={"Select-Permit-Type"}
-                  onSelectCallback={(value) => {
-                    setSelectedPermitTypes(() => value);
+    <FormProvider {...formMethods}>
+      <Stack style={{ width: "900px" }} spacing={2}>
+        <h2>Payment and Refund Detail</h2>
+        <Divider
+          flexItem
+          orientation="horizontal"
+          color={BC_COLOURS.bc_border_grey}
+        />
+        <FormGroup>
+          <span>
+            <strong>Issued By</strong>
+          </span>
+          <Stack direction="row" spacing={5}>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  onChange={(
+                    _event: React.ChangeEvent<HTMLInputElement>,
+                    checked: boolean,
+                  ) => {
+                    if (checked) {
+                      // setIssuedBy(() => [...issuedBy, "SELF_ISSUED"]);
+                      setValue("issuedBy", [...issuedByForm, "SELF_ISSUED"]);
+                    } else {
+                      // setIssuedBy(() =>
+                      //   issuedBy.filter((value) => value !== "SELF_ISSUED"),
+                      // );
+                      setValue(
+                        "issuedBy",
+                        issuedByForm.filter((value) => value !== "SELF_ISSUED"),
+                      );
+                    }
                   }}
-                  permitTypes={permitTypes ?? {}}
+                  checked={issuedByForm.includes("SELF_ISSUED")}
+                  sx={{ marginLeft: "0px", paddingLeft: "0px" }}
+                  name="issuedBy_SELF"
                 />
-              )}
-              {/* <Select
+              }
+              label="Self Issued"
+            />
+            <FormControlLabel
+              control={
+                <Checkbox
+                  onChange={(
+                    _event: React.ChangeEvent<HTMLInputElement>,
+                    checked: boolean,
+                  ) => {
+                    if (checked) {
+                      // setIssuedBy(() => [...issuedBy, "PPC"]);
+                      setValue("issuedBy", [...issuedByForm, "PPC"]);
+                    } else {
+                      // setIssuedBy(() =>
+                      //   issuedBy.filter((value) => value !== "PPC"),
+                      // );
+                      setValue(
+                        "issuedBy",
+                        issuedByForm.filter((value) => value !== "PPC"),
+                      );
+                    }
+                  }}
+                  checked={issuedByForm.includes("PPC")}
+                  sx={{ marginLeft: "0px", paddingLeft: "0px" }}
+                  name="issuedBy_PPC"
+                />
+              }
+              label="PPC"
+            />
+          </Stack>
+          <br />
+          <Stack spacing={2}>
+            <Stack direction="row">
+              <FormControl
+                sx={{ width: "274px" }}
+                disabled={issuedByForm.length === 0}
+              >
+                <FormLabel
+                  className="custom-form-control__label"
+                  id="payment-method-select"
+                  sx={{ fontWeight: "bold", marginBottom: "8px" }}
+                >
+                  Permit Type
+                </FormLabel>
+                {permitTypes && (
+                  <SelectPermitTypes
+                    key={"Select-Permit-Type"}
+                    onSelectCallback={(value) => {
+                      setSelectedPermitTypes(() => value);
+                    }}
+                    permitTypes={permitTypes ?? {}}
+                  />
+                )}
+                {/* <Select
                 labelId="demo-multiple-name-label"
                 id="demo-multiple-name"
                 multiple
@@ -313,209 +347,211 @@ export const PaymentAndRefundDetail = () => {
                     );
                   })}
               </Select> */}
-            </FormControl>
-          </Stack>
+              </FormControl>
+            </Stack>
 
-          <Stack>
-            <FormControl
-              sx={{ width: "274px" }}
-              className="custom-form-control"
-              margin="normal"
-              disabled={issuedBy.length === 0}
-            >
-              <FormLabel
-                className="custom-form-control__label"
-                id="payment-method-select-label"
-                sx={{ fontWeight: "bold", marginBottom: "8px" }}
+            <Stack>
+              <FormControl
+                sx={{ width: "274px" }}
+                className="custom-form-control"
+                margin="normal"
+                disabled={issuedByForm.length === 0}
               >
-                Payment Method
-              </FormLabel>
-              <Select
-                labelId="payment-method-select-label"
-                id="payment-method-select"
-                multiple
-                onChange={onSelectPaymentMethod}
-                renderValue={(selected) => {
-                  if (isAllPaymentMethodsSelected) return "All Payment Methods";
-                  return selected.join(", ");
-                }}
-                input={<OutlinedInput />}
-                value={selectedPaymentMethods}
-                MenuProps={{
-                  autoFocus: false,
-                }}
-              >
-                <MenuItem
-                  key={"All Payment Methods"}
-                  value={"All Payment Methods"}
+                <FormLabel
+                  className="custom-form-control__label"
+                  id="payment-method-select-label"
+                  sx={{ fontWeight: "bold", marginBottom: "8px" }}
                 >
-                  <Checkbox checked={isAllPaymentMethodsSelected} />
-                  <ListItemText primary={"All Payment Methods"} />
-                </MenuItem>
-                {Object.keys(CONSOLIDATED_PAYMENT_METHODS).map((key) => (
-                  <MenuItem key={key} value={key}>
-                    <Checkbox
-                      checked={selectedPaymentMethods.indexOf(key) > -1}
-                    />
-                    <ListItemText primary={key} />
+                  Payment Method
+                </FormLabel>
+                <Select
+                  labelId="payment-method-select-label"
+                  id="payment-method-select"
+                  multiple
+                  onChange={onSelectPaymentMethod}
+                  renderValue={(selected) => {
+                    if (isAllPaymentMethodsSelected)
+                      return "All Payment Methods";
+                    return selected.join(", ");
+                  }}
+                  input={<OutlinedInput />}
+                  value={selectedPaymentMethods}
+                  MenuProps={{
+                    autoFocus: false,
+                  }}
+                >
+                  <MenuItem
+                    key={"All Payment Methods"}
+                    value={"All Payment Methods"}
+                  >
+                    <Checkbox checked={isAllPaymentMethodsSelected} />
+                    <ListItemText primary={"All Payment Methods"} />
                   </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Stack>
-
-          <Stack direction="row">
-            <FormControl
-              sx={{ width: "274px" }}
-              className="custom-form-control"
-              margin="normal"
-              disabled={!issuedBy.includes("PPC")}
-            >
-              <FormLabel
-                className="custom-form-control__label"
-                id="users-select"
-                sx={{ fontWeight: "bold", marginBottom: "8px" }}
-              >
-                Users
-              </FormLabel>
-              {/* <InputLabel id="demo-multiple-name-label">
-                <strong>Users</strong>
-              </InputLabel> */}
-              <Select
-                // labelId="demo-multiple-name-label"
-                id="demo-multiple-name"
-                multiple
-                onChange={onSelectUser}
-                // renderValue={(selected) => selected.join(", ")}
-                renderValue={(selected) => {
-                  // const selectedLabels: string[] = [];
-                  // selected.forEach((selectedValue) => {
-                  //   selectedLabels.push(
-                  //     ppcList.find(({ username }) => username === selectedValue)
-                  //       ?.name as string,
-                  //   );
-                  // });
-
-                  // return selectedLabels.join(", ");
-                  return selected.join(", ");
-                }}
-                input={<OutlinedInput />}
-                // defaultValue={["All Users"]}
-                value={selectedIssuers}
-                aria-labelledby="users-select"
-                sx={SELECT_FIELD_STYLE.SELECT_FIELDSET}
-                inputProps={{
-                  "aria-label": "users-select",
-                }}
-              >
-                <MenuItem key="All Users" value="All Users">
-                  <Checkbox checked={isAllUsersSelected} />
-                  <ListItemText primary={"All Users"} />
-                </MenuItem>
-                {permitIssuers &&
-                  permitIssuers.map(({ userGUID, userName }) => (
-                    <MenuItem key={userGUID} value={userGUID}>
+                  {Object.keys(CONSOLIDATED_PAYMENT_METHODS).map((key) => (
+                    <MenuItem key={key} value={key}>
                       <Checkbox
-                        checked={selectedIssuers.indexOf(userGUID) > -1}
+                        checked={selectedPaymentMethods.indexOf(key) > -1}
                       />
-                      <ListItemText primary={userName} />
+                      <ListItemText primary={key} />
                     </MenuItem>
                   ))}
-              </Select>
-            </FormControl>
-          </Stack>
-          <Stack direction="row" spacing={3}>
-            <>
+                </Select>
+              </FormControl>
+            </Stack>
+
+            <Stack direction="row">
               <FormControl
+                sx={{ width: "274px" }}
                 className="custom-form-control"
                 margin="normal"
-                sx={{ width: "274px" }}
-                disabled={issuedBy.length === 0}
+                disabled={!issuedByForm.includes("PPC")}
               >
                 <FormLabel
                   className="custom-form-control__label"
-                  id={`label`}
+                  id="users-select"
                   sx={{ fontWeight: "bold", marginBottom: "8px" }}
                 >
-                  From
+                  Users
                 </FormLabel>
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <DateTimePicker
-                    defaultValue={dayjs()
-                      .subtract(1, "day")
-                      .set("h", 21)
-                      .set("m", 0)
-                      .set("s", 0)
-                      .set("ms", 0)}
-                    format="YYYY/MM/DD hh:mm A"
-                    slotProps={{
-                      digitalClockSectionItem: {
-                        sx: {
-                          width: "76px",
+                {/* <InputLabel id="demo-multiple-name-label">
+                <strong>Users</strong>
+              </InputLabel> */}
+                <Select
+                  // labelId="demo-multiple-name-label"
+                  id="demo-multiple-name"
+                  multiple
+                  onChange={onSelectUser}
+                  // renderValue={(selected) => selected.join(", ")}
+                  renderValue={(selected) => {
+                    // const selectedLabels: string[] = [];
+                    // selected.forEach((selectedValue) => {
+                    //   selectedLabels.push(
+                    //     ppcList.find(({ username }) => username === selectedValue)
+                    //       ?.name as string,
+                    //   );
+                    // });
+
+                    // return selectedLabels.join(", ");
+                    return selected.join(", ");
+                  }}
+                  input={<OutlinedInput />}
+                  // defaultValue={["All Users"]}
+                  value={selectedIssuers}
+                  aria-labelledby="users-select"
+                  sx={SELECT_FIELD_STYLE.SELECT_FIELDSET}
+                  inputProps={{
+                    "aria-label": "users-select",
+                  }}
+                >
+                  <MenuItem key="All Users" value="All Users">
+                    <Checkbox checked={isAllUsersSelected} />
+                    <ListItemText primary={"All Users"} />
+                  </MenuItem>
+                  {permitIssuers &&
+                    permitIssuers.map(({ userGUID, userName }) => (
+                      <MenuItem key={userGUID} value={userGUID}>
+                        <Checkbox
+                          checked={selectedIssuers.indexOf(userGUID) > -1}
+                        />
+                        <ListItemText primary={userName} />
+                      </MenuItem>
+                    ))}
+                </Select>
+              </FormControl>
+            </Stack>
+            <Stack direction="row" spacing={3}>
+              <>
+                <FormControl
+                  className="custom-form-control"
+                  margin="normal"
+                  sx={{ width: "274px" }}
+                  disabled={issuedByForm.length === 0}
+                >
+                  <FormLabel
+                    className="custom-form-control__label"
+                    id={`label`}
+                    sx={{ fontWeight: "bold", marginBottom: "8px" }}
+                  >
+                    From
+                  </FormLabel>
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DateTimePicker
+                      defaultValue={dayjs()
+                        .subtract(1, "day")
+                        .set("h", 21)
+                        .set("m", 0)
+                        .set("s", 0)
+                        .set("ms", 0)}
+                      format="YYYY/MM/DD hh:mm A"
+                      slotProps={{
+                        digitalClockSectionItem: {
+                          sx: {
+                            width: "76px",
+                          },
                         },
-                      },
-                    }}
-                    onChange={(value: Dayjs | null) => {
-                      setFromDateTime(() => value as Dayjs);
-                    }}
-                    disabled={issuedBy.length === 0}
-                    views={["year", "month", "day", "hours", "minutes"]}
-                  />
-                </LocalizationProvider>
-              </FormControl>
-            </>
-            <>
-              <FormControl
-                className="custom-form-control"
-                margin="normal"
-                sx={{ width: "274px" }}
-                disabled={issuedBy.length === 0}
-              >
-                <FormLabel
-                  className="custom-form-control__label"
-                  id={`label`}
-                  sx={{ fontWeight: "bold", marginBottom: "8px" }}
+                      }}
+                      onChange={(value: Dayjs | null) => {
+                        setFromDateTime(() => value as Dayjs);
+                      }}
+                      disabled={issuedByForm.length === 0}
+                      views={["year", "month", "day", "hours", "minutes"]}
+                    />
+                  </LocalizationProvider>
+                </FormControl>
+              </>
+              <>
+                <FormControl
+                  className="custom-form-control"
+                  margin="normal"
+                  sx={{ width: "274px" }}
+                  disabled={issuedByForm.length === 0}
                 >
-                  To
-                </FormLabel>
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <DateTimePicker
-                    disabled={issuedBy.length === 0}
-                    onChange={(value: Dayjs | null) => {
-                      setToDateTime(() => value as Dayjs);
-                    }}
-                    format="YYYY/MM/DD hh:mm A"
-                    defaultValue={dayjs()
-                      .set("h", 20)
-                      .set("m", 59)
-                      .set("s", 59)
-                      .set("ms", 999)}
-                    views={["year", "month", "day", "hours", "minutes"]}
-                    // slotProps={{
-                    //   textField: {
-                    //     helperText: "Select a from date time",
-                    //   },
-                    // }}
-                  />
-                </LocalizationProvider>
-              </FormControl>
-            </>
+                  <FormLabel
+                    className="custom-form-control__label"
+                    id={`label`}
+                    sx={{ fontWeight: "bold", marginBottom: "8px" }}
+                  >
+                    To
+                  </FormLabel>
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DateTimePicker
+                      disabled={issuedByForm.length === 0}
+                      onChange={(value: Dayjs | null) => {
+                        setToDateTime(() => value as Dayjs);
+                      }}
+                      format="YYYY/MM/DD hh:mm A"
+                      defaultValue={dayjs()
+                        .set("h", 20)
+                        .set("m", 59)
+                        .set("s", 59)
+                        .set("ms", 999)}
+                      views={["year", "month", "day", "hours", "minutes"]}
+                      // slotProps={{
+                      //   textField: {
+                      //     helperText: "Select a from date time",
+                      //   },
+                      // }}
+                    />
+                  </LocalizationProvider>
+                </FormControl>
+              </>
+            </Stack>
+            <br />
+            <Stack direction="row">
+              <Button
+                key="view-report-button"
+                aria-label="View Report"
+                variant="contained"
+                color="primary"
+                disabled={issuedByForm.length === 0}
+                onClick={onClickViewReport}
+              >
+                View Report
+              </Button>
+            </Stack>
           </Stack>
-          <br />
-          <Stack direction="row">
-            <Button
-              key="view-report-button"
-              aria-label="View Report"
-              variant="contained"
-              color="primary"
-              disabled={issuedBy.length === 0}
-              onClick={onClickViewReport}
-            >
-              View Report
-            </Button>
-          </Stack>
-        </Stack>
-      </FormGroup>
-    </Stack>
+        </FormGroup>
+      </Stack>
+    </FormProvider>
   );
 };
