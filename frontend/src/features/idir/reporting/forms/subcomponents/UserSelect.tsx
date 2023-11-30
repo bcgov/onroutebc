@@ -53,56 +53,54 @@ export const UserSelect = ({ permitIssuers }: UserSelectProps) => {
     }
   };
   return (
-    <>
-      <FormControl
-        sx={{ width: "274px" }}
-        className="custom-form-control"
-        margin="normal"
-        disabled={!issuedBy.includes(REPORT_ISSUED_BY.PPC)}
+    <FormControl
+      sx={{ width: "274px" }}
+      className="custom-form-control"
+      margin="normal"
+      disabled={!issuedBy.includes(REPORT_ISSUED_BY.PPC)}
+    >
+      <FormLabel
+        className="custom-form-control__label"
+        id="report-users-select-label"
+        sx={{ fontWeight: "bold", marginBottom: "8px" }}
       >
-        <FormLabel
-          className="custom-form-control__label"
-          id="report-users-select-label"
-          sx={{ fontWeight: "bold", marginBottom: "8px" }}
-        >
-          Users
-        </FormLabel>
-        <Select
-          id="report-user-select"
-          multiple
-          onChange={onSelectUser}
-          displayEmpty
-          renderValue={(selected) => {
-            if (isAllUsersSelected) return "All Users";
-            return selected.join(", ");
-          }}
-          input={<OutlinedInput />}
-          value={selectedUsers}
-          aria-labelledby="users-select"
-          sx={SELECT_FIELD_STYLE.SELECT_FIELDSET}
-          inputProps={{
-            "aria-label": "report-users-select-label",
-          }}
-          MenuProps={{
-            autoFocus: false,
-          }}
-        >
-          <MenuItem key="All Users" value="ALL">
-            <Checkbox checked={isAllUsersSelected} />
-            <ListItemText primary={"All Users"} />
-          </MenuItem>
-          {permitIssuers
-            ? Object.keys(permitIssuers).map((key) => (
-                <MenuItem key={key} value={key}>
-                  <Checkbox
-                    checked={selectedUsers && selectedUsers.indexOf(key) > -1}
-                  />
-                  <ListItemText primary={key} />
-                </MenuItem>
-              ))
-            : []}
-        </Select>
-      </FormControl>
-    </>
+        Users
+      </FormLabel>
+      <Select
+        id="report-user-select"
+        multiple
+        onChange={onSelectUser}
+        displayEmpty
+        renderValue={(selected) => {
+          if (isAllUsersSelected) return "All Users";
+          return selected.join(", ");
+        }}
+        input={<OutlinedInput />}
+        value={selectedUsers}
+        aria-labelledby="users-select"
+        sx={SELECT_FIELD_STYLE.SELECT_FIELDSET}
+        inputProps={{
+          "aria-label": "report-users-select-label",
+        }}
+        MenuProps={{
+          autoFocus: false,
+        }}
+      >
+        <MenuItem key="All Users" value="ALL">
+          <Checkbox checked={isAllUsersSelected} />
+          <ListItemText primary={"All Users"} />
+        </MenuItem>
+        {permitIssuers
+          ? Object.keys(permitIssuers).map((key) => (
+              <MenuItem key={key} value={key}>
+                <Checkbox
+                  checked={selectedUsers && selectedUsers.indexOf(key) > -1}
+                />
+                <ListItemText primary={key} />
+              </MenuItem>
+            ))
+          : []}
+      </Select>
+    </FormControl>
   );
 };
