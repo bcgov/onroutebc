@@ -1,24 +1,9 @@
-import {
-  Button,
-  Checkbox,
-  Divider,
-  FormControl,
-  FormControlLabel,
-  FormGroup,
-  FormLabel,
-  ListItemText,
-  MenuItem,
-  OutlinedInput,
-  Select,
-  SelectChangeEvent,
-  Stack,
-} from "@mui/material";
-import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { Button, Divider, FormGroup, Stack } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
-import dayjs, { Dayjs } from "dayjs";
+import dayjs from "dayjs";
 import { useContext, useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
+import { SnackBarContext } from "../../../../App";
 import { ONE_HOUR } from "../../../../common/constants/constants";
 import {
   ALL_CONSOLIDATED_PAYMENT_METHODS,
@@ -26,7 +11,6 @@ import {
   PaymentMethodAndCardTypeCodes,
 } from "../../../../common/types/paymentMethods";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
-import { SELECT_FIELD_STYLE } from "../../../../themes/orbcStyles";
 import { openBlobInNewTab } from "../../../permits/helpers/permitPDFHelper";
 import { getPaymentAndRefundDetail, usePermitTypesQuery } from "../api/reports";
 import { getPermitIssuers } from "../api/users";
@@ -35,15 +19,13 @@ import {
   PaymentAndRefundDetailRequest,
   REPORT_ISSUED_BY,
   ReadUserDtoForReport,
-  ReportIssuedByType,
 } from "../types/types";
 import "./style.scss";
-import { SnackBarContext } from "../../../../App";
 import { IssuedByCheckBox } from "./subcomponents/IssuedByCheckBox";
-import { PermitTypeSelect } from "./subcomponents/PermitTypeSelect";
 import { PaymentMethodSelect } from "./subcomponents/PaymentMethodSelect";
-import { UserSelect } from "./subcomponents/UserSelect";
+import { PermitTypeSelect } from "./subcomponents/PermitTypeSelect";
 import { ReportDateTimePickers } from "./subcomponents/ReportDateTimePickers";
+import { UserSelect } from "./subcomponents/UserSelect";
 
 /**
  * Component for Payment and Refund Detail form
@@ -129,40 +111,38 @@ export const PaymentAndRefundDetail = () => {
     }
   }, [ispermitIssuersQueryLoading]);
 
-  // console.log("issuedByForm::", issuedByForm);
-  // console.log("fromDateTimeForm::", fromDateTimeForm.toISOString());
-  // console.log("toDateTimeForm::", toDateTimeForm.toISOString());
-  // console.log("paymentMethodTypesForm::", paymentMethodTypesForm);
-  // console.log("permitTypeForm::", permitTypeForm);
-  // console.log("usersForm::", selectedUsers);
-  // console.log("isAllUsersSelected::", isAllUsersSelected);
-
   /**
+   * Uses the CONSOLIDATED PAYMENT METHODS object to get
+   * 1) paymentMethodTypeCode
+   * 2) paymentCardTypeCode
+   * and presents it as an array.
+   *
    * @returns The transformed payment codes aligned with API specification.
    */
-  const transformSelectedPaymentCodes = (): PaymentMethodAndCardTypeCodes[] => {
-    const paymentCodes: PaymentMethodAndCardTypeCodes[] = [];
-    if (isAllPaymentMethodsSelected) {
-      const { paymentMethodTypeCode, paymentCardTypeCode } =
-        ALL_CONSOLIDATED_PAYMENT_METHODS["All Payment Methods"];
-      paymentCodes.push({ paymentMethodTypeCode, paymentCardTypeCode });
-    }
-    return paymentCodes.concat(
-      selectedPaymentMethods
-        ? selectedPaymentMethods.map((key: string) => {
-            const { paymentMethodTypeCode, paymentCardTypeCode } =
-              ALL_CONSOLIDATED_PAYMENT_METHODS[key];
-            const paymentCodes: PaymentMethodAndCardTypeCodes = {
-              paymentMethodTypeCode,
-            };
-            if (paymentCardTypeCode) {
-              paymentCodes.paymentCardTypeCode = paymentCardTypeCode;
-            }
-            return paymentCodes;
-          })
-        : [],
-    );
-  };
+  const transformSelectedPaymentMethods =
+    (): PaymentMethodAndCardTypeCodes[] => {
+      const paymentCodes: PaymentMethodAndCardTypeCodes[] = [];
+      if (isAllPaymentMethodsSelected) {
+        const { paymentMethodTypeCode, paymentCardTypeCode } =
+          ALL_CONSOLIDATED_PAYMENT_METHODS["All Payment Methods"];
+        paymentCodes.push({ paymentMethodTypeCode, paymentCardTypeCode });
+      }
+      return paymentCodes.concat(
+        selectedPaymentMethods
+          ? selectedPaymentMethods.map((key: string) => {
+              const { paymentMethodTypeCode, paymentCardTypeCode } =
+                ALL_CONSOLIDATED_PAYMENT_METHODS[key];
+              const paymentCodes: PaymentMethodAndCardTypeCodes = {
+                paymentMethodTypeCode,
+              };
+              if (paymentCardTypeCode) {
+                paymentCodes.paymentCardTypeCode = paymentCardTypeCode;
+              }
+              return paymentCodes;
+            })
+          : [],
+      );
+    };
 
   /**
    * @returns A string array containing the permit types.
@@ -183,7 +163,7 @@ export const PaymentAndRefundDetail = () => {
         fromDateTime: fromDateTime.toISOString(),
         toDateTime: toDateTime.toISOString(),
         issuedBy: issuedBy,
-        paymentCodes: transformSelectedPaymentCodes(),
+        paymentCodes: transformSelectedPaymentMethods(),
         permitType: transformSelectedPermitTypes(),
       };
       if (issuedBy.includes(REPORT_ISSUED_BY.PPC)) {
@@ -243,81 +223,6 @@ export const PaymentAndRefundDetail = () => {
             </Stack>
             <Stack direction="row" spacing={3}>
               <ReportDateTimePickers />
-              {/* <>
-                <FormControl
-                  className="custom-form-control"
-                  margin="normal"
-                  sx={{ width: "274px" }}
-                  disabled={issuedBy.length === 0}
-                >
-                  <FormLabel
-                    className="custom-form-control__label"
-                    id={`label`}
-                    sx={{ fontWeight: "bold", marginBottom: "8px" }}
-                  >
-                    From
-                  </FormLabel>
-                  <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DateTimePicker
-                      defaultValue={dayjs()
-                        .subtract(1, "day")
-                        .set("h", 21)
-                        .set("m", 0)
-                        .set("s", 0)
-                        .set("ms", 0)}
-                      format="YYYY/MM/DD hh:mm A"
-                      slotProps={{
-                        digitalClockSectionItem: {
-                          sx: {
-                            width: "76px",
-                          },
-                        },
-                      }}
-                      onChange={(value: Dayjs | null) => {
-                        setValue("fromDateTime", value as Dayjs);
-                      }}
-                      disabled={issuedBy.length === 0}
-                      views={["year", "month", "day", "hours", "minutes"]}
-                    />
-                  </LocalizationProvider>
-                </FormControl>
-              </>
-              <>
-                <FormControl
-                  className="custom-form-control"
-                  margin="normal"
-                  sx={{ width: "274px" }}
-                  disabled={issuedBy.length === 0}
-                >
-                  <FormLabel
-                    className="custom-form-control__label"
-                    id={`label`}
-                    sx={{ fontWeight: "bold", marginBottom: "8px" }}
-                  >
-                    To
-                  </FormLabel>
-                  <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DateTimePicker
-                      disabled={issuedBy.length === 0}
-                      onChange={(value: Dayjs | null) => {
-                        setValue("toDateTime", value as Dayjs);
-                      }}
-                      format="YYYY/MM/DD hh:mm A"
-                      defaultValue={dayjs()
-                        .set("h", 20)
-                        .set("m", 59)
-                        .set("s", 59)
-                        .set("ms", 999)}
-                      views={["year", "month", "day", "hours", "minutes"]}
-                      // slotProps={{
-                      //   textField: {
-                      //     helperText: "Select a from date time",
-                      //   },
-                      // }}
-                    />
-                  </LocalizationProvider>
-                </FormControl>
-              </> */}
             </Stack>
             <br />
             <Stack direction="row">
