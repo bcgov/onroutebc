@@ -38,7 +38,7 @@ jobs:
       packages: write
     strategy:
       matrix:
-        package: [dops, vehicles, frontend]
+        package: [dops, vehicles, frontend, tps-migration]
     timeout-minutes: 2
     steps:
       - uses: shrink/actions-docker-registry-tag@v3
@@ -69,7 +69,7 @@ jobs:
       packages: write
     strategy:
       matrix:
-        package: [dops, vehicles, frontend]
+        package: [dops, vehicles, frontend, tps-migration]
     timeout-minutes: 2
     steps:
       - uses: shrink/actions-docker-registry-tag@v3
