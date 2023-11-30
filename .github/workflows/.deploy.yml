@@ -57,7 +57,7 @@ jobs:
   # https://github.com/bcgov-nr/action-deployer-openshift
   deploys:
     name: Helm
-    environment: ${{ github.event.number || github.event.release.tag_name || inputs.zone}}
+    environment: ${{ inputs.zone}}
     runs-on: ubuntu-22.04
     timeout-minutes: ${{ inputs.timeout-minutes }}
     steps:
@@ -71,11 +71,11 @@ jobs:
           oc project ${{ vars.oc_namespace }}
 
           # Interrupt any previous jobs (status = pending-upgrade)
-          PREVIOUS=$(helm status ${{ github.event.repository.name }}-${{ inputs.target }} -o json | jq .info.status || true)
+          PREVIOUS=$(helm status ${{ github.event.repository.name }}-${{ inputs.tag }} -o json | jq .info.status || true)
           if [[ ${PREVIOUS} =~ pending ]]; then
             echo "Rollback triggered"
-            helm rollback ${{ github.event.repository.name }}-${{ inputs.target }} || \
-              helm uninstall ${{ github.event.repository.name }}-${{ inputs.target }}
+            helm rollback ${{ github.event.repository.name }}-${{ inputs.tag }} || \
+              helm uninstall ${{ github.event.repository.name }}-${{ inputs.tag }}
           fi
 
           # Deploy Helm Chart

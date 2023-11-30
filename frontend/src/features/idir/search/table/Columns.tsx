@@ -4,12 +4,11 @@ import { MRT_ColumnDef } from "material-react-table";
 import { Permit } from "../../../permits/types/permit";
 import { PERMIT_EXPIRED } from "../../../permits/types/PermitStatus";
 import { PermitChip } from "../../../permits/components/permit-list/PermitChip";
-import { applyWhenNotNullable } from "../../../../common/helpers/util";
-import { DATE_FORMATS, toLocal } from "../../../../common/helpers/formatDate";
 import {
   hasPermitExpired,
   viewPermitPdf,
 } from "../../../permits/helpers/permitPDFHelper";
+import { formatCellValuetoDatetime } from "../../../../common/constants/defaultTableOptions";
 
 /*
  *
@@ -89,6 +88,14 @@ export const PermitSearchResultColumnDef: MRT_ColumnDef<Permit>[] = [
     enableSorting: true,
     enableMultiSort: false,
     sortingFn: "datetime",
+    Cell: (props: { cell: any }) => {
+      const formattedDate = formatCellValuetoDatetime(props.cell.getValue())
+      return (
+        <div>
+          {formattedDate}
+        </div>
+      );
+    },
   },
   {
     accessorKey: "permitData.expiryDate",
@@ -96,6 +103,14 @@ export const PermitSearchResultColumnDef: MRT_ColumnDef<Permit>[] = [
     enableSorting: true,
     enableMultiSort: false,
     sortingFn: "datetime",
+    Cell: (props: { cell: any }) => {
+      const formattedDate = formatCellValuetoDatetime(props.cell.getValue())
+      return (
+        <div>
+          {formattedDate}
+        </div>
+      );
+    },
   },
   {
     accessorKey: "permitIssueDateTime",
@@ -106,12 +121,8 @@ export const PermitSearchResultColumnDef: MRT_ColumnDef<Permit>[] = [
     sortingFn: "datetime",
     accessorFn: (originalRow) => {
       const { permitIssueDateTime } = originalRow;
-      const issueDate = applyWhenNotNullable(
-        (dt) => toLocal(dt, DATE_FORMATS.DATEONLY_ABBR_MONTH),
-        permitIssueDateTime,
-        "NA",
-      );
-      return issueDate;
+      const formattedDate = formatCellValuetoDatetime(permitIssueDateTime)
+      return formattedDate;
     },
   },
 ];

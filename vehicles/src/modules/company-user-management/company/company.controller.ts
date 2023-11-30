@@ -34,7 +34,7 @@ import { Roles } from '../../../common/decorator/roles.decorator';
 import { Role } from '../../../common/enum/roles.enum';
 import { IUserJWT } from '../../../common/interface/user-jwt.interface';
 import { AuthOnly } from '../../../common/decorator/auth-only.decorator';
-import { getDirectory, matchRoles } from '../../../common/helper/auth.helper';
+import { getDirectory } from '../../../common/helper/auth.helper';
 import { IDP } from '../../../common/enum/idp.enum';
 
 @ApiTags('Company and User Management - Company')
@@ -128,23 +128,21 @@ export class CompanyController {
     isArray: true,
   })
   @ApiQuery({ name: 'userGUID', required: false })
-  @Roles(Role.READ_SELF, Role.READ_ORG)
+  @Roles(Role.READ_ORG)
   @Get()
   async getCompanyMetadata(
     @Req() request: Request,
     @Query('userGUID') userGUID?: string,
   ): Promise<ReadCompanyMetadataDto[]> {
     const currentUser = request.user as IUserJWT;
-    const rolesExists = matchRoles([Role.READ_ORG], currentUser.roles);
-    if (
-      userGUID &&
-      (!rolesExists ||
-        (rolesExists && currentUser.identity_provider !== IDP.IDIR))
-    ) {
+    // Only IDIR users can call this endpoint with an arbitrary
+    // userGUID - other users must use the userGUID from their own
+    // token.
+    if (userGUID && currentUser.identity_provider !== IDP.IDIR) {
       throw new ForbiddenException();
     }
 
-    userGUID = userGUID ? userGUID : currentUser.userGUID;
+    userGUID = userGUID || currentUser.userGUID;
     const company = await this.companyService.findCompanyMetadataByUserGuid(
       userGUID,
     );

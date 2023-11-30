@@ -32,6 +32,7 @@ export const USER_INFO = "user-info";
 // IDIR
 export const IDIR_WELCOME = `/${IDPS.IDIR}/welcome`;
 export const SEARCH_RESULTS = `/${IDPS.IDIR}/search-results`;
+export const REPORTS = `/${IDPS.IDIR}/reports`;
 
 // Payment
 export const PAYMENT_REDIRECT = "payment";

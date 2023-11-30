@@ -6,6 +6,7 @@ export enum PaymentMethodType {
   CASH = 'CASH',
   CHEQUE = 'CHEQUE',
   POS = 'POS',
+  NO_PAYMENT = 'NP',
 }
 
 export enum ExtendedPaymentMethodType {

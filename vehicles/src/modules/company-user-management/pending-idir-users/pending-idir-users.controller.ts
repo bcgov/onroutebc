@@ -15,6 +15,8 @@ import { ReadPendingIdirUserDto } from './dto/response/read-pending-idir-user.dt
 import { getDirectory } from 'src/common/helper/auth.helper';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
 import { Request } from 'express';
+import { Roles } from '../../../common/decorator/roles.decorator';
+import { Role } from '../../../common/enum/roles.enum';
 
 @ApiTags('User Management - Pending IDIR User')
 @ApiBadRequestResponse({
@@ -43,10 +45,10 @@ export class PendingIdirUsersController {
   /**
    * A POST method defined with the @Post() decorator and a route of
    * pending-idir-users that creates a new pending idir user
-   * TODO: Secure endpoints once login is implemented.
    * @param createPendingIdirUserDto
    * @returns
    */
+  @Roles(Role.STAFF_ADMIN)
   @Post()
   async create(
     @Req() request: Request,
@@ -62,6 +64,7 @@ export class PendingIdirUsersController {
     return pendingIdirUser;
   }
 
+  @Roles(Role.STAFF_ADMIN)
   @Get()
   async findPendingIdirUser(): Promise<ReadPendingIdirUserDto[]> {
     const pendingIdirUser = await this.pendingIdirUserService.findAll();
