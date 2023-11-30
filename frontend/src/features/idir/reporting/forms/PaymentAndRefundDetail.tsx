@@ -124,10 +124,8 @@ export const PaymentAndRefundDetail = () => {
 
   const issuedByForm = watch("issuedBy");
   const fromDateTimeForm = watch("fromDateTime");
-  const [toDateTime, setToDateTime] = useState<Dayjs>(
-    dayjs().set("h", 20).set("m", 59).set("s", 59).set("ms", 999),
-  );
-
+  const toDateTimeForm = watch("toDateTime");
+  
   const getSelectedPaymentCodes = (): PaymentCodes[] => {
     const paymentCodes: PaymentCodes[] = [];
     if (isAllPaymentMethodsSelected) {
@@ -163,7 +161,7 @@ export const PaymentAndRefundDetail = () => {
     try {
       const requestObj: PaymentAndRefundDetailRequest = {
         fromDateTime: fromDateTimeForm.toISOString(),
-        toDateTime: toDateTime.toISOString(),
+        toDateTime: toDateTimeForm.toISOString(),
         issuedBy: issuedByForm,
         paymentCodes: getSelectedPaymentCodes(),
         permitType: getSelectedPermitTypes(),
@@ -216,6 +214,7 @@ export const PaymentAndRefundDetail = () => {
   };
   console.log("issuedByForm::", issuedByForm);
   console.log("fromDateTimeForm::", fromDateTimeForm.toISOString());
+  console.log("toDateTimeForm::", toDateTimeForm.toISOString());
 
   return (
     <FormProvider {...formMethods}>
@@ -513,7 +512,8 @@ export const PaymentAndRefundDetail = () => {
                     <DateTimePicker
                       disabled={issuedByForm.length === 0}
                       onChange={(value: Dayjs | null) => {
-                        setToDateTime(() => value as Dayjs);
+                        // setToDateTime(() => value as Dayjs);
+                        setValue("toDateTime", value as Dayjs);
                       }}
                       format="YYYY/MM/DD hh:mm A"
                       defaultValue={dayjs()
