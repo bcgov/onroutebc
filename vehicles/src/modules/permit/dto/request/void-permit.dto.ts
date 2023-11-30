@@ -11,6 +11,7 @@ import {
 } from 'class-validator';
 import { ApplicationStatus } from 'src/common/enum/application-status.enum';
 import { PaymentMethodType } from '../../../../common/enum/payment-method-type.enum';
+import { TransactionType } from '../../../../common/enum/transaction-type.enum';
 
 export class VoidPermitDto {
   @AutoMap()
@@ -39,6 +40,16 @@ export class VoidPermitDto {
   })
   @IsEnum(PaymentMethodType)
   paymentMethodTypeCode: PaymentMethodType;
+
+  @AutoMap()
+  @ApiProperty({
+    enum: TransactionType,
+    example: TransactionType.PURCHASE,
+    description:
+      'Represents the original value sent to indicate the type of transaction to perform.',
+  })
+  @IsEnum(TransactionType)
+  transactionTypeId: TransactionType;
 
   @AutoMap()
   @ApiProperty({

@@ -91,19 +91,19 @@ jobs:
       fullSemVer: ${{ steps.gitversion.outputs.fullSemVer}}
 
   create-release:
-    name: Create Release
+    name: Create release
     runs-on: ubuntu-22.04
     needs:
       - GitVersion
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
-      - uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ needs.GitVersion.outputs.fullSemVer }}
-          release_name: Release ${{ needs.GitVersion.outputs.fullSemVer }}
-          draft: false
-          prerelease: false
+      - name: Create Release
+        run: |
+          gh release create "${{ needs.GitVersion.outputs.fullSemVer }}" \
+          --repo=${{ github.repository }} \
+          --title="${{ github.repository }}-${{ needs.GitVersion.outputs.fullSemVer }}" \
+          --generate-notes
 
 
   # If merged into main, then handle any image promotions

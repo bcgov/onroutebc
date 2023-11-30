@@ -9,6 +9,7 @@ export const PAYMENT_METHOD_TYPE_CODE = {
   ICEPAY: "ICEPAY",
   POS: "POS",
   WEB: "WEB",
+  NP: "NP",
 } as const;
 
 /**
@@ -28,6 +29,7 @@ export const PAYMENT_METHOD_TYPE_DISPLAY = {
   ICEPAY: "IcePay",
   POS: "PoS",
   WEB: "Web",
+  NP: "No Payment",
 } as const;
 
 /**
@@ -96,6 +98,15 @@ export type PaymentMethodAndCardTypeCodes = {
 };
 
 /**
+ * This is an additional payment code that specifically includes
+ * a code called ALL.
+ */
+export type AllPaymentMethodAndCardTypeCodes = PaymentMethodAndCardTypeCodes | {
+  paymentMethodTypeCode: "ALL",
+  paymentCardTypeCode?: undefined
+}
+
+/**
  * The following record contains key value pairs for Payment Methods
  * and their associated paymentMethodType and paymentType values.
  */
@@ -134,6 +145,9 @@ export const CONSOLIDATED_PAYMENT_METHODS: Record<
   "IcePay - Visa (Debit)": {
     paymentMethodTypeCode: PAYMENT_METHOD_TYPE_CODE.ICEPAY,
     paymentCardTypeCode: PAYMENT_CARD_TYPE_CODE.PV,
+  },
+  "No Payment": {
+    paymentMethodTypeCode: PAYMENT_METHOD_TYPE_CODE.NP,
   },
   "PoS - Amex": {
     paymentMethodTypeCode: PAYMENT_METHOD_TYPE_CODE.POS,
@@ -179,6 +193,21 @@ export const CONSOLIDATED_PAYMENT_METHODS: Record<
     paymentMethodTypeCode: PAYMENT_METHOD_TYPE_CODE.WEB,
     paymentCardTypeCode: PAYMENT_CARD_TYPE_CODE.PV,
   },
+};
+
+/**
+ * This is an additional consolidated payment methods that specifically includes
+ * an option called All Payment Methods.
+ */
+export const ALL_CONSOLIDATED_PAYMENT_METHODS: Record<
+  string,
+  | AllPaymentMethodAndCardTypeCodes
+> = {
+  "All Payment Methods": {
+    paymentMethodTypeCode: "ALL",
+    paymentCardTypeCode: undefined
+  },
+  ...CONSOLIDATED_PAYMENT_METHODS,
 };
 
 /**
