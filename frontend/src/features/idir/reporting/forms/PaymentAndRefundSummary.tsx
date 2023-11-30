@@ -1,9 +1,4 @@
-import {
-  Button,
-  Divider,
-  FormGroup,
-  Stack
-} from "@mui/material";
+import { Button, Divider, FormGroup, Stack } from "@mui/material";
 import dayjs from "dayjs";
 import { FormProvider, useForm } from "react-hook-form";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
@@ -12,18 +7,20 @@ import { getPaymentAndRefundSummary } from "../api/reports";
 import {
   PaymentAndRefundSummaryFormData,
   PaymentAndRefundSummaryRequest,
-  REPORT_ISSUED_BY
+  REPORT_ISSUED_BY,
 } from "../types/types";
 import { IssuedByCheckBox } from "./subcomponents/IssuedByCheckBox";
 import { ReportDateTimePickers } from "./subcomponents/ReportDateTimePickers";
 import { SnackBarContext } from "../../../../App";
-import { useContext } from "react";
+import { useContext, useState } from "react";
+import { Loading } from "../../../../common/pages/Loading";
 
 /**
  * Component for Payment and Refund Summary form
  */
 export const PaymentAndRefundSummary = () => {
   const { setSnackBar } = useContext(SnackBarContext);
+  const [isGeneratingReport, setIsGeneratingReport] = useState<boolean>(false);
   const formMethods = useForm<PaymentAndRefundSummaryFormData>({
     defaultValues: {
       issuedBy: ["SELF_ISSUED", "PPC"],
@@ -48,6 +45,7 @@ export const PaymentAndRefundSummary = () => {
    * Opens the report in a new tab.
    */
   const onClickViewReport = async () => {
+    setIsGeneratingReport(() => true);
     try {
       const requestObj: PaymentAndRefundSummaryRequest = {
         fromDateTime: fromDateTime.toISOString(),
@@ -69,6 +67,8 @@ export const PaymentAndRefundSummary = () => {
         setShowSnackbar: () => true,
         alertType: "error",
       });
+    } finally {
+      setIsGeneratingReport(() => false);
     }
   };
 
@@ -81,38 +81,41 @@ export const PaymentAndRefundSummary = () => {
           orientation="horizontal"
           color={BC_COLOURS.bc_border_grey}
         />
-        <FormGroup>
-          <span>
-            <strong>Issued By</strong>
-          </span>
-          <Stack direction="row" spacing={5}>
-            <IssuedByCheckBox
-              issuedByOption={REPORT_ISSUED_BY.SELF_ISSUED}
-              label="Self Issued"
-            />
-            <IssuedByCheckBox
-              issuedByOption={REPORT_ISSUED_BY.PPC}
-              label="PPC"
-            />
-          </Stack>
-          <br />
-          <Stack direction="row" spacing={3}>
-            <ReportDateTimePickers />
-          </Stack>
-          <br />
-          <Stack direction="row">
-            <Button
-              disabled={issuedBy.length === 0}
-              key="view-report-button"
-              aria-label="View Report"
-              variant="contained"
-              color="primary"
-              onClick={onClickViewReport}
-            >
-              View Report
-            </Button>
-          </Stack>
-        </FormGroup>
+        {isGeneratingReport && <Loading />}
+        {!isGeneratingReport && (
+          <FormGroup>
+            <span>
+              <strong>Issued By</strong>
+            </span>
+            <Stack direction="row" spacing={5}>
+              <IssuedByCheckBox
+                issuedByOption={REPORT_ISSUED_BY.SELF_ISSUED}
+                label="Self Issued"
+              />
+              <IssuedByCheckBox
+                issuedByOption={REPORT_ISSUED_BY.PPC}
+                label="PPC"
+              />
+            </Stack>
+            <br />
+            <Stack direction="row" spacing={3}>
+              <ReportDateTimePickers />
+            </Stack>
+            <br />
+            <Stack direction="row">
+              <Button
+                disabled={issuedBy.length === 0}
+                key="view-report-button"
+                aria-label="View Report"
+                variant="contained"
+                color="primary"
+                onClick={onClickViewReport}
+              >
+                View Report
+              </Button>
+            </Stack>
+          </FormGroup>
+        )}
       </Stack>
     </FormProvider>
   );

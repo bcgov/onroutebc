@@ -97,6 +97,10 @@ export type PaymentMethodAndCardTypeCodes = {
   paymentCardTypeCode?: PaymentCardTypeCode;
 };
 
+/**
+ * This is an additional payment code that specifically includes
+ * a code called ALL.
+ */
 export type AllPaymentMethodAndCardTypeCodes = PaymentMethodAndCardTypeCodes | {
   paymentMethodTypeCode: "ALL",
   paymentCardTypeCode?: undefined
