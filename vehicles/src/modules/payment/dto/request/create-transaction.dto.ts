@@ -9,11 +9,10 @@ import {
 } from 'class-validator';
 import { TransactionType } from '../../../../common/enum/transaction-type.enum';
 import { PaymentMethodType } from '../../../../common/enum/payment-method-type.enum';
-
 import { Type } from 'class-transformer';
 import { PaymentGatewayTransactionDto } from '../common/payment-gateway-transaction.dto';
-import { CreateApplicationTransactionDto } from './create-application-transaction.dto copy';
 import { PaymentCardType } from '../../../../common/enum/payment-card-type.enum';
+import { CreateApplicationTransactionDto } from './create-application-transaction.dto';
 
 export class CreateTransactionDto extends PaymentGatewayTransactionDto {
   @AutoMap()

@@ -182,13 +182,6 @@ export class PaymentService {
     }
   }
 
-  private isRefundOrZero(transactionType: TransactionType) {
-    return (
-      transactionType == TransactionType.REFUND ||
-      transactionType == TransactionType.ZERO_AMOUNT
-    );
-  }
-
   /**
    * Creates a Transaction in ORBC System.
    * @param currentUser - The current user object of type {@link IUserJWT}
@@ -295,7 +288,7 @@ export class PaymentService {
         url = this.generateUrl(createdTransaction);
       }
 
-      if (this.isRefundOrZero(createdTransaction.transactionTypeId)) {
+      if (createdTransaction.transactionTypeId == TransactionType.REFUND) {
         const receiptNumber = await this.generateReceiptNumber();
         const receipt = new Receipt();
         receipt.receiptNumber = receiptNumber;
