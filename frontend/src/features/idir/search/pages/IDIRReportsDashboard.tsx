@@ -13,11 +13,19 @@ import { PaymentAndRefundDetail } from "../../reporting/forms/PaymentAndRefundDe
 import { PaymentAndRefundSummary } from "../../reporting/forms/PaymentAndRefundSummary";
 import "./dashboard.scss";
 
-enum REPORT_MODE {
+/**
+ * The types of reports.
+ */
+enum REPORT_TYPES {
   SUMMARY,
   DETAIL,
 }
 
+/**
+ * A reusable component for displaying the report options.
+ * Not intended to be exported as it is custom made for the reports.
+ * @returns A React component
+ */
 const ReportOption = ({
   label,
   isSelected,
@@ -31,23 +39,16 @@ const ReportOption = ({
     <>
       <Paper
         elevation={isSelected ? 5 : 0}
+        className="report-paper"
         sx={{
           ":hover": {
             background: isSelected ? null : BC_COLOURS.bc_background_light_grey,
           },
-          height: "75px",
           background: isSelected
             ? BC_COLOURS.bc_messages_blue_background
             : null,
-          border: "1px solid #313132",
-          cursor: "pointer",
-          paddingLeft: "24px",
-          paddingTop: "24px",
         }}
-        onClick={() => {
-          // setReportMode(() => REPORT_MODE.SUMMARY);
-          onSelect();
-        }}
+        onClick={onSelect}
       >
         <FormControlLabel
           control={<Radio checked={isSelected} />}
@@ -62,7 +63,9 @@ const ReportOption = ({
  * React component to render the reports page by an IDIR user.
  */
 export const IDIRReportsDashboard = memo(() => {
-  const [reportMode, setReportMode] = useState<REPORT_MODE>(REPORT_MODE.DETAIL);
+  const [reportMode, setReportMode] = useState<REPORT_TYPES>(
+    REPORT_TYPES.SUMMARY,
+  );
 
   return (
     <>
@@ -78,8 +81,8 @@ export const IDIRReportsDashboard = memo(() => {
       <div
         className="tabpanel-container"
         role="tabpanel"
-        id={`layout-tabpanel-search-results`}
-        aria-labelledby={`layout-tab-search-results`}
+        id={`idir-reports-dashboard`}
+        aria-labelledby={`idir-reports-dashboard`}
       >
         <Stack
           direction="row"
@@ -96,87 +99,26 @@ export const IDIRReportsDashboard = memo(() => {
             />
           }
         >
-          <Stack sx={{ width: "528px" }} spacing={3}>
+          <Stack className="report-form-area" spacing={3}>
             <ReportOption
               label="Payment and Refund Summary"
-              isSelected={reportMode === REPORT_MODE.SUMMARY}
+              isSelected={reportMode === REPORT_TYPES.SUMMARY}
               key="summary-report-radio"
               onSelect={() => {
-                setReportMode(() => REPORT_MODE.SUMMARY);
+                setReportMode(() => REPORT_TYPES.SUMMARY);
               }}
             />
             <ReportOption
               label="Payment and Refund Detail"
-              isSelected={reportMode === REPORT_MODE.DETAIL}
+              isSelected={reportMode === REPORT_TYPES.DETAIL}
               key="detail-report-radio"
               onSelect={() => {
-                setReportMode(() => REPORT_MODE.DETAIL);
+                setReportMode(() => REPORT_TYPES.DETAIL);
               }}
             />
-            {/* <Paper
-              elevation={reportMode === REPORT_MODE.SUMMARY ? 5 : 0}
-              sx={{
-                ":hover": {
-                  background:
-                    reportMode === REPORT_MODE.SUMMARY
-                      ? null
-                      : BC_COLOURS.bc_background_light_grey,
-                },
-                height: "75px",
-                background:
-                  reportMode === REPORT_MODE.SUMMARY
-                    ? BC_COLOURS.bc_messages_blue_background
-                    : null,
-                border: "1px solid #313132",
-                cursor: "pointer",
-                // alignItems: "center",
-                // justifyContent:"center",
-                paddingLeft: "24px",
-                paddingTop: "24px",
-              }}
-              onClick={() => {
-                setReportMode(() => REPORT_MODE.SUMMARY);
-              }}
-            >
-              <FormControlLabel
-                control={<Radio checked={reportMode === REPORT_MODE.SUMMARY} />}
-                label={<strong>Payment and Refund Summary</strong>}
-              />
-            </Paper>
-            <Paper
-              elevation={reportMode === REPORT_MODE.DETAIL ? 5 : 0}
-              sx={{
-                ":hover": {
-                  background:
-                    reportMode === REPORT_MODE.DETAIL
-                      ? null
-                      : BC_COLOURS.bc_background_light_grey,
-                },
-                height: "75px",
-                background:
-                  reportMode === REPORT_MODE.DETAIL
-                    ? BC_COLOURS.bc_messages_blue_background
-                    : null,
-                border:
-                  reportMode === REPORT_MODE.DETAIL
-                    ? `1px solid ${BC_COLOURS.bc_black}`
-                    : `1px solid ${BC_COLOURS.bc_text_box_border_grey}`,
-                cursor: "pointer",
-                paddingLeft: "24px",
-                paddingTop: "24px",
-              }}
-              onClick={() => {
-                setReportMode(() => REPORT_MODE.DETAIL);
-              }}
-            >
-              <FormControlLabel
-                control={<Radio checked={reportMode === REPORT_MODE.DETAIL} />}
-                label={<strong>Payment and Refund Detail</strong>}
-              />
-            </Paper> */}
           </Stack>
-          {reportMode === REPORT_MODE.SUMMARY && <PaymentAndRefundSummary />}
-          {reportMode === REPORT_MODE.DETAIL && <PaymentAndRefundDetail />}
+          {reportMode === REPORT_TYPES.SUMMARY && <PaymentAndRefundSummary />}
+          {reportMode === REPORT_TYPES.DETAIL && <PaymentAndRefundDetail />}
         </Stack>
       </div>
     </>
