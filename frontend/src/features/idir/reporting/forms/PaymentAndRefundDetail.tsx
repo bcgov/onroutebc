@@ -116,10 +116,6 @@ export const PaymentAndRefundDetail = () => {
     permitTypes &&
     Object.keys(permitTypes).length === selectedPermitTypes.length;
 
-  const isAllUsersSelected =
-    permitIssuers &&
-    Object.keys(permitIssuers).length === selectedUsers?.length;
-
   useEffect(() => {
     if (permitTypes) {
       setValue("permitType", Object.keys(permitTypes));
@@ -207,27 +203,6 @@ export const PaymentAndRefundDetail = () => {
     }
   };
 
-  /**
-   * Updates the selected users.
-   * @param event The select event containing the selected values.
-   */
-  const onSelectUser = (event: SelectChangeEvent<string[]>) => {
-    const {
-      target: { value },
-    } = event;
-    if (permitIssuers) {
-      const userNames = Object.keys(permitIssuers);
-      const totalUsers = userNames.length;
-      let newState: string[];
-      if (value[value.length - 1] === "ALL") {
-        newState = selectedUsers?.length === totalUsers ? [] : userNames;
-      } else {
-        newState = value as string[];
-      }
-      setValue("users", newState);
-    }
-  };
-
   return (
     <FormProvider {...formMethods}>
       <Stack style={{ width: "900px" }} spacing={2}>
@@ -256,63 +231,14 @@ export const PaymentAndRefundDetail = () => {
             <Stack direction="row">
               <PermitTypeSelect permitTypes={permitTypes} />
             </Stack>
-
             <Stack>
               <PaymentMethodSelect />
             </Stack>
             <Stack direction="row">
-              <UserSelect permitIssuers={permitIssuers} key="user-select-subcomponent"/>
-              {/* <FormControl
-                sx={{ width: "274px" }}
-                className="custom-form-control"
-                margin="normal"
-                disabled={!issuedBy.includes("PPC")}
-              >
-                <FormLabel
-                  className="custom-form-control__label"
-                  id="users-select"
-                  sx={{ fontWeight: "bold", marginBottom: "8px" }}
-                >
-                  Users
-                </FormLabel>
-                <Select
-                  id="demo-multiple-name"
-                  multiple
-                  onChange={onSelectUser}
-                  displayEmpty
-                  renderValue={(selected) => {
-                    if (isAllUsersSelected) return "All Users";
-                    return selected.join(", ");
-                  }}
-                  input={<OutlinedInput />}
-                  value={selectedUsers}
-                  aria-labelledby="users-select"
-                  sx={SELECT_FIELD_STYLE.SELECT_FIELDSET}
-                  inputProps={{
-                    "aria-label": "users-select",
-                  }}
-                  MenuProps={{
-                    autoFocus: false,
-                  }}
-                >
-                  <MenuItem key="All Users" value="ALL">
-                    <Checkbox checked={isAllUsersSelected} />
-                    <ListItemText primary={"All Users"} />
-                  </MenuItem>
-                  {permitIssuers
-                    ? Object.keys(permitIssuers).map((key) => (
-                        <MenuItem key={key} value={key}>
-                          <Checkbox
-                            checked={
-                              selectedUsers && selectedUsers.indexOf(key) > -1
-                            }
-                          />
-                          <ListItemText primary={key} />
-                        </MenuItem>
-                      ))
-                    : []}
-                </Select>
-              </FormControl> */}
+              <UserSelect
+                permitIssuers={permitIssuers}
+                key="user-select-subcomponent"
+              />
             </Stack>
             <Stack direction="row" spacing={3}>
               <>
