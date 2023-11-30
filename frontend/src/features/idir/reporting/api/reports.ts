@@ -1,38 +1,31 @@
-import { useQuery } from "@tanstack/react-query";
+import { UseQueryResult, useQuery } from "@tanstack/react-query";
 import { VEHICLES_URL } from "../../../../common/apiManager/endpoints/endpoints";
 import {
   httpGETRequest,
   httpPOSTRequestStream,
 } from "../../../../common/apiManager/httpRequestHandler";
-import { getFileNameFromHeaders } from "../../../permits/apiManager/permitsAPI";
 import { ONE_HOUR } from "../../../../common/constants/constants";
+import { getFileNameFromHeaders } from "../../../permits/apiManager/permitsAPI";
+import {
+  PaymentAndRefundDetailRequest,
+  PaymentAndRefundSummaryRequest,
+} from "../types/types";
 
 /**
- * The request object type for payment and refund summary
+ * Streams a file through a POST request.
+ *
+ * @param url The API endpoint.
+ * @param requestBody The request payload
+ * @returns An object containing the filename and blob.
+ * @throws Error when the file cannot be downloaded.
  */
-export type PaymentAndRefundSummaryRequest = {
-  issuedBy: string[];
-  fromDateTime: string;
-  toDateTime: string;
-};
-
-export interface PaymentCodes {
-  paymentMethodTypeCode: string;
-  paymentCardTypeCode?: string;
-}
-
-/**
- * The request object type for payment and refund detail
- */
-export interface PaymentAndRefundDetailRequest
-  extends PaymentAndRefundSummaryRequest {
-  permitType: string[];
-  paymentMethodType?: string[];
-  paymentCodes: PaymentCodes[] | ["ALL"];
-  users?: string[];
-}
-
-const streamDownloadWithHTTPPost = async (url: string, requestBody: any) => {
+const streamDownloadWithHTTPPost = async (
+  url: string,
+  requestBody: any,
+): Promise<{
+  blobObj: Blob;
+  filename: string;
+}> => {
   const response = await httpPOSTRequestStream(url, requestBody);
   const filename = getFileNameFromHeaders(response.headers);
   if (!filename) {
@@ -87,32 +80,6 @@ export const getPaymentAndRefundDetail = async (
   return await streamDownloadWithHTTPPost(url, requestObject);
 };
 
-const permitTypes_REFERENCE = {
-  EPTOP: "Extra-Provincial Temporary Operating",
-  HC: "Highway Crossing",
-  LCV: "Long Combination Vehicle",
-  MFP: "Motive Fuel User",
-  NRQBS: "Quarterly Non Resident Reg. / Ins. - Bus",
-  NRQCL: "Non Resident Quarterly Conditional License",
-  NRQCV: "Quarterly Non Resident Reg. / Ins. - Comm Vehicle",
-  NRQFT: "Non Resident Quarterly Farm Tractor",
-  NRQFV: "Quarterly Non Resident Reg. / Ins. - Farm Vehicle",
-  NRQXP: "Non Resident Quarterly X Plated",
-  NRSBS: "Single Trip Non-Resident Registration / Insurance -Buses",
-  NRSCL: "Non Resident Single Trip Conditional License",
-  NRSCV: "Single Trip Non-Resident Reg. / Ins. - Commercial Vehicle",
-  NRSFT: "Non Resident Farm Tractor Single Trip",
-  NRSFV: "Single Trip Non Resident Reg. / Ins. - Farm Vehicle",
-  NRSXP: "Non Resident Single Trip X Plated Vehicle",
-  RIG: "Rig Move",
-  STOS: "Single Trip Oversize",
-  STOW: "Single Trip Over Weight",
-  STWS: "Single Trip Overweight Oversize",
-  TRAX: "Term Axle Overweight",
-  TROS: "Term Oversize",
-  TROW: "Term Overweight",
-};
-
 /**
  * Retrieves the permit types to be used in the reports page.
  * @returns A Promise containing the permit types in key - value pairs
@@ -124,20 +91,17 @@ export const getPermitTypes = async (): Promise<Record<string, string>> => {
 };
 
 /**
- * 
- * @returns 
+ * Hook to fetch the permit types.
+ * @returns A query result object containing the permit types
  */
-export const usePermitTypesQuery = () => {
+export const usePermitTypesQuery = (): UseQueryResult<
+  Record<string, string>,
+  unknown
+> => {
   return useQuery({
     queryKey: ["permitTypes"],
     queryFn: () => getPermitTypes(),
-    // select: (data) => {
-    //   return {
-    //     "All Permit Types": "ALL",
-    //     ...data,
-    //   };
-    // },
     keepPreviousData: true,
     staleTime: ONE_HOUR,
   });
-}
+};

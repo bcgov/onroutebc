@@ -6,12 +6,9 @@ import {
   FormControlLabel,
   FormGroup,
   FormLabel,
-  Stack
+  Stack,
 } from "@mui/material";
-import {
-  DateTimePicker,
-  LocalizationProvider
-} from "@mui/x-date-pickers";
+import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs, { Dayjs } from "dayjs";
 import { useState } from "react";
@@ -19,9 +16,9 @@ import { useForm } from "react-hook-form";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { openBlobInNewTab } from "../../../permits/helpers/permitPDFHelper";
 import {
-  PaymentAndRefundSummaryRequest,
   getPaymentAndRefundSummary,
-} from "../../search/api/reports";
+} from "../api/reports";
+import { PaymentAndRefundSummaryRequest } from "../types/types";
 
 const sample = {
   issuedBy: ["SELF_ISSUED"],
@@ -48,10 +45,15 @@ export const PaymentAndRefundSummary = () => {
 
   const [issuedBy, setIssuedBy] = useState<string[]>(["SELF_ISSUED", "PPC"]);
   const [fromDateTime, setFromDateTime] = useState<Dayjs>(
-    dayjs().subtract(1, "day").set("h", 21).set("m", 0).set("s", 0).set("ms", 0)
+    dayjs()
+      .subtract(1, "day")
+      .set("h", 21)
+      .set("m", 0)
+      .set("s", 0)
+      .set("ms", 0),
   );
   const [toDateTime, setToDateTime] = useState<Dayjs>(
-    dayjs().set("h", 20).set("m", 59).set("s", 59).set("ms", 999)
+    dayjs().set("h", 20).set("m", 59).set("s", 59).set("ms", 999),
   );
   const { register, setValue, getValues, control } = formMethods;
 
@@ -66,12 +68,12 @@ export const PaymentAndRefundSummary = () => {
         issuedBy,
       };
       console.log("requestObj::", requestObj);
-        const { blobObj: blobObjWithoutType } = await getPaymentAndRefundSummary({
-          fromDateTime: fromDateTime.toISOString(),
-          toDateTime: toDateTime.toISOString(),
-          issuedBy,
-        });
-        openBlobInNewTab(blobObjWithoutType);
+      const { blobObj: blobObjWithoutType } = await getPaymentAndRefundSummary({
+        fromDateTime: fromDateTime.toISOString(),
+        toDateTime: toDateTime.toISOString(),
+        issuedBy,
+      });
+      openBlobInNewTab(blobObjWithoutType);
     } catch (err) {
       console.error(err);
     }
@@ -100,13 +102,13 @@ export const PaymentAndRefundSummary = () => {
                 sx={{ marginLeft: "0px", paddingLeft: "0px" }}
                 onChange={(
                   _event: React.ChangeEvent<HTMLInputElement>,
-                  checked: boolean
+                  checked: boolean,
                 ) => {
                   if (checked) {
                     setIssuedBy(() => [...issuedBy, "SELF_ISSUED"]);
                   } else {
                     setIssuedBy(() =>
-                      issuedBy.filter((value) => value !== "SELF_ISSUED")
+                      issuedBy.filter((value) => value !== "SELF_ISSUED"),
                     );
                   }
                   //   const issuedBy = getValues("issuedBy");
@@ -141,13 +143,13 @@ export const PaymentAndRefundSummary = () => {
               name="issuedBy_PPC"
               onChange={(
                 _event: React.ChangeEvent<HTMLInputElement>,
-                checked: boolean
+                checked: boolean,
               ) => {
                 if (checked) {
                   setIssuedBy(() => [...issuedBy, "PPC"]);
                 } else {
                   setIssuedBy(() =>
-                    issuedBy.filter((value) => value !== "PPC")
+                    issuedBy.filter((value) => value !== "PPC"),
                   );
                 }
               }}
