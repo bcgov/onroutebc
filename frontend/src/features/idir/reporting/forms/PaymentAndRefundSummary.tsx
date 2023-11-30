@@ -52,7 +52,6 @@ export const PaymentAndRefundSummary = () => {
         toDateTime: toDateTime.toISOString(),
         issuedBy,
       };
-      console.log("requestObj::", requestObj);
       const { blobObj: blobObjWithoutType } = await getPaymentAndRefundSummary({
         fromDateTime: fromDateTime.toISOString(),
         toDateTime: toDateTime.toISOString(),

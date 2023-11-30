@@ -172,7 +172,6 @@ export const PaymentAndRefundDetail = () => {
       if (issuedBy.includes(REPORT_ISSUED_BY.PPC)) {
         requestObj.users = selectedUsers;
       }
-      console.log("requestObj::", requestObj);
       const { blobObj: blobObjWithoutType } =
         await getPaymentAndRefundDetail(requestObj);
       openBlobInNewTab(blobObjWithoutType);
