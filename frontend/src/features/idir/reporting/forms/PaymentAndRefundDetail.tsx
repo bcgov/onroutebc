@@ -35,7 +35,7 @@ import { FormProvider, useForm } from "react-hook-form";
 
 interface PaymentAndRefundDetailRequestDayJs {
   permitType: string[];
-  paymentMethodType?: string[];
+  paymentMethodTypes?: string[];
   users?: string[];
   fromDateTime: Dayjs;
   toDateTime: Dayjs;
@@ -105,7 +105,7 @@ export const PaymentAndRefundDetail = () => {
         .set("s", 0)
         .set("ms", 0),
       toDateTime: dayjs().set("h", 20).set("m", 59).set("s", 59).set("ms", 999),
-      paymentMethodType: Object.keys(CONSOLIDATED_PAYMENT_METHODS),
+      paymentMethodTypes: Object.keys(CONSOLIDATED_PAYMENT_METHODS),
       permitType: Object.keys(permitTypes ?? []),
       users: permitIssuers?.map(({ userGUID }) => userGUID),
     },
@@ -114,18 +114,19 @@ export const PaymentAndRefundDetail = () => {
 
   const { watch, register, setValue } = formMethods;
 
-  const [selectedPaymentMethods, setSelectedPaymentMethods] = useState<
-    string[]
-  >(Object.keys(CONSOLIDATED_PAYMENT_METHODS));
-
-  const isAllPaymentMethodsSelected =
-    Object.keys(CONSOLIDATED_PAYMENT_METHODS).length ===
-    selectedPaymentMethods.length;
-
   const issuedByForm = watch("issuedBy");
   const fromDateTimeForm = watch("fromDateTime");
   const toDateTimeForm = watch("toDateTime");
+  const paymentMethodTypesForm = watch("paymentMethodTypes");
   
+  const isAllPaymentMethodsSelected =
+    Object.keys(CONSOLIDATED_PAYMENT_METHODS).length ===
+    paymentMethodTypesForm?.length;
+  console.log("issuedByForm::", issuedByForm);
+  console.log("fromDateTimeForm::", fromDateTimeForm.toISOString());
+  console.log("toDateTimeForm::", toDateTimeForm.toISOString());
+  console.log("paymentMethodTypesForm::", paymentMethodTypesForm);
+
   const getSelectedPaymentCodes = (): PaymentCodes[] => {
     const paymentCodes: PaymentCodes[] = [];
     if (isAllPaymentMethodsSelected) {
@@ -134,7 +135,7 @@ export const PaymentAndRefundDetail = () => {
       paymentCodes.push({ paymentMethodTypeCode, paymentCardTypeCode });
     }
     return paymentCodes.concat(
-      selectedPaymentMethods.map((key: string) => {
+      paymentMethodTypesForm ? paymentMethodTypesForm.map((key: string) => {
         const { paymentMethodTypeCode, paymentCardTypeCode } =
           ALL_CONSOLIDATED_PAYMENT_METHODS[key];
         const paymentCodes: PaymentCodes = {
@@ -144,7 +145,7 @@ export const PaymentAndRefundDetail = () => {
           paymentCodes.paymentCardTypeCode = paymentCardTypeCode;
         }
         return paymentCodes;
-      }),
+      }): [],
     );
   };
 
@@ -195,26 +196,23 @@ export const PaymentAndRefundDetail = () => {
    * @returns
    */
   const onSelectPaymentMethod = (
-    event: SelectChangeEvent<typeof selectedPaymentMethods>,
+    event: SelectChangeEvent<string[]>,
   ) => {
     const {
       target: { value },
     } = event;
     if (value[value.length - 1] === "All Payment Methods") {
-      setSelectedPaymentMethods(
-        selectedPaymentMethods.length ===
+      setValue(
+        "paymentMethodTypes",
+        paymentMethodTypesForm?.length ===
           Object.keys(CONSOLIDATED_PAYMENT_METHODS).length
           ? []
           : Object.keys(CONSOLIDATED_PAYMENT_METHODS),
       );
       return;
     }
-
-    setSelectedPaymentMethods(() => value as string[]);
+    setValue("paymentMethodTypes", value as string[]);
   };
-  console.log("issuedByForm::", issuedByForm);
-  console.log("fromDateTimeForm::", fromDateTimeForm.toISOString());
-  console.log("toDateTimeForm::", toDateTimeForm.toISOString());
 
   return (
     <FormProvider {...formMethods}>
@@ -359,6 +357,7 @@ export const PaymentAndRefundDetail = () => {
                   Payment Method
                 </FormLabel>
                 <Select
+                  {...register("paymentMethodTypes")}
                   labelId="payment-method-select-label"
                   id="payment-method-select"
                   multiple
@@ -369,7 +368,7 @@ export const PaymentAndRefundDetail = () => {
                     return selected.join(", ");
                   }}
                   input={<OutlinedInput />}
-                  value={selectedPaymentMethods}
+                  value={paymentMethodTypesForm}
                   MenuProps={{
                     autoFocus: false,
                   }}
@@ -384,7 +383,7 @@ export const PaymentAndRefundDetail = () => {
                   {Object.keys(CONSOLIDATED_PAYMENT_METHODS).map((key) => (
                     <MenuItem key={key} value={key}>
                       <Checkbox
-                        checked={selectedPaymentMethods.indexOf(key) > -1}
+                        checked={paymentMethodTypesForm && paymentMethodTypesForm.indexOf(key) > -1}
                       />
                       <ListItemText primary={key} />
                     </MenuItem>
