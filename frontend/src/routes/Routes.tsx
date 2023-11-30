@@ -25,6 +25,7 @@ import { VoidPermit } from "../features/permits/pages/Void/VoidPermit";
 import { AmendPermit } from "../features/permits/pages/Amend/AmendPermit";
 import { Unauthorized } from "../common/pages/Unauthorized";
 import { UniversalUnauthorized } from "../common/pages/UniversalUnauthorized";
+import { UniversalUnexpected } from "../common/pages/UniversalUnexpected";
 
 export const AppRoutes = () => {
   return (
@@ -34,6 +35,8 @@ export const AppRoutes = () => {
       <Route path={routes.CREATE_PROFILE_WIZARD_ROUTES.WELCOME} element={<WelcomePage />} />
       <Route path={routes.ERROR_ROUTES.UNAUTHORIZED} element={<Unauthorized />} />
       <Route path={routes.ERROR_ROUTES.UNIVERSAL_UNAUTHORIZED} element={<UniversalUnauthorized />} />
+      <Route path={routes.ERROR_ROUTES.UNEXPECTED} element={<UniversalUnexpected />} />
+      <Route path={routes.ERROR_ROUTES.NOT_FOUND} element={<NotFound />} />
       <Route path="*" element={<NotFound />} />
 
       {/* IDIR Routes */}

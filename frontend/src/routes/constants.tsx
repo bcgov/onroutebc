@@ -2,7 +2,6 @@ import { IDPS } from "../common/types/idp";
 
 export const ROUTE_PLACEHOLDERS = {
   PERMIT_ID: "permitId",
-  ERROR_MSG: "msg",
 };
 
 /**
@@ -31,6 +30,7 @@ export const ERROR_ROUTES = {
   UNAUTHORIZED: "/unauthorized",
   UNIVERSAL_UNAUTHORIZED: "/universal-unauthorized",
   UNEXPECTED: "/unexpected-error",
+  NOT_FOUND: "/not-found",
 };
 
 // Manage Vehicles
@@ -106,4 +106,15 @@ const PAYMENT_ROUTE_BASE = "/payment";
 export const PAYMENT_ROUTES = {
   BASE: PAYMENT_ROUTE_BASE,
   PAYMENT_REDIRECT: PAYMENT_ROUTE_BASE,
+};
+
+// OnRoute Webpage Links
+export const ONROUTE_WEBPAGE_LINKS = {
+  HOME: "https://onroutebc.gov.bc.ca",
+  COMMERCIAL_TRANSPORT_PROCEDURES: "https://www2.gov.bc.ca/gov/content/transportation/vehicle-safety-enforcement/information-education/commercial-transport-procedures",
+  DISCLAIMER: "https://www2.gov.bc.ca/gov/content/home/disclaimer",
+  PRIVACY: "https://www2.gov.bc.ca/gov/content/home/privacy",
+  ACCESSIBILITY: "https://www2.gov.bc.ca/gov/content/home/accessibility",
+  COPYRIGHT: "https://www2.gov.bc.ca/gov/content/home/copyright",
+  CONTACT_US: "https://onroutebc.gov.bc.ca",
 };

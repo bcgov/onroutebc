@@ -1,8 +1,8 @@
 import React from "react";
 import { AxiosError } from "axios";
+import { Navigate } from "react-router-dom";
 
 import { TabLayout } from "../../../../common/components/dashboard/TabLayout";
-import { Unauthorized } from "../../../../common/pages/Unauthorized";
 import { Loading } from "../../../../common/pages/Loading";
 import { ErrorFallback } from "../../../../common/pages/ErrorFallback";
 import { List } from "../list/List";
@@ -11,6 +11,7 @@ import { ActivePermitList } from "../permit-list/ActivePermitList";
 import { ExpiredPermitList } from "../permit-list/ExpiredPermitList";
 import { useApplicationsInProgressQuery } from "../../hooks/hooks";
 import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
+import { ERROR_ROUTES } from "../../../../routes/constants";
 
 export const PermitLists = React.memo(() => {
   const { applicationsInProgressQuery } = useApplicationsInProgressQuery();
@@ -28,7 +29,7 @@ export const PermitLists = React.memo(() => {
   if (isError) {
     if (error instanceof AxiosError) {
       if (error.response?.status === 401) {
-        return <Unauthorized />;
+        return <Navigate to={ERROR_ROUTES.UNIVERSAL_UNAUTHORIZED} />;
       }
       return <ErrorFallback error={error.message} />;
     }

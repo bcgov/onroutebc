@@ -1,6 +1,6 @@
 import { Box } from "@mui/material";
 import { AxiosError } from "axios";
-import { useParams } from "react-router-dom";
+import { Navigate, useParams } from "react-router-dom";
 
 import "../../../../common/components/dashboard/Dashboard.scss";
 import { Banner } from "../../../../common/components/dashboard/Banner";
@@ -10,12 +10,10 @@ import { TermOversizePay } from "../../pages/TermOversize/TermOversizePay";
 import { TermOversizeReview } from "../../pages/TermOversize/TermOversizeReview";
 import { useCompanyInfoQuery } from "../../../manageProfile/apiManager/hooks";
 import { Loading } from "../../../../common/pages/Loading";
-import { Unauthorized } from "../../../../common/pages/Unauthorized";
 import { ErrorFallback } from "../../../../common/pages/ErrorFallback";
 import { useApplicationDetailsQuery } from "../../hooks/hooks";
 import { PERMIT_STATUSES } from "../../types/PermitStatus";
-import { NotFound } from "../../../../common/pages/NotFound";
-import { APPLICATION_STEPS, ApplicationStep } from "../../../../routes/constants";
+import { APPLICATION_STEPS, ApplicationStep, ERROR_ROUTES } from "../../../../routes/constants";
 
 const displayHeaderText = (stepKey: ApplicationStep) => {
   switch (stepKey) {
@@ -72,7 +70,7 @@ export const ApplicationStepPage = ({
   if (companyInfoQuery.isError) {
     if (companyInfoQuery.error instanceof AxiosError) {
       if (companyInfoQuery.error.response?.status === 401) {
-        return <Unauthorized />;
+        return <Navigate to={ERROR_ROUTES.UNIVERSAL_UNAUTHORIZED} />;
       }
       return <ErrorFallback error={companyInfoQuery.error.message} />;
     }
@@ -88,7 +86,7 @@ export const ApplicationStepPage = ({
 
   // If no longer a valid application, then we can no longer perform application-related steps
   if (!isValidApplicationStatus()) {
-    return <NotFound />;
+    return <Navigate to={ERROR_ROUTES.NOT_FOUND} />;
   }
 
   return (

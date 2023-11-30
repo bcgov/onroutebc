@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { Box, Typography } from "@mui/material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
@@ -13,10 +13,9 @@ import { TrailerForm } from "../form/TrailerForm";
 import { PowerUnit, Trailer } from "../../types/managevehicles";
 import { DATE_FORMATS, toLocal } from "../../../../common/helpers/formatDate";
 import { getCompanyIdFromSession } from "../../../../common/apiManager/httpRequestHandler";
-import { VEHICLES_ROUTES } from "../../../../routes/constants";
+import { ERROR_ROUTES, VEHICLES_ROUTES } from "../../../../routes/constants";
 import { useVehicleByIdQuery } from "../../apiManager/hooks";
 import { Loading } from "../../../../common/pages/Loading";
-import { Unexpected } from "../../../../common/pages/Unexpected";
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
@@ -52,7 +51,7 @@ export const EditVehicleDashboard = React.memo(
     }
 
     if (!vehicleToEdit) {
-      return <Unexpected />;
+      return <Navigate to={ERROR_ROUTES.UNEXPECTED} />;
     }
 
     return (

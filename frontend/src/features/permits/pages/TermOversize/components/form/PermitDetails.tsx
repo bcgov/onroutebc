@@ -13,6 +13,7 @@ import { PHONE_WIDTH } from "../../../../../../themes/bcGovStyles";
 import { ConditionsTable } from "./ConditionsTable";
 import { requiredMessage } from "../../../../../../common/helpers/validationMessages";
 import { Commodities } from "../../../../types/application";
+import { ONROUTE_WEBPAGE_LINKS } from "../../../../../../routes/constants";
 
 export const PermitDetails = ({
   feature,
@@ -125,7 +126,7 @@ export const PermitDetails = ({
                 <div className="commodities-info__link">
                   <a
                     className="procedures-link"
-                    href="https://www2.gov.bc.ca/gov/content/transportation/vehicle-safety-enforcement/information-education/commercial-transport-procedures"
+                    href={ONROUTE_WEBPAGE_LINKS.COMMERCIAL_TRANSPORT_PROCEDURES}
                   >
                     <span className="procedures-link__title">
                       Commercial Transport Procedures - Province of British Columbia

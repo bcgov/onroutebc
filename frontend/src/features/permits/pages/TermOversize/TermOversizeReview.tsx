@@ -55,7 +55,7 @@ export const TermOversizeReview = () => {
     if (!isChecked) return;
 
     if (!applicationData) {
-      return navigate(ERROR_ROUTES.UNIVERSAL_UNAUTHORIZED);
+      return navigate(ERROR_ROUTES.UNEXPECTED);
     }
 
     const response =
@@ -67,7 +67,7 @@ export const TermOversizeReview = () => {
     if (saveApplicationSuccessful(status)) {
       next();
     } else {
-      navigate(ERROR_ROUTES.UNIVERSAL_UNAUTHORIZED);
+      navigate(ERROR_ROUTES.UNEXPECTED);
     }
     
     next();

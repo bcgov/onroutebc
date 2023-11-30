@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import React, { useContext } from "react";
 import { useLocation, useNavigate } from "react-router";
+import { Navigate } from "react-router-dom";
 
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { ROLES } from "../../../../common/authentication/types";
@@ -11,13 +12,12 @@ import { TabLayout } from "../../../../common/components/dashboard/TabLayout";
 import { FIVE_MINUTES } from "../../../../common/constants/constants";
 import { ErrorFallback } from "../../../../common/pages/ErrorFallback";
 import { Loading } from "../../../../common/pages/Loading";
-import { Unauthorized } from "../../../../common/pages/Unauthorized";
 import { getCompanyInfo } from "../../apiManager/manageProfileAPI";
 import { CompanyInfo } from "../../pages/CompanyInfo";
 import { MyInfo } from "../../pages/MyInfo";
 import { UserManagement } from "../../pages/UserManagement";
 import { BCEID_PROFILE_TABS } from "../../types/manageProfile.d";
-import { PROFILE_ROUTES } from "../../../../routes/constants";
+import { ERROR_ROUTES, PROFILE_ROUTES } from "../../../../routes/constants";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 
 /**
@@ -61,7 +61,7 @@ export const ManageProfilesDashboard = React.memo(() => {
   if (isError) {
     if (error instanceof AxiosError) {
       if (error.response?.status === 401) {
-        return <Unauthorized />;
+        return <Navigate to={ERROR_ROUTES.UNIVERSAL_UNAUTHORIZED} />;
       }
       return <ErrorFallback error={error.message} />;
     }
@@ -84,13 +84,6 @@ export const ManageProfilesDashboard = React.memo(() => {
       component: <UserManagement />,
     });
   }
-
-  /**
-   * TODO: Enable Payment Information page navigation when page is ready
-  tabs.push({
-    label: "Payment Information",
-    component: <>TODO</>,
-  });*/
 
   return (
     <TabLayout

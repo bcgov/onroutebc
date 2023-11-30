@@ -1,7 +1,6 @@
-import { Link } from "react-router-dom";
-
 import { ErrorPage } from "../components/error/ErrorPage";
-import { HOME } from "../../routes/constants";
+import { ONROUTE_WEBPAGE_LINKS } from "../../routes/constants";
+import { CustomExternalLink } from "../components/links/CustomExternalLink";
 
 export const NotFound = () => {
   return (
@@ -9,7 +8,7 @@ export const NotFound = () => {
       errorTitle="Page not found"
       msgNode={
         <>
-          Please visit <Link to={HOME}>onRouteBC</Link>.
+          Please visit <CustomExternalLink href={ONROUTE_WEBPAGE_LINKS.HOME}>onRouteBC</CustomExternalLink>.
         </>
       }
     />

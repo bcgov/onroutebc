@@ -109,7 +109,7 @@ export const PaymentRedirect = () => {
 
       if (permitIdsArray.length === 0) {
         // permit ids should not be empty, if so then something went wrong
-        navigate(ERROR_ROUTES.UNIVERSAL_UNAUTHORIZED, { replace: true });
+        navigate(ERROR_ROUTES.UNEXPECTED, { replace: true });
       } else if (paymentApproved === true) {
         // Payment successful, proceed to issue permit
         issuePermitsMutation.mutate(permitIdsArray);
@@ -127,7 +127,7 @@ export const PaymentRedirect = () => {
     if (issueFailed()) {
       return (
         <Navigate 
-          to={`${ERROR_ROUTES.UNIVERSAL_UNAUTHORIZED}`}
+          to={`${ERROR_ROUTES.UNEXPECTED}`}
           replace={true}
         />
       );

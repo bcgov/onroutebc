@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext, useMemo } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { Box } from "@mui/material";
 
 import { Permit } from "../../types/permit";
@@ -8,30 +8,29 @@ import { hasPermitExpired } from "../../helpers/permitPDFHelper";
 import { Banner } from "../../../../common/components/dashboard/Banner";
 import { useMultiStepForm } from "../../hooks/useMultiStepForm";
 import { AmendPermitContext } from "./context/AmendPermitContext";
+import { Loading } from "../../../../common/pages/Loading";
+import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
+import { USER_AUTH_GROUP } from "../../../manageProfile/types/userManagement.d";
+import { AmendPermitReview } from "./components/AmendPermitReview";
+import { AmendPermitFinish } from "./components/AmendPermitFinish";
+import { AmendPermitForm } from "./components/AmendPermitForm";
+import { applyWhenNotNullable } from "../../../../common/helpers/util";
+import { ERROR_ROUTES, IDIR_ROUTES } from "../../../../routes/constants";
 import {
   useAmendmentApplicationQuery,
   usePermitDetailsQuery,
   usePermitHistoryQuery,
 } from "../../hooks/hooks";
-import { Loading } from "../../../../common/pages/Loading";
-import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
-import { USER_AUTH_GROUP } from "../../../manageProfile/types/userManagement.d";
-import { Unauthorized } from "../../../../common/pages/Unauthorized";
-import { NotFound } from "../../../../common/pages/NotFound";
-import { Unexpected } from "../../../../common/pages/Unexpected";
-import { AmendPermitReview } from "./components/AmendPermitReview";
-import { AmendPermitFinish } from "./components/AmendPermitFinish";
-import { AmendPermitForm } from "./components/AmendPermitForm";
+
 import {
   AmendPermitFormData,
   getDefaultFormDataFromPermit,
 } from "./types/AmendPermitFormData";
-import { IDIR_ROUTES } from "../../../../routes/constants";
+
 import {
   SEARCH_BY_FILTERS,
   SEARCH_ENTITIES,
 } from "../../../idir/search/types/types";
-import { applyWhenNotNullable } from "../../../../common/helpers/util";
 
 export const AMEND_PERMIT_STEPS = {
   Amend: "Amend",
@@ -207,15 +206,15 @@ export const AmendPermit = () => {
   }
 
   if (!isAmendableByUser(idirUserDetails?.userAuthGroup)) {
-    return <Unauthorized />;
+    return <Navigate to={ERROR_ROUTES.UNIVERSAL_UNAUTHORIZED} />;
   }
 
   if (!permit) {
-    return <NotFound />;
+    return <Navigate to={ERROR_ROUTES.NOT_FOUND} />;
   }
 
   if (!isAmendable(permit)) {
-    return <Unexpected />;
+    return <Navigate to={ERROR_ROUTES.UNEXPECTED} />;
   }
 
   return (

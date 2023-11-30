@@ -1,3 +1,4 @@
+import { ONROUTE_WEBPAGE_LINKS } from "../../../routes/constants";
 import "./Footer.scss";
 
 export const Footer = () => {
@@ -6,30 +7,32 @@ export const Footer = () => {
       <div className="container">
         <ul>
           <li>
-            <a href="https://onroutebc.gov.bc.ca">Home</a>
+            <a href={ONROUTE_WEBPAGE_LINKS.HOME}>
+              Home
+            </a>
           </li>
           <li>
-            <a href="https://www2.gov.bc.ca/gov/content/home/disclaimer">
+            <a href={ONROUTE_WEBPAGE_LINKS.DISCLAIMER}>
               Disclaimer
             </a>
           </li>
           <li>
-            <a href="https://www2.gov.bc.ca/gov/content/home/privacy">
+            <a href={ONROUTE_WEBPAGE_LINKS.PRIVACY}>
               Privacy
             </a>
           </li>
           <li>
-            <a href="https://www2.gov.bc.ca/gov/content/home/accessibility">
+            <a href={ONROUTE_WEBPAGE_LINKS.ACCESSIBILITY}>
               Accessibility
             </a>
           </li>
           <li>
-            <a href="https://www2.gov.bc.ca/gov/content/home/copyright">
+            <a href={ONROUTE_WEBPAGE_LINKS.COPYRIGHT}>
               Copyright
             </a>
           </li>
           <li>
-            <a href="https://onroutebc.gov.bc.ca">
+            <a href={ONROUTE_WEBPAGE_LINKS.CONTACT_US}>
               Contact Us
             </a>
           </li>

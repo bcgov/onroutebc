@@ -1,14 +1,14 @@
-import { ErrorPage } from "../components/error/ErrorPage";
 import { ONROUTE_WEBPAGE_LINKS } from "../../routes/constants";
+import { ErrorPage } from "../components/error/ErrorPage";
 import { CustomExternalLink } from "../components/links/CustomExternalLink";
 
-export const Unexpected = () => {
+export const UniversalUnexpected = () => {
   return (
     <ErrorPage
       errorTitle="Unexpected Error"
       msgNode={
         <>
-          Please refresh to continue. If the error persists, <CustomExternalLink href={ONROUTE_WEBPAGE_LINKS.HOME}>contact us</CustomExternalLink>.
+          Please return to <CustomExternalLink href={ONROUTE_WEBPAGE_LINKS.HOME}>onRouteBC</CustomExternalLink>
         </>
       }
     />
