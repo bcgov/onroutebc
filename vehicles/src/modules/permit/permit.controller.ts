@@ -41,7 +41,6 @@ import { LessThenPipe } from 'src/common/class/customs.transform';
 import { PermitHistoryDto } from './dto/response/permit-history.dto';
 import { ResultDto } from './dto/response/result.dto';
 import { VoidPermitDto } from './dto/request/void-permit.dto';
-import { getDirectory } from 'src/common/helper/auth.helper';
 
 @ApiBearerAuth()
 @ApiTags('Permit')
@@ -72,8 +71,7 @@ export class PermitController {
     @Body() createPermitDto: CreatePermitDto,
   ): Promise<ReadPermitDto> {
     const currentUser = request.user as IUserJWT;
-    const directory = getDirectory(currentUser);
-    return this.permitService.create(createPermitDto, currentUser, directory);
+    return this.permitService.create(createPermitDto, currentUser);
   }
 
   @ApiOkResponse({
@@ -260,12 +258,10 @@ export class PermitController {
     voidPermitDto: VoidPermitDto,
   ): Promise<ResultDto> {
     const currentUser = request.user as IUserJWT;
-    const directory = getDirectory(currentUser);
     const permit = await this.permitService.voidPermit(
       permitId,
       voidPermitDto,
       currentUser,
-      directory,
     );
     return permit;
   }
