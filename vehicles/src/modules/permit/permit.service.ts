@@ -53,7 +53,6 @@ import { getMapFromCache } from 'src/common/helper/cache.helper';
 import { Cache } from 'cache-manager';
 import { PermitIssuedBy } from '../../common/enum/permit-issued-by.enum';
 import { getPaymentCodeFromCache } from '../../common/helper/payment.helper';
-import { IDP } from '../../common/enum/idp.enum';
 
 @Injectable()
 export class PermitService {
