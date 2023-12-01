@@ -206,11 +206,11 @@ export const AmendPermit = () => {
   }
 
   if (!isAmendableByUser(idirUserDetails?.userAuthGroup)) {
-    return <Navigate to={ERROR_ROUTES.UNIVERSAL_UNAUTHORIZED} />;
+    return <Navigate to={ERROR_ROUTES.UNAUTHORIZED} />;
   }
 
   if (!permit) {
-    return <Navigate to={ERROR_ROUTES.NOT_FOUND} />;
+    return <Navigate to={ERROR_ROUTES.UNEXPECTED} />;
   }
 
   if (!isAmendable(permit)) {

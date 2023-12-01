@@ -3,7 +3,6 @@ import { Routes, Route } from "react-router-dom";
 import * as routes from "./constants";
 import { InitialLandingPage } from "../features/homePage/InitialLandingPage";
 import { WelcomePage } from "../features/homePage/welcome/WelcomePage";
-import { NotFound } from "../common/pages/NotFound";
 import { ProtectedRoutes } from "./ProtectedRoutes";
 import { ManageProfiles } from "../features/manageProfile/ManageProfiles";
 import { ManageVehicles } from "../features/manageVehicles/ManageVehicles";
@@ -24,7 +23,6 @@ import { UserInfoWizard } from "../features/wizard/UserInfoWizard";
 import { VoidPermit } from "../features/permits/pages/Void/VoidPermit";
 import { IDIRReportsDashboard } from "../features/idir/search/pages/IDIRReportsDashboard";
 import { AmendPermit } from "../features/permits/pages/Amend/AmendPermit";
-import { Unauthorized } from "../common/pages/Unauthorized";
 import { UniversalUnauthorized } from "../common/pages/UniversalUnauthorized";
 import { UniversalUnexpected } from "../common/pages/UniversalUnexpected";
 
@@ -34,11 +32,9 @@ export const AppRoutes = () => {
       {/* Home and Error Routes */}
       <Route path={routes.HOME} element={<InitialLandingPage />} />
       <Route path={routes.CREATE_PROFILE_WIZARD_ROUTES.WELCOME} element={<WelcomePage />} />
-      <Route path={routes.ERROR_ROUTES.UNAUTHORIZED} element={<Unauthorized />} />
-      <Route path={routes.ERROR_ROUTES.UNIVERSAL_UNAUTHORIZED} element={<UniversalUnauthorized />} />
+      <Route path={routes.ERROR_ROUTES.UNAUTHORIZED} element={<UniversalUnauthorized />} />
       <Route path={routes.ERROR_ROUTES.UNEXPECTED} element={<UniversalUnexpected />} />
-      <Route path={routes.ERROR_ROUTES.NOT_FOUND} element={<NotFound />} />
-      <Route path="*" element={<NotFound />} />
+      <Route path="*" element={<UniversalUnexpected />} />
       
       {/* IDIR Routes */}
       <Route element={<ProtectedRoutes requiredRole={ROLES.READ_PERMIT} />}>

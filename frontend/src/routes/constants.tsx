@@ -28,9 +28,7 @@ export const HOME = "/";
 
 export const ERROR_ROUTES = {
   UNAUTHORIZED: "/unauthorized",
-  UNIVERSAL_UNAUTHORIZED: "/universal-unauthorized",
   UNEXPECTED: "/unexpected-error",
-  NOT_FOUND: "/not-found",
 };
 
 // Manage Vehicles

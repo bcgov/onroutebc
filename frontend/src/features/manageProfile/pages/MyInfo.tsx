@@ -40,7 +40,7 @@ export const MyInfo = memo(() => {
   if (isError) {
     if (error instanceof AxiosError) {
       if (error.response?.status === 401) {
-        return <Navigate to={ERROR_ROUTES.UNIVERSAL_UNAUTHORIZED} />;
+        return <Navigate to={ERROR_ROUTES.UNAUTHORIZED} />;
       }
       return <ErrorFallback error={error.message} />;
     }

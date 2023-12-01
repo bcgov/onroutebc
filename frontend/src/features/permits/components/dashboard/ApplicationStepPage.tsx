@@ -70,7 +70,7 @@ export const ApplicationStepPage = ({
   };
 
   if (!isValidPermitId() && applicationStep !== APPLICATION_STEPS.DETAILS) {
-    return <Navigate to={ERROR_ROUTES.NOT_FOUND} />;
+    return <Navigate to={ERROR_ROUTES.UNEXPECTED} />;
   }
 
   if (companyInfoQuery.isLoading) {
@@ -80,7 +80,7 @@ export const ApplicationStepPage = ({
   if (companyInfoQuery.isError) {
     if (companyInfoQuery.error instanceof AxiosError) {
       if (companyInfoQuery.error.response?.status === 401) {
-        return <Navigate to={ERROR_ROUTES.UNIVERSAL_UNAUTHORIZED} />;
+        return <Navigate to={ERROR_ROUTES.UNAUTHORIZED} />;
       }
       return <ErrorFallback error={companyInfoQuery.error.message} />;
     }
@@ -96,7 +96,7 @@ export const ApplicationStepPage = ({
 
   // If no longer a valid application, then we can no longer perform application-related steps
   if (!isValidApplicationStatus()) {
-    return <Navigate to={ERROR_ROUTES.NOT_FOUND} />;
+    return <Navigate to={ERROR_ROUTES.UNEXPECTED} />;
   }
 
   return (

@@ -106,19 +106,19 @@ export const VoidPermit = () => {
 
   // If user is not SYSADMIN, show unauthorized page
   if (idirUserDetails?.userAuthGroup !== USER_AUTH_GROUP.SYSADMIN) {
-    return <Navigate to={ERROR_ROUTES.UNIVERSAL_UNAUTHORIZED} />;
+    return <Navigate to={ERROR_ROUTES.UNAUTHORIZED} />;
   }
 
   // If permitId is not provided in the route, show not found page
   if (!permitId) {
-    return <Navigate to={ERROR_ROUTES.NOT_FOUND} />;
+    return <Navigate to={ERROR_ROUTES.UNEXPECTED} />;
   }
 
   // When querying permit details hasn't finished, show loading
   if (typeof permit === "undefined") return <Loading />;
 
   // When permit is not available, show not found
-  if (!permit) return <Navigate to={ERROR_ROUTES.NOT_FOUND} />;
+  if (!permit) return <Navigate to={ERROR_ROUTES.UNEXPECTED} />;
 
   // If permit is not voidable, show unexpected error page
   if (!isVoidable(permit)) return <Navigate to={ERROR_ROUTES.UNEXPECTED} />;

@@ -56,7 +56,7 @@ export const ProtectedRoutes = ({
         // user roles is null, indicating an error occurred fetching roles (eg. user with no roles, 403)
         return (
           <Navigate 
-            to={ERROR_ROUTES.UNIVERSAL_UNAUTHORIZED}
+            to={ERROR_ROUTES.UNAUTHORIZED}
             state={{ from: location }} 
             replace 
           />
