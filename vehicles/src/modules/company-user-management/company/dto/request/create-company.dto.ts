@@ -26,6 +26,15 @@ export class CreateCompanyDto {
 
   @AutoMap()
   @ApiProperty({
+    description: 'The Alternate name of the company/Doing Business As (DBA).',
+    example: 'ABC Carriers Inc.',
+  })
+  @IsOptional()
+  @IsString()
+  alternateName?: string;
+
+  @AutoMap()
+  @ApiProperty({
     description:
       'The mailing address of the company. ' +
       'The object must adhere to the individual field rules',
