@@ -12,11 +12,14 @@ import { Request } from 'express';
 import { Role } from '../../common/enum/roles.enum';
 import { IDP } from '../../common/enum/idp.enum';
 import {
+  getDirectory,
   matchCompanies,
   validateUserCompanyAndRoleContext,
 } from '../../common/helper/auth.helper';
 import { DataNotFoundException } from '../../common/exception/data-not-found.exception';
 import { AccountSource } from 'src/common/enum/account-source.enum';
+import { UserAuthGroup } from '../../common/enum/user-auth-group.enum';
+import { Directory } from '../../common/enum/directory.enum';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -42,7 +45,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     let userGUID: string,
       userName: string,
       roles: Role[],
-      associatedCompanies: number[];
+      associatedCompanies: number[],
+      orbc_first_name: string,
+      orbc_last_name: string,
+      orbc_user_auth_group: UserAuthGroup,
+      orbc_user_directory: Directory;
 
     let companyId: number;
     if (req.params['companyId']) {
@@ -75,14 +82,18 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     }
 
     if (req.headers['AuthOnly'] === 'false') {
-      const user = await this.authService.validateUser(
+      const user = await this.authService.getUserDetails(
         companyId,
         payload.identity_provider,
         userGUID,
       );
-      if (!user) {
+      if (!(user?.length)) {
         throw new UnauthorizedException();
       }
+      orbc_first_name = user?.at(0).firstName;
+      orbc_last_name = user?.at(0).lastName;
+      orbc_user_auth_group = user?.at(0).userAuthGroup;
+      orbc_user_directory = getDirectory(payload);
 
       if (payload.identity_provider !== IDP.IDIR) {
         associatedCompanies = await this.authService.getCompaniesForUser(
@@ -105,7 +116,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       roles,
       companyId,
       associatedCompanies,
-      access_token,
+      access_token,      
+      orbc_first_name,
+      orbc_last_name,
+      orbc_user_auth_group,
+      orbc_user_directory,
     };
 
     Object.assign(payload, currentUser);

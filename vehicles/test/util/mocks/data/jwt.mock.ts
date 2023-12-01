@@ -52,6 +52,10 @@ export const redCompanyAdminUserJWTMock: IUserJWT = {
   ],
   associatedCompanies: [constants.RED_COMPANY_ID],
   access_token: undefined,
+  orbc_first_name: constants.RED_COMPANY_ADMIN_FIRST_NAME,
+  orbc_last_name: constants.RED_COMPANY_ADMIN_LAST_NAME,
+  orbc_user_auth_group: constants.RED_COMPANY_ADMIN_USER_AUTH_GROUP,
+  orbc_user_directory: constants.RED_COMPANY_ADMIN_USER_STATUS_DIRECOTRY,  
 };
 
 export const redCompanyCvClientUserJWTMock: IUserJWT = {
@@ -103,6 +107,10 @@ export const redCompanyCvClientUserJWTMock: IUserJWT = {
   ],
   associatedCompanies: [constants.RED_COMPANY_ID],
   access_token: undefined,
+  orbc_first_name: constants.RED_COMPANY_CVCLIENT_FIRST_NAME,
+  orbc_last_name: constants.RED_COMPANY_CVCLIENT_LAST_NAME,
+  orbc_user_auth_group: constants.RED_COMPANY_CVCLIENT_USER_AUTH_GROUP,
+  orbc_user_directory: constants.RED_COMPANY_CVCLIENT_USER_STATUS_DIRECOTRY,
 };
 
 export const blueCompanyAdminUserJWTMock: IUserJWT = {
@@ -154,6 +162,10 @@ export const blueCompanyAdminUserJWTMock: IUserJWT = {
   ],
   associatedCompanies: [constants.BLUE_COMPANY_ID],
   access_token: undefined,
+  orbc_first_name: constants.BLUE_COMPANY_ADMIN_FIRST_NAME,
+  orbc_last_name: constants.BLUE_COMPANY_ADMIN_LAST_NAME,
+  orbc_user_auth_group: constants.BLUE_COMPANY_ADMIN_USER_AUTH_GROUP,
+  orbc_user_directory: constants.BLUE_COMPANY_ADMIN_USER_STATUS_DIRECOTRY,  
 };
 
 export const blueCompanyCvClientUserJWTMock: IUserJWT = {
@@ -205,6 +217,10 @@ export const blueCompanyCvClientUserJWTMock: IUserJWT = {
   ],
   associatedCompanies: [constants.BLUE_COMPANY_ID],
   access_token: undefined,
+  orbc_first_name: constants.BLUE_COMPANY_CVCLIENT_FIRST_NAME,
+  orbc_last_name: constants.BLUE_COMPANY_CVCLIENT_LAST_NAME,
+  orbc_user_auth_group: constants.BLUE_COMPANY_CVCLIENT_USER_AUTH_GROUP,
+  orbc_user_directory: constants.BLUE_COMPANY_CVCLIENT_USER_STATUS_DIRECOTRY,
 };
 
 export const sysAdminStaffUserJWTMock: IUserJWT = {
@@ -256,4 +272,8 @@ export const sysAdminStaffUserJWTMock: IUserJWT = {
   ],
   associatedCompanies: undefined,
   access_token: undefined,
+  orbc_first_name: constants.SYS_ADMIN_STAFF_FIRST_NAME,
+  orbc_last_name: constants.SYS_ADMIN_STAFF_LAST_NAME,
+  orbc_user_auth_group: constants.SYS_ADMIN_STAFF_USER_AUTH_GROUP,
+  orbc_user_directory: constants.SYS_ADMIN_STAFF_USER_STATUS_DIRECOTRY,
 };
