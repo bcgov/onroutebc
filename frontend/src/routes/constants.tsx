@@ -121,7 +121,7 @@ export const ONROUTE_WEBPAGE_LINKS = {
   COMMERCIAL_TRANSPORT_PROCEDURES: "https://www2.gov.bc.ca/gov/content/transportation/vehicle-safety-enforcement/information-education/commercial-transport-procedures",
   DISCLAIMER: "https://www2.gov.bc.ca/gov/content/home/disclaimer",
   PRIVACY: "https://www2.gov.bc.ca/gov/content/home/privacy",
-  ACCESSIBILITY: "https://www2.gov.bc.ca/gov/content/home/accessibility",
+  ACCESSIBILITY: "https://www2.gov.bc.ca/gov/content/home/accessible-government",
   COPYRIGHT: "https://www2.gov.bc.ca/gov/content/home/copyright",
   CONTACT_US: "https://onroutebc.gov.bc.ca",
 };

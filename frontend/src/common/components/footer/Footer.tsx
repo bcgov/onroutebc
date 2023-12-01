@@ -12,27 +12,47 @@ export const Footer = () => {
             </a>
           </li>
           <li>
-            <a href={ONROUTE_WEBPAGE_LINKS.DISCLAIMER}>
+            <a
+              href={ONROUTE_WEBPAGE_LINKS.DISCLAIMER}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               Disclaimer
             </a>
           </li>
           <li>
-            <a href={ONROUTE_WEBPAGE_LINKS.PRIVACY}>
+            <a
+              href={ONROUTE_WEBPAGE_LINKS.PRIVACY}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               Privacy
             </a>
           </li>
           <li>
-            <a href={ONROUTE_WEBPAGE_LINKS.ACCESSIBILITY}>
+            <a
+              href={ONROUTE_WEBPAGE_LINKS.ACCESSIBILITY}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               Accessibility
             </a>
           </li>
           <li>
-            <a href={ONROUTE_WEBPAGE_LINKS.COPYRIGHT}>
+            <a
+              href={ONROUTE_WEBPAGE_LINKS.COPYRIGHT}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               Copyright
             </a>
           </li>
           <li>
-            <a href={ONROUTE_WEBPAGE_LINKS.CONTACT_US}>
+            <a
+              href={ONROUTE_WEBPAGE_LINKS.CONTACT_US}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               Contact Us
             </a>
           </li>
