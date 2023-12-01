@@ -1,6 +1,8 @@
+import { Row } from "@tanstack/table-core/build/lib/types";
 import { BC_COLOURS } from "../../themes/bcGovStyles";
-import { DATE_FORMATS, toLocal } from "../helpers/formatDate";
+import { DATE_FORMATS, toLocal, utcToLocalDayjs } from "../helpers/formatDate";
 import { applyWhenNotNullable } from "../helpers/util";
+import { Permit } from "../../features/permits/types/permit";
 
 export const formatCellValuetoDatetime = (rawDateTime: string | null | undefined) => {
   return applyWhenNotNullable(
@@ -8,7 +10,16 @@ export const formatCellValuetoDatetime = (rawDateTime: string | null | undefined
     rawDateTime,
     "NA",
   );
-}
+};
+
+export const dateTimeStringSortingFn = (rowA: Row<Permit>, rowB: Row<Permit>, columnId: string) => {
+  const day1 = utcToLocalDayjs(rowA.getValue(columnId));
+  const day2 = utcToLocalDayjs(rowB.getValue(columnId));
+  let sortVal = 0;
+  if (day1.isBefore(day2)) sortVal = -1;
+  if (day1.isAfter(day2)) sortVal = 1;
+  return sortVal;
+};
 
 export const defaultTableStateOptions: any = {
 };
@@ -54,6 +65,9 @@ export const defaultTableOptions: any = {
   // row selection properties
   enableRowActions: true,
   enableRowSelection: true,
+
+  // prevent sorting by more then one column
+  enableMultiSort: false,
 
   // sticky table header properties
   //  docs recommend that a height is defined
