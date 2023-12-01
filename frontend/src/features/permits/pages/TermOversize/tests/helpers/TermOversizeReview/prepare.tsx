@@ -108,7 +108,8 @@ const ComponentWithWrapper = ({
   applicationData: Application;
 }) => {
   const [testApplicationData, setTestApplicationData] =
-    useState(applicationData);
+    useState<Application | null | undefined>(applicationData);
+  
   return (
     <ThemeProvider theme={bcGovTheme}>
       <ApplicationContext.Provider

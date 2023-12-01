@@ -39,23 +39,25 @@ export const ApplicationStepPage = ({
 
   // Query for the application data whenever this page is rendered
   const {
-    query: applicationDataQuery,
     applicationData,
     setApplicationData,
-  } = useApplicationDetailsQuery(permitId);
+    shouldEnableQuery,
+    isInvalidRoute,
+  } = useApplicationDetailsQuery(applicationStep, permitId);
 
-  const isValidPermitId = () => {
-    if (!permitId) return false;
-    if (permitId.trim() === "") return false;
-    return !isNaN(Number(permitId.trim()));
-  };
+  const isLoading = shouldEnableQuery && (typeof applicationData === "undefined");
+
+  const isInvalidApplication = 
+    ((typeof applicationData !== "undefined") && !applicationData)
+    || isInvalidRoute;
 
   // Permit must be an application in order to allow application-related steps
   // (ie. empty status for new application, or in progress or incomplete payment status)
   const isValidApplicationStatus = () => {
-    return !applicationData?.permitStatus
-      || applicationData?.permitStatus === PERMIT_STATUSES.IN_PROGRESS
-      || applicationData?.permitStatus === PERMIT_STATUSES.WAITING_PAYMENT;
+    return !isInvalidApplication && 
+      (!applicationData?.permitStatus
+        || applicationData?.permitStatus === PERMIT_STATUSES.IN_PROGRESS
+        || applicationData?.permitStatus === PERMIT_STATUSES.WAITING_PAYMENT);
   };
 
   const renderApplicationStep = () => {
@@ -69,7 +71,7 @@ export const ApplicationStepPage = ({
     }
   };
 
-  if (!isValidPermitId() && applicationStep !== APPLICATION_STEPS.DETAILS) {
+  if (isInvalidApplication || !isValidApplicationStatus()) {
     return <Navigate to={ERROR_ROUTES.UNEXPECTED} />;
   }
 
@@ -86,17 +88,8 @@ export const ApplicationStepPage = ({
     }
   }
 
-  // Show loading screen while application data is being fetched
-  // Note: when creating a new application, permitId will be undefined, and the query will not be performed
-  // since it's disabled on invalid application numbers, but isLoading will always be (stuck) in the true state
-  // We need to check for isInitialLoading state instead (see https://tanstack.com/query/latest/docs/react/guides/disabling-queries)
-  if (applicationDataQuery.isInitialLoading) {
+  if (isLoading) {
     return <Loading />;
-  }
-
-  // If no longer a valid application, then we can no longer perform application-related steps
-  if (!isValidApplicationStatus()) {
-    return <Navigate to={ERROR_ROUTES.UNEXPECTED} />;
   }
 
   return (
