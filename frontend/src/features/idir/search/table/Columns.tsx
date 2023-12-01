@@ -8,7 +8,7 @@ import {
   hasPermitExpired,
   viewPermitPdf,
 } from "../../../permits/helpers/permitPDFHelper";
-import { formatCellValuetoDatetime } from "../../../../common/constants/defaultTableOptions";
+import { dateTimeStringSortingFn, formatCellValuetoDatetime } from "../../../../common/constants/defaultTableOptions";
 
 /*
  *
@@ -22,7 +22,6 @@ export const PermitSearchResultColumnDef: MRT_ColumnDef<Permit>[] = [
     accessorKey: "permitNumber",
     header: "Permit #",
     enableSorting: true,
-    enableMultiSort: false,
     sortingFn: "alphanumeric",
     Cell: (props: { cell: any; row: any }) => {
       const permit = props.row.original as Permit;
@@ -55,14 +54,12 @@ export const PermitSearchResultColumnDef: MRT_ColumnDef<Permit>[] = [
     accessorKey: "permitType",
     header: "Permit Type",
     enableSorting: true,
-    enableMultiSort: false,
     sortingFn: "alphanumeric",
   },
   {
     accessorKey: "permitData.commodities",
     header: "Commodity",
     enableSorting: true,
-    enableMultiSort: false,
     sortingFn: "alphanumeric",
     // For TROS permits, commodities is not a concern.
     // Other permits will require implementation here.
@@ -72,22 +69,19 @@ export const PermitSearchResultColumnDef: MRT_ColumnDef<Permit>[] = [
     accessorKey: "permitData.vehicleDetails.plate",
     header: "Plate",
     enableSorting: true,
-    enableMultiSort: false,
     sortingFn: "alphanumeric",
   },
   {
     accessorKey: "permitData.companyName",
     header: "Company Name",
     enableSorting: true,
-    enableMultiSort: false,
     sortingFn: "alphanumeric",
   },
   {
     accessorKey: "permitData.startDate",
     header: "Permit Start Date",
     enableSorting: true,
-    enableMultiSort: false,
-    sortingFn: "datetime",
+    sortingFn: dateTimeStringSortingFn,
     Cell: (props: { cell: any }) => {
       const formattedDate = formatCellValuetoDatetime(props.cell.getValue())
       return (
@@ -101,8 +95,7 @@ export const PermitSearchResultColumnDef: MRT_ColumnDef<Permit>[] = [
     accessorKey: "permitData.expiryDate",
     header: "Permit End Date",
     enableSorting: true,
-    enableMultiSort: false,
-    sortingFn: "datetime",
+    sortingFn: dateTimeStringSortingFn,
     Cell: (props: { cell: any }) => {
       const formattedDate = formatCellValuetoDatetime(props.cell.getValue())
       return (
@@ -117,8 +110,7 @@ export const PermitSearchResultColumnDef: MRT_ColumnDef<Permit>[] = [
     header: "Issue Date",
     enableSorting: true,
     sortDescFirst: true,
-    enableMultiSort: false,
-    sortingFn: "datetime",
+    sortingFn: dateTimeStringSortingFn,
     accessorFn: (originalRow) => {
       const { permitIssueDateTime } = originalRow;
       const formattedDate = formatCellValuetoDatetime(permitIssueDateTime)
