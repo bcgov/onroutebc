@@ -69,6 +69,7 @@ CREATE TABLE [dbo].[ORBC_COMPANY](
 	[CLIENT_NUMBER] [char](13) NULL,
 	[TPS_CLIENT_HASH] [varchar](64) NULL,
 	[LEGAL_NAME] [nvarchar](500) NOT NULL,
+	[ALTERNATE_NAME] [nvarchar](150) NULL,
 	[COMPANY_DIRECTORY] [varchar](10) NOT NULL,
 	[MAILING_ADDRESS_ID] [int] NOT NULL,
 	[PHONE] [varchar](20) NULL,
@@ -77,7 +78,7 @@ CREATE TABLE [dbo].[ORBC_COMPANY](
 	[EMAIL] [varchar](50) NULL,
 	[PRIMARY_CONTACT_ID] [int] NULL,
 	[ACCOUNT_REGION] [char](1) NULL,
-	[ACCOUNT_SOURCE] [char](1) NULL,
+	[ACCOUNT_SOURCE] [char](1) NULL,	
 	[APP_CREATE_TIMESTAMP] [datetime2](7) DEFAULT (getutcdate()),
 	[APP_CREATE_USERID] [nvarchar](30) DEFAULT (user_name()),
 	[APP_CREATE_USER_GUID] [char](32) NULL,
@@ -654,6 +655,7 @@ EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'GUID of the co
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Unique client-facing client number' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_COMPANY', @level2type=N'COLUMN',@level2name=N'CLIENT_NUMBER'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'SHA-256 hash of the TPS client ID, for those clients who were imported from TPS.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_COMPANY', @level2type=N'COLUMN',@level2name=N'TPS_CLIENT_HASH'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Legal name of the company' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_COMPANY', @level2type=N'COLUMN',@level2name=N'LEGAL_NAME'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Alternate name of the company (DBA)' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_COMPANY', @level2type=N'COLUMN',@level2name=N'ALTERNATE_NAME'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The source of the company record - this can be Business BCeID or onRouteBC for clients without a Business BCeID. FK into directory table.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_COMPANY', @level2type=N'COLUMN',@level2name=N'COMPANY_DIRECTORY'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID of the mailing address of the company (FK into address table)' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_COMPANY', @level2type=N'COLUMN',@level2name=N'MAILING_ADDRESS_ID'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'General phone number of the company' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ORBC_COMPANY', @level2type=N'COLUMN',@level2name=N'PHONE'

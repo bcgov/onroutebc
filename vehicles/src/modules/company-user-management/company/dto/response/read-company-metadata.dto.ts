@@ -25,4 +25,11 @@ export class ReadCompanyMetadataDto {
     example: 'ABC Carriers Inc.',
   })
   legalName: string;
+
+  @AutoMap()
+  @ApiProperty({
+    description: 'The Alternate name of the company/Doing Business As (DBA).',
+    example: 'ABC Carriers Inc.',
+  })
+  alternateName?: string;
 }

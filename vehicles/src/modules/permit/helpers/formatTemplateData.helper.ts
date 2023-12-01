@@ -10,6 +10,8 @@ import {
   dateFormat,
 } from '../../../common/helper/date-time.helper';
 import { ApplicationStatus } from '../../../common/enum/application-status.enum';
+import { PermitIssuedBy } from '../../../common/enum/permit-issued-by.enum';
+import * as constants from '../../../common/constants/api.constant';
 /**
  * Formats the permit data so that it can be used in the templated word documents
  * @param permit
@@ -31,7 +33,9 @@ export const formatTemplateData = (
     createdDateTime: '',
     updatedDateTime: '',
     companyName: '',
+    companyAlternateName: '',
     clientNumber: '',
+    issuedBy: '',
     revisions: [],
     permitData: null,
   };
@@ -42,6 +46,10 @@ export const formatTemplateData = (
   template.permitName = fullNames.permitName;
   template.permitNumber = permit.permitNumber || '';
   template.permitType = permit.permitType;
+  template.issuedBy =
+    permit.permitIssuedBy === PermitIssuedBy.SELF_ISSUED
+      ? constants.SELF_ISSUED
+      : constants.PPC_FULL_TEXT;
   template.createdDateTime = convertUtcToPt(
     permit.createdDateTime,
     'MMM. D, YYYY, hh:mm a Z',
@@ -77,6 +85,7 @@ export const formatTemplateData = (
   // Format Company
   template.companyName = companyInfo.legalName;
   template.clientNumber = companyInfo.clientNumber;
+  template.companyAlternateName = companyInfo.alternateName;
 
   // Format Fee Summary
   template.permitData.feeSummary =

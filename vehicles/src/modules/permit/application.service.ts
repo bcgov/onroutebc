@@ -51,6 +51,7 @@ import { Directory } from 'src/common/enum/directory.enum';
 import { ReadPermitDto } from './dto/response/read-permit.dto';
 import { PermitIssuedBy } from '../../common/enum/permit-issued-by.enum';
 import { getPaymentCodeFromCache } from '../../common/helper/payment.helper';
+import * as constants from '../../common/constants/api.constant';
 
 @Injectable()
 export class ApplicationService {
@@ -480,7 +481,7 @@ export class ApplicationService {
           //Payer Name should be persisted in transacation Table so that it can be used for DocRegen
           payerName:
             currentUser.orbcUserDirectory === Directory.IDIR
-              ? 'Provincial Permit Centre'
+              ? constants.PPC_FULL_TEXT
               : currentUser.orbcUserFirstName +
                 ' ' +
                 currentUser.orbcUserLastName,

@@ -26,6 +26,7 @@ export const PROVINCE_ID_US_WA = 'US-WA';
 //Red Company
 export const RED_COMPANY_ID = 1;
 export const RED_COMPANY_LEGAL_NAME = 'Red Truck Inc';
+export const RED_COMPANY_ALTERNATE_NAME = 'Red Truck ALternate Inc';
 export const RED_COMPANY_GUID = 'C6073AA261AC4781A062DD0A59D7BB10';
 export const RED_COMPANY_CLIENT_NUMBER = 'B3-000005-722';
 export const RED_COMPANY_DIRECOTRY = Directory.BBCEID;
@@ -46,6 +47,7 @@ export const RED_COMPANY_COUNTRY_CODE = COUNTRY_CODE_CA;
 
 export const BLUE_COMPANY_ID = 2;
 export const BLUE_COMPANY_LEGAL_NAME = 'Blue Truck Inc';
+export const BLUE_COMPANY_ALTERNATE_NAME = 'Blue Truck Alternate Inc';
 export const BLUE_COMPANY_GUID: string = undefined;
 export const BLUE_COMPANY_CLIENT_NUMBER = 'E3-000006-923';
 export const BLUE_COMPANY_DIRECOTRY = Directory.BCEID;
