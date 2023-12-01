@@ -290,7 +290,11 @@ export class PaymentService {
         url = this.generateUrl(createdTransaction);
       }
 
-      if (createdTransaction.transactionTypeId == TransactionType.REFUND) {
+      if (
+        createdTransaction.paymentMethodTypeCode ==
+          PaymentMethodTypeEnum.NO_PAYMENT ||
+        createdTransaction.transactionTypeId == TransactionType.REFUND
+      ) {
         const receiptNumber = await this.generateReceiptNumber();
         const receipt = new Receipt();
         receipt.receiptNumber = receiptNumber;
