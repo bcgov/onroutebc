@@ -27,7 +27,6 @@ import { CreateGeneratedReportDto } from './dto/request/create-generated-report.
 import puppeteer, { Browser } from 'puppeteer';
 import { IFile } from '../../interface/file.interface';
 import { ReportTemplate } from '../../enum/report-template.enum';
-import { getDirectory } from 'src/helper/auth.helper';
 import { convertUtcToPt } from '../../helper/date-time.helper';
 
 @Injectable()
@@ -121,7 +120,6 @@ export class DgenService {
     const dmsObject = await this.dmsService.create(
       currentUser,
       generatedDocument,
-      getDirectory(currentUser),
       companyId,
     );
     res.setHeader('x-orbc-dms-id', dmsObject.documentId);

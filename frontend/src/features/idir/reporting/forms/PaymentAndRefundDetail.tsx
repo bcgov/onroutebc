@@ -20,7 +20,6 @@ import {
   REPORT_ISSUED_BY,
   ReadUserDtoForReport,
 } from "../types/types";
-import "./style.scss";
 import { IssuedByCheckBox } from "./subcomponents/IssuedByCheckBox";
 import { PaymentMethodSelect } from "./subcomponents/PaymentMethodSelect";
 import { PermitTypeSelect } from "./subcomponents/PermitTypeSelect";

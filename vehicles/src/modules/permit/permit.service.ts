@@ -52,6 +52,7 @@ import { CacheKey } from 'src/common/enum/cache-key.enum';
 import { getMapFromCache } from 'src/common/helper/cache.helper';
 import { Cache } from 'cache-manager';
 import { PermitIssuedBy } from '../../common/enum/permit-issued-by.enum';
+import { getPaymentCodeFromCache } from '../../common/helper/payment.helper';
 
 @Injectable()
 export class PermitService {
@@ -75,7 +76,6 @@ export class PermitService {
   async create(
     createPermitDto: CreatePermitDto,
     currentUser: IUserJWT,
-    directory: Directory,
   ): Promise<ReadPermitDto> {
     const permitEntity = await this.classMapper.mapAsync(
       createPermitDto,
@@ -84,7 +84,7 @@ export class PermitService {
       {
         extraArgs: () => ({
           userName: currentUser.userName,
-          directory: directory,
+          directory: currentUser.orbcUserDirectory,
           userGUID: currentUser.userGUID,
           timestamp: new Date(),
         }),
@@ -360,7 +360,6 @@ export class PermitService {
     permitId: string,
     voidPermitDto: VoidPermitDto,
     currentUser: IUserJWT,
-    directory: Directory,
   ): Promise<ResultDto> {
     const permit = await this.findOne(permitId);
     /**
@@ -406,11 +405,11 @@ export class PermitService {
       const userMetadata: Base = {
         createdDateTime: new Date(),
         createdUser: currentUser.userName,
-        createdUserDirectory: directory,
+        createdUserDirectory: currentUser.orbcUserDirectory,
         createdUserGuid: currentUser.userGUID,
         updatedDateTime: new Date(),
         updatedUser: currentUser.userName,
-        updatedUserDirectory: directory,
+        updatedUserDirectory: currentUser.orbcUserDirectory,
         updatedUserGuid: currentUser.userGUID,
       };
 
@@ -422,7 +421,7 @@ export class PermitService {
       newPermit.applicationNumber = applicationNumber;
       newPermit.permitStatus = voidPermitDto.status;
       newPermit.permitIssuedBy =
-        directory == Directory.IDIR
+        currentUser.orbcUserDirectory == Directory.IDIR
           ? PermitIssuedBy.PPC
           : PermitIssuedBy.SELF_ISSUED;
       newPermit.permitIssueDateTime = new Date();
@@ -450,7 +449,7 @@ export class PermitService {
           permitStatus: ApplicationStatus.SUPERSEDED,
           updatedDateTime: new Date(),
           updatedUser: currentUser.userName,
-          updatedUserDirectory: directory,
+          updatedUserDirectory: currentUser.orbcUserDirectory,
           updatedUserGuid: currentUser.userGUID,
         },
       );
@@ -471,7 +470,6 @@ export class PermitService {
       const transactionDto = await this.paymentService.createTransactions(
         currentUser,
         createTransactionDto,
-        directory,
         queryRunner,
       );
 
@@ -531,9 +529,23 @@ export class PermitService {
         generatedDocumentFileName: `Receipt_No_${fetchedTransaction.receipt.receiptNumber}`,
         templateData: {
           ...permitDataForTemplate,
+          pgTransactionId: fetchedTransaction.pgTransactionId,
           transactionOrderNumber: fetchedTransaction.transactionOrderNumber,
           transactionAmount: fetchedTransaction.totalTransactionAmount,
-          paymentMethod: fetchedTransaction.pgPaymentMethod,
+          //Payer Name should be persisted in transacation Table so that it can be used for DocRegen
+          payerName:
+            currentUser.orbcUserDirectory === Directory.IDIR
+              ? 'Provincial Permit Centre'
+              : currentUser.orbcUserFirstName +
+                ' ' +
+                currentUser.orbcUserLastName,
+          consolidatedPaymentMethod: (
+            await getPaymentCodeFromCache(
+              this.cacheManager,
+              fetchedTransaction.paymentMethodTypeCode,
+              fetchedTransaction.paymentCardTypeCode,
+            )
+          ).consolidatedPaymentMethod,
           transactionDate: convertUtcToPt(
             fetchedTransaction.transactionSubmitDate,
             'MMM. D, YYYY, hh:mm a Z',
@@ -564,7 +576,7 @@ export class PermitService {
           documentId: generatedDocuments.at(0).dmsId,
           updatedDateTime: new Date(),
           updatedUser: currentUser.userName,
-          updatedUserDirectory: directory,
+          updatedUserDirectory: currentUser.orbcUserDirectory,
           updatedUserGuid: currentUser.userGUID,
         },
       );
@@ -579,7 +591,7 @@ export class PermitService {
           receiptDocumentId: generatedDocuments.at(1).dmsId,
           updatedDateTime: new Date(),
           updatedUser: currentUser.userName,
-          updatedUserDirectory: directory,
+          updatedUserDirectory: currentUser.orbcUserDirectory,
           updatedUserGuid: currentUser.userGUID,
         },
       );

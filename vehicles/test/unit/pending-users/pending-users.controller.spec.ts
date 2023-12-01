@@ -14,7 +14,6 @@ import {
   updateRedCompanyPendingUserDtoMock,
 } from '../../util/mocks/data/pending-user.mock';
 import { UserAuthGroup } from '../../../src/common/enum/user-auth-group.enum';
-import { getDirectory } from 'src/common/helper/auth.helper';
 
 const COMPANY_ID_99 = 99;
 let pendingUserService: DeepMocked<PendingUsersService>;
@@ -63,7 +62,6 @@ describe('PendingUsersController', () => {
       expect(pendingUserService.create).toHaveBeenCalledWith(
         constants.RED_COMPANY_ID,
         createRedCompanyPendingUserDtoMock,
-        getDirectory(redCompanyAdminUserJWTMock),
         redCompanyAdminUserJWTMock,
       );
     });

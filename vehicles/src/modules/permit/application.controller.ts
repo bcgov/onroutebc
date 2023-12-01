@@ -33,7 +33,6 @@ import { ResultDto } from './dto/response/result.dto';
 import { Roles } from 'src/common/decorator/roles.decorator';
 import { Role } from 'src/common/enum/roles.enum';
 import { IssuePermitDto } from './dto/request/issue-permit.dto';
-import { getDirectory } from 'src/common/helper/auth.helper';
 import { ReadPermitDto } from './dto/response/read-permit.dto';
 
 @ApiBearerAuth()
@@ -69,12 +68,7 @@ export class ApplicationController {
     @Body() createApplication: CreateApplicationDto,
   ): Promise<ReadApplicationDto> {
     const currentUser = request.user as IUserJWT;
-    const directory = getDirectory(currentUser);
-    return await this.applicationService.create(
-      createApplication,
-      currentUser,
-      directory,
-    );
+    return await this.applicationService.create(createApplication, currentUser);
   }
 
   /**
@@ -151,12 +145,10 @@ export class ApplicationController {
     @Body() updateApplicationDto: UpdateApplicationDto,
   ): Promise<ReadApplicationDto> {
     const currentUser = request.user as IUserJWT;
-    const directory = getDirectory(currentUser);
     const application = await this.applicationService.update(
       applicationNumber,
       updateApplicationDto,
       currentUser,
-      directory,
     );
 
     if (!application) {
@@ -182,12 +174,10 @@ export class ApplicationController {
     @Body() updateApplicationStatusDto: UpdateApplicationStatusDto,
   ): Promise<ResultDto> {
     const currentUser = request.user as IUserJWT; // TODO: consider security with passing JWT token to DMS microservice
-    const directory = getDirectory(currentUser);
     const result = await this.applicationService.updateApplicationStatus(
       updateApplicationStatusDto.applicationIds,
       updateApplicationStatusDto.applicationStatus,
       currentUser,
-      directory,
     );
     if (!result) {
       throw new DataNotFoundException();
@@ -210,7 +200,6 @@ export class ApplicationController {
     @Body() issuePermitDto: IssuePermitDto,
   ): Promise<ResultDto> {
     const currentUser = request.user as IUserJWT;
-    const directory = getDirectory(currentUser);
     /**Bulk issuance would require changes in issuePermit service method with
      *  respect to Document generation etc. At the moment, it is not handled and
      *  only single permit Id must be passed.
@@ -219,7 +208,6 @@ export class ApplicationController {
     const result = await this.applicationService.issuePermit(
       currentUser,
       issuePermitDto.applicationIds[0],
-      directory,
     );
     return result;
   }

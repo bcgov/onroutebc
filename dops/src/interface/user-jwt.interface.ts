@@ -1,4 +1,6 @@
+import { Directory } from '../enum/directory.enum';
 import { Role } from '../enum/roles.enum';
+import { UserAuthGroup } from '../enum/user-auth-group.enum';
 
 export interface IUserJWT {
   jti: string;
@@ -26,4 +28,8 @@ export interface IUserJWT {
   roles: Role[];
   associatedCompanies: number[];
   access_token: string;
+  orbcUserFirstName: string;
+  orbcUserLastName: string;
+  orbcUserAuthGroup: UserAuthGroup;
+  orbcUserDirectory: Directory;
 }

@@ -13,7 +13,6 @@ import {
   powerUnitEntityMock,
   updatePowerUnitDtoMock,
 } from '../../util/mocks/data/power-unit.mock';
-import { getDirectory } from 'src/common/helper/auth.helper';
 import { redCompanyCvClientUserJWTMock } from 'test/util/mocks/data/jwt.mock';
 
 const COMPANY_ID_1 = 1;
@@ -57,7 +56,6 @@ describe('PowerUnitsService', () => {
         COMPANY_ID_1,
         createPowerUnitDtoMock,
         redCompanyCvClientUserJWTMock,
-        getDirectory(redCompanyCvClientUserJWTMock),
       );
       expect(typeof retPowerUnit).toBe('object');
       expect(retPowerUnit.powerUnitId).toBe(POWER_UNIT_ID_1);
@@ -93,7 +91,6 @@ describe('PowerUnitsService', () => {
         POWER_UNIT_ID_1,
         updatePowerUnitDtoMock,
         redCompanyCvClientUserJWTMock,
-        getDirectory(redCompanyCvClientUserJWTMock),
       );
       expect(typeof retPowerUnit).toBe('object');
       expect(retPowerUnit.powerUnitId).toBe(POWER_UNIT_ID_1);

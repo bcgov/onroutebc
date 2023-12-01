@@ -12,11 +12,11 @@ export class AuthService {
     private readonly pendingUserService: PendingUsersService,
   ) {}
 
-  async validateUser(
+  async getUserDetails(
     companyId: number,
     identity_provider: string,
     userGuid: string,
-  ): Promise<boolean> {
+  ): Promise<ReadUserDto[]> {
     let user: ReadUserDto[];
     if (identity_provider === IDP.IDIR) {
       user = Array(await this.usersService.findIdirUser(userGuid));
@@ -27,7 +27,7 @@ export class AuthService {
         user = await this.usersService.findUsersDto(userGuid, [companyId]);
       }
     }
-    return user?.length ? true : false;
+    return user;
   }
 
   /**
