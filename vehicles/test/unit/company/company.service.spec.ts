@@ -106,7 +106,6 @@ describe('CompanyService', () => {
         });
       const retCompanyUser = await service.create(
         createRedCompanyDtoMock,
-        constants.RED_COMPANY_DIRECOTRY,
         redCompanyAdminUserJWTMock,
       );
       expect(typeof retCompanyUser).toBe('object');
@@ -125,7 +124,6 @@ describe('CompanyService', () => {
         });
       const retCompanyUser = await service.create(
         createBlueCompanyDtoMock,
-        constants.BLUE_COMPANY_DIRECOTRY,
         blueCompanyAdminUserJWTMock,
       );
       expect(typeof retCompanyUser).toBe('object');
@@ -134,7 +132,7 @@ describe('CompanyService', () => {
 
     it('should catch and throw and Internal Error Exceptions user.', async () => {
       await expect(async () => {
-        await service.create(null, null, redCompanyAdminUserJWTMock);
+        await service.create(null, redCompanyAdminUserJWTMock);
       }).rejects.toThrowError(InternalServerErrorException);
     });
   });
@@ -152,7 +150,6 @@ describe('CompanyService', () => {
       const retCompany = await service.update(
         constants.RED_COMPANY_ID,
         updateRedCompanyDtoMock,
-        constants.RED_COMPANY_DIRECOTRY,
         redCompanyCvClientUserJWTMock,
       );
 
@@ -168,7 +165,6 @@ describe('CompanyService', () => {
         await service.update(
           COMPANY_ID_99,
           updateRedCompanyDtoMock,
-          constants.RED_COMPANY_DIRECOTRY,
           redCompanyCvClientUserJWTMock,
         );
       }).rejects.toThrow(DataNotFoundException);

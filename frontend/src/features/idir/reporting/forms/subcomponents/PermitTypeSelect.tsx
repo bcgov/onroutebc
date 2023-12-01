@@ -55,46 +55,44 @@ export const PermitTypeSelect = ({ permitTypes }: PermitTypeSelectProps) => {
     }
   };
   return (
-    <>
-      <FormControl sx={{ width: "274px" }} disabled={issuedBy.length === 0}>
-        <FormLabel
-          className="custom-form-control__label"
-          id="permit-type-select-label"
-          sx={{ fontWeight: "bold", marginBottom: "8px" }}
-        >
-          Permit Type
-        </FormLabel>
-        <Select
-          labelId="permit-type-select-label"
-          id="permit-type-select"
-          multiple
-          onChange={onSelectPermitType}
-          renderValue={(selected) => {
-            if (isAllPermitTypesSelected) return "All Permit Types";
-            return selected.join(", ");
-          }}
-          displayEmpty
-          input={<OutlinedInput />}
-          value={selectedPermitTypes}
-          MenuProps={{
-            autoFocus: false,
-          }}
-        >
-          <MenuItem key="All Permit Types" value="ALL">
-            <Checkbox checked={isAllPermitTypesSelected} />
-            <ListItemText primary={"All Permit Types"} />
-          </MenuItem>
-          {permitTypes &&
-            Object.keys(permitTypes).map((key) => {
-              return (
-                <MenuItem key={key} value={key}>
-                  <Checkbox checked={selectedPermitTypes.indexOf(key) > -1} />
-                  <ListItemText primary={key} />
-                </MenuItem>
-              );
-            })}
-        </Select>
-      </FormControl>
-    </>
+    <FormControl sx={{ width: "274px" }} disabled={issuedBy.length === 0}>
+      <FormLabel
+        className="custom-form-control__label"
+        id="permit-type-select-label"
+        sx={{ fontWeight: "bold", marginBottom: "8px" }}
+      >
+        Permit Type
+      </FormLabel>
+      <Select
+        labelId="permit-type-select-label"
+        id="permit-type-select"
+        multiple
+        onChange={onSelectPermitType}
+        renderValue={(selected) => {
+          if (isAllPermitTypesSelected) return "All Permit Types";
+          return selected.join(", ");
+        }}
+        displayEmpty
+        input={<OutlinedInput />}
+        value={selectedPermitTypes}
+        MenuProps={{
+          autoFocus: false,
+        }}
+      >
+        <MenuItem key="All Permit Types" value="ALL">
+          <Checkbox checked={isAllPermitTypesSelected} />
+          <ListItemText primary={"All Permit Types"} />
+        </MenuItem>
+        {permitTypes &&
+          Object.keys(permitTypes).map((key) => {
+            return (
+              <MenuItem key={key} value={key}>
+                <Checkbox checked={selectedPermitTypes.indexOf(key) > -1} />
+                <ListItemText primary={key} />
+              </MenuItem>
+            );
+          })}
+      </Select>
+    </FormControl>
   );
 };

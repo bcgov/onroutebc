@@ -12,7 +12,6 @@ import { Company } from '../entities/company.entity';
 
 import { CreateAddressDto } from '../../../common/dto/request/create-address.dto';
 import { Address } from '../../../common/entities/address.entity';
-
 import { ReadAddressDto } from '../../../common/dto/response/read-address.dto';
 import { UpdateAddressDto } from '../../../common/dto/request/update-address.dto';
 import { CreateCompanyDto } from '../dto/request/create-company.dto';

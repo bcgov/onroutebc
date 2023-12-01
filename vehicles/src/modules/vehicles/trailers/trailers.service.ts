@@ -9,7 +9,6 @@ import { UpdateTrailerDto } from './dto/request/update-trailer.dto';
 import { Trailer } from './entities/trailer.entity';
 import { DeleteDto } from 'src/modules/common/dto/response/delete.dto';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
-import { Directory } from 'src/common/enum/directory.enum';
 
 @Injectable()
 export class TrailersService {
@@ -23,7 +22,6 @@ export class TrailersService {
     companyId: number,
     trailer: CreateTrailerDto,
     currentUser: IUserJWT,
-    directory: Directory,
   ): Promise<ReadTrailerDto> {
     const newTrailer = this.classMapper.map(
       trailer,
@@ -33,7 +31,7 @@ export class TrailersService {
         extraArgs: () => ({
           companyId: companyId,
           userName: currentUser.userName,
-          directory: directory,
+          directory: currentUser.orbcUserDirectory,
           userGUID: currentUser.userGUID,
           timestamp: new Date(),
         }),
@@ -82,7 +80,6 @@ export class TrailersService {
     trailerId: string,
     updateTrailerDto: UpdateTrailerDto,
     currentUser: IUserJWT,
-    directory: Directory,
   ): Promise<ReadTrailerDto> {
     const newTrailer = this.classMapper.map(
       updateTrailerDto,
@@ -91,7 +88,7 @@ export class TrailersService {
       {
         extraArgs: () => ({
           userName: currentUser.userName,
-          directory: directory,
+          directory: currentUser.orbcUserDirectory,
           userGUID: currentUser.userGUID,
           timestamp: new Date(),
         }),
