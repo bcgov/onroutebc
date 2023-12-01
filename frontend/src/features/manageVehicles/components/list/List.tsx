@@ -32,7 +32,6 @@ import { DoesUserHaveRoleWithContext } from "../../../../common/authentication/u
 import { ROLES } from "../../../../common/authentication/types";
 import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
-import { defaultTableOptions } from "../../../../common/constants/defaultTableOptions";
 import {
   VehicleTypes,
   VehicleTypesAsString,
@@ -44,6 +43,12 @@ import {
   usePowerUnitTypesQuery,
   useTrailerTypesQuery,
 } from "../../apiManager/hooks";
+
+import {
+  defaultTableInitialStateOptions,
+  defaultTableOptions,
+  defaultTableStateOptions,
+} from "../../../../common/constants/defaultTableOptions";
 
 /**
  * Dynamically set the column based on vehicle type
@@ -202,8 +207,11 @@ export const List = memo(
       ...defaultTableOptions,
       data: data ?? [],
       columns: newColumns,
-      initialState: { showGlobalFilter: true },
+      initialState: {
+        ...defaultTableInitialStateOptions,
+      },
       state: {
+        ...defaultTableStateOptions,
         isLoading,
         showAlertBanner: isError,
         showProgressBars: isFetching,
@@ -211,12 +219,6 @@ export const List = memo(
         columnVisibility: { powerUnitId: false, trailerId: false },
         rowSelection: rowSelection,
       },
-      // Disable the default column actions so that we can use our custom actions
-      //enableColumnActions: false,
-      // Enable checkboxes for row selection
-      enableRowSelection: true,
-      //enableSortingRemoval: false,
-      // Row copy, delete, and edit options
       getRowId: (originalRow) => {
         if (vehicleType === "powerUnit") {
           const powerUnitRow = originalRow as PowerUnit;
@@ -226,16 +228,7 @@ export const List = memo(
           return trailerRow.trailerId as string;
         }
       },
-      //enableRowActions: true,
-      //selectAllMode: "page",
       onRowSelectionChange: setRowSelection,
-      //enableStickyHeader: true,
-      //positionActionsColumn: "last",
-      //displayColumnDefOptions: {
-      //  "mrt-row-actions": {
-      ////    header: "",
-      //  },
-      //},
       renderEmptyRowsFallback: () => <NoRecordsFound />,
       renderRowActions: useCallback(
         ({
@@ -310,61 +303,12 @@ export const List = memo(
         ),
         [hasNoRowsSelected],
       ),
-      // Main table container
-      //muiTablePaperProps: {
-      //  sx: {
-      //    border: "none",
-      //    boxShadow: "none",
-      //  },
-      //},
-      // Column widths
-      //defaultColumn: {
-      //  maxSize: 200, //allow columns to get larger than default
-      //  minSize: 25,
-      //  size: 50,
-      //},
-      // Cell/Body container
-      muiTableContainerProps: {
-        sx: {
-          outline: "1px solid #DBDCDC",
-          height: "calc(100vh - 475px)",
-        },
-      },
-      // Pagination
-      //muiBottomToolbarProps: {
-      //  sx: {
-      //    zIndex: 0, // resolve z-index conflict with sliding panel
-      //    backgroundColor: BC_COLOURS.bc_background_light_grey,
-      //  },
-      //},
-      // Top toolbar
-      //muiTopToolbarProps: { sx: { zIndex: 0 } }, // resolve z-index conflict with sliding panel
-      // Alert banner
       muiToolbarAlertBannerProps: isError
         ? {
             color: "error",
             children: "Error loading data",
           }
         : undefined,
-      // Search Bar
-      //positionGlobalFilter: "left",
-      muiSearchTextFieldProps: {
-        placeholder: "Search",
-        sx: {
-          minWidth: "300px",
-          backgroundColor: "white",
-        },
-        variant: "outlined",
-        inputProps: {
-          sx: {
-            padding: "10px",
-          },
-        },
-      },
-      // Row Header
-      //muiTableHeadRowProps: {
-      //   sx: { backgroundColor: BC_COLOURS.bc_background_light_grey },
-      //}
     });
 
     return (

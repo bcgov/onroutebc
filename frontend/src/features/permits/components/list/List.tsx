@@ -24,14 +24,15 @@ import "./List.scss";
 import { Trash } from "../../../../common/components/table/options/Trash";
 import { DeleteConfirmationDialog } from "../../../../common/components/dialog/DeleteConfirmationDialog";
 import { SnackBarContext } from "../../../../App";
+import { ApplicationInProgress, PermitApplicationInProgress } from "../../types/application";
 import { ApplicationInProgressColumnDefinition } from "./Columns";
 import { deleteApplications } from "../../apiManager/permitsAPI";
 import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
-import { defaultTableOptions } from "../../../../common/constants/defaultTableOptions";
 import {
-  ApplicationInProgress,
-  PermitApplicationInProgress,
-} from "../../types/application";
+  defaultTableInitialStateOptions,
+  defaultTableOptions,
+  defaultTableStateOptions,
+} from "../../../../common/constants/defaultTableOptions";
 
 /**
  * Dynamically set the column
@@ -130,14 +131,17 @@ export const List = memo(
       columns: columns,
       data: data ?? [],
       state: {
+        ...defaultTableStateOptions,
         showAlertBanner: isError,
         showProgressBars: isFetching,
         columnVisibility: { applicationId: true },
         rowSelection: rowSelection,
         isLoading,
       },
+      initialState: {
+        ...defaultTableInitialStateOptions,
+      },
       onRowSelectionChange: setRowSelection,
-      enableRowSelection: true,
       getRowId: (originalRow) => {
         const applicationRow = originalRow as PermitApplicationInProgress;
         return applicationRow.permitId;
@@ -186,29 +190,13 @@ export const List = memo(
         ),
         [hasNoRowsSelected],
       ),
-      muiTableContainerProps: {
-        sx: {
-          height: "calc(100vh - 475px)",
-          outline: "1px solid #DBDCDC",
-        },
-      },
+
       muiToolbarAlertBannerProps: isError
         ? {
             color: "error",
             children: "Error loading data",
           }
         : undefined,
-      initialState: {
-        showGlobalFilter: true,
-      }, //show the search bar by default
-      muiSearchTextFieldProps: {
-        className: "top-toolbar-search",
-        placeholder: "Search",
-        variant: "outlined",
-        inputProps: {
-          className: "search-input",
-        },
-      },
     });
 
     return (

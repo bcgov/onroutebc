@@ -1,8 +1,7 @@
 import { MRT_ColumnDef } from "material-react-table";
 
 import { VehicleTypes } from "../../types/managevehicles";
-import { applyWhenNotNullable } from "../../../../common/helpers/util";
-import { DATE_FORMATS, toLocal } from "../../../../common/helpers/formatDate";
+import { formatCellValuetoDatetime } from "../../../../common/constants/defaultTableOptions";
 
 /**
  * The Columns Options are from Material React Table.
@@ -38,14 +37,13 @@ export const PowerUnitColumnDefinition: MRT_ColumnDef<VehicleTypes>[] = [
   {
     id: "createdDateTime",
     header: "Date Created",
-    accessorFn: (originalRow) => {
-      const { createdDateTime } = originalRow;
-      const createdDtLocal = applyWhenNotNullable(
-        dt => toLocal(dt, DATE_FORMATS.LONG),
-        createdDateTime,
-        ""
+    Cell: (props: { cell: any }) => {
+      const formattedDate = formatCellValuetoDatetime(props.cell.getValue())
+      return (
+        <span>
+          {formattedDate}
+        </span>
       );
-      return createdDtLocal;
     },
   },
 ];
@@ -79,14 +77,13 @@ export const TrailerColumnDefinition: MRT_ColumnDef<VehicleTypes>[] = [
   {
     id: "createdDateTime",
     header: "Date Created",
-    accessorFn: (originalRow) => {
-      const { createdDateTime } = originalRow;
-      const createdDtLocal = applyWhenNotNullable(
-        dt => toLocal(dt, DATE_FORMATS.LONG),
-        createdDateTime,
-        ""
+    Cell: (props: { cell: any }) => {
+      const formattedDate = formatCellValuetoDatetime(props.cell.getValue())
+      return (
+        <span>
+          {formattedDate}
+        </span>
       );
-      return createdDtLocal;
     },
   },
 ];
