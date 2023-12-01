@@ -36,26 +36,22 @@ const ReportOption = ({
   onSelect: () => void;
 }) => {
   return (
-    <>
-      <Paper
-        elevation={isSelected ? 5 : 0}
-        className="report-paper"
-        sx={{
-          ":hover": {
-            background: isSelected ? null : BC_COLOURS.bc_background_light_grey,
-          },
-          background: isSelected
-            ? BC_COLOURS.bc_messages_blue_background
-            : null,
-        }}
-        onClick={onSelect}
-      >
-        <FormControlLabel
-          control={<Radio checked={isSelected} />}
-          label={<strong>{label}</strong>}
-        />
-      </Paper>
-    </>
+    <Paper
+      elevation={isSelected ? 5 : 0}
+      className="report-paper"
+      sx={{
+        ":hover": {
+          background: isSelected ? null : BC_COLOURS.bc_background_light_grey,
+        },
+        background: isSelected ? BC_COLOURS.bc_messages_blue_background : null,
+      }}
+      onClick={onSelect}
+    >
+      <FormControlLabel
+        control={<Radio checked={isSelected} />}
+        label={<strong>{label}</strong>}
+      />
+    </Paper>
   );
 };
 
