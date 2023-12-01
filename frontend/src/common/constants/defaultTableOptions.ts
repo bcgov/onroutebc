@@ -10,10 +10,9 @@ export const formatCellValuetoDatetime = (rawDateTime: string | null | undefined
   );
 }
 
-export const defaultTableStateOptions: any = {
-};
+export const defaultTableStateOptions = {};
 
-export const defaultTableInitialStateOptions: any = {
+export const defaultTableInitialStateOptions = {
   // property to enable global filter search box
   showGlobalFilter: true,
 };

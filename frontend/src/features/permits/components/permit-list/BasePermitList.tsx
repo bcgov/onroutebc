@@ -12,11 +12,14 @@ import {
 
 import { SnackBarContext } from "../../../../App";
 import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
-import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { Permit } from "../../types/permit";
 import { PermitsColumnDefinition } from "./Columns";
 import { PermitRowOptions } from "./PermitRowOptions";
-import { defaultTableInitialStateOptions, defaultTableOptions, defaultTableStateOptions } from "../../../../common/constants/defaultTableOptions";
+import {
+  defaultTableInitialStateOptions,
+  defaultTableOptions,
+  defaultTableStateOptions,
+} from "../../../../common/constants/defaultTableOptions";
 
 /**
  * A permit list component with common functionalities that can be shared by

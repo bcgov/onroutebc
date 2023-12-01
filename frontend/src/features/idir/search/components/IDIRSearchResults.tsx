@@ -11,7 +11,6 @@ import {
 } from "material-react-table";
 
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
-import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { hasPermitExpired } from "../../../permits/helpers/permitPDFHelper";
 import { Permit } from "../../../permits/types/permit";
 import { getDataBySearch } from "../api/idirSearch";
@@ -21,7 +20,11 @@ import { IDIRPermitSearchRowActions } from "./IDIRPermitSearchRowActions";
 import "./List.scss";
 import { USER_AUTH_GROUP } from "../../../manageProfile/types/userManagement.d";
 import { isPermitInactive } from "../../../permits/types/PermitStatus";
-import { defaultTableInitialStateOptions, defaultTableOptions, defaultTableStateOptions } from "../../../../common/constants/defaultTableOptions";
+import {
+  defaultTableInitialStateOptions,
+  defaultTableOptions,
+  defaultTableStateOptions,
+} from "../../../../common/constants/defaultTableOptions";
 
 /**
  * Function to decide whether to show row actions icon or not.
