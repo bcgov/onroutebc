@@ -118,8 +118,12 @@ export const TransactionHistoryTable = ({
     columns: columns,
     data: permitHistory,
     enableRowActions: false,
+    enableGlobalFilter: false,
+    enableTopToolbar: false,
+    enableBottomToolbar: false,
     initialState: {
       ...defaultTableInitialStateOptions,
+      showGlobalFilter: false,
     },
     state: {
       ...defaultTableStateOptions,
