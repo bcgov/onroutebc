@@ -44,6 +44,7 @@ export const redCompanyEntityMock: Company = {
   companyGUID: constants.RED_COMPANY_GUID,
   clientNumber: constants.RED_COMPANY_CLIENT_NUMBER,
   legalName: constants.RED_COMPANY_LEGAL_NAME,
+  alternateName: constants.RED_COMPANY_ALTERNATE_NAME,
   directory: constants.RED_COMPANY_DIRECOTRY,
   mailingAddress: { ...redCompanyAddressEntityMock },
   phone: constants.RED_COMPANY_PHONE_1,
@@ -62,6 +63,7 @@ export const redCompanyEntityMock: Company = {
 
 export const createRedCompanyDtoMock: CreateCompanyDto = {
   legalName: constants.RED_COMPANY_LEGAL_NAME,
+  alternateName: constants.RED_COMPANY_ALTERNATE_NAME,
   mailingAddress: { ...createRedCompanyAddressDtoMock },
   phone: constants.RED_COMPANY_PHONE_1,
   extension: constants.RED_COMPANY_PHONE_1_EXT,
@@ -73,6 +75,7 @@ export const createRedCompanyDtoMock: CreateCompanyDto = {
 
 export const updateRedCompanyDtoMock: UpdateCompanyDto = {
   legalName: constants.RED_COMPANY_LEGAL_NAME,
+  alternateName: constants.RED_COMPANY_ALTERNATE_NAME,
   mailingAddress: { ...updateRedCompanyAddressDtoMock },
   phone: constants.RED_COMPANY_PHONE_1,
   extension: null,
@@ -85,6 +88,7 @@ export const readRedCompanyDtoMock: ReadCompanyDto = {
   companyId: constants.RED_COMPANY_ID,
   companyGUID: constants.RED_COMPANY_GUID,
   legalName: constants.RED_COMPANY_LEGAL_NAME,
+  alternateName: constants.RED_COMPANY_ALTERNATE_NAME,
   clientNumber: constants.RED_COMPANY_CLIENT_NUMBER,
   mailingAddress: { ...readRedCompanyAddressDtoMock },
   phone: constants.RED_COMPANY_PHONE_1,
@@ -102,6 +106,7 @@ export const readRedCompanyUserDtoMock: ReadCompanyUserDto = {
 export const readRedCompanyMetadataDtoMock: ReadCompanyMetadataDto = {
   companyId: constants.RED_COMPANY_ID,
   legalName: constants.RED_COMPANY_LEGAL_NAME,
+  alternateName: constants.RED_COMPANY_ALTERNATE_NAME,
   clientNumber: constants.RED_COMPANY_CLIENT_NUMBER,
 };
 
@@ -114,6 +119,7 @@ export const blueCompanyEntityMock: Company = {
   companyGUID: constants.BLUE_COMPANY_GUID,
   clientNumber: constants.BLUE_COMPANY_CLIENT_NUMBER,
   legalName: constants.BLUE_COMPANY_LEGAL_NAME,
+  alternateName: constants.BLUE_COMPANY_ALTERNATE_NAME,
   directory: constants.BLUE_COMPANY_DIRECOTRY,
   mailingAddress: { ...blueCompanyAddressEntityMock },
   phone: constants.BLUE_COMPANY_PHONE_1,
@@ -132,6 +138,7 @@ export const blueCompanyEntityMock: Company = {
 
 export const createBlueCompanyDtoMock: CreateCompanyDto = {
   legalName: constants.BLUE_COMPANY_LEGAL_NAME,
+  alternateName: constants.BLUE_COMPANY_ALTERNATE_NAME,
   mailingAddress: { ...createBlueCompanyAddressDtoMock },
   phone: constants.BLUE_COMPANY_PHONE_1,
   extension: constants.BLUE_COMPANY_PHONE_1_EXT,
@@ -143,6 +150,7 @@ export const createBlueCompanyDtoMock: CreateCompanyDto = {
 
 export const updateBlueCompanyDtoMock: UpdateCompanyDto = {
   legalName: constants.BLUE_COMPANY_LEGAL_NAME,
+  alternateName: constants.BLUE_COMPANY_ALTERNATE_NAME,
   mailingAddress: { ...updateBlueCompanyAddressDtoMock },
   phone: constants.BLUE_COMPANY_PHONE_1,
   extension: null,
@@ -155,6 +163,7 @@ export const readBlueCompanyDtoMock: ReadCompanyDto = {
   companyId: constants.BLUE_COMPANY_ID,
   companyGUID: constants.BLUE_COMPANY_GUID,
   legalName: constants.BLUE_COMPANY_LEGAL_NAME,
+  alternateName: constants.BLUE_COMPANY_ALTERNATE_NAME,
   clientNumber: constants.BLUE_COMPANY_CLIENT_NUMBER,
   mailingAddress: { ...readBlueCompanyAddressDtoMock },
   phone: constants.BLUE_COMPANY_PHONE_1,
@@ -172,6 +181,7 @@ export const readBlueCompanyUserDtoMock: ReadCompanyUserDto = {
 export const readBlueCompanyMetadataDtoMock: ReadCompanyMetadataDto = {
   companyId: constants.BLUE_COMPANY_ID,
   legalName: constants.BLUE_COMPANY_LEGAL_NAME,
+  alternateName: constants.BLUE_COMPANY_ALTERNATE_NAME,
   clientNumber: constants.BLUE_COMPANY_CLIENT_NUMBER,
 };
 

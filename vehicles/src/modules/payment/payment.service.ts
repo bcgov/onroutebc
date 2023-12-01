@@ -26,7 +26,7 @@ import {
   PAYMENT_DESCRIPTION,
   PAYBC_PAYMENT_METHOD,
   PAYMENT_CURRENCY,
-} from '../../common/constants/vehicles.constant';
+} from '../../common/constants/api.constant';
 import { validateHash } from 'src/common/helper/validateHash.helper';
 import { UpdatePaymentGatewayTransactionDto } from './dto/request/update-payment-gateway-transaction.dto';
 import { PaymentCardType } from './entities/payment-card-type.entity';
