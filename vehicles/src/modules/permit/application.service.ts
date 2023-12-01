@@ -50,6 +50,7 @@ import { convertUtcToPt } from '../../common/helper/date-time.helper';
 import { Directory } from 'src/common/enum/directory.enum';
 import { ReadPermitDto } from './dto/response/read-permit.dto';
 import { PermitIssuedBy } from '../../common/enum/permit-issued-by.enum';
+import { getPaymentCodeFromCache } from '../../common/helper/payment.helper';
 
 @Injectable()
 export class ApplicationService {
@@ -467,15 +468,31 @@ export class ApplicationService {
         templateData: {
           ...permitDataForTemplate,
           // transaction details still needs to be reworked to support multiple permits
+          pgTransactionId:
+            fetchedApplication.permitTransactions[0].transaction
+              .pgTransactionId,
           transactionOrderNumber:
             fetchedApplication.permitTransactions[0].transaction
               .transactionOrderNumber,
           transactionAmount:
             fetchedApplication.permitTransactions[0].transaction
               .totalTransactionAmount,
-          paymentMethod:
-            fetchedApplication.permitTransactions[0].transaction
-              .pgPaymentMethod,
+          //Payer Name should be persisted in transacation Table so that it can be used for DocRegen
+          payerName:
+            currentUser.orbcUserDirectory === Directory.IDIR
+              ? 'Provincial Permit Centre'
+              : currentUser.orbcUserFirstName +
+                ' ' +
+                currentUser.orbcUserLastName,
+          consolidatedPaymentMethod: (
+            await getPaymentCodeFromCache(
+              this.cacheManager,
+              fetchedApplication.permitTransactions[0].transaction
+                .paymentMethodTypeCode,
+              fetchedApplication.permitTransactions[0].transaction
+                .paymentCardTypeCode,
+            )
+          ).consolidatedPaymentMethod,
           transactionDate: convertUtcToPt(
             fetchedApplication.permitTransactions[0].transaction
               .transactionSubmitDate,

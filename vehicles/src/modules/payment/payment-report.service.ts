@@ -17,8 +17,6 @@ import { ReportTemplate } from '../../common/enum/report-template.enum';
 import { convertUtcToPt } from '../../common/helper/date-time.helper';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
-import { CacheKey } from '../../common/enum/cache-key.enum';
-import { getFromCache } from '../../common/helper/cache.helper';
 import { IPaymentCode } from '../../common/interface/payment-code.interface';
 import { PermitTypeReport } from '../../common/enum/permit-type.enum';
 import { CreatePaymentSummaryReportDto } from './dto/request/create-payment-summary-report.dto';
@@ -26,6 +24,7 @@ import { PermitIssuedBy } from '../../common/enum/permit-issued-by.enum';
 import { IdirUser } from '../company-user-management/users/entities/idir.user.entity';
 import { PaymentMethodType } from './entities/payment-method-type.entity';
 import { PaymentCardType } from './entities/payment-card-type.entity';
+import { getPaymentCodeFromCache } from '../../common/helper/payment.helper';
 
 @Injectable()
 export class PaymentReportService {
@@ -398,23 +397,11 @@ export class PaymentReportService {
   ) {
     const paymentCodes: IPaymentCode[] = [];
     for (const paymentCode of createPaymentDetailedReportDto.paymentCodes) {
-      const paymentCodeDesc = paymentCode.paymentCardTypeCode
-        ? await getFromCache(
-            this.cacheManager,
-            CacheKey.PAYMENT_CARD_TYPE,
-            paymentCode.paymentCardTypeCode,
-          )
-        : null;
-      const paymentCodeTemp: IPaymentCode = {
-        paymentMethodTypeCode: paymentCode.paymentMethodTypeCode,
-        paymentCardTypeCode: paymentCode.paymentCardTypeCode,
-        consolidatedPaymentMethod:
-          (await getFromCache(
-            this.cacheManager,
-            CacheKey.PAYMENT_METHOD_TYPE,
-            paymentCode.paymentMethodTypeCode,
-          )) + (paymentCodeDesc ? ' - ' + paymentCodeDesc : ''),
-      };
+      const paymentCodeTemp = await getPaymentCodeFromCache(
+        this.cacheManager,
+        paymentCode.paymentMethodTypeCode,
+        paymentCode.paymentCardTypeCode,
+      );
 
       paymentCodes.push(paymentCodeTemp);
     }
