@@ -4,6 +4,11 @@ import { DATE_FORMATS, toLocal, utcToLocalDayjs } from "../helpers/formatDate";
 import { applyWhenNotNullable } from "../helpers/util";
 import { Permit } from "../../features/permits/types/permit";
 
+/**
+ * Format a given datetime string to a format that we can display
+ * @param rawDateTime 
+ * @returns datetime string for display or "NA" if invalid date given
+ */
 export const formatCellValuetoDatetime = (rawDateTime: string | null | undefined) => {
   return applyWhenNotNullable(
     (dt) => toLocal(dt, DATE_FORMATS.DATEONLY_ABBR_MONTH),
@@ -12,6 +17,13 @@ export const formatCellValuetoDatetime = (rawDateTime: string | null | undefined
   );
 };
 
+/**
+ * Take 2 rows and the given datetime columnId and return its sort value
+ * @param rowA - the A row being compared
+ * @param rowB - the B row being compared
+ * @param columnId - should be the column id of the date column
+ * @returns -1 if A < B, 0 if A == B and 1 if A > B
+ */
 export const dateTimeStringSortingFn = (rowA: Row<Permit>, rowB: Row<Permit>, columnId: string) => {
   const day1 = utcToLocalDayjs(rowA.getValue(columnId));
   const day2 = utcToLocalDayjs(rowB.getValue(columnId));
