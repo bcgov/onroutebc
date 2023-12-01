@@ -121,6 +121,7 @@ export const TransactionHistoryTable = ({
     enableGlobalFilter: false,
     enableTopToolbar: false,
     enableBottomToolbar: false,
+    enableRowSelection: false,
     initialState: {
       ...defaultTableInitialStateOptions,
       showGlobalFilter: false,
