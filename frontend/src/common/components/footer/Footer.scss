@@ -39,6 +39,12 @@ footer {
         padding-left: 5px;
         padding-right: 5px;
       }
+
+      &:last-child {
+        a {
+          border-right: 0;
+        }
+      }
     }
   }
 }
