@@ -31,7 +31,7 @@ export class TrailersService {
         extraArgs: () => ({
           companyId: companyId,
           userName: currentUser.userName,
-          directory: currentUser.orbc_user_directory,
+          directory: currentUser.orbcUserDirectory,
           userGUID: currentUser.userGUID,
           timestamp: new Date(),
         }),
@@ -88,7 +88,7 @@ export class TrailersService {
       {
         extraArgs: () => ({
           userName: currentUser.userName,
-          directory: currentUser.orbc_user_directory,
+          directory: currentUser.orbcUserDirectory,
           userGUID: currentUser.userGUID,
           timestamp: new Date(),
         }),

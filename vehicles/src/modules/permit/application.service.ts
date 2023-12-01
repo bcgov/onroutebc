@@ -130,7 +130,7 @@ export class ApplicationService {
           userName: currentUser.userName,
           userGUID: currentUser.userGUID,
           timestamp: new Date(),
-          directory: currentUser.orbc_user_directory,
+          directory: currentUser.orbcUserDirectory,
         }),
       },
     );
@@ -286,7 +286,7 @@ export class ApplicationService {
           userName: currentUser.userName,
           userGUID: currentUser.userGUID,
           timestamp: new Date(),
-          directory: currentUser.orbc_user_directory,
+          directory: currentUser.orbcUserDirectory,
         }),
       },
     );
@@ -347,7 +347,7 @@ export class ApplicationService {
         }),
         updatedUser: currentUser.userName,
         updatedDateTime: new Date(),
-        updatedUserDirectory: currentUser.orbc_user_directory,
+        updatedUserDirectory: currentUser.orbcUserDirectory,
         updatedUserGuid: currentUser.userGUID,
       })
       .whereInIds(applicationIds)
@@ -505,13 +505,13 @@ export class ApplicationService {
           documentId: generatedDocuments.at(0).dmsId,
           issuerUserGuid: currentUser.userGUID,
           permitIssuedBy:
-            currentUser.orbc_user_directory == Directory.IDIR
+            currentUser.orbcUserDirectory == Directory.IDIR
               ? PermitIssuedBy.PPC
               : PermitIssuedBy.SELF_ISSUED,
           permitIssueDateTime: fetchedApplication.permitIssueDateTime,
           updatedDateTime: new Date(),
           updatedUser: currentUser.userName,
-          updatedUserDirectory: currentUser.orbc_user_directory,
+          updatedUserDirectory: currentUser.orbcUserDirectory,
           updatedUserGuid: currentUser.userGUID,
         },
       );
@@ -527,7 +527,7 @@ export class ApplicationService {
           receiptDocumentId: generatedDocuments.at(1).dmsId,
           updatedDateTime: new Date(),
           updatedUser: currentUser.userName,
-          updatedUserDirectory: currentUser.orbc_user_directory,
+          updatedUserDirectory: currentUser.orbcUserDirectory,
           updatedUserGuid: currentUser.userGUID,
         },
       );
@@ -546,7 +546,7 @@ export class ApplicationService {
             permitStatus: ApplicationStatus.SUPERSEDED,
             updatedDateTime: new Date(),
             updatedUser: currentUser.userName,
-            updatedUserDirectory: currentUser.orbc_user_directory,
+            updatedUserDirectory: currentUser.orbcUserDirectory,
             updatedUserGuid: currentUser.userGUID,
           },
         );

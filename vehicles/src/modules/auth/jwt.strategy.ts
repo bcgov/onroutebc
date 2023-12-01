@@ -46,10 +46,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       userName: string,
       roles: Role[],
       associatedCompanies: number[],
-      orbc_first_name: string,
-      orbc_last_name: string,
-      orbc_user_auth_group: UserAuthGroup,
-      orbc_user_directory: Directory;
+      orbcUserFirstName: string,
+      orbcUserLastName: string,
+      orbcUserAuthGroup: UserAuthGroup,
+      orbcUserDirectory: Directory;
 
     let companyId: number;
     if (req.params['companyId']) {
@@ -90,10 +90,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       if (!user?.length) {
         throw new UnauthorizedException();
       }
-      orbc_first_name = user?.at(0).firstName;
-      orbc_last_name = user?.at(0).lastName;
-      orbc_user_auth_group = user?.at(0).userAuthGroup;
-      orbc_user_directory = getDirectory(payload);
+      orbcUserFirstName = user?.at(0).firstName;
+      orbcUserLastName = user?.at(0).lastName;
+      orbcUserAuthGroup = user?.at(0).userAuthGroup;
+      orbcUserDirectory = getDirectory(payload);
 
       if (payload.identity_provider !== IDP.IDIR) {
         associatedCompanies = await this.authService.getCompaniesForUser(
@@ -117,10 +117,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       companyId,
       associatedCompanies,
       access_token,
-      orbc_first_name,
-      orbc_last_name,
-      orbc_user_auth_group,
-      orbc_user_directory,
+      orbcUserFirstName,
+      orbcUserLastName,
+      orbcUserAuthGroup,
+      orbcUserDirectory,
     };
 
     Object.assign(payload, currentUser);

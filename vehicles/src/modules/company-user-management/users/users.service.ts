@@ -92,7 +92,7 @@ export class UsersService {
       let user = this.classMapper.map(createUserDto, CreateUserDto, User, {
         extraArgs: () => ({
           userName: currentUser.userName,
-          directory: currentUser.orbc_user_directory,
+          directory: currentUser.orbcUserDirectory,
           userGUID: currentUser.userGUID,
           timestamp: new Date(),
         }),
@@ -152,7 +152,7 @@ export class UsersService {
     const user = this.classMapper.map(updateUserDto, UpdateUserDto, User, {
       extraArgs: () => ({
         userName: currentUser.userName,
-        directory: currentUser.orbc_user_directory,
+        directory: currentUser.orbcUserDirectory,
         userGUID: currentUser.userGUID,
         timestamp: new Date(),
       }),
@@ -230,7 +230,7 @@ export class UsersService {
     user.updatedUserGuid = currentUser.userGUID;
     user.updatedDateTime = new Date();
     user.updatedUser = currentUser.userName;
-    user.updatedUserDirectory = currentUser.orbc_user_directory;
+    user.updatedUserDirectory = currentUser.orbcUserDirectory;
     return await this.userRepository.update({ userGUID }, user);
   }
 

@@ -31,7 +31,7 @@ export class PowerUnitsService {
         extraArgs: () => ({
           companyId: companyId,
           userName: currentUser.userName,
-          directory: currentUser.orbc_user_directory,
+          directory: currentUser.orbcUserDirectory,
           userGUID: currentUser.userGUID,
           timestamp: new Date(),
         }),
@@ -91,7 +91,7 @@ export class PowerUnitsService {
       {
         extraArgs: () => ({
           userName: currentUser.userName,
-          directory: currentUser.orbc_user_directory,
+          directory: currentUser.orbcUserDirectory,
           userGUID: currentUser.userGUID,
           timestamp: new Date(),
         }),

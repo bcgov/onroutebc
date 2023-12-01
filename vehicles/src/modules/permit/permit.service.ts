@@ -83,7 +83,7 @@ export class PermitService {
       {
         extraArgs: () => ({
           userName: currentUser.userName,
-          directory: currentUser.orbc_user_directory,
+          directory: currentUser.orbcUserDirectory,
           userGUID: currentUser.userGUID,
           timestamp: new Date(),
         }),
@@ -404,11 +404,11 @@ export class PermitService {
       const userMetadata: Base = {
         createdDateTime: new Date(),
         createdUser: currentUser.userName,
-        createdUserDirectory: currentUser.orbc_user_directory,
+        createdUserDirectory: currentUser.orbcUserDirectory,
         createdUserGuid: currentUser.userGUID,
         updatedDateTime: new Date(),
         updatedUser: currentUser.userName,
-        updatedUserDirectory: currentUser.orbc_user_directory,
+        updatedUserDirectory: currentUser.orbcUserDirectory,
         updatedUserGuid: currentUser.userGUID,
       };
 
@@ -420,7 +420,7 @@ export class PermitService {
       newPermit.applicationNumber = applicationNumber;
       newPermit.permitStatus = voidPermitDto.status;
       newPermit.permitIssuedBy =
-        currentUser.orbc_user_directory == Directory.IDIR
+        currentUser.orbcUserDirectory == Directory.IDIR
           ? PermitIssuedBy.PPC
           : PermitIssuedBy.SELF_ISSUED;
       newPermit.permitIssueDateTime = new Date();
@@ -448,7 +448,7 @@ export class PermitService {
           permitStatus: ApplicationStatus.SUPERSEDED,
           updatedDateTime: new Date(),
           updatedUser: currentUser.userName,
-          updatedUserDirectory: currentUser.orbc_user_directory,
+          updatedUserDirectory: currentUser.orbcUserDirectory,
           updatedUserGuid: currentUser.userGUID,
         },
       );
@@ -561,7 +561,7 @@ export class PermitService {
           documentId: generatedDocuments.at(0).dmsId,
           updatedDateTime: new Date(),
           updatedUser: currentUser.userName,
-          updatedUserDirectory: currentUser.orbc_user_directory,
+          updatedUserDirectory: currentUser.orbcUserDirectory,
           updatedUserGuid: currentUser.userGUID,
         },
       );
@@ -576,7 +576,7 @@ export class PermitService {
           receiptDocumentId: generatedDocuments.at(1).dmsId,
           updatedDateTime: new Date(),
           updatedUser: currentUser.userName,
-          updatedUserDirectory: currentUser.orbc_user_directory,
+          updatedUserDirectory: currentUser.orbcUserDirectory,
           updatedUserGuid: currentUser.userGUID,
         },
       );

@@ -40,7 +40,7 @@ export class PendingUsersService {
         extraArgs: () => ({
           companyId: companyId,
           userName: currentUser.userName,
-          directory: currentUser.orbc_user_directory,
+          directory: currentUser.orbcUserDirectory,
           userGUID: currentUser.userGUID,
           timestamp: new Date(),
         }),
@@ -82,7 +82,7 @@ export class PendingUsersService {
         extraArgs: () => ({
           companyId: companyId,
           userName: currentUser.userName,
-          directory: currentUser.orbc_user_directory,
+          directory: currentUser.orbcUserDirectory,
           userGUID: currentUser.userGUID,
           timestamp: new Date(),
         }),

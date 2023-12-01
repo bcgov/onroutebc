@@ -218,7 +218,7 @@ export class PaymentService {
             userName: currentUser.userName,
             userGUID: currentUser.userGUID,
             timestamp: new Date(),
-            directory: currentUser.orbc_user_directory,
+            directory: currentUser.orbcUserDirectory,
           }),
         },
       );
@@ -242,12 +242,12 @@ export class PaymentService {
         newPermitTransactions.createdDateTime = new Date();
         newPermitTransactions.createdUser = currentUser.userName;
         newPermitTransactions.createdUserDirectory =
-          currentUser.orbc_user_directory;
+          currentUser.orbcUserDirectory;
         newPermitTransactions.createdUserGuid = currentUser.userGUID;
         newPermitTransactions.updatedDateTime = new Date();
         newPermitTransactions.updatedUser = currentUser.userName;
         newPermitTransactions.updatedUserDirectory =
-          currentUser.orbc_user_directory;
+          currentUser.orbcUserDirectory;
         newPermitTransactions.updatedUserGuid = currentUser.userGUID;
         newPermitTransactions.transactionAmount = application.transactionAmount;
         newPermitTransactions = await queryRunner.manager.save(
@@ -264,7 +264,7 @@ export class PaymentService {
           existingApplication.updatedDateTime = new Date();
           existingApplication.updatedUser = currentUser.userName;
           existingApplication.updatedUserDirectory =
-            currentUser.orbc_user_directory;
+            currentUser.orbcUserDirectory;
           existingApplication.updatedUserGuid = currentUser.userGUID;
 
           await queryRunner.manager.save(existingApplication);
@@ -296,11 +296,11 @@ export class PaymentService {
         receipt.transaction = createdTransaction;
         receipt.createdDateTime = new Date();
         receipt.createdUser = currentUser.userName;
-        receipt.createdUserDirectory = currentUser.orbc_user_directory;
+        receipt.createdUserDirectory = currentUser.orbcUserDirectory;
         receipt.createdUserGuid = currentUser.userGUID;
         receipt.updatedDateTime = new Date();
         receipt.updatedUser = currentUser.userName;
-        receipt.updatedUserDirectory = currentUser.orbc_user_directory;
+        receipt.updatedUserDirectory = currentUser.orbcUserDirectory;
         receipt.updatedUserGuid = currentUser.userGUID;
         await queryRunner.manager.save(receipt);
       }
@@ -402,7 +402,7 @@ export class PaymentService {
             userName: currentUser.userName,
             userGUID: currentUser.userGUID,
             timestamp: new Date(),
-            directory: currentUser.orbc_user_directory,
+            directory: currentUser.orbcUserDirectory,
           }),
         },
       );
@@ -427,7 +427,7 @@ export class PaymentService {
               updatedDateTime: new Date(),
               updatedUser: currentUser.userName,
               updatedUserGuid: currentUser.userGUID,
-              updatedUserDirectory: currentUser.orbc_user_directory,
+              updatedUserDirectory: currentUser.orbcUserDirectory,
             },
           );
           if (!updateResult?.affected) {
@@ -451,11 +451,11 @@ export class PaymentService {
         receipt.receiptNumber = receiptNumber;
         receipt.createdDateTime = new Date();
         receipt.createdUser = currentUser.userName;
-        receipt.createdUserDirectory = currentUser.orbc_user_directory;
+        receipt.createdUserDirectory = currentUser.orbcUserDirectory;
         receipt.createdUserGuid = currentUser.userGUID;
         receipt.updatedDateTime = new Date();
         receipt.updatedUser = currentUser.userName;
-        receipt.updatedUserDirectory = currentUser.orbc_user_directory;
+        receipt.updatedUserDirectory = currentUser.orbcUserDirectory;
         receipt.updatedUserGuid = currentUser.userGUID;
         await queryRunner.manager.save(receipt);
       }

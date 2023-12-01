@@ -35,7 +35,7 @@ export class PendingIdirUsersService {
       {
         extraArgs: () => ({
           userName: currentUser.userName,
-          directory: currentUser.orbc_user_directory,
+          directory: currentUser.orbcUserDirectory,
           userGUID: currentUser.userGUID,
           timestamp: new Date(),
         }),

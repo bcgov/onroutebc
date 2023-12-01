@@ -72,7 +72,7 @@ export class CompanyService {
         Company,
         {
           extraArgs: () => ({
-            directory: currentUser.orbc_user_directory,
+            directory: currentUser.orbcUserDirectory,
             companyGUID: currentUser.bceid_business_guid,
             accountSource: currentUser.accountSource,
             userName: currentUser.userName,
@@ -96,7 +96,7 @@ export class CompanyService {
         {
           extraArgs: () => ({
             userName: currentUser.userName,
-            directory: currentUser.orbc_user_directory,
+            directory: currentUser.orbcUserDirectory,
             userGUID: currentUser.userGUID,
             timestamp: new Date(),
           }),
@@ -329,7 +329,7 @@ export class CompanyService {
         extraArgs: () => ({
           companyId: company.companyId,
           clientNumber: clientNumber,
-          directory: currentUser.orbc_user_directory,
+          directory: currentUser.orbcUserDirectory,
           mailingAddressId: mailingAddressId,
           contactId: contactId,
           userName: currentUser.userName,
