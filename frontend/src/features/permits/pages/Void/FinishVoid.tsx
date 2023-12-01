@@ -4,7 +4,7 @@ import { VoidPermitContext } from "./context/VoidPermitContext";
 import { RefundFormData } from "../Refund/types/RefundFormData";
 import { Permit } from "../../types/permit";
 import { usePermitHistoryQuery } from "../../hooks/hooks";
-import { calculateNetAmount } from "../../helpers/feeSummary";
+import { calculateAmountForVoid } from "../../helpers/feeSummary";
 import { RefundPage } from "../Refund/RefundPage";
 import { mapToVoidRequestData } from "./helpers/mapper";
 import { useVoidPermit } from "./hooks/useVoidPermit";
@@ -28,7 +28,9 @@ export const FinishVoid = ({
     ? []
     : permitHistory;
 
-  const amountToRefund = -1 * calculateNetAmount(transactionHistory);
+  const amountToRefund = !permit 
+    ? 0 
+    : -1 * calculateAmountForVoid(permit, permitHistory);
 
   const { mutation: voidPermitMutation, voidResults } = useVoidPermit();
 

@@ -20,7 +20,7 @@ import { Permit } from "../../../types/permit";
 import { IDIR_ROUTES } from "../../../../../routes/constants";
 import { RevokeDialog } from "./RevokeDialog";
 import { usePermitHistoryQuery } from "../../../hooks/hooks";
-import { calculateNetAmount } from "../../../helpers/feeSummary";
+import { calculateAmountForVoid } from "../../../helpers/feeSummary";
 import { FeeSummary } from "../../../components/feeSummary/FeeSummary";
 import { VoidPermitFormData } from "../types/VoidPermit";
 import { useVoidPermit } from "../hooks/useVoidPermit";
@@ -54,9 +54,9 @@ export const VoidPermitForm = ({
     }
   }, [voidResults]);
 
-  const amountToRefund = permitHistoryQuery.isInitialLoading
+  const amountToRefund = (permitHistoryQuery.isInitialLoading || !permit)
     ? 0
-    : -1 * calculateNetAmount(permitHistory);
+    : -1 * calculateAmountForVoid(permit, permitHistory);
 
   const {
     control,
