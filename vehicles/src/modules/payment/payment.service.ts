@@ -175,7 +175,8 @@ export class PaymentService {
   ) {
     if (
       this.isWebTransactionPurchase(paymentMethod, transactionType) &&
-      permitStatus != ApplicationStatus.IN_PROGRESS
+      permitStatus != ApplicationStatus.IN_PROGRESS &&
+      permitStatus != ApplicationStatus.WAITING_PAYMENT
     ) {
       throw new BadRequestException('Application should be in Progress!!');
     }
