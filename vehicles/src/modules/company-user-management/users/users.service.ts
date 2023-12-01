@@ -15,7 +15,6 @@ import { UpdateUserDto } from './dto/request/update-user.dto';
 import { Company } from '../company/entities/company.entity';
 import { CompanyUser } from './entities/company-user.entity';
 import { UserStatus } from '../../../common/enum/user-status.enum';
-import { Directory } from '../../../common/enum/directory.enum';
 import { PendingUser } from '../pending-users/entities/pending-user.entity';
 import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
 import { ReadUserOrbcStatusDto } from './dto/response/read-user-orbc-status.dto';
@@ -50,16 +49,15 @@ export class UsersService {
 
   /**
    * The create() method creates a new user entity with the
-   * {@link CreateUserDto} object, companyId, userName, and
-   * {@link Directory} parameters. It also deletes the corresponding
-   * PendingUser entity and commits the transaction if successful. If an error
-   * is thrown, it rolls back the transaction and returns the error.
+   * {@link CreateUserDto} object, companyId, and userName parameters. It also
+   * deletes the corresponding PendingUser entity and commits the transaction if
+   * successful. If an error is thrown, it rolls back the transaction and
+   * returns the error.
    * TODO verify the role with PENDING_USER and throw exception on mismatch
    *
    * @param createUserDto Request object of type {@link CreateUserDto} for
    * creating a new user.
    * @param companyId The company Id.
-   * @param Directory Directory dervied from the access token.
    * @param currentUser The current user details from the token.
    *
    * @returns The user details as a promise of type {@link ReadUserDto}
@@ -67,7 +65,6 @@ export class UsersService {
   async create(
     createUserDto: CreateUserDto,
     companyId: number,
-    directory: Directory,
     currentUser: IUserJWT,
   ): Promise<ReadUserDto> {
     let newUser: ReadUserDto;
@@ -95,7 +92,7 @@ export class UsersService {
       let user = this.classMapper.map(createUserDto, CreateUserDto, User, {
         extraArgs: () => ({
           userName: currentUser.userName,
-          directory: directory,
+          directory: currentUser.orbc_user_directory,
           userGUID: currentUser.userGUID,
           timestamp: new Date(),
         }),
@@ -143,7 +140,6 @@ export class UsersService {
     userGUID: string,
     updateUserDto: UpdateUserDto,
     companyId: number,
-    directory: Directory,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     currentUser?: IUserJWT,
   ): Promise<ReadUserDto> {
@@ -156,7 +152,7 @@ export class UsersService {
     const user = this.classMapper.map(updateUserDto, UpdateUserDto, User, {
       extraArgs: () => ({
         userName: currentUser.userName,
-        directory: directory,
+        directory: currentUser.orbc_user_directory,
         userGUID: currentUser.userGUID,
         timestamp: new Date(),
       }),
@@ -226,7 +222,6 @@ export class UsersService {
   async updateStatus(
     userGUID: string,
     statusCode: UserStatus,
-    directory: Directory,
     currentUser?: IUserJWT,
   ): Promise<UpdateResult> {
     const user = new User();
@@ -235,7 +230,7 @@ export class UsersService {
     user.updatedUserGuid = currentUser.userGUID;
     user.updatedDateTime = new Date();
     user.updatedUser = currentUser.userName;
-    user.updatedUserDirectory = directory;
+    user.updatedUserDirectory = currentUser.orbc_user_directory;
     return await this.userRepository.update({ userGUID }, user);
   }
 

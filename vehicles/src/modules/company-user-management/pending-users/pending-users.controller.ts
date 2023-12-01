@@ -29,7 +29,6 @@ import { IUserJWT } from 'src/common/interface/user-jwt.interface';
 import { Request } from 'express';
 import { Roles } from '../../../common/decorator/roles.decorator';
 import { Role } from '../../../common/enum/roles.enum';
-import { getDirectory } from 'src/common/helper/auth.helper';
 
 @ApiTags('Company and User Management - Pending User')
 @ApiBadRequestResponse({
@@ -77,11 +76,9 @@ export class PendingUsersController {
     @Body() createUserDto: CreatePendingUserDto,
   ) {
     const currentUser = request.user as IUserJWT;
-    const directory = getDirectory(currentUser);
     return await this.pendingUserService.create(
       companyId,
       createUserDto,
-      directory,
       currentUser,
     );
   }
@@ -165,12 +162,10 @@ export class PendingUsersController {
     @Body() updatePendingUserDto: UpdatePendingUserDto,
   ): Promise<ReadPendingUserDto> {
     const currentUser = request.user as IUserJWT;
-    const directory = getDirectory(currentUser);
     const pendingUser = await this.pendingUserService.update(
       companyId,
       userName,
       updatePendingUserDto,
-      directory,
       currentUser,
     );
     if (!pendingUser) {

@@ -87,7 +87,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         payload.identity_provider,
         userGUID,
       );
-      if (!(user?.length)) {
+      if (!user?.length) {
         throw new UnauthorizedException();
       }
       orbc_first_name = user?.at(0).firstName;
@@ -116,7 +116,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       roles,
       companyId,
       associatedCompanies,
-      access_token,      
+      access_token,
       orbc_first_name,
       orbc_last_name,
       orbc_user_auth_group,

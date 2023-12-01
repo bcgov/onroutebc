@@ -55,7 +55,7 @@ export const redCompanyAdminUserJWTMock: IUserJWT = {
   orbc_first_name: constants.RED_COMPANY_ADMIN_FIRST_NAME,
   orbc_last_name: constants.RED_COMPANY_ADMIN_LAST_NAME,
   orbc_user_auth_group: constants.RED_COMPANY_ADMIN_USER_AUTH_GROUP,
-  orbc_user_directory: constants.RED_COMPANY_ADMIN_USER_STATUS_DIRECOTRY,  
+  orbc_user_directory: constants.RED_COMPANY_ADMIN_USER_STATUS_DIRECOTRY,
 };
 
 export const redCompanyCvClientUserJWTMock: IUserJWT = {
@@ -165,7 +165,7 @@ export const blueCompanyAdminUserJWTMock: IUserJWT = {
   orbc_first_name: constants.BLUE_COMPANY_ADMIN_FIRST_NAME,
   orbc_last_name: constants.BLUE_COMPANY_ADMIN_LAST_NAME,
   orbc_user_auth_group: constants.BLUE_COMPANY_ADMIN_USER_AUTH_GROUP,
-  orbc_user_directory: constants.BLUE_COMPANY_ADMIN_USER_STATUS_DIRECOTRY,  
+  orbc_user_directory: constants.BLUE_COMPANY_ADMIN_USER_STATUS_DIRECOTRY,
 };
 
 export const blueCompanyCvClientUserJWTMock: IUserJWT = {

@@ -22,7 +22,6 @@ import { TransactionType } from '../../common/enum/transaction-type.enum';
 
 import { ReadPaymentGatewayTransactionDto } from './dto/response/read-payment-gateway-transaction.dto';
 import { Receipt } from './entities/receipt.entity';
-import { Directory } from 'src/common/enum/directory.enum';
 import {
   PAYMENT_DESCRIPTION,
   PAYBC_PAYMENT_METHOD,
@@ -192,7 +191,6 @@ export class PaymentService {
   async createTransactions(
     currentUser: IUserJWT,
     createTransactionDto: CreateTransactionDto,
-    directory: Directory,
     nestedQueryRunner?: QueryRunner,
   ): Promise<ReadTransactionDto> {
     const totalTransactionAmount =
@@ -220,7 +218,7 @@ export class PaymentService {
             userName: currentUser.userName,
             userGUID: currentUser.userGUID,
             timestamp: new Date(),
-            directory: directory,
+            directory: currentUser.orbc_user_directory,
           }),
         },
       );
@@ -243,11 +241,13 @@ export class PaymentService {
         newPermitTransactions.permit = existingApplication;
         newPermitTransactions.createdDateTime = new Date();
         newPermitTransactions.createdUser = currentUser.userName;
-        newPermitTransactions.createdUserDirectory = directory;
+        newPermitTransactions.createdUserDirectory =
+          currentUser.orbc_user_directory;
         newPermitTransactions.createdUserGuid = currentUser.userGUID;
         newPermitTransactions.updatedDateTime = new Date();
         newPermitTransactions.updatedUser = currentUser.userName;
-        newPermitTransactions.updatedUserDirectory = directory;
+        newPermitTransactions.updatedUserDirectory =
+          currentUser.orbc_user_directory;
         newPermitTransactions.updatedUserGuid = currentUser.userGUID;
         newPermitTransactions.transactionAmount = application.transactionAmount;
         newPermitTransactions = await queryRunner.manager.save(
@@ -263,7 +263,8 @@ export class PaymentService {
           existingApplication.permitStatus = ApplicationStatus.WAITING_PAYMENT;
           existingApplication.updatedDateTime = new Date();
           existingApplication.updatedUser = currentUser.userName;
-          existingApplication.updatedUserDirectory = directory;
+          existingApplication.updatedUserDirectory =
+            currentUser.orbc_user_directory;
           existingApplication.updatedUserGuid = currentUser.userGUID;
 
           await queryRunner.manager.save(existingApplication);
@@ -295,11 +296,11 @@ export class PaymentService {
         receipt.transaction = createdTransaction;
         receipt.createdDateTime = new Date();
         receipt.createdUser = currentUser.userName;
-        receipt.createdUserDirectory = directory;
+        receipt.createdUserDirectory = currentUser.orbc_user_directory;
         receipt.createdUserGuid = currentUser.userGUID;
         receipt.updatedDateTime = new Date();
         receipt.updatedUser = currentUser.userName;
-        receipt.updatedUserDirectory = directory;
+        receipt.updatedUserDirectory = currentUser.orbc_user_directory;
         receipt.updatedUserGuid = currentUser.userGUID;
         await queryRunner.manager.save(receipt);
       }
@@ -342,7 +343,6 @@ export class PaymentService {
     currentUser: IUserJWT,
     transactionId: string,
     updatePaymentGatewayTransactionDto: UpdatePaymentGatewayTransactionDto,
-    directory: Directory,
     queryString: string,
   ): Promise<ReadPaymentGatewayTransactionDto> {
     const query = queryString.substring(
@@ -402,7 +402,7 @@ export class PaymentService {
             userName: currentUser.userName,
             userGUID: currentUser.userGUID,
             timestamp: new Date(),
-            directory: directory,
+            directory: currentUser.orbc_user_directory,
           }),
         },
       );
@@ -427,7 +427,7 @@ export class PaymentService {
               updatedDateTime: new Date(),
               updatedUser: currentUser.userName,
               updatedUserGuid: currentUser.userGUID,
-              updatedUserDirectory: directory,
+              updatedUserDirectory: currentUser.orbc_user_directory,
             },
           );
           if (!updateResult?.affected) {
@@ -451,11 +451,11 @@ export class PaymentService {
         receipt.receiptNumber = receiptNumber;
         receipt.createdDateTime = new Date();
         receipt.createdUser = currentUser.userName;
-        receipt.createdUserDirectory = directory;
+        receipt.createdUserDirectory = currentUser.orbc_user_directory;
         receipt.createdUserGuid = currentUser.userGUID;
         receipt.updatedDateTime = new Date();
         receipt.updatedUser = currentUser.userName;
-        receipt.updatedUserDirectory = directory;
+        receipt.updatedUserDirectory = currentUser.orbc_user_directory;
         receipt.updatedUserGuid = currentUser.userGUID;
         await queryRunner.manager.save(receipt);
       }

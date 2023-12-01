@@ -84,7 +84,6 @@ export class ApplicationService {
   async create(
     createApplicationDto: CreateApplicationDto,
     currentUser: IUserJWT,
-    directory: Directory,
   ): Promise<ReadApplicationDto> {
     const id = createApplicationDto.permitId;
     //If permit id exists assign it to null to create new application.
@@ -131,7 +130,7 @@ export class ApplicationService {
           userName: currentUser.userName,
           userGUID: currentUser.userGUID,
           timestamp: new Date(),
-          directory: directory,
+          directory: currentUser.orbc_user_directory,
         }),
       },
     );
@@ -271,7 +270,6 @@ export class ApplicationService {
     applicationNumber: string,
     updateApplicationDto: UpdateApplicationDto,
     currentUser: IUserJWT,
-    directory: Directory,
   ): Promise<ReadApplicationDto> {
     const existingApplication = await this.findByApplicationNumber(
       applicationNumber,
@@ -288,7 +286,7 @@ export class ApplicationService {
           userName: currentUser.userName,
           userGUID: currentUser.userGUID,
           timestamp: new Date(),
-          directory: directory,
+          directory: currentUser.orbc_user_directory,
         }),
       },
     );
@@ -315,7 +313,6 @@ export class ApplicationService {
     applicationIds: string[],
     applicationStatus: ApplicationStatus,
     currentUser: IUserJWT,
-    directory: Directory,
   ): Promise<ResultDto> {
     let permitApprovalSource: PermitApprovalSourceEnum = null;
     if (applicationIds.length === 1) {
@@ -350,7 +347,7 @@ export class ApplicationService {
         }),
         updatedUser: currentUser.userName,
         updatedDateTime: new Date(),
-        updatedUserDirectory: directory,
+        updatedUserDirectory: currentUser.orbc_user_directory,
         updatedUserGuid: currentUser.userGUID,
       })
       .whereInIds(applicationIds)
@@ -381,11 +378,7 @@ export class ApplicationService {
    * @param applicationId applicationId to identify the application to be issued. It is the same as permitId.
    * @returns a resultDto that describes if the transaction was successful or if it failed
    */
-  async issuePermit(
-    currentUser: IUserJWT,
-    applicationId: string,
-    directory: Directory,
-  ) {
+  async issuePermit(currentUser: IUserJWT, applicationId: string) {
     let success = '';
     let failure = '';
     const fetchedApplication = await this.findOneWithSuccessfulTransaction(
@@ -512,13 +505,13 @@ export class ApplicationService {
           documentId: generatedDocuments.at(0).dmsId,
           issuerUserGuid: currentUser.userGUID,
           permitIssuedBy:
-            directory == Directory.IDIR
+            currentUser.orbc_user_directory == Directory.IDIR
               ? PermitIssuedBy.PPC
               : PermitIssuedBy.SELF_ISSUED,
           permitIssueDateTime: fetchedApplication.permitIssueDateTime,
           updatedDateTime: new Date(),
           updatedUser: currentUser.userName,
-          updatedUserDirectory: directory,
+          updatedUserDirectory: currentUser.orbc_user_directory,
           updatedUserGuid: currentUser.userGUID,
         },
       );
@@ -534,7 +527,7 @@ export class ApplicationService {
           receiptDocumentId: generatedDocuments.at(1).dmsId,
           updatedDateTime: new Date(),
           updatedUser: currentUser.userName,
-          updatedUserDirectory: directory,
+          updatedUserDirectory: currentUser.orbc_user_directory,
           updatedUserGuid: currentUser.userGUID,
         },
       );
@@ -553,7 +546,7 @@ export class ApplicationService {
             permitStatus: ApplicationStatus.SUPERSEDED,
             updatedDateTime: new Date(),
             updatedUser: currentUser.userName,
-            updatedUserDirectory: directory,
+            updatedUserDirectory: currentUser.orbc_user_directory,
             updatedUserGuid: currentUser.userGUID,
           },
         );

@@ -8,7 +8,6 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { UserAuthGroup } from '../../../common/enum/user-auth-group.enum';
-import { Directory } from '../../../common/enum/directory.enum';
 import { ReadUserDto } from '../users/dto/response/read-user.dto';
 import { CreateCompanyDto } from './dto/request/create-company.dto';
 import { UpdateCompanyDto } from './dto/request/update-company.dto';
@@ -52,7 +51,6 @@ export class CompanyService {
    *
    * @param createCompanyDto Request object of type {@link CreateCompanyDto} for
    * creating a new company and admin user.
-   * @param directory Directory derived from the access token.
    * @param currentUser The current user details from the token.
    *
    * @returns The company and admin user details as a promise of type
@@ -60,7 +58,6 @@ export class CompanyService {
    */
   async create(
     createCompanyDto: CreateCompanyDto,
-    directory: Directory,
     currentUser: IUserJWT,
   ): Promise<ReadCompanyUserDto> {
     let newCompany: Company;
@@ -75,7 +72,7 @@ export class CompanyService {
         Company,
         {
           extraArgs: () => ({
-            directory: directory,
+            directory: currentUser.orbc_user_directory,
             companyGUID: currentUser.bceid_business_guid,
             accountSource: currentUser.accountSource,
             userName: currentUser.userName,
@@ -99,7 +96,7 @@ export class CompanyService {
         {
           extraArgs: () => ({
             userName: currentUser.userName,
-            directory: directory,
+            directory: currentUser.orbc_user_directory,
             userGUID: currentUser.userGUID,
             timestamp: new Date(),
           }),
@@ -306,7 +303,6 @@ export class CompanyService {
   async update(
     companyId: number,
     updateCompanyDto: UpdateCompanyDto,
-    directory: Directory,
     currentUser: IUserJWT,
   ): Promise<ReadCompanyDto> {
     const company = await this.companyRepository.findOne({
@@ -333,7 +329,7 @@ export class CompanyService {
         extraArgs: () => ({
           companyId: company.companyId,
           clientNumber: clientNumber,
-          directory: directory,
+          directory: currentUser.orbc_user_directory,
           mailingAddressId: mailingAddressId,
           contactId: contactId,
           userName: currentUser.userName,

@@ -6,7 +6,6 @@ import { Repository } from 'typeorm';
 import { PendingIdirUser } from './entities/pending-idir-user.entity';
 import { CreatePendingIdirUserDto } from './dto/request/create-pending-idir-user.dto';
 import { ReadPendingIdirUserDto } from './dto/response/read-pending-idir-user.dto';
-import { Directory } from 'src/common/enum/directory.enum';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
 
 @Injectable()
@@ -27,7 +26,6 @@ export class PendingIdirUsersService {
    */
   async create(
     createPendingIdirUserDto: CreatePendingIdirUserDto,
-    directory: Directory,
     currentUser: IUserJWT,
   ): Promise<ReadPendingIdirUserDto> {
     const newPendingIdirUserDto = this.classMapper.map(
@@ -37,7 +35,7 @@ export class PendingIdirUsersService {
       {
         extraArgs: () => ({
           userName: currentUser.userName,
-          directory: directory,
+          directory: currentUser.orbc_user_directory,
           userGUID: currentUser.userGUID,
           timestamp: new Date(),
         }),

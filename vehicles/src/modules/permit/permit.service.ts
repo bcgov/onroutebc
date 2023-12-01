@@ -75,7 +75,6 @@ export class PermitService {
   async create(
     createPermitDto: CreatePermitDto,
     currentUser: IUserJWT,
-    directory: Directory,
   ): Promise<ReadPermitDto> {
     const permitEntity = await this.classMapper.mapAsync(
       createPermitDto,
@@ -84,7 +83,7 @@ export class PermitService {
       {
         extraArgs: () => ({
           userName: currentUser.userName,
-          directory: directory,
+          directory: currentUser.orbc_user_directory,
           userGUID: currentUser.userGUID,
           timestamp: new Date(),
         }),
@@ -360,7 +359,6 @@ export class PermitService {
     permitId: string,
     voidPermitDto: VoidPermitDto,
     currentUser: IUserJWT,
-    directory: Directory,
   ): Promise<ResultDto> {
     const permit = await this.findOne(permitId);
     /**
@@ -406,11 +404,11 @@ export class PermitService {
       const userMetadata: Base = {
         createdDateTime: new Date(),
         createdUser: currentUser.userName,
-        createdUserDirectory: directory,
+        createdUserDirectory: currentUser.orbc_user_directory,
         createdUserGuid: currentUser.userGUID,
         updatedDateTime: new Date(),
         updatedUser: currentUser.userName,
-        updatedUserDirectory: directory,
+        updatedUserDirectory: currentUser.orbc_user_directory,
         updatedUserGuid: currentUser.userGUID,
       };
 
@@ -422,7 +420,7 @@ export class PermitService {
       newPermit.applicationNumber = applicationNumber;
       newPermit.permitStatus = voidPermitDto.status;
       newPermit.permitIssuedBy =
-        directory == Directory.IDIR
+        currentUser.orbc_user_directory == Directory.IDIR
           ? PermitIssuedBy.PPC
           : PermitIssuedBy.SELF_ISSUED;
       newPermit.permitIssueDateTime = new Date();
@@ -450,7 +448,7 @@ export class PermitService {
           permitStatus: ApplicationStatus.SUPERSEDED,
           updatedDateTime: new Date(),
           updatedUser: currentUser.userName,
-          updatedUserDirectory: directory,
+          updatedUserDirectory: currentUser.orbc_user_directory,
           updatedUserGuid: currentUser.userGUID,
         },
       );
@@ -471,7 +469,6 @@ export class PermitService {
       const transactionDto = await this.paymentService.createTransactions(
         currentUser,
         createTransactionDto,
-        directory,
         queryRunner,
       );
 
@@ -564,7 +561,7 @@ export class PermitService {
           documentId: generatedDocuments.at(0).dmsId,
           updatedDateTime: new Date(),
           updatedUser: currentUser.userName,
-          updatedUserDirectory: directory,
+          updatedUserDirectory: currentUser.orbc_user_directory,
           updatedUserGuid: currentUser.userGUID,
         },
       );
@@ -579,7 +576,7 @@ export class PermitService {
           receiptDocumentId: generatedDocuments.at(1).dmsId,
           updatedDateTime: new Date(),
           updatedUser: currentUser.userName,
-          updatedUserDirectory: directory,
+          updatedUserDirectory: currentUser.orbc_user_directory,
           updatedUserGuid: currentUser.userGUID,
         },
       );
