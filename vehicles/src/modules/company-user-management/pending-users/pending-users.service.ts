@@ -7,7 +7,6 @@ import { CreatePendingUserDto } from './dto/request/create-pending-user.dto';
 import { UpdatePendingUserDto } from './dto/request/update-pending-user.dto';
 import { ReadPendingUserDto } from './dto/response/read-pending-user.dto';
 import { PendingUser } from './entities/pending-user.entity';
-import { Directory } from 'src/common/enum/directory.enum';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
 
 @Injectable()
@@ -31,7 +30,6 @@ export class PendingUsersService {
   async create(
     companyId: number,
     createPendingUserDto: CreatePendingUserDto,
-    directory: Directory,
     currentUser: IUserJWT,
   ): Promise<ReadPendingUserDto> {
     const newPendingUserDto = this.classMapper.map(
@@ -42,7 +40,7 @@ export class PendingUsersService {
         extraArgs: () => ({
           companyId: companyId,
           userName: currentUser.userName,
-          directory: directory,
+          directory: currentUser.orbcUserDirectory,
           userGUID: currentUser.userGUID,
           timestamp: new Date(),
         }),
@@ -74,7 +72,6 @@ export class PendingUsersService {
     companyId: number,
     userName: string,
     updatePendingUserDto: UpdatePendingUserDto,
-    directory: Directory,
     currentUser: IUserJWT,
   ): Promise<ReadPendingUserDto> {
     const updatePendingUser = this.classMapper.map(
@@ -85,7 +82,7 @@ export class PendingUsersService {
         extraArgs: () => ({
           companyId: companyId,
           userName: currentUser.userName,
-          directory: directory,
+          directory: currentUser.orbcUserDirectory,
           userGUID: currentUser.userGUID,
           timestamp: new Date(),
         }),

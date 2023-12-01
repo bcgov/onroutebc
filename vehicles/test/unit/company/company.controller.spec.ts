@@ -5,7 +5,6 @@ import { CompanyController } from '../../../src/modules/company-user-management/
 import { CompanyService } from '../../../src/modules/company-user-management/company/company.service';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { Request } from 'express';
-import { getDirectory } from '../../../src/common/helper/auth.helper';
 import { IUserJWT } from '../../../src/common/interface/user-jwt.interface';
 import {
   redCompanyAdminUserJWTMock,
@@ -62,7 +61,6 @@ describe('CompanyController', () => {
       );
       expect(companyService.create).toHaveBeenCalledWith(
         createRedCompanyDtoMock,
-        getDirectory(currentUser),
         currentUser,
       );
     });

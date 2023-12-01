@@ -16,7 +16,6 @@ import { S3Service } from '../common/s3.service';
 import { Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import { IDP } from '../../enum/idp.enum';
-import { Directory } from 'src/enum/directory.enum';
 
 @Injectable()
 export class DmsService {
@@ -32,7 +31,6 @@ export class DmsService {
   async create(
     currentUser: IUserJWT,
     file: Express.Multer.File | IFile,
-    directory: Directory,
     companyId?: number,
   ): Promise<ReadFileDto> {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call
@@ -52,12 +50,12 @@ export class DmsService {
       companyId: companyId,
       createdDateTime: new Date(),
       createdUser: currentUser.userName,
-      createdUserDirectory: directory,
+      createdUserDirectory: currentUser.orbcUserDirectory,
       createdUserGuid: currentUser.userGUID,
       updatedUser: currentUser.userName,
       updatedDateTime: new Date(),
       updatedUserGuid: currentUser.userGUID,
-      updatedUserDirectory: directory,
+      updatedUserDirectory: currentUser.orbcUserDirectory,
     };
 
     return this.classMapper.mapAsync(
@@ -69,7 +67,6 @@ export class DmsService {
 
   async update(
     currentUser: IUserJWT,
-    directory: Directory,
     documentId: string,
     file: Express.Multer.File,
     companyId?: number,
@@ -100,7 +97,7 @@ export class DmsService {
       updatedUser: currentUser.userName,
       updatedDateTime: new Date(),
       updatedUserGuid: currentUser.userGUID,
-      updatedUserDirectory: directory,
+      updatedUserDirectory: currentUser.orbcUserDirectory,
     };
 
     return this.classMapper.mapAsync(

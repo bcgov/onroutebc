@@ -44,52 +44,50 @@ export const PaymentMethodSelect = () => {
     setValue("paymentMethods", value as string[]);
   };
   return (
-    <>
-      <FormControl
-        sx={{ width: "274px" }}
-        className="custom-form-control"
-        margin="normal"
-        disabled={issuedBy.length === 0}
+    <FormControl
+      sx={{ width: "274px" }}
+      className="custom-form-control"
+      margin="normal"
+      disabled={issuedBy.length === 0}
+    >
+      <FormLabel
+        className="custom-form-control__label"
+        id="payment-method-select-label"
+        sx={{ fontWeight: "bold", marginBottom: "8px" }}
       >
-        <FormLabel
-          className="custom-form-control__label"
-          id="payment-method-select-label"
-          sx={{ fontWeight: "bold", marginBottom: "8px" }}
-        >
-          Payment Method
-        </FormLabel>
-        <Select
-          labelId="payment-method-select-label"
-          id="payment-method-select"
-          multiple
-          onChange={onSelectPaymentMethod}
-          renderValue={(selected) => {
-            if (isAllPaymentMethodsSelected) return "All Payment Methods";
-            return selected.join(", ");
-          }}
-          input={<OutlinedInput />}
-          value={selectedPaymentMethods}
-          MenuProps={{
-            autoFocus: false,
-          }}
-        >
-          <MenuItem key={"All Payment Methods"} value={"All Payment Methods"}>
-            <Checkbox checked={isAllPaymentMethodsSelected} />
-            <ListItemText primary={"All Payment Methods"} />
+        Payment Method
+      </FormLabel>
+      <Select
+        labelId="payment-method-select-label"
+        id="payment-method-select"
+        multiple
+        onChange={onSelectPaymentMethod}
+        renderValue={(selected) => {
+          if (isAllPaymentMethodsSelected) return "All Payment Methods";
+          return selected.join(", ");
+        }}
+        input={<OutlinedInput />}
+        value={selectedPaymentMethods}
+        MenuProps={{
+          autoFocus: false,
+        }}
+      >
+        <MenuItem key={"All Payment Methods"} value={"All Payment Methods"}>
+          <Checkbox checked={isAllPaymentMethodsSelected} />
+          <ListItemText primary={"All Payment Methods"} />
+        </MenuItem>
+        {Object.keys(CONSOLIDATED_PAYMENT_METHODS).map((key) => (
+          <MenuItem key={key} value={key}>
+            <Checkbox
+              checked={
+                selectedPaymentMethods &&
+                selectedPaymentMethods.indexOf(key) > -1
+              }
+            />
+            <ListItemText primary={key} />
           </MenuItem>
-          {Object.keys(CONSOLIDATED_PAYMENT_METHODS).map((key) => (
-            <MenuItem key={key} value={key}>
-              <Checkbox
-                checked={
-                  selectedPaymentMethods &&
-                  selectedPaymentMethods.indexOf(key) > -1
-                }
-              />
-              <ListItemText primary={key} />
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
-    </>
+        ))}
+      </Select>
+    </FormControl>
   );
 };

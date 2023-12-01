@@ -51,7 +51,7 @@ export const PaymentAndRefundSummary = () => {
         fromDateTime: fromDateTime.toISOString(),
         toDateTime: toDateTime.toISOString(),
         issuedBy,
-      });
+      } as PaymentAndRefundSummaryRequest);
       openBlobInNewTab(blobObjWithoutType);
     } catch (err) {
       console.error(err);

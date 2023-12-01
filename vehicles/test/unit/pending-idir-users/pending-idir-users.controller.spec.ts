@@ -11,7 +11,6 @@ import {
   pendingIdirUserEntityMock,
   readPendingIdirUserMock,
 } from 'test/util/mocks/data/pending-idir-user.mock';
-import { getDirectory } from 'src/common/helper/auth.helper';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
 
 let pendingIdirUserService: DeepMocked<PendingIdirUsersService>;
@@ -58,7 +57,6 @@ describe('PendingIdirUsersController', () => {
       );
       expect(pendingIdirUserService.create).toHaveBeenCalledWith(
         createPendingIdirUserMock,
-        getDirectory(currentUser),
         currentUser,
       );
     });
