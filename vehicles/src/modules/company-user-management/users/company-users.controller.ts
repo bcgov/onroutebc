@@ -19,7 +19,6 @@ import { CreateUserDto } from './dto/request/create-user.dto';
 import { ReadUserDto } from './dto/response/read-user.dto';
 import { UsersService } from './users.service';
 import { AuthOnly } from '../../../common/decorator/auth-only.decorator';
-import { getDirectory } from '../../../common/helper/auth.helper';
 import { IUserJWT } from '../../../common/interface/user-jwt.interface';
 import { Request } from 'express';
 import { Roles } from '../../../common/decorator/roles.decorator';
@@ -102,14 +101,8 @@ export class CompanyUsersController {
     @Body() createUserDto: CreateUserDto,
   ) {
     const currentUser = request.user as IUserJWT;
-    const directory = getDirectory(currentUser);
 
-    return await this.userService.create(
-      createUserDto,
-      companyId,
-      directory,
-      currentUser,
-    );
+    return await this.userService.create(createUserDto, companyId, currentUser);
   }
 
   /**
@@ -134,12 +127,10 @@ export class CompanyUsersController {
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<ReadUserDto> {
     const currentUser = request.user as IUserJWT;
-    const directory = getDirectory(currentUser);
     const user = await this.userService.update(
       userGUID,
       updateUserDto,
       companyId,
-      directory,
       currentUser,
     );
     if (!user) {
@@ -172,11 +163,9 @@ export class CompanyUsersController {
     @Body() updateUserStatusDto: UpdateUserStatusDto,
   ): Promise<object> {
     const currentUser = request.user as IUserJWT;
-    const directory = getDirectory(currentUser);
     const updateResult = await this.userService.updateStatus(
       userGUID,
       updateUserStatusDto.statusCode,
-      directory,
       currentUser,
     );
     if (updateResult.affected === 0) {

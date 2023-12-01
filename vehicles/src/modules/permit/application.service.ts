@@ -50,6 +50,7 @@ import { convertUtcToPt } from '../../common/helper/date-time.helper';
 import { Directory } from 'src/common/enum/directory.enum';
 import { ReadPermitDto } from './dto/response/read-permit.dto';
 import { PermitIssuedBy } from '../../common/enum/permit-issued-by.enum';
+import { getPaymentCodeFromCache } from '../../common/helper/payment.helper';
 
 @Injectable()
 export class ApplicationService {
@@ -84,7 +85,6 @@ export class ApplicationService {
   async create(
     createApplicationDto: CreateApplicationDto,
     currentUser: IUserJWT,
-    directory: Directory,
   ): Promise<ReadApplicationDto> {
     const id = createApplicationDto.permitId;
     //If permit id exists assign it to null to create new application.
@@ -131,7 +131,7 @@ export class ApplicationService {
           userName: currentUser.userName,
           userGUID: currentUser.userGUID,
           timestamp: new Date(),
-          directory: directory,
+          directory: currentUser.orbcUserDirectory,
         }),
       },
     );
@@ -271,7 +271,6 @@ export class ApplicationService {
     applicationNumber: string,
     updateApplicationDto: UpdateApplicationDto,
     currentUser: IUserJWT,
-    directory: Directory,
   ): Promise<ReadApplicationDto> {
     const existingApplication = await this.findByApplicationNumber(
       applicationNumber,
@@ -288,7 +287,7 @@ export class ApplicationService {
           userName: currentUser.userName,
           userGUID: currentUser.userGUID,
           timestamp: new Date(),
-          directory: directory,
+          directory: currentUser.orbcUserDirectory,
         }),
       },
     );
@@ -315,7 +314,6 @@ export class ApplicationService {
     applicationIds: string[],
     applicationStatus: ApplicationStatus,
     currentUser: IUserJWT,
-    directory: Directory,
   ): Promise<ResultDto> {
     let permitApprovalSource: PermitApprovalSourceEnum = null;
     if (applicationIds.length === 1) {
@@ -350,7 +348,7 @@ export class ApplicationService {
         }),
         updatedUser: currentUser.userName,
         updatedDateTime: new Date(),
-        updatedUserDirectory: directory,
+        updatedUserDirectory: currentUser.orbcUserDirectory,
         updatedUserGuid: currentUser.userGUID,
       })
       .whereInIds(applicationIds)
@@ -381,11 +379,7 @@ export class ApplicationService {
    * @param applicationId applicationId to identify the application to be issued. It is the same as permitId.
    * @returns a resultDto that describes if the transaction was successful or if it failed
    */
-  async issuePermit(
-    currentUser: IUserJWT,
-    applicationId: string,
-    directory: Directory,
-  ) {
+  async issuePermit(currentUser: IUserJWT, applicationId: string) {
     let success = '';
     let failure = '';
     const fetchedApplication = await this.findOneWithSuccessfulTransaction(
@@ -474,15 +468,31 @@ export class ApplicationService {
         templateData: {
           ...permitDataForTemplate,
           // transaction details still needs to be reworked to support multiple permits
+          pgTransactionId:
+            fetchedApplication.permitTransactions[0].transaction
+              .pgTransactionId,
           transactionOrderNumber:
             fetchedApplication.permitTransactions[0].transaction
               .transactionOrderNumber,
           transactionAmount:
             fetchedApplication.permitTransactions[0].transaction
               .totalTransactionAmount,
-          paymentMethod:
-            fetchedApplication.permitTransactions[0].transaction
-              .pgPaymentMethod,
+          //Payer Name should be persisted in transacation Table so that it can be used for DocRegen
+          payerName:
+            currentUser.orbcUserDirectory === Directory.IDIR
+              ? 'Provincial Permit Centre'
+              : currentUser.orbcUserFirstName +
+                ' ' +
+                currentUser.orbcUserLastName,
+          consolidatedPaymentMethod: (
+            await getPaymentCodeFromCache(
+              this.cacheManager,
+              fetchedApplication.permitTransactions[0].transaction
+                .paymentMethodTypeCode,
+              fetchedApplication.permitTransactions[0].transaction
+                .paymentCardTypeCode,
+            )
+          ).consolidatedPaymentMethod,
           transactionDate: convertUtcToPt(
             fetchedApplication.permitTransactions[0].transaction
               .transactionSubmitDate,
@@ -512,13 +522,13 @@ export class ApplicationService {
           documentId: generatedDocuments.at(0).dmsId,
           issuerUserGuid: currentUser.userGUID,
           permitIssuedBy:
-            directory == Directory.IDIR
+            currentUser.orbcUserDirectory == Directory.IDIR
               ? PermitIssuedBy.PPC
               : PermitIssuedBy.SELF_ISSUED,
           permitIssueDateTime: fetchedApplication.permitIssueDateTime,
           updatedDateTime: new Date(),
           updatedUser: currentUser.userName,
-          updatedUserDirectory: directory,
+          updatedUserDirectory: currentUser.orbcUserDirectory,
           updatedUserGuid: currentUser.userGUID,
         },
       );
@@ -534,7 +544,7 @@ export class ApplicationService {
           receiptDocumentId: generatedDocuments.at(1).dmsId,
           updatedDateTime: new Date(),
           updatedUser: currentUser.userName,
-          updatedUserDirectory: directory,
+          updatedUserDirectory: currentUser.orbcUserDirectory,
           updatedUserGuid: currentUser.userGUID,
         },
       );
@@ -553,7 +563,7 @@ export class ApplicationService {
             permitStatus: ApplicationStatus.SUPERSEDED,
             updatedDateTime: new Date(),
             updatedUser: currentUser.userName,
-            updatedUserDirectory: directory,
+            updatedUserDirectory: currentUser.orbcUserDirectory,
             updatedUserGuid: currentUser.userGUID,
           },
         );
