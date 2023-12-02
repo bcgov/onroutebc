@@ -1,8 +1,15 @@
 @import "../../../../../themes/orbcStyles.scss";
 
 .transaction-history-table {
-  width: 100%;
-  border: 1px solid $bc-border-grey;
+  &#{&} {
+    overflow: visible;
+    box-shadow: none;
+  }
+
+  & &__table {
+    width: 100%;
+    border: 1px solid $bc-border-grey;
+  }
 
   & &__header {
     background-color: $bc-background-light-grey;

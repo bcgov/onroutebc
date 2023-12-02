@@ -129,8 +129,11 @@ export const TransactionHistoryTable = ({
     state: {
       ...defaultTableStateOptions,
     },
-    muiTableProps: {
+    muiTablePaperProps: {
       className: "transaction-history-table",
+    },
+    muiTableContainerProps: {
+      className: "transaction-history-table__table",
     },
   });
 
