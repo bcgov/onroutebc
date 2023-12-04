@@ -33,8 +33,7 @@ export class S3Service {
     file: Buffer,
     filePath?: string,
   ): Promise<CompleteMultipartUploadCommandOutput> {
-        const client = this.s3Client;
-    console.log('Key and file path', this._s3Key + '/' + filePath);
+    const client = this.s3Client;
     const upload = new Upload({
       client,
       params: {

@@ -5,11 +5,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import * as path from 'path';
 import { TpsPermitModule } from './modules/tps-permit/tps-permit.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 const envPath = path.resolve(process.cwd() + '/../');
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     ConfigModule.forRoot({ envFilePath: `${envPath}/.env` }),
     TypeOrmModule.forRoot({
       type: process.env.DB_TYPE === 'mssql' ? 'mssql' : 'postgres',

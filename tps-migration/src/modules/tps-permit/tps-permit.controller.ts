@@ -7,9 +7,7 @@ export class TpsPermitController {
 
   @Get()
   async getHello() {
-    console.log('StartTime: ', new Date());
     const result = await this.tpsPermitService.uploadTpsPermit();
-    console.log('EndTime: ', new Date());
     return result;
   }
 }

@@ -1,13 +1,16 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { TpsPermit } from './entities/tps-permit.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { S3uploadStatus } from '../common/enum/s3-upload-status.enum';
 import { S3Service } from './s3.service';
-import { v4 as uuidv4 } from 'uuid';
 import { Document } from './entities/document.entity';
 import { CompleteMultipartUploadCommandOutput } from '@aws-sdk/client-s3';
 import { Permit } from './entities/permit.entity';
+import * as sha1 from 'crypto-js/sha1';
+import { LIMIT } from '../common/constants/tps-migration.constant';
+import { v5 as uuidv5 } from 'uuid';
+import { Cron } from '@nestjs/schedule';
 
 @Injectable()
 export class TpsPermitService {
@@ -21,45 +24,63 @@ export class TpsPermitService {
     private readonly s3Service: S3Service,
   ) {}
 
-  
+  private readonly logger = new Logger(TpsPermitService.name);
+
+  @Cron('0 */30 * * * *')
   async uploadTpsPermit() {
-    console.log('inside uploadTpsPermit');
+    this.logger.verbose('Logger inside uploadTpsPermit', new Date());
     const tpsPermits: TpsPermit[] = await this.tpsPermitRepository.find({
       where: { s3UploadStatus: S3uploadStatus.Pending },
-      take: 200,
+      take: LIMIT,
     });
 
     for (const tpsPermit of tpsPermits) {
       let s3Object = null;
-      const s3ObjectId = uuidv4();
+      const MY_NAMESPACE = '1b671a64-40d5-491e-99b0-da01ff1f3341';
+      const hash = sha1(tpsPermit.pdf.toString());
+      const s3ObjectId = uuidv5(hash.toString(), MY_NAMESPACE);
       try {
-        s3Object = await this.s3Service.uploadFile(
-          tpsPermit.pdf,
-          s3ObjectId.toString(),
-        );
+        s3Object = await this.s3Service.uploadFile(tpsPermit.pdf, s3ObjectId);
       } catch (err) {
-        console.log(err);
-        await this.tpsPermitRepository.update({
-          migrationId: tpsPermit.migrationId},{
-          s3UploadStatus: S3uploadStatus.Error,
-        });
+        this.logger.error('Error while upload to s3. ', err);
+        this.logger.error('Failed permit numer ', tpsPermit.permitNumber);
+        await this.tpsPermitRepository.update(
+          {
+            migrationId: tpsPermit.migrationId,
+          },
+          {
+            s3UploadStatus: S3uploadStatus.Error,
+          },
+        );
       }
+      this.logger.log(
+        tpsPermit.permitNumber + ' uploaded successfully.',
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        s3Object.Location,
+      );
       const document = await this.createDocument(
         s3ObjectId,
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         s3Object,
         tpsPermit,
       );
-      console.log(document.documentId);
-     console.log(await this.permitRepository.update({
-        permitNumber: tpsPermit.newPermitNumber},{
-        documentId: document.documentId,
-      }));
+      await this.permitRepository.update(
+        {
+          permitNumber: tpsPermit.newPermitNumber,
+        },
+        {
+          documentId: document.documentId,
+        },
+      );
 
-     console.log( await this.tpsPermitRepository.update({
-        migrationId: tpsPermit.migrationId},{
-        s3UploadStatus: S3uploadStatus.Processed,
-      }));
+      await this.tpsPermitRepository.update(
+        {
+          migrationId: tpsPermit.migrationId,
+        },
+        {
+          s3UploadStatus: S3uploadStatus.Processed,
+        },
+      );
     }
   }
 
@@ -79,12 +100,12 @@ export class TpsPermitService {
       dmsVersionId: dmsVersionId,
       companyId: tpsPermit.migrationId,
       createdDateTime: new Date(),
-      createdUser: 'redtruck',
+      createdUser: 'tps_migration',
       createdUserDirectory: 'BCEID',
-      createdUserGuid: '06267945F2EB4E31B585932F78B76269',
-      updatedUser: 'redtruck',
+      createdUserGuid: '79F2FC0B69EB4819A18DD68958390DE6',
+      updatedUser: 'tps_migration',
       updatedDateTime: new Date(),
-      updatedUserGuid: '06267945F2EB4E31B585932F78B76269',
+      updatedUserGuid: '79F2FC0B69EB4819A18DD68958390DE6',
       updatedUserDirectory: 'BCEID',
     };
 
