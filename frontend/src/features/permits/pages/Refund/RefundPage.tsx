@@ -23,6 +23,7 @@ import { TransactionHistoryTable } from "./components/TransactionHistoryTable";
 import { FeeSummary } from "../../components/feeSummary/FeeSummary";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { isZeroAmount } from "../../helpers/feeSummary";
+import { isValidTransaction } from "../../helpers/payment";
 import {
   CONSOLIDATED_PAYMENT_METHODS,
   PAYMENT_METHODS_WITH_CARD,
@@ -83,13 +84,14 @@ export const RefundPage = ({
   amountToRefund: number;
   onFinish: (refundData: RefundFormData) => void;
 }) => {
-  // Get last valid transaction's payment method
-  // eg. zero dollar amounts (from amendment) is not considered valid payment method
-  // Also, if the transaction is of payment method type with an associated card type, then its card type must not be empty
-  const getPrevPaymentMethod = () => {
-    if (!permitHistory || permitHistory.length === 0) return undefined;
+  const validTransactionHistory = permitHistory.filter(history =>
+    isValidTransaction(history.paymentMethodTypeCode, history.pgTransactionId));
+  
+  const getPrevValidTransaction = () => {
+    if (!validTransactionHistory || validTransactionHistory.length === 0) 
+      return undefined;
 
-    const prevValidTransaction = permitHistory.find((history) => {
+    return validTransactionHistory.find((history) => {
       return (
         history.paymentMethodTypeCode !== PAYMENT_METHOD_TYPE_CODE.NP &&
         ((PAYMENT_METHODS_WITH_CARD.includes(history.paymentMethodTypeCode) &&
@@ -98,6 +100,13 @@ export const RefundPage = ({
             !history.paymentCardTypeCode))
       );
     });
+  };
+
+  // Get last valid transaction's payment method
+  // eg. zero dollar amounts (from amendment) is not considered valid payment method
+  // Also, if the transaction is of payment method type with an associated card type, then its card type must not be empty
+  const getPrevPaymentMethod = () => {
+    const prevValidTransaction = getPrevValidTransaction();
 
     if (!prevValidTransaction) return undefined;
 
@@ -130,8 +139,9 @@ export const RefundPage = ({
   };
 
   const getRefundOnlineMethod = () => {
-    if (!permitHistory || permitHistory.length === 0) return "";
-    return getDefaultRequiredVal("", permitHistory[0].pgPaymentMethod);
+    const prevValidTransaction = getPrevValidTransaction();
+    if (!prevValidTransaction) return "";
+    return getDefaultRequiredVal("", prevValidTransaction.pgPaymentMethod);
   };
 
   const disableRefundCardSelection =
@@ -196,7 +206,7 @@ export const RefundPage = ({
       <div className="refund-page__section refund-page__section--left">
         <div className="refund-info refund-info--transactions">
           <div className="refund-info__header">Transaction History</div>
-          <TransactionHistoryTable permitHistory={permitHistory} />
+          <TransactionHistoryTable permitHistory={validTransactionHistory} />
         </div>
         {showSendSection ? (
           <div className="refund-info refund-info--send">

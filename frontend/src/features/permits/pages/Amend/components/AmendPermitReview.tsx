@@ -3,23 +3,34 @@ import { useContext, useEffect, useState } from "react";
 import "./AmendPermitReview.scss";
 import { AmendPermitContext } from "../context/AmendPermitContext";
 import { useCompanyInfoDetailsQuery } from "../../../../manageProfile/apiManager/hooks";
-import {
-  applyWhenNotNullable,
-  getDefaultRequiredVal,
-} from "../../../../../common/helpers/util";
-import {
-  usePowerUnitTypesQuery,
-  useTrailerTypesQuery,
-} from "../../../../manageVehicles/apiManager/hooks";
 import { PermitReview } from "../../TermOversize/components/review/PermitReview";
 import { Breadcrumb } from "../../../../../common/components/breadcrumb/Breadcrumb";
 import { getDefaultFormDataFromPermit } from "../types/AmendPermitFormData";
 import { ReviewReason } from "./review/ReviewReason";
 import { calculateAmountToRefund } from "../../../helpers/feeSummary";
+import { isValidTransaction } from "../../../helpers/payment";
+import {
+  applyWhenNotNullable,
+  getDefaultRequiredVal,
+} from "../../../../../common/helpers/util";
+
+import {
+  usePowerUnitTypesQuery,
+  useTrailerTypesQuery,
+} from "../../../../manageVehicles/apiManager/hooks";
 
 export const AmendPermitReview = () => {
-  const { permit, permitFormData, permitHistory, back, next, getLinks } =
-    useContext(AmendPermitContext);
+  const {
+    permit,
+    permitFormData,
+    permitHistory,
+    back,
+    next,
+    getLinks,
+  } = useContext(AmendPermitContext);
+
+  const validTransactionHistory = permitHistory.filter(history =>
+    isValidTransaction(history.paymentMethodTypeCode, history.pgTransactionId));
 
   const { data: companyInfo } = useCompanyInfoDetailsQuery(
     getDefaultRequiredVal(0, permitFormData?.companyId),
@@ -46,7 +57,7 @@ export const AmendPermitReview = () => {
   const amountToRefund =
     -1 *
     calculateAmountToRefund(
-      permitHistory,
+      validTransactionHistory,
       getDefaultRequiredVal(0, permitFormData?.permitData?.permitDuration),
     );
 

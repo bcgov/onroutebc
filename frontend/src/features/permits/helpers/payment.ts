@@ -2,7 +2,9 @@ import { PayBCPaymentDetails } from "../types/payment";
 import { parseRedirectUriPath } from "../pages/Payment/PaymentRedirect";
 import { 
   PAYMENT_GATEWAY_METHODS, 
-  PaymentGatewayMethod, 
+  PAYMENT_METHOD_TYPE_CODE, 
+  PaymentGatewayMethod,
+  PaymentMethodTypeCode, 
 } from "../../../common/types/paymentMethods";
 
 import {
@@ -62,4 +64,24 @@ export const getPayBCPaymentDetails = (
   };
 
   return payBCPaymentDetails;
+};
+
+/**
+ * Determines whether or not transaction is valid based on payment method and provided transaction ID.
+ * @param paymentMethod Payment method used
+ * @param pgTransactionId Payment Gateway transaction ID
+ * @returns Whether or not the transaction is valid
+ */
+export const isValidTransaction = (
+  paymentMethod: PaymentMethodTypeCode,
+  pgTransactionId?: string | null,
+) => {
+  const mandatoryTransactionIdPaymentMethods = [
+    PAYMENT_METHOD_TYPE_CODE.WEB,
+    PAYMENT_METHOD_TYPE_CODE.ICEPAY,
+    PAYMENT_METHOD_TYPE_CODE.POS,
+  ] as PaymentMethodTypeCode[];
+
+  return !mandatoryTransactionIdPaymentMethods.includes(paymentMethod)
+    || !!pgTransactionId;
 };

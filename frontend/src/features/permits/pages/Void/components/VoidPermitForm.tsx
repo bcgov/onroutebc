@@ -25,6 +25,7 @@ import { FeeSummary } from "../../../components/feeSummary/FeeSummary";
 import { VoidPermitFormData } from "../types/VoidPermit";
 import { useVoidPermit } from "../hooks/useVoidPermit";
 import { mapToRevokeRequestData } from "../helpers/mapper";
+import { isValidTransaction } from "../../../helpers/payment";
 
 const FEATURE = "void-permit";
 const searchRoute = `${IDIR_ROUTES.SEARCH_RESULTS}?searchEntity=permits`;
@@ -45,6 +46,9 @@ export const VoidPermitForm = ({
     permit?.originalPermitId,
   );
 
+  const validTransactionHistory = permitHistory.filter(history =>
+    isValidTransaction(history.paymentMethodTypeCode, history.pgTransactionId));
+
   const { mutation: revokePermitMutation, voidResults } = useVoidPermit();
 
   useEffect(() => {
@@ -56,7 +60,7 @@ export const VoidPermitForm = ({
 
   const amountToRefund = (permitHistoryQuery.isInitialLoading || !permit)
     ? 0
-    : -1 * calculateAmountForVoid(permit, permitHistory);
+    : -1 * calculateAmountForVoid(permit, validTransactionHistory);
 
   const {
     control,

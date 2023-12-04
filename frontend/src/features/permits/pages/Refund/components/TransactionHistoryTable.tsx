@@ -9,6 +9,7 @@ import {
 import "./TransactionHistoryTable.scss";
 import { PermitHistory } from "../../../types/PermitHistory";
 import { getPaymentMethod } from "../../../../../common/types/paymentMethods";
+import { isValidTransaction } from "../../../helpers/payment";
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
@@ -18,13 +19,21 @@ import {
   feeSummaryDisplayText,
   isTransactionTypeRefund,
 } from "../../../helpers/feeSummary";
-import { defaultTableInitialStateOptions, defaultTableOptions, defaultTableStateOptions } from "../../../../../common/constants/defaultTableOptions";
+
+import {
+  defaultTableInitialStateOptions,
+  defaultTableOptions,
+  defaultTableStateOptions,
+} from "../../../../../common/constants/defaultTableOptions";
 
 export const TransactionHistoryTable = ({
   permitHistory,
 }: {
   permitHistory: PermitHistory[];
 }) => {
+  const validTransactionHistory = permitHistory.filter(history =>
+    isValidTransaction(history.paymentMethodTypeCode, history.pgTransactionId));
+
   const columns = useMemo<MRT_ColumnDef<PermitHistory>[]>(
     () => [
       {
@@ -116,7 +125,7 @@ export const TransactionHistoryTable = ({
   const table = useMaterialReactTable({
     ...defaultTableOptions,
     columns: columns,
-    data: permitHistory,
+    data: validTransactionHistory,
     enableRowActions: false,
     enableGlobalFilter: false,
     enableTopToolbar: false,

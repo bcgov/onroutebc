@@ -8,6 +8,7 @@ import { calculateAmountForVoid } from "../../helpers/feeSummary";
 import { RefundPage } from "../Refund/RefundPage";
 import { mapToVoidRequestData } from "./helpers/mapper";
 import { useVoidPermit } from "./hooks/useVoidPermit";
+import { isValidTransaction } from "../../helpers/payment";
 
 export const FinishVoid = ({
   permit,
@@ -26,11 +27,12 @@ export const FinishVoid = ({
 
   const transactionHistory = permitHistoryQuery.isInitialLoading
     ? []
-    : permitHistory;
+    : permitHistory.filter(history =>
+        isValidTransaction(history.paymentMethodTypeCode, history.pgTransactionId));
 
   const amountToRefund = !permit 
     ? 0 
-    : -1 * calculateAmountForVoid(permit, permitHistory);
+    : -1 * calculateAmountForVoid(permit, transactionHistory);
 
   const { mutation: voidPermitMutation, voidResults } = useVoidPermit();
 

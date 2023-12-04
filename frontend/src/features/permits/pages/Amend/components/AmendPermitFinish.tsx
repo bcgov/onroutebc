@@ -6,16 +6,25 @@ import { calculateAmountToRefund } from "../../../helpers/feeSummary";
 import { RefundPage } from "../../Refund/RefundPage";
 import { RefundFormData } from "../../Refund/types/RefundFormData";
 import { Breadcrumb } from "../../../../../common/components/breadcrumb/Breadcrumb";
+import { mapToAmendRequestData } from "./helpers/mapper";
+import { useIssuePermits, useStartTransaction } from "../../../hooks/hooks";
+import { isValidTransaction } from "../../../helpers/payment";
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
 } from "../../../../../common/helpers/util";
-import { mapToAmendRequestData } from "./helpers/mapper";
-import { useIssuePermits, useStartTransaction } from "../../../hooks/hooks";
 
 export const AmendPermitFinish = () => {
-  const { permit, permitFormData, permitHistory, getLinks, afterFinishAmend } =
-    useContext(AmendPermitContext);
+  const {
+    permit,
+    permitFormData,
+    permitHistory,
+    getLinks,
+    afterFinishAmend,
+  } = useContext(AmendPermitContext);
+
+  const validTransactionHistory = permitHistory.filter(history =>
+    isValidTransaction(history.paymentMethodTypeCode, history.pgTransactionId));
 
   const permitId = applyWhenNotNullable(
     (id) => `${id}`,
@@ -26,7 +35,7 @@ export const AmendPermitFinish = () => {
   const amountToRefund =
     -1 *
     calculateAmountToRefund(
-      permitHistory,
+      validTransactionHistory,
       getDefaultRequiredVal(0, permitFormData?.permitData?.permitDuration),
     );
 
@@ -85,7 +94,7 @@ export const AmendPermitFinish = () => {
       <Breadcrumb links={getLinks()} />
 
       <RefundPage
-        permitHistory={permitHistory}
+        permitHistory={validTransactionHistory}
         amountToRefund={amountToRefund}
         permitNumber={permit?.permitNumber}
         permitType={permit?.permitType}

@@ -2,6 +2,7 @@ import { PermitHistory } from "../types/PermitHistory";
 import { TRANSACTION_TYPES, TransactionType } from "../types/payment.d";
 import { Permit } from "../types/permit";
 import { PERMIT_STATES, daysLeftBeforeExpiry, getPermitState } from "./permitState";
+import { isValidTransaction } from "./payment";
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
@@ -58,6 +59,9 @@ export const isTransactionTypeRefund = (transactionType: TransactionType) => {
  */
 export const calculateNetAmount = (permitHistory: PermitHistory[]) => {
   return permitHistory
+    .filter((permit) => 
+      isValidTransaction(permit.paymentMethodTypeCode, permit.pgTransactionId),
+    )
     .map((permit) =>
       isTransactionTypeRefund(permit.transactionTypeId)
         ? -1 * permit.transactionAmount
