@@ -1,6 +1,5 @@
 import {
   Injectable,
-  InternalServerErrorException,
   Logger,
 } from '@nestjs/common';
 import { TpsPermit } from './entities/tps-permit.entity';
@@ -38,61 +37,62 @@ export class TpsPermitService {
     });
 
     const ids = tpsPermits.map((tpsPermit) => tpsPermit.migrationId);
-    await this.tpsPermitRepository
-      .createQueryBuilder()
-      .update(TpsPermit)
-      .set({
-        s3UploadStatus: S3uploadStatus.Processing,
-      })
-      .where('migrationId IN (:...ids)', { ids: ids })
-      .execute();
+    if (ids.length > 0) {
+      await this.tpsPermitRepository
+        .createQueryBuilder()
+        .update(TpsPermit)
+        .set({
+          s3UploadStatus: S3uploadStatus.Processing,
+        })
+        .where('migrationId IN (:...ids)', { ids: ids })
+        .execute();
+      for (const tpsPermit of tpsPermits) {
+        let s3Object: CompleteMultipartUploadCommandOutput = null;
+        const MY_NAMESPACE = '1b671a64-40d5-491e-99b0-da01ff1f3341';
+        const hash = sha1(tpsPermit.pdf.toString());
+        const s3ObjectId = uuidv5(hash.toString(), MY_NAMESPACE);
+        try {
+          s3Object = await this.s3Service.uploadFile(tpsPermit.pdf, s3ObjectId);
+        } catch (err) {
+          this.logger.error('Error while upload to s3. ', err);
+          this.logger.error('Failed permit numer ', tpsPermit.permitNumber);
+          await this.tpsPermitRepository.update(
+            {
+              migrationId: tpsPermit.migrationId,
+            },
+            {
+              s3UploadStatus: S3uploadStatus.Error,
+            },
+          );
+        }
+        this.logger.log(
+          tpsPermit.permitNumber + ' uploaded successfully.',
+          s3Object.Location,
+        );
+        if (s3Object) {
+          const document = await this.createDocument(
+            s3ObjectId,
+            s3Object,
+            tpsPermit,
+          );
+          await this.permitRepository.update(
+            {
+              permitNumber: tpsPermit.newPermitNumber,
+            },
+            {
+              documentId: document.documentId,
+            },
+          );
 
-    for (const tpsPermit of tpsPermits) {
-      let s3Object:CompleteMultipartUploadCommandOutput = null;
-      const MY_NAMESPACE = '1b671a64-40d5-491e-99b0-da01ff1f3341';
-      const hash = sha1(tpsPermit.pdf.toString());
-      const s3ObjectId = uuidv5(hash.toString(), MY_NAMESPACE);
-      try {
-        s3Object = await this.s3Service.uploadFile(tpsPermit.pdf, s3ObjectId);
-      } catch (err) {
-        this.logger.error('Error while upload to s3. ', err);
-        this.logger.error('Failed permit numer ', tpsPermit.permitNumber);
-        await this.tpsPermitRepository.update(
-          {
-            migrationId: tpsPermit.migrationId,
-          },
-          {
-            s3UploadStatus: S3uploadStatus.Error,
-          },
-        );
-      }
-      this.logger.log(
-        tpsPermit.permitNumber + ' uploaded successfully.',
-        s3Object.Location,
-      );
-      if (s3Object) {
-        const document = await this.createDocument(
-          s3ObjectId,
-          s3Object,
-          tpsPermit,
-        );
-        await this.permitRepository.update(
-          {
-            permitNumber: tpsPermit.newPermitNumber,
-          },
-          {
-            documentId: document.documentId,
-          },
-        );
-
-        await this.tpsPermitRepository.update(
-          {
-            migrationId: tpsPermit.migrationId,
-          },
-          {
-            s3UploadStatus: S3uploadStatus.Processed,
-          },
-        );
+          await this.tpsPermitRepository.update(
+            {
+              migrationId: tpsPermit.migrationId,
+            },
+            {
+              s3UploadStatus: S3uploadStatus.Processed,
+            },
+          );
+        }
       }
     }
   }
