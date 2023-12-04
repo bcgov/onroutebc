@@ -28,11 +28,20 @@ export class TpsPermitService {
 
   @Cron('0 */30 * * * *')
   async uploadTpsPermit() {
-    this.logger.verbose('Logger inside uploadTpsPermit', new Date());
     const tpsPermits: TpsPermit[] = await this.tpsPermitRepository.find({
       where: { s3UploadStatus: S3uploadStatus.Pending },
       take: LIMIT,
     });
+
+    const ids = tpsPermits.map((tpsPermit) => tpsPermit.migrationId);
+    await this.tpsPermitRepository
+      .createQueryBuilder()
+      .update(TpsPermit)
+      .set({
+        s3UploadStatus: S3uploadStatus.Processing,
+      })
+      .where('migrationId IN (:...ids)', { ids: ids })
+      .execute();
 
     for (const tpsPermit of tpsPermits) {
       let s3Object = null;
