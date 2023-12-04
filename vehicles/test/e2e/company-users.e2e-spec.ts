@@ -110,7 +110,7 @@ describe('Company Users (e2e)', () => {
   });
 
   afterEach(() => {
-    jest.restoreAllMocks();
+    jest.clearAllMocks();
   });
 
   describe('/companies/1/users CREATE', () => {
