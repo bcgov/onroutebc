@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
 import { TpsPermit } from './entities/tps-permit.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -61,6 +61,7 @@ export class TpsPermitService {
             s3UploadStatus: S3uploadStatus.Error,
           },
         );
+        throw new InternalServerErrorException();
       }
       this.logger.log(
         tpsPermit.permitNumber + ' uploaded successfully.',
