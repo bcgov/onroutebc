@@ -11,7 +11,6 @@ import {
 } from "material-react-table";
 
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
-import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { hasPermitExpired } from "../../../permits/helpers/permitPDFHelper";
 import { Permit } from "../../../permits/types/permit";
 import { getDataBySearch } from "../api/idirSearch";

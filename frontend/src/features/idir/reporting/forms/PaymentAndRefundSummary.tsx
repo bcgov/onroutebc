@@ -47,16 +47,11 @@ export const PaymentAndRefundSummary = () => {
   const onClickViewReport = async () => {
     setIsGeneratingReport(() => true);
     try {
-      const requestObj: PaymentAndRefundSummaryRequest = {
-        fromDateTime: fromDateTime.toISOString(),
-        toDateTime: toDateTime.toISOString(),
-        issuedBy,
-      };
       const { blobObj: blobObjWithoutType } = await getPaymentAndRefundSummary({
         fromDateTime: fromDateTime.toISOString(),
         toDateTime: toDateTime.toISOString(),
         issuedBy,
-      });
+      } as PaymentAndRefundSummaryRequest);
       openBlobInNewTab(blobObjWithoutType);
     } catch (err) {
       console.error(err);

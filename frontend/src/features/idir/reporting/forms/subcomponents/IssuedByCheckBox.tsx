@@ -1,9 +1,8 @@
 import { Checkbox, FormControlLabel } from "@mui/material";
 import { useFormContext } from "react-hook-form";
 import {
-    PaymentAndRefundDetailFormData,
-    PaymentAndRefundSummaryFormData,
-    ReportIssuedByType
+  PaymentAndRefundSummaryFormData,
+  ReportIssuedByType,
 } from "../../types/types";
 
 /**
@@ -24,30 +23,28 @@ export const IssuedByCheckBox = ({
   const { setValue, watch } = useFormContext<PaymentAndRefundSummaryFormData>();
   const issuedBy = watch("issuedBy");
   return (
-    <>
-      <FormControlLabel
-        control={
-          <Checkbox
-            onChange={(
-              _event: React.ChangeEvent<HTMLInputElement>,
-              checked: boolean,
-            ) => {
-              if (checked) {
-                setValue("issuedBy", [...issuedBy, issuedByOption]);
-              } else {
-                setValue(
-                  "issuedBy",
-                  issuedBy.filter((value) => value !== issuedByOption),
-                );
-              }
-            }}
-            checked={issuedBy.includes(issuedByOption)}
-            sx={{ marginLeft: "0px", paddingLeft: "0px" }}
-            name={`issuedBy_${issuedByOption}`}
-          />
-        }
-        label={label}
-      />
-    </>
+    <FormControlLabel
+      control={
+        <Checkbox
+          onChange={(
+            _event: React.ChangeEvent<HTMLInputElement>,
+            checked: boolean,
+          ) => {
+            if (checked) {
+              setValue("issuedBy", [...issuedBy, issuedByOption]);
+            } else {
+              setValue(
+                "issuedBy",
+                issuedBy.filter((value) => value !== issuedByOption),
+              );
+            }
+          }}
+          checked={issuedBy.includes(issuedByOption)}
+          sx={{ marginLeft: "0px", paddingLeft: "0px" }}
+          name={`issuedBy_${issuedByOption}`}
+        />
+      }
+      label={label}
+    />
   );
 };

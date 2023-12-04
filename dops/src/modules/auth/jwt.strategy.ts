@@ -14,6 +14,8 @@ import { IDP } from '../../enum/idp.enum';
 import { Role } from '../../enum/roles.enum';
 import { UserStatus } from '../../enum/user-status.enum';
 import { AxiosResponse } from 'axios';
+import { UserAuthGroup } from '../../enum/user-auth-group.enum';
+import { getDirectory } from '../../helper/auth.helper';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -40,7 +42,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     let userGUID: string,
       userName: string,
       roles: Role[],
-      associatedCompanies: number[];
+      associatedCompanies: number[],
+      orbcUserFirstName: string,
+      orbcUserLastName: string,
+      orbcUserAuthGroup: UserAuthGroup;
 
     let companyId: number;
     if (req.params['companyId']) {
@@ -70,7 +75,13 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     }
 
     if (req.headers['AuthOnly'] === 'false') {
-      ({ roles, associatedCompanies } = await this.getUserDetails(
+      ({
+        roles,
+        associatedCompanies,
+        orbcUserFirstName,
+        orbcUserLastName,
+        orbcUserAuthGroup,
+      } = await this.getUserDetails(
         access_token,
         userGUID,
         companyId,
@@ -78,6 +89,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         associatedCompanies,
       ));
     }
+    const orbcUserDirectory = getDirectory(payload);
 
     const currentUser = {
       userName,
@@ -86,6 +98,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       companyId,
       associatedCompanies,
       access_token,
+      orbcUserFirstName,
+      orbcUserLastName,
+      orbcUserAuthGroup,
+      orbcUserDirectory,
     };
 
     Object.assign(payload, currentUser);
@@ -137,8 +153,24 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       throw new UnauthorizedException();
     }
 
+    const user = accessApiResponse.at(0).data as {
+      firstName: string;
+      lastName: string;
+      userAuthGroup: UserAuthGroup;
+    };
+
+    const orbcUserFirstName = user.firstName;
+    const orbcUserLastName = user.lastName;
+    const orbcUserAuthGroup = user.userAuthGroup;
+
     const roles = accessApiResponse.at(1).data as Role[];
 
-    return { roles, associatedCompanies };
+    return {
+      roles,
+      associatedCompanies,
+      orbcUserFirstName,
+      orbcUserLastName,
+      orbcUserAuthGroup,
+    };
   }
 }

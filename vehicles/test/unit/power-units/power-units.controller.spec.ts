@@ -14,7 +14,6 @@ import { createMock } from '@golevelup/ts-jest';
 import { Request } from 'express';
 import { redCompanyCvClientUserJWTMock } from 'test/util/mocks/data/jwt.mock';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
-import { getDirectory } from 'src/common/helper/auth.helper';
 
 const POWER_UNIT_ID_1 = '1';
 const POWER_UNIT_ID_2 = '2';
@@ -54,7 +53,6 @@ describe('PowerUnitsController', () => {
         COMPANY_ID_1,
         createPowerUnitDtoMock,
         currentUser,
-        getDirectory(currentUser),
       );
     });
   });
@@ -108,7 +106,6 @@ describe('PowerUnitsController', () => {
         POWER_UNIT_ID_1,
         updatePowerUnitDtoMock,
         currentUser,
-        getDirectory(currentUser),
       );
     });
 

@@ -14,7 +14,6 @@ import {
   updateTrailerDtoMock,
 } from '../../util/mocks/data/trailer.mock';
 import { redCompanyCvClientUserJWTMock } from 'test/util/mocks/data/jwt.mock';
-import { getDirectory } from 'src/common/helper/auth.helper';
 
 const COMPANY_ID_1 = 1;
 const TRAILER_ID_1 = '1';
@@ -57,7 +56,6 @@ describe('TrailersService', () => {
         COMPANY_ID_1,
         createTrailerDtoMock,
         redCompanyCvClientUserJWTMock,
-        getDirectory(redCompanyCvClientUserJWTMock),
       );
       expect(typeof retTrailer).toBe('object');
       expect(retTrailer.trailerId).toBe(TRAILER_ID_1);
@@ -93,7 +91,6 @@ describe('TrailersService', () => {
         TRAILER_ID_1,
         updateTrailerDtoMock,
         redCompanyCvClientUserJWTMock,
-        getDirectory(redCompanyCvClientUserJWTMock),
       );
       expect(typeof retTrailer).toBe('object');
       expect(retTrailer.trailerId).toBe(TRAILER_ID_1);

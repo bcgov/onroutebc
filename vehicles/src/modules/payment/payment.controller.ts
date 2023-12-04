@@ -27,7 +27,6 @@ import { IUserJWT } from 'src/common/interface/user-jwt.interface';
 import { Request, Response } from 'express';
 import { UpdatePaymentGatewayTransactionDto } from './dto/request/update-payment-gateway-transaction.dto';
 import { ReadPaymentGatewayTransactionDto } from './dto/response/read-payment-gateway-transaction.dto';
-import { getDirectory } from 'src/common/helper/auth.helper';
 import { CreatePaymentDetailedReportDto } from './dto/request/create-payment-detailed-report.dto';
 import { ReadFileDto } from '../common/dto/response/read-file.dto';
 import { CreatePaymentSummaryReportDto } from './dto/request/create-payment-summary-report.dto';
@@ -67,12 +66,10 @@ export class PaymentController {
     @Body() createTransactionDto: CreateTransactionDto,
   ): Promise<ReadTransactionDto> {
     const currentUser = request.user as IUserJWT;
-    const directory = getDirectory(currentUser);
 
     const paymentDetails = await this.paymentService.createTransactions(
       currentUser,
       createTransactionDto,
-      directory,
     );
 
     return paymentDetails;
@@ -93,13 +90,11 @@ export class PaymentController {
     updatePaymentGatewayTransactionDto: UpdatePaymentGatewayTransactionDto,
   ): Promise<ReadPaymentGatewayTransactionDto> {
     const currentUser = request.user as IUserJWT;
-    const directory = getDirectory(currentUser);
 
     const paymentDetails = await this.paymentService.updateTransactions(
       currentUser,
       transactionId,
       updatePaymentGatewayTransactionDto,
-      directory,
       queryString,
     );
 

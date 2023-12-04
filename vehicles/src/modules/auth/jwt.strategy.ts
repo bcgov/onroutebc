@@ -12,11 +12,14 @@ import { Request } from 'express';
 import { Role } from '../../common/enum/roles.enum';
 import { IDP } from '../../common/enum/idp.enum';
 import {
+  getDirectory,
   matchCompanies,
   validateUserCompanyAndRoleContext,
 } from '../../common/helper/auth.helper';
 import { DataNotFoundException } from '../../common/exception/data-not-found.exception';
 import { AccountSource } from 'src/common/enum/account-source.enum';
+import { UserAuthGroup } from '../../common/enum/user-auth-group.enum';
+import { Directory } from '../../common/enum/directory.enum';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -42,7 +45,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     let userGUID: string,
       userName: string,
       roles: Role[],
-      associatedCompanies: number[];
+      associatedCompanies: number[],
+      orbcUserFirstName: string,
+      orbcUserLastName: string,
+      orbcUserAuthGroup: UserAuthGroup,
+      orbcUserDirectory: Directory;
 
     let companyId: number;
     if (req.params['companyId']) {
@@ -75,14 +82,18 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     }
 
     if (req.headers['AuthOnly'] === 'false') {
-      const user = await this.authService.validateUser(
+      const user = await this.authService.getUserDetails(
         companyId,
         payload.identity_provider,
         userGUID,
       );
-      if (!user) {
+      if (!user?.length) {
         throw new UnauthorizedException();
       }
+      orbcUserFirstName = user?.at(0).firstName;
+      orbcUserLastName = user?.at(0).lastName;
+      orbcUserAuthGroup = user?.at(0).userAuthGroup;
+      orbcUserDirectory = getDirectory(payload);
 
       if (payload.identity_provider !== IDP.IDIR) {
         associatedCompanies = await this.authService.getCompaniesForUser(
@@ -106,6 +117,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       companyId,
       associatedCompanies,
       access_token,
+      orbcUserFirstName,
+      orbcUserLastName,
+      orbcUserAuthGroup,
+      orbcUserDirectory,
     };
 
     Object.assign(payload, currentUser);

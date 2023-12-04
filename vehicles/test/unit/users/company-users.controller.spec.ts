@@ -20,7 +20,6 @@ import {
 } from '../../util/mocks/data/user.mock';
 import { IUserJWT } from '../../../src/common/interface/user-jwt.interface';
 import { CompanyUsersController } from '../../../src/modules/company-user-management/users/company-users.controller';
-import { getDirectory } from '../../../src/common/helper/auth.helper';
 
 const COMPANY_ID_99 = 99;
 let userService: DeepMocked<UsersService>;
@@ -65,7 +64,6 @@ describe('CompanyUsersController', () => {
       expect(userService.create).toHaveBeenCalledWith(
         createRedCompanyCvClientUserDtoMock,
         constants.RED_COMPANY_ID,
-        getDirectory(currentUser),
         currentUser,
       );
     });
@@ -91,7 +89,6 @@ describe('CompanyUsersController', () => {
         constants.RED_COMPANY_CVCLIENT_USER_GUID,
         updateRedCompanyCvClientUserDtoMock,
         constants.RED_COMPANY_ID,
-        getDirectory(redCompanyAdminUserJWTMock),
         request.user,
       );
     });

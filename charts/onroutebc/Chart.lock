@@ -8,8 +8,5 @@ dependencies:
 - name: component
   repository: file:///home/ubuntu/helm-service/charts/component
   version: 0.2.2
-- name: component
-  repository: file:///home/ubuntu/helm-service/charts/component
-  version: 0.2.2
 digest: sha256:8003116d470fb48d8440d1a7d7f44a2d4f84fe78c13bc74e97b05e831134a5ff
 generated: "2023-11-27T14:43:24.360212758-08:00"

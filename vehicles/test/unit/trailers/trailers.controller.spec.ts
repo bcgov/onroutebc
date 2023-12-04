@@ -14,7 +14,6 @@ import { createMock } from '@golevelup/ts-jest';
 import { Request } from 'express';
 import { redCompanyCvClientUserJWTMock } from 'test/util/mocks/data/jwt.mock';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
-import { getDirectory } from 'src/common/helper/auth.helper';
 
 const TRAILER_ID_1 = '1';
 const TRAILER_ID_2 = '2';
@@ -51,7 +50,6 @@ describe('TrailersController', () => {
         COMPANY_ID_1,
         createTrailerDtoMock,
         currentUser,
-        getDirectory(currentUser),
       );
     });
   });
@@ -102,7 +100,6 @@ describe('TrailersController', () => {
         TRAILER_ID_1,
         updateTrailerDtoMock,
         currentUser,
-        getDirectory(currentUser),
       );
     });
 

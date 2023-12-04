@@ -27,14 +27,12 @@ import { CreateCompanyDto } from './dto/request/create-company.dto';
 import { UpdateCompanyDto } from './dto/request/update-company.dto';
 import { ReadCompanyDto } from './dto/response/read-company.dto';
 import { ReadCompanyUserDto } from './dto/response/read-company-user.dto';
-import { Directory } from '../../../common/enum/directory.enum';
 import { ReadCompanyMetadataDto } from './dto/response/read-company-metadata.dto';
 import { Request } from 'express';
 import { Roles } from '../../../common/decorator/roles.decorator';
 import { Role } from '../../../common/enum/roles.enum';
 import { IUserJWT } from '../../../common/interface/user-jwt.interface';
 import { AuthOnly } from '../../../common/decorator/auth-only.decorator';
-import { getDirectory } from '../../../common/helper/auth.helper';
 import { IDP } from '../../../common/enum/idp.enum';
 
 @ApiTags('Company and User Management - Company')
@@ -80,12 +78,7 @@ export class CompanyController {
     @Body() createCompanyDto: CreateCompanyDto,
   ) {
     const currentUser = request.user as IUserJWT;
-    const directory = getDirectory(currentUser);
-    return await this.companyService.create(
-      createCompanyDto,
-      directory,
-      currentUser,
-    );
+    return await this.companyService.create(createCompanyDto, currentUser);
   }
 
   /**
@@ -176,7 +169,6 @@ export class CompanyController {
     const retCompany = await this.companyService.update(
       companyId,
       updateCompanyDto,
-      Directory.BBCEID,
       currentUser,
     );
     if (!retCompany) {
