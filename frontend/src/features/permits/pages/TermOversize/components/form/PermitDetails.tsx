@@ -46,6 +46,7 @@ export const PermitDetails = ({
 
   // Permit expiry date === Permit start date + Permit duration - 1
   const expiryDate = dayjs(startDate).add(duration - 1, "day");
+  if (expiryDate.isLeapYear()) expiryDate.add(1, "day");
 
   // Formatted expiry date is just a derived value, and always reflects latest value of expiry date
   // no need to use useState nor place inside useEffect
