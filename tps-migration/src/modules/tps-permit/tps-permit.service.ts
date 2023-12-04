@@ -1,4 +1,8 @@
-import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
 import { TpsPermit } from './entities/tps-permit.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -61,36 +65,37 @@ export class TpsPermitService {
             s3UploadStatus: S3uploadStatus.Error,
           },
         );
-        throw new InternalServerErrorException();
       }
       this.logger.log(
         tpsPermit.permitNumber + ' uploaded successfully.',
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         s3Object.Location,
       );
-      const document = await this.createDocument(
-        s3ObjectId,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        s3Object,
-        tpsPermit,
-      );
-      await this.permitRepository.update(
-        {
-          permitNumber: tpsPermit.newPermitNumber,
-        },
-        {
-          documentId: document.documentId,
-        },
-      );
+      if (s3Object) {
+        const document = await this.createDocument(
+          s3ObjectId,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+          s3Object,
+          tpsPermit,
+        );
+        await this.permitRepository.update(
+          {
+            permitNumber: tpsPermit.newPermitNumber,
+          },
+          {
+            documentId: document.documentId,
+          },
+        );
 
-      await this.tpsPermitRepository.update(
-        {
-          migrationId: tpsPermit.migrationId,
-        },
-        {
-          s3UploadStatus: S3uploadStatus.Processed,
-        },
-      );
+        await this.tpsPermitRepository.update(
+          {
+            migrationId: tpsPermit.migrationId,
+          },
+          {
+            s3UploadStatus: S3uploadStatus.Processed,
+          },
+        );
+      }
     }
   }
 
