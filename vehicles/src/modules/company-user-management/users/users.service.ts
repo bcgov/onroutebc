@@ -30,6 +30,9 @@ import { ReadPendingUserDto } from '../pending-users/dto/response/read-pending-u
 import { BadRequestExceptionDto } from '../../../common/exception/badRequestException.dto';
 import { ExceptionDto } from '../../../common/exception/exception.dto';
 import { IDP } from '../../../common/enum/idp.enum';
+import { Contact } from '../../common/entities/contact.entity';
+import { getProvinceId } from '../../../common/helper/province-country.helper';
+import { Base } from '../../common/entities/base.entity';
 
 @Injectable()
 export class UsersService {
@@ -149,23 +152,13 @@ export class UsersService {
       throw new DataNotFoundException();
     }
 
-    const user = this.classMapper.map(updateUserDto, UpdateUserDto, User, {
-      extraArgs: () => ({
-        userName: currentUser.userName,
-        directory: currentUser.orbcUserDirectory,
-        userGUID: currentUser.userGUID,
-        timestamp: new Date(),
-      }),
-    });
-    user.userContact.contactId = userDetails[0]?.userContact?.contactId;
-
     //Searching with UserGuid will only return one result at max
-    const currentAuthGroup = userDetails.at(0).companyUsers.at(0).userAuthGroup;
+    const companyUser = userDetails.at(0).companyUsers.at(0);
     //A CV user's auth group should not be allowed to be downgraded from CVADMIN
     //if they are the last remaining CVADMIN of the Company
     if (
-      currentAuthGroup === UserAuthGroup.COMPANY_ADMINISTRATOR &&
-      currentAuthGroup !== updateUserDto.userAuthGroup
+      companyUser.userAuthGroup === UserAuthGroup.COMPANY_ADMINISTRATOR &&
+      companyUser.userAuthGroup !== updateUserDto.userAuthGroup
     ) {
       //Find all employees of the company
       const employees = await this.findUsersEntity(undefined, [companyId]);
@@ -194,18 +187,67 @@ export class UsersService {
       }
     }
 
-    // Should be allowed to update userAuthGroupID if current user is an
-    // IDIR(PPC Clerk) or CVAdmin
-    if (
-      (currentAuthGroup === UserAuthGroup.COMPANY_ADMINISTRATOR ||
-        currentUser.identity_provider === IDP.IDIR) &&
-      currentAuthGroup !== updateUserDto.userAuthGroup
-    ) {
-      user.companyUsers = userDetails.at(0).companyUsers;
-      user.companyUsers.at(0).userAuthGroup = updateUserDto.userAuthGroup;
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      const auditMetadata: Base = {
+        createdDateTime: new Date(),
+        createdUser: currentUser.userName,
+        createdUserDirectory: currentUser.orbcUserDirectory,
+        createdUserGuid: currentUser.userGUID,
+        updatedDateTime: new Date(),
+        updatedUser: currentUser.userName,
+        updatedUserDirectory: currentUser.orbcUserDirectory,
+        updatedUserGuid: currentUser.userGUID,
+      };
+
+      await queryRunner.manager.update(
+        Contact,
+        { contactId: userDetails[0]?.userContact?.contactId },
+        {
+          firstName: updateUserDto.firstName,
+          lastName: updateUserDto.lastName,
+          email: updateUserDto.email,
+          phone1: updateUserDto.phone1,
+          extension1: updateUserDto.phone1Extension,
+          phone2: updateUserDto.phone2,
+          extension2: updateUserDto.phone2Extension,
+          fax: updateUserDto.fax,
+          city: updateUserDto.city,
+          province: {
+            provinceId: getProvinceId(
+              updateUserDto.countryCode,
+              updateUserDto.provinceCode,
+            ),
+          },
+          ...auditMetadata,
+        },
+      );
+
+      // Should be allowed to update userAuthGroupID if current user is an
+      // IDIR(PPC Clerk) or CVAdmin
+      if (
+        (companyUser.userAuthGroup === UserAuthGroup.COMPANY_ADMINISTRATOR ||
+          currentUser.identity_provider === IDP.IDIR) &&
+        companyUser.userAuthGroup !== updateUserDto.userAuthGroup
+      ) {
+        await queryRunner.manager.update(
+          CompanyUser,
+          { companyUserId: companyUser.companyUserId },
+          { userAuthGroup: updateUserDto.userAuthGroup, ...auditMetadata },
+        );
+      }
+
+      await queryRunner.commitTransaction();
+    } catch (err) {
+      await queryRunner.rollbackTransaction();
+      throw new InternalServerErrorException(); // TODO: Handle the typeorm Error handling
+    } finally {
+      await queryRunner.release();
     }
-    await this.userRepository.save(user);
-    const userListDto = await this.findUsersDto(user.userGUID);
+
+    const userListDto = await this.findUsersDto(userGUID);
     return userListDto[0];
   }
 
