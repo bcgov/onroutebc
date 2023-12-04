@@ -48,7 +48,7 @@ export class TpsPermitService {
       .execute();
 
     for (const tpsPermit of tpsPermits) {
-      let s3Object = null;
+      let s3Object:CompleteMultipartUploadCommandOutput = null;
       const MY_NAMESPACE = '1b671a64-40d5-491e-99b0-da01ff1f3341';
       const hash = sha1(tpsPermit.pdf.toString());
       const s3ObjectId = uuidv5(hash.toString(), MY_NAMESPACE);
@@ -68,13 +68,11 @@ export class TpsPermitService {
       }
       this.logger.log(
         tpsPermit.permitNumber + ' uploaded successfully.',
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         s3Object.Location,
       );
       if (s3Object) {
         const document = await this.createDocument(
           s3ObjectId,
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
           s3Object,
           tpsPermit,
         );
