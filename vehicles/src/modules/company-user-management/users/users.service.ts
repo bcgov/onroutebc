@@ -187,6 +187,7 @@ export class UsersService {
       }
     }
 
+    //Updates the entities
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
