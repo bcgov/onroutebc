@@ -54,7 +54,7 @@ jobs:
           fi
           echo "tag=${PR_NO}" >> $GITHUB_OUTPUT
 
-deploys-test:
+  deploys-test:
     name: Deploys (test)
     needs: [vars]
     uses: ./.github/workflows/.deploy.yml
@@ -64,7 +64,7 @@ deploys-test:
       release: test
       tag: ${{ needs.vars.outputs.tag }}
       vault_role: nonprod
-  
+
   deploys-prod:
     name: Deploys (prod)
     needs: [deploys-test, vars]
