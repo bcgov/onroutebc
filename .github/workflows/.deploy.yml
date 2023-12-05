@@ -132,11 +132,9 @@ jobs:
             --set-string global.license=${{ inputs.namespace }} \
             --set-string global.zone=${{ inputs.environment }} \
             --set-string global.vault.role=${{ inputs.vault_role }} \
-            ${{ inputs.params }} \
             --install --wait --atomic ${{ github.event.repository.name }}-${{ inputs.tag }} \
-            --timeout ${{ inputs.timeout-minutes }}m \
-            --force \
-            --values ${{ inputs.values }}
+            --timeout ${{ inputs.timeout-minutes }}m --force \
+            --values ${{ inputs.values }} ${{ inputs.params }} \
             ./${{ github.event.repository.name }}-${{ inputs.tag }}.tgz
 
           # print history 
