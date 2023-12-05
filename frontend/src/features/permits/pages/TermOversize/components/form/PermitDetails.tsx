@@ -16,7 +16,6 @@ import {
   PERMIT_LEFT_HEADER_STYLE,
   PERMIT_RIGHT_BOX_STYLE,
 } from "../../../../../../themes/orbcStyles";
-import { DATE_MONTHS } from "../../../../../../common/helpers/formatDate";
 
 export const PermitDetails = ({
   feature,
