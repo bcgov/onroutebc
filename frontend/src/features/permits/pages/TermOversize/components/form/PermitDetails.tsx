@@ -16,6 +16,7 @@ import {
   PERMIT_LEFT_HEADER_STYLE,
   PERMIT_RIGHT_BOX_STYLE,
 } from "../../../../../../themes/orbcStyles";
+import { DATE_MONTHS } from "../../../../../../common/helpers/formatDate";
 
 export const PermitDetails = ({
   feature,
@@ -46,7 +47,12 @@ export const PermitDetails = ({
 
   // Permit expiry date === Permit start date + Permit duration - 1
   const expiryDate = dayjs(startDate).add(duration - 1, "day");
-  if (expiryDate.isLeapYear()) expiryDate.add(1, "day");
+
+  // handle leap year - if the given year is a leap year, and our
+  // expiry date is any month other then January, add 1 day back
+  if (expiryDate.isLeapYear() && expiryDate.month() > DATE_MONTHS.JAN) {
+    expiryDate.add(1, "day");
+  }
 
   // Formatted expiry date is just a derived value, and always reflects latest value of expiry date
   // no need to use useState nor place inside useEffect

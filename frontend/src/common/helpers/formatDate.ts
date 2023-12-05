@@ -24,6 +24,22 @@ export const DATE_FORMATS = {
   ISO8601: "YYYY-MM-DDTHH:mm:ss.SSS[Z]",
 };
 
+export const DATE_MONTHS = {
+  JAN: 0,
+  FEB: 1,
+  MAR: 2,
+  APR: 3,
+  MAY: 4,
+  JUN: 5,
+  JUL: 6,
+  AUG: 7,
+  SEP: 8,
+  OCT: 9,
+  NOV: 10,
+  DEC: 11
+};
+
+
 /**
  * Get the current local datetime DayJS object
  * @returns DayJS object representing current local datetime
