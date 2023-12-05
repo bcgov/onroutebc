@@ -27,9 +27,9 @@ on:
         default: ${{ github.event.number }}
       namespace:
         description: 'BC Gov LICENSE_PLATE of deployment env'
-        required: true
+        required: false
         type: string
-        default: "DEFINE_ME"
+        default: "c28f0c"
       vault_role:
         description: "nonprod/prod"
         required: true
