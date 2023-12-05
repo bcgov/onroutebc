@@ -1,7 +1,7 @@
-import { RowSelectionState } from "@tanstack/table-core";
+import { Delete } from "@mui/icons-material";
 import { Box, IconButton, Tooltip } from "@mui/material";
 import { UseQueryResult } from "@tanstack/react-query";
-import { Delete } from "@mui/icons-material";
+import { RowSelectionState } from "@tanstack/table-core";
 import {
   memo,
   useCallback,
@@ -20,19 +20,18 @@ import {
   useMaterialReactTable,
 } from "material-react-table";
 
-import "./List.scss";
-import { Trash } from "../../../../common/components/table/options/Trash";
-import { BC_COLOURS } from "../../../../themes/bcGovStyles";
-import { DeleteConfirmationDialog } from "../../../../common/components/dialog/DeleteConfirmationDialog";
 import { SnackBarContext } from "../../../../App";
+import { DeleteConfirmationDialog } from "../../../../common/components/dialog/DeleteConfirmationDialog";
+import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
+import { Trash } from "../../../../common/components/table/options/Trash";
+import { defaultTableInitialStateOptions, defaultTableOptions, defaultTableStateOptions } from "../../../../common/constants/defaultTableOptions";
+import { deleteApplications } from "../../apiManager/permitsAPI";
 import {
   ApplicationInProgress,
   PermitApplicationInProgress,
 } from "../../types/application";
 import { ApplicationInProgressColumnDefinition } from "./Columns";
-import { deleteApplications } from "../../apiManager/permitsAPI";
-import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
-import { defaultTableInitialStateOptions, defaultTableOptions, defaultTableStateOptions } from "../../../../common/constants/defaultTableOptions";
+import "./List.scss";
 
 /**
  * Dynamically set the column
