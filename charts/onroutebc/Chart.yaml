@@ -9,12 +9,12 @@ dependencies: # A list of the chart requirements (optional)
   - name: component
     repository: "https://bcgov.github.io/helm-service"
     alias: frontend
-    version: 0.2.2
+    version: 0.2.3
   - name: component
     repository: "https://bcgov.github.io/helm-service"
     alias: vehicles
-    version: 0.2.2
+    version: 0.2.3
   - name: component
     repository: "https://bcgov.github.io/helm-service"
     alias: dops
-    version: 0.2.2
+    version: 0.2.3
