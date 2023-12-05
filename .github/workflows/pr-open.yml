@@ -12,6 +12,7 @@ concurrency:
 jobs:
   pr-description-add:
     name: PR Description Add
+    if: github.event_name == 'pull_request'
     env:
       DOMAIN: apps.silver.devops.gov.bc.ca
       PREFIX: ${{ github.event.repository.name }}-${{ github.event.number }}
