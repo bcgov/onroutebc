@@ -2,8 +2,7 @@ name: PR
 
 on:
   pull_request:
-    branches: [main]
-  workflow_dispatch:
+  merge_group:
 
 concurrency:
   #  PR open and close use the same group, allowing only one at a time
@@ -11,14 +10,6 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  conventional-commits:
-    name: Conventional Commits
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: amannn/action-semantic-pull-request@v5.4.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
   pr-description-add:
     name: PR Description Add
     env:
@@ -48,9 +39,32 @@ jobs:
             After merge, new images are promoted to:
             - [Merge Workflow](https://github.com/${{ github.repository }}/actions/workflows/merge.yml)
 
+  # Find initial PR number (for merge queues)
+  vars:
+    name: Build and Deploy Vars
+    outputs:
+      tag: ${{ steps.deploys.outputs.tag }}
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Set Variables
+        id: deploys
+        run: |
+          # Get PR number (different process for merge queue)
+          if [ ${{ github.event_name }} == 'pull_request' ]
+          then
+            tag=${{ github.event.number }}
+          else
+            tag=$(echo ${{ github.event.merge_group.head_ref }} | grep -Eo "queue/main/pr-[0-9]+" | cut -d '-' -f2)
+          fi
+
+          echo "Summary ---"
+          echo -e "\tTag (PR no): ${tag}"
+          echo "tag=${tag}" >> $GITHUB_OUTPUT
+
   # https://github.com/bcgov-nr/action-builder-ghcr
   builds:
     name: Builds
+    needs: [vars]
     runs-on: ubuntu-22.04
     permissions:
       packages: write
@@ -63,20 +77,21 @@ jobs:
         with:
           keep_versions: 50
           package: ${{ matrix.package }}
-          tag: ${{ github.event.number }}
-          tag_fallback: test
+          tag: ${{ needs.vars.outputs.tag }}
+          tag_fallback: latest
           triggers: ('${{ matrix.package }}/')
 
   # https://github.com/bcgov-nr/action-deployer-openshift
   deploys:
     name: Deploys
-    needs: [builds]
+    needs: [builds, vars]
     uses: ./.github/workflows/.deploy.yml
     secrets: inherit
     with:
       autoscaling: false
-      target: ${{ github.event.number }}
+      target: ${{ needs.vars.outputs.tag }}
       values: values.yaml
       license: c28f0c
       vault_role: nonprod
       zone: dev
+      triggers: ('database/' 'dops/' 'frontend/' 'vehicles/')
