@@ -25,7 +25,7 @@ on:
         required: false
         type: string
         default: ${{ github.event.number }}
-      license:
+      namespace:
         description: 'BC Gov LICENSE_PLATE of deployment env'
         required: true
         type: string
@@ -129,7 +129,7 @@ jobs:
             --set global.autoscaling=${{ inputs.autoscaling }} \
             --set-string global.repository=${{ github.repository }} \
             --set-string global.tag=${{ inputs.release }} \
-            --set-string global.license=${{ inputs.license }} \
+            --set-string global.license=${{ inputs.namespace }} \
             --set-string global.zone=${{ inputs.environment }} \
             --set-string global.vault.role=${{ inputs.vault_role }} \
             ${{ inputs.params }} \

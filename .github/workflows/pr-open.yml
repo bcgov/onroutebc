@@ -89,8 +89,8 @@ jobs:
     secrets: inherit
     with:
       autoscaling: false
+      environment: dev
+      namespace: c28f0c
       release: ${{ needs.vars.outputs.tag }}
-      license: c28f0c
-      vault_role: nonprod
-      zone: dev
       triggers: ('database/' 'dops/' 'frontend/' 'vehicles/')
+      vault_role: nonprod
