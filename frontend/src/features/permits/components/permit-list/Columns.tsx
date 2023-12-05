@@ -54,13 +54,13 @@ export const PermitsColumnDefinition: MRT_ColumnDef<Permit>[] = [
     accessorKey: "permitData.startDate",
     header: "Permit Start Date",
     enableSorting: true,
-    sortingFn: dateTimeStringSortingFn
+    sortingFn: dateTimeStringSortingFn,
   },
   {
     accessorKey: "permitData.expiryDate",
     header: "Permit End Date",
     enableSorting: true,
-    sortingFn: dateTimeStringSortingFn
+    sortingFn: dateTimeStringSortingFn,
   },
   {
     accessorFn: (row) =>

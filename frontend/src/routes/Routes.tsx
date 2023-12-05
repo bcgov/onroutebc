@@ -38,10 +38,7 @@ export const AppRoutes = () => {
         element={<UniversalUnauthorized />}
       />
       <Route path="*" element={<NotFound />} />
-      <Route
-          path={routes.REPORTS}
-          element={<IDIRReportsDashboard />}
-        />
+      <Route path={routes.REPORTS} element={<IDIRReportsDashboard />} />
 
       {/* IDIR Routes */}
       <Route element={<ProtectedRoutes requiredRole={ROLES.READ_PERMIT} />}>

@@ -6,10 +6,12 @@ import { Permit } from "../../features/permits/types/permit";
 
 /**
  * Format a given datetime string to a format that we can display
- * @param rawDateTime 
+ * @param rawDateTime
  * @returns datetime string for display or "NA" if invalid date given
  */
-export const formatCellValuetoDatetime = (rawDateTime: string | null | undefined) => {
+export const formatCellValuetoDatetime = (
+  rawDateTime: string | null | undefined,
+) => {
   return applyWhenNotNullable(
     (dt) => toLocal(dt, DATE_FORMATS.DATEONLY_ABBR_MONTH),
     rawDateTime,
@@ -24,7 +26,11 @@ export const formatCellValuetoDatetime = (rawDateTime: string | null | undefined
  * @param columnId - should be the column id of the date column
  * @returns -1 if A < B, 0 if A == B and 1 if A > B
  */
-export const dateTimeStringSortingFn = (rowA: Row<Permit>, rowB: Row<Permit>, columnId: string) => {
+export const dateTimeStringSortingFn = (
+  rowA: Row<Permit>,
+  rowB: Row<Permit>,
+  columnId: string,
+) => {
   const day1 = utcToLocalDayjs(rowA.getValue(columnId));
   const day2 = utcToLocalDayjs(rowB.getValue(columnId));
   let sortVal = 0;
@@ -33,8 +39,7 @@ export const dateTimeStringSortingFn = (rowA: Row<Permit>, rowB: Row<Permit>, co
   return sortVal;
 };
 
-export const defaultTableStateOptions: any = {
-};
+export const defaultTableStateOptions: any = {};
 
 export const defaultTableInitialStateOptions: any = {
   // property to enable global filter search box
@@ -109,10 +114,10 @@ export const defaultTableOptions: any = {
     },
   },
   muiPaginationProps: {
-    color: 'secondary',
+    color: "secondary",
     rowsPerPageOptions: [10, 20, 30, 40, 50],
-    shape: 'rounded',
-    variant: 'outlined',
+    shape: "rounded",
+    variant: "outlined",
   },
   muiTablePaperProps: {
     sx: {
