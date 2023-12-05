@@ -3,6 +3,7 @@ name: Analysis
 on:
   push:
     branches: [main]
+  merge_group:
   pull_request:
     types: [opened, reopened, synchronize, ready_for_review]
   schedule:
@@ -43,7 +44,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Run Trivy vulnerability scanner in repo mode
-        uses: aquasecurity/trivy-action@0.14.0
+        uses: aquasecurity/trivy-action@0.15.0
         with:
           format: "sarif"
           output: "trivy-results.sarif"
