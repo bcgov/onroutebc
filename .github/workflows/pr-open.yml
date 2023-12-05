@@ -91,5 +91,6 @@ jobs:
       autoscaling: false
       environment: dev
       release: ${{ needs.vars.outputs.tag }}
+      tag: ${{ needs.vars.outputs.tag }}
       # triggers: ('database/' 'dops/' 'frontend/' 'vehicles/')
       vault_role: nonprod
