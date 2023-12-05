@@ -43,7 +43,11 @@ import {
   useTrailerTypesQuery,
 } from "../../apiManager/hooks";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
-import { defaultTableInitialStateOptions, defaultTableOptions, defaultTableStateOptions } from "../../../../common/constants/defaultTableOptions";
+import {
+  defaultTableInitialStateOptions,
+  defaultTableOptions,
+  defaultTableStateOptions,
+} from "../../../../common/constants/defaultTableOptions";
 
 /**
  * Dynamically set the column based on vehicle type

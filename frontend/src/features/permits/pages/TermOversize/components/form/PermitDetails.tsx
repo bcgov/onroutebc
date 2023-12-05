@@ -54,7 +54,10 @@ export const PermitDetails = ({
 
   // handle leap year - if the given year is a leap year, and our
   // expiry date is any month other then January, add 1 day back
-  if (expiryDate.isLeapYear() && expiryDate.isAfter(expiryDate.year() + "01-31", "month") ) {
+  if (
+    expiryDate.isLeapYear() &&
+    expiryDate.isAfter(expiryDate.year() + "01-31", "month")
+  ) {
     expiryDate.add(1, "day");
   }
 
