@@ -20,7 +20,11 @@ import { IDIRPermitSearchRowActions } from "./IDIRPermitSearchRowActions";
 import "./List.scss";
 import { USER_AUTH_GROUP } from "../../../manageProfile/types/userManagement.d";
 import { isPermitInactive } from "../../../permits/types/PermitStatus";
-import { defaultTableInitialStateOptions, defaultTableOptions, defaultTableStateOptions } from "../../../../common/constants/defaultTableOptions";
+import {
+  defaultTableInitialStateOptions,
+  defaultTableOptions,
+  defaultTableStateOptions,
+} from "../../../../common/constants/defaultTableOptions";
 
 /**
  * Function to decide whether to show row actions icon or not.
