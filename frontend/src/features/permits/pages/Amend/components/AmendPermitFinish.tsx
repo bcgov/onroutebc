@@ -24,7 +24,7 @@ export const AmendPermitFinish = () => {
   } = useContext(AmendPermitContext);
 
   const validTransactionHistory = permitHistory.filter(history =>
-    isValidTransaction(history.paymentMethodTypeCode, history.pgTransactionId));
+    isValidTransaction(history.paymentMethodTypeCode, history.pgApproved));
 
   const permitId = applyWhenNotNullable(
     (id) => `${id}`,

@@ -30,7 +30,7 @@ export const AmendPermitReview = () => {
   } = useContext(AmendPermitContext);
 
   const validTransactionHistory = permitHistory.filter(history =>
-    isValidTransaction(history.paymentMethodTypeCode, history.pgTransactionId));
+    isValidTransaction(history.paymentMethodTypeCode, history.pgApproved));
 
   const { data: companyInfo } = useCompanyInfoDetailsQuery(
     getDefaultRequiredVal(0, permitFormData?.companyId),

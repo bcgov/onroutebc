@@ -32,7 +32,7 @@ export const TransactionHistoryTable = ({
   permitHistory: PermitHistory[];
 }) => {
   const validTransactionHistory = permitHistory.filter(history =>
-    isValidTransaction(history.paymentMethodTypeCode, history.pgTransactionId));
+    isValidTransaction(history.paymentMethodTypeCode, history.pgApproved));
 
   const columns = useMemo<MRT_ColumnDef<PermitHistory>[]>(
     () => [

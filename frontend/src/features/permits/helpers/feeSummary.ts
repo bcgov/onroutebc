@@ -60,7 +60,7 @@ export const isTransactionTypeRefund = (transactionType: TransactionType) => {
 export const calculateNetAmount = (permitHistory: PermitHistory[]) => {
   return permitHistory
     .filter((permit) => 
-      isValidTransaction(permit.paymentMethodTypeCode, permit.pgTransactionId),
+      isValidTransaction(permit.paymentMethodTypeCode, permit.pgApproved),
     )
     .map((permit) =>
       isTransactionTypeRefund(permit.transactionTypeId)

@@ -2,7 +2,7 @@ import { PayBCPaymentDetails } from "../types/payment";
 import { parseRedirectUriPath } from "../pages/Payment/PaymentRedirect";
 import { 
   PAYMENT_GATEWAY_METHODS, 
-  PAYMENT_METHOD_TYPE_CODE, 
+  PAYMENT_METHODS_WITH_CARD,
   PaymentGatewayMethod,
   PaymentMethodTypeCode, 
 } from "../../../common/types/paymentMethods";
@@ -26,7 +26,7 @@ export const getPayBCPaymentDetails = (
   const { trnApproved } = parseRedirectUriPath(path);
 
   const payBCPaymentDetails: PayBCPaymentDetails = {
-    authCode: getDefaultRequiredVal("", params.get("authCode")),
+    authCode: params.get("authCode"),
     avsAddrMatch: getDefaultRequiredVal("", params.get("avsAddrMatch")),
     avsId: getDefaultRequiredVal("", params.get("avsId")),
     avsMessage: getDefaultRequiredVal("", params.get("avsMessage")),
@@ -34,9 +34,9 @@ export const getPayBCPaymentDetails = (
     avsProcessed: getDefaultRequiredVal("", params.get("avsProcessed")),
     avsResult: getDefaultRequiredVal("", params.get("avsResult")),
     cardType: getDefaultRequiredVal("", params.get("cardType")),
-    cvdId: 1, // applyWhenNotNullable((cvdId) => Number(cvdId), params.get("cvdId"), 0),
+    cvdId: applyWhenNotNullable((cvdId) => Number(cvdId), params.get("cvdId")),
     trnApproved: trnApproved,
-    messageId: "1", // getDefaultRequiredVal("", params.get("messageId")),
+    messageId: applyWhenNotNullable((messageId) => Number(messageId), params.get("messageId")),
     messageText: getDefaultRequiredVal("", params.get("messageText")),
     paymentMethod: getDefaultRequiredVal(
       PAYMENT_GATEWAY_METHODS.CC,
@@ -67,21 +67,15 @@ export const getPayBCPaymentDetails = (
 };
 
 /**
- * Determines whether or not transaction is valid based on payment method and provided transaction ID.
+ * Determines whether or not transaction is valid based on payment method and if it's approved.
  * @param paymentMethod Payment method used
- * @param pgTransactionId Payment Gateway transaction ID
+ * @param transactionApproved Approval status of the transaction
  * @returns Whether or not the transaction is valid
  */
 export const isValidTransaction = (
   paymentMethod: PaymentMethodTypeCode,
-  pgTransactionId?: string | null,
+  transactionApproved?: number | null,
 ) => {
-  const mandatoryTransactionIdPaymentMethods = [
-    PAYMENT_METHOD_TYPE_CODE.WEB,
-    PAYMENT_METHOD_TYPE_CODE.ICEPAY,
-    PAYMENT_METHOD_TYPE_CODE.POS,
-  ] as PaymentMethodTypeCode[];
-
-  return !mandatoryTransactionIdPaymentMethods.includes(paymentMethod)
-    || !!pgTransactionId;
+  return !PAYMENT_METHODS_WITH_CARD.includes(paymentMethod)
+    || (!!transactionApproved && transactionApproved > 0);
 };

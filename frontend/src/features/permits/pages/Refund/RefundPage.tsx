@@ -85,7 +85,7 @@ export const RefundPage = ({
   onFinish: (refundData: RefundFormData) => void;
 }) => {
   const validTransactionHistory = permitHistory.filter(history =>
-    isValidTransaction(history.paymentMethodTypeCode, history.pgTransactionId));
+    isValidTransaction(history.paymentMethodTypeCode, history.pgApproved));
   
   const getPrevValidTransaction = () => {
     if (!validTransactionHistory || validTransactionHistory.length === 0) 
@@ -184,10 +184,13 @@ export const RefundPage = ({
     setValue("refundOnlineMethod", getRefundOnlineMethod());
   }, [permitHistory, permitHistory.length]);
 
+  useEffect(() => {
+    setValue("shouldUsePrevPaymentMethod", shouldUsePrevPaymentMethod);
+  }, [shouldUsePrevPaymentMethod]);
+
   const handleRefundMethodChange = (shouldUsePrev: string) => {
     const usePrev = shouldUsePrev === "true";
     setShouldUsePrevPaymentMethod(usePrev);
-    setValue("shouldUsePrevPaymentMethod", usePrev);
     setValue("refundOnlineMethod", usePrev ? getRefundOnlineMethod() : "");
     clearErrors("transactionId");
   };

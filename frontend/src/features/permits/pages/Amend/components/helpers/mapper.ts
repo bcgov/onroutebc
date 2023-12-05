@@ -4,6 +4,7 @@ import { RefundFormData } from "../../../Refund/types/RefundFormData";
 import { isZeroAmount } from "../../../../helpers/feeSummary";
 import {
   CONSOLIDATED_PAYMENT_METHODS,
+  PAYMENT_METHODS_WITH_CARD,
   PAYMENT_METHOD_TYPE_CODE,
 } from "../../../../../../common/types/paymentMethods";
 
@@ -38,7 +39,7 @@ export const mapToAmendRequestData = (
   };
 
   const reqData = {
-    // Zero-dolloar amounts are considered "Purchases", as documented
+    // Zero-dollar amounts are considered "Purchases", as documented
     transactionTypeId: isRefundZeroAmount ? TRANSACTION_TYPES.P : TRANSACTION_TYPES.R,
     paymentMethodTypeCode: getRefundMethodType(),
     applicationDetails: [
@@ -61,5 +62,7 @@ export const mapToAmendRequestData = (
     pgPaymentMethod: refundData.refundOnlineMethod
       ? refundData.refundOnlineMethod
       : undefined,
+    pgApproved: PAYMENT_METHODS_WITH_CARD.includes(reqData.paymentMethodTypeCode)
+      ? 1 : undefined,
   };
 };

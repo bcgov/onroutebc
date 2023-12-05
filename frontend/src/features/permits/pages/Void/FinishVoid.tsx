@@ -28,7 +28,7 @@ export const FinishVoid = ({
   const transactionHistory = permitHistoryQuery.isInitialLoading
     ? []
     : permitHistory.filter(history =>
-        isValidTransaction(history.paymentMethodTypeCode, history.pgTransactionId));
+        isValidTransaction(history.paymentMethodTypeCode, history.pgApproved));
 
   const amountToRefund = !permit 
     ? 0 

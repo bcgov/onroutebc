@@ -71,7 +71,6 @@ export const PaymentRedirect = () => {
   const {
     mutation: completeTransactionMutation,
     paymentApproved,
-    setPaymentApproved,
   } = useCompleteTransaction(
     paymentDetails.messageText,
     paymentDetails.trnApproved,
@@ -90,16 +89,12 @@ export const PaymentRedirect = () => {
 
   useEffect(() => {
     if (completedTransaction.current === false) {
-      if (paymentDetails.trnApproved > 0) {
-        completeTransactionMutation.mutate({
-          transactionId: getDefaultRequiredVal("", transactionId),
-          transactionQueryString,
-          transactionDetails: transaction,
-        });
-        completedTransaction.current = true;
-      } else {
-        setPaymentApproved(false);
-      }
+      completeTransactionMutation.mutate({
+        transactionId: getDefaultRequiredVal("", transactionId),
+        transactionQueryString,
+        transactionDetails: transaction,
+      });
+      completedTransaction.current = true;
     }
   }, [paymentDetails.trnApproved]);
 
@@ -152,9 +147,9 @@ const mapTransactionDetails = (
     pgApproved: Number(paymentResponse.trnApproved),
     pgAuthCode: paymentResponse.authCode,
     pgTransactionDate: toUtc(paymentResponse.trnDate, DATE_FORMATS.ISO8601),
-    pgCvdId: Number(paymentResponse.cvdId),
+    pgCvdId: paymentResponse.cvdId,
     pgPaymentMethod: paymentResponse.paymentMethod,
-    pgMessageId: Number(paymentResponse.messageId),
+    pgMessageId: paymentResponse.messageId,
     pgMessageText: paymentResponse.messageText,
   };
 

@@ -47,7 +47,7 @@ export const VoidPermitForm = ({
   );
 
   const validTransactionHistory = permitHistory.filter(history =>
-    isValidTransaction(history.paymentMethodTypeCode, history.pgTransactionId));
+    isValidTransaction(history.paymentMethodTypeCode, history.pgApproved));
 
   const { mutation: revokePermitMutation, voidResults } = useVoidPermit();
 
@@ -77,7 +77,6 @@ export const VoidPermitForm = ({
   const handleContinue = () => {
     const formValues = getValues();
     setVoidPermitData(formValues);
-    console.log(formValues); //
     next();
   };
 
