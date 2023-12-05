@@ -89,8 +89,7 @@ jobs:
     secrets: inherit
     with:
       autoscaling: false
-      target: ${{ needs.vars.outputs.tag }}
-      values: values.yaml
+      release: ${{ needs.vars.outputs.tag }}
       license: c28f0c
       vault_role: nonprod
       zone: dev
