@@ -25,6 +25,7 @@ import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext
 import { SnackBarContext } from "../../../../App";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { BCEID_AUTH_GROUP } from "../../../manageProfile/types/userManagement.d";
+import { CustomFormComponent } from "../../../../common/components/form/CustomFormComponents";
 
 const CompanyBanner = ({ legalName }: { legalName: string }) => {
   return (
@@ -47,25 +48,6 @@ const CompanyBanner = ({ legalName }: { legalName: string }) => {
     </Box>
   );
 };
-
-const ExistingTPSSelection = ({ screenSize }: { screenSize: "lg" | "sm" }) => (
-  <div className={`existing-tps-action existing-tps-action--${screenSize}`}>
-    <div className="existing-tps-action__img-wrapper">
-      <img
-        height="54"
-        width="54"
-        src="./Existing_Account_Graphic.svg"
-        alt="TPS Profile"
-      />
-    </div>
-    <div className="existing-tps-action__profile">
-      <strong>Already have a TPS profile?</strong>
-      <Button variant="outlined" color="info" size="small">
-        Claim it now
-      </Button>
-    </div>
-  </div>
-);
 
 /**
  * Gets the section name inside the form for a particular field name
@@ -126,6 +108,7 @@ export const CreateProfileSteps = React.memo(() => {
         "",
         user?.profile?.bceid_business_name as string,
       ),
+      alternateName: "",
       mailingAddress: {
         addressLine1: "",
         addressLine2: "",
@@ -297,7 +280,6 @@ export const CreateProfileSteps = React.memo(() => {
                 ))}
               </Stepper>
             </div>
-            <ExistingTPSSelection screenSize="sm" />
             <div className="create-profile-section create-profile-section--info">
               <Alert severity="info">
                 <Typography>
@@ -310,14 +292,37 @@ export const CreateProfileSteps = React.memo(() => {
             </div>
             {activeStep === 0 && (
               <div className="create-profile-section create-profile-section--company">
-                <h2>Company Mailing Address</h2>
-                <hr></hr>
                 <CompanyBanner
                   legalName={getDefaultRequiredVal(
                     "",
                     user?.profile?.bceid_business_name as string,
                   )}
                 />
+                <h2>Doing Business As (DBA)</h2>
+                <hr></hr>
+                <CustomFormComponent
+                  type="input"
+                  feature="wizard"
+                  options={{
+                    name: "alternateName",
+                    rules: {
+                      required: false,
+                      validate: {
+                        validateAlternateName: (alternateName?: string) =>
+                          alternateName == null ||
+                          alternateName === "" ||
+                          (alternateName &&
+                            alternateName.length >= 1 &&
+                            alternateName.length <= 100),
+                      },
+                    },
+                    label: "DBA",
+                  }}
+                  className="company-info-general-form__input"
+                />
+                <h2>Company Mailing Address</h2>
+                <hr></hr>
+
                 <CompanyInformationWizardForm />
               </div>
             )}
@@ -361,9 +366,6 @@ export const CreateProfileSteps = React.memo(() => {
                 </>
               )}
             </div>
-          </div>
-          <div className="create-profile-steps__existing-tps">
-            <ExistingTPSSelection screenSize="lg" />
           </div>
         </div>
       </FormProvider>

@@ -18,6 +18,7 @@ export const CompanyInformationWizardForm = memo(() => {
 
   return (
     <div className="company-info-wizard-form">
+      
       <CompanyInfoGeneralForm feature={FEATURE} />
 
       <Typography variant="h2" gutterBottom>

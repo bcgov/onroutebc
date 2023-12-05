@@ -45,6 +45,7 @@ export interface CompanyAndUserRequest {
   companyId: number;
   companyGUID: string;
   legalName: string;
+  alternateName?: string;
   mailingAddress: Address;
   email: string;
   phone: string;

@@ -99,28 +99,6 @@ export const WelcomePage = React.memo(() => {
         )}
         {isNewCompanyProfile(companyNameFromContext) && (
           <div className="welcome-page__profile-actions">
-            <Card
-              className="welcome-cards welcome-cards--existing"
-              elevation={12}
-            >
-              <CardActionArea>
-                <div className="welcome-cards__img">
-                  <img
-                    height="80"
-                    width="80"
-                    className="welcome-account-graphics"
-                    src="./Existing_Account_Graphic.svg"
-                    alt="Existing TPS Profile"
-                  />
-                </div>
-                <CardContent>
-                  <Typography variant="body2">
-                    Claim an existing TPS Profile
-                  </Typography>
-                </CardContent>
-                <Chip className="welcome-cards__recommend" label="Recommend" />
-              </CardActionArea>
-            </Card>
             <Card className="welcome-cards welcome-cards--new" elevation={12}>
               <CardActionArea onClick={() => navigate("/create-profile")}>
                 <div className="welcome-cards__img">
@@ -134,7 +112,7 @@ export const WelcomePage = React.memo(() => {
                 </div>
                 <CardContent>
                   <Typography variant="body2">
-                    Create a new onRouteBC Profile
+                  Finish creating your onRouteBC Profile
                   </Typography>
                 </CardContent>
               </CardActionArea>

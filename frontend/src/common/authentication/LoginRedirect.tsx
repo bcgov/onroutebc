@@ -46,7 +46,7 @@ export const LoginRedirect = () => {
             // The user and company does not exist => Redirect them to Add new company page.
             else if (
               associatedCompanies.length < 1 &&
-              !migratedTPSClient.clientNumber
+              !migratedTPSClient?.clientNumber
             ) {
               navigate(routes.WELCOME);
             } else if (migratedTPSClient.clientNumber) {
