@@ -29,7 +29,7 @@ frontend:
           return {
             "VITE_DEPLOY_ENVIRONMENT":"{{.Values.global.zone}}",
             "VITE_API_VEHICLE_URL":"https://{{.Release.Name}}-vehicles.{{.Values.global.domain}}",
-              "VITE_AUTH0_ISSUER_URL":"https://{{ternary ("") (printf "%s." .Values.global.zone) (contains "prod" .Values.global.zone)}}loginproxy.gov.bc.ca/auth/realms/standard",
+            "VITE_AUTH0_ISSUER_URL":"https://{{ternary ("") (printf "%s." .Values.global.zone) (contains "prod" .Values.global.zone)}}loginproxy.gov.bc.ca/auth/realms/standard",
             "VITE_AUTH0_AUDIENCE":"on-route-bc-direct-4598",
             "VITE_SITEMINDER_LOG_OFF_URL": "https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi",
           };
