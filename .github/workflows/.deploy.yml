@@ -122,9 +122,6 @@ jobs:
 
           # Deploy Helm Chart
           helm dependency update
-          helm package --app-version="${{ env.package_tag }}" --version=${{ inputs.tag }} .
-
-          # Deploy Helm Chart
           helm upgrade \
             --set global.autoscaling=${{ inputs.autoscaling }} \
             --set-string global.repository=${{ github.repository }} \
@@ -134,8 +131,7 @@ jobs:
             --set-string global.vault.role=${{ inputs.vault_role }} \
             --install --wait --atomic ${{ github.event.repository.name }}-${{ inputs.tag }} \
             --timeout ${{ inputs.timeout-minutes }}m --force \
-            --values ${{ inputs.values }} ${{ inputs.params }} \
-            ./${{ github.event.repository.name }}-${{ inputs.tag }}.tgz
+            --values ${{ inputs.values }} ${{ inputs.params }} .
 
           # print history 
           helm history ${{ env.repo_release }}
