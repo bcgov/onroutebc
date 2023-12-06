@@ -794,10 +794,7 @@ export class ApplicationService {
     else approvalSourceId = 9;
     let rnd: number | string;
     if (permitId) {
-      seq = permit.applicationNumber.substring(3, 11);
-      seq = seq.padStart(8, '0');
-      const { randomInt } = await import('crypto');
-      rnd = randomInt(100, 1000);
+      seq = permit.applicationNumber.substring(3, 15);
     } else {
       seq = permit.permitNumber.substring(3, 15);
       rnd = 'A' + String(permit.revision + 1).padStart(2, '0');
