@@ -61,6 +61,69 @@ on:
         default: ''
         required: false
         type: string
+  
+  workflow_dispatch:
+    inputs:
+      ### Required
+      release:
+        description: 'release name'
+        required: true
+        type: string
+        default: "demo"
+
+      ### Typical / recommended
+      autoscaling:
+        description: 'Autoscaling enabled or not for the deployments'
+        required: false
+        type: boolean
+        default: true
+      environment:
+        description: "Deployment environment - dev/test/prod"
+        required: true
+        type: choice
+        options: ["dev","test","prod"]
+        default: "dev"
+      tag:
+        description: 'Docker tag; e.g. PR number, tag, test or prod'
+        required: false
+        type: string
+        default: "latest"
+      namespace:
+        description: 'BC Gov LICENSE_PLATE of deployment env'
+        required: false
+        type: string
+        default: "c28f0c"
+      vault_role:
+        description: "nonprod/prod"
+        required: true
+        type: choice
+        options: ["nonprod","prod"]
+      triggers:
+        description: Paths to trigger a deploy; omit=always; e.g. ('backend/' 'frontend/')
+        required: false
+        type: string
+
+      ### Usually a bad idea / not recommended
+      directory:
+        description: 'Chart directory.'
+        default: 'charts/${{ github.event.repository.name }}'
+        required: false
+        type: string
+      timeout-minutes:
+        description: 'Timeout minutes'
+        default: 10
+        required: false
+        type: number
+      values:
+        description: 'Values file.'
+        default: 'values.yaml'
+        required: false
+        type: string
+      params:
+        description: 'Extra parameters to pass to helm upgrade'
+        default: ''
+        required: false
+        type: string
 
 env:
   repo_release: ${{ github.event.repository.name }}-${{ inputs.release }}
