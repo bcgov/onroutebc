@@ -165,6 +165,9 @@
     },
     "@nestjs/axios": {
       "axios": "^1.6.0"
+    },
+    "@nestjs/passport": {
+      "passport": "^0.7.0"
     }
   }
 }

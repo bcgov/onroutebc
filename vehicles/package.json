@@ -158,6 +158,15 @@
     "@nestjs/axios": {
       "axios": "^1.6.0"
     },
-    "semver@<6.3.1": "^6.3.1"
+    "semver@<6.3.1": "^6.3.1",
+    "@jestjs/cli": {
+      "semver@<7.5.2": "^7.5.2"
+    },
+    "passwort-jwt": {
+      "semver@<7.5.2": "^7.5.2"
+    },
+    "@nestjs/passport": {
+      "passport": "^0.7.0"
+    }
   }
 }
