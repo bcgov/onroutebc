@@ -39,6 +39,16 @@ export class TpsPermit {
 
   @AutoMap()
   @ApiProperty({
+    example: 0,
+    description: 'S3 upload status of a permit pdf.',
+  })
+  @Column({
+    name: 'RETRY_COUNT',
+    nullable: true,
+  })
+  retryCount: number;
+  @AutoMap()
+  @ApiProperty({
     example: 'Processed',
     description: 'S3 upload status of a permit pdf.',
   })

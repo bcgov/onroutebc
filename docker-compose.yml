@@ -181,6 +181,7 @@ services:
       DOPS_S3_ENDPOINT: ${DOPS_S3_ENDPOINT}
       DOPS_S3_KEY: ${DOPS_S3_KEY}
       DOPS_S3_SECRETACCESSKEY: ${DOPS_S3_SECRETACCESSKEY}
+      ORBC_GUID_NAMESPACE: ${ORBC_GUID_NAMESPACE}
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5002/"]
       interval: 1m30s

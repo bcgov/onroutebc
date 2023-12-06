@@ -1,9 +1,6 @@
-import {
-  Injectable,
-  Logger,
-} from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { TpsPermit } from './entities/tps-permit.entity';
-import { Repository } from 'typeorm';
+import { LessThan, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { S3uploadStatus } from '../common/enum/s3-upload-status.enum';
 import { S3Service } from './s3.service';
@@ -29,7 +26,11 @@ export class TpsPermitService {
 
   private readonly logger = new Logger(TpsPermitService.name);
 
-  @Cron('0 */30 * * * *')
+  /**
+   * Scheduled method to run every 5 minute. To upload TPS permits pdf to S3.
+   *
+   */
+  @Cron('0 */5 * * * *')
   async uploadTpsPermit() {
     const tpsPermits: TpsPermit[] = await this.tpsPermitRepository.find({
       where: { s3UploadStatus: S3uploadStatus.Pending },
@@ -37,6 +38,7 @@ export class TpsPermitService {
     });
 
     const ids = tpsPermits.map((tpsPermit) => tpsPermit.migrationId);
+    // create query builder fails if array is empty. hence the length check.
     if (ids.length > 0) {
       await this.tpsPermitRepository
         .createQueryBuilder()
@@ -47,8 +49,30 @@ export class TpsPermitService {
         .where('migrationId IN (:...ids)', { ids: ids })
         .execute();
       for (const tpsPermit of tpsPermits) {
+        //Check to verify if permit document already exists in orbc permit table to avoid duplicate uploads.
+        //Only proceed if permit exists in orbc permit table and it does not have a document id.
+        const permit = await this.permitRepository.find({
+          where: { permitNumber: tpsPermit.newPermitNumber },
+        });
+        if (!permit) {
+          await this.tpsPermitRepository.update(
+            { migrationId: tpsPermit.migrationId },
+            {
+              s3UploadStatus: S3uploadStatus.Error,
+              retryCount: tpsPermit.retryCount + 1,
+            },
+          );
+          break;
+        }
+        if (permit[0].documentId != null) {
+          await this.tpsPermitRepository.delete({
+            migrationId: tpsPermit.migrationId,
+          });
+          break;
+        }
         let s3Object: CompleteMultipartUploadCommandOutput = null;
-        const MY_NAMESPACE = '1b671a64-40d5-491e-99b0-da01ff1f3341';
+        const MY_NAMESPACE = process.env.ORBC_GUID_NAMESPACE;
+        console.log('MY_NAMESPACE: ',MY_NAMESPACE)
         const hash = sha1(tpsPermit.pdf.toString());
         const s3ObjectId = uuidv5(hash.toString(), MY_NAMESPACE);
         try {
@@ -62,6 +86,7 @@ export class TpsPermitService {
             },
             {
               s3UploadStatus: S3uploadStatus.Error,
+              retryCount: tpsPermit.retryCount + 1,
             },
           );
         }
@@ -84,14 +109,99 @@ export class TpsPermitService {
             },
           );
 
+          await this.tpsPermitRepository.delete({
+            migrationId: tpsPermit.migrationId,
+          });
+        }
+      }
+    }
+  }
+  /**
+   * Scheduled method to run evry 3rd hour of the day. To retry failed permits.
+   *
+   */
+
+  @Cron('0 0 */3 * * *')
+  async reprocessTpsPermit() {
+    const tpsPermits: TpsPermit[] = await this.tpsPermitRepository.find({
+      where: { s3UploadStatus: S3uploadStatus.Error, retryCount: LessThan(3) },
+      take: LIMIT,
+    });
+
+    const ids = tpsPermits.map((tpsPermit) => tpsPermit.migrationId);
+    // create query builder fails if array is empty. hence the length check.
+    if (ids.length > 0) {
+      await this.tpsPermitRepository
+        .createQueryBuilder()
+        .update(TpsPermit)
+        .set({
+          s3UploadStatus: S3uploadStatus.Processing,
+        })
+        .where('migrationId IN (:...ids)', { ids: ids })
+        .execute();
+      for (const tpsPermit of tpsPermits) {
+        //Check to verify if permit document already exists in orbc permit table to avoid duplicate uploads.
+        //Only proceed if permit exists in orbc permit table and it does not have a document id.
+        const permit = await this.permitRepository.find({
+          where: { permitNumber: tpsPermit.newPermitNumber },
+        });
+        if (!permit) {
+          await this.tpsPermitRepository.update(
+            { migrationId: tpsPermit.migrationId },
+            {
+              s3UploadStatus: S3uploadStatus.Error,
+              retryCount: tpsPermit.retryCount + 1,
+            },
+          );
+          break;
+        }
+        if (permit[0].documentId != null) {
+          await this.tpsPermitRepository.delete({
+            migrationId: tpsPermit.migrationId,
+          });
+          break;
+        }
+        let s3Object: CompleteMultipartUploadCommandOutput = null;
+        const MY_NAMESPACE = '1b671a64-40d5-491e-99b0-da01ff1f3341';
+        const hash = sha1(tpsPermit.pdf.toString());
+        const s3ObjectId = uuidv5(hash.toString(), MY_NAMESPACE);
+        try {
+          s3Object = await this.s3Service.uploadFile(tpsPermit.pdf, s3ObjectId);
+        } catch (err) {
+          this.logger.error('Error while upload to s3. ', err);
+          this.logger.error('Failed permit numer ', tpsPermit.permitNumber);
           await this.tpsPermitRepository.update(
             {
               migrationId: tpsPermit.migrationId,
             },
             {
-              s3UploadStatus: S3uploadStatus.Processed,
+              s3UploadStatus: S3uploadStatus.Error,
+              retryCount: tpsPermit.retryCount + 1,
             },
           );
+        }
+        this.logger.log(
+          tpsPermit.permitNumber + ' uploaded successfully.',
+          s3Object.Location,
+        );
+        if (s3Object) {
+          const document = await this.createDocument(
+            s3ObjectId,
+            s3Object,
+            tpsPermit,
+          );
+          await this.permitRepository.update(
+            {
+              permitNumber: tpsPermit.newPermitNumber,
+            },
+            {
+              documentId: document.documentId,
+            },
+          );
+
+          await this.tpsPermitRepository.delete({
+            migrationId: tpsPermit.migrationId,
+          });
         }
       }
     }

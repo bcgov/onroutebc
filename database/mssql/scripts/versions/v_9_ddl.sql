@@ -290,6 +290,7 @@ CREATE TABLE [tps].[ORBC_TPS_MIGRATED_PERMITS](
 	[PERMIT_LAST_MODIFIED_DATE] [datetime2](7) NULL,
 	[PDF] [varbinary](max) NULL,
 	[S3_UPLOAD_STATUS] [varchar](20) DEFAULT ('PENDING'),
+	[RETRY_COUNT] [smallint] DEFAULT (0),
 	[ETL_PROCESS_ID] [varchar](38) NULL,
 	[PROCESSED] [bit] NULL,
 	[PROCESSED_DATE] [datetime2](7) NULL,
