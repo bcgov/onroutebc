@@ -1,6 +1,7 @@
 import { Mapper } from '@automapper/core';
 import { InjectMapper } from '@automapper/nestjs';
 import {
+  BadRequestException,
   Inject,
   Injectable,
   InternalServerErrorException,
@@ -29,6 +30,7 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { getFromCache } from '../../../common/helper/cache.helper';
 import { CacheKey } from '../../../common/enum/cache-key.enum';
+import { AccountSource } from '../../../common/enum/account-source.enum';
 
 @Injectable()
 export class CompanyService {
@@ -62,6 +64,22 @@ export class CompanyService {
   ): Promise<ReadCompanyUserDto> {
     let newCompany: Company;
     let newUser: ReadUserDto;
+    let migratedTPSClient = false;
+    const existingCompanyDetails = await this.findOneByCompanyGuid(
+      currentUser.bceid_business_guid,
+    );
+
+    //TPS migrated companies without any users linked to it is allowed
+    if (existingCompanyDetails?.companyUsers?.length) {
+      throw new BadRequestException(
+        'Company already exists in ORBC. Please use the update endpoint',
+      );
+    } else if (
+      existingCompanyDetails?.accountSource === AccountSource.TpsAccount
+    ) {
+      migratedTPSClient = true;
+    }
+
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -82,10 +100,14 @@ export class CompanyService {
         },
       );
 
-      newCompany.clientNumber = await this.generateClientNumber(
-        newCompany,
-        currentUser,
-      );
+      if (!migratedTPSClient) {
+        newCompany.clientNumber = await this.generateClientNumber(
+          newCompany,
+          currentUser,
+        );
+      } else {
+        newCompany.companyId = existingCompanyDetails?.companyId;
+      }
 
       newCompany = await queryRunner.manager.save(newCompany);
 
@@ -263,24 +285,51 @@ export class CompanyService {
   /**
    * The findOneByCompanyGuid() method returns a ReadCompanyDto object corresponding to the
    * company with that company GUID. It retrieves the entity from the database using the
-   * Repository, maps it to a DTO object using the Mapper, and returns it.
+   * Repository
    *
    * @param companyGUID The company Id.
    *
+   * @returns The company details as a promise of type {@link Company}
+   */
+  async findOneByCompanyGuid(companyGUID: string): Promise<Company> {
+    return await this.companyRepository.findOne({
+      where: { companyGUID: companyGUID },
+      relations: {
+        mailingAddress: true,
+        primaryContact: true,
+        companyUsers: true,
+      },
+    });
+  }
+
+  /**
+   * The mapCompanyEntityToCompanyDto() method returns a ReadCompanyDto object
+   * corresponding to the company with that company GUID. It maps the company
+   * entity to the DTO.
+   *
+   * @param company The company Entity.
+   *
    * @returns The company details as a promise of type {@link ReadCompanyDto}
    */
-  async findOneByCompanyGuid(companyGUID: string): Promise<ReadCompanyDto> {
-    return this.classMapper.mapAsync(
-      await this.companyRepository.findOne({
-        where: { companyGUID: companyGUID },
-        relations: {
-          mailingAddress: true,
-          primaryContact: true,
-        },
-      }),
-      Company,
-      ReadCompanyDto,
-    );
+  async mapCompanyEntityToCompanyDto(
+    company: Company,
+  ): Promise<ReadCompanyDto> {
+    return this.classMapper.mapAsync(company, Company, ReadCompanyDto);
+  }
+
+  /**
+   * The mapCompanyEntityToCompanyMetadataDto() method returns a ReadCompanyDto object
+   * corresponding to the company with that company GUID. It maps the company
+   * entity to the DTO.
+   *
+   * @param company The company Entity.
+   *
+   * @returns The company details as a promise of type {@link ReadCompanyMetadataDto}
+   */
+  async mapCompanyEntityToCompanyMetadataDto(
+    company: Company,
+  ): Promise<ReadCompanyMetadataDto> {
+    return this.classMapper.mapAsync(company, Company, ReadCompanyMetadataDto);
   }
 
   /**

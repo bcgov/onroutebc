@@ -2,6 +2,7 @@ import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
 import { ReadCompanyMetadataDto } from '../../../company/dto/response/read-company-metadata.dto';
 import { ReadUserDto } from './read-user.dto';
+import { ReadCompanyDto } from '../../../company/dto/response/read-company.dto';
 
 /**
  * JSON representation of response object when retrieving user information and
@@ -28,4 +29,12 @@ export class ReadUserOrbcStatusDto {
     type: [ReadCompanyMetadataDto],
   })
   pendingCompanies: ReadCompanyMetadataDto[];
+
+  @AutoMap()
+  @ApiProperty({
+    description:
+      'The metadata of migrated TPS client associated with the user.',
+    type: ReadCompanyDto,
+  })
+  migratedTPSClient: ReadCompanyDto;
 }
