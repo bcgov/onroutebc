@@ -29,6 +29,7 @@ export const dataSourceMockFactory = () => {
       query: jest.fn(),
       manager: {
         delete: jest.fn(),
+        update: jest.fn(),
         save: jest.fn((saveObject: object) => {
           if (saveObject instanceof Company) {
             if (saveObject.legalName === constants.RED_COMPANY_LEGAL_NAME) {

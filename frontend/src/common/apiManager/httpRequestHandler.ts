@@ -148,8 +148,8 @@ export const httpPOSTRequestStream = (url: string, data: any) => {
     method: "POST",
     body: JSON.stringify(data),
     headers: {
-      "Authorization": getAccessToken(),
-      "Content-Type": "application/json"
+      Authorization: getAccessToken(),
+      "Content-Type": "application/json",
     },
   });
 };
