@@ -402,7 +402,7 @@ export class UsersService {
         if (company) {
           if (
             company.accountSource === AccountSource.TpsAccount &&
-            company?.companyUsers?.length
+            !company?.companyUsers?.length
           ) {
             userExistsDto.migratedTPSClient =
               await this.companyService.mapCompanyEntityToCompanyDto(company);
