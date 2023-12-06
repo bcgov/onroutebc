@@ -85,7 +85,9 @@ describe('Company (e2e)', () => {
 
   describe('/companies CREATE', () => {
     it('should create a new Company.', async () => {
-      repo.findOne.mockResolvedValue(redCompanyEntityMock);
+      repo.findOne
+        .mockResolvedValueOnce(undefined)
+        .mockResolvedValueOnce(redCompanyEntityMock);
 
       jest
         .spyOn(emailService, 'sendEmailMessage')
