@@ -158,7 +158,7 @@ jobs:
 
   promote-images-release:
     name: Tag images with Release Version
-    needs:[GitVersion, create-release, vars]
+    needs: [GitVersion, create-release, vars]
     runs-on: ubuntu-22.04
     strategy:
       matrix:
