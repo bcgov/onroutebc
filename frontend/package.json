@@ -87,6 +87,7 @@
     "vitest-canvas-mock": "^0.3.2"
   },
   "overrides": {
-    "crypto-js": "^4.2.0"
+    "crypto-js": "^4.2.0",
+    "@adobe/css-tools": "^4.3.2"
   }
 }
