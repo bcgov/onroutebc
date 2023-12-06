@@ -713,13 +713,13 @@ export class ApplicationService {
     let seq: string;
     let source;
     let rnd;
-    let rev = '-R00';
+    let rev = '-A00';
     let permit: Permit;
     if (permitId) {
       //Amendment to existing permit.//Get revision Id from database.
       permit = await this.findOne(permitId);
       //Format revision id
-      rev = '-R' + String(permit.revision + 1).padStart(2, '0');
+      rev = '-A' + String(permit.revision + 1).padStart(2, '0');
       if (permit.permitNumber) {
         seq = permit.permitNumber.substring(3, 11);
         rnd = permit.permitNumber.substring(12, 15);
@@ -794,10 +794,7 @@ export class ApplicationService {
     else approvalSourceId = 9;
     let rnd: number | string;
     if (permitId) {
-      seq = await callDatabaseSequence(
-        'permit.ORBC_PERMIT_NUMBER_SEQ',
-        this.dataSource,
-      );
+      seq = permit.applicationNumber.substring(3, 11);
       seq = seq.padStart(8, '0');
       const { randomInt } = await import('crypto');
       rnd = randomInt(100, 1000);
