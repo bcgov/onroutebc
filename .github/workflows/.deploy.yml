@@ -8,6 +8,12 @@ on:
         description: 'PR number, test or prod.'
         required: true
         type: string
+      
+      repository:
+        description: 'repository name.'
+        required: false
+        type: string
+        default: "onroutebc"
 
       ### Typical / recommended
       autoscaling:
@@ -43,7 +49,7 @@ on:
       ### Usually a bad idea / not recommended
       directory:
         description: 'Chart directory.'
-        default: 'charts/${{ github.event.repository.name }}'
+        default: 'charts/${{ inputs.repository }}'
         required: false
         type: string
       timeout-minutes:
@@ -70,13 +76,14 @@ on:
         required: true
         type: string
         default: "demo"
+      
+      repository:
+        description: 'repository name.'
+        required: false
+        type: string
+        default: "onroutebc"
 
       ### Typical / recommended
-      autoscaling:
-        description: 'Autoscaling enabled or not for the deployments'
-        required: false
-        type: boolean
-        default: true
       environment:
         description: "Deployment environment - dev/test/prod"
         required: true
@@ -106,7 +113,7 @@ on:
       ### Usually a bad idea / not recommended
       directory:
         description: 'Chart directory.'
-        default: 'charts/${{ github.event.repository.name }}'
+        default: 'charts/${{ inputs.repository }}'
         required: false
         type: string
       values:
@@ -121,7 +128,7 @@ on:
         type: string
 
 env:
-  repo_release: ${{ github.event.repository.name }}-${{ inputs.release }}
+  repo_release: ${{ inputs.repository }}-${{ inputs.release }}
   package_tag: ${{ inputs.tag }}
 
 jobs:
@@ -184,16 +191,16 @@ jobs:
 
           # Deploy Helm release
           helm upgrade \
-            --set global.autoscaling=${{ inputs.autoscaling }} \
+            --set global.autoscaling=${{ inputs.autoscaling || true }} \
             --set-string global.repository=${{ github.repository }} \
             --set-string global.tag=${{ inputs.release }} \
             --set-string global.license=${{ inputs.namespace }} \
             --set-string global.zone=${{ inputs.environment }} \
             --set-string global.vault.role=${{ inputs.vault_role }} \
-            --install --wait --atomic ${{ github.event.repository.name }}-${{ inputs.tag }} \
+            --install --wait --atomic ${{ inputs.repository }}-${{ inputs.tag }} \
             --timeout 10m --force \
             --values ${{ inputs.values }} ${{ inputs.params }} \
-            ./${{ github.event.repository.name }}-${{ inputs.tag }}.tgz
+            ./${{ inputs.repository }}-${{ inputs.tag }}.tgz
 
           # print history 
           helm history ${{ env.repo_release }}
