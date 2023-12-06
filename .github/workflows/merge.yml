@@ -65,6 +65,24 @@ jobs:
       tag: ${{ needs.vars.outputs.tag }}
       vault_role: nonprod
 
+  promote-images-test:
+    name: Promote Images - Test
+    needs: [deploys-test, vars]
+    runs-on: ubuntu-22.04
+    permissions:
+      packages: write
+    strategy:
+      matrix:
+        package: [dops, vehicles, frontend]
+    timeout-minutes: 2
+    steps:
+      - uses: shrink/actions-docker-registry-tag@v3
+        with:
+          registry: ghcr.io
+          repository: ${{ github.repository }}/${{ matrix.package }}
+          target: ${{ needs.vars.outputs.tag }}
+          tags: test  #Promote images AFTER successful deploy
+
   GitVersion:
     name: Mainline Versioning - GitVersion
     needs:
@@ -129,8 +147,7 @@ jobs:
   create-release:
     name: Create Release
     runs-on: ubuntu-22.04
-    needs:
-      - GitVersion
+    needs: [GitVersion]
     steps:
       - uses: actions/create-release@v1
         with:
@@ -141,9 +158,7 @@ jobs:
 
   promote-images-release:
     name: Tag images with Release Version
-    needs:
-      - GitVersion
-      - create-release
+    needs:[GitVersion, create-release, vars]
     runs-on: ubuntu-22.04
     strategy:
       matrix:
@@ -153,7 +168,7 @@ jobs:
         with:
           registry: ghcr.io
           repository: ${{ github.repository }}/${{ matrix.component }}
-          target: test
+          target: ${{ needs.vars.outputs.tag }}
           tags: ${{ needs.GitVersion.outputs.fullSemVer }}
 
   deploys-prod:
