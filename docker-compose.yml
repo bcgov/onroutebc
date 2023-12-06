@@ -183,7 +183,7 @@ services:
       DOPS_S3_SECRETACCESSKEY: ${DOPS_S3_SECRETACCESSKEY}
       ORBC_GUID_NAMESPACE: ${ORBC_GUID_NAMESPACE}
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5002/"]
+      test: ["CMD", "curl", "-f", "http://localhost:6000/"]
       interval: 1m30s
       timeout: 10s
       retries: 3
@@ -196,5 +196,5 @@ services:
       - sql-server-db
       - dops-api
     ports:
-      - "5002:5002"
+      - "6000:6000"
       
