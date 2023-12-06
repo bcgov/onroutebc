@@ -15,8 +15,7 @@ import {
 import "./ConditionsTable.scss";
 import { Commodities } from "../../../../types/application";
 import { TROS_COMMODITIES } from "../../../../constants/termOversizeConstants";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowUpRightFromSquare } from "@fortawesome/free-solid-svg-icons";
+import { CustomExternalLink } from "../../../../../../common/components/links/CustomExternalLink";
 
 export const ConditionsTable = ({
   commodities,
@@ -147,10 +146,11 @@ export const ConditionsTable = ({
                 component="th" 
                 scope="row"
               >
-                <a
+                <CustomExternalLink
                   href={row.conditionLink}
                   className="condition-link"
                   data-testid="permit-condition-link"
+                  withLinkIcon={true}
                 >
                   <span
                     className="condition-link__link"
@@ -158,11 +158,7 @@ export const ConditionsTable = ({
                   >
                     {row.condition}
                   </span>
-                  <FontAwesomeIcon
-                    className="condition-link__icon"
-                    icon={faArrowUpRightFromSquare}
-                  />
-                </a>
+                </CustomExternalLink>
               </TableCell>
             </TableRow>
           ))}

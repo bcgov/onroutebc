@@ -1,26 +1,16 @@
-import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
 import "./PaymentFailedBanner.scss";
+import { ErrorBcGovBanner } from "../../../../../../common/components/banners/ErrorBcGovBanner";
 
 export const PaymentFailedBanner = () => {
   return (
-    <div className="payment-failed-banner">
-      <div className="payment-failed-banner__container">
-        <div className="payment-failed-banner__icon">
-          <FontAwesomeIcon icon={faExclamationCircle} />
+    <ErrorBcGovBanner
+      className="payment-failed-banner"
+      msg="Transaction failed."
+      additionalInfo={
+        <div className="payment-failed-banner__msg">
+          There was a problem with your payment. Please try again.
         </div>
-
-        <div className="payment-failed-banner__info">
-          <div className="payment-failed-banner__title">
-            Transaction failed.
-          </div>
-
-          <div className="payment-failed-banner__msg">
-            There was a problem with your payment. Please try again.
-          </div>
-        </div>
-      </div>
-    </div>
+      }
+    />
   );
 };

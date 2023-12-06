@@ -11,13 +11,8 @@
   width: -moz-fit-content; /* For Firefox, Firefox Android */
 
   &#{&}--error {
-    background-color: orbcStyles.$bc-messages-red-background;
-    border-color: #ebccd1;
-    color: orbcStyles.$bc-messages-red-text;
-
-    a {
-      color: #843534;
-    }
+    background-color: orbcStyles.$bc-messages-red-text;
+    color: orbcStyles.$white;
   }
 
   &#{&}--info {

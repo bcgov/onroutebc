@@ -2,8 +2,6 @@ import { Box, MenuItem, Typography } from "@mui/material";
 import { useFormContext } from "react-hook-form";
 import dayjs, { Dayjs } from "dayjs";
 import { useEffect } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowUpRightFromSquare } from "@fortawesome/free-solid-svg-icons";
 
 import "./PermitDetails.scss";
 import { InfoBcGovBanner } from "../../../../../../common/components/banners/InfoBcGovBanner";
@@ -14,6 +12,7 @@ import { ConditionsTable } from "./ConditionsTable";
 import { requiredMessage } from "../../../../../../common/helpers/validationMessages";
 import { Commodities } from "../../../../types/application";
 import { ONROUTE_WEBPAGE_LINKS } from "../../../../../../routes/constants";
+import { CustomExternalLink } from "../../../../../../common/components/links/CustomExternalLink";
 
 export const PermitDetails = ({
   feature,
@@ -138,19 +137,15 @@ export const PermitDetails = ({
             additionalInfo={
               <div className="commodities-info">
                 <div className="commodities-info__link">
-                  <a
+                  <CustomExternalLink
                     className="procedures-link"
                     href={ONROUTE_WEBPAGE_LINKS.COMMERCIAL_TRANSPORT_PROCEDURES}
+                    withLinkIcon={true}
                   >
                     <span className="procedures-link__title">
                       Commercial Transport Procedures - Province of British Columbia
                     </span>
-                    
-                    <FontAwesomeIcon
-                      className="procedures-link__icon"
-                      icon={faArrowUpRightFromSquare}
-                    />
-                  </a>
+                  </CustomExternalLink>
                 </div>
 
                 <div className="commodities-info__contact-methods">

@@ -28,24 +28,6 @@
     &:last-child td, &:last-child th {
       border: none;
     }
-
-    .condition-link {
-      color: $bc-text-links-blue;
-
-      &__icon {
-        margin-left: 0.5rem;
-      }
-
-      &:hover {
-        text-decoration: none;
-
-        .condition-link {
-          &__link {
-            color: $blue;
-          }
-        }
-      }
-    }
   }
 
   & &__checkbox {

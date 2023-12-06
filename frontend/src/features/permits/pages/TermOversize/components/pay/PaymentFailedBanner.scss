@@ -1,4 +1,4 @@
-@import "../../../../../../themes/orbcStyles.scss";
+@import "../../../../../../themes/orbcStyles";
 
 .payment-failed-banner {
   margin-top: 2.5rem;
@@ -12,23 +12,8 @@
     display: flex;
   }
 
-  & &__icon {
-    font-size: 1.5rem;
-    margin-right: 1rem;
-  }
-
-  & &__info {
-    display: flex;
-    flex-direction: column;
-  }
-
-  & &__title {
-    font-size: 1.125rem;
-    font-weight: bold;
-    margin-bottom: 0.5rem;
-  }
-
   & &__msg {
+    font-weight: normal;
     font-size: 1rem;
   }
 }

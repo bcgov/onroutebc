@@ -8,6 +8,7 @@ import {
 
 import "./BcGovAlertBanner.scss";
 import { ALERT_BANNER_TYPES, AlertBannerType } from "./types/AlertBannerType";
+import { getDefaultRequiredVal } from "../../helpers/util";
 
 /**
  *
@@ -22,10 +23,12 @@ export const BcGovAlertBanner = ({
   msg,
   additionalInfo,
   bannerType,
+  className,
 }: {
   msg: string;
   additionalInfo?: JSX.Element;
   bannerType: AlertBannerType;
+  className?: string;
 }) => {
   const getBannerIcon = () => {
     switch (bannerType) {
@@ -43,10 +46,11 @@ export const BcGovAlertBanner = ({
 
   const ariaLabel = `${bannerType}`;
   const msgId = `${bannerType}-desc`;
+  const additionalClassName = getDefaultRequiredVal("", className);
 
   return (
     <div
-      className={`bc-gov-alertbanner bc-gov-alertbanner--${bannerType}`}
+      className={`bc-gov-alertbanner bc-gov-alertbanner--${bannerType} ${additionalClassName}`}
       role="alert"
       aria-labelledby={ariaLabel}
       aria-describedby={msgId}
