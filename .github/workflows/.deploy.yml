@@ -113,7 +113,7 @@ on:
       ### Usually a bad idea / not recommended
       directory:
         description: 'Chart directory.'
-        default: 'charts/${{ inputs.repository }}'
+        default: 'charts/${{ github.event.repository.name }}'
         required: false
         type: string
       values:
