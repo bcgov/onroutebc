@@ -9,7 +9,7 @@ import { CompleteMultipartUploadCommandOutput } from '@aws-sdk/client-s3';
 import { Permit } from './entities/permit.entity';
 import * as sha1 from 'crypto-js/sha1';
 import { LIMIT } from '../common/constants/tps-migration.constant';
-import { v5 as uuidv5 } from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
 import { Cron } from '@nestjs/schedule';
 
 @Injectable()
@@ -30,7 +30,7 @@ export class TpsPermitService {
    * Scheduled method to run every 5 minute. To upload TPS permits pdf to S3.
    *
    */
-  @Cron('0 */30 * * * *')
+  @Cron('0 */5 * * * *')
   async uploadTpsPermit() {
     const tpsPermits: TpsPermit[] = await this.tpsPermitRepository.find({
       where: { s3UploadStatus: S3uploadStatus.Pending },
@@ -71,9 +71,7 @@ export class TpsPermitService {
           break;
         }
         let s3Object: CompleteMultipartUploadCommandOutput = null;
-        const ORBC_GUID_NAMESPACE = process.env.ORBC_GUID_NAMESPACE;
-        const hash = sha1(tpsPermit.pdf.toString());
-        const s3ObjectId = uuidv5(hash.toString(), ORBC_GUID_NAMESPACE);
+        const s3ObjectId = uuidv4();
         try {
           s3Object = await this.s3Service.uploadFile(
             tpsPermit.pdf,
@@ -165,9 +163,7 @@ export class TpsPermitService {
           break;
         }
         let s3Object: CompleteMultipartUploadCommandOutput = null;
-        const MY_NAMESPACE = '1b671a64-40d5-491e-99b0-da01ff1f3341';
-        const hash = sha1(tpsPermit.pdf.toString());
-        const s3ObjectId = uuidv5(hash.toString(), MY_NAMESPACE);
+        const s3ObjectId = uuidv4() ;
         try {
           s3Object = await this.s3Service.uploadFile(
             tpsPermit.pdf,
@@ -230,13 +226,13 @@ export class TpsPermitService {
       dmsVersionId: dmsVersionId,
       companyId: tpsPermit.migrationId,
       createdDateTime: new Date(),
-      createdUser: 'tps_migration',
-      createdUserDirectory: 'BCEID',
-      createdUserGuid: '79F2FC0B69EB4819A18DD68958390DE6',
-      updatedUser: 'tps_migration',
+      createdUser: null,
+      createdUserDirectory: null,
+      createdUserGuid: null,
+      updatedUser: null,
       updatedDateTime: new Date(),
-      updatedUserGuid: '79F2FC0B69EB4819A18DD68958390DE6',
-      updatedUserDirectory: 'BCEID',
+      updatedUserGuid: null,
+      updatedUserDirectory: null,
     };
 
     const result = await this.documentRepository.save(dmsRecord);
