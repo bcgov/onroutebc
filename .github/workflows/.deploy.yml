@@ -49,7 +49,7 @@ on:
       ### Usually a bad idea / not recommended
       directory:
         description: 'Chart directory.'
-        default: 'charts/${{ inputs.repository }}'
+        default: 'charts/onroutebc'
         required: false
         type: string
       timeout-minutes:
@@ -113,7 +113,7 @@ on:
       ### Usually a bad idea / not recommended
       directory:
         description: 'Chart directory.'
-        default: 'charts/${{ github.event.repository.name }}'
+        default: 'charts/onroutebc'
         required: false
         type: string
       values:
