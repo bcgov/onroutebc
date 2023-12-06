@@ -43,7 +43,6 @@ import { ResultDto } from './dto/response/result.dto';
 import { VoidPermitDto } from './dto/request/void-permit.dto';
 import { PaymentService } from '../payment/payment.service';
 import { CreateTransactionDto } from '../payment/dto/request/create-transaction.dto';
-import { TransactionType } from '../../common/enum/transaction-type.enum';
 import { Transaction } from '../payment/entities/transaction.entity';
 import { Directory } from 'src/common/enum/directory.enum';
 import { PermitData } from './entities/permit-data.entity';
@@ -462,10 +461,7 @@ export class PermitService {
       createTransactionDto.pgCardType = voidPermitDto.pgCardType;
       createTransactionDto.paymentMethodTypeCode =
         voidPermitDto.paymentMethodTypeCode;
-      createTransactionDto.transactionTypeId =
-        voidPermitDto.transactionAmount === 0
-          ? TransactionType.ZERO_AMOUNT
-          : TransactionType.REFUND;
+      createTransactionDto.transactionTypeId = voidPermitDto.transactionTypeId;
       createTransactionDto.applicationDetails = [
         {
           applicationId: newPermit.permitId,

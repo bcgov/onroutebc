@@ -225,7 +225,19 @@
               </thead>
               <tbody>
                 {{#each payments}}
-                {{#if this.subTotalAmount}}
+
+                <tr class="table-row">
+                  <td class="table-cell payment-method">
+                    <p>{{this.paymentMethod}}</p>
+                  </td>
+                  <td class="table-cell user">
+                    <p>{{this.users}}</p>
+                  </td>
+                  <td class="table-cell amount table-cell-right">
+                    <p>{{formatAmount this.amount}}</p>
+                  </td>
+                </tr>
+                {{#displayPaymentMethodSubTotal 'payment'}}
                 <tr class="table-row">
                   <td class="table-cell table-cell-background payment-method bold">
                     <p>SUB TOTAL</p>
@@ -233,10 +245,11 @@
                   <td class="table-cell table-cell-background user">
                   </td>
                   <td class="table-cell table-cell-background amount table-cell-right bold">
-                    <p>${{this.subTotalAmount}}</p>
+                    <p>{{formatAmount (amountLookup ../summaryPaymentsAndRefunds this.paymentMethod 'payment')}}</p>
                   </td>
                 </tr>
-                {{else if this.totalAmount}}
+                {{/displayPaymentMethodSubTotal}}
+                {{#if @last}}
                 <tr class="table-row"></tr>
                 <tr class="table-row">
                   <td class="table-cell table-cell-background payment-method bold">
@@ -245,19 +258,9 @@
                   <td class="table-cell table-cell-background user">
                   </td>
                   <td class="table-cell table-cell-background amount table-cell-right bold">
-                    <p style="font-size:10.0pt">${{this.totalAmount}}</p>
-                  </td>
-                </tr>
-                {{else}}
-                <tr class="table-row">
-                  <td class="table-cell payment-method">
-                    <p>{{this.paymentMethod}}</p>
-                  </td>
-                  <td class="table-cell user">
-                    <p>{{this.user}}</p>
-                  </td>
-                  <td class="table-cell amount table-cell-right">
-                    <p>${{this.amount}}</p>
+                    <p style="font-size:10.0pt">{{formatAmount (amountLookup ../summaryPaymentsAndRefunds
+                      this.paymentMethod
+                      'totalPayment')}}</p>
                   </td>
                 </tr>
                 {{/if}}
@@ -292,7 +295,19 @@
                 </thead>
                 <tbody>
                   {{#each refunds}}
-                  {{#if this.subTotalAmount}}
+
+                  <tr class="table-row">
+                    <td class="table-cell payment-method">
+                      <p>{{this.paymentMethod}}</p>
+                    </td>
+                    <td class="table-cell user">
+                      <p>{{this.users}}</p>
+                    </td>
+                    <td class="table-cell amount table-cell-right">
+                      <p>{{formatRefundAmount this.amount}}</p>
+                    </td>
+                  </tr>
+                  {{#displayPaymentMethodSubTotal 'refund'}}
                   <tr class="table-row">
                     <td class="table-cell table-cell-background payment-method bold">
                       <p>SUB TOTAL</p>
@@ -300,10 +315,12 @@
                     <td class="table-cell table-cell-background user">
                     </td>
                     <td class="table-cell table-cell-background amount table-cell-right bold">
-                      <p>-{{this.subTotalAmount}}</p>
+                      <p>{{formatRefundAmount (amountLookup ../summaryPaymentsAndRefunds this.paymentMethod 'refund')}}
+                      </p>
                     </td>
                   </tr>
-                  {{else if this.totalAmount}}
+                  {{/displayPaymentMethodSubTotal}}
+                  {{#if @last}}
                   <tr class="table-row"></tr>
                   <tr class="table-row">
                     <td class="table-cell table-cell-background payment-method bold">
@@ -312,19 +329,10 @@
                     <td class="table-cell table-cell-background user">
                     </td>
                     <td class="table-cell table-cell-background amount table-cell-right bold">
-                      <p style="font-size:10.0pt">-${{this.totalAmount}}</p>
-                    </td>
-                  </tr>
-                  {{else}}
-                  <tr class="table-row">
-                    <td class="table-cell payment-method">
-                      <p>{{this.paymentMethod}}</p>
-                    </td>
-                    <td class="table-cell user">
-                      <p>{{this.user}}</p>
-                    </td>
-                    <td class="table-cell amount table-cell-right">
-                      <p>-${{this.amount}}</p>
+                      <p style="font-size:10.0pt">{{formatRefundAmount (amountLookup ../summaryPaymentsAndRefunds
+                        this.paymentMethod
+                        'totalRefund')}}
+                      </p>
                     </td>
                   </tr>
                   {{/if}}
@@ -336,7 +344,7 @@
             </div>
 
 
-            {{#if summaryPayments}}
+            {{#if summaryPaymentsAndRefunds}}
             <div style="page-break-before: always;">
               <table class="table">
                 <thead>
@@ -356,24 +364,24 @@
                   </tr>
                 </thead>
                 <tbody>
-                  {{#each summaryPayments}}
-                  {{#if this.subTotalPaymentAmount}}
+                  {{#each summaryPaymentsAndRefunds}}
+                  {{#if @last}}
                   <tr class="table-row">
                     <td class="table-cell table-cell-background summary-payment-payment-method bold">
                       <p>TOTAL</p>
                     </td>
                     <td class="table-cell table-cell-background summary-payment-payment table-cell-right bold">
-                      <p>${{this.subTotalPaymentAmount}}</p>
+                      <p>{{formatAmount this.payment}}</p>
                     </td>
 
                     <td class="table-cell table-cell-background summary-payment-refund table-cell-right bold">
-                      <p>-${{this.subTotalRefundAmount}}</p>
+                      <p>{{formatAmount this.refund}}</p>
                     </td>
                     <td class="table-cell table-cell-background summary-payment-deposit table-cell-right bold">
-                      <p>${{this.subTotalDepositAmount}}</p>
+                      <p>{{formatAmount this.deposit}}</p>
                     </td>
                   </tr>
-                  {{else if this.grandTotalAmount}}
+
                   <tr class="table-row"></tr>
                   <tr class="table-row">
                     <td class="table-cell table-cell-background summary-payment-payment-method bold">
@@ -384,7 +392,7 @@
                     <td class="table-cell table-cell-background summary-payment-refund">
                     </td>
                     <td class="table-cell table-cell-background summary-payment-deposit table-cell-right bold">
-                      <p style="font-size:10.0pt">${{this.grandTotalAmount}}</p>
+                      <p style="font-size:10.0pt">{{formatAmount this.deposit}}</p>
                     </td>
                   </tr>
                   {{else}}
@@ -393,13 +401,13 @@
                       <p>{{this.paymentMethod}}</p>
                     </td>
                     <td class="table-cell table-cell-right table-cell-bottom-border summary-payment-payment">
-                      <p>${{this.payment}}</p>
+                      <p>{{formatAmount this.payment}}</p>
                     </td>
                     <td class="table-cell table-cell-right table-cell-bottom-border summary-payment-refund">
-                      <p>-${{this.refund}}</p>
+                      <p>{{formatAmount this.refund}}</p>
                     </td>
                     <td class="table-cell table-cell-right table-cell-bottom-border summary-payment-deposit">
-                      <p>${{this.deposit}}</p>
+                      <p>{{formatAmount this.deposit}}</p>
                     </td>
                   </tr>
                   {{/if}}
@@ -427,7 +435,7 @@
                 </thead>
                 <tbody>
                   {{#each summaryPermits}}
-                  {{#if this.totalPermits}}
+                  {{#if @last}}
                   <tr class="table-row"></tr>
                   <tr class="table-row"></tr>
                   <tr class="table-row">
@@ -435,7 +443,7 @@
                       <p style="font-size:10.0pt">TOTAL PERMITS</p>
                     </td>
                     <td class="table-cell table-cell-background summary-permit-count table-cell-right">
-                      <p style="font-size:10.0pt">{{this.totalPermits}}</p>
+                      <p style="font-size:10.0pt">{{this.permitCount}}</p>
                     </td>
                   </tr>
                   {{else}}
