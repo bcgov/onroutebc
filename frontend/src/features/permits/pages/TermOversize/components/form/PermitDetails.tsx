@@ -13,6 +13,8 @@ import { requiredMessage } from "../../../../../../common/helpers/validationMess
 import { Commodities } from "../../../../types/application";
 import { ONROUTE_WEBPAGE_LINKS } from "../../../../../../routes/constants";
 import { CustomExternalLink } from "../../../../../../common/components/links/CustomExternalLink";
+import { BANNER_MESSAGES } from "../../../../../../common/constants/bannerMessages";
+import { PPC_EMAIL, TOLL_FREE_NUMBER } from "../../../../../../common/constants/constants";
 
 export const PermitDetails = ({
   feature,
@@ -133,7 +135,7 @@ export const PermitDetails = ({
           </Typography>
 
           <InfoBcGovBanner
-            msg="The applicant is responsible for ensuring they are following Legislation, policies, standards and guidelines in the operation of a commercial transportation business in British Columbia."
+            msg={BANNER_MESSAGES.POLICY_REMINDER}
             additionalInfo={
               <div className="commodities-info">
                 <div className="commodities-info__link">
@@ -150,8 +152,8 @@ export const PermitDetails = ({
 
                 <div className="commodities-info__contact-methods">
                   For further assistance please contact the Provincial Permit Centre at{" "}
-                  <span className="contact-info contact-info--toll-free">Toll-free: 1-800-559-9688</span>{" "}or{" "}
-                  <span className="contact-info contact-info--email">Email: ppcpermit@gov.bc.ca</span>
+                  <span className="contact-info contact-info--toll-free">Toll-free: {TOLL_FREE_NUMBER}</span>{" "}or{" "}
+                  <span className="contact-info contact-info--email">Email: {PPC_EMAIL}</span>
                 </div>
               </div>
             }

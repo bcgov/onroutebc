@@ -48,6 +48,7 @@ import {
   invalidYearMin,
   requiredMessage,
 } from "../../../../../../../common/helpers/validationMessages";
+import { BANNER_MESSAGES } from "../../../../../../../common/constants/bannerMessages";
 
 const selectedVehicleSubtype = (vehicle: Vehicle) => {
   switch (vehicle.vehicleType) {
@@ -252,7 +253,7 @@ export const VehicleDetails = ({
 
         <div className="vehicle-details__info">
           <InfoBcGovBanner
-            msg="Can't find a vehicle from your inventory?"
+            msg={BANNER_MESSAGES.CANNOT_FIND_VEHICLE}
             additionalInfo={
               <div className="vehicle-inventory-info">
                 Your vehicle may not be available in a permit application because

@@ -20,6 +20,7 @@ import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
 } from "../../../../common/helpers/util";
+import { BANNER_MESSAGES } from "../../../../common/constants/bannerMessages";
 
 export const EditVehicleDashboard = React.memo(
   ({ editVehicleMode }: { editVehicleMode: VEHICLE_TYPES_ENUM }) => {
@@ -125,7 +126,7 @@ export const EditVehicleDashboard = React.memo(
 
         <Box className="dashboard-page__info-banner layout-box">
           <InfoBcGovBanner
-            msg="Please note, unless stated otherwise, all fields are mandatory."
+            msg={BANNER_MESSAGES.ALL_FIELDS_MANDATORY}
           />
         </Box>
 

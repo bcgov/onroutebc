@@ -8,6 +8,7 @@ import {
   PHONE_WIDTH,
   EXT_WIDTH,
 } from "../../../../themes/orbcStyles";
+import { BANNER_MESSAGES } from "../../../../common/constants/bannerMessages";
 
 export const ContactDetails = ({ feature }: { feature: string }) => {
   return (
@@ -94,7 +95,7 @@ export const ContactDetails = ({ feature }: { feature: string }) => {
         </div>
 
         <InfoBcGovBanner
-          msg="The permit will be sent to the email on your onRouteBC Company Information, in addition to any email listed below. If you would also like to receive the permit by Fax, please enter a fax number."
+          msg={BANNER_MESSAGES.PERMIT_SEND_TO}
         />
 
         <CustomFormComponent

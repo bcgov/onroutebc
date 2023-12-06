@@ -16,6 +16,7 @@ import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
 } from "../../../../../common/helpers/util";
+import { BANNER_MESSAGES } from "../../../../../common/constants/bannerMessages";
 
 /**
  * The Company Information Form contains multiple subs forms including
@@ -143,7 +144,7 @@ export const CompanyInfoForm = memo(
           </Typography>
 
           <InfoBcGovBanner
-            msg="The Company Primary Contact will be contacted for all onRouteBC client profile queries." 
+            msg={BANNER_MESSAGES.COMPANY_CONTACT} 
           />
 
           <CompanyPrimaryContactForm feature={FEATURE} />

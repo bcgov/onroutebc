@@ -13,6 +13,7 @@ import { VEHICLE_TYPES_ENUM } from "../form/constants";
 import { PowerUnitForm } from "../form/PowerUnitForm";
 import { TrailerForm } from "../form/TrailerForm";
 import { VEHICLES_ROUTES } from "../../../../routes/constants";
+import { BANNER_MESSAGES } from "../../../../common/constants/bannerMessages";
 
 export const AddVehicleDashboard = React.memo(
   ({ addVehicleMode }: { addVehicleMode: VEHICLE_TYPES_ENUM }) => {
@@ -68,7 +69,7 @@ export const AddVehicleDashboard = React.memo(
 
         <Box className="dashboard-page__info-banner layout-box">
           <InfoBcGovBanner
-            msg="Please note, unless stated otherwise, all fields are mandatory."
+            msg={BANNER_MESSAGES.ALL_FIELDS_MANDATORY}
           />
         </Box>
 
