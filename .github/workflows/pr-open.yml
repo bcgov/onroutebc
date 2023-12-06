@@ -90,6 +90,7 @@ jobs:
     secrets: inherit
     with:
       autoscaling: false
+      repository: ${{ github.event.repository.name }}
       environment: dev
       release: ${{ needs.vars.outputs.tag }}
       tag: ${{ needs.vars.outputs.tag }}
