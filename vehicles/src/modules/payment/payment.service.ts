@@ -353,16 +353,19 @@ export class PaymentService {
     const query = queryString.substring(
       0,
       queryString.indexOf('hashValue=') - 1,
-    );
+    ).replace("+", " ");
+
     const hashValue = queryString.substring(
       queryString.indexOf('hashValue=') + 10,
       queryString.length,
     );
+
     const validHash = validateHash(query, hashValue);
     const validDto = this.validateUpdateTransactionDto(
       updatePaymentGatewayTransactionDto,
-      queryString,
+      `${query}&hashValue=${hashValue}`,
     );
+    
     if (!validHash) {
       throw new InternalServerErrorException('Invalid Hash');
     }
@@ -519,7 +522,7 @@ export class PaymentService {
       `&trnOrderId=${trnOrderId}` +
       `&trnAmount=${trnAmount}` +
       `&paymentMethod=${paymentMethod}` +
-      `&cardType=${cardType}` +
+      `&cardType=${cardType ? cardType : ""}` +
       `&authCode=${authCode}` +
       `&trnDate=${trnDate}` +
       `&ref2=${ref2}` +
