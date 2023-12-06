@@ -107,6 +107,8 @@ export class CompanyService {
         );
       } else {
         newCompany.companyId = existingCompanyDetails?.companyId;
+        newCompany.mailingAddress.addressId =
+          existingCompanyDetails?.mailingAddress?.addressId;
       }
 
       newCompany = await queryRunner.manager.save(newCompany);
