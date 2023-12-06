@@ -7,8 +7,7 @@ import { S3Service } from './s3.service';
 import { Document } from './entities/document.entity';
 import { CompleteMultipartUploadCommandOutput } from '@aws-sdk/client-s3';
 import { Permit } from './entities/permit.entity';
-import * as sha1 from 'crypto-js/sha1';
-import { LIMIT } from '../common/constants/tps-migration.constant';
+import { ERROR_POLLING_INTERVAL, LIMIT, PENDING_POLLING_INTERVAL } from '../common/constants/tps-migration.constant';
 import { v4 as uuidv4 } from 'uuid';
 import { Cron } from '@nestjs/schedule';
 
@@ -30,7 +29,7 @@ export class TpsPermitService {
    * Scheduled method to run every 5 minute. To upload TPS permits pdf to S3.
    *
    */
-  @Cron('0 */5 * * * *')
+  @Cron(`0 */${PENDING_POLLING_INTERVAL} * * * *`)
   async uploadTpsPermit() {
     const tpsPermits: TpsPermit[] = await this.tpsPermitRepository.find({
       where: { s3UploadStatus: S3uploadStatus.Pending },
@@ -122,7 +121,7 @@ export class TpsPermitService {
    *
    */
 
-  @Cron('0 0 */3 * * *')
+  @Cron(`0 0 */${ERROR_POLLING_INTERVAL} * * *`)
   async reprocessTpsPermit() {
     const tpsPermits: TpsPermit[] = await this.tpsPermitRepository.find({
       where: { s3UploadStatus: S3uploadStatus.Error, retryCount: LessThan(3) },
