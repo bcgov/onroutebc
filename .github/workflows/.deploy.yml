@@ -109,11 +109,6 @@ on:
         default: 'charts/${{ github.event.repository.name }}'
         required: false
         type: string
-      timeout-minutes:
-        description: 'Timeout minutes'
-        default: 10
-        required: false
-        type: number
       values:
         description: 'Values file.'
         default: 'values.yaml'
@@ -135,7 +130,7 @@ jobs:
     name: Helm
     environment: ${{ inputs.environment }}
     runs-on: ubuntu-22.04
-    timeout-minutes: ${{ inputs.timeout-minutes }}
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - name: Check Deployment Triggers
@@ -196,7 +191,7 @@ jobs:
             --set-string global.zone=${{ inputs.environment }} \
             --set-string global.vault.role=${{ inputs.vault_role }} \
             --install --wait --atomic ${{ github.event.repository.name }}-${{ inputs.tag }} \
-            --timeout ${{ inputs.timeout-minutes }}m --force \
+            --timeout 10m --force \
             --values ${{ inputs.values }} ${{ inputs.params }} \
             ./${{ github.event.repository.name }}-${{ inputs.tag }}.tgz
 
