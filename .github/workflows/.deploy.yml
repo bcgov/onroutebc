@@ -4,7 +4,7 @@ on:
   workflow_call:
     inputs:
       ### Required
-      target:
+      release:
         description: 'PR number, test or prod.'
         required: true
         type: string
@@ -15,26 +15,30 @@ on:
         required: false
         type: boolean
         default: true
+      environment:
+        description: "Deployment environment - dev/test/prod"
+        required: true
+        type: string
+        default: "dev"
       tag:
         description: 'Docker tag; e.g. PR number, tag, test or prod'
         required: false
         type: string
         default: ${{ github.event.number }}
-      license:
+      namespace:
         description: 'BC Gov LICENSE_PLATE of deployment env'
-        required: true
+        required: false
         type: string
-        default: "DEFINE_ME"
+        default: "c28f0c"
       vault_role:
         description: "nonprod/prod"
         required: true
         type: string
         default: "nonprod"
-      zone:
-        description: "Deployment zone - dev/test/prod"
-        required: true
+      triggers:
+        description: Paths to trigger a deploy; omit=always; e.g. ('backend/' 'frontend/')
+        required: false
         type: string
-        default: "dev"
 
       ### Usually a bad idea / not recommended
       directory:
@@ -52,45 +56,89 @@ on:
         default: 'values.yaml'
         required: false
         type: string
+      params:
+        description: 'Extra parameters to pass to helm upgrade'
+        default: ''
+        required: false
+        type: string
+
+env:
+  repo_release: ${{ github.event.repository.name }}-${{ inputs.release }}
+  package_tag: ${{ inputs.tag }}
 
 jobs:
   # https://github.com/bcgov-nr/action-deployer-openshift
   deploys:
     name: Helm
-    environment: ${{ inputs.zone}}
+    environment: ${{ inputs.environment }}
     runs-on: ubuntu-22.04
     timeout-minutes: ${{ inputs.timeout-minutes }}
     steps:
       - uses: actions/checkout@v4
-      - name: Deploy
+      - name: Check Deployment Triggers
+        id: triggers
+        run: |
+          # Expand for trigger processing
+
+          # Always deploy if no triggers are provided
+          if [ -z "${{ inputs.triggers }}" ]; then
+            echo "Always deploy when no triggers are provided"
+            echo "triggered=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # Deploy if changed files (git diff) match triggers
+          TRIGGERS=${{ inputs.triggers }}
+          git fetch origin ${{ github.event.repository.default_branch }}
+          while read -r check; do
+            for t in "${TRIGGERS[@]}"; do
+              if [[ "${check}" =~ "${t}" ]]; then
+                  echo "Build triggered based on git diff"
+                  echo -e "${t}\n --> ${check}"
+                  echo "triggered=true" >> $GITHUB_OUTPUT
+                  exit 0
+              fi
+            done
+          done < <(git diff origin/${{ github.event.repository.default_branch }} --name-only)
+
+          # If here skip deployment
+          echo "No triggers have fired, deployment skipped"
+
+      - name: Deploy if Triggers Fired
+        if: ${{ steps.triggers.outputs.triggered == 'true' }}
         working-directory: ${{ inputs.directory }}
         shell: bash
         run: |
-          # Login to OpenShift (NOTE: project command is a safeguard)
           oc login --token=${{ secrets.oc_token }} --server=${{ vars.oc_server }}
-          oc project ${{ vars.oc_namespace }}
+          oc project ${{ vars.OC_NAMESPACE }} # Safeguard!
 
           # Interrupt any previous jobs (status = pending-upgrade)
-          PREVIOUS=$(helm status ${{ github.event.repository.name }}-${{ inputs.tag }} -o json | jq .info.status || true)
+          PREVIOUS=$(helm status ${{ env.repo_release }} -o json | jq .info.status || true)
           if [[ ${PREVIOUS} =~ pending ]]; then
             echo "Rollback triggered"
-            helm rollback ${{ github.event.repository.name }}-${{ inputs.tag }} || \
-              helm uninstall ${{ github.event.repository.name }}-${{ inputs.tag }}
+            helm rollback ${{ env.repo_release }} || \
+              helm uninstall ${{ env.repo_release }}
           fi
 
-          # Deploy Helm Chart
+          # Package Helm release
           helm dependency update
+          helm package --app-version="${{ env.package_tag }}" --version=${{ inputs.tag }} .
+
+          # Deploy Helm release
           helm upgrade \
             --set global.autoscaling=${{ inputs.autoscaling }} \
             --set-string global.repository=${{ github.repository }} \
-            --set-string global.tag=${{ inputs.target }} \
-            --set-string global.license=${{inputs.license}} \
-            --set-string global.zone=${{inputs.zone}} \
-            --set-string global.vault.role=${{inputs.vault_role}} \
+            --set-string global.tag=${{ inputs.release }} \
+            --set-string global.license=${{ inputs.namespace }} \
+            --set-string global.zone=${{ inputs.environment }} \
+            --set-string global.vault.role=${{ inputs.vault_role }} \
             --install --wait --atomic ${{ github.event.repository.name }}-${{ inputs.tag }} \
-            --timeout ${{ inputs.timeout-minutes }}m \
-            --force \
-            --values ${{ inputs.values }} .
+            --timeout ${{ inputs.timeout-minutes }}m --force \
+            --values ${{ inputs.values }} ${{ inputs.params }} \
+            ./${{ github.event.repository.name }}-${{ inputs.tag }}.tgz
 
+          # print history 
+          helm history ${{ env.repo_release }}
+          
           # Remove old build runs, build pods and deployment pods
           oc delete po --field-selector=status.phase==Succeeded

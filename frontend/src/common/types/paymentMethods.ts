@@ -101,10 +101,12 @@ export type PaymentMethodAndCardTypeCodes = {
  * This is an additional payment code that specifically includes
  * a code called ALL.
  */
-export type AllPaymentMethodAndCardTypeCodes = PaymentMethodAndCardTypeCodes | {
-  paymentMethodTypeCode: "ALL",
-  paymentCardTypeCode?: undefined
-}
+export type AllPaymentMethodAndCardTypeCodes =
+  | PaymentMethodAndCardTypeCodes
+  | {
+      paymentMethodTypeCode: "ALL";
+      paymentCardTypeCode?: undefined;
+    };
 
 /**
  * The following record contains key value pairs for Payment Methods
@@ -201,11 +203,11 @@ export const CONSOLIDATED_PAYMENT_METHODS: Record<
  */
 export const ALL_CONSOLIDATED_PAYMENT_METHODS: Record<
   string,
-  | AllPaymentMethodAndCardTypeCodes
+  AllPaymentMethodAndCardTypeCodes
 > = {
   "All Payment Methods": {
     paymentMethodTypeCode: "ALL",
-    paymentCardTypeCode: undefined
+    paymentCardTypeCode: undefined,
   },
   ...CONSOLIDATED_PAYMENT_METHODS,
 };

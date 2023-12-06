@@ -38,12 +38,8 @@ export const PowerUnitColumnDefinition: MRT_ColumnDef<VehicleTypes>[] = [
     id: "createdDateTime",
     header: "Date Created",
     Cell: (props: { cell: any }) => {
-      const formattedDate = formatCellValuetoDatetime(props.cell.getValue())
-      return (
-        <span>
-          {formattedDate}
-        </span>
-      );
+      const formattedDate = formatCellValuetoDatetime(props.cell.getValue());
+      return <span>{formattedDate}</span>;
     },
   },
 ];
@@ -78,12 +74,8 @@ export const TrailerColumnDefinition: MRT_ColumnDef<VehicleTypes>[] = [
     id: "createdDateTime",
     header: "Date Created",
     Cell: (props: { cell: any }) => {
-      const formattedDate = formatCellValuetoDatetime(props.cell.getValue())
-      return (
-        <span>
-          {formattedDate}
-        </span>
-      );
+      const formattedDate = formatCellValuetoDatetime(props.cell.getValue());
+      return <span>{formattedDate}</span>;
     },
   },
 ];

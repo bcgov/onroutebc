@@ -2,7 +2,6 @@ name: PR Closed
 
 on:
   pull_request:
-    branches: [main]
     types: [closed]
 
 concurrency:
@@ -15,109 +14,33 @@ jobs:
   cleanup-openshift:
     name: Cleanup OpenShift
     env:
-      name: ${{ github.event.repository.name }}-${{ github.event.number }}
+      release: ${{ github.event.repository.name }}-${{ github.event.number }}
     runs-on: ubuntu-22.04
     timeout-minutes: 10
     steps:
       - name: Remove OpenShift artifacts
         run: |
           oc login --token=${{ secrets.OC_TOKEN }} --server=${{ vars.OC_SERVER }}
-          oc project ${{ vars.OC_NAMESPACE }}
+          oc project ${{ vars.OC_NAMESPACE }} # Safeguard!
 
           # If found, then remove
-          helm status ${{ env.name }} && helm uninstall --no-hooks ${{ env.name }} || \
-            echo "Not found: ${{ env.name }}"
+          helm status ${{ env.release }} && helm uninstall --no-hooks ${{ env.release }} || \
+            echo "Not found: ${{ env.release }}"
 
           # Remove Bitnami Crunchy PVCs
-          oc delete pvc data-${{ github.event.repository.name }}-${{ github.event.number }}-bitnami-pg-0 || \
-            echo "$@"
-  GitVersion:
-    name: Mainline Versioning - GitVersion
-    if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main'
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0 # fetch the whole repo history
+          oc delete pvc data-${{ env.release }}-bitnami-pg-0 || \
+            echo "Not found: pvc data-${{ env.release }}-bitnami-pg-0"
 
-      - name: Setup GitVersion
-        uses: gittools/actions/gitversion/setup@v0.10.2
-        with:
-          versionSpec: "5.x"
-
-      - name: Determine SemVersion
-        id: gitversion
-        uses: gittools/actions/gitversion/execute@v0.10.2
-        with:
-          useConfigFile: true
-          configFilePath: GitVersion.yaml
-
-      - name: Display GitVersion outputs
-        run: |
-          echo "Major: ${{ steps.gitversion.outputs.major }}"
-          echo "Minor: ${{ steps.gitversion.outputs.minor }}"
-          echo "Patch: ${{ steps.gitversion.outputs.patch }}"
-          echo "PreReleaseTag: ${{ steps.gitversion.outputs.preReleaseTag }}"
-          echo "PreReleaseTagWithDash: ${{ steps.gitversion.outputs.preReleaseTagWithDash }}"
-          echo "PreReleaseLabel: ${{ steps.gitversion.outputs.preReleaseLabel }}"
-          echo "PreReleaseNumber: ${{ steps.gitversion.outputs.preReleaseNumber }}"
-          echo "WeightedPreReleaseNumber: ${{ steps.gitversion.outputs.weightedPreReleaseNumber }}"
-          echo "BuildMetaData: ${{ steps.gitversion.outputs.buildMetaData }}"
-          echo "BuildMetaDataPadded: ${{ steps.gitversion.outputs.buildMetaDataPadded }}"
-          echo "FullBuildMetaData: ${{ steps.gitversion.outputs.fullBuildMetaData }}"
-          echo "MajorMinorPatch: ${{ steps.gitversion.outputs.majorMinorPatch }}"
-          echo "SemVer: ${{ steps.gitversion.outputs.semVer }}"
-          echo "LegacySemVer: ${{ steps.gitversion.outputs.legacySemVer }}"
-          echo "LegacySemVerPadded: ${{ steps.gitversion.outputs.legacySemVerPadded }}"
-          echo "AssemblySemVer: ${{ steps.gitversion.outputs.assemblySemVer }}"
-          echo "AssemblySemFileVer: ${{ steps.gitversion.outputs.assemblySemFileVer }}"
-          echo "FullSemVer: ${{ steps.gitversion.outputs.fullSemVer }}"
-          echo "InformationalVersion: ${{ steps.gitversion.outputs.informationalVersion }}"
-          echo "BranchName: ${{ steps.gitversion.outputs.branchName }}"
-          echo "EscapedBranchName: ${{ steps.gitversion.outputs.escapedBranchName }}"
-          echo "Sha: ${{ steps.gitversion.outputs.sha }}"
-          echo "ShortSha: ${{ steps.gitversion.outputs.shortSha }}"
-          echo "NuGetVersionV2: ${{ steps.gitversion.outputs.nuGetVersionV2 }}"
-          echo "NuGetVersion: ${{ steps.gitversion.outputs.nuGetVersion }}"
-          echo "NuGetPreReleaseTagV2: ${{ steps.gitversion.outputs.nuGetPreReleaseTagV2 }}"
-          echo "NuGetPreReleaseTag: ${{ steps.gitversion.outputs.nuGetPreReleaseTag }}"
-          echo "VersionSourceSha: ${{ steps.gitversion.outputs.versionSourceSha }}"
-          echo "CommitsSinceVersionSource: ${{ steps.gitversion.outputs.commitsSinceVersionSource }}"
-          echo "CommitsSinceVersionSourcePadded: ${{ steps.gitversion.outputs.commitsSinceVersionSourcePadded }}"
-          echo "UncommittedChanges: ${{ steps.gitversion.outputs.uncommittedChanges }}"
-          echo "CommitDate: ${{ steps.gitversion.outputs.commitDate }}"
-    outputs:
-      fullSemVer: ${{ steps.gitversion.outputs.fullSemVer}}
-
-  create-release:
-    name: Create release
-    runs-on: ubuntu-22.04
-    needs:
-      - GitVersion
-    env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    steps:
-      - name: Create Release
-        run: |
-          gh release create "${{ needs.GitVersion.outputs.fullSemVer }}" \
-          --repo=${{ github.repository }} \
-          --title="${{ github.repository }}-${{ needs.GitVersion.outputs.fullSemVer }}" \
-          --generate-notes
-
-
-  # If merged into main, then handle any image promotions
-  tag-images:
-    name: Tag Images
-    needs: [GitVersion]
-    if: ${{ needs.GitVersion.outputs.fullSemVer  != '' }}
+ # Add tags to PR image
+  retags:
+    name: Promote Images
     runs-on: ubuntu-22.04
     permissions:
       packages: write
     strategy:
       matrix:
         package: [dops, vehicles, frontend]
-    timeout-minutes: 2
+    timeout-minutes: 1
     steps:
       - uses: shrink/actions-docker-registry-tag@v3
         with:

@@ -8,7 +8,10 @@ import {
   hasPermitExpired,
   viewPermitPdf,
 } from "../../../permits/helpers/permitPDFHelper";
-import { dateTimeStringSortingFn, formatCellValuetoDatetime } from "../../../../common/constants/defaultTableOptions";
+import {
+  dateTimeStringSortingFn,
+  formatCellValuetoDatetime,
+} from "../../../../common/constants/defaultTableOptions";
 
 /*
  *
@@ -83,12 +86,8 @@ export const PermitSearchResultColumnDef: MRT_ColumnDef<Permit>[] = [
     enableSorting: true,
     sortingFn: dateTimeStringSortingFn,
     Cell: (props: { cell: any }) => {
-      const formattedDate = formatCellValuetoDatetime(props.cell.getValue())
-      return (
-        <div>
-          {formattedDate}
-        </div>
-      );
+      const formattedDate = formatCellValuetoDatetime(props.cell.getValue());
+      return <div>{formattedDate}</div>;
     },
   },
   {
@@ -97,12 +96,8 @@ export const PermitSearchResultColumnDef: MRT_ColumnDef<Permit>[] = [
     enableSorting: true,
     sortingFn: dateTimeStringSortingFn,
     Cell: (props: { cell: any }) => {
-      const formattedDate = formatCellValuetoDatetime(props.cell.getValue())
-      return (
-        <div>
-          {formattedDate}
-        </div>
-      );
+      const formattedDate = formatCellValuetoDatetime(props.cell.getValue());
+      return <div>{formattedDate}</div>;
     },
   },
   {
@@ -113,7 +108,7 @@ export const PermitSearchResultColumnDef: MRT_ColumnDef<Permit>[] = [
     sortingFn: dateTimeStringSortingFn,
     accessorFn: (originalRow) => {
       const { permitIssueDateTime } = originalRow;
-      const formattedDate = formatCellValuetoDatetime(permitIssueDateTime)
+      const formattedDate = formatCellValuetoDatetime(permitIssueDateTime);
       return formattedDate;
     },
   },
