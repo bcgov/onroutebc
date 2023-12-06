@@ -150,7 +150,9 @@ export const IDIRSearchResults = memo(
 
           if (shouldShowRowActions(idirUserDetails?.userAuthGroup)) {
             return (
-              <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+              <Box
+                className="idir-search-results__row-actions"
+              >
                 <IDIRPermitSearchRowActions
                   isPermitInactive={isInactive}
                   permitNumber={row.original.permitNumber}
