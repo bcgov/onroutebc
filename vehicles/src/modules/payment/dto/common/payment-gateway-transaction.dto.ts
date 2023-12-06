@@ -48,7 +48,7 @@ export class PaymentGatewayTransactionDto {
   })
   @IsOptional()
   @IsString()
-  @Length(1, 2)
+  @Length(0, 2)
   pgCardType: string;
 
   @AutoMap()

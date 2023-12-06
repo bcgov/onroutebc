@@ -48,7 +48,7 @@ export const PermitSearchResultColumnDef: MRT_ColumnDef<Permit>[] = [
         </>
       );
     },
-    size: 200,
+    size: 180,
   },
   {
     accessorKey: "permitType",

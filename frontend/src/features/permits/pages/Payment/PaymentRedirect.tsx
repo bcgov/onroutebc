@@ -89,6 +89,7 @@ export const PaymentRedirect = () => {
 
   useEffect(() => {
     if (completedTransaction.current === false) {
+      console.log(transactionQueryString);//
       completeTransactionMutation.mutate({
         transactionId: getDefaultRequiredVal("", transactionId),
         transactionQueryString,
@@ -141,7 +142,6 @@ export const PaymentRedirect = () => {
 const mapTransactionDetails = (
   paymentResponse: PayBCPaymentDetails,
 ): CompleteTransactionRequestData => {
-  const isValidCardType = paymentResponse.cardType !== "";
   const transactionDetails = {
     pgTransactionId: paymentResponse.trnId,
     pgApproved: Number(paymentResponse.trnApproved),
@@ -151,14 +151,7 @@ const mapTransactionDetails = (
     pgPaymentMethod: paymentResponse.paymentMethod,
     pgMessageId: paymentResponse.messageId,
     pgMessageText: paymentResponse.messageText,
-  };
-
-  if (!isValidCardType) {
-    return transactionDetails;
-  }
-
-  return {
-    ...transactionDetails,
     pgCardType: paymentResponse.cardType as PaymentCardTypeCode,
   };
+  return transactionDetails;
 };

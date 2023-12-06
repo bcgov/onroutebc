@@ -99,7 +99,7 @@ export const defaultTableOptions: any = {
       backgroundColor: BC_COLOURS.bc_background_light_grey,
     },
   },
-  enableBottomToolbar: true,
+  enableBottomToolbar: false, // hide pagination for now
   enableSortingRemoval: false,
   muiBottomToolbarProps: {
     sx: {

@@ -1,0 +1,25 @@
+@import "../../../../themes/orbcStyles";
+
+.permit-chip {
+  margin-left: 0.5rem;
+  
+  &--voided {
+    background-color: $focus-blue;
+    color: $white;
+  }
+  
+  &--revoked {
+    background-color: $bc-messages-red-text;
+    color: $white;
+  }
+  
+  &--superseded {
+    background-color: $bc-border-grey;
+    color: $bc-black;
+  }
+  
+  &--expired {
+    background-color: $bc-messages-red-background;
+    color: $bc-messages-red-text;
+  };
+}

@@ -17,7 +17,7 @@ import { getDataBySearch } from "../api/idirSearch";
 import { PermitSearchResultColumnDef } from "../table/Columns";
 import { SearchFields } from "../types/types";
 import { IDIRPermitSearchRowActions } from "./IDIRPermitSearchRowActions";
-import "./List.scss";
+import "./IDIRSearchResults.scss";
 import { USER_AUTH_GROUP } from "../../../manageProfile/types/userManagement.d";
 import { isPermitInactive } from "../../../permits/types/PermitStatus";
 import {
@@ -113,7 +113,10 @@ export const IDIRSearchResults = memo(
         showProgressBars: isLoading,
       },
       enableTopToolbar: true,
-      renderToolbarInternalActions: () => <></>,
+      enableBottomToolbar: false,
+      enableRowSelection: false,
+      enableGlobalFilter: false,
+      renderToolbarInternalActions: () => <div className="toolbar-internal"></div>,
       renderTopToolbarCustomActions: () => {
         return (
           <Box sx={{ display: "flex", gap: "1rem", p: "4px" }}>
@@ -171,7 +174,7 @@ export const IDIRSearchResults = memo(
     });
 
     return (
-      <div className="table-container">
+      <div className="table-container idir-search-results">
         <MaterialReactTable table={table} />
       </div>
     );

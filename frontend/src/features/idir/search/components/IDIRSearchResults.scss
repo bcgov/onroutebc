@@ -1,0 +1,8 @@
+@use "../../../../common/components/table/Table.scss";
+
+.idir-search-results {
+  &#{&} {
+    margin-top: 0;
+    padding-bottom: 9rem;
+  }
+}
