@@ -31,6 +31,7 @@ export class S3Service {
 
   async uploadFile(
     file: Buffer,
+    fileName: string,
     filePath?: string,
   ): Promise<CompleteMultipartUploadCommandOutput> {
     const client = this.s3Client;
@@ -41,11 +42,11 @@ export class S3Service {
         Key: this._s3Key + '/' + filePath,
         Body: file,
         ContentType: 'application/pdf',
+        ContentDisposition: 'attachment; filename="' + fileName + '"',
         //TODO Add metadata
         //Metadata
       },
     });
-
     return await upload.done();
   }
 }

@@ -30,7 +30,7 @@ export class TpsPermitService {
    * Scheduled method to run every 5 minute. To upload TPS permits pdf to S3.
    *
    */
-  @Cron('0 */5 * * * *')
+  @Cron('0 */30 * * * *')
   async uploadTpsPermit() {
     const tpsPermits: TpsPermit[] = await this.tpsPermitRepository.find({
       where: { s3UploadStatus: S3uploadStatus.Pending },
@@ -75,7 +75,11 @@ export class TpsPermitService {
         const hash = sha1(tpsPermit.pdf.toString());
         const s3ObjectId = uuidv5(hash.toString(), ORBC_GUID_NAMESPACE);
         try {
-          s3Object = await this.s3Service.uploadFile(tpsPermit.pdf, s3ObjectId);
+          s3Object = await this.s3Service.uploadFile(
+            tpsPermit.pdf,
+            tpsPermit.permitNumber + '.pdf',
+            s3ObjectId,
+          );
         } catch (err) {
           this.logger.error('Error while upload to s3. ', err);
           this.logger.error('Failed permit numer ', tpsPermit.permitNumber);
@@ -165,7 +169,11 @@ export class TpsPermitService {
         const hash = sha1(tpsPermit.pdf.toString());
         const s3ObjectId = uuidv5(hash.toString(), MY_NAMESPACE);
         try {
-          s3Object = await this.s3Service.uploadFile(tpsPermit.pdf, s3ObjectId);
+          s3Object = await this.s3Service.uploadFile(
+            tpsPermit.pdf,
+            tpsPermit.permitNumber + '.pdf',
+            s3ObjectId,
+          );
         } catch (err) {
           this.logger.error('Error while upload to s3. ', err);
           this.logger.error('Failed permit numer ', tpsPermit.permitNumber);
