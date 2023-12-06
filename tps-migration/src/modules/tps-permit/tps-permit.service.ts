@@ -71,10 +71,9 @@ export class TpsPermitService {
           break;
         }
         let s3Object: CompleteMultipartUploadCommandOutput = null;
-        const MY_NAMESPACE = process.env.ORBC_GUID_NAMESPACE;
-        console.log('MY_NAMESPACE: ',MY_NAMESPACE)
+        const ORBC_GUID_NAMESPACE = process.env.ORBC_GUID_NAMESPACE;
         const hash = sha1(tpsPermit.pdf.toString());
-        const s3ObjectId = uuidv5(hash.toString(), MY_NAMESPACE);
+        const s3ObjectId = uuidv5(hash.toString(), ORBC_GUID_NAMESPACE);
         try {
           s3Object = await this.s3Service.uploadFile(tpsPermit.pdf, s3ObjectId);
         } catch (err) {
