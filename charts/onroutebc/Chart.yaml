@@ -1,6 +1,6 @@
 ---
 apiVersion: v2
-name: onRouteBC
+name: onroutebc
 description: Helm chart for onRouteBC
 type: application
 version: 1.0.1

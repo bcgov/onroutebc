@@ -21,7 +21,11 @@ import { getCompanyUsers } from "../apiManager/manageProfileAPI";
 import { UserManagementTableRowActions } from "../components/user-management/UserManagementRowOptions";
 import { UserManagementColumnsDefinition } from "../types/UserManagementColumns";
 import { BCeIDUserStatus, ReadCompanyUser } from "../types/userManagement.d";
-import { defaultTableInitialStateOptions, defaultTableOptions, defaultTableStateOptions } from "../../../common/constants/defaultTableOptions";
+import {
+  defaultTableInitialStateOptions,
+  defaultTableOptions,
+  defaultTableStateOptions,
+} from "../../../common/constants/defaultTableOptions";
 
 /**
  * User Management Component for CV Client.

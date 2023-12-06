@@ -41,11 +41,25 @@ export const PermitDetails = ({
 
   // watch() is subscribed to fields, and will always have the latest values from the fields
   // thus, no need to use this in useState and useEffect
-  const startDate = watch("permitData.startDate");
+  const rawStartDate = watch("permitData.startDate");
   const duration = watch("permitData.permitDuration");
 
   // Permit expiry date === Permit start date + Permit duration - 1
+  const startDate = dayjs(rawStartDate)
+    .hour(0)
+    .minute(0)
+    .second(0)
+    .millisecond(0);
   const expiryDate = dayjs(startDate).add(duration - 1, "day");
+
+  // handle leap year - if the given year is a leap year, and our
+  // expiry date is any month other then January, add 1 day back
+  if (
+    expiryDate.isLeapYear() &&
+    expiryDate.isAfter(expiryDate.year() + "01-31", "month")
+  ) {
+    expiryDate.add(1, "day");
+  }
 
   // Formatted expiry date is just a derived value, and always reflects latest value of expiry date
   // no need to use useState nor place inside useEffect

@@ -1,69 +1,84 @@
 name: Merge
 
 on:
-  workflow_run:
-    workflows: [PR Closed]
-    types: [completed]
+  push:
+    branches: [main]
+    paths-ignore:
+      - '*.md'
+      - '.github/**'
+      - 'common/graphics/**'
+      - '!.github/workflows/.deploy.yml'
+      - '!.github/workflows/merge.yml'
+  workflow_dispatch:
+    inputs:
+      pr_no:
+        description: "PR-numbered container set to deploy"
+        type: number
+        required: true
 
 concurrency:
   group: ${{ github.workflow }}
   cancel-in-progress: true
 
 jobs:
+  vars:
+    name: Set Variables
+    outputs:
+      tag: ${{ steps.tag.outputs.tag }}
+    runs-on: ubuntu-22.04
+    timeout-minutes: 1
+    steps:
+      # Get last merged (or current) PR number
+      - uses: actions/checkout@v4
+      - name: Get PR Number
+        id: tag
+        run: |
+          # Accept a provided PR as input or use the API
+          if [ ! -z "${{ inputs.pr_no }}" ]; then
+            PR_NO="${{ inputs.pr_no }}"
+          else
+            HEAD=$(git log main --oneline | head -n1 | awk '{print $1}')
+            PR_NO=$(\
+              curl -L -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${{ github.token }}" \
+                -H "X-GitHub-Api-Version: 2022-11-28" \
+                https://api.github.com/repos/${{ github.repository }}/commits/${HEAD}/pulls \
+                  | jq .[0].number
+            )
+          fi
+          echo -e "Last PR: ${PR_NO}"
+
+          # Validate PR number and send to output
+          if [ ! "${PR_NO}" =~ ^[0-9]+$ ]; then
+            echo "PR number not found"
+            exit 1
+          fi
+          echo "tag=${PR_NO}" >> $GITHUB_OUTPUT
+
   deploys-test:
     name: Deploys (test)
+    needs: [vars]
     uses: ./.github/workflows/.deploy.yml
     secrets: inherit
     with:
-      tag: test
-      target: latest
-      values: values.yaml
-      license: c28f0c
+      environment: test
+      release: test
+      tag: ${{ needs.vars.outputs.tag }}
       vault_role: nonprod
-      zone: test
 
-#  integration-e2e:
-#    name: Integration and E2E Tests
-#    needs: [deploys-test]
-#    uses: ./.github/workflows/.tests.yml
-#    with:
-#      target: test
-  
-  promote-images-test:
-    name: Promote Images - Test
-    #needs: [deploys-test, integration-e2e]
-    needs: [deploys-test]
-    runs-on: ubuntu-22.04
-    permissions:
-      packages: write
-    strategy:
-      matrix:
-        package: [dops, vehicles, frontend]
-    timeout-minutes: 2
-    steps:
-      - uses: shrink/actions-docker-registry-tag@v3
-        with:
-          registry: ghcr.io
-          repository: ${{ github.repository }}/${{ matrix.package }}
-          target: latest
-          tags: test
-  
   deploys-prod:
     name: Deploys (prod)
-    needs: [promote-images-test]
+    needs: [deploys-test, vars]
     uses: ./.github/workflows/.deploy.yml
     secrets: inherit
     with:
-      tag: prod
-      target: test
-      values: values.yaml
-      license: c28f0c
+      environment: prod
+      tag: ${{ needs.vars.outputs.tag }}
+      release: test
       vault_role: prod
-      zone: prod
   
   promote-images-prod:
     name: Promote Images - Prod
-    needs: [deploys-prod]
+    needs: [deploys-prod, vars]
     runs-on: ubuntu-22.04
     permissions:
       packages: write
@@ -76,5 +91,5 @@ jobs:
         with:
           registry: ghcr.io
           repository: ${{ github.repository }}/${{ matrix.package }}
-          target: test
+          target: ${{ needs.vars.outputs.tag }}
           tags: prod  #Promote images AFTER successful deploy
