@@ -40,27 +40,16 @@ jobs:
             After merge, new images are promoted to:
             - [Merge Workflow](https://github.com/${{ github.repository }}/actions/workflows/merge.yml)
 
-  # Find initial PR number (for merge queues)
+  # Get PR number for merge queues, otherwise jusr use github.event.nuber
   vars:
-    name: Build and Deploy Vars
+    name: Set Variables
     outputs:
-      tag: ${{ steps.deploys.outputs.tag }}
+      pr: ${{ steps.pr.outputs.pr }}
     runs-on: ubuntu-22.04
     steps:
-      - name: Set Variables
-        id: deploys
-        run: |
-          # Get PR number (different process for merge queue)
-          if [ ${{ github.event_name }} == 'pull_request' ]
-          then
-            tag=${{ github.event.number }}
-          else
-            tag=$(echo ${{ github.event.merge_group.head_ref }} | grep -Eo "queue/main/pr-[0-9]+" | cut -d '-' -f2)
-          fi
-
-          echo "Summary ---"
-          echo -e "\tTag (PR no): ${tag}"
-          echo "tag=${tag}" >> $GITHUB_OUTPUT
+      - name: PR Number
+        id: pr
+        uses: bcgov-nr/action-get-pr@v0.0.1
 
   # https://github.com/bcgov-nr/action-builder-ghcr
   builds:
@@ -78,7 +67,7 @@ jobs:
         with:
           keep_versions: 50
           package: ${{ matrix.package }}
-          tag: ${{ needs.vars.outputs.tag }}
+          tag: ${{ needs.vars.outputs.pr }}
           tag_fallback: latest
           triggers: ('${{ matrix.package }}/')
 
@@ -91,7 +80,7 @@ jobs:
     with:
       autoscaling: false
       environment: dev
-      release: ${{ needs.vars.outputs.tag }}
-      tag: ${{ needs.vars.outputs.tag }}
+      release: ${{ needs.vars.outputs.pr }}
+      tag: ${{ needs.vars.outputs.pr }}
       triggers: ('database/' 'dops/' 'frontend/' 'vehicles/')
       vault_role: nonprod
