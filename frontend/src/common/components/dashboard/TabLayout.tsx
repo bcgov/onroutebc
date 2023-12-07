@@ -137,7 +137,11 @@ export const TabLayout = React.memo(
             borderColor: "divider",
           }}
         >
-          <Banner bannerText={bannerText} bannerButton={bannerButton} />
+          <Banner
+            bannerText={bannerText}
+            bannerButton={bannerButton}
+            isTabBanner={true}
+          />
 
           <DisplayTabs
             value={value}

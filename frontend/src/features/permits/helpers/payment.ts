@@ -1,14 +1,16 @@
 import { PayBCPaymentDetails } from "../types/payment";
 import { parseRedirectUriPath } from "../pages/Payment/PaymentRedirect";
+import { 
+  PAYMENT_GATEWAY_METHODS,
+  PAYMENT_METHOD_TYPE_CODE,
+  PaymentGatewayMethod,
+  PaymentMethodTypeCode, 
+} from "../../../common/types/paymentMethods";
+
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
 } from "../../../common/helpers/util";
-
-import {
-  BAMBORA_PAYMENT_METHODS,
-  BamboraPaymentMethod,
-} from "../types/PaymentMethod";
 
 /**
  * Extracts PayBCPaymentDetails from the query parameters of a URL.
@@ -24,7 +26,7 @@ export const getPayBCPaymentDetails = (
   const { trnApproved } = parseRedirectUriPath(path);
 
   const payBCPaymentDetails: PayBCPaymentDetails = {
-    authCode: getDefaultRequiredVal("", params.get("authCode")),
+    authCode: params.get("authCode"),
     avsAddrMatch: getDefaultRequiredVal("", params.get("avsAddrMatch")),
     avsId: getDefaultRequiredVal("", params.get("avsId")),
     avsMessage: getDefaultRequiredVal("", params.get("avsMessage")),
@@ -32,14 +34,14 @@ export const getPayBCPaymentDetails = (
     avsProcessed: getDefaultRequiredVal("", params.get("avsProcessed")),
     avsResult: getDefaultRequiredVal("", params.get("avsResult")),
     cardType: getDefaultRequiredVal("", params.get("cardType")),
-    cvdId: 1, // applyWhenNotNullable((cvdId) => Number(cvdId), params.get("cvdId"), 0),
+    cvdId: applyWhenNotNullable((cvdId) => Number(cvdId), params.get("cvdId")),
     trnApproved: trnApproved,
-    messageId: "1", // getDefaultRequiredVal("", params.get("messageId")),
+    messageId: applyWhenNotNullable((messageId) => Number(messageId), params.get("messageId")),
     messageText: getDefaultRequiredVal("", params.get("messageText")),
     paymentMethod: getDefaultRequiredVal(
-      BAMBORA_PAYMENT_METHODS.CC,
+      PAYMENT_GATEWAY_METHODS.CC,
       params.get("paymentMethod"),
-    ) as BamboraPaymentMethod,
+    ) as PaymentGatewayMethod,
     ref1: getDefaultRequiredVal("", params.get("ref1")),
     ref2: getDefaultRequiredVal("", params.get("ref2")),
     ref3: getDefaultRequiredVal("", params.get("ref3")),
@@ -62,4 +64,18 @@ export const getPayBCPaymentDetails = (
   };
 
   return payBCPaymentDetails;
+};
+
+/**
+ * Determines whether or not transaction is valid based on payment method and if it's approved.
+ * @param paymentMethod Payment method used
+ * @param transactionApproved Approval status of the transaction
+ * @returns Whether or not the transaction is valid
+ */
+export const isValidTransaction = (
+  paymentMethod: PaymentMethodTypeCode,
+  transactionApproved?: number | null,
+) => {
+  return paymentMethod === PAYMENT_METHOD_TYPE_CODE.WEB
+    || (!!transactionApproved && transactionApproved > 0);
 };

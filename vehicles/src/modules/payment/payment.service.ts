@@ -175,7 +175,8 @@ export class PaymentService {
   ) {
     if (
       this.isWebTransactionPurchase(paymentMethod, transactionType) &&
-      permitStatus != ApplicationStatus.IN_PROGRESS
+      permitStatus != ApplicationStatus.IN_PROGRESS &&
+      permitStatus != ApplicationStatus.WAITING_PAYMENT
     ) {
       throw new BadRequestException('Application should be in Progress!!');
     }
@@ -289,7 +290,11 @@ export class PaymentService {
         url = this.generateUrl(createdTransaction);
       }
 
-      if (createdTransaction.transactionTypeId == TransactionType.REFUND) {
+      if (
+        createdTransaction.paymentMethodTypeCode ==
+          PaymentMethodTypeEnum.NO_PAYMENT ||
+        createdTransaction.transactionTypeId == TransactionType.REFUND
+      ) {
         const receiptNumber = await this.generateReceiptNumber();
         const receipt = new Receipt();
         receipt.receiptNumber = receiptNumber;
@@ -348,16 +353,19 @@ export class PaymentService {
     const query = queryString.substring(
       0,
       queryString.indexOf('hashValue=') - 1,
-    );
+    ).replace("+", " ");
+
     const hashValue = queryString.substring(
       queryString.indexOf('hashValue=') + 10,
       queryString.length,
     );
+
     const validHash = validateHash(query, hashValue);
     const validDto = this.validateUpdateTransactionDto(
       updatePaymentGatewayTransactionDto,
-      queryString,
+      `${query}&hashValue=${hashValue}`,
     );
+    
     if (!validHash) {
       throw new InternalServerErrorException('Invalid Hash');
     }
@@ -502,7 +510,7 @@ export class PaymentService {
     const trnOrderId = updatePaymentGatewayTransactionDto.pgTransactionId;
     const trnAmount = params.get('trnAmount');
     const paymentMethod = updatePaymentGatewayTransactionDto.pgPaymentMethod;
-    const cardType = updatePaymentGatewayTransactionDto.pgCardType;
+    const cardType = updatePaymentGatewayTransactionDto.pgCardType ?? "";
     const authCode = updatePaymentGatewayTransactionDto.pgAuthCode;
     const trnDate = params.get('trnDate');
     const ref2 = params.get('ref2');

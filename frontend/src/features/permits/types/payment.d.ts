@@ -1,11 +1,11 @@
-import {
-  PaymentCardTypeCode,
+import { 
+  PaymentCardTypeCode, 
   PaymentMethodTypeCode,
+  PaymentGatewayMethod,
 } from "../../../common/types/paymentMethods";
-import { BamboraPaymentMethod } from "./PaymentMethod";
 
 export interface PayBCPaymentDetails {
-  authCode: string;
+  authCode?: string | null;
   avsAddrMatch: string;
   avsId: string;
   avsMessage: string;
@@ -13,11 +13,11 @@ export interface PayBCPaymentDetails {
   avsProcessed: string;
   avsResult: string;
   cardType: string;
-  cvdId: number;
+  cvdId?: number | null;
   trnApproved: number;
-  messageId: string;
+  messageId?: number | null;
   messageText: string;
-  paymentMethod: BamboraPaymentMethod;
+  paymentMethod: PaymentGatewayMethod;
   ref1: string;
   ref2: string;
   ref3: string;
@@ -43,11 +43,12 @@ export const TRANSACTION_TYPES = {
   PA: "PA",
   PAC: "PAC",
   Q: "Q",
-  Z: "Z",
 } as const;
 
 export type TransactionType =
   (typeof TRANSACTION_TYPES)[keyof typeof TRANSACTION_TYPES];
+
+type Optional<T> = { [P in keyof T]?: T[P] | null | undefined };
 
 export interface PaymentGatewayData {
   pgTransactionId: string;
@@ -56,13 +57,13 @@ export interface PaymentGatewayData {
   pgCardType: PaymentCardTypeCode;
   pgTransactionDate: string;
   pgCvdId: number;
-  pgPaymentMethod: BamboraPaymentMethod;
+  pgPaymentMethod: PaymentGatewayMethod;
   pgMessageId: number;
   pgMessageText: string;
 }
 
 export interface StartTransactionRequestData
-  extends Partial<PaymentGatewayData> {
+  extends Optional<PaymentGatewayData> {
   transactionTypeId: TransactionType;
   paymentMethodTypeCode: PaymentMethodTypeCode;
   paymentCardTypeCode?: PaymentCardTypeCode;
@@ -73,7 +74,7 @@ export interface StartTransactionRequestData
 }
 
 export interface StartTransactionResponseData
-  extends Partial<PaymentGatewayData> {
+  extends Optional<PaymentGatewayData> {
   transactionId: string;
   transactionTypeId: TransactionType;
   paymentMethodTypeCode: PaymentMethodTypeCode;
@@ -88,9 +89,9 @@ export interface StartTransactionResponseData
   url?: string;
 }
 
-export type CompleteTransactionRequestData = Partial<PaymentGatewayData>;
+export type CompleteTransactionRequestData = Optional<PaymentGatewayData>;
 
 export interface CompleteTransactionResponseData
-  extends Partial<PaymentGatewayData> {
+  extends Optional<PaymentGatewayData> {
   transactionId: string;
 }

@@ -23,10 +23,8 @@ import { addUserToCompany } from "../apiManager/manageProfileAPI";
 import { UserAuthRadioGroup } from "../components/forms/userManagement/UserAuthRadioGroup";
 import UserGroupsAndPermissionsModal from "../components/user-management/UserGroupsAndPermissionsModal";
 import { BCEID_PROFILE_TABS } from "../types/manageProfile.d";
-import {
-  BCeIDAddUserRequest,
-  BCEID_AUTH_GROUP,
-} from "../types/userManagement.d";
+import { BCeIDAddUserRequest, BCEID_AUTH_GROUP } from "../types/userManagement.d";
+import { PROFILE_ROUTES } from "../../../routes/constants";
 
 /**
  * BCeID User - Add User Page.
@@ -48,7 +46,7 @@ export const AddUserDashboard = React.memo(() => {
   const { setSnackBar } = useContext(SnackBarContext);
 
   const onClickBreadCrumb = () => {
-    navigate("/manage-profiles", {
+    navigate(PROFILE_ROUTES.MANAGE, {
       state: {
         selectedTab: BCEID_PROFILE_TABS.USER_MANAGEMENT_ORGADMIN,
       },
@@ -86,7 +84,7 @@ export const AddUserDashboard = React.memo(() => {
           showSnackbar: true,
           setShowSnackbar: () => true,
         });
-        navigate("/manage-profiles", {
+        navigate(PROFILE_ROUTES.MANAGE, {
           state: {
             selectedTab: BCEID_PROFILE_TABS.USER_MANAGEMENT_ORGADMIN,
           },
@@ -112,7 +110,7 @@ export const AddUserDashboard = React.memo(() => {
   return (
     <div className="dashboard-page dashboard-page--add-user">
       <Box className="dashboard-page__banner layout-box">
-        <Banner bannerText="Add User" extendHeight={true} />
+        <Banner bannerText="Add User" />
       </Box>
 
       <Box className="dashboard-page__breadcrumb layout-box">

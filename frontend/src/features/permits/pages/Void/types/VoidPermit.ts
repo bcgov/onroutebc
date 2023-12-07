@@ -1,10 +1,12 @@
-import {
-  PaymentCardTypeCode,
-  PaymentMethodTypeCode,
-} from "../../../../../common/types/paymentMethods";
-import { BamboraPaymentMethod } from "../../../types/PaymentMethod";
 import { PermitStatus, PERMIT_STATUSES } from "../../../types/PermitStatus";
 import { PermitsActionResponse } from "../../../types/permit";
+import { TRANSACTION_TYPES, TransactionType } from "../../../types/payment.d";
+import { 
+  PaymentCardTypeCode, 
+  PaymentMethodTypeCode,
+  PaymentGatewayMethod,
+  PAYMENT_METHOD_TYPE_CODE,
+} from "../../../../../common/types/paymentMethods";
 
 export interface VoidPermitFormData {
   permitId: string;
@@ -20,17 +22,19 @@ export interface VoidPermitRequestData {
   paymentMethodTypeCode: PaymentMethodTypeCode;
   transactionAmount: number;
   pgTransactionDate?: string;
-  pgPaymentMethod?: BamboraPaymentMethod;
+  pgPaymentMethod?: PaymentGatewayMethod;
   pgCardType?: PaymentCardTypeCode;
   comment: string;
+  transactionTypeId: TransactionType;
 }
 
 export interface RevokePermitRequestData {
   status: Extract<PermitStatus, typeof PERMIT_STATUSES.REVOKED>;
-  paymentMethodTypeCode: PaymentMethodTypeCode; // hardcoded to "WEB" - Web
-  pgPaymentMethod?: BamboraPaymentMethod;
+  paymentMethodTypeCode: typeof PAYMENT_METHOD_TYPE_CODE.NP;
+  pgPaymentMethod?: PaymentGatewayMethod;
   transactionAmount: 0;
   comment: string;
+  transactionTypeId: typeof TRANSACTION_TYPES.P;
 }
 
 export type VoidPermitResponseData = PermitsActionResponse;

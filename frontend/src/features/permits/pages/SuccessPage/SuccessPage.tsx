@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import "./SuccessPage.scss";
 import { viewPermitPdf, viewReceiptPdf } from "../../helpers/permitPDFHelper";
+import { APPLICATIONS_ROUTES } from "../../../../routes/constants";
 
 export const SuccessPage = () => {
   useEffect(() => {
@@ -46,7 +47,7 @@ export const SuccessPage = () => {
           <Button
             variant="contained"
             color="primary"
-            onClick={() => navigate("/applications")}
+            onClick={() => navigate(APPLICATIONS_ROUTES.BASE)}
             className="success-btn"
           >
             Apply for a new permit

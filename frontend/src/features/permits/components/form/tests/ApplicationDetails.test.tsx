@@ -1,8 +1,9 @@
+import { permitTypeDisplayText } from "../../../types/PermitType";
 import {
   DATE_FORMATS,
   dayjsToLocalStr,
 } from "../../../../../common/helpers/formatDate";
-import { permitTypeDisplayText } from "../../../types/PermitType";
+
 import {
   closeMockServer,
   createdAt,

@@ -1,0 +1,19 @@
+@import "../../../themes/orbcStyles";
+
+.custom-link {
+  color: $bc-text-links-blue;
+
+  &__icon {
+    margin-left: 0.5rem;
+  }
+
+  &:hover {
+    text-decoration: none;
+
+    .custom-link {
+      &__link {
+        color: $blue;
+      }
+    }
+  }
+}
