@@ -24,4 +24,4 @@ jobs:
       environment: ${{inputs.environment}} #test env -> test database
       tag: ${{inputs.environment}}
       release: "demo"
-      vault_role: ${{contains("nonprod",inputs.environment) && "nonprod" || "prod" }}
+      vault_role: ${{contains("prod",inputs.environment) && "prod" || "nonprod" }}
