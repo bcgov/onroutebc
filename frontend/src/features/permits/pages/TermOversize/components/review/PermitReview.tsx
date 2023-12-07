@@ -3,7 +3,7 @@ import { Dayjs } from "dayjs";
 import { Dispatch, SetStateAction } from "react";
 
 import "./PermitReview.scss";
-import { WarningBcGovBanner } from "../../../../../../common/components/banners/AlertBanners";
+import { WarningBcGovBanner } from "../../../../../../common/components/banners/WarningBcGovBanner";
 import { ApplicationDetails } from "../../../../components/form/ApplicationDetails";
 import { ReviewContactDetails } from "./ReviewContactDetails";
 import { ReviewPermitDetails } from "./ReviewPermitDetails";
@@ -62,8 +62,7 @@ export const PermitReview = (props: PermitReviewProps) => {
     <Box className="permit-review layout-box">
       <Box className="permit-review__container">
         <WarningBcGovBanner
-          description="Please review and confirm that the information below is correct."
-          width="668px"
+          msg="Please review and confirm that the information below is correct."
         />
 
         <ApplicationDetails

@@ -9,13 +9,14 @@ import { CompanyInfoGeneralForm } from "./subForms/CompanyInfoGeneralForm";
 import { CompanyContactDetailsForm } from "./subForms/CompanyContactDetailsForm";
 import { CompanyPrimaryContactForm } from "./subForms/CompanyPrimaryContactForm";
 import { formatPhoneNumber } from "../../../../../common/components/form/subFormComponents/PhoneNumberInput";
-import { InfoBcGovBanner } from "../../../../../common/components/banners/AlertBanners";
+import { InfoBcGovBanner } from "../../../../../common/components/banners/InfoBcGovBanner";
 import { CompanyProfile } from "../../../types/manageProfile";
+import { getCompanyEmailFromSession } from "../../../../../common/apiManager/httpRequestHandler";
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
 } from "../../../../../common/helpers/util";
-import { getCompanyEmailFromSession } from "../../../../../common/apiManager/httpRequestHandler";
+import { BANNER_MESSAGES } from "../../../../../common/constants/bannerMessages";
 
 /**
  * The Company Information Form contains multiple subs forms including
@@ -142,7 +143,9 @@ export const CompanyInfoForm = memo(
             Company Primary Contact
           </Typography>
 
-          <InfoBcGovBanner description="The Company Primary Contact will be contacted for all onRouteBC client profile queries." />
+          <InfoBcGovBanner
+            msg={BANNER_MESSAGES.COMPANY_CONTACT} 
+          />
 
           <CompanyPrimaryContactForm feature={FEATURE} />
         </FormProvider>

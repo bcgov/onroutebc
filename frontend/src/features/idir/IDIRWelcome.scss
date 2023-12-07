@@ -1,4 +1,4 @@
-@import "../../themes/orbcStyles.scss";
+@import "../../themes/orbcStyles";
 
 .idir-welcome-page {
   display: flex;
@@ -10,9 +10,9 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    max-width: 400px;
+    max-width: 25rem;
     width: 90%;
-    margin: 25vh 0 calc(25vh - 0.25rem) 0;
+    margin: 25vh 0 30vh 0;
 
     .graphic {
       width: 178px;

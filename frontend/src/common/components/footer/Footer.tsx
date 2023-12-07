@@ -1,3 +1,4 @@
+import { ONROUTE_WEBPAGE_LINKS } from "../../../routes/constants";
 import "./Footer.scss";
 
 export const Footer = () => {
@@ -6,11 +7,13 @@ export const Footer = () => {
       <div className="container">
         <ul>
           <li>
-            <a href=".">Home</a>
+            <a href={ONROUTE_WEBPAGE_LINKS.HOME}>
+              Home
+            </a>
           </li>
           <li>
             <a
-              href="https://www2.gov.bc.ca/gov/content/home/disclaimer"
+              href={ONROUTE_WEBPAGE_LINKS.DISCLAIMER}
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -19,7 +22,7 @@ export const Footer = () => {
           </li>
           <li>
             <a
-              href="https://www2.gov.bc.ca/gov/content/home/privacy"
+              href={ONROUTE_WEBPAGE_LINKS.PRIVACY}
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -28,7 +31,7 @@ export const Footer = () => {
           </li>
           <li>
             <a
-              href="https://www2.gov.bc.ca/gov/content/home/accessible-government"
+              href={ONROUTE_WEBPAGE_LINKS.ACCESSIBILITY}
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -37,7 +40,7 @@ export const Footer = () => {
           </li>
           <li>
             <a
-              href="https://www2.gov.bc.ca/gov/content/home/copyright"
+              href={ONROUTE_WEBPAGE_LINKS.COPYRIGHT}
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -46,7 +49,7 @@ export const Footer = () => {
           </li>
           <li>
             <a
-              href="https://onroutebc.gov.bc.ca"
+              href={ONROUTE_WEBPAGE_LINKS.CONTACT_US}
               target="_blank"
               rel="noopener noreferrer"
             >

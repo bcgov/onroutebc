@@ -1,0 +1,3 @@
+@use "../../../../common/components/dashboard/Dashboard";
+
+@include Dashboard.layout-box-style(".application-form .breadcrumb");

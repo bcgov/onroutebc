@@ -73,7 +73,11 @@ export const steerAxleTireSizeInput = async () => {
   });
 };
 
-export const selectOptionsAndButtons = async () => {
+export const selectOptions = async () => {
+  return await screen.findAllByRole("combobox");
+};
+
+export const actionButtons = async () => {
   return await screen.findAllByRole("button");
 };
 

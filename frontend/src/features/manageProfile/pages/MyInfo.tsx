@@ -2,15 +2,16 @@ import { memo, useState } from "react";
 import { Typography } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
+import { Navigate } from "react-router-dom";
 
 import "./MyInfo.scss";
 import { UserInfoBanner } from "../../../common/components/banners/UserInfoBanner";
 import { DisplayMyInfo } from "./DisplayMyInfo";
 import { getMyInfo } from "../apiManager/manageProfileAPI";
 import { Loading } from "../../../common/pages/Loading";
-import { Unauthorized } from "../../../common/pages/Unauthorized";
 import { ErrorFallback } from "../../../common/pages/ErrorFallback";
 import { MyInfoForm } from "../components/forms/myInfo/MyInfoForm";
+import { ERROR_ROUTES } from "../../../routes/constants";
 
 const Header = () => (
   <Typography className="my-info-page__header" variant="h4">
@@ -39,7 +40,7 @@ export const MyInfo = memo(() => {
   if (isError) {
     if (error instanceof AxiosError) {
       if (error.response?.status === 401) {
-        return <Unauthorized />;
+        return <Navigate to={ERROR_ROUTES.UNAUTHORIZED} />;
       }
       return <ErrorFallback error={error.message} />;
     }
