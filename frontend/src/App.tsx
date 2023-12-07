@@ -20,7 +20,7 @@ import OnRouteBCContext, {
 import { NavIconSideBar } from "./common/components/naviconsidebar/NavIconSideBar";
 import { NavIconHomeButton } from "./common/components/naviconsidebar/NavIconHomeButton";
 import { NavIconReportButton } from "./common/components/naviconsidebar/NavIconReportButton";
-import { MigratedTPSClient } from "./common/authentication/types";
+import { MigratedClient } from "./common/authentication/types";
 
 const authority =
   import.meta.env.VITE_AUTH0_ISSUER_URL || envConfig.VITE_AUTH0_ISSUER_URL;
@@ -72,8 +72,8 @@ const App = () => {
   const [idirUserDetails, setIDIRUserDetails] = useState<
     IDIRUserDetailContext | undefined
   >();
-  const [migratedTPSClient, setMigratedTPSClient] = useState<
-    MigratedTPSClient | undefined
+  const [migratedClient, setMigratedClient] = useState<
+    MigratedClient | undefined
   >();
 
   // Needed the following usestate and useffect code so that the snackbar would disapear/close
@@ -101,8 +101,8 @@ const App = () => {
                 setIDIRUserDetails,
                 onRouteBCClientNumber,
                 setOnRouteBCClientNumber,
-                migratedTPSClient,
-                setMigratedTPSClient,
+                migratedClient,
+                setMigratedClient,
               };
             }, [
               userRoles,
@@ -111,7 +111,7 @@ const App = () => {
               companyLegalName,
               idirUserDetails,
               onRouteBCClientNumber,
-              migratedTPSClient,
+              migratedClient,
             ])}
           >
             <SnackBarContext.Provider value={{ setSnackBar: setSnackBar }}>

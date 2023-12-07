@@ -32,7 +32,7 @@ export type ClientInformation = {
   extension: string;
 };
 
-export type MigratedTPSClient = ClientInformation & CompanyMetadata;
+export type MigratedClient = ClientInformation & CompanyMetadata;
 
 /**
  * User Context object type
@@ -40,7 +40,7 @@ export type MigratedTPSClient = ClientInformation & CompanyMetadata;
 export interface BCeIDUserContextType {
   associatedCompanies: CompanyMetadata[];
   pendingCompanies: CompanyMetadata[];
-  migratedTPSClient: MigratedTPSClient;
+  migratedTPSClient: MigratedClient;
   user?: {
     userAuthGroup?: string;
     statusCode?: string;

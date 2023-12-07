@@ -63,7 +63,7 @@ export const useUserContext = () => {
     setCompanyLegalName,
     setIDIRUserDetails,
     setOnRouteBCClientNumber,
-    setMigratedTPSClient,
+    setMigratedClient: setMigratedTPSClient,
   } = useContext(OnRouteBCContext);
   const { isAuthenticated, user: userFromToken } = useAuth();
   return useQuery({

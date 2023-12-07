@@ -91,7 +91,8 @@ export const CreateProfileSteps = React.memo(() => {
     setUserDetails,
     setCompanyLegalName,
     setOnRouteBCClientNumber,
-    migratedTPSClient,
+    setMigratedClient: setMigratedTPSClient,
+    migratedClient,
   } = useContext(OnRouteBCContext);
   const { setSnackBar } = useContext(SnackBarContext);
 
@@ -111,19 +112,19 @@ export const CreateProfileSteps = React.memo(() => {
         "",
         user?.profile?.bceid_business_name as string,
       ),
-      alternateName: migratedTPSClient?.alternateName ?? "",
+      alternateName: migratedClient?.alternateName ?? "",
       mailingAddress: {
-        addressLine1: migratedTPSClient?.mailingAddress?.addressLine1 ?? "",
-        addressLine2: migratedTPSClient?.mailingAddress?.addressLine2 ?? "",
-        provinceCode: migratedTPSClient?.mailingAddress?.provinceCode ?? "",
-        countryCode: migratedTPSClient?.mailingAddress?.countryCode ?? "",
-        city: migratedTPSClient?.mailingAddress?.city ?? "",
-        postalCode: migratedTPSClient?.mailingAddress?.postalCode ?? "",
+        addressLine1: migratedClient?.mailingAddress?.addressLine1 ?? "",
+        addressLine2: migratedClient?.mailingAddress?.addressLine2 ?? "",
+        provinceCode: migratedClient?.mailingAddress?.provinceCode ?? "",
+        countryCode: migratedClient?.mailingAddress?.countryCode ?? "",
+        city: migratedClient?.mailingAddress?.city ?? "",
+        postalCode: migratedClient?.mailingAddress?.postalCode ?? "",
       },
       email: getDefaultRequiredVal("", user?.profile?.email),
-      phone: migratedTPSClient?.phone ?? "",
-      extension: migratedTPSClient?.extension ?? "",
-      fax: migratedTPSClient?.fax ?? "",
+      phone: migratedClient?.phone ?? "",
+      extension: migratedClient?.extension ?? "",
+      fax: migratedClient?.fax ?? "",
       adminUser: {
         userAuthGroup: BCEID_AUTH_GROUP.ORGADMIN,
         firstName: "",
@@ -178,6 +179,10 @@ export const CreateProfileSteps = React.memo(() => {
         setCompanyId?.(() => companyId);
         setCompanyLegalName?.(() => companyName);
         setOnRouteBCClientNumber?.(() => clientNumber);
+
+        // Clear any state in migrated client. We no longer need this
+        // once the user has successfully created/claimed their company.
+        setMigratedTPSClient?.(() => undefined);
 
         // Setting the companyId in the sessionStorage so that it can be used
         // used outside of react components;
@@ -243,11 +248,7 @@ export const CreateProfileSteps = React.memo(() => {
   };
 
   if (clientNumber) {
-    return (
-      <>
-        <OnRouteBCProfileCreated onRouteBCClientNumber={clientNumber} />
-      </>
-    );
+    return <OnRouteBCProfileCreated onRouteBCClientNumber={clientNumber} />;
   }
   return (
     <>

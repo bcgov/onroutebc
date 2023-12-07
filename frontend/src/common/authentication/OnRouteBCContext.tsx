@@ -1,5 +1,5 @@
 import React, { Dispatch, SetStateAction } from "react";
-import { MigratedTPSClient } from "./types";
+import { MigratedClient } from "./types";
 
 /**
  * The user details to be set in the context.
@@ -46,10 +46,8 @@ export type OnRouteBCContextType = {
   setIDIRUserDetails?: Dispatch<
     SetStateAction<IDIRUserDetailContext | undefined>
   >;
-  setMigratedTPSClient?: Dispatch<
-    SetStateAction<MigratedTPSClient | undefined>
-  >;
-  migratedTPSClient?: MigratedTPSClient;
+  setMigratedClient?: Dispatch<SetStateAction<MigratedClient | undefined>>;
+  migratedClient?: MigratedClient;
 };
 
 const defaultBehaviour: OnRouteBCContextType = {};
