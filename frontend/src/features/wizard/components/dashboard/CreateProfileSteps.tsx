@@ -91,7 +91,7 @@ export const CreateProfileSteps = React.memo(() => {
     setUserDetails,
     setCompanyLegalName,
     setOnRouteBCClientNumber,
-    setMigratedClient: setMigratedTPSClient,
+    setMigratedClient,
     migratedClient,
   } = useContext(OnRouteBCContext);
   const { setSnackBar } = useContext(SnackBarContext);
@@ -112,19 +112,34 @@ export const CreateProfileSteps = React.memo(() => {
         "",
         user?.profile?.bceid_business_name as string,
       ),
-      alternateName: migratedClient?.alternateName ?? "",
+      alternateName: getDefaultRequiredVal("", migratedClient?.alternateName),
       mailingAddress: {
-        addressLine1: migratedClient?.mailingAddress?.addressLine1 ?? "",
-        addressLine2: migratedClient?.mailingAddress?.addressLine2 ?? "",
-        provinceCode: migratedClient?.mailingAddress?.provinceCode ?? "",
-        countryCode: migratedClient?.mailingAddress?.countryCode ?? "",
-        city: migratedClient?.mailingAddress?.city ?? "",
-        postalCode: migratedClient?.mailingAddress?.postalCode ?? "",
+        addressLine1: getDefaultRequiredVal(
+          "",
+          migratedClient?.mailingAddress?.addressLine1,
+        ),
+        addressLine2: getDefaultRequiredVal(
+          "",
+          migratedClient?.mailingAddress?.addressLine2,
+        ),
+        provinceCode: getDefaultRequiredVal(
+          "",
+          migratedClient?.mailingAddress?.provinceCode,
+        ),
+        countryCode: getDefaultRequiredVal(
+          "",
+          migratedClient?.mailingAddress?.countryCode,
+        ),
+        city: getDefaultRequiredVal("", migratedClient?.mailingAddress?.city),
+        postalCode: getDefaultRequiredVal(
+          "",
+          migratedClient?.mailingAddress?.postalCode,
+        ),
       },
       email: getDefaultRequiredVal("", user?.profile?.email),
-      phone: migratedClient?.phone ?? "",
-      extension: migratedClient?.extension ?? "",
-      fax: migratedClient?.fax ?? "",
+      phone: getDefaultRequiredVal("", migratedClient?.phone),
+      extension: getDefaultRequiredVal("", migratedClient?.extension),
+      fax: getDefaultRequiredVal("", migratedClient?.fax),
       adminUser: {
         userAuthGroup: BCEID_AUTH_GROUP.ORGADMIN,
         firstName: "",
@@ -182,7 +197,7 @@ export const CreateProfileSteps = React.memo(() => {
 
         // Clear any state in migrated client. We no longer need this
         // once the user has successfully created/claimed their company.
-        setMigratedTPSClient?.(() => undefined);
+        setMigratedClient?.(() => undefined);
 
         // Setting the companyId in the sessionStorage so that it can be used
         // used outside of react components;
