@@ -34,7 +34,7 @@ export const useVehicleByIdQuery = (
   const [vehicle, setVehicle] = useState<Vehicle | null | undefined>();
 
   const query = useQuery({
-    queryKey: ["vehicle"],
+    queryKey: ["vehicle", "vehicleId", "vehicleType"],
     queryFn: () => getVehicleById(companyId, vehicleType, vehicleId),
     retry: false,
     refetchOnMount: "always", // always fetch when component is mounted

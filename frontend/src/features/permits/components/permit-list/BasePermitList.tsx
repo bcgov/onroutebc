@@ -52,16 +52,14 @@ export const BasePermitList = ({
     },
     renderEmptyRowsFallback: () => <NoRecordsFound />,
     renderRowActions: useCallback(
-      ({
-        row,
-      }: {
+      (props: {
         row: MRT_Row<Permit>;
       }) => {
         return (
           <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
             <PermitRowOptions
               isExpired={isExpired}
-              permitId={row.original.permitId}
+              permitId={props.row.original.permitId}
             />
           </Box>
         );
