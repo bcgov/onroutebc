@@ -4,10 +4,10 @@ on:
   workflow_dispatch:
     inputs:
       environment:
-        description: "Deployment environment - test/prod --> vault secrets"
+        description: "Deployment environment - test --> vault secrets"
         required: true
         type: choice
-        options: ["test","prod"]
+        options: ["test"]
         default: "test"
   
 
@@ -24,4 +24,4 @@ jobs:
       environment: ${{inputs.environment}} #test env -> test database
       tag: ${{inputs.environment}}
       release: "demo"
-      vault_role: ${{contains("prod",inputs.environment) && "prod" || "nonprod" }}
+      vault_role: "nonprod" 
