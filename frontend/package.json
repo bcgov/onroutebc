@@ -53,7 +53,7 @@
   },
   "devDependencies": {
     "@hookform/devtools": "^4.3.1",
-    "@mswjs/data": "^0.13.0",
+    "@mswjs/data": "^0.16.0",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^14.0.0",
     "@testing-library/user-event": "^14.4.3",
