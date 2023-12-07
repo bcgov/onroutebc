@@ -1,6 +1,8 @@
+@import "../../../../../../themes/orbcStyles";
+
 .permit-pay-fee-summary {
   & &__pay {
-    max-width: 30.5rem;
+    max-width: 33rem;
 
     .fee-summary {
       margin-bottom: 2em;
@@ -13,6 +15,7 @@
   }
 
   & &__contact {
+    color: $bc-black;
     margin-top: 2.5rem;
     margin-bottom: 10.75rem;
 

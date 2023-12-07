@@ -53,6 +53,7 @@ import { getMapFromCache } from 'src/common/helper/cache.helper';
 import { Cache } from 'cache-manager';
 import { PermitIssuedBy } from '../../common/enum/permit-issued-by.enum';
 import { getPaymentCodeFromCache } from '../../common/helper/payment.helper';
+import { PaymentMethodType } from 'src/common/enum/payment-method-type.enum';
 
 @Injectable()
 export class PermitService {
@@ -346,6 +347,7 @@ export class PermitService {
         permitId: +permit.permitId,
         transactionSubmitDate:
           permitTransaction.transaction.transactionSubmitDate,
+        pgApproved: permitTransaction.transaction.pgApproved,
       })),
     ) as PermitHistoryDto[];
   }
@@ -461,6 +463,13 @@ export class PermitService {
       createTransactionDto.paymentMethodTypeCode =
         voidPermitDto.paymentMethodTypeCode;
       createTransactionDto.transactionTypeId = voidPermitDto.transactionTypeId;
+
+      // Refund for void should automatically set this flag to approved for payment gateway payment methods
+      // Otherwise, the flag is not applicable
+      if (voidPermitDto.paymentMethodTypeCode === PaymentMethodType.WEB) {
+        createTransactionDto.pgApproved = 1;
+      }
+      
       createTransactionDto.applicationDetails = [
         {
           applicationId: newPermit.permitId,

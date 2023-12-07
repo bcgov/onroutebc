@@ -4,12 +4,8 @@ import { setupServer } from "msw/node";
 import userEvent from "@testing-library/user-event";
 import { ThemeProvider } from "@mui/material/styles";
 
-import { PERMITS_API } from "../../../../../apiManager/endpoints/endpoints";
-import {
-  dayjsToUtcStr,
-  now,
-  toLocalDayjs,
-} from "../../../../../../../common/helpers/formatDate";
+import { APPLICATIONS_API_ROUTES } from "../../../../../apiManager/endpoints/endpoints";
+import { dayjsToUtcStr, now, toLocalDayjs } from "../../../../../../../common/helpers/formatDate";
 import { renderWithClient } from "../../../../../../../common/helpers/testHelper";
 import { Application } from "../../../../../types/application";
 import { bcGovTheme } from "../../../../../../../themes/bcGovTheme";
@@ -51,50 +47,33 @@ export const vehicleSubtypes = [
 ];
 
 const server = setupServer(
-  rest.get(
-    `${MANAGE_PROFILE_API.COMPANIES}/:companyId`,
-    async (_, res, ctx) => {
-      return res(
-        ctx.json({
-          ...companyInfo,
-        }),
-      );
-    },
-  ),
-  rest.post(
-    `${PERMITS_API.SUBMIT_TERM_OVERSIZE_PERMIT}`,
-    async (req, res, ctx) => {
-      const reqBody = await req.json();
-      const applicationData = {
-        ...reqBody,
-        applicationNumber: newApplicationNumber,
-        createdDateTime: dayjsToUtcStr(now()),
-        updatedDateTime: dayjsToUtcStr(now()),
-      };
-      return res(
-        ctx.status(201),
-        ctx.json({
-          ...applicationData,
-        }),
-      );
-    },
-  ),
-  rest.put(
-    `${PERMITS_API.SUBMIT_TERM_OVERSIZE_PERMIT}/:id`,
-    async (req, res, ctx) => {
-      const reqBody = await req.json();
-      const applicationData = {
-        ...reqBody,
-        updatedDateTime: dayjsToUtcStr(now()),
-      };
-      return res(
-        ctx.status(200),
-        ctx.json({
-          ...applicationData,
-        }),
-      );
-    },
-  ),
+  rest.get(`${MANAGE_PROFILE_API.COMPANIES}/:companyId`, async (_, res, ctx) => {
+    return res(ctx.json({
+      ...companyInfo,
+    }));
+  }),
+  rest.post(`${APPLICATIONS_API_ROUTES.CREATE}`, async (req, res, ctx) => {
+    const reqBody = await req.json();
+    const applicationData = { 
+      ...reqBody,
+      applicationNumber: newApplicationNumber,
+      createdDateTime: dayjsToUtcStr(now()),
+      updatedDateTime: dayjsToUtcStr(now()),
+    };
+    return res(ctx.status(201), ctx.json({
+      ...applicationData,
+    }));
+  }),
+  rest.put(`${APPLICATIONS_API_ROUTES.UPDATE}/:id`, async (req, res, ctx) => {
+    const reqBody = await req.json();
+    const applicationData = { 
+      ...reqBody,
+      updatedDateTime: dayjsToUtcStr(now()),
+    };
+    return res(ctx.status(200), ctx.json({
+      ...applicationData,
+    }));
+  }),
   rest.get(VEHICLES_API.POWER_UNIT_TYPES, async (_, res, ctx) => {
     return res(
       ctx.json([
@@ -128,12 +107,9 @@ const ComponentWithWrapper = ({
 }: {
   applicationData: Application;
 }) => {
-  const [stepIndex, setStepIndex] = useState(0);
   const [testApplicationData, setTestApplicationData] =
-    useState(applicationData);
-  const next = () => setStepIndex((currentStepIndex) => currentStepIndex + 1);
-  const back = () => setStepIndex((currentStepIndex) => currentStepIndex - 1);
-  const goTo = (stepIndex: number) => setStepIndex(stepIndex);
+    useState<Application | null | undefined>(applicationData);
+  
   return (
     <ThemeProvider theme={bcGovTheme}>
       <ApplicationContext.Provider
@@ -141,12 +117,8 @@ const ComponentWithWrapper = ({
           () => ({
             applicationData: testApplicationData,
             setApplicationData: setTestApplicationData,
-            next,
-            back,
-            goTo,
-            currentStepIndex: stepIndex,
           }),
-          [testApplicationData, stepIndex],
+          [testApplicationData],
         )}
       >
         <TermOversizeReview />

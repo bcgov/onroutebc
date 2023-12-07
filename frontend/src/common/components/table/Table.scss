@@ -1,10 +1,11 @@
-@import "../../../themes/orbcStyles.scss";
+@import "../../../themes/orbcStyles";
 
 .table-container {
   overflow: hidden;
   background-color: $white;
   padding-bottom: 6.25rem;
-
+  margin-top: 1.5rem;
+  
   .column-link {
     color: $bc-text-links-blue;
   }

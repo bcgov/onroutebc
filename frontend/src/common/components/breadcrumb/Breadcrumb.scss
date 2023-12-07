@@ -1,9 +1,11 @@
-@import "../../../themes/orbcStyles.scss";
+@import "../../../themes/orbcStyles";
 
 .breadcrumb {
   display: flex;
   align-items: center;
   background-color: $white;
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
 
   & &__link {
     color: $bc-text-links-blue;

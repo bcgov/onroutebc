@@ -1,7 +1,7 @@
 import { Button } from "@mui/material";
 import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronUp } from "@fortawesome/free-solid-svg-icons";
+import { faArrowUp } from "@fortawesome/free-solid-svg-icons";
 
 import "./ScrollButton.scss";
 
@@ -31,16 +31,22 @@ export const ScrollButton = () => {
   }, []);
 
   return isVisible ? (
-    <Button
-      className="scroll-btn"
-      key="to-top-button"
-      aria-label="To Top"
-      variant="contained"
-      color="secondary"
-      onClick={scrollToTop}
-    >
-      <FontAwesomeIcon icon={faChevronUp} />
-    </Button>
+    <div className="scroll-btn">
+      <div className="scroll-btn__tooltip">
+        To Top
+      </div>
+
+      <Button
+        className="scroll-btn__btn"
+        key="to-top-button"
+        aria-label="To Top"
+        variant="contained"
+        color="secondary"
+        onClick={scrollToTop}
+      >
+        <FontAwesomeIcon icon={faArrowUp} />
+      </Button>
+    </div>
   ) : (
     <></>
   );

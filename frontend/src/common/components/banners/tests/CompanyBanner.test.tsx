@@ -2,6 +2,7 @@ import {
   defaultCompanyInfo,
   renderTestComponent,
 } from "./helpers/CompanyBanner/prepare";
+
 import {
   companyClientLabel,
   companyClientNumber,

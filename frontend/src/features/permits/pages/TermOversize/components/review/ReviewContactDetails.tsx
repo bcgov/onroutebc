@@ -2,11 +2,11 @@ import { Box, Typography } from "@mui/material";
 
 import "./ReviewContactDetails.scss";
 import { ContactDetails } from "../../../../types/application";
+import { DiffChip } from "./DiffChip";
 import {
   areValuesDifferent,
   getDefaultRequiredVal,
 } from "../../../../../../common/helpers/util";
-import { DiffChip } from "./DiffChip";
 
 const nameDisplay = (firstName?: string, lastName?: string) => {
   if (!firstName) return getDefaultRequiredVal("", lastName);

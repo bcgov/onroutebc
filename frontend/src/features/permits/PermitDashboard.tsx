@@ -1,14 +1,15 @@
 import React from "react";
-import { ApplicationDashboard } from "./components/dashboard/ApplicationDashboard";
 import { ErrorBoundary } from "react-error-boundary";
+
+import { PermitLists } from "./components/dashboard/PermitLists";
 import { ErrorFallback } from "../../common/pages/ErrorFallback";
 
-export const ManagePermits = React.memo(() => {
+export const PermitDashboard = React.memo(() => {
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
-      <ApplicationDashboard />
+      <PermitLists />
     </ErrorBoundary>
   );
 });
 
-ManagePermits.displayName = "ManagePermits";
+PermitDashboard.displayName = "PermitDashboard";

@@ -1,20 +1,29 @@
 import { useContext, useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
+import { useNavigate, useParams } from "react-router-dom";
 
+import "./TermOversizeReview.scss";
 import { ApplicationContext } from "../../context/ApplicationContext";
 import { Application } from "../../types/application";
 import { useSaveTermOversizeMutation } from "../../hooks/hooks";
-import { ProgressBar } from "../../components/progressBar/ProgressBar";
+import { ApplicationBreadcrumb } from "../../components/application-breadcrumb/ApplicationBreadcrumb";
 import { useCompanyInfoQuery } from "../../../manageProfile/apiManager/hooks";
 import { PermitReview } from "./components/review/PermitReview";
+import { APPLICATIONS_ROUTES, APPLICATION_STEPS, ERROR_ROUTES } from "../../../../routes/constants";
+import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import {
   usePowerUnitTypesQuery,
   useTrailerTypesQuery,
 } from "../../../manageVehicles/apiManager/hooks";
 
 export const TermOversizeReview = () => {
-  const { applicationData, setApplicationData, back, next } =
+  const { applicationData, setApplicationData } =
     useContext(ApplicationContext);
+
+  const routeParams = useParams();
+  const permitId = getDefaultRequiredVal("", routeParams.permitId);
+
+  const navigate = useNavigate();
 
   const companyQuery = useCompanyInfoQuery();
   const powerUnitTypesQuery = usePowerUnitTypesQuery();
@@ -27,17 +36,40 @@ export const TermOversizeReview = () => {
 
   // Send data to the backend API
   const submitTermOversizeMutation = useSaveTermOversizeMutation();
+
+  const saveApplicationSuccessful = (responseStatus: number) => {
+    return responseStatus === 200 || responseStatus === 201;
+  };
+
+  const back = () => {
+    navigate(APPLICATIONS_ROUTES.DETAILS(permitId), { replace: true });
+  };
+
+  const next = () => {
+    navigate(APPLICATIONS_ROUTES.PAY(permitId));
+  };
+
   const onSubmit = async () => {
     setIsSubmitted(true);
 
     if (!isChecked) return;
 
-    if (applicationData) {
-      const response =
-        await submitTermOversizeMutation.mutateAsync(applicationData);
-      const data = response.data;
-      setApplicationData(data);
+    if (!applicationData) {
+      return navigate(ERROR_ROUTES.UNEXPECTED);
     }
+
+    const response =
+      await submitTermOversizeMutation.mutateAsync(applicationData);
+
+    const { data, status } = response;
+    setApplicationData(data);
+
+    if (saveApplicationSuccessful(status)) {
+      next();
+    } else {
+      navigate(ERROR_ROUTES.UNEXPECTED);
+    }
+    
     next();
   };
 
@@ -46,8 +78,11 @@ export const TermOversizeReview = () => {
   }, []);
 
   return (
-    <>
-      <ProgressBar />
+    <div className="term-oversize-review">
+      <ApplicationBreadcrumb
+        permitId={permitId}
+        applicationStep={APPLICATION_STEPS.REVIEW}
+      />
 
       <FormProvider {...methods}>
         <PermitReview
@@ -77,6 +112,6 @@ export const TermOversizeReview = () => {
           }
         />
       </FormProvider>
-    </>
+    </div>
   );
 };
