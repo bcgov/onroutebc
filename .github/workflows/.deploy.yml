@@ -8,6 +8,12 @@ on:
         description: 'PR number, test or prod.'
         required: true
         type: string
+      
+      repository:
+        description: 'repository name.'
+        required: false
+        type: string
+        default: "onroutebc"
 
       ### Typical / recommended
       autoscaling:
@@ -43,7 +49,7 @@ on:
       ### Usually a bad idea / not recommended
       directory:
         description: 'Chart directory.'
-        default: 'charts/${{ github.event.repository.name }}'
+        default: 'charts/onroutebc'
         required: false
         type: string
       timeout-minutes:
@@ -61,9 +67,68 @@ on:
         default: ''
         required: false
         type: string
+  
+  workflow_dispatch:
+    inputs:
+      ### Required
+      release:
+        description: 'release name'
+        required: true
+        type: string
+        default: "demo"
+      
+      repository:
+        description: 'repository name.'
+        required: false
+        type: string
+        default: "onroutebc"
+
+      ### Typical / recommended
+      environment:
+        description: "Deployment environment - dev/test/prod"
+        required: true
+        type: choice
+        options: ["dev","test","prod"]
+        default: "dev"
+      tag:
+        description: 'Docker tag; e.g. PR number, tag, test or prod'
+        required: false
+        type: string
+        default: "latest"
+      namespace:
+        description: 'BC Gov LICENSE_PLATE of deployment env'
+        required: false
+        type: string
+        default: "c28f0c"
+      vault_role:
+        description: "nonprod/prod"
+        required: true
+        type: choice
+        options: ["nonprod","prod"]
+      triggers:
+        description: Paths to trigger a deploy; omit=always; e.g. ('backend/' 'frontend/')
+        required: false
+        type: string
+
+      ### Usually a bad idea / not recommended
+      directory:
+        description: 'Chart directory.'
+        default: 'charts/onroutebc'
+        required: false
+        type: string
+      values:
+        description: 'Values file.'
+        default: 'values.yaml'
+        required: false
+        type: string
+      params:
+        description: 'Extra parameters to pass to helm upgrade'
+        default: ''
+        required: false
+        type: string
 
 env:
-  repo_release: ${{ github.event.repository.name }}-${{ inputs.release }}
+  repo_release: ${{ inputs.repository }}-${{ inputs.release }}
   package_tag: ${{ inputs.tag }}
 
 jobs:
@@ -72,7 +137,7 @@ jobs:
     name: Helm
     environment: ${{ inputs.environment }}
     runs-on: ubuntu-22.04
-    timeout-minutes: ${{ inputs.timeout-minutes }}
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - name: Check Deployment Triggers
@@ -126,16 +191,16 @@ jobs:
 
           # Deploy Helm release
           helm upgrade \
-            --set global.autoscaling=${{ inputs.autoscaling }} \
+            --set global.autoscaling=${{ inputs.autoscaling || true }} \
             --set-string global.repository=${{ github.repository }} \
             --set-string global.tag=${{ inputs.release }} \
             --set-string global.license=${{ inputs.namespace }} \
             --set-string global.zone=${{ inputs.environment }} \
             --set-string global.vault.role=${{ inputs.vault_role }} \
-            --install --wait --atomic ${{ github.event.repository.name }}-${{ inputs.tag }} \
-            --timeout ${{ inputs.timeout-minutes }}m --force \
+            --install --wait --atomic ${{ inputs.repository }}-${{ inputs.tag }} \
+            --timeout 10m --force \
             --values ${{ inputs.values }} ${{ inputs.params }} \
-            ./${{ github.event.repository.name }}-${{ inputs.tag }}.tgz
+            ./${{ inputs.repository }}-${{ inputs.tag }}.tgz
 
           # print history 
           helm history ${{ env.repo_release }}
