@@ -94,6 +94,7 @@ describe('CompanyService', () => {
 
   describe('Company service create function', () => {
     it('should create a company registered in BC and its admin user.', async () => {
+      jest.spyOn(service, 'findOneByCompanyGuid').mockResolvedValue(undefined);
       repo.findOne.mockResolvedValue(redCompanyEntityMock);
       emailService.sendEmailMessage.mockResolvedValue(
         '00000000-0000-0000-0000-000000000000',
@@ -113,6 +114,7 @@ describe('CompanyService', () => {
     });
 
     it('should create a company registered in US and its admin user.', async () => {
+      jest.spyOn(service, 'findOneByCompanyGuid').mockResolvedValue(undefined);
       repo.findOne.mockResolvedValue(blueCompanyEntityMock);
       emailService.sendEmailMessage.mockResolvedValue(
         '00000000-0000-0000-0000-000000000000',
