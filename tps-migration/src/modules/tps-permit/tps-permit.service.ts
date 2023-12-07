@@ -7,7 +7,11 @@ import { S3Service } from './s3.service';
 import { Document } from './entities/document.entity';
 import { CompleteMultipartUploadCommandOutput } from '@aws-sdk/client-s3';
 import { Permit } from './entities/permit.entity';
-import { ERROR_POLLING_INTERVAL, LIMIT, PENDING_POLLING_INTERVAL } from '../common/constants/tps-migration.constant';
+import {
+  ERROR_POLLING_INTERVAL,
+  LIMIT,
+  PENDING_POLLING_INTERVAL,
+} from '../common/constants/tps-migration.constant';
 import { v4 as uuidv4 } from 'uuid';
 import { Cron } from '@nestjs/schedule';
 
@@ -162,7 +166,7 @@ export class TpsPermitService {
           break;
         }
         let s3Object: CompleteMultipartUploadCommandOutput = null;
-        const s3ObjectId = uuidv4() ;
+        const s3ObjectId = uuidv4();
         try {
           s3Object = await this.s3Service.uploadFile(
             tpsPermit.pdf,
