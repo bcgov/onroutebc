@@ -18,3 +18,7 @@ dependencies: # A list of the chart requirements (optional)
     repository: "https://bcgov.github.io/helm-service"
     alias: dops
     version: 0.2.3
+  - name: component
+    repository: "https://bcgov.github.io/helm-service"
+    alias: tps-migration
+    version: 0.2.3
