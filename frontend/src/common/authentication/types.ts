@@ -13,6 +13,8 @@ export type CompanyMetadata = {
   companyId: number;
   clientNumber: string;
   legalName: string;
+  companyGUID?: string;
+  alternateName?: string;
 };
 
 export type ClientInformation = {

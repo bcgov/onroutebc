@@ -50,6 +50,7 @@ export const LoginRedirect = () => {
             ) {
               navigate(routes.WELCOME);
             } else if (migratedTPSClient.clientNumber) {
+              navigate(routes.WELCOME);
               // The downside of having associatedCompanies.length === 1 is
               // that it hinges on an implicit relationship. It has no consequences today
               // but it could have in future. It's an unknown unknown.

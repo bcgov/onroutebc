@@ -75,13 +75,21 @@
       height: 190px;
       background: orbcStyles.$white 0% 0% no-repeat padding-box;
       border: 1px solid orbcStyles.$bc-text-box-border-grey;
+      cursor: pointer;
       border-radius: 8px;
       opacity: 1;
       text-align: center;
       margin-top: 2em;
       margin-bottom: 2em;
-      padding: 1em 0;
+      padding-bottom: 2em;
+      // padding-top: 0;
       box-shadow: none;
+
+      &:hover {
+        background: orbcStyles.$bc_messages_blue_background;
+        box-shadow: 10;
+        border: 1px solid orbcStyles.$bc_black;
+      }
 
       .welcome-account-graphics {
         padding-top: 2rem;

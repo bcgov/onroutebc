@@ -13,6 +13,7 @@ import {
 import { getCompanyNameFromSession } from "../../../common/apiManager/httpRequestHandler";
 import OnRouteBCContext from "../../../common/authentication/OnRouteBCContext";
 import "./welcome.scss";
+import { BC_COLOURS } from "../../../themes/bcGovStyles";
 
 const isInvitedUser = (companyNameFromContext?: string): boolean =>
   Boolean(companyNameFromContext);
@@ -55,14 +56,7 @@ export const WelcomePage = React.memo(() => {
         ) : (
           <WelcomeCompanyName companyName={companyNameFromToken} />
         )}
-        <div className="separator-line">
-          {isNewCompanyProfile(companyNameFromContext) && (
-            <Chip
-              className="separator-line__label"
-              label="Choose An Option Below"
-            />
-          )}
-        </div>
+        <div className="separator-line"></div>
         {isInvitedUser(companyNameFromContext) && (
           <>
             <br />
@@ -99,23 +93,34 @@ export const WelcomePage = React.memo(() => {
         )}
         {isNewCompanyProfile(companyNameFromContext) && (
           <div className="welcome-page__profile-actions">
-            <Card className="welcome-cards welcome-cards--new" elevation={12}>
-              <CardActionArea onClick={() => navigate("/create-profile")}>
-                <div className="welcome-cards__img">
-                  <img
-                    height="80"
-                    width="80"
-                    className="welcome-account-graphics"
-                    src="./Create_New_Profile_Graphic.svg"
-                    alt="New onRouteBC Profile"
-                  />
-                </div>
-                <CardContent>
+            <Card
+              className="welcome-cards welcome-cards--new"
+              sx={{
+                ":hover": {
+                  // background: BC_COLOURS.bc_messages_blue_background,
+                  boxShadow: 10,
+                  // border: `1px solid ${BC_COLOURS.bc_black}`,
+                  // background: BC_COLOURS.bc_background_light_grey,
+                },
+              }}
+            >
+              <CardContent onClick={() => navigate("/create-profile")}>
+                <Stack spacing={3}>
+                  <div className="welcome-cards__img">
+                    <img
+                      height="80"
+                      width="80"
+                      className="welcome-account-graphics"
+                      src="./Create_New_Profile_Graphic.svg"
+                      alt="New onRouteBC Profile"
+                    />
+                  </div>
+
                   <Typography variant="body2">
-                  Finish creating your onRouteBC Profile
+                    Finish creating your onRouteBC Profile
                   </Typography>
-                </CardContent>
-              </CardActionArea>
+                </Stack>
+              </CardContent>
             </Card>
           </div>
         )}

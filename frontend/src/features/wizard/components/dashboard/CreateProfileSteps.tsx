@@ -89,7 +89,9 @@ export const CreateProfileSteps = React.memo(() => {
     setUserDetails,
     setCompanyLegalName,
     setOnRouteBCClientNumber,
+    migratedTPSClient,
   } = useContext(OnRouteBCContext);
+  console.log('migratedTPSClient in wizard::', migratedTPSClient);
   const { setSnackBar } = useContext(SnackBarContext);
 
   const { user } = useAuth();
@@ -108,19 +110,19 @@ export const CreateProfileSteps = React.memo(() => {
         "",
         user?.profile?.bceid_business_name as string,
       ),
-      alternateName: "",
+      alternateName: migratedTPSClient?.alternateName ?? "",
       mailingAddress: {
-        addressLine1: "",
-        addressLine2: "",
-        provinceCode: "",
-        countryCode: "",
-        city: "",
-        postalCode: "",
+        addressLine1: migratedTPSClient?.mailingAddress?.addressLine1 ?? "",
+        addressLine2: migratedTPSClient?.mailingAddress?.addressLine2 ?? "",
+        provinceCode: migratedTPSClient?.mailingAddress?.provinceCode ?? "",
+        countryCode: migratedTPSClient?.mailingAddress?.countryCode ?? "",
+        city: migratedTPSClient?.mailingAddress?.city ?? "",
+        postalCode: migratedTPSClient?.mailingAddress?.postalCode ?? "",
       },
       email: getDefaultRequiredVal("", user?.profile?.email),
-      phone: "",
-      extension: "",
-      fax: "",
+      phone: migratedTPSClient?.phone ?? "",
+      extension: migratedTPSClient?.extension ?? "",
+      fax: migratedTPSClient?.fax ?? "",
       adminUser: {
         userAuthGroup: BCEID_AUTH_GROUP.ORGADMIN,
         firstName: "",

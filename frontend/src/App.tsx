@@ -20,6 +20,7 @@ import OnRouteBCContext, {
 import { NavIconSideBar } from "./common/components/naviconsidebar/NavIconSideBar";
 import { NavIconHomeButton } from "./common/components/naviconsidebar/NavIconHomeButton";
 import { NavIconReportButton } from "./common/components/naviconsidebar/NavIconReportButton";
+import { MigratedTPSClient } from "./common/authentication/types";
 
 const authority =
   import.meta.env.VITE_AUTH0_ISSUER_URL || envConfig.VITE_AUTH0_ISSUER_URL;
@@ -71,7 +72,11 @@ const App = () => {
   const [idirUserDetails, setIDIRUserDetails] = useState<
     IDIRUserDetailContext | undefined
   >();
+  const [migratedTPSClient, setMigratedTPSClient] = useState<
+    MigratedTPSClient | undefined
+  >();
 
+  console.log("migratedTPSClient in App.tsx::", migratedTPSClient);
   // Needed the following usestate and useffect code so that the snackbar would disapear/close
   const [displaySnackBar, setDisplaySnackBar] = useState(false);
   useEffect(() => {
@@ -97,8 +102,18 @@ const App = () => {
                 setIDIRUserDetails,
                 onRouteBCClientNumber,
                 setOnRouteBCClientNumber,
+                migratedTPSClient,
+                setMigratedTPSClient,
               };
-            }, [userRoles, companyId, userDetails])}
+            }, [
+              userRoles,
+              companyId,
+              userDetails,
+              companyLegalName,
+              idirUserDetails,
+              onRouteBCClientNumber,
+              migratedTPSClient,
+            ])}
           >
             <SnackBarContext.Provider value={{ setSnackBar: setSnackBar }}>
               <CustomSnackbar
