@@ -40,27 +40,25 @@ export const LoginRedirect = () => {
           // If the user does not exist
           if (!user?.userGUID) {
             // The user is in pending companies => Redirect them to User Info Page.
+            // i.e., The user has been invited.
             if (pendingCompanies.length > 0) {
               navigate(routes.WELCOME);
             }
-            // The user and company does not exist => Redirect them to Add new company page.
+            // The user and company do not exist (not a migrated client)
+            //     => Redirect them to the welcome page with challenge.
             else if (
               associatedCompanies.length < 1 &&
               !migratedTPSClient?.clientNumber
             ) {
               navigate(routes.WELCOME);
-            } else if (migratedTPSClient.clientNumber) {
+            } 
+            // The user does not exist but the business guid matches a migrated client.
+            //    => Take them to no challenge workflow.
+            else if (migratedTPSClient?.clientNumber) {
               navigate(routes.WELCOME);
-              // The downside of having associatedCompanies.length === 1 is
-              // that it hinges on an implicit relationship. It has no consequences today
-              // but it could have in future. It's an unknown unknown.
-              // Check if COMPANY_USERS has a link to a set of users
-              //      If yes, if the user is invited, then he goes to user info wizard (No confusion here)
-              //      If no,
-              // isMigratedClient => COMPANY EXISTS but no COMPANY_USER relationships or check ACCOUNT_SOURCE in COMPANY_TABLE?
-              // If yes, this is a migrated client and navigate to no challenge.
-              // If no, the login is unauthorized.
-            } else {
+            }
+            // The user does not exist and company do not exist and the user has  
+            else {
               navigate(routes.UNAUTHORIZED);
             }
           }

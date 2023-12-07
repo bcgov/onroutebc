@@ -7,25 +7,24 @@ import {
   Stepper,
   Typography,
 } from "@mui/material";
-import React, { useContext } from "react";
-import { useAuth } from "react-oidc-context";
-import { FormProvider, useForm, FieldValues } from "react-hook-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import React, { useContext } from "react";
+import { FieldValues, FormProvider, useForm } from "react-hook-form";
+import { useAuth } from "react-oidc-context";
 
-import "./CreateProfileSteps.scss";
+import { SnackBarContext } from "../../../../App";
+import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { Banner } from "../../../../common/components/dashboard/Banner";
 import "../../../../common/components/dashboard/Dashboard.scss";
+import { getDefaultRequiredVal } from "../../../../common/helpers/util";
+import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { createOnRouteBCProfile } from "../../../manageProfile/apiManager/manageProfileAPI";
-import { UserInformationWizardForm } from "../../pages/UserInformationWizardForm";
+import { CompanyAndUserRequest } from "../../../manageProfile/types/manageProfile";
+import { BCEID_AUTH_GROUP } from "../../../manageProfile/types/userManagement.d";
 import { CompanyInformationWizardForm } from "../../pages/CompanyInformationWizardForm";
 import { OnRouteBCProfileCreated } from "../../pages/OnRouteBCProfileCreated";
-import { BC_COLOURS } from "../../../../themes/bcGovStyles";
-import { CompanyAndUserRequest } from "../../../manageProfile/types/manageProfile";
-import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
-import { SnackBarContext } from "../../../../App";
-import { getDefaultRequiredVal } from "../../../../common/helpers/util";
-import { BCEID_AUTH_GROUP } from "../../../manageProfile/types/userManagement.d";
-import { CustomFormComponent } from "../../../../common/components/form/CustomFormComponents";
+import { UserInformationWizardForm } from "../../pages/UserInformationWizardForm";
+import "./CreateProfileSteps.scss";
 
 const CompanyBanner = ({ legalName }: { legalName: string }) => {
   return (
@@ -81,6 +80,9 @@ const getFirstValidationError = (
   }`;
 };
 
+/**
+ * The stepper component containing the necessary forms for creating profile.
+ */
 export const CreateProfileSteps = React.memo(() => {
   const queryClient = useQueryClient();
   const steps = ["Company Information", "My Information"];
@@ -91,10 +93,10 @@ export const CreateProfileSteps = React.memo(() => {
     setOnRouteBCClientNumber,
     migratedTPSClient,
   } = useContext(OnRouteBCContext);
-  console.log('migratedTPSClient in wizard::', migratedTPSClient);
   const { setSnackBar } = useContext(SnackBarContext);
 
   const { user } = useAuth();
+  console.log('user?.profile?.email::', user?.profile?.email);
 
   const [activeStep, setActiveStep] = React.useState(0);
   const [clientNumber, setClientNumber] = React.useState(null);
@@ -263,8 +265,8 @@ export const CreateProfileSteps = React.memo(() => {
           <Banner
             bannerText="Create a new onRouteBC Profile"
             bannerSubtext="Please follow the steps below to set up your onRouteBC profile"
+            extendHeight
           />
-          <br></br>
         </Box>
         <div
           className="tabpanel-container create-profile-steps"
@@ -300,31 +302,6 @@ export const CreateProfileSteps = React.memo(() => {
                     user?.profile?.bceid_business_name as string,
                   )}
                 />
-                <h2>Doing Business As (DBA)</h2>
-                <hr></hr>
-                <CustomFormComponent
-                  type="input"
-                  feature="wizard"
-                  options={{
-                    name: "alternateName",
-                    rules: {
-                      required: false,
-                      validate: {
-                        validateAlternateName: (alternateName?: string) =>
-                          alternateName == null ||
-                          alternateName === "" ||
-                          (alternateName &&
-                            alternateName.length >= 1 &&
-                            alternateName.length <= 100),
-                      },
-                    },
-                    label: "DBA",
-                  }}
-                  className="company-info-general-form__input"
-                />
-                <h2>Company Mailing Address</h2>
-                <hr></hr>
-
                 <CompanyInformationWizardForm />
               </div>
             )}
