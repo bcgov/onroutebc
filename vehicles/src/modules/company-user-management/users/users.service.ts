@@ -33,7 +33,6 @@ import { IDP } from '../../../common/enum/idp.enum';
 import { Contact } from '../../common/entities/contact.entity';
 import { getProvinceId } from '../../../common/helper/province-country.helper';
 import { Base } from '../../common/entities/base.entity';
-import { AccountSource } from '../../../common/enum/account-source.enum';
 
 @Injectable()
 export class UsersService {
@@ -400,19 +399,7 @@ export class UsersService {
           companyGUID,
         );
         if (company) {
-          if (
-            company.accountSource === AccountSource.TpsAccount &&
-            company?.companyUsers?.length
-          ) {
-            userExistsDto.migratedTPSClient =
-              await this.companyService.mapCompanyEntityToCompanyDto(company);
-          } else {
-            const companyMetadata =
-              await this.companyService.mapCompanyEntityToCompanyMetadataDto(
-                company,
-              );
-            userExistsDto.associatedCompanies.push(companyMetadata);
-          }
+          userExistsDto.associatedCompanies.push(company);
           return userExistsDto;
         }
       }

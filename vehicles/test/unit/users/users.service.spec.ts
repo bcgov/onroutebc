@@ -26,8 +26,8 @@ import { Role } from '../../../src/common/enum/roles.enum';
 import { DataNotFoundException } from '../../../src/common/exception/data-not-found.exception';
 import * as constants from '../../util/mocks/data/test-data.constants';
 import {
+  readRedCompanyDtoMock,
   readRedCompanyMetadataDtoMock,
-  redCompanyEntityMock,
 } from '../../util/mocks/data/company.mock';
 import {
   USER_LIST,
@@ -267,7 +267,7 @@ describe('UsersService', () => {
       );
 
       companyServiceMock.findOneByCompanyGuid.mockResolvedValue(
-        redCompanyEntityMock,
+        readRedCompanyDtoMock,
       );
       const retUserContext = await service.findORBCUser(
         constants.RED_COMPANY_PENDING_USER_GUID,
@@ -276,7 +276,7 @@ describe('UsersService', () => {
       );
 
       expect(typeof retUserContext).toBe('object');
-      expect(retUserContext.pendingCompanies[0].companyId).toBe(
+      expect(retUserContext.associatedCompanies[0].companyId).toBe(
         constants.RED_COMPANY_ID,
       );
     });
