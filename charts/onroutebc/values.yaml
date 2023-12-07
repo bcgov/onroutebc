@@ -301,7 +301,7 @@ tps-migration:
       image: tps-migration
       tag: "{{tpl .Values.global.tag .}}"
       ports:
-        - name: tps-migration-api
+        - name: tps-api
           containerPort: 5050
           protocol: TCP
       readinessProbe:
