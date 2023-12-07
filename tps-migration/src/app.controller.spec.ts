@@ -15,8 +15,8 @@ describe('AppController', () => {
   });
 
   describe('root', () => {
-    it('should return "Hello World!"', () => {
-      expect(appController.getHello()).toBe('Hello World!');
+    it('should return "TPS Migration Healthcheck!"', () => {
+      expect(appController.getHello()).toBe('TPS Migration Healthcheck!');
     });
   });
 });

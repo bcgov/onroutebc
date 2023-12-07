@@ -279,3 +279,91 @@ dops:
       - mssql-{{.Values.global.zone}}
       - cdogs-{{.Values.global.zone}}
       - dops-{{.Values.global.zone}}
+
+tps-migration:
+  enabled: true
+  deployment: # can be either a statefulSet or a deployment not both
+    enabled: true
+  statefulSet: # can be either a statefulSet or a deployment not both
+    enabled: false
+  secret:
+    enabled: false
+  configmap:
+    enabled: true
+  containers:
+    - name: tps-migration
+      command:
+        - "sh"
+        - "-c"
+        - "source /vault/secrets/auth0-{{.Values.global.zone}} && source /vault/secrets/mssql-{{.Values.global.zone}} && source /vault/secrets/dops-{{.Values.global.zone}} && npm run start:prod"
+      registry: '{{ .Values.global.registry }}'
+      repository: '{{ .Values.global.repository }}' # example, it includes registry and repository
+      image: tps-migration
+      tag: "{{tpl .Values.global.tag .}}"
+      ports:
+        - name: tps-migration-api
+          containerPort: 5050
+          protocol: TCP
+      readinessProbe:
+        httpGet:
+          path: /
+          port: 5050
+          scheme: HTTP
+        initialDelaySeconds: 60
+        periodSeconds: 15
+        timeoutSeconds: 5
+      livenessProbe:
+        successThreshold: 1
+        failureThreshold: 3
+        httpGet:
+          path: /
+          port: 5050
+          scheme: HTTP
+        initialDelaySeconds: 60
+        periodSeconds: 30
+        timeoutSeconds: 5
+      securityContext:
+        allowPrivilegeEscalation: true
+      resources: # this is optional
+        limits:
+          cpu: 200m
+          memory: 600Mi
+        requests:
+          cpu: 100m
+          memory: 200Mi
+  ingress:
+    annotations: 
+      route.openshift.io/termination: "edge"
+    enabled: true
+    hosts: 
+      - host: "{{.Release.Name}}-tps-migration.apps.silver.devops.gov.bc.ca"
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+    tls:
+      - {}
+  service:
+    enabled: true
+    type: ClusterIP
+    ports:
+      - name: 5050-tcp
+        protocol: TCP
+        port: 80
+        targetPort: 5050
+  serviceAccount:
+    name: "{{ .Values.global.license }}-vault"
+  vault:
+    enabled: true
+    resources: # this is optional
+      limits:
+        cpu: 100m
+        memory: 200Mi
+      requests:
+        cpu: 75m
+        memory: 100Mi
+    role: "{{.Values.global.vault.role}}"
+    license: "{{.Values.global.license}}"
+    secretPaths:
+      - auth0-{{.Values.global.zone}}
+      - mssql-{{.Values.global.zone}}
+      - dops-{{.Values.global.zone}}
