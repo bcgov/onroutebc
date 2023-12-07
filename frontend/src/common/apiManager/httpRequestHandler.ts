@@ -139,6 +139,22 @@ export const httpGETRequestStream = (url: string) => {
 };
 
 /**
+ * A HTTP GET Request for streams
+ * @param url The URL of the resource.
+ * @returns A Promise<Response> with the response from the API.
+ */
+export const httpPOSTRequestStream = (url: string, data: any) => {
+  return fetch(url, {
+    method: "POST",
+    body: JSON.stringify(data),
+    headers: {
+      Authorization: getAccessToken(),
+      "Content-Type": "application/json",
+    },
+  });
+};
+
+/**
  * A generic HTTP POST Request
  * @param url The URL of the resource.
  * @param data The request payload.

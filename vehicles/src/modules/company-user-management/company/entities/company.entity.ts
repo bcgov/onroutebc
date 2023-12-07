@@ -46,6 +46,13 @@ export class Company extends Base {
   legalName: string;
 
   /**
+   * The company's Alternate name/DBA.
+   */
+  @AutoMap()
+  @Column({ length: 150, name: 'ALTERNATE_NAME', nullable: true })
+  alternateName?: string;
+
+  /**
    * A property that represents the company's directory, which is an enum of
    * type {@link Directory}.
    */

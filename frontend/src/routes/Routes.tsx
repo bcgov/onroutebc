@@ -22,6 +22,7 @@ import { IDIRSearchResultsDashboard } from "../features/idir/search/pages/IDIRSe
 import { IDIRWelcome } from "../features/idir/IDIRWelcome";
 import { UserInfoWizard } from "../features/wizard/UserInfoWizard";
 import { VoidPermit } from "../features/permits/pages/Void/VoidPermit";
+import { IDIRReportsDashboard } from "../features/idir/search/pages/IDIRReportsDashboard";
 import { AmendPermit } from "../features/permits/pages/Amend/AmendPermit";
 import { Unauthorized } from "../common/pages/Unauthorized";
 import { UniversalUnauthorized } from "../common/pages/UniversalUnauthorized";
@@ -37,6 +38,7 @@ export const AppRoutes = () => {
         element={<UniversalUnauthorized />}
       />
       <Route path="*" element={<NotFound />} />
+      <Route path={routes.REPORTS} element={<IDIRReportsDashboard />} />
 
       {/* IDIR Routes */}
       <Route element={<ProtectedRoutes requiredRole={ROLES.READ_PERMIT} />}>

@@ -13,7 +13,6 @@ import {
   pendingIdirUserEntityMock,
 } from 'test/util/mocks/data/pending-idir-user.mock';
 import { PendingIdirUsersProfile } from 'src/modules/company-user-management/pending-idir-users/profiles/pending-idir-user.profile';
-import { getDirectory } from 'src/common/helper/auth.helper';
 import { sysAdminStaffUserJWTMock } from 'test/util/mocks/data/jwt.mock';
 
 let repo: DeepMocked<Repository<PendingIdirUser>>;
@@ -58,7 +57,6 @@ describe('PendingUsersService', () => {
       repo.save.mockResolvedValue(pendingIdirUserEntityMock);
       const retPendingUser = await service.create(
         createPendingIdirUserMock,
-        getDirectory(sysAdminStaffUserJWTMock),
         sysAdminStaffUserJWTMock,
       );
       expect(typeof retPendingUser).toBe('object');

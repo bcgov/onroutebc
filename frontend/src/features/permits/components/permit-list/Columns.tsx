@@ -3,6 +3,7 @@ import { MRT_ColumnDef } from "material-react-table";
 import { viewPermitPdf } from "../../helpers/permitPDFHelper";
 import { Permit } from "../../types/permit";
 import { PermitChip } from "./PermitChip";
+import { dateTimeStringSortingFn } from "../../../../common/constants/defaultTableOptions";
 
 /**
  * The column definition for Permits.
@@ -12,7 +13,6 @@ export const PermitsColumnDefinition: MRT_ColumnDef<Permit>[] = [
     accessorKey: "permitNumber",
     header: "Permit #",
     enableSorting: true,
-    enableMultiSort: false,
     sortingFn: "alphanumeric",
     size: 500,
     accessorFn: (row) => row.permitNumber,
@@ -35,7 +35,6 @@ export const PermitsColumnDefinition: MRT_ColumnDef<Permit>[] = [
     accessorKey: "permitType",
     header: "Permit Type",
     enableSorting: true,
-    enableMultiSort: false,
     sortingFn: "alphanumeric",
   },
   {
@@ -43,29 +42,25 @@ export const PermitsColumnDefinition: MRT_ColumnDef<Permit>[] = [
     id: "unitNumber",
     header: "Unit #",
     enableSorting: true,
-    enableMultiSort: false,
     sortingFn: "alphanumeric",
   },
   {
     accessorKey: "permitData.vehicleDetails.plate",
     header: "Plate",
     enableSorting: true,
-    enableMultiSort: false,
     sortingFn: "alphanumeric",
   },
   {
     accessorKey: "permitData.startDate",
     header: "Permit Start Date",
     enableSorting: true,
-    enableMultiSort: false,
-    sortingFn: "datetime",
+    sortingFn: dateTimeStringSortingFn,
   },
   {
     accessorKey: "permitData.expiryDate",
     header: "Permit End Date",
     enableSorting: true,
-    enableMultiSort: false,
-    sortingFn: "datetime",
+    sortingFn: dateTimeStringSortingFn,
   },
   {
     accessorFn: (row) =>
@@ -73,7 +68,6 @@ export const PermitsColumnDefinition: MRT_ColumnDef<Permit>[] = [
     id: "application",
     header: "Applicant",
     enableSorting: true,
-    enableMultiSort: false,
     sortingFn: "alphanumericCaseSensitive",
   },
 ];

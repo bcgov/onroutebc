@@ -1,6 +1,7 @@
 import { Mapper } from '@automapper/core';
 import { InjectMapper } from '@automapper/nestjs';
 import {
+  BadRequestException,
   Inject,
   Injectable,
   InternalServerErrorException,
@@ -8,7 +9,6 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { UserAuthGroup } from '../../../common/enum/user-auth-group.enum';
-import { Directory } from '../../../common/enum/directory.enum';
 import { ReadUserDto } from '../users/dto/response/read-user.dto';
 import { CreateCompanyDto } from './dto/request/create-company.dto';
 import { UpdateCompanyDto } from './dto/request/update-company.dto';
@@ -30,6 +30,7 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { getFromCache } from '../../../common/helper/cache.helper';
 import { CacheKey } from '../../../common/enum/cache-key.enum';
+import { AccountSource } from '../../../common/enum/account-source.enum';
 
 @Injectable()
 export class CompanyService {
@@ -52,7 +53,6 @@ export class CompanyService {
    *
    * @param createCompanyDto Request object of type {@link CreateCompanyDto} for
    * creating a new company and admin user.
-   * @param directory Directory derived from the access token.
    * @param currentUser The current user details from the token.
    *
    * @returns The company and admin user details as a promise of type
@@ -60,11 +60,26 @@ export class CompanyService {
    */
   async create(
     createCompanyDto: CreateCompanyDto,
-    directory: Directory,
     currentUser: IUserJWT,
   ): Promise<ReadCompanyUserDto> {
     let newCompany: Company;
     let newUser: ReadUserDto;
+    let migratedTPSClient = false;
+    const existingCompanyDetails = await this.findOneByCompanyGuid(
+      currentUser.bceid_business_guid,
+    );
+
+    //TPS migrated companies without any users linked to it is allowed
+    if (existingCompanyDetails?.companyUsers?.length) {
+      throw new BadRequestException(
+        'Company already exists in ORBC. Please use the update endpoint',
+      );
+    } else if (
+      existingCompanyDetails?.accountSource === AccountSource.TpsAccount
+    ) {
+      migratedTPSClient = true;
+    }
+
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -75,7 +90,7 @@ export class CompanyService {
         Company,
         {
           extraArgs: () => ({
-            directory: directory,
+            directory: currentUser.orbcUserDirectory,
             companyGUID: currentUser.bceid_business_guid,
             accountSource: currentUser.accountSource,
             userName: currentUser.userName,
@@ -85,10 +100,16 @@ export class CompanyService {
         },
       );
 
-      newCompany.clientNumber = await this.generateClientNumber(
-        newCompany,
-        currentUser,
-      );
+      if (!migratedTPSClient) {
+        newCompany.clientNumber = await this.generateClientNumber(
+          newCompany,
+          currentUser,
+        );
+      } else {
+        newCompany.companyId = existingCompanyDetails?.companyId;
+        newCompany.mailingAddress.addressId =
+          existingCompanyDetails?.mailingAddress?.addressId;
+      }
 
       newCompany = await queryRunner.manager.save(newCompany);
 
@@ -99,7 +120,7 @@ export class CompanyService {
         {
           extraArgs: () => ({
             userName: currentUser.userName,
-            directory: directory,
+            directory: currentUser.orbcUserDirectory,
             userGUID: currentUser.userGUID,
             timestamp: new Date(),
           }),
@@ -266,24 +287,51 @@ export class CompanyService {
   /**
    * The findOneByCompanyGuid() method returns a ReadCompanyDto object corresponding to the
    * company with that company GUID. It retrieves the entity from the database using the
-   * Repository, maps it to a DTO object using the Mapper, and returns it.
+   * Repository
    *
    * @param companyGUID The company Id.
    *
+   * @returns The company details as a promise of type {@link Company}
+   */
+  async findOneByCompanyGuid(companyGUID: string): Promise<Company> {
+    return await this.companyRepository.findOne({
+      where: { companyGUID: companyGUID },
+      relations: {
+        mailingAddress: true,
+        primaryContact: true,
+        companyUsers: true,
+      },
+    });
+  }
+
+  /**
+   * The mapCompanyEntityToCompanyDto() method returns a ReadCompanyDto object
+   * corresponding to the company with that company GUID. It maps the company
+   * entity to the DTO.
+   *
+   * @param company The company Entity.
+   *
    * @returns The company details as a promise of type {@link ReadCompanyDto}
    */
-  async findOneByCompanyGuid(companyGUID: string): Promise<ReadCompanyDto> {
-    return this.classMapper.mapAsync(
-      await this.companyRepository.findOne({
-        where: { companyGUID: companyGUID },
-        relations: {
-          mailingAddress: true,
-          primaryContact: true,
-        },
-      }),
-      Company,
-      ReadCompanyDto,
-    );
+  async mapCompanyEntityToCompanyDto(
+    company: Company,
+  ): Promise<ReadCompanyDto> {
+    return this.classMapper.mapAsync(company, Company, ReadCompanyDto);
+  }
+
+  /**
+   * The mapCompanyEntityToCompanyMetadataDto() method returns a ReadCompanyDto object
+   * corresponding to the company with that company GUID. It maps the company
+   * entity to the DTO.
+   *
+   * @param company The company Entity.
+   *
+   * @returns The company details as a promise of type {@link ReadCompanyMetadataDto}
+   */
+  async mapCompanyEntityToCompanyMetadataDto(
+    company: Company,
+  ): Promise<ReadCompanyMetadataDto> {
+    return this.classMapper.mapAsync(company, Company, ReadCompanyMetadataDto);
   }
 
   /**
@@ -306,7 +354,6 @@ export class CompanyService {
   async update(
     companyId: number,
     updateCompanyDto: UpdateCompanyDto,
-    directory: Directory,
     currentUser: IUserJWT,
   ): Promise<ReadCompanyDto> {
     const company = await this.companyRepository.findOne({
@@ -333,7 +380,7 @@ export class CompanyService {
         extraArgs: () => ({
           companyId: company.companyId,
           clientNumber: clientNumber,
-          directory: directory,
+          directory: currentUser.orbcUserDirectory,
           mailingAddressId: mailingAddressId,
           contactId: contactId,
           userName: currentUser.userName,

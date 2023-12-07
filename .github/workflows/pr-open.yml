@@ -2,25 +2,17 @@ name: PR
 
 on:
   pull_request:
-    branches: [main]
-  workflow_dispatch:
+  merge_group:
 
 concurrency:
-  #  PR open and close use the same group, allowing only one at a time
-  group: pr-${{ github.workflow }}-${{ github.event.number }}
+  # Cancel in progress for PR open and close, but not merge_group
+  group: ${{ github.workflow }}-${{ github.event.number || github.event.merge_group.base_sha }}
   cancel-in-progress: true
 
 jobs:
-  conventional-commits:
-    name: Conventional Commits
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: amannn/action-semantic-pull-request@v5.4.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
   pr-description-add:
     name: PR Description Add
+    if: github.event_name == 'pull_request'
     env:
       DOMAIN: apps.silver.devops.gov.bc.ca
       PREFIX: ${{ github.event.repository.name }}-${{ github.event.number }}
@@ -41,6 +33,7 @@ jobs:
             - [Frontend](https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }})
             - [Vehicles](https://${{ env.PREFIX }}-vehicles.${{ env.DOMAIN }}/api)
             - [Dops](https://${{ env.PREFIX }}-dops.${{ env.DOMAIN }}/api)
+            - [TPS-Migration](https://${{ env.PREFIX }}-tps-migration.${{ env.DOMAIN }}/api)
 
             Please create PRs in draft mode.  Mark as ready to enable:
             - [Analysis Workflow](https://github.com/${{ github.repository }}/actions/workflows/analysis.yml)
@@ -48,35 +41,48 @@ jobs:
             After merge, new images are promoted to:
             - [Merge Workflow](https://github.com/${{ github.repository }}/actions/workflows/merge.yml)
 
+  # Get PR number for merge queues, otherwise jusr use github.event.nuber
+  vars:
+    name: Set Variables
+    outputs:
+      pr: ${{ steps.pr.outputs.pr }}
+    runs-on: ubuntu-22.04
+    steps:
+      - name: PR Number
+        id: pr
+        uses: bcgov-nr/action-get-pr@v0.0.1
+
   # https://github.com/bcgov-nr/action-builder-ghcr
   builds:
     name: Builds
+    needs: [vars]
     runs-on: ubuntu-22.04
     permissions:
       packages: write
     strategy:
       matrix:
-        package: [dops, vehicles, frontend]
+        package: [dops, vehicles, frontend, tps-migration]
     timeout-minutes: 10
     steps:
       - uses: bcgov-nr/action-builder-ghcr@v2.0.0
         with:
           keep_versions: 50
           package: ${{ matrix.package }}
-          tag: ${{ github.event.number }}
-          tag_fallback: test
+          tag: ${{ needs.vars.outputs.pr }}
+          tag_fallback: latest
           triggers: ('${{ matrix.package }}/')
 
   # https://github.com/bcgov-nr/action-deployer-openshift
   deploys:
     name: Deploys
-    needs: [builds]
+    needs: [builds, vars]
     uses: ./.github/workflows/.deploy.yml
     secrets: inherit
     with:
       autoscaling: false
-      target: ${{ github.event.number }}
-      values: values.yaml
-      license: c28f0c
+      repository: ${{ github.event.repository.name }}
+      environment: dev
+      release: ${{ needs.vars.outputs.pr }}
+      tag: ${{ needs.vars.outputs.pr }}
+      triggers: ('database/' 'dops/' 'frontend/' 'vehicles/')
       vault_role: nonprod
-      zone: dev

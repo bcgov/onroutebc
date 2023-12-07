@@ -15,7 +15,6 @@ import { UpdateUserDto } from './dto/request/update-user.dto';
 import { Company } from '../company/entities/company.entity';
 import { CompanyUser } from './entities/company-user.entity';
 import { UserStatus } from '../../../common/enum/user-status.enum';
-import { Directory } from '../../../common/enum/directory.enum';
 import { PendingUser } from '../pending-users/entities/pending-user.entity';
 import { DataNotFoundException } from '../../../common/exception/data-not-found.exception';
 import { ReadUserOrbcStatusDto } from './dto/response/read-user-orbc-status.dto';
@@ -31,6 +30,10 @@ import { ReadPendingUserDto } from '../pending-users/dto/response/read-pending-u
 import { BadRequestExceptionDto } from '../../../common/exception/badRequestException.dto';
 import { ExceptionDto } from '../../../common/exception/exception.dto';
 import { IDP } from '../../../common/enum/idp.enum';
+import { Contact } from '../../common/entities/contact.entity';
+import { getProvinceId } from '../../../common/helper/province-country.helper';
+import { Base } from '../../common/entities/base.entity';
+import { AccountSource } from '../../../common/enum/account-source.enum';
 
 @Injectable()
 export class UsersService {
@@ -50,16 +53,15 @@ export class UsersService {
 
   /**
    * The create() method creates a new user entity with the
-   * {@link CreateUserDto} object, companyId, userName, and
-   * {@link Directory} parameters. It also deletes the corresponding
-   * PendingUser entity and commits the transaction if successful. If an error
-   * is thrown, it rolls back the transaction and returns the error.
+   * {@link CreateUserDto} object, companyId, and userName parameters. It also
+   * deletes the corresponding PendingUser entity and commits the transaction if
+   * successful. If an error is thrown, it rolls back the transaction and
+   * returns the error.
    * TODO verify the role with PENDING_USER and throw exception on mismatch
    *
    * @param createUserDto Request object of type {@link CreateUserDto} for
    * creating a new user.
    * @param companyId The company Id.
-   * @param Directory Directory dervied from the access token.
    * @param currentUser The current user details from the token.
    *
    * @returns The user details as a promise of type {@link ReadUserDto}
@@ -67,7 +69,6 @@ export class UsersService {
   async create(
     createUserDto: CreateUserDto,
     companyId: number,
-    directory: Directory,
     currentUser: IUserJWT,
   ): Promise<ReadUserDto> {
     let newUser: ReadUserDto;
@@ -95,7 +96,7 @@ export class UsersService {
       let user = this.classMapper.map(createUserDto, CreateUserDto, User, {
         extraArgs: () => ({
           userName: currentUser.userName,
-          directory: directory,
+          directory: currentUser.orbcUserDirectory,
           userGUID: currentUser.userGUID,
           timestamp: new Date(),
         }),
@@ -143,7 +144,6 @@ export class UsersService {
     userGUID: string,
     updateUserDto: UpdateUserDto,
     companyId: number,
-    directory: Directory,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     currentUser?: IUserJWT,
   ): Promise<ReadUserDto> {
@@ -153,23 +153,13 @@ export class UsersService {
       throw new DataNotFoundException();
     }
 
-    const user = this.classMapper.map(updateUserDto, UpdateUserDto, User, {
-      extraArgs: () => ({
-        userName: currentUser.userName,
-        directory: directory,
-        userGUID: currentUser.userGUID,
-        timestamp: new Date(),
-      }),
-    });
-    user.userContact.contactId = userDetails[0]?.userContact?.contactId;
-
     //Searching with UserGuid will only return one result at max
-    const currentAuthGroup = userDetails.at(0).companyUsers.at(0).userAuthGroup;
+    const companyUser = userDetails.at(0).companyUsers.at(0);
     //A CV user's auth group should not be allowed to be downgraded from CVADMIN
     //if they are the last remaining CVADMIN of the Company
     if (
-      currentAuthGroup === UserAuthGroup.COMPANY_ADMINISTRATOR &&
-      currentAuthGroup !== updateUserDto.userAuthGroup
+      companyUser.userAuthGroup === UserAuthGroup.COMPANY_ADMINISTRATOR &&
+      companyUser.userAuthGroup !== updateUserDto.userAuthGroup
     ) {
       //Find all employees of the company
       const employees = await this.findUsersEntity(undefined, [companyId]);
@@ -198,18 +188,68 @@ export class UsersService {
       }
     }
 
-    // Should be allowed to update userAuthGroupID if current user is an
-    // IDIR(PPC Clerk) or CVAdmin
-    if (
-      (currentAuthGroup === UserAuthGroup.COMPANY_ADMINISTRATOR ||
-        currentUser.identity_provider === IDP.IDIR) &&
-      currentAuthGroup !== updateUserDto.userAuthGroup
-    ) {
-      user.companyUsers = userDetails.at(0).companyUsers;
-      user.companyUsers.at(0).userAuthGroup = updateUserDto.userAuthGroup;
+    //Updates the entities
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      const auditMetadata: Base = {
+        createdDateTime: new Date(),
+        createdUser: currentUser.userName,
+        createdUserDirectory: currentUser.orbcUserDirectory,
+        createdUserGuid: currentUser.userGUID,
+        updatedDateTime: new Date(),
+        updatedUser: currentUser.userName,
+        updatedUserDirectory: currentUser.orbcUserDirectory,
+        updatedUserGuid: currentUser.userGUID,
+      };
+
+      await queryRunner.manager.update(
+        Contact,
+        { contactId: userDetails[0]?.userContact?.contactId },
+        {
+          firstName: updateUserDto.firstName,
+          lastName: updateUserDto.lastName,
+          email: updateUserDto.email,
+          phone1: updateUserDto.phone1,
+          extension1: updateUserDto.phone1Extension,
+          phone2: updateUserDto.phone2,
+          extension2: updateUserDto.phone2Extension,
+          fax: updateUserDto.fax,
+          city: updateUserDto.city,
+          province: {
+            provinceId: getProvinceId(
+              updateUserDto.countryCode,
+              updateUserDto.provinceCode,
+            ),
+          },
+          ...auditMetadata,
+        },
+      );
+
+      // Should be allowed to update userAuthGroupID if current user is an
+      // IDIR(PPC Clerk) or CVAdmin
+      if (
+        (companyUser.userAuthGroup === UserAuthGroup.COMPANY_ADMINISTRATOR ||
+          currentUser.identity_provider === IDP.IDIR) &&
+        companyUser.userAuthGroup !== updateUserDto.userAuthGroup
+      ) {
+        await queryRunner.manager.update(
+          CompanyUser,
+          { companyUserId: companyUser.companyUserId },
+          { userAuthGroup: updateUserDto.userAuthGroup, ...auditMetadata },
+        );
+      }
+
+      await queryRunner.commitTransaction();
+    } catch (err) {
+      await queryRunner.rollbackTransaction();
+      throw new InternalServerErrorException(); // TODO: Handle the typeorm Error handling
+    } finally {
+      await queryRunner.release();
     }
-    await this.userRepository.save(user);
-    const userListDto = await this.findUsersDto(user.userGUID);
+
+    const userListDto = await this.findUsersDto(userGUID);
     return userListDto[0];
   }
 
@@ -226,7 +266,6 @@ export class UsersService {
   async updateStatus(
     userGUID: string,
     statusCode: UserStatus,
-    directory: Directory,
     currentUser?: IUserJWT,
   ): Promise<UpdateResult> {
     const user = new User();
@@ -235,7 +274,7 @@ export class UsersService {
     user.updatedUserGuid = currentUser.userGUID;
     user.updatedDateTime = new Date();
     user.updatedUser = currentUser.userName;
-    user.updatedUserDirectory = directory;
+    user.updatedUserDirectory = currentUser.orbcUserDirectory;
     return await this.userRepository.update({ userGUID }, user);
   }
 
@@ -361,7 +400,19 @@ export class UsersService {
           companyGUID,
         );
         if (company) {
-          userExistsDto.associatedCompanies.push(company);
+          if (
+            company.accountSource === AccountSource.TpsAccount &&
+            !company?.companyUsers?.length
+          ) {
+            userExistsDto.migratedTPSClient =
+              await this.companyService.mapCompanyEntityToCompanyDto(company);
+          } else {
+            const companyMetadata =
+              await this.companyService.mapCompanyEntityToCompanyMetadataDto(
+                company,
+              );
+            userExistsDto.associatedCompanies.push(companyMetadata);
+          }
           return userExistsDto;
         }
       }

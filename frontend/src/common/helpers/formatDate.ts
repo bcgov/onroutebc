@@ -3,12 +3,14 @@ import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import localizedFormat from "dayjs/plugin/localizedFormat";
 import advancedFormat from "dayjs/plugin/advancedFormat";
+import isLeapYear from "dayjs/plugin/isLeapYear";
 
 // Need to add these plugins here
 dayjs.extend(utc); // for using utc
 dayjs.extend(timezone); // for using timezones
 dayjs.extend(localizedFormat); // for using localized datetime formats (eg. LLL)
 dayjs.extend(advancedFormat); // for using advanced datetime formats
+dayjs.extend(isLeapYear); // for using isLeapYear calculations
 
 export const DATE_FORMATS = {
   DATEONLY: "YYYY-MM-DD",

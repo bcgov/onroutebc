@@ -26,8 +26,8 @@ import { Role } from '../../../src/common/enum/roles.enum';
 import { DataNotFoundException } from '../../../src/common/exception/data-not-found.exception';
 import * as constants from '../../util/mocks/data/test-data.constants';
 import {
-  readRedCompanyDtoMock,
   readRedCompanyMetadataDtoMock,
+  redCompanyEntityMock,
 } from '../../util/mocks/data/company.mock';
 import {
   USER_LIST,
@@ -46,8 +46,6 @@ import { PendingIdirUsersService } from 'src/modules/company-user-management/pen
 import { pendingIdirUserEntityMock } from 'test/util/mocks/data/pending-idir-user.mock';
 import { Request } from 'express';
 import { IUserJWT } from '../../../src/common/interface/user-jwt.interface';
-import { Directory } from 'src/common/enum/directory.enum';
-import { getDirectory } from 'src/common/helper/auth.helper';
 
 interface SelectQueryBuilderParameters {
   userGUID?: string;
@@ -148,7 +146,6 @@ describe('UsersService', () => {
       const retUser = await service.create(
         createRedCompanyCvClientUserDtoMock,
         constants.RED_COMPANY_ID,
-        constants.RED_COMPANY_CVCLIENT_USER_STATUS_DIRECOTRY,
         redCompanyCvClientUserJWTMock,
       );
       expect(typeof retUser).toBe('object');
@@ -157,12 +154,7 @@ describe('UsersService', () => {
 
     it('should catch and throw and Internal Error Exceptions user.', async () => {
       await expect(async () => {
-        await service.create(
-          null,
-          null,
-          constants.RED_COMPANY_CVCLIENT_USER_STATUS_DIRECOTRY,
-          redCompanyCvClientUserJWTMock,
-        );
+        await service.create(null, null, redCompanyCvClientUserJWTMock);
       }).rejects.toThrowError(InternalServerErrorException);
     });
   });
@@ -184,7 +176,6 @@ describe('UsersService', () => {
         constants.RED_COMPANY_CVCLIENT_USER_GUID,
         updateRedCompanyCvClientUserDtoMock,
         constants.RED_COMPANY_ID,
-        getDirectory(redCompanyCvClientUserJWTMock),
         request.user as IUserJWT,
       );
 
@@ -224,7 +215,6 @@ describe('UsersService', () => {
       const retUpdateResult = await service.updateStatus(
         constants.BLUE_COMPANY_CVCLIENT_USER_GUID,
         UserStatus.DISABLED,
-        Directory.BCEID,
         redCompanyCvClientUserJWTMock,
       );
       expect(typeof retUpdateResult).toBe('object');
@@ -277,7 +267,7 @@ describe('UsersService', () => {
       );
 
       companyServiceMock.findOneByCompanyGuid.mockResolvedValue(
-        readRedCompanyDtoMock,
+        redCompanyEntityMock,
       );
       const retUserContext = await service.findORBCUser(
         constants.RED_COMPANY_PENDING_USER_GUID,
@@ -286,7 +276,7 @@ describe('UsersService', () => {
       );
 
       expect(typeof retUserContext).toBe('object');
-      expect(retUserContext.associatedCompanies[0].companyId).toBe(
+      expect(retUserContext.pendingCompanies[0].companyId).toBe(
         constants.RED_COMPANY_ID,
       );
     });

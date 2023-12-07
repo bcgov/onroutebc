@@ -94,6 +94,7 @@ describe('CompanyService', () => {
 
   describe('Company service create function', () => {
     it('should create a company registered in BC and its admin user.', async () => {
+      jest.spyOn(service, 'findOneByCompanyGuid').mockResolvedValue(undefined);
       repo.findOne.mockResolvedValue(redCompanyEntityMock);
       emailService.sendEmailMessage.mockResolvedValue(
         '00000000-0000-0000-0000-000000000000',
@@ -106,7 +107,6 @@ describe('CompanyService', () => {
         });
       const retCompanyUser = await service.create(
         createRedCompanyDtoMock,
-        constants.RED_COMPANY_DIRECOTRY,
         redCompanyAdminUserJWTMock,
       );
       expect(typeof retCompanyUser).toBe('object');
@@ -114,6 +114,7 @@ describe('CompanyService', () => {
     });
 
     it('should create a company registered in US and its admin user.', async () => {
+      jest.spyOn(service, 'findOneByCompanyGuid').mockResolvedValue(undefined);
       repo.findOne.mockResolvedValue(blueCompanyEntityMock);
       emailService.sendEmailMessage.mockResolvedValue(
         '00000000-0000-0000-0000-000000000000',
@@ -125,7 +126,6 @@ describe('CompanyService', () => {
         });
       const retCompanyUser = await service.create(
         createBlueCompanyDtoMock,
-        constants.BLUE_COMPANY_DIRECOTRY,
         blueCompanyAdminUserJWTMock,
       );
       expect(typeof retCompanyUser).toBe('object');
@@ -134,7 +134,7 @@ describe('CompanyService', () => {
 
     it('should catch and throw and Internal Error Exceptions user.', async () => {
       await expect(async () => {
-        await service.create(null, null, redCompanyAdminUserJWTMock);
+        await service.create(null, redCompanyAdminUserJWTMock);
       }).rejects.toThrowError(InternalServerErrorException);
     });
   });
@@ -152,7 +152,6 @@ describe('CompanyService', () => {
       const retCompany = await service.update(
         constants.RED_COMPANY_ID,
         updateRedCompanyDtoMock,
-        constants.RED_COMPANY_DIRECOTRY,
         redCompanyCvClientUserJWTMock,
       );
 
@@ -168,7 +167,6 @@ describe('CompanyService', () => {
         await service.update(
           COMPANY_ID_99,
           updateRedCompanyDtoMock,
-          constants.RED_COMPANY_DIRECOTRY,
           redCompanyCvClientUserJWTMock,
         );
       }).rejects.toThrow(DataNotFoundException);

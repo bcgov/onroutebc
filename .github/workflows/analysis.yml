@@ -3,6 +3,7 @@ name: Analysis
 on:
   push:
     branches: [main]
+  merge_group:
   pull_request:
     types: [opened, reopened, synchronize, ready_for_review]
   schedule:
@@ -17,7 +18,7 @@ jobs:
   # https://github.com/github/codeql-action
   codeql:
     name: CodeQL
-    if: github.event_name != 'pull_request' || !github.event.pull_request.draft
+    if: ${{ ! github.event.pull_request.draft }}
     runs-on: ubuntu-22.04
     timeout-minutes: 5
     steps:
@@ -37,13 +38,13 @@ jobs:
   # https://github.com/marketplace/actions/aqua-security-trivy
   trivy:
     name: Trivy Security Scan
-    if: github.event_name != 'pull_request' || !github.event.pull_request.draft
+    if: ${{ ! github.event.pull_request.draft }}
     runs-on: ubuntu-22.04
     timeout-minutes: 1
     steps:
       - uses: actions/checkout@v4
       - name: Run Trivy vulnerability scanner in repo mode
-        uses: aquasecurity/trivy-action@0.14.0
+        uses: aquasecurity/trivy-action@0.15.0
         with:
           format: "sarif"
           output: "trivy-results.sarif"
@@ -59,7 +60,7 @@ jobs:
 
   tests:
     name: Tests
-    if: github.event_name != 'pull_request' || !github.event.pull_request.draft
+    if: ${{ ! github.event.pull_request.draft }}
     runs-on: ubuntu-22.04
     timeout-minutes: 5
     services:
@@ -78,7 +79,7 @@ jobs:
           - 5432:5432
     strategy:
       matrix:
-        dir: [vehicles, dops, frontend]
+        dir: [vehicles, dops, frontend, tps-migration]
         include:
           - dir: dops
             sonar_projectKey: onroutebc_dops
@@ -88,6 +89,10 @@ jobs:
             sonar_projectKey: onroutebc_vehicles
             token: SONAR_TOKEN_VEHICLES
             triggers: ('vehicles')
+          - dir: tps-migration
+            sonar_projectKey: onroutebc_tps_migration
+            token: SONAR_TOKEN_TPS_MIGRATION
+            triggers: ('tps-migration')
           - dir: frontend
             sonar_projectKey: onroutebc_frontend
             token: SONAR_TOKEN_FRONTEND
@@ -109,3 +114,12 @@ jobs:
             -Dsonar.javascript.lcov.reportPaths=./coverage/lcov.info
           sonar_token: ${{ secrets[matrix.token] }}
           triggers: ${{ matrix.triggers }}
+
+  results:
+    name: Results
+    needs: [codeql, trivy, tests]
+    if: always() && (! failure())
+    runs-on: ubuntu-22.04
+    timeout-minutes: 1
+    steps:
+      - run: echo "Success!"

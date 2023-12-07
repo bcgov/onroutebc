@@ -12,11 +12,14 @@ import {
 
 import { SnackBarContext } from "../../../../App";
 import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
-import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { Permit } from "../../types/permit";
 import { PermitsColumnDefinition } from "./Columns";
 import { PermitRowOptions } from "./PermitRowOptions";
-import { defaultTableOptions } from "../../../../common/constants/defaultTableOptions";
+import {
+  defaultTableInitialStateOptions,
+  defaultTableOptions,
+  defaultTableStateOptions,
+} from "../../../../common/constants/defaultTableOptions";
 
 /**
  * A permit list component with common functionalities that can be shared by
@@ -37,10 +40,11 @@ export const BasePermitList = ({
     columns: PermitsColumnDefinition,
     data: data ?? [],
     initialState: {
-      showGlobalFilter: true,
+      ...defaultTableInitialStateOptions,
       sorting: [{ id: "permitData.expiryDate", desc: true }],
     },
     state: {
+      ...defaultTableStateOptions,
       showAlertBanner: isError,
       showProgressBars: isInitialLoading,
       columnVisibility: { applicationId: true },
@@ -74,31 +78,12 @@ export const BasePermitList = ({
       ),
       [],
     ),
-    muiTableContainerProps: {
-      sx: {
-        height: "calc(100vh - 475px)",
-        outline: "1px solid #DBDCDC",
-      },
-    },
     muiToolbarAlertBannerProps: isError
       ? {
           color: "error",
           children: "Error loading data",
         }
       : undefined,
-    muiSearchTextFieldProps: {
-      placeholder: "Search",
-      sx: {
-        minWidth: "300px",
-        backgroundColor: "white",
-      },
-      variant: "outlined",
-      inputProps: {
-        sx: {
-          padding: "10px",
-        },
-      },
-    },
   });
 
   useEffect(() => {

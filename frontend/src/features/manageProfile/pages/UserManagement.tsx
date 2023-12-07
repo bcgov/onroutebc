@@ -21,7 +21,11 @@ import { getCompanyUsers } from "../apiManager/manageProfileAPI";
 import { UserManagementTableRowActions } from "../components/user-management/UserManagementRowOptions";
 import { UserManagementColumnsDefinition } from "../types/UserManagementColumns";
 import { BCeIDUserStatus, ReadCompanyUser } from "../types/userManagement.d";
-import { defaultTableOptions } from "../../../common/constants/defaultTableOptions";
+import {
+  defaultTableInitialStateOptions,
+  defaultTableOptions,
+  defaultTableStateOptions,
+} from "../../../common/constants/defaultTableOptions";
 
 /**
  * User Management Component for CV Client.
@@ -80,7 +84,11 @@ export const UserManagement = () => {
     ...defaultTableOptions,
     columns: UserManagementColumnsDefinition,
     data: data ?? [],
+    initialState: {
+      ...defaultTableInitialStateOptions,
+    },
     state: {
+      ...defaultTableStateOptions,
       showAlertBanner: isError,
       showProgressBars: isInitialLoading,
       columnVisibility: { applicationId: true },
@@ -128,14 +136,6 @@ export const UserManagement = () => {
       ),
       [hasNoRowsSelected],
     ),
-    // Cell/Body container
-    muiTableContainerProps: {
-      sx: {
-        height: "calc(100vh - 475px)",
-        outline: "1px solid #DBDCDC",
-      },
-    },
-    // Alert banner
     muiToolbarAlertBannerProps: isError
       ? {
           color: "error",

@@ -12,7 +12,6 @@ import { ExceptionDto } from '../../../common/exception/exception.dto';
 import { CreatePendingIdirUserDto } from './dto/request/create-pending-idir-user.dto';
 import { PendingIdirUsersService } from './pending-idir-users.service';
 import { ReadPendingIdirUserDto } from './dto/response/read-pending-idir-user.dto';
-import { getDirectory } from 'src/common/helper/auth.helper';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
 import { Request } from 'express';
 import { Roles } from '../../../common/decorator/roles.decorator';
@@ -55,10 +54,8 @@ export class PendingIdirUsersController {
     @Body() createPendingIdirUserDto: CreatePendingIdirUserDto,
   ): Promise<ReadPendingIdirUserDto> {
     const currentUser = request.user as IUserJWT;
-    const directory = getDirectory(currentUser);
     const pendingIdirUser = await this.pendingIdirUserService.create(
       createPendingIdirUserDto,
-      directory,
       currentUser,
     );
     return pendingIdirUser;

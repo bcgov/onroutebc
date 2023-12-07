@@ -36,7 +36,6 @@ import { IUserJWT } from '../../interface/user-jwt.interface';
 import { IDP } from '../../enum/idp.enum';
 import { Roles } from '../../decorator/roles.decorator';
 import { Role } from '../../enum/roles.enum';
-import { getDirectory } from 'src/helper/auth.helper';
 
 @ApiTags('DMS')
 @ApiBadRequestResponse({
@@ -92,7 +91,6 @@ export class DmsController {
     file: Express.Multer.File,
   ): Promise<ReadFileDto> {
     const currentUser = request.user as IUserJWT;
-    const directory = getDirectory(currentUser);
     if (currentUser.identity_provider !== IDP.IDIR && !companyId) {
       throw new BadRequestException(
         'Company Id is manadatory for all IDP but IDIR',
@@ -102,12 +100,7 @@ export class DmsController {
       ? createFileDto.fileName
       : file.originalname;
 
-    return await this.dmsService.create(
-      currentUser,
-      file,
-      directory,
-      companyId,
-    );
+    return await this.dmsService.create(currentUser, file, companyId);
   }
 
   @ApiCreatedResponse({
@@ -143,7 +136,6 @@ export class DmsController {
     file: Express.Multer.File,
   ): Promise<ReadFileDto> {
     const currentUser = request.user as IUserJWT;
-    const directory = getDirectory(currentUser);
     if (currentUser.identity_provider !== IDP.IDIR && !companyId) {
       throw new BadRequestException(
         'Company Id is manadatory for all IDP but IDIR',
@@ -155,7 +147,6 @@ export class DmsController {
 
     return await this.dmsService.update(
       currentUser,
-      directory,
       documentId,
       file,
       companyId,
