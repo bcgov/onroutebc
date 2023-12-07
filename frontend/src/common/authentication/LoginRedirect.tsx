@@ -63,7 +63,10 @@ export const LoginRedirect = () => {
             else if (migratedTPSClient?.clientNumber) {
               navigate(CREATE_PROFILE_WIZARD_ROUTES.WELCOME);
             }
-            // The user does not exist and company do not exist and the user has  
+            // The user does not exist but there is one or more associated companies 
+            // due to business GUID match. This is an error scenario and the user is unauthorized.
+            
+            // Simply put, if !user and associatedCompanies.length > 0, get the guy out of here.
             else {
               navigate(ERROR_ROUTES.UNAUTHORIZED);
             }
