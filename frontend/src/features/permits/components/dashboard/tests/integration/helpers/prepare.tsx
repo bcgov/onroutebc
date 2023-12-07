@@ -34,6 +34,8 @@ import {
 // Use some default user details values to give to the OnRouteBCContext context provider
 export const defaultUserDetails = getDefaultUserDetails();
 export const newApplicationNumber = "A1-00000001-800-R01";
+export const newPermitId = "1";
+export const currDtUtcStr = dayjsToUtcStr(now());
 export const companyInfo = getDefaultCompanyInfo();
 
 // Mock API endpoints
@@ -44,8 +46,9 @@ const server = setupServer(
     const applicationData = {
       ...reqBody,
       applicationNumber: newApplicationNumber,
-      createdDateTime: dayjsToUtcStr(now()),
-      updatedDateTime: dayjsToUtcStr(now()),
+      permitId: newPermitId,
+      createdDateTime: currDtUtcStr,
+      updatedDateTime: currDtUtcStr,
     };
     const createdApplication = createApplication(applicationData); // add to mock application store
     return res(
@@ -61,7 +64,7 @@ const server = setupServer(
     const reqBody = await req.json();
     const applicationData = {
       ...reqBody,
-      updatedDateTime: dayjsToUtcStr(now()),
+      updatedDateTime: currDtUtcStr,
     }
     const updatedApplication = updateApplication(applicationData, id); // update application in mock application store
 

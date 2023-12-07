@@ -124,7 +124,7 @@ export const TermOversizeForm = () => {
       alertType: "success",
     });
 
-    applicationContext?.setApplicationData(responseData);
+    applicationContext.setApplicationData(responseData);
     return getDefaultRequiredVal("", responseData.permitId);
   };
 
@@ -155,6 +155,10 @@ export const TermOversizeForm = () => {
     }
   };
 
+  const onSave = async () => {
+    await onSaveApplication((permitId) => navigate(APPLICATIONS_ROUTES.DETAILS(permitId)));
+  };
+
   // Whenever "Leave" button is clicked
   const handleLeaveApplication = () => {
     if (!isApplicationSaved()) {
@@ -182,7 +186,7 @@ export const TermOversizeForm = () => {
         <PermitForm
           feature={FEATURE}
           onLeave={handleLeaveApplication}
-          onSave={() => onSaveApplication()}
+          onSave={onSave}
           onContinue={handleSubmit(onContinue)}
           isAmendAction={false}
           permitType={termOversizeDefaultValues.permitType}
