@@ -5,8 +5,9 @@ import "./CompanyInformationWizardForm.scss";
 import { CompanyInfoGeneralForm } from "../../manageProfile/components/forms/companyInfo/subForms/CompanyInfoGeneralForm";
 import { CompanyContactDetailsForm } from "../../manageProfile/components/forms/companyInfo/subForms/CompanyContactDetailsForm";
 import { CompanyPrimaryContactForm } from "../../manageProfile/components/forms/companyInfo/subForms/CompanyPrimaryContactForm";
-import { InfoBcGovBanner } from "../../../common/components/banners/AlertBanners";
 import { CustomFormComponent } from "../../../common/components/form/CustomFormComponents";
+import { InfoBcGovBanner } from "../../../common/components/banners/InfoBcGovBanner";
+import { BANNER_MESSAGES } from "../../../common/constants/bannerMessages";
 
 /**
  * The Company Wizard Form contains multiple subs forms including
@@ -54,7 +55,9 @@ export const CompanyInformationWizardForm = memo(() => {
         Company Primary Contact
       </Typography>
 
-      <InfoBcGovBanner description="The Company Primary Contact will be contacted for all onRouteBC client profile queries." />
+      <InfoBcGovBanner
+        msg={BANNER_MESSAGES.COMPANY_CONTACT} 
+      />
 
       <CompanyPrimaryContactForm feature={FEATURE} />
     </div>

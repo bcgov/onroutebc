@@ -20,16 +20,11 @@ import {
   useMaterialReactTable,
 } from "material-react-table";
 
-import { SnackBarContext } from "../../../../App";
-import { DeleteConfirmationDialog } from "../../../../common/components/dialog/DeleteConfirmationDialog";
-import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
+import "./List.scss";
 import { Trash } from "../../../../common/components/table/options/Trash";
-import { defaultTableInitialStateOptions, defaultTableOptions, defaultTableStateOptions } from "../../../../common/constants/defaultTableOptions";
-import { deleteApplications } from "../../apiManager/permitsAPI";
-import {
-  ApplicationInProgress,
-  PermitApplicationInProgress,
-} from "../../types/application";
+import { DeleteConfirmationDialog } from "../../../../common/components/dialog/DeleteConfirmationDialog";
+import { SnackBarContext } from "../../../../App";
+import { ApplicationInProgress, PermitApplicationInProgress } from "../../types/application";
 import { ApplicationInProgressColumnDefinition } from "./Columns";
 import "./List.scss";
 

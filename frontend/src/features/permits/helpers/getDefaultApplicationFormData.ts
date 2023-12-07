@@ -107,7 +107,7 @@ export const getDefaultVehicleDetails = (vehicleDetails?: VehicleDetails) => ({
 });
 
 export const getDurationOrDefault = (
-  applicationData?: Application | Permit,
+  applicationData?: Application | Permit | null,
 ): number => {
   return applyWhenNotNullable(
     (duration) => +duration,
@@ -124,7 +124,7 @@ export const getDurationOrDefault = (
  * @returns default values for the application data
  */
 export const getDefaultValues = (
-  applicationData?: Application,
+  applicationData?: Application | null,
   companyId?: number,
   userDetails?: BCeIDUserDetailContext,
   companyInfo?: CompanyProfile,

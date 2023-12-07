@@ -12,33 +12,29 @@ import {
   Typography,
 } from "@mui/material";
 
+import "./VehicleDetails.scss";
 import { CountryAndProvince } from "../../../../../../../common/components/form/CountryAndProvince";
 import { CustomFormComponent } from "../../../../../../../common/components/form/CustomFormComponents";
-import { InfoBcGovBanner } from "../../../../../../../common/components/banners/AlertBanners";
+import { InfoBcGovBanner } from "../../../../../../../common/components/banners/InfoBcGovBanner";
 import { VehicleDetails as VehicleDetailsType } from "../../../../../types/application";
+import { mapVinToVehicleObject } from "../../../../../helpers/mappers";
+import { getDefaultRequiredVal } from "../../../../../../../common/helpers/util";
+import { sortVehicleSubTypes } from "../../../../../helpers/sorter";
+import { removeIneligibleVehicleSubTypes } from "../../../../../helpers/removeIneligibleVehicles";
+import { CustomInputHTMLAttributes } from "../../../../../../../common/types/formElements";
+import { SelectUnitOrPlate } from "./customFields/SelectUnitOrPlate";
+import { SelectVehicleDropdown } from "./customFields/SelectVehicleDropdown";
 import {
   PowerUnit,
   Trailer,
   Vehicle,
   VehicleType,
 } from "../../../../../../manageVehicles/types/managevehicles";
-import { mapVinToVehicleObject } from "../../../../../helpers/mappers";
-import { getDefaultRequiredVal } from "../../../../../../../common/helpers/util";
-import { sortVehicleSubTypes } from "../../../../../helpers/sorter";
-import { removeIneligibleVehicleSubTypes } from "../../../../../helpers/removeIneligibleVehicles";
+
 import {
   TROS_INELIGIBLE_POWERUNITS,
   TROS_INELIGIBLE_TRAILERS,
 } from "../../../../../constants/termOversizeConstants";
-import { CustomInputHTMLAttributes } from "../../../../../../../common/types/formElements";
-import { SelectUnitOrPlate } from "./customFields/SelectUnitOrPlate";
-import { SelectVehicleDropdown } from "./customFields/SelectVehicleDropdown";
-import {
-  PERMIT_MAIN_BOX_STYLE,
-  PERMIT_LEFT_BOX_STYLE,
-  PERMIT_LEFT_HEADER_STYLE,
-  PERMIT_RIGHT_BOX_STYLE,
-} from "../../../../../../../themes/orbcStyles";
 
 import {
   CHOOSE_FROM_OPTIONS,
@@ -52,6 +48,7 @@ import {
   invalidYearMin,
   requiredMessage,
 } from "../../../../../../../common/helpers/validationMessages";
+import { BANNER_MESSAGES } from "../../../../../../../common/constants/bannerMessages";
 
 const selectedVehicleSubtype = (vehicle: Vehicle) => {
   switch (vehicle.vehicleType) {
@@ -241,223 +238,226 @@ export const VehicleDetails = ({
   };
 
   return (
-    <Box sx={[PERMIT_MAIN_BOX_STYLE, { borderBottom: "none" }]}>
-      <Box sx={PERMIT_LEFT_BOX_STYLE}>
-        <Typography variant={"h3"} sx={PERMIT_LEFT_HEADER_STYLE}>
+    <Box className="vehicle-details">
+      <Box className="vehicle-details__header">
+        <Typography variant={"h3"}>
           Vehicle Details
         </Typography>
       </Box>
-      <Box sx={PERMIT_RIGHT_BOX_STYLE}>
+
+      <Box className="vehicle-details__body">
         <Typography variant="h3">
           Choose a saved vehicle from your inventory or enter new vehicle
           information below.
         </Typography>
-        <InfoBcGovBanner
-          description="Can't find a vehicle from your inventory?"
-          htmlDescription={
-            <p
-              style={{
-                fontWeight: "normal",
-                fontSize: "16px",
-                paddingTop: "4px",
-              }}
-            >
-              Your vehicle may not be available in a permit application because
-              it cannot be used for the type of permit you are applying for.{" "}
-              <br />
-              If you are creating a new vehicle, a desired Vehicle Sub-Type may
-              not be available because it is not eligible for the permit
-              application you are currently in.
-            </p>
-          }
-        />
-        <Box sx={{ display: "flex", gap: "40px" }}>
-          <SelectUnitOrPlate
-            value={chooseFrom}
-            label={"Choose from"}
-            onChange={handleChooseFrom}
-            menuItems={CHOOSE_FROM_OPTIONS.map((data) => (
-              <MenuItem key={data.value} value={data.value}>
-                {data.label}
-              </MenuItem>
-            ))}
-            width={"180px"}
+
+        <div className="vehicle-details__info">
+          <InfoBcGovBanner
+            msg={BANNER_MESSAGES.CANNOT_FIND_VEHICLE}
+            additionalInfo={
+              <div className="vehicle-inventory-info">
+                Your vehicle may not be available in a permit application because
+                it cannot be used for the type of permit you are applying for.{" "}
+                <br />
+                <br />
+                If you are creating a new vehicle, a desired Vehicle Sub-Type may
+                not be available because it is not eligible for the permit
+                application you are currently in.
+              </div>
+            }
           />
-          <SelectVehicleDropdown
-            label={"Select vehicle"}
-            width={"268px"}
-            chooseFrom={chooseFrom}
-            vehicleOptions={vehicleOptions}
-            handleClearVehicle={clearVehicle}
-            handleSelectVehicle={onSelectVehicle}
-          />
-        </Box>
 
-        <CustomFormComponent
-          type="input"
-          feature={feature}
-          options={{
-            name: "permitData.vehicleDetails.vin",
-            rules: {
-              required: { value: true, message: requiredMessage() },
-              minLength: { value: 6, message: invalidVINLength(6) },
-              maxLength: 6,
-            },
-            label: "VIN",
-            width: formFieldStyle.width,
-            customHelperText: "last 6 digits",
-          }}
-        />
-
-        <CustomFormComponent
-          type="input"
-          feature={feature}
-          options={{
-            name: "permitData.vehicleDetails.plate",
-            rules: {
-              required: { value: true, message: requiredMessage() },
-              maxLength: { value: 10, message: invalidPlateLength(10) },
-            },
-            label: "Plate",
-            width: formFieldStyle.width,
-          }}
-        />
-
-        <CustomFormComponent
-          type="input"
-          feature={feature}
-          options={{
-            name: "permitData.vehicleDetails.make",
-            rules: {
-              required: { value: true, message: requiredMessage() },
-              maxLength: 20,
-            },
-            label: "Make",
-            width: formFieldStyle.width,
-          }}
-        />
-
-        <CustomFormComponent
-          type="input"
-          feature={feature}
-          options={{
-            name: "permitData.vehicleDetails.year",
-            rules: {
-              required: { value: true, message: requiredMessage() },
-              maxLength: 4,
-              validate: {
-                isNumber: (v) => !isNaN(v) || invalidNumber(),
-                lessThan1950: (v) => parseInt(v) > 1950 || invalidYearMin(1950),
-              },
-            },
-            inputType: "number",
-            label: "Year",
-            width: formFieldStyle.width,
-          }}
-        />
-
-        <CountryAndProvince
-          feature={feature}
-          countryField="permitData.vehicleDetails.countryCode"
-          provinceField="permitData.vehicleDetails.provinceCode"
-          isProvinceRequired={true}
-          width={formFieldStyle.width}
-        />
-
-        <CustomFormComponent
-          type="select"
-          feature={feature}
-          options={{
-            name: "permitData.vehicleDetails.vehicleType",
-            rules: {
-              required: {
-                value: true,
-                message: requiredMessage(),
-              },
-              onChange: handleChangeVehicleType,
-            },
-            label: "Vehicle Type",
-            width: formFieldStyle.width,
-          }}
-          menuOptions={VEHICLE_TYPES.map((data) => (
-            <MenuItem
-              key={data.value}
-              value={data.value}
-              data-testid="vehicle-type-menu-item"
-            >
-              {data.label}
-            </MenuItem>
-          ))}
-        />
-
-        <CustomFormComponent
-          type="select"
-          feature={feature}
-          options={{
-            name: "permitData.vehicleDetails.vehicleSubType",
-            rules: {
-              required: { value: true, message: requiredMessage() },
-            },
-            label: "Vehicle Sub-type",
-            width: formFieldStyle.width,
-          }}
-          menuOptions={subtypeOptions.map((subtype) => (
-            <MenuItem
-              key={subtype.typeCode}
-              value={subtype.typeCode}
-              data-testid="subtype-menu-item"
-            >
-              {subtype.type}
-            </MenuItem>
-          ))}
-        />
-
-        <FormControl>
-          <FormLabel
-            id="demo-radio-buttons-group-label"
-            sx={{ fontWeight: "bold", marginTop: "24px" }}
-          >
-            Would you like to add/update this vehicle to your Vehicle Inventory?
-          </FormLabel>
-          <RadioGroup
-            aria-labelledby="radio-buttons-group-label"
-            defaultValue={saveVehicle}
-            value={saveVehicle}
-            name="radio-buttons-group"
-            onChange={(x) => handleSaveVehicleRadioBtns(x.target.value)}
-          >
-            <Box sx={{ display: "flex" }}>
-              <FormControlLabel
-                value={true}
-                control={
-                  <Radio
-                    key={`radio-save-vehicle-yes`}
-                    inputProps={
-                      {
-                        "data-testid": "save-vehicle-yes",
-                      } as CustomInputHTMLAttributes
-                    }
-                  />
-                }
-                label="Yes"
+          <div className="vehicle-details__input-section">
+            <Box className="vehicle-selection">
+              <SelectUnitOrPlate
+                value={chooseFrom}
+                label={"Choose from"}
+                onChange={handleChooseFrom}
+                menuItems={CHOOSE_FROM_OPTIONS.map((data) => (
+                  <MenuItem key={data.value} value={data.value}>
+                    {data.label}
+                  </MenuItem>
+                ))}
+                width={"180px"}
               />
-              <FormControlLabel
-                value={false}
-                control={
-                  <Radio
-                    key={`radio-save-vehicle-no`}
-                    inputProps={
-                      {
-                        "data-testid": "save-vehicle-no",
-                      } as CustomInputHTMLAttributes
-                    }
-                  />
-                }
-                label="No"
+              
+              <SelectVehicleDropdown
+                label={"Select vehicle"}
+                width={"268px"}
+                chooseFrom={chooseFrom}
+                vehicleOptions={vehicleOptions}
+                handleClearVehicle={clearVehicle}
+                handleSelectVehicle={onSelectVehicle}
               />
             </Box>
-          </RadioGroup>
-        </FormControl>
+
+            <CustomFormComponent
+              type="input"
+              feature={feature}
+              options={{
+                name: "permitData.vehicleDetails.vin",
+                rules: {
+                  required: { value: true, message: requiredMessage() },
+                  minLength: { value: 6, message: invalidVINLength(6) },
+                  maxLength: 6,
+                },
+                label: "VIN",
+                width: formFieldStyle.width,
+                customHelperText: "last 6 digits",
+              }}
+            />
+
+            <CustomFormComponent
+              type="input"
+              feature={feature}
+              options={{
+                name: "permitData.vehicleDetails.plate",
+                rules: {
+                  required: { value: true, message: requiredMessage() },
+                  maxLength: { value: 10, message: invalidPlateLength(10) },
+                },
+                label: "Plate",
+                width: formFieldStyle.width,
+              }}
+            />
+
+            <CustomFormComponent
+              type="input"
+              feature={feature}
+              options={{
+                name: "permitData.vehicleDetails.make",
+                rules: {
+                  required: { value: true, message: requiredMessage() },
+                  maxLength: 20,
+                },
+                label: "Make",
+                width: formFieldStyle.width,
+              }}
+            />
+
+            <CustomFormComponent
+              type="input"
+              feature={feature}
+              options={{
+                name: "permitData.vehicleDetails.year",
+                rules: {
+                  required: { value: true, message: requiredMessage() },
+                  maxLength: 4,
+                  validate: {
+                    isNumber: (v) => !isNaN(v) || invalidNumber(),
+                    lessThan1950: (v) => parseInt(v) > 1950 || invalidYearMin(1950),
+                  },
+                },
+                inputType: "number",
+                label: "Year",
+                width: formFieldStyle.width,
+              }}
+            />
+
+            <CountryAndProvince
+              feature={feature}
+              countryField="permitData.vehicleDetails.countryCode"
+              provinceField="permitData.vehicleDetails.provinceCode"
+              isProvinceRequired={true}
+              width={formFieldStyle.width}
+            />
+
+            <CustomFormComponent
+              type="select"
+              feature={feature}
+              options={{
+                name: "permitData.vehicleDetails.vehicleType",
+                rules: {
+                  required: {
+                    value: true,
+                    message: requiredMessage(),
+                  },
+                  onChange: handleChangeVehicleType,
+                },
+                label: "Vehicle Type",
+                width: formFieldStyle.width,
+              }}
+              menuOptions={VEHICLE_TYPES.map((data) => (
+                <MenuItem
+                  key={data.value}
+                  value={data.value}
+                  data-testid="vehicle-type-menu-item"
+                >
+                  {data.label}
+                </MenuItem>
+              ))}
+            />
+
+            <CustomFormComponent
+              type="select"
+              feature={feature}
+              options={{
+                name: "permitData.vehicleDetails.vehicleSubType",
+                rules: {
+                  required: { value: true, message: requiredMessage() },
+                },
+                label: "Vehicle Sub-type",
+                width: formFieldStyle.width,
+              }}
+              menuOptions={subtypeOptions.map((subtype) => (
+                <MenuItem
+                  key={subtype.typeCode}
+                  value={subtype.typeCode}
+                  data-testid="subtype-menu-item"
+                >
+                  {subtype.type}
+                </MenuItem>
+              ))}
+            />
+
+            <FormControl>
+              <FormLabel
+                id="demo-radio-buttons-group-label"
+                sx={{ fontWeight: "bold", marginTop: "24px" }}
+              >
+                Would you like to add/update this vehicle to your Vehicle Inventory?
+              </FormLabel>
+              <RadioGroup
+                aria-labelledby="radio-buttons-group-label"
+                defaultValue={saveVehicle}
+                value={saveVehicle}
+                name="radio-buttons-group"
+                onChange={(x) => handleSaveVehicleRadioBtns(x.target.value)}
+              >
+                <Box sx={{ display: "flex" }}>
+                  <FormControlLabel
+                    value={true}
+                    control={
+                      <Radio
+                        key={`radio-save-vehicle-yes`}
+                        inputProps={
+                          {
+                            "data-testid": "save-vehicle-yes",
+                          } as CustomInputHTMLAttributes
+                        }
+                      />
+                    }
+                    label="Yes"
+                  />
+                  <FormControlLabel
+                    value={false}
+                    control={
+                      <Radio
+                        key={`radio-save-vehicle-no`}
+                        inputProps={
+                          {
+                            "data-testid": "save-vehicle-no",
+                          } as CustomInputHTMLAttributes
+                        }
+                      />
+                    }
+                    label="No"
+                  />
+                </Box>
+              </RadioGroup>
+            </FormControl>
+          </div>
+        </div>
       </Box>
     </Box>
   );

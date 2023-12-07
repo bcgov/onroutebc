@@ -1,26 +1,20 @@
 import { memo } from "react";
 
+import "./NoRecordsFound.scss";
+
 export const NoRecordsFound = memo(() => {
   return (
-    <div
-      style={{
-        padding: "20px 0px",
-        backgroundColor: "white",
-        textAlign: "center",
-      }}
-    >
-      <div>
+    <div className="no-records-found">
+      <div className="no-records-found__section no-records-found__section--img">
         <img
           src="No_Data_Graphic.svg"
-          style={{
-            width: "124px",
-            height: "112px",
-            marginTop: "80px",
-          }}
+          className="no-records-found__img"
         />
       </div>
-      <div>
-        <h3>No Records Found.</h3>
+      <div className="no-records-found__section no-records-found__section--msg">
+        <h3 className="no-records-found__msg">
+          No Records Found.
+        </h3>
       </div>
     </div>
   );

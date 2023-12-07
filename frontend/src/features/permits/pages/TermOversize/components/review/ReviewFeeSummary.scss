@@ -1,4 +1,4 @@
-@use "../../../../../../themes/orbcStyles.scss";
+@use "../../../../../../themes/orbcStyles";
 
 @include orbcStyles.permit-main-box-style(".review-fee-summary");
 @include orbcStyles.permit-left-box-style(".review-fee-summary__header");

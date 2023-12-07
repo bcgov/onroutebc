@@ -1,24 +1,26 @@
 import React from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { Box, Typography } from "@mui/material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
 
 import "./EditVehicleDashboard.scss";
 import { Banner } from "../../../../common/components/dashboard/Banner";
-import { InfoBcGovBanner } from "../../../../common/components/banners/AlertBanners";
+import { InfoBcGovBanner } from "../../../../common/components/banners/InfoBcGovBanner";
 import { VEHICLE_TYPES_ENUM } from "../form/constants";
 import { PowerUnitForm } from "../form/PowerUnitForm";
 import { TrailerForm } from "../form/TrailerForm";
-import { getVehicleById } from "../../apiManager/vehiclesAPI";
 import { PowerUnit, Trailer } from "../../types/managevehicles";
+import { DATE_FORMATS, toLocal } from "../../../../common/helpers/formatDate";
+import { getCompanyIdFromSession } from "../../../../common/apiManager/httpRequestHandler";
+import { ERROR_ROUTES, VEHICLES_ROUTES } from "../../../../routes/constants";
+import { useVehicleByIdQuery } from "../../apiManager/hooks";
+import { Loading } from "../../../../common/pages/Loading";
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
 } from "../../../../common/helpers/util";
-import { DATE_FORMATS, toLocal } from "../../../../common/helpers/formatDate";
-import { getCompanyIdFromSession } from "../../../../common/apiManager/httpRequestHandler";
+import { BANNER_MESSAGES } from "../../../../common/constants/bannerMessages";
 
 export const EditVehicleDashboard = React.memo(
   ({ editVehicleMode }: { editVehicleMode: VEHICLE_TYPES_ENUM }) => {
@@ -30,21 +32,28 @@ export const EditVehicleDashboard = React.memo(
       editVehicleMode === VEHICLE_TYPES_ENUM.POWER_UNIT;
     const isEditTrailer = (editVehicleMode: VEHICLE_TYPES_ENUM) =>
       editVehicleMode === VEHICLE_TYPES_ENUM.TRAILER;
-
-    const { data: vehicleToEdit, isLoading } = useQuery(
-      ["vehicleById", vehicleId],
-      () =>
-        getVehicleById(
-          vehicleId as string,
-          isEditPowerUnit(editVehicleMode) ? "powerUnit" : "trailer",
-          companyId,
-        ),
-      { retry: false, enabled: true },
+    
+    const { vehicle: vehicleToEdit } = useVehicleByIdQuery(
+      companyId,
+      isEditPowerUnit(editVehicleMode) ? "powerUnit" : "trailer",
+      vehicleId
     );
 
-    const handleShowAddVehicle = () => {
-      navigate("../");
+    const backToVehicleInventory = () => {
+      if (editVehicleMode === VEHICLE_TYPES_ENUM.TRAILER) {
+        navigate(VEHICLES_ROUTES.TRAILER_TAB);
+      } else {
+        navigate(VEHICLES_ROUTES.MANAGE);
+      }
     };
+
+    if (typeof vehicleToEdit === "undefined") {
+      return <Loading />;
+    }
+
+    if (!vehicleToEdit) {
+      return <Navigate to={ERROR_ROUTES.UNEXPECTED} />;
+    }
 
     return (
       <div className="dashboard-page">
@@ -84,7 +93,6 @@ export const EditVehicleDashboard = React.memo(
                   )}
                 </div>
               }
-              extendHeight={true}
             />
           )}
         </Box>
@@ -92,7 +100,7 @@ export const EditVehicleDashboard = React.memo(
         <Box className="dashboard-page__breadcrumb layout-box">
           <Typography
             className="breadcrumb-link breadcrumb-link--parent"
-            onClick={handleShowAddVehicle}
+            onClick={backToVehicleInventory}
           >
             Vehicle Inventory
           </Typography>
@@ -101,7 +109,7 @@ export const EditVehicleDashboard = React.memo(
 
           <Typography
             className="breadcrumb-link breadcrumb-link--parent"
-            onClick={handleShowAddVehicle}
+            onClick={backToVehicleInventory}
           >
             {editVehicleMode === VEHICLE_TYPES_ENUM.POWER_UNIT && "Power Unit"}
             {editVehicleMode === VEHICLE_TYPES_ENUM.TRAILER && "Trailer"}
@@ -118,8 +126,7 @@ export const EditVehicleDashboard = React.memo(
 
         <Box className="dashboard-page__info-banner layout-box">
           <InfoBcGovBanner
-            width="880px"
-            description="Please note, unless stated otherwise, all fields are mandatory."
+            msg={BANNER_MESSAGES.ALL_FIELDS_MANDATORY}
           />
         </Box>
 
@@ -130,16 +137,15 @@ export const EditVehicleDashboard = React.memo(
             {editVehicleMode === VEHICLE_TYPES_ENUM.TRAILER &&
               "Trailer Details"}
           </Typography>
-          {!isLoading && editVehicleMode === VEHICLE_TYPES_ENUM.POWER_UNIT && (
-            <PowerUnitForm
-              powerUnit={vehicleToEdit as PowerUnit}
-              companyId={companyId}
+          {isEditPowerUnit(editVehicleMode) ? (
+            <PowerUnitForm 
+              powerUnit={vehicleToEdit as PowerUnit} 
+              companyId={companyId} 
             />
-          )}
-          {!isLoading && editVehicleMode === VEHICLE_TYPES_ENUM.TRAILER && (
-            <TrailerForm
-              trailer={vehicleToEdit as Trailer}
-              companyId={companyId}
+          ) : (
+            <TrailerForm 
+              trailer={vehicleToEdit as Trailer} 
+              companyId={companyId} 
             />
           )}
         </Box>

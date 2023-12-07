@@ -20,7 +20,7 @@ import {
  * @returns current companyId, user details, default application data values, its setter method, and methods to manage the form
  */
 export const useDefaultApplicationFormData = (
-  applicationData?: Application,
+  applicationData?: Application | null,
   companyId?: number,
   userDetails?: BCeIDUserDetailContext,
   companyInfo?: CompanyProfile,

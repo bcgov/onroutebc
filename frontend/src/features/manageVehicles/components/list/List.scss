@@ -1,5 +1,5 @@
-@use "../../../../common/components/table/Table.scss";
-@import "../../../../themes/orbcStyles.scss";
+@use "../../../../common/components/table/Table";
+@import "../../../../themes/orbcStyles";
 
 .table-container {
   & &__top-toolbar {

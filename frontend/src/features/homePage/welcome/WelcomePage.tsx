@@ -1,7 +1,6 @@
 import Card from "@mui/material/Card";
 import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
-
 import {
   CardActionArea,
   CardContent,
@@ -10,10 +9,12 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
+
 import { getCompanyNameFromSession } from "../../../common/apiManager/httpRequestHandler";
 import OnRouteBCContext from "../../../common/authentication/OnRouteBCContext";
 import "./welcome.scss";
 import { BC_COLOURS } from "../../../themes/bcGovStyles";
+import { CREATE_PROFILE_WIZARD_ROUTES, PROFILE_ROUTES } from "../../../routes/constants";
 
 const isInvitedUser = (companyNameFromContext?: string): boolean =>
   Boolean(companyNameFromContext);
@@ -61,7 +62,7 @@ export const WelcomePage = React.memo(() => {
           <>
             <br />
             <Card elevation={12} sx={{ maxWidth: 200 }}>
-              <CardActionArea onClick={() => navigate("/user-info")}>
+              <CardActionArea onClick={() => navigate(PROFILE_ROUTES.USER_INFO)}>
                 <Stack>
                   <Stack direction="row">
                     <Grid container>
@@ -104,7 +105,7 @@ export const WelcomePage = React.memo(() => {
                 },
               }}
             >
-              <CardContent onClick={() => navigate("/create-profile")}>
+              <CardContent onClick={() => navigate(CREATE_PROFILE_WIZARD_ROUTES.CREATE)}>
                 <Stack spacing={3}>
                   <div className="welcome-cards__img">
                     <img

@@ -1,5 +1,3 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowUpRightFromSquare } from "@fortawesome/free-solid-svg-icons";
 import {
   TableContainer,
   Table,
@@ -13,6 +11,7 @@ import {
 import { Commodities } from "../../../../types/application";
 import "./ReviewConditionsTable.scss";
 import { getDefaultRequiredVal } from "../../../../../../common/helpers/util";
+import { CustomExternalLink } from "../../../../../../common/components/links/CustomExternalLink";
 
 export const ReviewConditionsTable = ({
   conditions,
@@ -55,19 +54,16 @@ export const ReviewConditionsTable = ({
                 </TableCell>
 
                 <TableCell component="td" scope="row">
-                  <a
+                  <CustomExternalLink
                     href={row.conditionLink}
                     className="condition-link"
                     data-testid="permit-condition-link"
+                    withLinkIcon={true}
                   >
                     <span data-testid="permit-condition-code">
                       {row.condition}
                     </span>
-                    <FontAwesomeIcon
-                      className="condition-link__icon"
-                      icon={faArrowUpRightFromSquare}
-                    />
-                  </a>
+                  </CustomExternalLink>
                 </TableCell>
               </TableRow>
             );

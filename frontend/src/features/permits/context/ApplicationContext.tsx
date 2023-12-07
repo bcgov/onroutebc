@@ -1,23 +1,14 @@
-import { Dispatch, ReactElement, createContext } from "react";
+import { Dispatch, createContext } from "react";
 import { Application } from "../types/application";
 
+type NullableApplication = Application | null | undefined;
+
 interface ApplicationContextType {
-  applicationData: Application | undefined;
-  setApplicationData: Dispatch<Application>;
-  next: () => void;
-  back: () => void;
-  goTo: (index: number) => void;
-  steps?: ReactElement;
-  currentStepIndex?: number;
-  step?: ReactElement;
-  isFirstStep?: boolean;
-  isLastStep?: boolean;
+  applicationData: NullableApplication;
+  setApplicationData: Dispatch<NullableApplication>;
 }
 
 export const ApplicationContext = createContext<ApplicationContextType>({
   applicationData: undefined,
-  setApplicationData: (() => undefined) as Dispatch<Application>,
-  next: () => undefined,
-  back: () => undefined,
-  goTo: () => undefined,
+  setApplicationData: (() => undefined) as Dispatch<NullableApplication>,
 });
