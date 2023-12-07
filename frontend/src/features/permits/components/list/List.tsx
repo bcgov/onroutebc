@@ -1,7 +1,7 @@
-import { Delete } from "@mui/icons-material";
+import { RowSelectionState } from "@tanstack/table-core";
 import { Box, IconButton, Tooltip } from "@mui/material";
 import { UseQueryResult } from "@tanstack/react-query";
-import { RowSelectionState } from "@tanstack/table-core";
+import { Delete } from "@mui/icons-material";
 import {
   memo,
   useCallback,
@@ -24,9 +24,18 @@ import "./List.scss";
 import { Trash } from "../../../../common/components/table/options/Trash";
 import { DeleteConfirmationDialog } from "../../../../common/components/dialog/DeleteConfirmationDialog";
 import { SnackBarContext } from "../../../../App";
-import { ApplicationInProgress, PermitApplicationInProgress } from "../../types/application";
+import {
+  ApplicationInProgress,
+  PermitApplicationInProgress,
+} from "../../types/application";
 import { ApplicationInProgressColumnDefinition } from "./Columns";
-import "./List.scss";
+import { deleteApplications } from "../../apiManager/permitsAPI";
+import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
+import {
+  defaultTableInitialStateOptions,
+  defaultTableOptions,
+  defaultTableStateOptions,
+} from "../../../../common/constants/defaultTableOptions";
 
 /**
  * Dynamically set the column
