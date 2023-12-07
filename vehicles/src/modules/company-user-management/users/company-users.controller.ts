@@ -154,7 +154,7 @@ export class CompanyUsersController {
   @ApiOkResponse({
     description: '{statusUpdated : true}',
   })
-  @Roles(Role.WRITE_SELF)
+  @Roles(Role.WRITE_USER)
   @Put(':userGUID/status')
   async updateStatus(
     @Req() request: Request,

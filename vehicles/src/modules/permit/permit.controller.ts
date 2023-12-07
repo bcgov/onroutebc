@@ -22,13 +22,13 @@ import {
   ApiQuery,
   ApiOkResponse,
 } from '@nestjs/swagger';
-import { Public } from '../../common/decorator/public.decorator';
 import { CreatePermitDto } from './dto/request/create-permit.dto';
 import { ReadPermitDto } from './dto/response/read-permit.dto';
 import { Request, Response } from 'express';
 import { IUserJWT } from '../../common/interface/user-jwt.interface';
 import { FileDownloadModes } from '../../common/enum/file-download-modes.enum';
 import { ReadFileDto } from '../common/dto/response/read-file.dto';
+import { AuthOnly } from '../../common/decorator/auth-only.decorator';
 import { Roles } from 'src/common/decorator/roles.decorator';
 import { Role } from 'src/common/enum/roles.enum';
 import { IDP } from 'src/common/enum/idp.enum';
@@ -271,7 +271,7 @@ export class PermitController {
    * that returns all available permit types from cache.
    * @returns
    */
-  @Public()
+  @AuthOnly()
   @Get('types/list')
   async getPermitTypes(): Promise<string> {
     const permitTypes = await this.permitService.getPermitType();
