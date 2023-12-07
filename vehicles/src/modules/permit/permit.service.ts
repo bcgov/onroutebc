@@ -464,14 +464,9 @@ export class PermitService {
         voidPermitDto.paymentMethodTypeCode;
       createTransactionDto.transactionTypeId = voidPermitDto.transactionTypeId;
 
-      // Refund for void should automatically set this flag to approved for online payment methods
+      // Refund for void should automatically set this flag to approved for payment gateway payment methods
       // Otherwise, the flag is not applicable
-      const isOnlinePaymentMethod = 
-        voidPermitDto.paymentMethodTypeCode === PaymentMethodType.WEB
-        || voidPermitDto.paymentMethodTypeCode === PaymentMethodType.POS
-        || voidPermitDto.paymentMethodTypeCode === PaymentMethodType.ICEPAY;
-      
-      if (isOnlinePaymentMethod) {
+      if (voidPermitDto.paymentMethodTypeCode === PaymentMethodType.WEB) {
         createTransactionDto.pgApproved = 1;
       }
       

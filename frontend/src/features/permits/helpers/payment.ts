@@ -1,8 +1,8 @@
 import { PayBCPaymentDetails } from "../types/payment";
 import { parseRedirectUriPath } from "../pages/Payment/PaymentRedirect";
 import { 
-  PAYMENT_GATEWAY_METHODS, 
-  PAYMENT_METHODS_WITH_CARD,
+  PAYMENT_GATEWAY_METHODS,
+  PAYMENT_METHOD_TYPE_CODE,
   PaymentGatewayMethod,
   PaymentMethodTypeCode, 
 } from "../../../common/types/paymentMethods";
@@ -76,6 +76,6 @@ export const isValidTransaction = (
   paymentMethod: PaymentMethodTypeCode,
   transactionApproved?: number | null,
 ) => {
-  return !PAYMENT_METHODS_WITH_CARD.includes(paymentMethod)
+  return paymentMethod === PAYMENT_METHOD_TYPE_CODE.WEB
     || (!!transactionApproved && transactionApproved > 0);
 };

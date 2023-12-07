@@ -4,7 +4,6 @@ import { RefundFormData } from "../../../Refund/types/RefundFormData";
 import { isZeroAmount } from "../../../../helpers/feeSummary";
 import {
   CONSOLIDATED_PAYMENT_METHODS,
-  PAYMENT_METHODS_WITH_CARD,
   PAYMENT_METHOD_TYPE_CODE,
 } from "../../../../../../common/types/paymentMethods";
 
@@ -62,7 +61,7 @@ export const mapToAmendRequestData = (
     pgPaymentMethod: refundData.refundOnlineMethod
       ? refundData.refundOnlineMethod
       : undefined,
-    pgApproved: PAYMENT_METHODS_WITH_CARD.includes(reqData.paymentMethodTypeCode)
+    pgApproved: reqData.paymentMethodTypeCode === PAYMENT_METHOD_TYPE_CODE.WEB
       ? 1 : undefined,
   };
 };

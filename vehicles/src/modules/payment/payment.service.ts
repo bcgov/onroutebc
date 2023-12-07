@@ -510,7 +510,7 @@ export class PaymentService {
     const trnOrderId = updatePaymentGatewayTransactionDto.pgTransactionId;
     const trnAmount = params.get('trnAmount');
     const paymentMethod = updatePaymentGatewayTransactionDto.pgPaymentMethod;
-    const cardType = updatePaymentGatewayTransactionDto.pgCardType;
+    const cardType = updatePaymentGatewayTransactionDto.pgCardType ?? "";
     const authCode = updatePaymentGatewayTransactionDto.pgAuthCode;
     const trnDate = params.get('trnDate');
     const ref2 = params.get('ref2');
@@ -522,7 +522,7 @@ export class PaymentService {
       `&trnOrderId=${trnOrderId}` +
       `&trnAmount=${trnAmount}` +
       `&paymentMethod=${paymentMethod}` +
-      `&cardType=${cardType ? cardType : ""}` +
+      `&cardType=${cardType}` +
       `&authCode=${authCode}` +
       `&trnDate=${trnDate}` +
       `&ref2=${ref2}` +
