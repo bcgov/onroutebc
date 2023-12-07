@@ -12,7 +12,7 @@
     margin-top: 2em;
     margin-bottom: 2em;
   }
-  
+
   &__header {
     display: flex;
     flex-direction: column;
@@ -82,14 +82,7 @@
       margin-top: 2em;
       margin-bottom: 2em;
       padding-bottom: 2em;
-      // padding-top: 0;
       box-shadow: none;
-
-      &:hover {
-        background: orbcStyles.$bc_messages_blue_background;
-        box-shadow: 10;
-        border: 1px solid orbcStyles.$bc_black;
-      }
 
       .welcome-account-graphics {
         padding-top: 2rem;
@@ -105,6 +98,11 @@
       &--new {
         margin-left: 1em;
         margin-right: 0em;
+
+        &:hover {
+          background: orbcStyles.$bc_messages_blue_background;
+          border: 1px solid orbcStyles.$bc_black;
+        }
       }
 
       &__recommend {

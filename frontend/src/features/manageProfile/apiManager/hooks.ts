@@ -134,28 +134,7 @@ export const useUserContext = () => {
           );
         }
         if (migratedTPSClient?.clientNumber) {
-          console.log("Before setting in context::", migratedTPSClient);
           setMigratedTPSClient?.(() => migratedTPSClient);
-          // {
-          //   "companyId": 102,
-          //   "companyGUID": "B50E1574C1A944189BC661DED01345FB",
-          //   "clientNumber": "B1-000007-007",
-          //   "legalName": "Texasflood Trucking",
-          //   "alternateName": null,
-          //   "phone": "267-189-4484",
-          //   "extension": null,
-          //   "fax": null,
-          //   "email": "gspoure4@mtv.com",
-          //   "primaryContact": null,
-          //   "mailingAddress": {
-          //     "addressLine1": "325-1207 Douglas St",
-          //     "addressLine2": null,
-          //     "city": "Victoria",
-          //     "postalCode": "V8W 2E7",
-          //     "provinceCode": "BC",
-          //     "countryCode": "CA"
-          //   }
-          // }
         }
       }
     },

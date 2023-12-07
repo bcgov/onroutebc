@@ -96,7 +96,6 @@ export const CreateProfileSteps = React.memo(() => {
   const { setSnackBar } = useContext(SnackBarContext);
 
   const { user } = useAuth();
-  console.log('user?.profile?.email::', user?.profile?.email);
 
   const [activeStep, setActiveStep] = React.useState(0);
   const [clientNumber, setClientNumber] = React.useState(null);
@@ -265,7 +264,6 @@ export const CreateProfileSteps = React.memo(() => {
           <Banner
             bannerText="Create a new onRouteBC Profile"
             bannerSubtext="Please follow the steps below to set up your onRouteBC profile"
-            extendHeight
           />
         </Box>
         <div

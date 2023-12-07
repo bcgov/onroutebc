@@ -1,20 +1,21 @@
-import Card from "@mui/material/Card";
-import React, { useContext } from "react";
-import { useNavigate } from "react-router-dom";
 import {
   CardActionArea,
   CardContent,
-  Chip,
   Grid,
   Stack,
-  Typography,
+  Typography
 } from "@mui/material";
+import Card from "@mui/material/Card";
+import React, { useContext } from "react";
+import { useNavigate } from "react-router-dom";
 
 import { getCompanyNameFromSession } from "../../../common/apiManager/httpRequestHandler";
 import OnRouteBCContext from "../../../common/authentication/OnRouteBCContext";
+import {
+  CREATE_PROFILE_WIZARD_ROUTES,
+  PROFILE_ROUTES,
+} from "../../../routes/constants";
 import "./welcome.scss";
-import { BC_COLOURS } from "../../../themes/bcGovStyles";
-import { CREATE_PROFILE_WIZARD_ROUTES, PROFILE_ROUTES } from "../../../routes/constants";
 
 const isInvitedUser = (companyNameFromContext?: string): boolean =>
   Boolean(companyNameFromContext);
@@ -62,7 +63,9 @@ export const WelcomePage = React.memo(() => {
           <>
             <br />
             <Card elevation={12} sx={{ maxWidth: 200 }}>
-              <CardActionArea onClick={() => navigate(PROFILE_ROUTES.USER_INFO)}>
+              <CardActionArea
+                onClick={() => navigate(PROFILE_ROUTES.USER_INFO)}
+              >
                 <Stack>
                   <Stack direction="row">
                     <Grid container>
@@ -98,14 +101,13 @@ export const WelcomePage = React.memo(() => {
               className="welcome-cards welcome-cards--new"
               sx={{
                 ":hover": {
-                  // background: BC_COLOURS.bc_messages_blue_background,
                   boxShadow: 10,
-                  // border: `1px solid ${BC_COLOURS.bc_black}`,
-                  // background: BC_COLOURS.bc_background_light_grey,
                 },
               }}
             >
-              <CardContent onClick={() => navigate(CREATE_PROFILE_WIZARD_ROUTES.CREATE)}>
+              <CardContent
+                onClick={() => navigate(CREATE_PROFILE_WIZARD_ROUTES.CREATE)}
+              >
                 <Stack spacing={3}>
                   <div className="welcome-cards__img">
                     <img

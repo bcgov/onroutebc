@@ -76,7 +76,6 @@ const App = () => {
     MigratedTPSClient | undefined
   >();
 
-  console.log("migratedTPSClient in App.tsx::", migratedTPSClient);
   // Needed the following usestate and useffect code so that the snackbar would disapear/close
   const [displaySnackBar, setDisplaySnackBar] = useState(false);
   useEffect(() => {
