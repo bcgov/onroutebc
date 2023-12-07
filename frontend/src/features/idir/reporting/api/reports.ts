@@ -1,11 +1,13 @@
 import { UseQueryResult, useQuery } from "@tanstack/react-query";
+
 import { VEHICLES_URL } from "../../../../common/apiManager/endpoints/endpoints";
+import { ONE_HOUR } from "../../../../common/constants/constants";
+import { getFileNameFromHeaders } from "../../../permits/apiManager/permitsAPI";
 import {
   httpGETRequest,
   httpPOSTRequestStream,
 } from "../../../../common/apiManager/httpRequestHandler";
-import { ONE_HOUR } from "../../../../common/constants/constants";
-import { getFileNameFromHeaders } from "../../../permits/apiManager/permitsAPI";
+
 import {
   PaymentAndRefundDetailRequest,
   PaymentAndRefundSummaryRequest,

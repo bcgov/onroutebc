@@ -1,0 +1,13 @@
+@import "../../../themes/orbcStyles";
+
+.no-records-found {
+  padding: 1.25rem 0;
+  background-color: $white;
+  text-align: center;
+
+  & &__img {
+    margin-top: 5rem;
+    width: 7.75rem;
+    height: 7rem;
+  }
+}

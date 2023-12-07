@@ -1,4 +1,4 @@
-.start-application {
+.start-application-action {
   display: flex;
   flex-direction: row;
   align-items: flex-end;
@@ -13,7 +13,7 @@
 }
 
 @media (width < 768px) {
-  .start-application {
+  .start-application-action {
     flex-direction: column;
 
     & &__btn {

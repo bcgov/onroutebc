@@ -3,7 +3,6 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   IsNumber,
   IsOptional,
-  IsPositive,
   IsString,
   Length,
   Max,
@@ -29,7 +28,6 @@ export class PaymentGatewayTransactionDto {
   })
   @IsOptional()
   @IsNumber()
-  @IsPositive()
   pgApproved: number;
 
   @AutoMap()
@@ -70,7 +68,6 @@ export class PaymentGatewayTransactionDto {
   })
   @IsOptional()
   @IsNumber()
-  @IsPositive()
   @Min(1)
   @Max(6)
   pgCvdId: number;
@@ -93,7 +90,6 @@ export class PaymentGatewayTransactionDto {
   })
   @IsOptional()
   @IsNumber()
-  @IsPositive()
   pgMessageId: number;
 
   @AutoMap()

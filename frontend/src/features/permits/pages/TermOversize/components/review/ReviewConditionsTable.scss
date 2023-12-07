@@ -1,4 +1,4 @@
-@import "../../../../../../themes/orbcStyles.scss";
+@import "../../../../../../themes/orbcStyles";
 
 .review-conditions-table {
   min-width: 650px;
@@ -9,14 +9,6 @@
   }
 
   &__row {
-    .condition-link {
-      color: $bc-text-links-blue;
-
-      &__icon {
-        margin-left: 0.5em;
-      }
-    }
-
     td {
       padding: 1em 0;
     }
