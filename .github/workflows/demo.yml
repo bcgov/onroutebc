@@ -1,0 +1,27 @@
+name: Deploy Demo
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Deployment environment - test --> vault secrets"
+        required: true
+        type: choice
+        options: ["test"]
+        default: "test"
+  
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  deploys-demo:
+    name: Deploys (demo)
+    uses: ./.github/workflows/.deploy.yml
+    secrets: inherit
+    with:
+      environment: ${{inputs.environment}} #test env -> test database
+      tag: ${{inputs.environment}}
+      release: "demo"
+      vault_role: "nonprod"
