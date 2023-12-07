@@ -1,3 +1,4 @@
+import { getDefaultRequiredVal } from "../../helpers/util";
 import "./OnRouteBCChip.scss";
 
 /**
@@ -10,9 +11,11 @@ export const OnRouteBCChip = ({
   message: string;
   className?: string;
 }) => {
+  const additionalClassName = getDefaultRequiredVal("", className);
+
   return (
     <span
-      className={`onroutebc-chip ${className ? className : ""}`}
+      className={`onroutebc-chip ${additionalClassName}`}
     >
       {message}
     </span>

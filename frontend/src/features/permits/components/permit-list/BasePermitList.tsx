@@ -4,7 +4,6 @@ import { UseQueryResult } from "@tanstack/react-query";
 
 import {
   MRT_Row,
-  MRT_TableInstance,
   MaterialReactTable,
   useMaterialReactTable,
 } from "material-react-table";
@@ -53,7 +52,11 @@ export const BasePermitList = ({
     },
     renderEmptyRowsFallback: () => <NoRecordsFound />,
     renderRowActions: useCallback(
-      ({ row }: { table: MRT_TableInstance<Permit>; row: MRT_Row<Permit> }) => {
+      ({
+        row,
+      }: {
+        row: MRT_Row<Permit>;
+      }) => {
         return (
           <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
             <PermitRowOptions

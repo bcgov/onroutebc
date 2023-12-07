@@ -1,6 +1,7 @@
 import { Box } from "@mui/material";
 import { AxiosError } from "axios";
 import { Navigate, useParams } from "react-router-dom";
+import { useMemo } from "react";
 
 import "../../../../common/components/dashboard/Dashboard.scss";
 import { Banner } from "../../../../common/components/dashboard/Banner";
@@ -44,6 +45,11 @@ export const ApplicationStepPage = ({
     shouldEnableQuery,
     isInvalidRoute,
   } = useApplicationDetailsQuery(applicationStep, permitId);
+
+  const contextData = useMemo(() => ({
+    applicationData,
+    setApplicationData,
+  }), [applicationData, setApplicationData]);
 
   const isLoading = shouldEnableQuery && (typeof applicationData === "undefined");
 
@@ -94,10 +100,7 @@ export const ApplicationStepPage = ({
 
   return (
     <ApplicationContext.Provider
-      value={{
-        applicationData,
-        setApplicationData,
-      }}
+      value={contextData}
     >
       <Box
         className="layout-box"

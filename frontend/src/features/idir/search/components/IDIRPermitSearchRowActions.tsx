@@ -122,15 +122,17 @@ export const IDIRPermitSearchRowActions = ({
    * @param selectedOption The selected option as a string.
    */
   const onSelectOption = (selectedOption: string) => {
+    const permitIdStr = `${permitId}`;
+
     if (selectedOption === PERMIT_ACTION_TYPES.RESEND) {
       // For implementation
       setIsResendOpen(() => true);
     } else if (selectedOption === PERMIT_ACTION_TYPES.VIEW_RECEIPT) {
       viewReceiptPdf(permitId.toString());
     } else if (selectedOption === PERMIT_ACTION_TYPES.VOID_REVOKE) {
-      navigate(`${routes.PERMITS_ROUTES.VOID(`${permitId}`)}`);
+      navigate(`${routes.PERMITS_ROUTES.VOID(permitIdStr)}`);
     } else if (selectedOption === PERMIT_ACTION_TYPES.AMEND) {
-      navigate(`${routes.PERMITS_ROUTES.AMEND(`${permitId}`)}`);
+      navigate(`${routes.PERMITS_ROUTES.AMEND(permitIdStr)}`);
     }
   };
 

@@ -1,12 +1,14 @@
 import { Dispatch, createContext } from "react";
 import { Application } from "../types/application";
 
+type NullableApplication = Application | null | undefined;
+
 interface ApplicationContextType {
-  applicationData: Application | null | undefined;
-  setApplicationData: Dispatch<Application | null | undefined>;
+  applicationData: NullableApplication;
+  setApplicationData: Dispatch<NullableApplication>;
 }
 
 export const ApplicationContext = createContext<ApplicationContextType>({
   applicationData: undefined,
-  setApplicationData: (() => undefined) as Dispatch<Application | null | undefined>,
+  setApplicationData: (() => undefined) as Dispatch<NullableApplication>,
 });

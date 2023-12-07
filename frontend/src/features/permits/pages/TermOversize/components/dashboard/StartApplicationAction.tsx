@@ -19,7 +19,7 @@ export const StartApplicationAction = () => {
   const navigate = useNavigate();
   const [chooseFrom, setChooseFrom] = useState<string>(PERMIT_TYPES.TROS);
   const handleChooseFrom = (event: SelectChangeEvent) => {
-    setChooseFrom(event.target.value as string);
+    setChooseFrom(event.target.value);
   };
 
   const handleStartButtonClicked = () => {
