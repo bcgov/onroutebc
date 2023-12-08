@@ -196,7 +196,10 @@ export class PermitService {
       );
     }
     if (searchColumn.toLowerCase() === 'permitnumber') {
-      searchString = searchString.replace('-', '');
+      console.log('searchString before: ',searchString)
+      const replace = /-/gi;
+      searchString = searchString.replace(replace, '');
+      console.log('searchString after: ',searchString)
       permits.andWhere(
         `replace(permit.permitNumber,'-', '') like '%${searchString}%'`,
       );
