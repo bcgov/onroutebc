@@ -172,7 +172,6 @@ services:
       AUTH0_ISSUER_URL: ${AUTH0_ISSUER_URL}
       AUTH0_AUDIENCE: ${AUTH0_AUDIENCE}
       AUTH0_IGNORE_EXP: ${AUTH0_IGNORE_EXP}
-      DOPS_URL: "http://dops-api:5001"
       DOPS_CVSE_FORMS_CACHE_TTL_MS: ${DOPS_CVSE_FORMS_CACHE_TTL_MS}
       DOPS_S3_ACCESS_TYPE: ${DOPS_S3_ACCESS_TYPE}
       DOPS_S3_ACCESSKEYID: ${DOPS_S3_ACCESSKEYID}
@@ -193,7 +192,6 @@ services:
     hostname: tps-migration
     links:
       - sql-server-db
-      - dops-api
     ports:
       - "5050:5050"
       
