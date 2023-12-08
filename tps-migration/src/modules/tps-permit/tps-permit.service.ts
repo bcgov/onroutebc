@@ -39,7 +39,6 @@ export class TpsPermitService {
       where: { s3UploadStatus: S3uploadStatus.Pending },
       take: LIMIT,
     });
-
     const ids = tpsPermits.map((tpsPermit) => tpsPermit.migrationId);
     // create query builder fails if array is empty. hence the length check.
     if (ids.length > 0) {
@@ -67,7 +66,7 @@ export class TpsPermitService {
           );
           break;
         }
-        if (permit[0].documentId != null) {
+        if (permit && permit[0].documentId != null) {
           await this.tpsPermitRepository.delete({
             migrationId: tpsPermit.migrationId,
           });
