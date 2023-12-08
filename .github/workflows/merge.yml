@@ -152,7 +152,7 @@ jobs:
 
   deploys-prod:
     name: Deploys (prod)
-    needs: [promote-images-test, vars]
+    needs: [promote-images-release, vars]
     uses: ./.github/workflows/.deploy.yml
     secrets: inherit
     with:
