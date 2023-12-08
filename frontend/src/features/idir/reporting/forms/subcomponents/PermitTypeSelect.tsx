@@ -9,7 +9,9 @@ import {
   SelectChangeEvent,
 } from "@mui/material";
 import { useFormContext } from "react-hook-form";
+
 import { PaymentAndRefundDetailFormData } from "../../types/types";
+import { Optional } from "../../../../../common/types/common";
 
 /**
  * The props needed for permit type select component.
@@ -18,7 +20,7 @@ export type PermitTypeSelectProps = {
   /**
    * A key value pair containing the permit types and their full names.
    */
-  permitTypes: Record<string, string> | undefined;
+  permitTypes: Optional<Record<string, string>>;
 };
 
 /**

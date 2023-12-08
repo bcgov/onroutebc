@@ -19,6 +19,7 @@ import {
   getDefaultPowerUnitTypes,
   getDefaultTrailerTypes,
 } from "../../../../../components/dashboard/tests/integration/fixtures/getVehicleInfo";
+import { Nullable } from "../../../../../../../common/types/common";
 
 export const newApplicationNumber = "A1-00000001-800-R01";
 const { permitData, ...otherDetails } = getDefaultApplication();
@@ -108,7 +109,7 @@ const ComponentWithWrapper = ({
   applicationData: Application;
 }) => {
   const [testApplicationData, setTestApplicationData] =
-    useState<Application | null | undefined>(applicationData);
+    useState<Nullable<Application>>(applicationData);
   
   return (
     <ThemeProvider theme={bcGovTheme}>

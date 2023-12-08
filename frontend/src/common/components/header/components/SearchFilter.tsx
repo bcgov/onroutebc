@@ -22,6 +22,7 @@ import "./SearchFilter.scss";
 import { CustomSelectDisplayProps } from "../../../types/formElements";
 import { getDefaultRequiredVal } from "../../../helpers/util";
 import { IDIR_ROUTES } from "../../../../routes/constants";
+import { Nullable } from "../../../types/common";
 import {
   SearchByFilter,
   SearchEntity,
@@ -42,7 +43,7 @@ const SEARCH_BY_APPLICATION_OPTIONS = [
   { label: "Application Number", value: "applicationNumber" },
 ];
 
-const getDefaultSearchEntity = (searchEntity?: string | null) => {
+const getDefaultSearchEntity = (searchEntity?: Nullable<string>) => {
   switch (searchEntity) {
     case "companies":
       return "companies";
@@ -54,7 +55,7 @@ const getDefaultSearchEntity = (searchEntity?: string | null) => {
   }
 };
 
-const getSearchByOptions = (searchEntity?: string | null) => {
+const getSearchByOptions = (searchEntity?: Nullable<string>) => {
   switch (searchEntity) {
     case "companies":
       return SEARCH_BY_COMPANY_OPTIONS;
@@ -67,8 +68,8 @@ const getSearchByOptions = (searchEntity?: string | null) => {
 };
 
 const getDefaultSearchBy = (
-  searchEntity?: string | null,
-  searchBy?: string | null,
+  searchEntity?: Nullable<string>,
+  searchBy?: Nullable<string>,
 ) => {
   const defaultSearchEntity = getDefaultSearchEntity(searchEntity);
   const searchByOptions = getSearchByOptions(defaultSearchEntity).map(

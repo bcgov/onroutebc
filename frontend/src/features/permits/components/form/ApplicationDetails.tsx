@@ -14,6 +14,7 @@ import { CompanyInformation } from "./CompanyInformation";
 import "./ApplicationDetails.scss";
 import { permitTypeDisplayText } from "../../types/PermitType";
 import { CompanyProfile } from "../../../manageProfile/types/manageProfile";
+import { Nullable } from "../../../../common/types/common";
 
 export const ApplicationDetails = ({
   permitType,
@@ -29,7 +30,7 @@ export const ApplicationDetails = ({
   infoNumber?: string;
   createdDateTime?: Dayjs;
   updatedDateTime?: Dayjs;
-  companyInfo?: CompanyProfile | null;
+  companyInfo?: Nullable<CompanyProfile>;
   isAmendAction?: boolean;
 }) => {
   const applicationName = permitTypeDisplayText(

@@ -12,6 +12,7 @@ import {
   updatePowerUnit,
   updateTrailer,
 } from "./vehiclesAPI";
+import { Nullable } from "../../../common/types/common";
 
 /**
  * Fetches all vehicles.
@@ -31,7 +32,7 @@ export const useVehicleByIdQuery = (
   vehicleType: VehicleTypesAsString, 
   vehicleId?: string
 ) => {
-  const [vehicle, setVehicle] = useState<Vehicle | null | undefined>();
+  const [vehicle, setVehicle] = useState<Nullable<Vehicle>>();
 
   const query = useQuery({
     queryKey: ["vehicle", "vehicleId", "vehicleType"],

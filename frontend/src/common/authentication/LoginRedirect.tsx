@@ -13,6 +13,7 @@ import {
   ERROR_ROUTES, 
   IDIR_ROUTES,
 } from "../../routes/constants";
+import { Optional } from "../types/common";
 
 /*
  * Redirects user to their correct page after loading their
@@ -34,7 +35,7 @@ export const LoginRedirect = () => {
       if (userFromToken?.profile?.identity_provider === IDPS.IDIR) {
         navigate(IDIR_ROUTES.WELCOME);
       } else {
-        const userContextData: BCeIDUserContextType | undefined =
+        const userContextData: Optional<BCeIDUserContextType> =
           queryClient.getQueryData<BCeIDUserContextType>(["userContext"]);
         if (userContextData) {
           const { associatedCompanies, pendingCompanies, user } =

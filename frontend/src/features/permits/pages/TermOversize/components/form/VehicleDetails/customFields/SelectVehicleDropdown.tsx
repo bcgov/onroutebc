@@ -13,6 +13,7 @@ import { getDefaultRequiredVal } from "../../../../../../../../common/helpers/ut
 import { SELECT_FIELD_STYLE } from "../../../../../../../../themes/orbcStyles";
 import { sortVehicles } from "../../../../../../helpers/sorter";
 import { removeIneligibleVehicles } from "../../../../../../helpers/removeIneligibleVehicles";
+import { Nullable } from "../../../../../../../../common/types/common";
 import {
   PowerUnit,
   Trailer,
@@ -73,7 +74,7 @@ export const SelectVehicleDropdown = ({
       <FormLabel className="select-field-form-label">{label}</FormLabel>
       <Autocomplete
         id="tros-select-vehicle"
-        onChange={(_, value: Vehicle | null | undefined, reason) => {
+        onChange={(_, value: Nullable<Vehicle>, reason) => {
           if (!value || reason === "clear") {
             handleClearVehicle();
           } else {

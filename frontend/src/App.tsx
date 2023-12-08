@@ -9,17 +9,19 @@ import "./App.scss";
 import { Header } from "./common/components/header/Header";
 import { Footer } from "./common/components/footer/Footer";
 import { bcGovTheme } from "./themes/bcGovTheme";
+import { NavIconSideBar } from "./common/components/naviconsidebar/NavIconSideBar";
+import { NavIconHomeButton } from "./common/components/naviconsidebar/NavIconHomeButton";
+import { NavIconReportButton } from "./common/components/naviconsidebar/NavIconReportButton";
+import { Nullable, Optional } from "./common/types/common";
 import {
   CustomSnackbar,
   SnackBarOptions,
 } from "./common/components/snackbar/CustomSnackBar";
+
 import OnRouteBCContext, {
   BCeIDUserDetailContext,
   IDIRUserDetailContext,
 } from "./common/authentication/OnRouteBCContext";
-import { NavIconSideBar } from "./common/components/naviconsidebar/NavIconSideBar";
-import { NavIconHomeButton } from "./common/components/naviconsidebar/NavIconHomeButton";
-import { NavIconReportButton } from "./common/components/naviconsidebar/NavIconReportButton";
 
 const authority =
   import.meta.env.VITE_AUTH0_ISSUER_URL || envConfig.VITE_AUTH0_ISSUER_URL;
@@ -57,19 +59,19 @@ const App = () => {
     alertType: "info",
   });
 
-  const [userRoles, setUserRoles] = useState<string[] | null | undefined>();
-  const [companyId, setCompanyId] = useState<number | undefined>();
+  const [userRoles, setUserRoles] = useState<Nullable<string[]>>();
+  const [companyId, setCompanyId] = useState<Optional<number>>();
   const [onRouteBCClientNumber, setOnRouteBCClientNumber] = useState<
-    string | undefined
+    Optional<string>
   >();
   const [companyLegalName, setCompanyLegalName] = useState<
-    string | undefined
+    Optional<string>
   >();
   const [userDetails, setUserDetails] = useState<
-    BCeIDUserDetailContext | undefined
+    Optional<BCeIDUserDetailContext>
   >();
   const [idirUserDetails, setIDIRUserDetails] = useState<
-    IDIRUserDetailContext | undefined
+    Optional<IDIRUserDetailContext>
   >();
 
   // Needed the following usestate and useffect code so that the snackbar would disapear/close

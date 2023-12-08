@@ -11,6 +11,7 @@ import {
   forwardRef,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { In } from 'typeorm/find-options/operator/In';
 import { ApplicationStatus } from 'src/common/enum/application-status.enum';
 import { DataSource, IsNull, Repository } from 'typeorm';
 import { CreateApplicationDto } from './dto/request/create-application.dto';
@@ -197,12 +198,12 @@ export class ApplicationService {
      Initially written to facilitate get application in progress for IDIR user.*/
   async findAllApplicationCompany(
     companyId: number,
-    status: ApplicationStatus,
+    statuses: ApplicationStatus[],
   ): Promise<ReadApplicationDto[]> {
     const applications = await this.permitRepository.find({
       where: {
         companyId: +companyId,
-        permitStatus: status,
+        permitStatus: In([...statuses]),
         permitNumber: IsNull(),
       },
       relations: {
@@ -222,13 +223,13 @@ export class ApplicationService {
   async findAllApplicationUser(
     companyId: number,
     userGuid: string,
-    status: ApplicationStatus,
+    statuses: ApplicationStatus[],
   ): Promise<ReadApplicationDto[]> {
     const applications: Permit[] = await this.permitRepository.find({
       where: {
         companyId: +companyId,
         userGuid: userGuid,
-        permitStatus: status,
+        permitStatus: In([...statuses]),
         permitNumber: IsNull(),
       },
       relations: {

@@ -1,20 +1,24 @@
 import { Permit } from "../../../types/permit";
 import { getDefaultValues } from "../../../helpers/getDefaultApplicationFormData";
+import { Nullable } from "../../../../../common/types/common";
+import { areApplicationDataEqual } from "../../../helpers/equality";
 import {
   applyWhenNotNullable,
   areValuesDifferent,
   getDefaultRequiredVal,
 } from "../../../../../common/helpers/util";
+
 import {
   Application,
   PERMIT_APPLICATION_ORIGINS,
   PERMIT_APPROVAL_SOURCES,
 } from "../../../types/application.d";
-import { areApplicationDataEqual } from "../../../helpers/equality";
+
 import {
   transformApplicationToPermit,
   transformPermitToApplication,
 } from "../../../helpers/mappers";
+
 import {
   DATE_FORMATS,
   dayjsToLocalStr,
@@ -48,7 +52,7 @@ export const mapFormDataToPermit = (data: AmendPermitFormData) => {
  * @returns Default form data values
  */
 export const getDefaultFormDataFromPermit = (
-  permit?: Permit | null,
+  permit?: Nullable<Permit>,
 ): AmendPermitFormData => {
   // Default form values when permit is not available (or period of time when loading)
   if (!permit) {
@@ -109,7 +113,7 @@ export const getDefaultFormDataFromPermit = (
  * @returns Default form data values
  */
 export const getDefaultFromNullableFormData = (
-  permitFormData?: AmendPermitFormData | null,
+  permitFormData?: Nullable<AmendPermitFormData>,
 ): AmendPermitFormData => {
   // Default form values when permit is not available (or period of time when loading)
   if (!permitFormData) {
@@ -144,8 +148,8 @@ export const getDefaultFromNullableFormData = (
 };
 
 export const arePermitsEqual = (
-  permit1?: AmendPermitFormData | null,
-  permit2?: AmendPermitFormData | null,
+  permit1?: Nullable<AmendPermitFormData>,
+  permit2?: Nullable<AmendPermitFormData>,
 ) => {
   if (!permit1 && !permit2) return true; // considered equal when both are undefined
   if (!permit1 || !permit2) return false; // considered not equal when only one is undefined

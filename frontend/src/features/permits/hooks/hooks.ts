@@ -23,6 +23,7 @@ import {
   modifyAmendmentApplication,
   getApplicationsInProgress,
 } from "../apiManager/permitsAPI";
+import { Nullable, Optional } from "../../../common/types/common";
 
 /**
  * A custom react query mutation hook that saves the application data to the backend API
@@ -61,7 +62,7 @@ export const useApplicationDetailsQuery = (
   permitId?: string,
 ) => {
   const [applicationData, setApplicationData] = 
-    useState<Application | null | undefined>();
+    useState<Nullable<Application>>();
 
   // Currently, creating new application route doesn't contain permitId
   // ie. route === "/applications/new" instead of "/applications/:permitId"
@@ -124,7 +125,7 @@ export const useApplicationDetailsQuery = (
  * @returns permit details, or error if failed
  */
 export const usePermitDetailsQuery = (permitId?: string) => {
-  const [permit, setPermit] = useState<Permit | null | undefined>(undefined);
+  const [permit, setPermit] = useState<Nullable<Permit>>(undefined);
 
   const invalidPermitId = !permitId;
   const query = useQuery({
@@ -152,7 +153,7 @@ export const usePermitDetailsQuery = (permitId?: string) => {
  */
 export const useStartTransaction = () => {
   const [transaction, setTransaction] = useState<
-    StartTransactionResponseData | null | undefined
+    Nullable<StartTransactionResponseData>
   >(undefined);
   const queryClient = useQueryClient();
 
@@ -187,7 +188,7 @@ export const useCompleteTransaction = (
   paymentStatus: number,
 ) => {
   const queryClient = useQueryClient();
-  const [paymentApproved, setPaymentApproved] = useState<boolean | undefined>(
+  const [paymentApproved, setPaymentApproved] = useState<Optional<boolean>>(
     undefined,
   );
   const [message, setMessage] = useState<string>(messageText);
@@ -271,7 +272,7 @@ export const usePermitHistoryQuery = (originalPermitId?: string) => {
  */
 export const useIssuePermits = () => {
   const [issueResults, setIssueResults] = useState<
-    IssuePermitsResponse | undefined
+    Optional<IssuePermitsResponse>
   >(undefined);
   const queryClient = useQueryClient();
 
@@ -351,7 +352,7 @@ export const useModifyAmendmentApplication = () => {
  */
 export const useAmendmentApplicationQuery = (originalPermitId?: string) => {
   const [amendmentApplication, setAmendmentApplication] = useState<
-    Permit | null | undefined
+    Nullable<Permit>
   >(undefined);
 
   const isIdInvalid = !originalPermitId;
