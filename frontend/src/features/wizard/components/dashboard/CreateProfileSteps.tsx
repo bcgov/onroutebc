@@ -2,6 +2,7 @@ import {
   Alert,
   Box,
   Button,
+  Stack,
   Step,
   StepLabel,
   Stepper,
@@ -25,6 +26,7 @@ import { CompanyInformationWizardForm } from "../../pages/CompanyInformationWiza
 import { OnRouteBCProfileCreated } from "../../pages/OnRouteBCProfileCreated";
 import { UserInformationWizardForm } from "../../pages/UserInformationWizardForm";
 import "./CreateProfileSteps.scss";
+import { useNavigate } from "react-router";
 
 const CompanyBanner = ({ legalName }: { legalName: string }) => {
   return (
@@ -84,6 +86,7 @@ const getFirstValidationError = (
  * The stepper component containing the necessary forms for creating profile.
  */
 export const CreateProfileSteps = React.memo(() => {
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const steps = ["Company Information", "My Information"];
   const {
@@ -328,15 +331,40 @@ export const CreateProfileSteps = React.memo(() => {
             )}
             <div className="create-profile-section create-profile-section--nav">
               {activeStep === 0 && (
-                <Button
-                  className="proceed-btn proceed-btn--next"
-                  onClick={handleSubmit(handleNext)}
-                  variant="contained"
-                  color="primary"
-                  endIcon={<>&rarr;</>}
-                >
-                  Next
-                </Button>
+                <>
+                  <Stack direction="row" spacing={3}>
+                    <Button
+                      key="cancel-create-profile-button"
+                      aria-label="Cancel Create Profile"
+                      variant="contained"
+                      color="secondary"
+                      onClick={() => {
+                        // Go back
+                        navigate(-1);
+                      }}
+                      disableElevation
+                      sx={{
+                        ":hover": {
+                          background: BC_COLOURS.bc_background_light_grey,
+                          border: `2px solid ${BC_COLOURS.bc_text_box_border_grey}`,
+                        },
+                        border: `2px solid ${BC_COLOURS.white}`,
+                        borderRadius: "4px",
+                      }}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      className="proceed-btn proceed-btn--next"
+                      onClick={handleSubmit(handleNext)}
+                      variant="contained"
+                      color="primary"
+                      endIcon={<>&rarr;</>}
+                    >
+                      Next
+                    </Button>
+                  </Stack>
+                </>
               )}
               {activeStep === 1 && (
                 <>
