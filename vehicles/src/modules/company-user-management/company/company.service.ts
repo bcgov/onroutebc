@@ -31,6 +31,7 @@ import { Cache } from 'cache-manager';
 import { getFromCache } from '../../../common/helper/cache.helper';
 import { CacheKey } from '../../../common/enum/cache-key.enum';
 import { AccountSource } from '../../../common/enum/account-source.enum';
+import { PendingUser } from '../pending-users/entities/pending-user.entity';
 
 @Injectable()
 export class CompanyService {
@@ -109,6 +110,11 @@ export class CompanyService {
         newCompany.companyId = existingCompanyDetails?.companyId;
         newCompany.mailingAddress.addressId =
           existingCompanyDetails?.mailingAddress?.addressId;
+
+        await queryRunner.manager.delete(PendingUser, {
+          companyId: existingCompanyDetails?.companyId,
+          userGUID: currentUser.userGUID,
+        });
       }
 
       newCompany = await queryRunner.manager.save(newCompany);

@@ -117,6 +117,11 @@ export class UsersService {
         companyId: companyId,
         userName: currentUser.userName,
       });
+      //Delete migrated Client. User name would be either null or a constant value
+      await queryRunner.manager.delete(PendingUser, {
+        companyId: companyId,
+        userGUID: currentUser.userGUID,
+      });
 
       await queryRunner.commitTransaction();
     } catch (err) {
