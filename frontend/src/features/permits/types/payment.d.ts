@@ -1,3 +1,4 @@
+import { Nullable, NullableFields } from "../../../common/types/common";
 import { 
   PaymentCardTypeCode, 
   PaymentMethodTypeCode,
@@ -5,7 +6,7 @@ import {
 } from "../../../common/types/paymentMethods";
 
 export interface PayBCPaymentDetails {
-  authCode?: string | null;
+  authCode?: Nullable<string>;
   avsAddrMatch: string;
   avsId: string;
   avsMessage: string;
@@ -13,9 +14,9 @@ export interface PayBCPaymentDetails {
   avsProcessed: string;
   avsResult: string;
   cardType: string;
-  cvdId?: number | null;
+  cvdId?: Nullable<number>;
   trnApproved: number;
-  messageId?: number | null;
+  messageId?: Nullable<number>;
   messageText: string;
   paymentMethod: PaymentGatewayMethod;
   ref1: string;
@@ -48,8 +49,6 @@ export const TRANSACTION_TYPES = {
 export type TransactionType =
   (typeof TRANSACTION_TYPES)[keyof typeof TRANSACTION_TYPES];
 
-type Optional<T> = { [P in keyof T]?: T[P] | null | undefined };
-
 export interface PaymentGatewayData {
   pgTransactionId: string;
   pgApproved: number;
@@ -63,7 +62,7 @@ export interface PaymentGatewayData {
 }
 
 export interface StartTransactionRequestData
-  extends Optional<PaymentGatewayData> {
+  extends NullableFields<PaymentGatewayData> {
   transactionTypeId: TransactionType;
   paymentMethodTypeCode: PaymentMethodTypeCode;
   paymentCardTypeCode?: PaymentCardTypeCode;
@@ -74,11 +73,11 @@ export interface StartTransactionRequestData
 }
 
 export interface StartTransactionResponseData
-  extends Optional<PaymentGatewayData> {
+  extends NullableFields<PaymentGatewayData> {
   transactionId: string;
   transactionTypeId: TransactionType;
   paymentMethodTypeCode: PaymentMethodTypeCode;
-  paymentCardTypeCode?: PaymentCardTypeCode | null;
+  paymentCardTypeCode?: Nullable<PaymentCardTypeCode>;
   totalTransactionAmount: number;
   transactionSubmitDate: string;
   transactionOrderNumber: string;
@@ -89,9 +88,9 @@ export interface StartTransactionResponseData
   url?: string;
 }
 
-export type CompleteTransactionRequestData = Optional<PaymentGatewayData>;
+export type CompleteTransactionRequestData = NullableFields<PaymentGatewayData>;
 
 export interface CompleteTransactionResponseData
-  extends Optional<PaymentGatewayData> {
+  extends NullableFields<PaymentGatewayData> {
   transactionId: string;
 }

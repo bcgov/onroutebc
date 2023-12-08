@@ -26,6 +26,7 @@ import { VoidPermitFormData } from "../types/VoidPermit";
 import { useVoidPermit } from "../hooks/useVoidPermit";
 import { mapToRevokeRequestData } from "../helpers/mapper";
 import { isValidTransaction } from "../../../helpers/payment";
+import { Nullable } from "../../../../../common/types/common";
 
 const FEATURE = "void-permit";
 const searchRoute = `${IDIR_ROUTES.SEARCH_RESULTS}?searchEntity=permits`;
@@ -34,7 +35,7 @@ export const VoidPermitForm = ({
   permit,
   onRevokeSuccess,
 }: {
-  permit: Permit | null;
+  permit: Nullable<Permit>;
   onRevokeSuccess: () => void;
 }) => {
   const navigate = useNavigate();

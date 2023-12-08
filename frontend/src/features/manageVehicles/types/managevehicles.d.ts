@@ -1,3 +1,5 @@
+import { Nullable } from "../../../common/types/common";
+
 export type VehicleTypes = PowerUnit | Trailer;
 export type VehicleTypesAsString = "powerUnit" | "trailer";
 
@@ -11,23 +13,23 @@ interface Vehicle {
   countryCode: string;
   make: string;
   vin: string;
-  year: number | null;
-  createdDateTime?: string | null;
-  updatedDateTime?: string | null;
+  year: Nullable<number>;
+  createdDateTime?: Nullable<string>;
+  updatedDateTime?: Nullable<string>;
   vehicleType?: VehicleTypesAsString;
 }
 
 export interface PowerUnit extends Vehicle {
   powerUnitId?: string;
   licensedGvw?: number;
-  steerAxleTireSize?: number | null;
+  steerAxleTireSize?: Nullable<number>;
   powerUnitTypeCode: string;
 }
 
 export interface Trailer extends Vehicle {
   trailerId?: string;
   trailerTypeCode: string;
-  emptyTrailerWidth?: number | null;
+  emptyTrailerWidth?: Nullable<number>;
 }
 
 /**

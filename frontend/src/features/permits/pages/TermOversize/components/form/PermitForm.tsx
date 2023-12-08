@@ -9,6 +9,7 @@ import { PermitDetails } from "./PermitDetails";
 import { VehicleDetails } from "./VehicleDetails/VehicleDetails";
 import { CompanyProfile } from "../../../../../manageProfile/types/manageProfile.d";
 import { PermitType } from "../../../../types/PermitType";
+import { Nullable } from "../../../../../../common/types/common";
 import {
   PowerUnit,
   Trailer,
@@ -40,7 +41,7 @@ interface PermitFormProps {
   powerUnitTypes: VehicleType[];
   trailerTypes: VehicleType[];
   children?: React.ReactNode;
-  companyInfo?: CompanyProfile | null;
+  companyInfo?: Nullable<CompanyProfile>;
   durationOptions: {
     value: number;
     label: string;
