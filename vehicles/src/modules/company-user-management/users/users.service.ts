@@ -34,6 +34,9 @@ import { Contact } from '../../common/entities/contact.entity';
 import { getProvinceId } from '../../../common/helper/province-country.helper';
 import { Base } from '../../common/entities/base.entity';
 import { AccountSource } from '../../../common/enum/account-source.enum';
+import { ReadVerifyMigratedClientDto } from './dto/response/read-verify-migrated-client.dto';
+import { VerifyMigratedClientDto } from './dto/request/verify-migrated-client.dto';
+import { Permit } from '../../permit/entities/permit.entity';
 
 @Injectable()
 export class UsersService {
@@ -116,6 +119,11 @@ export class UsersService {
       await queryRunner.manager.delete(PendingUser, {
         companyId: companyId,
         userName: currentUser.userName,
+      });
+      //Delete migrated Client. User name would be either null or a constant value
+      await queryRunner.manager.delete(PendingUser, {
+        companyId: companyId,
+        userGUID: currentUser.userGUID,
       });
 
       await queryRunner.commitTransaction();
@@ -355,79 +363,177 @@ export class UsersService {
   }
 
   /**
+   * The verifyMigratedClient() method searches for migrated client and permit
+   * in OnRouteBC and returns the status
+   *
+   * @param currentUser The current logged in User JWT Token.
+   *
+   * @returns The {@link ReadVerifyMigratedClientDto} entity.
+   */
+  async verifyMigratedClient(
+    currentUser: IUserJWT,
+    verifyMigratedClientDto: VerifyMigratedClientDto,
+  ): Promise<ReadVerifyMigratedClientDto> {
+    const verifyMigratedClient: ReadVerifyMigratedClientDto = {
+      foundClient: false,
+      foundPermit: false,
+      clientAndPermitMatch: false,
+    };
+    const company = await this.companyService.findOneByMigratedClientNumber(
+      verifyMigratedClientDto.clientNumber,
+    );
+    if (company) {
+      verifyMigratedClient.foundClient = true;
+    }
+
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      const permit = await queryRunner.manager.findOne(Permit, {
+        where: {
+          migratedPermitNumber: verifyMigratedClientDto.permitNumber,
+        },
+      });
+
+      if (permit) {
+        verifyMigratedClient.foundPermit = true;
+        if (permit.companyId === company.companyId) {
+          verifyMigratedClient.clientAndPermitMatch = true;
+        }
+      }
+
+      await queryRunner.commitTransaction();
+    } catch (err) {
+      await queryRunner.rollbackTransaction();
+      throw new InternalServerErrorException(); // TODO: Handle the typeorm Error handling
+    } finally {
+      await queryRunner.release();
+    }
+
+    return verifyMigratedClient;
+  }
+
+  /**
    * The findORBCUser() method searches ORBC if the user exists by its GUID and
    * returns a DTO with user details and its associated companies.
    *
-   * @param userGUID The user GUID.
-   * @param userName The user Name.
-   * @param companyGUID The company GUID.
+   * @param currentUser The current logged in User JWT Token.
    *
    * @returns The {@link ReadUserOrbcStatusDto} entity.
    */
-  async findORBCUser(
-    userGUID: string,
-    userName: string,
-    companyGUID: string,
-  ): Promise<ReadUserOrbcStatusDto> {
-    const userExistsDto = new ReadUserOrbcStatusDto();
-    userExistsDto.associatedCompanies = [];
-    userExistsDto.pendingCompanies = [];
+  async findORBCUser(currentUser: IUserJWT): Promise<ReadUserOrbcStatusDto> {
+    const userContextDto = new ReadUserOrbcStatusDto();
+    userContextDto.associatedCompanies = [];
+    userContextDto.pendingCompanies = [];
 
     const user = await this.userRepository.findOne({
-      where: { userGUID: userGUID },
+      where: { userGUID: currentUser.userGUID },
       relations: {
         userContact: true,
         companyUsers: true,
       },
     });
 
-    const pendingCompanies = await this.pendingUsersService.findPendingUsersDto(
-      userName,
-    );
+    if (!user && currentUser.bceid_business_guid) {
+      const company = await this.companyService.findOneByCompanyGuid(
+        currentUser.bceid_business_guid,
+      );
+      if (
+        company &&
+        company.accountSource === AccountSource.TpsAccount &&
+        !company?.companyUsers?.length
+      ) {
+        userContextDto.migratedClient =
+          await this.companyService.mapCompanyEntityToCompanyDto(company);
+      } else if (company) {
+        const companyMetadata =
+          await this.companyService.mapCompanyEntityToCompanyMetadataDto(
+            company,
+          );
+        userContextDto.associatedCompanies.push(companyMetadata);
+      }
+    } else if (user) {
+      //User name sync from BCeID applciation.
+      if (
+        user.userName?.toUpperCase() !== currentUser.userName?.toUpperCase()
+      ) {
+        await this.userRepository.update(
+          { userGUID: currentUser.userGUID },
+          {
+            userName: currentUser.userName,
+            updatedUserGuid: currentUser.userGUID,
+            updatedDateTime: new Date(),
+            updatedUser: currentUser.userName,
+            updatedUserDirectory: currentUser.orbcUserDirectory,
+          },
+        );
+        user.userName = currentUser.userName;
+      }
 
-    if (pendingCompanies?.length) {
-      for (const pendingCompany of pendingCompanies) {
-        userExistsDto.pendingCompanies.push(
-          await this.companyService.findCompanyMetadata(
-            pendingCompany.companyId,
-          ),
-        );
-      }
-    }
-    if (!user) {
-      if (companyGUID) {
-        const company = await this.companyService.findOneByCompanyGuid(
-          companyGUID,
-        );
-        if (company) {
-          if (
-            company.accountSource === AccountSource.TpsAccount &&
-            !company?.companyUsers?.length
-          ) {
-            userExistsDto.migratedTPSClient =
-              await this.companyService.mapCompanyEntityToCompanyDto(company);
-          } else {
-            const companyMetadata =
-              await this.companyService.mapCompanyEntityToCompanyMetadataDto(
-                company,
-              );
-            userExistsDto.associatedCompanies.push(companyMetadata);
-          }
-          return userExistsDto;
-        }
-      }
-    } else {
-      const readCompanyMetadataDto =
-        await this.companyService.findCompanyMetadataByUserGuid(userGUID);
-      userExistsDto.user = await this.classMapper.mapAsync(
+      userContextDto.user = await this.classMapper.mapAsync(
         user,
         User,
         ReadUserDto,
       );
-      userExistsDto.associatedCompanies = readCompanyMetadataDto;
+
+      userContextDto.associatedCompanies =
+        await this.companyService.findCompanyMetadataByUserGuid(
+          currentUser.userGUID,
+        );
     }
 
-    return userExistsDto;
+    await this.processPendingUserInvitesForUserContextCall(
+      currentUser,
+      userContextDto,
+    );
+
+    return userContextDto;
+  }
+
+  /**
+   * The processPendingUserInvitesForUserContextCall() method finds pending user invites for the username
+   * and finds pushed the metadata of company to which they were invited
+   *
+   * @param currentUser The current logged in User JWT Token.
+   *
+   */
+
+  private async processPendingUserInvitesForUserContextCall(
+    currentUser: IUserJWT,
+    userContextDto: ReadUserOrbcStatusDto,
+  ) {
+    const pendingUsers = await this.pendingUsersService.findPendingUsersDto(
+      currentUser.userName,
+      null,
+      null,
+    );
+    //Auto invite for TPS migrated client for second user onward.
+    if (!userContextDto.migratedClient) {
+      pendingUsers.push(
+        ...(await this.pendingUsersService.findPendingUsersDto(
+          null,
+          null,
+          currentUser.userGUID,
+        )),
+      );
+    }
+
+    if (pendingUsers?.length) {
+      for (const pendingUser of pendingUsers) {
+        if (
+          !userContextDto.pendingCompanies?.some((company) => {
+            return company.companyId === pendingUser.companyId;
+          })
+        ) {
+          userContextDto.pendingCompanies.push(
+            await this.companyService.findCompanyMetadata(
+              pendingUser.companyId,
+            ),
+          );
+        }
+      }
+    }
   }
 
   /**
@@ -509,6 +615,21 @@ export class UsersService {
         }
       }
     } else {
+      if (
+        idirUser.userName.toUpperCase() !== currentUser.userName.toUpperCase()
+      ) {
+        await this.idirUserRepository.update(
+          { userGUID: currentUser.userGUID },
+          {
+            userName: currentUser.userName,
+            updatedUserGuid: currentUser.userGUID,
+            updatedDateTime: new Date(),
+            updatedUser: currentUser.userName,
+            updatedUserDirectory: currentUser.orbcUserDirectory,
+          },
+        );
+        idirUser.userName = currentUser.userName;
+      }
       userExists = await this.classMapper.mapAsync(
         idirUser,
         IdirUser,

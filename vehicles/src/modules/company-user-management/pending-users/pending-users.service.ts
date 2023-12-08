@@ -8,6 +8,7 @@ import { UpdatePendingUserDto } from './dto/request/update-pending-user.dto';
 import { ReadPendingUserDto } from './dto/response/read-pending-user.dto';
 import { PendingUser } from './entities/pending-user.entity';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
+import { TPS_MIGRATED_USER } from '../../../common/constants/api.constant';
 
 @Injectable()
 export class PendingUsersService {
@@ -104,26 +105,42 @@ export class PendingUsersService {
    *
    * @param userName (Optional) The username for filtering.
    * @param companyId (Optional) The company ID for filtering.
+   * @param userGUID (Optional) The userGuid for filtering.
    *
    * @returns A Promise that resolves to an array of {@link pendingUser} entities.
    */
-  private async findPendingUsersEntity(userName?: string, companyId?: number) {
+  private async findPendingUsersEntity(
+    userName?: string,
+    companyId?: number,
+    userGUID?: string,
+  ) {
     // Construct the query builder to retrieve pending user entities and associated data
-    return await this.pendingUserRepository
+
+    const queryBuilder = this.pendingUserRepository
       .createQueryBuilder('pendingUser')
       /* Conditional WHERE clause for userName. If userName is provided, the
      WHERE clause is pendingUser.userName = :userName; otherwise, it is 1=1 to
      include all pending users.*/
-      .where(userName ? 'pendingUser.userName = :userName' : '1=1', {
-        userName: userName,
-      })
-      /* Conditional WHERE clause for companyId. If companyId is provided, the
-    WHERE clause is pendingUser.companyId = :companyId; otherwise, it is 1=1 to
-    include all companies.*/
-      .andWhere(companyId ? `pendingUser.companyId= :companyId` : '1=1', {
-        companyId,
-      })
-      .getMany();
+      .where(userName ? 'UPPER(pendingUser.userName) = :userName' : '1=1', {
+        userName: userName?.toUpperCase(),
+      });
+
+    if (companyId) {
+      queryBuilder.andWhere('pendingUser.companyId= :companyId', {
+        companyId: companyId,
+      });
+    }
+    if (userGUID) {
+      queryBuilder.andWhere('pendingUser.userGUID= :userGUID', {
+        userGUID: userGUID,
+      });
+    } else {
+      queryBuilder.andWhere('pendingUser.userName != :tpsMigratedUserName', {
+        tpsMigratedUserName: TPS_MIGRATED_USER,
+      });
+    }
+
+    return await queryBuilder.getMany();
   }
 
   /**
@@ -132,6 +149,7 @@ export class PendingUsersService {
    *
    * @param userName (Optional) The username for filtering.
    * @param companyId (Optional) The company ID for filtering.
+   * @param userGUID (Optional) The userGuid for filtering.
    *
    * @returns A Promise that resolves to an array of {@link readPendingUserDto}
    * objects.
@@ -139,11 +157,13 @@ export class PendingUsersService {
   async findPendingUsersDto(
     userName?: string,
     companyId?: number,
+    userGUID?: string,
   ): Promise<ReadPendingUserDto[]> {
     // Find pending user entities based on the provided filtering criteria
     const pendingUserDetails = await this.findPendingUsersEntity(
       userName,
       companyId,
+      userGUID,
     );
 
     // Map the retrieved pending user entities to ReadPendingUserDto objects
