@@ -89,7 +89,6 @@ export const PaymentRedirect = () => {
 
   useEffect(() => {
     if (completedTransaction.current === false) {
-      console.log(transactionQueryString);//
       completeTransactionMutation.mutate({
         transactionId: getDefaultRequiredVal("", transactionId),
         transactionQueryString,
