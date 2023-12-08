@@ -88,8 +88,8 @@ export const invalidDBALength = (min: number, max: number) => {
  *
  * @param value The value to be validated.
  * @param {number} options.minLength: The minimum length of the field. Defaults to 1.
- * @param {number} options.maxLength: The minimum length of the field. Defaults to 1.
- * @returns
+ * @param {number} options.maxLength: The maximum length of the field. Required.
+ * @returns A boolean
  */
 export const isValidOptionalString = (
   value: string | undefined,
