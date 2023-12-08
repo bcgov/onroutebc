@@ -32,6 +32,7 @@ import { getFromCache } from '../../../common/helper/cache.helper';
 import { CacheKey } from '../../../common/enum/cache-key.enum';
 import { AccountSource } from '../../../common/enum/account-source.enum';
 import { PendingUser } from '../pending-users/entities/pending-user.entity';
+import * as crypto from 'crypto';
 
 @Injectable()
 export class CompanyService {
@@ -322,8 +323,12 @@ export class CompanyService {
   async findOneByMigratedClientNumber(
     migratedClientNumber: string,
   ): Promise<Company> {
+    const migratedClientHash = crypto
+      .createHash('sha256')
+      .update(migratedClientNumber)
+      .digest('hex');
     return await this.companyRepository.findOne({
-      where: { migratedClientNumber: migratedClientNumber },
+      where: { migratedClientNumber: migratedClientHash },
     });
   }
 
