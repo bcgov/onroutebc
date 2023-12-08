@@ -36,7 +36,9 @@ import {
   updateRedCompanyCvClientUserDtoMock,
 } from '../../util/mocks/data/user.mock';
 import {
+  redCompanyAdminUserJWTMock,
   redCompanyCvClientUserJWTMock,
+  redCompanyPendingUserJWTMock,
   sysAdminStaffUserJWTMock,
 } from '../../util/mocks/data/jwt.mock';
 import { readRedCompanyPendingUserDtoMock } from '../../util/mocks/data/pending-user.mock';
@@ -248,9 +250,7 @@ describe('UsersService', () => {
         readRedCompanyMetadataDtoMock,
       ]);
       const retUserContext = await service.findORBCUser(
-        constants.RED_COMPANY_ADMIN_USER_GUID,
-        constants.RED_COMPANY_ADMIN_USER_NAME,
-        constants.RED_COMPANY_GUID,
+        redCompanyAdminUserJWTMock,
       );
       expect(typeof retUserContext).toBe('object');
       expect(retUserContext.user.userGUID).toBe(
@@ -270,9 +270,7 @@ describe('UsersService', () => {
         redCompanyEntityMock,
       );
       const retUserContext = await service.findORBCUser(
-        constants.RED_COMPANY_PENDING_USER_GUID,
-        constants.RED_COMPANY_PENDING_USER_NAME,
-        constants.RED_COMPANY_GUID,
+        redCompanyPendingUserJWTMock,
       );
 
       expect(typeof retUserContext).toBe('object');

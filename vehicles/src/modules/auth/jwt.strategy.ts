@@ -95,9 +95,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       orbcUserAuthGroup = user?.at(0).userAuthGroup;
 
       if (payload.identity_provider !== IDP.IDIR) {
-        associatedCompanies = await this.authService.getCompaniesForUser(
-          userGUID,
-        );
+        associatedCompanies =
+          await this.authService.getCompaniesForUser(userGUID);
         //Remove when one login Multiple Companies needs to be activated
         companyId = associatedCompanies?.length
           ? associatedCompanies?.at(0)
@@ -148,9 +147,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       payload.identity_provider !== IDP.IDIR &&
       userGUIDParam
     ) {
-      const associatedCompanies = await this.authService.getCompaniesForUser(
-        userGUIDParam,
-      );
+      const associatedCompanies =
+        await this.authService.getCompaniesForUser(userGUIDParam);
 
       if (!associatedCompanies?.length) {
         throw new DataNotFoundException();

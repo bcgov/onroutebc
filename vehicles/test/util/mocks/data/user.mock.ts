@@ -78,7 +78,7 @@ export const readRedAdminUserOrbcStatusDtoMock: ReadUserOrbcStatusDto = {
   user: { ...readRedCompanyAdminUserDtoMock },
   associatedCompanies: [readRedCompanyMetadataDtoMock],
   pendingCompanies: [],
-  migratedTPSClient: undefined,
+  migratedClient: undefined,
 };
 
 export const updateRedCompanyAdminUserStatusDtoMock: UpdateUserStatusDto = {
@@ -125,7 +125,7 @@ export const readRedCvClientUserOrbcStatusDtoMock: ReadUserOrbcStatusDto = {
   user: { ...readRedCompanyCvClientUserDtoMock },
   associatedCompanies: [readRedCompanyMetadataDtoMock],
   pendingCompanies: [],
-  migratedTPSClient: undefined,
+  migratedClient: undefined,
 };
 
 /***************************************BLUE */
@@ -165,7 +165,7 @@ export const readBlueAdminUserOrbcStatusDtoMock: ReadUserOrbcStatusDto = {
   user: { ...readBlueCompanyAdminUserDtoMock },
   associatedCompanies: [readBlueCompanyMetadataDtoMock],
   pendingCompanies: [],
-  migratedTPSClient: undefined,
+  migratedClient: undefined,
 };
 
 //Blue Company Cv Client User
@@ -208,7 +208,7 @@ export const readBlueCvClientUserOrbcStatusDtoMock: ReadUserOrbcStatusDto = {
   user: { ...readBlueCompanyCvClientUserDtoMock },
   associatedCompanies: [readBlueCompanyMetadataDtoMock],
   pendingCompanies: [],
-  migratedTPSClient: undefined,
+  migratedClient: undefined,
 };
 
 //Blue Company Cv Client User
@@ -251,7 +251,7 @@ export const readSysAdminStaffUserOrbcStatusDtoMock: ReadUserOrbcStatusDto = {
   user: { ...readSysAdminStaffUserDtoMock },
   associatedCompanies: [],
   pendingCompanies: [],
-  migratedTPSClient: undefined,
+  migratedClient: undefined,
 };
 
 export const USER_LIST: User[] = [
