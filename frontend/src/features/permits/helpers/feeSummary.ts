@@ -3,6 +3,7 @@ import { TRANSACTION_TYPES, TransactionType } from "../types/payment.d";
 import { Permit } from "../types/permit";
 import { PERMIT_STATES, daysLeftBeforeExpiry, getPermitState } from "./permitState";
 import { isValidTransaction } from "./payment";
+import { Nullable } from "../../../common/types/common";
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
@@ -24,8 +25,8 @@ export const calculateFeeByDuration = (duration: number) => {
  * @returns display text for the fee summary (currency amount to 2 decimal places)
  */
 export const feeSummaryDisplayText = (
-  feeSummary?: string | null,
-  duration?: number | null,
+  feeSummary?: Nullable<string>,
+  duration?: Nullable<number>,
 ) => {
   const feeFromSummary = applyWhenNotNullable(
     (numericStr) => Number(numericStr).toFixed(2),

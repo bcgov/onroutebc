@@ -1,5 +1,7 @@
 import { useContext } from "react";
+
 import OnRouteBCContext from "./OnRouteBCContext";
+import { Nullable, Optional } from "../types/common";
 
 /**
  * Returns a boolean indicating if the user has a given role.
@@ -16,8 +18,8 @@ import OnRouteBCContext from "./OnRouteBCContext";
  * @returns A boolean indicating if the user has the role to access a page.
  */
 export const DoesUserHaveRole = (
-  userRoles: string[] | null | undefined,
-  requiredRole: string | undefined,
+  userRoles: Nullable<string[]>,
+  requiredRole: Optional<string>,
 ) => {
   return (
     requiredRole &&
@@ -34,7 +36,7 @@ export const DoesUserHaveRole = (
  * @returns A boolean indicating if the user has the role to access a page or feature.
  */
 export const DoesUserHaveRoleWithContext = (
-  requiredRole: string | undefined,
+  requiredRole: Optional<string>,
 ) => {
   const { userRoles } = useContext(OnRouteBCContext);
   return (

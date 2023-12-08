@@ -7,6 +7,7 @@ import {
 
 import { SELECT_FIELD_STYLE } from "../../../../../../../../themes/orbcStyles";
 import { CustomSelectDisplayProps } from "../../../../../../../../common/types/formElements";
+import { Optional } from "../../../../../../../../common/types/common";
 
 /**
  * This simple MUI select component without
@@ -22,7 +23,7 @@ export const SelectUnitOrPlate = ({
   value: string;
   label: string;
   onChange: (event: SelectChangeEvent) => void;
-  menuItems: JSX.Element[] | undefined;
+  menuItems: Optional<JSX.Element[]>;
   width: string;
 }) => (
   <FormControl margin="normal">

@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 
 import { getCompanyNameFromSession } from "../../../common/apiManager/httpRequestHandler";
 import OnRouteBCContext from "../../../common/authentication/OnRouteBCContext";
+import { Nullable } from "../../../common/types/common";
 import {
   CREATE_PROFILE_WIZARD_ROUTES,
   PROFILE_ROUTES,
@@ -26,7 +27,7 @@ const isNewCompanyProfile = (companyNameFromContext?: string): boolean =>
 const WelcomeCompanyName = ({
   companyName,
 }: {
-  companyName?: string;
+  companyName: Nullable<string>;
 }): React.ReactElement => {
   if (!companyName) return <></>;
   return (

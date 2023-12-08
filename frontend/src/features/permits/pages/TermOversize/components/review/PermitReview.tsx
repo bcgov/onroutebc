@@ -21,6 +21,7 @@ import { VehicleType } from "../../../../../manageVehicles/types/managevehicles"
 import { PermitType } from "../../../../types/PermitType";
 import { calculateFeeByDuration } from "../../../../helpers/feeSummary";
 import { getDefaultRequiredVal } from "../../../../../../common/helpers/util";
+import { Nullable } from "../../../../../../common/types/common";
 
 interface PermitReviewProps {
   permitType?: PermitType;
@@ -28,7 +29,7 @@ interface PermitReviewProps {
   applicationNumber?: string;
   createdDateTime?: Dayjs;
   updatedDateTime?: Dayjs;
-  companyInfo?: CompanyProfile | null;
+  companyInfo?: Nullable<CompanyProfile>;
   contactDetails?: ContactDetails;
   permitStartDate?: Dayjs;
   permitDuration?: number;
@@ -47,7 +48,7 @@ interface PermitReviewProps {
   onEdit: () => void;
   onContinue: () => Promise<void>;
   showChangedFields?: boolean;
-  oldFields?: Partial<Application> | null;
+  oldFields?: Nullable<Partial<Application>>;
   calculatedFee?: string;
 }
 
