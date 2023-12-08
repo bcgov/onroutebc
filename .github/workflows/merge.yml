@@ -143,7 +143,8 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        component: [backend/vehicles, backend/dops, frontend]
+        package: [dops, vehicles, frontend, tps-migration]
+    timeout-minutes: 2
     steps:
       - uses: shrink/actions-docker-registry-tag@v3
         with:
