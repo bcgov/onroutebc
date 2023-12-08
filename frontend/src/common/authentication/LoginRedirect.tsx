@@ -7,10 +7,10 @@ import { BCeIDUserContextType } from "./types";
 import { Loading } from "../pages/Loading";
 import { useUserContext } from "../../features/manageProfile/apiManager/hooks";
 import { IDPS } from "../types/idp";
-import { 
-  APPLICATIONS_ROUTES, 
-  CREATE_PROFILE_WIZARD_ROUTES, 
-  ERROR_ROUTES, 
+import {
+  APPLICATIONS_ROUTES,
+  CREATE_PROFILE_WIZARD_ROUTES,
+  ERROR_ROUTES,
   IDIR_ROUTES,
 } from "../../routes/constants";
 import { Optional } from "../types/common";
@@ -41,7 +41,7 @@ export const LoginRedirect = () => {
           const {
             associatedCompanies,
             pendingCompanies,
-            migratedTPSClient,
+            migratedClient,
             user,
           } = userContextData;
           // If the user does not exist
@@ -55,18 +55,18 @@ export const LoginRedirect = () => {
             //     => Redirect them to the welcome page with challenge.
             else if (
               associatedCompanies?.length < 1 &&
-              !migratedTPSClient?.clientNumber
+              !migratedClient?.clientNumber
             ) {
               navigate(CREATE_PROFILE_WIZARD_ROUTES.WELCOME);
-            } 
+            }
             // The user does not exist but the business guid matches a migrated client.
             //    => Take them to no challenge workflow.
-            else if (migratedTPSClient?.clientNumber) {
+            else if (migratedClient?.clientNumber) {
               navigate(CREATE_PROFILE_WIZARD_ROUTES.WELCOME);
             }
-            // The user does not exist but there is one or more associated companies 
+            // The user does not exist but there is one or more associated companies
             // due to business GUID match. This is an error scenario and the user is unauthorized.
-            
+
             // Simply put, if !user and associatedCompanies.length > 0, get the guy out of here.
             else {
               navigate(ERROR_ROUTES.UNAUTHORIZED);
