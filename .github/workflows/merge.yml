@@ -127,6 +127,8 @@ jobs:
     name: Create Release
     runs-on: ubuntu-22.04
     needs: [GitVersion]
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
     steps:
       - uses: actions/create-release@v1
         with:
