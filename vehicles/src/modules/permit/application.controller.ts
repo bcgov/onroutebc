@@ -91,7 +91,12 @@ export class ApplicationController {
   async findAllApplication(
     @Req() request: Request,
     @Query('companyId') companyId?: number,
-    @Query('statuses', new DefaultValuePipe([]), ParamToArray<ApplicationStatus>) statuses: ApplicationStatus[] = [],
+    @Query(
+      'statuses',
+      new DefaultValuePipe([]),
+      ParamToArray<ApplicationStatus>,
+    )
+    statuses: ApplicationStatus[] = [],
   ): Promise<ReadApplicationDto[]> {
     const currentUser = request.user as IUserJWT;
     if (currentUser.identity_provider == IDP.IDIR) {
