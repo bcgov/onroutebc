@@ -234,11 +234,12 @@ export const getVehicleDetails = (
   const powerUnits = getAllPowerUnits();
   const existingVehicle = powerUnits[0];
   const updatedProvinceAbbr = "AB";
+  const vin = getDefaultRequiredVal("", existingVehicle.vin as Nullable<string>);
   const vehicle = {
     ...existingVehicle,
     vin:
       usage === "create"
-        ? `${(existingVehicle.vin as string).slice(1)}1`
+        ? `${vin.slice(1)}1`
         : existingVehicle.vin,
     provinceCode:
       usage === "update" ? updatedProvinceAbbr : existingVehicle.provinceCode,
