@@ -350,14 +350,18 @@ export class PaymentService {
     updatePaymentGatewayTransactionDto: UpdatePaymentGatewayTransactionDto,
     queryString: string,
   ): Promise<ReadPaymentGatewayTransactionDto> {
-    const query = queryString
-      .substring(0, queryString.indexOf('hashValue=') - 1)
-      .replace('+', ' ');
+    let query: string, hashValue: string;
+    //Code QL fixes.
+    if (typeof queryString === 'string') {
+      query = queryString
+        .substring(0, queryString.indexOf('hashValue=') - 1)
+        .replace('+', ' ');
 
-    const hashValue = queryString.substring(
-      queryString.indexOf('hashValue=') + 10,
-      queryString.length,
-    );
+      hashValue = queryString.substring(
+        queryString.indexOf('hashValue=') + 10,
+        queryString.length,
+      );
+    }
 
     const validHash = validateHash(query, hashValue);
     const validDto = this.validateUpdateTransactionDto(
