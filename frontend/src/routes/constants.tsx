@@ -1,3 +1,4 @@
+import { Nullable } from "../common/types/common";
 import { IDPS } from "../common/types/idp";
 
 export const ROUTE_PLACEHOLDERS = {
@@ -15,7 +16,7 @@ export const ROUTE_PLACEHOLDERS = {
 const DYNAMIC_ROUTE_URI = (
   prefixUri: string,
   placeholderName: string,
-  value?: string | null
+  value?: Nullable<string>,
 ) => {
   if (!value) {
     return `${prefixUri}/:${placeholderName}`;

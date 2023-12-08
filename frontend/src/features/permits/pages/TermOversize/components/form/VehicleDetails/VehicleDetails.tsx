@@ -24,6 +24,8 @@ import { removeIneligibleVehicleSubTypes } from "../../../../../helpers/removeIn
 import { CustomInputHTMLAttributes } from "../../../../../../../common/types/formElements";
 import { SelectUnitOrPlate } from "./customFields/SelectUnitOrPlate";
 import { SelectVehicleDropdown } from "./customFields/SelectVehicleDropdown";
+import { BANNER_MESSAGES } from "../../../../../../../common/constants/bannerMessages";
+import { Optional } from "../../../../../../../common/types/common";
 import {
   PowerUnit,
   Trailer,
@@ -48,7 +50,6 @@ import {
   invalidYearMin,
   requiredMessage,
 } from "../../../../../../../common/helpers/validationMessages";
-import { BANNER_MESSAGES } from "../../../../../../../common/constants/bannerMessages";
 
 const selectedVehicleSubtype = (vehicle: Vehicle) => {
   switch (vehicle.vehicleType) {
@@ -101,7 +102,7 @@ export const VehicleDetails = ({
     emptyVehicleSubtype,
   ]);
   const [selectedVehicle, setSelectedVehicle] = useState<
-    VehicleDetailsType | undefined
+    Optional<VehicleDetailsType>
   >();
 
   useEffect(() => {

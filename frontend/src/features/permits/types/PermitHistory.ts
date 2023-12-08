@@ -1,4 +1,5 @@
 import { TransactionType } from "./payment";
+import { RequiredOrNull } from "../../../common/types/common";
 import { 
   PaymentCardTypeCode, 
   PaymentMethodTypeCode,
@@ -7,16 +8,16 @@ import {
 
 export interface PermitHistory {
   permitNumber: string;
-  comment: string | null;
+  comment: RequiredOrNull<string>;
   commentUsername: string;
   transactionAmount: number;
   transactionOrderNumber: string;
-  pgTransactionId: string | null;
-  pgPaymentMethod: PaymentGatewayMethod | null;
-  paymentCardTypeCode: PaymentCardTypeCode | null;
+  pgTransactionId: RequiredOrNull<string>;
+  pgPaymentMethod: RequiredOrNull<PaymentGatewayMethod>;
+  paymentCardTypeCode: RequiredOrNull<PaymentCardTypeCode>;
   paymentMethodTypeCode: PaymentMethodTypeCode;
   transactionTypeId: TransactionType;
   permitId: number;
-  transactionSubmitDate: string | null;
-  pgApproved: number | null;
+  transactionSubmitDate: RequiredOrNull<string>;
+  pgApproved: RequiredOrNull<number>;
 }

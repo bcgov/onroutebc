@@ -17,6 +17,7 @@ import { getDefaultUserDetails } from "../fixtures/getUserDetails";
 import { getDefaultRequiredVal } from "../../../../../../../common/helpers/util";
 import { formatCountry, formatProvince } from "../../../../../../../common/helpers/formatCountryProvince";
 import { APPLICATION_STEPS } from "../../../../../../../routes/constants";
+import { Nullable, Optional } from "../../../../../../../common/types/common";
 import OnRouteBCContext, {
   OnRouteBCContextType,
 } from "../../../../../../../common/authentication/OnRouteBCContext";
@@ -237,7 +238,7 @@ export const getVehicleDetails = (
     ...existingVehicle,
     vin:
       usage === "create"
-        ? `${existingVehicle.vin.slice(1)}1`
+        ? `${(existingVehicle.vin as string).slice(1)}1`
         : existingVehicle.vin,
     provinceCode:
       usage === "update" ? updatedProvinceAbbr : existingVehicle.provinceCode,
@@ -254,9 +255,9 @@ export const getVehicleDetails = (
       vin: vehicle.vin,
       plate: vehicle.plate,
       make: vehicle.make,
-      year: getDefaultRequiredVal(0, vehicle.year),
-      country: formatCountry(vehicle.countryCode),
-      province: formatProvince(vehicle.countryCode, vehicle.provinceCode),
+      year: getDefaultRequiredVal(0, vehicle.year as Nullable<number>),
+      country: formatCountry(vehicle.countryCode as Optional<string>),
+      province: formatProvince(vehicle.countryCode as Optional<string>, vehicle.provinceCode as Optional<string>),
       vehicleType: "Power Unit",
       vehicleSubtype,
       saveVehicle,

@@ -1,5 +1,6 @@
 import { PayBCPaymentDetails } from "../types/payment";
 import { parseRedirectUriPath } from "../pages/Payment/PaymentRedirect";
+import { Nullable } from "../../../common/types/common";
 import { 
   PAYMENT_GATEWAY_METHODS,
   PAYMENT_METHOD_TYPE_CODE,
@@ -74,7 +75,7 @@ export const getPayBCPaymentDetails = (
  */
 export const isValidTransaction = (
   paymentMethod: PaymentMethodTypeCode,
-  transactionApproved?: number | null,
+  transactionApproved?: Nullable<number>,
 ) => {
   return paymentMethod === PAYMENT_METHOD_TYPE_CODE.WEB
     || (!!transactionApproved && transactionApproved > 0);

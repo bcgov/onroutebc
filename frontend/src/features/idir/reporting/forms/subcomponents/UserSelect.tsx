@@ -8,8 +8,10 @@ import {
   Select,
   SelectChangeEvent,
 } from "@mui/material";
-import { SELECT_FIELD_STYLE } from "../../../../../themes/orbcStyles";
 import { useFormContext } from "react-hook-form";
+
+import { SELECT_FIELD_STYLE } from "../../../../../themes/orbcStyles";
+import { Optional } from "../../../../../common/types/common";
 import {
   PaymentAndRefundDetailFormData,
   REPORT_ISSUED_BY,
@@ -19,7 +21,7 @@ import {
  * The props used by the user select component.
  */
 export type UserSelectProps = {
-  permitIssuers: Record<string, string> | never[] | undefined;
+  permitIssuers: Optional<Record<string, string>> | never[];
 };
 
 /**
