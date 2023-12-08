@@ -18,6 +18,7 @@ import {
   ApiOkResponse,
   ApiQuery,
   ApiTags,
+  ApiCreatedResponse,
 } from '@nestjs/swagger';
 import { ExceptionDto } from '../../../common/exception/exception.dto';
 import { ReadUserOrbcStatusDto } from './dto/response/read-user-orbc-status.dto';
@@ -32,7 +33,6 @@ import { ReadUserDto } from './dto/response/read-user.dto';
 import { IDP } from '../../../common/enum/idp.enum';
 import { ReadVerifyMigratedClientDto } from './dto/response/read-verify-migrated-client.dto';
 import { VerifyMigratedClientDto } from './dto/request/verify-migrated-client.dto';
-import { ApiCreatedResponse } from '@nestjs/swagger';
 
 @ApiTags('Company and User Management - User')
 @ApiBadRequestResponse({
