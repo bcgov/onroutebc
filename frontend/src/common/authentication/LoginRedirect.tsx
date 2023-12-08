@@ -47,13 +47,13 @@ export const LoginRedirect = () => {
           if (!user?.userGUID) {
             // The user is in pending companies => Redirect them to User Info Page.
             // i.e., The user has been invited.
-            if (pendingCompanies.length > 0) {
+            if (pendingCompanies?.length > 0) {
               navigate(CREATE_PROFILE_WIZARD_ROUTES.WELCOME);
             }
             // The user and company do not exist (not a migrated client)
             //     => Redirect them to the welcome page with challenge.
             else if (
-              associatedCompanies.length < 1 &&
+              associatedCompanies?.length < 1 &&
               !migratedTPSClient?.clientNumber
             ) {
               navigate(CREATE_PROFILE_WIZARD_ROUTES.WELCOME);
@@ -72,16 +72,16 @@ export const LoginRedirect = () => {
             }
           }
           // The user and company exist
-          else if (associatedCompanies.length) {
+          else if (associatedCompanies?.length) {
             navigate(APPLICATIONS_ROUTES.BASE);
           }
           // User exists but company does not exist. This is not a possible scenario.
-          else if (!associatedCompanies.length) {
+          else if (!associatedCompanies?.length) {
             // Error Page
             navigate(ERROR_ROUTES.UNAUTHORIZED);
           }
 
-          // else if(pendingCompanies.length) (i.e., user exists and has invites from a company)
+          // else if(pendingCompanies?.length) (i.e., user exists and has invites from a company)
           // is not a valid block currently because
           // one user can only be part of one company currently.
         }
