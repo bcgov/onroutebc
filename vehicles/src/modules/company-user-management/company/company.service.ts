@@ -326,7 +326,7 @@ export class CompanyService {
   ): Promise<Company> {
     const migratedClientHash = crypto
       .createHash('sha256')
-      .update(migratedClientNumber?.replace('-', ''))
+      .update(migratedClientNumber?.replace(/-/g, ''))
       .digest('hex');
     return await this.companyRepository.findOne({
       where: { migratedClientNumber: migratedClientHash?.toUpperCase() },
