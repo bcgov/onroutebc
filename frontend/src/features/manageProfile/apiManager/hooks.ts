@@ -64,7 +64,7 @@ export const useUserContext = () => {
     setCompanyLegalName,
     setIDIRUserDetails,
     setOnRouteBCClientNumber,
-    setMigratedClient: setMigratedTPSClient,
+    setMigratedClient,
   } = useContext(OnRouteBCContext);
   const { isAuthenticated, user: userFromToken } = useAuth();
   return useQuery({
@@ -135,7 +135,7 @@ export const useUserContext = () => {
           );
         }
         if (migratedClient?.clientNumber) {
-          setMigratedTPSClient?.(() => migratedClient);
+          setMigratedClient?.(() => migratedClient);
         }
       }
     },
