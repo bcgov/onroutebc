@@ -38,30 +38,51 @@ export const LoginRedirect = () => {
         const userContextData: Optional<BCeIDUserContextType> =
           queryClient.getQueryData<BCeIDUserContextType>(["userContext"]);
         if (userContextData) {
-          const { associatedCompanies, pendingCompanies, user } =
-            userContextData;
+          const {
+            associatedCompanies,
+            pendingCompanies,
+            migratedTPSClient,
+            user,
+          } = userContextData;
           // If the user does not exist
           if (!user?.userGUID) {
             // The user is in pending companies => Redirect them to User Info Page.
-            if (pendingCompanies.length > 0) {
+            // i.e., The user has been invited.
+            if (pendingCompanies?.length > 0) {
               navigate(CREATE_PROFILE_WIZARD_ROUTES.WELCOME);
             }
-            // The user and company does not exist => Redirect them to Add new company page.
-            else if (associatedCompanies.length < 1) {
+            // The user and company do not exist (not a migrated client)
+            //     => Redirect them to the welcome page with challenge.
+            else if (
+              associatedCompanies?.length < 1 &&
+              !migratedTPSClient?.clientNumber
+            ) {
               navigate(CREATE_PROFILE_WIZARD_ROUTES.WELCOME);
+            } 
+            // The user does not exist but the business guid matches a migrated client.
+            //    => Take them to no challenge workflow.
+            else if (migratedTPSClient?.clientNumber) {
+              navigate(CREATE_PROFILE_WIZARD_ROUTES.WELCOME);
+            }
+            // The user does not exist but there is one or more associated companies 
+            // due to business GUID match. This is an error scenario and the user is unauthorized.
+            
+            // Simply put, if !user and associatedCompanies.length > 0, get the guy out of here.
+            else {
+              navigate(ERROR_ROUTES.UNAUTHORIZED);
             }
           }
           // The user and company exist
-          else if (associatedCompanies.length) {
+          else if (associatedCompanies?.length) {
             navigate(APPLICATIONS_ROUTES.BASE);
           }
           // User exists but company does not exist. This is not a possible scenario.
-          else if (!associatedCompanies.length) {
+          else if (!associatedCompanies?.length) {
             // Error Page
             navigate(ERROR_ROUTES.UNAUTHORIZED);
           }
 
-          // else if(pendingCompanies.length) (i.e., user exists and has invites from a company)
+          // else if(pendingCompanies?.length) (i.e., user exists and has invites from a company)
           // is not a valid block currently because
           // one user can only be part of one company currently.
         }

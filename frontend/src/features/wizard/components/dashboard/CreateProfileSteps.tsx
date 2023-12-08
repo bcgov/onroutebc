@@ -2,29 +2,31 @@ import {
   Alert,
   Box,
   Button,
+  Stack,
   Step,
   StepLabel,
   Stepper,
   Typography,
 } from "@mui/material";
-import React, { useContext } from "react";
-import { useAuth } from "react-oidc-context";
-import { FormProvider, useForm, FieldValues } from "react-hook-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import React, { useContext } from "react";
+import { FieldValues, FormProvider, useForm } from "react-hook-form";
+import { useAuth } from "react-oidc-context";
 
-import "./CreateProfileSteps.scss";
+import { SnackBarContext } from "../../../../App";
+import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { Banner } from "../../../../common/components/dashboard/Banner";
 import "../../../../common/components/dashboard/Dashboard.scss";
+import { getDefaultRequiredVal } from "../../../../common/helpers/util";
+import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { createOnRouteBCProfile } from "../../../manageProfile/apiManager/manageProfileAPI";
-import { UserInformationWizardForm } from "../../pages/UserInformationWizardForm";
+import { CompanyAndUserRequest } from "../../../manageProfile/types/manageProfile";
+import { BCEID_AUTH_GROUP } from "../../../manageProfile/types/userManagement.d";
 import { CompanyInformationWizardForm } from "../../pages/CompanyInformationWizardForm";
 import { OnRouteBCProfileCreated } from "../../pages/OnRouteBCProfileCreated";
-import { BC_COLOURS } from "../../../../themes/bcGovStyles";
-import { CompanyAndUserRequest } from "../../../manageProfile/types/manageProfile";
-import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
-import { SnackBarContext } from "../../../../App";
-import { getDefaultRequiredVal } from "../../../../common/helpers/util";
-import { BCEID_AUTH_GROUP } from "../../../manageProfile/types/userManagement.d";
+import { UserInformationWizardForm } from "../../pages/UserInformationWizardForm";
+import "./CreateProfileSteps.scss";
+import { useNavigate } from "react-router";
 
 const CompanyBanner = ({ legalName }: { legalName: string }) => {
   return (
@@ -47,25 +49,6 @@ const CompanyBanner = ({ legalName }: { legalName: string }) => {
     </Box>
   );
 };
-
-const ExistingTPSSelection = ({ screenSize }: { screenSize: "lg" | "sm" }) => (
-  <div className={`existing-tps-action existing-tps-action--${screenSize}`}>
-    <div className="existing-tps-action__img-wrapper">
-      <img
-        height="54"
-        width="54"
-        src="./Existing_Account_Graphic.svg"
-        alt="TPS Profile"
-      />
-    </div>
-    <div className="existing-tps-action__profile">
-      <strong>Already have a TPS profile?</strong>
-      <Button variant="outlined" color="info" size="small">
-        Claim it now
-      </Button>
-    </div>
-  </div>
-);
 
 /**
  * Gets the section name inside the form for a particular field name
@@ -99,7 +82,11 @@ const getFirstValidationError = (
   }`;
 };
 
+/**
+ * The stepper component containing the necessary forms for creating profile.
+ */
 export const CreateProfileSteps = React.memo(() => {
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const steps = ["Company Information", "My Information"];
   const {
@@ -107,6 +94,8 @@ export const CreateProfileSteps = React.memo(() => {
     setUserDetails,
     setCompanyLegalName,
     setOnRouteBCClientNumber,
+    setMigratedClient,
+    migratedClient,
   } = useContext(OnRouteBCContext);
   const { setSnackBar } = useContext(SnackBarContext);
 
@@ -126,18 +115,34 @@ export const CreateProfileSteps = React.memo(() => {
         "",
         user?.profile?.bceid_business_name as string,
       ),
+      alternateName: getDefaultRequiredVal("", migratedClient?.alternateName),
       mailingAddress: {
-        addressLine1: "",
-        addressLine2: "",
-        provinceCode: "",
-        countryCode: "",
-        city: "",
-        postalCode: "",
+        addressLine1: getDefaultRequiredVal(
+          "",
+          migratedClient?.mailingAddress?.addressLine1,
+        ),
+        addressLine2: getDefaultRequiredVal(
+          "",
+          migratedClient?.mailingAddress?.addressLine2,
+        ),
+        provinceCode: getDefaultRequiredVal(
+          "",
+          migratedClient?.mailingAddress?.provinceCode,
+        ),
+        countryCode: getDefaultRequiredVal(
+          "",
+          migratedClient?.mailingAddress?.countryCode,
+        ),
+        city: getDefaultRequiredVal("", migratedClient?.mailingAddress?.city),
+        postalCode: getDefaultRequiredVal(
+          "",
+          migratedClient?.mailingAddress?.postalCode,
+        ),
       },
       email: getDefaultRequiredVal("", user?.profile?.email),
-      phone: "",
-      extension: "",
-      fax: "",
+      phone: getDefaultRequiredVal("", migratedClient?.phone),
+      extension: getDefaultRequiredVal("", migratedClient?.extension),
+      fax: getDefaultRequiredVal("", migratedClient?.fax),
       adminUser: {
         userAuthGroup: BCEID_AUTH_GROUP.ORGADMIN,
         firstName: "",
@@ -192,6 +197,10 @@ export const CreateProfileSteps = React.memo(() => {
         setCompanyId?.(() => companyId);
         setCompanyLegalName?.(() => companyName);
         setOnRouteBCClientNumber?.(() => clientNumber);
+
+        // Clear any state in migrated client. We no longer need this
+        // once the user has successfully created/claimed their company.
+        setMigratedClient?.(() => undefined);
 
         // Setting the companyId in the sessionStorage so that it can be used
         // used outside of react components;
@@ -257,11 +266,7 @@ export const CreateProfileSteps = React.memo(() => {
   };
 
   if (clientNumber) {
-    return (
-      <>
-        <OnRouteBCProfileCreated onRouteBCClientNumber={clientNumber} />
-      </>
-    );
+    return <OnRouteBCProfileCreated onRouteBCClientNumber={clientNumber} />;
   }
   return (
     <>
@@ -279,7 +284,6 @@ export const CreateProfileSteps = React.memo(() => {
             bannerText="Create a new onRouteBC Profile"
             bannerSubtext="Please follow the steps below to set up your onRouteBC profile"
           />
-          <br></br>
         </Box>
         <div
           className="tabpanel-container create-profile-steps"
@@ -297,7 +301,6 @@ export const CreateProfileSteps = React.memo(() => {
                 ))}
               </Stepper>
             </div>
-            <ExistingTPSSelection screenSize="sm" />
             <div className="create-profile-section create-profile-section--info">
               <Alert severity="info">
                 <Typography>
@@ -310,8 +313,6 @@ export const CreateProfileSteps = React.memo(() => {
             </div>
             {activeStep === 0 && (
               <div className="create-profile-section create-profile-section--company">
-                <h2>Company Mailing Address</h2>
-                <hr></hr>
                 <CompanyBanner
                   legalName={getDefaultRequiredVal(
                     "",
@@ -330,15 +331,40 @@ export const CreateProfileSteps = React.memo(() => {
             )}
             <div className="create-profile-section create-profile-section--nav">
               {activeStep === 0 && (
-                <Button
-                  className="proceed-btn proceed-btn--next"
-                  onClick={handleSubmit(handleNext)}
-                  variant="contained"
-                  color="primary"
-                  endIcon={<>&rarr;</>}
-                >
-                  Next
-                </Button>
+                <>
+                  <Stack direction="row" spacing={3}>
+                    <Button
+                      key="cancel-create-profile-button"
+                      aria-label="Cancel Create Profile"
+                      variant="contained"
+                      color="secondary"
+                      onClick={() => {
+                        // Go back
+                        navigate(-1);
+                      }}
+                      disableElevation
+                      sx={{
+                        ":hover": {
+                          background: BC_COLOURS.bc_background_light_grey,
+                          border: `2px solid ${BC_COLOURS.bc_text_box_border_grey}`,
+                        },
+                        border: `2px solid ${BC_COLOURS.white}`,
+                        borderRadius: "4px",
+                      }}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      className="proceed-btn proceed-btn--next"
+                      onClick={handleSubmit(handleNext)}
+                      variant="contained"
+                      color="primary"
+                      endIcon={<>&rarr;</>}
+                    >
+                      Next
+                    </Button>
+                  </Stack>
+                </>
               )}
               {activeStep === 1 && (
                 <>
@@ -361,9 +387,6 @@ export const CreateProfileSteps = React.memo(() => {
                 </>
               )}
             </div>
-          </div>
-          <div className="create-profile-steps__existing-tps">
-            <ExistingTPSSelection screenSize="lg" />
           </div>
         </div>
       </FormProvider>
