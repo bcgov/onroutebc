@@ -21,7 +21,6 @@ import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { createOnRouteBCProfile } from "../../../manageProfile/apiManager/manageProfileAPI";
 import { CompanyAndUserRequest } from "../../../manageProfile/types/manageProfile";
-import { BCEID_AUTH_GROUP } from "../../../manageProfile/types/userManagement.d";
 import { CompanyInformationWizardForm } from "../../pages/CompanyInformationWizardForm";
 import { OnRouteBCProfileCreated } from "../../pages/OnRouteBCProfileCreated";
 import { UserInformationWizardForm } from "../../pages/UserInformationWizardForm";
@@ -144,7 +143,6 @@ export const CreateProfileSteps = React.memo(() => {
       extension: getDefaultRequiredVal("", migratedClient?.extension),
       fax: getDefaultRequiredVal("", migratedClient?.fax),
       adminUser: {
-        userAuthGroup: BCEID_AUTH_GROUP.ORGADMIN,
         firstName: "",
         lastName: "",
         email: "",
@@ -272,7 +270,6 @@ export const CreateProfileSteps = React.memo(() => {
     <>
       <FormProvider {...formMethods}>
         <input type="hidden" {...register("legalName")} />
-        <input type="hidden" {...register("adminUser.userAuthGroup")} />
         <Box
           className="layout-box"
           sx={{
