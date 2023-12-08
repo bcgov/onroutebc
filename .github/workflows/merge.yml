@@ -62,10 +62,39 @@ jobs:
           target: ${{ needs.vars.outputs.pr }}
           tags: test  #Promote images AFTER successful deploy
 
+  deploys-prod:
+    name: Deploys (prod)
+    needs: [promote-images-test, vars]
+    uses: ./.github/workflows/.deploy.yml
+    secrets: inherit
+    with:
+      environment: prod
+      tag: ${{ needs.vars.outputs.pr }}
+      release: prod
+      vault_role: prod
+  
+  promote-images-prod:
+    name: Promote Images - Prod
+    needs: [deploys-prod, vars]
+    runs-on: ubuntu-22.04
+    permissions:
+      packages: write
+    strategy:
+      matrix:
+        package: [dops, vehicles, frontend, tps-migration]
+    timeout-minutes: 2
+    steps:
+      - uses: shrink/actions-docker-registry-tag@v3
+        with:
+          registry: ghcr.io
+          repository: ${{ github.repository }}/${{ matrix.package }}
+          target: ${{ needs.vars.outputs.pr }}
+          tags: prod  #Promote images AFTER successful deploy
+  
   GitVersion:
     name: Mainline Versioning - GitVersion
     needs:
-      - promote-images-test
+      - promote-images-prod
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout Code
@@ -127,6 +156,8 @@ jobs:
     name: Create Release
     runs-on: ubuntu-22.04
     needs: [GitVersion]
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
     steps:
       - uses: actions/create-release@v1
         with:
@@ -141,34 +172,6 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        component: [backend/vehicles, backend/dops, frontend]
-    steps:
-      - uses: shrink/actions-docker-registry-tag@v3
-        with:
-          registry: ghcr.io
-          repository: ${{ github.repository }}/${{ matrix.component }}
-          target: ${{ needs.vars.outputs.pr }}
-          tags: ${{ needs.GitVersion.outputs.fullSemVer }}
-
-  deploys-prod:
-    name: Deploys (prod)
-    needs: [promote-images-release, vars]
-    uses: ./.github/workflows/.deploy.yml
-    secrets: inherit
-    with:
-      environment: prod
-      tag: ${{ needs.vars.outputs.pr }}
-      release: test
-      vault_role: prod
-  
-  promote-images-prod:
-    name: Promote Images - Prod
-    needs: [deploys-prod, vars]
-    runs-on: ubuntu-22.04
-    permissions:
-      packages: write
-    strategy:
-      matrix:
         package: [dops, vehicles, frontend, tps-migration]
     timeout-minutes: 2
     steps:
@@ -177,4 +180,4 @@ jobs:
           registry: ghcr.io
           repository: ${{ github.repository }}/${{ matrix.package }}
           target: ${{ needs.vars.outputs.pr }}
-          tags: prod  #Promote images AFTER successful deploy
+          tags: ${{ needs.GitVersion.outputs.fullSemVer }}

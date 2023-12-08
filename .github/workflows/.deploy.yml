@@ -193,11 +193,11 @@ jobs:
           helm upgrade \
             --set global.autoscaling=${{ inputs.autoscaling || true }} \
             --set-string global.repository=${{ github.repository }} \
-            --set-string global.tag=${{ inputs.release }} \
+            --set-string global.tag=${{ inputs.tag }} \
             --set-string global.license=${{ inputs.namespace }} \
             --set-string global.zone=${{ inputs.environment }} \
             --set-string global.vault.role=${{ inputs.vault_role }} \
-            --install --wait --atomic ${{ inputs.repository }}-${{ inputs.tag }} \
+            --install --wait --atomic ${{ inputs.repository }}-${{ inputs.release }} \
             --timeout 10m --force \
             --values ${{ inputs.values }} ${{ inputs.params }} \
             ./${{ inputs.repository }}-${{ inputs.tag }}.tgz
