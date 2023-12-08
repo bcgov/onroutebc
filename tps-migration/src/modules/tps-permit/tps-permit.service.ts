@@ -30,7 +30,8 @@ export class TpsPermitService {
   private readonly logger = new Logger(TpsPermitService.name);
 
   /**
-   * Scheduled method to run every 5 minute. To upload TPS permits pdf to S3.
+   * Scheduled method to run every 5 minute. To upload PENDING TPS permits pdf to S3, update ORBC_DOCUMENT and ORBC_PERMIT table. and delete migrated permit and pdf from TPS_MIGRATED_PERMIT table.
+   * If records are stuck in PROCESSING status then something must have gone wrong and needs attention.
    *
    */
   @Cron(`0 */${PENDING_POLLING_INTERVAL} * * * *`)
@@ -119,11 +120,12 @@ export class TpsPermitService {
       }
     }
   }
+
   /**
-   * Scheduled method to run evry 3rd hour of the day. To retry failed permits.
+   * Scheduled method to run every 5 minute. To upload ERROR TPS permits pdf to S3, update ORBC_DOCUMENT and ORBC_PERMIT table. and delete migrated permit and pdf from TPS_MIGRATED_PERMIT table.
+   * If records are stuck in PROCESSING status then something must have gone wrong and needs attention.
    *
    */
-
   @Cron(`0 0 */${ERROR_POLLING_INTERVAL} * * *`)
   async reprocessTpsPermit() {
     const tpsPermits: TpsPermit[] = await this.tpsPermitRepository.find({
