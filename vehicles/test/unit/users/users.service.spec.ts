@@ -20,7 +20,7 @@ import {
 
 import { PendingUsersService } from '../../../src/modules/company-user-management/pending-users/pending-users.service';
 
-import { InternalServerErrorException } from '@nestjs/common';
+import { BadRequestException } from '@nestjs/common';
 import { UserStatus } from '../../../src/common/enum/user-status.enum';
 import { Role } from '../../../src/common/enum/roles.enum';
 import { DataNotFoundException } from '../../../src/common/exception/data-not-found.exception';
@@ -145,6 +145,9 @@ describe('UsersService', () => {
 
   describe('User service create function', () => {
     it('should create a user.', async () => {
+      pendingUsersServiceMock.findPendingUsersDto.mockResolvedValue([
+        readRedCompanyPendingUserDtoMock,
+      ]);
       const retUser = await service.create(
         createRedCompanyCvClientUserDtoMock,
         constants.RED_COMPANY_ID,
@@ -155,9 +158,10 @@ describe('UsersService', () => {
     });
 
     it('should catch and throw and Internal Error Exceptions user.', async () => {
+      pendingUsersServiceMock.findPendingUsersDto.mockResolvedValue([]);
       await expect(async () => {
         await service.create(null, null, redCompanyCvClientUserJWTMock);
-      }).rejects.toThrowError(InternalServerErrorException);
+      }).rejects.toThrowError(BadRequestException);
     });
   });
 

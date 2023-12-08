@@ -80,7 +80,8 @@ export class UsersService {
       currentUser.userName,
       companyId,
     );
-    if (pendingUser?.length) {
+
+    if (!pendingUser?.length) {
       throw new BadRequestException('User not invited for this company.');
     }
     //Comment Begin: Business BCeID validation.
@@ -101,6 +102,7 @@ export class UsersService {
     try {
       let user = this.classMapper.map(createUserDto, CreateUserDto, User, {
         extraArgs: () => ({
+          userAuthGroup: pendingUser?.at(0).userAuthGroup,
           userName: currentUser.userName,
           directory: currentUser.orbcUserDirectory,
           userGUID: currentUser.userGUID,
