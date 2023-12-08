@@ -8,6 +8,10 @@ import { CompanyPrimaryContactForm } from "../../manageProfile/components/forms/
 import { CustomFormComponent } from "../../../common/components/form/CustomFormComponents";
 import { InfoBcGovBanner } from "../../../common/components/banners/InfoBcGovBanner";
 import { BANNER_MESSAGES } from "../../../common/constants/bannerMessages";
+import {
+  invalidDBALength,
+  isValidOptionalString,
+} from "../../../common/helpers/validationMessages";
 
 /**
  * The Company Wizard Form contains multiple subs forms including
@@ -29,12 +33,9 @@ export const CompanyInformationWizardForm = memo(() => {
           rules: {
             required: false,
             validate: {
-              validateAlternateName: (alternateName?: string) =>
-                alternateName == null ||
-                alternateName === "" ||
-                (alternateName &&
-                  alternateName.length >= 1 &&
-                  alternateName.length <= 150),
+              validateAlternateName: (alternateName: string) =>
+                isValidOptionalString(alternateName, { maxLength: 150 }) ||
+                invalidDBALength(1, 150),
             },
           },
           label: "DBA",
@@ -55,9 +56,7 @@ export const CompanyInformationWizardForm = memo(() => {
         Company Primary Contact
       </Typography>
 
-      <InfoBcGovBanner
-        msg={BANNER_MESSAGES.COMPANY_CONTACT} 
-      />
+      <InfoBcGovBanner msg={BANNER_MESSAGES.COMPANY_CONTACT} />
 
       <CompanyPrimaryContactForm feature={FEATURE} />
     </div>
