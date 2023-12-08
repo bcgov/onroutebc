@@ -158,7 +158,7 @@ jobs:
     with:
       environment: prod
       tag: ${{ needs.vars.outputs.pr }}
-      release: test
+      release: prod
       vault_role: prod
   
   promote-images-prod:
