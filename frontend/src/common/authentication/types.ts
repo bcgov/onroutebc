@@ -1,3 +1,5 @@
+import { Nullable } from "../types/common";
+
 /**
  * Type for displaying snackbar (aka toast message) after an operation.
  */
@@ -35,8 +37,8 @@ export interface BCeIDUserContextType {
     city?: string;
     provinceCode?: string;
     countryCode?: string;
-    phone1Extension?: string | null;
-    phone2Extension?: string | null;
+    phone1Extension?: Nullable<string>;
+    phone2Extension?: Nullable<string>;
   };
 }
 

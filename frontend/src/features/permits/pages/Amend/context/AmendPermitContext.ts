@@ -3,10 +3,11 @@ import { createContext } from "react";
 import { Permit } from "../../../types/permit";
 import { AmendPermitFormData } from "../types/AmendPermitFormData";
 import { PermitHistory } from "../../../types/PermitHistory";
+import { Nullable } from "../../../../../common/types/common";
 
 interface AmendPermitContextType {
-  permit?: Permit | null;
-  permitFormData?: AmendPermitFormData | null;
+  permit?: Nullable<Permit>;
+  permitFormData?: Nullable<AmendPermitFormData>;
   permitHistory: PermitHistory[];
   setPermitFormData: (formData: AmendPermitFormData) => void;
   back: () => void;

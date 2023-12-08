@@ -6,6 +6,7 @@ import { BCeIDUserDetailContext } from "../../../common/authentication/OnRouteBC
 import { areCommoditiesEqual } from "../helpers/equality";
 import { getDefaultRequiredVal } from "../../../common/helpers/util";
 import { CompanyProfile } from "../../manageProfile/types/manageProfile";
+import { Nullable, Optional } from "../../../common/types/common";
 import {
   getDefaultContactDetails,
   getDefaultMailingAddress,
@@ -20,7 +21,7 @@ import {
  * @returns current companyId, user details, default application data values, its setter method, and methods to manage the form
  */
 export const useDefaultApplicationFormData = (
-  applicationData?: Application | null,
+  applicationData?: Nullable<Application>,
   companyId?: number,
   userDetails?: BCeIDUserDetailContext,
   companyInfo?: CompanyProfile,
@@ -85,7 +86,7 @@ export const useDefaultApplicationFormData = (
 
   // Recommended way of making deep comparisons (for arrays/objects) in dependency arrays
   // https://stackoverflow.com/questions/59467758/passing-array-to-useeffect-dependency-list
-  const commoditiesRef = useRef<Commodities[] | undefined>(
+  const commoditiesRef = useRef<Optional<Commodities[]>>(
     applicationData?.permitData?.commodities,
   );
   const incomingCommodities = getDefaultRequiredVal(

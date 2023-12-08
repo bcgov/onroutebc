@@ -14,6 +14,7 @@ import { getCompanyNameFromSession } from "../../../common/apiManager/httpReques
 import OnRouteBCContext from "../../../common/authentication/OnRouteBCContext";
 import "./welcome.scss";
 import { CREATE_PROFILE_WIZARD_ROUTES, PROFILE_ROUTES } from "../../../routes/constants";
+import { Nullable } from "../../../common/types/common";
 
 const isInvitedUser = (companyNameFromContext?: string): boolean =>
   Boolean(companyNameFromContext);
@@ -24,7 +25,7 @@ const isNewCompanyProfile = (companyNameFromContext?: string): boolean =>
 const WelcomeCompanyName = ({
   companyName,
 }: {
-  companyName?: string;
+  companyName: Nullable<string>;
 }): React.ReactElement => {
   if (!companyName) return <></>;
   return (

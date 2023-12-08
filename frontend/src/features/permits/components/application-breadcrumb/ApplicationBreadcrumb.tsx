@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 
 import { Breadcrumb } from "../../../../common/components/breadcrumb/Breadcrumb";
+import { Nullable } from "../../../../common/types/common";
 import { 
   APPLICATIONS_ROUTES,
   ApplicationStep,
@@ -10,7 +11,7 @@ export const ApplicationBreadcrumb = ({
   permitId,
   applicationStep,
 }: {
-  permitId?: string | null;
+  permitId?: Nullable<string>;
   applicationStep: ApplicationStep;
 }) => {
   const navigate = useNavigate();

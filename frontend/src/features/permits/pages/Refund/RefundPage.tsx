@@ -31,6 +31,7 @@ import {
   PAYMENT_METHOD_TYPE_DISPLAY,
   getPaymentMethod,
 } from "../../../../common/types/paymentMethods";
+import { Optional } from "../../../../common/types/common";
 
 type PermitAction = "void" | "revoke" | "amend";
 
@@ -48,7 +49,7 @@ const permitActionText = (permitAction: PermitAction) => {
 const transactionIdRules = {
   validate: {
     requiredWhenSelected: (
-      value: string | undefined,
+      value: Optional<string>,
       formValues: RefundFormData,
     ) => {
       return (
