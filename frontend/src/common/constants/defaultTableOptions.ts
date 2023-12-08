@@ -4,6 +4,7 @@ import { BC_COLOURS } from "../../themes/bcGovStyles";
 import { DATE_FORMATS, toLocal, utcToLocalDayjs } from "../helpers/formatDate";
 import { applyWhenNotNullable } from "../helpers/util";
 import { Permit } from "../../features/permits/types/permit";
+import { Nullable } from "../types/common";
 
 /**
  * Format a given datetime string to a format that we can display
@@ -11,7 +12,7 @@ import { Permit } from "../../features/permits/types/permit";
  * @returns datetime string for display or "NA" if invalid date given
  */
 export const formatCellValuetoDatetime = (
-  rawDateTime: string | null | undefined,
+  rawDateTime: Nullable<string>,
 ) => {
   return applyWhenNotNullable(
     (dt) => toLocal(dt, DATE_FORMATS.DATEONLY_ABBR_MONTH),

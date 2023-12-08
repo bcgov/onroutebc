@@ -5,6 +5,7 @@ import { useContext } from "react";
 import { FIVE_MINUTES } from "../../../common/constants/constants";
 import { BCeIDAuthGroup } from "../types/userManagement";
 import { IDPS } from "../../../common/types/idp";
+import { RequiredOrNull } from "../../../common/types/common";
 import {
   getCompanyInfo,
   getCompanyInfoById,
@@ -161,7 +162,7 @@ export const useIDIRUserRoles = () => {
     queryKey: ["userIDIRRoles"],
     refetchInterval: FIVE_MINUTES,
     queryFn: getIDIRUserRoles,
-    onSuccess: (userRoles: string[] | null) => {
+    onSuccess: (userRoles: RequiredOrNull<string[]>) => {
       setUserRoles?.(() => userRoles);
     },
     retry: true,

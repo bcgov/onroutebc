@@ -1,5 +1,6 @@
 import { ReplaceDayjsWithString } from "./utility";
 import { PartialApplication, PermitData } from "./application";
+import { Nullable } from "../../../common/types/common";
 
 /**
  * A partial permit type that consists of all common fields used for a permit.
@@ -10,9 +11,9 @@ interface PartialPermit
     Required<PartialApplication>,
     "previousRevision" | "comment" | "userGuid" | "documentId" | "permitId"
   > {
-  previousRevision?: number | null;
-  comment?: string | null;
-  userGuid?: string | null;
+  previousRevision?: Nullable<number>;
+  comment?: Nullable<string>;
+  userGuid?: Nullable<string>;
   documentId?: string;
   permitId: number;
 }
@@ -25,7 +26,7 @@ interface PartialPermit
  * between frontend and backend, and also used on the frontend for permit-related logic.
  */
 export interface Permit extends PartialPermit {
-  permitIssueDateTime?: string | null;
+  permitIssueDateTime?: Nullable<string>;
   createdDateTime: string;
   updatedDateTime: string;
   permitData: ReplaceDayjsWithString<PermitData>;

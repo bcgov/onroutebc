@@ -1,3 +1,5 @@
+import { Nullable } from "../../../common/types/common";
+
 export const PERMIT_TYPES = {
   EPTOP: "EPTOP",
   HC: "HC",
@@ -31,7 +33,7 @@ export type PermitType = (typeof PERMIT_TYPES)[keyof typeof PERMIT_TYPES];
  * @param permitType String (if any) that represents the permit type
  * @returns Name/description of the permit type, or empty string if no mapping exists for permit type
  */
-export const getPermitTypeName = (permitType?: string | null) => {
+export const getPermitTypeName = (permitType?: Nullable<string>) => {
   switch (permitType) {
     case PERMIT_TYPES.EPTOP:
       return "Extra-Provincial Temporary Operating";

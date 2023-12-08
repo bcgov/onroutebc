@@ -1,5 +1,7 @@
 import React, { Dispatch, SetStateAction } from "react";
 
+import { Nullable, Optional } from "../types/common";
+
 /**
  * The user details to be set in the context.
  */
@@ -31,19 +33,19 @@ export interface BCeIDUserDetailContext {
  * The data and functions to in the react context.
  */
 export type OnRouteBCContextType = {
-  setUserRoles?: Dispatch<SetStateAction<string[] | null | undefined>>;
-  userRoles?: string[] | null;
-  setOnRouteBCClientNumber?: Dispatch<SetStateAction<string | undefined>>;
+  setUserRoles?: Dispatch<SetStateAction<Nullable<string[]>>>;
+  userRoles?: Nullable<string[]>;
+  setOnRouteBCClientNumber?: Dispatch<SetStateAction<Optional<string>>>;
   onRouteBCClientNumber?: string;
-  setUserDetails?: Dispatch<SetStateAction<BCeIDUserDetailContext | undefined>>;
+  setUserDetails?: Dispatch<SetStateAction<Optional<BCeIDUserDetailContext>>>;
   userDetails?: BCeIDUserDetailContext;
-  setCompanyId?: Dispatch<SetStateAction<number | undefined>>;
+  setCompanyId?: Dispatch<SetStateAction<Optional<number>>>;
   companyId?: number;
-  setCompanyLegalName?: Dispatch<SetStateAction<string | undefined>>;
+  setCompanyLegalName?: Dispatch<SetStateAction<Optional<string>>>;
   companyLegalName?: string;
   idirUserDetails?: IDIRUserDetailContext;
   setIDIRUserDetails?: Dispatch<
-    SetStateAction<IDIRUserDetailContext | undefined>
+    SetStateAction<Optional<IDIRUserDetailContext>>
   >;
 };
 

@@ -1,15 +1,16 @@
 import { SearchFields } from "../../features/idir/search/types/types";
+import { BCeIDAddUserRequest } from "../../features/manageProfile/types/userManagement";
+import { Application } from "../../features/permits/types/application";
 import {
   CompanyAndUserRequest,
   CompanyProfile,
   UserInformation,
 } from "../../features/manageProfile/types/manageProfile";
-import { BCeIDAddUserRequest } from "../../features/manageProfile/types/userManagement";
+
 import {
   PowerUnit,
   Trailer,
 } from "../../features/manageVehicles/types/managevehicles";
-import { Application } from "../../features/permits/types/application";
 
 export interface ApiErrorResponse {
   status: number;
@@ -52,4 +53,11 @@ export type PageMetadata = {
   itemsPerPage: number;
   totalPages?: number;
   totalItems?: number;
+};
+
+export type Optional<T> = T | undefined;
+export type RequiredOrNull<T> = T | null;
+export type Nullable<T> = Optional<RequiredOrNull<T>>;
+export type NullableFields<T> = {
+  [P in keyof T]?: Nullable<T[P]>;
 };

@@ -1,7 +1,7 @@
 import { DATE_FORMATS, toLocal } from "../../../common/helpers/formatDate";
 import { mapApplicationToApplicationRequestData } from "../helpers/mappers";
 import { IssuePermitsResponse, Permit } from "../types/permit";
-import { PaginatedResponse } from "../../../common/types/common";
+import { PaginatedResponse, RequiredOrNull } from "../../../common/types/common";
 import { PERMIT_STATUSES } from "../types/PermitStatus";
 import { PermitHistory } from "../types/PermitHistory";
 import { getPermitTypeName } from "../types/PermitType";
@@ -140,7 +140,7 @@ export const getApplicationsInProgress = async (): Promise<
  */
 export const getApplicationByPermitId = async (
   permitId?: string,
-): Promise<ApplicationResponse | null> => {
+): Promise<RequiredOrNull<ApplicationResponse>> => {
   try {
     const companyId = getCompanyIdFromSession();
     let url = `${APPLICATIONS_API_ROUTES.GET}/${permitId}`;
@@ -241,7 +241,7 @@ export const downloadReceiptPdf = async (permitId: string) => {
  */
 export const startTransaction = async (
   requestData: StartTransactionRequestData,
-): Promise<StartTransactionResponseData | null> => {
+): Promise<RequiredOrNull<StartTransactionResponseData>> => {
   try {
     const response = await httpPOSTRequest(PAYMENT_API_ROUTES.START, replaceEmptyValuesWithNull(requestData));
     if (response.status !== 201) {
@@ -265,7 +265,7 @@ export const completeTransaction = async (transactionData: {
   transactionId: string;
   transactionQueryString: string;
   transactionDetails: CompleteTransactionRequestData;
-}): Promise<CompleteTransactionResponseData | null> => {
+}): Promise<RequiredOrNull<CompleteTransactionResponseData>> => {
   try {
     const { transactionId, transactionDetails, transactionQueryString } =
       transactionData;
@@ -323,7 +323,7 @@ export const issuePermits = async (
  * @param permitId Permit id of the permit to be retrieved.
  * @returns Permit information if found, or undefined
  */
-export const getPermit = async (permitId?: string): Promise<Permit | null> => {
+export const getPermit = async (permitId?: string): Promise<RequiredOrNull<Permit>> => {
   if (!permitId) return null;
   const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
   let permitsURL = `${PERMITS_API_ROUTES.GET}/${permitId}`;
@@ -347,7 +347,7 @@ export const getPermit = async (permitId?: string): Promise<Permit | null> => {
  */
 export const getCurrentAmendmentApplication = async (
   originalId?: string,
-): Promise<Permit | null> => {
+): Promise<RequiredOrNull<Permit>> => {
   if (!originalId) return null;
   const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
   let permitsURL = `${APPLICATIONS_API_ROUTES.GET}/${originalId}`;

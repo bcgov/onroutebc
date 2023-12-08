@@ -11,6 +11,7 @@ import {
 
 import { replaceEmptyValuesWithNull } from "../../../common/helpers/util";
 import { VEHICLES_URL } from "../../../common/apiManager/endpoints/endpoints";
+import { RequiredOrNull } from "../../../common/types/common";
 import {
   httpPOSTRequest,
   httpPUTRequest,
@@ -140,7 +141,7 @@ export const getVehicleById = async (
   companyId: string,
   vehicleType: VehicleTypesAsString,
   vehicleId?: string,
-): Promise<Vehicle | null> => {
+): Promise<RequiredOrNull<Vehicle>> => {
   if (!vehicleId) return null;
   
   let url = `${VEHICLES_URL}/companies/${companyId}/vehicles`;
@@ -214,7 +215,7 @@ export const deleteVehicles = async (
   vehicleType: VehicleTypesAsString,
   companyId: string,
 ) => {
-  let url: string | null = null;
+  let url: RequiredOrNull<string> = null;
   let requestBody: { powerUnits: Array<string> } | { trailers: Array<string> };
   if (vehicleType === "powerUnit") {
     url = `${VEHICLES_URL}/companies/${companyId}/vehicles/powerUnits/delete-requests`;

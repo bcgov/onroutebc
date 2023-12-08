@@ -1,9 +1,12 @@
 import { Box, Typography } from "@mui/material";
+
 import { CompanyProfile } from "../../../manageProfile/types/manageProfile";
+import { Nullable } from "../../../../common/types/common";
 import {
   formatCountry,
   formatProvince,
 } from "../../../../common/helpers/formatCountryProvince";
+
 import {
   PERMIT_LEFT_BOX_STYLE,
   PERMIT_LEFT_HEADER_STYLE,
@@ -14,7 +17,7 @@ import {
 export const CompanyInformation = ({
   companyInfo,
 }: {
-  companyInfo?: CompanyProfile | null;
+  companyInfo?: Nullable<CompanyProfile>;
 }) => {
   return (
     <Box sx={PERMIT_MAIN_BOX_STYLE}>

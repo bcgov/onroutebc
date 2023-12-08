@@ -9,7 +9,7 @@ import {
   useFormContext,
   useController,
 } from "react-hook-form";
-import { ORBC_FormTypes } from "../../../types/common";
+import { ORBC_FormTypes, RequiredOrNull } from "../../../types/common";
 import { DatePicker, DateValidationError } from "@mui/x-date-pickers";
 import { useState, useEffect } from "react";
 import {
@@ -69,7 +69,7 @@ export const CustomDatePicker = <T extends ORBC_FormTypes>(
    * Reference: https://mui.com/x/react-date-pickers/validation/#show-the-error
    */
   const { setError, clearErrors } = useFormContext();
-  const [MUIerror, setMUIError] = useState<DateValidationError | null>(null);
+  const [MUIerror, setMUIError] = useState<RequiredOrNull<DateValidationError>>(null);
   const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {

@@ -9,12 +9,13 @@ import { RefundPage } from "../Refund/RefundPage";
 import { mapToVoidRequestData } from "./helpers/mapper";
 import { useVoidPermit } from "./hooks/useVoidPermit";
 import { isValidTransaction } from "../../helpers/payment";
+import { Nullable } from "../../../../common/types/common";
 
 export const FinishVoid = ({
   permit,
   onSuccess,
 }: {
-  permit: Permit | null;
+  permit: Nullable<Permit>;
   onSuccess: () => void;
 }) => {
   const { voidPermitData } = useContext(VoidPermitContext);

@@ -9,6 +9,7 @@ import { CountryAndProvince } from "../../../../common/components/form/CountryAn
 import { CustomFormComponent } from "../../../../common/components/form/CustomFormComponents";
 import { SnackBarContext } from "../../../../App";
 import { VEHICLES_ROUTES } from "../../../../routes/constants";
+import { Nullable } from "../../../../common/types/common";
 import {
   getDefaultRequiredVal,
   getDefaultNullableVal,
@@ -89,8 +90,8 @@ export const PowerUnitForm = ({ powerUnit, companyId }: PowerUnitFormProps) => {
   const onAddOrUpdateVehicle = async (data: FieldValues) => {
     // return input as a number if it's a valid number value, or original value if invalid number
     const convertToNumberIfValid = (
-      str?: string | null,
-      valueToReturnWhenInvalid?: 0 | string | null,
+      str?: Nullable<string>,
+      valueToReturnWhenInvalid?: 0 | Nullable<string>,
     ) => {
       return str != null && str !== "" && !isNaN(Number(str))
         ? Number(str)
