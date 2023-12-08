@@ -64,7 +64,7 @@ export const useUserContext = () => {
     setCompanyLegalName,
     setIDIRUserDetails,
     setOnRouteBCClientNumber,
-    setMigratedClient: setMigratedTPSClient,
+    setMigratedClient,
   } = useContext(OnRouteBCContext);
   const { isAuthenticated, user: userFromToken } = useAuth();
   return useQuery({
@@ -95,7 +95,7 @@ export const useUserContext = () => {
           user,
           associatedCompanies,
           pendingCompanies,
-          migratedTPSClient,
+          migratedClient,
         } = userContextResponseBody as BCeIDUserContextType;
         if (user?.userGUID) {
           const companyId = associatedCompanies[0].companyId;
@@ -134,8 +134,8 @@ export const useUserContext = () => {
             companyId.toString(),
           );
         }
-        if (migratedTPSClient?.clientNumber) {
-          setMigratedTPSClient?.(() => migratedTPSClient);
+        if (migratedClient?.clientNumber) {
+          setMigratedClient?.(() => migratedClient);
         }
       }
     },
