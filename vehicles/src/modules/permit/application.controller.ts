@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  DefaultValuePipe,
   Get,
   Param,
   Post,
@@ -34,6 +35,7 @@ import { Roles } from 'src/common/decorator/roles.decorator';
 import { Role } from 'src/common/enum/roles.enum';
 import { IssuePermitDto } from './dto/request/issue-permit.dto';
 import { ReadPermitDto } from './dto/response/read-permit.dto';
+import { ParamToArray } from 'src/common/class/customs.transform';
 
 @ApiBearerAuth()
 @ApiTags('Permit Application')
@@ -89,19 +91,19 @@ export class ApplicationController {
   async findAllApplication(
     @Req() request: Request,
     @Query('companyId') companyId?: number,
-    @Query('status') status?: ApplicationStatus,
+    @Query('statuses', new DefaultValuePipe([]), ParamToArray<ApplicationStatus>) statuses: ApplicationStatus[] = [],
   ): Promise<ReadApplicationDto[]> {
     const currentUser = request.user as IUserJWT;
     if (currentUser.identity_provider == IDP.IDIR) {
       return this.applicationService.findAllApplicationCompany(
         companyId,
-        status,
+        statuses,
       );
     } else {
       return this.applicationService.findAllApplicationUser(
         companyId,
         currentUser.userGUID,
-        status,
+        statuses,
       );
     }
   }
