@@ -24,8 +24,8 @@ export class ReadVerifyMigratedClientDto {
   @AutoMap()
   @ApiProperty({
     description:
-      'Boolean value to denote if TPS migrated permit and client combo exists in OnRouteBC',
+      'Boolean value to denote if TPS migrated permit belongs to the migrated client',
     default: false,
   })
-  foundClientAndPermit: boolean;
+  clientAndPermitMatch: boolean;
 }
