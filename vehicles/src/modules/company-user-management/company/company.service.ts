@@ -64,7 +64,7 @@ export class CompanyService {
   ): Promise<ReadCompanyUserDto> {
     let newCompany: Company;
     let newUser: ReadUserDto;
-    let migratedTPSClient = false;
+    let migratedClient = false;
     const existingCompanyDetails = await this.findOneByCompanyGuid(
       currentUser.bceid_business_guid,
     );
@@ -77,7 +77,7 @@ export class CompanyService {
     } else if (
       existingCompanyDetails?.accountSource === AccountSource.TpsAccount
     ) {
-      migratedTPSClient = true;
+      migratedClient = true;
     }
 
     const queryRunner = this.dataSource.createQueryRunner();
@@ -100,7 +100,7 @@ export class CompanyService {
         },
       );
 
-      if (!migratedTPSClient) {
+      if (!migratedClient) {
         newCompany.clientNumber = await this.generateClientNumber(
           newCompany,
           currentUser,

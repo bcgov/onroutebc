@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 import { Base } from '../../../common/entities/base.entity';
 import { AutoMap } from '@automapper/classes';
 import { UserAuthGroup } from '../../../../common/enum/user-auth-group.enum';
@@ -9,15 +9,29 @@ export class PendingUser extends Base {
    * A number property, representing the company's ID.
    */
   @AutoMap()
-  @PrimaryColumn({ type: 'int', name: 'COMPANY_ID', nullable: false })
+  @PrimaryGeneratedColumn({ type: 'int', name: 'PENDING_USER_ID' })
+  pendingUserId: number;
+
+  /**
+   * A number property, representing the company's ID.
+   */
+  @AutoMap()
+  @Column({ type: 'int', name: 'COMPANY_ID', nullable: false })
   companyId: number;
 
   /**
    * A string property with a length of 50, representing the user name.
    */
   @AutoMap()
-  @PrimaryColumn({ length: 50, name: 'USERNAME', nullable: false })
+  @Column({ length: 50, name: 'USERNAME', nullable: true })
   userName: string;
+
+  /**
+   *  A string property with a length of 32, representing the user guid.
+   */
+  @AutoMap()
+  @Column({ length: 32, name: 'USER_GUID', nullable: false })
+  userGUID?: string;
 
   /**
    * A property that represents the user's auth group, which is an enum of

@@ -71,11 +71,7 @@ export class UsersController {
     if (currentUser.identity_provider == IDP.IDIR) {
       userExists = await this.userService.checkIdirUser(currentUser);
     } else {
-      userExists = await this.userService.findORBCUser(
-        currentUser.userGUID,
-        currentUser.userName,
-        currentUser.bceid_business_guid,
-      );
+      userExists = await this.userService.findORBCUser(currentUser);
     }
     return userExists;
   }
