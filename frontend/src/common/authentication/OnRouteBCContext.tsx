@@ -1,4 +1,5 @@
 import React, { Dispatch, SetStateAction } from "react";
+import { MigratedClient } from "./types";
 
 import { Nullable, Optional } from "../types/common";
 
@@ -47,6 +48,8 @@ export type OnRouteBCContextType = {
   setIDIRUserDetails?: Dispatch<
     SetStateAction<Optional<IDIRUserDetailContext>>
   >;
+  setMigratedClient?: Dispatch<SetStateAction<Optional<MigratedClient>>>;
+  migratedClient?: MigratedClient;
 };
 
 const defaultBehaviour: OnRouteBCContextType = {};

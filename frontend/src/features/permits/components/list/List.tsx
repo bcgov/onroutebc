@@ -24,7 +24,10 @@ import "./List.scss";
 import { Trash } from "../../../../common/components/table/options/Trash";
 import { DeleteConfirmationDialog } from "../../../../common/components/dialog/DeleteConfirmationDialog";
 import { SnackBarContext } from "../../../../App";
-import { ApplicationInProgress, PermitApplicationInProgress } from "../../types/application";
+import {
+  ApplicationInProgress,
+  PermitApplicationInProgress,
+} from "../../types/application";
 import { ApplicationInProgressColumnDefinition } from "./Columns";
 import { deleteApplications } from "../../apiManager/permitsAPI";
 import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";

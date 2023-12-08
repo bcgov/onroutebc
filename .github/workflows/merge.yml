@@ -65,7 +65,7 @@ jobs:
   GitVersion:
     name: Mainline Versioning - GitVersion
     needs:
-      - deploys-test
+      - promote-images-test
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout Code
@@ -152,7 +152,7 @@ jobs:
 
   deploys-prod:
     name: Deploys (prod)
-    needs: [deploys-test, vars]
+    needs: [promote-images-release, vars]
     uses: ./.github/workflows/.deploy.yml
     secrets: inherit
     with:

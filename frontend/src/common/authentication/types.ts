@@ -11,11 +11,30 @@ export interface CompanyMetadataContextType {
 /**
  * Company Basic Info type
  */
-export interface CompanyMetadata {
+export type CompanyMetadata = {
   companyId: number;
   clientNumber: string;
   legalName: string;
-}
+  companyGUID?: string;
+  alternateName?: string;
+};
+
+export type ClientInformation = {
+  mailingAddress: {
+    addressLine1: string;
+    addressLine2: string;
+    city: string;
+    postalCode: string;
+    provinceCode?: string;
+    countryCode?: string;
+  };
+  email: string;
+  phone: string;
+  fax: string;
+  extension: string;
+};
+
+export type MigratedClient = ClientInformation & CompanyMetadata;
 
 /**
  * User Context object type
@@ -23,6 +42,7 @@ export interface CompanyMetadata {
 export interface BCeIDUserContextType {
   associatedCompanies: CompanyMetadata[];
   pendingCompanies: CompanyMetadata[];
+  migratedTPSClient: MigratedClient;
   user?: {
     userAuthGroup?: string;
     statusCode?: string;
