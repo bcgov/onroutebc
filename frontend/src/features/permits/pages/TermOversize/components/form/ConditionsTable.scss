@@ -1,0 +1,38 @@
+@import "../../../../../../themes/orbcStyles";
+
+.conditions-table {
+  &#{&} {
+    box-shadow: none;
+  }
+
+  & &__table {
+    min-width: 36rem;
+    table-layout: fixed;
+  }
+
+  & &__header {
+    font-weight: bold;
+
+    &--description {
+      padding-left: 0;
+    }
+  }
+
+  & &__cell {
+    &--checkbox {
+      padding-left: 0;
+    }
+  }
+
+  & &__row {
+    &:last-child td, &:last-child th {
+      border: none;
+    }
+  }
+
+  & &__checkbox {
+    &--disabled {
+      color: $disabled-colour;
+    }
+  }
+}

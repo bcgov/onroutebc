@@ -402,6 +402,81 @@ CREATE TABLE [tps].[ORBC_TPS_MIGRATED_USERS](
 ) ON [PRIMARY]
 GO
 
+CREATE TRIGGER [tps].[ORBC_TPS_MIGRATED_USERS_TRG] 
+   ON  [tps].[ORBC_TPS_MIGRATED_USERS] 
+   AFTER INSERT AS 
+
+SET NOCOUNT ON
+
+-- Columns from inserted records
+DECLARE @company_id int
+DECLARE @first_name varchar(50)
+DECLARE @last_name varchar(50)
+DECLARE @user_guid varchar(32)
+
+-- Intermediate variables
+DECLARE @existing_count int
+
+DECLARE user_cursor CURSOR FOR
+	SELECT c.COMPANY_ID, i.FIRST_NAME, i.LAST_NAME, i.GUID
+	FROM inserted i, dbo.ORBC_COMPANY c, tps.ORBC_TPS_MIGRATED_CLIENTS cli
+	WHERE i.CLIENT_ID = cli.ID
+	AND cli.CLIENT_HASH = c.TPS_CLIENT_HASH
+	FOR READ ONLY
+	
+OPEN user_cursor
+	
+FETCH NEXT FROM user_cursor
+INTO @company_id, @first_name, @last_name, @user_guid
+
+WHILE @@FETCH_STATUS=0
+BEGIN
+	-- Retreive the company ID from the ORBC company table if this TPS client
+	-- has already been migrated into ORBC
+	SELECT 
+		@existing_count = count(*)
+	FROM
+		dbo.ORBC_PENDING_USER
+	WHERE
+		USER_GUID = @user_guid
+	AND
+		COMPANY_ID = @company_id
+
+	IF @existing_count = 0
+		-- The user has not already been added to the pending user table
+		BEGIN
+			-- Create the pending user record
+			INSERT INTO 
+				dbo.ORBC_PENDING_USER(
+					COMPANY_ID, 
+					USERNAME, 
+					USER_GUID, 
+					USER_AUTH_GROUP_TYPE,
+					FIRST_NAME, 
+					LAST_NAME)
+			VALUES (
+				@company_id,
+				'TPS Migrated User',
+				@user_guid,
+				'ORGADMIN',
+				@first_name,
+				@last_name)
+			
+		END -- BEGIN
+
+	FETCH NEXT FROM user_cursor
+	INTO @company_id, @first_name, @last_name, @user_guid
+
+END -- WHILE @@FETCH_STATUS=0
+
+CLOSE user_cursor
+DEALLOCATE user_cursor
+
+GO
+
+ALTER TABLE [tps].[ORBC_TPS_MIGRATED_USERS] ENABLE TRIGGER [ORBC_TPS_MIGRATED_USERS_TRG]
+GO
+
 ALTER TABLE [tps].[ORBC_TPS_MIGRATED_USERS] ADD  CONSTRAINT [DF_ORBC_TPS_MIGRATED_USERS_DB_CREATE_USERID]  DEFAULT (user_name()) FOR [DB_CREATE_USERID]
 GO
 

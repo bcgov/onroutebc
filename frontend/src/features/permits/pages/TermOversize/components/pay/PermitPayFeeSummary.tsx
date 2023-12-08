@@ -3,6 +3,7 @@ import { Box, Button, Typography } from "@mui/material";
 import "./PermitPayFeeSummary.scss";
 import { PermitType } from "../../../../types/PermitType";
 import { FeeSummary } from "../../../../components/feeSummary/FeeSummary";
+import { PPC_EMAIL, TOLL_FREE_NUMBER } from "../../../../../../common/constants/constants";
 
 export const PermitPayFeeSummary = ({
   calculatedFee,
@@ -32,11 +33,11 @@ export const PermitPayFeeSummary = ({
         Have questions? Please contact the Provincial Permit Centre. Toll-free:
         <span className="pay-contact pay-contact--phone">
           {" "}
-          1-800-559-9688
+          {TOLL_FREE_NUMBER}
         </span>{" "}
         or Email:{" "}
         <span className="pay-contact pay-contact--email">
-          ppcpermit@gov.bc.ca
+          {PPC_EMAIL}
         </span>
       </Typography>
     </Box>

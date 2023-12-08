@@ -9,7 +9,7 @@ import {
 import "./TransactionHistoryTable.scss";
 import { PermitHistory } from "../../../types/PermitHistory";
 import { getPaymentMethod } from "../../../../../common/types/paymentMethods";
-import { TRANSACTION_TYPES } from "../../../types/payment.d";
+import { isValidTransaction } from "../../../helpers/payment";
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
@@ -19,6 +19,7 @@ import {
   feeSummaryDisplayText,
   isTransactionTypeRefund,
 } from "../../../helpers/feeSummary";
+
 import {
   defaultTableInitialStateOptions,
   defaultTableOptions,
@@ -30,6 +31,9 @@ export const TransactionHistoryTable = ({
 }: {
   permitHistory: PermitHistory[];
 }) => {
+  const validTransactionHistory = permitHistory.filter(history =>
+    isValidTransaction(history.paymentMethodTypeCode, history.pgApproved));
+
   const columns = useMemo<MRT_ColumnDef<PermitHistory>[]>(
     () => [
       {
@@ -49,10 +53,6 @@ export const TransactionHistoryTable = ({
       },
       {
         accessorFn: (originalRow) => {
-          if (originalRow.transactionTypeId === TRANSACTION_TYPES.Z) {
-            return "NA";
-          }
-
           return getPaymentMethod(
             originalRow.paymentMethodTypeCode,
             originalRow.paymentCardTypeCode,
@@ -125,16 +125,24 @@ export const TransactionHistoryTable = ({
   const table = useMaterialReactTable({
     ...defaultTableOptions,
     columns: columns,
-    data: permitHistory,
+    data: validTransactionHistory,
     enableRowActions: false,
+    enableGlobalFilter: false,
+    enableTopToolbar: false,
+    enableBottomToolbar: false,
+    enableRowSelection: false,
     initialState: {
       ...defaultTableInitialStateOptions,
+      showGlobalFilter: false,
     },
     state: {
       ...defaultTableStateOptions,
     },
-    muiTableProps: {
+    muiTablePaperProps: {
       className: "transaction-history-table",
+    },
+    muiTableContainerProps: {
+      className: "transaction-history-table__table",
     },
   });
 

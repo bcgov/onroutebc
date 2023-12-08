@@ -22,7 +22,6 @@ import {
 
 import "./List.scss";
 import { Trash } from "../../../../common/components/table/options/Trash";
-import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { DeleteConfirmationDialog } from "../../../../common/components/dialog/DeleteConfirmationDialog";
 import { SnackBarContext } from "../../../../App";
 import {

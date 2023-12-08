@@ -49,6 +49,13 @@
       "placeholders": [":min", ":max"]
     }
   },
+  "dba": {
+    "defaultMessage": "Invalid DBA format",
+    "length": {
+      "messageTemplate": "Doing Business As length must be between :min-:max characters",
+      "placeholders": [":min", ":max"]
+    }
+  },
   "city": {
     "defaultMessage": "Invalid city format",
     "length": {

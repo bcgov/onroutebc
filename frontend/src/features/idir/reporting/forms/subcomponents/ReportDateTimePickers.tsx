@@ -3,7 +3,9 @@ import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs, { Dayjs } from "dayjs";
 import { useFormContext } from "react-hook-form";
+
 import { PaymentAndRefundSummaryFormData } from "../../types/types";
+import { RequiredOrNull } from "../../../../../common/types/common";
 
 /**
  * The date time pickers for reports.
@@ -42,7 +44,7 @@ export const ReportDateTimePickers = () => {
                 },
               },
             }}
-            onChange={(value: Dayjs | null) => {
+            onChange={(value: RequiredOrNull<Dayjs>) => {
               setValue("fromDateTime", value as Dayjs);
             }}
             disabled={issuedBy.length === 0}
@@ -66,7 +68,7 @@ export const ReportDateTimePickers = () => {
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <DateTimePicker
             disabled={issuedBy.length === 0}
-            onChange={(value: Dayjs | null) => {
+            onChange={(value: RequiredOrNull<Dayjs>) => {
               setValue("toDateTime", value as Dayjs);
             }}
             format="YYYY/MM/DD hh:mm A"

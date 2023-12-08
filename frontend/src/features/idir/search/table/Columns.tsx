@@ -51,7 +51,7 @@ export const PermitSearchResultColumnDef: MRT_ColumnDef<Permit>[] = [
         </>
       );
     },
-    size: 200,
+    size: 180,
   },
   {
     accessorKey: "permitType",
@@ -101,7 +101,7 @@ export const PermitSearchResultColumnDef: MRT_ColumnDef<Permit>[] = [
     },
   },
   {
-    accessorKey: "permitIssueDateTime",
+    id: "permitIssueDateTime",
     header: "Issue Date",
     enableSorting: true,
     sortDescFirst: true,

@@ -1,0 +1,8 @@
+@use "../../../../common/components/dashboard/Dashboard";
+
+@include Dashboard.layout-box-style(".term-oversize-review .breadcrumb");
+
+.term-oversize-review {
+  display: flex;
+  flex-direction: column;
+}

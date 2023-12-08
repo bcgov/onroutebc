@@ -11,6 +11,7 @@ import { getCompanyUserByUserGUID } from "../apiManager/manageProfileAPI";
 import { EditUserForm } from "../components/forms/userManagement/EditUser";
 import { BCEID_PROFILE_TABS } from "../types/manageProfile.d";
 import { DATE_FORMATS, toLocal } from "../../../common/helpers/formatDate";
+import { PROFILE_ROUTES } from "../../../routes/constants";
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
@@ -30,7 +31,7 @@ export const EditUserDashboard = React.memo(() => {
   );
 
   const onClickBreadcrumb = () => {
-    navigate("../", {
+    navigate(PROFILE_ROUTES.MANAGE, {
       state: {
         selectedTab: BCEID_PROFILE_TABS.USER_MANAGEMENT_ORGADMIN,
       },
@@ -70,7 +71,6 @@ export const EditUserDashboard = React.memo(() => {
               )}
             </div>
           }
-          extendHeight={true}
         />
       </Box>
 

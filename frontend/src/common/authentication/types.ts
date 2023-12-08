@@ -1,3 +1,5 @@
+import { Nullable } from "../types/common";
+
 /**
  * Type for displaying snackbar (aka toast message) after an operation.
  */
@@ -9,11 +11,30 @@ export interface CompanyMetadataContextType {
 /**
  * Company Basic Info type
  */
-export interface CompanyMetadata {
+export type CompanyMetadata = {
   companyId: number;
   clientNumber: string;
   legalName: string;
-}
+  companyGUID?: string;
+  alternateName?: string;
+};
+
+export type ClientInformation = {
+  mailingAddress: {
+    addressLine1: string;
+    addressLine2: string;
+    city: string;
+    postalCode: string;
+    provinceCode?: string;
+    countryCode?: string;
+  };
+  email: string;
+  phone: string;
+  fax: string;
+  extension: string;
+};
+
+export type MigratedClient = ClientInformation & CompanyMetadata;
 
 /**
  * User Context object type
@@ -21,6 +42,7 @@ export interface CompanyMetadata {
 export interface BCeIDUserContextType {
   associatedCompanies: CompanyMetadata[];
   pendingCompanies: CompanyMetadata[];
+  migratedClient: MigratedClient;
   user?: {
     userAuthGroup?: string;
     statusCode?: string;
@@ -35,8 +57,8 @@ export interface BCeIDUserContextType {
     city?: string;
     provinceCode?: string;
     countryCode?: string;
-    phone1Extension?: string | null;
-    phone2Extension?: string | null;
+    phone1Extension?: Nullable<string>;
+    phone2Extension?: Nullable<string>;
   };
 }
 

@@ -3,6 +3,7 @@ import { memo } from "react";
 import { useNavigate } from "react-router-dom";
 
 import "./OnRouteBCProfileCreated.scss";
+import { APPLICATIONS_ROUTES, PROFILE_ROUTES } from "../../../routes/constants";
 
 export const OnRouteBCProfileCreated = memo(
   ({ onRouteBCClientNumber }: { onRouteBCClientNumber?: string }) => {
@@ -19,7 +20,7 @@ export const OnRouteBCProfileCreated = memo(
             />
           </div>
           <div className="profile-created__block profile-created__block--success-msg">
-            <Typography variant="h4">Profile Successfully set up!</Typography>
+            <Typography variant="h4">Profile successfully set up!</Typography>
           </div>
           {onRouteBCClientNumber && (
             <div className="profile-created__block profile-created__block--client-number">
@@ -39,7 +40,7 @@ export const OnRouteBCProfileCreated = memo(
             <Button
               variant="contained"
               color="primary"
-              onClick={() => navigate("/applications")}
+              onClick={() => navigate(APPLICATIONS_ROUTES.BASE)}
             >
               Apply for a permit
             </Button>
@@ -48,7 +49,7 @@ export const OnRouteBCProfileCreated = memo(
             <Button
               variant="outlined"
               color="primary"
-              onClick={() => navigate("/manage-profiles")}
+              onClick={() => navigate(PROFILE_ROUTES.MANAGE)}
             >
               View Profile
             </Button>

@@ -9,32 +9,41 @@ import "./Banner.scss";
  * @param bannerText - string to display on the banner. (Example: "Profile")
  * @param bannerSubtext - subtext to display on the banner. (Example: "Please follow instructions")
  * @param bannerButton - string to display on the banner. (Example: "Profile")
- * @param extendHeight - If the dashboard does NOT use Tabs, then extend the height to match the height of the TabLayout component
+ * @param isTabBanner - If the dashboard uses Tabs, then shrink the bottom of the banner to match the height of the TabLayout component
  * @returns React component containing a layout for a Banner, Tabs, and TabPanels.
  */
 export const Banner = ({
   bannerText,
   bannerSubtext,
   bannerButton,
-  extendHeight,
+  isTabBanner,
 }: {
   bannerText: string;
   bannerSubtext?: string | ReactNode;
   bannerButton?: JSX.Element;
-  extendHeight?: boolean;
+  isTabBanner?: boolean;
 }) => (
   <div
-    className={`layout-banner ${extendHeight ? "layout-banner--extend" : ""}`}
+    className={`layout-banner ${isTabBanner ? "layout-banner--tab" : ""}`}
   >
     <Grid container>
-      <Grid xs={12} item className="layout-banner__text-section">
-        <h2>{bannerText}</h2>
-        <Box className="banner-button">
-          {bannerButton ? bannerButton : null}
-        </Box>
+      <Grid
+        xs={12}
+        item
+        className="layout-banner__text-section"
+      >
+        <h2 className="layout-banner__text">
+          {bannerText}
+        </h2>
+        
+        {bannerButton ? (
+          <Box className="layout-banner__button">
+            {bannerButton}
+          </Box>
+        ) : null}
       </Grid>
       <Grid xs item>
-        <div className="banner-subtext">
+        <div className="layout-banner__subtext">
           <div>{bannerSubtext}</div>
         </div>
       </Grid>

@@ -1,0 +1,20 @@
+@use "../../../../common/components/table/Table";
+
+.idir-search-results {
+  &#{&} {
+    margin-top: 0;
+    padding-bottom: 12.5rem;
+    position: relative;
+
+    th:last-of-type, td:last-of-type {
+      padding: 0;
+      min-width: 0;
+      max-width: 3rem;
+    }
+  }
+
+  & &__row-actions {
+    padding: 0;
+    max-width: 3rem;
+  }
+}

@@ -32,9 +32,8 @@ export class ReadUserOrbcStatusDto {
 
   @AutoMap()
   @ApiProperty({
-    description:
-      'The metadata of migrated TPS client associated with the user.',
+    description: 'The metadata of migrated client associated with the user.',
     type: ReadCompanyDto,
   })
-  migratedTPSClient: ReadCompanyDto;
+  migratedClient: ReadCompanyDto;
 }

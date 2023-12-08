@@ -11,6 +11,7 @@ import {
   forwardRef,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { In } from 'typeorm/find-options/operator/In';
 import { ApplicationStatus } from 'src/common/enum/application-status.enum';
 import { DataSource, IsNull, Repository } from 'typeorm';
 import { CreateApplicationDto } from './dto/request/create-application.dto';
@@ -136,9 +137,8 @@ export class ApplicationService {
         }),
       },
     );
-    const savedPermitEntity = await this.permitRepository.save(
-      permitApplication,
-    );
+    const savedPermitEntity =
+      await this.permitRepository.save(permitApplication);
     // In case of new application assign original permit ID
     if (id === undefined || id === null) {
       await this.permitRepository
@@ -198,12 +198,12 @@ export class ApplicationService {
      Initially written to facilitate get application in progress for IDIR user.*/
   async findAllApplicationCompany(
     companyId: number,
-    status: ApplicationStatus,
+    statuses: ApplicationStatus[],
   ): Promise<ReadApplicationDto[]> {
     const applications = await this.permitRepository.find({
       where: {
         companyId: +companyId,
-        permitStatus: status,
+        permitStatus: In([...statuses]),
         permitNumber: IsNull(),
       },
       relations: {
@@ -223,13 +223,13 @@ export class ApplicationService {
   async findAllApplicationUser(
     companyId: number,
     userGuid: string,
-    status: ApplicationStatus,
+    statuses: ApplicationStatus[],
   ): Promise<ReadApplicationDto[]> {
     const applications: Permit[] = await this.permitRepository.find({
       where: {
         companyId: +companyId,
         userGuid: userGuid,
-        permitStatus: status,
+        permitStatus: In([...statuses]),
         permitNumber: IsNull(),
       },
       relations: {
@@ -273,9 +273,8 @@ export class ApplicationService {
     updateApplicationDto: UpdateApplicationDto,
     currentUser: IUserJWT,
   ): Promise<ReadApplicationDto> {
-    const existingApplication = await this.findByApplicationNumber(
-      applicationNumber,
-    );
+    const existingApplication =
+      await this.findByApplicationNumber(applicationNumber);
 
     const newApplication = this.classMapper.map(
       updateApplicationDto,
@@ -383,9 +382,8 @@ export class ApplicationService {
   async issuePermit(currentUser: IUserJWT, applicationId: string) {
     let success = '';
     let failure = '';
-    const fetchedApplication = await this.findOneWithSuccessfulTransaction(
-      applicationId,
-    );
+    const fetchedApplication =
+      await this.findOneWithSuccessfulTransaction(applicationId);
     // Check if a PDF document already exists for the permit.
     // It's important that a PDF does not get overwritten.
     // Once its created, it is a permanent legal document.
@@ -795,7 +793,7 @@ export class ApplicationService {
     let rnd: number | string;
     if (permitId) {
       seq = permit.applicationNumber.substring(3, 11);
-      rnd = permit.applicationNumber.substring(12, 15)
+      rnd = permit.applicationNumber.substring(12, 15);
     } else {
       seq = permit.permitNumber.substring(3, 15);
       rnd = 'A' + String(permit.revision + 1).padStart(2, '0');

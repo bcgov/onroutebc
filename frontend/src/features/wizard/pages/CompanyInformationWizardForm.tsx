@@ -5,19 +5,45 @@ import "./CompanyInformationWizardForm.scss";
 import { CompanyInfoGeneralForm } from "../../manageProfile/components/forms/companyInfo/subForms/CompanyInfoGeneralForm";
 import { CompanyContactDetailsForm } from "../../manageProfile/components/forms/companyInfo/subForms/CompanyContactDetailsForm";
 import { CompanyPrimaryContactForm } from "../../manageProfile/components/forms/companyInfo/subForms/CompanyPrimaryContactForm";
-import { InfoBcGovBanner } from "../../../common/components/banners/AlertBanners";
+import { CustomFormComponent } from "../../../common/components/form/CustomFormComponents";
+import { InfoBcGovBanner } from "../../../common/components/banners/InfoBcGovBanner";
+import { BANNER_MESSAGES } from "../../../common/constants/bannerMessages";
+import {
+  invalidDBALength,
+  isValidOptionalString,
+} from "../../../common/helpers/validationMessages";
 
 /**
- * The User Information Form contains multiple subs forms including
- * Company Info, Company Contact, Primary Contact, and Mailing Address Forms.
- * This Component contains the logic for React Hook forms and React query
- * for state management and API calls
+ * The Company Wizard Form contains multiple subs forms including
+ * Company Info, Company Contact, and Primary Contact forms.
  */
 export const CompanyInformationWizardForm = memo(() => {
   const FEATURE = "wizard";
 
   return (
     <div className="company-info-wizard-form">
+      <Typography variant="h2" gutterBottom>
+        Doing Business As (DBA)
+      </Typography>
+      <CustomFormComponent
+        type="input"
+        feature={FEATURE}
+        options={{
+          name: "alternateName",
+          rules: {
+            required: false,
+            validate: {
+              validateAlternateName: (alternateName: string) =>
+                isValidOptionalString(alternateName, { maxLength: 150 }) ||
+                invalidDBALength(1, 150),
+            },
+          },
+          label: "DBA",
+        }}
+      />
+      <Typography variant="h2" gutterBottom>
+        Company Mailing Address
+      </Typography>
       <CompanyInfoGeneralForm feature={FEATURE} />
 
       <Typography variant="h2" gutterBottom>
@@ -30,7 +56,7 @@ export const CompanyInformationWizardForm = memo(() => {
         Company Primary Contact
       </Typography>
 
-      <InfoBcGovBanner description="The Company Primary Contact will be contacted for all onRouteBC client profile queries." />
+      <InfoBcGovBanner msg={BANNER_MESSAGES.COMPANY_CONTACT} />
 
       <CompanyPrimaryContactForm feature={FEATURE} />
     </div>

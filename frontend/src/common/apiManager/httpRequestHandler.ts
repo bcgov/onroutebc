@@ -4,6 +4,7 @@ import {
   getDefaultNullableVal,
   getDefaultRequiredVal,
 } from "../helpers/util";
+import { Nullable, RequiredOrNull } from "../types/common";
 
 // Add environment variables to get the full key.
 // Full key structure: oidc.user:${AUTH0_ISSUER_URL}:${AUTH0_AUDIENCE}
@@ -53,7 +54,7 @@ const getCorrelationId = () => {
  * Retrieves the companyId from the session.
  * @returns string | null
  */
-export const getCompanyIdFromSession = (): string | null => {
+export const getCompanyIdFromSession = (): RequiredOrNull<string> => {
   return sessionStorage.getItem("onRouteBC.user.companyId");
 };
 
@@ -61,7 +62,7 @@ export const getCompanyIdFromSession = (): string | null => {
  * Retrieves user's GUID from session.
  * @returns string | null
  */
-export const getUserGuidFromSession = (): string | null => {
+export const getUserGuidFromSession = (): RequiredOrNull<string> => {
   const parsedSessionObject = getDefaultRequiredVal(
     { profile: { bceid_user_guid: "" } },
     getUserStorage(),
@@ -72,9 +73,9 @@ export const getUserGuidFromSession = (): string | null => {
 
 /**
  * Retrieves company name from session.
- * @returns string | null
+ * @returns string | null | undefined
  */
-export const getCompanyNameFromSession = (): string | undefined => {
+export const getCompanyNameFromSession = (): Nullable<string> => {
   const parsedSessionObject = getDefaultRequiredVal(
     { profile: { bceid_business_name: "" } },
     getUserStorage(),
@@ -101,9 +102,9 @@ export const getLoginUsernameFromSession = (): string => {
 
 /**
  * Retrieves company email from session.
- * @returns string | undefined
+ * @returns string | null | undefined
  */
-export const getCompanyEmailFromSession = (): string | undefined => {
+export const getCompanyEmailFromSession = (): Nullable<string> => {
   const parsedSessionObject = getDefaultRequiredVal(
     { profile: { email: "" } },
     getUserStorage(),
