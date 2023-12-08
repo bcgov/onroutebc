@@ -560,6 +560,21 @@ export class UsersService {
         }
       }
     } else {
+      if (
+        idirUser.userName.toUpperCase() !== currentUser.userName.toUpperCase()
+      ) {
+        await this.idirUserRepository.update(
+          { userGUID: currentUser.userGUID },
+          {
+            userName: currentUser.userName,
+            updatedUserGuid: currentUser.userGUID,
+            updatedDateTime: new Date(),
+            updatedUser: currentUser.userName,
+            updatedUserDirectory: currentUser.orbcUserDirectory,
+          },
+        );
+        idirUser.userName = currentUser.userName;
+      }
       userExists = await this.classMapper.mapAsync(
         idirUser,
         IdirUser,
