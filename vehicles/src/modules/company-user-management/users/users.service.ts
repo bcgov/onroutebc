@@ -34,6 +34,9 @@ import { Contact } from '../../common/entities/contact.entity';
 import { getProvinceId } from '../../../common/helper/province-country.helper';
 import { Base } from '../../common/entities/base.entity';
 import { AccountSource } from '../../../common/enum/account-source.enum';
+import { ReadVerifyMigratedClientDto } from './dto/response/read-verify-migrated-client.dto';
+import { VerifyMigratedClientDto } from './dto/request/verify-migrated-client.dto';
+import { Permit } from '../../permit/entities/permit.entity';
 
 @Injectable()
 export class UsersService {
@@ -357,6 +360,58 @@ export class UsersService {
       ReadUserDto,
     );
     return readUserDto.concat(pendingUsersList);
+  }
+
+  /**
+   * The verifyMigratedClient() method searches for migrated client and permit
+   * in OnRouteBC and returns the status
+   *
+   * @param currentUser The current logged in User JWT Token.
+   *
+   * @returns The {@link ReadVerifyMigratedClientDto} entity.
+   */
+  async verifyMigratedClient(
+    currentUser: IUserJWT,
+    verifyMigratedClientDto: VerifyMigratedClientDto,
+  ): Promise<ReadVerifyMigratedClientDto> {
+    const verifyMigratedClient: ReadVerifyMigratedClientDto = {
+      foundClient: false,
+      foundPermit: false,
+      foundClientAndPermit: false,
+    };
+    const company = await this.companyService.findOneByMigratedClientNumber(
+      verifyMigratedClientDto.clientNumber,
+    );
+    if (company) {
+      verifyMigratedClient.foundClient = true;
+    }
+
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      const permit = await queryRunner.manager.findOne(Permit, {
+        where: {
+          migratedPermitNumber: verifyMigratedClientDto.permitNumber,
+        },
+      });
+
+      if (permit) {
+        verifyMigratedClient.foundPermit = true;
+        if (permit.companyId === company.companyId) {
+          verifyMigratedClient.foundClientAndPermit = true;
+        }
+      }
+
+      await queryRunner.commitTransaction();
+    } catch (err) {
+      await queryRunner.rollbackTransaction();
+      throw new InternalServerErrorException(); // TODO: Handle the typeorm Error handling
+    } finally {
+      await queryRunner.release();
+    }
+
+    return verifyMigratedClient;
   }
 
   /**

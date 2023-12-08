@@ -291,7 +291,7 @@ export class CompanyService {
   }
 
   /**
-   * The findOneByCompanyGuid() method returns a ReadCompanyDto object corresponding to the
+   * The findOneByCompanyGuid() method returns a Company Entity object corresponding to the
    * company with that company GUID. It retrieves the entity from the database using the
    * Repository
    *
@@ -307,6 +307,23 @@ export class CompanyService {
         primaryContact: true,
         companyUsers: true,
       },
+    });
+  }
+
+  /**
+   * The findOneByMigratedClientNumber() method returns a Company Entity object corresponding to the
+   * company with that migrated client number. It retrieves the entity from the database using the
+   * Repository
+   *
+   * @param migratedClientNumber The migrated client Number.
+   *
+   * @returns The company details as a promise of type {@link Company}
+   */
+  async findOneByMigratedClientNumber(
+    migratedClientNumber: string,
+  ): Promise<Company> {
+    return await this.companyRepository.findOne({
+      where: { migratedClientNumber: migratedClientNumber },
     });
   }
 
