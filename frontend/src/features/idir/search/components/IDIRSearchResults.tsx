@@ -20,6 +20,7 @@ import { IDIRPermitSearchRowActions } from "./IDIRPermitSearchRowActions";
 import "./IDIRSearchResults.scss";
 import { USER_AUTH_GROUP } from "../../../manageProfile/types/userManagement.d";
 import { isPermitInactive } from "../../../permits/types/PermitStatus";
+import { Optional } from "../../../../common/types/common";
 import {
   defaultTableInitialStateOptions,
   defaultTableOptions,
@@ -31,7 +32,7 @@ import {
  * @param userAuthGroup The auth group the user belongs to.
  * @returns boolean
  */
-const shouldShowRowActions = (userAuthGroup: string | undefined): boolean => {
+const shouldShowRowActions = (userAuthGroup: Optional<string>): boolean => {
   if (!userAuthGroup) return false;
   // Check if the user has PPC role to confirm
   const allowableAuthGroups = [

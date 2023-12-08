@@ -7,6 +7,7 @@ import {
 
 import "./SelectPermitType.scss";
 import { SELECT_FIELD_STYLE } from "../../../../../../themes/orbcStyles";
+import { Optional } from "../../../../../../common/types/common";
 
 export const SelectPermitType = ({
   value,
@@ -17,7 +18,7 @@ export const SelectPermitType = ({
   value: string;
   label: string;
   onChange: (event: SelectChangeEvent) => void;
-  menuItems: JSX.Element[] | undefined;
+  menuItems: Optional<JSX.Element[]>;
 }) => (
   <FormControl margin="normal" className="select-permit-type">
     <FormLabel className="select-permit-type__label">{label}</FormLabel>

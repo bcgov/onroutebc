@@ -24,6 +24,7 @@ import {
   toLocalDayjs,
   utcToLocalDayjs,
 } from "../../../common/helpers/formatDate";
+import { Optional } from "../../../common/types/common";
 
 /**
  * This helper function is used to get the vehicle object that matches the vin prop
@@ -33,9 +34,9 @@ import {
  * @returns a PowerUnit or Trailer object, or undefined
  */
 export const mapVinToVehicleObject = (
-  vehicles: VehicleTypes[] | undefined,
+  vehicles: Optional<VehicleTypes[]>,
   vin: string,
-): PowerUnit | Trailer | undefined => {
+): Optional<PowerUnit | Trailer> => {
   if (!vehicles) return undefined;
 
   const existingVehicles = vehicles.filter((item) => {
@@ -58,8 +59,8 @@ export const mapVinToVehicleObject = (
 export const mapTypeCodeToObject = (
   typeCode: string,
   vehicleType: string,
-  powerUnitTypes: VehicleType[] | undefined,
-  trailerTypes: VehicleType[] | undefined,
+  powerUnitTypes: Optional<VehicleType[]>,
+  trailerTypes: Optional<VehicleType[]>,
 ) => {
   let typeObject = undefined;
 

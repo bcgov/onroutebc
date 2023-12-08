@@ -1,3 +1,5 @@
+import { Nullable, Optional, RequiredOrNull } from "../types/common";
+
 /**
  * Remove all the null, undefined and empty fields (including arrays).
  * @param obj The object to remove empty values from.
@@ -39,7 +41,7 @@ export const removeEmptyValues = (obj: object): object => {
  *
  * @see https://dev.to/typescripttv/what-is-the-difference-between-null-and-undefined-5h76
  */
-export const replaceEmptyValuesWithNull = (obj: object): object | null => {
+export const replaceEmptyValuesWithNull = (obj: object): RequiredOrNull<object> => {
   if (Array.isArray(obj)) {
     return obj.map((item) => replaceEmptyValuesWithNull(item));
   } else if (typeof obj === "object" && obj !== null) {
@@ -69,7 +71,7 @@ export const replaceEmptyValuesWithNull = (obj: object): object | null => {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const applyWhenNotNullable = <T>(
   applyFn: (val: T) => any,
-  inputVal?: T | null,
+  inputVal?: Nullable<T>,
   explicitDefaultVal?: any,
 ) => {
   return inputVal != null ? applyFn(inputVal) : explicitDefaultVal;
@@ -87,8 +89,8 @@ export const applyWhenNotNullable = <T>(
  * @returns The first non-nullable value from defaultVals, or undefined if there are no non-nullable values.
  */
 export const getDefaultNullableVal = <T>(
-  ...defaultVals: (T | null | undefined)[]
-): T | undefined => {
+  ...defaultVals: (Nullable<T>)[]
+): Optional<T> => {
   return defaultVals.find((val) => val != null) ?? undefined;
 };
 
@@ -106,7 +108,7 @@ export const getDefaultNullableVal = <T>(
  */
 export const getDefaultRequiredVal = <T>(
   fallbackDefault: T,
-  ...defaultVals: (T | null | undefined)[]
+  ...defaultVals: Nullable<T>[]
 ): T => {
   return defaultVals.find((val) => val != null) ?? fallbackDefault;
 };
@@ -118,8 +120,8 @@ export const getDefaultRequiredVal = <T>(
  * @returns boolean value indicating if values are different.
  */
 export const areValuesDifferent = <T>(
-  val1?: T | null,
-  val2?: T | null,
+  val1?: Nullable<T>,
+  val2?: Nullable<T>,
 ): boolean => {
   if (!val1 && !val2) return false; // both empty === equal
 

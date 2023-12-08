@@ -1,3 +1,4 @@
+import { Optional } from "../../../common/types/common";
 import {
   VehicleType,
   Vehicle,
@@ -11,7 +12,7 @@ import {
  */
 export const sortVehicleSubTypes = (
   vehicleType: string,
-  options: VehicleType[] | undefined,
+  options: Optional<VehicleType[]>,
 ) => {
   if (!vehicleType || !options) return [];
   const sorted = [...options]; // make copy of original array (original shouldn't be changed)
@@ -33,7 +34,7 @@ export const sortVehicleSubTypes = (
  */
 export const sortVehicles = (
   chooseFrom: string,
-  options: Vehicle[] | undefined,
+  options: Optional<Vehicle[]>,
 ) => {
   if (!chooseFrom || !options) return [];
 

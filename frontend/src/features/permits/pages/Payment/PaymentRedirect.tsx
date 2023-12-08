@@ -8,6 +8,7 @@ import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { DATE_FORMATS, toUtc } from "../../../../common/helpers/formatDate";
 import { APPLICATIONS_ROUTES, ERROR_ROUTES, PERMITS_ROUTES } from "../../../../routes/constants";
 import { PaymentCardTypeCode } from "../../../../common/types/paymentMethods";
+import { Nullable } from "../../../../common/types/common";
 import {
   CompleteTransactionRequestData,
   PayBCPaymentDetails,
@@ -16,13 +17,13 @@ import {
 const PERMIT_ID_DELIM = ",";
 const PATH_DELIM = "?";
 
-const getPermitIdsArray = (permitIds?: string | null) => {
+const getPermitIdsArray = (permitIds?: Nullable<string>) => {
   return getDefaultRequiredVal("", permitIds)
     .split(PERMIT_ID_DELIM)
     .filter((id) => id !== "");
 };
 
-export const parseRedirectUriPath = (path?: string | null) => {
+export const parseRedirectUriPath = (path?: Nullable<string>) => {
   const splitPath = path?.split(PATH_DELIM);
   let permitIds = "";
   let trnApproved = 0;
