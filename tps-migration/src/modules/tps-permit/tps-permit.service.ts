@@ -147,7 +147,7 @@ export class TpsPermitService {
       for (const tpsPermit of tpsPermits) {
         //Check to verify if permit document already exists in orbc permit table to avoid duplicate uploads.
         //Only proceed if permit exists in orbc permit table and it does not have a document id.
-        const permit = await this.permitRepository.find({
+        const permit = await this.permitRepository.findOne({
           where: { tpsPermitNumber: tpsPermit.permitNumber },
         });
         if (!permit) {
@@ -160,7 +160,7 @@ export class TpsPermitService {
           );
           break;
         }
-        if (permit[0].documentId != null) {
+        if (permit?.documentId) {
           await this.tpsPermitRepository.delete({
             migrationId: tpsPermit.migrationId,
           });
