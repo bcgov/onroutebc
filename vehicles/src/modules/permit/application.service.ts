@@ -796,7 +796,7 @@ export class ApplicationService {
     let rnd: number | string;
     if (permitId) {
       seq = permit.applicationNumber.substring(3, 11);
-      rnd = permit.applicationNumber.substring(12, 15)
+      rnd = permit.applicationNumber.substring(12, 15);
     } else {
       seq = permit.permitNumber.substring(3, 15);
       rnd = 'A' + String(permit.revision + 1).padStart(2, '0');

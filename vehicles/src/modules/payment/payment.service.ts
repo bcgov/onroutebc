@@ -350,10 +350,9 @@ export class PaymentService {
     updatePaymentGatewayTransactionDto: UpdatePaymentGatewayTransactionDto,
     queryString: string,
   ): Promise<ReadPaymentGatewayTransactionDto> {
-    const query = queryString.substring(
-      0,
-      queryString.indexOf('hashValue=') - 1,
-    ).replace("+", " ");
+    const query = queryString
+      .substring(0, queryString.indexOf('hashValue=') - 1)
+      .replace('+', ' ');
 
     const hashValue = queryString.substring(
       queryString.indexOf('hashValue=') + 10,
@@ -365,7 +364,7 @@ export class PaymentService {
       updatePaymentGatewayTransactionDto,
       `${query}&hashValue=${hashValue}`,
     );
-    
+
     if (!validHash) {
       throw new InternalServerErrorException('Invalid Hash');
     }
@@ -510,7 +509,7 @@ export class PaymentService {
     const trnOrderId = updatePaymentGatewayTransactionDto.pgTransactionId;
     const trnAmount = params.get('trnAmount');
     const paymentMethod = updatePaymentGatewayTransactionDto.pgPaymentMethod;
-    const cardType = updatePaymentGatewayTransactionDto.pgCardType ?? "";
+    const cardType = updatePaymentGatewayTransactionDto.pgCardType ?? '';
     const authCode = updatePaymentGatewayTransactionDto.pgAuthCode;
     const trnDate = params.get('trnDate');
     const ref2 = params.get('ref2');

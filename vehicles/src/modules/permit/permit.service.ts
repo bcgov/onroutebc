@@ -196,8 +196,13 @@ export class PermitService {
       );
     }
     if (searchColumn.toLowerCase() === 'permitnumber') {
-      permits.andWhere(`replace(permit.permitNumber,'-', '') like '%${searchString}%'`)
-      permits.orWhere(`replace(permit.tpsPermitNumber,'-', '') like '%${searchString}%'`)
+      searchString = searchString.replace('-', '');
+      permits.andWhere(
+        `replace(permit.permitNumber,'-', '') like '%${searchString}%'`,
+      );
+      permits.orWhere(
+        `replace(permit.tpsPermitNumber,'-', '') like '%${searchString}%'`,
+      );
     }
     if (searchColumn.toLowerCase() === 'clientnumber') {
       permits.andWhere(
@@ -470,7 +475,7 @@ export class PermitService {
       if (voidPermitDto.paymentMethodTypeCode === PaymentMethodType.WEB) {
         createTransactionDto.pgApproved = 1;
       }
-      
+
       createTransactionDto.applicationDetails = [
         {
           applicationId: newPermit.permitId,
