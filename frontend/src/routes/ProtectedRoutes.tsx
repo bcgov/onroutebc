@@ -58,7 +58,6 @@ export const ProtectedRoutes = ({
         );
       }
       if (!userRoles) {
-        console.log("LoadIDIRUserRoles section");
         return (
           <>
             <LoadIDIRUserRoles />
