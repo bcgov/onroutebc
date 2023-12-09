@@ -187,7 +187,7 @@ jobs:
 
           # Package Helm release
           helm dependency update
-          ${{ inputs.tag == 'test' && helm package .|| (inputs.tag == 'prod' && helm package . || helm package --app-version="env.package_tag" --version=inputs.tag .)}}
+          ${{ (inputs.tag == 'test' && helm package .)|| (inputs.tag == 'prod' && helm package .) || (helm package --app-version="env.package_tag" --version=inputs.tag .)}}
 
           # Deploy Helm release
           helm upgrade \
