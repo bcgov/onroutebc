@@ -187,13 +187,7 @@ jobs:
 
           # Package Helm release
           helm dependency update
-          if [[ ${{inputs.tag}} == 'test'; then
-            helm package . 
-          elif [[ ${{inputs.tag}} == 'prod']]; then 
-            helm package .
-          else
-            helm package --app-version="${{env.package_tag}}" --version=${{inputs.tag}} .
-          fi
+          helm package --app-version="${{ env.package_tag }}" --version=${{ inputs.tag }} .
 
           # Deploy Helm release
           helm upgrade \
