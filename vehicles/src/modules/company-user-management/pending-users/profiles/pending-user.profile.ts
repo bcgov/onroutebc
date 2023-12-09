@@ -105,8 +105,8 @@ export class PendingUsersProfile extends AutomapperProfile {
         ),
         forMember(
           (d) => d.userName,
-          mapWithArguments((source, { userName }) => {
-            return userName;
+          mapWithArguments((source, { pendingUserName }) => {
+            return pendingUserName;
           }),
         ),
         forMember(

@@ -82,6 +82,7 @@ export class PendingUsersService {
       {
         extraArgs: () => ({
           companyId: companyId,
+          pendingUserName: userName,
           userName: currentUser.userName,
           directory: currentUser.orbcUserDirectory,
           userGUID: currentUser.userGUID,
