@@ -64,6 +64,7 @@ export const useUserContext = () => {
     setCompanyLegalName,
     setIDIRUserDetails,
     setOnRouteBCClientNumber,
+    setMigratedClient,
   } = useContext(OnRouteBCContext);
   const { isAuthenticated, user: userFromToken } = useAuth();
   return useQuery({
@@ -90,8 +91,12 @@ export const useUserContext = () => {
           setIDIRUserDetails?.(() => userDetails);
         }
       } else {
-        const { user, associatedCompanies, pendingCompanies } =
-          userContextResponseBody as BCeIDUserContextType;
+        const {
+          user,
+          associatedCompanies,
+          pendingCompanies,
+          migratedClient,
+        } = userContextResponseBody as BCeIDUserContextType;
         if (user?.userGUID) {
           const companyId = associatedCompanies[0].companyId;
           const legalName = associatedCompanies[0].legalName;
@@ -128,6 +133,9 @@ export const useUserContext = () => {
             "onRouteBC.user.companyId",
             companyId.toString(),
           );
+        }
+        if (migratedClient?.clientNumber) {
+          setMigratedClient?.(() => migratedClient);
         }
       }
     },

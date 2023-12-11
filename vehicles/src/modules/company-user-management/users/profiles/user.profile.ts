@@ -60,6 +60,12 @@ export class UsersProfile extends AutomapperProfile {
           }),
         ),
         forMember(
+          (d) => d.userAuthGroup,
+          mapWithArguments((source, { userAuthGroup }) => {
+            return userAuthGroup;
+          }),
+        ),
+        forMember(
           (d) => d.createdUserGuid,
           mapWithArguments((source, { userGUID }) => {
             return userGUID;

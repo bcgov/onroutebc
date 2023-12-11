@@ -25,14 +25,11 @@ export const ProtectedRoutes = ({
     user: userFromToken,
   } = useAuth();
 
-  const { 
-    userRoles, 
-    companyId, 
-    idirUserDetails, 
-  } = useContext(OnRouteBCContext);
+  const { userRoles, companyId, idirUserDetails } =
+    useContext(OnRouteBCContext);
 
   const userIDP = userFromToken?.profile?.identity_provider as string;
-  
+
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -51,24 +48,23 @@ export const ProtectedRoutes = ({
   }
 
   if (isAuthenticated) {
-    if (isIDIR(userIDP) && !idirUserDetails?.userAuthGroup) {
-      if (typeof userRoles !== "undefined" && !userRoles) {
-        // user roles is null, indicating an error occurred fetching roles (eg. user with no roles, 403)
+    if (isIDIR(userIDP)) {
+      if (!idirUserDetails?.userAuthGroup) {
         return (
-          <Navigate 
-            to={ERROR_ROUTES.UNAUTHORIZED}
-            state={{ from: location }} 
-            replace 
-          />
+          <>
+            <LoadIDIRUserContext />
+            <Loading />
+          </>
         );
       }
-
-      return (
-        <>
-          <LoadIDIRUserContext />
-          <LoadIDIRUserRoles />
-        </>
-      );
+      if (!userRoles) {
+        return (
+          <>
+            <LoadIDIRUserRoles />
+            <Loading />
+          </>
+        );
+      }
     }
     if (!isIDIR(userIDP)) {
       if (!companyId) {
@@ -91,21 +87,15 @@ export const ProtectedRoutes = ({
 
     if (!DoesUserHaveRole(userRoles, requiredRole)) {
       return (
-        <Navigate 
-          to={ERROR_ROUTES.UNAUTHORIZED} 
-          state={{ from: location }} 
-          replace 
+        <Navigate
+          to={ERROR_ROUTES.UNAUTHORIZED}
+          state={{ from: location }}
+          replace
         />
       );
     }
     return <Outlet />;
   } else {
-    return (
-      <Navigate 
-        to={HOME} 
-        state={{ from: location }} 
-        replace 
-      />
-    );
+    return <Navigate to={HOME} state={{ from: location }} replace />;
   }
 };

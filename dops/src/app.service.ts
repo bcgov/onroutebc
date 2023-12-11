@@ -35,8 +35,9 @@ export class AppService {
         const templateMetadata = await this.dmsService.findLatest(
           template.documentId,
         );
+        //TODO: Temporary stopgap for release 1
         const templatefile = await this.s3Service.getFile(
-          templateMetadata.s3ObjectId,
+          templateMetadata.fileName, //TODO: Should be templateMetadata.s3ObjectId . Using filename as temporary stopgap for release 1 integration with BCBox.
         );
 
         return {

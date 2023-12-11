@@ -20,7 +20,7 @@ export const OnRouteBCProfileCreated = memo(
             />
           </div>
           <div className="profile-created__block profile-created__block--success-msg">
-            <Typography variant="h4">Profile Successfully set up!</Typography>
+            <Typography variant="h4">Profile successfully set up!</Typography>
           </div>
           {onRouteBCClientNumber && (
             <div className="profile-created__block profile-created__block--client-number">

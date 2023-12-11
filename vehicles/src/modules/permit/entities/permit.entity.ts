@@ -173,13 +173,16 @@ export class Permit extends Base {
       'Unique formatted tps permit number, recorded once the permit is migrated from tps.',
   })
   @Column({
-    length: '16',
+    length: '11',
     name: 'TPS_PERMIT_NUMBER',
     nullable: true,
+    insert: false,
+    update: false,
   })
-  tpsPermitNumber: string;
+  migratedPermitNumber?: string;
 
   @AutoMap()
+  @ApiProperty({
   @ApiProperty({
     example: ApplicationStatus.IN_PROGRESS,
     description:

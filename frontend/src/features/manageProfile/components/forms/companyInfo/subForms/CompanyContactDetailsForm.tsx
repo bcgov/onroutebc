@@ -42,7 +42,7 @@ export const CompanyContactDetailsForm = ({ feature }: { feature: string }) => (
                 invalidPhoneLength(10, 20),
             },
           },
-          label: "Phone Number",
+          label: "Phone",
           inputProps: { maxLength: 20 },
         }}
         className="company-contact-details-form__input company-contact-details-form__input--left"

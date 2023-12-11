@@ -55,7 +55,6 @@ export const redCompanyAdminUserEntityMock: User = {
 };
 
 export const createRedCompanyAdminUserDtoMock: CreateUserDto = {
-  userAuthGroup: constants.RED_COMPANY_ADMIN_USER_AUTH_GROUP,
   ...createRedCompanyAdminContactDtoMock,
 };
 
@@ -78,7 +77,7 @@ export const readRedAdminUserOrbcStatusDtoMock: ReadUserOrbcStatusDto = {
   user: { ...readRedCompanyAdminUserDtoMock },
   associatedCompanies: [readRedCompanyMetadataDtoMock],
   pendingCompanies: [],
-  migratedTPSClient: undefined,
+  migratedClient: undefined,
 };
 
 export const updateRedCompanyAdminUserStatusDtoMock: UpdateUserStatusDto = {
@@ -98,7 +97,6 @@ export const redCompanyCvClientUserEntityMock: User = {
 };
 
 export const createRedCompanyCvClientUserDtoMock: CreateUserDto = {
-  userAuthGroup: constants.RED_COMPANY_CVCLIENT_USER_AUTH_GROUP,
   ...createRedCompanyCvClientContactDtoMock,
 };
 
@@ -125,7 +123,7 @@ export const readRedCvClientUserOrbcStatusDtoMock: ReadUserOrbcStatusDto = {
   user: { ...readRedCompanyCvClientUserDtoMock },
   associatedCompanies: [readRedCompanyMetadataDtoMock],
   pendingCompanies: [],
-  migratedTPSClient: undefined,
+  migratedClient: undefined,
 };
 
 /***************************************BLUE */
@@ -142,7 +140,6 @@ export const blueCompanyAdminUserEntityMock: User = {
 };
 
 export const createBlueCompanyAdminUserDtoMock: CreateUserDto = {
-  userAuthGroup: constants.BLUE_COMPANY_ADMIN_USER_AUTH_GROUP,
   ...createBlueCompanyAdminContactDtoMock,
 };
 
@@ -165,7 +162,7 @@ export const readBlueAdminUserOrbcStatusDtoMock: ReadUserOrbcStatusDto = {
   user: { ...readBlueCompanyAdminUserDtoMock },
   associatedCompanies: [readBlueCompanyMetadataDtoMock],
   pendingCompanies: [],
-  migratedTPSClient: undefined,
+  migratedClient: undefined,
 };
 
 //Blue Company Cv Client User
@@ -181,7 +178,6 @@ export const blueCompanyCvClientUserEntityMock: User = {
 };
 
 export const createBlueCompanyCvClientUserDtoMock: CreateUserDto = {
-  userAuthGroup: constants.BLUE_COMPANY_CVCLIENT_USER_AUTH_GROUP,
   ...createBlueCompanyCvClientContactDtoMock,
 };
 
@@ -208,7 +204,7 @@ export const readBlueCvClientUserOrbcStatusDtoMock: ReadUserOrbcStatusDto = {
   user: { ...readBlueCompanyCvClientUserDtoMock },
   associatedCompanies: [readBlueCompanyMetadataDtoMock],
   pendingCompanies: [],
-  migratedTPSClient: undefined,
+  migratedClient: undefined,
 };
 
 //Blue Company Cv Client User
@@ -224,7 +220,6 @@ export const sysAdminStaffUserEntityMock: User = {
 };
 
 export const createSysAdminStaffUserDtoMock: CreateUserDto = {
-  userAuthGroup: constants.SYS_ADMIN_STAFF_USER_AUTH_GROUP,
   ...createSysAdminStaffContactDtoMock,
 };
 
@@ -251,7 +246,7 @@ export const readSysAdminStaffUserOrbcStatusDtoMock: ReadUserOrbcStatusDto = {
   user: { ...readSysAdminStaffUserDtoMock },
   associatedCompanies: [],
   pendingCompanies: [],
-  migratedTPSClient: undefined,
+  migratedClient: undefined,
 };
 
 export const USER_LIST: User[] = [

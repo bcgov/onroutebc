@@ -136,9 +136,8 @@ export class CompanyController {
     }
 
     userGUID = userGUID || currentUser.userGUID;
-    const company = await this.companyService.findCompanyMetadataByUserGuid(
-      userGUID,
-    );
+    const company =
+      await this.companyService.findCompanyMetadataByUserGuid(userGUID);
     if (!company?.length) {
       throw new DataNotFoundException();
     }

@@ -45,13 +45,14 @@ export interface CompanyAndUserRequest {
   companyId: number;
   companyGUID: string;
   legalName: string;
+  alternateName?: string; // Doing Business As field
   mailingAddress: Address;
   email: string;
   phone: string;
   extension?: string;
   fax?: string;
   primaryContact: Contact;
-  adminUser: UserInformation;
+  adminUser: Contact;
 }
 
 /**
