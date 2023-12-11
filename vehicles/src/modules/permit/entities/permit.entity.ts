@@ -183,7 +183,6 @@ export class Permit extends Base {
 
   @AutoMap()
   @ApiProperty({
-  @ApiProperty({
     example: ApplicationStatus.IN_PROGRESS,
     description:
       'State of a permit or permit application, at any given point in time',
