@@ -33,6 +33,7 @@ import { CacheKey } from '../../../common/enum/cache-key.enum';
 import { AccountSource } from '../../../common/enum/account-source.enum';
 import { PendingUser } from '../pending-users/entities/pending-user.entity';
 import * as crypto from 'crypto';
+import { UserStatus } from '../../../common/enum/user-status.enum';
 
 @Injectable()
 export class CompanyService {
@@ -140,6 +141,7 @@ export class CompanyService {
       newCompanyUser.company.companyId = newCompany.companyId;
       newCompanyUser.user = user;
       newCompanyUser.userAuthGroup = UserAuthGroup.COMPANY_ADMINISTRATOR;
+      newCompanyUser.statusCode = UserStatus.ACTIVE;
 
       user.companyUsers = [newCompanyUser];
       user = await queryRunner.manager.save(user);

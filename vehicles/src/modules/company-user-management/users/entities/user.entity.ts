@@ -58,20 +58,6 @@ export class User extends Base {
   })
   userAuthGroup: UserAuthGroup;
 
-  /**
-   * The status of the user in the system. It is an enum of UserStatus type and
-   * has a default value of 'ACTIVE'.
-   */
-  @AutoMap()
-  @Column({
-    type: 'simple-enum',
-    enum: UserStatus,
-    length: 10,
-    name: 'USER_STATUS_TYPE',
-    default: 'ACTIVE',
-    nullable: false,
-  })
-  statusCode: UserStatus;
 
   /**
    * A one-to-one relationship with the Contact entity, representing the contact
