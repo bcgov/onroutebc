@@ -10,6 +10,8 @@ import {
 } from '@nestjs/common';
 import { BadRequestExceptionDto } from './exception/badRequestException.dto';
 import { ExceptionDto } from './exception/exception.dto';
+import * as bodyParser from 'body-parser';
+
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -63,7 +65,7 @@ async function bootstrap() {
     new HttpExceptionFilter(),
   );
 
-  app.useBodyParser('json', { limit: '10mb' });  
+  app.use(bodyParser.json({ limit: '10mb' }));
 
   await app.listen(5001);
 }
