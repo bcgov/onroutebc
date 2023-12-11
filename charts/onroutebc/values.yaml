@@ -237,10 +237,10 @@ dops:
         allowPrivilegeEscalation: true
       resources: # this is optional
         limits:
-          cpu: 200m
-          memory: 600Mi
+          cpu: 300m
+          memory: 500Mi
         requests:
-          cpu: 100m
+          cpu: 150m
           memory: 200Mi
   ingress:
     annotations: 
