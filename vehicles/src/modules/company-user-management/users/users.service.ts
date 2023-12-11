@@ -76,12 +76,20 @@ export class UsersService {
   ): Promise<ReadUserDto> {
     let newUser: ReadUserDto;
 
-    const pendingUser = await this.pendingUsersService.findPendingUsersDto(
+    const pendingUsers = await this.pendingUsersService.findPendingUsersDto(
       currentUser.userName,
       companyId,
     );
 
-    if (!pendingUser?.length) {
+    pendingUsers.push(
+      ...(await this.pendingUsersService.findPendingUsersDto(
+        null,
+        companyId,
+        currentUser.userGUID,
+      )),
+    );
+
+    if (!pendingUsers?.length) {
       throw new BadRequestException('User not invited for this company.');
     }
     //Comment Begin: Business BCeID validation.
@@ -91,7 +99,7 @@ export class UsersService {
       const company = await this.companyService.findOneByCompanyGuid(
         currentUser.bceid_business_guid,
       );
-      if (pendingUser.some((e) => e.companyId != company.companyId)) {
+      if (pendingUsers.some((e) => e.companyId != company.companyId)) {
         throw new BadRequestException('User not invited for this company.');
       }
     }
@@ -102,7 +110,7 @@ export class UsersService {
     try {
       let user = this.classMapper.map(createUserDto, CreateUserDto, User, {
         extraArgs: () => ({
-          userAuthGroup: pendingUser?.at(0).userAuthGroup,
+          userAuthGroup: pendingUsers?.at(0).userAuthGroup,
           userName: currentUser.userName,
           directory: currentUser.orbcUserDirectory,
           userGUID: currentUser.userGUID,
@@ -114,7 +122,7 @@ export class UsersService {
       newCompanyUser.company = new Company();
       newCompanyUser.company.companyId = companyId;
       newCompanyUser.user = user;
-      newCompanyUser.userAuthGroup = pendingUser?.at(0).userAuthGroup;
+      newCompanyUser.userAuthGroup = pendingUsers?.at(0).userAuthGroup;
 
       user.companyUsers = [newCompanyUser];
       user = await queryRunner.manager.save(user);
