@@ -168,8 +168,9 @@ export class Permit extends Base {
 
   @AutoMap()
   @ApiProperty({
-    example: 'P2-000000',
-    description: 'Unique formatted migrated permit number.',
+    example: '08-000-2819',
+    description:
+      'Unique formatted tps permit number, recorded once the permit is migrated from tps.',
   })
   @Column({
     length: '11',

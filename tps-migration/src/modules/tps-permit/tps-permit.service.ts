@@ -30,7 +30,8 @@ export class TpsPermitService {
   private readonly logger = new Logger(TpsPermitService.name);
 
   /**
-   * Scheduled method to run every 5 minute. To upload TPS permits pdf to S3.
+   * Scheduled method to run every 5 minute. To upload PENDING TPS permits pdf to S3, update ORBC_DOCUMENT and ORBC_PERMIT table. and delete migrated permit and pdf from TPS_MIGRATED_PERMIT table.
+   * If records are stuck in PROCESSING status then something must have gone wrong and needs attention.
    *
    */
   @Cron(`0 */${PENDING_POLLING_INTERVAL} * * * *`)
@@ -39,7 +40,6 @@ export class TpsPermitService {
       where: { s3UploadStatus: S3uploadStatus.Pending },
       take: LIMIT,
     });
-
     const ids = tpsPermits.map((tpsPermit) => tpsPermit.migrationId);
     // create query builder fails if array is empty. hence the length check.
     if (ids.length > 0) {
@@ -54,7 +54,7 @@ export class TpsPermitService {
       for (const tpsPermit of tpsPermits) {
         //Check to verify if permit document already exists in orbc permit table to avoid duplicate uploads.
         //Only proceed if permit exists in orbc permit table and it does not have a document id.
-        const permit = await this.permitRepository.find({
+        const permit = await this.permitRepository.findOne({
           where: { tpsPermitNumber: tpsPermit.permitNumber },
         });
         if (!permit) {
@@ -67,7 +67,7 @@ export class TpsPermitService {
           );
           break;
         }
-        if (permit[0].documentId != null) {
+        if (permit?.documentId) {
           await this.tpsPermitRepository.delete({
             migrationId: tpsPermit.migrationId,
           });
@@ -120,11 +120,12 @@ export class TpsPermitService {
       }
     }
   }
+
   /**
-   * Scheduled method to run evry 3rd hour of the day. To retry failed permits.
+   * Scheduled method to run every 5 minute. To upload ERROR TPS permits pdf to S3, update ORBC_DOCUMENT and ORBC_PERMIT table. and delete migrated permit and pdf from TPS_MIGRATED_PERMIT table.
+   * If records are stuck in PROCESSING status then something must have gone wrong and needs attention.
    *
    */
-
   @Cron(`0 0 */${ERROR_POLLING_INTERVAL} * * *`)
   async reprocessTpsPermit() {
     const tpsPermits: TpsPermit[] = await this.tpsPermitRepository.find({
@@ -146,7 +147,7 @@ export class TpsPermitService {
       for (const tpsPermit of tpsPermits) {
         //Check to verify if permit document already exists in orbc permit table to avoid duplicate uploads.
         //Only proceed if permit exists in orbc permit table and it does not have a document id.
-        const permit = await this.permitRepository.find({
+        const permit = await this.permitRepository.findOne({
           where: { tpsPermitNumber: tpsPermit.permitNumber },
         });
         if (!permit) {
@@ -159,7 +160,7 @@ export class TpsPermitService {
           );
           break;
         }
-        if (permit[0].documentId != null) {
+        if (permit?.documentId) {
           await this.tpsPermitRepository.delete({
             migrationId: tpsPermit.migrationId,
           });
