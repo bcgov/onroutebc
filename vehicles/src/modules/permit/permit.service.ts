@@ -196,15 +196,11 @@ export class PermitService {
       );
     }
     if (searchColumn.toLowerCase() === 'permitnumber') {
-      console.log('searchString before: ',searchString)
-      const replace = /-/gi;
-      searchString = searchString.replace(replace, '');
-      console.log('searchString after: ',searchString)
       permits.andWhere(
-        `replace(permit.permitNumber,'-', '') like '%${searchString}%'`,
+        `permit.permitNumber like '%${searchString}%'`,
       );
       permits.orWhere(
-        `replace(permit.tpsPermitNumber,'-', '') like '%${searchString}%'`,
+        `permit.tpsPermitNumber like '%${searchString}%'`,
       );
     }
     if (searchColumn.toLowerCase() === 'clientnumber') {
