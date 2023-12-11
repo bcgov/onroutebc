@@ -137,9 +137,8 @@ export class ApplicationService {
         }),
       },
     );
-    const savedPermitEntity = await this.permitRepository.save(
-      permitApplication,
-    );
+    const savedPermitEntity =
+      await this.permitRepository.save(permitApplication);
     // In case of new application assign original permit ID
     if (id === undefined || id === null) {
       await this.permitRepository
@@ -274,9 +273,8 @@ export class ApplicationService {
     updateApplicationDto: UpdateApplicationDto,
     currentUser: IUserJWT,
   ): Promise<ReadApplicationDto> {
-    const existingApplication = await this.findByApplicationNumber(
-      applicationNumber,
-    );
+    const existingApplication =
+      await this.findByApplicationNumber(applicationNumber);
 
     const newApplication = this.classMapper.map(
       updateApplicationDto,
@@ -384,9 +382,8 @@ export class ApplicationService {
   async issuePermit(currentUser: IUserJWT, applicationId: string) {
     let success = '';
     let failure = '';
-    const fetchedApplication = await this.findOneWithSuccessfulTransaction(
-      applicationId,
-    );
+    const fetchedApplication =
+      await this.findOneWithSuccessfulTransaction(applicationId);
     // Check if a PDF document already exists for the permit.
     // It's important that a PDF does not get overwritten.
     // Once its created, it is a permanent legal document.

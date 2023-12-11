@@ -495,9 +495,8 @@ export class PermitService {
         newPermit.companyId,
       );
 
-      const fullNames = await this.applicationService.getFullNamesFromCache(
-        newPermit,
-      );
+      const fullNames =
+        await this.applicationService.getFullNamesFromCache(newPermit);
 
       const revisionHistory = await queryRunner.manager.find(Permit, {
         where: { originalPermitId: permit.originalPermitId },
