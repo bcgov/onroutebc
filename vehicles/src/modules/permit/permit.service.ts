@@ -196,12 +196,8 @@ export class PermitService {
       );
     }
     if (searchColumn.toLowerCase() === 'permitnumber') {
-      permits.andWhere(
-        `permit.permitNumber like '%${searchString}%'`,
-      );
-      permits.orWhere(
-        `permit.tpsPermitNumber like '%${searchString}%'`,
-      );
+      permits.andWhere(`permit.permitNumber like '%${searchString}%'`);
+      permits.orWhere(`permit.migratedPermitNumber like '%${searchString}%'`);
     }
     if (searchColumn.toLowerCase() === 'clientnumber') {
       permits.andWhere(
