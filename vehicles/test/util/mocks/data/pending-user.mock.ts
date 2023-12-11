@@ -7,6 +7,7 @@ import { ReadPendingUserDto } from '../../../../src/modules/company-user-managem
 import * as constants from './test-data.constants';
 
 export const redCompanyPendingUserEntityMock: PendingUser = {
+  pendingUserId: 1,
   companyId: constants.RED_COMPANY_ID,
   userName: constants.RED_COMPANY_PENDING_USER_NAME,
   userAuthGroup: UserAuthGroup.CV_CLIENT,
@@ -30,6 +31,7 @@ export const readRedCompanyPendingUserDtoMock: ReadPendingUserDto = {
 };
 
 export const blueCompanyPendingUserEntityMock: PendingUser = {
+  pendingUserId: 2,
   companyId: constants.BLUE_COMPANY_ID,
   userName: constants.BLUE_COMPANY_PENDING_USER_NAME,
   userAuthGroup: UserAuthGroup.CV_CLIENT,

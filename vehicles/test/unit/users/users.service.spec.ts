@@ -20,7 +20,7 @@ import {
 
 import { PendingUsersService } from '../../../src/modules/company-user-management/pending-users/pending-users.service';
 
-import { InternalServerErrorException } from '@nestjs/common';
+import { BadRequestException } from '@nestjs/common';
 import { UserStatus } from '../../../src/common/enum/user-status.enum';
 import { Role } from '../../../src/common/enum/roles.enum';
 import { DataNotFoundException } from '../../../src/common/exception/data-not-found.exception';
@@ -36,7 +36,9 @@ import {
   updateRedCompanyCvClientUserDtoMock,
 } from '../../util/mocks/data/user.mock';
 import {
+  redCompanyAdminUserJWTMock,
   redCompanyCvClientUserJWTMock,
+  redCompanyPendingUserJWTMock,
   sysAdminStaffUserJWTMock,
 } from '../../util/mocks/data/jwt.mock';
 import { readRedCompanyPendingUserDtoMock } from '../../util/mocks/data/pending-user.mock';
@@ -143,6 +145,9 @@ describe('UsersService', () => {
 
   describe('User service create function', () => {
     it('should create a user.', async () => {
+      pendingUsersServiceMock.findPendingUsersDto.mockResolvedValue([
+        readRedCompanyPendingUserDtoMock,
+      ]);
       const retUser = await service.create(
         createRedCompanyCvClientUserDtoMock,
         constants.RED_COMPANY_ID,
@@ -153,9 +158,10 @@ describe('UsersService', () => {
     });
 
     it('should catch and throw and Internal Error Exceptions user.', async () => {
+      pendingUsersServiceMock.findPendingUsersDto.mockResolvedValue([]);
       await expect(async () => {
         await service.create(null, null, redCompanyCvClientUserJWTMock);
-      }).rejects.toThrowError(InternalServerErrorException);
+      }).rejects.toThrowError(BadRequestException);
     });
   });
 
@@ -248,9 +254,7 @@ describe('UsersService', () => {
         readRedCompanyMetadataDtoMock,
       ]);
       const retUserContext = await service.findORBCUser(
-        constants.RED_COMPANY_ADMIN_USER_GUID,
-        constants.RED_COMPANY_ADMIN_USER_NAME,
-        constants.RED_COMPANY_GUID,
+        redCompanyAdminUserJWTMock,
       );
       expect(typeof retUserContext).toBe('object');
       expect(retUserContext.user.userGUID).toBe(
@@ -270,9 +274,7 @@ describe('UsersService', () => {
         redCompanyEntityMock,
       );
       const retUserContext = await service.findORBCUser(
-        constants.RED_COMPANY_PENDING_USER_GUID,
-        constants.RED_COMPANY_PENDING_USER_NAME,
-        constants.RED_COMPANY_GUID,
+        redCompanyPendingUserJWTMock,
       );
 
       expect(typeof retUserContext).toBe('object');

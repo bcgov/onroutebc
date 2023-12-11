@@ -168,6 +168,20 @@ export class Permit extends Base {
 
   @AutoMap()
   @ApiProperty({
+    example: 'P2-000000',
+    description: 'Unique formatted migrated permit number.',
+  })
+  @Column({
+    length: '11',
+    name: 'TPS_PERMIT_NUMBER',
+    nullable: true,
+    insert: false,
+    update: false,
+  })
+  migratedPermitNumber?: string;
+
+  @AutoMap()
+  @ApiProperty({
     example: ApplicationStatus.IN_PROGRESS,
     description:
       'State of a permit or permit application, at any given point in time',

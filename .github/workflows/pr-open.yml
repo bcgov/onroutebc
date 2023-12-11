@@ -5,8 +5,8 @@ on:
   merge_group:
 
 concurrency:
-  #  PR open and close use the same group, allowing only one at a time
-  group: pr-${{ github.workflow }}-${{ github.event.number }}
+  # Cancel in progress for PR open and close, but not merge_group
+  group: ${{ github.workflow }}-${{ github.event.number || github.event.merge_group.base_sha }}
   cancel-in-progress: true
 
 jobs:
@@ -33,6 +33,7 @@ jobs:
             - [Frontend](https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }})
             - [Vehicles](https://${{ env.PREFIX }}-vehicles.${{ env.DOMAIN }}/api)
             - [Dops](https://${{ env.PREFIX }}-dops.${{ env.DOMAIN }}/api)
+            - [TPS-Migration](https://${{ env.PREFIX }}-tps-migration.${{ env.DOMAIN }}/api)
 
             Please create PRs in draft mode.  Mark as ready to enable:
             - [Analysis Workflow](https://github.com/${{ github.repository }}/actions/workflows/analysis.yml)
@@ -40,27 +41,16 @@ jobs:
             After merge, new images are promoted to:
             - [Merge Workflow](https://github.com/${{ github.repository }}/actions/workflows/merge.yml)
 
-  # Find initial PR number (for merge queues)
+  # Get PR number for merge queues, otherwise jusr use github.event.nuber
   vars:
-    name: Build and Deploy Vars
+    name: Set Variables
     outputs:
-      tag: ${{ steps.deploys.outputs.tag }}
+      pr: ${{ steps.pr.outputs.pr }}
     runs-on: ubuntu-22.04
     steps:
-      - name: Set Variables
-        id: deploys
-        run: |
-          # Get PR number (different process for merge queue)
-          if [ ${{ github.event_name }} == 'pull_request' ]
-          then
-            tag=${{ github.event.number }}
-          else
-            tag=$(echo ${{ github.event.merge_group.head_ref }} | grep -Eo "queue/main/pr-[0-9]+" | cut -d '-' -f2)
-          fi
-
-          echo "Summary ---"
-          echo -e "\tTag (PR no): ${tag}"
-          echo "tag=${tag}" >> $GITHUB_OUTPUT
+      - name: PR Number
+        id: pr
+        uses: bcgov-nr/action-get-pr@v0.0.1
 
   # https://github.com/bcgov-nr/action-builder-ghcr
   builds:
@@ -71,14 +61,14 @@ jobs:
       packages: write
     strategy:
       matrix:
-        package: [dops, vehicles, frontend]
+        package: [dops, vehicles, frontend, tps-migration]
     timeout-minutes: 10
     steps:
       - uses: bcgov-nr/action-builder-ghcr@v2.0.0
         with:
           keep_versions: 50
           package: ${{ matrix.package }}
-          tag: ${{ needs.vars.outputs.tag }}
+          tag: ${{ needs.vars.outputs.pr }}
           tag_fallback: latest
           triggers: ('${{ matrix.package }}/')
 
@@ -90,8 +80,9 @@ jobs:
     secrets: inherit
     with:
       autoscaling: false
+      repository: ${{ github.event.repository.name }}
       environment: dev
-      release: ${{ needs.vars.outputs.tag }}
-      tag: ${{ needs.vars.outputs.tag }}
+      release: ${{ needs.vars.outputs.pr }}
+      tag: ${{ needs.vars.outputs.pr }}
       triggers: ('database/' 'dops/' 'frontend/' 'vehicles/')
       vault_role: nonprod

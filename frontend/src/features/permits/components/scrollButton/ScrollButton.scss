@@ -1,17 +1,43 @@
-@import "../../../../themes/orbcStyles.scss";
+@import "../../../../themes/orbcStyles";
 
 .scroll-btn {
-  &#{&} {
+  position: relative;
+
+  & &__btn {
     background-color: $white;
     color: $bc-black;
     border-radius: 0.25rem;
     font-size: 1.5rem;
     padding: 0.75rem 1rem;
     min-width: auto;
+    box-shadow: 0 0 0.5rem #00000029;
+  }
+  
+  & &__tooltip {
+    right: calc(100% + 0.25rem);
+    bottom: 0;
+    display: none;
+    font-size: 1rem;
+    padding: 0.5rem;
+    color: $white;
+    background-color: $bc-black;
+    font-weight: normal;
+    border-radius: 0.25rem;
+    position: absolute;
+    width: 100%;
   }
 
   &#{&}:hover {
-    background-color: $bc-background-light-grey;
-    font-weight: bold;
+    .scroll-btn {
+      &__btn {
+        background-color: $bc-background-light-grey;
+        font-weight: bold;
+        box-shadow: 0 0 0.375rem #00000029;
+      }
+
+      &__tooltip {
+        display: block;
+      }
+    }
   }
 }

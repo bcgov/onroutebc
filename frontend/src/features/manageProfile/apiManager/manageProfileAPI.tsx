@@ -1,4 +1,9 @@
 import { VEHICLES_URL } from "../../../common/apiManager/endpoints/endpoints";
+import { BCeIDUserContextType } from "../../../common/authentication/types";
+import { replaceEmptyValuesWithNull } from "../../../common/helpers/util";
+import { RequiredOrNull } from "../../../common/types/common";
+import { BCeIDAddUserRequest, ReadCompanyUser } from "../types/userManagement";
+import { MANAGE_PROFILE_API } from "./endpoints/endpoints";
 import {
   httpGETRequest,
   httpPOSTRequest,
@@ -7,15 +12,13 @@ import {
   getUserGuidFromSession,
   httpDELETERequest,
 } from "../../../common/apiManager/httpRequestHandler";
-import { BCeIDUserContextType } from "../../../common/authentication/types";
-import { replaceEmptyValuesWithNull } from "../../../common/helpers/util";
+
 import {
   CompanyProfile,
   CompanyAndUserRequest,
   UserInformation,
+  Contact,
 } from "../types/manageProfile";
-import { BCeIDAddUserRequest, ReadCompanyUser } from "../types/userManagement";
-import { MANAGE_PROFILE_API } from "./endpoints/endpoints";
 
 export const getCompanyInfo = async (): Promise<CompanyProfile> => {
   const url = MANAGE_PROFILE_API.COMPANIES + "/" + getCompanyIdFromSession();
@@ -24,7 +27,7 @@ export const getCompanyInfo = async (): Promise<CompanyProfile> => {
 
 export const getCompanyInfoById = async (
   companyId: number,
-): Promise<CompanyProfile | null> => {
+): Promise<RequiredOrNull<CompanyProfile>> => {
   try {
     const response = await httpGETRequest(
       `${MANAGE_PROFILE_API.COMPANIES}/${companyId}`,
@@ -74,7 +77,7 @@ export const updateMyInfo = async ({ myInfo }: { myInfo: UserInformation }) => {
 export const createMyOnRouteBCUserProfile = async ({
   myInfo,
 }: {
-  myInfo: Omit<UserInformation, "statusCode" | "userName" | "userGUID">;
+  myInfo: Contact;
 }) => {
   return await httpPOSTRequest(
     `${MANAGE_PROFILE_API.COMPANIES}/${getCompanyIdFromSession()}/users`,
@@ -119,7 +122,7 @@ export const getUserRolesByCompanyId = (): Promise<string[]> => {
 /**
  * Retrieves the roles of an IDIR user (i.e., OnRouteBC staff).
  */
-export const getIDIRUserRoles = async (): Promise<string[] | null> => {
+export const getIDIRUserRoles = async (): Promise<RequiredOrNull<string[]>> => {
   try {
     const response = await httpGETRequest(`${VEHICLES_URL}/users/roles`);
     if (response.status === 200) {

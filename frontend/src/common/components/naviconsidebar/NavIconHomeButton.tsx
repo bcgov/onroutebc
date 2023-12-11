@@ -1,6 +1,6 @@
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
-import * as routes from "../../../routes/constants";
+import { IDIR_ROUTES } from "../../../routes/constants";
 import { NavButton } from "./NavButton";
 import { NAV_BUTTON_TYPES } from "./types/NavButtonType";
 
@@ -9,11 +9,14 @@ import { NAV_BUTTON_TYPES } from "./types/NavButtonType";
  */
 export const NavIconHomeButton = () => {
   const navigate = useNavigate();
+  const { pathname } = useLocation();
+  const isActive = pathname === IDIR_ROUTES.WELCOME;
 
   return (
     <NavButton
       type={NAV_BUTTON_TYPES.HOME}
-      onClick={() => navigate(routes.IDIR_WELCOME)}
+      onClick={() => navigate(IDIR_ROUTES.WELCOME)}
+      isActive={isActive}
     />
   );
 };

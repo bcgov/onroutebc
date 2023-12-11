@@ -1,8 +1,10 @@
 import { Row } from "@tanstack/table-core/build/lib/types";
+
 import { BC_COLOURS } from "../../themes/bcGovStyles";
 import { DATE_FORMATS, toLocal, utcToLocalDayjs } from "../helpers/formatDate";
 import { applyWhenNotNullable } from "../helpers/util";
 import { Permit } from "../../features/permits/types/permit";
+import { Nullable } from "../types/common";
 
 /**
  * Format a given datetime string to a format that we can display
@@ -10,7 +12,7 @@ import { Permit } from "../../features/permits/types/permit";
  * @returns datetime string for display or "NA" if invalid date given
  */
 export const formatCellValuetoDatetime = (
-  rawDateTime: string | null | undefined,
+  rawDateTime: Nullable<string>,
 ) => {
   return applyWhenNotNullable(
     (dt) => toLocal(dt, DATE_FORMATS.DATEONLY_ABBR_MONTH),
@@ -39,9 +41,9 @@ export const dateTimeStringSortingFn = (
   return sortVal;
 };
 
-export const defaultTableStateOptions: any = {};
+export const defaultTableStateOptions = {};
 
-export const defaultTableInitialStateOptions: any = {
+export const defaultTableInitialStateOptions = {
   // property to enable global filter search box
   showGlobalFilter: true,
 };
@@ -105,7 +107,7 @@ export const defaultTableOptions: any = {
       backgroundColor: BC_COLOURS.bc_background_light_grey,
     },
   },
-  enableBottomToolbar: true,
+  enableBottomToolbar: false, // hide pagination for now
   enableSortingRemoval: false,
   muiBottomToolbarProps: {
     sx: {

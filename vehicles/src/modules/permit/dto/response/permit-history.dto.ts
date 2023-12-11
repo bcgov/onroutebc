@@ -96,4 +96,12 @@ export class PermitHistoryDto {
       'Represents the date that the transaction for the permit was submitted.',
   })
   transactionSubmitDate: Date;
+
+  @AutoMap()
+  @ApiProperty({
+    example: '1',
+    description:
+      'Represents the approval result of a transaction. 0 = Transaction refused, 1 = Transaction approved',
+  })
+  pgApproved: number;
 }

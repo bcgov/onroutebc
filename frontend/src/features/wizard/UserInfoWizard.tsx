@@ -12,8 +12,7 @@ import { getDefaultRequiredVal } from "../../common/helpers/util";
 import { ErrorFallback } from "../../common/pages/ErrorFallback";
 import { createMyOnRouteBCUserProfile } from "../manageProfile/apiManager/manageProfileAPI";
 import { ReusableUserInfoForm } from "../manageProfile/components/forms/common/ReusableUserInfoForm";
-import { UserInformation } from "../manageProfile/types/manageProfile";
-import { BCEID_AUTH_GROUP } from "../manageProfile/types/userManagement.d";
+import { Contact, UserInformation } from "../manageProfile/types/manageProfile";
 import { OnRouteBCProfileCreated } from "./pages/OnRouteBCProfileCreated";
 
 /**
@@ -21,14 +20,7 @@ import { OnRouteBCProfileCreated } from "./pages/OnRouteBCProfileCreated";
  * when an invited user logs in for the first time.
  */
 export const UserInfoWizard = React.memo(() => {
-  const formMethods = useForm<
-    Omit<UserInformation, "statusCode" | "userName" | "userGUID">
-  >({
-    defaultValues: {
-      // Remove this userAuthGroup once backend integrates the auth group.
-      userAuthGroup: BCEID_AUTH_GROUP.CVCLIENT as string,
-    },
-  });
+  const formMethods = useForm<Contact>();
 
   const { setUserDetails } = useContext(OnRouteBCContext);
   const { setSnackBar } = useContext(SnackBarContext);
@@ -74,10 +66,7 @@ export const UserInfoWizard = React.memo(() => {
    */
   const onClickFinish = (data: FieldValues) => {
     createProfileQuery.mutate({
-      myInfo: data as Omit<
-        UserInformation,
-        "statusCode" | "userName" | "userGUID"
-      >,
+      myInfo: data as Contact,
     });
   };
 

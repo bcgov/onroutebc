@@ -7,6 +7,7 @@ import {
   Put,
   Delete,
   Req,
+  BadRequestException,
 } from '@nestjs/common';
 
 import {
@@ -29,6 +30,7 @@ import { IUserJWT } from 'src/common/interface/user-jwt.interface';
 import { Request } from 'express';
 import { Roles } from '../../../common/decorator/roles.decorator';
 import { Role } from '../../../common/enum/roles.enum';
+import { TPS_MIGRATED_USER } from '../../../common/constants/api.constant';
 
 @ApiTags('Company and User Management - Pending User')
 @ApiBadRequestResponse({
@@ -126,6 +128,11 @@ export class PendingUsersController {
     @Param('companyId') companyId: number,
     @Param('userName') userName: string,
   ): Promise<ReadPendingUserDto> {
+    if (userName?.toUpperCase() === TPS_MIGRATED_USER.toUpperCase()) {
+      throw new BadRequestException(
+        `Action not allowed for username ${userName}`,
+      );
+    }
     const pendingUser = await this.pendingUserService.findPendingUsersDto(
       userName,
       companyId,
@@ -162,6 +169,11 @@ export class PendingUsersController {
     @Body() updatePendingUserDto: UpdatePendingUserDto,
   ): Promise<ReadPendingUserDto> {
     const currentUser = request.user as IUserJWT;
+    if (userName?.toUpperCase() === TPS_MIGRATED_USER.toUpperCase()) {
+      throw new BadRequestException(
+        `Update not allowed for username ${userName}`,
+      );
+    }
     const pendingUser = await this.pendingUserService.update(
       companyId,
       userName,
@@ -188,6 +200,11 @@ export class PendingUsersController {
     @Param('companyId') companyId: number,
     @Param('userName') userName: string,
   ) {
+    if (userName?.toUpperCase() === TPS_MIGRATED_USER.toUpperCase()) {
+      throw new BadRequestException(
+        `Delete not allowed for username ${userName}`,
+      );
+    }
     const deleteResult = await this.pendingUserService.remove(
       companyId,
       userName,

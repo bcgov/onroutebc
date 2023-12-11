@@ -5,6 +5,7 @@ import { useContext } from "react";
 import { FIVE_MINUTES } from "../../../common/constants/constants";
 import { BCeIDAuthGroup } from "../types/userManagement";
 import { IDPS } from "../../../common/types/idp";
+import { RequiredOrNull } from "../../../common/types/common";
 import {
   getCompanyInfo,
   getCompanyInfoById,
@@ -63,6 +64,7 @@ export const useUserContext = () => {
     setCompanyLegalName,
     setIDIRUserDetails,
     setOnRouteBCClientNumber,
+    setMigratedClient,
   } = useContext(OnRouteBCContext);
   const { isAuthenticated, user: userFromToken } = useAuth();
   return useQuery({
@@ -89,8 +91,12 @@ export const useUserContext = () => {
           setIDIRUserDetails?.(() => userDetails);
         }
       } else {
-        const { user, associatedCompanies, pendingCompanies } =
-          userContextResponseBody as BCeIDUserContextType;
+        const {
+          user,
+          associatedCompanies,
+          pendingCompanies,
+          migratedClient,
+        } = userContextResponseBody as BCeIDUserContextType;
         if (user?.userGUID) {
           const companyId = associatedCompanies[0].companyId;
           const legalName = associatedCompanies[0].legalName;
@@ -128,6 +134,9 @@ export const useUserContext = () => {
             companyId.toString(),
           );
         }
+        if (migratedClient?.clientNumber) {
+          setMigratedClient?.(() => migratedClient);
+        }
       }
     },
     retry: false,
@@ -161,7 +170,7 @@ export const useIDIRUserRoles = () => {
     queryKey: ["userIDIRRoles"],
     refetchInterval: FIVE_MINUTES,
     queryFn: getIDIRUserRoles,
-    onSuccess: (userRoles: string[] | null) => {
+    onSuccess: (userRoles: RequiredOrNull<string[]>) => {
       setUserRoles?.(() => userRoles);
     },
     retry: true,
