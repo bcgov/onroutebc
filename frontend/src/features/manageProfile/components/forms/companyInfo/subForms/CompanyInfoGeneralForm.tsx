@@ -7,6 +7,7 @@ import {
   invalidAddressLength,
   invalidCityLength,
   invalidPostalCode,
+  isValidOptionalString,
   requiredMessage,
 } from "../../../../../../common/helpers/validationMessages";
 
@@ -39,12 +40,7 @@ export const CompanyInfoGeneralForm = ({ feature }: { feature: string }) => (
           required: false,
           validate: {
             validateAddress2: (address2?: string) =>
-              address2 == null ||
-              address2 === "" ||
-              (address2 != null &&
-                address2 !== "" &&
-                address2.length >= 1 &&
-                address2.length <= 100) ||
+              isValidOptionalString(address2, { maxLength: 100 }) ||
               invalidAddressLength(1, 100),
           },
         },

@@ -109,3 +109,16 @@ export const toTimeZone = (
   ianaId
     ? dayjs(datetimeStr).tz(ianaId).format(formatStr)
     : toLocal(datetimeStr, formatStr);
+
+/**
+ * Gets the number of days between two datetimes (should both be in the same timezone).
+ * @param laterDt Dayjs object representing the later datetime
+ * @param earlierDt Dayjs object representing the earlier datetime
+ * @returns Number of days between the two datetimes.
+ */
+export const getDateDiffInDays = (
+  laterDt: Dayjs,
+  earlierDt: Dayjs,
+) => {
+  return laterDt.diff(earlierDt, "day");
+};

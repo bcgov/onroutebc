@@ -28,6 +28,19 @@ export class Permit extends Base {
 
   @AutoMap()
   @ApiProperty({
+    example: '08-000-2819',
+    description:
+      'Unique formatted tps permit number, recorded once the permit is moved from tps migrated permit table.',
+  })
+  @Column({
+    length: '19',
+    name: 'TPS_PERMIT_NUMBER',
+    nullable: true,
+  })
+  tpsPermitNumber: string;
+
+  @AutoMap()
+  @ApiProperty({
     description: 'DMS Document ID used to retrieve the PDF of the permit',
   })
   @Column({

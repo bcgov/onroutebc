@@ -62,11 +62,7 @@ describe('UsersController', () => {
       const retOrbcUserContext = await controller.find(request);
       expect(typeof retOrbcUserContext).toBe('object');
       expect(retOrbcUserContext).toEqual(readRedAdminUserOrbcStatusDtoMock);
-      expect(userService.findORBCUser).toHaveBeenCalledWith(
-        currentUser.userGUID,
-        currentUser.userName,
-        currentUser.bceid_business_guid,
-      );
+      expect(userService.findORBCUser).toHaveBeenCalledWith(currentUser);
     });
   });
 

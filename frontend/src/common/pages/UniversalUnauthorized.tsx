@@ -5,7 +5,7 @@ export const UniversalUnauthorized = () => {
     <ErrorPage
       errorTitle="Unauthorized access"
       msgNode={
-        <>You do not have the necessary authorization to view this page.</>
+        <>You do not have the necessary authorization.</>
       }
     />
   );

@@ -3,10 +3,11 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { VoidPermitResponseData } from "../types/VoidPermit";
 import { voidPermit } from "../../../apiManager/permitsAPI";
+import { Optional } from "../../../../../common/types/common";
 
 export const useVoidPermit = () => {
   const [voidResults, setVoidResults] = useState<
-    VoidPermitResponseData | undefined
+    Optional<VoidPermitResponseData>
   >(undefined);
 
   const queryClient = useQueryClient();

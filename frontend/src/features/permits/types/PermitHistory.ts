@@ -1,21 +1,23 @@
-import {
-  PaymentCardTypeCode,
-  PaymentMethodTypeCode,
-} from "../../../common/types/paymentMethods";
-import { BamboraPaymentMethod } from "./PaymentMethod";
 import { TransactionType } from "./payment";
+import { RequiredOrNull } from "../../../common/types/common";
+import { 
+  PaymentCardTypeCode, 
+  PaymentMethodTypeCode,
+  PaymentGatewayMethod,
+} from "../../../common/types/paymentMethods";
 
 export interface PermitHistory {
   permitNumber: string;
-  comment: string | null;
+  comment: RequiredOrNull<string>;
   commentUsername: string;
   transactionAmount: number;
   transactionOrderNumber: string;
-  pgTransactionId: string | null;
-  pgPaymentMethod: BamboraPaymentMethod | null;
-  paymentCardTypeCode: PaymentCardTypeCode | null;
+  pgTransactionId: RequiredOrNull<string>;
+  pgPaymentMethod: RequiredOrNull<PaymentGatewayMethod>;
+  paymentCardTypeCode: RequiredOrNull<PaymentCardTypeCode>;
   paymentMethodTypeCode: PaymentMethodTypeCode;
   transactionTypeId: TransactionType;
   permitId: number;
-  transactionSubmitDate: string | null;
+  transactionSubmitDate: RequiredOrNull<string>;
+  pgApproved: RequiredOrNull<number>;
 }

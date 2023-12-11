@@ -233,8 +233,6 @@ dops:
         initialDelaySeconds: 60
         periodSeconds: 30
         timeoutSeconds: 5
-      securityContext:
-        allowPrivilegeEscalation: true
       resources: # this is optional
         limits:
           cpu: 300m
@@ -326,11 +324,11 @@ tps-migration:
         allowPrivilegeEscalation: true
       resources: # this is optional
         limits:
-          cpu: 200m
-          memory: 600Mi
+          cpu: 75m
+          memory: 150Mi
         requests:
-          cpu: 100m
-          memory: 200Mi
+          cpu: 25m
+          memory: 50Mi
   ingress:
     annotations: 
       route.openshift.io/termination: "edge"

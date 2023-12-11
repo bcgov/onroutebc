@@ -4,14 +4,16 @@ import { getUserGuidFromSession } from "../../../common/apiManager/httpRequestHa
 import { BCeIDUserDetailContext } from "../../../common/authentication/OnRouteBCContext";
 import { TROS_COMMODITIES } from "../constants/termOversizeConstants";
 import { now } from "../../../common/helpers/formatDate";
-import {
-  Address,
-  CompanyProfile,
-} from "../../manageProfile/types/manageProfile";
+import { Nullable } from "../../../common/types/common";
 import { PERMIT_STATUSES } from "../types/PermitStatus";
 import { calculateFeeByDuration } from "./feeSummary";
 import { PERMIT_TYPES } from "../types/PermitType";
 import { Permit } from "../types/permit";
+import {
+  Address,
+  CompanyProfile,
+} from "../../manageProfile/types/manageProfile";
+
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
@@ -107,7 +109,7 @@ export const getDefaultVehicleDetails = (vehicleDetails?: VehicleDetails) => ({
 });
 
 export const getDurationOrDefault = (
-  applicationData?: Application | Permit,
+  applicationData?: Nullable<Application | Permit>,
 ): number => {
   return applyWhenNotNullable(
     (duration) => +duration,
@@ -124,7 +126,7 @@ export const getDurationOrDefault = (
  * @returns default values for the application data
  */
 export const getDefaultValues = (
-  applicationData?: Application,
+  applicationData?: Nullable<Application>,
   companyId?: number,
   userDetails?: BCeIDUserDetailContext,
   companyInfo?: CompanyProfile,

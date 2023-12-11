@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   RadioGroup,
   FormControlLabel,
@@ -10,22 +11,23 @@ import {
   OutlinedInput,
 } from "@mui/material";
 
-import "./SearchFilter.scss";
 import {
   Controller,
   FieldValues,
   FormProvider,
   useForm,
 } from "react-hook-form";
+
+import "./SearchFilter.scss";
 import { CustomSelectDisplayProps } from "../../../types/formElements";
-import { useNavigate, useSearchParams } from "react-router-dom";
 import { getDefaultRequiredVal } from "../../../helpers/util";
+import { IDIR_ROUTES } from "../../../../routes/constants";
+import { Nullable } from "../../../types/common";
 import {
   SearchByFilter,
   SearchEntity,
   SearchFields,
 } from "../../../../features/idir/search/types/types";
-import { SEARCH_RESULTS } from "../../../../routes/constants";
 
 const SEARCH_BY_PERMIT_OPTIONS = [
   { label: "Permit Number", value: "permitNumber" },
@@ -41,7 +43,7 @@ const SEARCH_BY_APPLICATION_OPTIONS = [
   { label: "Application Number", value: "applicationNumber" },
 ];
 
-const getDefaultSearchEntity = (searchEntity?: string | null) => {
+const getDefaultSearchEntity = (searchEntity?: Nullable<string>) => {
   switch (searchEntity) {
     case "companies":
       return "companies";
@@ -53,7 +55,7 @@ const getDefaultSearchEntity = (searchEntity?: string | null) => {
   }
 };
 
-const getSearchByOptions = (searchEntity?: string | null) => {
+const getSearchByOptions = (searchEntity?: Nullable<string>) => {
   switch (searchEntity) {
     case "companies":
       return SEARCH_BY_COMPANY_OPTIONS;
@@ -66,8 +68,8 @@ const getSearchByOptions = (searchEntity?: string | null) => {
 };
 
 const getDefaultSearchBy = (
-  searchEntity?: string | null,
-  searchBy?: string | null,
+  searchEntity?: Nullable<string>,
+  searchBy?: Nullable<string>,
 ) => {
   const defaultSearchEntity = getDefaultSearchEntity(searchEntity);
   const searchByOptions = getSearchByOptions(defaultSearchEntity).map(
@@ -133,8 +135,8 @@ export const SearchFilter = () => {
     const searchFields = Object.entries(data)
       .map(([key, value]) => `${key}=${value}`)
       .join("&");
-
-    navigate(`${SEARCH_RESULTS}?${searchFields}`);
+    
+    navigate(`${IDIR_ROUTES.SEARCH_RESULTS}?${searchFields}`);
   };
 
   return (

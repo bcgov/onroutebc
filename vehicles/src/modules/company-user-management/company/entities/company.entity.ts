@@ -39,6 +39,19 @@ export class Company extends Base {
   clientNumber: string;
 
   /**
+   * The migrated client number of the company encoded SHA-256.
+   */
+  @AutoMap()
+  @Column({
+    length: 64,
+    name: 'TPS_CLIENT_HASH',
+    nullable: true,
+    insert: false,
+    update: false,
+  })
+  migratedClientNumber?: string;
+
+  /**
    * The company's legal name.
    */
   @AutoMap()

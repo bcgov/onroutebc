@@ -1,21 +1,24 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { NavLink } from "react-router-dom";
 import { useAuth } from "react-oidc-context";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
 
 import "./Header.scss";
-import * as routes from "../../../routes/constants";
 import { DoesUserHaveRoleWithContext } from "../../authentication/util";
 import { ROLES } from "../../authentication/types";
 import { Brand } from "./components/Brand";
-import { LogoutButton } from "./components/LogoutButton";
 import { UserSection } from "./components/UserSection";
-import { UserSectionInfo } from "./components/UserSectionInfo";
 import { getLoginUsernameFromSession } from "../../apiManager/httpRequestHandler";
 import { SearchButton } from "./components/SearchButton";
 import { SearchFilter } from "./components/SearchFilter";
 import { IDPS } from "../../types/idp";
+import OnRouteBCContext from "../../authentication/OnRouteBCContext";
+import { 
+  APPLICATIONS_ROUTES, 
+  PROFILE_ROUTES, 
+  VEHICLES_ROUTES, 
+} from "../../../routes/constants";
 
 const getEnv = () => {
   const env =
@@ -44,7 +47,6 @@ const Navbar = ({
   isAuthenticated: boolean;
   isMobile?: boolean;
 }) => {
-  const username = getLoginUsernameFromSession();
   const navbarClassName = isMobile ? "mobile" : "normal";
   return (
     <nav className={`navbar navbar--${navbarClassName}`}>
@@ -54,28 +56,26 @@ const Navbar = ({
             <>
               {DoesUserHaveRoleWithContext(ROLES.WRITE_PERMIT) && (
                 <li>
-                  <NavLink to={routes.APPLICATIONS}>Permits</NavLink>
+                  <NavLink to={APPLICATIONS_ROUTES.BASE}>
+                    Permits
+                  </NavLink>
                 </li>
               )}
               {DoesUserHaveRoleWithContext(ROLES.READ_VEHICLE) && (
                 <li>
-                  <NavLink to={routes.MANAGE_VEHICLES}>
+                  <NavLink to={VEHICLES_ROUTES.MANAGE}>
                     Vehicle Inventory
                   </NavLink>
                 </li>
               )}
               {DoesUserHaveRoleWithContext(ROLES.READ_ORG) && (
                 <li>
-                  <NavLink to={routes.MANAGE_PROFILES}>Profile</NavLink>
+                  <NavLink to={PROFILE_ROUTES.MANAGE}>
+                    Profile
+                  </NavLink>
                 </li>
               )}
             </>
-          )}
-          {isAuthenticated && (
-            <li className={`user-section user-section--${navbarClassName}`}>
-              <UserSectionInfo username={username} />
-              <LogoutButton />
-            </li>
           )}
         </ul>
       </div>
@@ -95,8 +95,12 @@ export const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
   const { isAuthenticated, user } = useAuth();
+  const { userDetails } = useContext(OnRouteBCContext);
   const username = getLoginUsernameFromSession();
   const isIdir = user?.profile?.identity_provider === IDPS.IDIR;
+
+  const shouldDisplayNavBar =
+    !isIdir && Boolean(Object.keys(userDetails ?? {}).length);
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
@@ -135,8 +139,10 @@ export const Header = () => {
           {isAuthenticated ? <NavButton /> : null}
         </div>
       </header>
-      {!isIdir && <Navbar isAuthenticated={isAuthenticated} />}
-      {!isIdir && menuOpen ? (
+      {shouldDisplayNavBar && (
+        <Navbar isAuthenticated={isAuthenticated} />
+      )}
+      {shouldDisplayNavBar && menuOpen ? (
         <Navbar isAuthenticated={isAuthenticated} isMobile={true} />
       ) : null}
       {filterOpen ? <SearchFilter /> : null}

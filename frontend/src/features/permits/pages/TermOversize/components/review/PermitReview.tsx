@@ -3,7 +3,7 @@ import { Dayjs } from "dayjs";
 import { Dispatch, SetStateAction } from "react";
 
 import "./PermitReview.scss";
-import { WarningBcGovBanner } from "../../../../../../common/components/banners/AlertBanners";
+import { WarningBcGovBanner } from "../../../../../../common/components/banners/WarningBcGovBanner";
 import { ApplicationDetails } from "../../../../components/form/ApplicationDetails";
 import { ReviewContactDetails } from "./ReviewContactDetails";
 import { ReviewPermitDetails } from "./ReviewPermitDetails";
@@ -21,6 +21,7 @@ import { VehicleType } from "../../../../../manageVehicles/types/managevehicles"
 import { PermitType } from "../../../../types/PermitType";
 import { calculateFeeByDuration } from "../../../../helpers/feeSummary";
 import { getDefaultRequiredVal } from "../../../../../../common/helpers/util";
+import { Nullable } from "../../../../../../common/types/common";
 
 interface PermitReviewProps {
   permitType?: PermitType;
@@ -28,7 +29,7 @@ interface PermitReviewProps {
   applicationNumber?: string;
   createdDateTime?: Dayjs;
   updatedDateTime?: Dayjs;
-  companyInfo?: CompanyProfile | null;
+  companyInfo?: Nullable<CompanyProfile>;
   contactDetails?: ContactDetails;
   permitStartDate?: Dayjs;
   permitDuration?: number;
@@ -47,7 +48,7 @@ interface PermitReviewProps {
   onEdit: () => void;
   onContinue: () => Promise<void>;
   showChangedFields?: boolean;
-  oldFields?: Partial<Application> | null;
+  oldFields?: Nullable<Partial<Application>>;
   calculatedFee?: string;
 }
 
@@ -62,8 +63,7 @@ export const PermitReview = (props: PermitReviewProps) => {
     <Box className="permit-review layout-box">
       <Box className="permit-review__container">
         <WarningBcGovBanner
-          description="Please review and confirm that the information below is correct."
-          width="668px"
+          msg="Please review and confirm that the information below is correct."
         />
 
         <ApplicationDetails

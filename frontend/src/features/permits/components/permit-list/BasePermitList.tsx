@@ -3,9 +3,7 @@ import { useCallback, useContext, useEffect } from "react";
 import { UseQueryResult } from "@tanstack/react-query";
 
 import {
-  MRT_GlobalFilterTextField,
   MRT_Row,
-  MRT_TableInstance,
   MaterialReactTable,
   useMaterialReactTable,
 } from "material-react-table";
@@ -39,6 +37,8 @@ export const BasePermitList = ({
     ...defaultTableOptions,
     columns: PermitsColumnDefinition,
     data: data ?? [],
+    enableTopToolbar: false,
+    enableRowSelection: false,
     initialState: {
       ...defaultTableInitialStateOptions,
       sorting: [{ id: "permitData.expiryDate", desc: true }],
@@ -52,30 +52,18 @@ export const BasePermitList = ({
     },
     renderEmptyRowsFallback: () => <NoRecordsFound />,
     renderRowActions: useCallback(
-      ({ row }: { table: MRT_TableInstance<Permit>; row: MRT_Row<Permit> }) => {
+      (props: {
+        row: MRT_Row<Permit>;
+      }) => {
         return (
           <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
             <PermitRowOptions
               isExpired={isExpired}
-              permitId={row.original.permitId}
+              permitId={props.row.original.permitId}
             />
           </Box>
         );
       },
-      [],
-    ),
-    renderTopToolbar: useCallback(
-      ({ table }: { table: MRT_TableInstance<Permit> }) => (
-        <Box
-          sx={{
-            display: "flex",
-            padding: "20px 0px",
-            backgroundColor: "white",
-          }}
-        >
-          <MRT_GlobalFilterTextField table={table} />
-        </Box>
-      ),
       [],
     ),
     muiToolbarAlertBannerProps: isError

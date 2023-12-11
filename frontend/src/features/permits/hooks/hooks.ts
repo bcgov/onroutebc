@@ -1,5 +1,5 @@
 import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AxiosError } from "axios";
 
 import { Application } from "../types/application";
@@ -7,7 +7,8 @@ import { mapApplicationResponseToApplication } from "../helpers/mappers";
 import { IssuePermitsResponse, Permit } from "../types/permit";
 import { PermitHistory } from "../types/PermitHistory";
 import { StartTransactionResponseData } from "../types/payment";
-
+import { FIVE_MINUTES } from "../../../common/constants/constants";
+import { APPLICATION_STEPS, ApplicationStep } from "../../../routes/constants";
 import {
   getApplicationByPermitId,
   getPermit,
@@ -20,7 +21,9 @@ import {
   amendPermit,
   getCurrentAmendmentApplication,
   modifyAmendmentApplication,
+  getApplicationsInProgress,
 } from "../apiManager/permitsAPI";
+import { Nullable, Optional } from "../../../common/types/common";
 
 /**
  * A custom react query mutation hook that saves the application data to the backend API
@@ -39,8 +42,8 @@ export const useSaveTermOversizeMutation = () => {
     onSuccess: (response) => {
       if (response.status === 200 || response.status === 201) {
         queryClient.invalidateQueries(["termOversize"]);
-        queryClient.setQueryData(["termOversize"], response);
-        return response;
+        queryClient.setQueryData(["termOversize"], response.data);
+        return response.data;
       } else {
         // Display Error in the form.
       }
@@ -54,38 +57,64 @@ export const useSaveTermOversizeMutation = () => {
  * @param permitId permit id for the application, if it exists
  * @returns appropriate Application data, or error if failed
  */
-export const useApplicationDetailsQuery = (permitId?: string) => {
-  const [applicationData, setApplicationData] = useState<
-    Application | undefined
-  >(undefined);
+export const useApplicationDetailsQuery = (
+  applicationStep: ApplicationStep,
+  permitId?: string,
+) => {
+  const [applicationData, setApplicationData] = 
+    useState<Nullable<Application>>();
 
   // Currently, creating new application route doesn't contain permitId
-  // ie. route === "/applications/permits" instead of "/applications/:permitId"
+  // ie. route === "/applications/new" instead of "/applications/:permitId"
   // Thus we need to do a check
-  const isPermitIdValid = permitId != null && !isNaN(Number(permitId));
+  // Also, "/applications/new" is valid, but "/applications/new/review" is invalid
+  // Thus we also need applicationStep to determine which page (route) we're on
+  const isCreateNewApplication = 
+    typeof permitId === "undefined" && applicationStep === APPLICATION_STEPS.DETAILS;
+  
+  // Check if the permit id is numeric
+  const isPermitIdNumeric = () => {
+    if (!permitId) return false;
+    if (permitId.trim() === "") return false;
+    return !isNaN(Number(permitId.trim()));
+  };
 
+  const isInvalidRoute = !isPermitIdNumeric() && !isCreateNewApplication;
+  const shouldEnableQuery = isPermitIdNumeric();
+
+  // This won't fetch anything (ie. query.data will be undefined) if shouldEnableQuery is false
   const query = useQuery({
     queryKey: ["termOversize"],
     queryFn: () => getApplicationByPermitId(permitId),
     retry: false,
     refetchOnMount: "always", // always fetch when component is mounted (ApplicationDashboard page)
     refetchOnWindowFocus: false, // prevent unnecessary multiple queries on page showing up in foreground
-    enabled: isPermitIdValid, // does not perform the query at all if permit id is invalid
-    onSuccess: (application) => {
-      if (!application) {
-        // set to undefined when application not found
-        setApplicationData(undefined);
-      } else {
-        // if found, convert to ApplicationResponse object to Application (date string values to Dayjs objects to be used for date inputs)
-        setApplicationData(mapApplicationResponseToApplication(application));
-      }
-    },
+    enabled: shouldEnableQuery, // does not perform the query at all if permit id is invalid
   });
 
+  useEffect(() => {
+    if (!shouldEnableQuery) {
+      if (isInvalidRoute) {
+        setApplicationData(null);
+      } else {
+        setApplicationData(undefined);
+      }
+    } else if (!query.data) {
+      // query is enabled, set application data to whatever's being fetched
+      setApplicationData(query.data);
+    } else {
+      const application = mapApplicationResponseToApplication(query.data);
+      setApplicationData(
+        application,
+      );
+    }
+  }, [query.data, shouldEnableQuery, isInvalidRoute]);
+
   return {
-    query,
     applicationData,
     setApplicationData,
+    isInvalidRoute,
+    shouldEnableQuery,
   };
 };
 
@@ -96,7 +125,7 @@ export const useApplicationDetailsQuery = (permitId?: string) => {
  * @returns permit details, or error if failed
  */
 export const usePermitDetailsQuery = (permitId?: string) => {
-  const [permit, setPermit] = useState<Permit | null | undefined>(undefined);
+  const [permit, setPermit] = useState<Nullable<Permit>>(undefined);
 
   const invalidPermitId = !permitId;
   const query = useQuery({
@@ -124,7 +153,7 @@ export const usePermitDetailsQuery = (permitId?: string) => {
  */
 export const useStartTransaction = () => {
   const [transaction, setTransaction] = useState<
-    StartTransactionResponseData | null | undefined
+    Nullable<StartTransactionResponseData>
   >(undefined);
   const queryClient = useQueryClient();
 
@@ -159,7 +188,7 @@ export const useCompleteTransaction = (
   paymentStatus: number,
 ) => {
   const queryClient = useQueryClient();
-  const [paymentApproved, setPaymentApproved] = useState<boolean | undefined>(
+  const [paymentApproved, setPaymentApproved] = useState<Optional<boolean>>(
     undefined,
   );
   const [message, setMessage] = useState<string>(messageText);
@@ -243,7 +272,7 @@ export const usePermitHistoryQuery = (originalPermitId?: string) => {
  */
 export const useIssuePermits = () => {
   const [issueResults, setIssueResults] = useState<
-    IssuePermitsResponse | undefined
+    Optional<IssuePermitsResponse>
   >(undefined);
   const queryClient = useQueryClient();
 
@@ -323,7 +352,7 @@ export const useModifyAmendmentApplication = () => {
  */
 export const useAmendmentApplicationQuery = (originalPermitId?: string) => {
   const [amendmentApplication, setAmendmentApplication] = useState<
-    Permit | null | undefined
+    Nullable<Permit>
   >(undefined);
 
   const isIdInvalid = !originalPermitId;
@@ -342,5 +371,22 @@ export const useAmendmentApplicationQuery = (originalPermitId?: string) => {
   return {
     query,
     amendmentApplication,
+  };
+};
+
+/**
+ * A custom react query hook that fetches applications in progress.
+ * @returns List of applications in progress
+ */
+export const useApplicationsInProgressQuery = () => {
+  const applicationsInProgressQuery = useQuery({
+    queryKey: ["applicationInProgress"],
+    queryFn: getApplicationsInProgress,
+    keepPreviousData: true,
+    staleTime: FIVE_MINUTES,
+  });
+
+  return {
+    applicationsInProgressQuery,
   };
 };

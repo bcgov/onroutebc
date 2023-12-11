@@ -1,5 +1,9 @@
-@use "../list/List.scss";
+@use "../list/List";
 
 .table-container {
   padding-bottom: 12.5rem;
+
+  .bc-gov-alertbanner {
+    margin-bottom: 1.5rem;
+  }
 }

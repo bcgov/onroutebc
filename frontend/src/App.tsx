@@ -9,17 +9,20 @@ import "./App.scss";
 import { Header } from "./common/components/header/Header";
 import { Footer } from "./common/components/footer/Footer";
 import { bcGovTheme } from "./themes/bcGovTheme";
+import { NavIconSideBar } from "./common/components/naviconsidebar/NavIconSideBar";
+import { NavIconHomeButton } from "./common/components/naviconsidebar/NavIconHomeButton";
+import { NavIconReportButton } from "./common/components/naviconsidebar/NavIconReportButton";
+import { Nullable, Optional } from "./common/types/common";
 import {
   CustomSnackbar,
   SnackBarOptions,
 } from "./common/components/snackbar/CustomSnackBar";
+
 import OnRouteBCContext, {
   BCeIDUserDetailContext,
   IDIRUserDetailContext,
 } from "./common/authentication/OnRouteBCContext";
-import { NavIconSideBar } from "./common/components/naviconsidebar/NavIconSideBar";
-import { NavIconHomeButton } from "./common/components/naviconsidebar/NavIconHomeButton";
-import { NavIconReportButton } from "./common/components/naviconsidebar/NavIconReportButton";
+import { MigratedClient } from "./common/authentication/types";
 
 const authority =
   import.meta.env.VITE_AUTH0_ISSUER_URL || envConfig.VITE_AUTH0_ISSUER_URL;
@@ -57,20 +60,17 @@ const App = () => {
     alertType: "info",
   });
 
-  const [userRoles, setUserRoles] = useState<string[] | null | undefined>();
-  const [companyId, setCompanyId] = useState<number | undefined>();
-  const [onRouteBCClientNumber, setOnRouteBCClientNumber] = useState<
-    string | undefined
-  >();
-  const [companyLegalName, setCompanyLegalName] = useState<
-    string | undefined
-  >();
-  const [userDetails, setUserDetails] = useState<
-    BCeIDUserDetailContext | undefined
-  >();
-  const [idirUserDetails, setIDIRUserDetails] = useState<
-    IDIRUserDetailContext | undefined
-  >();
+  const [userRoles, setUserRoles] = useState<Nullable<string[]>>();
+  const [companyId, setCompanyId] = useState<Optional<number>>();
+  const [onRouteBCClientNumber, setOnRouteBCClientNumber] =
+    useState<Optional<string>>();
+  const [companyLegalName, setCompanyLegalName] = useState<Optional<string>>();
+  const [userDetails, setUserDetails] =
+    useState<Optional<BCeIDUserDetailContext>>();
+  const [idirUserDetails, setIDIRUserDetails] =
+    useState<Optional<IDIRUserDetailContext>>();
+  const [migratedClient, setMigratedClient] =
+    useState<Optional<MigratedClient>>();
 
   // Needed the following usestate and useffect code so that the snackbar would disapear/close
   const [displaySnackBar, setDisplaySnackBar] = useState(false);
@@ -97,8 +97,18 @@ const App = () => {
                 setIDIRUserDetails,
                 onRouteBCClientNumber,
                 setOnRouteBCClientNumber,
+                migratedClient,
+                setMigratedClient,
               };
-            }, [userRoles, companyId, userDetails])}
+            }, [
+              userRoles,
+              companyId,
+              userDetails,
+              companyLegalName,
+              idirUserDetails,
+              onRouteBCClientNumber,
+              migratedClient,
+            ])}
           >
             <SnackBarContext.Provider value={{ setSnackBar: setSnackBar }}>
               <CustomSnackbar

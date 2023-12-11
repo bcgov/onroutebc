@@ -1,21 +1,13 @@
-@import "../../../../themes/orbcStyles.scss";
+@use "../../../../common/components/dashboard/Dashboard";
+@import "../../../../themes/orbcStyles";
+
+@include Dashboard.layout-box-style(".pay-now-page .payment");
+@include Dashboard.layout-box-style(".pay-now-page .breadcrumb");
 
 .payment {
-  padding: 0 8.551vw;
   background-color: $bc-white;
   display: flex;
   flex-direction: column;
   padding-top: 1.5rem;
-}
-
-@media (width < 768px) {
-  .payment {
-    padding: 0 5.5rem;
-  }
-}
-
-@media (width < 420px) {
-  .payment {
-    padding: 0 1rem;
-  }
+  padding-bottom: 0;
 }

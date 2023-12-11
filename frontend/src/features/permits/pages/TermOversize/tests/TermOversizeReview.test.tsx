@@ -1,20 +1,22 @@
 import { Dayjs } from "dayjs";
 import { waitFor } from "@testing-library/react";
 
-import {
-  DATE_FORMATS,
-  dayjsToLocalStr,
-} from "../../../../../common/helpers/formatDate";
-import {
-  formatCountry,
-  formatProvince,
-} from "../../../../../common/helpers/formatCountryProvince";
 import { VehicleDetails } from "../../../types/application";
 import { vehicleTypeDisplayText } from "../../../helpers/mappers";
 import { VehicleTypesAsString } from "../../../../manageVehicles/types/managevehicles";
 import { getDefaultRequiredVal } from "../../../../../common/helpers/util";
 import { calculateFeeByDuration } from "../../../helpers/feeSummary";
 import { permitTypeDisplayText } from "../../../types/PermitType";
+import {
+  DATE_FORMATS,
+  dayjsToLocalStr,
+} from "../../../../../common/helpers/formatDate";
+
+import {
+  formatCountry,
+  formatProvince,
+} from "../../../../../common/helpers/formatCountryProvince";
+
 import {
   applicationCreatedDate,
   applicationHeaderTitle,

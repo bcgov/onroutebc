@@ -1,3 +1,5 @@
+import { Nullable } from "./common";
+
 /**
  * The payment method type codes.
  */
@@ -227,7 +229,7 @@ export const getConsolidatedPaymentMethod = (
 
 export const getPaymentMethod = (
   paymentMethod: PaymentMethodTypeCode,
-  paymentCard?: PaymentCardTypeCode | null,
+  paymentCard?: Nullable<PaymentCardTypeCode>,
 ): string => {
   if (!paymentCard || !PAYMENT_METHODS_WITH_CARD.includes(paymentMethod)) {
     return PAYMENT_METHOD_TYPE_DISPLAY[paymentMethod];
@@ -238,3 +240,11 @@ export const getPaymentMethod = (
     PAYMENT_CARD_TYPE_DISPLAY[paymentCard],
   );
 };
+
+export const PAYMENT_GATEWAY_METHODS = {
+  CC: "CC", // Credit Card Transaction
+  IO: "IO", // Interac Online Transaction
+} as const;
+
+export type PaymentGatewayMethod =
+  (typeof PAYMENT_GATEWAY_METHODS)[keyof typeof PAYMENT_GATEWAY_METHODS];

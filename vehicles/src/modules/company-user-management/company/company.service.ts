@@ -31,6 +31,8 @@ import { Cache } from 'cache-manager';
 import { getFromCache } from '../../../common/helper/cache.helper';
 import { CacheKey } from '../../../common/enum/cache-key.enum';
 import { AccountSource } from '../../../common/enum/account-source.enum';
+import { PendingUser } from '../pending-users/entities/pending-user.entity';
+import * as crypto from 'crypto';
 
 @Injectable()
 export class CompanyService {
@@ -64,7 +66,7 @@ export class CompanyService {
   ): Promise<ReadCompanyUserDto> {
     let newCompany: Company;
     let newUser: ReadUserDto;
-    let migratedTPSClient = false;
+    let migratedClient = false;
     const existingCompanyDetails = await this.findOneByCompanyGuid(
       currentUser.bceid_business_guid,
     );
@@ -77,7 +79,7 @@ export class CompanyService {
     } else if (
       existingCompanyDetails?.accountSource === AccountSource.TpsAccount
     ) {
-      migratedTPSClient = true;
+      migratedClient = true;
     }
 
     const queryRunner = this.dataSource.createQueryRunner();
@@ -100,7 +102,7 @@ export class CompanyService {
         },
       );
 
-      if (!migratedTPSClient) {
+      if (!migratedClient) {
         newCompany.clientNumber = await this.generateClientNumber(
           newCompany,
           currentUser,
@@ -109,6 +111,11 @@ export class CompanyService {
         newCompany.companyId = existingCompanyDetails?.companyId;
         newCompany.mailingAddress.addressId =
           existingCompanyDetails?.mailingAddress?.addressId;
+
+        await queryRunner.manager.delete(PendingUser, {
+          companyId: existingCompanyDetails?.companyId,
+          userGUID: currentUser.userGUID,
+        });
       }
 
       newCompany = await queryRunner.manager.save(newCompany);
@@ -119,6 +126,7 @@ export class CompanyService {
         User,
         {
           extraArgs: () => ({
+            userAuthGroup: UserAuthGroup.COMPANY_ADMINISTRATOR,
             userName: currentUser.userName,
             directory: currentUser.orbcUserDirectory,
             userGUID: currentUser.userGUID,
@@ -285,7 +293,7 @@ export class CompanyService {
   }
 
   /**
-   * The findOneByCompanyGuid() method returns a ReadCompanyDto object corresponding to the
+   * The findOneByCompanyGuid() method returns a Company Entity object corresponding to the
    * company with that company GUID. It retrieves the entity from the database using the
    * Repository
    *
@@ -301,6 +309,27 @@ export class CompanyService {
         primaryContact: true,
         companyUsers: true,
       },
+    });
+  }
+
+  /**
+   * The findOneByMigratedClientNumber() method returns a Company Entity object corresponding to the
+   * company with that migrated client number. It retrieves the entity from the database using the
+   * Repository
+   *
+   * @param migratedClientNumber The migrated client Number.
+   *
+   * @returns The company details as a promise of type {@link Company}
+   */
+  async findOneByMigratedClientNumber(
+    migratedClientNumber: string,
+  ): Promise<Company> {
+    const migratedClientHash = crypto
+      .createHash('sha256')
+      .update(migratedClientNumber?.replace(/-/g, ''))
+      .digest('hex');
+    return await this.companyRepository.findOne({
+      where: { migratedClientNumber: migratedClientHash?.toUpperCase() },
     });
   }
 

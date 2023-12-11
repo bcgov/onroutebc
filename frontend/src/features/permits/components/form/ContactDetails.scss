@@ -1,0 +1,14 @@
+@use "../../../../themes/orbcStyles";
+
+@include orbcStyles.permit-main-box-style(".contact-details-form");
+@include orbcStyles.permit-left-box-style(".contact-details-form__header");
+@include orbcStyles.permit-right-box-style(".contact-details-form__body");
+
+.contact-details-form {
+  & &__body {
+    .bc-gov-alertbanner {
+      margin-top: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+  }
+}

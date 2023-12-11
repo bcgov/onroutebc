@@ -1,11 +1,12 @@
-import {
-  PaymentCardTypeCode,
+import { Nullable, NullableFields } from "../../../common/types/common";
+import { 
+  PaymentCardTypeCode, 
   PaymentMethodTypeCode,
+  PaymentGatewayMethod,
 } from "../../../common/types/paymentMethods";
-import { BamboraPaymentMethod } from "./PaymentMethod";
 
 export interface PayBCPaymentDetails {
-  authCode: string;
+  authCode?: Nullable<string>;
   avsAddrMatch: string;
   avsId: string;
   avsMessage: string;
@@ -13,11 +14,11 @@ export interface PayBCPaymentDetails {
   avsProcessed: string;
   avsResult: string;
   cardType: string;
-  cvdId: number;
+  cvdId?: Nullable<number>;
   trnApproved: number;
-  messageId: string;
+  messageId?: Nullable<number>;
   messageText: string;
-  paymentMethod: BamboraPaymentMethod;
+  paymentMethod: PaymentGatewayMethod;
   ref1: string;
   ref2: string;
   ref3: string;
@@ -43,7 +44,6 @@ export const TRANSACTION_TYPES = {
   PA: "PA",
   PAC: "PAC",
   Q: "Q",
-  Z: "Z",
 } as const;
 
 export type TransactionType =
@@ -56,13 +56,13 @@ export interface PaymentGatewayData {
   pgCardType: PaymentCardTypeCode;
   pgTransactionDate: string;
   pgCvdId: number;
-  pgPaymentMethod: BamboraPaymentMethod;
+  pgPaymentMethod: PaymentGatewayMethod;
   pgMessageId: number;
   pgMessageText: string;
 }
 
 export interface StartTransactionRequestData
-  extends Partial<PaymentGatewayData> {
+  extends NullableFields<PaymentGatewayData> {
   transactionTypeId: TransactionType;
   paymentMethodTypeCode: PaymentMethodTypeCode;
   paymentCardTypeCode?: PaymentCardTypeCode;
@@ -73,11 +73,11 @@ export interface StartTransactionRequestData
 }
 
 export interface StartTransactionResponseData
-  extends Partial<PaymentGatewayData> {
+  extends NullableFields<PaymentGatewayData> {
   transactionId: string;
   transactionTypeId: TransactionType;
   paymentMethodTypeCode: PaymentMethodTypeCode;
-  paymentCardTypeCode?: PaymentCardTypeCode | null;
+  paymentCardTypeCode?: Nullable<PaymentCardTypeCode>;
   totalTransactionAmount: number;
   transactionSubmitDate: string;
   transactionOrderNumber: string;
@@ -88,9 +88,9 @@ export interface StartTransactionResponseData
   url?: string;
 }
 
-export type CompleteTransactionRequestData = Partial<PaymentGatewayData>;
+export type CompleteTransactionRequestData = NullableFields<PaymentGatewayData>;
 
 export interface CompleteTransactionResponseData
-  extends Partial<PaymentGatewayData> {
+  extends NullableFields<PaymentGatewayData> {
   transactionId: string;
 }

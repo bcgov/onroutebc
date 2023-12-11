@@ -1,5 +1,8 @@
 import { vi } from "vitest";
+
+import { assertSuccessfulSubmit } from "./helpers/assert";
 import {
+  actionButtons,
   chooseOption,
   clickSubmit,
   countrySelect,
@@ -10,7 +13,7 @@ import {
   powerUnitTypeCodeSelect,
   provinceSelect,
   replaceValueForInput,
-  selectOptionsAndButtons,
+  selectOptions,
   steerAxleTireSizeInput,
   submitVehicleForm,
   textInputs,
@@ -28,7 +31,6 @@ import {
   renderTestPowerUnitForm,
   resetMockServer,
 } from "./helpers/prepare";
-import { assertSuccessfulSubmit } from "./helpers/assert";
 
 beforeAll(() => {
   listenToMockServer();
@@ -43,46 +45,49 @@ afterAll(() => {
   closeMockServer();
 });
 
-// describe("All Power Unit Form Fields", () => {
-//   it("should render all form fields", async () => {
-//     // Arrange and Act
-//     const { user } = renderTestPowerUnitForm();
-//     const unitNumber = await unitNumberInput();
-//     const make = await makeInput();
-//     const year = await yearInput();
-//     const vin = await vinInput();
-//     const plate = await plateInput();
-//     const powerUnitTypeCode = await powerUnitTypeCodeSelect();
-//     const country = await countrySelect();
-//     const province = await provinceSelect();
-//     const licensedGvw = await licensedGvwInput();
-//     const steerAxleTireSize = await steerAxleTireSizeInput();
+describe("All Power Unit Form Fields", () => {
+  it("should render all form fields", async () => {
+    // Arrange and Act
+    const { user } = renderTestPowerUnitForm();
+    const unitNumber = await unitNumberInput();
+    const make = await makeInput();
+    const year = await yearInput();
+    const vin = await vinInput();
+    const plate = await plateInput();
+    const powerUnitTypeCode = await powerUnitTypeCodeSelect();
+    const country = await countrySelect();
+    const province = await provinceSelect();
+    const licensedGvw = await licensedGvwInput();
+    const steerAxleTireSize = await steerAxleTireSizeInput();
 
-//     // Assert
-//     expect(unitNumber).toBeInTheDocument();
-//     expect(make).toBeInTheDocument();
-//     expect(year).toBeInTheDocument();
-//     expect(vin).toBeInTheDocument();
-//     expect(plate).toBeInTheDocument();
-//     expect(powerUnitTypeCode).toBeInTheDocument();
-//     expect(country).toBeInTheDocument();
-//     expect(province).toBeInTheDocument();
-//     expect(licensedGvw).toBeInTheDocument();
-//     expect(steerAxleTireSize).toBeInTheDocument();
+    // Assert
+    expect(unitNumber).toBeInTheDocument();
+    expect(make).toBeInTheDocument();
+    expect(year).toBeInTheDocument();
+    expect(vin).toBeInTheDocument();
+    expect(plate).toBeInTheDocument();
+    expect(powerUnitTypeCode).toBeInTheDocument();
+    expect(country).toBeInTheDocument();
+    expect(province).toBeInTheDocument();
+    expect(licensedGvw).toBeInTheDocument();
+    expect(steerAxleTireSize).toBeInTheDocument();
 
-//     await clickSubmit(user);
+    await clickSubmit(user);
 
-//     // Check for number of select dropdowns and the Cancel & Add To Inventory buttons
-//     const selectFields = await selectOptionsAndButtons();
-//     expect(selectFields).toHaveLength(5);
-//     // Check for number of input fields
-//     const inputFields = await textInputs();
-//     expect(inputFields).toHaveLength(5);
-//     // Check for number of inputs with type="number" (ie. role of "spinbutton")
-//     const numberFields = await numericInputs();
-//     expect(numberFields).toHaveLength(2);
-//   });
-// });
+    // Check for number of select dropdowns
+    const selectFields = await selectOptions();
+    expect(selectFields).toHaveLength(3);
+    // Check for number of buttons
+    const buttons = await actionButtons();
+    expect(buttons).toHaveLength(2);
+    // Check for number of input fields
+    const inputFields = await textInputs();
+    expect(inputFields).toHaveLength(5);
+    // Check for number of inputs with type="number" (ie. role of "spinbutton")
+    const numberFields = await numericInputs();
+    expect(numberFields).toHaveLength(2);
+  });
+});
 
 describe("Power Unit Form: Test VIN field validation", () => {
   it("should show error when submitting empty VIN field", async () => {

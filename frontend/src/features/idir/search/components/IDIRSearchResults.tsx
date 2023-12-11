@@ -17,9 +17,10 @@ import { getDataBySearch } from "../api/idirSearch";
 import { PermitSearchResultColumnDef } from "../table/Columns";
 import { SearchFields } from "../types/types";
 import { IDIRPermitSearchRowActions } from "./IDIRPermitSearchRowActions";
-import "./List.scss";
+import "./IDIRSearchResults.scss";
 import { USER_AUTH_GROUP } from "../../../manageProfile/types/userManagement.d";
 import { isPermitInactive } from "../../../permits/types/PermitStatus";
+import { Optional } from "../../../../common/types/common";
 import {
   defaultTableInitialStateOptions,
   defaultTableOptions,
@@ -31,7 +32,7 @@ import {
  * @param userAuthGroup The auth group the user belongs to.
  * @returns boolean
  */
-const shouldShowRowActions = (userAuthGroup: string | undefined): boolean => {
+const shouldShowRowActions = (userAuthGroup: Optional<string>): boolean => {
   if (!userAuthGroup) return false;
   // Check if the user has PPC role to confirm
   const allowableAuthGroups = [
@@ -113,7 +114,10 @@ export const IDIRSearchResults = memo(
         showProgressBars: isLoading,
       },
       enableTopToolbar: true,
-      renderToolbarInternalActions: () => <></>,
+      enableBottomToolbar: false,
+      enableRowSelection: false,
+      enableGlobalFilter: false,
+      renderToolbarInternalActions: () => <div className="toolbar-internal"></div>,
       renderTopToolbarCustomActions: () => {
         return (
           <Box sx={{ display: "flex", gap: "1rem", p: "4px" }}>
@@ -147,7 +151,9 @@ export const IDIRSearchResults = memo(
 
           if (shouldShowRowActions(idirUserDetails?.userAuthGroup)) {
             return (
-              <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+              <Box
+                className="idir-search-results__row-actions"
+              >
                 <IDIRPermitSearchRowActions
                   isPermitInactive={isInactive}
                   permitNumber={row.original.permitNumber}
@@ -171,7 +177,7 @@ export const IDIRSearchResults = memo(
     });
 
     return (
-      <div className="table-container">
+      <div className="table-container idir-search-results">
         <MaterialReactTable table={table} />
       </div>
     );
