@@ -140,7 +140,7 @@ export class PermitController {
 
   @ApiOkResponse({
     description: 'The Search Permit Resource',
-    type: ReadPermitDto,
+    type: PaginationDto<ReadPermitDto, IPaginationMeta>,
     isArray: true,
   })
   /**
