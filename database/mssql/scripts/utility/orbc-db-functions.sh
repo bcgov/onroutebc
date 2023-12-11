@@ -81,8 +81,12 @@ function revert_db_single {
 
     if (( $? == 0 )); then
       echo "Reverted ORBC database version."
+      # Clean up temp revert script
+      rm ${SCRIPT_DIR}/tmp/revert.tmp.sql
     else
       echo "Error reverting ORBC database version."
+      # Clean up temp revert script
+      rm ${SCRIPT_DIR}/tmp/revert.tmp.sql
       return 1
     fi
   else
