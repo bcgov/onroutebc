@@ -30,8 +30,9 @@ export async function getAccessToken(
     password = process.env.CDOGS_CLIENT_SECRET;
   }
 
-  const tokenFromCache: GovCommonServicesToken =
-    await cacheManager.get(tokenCacheKey);
+  const tokenFromCache: GovCommonServicesToken = await cacheManager.get(
+    tokenCacheKey,
+  );
   if (tokenFromCache) {
     if (Date.now() < tokenFromCache.expires_at) {
       return tokenFromCache.access_token;

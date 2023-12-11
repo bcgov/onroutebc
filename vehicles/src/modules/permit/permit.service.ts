@@ -196,12 +196,8 @@ export class PermitService {
       );
     }
     if (searchColumn.toLowerCase() === 'permitnumber') {
-      permits.andWhere(
-      permits.orWhere(`permit.migratedPermitNumber like '%${searchString}%'`);
-      );
-      permits.orWhere(
-        `permit.tpsPermitNumber like '%${searchString}%'`,
-      );
+      permits.andWhere(`permit.permitNumber like '%${searchString}%'`);
+      permits.orWhere(`permit.tpsPermitNumber like '%${searchString}%'`);
     }
     if (searchColumn.toLowerCase() === 'clientnumber') {
       permits.andWhere(
@@ -499,8 +495,9 @@ export class PermitService {
         newPermit.companyId,
       );
 
-      const fullNames =
-        await this.applicationService.getFullNamesFromCache(newPermit);
+      const fullNames = await this.applicationService.getFullNamesFromCache(
+        newPermit,
+      );
 
       const revisionHistory = await queryRunner.manager.find(Permit, {
         where: { originalPermitId: permit.originalPermitId },
