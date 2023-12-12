@@ -47,7 +47,6 @@ import {
   VoidPermitRequestData,
   VoidPermitResponseData,
 } from "../pages/Void/types/VoidPermit";
-import { VEHICLES_URL } from "../../../common/apiManager/endpoints/endpoints";
 
 /**
  * Submits a new term oversize application.
@@ -388,13 +387,12 @@ export const getPermits = async ({ expired = false, page = 0 } = {}): Promise<
   PaginatedResponse<Permit>
 > => {
   const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
-  let permitsURL = new URL(`${VEHICLES_URL}/permits/user`);
-  const queryParams = [];
+  const permitsURL = new URL(PERMITS_API_ROUTES.GET_LIST);
   if (companyId) {
     permitsURL.searchParams.set("companyId", companyId);
   }
   if (expired) {
-    permitsURL.searchParams.set("companyId", companyId);
+    permitsURL.searchParams.set("expired", "true");
   }
   if (page > 0) {
     permitsURL.searchParams.set("page", page.toString());

@@ -1,30 +1,29 @@
 import { useQuery } from "@tanstack/react-query";
-
-import "./ActivePermitList.scss";
-import { InfoBcGovBanner } from "../../../../common/components/banners/InfoBcGovBanner";
-import { FIVE_MINUTES } from "../../../../common/constants/constants";
-import { getPermits } from "../../apiManager/permitsAPI";
-import { BasePermitList } from "./BasePermitList";
-import { BANNER_MESSAGES } from "../../../../common/constants/bannerMessages";
 import { useCallback, useContext, useEffect, useState } from "react";
+import { Box } from "@mui/material";
 import {
   MRT_PaginationState,
   MRT_Row,
   MaterialReactTable,
   useMaterialReactTable,
 } from "material-react-table";
+
+import "./ActivePermitList.scss";
+import { InfoBcGovBanner } from "../../../../common/components/banners/InfoBcGovBanner";
+import { FIVE_MINUTES } from "../../../../common/constants/constants";
+import { getPermits } from "../../apiManager/permitsAPI";
+import { BANNER_MESSAGES } from "../../../../common/constants/bannerMessages";
 import { Permit } from "../../types/permit";
 import { PaginatedResponse } from "../../../../common/types/common";
 import { SnackBarContext } from "../../../../App";
+import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
+import { PermitRowOptions } from "./PermitRowOptions";
+import { PermitsColumnDefinition } from "./Columns";
 import {
   defaultTableInitialStateOptions,
   defaultTableOptions,
   defaultTableStateOptions,
 } from "../../../../common/constants/defaultTableOptions";
-import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
-import { Box } from "@mui/material";
-import { PermitRowOptions } from "./PermitRowOptions";
-import { PermitsColumnDefinition } from "./Columns";
 
 /**
  * A wrapper with the query to load the table with active permits.

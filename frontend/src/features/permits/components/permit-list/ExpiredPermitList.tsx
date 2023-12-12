@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-
+import { useCallback, useContext, useEffect, useState } from "react";
 import { Box } from "@mui/material";
 import {
   MRT_PaginationState,
@@ -7,21 +7,21 @@ import {
   MaterialReactTable,
   useMaterialReactTable,
 } from "material-react-table";
-import { useCallback, useContext, useEffect, useState } from "react";
+
 import { SnackBarContext } from "../../../../App";
 import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
 import { TEN_MINUTES } from "../../../../common/constants/constants";
-import {
-  defaultTableInitialStateOptions,
-  defaultTableOptions,
-  defaultTableStateOptions,
-} from "../../../../common/constants/defaultTableOptions";
 import { PaginatedResponse } from "../../../../common/types/common";
 import { getPermits } from "../../apiManager/permitsAPI";
 import { Permit } from "../../types/permit";
 import { PermitsColumnDefinition } from "./Columns";
 import "./ExpiredPermitList.scss";
 import { PermitRowOptions } from "./PermitRowOptions";
+import {
+  defaultTableInitialStateOptions,
+  defaultTableOptions,
+  defaultTableStateOptions,
+} from "../../../../common/constants/defaultTableOptions";
 
 /**
  * A wrapper with the query to load the table with expired permits.

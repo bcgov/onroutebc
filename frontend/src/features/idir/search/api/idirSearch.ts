@@ -11,7 +11,7 @@ import { SearchFields } from "../types/types";
  */
 export const getDataBySearch = (
   { searchEntity, searchByFilter, searchValue }: SearchFields,
-  page: number = 0,
+  page: number,
 ): Promise<PaginatedResponse<Permit>> => {
   const searchURL = new URL(`${VEHICLES_URL}/${searchEntity}/ppc/search`);
   searchURL.searchParams.set("searchColumn", searchByFilter);
