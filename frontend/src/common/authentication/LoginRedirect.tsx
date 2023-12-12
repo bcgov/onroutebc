@@ -23,14 +23,16 @@ export const LoginRedirect = () => {
   const navigate = useNavigate();
   const { isAuthenticated, user: userFromToken } = useAuth();
 
-  const userContextQuery = useUserContext();
+  const { isLoading, isError } = useUserContext();
   const queryClient = useQueryClient();
-  const { isLoading } = userContextQuery;
 
   /**
    * Hook to determine where to navigate to.
    */
   useEffect(() => {
+    if (isError) {
+      navigate(ERROR_ROUTES.UNEXPECTED);
+    }
     if (isAuthenticated && !isLoading) {
       if (userFromToken?.profile?.identity_provider === IDPS.IDIR) {
         navigate(IDIR_ROUTES.WELCOME);
