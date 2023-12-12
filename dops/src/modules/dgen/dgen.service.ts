@@ -248,7 +248,7 @@ export class DgenService {
       await page.emulateMediaType('print');
 
       generatedDocument.buffer = await page.pdf({
-        timeout: 0, //Set to 0 for indefinite wait
+        timeout: 0, // Set to 0 for indefinite wait
         format: 'letter',
         displayHeaderFooter: true,
         printBackground: true,
