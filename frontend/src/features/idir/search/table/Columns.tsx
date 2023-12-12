@@ -87,7 +87,7 @@ export const PermitSearchResultColumnDef: MRT_ColumnDef<Permit>[] = [
     sortingFn: dateTimeStringSortingFn,
     Cell: (props: { cell: any }) => {
       const formattedDate = formatCellValuetoDatetime(props.cell.getValue());
-      return <div>{formattedDate}</div>;
+      return formattedDate;
     },
   },
   {
@@ -97,7 +97,7 @@ export const PermitSearchResultColumnDef: MRT_ColumnDef<Permit>[] = [
     sortingFn: dateTimeStringSortingFn,
     Cell: (props: { cell: any }) => {
       const formattedDate = formatCellValuetoDatetime(props.cell.getValue());
-      return <div>{formattedDate}</div>;
+      return formattedDate;
     },
   },
   {
