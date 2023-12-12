@@ -12,6 +12,7 @@ import { BadRequestExceptionDto } from './exception/badRequestException.dto';
 import { ExceptionDto } from './exception/exception.dto';
 import { NestExpressApplication } from '@nestjs/platform-express';
 
+
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.useGlobalPipes(
@@ -64,6 +65,8 @@ async function bootstrap() {
     new FallbackExceptionFilter(),
     new HttpExceptionFilter(),
   );
+
+  app.useBodyParser('json', { limit: '2mb' });  
 
   await app.listen(5001);
 }
