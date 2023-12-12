@@ -1,11 +1,9 @@
 import {
-  CardActionArea,
   CardContent,
   Container,
-  Grid,
   Paper,
   Stack,
-  Typography,
+  Typography
 } from "@mui/material";
 import Card from "@mui/material/Card";
 import React, { useContext } from "react";
@@ -13,16 +11,15 @@ import { useNavigate } from "react-router-dom";
 
 import { getCompanyNameFromSession } from "../../../common/apiManager/httpRequestHandler";
 import OnRouteBCContext from "../../../common/authentication/OnRouteBCContext";
+import { GreenCheckIcon } from "../../../common/components/icons/GreenCheckIcon";
+import { RedXMarkIcon } from "../../../common/components/icons/RedXMarkIcon";
 import { Nullable } from "../../../common/types/common";
 import {
   CREATE_PROFILE_WIZARD_ROUTES,
   PROFILE_ROUTES,
 } from "../../../routes/constants";
-import "./welcome.scss";
 import { BC_COLOURS } from "../../../themes/bcGovStyles";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { GreenCheckIcon } from "../../../common/components/icons/GreenCheckIcon";
-import { RedXMarkIcon } from "../../../common/components/icons/RedXMarkIcon";
+import "./welcome.scss";
 
 const isInvitedUser = (companyNameFromContext?: string): boolean =>
   Boolean(companyNameFromContext);

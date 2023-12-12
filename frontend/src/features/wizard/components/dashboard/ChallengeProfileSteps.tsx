@@ -2,11 +2,6 @@ import {
   Alert,
   Box,
   Button,
-  Card,
-  CardContent,
-  CardHeader,
-  CardMedia,
-  Paper,
   Stack,
   Step,
   StepLabel,
@@ -18,6 +13,9 @@ import React, { useContext, useState } from "react";
 import { FieldValues, FormProvider, useForm } from "react-hook-form";
 import { useAuth } from "react-oidc-context";
 
+import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useNavigate } from "react-router";
 import { SnackBarContext } from "../../../../App";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { Banner } from "../../../../common/components/dashboard/Banner";
@@ -32,18 +30,12 @@ import {
   CompanyAndUserRequest,
   VerifyMigratedClientRequest,
 } from "../../../manageProfile/types/manageProfile";
+import { ClientAndPermitReferenceInfoBox } from "../../pages/ClientAndPermitReferenceInfoBox";
 import { CompanyInformationWizardForm } from "../../pages/CompanyInformationWizardForm";
 import { OnRouteBCProfileCreated } from "../../pages/OnRouteBCProfileCreated";
 import { UserInformationWizardForm } from "../../pages/UserInformationWizardForm";
-import "./CreateProfileSteps.scss";
-import { useNavigate } from "react-router";
 import { VerifyMigratedClientForm } from "../../pages/VerifyMigratedClientForm";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faArrowLeft,
-  faArrowRight,
-  faCircleInfo,
-} from "@fortawesome/free-solid-svg-icons";
+import "./CreateProfileSteps.scss";
 
 const CompanyBanner = ({ legalName }: { legalName: string }) => {
   return (
@@ -334,6 +326,7 @@ export const ChallengeProfileSteps = React.memo(() => {
         role="profile-steps"
         id={`profile-steps`}
         aria-labelledby={`profile-steps`}
+        style={{ paddingBottom: "10em"}}
       >
         {/* <Stack direction="row"> */}
         <div className="create-profile-steps__create-profile">
@@ -511,40 +504,11 @@ export const ChallengeProfileSteps = React.memo(() => {
             </FormProvider>
           )}
         </div>
-        {/* </Stack> */}
-        <Card
-          title="XYZ XS"
-          sx={{
-            width: "528px",
-            background: `${BC_COLOURS.bc_messages_blue_background}`,
-          }}
-        >
-          {/* <CardHeader
-            title={
-              <strong>Where can I find my Client No. and Permit No.?</strong>
-            }
-            avatar={<FontAwesomeIcon icon={faCircleInfo} />}
-          /> */}
-
-          <CardContent>
-            <Stack spacing={3}>
-              <div>
-                Your Client No. and Permit No. can be found on any <br />
-                Commercial Vehicle Permit. Please see the sample below.
-                <br />
-                If you need further assistance, please contact the
-                <br />
-                Provincial Permit Centre at{" "}
-                <strong>Toll-free: 1-800-559-9688</strong> or <br />{" "}
-                <strong>Email: ppcpermit@gov.bc.ca</strong>
-              </div>
-              <Stack spacing={3}>
-                <CardMedia component="img" src="/Old_Permit_Sample.png" />
-                <CardMedia component="img" src="/New_Permit_Sample.png" />
-              </Stack>
-            </Stack>
-          </CardContent>
-        </Card>
+        <div style={{
+            padding: "1.5em"
+        }}>
+          <ClientAndPermitReferenceInfoBox />
+        </div>
       </div>
     </>
   );
