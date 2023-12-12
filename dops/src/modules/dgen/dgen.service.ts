@@ -315,16 +315,6 @@ export class DgenService {
       return convertUtcToPt(utcDate, 'MMM. D, YYYY, hh:mm A Z');
     });
 
-    Handlebars.registerHelper('formatRefundAmount', function (amount: number) {
-      if (this.paymentMethod === 'No Payment') {
-        return '$0';
-      } else if (amount === 0) {
-        return '';
-      } else {
-        return `-$${Math.abs(amount).toFixed(2)}`;
-      }
-    });
-
     Handlebars.registerHelper(
       'formatAmount',
       function (amount: number, amountType?: string) {
