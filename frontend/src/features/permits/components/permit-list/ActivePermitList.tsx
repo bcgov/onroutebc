@@ -61,7 +61,7 @@ export const ActivePermitList = () => {
   const table = useMaterialReactTable({
     ...defaultTableOptions,
     columns: PermitsColumnDefinition,
-    data: data ?? [],
+    data: data?.items ?? [],
     enableTopToolbar: false,
     enableRowSelection: false,
     initialState: {
