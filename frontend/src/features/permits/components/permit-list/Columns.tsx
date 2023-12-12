@@ -3,7 +3,7 @@ import { MRT_ColumnDef } from "material-react-table";
 import { viewPermitPdf } from "../../helpers/permitPDFHelper";
 import { Permit } from "../../types/permit";
 import { PermitChip } from "./PermitChip";
-import { dateTimeStringSortingFn } from "../../../../common/constants/defaultTableOptions";
+import { dateTimeStringSortingFn, formatCellValuetoDatetime } from "../../../../common/constants/defaultTableOptions";
 
 /**
  * The column definition for Permits.
@@ -55,12 +55,20 @@ export const PermitsColumnDefinition: MRT_ColumnDef<Permit>[] = [
     header: "Permit Start Date",
     enableSorting: true,
     sortingFn: dateTimeStringSortingFn,
+    Cell: (props: { cell: any }) => {
+      const formattedDate = formatCellValuetoDatetime(props.cell.getValue());
+      return formattedDate;
+    },
   },
   {
     accessorKey: "permitData.expiryDate",
     header: "Permit End Date",
     enableSorting: true,
     sortingFn: dateTimeStringSortingFn,
+    Cell: (props: { cell: any }) => {
+      const formattedDate = formatCellValuetoDatetime(props.cell.getValue());
+      return formattedDate;
+    },
   },
   {
     accessorFn: (row) =>

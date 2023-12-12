@@ -139,19 +139,9 @@ export const getUserRolesByCompanyId = (): Promise<string[]> => {
  * Retrieves the roles of an IDIR user (i.e., OnRouteBC staff).
  */
 export const getIDIRUserRoles = async (): Promise<RequiredOrNull<string[]>> => {
-  try {
-    const response = await httpGETRequest(`${VEHICLES_URL}/users/roles`);
-    if (response.status === 200) {
-      return response.data as string[];
-    }
-
-    // Error status code, return null for roles
-    return null;
-  } catch (err) {
-    // If error, return null for roles
-    console.error(err);
-    return null;
-  }
+  return httpGETRequest(`${VEHICLES_URL}/users/roles`).then(
+    (response) => response.data,
+  );
 };
 
 /**
