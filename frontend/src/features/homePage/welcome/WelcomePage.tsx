@@ -3,7 +3,7 @@ import {
   Container,
   Paper,
   Stack,
-  Typography
+  Typography,
 } from "@mui/material";
 import Card from "@mui/material/Card";
 import React, { useContext } from "react";
@@ -104,12 +104,23 @@ const ChallengeOption = ({
           background: BC_COLOURS.bc_messages_blue_background,
         },
         cursor: "pointer",
+        width: "220px",
+        height: "80px",
         // background: BC_COLOURS.bc_messages_blue_background,
       }}
       onClick={() => navigate(navigateTo)}
     >
-      {labelIcon}
-      {label}
+      <Stack
+        direction="row"
+        spacing={2}
+        sx={{
+          marginLeft: "5em",
+          marginTop: "1.82em",
+        }}
+      >
+        <div>{labelIcon}</div>
+        <div>{label}</div>
+      </Stack>
     </Paper>
   );
 };
@@ -144,21 +155,21 @@ export const WelcomePage = React.memo(() => {
         )}
         {
           <Stack spacing={2}>
-            <Typography>
-              Has this company purchased a commercial vehicle permit in the last
-              7 years?
+            <Typography sx={{ alignSelf: "center" }}>
+              Has this company purchased a commercial vehicle <br /> permit in
+              the last 7 years?
             </Typography>
             <Container>
               <Stack direction="row" spacing={3}>
                 <ChallengeOption
                   navigateTo={CREATE_PROFILE_WIZARD_ROUTES.CREATE}
                   label="No"
-                  labelIcon={<RedXMarkIcon />}
+                  labelIcon={<RedXMarkIcon size="xl" />}
                 />
                 <ChallengeOption
                   navigateTo={CREATE_PROFILE_WIZARD_ROUTES.CREATE}
                   label="Yes"
-                  labelIcon={<GreenCheckIcon />}
+                  labelIcon={<GreenCheckIcon size="xl" />}
                 />
               </Stack>
             </Container>
