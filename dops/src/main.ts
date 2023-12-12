@@ -66,7 +66,7 @@ async function bootstrap() {
     new HttpExceptionFilter(),
   );
 
-  app.use(bodyParser.json({ limit: '10mb' }));
+  app.useBodyParser('json', { limit: '2mb' });  
 
   await app.listen(5001);
 }
