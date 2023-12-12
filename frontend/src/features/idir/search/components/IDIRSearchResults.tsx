@@ -4,6 +4,7 @@ import { memo, useCallback, useContext, useMemo, useState } from "react";
 
 import {
   MRT_ColumnDef,
+  MRT_PaginationState,
   MRT_Row,
   MRT_TableInstance,
   MaterialReactTable,
@@ -26,6 +27,7 @@ import {
   defaultTableOptions,
   defaultTableStateOptions,
 } from "../../../../common/constants/defaultTableOptions";
+import { PaginatedResponse } from "../../../../common/types/common";
 
 /**
  * Function to decide whether to show row actions icon or not.
@@ -64,17 +66,34 @@ export const IDIRSearchResults = memo(
     const { idirUserDetails } = useContext(OnRouteBCContext);
     const [isActiveRecordsOnly, setIsActiveRecordsOnly] =
       useState<boolean>(false);
-
-    const { data, isLoading, isError } = useQuery(
-      ["search-entity", searchValue, searchByFilter, searchEntity],
+    const [pagination, setPagination] = useState<MRT_PaginationState>({
+      pageIndex: 0,
+      pageSize: 10,
+    });
+    const searchResultsQuery = useQuery(
+      [
+        "search-entity",
+        searchValue,
+        searchByFilter,
+        searchEntity,
+        pagination.pageIndex,
+      ],
       () =>
-        getDataBySearch({
-          searchByFilter,
-          searchEntity,
-          searchValue,
-        }),
+        getDataBySearch(
+          {
+            searchByFilter,
+            searchEntity,
+            searchValue,
+          },
+          pagination.pageIndex,
+        ),
       { retry: false, enabled: true, refetchInterval: false },
     );
+
+    const { data, isLoading, isError } = searchResultsQuery;
+    const {
+      meta: { totalItems, totalPages },
+    } = data as PaginatedResponse<Permit>;
 
     // Column definitions for the table
     const columns = useMemo<MRT_ColumnDef<Permit>[]>(
@@ -112,12 +131,19 @@ export const IDIRSearchResults = memo(
         isLoading,
         showAlertBanner: isError,
         showProgressBars: isLoading,
+        pagination,
       },
+      manualPagination: true,
+      rowCount: totalItems,
+      pageCount: totalPages,
+      onPaginationChange: setPagination,
       enableTopToolbar: true,
       enableBottomToolbar: false,
       enableRowSelection: false,
       enableGlobalFilter: false,
-      renderToolbarInternalActions: () => <div className="toolbar-internal"></div>,
+      renderToolbarInternalActions: () => (
+        <div className="toolbar-internal"></div>
+      ),
       renderTopToolbarCustomActions: () => {
         return (
           <Box sx={{ display: "flex", gap: "1rem", p: "4px" }}>
@@ -151,9 +177,7 @@ export const IDIRSearchResults = memo(
 
           if (shouldShowRowActions(idirUserDetails?.userAuthGroup)) {
             return (
-              <Box
-                className="idir-search-results__row-actions"
-              >
+              <Box className="idir-search-results__row-actions">
                 <IDIRPermitSearchRowActions
                   isPermitInactive={isInactive}
                   permitNumber={row.original.permitNumber}
