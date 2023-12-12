@@ -154,11 +154,13 @@ export const WelcomePage = React.memo(() => {
           <ProfileAction navigateTo={CREATE_PROFILE_WIZARD_ROUTES.CREATE} />
         )}
         {
-          <Stack spacing={2}>
-            <Typography sx={{ alignSelf: "center" }}>
-              Has this company purchased a commercial vehicle <br /> permit in
-              the last 7 years?
-            </Typography>
+          <Stack spacing={2} sx={{ justifyContent: "center" }}>
+            <div style={{ alignSelf: "center" }}>
+              Has this company purchased a commercial vehicle
+            </div>
+            <div style={{ alignSelf: "center", marginTop: "0px" }}>
+              permit in the last 7 years?
+            </div>
             <Container>
               <Stack direction="row" spacing={3}>
                 <ChallengeOption
@@ -167,7 +169,7 @@ export const WelcomePage = React.memo(() => {
                   labelIcon={<RedXMarkIcon size="xl" />}
                 />
                 <ChallengeOption
-                  navigateTo={CREATE_PROFILE_WIZARD_ROUTES.CREATE}
+                  navigateTo={CREATE_PROFILE_WIZARD_ROUTES.MIGRATED_CLIENT}
                   label="Yes"
                   labelIcon={<GreenCheckIcon size="xl" />}
                 />

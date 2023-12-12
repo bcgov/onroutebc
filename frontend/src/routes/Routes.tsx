@@ -25,6 +25,7 @@ import { IDIRReportsDashboard } from "../features/idir/search/pages/IDIRReportsD
 import { AmendPermit } from "../features/permits/pages/Amend/AmendPermit";
 import { UniversalUnauthorized } from "../common/pages/UniversalUnauthorized";
 import { UniversalUnexpected } from "../common/pages/UniversalUnexpected";
+import { ChallengeProfileWizard } from "../features/wizard/ChallengeProfileWizard";
 
 export const AppRoutes = () => {
   return (
@@ -142,6 +143,8 @@ export const AppRoutes = () => {
       </Route>
 
       <Route path={routes.CREATE_PROFILE_WIZARD_ROUTES.CREATE} element={<CreateProfileWizard />} />
+      <Route path={routes.CREATE_PROFILE_WIZARD_ROUTES.MIGRATED_CLIENT} element={<ChallengeProfileWizard />} />
+      
       <Route path={routes.PROFILE_ROUTES.USER_INFO} element={<UserInfoWizard />} />
     </Routes>
   );
