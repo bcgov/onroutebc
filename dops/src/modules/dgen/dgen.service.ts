@@ -337,11 +337,10 @@ export class DgenService {
 
         const formattedAmount = `$${Math.abs(amount).toFixed(2)}`;
         if (amountType === 'Deposit') {
-          return amount === 0
-            ? '$0'
-            : amount > 0
-            ? formattedAmount
-            : `-${formattedAmount}`;
+          if (amount === 0) {
+            return '$0';
+          }
+          return amount > 0 ? formattedAmount : `-${formattedAmount}`;
         }
 
         if (amountType === 'Payment') {
