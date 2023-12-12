@@ -325,17 +325,36 @@ export class DgenService {
       }
     });
 
-    Handlebars.registerHelper('formatAmount', function (amount: number) {
-      if (this.paymentMethod === 'No Payment') {
-        return '$0';
-      } else if (amount === 0) {
+    Handlebars.registerHelper(
+      'formatAmount',
+      function (amount: number, amountType?: string) {
+        if (!amount) {
+          amount = 0;
+        }
+        if (this.paymentMethod === 'No Payment') {
+          return '$0';
+        }
+
+        const formattedAmount = `$${Math.abs(amount).toFixed(2)}`;
+        if (amountType === 'Deposit') {
+          return amount === 0
+            ? '$0'
+            : amount > 0
+            ? formattedAmount
+            : `-${formattedAmount}`;
+        }
+
+        if (amountType === 'Payment') {
+          return amount === 0 ? '' : formattedAmount;
+        }
+
+        if (amountType === 'Refund') {
+          return amount === 0 ? '' : `-${formattedAmount}`;
+        }
+
         return '';
-      } else if (amount > 0) {
-        return `$${Math.abs(amount).toFixed(2)}`;
-      } else if (amount < 0) {
-        return `-$${Math.abs(amount).toFixed(2)}`;
-      }
-    });
+      },
+    );
     /* eslint-enable */
     interface SummaryPaymentsInterface {
       paymentMethod: string;
@@ -365,7 +384,10 @@ export class DgenService {
           const found = summaryPayments.find(
             (x) =>
               x.paymentMethod ===
-              (transactionType === 'totalPayment' ? 'totalAmount' : field),
+              (transactionType === 'totalPayment' ||
+              transactionType === 'totalRefund'
+                ? 'totalAmount'
+                : field),
           );
           return found ? found[property] : null;
         }
