@@ -44,7 +44,7 @@ async function bootstrap() {
   app.enableCors({
     exposedHeaders: ['Content-Disposition'],
   });
-  app.useBodyParser('json', { limit: '2mb' });
+  app.useBodyParser('json', { limit: '20mb' });
   const config = new DocumentBuilder()
     .setTitle('DOPS API')
     .setDescription('The Document Operations API description')
