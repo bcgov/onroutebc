@@ -326,7 +326,7 @@ export const ChallengeProfileSteps = React.memo(() => {
         role="profile-steps"
         id={`profile-steps`}
         aria-labelledby={`profile-steps`}
-        style={{ paddingBottom: "10em"}}
+        style={{ paddingBottom: "10em" }}
       >
         {/* <Stack direction="row"> */}
         <div className="create-profile-steps__create-profile">
@@ -504,11 +504,15 @@ export const ChallengeProfileSteps = React.memo(() => {
             </FormProvider>
           )}
         </div>
-        <div style={{
-            padding: "1.5em"
-        }}>
-          <ClientAndPermitReferenceInfoBox />
-        </div>
+        {activeStep === 0 && (
+          <div
+            style={{
+              padding: "1.5em",
+            }}
+          >
+            <ClientAndPermitReferenceInfoBox />
+          </div>
+        )}
       </div>
     </>
   );
