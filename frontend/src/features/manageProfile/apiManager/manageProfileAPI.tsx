@@ -18,6 +18,8 @@ import {
   CompanyAndUserRequest,
   UserInformation,
   Contact,
+  VerifyMigratedClientRequest,
+  VerifyMigratedClientResponse,
 } from "../types/manageProfile";
 
 export const getCompanyInfo = async (): Promise<CompanyProfile> => {
@@ -90,13 +92,27 @@ export const createMyOnRouteBCUserProfile = async ({
  * @param onRouteBCProfileRequestObject The request object containing the profile details
  * @returns A Promise containing the response from the API.
  */
-export const createOnRouteBCProfile = async (
+export const createOnRouteBCProfile = (
   onRouteBCProfileRequestObject: CompanyAndUserRequest,
 ) => {
-  return await httpPOSTRequest(
+  return httpPOSTRequest(
     `${MANAGE_PROFILE_API.COMPANIES}`,
     replaceEmptyValuesWithNull(onRouteBCProfileRequestObject),
   );
+};
+
+/**
+ * Verifies a migrated client through an API call.
+ * @param requestPayload The verify migrated client form values.
+ * @returns A promise containing details of the verification.
+ */
+export const verifyMigratedClient = (
+  requestPayload: VerifyMigratedClientRequest,
+): Promise<VerifyMigratedClientResponse> => {
+  return httpPOSTRequest(
+    `${VEHICLES_URL}/users/verify-migrated-client`,
+    replaceEmptyValuesWithNull(requestPayload),
+  ).then((response) => response.data);
 };
 
 /**

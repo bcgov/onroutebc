@@ -1,9 +1,11 @@
 import {
   CardActionArea,
   CardContent,
+  Container,
   Grid,
+  Paper,
   Stack,
-  Typography
+  Typography,
 } from "@mui/material";
 import Card from "@mui/material/Card";
 import React, { useContext } from "react";
@@ -17,6 +19,10 @@ import {
   PROFILE_ROUTES,
 } from "../../../routes/constants";
 import "./welcome.scss";
+import { BC_COLOURS } from "../../../themes/bcGovStyles";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { GreenCheckIcon } from "../../../common/components/icons/GreenCheckIcon";
+import { RedXMarkIcon } from "../../../common/components/icons/RedXMarkIcon";
 
 const isInvitedUser = (companyNameFromContext?: string): boolean =>
   Boolean(companyNameFromContext);
@@ -41,8 +47,81 @@ const WelcomeCompanyName = ({
   );
 };
 
-export const WelcomePage = React.memo(() => {
+/**
+ * Reusable Card component to display a possible action for the user.
+ * @returns A react component.
+ */
+const ProfileAction = ({
+  navigateTo,
+}: {
+  navigateTo: string;
+}): React.ReactElement => {
   const navigate = useNavigate();
+  return (
+    <div className="welcome-page__profile-actions">
+      <Card
+        className="welcome-cards welcome-cards--new"
+        sx={{
+          ":hover": {
+            boxShadow: 10,
+          },
+        }}
+      >
+        <CardContent onClick={() => navigate(navigateTo)}>
+          <Stack spacing={3}>
+            <div className="welcome-cards__img">
+              <img
+                height="80"
+                width="80"
+                className="welcome-account-graphics"
+                src="./Create_New_Profile_Graphic.svg"
+                alt="New onRouteBC Profile"
+              />
+            </div>
+
+            <Typography variant="body2">
+              Finish creating your onRouteBC Profile
+            </Typography>
+          </Stack>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
+
+const ChallengeOption = ({
+  navigateTo,
+  label,
+  labelIcon,
+}: {
+  navigateTo: string;
+  label: string;
+  labelIcon: JSX.Element;
+}): React.ReactElement => {
+  const navigate = useNavigate();
+  return (
+    <Paper
+      // className="report-paper"
+      sx={{
+        ":hover": {
+          background: BC_COLOURS.bc_messages_blue_background,
+        },
+        cursor: "pointer",
+        // background: BC_COLOURS.bc_messages_blue_background,
+      }}
+      onClick={() => navigate(navigateTo)}
+    >
+      {labelIcon}
+      {label}
+    </Paper>
+  );
+};
+
+/**
+ * The BCeID welcome page of the application.
+ * A BCeID user reaches this page on their very first login.
+ */
+export const WelcomePage = React.memo(() => {
   const companyNameFromToken = getCompanyNameFromSession();
   const { companyLegalName: companyNameFromContext } =
     useContext(OnRouteBCContext);
@@ -61,73 +140,33 @@ export const WelcomePage = React.memo(() => {
         )}
         <div className="separator-line"></div>
         {isInvitedUser(companyNameFromContext) && (
-          <>
-            <br />
-            <Card elevation={12} sx={{ maxWidth: 200 }}>
-              <CardActionArea
-                onClick={() => navigate(PROFILE_ROUTES.USER_INFO)}
-              >
-                <Stack>
-                  <Stack direction="row">
-                    <Grid container>
-                      <Grid item xs={3}></Grid>
-                      <Grid item xs={6} sx={{ paddingTop: "2rem" }}>
-                        <div className="welcome-cards__img">
-                          <img
-                            height="80"
-                            width="80"
-                            className="welcome-account-graphics"
-                            src="./Create_New_Profile_Graphic.svg"
-                            alt="New onRouteBC Profile"
-                          />
-                        </div>
-                      </Grid>
-                    </Grid>
-                  </Stack>
-                  <CardContent>
-                    <Typography variant="body2">
-                      Finish creating your <br /> onRouteBC Profile
-                    </Typography>
-                  </CardContent>
-                </Stack>
-
-                <div className="welcome-cards__img"></div>
-              </CardActionArea>
-            </Card>
-          </>
+          <ProfileAction navigateTo={PROFILE_ROUTES.USER_INFO} />
         )}
-        {isNewCompanyProfile(companyNameFromContext) && (
-          <div className="welcome-page__profile-actions">
-            <Card
-              className="welcome-cards welcome-cards--new"
-              sx={{
-                ":hover": {
-                  boxShadow: 10,
-                },
-              }}
-            >
-              <CardContent
-                onClick={() => navigate(CREATE_PROFILE_WIZARD_ROUTES.CREATE)}
-              >
-                <Stack spacing={3}>
-                  <div className="welcome-cards__img">
-                    <img
-                      height="80"
-                      width="80"
-                      className="welcome-account-graphics"
-                      src="./Create_New_Profile_Graphic.svg"
-                      alt="New onRouteBC Profile"
-                    />
-                  </div>
-
-                  <Typography variant="body2">
-                    Finish creating your onRouteBC Profile
-                  </Typography>
-                </Stack>
-              </CardContent>
-            </Card>
-          </div>
+        {false && isNewCompanyProfile(companyNameFromContext) && (
+          <ProfileAction navigateTo={CREATE_PROFILE_WIZARD_ROUTES.CREATE} />
         )}
+        {
+          <Stack spacing={2}>
+            <Typography>
+              Has this company purchased a commercial vehicle permit in the last
+              7 years?
+            </Typography>
+            <Container>
+              <Stack direction="row" spacing={3}>
+                <ChallengeOption
+                  navigateTo={CREATE_PROFILE_WIZARD_ROUTES.CREATE}
+                  label="No"
+                  labelIcon={<RedXMarkIcon />}
+                />
+                <ChallengeOption
+                  navigateTo={CREATE_PROFILE_WIZARD_ROUTES.CREATE}
+                  label="Yes"
+                  labelIcon={<GreenCheckIcon />}
+                />
+              </Stack>
+            </Container>
+          </Stack>
+        }
       </div>
     </div>
   );

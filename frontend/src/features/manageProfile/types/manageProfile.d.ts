@@ -56,6 +56,23 @@ export interface CompanyAndUserRequest {
 }
 
 /**
+ * The request object to verify a migrated client
+ */
+export type VerifyMigratedClientRequest = {
+  clientNumber: string;
+  permitNumber: string;
+};
+
+/**
+ * The response object from the API to verify a migrated client
+ */
+export type VerifyMigratedClientResponse = {
+  foundClient: boolean;
+  foundPermit: boolean;
+  clientAndPermitMatch: boolean;
+};
+
+/**
  * The tabs on the user profile management page.
  */
 export enum BCEID_PROFILE_TABS {
