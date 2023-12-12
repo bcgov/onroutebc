@@ -156,7 +156,7 @@ export const useUserRolesByCompanyId = () => {
     onSuccess: (userRolesResponseBody: string[]) => {
       setUserRoles?.(() => userRolesResponseBody);
     },
-    retry: true,
+    retry: 1, // Retry once on failure
   });
 };
 
@@ -173,6 +173,6 @@ export const useIDIRUserRoles = () => {
     onSuccess: (userRoles: RequiredOrNull<string[]>) => {
       setUserRoles?.(() => userRoles);
     },
-    retry: true,
+    retry: 1, // Retry once on failure
   });
 };

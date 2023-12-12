@@ -1,4 +1,7 @@
+import { useEffect } from "react";
+import { useNavigate } from "react-router";
 import { useUserRolesByCompanyId } from "../../features/manageProfile/apiManager/hooks";
+import { ERROR_ROUTES } from "../../routes/constants";
 
 /*
  * A simple component that merely calls a react query hook.
@@ -10,6 +13,14 @@ import { useUserRolesByCompanyId } from "../../features/manageProfile/apiManager
  * and hence only has to be executed after the conditions are met.
  */
 export const LoadBCeIDUserRolesByCompany = () => {
-  useUserRolesByCompanyId();
+  const { isLoading, isError } = useUserRolesByCompanyId();
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (!isLoading) {
+      if (isError) {
+        navigate(ERROR_ROUTES.UNAUTHORIZED);
+      }
+    }
+  }, [isLoading]);
   return null;
 };
