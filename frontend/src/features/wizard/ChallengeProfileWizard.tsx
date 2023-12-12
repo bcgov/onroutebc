@@ -6,7 +6,6 @@ import { ChallengeProfileSteps } from "./components/dashboard/ChallengeProfileSt
 export const ChallengeProfileWizard = React.memo(() => {
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
-      {/* <CreateProfileSteps /> */}
       <ChallengeProfileSteps />
     </ErrorBoundary>
   );

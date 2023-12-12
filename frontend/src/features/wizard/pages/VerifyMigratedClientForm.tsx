@@ -26,6 +26,7 @@ export const VerifyMigratedClientForm = () => {
               // },
             },
             label: "Client No.",
+            
           }}
         />
         <div className="create-profile-section create-profile-section--info">
