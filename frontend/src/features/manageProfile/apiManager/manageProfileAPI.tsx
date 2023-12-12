@@ -17,6 +17,7 @@ import {
   CompanyProfile,
   CompanyAndUserRequest,
   UserInformation,
+  Contact,
 } from "../types/manageProfile";
 
 export const getCompanyInfo = async (): Promise<CompanyProfile> => {
@@ -76,7 +77,7 @@ export const updateMyInfo = async ({ myInfo }: { myInfo: UserInformation }) => {
 export const createMyOnRouteBCUserProfile = async ({
   myInfo,
 }: {
-  myInfo: Omit<UserInformation, "statusCode" | "userName" | "userGUID">;
+  myInfo: Contact;
 }) => {
   return await httpPOSTRequest(
     `${MANAGE_PROFILE_API.COMPANIES}/${getCompanyIdFromSession()}/users`,

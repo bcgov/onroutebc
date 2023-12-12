@@ -10,11 +10,11 @@ import {
 } from '@nestjs/common';
 import { BadRequestExceptionDto } from './exception/badRequestException.dto';
 import { ExceptionDto } from './exception/exception.dto';
-import * as bodyParser from 'body-parser';
+import { NestExpressApplication } from '@nestjs/platform-express';
 
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.useGlobalPipes(
     new ValidationPipe({
       exceptionFactory: (e) => {
@@ -45,6 +45,7 @@ async function bootstrap() {
   app.enableCors({
     exposedHeaders: ['Content-Disposition'],
   });
+  app.useBodyParser('json', { limit: '2mb' });
   const config = new DocumentBuilder()
     .setTitle('DOPS API')
     .setDescription('The Document Operations API description')

@@ -52,7 +52,7 @@ export interface CompanyAndUserRequest {
   extension?: string;
   fax?: string;
   primaryContact: Contact;
-  adminUser: UserInformation;
+  adminUser: Contact;
 }
 
 /**

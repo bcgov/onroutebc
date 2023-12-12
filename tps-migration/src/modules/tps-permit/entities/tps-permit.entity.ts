@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 import { AutoMap } from '@automapper/classes';
-import { S3uploadStatus } from 'src/modules/common/enum/s3-upload-status.enum';
+import { S3uploadStatus } from '../../common/enum/s3-upload-status.enum';
 
 @Entity({ name: 'tps.ORBC_TPS_MIGRATED_PERMITS' })
 export class TpsPermit {
