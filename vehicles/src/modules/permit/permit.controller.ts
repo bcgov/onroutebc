@@ -22,7 +22,7 @@ import {
   ApiQuery,
   ApiOkResponse,
 } from '@nestjs/swagger';
-import { Public } from '../../common/decorator/public.decorator';
+import { AuthOnly } from '../../common/decorator/auth-only.decorator';
 import { CreatePermitDto } from './dto/request/create-permit.dto';
 import { ReadPermitDto } from './dto/response/read-permit.dto';
 import { Request, Response } from 'express';
@@ -140,7 +140,7 @@ export class PermitController {
 
   @ApiOkResponse({
     description: 'The Search Permit Resource',
-    type: ReadPermitDto,
+    type: PaginationDto<ReadPermitDto, IPaginationMeta>,
     isArray: true,
   })
   /**
@@ -271,7 +271,7 @@ export class PermitController {
    * that returns all available permit types from cache.
    * @returns
    */
-  @Public()
+  @AuthOnly()
   @Get('types/list')
   async getPermitTypes(): Promise<string> {
     const permitTypes = await this.permitService.getPermitType();
