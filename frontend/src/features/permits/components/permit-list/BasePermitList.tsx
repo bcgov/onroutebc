@@ -41,7 +41,7 @@ export const BasePermitList = ({
     enableRowSelection: false,
     initialState: {
       ...defaultTableInitialStateOptions,
-      sorting: [{ id: "permitData.expiryDate", desc: true }],
+      sorting: [{ id: "permitData.startDate", desc: true }],
     },
     state: {
       ...defaultTableStateOptions,
