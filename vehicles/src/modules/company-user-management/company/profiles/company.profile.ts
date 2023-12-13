@@ -131,8 +131,8 @@ export class CompanyProfile extends AutomapperProfile {
        * mailingAddress property of UpdateCompanyDto to instances of the Address
        * entity using the mapWith function. It also maps the
        * mailingAddress.addressId property to values provided as arguments to
-       * the mapping function using the mapWithArguments function. The directory
-       * and primaryContact.contactId properties are also mapped to values
+       * the mapping function using the mapWithArguments function. The
+       * primaryContact.contactId properties are also mapped to values
        * provided as arguments using the mapWithArguments function.
        */
       createMap(
@@ -180,12 +180,6 @@ export class CompanyProfile extends AutomapperProfile {
           (d) => d.mailingAddress.addressId,
           mapWithArguments((source, { mailingAddressId }) => {
             return mailingAddressId;
-          }),
-        ),
-        forMember(
-          (d) => d.directory,
-          mapWithArguments((source, { directory }) => {
-            return directory;
           }),
         ),
         forMember(
