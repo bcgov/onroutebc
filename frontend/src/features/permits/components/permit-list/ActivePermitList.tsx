@@ -37,7 +37,7 @@ export const ActivePermitList = () => {
   const activePermitsQuery = useQuery({
     queryKey: ["activePermits", pagination.pageIndex],
     queryFn: () => getPermits({ page: pagination.pageIndex + 1 }),
-    keepPreviousData: true,
+    keepPreviousData: false,
     staleTime: FIVE_MINUTES,
     retry: 1,
   });
