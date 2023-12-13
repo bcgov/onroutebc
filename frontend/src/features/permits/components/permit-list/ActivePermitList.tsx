@@ -78,6 +78,8 @@ export const ActivePermitList = () => {
     rowCount: totalItems,
     pageCount: totalPages,
     onPaginationChange: setPagination,
+    enablePagination: true,
+    enableBottomToolbar: true,
     renderEmptyRowsFallback: () => <NoRecordsFound />,
     renderRowActions: useCallback((props: { row: MRT_Row<Permit> }) => {
       return (

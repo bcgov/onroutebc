@@ -137,8 +137,9 @@ export const IDIRSearchResults = memo(
       rowCount: totalItems,
       pageCount: totalPages,
       onPaginationChange: setPagination,
+      enablePagination: true,
       enableTopToolbar: true,
-      enableBottomToolbar: false,
+      enableBottomToolbar: true,
       enableRowSelection: false,
       enableGlobalFilter: false,
       renderToolbarInternalActions: () => (
