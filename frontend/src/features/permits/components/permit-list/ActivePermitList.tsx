@@ -31,7 +31,7 @@ import {
 export const ActivePermitList = () => {
   const snackBar = useContext(SnackBarContext);
   const [pagination, setPagination] = useState<MRT_PaginationState>({
-    pageIndex: 0,
+    pageIndex: 1,
     pageSize: 10,
   });
   const activePermitsQuery = useQuery({
