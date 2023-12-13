@@ -31,12 +31,12 @@ import {
 export const ActivePermitList = () => {
   const snackBar = useContext(SnackBarContext);
   const [pagination, setPagination] = useState<MRT_PaginationState>({
-    pageIndex: 0,
+    pageIndex: 1,
     pageSize: 10,
   });
   const activePermitsQuery = useQuery({
     queryKey: ["activePermits", pagination.pageIndex],
-    queryFn: () => getPermits({ page: pagination.pageIndex + 1 }),
+    queryFn: () => getPermits({ page: pagination.pageIndex }),
     keepPreviousData: true,
     staleTime: FIVE_MINUTES,
     retry: 1,
@@ -46,7 +46,7 @@ export const ActivePermitList = () => {
 
   console.log('data::', data);
   console.log('pagination::', pagination);
-  console.log('pageIndex from API::', data?.meta?.currentPage ?? 1);
+  console.log('pageIndex from API::', data?.meta?.currentPage);
 
   useEffect(() => {
     if (isError) {
@@ -68,6 +68,7 @@ export const ActivePermitList = () => {
     initialState: {
       ...defaultTableInitialStateOptions,
       sorting: [{ id: "permitData.expiryDate", desc: true }],
+      pagination: { pageIndex: 1, pageSize: 10}
     },
     state: {
       ...defaultTableStateOptions,
@@ -77,7 +78,7 @@ export const ActivePermitList = () => {
       isLoading: isInitialLoading || isLoading,
       pagination,
     },
-    autoResetPageIndex: false,
+    // autoResetPageIndex: false,
     rowCount: data?.meta?.totalItems ?? 0,
     pageCount: data?.meta?.totalPages ?? 0,
     onPaginationChange: setPagination,
