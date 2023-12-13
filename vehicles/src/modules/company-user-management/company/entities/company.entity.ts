@@ -49,7 +49,7 @@ export class Company extends Base {
     insert: false,
     update: false,
   })
-  migratedClientNumber?: string;
+  migratedClientHash?: string;
 
   /**
    * The company's legal name.

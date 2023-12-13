@@ -390,7 +390,7 @@ export class UsersService {
     const verifyMigratedClient: ReadVerifyMigratedClientDto = {
       foundClient: false,
       foundPermit: false,
-      clientAndPermitMatch: false,
+      migratedClient: undefined,
     };
     const company = await this.companyService.findOneByMigratedClientNumber(
       verifyMigratedClientDto.clientNumber,
@@ -412,7 +412,8 @@ export class UsersService {
       if (permit) {
         verifyMigratedClient.foundPermit = true;
         if (permit.companyId === company.companyId) {
-          verifyMigratedClient.clientAndPermitMatch = true;
+          verifyMigratedClient.migratedClient =
+            await this.companyService.mapCompanyEntityToCompanyDto(company);
         }
       }
 
