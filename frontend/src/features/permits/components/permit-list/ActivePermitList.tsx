@@ -35,13 +35,18 @@ export const ActivePermitList = () => {
     pageSize: 10,
   });
   const activePermitsQuery = useQuery({
-    queryKey: ["activePermits", pagination.pageIndex],
+    queryKey: ["activePermits", pagination.pageIndex + 1],
     queryFn: () => getPermits({ page: pagination.pageIndex + 1 }),
     keepPreviousData: true,
     staleTime: FIVE_MINUTES,
+    retry: 1,
   });
 
   const { data, isError, isInitialLoading, isLoading } = activePermitsQuery;
+
+  console.log('data::', data);
+  console.log('pagination::', pagination);
+  console.log('pageIndex from API::', data?.meta?.currentPage ?? 1);
 
   useEffect(() => {
     if (isError) {
