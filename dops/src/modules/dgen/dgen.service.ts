@@ -216,6 +216,7 @@ export class DgenService {
       throw new InternalServerErrorException('Template not found');
     }
     let startDateTime = new Date();
+    console.log('startDateTime',startDateTime);
     
     this.registerHandleBarsHelpers();
 
@@ -226,6 +227,7 @@ export class DgenService {
     });
 
     let endDateTime = new Date();
+    console.log('endDateTime',endDateTime);
     const generatedDocument: IFile = {
       originalname: createGeneratedReportDto.generatedDocumentFileName,
       encoding: undefined,
