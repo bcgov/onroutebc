@@ -427,6 +427,7 @@ export class PermitService {
         currentUser.orbcUserDirectory == Directory.IDIR
           ? PermitIssuedBy.PPC
           : PermitIssuedBy.SELF_ISSUED;
+      newPermit.issuerUserGuid = currentUser.userGUID;
       newPermit.permitIssueDateTime = new Date();
       newPermit.revision = permit.revision + 1;
       newPermit.previousRevision = +permitId;
