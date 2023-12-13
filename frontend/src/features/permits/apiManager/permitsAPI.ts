@@ -395,7 +395,7 @@ export const getPermits = async ({ expired = false, page = 0 } = {}): Promise<
     permitsURL.searchParams.set("expired", "true");
   }
   if (page > 0) {
-    permitsURL.searchParams.set("page", page.toString());
+    permitsURL.searchParams.set("page", (page + 1).toString());
   }
   const permits = await httpGETRequest(permitsURL.toString())
     .then((response) => {
