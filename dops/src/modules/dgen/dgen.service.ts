@@ -213,6 +213,8 @@ export class DgenService {
     if (!template?.length) {
       throw new InternalServerErrorException('Template not found');
     }
+    let startDateTime = new Date();
+    
     this.registerHandleBarsHelpers();
 
     const compiledTemplate = Handlebars.compile(template);
@@ -221,6 +223,7 @@ export class DgenService {
       ...createGeneratedReportDto.reportData,
     });
 
+    let endDateTime = new Date();
     const generatedDocument: IFile = {
       originalname: createGeneratedReportDto.generatedDocumentFileName,
       encoding: undefined,
@@ -228,6 +231,13 @@ export class DgenService {
       buffer: undefined,
       size: undefined,
     };
+
+    let processingTime = endDateTime.getTime() - startDateTime.getTime();
+    console.log(
+      `HandleBars() -> Start time: ${startDateTime.toISOString()},` +
+        `End time: ${endDateTime.toISOString()},` +
+        `Processing time: ${processingTime}ms`,
+    );
 
     let browser: Browser;
     try {
