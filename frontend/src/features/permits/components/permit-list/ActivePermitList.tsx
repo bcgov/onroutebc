@@ -77,6 +77,7 @@ export const ActivePermitList = () => {
       isLoading: isInitialLoading || isLoading,
       pagination,
     },
+    autoResetPageIndex: false,
     rowCount: data?.meta?.totalItems ?? 0,
     pageCount: data?.meta?.totalPages ?? 0,
     onPaginationChange: setPagination,
