@@ -31,12 +31,12 @@ import {
 export const ActivePermitList = () => {
   const snackBar = useContext(SnackBarContext);
   const [pagination, setPagination] = useState<MRT_PaginationState>({
-    pageIndex: 1,
+    pageIndex: 0,
     pageSize: 10,
   });
   const activePermitsQuery = useQuery({
     queryKey: ["activePermits", pagination.pageIndex],
-    queryFn: () => getPermits({ page: pagination.pageIndex }),
+    queryFn: () => getPermits({ page: pagination.pageIndex + 1 }),
     keepPreviousData: true,
     staleTime: FIVE_MINUTES,
   });
