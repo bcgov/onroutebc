@@ -29,6 +29,7 @@ import {
 import {
   CompanyAndUserRequest,
   VerifyMigratedClientRequest,
+  VerifyMigratedClientResponse,
 } from "../../../manageProfile/types/manageProfile";
 import { ClientAndPermitReferenceInfoBox } from "../../pages/ClientAndPermitReferenceInfoBox";
 import { CompanyInformationWizardForm } from "../../pages/CompanyInformationWizardForm";
@@ -131,8 +132,9 @@ export const ChallengeProfileSteps = React.memo(() => {
 
   const verifyMigratedClientMutation = useMutation({
     mutationFn: verifyMigratedClient,
-    onSuccess: async (response) => {
-      if (response?.clientAndPermitMatch) {
+    onSuccess: async (response: VerifyMigratedClientResponse) => {
+      const {foundClient, foundPermit, migratedClient } = response;
+      if (foundClient && foundPermit && migratedClient) {
         setIsClientVerified(() => true);
       } else {
         console.log("coming here");

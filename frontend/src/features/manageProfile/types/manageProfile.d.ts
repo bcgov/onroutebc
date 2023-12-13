@@ -1,3 +1,5 @@
+import { ClientInformation } from "../../../common/authentication/types";
+
 interface Address {
   addressLine1: string;
   addressLine2?: string;
@@ -69,7 +71,7 @@ export type VerifyMigratedClientRequest = {
 export type VerifyMigratedClientResponse = {
   foundClient: boolean;
   foundPermit: boolean;
-  clientAndPermitMatch: boolean;
+  migratedClient?: ClientInformation;
 };
 
 /**
