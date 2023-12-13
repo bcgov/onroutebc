@@ -235,10 +235,10 @@ dops:
         timeoutSeconds: 5
       resources: # this is optional
         limits:
-          cpu: 300m
+          cpu: 900m
           memory: 8Gi
         requests:
-          cpu: 150m
+          cpu: 300m
           memory: 2Gi
   ingress:
     annotations: 
