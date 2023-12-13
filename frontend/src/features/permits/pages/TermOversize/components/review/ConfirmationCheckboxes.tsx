@@ -16,16 +16,16 @@ export const ConfirmationCheckboxes = ({
   const checkboxes = [
     {
       description:
-        "I confirm that this permit is issued to the registered owner (or lessee) of the vehicle being permitted.",
+        "Confirm that this permit is issued to the registered owner (or lessee) of the vehicle being permitted.",
       checked: false,
     },
     {
       description:
-        "I confirm I am compliant with the appropriate policy for my selected commodity(s).",
+        "Confirm compliance with the appropriate policy for the selected commodity(s).",
       checked: false,
     },
     {
-      description: "I confirm the information in this application is correct.",
+      description: "Confirm the information in this application is correct.",
       checked: false,
     },
   ];
@@ -50,7 +50,10 @@ export const ConfirmationCheckboxes = ({
         Please read the following carefully and check all to proceed.
       </Typography>
       {checked.map((x) => (
-        <Box key={x.description}>
+        <Box
+          key={x.description}
+          className="confirmation-checkboxes__attestation"
+        >
           <Checkbox
             className={
               "confirmation-checkboxes__checkbox " +

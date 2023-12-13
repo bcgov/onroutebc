@@ -35,6 +35,16 @@ export class CreateCompanyDto {
 
   @AutoMap()
   @ApiProperty({
+    description: 'The migrated client hash.',
+    example: '8db3c29a00c728c0a3c31b91662a4ba4280e50ac6bfc388a7765d1bcb46845da',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  migratedClientHash?: string;
+
+  @AutoMap()
+  @ApiProperty({
     description:
       'The mailing address of the company. ' +
       'The object must adhere to the individual field rules',
