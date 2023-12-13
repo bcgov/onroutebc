@@ -236,7 +236,7 @@ dops:
       resources: # this is optional
         limits:
           cpu: 300m
-          memory: 600Mi
+          memory: 2Gi
         requests:
           cpu: 150m
           memory: 200Mi
