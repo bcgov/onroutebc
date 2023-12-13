@@ -124,14 +124,6 @@ export class PaymentReportService {
       });
     }
 
-    queryBuilder.andWhere('permit.permitStatus IN (:...permitStatus)', {
-      permitStatus: [
-        ApplicationStatus.ISSUED,
-        ApplicationStatus.REVOKED,
-        ApplicationStatus.VOIDED,
-      ],
-    });
-
     queryBuilder.andWhere('permit.permitIssueDateTime >= :fromDateTime', {
       fromDateTime: reportDto.fromDateTime,
     });
@@ -601,14 +593,6 @@ export class PaymentReportService {
         transactionTypes: transactionTypes,
       });
     }
-
-    queryBuilder.andWhere('permit.permitStatus IN (:...permitStatus)', {
-      permitStatus: [
-        ApplicationStatus.ISSUED,
-        ApplicationStatus.REVOKED,
-        ApplicationStatus.VOIDED,
-      ],
-    });
 
     queryBuilder.andWhere('permit.permitIssueDateTime >= :fromDateTime', {
       fromDateTime: reportDto.fromDateTime,
