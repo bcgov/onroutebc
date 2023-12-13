@@ -459,13 +459,13 @@ export class PermitService {
       );
 
       const createTransactionDto = new CreateTransactionDto();
-      createTransactionDto.pgTransactionId = voidPermitDto.pgTransactionId;
-      createTransactionDto.pgPaymentMethod = voidPermitDto.pgPaymentMethod;
-      createTransactionDto.pgCardType = voidPermitDto.pgCardType;
-      createTransactionDto.paymentCardTypeCode = voidPermitDto.pgCardType;
+      createTransactionDto.transactionTypeId = voidPermitDto.transactionTypeId;
       createTransactionDto.paymentMethodTypeCode =
         voidPermitDto.paymentMethodTypeCode;
-      createTransactionDto.transactionTypeId = voidPermitDto.transactionTypeId;
+      createTransactionDto.paymentCardTypeCode = voidPermitDto.pgCardType;
+      createTransactionDto.pgCardType = voidPermitDto.pgCardType;
+      createTransactionDto.pgTransactionId = voidPermitDto.pgTransactionId;
+      createTransactionDto.pgPaymentMethod = voidPermitDto.pgPaymentMethod;
 
       // Refund for void should automatically set this flag to approved for payment gateway payment methods
       // Otherwise, the flag is not applicable
