@@ -12,6 +12,7 @@ import {
 import { ApplicationStatus } from 'src/common/enum/application-status.enum';
 import { PaymentMethodType } from '../../../../common/enum/payment-method-type.enum';
 import { TransactionType } from '../../../../common/enum/transaction-type.enum';
+import { PaymentCardType } from '../../../../common/enum/payment-card-type.enum';
 
 export class VoidPermitDto {
   @AutoMap()
@@ -83,14 +84,14 @@ export class VoidPermitDto {
 
   @AutoMap()
   @ApiProperty({
-    example: 'VI',
+    enum: PaymentCardType,
+    example: PaymentCardType.VISA,
     description: 'Represents the card type used for the transaction.',
     required: false,
   })
   @IsOptional()
-  @IsString()
-  @Length(1, 2)
-  pgCardType: string;
+  @IsEnum(PaymentCardType)
+  pgCardType?: PaymentCardType;
 
   @AutoMap()
   @ApiProperty({
