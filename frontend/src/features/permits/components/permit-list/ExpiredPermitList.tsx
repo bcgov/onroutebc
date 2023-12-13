@@ -40,10 +40,6 @@ export const ExpiredPermitList = () => {
   });
   const { data, isError, isInitialLoading, isLoading } = expiredPermitsQuery;
 
-  const {
-    meta: { totalItems, totalPages },
-  } = data as PaginatedResponse<Permit>;
-
   useEffect(() => {
     if (isError) {
       snackBar.setSnackBar({
@@ -73,8 +69,8 @@ export const ExpiredPermitList = () => {
       isLoading: isInitialLoading || isLoading,
       pagination,
     },
-    rowCount: totalItems,
-    pageCount: totalPages,
+    rowCount: data?.meta?.totalItems,
+    pageCount: data?.meta?.totalPages,
     onPaginationChange: setPagination,
     enablePagination: true,
     enableBottomToolbar: true,

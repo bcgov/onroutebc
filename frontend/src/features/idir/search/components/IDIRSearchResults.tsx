@@ -90,9 +90,6 @@ export const IDIRSearchResults = memo(
     );
 
     const { data, isLoading, isError } = searchResultsQuery;
-    const {
-      meta: { totalItems, totalPages },
-    } = data as PaginatedResponse<Permit>;
 
     // Column definitions for the table
     const columns = useMemo<MRT_ColumnDef<Permit>[]>(
@@ -133,8 +130,8 @@ export const IDIRSearchResults = memo(
         pagination,
       },
       manualPagination: true,
-      rowCount: totalItems,
-      pageCount: totalPages,
+      rowCount: data?.meta?.totalItems,
+      pageCount: data?.meta?.totalPages,
       onPaginationChange: setPagination,
       enablePagination: true,
       enableTopToolbar: true,
