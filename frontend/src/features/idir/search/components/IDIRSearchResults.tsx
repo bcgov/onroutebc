@@ -21,13 +21,12 @@ import { IDIRPermitSearchRowActions } from "./IDIRPermitSearchRowActions";
 import "./IDIRSearchResults.scss";
 import { USER_AUTH_GROUP } from "../../../manageProfile/types/userManagement.d";
 import { isPermitInactive } from "../../../permits/types/PermitStatus";
-import { Optional } from "../../../../common/types/common";
+import { Optional, PaginatedResponse } from "../../../../common/types/common";
 import {
   defaultTableInitialStateOptions,
   defaultTableOptions,
   defaultTableStateOptions,
 } from "../../../../common/constants/defaultTableOptions";
-import { PaginatedResponse } from "../../../../common/types/common";
 
 /**
  * Function to decide whether to show row actions icon or not.
