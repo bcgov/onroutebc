@@ -210,6 +210,8 @@ export class DgenService {
       this.getCacheKeyforReport(createGeneratedReportDto.reportTemplate),
     );
 
+    console.log("heloo!!!!!!!!!!!!!!!!!");
+
     if (!template?.length) {
       throw new InternalServerErrorException('Template not found');
     }
@@ -233,6 +235,7 @@ export class DgenService {
     };
 
     let processingTime = endDateTime.getTime() - startDateTime.getTime();
+    
     console.log(
       `HandleBars() -> Start time: ${startDateTime.toISOString()},` +
         `End time: ${endDateTime.toISOString()},` +
