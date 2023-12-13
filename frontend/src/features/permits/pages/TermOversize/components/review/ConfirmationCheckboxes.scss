@@ -1,6 +1,8 @@
 @import "../../../../../../themes/orbcStyles";
 
 .confirmation-checkboxes {
+  color: $bc-black;
+  
   & &__checkbox {
     padding-left: 0;
     color: $bc-primary-blue;
@@ -8,6 +10,12 @@
     &--invalid {
       color: $bc-red;
     }
+  }
+
+  & &__attestation {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
   }
 
   & &__error {
