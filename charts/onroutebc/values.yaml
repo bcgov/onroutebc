@@ -239,7 +239,7 @@ dops:
           memory: 2Gi
         requests:
           cpu: 150m
-          memory: 600Mi
+          memory: 2Gi
   ingress:
     annotations: 
       route.openshift.io/termination: "edge"
