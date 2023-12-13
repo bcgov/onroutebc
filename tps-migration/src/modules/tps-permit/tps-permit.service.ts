@@ -32,7 +32,7 @@ export class TpsPermitService {
   /**
    * Scheduled method to run every 5 minute. To upload PENDING TPS permits pdf to S3, update ORBC_DOCUMENT and ORBC_PERMIT table. and delete migrated permit and pdf from TPS_MIGRATED_PERMIT table.
    * If records are stuck in PROCESSING status then something must have gone wrong and needs attention.
-   *
+   * Revisit breaking the loop
    */
   @Cron(`0 */${PENDING_POLLING_INTERVAL} * * * *`)
   async uploadTpsPermit() {
