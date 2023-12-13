@@ -25,7 +25,7 @@ export class ReadVerifyMigratedClientDto {
   @AutoMap()
   @ApiProperty({
     description:
-      'The metadata of migrated client associated with the client and permit number. Passed only when a match is found',
+      'The metadata of migrated client associated with the client and permit number. Returned when a match is found',
     type: ReadCompanyDto,
     required: false,
   })
