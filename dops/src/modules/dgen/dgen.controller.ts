@@ -69,6 +69,7 @@ export class DgenController {
     @Body() createGeneratedDocumentDto: CreateGeneratedDocumentDto,
   ) {
     const currentUser = request.user as IUserJWT;
+    console.log('Test - Controller')
     if (currentUser.identity_provider !== IDP.IDIR && !companyId) {
       throw new BadRequestException(
         'Company Id is manadatory for all IDP but IDIR',
@@ -92,6 +93,7 @@ export class DgenController {
     @Body() createGeneratedReportDto: CreateGeneratedReportDto,
   ) {
     const currentUser = request.user as IUserJWT;
+    console.log('Test - Controller')
     await this.dgenService.generateReport(
       currentUser,
       createGeneratedReportDto,
