@@ -3,14 +3,16 @@ import { Box, Button, Typography } from "@mui/material";
 import "./PermitPayFeeSummary.scss";
 import { PermitType } from "../../../../types/PermitType";
 import { FeeSummary } from "../../../../components/feeSummary/FeeSummary";
-import { PPC_EMAIL, TOLL_FREE_NUMBER } from "../../../../../../common/constants/constants";
+import { PAY_NOW, PPC_EMAIL, TOLL_FREE_HAVE_QUESTIONS, TOLL_FREE_NUMBER } from "../../../../../../common/constants/constants";
 
 export const PermitPayFeeSummary = ({
   calculatedFee,
+  isBusy,
   permitType,
   onPay,
 }: {
   calculatedFee: number;
+  isBusy: boolean;
   permitType?: PermitType;
   onPay: () => void;
 }) => {
@@ -24,13 +26,14 @@ export const PermitPayFeeSummary = ({
           className="permit-pay-fee-summary__pay-btn"
           variant="contained"
           onClick={onPay}
+          disabled={isBusy}
         >
-          Pay Now
+          {PAY_NOW}
         </Button>
       </Box>
 
       <Typography className="permit-pay-fee-summary__contact" variant="h6">
-        Have questions? Please contact the Provincial Permit Centre. Toll-free:
+        {TOLL_FREE_HAVE_QUESTIONS}
         <span className="pay-contact pay-contact--phone">
           {" "}
           {TOLL_FREE_NUMBER}
