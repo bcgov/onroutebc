@@ -5,6 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import * as CryptoJS from 'crypto-js';
+import { randomInt } from 'crypto';
 import { CreateTransactionDto } from './dto/request/create-transaction.dto';
 import { ReadTransactionDto } from './dto/response/read-transaction.dto';
 import { InjectMapper } from '@automapper/nestjs';
@@ -131,10 +132,8 @@ export class PaymentService {
       ),
     );
     const trnNum = seq.toString(16);
-    // const trnNum = 'T' + currDate.getTime().toString().substring(4);
-    const currentDate = Date.now();
     const transactionOrderNumber =
-      'T' + trnNum.padStart(9, '0').toUpperCase() + String(currentDate);
+      'T' + trnNum.padStart(6, '0').toUpperCase() + randomInt(100, 1000).toString();
 
     return transactionOrderNumber;
   }
