@@ -92,6 +92,7 @@ export class DgenController {
     @Body() createGeneratedReportDto: CreateGeneratedReportDto,
   ) {
     const currentUser = request.user as IUserJWT;
+console.log('Test - Controller')
     await this.dgenService.generateReport(
       currentUser,
       createGeneratedReportDto,
