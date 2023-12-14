@@ -41,6 +41,11 @@ on:
         required: true
         type: string
         default: "nonprod"
+      vault_zone:
+        description: "secret zone"
+        required: true
+        type: string
+        default: "dev"
       triggers:
         description: Paths to trigger a deploy; omit=always; e.g. ('backend/' 'frontend/')
         required: false
@@ -105,10 +110,11 @@ on:
         required: true
         type: choice
         options: ["nonprod","prod"]
-      triggers:
-        description: Paths to trigger a deploy; omit=always; e.g. ('backend/' 'frontend/')
-        required: false
+      vault_zone:
+        description: "secret zone"
+        required: true
         type: string
+        default: "dev"
 
       ### Usually a bad idea / not recommended
       directory:
@@ -185,11 +191,8 @@ jobs:
               helm uninstall ${{ env.repo_release }}
           fi
 
-          # Package Helm release
-          helm dependency update
-          helm package --app-version="${{ env.package_tag }}" --version=${{ inputs.tag }} .
-
           # Deploy Helm release
+          helm dependency update
           helm upgrade \
             --set global.autoscaling=${{ inputs.autoscaling || true }} \
             --set-string global.repository=${{ github.repository }} \
@@ -197,10 +200,12 @@ jobs:
             --set-string global.license=${{ inputs.namespace }} \
             --set-string global.zone=${{ inputs.environment }} \
             --set-string global.vault.role=${{ inputs.vault_role }} \
+            --set-string global.vault_zone=${{ inputs.vault_zone }} \
             --install --wait --atomic ${{ inputs.repository }}-${{ inputs.release }} \
             --timeout 10m --force \
-            --values ${{ inputs.values }} ${{ inputs.params }} \
-            ./${{ inputs.repository }}-${{ inputs.tag }}.tgz
+            --values ${{ inputs.values }} \
+            ${{ inputs.params }} .
+
 
           # print history 
           helm history ${{ env.repo_release }}
