@@ -43,6 +43,7 @@ jobs:
       release: test
       tag: ${{ needs.vars.outputs.pr }}
       vault_role: nonprod
+      vault_zone: test
 
   promote-images-test:
     name: Promote Images - Test
@@ -72,6 +73,7 @@ jobs:
       tag: ${{ needs.vars.outputs.pr }}
       release: prod
       vault_role: prod
+      vault_zone: prod
   
   promote-images-prod:
     name: Promote Images - Prod
