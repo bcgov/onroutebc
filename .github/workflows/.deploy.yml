@@ -192,6 +192,7 @@ jobs:
           fi
 
           # Deploy Helm release
+          helm dependency update
           helm upgrade \
             --set global.autoscaling=${{ inputs.autoscaling || true }} \
             --set-string global.repository=${{ github.repository }} \
