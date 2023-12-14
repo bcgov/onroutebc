@@ -36,8 +36,8 @@ export const ActivePermitList = () => {
   });
   const activePermitsQuery = useQuery({
     queryKey: ["activePermits", pagination.pageIndex],
-    queryFn: () => getPermits({ page: pagination.pageIndex + 1 }),
-    keepPreviousData: false,
+    queryFn: () => getPermits({ page: pagination.pageIndex }),
+    keepPreviousData: true,
     staleTime: FIVE_MINUTES,
     retry: 1,
   });
@@ -68,7 +68,7 @@ export const ActivePermitList = () => {
     initialState: {
       ...defaultTableInitialStateOptions,
       sorting: [{ id: "permitData.expiryDate", desc: true }],
-      // pagination: { pageIndex: 1, pageSize: 10}
+      pagination: { pageIndex: 0, pageSize: 10}
     },
     state: {
       ...defaultTableStateOptions,
@@ -78,7 +78,8 @@ export const ActivePermitList = () => {
       isLoading: isInitialLoading || isLoading,
       pagination,
     },
-    // autoResetPageIndex: false,
+    autoResetPageIndex: false,
+    manualPagination: true,
     rowCount: data?.meta?.totalItems ?? 0,
     pageCount: data?.meta?.totalPages ?? 0,
     onPaginationChange: setPagination,

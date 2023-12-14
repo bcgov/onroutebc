@@ -383,7 +383,7 @@ export const getCurrentAmendmentApplication = async (
  * @param expired If set to true, expired permits will be retrieved.
  * @returns A list of permits.
  */
-export const getPermits = async ({ expired = false, page = 1 } = {}): Promise<
+export const getPermits = async ({ expired = false, page = 0 } = {}): Promise<
   PaginatedResponse<Permit>
 > => {
   const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
@@ -394,7 +394,7 @@ export const getPermits = async ({ expired = false, page = 1 } = {}): Promise<
   if (expired) {
     permitsURL.searchParams.set("expired", "true");
   }
-  permitsURL.searchParams.set("page", page.toString());
+  permitsURL.searchParams.set("page", (page + 1).toString());
   
   const permits = await httpGETRequest(permitsURL.toString())
     .then((response) => {
