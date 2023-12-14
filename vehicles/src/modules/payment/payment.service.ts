@@ -131,9 +131,9 @@ export class PaymentService {
         this.dataSource,
       ),
     );
-    const trnNum = seq.toString(16);
+    const trnNum = seq.toString(36) + Math.floor(Math.random() * 9999).toString(36);
     const transactionOrderNumber =
-      'T' + trnNum.padStart(6, '0').toUpperCase() + randomInt(100, 1000).toString();
+      'T' + trnNum.padStart(9, '0').toUpperCase();
 
     return transactionOrderNumber;
   }
