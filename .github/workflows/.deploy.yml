@@ -115,10 +115,6 @@ on:
         required: true
         type: string
         default: "dev"
-      triggers:
-        description: Paths to trigger a deploy; omit=always; e.g. ('backend/' 'frontend/')
-        required: false
-        type: string
 
       ### Usually a bad idea / not recommended
       directory:
