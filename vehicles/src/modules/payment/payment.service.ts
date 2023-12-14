@@ -5,7 +5,6 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import * as CryptoJS from 'crypto-js';
-import { randomInt } from 'crypto';
 import { CreateTransactionDto } from './dto/request/create-transaction.dto';
 import { ReadTransactionDto } from './dto/response/read-transaction.dto';
 import { InjectMapper } from '@automapper/nestjs';
@@ -131,9 +130,13 @@ export class PaymentService {
         this.dataSource,
       ),
     );
-    const trnNum = seq.toString(36) + Math.floor(Math.random() * 9999).toString(36);
-    const transactionOrderNumber =
-      'T' + trnNum.padStart(9, '0').toUpperCase();
+    //Current epoch is 13 digit. using 2000000000000 in mod to result into 12 digit. will not generate duplicate value till year 2087. and will result into 8 character base36 string.
+    //Using mod 35 with sequence number to get 35 unique values for each same timestamp mod evaluated earlier. decimal till digit 35 result into single base36 character.
+    //Transaction number can not be more than 10 character hence the mod, to limit the character upto length of 10 character.
+    //Done to minimize duplicate transaction number in dev and test.
+    const trnNum =
+      (Date.now() % 2000000000000).toString(36) + (seq % 35).toString(36);
+    const transactionOrderNumber = 'T' + trnNum.padStart(9, '0').toUpperCase();
 
     return transactionOrderNumber;
   }
