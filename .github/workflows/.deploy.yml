@@ -191,6 +191,10 @@ jobs:
               helm uninstall ${{ env.repo_release }}
           fi
 
+          # Package Helm release
+          helm dependency update
+          helm package --app-version="${{ env.package_tag }}" --version=${{ inputs.tag }} .
+
           # Deploy Helm release
           helm upgrade \
             --set global.autoscaling=${{ inputs.autoscaling || true }} \
@@ -203,7 +207,7 @@ jobs:
             --install --wait --atomic ${{ inputs.repository }}-${{ inputs.release }} \
             --timeout 10m --force \
             --values ${{ inputs.values }} ${{ inputs.params }} \
-
+            ./${{ inputs.repository }}-${{ inputs.tag }}.tgz
 
           # print history 
           helm history ${{ env.repo_release }}
