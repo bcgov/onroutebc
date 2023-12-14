@@ -11,9 +11,17 @@ import {
 import { BadRequestExceptionDto } from './exception/badRequestException.dto';
 import { ExceptionDto } from './exception/exception.dto';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import helmet from 'helmet';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  app.use(helmet());
+  app.enableCors({
+    methods: ['GET', 'PUT', 'POST', 'DELETE'],
+    maxAge: 7200,
+    credentials: false,
+    exposedHeaders: ['Content-Disposition'],
+  });
   app.useGlobalPipes(
     new ValidationPipe({
       exceptionFactory: (e) => {
@@ -41,9 +49,6 @@ async function bootstrap() {
       validationError: { target: false },
     }),
   );
-  app.enableCors({
-    exposedHeaders: ['Content-Disposition'],
-  });
   app.useBodyParser('json', { limit: '2mb' });
   const config = new DocumentBuilder()
     .setTitle('DOPS API')
