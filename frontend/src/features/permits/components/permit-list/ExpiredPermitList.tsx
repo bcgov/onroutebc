@@ -73,6 +73,7 @@ export const ExpiredPermitList = () => {
     pageCount: data?.meta?.totalPages ?? 0,
     onPaginationChange: setPagination,
     enablePagination: true,
+    manualPagination: true,
     enableBottomToolbar: true,
     renderEmptyRowsFallback: () => <NoRecordsFound />,
     renderRowActions: useCallback((props: { row: MRT_Row<Permit> }) => {
