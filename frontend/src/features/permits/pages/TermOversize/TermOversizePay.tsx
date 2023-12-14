@@ -55,7 +55,7 @@ export const TermOversizePay = () => {
   }, [transaction]);
 
   const handlePay = () => {
-    setIsBusy(true)
+    setIsBusy(true);
     startTransactionMutation.mutate({
       transactionTypeId: TRANSACTION_TYPES.P,
       paymentMethodTypeCode: 
