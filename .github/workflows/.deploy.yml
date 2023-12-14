@@ -41,6 +41,11 @@ on:
         required: true
         type: string
         default: "nonprod"
+      vault_zone:
+        description: "secret zone"
+        required: true
+        type: string
+        default: "dev"
       triggers:
         description: Paths to trigger a deploy; omit=always; e.g. ('backend/' 'frontend/')
         required: false
@@ -105,6 +110,11 @@ on:
         required: true
         type: choice
         options: ["nonprod","prod"]
+      vault_zone:
+        description: "secret zone"
+        required: true
+        type: string
+        default: "dev"
       triggers:
         description: Paths to trigger a deploy; omit=always; e.g. ('backend/' 'frontend/')
         required: false
@@ -197,6 +207,7 @@ jobs:
             --set-string global.license=${{ inputs.namespace }} \
             --set-string global.zone=${{ inputs.environment }} \
             --set-string global.vault.role=${{ inputs.vault_role }} \
+            --set-string global.vault_zone=${{ inputs.vault_zone }} \
             --install --wait --atomic ${{ inputs.repository }}-${{ inputs.release }} \
             --timeout 10m --force \
             --values ${{ inputs.values }} ${{ inputs.params }} \
