@@ -5,7 +5,6 @@ import { Transaction } from './entities/transaction.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, SelectQueryBuilder } from 'typeorm';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
-import { ApplicationStatus } from '../../common/enum/application-status.enum';
 import { PaymentMethodTypeReport } from '../../common/enum/payment-method-type.enum';
 import { PaymentCardType as PaymentCardTypeEnum } from '../../common/enum/payment-card-type.enum';
 import { TransactionType } from '../../common/enum/transaction-type.enum';
@@ -123,14 +122,6 @@ export class PaymentReportService {
         transactionTypes: transactionTypes,
       });
     }
-
-    queryBuilder.andWhere('permit.permitStatus IN (:...permitStatus)', {
-      permitStatus: [
-        ApplicationStatus.ISSUED,
-        ApplicationStatus.REVOKED,
-        ApplicationStatus.VOIDED,
-      ],
-    });
 
     queryBuilder.andWhere('permit.permitIssueDateTime >= :fromDateTime', {
       fromDateTime: reportDto.fromDateTime,
@@ -601,14 +592,6 @@ export class PaymentReportService {
         transactionTypes: transactionTypes,
       });
     }
-
-    queryBuilder.andWhere('permit.permitStatus IN (:...permitStatus)', {
-      permitStatus: [
-        ApplicationStatus.ISSUED,
-        ApplicationStatus.REVOKED,
-        ApplicationStatus.VOIDED,
-      ],
-    });
 
     queryBuilder.andWhere('permit.permitIssueDateTime >= :fromDateTime', {
       fromDateTime: reportDto.fromDateTime,

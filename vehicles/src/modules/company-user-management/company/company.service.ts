@@ -67,18 +67,23 @@ export class CompanyService {
     let newCompany: Company;
     let newUser: ReadUserDto;
     let migratedClient = false;
-    const existingCompanyDetails = await this.findOneByCompanyGuid(
+    let existingCompanyDetails = await this.findOneByCompanyGuid(
       currentUser.bceid_business_guid,
     );
+
+    if (!existingCompanyDetails && createCompanyDto?.migratedClientHash) {
+      existingCompanyDetails = await this.findOneByMigratedClientHash(
+        createCompanyDto?.migratedClientHash,
+      );
+    }
 
     //TPS migrated companies without any users linked to it is allowed
     if (existingCompanyDetails?.companyUsers?.length) {
       throw new BadRequestException(
         'Company already exists in ORBC. Please use the update endpoint',
       );
-    } else if (
-      existingCompanyDetails?.accountSource === AccountSource.TpsAccount
-    ) {
+    }
+    if (existingCompanyDetails?.accountSource === AccountSource.TpsAccount) {
       migratedClient = true;
     }
 
@@ -328,8 +333,28 @@ export class CompanyService {
       .createHash('sha256')
       .update(migratedClientNumber?.replace(/-/g, ''))
       .digest('hex');
+    return await this.findOneByMigratedClientHash(migratedClientHash);
+  }
+
+  /**
+   * The findOneByMigratedClientHash() method returns a Company Entity object corresponding to the
+   * company with that migrated client hash. It retrieves the entity from the database using the
+   * Repository
+   *
+   * @param migratedClientHash The migrated client Number.
+   *
+   * @returns The company details as a promise of type {@link Company}
+   */
+  async findOneByMigratedClientHash(
+    migratedClientHash: string,
+  ): Promise<Company> {
     return await this.companyRepository.findOne({
-      where: { migratedClientNumber: migratedClientHash?.toUpperCase() },
+      where: { migratedClientHash: migratedClientHash?.toUpperCase() },
+      relations: {
+        mailingAddress: true,
+        primaryContact: true,
+        companyUsers: true,
+      },
     });
   }
 

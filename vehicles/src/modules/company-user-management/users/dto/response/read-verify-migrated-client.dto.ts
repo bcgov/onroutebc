@@ -1,5 +1,6 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
+import { ReadCompanyDto } from '../../../company/dto/response/read-company.dto';
 
 /**
  * JSON representation of response object when verifying migrated client and permit information.
@@ -24,8 +25,9 @@ export class ReadVerifyMigratedClientDto {
   @AutoMap()
   @ApiProperty({
     description:
-      'Boolean value to denote if TPS migrated permit belongs to the migrated client',
-    default: false,
+      'The metadata of migrated client associated with the client and permit number. Returned when a match is found',
+    type: ReadCompanyDto,
+    required: false,
   })
-  clientAndPermitMatch: boolean;
+  migratedClient?: ReadCompanyDto;
 }
