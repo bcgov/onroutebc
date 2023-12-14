@@ -20,7 +20,7 @@ export const PermitPayFeeSummary = ({
   const debouncedInputAction = useDebounce(inputAction, DEBOUNCE_TIMEOUT);
 
   useEffect(() => {
-    if (debouncedInputAction) {onPay()}
+    if (debouncedInputAction) { onPay(); }
 
   }, [debouncedInputAction])
 
