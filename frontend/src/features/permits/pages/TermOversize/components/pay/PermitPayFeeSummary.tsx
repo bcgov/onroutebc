@@ -3,7 +3,7 @@ import { Box, Button, Typography } from "@mui/material";
 import "./PermitPayFeeSummary.scss";
 import { PermitType } from "../../../../types/PermitType";
 import { FeeSummary } from "../../../../components/feeSummary/FeeSummary";
-import { DEBOUNCE_TIMEOUT, PAY_NOW, PPC_EMAIL, TOLL_FREE_HAVE_QUESTIONS, TOLL_FREE_NUMBER } from "../../../../../../common/constants/constants";
+import { DEBOUNCE_TIMEOUT, PPC_EMAIL, TOLL_FREE_NUMBER } from "../../../../../../common/constants/constants";
 import { useDebounce } from "@uidotdev/usehooks";
 import { useEffect, useState } from "react";
 
@@ -20,7 +20,9 @@ export const PermitPayFeeSummary = ({
   const debouncedInputAction = useDebounce(inputAction, DEBOUNCE_TIMEOUT);
 
   useEffect(() => {
-    if (debouncedInputAction) { onPay(); }
+    if (debouncedInputAction) {
+      onPay();
+    }
 
   }, [debouncedInputAction])
 
@@ -35,12 +37,12 @@ export const PermitPayFeeSummary = ({
           variant="contained"
           onClick={() => setInputAction(true)}
         >
-          {PAY_NOW}
+          Pay Now
         </Button>
       </Box>
 
       <Typography className="permit-pay-fee-summary__contact" variant="h6">
-        {TOLL_FREE_HAVE_QUESTIONS}
+        Have questions? Please contact the Provincial Permit Centre. Toll-free:
         <span className="pay-contact pay-contact--phone">
           {" "}
           {TOLL_FREE_NUMBER}
