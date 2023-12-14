@@ -1,5 +1,5 @@
 import { Box } from "@mui/material";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect } from "react";
 import { useSearchParams, useNavigate, useParams } from "react-router-dom";
 
 import "./TermOversizePay.scss";
@@ -17,7 +17,6 @@ import { APPLICATIONS_ROUTES, APPLICATION_STEPS } from "../../../../routes/const
 
 export const TermOversizePay = () => {
   const { applicationData } = useContext(ApplicationContext);
-  const [isBusy, setIsBusy] = useState(false);
   const routeParams = useParams();
   const permitId = getDefaultRequiredVal("", routeParams.permitId);
   const [searchParams] = useSearchParams();
@@ -27,8 +26,6 @@ export const TermOversizePay = () => {
     searchParams.get("paymentFailed"),
     false
   );
-
-
 
   const calculatedFee = calculateFeeByDuration(
     getDefaultRequiredVal(0, applicationData?.permitData?.permitDuration),
@@ -45,7 +42,6 @@ export const TermOversizePay = () => {
 
   useEffect(() => {
     if (typeof transaction !== "undefined") {
-      setIsBusy(false);
       if (!transaction?.url) {
         navigate(APPLICATIONS_ROUTES.PAY(permitId, true));
       } else {
@@ -55,7 +51,6 @@ export const TermOversizePay = () => {
   }, [transaction]);
 
   const handlePay = () => {
-    setIsBusy(true);
     startTransactionMutation.mutate({
       transactionTypeId: TRANSACTION_TYPES.P,
       paymentMethodTypeCode: 
@@ -90,7 +85,6 @@ export const TermOversizePay = () => {
           calculatedFee={calculatedFee}
           permitType={applicationData?.permitType}
           onPay={handlePay}
-          isBusy={isBusy}
         />
       </Box>
     </div>
