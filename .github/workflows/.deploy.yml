@@ -200,7 +200,7 @@ jobs:
             --set-string global.license=${{ inputs.namespace }} \
             --set-string global.zone=${{ inputs.environment }} \
             --set-string global.vault.role=${{ inputs.vault_role }} \
-            --set-string global.vault_zone=${{ inputs.vault_zone }} \
+            --set-string global.vault.zone=${{ inputs.vault_zone }} \
             --install --wait --atomic ${{ inputs.repository }}-${{ inputs.release }} \
             --timeout 10m --force \
             --values ${{ inputs.values }} \
