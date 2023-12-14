@@ -10,9 +10,17 @@ import {
 } from '@nestjs/common';
 import { BadRequestExceptionDto } from './common/exception/badRequestException.dto';
 import { ExceptionDto } from './common/exception/exception.dto';
+import helmet from 'helmet';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.use(helmet());
+  app.enableCors({
+    methods: ['GET', 'PUT', 'POST', 'DELETE'],
+    maxAge: 7200,
+    credentials: false,
+    exposedHeaders: ['Content-Disposition'],
+  });
   app.useGlobalPipes(
     new ValidationPipe({
       exceptionFactory: (e) => {
@@ -41,9 +49,6 @@ async function bootstrap() {
       validationError: { target: false },
     }),
   );
-  app.enableCors({
-    exposedHeaders: ['Content-Disposition'],
-  });
   const config = new DocumentBuilder()
     .setTitle('Vehicles API')
     .setDescription('The vehicles API description')
