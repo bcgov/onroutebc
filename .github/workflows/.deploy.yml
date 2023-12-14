@@ -192,6 +192,7 @@ jobs:
           fi
 
           # Deploy Helm release
+          helm dependency update
           helm upgrade \
             --set global.autoscaling=${{ inputs.autoscaling || true }} \
             --set-string global.repository=${{ github.repository }} \
@@ -202,7 +203,8 @@ jobs:
             --set-string global.vault_zone=${{ inputs.vault_zone }} \
             --install --wait --atomic ${{ inputs.repository }}-${{ inputs.release }} \
             --timeout 10m --force \
-            --values ${{ inputs.values }} ${{ inputs.params }} \
+            --values ${{ inputs.values }} \
+            ${{ inputs.params }} .
 
 
           # print history 
