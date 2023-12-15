@@ -1,29 +1,28 @@
-import { useQuery } from "@tanstack/react-query";
-import { useCallback, useContext, useEffect, useState } from "react";
 import { Box } from "@mui/material";
+import { useQuery } from "@tanstack/react-query";
 import {
   MRT_PaginationState,
   MRT_Row,
   MaterialReactTable,
   useMaterialReactTable,
 } from "material-react-table";
+import { useCallback, useContext, useEffect, useState } from "react";
 
-import "./ActivePermitList.scss";
-import { InfoBcGovBanner } from "../../../../common/components/banners/InfoBcGovBanner";
-import { FIVE_MINUTES } from "../../../../common/constants/constants";
-import { getPermits } from "../../apiManager/permitsAPI";
-import { BANNER_MESSAGES } from "../../../../common/constants/bannerMessages";
-import { Permit } from "../../types/permit";
-import { PaginatedResponse } from "../../../../common/types/common";
 import { SnackBarContext } from "../../../../App";
+import { InfoBcGovBanner } from "../../../../common/components/banners/InfoBcGovBanner";
 import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
-import { PermitRowOptions } from "./PermitRowOptions";
-import { PermitsColumnDefinition } from "./Columns";
+import { BANNER_MESSAGES } from "../../../../common/constants/bannerMessages";
+import { FIVE_MINUTES } from "../../../../common/constants/constants";
 import {
   defaultTableInitialStateOptions,
   defaultTableOptions,
   defaultTableStateOptions,
 } from "../../../../common/constants/defaultTableOptions";
+import { getPermits } from "../../apiManager/permitsAPI";
+import { Permit } from "../../types/permit";
+import "./ActivePermitList.scss";
+import { PermitsColumnDefinition } from "./Columns";
+import { PermitRowOptions } from "./PermitRowOptions";
 
 /**
  * A wrapper with the query to load the table with active permits.
@@ -35,8 +34,12 @@ export const ActivePermitList = () => {
     pageSize: 10,
   });
   const activePermitsQuery = useQuery({
-    queryKey: ["activePermits", pagination.pageIndex],
-    queryFn: () => getPermits({ page: pagination.pageIndex }),
+    queryKey: ["activePermits", pagination.pageIndex, pagination.pageSize],
+    queryFn: () =>
+      getPermits(
+        { expired: false },
+        { page: pagination.pageIndex, limit: pagination.pageSize },
+      ),
     keepPreviousData: true,
     staleTime: FIVE_MINUTES,
     retry: 1,
@@ -64,7 +67,6 @@ export const ActivePermitList = () => {
     initialState: {
       ...defaultTableInitialStateOptions,
       sorting: [{ id: "permitData.expiryDate", desc: true }],
-      pagination: { pageIndex: 0, pageSize: 10}
     },
     state: {
       ...defaultTableStateOptions,

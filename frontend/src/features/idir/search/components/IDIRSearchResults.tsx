@@ -27,6 +27,7 @@ import {
   defaultTableOptions,
   defaultTableStateOptions,
 } from "../../../../common/constants/defaultTableOptions";
+import { TEN_MINUTES } from "../../../../common/constants/constants";
 
 /**
  * Function to decide whether to show row actions icon or not.
@@ -76,6 +77,7 @@ export const IDIRSearchResults = memo(
         searchByFilter,
         searchEntity,
         pagination.pageIndex,
+        pagination.pageSize,
       ],
       () =>
         getDataBySearch(
@@ -84,9 +86,15 @@ export const IDIRSearchResults = memo(
             searchEntity,
             searchValue,
           },
-          pagination.pageIndex,
+          { page: pagination.pageIndex, limit: pagination.pageSize },
         ),
-      { retry: 1, enabled: true, refetchInterval: false },
+      {
+        retry: 1, // retry once.
+        enabled: true,
+        refetchInterval: false,
+        staleTime: TEN_MINUTES,
+        keepPreviousData: true,
+      },
     );
 
     const { data, isLoading, isError } = searchResultsQuery;
@@ -121,7 +129,6 @@ export const IDIRSearchResults = memo(
       initialState: {
         ...defaultTableInitialStateOptions,
         sorting: [{ id: "permitIssueDateTime", desc: true }],
-        pagination: { pageIndex: 0, pageSize: 10}
       },
       state: {
         ...defaultTableStateOptions,

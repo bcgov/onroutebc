@@ -4,14 +4,6 @@ version: "3.8"
 services:
   sql-server-db:
     container_name: sql-server-db
-    deploy:
-      resources:
-        limits:
-          cpus: '1'
-          memory: '1.5GB'
-        reservations:
-          cpus: '1'
-          memory: '1.5GB'
     build:
       context: ./database/mssql
       dockerfile: Dockerfile
@@ -47,159 +39,158 @@ services:
     volumes:
       - /sql_data
 
-  # vehicles-api:
-  #   container_name: vehicles-api
-  #   build:
-  #     context: ./vehicles/
-  #     dockerfile: Dockerfile
-  #   environment:
-  #     NODE_ENV: development
-  #     DB_TYPE: ${DB_TYPE}
-  #     MSSQL_HOST: sql-server-db
-  #     MSSQL_PORT: ${MSSQL_PORT}
-  #     MSSQL_DB: ${MSSQL_DB}
-  #     MSSQL_SA_USER: ${MSSQL_SA_USER}
-  #     MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD}
-  #     MSSQL_ENCRYPT: ${MSSQL_ENCRYPT}
-  #     AUTH0_ISSUER_URL: ${AUTH0_ISSUER_URL}
-  #     AUTH0_AUDIENCE: ${AUTH0_AUDIENCE}
-  #     AUTH0_IGNORE_EXP: ${AUTH0_IGNORE_EXP}
-  #     CHES_TOKEN_URL: ${CHES_TOKEN_URL}
-  #     CHES_CLIENT_ID: ${CHES_CLIENT_ID}
-  #     CHES_CLIENT_SECRET: ${CHES_CLIENT_SECRET}
-  #     CHES_URL: ${CHES_URL}
-  #     DOPS_URL: "http://dops-api:5001"
-  #     FRONT_END_URL: "http://frontend:3000"
-  #     PAYBC_API_KEY: ${PAYBC_API_KEY}
-  #     PAYBC_REF_NUMBER: ${PAYBC_REF_NUMBER}
-  #     PAYBC_BASE_URL: ${PAYBC_BASE_URL}
-  #     PAYBC_REDIRECT: ${PAYBC_REDIRECT}
-  #     GL_CODE: ${GL_CODE}
-  #   healthcheck:
-  #     test: ["CMD", "curl", "-f", "http://localhost:5000/"]
-  #     interval: 1m30s
-  #     timeout: 10s
-  #     retries: 3
-  #     start_period: 40s
-  #   depends_on:
-  #     sql-server-db:
-  #       condition: service_healthy
-  #   hostname: vehicles-api
-  #   links:
-  #     - sql-server-db
-  #     - dops-api
-  #   ports:
-  #     - "5000:5000"
+  vehicles-api:
+    container_name: vehicles-api
+    build:
+      context: ./vehicles/
+      dockerfile: Dockerfile
+    environment:
+      NODE_ENV: development
+      DB_TYPE: ${DB_TYPE}
+      MSSQL_HOST: sql-server-db
+      MSSQL_PORT: ${MSSQL_PORT}
+      MSSQL_DB: ${MSSQL_DB}
+      MSSQL_SA_USER: ${MSSQL_SA_USER}
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD}
+      MSSQL_ENCRYPT: ${MSSQL_ENCRYPT}
+      AUTH0_ISSUER_URL: ${AUTH0_ISSUER_URL}
+      AUTH0_AUDIENCE: ${AUTH0_AUDIENCE}
+      AUTH0_IGNORE_EXP: ${AUTH0_IGNORE_EXP}
+      CHES_TOKEN_URL: ${CHES_TOKEN_URL}
+      CHES_CLIENT_ID: ${CHES_CLIENT_ID}
+      CHES_CLIENT_SECRET: ${CHES_CLIENT_SECRET}
+      CHES_URL: ${CHES_URL}
+      DOPS_URL: "http://dops-api:5001"
+      FRONT_END_URL: "http://frontend:3000"
+      PAYBC_API_KEY: ${PAYBC_API_KEY}
+      PAYBC_REF_NUMBER: ${PAYBC_REF_NUMBER}
+      PAYBC_BASE_URL: ${PAYBC_BASE_URL}
+      PAYBC_REDIRECT: ${PAYBC_REDIRECT}
+      GL_CODE: ${GL_CODE}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    depends_on:
+      sql-server-db:
+        condition: service_healthy
+    hostname: vehicles-api
+    links:
+      - sql-server-db
+      - dops-api
+    ports:
+      - "5000:5000"
 
-  # dops-api:
-  #   container_name: dops-api
-  #   build:
-  #     context: ./dops/
-  #     dockerfile: Dockerfile
-  #   environment:
-  #     NODE_ENV: development
-  #     DB_TYPE: ${DB_TYPE}
-  #     MSSQL_HOST: sql-server-db
-  #     MSSQL_PORT: ${MSSQL_PORT}
-  #     MSSQL_DB: ${MSSQL_DB}
-  #     MSSQL_SA_USER: ${MSSQL_SA_USER}
-  #     MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD}
-  #     MSSQL_ENCRYPT: ${MSSQL_ENCRYPT}
-  #     AUTH0_ISSUER_URL: ${AUTH0_ISSUER_URL}
-  #     AUTH0_AUDIENCE: ${AUTH0_AUDIENCE}
-  #     AUTH0_IGNORE_EXP: ${AUTH0_IGNORE_EXP}
-  #     DOPS_CVSE_FORMS_CACHE_TTL_MS: ${DOPS_CVSE_FORMS_CACHE_TTL_MS}
-  #     DOPS_S3_ACCESS_TYPE: ${DOPS_S3_ACCESS_TYPE}
-  #     DOPS_S3_ACCESSKEYID: ${DOPS_S3_ACCESSKEYID}
-  #     DOPS_S3_BUCKET: ${DOPS_S3_BUCKET}
-  #     DOPS_S3_PRESIGNED_URL_EXPIRY: ${DOPS_S3_PRESIGNED_URL_EXPIRY}
-  #     DOPS_S3_ENDPOINT: ${DOPS_S3_ENDPOINT}
-  #     DOPS_S3_KEY: ${DOPS_S3_KEY}
-  #     DOPS_S3_SECRETACCESSKEY: ${DOPS_S3_SECRETACCESSKEY}
-  #     CDOGS_TOKEN_URL: ${CDOGS_TOKEN_URL}
-  #     CDOGS_CLIENT_ID: ${CDOGS_CLIENT_ID}
-  #     CDOGS_CLIENT_SECRET: ${CDOGS_CLIENT_SECRET}
-  #     CDOGS_URL: ${CDOGS_URL}
-  #     ACCESS_API_URL: "http://vehicles-api:5000"
-  #   healthcheck:
-  #     test: ["CMD", "curl", "-f", "http://localhost:5001/"]
-  #     interval: 1m30s
-  #     timeout: 10s
-  #     retries: 3
-  #     start_period: 40s
-  #   depends_on:
-  #     sql-server-db:
-  #       condition: service_healthy
-  #   hostname: dops-api
-  #   links:
-  #     - sql-server-db
-  #   ports:
-  #     - "5001:5001"
+  dops-api:
+    container_name: dops-api
+    build:
+      context: ./dops/
+      dockerfile: Dockerfile
+    environment:
+      NODE_ENV: development
+      DB_TYPE: ${DB_TYPE}
+      MSSQL_HOST: sql-server-db
+      MSSQL_PORT: ${MSSQL_PORT}
+      MSSQL_DB: ${MSSQL_DB}
+      MSSQL_SA_USER: ${MSSQL_SA_USER}
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD}
+      MSSQL_ENCRYPT: ${MSSQL_ENCRYPT}
+      AUTH0_ISSUER_URL: ${AUTH0_ISSUER_URL}
+      AUTH0_AUDIENCE: ${AUTH0_AUDIENCE}
+      AUTH0_IGNORE_EXP: ${AUTH0_IGNORE_EXP}
+      DOPS_CVSE_FORMS_CACHE_TTL_MS: ${DOPS_CVSE_FORMS_CACHE_TTL_MS}
+      DOPS_S3_ACCESS_TYPE: ${DOPS_S3_ACCESS_TYPE}
+      DOPS_S3_ACCESSKEYID: ${DOPS_S3_ACCESSKEYID}
+      DOPS_S3_BUCKET: ${DOPS_S3_BUCKET}
+      DOPS_S3_PRESIGNED_URL_EXPIRY: ${DOPS_S3_PRESIGNED_URL_EXPIRY}
+      DOPS_S3_ENDPOINT: ${DOPS_S3_ENDPOINT}
+      DOPS_S3_KEY: ${DOPS_S3_KEY}
+      DOPS_S3_SECRETACCESSKEY: ${DOPS_S3_SECRETACCESSKEY}
+      CDOGS_TOKEN_URL: ${CDOGS_TOKEN_URL}
+      CDOGS_CLIENT_ID: ${CDOGS_CLIENT_ID}
+      CDOGS_CLIENT_SECRET: ${CDOGS_CLIENT_SECRET}
+      CDOGS_URL: ${CDOGS_URL}
+      ACCESS_API_URL: "http://vehicles-api:5000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5001/"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    depends_on:
+      sql-server-db:
+        condition: service_healthy
+    hostname: dops-api
+    links:
+      - sql-server-db
+    ports:
+      - "5001:5001"
 
-  # frontend:
-  #   container_name: frontend
-  #   build:
-  #     context: ./frontend/
-  #     dockerfile: Dockerfile
-  #     args:
-  #       VITE_DEPLOY_ENVIRONMENT: ${VITE_DEPLOY_ENVIRONMENT}
-  #       VITE_API_VEHICLE_URL: ${VITE_API_VEHICLE_URL}
-  #       VITE_AUTH0_ISSUER_URL: ${VITE_AUTH0_ISSUER_URL}
-  #       VITE_AUTH0_AUDIENCE: ${VITE_AUTH0_AUDIENCE}
-  #       VITE_SITEMINDER_LOG_OFF_URL: ${VITE_SITEMINDER_LOG_OFF_URL}
-  #   healthcheck:
-  #     test: ["CMD", "curl", "-f", "http://localhost:3000"]
-  #     interval: 1m30s
-  #     timeout: 10s
-  #     retries: 3
-  #     start_period: 40s
-  #   hostname: frontend
-  #   links:
-  #     - vehicles-api
-  #     - dops-api
-  #   ports:
-  #     - "3000:3000"
-  #   volumes:
-  #     - ./frontend:/app:z
-  #     - /app/node_modules
+  frontend:
+    container_name: frontend
+    build:
+      context: ./frontend/
+      dockerfile: Dockerfile
+      args:
+        VITE_DEPLOY_ENVIRONMENT: ${VITE_DEPLOY_ENVIRONMENT}
+        VITE_API_VEHICLE_URL: ${VITE_API_VEHICLE_URL}
+        VITE_AUTH0_ISSUER_URL: ${VITE_AUTH0_ISSUER_URL}
+        VITE_AUTH0_AUDIENCE: ${VITE_AUTH0_AUDIENCE}
+        VITE_SITEMINDER_LOG_OFF_URL: ${VITE_SITEMINDER_LOG_OFF_URL}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    hostname: frontend
+    links:
+      - vehicles-api
+      - dops-api
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app:z
+      - /app/node_modules
 
-  # tps-migration:
-  #   container_name: tps-migration
-  #   build:
-  #     context: ./tps-migration/
-  #     dockerfile: Dockerfile
-  #   environment:
-  #     NODE_ENV: development
-  #     DB_TYPE: ${DB_TYPE}
-  #     MSSQL_HOST: sql-server-db
-  #     MSSQL_PORT: ${MSSQL_PORT}
-  #     MSSQL_DB: ${MSSQL_DB}
-  #     MSSQL_SA_USER: ${MSSQL_SA_USER}
-  #     MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD}
-  #     MSSQL_ENCRYPT: ${MSSQL_ENCRYPT}
-  #     AUTH0_ISSUER_URL: ${AUTH0_ISSUER_URL}
-  #     AUTH0_AUDIENCE: ${AUTH0_AUDIENCE}
-  #     AUTH0_IGNORE_EXP: ${AUTH0_IGNORE_EXP}
-  #     DOPS_CVSE_FORMS_CACHE_TTL_MS: ${DOPS_CVSE_FORMS_CACHE_TTL_MS}
-  #     DOPS_S3_ACCESS_TYPE: ${DOPS_S3_ACCESS_TYPE}
-  #     DOPS_S3_ACCESSKEYID: ${DOPS_S3_ACCESSKEYID}
-  #     DOPS_S3_BUCKET: ${DOPS_S3_BUCKET}
-  #     DOPS_S3_PRESIGNED_URL_EXPIRY: ${DOPS_S3_PRESIGNED_URL_EXPIRY}
-  #     DOPS_S3_ENDPOINT: ${DOPS_S3_ENDPOINT}
-  #     DOPS_S3_KEY: ${DOPS_S3_KEY}
-  #     DOPS_S3_SECRETACCESSKEY: ${DOPS_S3_SECRETACCESSKEY}
-  #   healthcheck:
-  #     test: ["CMD", "curl", "-f", "http://localhost:5050/"]
-  #     interval: 1m30s
-  #     timeout: 10s
-  #     retries: 3
-  #     start_period: 40s
-  #   depends_on:
-  #     sql-server-db:
-  #       condition: service_healthy
-  #   hostname: tps-migration
-  #   links:
-  #     - sql-server-db
-  #   ports:
-  #     - "5050:5050"
-      
+  tps-migration:
+    container_name: tps-migration
+    build:
+      context: ./tps-migration/
+      dockerfile: Dockerfile
+    environment:
+      NODE_ENV: development
+      DB_TYPE: ${DB_TYPE}
+      MSSQL_HOST: sql-server-db
+      MSSQL_PORT: ${MSSQL_PORT}
+      MSSQL_DB: ${MSSQL_DB}
+      MSSQL_SA_USER: ${MSSQL_SA_USER}
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD}
+      MSSQL_ENCRYPT: ${MSSQL_ENCRYPT}
+      AUTH0_ISSUER_URL: ${AUTH0_ISSUER_URL}
+      AUTH0_AUDIENCE: ${AUTH0_AUDIENCE}
+      AUTH0_IGNORE_EXP: ${AUTH0_IGNORE_EXP}
+      DOPS_CVSE_FORMS_CACHE_TTL_MS: ${DOPS_CVSE_FORMS_CACHE_TTL_MS}
+      DOPS_S3_ACCESS_TYPE: ${DOPS_S3_ACCESS_TYPE}
+      DOPS_S3_ACCESSKEYID: ${DOPS_S3_ACCESSKEYID}
+      DOPS_S3_BUCKET: ${DOPS_S3_BUCKET}
+      DOPS_S3_PRESIGNED_URL_EXPIRY: ${DOPS_S3_PRESIGNED_URL_EXPIRY}
+      DOPS_S3_ENDPOINT: ${DOPS_S3_ENDPOINT}
+      DOPS_S3_KEY: ${DOPS_S3_KEY}
+      DOPS_S3_SECRETACCESSKEY: ${DOPS_S3_SECRETACCESSKEY}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5050/"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    depends_on:
+      sql-server-db:
+        condition: service_healthy
+    hostname: tps-migration
+    links:
+      - sql-server-db
+    ports:
+      - "5050:5050"

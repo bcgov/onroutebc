@@ -3,6 +3,7 @@ import { mapApplicationToApplicationRequestData } from "../helpers/mappers";
 import { IssuePermitsResponse, Permit } from "../types/permit";
 import {
   PaginatedResponse,
+  PaginationOptions,
   RequiredOrNull,
 } from "../../../common/types/common";
 import { PERMIT_STATUSES } from "../types/PermitStatus";
@@ -383,9 +384,10 @@ export const getCurrentAmendmentApplication = async (
  * @param expired If set to true, expired permits will be retrieved.
  * @returns A list of permits.
  */
-export const getPermits = async ({ expired = false, page = 0 } = {}): Promise<
-  PaginatedResponse<Permit>
-> => {
+export const getPermits = async (
+  { expired = false } = {},
+  { page = 0, limit = 10 }: PaginationOptions,
+): Promise<PaginatedResponse<Permit>> => {
   const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
   const permitsURL = new URL(PERMITS_API_ROUTES.GET_LIST);
   if (companyId) {
@@ -395,7 +397,7 @@ export const getPermits = async ({ expired = false, page = 0 } = {}): Promise<
     permitsURL.searchParams.set("expired", "true");
   }
   permitsURL.searchParams.set("page", (page + 1).toString());
-  
+  permitsURL.searchParams.set("limit", limit.toString());
   const permits = await httpGETRequest(permitsURL.toString())
     .then((response) => {
       const paginatedResponseObject = getDefaultRequiredVal(
