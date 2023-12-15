@@ -31,7 +31,7 @@ export type ORBC_FormTypes =
   | SearchFields;
 
 /**
- * T
+ * The options for pagination.
  */
 export type PaginationOptions = {
   page: number;
