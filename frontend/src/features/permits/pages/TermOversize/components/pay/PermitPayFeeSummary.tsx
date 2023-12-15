@@ -3,7 +3,9 @@ import { Box, Button, Typography } from "@mui/material";
 import "./PermitPayFeeSummary.scss";
 import { PermitType } from "../../../../types/PermitType";
 import { FeeSummary } from "../../../../components/feeSummary/FeeSummary";
-import { PPC_EMAIL, TOLL_FREE_NUMBER } from "../../../../../../common/constants/constants";
+import { DEBOUNCE_TIMEOUT, PPC_EMAIL, TOLL_FREE_NUMBER } from "../../../../../../common/constants/constants";
+import { useDebounce } from "@uidotdev/usehooks";
+import { useEffect, useState } from "react";
 
 export const PermitPayFeeSummary = ({
   calculatedFee,
@@ -14,6 +16,16 @@ export const PermitPayFeeSummary = ({
   permitType?: PermitType;
   onPay: () => void;
 }) => {
+  const [inputAction, setInputAction] = useState(false);
+  const debouncedInputAction = useDebounce(inputAction, DEBOUNCE_TIMEOUT);
+
+  useEffect(() => {
+    if (debouncedInputAction) {
+      onPay();
+    }
+
+  }, [debouncedInputAction])
+
   return (
     <Box className="permit-pay-fee-summary">
       <Box className="permit-pay-fee-summary__pay">
@@ -23,7 +35,7 @@ export const PermitPayFeeSummary = ({
           data-testid="pay-now-btn"
           className="permit-pay-fee-summary__pay-btn"
           variant="contained"
-          onClick={onPay}
+          onClick={() => setInputAction(true)}
         >
           Pay Now
         </Button>
