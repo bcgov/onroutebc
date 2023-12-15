@@ -1,6 +1,6 @@
 import { Box } from "@mui/material";
+import { useQuery } from "@tanstack/react-query";
 import { useCallback, useContext, useEffect, useState } from "react";
-import { UseQueryResult, useQuery } from "@tanstack/react-query";
 
 import {
   MRT_PaginationState,
@@ -11,16 +11,16 @@ import {
 
 import { SnackBarContext } from "../../../../App";
 import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
-import { Permit } from "../../types/permit";
-import { PermitsColumnDefinition } from "./Columns";
-import { PermitRowOptions } from "./PermitRowOptions";
+import { FIVE_MINUTES } from "../../../../common/constants/constants";
 import {
   defaultTableInitialStateOptions,
   defaultTableOptions,
   defaultTableStateOptions,
 } from "../../../../common/constants/defaultTableOptions";
 import { getPermits } from "../../apiManager/permitsAPI";
-import { FIVE_MINUTES } from "../../../../common/constants/constants";
+import { Permit } from "../../types/permit";
+import { PermitsColumnDefinition } from "./Columns";
+import { PermitRowOptions } from "./PermitRowOptions";
 
 /**
  * A permit list component with common functionalities that can be shared by
