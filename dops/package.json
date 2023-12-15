@@ -66,6 +66,7 @@
     "dayjs": "^1.11.8",
     "dotenv": "^16.1.4",
     "handlebars": "^4.7.8",
+    "helmet": "^7.1.0",
     "jwks-rsa": "^3.0.1",
     "mssql": "^9.1.1",
     "passport": "^0.7.0",

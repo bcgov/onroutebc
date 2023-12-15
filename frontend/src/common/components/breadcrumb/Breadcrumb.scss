@@ -12,10 +12,20 @@
     cursor: pointer;
     text-decoration: underline;
 
+    &:hover {
+      color: $blue;
+      text-decoration: none;
+    }
+
     &--current {
       text-decoration: none;
       color: $bc-black;
-      cursor: auto;
+      cursor: default;
+
+      &:hover {
+        color: $bc-black;
+        text-decoration: none;
+      }
     }
   }
 

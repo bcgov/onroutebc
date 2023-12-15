@@ -15,4 +15,4 @@ GO
 DECLARE @VersionDescription VARCHAR(255)
 SET @VersionDescription = '*** Enter description of DB change here ***'
 
-INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [DDL_FILE_SHA1], [RELEASE_DATE]) VALUES (/*<<REPLACE VERSION NUMBER HERE>>*/, @VersionDescription, '$(FILE_HASH)', getutcdate())
+INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [UPDATE_SCRIPT], [REVERT_SCRIPT], [RELEASE_DATE]) VALUES (/*<<REPLACE VERSION NUMBER HERE>>*/, @VersionDescription, '$(UPDATE_SCRIPT)', '$(REVERT_SCRIPT)', getutcdate())
