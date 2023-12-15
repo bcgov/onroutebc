@@ -13,6 +13,7 @@ global:
   domain: "apps.silver.devops.gov.bc.ca" # it is required, apps.silver.devops.gov.bc.ca for silver cluster
   vault:
     role: "nonprod"
+    zone: "dev"
 frontend:
   enabled: true
   deployment: # can be either a statefulSet or a deployment not both
@@ -29,7 +30,7 @@ frontend:
           return {
             "VITE_DEPLOY_ENVIRONMENT":"{{.Values.global.zone}}",
             "VITE_API_VEHICLE_URL":"https://{{.Release.Name}}-vehicles.{{.Values.global.domain}}",
-              "VITE_AUTH0_ISSUER_URL":"https://{{ternary ("") (printf "%s." .Values.global.zone) (contains "prod" .Values.global.zone)}}loginproxy.gov.bc.ca/auth/realms/standard",
+            "VITE_AUTH0_ISSUER_URL":"https://{{ternary ("") (printf "%s." .Values.global.zone) (contains "prod" .Values.global.zone)}}loginproxy.gov.bc.ca/auth/realms/standard",
             "VITE_AUTH0_AUDIENCE":"on-route-bc-direct-4598",
             "VITE_SITEMINDER_LOG_OFF_URL": "https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi",
           };
@@ -103,7 +104,7 @@ vehicles:
       command:
         - "sh"
         - "-c"
-        - "source /vault/secrets/auth0-{{.Values.global.zone}} && source /vault/secrets/ches-{{.Values.global.zone}} && source /vault/secrets/mssql-{{.Values.global.zone}} && source /vault/secrets/payment-{{.Values.global.zone}} && npm run start:prod"
+        - "source /vault/secrets/auth0-{{.Values.global.vault.zone}} && source /vault/secrets/ches-{{.Values.global.vault.zone}} && source /vault/secrets/mssql-{{.Values.global.vault.zone}} && source /vault/secrets/payment-{{.Values.global.vault.zone}} && npm run start:prod"
       registry: '{{ .Values.global.registry }}'
       repository: '{{ .Values.global.repository }}' # example, it includes registry and repository
       image: vehicles
@@ -180,10 +181,11 @@ vehicles:
     role: "{{.Values.global.vault.role}}"
     license: "{{.Values.global.license}}"
     secretPaths:
-      - auth0-{{.Values.global.zone}}
-      - ches-{{.Values.global.zone}}
-      - mssql-{{.Values.global.zone}}
-      - payment-{{.Values.global.zone}}
+      - "auth0-{{tpl $.Values.vault.zone $}}"
+      - "ches-{{tpl $.Values.vault.zone $}}"
+      - "mssql-{{tpl $.Values.vault.zone $}}"
+      - "payment-{{tpl $.Values.vault.zone $}}"
+    zone: "{{.Values.global.vault.zone}}"
 
 dops:
   enabled: true
@@ -202,7 +204,7 @@ dops:
       command:
         - "sh"
         - "-c"
-        - "source /vault/secrets/auth0-{{.Values.global.zone}} && source /vault/secrets/mssql-{{.Values.global.zone}} && source /vault/secrets/cdogs-{{.Values.global.zone}} && source /vault/secrets/dops-{{.Values.global.zone}} && npm run start:prod"
+        - "source /vault/secrets/auth0-{{.Values.global.vault.zone}} && source /vault/secrets/mssql-{{.Values.global.vault.zone}} && source /vault/secrets/cdogs-{{.Values.global.vault.zone}} && source /vault/secrets/dops-{{.Values.global.vault.zone}} && npm run start:prod"
       registry: '{{ .Values.global.registry }}'
       repository: '{{ .Values.global.repository }}' # example, it includes registry and repository
       image: dops
@@ -273,10 +275,11 @@ dops:
     role: "{{.Values.global.vault.role}}"
     license: "{{.Values.global.license}}"
     secretPaths:
-      - auth0-{{.Values.global.zone}}
-      - mssql-{{.Values.global.zone}}
-      - cdogs-{{.Values.global.zone}}
-      - dops-{{.Values.global.zone}}
+      - "auth0-{{tpl $.Values.vault.zone $}}"
+      - "mssql-{{tpl $.Values.vault.zone $}}"
+      - "cdogs-{{tpl $.Values.vault.zone $}}"
+      - "dops-{{tpl $.Values.vault.zone $}}"
+    zone: "{{.Values.global.vault.zone}}"
 
 tps-migration:
   enabled: true
@@ -293,7 +296,7 @@ tps-migration:
       command:
         - "sh"
         - "-c"
-        - "source /vault/secrets/auth0-{{.Values.global.zone}} && source /vault/secrets/mssql-{{.Values.global.zone}} && source /vault/secrets/dops-{{.Values.global.zone}} && npm run start:prod"
+        - "source /vault/secrets/auth0-{{.Values.global.vault.zone}} && source /vault/secrets/mssql-{{.Values.global.vault.zone}} && source /vault/secrets/dops-{{.Values.global.vault.zone}} && npm run start:prod"
       registry: '{{ .Values.global.registry }}'
       repository: '{{ .Values.global.repository }}' # example, it includes registry and repository
       image: tps-migration
@@ -362,6 +365,7 @@ tps-migration:
     role: "{{.Values.global.vault.role}}"
     license: "{{.Values.global.license}}"
     secretPaths:
-      - auth0-{{.Values.global.zone}}
-      - mssql-{{.Values.global.zone}}
-      - dops-{{.Values.global.zone}}
+      - "auth0-{{tpl $.Values.vault.zone $}}"
+      - "mssql-{{tpl $.Values.vault.zone $}}"
+      - "dops-{{tpl $.Values.vault.zone $}}"
+    zone: "{{.Values.global.vault.zone}}"
