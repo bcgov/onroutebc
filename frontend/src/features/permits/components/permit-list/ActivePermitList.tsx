@@ -44,10 +44,6 @@ export const ActivePermitList = () => {
 
   const { data, isError, isInitialLoading, isLoading } = activePermitsQuery;
 
-  console.log('data::', data);
-  console.log('pagination::', pagination);
-  console.log('pageIndex from API::', data?.meta?.currentPage);
-
   useEffect(() => {
     if (isError) {
       snackBar.setSnackBar({
