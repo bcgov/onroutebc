@@ -77,6 +77,6 @@ export const isValidTransaction = (
   paymentMethod: PaymentMethodTypeCode,
   transactionApproved?: Nullable<number>,
 ) => {
-  return paymentMethod === PAYMENT_METHOD_TYPE_CODE.WEB
+  return paymentMethod !== PAYMENT_METHOD_TYPE_CODE.WEB
     || (!!transactionApproved && transactionApproved > 0);
 };
