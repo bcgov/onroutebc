@@ -33,10 +33,11 @@ export const ExpiredPermitList = () => {
     pageSize: 10,
   });
   const expiredPermitsQuery = useQuery({
-    queryKey: ["expiredPermits"],
+    queryKey: ["expiredPermits", pagination.pageIndex],
     queryFn: () => getPermits({ expired: true, page: pagination.pageIndex }),
     keepPreviousData: true,
     staleTime: TEN_MINUTES,
+    retry: 1,
   });
   const { data, isError, isInitialLoading, isLoading } = expiredPermitsQuery;
 
@@ -60,6 +61,7 @@ export const ExpiredPermitList = () => {
     initialState: {
       ...defaultTableInitialStateOptions,
       sorting: [{ id: "permitData.expiryDate", desc: true }],
+      pagination: { pageIndex: 0, pageSize: 10}
     },
     state: {
       ...defaultTableStateOptions,
@@ -69,11 +71,12 @@ export const ExpiredPermitList = () => {
       isLoading: isInitialLoading || isLoading,
       pagination,
     },
+    autoResetPageIndex: false,
+    manualPagination: true,
     rowCount: data?.meta?.totalItems ?? 0,
     pageCount: data?.meta?.totalPages ?? 0,
     onPaginationChange: setPagination,
     enablePagination: true,
-    manualPagination: true,
     enableBottomToolbar: true,
     renderEmptyRowsFallback: () => <NoRecordsFound />,
     renderRowActions: useCallback((props: { row: MRT_Row<Permit> }) => {

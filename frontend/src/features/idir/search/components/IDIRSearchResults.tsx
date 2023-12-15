@@ -86,7 +86,7 @@ export const IDIRSearchResults = memo(
           },
           pagination.pageIndex,
         ),
-      { retry: false, enabled: true, refetchInterval: false },
+      { retry: 1, enabled: true, refetchInterval: false },
     );
 
     const { data, isLoading, isError } = searchResultsQuery;
@@ -121,6 +121,7 @@ export const IDIRSearchResults = memo(
       initialState: {
         ...defaultTableInitialStateOptions,
         sorting: [{ id: "permitIssueDateTime", desc: true }],
+        pagination: { pageIndex: 0, pageSize: 10}
       },
       state: {
         ...defaultTableStateOptions,
@@ -129,6 +130,7 @@ export const IDIRSearchResults = memo(
         showProgressBars: isLoading,
         pagination,
       },
+      autoResetPageIndex: false,
       manualPagination: true,
       rowCount: data?.meta?.totalItems ?? 0,
       pageCount: data?.meta?.totalPages ?? 0,
