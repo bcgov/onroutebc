@@ -37,12 +37,14 @@ interface PermitAction {
 }
 
 const PERMIT_ACTIONS: PermitAction[] = [
+  /*
   {
     action: PERMIT_ACTION_TYPES.RESEND,
     isAuthorized: (_: boolean, userAuthGroup?: string) =>
       userAuthGroup === USER_AUTH_GROUP.PPCCLERK ||
       userAuthGroup === USER_AUTH_GROUP.SYSADMIN,
   },
+  */
   {
     action: PERMIT_ACTION_TYPES.VIEW_RECEIPT,
     isAuthorized: (_: boolean, userAuthGroup?: string) =>
