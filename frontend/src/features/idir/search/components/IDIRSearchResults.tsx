@@ -12,22 +12,22 @@ import {
 } from "material-react-table";
 
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
+import { TEN_MINUTES } from "../../../../common/constants/constants";
+import {
+  defaultTableInitialStateOptions,
+  defaultTableOptions,
+  defaultTableStateOptions,
+} from "../../../../common/constants/defaultTableOptions";
+import { Optional } from "../../../../common/types/common";
+import { USER_AUTH_GROUP } from "../../../manageProfile/types/userManagement.d";
 import { hasPermitExpired } from "../../../permits/helpers/permitPDFHelper";
+import { isPermitInactive } from "../../../permits/types/PermitStatus";
 import { Permit } from "../../../permits/types/permit";
 import { getDataBySearch } from "../api/idirSearch";
 import { PermitSearchResultColumnDef } from "../table/Columns";
 import { SearchFields } from "../types/types";
 import { IDIRPermitSearchRowActions } from "./IDIRPermitSearchRowActions";
 import "./IDIRSearchResults.scss";
-import { USER_AUTH_GROUP } from "../../../manageProfile/types/userManagement.d";
-import { isPermitInactive } from "../../../permits/types/PermitStatus";
-import { Optional, PaginatedResponse } from "../../../../common/types/common";
-import {
-  defaultTableInitialStateOptions,
-  defaultTableOptions,
-  defaultTableStateOptions,
-} from "../../../../common/constants/defaultTableOptions";
-import { TEN_MINUTES } from "../../../../common/constants/constants";
 
 /**
  * Function to decide whether to show row actions icon or not.
