@@ -11,7 +11,7 @@ import {
 } from "material-react-table";
 
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
-import { hasPermitExpired } from "../../../permits/helpers/permitPDFHelper";
+import { hasPermitExpired } from "../../../permits/helpers/permitState";
 import { Permit } from "../../../permits/types/permit";
 import { getDataBySearch } from "../api/idirSearch";
 import { PermitSearchResultColumnDef } from "../table/Columns";

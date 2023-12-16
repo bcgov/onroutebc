@@ -4,13 +4,14 @@ import dayjs, { Dayjs } from "dayjs";
 import userEvent from "@testing-library/user-event";
 import { Options } from "@testing-library/user-event/dist/types/options";
 
-import { now } from "../../../../../../../../common/helpers/formatDate";
+import { getStartOfDate, now } from "../../../../../../../../common/helpers/formatDate";
 import { TROS_COMMODITIES } from "../../../../../../constants/termOversizeConstants";
 import { PermitDetails } from "../../PermitDetails";
 import { Commodities } from "../../../../../../types/application";
+import { getExpiryDate } from "../../../../../../helpers/permitState";
 
 const feature = "testfeature";
-export const currentDt = now();
+export const currentDt = getStartOfDate(now());
 export const tomorrow = dayjs(currentDt).add(1, "day");
 export const day = currentDt.date();
 export const thisMonth = currentDt.month();
@@ -53,7 +54,7 @@ const TestFormWrapper = (props: React.PropsWithChildren) => {
       permitData: {
         startDate: currentDt,
         permitDuration: 30,
-        expiryDate: currentDt,
+        expiryDate: getExpiryDate(currentDt, 30),
         commodities: [],
       },
     },

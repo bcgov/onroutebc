@@ -5,16 +5,17 @@ import "./ReviewPermitDetails.scss";
 import { PermitExpiryDateBanner } from "../../../../../../common/components/banners/PermitExpiryDateBanner";
 import { Commodities } from "../../../../types/application";
 import { ReviewConditionsTable } from "./ReviewConditionsTable";
+import { DiffChip } from "./DiffChip";
 import {
   applyWhenNotNullable,
   areValuesDifferent,
   getDefaultRequiredVal,
 } from "../../../../../../common/helpers/util";
+
 import {
   DATE_FORMATS,
   dayjsToLocalStr,
 } from "../../../../../../common/helpers/formatDate";
-import { DiffChip } from "./DiffChip";
 
 export const ReviewPermitDetails = ({
   startDate,

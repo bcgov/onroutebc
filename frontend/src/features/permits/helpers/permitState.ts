@@ -100,3 +100,13 @@ export const getExpiryDate = (startDate: Dayjs, duration: number) => {
   // "Exclude" the end date from the duration period if not based on leap year condition
   return originalEndDate.subtract(1, "day");
 };
+
+/**
+ * Returns a boolean to indicate if a permit has expired.
+ * @param expiryDate The expiry date of the permit
+ * @returns boolean indicating if the permit has expired.
+ */
+export const hasPermitExpired = (expiryDate: string): boolean => {
+  if (!expiryDate) return false;
+  return dayjs().isAfter(expiryDate, "date");
+};

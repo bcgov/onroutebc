@@ -40,6 +40,7 @@ import {
   allDurations,
   emptyCommodities,
 } from "./helpers/prepare";
+import { getExpiryDate } from "../../../../../helpers/permitState";
 
 describe("Permit Details duration", () => {
   it("should have available durations to select", async () => {
@@ -69,9 +70,11 @@ describe("Permit Details duration", () => {
     await selectDurationOption(user, durationText);
 
     // Assert
-    const expectedExpiry = dayjs(currentDt)
-      .add(durationDays - 1, "day")
-      .format(DATE_FORMATS.SHORT);
+    const expectedExpiry = getExpiryDate(
+      dayjs(currentDt), 
+      durationDays
+    ).format(DATE_FORMATS.SHORT);
+
     expect(await expiryDateElement(expectedExpiry)).toBeVisible();
   });
 });
@@ -217,9 +220,11 @@ describe("Permit Details start date", () => {
     }
 
     // Assert
-    const expectedExpiry = dayjs(tomorrow)
-      .add(defaultDuration - 1, "day")
-      .format(DATE_FORMATS.SHORT);
+    const expectedExpiry = getExpiryDate(
+      dayjs(tomorrow),
+      defaultDuration,
+    ).format(DATE_FORMATS.SHORT);
+
     expect(await expiryDateElement(expectedExpiry)).toBeVisible();
   });
 });

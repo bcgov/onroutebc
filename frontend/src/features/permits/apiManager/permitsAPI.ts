@@ -120,7 +120,7 @@ export const getApplicationsInProgress = async (): Promise<
               DATE_FORMATS.DATEONLY_SHORT_NAME,
             ),
             expiryDate: toLocal(
-              application.permitData.startDate,
+              application.permitData.expiryDate,
               DATE_FORMATS.DATEONLY_SHORT_NAME,
             ),
           },
