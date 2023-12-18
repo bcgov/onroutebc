@@ -212,3 +212,9 @@ jobs:
           
           # Remove old build runs, build pods and deployment pods
           oc delete po --field-selector=status.phase==Succeeded
+      
+      - uses: dchourasia/ms-teams-notification@1.0 #  or "./" if in a local set-up
+        if: ${{inputs.environment == 'prod'}}
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          webhook-uri: ${{ secrets.MS_TEAMS_WEBHOOK_URI }}
