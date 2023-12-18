@@ -20,6 +20,7 @@ export type CompanyMetadata = {
 };
 
 export type ClientInformation = {
+  migratedClientHash?: string;
   mailingAddress: {
     addressLine1: string;
     addressLine2: string;
