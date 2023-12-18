@@ -9,6 +9,7 @@ import * as fs from 'fs';
 import { CacheKey } from './common/enum/cache-key.enum';
 import { addToCache, createCacheMap } from './common/helper/cache.helper';
 import { PaymentService } from './modules/payment/payment.service';
+import { LogMethodExecution } from './common/decorator/log-method-execution.decorator';
 
 @Injectable()
 export class AppService {
@@ -26,6 +27,7 @@ export class AppService {
     return 'Vehicles Healthcheck!';
   }
 
+  @LogMethodExecution()
   async initializeCache() {
     const startDateTime = new Date();
     const countries = await this.commonService.findAllCountries();

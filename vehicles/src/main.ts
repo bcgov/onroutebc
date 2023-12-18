@@ -10,10 +10,14 @@ import {
 } from '@nestjs/common';
 import { BadRequestExceptionDto } from './common/exception/badRequestException.dto';
 import { ExceptionDto } from './common/exception/exception.dto';
+import { NestExpressApplication } from '@nestjs/platform-express';
 import helmet from 'helmet';
+import { customLogger } from './common/logger/logger.config';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+    logger: customLogger,
+  });
   app.use(helmet());
   app.enableCors({
     methods: ['GET', 'PUT', 'POST', 'DELETE'],
