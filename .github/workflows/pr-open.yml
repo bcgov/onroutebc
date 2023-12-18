@@ -78,6 +78,7 @@ jobs:
     needs: [builds, vars]
     runs-on: ubuntu-22.04
     steps:
+      - uses: actions/checkout@v4
       - uses: ./.github/workflows/.deploy.yml
         with:
           autoscaling: false
