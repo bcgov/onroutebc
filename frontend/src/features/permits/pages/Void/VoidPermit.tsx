@@ -13,10 +13,10 @@ import { FinishVoid } from "./FinishVoid";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { USER_AUTH_GROUP } from "../../../manageProfile/types/userManagement.d";
 import { isPermitInactive } from "../../types/PermitStatus";
-import { hasPermitExpired } from "../../helpers/permitPDFHelper";
 import { Permit } from "../../types/permit";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { Breadcrumb } from "../../../../common/components/breadcrumb/Breadcrumb";
+import { hasPermitExpired } from "../../helpers/permitState";
 import {
   SEARCH_BY_FILTERS,
   SEARCH_ENTITIES,

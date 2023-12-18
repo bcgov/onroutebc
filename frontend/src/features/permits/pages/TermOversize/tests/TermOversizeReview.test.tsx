@@ -260,11 +260,14 @@ describe("Review and Confirm Application Details", () => {
         expiryDate,
         permitDuration: duration,
       } = defaultApplicationData.permitData;
+
       const startDateStr = dayjsToLocalStr(
         startDate,
         DATE_FORMATS.DATEONLY_SLASH,
       );
+
       const expiryDateStr = dayjsToLocalStr(expiryDate, DATE_FORMATS.SHORT);
+      
       expect(await permitStartDate()).toHaveTextContent(startDateStr);
       expect(await permitDuration()).toHaveTextContent(`${duration} Days`);
       expect(await permitExpiryDate()).toHaveTextContent(expiryDateStr);

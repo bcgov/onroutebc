@@ -1,24 +1,14 @@
-import { useQuery } from "@tanstack/react-query";
 
-import "./ExpiredPermitList.scss";
-import { TEN_MINUTES } from "../../../../common/constants/constants";
-import { getPermits } from "../../apiManager/permitsAPI";
 import { BasePermitList } from "./BasePermitList";
+import "./ExpiredPermitList.scss";
 
 /**
  * A wrapper with the query to load the table with expired permits.
  */
 export const ExpiredPermitList = () => {
-  const query = useQuery({
-    queryKey: ["expiredPermits"],
-    queryFn: () => getPermits({ expired: true }),
-    keepPreviousData: true,
-    staleTime: TEN_MINUTES,
-  });
-
   return (
     <div className="table-container">
-      <BasePermitList query={query} />
+      <BasePermitList isExpired/>
     </div>
   );
 };

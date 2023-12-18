@@ -4,20 +4,23 @@ import dayjs, { Dayjs } from "dayjs";
 import userEvent from "@testing-library/user-event";
 import { Options } from "@testing-library/user-event/dist/types/options";
 
-import { now } from "../../../../../../../../common/helpers/formatDate";
+import { getStartOfDate, now } from "../../../../../../../../common/helpers/formatDate";
 import { TROS_COMMODITIES } from "../../../../../../constants/termOversizeConstants";
 import { PermitDetails } from "../../PermitDetails";
 import { Commodities } from "../../../../../../types/application";
+import { getExpiryDate } from "../../../../../../helpers/permitState";
 
 const feature = "testfeature";
-export const currentDt = now();
+export const currentDt = getStartOfDate(now());
 export const tomorrow = dayjs(currentDt).add(1, "day");
 export const day = currentDt.date();
 export const thisMonth = currentDt.month();
+export const thisYear = currentDt.year();
 export const daysInCurrMonth = currentDt.daysInMonth();
 export const tomorrowDay = tomorrow.date();
 export const maxFutureDate = dayjs(currentDt).add(14, "day");
 export const maxFutureMonth = maxFutureDate.month();
+export const maxFutureYear = maxFutureDate.year();
 export const maxFutureDay = maxFutureDate.date();
 export const daysInFutureMonth = maxFutureDate.daysInMonth();
 
@@ -53,7 +56,7 @@ const TestFormWrapper = (props: React.PropsWithChildren) => {
       permitData: {
         startDate: currentDt,
         permitDuration: 30,
-        expiryDate: currentDt,
+        expiryDate: getExpiryDate(currentDt, 30),
         commodities: [],
       },
     },
