@@ -4,6 +4,7 @@ import { memo, useCallback, useContext, useMemo, useState } from "react";
 
 import {
   MRT_ColumnDef,
+  MRT_PaginationState,
   MRT_Row,
   MRT_TableInstance,
   MaterialReactTable,
@@ -11,21 +12,22 @@ import {
 } from "material-react-table";
 
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
+import { TEN_MINUTES } from "../../../../common/constants/constants";
+import {
+  defaultTableInitialStateOptions,
+  defaultTableOptions,
+  defaultTableStateOptions,
+} from "../../../../common/constants/defaultTableOptions";
+import { Optional } from "../../../../common/types/common";
+import { USER_AUTH_GROUP } from "../../../manageProfile/types/userManagement.d";
 import { hasPermitExpired } from "../../../permits/helpers/permitState";
+import { isPermitInactive } from "../../../permits/types/PermitStatus";
 import { Permit } from "../../../permits/types/permit";
 import { getDataBySearch } from "../api/idirSearch";
 import { PermitSearchResultColumnDef } from "../table/Columns";
 import { SearchFields } from "../types/types";
 import { IDIRPermitSearchRowActions } from "./IDIRPermitSearchRowActions";
 import "./IDIRSearchResults.scss";
-import { USER_AUTH_GROUP } from "../../../manageProfile/types/userManagement.d";
-import { isPermitInactive } from "../../../permits/types/PermitStatus";
-import { Optional } from "../../../../common/types/common";
-import {
-  defaultTableInitialStateOptions,
-  defaultTableOptions,
-  defaultTableStateOptions,
-} from "../../../../common/constants/defaultTableOptions";
 
 /**
  * Function to decide whether to show row actions icon or not.
@@ -64,17 +66,38 @@ export const IDIRSearchResults = memo(
     const { idirUserDetails } = useContext(OnRouteBCContext);
     const [isActiveRecordsOnly, setIsActiveRecordsOnly] =
       useState<boolean>(false);
-
-    const { data, isLoading, isError } = useQuery(
-      ["search-entity", searchValue, searchByFilter, searchEntity],
+    const [pagination, setPagination] = useState<MRT_PaginationState>({
+      pageIndex: 0,
+      pageSize: 10,
+    });
+    const searchResultsQuery = useQuery(
+      [
+        "search-entity",
+        searchValue,
+        searchByFilter,
+        searchEntity,
+        pagination.pageIndex,
+        pagination.pageSize,
+      ],
       () =>
-        getDataBySearch({
-          searchByFilter,
-          searchEntity,
-          searchValue,
-        }),
-      { retry: false, enabled: true, refetchInterval: false },
+        getDataBySearch(
+          {
+            searchByFilter,
+            searchEntity,
+            searchValue,
+          },
+          { page: pagination.pageIndex, limit: pagination.pageSize },
+        ),
+      {
+        retry: 1, // retry once.
+        enabled: true,
+        refetchInterval: false,
+        staleTime: TEN_MINUTES,
+        keepPreviousData: true,
+      },
     );
+
+    const { data, isLoading, isError } = searchResultsQuery;
 
     // Column definitions for the table
     const columns = useMemo<MRT_ColumnDef<Permit>[]>(
@@ -112,12 +135,21 @@ export const IDIRSearchResults = memo(
         isLoading,
         showAlertBanner: isError,
         showProgressBars: isLoading,
+        pagination,
       },
+      autoResetPageIndex: false,
+      manualPagination: true,
+      rowCount: data?.meta?.totalItems ?? 0,
+      pageCount: data?.meta?.totalPages ?? 0,
+      onPaginationChange: setPagination,
+      enablePagination: true,
       enableTopToolbar: true,
-      enableBottomToolbar: false,
+      enableBottomToolbar: true,
       enableRowSelection: false,
       enableGlobalFilter: false,
-      renderToolbarInternalActions: () => <div className="toolbar-internal"></div>,
+      renderToolbarInternalActions: () => (
+        <div className="toolbar-internal"></div>
+      ),
       renderTopToolbarCustomActions: () => {
         return (
           <Box sx={{ display: "flex", gap: "1rem", p: "4px" }}>
@@ -151,9 +183,7 @@ export const IDIRSearchResults = memo(
 
           if (shouldShowRowActions(idirUserDetails?.userAuthGroup)) {
             return (
-              <Box
-                className="idir-search-results__row-actions"
-              >
+              <Box className="idir-search-results__row-actions">
                 <IDIRPermitSearchRowActions
                   isPermitInactive={isInactive}
                   permitNumber={row.original.permitNumber}
