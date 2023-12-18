@@ -39,6 +39,8 @@ import {
   defaultDuration,
   allDurations,
   emptyCommodities,
+  maxFutureYear,
+  thisYear,
 } from "./helpers/prepare";
 import { getExpiryDate } from "../../../../../helpers/permitState";
 
@@ -109,7 +111,8 @@ describe("Permit Details start date", () => {
     await openStartDateSelect(user);
 
     // Assert
-    if (maxFutureMonth > thisMonth) {
+    const shouldUseNextMonth = (maxFutureMonth > thisMonth) || (maxFutureYear > thisYear);
+    if (shouldUseNextMonth) {
       await selectNextMonth(user);
 
       const datesNextMonth = await nextMonthDateOptions();
@@ -128,8 +131,7 @@ describe("Permit Details start date", () => {
       const disabledOptions = datesAfterMaxFutureDay.filter((option) =>
         option.hasAttribute("disabled"),
       );
-      // Uncomment this line
-      // expect(disabledOptions.length).toBe(daysInFutureMonth - maxFutureDay);
+      expect(disabledOptions.length).toBe(daysInFutureMonth - maxFutureDay);
     }
   });
 
@@ -141,7 +143,8 @@ describe("Permit Details start date", () => {
     await openStartDateSelect(user);
 
     // Assert
-    if (maxFutureMonth > thisMonth) {
+    const shouldUseNextMonth = (maxFutureMonth > thisMonth) || (maxFutureYear > thisYear);
+    if (shouldUseNextMonth) {
       // First find this month's active days
       const thisMonthDates = await dateOptions();
       const remainingDaysThisMonth = thisMonthDates.filter(
@@ -178,8 +181,7 @@ describe("Permit Details start date", () => {
         (option) => !option.hasAttribute("disabled"),
       );
 
-      // Uncomment this line.
-      // expect(activeDates.length).toBe(1 + 14); // today and next 14 days
+      expect(activeDates.length).toBe(1 + 14); // today and next 14 days
     }
   });
 

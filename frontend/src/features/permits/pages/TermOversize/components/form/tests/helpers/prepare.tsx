@@ -15,10 +15,12 @@ export const currentDt = getStartOfDate(now());
 export const tomorrow = dayjs(currentDt).add(1, "day");
 export const day = currentDt.date();
 export const thisMonth = currentDt.month();
+export const thisYear = currentDt.year();
 export const daysInCurrMonth = currentDt.daysInMonth();
 export const tomorrowDay = tomorrow.date();
 export const maxFutureDate = dayjs(currentDt).add(14, "day");
 export const maxFutureMonth = maxFutureDate.month();
+export const maxFutureYear = maxFutureDate.year();
 export const maxFutureDay = maxFutureDate.date();
 export const daysInFutureMonth = maxFutureDate.daysInMonth();
 
