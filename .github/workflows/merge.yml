@@ -167,6 +167,10 @@ jobs:
           release_name: Release ${{ needs.GitVersion.outputs.fullSemVer }}
           draft: false
           prerelease: false
+      - name: Microsoft Teams Notification
+        uses: skitionek/notify-microsoft-teams@master
+        with:
+          webhook_url: ${{ secrets.MS_TEAMS_WEBHOOK_URI  }}
 
   promote-images-release:
     name: Tag images with Release Version

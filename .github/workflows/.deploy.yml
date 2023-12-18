@@ -212,8 +212,8 @@ jobs:
           
           # Remove old build runs, build pods and deployment pods
           oc delete po --field-selector=status.phase==Succeeded
-
-      - uses: dchourasia/ms-teams-notification@1.0
+      
+      - name: Microsoft Teams Notification
+        uses: skitionek/notify-microsoft-teams@master
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }} 
-          webhook-uri: ${{ secrets.MS_TEAMS_WEBHOOK_URI }}
+          webhook_url: ${{ secrets.MS_TEAMS_WEBHOOK_URI  }}
