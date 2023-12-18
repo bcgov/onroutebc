@@ -74,16 +74,21 @@ jobs:
 
   # https://github.com/bcgov-nr/action-deployer-openshift
   deploys:
-    name: Deploys
-    needs: [builds, vars]
-    uses: ./.github/workflows/.deploy.yml
-    secrets: inherit
-    with:
-      autoscaling: false
-      repository: ${{ github.event.repository.name }}
-      environment: dev
-      release: ${{ needs.vars.outputs.pr }}
-      tag: ${{ needs.vars.outputs.pr }}
-      triggers: ('database/' 'dops/' 'frontend/' 'vehicles/')
-      vault_role: nonprod
-      vault_zone: dev
+    - name: Deploys
+      needs: [builds, vars]
+      uses: ./.github/workflows/.deploy.yml
+      secrets: inherit
+      with:
+        autoscaling: false
+        repository: ${{ github.event.repository.name }}
+        environment: dev
+        release: ${{ needs.vars.outputs.pr }}
+        tag: ${{ needs.vars.outputs.pr }}
+        triggers: ('tps-migration/' 'dops/' 'frontend/' 'vehicles/')
+        vault_role: nonprod
+        vault_zone: dev
+    - name: Notify Teams
+      uses: dchourasia/ms-teams-notification@1.0 #  or "./" if in a local set-up
+      with:
+        github-token: ${{ github.token }}
+        webhook-uri: ${{ secrets.MS_TEAMS_WEBHOOK_URI }}
