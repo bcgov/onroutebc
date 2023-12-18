@@ -77,9 +77,9 @@ jobs:
     name: Deploys
     needs: [builds, vars]
     runs-on: ubuntu-22.04
-    secrets: inherit
     steps:
       - uses: ./.github/workflows/.deploy.yml
+        secrets: inherit
         with:
           autoscaling: false
           repository: ${{ github.event.repository.name }}
