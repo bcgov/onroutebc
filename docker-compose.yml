@@ -194,4 +194,3 @@ services:
       - sql-server-db
     ports:
       - "5050:5050"
-      

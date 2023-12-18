@@ -117,7 +117,7 @@ export const defaultTableOptions: any = {
   },
   muiPaginationProps: {
     color: "secondary",
-    rowsPerPageOptions: [10, 20, 30, 40, 50],
+    rowsPerPageOptions: [10, 25], // APIs support max 25 rows per page
     shape: "rounded",
     variant: "outlined",
   },
