@@ -20,11 +20,14 @@ import {
   DATE_FORMATS,
   dayjsToLocalStr,
   dayjsToUtcStr,
+  getStartOfDate,
   now,
   toLocalDayjs,
   utcToLocalDayjs,
 } from "../../../common/helpers/formatDate";
 import { Optional } from "../../../common/types/common";
+import { getDurationOrDefault } from "./getDefaultApplicationFormData";
+import { getExpiryDate } from "./permitState";
 
 /**
  * This helper function is used to get the vehicle object that matches the vin prop
@@ -85,6 +88,23 @@ export const mapTypeCodeToObject = (
 export const mapApplicationResponseToApplication = (
   response: ApplicationResponse,
 ): Application => {
+  const startDateOrDefault = applyWhenNotNullable(
+    (datetimeStr: string): Dayjs => toLocalDayjs(datetimeStr),
+    response.permitData.startDate,
+    getStartOfDate(now()),
+  );
+
+  const durationOrDefault = getDurationOrDefault(
+    30,
+    response.permitData.permitDuration,
+  );
+
+  const expiryDateOrDefault = applyWhenNotNullable(
+    (datetimeStr: string): Dayjs => toLocalDayjs(datetimeStr),
+    response.permitData.expiryDate,
+    getExpiryDate(startDateOrDefault, durationOrDefault),
+  );
+
   return {
     ...response,
     createdDateTime: applyWhenNotNullable(
@@ -97,16 +117,8 @@ export const mapApplicationResponseToApplication = (
     ),
     permitData: {
       ...response.permitData,
-      startDate: applyWhenNotNullable(
-        (datetimeStr: string): Dayjs => toLocalDayjs(datetimeStr),
-        response.permitData.startDate,
-        now(),
-      ),
-      expiryDate: applyWhenNotNullable(
-        (datetimeStr: string): Dayjs => toLocalDayjs(datetimeStr),
-        response.permitData.expiryDate,
-        now(),
-      ),
+      startDate: startDateOrDefault,
+      expiryDate: expiryDateOrDefault,
     },
   };
 };
@@ -183,6 +195,23 @@ export const clonePermit = (permit: Permit): Permit => {
  * @returns Transformed Application object
  */
 export const transformPermitToApplication = (permit: Permit) => {
+  const startDateOrDefault = applyWhenNotNullable(
+    (datetimeStr: string): Dayjs => toLocalDayjs(datetimeStr),
+    permit.permitData.startDate,
+    getStartOfDate(now()),
+  );
+
+  const durationOrDefault = getDurationOrDefault(
+    30,
+    permit.permitData.permitDuration,
+  );
+
+  const expiryDateOrDefault = applyWhenNotNullable(
+    (datetimeStr: string): Dayjs => toLocalDayjs(datetimeStr),
+    permit.permitData.expiryDate,
+    getExpiryDate(startDateOrDefault, durationOrDefault),
+  );
+
   return {
     ...permit,
     permitId: `${permit.permitId}`,
@@ -200,16 +229,8 @@ export const transformPermitToApplication = (permit: Permit) => {
     ),
     permitData: {
       ...permit.permitData,
-      startDate: applyWhenNotNullable(
-        (datetimeStr: string): Dayjs => toLocalDayjs(datetimeStr),
-        permit.permitData.startDate,
-        now(),
-      ),
-      expiryDate: applyWhenNotNullable(
-        (datetimeStr: string): Dayjs => toLocalDayjs(datetimeStr),
-        permit.permitData.expiryDate,
-        now(),
-      ),
+      startDate: startDateOrDefault,
+      expiryDate: expiryDateOrDefault,
     },
   };
 };

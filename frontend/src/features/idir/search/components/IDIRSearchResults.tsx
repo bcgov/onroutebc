@@ -20,7 +20,7 @@ import {
 } from "../../../../common/constants/defaultTableOptions";
 import { Optional } from "../../../../common/types/common";
 import { USER_AUTH_GROUP } from "../../../manageProfile/types/userManagement.d";
-import { hasPermitExpired } from "../../../permits/helpers/permitPDFHelper";
+import { hasPermitExpired } from "../../../permits/helpers/permitState";
 import { isPermitInactive } from "../../../permits/types/PermitStatus";
 import { Permit } from "../../../permits/types/permit";
 import { getDataBySearch } from "../api/idirSearch";

@@ -1,17 +1,18 @@
 import { factory, nullable, primaryKey } from "@mswjs/data";
-import dayjs from "dayjs";
 
 import { ApplicationRequestData } from "../../../../../types/application";
-import {
-  DATE_FORMATS,
-  dayjsToLocalStr,
-  now,
-} from "../../../../../../../common/helpers/formatDate";
 import { getDefaultUserDetails } from "./getUserDetails";
 import { getDefaultPowerUnits } from "./getVehicleInfo";
 import { getDefaultCompanyInfo } from "./getCompanyInfo";
 import { TROS_COMMODITIES } from "../../../../../constants/termOversizeConstants";
 import { PERMIT_TYPES } from "../../../../../types/PermitType";
+import { getExpiryDate } from "../../../../../helpers/permitState";
+import {
+  DATE_FORMATS,
+  dayjsToLocalStr,
+  getStartOfDate,
+  now,
+} from "../../../../../../../common/helpers/formatDate";
 
 const activeApplicationSource = factory({
   application: {
@@ -103,9 +104,9 @@ export const resetApplicationSource = () => {
 };
 
 export const getDefaultApplication = () => {
-  const currentDt = now();
+  const currentDt = getStartOfDate(now());
   const startDate = dayjsToLocalStr(currentDt, DATE_FORMATS.DATEONLY);
-  const expiryDt = dayjs(currentDt).add(30 - 1, "day");
+  const expiryDt = getExpiryDate(currentDt, 30);
   const expiryDate = dayjsToLocalStr(expiryDt, DATE_FORMATS.DATEONLY);
   const { companyId, userDetails } = getDefaultUserDetails();
   const contactDetails = {
