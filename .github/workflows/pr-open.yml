@@ -79,7 +79,6 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: ./.github/workflows/.deploy.yml
-        secrets: inherit
         with:
           autoscaling: false
           repository: ${{ github.event.repository.name }}
@@ -89,6 +88,7 @@ jobs:
           triggers: ('tps-migration/' 'dops/' 'frontend/' 'vehicles/')
           vault_role: nonprod
           vault_zone: dev
+          secrets: inherit
       - uses: dchourasia/ms-teams-notification@1.0 #  or "./" if in a local set-up
         #if: ${{inputs.environment == 'prod'
         if: always()
