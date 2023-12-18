@@ -1,7 +1,11 @@
 import { DATE_FORMATS, toLocal } from "../../../common/helpers/formatDate";
 import { mapApplicationToApplicationRequestData } from "../helpers/mappers";
 import { IssuePermitsResponse, Permit } from "../types/permit";
-import { PaginatedResponse, RequiredOrNull } from "../../../common/types/common";
+import {
+  PaginatedResponse,
+  PaginationOptions,
+  RequiredOrNull,
+} from "../../../common/types/common";
 import { PERMIT_STATUSES } from "../types/PermitStatus";
 import { PermitHistory } from "../types/PermitHistory";
 import { getPermitTypeName } from "../types/PermitType";
@@ -98,34 +102,33 @@ export const getApplicationsInProgress = async (): Promise<
     }
 
     const response = await httpGETRequest(applicationsUrl);
-    const applications =
-      (
-        getDefaultRequiredVal([], response.data) as PermitApplicationInProgress[]
-      ).map((application) => {
-        return {
-          ...application,
-          permitType: getPermitTypeName(application.permitType) as string,
-          createdDateTime: toLocal(
-            application.createdDateTime,
-            DATE_FORMATS.DATETIME_LONG_TZ,
+    const applications = (
+      getDefaultRequiredVal([], response.data) as PermitApplicationInProgress[]
+    ).map((application) => {
+      return {
+        ...application,
+        permitType: getPermitTypeName(application.permitType) as string,
+        createdDateTime: toLocal(
+          application.createdDateTime,
+          DATE_FORMATS.DATETIME_LONG_TZ,
+        ),
+        updatedDateTime: toLocal(
+          application.updatedDateTime,
+          DATE_FORMATS.DATETIME_LONG_TZ,
+        ),
+        permitData: {
+          ...application.permitData,
+          startDate: toLocal(
+            application.permitData.startDate,
+            DATE_FORMATS.DATEONLY_SHORT_NAME,
           ),
-          updatedDateTime: toLocal(
-            application.updatedDateTime,
-            DATE_FORMATS.DATETIME_LONG_TZ,
+          expiryDate: toLocal(
+            application.permitData.startDate,
+            DATE_FORMATS.DATEONLY_SHORT_NAME,
           ),
-          permitData: {
-            ...application.permitData,
-            startDate: toLocal(
-              application.permitData.startDate,
-              DATE_FORMATS.DATEONLY_SHORT_NAME,
-            ),
-            expiryDate: toLocal(
-              application.permitData.startDate,
-              DATE_FORMATS.DATEONLY_SHORT_NAME,
-            ),
-          },
-        } as PermitApplicationInProgress;
-      });
+        },
+      } as PermitApplicationInProgress;
+    });
     return applications;
   } catch (err) {
     console.error(err);
@@ -161,14 +164,14 @@ export const getApplicationByPermitId = async (
  * @returns A Promise with the API response.
  */
 export const deleteApplications = async (applicationIds: Array<string>) => {
-  const requestBody = { 
-    applicationIds, 
-    applicationStatus: PERMIT_STATUSES.CANCELLED, 
+  const requestBody = {
+    applicationIds,
+    applicationStatus: PERMIT_STATUSES.CANCELLED,
   };
 
   return await httpPOSTRequest(
     `${APPLICATIONS_API_ROUTES.STATUS}`,
-    replaceEmptyValuesWithNull(requestBody)
+    replaceEmptyValuesWithNull(requestBody),
   );
 };
 
@@ -243,7 +246,10 @@ export const startTransaction = async (
   requestData: StartTransactionRequestData,
 ): Promise<RequiredOrNull<StartTransactionResponseData>> => {
   try {
-    const response = await httpPOSTRequest(PAYMENT_API_ROUTES.START, replaceEmptyValuesWithNull(requestData));
+    const response = await httpPOSTRequest(
+      PAYMENT_API_ROUTES.START,
+      replaceEmptyValuesWithNull(requestData),
+    );
     if (response.status !== 201) {
       return null;
     }
@@ -272,7 +278,7 @@ export const completeTransaction = async (transactionData: {
 
     const response = await httpPUTRequest(
       `${PAYMENT_API_ROUTES.COMPLETE}/${transactionId}/${PAYMENT_API_ROUTES.PAYMENT_GATEWAY}?queryString=${transactionQueryString}`,
-      transactionDetails
+      transactionDetails,
     );
     if (response.status !== 200) {
       return null;
@@ -296,10 +302,13 @@ export const issuePermits = async (
     const companyId = getCompanyIdFromSession();
     const response = await httpPOSTRequest(
       PERMITS_API_ROUTES.ISSUE,
-      replaceEmptyValuesWithNull({ 
-        applicationIds: [...ids], 
-        companyId: applyWhenNotNullable((companyId) => Number(companyId), companyId),
-      })
+      replaceEmptyValuesWithNull({
+        applicationIds: [...ids],
+        companyId: applyWhenNotNullable(
+          (companyId) => Number(companyId),
+          companyId,
+        ),
+      }),
     );
 
     if (response.status !== 201) {
@@ -323,7 +332,9 @@ export const issuePermits = async (
  * @param permitId Permit id of the permit to be retrieved.
  * @returns Permit information if found, or undefined
  */
-export const getPermit = async (permitId?: string): Promise<RequiredOrNull<Permit>> => {
+export const getPermit = async (
+  permitId?: string,
+): Promise<RequiredOrNull<Permit>> => {
   if (!permitId) return null;
   const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
   let permitsURL = `${PERMITS_API_ROUTES.GET}/${permitId}`;
@@ -373,55 +384,60 @@ export const getCurrentAmendmentApplication = async (
  * @param expired If set to true, expired permits will be retrieved.
  * @returns A list of permits.
  */
-export const getPermits = async ({ expired = false } = {}): Promise<
-  Permit[]
-> => {
+export const getPermits = async (
+  { expired = false } = {},
+  { page = 0, limit = 10 }: PaginationOptions,
+): Promise<PaginatedResponse<Permit>> => {
   const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
-  let permitsURL = `${PERMITS_API_ROUTES.GET_LIST}`;
-  const queryParams = [];
+  const permitsURL = new URL(PERMITS_API_ROUTES.GET_LIST);
   if (companyId) {
-    queryParams.push(`companyId=${companyId}`);
+    permitsURL.searchParams.set("companyId", companyId);
   }
   if (expired) {
-    queryParams.push(`expired=${expired}`);
+    permitsURL.searchParams.set("expired", "true");
   }
-  if (queryParams.length > 0) {
-    permitsURL += `?${queryParams.join("&")}`;
-  }
-  const permits = await httpGETRequest(permitsURL)
+  permitsURL.searchParams.set("page", (page + 1).toString());
+  permitsURL.searchParams.set("limit", limit.toString());
+  const permits = await httpGETRequest(permitsURL.toString())
     .then((response) => {
       const paginatedResponseObject = getDefaultRequiredVal(
         {},
         response.data,
       ) as PaginatedResponse<Permit>;
-      return paginatedResponseObject.items;
+      return paginatedResponseObject;
     })
-    .then((permits) =>
-      permits.map((permit) => {
-        return {
-          ...permit,
-          createdDateTime: toLocal(
-            permit.createdDateTime,
-            DATE_FORMATS.DATETIME_LONG_TZ,
-          ),
-          updatedDateTime: toLocal(
-            permit.updatedDateTime,
-            DATE_FORMATS.DATETIME_LONG_TZ,
-          ),
-          permitData: {
-            ...permit.permitData,
-            startDate: toLocal(
-              permit.permitData.startDate,
-              DATE_FORMATS.DATEONLY_SHORT_NAME,
+    .then((paginatedPermits: PaginatedResponse<Permit>) => {
+      const permitsWithDateTransformations = paginatedPermits.items.map(
+        (permit) => {
+          return {
+            ...permit,
+            createdDateTime: toLocal(
+              permit.createdDateTime,
+              DATE_FORMATS.DATETIME_LONG_TZ,
             ),
-            expiryDate: toLocal(
-              permit.permitData.expiryDate,
-              DATE_FORMATS.DATEONLY_SHORT_NAME,
+            updatedDateTime: toLocal(
+              permit.updatedDateTime,
+              DATE_FORMATS.DATETIME_LONG_TZ,
             ),
-          },
-        } as Permit;
-      }),
-    );
+            permitData: {
+              ...permit.permitData,
+              startDate: toLocal(
+                permit.permitData.startDate,
+                DATE_FORMATS.DATEONLY_SHORT_NAME,
+              ),
+              expiryDate: toLocal(
+                permit.permitData.expiryDate,
+                DATE_FORMATS.DATEONLY_SHORT_NAME,
+              ),
+            },
+          } as Permit;
+        },
+      );
+      return {
+        ...paginatedPermits,
+        items: permitsWithDateTransformations,
+      };
+    });
   return permits;
 };
 
@@ -430,7 +446,7 @@ export const getPermitHistory = async (originalPermitId?: string) => {
     if (!originalPermitId) return [];
 
     const response = await httpGETRequest(
-      `${PERMITS_API_ROUTES.HISTORY}?originalId=${originalPermitId}`
+      `${PERMITS_API_ROUTES.HISTORY}?originalId=${originalPermitId}`,
     );
 
     if (response.status === 200) {
@@ -456,7 +472,7 @@ export const voidPermit = async (voidPermitParams: {
   try {
     const response = await httpPOSTRequest(
       `${PERMITS_API_ROUTES.BASE}/${permitId}/${PERMITS_API_ROUTES.VOID}`,
-      replaceEmptyValuesWithNull(voidData)
+      replaceEmptyValuesWithNull(voidData),
     );
 
     if (response.status === 201) {

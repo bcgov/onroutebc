@@ -31,6 +31,14 @@ export type ORBC_FormTypes =
   | SearchFields;
 
 /**
+ * The options for pagination.
+ */
+export type PaginationOptions = {
+  page: number;
+  limit: number;
+}
+
+/**
  * A generic paginated response structure for all the paginated responses from APIs.
  */
 export type PaginatedResponse<T> = {
@@ -41,13 +49,13 @@ export type PaginatedResponse<T> = {
   /**
    * Metadata about a page.
    */
-  meta: PageMetadata;
+  meta: PageMetadataInResponse;
 };
 
 /**
  * The metadata containing info about a page in the paginated response.
  */
-export type PageMetadata = {
+export type PageMetadataInResponse = {
   currentPage: number;
   currentItemCount: number;
   itemsPerPage: number;
