@@ -26,6 +26,7 @@ import { OnRouteBCProfileCreated } from "../../pages/OnRouteBCProfileCreated";
 import { UserInformationWizardForm } from "../../pages/UserInformationWizardForm";
 import "./CreateProfileSteps.scss";
 import { useNavigate } from "react-router";
+import { LoadBCeIDUserRolesByCompany } from "../../../../common/authentication/LoadBCeIDUserRolesByCompany";
 
 const CompanyBanner = ({ legalName }: { legalName: string }) => {
   return (
@@ -117,7 +118,7 @@ export const CreateProfileSteps = React.memo(() => {
       alternateName: getDefaultRequiredVal("", migratedClient?.alternateName),
       mailingAddress: {
         addressLine1: getDefaultRequiredVal(
-          "",
+          "123 Main St",
           migratedClient?.mailingAddress?.addressLine1,
         ),
         addressLine2: getDefaultRequiredVal(
@@ -125,47 +126,50 @@ export const CreateProfileSteps = React.memo(() => {
           migratedClient?.mailingAddress?.addressLine2,
         ),
         provinceCode: getDefaultRequiredVal(
-          "",
+          "BC",
           migratedClient?.mailingAddress?.provinceCode,
         ),
         countryCode: getDefaultRequiredVal(
-          "",
+          "CA",
           migratedClient?.mailingAddress?.countryCode,
         ),
-        city: getDefaultRequiredVal("", migratedClient?.mailingAddress?.city),
+        city: getDefaultRequiredVal(
+          "Victoria",
+          migratedClient?.mailingAddress?.city,
+        ),
         postalCode: getDefaultRequiredVal(
-          "",
+          "V8V8V8",
           migratedClient?.mailingAddress?.postalCode,
         ),
       },
       email: getDefaultRequiredVal("", user?.profile?.email),
-      phone: getDefaultRequiredVal("", migratedClient?.phone),
+      phone: getDefaultRequiredVal("234-566-7997", migratedClient?.phone),
       extension: getDefaultRequiredVal("", migratedClient?.extension),
       fax: getDefaultRequiredVal("", migratedClient?.fax),
       adminUser: {
-        firstName: "",
-        lastName: "",
-        email: "",
-        phone1: "",
+        firstName: "Krishnan",
+        lastName: "Sub",
+        email: "k@k.com",
+        phone1: "234-566-7997",
         phone1Extension: "",
         phone2: "",
         phone2Extension: "",
         fax: "",
-        countryCode: "",
-        provinceCode: "",
-        city: "",
+        countryCode: "CA",
+        provinceCode: "BC",
+        city: "Victoria",
       },
       primaryContact: {
-        firstName: "",
-        lastName: "",
-        email: "",
-        phone1: "",
+        firstName: "Krishnan",
+        lastName: "Sub",
+        email: "k@k.com",
+        phone1: "234-566-7997",
         phone1Extension: "",
         phone2: "",
         phone2Extension: "",
-        countryCode: "",
-        provinceCode: "",
-        city: "",
+        countryCode: "CA",
+        provinceCode: "BC",
+        city: "Victoria",
       },
     },
   });
@@ -264,7 +268,12 @@ export const CreateProfileSteps = React.memo(() => {
   };
 
   if (clientNumber) {
-    return <OnRouteBCProfileCreated onRouteBCClientNumber={clientNumber} />;
+    return (
+      <>
+        <LoadBCeIDUserRolesByCompany />
+        <OnRouteBCProfileCreated onRouteBCClientNumber={clientNumber} />
+      </>
+    );
   }
   return (
     <>
