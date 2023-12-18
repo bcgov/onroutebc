@@ -1,4 +1,3 @@
-import dayjs from "dayjs";
 import {
   downloadPermitApplicationPdf,
   downloadReceiptPdf,
@@ -44,14 +43,4 @@ export const viewPermitPdf = async (permitId: string) => {
   } catch (err) {
     console.error(err);
   }
-};
-
-/**
- * Returns a boolean to indicate if a permit has expired.
- * @param expiryDate The expiry date of the permit
- * @returns boolean indicating if the permit has expired.
- */
-export const hasPermitExpired = (expiryDate: string): boolean => {
-  if (!expiryDate) return false;
-  return dayjs().isAfter(expiryDate, "date");
 };

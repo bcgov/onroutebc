@@ -4,7 +4,6 @@ import { Box } from "@mui/material";
 
 import { Permit } from "../../types/permit";
 import { PERMIT_STATUSES, isPermitInactive } from "../../types/PermitStatus";
-import { hasPermitExpired } from "../../helpers/permitPDFHelper";
 import { Banner } from "../../../../common/components/dashboard/Banner";
 import { useMultiStepForm } from "../../hooks/useMultiStepForm";
 import { AmendPermitContext } from "./context/AmendPermitContext";
@@ -16,6 +15,7 @@ import { AmendPermitFinish } from "./components/AmendPermitFinish";
 import { AmendPermitForm } from "./components/AmendPermitForm";
 import { applyWhenNotNullable } from "../../../../common/helpers/util";
 import { ERROR_ROUTES, IDIR_ROUTES } from "../../../../routes/constants";
+import { hasPermitExpired } from "../../helpers/permitState";
 import {
   useAmendmentApplicationQuery,
   usePermitDetailsQuery,

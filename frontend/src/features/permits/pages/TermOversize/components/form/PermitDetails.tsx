@@ -15,6 +15,8 @@ import { ONROUTE_WEBPAGE_LINKS } from "../../../../../../routes/constants";
 import { CustomExternalLink } from "../../../../../../common/components/links/CustomExternalLink";
 import { BANNER_MESSAGES } from "../../../../../../common/constants/bannerMessages";
 import { PPC_EMAIL, TOLL_FREE_NUMBER } from "../../../../../../common/constants/constants";
+import { DATE_FORMATS, getStartOfDate } from "../../../../../../common/helpers/formatDate";
+import { getExpiryDate } from "../../../../helpers/permitState";
 
 export const PermitDetails = ({
   feature,
@@ -44,25 +46,12 @@ export const PermitDetails = ({
   const duration = watch("permitData.permitDuration");
 
   // Permit expiry date === Permit start date + Permit duration - 1
-  const startDate = dayjs(rawStartDate)
-    .hour(0)
-    .minute(0)
-    .second(0)
-    .millisecond(0);
-  const expiryDate = dayjs(startDate).add(duration - 1, "day");
-
-  // handle leap year - if the given year is a leap year, and our
-  // expiry date is any month other then January, add 1 day back
-  if (
-    expiryDate.isLeapYear() &&
-    expiryDate.isAfter(expiryDate.year() + "01-31", "month")
-  ) {
-    expiryDate.add(1, "day");
-  }
+  const startDate = getStartOfDate(rawStartDate);
+  const expiryDate = getExpiryDate(startDate, duration);
 
   // Formatted expiry date is just a derived value, and always reflects latest value of expiry date
   // no need to use useState nor place inside useEffect
-  const formattedExpiryDate = dayjs(expiryDate).format("LL");
+  const formattedExpiryDate = dayjs(expiryDate).format(DATE_FORMATS.SHORT);
 
   useEffect(() => {
     // We do need to check if the root form default values (which are from ApplicationContext) are changed,

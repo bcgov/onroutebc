@@ -122,3 +122,16 @@ export const getDateDiffInDays = (
 ) => {
   return laterDt.diff(earlierDt, "day");
 };
+
+/**
+ * Get the start of any datetime (ie. the date + time of 00:00:00 am).
+ * @param date Any Dayjs object
+ * @returns Dayjs object representing the start of the datetime (with time 00:00:00 am)
+ */
+export const getStartOfDate = (date: Dayjs | string) => {
+  return dayjs(date)
+    .hour(0)
+    .minute(0)
+    .second(0)
+    .millisecond(0);
+};
