@@ -26,6 +26,7 @@ import { OnRouteBCProfileCreated } from "../../pages/OnRouteBCProfileCreated";
 import { UserInformationWizardForm } from "../../pages/UserInformationWizardForm";
 import "./CreateProfileSteps.scss";
 import { useNavigate } from "react-router";
+import { LoadBCeIDUserRolesByCompany } from "../../../../common/authentication/LoadBCeIDUserRolesByCompany";
 
 const CompanyBanner = ({ legalName }: { legalName: string }) => {
   return (
@@ -264,7 +265,12 @@ export const CreateProfileSteps = React.memo(() => {
   };
 
   if (clientNumber) {
-    return <OnRouteBCProfileCreated onRouteBCClientNumber={clientNumber} />;
+    return (
+      <>
+        <LoadBCeIDUserRolesByCompany />
+        <OnRouteBCProfileCreated onRouteBCClientNumber={clientNumber} />
+      </>
+    );
   }
   return (
     <>
