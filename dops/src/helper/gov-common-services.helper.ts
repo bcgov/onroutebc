@@ -1,11 +1,13 @@
 import { HttpService } from '@nestjs/axios';
-import { AxiosRequestConfig } from 'axios';
+import { AxiosRequestConfig, AxiosError } from 'axios';
 import { lastValueFrom } from 'rxjs';
 import { GovCommonServices } from '../enum/gov-common-services.enum';
-import { InternalServerErrorException } from '@nestjs/common';
+import { InternalServerErrorException, Logger } from '@nestjs/common';
 import { Cache } from 'cache-manager';
 import { GovCommonServicesToken } from '../interface/gov-common-services-token.interface';
 import { CacheKey } from '../enum/cache-key.enum';
+
+const logger = new Logger('GocCommonServicesHelper');
 
 export async function getAccessToken(
   govCommonServices: GovCommonServices,
@@ -57,9 +59,26 @@ export async function getAccessToken(
     .then((response) => {
       return response.data as GovCommonServicesToken;
     })
-    .catch((error) => {
-      console.error('Error: getCommonServiceAccessToken() ', error);
-      throw new InternalServerErrorException();
+
+    .catch((error: AxiosError) => {
+      if (error.response) {
+        const errorData = error.response.data as {
+          error: string;
+          error_description?: string;
+        };
+        logger.error(
+          `Error response from token issuer: ${JSON.stringify(
+            errorData,
+            null,
+            2,
+          )}`,
+        );
+      } else {
+        logger.error(error?.message, error?.stack);
+      }
+      throw new InternalServerErrorException(
+        `Error acquiring token from ${tokenUrl}`,
+      );
     });
 
   token.expires_at = Date.now() + (token.expires_in - 15) * 1000;

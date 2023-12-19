@@ -2,6 +2,7 @@ import {
   Inject,
   Injectable,
   InternalServerErrorException,
+  Logger,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -31,6 +32,7 @@ import { convertUtcToPt } from '../../helper/date-time.helper';
 
 @Injectable()
 export class DgenService {
+  private readonly logger = new Logger(DgenService.name);
   constructor(
     @InjectRepository(DocumentTemplate)
     private documentTemplateRepository: Repository<DocumentTemplate>,
@@ -112,8 +114,11 @@ export class DgenService {
         );
         generatedDocument.buffer = Buffer.from(mergedDocument);
         generatedDocument.size = mergedDocument.length;
-      } catch (err) {
-        console.log('Error while trying to merge files', err);
+      } catch (error) {
+        /**
+         * Swallow the error as failure to send email should not break the flow
+         */
+        this.logger.error(error);
       }
     }
 
@@ -260,9 +265,9 @@ export class DgenService {
        `,
       });
       generatedDocument.size = generatedDocument.buffer.length;
-    } catch (err) {
-      console.log('error on pup', err);
-      throw new InternalServerErrorException(err);
+    } catch (error) {
+      this.logger.error(error);
+      throw error;
     } finally {
       if (browser) {
         await browser.close();

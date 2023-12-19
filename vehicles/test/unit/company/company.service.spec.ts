@@ -27,7 +27,6 @@ import {
 } from '../../util/mocks/data/company.mock';
 
 import { DataNotFoundException } from '../../../src/common/exception/data-not-found.exception';
-import { InternalServerErrorException } from '@nestjs/common';
 import * as constants from '../../util/mocks/data/test-data.constants';
 import {
   blueCompanyAdminUserJWTMock,
@@ -135,7 +134,7 @@ describe('CompanyService', () => {
     it('should catch and throw and Internal Error Exceptions user.', async () => {
       await expect(async () => {
         await service.create(null, redCompanyAdminUserJWTMock);
-      }).rejects.toThrowError(InternalServerErrorException);
+      }).rejects.toThrowError(TypeError);
     });
   });
 

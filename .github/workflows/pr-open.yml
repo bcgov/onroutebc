@@ -84,6 +84,6 @@ jobs:
       environment: dev
       release: ${{ needs.vars.outputs.pr }}
       tag: ${{ needs.vars.outputs.pr }}
-      triggers: ('database/' 'dops/' 'frontend/' 'vehicles/')
+      triggers: ('tps-migration' 'dops/' 'frontend/' 'vehicles/')
       vault_role: nonprod
       vault_zone: dev

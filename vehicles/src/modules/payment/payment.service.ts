@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Injectable,
   InternalServerErrorException,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import * as CryptoJS from 'crypto-js';
@@ -34,6 +35,7 @@ import { PaymentMethodType } from './entities/payment-method-type.entity';
 
 @Injectable()
 export class PaymentService {
+  private readonly logger = new Logger(PaymentService.name);
   constructor(
     private dataSource: DataSource,
     @InjectRepository(Transaction)
@@ -325,11 +327,12 @@ export class PaymentService {
       if (!nestedQueryRunner) {
         await queryRunner.commitTransaction();
       }
-    } catch (err) {
+    } catch (error) {
       if (!nestedQueryRunner) {
         await queryRunner.rollbackTransaction();
       }
-      throw new InternalServerErrorException(); // Should handle the typeorm Error handling
+      this.logger.error(error);
+      throw error;
     } finally {
       if (!nestedQueryRunner) {
         await queryRunner.release();
@@ -474,9 +477,10 @@ export class PaymentService {
       }
 
       await queryRunner.commitTransaction();
-    } catch (err) {
+    } catch (error) {
       await queryRunner.rollbackTransaction();
-      throw new InternalServerErrorException(); // Should handle the typeorm Error handling
+      this.logger.error(error);
+      throw error;
     } finally {
       await queryRunner.release();
     }

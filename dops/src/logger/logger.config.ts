@@ -12,7 +12,8 @@ const globalLoggerFormat: winston.Logform.Format = winston.format.combine(
 const localLoggerFormat: winston.Logform.Format = winston.format.combine(
   winston.format.colorize(),
   winston.format.align(),
-  utilities.format.nestLike('Vehicles', { colors: true, prettyPrint: true }),
+  winston.format.splat(),
+  utilities.format.nestLike('Dops', { colors: true, prettyPrint: true }),
 );
 
 const errorStack: winston.Logform.Format = winston.format.combine(
@@ -22,7 +23,7 @@ const errorStack: winston.Logform.Format = winston.format.combine(
 export const customLogger: LoggerService = WinstonModule.createLogger({
   transports: [
     new winston.transports.Console({
-      level: 'silly',
+      level: process.env.DOPS_API_LOG_LEVEL || 'silly',
       format: winston.format.combine(
         globalLoggerFormat,
         localLoggerFormat,
