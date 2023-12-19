@@ -16,6 +16,7 @@ import { Response } from 'express';
 import { FileDownloadModes } from '../../common/enum/file-download-modes.enum';
 import { ReadFileDto } from './dto/response/read-file.dto';
 import { DopsGeneratedReport } from '../../common/interface/dops-generated-report.interface';
+import { ExceptionDto } from '../../common/exception/exception.dto';
 
 @Injectable()
 export class DopsService {
@@ -123,7 +124,7 @@ export class DopsService {
       })
       .catch((error: AxiosError) => {
         if (error.response) {
-          const errorData = error.response.data;
+          const errorData = error.response.data as ExceptionDto;
           this.logger.error(
             `Error response from DOPS: ${JSON.stringify(errorData, null, 2)}`,
           );
