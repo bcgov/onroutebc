@@ -75,7 +75,8 @@ export class TypeormCustomLogger extends AbstractLogger {
   private logErrorOrQueryError(message: LogMessage) {
     if (message.prefix === 'query failed') {
       this.logger.error(`${message.prefix} : ${message.message?.toString()}`);
-      this.logger.error(message.parameters); // Mask sensitive information before logging if needed
+       // Prameter log level set to Debug
+      this.logger.debug(message.parameters); // Mask sensitive information before logging if needed
     } else {
       this.logger.error(new CustomError(message.message));
     }
