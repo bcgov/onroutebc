@@ -26,6 +26,7 @@ import { PermitModule } from './modules/permit/permit.module';
 import { EmailModule } from './modules/email/email.module';
 import { PaymentModule } from './modules/payment/payment.module';
 import { HTTPLoggerMiddleware } from './common/middleware/req.res.logger';
+import { TypeormCustomLogger } from './common/logger/typeorm-logger.config';
 
 const envPath = path.resolve(process.cwd() + '/../');
 
@@ -58,7 +59,8 @@ const envPath = path.resolve(process.cwd() + '/../');
       options: { encrypt: process.env.MSSQL_ENCRYPT === 'true', useUTC: true },
       autoLoadEntities: true, // Auto load all entities regiestered by typeorm forFeature method.
       synchronize: false, // This changes the DB schema to match changes to entities, which we might not want.
-      logging: false,
+      maxQueryExecutionTime: 5000, //5 second
+      logger: new TypeormCustomLogger(['error']),
     }),
     AutomapperModule.forRoot({
       strategyInitializer: classes(),

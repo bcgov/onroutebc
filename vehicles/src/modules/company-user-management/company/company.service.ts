@@ -4,7 +4,7 @@ import {
   BadRequestException,
   Inject,
   Injectable,
-  InternalServerErrorException,
+  Logger,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
@@ -36,6 +36,7 @@ import * as crypto from 'crypto';
 
 @Injectable()
 export class CompanyService {
+  private readonly logger = new Logger(CompanyService.name);
   constructor(
     @InjectRepository(Company)
     private companyRepository: Repository<Company>,
@@ -151,9 +152,14 @@ export class CompanyService {
       user.companyUsers = [newCompanyUser]; //To populate Company User Auth Group
       newUser = await this.classMapper.mapAsync(user, User, ReadUserDto);
       await queryRunner.commitTransaction();
-    } catch (err) {
+    } catch (error) {
       await queryRunner.rollbackTransaction();
-      throw new InternalServerErrorException(); // TODO: Handle the typeorm Error handling
+      if (error instanceof Error) {
+        this.logger.error(error?.message, error?.stack);
+      } else {
+        this.logger.error(error);
+      }
+      throw error;
     } finally {
       await queryRunner.release();
     }
@@ -215,7 +221,11 @@ export class CompanyService {
         [readCompanyUserDto.email, readCompanyUserDto.primaryContact.email],
       );
     } catch (error: unknown) {
-      console.log('Error in Email Service', error);
+      if (error instanceof Error) {
+        this.logger.error(error?.message, error?.stack);
+      } else {
+        this.logger.error(error);
+      }
     }
 
     return readCompanyUserDto;

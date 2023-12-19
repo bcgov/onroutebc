@@ -12,9 +12,12 @@ import {
   TypeORMCacheType,
 } from '../interface/pagination.interface';
 import { createPaginationObject } from './pagination.helper';
+import { Logger } from '@nestjs/common';
 
 const DEFAULT_LIMIT = 10;
 const DEFAULT_PAGE = 1;
+
+const logger = new Logger('Paginate');
 
 export async function paginate<T, CustomMetaType = IPaginationMeta>(
   repositoryOrQueryBuilder: Repository<T> | SelectQueryBuilder<T>,
@@ -58,7 +61,7 @@ function resolveNumericOption(
   if (Number.isInteger(resolvedValue) && resolvedValue >= 0)
     return resolvedValue;
 
-  console.warn(
+  logger.warn(
     `Query parameter "${key}" with value "${value}" was resolved as "${resolvedValue}", please validate your query input! Falling back to default "${defaultValue}".`,
   );
   return defaultValue;

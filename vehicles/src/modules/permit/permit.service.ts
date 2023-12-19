@@ -2,6 +2,7 @@ import {
   Inject,
   Injectable,
   InternalServerErrorException,
+  Logger,
   NotFoundException,
   forwardRef,
 } from '@nestjs/common';
@@ -57,6 +58,7 @@ import { PaymentMethodType } from 'src/common/enum/payment-method-type.enum';
 
 @Injectable()
 export class PermitService {
+  private readonly logger = new Logger(PermitService.name);
   constructor(
     @InjectMapper() private readonly classMapper: Mapper,
     @InjectRepository(Permit)
@@ -641,11 +643,20 @@ export class PermitService {
           attachments,
         );
       } catch (error: unknown) {
-        console.log('Error in Email Service', error);
+        /**
+         * Swallow the error as failure to send email should not break the flow
+         */
+        if (error instanceof Error) {
+          this.logger.error(error?.message, error?.stack);
+        }
       }
-    } catch (err) {
+    } catch (error) {
       await queryRunner.rollbackTransaction();
-      console.log(err);
+      if (error instanceof Error) {
+        this.logger.error(error?.message, error?.stack);
+      } else {
+        this.logger.error(error);
+      }
       success = '';
       failure = permitId;
     } finally {

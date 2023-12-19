@@ -12,7 +12,8 @@ const globalLoggerFormat: winston.Logform.Format = winston.format.combine(
 const localLoggerFormat: winston.Logform.Format = winston.format.combine(
   winston.format.colorize(),
   winston.format.align(),
-  utilities.format.nestLike('Vehicles', { colors: true, prettyPrint: true }),
+  winston.format.splat(),
+  utilities.format.nestLike('Dops', { colors: true, prettyPrint: true }),
 );
 
 const errorStack: winston.Logform.Format = winston.format.combine(

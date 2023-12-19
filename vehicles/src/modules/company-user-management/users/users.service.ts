@@ -4,7 +4,7 @@ import {
   BadRequestException,
   HttpStatus,
   Injectable,
-  InternalServerErrorException,
+  Logger,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository, UpdateResult } from 'typeorm';
@@ -40,6 +40,7 @@ import { Permit } from '../../permit/entities/permit.entity';
 
 @Injectable()
 export class UsersService {
+  private readonly logger = new Logger(UsersService.name);
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
@@ -140,9 +141,14 @@ export class UsersService {
       });
 
       await queryRunner.commitTransaction();
-    } catch (err) {
+    } catch (error) {
       await queryRunner.rollbackTransaction();
-      throw new InternalServerErrorException(); // TODO: Handle the typeorm Error handling
+      if (error instanceof Error) {
+        this.logger.error(error?.message, error?.stack);
+      } else {
+        this.logger.error(error);
+      }
+      throw error;
     } finally {
       await queryRunner.release();
     }
@@ -263,9 +269,14 @@ export class UsersService {
       }
 
       await queryRunner.commitTransaction();
-    } catch (err) {
+    } catch (error) {
       await queryRunner.rollbackTransaction();
-      throw new InternalServerErrorException(); // TODO: Handle the typeorm Error handling
+      if (error instanceof Error) {
+        this.logger.error(error?.message, error?.stack);
+      } else {
+        this.logger.error(error);
+      }
+      throw error;
     } finally {
       await queryRunner.release();
     }
@@ -418,9 +429,14 @@ export class UsersService {
       }
 
       await queryRunner.commitTransaction();
-    } catch (err) {
+    } catch (error) {
       await queryRunner.rollbackTransaction();
-      throw new InternalServerErrorException(); // TODO: Handle the typeorm Error handling
+      if (error instanceof Error) {
+        this.logger.error(error?.message, error?.stack);
+      } else {
+        this.logger.error(error);
+      }
+      throw error;
     } finally {
       await queryRunner.release();
     }
@@ -621,9 +637,14 @@ export class UsersService {
             IdirUser,
             ReadUserOrbcStatusDto,
           );
-        } catch (err) {
+        } catch (error) {
           await queryRunner.rollbackTransaction();
-          throw new InternalServerErrorException(); // TODO: Handle the typeorm Error handling
+          if (error instanceof Error) {
+            this.logger.error(error?.message, error?.stack);
+          } else {
+            this.logger.error(error);
+          }
+          throw error;
         } finally {
           await queryRunner.release();
         }

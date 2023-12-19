@@ -33,7 +33,7 @@ export class CreatePowerUnitDto {
   })
   @IsString()
   //@IsAlphanumeric()
-  @MaxLength(10)
+  //@MaxLength(10)
   plate: string;
 
   @AutoMap()

@@ -7,6 +7,7 @@ import {
   Inject,
   Injectable,
   InternalServerErrorException,
+  Logger,
   NotFoundException,
   forwardRef,
 } from '@nestjs/common';
@@ -56,6 +57,7 @@ import * as constants from '../../common/constants/api.constant';
 
 @Injectable()
 export class ApplicationService {
+  private readonly logger = new Logger(ApplicationService.name);
   constructor(
     @InjectMapper() private readonly classMapper: Mapper,
     @InjectRepository(Permit)
@@ -600,11 +602,20 @@ export class ApplicationService {
           attachments,
         );
       } catch (error: unknown) {
-        console.log('Error in Email Service', error);
+        /**
+         * Swallow the error as failure to send email should not break the flow
+         */
+        if (error instanceof Error) {
+          this.logger.error(error?.message, error?.stack);
+        }
       }
-    } catch (err) {
+    } catch (error) {
       await queryRunner.rollbackTransaction();
-      console.log(err);
+      if (error instanceof Error) {
+        this.logger.error(error?.message, error?.stack);
+      } else {
+        this.logger.error(error);
+      }
       success = '';
       failure = applicationId;
     } finally {
