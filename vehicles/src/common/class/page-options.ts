@@ -15,13 +15,13 @@ export class PageOptionsDto {
 
   @ApiPropertyOptional({
     minimum: 1,
-    maximum: 50,
+    maximum: 25,
     default: 10,
   })
   @Type(() => Number)
   @IsInt()
   @Min(1)
-  @Max(50)
+  @Max(25)
   @IsOptional()
   readonly take?: number = 10;
 

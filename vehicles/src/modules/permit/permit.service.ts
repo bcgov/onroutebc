@@ -212,10 +212,10 @@ export class PermitService {
       permits.andWhere(`permit.applicationNumber like '%${searchString}%'`);
     }
 
-    const itemCount = await permits.getCount();
+    const totalItems = await permits.getCount();
     const { entities } = await permits.getRawAndEntities();
 
-    const pageMetaDto = new PageMetaDto({ itemCount, pageOptionsDto });
+    const pageMetaDto = new PageMetaDto({ totalItems, pageOptionsDto });
 
     const readPermitDto: ReadPermitDto[] = await this.classMapper.mapArrayAsync(
       entities,
@@ -263,10 +263,10 @@ export class PermitService {
       .skip(pageOptionsDto.skip)
       .take(pageOptionsDto.take);
 
-    const itemCount = await permits.getCount();
+    const totalItems = await permits.getCount();
     const { entities } = await permits.getRawAndEntities();
 
-    const pageMetaDto = new PageMetaDto({ itemCount, pageOptionsDto });
+    const pageMetaDto = new PageMetaDto({ totalItems, pageOptionsDto });
 
     const readPermitDto: ReadPermitDto[] = await this.classMapper.mapArrayAsync(
       entities,

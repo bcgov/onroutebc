@@ -70,19 +70,6 @@ export class PermitController {
   }
 
   @ApiOkResponse({
-    description: 'The Permit Resource',
-    type: ReadPermitDto,
-    isArray: true,
-  })
-  @Roles(Role.READ_PERMIT)
-  @Get()
-  async get(
-    @Query('permitNumber') permitNumber: string,
-  ): Promise<ReadPermitDto[]> {
-    return this.permitService.findByPermitNumber(permitNumber);
-  }
-
-  @ApiOkResponse({
     description: 'The Permit Resource to get revision and payment history.',
     type: PermitHistoryDto,
     isArray: true,
@@ -105,8 +92,8 @@ export class PermitController {
   @ApiQuery({ name: 'expired', required: false, example: 'true' })
   @ApiPaginatedResponse(ReadPermitDto)
   @Roles(Role.READ_PERMIT)
-  @Get('user')
-  async getPaginatedUserPermit(
+  @Get()
+  async getPermit(
     @Req() request: Request,
     @Query('companyId') companyId: number,
     @Query('expired') expired: string,
