@@ -1,7 +1,7 @@
 /**
  * Service responsible for interacting with S3 Object Store
  */
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import {
   CompleteMultipartUploadCommandOutput,
@@ -16,6 +16,7 @@ import { Upload } from '@aws-sdk/lib-storage';
 
 @Injectable()
 export class S3Service {
+  private readonly logger = new Logger(S3Service.name);
   constructor(private readonly httpService: HttpService) {}
 
   private readonly _s3AccessKeyId = process.env.DOPS_S3_ACCESSKEYID;
@@ -71,8 +72,8 @@ export class S3Service {
       if (res) this._processS3Headers(response, res);
       const stream = response.Body as NodeJS.ReadableStream;
       return stream;
-    } catch (e) {
-      console.log(e);
+    } catch (error) {
+      this.logger.error(error);
     }
   }
 

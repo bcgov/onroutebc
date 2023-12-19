@@ -69,6 +69,7 @@
     "helmet": "^7.1.0",
     "jwks-rsa": "^3.0.1",
     "mssql": "^9.1.1",
+    "nest-winston": "^1.9.4",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
     "pdf-lib": "^1.17.1",
@@ -78,7 +79,8 @@
     "rxjs": "^7.8.1",
     "swagger-ui-express": "^4.6.3",
     "typeorm": "^0.3.16",
-    "uuid": "^9.0.0"
+    "uuid": "^9.0.0",
+    "winston": "^3.11.0"
   },
   "devDependencies": {
     "@golevelup/ts-jest": "^0.4.0",

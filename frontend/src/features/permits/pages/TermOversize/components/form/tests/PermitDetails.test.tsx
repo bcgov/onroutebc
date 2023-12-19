@@ -39,7 +39,10 @@ import {
   defaultDuration,
   allDurations,
   emptyCommodities,
+  maxFutureYear,
+  thisYear,
 } from "./helpers/prepare";
+import { getExpiryDate } from "../../../../../helpers/permitState";
 
 describe("Permit Details duration", () => {
   it("should have available durations to select", async () => {
@@ -69,9 +72,11 @@ describe("Permit Details duration", () => {
     await selectDurationOption(user, durationText);
 
     // Assert
-    const expectedExpiry = dayjs(currentDt)
-      .add(durationDays - 1, "day")
-      .format(DATE_FORMATS.SHORT);
+    const expectedExpiry = getExpiryDate(
+      dayjs(currentDt), 
+      durationDays
+    ).format(DATE_FORMATS.SHORT);
+
     expect(await expiryDateElement(expectedExpiry)).toBeVisible();
   });
 });
@@ -106,7 +111,8 @@ describe("Permit Details start date", () => {
     await openStartDateSelect(user);
 
     // Assert
-    if (maxFutureMonth > thisMonth) {
+    const shouldUseNextMonth = (maxFutureMonth > thisMonth) || (maxFutureYear > thisYear);
+    if (shouldUseNextMonth) {
       await selectNextMonth(user);
 
       const datesNextMonth = await nextMonthDateOptions();
@@ -137,7 +143,8 @@ describe("Permit Details start date", () => {
     await openStartDateSelect(user);
 
     // Assert
-    if (maxFutureMonth > thisMonth) {
+    const shouldUseNextMonth = (maxFutureMonth > thisMonth) || (maxFutureYear > thisYear);
+    if (shouldUseNextMonth) {
       // First find this month's active days
       const thisMonthDates = await dateOptions();
       const remainingDaysThisMonth = thisMonthDates.filter(
@@ -217,9 +224,11 @@ describe("Permit Details start date", () => {
     }
 
     // Assert
-    const expectedExpiry = dayjs(tomorrow)
-      .add(defaultDuration - 1, "day")
-      .format(DATE_FORMATS.SHORT);
+    const expectedExpiry = getExpiryDate(
+      dayjs(tomorrow),
+      defaultDuration,
+    ).format(DATE_FORMATS.SHORT);
+
     expect(await expiryDateElement(expectedExpiry)).toBeVisible();
   });
 });

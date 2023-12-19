@@ -4,10 +4,8 @@ import { MRT_ColumnDef } from "material-react-table";
 import { Permit } from "../../../permits/types/permit";
 import { PERMIT_EXPIRED } from "../../../permits/types/PermitStatus";
 import { PermitChip } from "../../../permits/components/permit-list/PermitChip";
-import {
-  hasPermitExpired,
-  viewPermitPdf,
-} from "../../../permits/helpers/permitPDFHelper";
+import { viewPermitPdf } from "../../../permits/helpers/permitPDFHelper";
+import { hasPermitExpired } from "../../../permits/helpers/permitState";
 import {
   dateTimeStringSortingFn,
   formatCellValuetoDatetime,

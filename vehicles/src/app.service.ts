@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { PowerUnitTypesService } from './modules/vehicles/power-unit-types/power-unit-types.service';
@@ -9,9 +9,12 @@ import * as fs from 'fs';
 import { CacheKey } from './common/enum/cache-key.enum';
 import { addToCache, createCacheMap } from './common/helper/cache.helper';
 import { PaymentService } from './modules/payment/payment.service';
+import { LogMethodExecution } from './common/decorator/log-method-execution.decorator';
 
 @Injectable()
 export class AppService {
+  private readonly logger = new Logger(AppService.name);
+
   constructor(
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
@@ -26,6 +29,7 @@ export class AppService {
     return 'Vehicles Healthcheck!';
   }
 
+  @LogMethodExecution()
   async initializeCache() {
     const startDateTime = new Date();
     const countries = await this.commonService.findAllCountries();
@@ -105,7 +109,7 @@ export class AppService {
 
     const endDateTime = new Date();
     const processingTime = endDateTime.getTime() - startDateTime.getTime();
-    console.log(
+    this.logger.log(
       `initializeCache() -> Start time: ${startDateTime.toISOString()},` +
         `End time: ${endDateTime.toISOString()},` +
         `Processing time: ${processingTime}ms`,
