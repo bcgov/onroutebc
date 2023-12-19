@@ -90,7 +90,7 @@ jobs:
       vault_zone: prod
   
   notify-teams-prod:
-    name: Notify Teams - Test
+    name: Notify Teams - Prod
     needs: [deploys-prod, vars]
     runs-on: ubuntu-22.04
     steps:
