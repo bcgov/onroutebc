@@ -75,7 +75,7 @@ export type PageMetadataInResponse = {
    */
   hasPreviousPage: boolean;
   /**
-   * Is there a next page.
+   * Is there a next page?
    */
   hasNextPage: boolean;
 } & PaginationOptions;
