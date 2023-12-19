@@ -46,6 +46,7 @@ services:
       dockerfile: Dockerfile
     environment:
       NODE_ENV: development
+      VECHICLES_API_LOG_LEVEL: ${VECHICLES_API_LOG_LEVEL}
       DB_TYPE: ${DB_TYPE}
       MSSQL_HOST: sql-server-db
       MSSQL_PORT: ${MSSQL_PORT}
@@ -90,6 +91,7 @@ services:
       dockerfile: Dockerfile
     environment:
       NODE_ENV: development
+      DOPS_API_LOG_LEVEL: ${DOPS_API_LOG_LEVEL}
       DB_TYPE: ${DB_TYPE}
       MSSQL_HOST: sql-server-db
       MSSQL_PORT: ${MSSQL_PORT}

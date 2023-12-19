@@ -23,7 +23,7 @@ const errorStack: winston.Logform.Format = winston.format.combine(
 export const customLogger: LoggerService = WinstonModule.createLogger({
   transports: [
     new winston.transports.Console({
-      level: 'silly',
+      level: process.env.DOPS_API_LOG_LEVEL || 'silly',
       format: winston.format.combine(
         globalLoggerFormat,
         localLoggerFormat,
