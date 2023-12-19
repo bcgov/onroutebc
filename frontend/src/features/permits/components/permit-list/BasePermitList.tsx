@@ -86,7 +86,7 @@ export const BasePermitList = ({
     ),
     autoResetPageIndex: false,
     manualPagination: true,
-    rowCount: data?.meta?.itemCount ?? 0,
+    rowCount: data?.meta?.totalItems ?? 0,
     pageCount: data?.meta?.pageCount ?? 0,
     onPaginationChange: setPagination,
     enablePagination: true,

@@ -389,7 +389,7 @@ export const getPermits = async (
   { page = 0, take = 10 }: PaginationOptions,
 ): Promise<PaginatedResponse<Permit>> => {
   const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
-  const permitsURL = new URL(PERMITS_API_ROUTES.GET_LIST);
+  const permitsURL = new URL(PERMITS_API_ROUTES.GET);
   if (companyId) {
     permitsURL.searchParams.set("companyId", companyId);
   }

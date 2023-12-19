@@ -34,7 +34,13 @@ export type ORBC_FormTypes =
  * The options for pagination.
  */
 export type PaginationOptions = {
+  /**
+   * The page number to fetch.
+   */
   page: number;
+  /**
+   * The number of items in the current page.
+   */
   take: number;
 };
 
@@ -56,13 +62,23 @@ export type PaginatedResponse<T> = {
  * The metadata containing info about a page in the paginated response.
  */
 export type PageMetadataInResponse = {
-  page: number;
-  take: number;
-  itemCount: number;
+  /**
+   * The total items matching the query in the database.
+   */
+  totalItems: number;
+  /**
+   * The total number of pages.
+   */
   pageCount: number;
+  /**
+   * Is there a previous page?
+   */
   hasPreviousPage: boolean;
+  /**
+   * Is there a next page.
+   */
   hasNextPage: boolean;
-};
+} & PaginationOptions;
 
 export type Optional<T> = T | undefined;
 export type RequiredOrNull<T> = T | null;
