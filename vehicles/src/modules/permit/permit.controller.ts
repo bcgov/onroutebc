@@ -7,8 +7,6 @@ import {
   Param,
   Query,
   Res,
-  DefaultValuePipe,
-  ParseIntPipe,
 } from '@nestjs/common';
 import { PermitService } from './permit.service';
 import { ExceptionDto } from '../../common/exception/exception.dto';
@@ -32,15 +30,12 @@ import { ReadFileDto } from '../common/dto/response/read-file.dto';
 import { Roles } from 'src/common/decorator/roles.decorator';
 import { Role } from 'src/common/enum/roles.enum';
 import { IDP } from 'src/common/enum/idp.enum';
-import {
-  IPaginationMeta,
-  IPaginationOptions,
-} from 'src/common/interface/pagination.interface';
 import { PaginationDto } from 'src/common/class/pagination';
-import { LessThenPipe } from 'src/common/class/customs.transform';
 import { PermitHistoryDto } from './dto/response/permit-history.dto';
 import { ResultDto } from './dto/response/result.dto';
 import { VoidPermitDto } from './dto/request/void-permit.dto';
+import { ApiPaginatedResponse } from 'src/common/class/api-paginate-response';
+import { PageOptionsDto } from 'src/common/class/page-options';
 
 @ApiBearerAuth()
 @ApiTags('Permit')
@@ -108,60 +103,46 @@ export class PermitController {
    */
   @ApiQuery({ name: 'companyId', required: true })
   @ApiQuery({ name: 'expired', required: false, example: 'true' })
-  @ApiQuery({ name: 'page', required: false, example: '1' })
-  @ApiQuery({ name: 'limit', required: false, example: '10' })
+  @ApiPaginatedResponse(ReadPermitDto)
   @Roles(Role.READ_PERMIT)
   @Get('user')
   async getPaginatedUserPermit(
     @Req() request: Request,
     @Query('companyId') companyId: number,
     @Query('expired') expired: string,
-    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
-    @Query('limit', new DefaultValuePipe(10), ParseIntPipe, LessThenPipe)
-    limit = 10,
-  ): Promise<PaginationDto<ReadPermitDto, IPaginationMeta>> {
-    const options: IPaginationOptions = {
-      limit,
-      page,
-    };
-
+    @Query() pageOptionsDto: PageOptionsDto,
+  ): Promise<PaginationDto<ReadPermitDto>> {
     const currentUser = request.user as IUserJWT;
     const userGuid =
       currentUser.identity_provider === IDP.BCEID
         ? currentUser.bceid_user_guid
         : null;
     return await this.permitService.findUserPermit(
-      options,
+      pageOptionsDto,
       userGuid,
       companyId,
       expired,
     );
   }
 
-  @ApiOkResponse({
-    description: 'The Search Permit Resource',
-    type: PaginationDto<ReadPermitDto, IPaginationMeta>,
-    isArray: true,
-  })
   /**
    * @Query searchColumn: Key to search a permit. ex: plate
    * @Query searchString: Value of key. ex: AB123D
    * The above example will search for a permit where plate is AB123D.
    */
+  @ApiPaginatedResponse(ReadPermitDto)
   @Roles(Role.STAFF)
   @Get('ppc/search')
   async getPermitData(
     @Query('searchColumn') searchColumn: string,
     @Query('searchString') searchString: string,
-    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
-    @Query('limit', new DefaultValuePipe(10), ParseIntPipe, LessThenPipe)
-    limit = 10,
-  ): Promise<PaginationDto<ReadPermitDto, IPaginationMeta>> {
-    const options: IPaginationOptions = {
-      limit,
-      page,
-    };
-    return this.permitService.findPermit(options, searchColumn, searchString);
+    @Query() pageOptionsDto: PageOptionsDto,
+  ): Promise<PaginationDto<ReadPermitDto>> {
+    return this.permitService.findPermit(
+      pageOptionsDto,
+      searchColumn,
+      searchString,
+    );
   }
 
   @ApiCreatedResponse({

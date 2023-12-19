@@ -20,12 +20,7 @@ import { Response } from 'express';
 import { ReadFileDto } from '../common/dto/response/read-file.dto';
 import { PermitStatus } from 'src/common/enum/permit-status.enum';
 import { Receipt } from '../payment/entities/receipt.entity';
-import {
-  IPaginationMeta,
-  IPaginationOptions,
-} from 'src/common/interface/pagination.interface';
 import { PaginationDto } from 'src/common/class/pagination';
-import { paginate } from 'src/common/helper/paginate';
 import { PermitHistoryDto } from './dto/response/permit-history.dto';
 import { ApplicationStatus } from 'src/common/enum/application-status.enum';
 import { ApplicationService } from './application.service';
@@ -54,6 +49,8 @@ import { Cache } from 'cache-manager';
 import { PermitIssuedBy } from '../../common/enum/permit-issued-by.enum';
 import { getPaymentCodeFromCache } from '../../common/helper/payment.helper';
 import { PaymentMethodType } from 'src/common/enum/payment-method-type.enum';
+import { PageOptionsDto } from 'src/common/class/page-options';
+import { PageMetaDto } from 'src/common/class/page-meta';
 
 @Injectable()
 export class PermitService {
@@ -182,14 +179,16 @@ export class PermitService {
   }
 
   async findPermit(
-    options: IPaginationOptions,
+    pageOptionsDto: PageOptionsDto,
     searchColumn: string,
     searchString: string,
-  ): Promise<PaginationDto<ReadPermitDto, IPaginationMeta>> {
+  ): Promise<PaginationDto<ReadPermitDto>> {
     const permits = this.permitRepository
       .createQueryBuilder('permit')
       .innerJoinAndSelect('permit.permitData', 'permitData')
-      .where('permit.permitNumber IS NOT NULL');
+      .where('permit.permitNumber IS NOT NULL')
+      .skip(pageOptionsDto.skip)
+      .take(pageOptionsDto.take);
     if (searchColumn.toLowerCase() === 'plate') {
       permits.andWhere(
         `JSON_VALUE(permitData.permitData, '$.vehicleDetails.plate') like '%${searchString}%'`,
@@ -212,21 +211,18 @@ export class PermitService {
     if (searchColumn.toLowerCase() === 'applicationnumber') {
       permits.andWhere(`permit.applicationNumber like '%${searchString}%'`);
     }
-    const permit: PaginationDto<Permit, IPaginationMeta> = await paginate(
-      permits,
-      options,
-    );
+
+    const itemCount = await permits.getCount();
+    const { entities } = await permits.getRawAndEntities();
+
+    const pageMetaDto = new PageMetaDto({ itemCount, pageOptionsDto });
+
     const readPermitDto: ReadPermitDto[] = await this.classMapper.mapArrayAsync(
-      permit.items,
+      entities,
       Permit,
       ReadPermitDto,
     );
-    const readPermitDtoItems: PaginationDto<ReadPermitDto, IPaginationMeta> =
-      new PaginationDto<ReadPermitDto, IPaginationMeta>(
-        readPermitDto,
-        permit.meta,
-      );
-    return readPermitDtoItems;
+    return new PaginationDto(readPermitDto, pageMetaDto);
   }
 
   /**
@@ -237,11 +233,11 @@ export class PermitService {
    *
    */
   public async findUserPermit(
-    options: IPaginationOptions,
+    pageOptionsDto: PageOptionsDto,
     userGUID: string,
     companyId: number,
     expired: string,
-  ): Promise<PaginationDto<ReadPermitDto, IPaginationMeta>> {
+  ): Promise<PaginationDto<ReadPermitDto>> {
     const permits = this.permitRepository
       .createQueryBuilder('permit')
       .innerJoinAndSelect('permit.permitData', 'permitData')
@@ -263,23 +259,21 @@ export class PermitService {
           activeStatus: PermitStatus.ISSUED,
           expiryDate: new Date(),
         },
-      );
+      )
+      .skip(pageOptionsDto.skip)
+      .take(pageOptionsDto.take);
 
-    const permit: PaginationDto<Permit, IPaginationMeta> = await paginate(
-      permits,
-      options,
-    );
+    const itemCount = await permits.getCount();
+    const { entities } = await permits.getRawAndEntities();
+
+    const pageMetaDto = new PageMetaDto({ itemCount, pageOptionsDto });
+
     const readPermitDto: ReadPermitDto[] = await this.classMapper.mapArrayAsync(
-      permit.items,
+      entities,
       Permit,
       ReadPermitDto,
     );
-    const readPermitDtoItems: PaginationDto<ReadPermitDto, IPaginationMeta> =
-      new PaginationDto<ReadPermitDto, IPaginationMeta>(
-        readPermitDto,
-        permit.meta,
-      );
-    return readPermitDtoItems;
+    return new PaginationDto(readPermitDto, pageMetaDto);
   }
 
   /**
