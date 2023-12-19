@@ -3,7 +3,10 @@ import { MRT_ColumnDef } from "material-react-table";
 import { viewPermitPdf } from "../../helpers/permitPDFHelper";
 import { Permit } from "../../types/permit";
 import { PermitChip } from "./PermitChip";
-import { dateTimeStringSortingFn, formatCellValuetoDatetime } from "../../../../common/constants/defaultTableOptions";
+import {
+  dateTimeStringSortingFn,
+  formatCellValuetoDatetime,
+} from "../../../../common/constants/defaultTableOptions";
 
 /**
  * The column definition for Permits.
@@ -16,7 +19,7 @@ export const PermitsColumnDefinition: MRT_ColumnDef<Permit>[] = [
     sortingFn: "alphanumeric",
     size: 500,
     accessorFn: (row) => row.permitNumber,
-    Cell: (props: { cell: any; row: any }) => {
+    Cell: (props: { row: any; renderedCellValue: any }) => {
       return (
         <>
           <Link
@@ -24,7 +27,7 @@ export const PermitsColumnDefinition: MRT_ColumnDef<Permit>[] = [
             variant="body2"
             onClick={() => viewPermitPdf(props.row.original.permitId)}
           >
-            {props.cell.getValue()}
+            {props.renderedCellValue}
           </Link>
           <PermitChip permitStatus={props.row.original.permitStatus} />
         </>
