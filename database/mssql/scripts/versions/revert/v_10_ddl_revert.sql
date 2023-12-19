@@ -18,3 +18,8 @@ BEGIN CATCH
     ROLLBACK;
   THROW
 END CATCH
+
+DECLARE @VersionDescription VARCHAR(255)
+SET @VersionDescription = 'Reverting function to format a UTC date into Pacific time for reports.'
+
+INSERT [dbo].[ORBC_SYS_VERSION] ([VERSION_ID], [DESCRIPTION], [RELEASE_DATE]) VALUES (9, @VersionDescription, getutcdate())
