@@ -331,11 +331,7 @@ export class PaymentService {
       if (!nestedQueryRunner) {
         await queryRunner.rollbackTransaction();
       }
-      if (error instanceof Error) {
-        this.logger.error(error?.message, error?.stack);
-      } else {
-        this.logger.error(error);
-      }
+      this.logger.error(error);
       throw error;
     } finally {
       if (!nestedQueryRunner) {
@@ -483,11 +479,7 @@ export class PaymentService {
       await queryRunner.commitTransaction();
     } catch (error) {
       await queryRunner.rollbackTransaction();
-      if (error instanceof Error) {
-        this.logger.error(error?.message, error?.stack);
-      } else {
-        this.logger.error(error);
-      }
+      this.logger.error(error);
       throw error;
     } finally {
       await queryRunner.release();

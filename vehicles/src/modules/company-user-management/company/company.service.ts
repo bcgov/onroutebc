@@ -154,11 +154,7 @@ export class CompanyService {
       await queryRunner.commitTransaction();
     } catch (error) {
       await queryRunner.rollbackTransaction();
-      if (error instanceof Error) {
-        this.logger.error(error?.message, error?.stack);
-      } else {
-        this.logger.error(error);
-      }
+      this.logger.error(error);
       throw error;
     } finally {
       await queryRunner.release();
@@ -221,11 +217,7 @@ export class CompanyService {
         [readCompanyUserDto.email, readCompanyUserDto.primaryContact.email],
       );
     } catch (error: unknown) {
-      if (error instanceof Error) {
-        this.logger.error(error?.message, error?.stack);
-      } else {
-        this.logger.error(error);
-      }
+      this.logger.error(error);
     }
 
     return readCompanyUserDto;

@@ -118,11 +118,7 @@ export class DgenService {
         /**
          * Swallow the error as failure to send email should not break the flow
          */
-        if (error instanceof Error) {
-          this.logger.error(error?.message, error?.stack);
-        } else {
-          this.logger.error(error);
-        }
+        this.logger.error(error);
       }
     }
 
@@ -270,11 +266,7 @@ export class DgenService {
       });
       generatedDocument.size = generatedDocument.buffer.length;
     } catch (error) {
-      if (error instanceof Error) {
-        this.logger.error(error?.message, error?.stack);
-      } else {
-        this.logger.error(error);
-      }
+      this.logger.error(error);
       throw error;
     } finally {
       if (browser) {

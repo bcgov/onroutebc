@@ -73,11 +73,7 @@ export class S3Service {
       const stream = response.Body as NodeJS.ReadableStream;
       return stream;
     } catch (error) {
-      if (error instanceof Error) {
-        this.logger.error(error?.message, error?.stack);
-      } else {
-        this.logger.error(error);
-      }
+      this.logger.error(error);
     }
   }
 

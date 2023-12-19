@@ -605,17 +605,11 @@ export class ApplicationService {
         /**
          * Swallow the error as failure to send email should not break the flow
          */
-        if (error instanceof Error) {
-          this.logger.error(error?.message, error?.stack);
-        }
+        this.logger.error(error);
       }
     } catch (error) {
       await queryRunner.rollbackTransaction();
-      if (error instanceof Error) {
-        this.logger.error(error?.message, error?.stack);
-      } else {
-        this.logger.error(error);
-      }
+      this.logger.error(error);
       success = '';
       failure = applicationId;
     } finally {
