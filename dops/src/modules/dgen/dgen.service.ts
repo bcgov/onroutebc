@@ -215,9 +215,14 @@ export class DgenService {
       this.getCacheKeyforReport(createGeneratedReportDto.reportTemplate),
     );
 
+    console.log("heloo!!!!!!!!!!!!!!!!!");
+
     if (!template?.length) {
       throw new InternalServerErrorException('Template not found');
     }
+    let startDateTime = new Date();
+    console.log('startDateTime',startDateTime);
+    
     this.registerHandleBarsHelpers();
 
     const compiledTemplate = Handlebars.compile(template);
@@ -226,6 +231,8 @@ export class DgenService {
       ...createGeneratedReportDto.reportData,
     });
 
+    let endDateTime = new Date();
+    console.log('endDateTime',endDateTime);
     const generatedDocument: IFile = {
       originalname: createGeneratedReportDto.generatedDocumentFileName,
       encoding: undefined,
@@ -234,15 +241,57 @@ export class DgenService {
       size: undefined,
     };
 
+    let processingTime = endDateTime.getTime() - startDateTime.getTime();
+    
+    console.log(
+      `HandleBars() -> Start time: ${startDateTime.toISOString()},` +
+        `End time: ${endDateTime.toISOString()},` +
+        `Processing time: ${processingTime}ms`,
+    );
+
     let browser: Browser;
     try {
+
+      const minimal_args = [
+        '--autoplay-policy=user-gesture-required',
+        '--disable-background-networking',
+        '--disable-background-timer-throttling',
+        '--disable-backgrounding-occluded-windows',
+        '--disable-breakpad',
+        '--disable-client-side-phishing-detection',
+        '--disable-component-update',
+        '--disable-default-apps',
+        '--disable-dev-shm-usage',
+        '--disable-domain-reliability',
+        '--disable-extensions',
+        '--disable-features=AudioServiceOutOfProcess',
+        '--disable-hang-monitor',
+        '--disable-ipc-flooding-protection',
+        '--disable-notifications',
+        '--disable-offer-store-unmasked-wallet-cards',
+        '--disable-popup-blocking',
+        '--disable-print-preview',
+        '--disable-prompt-on-repost',
+        '--disable-renderer-backgrounding',
+        '--disable-setuid-sandbox',
+        '--disable-speech-api',
+        '--disable-sync',
+        '--hide-scrollbars',
+        '--ignore-gpu-blacklist',
+        '--metrics-recording-only',
+        '--mute-audio',
+        '--no-default-browser-check',
+        '--no-first-run',
+        '--no-pings',
+        '--no-sandbox',
+        '--no-zygote',
+        '--password-store=basic',
+        '--use-gl=swiftshader',
+        '--use-mock-keychain',
+       ];
+
       const browser = await puppeteer.launch({
-        args: [
-          '--no-sandbox',
-          '--disable-setuid-sandbox',
-          '--disable-dev-shm-usage',
-          '--disable-gpu',
-        ],
+        args: minimal_args,
         headless: 'new',
         env: {
           ELECTRON_DISABLE_SANDBOX: '1',

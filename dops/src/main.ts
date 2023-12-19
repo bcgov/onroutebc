@@ -14,6 +14,7 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import helmet from 'helmet';
 import { customLogger } from './logger/logger.config';
 
+
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     logger: customLogger,
@@ -52,7 +53,10 @@ async function bootstrap() {
       validationError: { target: false },
     }),
   );
-  app.useBodyParser('json', { limit: '20mb' });
+  app.enableCors({
+    exposedHeaders: ['Content-Disposition'],
+  });
+  app.useBodyParser('json', { limit: '200mb' });
   const config = new DocumentBuilder()
     .setTitle('DOPS API')
     .setDescription('The Document Operations API description')
