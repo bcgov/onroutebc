@@ -18,6 +18,7 @@ import { CacheModule } from '@nestjs/cache-manager';
 import { DgenModule } from './modules/dgen/dgen.module';
 import { CommonModule } from './modules/common/common.module';
 import { HTTPLoggerMiddleware } from './middleware/req.res.logger';
+import { TypeormCustomLogger } from './logger/typeorm-logger.config';
 
 const envPath = path.resolve(process.cwd() + '/../');
 
@@ -34,7 +35,14 @@ const envPath = path.resolve(process.cwd() + '/../');
       options: { encrypt: process.env.MSSQL_ENCRYPT === 'true', useUTC: true },
       autoLoadEntities: true, // Auto load all entities regiestered by typeorm forFeature method.
       synchronize: false, // This changes the DB schema to match changes to entities, which we might not want.
-      logging: false,
+      maxQueryExecutionTime:
+        +process.env.DOPS_API_MAX_QUERY_EXECUTION_TIME_MS || 5000, //5 seconds by default
+      logger: new TypeormCustomLogger(
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        process.env.DOPS_API_TYPEORM_LOG_LEVEL
+          ? JSON.parse(process.env.DOPS_API_TYPEORM_LOG_LEVEL)
+          : ['error'],
+      ),
     }),
     AutomapperModule.forRoot({
       strategyInitializer: classes(),

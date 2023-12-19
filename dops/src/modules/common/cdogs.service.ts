@@ -2,8 +2,14 @@
  * Service responsible for interacting with CDOGS (Common Document Generation
  * Service).
  */
-import { Inject, Injectable } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
+import { AxiosError } from 'axios';
 import { lastValueFrom } from 'rxjs';
 import { IUserJWT } from '../../interface/user-jwt.interface';
 import { CreateGeneratedDocumentDto } from '../dgen/dto/request/create-generated-document.dto';
@@ -22,6 +28,7 @@ import {
 
 @Injectable()
 export class CdogsService {
+  private readonly logger = new Logger(CdogsService.name);
   constructor(
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
@@ -110,9 +117,16 @@ export class CdogsService {
       .then((response) => {
         return response;
       })
-      .catch((error) => {
-        console.error('generate Document error: ', error);
-        throw error;
+      .catch((error: AxiosError) => {
+        if (error.response) {
+          const errorData = error.response.data;
+          this.logger.error(
+            `Error response from CHES: ${JSON.stringify(errorData, null, 2)}`,
+          );
+        } else {
+          this.logger.error(error?.message, error?.stack);
+        }
+        throw new InternalServerErrorException('Error rendering via CDOGS');
       });
 
     const generatedDocument: IFile = {

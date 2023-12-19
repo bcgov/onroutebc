@@ -1,13 +1,17 @@
 /**
  * Service responsible for interacting with DOPS (Document Operations Service).
  */
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
-import { lastValueFrom, map } from 'rxjs';
+import { lastValueFrom } from 'rxjs';
 import { IUserJWT } from '../../common/interface/user-jwt.interface';
 import { DopsGeneratedDocument } from '../../common/interface/dops-generated-document.interface';
 import { IFile } from '../../common/interface/file.interface';
-import { AxiosRequestConfig, AxiosResponse } from 'axios';
+import { AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
 import { Response } from 'express';
 import { FileDownloadModes } from '../../common/enum/file-download-modes.enum';
 import { ReadFileDto } from './dto/response/read-file.dto';
@@ -15,6 +19,7 @@ import { DopsGeneratedReport } from '../../common/interface/dops-generated-repor
 
 @Injectable()
 export class DopsService {
+  private readonly logger = new Logger(DopsService.name);
   constructor(private readonly httpService: HttpService) {}
 
   /**
@@ -50,18 +55,21 @@ export class DopsService {
 
     // Calls the DOPS service, which converts the the template document into a pdf
     const dopsResponse = await lastValueFrom(
-      this.httpService.get(url, reqConfig).pipe(
-        map((response) => {
-          return response;
-        }),
-      ),
+      this.httpService.get(url, reqConfig),
     )
       .then((response) => {
         return response;
       })
-      .catch((error) => {
-        console.log('DOPS GET DMS url Error: ', error);
-        throw error;
+      .catch((error: AxiosError) => {
+        if (error.response) {
+          const errorData = error.response.data;
+          this.logger.error(
+            `Error response from DOPS: ${JSON.stringify(errorData, null, 2)}`,
+          );
+        } else {
+          this.logger.error(error?.message, error?.stack);
+        }
+        throw new InternalServerErrorException('Error downloading file');
       });
 
     if (download === FileDownloadModes.PROXY) {
@@ -113,9 +121,18 @@ export class DopsService {
       .then((response) => {
         return response;
       })
-      .catch((error) => {
-        console.log('generate Document error: ', error);
-        throw error;
+      .catch((error: AxiosError) => {
+        if (error.response) {
+          const errorData = error.response.data;
+          this.logger.error(
+            `Error response from DOPS: ${JSON.stringify(errorData, null, 2)}`,
+          );
+        } else {
+          this.logger.error(error?.message, error?.stack);
+        }
+        throw new InternalServerErrorException(
+          'Error generating document via CDOGS',
+        );
       });
 
     if (res) {
@@ -203,9 +220,18 @@ export class DopsService {
       .then((response) => {
         return response;
       })
-      .catch((error) => {
-        console.log('generate Document error: ', error);
-        throw error;
+      .catch((error: AxiosError) => {
+        if (error.response) {
+          const errorData = error.response.data;
+          this.logger.error(
+            `Error response from DOPS: ${JSON.stringify(errorData, null, 2)}`,
+          );
+        } else {
+          this.logger.error(error?.message, error?.stack);
+        }
+        throw new InternalServerErrorException(
+          'Error generating document via Puppeteer',
+        );
       });
 
     if (res) {

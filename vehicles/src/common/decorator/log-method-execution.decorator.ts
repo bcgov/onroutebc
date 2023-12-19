@@ -11,9 +11,9 @@ export function LogMethodExecution() {
     const originalMethod = descriptor.value;
 
     descriptor.value = function (...args: any[]) {
-      logger.log(`Entering ${propertyKey} method`);
+      logger.debug(`Entering ${propertyKey} method`);
       const result = originalMethod.apply(this, args);
-      logger.log(`Exiting ${propertyKey} method`);
+      logger.debug(`Exiting ${propertyKey} method`);
       return result;
     };
     /* eslint-enable */

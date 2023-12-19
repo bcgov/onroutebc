@@ -2,13 +2,13 @@ import { HttpService } from '@nestjs/axios';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import {
-  HttpException,
   Inject,
   Injectable,
   InternalServerErrorException,
+  Logger,
 } from '@nestjs/common';
-import { AxiosRequestConfig } from 'axios';
-import { lastValueFrom, map } from 'rxjs';
+import { AxiosRequestConfig, AxiosError } from 'axios';
+import { lastValueFrom } from 'rxjs';
 import { getAccessToken } from '../../common/helper/gov-common-services.helper';
 import { GovCommonServices } from '../../common/enum/gov-common-services.enum';
 import * as Handlebars from 'handlebars';
@@ -21,6 +21,7 @@ import { getFromCache } from '../../common/helper/cache.helper';
 
 @Injectable()
 export class EmailService {
+  private readonly logger = new Logger(EmailService.name);
   constructor(
     private readonly httpService: HttpService,
     @Inject(CACHE_MANAGER)
@@ -64,13 +65,11 @@ export class EmailService {
     };
 
     const responseData = await lastValueFrom(
-      this.httpService
-        .post(this.chesUrl.concat('email'), requestData, requestConfig)
-        .pipe(
-          map((response) => {
-            return response;
-          }),
-        ),
+      this.httpService.post(
+        this.chesUrl.concat('email'),
+        requestData,
+        requestConfig,
+      ),
     )
       .then((response) => {
         return response.data as {
@@ -84,8 +83,16 @@ export class EmailService {
           txId: string;
         };
       })
-      .catch((error: HttpException) => {
-        throw error;
+      .catch((error: AxiosError) => {
+        if (error.response) {
+          const errorData = error.response.data;
+          this.logger.error(
+            `Error response from CHES: ${JSON.stringify(errorData, null, 2)}`,
+          );
+        } else {
+          this.logger.error(error?.message, error?.stack);
+        }
+        throw new InternalServerErrorException('Error sending email');
       });
 
     return responseData.txId;
