@@ -35,8 +35,8 @@ export type ORBC_FormTypes =
  */
 export type PaginationOptions = {
   page: number;
-  limit: number;
-}
+  take: number;
+};
 
 /**
  * A generic paginated response structure for all the paginated responses from APIs.
@@ -56,11 +56,12 @@ export type PaginatedResponse<T> = {
  * The metadata containing info about a page in the paginated response.
  */
 export type PageMetadataInResponse = {
-  currentPage: number;
-  currentItemCount: number;
-  itemsPerPage: number;
-  totalPages?: number;
-  totalItems?: number;
+  page: number;
+  take: number;
+  itemCount: number;
+  pageCount: number;
+  hasPreviousPage: boolean;
+  hasNextPage: boolean;
 };
 
 export type Optional<T> = T | undefined;
