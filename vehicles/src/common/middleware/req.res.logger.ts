@@ -10,9 +10,7 @@ export class HTTPLoggerMiddleware implements NestMiddleware {
 
     // Log when a request is received
     this.logger.log(
-      `Received ${method} ${originalUrl} - ${request.get(
-        'user-agent',
-      )} \n ${JSON.stringify(headers)}`,
+      `Received ${method} ${originalUrl} \n ${JSON.stringify(headers)}`,
     );
 
     response.on('finish', () => {
