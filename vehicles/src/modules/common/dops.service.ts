@@ -225,7 +225,7 @@ export class DopsService {
         if (error.response) {
           const errorData = error.response.data as ExceptionDto;
           this.logger.error(
-            `Error response from DOPS: ${JSON.stringify(errorData, null, 2)}`,
+            `Error response from DOPS: ${errorData.status} ${errorData.message} `,
           );
         } else {
           this.logger.error(error?.message, error?.stack);
