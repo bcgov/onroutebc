@@ -23,7 +23,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
       statusCode = exception.getStatus();
 
     this.logger.error(
-      'HTTP exception handler triggered',
+      (exception as Error).message,
       JSON.stringify(exception),
       `${request.method} ${request.url}`,
     );
