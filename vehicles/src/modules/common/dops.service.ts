@@ -223,7 +223,7 @@ export class DopsService {
       })
       .catch((error: AxiosError) => {
         if (error.response) {
-          const errorData = error.response.data;
+          const errorData = error.response.data as ExceptionDto;
           this.logger.error(
             `Error response from DOPS: ${JSON.stringify(errorData, null, 2)}`,
           );
