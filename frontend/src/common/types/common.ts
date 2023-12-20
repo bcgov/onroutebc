@@ -31,9 +31,9 @@ export type ORBC_FormTypes =
   | SearchFields;
 
 /**
- * The options for pagination.
+ * The options for pagination and filtering data.
  */
-export type PaginationOptions = {
+export type PaginationAndFilters = {
   /**
    * The page number to fetch.
    */
@@ -96,7 +96,7 @@ export type PageMetadataInResponse = {
    * Is there a next page?
    */
   hasNextPage: boolean;
-} & PaginationOptions;
+} & PaginationAndFilters;
 
 export type Optional<T> = T | undefined;
 export type RequiredOrNull<T> = T | null;
