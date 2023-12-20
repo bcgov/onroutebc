@@ -19,6 +19,7 @@ import { DgenModule } from './modules/dgen/dgen.module';
 import { CommonModule } from './modules/common/common.module';
 import { HTTPLoggerMiddleware } from './middleware/req.res.logger';
 import { TypeormCustomLogger } from './logger/typeorm-logger.config';
+import { getTypeormLogLevel } from './helper/logger.helper';
 
 const envPath = path.resolve(process.cwd() + '/../');
 
@@ -38,10 +39,7 @@ const envPath = path.resolve(process.cwd() + '/../');
       maxQueryExecutionTime:
         +process.env.DOPS_API_MAX_QUERY_EXECUTION_TIME_MS || 5000, //5 seconds by default
       logger: new TypeormCustomLogger(
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        process.env.DOPS_API_TYPEORM_LOG_LEVEL
-          ? JSON.parse(process.env.DOPS_API_TYPEORM_LOG_LEVEL)
-          : ['error'],
+        getTypeormLogLevel(process.env.VECHICLES_API_TYPEORM_LOG_LEVEL),
       ),
     }),
     AutomapperModule.forRoot({
