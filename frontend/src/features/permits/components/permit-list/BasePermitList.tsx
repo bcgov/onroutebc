@@ -38,13 +38,24 @@ export const BasePermitList = ({
     pageIndex: 0,
     pageSize: 10,
   });
+  const [globalFilter, setGlobalFilter] = useState<string>("");
 
   const permitsQuery = useQuery({
-    queryKey: ["permits", isExpired, pagination.pageIndex, pagination.pageSize],
+    queryKey: [
+      "permits",
+      isExpired,
+      globalFilter,
+      pagination.pageIndex,
+      pagination.pageSize,
+    ],
     queryFn: () =>
       getPermits(
         { expired: isExpired },
-        { page: pagination.pageIndex, limit: pagination.pageSize },
+        {
+          page: pagination.pageIndex,
+          limit: pagination.pageSize,
+          searchValue: globalFilter,
+        },
       ),
     keepPreviousData: true,
     staleTime: FIVE_MINUTES,
@@ -69,6 +80,7 @@ export const BasePermitList = ({
       columnVisibility: { applicationId: true },
       isLoading: isInitialLoading || isLoading,
       pagination,
+      globalFilter,
     },
     renderTopToolbar: useCallback(
       ({ table }: { table: MRT_TableInstance<Permit> }) => (
@@ -85,9 +97,11 @@ export const BasePermitList = ({
       [],
     ),
     autoResetPageIndex: false,
+    manualFiltering: true,
     manualPagination: true,
     rowCount: data?.meta?.totalItems ?? 0,
     pageCount: data?.meta?.totalPages ?? 0,
+    onGlobalFilterChange: setGlobalFilter,
     onPaginationChange: setPagination,
     enablePagination: true,
     enableBottomToolbar: true,

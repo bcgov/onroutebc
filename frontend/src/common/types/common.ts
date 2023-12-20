@@ -36,6 +36,7 @@ export type ORBC_FormTypes =
 export type PaginationOptions = {
   page: number;
   limit: number;
+  searchValue?: string;
 }
 
 /**
