@@ -20,6 +20,7 @@ import {
   DATE_FORMATS,
   dayjsToLocalStr,
   dayjsToUtcStr,
+  getEndOfDate,
   getStartOfDate,
   now,
   toLocalDayjs,
@@ -89,7 +90,7 @@ export const mapApplicationResponseToApplication = (
   response: ApplicationResponse,
 ): Application => {
   const startDateOrDefault = applyWhenNotNullable(
-    (datetimeStr: string): Dayjs => toLocalDayjs(datetimeStr),
+    (datetimeStr: string): Dayjs => getStartOfDate(toLocalDayjs(datetimeStr)),
     response.permitData.startDate,
     getStartOfDate(now()),
   );
@@ -100,7 +101,7 @@ export const mapApplicationResponseToApplication = (
   );
 
   const expiryDateOrDefault = applyWhenNotNullable(
-    (datetimeStr: string): Dayjs => toLocalDayjs(datetimeStr),
+    (datetimeStr: string): Dayjs => getEndOfDate(toLocalDayjs(datetimeStr)),
     response.permitData.expiryDate,
     getExpiryDate(startDateOrDefault, durationOrDefault),
   );
@@ -196,7 +197,7 @@ export const clonePermit = (permit: Permit): Permit => {
  */
 export const transformPermitToApplication = (permit: Permit) => {
   const startDateOrDefault = applyWhenNotNullable(
-    (datetimeStr: string): Dayjs => toLocalDayjs(datetimeStr),
+    (datetimeStr: string): Dayjs => getStartOfDate(toLocalDayjs(datetimeStr)),
     permit.permitData.startDate,
     getStartOfDate(now()),
   );
@@ -207,7 +208,7 @@ export const transformPermitToApplication = (permit: Permit) => {
   );
 
   const expiryDateOrDefault = applyWhenNotNullable(
-    (datetimeStr: string): Dayjs => toLocalDayjs(datetimeStr),
+    (datetimeStr: string): Dayjs => getEndOfDate(toLocalDayjs(datetimeStr)),
     permit.permitData.expiryDate,
     getExpiryDate(startDateOrDefault, durationOrDefault),
   );
