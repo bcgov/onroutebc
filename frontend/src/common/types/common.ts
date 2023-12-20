@@ -31,17 +31,25 @@ export type ORBC_FormTypes =
   | SearchFields;
 
 /**
- * The options for pagination and filtering data.
+ * The options for pagination.
  */
-export type PaginationAndFilters = {
+export type PaginationOptions = {
   /**
    * The page number to fetch.
    */
   page: number;
   /**
    * The number of items in the current page.
+   * Max. value is 25.
    */
   take: number;
+};
+
+/**
+ * Additional data filters that could be used for
+ * filtering data further.
+ */
+export type DataFilterOptions = {
   /**
    * The search value entered by the user.
    */
@@ -61,6 +69,11 @@ export type PaginationAndFilters = {
     descending?: boolean;
   }>;
 };
+
+/**
+ * The options for pagination and filtering data.
+ */
+export type PaginationAndFilters = PaginationOptions & DataFilterOptions;
 
 /**
  * A generic paginated response structure for all the paginated responses from APIs.
@@ -96,7 +109,7 @@ export type PageMetadataInResponse = {
    * Is there a next page?
    */
   hasNextPage: boolean;
-} & PaginationAndFilters;
+} & PaginationOptions;
 
 export type Optional<T> = T | undefined;
 export type RequiredOrNull<T> = T | null;
