@@ -9,7 +9,7 @@ export class HTTPLoggerMiddleware implements NestMiddleware {
     const { method, originalUrl, headers } = request;
 
     const headersObj = { ...headers };
-    if (process.env.NODE_ENV === 'production') {
+    if (process.env.NODE_ENV === 'production' && headersObj.authorization) {
       headersObj.authorization = 'xxxxxxxxx';
     }
     // Log when a request is received
