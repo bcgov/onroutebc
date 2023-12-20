@@ -44,7 +44,7 @@ export const BasePermitList = ({
     queryFn: () =>
       getPermits(
         { expired: isExpired },
-        { page: pagination.pageIndex, limit: pagination.pageSize },
+        { page: pagination.pageIndex, take: pagination.pageSize },
       ),
     keepPreviousData: true,
     staleTime: FIVE_MINUTES,
@@ -87,7 +87,7 @@ export const BasePermitList = ({
     autoResetPageIndex: false,
     manualPagination: true,
     rowCount: data?.meta?.totalItems ?? 0,
-    pageCount: data?.meta?.totalPages ?? 0,
+    pageCount: data?.meta?.pageCount ?? 0,
     onPaginationChange: setPagination,
     enablePagination: true,
     enableBottomToolbar: true,
