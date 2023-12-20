@@ -5,7 +5,7 @@ import userEvent from "@testing-library/user-event";
 import { ThemeProvider } from "@mui/material/styles";
 
 import { APPLICATIONS_API_ROUTES } from "../../../../../apiManager/endpoints/endpoints";
-import { dayjsToUtcStr, now, toLocalDayjs } from "../../../../../../../common/helpers/formatDate";
+import { dayjsToUtcStr, getEndOfDate, getStartOfDate, now, toLocalDayjs } from "../../../../../../../common/helpers/formatDate";
 import { renderWithClient } from "../../../../../../../common/helpers/testHelper";
 import { Application } from "../../../../../types/application";
 import { bcGovTheme } from "../../../../../../../themes/bcGovTheme";
@@ -31,8 +31,8 @@ export const defaultApplicationData = {
   updatedDateTime: now(),
   permitData: {
     ...permitData,
-    startDate: toLocalDayjs(permitData.startDate),
-    expiryDate: toLocalDayjs(permitData.expiryDate),
+    startDate: getStartOfDate(toLocalDayjs(permitData.startDate)),
+    expiryDate: getEndOfDate(toLocalDayjs(permitData.expiryDate)),
   },
 } as Application;
 
