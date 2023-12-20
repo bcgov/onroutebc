@@ -84,7 +84,7 @@ export const PermitsColumnDefinition: MRT_ColumnDef<Permit>[] = [
     id: "applicant",
     header: "Applicant",
     enableSorting: true,
-    sortingFn: "alphanumericCaseSensitive",
+    // sortingFn: "alphanumericCaseSensitive",
   },
 ];
 
