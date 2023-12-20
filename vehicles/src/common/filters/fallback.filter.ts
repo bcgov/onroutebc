@@ -33,7 +33,7 @@ export class FallbackExceptionFilter implements ExceptionFilter {
     }
 
     this.logger.error(
-      `${request.method} ${request.url} ${status} - ${message}`,
+      `Response: ${request.method} ${request.url} ${status} - ${message}`,
       getErrorStack(exception),
     );
     // TODO : Update the below implemenation to send 422 instead of 500.

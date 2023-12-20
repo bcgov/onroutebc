@@ -23,7 +23,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
       statusCode = exception.getStatus();
 
     this.logger.error(
-      `${request.method} ${request.url} ${statusCode} - ${
+      `Response: ${request.method} ${request.url} ${statusCode} - ${
         (exception as Error).message
       }`,
       JSON.stringify(exception),
