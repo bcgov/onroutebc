@@ -297,7 +297,7 @@ tps-migration:
       command:
         - "sh"
         - "-c"
-        - "source /vault/secrets/auth0-{{.Values.global.vault.zone}} && source /vault/secrets/mssql-{{.Values.global.vault.zone}} && source /vault/secrets/dops-{{.Values.global.vault.zone}} && source /vault/secrets/tps-migration-{{.Values.global.vault.zone}} && npm run start:prod"
+        - "source /vault/secrets/auth0-{{.Values.global.vault.zone}} && source /vault/secrets/mssql-{{.Values.global.vault.zone}} && source /vault/secrets/dops-{{.Values.global.vault.zone}} && source /vault/secrets/tps-{{.Values.global.vault.zone}} && npm run start:prod"
       registry: '{{ .Values.global.registry }}'
       repository: '{{ .Values.global.repository }}' # example, it includes registry and repository
       image: tps-migration
@@ -369,5 +369,5 @@ tps-migration:
       - "auth0-{{tpl $.Values.vault.zone $}}"
       - "mssql-{{tpl $.Values.vault.zone $}}"
       - "dops-{{tpl $.Values.vault.zone $}}"
-      - "tps-migration-{{tpl $.Values.vault.zone $}}"
+      - "tps-{{tpl $.Values.vault.zone $}}"
     zone: "{{.Values.global.vault.zone}}"
