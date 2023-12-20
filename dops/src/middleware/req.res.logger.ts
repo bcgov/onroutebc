@@ -8,9 +8,11 @@ export class HTTPLoggerMiddleware implements NestMiddleware {
   use(request: Request, response: Response, next: NextFunction): void {
     const { method, originalUrl, headers } = request;
 
+    const headersObj = { ...headers };
+    headersObj.authorization = 'xxxxxxxxx';
     // Log when a request is received
     this.logger.log(
-      `Received ${method} ${originalUrl} \n ${JSON.stringify(headers)}`,
+      `Received ${method} ${originalUrl} \n ${JSON.stringify(headersObj)}`,
     );
 
     response.on('finish', () => {
