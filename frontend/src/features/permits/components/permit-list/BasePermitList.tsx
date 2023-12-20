@@ -3,8 +3,10 @@ import { useQuery } from "@tanstack/react-query";
 import { useCallback, useContext, useEffect, useState } from "react";
 
 import {
+  MRT_GlobalFilterTextField,
   MRT_PaginationState,
   MRT_Row,
+  MRT_TableInstance,
   MaterialReactTable,
   useMaterialReactTable,
 } from "material-react-table";
@@ -55,7 +57,6 @@ export const BasePermitList = ({
     ...defaultTableOptions,
     columns: PermitsColumnDefinition,
     data: data?.items ?? [],
-    enableTopToolbar: false,
     enableRowSelection: false,
     initialState: {
       ...defaultTableInitialStateOptions,
@@ -69,6 +70,20 @@ export const BasePermitList = ({
       isLoading: isInitialLoading || isLoading,
       pagination,
     },
+    renderTopToolbar: useCallback(
+      ({ table }: { table: MRT_TableInstance<Permit> }) => (
+        <Box
+          sx={{
+            display: "flex",
+            padding: "1.25em 0em",
+            backgroundColor: "white",
+          }}
+        >
+          <MRT_GlobalFilterTextField table={table} />
+        </Box>
+      ),
+      [],
+    ),
     autoResetPageIndex: false,
     manualPagination: true,
     rowCount: data?.meta?.totalItems ?? 0,
