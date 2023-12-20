@@ -6,7 +6,8 @@ export const getTypeormLogLevel = (logLevelString: string): LogLevel[] => {
   const logLevelValues = logLevels.map((logLevel) => {
     const logLevelValue = logLevel as LogLevel;
     if (!isValidLogLevel(logLevelValue)) {
-      throw new Error(`Unknown log level: ${logLevel}`);
+      return 'error'; //bypass incorrect value in vault
+      //throw new Error(`Unknown log level: ${logLevel}`);
     }
     return logLevelValue;
   });
