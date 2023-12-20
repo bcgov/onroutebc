@@ -30,12 +30,12 @@ import { ReadFileDto } from '../common/dto/response/read-file.dto';
 import { Roles } from 'src/common/decorator/roles.decorator';
 import { Role } from 'src/common/enum/roles.enum';
 import { IDP } from 'src/common/enum/idp.enum';
-import { PaginationDto } from 'src/common/class/pagination';
+import { PaginationDto } from 'src/common/dto/paginate/pagination';
 import { PermitHistoryDto } from './dto/response/permit-history.dto';
 import { ResultDto } from './dto/response/result.dto';
 import { VoidPermitDto } from './dto/request/void-permit.dto';
-import { ApiPaginatedResponse } from 'src/common/class/api-paginate-response';
-import { PageOptionsDto } from 'src/common/class/page-options';
+import { ApiPaginatedResponse } from 'src/common/decorator/api-paginate-response';
+import { PageOptionsDto } from 'src/common/dto/paginate/page-options';
 
 @ApiBearerAuth()
 @ApiTags('Permit')

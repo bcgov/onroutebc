@@ -21,7 +21,7 @@ import { Response } from 'express';
 import { ReadFileDto } from '../common/dto/response/read-file.dto';
 import { PermitStatus } from 'src/common/enum/permit-status.enum';
 import { Receipt } from '../payment/entities/receipt.entity';
-import { PaginationDto } from 'src/common/class/pagination';
+import { PaginationDto } from 'src/common/dto/paginate/pagination';
 import { PermitHistoryDto } from './dto/response/permit-history.dto';
 import { ApplicationStatus } from 'src/common/enum/application-status.enum';
 import { ApplicationService } from './application.service';
@@ -50,8 +50,8 @@ import { Cache } from 'cache-manager';
 import { PermitIssuedBy } from '../../common/enum/permit-issued-by.enum';
 import { getPaymentCodeFromCache } from '../../common/helper/payment.helper';
 import { PaymentMethodType } from 'src/common/enum/payment-method-type.enum';
-import { PageOptionsDto } from 'src/common/class/page-options';
-import { PageMetaDto } from 'src/common/class/page-meta';
+import { PageOptionsDto } from 'src/common/dto/paginate/page-options';
+import { PageMetaDto } from 'src/common/dto/paginate/page-meta';
 
 @Injectable()
 export class PermitService {
