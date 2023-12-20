@@ -185,6 +185,7 @@ vehicles:
       - "ches-{{tpl $.Values.vault.zone $}}"
       - "mssql-{{tpl $.Values.vault.zone $}}"
       - "payment-{{tpl $.Values.vault.zone $}}"
+      - "vehicles-{{tpl $.Values.vault.zone $}}"
     zone: "{{.Values.global.vault.zone}}"
 
 dops:
@@ -368,4 +369,5 @@ tps-migration:
       - "auth0-{{tpl $.Values.vault.zone $}}"
       - "mssql-{{tpl $.Values.vault.zone $}}"
       - "dops-{{tpl $.Values.vault.zone $}}"
+      - "tps-{{tpl $.Values.vault.zone $}}"
     zone: "{{.Values.global.vault.zone}}"
