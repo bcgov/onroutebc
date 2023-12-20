@@ -17,7 +17,7 @@ export const PermitsColumnDefinition: MRT_ColumnDef<Permit>[] = [
     id: "permitNumber",
     header: "Permit #",
     enableSorting: true,
-    sortingFn: "alphanumeric",
+    // sortingFn: "alphanumeric",
     size: 500,
     accessorFn: (row) => row.permitNumber,
     Cell: (props: { row: any; renderedCellValue: any }) => {
@@ -47,21 +47,21 @@ export const PermitsColumnDefinition: MRT_ColumnDef<Permit>[] = [
     id: "unitNumber",
     header: "Unit #",
     enableSorting: true,
-    sortingFn: "alphanumeric",
+    // sortingFn: "alphanumeric",
   },
   {
     accessorKey: "permitData.vehicleDetails.plate",
     header: "Plate",
     id: "plate",
     enableSorting: true,
-    sortingFn: "alphanumeric",
+    // sortingFn: "alphanumeric",
   },
   {
     accessorKey: "permitData.startDate",
     id: "startDate",
     header: "Permit Start Date",
     enableSorting: true,
-    sortingFn: dateTimeStringSortingFn,
+    // sortingFn: dateTimeStringSortingFn,
     Cell: (props: { cell: any }) => {
       const formattedDate = formatCellValuetoDatetime(props.cell.getValue());
       return formattedDate;
@@ -72,7 +72,7 @@ export const PermitsColumnDefinition: MRT_ColumnDef<Permit>[] = [
     header: "Permit End Date",
     id: "expiryDate",
     enableSorting: true,
-    sortingFn: dateTimeStringSortingFn,
+    // sortingFn: dateTimeStringSortingFn,
     Cell: (props: { cell: any }) => {
       const formattedDate = formatCellValuetoDatetime(props.cell.getValue());
       return formattedDate;

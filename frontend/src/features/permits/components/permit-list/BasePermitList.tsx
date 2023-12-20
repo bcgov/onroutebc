@@ -6,6 +6,7 @@ import {
   MRT_GlobalFilterTextField,
   MRT_PaginationState,
   MRT_Row,
+  MRT_SortingState,
   MRT_TableInstance,
   MaterialReactTable,
   useMaterialReactTable,
@@ -39,6 +40,7 @@ export const BasePermitList = ({
     pageSize: 10,
   });
   const [globalFilter, setGlobalFilter] = useState<string>("");
+  const [sorting, setSorting] = useState<MRT_SortingState>([]);
 
   const permitsQuery = useQuery({
     queryKey: [
@@ -47,6 +49,7 @@ export const BasePermitList = ({
       globalFilter,
       pagination.pageIndex,
       pagination.pageSize,
+      sorting,
     ],
     queryFn: () =>
       getPermits(
@@ -55,6 +58,7 @@ export const BasePermitList = ({
           page: pagination.pageIndex,
           take: pagination.pageSize,
           searchValue: globalFilter,
+          sorting: JSON.stringify(sorting),
         },
       ),
     keepPreviousData: true,
@@ -99,8 +103,10 @@ export const BasePermitList = ({
     autoResetPageIndex: false,
     manualFiltering: true,
     manualPagination: true,
+    manualSorting: true,
     rowCount: data?.meta?.totalItems ?? 0,
     pageCount: data?.meta?.pageCount ?? 0,
+    onSortingChange: setSorting,
     onGlobalFilterChange: setGlobalFilter,
     onPaginationChange: setPagination,
     enablePagination: true,

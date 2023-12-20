@@ -46,6 +46,10 @@ export type PaginationOptions = {
    * The search value entered by the user.
    */
   searchValue?: string;
+  /**
+   * The sorting configuration selected by the user.
+   */
+  sorting?: string;
 };
 
 /**

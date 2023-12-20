@@ -386,7 +386,7 @@ export const getCurrentAmendmentApplication = async (
  */
 export const getPermits = async (
   { expired = false } = {},
-  { page = 0, take = 10, searchValue }: PaginationOptions,
+  { page = 0, take = 10, searchValue, sorting }: PaginationOptions,
 ): Promise<PaginatedResponse<Permit>> => {
   const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
   const permitsURL = new URL(PERMITS_API_ROUTES.GET);
@@ -400,6 +400,9 @@ export const getPermits = async (
   permitsURL.searchParams.set("take", take.toString());
   if (searchValue) {
     permitsURL.searchParams.set("searchValue", searchValue);
+  }
+  if (sorting) {
+    permitsURL.searchParams.set("sorting", sorting);
   }
   const permits = await httpGETRequest(permitsURL.toString())
     .then((response) => {
