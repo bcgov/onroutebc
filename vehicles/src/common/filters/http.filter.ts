@@ -23,9 +23,10 @@ export class HttpExceptionFilter implements ExceptionFilter {
       statusCode = exception.getStatus();
 
     this.logger.error(
-      (exception as Error).message,
+      `${request.method} ${request.url} ${statusCode} - ${
+        (exception as Error).message
+      }`,
       JSON.stringify(exception),
-      `${request.method} ${request.url} ${statusCode}`,
     );
 
     if (statusCode === HttpStatus.BAD_REQUEST) {
