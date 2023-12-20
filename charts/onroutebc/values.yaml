@@ -104,7 +104,7 @@ vehicles:
       command:
         - "sh"
         - "-c"
-        - "source /vault/secrets/auth0-{{.Values.global.vault.zone}} && source /vault/secrets/ches-{{.Values.global.vault.zone}} && source /vault/secrets/mssql-{{.Values.global.vault.zone}} && source /vault/secrets/payment-{{.Values.global.vault.zone}} && npm run start:prod"
+        - "source /vault/secrets/auth0-{{.Values.global.vault.zone}} && source /vault/secrets/ches-{{.Values.global.vault.zone}} && source /vault/secrets/mssql-{{.Values.global.vault.zone}} && source /vault/secrets/payment-{{.Values.global.vault.zone}} && source /vault/secrets/vehicles-{{.Values.global.vault.zone}} && npm run start:prod"
       registry: '{{ .Values.global.registry }}'
       repository: '{{ .Values.global.repository }}' # example, it includes registry and repository
       image: vehicles
@@ -297,7 +297,7 @@ tps-migration:
       command:
         - "sh"
         - "-c"
-        - "source /vault/secrets/auth0-{{.Values.global.vault.zone}} && source /vault/secrets/mssql-{{.Values.global.vault.zone}} && source /vault/secrets/dops-{{.Values.global.vault.zone}} && npm run start:prod"
+        - "source /vault/secrets/auth0-{{.Values.global.vault.zone}} && source /vault/secrets/mssql-{{.Values.global.vault.zone}} && source /vault/secrets/dops-{{.Values.global.vault.zone}} && source /vault/secrets/tps-{{.Values.global.vault.zone}} && npm run start:prod"
       registry: '{{ .Values.global.registry }}'
       repository: '{{ .Values.global.repository }}' # example, it includes registry and repository
       image: tps-migration
