@@ -27,6 +27,7 @@ import { EmailModule } from './modules/email/email.module';
 import { PaymentModule } from './modules/payment/payment.module';
 import { HTTPLoggerMiddleware } from './common/middleware/req.res.logger';
 import { TypeormCustomLogger } from './common/logger/typeorm-logger.config';
+import { getTypeormLogLevel } from './common/helper/logger.helper';
 
 const envPath = path.resolve(process.cwd() + '/../');
 
@@ -62,10 +63,7 @@ const envPath = path.resolve(process.cwd() + '/../');
       maxQueryExecutionTime:
         +process.env.VECHICLES_API_MAX_QUERY_EXECUTION_TIME_MS || 5000, //5 seconds by default
       logger: new TypeormCustomLogger(
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        process.env.VECHICLES_API_TYPEORM_LOG_LEVEL
-          ? JSON.parse(process.env.VECHICLES_API_TYPEORM_LOG_LEVEL)
-          : ['error'],
+        getTypeormLogLevel(process.env.VECHICLES_API_TYPEORM_LOG_LEVEL),
       ),
     }),
     AutomapperModule.forRoot({
