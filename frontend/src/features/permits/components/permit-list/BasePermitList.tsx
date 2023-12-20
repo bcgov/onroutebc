@@ -58,10 +58,15 @@ export const BasePermitList = ({
           page: pagination.pageIndex,
           take: pagination.pageSize,
           searchValue: globalFilter,
-          sorting: JSON.stringify({
-            orderBy: sorting.at(0)?.id,
-            descending: sorting.at(0)?.desc,
-          }),
+          sorting:
+            sorting.length > 0
+              ? [
+                  {
+                    orderBy: sorting.at(0)?.id as string,
+                    descending: Boolean(sorting.at(0)?.desc),
+                  },
+                ]
+              : [],
         },
       ),
     keepPreviousData: true,

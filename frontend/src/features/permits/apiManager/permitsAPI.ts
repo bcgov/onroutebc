@@ -402,7 +402,7 @@ export const getPermits = async (
     permitsURL.searchParams.set("searchValue", searchValue);
   }
   if (sorting) {
-    permitsURL.searchParams.set("sorting", sorting);
+    permitsURL.searchParams.set("sorting", JSON.stringify(sorting));
   }
   const permits = await httpGETRequest(permitsURL.toString())
     .then((response) => {

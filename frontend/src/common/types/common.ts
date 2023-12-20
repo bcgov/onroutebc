@@ -49,7 +49,17 @@ export type PaginationOptions = {
   /**
    * The sorting configuration selected by the user.
    */
-  sorting?: string;
+  sorting?: Array<{
+    /**
+     * The field to order by.
+     */
+    orderBy: string;
+    /**
+     * Boolean indicating if the sort is in descending order.
+     * If not given a value, defaulted to false.
+     */
+    descending?: boolean;
+  }>;
 };
 
 /**
