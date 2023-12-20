@@ -35,8 +35,6 @@ describe('HTTPLoggerMiddleware', () => {
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     middleware.use(request, response, () => {});
 
-    expect(loggerSpy).toHaveBeenCalledWith(
-      `GET /test 200 100 - Test User Agent`,
-    );
+    expect(loggerSpy).toHaveBeenCalledWith(`GET /test 200 100`);
   });
 });
