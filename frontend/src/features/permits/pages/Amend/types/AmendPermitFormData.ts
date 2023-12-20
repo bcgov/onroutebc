@@ -22,6 +22,8 @@ import {
 import {
   DATE_FORMATS,
   dayjsToLocalStr,
+  getEndOfDate,
+  getStartOfDate,
   toLocalDayjs,
   utcToLocalDayjs,
 } from "../../../../../common/helpers/formatDate";
@@ -83,11 +85,11 @@ export const getDefaultFormDataFromPermit = (
         permitData: {
           ...permit.permitData,
           startDate: applyWhenNotNullable(
-            (startAt) => toLocalDayjs(startAt),
+            (startAt) => getStartOfDate(toLocalDayjs(startAt)),
             permit.permitData?.startDate,
           ),
           expiryDate: applyWhenNotNullable(
-            (endAt) => toLocalDayjs(endAt),
+            (endAt) => getEndOfDate(toLocalDayjs(endAt)),
             permit.permitData?.expiryDate,
           ),
           companyName: getDefaultRequiredVal(
