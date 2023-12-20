@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 
@@ -12,9 +12,12 @@ import { createFile } from './helper/file.helper';
 import { addToCache } from './helper/cache.helper';
 import * as fs from 'fs';
 import { DgenService } from './modules/dgen/dgen.service';
+import { LogMethodExecution } from './decorator/log-method-execution.decorator';
 
 @Injectable()
 export class AppService {
+  private readonly logger = new Logger(AppService.name);
+
   constructor(
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
@@ -27,6 +30,7 @@ export class AppService {
     return 'DOPS Healthcheck!';
   }
 
+  @LogMethodExecution()
   async initializeCache() {
     const startDateTime = new Date();
     const templates = await this.dgenService.findAllTemplates();
@@ -71,7 +75,7 @@ export class AppService {
 
     const endDateTime = new Date();
     const processingTime = endDateTime.getTime() - startDateTime.getTime();
-    console.info(
+    this.logger.log(
       `initializeCache() -> Start time: ${startDateTime.toISOString()},` +
         `End time: ${endDateTime.toISOString()},` +
         `Processing time: ${processingTime}ms`,

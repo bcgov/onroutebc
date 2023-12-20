@@ -1,5 +1,10 @@
 import 'dotenv/config';
-import { Module, OnApplicationBootstrap } from '@nestjs/common';
+import {
+  Logger,
+  MiddlewareConsumer,
+  Module,
+  OnApplicationBootstrap,
+} from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { AppService } from './app.service';
@@ -12,6 +17,9 @@ import { DmsModule } from './modules/dms/dms.module';
 import { CacheModule } from '@nestjs/cache-manager';
 import { DgenModule } from './modules/dgen/dgen.module';
 import { CommonModule } from './modules/common/common.module';
+import { HTTPLoggerMiddleware } from './middleware/req.res.logger';
+import { TypeormCustomLogger } from './logger/typeorm-logger.config';
+import { getTypeormLogLevel } from './helper/logger.helper';
 
 const envPath = path.resolve(process.cwd() + '/../');
 
@@ -28,7 +36,11 @@ const envPath = path.resolve(process.cwd() + '/../');
       options: { encrypt: process.env.MSSQL_ENCRYPT === 'true', useUTC: true },
       autoLoadEntities: true, // Auto load all entities regiestered by typeorm forFeature method.
       synchronize: false, // This changes the DB schema to match changes to entities, which we might not want.
-      logging: false,
+      maxQueryExecutionTime:
+        +process.env.DOPS_API_MAX_QUERY_EXECUTION_TIME_MS || 5000, //5 seconds by default
+      logger: new TypeormCustomLogger(
+        getTypeormLogLevel(process.env.VECHICLES_API_TYPEORM_LOG_LEVEL),
+      ),
     }),
     AutomapperModule.forRoot({
       strategyInitializer: classes(),
@@ -47,11 +59,15 @@ const envPath = path.resolve(process.cwd() + '/../');
   providers: [AppService],
 })
 export class AppModule implements OnApplicationBootstrap {
+  private readonly logger = new Logger(AppModule.name);
   constructor(private readonly appService: AppService) {}
-
+  // let's add a middleware on all routes
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(HTTPLoggerMiddleware).forRoutes('*');
+  }
   async onApplicationBootstrap() {
     await this.appService.initializeCache().catch((err) => {
-      console.error('Cache initialization failed:', err);
+      this.logger.error('Cache initialization failed:', err);
     });
   }
 }

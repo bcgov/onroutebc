@@ -3,8 +3,10 @@ import { useQuery } from "@tanstack/react-query";
 import { useCallback, useContext, useEffect, useState } from "react";
 
 import {
+  MRT_GlobalFilterTextField,
   MRT_PaginationState,
   MRT_Row,
+  MRT_TableInstance,
   MaterialReactTable,
   useMaterialReactTable,
 } from "material-react-table";
@@ -42,7 +44,7 @@ export const BasePermitList = ({
     queryFn: () =>
       getPermits(
         { expired: isExpired },
-        { page: pagination.pageIndex, limit: pagination.pageSize },
+        { page: pagination.pageIndex, take: pagination.pageSize },
       ),
     keepPreviousData: true,
     staleTime: FIVE_MINUTES,
@@ -55,7 +57,6 @@ export const BasePermitList = ({
     ...defaultTableOptions,
     columns: PermitsColumnDefinition,
     data: data?.items ?? [],
-    enableTopToolbar: false,
     enableRowSelection: false,
     initialState: {
       ...defaultTableInitialStateOptions,
@@ -69,10 +70,24 @@ export const BasePermitList = ({
       isLoading: isInitialLoading || isLoading,
       pagination,
     },
+    renderTopToolbar: useCallback(
+      ({ table }: { table: MRT_TableInstance<Permit> }) => (
+        <Box
+          sx={{
+            display: "flex",
+            padding: "1.25em 0em",
+            backgroundColor: "white",
+          }}
+        >
+          <MRT_GlobalFilterTextField table={table} />
+        </Box>
+      ),
+      [],
+    ),
     autoResetPageIndex: false,
     manualPagination: true,
     rowCount: data?.meta?.totalItems ?? 0,
-    pageCount: data?.meta?.totalPages ?? 0,
+    pageCount: data?.meta?.pageCount ?? 0,
     onPaginationChange: setPagination,
     enablePagination: true,
     enableBottomToolbar: true,

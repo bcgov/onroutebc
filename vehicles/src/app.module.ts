@@ -1,5 +1,10 @@
 import 'dotenv/config';
-import { Module, OnApplicationBootstrap } from '@nestjs/common';
+import {
+  Logger,
+  MiddlewareConsumer,
+  Module,
+  OnApplicationBootstrap,
+} from '@nestjs/common';
 import { CacheModule } from '@nestjs/cache-manager';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
@@ -20,6 +25,9 @@ import { AuthModule } from './modules/auth/auth.module';
 import { PermitModule } from './modules/permit/permit.module';
 import { EmailModule } from './modules/email/email.module';
 import { PaymentModule } from './modules/payment/payment.module';
+import { HTTPLoggerMiddleware } from './common/middleware/req.res.logger';
+import { TypeormCustomLogger } from './common/logger/typeorm-logger.config';
+import { getTypeormLogLevel } from './common/helper/logger.helper';
 
 const envPath = path.resolve(process.cwd() + '/../');
 
@@ -52,7 +60,11 @@ const envPath = path.resolve(process.cwd() + '/../');
       options: { encrypt: process.env.MSSQL_ENCRYPT === 'true', useUTC: true },
       autoLoadEntities: true, // Auto load all entities regiestered by typeorm forFeature method.
       synchronize: false, // This changes the DB schema to match changes to entities, which we might not want.
-      logging: false,
+      maxQueryExecutionTime:
+        +process.env.VEHICLES_API_MAX_QUERY_EXECUTION_TIME_MS || 5000, //5 seconds by default
+      logger: new TypeormCustomLogger(
+        getTypeormLogLevel(process.env.VEHICLES_API_TYPEORM_LOG_LEVEL),
+      ),
     }),
     AutomapperModule.forRoot({
       strategyInitializer: classes(),
@@ -79,11 +91,15 @@ const envPath = path.resolve(process.cwd() + '/../');
   providers: [AppService],
 })
 export class AppModule implements OnApplicationBootstrap {
+  private readonly logger = new Logger(AppModule.name);
   constructor(private readonly appService: AppService) {}
-
+  // let's add a middleware on all routes
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(HTTPLoggerMiddleware).forRoutes('*');
+  }
   async onApplicationBootstrap() {
     await this.appService.initializeCache().catch((err) => {
-      console.error('Cache initialization failed:', err);
+      this.logger.error('Cache initialization failed:', err);
     });
   }
 }

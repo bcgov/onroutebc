@@ -2,6 +2,7 @@ import {
   Inject,
   Injectable,
   InternalServerErrorException,
+  Logger,
   NotFoundException,
   forwardRef,
 } from '@nestjs/common';
@@ -54,6 +55,7 @@ import { PageMetaDto } from 'src/common/class/page-meta';
 
 @Injectable()
 export class PermitService {
+  private readonly logger = new Logger(PermitService.name);
   constructor(
     @InjectMapper() private readonly classMapper: Mapper,
     @InjectRepository(Permit)
@@ -635,11 +637,14 @@ export class PermitService {
           attachments,
         );
       } catch (error: unknown) {
-        console.log('Error in Email Service', error);
+        /**
+         * Swallow the error as failure to send email should not break the flow
+         */
+        this.logger.error(error);
       }
-    } catch (err) {
+    } catch (error) {
       await queryRunner.rollbackTransaction();
-      console.log(err);
+      this.logger.error(error);
       success = '';
       failure = permitId;
     } finally {
