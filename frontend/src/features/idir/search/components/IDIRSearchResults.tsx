@@ -86,7 +86,7 @@ export const IDIRSearchResults = memo(
             searchEntity,
             searchValue,
           },
-          { page: pagination.pageIndex, limit: pagination.pageSize },
+          { page: pagination.pageIndex, take: pagination.pageSize },
         ),
       {
         retry: 1, // retry once.
@@ -140,7 +140,7 @@ export const IDIRSearchResults = memo(
       autoResetPageIndex: false,
       manualPagination: true,
       rowCount: data?.meta?.totalItems ?? 0,
-      pageCount: data?.meta?.totalPages ?? 0,
+      pageCount: data?.meta?.pageCount ?? 0,
       onPaginationChange: setPagination,
       enablePagination: true,
       enableTopToolbar: true,

@@ -53,7 +53,7 @@ export const BasePermitList = ({
         { expired: isExpired },
         {
           page: pagination.pageIndex,
-          limit: pagination.pageSize,
+          take: pagination.pageSize,
           searchValue: globalFilter,
         },
       ),
@@ -100,7 +100,7 @@ export const BasePermitList = ({
     manualFiltering: true,
     manualPagination: true,
     rowCount: data?.meta?.totalItems ?? 0,
-    pageCount: data?.meta?.totalPages ?? 0,
+    pageCount: data?.meta?.pageCount ?? 0,
     onGlobalFilterChange: setGlobalFilter,
     onPaginationChange: setPagination,
     enablePagination: true,
