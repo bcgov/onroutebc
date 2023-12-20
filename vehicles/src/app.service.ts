@@ -29,7 +29,7 @@ export class AppService {
     return 'Vehicles Healthcheck!';
   }
 
-  @LogMethodExecution()
+  @LogMethodExecution(true)
   async initializeCache() {
     const startDateTime = new Date();
     const countries = await this.commonService.findAllCountries();
