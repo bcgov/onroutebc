@@ -3,11 +3,12 @@ import dayjs, { Dayjs } from "dayjs";
 import { getUserGuidFromSession } from "../../../common/apiManager/httpRequestHandler";
 import { BCeIDUserDetailContext } from "../../../common/authentication/OnRouteBCContext";
 import { TROS_COMMODITIES } from "../constants/termOversizeConstants";
-import { getStartOfDate, now } from "../../../common/helpers/formatDate";
+import { getEndOfDate, getStartOfDate, now } from "../../../common/helpers/formatDate";
 import { Nullable } from "../../../common/types/common";
 import { PERMIT_STATUSES } from "../types/PermitStatus";
 import { calculateFeeByDuration } from "./feeSummary";
 import { PERMIT_TYPES } from "../types/PermitType";
+import { getExpiryDate } from "./permitState";
 import {
   Address,
   CompanyProfile,
@@ -24,7 +25,6 @@ import {
   MailingAddress,
   VehicleDetails,
 } from "../types/application";
-import { getExpiryDate } from "./permitState";
 
 /**
  * Get default values for contact details, or populate with existing contact details and/or user details
@@ -124,7 +124,7 @@ export const getStartDateOrDefault = (
   startDate?: Nullable<Dayjs | string>,
 ): Dayjs => {
   return applyWhenNotNullable(
-    (date) => dayjs(date),
+    (date) => getStartOfDate(dayjs(date)),
     startDate,
     getStartOfDate(defaultStartDate),
   );
@@ -136,7 +136,7 @@ export const getExpiryDateOrDefault = (
   expiryDate?: Nullable<Dayjs | string>,
 ): Dayjs => {
   return applyWhenNotNullable(
-    (date) => dayjs(date),
+    (date) => getEndOfDate(dayjs(date)),
     expiryDate,
     getExpiryDate(startDateOrDefault, durationOrDefault),
   );
