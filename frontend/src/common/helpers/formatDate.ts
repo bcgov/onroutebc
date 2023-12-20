@@ -135,3 +135,16 @@ export const getStartOfDate = (date: Dayjs | string) => {
     .second(0)
     .millisecond(0);
 };
+
+/**
+ * Get the end of any datetime (ie. the date + time of 23:59:59 pm).
+ * @param date Any Dayjs object
+ * @returns Dayjs object representing the end of the datetime (with time 23:59:59 pm)
+ */
+export const getEndOfDate = (date: Dayjs | string) => {
+  return dayjs(date)
+    .hour(23)
+    .minute(59)
+    .second(59)
+    .millisecond(999);
+};
