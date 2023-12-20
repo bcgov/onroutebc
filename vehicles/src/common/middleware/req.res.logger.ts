@@ -14,15 +14,13 @@ export class HTTPLoggerMiddleware implements NestMiddleware {
     }
     // Log when a request is received
     this.logger.log(
-      `Received ${method} ${originalUrl} \n ${JSON.stringify(headersObj)}`,
+      `Request: ${method} ${originalUrl} \n ${JSON.stringify(headersObj)}`,
     );
 
     response.on('finish', () => {
       const { statusCode } = response;
       const contentLength = response.get('content-length');
-      const hostedHttpLogFormat = `${method} ${originalUrl} ${statusCode} ${contentLength} - ${request.get(
-        'user-agent',
-      )}`;
+      const hostedHttpLogFormat = `Response: ${method} ${originalUrl} ${statusCode} ${contentLength}`;
       this.logger.log(hostedHttpLogFormat);
     });
     next();
