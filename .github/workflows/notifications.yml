@@ -14,4 +14,3 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           webhook-uri: ${{ secrets.MS_TEAMS_WEBHOOK_URI }}
-          show-on-failure: true
