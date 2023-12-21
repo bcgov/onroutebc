@@ -3,7 +3,7 @@ name: Notifications
 
 on:
   workflow_run: 
-    workflows: [Analysis] #why this not triggering?
+    workflows: [Deploy]
 jobs:
   notify-teams:
     name: Notify Teams 
