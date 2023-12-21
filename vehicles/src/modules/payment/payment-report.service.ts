@@ -24,6 +24,7 @@ import { IdirUser } from '../company-user-management/users/entities/idir.user.en
 import { PaymentMethodType } from './entities/payment-method-type.entity';
 import { PaymentCardType } from './entities/payment-card-type.entity';
 import { getPaymentCodeFromCache } from '../../common/helper/payment.helper';
+import { LogMethodExecution } from '../../common/decorator/log-method-execution.decorator';
 
 @Injectable()
 export class PaymentReportService {
@@ -36,6 +37,7 @@ export class PaymentReportService {
     private readonly cacheManager: Cache,
   ) {}
 
+  @LogMethodExecution()
   private getSelectQueryBuilderForDetailedReports(
     queryBuilder: SelectQueryBuilder<Transaction>,
   ) {
@@ -57,6 +59,7 @@ export class PaymentReportService {
       );
   }
 
+  @LogMethodExecution()
   private getSelectQueryBuilderForPaymentAndRefundSummary(
     queryBuilder: SelectQueryBuilder<Transaction>,
   ) {
@@ -73,6 +76,7 @@ export class PaymentReportService {
       .distinct();
   }
 
+  @LogMethodExecution()
   private getSelectQueryBuilderForPermitSummary(
     queryBuilder: SelectQueryBuilder<Transaction>,
   ) {
@@ -85,6 +89,7 @@ export class PaymentReportService {
       .distinct();
   }
 
+  @LogMethodExecution()
   private getTargetQueryBuilderForReports(
     queryBuilder: SelectQueryBuilder<Transaction>,
   ) {
@@ -109,6 +114,7 @@ export class PaymentReportService {
       );
   }
 
+  @LogMethodExecution()
   private getCondtionQueryBuilderForDetailedReports(
     queryBuilder: SelectQueryBuilder<Transaction>,
     transactionTypes: TransactionType[],
@@ -184,6 +190,7 @@ export class PaymentReportService {
     }
   }
 
+  @LogMethodExecution()
   async findTransactionDataForDetailedReports(
     transactionTypes: TransactionType[],
     createPaymentDetailedReportDto: CreatePaymentDetailedReportDto,
@@ -229,6 +236,7 @@ export class PaymentReportService {
     }
   }
 
+  @LogMethodExecution()
   async findSummaryPaymentAndRefundDataForDetailedReports(
     transactionType: TransactionType[],
     reportDto: CreatePaymentDetailedReportDto | CreatePaymentSummaryReportDto,
@@ -327,6 +335,7 @@ export class PaymentReportService {
     }
   }
 
+  @LogMethodExecution()
   async findSummaryPermitDataForDetailedReports(
     transactionType: TransactionType[],
     reportDto: CreatePaymentDetailedReportDto | CreatePaymentSummaryReportDto,
@@ -383,6 +392,7 @@ export class PaymentReportService {
     }
   }
 
+  @LogMethodExecution()
   private async getConsolidatedPaymentMethodFromDto(
     createPaymentDetailedReportDto: CreatePaymentDetailedReportDto,
   ) {
@@ -403,6 +413,7 @@ export class PaymentReportService {
     return paymentCodes;
   }
 
+  @LogMethodExecution()
   async createPaymentDetailedReport(
     currentUser: IUserJWT,
     createPaymentDetailedReportDto: CreatePaymentDetailedReportDto,
@@ -508,6 +519,7 @@ export class PaymentReportService {
     await this.dopsService.generateReport(currentUser, generateReportData, res);
   }
 
+  @LogMethodExecution()
   async createPaymentSummaryReport(
     currentUser: IUserJWT,
     createPaymentSummaryReportDto: CreatePaymentSummaryReportDto,
@@ -563,6 +575,7 @@ export class PaymentReportService {
     await this.dopsService.generateReport(currentUser, generateReportData, res);
   }
 
+  @LogMethodExecution()
   private getSelectQueryBuilderForSummaryReports(
     queryBuilder: SelectQueryBuilder<Transaction>,
   ) {
@@ -582,6 +595,7 @@ export class PaymentReportService {
       .distinct();
   }
 
+  @LogMethodExecution()
   private getCondtionQueryBuilderForSummaryReports(
     queryBuilder: SelectQueryBuilder<Transaction>,
     transactionTypes: TransactionType[],
@@ -607,6 +621,7 @@ export class PaymentReportService {
     }
   }
 
+  @LogMethodExecution()
   async findTransactionDataForSummaryReports(
     transactionTypes: TransactionType[],
     reportDto: CreatePaymentSummaryReportDto,

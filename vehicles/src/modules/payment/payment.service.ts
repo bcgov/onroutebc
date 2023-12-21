@@ -32,6 +32,7 @@ import { validateHash } from 'src/common/helper/validateHash.helper';
 import { UpdatePaymentGatewayTransactionDto } from './dto/request/update-payment-gateway-transaction.dto';
 import { PaymentCardType } from './entities/payment-card-type.entity';
 import { PaymentMethodType } from './entities/payment-method-type.entity';
+import { LogMethodExecution } from '../../common/decorator/log-method-execution.decorator';
 
 @Injectable()
 export class PaymentService {
@@ -109,6 +110,7 @@ export class PaymentService {
     return { queryString, payBCHash, hashExpiry };
   };
 
+  @LogMethodExecution()
   generateUrl(transaction: Transaction): string {
     // Construct the URL with the transaction details for the payment gateway
     const { queryString, payBCHash } = this.queryHash(transaction);
@@ -125,6 +127,7 @@ export class PaymentService {
    *
    * @returns {string} The Transaction Order Number.
    */
+  @LogMethodExecution()
   async generateTransactionOrderNumber(): Promise<string> {
     const seq: number = parseInt(
       await callDatabaseSequence(
@@ -146,6 +149,7 @@ export class PaymentService {
   /**
    * Generate Receipt Number
    */
+  @LogMethodExecution()
   async generateReceiptNumber(): Promise<string> {
     const currentDate = new Date();
     const year = currentDate.getFullYear();
