@@ -3,7 +3,7 @@ name: Notifications
 
 on:
   workflow_run: 
-    workflows: [.deploy.yml]
+    workflows: [Deploy]
 jobs:
   vars:
     name: Set Variables
