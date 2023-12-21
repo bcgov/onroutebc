@@ -47,6 +47,15 @@ export class TpsPermit {
     nullable: true,
   })
   retryCount: number;
+
+  @AutoMap()
+  @ApiProperty({
+    example: '1',
+    description: 'Represents the revision number for a permit.',
+  })
+  @Column({ type: 'integer', name: 'PERMIT_GENERATION' })
+  revision: number;
+
   @AutoMap()
   @ApiProperty({
     example: 'Processed',
