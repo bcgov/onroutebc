@@ -20,12 +20,31 @@ import { CommonModule } from './modules/common/common.module';
 import { HTTPLoggerMiddleware } from './middleware/req.res.logger';
 import { TypeormCustomLogger } from './logger/typeorm-logger.config';
 import { getTypeormLogLevel } from './helper/logger.helper';
+import { ClsModule } from 'nestjs-cls';
+import { Request } from 'express';
+import { v4 as uuidv4 } from 'uuid';
 
 const envPath = path.resolve(process.cwd() + '/../');
 
 @Module({
   imports: [
     ConfigModule.forRoot({ envFilePath: `${envPath}/.env` }),
+    // Register the ClsModule,
+    ClsModule.forRoot({
+      global: true,
+      middleware: {
+        // automatically mount the
+        // ClsMiddleware for all routes
+        mount: true,
+        generateId: true,
+        idGenerator: (req: Request) => {
+          const correlationId = req.headers['x-correlation-id'];
+          return Array.isArray(correlationId)
+            ? correlationId[0]
+            : correlationId ?? uuidv4();
+        },
+      },
+    }),
     TypeOrmModule.forRoot({
       type: 'mssql',
       host: process.env.MSSQL_HOST,

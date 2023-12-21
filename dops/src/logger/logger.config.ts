@@ -1,6 +1,17 @@
 import { WinstonModule, utilities } from 'nest-winston';
 import * as winston from 'winston';
 import { LoggerService } from '@nestjs/common';
+import { ClsServiceManager } from 'nestjs-cls';
+
+const correlationIdFormat = winston.format((info) => {
+  const cls = ClsServiceManager.getClsService();
+  const correlationId = cls.getId();
+  if (correlationId) {
+    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+    info.message = `[${correlationId}] ${info.message}`;
+  }
+  return info;
+})();
 
 const globalLoggerFormat: winston.Logform.Format = winston.format.combine(
   winston.format.timestamp({
@@ -13,6 +24,7 @@ const localLoggerFormat: winston.Logform.Format = winston.format.combine(
   winston.format.colorize(),
   winston.format.align(),
   winston.format.splat(),
+  correlationIdFormat,
   utilities.format.nestLike('Dops', { colors: true, prettyPrint: true }),
 );
 
