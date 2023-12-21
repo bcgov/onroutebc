@@ -13,6 +13,7 @@ import { ExceptionDto } from './exception/exception.dto';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import helmet from 'helmet';
 import { customLogger } from './logger/logger.config';
+import { CorrelationIdInterceptor } from './interceptor/correlationId.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
@@ -23,7 +24,7 @@ async function bootstrap() {
     methods: ['GET', 'PUT', 'POST', 'DELETE'],
     maxAge: 7200,
     credentials: false,
-    exposedHeaders: ['Content-Disposition'],
+    exposedHeaders: ['Content-Disposition', 'x-correlation-id'],
   });
   app.useGlobalPipes(
     new ValidationPipe({
@@ -72,6 +73,8 @@ async function bootstrap() {
     new FallbackExceptionFilter(),
     new HttpExceptionFilter(),
   );
+
+  app.useGlobalInterceptors(new CorrelationIdInterceptor());
 
   await app.listen(5001);
 }

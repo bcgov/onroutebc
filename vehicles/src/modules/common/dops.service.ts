@@ -17,11 +17,15 @@ import { FileDownloadModes } from '../../common/enum/file-download-modes.enum';
 import { ReadFileDto } from './dto/response/read-file.dto';
 import { DopsGeneratedReport } from '../../common/interface/dops-generated-report.interface';
 import { ExceptionDto } from '../../common/exception/exception.dto';
+import { ClsService } from 'nestjs-cls';
 
 @Injectable()
 export class DopsService {
   private readonly logger = new Logger(DopsService.name);
-  constructor(private readonly httpService: HttpService) {}
+  constructor(
+    private readonly httpService: HttpService,
+    private readonly cls: ClsService,
+  ) {}
 
   /**
    * Downloads a document from from DOPS.
@@ -50,6 +54,7 @@ export class DopsService {
       headers: {
         Authorization: currentUser.access_token,
         'Content-Type': 'application/json',
+        'x-correlation-id': this.cls.getId(),
       },
       responseType: download === FileDownloadModes.PROXY ? 'stream' : 'json',
     };
@@ -111,6 +116,7 @@ export class DopsService {
       headers: {
         Authorization: currentUser.access_token,
         'Content-Type': 'application/json',
+        'x-correlation-id': this.cls.getId(),
       },
       responseType: 'stream',
     };
@@ -210,6 +216,7 @@ export class DopsService {
       headers: {
         Authorization: currentUser.access_token,
         'Content-Type': 'application/json',
+        'x-correlation-id': this.cls.getId(),
       },
       responseType: 'stream',
     };
