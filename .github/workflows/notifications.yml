@@ -7,7 +7,6 @@ on:
 jobs:
   notify-teams:
     name: Notify Teams 
-    needs: [vars]
     runs-on: ubuntu-22.04
     steps:
       - name: MS Teams Notifications
