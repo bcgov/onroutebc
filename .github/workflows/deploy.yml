@@ -1,0 +1,214 @@
+name: Deploy
+
+on:
+  workflow_call:
+    inputs:
+      ### Required
+      release:
+        description: 'PR number, test or prod.'
+        required: true
+        type: string
+      
+      repository:
+        description: 'repository name.'
+        required: false
+        type: string
+        default: "onroutebc"
+
+      ### Typical / recommended
+      autoscaling:
+        description: 'Autoscaling enabled or not for the deployments'
+        required: false
+        type: boolean
+        default: true
+      environment:
+        description: "Deployment environment - dev/test/prod"
+        required: true
+        type: string
+        default: "dev"
+      tag:
+        description: 'Docker tag; e.g. PR number, tag, test or prod'
+        required: false
+        type: string
+        default: ${{ github.event.number }}
+      namespace:
+        description: 'BC Gov LICENSE_PLATE of deployment env'
+        required: false
+        type: string
+        default: "c28f0c"
+      vault_role:
+        description: "nonprod/prod"
+        required: true
+        type: string
+        default: "nonprod"
+      vault_zone:
+        description: "secret zone"
+        required: true
+        type: string
+        default: "dev"
+      triggers:
+        description: Paths to trigger a deploy; omit=always; e.g. ('backend/' 'frontend/')
+        required: false
+        type: string
+
+      ### Usually a bad idea / not recommended
+      directory:
+        description: 'Chart directory.'
+        default: 'charts/onroutebc'
+        required: false
+        type: string
+      timeout-minutes:
+        description: 'Timeout minutes'
+        default: 10
+        required: false
+        type: number
+      values:
+        description: 'Values file.'
+        default: 'values.yaml'
+        required: false
+        type: string
+      params:
+        description: 'Extra parameters to pass to helm upgrade'
+        default: ''
+        required: false
+        type: string
+  
+  workflow_dispatch:
+    inputs:
+      ### Required
+      release:
+        description: 'release name'
+        required: true
+        type: string
+        default: "demo"
+      
+      repository:
+        description: 'repository name.'
+        required: false
+        type: string
+        default: "onroutebc"
+
+      ### Typical / recommended
+      environment:
+        description: "Deployment environment - dev/test/prod"
+        required: true
+        type: choice
+        options: ["dev","test","prod"]
+        default: "dev"
+      tag:
+        description: 'Docker tag; e.g. PR number, tag, test or prod'
+        required: false
+        type: string
+        default: "latest"
+      namespace:
+        description: 'BC Gov LICENSE_PLATE of deployment env'
+        required: false
+        type: string
+        default: "c28f0c"
+      vault_role:
+        description: "nonprod/prod"
+        required: true
+        type: choice
+        options: ["nonprod","prod"]
+      vault_zone:
+        description: "secret zone"
+        required: true
+        type: string
+        default: "dev"
+
+      ### Usually a bad idea / not recommended
+      directory:
+        description: 'Chart directory.'
+        default: 'charts/onroutebc'
+        required: false
+        type: string
+      values:
+        description: 'Values file.'
+        default: 'values.yaml'
+        required: false
+        type: string
+      params:
+        description: 'Extra parameters to pass to helm upgrade'
+        default: ''
+        required: false
+        type: string
+
+env:
+  repo_release: ${{ inputs.repository }}-${{ inputs.release }}
+  package_tag: ${{ inputs.tag }}
+
+jobs:
+  # https://github.com/bcgov-nr/action-deployer-openshift
+  deploys:
+    name: Helm
+    environment: ${{ inputs.environment }}
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check Deployment Triggers
+        id: triggers
+        run: |
+          # Expand for trigger processing
+
+          # Always deploy if no triggers are provided
+          if [ -z "${{ inputs.triggers }}" ]; then
+            echo "Always deploy when no triggers are provided"
+            echo "triggered=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # Deploy if changed files (git diff) match triggers
+          TRIGGERS=${{ inputs.triggers }}
+          git fetch origin ${{ github.event.repository.default_branch }}
+          while read -r check; do
+            for t in "${TRIGGERS[@]}"; do
+              if [[ "${check}" =~ "${t}" ]]; then
+                  echo "Build triggered based on git diff"
+                  echo -e "${t}\n --> ${check}"
+                  echo "triggered=true" >> $GITHUB_OUTPUT
+                  exit 0
+              fi
+            done
+          done < <(git diff origin/${{ github.event.repository.default_branch }} --name-only)
+
+          # If here skip deployment
+          echo "No triggers have fired, deployment skipped"
+
+      - name: Deploy if Triggers Fired
+        if: ${{ steps.triggers.outputs.triggered == 'true' }}
+        working-directory: ${{ inputs.directory }}
+        shell: bash
+        run: |
+          oc login --token=${{ secrets.oc_token }} --server=${{ vars.oc_server }}
+          oc project ${{ vars.OC_NAMESPACE }} # Safeguard!
+
+          # Interrupt any previous jobs (status = pending-upgrade)
+          PREVIOUS=$(helm status ${{ env.repo_release }} -o json | jq .info.status || true)
+          if [[ ${PREVIOUS} =~ pending ]]; then
+            echo "Rollback triggered"
+            helm rollback ${{ env.repo_release }} || \
+              helm uninstall ${{ env.repo_release }}
+          fi
+
+          # Deploy Helm release
+          helm dependency update
+          helm upgrade \
+            --set global.autoscaling=${{ inputs.autoscaling || true }} \
+            --set-string global.repository=${{ github.repository }} \
+            --set-string global.tag=${{ inputs.tag }} \
+            --set-string global.license=${{ inputs.namespace }} \
+            --set-string global.zone=${{ inputs.environment }} \
+            --set-string global.vault.role=${{ inputs.vault_role }} \
+            --set-string global.vault.zone=${{ inputs.vault_zone }} \
+            --install --wait --atomic ${{ inputs.repository }}-${{ inputs.release }} \
+            --timeout 10m --force \
+            --values ${{ inputs.values }} \
+            ${{ inputs.params }} .
+
+
+          # print history 
+          helm history ${{ env.repo_release }}
+          
+          # Remove old build runs, build pods and deployment pods
+          oc delete po --field-selector=status.phase==Succeeded
