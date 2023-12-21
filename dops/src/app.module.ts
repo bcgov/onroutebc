@@ -4,6 +4,7 @@ import {
   MiddlewareConsumer,
   Module,
   OnApplicationBootstrap,
+  RequestMethod,
 } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
@@ -82,7 +83,10 @@ export class AppModule implements OnApplicationBootstrap {
   constructor(private readonly appService: AppService) {}
   // let's add a middleware on all routes
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(HTTPLoggerMiddleware).forRoutes('*');
+    consumer
+      .apply(HTTPLoggerMiddleware)
+      .exclude({ path: '/', method: RequestMethod.GET })
+      .forRoutes('*');
   }
   async onApplicationBootstrap() {
     await this.appService.initializeCache().catch((err) => {
