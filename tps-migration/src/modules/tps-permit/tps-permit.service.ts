@@ -57,7 +57,7 @@ export class TpsPermitService {
         const permit = await this.permitRepository.findOne({
           where: {
             tpsPermitNumber: tpsPermit.permitNumber,
-            revision: tpsPermit.revision + 1,
+            revision: tpsPermit.revision - 1,
           },
         });
         if (!permit) {
@@ -153,7 +153,7 @@ export class TpsPermitService {
         const permit = await this.permitRepository.findOne({
           where: {
             tpsPermitNumber: tpsPermit.permitNumber,
-            revision: tpsPermit.revision + 1,
+            revision: tpsPermit.revision - 1,
           },
         });
         if (!permit) {
