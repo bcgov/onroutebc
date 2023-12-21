@@ -13,5 +13,4 @@ jobs:
         uses: dchourasia/ms-teams-notification@1.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          webhook-uri: ${{ secrets.MS_TEAMS_WEBHOOK_URI }}
-          show-on-failure: true
+          webhook-uri: ${{ vars.MS_TEAMS_WEBHOOK_URI }}
