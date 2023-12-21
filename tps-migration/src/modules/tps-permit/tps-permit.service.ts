@@ -55,8 +55,10 @@ export class TpsPermitService {
         //Check to verify if permit document already exists in orbc permit table to avoid duplicate uploads.
         //Only proceed if permit exists in orbc permit table and it does not have a document id.
         const permit = await this.permitRepository.findOne({
-          where: { tpsPermitNumber: tpsPermit.permitNumber,
-          revision: tpsPermit.revision +1 },
+          where: {
+            tpsPermitNumber: tpsPermit.permitNumber,
+            revision: tpsPermit.revision + 1,
+          },
         });
         if (!permit) {
           await this.tpsPermitRepository.update(
@@ -149,7 +151,10 @@ export class TpsPermitService {
         //Check to verify if permit document already exists in orbc permit table to avoid duplicate uploads.
         //Only proceed if permit exists in orbc permit table and it does not have a document id.
         const permit = await this.permitRepository.findOne({
-          where: { tpsPermitNumber: tpsPermit.permitNumber },
+          where: {
+            tpsPermitNumber: tpsPermit.permitNumber,
+            revision: tpsPermit.revision + 1,
+          },
         });
         if (!permit) {
           await this.tpsPermitRepository.update(

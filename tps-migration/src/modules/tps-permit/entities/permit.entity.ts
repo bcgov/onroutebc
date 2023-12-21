@@ -54,6 +54,6 @@ export class Permit extends Base {
     example: '1',
     description: 'Represents the revision number for a permit.',
   })
-  @Column({ type: 'integer', name: 'REVISION'})
+  @Column({ type: 'integer', name: 'REVISION' })
   revision: number;
 }

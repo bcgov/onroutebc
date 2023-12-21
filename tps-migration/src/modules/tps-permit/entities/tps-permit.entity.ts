@@ -53,7 +53,7 @@ export class TpsPermit {
     example: '1',
     description: 'Represents the revision number for a permit.',
   })
-  @Column({ type: 'integer', name: 'PERMIT_GENERATION'})
+  @Column({ type: 'integer', name: 'PERMIT_GENERATION' })
   revision: number;
 
   @AutoMap()
