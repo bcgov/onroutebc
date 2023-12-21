@@ -325,7 +325,7 @@ export const ChallengeProfileSteps = React.memo(() => {
 
       <div
         className="tabpanel-container create-profile-steps"
-        role="profile-steps"
+        // role="profile-steps"
         id={`profile-steps`}
         aria-labelledby={`profile-steps`}
         style={{ paddingBottom: "10em" }}
@@ -426,59 +426,57 @@ export const ChallengeProfileSteps = React.memo(() => {
               )}
               <div className="create-profile-section create-profile-section--nav">
                 {activeStep === 1 && (
-                  <>
-                    <Stack direction="row" spacing={3}>
-                      <Button
-                        key="cancel-create-profile-button"
-                        aria-label="Cancel Create Profile"
-                        variant="contained"
-                        color="secondary"
-                        onClick={() => {
-                          // Go back
-                          navigate(-1);
-                        }}
-                        disableElevation
-                        sx={{
-                          ":hover": {
-                            background: BC_COLOURS.bc_background_light_grey,
-                            border: `2px solid ${BC_COLOURS.bc_text_box_border_grey}`,
-                          },
-                          border: `2px solid ${BC_COLOURS.white}`,
-                          borderRadius: "4px",
-                        }}
-                      >
-                        Cancel
-                      </Button>
-                      <Button
-                        onClick={handleBack}
-                        variant="contained"
-                        color="secondary"
-                        startIcon={<FontAwesomeIcon icon={faArrowLeft} />}
-                        className="proceed-btn proceed-btn--prev"
-                        sx={{
-                          ":hover": {
-                            background: BC_COLOURS.bc_text_links_blue,
-                            border: `2px solid ${BC_COLOURS.bc_text_links_blue}`,
-                          },
-                          border: `2px solid ${BC_COLOURS.bc_primary_blue}`,
-                          borderRadius: "4px",
-                          color: `${BC_COLOURS.bc_primary_blue}`,
-                          background: `${BC_COLOURS.white}`,
-                        }}
-                      >
-                        <strong>Previous</strong>
-                      </Button>
-                      <Button
-                        className="proceed-btn proceed-btn--next"
-                        onClick={handleCreateProfileSubmit(handleNext)}
-                        variant="contained"
-                        color="primary"
-                        endIcon={<FontAwesomeIcon icon={faArrowRight} />}
-                      >
-                        Next
-                      </Button>
-                    </Stack>
-                  </>
+                  <Stack direction="row" spacing={3}>
+                    <Button
+                      key="cancel-create-profile-button"
+                      aria-label="Cancel Create Profile"
+                      variant="contained"
+                      color="secondary"
+                      onClick={() => {
+                        // Go back
+                        navigate(-1);
+                      }}
+                      disableElevation
+                      sx={{
+                        ":hover": {
+                          background: BC_COLOURS.bc_background_light_grey,
+                          border: `2px solid ${BC_COLOURS.bc_text_box_border_grey}`,
+                        },
+                        border: `2px solid ${BC_COLOURS.white}`,
+                        borderRadius: "4px",
+                      }}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      onClick={handleBack}
+                      variant="contained"
+                      color="secondary"
+                      startIcon={<FontAwesomeIcon icon={faArrowLeft} />}
+                      className="proceed-btn proceed-btn--prev"
+                      sx={{
+                        ":hover": {
+                          background: BC_COLOURS.bc_text_links_blue,
+                          border: `2px solid ${BC_COLOURS.bc_text_links_blue}`,
+                        },
+                        border: `2px solid ${BC_COLOURS.bc_primary_blue}`,
+                        borderRadius: "4px",
+                        color: `${BC_COLOURS.bc_primary_blue}`,
+                        background: `${BC_COLOURS.white}`,
+                      }}
+                    >
+                      <strong>Previous</strong>
+                    </Button>
+                    <Button
+                      className="proceed-btn proceed-btn--next"
+                      onClick={handleCreateProfileSubmit(handleNext)}
+                      variant="contained"
+                      color="primary"
+                      endIcon={<FontAwesomeIcon icon={faArrowRight} />}
+                    >
+                      Next
+                    </Button>
+                  </Stack>
                 )}
                 {activeStep === 2 && (
                   <>
