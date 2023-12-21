@@ -133,7 +133,7 @@ export const ChallengeProfileSteps = React.memo(() => {
   const verifyMigratedClientMutation = useMutation({
     mutationFn: verifyMigratedClient,
     onSuccess: async (response: VerifyMigratedClientResponse) => {
-      const {foundClient, foundPermit, migratedClient } = response;
+      const { foundClient, foundPermit, migratedClient } = response;
       if (foundClient && foundPermit && migratedClient) {
         setIsClientVerified(() => true);
       } else {
@@ -353,40 +353,38 @@ export const ChallengeProfileSteps = React.memo(() => {
                 <VerifyMigratedClientForm />
                 <div className="create-profile-section create-profile-section--nav">
                   {activeStep === 0 && (
-                    <>
-                      <Stack direction="row" spacing={3}>
-                        <Button
-                          key="cancel-create-profile-button"
-                          aria-label="Cancel Create Profile"
-                          variant="contained"
-                          color="secondary"
-                          onClick={() => {
-                            // Go back
-                            navigate(-1);
-                          }}
-                          disableElevation
-                          sx={{
-                            ":hover": {
-                              background: BC_COLOURS.bc_background_light_grey,
-                              border: `2px solid ${BC_COLOURS.bc_text_box_border_grey}`,
-                            },
-                            border: `2px solid ${BC_COLOURS.white}`,
-                            borderRadius: "4px",
-                          }}
-                        >
-                          Cancel
-                        </Button>
-                        <Button
-                          className="proceed-btn proceed-btn--next"
-                          onClick={handleVerifyClientSubmit(handleNext)}
-                          variant="contained"
-                          color="primary"
-                          endIcon={<FontAwesomeIcon icon={faArrowRight} />}
-                        >
-                          Next
-                        </Button>
-                      </Stack>
-                    </>
+                    <Stack direction="row" spacing={3}>
+                      <Button
+                        key="cancel-create-profile-button"
+                        aria-label="Cancel Create Profile"
+                        variant="contained"
+                        color="secondary"
+                        onClick={() => {
+                          // Go back
+                          navigate(-1);
+                        }}
+                        disableElevation
+                        sx={{
+                          ":hover": {
+                            background: BC_COLOURS.bc_background_light_grey,
+                            border: `2px solid ${BC_COLOURS.bc_text_box_border_grey}`,
+                          },
+                          border: `2px solid ${BC_COLOURS.white}`,
+                          borderRadius: "4px",
+                        }}
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        className="proceed-btn proceed-btn--next"
+                        onClick={handleVerifyClientSubmit(handleNext)}
+                        variant="contained"
+                        color="primary"
+                        endIcon={<FontAwesomeIcon icon={faArrowRight} />}
+                      >
+                        Next
+                      </Button>
+                    </Stack>
                   )}
                 </div>
               </div>

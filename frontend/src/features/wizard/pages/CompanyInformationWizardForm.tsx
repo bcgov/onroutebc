@@ -20,11 +20,9 @@ import { useFormContext } from "react-hook-form";
  */
 export const CompanyInformationWizardForm = memo(() => {
   const FEATURE = "wizard";
-  const { register } = useFormContext();
 
   return (
     <div className="company-info-wizard-form">
-      {/* <input type="hidden" {...register("legalName")} /> */}
       <Typography variant="h2" gutterBottom>
         Doing Business As (DBA)
       </Typography>
