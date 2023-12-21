@@ -3,7 +3,7 @@ name: Notifications
 
 on:
   workflow_run: 
-    workflows: [Deploy] #why this not triggering?
+    workflows: [Analysis] #why this not triggering?
 jobs:
   vars:
     name: Set Variables
