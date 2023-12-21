@@ -7,7 +7,7 @@ on:
       - '*.md'
       - '.github/**'
       - 'common/graphics/**'
-      - '!.github/workflows/.deploy.yml'
+      - '!.github/workflows/deploy.yml'
       - '!.github/workflows/merge.yml'
   workflow_dispatch:
     inputs:
@@ -36,7 +36,7 @@ jobs:
   deploys-test:
     name: Deploys (test)
     needs: [vars]
-    uses: ./.github/workflows/.deploy.yml
+    uses: ./.github/workflows/deploy.yml
     secrets: inherit
     with:
       environment: test
@@ -66,7 +66,7 @@ jobs:
   deploys-prod:
     name: Deploys (prod)
     needs: [promote-images-test, vars]
-    uses: ./.github/workflows/.deploy.yml
+    uses: ./.github/workflows/deploy.yml
     secrets: inherit
     with:
       environment: prod
