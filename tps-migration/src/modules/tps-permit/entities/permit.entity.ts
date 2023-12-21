@@ -48,4 +48,12 @@ export class Permit extends Base {
     nullable: true,
   })
   documentId: string;
+
+  @AutoMap()
+  @ApiProperty({
+    example: '1',
+    description: 'Represents the revision number for a permit.',
+  })
+  @Column({ type: 'integer', name: 'REVISION' })
+  revision: number;
 }
