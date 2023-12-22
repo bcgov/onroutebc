@@ -74,8 +74,8 @@ export const ChallengeProfileSteps = React.memo(() => {
 
   const verifyMigratedClientFormMethods = useForm<VerifyMigratedClientRequest>({
     defaultValues: {
-      clientNumber: "202799755",
-      permitNumber: "TPS211999",
+      clientNumber: "",
+      permitNumber: "",
     },
   });
 
