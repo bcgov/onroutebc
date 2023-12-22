@@ -466,7 +466,6 @@ export class CompanyService {
    * @param company
    *
    */
-  @LogMethodExecution()
   private async generateClientNumber(
     company: Company,
     currentUser: IUserJWT,

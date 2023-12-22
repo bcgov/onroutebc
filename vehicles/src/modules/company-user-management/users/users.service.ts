@@ -316,7 +316,6 @@ export class UsersService {
    *
    * @returns A Promise that resolves to an array of {@link User} entities.
    */
-  @LogMethodExecution()
   private async findUsersEntity(userGUID?: string, companyId?: number[]) {
     // Construct the query builder to retrieve user entities and associated data
     return await this.userRepository
@@ -524,7 +523,6 @@ export class UsersService {
    * @param currentUser The current logged in User JWT Token.
    *
    */
-  @LogMethodExecution()
   private async processPendingUserInvitesForUserContextCall(
     currentUser: IUserJWT,
     userContextDto: ReadUserOrbcStatusDto,
@@ -669,7 +667,6 @@ export class UsersService {
     return userExists;
   }
 
-  @LogMethodExecution()
   private mapIdirUser(
     currentUser: IUserJWT,
     userAuthGroup: UserAuthGroup,

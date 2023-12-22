@@ -162,7 +162,6 @@ export class ApplicationService {
     );
   }
 
-  @LogMethodExecution()
   private async findOne(permitId: string): Promise<Permit> {
     return await this.permitRepository.findOne({
       where: [{ permitId: permitId }],
@@ -172,7 +171,6 @@ export class ApplicationService {
     });
   }
 
-  @LogMethodExecution()
   private async findOneWithSuccessfulTransaction(
     applicationId: string,
   ): Promise<Permit> {
@@ -258,7 +256,6 @@ export class ApplicationService {
    * @param applicationNumber example: "A2-00000004-373"
    * @returns Permit object associated with the given applicationNumber
    */
-  @LogMethodExecution()
   private async findByApplicationNumber(
     applicationNumber: string,
   ): Promise<Permit> {
@@ -778,7 +775,6 @@ export class ApplicationService {
    * @param permitApplicationOrigin
    *
    */
-  @LogMethodExecution()
   private async getPermitApplicationOrigin(
     permitApplicationOrigin: PermitApplicationOriginEnum,
   ): Promise<string> {

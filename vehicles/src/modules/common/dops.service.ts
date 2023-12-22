@@ -189,7 +189,6 @@ export class DopsService {
    * @param data - The stream of data to create a file from.
    * @returns A Promise resolving to a Buffer representing the created file.
    */
-  @LogMethodExecution()
   private async createFile(data: NodeJS.ReadableStream) {
     // Read the stream data and concatenate all chunks into a single Buffer
     return new Promise<Buffer>((resolve, reject) => {

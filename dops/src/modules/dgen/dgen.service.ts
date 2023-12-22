@@ -82,7 +82,6 @@ export class DgenService {
    * @param templateVersion template version
    * @returns
    */
-  @LogMethodExecution()
   private async findTemplateEntity(
     templateName: TemplateName,
     templateVersion: number,
@@ -155,7 +154,6 @@ export class DgenService {
     });
   }
 
-  @LogMethodExecution()
   private async mergeDocuments(
     documentsToMerge: string[],
     documentBufferMap: Map<string, Buffer>,
@@ -170,7 +168,6 @@ export class DgenService {
     return mergedDocument;
   }
 
-  @LogMethodExecution()
   private async fetchDocumentsToMerge(
     documentsToMerge: ExternalDocumentEnum.ExternalDocument[],
     documentBufferMap: Map<string, Buffer>,
@@ -304,7 +301,6 @@ export class DgenService {
     });
   }
 
-  @LogMethodExecution({ printMemoryStats: true })
   private registerHandleBarsHelpers() {
     /* eslint-disable */
     Handlebars.registerHelper(

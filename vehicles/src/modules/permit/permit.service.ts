@@ -108,7 +108,6 @@ export class PermitService {
     return readPermitDto;
   }
 
-  @LogMethodExecution()
   private async findOne(permitId: string): Promise<Permit> {
     return this.permitRepository.findOne({
       where: { permitId: permitId },

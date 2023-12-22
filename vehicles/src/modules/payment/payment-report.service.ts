@@ -37,7 +37,6 @@ export class PaymentReportService {
     private readonly cacheManager: Cache,
   ) {}
 
-  @LogMethodExecution()
   private getSelectQueryBuilderForDetailedReports(
     queryBuilder: SelectQueryBuilder<Transaction>,
   ) {
@@ -59,7 +58,6 @@ export class PaymentReportService {
       );
   }
 
-  @LogMethodExecution()
   private getSelectQueryBuilderForPaymentAndRefundSummary(
     queryBuilder: SelectQueryBuilder<Transaction>,
   ) {
@@ -76,7 +74,6 @@ export class PaymentReportService {
       .distinct();
   }
 
-  @LogMethodExecution()
   private getSelectQueryBuilderForPermitSummary(
     queryBuilder: SelectQueryBuilder<Transaction>,
   ) {
@@ -89,7 +86,6 @@ export class PaymentReportService {
       .distinct();
   }
 
-  @LogMethodExecution()
   private getTargetQueryBuilderForReports(
     queryBuilder: SelectQueryBuilder<Transaction>,
   ) {
@@ -114,7 +110,6 @@ export class PaymentReportService {
       );
   }
 
-  @LogMethodExecution()
   private getCondtionQueryBuilderForDetailedReports(
     queryBuilder: SelectQueryBuilder<Transaction>,
     transactionTypes: TransactionType[],
@@ -392,7 +387,6 @@ export class PaymentReportService {
     }
   }
 
-  @LogMethodExecution()
   private async getConsolidatedPaymentMethodFromDto(
     createPaymentDetailedReportDto: CreatePaymentDetailedReportDto,
   ) {
@@ -575,7 +569,6 @@ export class PaymentReportService {
     await this.dopsService.generateReport(currentUser, generateReportData, res);
   }
 
-  @LogMethodExecution()
   private getSelectQueryBuilderForSummaryReports(
     queryBuilder: SelectQueryBuilder<Transaction>,
   ) {
@@ -595,7 +588,6 @@ export class PaymentReportService {
       .distinct();
   }
 
-  @LogMethodExecution()
   private getCondtionQueryBuilderForSummaryReports(
     queryBuilder: SelectQueryBuilder<Transaction>,
     transactionTypes: TransactionType[],

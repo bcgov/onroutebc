@@ -112,7 +112,6 @@ export class PendingUsersService {
    *
    * @returns A Promise that resolves to an array of {@link pendingUser} entities.
    */
-  @LogMethodExecution()
   private async findPendingUsersEntity(
     userName?: string,
     companyId?: number,

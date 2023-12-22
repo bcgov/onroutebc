@@ -98,7 +98,6 @@ export class S3Service {
     return url;
   }
 
-  @LogMethodExecution()
   private _processS3Headers(
     s3Resp: GetObjectCommandOutput,
     res: Response,
