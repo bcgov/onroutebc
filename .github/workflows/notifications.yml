@@ -3,7 +3,7 @@ name: Notifications
 
 on:
   workflow_run: 
-    workflows: [PR,PR Closed,Merge]
+    workflows: [PR,Merge]
 jobs:
   notify-teams:
     name: Notify Teams 
