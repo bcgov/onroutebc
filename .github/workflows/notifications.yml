@@ -3,20 +3,8 @@ name: Notifications
 
 on:
   workflow_run: 
-    workflows: [PR,Merge]
+    workflows: [PR,PR Closed,Merge]
 jobs:
-  vars:
-    name: Set Variables
-    outputs:
-      pr: ${{ steps.pr.outputs.pr }}
-    runs-on: ubuntu-22.04
-    timeout-minutes: 1
-    steps:
-      # Get PR number for squash merges to main
-      - name: PR Number
-        id: pr
-        uses: bcgov-nr/action-get-pr@v0.0.1
-
   notify-teams:
     name: Notify Teams 
     needs: [vars]
@@ -27,6 +15,3 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           webhook-uri: ${{ vars.MS_TEAMS_WEBHOOK_URI }}
-          custom-facts: |
-            - name: Notify
-              value: "PR# ${{ needs.vars.outputs.pr }}"
