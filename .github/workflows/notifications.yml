@@ -24,7 +24,6 @@ jobs:
         uses: bcgov-nr/action-get-pr@v0.0.1
   
   notify-teams:
-    name: Notify Teams
     needs: [vars]
     runs-on: ubuntu-22.04
     steps:
