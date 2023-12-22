@@ -18,35 +18,6 @@ import { UserInformationWizardForm } from "./UserInformationWizardForm";
 import { WizardCompanyBanner } from "./WizardCompanyBanner";
 
 /**
- * Gets the section name inside the form for a particular field name
- * @param field - Field name inside the form (eg. primaryContact.firstName)
- * @returns Name of the section in the form that the field belongs to (eg. Company Primary Contact)
- */
-const getSectionNameByField = (field: string) => {
-  const sectionParts = field.split(".");
-
-  switch (sectionParts[0]) {
-    case "mailingAddress":
-      return "Company Mailing Address";
-    case "primaryContact":
-      return "Company Primary Contact";
-    case "adminUser":
-      return "User Details";
-    default:
-      return "Company Contact Details";
-  }
-};
-
-const getFirstValidationError = (
-  errors: { field: string; message: string[] }[],
-) => {
-  if (errors.length === 0 || errors[0].message.length === 0) return undefined;
-  return `${getSectionNameByField(errors[0].field)} validation error: ${
-    errors[0].message[0]
-  }`;
-};
-
-/**
  * The company info and user info steps to be shared between
  * challenge and no challenge workflows.
  */
