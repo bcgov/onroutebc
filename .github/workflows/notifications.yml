@@ -1,7 +1,7 @@
 name: Notifications
 on:
   pull_request:
-    types: [opened,reopened,synchronize,closed]
+    types: [opened,closed]
   push:
     branches: [main]
     paths-ignore:
@@ -10,6 +10,9 @@ on:
       - 'common/graphics/**'
       - '!.github/workflows/deploy.yml'
       - '!.github/workflows/merge.yml'
+  issue_comment:
+  pull_request_review:
+  pull_request_review_comment:
 jobs:
   vars:
     name: Set Variables
@@ -24,7 +27,6 @@ jobs:
         uses: bcgov-nr/action-get-pr@v0.0.1
   
   notify-teams:
-    name: Notify Teams
     needs: [vars]
     runs-on: ubuntu-22.04
     steps:
