@@ -63,6 +63,21 @@ jobs:
           target: ${{ needs.vars.outputs.pr }}
           tags: test  #Promote images AFTER successful deploy
       
+  notify-teams-test:
+    name: Notify Teams - Test
+    needs: [deploys-test, vars]
+    runs-on: ubuntu-22.04
+    steps:
+      - name: MS Teams Notifications
+        uses: dchourasia/ms-teams-notification@1.0
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          webhook-uri: ${{ vars.MS_TEAMS_WEBHOOK_URI }}
+          custom-facts: |
+            - name: Notify QA Team
+              value: "Successful Deploy of ${{ needs.vars.outputs.pr }} to TEST - cc QA TEAM"
+          show-on-exit: false
+
   deploys-prod:
     name: Deploys (prod)
     needs: [promote-images-test, vars]
@@ -74,6 +89,21 @@ jobs:
       release: prod
       vault_role: prod
       vault_zone: prod
+  
+  notify-teams-prod:
+    name: Notify Teams - Prod
+    needs: [deploys-prod, vars]
+    runs-on: ubuntu-22.04
+    steps:
+      - name: MS Teams Notifications
+        uses: dchourasia/ms-teams-notification@1.0
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          webhook-uri: ${{ vars.MS_TEAMS_WEBHOOK_URI }}
+          custom-facts: |
+            - name: Notify Production Team
+              value: "Successful Deploy of ${{ needs.vars.outputs.pr }} to PROD"
+          show-on-exit: false
   
   promote-images-prod:
     name: Promote Images - Prod
@@ -167,6 +197,15 @@ jobs:
           release_name: Release ${{ needs.GitVersion.outputs.fullSemVer }}
           draft: false
           prerelease: false
+      - name: MS Teams Notifications
+        uses: dchourasia/ms-teams-notification@1.0
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          webhook-uri: ${{ vars.MS_TEAMS_WEBHOOK_URI }}
+          custom-facts: |
+            - name: Notify Teams
+              value: "Release ${{ needs.GitVersion.outputs.fullSemVer }} Created."
+          show-on-exit: false
 
   promote-images-release:
     name: Tag images with Release Version
