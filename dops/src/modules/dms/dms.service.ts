@@ -16,6 +16,7 @@ import { S3Service } from '../common/s3.service';
 import { Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import { IDP } from '../../enum/idp.enum';
+import { LogMethodExecution } from '../../decorator/log-method-execution.decorator';
 
 @Injectable()
 export class DmsService {
@@ -28,6 +29,7 @@ export class DmsService {
 
   private s3accessType = process.env.DOPS_S3_ACCESS_TYPE;
 
+  @LogMethodExecution()
   async create(
     currentUser: IUserJWT,
     file: Express.Multer.File | IFile,
@@ -65,6 +67,7 @@ export class DmsService {
     );
   }
 
+  @LogMethodExecution()
   async update(
     currentUser: IUserJWT,
     documentId: string,
@@ -107,6 +110,7 @@ export class DmsService {
     );
   }
 
+  @LogMethodExecution()
   async findOne(documentId: string): Promise<ReadFileDto> {
     const readFile = this.classMapper.mapAsync(
       await this.documentRepository.findOne({
@@ -118,6 +122,7 @@ export class DmsService {
     return readFile;
   }
 
+  @LogMethodExecution()
   async download(
     currentUser: IUserJWT,
     documentId: string,
@@ -144,6 +149,7 @@ export class DmsService {
     return { file, s3Object };
   }
 
+  @LogMethodExecution()
   async findLatest(documentId: string): Promise<ReadFileDto> {
     const subQuery = this.documentRepository
       .createQueryBuilder('document')
