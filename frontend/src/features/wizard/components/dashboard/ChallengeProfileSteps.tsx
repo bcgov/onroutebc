@@ -80,6 +80,32 @@ export const ChallengeProfileSteps = React.memo(() => {
         setActiveStep(() => 1);
       }
     },
+    onError: async (response: VerifyMigratedClientResponse) => {
+      const { foundClient, foundPermit, migratedClient } = response;
+      if (foundClient && foundPermit && migratedClient) {
+        // Clear form errors (if any)
+        clearVerifyClientErrors();
+
+        setIsClientVerified(() => true);
+        setActiveStep(() => 1);
+
+        // set the updated migrated client in OnRouteBCContext.
+        setMigratedClient?.(() => migratedClient);
+      } else {
+        if (!foundClient) {
+          setVerifyClientError("clientNumber", {
+            message: "Client No. not found",
+          });
+        }
+        if (!foundPermit) {
+          setVerifyClientError("permitNumber", {
+            message: "Permit No. does not match Client No.",
+          });
+        }
+        setIsClientVerified(() => true);
+        setActiveStep(() => 1);
+      }
+    },
   });
 
   /**
