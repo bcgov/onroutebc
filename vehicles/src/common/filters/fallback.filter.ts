@@ -33,9 +33,8 @@ export class FallbackExceptionFilter implements ExceptionFilter {
     }
 
     this.logger.error(
-      message,
+      `Response: ${request.method} ${request.url} ${status} - ${message}`,
       getErrorStack(exception),
-      `${request.method} ${request.url}`,
     );
     // TODO : Update the below implemenation to send 422 instead of 500.
     if (status === HttpStatus.UNPROCESSABLE_ENTITY) {

@@ -4,6 +4,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { lastValueFrom } from 'rxjs';
+import { ClsService } from 'nestjs-cls';
 
 @Injectable()
 export class AuthService {
@@ -11,6 +12,7 @@ export class AuthService {
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
     private readonly httpService: HttpService,
+    private readonly cls: ClsService,
   ) {}
 
   async getUserDetails(
@@ -22,6 +24,7 @@ export class AuthService {
         headers: {
           Authorization: accessToken,
           'Content-Type': 'application/json',
+          'x-correlation-id': this.cls.getId(),
         },
       }),
     );
@@ -47,6 +50,7 @@ export class AuthService {
         headers: {
           Authorization: accessToken,
           'Content-Type': 'application/json',
+          'x-correlation-id': this.cls.getId(),
         },
       }),
     );
@@ -66,6 +70,7 @@ export class AuthService {
         headers: {
           Authorization: accessToken,
           'Content-Type': 'application/json',
+          'x-correlation-id': this.cls.getId(),
         },
       }),
     );

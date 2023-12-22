@@ -1,0 +1,16 @@
+
+name: Notifications
+
+on:
+  workflow_run: 
+    workflows: [PR,PR Closed,Merge]
+jobs:
+  notify-teams:
+    name: Notify Teams 
+    runs-on: ubuntu-22.04
+    steps:
+      - name: MS Teams Notifications
+        uses: dchourasia/ms-teams-notification@1.0
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          webhook-uri: ${{ vars.MS_TEAMS_WEBHOOK_URI }}

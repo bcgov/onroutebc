@@ -76,7 +76,7 @@ jobs:
   deploys:
     name: Deploys
     needs: [builds, vars]
-    uses: ./.github/workflows/.deploy.yml
+    uses: ./.github/workflows/deploy.yml
     secrets: inherit
     with:
       autoscaling: false
