@@ -32,4 +32,8 @@ jobs:
           custom-facts: |
             - name: PR#
               value: "${{ needs.vars.outputs.pr }}"
+            - name: Event
+              value: "${{ github.event_name }}"
+            - name: Type
+              value: "${{ github.event.action }}"
           show-on-exit: false
