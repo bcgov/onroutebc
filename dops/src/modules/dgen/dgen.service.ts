@@ -29,6 +29,7 @@ import puppeteer, { Browser } from 'puppeteer';
 import { IFile } from '../../interface/file.interface';
 import { ReportTemplate } from '../../enum/report-template.enum';
 import { convertUtcToPt } from '../../helper/date-time.helper';
+import { LogMethodExecution } from '../../decorator/log-method-execution.decorator';
 
 @Injectable()
 export class DgenService {
@@ -51,10 +52,12 @@ export class DgenService {
    * Find all templates registered in ORBC_DOCUMENT_TEMPLATE
    * @returns A list of templates of type {@link DocumentTemplate}
    */
+  @LogMethodExecution()
   async findAllTemplates(): Promise<DocumentTemplate[]> {
     return await this.documentTemplateRepository.find();
   }
 
+  @LogMethodExecution()
   async getLatestTemplates(): Promise<DocumentTemplate[]> {
     const latestTemplates = await this.documentTemplateRepository
       .createQueryBuilder('documentTemplate')
@@ -88,6 +91,7 @@ export class DgenService {
     });
   }
 
+  @LogMethodExecution()
   async generate(
     currentUser: IUserJWT,
     createGeneratedDocumentDto: CreateGeneratedDocumentDto,
@@ -205,6 +209,7 @@ export class DgenService {
     );
   }
 
+  @LogMethodExecution({ printMemoryStats: true })
   async generateReport(
     currentUser: IUserJWT,
     createGeneratedReportDto: CreateGeneratedReportDto,
@@ -389,6 +394,7 @@ export class DgenService {
     );
   }
 
+  @LogMethodExecution()
   getCacheKeyforReport(reportName: ReportTemplate): CacheKey {
     switch (reportName) {
       case ReportTemplate.PAYMENT_AND_REFUND_DETAILED_REPORT:

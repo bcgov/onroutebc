@@ -1,17 +1,17 @@
-import { memo } from "react";
 import Typography from "@mui/material/Typography";
+import { memo } from "react";
 
-import "./CompanyInformationWizardForm.scss";
-import { CompanyInfoGeneralForm } from "../../manageProfile/components/forms/companyInfo/subForms/CompanyInfoGeneralForm";
-import { CompanyContactDetailsForm } from "../../manageProfile/components/forms/companyInfo/subForms/CompanyContactDetailsForm";
-import { CompanyPrimaryContactForm } from "../../manageProfile/components/forms/companyInfo/subForms/CompanyPrimaryContactForm";
-import { CustomFormComponent } from "../../../common/components/form/CustomFormComponents";
 import { InfoBcGovBanner } from "../../../common/components/banners/InfoBcGovBanner";
+import { CustomFormComponent } from "../../../common/components/form/CustomFormComponents";
 import { BANNER_MESSAGES } from "../../../common/constants/bannerMessages";
 import {
   invalidDBALength,
   isValidOptionalString,
 } from "../../../common/helpers/validationMessages";
+import { CompanyContactDetailsForm } from "../../manageProfile/components/forms/companyInfo/subForms/CompanyContactDetailsForm";
+import { CompanyInfoGeneralForm } from "../../manageProfile/components/forms/companyInfo/subForms/CompanyInfoGeneralForm";
+import { CompanyPrimaryContactForm } from "../../manageProfile/components/forms/companyInfo/subForms/CompanyPrimaryContactForm";
+import "./CompanyInformationWizardForm.scss";
 
 /**
  * The Company Wizard Form contains multiple subs forms including

@@ -7,6 +7,7 @@ import { ReadTrailerTypeDto } from './dto/response/read-trailer-type.dto';
 import { UpdateTrailerTypeDto } from './dto/request/update-trailer-type.dto';
 import { DeleteResult, Repository } from 'typeorm';
 import { TrailerType } from './entities/trailer-type.entity';
+import { LogMethodExecution } from '../../../common/decorator/log-method-execution.decorator';
 
 @Injectable()
 export class TrailerTypesService {
@@ -16,6 +17,7 @@ export class TrailerTypesService {
     @InjectMapper() private readonly classMapper: Mapper,
   ) {}
 
+  @LogMethodExecution()
   async create(trailerType: CreateTrailerTypeDto): Promise<ReadTrailerTypeDto> {
     const newTrailerType = this.classMapper.map(
       trailerType,
@@ -26,6 +28,7 @@ export class TrailerTypesService {
     return this.findOne(newTrailerType.typeCode);
   }
 
+  @LogMethodExecution()
   async findAll(): Promise<ReadTrailerTypeDto[]> {
     return this.classMapper.mapArrayAsync(
       await this.trailerTypeRepository.find(),
@@ -34,6 +37,7 @@ export class TrailerTypesService {
     );
   }
 
+  @LogMethodExecution()
   async findOne(typeCode: string): Promise<ReadTrailerTypeDto> {
     return this.classMapper.mapAsync(
       await this.trailerTypeRepository.findOne({
@@ -44,6 +48,7 @@ export class TrailerTypesService {
     );
   }
 
+  @LogMethodExecution()
   async update(
     typeCode: string,
     updateTrailerTypeDto: UpdateTrailerTypeDto,
@@ -58,6 +63,7 @@ export class TrailerTypesService {
     return this.findOne(typeCode);
   }
 
+  @LogMethodExecution()
   async remove(typeCode: string): Promise<DeleteResult> {
     return await this.trailerTypeRepository.delete(typeCode);
   }

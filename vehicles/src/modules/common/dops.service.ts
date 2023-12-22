@@ -18,6 +18,7 @@ import { ReadFileDto } from './dto/response/read-file.dto';
 import { DopsGeneratedReport } from '../../common/interface/dops-generated-report.interface';
 import { ExceptionDto } from '../../common/exception/exception.dto';
 import { ClsService } from 'nestjs-cls';
+import { LogMethodExecution } from '../../common/decorator/log-method-execution.decorator';
 
 @Injectable()
 export class DopsService {
@@ -36,6 +37,7 @@ export class DopsService {
    * @returns A Promise that resolves to an object of type {@link IFile}. Null
    * is returned if Response object was passed as a parameter.
    */
+  @LogMethodExecution()
   async download(
     currentUser: IUserJWT,
     dmsId: string,
@@ -102,6 +104,7 @@ export class DopsService {
    * @returns A Promise that resolves to an object of type {@link IFile}. Null
    * is returned if Response object was passed as a parameter.
    */
+  @LogMethodExecution()
   async generateDocument(
     currentUser: IUserJWT,
     dopsGeneratedDocument: DopsGeneratedDocument,
@@ -170,6 +173,7 @@ export class DopsService {
    *                   headers.
    * @param res - The Express {@link Response} object.
    */
+  @LogMethodExecution()
   convertAxiosToExpress(response: AxiosResponse, res: Response) {
     // Get the headers from the Axios response
     const headers = response.headers;
@@ -204,6 +208,7 @@ export class DopsService {
    * @returns A Promise that resolves to an object of type {@link IFile}. Null
    * is returned if Response object was passed as a parameter.
    */
+  @LogMethodExecution()
   async generateReport(
     currentUser: IUserJWT,
     dopsGeneratedReport: DopsGeneratedReport,
