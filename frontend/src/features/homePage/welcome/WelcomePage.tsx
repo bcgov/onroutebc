@@ -98,7 +98,6 @@ const ChallengeOption = ({
   const navigate = useNavigate();
   return (
     <Paper
-      // className="report-paper"
       sx={{
         ":hover": {
           background: BC_COLOURS.bc_messages_blue_background,
@@ -106,7 +105,6 @@ const ChallengeOption = ({
         cursor: "pointer",
         width: "220px",
         height: "80px",
-        // background: BC_COLOURS.bc_messages_blue_background,
       }}
       onClick={() => navigate(navigateTo)}
     >
