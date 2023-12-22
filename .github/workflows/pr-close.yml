@@ -48,6 +48,11 @@ jobs:
           repository: ${{ github.repository }}/${{ matrix.package }}
           target: ${{ github.event.number }}
           tags: latest
+  
+  notify-teams-dev:
+    name: Notify Teams - Dev
+    runs-on: ubuntu-22.04
+    steps:
       - name: MS Teams Notifications
         uses: dchourasia/ms-teams-notification@1.0
         with:
@@ -55,5 +60,5 @@ jobs:
           webhook-uri: ${{ vars.MS_TEAMS_WEBHOOK_URI }}
           custom-facts: |
             - name: Notify
-              value: "Successful Merge of ${{ needs.vars.outputs.pr }}"
+              value: "Successful Merge of ${{ github.event.number }}"
           show-on-exit: false
