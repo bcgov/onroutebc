@@ -2,7 +2,7 @@ import { VEHICLES_URL } from "../../../../common/apiManager/endpoints/endpoints"
 import { httpGETRequest } from "../../../../common/apiManager/httpRequestHandler";
 import {
   PaginatedResponse,
-  PaginationAndFilters,
+  PaginationOptions
 } from "../../../../common/types/common";
 import { Permit } from "../../../permits/types/permit";
 import { SearchFields } from "../types/types";
@@ -14,11 +14,13 @@ import { SearchFields } from "../types/types";
  */
 export const getDataBySearch = (
   { searchEntity, searchByFilter, searchValue }: SearchFields,
-  { page = 0, take = 10 }: PaginationAndFilters,
+  { page = 0, take = 10 }: PaginationOptions,
 ): Promise<PaginatedResponse<Permit>> => {
   const searchURL = new URL(`${VEHICLES_URL}/${searchEntity}/ppc/search`);
   searchURL.searchParams.set("searchColumn", searchByFilter);
   searchURL.searchParams.set("searchString", searchValue);
+
+  // API pagination index starts at 1. Hence page + 1.
   searchURL.searchParams.set("page", (page + 1).toString());
   searchURL.searchParams.set("take", take.toString());
   return httpGETRequest(searchURL.toString()).then((response) => response.data);

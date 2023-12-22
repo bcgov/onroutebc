@@ -46,6 +46,21 @@ export type PaginationOptions = {
 };
 
 /**
+ * The config for sorting data.
+ */
+export type SortingConfig = {
+  /**
+   * The field to order by.
+   */
+  orderBy: string;
+  /**
+   * Boolean indicating if the sort is in descending order.
+   * If not given a value, defaulted to false.
+   */
+  descending?: boolean;
+};
+
+/**
  * Additional data filters that could be used for
  * filtering data further.
  */
@@ -57,17 +72,7 @@ export type DataFilterOptions = {
   /**
    * The sorting configuration selected by the user.
    */
-  sorting?: Array<{
-    /**
-     * The field to order by.
-     */
-    orderBy: string;
-    /**
-     * Boolean indicating if the sort is in descending order.
-     * If not given a value, defaulted to false.
-     */
-    descending?: boolean;
-  }>;
+  sorting?: Array<SortingConfig>;
 };
 
 /**

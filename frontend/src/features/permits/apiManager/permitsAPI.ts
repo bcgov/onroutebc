@@ -397,6 +397,7 @@ export const getPermits = async (
   if (expired) {
     permitsURL.searchParams.set("expired", "true");
   }
+  // API pagination index starts at 1. Hence page + 1.
   permitsURL.searchParams.set("page", (page + 1).toString());
   permitsURL.searchParams.set("take", take.toString());
   if (searchValue) {
