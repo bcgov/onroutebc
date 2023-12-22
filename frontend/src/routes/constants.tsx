@@ -99,6 +99,7 @@ export const APPLICATIONS_ROUTES = {
 export const CREATE_PROFILE_WIZARD_ROUTES = {
   CREATE: "/create-profile",
   WELCOME: "/welcome",
+  MIGRATED_CLIENT: "/migrated-client"
 };
 
 // IDIR

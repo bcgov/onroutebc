@@ -1,14 +1,14 @@
 import React from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { ErrorFallback } from "../../common/pages/ErrorFallback";
-import { CreateProfileSteps } from "./components/dashboard/CreateProfileSteps";
+import { ChallengeProfileSteps } from "./components/dashboard/ChallengeProfileSteps";
 
-export const CreateProfileWizard = React.memo(() => {
+export const ChallengeProfileWizard = React.memo(() => {
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
-      <CreateProfileSteps />
+      <ChallengeProfileSteps />
     </ErrorBoundary>
   );
 });
 
-CreateProfileWizard.displayName = "CreateProfileWizard";
+ChallengeProfileWizard.displayName = "ChallengeProfileWizard";

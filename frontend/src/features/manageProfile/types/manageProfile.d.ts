@@ -1,3 +1,5 @@
+import { ClientInformation } from "../../../common/authentication/types";
+
 interface Address {
   addressLine1: string;
   addressLine2?: string;
@@ -54,6 +56,23 @@ export interface CompanyAndUserRequest {
   primaryContact: Contact;
   adminUser: Contact;
 }
+
+/**
+ * The request object to verify a migrated client
+ */
+export type VerifyMigratedClientRequest = {
+  clientNumber: string;
+  permitNumber: string;
+};
+
+/**
+ * The response object from the API to verify a migrated client
+ */
+export type VerifyMigratedClientResponse = {
+  foundClient: boolean;
+  foundPermit: boolean;
+  migratedClient?: MigratedClient;
+};
 
 /**
  * The tabs on the user profile management page.
