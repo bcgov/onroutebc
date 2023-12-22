@@ -87,3 +87,18 @@ jobs:
       triggers: ('tps-migration' 'dops/' 'frontend/' 'vehicles/')
       vault_role: nonprod
       vault_zone: dev
+  
+  notify-teams-dev:
+    name: Notify Teams - Dev
+    needs: [deploys, vars]
+    runs-on: ubuntu-22.04
+    steps:
+      - name: MS Teams Notifications
+        uses: dchourasia/ms-teams-notification@1.0
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          webhook-uri: ${{ vars.MS_TEAMS_WEBHOOK_URI }}
+          custom-facts: |
+            - name: Notify
+              value: "Successful Deploy of ${{ needs.vars.outputs.pr }} to DEV"
+          show-on-exit: false
