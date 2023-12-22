@@ -114,6 +114,8 @@ export const ChallengeProfileSteps = React.memo(() => {
       if (foundClient && foundPermit && migratedClient) {
         setIsClientVerified(() => true);
         clearVerifyClientErrors();
+        setActiveStep(() => 1);
+        setMigratedClient?.(() => migratedClient);
       } else {
         if (!foundClient) {
           setVerifyClientError("clientNumber", {
@@ -258,11 +260,11 @@ export const ChallengeProfileSteps = React.memo(() => {
   };
 
   /**
-   *
-   * @param data
+   * Onclick handler for Next button at Verify Profile stage.
+   * @param data The form data.
    */
   const handleNextVerifyClientStep = (data: VerifyMigratedClientRequest) => {
-    verifyMigratedClientMutation.mutate(data as VerifyMigratedClientRequest);
+    verifyMigratedClientMutation.mutate(data);
   };
 
   const handleNext = () => {
