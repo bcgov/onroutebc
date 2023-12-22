@@ -7,15 +7,15 @@ import { useFormContext } from "react-hook-form";
 import { useAuth } from "react-oidc-context";
 import { useNavigate } from "react-router-dom";
 import { Nullable } from "vitest";
-import { SnackBarContext } from "../../../../App";
-import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
-import { getDefaultRequiredVal } from "../../../../common/helpers/util";
-import { BC_COLOURS } from "../../../../themes/bcGovStyles";
-import { createOnRouteBCProfile } from "../../../manageProfile/apiManager/manageProfileAPI";
-import { CompanyAndUserRequest } from "../../../manageProfile/types/manageProfile";
-import { CompanyInformationWizardForm } from "../../subcomponents/CompanyInformationWizardForm";
-import { UserInformationWizardForm } from "../../subcomponents/UserInformationWizardForm";
-import { WizardCompanyBanner } from "../../subcomponents/WizardCompanyBanner";
+import OnRouteBCContext from "../../../common/authentication/OnRouteBCContext";
+import { getDefaultRequiredVal } from "../../../common/helpers/util";
+import { ERROR_ROUTES } from "../../../routes/constants";
+import { BC_COLOURS } from "../../../themes/bcGovStyles";
+import { createOnRouteBCProfile } from "../../manageProfile/apiManager/manageProfileAPI";
+import { CompanyAndUserRequest } from "../../manageProfile/types/manageProfile";
+import { CompanyInformationWizardForm } from "./CompanyInformationWizardForm";
+import { UserInformationWizardForm } from "./UserInformationWizardForm";
+import { WizardCompanyBanner } from "./WizardCompanyBanner";
 
 /**
  * Gets the section name inside the form for a particular field name
@@ -48,7 +48,7 @@ const getFirstValidationError = (
 
 /**
  * The company info and user info steps to be shared between
- * challenge and no challenge workflows
+ * challenge and no challenge workflows.
  */
 export const CompanyAndUserInfoSteps = ({
   setClientNumber,
@@ -73,7 +73,6 @@ export const CompanyAndUserInfoSteps = ({
   } = useContext(OnRouteBCContext);
   const { user } = useAuth();
   const queryClient = useQueryClient();
-  const { setSnackBar } = useContext(SnackBarContext);
 
   const createProfileQuery = useMutation({
     mutationFn: createOnRouteBCProfile,
@@ -110,21 +109,11 @@ export const CompanyAndUserInfoSteps = ({
 
         setClientNumber(() => responseBody["clientNumber"]);
         queryClient.invalidateQueries(["userContext"]);
-      } else if (response.status === 400) {
-        const { error } = response.data;
-        const firstErrMsg = getFirstValidationError(
-          getDefaultRequiredVal([], error),
-        );
-        if (firstErrMsg) {
-          setSnackBar({
-            message: firstErrMsg,
-            showSnackbar: true,
-            setShowSnackbar: () => true,
-            alertType: "error",
-          });
-        }
       }
     },
+    onError: () => {
+      navigate(ERROR_ROUTES.UNEXPECTED);
+    }
   });
 
   const handleNext = () => {

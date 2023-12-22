@@ -7,13 +7,13 @@ import { useAuth } from "react-oidc-context";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useNavigate } from "react-router";
-import { SnackBarContext } from "../../../../App";
 import { LoadBCeIDUserRolesByCompany } from "../../../../common/authentication/LoadBCeIDUserRolesByCompany";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { Banner } from "../../../../common/components/dashboard/Banner";
 import "../../../../common/components/dashboard/Dashboard.scss";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { Nullable } from "../../../../common/types/common";
+import { ERROR_ROUTES } from "../../../../routes/constants";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { verifyMigratedClient } from "../../../manageProfile/apiManager/manageProfileAPI";
 import {
@@ -22,11 +22,12 @@ import {
   VerifyMigratedClientResponse,
 } from "../../../manageProfile/types/manageProfile";
 import { ClientAndPermitReferenceInfoBox } from "../../subcomponents/ClientAndPermitReferenceInfoBox";
+import { CompanyAndUserInfoSteps } from "../../subcomponents/CompanyAndUserInfoSteps";
 import { OnRouteBCProfileCreated } from "../../subcomponents/OnRouteBCProfileCreated";
 import { VerifyMigratedClientForm } from "../../subcomponents/VerifyMigratedClientForm";
 import { WizardCompanyBanner } from "../../subcomponents/WizardCompanyBanner";
 import "./CreateProfileSteps.scss";
-import { CompanyAndUserInfoSteps } from "./Reusable";
+
 /**
  * The stepper component containing the necessary forms for creating profile.
  */
@@ -34,7 +35,6 @@ export const ChallengeProfileSteps = React.memo(() => {
   const navigate = useNavigate();
   const steps = ["Verify Profile", "Company Information", "My Information"];
   const { migratedClient, setMigratedClient } = useContext(OnRouteBCContext);
-  const { setSnackBar } = useContext(SnackBarContext);
   const { user } = useAuth();
 
   const [activeStep, setActiveStep] = useState(0);
@@ -140,17 +140,10 @@ export const ChallengeProfileSteps = React.memo(() => {
             message: "Permit No. does not match Client No.",
           });
         }
-        setIsClientVerified(() => true);
-        setActiveStep(() => 1);
       }
     },
     onError: () => {
-      setSnackBar({
-        message: "An unexpected error occurred.",
-        showSnackbar: true,
-        setShowSnackbar: () => true,
-        alertType: "error",
-      });
+      navigate(ERROR_ROUTES.UNEXPECTED);
     },
   });
 

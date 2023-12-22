@@ -12,7 +12,7 @@ import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { CompanyAndUserRequest } from "../../../manageProfile/types/manageProfile";
 import { OnRouteBCProfileCreated } from "../../subcomponents/OnRouteBCProfileCreated";
 import "./CreateProfileSteps.scss";
-import { CompanyAndUserInfoSteps } from "./Reusable";
+import { CompanyAndUserInfoSteps } from "../../subcomponents/CompanyAndUserInfoSteps";
 
 /**
  * The stepper component containing the necessary forms for creating profile.
