@@ -4,6 +4,7 @@ import {
   MiddlewareConsumer,
   Module,
   OnApplicationBootstrap,
+  RequestMethod,
 } from '@nestjs/common';
 import { CacheModule } from '@nestjs/cache-manager';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -28,12 +29,31 @@ import { PaymentModule } from './modules/payment/payment.module';
 import { HTTPLoggerMiddleware } from './common/middleware/req.res.logger';
 import { TypeormCustomLogger } from './common/logger/typeorm-logger.config';
 import { getTypeormLogLevel } from './common/helper/logger.helper';
+import { ClsModule } from 'nestjs-cls';
+import { Request } from 'express';
+import { v4 as uuidv4 } from 'uuid';
 
 const envPath = path.resolve(process.cwd() + '/../');
 
 @Module({
   imports: [
     ConfigModule.forRoot({ envFilePath: `${envPath}/.env` }),
+    // Register the ClsModule,
+    ClsModule.forRoot({
+      global: true,
+      middleware: {
+        // automatically mount the
+        // ClsMiddleware for all routes
+        mount: true,
+        generateId: true,
+        idGenerator: (req: Request) => {
+          const correlationId = req.headers['x-correlation-id'];
+          return Array.isArray(correlationId)
+            ? correlationId[0]
+            : correlationId ?? uuidv4();
+        },
+      },
+    }),
     TypeOrmModule.forRoot({
       type: process.env.DB_TYPE === 'mssql' ? 'mssql' : 'postgres',
       useUTC: true,
@@ -95,7 +115,10 @@ export class AppModule implements OnApplicationBootstrap {
   constructor(private readonly appService: AppService) {}
   // let's add a middleware on all routes
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(HTTPLoggerMiddleware).forRoutes('*');
+    consumer
+      .apply(HTTPLoggerMiddleware)
+      .exclude({ path: '/', method: RequestMethod.GET })
+      .forRoutes('*');
   }
   async onApplicationBootstrap() {
     await this.appService.initializeCache().catch((err) => {

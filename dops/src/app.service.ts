@@ -30,7 +30,7 @@ export class AppService {
     return 'DOPS Healthcheck!';
   }
 
-  @LogMethodExecution()
+  @LogMethodExecution({ printMemoryStats: true })
   async initializeCache() {
     const startDateTime = new Date();
     const templates = await this.dgenService.findAllTemplates();

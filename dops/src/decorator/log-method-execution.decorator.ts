@@ -1,19 +1,37 @@
 import { Logger } from '@nestjs/common';
 
-export function LogMethodExecution() {
+export function LogMethodExecution(logMethodOptions?: {
+  printMemoryStats: boolean;
+}) {
   return function (
     target: object,
     propertyKey: string,
     descriptor: PropertyDescriptor,
   ) {
-    const logger = new Logger(target.constructor.name);
+    let memoryUsage = '';
     /* eslint-disable */
+    const logger = new Logger(target.constructor.name);
     const originalMethod = descriptor.value;
+    descriptor.value = async function (...args: any[]) {
+      if (logMethodOptions?.printMemoryStats) {
+        const memoryStats = process.memoryUsage();
+        memoryUsage = `, Memory usage: ${JSON.stringify(memoryStats)}`;
+      }
+      logger.debug(
+        `>> Entering ${target.constructor.name}.${propertyKey} method${memoryUsage}`,
+      );
 
-    descriptor.value = function (...args: any[]) {
-      logger.debug(`Entering ${propertyKey} method`);
-      const result = originalMethod.apply(this, args);
-      logger.debug(`Exiting ${propertyKey} method`);
+      const start = performance.now();
+      const result = await originalMethod.apply(this, args);
+      const end = performance.now();
+      const executionTime = end - start;
+      if (logMethodOptions?.printMemoryStats) {
+        const memoryStats = process.memoryUsage();
+        memoryUsage = `, Memory usage: ${JSON.stringify(memoryStats)}`;
+      }
+      logger.debug(
+        `<< Exiting ${target.constructor.name}.${propertyKey} method, execution time: ${executionTime}ms${memoryUsage}`,
+      );
       return result;
     };
     /* eslint-enable */
