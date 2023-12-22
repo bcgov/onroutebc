@@ -19,7 +19,11 @@ export type CompanyMetadata = {
   alternateName?: string;
 };
 
+/**
+ * Partial Information about a company.
+ */
 export type ClientInformation = {
+  migratedClientHash?: string;
   mailingAddress: {
     addressLine1: string;
     addressLine2: string;
@@ -34,6 +38,9 @@ export type ClientInformation = {
   extension: string;
 };
 
+/**
+ * The information a migrated client will have.
+ */
 export type MigratedClient = ClientInformation & CompanyMetadata;
 
 /**
