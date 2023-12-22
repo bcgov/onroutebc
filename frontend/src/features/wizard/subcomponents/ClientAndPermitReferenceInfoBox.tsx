@@ -15,13 +15,6 @@ export const ClientAndPermitReferenceInfoBox = () => {
         background: `${BC_COLOURS.bc_messages_blue_background}`,
       }}
     >
-      {/* <CardHeader
-            title={
-              <strong>Where can I find my Client No. and Permit No.?</strong>
-            }
-            avatar={<FontAwesomeIcon icon={faCircleInfo} />}
-          /> */}
-
       <CardContent>
         <Stack
           direction="row"

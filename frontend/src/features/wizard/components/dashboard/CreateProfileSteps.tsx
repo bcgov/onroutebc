@@ -13,7 +13,9 @@ import React, { useContext } from "react";
 import { FieldValues, FormProvider, useForm } from "react-hook-form";
 import { useAuth } from "react-oidc-context";
 
+import { useNavigate } from "react-router";
 import { SnackBarContext } from "../../../../App";
+import { LoadBCeIDUserRolesByCompany } from "../../../../common/authentication/LoadBCeIDUserRolesByCompany";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { Banner } from "../../../../common/components/dashboard/Banner";
 import "../../../../common/components/dashboard/Dashboard.scss";
@@ -21,34 +23,11 @@ import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { createOnRouteBCProfile } from "../../../manageProfile/apiManager/manageProfileAPI";
 import { CompanyAndUserRequest } from "../../../manageProfile/types/manageProfile";
-import { CompanyInformationWizardForm } from "../../pages/CompanyInformationWizardForm";
-import { OnRouteBCProfileCreated } from "../../pages/OnRouteBCProfileCreated";
-import { UserInformationWizardForm } from "../../pages/UserInformationWizardForm";
+import { CompanyInformationWizardForm } from "../../subcomponents/CompanyInformationWizardForm";
+import { OnRouteBCProfileCreated } from "../../subcomponents/OnRouteBCProfileCreated";
+import { UserInformationWizardForm } from "../../subcomponents/UserInformationWizardForm";
+import { WizardCompanyBanner } from "../../subcomponents/WizardCompanyBanner";
 import "./CreateProfileSteps.scss";
-import { useNavigate } from "react-router";
-import { LoadBCeIDUserRolesByCompany } from "../../../../common/authentication/LoadBCeIDUserRolesByCompany";
-
-const CompanyBanner = ({ legalName }: { legalName: string }) => {
-  return (
-    <Box
-      sx={{
-        height: 100,
-        backgroundColor: BC_COLOURS.banner_grey,
-        color: BC_COLOURS.bc_primary_blue,
-        marginTop: "20px",
-        px: 3,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-      }}
-    >
-      <div>
-        <Typography variant="h5">COMPANY NAME</Typography>
-        <Typography variant="h4">{legalName}</Typography>
-      </div>
-    </Box>
-  );
-};
 
 /**
  * Gets the section name inside the form for a particular field name
@@ -316,7 +295,7 @@ export const CreateProfileSteps = React.memo(() => {
             </div>
             {activeStep === 0 && (
               <div className="create-profile-section create-profile-section--company">
-                <CompanyBanner
+                <WizardCompanyBanner
                   legalName={getDefaultRequiredVal(
                     "",
                     user?.profile?.bceid_business_name as string,

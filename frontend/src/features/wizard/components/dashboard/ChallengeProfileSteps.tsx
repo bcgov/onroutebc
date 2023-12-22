@@ -31,34 +31,13 @@ import {
   VerifyMigratedClientRequest,
   VerifyMigratedClientResponse,
 } from "../../../manageProfile/types/manageProfile";
-import { ClientAndPermitReferenceInfoBox } from "../../pages/ClientAndPermitReferenceInfoBox";
-import { CompanyInformationWizardForm } from "../../pages/CompanyInformationWizardForm";
-import { OnRouteBCProfileCreated } from "../../pages/OnRouteBCProfileCreated";
-import { UserInformationWizardForm } from "../../pages/UserInformationWizardForm";
-import { VerifyMigratedClientForm } from "../../pages/VerifyMigratedClientForm";
+import { ClientAndPermitReferenceInfoBox } from "../../subcomponents/ClientAndPermitReferenceInfoBox";
+import { CompanyInformationWizardForm } from "../../subcomponents/CompanyInformationWizardForm";
+import { OnRouteBCProfileCreated } from "../../subcomponents/OnRouteBCProfileCreated";
+import { UserInformationWizardForm } from "../../subcomponents/UserInformationWizardForm";
+import { VerifyMigratedClientForm } from "../../subcomponents/VerifyMigratedClientForm";
 import "./CreateProfileSteps.scss";
-
-const CompanyBanner = ({ legalName }: { legalName: string }) => {
-  return (
-    <Box
-      sx={{
-        height: 100,
-        backgroundColor: BC_COLOURS.banner_grey,
-        color: BC_COLOURS.bc_primary_blue,
-        marginTop: "20px",
-        px: 3,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-      }}
-    >
-      <div>
-        <Typography variant="h5">COMPANY NAME</Typography>
-        <Typography variant="h4">{legalName}</Typography>
-      </div>
-    </Box>
-  );
-};
+import { WizardCompanyBanner } from "../../subcomponents/WizardCompanyBanner";
 
 /**
  * Gets the section name inside the form for a particular field name
@@ -127,8 +106,14 @@ export const ChallengeProfileSteps = React.memo(() => {
     },
   });
 
-  const { handleSubmit: handleVerifyClientSubmit } =
-    verifyMigratedClientFormMethods;
+  const {
+    handleSubmit: handleVerifyClientSubmit,
+    getValues: getVerifyClientValues,
+    getFieldState: getVerifyClientFieldState,
+    formState: verifyClientFormState,
+    setError: setVerifyClientError,
+    clearErrors: clearVerifyClientErrors,
+  } = verifyMigratedClientFormMethods;
 
   const verifyMigratedClientMutation = useMutation({
     mutationFn: verifyMigratedClient,
@@ -137,8 +122,18 @@ export const ChallengeProfileSteps = React.memo(() => {
       if (foundClient && foundPermit && migratedClient) {
         setIsClientVerified(() => true);
       } else {
-        console.log("coming here");
+        if (!foundClient) {
+          setVerifyClientError("clientNumber", {
+            message: "Client No. not found",
+          });
+        }
+        if (!foundPermit) {
+          setVerifyClientError("permitNumber", {
+            message: "Permit No. does not match Client No.",
+          });
+        }
         setIsClientVerified(() => true);
+        setActiveStep(() => 1);
       }
     },
   });
@@ -269,35 +264,17 @@ export const ChallengeProfileSteps = React.memo(() => {
     createProfileQuery.mutate(profileToBeCreated);
   };
 
-  const completedSteps = () => {
-    return Object.keys(completed).length;
+  /**
+   *
+   * @param data
+   */
+  const handleNextVerifyClientStep = (data: VerifyMigratedClientRequest) => {
+    verifyMigratedClientMutation.mutate(data as VerifyMigratedClientRequest);
   };
 
-  const totalSteps = () => {
-    return steps.length;
-  };
-
-  const isLastStep = () => {
-    return activeStep === totalSteps() - 1;
-  };
-
-  const allStepsCompleted = () => {
-    return completedSteps() === totalSteps();
-  };
-
-  const handleNext = (
-    data: VerifyMigratedClientRequest | CompanyAndUserRequest,
-  ) => {
-    if (activeStep === 0 && !isClientVerified) {
-      verifyMigratedClientMutation.mutate(data as VerifyMigratedClientRequest);
-    } else if (isClientVerified || activeStep > 0) {
-      const newActiveStep =
-        isLastStep() && !allStepsCompleted()
-          ? // It's the last step, but not all steps have been completed,
-            // find the first step that has been completed
-            steps.findIndex((step, i) => !(i in completed))
-          : activeStep + 1;
-      setActiveStep(newActiveStep);
+  const handleNext = () => {
+    if (isClientVerified || activeStep > 0) {
+      setActiveStep((prevActiveStep) => prevActiveStep + 1);
     }
   };
 
@@ -325,13 +302,14 @@ export const ChallengeProfileSteps = React.memo(() => {
 
       <div
         className="tabpanel-container create-profile-steps"
-        // role="profile-steps"
         id={`profile-steps`}
         aria-labelledby={`profile-steps`}
         style={{ paddingBottom: "10em" }}
       >
-        {/* <Stack direction="row"> */}
-        <div className="create-profile-steps__create-profile">
+        <div
+          className="create-profile-steps__create-profile"
+          style={{ width: "50%" }}
+        >
           <div className="create-profile-section create-profile-section--steps">
             <Stepper activeStep={activeStep} alternativeLabel>
               {steps.map((label) => (
@@ -344,7 +322,7 @@ export const ChallengeProfileSteps = React.memo(() => {
           {activeStep === 0 && (
             <FormProvider {...verifyMigratedClientFormMethods}>
               <div className="create-profile-section create-profile-section--company">
-                <CompanyBanner
+                <WizardCompanyBanner
                   legalName={getDefaultRequiredVal(
                     "",
                     user?.profile?.bceid_business_name as string,
@@ -377,7 +355,9 @@ export const ChallengeProfileSteps = React.memo(() => {
                       </Button>
                       <Button
                         className="proceed-btn proceed-btn--next"
-                        onClick={handleVerifyClientSubmit(handleNext)}
+                        onClick={handleVerifyClientSubmit(
+                          handleNextVerifyClientStep,
+                        )}
                         variant="contained"
                         color="primary"
                         endIcon={<FontAwesomeIcon icon={faArrowRight} />}
@@ -390,7 +370,6 @@ export const ChallengeProfileSteps = React.memo(() => {
               </div>
             </FormProvider>
           )}
-
           {activeStep !== 0 && (
             <FormProvider {...companyAndUserFormMethods}>
               <input type="hidden" {...register("legalName")} />
@@ -408,7 +387,7 @@ export const ChallengeProfileSteps = React.memo(() => {
               )}
               {activeStep === 1 && (
                 <div className="create-profile-section create-profile-section--company">
-                  <CompanyBanner
+                  <WizardCompanyBanner
                     legalName={getDefaultRequiredVal(
                       "",
                       user?.profile?.bceid_business_name as string,
@@ -516,4 +495,4 @@ export const ChallengeProfileSteps = React.memo(() => {
   );
 });
 
-ChallengeProfileSteps.displayName = "CreateProfileSteps";
+ChallengeProfileSteps.displayName = "ChallengeProfileSteps";

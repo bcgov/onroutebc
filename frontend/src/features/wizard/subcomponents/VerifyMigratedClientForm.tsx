@@ -17,12 +17,10 @@ export const VerifyMigratedClientForm = () => {
         options={{
           name: "clientNumber",
           rules: {
-            required: true,
-            // validate: {
-            //   validateAlternateName: (alternateName: string) =>
-            //     isValidOptionalString(alternateName, { maxLength: 150 }) ||
-            //     invalidDBALength(1, 150),
-            // },
+            required: {
+              value: true,
+              message: "This is a required field.",
+            },
           },
           label: "Client No.",
         }}
@@ -33,7 +31,7 @@ export const VerifyMigratedClientForm = () => {
           icon={
             <FontAwesomeIcon
               icon={faCircleInfo}
-              size="xl"
+              size="lg"
               color={BC_COLOURS.bc_black}
             />
           }
@@ -52,12 +50,10 @@ export const VerifyMigratedClientForm = () => {
         options={{
           name: "permitNumber",
           rules: {
-            required: true,
-            // validate: {
-            //   validateAlternateName: (alternateName: string) =>
-            //     isValidOptionalString(alternateName, { maxLength: 150 }) ||
-            //     invalidDBALength(1, 150),
-            // },
+            required: {
+              value: true,
+              message: "This is a required field.",
+            },
           },
           label: "Permit No.",
         }}
