@@ -94,11 +94,6 @@ export const ChallengeProfileSteps = React.memo(() => {
   const [isClientVerified, setIsClientVerified] = useState<boolean>(false);
   const [clientNumber, setClientNumber] = useState(null);
 
-  // Add a setter when there's a use for it.
-  const [completed] = useState<{
-    [k: number]: boolean;
-  }>({});
-
   const verifyMigratedClientFormMethods = useForm<VerifyMigratedClientRequest>({
     defaultValues: {
       clientNumber: "",
@@ -108,9 +103,6 @@ export const ChallengeProfileSteps = React.memo(() => {
 
   const {
     handleSubmit: handleVerifyClientSubmit,
-    getValues: getVerifyClientValues,
-    getFieldState: getVerifyClientFieldState,
-    formState: verifyClientFormState,
     setError: setVerifyClientError,
     clearErrors: clearVerifyClientErrors,
   } = verifyMigratedClientFormMethods;
@@ -121,6 +113,7 @@ export const ChallengeProfileSteps = React.memo(() => {
       const { foundClient, foundPermit, migratedClient } = response;
       if (foundClient && foundPermit && migratedClient) {
         setIsClientVerified(() => true);
+        clearVerifyClientErrors();
       } else {
         if (!foundClient) {
           setVerifyClientError("clientNumber", {
