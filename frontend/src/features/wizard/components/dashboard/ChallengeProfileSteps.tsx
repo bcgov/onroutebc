@@ -7,6 +7,8 @@ import { useAuth } from "react-oidc-context";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useNavigate } from "react-router";
+import { SnackBarContext } from "../../../../App";
+import { LoadBCeIDUserRolesByCompany } from "../../../../common/authentication/LoadBCeIDUserRolesByCompany";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { Banner } from "../../../../common/components/dashboard/Banner";
 import "../../../../common/components/dashboard/Dashboard.scss";
@@ -15,6 +17,7 @@ import { Nullable } from "../../../../common/types/common";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
 import { verifyMigratedClient } from "../../../manageProfile/apiManager/manageProfileAPI";
 import {
+  CompanyAndUserRequest,
   VerifyMigratedClientRequest,
   VerifyMigratedClientResponse,
 } from "../../../manageProfile/types/manageProfile";
@@ -24,15 +27,14 @@ import { VerifyMigratedClientForm } from "../../subcomponents/VerifyMigratedClie
 import { WizardCompanyBanner } from "../../subcomponents/WizardCompanyBanner";
 import "./CreateProfileSteps.scss";
 import { Reusable } from "./Reusable";
-import { LoadBCeIDUserRolesByCompany } from "../../../../common/authentication/LoadBCeIDUserRolesByCompany";
 /**
  * The stepper component containing the necessary forms for creating profile.
  */
 export const ChallengeProfileSteps = React.memo(() => {
   const navigate = useNavigate();
   const steps = ["Verify Profile", "Company Information", "My Information"];
-  const { setMigratedClient } = useContext(OnRouteBCContext);
-
+  const { migratedClient, setMigratedClient } = useContext(OnRouteBCContext);
+  const { setSnackBar } = useContext(SnackBarContext);
   const { user } = useAuth();
 
   const [activeStep, setActiveStep] = useState(0);
@@ -43,6 +45,68 @@ export const ChallengeProfileSteps = React.memo(() => {
     defaultValues: {
       clientNumber: "",
       permitNumber: "",
+    },
+  });
+
+  const companyAndUserFormMethods = useForm<CompanyAndUserRequest>({
+    defaultValues: {
+      legalName: getDefaultRequiredVal(
+        "",
+        user?.profile?.bceid_business_name as string,
+      ),
+      alternateName: getDefaultRequiredVal("", migratedClient?.alternateName),
+      mailingAddress: {
+        addressLine1: getDefaultRequiredVal(
+          "",
+          migratedClient?.mailingAddress?.addressLine1,
+        ),
+        addressLine2: getDefaultRequiredVal(
+          "",
+          migratedClient?.mailingAddress?.addressLine2,
+        ),
+        provinceCode: getDefaultRequiredVal(
+          "",
+          migratedClient?.mailingAddress?.provinceCode,
+        ),
+        countryCode: getDefaultRequiredVal(
+          "",
+          migratedClient?.mailingAddress?.countryCode,
+        ),
+        city: getDefaultRequiredVal("", migratedClient?.mailingAddress?.city),
+        postalCode: getDefaultRequiredVal(
+          "",
+          migratedClient?.mailingAddress?.postalCode,
+        ),
+      },
+      email: getDefaultRequiredVal("", user?.profile?.email),
+      phone: getDefaultRequiredVal("", migratedClient?.phone),
+      extension: getDefaultRequiredVal("", migratedClient?.extension),
+      fax: getDefaultRequiredVal("", migratedClient?.fax),
+      adminUser: {
+        firstName: "",
+        lastName: "",
+        email: "",
+        phone1: "",
+        phone1Extension: "",
+        phone2: "",
+        phone2Extension: "",
+        fax: "",
+        countryCode: "",
+        provinceCode: "",
+        city: "",
+      },
+      primaryContact: {
+        firstName: "",
+        lastName: "",
+        email: "",
+        phone1: "",
+        phone1Extension: "",
+        phone2: "",
+        phone2Extension: "",
+        countryCode: "",
+        provinceCode: "",
+        city: "",
+      },
     },
   });
 
@@ -80,31 +144,13 @@ export const ChallengeProfileSteps = React.memo(() => {
         setActiveStep(() => 1);
       }
     },
-    onError: async (response: VerifyMigratedClientResponse) => {
-      const { foundClient, foundPermit, migratedClient } = response;
-      if (foundClient && foundPermit && migratedClient) {
-        // Clear form errors (if any)
-        clearVerifyClientErrors();
-
-        setIsClientVerified(() => true);
-        setActiveStep(() => 1);
-
-        // set the updated migrated client in OnRouteBCContext.
-        setMigratedClient?.(() => migratedClient);
-      } else {
-        if (!foundClient) {
-          setVerifyClientError("clientNumber", {
-            message: "Client No. not found",
-          });
-        }
-        if (!foundPermit) {
-          setVerifyClientError("permitNumber", {
-            message: "Permit No. does not match Client No.",
-          });
-        }
-        setIsClientVerified(() => true);
-        setActiveStep(() => 1);
-      }
+    onError: () => {
+      setSnackBar({
+        message: "An unexpected error occurred.",
+        showSnackbar: true,
+        setShowSnackbar: () => true,
+        alertType: "error",
+      });
     },
   });
 
@@ -210,11 +256,14 @@ export const ChallengeProfileSteps = React.memo(() => {
             </FormProvider>
           )}
           {activeStep !== 0 && isClientVerified && (
-            <Reusable
-              activeStep={activeStep}
-              setActiveStep={setActiveStep}
-              setClientNumber={setClientNumber}
-            />
+            <FormProvider {...companyAndUserFormMethods}>
+              <Reusable
+                activeStep={activeStep}
+                setActiveStep={setActiveStep}
+                setClientNumber={setClientNumber}
+                totalSteps={3}
+              />
+            </FormProvider>
           )}
         </div>
         {activeStep === 0 && (

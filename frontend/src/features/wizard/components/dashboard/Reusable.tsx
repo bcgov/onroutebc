@@ -1,5 +1,5 @@
 import { Alert, Button, Stack, Typography } from "@mui/material";
-import { FormProvider, useForm } from "react-hook-form";
+import { FormProvider, useForm, useFormContext } from "react-hook-form";
 import { WizardCompanyBanner } from "../../subcomponents/WizardCompanyBanner";
 import { CompanyInformationWizardForm } from "../../subcomponents/CompanyInformationWizardForm";
 import { UserInformationWizardForm } from "../../subcomponents/UserInformationWizardForm";
@@ -50,12 +50,16 @@ export const Reusable = ({
   setClientNumber,
   activeStep,
   setActiveStep,
+  totalSteps,
 }: {
   setClientNumber: Dispatch<SetStateAction<Nullable<string>>>;
   activeStep: number;
   setActiveStep: Dispatch<SetStateAction<number>>;
+  totalSteps: number;
 }) => {
   const navigate = useNavigate();
+  const { handleSubmit: handleCreateProfileSubmit, register } =
+    useFormContext<CompanyAndUserRequest>();
   const {
     setCompanyId,
     setUserDetails,
@@ -67,72 +71,6 @@ export const Reusable = ({
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const { setSnackBar } = useContext(SnackBarContext);
-
-  console.log('migratedClient in company form::', migratedClient);
-
-  const companyAndUserFormMethods = useForm<CompanyAndUserRequest>({
-    defaultValues: {
-      legalName: getDefaultRequiredVal(
-        "",
-        user?.profile?.bceid_business_name as string,
-      ),
-      alternateName: getDefaultRequiredVal("", migratedClient?.alternateName),
-      mailingAddress: {
-        addressLine1: getDefaultRequiredVal(
-          "",
-          migratedClient?.mailingAddress?.addressLine1,
-        ),
-        addressLine2: getDefaultRequiredVal(
-          "",
-          migratedClient?.mailingAddress?.addressLine2,
-        ),
-        provinceCode: getDefaultRequiredVal(
-          "",
-          migratedClient?.mailingAddress?.provinceCode,
-        ),
-        countryCode: getDefaultRequiredVal(
-          "",
-          migratedClient?.mailingAddress?.countryCode,
-        ),
-        city: getDefaultRequiredVal("", migratedClient?.mailingAddress?.city),
-        postalCode: getDefaultRequiredVal(
-          "",
-          migratedClient?.mailingAddress?.postalCode,
-        ),
-      },
-      email: getDefaultRequiredVal("", user?.profile?.email),
-      phone: getDefaultRequiredVal("", migratedClient?.phone),
-      extension: getDefaultRequiredVal("", migratedClient?.extension),
-      fax: getDefaultRequiredVal("", migratedClient?.fax),
-      adminUser: {
-        firstName: "",
-        lastName: "",
-        email: "",
-        phone1: "",
-        phone1Extension: "",
-        phone2: "",
-        phone2Extension: "",
-        fax: "",
-        countryCode: "",
-        provinceCode: "",
-        city: "",
-      },
-      primaryContact: {
-        firstName: "",
-        lastName: "",
-        email: "",
-        phone1: "",
-        phone1Extension: "",
-        phone2: "",
-        phone2Extension: "",
-        countryCode: "",
-        provinceCode: "",
-        city: "",
-      },
-    },
-  });
-  const { handleSubmit: handleCreateProfileSubmit, register } =
-    companyAndUserFormMethods;
 
   const createProfileQuery = useMutation({
     mutationFn: createOnRouteBCProfile,
@@ -205,9 +143,9 @@ export const Reusable = ({
   };
 
   return (
-    <FormProvider {...companyAndUserFormMethods}>
+    <>
       <input type="hidden" {...register("legalName")} />
-      {activeStep !== 0 && (
+      {activeStep === totalSteps - 2 && (
         <div className="create-profile-section create-profile-section--info">
           <Alert severity="info">
             <Typography>
@@ -218,7 +156,7 @@ export const Reusable = ({
           </Alert>
         </div>
       )}
-      {activeStep === 1 && (
+      {activeStep === totalSteps - 2 && (
         <div className="create-profile-section create-profile-section--company">
           <WizardCompanyBanner
             legalName={getDefaultRequiredVal(
@@ -229,7 +167,7 @@ export const Reusable = ({
           <CompanyInformationWizardForm />
         </div>
       )}
-      {activeStep === 2 && (
+      {activeStep === totalSteps - 1 && (
         <div className="create-profile-section create-profile-section--user">
           <h2>User Details</h2>
           <hr></hr>
@@ -237,7 +175,7 @@ export const Reusable = ({
         </div>
       )}
       <div className="create-profile-section create-profile-section--nav">
-        {activeStep === 1 && (
+        {activeStep === totalSteps - 2 && (
           <Stack direction="row" spacing={3}>
             <Button
               key="cancel-create-profile-button"
@@ -260,25 +198,27 @@ export const Reusable = ({
             >
               Cancel
             </Button>
-            <Button
-              onClick={handleBack}
-              variant="contained"
-              color="secondary"
-              startIcon={<FontAwesomeIcon icon={faArrowLeft} />}
-              className="proceed-btn proceed-btn--prev"
-              sx={{
-                ":hover": {
-                  background: BC_COLOURS.bc_text_links_blue,
-                  border: `2px solid ${BC_COLOURS.bc_text_links_blue}`,
-                },
-                border: `2px solid ${BC_COLOURS.bc_primary_blue}`,
-                borderRadius: "4px",
-                color: `${BC_COLOURS.bc_primary_blue}`,
-                background: `${BC_COLOURS.white}`,
-              }}
-            >
-              <strong>Previous</strong>
-            </Button>
+            {totalSteps === 3 && (
+              <Button
+                onClick={handleBack}
+                variant="contained"
+                color="secondary"
+                startIcon={<FontAwesomeIcon icon={faArrowLeft} />}
+                className="proceed-btn proceed-btn--prev"
+                sx={{
+                  ":hover": {
+                    background: BC_COLOURS.bc_text_links_blue,
+                    border: `2px solid ${BC_COLOURS.bc_text_links_blue}`,
+                  },
+                  border: `2px solid ${BC_COLOURS.bc_primary_blue}`,
+                  borderRadius: "4px",
+                  color: `${BC_COLOURS.bc_primary_blue}`,
+                  background: `${BC_COLOURS.white}`,
+                }}
+              >
+                <strong>Previous</strong>
+              </Button>
+            )}
             <Button
               className="proceed-btn proceed-btn--next"
               onClick={handleCreateProfileSubmit(handleNext)}
@@ -290,7 +230,7 @@ export const Reusable = ({
             </Button>
           </Stack>
         )}
-        {activeStep === 2 && (
+        {activeStep === totalSteps - 1 && (
           <>
             <Button
               onClick={handleBack}
@@ -311,6 +251,6 @@ export const Reusable = ({
           </>
         )}
       </div>
-    </FormProvider>
+    </>
   );
 };
