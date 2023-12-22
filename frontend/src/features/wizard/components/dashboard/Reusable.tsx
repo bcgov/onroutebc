@@ -68,6 +68,8 @@ export const Reusable = ({
   const queryClient = useQueryClient();
   const { setSnackBar } = useContext(SnackBarContext);
 
+  console.log('migratedClient in company form::', migratedClient);
+
   const companyAndUserFormMethods = useForm<CompanyAndUserRequest>({
     defaultValues: {
       legalName: getDefaultRequiredVal(
