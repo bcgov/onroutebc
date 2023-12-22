@@ -3,7 +3,7 @@ name: Notifications
 
 on:
   workflow_run: 
-    workflows: [Deploys]
+    workflows: [Deploy]
 jobs:
   notify-teams:
     name: Notify Teams 
