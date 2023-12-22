@@ -3,7 +3,7 @@ name: Notifications
 
 on:
   workflow_run: 
-    workflows: [PR,PR Closed,Merge]
+    workflows: [Deploys]
 jobs:
   notify-teams:
     name: Notify Teams 
@@ -14,3 +14,4 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           webhook-uri: ${{ vars.MS_TEAMS_WEBHOOK_URI }}
+          parent-job: Deploys
