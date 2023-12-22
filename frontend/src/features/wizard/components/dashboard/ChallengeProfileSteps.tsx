@@ -1,6 +1,6 @@
 import { Box, Button, Stack, Step, StepLabel, Stepper } from "@mui/material";
 import { useMutation } from "@tanstack/react-query";
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useAuth } from "react-oidc-context";
 
@@ -8,7 +8,6 @@ import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useNavigate } from "react-router";
 import { LoadBCeIDUserRolesByCompany } from "../../../../common/authentication/LoadBCeIDUserRolesByCompany";
-import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { Banner } from "../../../../common/components/dashboard/Banner";
 import "../../../../common/components/dashboard/Dashboard.scss";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
@@ -33,81 +32,55 @@ import "./CreateProfileSteps.scss";
  */
 export const ChallengeProfileSteps = React.memo(() => {
   const navigate = useNavigate();
-  const steps = ["Verify Profile", "Company Information", "My Information"];
-  const { migratedClient, setMigratedClient } = useContext(OnRouteBCContext);
   const { user } = useAuth();
 
+  const steps = ["Verify Profile", "Company Information", "My Information"];
   const [activeStep, setActiveStep] = useState(0);
   const [isClientVerified, setIsClientVerified] = useState<boolean>(false);
   const [clientNumber, setClientNumber] = useState<Nullable<string>>(null);
 
+  const defaultCompanyAndUserInfoValues = {
+    legalName: getDefaultRequiredVal(
+      "",
+      user?.profile?.bceid_business_name as string,
+    ),
+    email: getDefaultRequiredVal("", user?.profile?.email),
+    adminUser: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      phone1: "",
+      phone1Extension: "",
+      phone2: "",
+      phone2Extension: "",
+      fax: "",
+      countryCode: "",
+      provinceCode: "",
+      city: "",
+    },
+    primaryContact: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      phone1: "",
+      phone1Extension: "",
+      phone2: "",
+      phone2Extension: "",
+      countryCode: "",
+      provinceCode: "",
+      city: "",
+    },
+  };
+
   const verifyMigratedClientFormMethods = useForm<VerifyMigratedClientRequest>({
     defaultValues: {
-      clientNumber: "",
-      permitNumber: "",
+      clientNumber: "202799755",
+      permitNumber: "TPS211999",
     },
   });
 
   const companyAndUserFormMethods = useForm<CompanyAndUserRequest>({
-    defaultValues: {
-      legalName: getDefaultRequiredVal(
-        "",
-        user?.profile?.bceid_business_name as string,
-      ),
-      alternateName: getDefaultRequiredVal("", migratedClient?.alternateName),
-      mailingAddress: {
-        addressLine1: getDefaultRequiredVal(
-          "",
-          migratedClient?.mailingAddress?.addressLine1,
-        ),
-        addressLine2: getDefaultRequiredVal(
-          "",
-          migratedClient?.mailingAddress?.addressLine2,
-        ),
-        provinceCode: getDefaultRequiredVal(
-          "",
-          migratedClient?.mailingAddress?.provinceCode,
-        ),
-        countryCode: getDefaultRequiredVal(
-          "",
-          migratedClient?.mailingAddress?.countryCode,
-        ),
-        city: getDefaultRequiredVal("", migratedClient?.mailingAddress?.city),
-        postalCode: getDefaultRequiredVal(
-          "",
-          migratedClient?.mailingAddress?.postalCode,
-        ),
-      },
-      email: getDefaultRequiredVal("", user?.profile?.email),
-      phone: getDefaultRequiredVal("", migratedClient?.phone),
-      extension: getDefaultRequiredVal("", migratedClient?.extension),
-      fax: getDefaultRequiredVal("", migratedClient?.fax),
-      adminUser: {
-        firstName: "",
-        lastName: "",
-        email: "",
-        phone1: "",
-        phone1Extension: "",
-        phone2: "",
-        phone2Extension: "",
-        fax: "",
-        countryCode: "",
-        provinceCode: "",
-        city: "",
-      },
-      primaryContact: {
-        firstName: "",
-        lastName: "",
-        email: "",
-        phone1: "",
-        phone1Extension: "",
-        phone2: "",
-        phone2Extension: "",
-        countryCode: "",
-        provinceCode: "",
-        city: "",
-      },
-    },
+    defaultValues: defaultCompanyAndUserInfoValues,
   });
 
   const {
@@ -115,6 +88,8 @@ export const ChallengeProfileSteps = React.memo(() => {
     setError: setVerifyClientError,
     clearErrors: clearVerifyClientErrors,
   } = verifyMigratedClientFormMethods;
+
+  const { reset: resetCompanyAndUserForm } = companyAndUserFormMethods;
 
   const verifyMigratedClientMutation = useMutation({
     mutationFn: verifyMigratedClient,
@@ -127,8 +102,42 @@ export const ChallengeProfileSteps = React.memo(() => {
         setIsClientVerified(() => true);
         setActiveStep(() => 1);
 
-        // set the updated migrated client in OnRouteBCContext.
-        setMigratedClient?.(() => migratedClient);
+        resetCompanyAndUserForm({
+          ...defaultCompanyAndUserInfoValues,
+          alternateName: getDefaultRequiredVal(
+            "",
+            migratedClient?.alternateName,
+          ),
+          mailingAddress: {
+            addressLine1: getDefaultRequiredVal(
+              "",
+              migratedClient?.mailingAddress?.addressLine1,
+            ),
+            addressLine2: getDefaultRequiredVal(
+              "",
+              migratedClient?.mailingAddress?.addressLine2,
+            ),
+            provinceCode: getDefaultRequiredVal(
+              "",
+              migratedClient?.mailingAddress?.provinceCode,
+            ),
+            countryCode: getDefaultRequiredVal(
+              "",
+              migratedClient?.mailingAddress?.countryCode,
+            ),
+            city: getDefaultRequiredVal(
+              "",
+              migratedClient?.mailingAddress?.city,
+            ),
+            postalCode: getDefaultRequiredVal(
+              "",
+              migratedClient?.mailingAddress?.postalCode,
+            ),
+          },
+          phone: getDefaultRequiredVal("", migratedClient?.phone),
+          extension: getDefaultRequiredVal("", migratedClient?.extension),
+          fax: getDefaultRequiredVal("", migratedClient?.fax),
+        });
       } else {
         if (!foundClient) {
           setVerifyClientError("clientNumber", {
