@@ -28,5 +28,5 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           webhook-uri: ${{ vars.MS_TEAMS_WEBHOOK_URI }}
           custom-facts: |
-            - name: Notify
-              value: "PR# ${{ needs.vars.outputs.pr }}"
+            - name: "PR#"
+              value: "${{ needs.vars.outputs.pr }}"
