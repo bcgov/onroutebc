@@ -36,3 +36,4 @@ jobs:
               value: "${{ github.event_name }}"
             - name: Type
               value: "${{ github.event.action }}"
+          show-on-exit: false
