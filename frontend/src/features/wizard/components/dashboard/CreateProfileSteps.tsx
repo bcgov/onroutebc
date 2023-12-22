@@ -1,9 +1,4 @@
-import {
-  Box,
-  Step,
-  StepLabel,
-  Stepper
-} from "@mui/material";
+import { Box, Step, StepLabel, Stepper } from "@mui/material";
 import React, { useContext } from "react";
 
 import { FormProvider, useForm } from "react-hook-form";
@@ -17,7 +12,7 @@ import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { CompanyAndUserRequest } from "../../../manageProfile/types/manageProfile";
 import { OnRouteBCProfileCreated } from "../../subcomponents/OnRouteBCProfileCreated";
 import "./CreateProfileSteps.scss";
-import { Reusable } from "./Reusable";
+import { CompanyAndUserInfoSteps } from "./Reusable";
 
 /**
  * The stepper component containing the necessary forms for creating profile.
@@ -32,67 +27,67 @@ export const CreateProfileSteps = React.memo(() => {
   const [clientNumber, setClientNumber] =
     React.useState<Nullable<string>>(null);
 
-    const companyAndUserFormMethods = useForm<CompanyAndUserRequest>({
-      defaultValues: {
-        legalName: getDefaultRequiredVal(
+  const companyAndUserFormMethods = useForm<CompanyAndUserRequest>({
+    defaultValues: {
+      legalName: getDefaultRequiredVal(
+        "",
+        user?.profile?.bceid_business_name as string,
+      ),
+      alternateName: getDefaultRequiredVal("", migratedClient?.alternateName),
+      mailingAddress: {
+        addressLine1: getDefaultRequiredVal(
           "",
-          user?.profile?.bceid_business_name as string,
+          migratedClient?.mailingAddress?.addressLine1,
         ),
-        alternateName: getDefaultRequiredVal("", migratedClient?.alternateName),
-        mailingAddress: {
-          addressLine1: getDefaultRequiredVal(
-            "",
-            migratedClient?.mailingAddress?.addressLine1,
-          ),
-          addressLine2: getDefaultRequiredVal(
-            "",
-            migratedClient?.mailingAddress?.addressLine2,
-          ),
-          provinceCode: getDefaultRequiredVal(
-            "",
-            migratedClient?.mailingAddress?.provinceCode,
-          ),
-          countryCode: getDefaultRequiredVal(
-            "",
-            migratedClient?.mailingAddress?.countryCode,
-          ),
-          city: getDefaultRequiredVal("", migratedClient?.mailingAddress?.city),
-          postalCode: getDefaultRequiredVal(
-            "",
-            migratedClient?.mailingAddress?.postalCode,
-          ),
-        },
-        email: getDefaultRequiredVal("", user?.profile?.email),
-        phone: getDefaultRequiredVal("", migratedClient?.phone),
-        extension: getDefaultRequiredVal("", migratedClient?.extension),
-        fax: getDefaultRequiredVal("", migratedClient?.fax),
-        adminUser: {
-          firstName: "",
-          lastName: "",
-          email: "",
-          phone1: "",
-          phone1Extension: "",
-          phone2: "",
-          phone2Extension: "",
-          fax: "",
-          countryCode: "",
-          provinceCode: "",
-          city: "",
-        },
-        primaryContact: {
-          firstName: "",
-          lastName: "",
-          email: "",
-          phone1: "",
-          phone1Extension: "",
-          phone2: "",
-          phone2Extension: "",
-          countryCode: "",
-          provinceCode: "",
-          city: "",
-        },
+        addressLine2: getDefaultRequiredVal(
+          "",
+          migratedClient?.mailingAddress?.addressLine2,
+        ),
+        provinceCode: getDefaultRequiredVal(
+          "",
+          migratedClient?.mailingAddress?.provinceCode,
+        ),
+        countryCode: getDefaultRequiredVal(
+          "",
+          migratedClient?.mailingAddress?.countryCode,
+        ),
+        city: getDefaultRequiredVal("", migratedClient?.mailingAddress?.city),
+        postalCode: getDefaultRequiredVal(
+          "",
+          migratedClient?.mailingAddress?.postalCode,
+        ),
       },
-    });
+      email: getDefaultRequiredVal("", user?.profile?.email),
+      phone: getDefaultRequiredVal("", migratedClient?.phone),
+      extension: getDefaultRequiredVal("", migratedClient?.extension),
+      fax: getDefaultRequiredVal("", migratedClient?.fax),
+      adminUser: {
+        firstName: "",
+        lastName: "",
+        email: "",
+        phone1: "",
+        phone1Extension: "",
+        phone2: "",
+        phone2Extension: "",
+        fax: "",
+        countryCode: "",
+        provinceCode: "",
+        city: "",
+      },
+      primaryContact: {
+        firstName: "",
+        lastName: "",
+        email: "",
+        phone1: "",
+        phone1Extension: "",
+        phone2: "",
+        phone2Extension: "",
+        countryCode: "",
+        provinceCode: "",
+        city: "",
+      },
+    },
+  });
 
   if (clientNumber) {
     return (
@@ -133,12 +128,12 @@ export const CreateProfileSteps = React.memo(() => {
             </Stepper>
           </div>
           <FormProvider {...companyAndUserFormMethods}>
-          <Reusable
-            activeStep={activeStep}
-            setActiveStep={setActiveStep}
-            setClientNumber={setClientNumber}
-            totalSteps={2}
-          />
+            <CompanyAndUserInfoSteps
+              activeStep={activeStep}
+              setActiveStep={setActiveStep}
+              setClientNumber={setClientNumber}
+              totalSteps={2}
+            />
           </FormProvider>
         </div>
       </div>

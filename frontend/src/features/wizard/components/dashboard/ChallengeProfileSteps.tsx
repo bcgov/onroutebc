@@ -26,7 +26,7 @@ import { OnRouteBCProfileCreated } from "../../subcomponents/OnRouteBCProfileCre
 import { VerifyMigratedClientForm } from "../../subcomponents/VerifyMigratedClientForm";
 import { WizardCompanyBanner } from "../../subcomponents/WizardCompanyBanner";
 import "./CreateProfileSteps.scss";
-import { Reusable } from "./Reusable";
+import { CompanyAndUserInfoSteps } from "./Reusable";
 /**
  * The stepper component containing the necessary forms for creating profile.
  */
@@ -257,7 +257,7 @@ export const ChallengeProfileSteps = React.memo(() => {
           )}
           {activeStep !== 0 && isClientVerified && (
             <FormProvider {...companyAndUserFormMethods}>
-              <Reusable
+              <CompanyAndUserInfoSteps
                 activeStep={activeStep}
                 setActiveStep={setActiveStep}
                 setClientNumber={setClientNumber}

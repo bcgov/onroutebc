@@ -1,21 +1,21 @@
-import { Alert, Button, Stack, Typography } from "@mui/material";
-import { FormProvider, useForm, useFormContext } from "react-hook-form";
-import { WizardCompanyBanner } from "../../subcomponents/WizardCompanyBanner";
-import { CompanyInformationWizardForm } from "../../subcomponents/CompanyInformationWizardForm";
-import { UserInformationWizardForm } from "../../subcomponents/UserInformationWizardForm";
-import { BC_COLOURS } from "../../../../themes/bcGovStyles";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
-import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
-import { Dispatch, SetStateAction, useContext } from "react";
-import { CompanyAndUserRequest } from "../../../manageProfile/types/manageProfile";
-import { getDefaultRequiredVal } from "../../../../common/helpers/util";
-import { useAuth } from "react-oidc-context";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Alert, Button, Stack, Typography } from "@mui/material";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createOnRouteBCProfile } from "../../../manageProfile/apiManager/manageProfileAPI";
+import { Dispatch, SetStateAction, useContext } from "react";
+import { useFormContext } from "react-hook-form";
+import { useAuth } from "react-oidc-context";
+import { useNavigate } from "react-router-dom";
 import { Nullable } from "vitest";
 import { SnackBarContext } from "../../../../App";
-import { useNavigate } from "react-router-dom";
+import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
+import { getDefaultRequiredVal } from "../../../../common/helpers/util";
+import { BC_COLOURS } from "../../../../themes/bcGovStyles";
+import { createOnRouteBCProfile } from "../../../manageProfile/apiManager/manageProfileAPI";
+import { CompanyAndUserRequest } from "../../../manageProfile/types/manageProfile";
+import { CompanyInformationWizardForm } from "../../subcomponents/CompanyInformationWizardForm";
+import { UserInformationWizardForm } from "../../subcomponents/UserInformationWizardForm";
+import { WizardCompanyBanner } from "../../subcomponents/WizardCompanyBanner";
 
 /**
  * Gets the section name inside the form for a particular field name
@@ -46,7 +46,11 @@ const getFirstValidationError = (
   }`;
 };
 
-export const Reusable = ({
+/**
+ * The company info and user info steps to be shared between
+ * challenge and no challenge workflows
+ */
+export const CompanyAndUserInfoSteps = ({
   setClientNumber,
   activeStep,
   setActiveStep,
@@ -66,7 +70,6 @@ export const Reusable = ({
     setCompanyLegalName,
     setOnRouteBCClientNumber,
     setMigratedClient,
-    migratedClient,
   } = useContext(OnRouteBCContext);
   const { user } = useAuth();
   const queryClient = useQueryClient();
