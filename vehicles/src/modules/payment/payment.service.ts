@@ -100,13 +100,10 @@ export class PaymentService {
       `&ref2=${transaction.transactionId}`;
 
     // Generate the hash using the query string and the MD5 algorithm
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-
     const payBCHash: string = CryptoJS.MD5(
       `${queryString}${process.env.PAYBC_API_KEY}`,
     ).toString();
 
-    // Generate the hash using the query string and
     const hashExpiry = this.generateHashExpiry();
 
     return { queryString, payBCHash, hashExpiry };

@@ -28,7 +28,10 @@ export function LogMethodExecution(logMethodOptions?: {
       const result = originalMethod.apply(this, args);
       const end = performance.now();
       const executionTime = end - start;
-      if (logMethodOptions?.printMemoryStats) {
+      if (
+        logMethodOptions?.printMemoryStats &&
+        process.env.VEHICLES_API_LOG_LEVEL === 'debug'
+      ) {
         const memoryStats = process.memoryUsage();
         memoryUsage = `, Memory usage: ${JSON.stringify(memoryStats)}`;
       }

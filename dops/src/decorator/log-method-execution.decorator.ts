@@ -12,8 +12,11 @@ export function LogMethodExecution(logMethodOptions?: {
     /* eslint-disable */
     const logger = new Logger(target.constructor.name);
     const originalMethod = descriptor.value;
-    descriptor.value = async function (...args: any[]) {
-      if (logMethodOptions?.printMemoryStats) {
+    descriptor.value = function (...args: any[]) {
+      if (
+        logMethodOptions?.printMemoryStats &&
+        process.env.DOPS_API_LOG_LEVEL === 'debug'
+      ) {
         const memoryStats = process.memoryUsage();
         memoryUsage = `, Memory usage: ${JSON.stringify(memoryStats)}`;
       }
@@ -22,10 +25,13 @@ export function LogMethodExecution(logMethodOptions?: {
       );
 
       const start = performance.now();
-      const result = await originalMethod.apply(this, args);
+      const result = originalMethod.apply(this, args);
       const end = performance.now();
       const executionTime = end - start;
-      if (logMethodOptions?.printMemoryStats) {
+      if (
+        logMethodOptions?.printMemoryStats &&
+        process.env.DOPS_API_LOG_LEVEL === 'debug'
+      ) {
         const memoryStats = process.memoryUsage();
         memoryUsage = `, Memory usage: ${JSON.stringify(memoryStats)}`;
       }
