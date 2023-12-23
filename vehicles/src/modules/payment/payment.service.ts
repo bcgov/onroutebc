@@ -70,19 +70,24 @@ export class PaymentService {
   };
 
   private queryHash = (transaction: Transaction) => {
+    console.log('queryHash',transaction);
     const permitIds = transaction.permitTransactions.map(
       (permitTransaction) => {
         return permitTransaction.permit.permitId;
       },
     );
 
+    console.log('permitIds',permitIds);
+
     // Construct the URL with the transaction details for the payment gateway
     const redirectUrl = permitIds
       ? `${process.env.PAYBC_REDIRECT}` + `?path=${permitIds.join(',')}`
       : `${process.env.PAYBC_REDIRECT}`;
 
+      console.log('redirectUrl',redirectUrl);
     const date = new Date().toISOString().split('T')[0];
 
+    console.log('date',date);
     // There should be a better way of doing this which is not as rigid - something like
     // dynamically removing the hashValue param from the actual query string instead of building
     // it up manually below, but this is sufficient for now.
@@ -99,14 +104,20 @@ export class PaymentService {
       `&revenue=1:${process.env.GL_CODE}:${transaction.totalTransactionAmount}` +
       `&ref2=${transaction.transactionId}`;
 
+      console.log('queryString',queryString);
     // Generate the hash using the query string and the MD5 algorithm
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
 
     const payBCHash: string = CryptoJS.MD5(
       `${queryString}${process.env.PAYBC_API_KEY}`,
     ).toString();
+
+    console.log('process.env.PAYBC_API_KEY',process.env.PAYBC_API_KEY);
+    console.log('payBCHash',payBCHash);
+    // Generate the hash using the query string and
     const hashExpiry = this.generateHashExpiry();
 
+    console.log('hashExpiry',hashExpiry);
     return { queryString, payBCHash, hashExpiry };
   };
 
@@ -114,11 +125,14 @@ export class PaymentService {
   generateUrl(transaction: Transaction): string {
     // Construct the URL with the transaction details for the payment gateway
     const { queryString, payBCHash } = this.queryHash(transaction);
-
+console.log('generateUrl queryString',queryString)
+console.log('generateUrl payBCHash',payBCHash)
     const url =
       `${process.env.PAYBC_BASE_URL}?` +
       `${queryString}` +
       `&hashValue=${payBCHash}`;
+
+      console.log('generateUrl url',url)
     return url;
   }
 
