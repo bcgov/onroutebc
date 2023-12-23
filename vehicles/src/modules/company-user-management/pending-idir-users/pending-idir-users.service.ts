@@ -7,7 +7,7 @@ import { PendingIdirUser } from './entities/pending-idir-user.entity';
 import { CreatePendingIdirUserDto } from './dto/request/create-pending-idir-user.dto';
 import { ReadPendingIdirUserDto } from './dto/response/read-pending-idir-user.dto';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
-import { LogMethodExecution } from '../../../common/decorator/log-method-execution.decorator';
+import { LogAsyncMethodExecution } from '../../../common/decorator/log-async-method-execution.decorator';
 
 @Injectable()
 export class PendingIdirUsersService {
@@ -25,7 +25,7 @@ export class PendingIdirUsersService {
    * @returns The pending user details as a promise of type createPendingIdirUserDto
    * {@link CreatePendingIdirUserDto}
    */
-  @LogMethodExecution()
+  @LogAsyncMethodExecution()
   async create(
     createPendingIdirUserDto: CreatePendingIdirUserDto,
     currentUser: IUserJWT,
@@ -59,7 +59,7 @@ export class PendingIdirUsersService {
    * @param userName The username for filtering.
    * @returns Promise resolves to ReadPendingIdirUserDto
    */
-  @LogMethodExecution()
+  @LogAsyncMethodExecution()
   async findPendingIdirUser(userName: string): Promise<ReadPendingIdirUserDto> {
     const idirUser = await this.pendingIdirUserRepository.findOne({
       where: { userName: userName },
@@ -73,7 +73,7 @@ export class PendingIdirUsersService {
     return readPendingIdirUser;
   }
 
-  @LogMethodExecution()
+  @LogAsyncMethodExecution()
   async findAll(): Promise<ReadPendingIdirUserDto[]> {
     const idirusers = await this.pendingIdirUserRepository.find();
     const readPendingIdirUsers = await this.classMapper.mapArrayAsync(

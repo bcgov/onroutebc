@@ -9,7 +9,7 @@ import { UpdateTrailerDto } from './dto/request/update-trailer.dto';
 import { Trailer } from './entities/trailer.entity';
 import { DeleteDto } from 'src/modules/common/dto/response/delete.dto';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
-import { LogMethodExecution } from '../../../common/decorator/log-method-execution.decorator';
+import { LogAsyncMethodExecution } from '../../../common/decorator/log-async-method-execution.decorator';
 
 @Injectable()
 export class TrailersService {
@@ -19,7 +19,7 @@ export class TrailersService {
     @InjectMapper() private readonly classMapper: Mapper,
   ) {}
 
-  @LogMethodExecution()
+  @LogAsyncMethodExecution()
   async create(
     companyId: number,
     trailer: CreateTrailerDto,
@@ -46,7 +46,7 @@ export class TrailersService {
     );
   }
 
-  @LogMethodExecution()
+  @LogAsyncMethodExecution()
   async findAll(companyId: number): Promise<ReadTrailerDto[]> {
     return this.classMapper.mapArrayAsync(
       await this.trailerRepository.find({
@@ -61,7 +61,7 @@ export class TrailersService {
     );
   }
 
-  @LogMethodExecution()
+  @LogAsyncMethodExecution()
   async findOne(companyId: number, trailerId: string): Promise<ReadTrailerDto> {
     return this.classMapper.mapAsync(
       await this.trailerRepository.findOne({
@@ -79,7 +79,7 @@ export class TrailersService {
     );
   }
 
-  @LogMethodExecution()
+  @LogAsyncMethodExecution()
   async update(
     companyId: number,
     trailerId: string,
@@ -107,12 +107,12 @@ export class TrailersService {
     return this.findOne(companyId, trailerId);
   }
 
-  @LogMethodExecution()
+  @LogAsyncMethodExecution()
   async remove(companyId: number, trailerId: string): Promise<DeleteResult> {
     return await this.trailerRepository.delete(trailerId);
   }
 
-  @LogMethodExecution()
+  @LogAsyncMethodExecution()
   async removeAll(trailerIds: string[], companyId: number): Promise<DeleteDto> {
     const deletedResult = await this.trailerRepository
       .createQueryBuilder()

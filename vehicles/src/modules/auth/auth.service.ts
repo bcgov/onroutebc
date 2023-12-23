@@ -4,7 +4,7 @@ import { ReadUserDto } from '../company-user-management/users/dto/response/read-
 import { PendingUsersService } from '../company-user-management/pending-users/pending-users.service';
 import { Role } from '../../common/enum/roles.enum';
 import { IDP } from '../../common/enum/idp.enum';
-import { LogMethodExecution } from '../../common/decorator/log-method-execution.decorator';
+import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method-execution.decorator';
 
 @Injectable()
 export class AuthService {
@@ -13,7 +13,7 @@ export class AuthService {
     private readonly pendingUserService: PendingUsersService,
   ) {}
 
-  @LogMethodExecution()
+  @LogAsyncMethodExecution()
   async getUserDetails(
     companyId: number,
     identity_provider: string,
@@ -42,7 +42,7 @@ export class AuthService {
    *
    * @returns The Roles as a promise of type {@link Role[]}
    */
-  @LogMethodExecution()
+  @LogAsyncMethodExecution()
   async getRolesForUser(userGuid: string, companyId = 0): Promise<Role[]> {
     const roles = await this.usersService.getRolesForUser(userGuid, companyId);
     return roles;
@@ -56,7 +56,7 @@ export class AuthService {
    *
    * @returns The associated companies as a promise of type {@link number[]}
    */
-  @LogMethodExecution()
+  @LogAsyncMethodExecution()
   async getCompaniesForUser(userGuid: string): Promise<number[]> {
     const companies = await this.usersService.getCompaniesForUser(userGuid);
     return companies;

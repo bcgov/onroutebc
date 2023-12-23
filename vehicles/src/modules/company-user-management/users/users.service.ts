@@ -37,7 +37,7 @@ import { AccountSource } from '../../../common/enum/account-source.enum';
 import { ReadVerifyMigratedClientDto } from './dto/response/read-verify-migrated-client.dto';
 import { VerifyMigratedClientDto } from './dto/request/verify-migrated-client.dto';
 import { Permit } from '../../permit/entities/permit.entity';
-import { LogMethodExecution } from '../../../common/decorator/log-method-execution.decorator';
+import { LogAsyncMethodExecution } from '../../../common/decorator/log-async-method-execution.decorator';
 
 @Injectable()
 export class UsersService {
@@ -71,7 +71,7 @@ export class UsersService {
    *
    * @returns The user details as a promise of type {@link ReadUserDto}
    */
-  @LogMethodExecution()
+  @LogAsyncMethodExecution()
   async create(
     createUserDto: CreateUserDto,
     companyId: number,
@@ -165,7 +165,7 @@ export class UsersService {
    * @param currentUser The details of the current authorized user.
    * @returns The updated user details as a promise of type {@link ReadUserDto}.
    */
-  @LogMethodExecution()
+  @LogAsyncMethodExecution()
   async update(
     userGUID: string,
     updateUserDto: UpdateUserDto,
@@ -290,7 +290,7 @@ export class UsersService {
    *
    * @returns The UpdateResult of the operation
    */
-  @LogMethodExecution()
+  @LogAsyncMethodExecution()
   async updateStatus(
     userGUID: string,
     statusCode: UserStatus,
@@ -352,7 +352,7 @@ export class UsersService {
    *
    * @returns A Promise that resolves to an array of {@link ReadUserDto} objects.
    */
-  @LogMethodExecution()
+  @LogAsyncMethodExecution()
   async findUsersDto(
     userGUID?: string,
     companyId?: number[],
@@ -391,7 +391,7 @@ export class UsersService {
    *
    * @returns The {@link ReadVerifyMigratedClientDto} entity.
    */
-  @LogMethodExecution()
+  @LogAsyncMethodExecution()
   async verifyMigratedClient(
     currentUser: IUserJWT,
     verifyMigratedClientDto: VerifyMigratedClientDto,
@@ -446,7 +446,7 @@ export class UsersService {
    *
    * @returns The {@link ReadUserOrbcStatusDto} entity.
    */
-  @LogMethodExecution()
+  @LogAsyncMethodExecution()
   async findORBCUser(currentUser: IUserJWT): Promise<ReadUserOrbcStatusDto> {
     const userContextDto = new ReadUserOrbcStatusDto();
     userContextDto.associatedCompanies = [];
@@ -570,7 +570,7 @@ export class UsersService {
    *
    * @returns The Roles as a promise of type {@link Role}
    */
-  @LogMethodExecution()
+  @LogAsyncMethodExecution()
   async getRolesForUser(userGUID: string, companyId = 0): Promise<Role[]> {
     const queryResult = (await this.userRepository.query(
       'SELECT ROLE_TYPE FROM access.ORBC_GET_ROLES_FOR_USER_FN(@0,@1)',
@@ -590,7 +590,7 @@ export class UsersService {
    *
    * @returns The associated companies as a promise of type {@link number[]}
    */
-  @LogMethodExecution()
+  @LogAsyncMethodExecution()
   async getCompaniesForUser(userGuid: string): Promise<number[]> {
     const companies = (
       await this.companyService.findCompanyMetadataByUserGuid(userGuid)
@@ -598,7 +598,7 @@ export class UsersService {
     return companies;
   }
 
-  @LogMethodExecution()
+  @LogAsyncMethodExecution()
   async checkIdirUser(currentUser: IUserJWT): Promise<ReadUserOrbcStatusDto> {
     let userExists: ReadUserOrbcStatusDto = null;
     const idirUser = await this.findOneIdirUser(currentUser.idir_user_guid);
@@ -682,7 +682,7 @@ export class UsersService {
     return user;
   }
 
-  @LogMethodExecution()
+  @LogAsyncMethodExecution()
   async findIdirUser(userGUID?: string): Promise<ReadUserDto> {
     // Find user entities based on the provided filtering criteria
     const userDetails = await this.idirUserRepository.findOne({
@@ -697,7 +697,7 @@ export class UsersService {
     return readUserDto;
   }
 
-  @LogMethodExecution()
+  @LogAsyncMethodExecution()
   async findOneIdirUser(userGUID?: string): Promise<IdirUser> {
     // Find user entities based on the provided filtering criteria
     const userDetails = await this.idirUserRepository.findOne({
@@ -707,7 +707,7 @@ export class UsersService {
     return userDetails;
   }
 
-  @LogMethodExecution()
+  @LogAsyncMethodExecution()
   async findPermitIssuerPPCUser(): Promise<ReadUserDto[]> {
     const subQueryBuilder = this.idirUserRepository
       .createQueryBuilder()
