@@ -71,6 +71,7 @@ export class PaymentController {
       currentUser,
       createTransactionDto,
     );
+    console.log('paymentDetails',paymentDetails)
 
     return paymentDetails;
   }

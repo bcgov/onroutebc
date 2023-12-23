@@ -332,6 +332,7 @@ console.log('generateUrl payBCHash',payBCHash)
         await queryRunner.manager.save(receipt);
       }
 
+      console.log('create Transaction url',url)
       readTransactionDto = await this.classMapper.mapAsync(
         createdTransaction,
         Transaction,
@@ -342,6 +343,8 @@ console.log('generateUrl payBCHash',payBCHash)
           }),
         },
       );
+
+      console.log('create Transaction readTransactionDto',readTransactionDto)
       if (!nestedQueryRunner) {
         await queryRunner.commitTransaction();
       }
