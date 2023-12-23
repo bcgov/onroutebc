@@ -29,6 +29,7 @@ import puppeteer, { Browser } from 'puppeteer';
 import { IFile } from '../../interface/file.interface';
 import { ReportTemplate } from '../../enum/report-template.enum';
 import { convertUtcToPt } from '../../helper/date-time.helper';
+import { LogAsyncMethodExecution } from '../../decorator/log-async-method-execution.decorator';
 import { LogMethodExecution } from '../../decorator/log-method-execution.decorator';
 
 @Injectable()
@@ -52,12 +53,12 @@ export class DgenService {
    * Find all templates registered in ORBC_DOCUMENT_TEMPLATE
    * @returns A list of templates of type {@link DocumentTemplate}
    */
-  @LogMethodExecution()
+  @LogAsyncMethodExecution()
   async findAllTemplates(): Promise<DocumentTemplate[]> {
     return await this.documentTemplateRepository.find();
   }
 
-  @LogMethodExecution()
+  @LogAsyncMethodExecution()
   async getLatestTemplates(): Promise<DocumentTemplate[]> {
     const latestTemplates = await this.documentTemplateRepository
       .createQueryBuilder('documentTemplate')
@@ -91,7 +92,7 @@ export class DgenService {
     });
   }
 
-  @LogMethodExecution()
+  @LogAsyncMethodExecution()
   async generate(
     currentUser: IUserJWT,
     createGeneratedDocumentDto: CreateGeneratedDocumentDto,
@@ -209,7 +210,7 @@ export class DgenService {
     );
   }
 
-  @LogMethodExecution({ printMemoryStats: true })
+  @LogAsyncMethodExecution({ printMemoryStats: true })
   async generateReport(
     currentUser: IUserJWT,
     createGeneratedReportDto: CreateGeneratedReportDto,

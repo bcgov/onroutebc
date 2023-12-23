@@ -13,7 +13,7 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { Response } from 'express';
 import { IFile } from '../../interface/file.interface';
 import { Upload } from '@aws-sdk/lib-storage';
-import { LogMethodExecution } from '../../decorator/log-method-execution.decorator';
+import { LogAsyncMethodExecution } from '../../decorator/log-async-method-execution.decorator';
 @Injectable()
 export class S3Service {
   private readonly logger = new Logger(S3Service.name);
@@ -38,7 +38,7 @@ export class S3Service {
     region: 'ca-central-1',
   });
 
-  @LogMethodExecution()
+  @LogAsyncMethodExecution()
   async uploadFile(
     file: Express.Multer.File | IFile,
     filePath?: string,
@@ -59,7 +59,7 @@ export class S3Service {
     return (await upload.done()) as CompleteMultipartUploadCommandOutput;
   }
 
-  @LogMethodExecution()
+  @LogAsyncMethodExecution()
   async getFile(
     filePath: string,
     res?: Response,
@@ -79,7 +79,7 @@ export class S3Service {
     }
   }
 
-  @LogMethodExecution()
+  @LogAsyncMethodExecution()
   async presignUrl(filePath: string): Promise<string> {
     const params = {
       Bucket: this._s3Bucket,

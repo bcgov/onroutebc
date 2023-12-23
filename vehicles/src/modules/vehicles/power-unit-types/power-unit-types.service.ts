@@ -7,7 +7,7 @@ import { CreatePowerUnitTypeDto } from './dto/request/create-power-unit-type.dto
 import { ReadPowerUnitTypeDto } from './dto/response/read-power-unit-type.dto';
 import { UpdatePowerUnitTypeDto } from './dto/request/update-power-unit-type.dto';
 import { PowerUnitType } from './entities/power-unit-type.entity';
-import { LogMethodExecution } from '../../../common/decorator/log-method-execution.decorator';
+import { LogAsyncMethodExecution } from '../../../common/decorator/log-async-method-execution.decorator';
 
 @Injectable()
 export class PowerUnitTypesService {
@@ -17,7 +17,7 @@ export class PowerUnitTypesService {
     @InjectMapper() private readonly classMapper: Mapper,
   ) {}
 
-  @LogMethodExecution()
+  @LogAsyncMethodExecution()
   async create(
     powerUnitType: CreatePowerUnitTypeDto,
   ): Promise<ReadPowerUnitTypeDto> {
@@ -30,7 +30,7 @@ export class PowerUnitTypesService {
     return this.findOne(newPowerUnitType.typeCode);
   }
 
-  @LogMethodExecution()
+  @LogAsyncMethodExecution()
   async findAll(): Promise<ReadPowerUnitTypeDto[]> {
     return this.classMapper.mapArrayAsync(
       await this.powerUnitTypeRepository.find(),
@@ -39,7 +39,7 @@ export class PowerUnitTypesService {
     );
   }
 
-  @LogMethodExecution()
+  @LogAsyncMethodExecution()
   async findOne(typeCode: string): Promise<ReadPowerUnitTypeDto> {
     return this.classMapper.mapAsync(
       await this.powerUnitTypeRepository.findOne({
@@ -50,7 +50,7 @@ export class PowerUnitTypesService {
     );
   }
 
-  @LogMethodExecution()
+  @LogAsyncMethodExecution()
   async update(
     typeCode: string,
     updatePowerUnitTypeDto: UpdatePowerUnitTypeDto,
@@ -65,7 +65,7 @@ export class PowerUnitTypesService {
     return this.findOne(typeCode);
   }
 
-  @LogMethodExecution()
+  @LogAsyncMethodExecution()
   async remove(typeCode: string): Promise<DeleteResult> {
     return await this.powerUnitTypeRepository.delete(typeCode);
   }

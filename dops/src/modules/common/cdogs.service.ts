@@ -25,7 +25,7 @@ import {
   FILE_TYPE_DOCX,
   FILE_TYPE_PDF,
 } from '../../constants/dops.constant';
-import { LogMethodExecution } from '../../decorator/log-method-execution.decorator';
+import { LogAsyncMethodExecution } from '../../decorator/log-async-method-execution.decorator';
 
 @Injectable()
 export class CdogsService {
@@ -44,7 +44,7 @@ export class CdogsService {
    * @returns A Promise that resolves to an array of ReadCOMSDto objects
    *          representing the created objects.
    */
-  @LogMethodExecution()
+  @LogAsyncMethodExecution()
   async generateDocument(
     currentUser: IUserJWT,
     createGeneratedDocumentDto: CreateGeneratedDocumentDto,

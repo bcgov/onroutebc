@@ -1,6 +1,6 @@
 import { Logger } from '@nestjs/common';
 
-export function LogMethodExecution(logMethodOptions?: {
+export function LogAsyncMethodExecution(logMethodOptions?: {
   printMemoryStats: boolean;
 }) {
   return function (
@@ -12,7 +12,7 @@ export function LogMethodExecution(logMethodOptions?: {
     /* eslint-disable */
     const logger = new Logger(target.constructor.name);
     const originalMethod = descriptor.value;
-    descriptor.value = function (...args: any[]) {
+    descriptor.value = async function (...args: any[]) {
       if (
         logMethodOptions?.printMemoryStats &&
         process.env.VEHICLES_API_LOG_LEVEL === 'debug'
@@ -25,7 +25,7 @@ export function LogMethodExecution(logMethodOptions?: {
       );
 
       const start = performance.now();
-      const result = originalMethod.apply(this, args);
+      const result = await originalMethod.apply(this, args);
       const end = performance.now();
       const executionTime = end - start;
       if (logMethodOptions?.printMemoryStats) {

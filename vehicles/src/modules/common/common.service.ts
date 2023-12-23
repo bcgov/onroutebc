@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Country } from './entities/country.entity';
 import { Province } from './entities/province.entity';
-import { LogMethodExecution } from '../../common/decorator/log-method-execution.decorator';
+import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method-execution.decorator';
 
 @Injectable()
 export class CommonService {
@@ -14,26 +14,26 @@ export class CommonService {
     private provinceRepository: Repository<Province>,
   ) {}
 
-  @LogMethodExecution()
+  @LogAsyncMethodExecution()
   async findOneCountry(countryCode: string): Promise<Country> {
     return await this.countryRepository.findOne({
       where: { countryCode: countryCode },
     });
   }
 
-  @LogMethodExecution()
+  @LogAsyncMethodExecution()
   async findAllCountries(): Promise<Country[]> {
     return await this.countryRepository.find({});
   }
 
-  @LogMethodExecution()
+  @LogAsyncMethodExecution()
   async findOneProvince(provinceCode: string): Promise<Province> {
     return await this.provinceRepository.findOne({
       where: { provinceCode: provinceCode },
     });
   }
 
-  @LogMethodExecution()
+  @LogAsyncMethodExecution()
   async findAllProvinces(): Promise<Province[]> {
     return await this.provinceRepository.find({});
   }
