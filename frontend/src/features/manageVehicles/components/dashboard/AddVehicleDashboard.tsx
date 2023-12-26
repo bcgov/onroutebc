@@ -68,9 +68,7 @@ export const AddVehicleDashboard = React.memo(
         </Box>
 
         <Box className="dashboard-page__info-banner layout-box">
-          <InfoBcGovBanner
-            msg={BANNER_MESSAGES.ALL_FIELDS_MANDATORY}
-          />
+          <InfoBcGovBanner msg={BANNER_MESSAGES.ALL_FIELDS_MANDATORY} />
         </Box>
 
         <Box className="dashboard-page__form layout-box">

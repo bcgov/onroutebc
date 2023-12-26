@@ -1,4 +1,3 @@
-
 import { BasePermitList } from "./BasePermitList";
 import "./ExpiredPermitList.scss";
 
@@ -8,7 +7,7 @@ import "./ExpiredPermitList.scss";
 export const ExpiredPermitList = () => {
   return (
     <div className="table-container">
-      <BasePermitList isExpired/>
+      <BasePermitList isExpired />
     </div>
   );
 };

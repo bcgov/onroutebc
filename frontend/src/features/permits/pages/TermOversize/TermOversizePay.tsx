@@ -8,12 +8,18 @@ import { ApplicationBreadcrumb } from "../../components/application-breadcrumb/A
 import { calculateFeeByDuration, isZeroAmount } from "../../helpers/feeSummary";
 import { ApplicationSummary } from "./components/pay/ApplicationSummary";
 import { PermitPayFeeSummary } from "./components/pay/PermitPayFeeSummary";
-import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../../common/helpers/util";
+import {
+  applyWhenNotNullable,
+  getDefaultRequiredVal,
+} from "../../../../common/helpers/util";
 import { useStartTransaction } from "../../hooks/hooks";
 import { TRANSACTION_TYPES } from "../../types/payment.d";
 import { PAYMENT_METHOD_TYPE_CODE } from "../../../../common/types/paymentMethods";
 import { PaymentFailedBanner } from "./components/pay/PaymentFailedBanner";
-import { APPLICATIONS_ROUTES, APPLICATION_STEPS } from "../../../../routes/constants";
+import {
+  APPLICATIONS_ROUTES,
+  APPLICATION_STEPS,
+} from "../../../../routes/constants";
 
 export const TermOversizePay = () => {
   const { applicationData } = useContext(ApplicationContext);
@@ -22,9 +28,9 @@ export const TermOversizePay = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const paymentFailed = applyWhenNotNullable(
-    queryParam => queryParam === "true",
+    (queryParam) => queryParam === "true",
     searchParams.get("paymentFailed"),
-    false
+    false,
   );
 
   const calculatedFee = calculateFeeByDuration(
@@ -53,8 +59,9 @@ export const TermOversizePay = () => {
   const handlePay = () => {
     startTransactionMutation.mutate({
       transactionTypeId: TRANSACTION_TYPES.P,
-      paymentMethodTypeCode: 
-        isFeeZero ? PAYMENT_METHOD_TYPE_CODE.NP : PAYMENT_METHOD_TYPE_CODE.WEB,
+      paymentMethodTypeCode: isFeeZero
+        ? PAYMENT_METHOD_TYPE_CODE.NP
+        : PAYMENT_METHOD_TYPE_CODE.WEB,
       applicationDetails: [
         {
           applicationId: permitId,
@@ -77,9 +84,7 @@ export const TermOversizePay = () => {
           applicationNumber={applicationData?.applicationNumber}
         />
 
-        {paymentFailed ? (
-          <PaymentFailedBanner />
-        ) : null}
+        {paymentFailed ? <PaymentFailedBanner /> : null}
 
         <PermitPayFeeSummary
           calculatedFee={calculatedFee}

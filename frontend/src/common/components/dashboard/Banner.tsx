@@ -23,23 +23,13 @@ export const Banner = ({
   bannerButton?: JSX.Element;
   isTabBanner?: boolean;
 }) => (
-  <div
-    className={`layout-banner ${isTabBanner ? "layout-banner--tab" : ""}`}
-  >
+  <div className={`layout-banner ${isTabBanner ? "layout-banner--tab" : ""}`}>
     <Grid container>
-      <Grid
-        xs={12}
-        item
-        className="layout-banner__text-section"
-      >
-        <h2 className="layout-banner__text">
-          {bannerText}
-        </h2>
-        
+      <Grid xs={12} item className="layout-banner__text-section">
+        <h2 className="layout-banner__text">{bannerText}</h2>
+
         {bannerButton ? (
-          <Box className="layout-banner__button">
-            {bannerButton}
-          </Box>
+          <Box className="layout-banner__button">{bannerButton}</Box>
         ) : null}
       </Grid>
       <Grid xs item>

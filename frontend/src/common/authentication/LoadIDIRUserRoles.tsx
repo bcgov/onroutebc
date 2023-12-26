@@ -22,6 +22,6 @@ export const LoadIDIRUserRoles = () => {
       }
     }
   }, [isLoading]);
-  
+
   return null;
 };

@@ -114,10 +114,7 @@ export const toTimeZone = (
  * @param earlierDt Dayjs object representing the earlier datetime
  * @returns Number of days between the two datetimes.
  */
-export const getDateDiffInDays = (
-  laterDt: Dayjs,
-  earlierDt: Dayjs,
-) => {
+export const getDateDiffInDays = (laterDt: Dayjs, earlierDt: Dayjs) => {
   return laterDt.diff(earlierDt, "day");
 };
 
@@ -127,11 +124,7 @@ export const getDateDiffInDays = (
  * @returns Dayjs object representing the start of the datetime (with time 00:00:00 am)
  */
 export const getStartOfDate = (date: Dayjs | string) => {
-  return dayjs(date)
-    .hour(0)
-    .minute(0)
-    .second(0)
-    .millisecond(0);
+  return dayjs(date).hour(0).minute(0).second(0).millisecond(0);
 };
 
 /**
@@ -140,9 +133,5 @@ export const getStartOfDate = (date: Dayjs | string) => {
  * @returns Dayjs object representing the end of the datetime (with time 23:59:59 pm)
  */
 export const getEndOfDate = (date: Dayjs | string) => {
-  return dayjs(date)
-    .hour(23)
-    .minute(59)
-    .second(59)
-    .millisecond(999);
+  return dayjs(date).hour(23).minute(59).second(59).millisecond(999);
 };

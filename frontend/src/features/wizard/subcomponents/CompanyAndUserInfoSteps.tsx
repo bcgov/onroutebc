@@ -84,7 +84,7 @@ export const CompanyAndUserInfoSteps = ({
     },
     onError: () => {
       navigate(ERROR_ROUTES.UNEXPECTED);
-    }
+    },
   });
 
   const handleNext = () => {

@@ -143,9 +143,7 @@ export const CompanyInfoForm = memo(
             Company Primary Contact
           </Typography>
 
-          <InfoBcGovBanner
-            msg={BANNER_MESSAGES.COMPANY_CONTACT} 
-          />
+          <InfoBcGovBanner msg={BANNER_MESSAGES.COMPANY_CONTACT} />
 
           <CompanyPrimaryContactForm feature={FEATURE} />
         </FormProvider>

@@ -85,11 +85,12 @@ export const RefundPage = ({
   amountToRefund: number;
   onFinish: (refundData: RefundFormData) => void;
 }) => {
-  const validTransactionHistory = permitHistory.filter(history =>
-    isValidTransaction(history.paymentMethodTypeCode, history.pgApproved));
-  
+  const validTransactionHistory = permitHistory.filter((history) =>
+    isValidTransaction(history.paymentMethodTypeCode, history.pgApproved),
+  );
+
   const getPrevValidTransaction = () => {
-    if (!validTransactionHistory || validTransactionHistory.length === 0) 
+    if (!validTransactionHistory || validTransactionHistory.length === 0)
       return undefined;
 
     return validTransactionHistory.find((history) => {
