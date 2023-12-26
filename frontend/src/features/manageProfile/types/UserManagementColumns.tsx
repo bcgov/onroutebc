@@ -42,14 +42,12 @@ export const UserManagementColumnsDefinition: MRT_ColumnDef<ReadCompanyUser>[] =
       header: "BCeID Username",
       Cell: (props: { row: any }) => {
         return (
-          <>
-            <Stack direction="row">
-              <span>{props.row.original.userName}</span>
-              {shouldShowChip(props.row.original.userStatus) && (
-                <UserManagementChip />
-              )}
-            </Stack>
-          </>
+          <Stack direction="row">
+            <span>{props.row.original.userName}</span>
+            {shouldShowChip(props.row.original.userStatus) && (
+              <UserManagementChip />
+            )}
+          </Stack>
         );
       },
     },

@@ -98,6 +98,7 @@ mv - manage vehicles
 .mv-input[type="button"],
 .mv-input[type="submit"] {
   -webkit-appearance: none;
+  appearance: none;
 }
 
 .bold-text {
@@ -110,7 +111,6 @@ mv - manage vehicles
   margin-left: 0px;
   padding-left: 5%;
   padding-right: 5%;
-  //height: 75px;
   background-color: orbcStyles.$white;
   position: fixed;
   bottom: 1px;

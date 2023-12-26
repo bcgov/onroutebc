@@ -7,7 +7,6 @@ import { useAuth } from "react-oidc-context";
 import {
   MaterialReactTable,
   MRT_Row,
-  MRT_TableInstance,
   useMaterialReactTable,
 } from "material-react-table";
 
@@ -110,12 +109,7 @@ export const UserManagement = () => {
       },
     },
     renderRowActions: useCallback(
-      ({
-        row,
-      }: {
-        table: MRT_TableInstance<ReadCompanyUser>;
-        row: MRT_Row<ReadCompanyUser>;
-      }) => {
+      ({ row }: { row: MRT_Row<ReadCompanyUser> }) => {
         if (row.original.statusCode === BCeIDUserStatus.ACTIVE) {
           return (
             <Box sx={{ display: "flex", justifyContent: "flex-end" }}>

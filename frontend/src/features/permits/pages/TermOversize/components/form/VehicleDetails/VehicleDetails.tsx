@@ -223,7 +223,7 @@ export const VehicleDetails = ({
   }, []);
 
   const handleChooseFrom = (event: SelectChangeEvent) => {
-    setChooseFrom(event.target.value as string);
+    setChooseFrom(event.target.value);
   };
 
   const handleSaveVehicleRadioBtns = (isSave: string) => {
@@ -234,7 +234,7 @@ export const VehicleDetails = ({
 
   // Reset the vehicle subtype field whenever a different vehicle type is selected
   const handleChangeVehicleType = (event: SelectChangeEvent) => {
-    const updatedVehicleType = event.target.value as string;
+    const updatedVehicleType = event.target.value;
     setValue("permitData.vehicleDetails.vehicleType", updatedVehicleType);
   };
 
