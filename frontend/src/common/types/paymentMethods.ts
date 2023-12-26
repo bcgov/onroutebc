@@ -107,7 +107,7 @@ export type AllPaymentMethodAndCardTypeCodes =
   | PaymentMethodAndCardTypeCodes
   | {
       paymentMethodTypeCode: "ALL";
-      paymentCardTypeCode: undefined;
+      paymentCardTypeCode?: undefined;
     };
 
 /**
