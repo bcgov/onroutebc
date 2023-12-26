@@ -26,13 +26,29 @@ export const sortVehicleSubTypes = (
   return sorted;
 };
 
-const sortByPlateOrUnitNumber = (a: Vehicle, b: Vehicle, chooseFrom: string) => {
-  if (chooseFrom === "plate") {
-    return a.plate > b.plate ? 1 : -1;
-  }
+/**
+ * @param a Vehicle a
+ * @param b Vehicle b
+ * @returns 1 or -1 depending on whether a's plate > b's plate
+ */
+const sortByPlate = (a: Vehicle, b: Vehicle) => {
+  return a.plate > b.plate ? 1 : -1;
+};
+
+/**
+ * @param a Vehicle a
+ * @param b Vehicle b
+ * @returns 1 or -1 depending on whether a's unitNumber > b's unitNumber
+ */
+const sortByUnitNumber = (a: Vehicle, b: Vehicle) => {
   return (a.unitNumber || -1) > (b.unitNumber || -1) ? 1 : -1;
 };
 
+/**
+ * @param a Vehicle a
+ * @param b Vehicle b
+ * @returns 1 or -1 depending on whether a's vehicleType > b's vehicleType
+ */
 const sortByVehicleType = (a: Vehicle, b: Vehicle) => {
   if (a.vehicleType && b.vehicleType) {
     return a.vehicleType > b.vehicleType ? 1 : -1;
@@ -55,7 +71,10 @@ export const sortVehicles = (
   const sortedVehicles = options.toSorted((a, b) => {
     // If the vehicle types (powerUnit | trailer) are the same, sort by plate or unitnumber
     if (a.vehicleType?.toLowerCase() === b.vehicleType?.toLowerCase()) {
-      return sortByPlateOrUnitNumber(a, b, chooseFrom);
+      if (chooseFrom === "plate") {
+        return sortByPlate(a, b);
+      }
+      return sortByUnitNumber(a, b);
     }
     // else sort by vehicle type
     return sortByVehicleType(a, b);
