@@ -5,7 +5,7 @@ import { memo, useCallback, useContext, useMemo, useState } from "react";
 import {
   MRT_ColumnDef,
   MRT_PaginationState,
-  MRT_Row as MrtRow,
+  MRT_Row,
   MaterialReactTable,
   useMaterialReactTable,
 } from "material-react-table";
@@ -169,7 +169,7 @@ export const IDIRSearchResults = memo(
           </Box>
         );
       },
-      renderRowActions: useCallback(({ row }: { row: MrtRow<Permit> }) => {
+      renderRowActions: useCallback(({ row }: { row: MRT_Row<Permit> }) => {
         const isInactive =
           hasPermitExpired(row.original.permitData.expiryDate) ||
           isPermitInactive(row.original.permitStatus);
