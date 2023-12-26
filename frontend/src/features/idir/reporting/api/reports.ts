@@ -2,7 +2,6 @@ import { UseQueryResult, useQuery } from "@tanstack/react-query";
 
 import { VEHICLES_URL } from "../../../../common/apiManager/endpoints/endpoints";
 import { ONE_HOUR } from "../../../../common/constants/constants";
-import { getFileNameFromHeaders } from "../../../permits/apiManager/permitsAPI";
 import {
   httpGETRequest,
   httpPOSTRequestStream,
@@ -12,6 +11,7 @@ import {
   PaymentAndRefundDetailRequest,
   PaymentAndRefundSummaryRequest,
 } from "../types/types";
+import { streamDownloadFile } from "../../../../common/helpers/util";
 
 /**
  * Streams a file through a POST request.
@@ -31,41 +31,6 @@ const streamDownloadWithHTTPPost = async (
   const response = await httpPOSTRequestStream(url, requestBody);
   const file = await streamDownloadFile(response);
   return file;
-};
-
-/**
- * Downloads a file using stream.
- * @param response The Axios response containing file details.
- * @returns The file.
- */
-export const streamDownloadFile = async (response: Response) => {
-  const filename = getFileNameFromHeaders(response.headers);
-  if (!filename) {
-    throw new Error("Unable to download pdf, file not available");
-  }
-  if (!response.body) {
-    throw new Error("Unable to download pdf, no response found");
-  }
-  const reader = response.body.getReader();
-  const stream = new ReadableStream({
-    start: (controller) => {
-      const processRead = async () => {
-        const { done, value } = await reader.read();
-        if (done) {
-          // When no more data needs to be consumed, close the stream
-          controller.close();
-          return;
-        }
-        // Enqueue the next data chunk into our target stream
-        controller.enqueue(value);
-        await processRead();
-      };
-      processRead();
-    },
-  });
-  const newRes = new Response(stream);
-  const blobObj = await newRes.blob();
-  return { blobObj, filename };
 };
 
 /**
