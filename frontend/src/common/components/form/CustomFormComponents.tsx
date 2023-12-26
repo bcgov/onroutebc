@@ -148,9 +148,6 @@ export const CustomFormComponent = <T extends ORBC_FormTypes>({
           <CustomDatePicker
             feature={feature}
             name={name}
-            rules={rules}
-            inputProps={inputProps}
-            invalid={invalid}
             disabled={disabled}
             readOnly={readOnly}
           />

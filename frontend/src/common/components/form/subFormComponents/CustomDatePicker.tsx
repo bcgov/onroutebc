@@ -25,10 +25,6 @@ import { now } from "../../../helpers/formatDate";
 export interface CustomDatePickerProps<T extends FieldValues> {
   feature: string;
   name: FieldPath<T>;
-  rules: RegisterOptions;
-  inputProps: RegisterOptions;
-  invalid: boolean;
-  field?: ControllerRenderProps<FieldValues, Path<T>>;
   disabled?: boolean;
   readOnly?: boolean;
 }
