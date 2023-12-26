@@ -84,7 +84,13 @@ const Navbar = ({
  */
 const NavButton = ({ toggleMenu }: { toggleMenu: () => void }) => (
   <div className="other">
-    <a className="nav-btn" onClick={toggleMenu} onKeyDown={toggleMenu}>
+    <a
+      className="nav-btn"
+      role="link"
+      onClick={toggleMenu}
+      onKeyDown={toggleMenu}
+      tabIndex={0}
+    >
       <FontAwesomeIcon id="menu" className="menu-icon" icon={faBars} />
     </a>
   </div>

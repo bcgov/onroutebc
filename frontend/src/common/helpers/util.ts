@@ -41,7 +41,9 @@ export const removeEmptyValues = (obj: object): object => {
  *
  * @see https://dev.to/typescripttv/what-is-the-difference-between-null-and-undefined-5h76
  */
-export const replaceEmptyValuesWithNull = (obj: object): RequiredOrNull<object> => {
+export const replaceEmptyValuesWithNull = (
+  obj: object,
+): RequiredOrNull<object> => {
   if (Array.isArray(obj)) {
     return obj.map((item) => replaceEmptyValuesWithNull(item));
   } else if (typeof obj === "object" && obj !== null) {
@@ -89,7 +91,7 @@ export const applyWhenNotNullable = <T>(
  * @returns The first non-nullable value from defaultVals, or undefined if there are no non-nullable values.
  */
 export const getDefaultNullableVal = <T>(
-  ...defaultVals: (Nullable<T>)[]
+  ...defaultVals: Nullable<T>[]
 ): Optional<T> => {
   return defaultVals.find((val) => val != null) ?? undefined;
 };
@@ -130,4 +132,57 @@ export const areValuesDifferent = <T>(
   }
 
   return false; // values are equal otherwise
+};
+
+/**
+ * Returns the file name for a file from API response.
+ * @param headers The collection of headers in an API response.
+ * @returns string | undefined.
+ */
+export const getFileNameFromHeaders = (
+  headers: Headers,
+): string | undefined => {
+  const contentDisposition = headers.get("content-disposition");
+  if (!contentDisposition) return undefined;
+  const matchRegex = /filename=(.+)/;
+  const filenameMatch = matchRegex.exec(contentDisposition);
+  if (filenameMatch && filenameMatch.length > 1) {
+    return filenameMatch[1];
+  }
+  return undefined;
+};
+
+/**
+ * Downloads a file using stream.
+ * @param response The Axios response containing file details.
+ * @returns The file.
+ */
+export const streamDownloadFile = async (response: Response) => {
+  const filename = getFileNameFromHeaders(response.headers);
+  if (!filename) {
+    throw new Error("Unable to download pdf, file not available");
+  }
+  if (!response.body) {
+    throw new Error("Unable to download pdf, no response found");
+  }
+  const reader = response.body.getReader();
+  const stream = new ReadableStream({
+    start: (controller) => {
+      const processRead = async () => {
+        const { done, value } = await reader.read();
+        if (done) {
+          // When no more data needs to be consumed, close the stream
+          controller.close();
+          return;
+        }
+        // Enqueue the next data chunk into our target stream
+        controller.enqueue(value);
+        await processRead();
+      };
+      processRead();
+    },
+  });
+  const newRes = new Response(stream);
+  const blobObj = await newRes.blob();
+  return { blobObj, filename };
 };
