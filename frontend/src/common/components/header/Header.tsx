@@ -89,6 +89,7 @@ const NavButton = ({ toggleMenu }: { toggleMenu: () => void }) => (
       role="link"
       onClick={toggleMenu}
       onKeyDown={toggleMenu}
+      tabIndex={0}
     >
       <FontAwesomeIcon id="menu" className="menu-icon" icon={faBars} />
     </a>
