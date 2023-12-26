@@ -3,9 +3,6 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import {
   FieldValues,
   FieldPath,
-  RegisterOptions,
-  ControllerRenderProps,
-  Path,
   useFormContext,
   useController,
 } from "react-hook-form";
