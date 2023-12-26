@@ -22,7 +22,7 @@ import { RedXMarkIcon } from "../../../../common/components/icons/RedXMarkIcon";
 export default function UserGroupsAndPermissionsModal({
   isOpen,
   onClickClose,
-}: {
+}: Readonly<{
   /**
    * Boolean to control the open and close state of Dialog box.
    */
@@ -32,7 +32,7 @@ export default function UserGroupsAndPermissionsModal({
    * @returns void
    */
   onClickClose: () => void;
-}) {
+}>) {
   return (
     <div>
       <Dialog

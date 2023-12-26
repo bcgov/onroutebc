@@ -170,34 +170,26 @@ export const IDIRSearchResults = memo(
           </Box>
         );
       },
-      renderRowActions: useCallback(
-        ({
-          row,
-        }: {
-          table: MRT_TableInstance<Permit>;
-          row: MRT_Row<Permit>;
-        }) => {
-          const isInactive =
-            hasPermitExpired(row.original.permitData.expiryDate) ||
-            isPermitInactive(row.original.permitStatus);
+      renderRowActions: useCallback(({ row }: { row: MRT_Row<Permit> }) => {
+        const isInactive =
+          hasPermitExpired(row.original.permitData.expiryDate) ||
+          isPermitInactive(row.original.permitStatus);
 
-          if (shouldShowRowActions(idirUserDetails?.userAuthGroup)) {
-            return (
-              <Box className="idir-search-results__row-actions">
-                <IDIRPermitSearchRowActions
-                  isPermitInactive={isInactive}
-                  permitNumber={row.original.permitNumber}
-                  permitId={row.original.permitId}
-                  userAuthGroup={idirUserDetails?.userAuthGroup}
-                />
-              </Box>
-            );
-          } else {
-            return <></>;
-          }
-        },
-        [],
-      ),
+        if (shouldShowRowActions(idirUserDetails?.userAuthGroup)) {
+          return (
+            <Box className="idir-search-results__row-actions">
+              <IDIRPermitSearchRowActions
+                isPermitInactive={isInactive}
+                permitNumber={row.original.permitNumber}
+                permitId={row.original.permitId}
+                userAuthGroup={idirUserDetails?.userAuthGroup}
+              />
+            </Box>
+          );
+        } else {
+          return <></>;
+        }
+      }, []),
       muiToolbarAlertBannerProps: isError
         ? {
             color: "error",

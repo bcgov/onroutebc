@@ -96,7 +96,6 @@ export const UserInfoWizard = React.memo(() => {
         </Box>
         <div
           className="tabpanel-container create-profile-steps"
-          role="profile-steps"
           id={`profile-steps`}
           aria-labelledby={`profile-steps`}
         >

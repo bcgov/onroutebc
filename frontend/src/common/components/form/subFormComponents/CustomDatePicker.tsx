@@ -38,9 +38,12 @@ export interface CustomDatePickerProps<T extends FieldValues> {
  * Based on https://mui.com/x/react-date-pickers/date-picker/
  *
  */
-export const CustomDatePicker = <T extends ORBC_FormTypes>(
-  props: CustomDatePickerProps<T>,
-): JSX.Element => {
+export const CustomDatePicker = <T extends ORBC_FormTypes>({
+  feature,
+  name,
+  disabled,
+  readOnly,
+}: CustomDatePickerProps<T>): JSX.Element => {
   const {
     trigger,
     formState: { isSubmitted },
@@ -57,7 +60,6 @@ export const CustomDatePicker = <T extends ORBC_FormTypes>(
    * There may be a better solution.
    * Referenced: https://www.reddit.com/r/reactjs/comments/udzhh7/reacthookform_not_working_with_mui_datepicker/
    */
-  const name: FieldPath<T> = props.name;
   const {
     field: { onChange, value, ref },
   } = useController({ name, control });
@@ -69,11 +71,12 @@ export const CustomDatePicker = <T extends ORBC_FormTypes>(
    * Reference: https://mui.com/x/react-date-pickers/validation/#show-the-error
    */
   const { setError, clearErrors } = useFormContext();
-  const [MUIerror, setMUIError] = useState<RequiredOrNull<DateValidationError>>(null);
+  const [MUIError, setMUIError] =
+    useState<RequiredOrNull<DateValidationError>>(null);
   const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
-    switch (MUIerror) {
+    switch (MUIError) {
       case "minDate":
       case "disablePast": {
         setError(name, { type: "focus" }, { shouldFocus: true });
@@ -96,15 +99,16 @@ export const CustomDatePicker = <T extends ORBC_FormTypes>(
         break;
       }
     }
-  }, [MUIerror]);
+  }, [MUIError]);
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <DatePicker
+        key={`${feature}-date-picker`}
         ref={ref}
         value={value}
-        disabled={props.disabled}
-        readOnly={props.readOnly}
+        disabled={disabled}
+        readOnly={readOnly}
         onChange={onChange}
         disablePast
         maxDate={maxDate}
@@ -119,9 +123,9 @@ export const CustomDatePicker = <T extends ORBC_FormTypes>(
         // The validation needed to be triggered again manually
         onClose={async () => {
           if (isSubmitted) {
-            const output = await trigger(props.name);
+            const output = await trigger(name);
             if (!output) {
-              trigger(props.name);
+              trigger(name);
             }
           }
         }}

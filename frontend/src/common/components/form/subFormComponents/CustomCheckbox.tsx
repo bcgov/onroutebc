@@ -37,20 +37,18 @@ export const CustomCheckbox = <T extends ORBC_FormTypes>(
       name={props.name}
       control={control}
       render={() => (
-        <>
-          <FormControl>
-            <div>
-              <Checkbox
-                {...register(props.name)}
-                checked={props.checked}
-                onChange={props.handleOnChange}
-                inputProps={props.inputProps}
-                sx={{ marginLeft: "0px", paddingLeft: "0px" }}
-              />
-              <FormLabel>{props.label}</FormLabel>
-            </div>
-          </FormControl>
-        </>
+        <FormControl>
+          <div>
+            <Checkbox
+              {...register(props.name)}
+              checked={props.checked}
+              onChange={props.handleOnChange}
+              inputProps={props.inputProps}
+              sx={{ marginLeft: "0px", paddingLeft: "0px" }}
+            />
+            <FormLabel>{props.label}</FormLabel>
+          </div>
+        </FormControl>
       )}
     />
   );

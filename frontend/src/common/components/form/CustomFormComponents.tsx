@@ -179,40 +179,38 @@ export const CustomFormComponent = <T extends ORBC_FormTypes>({
         control={control}
         rules={rules}
         render={({ fieldState: { invalid } }) => (
-          <>
-            <FormControl
-              className="custom-form-control"
-              margin="normal"
-              error={invalid}
-              sx={{ width: "100%" }}
+          <FormControl
+            className="custom-form-control"
+            margin="normal"
+            error={invalid}
+            sx={{ width: "100%" }}
+          >
+            <FormLabel
+              className="custom-form-control__label"
+              id={`${feature}-${name}-label`}
+              sx={{ fontWeight: "bold", marginBottom: "8px" }}
             >
-              <FormLabel
-                className="custom-form-control__label"
-                id={`${feature}-${name}-label`}
-                sx={{ fontWeight: "bold", marginBottom: "8px" }}
-              >
-                {label}
-                {!isRequired() && (
-                  <span style={{ fontWeight: "normal" }}> (optional)</span>
-                )}
-                {customHelperText && (
-                  <span style={{ fontWeight: "normal" }}>
-                    {` (${customHelperText})`}
-                  </span>
-                )}
-              </FormLabel>
-              {renderSubFormComponent(invalid)}
-              {invalid && (
-                <FormHelperText
-                  className="custom-form-control__helper-text"
-                  data-testid={`alert-${name}`}
-                  error
-                >
-                  {getErrorMessage(errors, name)}
-                </FormHelperText>
+              {label}
+              {!isRequired() && (
+                <span style={{ fontWeight: "normal" }}> (optional)</span>
               )}
-            </FormControl>
-          </>
+              {customHelperText && (
+                <span style={{ fontWeight: "normal" }}>
+                  {` (${customHelperText})`}
+                </span>
+              )}
+            </FormLabel>
+            {renderSubFormComponent(invalid)}
+            {invalid && (
+              <FormHelperText
+                className="custom-form-control__helper-text"
+                data-testid={`alert-${name}`}
+                error
+              >
+                {getErrorMessage(errors, name)}
+              </FormHelperText>
+            )}
+          </FormControl>
         )}
       />
     </Box>

@@ -41,7 +41,7 @@ export const PermitsColumnDefinition: MRT_ColumnDef<Permit>[] = [
     sortingFn: "alphanumeric",
   },
   {
-    accessorFn: (row) => `${row.permitData.vehicleDetails?.unitNumber || ""}`,
+    accessorFn: (row) => `${row.permitData.vehicleDetails?.unitNumber ?? ""}`,
     id: "unitNumber",
     header: "Unit #",
     enableSorting: true,

@@ -110,12 +110,7 @@ export const UserManagement = () => {
       },
     },
     renderRowActions: useCallback(
-      ({
-        row,
-      }: {
-        table: MRT_TableInstance<ReadCompanyUser>;
-        row: MRT_Row<ReadCompanyUser>;
-      }) => {
+      ({ row }: { row: MRT_Row<ReadCompanyUser> }) => {
         if (row.original.statusCode === BCeIDUserStatus.ACTIVE) {
           return (
             <Box sx={{ display: "flex", justifyContent: "flex-end" }}>

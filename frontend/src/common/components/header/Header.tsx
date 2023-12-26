@@ -14,10 +14,10 @@ import { SearchButton } from "./components/SearchButton";
 import { SearchFilter } from "./components/SearchFilter";
 import { IDPS } from "../../types/idp";
 import OnRouteBCContext from "../../authentication/OnRouteBCContext";
-import { 
-  APPLICATIONS_ROUTES, 
-  PROFILE_ROUTES, 
-  VEHICLES_ROUTES, 
+import {
+  APPLICATIONS_ROUTES,
+  PROFILE_ROUTES,
+  VEHICLES_ROUTES,
 } from "../../../routes/constants";
 
 const getEnv = () => {
@@ -56,9 +56,7 @@ const Navbar = ({
             <>
               {DoesUserHaveRoleWithContext(ROLES.WRITE_PERMIT) && (
                 <li>
-                  <NavLink to={APPLICATIONS_ROUTES.BASE}>
-                    Permits
-                  </NavLink>
+                  <NavLink to={APPLICATIONS_ROUTES.BASE}>Permits</NavLink>
                 </li>
               )}
               {DoesUserHaveRoleWithContext(ROLES.READ_VEHICLE) && (
@@ -70,9 +68,7 @@ const Navbar = ({
               )}
               {DoesUserHaveRoleWithContext(ROLES.READ_ORG) && (
                 <li>
-                  <NavLink to={PROFILE_ROUTES.MANAGE}>
-                    Profile
-                  </NavLink>
+                  <NavLink to={PROFILE_ROUTES.MANAGE}>Profile</NavLink>
                 </li>
               )}
             </>
@@ -82,6 +78,17 @@ const Navbar = ({
     </nav>
   );
 };
+
+/**
+ * Navigation button react component.
+ */
+const NavButton = ({ toggleMenu }: { toggleMenu: () => void }) => (
+  <div className="other">
+    <a className="nav-btn" onClick={toggleMenu} onKeyDown={toggleMenu}>
+      <FontAwesomeIcon id="menu" className="menu-icon" icon={faBars} />
+    </a>
+  </div>
+);
 
 /*
  * The Header component includes the BC Gov banner and Navigation bar
@@ -112,14 +119,6 @@ export const Header = () => {
     setMenuOpen(false);
   };
 
-  const NavButton = () => (
-    <div className="other">
-      <a className="nav-btn" onClick={toggleMenu}>
-        <FontAwesomeIcon id="menu" className="menu-icon" icon={faBars} />
-      </a>
-    </div>
-  );
-
   return (
     <div className="header">
       <header
@@ -139,9 +138,7 @@ export const Header = () => {
           {isAuthenticated ? <NavButton /> : null}
         </div>
       </header>
-      {shouldDisplayNavBar && (
-        <Navbar isAuthenticated={isAuthenticated} />
-      )}
+      {shouldDisplayNavBar && <Navbar isAuthenticated={isAuthenticated} />}
       {shouldDisplayNavBar && menuOpen ? (
         <Navbar isAuthenticated={isAuthenticated} isMobile={true} />
       ) : null}
