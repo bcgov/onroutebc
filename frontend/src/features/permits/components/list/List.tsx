@@ -167,7 +167,7 @@ export const List = memo(
                     const newObject: { [key: string]: boolean } = {};
                     // Setting the selected row to false so that
                     // the row appears unchecked.
-                    newObject[row.original.permitId as string] = false;
+                    newObject[row.original.permitId] = false;
                     return newObject;
                   });
                 }}
