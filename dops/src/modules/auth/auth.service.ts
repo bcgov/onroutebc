@@ -5,7 +5,7 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { lastValueFrom } from 'rxjs';
 import { ClsService } from 'nestjs-cls';
-import { LogMethodExecution } from '../../decorator/log-method-execution.decorator';
+import { LogAsyncMethodExecution } from '../../decorator/log-async-method-execution.decorator';
 
 @Injectable()
 export class AuthService {
@@ -16,7 +16,7 @@ export class AuthService {
     private readonly cls: ClsService,
   ) {}
 
-  @LogMethodExecution()
+  @LogAsyncMethodExecution()
   async getUserDetails(
     accessToken: string,
     userGuid: string,
@@ -42,7 +42,7 @@ export class AuthService {
    *
    * @returns The Roles as a promise of type {@link Role[]}
    */
-  @LogMethodExecution()
+  @LogAsyncMethodExecution()
   async getRolesForUser(
     accessToken: string,
     companyId?: number,
@@ -67,7 +67,7 @@ export class AuthService {
    *
    * @returns The associated companies as a promise of type {@link number[]}
    */
-  @LogMethodExecution()
+  @LogAsyncMethodExecution()
   async getCompaniesForUser(accessToken: string): Promise<AxiosResponse> {
     return lastValueFrom(
       this.httpService.get(process.env.ACCESS_API_URL + '/companies', {

@@ -33,7 +33,7 @@ import { CacheKey } from '../../../common/enum/cache-key.enum';
 import { AccountSource } from '../../../common/enum/account-source.enum';
 import { PendingUser } from '../pending-users/entities/pending-user.entity';
 import * as crypto from 'crypto';
-import { LogMethodExecution } from '../../../common/decorator/log-method-execution.decorator';
+import { LogAsyncMethodExecution } from '../../../common/decorator/log-async-method-execution.decorator';
 
 @Injectable()
 export class CompanyService {
@@ -62,7 +62,7 @@ export class CompanyService {
    * @returns The company and admin user details as a promise of type
    * {@link ReadCompanyUserDto}
    */
-  @LogMethodExecution()
+  @LogAsyncMethodExecution()
   async create(
     createCompanyDto: CreateCompanyDto,
     currentUser: IUserJWT,
@@ -234,7 +234,7 @@ export class CompanyService {
    *
    * @returns The company details as a promise of type {@link ReadCompanyDto}
    */
-  @LogMethodExecution()
+  @LogAsyncMethodExecution()
   async findOne(companyId: number): Promise<ReadCompanyDto> {
     return this.classMapper.mapAsync(
       await this.companyRepository.findOne({
@@ -258,7 +258,7 @@ export class CompanyService {
    *
    * @returns The company details list as a promise of type {@link ReadCompanyMetadataDto}
    */
-  @LogMethodExecution()
+  @LogAsyncMethodExecution()
   async findCompanyMetadataByUserGuid(
     userGUID: string,
   ): Promise<ReadCompanyMetadataDto[]> {
@@ -291,7 +291,7 @@ export class CompanyService {
    *
    * @returns The company details as a promise of type {@link ReadCompanyMetadataDto}
    */
-  @LogMethodExecution()
+  @LogAsyncMethodExecution()
   async findCompanyMetadata(
     companyId: number,
   ): Promise<ReadCompanyMetadataDto> {
@@ -313,7 +313,7 @@ export class CompanyService {
    *
    * @returns The company details as a promise of type {@link Company}
    */
-  @LogMethodExecution()
+  @LogAsyncMethodExecution()
   async findOneByCompanyGuid(companyGUID: string): Promise<Company> {
     return await this.companyRepository.findOne({
       where: { companyGUID: companyGUID },
@@ -334,7 +334,7 @@ export class CompanyService {
    *
    * @returns The company details as a promise of type {@link Company}
    */
-  @LogMethodExecution()
+  @LogAsyncMethodExecution()
   async findOneByMigratedClientNumber(
     migratedClientNumber: string,
   ): Promise<Company> {
@@ -354,7 +354,7 @@ export class CompanyService {
    *
    * @returns The company details as a promise of type {@link Company}
    */
-  @LogMethodExecution()
+  @LogAsyncMethodExecution()
   async findOneByMigratedClientHash(
     migratedClientHash: string,
   ): Promise<Company> {
@@ -377,7 +377,7 @@ export class CompanyService {
    *
    * @returns The company details as a promise of type {@link ReadCompanyDto}
    */
-  @LogMethodExecution()
+  @LogAsyncMethodExecution()
   async mapCompanyEntityToCompanyDto(
     company: Company,
   ): Promise<ReadCompanyDto> {
@@ -393,7 +393,7 @@ export class CompanyService {
    *
    * @returns The company details as a promise of type {@link ReadCompanyMetadataDto}
    */
-  @LogMethodExecution()
+  @LogAsyncMethodExecution()
   async mapCompanyEntityToCompanyMetadataDto(
     company: Company,
   ): Promise<ReadCompanyMetadataDto> {
@@ -417,7 +417,7 @@ export class CompanyService {
    *
    * @returns The company details as a promise of type {@link ReadCompanyDto}
    */
-  @LogMethodExecution()
+  @LogAsyncMethodExecution()
   async update(
     companyId: number,
     updateCompanyDto: UpdateCompanyDto,

@@ -12,7 +12,7 @@ import { createFile } from './helper/file.helper';
 import { addToCache } from './helper/cache.helper';
 import * as fs from 'fs';
 import { DgenService } from './modules/dgen/dgen.service';
-import { LogMethodExecution } from './decorator/log-method-execution.decorator';
+import { LogAsyncMethodExecution } from './decorator/log-async-method-execution.decorator';
 
 @Injectable()
 export class AppService {
@@ -30,7 +30,7 @@ export class AppService {
     return 'DOPS Healthcheck!';
   }
 
-  @LogMethodExecution({ printMemoryStats: true })
+  @LogAsyncMethodExecution({ printMemoryStats: true })
   async initializeCache() {
     const startDateTime = new Date();
     const templates = await this.dgenService.findAllTemplates();

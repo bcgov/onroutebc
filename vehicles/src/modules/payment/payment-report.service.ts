@@ -24,7 +24,7 @@ import { IdirUser } from '../company-user-management/users/entities/idir.user.en
 import { PaymentMethodType } from './entities/payment-method-type.entity';
 import { PaymentCardType } from './entities/payment-card-type.entity';
 import { getPaymentCodeFromCache } from '../../common/helper/payment.helper';
-import { LogMethodExecution } from '../../common/decorator/log-method-execution.decorator';
+import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method-execution.decorator';
 
 @Injectable()
 export class PaymentReportService {
@@ -185,7 +185,7 @@ export class PaymentReportService {
     }
   }
 
-  @LogMethodExecution()
+  @LogAsyncMethodExecution()
   async findTransactionDataForDetailedReports(
     transactionTypes: TransactionType[],
     createPaymentDetailedReportDto: CreatePaymentDetailedReportDto,
@@ -231,7 +231,7 @@ export class PaymentReportService {
     }
   }
 
-  @LogMethodExecution()
+  @LogAsyncMethodExecution()
   async findSummaryPaymentAndRefundDataForDetailedReports(
     transactionType: TransactionType[],
     reportDto: CreatePaymentDetailedReportDto | CreatePaymentSummaryReportDto,
@@ -330,7 +330,7 @@ export class PaymentReportService {
     }
   }
 
-  @LogMethodExecution()
+  @LogAsyncMethodExecution()
   async findSummaryPermitDataForDetailedReports(
     transactionType: TransactionType[],
     reportDto: CreatePaymentDetailedReportDto | CreatePaymentSummaryReportDto,
@@ -407,7 +407,7 @@ export class PaymentReportService {
     return paymentCodes;
   }
 
-  @LogMethodExecution()
+  @LogAsyncMethodExecution()
   async createPaymentDetailedReport(
     currentUser: IUserJWT,
     createPaymentDetailedReportDto: CreatePaymentDetailedReportDto,
@@ -513,7 +513,7 @@ export class PaymentReportService {
     await this.dopsService.generateReport(currentUser, generateReportData, res);
   }
 
-  @LogMethodExecution()
+  @LogAsyncMethodExecution()
   async createPaymentSummaryReport(
     currentUser: IUserJWT,
     createPaymentSummaryReportDto: CreatePaymentSummaryReportDto,
@@ -613,7 +613,7 @@ export class PaymentReportService {
     }
   }
 
-  @LogMethodExecution()
+  @LogAsyncMethodExecution()
   async findTransactionDataForSummaryReports(
     transactionTypes: TransactionType[],
     reportDto: CreatePaymentSummaryReportDto,
