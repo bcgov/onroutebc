@@ -38,7 +38,7 @@ export const PermitsColumnDefinition: MRT_ColumnDef<Permit>[] = [
     enableSorting: true,
   },
   {
-    accessorFn: (row) => `${row.permitData.vehicleDetails?.unitNumber || ""}`,
+    accessorFn: (row) => `${row.permitData.vehicleDetails?.unitNumber ?? ""}`,
     id: "unitNumber",
     header: "Unit #",
     enableSorting: true,

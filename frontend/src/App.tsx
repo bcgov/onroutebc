@@ -110,7 +110,11 @@ const App = () => {
               migratedClient,
             ])}
           >
-            <SnackBarContext.Provider value={{ setSnackBar: setSnackBar }}>
+            <SnackBarContext.Provider
+              value={useMemo(() => {
+                return { setSnackBar: setSnackBar };
+              }, [setSnackBar])}
+            >
               <CustomSnackbar
                 showSnackbar={displaySnackBar}
                 setShowSnackbar={setDisplaySnackBar}
