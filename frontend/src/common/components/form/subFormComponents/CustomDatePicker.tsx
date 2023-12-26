@@ -71,12 +71,12 @@ export const CustomDatePicker = <T extends ORBC_FormTypes>({
    * Reference: https://mui.com/x/react-date-pickers/validation/#show-the-error
    */
   const { setError, clearErrors } = useFormContext();
-  const [MUIError, setMUIError] =
+  const [muiError, setMuiError] =
     useState<RequiredOrNull<DateValidationError>>(null);
   const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
-    switch (MUIError) {
+    switch (muiError) {
       case "minDate":
       case "disablePast": {
         setError(name, { type: "focus" }, { shouldFocus: true });
@@ -99,7 +99,7 @@ export const CustomDatePicker = <T extends ORBC_FormTypes>({
         break;
       }
     }
-  }, [MUIError]);
+  }, [muiError]);
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -112,7 +112,7 @@ export const CustomDatePicker = <T extends ORBC_FormTypes>({
         onChange={onChange}
         disablePast
         maxDate={maxDate}
-        onError={(newError) => setMUIError(newError)}
+        onError={(newError) => setMuiError(newError)}
         slotProps={{
           textField: {
             helperText: errorMessage,
