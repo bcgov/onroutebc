@@ -135,7 +135,7 @@ export const Header = () => {
               <UserSection username={username} />
             </div>
           ) : null}
-          {isAuthenticated ? <NavButton /> : null}
+          {isAuthenticated ? <NavButton toggleMenu={toggleMenu} /> : null}
         </div>
       </header>
       {shouldDisplayNavBar && <Navbar isAuthenticated={isAuthenticated} />}

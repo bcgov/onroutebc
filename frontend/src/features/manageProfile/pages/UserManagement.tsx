@@ -7,7 +7,6 @@ import { useAuth } from "react-oidc-context";
 import {
   MaterialReactTable,
   MRT_Row,
-  MRT_TableInstance,
   useMaterialReactTable,
 } from "material-react-table";
 

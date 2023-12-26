@@ -6,7 +6,6 @@ import {
   MRT_ColumnDef,
   MRT_PaginationState,
   MRT_Row,
-  MRT_TableInstance,
   MaterialReactTable,
   useMaterialReactTable,
 } from "material-react-table";
