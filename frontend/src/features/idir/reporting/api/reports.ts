@@ -29,6 +29,16 @@ const streamDownloadWithHTTPPost = async (
   filename: string;
 }> => {
   const response = await httpPOSTRequestStream(url, requestBody);
+  const file = await streamDownloadFile(response);
+  return file;
+};
+
+/**
+ * Downloads a file using stream.
+ * @param response The Axios response containing file details.
+ * @returns The file.
+ */
+export const streamDownloadFile = async (response: Response) => {
   const filename = getFileNameFromHeaders(response.headers);
   if (!filename) {
     throw new Error("Unable to download pdf, file not available");
