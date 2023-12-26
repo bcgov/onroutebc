@@ -29,6 +29,7 @@ import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
   replaceEmptyValuesWithNull,
+  streamDownloadFile,
 } from "../../../common/helpers/util";
 
 import {
@@ -175,46 +176,10 @@ export const deleteApplications = async (applicationIds: Array<string>) => {
   );
 };
 
-export const getFileNameFromHeaders = (headers: Headers) => {
-  const contentDisposition = headers.get("content-disposition");
-  if (!contentDisposition) return undefined;
-  const matchRegex = /filename=(.+)/;
-  const filenameMatch = matchRegex.exec(contentDisposition);
-  if (filenameMatch && filenameMatch.length > 1) {
-    return filenameMatch[1];
-  }
-  return undefined;
-};
-
 const streamDownload = async (url: string) => {
   const response = await httpGETRequestStream(url);
-  const filename = getFileNameFromHeaders(response.headers);
-  if (!filename) {
-    throw new Error("Unable to download pdf, file not available");
-  }
-  if (!response.body) {
-    throw new Error("Unable to download pdf, no response found");
-  }
-  const reader = response.body.getReader();
-  const stream = new ReadableStream({
-    start: (controller) => {
-      const processRead = async () => {
-        const { done, value } = await reader.read();
-        if (done) {
-          // When no more data needs to be consumed, close the stream
-          controller.close();
-          return;
-        }
-        // Enqueue the next data chunk into our target stream
-        controller.enqueue(value);
-        await processRead();
-      };
-      processRead();
-    },
-  });
-  const newRes = new Response(stream);
-  const blobObj = await newRes.blob();
-  return { blobObj, filename };
+  const file = await streamDownloadFile(response);
+  return file;
 };
 
 /**
