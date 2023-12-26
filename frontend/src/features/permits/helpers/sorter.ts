@@ -68,7 +68,9 @@ export const sortVehicles = (
 ) => {
   if (!chooseFrom || !options) return [];
 
-  const sortedVehicles = options.toSorted((a, b) => {
+  // We shouldn't change original array, but make an copy and sort on that instead
+  const sortedVehicles = [...options];
+  sortedVehicles.sort((a, b) => {
     // If the vehicle types (powerUnit | trailer) are the same, sort by plate or unitnumber
     if (a.vehicleType?.toLowerCase() === b.vehicleType?.toLowerCase()) {
       if (chooseFrom === "plate") {
