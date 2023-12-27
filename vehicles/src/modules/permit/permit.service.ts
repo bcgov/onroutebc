@@ -53,6 +53,7 @@ import { PaymentMethodType } from 'src/common/enum/payment-method-type.enum';
 import { PageOptionsDto } from 'src/common/dto/paginate/page-options';
 import { PageMetaDto } from 'src/common/dto/paginate/page-meta';
 import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method-execution.decorator';
+import { SortDto } from '../common/dto/request/sort.dto';
 
 @Injectable()
 export class PermitService {
