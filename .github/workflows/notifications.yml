@@ -12,16 +12,3 @@ jobs:
           webhook-uri: ${{ vars.MS_TEAMS_WEBHOOK_URI }}
           show-on-exit: false
           enable-view-status: false
-on:
-  workflow_run: [PR Closed]
-jobs:
-  notify-teams:
-    runs-on: ubuntu-22.04
-    if: ${{ github.event.action == 'completed' }}
-    steps:
-      - uses: dchourasia/ms-teams-notification@1.0
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          webhook-uri: ${{ vars.MS_TEAMS_WEBHOOK_URI }}
-          show-on-exit: false
-          enable-view-status: false
