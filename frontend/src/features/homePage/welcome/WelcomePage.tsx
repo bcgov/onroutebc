@@ -148,10 +148,11 @@ export const WelcomePage = React.memo(() => {
         {isInvitedUser(companyNameFromContext) && (
           <ProfileAction navigateTo={PROFILE_ROUTES.USER_INFO} />
         )}
-        {companyNameFromContext && isNewCompanyProfile(companyNameFromContext) && (
-          <ProfileAction navigateTo={CREATE_PROFILE_WIZARD_ROUTES.CREATE} />
-        )}
-        {!companyNameFromContext &&
+        {companyNameFromContext &&
+          isNewCompanyProfile(companyNameFromContext) && (
+            <ProfileAction navigateTo={CREATE_PROFILE_WIZARD_ROUTES.CREATE} />
+          )}
+        {!companyNameFromContext && (
           <Stack spacing={2} sx={{ justifyContent: "center" }}>
             <div style={{ alignSelf: "center" }}>
               Has this company purchased a commercial vehicle
@@ -174,7 +175,7 @@ export const WelcomePage = React.memo(() => {
               </Stack>
             </Container>
           </Stack>
-        }
+        )}
       </div>
     </div>
   );

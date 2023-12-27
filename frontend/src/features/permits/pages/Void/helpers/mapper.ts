@@ -66,8 +66,8 @@ export const mapToVoidRequestData = (
       : undefined,
     pgCardType: getRefundCardType(),
     comment: voidPermitFormData.reason,
-    transactionTypeId: isRefundZeroAmount 
-      ? TRANSACTION_TYPES.P 
+    transactionTypeId: isRefundZeroAmount
+      ? TRANSACTION_TYPES.P
       : TRANSACTION_TYPES.R,
   };
 };

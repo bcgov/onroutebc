@@ -10,10 +10,10 @@ export const ApplicationInProgressColumnDefinition: MRT_ColumnDef<ApplicationInP
       accessorKey: "applicationNumber",
       header: "Application #",
       accessorFn: (row) => row.applicationNumber,
-      Cell: (props: {cell: any, row: any}) => {
+      Cell: (props: { cell: any; row: any }) => {
         const permitIdStr = `${props.row.original.permitId}`;
         return (
-          <Link 
+          <Link
             to={`${APPLICATIONS_ROUTES.DETAILS(permitIdStr)}`}
             className="column-link column-link--application-details"
           >

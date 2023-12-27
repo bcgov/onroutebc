@@ -3,7 +3,11 @@ import dayjs, { Dayjs } from "dayjs";
 import { getUserGuidFromSession } from "../../../common/apiManager/httpRequestHandler";
 import { BCeIDUserDetailContext } from "../../../common/authentication/OnRouteBCContext";
 import { TROS_COMMODITIES } from "../constants/termOversizeConstants";
-import { getEndOfDate, getStartOfDate, now } from "../../../common/helpers/formatDate";
+import {
+  getEndOfDate,
+  getStartOfDate,
+  now,
+} from "../../../common/helpers/formatDate";
 import { Nullable } from "../../../common/types/common";
 import { PERMIT_STATUSES } from "../types/PermitStatus";
 import { calculateFeeByDuration } from "./feeSummary";

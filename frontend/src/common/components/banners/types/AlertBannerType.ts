@@ -5,4 +5,5 @@ export const ALERT_BANNER_TYPES = {
   ERROR: "error",
 } as const;
 
-export type AlertBannerType = typeof ALERT_BANNER_TYPES[keyof typeof ALERT_BANNER_TYPES];
+export type AlertBannerType =
+  (typeof ALERT_BANNER_TYPES)[keyof typeof ALERT_BANNER_TYPES];

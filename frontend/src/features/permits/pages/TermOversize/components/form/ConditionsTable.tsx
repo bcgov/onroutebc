@@ -88,34 +88,24 @@ export const ConditionsTable = ({
 
   return (
     <TableContainer className="conditions-table" component={Paper}>
-      <Table 
-        className="conditions-table__table"
-        aria-label="simple table"
-      >
+      <Table className="conditions-table__table" aria-label="simple table">
         <TableHead>
           <TableRow>
-            <TableCell 
-              className="conditions-table__header conditions-table__header--description"
-            >
+            <TableCell className="conditions-table__header conditions-table__header--description">
               Description
             </TableCell>
 
-            <TableCell 
-              className="conditions-table__header conditions-table__header--conditions"
-            >
+            <TableCell className="conditions-table__header conditions-table__header--conditions">
               Conditions
             </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {allOptions.map((row) => (
-            <TableRow
-              key={row.condition}
-              className="conditions-table__row"
-            >
+            <TableRow key={row.condition} className="conditions-table__row">
               <TableCell
                 className="conditions-table__cell conditions-table__cell--checkbox"
-                component="th" 
+                component="th"
                 scope="row"
               >
                 <FormControlLabel
@@ -125,7 +115,11 @@ export const ConditionsTable = ({
                       render={() => {
                         return (
                           <Checkbox
-                            className={`conditions-table__checkbox ${row.disabled ? "conditions-table__checkbox--disabled" : ""}`}
+                            className={`conditions-table__checkbox ${
+                              row.disabled
+                                ? "conditions-table__checkbox--disabled"
+                                : ""
+                            }`}
                             key={row.condition}
                             checked={row.checked}
                             disabled={row.disabled}
@@ -141,9 +135,9 @@ export const ConditionsTable = ({
                 />
               </TableCell>
 
-              <TableCell 
+              <TableCell
                 className="conditions-table__cell conditions-table__cell--condition"
-                component="th" 
+                component="th"
                 scope="row"
               >
                 <CustomExternalLink

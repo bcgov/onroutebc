@@ -126,11 +126,11 @@ describe("Application Contact Details", () => {
     const phone1Input = await inputWithValue(phone1);
     const phone2Input = await inputWithValue(phone2);
     const emailInput = await inputWithValue(email);
-    
+
     // Info banner should be present
     expect(await sendPermitToEmailMsg()).toBeInTheDocument();
 
-    // Act - change various input field values and save application    
+    // Act - change various input field values and save application
     const newFirstName = "Myfirstname";
     await replaceValueForInput(
       user,
@@ -155,12 +155,24 @@ describe("Application Contact Details", () => {
 
     // Assert - input fields should contain updated values
     const savedApplication = await getSavedApplication();
-    expect(savedApplication?.permitData?.contactDetails?.firstName).toBe(newFirstName);
-    expect(savedApplication?.permitData?.contactDetails?.lastName).toBe(newLastName);
-    expect(savedApplication?.permitData?.contactDetails?.phone1).toBe(newPhone1);
-    expect(savedApplication?.permitData?.contactDetails?.phone1Extension).toBe(phone1Extension);
-    expect(savedApplication?.permitData?.contactDetails?.phone2).toBe(newPhone2);
-    expect(savedApplication?.permitData?.contactDetails?.phone2Extension).toBe(phone2Extension);
+    expect(savedApplication?.permitData?.contactDetails?.firstName).toBe(
+      newFirstName,
+    );
+    expect(savedApplication?.permitData?.contactDetails?.lastName).toBe(
+      newLastName,
+    );
+    expect(savedApplication?.permitData?.contactDetails?.phone1).toBe(
+      newPhone1,
+    );
+    expect(savedApplication?.permitData?.contactDetails?.phone1Extension).toBe(
+      phone1Extension,
+    );
+    expect(savedApplication?.permitData?.contactDetails?.phone2).toBe(
+      newPhone2,
+    );
+    expect(savedApplication?.permitData?.contactDetails?.phone2Extension).toBe(
+      phone2Extension,
+    );
     expect(savedApplication?.permitData?.contactDetails?.email).toBe(newEmail);
     expect(savedApplication?.permitData?.contactDetails?.fax).toBe(fax);
   });

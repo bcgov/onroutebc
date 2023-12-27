@@ -6,9 +6,8 @@ import { voidPermit } from "../../../apiManager/permitsAPI";
 import { Optional } from "../../../../../common/types/common";
 
 export const useVoidPermit = () => {
-  const [voidResults, setVoidResults] = useState<
-    Optional<VoidPermitResponseData>
-  >(undefined);
+  const [voidResults, setVoidResults] =
+    useState<Optional<VoidPermitResponseData>>(undefined);
 
   const queryClient = useQueryClient();
 

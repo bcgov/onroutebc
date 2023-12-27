@@ -20,17 +20,12 @@ import {
 } from "../../../../manageVehicles/apiManager/hooks";
 
 export const AmendPermitReview = () => {
-  const {
-    permit,
-    permitFormData,
-    permitHistory,
-    back,
-    next,
-    getLinks,
-  } = useContext(AmendPermitContext);
+  const { permit, permitFormData, permitHistory, back, next, getLinks } =
+    useContext(AmendPermitContext);
 
-  const validTransactionHistory = permitHistory.filter(history =>
-    isValidTransaction(history.paymentMethodTypeCode, history.pgApproved));
+  const validTransactionHistory = permitHistory.filter((history) =>
+    isValidTransaction(history.paymentMethodTypeCode, history.pgApproved),
+  );
 
   const { data: companyInfo } = useCompanyInfoDetailsQuery(
     getDefaultRequiredVal(0, permitFormData?.companyId),
