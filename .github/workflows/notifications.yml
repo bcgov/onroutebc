@@ -6,12 +6,27 @@ on:
       - in_progess
       - completed  
 jobs:
-  notify-teams:
+  notify-teams-in-progress:
     runs-on: ubuntu-22.04
     steps:
-      - uses: dchourasia/ms-teams-notification@1.0
+      - uses: jdcargile/ms-teams-notification@v1.3
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          webhook-uri: ${{ vars.MS_TEAMS_WEBHOOK_URI }}
-          show-on-error: true
-          enable-view-status: false
+          ms-teams-webhook-uri: ${{ vars.MS_TEAMS_WEBHOOK_URI }}
+          notification-summary: |
+            Workflow:  ${{github.event.workflow}}
+            Status: ${{github.event.type}}
+          notification-color: 17a2b8
+          timezone: America/Vancouver
+  notify-teams-complete:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: jdcargile/ms-teams-notification@v1.3
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          ms-teams-webhook-uri: ${{ vars.MS_TEAMS_WEBHOOK_URI }}
+          notification-summary: |
+            Workflow:  ${{github.event.workflow}}
+            Status: ${{github.event.type}}
+          notification-color: 28a745
+          timezone: America/Vancouver
