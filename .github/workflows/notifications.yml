@@ -6,30 +6,34 @@ on:
       - in_progess
       - completed  
 jobs:
-  notify-teams:
+  notify-teams-in-progress:
+    if: ${{github.event.action == 'in_progress'}}
     runs-on: ubuntu-22.04
     steps:
       - uses: jdcargile/ms-teams-notification@v1.3
-        if: ${{github.event.type == 'in_progress'}} 
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           ms-teams-webhook-uri: ${{ vars.MS_TEAMS_WEBHOOK_URI }}
           notification-summary: |
-            Event: ${{github.event}}
-            Workflow:  ${{github.event.workflow.name}} - ${{github.workflow}}
-            Type: ${{github.event.type}}
-            Workflow_Run: ${{toJson(github.event.workflow_run.pull_requests)}}
+            Event: ${{github.event_name}}
+            Workflow:  ${{toJson(github.event.workflow)}}
+            Action: ${{github.event.action}}
+            Workflow_Run: ${{toJson(github.event.workflow_run)}}
           notification-color: 17a2b8
           timezone: America/Vancouver
+  notify-teams-completed:
+    if: ${{github.event.action == 'completed'}}
+    runs-on: ubuntu-22.04
+    steps:
       - uses: jdcargile/ms-teams-notification@v1.3
-        if: ${{github.event.type == 'completed'}} 
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           ms-teams-webhook-uri: ${{ vars.MS_TEAMS_WEBHOOK_URI }}
           notification-summary: |
-            Event: ${{github.event}}
-            Workflow:  ${{github.event.workflow.name}} - ${{github.workflow}}
-            Type: ${{github.event.type}}
-            Workflow_Run: ${{toJson(github.event.workflow_run.pull_requests)}}
-          notification-color: 28a745
+            Event: ${{github.event_name}}
+            Workflow:  ${{toJson(github.event.workflow)}}
+            Action: ${{github.event.action}}
+            Workflow_Run: ${{toJson(github.event.workflow_run)}}
+          notification-color: 17a2b8
           timezone: America/Vancouver
+          notification-color: 28a745
