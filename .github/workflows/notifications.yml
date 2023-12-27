@@ -1,14 +1,17 @@
 name: Notifications
 on:
-  workflow_run: [PR,Merge]
+  workflow_run: 
+    workflows: [PR,Merge]
+    types:
+      - in_progess
+      - completed  
 jobs:
   notify-teams:
     runs-on: ubuntu-22.04
-    if: ${{ github.event.action == 'in_progress' || github.event.action == 'completed' }}
     steps:
       - uses: dchourasia/ms-teams-notification@1.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           webhook-uri: ${{ vars.MS_TEAMS_WEBHOOK_URI }}
-          show-on-exit: false
+          show-on-error: true
           enable-view-status: false
