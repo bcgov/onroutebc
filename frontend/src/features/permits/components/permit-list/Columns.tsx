@@ -1,12 +1,9 @@
 import Link from "@mui/material/Link";
 import { MRT_ColumnDef } from "material-react-table";
+import { formatCellValuetoDatetime } from "../../../../common/constants/defaultTableOptions";
 import { viewPermitPdf } from "../../helpers/permitPDFHelper";
 import { Permit } from "../../types/permit";
 import { PermitChip } from "./PermitChip";
-import {
-  dateTimeStringSortingFn,
-  formatCellValuetoDatetime,
-} from "../../../../common/constants/defaultTableOptions";
 
 /**
  * The column definition for Permits.
@@ -14,9 +11,9 @@ import {
 export const PermitsColumnDefinition: MRT_ColumnDef<Permit>[] = [
   {
     accessorKey: "permitNumber",
+    id: "permitNumber",
     header: "Permit #",
     enableSorting: true,
-    sortingFn: "alphanumeric",
     size: 500,
     accessorFn: (row) => row.permitNumber,
     Cell: (props: { row: any; renderedCellValue: any }) => {
@@ -36,28 +33,27 @@ export const PermitsColumnDefinition: MRT_ColumnDef<Permit>[] = [
   },
   {
     accessorKey: "permitType",
+    id: "permitType",
     header: "Permit Type",
     enableSorting: true,
-    sortingFn: "alphanumeric",
   },
   {
     accessorFn: (row) => `${row.permitData.vehicleDetails?.unitNumber ?? ""}`,
     id: "unitNumber",
     header: "Unit #",
     enableSorting: true,
-    sortingFn: "alphanumeric",
   },
   {
     accessorKey: "permitData.vehicleDetails.plate",
     header: "Plate",
+    id: "plate",
     enableSorting: true,
-    sortingFn: "alphanumeric",
   },
   {
     accessorKey: "permitData.startDate",
+    id: "startDate",
     header: "Permit Start Date",
     enableSorting: true,
-    sortingFn: dateTimeStringSortingFn,
     Cell: (props: { cell: any }) => {
       const formattedDate = formatCellValuetoDatetime(props.cell.getValue());
       return formattedDate;
@@ -66,8 +62,8 @@ export const PermitsColumnDefinition: MRT_ColumnDef<Permit>[] = [
   {
     accessorKey: "permitData.expiryDate",
     header: "Permit End Date",
+    id: "expiryDate",
     enableSorting: true,
-    sortingFn: dateTimeStringSortingFn,
     Cell: (props: { cell: any }) => {
       const formattedDate = formatCellValuetoDatetime(props.cell.getValue());
       return formattedDate;
@@ -76,10 +72,9 @@ export const PermitsColumnDefinition: MRT_ColumnDef<Permit>[] = [
   {
     accessorFn: (row) =>
       `${row.permitData.contactDetails?.firstName} ${row.permitData.contactDetails?.lastName} `,
-    id: "application",
+    id: "applicant",
     header: "Applicant",
     enableSorting: true,
-    sortingFn: "alphanumericCaseSensitive",
   },
 ];
 
