@@ -251,7 +251,6 @@ export class PermitService {
     searchValue?: string,
     sortDto?: SortDto[],
   ): Promise<PaginationDto<ReadPermitDto>> {
-    console.log('findUserPermit');
     const permits = this.permitRepository
       .createQueryBuilder('permit')
       .innerJoinAndSelect('permit.permitData', 'permitData')
@@ -331,15 +330,8 @@ export class PermitService {
             );
           }
         }
-
-        /* else{
-          console.log(index)
-          permits.addOrderBy(value.orderBy, value.descending?'DESC':'ASC')
-        }*/
       });
     }
-
-    console.log('Query: ', permits.getQueryAndParameters());
 
     const totalItems = await permits.getCount();
     const { entities } = await permits.getRawAndEntities();
