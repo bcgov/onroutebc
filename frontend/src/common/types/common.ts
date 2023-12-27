@@ -40,9 +40,45 @@ export type PaginationOptions = {
   page: number;
   /**
    * The number of items in the current page.
+   * Max. value is 25.
    */
   take: number;
 };
+
+/**
+ * The config for sorting data.
+ */
+export type SortingConfig = {
+  /**
+   * The field to order by.
+   */
+  orderBy: string;
+  /**
+   * Boolean indicating if the sort is in descending order.
+   * If not given a value, defaulted to false.
+   */
+  descending?: boolean;
+};
+
+/**
+ * Additional data filters that could be used for
+ * filtering data further.
+ */
+export type DataFilterOptions = {
+  /**
+   * The search value entered by the user.
+   */
+  searchValue?: string;
+  /**
+   * The sorting configuration selected by the user.
+   */
+  sorting?: Array<SortingConfig>;
+};
+
+/**
+ * The options for pagination and filtering data.
+ */
+export type PaginationAndFilters = PaginationOptions & DataFilterOptions;
 
 /**
  * A generic paginated response structure for all the paginated responses from APIs.

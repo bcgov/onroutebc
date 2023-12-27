@@ -3,7 +3,7 @@ import { mapApplicationToApplicationRequestData } from "../helpers/mappers";
 import { IssuePermitsResponse, Permit } from "../types/permit";
 import {
   PaginatedResponse,
-  PaginationOptions,
+  PaginationAndFilters,
   RequiredOrNull,
 } from "../../../common/types/common";
 import { PERMIT_STATUSES } from "../types/PermitStatus";
@@ -347,11 +347,12 @@ export const getCurrentAmendmentApplication = async (
 /**
  * Retrieve the list of active or expired permits.
  * @param expired If set to true, expired permits will be retrieved.
+ * @param paginationOptions The pagination and filters applied.
  * @returns A list of permits.
  */
 export const getPermits = async (
   { expired = false } = {},
-  { page = 0, take = 10 }: PaginationOptions,
+  { page = 0, take = 10, searchValue, sorting = [] }: PaginationAndFilters,
 ): Promise<PaginatedResponse<Permit>> => {
   const companyId = getDefaultRequiredVal("", getCompanyIdFromSession());
   const permitsURL = new URL(PERMITS_API_ROUTES.GET);
@@ -361,8 +362,15 @@ export const getPermits = async (
   if (expired) {
     permitsURL.searchParams.set("expired", "true");
   }
+  // API pagination index starts at 1. Hence page + 1.
   permitsURL.searchParams.set("page", (page + 1).toString());
   permitsURL.searchParams.set("take", take.toString());
+  if (searchValue) {
+    permitsURL.searchParams.set("searchValue", searchValue);
+  }
+  if (sorting.length > 0) {
+    permitsURL.searchParams.set("sorting", JSON.stringify(sorting));
+  }
   const permits = await httpGETRequest(permitsURL.toString())
     .then((response) => {
       const paginatedResponseObject = getDefaultRequiredVal(
