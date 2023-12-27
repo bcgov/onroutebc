@@ -16,8 +16,9 @@ jobs:
           ms-teams-webhook-uri: ${{ vars.MS_TEAMS_WEBHOOK_URI }}
           notification-summary: |
             Event: ${{github.event}}
-            Workflow:  ${{github.event.workflow}} - ${{github.workflow}}
+            Workflow:  ${{github.event.workflow.name}} - ${{github.workflow}}
             Type: ${{github.event.type}}
+            Workflow_Run: ${{toJson(github.event.workflow_run.pull_requests)}}
           notification-color: 17a2b8
           timezone: America/Vancouver
       - uses: jdcargile/ms-teams-notification@v1.3
@@ -27,7 +28,8 @@ jobs:
           ms-teams-webhook-uri: ${{ vars.MS_TEAMS_WEBHOOK_URI }}
           notification-summary: |
             Event: ${{github.event}}
-            Workflow:  ${{github.event.workflow}} - ${{github.workflow}}
+            Workflow:  ${{github.event.workflow.name}} - ${{github.workflow}}
             Type: ${{github.event.type}}
+            Workflow_Run: ${{toJson(github.event.workflow_run.pull_requests)}}
           notification-color: 28a745
           timezone: America/Vancouver
