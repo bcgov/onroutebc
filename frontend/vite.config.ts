@@ -23,7 +23,7 @@ export default defineConfig({
       inline: ["vitest-canvas-mock"]
     },
     coverage: {
-      reporter: ["text", "html"],
+      reporter: ["text", "html", "lcov"],
       exclude: ["node_modules/", "src/setupTests.ts"],
     },
   },
