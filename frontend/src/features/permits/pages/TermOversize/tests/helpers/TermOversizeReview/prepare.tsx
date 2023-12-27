@@ -5,7 +5,13 @@ import userEvent from "@testing-library/user-event";
 import { ThemeProvider } from "@mui/material/styles";
 
 import { APPLICATIONS_API_ROUTES } from "../../../../../apiManager/endpoints/endpoints";
-import { dayjsToUtcStr, getEndOfDate, getStartOfDate, now, toLocalDayjs } from "../../../../../../../common/helpers/formatDate";
+import {
+  dayjsToUtcStr,
+  getEndOfDate,
+  getStartOfDate,
+  now,
+  toLocalDayjs,
+} from "../../../../../../../common/helpers/formatDate";
 import { renderWithClient } from "../../../../../../../common/helpers/testHelper";
 import { Application } from "../../../../../types/application";
 import { bcGovTheme } from "../../../../../../../themes/bcGovTheme";
@@ -48,32 +54,43 @@ export const vehicleSubtypes = [
 ];
 
 const server = setupServer(
-  rest.get(`${MANAGE_PROFILE_API.COMPANIES}/:companyId`, async (_, res, ctx) => {
-    return res(ctx.json({
-      ...companyInfo,
-    }));
-  }),
+  rest.get(
+    `${MANAGE_PROFILE_API.COMPANIES}/:companyId`,
+    async (_, res, ctx) => {
+      return res(
+        ctx.json({
+          ...companyInfo,
+        }),
+      );
+    },
+  ),
   rest.post(`${APPLICATIONS_API_ROUTES.CREATE}`, async (req, res, ctx) => {
     const reqBody = await req.json();
-    const applicationData = { 
+    const applicationData = {
       ...reqBody,
       applicationNumber: newApplicationNumber,
       createdDateTime: dayjsToUtcStr(now()),
       updatedDateTime: dayjsToUtcStr(now()),
     };
-    return res(ctx.status(201), ctx.json({
-      ...applicationData,
-    }));
+    return res(
+      ctx.status(201),
+      ctx.json({
+        ...applicationData,
+      }),
+    );
   }),
   rest.put(`${APPLICATIONS_API_ROUTES.UPDATE}/:id`, async (req, res, ctx) => {
     const reqBody = await req.json();
-    const applicationData = { 
+    const applicationData = {
       ...reqBody,
       updatedDateTime: dayjsToUtcStr(now()),
     };
-    return res(ctx.status(200), ctx.json({
-      ...applicationData,
-    }));
+    return res(
+      ctx.status(200),
+      ctx.json({
+        ...applicationData,
+      }),
+    );
   }),
   rest.get(VEHICLES_API.POWER_UNIT_TYPES, async (_, res, ctx) => {
     return res(
@@ -110,7 +127,7 @@ const ComponentWithWrapper = ({
 }) => {
   const [testApplicationData, setTestApplicationData] =
     useState<Nullable<Application>>(applicationData);
-  
+
   return (
     <ThemeProvider theme={bcGovTheme}>
       <ApplicationContext.Provider

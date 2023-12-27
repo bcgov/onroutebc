@@ -1,11 +1,11 @@
 import { PayBCPaymentDetails } from "../types/payment";
 import { parseRedirectUriPath } from "../pages/Payment/PaymentRedirect";
 import { Nullable } from "../../../common/types/common";
-import { 
+import {
   PAYMENT_GATEWAY_METHODS,
   PAYMENT_METHOD_TYPE_CODE,
   PaymentGatewayMethod,
-  PaymentMethodTypeCode, 
+  PaymentMethodTypeCode,
 } from "../../../common/types/paymentMethods";
 
 import {
@@ -37,7 +37,10 @@ export const getPayBCPaymentDetails = (
     cardType: getDefaultRequiredVal("", params.get("cardType")),
     cvdId: applyWhenNotNullable((cvdId) => Number(cvdId), params.get("cvdId")),
     trnApproved: trnApproved,
-    messageId: applyWhenNotNullable((messageId) => Number(messageId), params.get("messageId")),
+    messageId: applyWhenNotNullable(
+      (messageId) => Number(messageId),
+      params.get("messageId"),
+    ),
     messageText: getDefaultRequiredVal("", params.get("messageText")),
     paymentMethod: getDefaultRequiredVal(
       PAYMENT_GATEWAY_METHODS.CC,
@@ -77,6 +80,8 @@ export const isValidTransaction = (
   paymentMethod: PaymentMethodTypeCode,
   transactionApproved?: Nullable<number>,
 ) => {
-  return paymentMethod !== PAYMENT_METHOD_TYPE_CODE.WEB
-    || (!!transactionApproved && transactionApproved > 0);
+  return (
+    paymentMethod !== PAYMENT_METHOD_TYPE_CODE.WEB ||
+    (!!transactionApproved && transactionApproved > 0)
+  );
 };

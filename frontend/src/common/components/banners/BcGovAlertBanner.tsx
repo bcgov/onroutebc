@@ -39,7 +39,7 @@ export const BcGovAlertBanner = ({
       case ALERT_BANNER_TYPES.WARNING:
         return faExclamationTriangle;
       case ALERT_BANNER_TYPES.ERROR:
-      default: 
+      default:
         return faExclamationCircle;
     }
   };
@@ -61,10 +61,7 @@ export const BcGovAlertBanner = ({
       />
 
       <div className="bc-gov-alertbanner__info">
-        <p 
-          className="bc-gov-alertbanner__msg" 
-          id={msgId}
-        >
+        <p className="bc-gov-alertbanner__msg" id={msgId}>
           {msg}
         </p>
 

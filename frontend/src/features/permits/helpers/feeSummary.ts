@@ -1,7 +1,11 @@
 import { PermitHistory } from "../types/PermitHistory";
 import { TRANSACTION_TYPES, TransactionType } from "../types/payment.d";
 import { Permit } from "../types/permit";
-import { PERMIT_STATES, daysLeftBeforeExpiry, getPermitState } from "./permitState";
+import {
+  PERMIT_STATES,
+  daysLeftBeforeExpiry,
+  getPermitState,
+} from "./permitState";
 import { isValidTransaction } from "./payment";
 import { Nullable } from "../../../common/types/common";
 import {
@@ -60,7 +64,7 @@ export const isTransactionTypeRefund = (transactionType: TransactionType) => {
  */
 export const calculateNetAmount = (permitHistory: PermitHistory[]) => {
   return permitHistory
-    .filter((permit) => 
+    .filter((permit) =>
       isValidTransaction(permit.paymentMethodTypeCode, permit.pgApproved),
     )
     .map((permit) =>
@@ -106,7 +110,10 @@ export const calculateAmountForVoid = (
   permitHistory: PermitHistory[],
 ) => {
   const permitState = getPermitState(permit);
-  if (permitState === PERMIT_STATES.EXPIRES_IN_30 || permitState === PERMIT_STATES.EXPIRED) {
+  if (
+    permitState === PERMIT_STATES.EXPIRES_IN_30 ||
+    permitState === PERMIT_STATES.EXPIRED
+  ) {
     return 0;
   }
 

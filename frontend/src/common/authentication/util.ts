@@ -35,9 +35,7 @@ export const DoesUserHaveRole = (
  * @param requiredRole The role to check for.
  * @returns A boolean indicating if the user has the role to access a page or feature.
  */
-export const DoesUserHaveRoleWithContext = (
-  requiredRole: Optional<string>,
-) => {
+export const DoesUserHaveRoleWithContext = (requiredRole: Optional<string>) => {
   const { userRoles } = useContext(OnRouteBCContext);
   return (
     requiredRole &&

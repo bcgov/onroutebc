@@ -22,8 +22,9 @@ import {
   SEARCH_ENTITIES,
 } from "../../../idir/search/types/types";
 
-const searchRoute = `${IDIR_ROUTES.SEARCH_RESULTS}?searchEntity=${SEARCH_ENTITIES.PERMIT}`
-  + `&searchByFilter=${SEARCH_BY_FILTERS.PERMIT_NUMBER}`;
+const searchRoute =
+  `${IDIR_ROUTES.SEARCH_RESULTS}?searchEntity=${SEARCH_ENTITIES.PERMIT}` +
+  `&searchByFilter=${SEARCH_BY_FILTERS.PERMIT_NUMBER}`;
 
 const isVoidable = (permit: Permit) => {
   return (

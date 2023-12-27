@@ -7,9 +7,7 @@ export const Footer = () => {
       <div className="container">
         <ul>
           <li>
-            <a href={ONROUTE_WEBPAGE_LINKS.HOME}>
-              Home
-            </a>
+            <a href={ONROUTE_WEBPAGE_LINKS.HOME}>Home</a>
           </li>
           <li>
             <a

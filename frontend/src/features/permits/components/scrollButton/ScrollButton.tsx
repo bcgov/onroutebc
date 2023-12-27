@@ -32,9 +32,7 @@ export const ScrollButton = () => {
 
   return isVisible ? (
     <div className="scroll-btn">
-      <div className="scroll-btn__tooltip">
-        To Top
-      </div>
+      <div className="scroll-btn__tooltip">To Top</div>
 
       <Button
         className="scroll-btn__btn"

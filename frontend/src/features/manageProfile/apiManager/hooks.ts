@@ -91,12 +91,8 @@ export const useUserContext = () => {
           setIDIRUserDetails?.(() => userDetails);
         }
       } else {
-        const {
-          user,
-          associatedCompanies,
-          pendingCompanies,
-          migratedClient,
-        } = userContextResponseBody as BCeIDUserContextType;
+        const { user, associatedCompanies, pendingCompanies, migratedClient } =
+          userContextResponseBody as BCeIDUserContextType;
         if (user?.userGUID) {
           const companyId = associatedCompanies[0].companyId;
           const legalName = associatedCompanies[0].legalName;

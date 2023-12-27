@@ -53,6 +53,7 @@ import { PaymentMethodType } from 'src/common/enum/payment-method-type.enum';
 import { PageOptionsDto } from 'src/common/dto/paginate/page-options';
 import { PageMetaDto } from 'src/common/dto/paginate/page-meta';
 import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method-execution.decorator';
+import { SortDto } from '../common/dto/request/sort.dto';
 
 @Injectable()
 export class PermitService {
@@ -247,6 +248,8 @@ export class PermitService {
     userGUID: string,
     companyId: number,
     expired: string,
+    searchValue?: string,
+    sortDto?: SortDto[],
   ): Promise<PaginationDto<ReadPermitDto>> {
     const permits = this.permitRepository
       .createQueryBuilder('permit')
@@ -272,6 +275,63 @@ export class PermitService {
       )
       .skip(pageOptionsDto.skip)
       .take(pageOptionsDto.take);
+    if (searchValue) {
+      permits.andWhere(
+        `JSON_VALUE(permitData.permitData, '$.vehicleDetails.plate') like '%${searchValue}%'`,
+      );
+      permits.orWhere(
+        `JSON_VALUE(permitData.permitData, '$.vehicleDetails.unitNumber') like '%${searchValue}%'`,
+      );
+    }
+    if (sortDto.length > 0) {
+      sortDto.forEach((value, index) => {
+        if (index === 0) {
+          if (
+            value.orderBy == 'permitNumber' ||
+            value.orderBy == 'permitType'
+          ) {
+            permits.orderBy(
+              `permit.${value.orderBy}`,
+              value.descending ? 'DESC' : 'ASC',
+            );
+          }
+          if (
+            value.orderBy == 'startDate' ||
+            value.orderBy == 'expiryDate' ||
+            value.orderBy == 'unitNumber' ||
+            value.orderBy == 'plate' ||
+            value.orderBy == 'applicant'
+          ) {
+            permits.orderBy(
+              `permitData.${value.orderBy}`,
+              value.descending ? 'DESC' : 'ASC',
+            );
+          }
+        } else {
+          if (
+            value.orderBy == 'permitNumber' ||
+            value.orderBy == 'permitType'
+          ) {
+            permits.addOrderBy(
+              `permit.${value.orderBy}`,
+              value.descending ? 'DESC' : 'ASC',
+            );
+          }
+          if (
+            value.orderBy == 'startDate' ||
+            value.orderBy == 'expiryDate' ||
+            value.orderBy == 'unitNumber' ||
+            value.orderBy == 'plate' ||
+            value.orderBy == 'applicant'
+          ) {
+            permits.addOrderBy(
+              `permitData.${value.orderBy}`,
+              value.descending ? 'DESC' : 'ASC',
+            );
+          }
+        }
+      });
+    }
 
     const totalItems = await permits.getCount();
     const { entities } = await permits.getRawAndEntities();

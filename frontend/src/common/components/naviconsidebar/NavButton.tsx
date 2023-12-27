@@ -35,9 +35,7 @@ export const NavButton = ({
       <div className="nav-button__hover-container">
         {<FontAwesomeIcon icon={icon} />}
 
-        <div className={`nav-button__hover-tooltip`}>
-          {title}
-        </div>
+        <div className={`nav-button__hover-tooltip`}>{title}</div>
       </div>
     </button>
   );

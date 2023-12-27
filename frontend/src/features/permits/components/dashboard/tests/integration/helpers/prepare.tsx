@@ -7,28 +7,38 @@ import { renderWithClient } from "../../../../../../../common/helpers/testHelper
 import { bcGovTheme } from "../../../../../../../themes/bcGovTheme";
 import { ApplicationStepPage } from "../../../ApplicationStepPage";
 import { APPLICATIONS_API_ROUTES } from "../../../../../apiManager/endpoints/endpoints";
-import { dayjsToUtcStr, now } from "../../../../../../../common/helpers/formatDate";
-import { createApplication, getApplication, updateApplication } from "../fixtures/getActiveApplication";
+import {
+  dayjsToUtcStr,
+  now,
+} from "../../../../../../../common/helpers/formatDate";
+import {
+  createApplication,
+  getApplication,
+  updateApplication,
+} from "../fixtures/getActiveApplication";
 import { VEHICLES_API } from "../../../../../../manageVehicles/apiManager/endpoints/endpoints";
 import { VEHICLES_URL } from "../../../../../../../common/apiManager/endpoints/endpoints";
 import { MANAGE_PROFILE_API } from "../../../../../../manageProfile/apiManager/endpoints/endpoints";
 import { getDefaultCompanyInfo } from "../fixtures/getCompanyInfo";
 import { getDefaultUserDetails } from "../fixtures/getUserDetails";
 import { getDefaultRequiredVal } from "../../../../../../../common/helpers/util";
-import { formatCountry, formatProvince } from "../../../../../../../common/helpers/formatCountryProvince";
+import {
+  formatCountry,
+  formatProvince,
+} from "../../../../../../../common/helpers/formatCountryProvince";
 import { APPLICATION_STEPS } from "../../../../../../../routes/constants";
 import { Nullable, Optional } from "../../../../../../../common/types/common";
 import OnRouteBCContext, {
   OnRouteBCContextType,
 } from "../../../../../../../common/authentication/OnRouteBCContext";
 
-import { 
-  createPowerUnit, 
-  createTrailer, 
-  getAllPowerUnits, 
-  getAllTrailers, 
-  getDefaultPowerUnitTypes, 
-  getDefaultTrailerTypes, 
+import {
+  createPowerUnit,
+  createTrailer,
+  getAllPowerUnits,
+  getAllTrailers,
+  getDefaultPowerUnitTypes,
+  getDefaultTrailerTypes,
   updatePowerUnit,
 } from "../fixtures/getVehicleInfo";
 
@@ -66,30 +76,31 @@ const server = setupServer(
     const applicationData = {
       ...reqBody,
       updatedDateTime: currDtUtcStr,
-    }
+    };
     const updatedApplication = updateApplication(applicationData, id); // update application in mock application store
 
-      if (!updatedApplication) {
-        return res(
-          ctx.status(404),
-          ctx.json({
-            message: "Application not found",
-          }),
-        );
-      }
+    if (!updatedApplication) {
       return res(
+        ctx.status(404),
         ctx.json({
-          ...updatedApplication,
+          message: "Application not found",
         }),
       );
-    },
-  ),
+    }
+    return res(
+      ctx.json({
+        ...updatedApplication,
+      }),
+    );
+  }),
   // Mock getting application
   rest.get(`${APPLICATIONS_API_ROUTES.GET}/:permitId`, (_, res, ctx) => {
-    return res(ctx.json({
-      // get application from mock application store (there's only 1 application or empty), since we're testing save/create/edit behaviour
-      data: getApplication(), 
-    }));
+    return res(
+      ctx.json({
+        // get application from mock application store (there's only 1 application or empty), since we're testing save/create/edit behaviour
+        data: getApplication(),
+      }),
+    );
   }),
   // Mock getting power unit types
   rest.get(VEHICLES_API.POWER_UNIT_TYPES, async (_, res, ctx) => {
@@ -234,13 +245,13 @@ export const getVehicleDetails = (
   const powerUnits = getAllPowerUnits();
   const existingVehicle = powerUnits[0];
   const updatedProvinceAbbr = "AB";
-  const vin = getDefaultRequiredVal("", existingVehicle.vin as Nullable<string>);
+  const vin = getDefaultRequiredVal(
+    "",
+    existingVehicle.vin as Nullable<string>,
+  );
   const vehicle = {
     ...existingVehicle,
-    vin:
-      usage === "create"
-        ? `${vin.slice(1)}1`
-        : existingVehicle.vin,
+    vin: usage === "create" ? `${vin.slice(1)}1` : existingVehicle.vin,
     provinceCode:
       usage === "update" ? updatedProvinceAbbr : existingVehicle.provinceCode,
   };
@@ -258,7 +269,10 @@ export const getVehicleDetails = (
       make: vehicle.make,
       year: getDefaultRequiredVal(0, vehicle.year as Nullable<number>),
       country: formatCountry(vehicle.countryCode as Optional<string>),
-      province: formatProvince(vehicle.countryCode as Optional<string>, vehicle.provinceCode as Optional<string>),
+      province: formatProvince(
+        vehicle.countryCode as Optional<string>,
+        vehicle.provinceCode as Optional<string>,
+      ),
       vehicleType: "Power Unit",
       vehicleSubtype,
       saveVehicle,

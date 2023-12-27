@@ -15,16 +15,12 @@ import {
 } from "../../../../../common/helpers/util";
 
 export const AmendPermitFinish = () => {
-  const {
-    permit,
-    permitFormData,
-    permitHistory,
-    getLinks,
-    afterFinishAmend,
-  } = useContext(AmendPermitContext);
+  const { permit, permitFormData, permitHistory, getLinks, afterFinishAmend } =
+    useContext(AmendPermitContext);
 
-  const validTransactionHistory = permitHistory.filter(history =>
-    isValidTransaction(history.paymentMethodTypeCode, history.pgApproved));
+  const validTransactionHistory = permitHistory.filter((history) =>
+    isValidTransaction(history.paymentMethodTypeCode, history.pgApproved),
+  );
 
   const permitId = applyWhenNotNullable(
     (id) => `${id}`,
