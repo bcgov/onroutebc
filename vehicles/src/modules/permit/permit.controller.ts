@@ -36,6 +36,7 @@ import { ResultDto } from './dto/response/result.dto';
 import { VoidPermitDto } from './dto/request/void-permit.dto';
 import { ApiPaginatedResponse } from 'src/common/decorator/api-paginate-response';
 import { PageOptionsDto } from 'src/common/dto/paginate/page-options';
+import { SortDto } from '../common/dto/request/sort.dto';
 
 @ApiBearerAuth()
 @ApiTags('Permit')
@@ -90,6 +91,13 @@ export class PermitController {
    */
   @ApiQuery({ name: 'companyId', required: true })
   @ApiQuery({ name: 'expired', required: false, example: 'true' })
+  @ApiQuery({
+    name: 'sorting',
+    required: false,
+    example:
+      '[{"orderBy":"unitNumber","descending":false},{"orderBy":"permitType","descending":false}]',
+  })
+  @ApiQuery({ name: 'searchValue', required: false, example: 'permitNumber' })
   @ApiPaginatedResponse(ReadPermitDto)
   @Roles(Role.READ_PERMIT)
   @Get()
@@ -98,8 +106,13 @@ export class PermitController {
     @Query('companyId') companyId: number,
     @Query('expired') expired: string,
     @Query() pageOptionsDto: PageOptionsDto,
+    @Query('sorting') sorting?: string,
+    @Query('searchValue') searchValue?: string,
   ): Promise<PaginationDto<ReadPermitDto>> {
     const currentUser = request.user as IUserJWT;
+    let sortDto: SortDto[] = [];
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    if (sorting) sortDto = JSON.parse(sorting);
     const userGuid =
       currentUser.identity_provider === IDP.BCEID
         ? currentUser.bceid_user_guid
@@ -109,6 +122,8 @@ export class PermitController {
       userGuid,
       companyId,
       expired,
+      searchValue,
+      sortDto,
     );
   }
 
