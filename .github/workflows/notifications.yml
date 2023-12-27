@@ -1,39 +1,27 @@
 name: Notifications
 on:
-  pull_request:
-    types: [opened,closed]
-  push:
-    branches: [main]
-    paths-ignore:
-      - '*.md'
-      - '.github/**'
-      - 'common/graphics/**'
-      - '!.github/workflows/deploy.yml'
-      - '!.github/workflows/merge.yml'
+  workflow_run: [PR,Merge]
 jobs:
-  vars:
-    outputs:
-      pr: ${{ steps.pr.outputs.pr }}
-    runs-on: ubuntu-22.04
-    timeout-minutes: 1
-    steps:
-      # Get PR number for squash merges to main
-      - id: pr
-        uses: bcgov-nr/action-get-pr@v0.0.1
-  
   notify-teams:
-    needs: [vars]
     runs-on: ubuntu-22.04
+    if: ${{ github.event.action == 'in_progress' || github.event.action == 'completed' }}
     steps:
       - uses: dchourasia/ms-teams-notification@1.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           webhook-uri: ${{ vars.MS_TEAMS_WEBHOOK_URI }}
-          custom-facts: |
-            - name: PR#
-              value: "${{ needs.vars.outputs.pr }}"
-            - name: Event
-              value: "${{ github.event_name }}"
-            - name: Type
-              value: "${{ github.event.action }}"
           show-on-exit: false
+          enable-view-status: false
+on:
+  workflow_run: [PR Closed]
+jobs:
+  notify-teams:
+    runs-on: ubuntu-22.04
+    if: ${{ github.event.action == 'completed' }}
+    steps:
+      - uses: dchourasia/ms-teams-notification@1.0
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          webhook-uri: ${{ vars.MS_TEAMS_WEBHOOK_URI }}
+          show-on-exit: false
+          enable-view-status: false
