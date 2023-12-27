@@ -6,7 +6,11 @@ import { Loading } from "../../../../common/pages/Loading";
 import { useCompleteTransaction, useIssuePermits } from "../../hooks/hooks";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { DATE_FORMATS, toUtc } from "../../../../common/helpers/formatDate";
-import { APPLICATIONS_ROUTES, ERROR_ROUTES, PERMITS_ROUTES } from "../../../../routes/constants";
+import {
+  APPLICATIONS_ROUTES,
+  ERROR_ROUTES,
+  PERMITS_ROUTES,
+} from "../../../../routes/constants";
 import { PaymentCardTypeCode } from "../../../../common/types/paymentMethods";
 import { Nullable } from "../../../../common/types/common";
 import {
@@ -69,13 +73,11 @@ export const PaymentRedirect = () => {
   );
   const transactionId = getDefaultRequiredVal("", searchParams.get("ref2"));
 
-  const {
-    mutation: completeTransactionMutation,
-    paymentApproved,
-  } = useCompleteTransaction(
-    paymentDetails.messageText,
-    paymentDetails.trnApproved,
-  );
+  const { mutation: completeTransactionMutation, paymentApproved } =
+    useCompleteTransaction(
+      paymentDetails.messageText,
+      paymentDetails.trnApproved,
+    );
 
   const { mutation: issuePermitsMutation, issueResults } = useIssuePermits();
 
@@ -112,8 +114,8 @@ export const PaymentRedirect = () => {
         issuedPermit.current = true;
       } else if (paymentApproved === false) {
         // Payment failed, redirect back to pay now page
-        navigate(APPLICATIONS_ROUTES.PAY(permitIdsArray[0], true), { 
-          replace: true, 
+        navigate(APPLICATIONS_ROUTES.PAY(permitIdsArray[0], true), {
+          replace: true,
         });
       }
     }
@@ -121,15 +123,10 @@ export const PaymentRedirect = () => {
 
   if (issueResults) {
     if (issueFailed()) {
-      return (
-        <Navigate 
-          to={`${ERROR_ROUTES.UNEXPECTED}`}
-          replace={true}
-        />
-      );
+      return <Navigate to={`${ERROR_ROUTES.UNEXPECTED}`} replace={true} />;
     }
     return (
-      <Navigate 
+      <Navigate
         to={`${PERMITS_ROUTES.SUCCESS(issueResults.success[0])}`}
         replace={true}
       />
@@ -155,8 +152,7 @@ const mapTransactionDetails = (
     pgMessageText: paymentResponse.messageText,
   };
 
-  if (!isValidCardType)
-    return transactionDetails;
+  if (!isValidCardType) return transactionDetails;
 
   return {
     ...transactionDetails,

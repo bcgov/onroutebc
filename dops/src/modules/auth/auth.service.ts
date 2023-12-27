@@ -4,6 +4,8 @@ import { Inject, Injectable } from '@nestjs/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { lastValueFrom } from 'rxjs';
+import { ClsService } from 'nestjs-cls';
+import { LogAsyncMethodExecution } from '../../decorator/log-async-method-execution.decorator';
 
 @Injectable()
 export class AuthService {
@@ -11,8 +13,10 @@ export class AuthService {
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
     private readonly httpService: HttpService,
+    private readonly cls: ClsService,
   ) {}
 
+  @LogAsyncMethodExecution()
   async getUserDetails(
     accessToken: string,
     userGuid: string,
@@ -22,6 +26,7 @@ export class AuthService {
         headers: {
           Authorization: accessToken,
           'Content-Type': 'application/json',
+          'x-correlation-id': this.cls.getId(),
         },
       }),
     );
@@ -37,6 +42,7 @@ export class AuthService {
    *
    * @returns The Roles as a promise of type {@link Role[]}
    */
+  @LogAsyncMethodExecution()
   async getRolesForUser(
     accessToken: string,
     companyId?: number,
@@ -47,6 +53,7 @@ export class AuthService {
         headers: {
           Authorization: accessToken,
           'Content-Type': 'application/json',
+          'x-correlation-id': this.cls.getId(),
         },
       }),
     );
@@ -60,12 +67,14 @@ export class AuthService {
    *
    * @returns The associated companies as a promise of type {@link number[]}
    */
+  @LogAsyncMethodExecution()
   async getCompaniesForUser(accessToken: string): Promise<AxiosResponse> {
     return lastValueFrom(
       this.httpService.get(process.env.ACCESS_API_URL + '/companies', {
         headers: {
           Authorization: accessToken,
           'Content-Type': 'application/json',
+          'x-correlation-id': this.cls.getId(),
         },
       }),
     );

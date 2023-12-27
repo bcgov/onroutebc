@@ -17,7 +17,7 @@ export const PERMIT_STATES = {
   EXPIRED: "EXPIRED",
 } as const;
 
-export type PermitState = typeof PERMIT_STATES[keyof typeof PERMIT_STATES];
+export type PermitState = (typeof PERMIT_STATES)[keyof typeof PERMIT_STATES];
 
 /**
  * Get the number of days left before a permit expires.
@@ -27,13 +27,18 @@ export type PermitState = typeof PERMIT_STATES[keyof typeof PERMIT_STATES];
 export const daysLeftBeforeExpiry = (permit: Permit) => {
   // Perform datetime calculations in local datetime
   const currDate = now();
-  const permitStartDate = getStartOfDate(toLocalDayjs(permit.permitData.startDate));
-  const permitExpiryDate = getExpiryDate(permitStartDate, permit.permitData.permitDuration);
-  
+  const permitStartDate = getStartOfDate(
+    toLocalDayjs(permit.permitData.startDate),
+  );
+  const permitExpiryDate = getExpiryDate(
+    permitStartDate,
+    permit.permitData.permitDuration,
+  );
+
   if (currDate.isBefore(permitStartDate)) {
     return permit.permitData.permitDuration; // full number of days in the duration
   }
-  
+
   // Active permit (current datetime is between the start date and end date)
   const tomorrow = dayjs(getStartOfDate(currDate)).add(1, "day");
   return getDateDiffInDays(permitExpiryDate, tomorrow);
@@ -47,13 +52,18 @@ export const daysLeftBeforeExpiry = (permit: Permit) => {
 export const getPermitState = (permit: Permit): PermitState => {
   // Perform datetime calculations in local datetime
   const currDate = now();
-  const permitStartDate = getStartOfDate(toLocalDayjs(permit.permitData.startDate));
-  const permitExpiryDate = getExpiryDate(permitStartDate, permit.permitData.permitDuration);
-  
+  const permitStartDate = getStartOfDate(
+    toLocalDayjs(permit.permitData.startDate),
+  );
+  const permitExpiryDate = getExpiryDate(
+    permitStartDate,
+    permit.permitData.permitDuration,
+  );
+
   if (currDate.isAfter(permitExpiryDate)) {
     return PERMIT_STATES.EXPIRED;
   }
-  
+
   const daysLeft = daysLeftBeforeExpiry(permit);
   if (daysLeft < 30) {
     return PERMIT_STATES.EXPIRES_IN_30;

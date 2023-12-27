@@ -52,7 +52,7 @@ import { getPaymentCodeFromCache } from '../../common/helper/payment.helper';
 import { PaymentMethodType } from 'src/common/enum/payment-method-type.enum';
 import { PageOptionsDto } from 'src/common/dto/paginate/page-options';
 import { PageMetaDto } from 'src/common/dto/paginate/page-meta';
-import { SortDto } from '../common/dto/request/sort.dto';
+import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method-execution.decorator';
 
 @Injectable()
 export class PermitService {
@@ -74,6 +74,7 @@ export class PermitService {
     private readonly cacheManager: Cache,
   ) {}
 
+  @LogAsyncMethodExecution()
   async create(
     createPermitDto: CreatePermitDto,
     currentUser: IUserJWT,
@@ -131,6 +132,7 @@ export class PermitService {
    * @param permitNumber partial or full permit number to search
    * @returns an array of permits
    */
+  @LogAsyncMethodExecution()
   public async findByPermitNumber(
     permitNumber: string,
   ): Promise<ReadPermitDto[]> {
@@ -140,6 +142,7 @@ export class PermitService {
     return this.classMapper.mapArrayAsync(permits, Permit, ReadPermitDto);
   }
 
+  @LogAsyncMethodExecution()
   public async findAllPermitTypes(): Promise<PermitType[]> {
     return this.permitTypeRepository.find({});
   }
@@ -151,6 +154,8 @@ export class PermitService {
    * @param downloadMode - The mode for downloading the document (optional).
    * @returns A Promise resolving to a ReadFileDto object representing the found PDF document.
    */
+
+  @LogAsyncMethodExecution()
   public async findPDFbyPermitId(
     currentUser: IUserJWT,
     permitId: string,
@@ -181,6 +186,7 @@ export class PermitService {
     return file;
   }
 
+  @LogAsyncMethodExecution()
   async findPermit(
     pageOptionsDto: PageOptionsDto,
     searchColumn: string,
@@ -235,6 +241,7 @@ export class PermitService {
    * @param expired if true get expired premits else get active permits
    *
    */
+  @LogAsyncMethodExecution()
   public async findUserPermit(
     pageOptionsDto: PageOptionsDto,
     userGUID: string,
@@ -352,6 +359,7 @@ export class PermitService {
    * @param permitId - The ID of the permit for which to find the receipt PDF document.
    * @returns A Promise resolving to a ReadFileDto object representing the found PDF document.
    */
+  @LogAsyncMethodExecution()
   public async findReceiptPDF(
     currentUser: IUserJWT,
     permitId: string,
@@ -381,6 +389,7 @@ export class PermitService {
     );
   }
 
+  @LogAsyncMethodExecution()
   public async findPermitHistory(
     originalPermitId: string,
   ): Promise<PermitHistoryDto[]> {
@@ -423,6 +432,7 @@ export class PermitService {
    * @param status ex: VOIDED|REVOKED
    * Description: This method will update the permit status for given permit id and will set it to either REVOKED or VOIDED stauts.
    */
+  @LogAsyncMethodExecution()
   public async voidPermit(
     permitId: string,
     voidPermitDto: VoidPermitDto,
@@ -725,6 +735,7 @@ export class PermitService {
     return resultDto;
   }
 
+  @LogAsyncMethodExecution()
   async getPermitType(): Promise<string> {
     return await getMapFromCache(this.cacheManager, CacheKey.PERMIT_TYPE);
   }

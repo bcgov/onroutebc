@@ -24,6 +24,7 @@ import { IdirUser } from '../company-user-management/users/entities/idir.user.en
 import { PaymentMethodType } from './entities/payment-method-type.entity';
 import { PaymentCardType } from './entities/payment-card-type.entity';
 import { getPaymentCodeFromCache } from '../../common/helper/payment.helper';
+import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method-execution.decorator';
 
 @Injectable()
 export class PaymentReportService {
@@ -184,6 +185,7 @@ export class PaymentReportService {
     }
   }
 
+  @LogAsyncMethodExecution()
   async findTransactionDataForDetailedReports(
     transactionTypes: TransactionType[],
     createPaymentDetailedReportDto: CreatePaymentDetailedReportDto,
@@ -229,6 +231,7 @@ export class PaymentReportService {
     }
   }
 
+  @LogAsyncMethodExecution()
   async findSummaryPaymentAndRefundDataForDetailedReports(
     transactionType: TransactionType[],
     reportDto: CreatePaymentDetailedReportDto | CreatePaymentSummaryReportDto,
@@ -327,6 +330,7 @@ export class PaymentReportService {
     }
   }
 
+  @LogAsyncMethodExecution()
   async findSummaryPermitDataForDetailedReports(
     transactionType: TransactionType[],
     reportDto: CreatePaymentDetailedReportDto | CreatePaymentSummaryReportDto,
@@ -403,6 +407,7 @@ export class PaymentReportService {
     return paymentCodes;
   }
 
+  @LogAsyncMethodExecution()
   async createPaymentDetailedReport(
     currentUser: IUserJWT,
     createPaymentDetailedReportDto: CreatePaymentDetailedReportDto,
@@ -508,6 +513,7 @@ export class PaymentReportService {
     await this.dopsService.generateReport(currentUser, generateReportData, res);
   }
 
+  @LogAsyncMethodExecution()
   async createPaymentSummaryReport(
     currentUser: IUserJWT,
     createPaymentSummaryReportDto: CreatePaymentSummaryReportDto,
@@ -607,6 +613,7 @@ export class PaymentReportService {
     }
   }
 
+  @LogAsyncMethodExecution()
   async findTransactionDataForSummaryReports(
     transactionTypes: TransactionType[],
     reportDto: CreatePaymentSummaryReportDto,

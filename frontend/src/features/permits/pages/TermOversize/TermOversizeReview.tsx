@@ -9,7 +9,11 @@ import { useSaveTermOversizeMutation } from "../../hooks/hooks";
 import { ApplicationBreadcrumb } from "../../components/application-breadcrumb/ApplicationBreadcrumb";
 import { useCompanyInfoQuery } from "../../../manageProfile/apiManager/hooks";
 import { PermitReview } from "./components/review/PermitReview";
-import { APPLICATIONS_ROUTES, APPLICATION_STEPS, ERROR_ROUTES } from "../../../../routes/constants";
+import {
+  APPLICATIONS_ROUTES,
+  APPLICATION_STEPS,
+  ERROR_ROUTES,
+} from "../../../../routes/constants";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import {
   usePowerUnitTypesQuery,
@@ -69,7 +73,7 @@ export const TermOversizeReview = () => {
     } else {
       navigate(ERROR_ROUTES.UNEXPECTED);
     }
-    
+
     next();
   };
 

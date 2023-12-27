@@ -15,15 +15,20 @@ export class HttpExceptionFilter implements ExceptionFilter {
   private readonly logger = new Logger(HttpExceptionFilter.name);
   catch(exception: HttpException, host: ArgumentsHost) {
     let exceptionDto: ExceptionDto;
-    this.logger.error(
-      'HTTP exception handler triggered',
-      JSON.stringify(exception),
-    );
 
     const ctx = host.switchToHttp();
 
     const response = ctx.getResponse<Response>(),
+      request = ctx.getRequest<Request>(),
       statusCode = exception.getStatus();
+
+    this.logger.error(
+      `Response: ${request.method} ${request.url} ${statusCode} - ${
+        (exception as Error).message
+      }`,
+      JSON.stringify(exception),
+    );
+
     if (statusCode === HttpStatus.BAD_REQUEST) {
       exceptionDto = exception.getResponse() as ExceptionDto;
     } else {

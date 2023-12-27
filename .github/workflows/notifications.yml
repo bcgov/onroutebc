@@ -1,18 +1,32 @@
-
 name: Notifications
-
 on:
   workflow_run: 
-    workflows: [Deploy] #why this not triggering?
+    workflows: [PR,Merge]
+    types:
+      - in_progess
+      - completed  
 jobs:
   notify-teams:
-    name: Notify Teams 
-    needs: [vars]
     runs-on: ubuntu-22.04
     steps:
-      - name: MS Teams Notifications
-        uses: dchourasia/ms-teams-notification@1.0
+      - uses: jdcargile/ms-teams-notification@v1.3
+        if: 
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          webhook-uri: ${{ secrets.MS_TEAMS_WEBHOOK_URI }}
-          show-on-failure: true
+          ms-teams-webhook-uri: ${{ vars.MS_TEAMS_WEBHOOK_URI }}
+          notification-summary: |
+            Event: ${{github.event}}
+            Workflow:  ${{github.event.workflow}} - ${{github.workflow}}
+            Type: ${{github.event.type}}
+          notification-color: 17a2b8
+          timezone: America/Vancouver
+      - uses: jdcargile/ms-teams-notification@v1.3
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          ms-teams-webhook-uri: ${{ vars.MS_TEAMS_WEBHOOK_URI }}
+          notification-summary: |
+            Event: ${{github.event}}
+            Workflow:  ${{github.event.workflow}} - ${{github.workflow}}
+            Type: ${{github.event.type}}
+          notification-color: 28a745
+          timezone: America/Vancouver

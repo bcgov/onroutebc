@@ -18,6 +18,8 @@ import { IssuePermitEmailData } from '../../common/interface/issue-permit-email-
 import { AttachementEmailData } from '../../common/interface/attachment-email-data.interface';
 import { CacheKey } from '../../common/enum/cache-key.enum';
 import { getFromCache } from '../../common/helper/cache.helper';
+import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method-execution.decorator';
+import { LogMethodExecution } from '../../common/decorator/log-method-execution.decorator';
 
 @Injectable()
 export class EmailService {
@@ -29,6 +31,7 @@ export class EmailService {
   ) {}
 
   private chesUrl = process.env.CHES_URL;
+  @LogAsyncMethodExecution()
   async sendEmailMessage(
     template: EmailTemplate,
     data: ProfileRegistrationEmailData | IssuePermitEmailData,
@@ -98,6 +101,7 @@ export class EmailService {
     return responseData.txId;
   }
 
+  @LogAsyncMethodExecution()
   async renderTemplate(
     templateName: EmailTemplate,
     data: ProfileRegistrationEmailData | IssuePermitEmailData,
@@ -130,6 +134,7 @@ export class EmailService {
     return htmlBody;
   }
 
+  @LogMethodExecution()
   getCacheKeyforEmailTemplate(templateName: EmailTemplate): CacheKey {
     switch (templateName) {
       case EmailTemplate.ISSUE_PERMIT:

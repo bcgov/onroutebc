@@ -16,6 +16,7 @@ import { S3Service } from '../common/s3.service';
 import { Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import { IDP } from '../../enum/idp.enum';
+import { LogAsyncMethodExecution } from '../../decorator/log-async-method-execution.decorator';
 
 @Injectable()
 export class DmsService {
@@ -28,13 +29,14 @@ export class DmsService {
 
   private s3accessType = process.env.DOPS_S3_ACCESS_TYPE;
 
+  @LogAsyncMethodExecution()
   async create(
     currentUser: IUserJWT,
     file: Express.Multer.File | IFile,
     companyId?: number,
   ): Promise<ReadFileDto> {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-    const s3ObjectId = uuidv4() as string;
+    const s3ObjectId = uuidv4();
     const s3Object = await this.s3Service.uploadFile(file, s3ObjectId);
 
     const dmsVersionId = 1;
@@ -65,6 +67,7 @@ export class DmsService {
     );
   }
 
+  @LogAsyncMethodExecution()
   async update(
     currentUser: IUserJWT,
     documentId: string,
@@ -107,6 +110,7 @@ export class DmsService {
     );
   }
 
+  @LogAsyncMethodExecution()
   async findOne(documentId: string): Promise<ReadFileDto> {
     const readFile = this.classMapper.mapAsync(
       await this.documentRepository.findOne({
@@ -118,6 +122,7 @@ export class DmsService {
     return readFile;
   }
 
+  @LogAsyncMethodExecution()
   async download(
     currentUser: IUserJWT,
     documentId: string,
@@ -144,6 +149,7 @@ export class DmsService {
     return { file, s3Object };
   }
 
+  @LogAsyncMethodExecution()
   async findLatest(documentId: string): Promise<ReadFileDto> {
     const subQuery = this.documentRepository
       .createQueryBuilder('document')

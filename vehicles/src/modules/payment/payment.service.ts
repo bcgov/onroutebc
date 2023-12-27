@@ -32,6 +32,8 @@ import { validateHash } from 'src/common/helper/validateHash.helper';
 import { UpdatePaymentGatewayTransactionDto } from './dto/request/update-payment-gateway-transaction.dto';
 import { PaymentCardType } from './entities/payment-card-type.entity';
 import { PaymentMethodType } from './entities/payment-method-type.entity';
+import { LogMethodExecution } from '../../common/decorator/log-method-execution.decorator';
+import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method-execution.decorator';
 
 @Injectable()
 export class PaymentService {
@@ -74,7 +76,6 @@ export class PaymentService {
         return permitTransaction.permit.permitId;
       },
     );
-
     // Construct the URL with the transaction details for the payment gateway
     const redirectUrl = permitIds
       ? `${process.env.PAYBC_REDIRECT}` + `?path=${permitIds.join(',')}`
@@ -99,20 +100,19 @@ export class PaymentService {
       `&ref2=${transaction.transactionId}`;
 
     // Generate the hash using the query string and the MD5 algorithm
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-
     const payBCHash: string = CryptoJS.MD5(
       `${queryString}${process.env.PAYBC_API_KEY}`,
     ).toString();
+
     const hashExpiry = this.generateHashExpiry();
 
     return { queryString, payBCHash, hashExpiry };
   };
 
+  @LogMethodExecution()
   generateUrl(transaction: Transaction): string {
     // Construct the URL with the transaction details for the payment gateway
     const { queryString, payBCHash } = this.queryHash(transaction);
-
     const url =
       `${process.env.PAYBC_BASE_URL}?` +
       `${queryString}` +
@@ -125,6 +125,7 @@ export class PaymentService {
    *
    * @returns {string} The Transaction Order Number.
    */
+  @LogAsyncMethodExecution()
   async generateTransactionOrderNumber(): Promise<string> {
     const seq: number = parseInt(
       await callDatabaseSequence(
@@ -146,6 +147,7 @@ export class PaymentService {
   /**
    * Generate Receipt Number
    */
+  @LogAsyncMethodExecution()
   async generateReceiptNumber(): Promise<string> {
     const currentDate = new Date();
     const year = currentDate.getFullYear();
@@ -324,6 +326,7 @@ export class PaymentService {
           }),
         },
       );
+
       if (!nestedQueryRunner) {
         await queryRunner.commitTransaction();
       }

@@ -27,6 +27,36 @@ export const sortVehicleSubTypes = (
 };
 
 /**
+ * @param a Vehicle a
+ * @param b Vehicle b
+ * @returns 1 or -1 depending on whether a's plate > b's plate
+ */
+const sortByPlate = (a: Vehicle, b: Vehicle) => {
+  return a.plate > b.plate ? 1 : -1;
+};
+
+/**
+ * @param a Vehicle a
+ * @param b Vehicle b
+ * @returns 1 or -1 depending on whether a's unitNumber > b's unitNumber
+ */
+const sortByUnitNumber = (a: Vehicle, b: Vehicle) => {
+  return (a.unitNumber || -1) > (b.unitNumber || -1) ? 1 : -1;
+};
+
+/**
+ * @param a Vehicle a
+ * @param b Vehicle b
+ * @returns 1 or -1 depending on whether a's vehicleType > b's vehicleType
+ */
+const sortByVehicleType = (a: Vehicle, b: Vehicle) => {
+  if (a.vehicleType && b.vehicleType) {
+    return a.vehicleType > b.vehicleType ? 1 : -1;
+  }
+  return 0;
+};
+
+/**
  * Sort Vehicles by Plates and Unit Number alphabetically and immutably
  * @param vehicleType string, either plate or unitNumber
  * @param options array of Vehicles (Power Units and Trailers)
@@ -38,30 +68,19 @@ export const sortVehicles = (
 ) => {
   if (!chooseFrom || !options) return [];
 
-  const sortByPlateOrUnitNumber = (a: Vehicle, b: Vehicle) => {
-    if (chooseFrom === "plate") {
-      return a.plate > b.plate ? 1 : -1;
-    }
-    return (a.unitNumber || -1) > (b.unitNumber || -1) ? 1 : -1;
-  };
-
-  const sortByVehicleType = (a: Vehicle, b: Vehicle) => {
-    if (a.vehicleType && b.vehicleType) {
-      return a.vehicleType > b.vehicleType ? 1 : -1;
-    }
-    return 0;
-  };
-
   // We shouldn't change original array, but make an copy and sort on that instead
-  const sorted = [...options];
-  sorted.sort((a, b) => {
+  const sortedVehicles = [...options];
+  sortedVehicles.sort((a, b) => {
     // If the vehicle types (powerUnit | trailer) are the same, sort by plate or unitnumber
     if (a.vehicleType?.toLowerCase() === b.vehicleType?.toLowerCase()) {
-      return sortByPlateOrUnitNumber(a, b);
+      if (chooseFrom === "plate") {
+        return sortByPlate(a, b);
+      }
+      return sortByUnitNumber(a, b);
     }
     // else sort by vehicle type
     return sortByVehicleType(a, b);
   });
 
-  return sorted;
+  return sortedVehicles;
 };

@@ -47,8 +47,9 @@ export const VoidPermitForm = ({
     permit?.originalPermitId,
   );
 
-  const validTransactionHistory = permitHistory.filter(history =>
-    isValidTransaction(history.paymentMethodTypeCode, history.pgApproved));
+  const validTransactionHistory = permitHistory.filter((history) =>
+    isValidTransaction(history.paymentMethodTypeCode, history.pgApproved),
+  );
 
   const { mutation: revokePermitMutation, voidResults } = useVoidPermit();
 
@@ -59,9 +60,10 @@ export const VoidPermitForm = ({
     }
   }, [voidResults]);
 
-  const amountToRefund = (permitHistoryQuery.isInitialLoading || !permit)
-    ? 0
-    : -1 * calculateAmountForVoid(permit, validTransactionHistory);
+  const amountToRefund =
+    permitHistoryQuery.isInitialLoading || !permit
+      ? 0
+      : -1 * calculateAmountForVoid(permit, validTransactionHistory);
 
   const {
     control,

@@ -20,7 +20,7 @@ export default function PermitResendDialog({
   email,
   fax,
   permitNumber,
-}: {
+}: Readonly<{
   /**
    * Boolean to control the open and close state of Dialog box.
    */
@@ -48,9 +48,9 @@ export default function PermitResendDialog({
    * The fax if available.
    */
   fax?: string;
-}) {
-  const [emailState, setEmail] = useState<string>(email ?? "");
-  const [faxState, setFax] = useState<string>(fax ?? "");
+}>) {
+  const [emailState, setEmailState] = useState<string>(email ?? "");
+  const [faxState, setFaxState] = useState<string>(fax ?? "");
   return (
     <div>
       <Dialog
@@ -88,7 +88,7 @@ export default function PermitResendDialog({
                 }}
                 style={{ width: "100%" }}
                 onChange={(event) => {
-                  setEmail(() => event.target?.value as string);
+                  setEmailState(() => event.target?.value);
                 }}
               />
             </Grid>
@@ -107,7 +107,7 @@ export default function PermitResendDialog({
                   },
                 }}
                 onChange={(event) => {
-                  setFax(() => event.target?.value as string);
+                  setFaxState(() => event.target?.value);
                 }}
               />
             </Grid>

@@ -13,7 +13,7 @@ import { ErrorFallback } from "../../common/pages/ErrorFallback";
 import { createMyOnRouteBCUserProfile } from "../manageProfile/apiManager/manageProfileAPI";
 import { ReusableUserInfoForm } from "../manageProfile/components/forms/common/ReusableUserInfoForm";
 import { Contact, UserInformation } from "../manageProfile/types/manageProfile";
-import { OnRouteBCProfileCreated } from "./pages/OnRouteBCProfileCreated";
+import { OnRouteBCProfileCreated } from "./subcomponents/OnRouteBCProfileCreated";
 
 /**
  * User Info wizard displays a user information form
@@ -96,7 +96,6 @@ export const UserInfoWizard = React.memo(() => {
         </Box>
         <div
           className="tabpanel-container create-profile-steps"
-          role="profile-steps"
           id={`profile-steps`}
           aria-labelledby={`profile-steps`}
         >

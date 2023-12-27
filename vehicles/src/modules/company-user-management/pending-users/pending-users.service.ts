@@ -9,6 +9,7 @@ import { ReadPendingUserDto } from './dto/response/read-pending-user.dto';
 import { PendingUser } from './entities/pending-user.entity';
 import { IUserJWT } from 'src/common/interface/user-jwt.interface';
 import { TPS_MIGRATED_USER } from '../../../common/constants/api.constant';
+import { LogAsyncMethodExecution } from '../../../common/decorator/log-async-method-execution.decorator';
 
 @Injectable()
 export class PendingUsersService {
@@ -28,6 +29,7 @@ export class PendingUsersService {
    * @returns The pending user details as a promise of type
    * {@link ReadPendingUserDto}
    */
+  @LogAsyncMethodExecution()
   async create(
     companyId: number,
     createPendingUserDto: CreatePendingUserDto,
@@ -69,6 +71,7 @@ export class PendingUsersService {
    * @returns The pending user details as a promise of type
    * {@link ReadPendingUserDto}.
    */
+  @LogAsyncMethodExecution()
   async update(
     companyId: number,
     userName: string,
@@ -154,6 +157,7 @@ export class PendingUsersService {
    * @returns A Promise that resolves to an array of {@link readPendingUserDto}
    * objects.
    */
+  @LogAsyncMethodExecution()
   async findPendingUsersDto(
     userName?: string,
     companyId?: number,
@@ -184,6 +188,7 @@ export class PendingUsersService {
    * @param userName The userName of the pending user.
    * @returns The Result object returned by DeleteQueryBuilder execution.
    */
+  @LogAsyncMethodExecution()
   async remove(companyId: number, userName: string): Promise<DeleteResult> {
     return await this.pendingUserRepository.delete({ companyId, userName });
   }

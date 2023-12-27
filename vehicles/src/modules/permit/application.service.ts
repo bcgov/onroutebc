@@ -54,6 +54,7 @@ import { ReadPermitDto } from './dto/response/read-permit.dto';
 import { PermitIssuedBy } from '../../common/enum/permit-issued-by.enum';
 import { getPaymentCodeFromCache } from '../../common/helper/payment.helper';
 import * as constants from '../../common/constants/api.constant';
+import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method-execution.decorator';
 
 @Injectable()
 export class ApplicationService {
@@ -86,6 +87,7 @@ export class ApplicationService {
    * @param createApplicationDto
    *
    */
+  @LogAsyncMethodExecution()
   async create(
     createApplicationDto: CreateApplicationDto,
     currentUser: IUserJWT,
@@ -186,6 +188,7 @@ export class ApplicationService {
   }
 
   /* Get single application By Permit ID*/
+  @LogAsyncMethodExecution()
   async findApplication(permitId: string): Promise<ReadApplicationDto> {
     const application = await this.findOne(permitId);
     const readPermitApplicationdto = await this.classMapper.mapAsync(
@@ -198,6 +201,7 @@ export class ApplicationService {
 
   /* Get all application for a company. 
      Initially written to facilitate get application in progress for IDIR user.*/
+  @LogAsyncMethodExecution()
   async findAllApplicationCompany(
     companyId: number,
     statuses: ApplicationStatus[],
@@ -222,6 +226,7 @@ export class ApplicationService {
 
   /*Get all application in progress for a specific user of a specific company.
     Initially written to facilitate get application in progress for company User. */
+  @LogAsyncMethodExecution()
   async findAllApplicationUser(
     companyId: number,
     userGuid: string,
@@ -270,6 +275,7 @@ export class ApplicationService {
    * @param updateApplicationDto
    * @returns The updated application as a ReadApplicationDto
    */
+  @LogAsyncMethodExecution()
   async update(
     applicationNumber: string,
     updateApplicationDto: UpdateApplicationDto,
@@ -312,6 +318,7 @@ export class ApplicationService {
    * Assumption has been made that @param applicationIds length > 1 is only applicable for bulk delete.
    * which means move all the applications to Cancelled status. For every other status length will be one.
    **/
+  @LogAsyncMethodExecution()
   async updateApplicationStatus(
     applicationIds: string[],
     applicationStatus: ApplicationStatus,
@@ -381,6 +388,7 @@ export class ApplicationService {
    * @param applicationId applicationId to identify the application to be issued. It is the same as permitId.
    * @returns a resultDto that describes if the transaction was successful or if it failed
    */
+  @LogAsyncMethodExecution()
   async issuePermit(currentUser: IUserJWT, applicationId: string) {
     let success = '';
     let failure = '';
@@ -624,6 +632,7 @@ export class ApplicationService {
     return resultDto;
   }
 
+  @LogAsyncMethodExecution()
   async generateDocument(
     currentUser: IUserJWT,
     dopsRequestData: DopsGeneratedDocument,
@@ -643,6 +652,7 @@ export class ApplicationService {
    * @param permit
    * @returns a json object of the full names
    */
+  @LogAsyncMethodExecution()
   async getFullNamesFromCache(permit: Permit): Promise<FullNames> {
     const permitData = JSON.parse(permit.permitData.permitData) as PermitData;
 
@@ -709,6 +719,7 @@ export class ApplicationService {
    * @param permitId if permit id is present then it is a permit amendment
    * and application number will be generated from exisitng permit number.
    */
+  @LogAsyncMethodExecution()
   async generateApplicationNumber(
     permitApplicationOrigin: string,
     permitId: string,
@@ -781,6 +792,7 @@ export class ApplicationService {
    * @param oldPermitId
    * @returns permitNumber
    */
+  @LogAsyncMethodExecution()
   async generatePermitNumber(
     permitId: string,
     oldPermitId: string,
@@ -808,6 +820,7 @@ export class ApplicationService {
     return permitNumber;
   }
 
+  @LogAsyncMethodExecution()
   async findOneTransactionByOrderNumber(
     transactionOrderNumber: string,
   ): Promise<ReadTransactionDto> {
@@ -822,6 +835,7 @@ export class ApplicationService {
     );
   }
 
+  @LogAsyncMethodExecution()
   async findCurrentAmendmentApplication(
     originalPermitId: string,
   ): Promise<ReadPermitDto> {
@@ -848,6 +862,7 @@ export class ApplicationService {
     return await this.classMapper.mapAsync(application, Permit, ReadPermitDto);
   }
 
+  @LogAsyncMethodExecution()
   async checkApplicationInProgress(originalPermitId: string): Promise<number> {
     const count = await this.permitRepository
       .createQueryBuilder('permit')

@@ -4,7 +4,10 @@ import dayjs, { Dayjs } from "dayjs";
 import userEvent from "@testing-library/user-event";
 import { Options } from "@testing-library/user-event/dist/types/options";
 
-import { getStartOfDate, now } from "../../../../../../../../common/helpers/formatDate";
+import {
+  getStartOfDate,
+  now,
+} from "../../../../../../../../common/helpers/formatDate";
 import { TROS_COMMODITIES } from "../../../../../../constants/termOversizeConstants";
 import { PermitDetails } from "../../PermitDetails";
 import { Commodities } from "../../../../../../types/application";

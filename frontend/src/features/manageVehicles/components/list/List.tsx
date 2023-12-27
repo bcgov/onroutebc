@@ -122,7 +122,7 @@ export const List = memo(
       } else {
         val = fetchedTrailerTypes?.filter((value) => value.typeCode === code);
       }
-      return val?.at(0)?.type || "";
+      return val?.at(0)?.type ?? "";
     };
 
     if (colTypeCodes?.length === 1) {
@@ -231,12 +231,7 @@ export const List = memo(
       onRowSelectionChange: setRowSelection,
       renderEmptyRowsFallback: () => <NoRecordsFound />,
       renderRowActions: useCallback(
-        ({
-          row,
-        }: {
-          table: MRT_TableInstance<VehicleTypes>;
-          row: MRT_Row<VehicleTypes>;
-        }) => (
+        ({ row }: { row: MRT_Row<VehicleTypes> }) => (
           <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
             {DoesUserHaveRoleWithContext(ROLES.WRITE_VEHICLE) && (
               <>
@@ -246,14 +241,14 @@ export const List = memo(
                       if (vehicleType === "powerUnit") {
                         navigate(
                           `${VEHICLES_ROUTES.POWER_UNIT_DETAILS}/${row.getValue(
-                            "powerUnitId"
-                          )}`
+                            "powerUnitId",
+                          )}`,
                         );
                       } else if (vehicleType === "trailer") {
                         navigate(
                           `${VEHICLES_ROUTES.TRAILER_DETAILS}/${row.getValue(
-                            "trailerId"
-                          )}`
+                            "trailerId",
+                          )}`,
                         );
                       }
                     }}
@@ -272,7 +267,7 @@ export const List = memo(
                         const newObject: { [key: string]: boolean } = {};
                         // Setting the selected row to false so that
                         // the row appears unchecked.
-                        newObject[row.getValue(`${vehicleType}Id`) as string] =
+                        newObject[row.getValue<string>(`${vehicleType}Id`)] =
                           false;
                         return newObject;
                       });

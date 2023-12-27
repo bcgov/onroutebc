@@ -17,11 +17,17 @@ import { FileDownloadModes } from '../../common/enum/file-download-modes.enum';
 import { ReadFileDto } from './dto/response/read-file.dto';
 import { DopsGeneratedReport } from '../../common/interface/dops-generated-report.interface';
 import { ExceptionDto } from '../../common/exception/exception.dto';
+import { ClsService } from 'nestjs-cls';
+import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method-execution.decorator';
+import { LogMethodExecution } from '../../common/decorator/log-method-execution.decorator';
 
 @Injectable()
 export class DopsService {
   private readonly logger = new Logger(DopsService.name);
-  constructor(private readonly httpService: HttpService) {}
+  constructor(
+    private readonly httpService: HttpService,
+    private readonly cls: ClsService,
+  ) {}
 
   /**
    * Downloads a document from from DOPS.
@@ -32,6 +38,7 @@ export class DopsService {
    * @returns A Promise that resolves to an object of type {@link IFile}. Null
    * is returned if Response object was passed as a parameter.
    */
+  @LogAsyncMethodExecution()
   async download(
     currentUser: IUserJWT,
     dmsId: string,
@@ -50,6 +57,7 @@ export class DopsService {
       headers: {
         Authorization: currentUser.access_token,
         'Content-Type': 'application/json',
+        'x-correlation-id': this.cls.getId(),
       },
       responseType: download === FileDownloadModes.PROXY ? 'stream' : 'json',
     };
@@ -97,6 +105,7 @@ export class DopsService {
    * @returns A Promise that resolves to an object of type {@link IFile}. Null
    * is returned if Response object was passed as a parameter.
    */
+  @LogAsyncMethodExecution()
   async generateDocument(
     currentUser: IUserJWT,
     dopsGeneratedDocument: DopsGeneratedDocument,
@@ -111,6 +120,7 @@ export class DopsService {
       headers: {
         Authorization: currentUser.access_token,
         'Content-Type': 'application/json',
+        'x-correlation-id': this.cls.getId(),
       },
       responseType: 'stream',
     };
@@ -164,6 +174,7 @@ export class DopsService {
    *                   headers.
    * @param res - The Express {@link Response} object.
    */
+  @LogMethodExecution()
   convertAxiosToExpress(response: AxiosResponse, res: Response) {
     // Get the headers from the Axios response
     const headers = response.headers;
@@ -198,6 +209,7 @@ export class DopsService {
    * @returns A Promise that resolves to an object of type {@link IFile}. Null
    * is returned if Response object was passed as a parameter.
    */
+  @LogAsyncMethodExecution()
   async generateReport(
     currentUser: IUserJWT,
     dopsGeneratedReport: DopsGeneratedReport,
@@ -210,6 +222,7 @@ export class DopsService {
       headers: {
         Authorization: currentUser.access_token,
         'Content-Type': 'application/json',
+        'x-correlation-id': this.cls.getId(),
       },
       responseType: 'stream',
     };
@@ -223,9 +236,8 @@ export class DopsService {
       })
       .catch((error: AxiosError) => {
         if (error.response) {
-          const errorData = error.response.data;
           this.logger.error(
-            `Error response from DOPS: ${JSON.stringify(errorData, null, 2)}`,
+            `Error response from DOPS: ${error.response.status} ${error.response.statusText} `,
           );
         } else {
           this.logger.error(error?.message, error?.stack);

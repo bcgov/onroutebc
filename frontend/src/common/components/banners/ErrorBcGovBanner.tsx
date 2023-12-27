@@ -1,11 +1,11 @@
 import { BcGovAlertBanner } from "./BcGovAlertBanner";
 import { ALERT_BANNER_TYPES } from "./types/AlertBannerType";
 
-export const ErrorBcGovBanner = ({ 
+export const ErrorBcGovBanner = ({
   msg,
   additionalInfo,
   className,
-}: { 
+}: {
   msg: string;
   additionalInfo?: JSX.Element;
   className?: string;

@@ -9,12 +9,11 @@ export const NoRecordsFound = memo(() => {
         <img
           src="No_Data_Graphic.svg"
           className="no-records-found__img"
+          alt="No Data Graphic"
         />
       </div>
       <div className="no-records-found__section no-records-found__section--msg">
-        <h3 className="no-records-found__msg">
-          No Records Found.
-        </h3>
+        <h3 className="no-records-found__msg">No Records Found.</h3>
       </div>
     </div>
   );

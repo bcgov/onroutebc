@@ -11,9 +11,7 @@ import { Nullable } from "../types/common";
  * @param rawDateTime
  * @returns datetime string for display or "NA" if invalid date given
  */
-export const formatCellValuetoDatetime = (
-  rawDateTime: Nullable<string>,
-) => {
+export const formatCellValuetoDatetime = (rawDateTime: Nullable<string>) => {
   return applyWhenNotNullable(
     (dt) => toLocal(dt, DATE_FORMATS.DATEONLY_ABBR_MONTH),
     rawDateTime,

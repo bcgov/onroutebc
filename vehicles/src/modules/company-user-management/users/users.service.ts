@@ -37,6 +37,7 @@ import { AccountSource } from '../../../common/enum/account-source.enum';
 import { ReadVerifyMigratedClientDto } from './dto/response/read-verify-migrated-client.dto';
 import { VerifyMigratedClientDto } from './dto/request/verify-migrated-client.dto';
 import { Permit } from '../../permit/entities/permit.entity';
+import { LogAsyncMethodExecution } from '../../../common/decorator/log-async-method-execution.decorator';
 
 @Injectable()
 export class UsersService {
@@ -70,6 +71,7 @@ export class UsersService {
    *
    * @returns The user details as a promise of type {@link ReadUserDto}
    */
+  @LogAsyncMethodExecution()
   async create(
     createUserDto: CreateUserDto,
     companyId: number,
@@ -163,6 +165,7 @@ export class UsersService {
    * @param currentUser The details of the current authorized user.
    * @returns The updated user details as a promise of type {@link ReadUserDto}.
    */
+  @LogAsyncMethodExecution()
   async update(
     userGUID: string,
     updateUserDto: UpdateUserDto,
@@ -287,6 +290,7 @@ export class UsersService {
    *
    * @returns The UpdateResult of the operation
    */
+  @LogAsyncMethodExecution()
   async updateStatus(
     userGUID: string,
     statusCode: UserStatus,
@@ -348,6 +352,7 @@ export class UsersService {
    *
    * @returns A Promise that resolves to an array of {@link ReadUserDto} objects.
    */
+  @LogAsyncMethodExecution()
   async findUsersDto(
     userGUID?: string,
     companyId?: number[],
@@ -386,6 +391,7 @@ export class UsersService {
    *
    * @returns The {@link ReadVerifyMigratedClientDto} entity.
    */
+  @LogAsyncMethodExecution()
   async verifyMigratedClient(
     currentUser: IUserJWT,
     verifyMigratedClientDto: VerifyMigratedClientDto,
@@ -440,6 +446,7 @@ export class UsersService {
    *
    * @returns The {@link ReadUserOrbcStatusDto} entity.
    */
+  @LogAsyncMethodExecution()
   async findORBCUser(currentUser: IUserJWT): Promise<ReadUserOrbcStatusDto> {
     const userContextDto = new ReadUserOrbcStatusDto();
     userContextDto.associatedCompanies = [];
@@ -516,7 +523,6 @@ export class UsersService {
    * @param currentUser The current logged in User JWT Token.
    *
    */
-
   private async processPendingUserInvitesForUserContextCall(
     currentUser: IUserJWT,
     userContextDto: ReadUserOrbcStatusDto,
@@ -564,6 +570,7 @@ export class UsersService {
    *
    * @returns The Roles as a promise of type {@link Role}
    */
+  @LogAsyncMethodExecution()
   async getRolesForUser(userGUID: string, companyId = 0): Promise<Role[]> {
     const queryResult = (await this.userRepository.query(
       'SELECT ROLE_TYPE FROM access.ORBC_GET_ROLES_FOR_USER_FN(@0,@1)',
@@ -583,6 +590,7 @@ export class UsersService {
    *
    * @returns The associated companies as a promise of type {@link number[]}
    */
+  @LogAsyncMethodExecution()
   async getCompaniesForUser(userGuid: string): Promise<number[]> {
     const companies = (
       await this.companyService.findCompanyMetadataByUserGuid(userGuid)
@@ -590,6 +598,7 @@ export class UsersService {
     return companies;
   }
 
+  @LogAsyncMethodExecution()
   async checkIdirUser(currentUser: IUserJWT): Promise<ReadUserOrbcStatusDto> {
     let userExists: ReadUserOrbcStatusDto = null;
     const idirUser = await this.findOneIdirUser(currentUser.idir_user_guid);
@@ -673,6 +682,7 @@ export class UsersService {
     return user;
   }
 
+  @LogAsyncMethodExecution()
   async findIdirUser(userGUID?: string): Promise<ReadUserDto> {
     // Find user entities based on the provided filtering criteria
     const userDetails = await this.idirUserRepository.findOne({
@@ -687,6 +697,7 @@ export class UsersService {
     return readUserDto;
   }
 
+  @LogAsyncMethodExecution()
   async findOneIdirUser(userGUID?: string): Promise<IdirUser> {
     // Find user entities based on the provided filtering criteria
     const userDetails = await this.idirUserRepository.findOne({
@@ -696,6 +707,7 @@ export class UsersService {
     return userDetails;
   }
 
+  @LogAsyncMethodExecution()
   async findPermitIssuerPPCUser(): Promise<ReadUserDto[]> {
     const subQueryBuilder = this.idirUserRepository
       .createQueryBuilder()

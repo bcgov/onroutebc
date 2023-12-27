@@ -28,9 +28,9 @@ export const useVehiclesQuery = (companyId: string) => {
 };
 
 export const useVehicleByIdQuery = (
-  companyId: string, 
-  vehicleType: VehicleTypesAsString, 
-  vehicleId?: string
+  companyId: string,
+  vehicleType: VehicleTypesAsString,
+  vehicleId?: string,
 ) => {
   const [vehicle, setVehicle] = useState<Nullable<Vehicle>>();
 

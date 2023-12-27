@@ -25,17 +25,27 @@ import { IDIRReportsDashboard } from "../features/idir/search/pages/IDIRReportsD
 import { AmendPermit } from "../features/permits/pages/Amend/AmendPermit";
 import { UniversalUnauthorized } from "../common/pages/UniversalUnauthorized";
 import { UniversalUnexpected } from "../common/pages/UniversalUnexpected";
+import { ChallengeProfileWizard } from "../features/wizard/ChallengeProfileWizard";
 
 export const AppRoutes = () => {
   return (
     <Routes>
       {/* Home and Error Routes */}
       <Route path={routes.HOME} element={<InitialLandingPage />} />
-      <Route path={routes.CREATE_PROFILE_WIZARD_ROUTES.WELCOME} element={<WelcomePage />} />
-      <Route path={routes.ERROR_ROUTES.UNAUTHORIZED} element={<UniversalUnauthorized />} />
-      <Route path={routes.ERROR_ROUTES.UNEXPECTED} element={<UniversalUnexpected />} />
+      <Route
+        path={routes.CREATE_PROFILE_WIZARD_ROUTES.WELCOME}
+        element={<WelcomePage />}
+      />
+      <Route
+        path={routes.ERROR_ROUTES.UNAUTHORIZED}
+        element={<UniversalUnauthorized />}
+      />
+      <Route
+        path={routes.ERROR_ROUTES.UNEXPECTED}
+        element={<UniversalUnexpected />}
+      />
       <Route path="*" element={<UniversalUnexpected />} />
-      
+
       {/* IDIR Routes */}
       <Route element={<ProtectedRoutes requiredRole={ROLES.READ_PERMIT} />}>
         <Route path={routes.IDIR_ROUTES.WELCOME} element={<IDIRWelcome />} />
@@ -47,7 +57,6 @@ export const AppRoutes = () => {
           path={routes.IDIR_ROUTES.REPORTS}
           element={<IDIRReportsDashboard />}
         />
-
       </Route>
 
       {/* BCeID Routes */}
@@ -91,12 +100,21 @@ export const AppRoutes = () => {
       </Route>
 
       <Route element={<ProtectedRoutes requiredRole={ROLES.READ_ORG} />}>
-        <Route path={routes.PROFILE_ROUTES.MANAGE} element={<ManageProfiles />} />
+        <Route
+          path={routes.PROFILE_ROUTES.MANAGE}
+          element={<ManageProfiles />}
+        />
       </Route>
 
       <Route element={<ProtectedRoutes requiredRole={ROLES.WRITE_USER} />}>
-        <Route path={routes.PROFILE_ROUTES.ADD_USER} element={<AddUserDashboard />} />
-        <Route path={`${routes.PROFILE_ROUTES.EDIT_USER}/:userGUID`} element={<EditUserDashboard />} />
+        <Route
+          path={routes.PROFILE_ROUTES.ADD_USER}
+          element={<AddUserDashboard />}
+        />
+        <Route
+          path={`${routes.PROFILE_ROUTES.EDIT_USER}/:userGUID`}
+          element={<EditUserDashboard />}
+        />
       </Route>
 
       <Route element={<ProtectedRoutes requiredRole={ROLES.WRITE_PERMIT} />}>
@@ -104,30 +122,47 @@ export const AppRoutes = () => {
           <Route index={true} element={<PermitDashboard />} />
           <Route
             path={`${routes.APPLICATIONS_ROUTES.START_APPLICATION}`}
-            element={<ApplicationSteps applicationStep={routes.APPLICATION_STEPS.DETAILS} />}
+            element={
+              <ApplicationSteps
+                applicationStep={routes.APPLICATION_STEPS.DETAILS}
+              />
+            }
           />
-          <Route
-            path={`${routes.APPLICATIONS_ROUTES.DETAILS()}`}
-          >
-            <Route index={true} element={<ApplicationSteps applicationStep={routes.APPLICATION_STEPS.DETAILS} />} />
+          <Route path={`${routes.APPLICATIONS_ROUTES.DETAILS()}`}>
+            <Route
+              index={true}
+              element={
+                <ApplicationSteps
+                  applicationStep={routes.APPLICATION_STEPS.DETAILS}
+                />
+              }
+            />
             <Route
               path={routes.APPLICATIONS_ROUTES.REVIEW()}
-              element={<ApplicationSteps applicationStep={routes.APPLICATION_STEPS.REVIEW}  />}
+              element={
+                <ApplicationSteps
+                  applicationStep={routes.APPLICATION_STEPS.REVIEW}
+                />
+              }
             />
             <Route
               path={routes.APPLICATIONS_ROUTES.PAY()}
-              element={<ApplicationSteps applicationStep={routes.APPLICATION_STEPS.PAY} />}
+              element={
+                <ApplicationSteps
+                  applicationStep={routes.APPLICATION_STEPS.PAY}
+                />
+              }
             />
           </Route>
         </Route>
       </Route>
 
       <Route element={<ProtectedRoutes requiredRole={ROLES.WRITE_PERMIT} />}>
-        <Route 
+        <Route
           path={`${routes.PERMITS_ROUTES.VOID()}`}
-          element={<VoidPermit />} 
+          element={<VoidPermit />}
         />
-        <Route 
+        <Route
           path={`${routes.PERMITS_ROUTES.AMEND()}`}
           element={<AmendPermit />}
         />
@@ -138,11 +173,25 @@ export const AppRoutes = () => {
       </Route>
 
       <Route element={<ProtectedRoutes requiredRole={ROLES.WRITE_PERMIT} />}>
-        <Route path={routes.PAYMENT_ROUTES.PAYMENT_REDIRECT} element={<PaymentRedirect />} />
+        <Route
+          path={routes.PAYMENT_ROUTES.PAYMENT_REDIRECT}
+          element={<PaymentRedirect />}
+        />
       </Route>
 
-      <Route path={routes.CREATE_PROFILE_WIZARD_ROUTES.CREATE} element={<CreateProfileWizard />} />
-      <Route path={routes.PROFILE_ROUTES.USER_INFO} element={<UserInfoWizard />} />
+      <Route
+        path={routes.CREATE_PROFILE_WIZARD_ROUTES.CREATE}
+        element={<CreateProfileWizard />}
+      />
+      <Route
+        path={routes.CREATE_PROFILE_WIZARD_ROUTES.MIGRATED_CLIENT}
+        element={<ChallengeProfileWizard />}
+      />
+
+      <Route
+        path={routes.PROFILE_ROUTES.USER_INFO}
+        element={<UserInfoWizard />}
+      />
     </Routes>
   );
 };

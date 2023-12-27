@@ -64,12 +64,24 @@ export const PROFILE_ROUTES = {
 const PERMITS_ROUTE_BASE = "/permits";
 export const PERMITS_ROUTES = {
   BASE: PERMITS_ROUTE_BASE,
-  SUCCESS: (permitId?: string) => 
-    `${DYNAMIC_ROUTE_URI(PERMITS_ROUTE_BASE, ROUTE_PLACEHOLDERS.PERMIT_ID, permitId)}/success`,
-  VOID: (permitId?: string) => 
-    `${DYNAMIC_ROUTE_URI(PERMITS_ROUTE_BASE, ROUTE_PLACEHOLDERS.PERMIT_ID, permitId)}/void`,
-  AMEND: (permitId?: string) => 
-    `${DYNAMIC_ROUTE_URI(PERMITS_ROUTE_BASE, ROUTE_PLACEHOLDERS.PERMIT_ID, permitId)}/amend`,
+  SUCCESS: (permitId?: string) =>
+    `${DYNAMIC_ROUTE_URI(
+      PERMITS_ROUTE_BASE,
+      ROUTE_PLACEHOLDERS.PERMIT_ID,
+      permitId,
+    )}/success`,
+  VOID: (permitId?: string) =>
+    `${DYNAMIC_ROUTE_URI(
+      PERMITS_ROUTE_BASE,
+      ROUTE_PLACEHOLDERS.PERMIT_ID,
+      permitId,
+    )}/void`,
+  AMEND: (permitId?: string) =>
+    `${DYNAMIC_ROUTE_URI(
+      PERMITS_ROUTE_BASE,
+      ROUTE_PLACEHOLDERS.PERMIT_ID,
+      permitId,
+    )}/amend`,
 };
 
 // Applications
@@ -82,23 +94,37 @@ export const APPLICATION_STEPS = {
   PAY: 3,
 } as const;
 
-export type ApplicationStep = typeof APPLICATION_STEPS[keyof typeof APPLICATION_STEPS];
+export type ApplicationStep =
+  (typeof APPLICATION_STEPS)[keyof typeof APPLICATION_STEPS];
 
 export const APPLICATIONS_ROUTES = {
   BASE: APPLICATIONS_ROUTE_BASE,
-  DETAILS: (permitId?: string) => 
-    `${DYNAMIC_ROUTE_URI(APPLICATIONS_ROUTE_BASE, ROUTE_PLACEHOLDERS.PERMIT_ID, permitId)}`,
+  DETAILS: (permitId?: string) =>
+    `${DYNAMIC_ROUTE_URI(
+      APPLICATIONS_ROUTE_BASE,
+      ROUTE_PLACEHOLDERS.PERMIT_ID,
+      permitId,
+    )}`,
   START_APPLICATION: `${APPLICATIONS_ROUTE_BASE}/new`,
-  REVIEW: (permitId?: string) => 
-    `${DYNAMIC_ROUTE_URI(APPLICATIONS_ROUTE_BASE, ROUTE_PLACEHOLDERS.PERMIT_ID, permitId)}/review`,
-  PAY: (permitId?: string, failed?: boolean) => 
-    `${DYNAMIC_ROUTE_URI(APPLICATIONS_ROUTE_BASE, ROUTE_PLACEHOLDERS.PERMIT_ID, permitId)}/pay${failed ? "?paymentFailed=true" : ""}`,
+  REVIEW: (permitId?: string) =>
+    `${DYNAMIC_ROUTE_URI(
+      APPLICATIONS_ROUTE_BASE,
+      ROUTE_PLACEHOLDERS.PERMIT_ID,
+      permitId,
+    )}/review`,
+  PAY: (permitId?: string, failed?: boolean) =>
+    `${DYNAMIC_ROUTE_URI(
+      APPLICATIONS_ROUTE_BASE,
+      ROUTE_PLACEHOLDERS.PERMIT_ID,
+      permitId,
+    )}/pay${failed ? "?paymentFailed=true" : ""}`,
 };
 
 // Create Profile Wizard
 export const CREATE_PROFILE_WIZARD_ROUTES = {
   CREATE: "/create-profile",
   WELCOME: "/welcome",
+  MIGRATED_CLIENT: "/migrated-client",
 };
 
 // IDIR
@@ -119,10 +145,12 @@ export const PAYMENT_ROUTES = {
 // OnRoute Webpage Links
 export const ONROUTE_WEBPAGE_LINKS = {
   HOME: "https://onroutebc.gov.bc.ca",
-  COMMERCIAL_TRANSPORT_PROCEDURES: "https://www2.gov.bc.ca/gov/content/transportation/vehicle-safety-enforcement/information-education/commercial-transport-procedures",
+  COMMERCIAL_TRANSPORT_PROCEDURES:
+    "https://www2.gov.bc.ca/gov/content/transportation/vehicle-safety-enforcement/information-education/commercial-transport-procedures",
   DISCLAIMER: "https://www2.gov.bc.ca/gov/content/home/disclaimer",
   PRIVACY: "https://www2.gov.bc.ca/gov/content/home/privacy",
-  ACCESSIBILITY: "https://www2.gov.bc.ca/gov/content/home/accessible-government",
+  ACCESSIBILITY:
+    "https://www2.gov.bc.ca/gov/content/home/accessible-government",
   COPYRIGHT: "https://www2.gov.bc.ca/gov/content/home/copyright",
   CONTACT_US: "https://onroutebc.gov.bc.ca",
 };

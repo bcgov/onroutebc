@@ -101,9 +101,8 @@ export const VehicleDetails = ({
   const [subtypeOptions, setSubtypeOptions] = useState<VehicleType[]>([
     emptyVehicleSubtype,
   ]);
-  const [selectedVehicle, setSelectedVehicle] = useState<
-    Optional<VehicleDetailsType>
-  >();
+  const [selectedVehicle, setSelectedVehicle] =
+    useState<Optional<VehicleDetailsType>>();
 
   useEffect(() => {
     // Update subtype options when vehicle type changes
@@ -223,7 +222,7 @@ export const VehicleDetails = ({
   }, []);
 
   const handleChooseFrom = (event: SelectChangeEvent) => {
-    setChooseFrom(event.target.value as string);
+    setChooseFrom(event.target.value);
   };
 
   const handleSaveVehicleRadioBtns = (isSave: string) => {
@@ -234,16 +233,14 @@ export const VehicleDetails = ({
 
   // Reset the vehicle subtype field whenever a different vehicle type is selected
   const handleChangeVehicleType = (event: SelectChangeEvent) => {
-    const updatedVehicleType = event.target.value as string;
+    const updatedVehicleType = event.target.value;
     setValue("permitData.vehicleDetails.vehicleType", updatedVehicleType);
   };
 
   return (
     <Box className="vehicle-details">
       <Box className="vehicle-details__header">
-        <Typography variant={"h3"}>
-          Vehicle Details
-        </Typography>
+        <Typography variant={"h3"}>Vehicle Details</Typography>
       </Box>
 
       <Box className="vehicle-details__body">
@@ -257,12 +254,12 @@ export const VehicleDetails = ({
             msg={BANNER_MESSAGES.CANNOT_FIND_VEHICLE}
             additionalInfo={
               <div className="vehicle-inventory-info">
-                Your vehicle may not be available in a permit application because
-                it cannot be used for the type of permit you are applying for.{" "}
+                Your vehicle may not be available in a permit application
+                because it cannot be used for the type of permit you are
+                applying for. <br />
                 <br />
-                <br />
-                If you are creating a new vehicle, a desired Vehicle Sub-Type may
-                not be available because it is not eligible for the permit
+                If you are creating a new vehicle, a desired Vehicle Sub-Type
+                may not be available because it is not eligible for the permit
                 application you are currently in.
               </div>
             }
@@ -281,7 +278,7 @@ export const VehicleDetails = ({
                 ))}
                 width={"180px"}
               />
-              
+
               <SelectVehicleDropdown
                 label={"Select vehicle"}
                 width={"268px"}
@@ -346,7 +343,8 @@ export const VehicleDetails = ({
                   maxLength: 4,
                   validate: {
                     isNumber: (v) => !isNaN(v) || invalidNumber(),
-                    lessThan1950: (v) => parseInt(v) > 1950 || invalidYearMin(1950),
+                    lessThan1950: (v) =>
+                      parseInt(v) > 1950 || invalidYearMin(1950),
                   },
                 },
                 inputType: "number",
@@ -416,7 +414,8 @@ export const VehicleDetails = ({
                 id="demo-radio-buttons-group-label"
                 sx={{ fontWeight: "bold", marginTop: "24px" }}
               >
-                Would you like to add/update this vehicle to your Vehicle Inventory?
+                Would you like to add/update this vehicle to your Vehicle
+                Inventory?
               </FormLabel>
               <RadioGroup
                 aria-labelledby="radio-buttons-group-label"
