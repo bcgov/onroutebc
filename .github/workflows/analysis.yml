@@ -106,11 +106,11 @@ jobs:
           dir: ${{ matrix.dir }}
           node_version: "18"
           sonar_args: >
-            -Dsonar.exclusions=**/coverage/**,**/node_modules/**,**/*spec.ts
+            -Dsonar.exclusions=**/coverage/**,**/node_modules/**
             -Dsonar.organization=bcgov-sonarcloud
             -Dsonar.projectKey=${{ matrix.sonar_projectKey }}
             -Dsonar.sources=src
-            -Dsonar.tests.inclusions=**/*spec.ts
+            -Dsonar.tests.inclusions=**/*.spec.tsx,**/*.spec.ts
             -Dsonar.javascript.lcov.reportPaths=./coverage/lcov.info
           sonar_token: ${{ secrets[matrix.token] }}
           triggers: ${{ matrix.triggers }}
