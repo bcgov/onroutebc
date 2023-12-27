@@ -15,7 +15,7 @@
     "@mui/x-date-pickers": "^6.17.0",
     "@tanstack/react-query": "^4.29.7",
     "@uidotdev/usehooks": "^2.4.1",
-    "axios": "^1.6.0",
+    "axios": "^1.6.3",
     "dayjs": "^1.11.7",
     "lottie-web": "^5.12.2",
     "material-react-table": "^2.0.4",
