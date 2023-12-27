@@ -26,6 +26,7 @@ import { AmendPermit } from "../features/permits/pages/Amend/AmendPermit";
 import { UniversalUnauthorized } from "../common/pages/UniversalUnauthorized";
 import { UniversalUnexpected } from "../common/pages/UniversalUnexpected";
 import { ChallengeProfileWizard } from "../features/wizard/ChallengeProfileWizard";
+import { IDIRProtectedRoutes } from "./IDIRProtectedRoutes";
 
 export const AppRoutes = () => {
   return (
@@ -38,7 +39,7 @@ export const AppRoutes = () => {
       <Route path="*" element={<UniversalUnexpected />} />
       
       {/* IDIR Routes */}
-      <Route element={<ProtectedRoutes requiredRole={ROLES.READ_PERMIT} />}>
+      <Route element={<IDIRProtectedRoutes requiredRole={ROLES.STAFF} requiredAuthGroup="SYSADMIN" />}>
         <Route path={routes.IDIR_ROUTES.WELCOME} element={<IDIRWelcome />} />
         <Route
           path={routes.IDIR_ROUTES.SEARCH_RESULTS}

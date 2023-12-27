@@ -1,24 +1,24 @@
-import { useAuth } from "react-oidc-context";
-import { useLocation, Navigate, Outlet, useNavigate } from "react-router-dom";
 import { useContext, useEffect } from "react";
+import { useAuth } from "react-oidc-context";
+import { Navigate, Outlet, useLocation, useNavigate } from "react-router-dom";
 
-import { HOME, ERROR_ROUTES } from "./constants";
-import { Loading } from "../common/pages/Loading";
-import OnRouteBCContext from "../common/authentication/OnRouteBCContext";
-import { DoesUserHaveRole } from "../common/authentication/util";
-import { LoadBCeIDUserRolesByCompany } from "../common/authentication/LoadBCeIDUserRolesByCompany";
-import { LoadBCeIDUserContext } from "../common/authentication/LoadBCeIDUserContext";
 import { LoadIDIRUserContext } from "../common/authentication/LoadIDIRUserContext";
 import { LoadIDIRUserRoles } from "../common/authentication/LoadIDIRUserRoles";
+import OnRouteBCContext from "../common/authentication/OnRouteBCContext";
+import { IDIRUserAuthGroupType, UserAuthGroupType, UserRolesType } from "../common/authentication/types";
+import { DoesUserHaveRole } from "../common/authentication/util";
+import { Loading } from "../common/pages/Loading";
 import { IDPS } from "../common/types/idp";
-import { UserRolesType } from "../common/authentication/types";
+import { ERROR_ROUTES, HOME } from "./constants";
 
 const isIDIR = (identityProvider: string) => identityProvider === IDPS.IDIR;
 
-export const ProtectedRoutes = ({
+export const IDIRProtectedRoutes = ({
   requiredRole,
+  requiredAuthGroup,
 }: {
   requiredRole?: UserRolesType;
+  requiredAuthGroup: IDIRUserAuthGroupType;
 }) => {
   const {
     isAuthenticated,
@@ -26,20 +26,19 @@ export const ProtectedRoutes = ({
     user: userFromToken,
   } = useAuth();
 
-  const { userRoles, companyId, idirUserDetails } =
-    useContext(OnRouteBCContext);
+  const { userRoles, idirUserDetails } = useContext(OnRouteBCContext);
 
   const userIDP = userFromToken?.profile?.identity_provider as string;
 
   const location = useLocation();
   const navigate = useNavigate();
 
-  /**
-   * Redirect the user back to login page if they are trying to directly access
-   * a protected page but are unauthenticated.
-   */
   useEffect(() => {
     if (!isAuthLoading && !isAuthenticated) {
+      /**
+       * Redirect the user back to login page if they are trying to directly access
+       * a protected page but are unauthenticated.
+       */
       navigate(HOME);
     }
   }, [isAuthLoading, isAuthenticated]);
@@ -62,24 +61,6 @@ export const ProtectedRoutes = ({
         return (
           <>
             <LoadIDIRUserRoles />
-            <Loading />
-          </>
-        );
-      }
-    }
-    if (!isIDIR(userIDP)) {
-      if (!companyId) {
-        return (
-          <>
-            <LoadBCeIDUserContext />
-            <Loading />
-          </>
-        );
-      }
-      if (!userRoles) {
-        return (
-          <>
-            <LoadBCeIDUserRolesByCompany />
             <Loading />
           </>
         );
