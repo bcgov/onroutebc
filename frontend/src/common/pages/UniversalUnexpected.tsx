@@ -8,7 +8,10 @@ export const UniversalUnexpected = () => {
       errorTitle="Unexpected Error"
       msgNode={
         <>
-          Please return to <CustomExternalLink href={ONROUTE_WEBPAGE_LINKS.HOME}>onRouteBC</CustomExternalLink>
+          Please return to{" "}
+          <CustomExternalLink href={ONROUTE_WEBPAGE_LINKS.HOME}>
+            onRouteBC
+          </CustomExternalLink>
         </>
       }
     />

@@ -4,19 +4,14 @@ import "./ContactDetails.scss";
 import { InfoBcGovBanner } from "../../../../common/components/banners/InfoBcGovBanner";
 import { CustomFormComponent } from "../../../../common/components/form/CustomFormComponents";
 import { requiredMessage } from "../../../../common/helpers/validationMessages";
-import {
-  PHONE_WIDTH,
-  EXT_WIDTH,
-} from "../../../../themes/orbcStyles";
+import { PHONE_WIDTH, EXT_WIDTH } from "../../../../themes/orbcStyles";
 import { BANNER_MESSAGES } from "../../../../common/constants/bannerMessages";
 
 export const ContactDetails = ({ feature }: { feature: string }) => {
   return (
     <Box className="contact-details-form">
       <Box className="contact-details-form__header">
-        <Typography variant={"h3"}>
-          Contact Information
-        </Typography>
+        <Typography variant={"h3"}>Contact Information</Typography>
       </Box>
 
       <Box className="contact-details-form__body">
@@ -94,9 +89,7 @@ export const ContactDetails = ({ feature }: { feature: string }) => {
           />
         </div>
 
-        <InfoBcGovBanner
-          msg={BANNER_MESSAGES.PERMIT_SEND_TO}
-        />
+        <InfoBcGovBanner msg={BANNER_MESSAGES.PERMIT_SEND_TO} />
 
         <CustomFormComponent
           type="input"

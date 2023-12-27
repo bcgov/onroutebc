@@ -44,9 +44,7 @@ export const IDIRSearchResultsDashboard = memo(() => {
           borderColor: "divider",
         }}
       >
-        <Banner 
-          bannerText={getBannerText(searchFields)}
-        />
+        <Banner bannerText={getBannerText(searchFields)} />
       </Box>
       <div
         className="tabpanel-container"

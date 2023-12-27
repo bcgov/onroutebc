@@ -23,7 +23,10 @@ import { addUserToCompany } from "../apiManager/manageProfileAPI";
 import { UserAuthRadioGroup } from "../components/forms/userManagement/UserAuthRadioGroup";
 import UserGroupsAndPermissionsModal from "../components/user-management/UserGroupsAndPermissionsModal";
 import { BCEID_PROFILE_TABS } from "../types/manageProfile.d";
-import { BCeIDAddUserRequest, BCEID_AUTH_GROUP } from "../types/userManagement.d";
+import {
+  BCeIDAddUserRequest,
+  BCEID_AUTH_GROUP,
+} from "../types/userManagement.d";
 import { PROFILE_ROUTES } from "../../../routes/constants";
 
 /**

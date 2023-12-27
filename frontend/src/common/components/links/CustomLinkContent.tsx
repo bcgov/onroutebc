@@ -10,11 +10,7 @@ export const CustomLinkContent = ({
 }) => {
   return (
     <>
-      <span
-        className="custom-link__link"
-      >
-        {children}
-      </span>
+      <span className="custom-link__link">{children}</span>
 
       {withLinkIcon ? (
         <FontAwesomeIcon

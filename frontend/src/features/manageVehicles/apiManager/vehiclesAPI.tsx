@@ -143,7 +143,7 @@ export const getVehicleById = async (
   vehicleId?: string,
 ): Promise<RequiredOrNull<Vehicle>> => {
   if (!vehicleId) return null;
-  
+
   let url = `${VEHICLES_URL}/companies/${companyId}/vehicles`;
   if (vehicleType === "powerUnit") {
     url += `/powerUnits/${vehicleId}`;
