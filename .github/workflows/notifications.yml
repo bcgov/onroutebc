@@ -34,6 +34,5 @@ jobs:
             Workflow:  ${{toJson(github.event.workflow)}}
             Action: ${{github.event.action}}
             Workflow_Run: ${{toJson(github.event.workflow_run)}}
-          notification-color: 17a2b8
-          timezone: America/Vancouver
           notification-color: 28a745
+          timezone: America/Vancouver
