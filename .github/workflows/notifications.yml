@@ -7,7 +7,7 @@ on:
       - completed  
 jobs:
   notify-teams-in-progress:
-    if: ${{github.event.action == 'in_progress'}}
+    if: ${{github.event.workflow.name == 'PR' && github.event.action == 'in_progress'}}
     runs-on: ubuntu-22.04
     steps:
       - uses: jdcargile/ms-teams-notification@v1.3
@@ -19,10 +19,12 @@ jobs:
             Workflow:  ${{toJson(github.event.workflow)}}
             Action: ${{github.event.action}}
             Workflow_Run: ${{toJson(github.event.workflow_run)}}
+            PR: ${{github.event.workflow_run.pull_requests[0].number}}
+            Message: ${{github.event.workflow_run.head_commit.message}}
           notification-color: 17a2b8
           timezone: America/Vancouver
   notify-teams-completed:
-    if: ${{github.event.action == 'completed'}}
+    if: ${{github.event.workflow.name == 'PR' && github.event.action == 'completed'}}
     runs-on: ubuntu-22.04
     steps:
       - uses: jdcargile/ms-teams-notification@v1.3
@@ -34,5 +36,7 @@ jobs:
             Workflow:  ${{toJson(github.event.workflow)}}
             Action: ${{github.event.action}}
             Workflow_Run: ${{toJson(github.event.workflow_run)}}
+            PR: ${{github.event.workflow_run.pull_requests[0].number}}
+            Message: ${{github.event.workflow_run.head_commit.message}}
           notification-color: 28a745
           timezone: America/Vancouver
