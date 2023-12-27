@@ -6,6 +6,7 @@ import {
   MRT_GlobalFilterTextField,
   MRT_PaginationState,
   MRT_Row,
+  MRT_SortingState,
   MRT_TableInstance,
   MaterialReactTable,
   useMaterialReactTable,
@@ -38,20 +39,42 @@ export const BasePermitList = ({
     pageIndex: 0,
     pageSize: 10,
   });
+  const [globalFilter, setGlobalFilter] = useState<string>("");
+  const [sorting, setSorting] = useState<MRT_SortingState>([]);
 
   const permitsQuery = useQuery({
-    queryKey: ["permits", isExpired, pagination.pageIndex, pagination.pageSize],
+    queryKey: [
+      "permits",
+      isExpired,
+      globalFilter,
+      pagination.pageIndex,
+      pagination.pageSize,
+      sorting,
+    ],
     queryFn: () =>
       getPermits(
         { expired: isExpired },
-        { page: pagination.pageIndex, take: pagination.pageSize },
+        {
+          page: pagination.pageIndex,
+          take: pagination.pageSize,
+          searchValue: globalFilter,
+          sorting:
+            sorting.length > 0
+              ? [
+                  {
+                    orderBy: sorting.at(0)?.id as string,
+                    descending: Boolean(sorting.at(0)?.desc),
+                  },
+                ]
+              : [],
+        },
       ),
     keepPreviousData: true,
     staleTime: FIVE_MINUTES,
     retry: 1,
   });
 
-  const { data, isError, isInitialLoading, isLoading } = permitsQuery;
+  const { data, isError, isLoading } = permitsQuery;
 
   const table = useMaterialReactTable({
     ...defaultTableOptions,
@@ -65,10 +88,11 @@ export const BasePermitList = ({
     state: {
       ...defaultTableStateOptions,
       showAlertBanner: isError,
-      showProgressBars: isInitialLoading,
+      showProgressBars: isLoading,
       columnVisibility: { applicationId: true },
-      isLoading: isInitialLoading || isLoading,
+      isLoading: isLoading,
       pagination,
+      globalFilter,
     },
     renderTopToolbar: useCallback(
       ({ table }: { table: MRT_TableInstance<Permit> }) => (
@@ -85,9 +109,13 @@ export const BasePermitList = ({
       [],
     ),
     autoResetPageIndex: false,
+    manualFiltering: true,
     manualPagination: true,
+    manualSorting: true,
     rowCount: data?.meta?.totalItems ?? 0,
     pageCount: data?.meta?.pageCount ?? 0,
+    onSortingChange: setSorting,
+    onGlobalFilterChange: setGlobalFilter,
     onPaginationChange: setPagination,
     enablePagination: true,
     enableBottomToolbar: true,
