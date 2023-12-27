@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: jdcargile/ms-teams-notification@v1.3
-        if: 
+        if: ${{github.event.type == 'in_progress'}} 
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           ms-teams-webhook-uri: ${{ vars.MS_TEAMS_WEBHOOK_URI }}
@@ -21,6 +21,7 @@ jobs:
           notification-color: 17a2b8
           timezone: America/Vancouver
       - uses: jdcargile/ms-teams-notification@v1.3
+        if: ${{github.event.type == 'completed'}} 
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           ms-teams-webhook-uri: ${{ vars.MS_TEAMS_WEBHOOK_URI }}
