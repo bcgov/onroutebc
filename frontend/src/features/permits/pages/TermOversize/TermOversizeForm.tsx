@@ -15,9 +15,15 @@ import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext
 import { PermitForm } from "./components/form/PermitForm";
 import { usePermitVehicleManagement } from "../../hooks/usePermitVehicleManagement";
 import { useCompanyInfoQuery } from "../../../manageProfile/apiManager/hooks";
-import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../../common/helpers/util";
+import {
+  applyWhenNotNullable,
+  getDefaultRequiredVal,
+} from "../../../../common/helpers/util";
 import { TROS_PERMIT_DURATIONS } from "../../constants/termOversizeConstants";
-import { APPLICATIONS_ROUTES, APPLICATION_STEPS } from "../../../../routes/constants";
+import {
+  APPLICATIONS_ROUTES,
+  APPLICATION_STEPS,
+} from "../../../../routes/constants";
 
 /**
  * The first step in creating and submitting a TROS Application.
@@ -108,7 +114,9 @@ export const TermOversizeForm = () => {
     handleSaveVehicle(vehicleData);
 
     // Save application before continuing
-    await onSaveApplication((permitId) => navigate(APPLICATIONS_ROUTES.REVIEW(permitId)));
+    await onSaveApplication((permitId) =>
+      navigate(APPLICATIONS_ROUTES.REVIEW(permitId)),
+    );
   };
 
   const isSaveTermOversizeSuccessful = (status: number) =>
@@ -139,7 +147,7 @@ export const TermOversizeForm = () => {
 
   // Whenever application is to be saved (either through "Save" or "Continue")
   const onSaveApplication = async (
-    additionalSuccessAction?: (permitId: string) => void
+    additionalSuccessAction?: (permitId: string) => void,
   ) => {
     const termOverSizeToBeAdded = applicationFormData(getValues());
     const response = await submitTermOversizeMutation.mutateAsync(
@@ -148,7 +156,10 @@ export const TermOversizeForm = () => {
 
     if (isSaveTermOversizeSuccessful(response.status)) {
       const responseData = response.data;
-      const savedPermitId = onSaveSuccess(responseData as Application, response.status);
+      const savedPermitId = onSaveSuccess(
+        responseData as Application,
+        response.status,
+      );
       additionalSuccessAction?.(savedPermitId);
     } else {
       onSaveFailure();
@@ -156,7 +167,9 @@ export const TermOversizeForm = () => {
   };
 
   const onSave = async () => {
-    await onSaveApplication((permitId) => navigate(APPLICATIONS_ROUTES.DETAILS(permitId)));
+    await onSaveApplication((permitId) =>
+      navigate(APPLICATIONS_ROUTES.DETAILS(permitId)),
+    );
   };
 
   // Whenever "Leave" button is clicked
@@ -178,9 +191,7 @@ export const TermOversizeForm = () => {
 
   return (
     <div className="application-form">
-      <ApplicationBreadcrumb
-        applicationStep={APPLICATION_STEPS.DETAILS}
-      />
+      <ApplicationBreadcrumb applicationStep={APPLICATION_STEPS.DETAILS} />
 
       <FormProvider {...formMethods}>
         <PermitForm

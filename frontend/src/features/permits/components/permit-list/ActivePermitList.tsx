@@ -1,4 +1,3 @@
-
 import { InfoBcGovBanner } from "../../../../common/components/banners/InfoBcGovBanner";
 import { BANNER_MESSAGES } from "../../../../common/constants/bannerMessages";
 import "./ActivePermitList.scss";

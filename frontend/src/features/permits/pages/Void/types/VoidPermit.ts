@@ -1,8 +1,8 @@
 import { PermitStatus, PERMIT_STATUSES } from "../../../types/PermitStatus";
 import { PermitsActionResponse } from "../../../types/permit";
 import { TRANSACTION_TYPES, TransactionType } from "../../../types/payment.d";
-import { 
-  PaymentCardTypeCode, 
+import {
+  PaymentCardTypeCode,
   PaymentMethodTypeCode,
   PaymentGatewayMethod,
   PAYMENT_METHOD_TYPE_CODE,

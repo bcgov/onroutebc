@@ -14,8 +14,14 @@ import { Commodities } from "../../../../types/application";
 import { ONROUTE_WEBPAGE_LINKS } from "../../../../../../routes/constants";
 import { CustomExternalLink } from "../../../../../../common/components/links/CustomExternalLink";
 import { BANNER_MESSAGES } from "../../../../../../common/constants/bannerMessages";
-import { PPC_EMAIL, TOLL_FREE_NUMBER } from "../../../../../../common/constants/constants";
-import { DATE_FORMATS, getStartOfDate } from "../../../../../../common/helpers/formatDate";
+import {
+  PPC_EMAIL,
+  TOLL_FREE_NUMBER,
+} from "../../../../../../common/constants/constants";
+import {
+  DATE_FORMATS,
+  getStartOfDate,
+} from "../../../../../../common/helpers/formatDate";
 import { getExpiryDate } from "../../../../helpers/permitState";
 
 export const PermitDetails = ({
@@ -72,9 +78,7 @@ export const PermitDetails = ({
   return (
     <Box className="permit-details">
       <Box className="permit-details__header">
-        <Typography variant={"h3"}>
-          Permit Details
-        </Typography>
+        <Typography variant={"h3"}>Permit Details</Typography>
       </Box>
 
       <Box className="permit-details__body">
@@ -116,10 +120,7 @@ export const PermitDetails = ({
         <PermitExpiryDateBanner expiryDate={formattedExpiryDate} />
 
         <Box className="permit-details__commodities">
-          <Typography 
-            variant="h3"
-            className="commodities-title"
-          >
+          <Typography variant="h3" className="commodities-title">
             Select the commodities below and their respective CVSE forms.
           </Typography>
 
@@ -134,15 +135,22 @@ export const PermitDetails = ({
                     withLinkIcon={true}
                   >
                     <span className="procedures-link__title">
-                      Commercial Transport Procedures - Province of British Columbia
+                      Commercial Transport Procedures - Province of British
+                      Columbia
                     </span>
                   </CustomExternalLink>
                 </div>
 
                 <div className="commodities-info__contact-methods">
-                  For further assistance please contact the Provincial Permit Centre at{" "}
-                  <span className="contact-info contact-info--toll-free">Toll-free: {TOLL_FREE_NUMBER}</span>{" "}or{" "}
-                  <span className="contact-info contact-info--email">Email: {PPC_EMAIL}</span>
+                  For further assistance please contact the Provincial Permit
+                  Centre at{" "}
+                  <span className="contact-info contact-info--toll-free">
+                    Toll-free: {TOLL_FREE_NUMBER}
+                  </span>{" "}
+                  or{" "}
+                  <span className="contact-info contact-info--email">
+                    Email: {PPC_EMAIL}
+                  </span>
                 </div>
               </div>
             }

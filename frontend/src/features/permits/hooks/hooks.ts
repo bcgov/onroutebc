@@ -61,7 +61,7 @@ export const useApplicationDetailsQuery = (
   applicationStep: ApplicationStep,
   permitId?: string,
 ) => {
-  const [applicationData, setApplicationData] = 
+  const [applicationData, setApplicationData] =
     useState<Nullable<Application>>();
 
   // Currently, creating new application route doesn't contain permitId
@@ -69,9 +69,10 @@ export const useApplicationDetailsQuery = (
   // Thus we need to do a check
   // Also, "/applications/new" is valid, but "/applications/new/review" is invalid
   // Thus we also need applicationStep to determine which page (route) we're on
-  const isCreateNewApplication = 
-    typeof permitId === "undefined" && applicationStep === APPLICATION_STEPS.DETAILS;
-  
+  const isCreateNewApplication =
+    typeof permitId === "undefined" &&
+    applicationStep === APPLICATION_STEPS.DETAILS;
+
   // Check if the permit id is numeric
   const isPermitIdNumeric = () => {
     if (!permitId) return false;
@@ -104,9 +105,7 @@ export const useApplicationDetailsQuery = (
       setApplicationData(query.data);
     } else {
       const application = mapApplicationResponseToApplication(query.data);
-      setApplicationData(
-        application,
-      );
+      setApplicationData(application);
     }
   }, [query.data, shouldEnableQuery, isInvalidRoute]);
 
@@ -152,9 +151,8 @@ export const usePermitDetailsQuery = (permitId?: string) => {
  * @returns The mutation object, as well as the transaction that was started (if there is one, or undefined if there's an error).
  */
 export const useStartTransaction = () => {
-  const [transaction, setTransaction] = useState<
-    Nullable<StartTransactionResponseData>
-  >(undefined);
+  const [transaction, setTransaction] =
+    useState<Nullable<StartTransactionResponseData>>(undefined);
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
@@ -188,9 +186,8 @@ export const useCompleteTransaction = (
   paymentStatus: number,
 ) => {
   const queryClient = useQueryClient();
-  const [paymentApproved, setPaymentApproved] = useState<Optional<boolean>>(
-    undefined,
-  );
+  const [paymentApproved, setPaymentApproved] =
+    useState<Optional<boolean>>(undefined);
   const [message, setMessage] = useState<string>(messageText);
 
   const onTransactionResult = (message: string, paymentApproved: boolean) => {
@@ -271,9 +268,8 @@ export const usePermitHistoryQuery = (originalPermitId?: string) => {
  * @returns Mutation object, and the issued results response.
  */
 export const useIssuePermits = () => {
-  const [issueResults, setIssueResults] = useState<
-    Optional<IssuePermitsResponse>
-  >(undefined);
+  const [issueResults, setIssueResults] =
+    useState<Optional<IssuePermitsResponse>>(undefined);
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
@@ -351,9 +347,8 @@ export const useModifyAmendmentApplication = () => {
  * @returns Current application used for amendment, or null/undefined
  */
 export const useAmendmentApplicationQuery = (originalPermitId?: string) => {
-  const [amendmentApplication, setAmendmentApplication] = useState<
-    Nullable<Permit>
-  >(undefined);
+  const [amendmentApplication, setAmendmentApplication] =
+    useState<Nullable<Permit>>(undefined);
 
   const isIdInvalid = !originalPermitId;
   const query = useQuery({

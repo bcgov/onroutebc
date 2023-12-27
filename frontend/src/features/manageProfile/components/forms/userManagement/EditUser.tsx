@@ -16,7 +16,10 @@ import { PROFILE_ROUTES } from "../../../../../routes/constants";
 import { BC_COLOURS } from "../../../../../themes/bcGovStyles";
 import { updateUserInfo } from "../../../apiManager/manageProfileAPI";
 import { BCEID_PROFILE_TABS } from "../../../types/manageProfile.d";
-import { BCEID_AUTH_GROUP, ReadCompanyUser } from "../../../types/userManagement.d";
+import {
+  BCEID_AUTH_GROUP,
+  ReadCompanyUser,
+} from "../../../types/userManagement.d";
 import UserGroupsAndPermissionsModal from "../../user-management/UserGroupsAndPermissionsModal";
 import { ReusableUserInfoForm } from "../common/ReusableUserInfoForm";
 import "../myInfo/MyInfoForm.scss";

@@ -14,7 +14,11 @@ import { Loading } from "../../../../common/pages/Loading";
 import { ErrorFallback } from "../../../../common/pages/ErrorFallback";
 import { useApplicationDetailsQuery } from "../../hooks/hooks";
 import { PERMIT_STATUSES } from "../../types/PermitStatus";
-import { APPLICATION_STEPS, ApplicationStep, ERROR_ROUTES } from "../../../../routes/constants";
+import {
+  APPLICATION_STEPS,
+  ApplicationStep,
+  ERROR_ROUTES,
+} from "../../../../routes/constants";
 
 const displayHeaderText = (stepKey: ApplicationStep) => {
   switch (stepKey) {
@@ -46,24 +50,29 @@ export const ApplicationStepPage = ({
     isInvalidRoute,
   } = useApplicationDetailsQuery(applicationStep, permitId);
 
-  const contextData = useMemo(() => ({
-    applicationData,
-    setApplicationData,
-  }), [applicationData, setApplicationData]);
+  const contextData = useMemo(
+    () => ({
+      applicationData,
+      setApplicationData,
+    }),
+    [applicationData, setApplicationData],
+  );
 
-  const isLoading = shouldEnableQuery && (typeof applicationData === "undefined");
+  const isLoading = shouldEnableQuery && typeof applicationData === "undefined";
 
-  const isInvalidApplication = 
-    ((typeof applicationData !== "undefined") && !applicationData)
-    || isInvalidRoute;
+  const isInvalidApplication =
+    (typeof applicationData !== "undefined" && !applicationData) ||
+    isInvalidRoute;
 
   // Permit must be an application in order to allow application-related steps
   // (ie. empty status for new application, or in progress or incomplete payment status)
   const isValidApplicationStatus = () => {
-    return !isInvalidApplication && 
-      (!applicationData?.permitStatus
-        || applicationData?.permitStatus === PERMIT_STATUSES.IN_PROGRESS
-        || applicationData?.permitStatus === PERMIT_STATUSES.WAITING_PAYMENT);
+    return (
+      !isInvalidApplication &&
+      (!applicationData?.permitStatus ||
+        applicationData?.permitStatus === PERMIT_STATUSES.IN_PROGRESS ||
+        applicationData?.permitStatus === PERMIT_STATUSES.WAITING_PAYMENT)
+    );
   };
 
   const renderApplicationStep = () => {
@@ -99,9 +108,7 @@ export const ApplicationStepPage = ({
   }
 
   return (
-    <ApplicationContext.Provider
-      value={contextData}
-    >
+    <ApplicationContext.Provider value={contextData}>
       <Box
         className="layout-box"
         sx={{
@@ -109,9 +116,7 @@ export const ApplicationStepPage = ({
           borderColor: "divider",
         }}
       >
-        <Banner
-          bannerText={displayHeaderText(applicationStep)}
-        />
+        <Banner bannerText={displayHeaderText(applicationStep)} />
       </Box>
 
       {renderApplicationStep()}

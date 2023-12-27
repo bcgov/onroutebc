@@ -39,7 +39,9 @@ export const mapToAmendRequestData = (
 
   const reqData = {
     // Zero-dollar amounts are considered "Purchases", as documented
-    transactionTypeId: isRefundZeroAmount ? TRANSACTION_TYPES.P : TRANSACTION_TYPES.R,
+    transactionTypeId: isRefundZeroAmount
+      ? TRANSACTION_TYPES.P
+      : TRANSACTION_TYPES.R,
     paymentMethodTypeCode: getRefundMethodType(),
     applicationDetails: [
       {
@@ -61,7 +63,9 @@ export const mapToAmendRequestData = (
     pgPaymentMethod: refundData.refundOnlineMethod
       ? refundData.refundOnlineMethod
       : undefined,
-    pgApproved: reqData.paymentMethodTypeCode === PAYMENT_METHOD_TYPE_CODE.WEB
-      ? 1 : undefined,
+    pgApproved:
+      reqData.paymentMethodTypeCode === PAYMENT_METHOD_TYPE_CODE.WEB
+        ? 1
+        : undefined,
   };
 };

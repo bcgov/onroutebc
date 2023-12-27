@@ -72,10 +72,9 @@ describe("Permit Details duration", () => {
     await selectDurationOption(user, durationText);
 
     // Assert
-    const expectedExpiry = getExpiryDate(
-      dayjs(currentDt), 
-      durationDays
-    ).format(DATE_FORMATS.SHORT);
+    const expectedExpiry = getExpiryDate(dayjs(currentDt), durationDays).format(
+      DATE_FORMATS.SHORT,
+    );
 
     expect(await expiryDateElement(expectedExpiry)).toBeVisible();
   });
@@ -111,7 +110,8 @@ describe("Permit Details start date", () => {
     await openStartDateSelect(user);
 
     // Assert
-    const shouldUseNextMonth = (maxFutureMonth > thisMonth) || (maxFutureYear > thisYear);
+    const shouldUseNextMonth =
+      maxFutureMonth > thisMonth || maxFutureYear > thisYear;
     if (shouldUseNextMonth) {
       await selectNextMonth(user);
 
@@ -143,7 +143,8 @@ describe("Permit Details start date", () => {
     await openStartDateSelect(user);
 
     // Assert
-    const shouldUseNextMonth = (maxFutureMonth > thisMonth) || (maxFutureYear > thisYear);
+    const shouldUseNextMonth =
+      maxFutureMonth > thisMonth || maxFutureYear > thisYear;
     if (shouldUseNextMonth) {
       // First find this month's active days
       const thisMonthDates = await dateOptions();

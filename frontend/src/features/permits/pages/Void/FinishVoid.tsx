@@ -28,11 +28,12 @@ export const FinishVoid = ({
 
   const transactionHistory = permitHistoryQuery.isInitialLoading
     ? []
-    : permitHistory.filter(history =>
-        isValidTransaction(history.paymentMethodTypeCode, history.pgApproved));
+    : permitHistory.filter((history) =>
+        isValidTransaction(history.paymentMethodTypeCode, history.pgApproved),
+      );
 
-  const amountToRefund = !permit 
-    ? 0 
+  const amountToRefund = !permit
+    ? 0
     : -1 * calculateAmountForVoid(permit, transactionHistory);
 
   const { mutation: voidPermitMutation, voidResults } = useVoidPermit();

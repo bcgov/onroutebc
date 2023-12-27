@@ -72,8 +72,9 @@ const isAmendableByUser = (authGroup?: string) => {
   );
 };
 
-const searchRoute = `${IDIR_ROUTES.SEARCH_RESULTS}?searchEntity=${SEARCH_ENTITIES.PERMIT}`
-  + `&searchByFilter=${SEARCH_BY_FILTERS.PERMIT_NUMBER}&searchValue=`;
+const searchRoute =
+  `${IDIR_ROUTES.SEARCH_RESULTS}?searchEntity=${SEARCH_ENTITIES.PERMIT}` +
+  `&searchByFilter=${SEARCH_BY_FILTERS.PERMIT_NUMBER}&searchValue=`;
 
 export const AmendPermit = () => {
   const { permitId } = useParams();
@@ -226,9 +227,7 @@ export const AmendPermit = () => {
           borderColor: "divider",
         }}
       >
-        <Banner
-          bannerText={displayHeaderText(step.key as AmendPermitStep)}
-        />
+        <Banner bannerText={displayHeaderText(step.key as AmendPermitStep)} />
       </Box>
 
       {step}

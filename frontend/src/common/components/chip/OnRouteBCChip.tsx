@@ -14,11 +14,7 @@ export const OnRouteBCChip = ({
   const additionalClassName = getDefaultRequiredVal("", className);
 
   return (
-    <span
-      className={`onroutebc-chip ${additionalClassName}`}
-    >
-      {message}
-    </span>
+    <span className={`onroutebc-chip ${additionalClassName}`}>{message}</span>
   );
 };
 

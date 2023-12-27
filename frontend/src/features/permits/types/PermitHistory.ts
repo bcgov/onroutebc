@@ -1,7 +1,7 @@
 import { TransactionType } from "./payment";
 import { RequiredOrNull } from "../../../common/types/common";
-import { 
-  PaymentCardTypeCode, 
+import {
+  PaymentCardTypeCode,
   PaymentMethodTypeCode,
   PaymentGatewayMethod,
 } from "../../../common/types/paymentMethods";

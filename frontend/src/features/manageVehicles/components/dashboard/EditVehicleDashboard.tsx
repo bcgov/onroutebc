@@ -32,11 +32,11 @@ export const EditVehicleDashboard = React.memo(
       editVehicleMode === VEHICLE_TYPES_ENUM.POWER_UNIT;
     const isEditTrailer = (editVehicleMode: VEHICLE_TYPES_ENUM) =>
       editVehicleMode === VEHICLE_TYPES_ENUM.TRAILER;
-    
+
     const { vehicle: vehicleToEdit } = useVehicleByIdQuery(
       companyId,
       isEditPowerUnit(editVehicleMode) ? "powerUnit" : "trailer",
-      vehicleId
+      vehicleId,
     );
 
     const backToVehicleInventory = () => {
@@ -125,9 +125,7 @@ export const EditVehicleDashboard = React.memo(
         </Box>
 
         <Box className="dashboard-page__info-banner layout-box">
-          <InfoBcGovBanner
-            msg={BANNER_MESSAGES.ALL_FIELDS_MANDATORY}
-          />
+          <InfoBcGovBanner msg={BANNER_MESSAGES.ALL_FIELDS_MANDATORY} />
         </Box>
 
         <Box className="dashboard-page__form layout-box">
@@ -138,14 +136,14 @@ export const EditVehicleDashboard = React.memo(
               "Trailer Details"}
           </Typography>
           {isEditPowerUnit(editVehicleMode) ? (
-            <PowerUnitForm 
-              powerUnit={vehicleToEdit as PowerUnit} 
-              companyId={companyId} 
+            <PowerUnitForm
+              powerUnit={vehicleToEdit as PowerUnit}
+              companyId={companyId}
             />
           ) : (
-            <TrailerForm 
-              trailer={vehicleToEdit as Trailer} 
-              companyId={companyId} 
+            <TrailerForm
+              trailer={vehicleToEdit as Trailer}
+              companyId={companyId}
             />
           )}
         </Box>

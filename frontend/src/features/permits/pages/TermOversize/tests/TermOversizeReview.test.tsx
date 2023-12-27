@@ -267,7 +267,7 @@ describe("Review and Confirm Application Details", () => {
       );
 
       const expiryDateStr = dayjsToLocalStr(expiryDate, DATE_FORMATS.SHORT);
-      
+
       expect(await permitStartDate()).toHaveTextContent(startDateStr);
       expect(await permitDuration()).toHaveTextContent(`${duration} Days`);
       expect(await permitExpiryDate()).toHaveTextContent(expiryDateStr);

@@ -135,7 +135,7 @@ export const SearchFilter = () => {
     const searchFields = Object.entries(data)
       .map(([key, value]) => `${key}=${value}`)
       .join("&");
-    
+
     navigate(`${IDIR_ROUTES.SEARCH_RESULTS}?${searchFields}`);
   };
 
