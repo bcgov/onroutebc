@@ -48,7 +48,14 @@ export const AppRoutes = () => {
       <Route path="*" element={<UniversalUnexpected />} />
 
       {/* IDIR Routes */}
-      <Route element={<IDIRProtectedRoutes requiredRole={ROLES.STAFF} requiredAuthGroup="SYSADMIN" />}>
+      <Route
+        element={
+          <IDIRProtectedRoutes
+            requiredRole={ROLES.STAFF}
+            requiredAuthGroup="SYSADMIN"
+          />
+        }
+      >
         <Route path={routes.IDIR_ROUTES.WELCOME} element={<IDIRWelcome />} />
         <Route
           path={routes.IDIR_ROUTES.SEARCH_RESULTS}
