@@ -10,33 +10,21 @@ jobs:
     if: ${{github.action == 'in_progress'}}
     runs-on: ubuntu-22.04
     steps:
-      - uses: jdcargile/ms-teams-notification@v1.3
+      - uses: simbo/msteams-message-card-action@latest
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          ms-teams-webhook-uri: ${{ vars.MS_TEAMS_WEBHOOK_URI }}
-          notification-summary: |
-            Event: ${{github.event_name}}
-            Workflow:  ${{toJson(github.event.workflow)}}
-            Action: ${{github.action}}
-            Workflow_Run: ${{toJson(github.event.workflow_run)}}
-            PR: ${{github.event.workflow_run.pull_requests[0].number}}
-            Message: ${{github.event.workflow_run.head_commit.message}}
-          notification-color: 17a2b8
-          timezone: America/Vancouver
-  notify-teams-completed:
-    if: ${{github.action == 'completed'}}
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: jdcargile/ms-teams-notification@v1.3
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          ms-teams-webhook-uri: ${{ vars.MS_TEAMS_WEBHOOK_URI }}
-          notification-summary: |
-            Event: ${{github.event_name}}
-            Workflow:  ${{toJson(github.event.workflow)}}
-            Action: ${{github.action}}
-            Workflow_Run: ${{toJson(github.event.workflow_run)}}
-            PR: ${{github.event.workflow_run.pull_requests[0].number}}
-            Message: ${{github.event.workflow_run.head_commit.message}}
-          notification-color: 28a745
-          timezone: America/Vancouver
+          webhook: ${{ vars.MS_TEAMS_WEBHOOK_URI }}
+          title: ${{github.event.workflow_run.pull_requests[0].number}}
+          message: ${{github.event.workflow_run.head_commit.message}} 
+          color: ff69b4
+          buttons: |
+            PR ${{github.event.workflow_run.pull_requests[0].number}} https://github.com/bcgov/onroutebc/pull/${{github.event.workflow_run.pull_requests[0].number}}
+            Diff https://github.com/bcgov/onroutebc/pull/${{github.event.workflow_run.pull_requests[0].number}}/files
+          sections: |
+            -
+              activityTitle: ${{github.event.workflow_run.head_commit.committer.name}}
+              activitySubtitle: ${{github.event.workflow_run.head_commit.committer.date}}
+              activityImage: https://github.com${{github.event.workflow_run.head_commit.committer.username}}.png
+              facts:
+                - name: "Pull Requests:"
+                  value: ${{toJson(github.event.workflow_run.pull_requests)}}
+              text: ${{github.event.workflow_run.head_commit.message}} 
