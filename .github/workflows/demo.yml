@@ -20,10 +20,11 @@ jobs:
     name: Uninstall (demo)
     runs-on: ubuntu-22.04
     steps:
-      - run: |
-        oc login --token=${{ secrets.oc_token }} --server=${{ vars.oc_server }}
-        oc project ${{ vars.OC_NAMESPACE }} # Safeguard!
-        helm uninstall onroutebc-demo
+      - name: uninstall
+        run: |
+          oc login --token=${{ secrets.oc_token }} --server=${{ vars.oc_server }}
+          oc project ${{ vars.OC_NAMESPACE }} # Safeguard!
+          helm uninstall onroutebc-demo
   deploy-demo:
     name: Deploys (demo)
     uses: ./.github/workflows/deploy.yml
