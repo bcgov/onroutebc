@@ -7,7 +7,6 @@ on:
       - completed  
 jobs:
   notify-teams-in-progress:
-    if: ${{github.action == 'in_progress'}}
     runs-on: ubuntu-22.04
     steps:
       - uses: simbo/msteams-message-card-action@latest
@@ -25,8 +24,14 @@ jobs:
               activitySubtitle: ${{github.event.workflow_run.head_commit.committer.date}}
               activityImage: https://github.com${{github.event.workflow_run.head_commit.committer.username}}.png
               facts:
-                - name: "Pull Requests:"
+                - name: "Github"
+                  value: ${{toJsongithub}}
+                - name: "Action"
+                  value: ${{github.action}}
+                - name: "Pull Requests"
                   value: ${{toJson(github.event.workflow_run.pull_requests)}}
+                - name: "Event"
+                  value: ${{toJson(github.event)}}
               text: ${{github.event.workflow_run.head_commit.message}} 
   notify-teams-completed:
     if: ${{github.action == 'completed'}}
