@@ -110,6 +110,7 @@ export class TpsPermitService {
           await this.permitRepository.update(
             {
               tpsPermitNumber: tpsPermit.permitNumber,
+              revision: tpsPermit.revision - 1,
             },
             {
               documentId: document.documentId,
@@ -206,6 +207,7 @@ export class TpsPermitService {
           await this.permitRepository.update(
             {
               tpsPermitNumber: tpsPermit.permitNumber,
+              revision: tpsPermit.revision - 1,
             },
             {
               documentId: document.documentId,

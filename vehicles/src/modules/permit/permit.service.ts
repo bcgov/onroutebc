@@ -9,7 +9,7 @@ import {
 import { Mapper } from '@automapper/core';
 import { InjectMapper } from '@automapper/nestjs';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Like, Repository } from 'typeorm';
+import { Brackets, DataSource, Like, Repository } from 'typeorm';
 import { CreatePermitDto } from './dto/request/create-permit.dto';
 import { ReadPermitDto } from './dto/response/read-permit.dto';
 import { Permit } from './entities/permit.entity';
@@ -277,10 +277,15 @@ export class PermitService {
       .take(pageOptionsDto.take);
     if (searchValue) {
       permits.andWhere(
-        `JSON_VALUE(permitData.permitData, '$.vehicleDetails.plate') like '%${searchValue}%'`,
-      );
-      permits.orWhere(
-        `JSON_VALUE(permitData.permitData, '$.vehicleDetails.unitNumber') like '%${searchValue}%'`,
+        new Brackets((query) => {
+          query
+            .where(
+              `JSON_VALUE(permitData.permitData, '$.vehicleDetails.plate') like '%${searchValue}%'`,
+            )
+            .orWhere(
+              `JSON_VALUE(permitData.permitData, '$.vehicleDetails.unitNumber') like '%${searchValue}%'`,
+            );
+        }),
       );
     }
     if (sortDto.length > 0) {
