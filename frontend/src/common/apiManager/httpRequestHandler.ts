@@ -1,10 +1,23 @@
 import axios from "axios";
+import { v4 as uuidv4 } from "uuid";
 import {
   applyWhenNotNullable,
   getDefaultNullableVal,
   getDefaultRequiredVal,
 } from "../helpers/util";
 import { Nullable, RequiredOrNull } from "../types/common";
+
+// Request interceptor to add a correlationId to the header.
+axios.interceptors.request.use(
+  function (config) {
+    const { headers } = config;
+    headers.set("x-correlation-id", uuidv4());
+    return config;
+  },
+  function (error) {
+    console.log("Unable to make a request:", error);
+  },
+);
 
 // Add environment variables to get the full key.
 // Full key structure: oidc.user:${AUTH0_ISSUER_URL}:${AUTH0_AUDIENCE}
@@ -135,12 +148,13 @@ export const httpGETRequestStream = (url: string) => {
   return fetch(url, {
     headers: {
       Authorization: getAccessToken(),
+      "x-correlation-id": uuidv4(),
     },
   });
 };
 
 /**
- * A HTTP GET Request for streams
+ * A HTTP POST Request for streams
  * @param url The URL of the resource.
  * @returns A Promise<Response> with the response from the API.
  */
@@ -151,6 +165,7 @@ export const httpPOSTRequestStream = (url: string, data: any) => {
     headers: {
       Authorization: getAccessToken(),
       "Content-Type": "application/json",
+      "x-correlation-id": uuidv4(),
     },
   });
 };
