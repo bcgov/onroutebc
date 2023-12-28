@@ -19,7 +19,6 @@ import {
 import {
   getCompanyIdFromSession,
   httpGETRequest,
-  getUserGuidFromSession,
   httpPUTRequest,
   httpPOSTRequest,
   httpGETRequestStream,
