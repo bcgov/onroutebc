@@ -2,9 +2,6 @@ name: Notifications
 on:
   workflow_run: 
     workflows: [PR,Merge]
-    types:
-      - in_progess
-      - completed  
 jobs:
   notify-teams-in-progress:
     if: ${{github.action != 'completed'}}
