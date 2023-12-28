@@ -40,7 +40,12 @@ export const BasePermitList = ({
     pageSize: 10,
   });
   const [globalFilter, setGlobalFilter] = useState<string>("");
-  const [sorting, setSorting] = useState<MRT_SortingState>([]);
+  const [sorting, setSorting] = useState<MRT_SortingState>([
+    {
+      id: "startDate",
+      desc: true,
+    },
+  ]);
 
   const permitsQuery = useQuery({
     queryKey: [
@@ -74,7 +79,7 @@ export const BasePermitList = ({
     retry: 1,
   });
 
-  const { data, isError, isLoading } = permitsQuery;
+  const { data, isError, isLoading, isRefetching } = permitsQuery;
 
   const table = useMaterialReactTable({
     ...defaultTableOptions,
@@ -83,16 +88,16 @@ export const BasePermitList = ({
     enableRowSelection: false,
     initialState: {
       ...defaultTableInitialStateOptions,
-      sorting: [{ id: "permitData.startDate", desc: true }],
+      sorting: [{ id: "startDate", desc: true }],
     },
     state: {
       ...defaultTableStateOptions,
       showAlertBanner: isError,
-      showProgressBars: isLoading,
       columnVisibility: { applicationId: true },
-      isLoading: isLoading,
+      isLoading: isLoading || isRefetching,
       pagination,
       globalFilter,
+      sorting,
     },
     renderTopToolbar: useCallback(
       ({ table }: { table: MRT_TableInstance<Permit> }) => (
