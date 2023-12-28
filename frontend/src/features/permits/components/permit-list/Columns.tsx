@@ -16,7 +16,7 @@ export const PermitsColumnDefinition: MRT_ColumnDef<Permit>[] = [
     enableSorting: true,
     size: 500,
     accessorFn: (row) => row.permitNumber,
-    Cell: (props: { row: any; renderedCellValue: any }) => {
+    Cell: (props: { row: any; cell: any }) => {
       return (
         <>
           <Link
@@ -24,7 +24,7 @@ export const PermitsColumnDefinition: MRT_ColumnDef<Permit>[] = [
             variant="body2"
             onClick={() => viewPermitPdf(props.row.original.permitId)}
           >
-            {props.renderedCellValue}
+            {props.cell.getValue()}
           </Link>
           <PermitChip permitStatus={props.row.original.permitStatus} />
         </>
