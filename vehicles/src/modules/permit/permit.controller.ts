@@ -83,6 +83,8 @@ export class PermitController {
     return this.permitService.findPermitHistory(originalId);
   }
 
+  // Comment for rebuilding - Remove this comment
+
   /**
    * Get Permits of Logged in user
    * @Query companyId Company id of logged in user
