@@ -74,7 +74,7 @@ export const BasePermitList = ({
     retry: 1,
   });
 
-  const { data, isError, isLoading } = permitsQuery;
+  const { data, isError, isLoading, isRefetching } = permitsQuery;
 
   const table = useMaterialReactTable({
     ...defaultTableOptions,
@@ -83,14 +83,14 @@ export const BasePermitList = ({
     enableRowSelection: false,
     initialState: {
       ...defaultTableInitialStateOptions,
-      sorting: [{ id: "permitData.startDate", desc: true }],
+      sorting: [{ id: "startDate", desc: true }],
     },
     state: {
       ...defaultTableStateOptions,
       showAlertBanner: isError,
-      showProgressBars: isLoading,
+      showProgressBars: isRefetching,
       columnVisibility: { applicationId: true },
-      isLoading: isLoading,
+      isLoading,
       pagination,
       globalFilter,
       sorting,
