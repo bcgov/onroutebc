@@ -18,6 +18,7 @@ concurrency:
 jobs:
   uninstall-demo:
     name: Uninstall (demo)
+    environment: test
     runs-on: ubuntu-22.04
     steps:
       - name: uninstall
