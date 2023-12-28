@@ -83,7 +83,7 @@ export const BasePermitList = ({
     enableRowSelection: false,
     initialState: {
       ...defaultTableInitialStateOptions,
-      // sorting: [{ id: "permitData.startDate", desc: true }],
+      sorting: [{ id: "permitData.startDate", desc: true }],
     },
     state: {
       ...defaultTableStateOptions,
@@ -93,6 +93,7 @@ export const BasePermitList = ({
       isLoading: isLoading,
       pagination,
       globalFilter,
+      sorting,
     },
     renderTopToolbar: useCallback(
       ({ table }: { table: MRT_TableInstance<Permit> }) => (
