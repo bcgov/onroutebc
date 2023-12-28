@@ -11,7 +11,7 @@ import { Nullable, RequiredOrNull } from "../types/common";
 axios.interceptors.request.use(
   function (config) {
     const { headers } = config;
-    headers.set("X-correlation-id", uuidv4());
+    headers.set("X-Kcorrelation-id", uuidv4());
     return config;
   },
   function (error) {
@@ -146,7 +146,7 @@ export const httpGETRequest = (url: string) => {
  * @returns A Promise<Response> with the response from the API.
  */
 export const httpGETRequestStream = (url: string) => {
-  return axios(url, {
+  return fetch(url, {
     headers: {
       Authorization: getAccessToken(),
     },
@@ -159,7 +159,7 @@ export const httpGETRequestStream = (url: string) => {
  * @returns A Promise<Response> with the response from the API.
  */
 export const httpPOSTRequestStream = (url: string, data: any) => {
-  return axios.post(url, {
+  return fetch(url, {
     body: JSON.stringify(data),
     headers: {
       Authorization: getAccessToken(),
