@@ -24,6 +24,4 @@ sqlcmd -C -U ${ORBC_USER} -P "${ORBC_PASS}" -S ${ORBC_SERVER} -d ${ORBC_DATABASE
 sqlcmd -C -U ${ORBC_USER} -P "${ORBC_PASS}" -S ${ORBC_SERVER} -d ${ORBC_DATABASE} -i ${SCRIPT_DIR}/sampledata/dbo.ORBC_POWER_UNIT.Table.sql
 sqlcmd -C -U ${ORBC_USER} -P "${ORBC_PASS}" -S ${ORBC_SERVER} -d ${ORBC_DATABASE} -i ${SCRIPT_DIR}/sampledata/dbo.ORBC_TRAILER.Table.sql
 
-${SCRIPT_DIR}/utility/refresh-sample-idir-users.sh -u ${ORBC_USER} -p "${ORBC_PASS}" -s ${ORBC_SERVER} -d ${ORBC_DATABASE}
-
 echo "Finished loading sample data"
