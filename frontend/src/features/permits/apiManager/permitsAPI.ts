@@ -93,13 +93,9 @@ export const getApplicationsInProgress = async (): Promise<
 > => {
   try {
     const companyId = getCompanyIdFromSession();
-    const userGuid = getUserGuidFromSession();
     let applicationsUrl = `${APPLICATIONS_API_ROUTES.IN_PROGRESS}`;
     if (companyId) {
       applicationsUrl += `&companyId=${companyId}`;
-    }
-    if (userGuid) {
-      applicationsUrl += `&userGUID=${userGuid}`;
     }
 
     const response = await httpGETRequest(applicationsUrl);
