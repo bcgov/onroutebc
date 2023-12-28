@@ -52,7 +52,7 @@ jobs:
               activitySubtitle: ${{github.event.workflow_run.head_commit.committer.date}}
               activityImage: https://github.com${{github.event.workflow_run.head_commit.committer.username}}.png
               facts:
-                - name: "Github"
+                - name: "Github "
                   value: ${{toJson(github)}}
                 - name: "Action"
                   value: ${{github.action}}
