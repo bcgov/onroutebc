@@ -26,7 +26,6 @@ jobs:
           oc login --token=${{ secrets.oc_token }} --server=${{ vars.oc_server }}
           oc project ${{ vars.OC_NAMESPACE }} # Safeguard!
           helm uninstall onroutebc-demo
-          sleep 10
   deploy-demo:
     name: Deploys (demo)
     uses: ./.github/workflows/deploy.yml
