@@ -4,6 +4,7 @@ import { useCallback, useContext, useEffect, useState } from "react";
 
 import {
   MRT_GlobalFilterTextField,
+  MRT_LinearProgressBar,
   MRT_PaginationState,
   MRT_Row,
   MRT_SortingState,
@@ -105,6 +106,7 @@ export const BasePermitList = ({
           }}
         >
           <MRT_GlobalFilterTextField table={table} />
+          <MRT_LinearProgressBar isTopToolbar table={table} />
         </Box>
       ),
       [],
@@ -120,7 +122,6 @@ export const BasePermitList = ({
     onPaginationChange: setPagination,
     enablePagination: true,
     enableBottomToolbar: true,
-    enableTopToolbar: true,
     renderEmptyRowsFallback: () => <NoRecordsFound />,
     renderRowActions: useCallback((props: { row: MRT_Row<Permit> }) => {
       return (
