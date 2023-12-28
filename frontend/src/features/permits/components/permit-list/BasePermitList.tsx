@@ -120,6 +120,7 @@ export const BasePermitList = ({
     onPaginationChange: setPagination,
     enablePagination: true,
     enableBottomToolbar: true,
+    enableTopToolbar: true,
     renderEmptyRowsFallback: () => <NoRecordsFound />,
     renderRowActions: useCallback((props: { row: MRT_Row<Permit> }) => {
       return (
