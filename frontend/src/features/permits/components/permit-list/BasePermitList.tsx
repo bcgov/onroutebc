@@ -4,7 +4,6 @@ import { useCallback, useContext, useEffect, useState } from "react";
 
 import {
   MRT_GlobalFilterTextField,
-  MRT_LinearProgressBar,
   MRT_PaginationState,
   MRT_Row,
   MRT_SortingState,
@@ -41,7 +40,12 @@ export const BasePermitList = ({
     pageSize: 10,
   });
   const [globalFilter, setGlobalFilter] = useState<string>("");
-  const [sorting, setSorting] = useState<MRT_SortingState>([]);
+  const [sorting, setSorting] = useState<MRT_SortingState>([
+    {
+      id: "startDate",
+      desc: true,
+    },
+  ]);
 
   const permitsQuery = useQuery({
     queryKey: [
@@ -89,9 +93,8 @@ export const BasePermitList = ({
     state: {
       ...defaultTableStateOptions,
       showAlertBanner: isError,
-      showProgressBars: isRefetching,
       columnVisibility: { applicationId: true },
-      isLoading,
+      isLoading: isLoading || isRefetching,
       pagination,
       globalFilter,
       sorting,
@@ -106,7 +109,6 @@ export const BasePermitList = ({
           }}
         >
           <MRT_GlobalFilterTextField table={table} />
-          <MRT_LinearProgressBar isTopToolbar table={table} />
         </Box>
       ),
       [],
