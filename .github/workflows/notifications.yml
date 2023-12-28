@@ -46,6 +46,6 @@ jobs:
               facts:
                 - name: "Pull Requests"
                   value: ${{toJSON(github.event.workflow_run.pull_requests)}}
-                - name: "Event"
+                - name: "Event "
                   value: ${{toJSON(github.event)}}
               text: completed
