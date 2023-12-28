@@ -25,13 +25,13 @@ jobs:
               activityImage: https://github.com${{github.event.workflow_run.head_commit.committer.username}}.png
               facts:
                 - name: "Github"
-                  value: ${{toJson(github)}}
+                  value: ${{toJSON(github)}}
                 - name: "Action"
                   value: ${{github.action}}
                 - name: "Pull Requests"
-                  value: ${{toJson(github.event.workflow_run.pull_requests)}}
+                  value: ${{toJSON(github.event.workflow_run.pull_requests)}}
                 - name: "Event"
-                  value: ${{toJson(github.event)}}
+                  value: ${{toJSON(github.event)}}
               text: ${{github.event.workflow_run.head_commit.message}} 
   notify-teams-completed:
     if: ${{github.action == 'completed'}}
@@ -53,11 +53,11 @@ jobs:
               activityImage: https://github.com${{github.event.workflow_run.head_commit.committer.username}}.png
               facts:
                 - name: "Github "
-                  value: ${{toJson(github)}}
+                  value: ${{toJSON(github)}}
                 - name: "Action"
                   value: ${{github.action}}
                 - name: "Pull Requests"
-                  value: ${{toJson(github.event.workflow_run.pull_requests)}}
+                  value: ${{toJSON(github.event.workflow_run.pull_requests)}}
                 - name: "Event"
-                  value: ${{toJson(github.event)}}
+                  value: ${{toJSON(github.event)}}
               text: ${{github.event.workflow_run.head_commit.message}} 
