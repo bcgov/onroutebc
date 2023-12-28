@@ -30,6 +30,7 @@ jobs:
   deploy-demo:
     name: Deploys (demo)
     uses: ./.github/workflows/deploy.yml
+    needs: uninstall-demo
     secrets: inherit
     with:
       environment: ${{inputs.environment}} #test env -> test database
