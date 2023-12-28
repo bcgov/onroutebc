@@ -11,7 +11,7 @@ import { Nullable, RequiredOrNull } from "../types/common";
 axios.interceptors.request.use(
   function (config) {
     const { headers } = config;
-    headers.set("X-Kcorrelation-id", uuidv4());
+    headers.set("x-correlation-id", uuidv4());
     return config;
   },
   function (error) {
