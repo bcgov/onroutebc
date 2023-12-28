@@ -21,8 +21,6 @@ jobs:
             Diff https://github.com/bcgov/onroutebc/pull/${{github.event.workflow_run.pull_requests[0].number}}/files
           sections: |
             -
-              activitySubtitle: ${{github.event.workflow_run.head_commit.timestamp}}
-              activityImage: https://github.com${{github.event.workflow_run.head_commit.committer.username}}.png
               text: ${{github.event.workflow_run.status}}
   notify-teams-completed:
     if: ${{github.action == 'completed'}}
@@ -39,6 +37,4 @@ jobs:
             Diff https://github.com/bcgov/onroutebc/pull/${{github.event.workflow_run.pull_requests[0].number}}/files
           sections: |
             -
-              activitySubtitle: ${{github.event.workflow_run.head_commit.timestamp}}
-              activityImage: https://github.com${{github.event.workflow_run.head_commit.committer.username}}.png
               text: ${{github.event.workflow_run.status}}
