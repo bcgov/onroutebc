@@ -14,14 +14,14 @@ jobs:
           message: "${{github.event.workflow_run.head_commit.message}}" 
           color: ff69b4
           buttons: |
-            PR ${{github.event.workflow_run.pull_requests[0].number}} https://github.com/bcgov/onroutebc/pull/${{github.event.workflow_run.pull_requests[0].number}}
+            Pull Request ${{github.event.workflow_run.pull_requests[0].number}} https://github.com/bcgov/onroutebc/pull/${{github.event.workflow_run.pull_requests[0].number}}
             Diff https://github.com/bcgov/onroutebc/pull/${{github.event.workflow_run.pull_requests[0].number}}/files
           sections: |
             -
               activity:
                 title: ${{github.event.workflow_run.head_commit.committer.name}}
                 subtitle: ${{github.event.workflow_run.head_commit.timestamp}}
-                image: https://github.com${{github.event.workflow_run.head_commit.committer.username}}.png
+                image: ${{github.event.workflow_run.head_repository.owner.avatar_url}}
           text: |
             status: ${{github.event.workflow_run.status}}
   notify-teams-completed:
@@ -35,13 +35,13 @@ jobs:
           message: "${{github.event.workflow_run.head_commit.message}}" 
           color: ff69b4
           buttons: |
-            PR ${{github.event.workflow_run.pull_requests[0].number}} https://github.com/bcgov/onroutebc/pull/${{github.event.workflow_run.pull_requests[0].number}}
+            Pull Request ${{github.event.workflow_run.pull_requests[0].number}} https://github.com/bcgov/onroutebc/pull/${{github.event.workflow_run.pull_requests[0].number}}
             Diff https://github.com/bcgov/onroutebc/pull/${{github.event.workflow_run.pull_requests[0].number}}/files
           sections: |
             -
               activity:
                 title: ${{github.event.workflow_run.head_commit.committer.name}}
                 subtitle: ${{github.event.workflow_run.head_commit.timestamp}}
-                image: https://github.com${{github.event.workflow_run.head_commit.committer.username}}.png
+                image: ${{github.event.workflow_run.head_repository.owner.avatar_url}}
               text: |
                 status: ${{github.event.workflow_run.status}}
