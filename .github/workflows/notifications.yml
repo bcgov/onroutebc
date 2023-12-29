@@ -4,7 +4,7 @@ on:
     workflows: [PR,Merge]
 jobs:
   notify-teams-in-progress:
-    if: ${{github.event.workflow_run.status != 'completed'}
+    if: ${{github.event.workflow_run.status != 'completed'}}
     runs-on: ubuntu-22.04
     steps:
       - uses: simbo/msteams-message-card-action@latest
@@ -25,7 +25,7 @@ jobs:
           text: |
             status: ${{github.event.workflow_run.status}}
   notify-teams-completed:
-    if: ${{github.event.workflow_run.status == 'completed'}
+    if: ${{github.event.workflow_run.status == 'completed'}}
     runs-on: ubuntu-22.04
     steps:
       - uses: simbo/msteams-message-card-action@latest
