@@ -11,6 +11,7 @@ export class AppController {
   @Public()
   @Get()
   getHello(): string {
+  console.log('process.env.VEHICLES_API_TYPEORM_LOG_LEVEL',process.env.VEHICLES_API_TYPEORM_LOG_LEVEL);
     return this.appService.getHello();
   }
 }
