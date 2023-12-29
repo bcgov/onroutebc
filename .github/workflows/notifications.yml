@@ -3,6 +3,7 @@ on:
   workflow_run: 
     workflows: [PR,Merge]
     types:
+      - requested
       - in_progess
       - completed
 jobs:
