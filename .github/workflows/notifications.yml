@@ -24,7 +24,6 @@ jobs:
                 image: https://github.com${{github.event.workflow_run.head_commit.committer.username}}.png
           text: |
             status: ${{github.event.workflow_run.status}}
-            action: ${{github.action}}
   notify-teams-completed:
     if: ${{github.event.workflow_run.status == 'completed'}
     runs-on: ubuntu-22.04
@@ -46,4 +45,3 @@ jobs:
                 image: https://github.com${{github.event.workflow_run.head_commit.committer.username}}.png
               text: |
                 status: ${{github.event.workflow_run.status}}
-                action: ${{github.action}}
