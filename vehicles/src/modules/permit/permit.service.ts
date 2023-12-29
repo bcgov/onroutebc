@@ -251,6 +251,8 @@ export class PermitService {
     searchValue?: string,
     sortDto?: SortDto[],
   ): Promise<PaginationDto<ReadPermitDto>> {
+    console.log('pagination ',pageOptionsDto)
+    console.log('pagination ship ',pageOptionsDto.skip)
     const permits = this.permitRepository
       .createQueryBuilder('permit')
       .innerJoinAndSelect('permit.permitData', 'permitData')
@@ -273,8 +275,8 @@ export class PermitService {
           expiryDate: new Date(),
         },
       )
-      .skip(pageOptionsDto.skip)
-      .take(pageOptionsDto.take);
+      .skip(pageOptionsDto.getSkip())
+      .take(pageOptionsDto.take)
     if (searchValue) {
       permits.andWhere(
         new Brackets((query) => {
@@ -337,12 +339,9 @@ export class PermitService {
         }
       });
     }
-
     const totalItems = await permits.getCount();
     const { entities } = await permits.getRawAndEntities();
-
     const pageMetaDto = new PageMetaDto({ totalItems, pageOptionsDto });
-
     const readPermitDto: ReadPermitDto[] = await this.classMapper.mapArrayAsync(
       entities,
       Permit,
