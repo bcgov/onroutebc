@@ -2,6 +2,9 @@ name: Notifications
 on:
   workflow_run: 
     workflows: [PR,Merge]
+    types:
+      - in_progess
+      - completed
 jobs:
   notify-teams-in-progress:
     if: ${{github.event.workflow_run.status != 'completed'}}
@@ -19,11 +22,11 @@ jobs:
           sections: |
             -
               activity:
-                title: ${{github.event.workflow_run.head_commit.committer.name}}
+                title: ${{github.event.workflow_run.head_commit.committer.name }}
                 subtitle: ${{github.event.workflow_run.head_commit.timestamp}}
                 image: ${{github.event.workflow_run.head_repository.owner.avatar_url}}
-          text: |
-            status: ${{github.event.workflow_run.status}}
+              text: |
+                status: ${{github.event.workflow_run.status}}
   notify-teams-completed:
     if: ${{github.event.workflow_run.status == 'completed'}}
     runs-on: ubuntu-22.04
@@ -33,7 +36,7 @@ jobs:
           webhook: ${{ vars.MS_TEAMS_WEBHOOK_URI }}
           title: "PR# ${{github.event.workflow_run.pull_requests[0].number}}"
           message: "${{github.event.workflow_run.head_commit.message}}" 
-          color: ff69b4
+          color: 4bb543
           buttons: |
             Pull Request ${{github.event.workflow_run.pull_requests[0].number}} https://github.com/bcgov/onroutebc/pull/${{github.event.workflow_run.pull_requests[0].number}}
             Diff https://github.com/bcgov/onroutebc/pull/${{github.event.workflow_run.pull_requests[0].number}}/files
