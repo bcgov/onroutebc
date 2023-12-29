@@ -37,7 +37,7 @@ jobs:
           webhook: ${{ vars.MS_TEAMS_WEBHOOK_URI }}
           title: "PR# ${{github.event.workflow_run.pull_requests[0].number}}"
           message: "${{github.event.workflow_run.head_commit.message}}" 
-          color: 4bb543
+          color: 28a745
           buttons: |
             Pull Request ${{github.event.workflow_run.pull_requests[0].number}} ${{github.event.workflow_run.repository.html_url}}/pull/${{github.event.workflow_run.pull_requests[0].number}}
             Diff ${{github.event.workflow_run.repository.html_url}}/pull/${{github.event.workflow_run.pull_requests[0].number}}/files
