@@ -5,20 +5,35 @@ import { Navigate, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { LoadIDIRUserContext } from "../common/authentication/LoadIDIRUserContext";
 import { LoadIDIRUserRoles } from "../common/authentication/LoadIDIRUserRoles";
 import OnRouteBCContext from "../common/authentication/OnRouteBCContext";
-import { IDIRUserAuthGroupType, UserAuthGroupType, UserRolesType } from "../common/authentication/types";
-import { DoesUserHaveRole } from "../common/authentication/util";
+import {
+  IDIRUserAuthGroupType,
+  UserRolesType,
+} from "../common/authentication/types";
+import {
+  DoesUserHaveAuthGroup,
+  DoesUserHaveRole,
+} from "../common/authentication/util";
 import { Loading } from "../common/pages/Loading";
 import { IDPS } from "../common/types/idp";
 import { ERROR_ROUTES, HOME } from "./constants";
 
 const isIDIR = (identityProvider: string) => identityProvider === IDPS.IDIR;
 
+/**
+ * This component ensures that a page is only available to IDIR users
+ * with necessary roles and auth groups (as applicable).
+ *
+ */
 export const IDIRProtectedRoutes = ({
   requiredRole,
-  requiredAuthGroup,
+  allowedAuthGroups,
 }: {
   requiredRole?: UserRolesType;
-  requiredAuthGroup: IDIRUserAuthGroupType;
+  /**
+   * The collection of auth groups allowed to have access to a page or action.
+   * IDIR System Admin is assumed to be allowed regardless of it being passed.
+   */
+  allowedAuthGroups?: IDIRUserAuthGroupType[];
 }) => {
   const {
     isAuthenticated,
@@ -65,9 +80,7 @@ export const IDIRProtectedRoutes = ({
           </>
         );
       }
-    }
-
-    if (!DoesUserHaveRole(userRoles, requiredRole)) {
+    } else {
       return (
         <Navigate
           to={ERROR_ROUTES.UNAUTHORIZED}
@@ -76,7 +89,24 @@ export const IDIRProtectedRoutes = ({
         />
       );
     }
-    return <Outlet />;
+
+    const doesUserHaveAccess =
+      DoesUserHaveAuthGroup<IDIRUserAuthGroupType>({
+        userAuthGroup: idirUserDetails?.userAuthGroup,
+        allowedAuthGroups,
+      }) && DoesUserHaveRole(userRoles, requiredRole);
+
+    if (doesUserHaveAccess) {
+      return <Outlet />;
+    }
+    // The user does not have access. They should be disallowed.
+    return (
+      <Navigate
+        to={ERROR_ROUTES.UNAUTHORIZED}
+        state={{ from: location }}
+        replace
+      />
+    );
   } else {
     return <Navigate to={HOME} state={{ from: location }} replace />;
   }

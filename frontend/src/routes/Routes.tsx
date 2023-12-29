@@ -11,7 +11,7 @@ import { EditVehicleDashboard } from "../features/manageVehicles/components/dash
 import { VEHICLE_TYPES_ENUM } from "../features/manageVehicles/components/form/constants";
 import { CreateProfileWizard } from "../features/wizard/CreateProfileWizard";
 import { ApplicationSteps } from "../features/permits/ApplicationSteps";
-import { ROLES } from "../common/authentication/types";
+import { IDIR_USER_AUTH_GROUP, ROLES } from "../common/authentication/types";
 import { PermitDashboard } from "../features/permits/PermitDashboard";
 import { SuccessPage } from "../features/permits/pages/SuccessPage/SuccessPage";
 import { PaymentRedirect } from "../features/permits/pages/Payment/PaymentRedirect";
@@ -27,6 +27,7 @@ import { UniversalUnauthorized } from "../common/pages/UniversalUnauthorized";
 import { UniversalUnexpected } from "../common/pages/UniversalUnexpected";
 import { ChallengeProfileWizard } from "../features/wizard/ChallengeProfileWizard";
 import { IDIRProtectedRoutes } from "./IDIRProtectedRoutes";
+import { IDIRRoutes } from "./IDIRRoutes";
 
 export const AppRoutes = () => {
   return (
@@ -48,24 +49,7 @@ export const AppRoutes = () => {
       <Route path="*" element={<UniversalUnexpected />} />
 
       {/* IDIR Routes */}
-      <Route
-        element={
-          <IDIRProtectedRoutes
-            requiredRole={ROLES.STAFF}
-            requiredAuthGroup="SYSADMIN"
-          />
-        }
-      >
-        <Route path={routes.IDIR_ROUTES.WELCOME} element={<IDIRWelcome />} />
-        <Route
-          path={routes.IDIR_ROUTES.SEARCH_RESULTS}
-          element={<IDIRSearchResultsDashboard />}
-        />
-        <Route
-          path={routes.IDIR_ROUTES.REPORTS}
-          element={<IDIRReportsDashboard />}
-        />
-      </Route>
+      <IDIRRoutes />
 
       {/* BCeID Routes */}
       {/* Protected Routes */}

@@ -1,5 +1,5 @@
 import React, { Dispatch, SetStateAction } from "react";
-import { MigratedClient } from "./types";
+import { IDIRUserAuthGroupType, MigratedClient } from "./types";
 
 import { Nullable, Optional } from "../types/common";
 
@@ -11,7 +11,7 @@ export type IDIRUserDetailContext = {
   lastName: string;
   userName: string;
   email: string;
-  userAuthGroup: string;
+  userAuthGroup: IDIRUserAuthGroupType;
 };
 
 /**
