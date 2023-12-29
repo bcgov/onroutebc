@@ -21,7 +21,7 @@ jobs:
               activity:
                 title: ${{github.event.workflow_run.head_commit.committer.name}}
                 subtitle: ${{github.event.workflow_run.head_commit.timestamp}}
-                image: github.com/${{github.event.workflow_run.head_repository.owner.avatar_url}}
+                image: ${{github.event.workflow_run.head_repository.owner.avatar_url}}
           text: |
             status: ${{github.event.workflow_run.status}}
   notify-teams-completed:
