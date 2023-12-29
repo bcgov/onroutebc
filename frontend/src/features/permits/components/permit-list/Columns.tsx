@@ -1,9 +1,9 @@
 import Link from "@mui/material/Link";
 import { MRT_ColumnDef } from "material-react-table";
-import { formatCellValuetoDatetime } from "../../../../common/constants/defaultTableOptions";
 import { viewPermitPdf } from "../../helpers/permitPDFHelper";
 import { Permit } from "../../types/permit";
 import { PermitChip } from "./PermitChip";
+import { formatCellValuetoDatetime } from "../../../../common/helpers/tableHelper";
 
 /**
  * The column definition for Permits.

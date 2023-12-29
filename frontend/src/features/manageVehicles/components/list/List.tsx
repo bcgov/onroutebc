@@ -45,10 +45,10 @@ import {
 } from "../../apiManager/hooks";
 
 import {
-  defaultTableInitialStateOptions,
   defaultTableOptions,
-  defaultTableStateOptions,
-} from "../../../../common/constants/defaultTableOptions";
+  defaultTableInitialStateOptions,
+  defaultTableStateOptions
+} from "../../../../common/helpers/tableHelper";
 
 /**
  * Dynamically set the column based on vehicle type

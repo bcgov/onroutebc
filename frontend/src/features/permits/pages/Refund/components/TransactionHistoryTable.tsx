@@ -23,8 +23,9 @@ import {
 import {
   defaultTableInitialStateOptions,
   defaultTableOptions,
-  defaultTableStateOptions,
-} from "../../../../../common/constants/defaultTableOptions";
+  defaultTableStateOptions
+} from "../../../../../common/helpers/tableHelper";
+
 
 export const TransactionHistoryTable = ({
   permitHistory,

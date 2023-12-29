@@ -15,15 +15,15 @@ import {
 import { SnackBarContext } from "../../../../App";
 import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
 import { FIVE_MINUTES } from "../../../../common/constants/constants";
-import {
-  defaultTableInitialStateOptions,
-  defaultTableOptions,
-  defaultTableStateOptions,
-} from "../../../../common/constants/defaultTableOptions";
 import { getPermits } from "../../apiManager/permitsAPI";
 import { Permit } from "../../types/permit";
 import { PermitsColumnDefinition } from "./Columns";
 import { PermitRowOptions } from "./PermitRowOptions";
+import {
+  defaultTableInitialStateOptions,
+  defaultTableOptions,
+  defaultTableStateOptions
+} from "../../../../common/helpers/tableHelper";
 
 /**
  * A permit list component with common functionalities that can be shared by

@@ -12,11 +12,6 @@ import {
 
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { TEN_MINUTES } from "../../../../common/constants/constants";
-import {
-  defaultTableInitialStateOptions,
-  defaultTableOptions,
-  defaultTableStateOptions,
-} from "../../../../common/constants/defaultTableOptions";
 import { Optional } from "../../../../common/types/common";
 import { USER_AUTH_GROUP } from "../../../manageProfile/types/userManagement.d";
 import { hasPermitExpired } from "../../../permits/helpers/permitState";
@@ -26,6 +21,11 @@ import { getDataBySearch } from "../api/idirSearch";
 import { PermitSearchResultColumnDef } from "../table/Columns";
 import { SearchFields } from "../types/types";
 import { IDIRPermitSearchRowActions } from "./IDIRPermitSearchRowActions";
+import {
+  defaultTableInitialStateOptions,
+  defaultTableOptions,
+  defaultTableStateOptions
+} from "../../../../common/helpers/tableHelper";
 import "./IDIRSearchResults.scss";
 
 /**
