@@ -197,7 +197,7 @@ export class PermitService {
       .createQueryBuilder('permit')
       .innerJoinAndSelect('permit.permitData', 'permitData')
       .where('permit.permitNumber IS NOT NULL')
-      .skip(pageOptionsDto.skip)
+      .skip((pageOptionsDto.page - 1) * pageOptionsDto.take)
       .take(pageOptionsDto.take);
     if (searchColumn.toLowerCase() === 'plate') {
       permits.andWhere(
@@ -273,7 +273,7 @@ export class PermitService {
           expiryDate: new Date(),
         },
       )
-      .skip(pageOptionsDto.getSkip())
+      .skip((pageOptionsDto.page - 1) * pageOptionsDto.take)
       .take(pageOptionsDto.take);
     if (searchValue) {
       permits.andWhere(
