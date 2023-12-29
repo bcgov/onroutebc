@@ -1,7 +1,6 @@
 import { MRT_ColumnDef } from "material-react-table";
-
 import { VehicleTypes } from "../../types/managevehicles";
-import { formatCellValuetoDatetime } from "../../../../common/constants/defaultTableOptions";
+import { formatCellValuetoDatetime } from "../../../../common/helpers/tableHelper";
 
 const CommonVehicleColumnDefinition: MRT_ColumnDef<VehicleTypes>[] = [
   {
