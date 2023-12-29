@@ -6,6 +6,7 @@ import {
   BCeIDUserAuthGroupType,
   IDIRUserAuthGroupType,
   IDIR_USER_AUTH_GROUP,
+  UserRolesType,
 } from "./types";
 
 /**
@@ -77,3 +78,31 @@ export function DoesUserHaveAuthGroup<
       allowedAuthGroups.includes(userAuthGroup))
   );
 }
+
+/**
+ * Returns a boolean indicating if the user has a given role.
+ *
+ * RATIONALE for this function:
+ * In ProtectedRoutes Component, there is a number of hooks called and when trying
+ * to use the DoesUserHaveRoleWithContext function, it throws a hook order bug as
+ * the order of execution of hooks must not change as per the rules of hooks.
+ *
+ * Hence a separate function that does accept userRoles as a parameter.
+ *
+ * @param userRoles The set of roles of the user.
+ * @param requiredRole The role to check for.
+ * @returns A boolean indicating if the user has the role to access a page.
+ */
+export const DoesUserHaveRoleMany = ({
+  userRoles,
+  allowedRoles,
+}: {
+  userRoles: Optional<UserRolesType[]>;
+  allowedRoles: UserRolesType[];
+}) => {
+  return (
+    userRoles &&
+    userRoles.length &&
+    userRoles.some((userRole) => allowedRoles.includes(userRole))
+  );
+};

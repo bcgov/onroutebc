@@ -26,8 +26,7 @@ import { AmendPermit } from "../features/permits/pages/Amend/AmendPermit";
 import { UniversalUnauthorized } from "../common/pages/UniversalUnauthorized";
 import { UniversalUnexpected } from "../common/pages/UniversalUnexpected";
 import { ChallengeProfileWizard } from "../features/wizard/ChallengeProfileWizard";
-import { IDIRProtectedRoutes } from "./IDIRProtectedRoutes";
-import { IDIRRoutes } from "./IDIRRoutes";
+import { IDIRAuthWall } from "../common/authentication/auth-walls/IDIRAuthWall";
 
 export const AppRoutes = () => {
   return (
@@ -49,7 +48,35 @@ export const AppRoutes = () => {
       <Route path="*" element={<UniversalUnexpected />} />
 
       {/* IDIR Routes */}
-      <IDIRRoutes />
+      <Route
+        element={
+          <IDIRAuthWall
+            requiredRole={ROLES.STAFF}
+            allowedAuthGroups={[
+              IDIR_USER_AUTH_GROUP.ENFORCEMENT_OFFICER,
+              IDIR_USER_AUTH_GROUP.PPC_CLERK,
+            ]}
+          />
+        }
+      >
+        {/* All IDIR users are allowed access to welcome page */}
+        <Route path={routes.IDIR_ROUTES.WELCOME} element={<IDIRWelcome />} />
+
+        {/* All IDIR users are allowed access to search page */}
+        <Route
+          path={routes.IDIR_ROUTES.SEARCH_RESULTS}
+          element={<IDIRSearchResultsDashboard />}
+        />
+      </Route>
+
+      {/* IDIR System Admin Routes */}
+      <Route element={<IDIRAuthWall requiredRole={ROLES.STAFF_ADMIN} />}>
+        {/* Only IDIR System Admins can access the reports page */}
+        <Route
+          path={routes.IDIR_ROUTES.REPORTS}
+          element={<IDIRReportsDashboard />}
+        />
+      </Route>
 
       {/* BCeID Routes */}
       {/* Protected Routes */}

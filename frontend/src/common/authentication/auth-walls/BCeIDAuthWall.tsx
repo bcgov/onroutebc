@@ -2,14 +2,14 @@ import { useContext, useEffect } from "react";
 import { useAuth } from "react-oidc-context";
 import { Navigate, Outlet, useLocation, useNavigate } from "react-router-dom";
 
-import { LoadBCeIDUserContext } from "../common/authentication/LoadBCeIDUserContext";
-import { LoadBCeIDUserRolesByCompany } from "../common/authentication/LoadBCeIDUserRolesByCompany";
-import OnRouteBCContext from "../common/authentication/OnRouteBCContext";
-import { UserRolesType } from "../common/authentication/types";
-import { DoesUserHaveRole } from "../common/authentication/util";
-import { Loading } from "../common/pages/Loading";
-import { IDPS } from "../common/types/idp";
-import { ERROR_ROUTES, HOME } from "./constants";
+import { LoadBCeIDUserContext } from "../LoadBCeIDUserContext";
+import { LoadBCeIDUserRolesByCompany } from "../LoadBCeIDUserRolesByCompany";
+import OnRouteBCContext from "../OnRouteBCContext";
+import { UserRolesType } from "../types";
+import { DoesUserHaveRole } from "../util";
+import { Loading } from "../../pages/Loading";
+import { IDPS } from "../../types/idp";
+import { ERROR_ROUTES, HOME } from "../../../routes/constants";
 
 const isIDIR = (identityProvider: string) => identityProvider === IDPS.IDIR;
 

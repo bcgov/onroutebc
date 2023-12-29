@@ -2,20 +2,14 @@ import { useContext, useEffect } from "react";
 import { useAuth } from "react-oidc-context";
 import { Navigate, Outlet, useLocation, useNavigate } from "react-router-dom";
 
-import { LoadIDIRUserContext } from "../common/authentication/LoadIDIRUserContext";
-import { LoadIDIRUserRoles } from "../common/authentication/LoadIDIRUserRoles";
-import OnRouteBCContext from "../common/authentication/OnRouteBCContext";
-import {
-  IDIRUserAuthGroupType,
-  UserRolesType,
-} from "../common/authentication/types";
-import {
-  DoesUserHaveAuthGroup,
-  DoesUserHaveRole,
-} from "../common/authentication/util";
-import { Loading } from "../common/pages/Loading";
-import { IDPS } from "../common/types/idp";
-import { ERROR_ROUTES, HOME } from "./constants";
+import { LoadIDIRUserContext } from "../LoadIDIRUserContext";
+import { LoadIDIRUserRoles } from "../LoadIDIRUserRoles";
+import OnRouteBCContext from "../OnRouteBCContext";
+import { IDIRUserAuthGroupType, UserRolesType } from "../types";
+import { DoesUserHaveAuthGroup, DoesUserHaveRole } from "../util";
+import { Loading } from "../../pages/Loading";
+import { IDPS } from "../../types/idp";
+import { ERROR_ROUTES, HOME } from "../../../routes/constants";
 
 const isIDIR = (identityProvider: string) => identityProvider === IDPS.IDIR;
 
@@ -24,7 +18,7 @@ const isIDIR = (identityProvider: string) => identityProvider === IDPS.IDIR;
  * with necessary roles and auth groups (as applicable).
  *
  */
-export const IDIRProtectedRoutes = ({
+export const IDIRAuthWall = ({
   requiredRole,
   allowedAuthGroups,
 }: {
@@ -32,6 +26,7 @@ export const IDIRProtectedRoutes = ({
   /**
    * The collection of auth groups allowed to have access to a page or action.
    * IDIR System Admin is assumed to be allowed regardless of it being passed.
+   * If not provided, only a System Admin will be allowed to access.
    */
   allowedAuthGroups?: IDIRUserAuthGroupType[];
 }) => {
@@ -111,3 +106,5 @@ export const IDIRProtectedRoutes = ({
     return <Navigate to={HOME} state={{ from: location }} replace />;
   }
 };
+
+IDIRAuthWall.displayName = "IDIRAuthWall";
