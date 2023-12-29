@@ -1,6 +1,7 @@
 import { LogLevel } from 'typeorm';
 
 export const getTypeormLogLevel = (logLevelString: string): LogLevel[] => {
+  console.log('process.env.VEHICLES_API_TYPEORM_LOG_LEVEL',process.env.VEHICLES_API_TYPEORM_LOG_LEVEL);
   const logLevels = logLevelString ? logLevelString.split(',') : ['error'];
 
   const logLevelValues = logLevels.map((logLevel) => {
