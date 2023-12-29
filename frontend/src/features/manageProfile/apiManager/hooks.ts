@@ -72,9 +72,10 @@ export const useUserContext = () => {
     queryFn: getUserContext,
     cacheTime: 500,
     refetchOnMount: "always",
-    onSuccess: (
+    select: (
       userContextResponseBody: BCeIDUserContextType | IDIRUserContextType,
     ) => {
+      console.log('userContextResponseBody::', userContextResponseBody);
       if (
         isAuthenticated &&
         userFromToken?.profile?.identity_provider === IDPS.IDIR

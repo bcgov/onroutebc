@@ -27,16 +27,14 @@ import { UniversalUnauthorized } from "../common/pages/UniversalUnauthorized";
 import { UniversalUnexpected } from "../common/pages/UniversalUnexpected";
 import { ChallengeProfileWizard } from "../features/wizard/ChallengeProfileWizard";
 import { IDIRAuthWall } from "../common/authentication/auth-walls/IDIRAuthWall";
+import { NewBCeIDAuthWall } from "../common/authentication/auth-walls/NewBCeIDAuthWall";
 
 export const AppRoutes = () => {
   return (
     <Routes>
       {/* Home and Error Routes */}
+      {/* Home and Error routes do no have any constraints. */}
       <Route path={routes.HOME} element={<InitialLandingPage />} />
-      <Route
-        path={routes.CREATE_PROFILE_WIZARD_ROUTES.WELCOME}
-        element={<WelcomePage />}
-      />
       <Route
         path={routes.ERROR_ROUTES.UNAUTHORIZED}
         element={<UniversalUnauthorized />}
@@ -46,6 +44,34 @@ export const AppRoutes = () => {
         element={<UniversalUnexpected />}
       />
       <Route path="*" element={<UniversalUnexpected />} />
+
+      {/* Wizard Routes */}
+
+      {/* Wizard Routes only require that a user
+        * 1) is authenticated
+        * 2) is BCeID
+        * 3) has no recorded personal info in the system
+           - i.e., userDetails object in OnRouteBCContext should be empty/undefined.
+      */}
+      <Route element={<NewBCeIDAuthWall />}>
+        <Route
+          path={routes.CREATE_PROFILE_WIZARD_ROUTES.WELCOME}
+          element={<WelcomePage />}
+        />
+        <Route
+          path={routes.CREATE_PROFILE_WIZARD_ROUTES.CREATE}
+          element={<CreateProfileWizard />}
+        />
+        <Route
+          path={routes.CREATE_PROFILE_WIZARD_ROUTES.MIGRATED_CLIENT}
+          element={<ChallengeProfileWizard />}
+        />
+
+        <Route
+          path={routes.CREATE_PROFILE_WIZARD_ROUTES.USER_INFO}
+          element={<UserInfoWizard />}
+        />
+      </Route>
 
       {/* IDIR Routes */}
       <Route
@@ -197,20 +223,6 @@ export const AppRoutes = () => {
           element={<PaymentRedirect />}
         />
       </Route>
-
-      <Route
-        path={routes.CREATE_PROFILE_WIZARD_ROUTES.CREATE}
-        element={<CreateProfileWizard />}
-      />
-      <Route
-        path={routes.CREATE_PROFILE_WIZARD_ROUTES.MIGRATED_CLIENT}
-        element={<ChallengeProfileWizard />}
-      />
-
-      <Route
-        path={routes.PROFILE_ROUTES.USER_INFO}
-        element={<UserInfoWizard />}
-      />
     </Routes>
   );
 };
