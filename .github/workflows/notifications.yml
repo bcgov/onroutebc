@@ -19,7 +19,7 @@ jobs:
           sections: |
             -
               activity:
-                title: ${{github.event.workflow_run.head_commit.committer.name}}
+                title: ${{github.event.workflow_run.head_commit.committer.name }}
                 subtitle: ${{github.event.workflow_run.head_commit.timestamp}}
                 image: ${{github.event.workflow_run.head_repository.owner.avatar_url}}
           text: |
