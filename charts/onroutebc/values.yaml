@@ -98,6 +98,7 @@ vehicles:
       FRONTEND_URL: "https://{{.Release.Name}}-frontend.apps.silver.devops.gov.bc.ca"
       PAYBC_REDIRECT: "https://{{.Release.Name}}-frontend.apps.silver.devops.gov.bc.ca/payment"
       VEHICLES_URL: "https://{{.Release.Name}}-vehicles.apps.silver.devops.gov.bc.ca"
+      DOPS_API_TYPEORM_LOG_LEVEL: "query,error,warn,info,log,schema"
 
   containers:
     - name: vehicles
@@ -119,6 +120,8 @@ vehicles:
             key: VEHICLES_URL
           - name: PAYBC_REDIRECT
             key: PAYBC_REDIRECT
+          - name: DOPS_API_TYPEORM_LOG_LEVEL
+            key: DOPS_API_TYPEORM_LOG_LEVEL
       ports:
         - name: vehicles-api
           containerPort: 5000
