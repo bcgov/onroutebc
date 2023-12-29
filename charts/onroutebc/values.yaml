@@ -98,7 +98,7 @@ vehicles:
       FRONTEND_URL: "https://{{.Release.Name}}-frontend.apps.silver.devops.gov.bc.ca"
       PAYBC_REDIRECT: "https://{{.Release.Name}}-frontend.apps.silver.devops.gov.bc.ca/payment"
       VEHICLES_URL: "https://{{.Release.Name}}-vehicles.apps.silver.devops.gov.bc.ca"
-      VEHICLES_API_TYPEORM_LOG_LEVEL: "query,error,warn,info,log,schema"
+      VEHICLES_API_TYPEORM_LOG_LEVEL: "query"
 
   containers:
     - name: vehicles
