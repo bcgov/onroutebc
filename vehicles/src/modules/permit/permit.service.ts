@@ -251,8 +251,6 @@ export class PermitService {
     searchValue?: string,
     sortDto?: SortDto[],
   ): Promise<PaginationDto<ReadPermitDto>> {
-    console.log('pagination ',pageOptionsDto)
-    console.log('pagination ship ',pageOptionsDto.skip)
     const permits = this.permitRepository
       .createQueryBuilder('permit')
       .innerJoinAndSelect('permit.permitData', 'permitData')
@@ -276,7 +274,7 @@ export class PermitService {
         },
       )
       .skip(pageOptionsDto.getSkip())
-      .take(pageOptionsDto.take)
+      .take(pageOptionsDto.take);
     if (searchValue) {
       permits.andWhere(
         new Brackets((query) => {
