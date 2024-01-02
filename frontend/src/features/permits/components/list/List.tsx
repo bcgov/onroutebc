@@ -32,10 +32,10 @@ import { ApplicationInProgressColumnDefinition } from "./Columns";
 import { deleteApplications } from "../../apiManager/permitsAPI";
 import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
 import {
-  defaultTableInitialStateOptions,
   defaultTableOptions,
   defaultTableStateOptions,
-} from "../../../../common/constants/defaultTableOptions";
+  defaultTableInitialStateOptions
+} from "../../../../common/helpers/tableHelper";
 
 /**
  * Dynamically set the column

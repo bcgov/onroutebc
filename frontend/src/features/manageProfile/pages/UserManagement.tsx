@@ -21,10 +21,10 @@ import { UserManagementTableRowActions } from "../components/user-management/Use
 import { UserManagementColumnsDefinition } from "../types/UserManagementColumns";
 import { BCeIDUserStatus, ReadCompanyUser } from "../types/userManagement.d";
 import {
-  defaultTableInitialStateOptions,
   defaultTableOptions,
-  defaultTableStateOptions,
-} from "../../../common/constants/defaultTableOptions";
+  defaultTableInitialStateOptions,
+  defaultTableStateOptions
+} from "../../../common/helpers/tableHelper";
 
 /**
  * User Management Component for CV Client.

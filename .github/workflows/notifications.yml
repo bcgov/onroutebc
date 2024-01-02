@@ -3,6 +3,7 @@ on:
   workflow_run: 
     workflows: [PR,Merge]
     types:
+      - requested
       - in_progess
       - completed
 jobs:
@@ -17,8 +18,8 @@ jobs:
           message: "${{github.event.workflow_run.head_commit.message}}" 
           color: ff69b4
           buttons: |
-            Pull Request ${{github.event.workflow_run.pull_requests[0].number}} https://github.com/bcgov/onroutebc/pull/${{github.event.workflow_run.pull_requests[0].number}}
-            Diff https://github.com/bcgov/onroutebc/pull/${{github.event.workflow_run.pull_requests[0].number}}/files
+            Pull Request ${{github.event.workflow_run.pull_requests[0].number}} ${{github.event.workflow_run.repository.html_url}}/pull/${{github.event.workflow_run.pull_requests[0].number}}
+            Diff ${{github.event.workflow_run.repository.html_url}}/pull/${{github.event.workflow_run.pull_requests[0].number}}/files
           sections: |
             -
               activity:
@@ -36,10 +37,10 @@ jobs:
           webhook: ${{ vars.MS_TEAMS_WEBHOOK_URI }}
           title: "PR# ${{github.event.workflow_run.pull_requests[0].number}}"
           message: "${{github.event.workflow_run.head_commit.message}}" 
-          color: 4bb543
+          color: 28a745
           buttons: |
-            Pull Request ${{github.event.workflow_run.pull_requests[0].number}} https://github.com/bcgov/onroutebc/pull/${{github.event.workflow_run.pull_requests[0].number}}
-            Diff https://github.com/bcgov/onroutebc/pull/${{github.event.workflow_run.pull_requests[0].number}}/files
+            Pull Request ${{github.event.workflow_run.pull_requests[0].number}} ${{github.event.workflow_run.repository.html_url}}/pull/${{github.event.workflow_run.pull_requests[0].number}}
+            Diff ${{github.event.workflow_run.repository.html_url}}/pull/${{github.event.workflow_run.pull_requests[0].number}}/files
           sections: |
             -
               activity:
