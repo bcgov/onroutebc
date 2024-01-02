@@ -1,6 +1,6 @@
 FROM node:18.19.0-alpine AS builder
 
-# Set the working directory to /app inside the container
+#  Set the working directory to /app inside the container
 WORKDIR /app
 
 # Set variables
