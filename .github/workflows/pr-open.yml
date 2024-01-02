@@ -69,7 +69,7 @@ jobs:
           keep_versions: 50
           package: ${{ matrix.package }}
           tag: ${{ needs.vars.outputs.pr }}
-          tag_fallback: latest
+          tag_fallback: #remove fallback to force builds each time
           triggers: ('${{ matrix.package }}/')
 
   # https://github.com/bcgov-nr/action-deployer-openshift
