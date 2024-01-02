@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { useAuth } from "react-oidc-context";
 import { useNavigate } from "react-router-dom";
 
-import { BCeIDUserContextType } from "./types";
+import { BCeIDUserContextType, IDIRUserContextType } from "./types";
 import { Loading } from "../pages/Loading";
 import { useUserContext } from "../../features/manageProfile/apiManager/hooks";
 import { IDPS } from "../types/idp";
@@ -81,7 +81,13 @@ export const LoginRedirect = () => {
     }
     if (isAuthenticated && !isLoading) {
       if (userFromToken?.profile?.identity_provider === IDPS.IDIR) {
-        navigate(IDIR_ROUTES.WELCOME);
+        const userContextData: Optional<IDIRUserContextType> =
+          queryClient.getQueryData<IDIRUserContextType>(["userContext"]);
+        if (userContextData?.user?.userGUID) {
+          navigate(IDIR_ROUTES.WELCOME);
+        } else {
+          navigate(ERROR_ROUTES.UNAUTHORIZED);
+        }
       } else {
         const userContextData: Optional<BCeIDUserContextType> =
           queryClient.getQueryData<BCeIDUserContextType>(["userContext"]);

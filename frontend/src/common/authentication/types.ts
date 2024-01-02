@@ -101,8 +101,6 @@ export enum ROLES {
  * User Context object type
  */
 export interface IDIRUserContextType {
-  associatedCompanies: [];
-  pendingCompanies: [];
   user?: {
     userAuthGroup?: string;
     statusCode?: string;
