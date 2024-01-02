@@ -87,12 +87,10 @@ export const defaultTableOptions: any = {
   enableMultiSort: false,
 
   // sticky table header properties
-  //  docs recommend that a height is defined
   enableStickyHeader: true,
   muiTableContainerProps: {
     sx: {
-      outline: "1px solid #DBDCDC",
-      height: "calc(100vh - 475px)",
+      outline: "1px solid #DBDCDC"
     },
   },
 
