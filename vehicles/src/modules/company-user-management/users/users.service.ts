@@ -420,7 +420,7 @@ export class UsersService {
 
       if (permit) {
         verifyMigratedClient.foundPermit = true;
-        if (permit.companyId === company.companyId) {
+        if (permit.companyId === company?.companyId) {
           verifyMigratedClient.migratedClient =
             await this.companyService.mapCompanyEntityToCompanyDto(company);
         }
