@@ -21,7 +21,8 @@ export const NavIconSideBar = (props: NavIconSideBarProps) => {
   const isEofficer =
     idirUserDetails?.userAuthGroup === USER_AUTH_GROUP.EOFFICER;
 
-  const shouldShowSideBar = isAuthenticated && isIdir && !isEofficer;
+  const shouldShowSideBar =
+    isAuthenticated && isIdir && idirUserDetails?.userName && !isEofficer;
 
   return shouldShowSideBar ? (
     <div className="nav-icon-side-bar">{children}</div>
