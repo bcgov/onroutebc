@@ -72,7 +72,7 @@ export const useUserContext = () => {
     queryFn: getUserContext,
     cacheTime: 500,
     refetchOnMount: "always",
-    select: (
+    onSuccess: (
       userContextResponseBody: BCeIDUserContextType | IDIRUserContextType,
     ) => {
       console.log('userContextResponseBody::', userContextResponseBody);

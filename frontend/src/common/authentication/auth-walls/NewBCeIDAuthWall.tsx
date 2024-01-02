@@ -22,7 +22,7 @@ export const NewBCeIDAuthWall = () => {
   } = useAuth();
 
   const { userDetails, companyId } = useContext(OnRouteBCContext);
-  const { isLoading, isError } = useUserContext();
+  useUserContext();
   console.log("companyId::", companyId);
   console.log("userDetails::", userDetails);
   const [hasUserContextLoaded, setHasUserContextLoaded] =
@@ -59,8 +59,8 @@ export const NewBCeIDAuthWall = () => {
       if (!hasUserContextLoaded) {
         return (
           <>
-            {/* <LoadBCeIDUserContext /> */}
-            {/* <Loading /> */}
+            <LoadBCeIDUserContext />
+            <Loading />
           </>
         );
       } else {

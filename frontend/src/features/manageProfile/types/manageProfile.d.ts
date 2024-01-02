@@ -1,4 +1,4 @@
-import { ClientInformation } from "../../../common/authentication/types";
+import { ClientInformation, MigratedClient } from "../../../common/authentication/types";
 
 interface Address {
   addressLine1: string;
@@ -48,6 +48,7 @@ export interface CompanyAndUserRequest {
   companyGUID: string;
   legalName: string;
   alternateName?: string; // Doing Business As field
+  migratedClientHash?: string;
   mailingAddress: Address;
   email: string;
   phone: string;

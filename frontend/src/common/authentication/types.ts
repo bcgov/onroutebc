@@ -167,8 +167,6 @@ export type IDIRUserAuthGroupType =
  * User Context object type
  */
 export interface IDIRUserContextType {
-  associatedCompanies: [];
-  pendingCompanies: [];
   user?: {
     userAuthGroup?: string;
     statusCode?: string;
