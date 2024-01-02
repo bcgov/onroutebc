@@ -58,6 +58,7 @@ import { PageMetaDto } from 'src/common/dto/paginate/page-meta';
 import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method-execution.decorator';
 import { SortDto } from '../common/dto/request/sort.dto';
 import * as constants from '../../common/constants/api.constant';
+import { PermitApprovalSource } from '../../common/enum/permit-approval-source.enum';
 
 @Injectable()
 export class PermitService {
@@ -496,6 +497,7 @@ export class PermitService {
       newPermit.permitNumber = permitNumber;
       newPermit.applicationNumber = applicationNumber;
       newPermit.permitStatus = voidPermitDto.status;
+      newPermit.permitApprovalSource = PermitApprovalSource.PPC;
       newPermit.permitIssuedBy =
         currentUser.orbcUserDirectory == Directory.IDIR
           ? PermitIssuedBy.PPC

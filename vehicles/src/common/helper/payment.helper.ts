@@ -41,7 +41,7 @@ export const formatAmount = (
   amount: number,
 ): string => {
   const formattedAmount = `$${Math.abs(amount).toFixed(2)}`;
-  if (transactionTypeCode === TransactionType.REFUND) {
+  if (transactionTypeCode === TransactionType.REFUND && amount !== 0) {
     return `-${formattedAmount}`;
   } else {
     return `${formattedAmount}`;

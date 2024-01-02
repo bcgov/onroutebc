@@ -546,6 +546,7 @@ export class ApplicationService {
           permitNumber: fetchedApplication.permitNumber,
           documentId: generatedDocuments.at(0).dmsId,
           issuerUserGuid: currentUser.userGUID,
+          permitApprovalSource: PermitApprovalSourceEnum.AUTO, //TODO : Hardcoding for release 1
           permitIssuedBy:
             currentUser.orbcUserDirectory == Directory.IDIR
               ? PermitIssuedBy.PPC
@@ -814,7 +815,7 @@ export class ApplicationService {
     const permit = await this.findOne(id);
     let seq: string;
     const approvalSource = await this.permitApprovalSourceRepository.findOne({
-      where: [{ id: PermitApprovalSourceEnum.AUTO }],
+      where: [{ id: PermitApprovalSourceEnum.AUTO }], //TODO : Hardcoding for release 1
     });
     let approvalSourceId: number;
     if (approvalSource.code) approvalSourceId = approvalSource.code;
