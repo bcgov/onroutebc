@@ -25,6 +25,14 @@ export class Permit extends Base {
     nullable: true,
   })
   permitNumber: string;
+  @AutoMap()
+  @ApiProperty({
+    example: '1',
+    description:
+      'Foreign key to the ORBC_COMPANY table, represents the company requesting the permit.',
+  })
+  @Column({ type: 'integer', name: 'COMPANY_ID', nullable: true })
+  companyId: number;
 
   @AutoMap()
   @ApiProperty({

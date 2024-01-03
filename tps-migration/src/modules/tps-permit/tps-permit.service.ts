@@ -70,6 +70,7 @@ export class TpsPermitService {
           );
           continue;
         }
+        // Permit existing with a document id indicates duplicate record.
         if (permit?.documentId) {
           await this.tpsPermitRepository.delete({
             migrationId: tpsPermit.migrationId,
@@ -106,6 +107,7 @@ export class TpsPermitService {
             s3ObjectId,
             s3Object,
             tpsPermit,
+            permit.companyId,
           );
           await this.permitRepository.update(
             {
@@ -198,25 +200,30 @@ export class TpsPermitService {
           tpsPermit.permitNumber + ' uploaded successfully.',
           s3Object.Location,
         );
-        if (s3Object) {
-          const document = await this.createDocument(
-            s3ObjectId,
-            s3Object,
-            tpsPermit,
-          );
-          await this.permitRepository.update(
-            {
-              tpsPermitNumber: tpsPermit.permitNumber,
-              revision: tpsPermit.revision - 1,
-            },
-            {
-              documentId: document.documentId,
-            },
-          );
+        try {
+          if (s3Object) {
+            const document = await this.createDocument(
+              s3ObjectId,
+              s3Object,
+              tpsPermit,
+              permit.companyId,
+            );
+            await this.permitRepository.update(
+              {
+                tpsPermitNumber: tpsPermit.permitNumber,
+                revision: tpsPermit.revision - 1,
+              },
+              {
+                documentId: document.documentId,
+              },
+            );
 
-          await this.tpsPermitRepository.delete({
-            migrationId: tpsPermit.migrationId,
-          });
+            await this.tpsPermitRepository.delete({
+              migrationId: tpsPermit.migrationId,
+            });
+          }
+        } catch (err) {
+          this.logger.log(err);
         }
       }
     }
@@ -226,6 +233,7 @@ export class TpsPermitService {
     s3ObjectId: string,
     s3Object: CompleteMultipartUploadCommandOutput,
     tpsPermit: TpsPermit,
+    companyId: number,
   ): Promise<Document> {
     const dmsVersionId = 1;
     const dmsRecord: Document = {
@@ -236,7 +244,7 @@ export class TpsPermitService {
       objectMimeType: 'pdf',
       fileName: tpsPermit.newPermitNumber + '.pdf',
       dmsVersionId: dmsVersionId,
-      companyId: tpsPermit.migrationId,
+      companyId: companyId,
       createdDateTime: new Date(),
       createdUser: null,
       createdUserDirectory: null,
