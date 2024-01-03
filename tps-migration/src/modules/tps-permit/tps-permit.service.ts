@@ -106,6 +106,7 @@ export class TpsPermitService {
             s3ObjectId,
             s3Object,
             tpsPermit,
+            permit.companyId
           );
           await this.permitRepository.update(
             {
@@ -203,6 +204,7 @@ export class TpsPermitService {
             s3ObjectId,
             s3Object,
             tpsPermit,
+            permit.companyId,
           );
           await this.permitRepository.update(
             {
@@ -226,6 +228,7 @@ export class TpsPermitService {
     s3ObjectId: string,
     s3Object: CompleteMultipartUploadCommandOutput,
     tpsPermit: TpsPermit,
+    companyId: number,
   ): Promise<Document> {
     const dmsVersionId = 1;
     const dmsRecord: Document = {
@@ -236,7 +239,7 @@ export class TpsPermitService {
       objectMimeType: 'pdf',
       fileName: tpsPermit.newPermitNumber + '.pdf',
       dmsVersionId: dmsVersionId,
-      companyId: tpsPermit.migrationId,
+      companyId: companyId,
       createdDateTime: new Date(),
       createdUser: null,
       createdUserDirectory: null,
