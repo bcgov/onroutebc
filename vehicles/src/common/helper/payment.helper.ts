@@ -7,6 +7,7 @@ import {
 } from '../enum/payment-method-type.enum';
 import { getFromCache } from './cache.helper';
 import { IPaymentCode } from '../interface/payment-code.interface';
+import { TransactionType } from '../enum/transaction-type.enum';
 
 export const getPaymentCodeFromCache = async (
   cacheManager: Cache,
@@ -33,4 +34,16 @@ export const getPaymentCodeFromCache = async (
   };
 
   return paymentCode;
+};
+
+export const formatAmount = (
+  transactionTypeCode: TransactionType,
+  amount: number,
+): string => {
+  const formattedAmount = `$${Math.abs(amount).toFixed(2)}`;
+  if (transactionTypeCode === TransactionType.REFUND && amount !== 0) {
+    return `-${formattedAmount}`;
+  } else {
+    return `${formattedAmount}`;
+  }
 };

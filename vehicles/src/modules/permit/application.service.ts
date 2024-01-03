@@ -52,7 +52,10 @@ import { convertUtcToPt } from '../../common/helper/date-time.helper';
 import { Directory } from 'src/common/enum/directory.enum';
 import { ReadPermitDto } from './dto/response/read-permit.dto';
 import { PermitIssuedBy } from '../../common/enum/permit-issued-by.enum';
-import { getPaymentCodeFromCache } from '../../common/helper/payment.helper';
+import {
+  formatAmount,
+  getPaymentCodeFromCache,
+} from '../../common/helper/payment.helper';
 import * as constants from '../../common/constants/api.constant';
 import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method-execution.decorator';
 
@@ -410,18 +413,19 @@ export class ApplicationService {
       );
     }
 
-    const newApplication =
-      applicationId === fetchedApplication.originalPermitId
-        ? applicationId
-        : null;
-    const oldApplication =
-      applicationId === fetchedApplication.originalPermitId
-        ? null
-        : fetchedApplication.previousRevision.toString();
+    const isApplicationIdEqualToOriginalPermitId =
+      applicationId === fetchedApplication.originalPermitId;
+
+    const newApplicationId = isApplicationIdEqualToOriginalPermitId
+      ? applicationId
+      : null;
+    const prevApplicationId = isApplicationIdEqualToOriginalPermitId
+      ? null
+      : fetchedApplication.previousRevision.toString();
 
     const permitNumber = await this.generatePermitNumber(
-      newApplication,
-      oldApplication,
+      newApplicationId,
+      prevApplicationId,
     );
     //Generate receipt number for the permit to be created in database.
     const receiptNumber =
@@ -483,9 +487,17 @@ export class ApplicationService {
           transactionOrderNumber:
             fetchedApplication.permitTransactions[0].transaction
               .transactionOrderNumber,
-          transactionAmount:
+          transactionAmount: formatAmount(
+            fetchedApplication.permitTransactions[0].transaction
+              .transactionTypeId,
+            fetchedApplication.permitTransactions[0].transactionAmount,
+          ),
+          totalTransactionAmount: formatAmount(
+            fetchedApplication.permitTransactions[0].transaction
+              .transactionTypeId,
             fetchedApplication.permitTransactions[0].transaction
               .totalTransactionAmount,
+          ),
           //Payer Name should be persisted in transacation Table so that it can be used for DocRegen
           payerName:
             currentUser.orbcUserDirectory === Directory.IDIR
@@ -493,6 +505,10 @@ export class ApplicationService {
               : currentUser.orbcUserFirstName +
                 ' ' +
                 currentUser.orbcUserLastName,
+          issuedBy:
+            currentUser.orbcUserDirectory === Directory.IDIR
+              ? constants.PPC_FULL_TEXT
+              : constants.SELF_ISSUED,
           consolidatedPaymentMethod: (
             await getPaymentCodeFromCache(
               this.cacheManager,
@@ -530,6 +546,7 @@ export class ApplicationService {
           permitNumber: fetchedApplication.permitNumber,
           documentId: generatedDocuments.at(0).dmsId,
           issuerUserGuid: currentUser.userGUID,
+          permitApprovalSource: PermitApprovalSourceEnum.AUTO, //TODO : Hardcoding for release 1
           permitIssuedBy:
             currentUser.orbcUserDirectory == Directory.IDIR
               ? PermitIssuedBy.PPC
@@ -559,10 +576,7 @@ export class ApplicationService {
       );
 
       // In case of amendment move the parent permit to SUPERSEDED Status.
-      if (
-        fetchedApplication.previousRevision != null ||
-        fetchedApplication.previousRevision != undefined
-      ) {
+      if (fetchedApplication.previousRevision) {
         await queryRunner.manager.update(
           Permit,
           {
@@ -801,11 +815,10 @@ export class ApplicationService {
     const permit = await this.findOne(id);
     let seq: string;
     const approvalSource = await this.permitApprovalSourceRepository.findOne({
-      where: { id: permit.permitApprovalSource },
+      where: [{ id: PermitApprovalSourceEnum.AUTO }], //TODO : Hardcoding for release 1
     });
     let approvalSourceId: number;
-    if (approvalSource.code != undefined || approvalSource.code != null)
-      approvalSourceId = approvalSource.code;
+    if (approvalSource.code) approvalSourceId = approvalSource.code;
     else approvalSourceId = 9;
     let rnd: number | string;
     if (permitId) {

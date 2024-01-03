@@ -48,12 +48,17 @@ import { CacheKey } from 'src/common/enum/cache-key.enum';
 import { getMapFromCache } from 'src/common/helper/cache.helper';
 import { Cache } from 'cache-manager';
 import { PermitIssuedBy } from '../../common/enum/permit-issued-by.enum';
-import { getPaymentCodeFromCache } from '../../common/helper/payment.helper';
+import {
+  formatAmount,
+  getPaymentCodeFromCache,
+} from '../../common/helper/payment.helper';
 import { PaymentMethodType } from 'src/common/enum/payment-method-type.enum';
 import { PageOptionsDto } from 'src/common/dto/paginate/page-options';
 import { PageMetaDto } from 'src/common/dto/paginate/page-meta';
 import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method-execution.decorator';
 import { SortDto } from '../common/dto/request/sort.dto';
+import * as constants from '../../common/constants/api.constant';
+import { PermitApprovalSource } from '../../common/enum/permit-approval-source.enum';
 
 @Injectable()
 export class PermitService {
@@ -492,6 +497,7 @@ export class PermitService {
       newPermit.permitNumber = permitNumber;
       newPermit.applicationNumber = applicationNumber;
       newPermit.permitStatus = voidPermitDto.status;
+      newPermit.permitApprovalSource = PermitApprovalSource.PPC;
       newPermit.permitIssuedBy =
         currentUser.orbcUserDirectory == Directory.IDIR
           ? PermitIssuedBy.PPC
@@ -611,7 +617,14 @@ export class PermitService {
           ...permitDataForTemplate,
           pgTransactionId: fetchedTransaction.pgTransactionId,
           transactionOrderNumber: fetchedTransaction.transactionOrderNumber,
-          transactionAmount: fetchedTransaction.totalTransactionAmount,
+          transactionAmount: formatAmount(
+            fetchedTransaction.transactionTypeId,
+            fetchedTransaction.totalTransactionAmount,
+          ),
+          totalTransactionAmount: formatAmount(
+            fetchedTransaction.transactionTypeId,
+            fetchedTransaction.totalTransactionAmount,
+          ),
           //Payer Name should be persisted in transacation Table so that it can be used for DocRegen
           payerName:
             currentUser.orbcUserDirectory === Directory.IDIR
@@ -619,6 +632,10 @@ export class PermitService {
               : currentUser.orbcUserFirstName +
                 ' ' +
                 currentUser.orbcUserLastName,
+          issuedBy:
+            currentUser.orbcUserDirectory === Directory.IDIR
+              ? constants.PPC_FULL_TEXT
+              : constants.SELF_ISSUED,
           consolidatedPaymentMethod: (
             await getPaymentCodeFromCache(
               this.cacheManager,
