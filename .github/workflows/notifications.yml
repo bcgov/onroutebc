@@ -14,7 +14,7 @@ jobs:
       - uses: simbo/msteams-message-card-action@latest
         with:
           webhook: ${{ vars.MS_TEAMS_WEBHOOK_URI }}
-          title: "${{github.base_ref}}"
+          title: "${{github.event.workflow_run.head_branch}}"
           message: "${{github.event.workflow_run.head_commit.message}}" 
           color: ff69b4
           buttons: |
@@ -28,6 +28,7 @@ jobs:
                 image: ${{github.event.workflow_run.head_repository.owner.avatar_url}}
               text: |
                 status: ${{github.event.workflow_run.status}}
+                event: ${{toJSON(github.event.workflow_run.event)}}
   notify-teams-completed:
     if: ${{github.event.workflow_run.status == 'completed'}}
     runs-on: ubuntu-22.04
@@ -35,7 +36,7 @@ jobs:
       - uses: simbo/msteams-message-card-action@latest
         with:
           webhook: ${{ vars.MS_TEAMS_WEBHOOK_URI }}
-          title: "${{github.base_ref}}"
+          title: "${{github.event.workflow_run.head_branch}}"
           message: "${{github.event.workflow_run.head_commit.message}}" 
           color: 28a745
           buttons: |
@@ -49,3 +50,4 @@ jobs:
                 image: ${{github.event.workflow_run.head_repository.owner.avatar_url}}
               text: |
                 status: ${{github.event.workflow_run.status}}
+                event: ${{toJSON(github.event.workflow_run.event)}}
