@@ -3,12 +3,10 @@ on:
   workflow_run: 
     workflows: [PR,Merge]
     types:
-      - requested
-      - in_progess
       - completed
 jobs:
   notify-teams-pr:
-    if: ${{github.event.workflow_run.event == 'pull_request' && github.event.workflow_run.status == 'completed'}}
+    if: ${{github.event.workflow_run.event == 'pull_request'}}
     runs-on: ubuntu-22.04
     steps:
       - uses: simbo/msteams-message-card-action@latest
@@ -24,14 +22,14 @@ jobs:
                 title: ${{github.event.workflow_run.head_commit.committer.name}}
                 subtitle: ${{github.event.workflow_run.head_commit.timestamp}}
                 image: ${{github.event.workflow_run.head_repository.owner.avatar_url}}
-              summary: "${{toJSON(github.event.workflow_run)}}"
+              text: ${{toJSON(github.event.workflow_run)}}
             - facts:
                 - name: event
                   value: ${{github.event.workflow_run.event}}
                 - name: status
                   value: ${{github.event.workflow_run.status}}
   notify-teams-merged:
-    if: ${{github.event.workflow_run.event == 'push' && github.event.workflow_run.status == 'completed'}}
+    if: ${{github.event.workflow_run.event == 'push'}}
     runs-on: ubuntu-22.04
     steps:
       - name: PR Number
@@ -50,7 +48,7 @@ jobs:
                 title: ${{github.event.workflow_run.head_commit.committer.name}}
                 subtitle: ${{github.event.workflow_run.head_commit.timestamp}}
                 image: ${{github.event.workflow_run.head_repository.owner.avatar_url}}
-              summary: "${{toJSON(github.event.workflow_run)}}"
+              text: ${{toJSON(github.event.workflow_run)}}
             - facts:
                 - name: event
                   value: ${{github.event.workflow_run.event}}
