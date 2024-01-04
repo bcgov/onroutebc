@@ -22,7 +22,8 @@ jobs:
                 title: ${{github.event.workflow_run.head_commit.committer.name}}
                 subtitle: ${{github.event.workflow_run.head_commit.timestamp}}
                 image: ${{github.event.workflow_run.head_repository.owner.avatar_url}}
-              text: ${{toJSON(github.event.workflow_run)}}
+              text: |
+                ${{toJSON(github.event.workflow_run)}}
             - facts:
                 - name: event
                   value: ${{github.event.workflow_run.event}}
@@ -48,7 +49,8 @@ jobs:
                 title: ${{github.event.workflow_run.head_commit.committer.name}}
                 subtitle: ${{github.event.workflow_run.head_commit.timestamp}}
                 image: ${{github.event.workflow_run.head_repository.owner.avatar_url}}
-              text: ${{toJSON(github.event.workflow_run)}}
+              text: |
+                ${{toJSON(github.event.workflow_run)}}
             - facts:
                 - name: event
                   value: ${{github.event.workflow_run.event}}
