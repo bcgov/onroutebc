@@ -3,12 +3,10 @@ on:
   workflow_run: 
     workflows: [PR,Merge]
     types:
-      - requested
-      - in_progess
       - completed
 jobs:
-  notify-teams-in-progress:
-    if: ${{github.event.workflow_run.status != 'completed'}}
+  notify-teams-pr:
+    if: ${{github.event.workflow_run.event == 'pull_request'}}
     runs-on: ubuntu-22.04
     steps:
       - uses: simbo/msteams-message-card-action@latest
@@ -24,29 +22,33 @@ jobs:
                 title: ${{github.event.workflow_run.head_commit.committer.name}}
                 subtitle: ${{github.event.workflow_run.head_commit.timestamp}}
                 image: ${{github.event.workflow_run.head_repository.owner.avatar_url}}
+              text: ${{toJSON(github.event.workflow_run)}}
             - facts:
                 - name: event
                   value: ${{github.event.workflow_run.event}}
                 - name: status
                   value: ${{github.event.workflow_run.status}}
-
-  notify-teams-completed:
-    if: ${{github.event.workflow_run.status == 'completed'}}
+  notify-teams-merged:
+    if: ${{github.event.workflow_run.event == 'push'}}
     runs-on: ubuntu-22.04
     steps:
+      - name: PR Number
+        id: pr
+        uses: bcgov-nr/action-get-pr@v0.0.1
       - uses: simbo/msteams-message-card-action@latest
         with:
           webhook: ${{ vars.MS_TEAMS_WEBHOOK_URI }}
           title: "${{github.event.workflow_run.head_commit.message}}" 
           color: '28a745'
           buttons: |
-            Pull Request ${{github.event.workflow_run.pull_requests[0].number}} ${{github.event.workflow_run.repository.html_url}}/pull/${{github.event.workflow_run.pull_requests[0].number}}
-            Diff ${{github.event.workflow_run.repository.html_url}}/pull/${{github.event.workflow_run.pull_requests[0].number}}/files
+            Pull Request ${{steps.pr.outputs.pr}} ${{github.event.workflow_run.repository.html_url}}/pull/${{steps.pr.outputs.pr}}
+            Diff ${{github.event.workflow_run.repository.html_url}}/pull/${{steps.pr.outputs.pr}}/files
           sections: |
             - activity:
                 title: ${{github.event.workflow_run.head_commit.committer.name}}
                 subtitle: ${{github.event.workflow_run.head_commit.timestamp}}
                 image: ${{github.event.workflow_run.head_repository.owner.avatar_url}}
+              text: ${{toJSON(github.event.workflow_run)}}
             - facts:
                 - name: event
                   value: ${{github.event.workflow_run.event}}
