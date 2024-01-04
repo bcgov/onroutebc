@@ -78,7 +78,9 @@ export const PaymentAndRefundDetail = () => {
       toDateTime: dayjs().set("h", 20).set("m", 59).set("s", 59).set("ms", 999),
       paymentMethods: Object.keys(CONSOLIDATED_PAYMENT_METHODS),
       permitType: Object.keys(permitTypes ?? []),
-      users: Object.keys(permitIssuers ?? {}),
+      // permitIssues is a <userName, userGUID> record.
+      // So, Object.values is what we need.
+      users: Object.values(permitIssuers ?? {}),
     },
     reValidateMode: "onBlur",
   });
@@ -108,7 +110,9 @@ export const PaymentAndRefundDetail = () => {
 
   useEffect(() => {
     if (permitIssuers) {
-      setValue("users", Object.keys(permitIssuers));
+      // permitIssues is a <userName, userGUID> record.
+      // So, Object.values is what we need.
+      setValue("users", Object.values(permitIssuers));
     }
   }, [ispermitIssuersQueryLoading]);
 
