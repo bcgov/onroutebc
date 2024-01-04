@@ -8,7 +8,7 @@ on:
       - completed
 jobs:
   notify-teams-pr:
-    if: ${{github.event.workflow_run.name == 'PR' && github.event.workflow_run.status == 'completed'}}
+    if: ${{github.event.workflow_run.event == 'pull_request' && github.event.workflow_run.status == 'completed'}}
     runs-on: ubuntu-22.04
     steps:
       - uses: simbo/msteams-message-card-action@latest
@@ -31,7 +31,7 @@ jobs:
                   value: ${{github.event.workflow_run.status}}
           summary: "${{toJSON(github.event.workflow_run)}}"
   notify-teams-merged:
-    if: ${{github.event.workflow_run.name == 'Merge' && github.event.workflow_run.status == 'completed'}}
+    if: ${{github.event.workflow_run.event == 'push' && github.event.workflow_run.status == 'completed'}}
     runs-on: ubuntu-22.04
     steps:
       - name: PR Number
