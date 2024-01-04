@@ -43,7 +43,7 @@ export const UserSelect = ({ permitIssuers }: UserSelectProps) => {
       target: { value },
     } = event;
     if (permitIssuers) {
-      // permitIssues is a <userName, userGUID> record.
+      // permitIssuers is a <userName, userGUID> record.
       // So, Object.values is what we need.
       const userGUIDs = Object.values(permitIssuers);
       const totalUsers = userGUIDs.length;
