@@ -20,16 +20,15 @@ jobs:
             Pull Request ${{github.event.workflow_run.pull_requests[0].number}} ${{github.event.workflow_run.repository.html_url}}/pull/${{github.event.workflow_run.pull_requests[0].number}}
             Diff ${{github.event.workflow_run.repository.html_url}}/pull/${{github.event.workflow_run.pull_requests[0].number}}/files
           sections: |
-            -
-              activity:
-                title: ${{github.event.workflow_run.head_commit.committer.name }}
+            - activity:
+                title: ${{github.event.workflow_run.head_commit.committer.name}}
                 subtitle: ${{github.event.workflow_run.head_commit.timestamp}}
                 image: ${{github.event.workflow_run.head_repository.owner.avatar_url}}
-                facts:
-                  - name: event
-                    value: ${{github.event.workflow_run.event}}
-                  - name: status
-                    value: ${{github.event.workflow_run.status}}
+            - facts:
+                - name: event
+                  value: ${{github.event.workflow_run.event}}
+                - name: status
+                  value: ${{github.event.workflow_run.status}}
 
   notify-teams-completed:
     if: ${{github.event.workflow_run.status == 'completed'}}
@@ -44,13 +43,12 @@ jobs:
             Pull Request ${{github.event.workflow_run.pull_requests[0].number}} ${{github.event.workflow_run.repository.html_url}}/pull/${{github.event.workflow_run.pull_requests[0].number}}
             Diff ${{github.event.workflow_run.repository.html_url}}/pull/${{github.event.workflow_run.pull_requests[0].number}}/files
           sections: |
-            -
-              activity:
+            - activity:
                 title: ${{github.event.workflow_run.head_commit.committer.name}}
                 subtitle: ${{github.event.workflow_run.head_commit.timestamp}}
                 image: ${{github.event.workflow_run.head_repository.owner.avatar_url}}
-                facts:
-                  - name: event
-                    value: ${{github.event.workflow_run.event}}
-                  - name: status
-                    value: ${{github.event.workflow_run.status}}
+            - facts:
+                - name: event
+                  value: ${{github.event.workflow_run.event}}
+                - name: status
+                  value: ${{github.event.workflow_run.status}}
