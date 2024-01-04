@@ -24,12 +24,12 @@ jobs:
                 title: ${{github.event.workflow_run.head_commit.committer.name}}
                 subtitle: ${{github.event.workflow_run.head_commit.timestamp}}
                 image: ${{github.event.workflow_run.head_repository.owner.avatar_url}}
+              summary: "${{toJSON(github.event.workflow_run)}}"
             - facts:
                 - name: event
                   value: ${{github.event.workflow_run.event}}
                 - name: status
                   value: ${{github.event.workflow_run.status}}
-          summary: "${{toJSON(github.event.workflow_run)}}"
   notify-teams-merged:
     if: ${{github.event.workflow_run.event == 'push' && github.event.workflow_run.status == 'completed'}}
     runs-on: ubuntu-22.04
@@ -50,9 +50,9 @@ jobs:
                 title: ${{github.event.workflow_run.head_commit.committer.name}}
                 subtitle: ${{github.event.workflow_run.head_commit.timestamp}}
                 image: ${{github.event.workflow_run.head_repository.owner.avatar_url}}
+              summary: "${{toJSON(github.event.workflow_run)}}"
             - facts:
                 - name: event
                   value: ${{github.event.workflow_run.event}}
                 - name: status
                   value: ${{github.event.workflow_run.status}}
-          summary: "${{toJSON(github.event.workflow_run)}}"
