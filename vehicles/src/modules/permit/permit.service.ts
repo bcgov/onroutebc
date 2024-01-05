@@ -333,60 +333,38 @@ private buildPermitQuery(
 
 private sortPermits(
   permits: SelectQueryBuilder<Permit>, 
-  sortDto?: SortDto[]): SelectQueryBuilder<Permit>
-  {
-  if (sortDto.length > 0) {
-    sortDto.forEach((value, index) => {
-      if (index === 0) {
-        if (
-          value.orderBy == 'permitNumber' ||
-          value.orderBy == 'permitType'
-        ) {
-          permits.orderBy(
-            `permit.${value.orderBy}`,
-            value.descending ? 'DESC' : 'ASC',
-          );
-        }
-        if (
-          value.orderBy == 'startDate' ||
-          value.orderBy == 'expiryDate' ||
-          value.orderBy == 'unitNumber' ||
-          value.orderBy == 'plate' ||
-          value.orderBy == 'applicant'
-        ) {
-          permits.orderBy(
-            `permitData.${value.orderBy}`,
-            value.descending ? 'DESC' : 'ASC',
-          );
-        }
-      } else {
-        if (
-          value.orderBy == 'permitNumber' ||
-          value.orderBy == 'permitType'
-        ) {
-          permits.addOrderBy(
-            `permit.${value.orderBy}`,
-            value.descending ? 'DESC' : 'ASC',
-          );
-        }
-        if (
-          value.orderBy == 'startDate' ||
-          value.orderBy == 'expiryDate' ||
-          value.orderBy == 'unitNumber' ||
-          value.orderBy == 'plate' ||
-          value.orderBy == 'applicant'
-        ) {
-          permits.addOrderBy(
-            `permitData.${value.orderBy}`,
-            value.descending ? 'DESC' : 'ASC',
-          );
-        }
-      }
-    });
+  sortDto?: SortDto[]
+): SelectQueryBuilder<Permit> {
+  if (!sortDto || sortDto.length === 0) {
     return permits;
   }
 
+  sortDto.forEach((value, index) => {
+    const orderByMapping: Record<string, string> = {
+      permitNumber: 'permit.permitNumber',
+      permitType: 'permit.permitType',
+      startDate: 'permitData.startDate',
+      expiryDate: 'permitData.expiryDate',
+      unitNumber: 'permitData.unitNumber',
+      plate: 'permitData.plate',
+      applicant: 'permitData.applicant',
+    };
+
+    const orderByKey = orderByMapping[value.orderBy];
+
+    if (orderByKey) {
+      const orderBy = value.descending ? 'DESC' : 'ASC';
+      if (index === 0) {
+        permits.orderBy(orderByKey, orderBy);
+      } else {
+        permits.addOrderBy(orderByKey, orderBy);
+      }
+    }
+  });
+
+  return permits;
 }
+
 
 private async mapEntitiesToReadPermitDto(entities: Permit[]): Promise<ReadPermitDto[]>
 {
