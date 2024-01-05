@@ -15,9 +15,7 @@ import helmet from 'helmet';
 import { customLogger } from './common/logger/logger.config';
 import { CorrelationIdInterceptor } from './common/interceptor/correlationId.interceptor';
 
-const allowedOrigins = [
-  process.env.FRONTEND_URL
-];
+const allowedOrigins = [process.env.FRONTEND_URL];
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
@@ -27,8 +25,8 @@ async function bootstrap() {
   app.enableCors({
     origin: function (origin, callback) {
       if (
-        allowedOrigins.includes(origin) ||
-        (process.env.NODE_ENV !== 'production' && origin?.includes('localhost'))
+        (origin && allowedOrigins.includes(origin)) ||
+        process.env.NODE_ENV !== 'production'
       ) {
         callback(null, true);
       } else {
