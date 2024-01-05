@@ -95,10 +95,8 @@ vehicles:
     enabled: true
     data:
       DOPS_URL: "https://{{.Release.Name}}-dops.apps.silver.devops.gov.bc.ca"
-      FRONTEND_URL: "https://{{.Release.Name}}-frontend.apps.silver.devops.gov.bc.ca"
-      PAYBC_REDIRECT: "https://{{.Release.Name}}-frontend.apps.silver.devops.gov.bc.ca/payment"
-      VEHICLES_URL: "https://{{.Release.Name}}-vehicles.apps.silver.devops.gov.bc.ca"
-
+      FRONTEND_URL: "https://{{.Release.Name}}-frontend.apps.silver.devops.gov.bc.ca"      
+      ACCESS_API_URL: "https://{{.Release.Name}}-vehicles.apps.silver.devops.gov.bc.ca"
   containers:
     - name: vehicles
       command:
@@ -115,8 +113,8 @@ vehicles:
             key: DOPS_URL
           - name: FRONTEND_URL
             key: FRONTEND_URL
-          - name: VEHICLES_URL
-            key: VEHICLES_URL
+          - name: ACCESS_API_URL
+            key: ACCESS_API_URL
           - name: PAYBC_REDIRECT
             key: PAYBC_REDIRECT
       ports:
@@ -199,6 +197,8 @@ dops:
   configmap:
     enabled: true
     data:
+      DOPS_URL: "https://{{.Release.Name}}-dops.apps.silver.devops.gov.bc.ca"
+      FRONTEND_URL: "https://{{.Release.Name}}-frontend.apps.silver.devops.gov.bc.ca"
       ACCESS_API_URL: "https://{{.Release.Name}}-vehicles.apps.silver.devops.gov.bc.ca"
   containers:
     - name: dops

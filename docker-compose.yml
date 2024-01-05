@@ -63,6 +63,7 @@ services:
       CHES_CLIENT_ID: ${CHES_CLIENT_ID}
       CHES_CLIENT_SECRET: ${CHES_CLIENT_SECRET}
       CHES_URL: ${CHES_URL}
+      ACCESS_API_URL: "http://vehicles-api:5000"
       DOPS_URL: "http://dops-api:5001"
       FRONT_END_URL: "http://frontend:3000"
       PAYBC_API_KEY: ${PAYBC_API_KEY}
@@ -119,6 +120,8 @@ services:
       CDOGS_CLIENT_SECRET: ${CDOGS_CLIENT_SECRET}
       CDOGS_URL: ${CDOGS_URL}
       ACCESS_API_URL: "http://vehicles-api:5000"
+      DOPS_URL: "http://dops-api:5001"
+      FRONT_END_URL: "http://frontend:3000"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5001/"]
       interval: 1m30s
