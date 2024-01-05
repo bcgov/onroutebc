@@ -2,7 +2,7 @@ import { Dayjs } from "dayjs";
 
 import { Permit } from "../types/permit";
 import { applyWhenNotNullable } from "../../../common/helpers/util";
-import { Optional } from "../../../common/types/common";
+import { Nullable, Optional } from "../../../common/types/common";
 import { getDurationOrDefault } from "./getDefaultApplicationFormData";
 import { getExpiryDate } from "./permitState";
 import {
@@ -10,6 +10,8 @@ import {
   Vehicle,
   VehicleType,
   VEHICLE_TYPES,
+  PowerUnit,
+  Trailer,
 } from "../../manageVehicles/types/Vehicle";
 
 import {
@@ -30,25 +32,24 @@ import {
 } from "../../../common/helpers/formatDate";
 
 /**
- * This helper function is used to get the vehicle object that matches the vin prop
- * If there are multiple vehicles with the same vin, then return the first vehicle
- * @param vehicles list of vehicles
- * @param vin string used as a key to find the existing vehicle
- * @returns A Vehicle (PowerUnit or Trailer) object, or undefined
+ * This helper function is used to get the vehicle object that matches the vehicleType and id.
+ * @param vehicles List of existing vehicles
+ * @param vehicleType Type of vehicle
+ * @param id string used as a key to find the existing vehicle
+ * @returns The found Vehicle object in the provided list, or undefined if not found
  */
-export const mapVinToVehicleObject = (
+export const mapToVehicleObjectById = (
   vehicles: Optional<Vehicle[]>,
-  vin: string,
+  vehicleType: VehicleType,
+  id: Nullable<string>,
 ): Optional<Vehicle> => {
   if (!vehicles) return undefined;
 
-  const existingVehicles = vehicles.filter((item) => {
-    return item.vin === vin;
+  return vehicles.find((item) => {
+    return vehicleType === VEHICLE_TYPES.POWER_UNIT ? 
+      (item.vehicleType === VEHICLE_TYPES.POWER_UNIT && (item as PowerUnit).powerUnitId === id) :
+      (item.vehicleType === VEHICLE_TYPES.TRAILER && (item as Trailer).trailerId === id);
   });
-
-  if (!existingVehicles) return undefined;
-
-  return existingVehicles[0];
 };
 
 /**

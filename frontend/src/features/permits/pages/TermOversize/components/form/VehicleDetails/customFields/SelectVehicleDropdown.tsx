@@ -19,6 +19,7 @@ import {
   Trailer,
   BaseVehicle,
   VEHICLE_TYPES,
+  Vehicle,
 } from "../../../../../../../manageVehicles/types/Vehicle";
 
 import {
@@ -57,7 +58,7 @@ export const SelectVehicleDropdown = ({
   chooseFrom: string;
   label: string;
   width: string;
-  vehicleOptions: (PowerUnit | Trailer)[];
+  vehicleOptions: (Vehicle)[];
   handleSelectVehicle: (vehicle: BaseVehicle) => void;
   handleClearVehicle: () => void;
 }) => {
@@ -104,11 +105,15 @@ export const SelectVehicleDropdown = ({
           const vehicleType =
             option.vehicleType === VEHICLE_TYPES.POWER_UNIT ? 
               VEHICLE_TYPES.POWER_UNIT : VEHICLE_TYPES.TRAILER;
+
+          const key = vehicleType === VEHICLE_TYPES.POWER_UNIT ?
+            `power-unit-${(option as PowerUnit).powerUnitId}` :
+            `trailer-${(option as Trailer).trailerId}`;
           
           return (
             <li
               {...props}
-              key={option.unitNumber}
+              key={key}
               data-testid={`select-vehicle-option-${vehicleType}`}
             >
               {chooseFrom == "plate" ? option.plate : option.unitNumber}

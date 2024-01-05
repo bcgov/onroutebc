@@ -6,7 +6,7 @@ import {
 import {
   PermitData,
   Commodities,
-  VehicleDetails as VehicleDetailsType,
+  VehicleDetails,
   ContactDetails as ContactDetailsType,
   MailingAddress,
 } from "../types/application";
@@ -99,8 +99,8 @@ export const areCommoditiesEqual = (
  * @returns true when vehicle details are equivalent, false otherwise
  */
 const areVehicleDetailsEqual = (
-  vehicleDetails1?: VehicleDetailsType,
-  vehicleDetails2?: VehicleDetailsType,
+  vehicleDetails1?: VehicleDetails,
+  vehicleDetails2?: VehicleDetails,
 ) => {
   if (!vehicleDetails1 && !vehicleDetails2) return true; // considered equal when both are undefined
   if (!vehicleDetails1 || !vehicleDetails2) return false; // considered not equal when only one is undefined
@@ -108,7 +108,7 @@ const areVehicleDetailsEqual = (
   // Equal when all key-value pairs of both contacts details are equal
   return Object.entries(vehicleDetails1)
     .map(([key, val]) => {
-      const val2 = vehicleDetails2[key as keyof VehicleDetailsType]; // get value from second vehicle details for this key
+      const val2 = vehicleDetails2[key as keyof VehicleDetails]; // get value from second vehicle details for this key
       return getDefaultRequiredVal("", val) === getDefaultRequiredVal("", val2);
     })
     .reduce((prevIsEqual, currIsEqual) => prevIsEqual && currIsEqual, true);

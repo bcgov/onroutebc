@@ -100,6 +100,7 @@ export const getDefaultMailingAddress = (
  * @returns default values for vehicle details
  */
 export const getDefaultVehicleDetails = (vehicleDetails?: VehicleDetails) => ({
+  vehicleId: getDefaultRequiredVal("", vehicleDetails?.vehicleId),
   unitNumber: getDefaultRequiredVal("", vehicleDetails?.unitNumber),
   vin: getDefaultRequiredVal("", vehicleDetails?.vin),
   plate: getDefaultRequiredVal("", vehicleDetails?.plate),
@@ -109,7 +110,7 @@ export const getDefaultVehicleDetails = (vehicleDetails?: VehicleDetails) => ({
   provinceCode: getDefaultRequiredVal("", vehicleDetails?.provinceCode),
   vehicleType: getDefaultRequiredVal("", vehicleDetails?.vehicleType),
   vehicleSubType: getDefaultRequiredVal("", vehicleDetails?.vehicleSubType),
-  saveVehicle: getDefaultRequiredVal(false, vehicleDetails?.saveVehicle),
+  saveVehicle: false,
 });
 
 export const getDurationOrDefault = (

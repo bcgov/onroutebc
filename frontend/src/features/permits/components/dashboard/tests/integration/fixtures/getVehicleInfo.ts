@@ -61,6 +61,7 @@ const vehicleSourceDef = factory({
 
 export const getDefaultPowerUnits = () => [
   {
+    powerUnitId: "1",
     companyId: 74,
     unitNumber: "61",
     plate: "ABCDEF",
@@ -79,6 +80,7 @@ export const getDefaultPowerUnits = () => [
 
 export const getDefaultTrailers = () => [
   {
+    trailerId: "1",
     companyId: 74,
     unitNumber: "3",
     plate: "A1B23C",

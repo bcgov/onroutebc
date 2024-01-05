@@ -1,10 +1,12 @@
 import { getDefaultRequiredVal } from "../../../common/helpers/util";
 import { VehicleDetails } from "../types/application.d";
-import { mapVinToVehicleObject } from "../helpers/mappers";
+import { mapToVehicleObjectById } from "../helpers/mappers";
 import {
   PowerUnit,
   Trailer,
   VEHICLE_TYPES,
+  Vehicle,
+  VehicleType,
 } from "../../manageVehicles/types/Vehicle";
 
 import {
@@ -45,12 +47,18 @@ export const usePermitVehicleManagement = (companyId: string) => {
     const vehicle = vehicleData;
 
     // Check if the vehicle that is to be saved was created from an existing vehicle
-    const existingVehicle = mapVinToVehicleObject(fetchedVehicles, vehicle.vin);
+    const vehicleId = vehicle.vehicleId;
+    
+    const existingVehicle = mapToVehicleObjectById(
+      fetchedVehicles,
+      vehicle.vehicleType as VehicleType,
+      vehicleId,
+    );
 
     const transformByVehicleType = (
       vehicleFormData: VehicleDetails,
-      existingVehicle?: PowerUnit | Trailer,
-    ): PowerUnit | Trailer => {
+      existingVehicle?: Vehicle,
+    ): Vehicle => {
       const defaultPowerUnit: PowerUnit = {
         powerUnitId: "",
         unitNumber: "",
@@ -83,13 +91,22 @@ export const usePermitVehicleManagement = (companyId: string) => {
               "",
               (existingVehicle as Trailer)?.trailerId,
             ),
-            unitNumber: getDefaultRequiredVal("", existingVehicle?.unitNumber),
+            unitNumber: getDefaultRequiredVal(
+              "",
+              existingVehicle?.unitNumber,
+              vehicleFormData.unitNumber,
+            ),
           } as Trailer;
         case VEHICLE_TYPES.POWER_UNIT:
         default:
           return {
             ...defaultPowerUnit,
-            unitNumber: getDefaultRequiredVal("", existingVehicle?.unitNumber),
+            unitNumber:
+              getDefaultRequiredVal(
+                "",
+                existingVehicle?.unitNumber,
+                vehicleFormData.unitNumber,
+              ),
             powerUnitId: getDefaultRequiredVal(
               "",
               (existingVehicle as PowerUnit)?.powerUnitId,
@@ -114,7 +131,10 @@ export const usePermitVehicleManagement = (companyId: string) => {
         });
       } else {
         addPowerUnitMutation.mutate({
-          powerUnit,
+          powerUnit: {
+            ...powerUnit,
+            powerUnitId: getDefaultRequiredVal("", vehicle.vehicleId),
+          },
           companyId,
         });
       }
@@ -132,7 +152,10 @@ export const usePermitVehicleManagement = (companyId: string) => {
         });
       } else {
         addTrailerMutation.mutate({
-          trailer,
+          trailer: {
+            ...trailer,
+            trailerId: getDefaultRequiredVal("", vehicle.vehicleId),
+          },
           companyId,
         });
       }

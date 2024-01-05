@@ -131,6 +131,7 @@ export const getDefaultApplication = () => {
     vehicleType: VEHICLE_TYPES.POWER_UNIT,
     vehicleSubType: vehicle.powerUnitTypeCode,
     unitNumber: vehicle.unitNumber,
+    vehicleId: vehicle.powerUnitId,
   };
   const commodities = [
     TROS_COMMODITIES[0],
