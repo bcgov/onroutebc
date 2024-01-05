@@ -19,6 +19,7 @@ const allowedOrigins = [
   process.env.DOPS_URL,
   process.env.FRONTEND_URL,
   process.env.ACCESS_API_URL,
+  'localhost'
 ];
 
 // if (process.env.LOCALHOST_DOMAIN) {
