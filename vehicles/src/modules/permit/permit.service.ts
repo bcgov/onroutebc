@@ -59,7 +59,7 @@ import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method
 import { SortDto } from '../common/dto/request/sort.dto';
 import * as constants from '../../common/constants/api.constant';
 import { PermitApprovalSource } from '../../common/enum/permit-approval-source.enum';
-
+import { SelectQueryBuilder } from 'typeorm';
 @Injectable()
 export class PermitService {
   private readonly logger = new Logger(PermitService.name);
@@ -248,110 +248,155 @@ export class PermitService {
    *
    */
   @LogAsyncMethodExecution()
-  public async findUserPermit(
-    pageOptionsDto: PageOptionsDto,
-    userGUID: string,
-    companyId: number,
-    expired: string,
-    searchValue?: string,
-    sortDto?: SortDto[],
-  ): Promise<PaginationDto<ReadPermitDto>> {
-    const permits = this.permitRepository
-      .createQueryBuilder('permit')
-      .innerJoinAndSelect('permit.permitData', 'permitData')
-      .where('permit.permitNumber IS NOT NULL')
-      .andWhere('permit.companyId = :companyId', {
-        companyId: companyId,
-      })
-      .andWhere(userGUID ? 'permit.userGuid = :userGUID' : '1=1', {
-        userGUID: userGUID,
-      })
-      .andWhere(
-        expired === 'true'
-          ? '(permit.permitStatus IN (:...expiredStatus)OR(permit.permitStatus = :activeStatus AND permitData.expiryDate < :expiryDate))'
-          : '(permit.permitStatus = :activeStatus AND permitData.expiryDate >= :expiryDate)',
-        {
-          expiredStatus: Object.values(PermitStatus).filter(
-            (x) => x != PermitStatus.ISSUED && x != PermitStatus.SUPERSEDED,
-          ),
-          activeStatus: PermitStatus.ISSUED,
-          expiryDate: new Date(),
-        },
-      )
-      .skip((pageOptionsDto.page - 1) * pageOptionsDto.take)
-      .take(pageOptionsDto.take);
-    if (searchValue) {
-      permits.andWhere(
-        new Brackets((query) => {
-          query
-            .where(
-              `JSON_VALUE(permitData.permitData, '$.vehicleDetails.plate') like '%${searchValue}%'`,
-            )
-            .orWhere(
-              `JSON_VALUE(permitData.permitData, '$.vehicleDetails.unitNumber') like '%${searchValue}%'`,
-            );
-        }),
-      );
-    }
-    if (sortDto.length > 0) {
-      sortDto.forEach((value, index) => {
-        if (index === 0) {
-          if (
-            value.orderBy == 'permitNumber' ||
-            value.orderBy == 'permitType'
-          ) {
-            permits.orderBy(
-              `permit.${value.orderBy}`,
-              value.descending ? 'DESC' : 'ASC',
-            );
-          }
-          if (
-            value.orderBy == 'startDate' ||
-            value.orderBy == 'expiryDate' ||
-            value.orderBy == 'unitNumber' ||
-            value.orderBy == 'plate' ||
-            value.orderBy == 'applicant'
-          ) {
-            permits.orderBy(
-              `permitData.${value.orderBy}`,
-              value.descending ? 'DESC' : 'ASC',
-            );
-          }
-        } else {
-          if (
-            value.orderBy == 'permitNumber' ||
-            value.orderBy == 'permitType'
-          ) {
-            permits.addOrderBy(
-              `permit.${value.orderBy}`,
-              value.descending ? 'DESC' : 'ASC',
-            );
-          }
-          if (
-            value.orderBy == 'startDate' ||
-            value.orderBy == 'expiryDate' ||
-            value.orderBy == 'unitNumber' ||
-            value.orderBy == 'plate' ||
-            value.orderBy == 'applicant'
-          ) {
-            permits.addOrderBy(
-              `permitData.${value.orderBy}`,
-              value.descending ? 'DESC' : 'ASC',
-            );
-          }
-        }
-      });
-    }
-    const totalItems = await permits.getCount();
-    const { entities } = await permits.getRawAndEntities();
-    const pageMetaDto = new PageMetaDto({ totalItems, pageOptionsDto });
-    const readPermitDto: ReadPermitDto[] = await this.classMapper.mapArrayAsync(
-      entities,
-      Permit,
-      ReadPermitDto,
-    );
-    return new PaginationDto(readPermitDto, pageMetaDto);
+public async findUserPermit(
+  pageOptionsDto: PageOptionsDto,
+  userGUID: string,
+  companyId: number,
+  expired: string,
+  searchValue?: string,
+  sortDto?: SortDto[],
+): Promise<PaginationDto<ReadPermitDto>> {
+  const permits = this.buildPermitQuery(pageOptionsDto, userGUID, companyId, expired, searchValue, sortDto);
+  const sortedPermits = this.sortPermits(permits, sortDto)
+  const totalItems = await sortedPermits.getCount();
+  const { entities } = await permits.getRawAndEntities();
+  const pageMetaDto = new PageMetaDto({ totalItems, pageOptionsDto });
+  const readPermitDto: ReadPermitDto[] = await this.mapEntitiesToReadPermitDto(entities);
+  return new PaginationDto(readPermitDto, pageMetaDto);
+}
+
+private buildPermitQuery(
+  pageOptionsDto: PageOptionsDto,
+  userGUID: string,
+  companyId: number,
+  expired: string,
+  searchValue?: string,
+  sortDto?: SortDto[],
+): SelectQueryBuilder<Permit> {
+  let permitsQuery = this.permitRepository
+    .createQueryBuilder('permit')
+    .innerJoinAndSelect('permit.permitData', 'permitData')
+
+  // Apply conditions based on parameters
+  permitsQuery = permitsQuery
+    .where('permit.permitNumber IS NOT NULL')
+    .andWhere('permit.companyId = :companyId', { companyId });
+
+  if (userGUID) {
+    permitsQuery = permitsQuery.andWhere('permit.userGuid = :userGUID', { userGUID });
   }
+
+  if (expired === 'true') {
+    permitsQuery = permitsQuery.andWhere('(permit.permitStatus IN (:...expiredStatus)OR(permit.permitStatus = :activeStatus AND permitData.expiryDate < :expiryDate))',
+    {
+      expiredStatus: Object.values(PermitStatus).filter(
+        (x) => x != PermitStatus.ISSUED && x != PermitStatus.SUPERSEDED,
+      ),
+      activeStatus: PermitStatus.ISSUED,
+      expiryDate: new Date(),
+    }
+    );
+  } else {
+    permitsQuery = permitsQuery.andWhere('(permit.permitStatus = :activeStatus AND permitData.expiryDate >= :expiryDate)',
+      {
+        expiredStatus: Object.values(PermitStatus).filter(
+          (x) => x != PermitStatus.ISSUED && x != PermitStatus.SUPERSEDED,
+        ),
+        activeStatus: PermitStatus.ISSUED,
+        expiryDate: new Date(),
+      }
+      );
+  }
+
+  // Handle searchValue
+  if (searchValue) {
+    permitsQuery = permitsQuery.andWhere(
+      new Brackets((query) => {
+        query
+          .where(
+            `JSON_VALUE(permitData.permitData, '$.vehicleDetails.plate') like '%${searchValue}%'`,
+          )
+          .orWhere(
+            `JSON_VALUE(permitData.permitData, '$.vehicleDetails.unitNumber') like '%${searchValue}%'`,
+          );
+      }),
+    );
+  }
+
+  // Apply pagination
+  permitsQuery = permitsQuery
+    .skip((pageOptionsDto.page - 1) * pageOptionsDto.take)
+    .take(pageOptionsDto.take);
+
+  return permitsQuery;
+}
+
+private sortPermits(
+  permits: SelectQueryBuilder<Permit>, 
+  sortDto?: SortDto[]): SelectQueryBuilder<Permit>
+  {
+  if (sortDto.length > 0) {
+    sortDto.forEach((value, index) => {
+      if (index === 0) {
+        if (
+          value.orderBy == 'permitNumber' ||
+          value.orderBy == 'permitType'
+        ) {
+          permits.orderBy(
+            `permit.${value.orderBy}`,
+            value.descending ? 'DESC' : 'ASC',
+          );
+        }
+        if (
+          value.orderBy == 'startDate' ||
+          value.orderBy == 'expiryDate' ||
+          value.orderBy == 'unitNumber' ||
+          value.orderBy == 'plate' ||
+          value.orderBy == 'applicant'
+        ) {
+          permits.orderBy(
+            `permitData.${value.orderBy}`,
+            value.descending ? 'DESC' : 'ASC',
+          );
+        }
+      } else {
+        if (
+          value.orderBy == 'permitNumber' ||
+          value.orderBy == 'permitType'
+        ) {
+          permits.addOrderBy(
+            `permit.${value.orderBy}`,
+            value.descending ? 'DESC' : 'ASC',
+          );
+        }
+        if (
+          value.orderBy == 'startDate' ||
+          value.orderBy == 'expiryDate' ||
+          value.orderBy == 'unitNumber' ||
+          value.orderBy == 'plate' ||
+          value.orderBy == 'applicant'
+        ) {
+          permits.addOrderBy(
+            `permitData.${value.orderBy}`,
+            value.descending ? 'DESC' : 'ASC',
+          );
+        }
+      }
+    });
+    return permits;
+  }
+
+}
+
+private async mapEntitiesToReadPermitDto(entities: Permit[]): Promise<ReadPermitDto[]>
+{
+  const readPermitDto: ReadPermitDto[] = await this.classMapper.mapArrayAsync(
+    entities,
+    Permit,
+    ReadPermitDto,
+  );
+  return readPermitDto;
+}
 
   /**
    * Finds a receipt PDF document associated with a specific permit ID.
