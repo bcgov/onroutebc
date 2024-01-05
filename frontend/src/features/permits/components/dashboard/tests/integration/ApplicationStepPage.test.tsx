@@ -5,9 +5,10 @@ import { getEmptyUserDetails } from "./fixtures/getUserDetails";
 import { resetApplicationSource } from "./fixtures/getActiveApplication";
 import { getDefaultRequiredVal } from "../../../../../../common/helpers/util";
 import { assertVehicleSubtypeOptions } from "./helpers/assert";
+import { VEHICLE_TYPES } from "../../../../../manageVehicles/types/Vehicle";
 import {
   findPowerUnit,
-  getAllPowerUnitTypes,
+  getAllPowerUnitSubTypes,
   getAllPowerUnits,
   getAllTrailers,
   resetVehicleSource,
@@ -253,7 +254,7 @@ describe("Vehicle Details", () => {
     await openVehicleSubtypeSelect(user);
 
     // Assert
-    await assertVehicleSubtypeOptions("powerUnit");
+    await assertVehicleSubtypeOptions(VEHICLE_TYPES.POWER_UNIT);
   });
 
   it("should not show excluded subtypes for trailers", async () => {
@@ -266,7 +267,7 @@ describe("Vehicle Details", () => {
     await openVehicleSubtypeSelect(user);
 
     // Assert
-    await assertVehicleSubtypeOptions("trailer");
+    await assertVehicleSubtypeOptions(VEHICLE_TYPES.TRAILER);
   });
 
   it("should display error messages for empty vehicle detail fields", async () => {
@@ -386,8 +387,8 @@ describe("Vehicle Details", () => {
     await openVehicleSelect(user);
 
     // Assert
-    const powerUnitOptions = await vehicleOptions("powerUnit");
-    const trailerOptions = await vehicleOptions("trailer");
+    const powerUnitOptions = await vehicleOptions(VEHICLE_TYPES.POWER_UNIT);
+    const trailerOptions = await vehicleOptions(VEHICLE_TYPES.TRAILER);
     expect(powerUnitOptions.length).toBe(powerUnits.length);
     expect(trailerOptions.length).toBe(trailers.length);
 
@@ -396,8 +397,8 @@ describe("Vehicle Details", () => {
     await openVehicleSelect(user);
 
     // Assert
-    const updatedPowerUnitOptions = await vehicleOptions("powerUnit");
-    const updatedTrailerOptions = await vehicleOptions("trailer");
+    const updatedPowerUnitOptions = await vehicleOptions(VEHICLE_TYPES.POWER_UNIT);
+    const updatedTrailerOptions = await vehicleOptions(VEHICLE_TYPES.TRAILER);
     expect(updatedPowerUnitOptions.length).toBe(powerUnits.length);
     expect(updatedTrailerOptions.length).toBe(trailers.length);
   });
@@ -415,10 +416,10 @@ describe("Vehicle Details", () => {
     await replaceValueForInput(user, vehicleTextfield, 0, plate);
 
     // Assert
-    const powerUnitOptions = await vehicleOptions("powerUnit");
+    const powerUnitOptions = await vehicleOptions(VEHICLE_TYPES.POWER_UNIT);
     expect(powerUnitOptions.length).toBe(1);
     expect(powerUnitOptions[0]).toHaveTextContent(plate);
-    expect(async () => await vehicleOptions("trailer")).rejects.toThrow();
+    expect(async () => await vehicleOptions(VEHICLE_TYPES.TRAILER)).rejects.toThrow();
   });
 
   it("should filter vehicle options by typing in unit number", async () => {
@@ -437,10 +438,10 @@ describe("Vehicle Details", () => {
     await replaceValueForInput(user, vehicleTextfield, 0, unitNumber);
 
     // Assert
-    const trailerOptions = await vehicleOptions("trailer");
+    const trailerOptions = await vehicleOptions(VEHICLE_TYPES.TRAILER);
     expect(trailerOptions.length).toBe(1);
     expect(trailerOptions[0]).toHaveTextContent(unitNumber);
-    expect(async () => await vehicleOptions("powerUnit")).rejects.toThrow();
+    expect(async () => await vehicleOptions(VEHICLE_TYPES.POWER_UNIT)).rejects.toThrow();
   });
 
   it("should fill in vehicle details after choosing vehicle option", async () => {
@@ -450,7 +451,7 @@ describe("Vehicle Details", () => {
     const unitNumber = getDefaultRequiredVal("", vehicle.unitNumber);
     const vehicleSubtype = getDefaultRequiredVal(
       "",
-      getAllPowerUnitTypes().find(
+      getAllPowerUnitSubTypes().find(
         (subtype) => subtype.typeCode === vehicle.powerUnitTypeCode,
       )?.type,
     );

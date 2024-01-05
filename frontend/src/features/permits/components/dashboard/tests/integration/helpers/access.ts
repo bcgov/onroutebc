@@ -2,7 +2,7 @@ import { screen, waitFor } from "@testing-library/react";
 import { UserEvent } from "@testing-library/user-event/dist/types/setup/setup";
 
 import { getApplication } from "../fixtures/getActiveApplication";
-import { VehicleTypesAsString } from "../../../../../../manageVehicles/types/managevehicles";
+import { VehicleType } from "../../../../../../manageVehicles/types/Vehicle";
 
 export const inputWithValue = async (val: string) => {
   return await screen.findByDisplayValue(val);
@@ -198,7 +198,7 @@ export const openVehicleSelect = async (user: UserEvent) => {
   await user.click(vehicleSelectEl);
 };
 
-export const vehicleOptions = async (vehicleType: VehicleTypesAsString) => {
+export const vehicleOptions = async (vehicleType: VehicleType) => {
   return await screen.findAllByTestId(`select-vehicle-option-${vehicleType}`);
 };
 

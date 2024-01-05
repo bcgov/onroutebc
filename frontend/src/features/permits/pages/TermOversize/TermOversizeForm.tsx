@@ -61,7 +61,7 @@ export const TermOversizeForm = () => {
   const { companyLegalName, onRouteBCClientNumber } =
     useContext(OnRouteBCContext);
 
-  const { handleSaveVehicle, vehicleOptions, powerUnitTypes, trailerTypes } =
+  const { handleSaveVehicle, vehicleOptions, powerUnitSubTypes, trailerSubTypes } =
     usePermitVehicleManagement(
       applyWhenNotNullable((companyIdNum) => `${companyIdNum}`, companyId, "0"),
     );
@@ -210,8 +210,8 @@ export const TermOversizeForm = () => {
           permitCommodities={termOversizeDefaultValues.permitData.commodities}
           vehicleDetails={termOversizeDefaultValues.permitData.vehicleDetails}
           vehicleOptions={vehicleOptions}
-          powerUnitTypes={powerUnitTypes}
-          trailerTypes={trailerTypes}
+          powerUnitSubTypes={powerUnitSubTypes}
+          trailerSubTypes={trailerSubTypes}
           companyInfo={companyInfo}
           durationOptions={TROS_PERMIT_DURATIONS}
         />

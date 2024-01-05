@@ -2,13 +2,15 @@ import { Dayjs } from "dayjs";
 
 import { Permit } from "../types/permit";
 import { applyWhenNotNullable } from "../../../common/helpers/util";
+import { Optional } from "../../../common/types/common";
+import { getDurationOrDefault } from "./getDefaultApplicationFormData";
+import { getExpiryDate } from "./permitState";
 import {
-  PowerUnit,
-  Trailer,
+  VehicleSubType,
+  Vehicle,
   VehicleType,
-  VehicleTypes,
-  VehicleTypesAsString,
-} from "../../manageVehicles/types/managevehicles";
+  VEHICLE_TYPES,
+} from "../../manageVehicles/types/Vehicle";
 
 import {
   Application,
@@ -26,21 +28,18 @@ import {
   toLocalDayjs,
   utcToLocalDayjs,
 } from "../../../common/helpers/formatDate";
-import { Optional } from "../../../common/types/common";
-import { getDurationOrDefault } from "./getDefaultApplicationFormData";
-import { getExpiryDate } from "./permitState";
 
 /**
  * This helper function is used to get the vehicle object that matches the vin prop
  * If there are multiple vehicles with the same vin, then return the first vehicle
  * @param vehicles list of vehicles
  * @param vin string used as a key to find the existing vehicle
- * @returns a PowerUnit or Trailer object, or undefined
+ * @returns A Vehicle (PowerUnit or Trailer) object, or undefined
  */
 export const mapVinToVehicleObject = (
-  vehicles: Optional<VehicleTypes[]>,
+  vehicles: Optional<Vehicle[]>,
   vin: string,
-): Optional<PowerUnit | Trailer> => {
+): Optional<Vehicle> => {
   if (!vehicles) return undefined;
 
   const existingVehicles = vehicles.filter((item) => {
@@ -53,27 +52,27 @@ export const mapVinToVehicleObject = (
 };
 
 /**
- * Maps the typeCode (Example: GRADERS) to the TrailerType or PowerUnitType object, then return that object
+ * Maps the typeCode (Example: GRADERS) to the corresponding Trailer or PowerUnit subtype object, then return that object
  * @param typeCode
  * @param vehicleType
- * @param powerUnitTypes
- * @param trailerTypes
+ * @param powerUnitSubTypes
+ * @param trailerSubTypes
  * @returns A Vehicle Sub type object
  */
 export const mapTypeCodeToObject = (
   typeCode: string,
   vehicleType: string,
-  powerUnitTypes: Optional<VehicleType[]>,
-  trailerTypes: Optional<VehicleType[]>,
+  powerUnitSubTypes: Optional<VehicleSubType[]>,
+  trailerSubTypes: Optional<VehicleSubType[]>,
 ) => {
   let typeObject = undefined;
 
-  if (powerUnitTypes && vehicleType === "powerUnit") {
-    typeObject = powerUnitTypes.find((v) => {
+  if (powerUnitSubTypes && vehicleType === VEHICLE_TYPES.POWER_UNIT) {
+    typeObject = powerUnitSubTypes.find((v) => {
       return v.typeCode == typeCode;
     });
-  } else if (trailerTypes && vehicleType === "trailer") {
-    typeObject = trailerTypes.find((v) => {
+  } else if (trailerSubTypes && vehicleType === VEHICLE_TYPES.TRAILER) {
+    typeObject = trailerSubTypes.find((v) => {
       return v.typeCode == typeCode;
     });
   }
@@ -155,8 +154,8 @@ export const mapApplicationToApplicationRequestData = (
  * @param vehicleType Vehicle type (powerUnit or trailer)
  * @returns display text for the vehicle type
  */
-export const vehicleTypeDisplayText = (vehicleType: VehicleTypesAsString) => {
-  if (vehicleType === "trailer") {
+export const vehicleTypeDisplayText = (vehicleType: VehicleType) => {
+  if (vehicleType === VEHICLE_TYPES.TRAILER) {
     return "Trailer";
   }
   return "Power Unit";

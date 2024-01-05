@@ -29,9 +29,11 @@ import { Optional } from "../../../../../../../common/types/common";
 import {
   PowerUnit,
   Trailer,
+  BaseVehicle,
+  VehicleSubType,
+  VEHICLE_TYPES,
   Vehicle,
-  VehicleType,
-} from "../../../../../../manageVehicles/types/managevehicles";
+} from "../../../../../../manageVehicles/types/Vehicle";
 
 import {
   TROS_INELIGIBLE_POWERUNITS,
@@ -40,7 +42,7 @@ import {
 
 import {
   CHOOSE_FROM_OPTIONS,
-  VEHICLE_TYPES,
+  VEHICLE_TYPE_OPTIONS,
 } from "../../../../../constants/constants";
 
 import {
@@ -51,11 +53,11 @@ import {
   requiredMessage,
 } from "../../../../../../../common/helpers/validationMessages";
 
-const selectedVehicleSubtype = (vehicle: Vehicle) => {
+const selectedVehicleSubtype = (vehicle: BaseVehicle) => {
   switch (vehicle.vehicleType) {
-    case "powerUnit":
+    case VEHICLE_TYPES.POWER_UNIT:
       return (vehicle as PowerUnit).powerUnitTypeCode;
-    case "trailer":
+    case VEHICLE_TYPES.TRAILER:
       return (vehicle as Trailer).trailerTypeCode;
     default:
       return "";
@@ -66,14 +68,14 @@ export const VehicleDetails = ({
   feature,
   vehicleData,
   vehicleOptions,
-  powerUnitTypes,
-  trailerTypes,
+  powerUnitSubTypes,
+  trailerSubTypes,
 }: {
   feature: string;
   vehicleData?: VehicleDetailsType;
-  vehicleOptions: (PowerUnit | Trailer)[];
-  powerUnitTypes: VehicleType[];
-  trailerTypes: VehicleType[];
+  vehicleOptions: Vehicle[];
+  powerUnitSubTypes: VehicleSubType[];
+  trailerSubTypes: VehicleSubType[];
 }) => {
   const formFieldStyle = {
     fontWeight: "bold",
@@ -87,7 +89,7 @@ export const VehicleDetails = ({
     description: "",
   };
 
-  const DEFAULT_VEHICLE_TYPE = "powerUnit";
+  const DEFAULT_VEHICLE_TYPE = VEHICLE_TYPES.POWER_UNIT;
 
   const { setValue, resetField, watch } = useFormContext();
 
@@ -98,7 +100,7 @@ export const VehicleDetails = ({
   // Radio button value to decide if the user wants to save the vehicle in inventory
   const [saveVehicle, setSaveVehicle] = useState(false);
   // Options for the vehicle subtype field (based on vehicle type)
-  const [subtypeOptions, setSubtypeOptions] = useState<VehicleType[]>([
+  const [subtypeOptions, setSubtypeOptions] = useState<VehicleSubType[]>([
     emptyVehicleSubtype,
   ]);
   const [selectedVehicle, setSelectedVehicle] =
@@ -108,7 +110,7 @@ export const VehicleDetails = ({
     // Update subtype options when vehicle type changes
     const subtypes = getEligibleSubtypeOptions(typeValue);
     setSubtypeOptions(subtypes);
-  }, [typeValue, powerUnitTypes, trailerTypes]);
+  }, [typeValue, powerUnitSubTypes, trailerSubTypes]);
 
   // Whenever context changes, set selected Vehicle details
   useEffect(() => {
@@ -125,18 +127,18 @@ export const VehicleDetails = ({
 
   // Returns correct subtype options based on vehicle type
   const getSubtypeOptions = (vehicleType: string) => {
-    if (vehicleType === "powerUnit") {
-      return [...powerUnitTypes];
+    if (vehicleType === VEHICLE_TYPES.POWER_UNIT) {
+      return [...powerUnitSubTypes];
     }
-    if (vehicleType === "trailer") {
-      return [...trailerTypes];
+    if (vehicleType === VEHICLE_TYPES.TRAILER) {
+      return [...trailerSubTypes];
     }
     return [emptyVehicleSubtype];
   };
 
   // Returns eligible subset of subtype options to be used by select field for vehicle subtype
   const getEligibleSubtypeOptions = (vehicleType?: string) => {
-    if (vehicleType !== "powerUnit" && vehicleType !== "trailer") {
+    if (vehicleType !== VEHICLE_TYPES.POWER_UNIT && vehicleType !== VEHICLE_TYPES.TRAILER) {
       return [emptyVehicleSubtype];
     }
 
@@ -193,7 +195,7 @@ export const VehicleDetails = ({
   };
 
   // Whenever a new vehicle is selected
-  const onSelectVehicle = (selectedVehicle: Vehicle) => {
+  const onSelectVehicle = (selectedVehicle: BaseVehicle) => {
     const vehicle = mapVinToVehicleObject(vehicleOptions, selectedVehicle.vin);
     if (!vehicle) {
       // vehicle selection is invalid
@@ -376,7 +378,7 @@ export const VehicleDetails = ({
                 label: "Vehicle Type",
                 width: formFieldStyle.width,
               }}
-              menuOptions={VEHICLE_TYPES.map((data) => (
+              menuOptions={VEHICLE_TYPE_OPTIONS.map((data) => (
                 <MenuItem
                   key={data.value}
                   value={data.value}

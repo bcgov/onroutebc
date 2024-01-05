@@ -17,8 +17,9 @@ import { Nullable } from "../../../../../../../../common/types/common";
 import {
   PowerUnit,
   Trailer,
-  Vehicle,
-} from "../../../../../../../manageVehicles/types/managevehicles";
+  BaseVehicle,
+  VEHICLE_TYPES,
+} from "../../../../../../../manageVehicles/types/Vehicle";
 
 import {
   TROS_INELIGIBLE_POWERUNITS,
@@ -57,7 +58,7 @@ export const SelectVehicleDropdown = ({
   label: string;
   width: string;
   vehicleOptions: (PowerUnit | Trailer)[];
-  handleSelectVehicle: (vehicle: Vehicle) => void;
+  handleSelectVehicle: (vehicle: BaseVehicle) => void;
   handleClearVehicle: () => void;
 }) => {
   const sortedVehicles = sortVehicles(chooseFrom, vehicleOptions);
@@ -74,7 +75,7 @@ export const SelectVehicleDropdown = ({
       <FormLabel className="select-field-form-label">{label}</FormLabel>
       <Autocomplete
         id="tros-select-vehicle"
-        onChange={(_, value: Nullable<Vehicle>, reason) => {
+        onChange={(_, value: Nullable<BaseVehicle>, reason) => {
           if (!value || reason === "clear") {
             handleClearVehicle();
           } else {
@@ -99,12 +100,15 @@ export const SelectVehicleDropdown = ({
         ]}
         renderOption={(props, option) => {
           if (!option) return "";
+
           const vehicleType =
-            option.vehicleType === "powerUnit" ? "powerUnit" : "trailer";
+            option.vehicleType === VEHICLE_TYPES.POWER_UNIT ? 
+              VEHICLE_TYPES.POWER_UNIT : VEHICLE_TYPES.TRAILER;
+          
           return (
             <li
               {...props}
-              key={option.vin}
+              key={option.unitNumber}
               data-testid={`select-vehicle-option-${vehicleType}`}
             >
               {chooseFrom == "plate" ? option.plate : option.unitNumber}

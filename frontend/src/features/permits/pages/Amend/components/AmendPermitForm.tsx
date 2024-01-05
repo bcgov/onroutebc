@@ -56,7 +56,7 @@ export const AmendPermitForm = () => {
   const modifyAmendmentMutation = useModifyAmendmentApplication();
   const snackBar = useContext(SnackBarContext);
 
-  const { handleSaveVehicle, vehicleOptions, powerUnitTypes, trailerTypes } =
+  const { handleSaveVehicle, vehicleOptions, powerUnitSubTypes, trailerSubTypes } =
     usePermitVehicleManagement(`${formData.companyId}`);
 
   const { handleSubmit, getValues } = formMethods;
@@ -197,8 +197,8 @@ export const AmendPermitForm = () => {
           permitCommodities={formData.permitData.commodities}
           vehicleDetails={formData.permitData.vehicleDetails}
           vehicleOptions={vehicleOptions}
-          powerUnitTypes={powerUnitTypes}
-          trailerTypes={trailerTypes}
+          powerUnitSubTypes={powerUnitSubTypes}
+          trailerSubTypes={trailerSubTypes}
           companyInfo={companyInfo}
           durationOptions={durationOptions}
         >

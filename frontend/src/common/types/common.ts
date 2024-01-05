@@ -10,7 +10,7 @@ import {
 import {
   PowerUnit,
   Trailer,
-} from "../../features/manageVehicles/types/managevehicles";
+} from "../../features/manageVehicles/types/Vehicle";
 
 export interface ApiErrorResponse {
   status: number;

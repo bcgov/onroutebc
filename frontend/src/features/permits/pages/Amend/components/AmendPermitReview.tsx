@@ -15,8 +15,8 @@ import {
 } from "../../../../../common/helpers/util";
 
 import {
-  usePowerUnitTypesQuery,
-  useTrailerTypesQuery,
+  usePowerUnitSubTypesQuery,
+  useTrailerSubTypesQuery,
 } from "../../../../manageVehicles/apiManager/hooks";
 
 export const AmendPermitReview = () => {
@@ -30,8 +30,8 @@ export const AmendPermitReview = () => {
   const { data: companyInfo } = useCompanyInfoDetailsQuery(
     getDefaultRequiredVal(0, permitFormData?.companyId),
   );
-  const powerUnitTypesQuery = usePowerUnitTypesQuery();
-  const trailerTypesQuery = useTrailerTypesQuery();
+  const powerUnitSubTypesQuery = usePowerUnitSubTypesQuery();
+  const trailerSubTypesQuery = useTrailerSubTypesQuery();
 
   // For the confirmation checkboxes
   const [isChecked, setIsChecked] = useState(false);
@@ -79,8 +79,8 @@ export const AmendPermitReview = () => {
         allChecked={isChecked}
         setAllChecked={setIsChecked}
         hasAttemptedCheckboxes={isSubmitted}
-        powerUnitTypes={powerUnitTypesQuery.data}
-        trailerTypes={trailerTypesQuery.data}
+        powerUnitSubTypes={powerUnitSubTypesQuery.data}
+        trailerSubTypes={trailerSubTypesQuery.data}
         vehicleDetails={permitFormData?.permitData?.vehicleDetails}
         vehicleWasSaved={
           permitFormData?.permitData?.vehicleDetails?.saveVehicle

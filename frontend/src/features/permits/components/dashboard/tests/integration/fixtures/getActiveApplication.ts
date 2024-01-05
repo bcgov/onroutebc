@@ -7,6 +7,7 @@ import { getDefaultCompanyInfo } from "./getCompanyInfo";
 import { TROS_COMMODITIES } from "../../../../../constants/termOversizeConstants";
 import { PERMIT_TYPES } from "../../../../../types/PermitType";
 import { getExpiryDate } from "../../../../../helpers/permitState";
+import { VEHICLE_TYPES } from "../../../../../../manageVehicles/types/Vehicle";
 import {
   DATE_FORMATS,
   dayjsToLocalStr,
@@ -127,7 +128,7 @@ export const getDefaultApplication = () => {
     year: vehicle.year,
     countryCode: vehicle.countryCode,
     provinceCode: vehicle.provinceCode,
-    vehicleType: "powerUnit",
+    vehicleType: VEHICLE_TYPES.POWER_UNIT,
     vehicleSubType: vehicle.powerUnitTypeCode,
     unitNumber: vehicle.unitNumber,
   };

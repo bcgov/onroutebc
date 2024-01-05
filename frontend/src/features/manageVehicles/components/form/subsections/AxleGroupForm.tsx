@@ -1,16 +1,17 @@
 import { useFormContext } from "react-hook-form";
-import "./VehicleForm.scss";
 import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import FormControl from "@mui/material/FormControl";
 import FormLabel from "@mui/material/FormLabel";
+import OutlinedInput from "@mui/material/OutlinedInput";
+
+import "./VehicleForm.scss";
 import {
   AxleFrontGroup,
   AxleType,
   AxleGroup,
-} from "../../../types/managevehicles";
-import OutlinedInput from "@mui/material/OutlinedInput";
+} from "../../../types/Vehicle";
 
 /**
  * The props that can be passed to the axle group form.

@@ -2,7 +2,9 @@ import { factory, nullable, primaryKey } from "@mswjs/data";
 import {
   PowerUnit,
   Trailer,
-} from "../../../../../../manageVehicles/types/managevehicles";
+  VEHICLE_TYPES,
+} from "../../../../../../manageVehicles/types/Vehicle";
+
 import {
   TROS_INELIGIBLE_POWERUNITS,
   TROS_INELIGIBLE_TRAILERS,
@@ -27,7 +29,7 @@ const vehicleSourceDef = factory({
     provinceCode: String,
     countryCode: String,
     powerUnitTypeCode: String,
-    vehicleType: () => "powerUnit",
+    vehicleType: (): string => VEHICLE_TYPES.POWER_UNIT,
   },
   trailer: {
     trailerId: primaryKey((): string => `${trailerId++}`),
@@ -43,14 +45,14 @@ const vehicleSourceDef = factory({
     provinceCode: String,
     countryCode: String,
     trailerTypeCode: String,
-    vehicleType: () => "trailer",
+    vehicleType: (): string => VEHICLE_TYPES.TRAILER,
   },
-  trailerType: {
+  trailerSubType: {
     typeCode: primaryKey(String),
     type: String,
     description: String,
   },
-  powerUnitType: {
+  powerUnitSubType: {
     typeCode: primaryKey(String),
     type: String,
     description: String,
@@ -92,7 +94,7 @@ export const getDefaultTrailers = () => [
   },
 ];
 
-export const getDefaultPowerUnitTypes = () => [
+export const getDefaultPowerUnitSubTypes = () => [
   {
     typeCode: "PUTYPEA",
     type: "Power Unit Type A",
@@ -111,7 +113,7 @@ export const getDefaultPowerUnitTypes = () => [
   { ...TROS_INELIGIBLE_POWERUNITS[0] },
 ];
 
-export const getDefaultTrailerTypes = () => [
+export const getDefaultTrailerSubTypes = () => [
   {
     typeCode: "TRAILTA",
     type: "Trailer Type A",
@@ -196,11 +198,11 @@ export const findTrailer = (vin: string) => {
 };
 
 const initVehicleSource = () => {
-  getDefaultPowerUnitTypes().forEach((powerUnitType) => {
-    vehicleSourceDef.powerUnitType.create(powerUnitType);
+  getDefaultPowerUnitSubTypes().forEach((powerUnitSubType) => {
+    vehicleSourceDef.powerUnitSubType.create(powerUnitSubType);
   });
-  getDefaultTrailerTypes().forEach((trailerType) => {
-    vehicleSourceDef.trailerType.create(trailerType);
+  getDefaultTrailerSubTypes().forEach((trailerSubType) => {
+    vehicleSourceDef.trailerSubType.create(trailerSubType);
   });
   getDefaultPowerUnits().forEach((powerUnit) => {
     createPowerUnit(powerUnit);
@@ -212,9 +214,9 @@ const initVehicleSource = () => {
 
 export const getAllPowerUnits = () => vehicleSourceDef.powerUnit.getAll();
 export const getAllTrailers = () => vehicleSourceDef.trailer.getAll();
-export const getAllPowerUnitTypes = () =>
-  vehicleSourceDef.powerUnitType.getAll();
-export const getAllTrailerTypes = () => vehicleSourceDef.trailerType.getAll();
+export const getAllPowerUnitSubTypes = () =>
+  vehicleSourceDef.powerUnitSubType.getAll();
+export const getAllTrailerSubTypes = () => vehicleSourceDef.trailerSubType.getAll();
 
 export const resetVehicleSource = () => {
   powerUnitId = 1;
@@ -233,14 +235,14 @@ export const resetVehicleSource = () => {
       },
     },
   });
-  vehicleSourceDef.powerUnitType.deleteMany({
+  vehicleSourceDef.powerUnitSubType.deleteMany({
     where: {
       typeCode: {
         contains: "",
       },
     },
   });
-  vehicleSourceDef.trailerType.deleteMany({
+  vehicleSourceDef.trailerSubType.deleteMany({
     where: {
       typeCode: {
         contains: "",

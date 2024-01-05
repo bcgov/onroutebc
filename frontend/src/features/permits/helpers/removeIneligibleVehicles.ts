@@ -1,27 +1,29 @@
 import {
   PowerUnit,
   Trailer,
-  Vehicle,
+  BaseVehicle,
+  VehicleSubType,
   VehicleType,
-} from "../../manageVehicles/types/managevehicles";
+  VEHICLE_TYPES,
+} from "../../manageVehicles/types/Vehicle";
 
 /**
  * A helper method that acts as a client side policy check to remove ineligible power unit or trailer subtypes from dropdown lists
  * @param vehicles Array of eligible and ineligible vehicle sub types
- * @param vehicleType String which is either "powerUnit" or "trailer"
+ * @param vehicleType Type of vehicle
  * @param ineligiblePowerUnits Array of ineligible power unit sub types
  * @param ineligibleTrailers Array of ineligible trailer sub types
  * @returns An array of eligible power unit or trailer sub types
  */
 export const removeIneligibleVehicleSubTypes = (
-  vehicles: VehicleType[],
-  vehicleType: "powerUnit" | "trailer",
-  ineligiblePowerUnits: VehicleType[],
-  ineligibleTrailers: VehicleType[],
+  vehicles: VehicleSubType[],
+  vehicleType: VehicleType,
+  ineligiblePowerUnits: VehicleSubType[],
+  ineligibleTrailers: VehicleSubType[],
 ) => {
-  let ineligibleList: VehicleType[] = [];
-  if (vehicleType === "powerUnit") ineligibleList = ineligiblePowerUnits;
-  if (vehicleType === "trailer") ineligibleList = ineligibleTrailers;
+  let ineligibleList: VehicleSubType[] = [];
+  if (vehicleType === VEHICLE_TYPES.POWER_UNIT) ineligibleList = ineligiblePowerUnits;
+  if (vehicleType === VEHICLE_TYPES.TRAILER) ineligibleList = ineligibleTrailers;
 
   const filteredVehicles = vehicles.filter((vehicle) => {
     return !ineligibleList.some(
@@ -35,24 +37,24 @@ export const removeIneligibleVehicleSubTypes = (
 /**
  * A helper method that acts as a client side policy check to remove ineligible power unit or trailer vehicles from dropdown lists
  * @param vehicles Array of eligible and ineligible vehicles
- * @param ineligiblePowerUnits Array of ineligible power unit sub types
- * @param ineligibleTrailers Array of ineligible trailer sub types
+ * @param ineligiblePowerUnitSubtypes Array of ineligible power unit sub types
+ * @param ineligibleTrailerSubtypes Array of ineligible trailer sub types
  * @returns An array of eligible vehicles
  */
 export const removeIneligibleVehicles = (
-  vehicles: Vehicle[],
-  ineligiblePowerUnits: VehicleType[],
-  ineligibleTrailers: VehicleType[],
+  vehicles: BaseVehicle[],
+  ineligiblePowerUnitSubtypes: VehicleSubType[],
+  ineligibleTrailerSubtypes: VehicleSubType[],
 ) => {
   const filteredVehicles = vehicles.filter((vehicle) => {
-    if (vehicle.vehicleType === "powerUnit") {
+    if (vehicle.vehicleType === VEHICLE_TYPES.POWER_UNIT) {
       const powerUnit = vehicle as PowerUnit;
-      return !ineligiblePowerUnits.some((ineligible) => {
+      return !ineligiblePowerUnitSubtypes.some((ineligible) => {
         return powerUnit.powerUnitTypeCode === ineligible.typeCode;
       });
-    } else if (vehicle.vehicleType === "trailer") {
+    } else if (vehicle.vehicleType === VEHICLE_TYPES.TRAILER) {
       const trailer = vehicle as Trailer;
-      return !ineligibleTrailers.some((ineligible) => {
+      return !ineligibleTrailerSubtypes.some((ineligible) => {
         return trailer.trailerTypeCode === ineligible.typeCode;
       });
     } else {

@@ -8,7 +8,6 @@ import { ManageProfiles } from "../features/manageProfile/ManageProfiles";
 import { ManageVehicles } from "../features/manageVehicles/ManageVehicles";
 import { AddVehicleDashboard } from "../features/manageVehicles/components/dashboard/AddVehicleDashboard";
 import { EditVehicleDashboard } from "../features/manageVehicles/components/dashboard/EditVehicleDashboard";
-import { VEHICLE_TYPES_ENUM } from "../features/manageVehicles/components/form/constants";
 import { CreateProfileWizard } from "../features/wizard/CreateProfileWizard";
 import { ApplicationSteps } from "../features/permits/ApplicationSteps";
 import { ROLES } from "../common/authentication/types";
@@ -26,6 +25,7 @@ import { AmendPermit } from "../features/permits/pages/Amend/AmendPermit";
 import { UniversalUnauthorized } from "../common/pages/UniversalUnauthorized";
 import { UniversalUnexpected } from "../common/pages/UniversalUnexpected";
 import { ChallengeProfileWizard } from "../features/wizard/ChallengeProfileWizard";
+import { VEHICLE_TYPES } from "../features/manageVehicles/types/Vehicle";
 
 export const AppRoutes = () => {
   return (
@@ -68,7 +68,7 @@ export const AppRoutes = () => {
             path={`${routes.VEHICLES_ROUTES.POWER_UNIT_DETAILS}/:vehicleId`}
             element={
               <EditVehicleDashboard
-                editVehicleMode={VEHICLE_TYPES_ENUM.POWER_UNIT}
+                editVehicleMode={VEHICLE_TYPES.POWER_UNIT}
               />
             }
           />
@@ -76,7 +76,7 @@ export const AppRoutes = () => {
             path={`${routes.VEHICLES_ROUTES.TRAILER_DETAILS}/:vehicleId`}
             element={
               <EditVehicleDashboard
-                editVehicleMode={VEHICLE_TYPES_ENUM.TRAILER}
+                editVehicleMode={VEHICLE_TYPES.TRAILER}
               />
             }
           />
@@ -84,7 +84,7 @@ export const AppRoutes = () => {
             path={routes.VEHICLES_ROUTES.ADD_POWER_UNIT}
             element={
               <AddVehicleDashboard
-                addVehicleMode={VEHICLE_TYPES_ENUM.POWER_UNIT}
+                addVehicleMode={VEHICLE_TYPES.POWER_UNIT}
               />
             }
           />
@@ -92,7 +92,7 @@ export const AppRoutes = () => {
             path={routes.VEHICLES_ROUTES.ADD_TRAILER}
             element={
               <AddVehicleDashboard
-                addVehicleMode={VEHICLE_TYPES_ENUM.TRAILER}
+                addVehicleMode={VEHICLE_TYPES.TRAILER}
               />
             }
           />

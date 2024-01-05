@@ -37,8 +37,8 @@ import {
   createTrailer,
   getAllPowerUnits,
   getAllTrailers,
-  getDefaultPowerUnitTypes,
-  getDefaultTrailerTypes,
+  getDefaultPowerUnitSubTypes,
+  getDefaultTrailerSubTypes,
   updatePowerUnit,
 } from "../fixtures/getVehicleInfo";
 
@@ -106,7 +106,7 @@ const server = setupServer(
   rest.get(VEHICLES_API.POWER_UNIT_TYPES, async (_, res, ctx) => {
     return res(
       ctx.json([
-        ...getDefaultPowerUnitTypes(), // get power unit types from mock vehicle store
+        ...getDefaultPowerUnitSubTypes(), // get power unit types from mock vehicle store
       ]),
     );
   }),
@@ -114,7 +114,7 @@ const server = setupServer(
   rest.get(VEHICLES_API.TRAILER_TYPES, async (_, res, ctx) => {
     return res(
       ctx.json([
-        ...getDefaultTrailerTypes(), // get trailer types from mock vehicle store
+        ...getDefaultTrailerSubTypes(), // get trailer types from mock vehicle store
       ]),
     );
   }),
@@ -257,7 +257,7 @@ export const getVehicleDetails = (
   };
   const vehicleSubtype = getDefaultRequiredVal(
     "",
-    getDefaultPowerUnitTypes().find(
+    getDefaultPowerUnitSubTypes().find(
       (subtype) => subtype.typeCode === vehicle.powerUnitTypeCode,
     )?.type,
   );

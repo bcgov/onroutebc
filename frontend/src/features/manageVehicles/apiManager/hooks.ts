@@ -1,18 +1,18 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 
-import { Vehicle, VehicleTypesAsString } from "../types/managevehicles";
+import { BaseVehicle, VehicleType } from "../types/Vehicle";
+import { Nullable } from "../../../common/types/common";
 import {
   addPowerUnit,
   addTrailer,
   getAllVehicles,
-  getPowerUnitTypes,
-  getTrailerTypes,
+  getPowerUnitSubTypes,
+  getTrailerSubTypes,
   getVehicleById,
   updatePowerUnit,
   updateTrailer,
 } from "./vehiclesAPI";
-import { Nullable } from "../../../common/types/common";
 
 /**
  * Fetches all vehicles.
@@ -29,10 +29,10 @@ export const useVehiclesQuery = (companyId: string) => {
 
 export const useVehicleByIdQuery = (
   companyId: string,
-  vehicleType: VehicleTypesAsString,
+  vehicleType: VehicleType,
   vehicleId?: string,
 ) => {
-  const [vehicle, setVehicle] = useState<Nullable<Vehicle>>();
+  const [vehicle, setVehicle] = useState<Nullable<BaseVehicle>>();
 
   const query = useQuery({
     queryKey: ["vehicle", "vehicleId", "vehicleType"],
@@ -53,13 +53,13 @@ export const useVehicleByIdQuery = (
 };
 
 /**
- * Fetches a list of vehicle subtypes for PowerUnit vehicles.
- * @returns List of vehicle subtypes for PowerUnit vehicles
+ * Fetches a list of vehicle subtypes for Power Unit vehicles.
+ * @returns List of vehicle subtypes for Power Unit vehicles
  */
-export const usePowerUnitTypesQuery = () => {
+export const usePowerUnitSubTypesQuery = () => {
   return useQuery({
-    queryKey: ["powerUnitTypes"],
-    queryFn: getPowerUnitTypes,
+    queryKey: ["powerUnitSubTypes"],
+    queryFn: getPowerUnitSubTypes,
     retry: false,
     refetchOnWindowFocus: false, // prevents unnecessary queries
   });
@@ -105,12 +105,12 @@ export const useUpdatePowerUnitMutation = () => {
 
 /**
  * Fetches a list of vehicle subtypes for trailer vehicles.
- * @returns list of vehicle subtypes for trailer vehicles
+ * @returns List of vehicle subtypes for trailer vehicles.
  */
-export const useTrailerTypesQuery = () => {
+export const useTrailerSubTypesQuery = () => {
   return useQuery({
-    queryKey: ["trailerTypes"],
-    queryFn: getTrailerTypes,
+    queryKey: ["trailerSubTypes"],
+    queryFn: getTrailerSubTypes,
     retry: false,
     refetchOnWindowFocus: false, // prevents unnecessary queries
   });

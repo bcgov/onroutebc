@@ -33,15 +33,16 @@ import { ROLES } from "../../../../common/authentication/types";
 import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import {
-  VehicleTypes,
-  VehicleTypesAsString,
+  Vehicle,
+  VehicleType,
   PowerUnit,
   Trailer,
-} from "../../types/managevehicles";
+  VEHICLE_TYPES,
+} from "../../types/Vehicle";
 
 import {
-  usePowerUnitTypesQuery,
-  useTrailerTypesQuery,
+  usePowerUnitSubTypesQuery,
+  useTrailerSubTypesQuery,
 } from "../../apiManager/hooks";
 
 import {
@@ -52,13 +53,13 @@ import {
 
 /**
  * Dynamically set the column based on vehicle type
- * @param vehicleType Either "powerUnit" | "trailer"
+ * @param vehicleType Type of the vehicle
  * @returns An array of column headers/accessor keys for Material React Table
  */
 const getColumns = (
-  vehicleType: VehicleTypesAsString,
-): MRT_ColumnDef<VehicleTypes>[] => {
-  if (vehicleType === "powerUnit") {
+  vehicleType: VehicleType,
+): MRT_ColumnDef<Vehicle>[] => {
+  if (vehicleType === VEHICLE_TYPES.POWER_UNIT) {
     return PowerUnitColumnDefinition;
   }
   return TrailerColumnDefinition;
@@ -79,15 +80,15 @@ export const List = memo(
     query,
     companyId,
   }: {
-    vehicleType: VehicleTypesAsString;
-    query: UseQueryResult<VehicleTypes[]>;
+    vehicleType: VehicleType;
+    query: UseQueryResult<Vehicle[]>;
     companyId: string;
   }) => {
     // Data, fetched from backend API
     const { data, isError, isFetching, isLoading } = query;
 
     // Column definitions for the table
-    const columns = useMemo<MRT_ColumnDef<VehicleTypes>[]>(
+    const columns = useMemo<MRT_ColumnDef<Vehicle>[]>(
       () => getColumns(vehicleType),
       [],
     );
@@ -97,15 +98,15 @@ export const List = memo(
     const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
     const hasNoRowsSelected = Object.keys(rowSelection).length === 0;
 
-    const powerUnitTypesQuery = usePowerUnitTypesQuery();
-    const trailerTypesQuery = useTrailerTypesQuery();
-    const fetchedPowerUnitTypes = getDefaultRequiredVal(
+    const powerUnitSubTypesQuery = usePowerUnitSubTypesQuery();
+    const trailerSubTypesQuery = useTrailerSubTypesQuery();
+    const fetchedPowerUnitSubTypes = getDefaultRequiredVal(
       [],
-      powerUnitTypesQuery.data,
+      powerUnitSubTypesQuery.data,
     );
-    const fetchedTrailerTypes = getDefaultRequiredVal(
+    const fetchedTrailerSubTypes = getDefaultRequiredVal(
       [],
-      trailerTypesQuery.data,
+      trailerSubTypesQuery.data,
     );
 
     const colTypeCodes = columns.filter(
@@ -117,10 +118,10 @@ export const List = memo(
 
     const transformVehicleCode = (code: string) => {
       let val;
-      if (vehicleType === "powerUnit") {
-        val = fetchedPowerUnitTypes?.filter((value) => value.typeCode === code);
+      if (vehicleType === VEHICLE_TYPES.POWER_UNIT) {
+        val = fetchedPowerUnitSubTypes?.filter((value) => value.typeCode === code);
       } else {
-        val = fetchedTrailerTypes?.filter((value) => value.typeCode === code);
+        val = fetchedTrailerSubTypes?.filter((value) => value.typeCode === code);
       }
       return val?.at(0)?.type ?? "";
     };
@@ -220,7 +221,7 @@ export const List = memo(
         rowSelection: rowSelection,
       },
       getRowId: (originalRow) => {
-        if (vehicleType === "powerUnit") {
+        if (vehicleType === VEHICLE_TYPES.POWER_UNIT) {
           const powerUnitRow = originalRow as PowerUnit;
           return powerUnitRow.powerUnitId as string;
         } else {
@@ -231,20 +232,20 @@ export const List = memo(
       onRowSelectionChange: setRowSelection,
       renderEmptyRowsFallback: () => <NoRecordsFound />,
       renderRowActions: useCallback(
-        ({ row }: { row: MRT_Row<VehicleTypes> }) => (
+        ({ row }: { row: MRT_Row<Vehicle> }) => (
           <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
             {DoesUserHaveRoleWithContext(ROLES.WRITE_VEHICLE) && (
               <>
                 <Tooltip arrow placement="left" title="Edit">
                   <IconButton
                     onClick={() => {
-                      if (vehicleType === "powerUnit") {
+                      if (vehicleType === VEHICLE_TYPES.POWER_UNIT) {
                         navigate(
                           `${VEHICLES_ROUTES.POWER_UNIT_DETAILS}/${row.getValue(
                             "powerUnitId",
                           )}`,
                         );
-                      } else if (vehicleType === "trailer") {
+                      } else if (vehicleType === VEHICLE_TYPES.TRAILER) {
                         navigate(
                           `${VEHICLES_ROUTES.TRAILER_DETAILS}/${row.getValue(
                             "trailerId",
@@ -285,7 +286,7 @@ export const List = memo(
       ),
       // Render a custom options Bar (inclues search and trash)
       renderTopToolbar: useCallback(
-        ({ table }: { table: MRT_TableInstance<VehicleTypes> }) => (
+        ({ table }: { table: MRT_TableInstance<Vehicle> }) => (
           <Box className="table-container__top-toolbar">
             <MRT_GlobalFilterTextField table={table} />
             {DoesUserHaveRoleWithContext(ROLES.WRITE_VEHICLE) && (

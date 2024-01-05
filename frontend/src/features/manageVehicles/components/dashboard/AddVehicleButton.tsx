@@ -11,8 +11,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 
-import { VEHICLE_TYPES_ENUM } from "../form/constants";
 import { VEHICLES_ROUTES } from "../../../../routes/constants";
+import { VEHICLE_TYPES, VehicleType } from "../../types/Vehicle";
 
 /**
  *
@@ -27,11 +27,11 @@ export const AddVehicleButton = () => {
 
   const options = [
     {
-      vehicleMode: VEHICLE_TYPES_ENUM.POWER_UNIT,
+      vehicleMode: VEHICLE_TYPES.POWER_UNIT,
       labelValue: "Power Unit",
     },
     {
-      vehicleMode: VEHICLE_TYPES_ENUM.TRAILER,
+      vehicleMode: VEHICLE_TYPES.TRAILER,
       labelValue: "Trailer",
     },
   ];
@@ -52,11 +52,11 @@ export const AddVehicleButton = () => {
   const handleMenuItemClick = (
     _event: React.MouseEvent<HTMLLIElement, MouseEvent>,
     _index: number,
-    vehicleMode: VEHICLE_TYPES_ENUM,
+    vehicleMode: VehicleType,
   ) => {
-    if (vehicleMode === VEHICLE_TYPES_ENUM.POWER_UNIT) {
+    if (vehicleMode === VEHICLE_TYPES.POWER_UNIT) {
       navigate(VEHICLES_ROUTES.ADD_POWER_UNIT);
-    } else if (vehicleMode === VEHICLE_TYPES_ENUM.TRAILER) {
+    } else if (vehicleMode === VEHICLE_TYPES.TRAILER) {
       navigate(VEHICLES_ROUTES.ADD_TRAILER);
     }
 

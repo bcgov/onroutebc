@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useContext } from "react";
 
 import "./VehicleForm.scss";
-import { PowerUnit, VehicleType } from "../../types/managevehicles";
+import { PowerUnit, VehicleSubType } from "../../types/Vehicle";
 import { CountryAndProvince } from "../../../../common/components/form/CountryAndProvince";
 import { CustomFormComponent } from "../../../../common/components/form/CustomFormComponents";
 import { SnackBarContext } from "../../../../App";
@@ -17,7 +17,7 @@ import {
 
 import {
   useAddPowerUnitMutation,
-  usePowerUnitTypesQuery,
+  usePowerUnitSubTypesQuery,
   useUpdatePowerUnitMutation,
 } from "../../apiManager/hooks";
 
@@ -69,7 +69,7 @@ export const PowerUnitForm = ({ powerUnit, companyId }: PowerUnitFormProps) => {
 
   const { handleSubmit } = formMethods;
 
-  const powerUnitTypesQuery = usePowerUnitTypesQuery();
+  const powerUnitSubTypesQuery = usePowerUnitSubTypesQuery();
   const addPowerUnitMutation = useAddPowerUnitMutation();
   const updatePowerUnitMutation = useUpdatePowerUnitMutation();
   const snackBar = useContext(SnackBarContext);
@@ -261,7 +261,7 @@ export const PowerUnitForm = ({ powerUnit, companyId }: PowerUnitFormProps) => {
               label: "Vehicle Sub-type",
               width: formFieldStyle.width,
             }}
-            menuOptions={powerUnitTypesQuery?.data?.map((data: VehicleType) => (
+            menuOptions={powerUnitSubTypesQuery?.data?.map((data: VehicleSubType) => (
               <MenuItem key={data.typeCode} value={data.typeCode}>
                 {data.type}
               </MenuItem>

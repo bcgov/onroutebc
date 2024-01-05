@@ -4,13 +4,13 @@ import { useNavigate } from "react-router-dom";
 import { useContext } from "react";
 
 import "./VehicleForm.scss";
-import { Trailer, VehicleType } from "../../types/managevehicles";
+import { Trailer, VEHICLE_TYPES, VehicleSubType } from "../../types/Vehicle";
 import { CountryAndProvince } from "../../../../common/components/form/CountryAndProvince";
 import { CustomFormComponent } from "../../../../common/components/form/CustomFormComponents";
 import { SnackBarContext } from "../../../../App";
 import {
   useAddTrailerMutation,
-  useTrailerTypesQuery,
+  useTrailerSubTypesQuery,
   useUpdateTrailerMutation,
 } from "../../apiManager/hooks";
 
@@ -68,7 +68,7 @@ export const TrailerForm = ({ trailer, companyId }: TrailerFormProps) => {
 
   const { handleSubmit } = formMethods;
 
-  const trailerTypesQuery = useTrailerTypesQuery();
+  const trailerSubTypesQuery = useTrailerSubTypesQuery();
   const addTrailerMutation = useAddTrailerMutation();
   const updateTrailerMutation = useUpdateTrailerMutation();
   const snackBar = useContext(SnackBarContext);
@@ -140,7 +140,7 @@ export const TrailerForm = ({ trailer, companyId }: TrailerFormProps) => {
   /**
    * The name of this feature that is used for id's, keys, and associating form components
    */
-  const FEATURE = "trailer";
+  const FEATURE = VEHICLE_TYPES.TRAILER;
 
   return (
     <div>
@@ -253,7 +253,7 @@ export const TrailerForm = ({ trailer, companyId }: TrailerFormProps) => {
               label: "Vehicle Sub-type",
               width: formFieldStyle.width,
             }}
-            menuOptions={trailerTypesQuery?.data?.map((data: VehicleType) => (
+            menuOptions={trailerSubTypesQuery?.data?.map((data: VehicleSubType) => (
               <MenuItem key={data.typeCode} value={data.typeCode}>
                 {data.type}
               </MenuItem>

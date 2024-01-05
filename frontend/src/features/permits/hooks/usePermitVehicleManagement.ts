@@ -1,15 +1,17 @@
 import { getDefaultRequiredVal } from "../../../common/helpers/util";
 import { VehicleDetails } from "../types/application.d";
+import { mapVinToVehicleObject } from "../helpers/mappers";
 import {
   PowerUnit,
   Trailer,
-} from "../../manageVehicles/types/managevehicles.d";
-import { mapVinToVehicleObject } from "../helpers/mappers";
+  VEHICLE_TYPES,
+} from "../../manageVehicles/types/Vehicle";
+
 import {
   useAddPowerUnitMutation,
   useAddTrailerMutation,
-  usePowerUnitTypesQuery,
-  useTrailerTypesQuery,
+  usePowerUnitSubTypesQuery,
+  useTrailerSubTypesQuery,
   useUpdatePowerUnitMutation,
   useUpdateTrailerMutation,
   useVehiclesQuery,
@@ -24,16 +26,16 @@ export const usePermitVehicleManagement = (companyId: string) => {
 
   // Queries used to populate select options for vehicle details
   const allVehiclesQuery = useVehiclesQuery(companyId);
-  const powerUnitTypesQuery = usePowerUnitTypesQuery();
-  const trailerTypesQuery = useTrailerTypesQuery();
+  const powerUnitSubTypesQuery = usePowerUnitSubTypesQuery();
+  const trailerSubTypesQuery = useTrailerSubTypesQuery();
 
   // Vehicle details that have been fetched by vehicle details queries
   const fetchedVehicles = getDefaultRequiredVal([], allVehiclesQuery.data);
-  const fetchedPowerUnitTypes = getDefaultRequiredVal(
+  const fetchedPowerUnitSubTypes = getDefaultRequiredVal(
     [],
-    powerUnitTypesQuery.data,
+    powerUnitSubTypesQuery.data,
   );
-  const fetchedTrailerTypes = getDefaultRequiredVal([], trailerTypesQuery.data);
+  const fetchedTrailerSubTypes = getDefaultRequiredVal([], trailerSubTypesQuery.data);
 
   const handleSaveVehicle = (vehicleData?: VehicleDetails) => {
     // Check if the "add/update vehicle" checkbox was checked by the user
@@ -74,7 +76,7 @@ export const usePermitVehicleManagement = (companyId: string) => {
       };
 
       switch (vehicleFormData.vehicleType) {
-        case "trailer":
+        case VEHICLE_TYPES.TRAILER:
           return {
             ...defaultTrailer,
             trailerId: getDefaultRequiredVal(
@@ -83,7 +85,7 @@ export const usePermitVehicleManagement = (companyId: string) => {
             ),
             unitNumber: getDefaultRequiredVal("", existingVehicle?.unitNumber),
           } as Trailer;
-        case "powerUnit":
+        case VEHICLE_TYPES.POWER_UNIT:
         default:
           return {
             ...defaultPowerUnit,
@@ -97,7 +99,7 @@ export const usePermitVehicleManagement = (companyId: string) => {
     };
 
     // If the vehicle type is a power unit then create a power unit object
-    if (vehicle.vehicleType === "powerUnit") {
+    if (vehicle.vehicleType === VEHICLE_TYPES.POWER_UNIT) {
       const powerUnit = transformByVehicleType(
         vehicle,
         existingVehicle,
@@ -116,7 +118,7 @@ export const usePermitVehicleManagement = (companyId: string) => {
           companyId,
         });
       }
-    } else if (vehicle.vehicleType === "trailer") {
+    } else if (vehicle.vehicleType === VEHICLE_TYPES.TRAILER) {
       const trailer = transformByVehicleType(
         vehicle,
         existingVehicle,
@@ -139,8 +141,8 @@ export const usePermitVehicleManagement = (companyId: string) => {
 
   return {
     handleSaveVehicle,
-    powerUnitTypes: fetchedPowerUnitTypes,
-    trailerTypes: fetchedTrailerTypes,
+    powerUnitSubTypes: fetchedPowerUnitSubTypes,
+    trailerSubTypes: fetchedTrailerSubTypes,
     vehicleOptions: fetchedVehicles,
   };
 };
