@@ -16,9 +16,7 @@ import { customLogger } from './common/logger/logger.config';
 import { CorrelationIdInterceptor } from './common/interceptor/correlationId.interceptor';
 
 const allowedOrigins = [
-  process.env.DOPS_URL,
-  process.env.FRONTEND_URL,
-  process.env.ACCESS_API_URL,
+  process.env.FRONTEND_URL
 ];
 
 async function bootstrap() {
@@ -30,7 +28,7 @@ async function bootstrap() {
     origin: function (origin, callback) {
       if (
         allowedOrigins.includes(origin) ||
-        (process.env.NODE_ENV !== 'production' && origin.includes('localhost'))
+        (process.env.NODE_ENV !== 'production' && origin?.includes('localhost'))
       ) {
         callback(null, true);
       } else {
