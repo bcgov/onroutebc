@@ -9,7 +9,7 @@ import {
 import { Mapper } from '@automapper/core';
 import { InjectMapper } from '@automapper/nestjs';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Brackets, DataSource, Like, Repository } from 'typeorm';
+import { Brackets, DataSource, Like, Repository, SelectQueryBuilder } from 'typeorm';
 import { CreatePermitDto } from './dto/request/create-permit.dto';
 import { ReadPermitDto } from './dto/response/read-permit.dto';
 import { Permit } from './entities/permit.entity';
@@ -59,7 +59,7 @@ import { LogAsyncMethodExecution } from '../../common/decorator/log-async-method
 import { SortDto } from '../common/dto/request/sort.dto';
 import * as constants from '../../common/constants/api.constant';
 import { PermitApprovalSource } from '../../common/enum/permit-approval-source.enum';
-import { SelectQueryBuilder } from 'typeorm';
+
 @Injectable()
 export class PermitService {
   private readonly logger = new Logger(PermitService.name);
