@@ -38,6 +38,7 @@ jobs:
     needs: [vars]
     uses: ./.github/workflows/deploy.yml
     secrets: inherit
+    environment: test
     with:
       environment: test
       release: test
