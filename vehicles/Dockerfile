@@ -28,7 +28,7 @@ RUN mkdir /.npm && chmod 777 /.npm
 WORKDIR /app
 
 # Set node to production
-ENV NODE_ENV production
+ENV NODE_ENV ${NODE_ENV}
 
 # Set environment variables
 ENV DB_TYPE ${DB_TYPE}
