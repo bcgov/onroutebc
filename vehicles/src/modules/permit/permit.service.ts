@@ -256,7 +256,7 @@ public async findUserPermit(
   searchValue?: string,
   sortDto?: SortDto[],
 ): Promise<PaginationDto<ReadPermitDto>> {
-  const permits = this.buildPermitQuery(pageOptionsDto, userGUID, companyId, expired, searchValue, sortDto);
+  const permits = this.buildPermitQuery(pageOptionsDto, userGUID, companyId, expired, searchValue);
   const sortedPermits = this.sortPermits(permits, sortDto)
   const totalItems = await sortedPermits.getCount();
   const { entities } = await permits.getRawAndEntities();
@@ -271,7 +271,6 @@ private buildPermitQuery(
   companyId: number,
   expired: string,
   searchValue?: string,
-  sortDto?: SortDto[],
 ): SelectQueryBuilder<Permit> {
   let permitsQuery = this.permitRepository
     .createQueryBuilder('permit')
