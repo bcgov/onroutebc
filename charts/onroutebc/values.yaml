@@ -211,7 +211,11 @@ dops:
       image: dops
       tag: "{{tpl .Values.global.tag .}}"
       env:
-        fromLocalConfigmap: 
+        fromLocalConfigmap:
+          - name: DOPS_URL
+            key: DOPS_URL
+          - name: FRONTEND_URL
+            key: FRONTEND_URL
           - name: ACCESS_API_URL
             key: ACCESS_API_URL
       ports:

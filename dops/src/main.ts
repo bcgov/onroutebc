@@ -15,12 +15,19 @@ import helmet from 'helmet';
 import { customLogger } from './logger/logger.config';
 import { CorrelationIdInterceptor } from './interceptor/correlationId.interceptor';
 
+const allowedOrigins = [
+  process.env.DOPS_URL,
+  process.env.FRONTEND_URL,
+  process.env.ACCESS_API_URL,
+];
+
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     logger: customLogger,
   });
   app.use(helmet());
   app.enableCors({
+    origin: allowedOrigins,
     methods: ['GET', 'PUT', 'POST', 'DELETE'],
     maxAge: 7200,
     credentials: false,

@@ -65,7 +65,7 @@ services:
       CHES_URL: ${CHES_URL}
       ACCESS_API_URL: "http://vehicles-api:5000"
       DOPS_URL: "http://dops-api:5001"
-      FRONT_END_URL: "http://frontend:3000"
+      FRONTEND_URL: "http://frontend:3000"
       PAYBC_API_KEY: ${PAYBC_API_KEY}
       PAYBC_REF_NUMBER: ${PAYBC_REF_NUMBER}
       PAYBC_BASE_URL: ${PAYBC_BASE_URL}
@@ -121,7 +121,7 @@ services:
       CDOGS_URL: ${CDOGS_URL}
       ACCESS_API_URL: "http://vehicles-api:5000"
       DOPS_URL: "http://dops-api:5001"
-      FRONT_END_URL: "http://frontend:3000"
+      FRONTEND_URL: "http://frontend:3000"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5001/"]
       interval: 1m30s
