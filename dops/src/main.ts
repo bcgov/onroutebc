@@ -27,7 +27,16 @@ async function bootstrap() {
   });
   app.use(helmet());
   app.enableCors({
-    origin: allowedOrigins,
+    origin: function (origin, callback) {
+      if (
+        allowedOrigins.includes(origin) ||
+        (process.env.NODE_ENV !== 'production' && origin.includes('localhost'))
+      ) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     methods: ['GET', 'PUT', 'POST', 'DELETE'],
     maxAge: 7200,
     credentials: false,

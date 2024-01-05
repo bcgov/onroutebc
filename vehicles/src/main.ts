@@ -19,12 +19,7 @@ const allowedOrigins = [
   process.env.DOPS_URL,
   process.env.FRONTEND_URL,
   process.env.ACCESS_API_URL,
-  'localhost'
 ];
-
-// if (process.env.LOCALHOST_DOMAIN) {
-//   allowedOrigins.push(process.env.LOCALHOST_DOMAIN);
-// }
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
@@ -32,7 +27,16 @@ async function bootstrap() {
   });
   app.use(helmet());
   app.enableCors({
-    origin: allowedOrigins,
+    origin: function (origin, callback) {
+      if (
+        allowedOrigins.includes(origin) ||
+        (process.env.NODE_ENV !== 'production' && origin.includes('localhost'))
+      ) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     methods: ['GET', 'PUT', 'POST', 'DELETE'],
     maxAge: 7200,
     credentials: false,

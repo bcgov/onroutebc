@@ -285,6 +285,7 @@ dops:
       - "mssql-{{tpl $.Values.vault.zone $}}"
       - "cdogs-{{tpl $.Values.vault.zone $}}"
       - "dops-{{tpl $.Values.vault.zone $}}"
+      - "s3-{{tpl $.Values.vault.zone $}}"
     zone: "{{.Values.global.vault.zone}}"
 
 tps-migration:
@@ -372,7 +373,7 @@ tps-migration:
     license: "{{.Values.global.license}}"
     secretPaths:
       - "auth0-{{tpl $.Values.vault.zone $}}"
-      - "mssql-{{tpl $.Values.vault.zone $}}"
-      - "dops-{{tpl $.Values.vault.zone $}}"
+      - "mssql-{{tpl $.Values.vault.zone $}}"      
       - "tps-{{tpl $.Values.vault.zone $}}"
+      - "s3-{{tpl $.Values.vault.zone $}}"
     zone: "{{.Values.global.vault.zone}}"
