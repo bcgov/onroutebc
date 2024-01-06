@@ -38,6 +38,7 @@ export class TpsPermitService {
   async uploadTpsPermit() {
     const tpsPermits: TpsPermit[] = await this.tpsPermitRepository.find({
       where: { s3UploadStatus: S3uploadStatus.Pending },
+      select: { migrationId: true },
       take: LIMIT,
     });
     const ids = tpsPermits.map((tpsPermit) => tpsPermit.migrationId);
@@ -51,7 +52,10 @@ export class TpsPermitService {
         })
         .where('migrationId IN (:...ids)', { ids: ids })
         .execute();
-      for (const tpsPermit of tpsPermits) {
+      for (const id of ids) {
+        const tpsPermit: TpsPermit = await this.tpsPermitRepository.findOne({
+          where: { migrationId: id },
+        });
         //Check to verify if permit document already exists in orbc permit table to avoid duplicate uploads.
         //Only proceed if permit exists in orbc permit table and it does not have a document id.
         const permit = await this.permitRepository.findOne({
@@ -136,6 +140,7 @@ export class TpsPermitService {
   async reprocessTpsPermit() {
     const tpsPermits: TpsPermit[] = await this.tpsPermitRepository.find({
       where: { s3UploadStatus: S3uploadStatus.Error, retryCount: LessThan(3) },
+      select: { migrationId: true },
       take: LIMIT,
     });
 
@@ -150,7 +155,10 @@ export class TpsPermitService {
         })
         .where('migrationId IN (:...ids)', { ids: ids })
         .execute();
-      for (const tpsPermit of tpsPermits) {
+      for (const id of ids) {
+        const tpsPermit: TpsPermit = await this.tpsPermitRepository.findOne({
+          where: { migrationId: id },
+        });
         //Check to verify if permit document already exists in orbc permit table to avoid duplicate uploads.
         //Only proceed if permit exists in orbc permit table and it does not have a document id.
         const permit = await this.permitRepository.findOne({
