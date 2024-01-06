@@ -33,6 +33,7 @@ import {
   VehicleSubType,
   VEHICLE_TYPES,
   Vehicle,
+  VehicleType,
 } from "../../../../../../manageVehicles/types/Vehicle";
 
 import {
@@ -99,6 +100,11 @@ export const VehicleDetails = ({
   const [chooseFrom, setChooseFrom] = useState("");
   // Radio button value to decide if the user wants to save the vehicle in inventory
   const [saveVehicle, setSaveVehicle] = useState(false);
+
+  // Disable vehicle type selection when a vehicle has been selected from dropdown
+  // Enable only when user chooses to manually enter new vehicle info by clearing the vehicle details
+  const [disableVehicleTypeSelect, setDisableVehicleTypeSelect] = useState(false);
+
   // Options for the vehicle subtype field (based on vehicle type)
   const [subtypeOptions, setSubtypeOptions] = useState<VehicleSubType[]>([
     emptyVehicleSubtype,
@@ -124,6 +130,22 @@ export const VehicleDetails = ({
       setNewVehicle(selectedVehicle);
     }
   }, [selectedVehicle]);
+
+  useEffect(() => {
+    const existingVehicle = vehicleData?.vehicleType ?
+      mapToVehicleObjectById(
+        vehicleOptions,
+        vehicleData.vehicleType as VehicleType,
+        vehicleData?.vehicleId,
+      ) :
+      undefined;
+
+    if (existingVehicle) {
+      setDisableVehicleTypeSelect(true);
+    } else {
+      setDisableVehicleTypeSelect(false);
+    }
+  }, [vehicleData, vehicleOptions]);
 
   // Returns correct subtype options based on vehicle type
   const getSubtypeOptions = (vehicleType: string) => {
@@ -177,6 +199,7 @@ export const VehicleDetails = ({
     resetField("permitData.vehicleDetails.vehicleSubType", {
       defaultValue: "",
     });
+    setDisableVehicleTypeSelect(false); // enable vehicle type selection
   };
 
   // Set new vehicle selection
@@ -194,6 +217,7 @@ export const VehicleDetails = ({
       "permitData.vehicleDetails.vehicleSubType",
       vehicle.vehicleSubType,
     );
+    setDisableVehicleTypeSelect(true); // disable vehicle type selection
   };
 
   // Whenever a new vehicle is selected
@@ -381,6 +405,8 @@ export const VehicleDetails = ({
             <CustomFormComponent
               type="select"
               feature={feature}
+              readOnly={disableVehicleTypeSelect}
+              disabled={disableVehicleTypeSelect}
               options={{
                 name: "permitData.vehicleDetails.vehicleType",
                 rules: {
