@@ -12,6 +12,7 @@ jobs:
       - uses: simbo/msteams-message-card-action@latest
         with:
           webhook: ${{ vars.MS_TEAMS_WEBHOOK_URI }}
+          summary: "${{github.event.workflow_run.event}}-${{github.event.workflow_run.status}}"
           title: "${{github.event.workflow_run.head_commit.message}}" 
           color: 'ff69b4'
           buttons: |
@@ -23,8 +24,6 @@ jobs:
                 title: ${{github.event.workflow_run.head_commit.committer.name}}
                 subtitle: ${{github.event.workflow_run.head_commit.timestamp}}
                 image: ${{github.event.workflow_run.head_repository.owner.avatar_url}}
-              text: | 
-                ${{github.event.workflow_run.event}}-${{github.event.workflow_run.status}}
   notify-teams-merged:
     if: ${{github.event.workflow_run.event == 'push'}}
     runs-on: ubuntu-22.04
@@ -50,6 +49,7 @@ jobs:
           webhook: ${{ vars.MS_TEAMS_WEBHOOK_URI }}
           title: "${{github.event.workflow_run.head_commit.message}}" 
           color: '28a745'
+          summary: "${{github.event.workflow_run.event}}-${{github.event.workflow_run.status}}"
           buttons: |
             Pull Request ${{steps.pr.outputs.pr}} ${{github.event.workflow_run.repository.html_url}}/pull/${{steps.pr.outputs.pr}}
             Diff ${{github.event.workflow_run.repository.html_url}}/pull/${{steps.pr.outputs.pr}}/files
@@ -59,5 +59,3 @@ jobs:
                 title: ${{github.event.workflow_run.head_commit.committer.name}}
                 subtitle: ${{github.event.workflow_run.head_commit.timestamp}}
                 image: ${{github.event.workflow_run.head_repository.owner.avatar_url}}
-              text: | 
-                  ${{github.event.workflow_run.event}}-${{github.event.workflow_run.status}}
