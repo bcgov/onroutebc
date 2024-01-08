@@ -1,7 +1,6 @@
 import {
   Injectable,
   InternalServerErrorException,
-  Logger,
 } from '@nestjs/common';
 import { TpsPermit } from './entities/tps-permit.entity';
 import { LessThan, Repository } from 'typeorm';
@@ -30,8 +29,6 @@ export class TpsPermitService {
     private documentRepository: Repository<Document>,
     private readonly s3Service: S3Service,
   ) {}
-
-  private readonly logger = new Logger(TpsPermitService.name);
 
   /**
    * Scheduled method to run every 5 minute. To upload PENDING TPS permits pdf to S3, update ORBC_DOCUMENT and ORBC_PERMIT table. and delete migrated permit and pdf from TPS_MIGRATED_PERMIT table.
@@ -163,8 +160,8 @@ export class TpsPermitService {
           s3ObjectId,
         );
       } catch (err) {
-        this.logger.error('Error while upload to s3. ', err);
-        this.logger.error('Failed permit numer ', tpsPermit.permitNumber);
+        console.log('Error while upload to s3. ', err);
+        console.log('Failed permit numer ', tpsPermit.permitNumber);
         await this.tpsPermitRepository.update(
           {
             migrationId: tpsPermit.migrationId,
@@ -175,7 +172,7 @@ export class TpsPermitService {
           },
         );
       }
-      this.logger.log(
+      console.log(
         tpsPermit.permitNumber + ' uploaded successfully.',
         s3Object.Location,
       );
@@ -207,7 +204,7 @@ export class TpsPermitService {
           );
         }
       } catch (err) {
-        this.logger.log(err);
+        console.log(err);
       }
     }
   }
