@@ -13,8 +13,10 @@ export function LogAsyncMethodExecution(logMethodOptions?: {
     const logger = new Logger(target.constructor.name);
     const originalMethod = descriptor.value;
     descriptor.value = async function (...args: any[]) {
-      if (logMethodOptions?.printMemoryStats  &&
-        process.env.DOPS_API_LOG_LEVEL === 'debug') {
+      if (
+        logMethodOptions?.printMemoryStats &&
+        process.env.DOPS_API_LOG_LEVEL === 'debug'
+      ) {
         const memoryStats = process.memoryUsage();
         memoryUsage = `, Memory usage: ${JSON.stringify(memoryStats)}`;
       }
@@ -26,8 +28,10 @@ export function LogAsyncMethodExecution(logMethodOptions?: {
       const result = await originalMethod.apply(this, args);
       const end = performance.now();
       const executionTime = end - start;
-      if (logMethodOptions?.printMemoryStats  &&
-        process.env.DOPS_API_LOG_LEVEL === 'debug') {
+      if (
+        logMethodOptions?.printMemoryStats &&
+        process.env.DOPS_API_LOG_LEVEL === 'debug'
+      ) {
         const memoryStats = process.memoryUsage();
         memoryUsage = `, Memory usage: ${JSON.stringify(memoryStats)}`;
       }
