@@ -53,6 +53,8 @@ export class TpsPermitService {
         .where('migrationId IN (:...ids)', { ids: ids })
         .execute();
       await this.uploadToS3(ids);
+        // Permit existing with a document id indicates duplicate record.
+            permit.companyId,
     }
   }
 
@@ -176,30 +178,32 @@ export class TpsPermitService {
         s3Object.Location,
       );
       try {
-        if (s3Object) {
-          const document = await this.createDocument(
-            s3ObjectId,
-            s3Object,
-            tpsPermit,
+          if (s3Object) {
+            const document = await this.createDocument(
+              s3ObjectId,
+              s3Object,
+              tpsPermit,
             permit.companyId,
-          );
-          await this.permitRepository.update(
-            {
-              tpsPermitNumber: tpsPermit.permitNumber,
-              revision: tpsPermit.revision - 1,
-            },
-            {
-              documentId: document.documentId,
-            },
-          );
+            );
+            await this.permitRepository.update(
+              {
+                tpsPermitNumber: tpsPermit.permitNumber,
+                revision: tpsPermit.revision - 1,
+              },
+              {
+                documentId: document.documentId,
+              },
+            );
 
-          await this.tpsPermitRepository.delete({
-            migrationId: tpsPermit.migrationId,
-          });
-        }
+            await this.tpsPermitRepository.delete({
+              migrationId: tpsPermit.migrationId,
+            });
+          }
       } catch (err) {
         this.logger.log(err);
+        }
       }
     }
   }
+    companyId: number,
 }

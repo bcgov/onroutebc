@@ -26,11 +26,16 @@ import { PermitTypeSelect } from "./subcomponents/PermitTypeSelect";
 import { ReportDateTimePickers } from "./subcomponents/ReportDateTimePickers";
 import { UserSelect } from "./subcomponents/UserSelect";
 import { Loading } from "../../../../common/pages/Loading";
+import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
+import { useAuth } from "react-oidc-context";
 
 /**
  * Component for Payment and Refund Detail form
  */
 export const PaymentAndRefundDetail = () => {
+  const { idirUserDetails } = useContext(OnRouteBCContext);
+  const { user: idirUserFromAuthContext } = useAuth();
+  const isSysAdmin = idirUserDetails?.userAuthGroup === "SYSADMIN";
   // GET the permit types.
   const permitTypesQuery = usePermitTypesQuery();
   const { setSnackBar } = useContext(SnackBarContext);
@@ -58,17 +63,18 @@ export const PaymentAndRefundDetail = () => {
       ) as Record<string, string>;
     },
     keepPreviousData: true,
+    enabled: isSysAdmin,
     staleTime: ONE_HOUR,
     retry: false,
     refetchOnWindowFocus: false, // prevents unnecessary queries
   });
 
-  const { data: permitIssuers, isLoading: ispermitIssuersQueryLoading } =
+  const { data: permitIssuers, isLoading: isPermitIssuersQueryLoading } =
     permitIssuersQuery;
 
   const formMethods = useForm<PaymentAndRefundDetailFormData>({
     defaultValues: {
-      issuedBy: ["SELF_ISSUED", "PPC"],
+      issuedBy: [REPORT_ISSUED_BY.SELF_ISSUED, REPORT_ISSUED_BY.PPC],
       fromDateTime: dayjs()
         .subtract(1, "day")
         .set("h", 21)
@@ -78,7 +84,12 @@ export const PaymentAndRefundDetail = () => {
       toDateTime: dayjs().set("h", 20).set("m", 59).set("s", 59).set("ms", 999),
       paymentMethods: Object.keys(CONSOLIDATED_PAYMENT_METHODS),
       permitType: Object.keys(permitTypes ?? []),
-      users: Object.keys(permitIssuers ?? {}),
+      // permitIssuers is a <userName, userGUID> record.
+      // So, Object.values is what we need.
+      users: isSysAdmin
+        ? Object.values(permitIssuers ?? {})
+        : // If user is not a sys admin, only their own guid is populated.
+          [idirUserFromAuthContext?.profile?.idir_user_guid as string],
     },
     reValidateMode: "onBlur",
   });
@@ -108,9 +119,11 @@ export const PaymentAndRefundDetail = () => {
 
   useEffect(() => {
     if (permitIssuers) {
-      setValue("users", Object.keys(permitIssuers));
+      // permitIssuers is a <userName, userGUID> record.
+      // So, Object.values is what we need.
+      setValue("users", Object.values(permitIssuers));
     }
-  }, [ispermitIssuersQueryLoading]);
+  }, [isPermitIssuersQueryLoading]);
 
   /**
    * Uses the CONSOLIDATED PAYMENT METHODS object to get
@@ -220,12 +233,14 @@ export const PaymentAndRefundDetail = () => {
               <Stack>
                 <PaymentMethodSelect />
               </Stack>
-              <Stack direction="row">
-                <UserSelect
-                  permitIssuers={permitIssuers}
-                  key="user-select-subcomponent"
-                />
-              </Stack>
+              {isSysAdmin && (
+                <Stack direction="row">
+                  <UserSelect
+                    permitIssuers={permitIssuers}
+                    key="user-select-subcomponent"
+                  />
+                </Stack>
+              )}
               <Stack direction="row" spacing={3}>
                 <ReportDateTimePickers />
               </Stack>
