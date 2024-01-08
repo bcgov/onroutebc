@@ -49,5 +49,6 @@ migrate_db_current ${MSSQL_SA_USER} "${MSSQL_SA_PASSWORD}" "${MSSQL_HOST}" ${MSS
 
 # Load sample data if configured
 if [[ ${MSSQL_LOAD_SAMPLE_DATA} -eq 1 ]]; then
-  /usr/config/utility/refresh-sample-data.sh -u ${MSSQL_SA_USER} -p "${MSSQL_SA_PASSWORD}" -s ${MSSQL_HOST} -d ${MSSQL_DB} 
+  /usr/config/utility/refresh-sample-data.sh -u ${MSSQL_SA_USER} -p '"${MSSQL_SA_PASSWORD}"' -s ${MSSQL_HOST} -d ${MSSQL_DB} 
+  /usr/config/utility/refresh-sample-idir-users.sh -u ${MSSQL_SA_USER} -p '"${MSSQL_SA_PASSWORD}"' -s ${MSSQL_HOST} -d ${MSSQL_DB} 
 fi
