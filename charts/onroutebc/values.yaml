@@ -103,7 +103,7 @@ vehicles:
       command:
         - "sh"
         - "-c"
-        - "source /vault/secrets/KEYCLOAK-{{.Values.global.vault.zone}}  && source /vault/secrets/keycloak-{{.Values.global.vault.zone}} && source /vault/secrets/ches-{{.Values.global.vault.zone}} && source /vault/secrets/mssql-{{.Values.global.vault.zone}} && source /vault/secrets/payment-{{.Values.global.vault.zone}} && source /vault/secrets/vehicles-{{.Values.global.vault.zone}} && npm run start:prod"
+        - "source /vault/secrets/keycloak-{{.Values.global.vault.zone}} && source /vault/secrets/ches-{{.Values.global.vault.zone}} && source /vault/secrets/mssql-{{.Values.global.vault.zone}} && source /vault/secrets/payment-{{.Values.global.vault.zone}} && source /vault/secrets/vehicles-{{.Values.global.vault.zone}} && npm run start:prod"
       registry: '{{ .Values.global.registry }}'
       repository: '{{ .Values.global.repository }}' # example, it includes registry and repository
       image: vehicles
@@ -179,8 +179,7 @@ vehicles:
         memory: 100Mi
     role: "{{.Values.global.vault.role}}"
     license: "{{.Values.global.license}}"
-    secretPaths:
-      - "KEYCLOAK-{{tpl $.Values.vault.zone $}}"
+    secretPaths:      
       - "keycloak-{{tpl $.Values.vault.zone $}}"
       - "ches-{{tpl $.Values.vault.zone $}}"
       - "mssql-{{tpl $.Values.vault.zone $}}"
@@ -207,7 +206,7 @@ dops:
       command:
         - "sh"
         - "-c"
-        - "source /vault/secrets/KEYCLOAK-{{.Values.global.vault.zone}}  && source /vault/secrets/keycloak-{{.Values.global.vault.zone}} && source /vault/secrets/mssql-{{.Values.global.vault.zone}} && source /vault/secrets/cdogs-{{.Values.global.vault.zone}} && source /vault/secrets/dops-{{.Values.global.vault.zone}} && source /vault/secrets/s3-{{.Values.global.vault.zone}} && npm run start:prod"
+        - "source /vault/secrets/keycloak-{{.Values.global.vault.zone}} && source /vault/secrets/mssql-{{.Values.global.vault.zone}} && source /vault/secrets/cdogs-{{.Values.global.vault.zone}} && source /vault/secrets/dops-{{.Values.global.vault.zone}} && source /vault/secrets/s3-{{.Values.global.vault.zone}} && npm run start:prod"
       registry: '{{ .Values.global.registry }}'
       repository: '{{ .Values.global.repository }}' # example, it includes registry and repository
       image: dops
@@ -281,8 +280,7 @@ dops:
         memory: 100Mi
     role: "{{.Values.global.vault.role}}"
     license: "{{.Values.global.license}}"
-    secretPaths:
-      - "KEYCLOAK-{{tpl $.Values.vault.zone $}}"
+    secretPaths:      
       - "keycloak-{{tpl $.Values.vault.zone $}}"
       - "mssql-{{tpl $.Values.vault.zone $}}"
       - "cdogs-{{tpl $.Values.vault.zone $}}"
@@ -305,7 +303,7 @@ tps-migration:
       command:
         - "sh"
         - "-c"
-        - "source /vault/secrets/KEYCLOAK-{{.Values.global.vault.zone}} && source /vault/secrets/keycloak-{{.Values.global.vault.zone}} && source /vault/secrets/mssql-{{.Values.global.vault.zone}} && source /vault/secrets/s3-{{.Values.global.vault.zone}} && source /vault/secrets/tps-{{.Values.global.vault.zone}} && npm run start:prod"
+        - "source /vault/secrets/keycloak-{{.Values.global.vault.zone}} && source /vault/secrets/mssql-{{.Values.global.vault.zone}} && source /vault/secrets/s3-{{.Values.global.vault.zone}} && source /vault/secrets/tps-{{.Values.global.vault.zone}} && npm run start:prod"
       registry: '{{ .Values.global.registry }}'
       repository: '{{ .Values.global.repository }}' # example, it includes registry and repository
       image: tps-migration
@@ -373,8 +371,7 @@ tps-migration:
         memory: 100Mi
     role: "{{.Values.global.vault.role}}"
     license: "{{.Values.global.license}}"
-    secretPaths:
-      - "KEYCLOAK-{{tpl $.Values.vault.zone $}}"
+    secretPaths:      
       - "keycloak-{{tpl $.Values.vault.zone $}}"
       - "mssql-{{tpl $.Values.vault.zone $}}"      
       - "tps-{{tpl $.Values.vault.zone $}}"
