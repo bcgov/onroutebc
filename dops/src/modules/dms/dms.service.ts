@@ -27,8 +27,6 @@ export class DmsService {
     private readonly s3Service: S3Service,
   ) {}
 
-  private s3accessType = process.env.DOPS_S3_ACCESS_TYPE;
-
   @LogAsyncMethodExecution()
   async create(
     currentUser: IUserJWT,
