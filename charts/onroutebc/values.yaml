@@ -179,7 +179,7 @@ vehicles:
         memory: 100Mi
     role: "{{.Values.global.vault.role}}"
     license: "{{.Values.global.license}}"
-    secretPaths:      
+    secretPaths:
       - "keycloak-{{tpl $.Values.vault.zone $}}"
       - "ches-{{tpl $.Values.vault.zone $}}"
       - "mssql-{{tpl $.Values.vault.zone $}}"
@@ -280,7 +280,7 @@ dops:
         memory: 100Mi
     role: "{{.Values.global.vault.role}}"
     license: "{{.Values.global.license}}"
-    secretPaths:      
+    secretPaths:
       - "keycloak-{{tpl $.Values.vault.zone $}}"
       - "mssql-{{tpl $.Values.vault.zone $}}"
       - "cdogs-{{tpl $.Values.vault.zone $}}"
@@ -371,7 +371,7 @@ tps-migration:
         memory: 100Mi
     role: "{{.Values.global.vault.role}}"
     license: "{{.Values.global.license}}"
-    secretPaths:      
+    secretPaths:
       - "keycloak-{{tpl $.Values.vault.zone $}}"
       - "mssql-{{tpl $.Values.vault.zone $}}"      
       - "tps-{{tpl $.Values.vault.zone $}}"
