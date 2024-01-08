@@ -201,7 +201,7 @@ export class TpsPermitService {
             migrationId: tpsPermit.migrationId,
           });
         } else {
-          new InternalServerErrorException(
+         throw new InternalServerErrorException(
             'S3 Upload Failed for TPS Permit Number ',
             permit.tpsPermitNumber,
           );
