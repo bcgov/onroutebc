@@ -25,10 +25,10 @@ import OnRouteBCContext, {
 import { MigratedClient } from "./common/authentication/types";
 
 const authority =
-  import.meta.env.VITE_AUTH0_ISSUER_URL || envConfig.VITE_AUTH0_ISSUER_URL;
+  import.meta.env.VITE_KEYCLOAK_ISSUER_URL || envConfig.VITE_KEYCLOAK_ISSUER_URL;
 
 const client_id =
-  import.meta.env.VITE_AUTH0_AUDIENCE || envConfig.VITE_AUTH0_AUDIENCE;
+  import.meta.env.VITE_KEYCLOAK_AUDIENCE || envConfig.VITE_KEYCLOAK_AUDIENCE;
 
 /**
  * The OIDC Configuration needed for authentication.
