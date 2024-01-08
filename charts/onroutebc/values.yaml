@@ -10,6 +10,8 @@ global:
   secrets:
     annotation:
       helm.sh/policy: "keep"
+  # The image registry of OpenShift. It is used in conjunction with ImageStreams which is a OpenShift specific resource.
+  openshiftImageRegistry: "image-registry.openshift-image-registry.svc:5000"
   domain: "apps.silver.devops.gov.bc.ca" # it is required, apps.silver.devops.gov.bc.ca for silver cluster
   vault:
     role: "nonprod"
