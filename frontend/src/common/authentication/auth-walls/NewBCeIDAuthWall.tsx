@@ -1,12 +1,18 @@
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
 import { useAuth } from "react-oidc-context";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 
 import { useUserContext } from "../../../features/manageProfile/apiManager/hooks";
-import { APPLICATIONS_ROUTES, CREATE_PROFILE_WIZARD_ROUTES, ERROR_ROUTES, HOME } from "../../../routes/constants";
+import {
+  APPLICATIONS_ROUTES,
+  CREATE_PROFILE_WIZARD_ROUTES,
+  ERROR_ROUTES,
+  HOME,
+} from "../../../routes/constants";
 import { Loading } from "../../pages/Loading";
 import { IDPS } from "../../types/idp";
 import { BCeIDUserContextType } from "../types";
+import OnRouteBCContext from "../OnRouteBCContext";
 
 const isBCeID = (identityProvider: string) => identityProvider === IDPS.BCEID;
 
@@ -66,11 +72,21 @@ export const NewBCeIDAuthWall = () => {
     user: userFromToken,
   } = useAuth();
 
+  const { userDetails } = useContext(OnRouteBCContext);
+  console.log('userDetails::', userDetails);
+
+  console.log(
+    "Boolean(!(userDetails?.userAuthGroup && userDetails?.userName))::",
+    Boolean(!(userDetails?.userAuthGroup && userDetails?.userName)),
+  );
+
   const {
     data: userContextData,
     isLoading: isUserContextLoading,
     isError: isUserContextError,
-  } = useUserContext();
+  } = useUserContext(
+    Boolean(!(userDetails?.userAuthGroup && userDetails?.userName)),
+  );
 
   const userIDP = userFromToken?.profile?.identity_provider as string;
   const location = useLocation();
@@ -81,13 +97,20 @@ export const NewBCeIDAuthWall = () => {
     }
   }, [isAuthLoading, isAuthenticated]);
 
-  if (isAuthLoading || isUserContextLoading) {
+  console.log(
+    "isAuthLoading || isUserContextLoading::",
+    isAuthLoading || isUserContextLoading,
+  );
+  if (!userDetails?.userAuthGroup && (isAuthLoading || isUserContextLoading)) {
     return <Loading />;
   }
 
   if (isAuthenticated && !isUserContextLoading && !isUserContextError) {
     if (isBCeID(userIDP)) {
-      if (userContextData && !userContextData.user?.userAuthGroup) {
+      if (
+        (!userDetails?.userAuthGroup && !isUserContextLoading) ||
+        (userContextData && !userContextData.user?.userAuthGroup)
+      ) {
         // The user is now authenticated and confirmed to be a new user
         return <Outlet />;
       }

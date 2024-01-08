@@ -55,9 +55,10 @@ export const useCompanyInfoDetailsQuery = (companyId: number) => {
 
 /**
  * Hook to set up the user context after fetching the data from user-context api.
+ * @param enabled boolean indicating if the query is enabled. Defaults to true.
  * @returns UseQueryResult containing the query results.
  */
-export const useUserContext = () => {
+export const useUserContext = (enabled = true) => {
   const {
     setCompanyId,
     setUserDetails,
@@ -72,10 +73,12 @@ export const useUserContext = () => {
     queryFn: getUserContext,
     cacheTime: 500,
     refetchOnMount: "always",
+    staleTime: FIVE_MINUTES,
+    enabled,
     onSuccess: (
       userContextResponseBody: BCeIDUserContextType | IDIRUserContextType,
     ) => {
-      console.log('userContextResponseBody::', userContextResponseBody);
+      console.log("userContextResponseBody::", userContextResponseBody);
       if (
         isAuthenticated &&
         userFromToken?.profile?.identity_provider === IDPS.IDIR
