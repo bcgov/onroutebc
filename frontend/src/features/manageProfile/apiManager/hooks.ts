@@ -2,7 +2,10 @@ import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "react-oidc-context";
 import { useContext } from "react";
 
-import { FIVE_MINUTES, FOUR_MINUTES } from "../../../common/constants/constants";
+import {
+  FIVE_MINUTES,
+  FOUR_MINUTES,
+} from "../../../common/constants/constants";
 import { BCeIDAuthGroup } from "../types/userManagement";
 import { IDPS } from "../../../common/types/idp";
 import { RequiredOrNull } from "../../../common/types/common";
@@ -148,10 +151,10 @@ export const useUserContext = (enabled = true) => {
           setMigratedClient?.(() => migratedClient);
         }
         /**
-         * If there is company in the system (to prevent unauthorized logins)
-         * we can affirmatively say that the user is a new user.
+         * If there is no company in the system (to prevent unauthorized logins)
+         * we can affirmatively say that the logged in user is a new user.
          */
-        if (!(associatedCompanies.length > 0)) {
+        if (associatedCompanies.length === 0) {
           setIsNewBCeIDUser?.(() => true);
         }
       }
