@@ -1,23 +1,6 @@
 import { UserInformation } from "./manageProfile";
 
 /**
- * All user auth groups
- */
-export const USER_AUTH_GROUP = {
-  ANONYMOUS: "ANONYMOUS",
-  CVCLIENT: "CVCLIENT",
-  IDIRBASIC: "IDIRBASIC",
-  ORGADMIN: "ORGADMIN",
-  PPCCLERK: "PPCCLERK",
-  PUBLIC: "PUBLIC",
-  SYSADMIN: "SYSADMIN",
-  EOFFICER: "EOFFICER",
-} as const;
-
-export type UserAuthGroup =
-  (typeof USER_AUTH_GROUP)[keyof typeof USER_AUTH_GROUP];
-
-/**
  * The types of user auth groups for BCeID users.
  */
 export const BCEID_AUTH_GROUP = {

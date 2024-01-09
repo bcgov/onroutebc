@@ -1,33 +1,33 @@
-import { Routes, Route } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 
-import * as routes from "./constants";
+import { BCeIDAuthWall } from "../common/authentication/auth-walls/BCeIDAuthWall";
+import { IDIRAuthWall } from "../common/authentication/auth-walls/IDIRAuthWall";
+import { NewBCeIDAuthWall } from "../common/authentication/auth-walls/NewBCeIDAuthWall";
+import { IDIR_USER_AUTH_GROUP, ROLES } from "../common/authentication/types";
+import { UniversalUnauthorized } from "../common/pages/UniversalUnauthorized";
+import { UniversalUnexpected } from "../common/pages/UniversalUnexpected";
 import { InitialLandingPage } from "../features/homePage/InitialLandingPage";
 import { WelcomePage } from "../features/homePage/welcome/WelcomePage";
-import { ProtectedRoutes } from "./ProtectedRoutes";
+import { IDIRWelcome } from "../features/idir/IDIRWelcome";
+import { IDIRReportsDashboard } from "../features/idir/search/pages/IDIRReportsDashboard";
+import { IDIRSearchResultsDashboard } from "../features/idir/search/pages/IDIRSearchResultsDashboard";
 import { ManageProfiles } from "../features/manageProfile/ManageProfiles";
+import { AddUserDashboard } from "../features/manageProfile/pages/AddUserDashboard";
+import { EditUserDashboard } from "../features/manageProfile/pages/EditUserDashboard";
 import { ManageVehicles } from "../features/manageVehicles/ManageVehicles";
 import { AddVehicleDashboard } from "../features/manageVehicles/components/dashboard/AddVehicleDashboard";
 import { EditVehicleDashboard } from "../features/manageVehicles/components/dashboard/EditVehicleDashboard";
 import { VEHICLE_TYPES_ENUM } from "../features/manageVehicles/components/form/constants";
-import { CreateProfileWizard } from "../features/wizard/CreateProfileWizard";
 import { ApplicationSteps } from "../features/permits/ApplicationSteps";
-import { IDIR_USER_AUTH_GROUP, ROLES } from "../common/authentication/types";
 import { PermitDashboard } from "../features/permits/PermitDashboard";
-import { SuccessPage } from "../features/permits/pages/SuccessPage/SuccessPage";
-import { PaymentRedirect } from "../features/permits/pages/Payment/PaymentRedirect";
-import { AddUserDashboard } from "../features/manageProfile/pages/AddUserDashboard";
-import { EditUserDashboard } from "../features/manageProfile/pages/EditUserDashboard";
-import { IDIRSearchResultsDashboard } from "../features/idir/search/pages/IDIRSearchResultsDashboard";
-import { IDIRWelcome } from "../features/idir/IDIRWelcome";
-import { UserInfoWizard } from "../features/wizard/UserInfoWizard";
-import { VoidPermit } from "../features/permits/pages/Void/VoidPermit";
-import { IDIRReportsDashboard } from "../features/idir/search/pages/IDIRReportsDashboard";
 import { AmendPermit } from "../features/permits/pages/Amend/AmendPermit";
-import { UniversalUnauthorized } from "../common/pages/UniversalUnauthorized";
-import { UniversalUnexpected } from "../common/pages/UniversalUnexpected";
+import { PaymentRedirect } from "../features/permits/pages/Payment/PaymentRedirect";
+import { SuccessPage } from "../features/permits/pages/SuccessPage/SuccessPage";
+import { VoidPermit } from "../features/permits/pages/Void/VoidPermit";
 import { ChallengeProfileWizard } from "../features/wizard/ChallengeProfileWizard";
-import { IDIRAuthWall } from "../common/authentication/auth-walls/IDIRAuthWall";
-import { NewBCeIDAuthWall } from "../common/authentication/auth-walls/NewBCeIDAuthWall";
+import { CreateProfileWizard } from "../features/wizard/CreateProfileWizard";
+import { UserInfoWizard } from "../features/wizard/UserInfoWizard";
+import * as routes from "./constants";
 
 export const AppRoutes = () => {
   return (
@@ -106,7 +106,7 @@ export const AppRoutes = () => {
 
       {/* BCeID Routes */}
       {/* Protected Routes */}
-      <Route element={<ProtectedRoutes requiredRole={ROLES.READ_VEHICLE} />}>
+      <Route element={<BCeIDAuthWall requiredRole={ROLES.READ_VEHICLE} />}>
         <Route path={routes.VEHICLES_ROUTES.MANAGE}>
           <Route index={true} element={<ManageVehicles />} />
           <Route
@@ -144,14 +144,14 @@ export const AppRoutes = () => {
         </Route>
       </Route>
 
-      <Route element={<ProtectedRoutes requiredRole={ROLES.READ_ORG} />}>
+      <Route element={<BCeIDAuthWall requiredRole={ROLES.READ_ORG} />}>
         <Route
           path={routes.PROFILE_ROUTES.MANAGE}
           element={<ManageProfiles />}
         />
       </Route>
 
-      <Route element={<ProtectedRoutes requiredRole={ROLES.WRITE_USER} />}>
+      <Route element={<BCeIDAuthWall requiredRole={ROLES.WRITE_USER} />}>
         <Route
           path={routes.PROFILE_ROUTES.ADD_USER}
           element={<AddUserDashboard />}
@@ -162,7 +162,7 @@ export const AppRoutes = () => {
         />
       </Route>
 
-      <Route element={<ProtectedRoutes requiredRole={ROLES.WRITE_PERMIT} />}>
+      <Route element={<BCeIDAuthWall requiredRole={ROLES.WRITE_PERMIT} />}>
         <Route path={routes.APPLICATIONS_ROUTES.BASE}>
           <Route index={true} element={<PermitDashboard />} />
           <Route
@@ -202,7 +202,7 @@ export const AppRoutes = () => {
         </Route>
       </Route>
 
-      <Route element={<ProtectedRoutes requiredRole={ROLES.WRITE_PERMIT} />}>
+      <Route element={<BCeIDAuthWall requiredRole={ROLES.WRITE_PERMIT} />}>
         <Route
           path={`${routes.PERMITS_ROUTES.VOID()}`}
           element={<VoidPermit />}
@@ -217,7 +217,7 @@ export const AppRoutes = () => {
         />
       </Route>
 
-      <Route element={<ProtectedRoutes requiredRole={ROLES.WRITE_PERMIT} />}>
+      <Route element={<BCeIDAuthWall requiredRole={ROLES.WRITE_PERMIT} />}>
         <Route
           path={routes.PAYMENT_ROUTES.PAYMENT_REDIRECT}
           element={<PaymentRedirect />}

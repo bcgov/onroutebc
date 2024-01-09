@@ -1,17 +1,13 @@
 import { useContext, useEffect } from "react";
 import { useAuth } from "react-oidc-context";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
-
-import { useUserContext } from "../../../features/manageProfile/apiManager/hooks";
 import {
-  APPLICATIONS_ROUTES,
-  CREATE_PROFILE_WIZARD_ROUTES,
   ERROR_ROUTES,
-  HOME,
+  HOME
 } from "../../../routes/constants";
 import { Loading } from "../../pages/Loading";
 import { IDPS } from "../../types/idp";
-import { BCeIDUserContextType } from "../types";
+import { LoadBCeIDUserContext } from "../LoadBCeIDUserContext";
 import OnRouteBCContext from "../OnRouteBCContext";
 
 const isBCeID = (identityProvider: string) => identityProvider === IDPS.BCEID;
@@ -26,21 +22,8 @@ export const NewBCeIDAuthWall = () => {
     user: userFromToken,
   } = useAuth();
 
-  // const { userDetails } = useContext(OnRouteBCContext);
-  // console.log('userDetails::', userDetails);
-
-  // console.log(
-  //   "Boolean(!(userDetails?.userAuthGroup && userDetails?.userName))::",
-  //   Boolean(!(userDetails?.userAuthGroup && userDetails?.userName)),
-  // );
-
-  const {
-    data: userContextData,
-    isLoading: isUserContextLoading,
-    isError: isUserContextError,
-  } = useUserContext(
-    // Boolean(!(userDetails?.userAuthGroup && userDetails?.userName)),
-  );
+  const { isNewBCeIDUser, companyId, userDetails } =
+    useContext(OnRouteBCContext);
 
   const userIDP = userFromToken?.profile?.identity_provider as string;
   const location = useLocation();
@@ -51,20 +34,26 @@ export const NewBCeIDAuthWall = () => {
     }
   }, [isAuthLoading, isAuthenticated]);
 
-  console.log(
-    "isAuthLoading || isUserContextLoading::",
-    isAuthLoading || isUserContextLoading,
-  );
-  if (isAuthLoading || isUserContextLoading) {
+  if (isAuthLoading) {
     return <Loading />;
   }
 
-  if (isAuthenticated && !isUserContextLoading && !isUserContextError) {
+  if (isAuthenticated) {
     if (isBCeID(userIDP)) {
+      // Condition to check if the user context must be loaded.
       if (
-        // (!userDetails?.userAuthGroup && !isUserContextLoading) ||
-        (userContextData && !userContextData.user?.userAuthGroup)
+        !companyId &&
+        isNewBCeIDUser === undefined &&
+        !userDetails?.userAuthGroup
       ) {
+        return (
+          <>
+            <LoadBCeIDUserContext />
+            <Loading />
+          </>
+        );
+      }
+      if (isNewBCeIDUser) {
         // The user is now authenticated and confirmed to be a new user
         return <Outlet />;
       }
@@ -75,9 +64,17 @@ export const NewBCeIDAuthWall = () => {
        * already has a profile in the system.
        */
     } else {
+      /**
+       * This is a placeholder to navigate an IDIR user to the unexpected error page
+       * since a companyId is necessary for them to do anything and
+       * that feature is yet to be built.
+       *
+       * Once we set up idir user acting as a company, there will be appropriate
+       * handlers here.
+       */
       return (
         <Navigate
-          to={ERROR_ROUTES.UNAUTHORIZED}
+          to={ERROR_ROUTES.UNEXPECTED}
           state={{ from: location }}
           replace
         />

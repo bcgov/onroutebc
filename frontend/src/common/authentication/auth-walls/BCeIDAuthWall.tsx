@@ -2,18 +2,18 @@ import { useContext, useEffect } from "react";
 import { useAuth } from "react-oidc-context";
 import { Navigate, Outlet, useLocation, useNavigate } from "react-router-dom";
 
+import { ERROR_ROUTES, HOME } from "../../../routes/constants";
+import { Loading } from "../../pages/Loading";
+import { IDPS } from "../../types/idp";
 import { LoadBCeIDUserContext } from "../LoadBCeIDUserContext";
 import { LoadBCeIDUserRolesByCompany } from "../LoadBCeIDUserRolesByCompany";
 import OnRouteBCContext from "../OnRouteBCContext";
 import { UserRolesType } from "../types";
 import { DoesUserHaveRole } from "../util";
-import { Loading } from "../../pages/Loading";
-import { IDPS } from "../../types/idp";
-import { ERROR_ROUTES, HOME } from "../../../routes/constants";
 
 const isIDIR = (identityProvider: string) => identityProvider === IDPS.IDIR;
 
-export const BCeIDProtectedRoutes = ({
+export const BCeIDAuthWall = ({
   requiredRole,
 }: {
   requiredRole?: UserRolesType;
@@ -24,7 +24,7 @@ export const BCeIDProtectedRoutes = ({
     user: userFromToken,
   } = useAuth();
 
-  const { userRoles, companyId } = useContext(OnRouteBCContext);
+  const { userRoles, companyId, isNewBCeIDUser } = useContext(OnRouteBCContext);
 
   const userIDP = userFromToken?.profile?.identity_provider as string;
 
@@ -45,7 +45,24 @@ export const BCeIDProtectedRoutes = ({
     return <Loading />;
   }
 
-  if (isAuthenticated) {
+  if (isAuthenticated && !isNewBCeIDUser) {
+    if (isIDIR(userIDP)) {
+      /**
+       * This is a placeholder to navigate an IDIR user to an unauthorized page
+       * since a companyId is necessary for them to do anything and
+       * that feature is yet to be built.
+       *
+       * Once we set up idir user acting as a company, there will be appropriate
+       * handlers here.
+       */
+      return (
+        <Navigate
+          to={ERROR_ROUTES.UNEXPECTED}
+          state={{ from: location }}
+          replace
+        />
+      );
+    }
     if (!isIDIR(userIDP)) {
       if (!companyId) {
         return (
@@ -79,3 +96,5 @@ export const BCeIDProtectedRoutes = ({
     return <Navigate to={HOME} state={{ from: location }} replace />;
   }
 };
+
+BCeIDAuthWall.displayName = "BCeIDAuthWall";

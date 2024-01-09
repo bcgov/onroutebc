@@ -13,7 +13,7 @@ import {
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { TEN_MINUTES } from "../../../../common/constants/constants";
 import { Optional } from "../../../../common/types/common";
-import { USER_AUTH_GROUP } from "../../../manageProfile/types/userManagement.d";
+import { USER_AUTH_GROUP } from "../../../../common/authentication/types";
 import { hasPermitExpired } from "../../../permits/helpers/permitState";
 import { isPermitInactive } from "../../../permits/types/PermitStatus";
 import { Permit } from "../../../permits/types/permit";
@@ -24,7 +24,7 @@ import { IDIRPermitSearchRowActions } from "./IDIRPermitSearchRowActions";
 import {
   defaultTableInitialStateOptions,
   defaultTableOptions,
-  defaultTableStateOptions
+  defaultTableStateOptions,
 } from "../../../../common/helpers/tableHelper";
 import "./IDIRSearchResults.scss";
 
@@ -37,9 +37,9 @@ const shouldShowRowActions = (userAuthGroup: Optional<string>): boolean => {
   if (!userAuthGroup) return false;
   // Check if the user has PPC role to confirm
   const allowableAuthGroups = [
-    USER_AUTH_GROUP.PPCCLERK,
-    USER_AUTH_GROUP.EOFFICER,
-    USER_AUTH_GROUP.SYSADMIN,
+    USER_AUTH_GROUP.PPC_CLERK,
+    USER_AUTH_GROUP.ENFORCEMENT_OFFICER,
+    USER_AUTH_GROUP.SYSTEM_ADMINISTRATOR,
   ] as string[];
   return allowableAuthGroups.includes(userAuthGroup);
 };

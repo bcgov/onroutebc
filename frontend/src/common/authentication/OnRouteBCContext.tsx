@@ -1,5 +1,5 @@
 import React, { Dispatch, SetStateAction } from "react";
-import { IDIRUserAuthGroupType, MigratedClient } from "./types";
+import { IDIRUserAuthGroupType, MigratedClient, UserRolesType } from "./types";
 
 import { Nullable, Optional } from "../types/common";
 
@@ -34,8 +34,8 @@ export interface BCeIDUserDetailContext {
  * The data and functions to in the react context.
  */
 export type OnRouteBCContextType = {
-  setUserRoles?: Dispatch<SetStateAction<Nullable<string[]>>>;
-  userRoles?: Nullable<string[]>;
+  setUserRoles?: Dispatch<SetStateAction<Nullable<UserRolesType[]>>>;
+  userRoles?: Nullable<UserRolesType[]>;
   setOnRouteBCClientNumber?: Dispatch<SetStateAction<Optional<string>>>;
   onRouteBCClientNumber?: string;
   setUserDetails?: Dispatch<SetStateAction<Optional<BCeIDUserDetailContext>>>;
@@ -50,6 +50,8 @@ export type OnRouteBCContextType = {
   >;
   setMigratedClient?: Dispatch<SetStateAction<Optional<MigratedClient>>>;
   migratedClient?: MigratedClient;
+  isNewBCeIDUser?: boolean;
+  setIsNewBCeIDUser?: Dispatch<SetStateAction<Optional<boolean>>>;
 };
 
 const defaultBehaviour: OnRouteBCContextType = {};

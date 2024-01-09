@@ -41,14 +41,9 @@ export const DoesUserHaveRole = (
  * @param requiredRole The role to check for.
  * @returns A boolean indicating if the user has the role to access a page or feature.
  */
-export const DoesUserHaveRoleWithContext = (requiredRole: Optional<string>) => {
+export const DoesUserHaveRoleWithContext = (requiredRole: Optional<UserRolesType>) => {
   const { userRoles } = useContext(OnRouteBCContext);
-  return (
-    requiredRole &&
-    userRoles &&
-    userRoles.length &&
-    userRoles.includes(requiredRole)
-  );
+  return requiredRole && userRoles?.includes(requiredRole);
 };
 
 /**
@@ -100,9 +95,5 @@ export const DoesUserHaveRoleMany = ({
   userRoles: Optional<UserRolesType[]>;
   allowedRoles: UserRolesType[];
 }) => {
-  return (
-    userRoles &&
-    userRoles.length &&
-    userRoles.some((userRole) => allowedRoles.includes(userRole))
-  );
+  return userRoles?.some((userRole) => allowedRoles.includes(userRole));
 };
