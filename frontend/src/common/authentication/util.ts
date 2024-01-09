@@ -13,7 +13,7 @@ import {
  * Returns a boolean indicating if the user has a given role.
  *
  * RATIONALE for this function:
- * In ProtectedRoutes Component, there is a number of hooks called and when trying
+ * In AuthWall Components, there is a number of hooks called and when trying
  * to use the DoesUserHaveRoleWithContext function, it throws a hook order bug as
  * the order of execution of hooks must not change as per the rules of hooks.
  *
@@ -78,7 +78,7 @@ export function DoesUserHaveAuthGroup<
  * Returns a boolean indicating if the user has a given role.
  *
  * RATIONALE for this function:
- * In ProtectedRoutes Component, there is a number of hooks called and when trying
+ * In AuthWall Components, there is a number of hooks called and when trying
  * to use the DoesUserHaveRoleWithContext function, it throws a hook order bug as
  * the order of execution of hooks must not change as per the rules of hooks.
  *
