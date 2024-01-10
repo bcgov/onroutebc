@@ -125,6 +125,7 @@ export const CREATE_PROFILE_WIZARD_ROUTES = {
   CREATE: "/create-profile",
   WELCOME: "/welcome",
   MIGRATED_CLIENT: "/migrated-client",
+  USER_INFO: "/user-info",
 };
 
 // IDIR

@@ -19,8 +19,8 @@ Create a .env file in the root directory of onRouteBC and add the following vari
 ```conf
 VITE_DEPLOY_ENVIRONMENT=local
 VITE_API_VEHICLE_URL=http://localhost:5000
-VITE_AUTH0_ISSUER_URL=
-VITE_AUTH0_AUDIENCE=
+VITE_KEYCLOAK_ISSUER_URL=
+VITE_KEYCLOAK_AUDIENCE=
 VITE_SITEMINDER_LOG_OFF_URL=
 ```
 
