@@ -193,7 +193,7 @@ jobs:
 
           # Clean previous image, if any 
           if [[ ${{inputs.environment}} == 'dev' ]]; then
-            helm uninstall ${{ env.repo_release }}
+            helm uninstall ${{ env.repo_release }} || true
           fi
 
           # Deploy Helm release
