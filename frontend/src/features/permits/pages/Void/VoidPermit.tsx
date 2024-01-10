@@ -11,7 +11,7 @@ import { ERROR_ROUTES, IDIR_ROUTES } from "../../../../routes/constants";
 import { VoidPermitFormData } from "./types/VoidPermit";
 import { FinishVoid } from "./FinishVoid";
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
-import { USER_AUTH_GROUP } from "../../../manageProfile/types/userManagement.d";
+import { USER_AUTH_GROUP } from "../../../../common/authentication/types";
 import { isPermitInactive } from "../../types/PermitStatus";
 import { Permit } from "../../types/permit";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
@@ -106,7 +106,7 @@ export const VoidPermit = () => {
   );
 
   // If user is not SYSADMIN, show unauthorized page
-  if (idirUserDetails?.userAuthGroup !== USER_AUTH_GROUP.SYSADMIN) {
+  if (idirUserDetails?.userAuthGroup !== USER_AUTH_GROUP.SYSTEM_ADMINISTRATOR) {
     return <Navigate to={ERROR_ROUTES.UNAUTHORIZED} />;
   }
 
