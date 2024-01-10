@@ -50,13 +50,13 @@ parameters:
   - name: DATABASE_HOST
     description: Host url/service of database connection
     required: true
-  - name: AUTH0_ISSUER_URL
+  - name: KEYCLOAK_ISSUER_URL
     description: The principal that issued the JWT
     required: true
-  - name: AUTH0_AUDIENCE
+  - name: KEYCLOAK_AUDIENCE
     description: Identifies the recipients that the JWT is intended for
     required: true
-  - name: AUTH0_IGNORE_EXP
+  - name: KEYCLOAK_IGNORE_EXP
     description: The boolean flag to ignore the JWT expiration
     required: true
   - name: SITEMINDER_LOG_OFF_URL
@@ -77,25 +77,22 @@ parameters:
   - name: DOPS_CVSE_FORMS_CACHE_TTL_MS
     description: The cache time to live for CVSE FORMS in DOPS in Milliseconds
     required: true
-  - name: DOPS_S3_ACCESS_TYPE
-    description: The key to switch between COMS or Direct access
-    required: true
-  - name: DOPS_S3_ACCESSKEYID
+  - name: OCIO_S3_ACCESSKEYID
     description: The Access Key for your S3 compatible object storage account
     required: true
-  - name: DOPS_S3_BUCKET
+  - name: OCIO_S3_BUCKET
     description: The object storage bucket name
     required: true
-  - name: DOPS_S3_PRESIGNED_URL_EXPIRY
+  - name: OCIO_S3_PRESIGNED_URL_EXPIRY
     description: The expiry time for pre-signed URLs to objects in seconds
     required: true
-  - name: DOPS_S3_ENDPOINT
+  - name: OCIO_S3_ENDPOINT
     description: Object store URL
     required: true
-  - name: DOPS_S3_KEY
+  - name: OCIO_S3_KEY
     description: The base path for storage location
     required: true
-  - name: DOPS_S3_SECRETACCESSKEY
+  - name: OCIO_S3_SECRETACCESSKEY
     description: The Secret Access Key for your S3 compatible object storage account
     required: true
   - name: CHES_TOKEN_URL
@@ -153,8 +150,8 @@ objects:
           return {
             "VITE_DEPLOY_ENVIRONMENT":"${ZONE}",
             "VITE_API_VEHICLE_URL":"https://${NAME}-${ZONE}-backend-vehicles.${DOMAIN}",
-            "VITE_AUTH0_ISSUER_URL":"${AUTH0_ISSUER_URL}",
-            "VITE_AUTH0_AUDIENCE":"${AUTH0_AUDIENCE}",
+            "VITE_KEYCLOAK_ISSUER_URL":"${KEYCLOAK_ISSUER_URL}",
+            "VITE_KEYCLOAK_AUDIENCE":"${KEYCLOAK_AUDIENCE}",
             "VITE_SITEMINDER_LOG_OFF_URL": "${SITEMINDER_LOG_OFF_URL}",
           };
         })();

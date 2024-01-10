@@ -3,8 +3,12 @@ import { useQuery } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import { useContext, useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
+import { useAuth } from "react-oidc-context";
 import { SnackBarContext } from "../../../../App";
+import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
+import { IDIR_USER_AUTH_GROUP } from "../../../../common/authentication/types";
 import { ONE_HOUR } from "../../../../common/constants/constants";
+import { Loading } from "../../../../common/pages/Loading";
 import {
   ALL_CONSOLIDATED_PAYMENT_METHODS,
   AllPaymentMethodAndCardTypeCodes,
@@ -25,12 +29,16 @@ import { PaymentMethodSelect } from "./subcomponents/PaymentMethodSelect";
 import { PermitTypeSelect } from "./subcomponents/PermitTypeSelect";
 import { ReportDateTimePickers } from "./subcomponents/ReportDateTimePickers";
 import { UserSelect } from "./subcomponents/UserSelect";
-import { Loading } from "../../../../common/pages/Loading";
 
 /**
  * Component for Payment and Refund Detail form
  */
 export const PaymentAndRefundDetail = () => {
+  const { idirUserDetails } = useContext(OnRouteBCContext);
+  const { user: idirUserFromAuthContext } = useAuth();
+  const isSysAdmin =
+    idirUserDetails?.userAuthGroup ===
+    IDIR_USER_AUTH_GROUP.SYSTEM_ADMINISTRATOR;
   // GET the permit types.
   const permitTypesQuery = usePermitTypesQuery();
   const { setSnackBar } = useContext(SnackBarContext);
@@ -58,17 +66,19 @@ export const PaymentAndRefundDetail = () => {
       ) as Record<string, string>;
     },
     keepPreviousData: true,
+    // Only query the permit issuers when the user is sysadmin.
+    enabled: isSysAdmin,
     staleTime: ONE_HOUR,
     retry: false,
     refetchOnWindowFocus: false, // prevents unnecessary queries
   });
 
-  const { data: permitIssuers, isLoading: ispermitIssuersQueryLoading } =
+  const { data: permitIssuers, isLoading: isPermitIssuersQueryLoading } =
     permitIssuersQuery;
 
   const formMethods = useForm<PaymentAndRefundDetailFormData>({
     defaultValues: {
-      issuedBy: ["SELF_ISSUED", "PPC"],
+      issuedBy: [REPORT_ISSUED_BY.SELF_ISSUED, REPORT_ISSUED_BY.PPC],
       fromDateTime: dayjs()
         .subtract(1, "day")
         .set("h", 21)
@@ -80,7 +90,10 @@ export const PaymentAndRefundDetail = () => {
       permitType: Object.keys(permitTypes ?? []),
       // permitIssuers is a <userName, userGUID> record.
       // So, Object.values is what we need.
-      users: Object.values(permitIssuers ?? {}),
+      users: isSysAdmin
+        ? Object.values(permitIssuers ?? {})
+        : // If user is not a sys admin, only their own guid is populated.
+          [idirUserFromAuthContext?.profile?.idir_user_guid as string],
     },
     reValidateMode: "onBlur",
   });
@@ -114,7 +127,7 @@ export const PaymentAndRefundDetail = () => {
       // So, Object.values is what we need.
       setValue("users", Object.values(permitIssuers));
     }
-  }, [ispermitIssuersQueryLoading]);
+  }, [isPermitIssuersQueryLoading]);
 
   /**
    * Uses the CONSOLIDATED PAYMENT METHODS object to get
@@ -224,12 +237,14 @@ export const PaymentAndRefundDetail = () => {
               <Stack>
                 <PaymentMethodSelect />
               </Stack>
-              <Stack direction="row">
-                <UserSelect
-                  permitIssuers={permitIssuers}
-                  key="user-select-subcomponent"
-                />
-              </Stack>
+              {isSysAdmin && (
+                <Stack direction="row">
+                  <UserSelect
+                    permitIssuers={permitIssuers}
+                    key="user-select-subcomponent"
+                  />
+                </Stack>
+              )}
               <Stack direction="row" spacing={3}>
                 <ReportDateTimePickers />
               </Stack>

@@ -1,23 +1,22 @@
-import { useAuth } from "react-oidc-context";
-import { useLocation, Navigate, Outlet, useNavigate } from "react-router-dom";
 import { useContext, useEffect } from "react";
+import { useAuth } from "react-oidc-context";
+import { Navigate, Outlet, useLocation, useNavigate } from "react-router-dom";
 
-import { HOME, ERROR_ROUTES } from "./constants";
-import { Loading } from "../common/pages/Loading";
-import OnRouteBCContext from "../common/authentication/OnRouteBCContext";
-import { DoesUserHaveRole } from "../common/authentication/util";
-import { LoadBCeIDUserRolesByCompany } from "../common/authentication/LoadBCeIDUserRolesByCompany";
-import { LoadBCeIDUserContext } from "../common/authentication/LoadBCeIDUserContext";
-import { LoadIDIRUserContext } from "../common/authentication/LoadIDIRUserContext";
-import { LoadIDIRUserRoles } from "../common/authentication/LoadIDIRUserRoles";
-import { IDPS } from "../common/types/idp";
+import { ERROR_ROUTES, HOME } from "../../../routes/constants";
+import { Loading } from "../../pages/Loading";
+import { IDPS } from "../../types/idp";
+import { LoadBCeIDUserContext } from "../LoadBCeIDUserContext";
+import { LoadBCeIDUserRolesByCompany } from "../LoadBCeIDUserRolesByCompany";
+import OnRouteBCContext from "../OnRouteBCContext";
+import { UserRolesType } from "../types";
+import { DoesUserHaveRole } from "../util";
 
 const isIDIR = (identityProvider: string) => identityProvider === IDPS.IDIR;
 
-export const ProtectedRoutes = ({
+export const BCeIDAuthWall = ({
   requiredRole,
 }: {
-  requiredRole?: string;
+  requiredRole?: UserRolesType;
 }) => {
   const {
     isAuthenticated,
@@ -25,8 +24,7 @@ export const ProtectedRoutes = ({
     user: userFromToken,
   } = useAuth();
 
-  const { userRoles, companyId, idirUserDetails } =
-    useContext(OnRouteBCContext);
+  const { userRoles, companyId, isNewBCeIDUser } = useContext(OnRouteBCContext);
 
   const userIDP = userFromToken?.profile?.identity_provider as string;
 
@@ -47,24 +45,23 @@ export const ProtectedRoutes = ({
     return <Loading />;
   }
 
-  if (isAuthenticated) {
+  if (isAuthenticated && !isNewBCeIDUser) {
     if (isIDIR(userIDP)) {
-      if (!idirUserDetails?.userAuthGroup) {
-        return (
-          <>
-            <LoadIDIRUserContext />
-            <Loading />
-          </>
-        );
-      }
-      if (!userRoles) {
-        return (
-          <>
-            <LoadIDIRUserRoles />
-            <Loading />
-          </>
-        );
-      }
+      /**
+       * This is a placeholder to navigate an IDIR user to an unauthorized page
+       * since a companyId is necessary for them to do anything and
+       * that feature is yet to be built.
+       *
+       * Once we set up idir user acting as a company, there will be appropriate
+       * handlers here.
+       */
+      return (
+        <Navigate
+          to={ERROR_ROUTES.UNEXPECTED}
+          state={{ from: location }}
+          replace
+        />
+      );
     }
     if (!isIDIR(userIDP)) {
       if (!companyId) {
@@ -99,3 +96,5 @@ export const ProtectedRoutes = ({
     return <Navigate to={HOME} state={{ from: location }} replace />;
   }
 };
+
+BCeIDAuthWall.displayName = "BCeIDAuthWall";
