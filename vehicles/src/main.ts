@@ -14,6 +14,7 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import helmet from 'helmet';
 import { customLogger } from './common/logger/logger.config';
 import { CorrelationIdInterceptor } from './common/interceptor/correlationId.interceptor';
+import * as responseTime from 'response-time';
 
 const allowedOrigins = [process.env.FRONTEND_URL];
 
@@ -66,21 +67,25 @@ async function bootstrap() {
       validationError: { target: false },
     }),
   );
-  const config = new DocumentBuilder()
-    .setTitle('Vehicles API')
-    .setDescription('The vehicles API description')
-    .setVersion('1.0')
-    .addBearerAuth()
-    .build();
 
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document, {
-    swaggerOptions: {
-      tagsSorter: 'alpha',
-      operationsSorter: 'alpha',
-    },
-  });
+  app.use(responseTime());
 
+  if (process.env.NODE_ENV !== 'production') {
+    const config = new DocumentBuilder()
+      .setTitle('Vehicles API')
+      .setDescription('The vehicles API description')
+      .setVersion('1.0')
+      .addBearerAuth()
+      .build();
+
+    const document = SwaggerModule.createDocument(app, config);
+    SwaggerModule.setup('api', app, document, {
+      swaggerOptions: {
+        tagsSorter: 'alpha',
+        operationsSorter: 'alpha',
+      },
+    });
+  }
   app.useGlobalFilters(
     new FallbackExceptionFilter(),
     new HttpExceptionFilter(),

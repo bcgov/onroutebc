@@ -8,6 +8,7 @@ export const TEN_SECONDS = 10 * ONE_SECOND;
 
 // Minutes
 export const ONE_MINUTE = 60 * ONE_SECOND;
+export const FOUR_MINUTES = 4 * ONE_MINUTE;
 export const FIVE_MINUTES = 5 * ONE_MINUTE;
 export const TEN_MINUTES = 10 * ONE_MINUTE;
 
