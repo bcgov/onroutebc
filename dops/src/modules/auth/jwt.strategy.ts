@@ -29,7 +29,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       }),
 
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      ignoreExpiration: process.env.KEYCLOAK_IGNORE_EXP === 'true' ? true : false,
+      ignoreExpiration:
+        process.env.KEYCLOAK_IGNORE_EXP === 'true' ? true : false,
       audience: process.env.KEYCLOAK_AUDIENCE,
       issuer: `${process.env.KEYCLOAK_ISSUER_URL}`,
       algorithms: ['RS256'],
