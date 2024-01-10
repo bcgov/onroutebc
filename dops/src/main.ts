@@ -67,23 +67,25 @@ async function bootstrap() {
     }),
   );
   app.useBodyParser('json', { limit: '2mb' });
-  const config = new DocumentBuilder()
-    .setTitle('DOPS API')
-    .setDescription('The Document Operations API description')
-    .setVersion('1.0')
-    .addBearerAuth()
-    .build();
-
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document, {
-    swaggerOptions: {
-      tagsSorter: 'alpha',
-      operationsSorter: 'alpha',
-    },
-  });
 
   app.use(responseTime());
 
+  if (process.env.NODE_ENV !== 'production') {
+    const config = new DocumentBuilder()
+      .setTitle('DOPS API')
+      .setDescription('The Document Operations API description')
+      .setVersion('1.0')
+      .addBearerAuth()
+      .build();
+
+    const document = SwaggerModule.createDocument(app, config);
+    SwaggerModule.setup('api', app, document, {
+      swaggerOptions: {
+        tagsSorter: 'alpha',
+        operationsSorter: 'alpha',
+      },
+    });
+  }
   app.useGlobalFilters(
     new FallbackExceptionFilter(),
     new HttpExceptionFilter(),
