@@ -107,7 +107,7 @@ export class CompanyController {
     @Query('clientNumber') clientNumber: string,
   ): Promise<PaginationDto<ReadCompanyMetadataDto>> {
     console.log("Legal Name passed in:", legalName);
-    const companies =
+    const companies: PaginationDto<ReadCompanyMetadataDto> =
       await this.companyService.findCompanyMetadataPaginated(pageOptionsDto, legalName, clientNumber);
 
     if (!companies?.items.length) {

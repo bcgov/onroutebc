@@ -18,6 +18,7 @@ import {
   readRedCompanyUserDtoMock,
   updateRedCompanyDtoMock,
 } from '../../util/mocks/data/company.mock';
+import { PageOptionsDto } from 'src/common/dto/paginate/page-options';
 
 const COMPANY_ID_99 = 99;
 let companyService: DeepMocked<CompanyService>;
@@ -156,6 +157,33 @@ describe('CompanyController', () => {
           request,
           COMPANY_ID_99,
           updateRedCompanyDtoMock,
+        );
+      }).rejects.toThrow(DataNotFoundException);
+    });
+  });
+
+  describe('Company controller getCompanyMetadataPaginated function', () => {
+    it('should return the company metadata when company legal name or client id are provided', async () => {
+      const request = createMock<Request>();
+      request.user = redCompanyAdminUserJWTMock;
+      const pageOptionsDto = {
+        page: 1,
+        take: 10,
+      }
+      const retCompanyMetadata = await controller.getCompanyMetadataPaginated(pageOptionsDto, 'He', 'R');
+      expect(typeof retCompanyMetadata).toBe('object');
+      console.log("Retrieved records: " + retCompanyMetadata.items.length.toString());
+      expect(retCompanyMetadata.items.length).toBeGreaterThan(0);
+    });
+
+    it('should throw a DataNotFoundException if company is not found', async () => {
+      const pageOptionsDto: PageOptionsDto = {page: 1, take: 10};
+      companyService.findCompanyMetadataPaginated.mockResolvedValue(undefined);
+      await expect(async () => {
+        await controller.getCompanyMetadataPaginated(
+          pageOptionsDto,
+          'aaaaaaaa',
+          'bbbbbbbb',
         );
       }).rejects.toThrow(DataNotFoundException);
     });
