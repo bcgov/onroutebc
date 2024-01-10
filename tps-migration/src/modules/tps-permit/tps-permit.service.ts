@@ -201,6 +201,7 @@ export class TpsPermitService {
           );
         }
       } catch (err) {
+        console.log('TPS Permit Number',tpsPermit.permitNumber)
         console.log(err);
       }
     }

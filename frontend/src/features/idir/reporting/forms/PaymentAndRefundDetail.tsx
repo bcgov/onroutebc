@@ -3,8 +3,12 @@ import { useQuery } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import { useContext, useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
+import { useAuth } from "react-oidc-context";
 import { SnackBarContext } from "../../../../App";
+import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
+import { IDIR_USER_AUTH_GROUP } from "../../../../common/authentication/types";
 import { ONE_HOUR } from "../../../../common/constants/constants";
+import { Loading } from "../../../../common/pages/Loading";
 import {
   ALL_CONSOLIDATED_PAYMENT_METHODS,
   AllPaymentMethodAndCardTypeCodes,
@@ -25,9 +29,6 @@ import { PaymentMethodSelect } from "./subcomponents/PaymentMethodSelect";
 import { PermitTypeSelect } from "./subcomponents/PermitTypeSelect";
 import { ReportDateTimePickers } from "./subcomponents/ReportDateTimePickers";
 import { UserSelect } from "./subcomponents/UserSelect";
-import { Loading } from "../../../../common/pages/Loading";
-import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
-import { useAuth } from "react-oidc-context";
 
 /**
  * Component for Payment and Refund Detail form
@@ -35,7 +36,9 @@ import { useAuth } from "react-oidc-context";
 export const PaymentAndRefundDetail = () => {
   const { idirUserDetails } = useContext(OnRouteBCContext);
   const { user: idirUserFromAuthContext } = useAuth();
-  const isSysAdmin = idirUserDetails?.userAuthGroup === "SYSADMIN";
+  const isSysAdmin =
+    idirUserDetails?.userAuthGroup ===
+    IDIR_USER_AUTH_GROUP.SYSTEM_ADMINISTRATOR;
   // GET the permit types.
   const permitTypesQuery = usePermitTypesQuery();
   const { setSnackBar } = useContext(SnackBarContext);
@@ -63,6 +66,7 @@ export const PaymentAndRefundDetail = () => {
       ) as Record<string, string>;
     },
     keepPreviousData: true,
+    // Only query the permit issuers when the user is sysadmin.
     enabled: isSysAdmin,
     staleTime: ONE_HOUR,
     retry: false,
