@@ -35,7 +35,13 @@ describe('HTTPLoggerMiddleware', () => {
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     middleware.use(request, response, () => {});
 
-    expect(loggerSpy).toHaveBeenNthCalledWith(1, 'Request: GET /test \n {}');
-    expect(loggerSpy).toHaveBeenNthCalledWith(2, 'Response: GET /test 200 100');
+    expect(loggerSpy).toHaveBeenNthCalledWith(
+      1,
+      'Request: GET /test \nHeader: {} \nPayload: undefined',
+    );
+    expect(loggerSpy).toHaveBeenNthCalledWith(
+      2,
+      'Response: GET /test StatusCode: 200 ContentLength: 100 ResponseTime: 100ms',
+    );
   });
 });

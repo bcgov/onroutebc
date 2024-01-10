@@ -9,6 +9,7 @@ import {
 import { Response } from 'express';
 import { ExceptionDto } from '../exception/exception.dto';
 import { TypeORMError } from 'typeorm';
+import { ClsServiceManager } from 'nestjs-cls';
 
 /*Catch all but http exceptions */
 @Catch()
@@ -30,6 +31,12 @@ export class FallbackExceptionFilter implements ExceptionFilter {
     } else {
       status = HttpStatus.INTERNAL_SERVER_ERROR;
       message = getErrorMessage(exception);
+    }
+
+    const cls = ClsServiceManager.getClsService();
+    const correlationId = cls.getId();
+    if (!response.getHeader('x-correlation-id') && correlationId) {
+      response.setHeader('x-correlation-id', correlationId);
     }
 
     this.logger.error(

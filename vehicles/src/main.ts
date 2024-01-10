@@ -14,6 +14,7 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import helmet from 'helmet';
 import { customLogger } from './common/logger/logger.config';
 import { CorrelationIdInterceptor } from './common/interceptor/correlationId.interceptor';
+import * as responseTime from 'response-time';
 
 const allowedOrigins = [process.env.FRONTEND_URL];
 
@@ -66,6 +67,9 @@ async function bootstrap() {
       validationError: { target: false },
     }),
   );
+
+  app.use(responseTime());
+
   if (process.env.NODE_ENV !== 'production') {
     const config = new DocumentBuilder()
       .setTitle('Vehicles API')
