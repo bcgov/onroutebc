@@ -1,7 +1,4 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-} from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { TpsPermit } from './entities/tps-permit.entity';
 import { LessThan, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -198,7 +195,7 @@ export class TpsPermitService {
             migrationId: tpsPermit.migrationId,
           });
         } else {
-         throw new InternalServerErrorException(
+          throw new InternalServerErrorException(
             'S3 Upload Failed for TPS Permit Number ',
             permit.tpsPermitNumber,
           );
