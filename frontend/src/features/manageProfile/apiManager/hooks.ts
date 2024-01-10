@@ -2,7 +2,10 @@ import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "react-oidc-context";
 import { useContext } from "react";
 
-import { FIVE_MINUTES } from "../../../common/constants/constants";
+import {
+  FIVE_MINUTES,
+  FOUR_MINUTES,
+} from "../../../common/constants/constants";
 import { BCeIDAuthGroup } from "../types/userManagement";
 import { IDPS } from "../../../common/types/idp";
 import { RequiredOrNull } from "../../../common/types/common";
@@ -22,6 +25,7 @@ import OnRouteBCContext, {
 import {
   BCeIDUserContextType,
   IDIRUserContextType,
+  UserRolesType,
 } from "../../../common/authentication/types";
 
 /**
@@ -55,9 +59,10 @@ export const useCompanyInfoDetailsQuery = (companyId: number) => {
 
 /**
  * Hook to set up the user context after fetching the data from user-context api.
+ * @param enabled boolean indicating if the query is enabled. Defaults to true.
  * @returns UseQueryResult containing the query results.
  */
-export const useUserContext = () => {
+export const useUserContext = (enabled = true) => {
   const {
     setCompanyId,
     setUserDetails,
@@ -65,6 +70,7 @@ export const useUserContext = () => {
     setIDIRUserDetails,
     setOnRouteBCClientNumber,
     setMigratedClient,
+    setIsNewBCeIDUser,
   } = useContext(OnRouteBCContext);
   const { isAuthenticated, user: userFromToken } = useAuth();
   return useQuery({
@@ -72,6 +78,8 @@ export const useUserContext = () => {
     queryFn: getUserContext,
     cacheTime: 500,
     refetchOnMount: "always",
+    staleTime: FOUR_MINUTES,
+    enabled,
     onSuccess: (
       userContextResponseBody: BCeIDUserContextType | IDIRUserContextType,
     ) => {
@@ -93,6 +101,9 @@ export const useUserContext = () => {
       } else {
         const { user, associatedCompanies, pendingCompanies, migratedClient } =
           userContextResponseBody as BCeIDUserContextType;
+        /**
+         * User exists => the user is already in the system.
+         */
         if (user?.userGUID) {
           const companyId = associatedCompanies[0].companyId;
           const legalName = associatedCompanies[0].legalName;
@@ -121,6 +132,9 @@ export const useUserContext = () => {
             companyId.toString(),
           );
         }
+        /**
+         * The user has been added to a company.
+         */
         if (pendingCompanies.length > 0) {
           const { companyId, legalName } = pendingCompanies[0];
           setCompanyId?.(() => companyId);
@@ -130,12 +144,22 @@ export const useUserContext = () => {
             companyId.toString(),
           );
         }
+        /**
+         * The user has been migrated.
+         */
         if (migratedClient?.clientNumber) {
           setMigratedClient?.(() => migratedClient);
         }
+        /**
+         * If there is no company in the system (to prevent unauthorized logins)
+         * we can affirmatively say that the logged in user is a new user.
+         */
+        if (associatedCompanies.length === 0) {
+          setIsNewBCeIDUser?.(() => true);
+        }
       }
     },
-    retry: false,
+    retry: 1, // Retry once on failure
   });
 };
 
@@ -149,7 +173,7 @@ export const useUserRolesByCompanyId = () => {
     queryKey: ["userRoles"],
     refetchInterval: FIVE_MINUTES,
     queryFn: getUserRolesByCompanyId,
-    onSuccess: (userRolesResponseBody: string[]) => {
+    onSuccess: (userRolesResponseBody: UserRolesType[]) => {
       setUserRoles?.(() => userRolesResponseBody);
     },
     retry: 1, // Retry once on failure
@@ -166,7 +190,7 @@ export const useIDIRUserRoles = () => {
     queryKey: ["userIDIRRoles"],
     refetchInterval: FIVE_MINUTES,
     queryFn: getIDIRUserRoles,
-    onSuccess: (userRoles: RequiredOrNull<string[]>) => {
+    onSuccess: (userRoles: RequiredOrNull<UserRolesType[]>) => {
       setUserRoles?.(() => userRoles);
     },
     retry: 1, // Retry once on failure

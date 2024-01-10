@@ -19,13 +19,13 @@ export class S3Service {
   private readonly logger = new Logger(S3Service.name);
   constructor(private readonly httpService: HttpService) {}
 
-  private readonly _s3AccessKeyId = process.env.DOPS_S3_ACCESSKEYID;
-  private readonly _s3SecretAccessKey = process.env.DOPS_S3_SECRETACCESSKEY;
-  private readonly _s3EndPoint = process.env.DOPS_S3_ENDPOINT;
-  private readonly _s3Bucket = process.env.DOPS_S3_BUCKET;
-  private readonly _s3Key = process.env.DOPS_S3_KEY;
+  private readonly _s3AccessKeyId = process.env.OCIO_S3_ACCESSKEYID;
+  private readonly _s3SecretAccessKey = process.env.OCIO_S3_SECRETACCESSKEY;
+  private readonly _s3EndPoint = process.env.OCIO_S3_ENDPOINT;
+  private readonly _s3Bucket = process.env.OCIO_S3_BUCKET;
+  private readonly _s3Key = process.env.OCIO_S3_KEY;
   private readonly _s3PreSignedUrlExpiry =
-    process.env.DOPS_S3_PRESIGNED_URL_EXPIRY;
+    process.env.OCIO_S3_PRESIGNED_URL_EXPIRY;
 
   private s3client: S3Client = new S3Client({
     apiVersion: '2006-03-01',

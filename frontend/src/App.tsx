@@ -22,13 +22,14 @@ import OnRouteBCContext, {
   BCeIDUserDetailContext,
   IDIRUserDetailContext,
 } from "./common/authentication/OnRouteBCContext";
-import { MigratedClient } from "./common/authentication/types";
+import { MigratedClient, UserRolesType } from "./common/authentication/types";
 
 const authority =
-  import.meta.env.VITE_AUTH0_ISSUER_URL || envConfig.VITE_AUTH0_ISSUER_URL;
+  import.meta.env.VITE_KEYCLOAK_ISSUER_URL ||
+  envConfig.VITE_KEYCLOAK_ISSUER_URL;
 
 const client_id =
-  import.meta.env.VITE_AUTH0_AUDIENCE || envConfig.VITE_AUTH0_AUDIENCE;
+  import.meta.env.VITE_KEYCLOAK_AUDIENCE || envConfig.VITE_KEYCLOAK_AUDIENCE;
 
 /**
  * The OIDC Configuration needed for authentication.
@@ -60,7 +61,7 @@ const App = () => {
     alertType: "info",
   });
 
-  const [userRoles, setUserRoles] = useState<Nullable<string[]>>();
+  const [userRoles, setUserRoles] = useState<Nullable<UserRolesType[]>>();
   const [companyId, setCompanyId] = useState<Optional<number>>();
   const [onRouteBCClientNumber, setOnRouteBCClientNumber] =
     useState<Optional<string>>();
@@ -71,6 +72,7 @@ const App = () => {
     useState<Optional<IDIRUserDetailContext>>();
   const [migratedClient, setMigratedClient] =
     useState<Optional<MigratedClient>>();
+  const [isNewBCeIDUser, setIsNewBCeIDUser] = useState<Optional<boolean>>();
 
   // Needed the following usestate and useffect code so that the snackbar would disapear/close
   const [displaySnackBar, setDisplaySnackBar] = useState(false);
@@ -99,6 +101,8 @@ const App = () => {
                 setOnRouteBCClientNumber,
                 migratedClient,
                 setMigratedClient,
+                isNewBCeIDUser,
+                setIsNewBCeIDUser,
               };
             }, [
               userRoles,
@@ -108,6 +112,7 @@ const App = () => {
               idirUserDetails,
               onRouteBCClientNumber,
               migratedClient,
+              isNewBCeIDUser,
             ])}
           >
             <SnackBarContext.Provider

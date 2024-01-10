@@ -20,7 +20,7 @@ axios.interceptors.request.use(
 );
 
 // Add environment variables to get the full key.
-// Full key structure: oidc.user:${AUTH0_ISSUER_URL}:${AUTH0_AUDIENCE}
+// Full key structure: oidc.user:${KEYCLOAK_ISSUER_URL}:${KEYCLOAK_AUDIENCE}
 // Full key example:: oidc.user:https://dev.loginproxy.gov.bc.ca/auth/realms/standard:on-route-bc-direct-4598
 const getUserStorageKey = () =>
   Object.keys(sessionStorage).find((key) => key.startsWith("oidc.user"));

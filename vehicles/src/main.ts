@@ -15,12 +15,24 @@ import helmet from 'helmet';
 import { customLogger } from './common/logger/logger.config';
 import { CorrelationIdInterceptor } from './common/interceptor/correlationId.interceptor';
 
+const allowedOrigins = [process.env.FRONTEND_URL];
+
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     logger: customLogger,
   });
   app.use(helmet());
   app.enableCors({
+    origin: function (origin, callback) {
+      if (
+        (origin && allowedOrigins.includes(origin)) ||
+        process.env.NODE_ENV !== 'production'
+      ) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     methods: ['GET', 'PUT', 'POST', 'DELETE'],
     maxAge: 7200,
     credentials: false,
@@ -54,21 +66,22 @@ async function bootstrap() {
       validationError: { target: false },
     }),
   );
-  const config = new DocumentBuilder()
-    .setTitle('Vehicles API')
-    .setDescription('The vehicles API description')
-    .setVersion('1.0')
-    .addBearerAuth()
-    .build();
+  if (process.env.NODE_ENV !== 'production') {
+    const config = new DocumentBuilder()
+      .setTitle('Vehicles API')
+      .setDescription('The vehicles API description')
+      .setVersion('1.0')
+      .addBearerAuth()
+      .build();
 
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document, {
-    swaggerOptions: {
-      tagsSorter: 'alpha',
-      operationsSorter: 'alpha',
-    },
-  });
-
+    const document = SwaggerModule.createDocument(app, config);
+    SwaggerModule.setup('api', app, document, {
+      swaggerOptions: {
+        tagsSorter: 'alpha',
+        operationsSorter: 'alpha',
+      },
+    });
+  }
   app.useGlobalFilters(
     new FallbackExceptionFilter(),
     new HttpExceptionFilter(),
