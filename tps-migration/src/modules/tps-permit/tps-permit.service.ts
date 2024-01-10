@@ -18,6 +18,7 @@ import {
 } from '../common/constants/tps-migration.constant';
 import { v4 as uuidv4 } from 'uuid';
 import { Cron } from '@nestjs/schedule';
+import { LogAsyncMethodExecution } from '../../decorator/log-async-method-execution.decorator';
 
 @Injectable()
 export class TpsPermitService {
@@ -38,6 +39,7 @@ export class TpsPermitService {
    *
    */
   @Cron(`0 */${PENDING_POLLING_INTERVAL} * * * *`)
+  @LogAsyncMethodExecution()
   async uploadTpsPermit() {
     const tpsPermits: TpsPermit[] = await this.tpsPermitRepository.find({
       where: { s3UploadStatus: S3uploadStatus.Pending },
@@ -65,6 +67,7 @@ export class TpsPermitService {
    *
    */
   @Cron(`0 0 */${ERROR_POLLING_INTERVAL} * * *`)
+  @LogAsyncMethodExecution()
   async reprocessTpsPermit() {
     const tpsPermits: TpsPermit[] = await this.tpsPermitRepository.find({
       where: { s3UploadStatus: S3uploadStatus.Error, retryCount: LessThan(3) },
@@ -87,6 +90,7 @@ export class TpsPermitService {
     }
   }
 
+  @LogAsyncMethodExecution()
   async createDocument(
     s3ObjectId: string,
     s3Object: CompleteMultipartUploadCommandOutput,
@@ -117,6 +121,7 @@ export class TpsPermitService {
     return result;
   }
 
+  @LogAsyncMethodExecution()
   async permitExists(permitNumber: string, revision: number) {
     return await this.permitRepository.findOne({
       where: {
@@ -126,6 +131,7 @@ export class TpsPermitService {
     });
   }
 
+  @LogAsyncMethodExecution()
   async uploadToS3(ids: number[]) {
     for (const id of ids) {
       const tpsPermit: TpsPermit = await this.tpsPermitRepository.findOne({
