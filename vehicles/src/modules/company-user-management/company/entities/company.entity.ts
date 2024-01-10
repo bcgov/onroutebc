@@ -84,7 +84,6 @@ export class Company extends Base {
    * A one-to-one relationship with the {@link Address} entity, representing the
    * company's mailing address.
    */
-  //bruce test
   @AutoMap(() => Address)
   @OneToOne(() => Address, (Address) => Address.company, { cascade: true })
   @JoinColumn({ name: 'MAILING_ADDRESS_ID' })

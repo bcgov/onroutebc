@@ -34,9 +34,7 @@ import { Role } from '../../../common/enum/roles.enum';
 import { IUserJWT } from '../../../common/interface/user-jwt.interface';
 import { AuthOnly } from '../../../common/decorator/auth-only.decorator';
 import { IDP } from '../../../common/enum/idp.enum';
-
 import { PaginationDto } from 'src/common/dto/paginate/pagination';
-import { PageMetaDto } from 'src/common/dto/paginate/page-meta';
 import { PageOptionsDto } from 'src/common/dto/paginate/page-options';
 
 
@@ -84,6 +82,39 @@ export class CompanyController {
   ) {
     const currentUser = request.user as IUserJWT;
     return await this.companyService.create(createCompanyDto, currentUser);
+  }
+
+  /**
+   * A GET method defined with the @Get() decorator and a route of /companies/staff/paginated
+   * that retrieves companies metadata by company's legal name or client number. 
+   *
+   * @param legalName The legal name of the company.
+   * @param clientNumber The client number of the company.
+   * @returns The companies with response object {@link ReadCompanyMetadataDto}.
+   */
+  @ApiOkResponse({
+    description: 'The Company Metadata Resource',
+    type: ReadCompanyMetadataDto,
+    isArray: true,
+  })
+  @ApiQuery({ name: 'legalName', required: false })
+  @ApiQuery({ name: 'clientNumber', required: false })
+  @Roles(Role.READ_ORG)
+  @Get('paginated')
+  async getCompanyMetadataPaginated(
+    @Query() pageOptionsDto: PageOptionsDto,
+    @Query('legalName') legalName: string,
+    @Query('clientNumber') clientNumber: string,
+  ): Promise<PaginationDto<ReadCompanyMetadataDto>> {
+    console.log("Legal Name passed in:", legalName);
+    const companies =
+      await this.companyService.findCompanyMetadataPaginated(pageOptionsDto, legalName, clientNumber);
+
+    if (!companies?.items.length) {
+      throw new DataNotFoundException();
+    }
+
+    return companies;
   }
 
   /**
@@ -181,38 +212,7 @@ export class CompanyController {
     return retCompany;
   }
 
-  /**
-   * A GET method defined with the @Get() decorator and a route of /companies/staff/paginated
-   * that retrieves companies metadata by company's legal name or client number. 
-   *
-   * @param legalName The legal name of the company.
-   * @param clientNumber The client number of the company.
-   * @returns The companies with response object {@link ReadCompanyMetadataDto}.
-   */
-  @ApiOkResponse({
-    description: 'The Company Metadata Resource',
-    type: ReadCompanyMetadataDto,
-    isArray: true,
-  })
-  @ApiQuery({ name: 'legalName', required: false })
-  @ApiQuery({ name: 'clientNumber', required: false })
-  @Roles(Role.STAFF)
-  @Get('staff/paginated')
-  async getCompanyMetadataPaginated(
-    @Query() pageOptionsDto: PageOptionsDto,
-    @Query('legalName') legalName: string,
-    @Query('clientNumber') clientNumber: string,
-  ): Promise<PaginationDto<ReadCompanyMetadataDto>> {
-    console.log("Legal Name passed in:", legalName);
-    const companies =
-      await this.companyService.findCompanyMetadataPaginated(pageOptionsDto, legalName, clientNumber);
-
-    if (!companies?.items.length) {
-      throw new DataNotFoundException();
-    }
-
-    return companies;
-  }
+  
 }
 
 
