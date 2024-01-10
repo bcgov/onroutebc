@@ -14,6 +14,7 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import helmet from 'helmet';
 import { customLogger } from './common/logger/logger.config';
 import { CorrelationIdInterceptor } from './common/interceptor/correlationId.interceptor';
+import * as responseTime from 'response-time';
 
 const allowedOrigins = [process.env.FRONTEND_URL];
 
@@ -80,6 +81,8 @@ async function bootstrap() {
       operationsSorter: 'alpha',
     },
   });
+
+  app.use(responseTime());
 
   app.useGlobalFilters(
     new FallbackExceptionFilter(),

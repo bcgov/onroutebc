@@ -8,6 +8,7 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import { ExceptionDto } from '../exception/exception.dto';
+import { ClsServiceManager } from 'nestjs-cls';
 
 /*Catch all http exceptions */
 @Catch(HttpException)
@@ -22,6 +23,11 @@ export class HttpExceptionFilter implements ExceptionFilter {
       request = ctx.getRequest<Request>(),
       statusCode = exception.getStatus();
 
+    const cls = ClsServiceManager.getClsService();
+    const correlationId = cls.getId();
+    if (!response.getHeader('x-correlation-id') && correlationId) {
+      response.setHeader('x-correlation-id', correlationId);
+    }
     this.logger.error(
       `Response: ${request.method} ${request.url} ${statusCode} - ${
         (exception as Error).message
