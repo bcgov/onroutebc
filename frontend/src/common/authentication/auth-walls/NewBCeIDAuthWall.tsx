@@ -1,4 +1,4 @@
-import { useContext, useEffect } from "react";
+import { useContext } from "react";
 import { useAuth } from "react-oidc-context";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import {
@@ -27,12 +27,6 @@ export const NewBCeIDAuthWall = () => {
 
   const userIDP = userFromToken?.profile?.identity_provider as string;
   const location = useLocation();
-
-  useEffect(() => {
-    if (!isAuthLoading && isAuthenticated) {
-      console.log("user context state update");
-    }
-  }, [isAuthLoading, isAuthenticated]);
 
   if (isAuthLoading) {
     return <Loading />;
