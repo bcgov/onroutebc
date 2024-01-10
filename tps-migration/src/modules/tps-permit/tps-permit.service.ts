@@ -1,4 +1,8 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
 import { TpsPermit } from './entities/tps-permit.entity';
 import { LessThan, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -17,6 +21,7 @@ import { Cron } from '@nestjs/schedule';
 
 @Injectable()
 export class TpsPermitService {
+  private readonly logger = new Logger(TpsPermitService.name);
   constructor(
     @InjectRepository(TpsPermit)
     private tpsPermitRepository: Repository<TpsPermit>,
@@ -156,9 +161,11 @@ export class TpsPermitService {
           tpsPermit.permitNumber + '.pdf',
           s3ObjectId,
         );
-      } catch (err) {
-        console.log('Error while upload to s3. ', err);
-        console.log('Failed permit numer ', tpsPermit.permitNumber);
+      } catch (error) {
+        this.logger.log(
+          `Error while uploading permit# ${tpsPermit.permitNumber} docs to S3`,
+        );
+        this.logger.error(error);
         await this.tpsPermitRepository.update(
           {
             migrationId: tpsPermit.migrationId,
@@ -169,9 +176,8 @@ export class TpsPermitService {
           },
         );
       }
-      console.log(
-        tpsPermit.permitNumber + ' uploaded successfully.',
-        s3Object.Location,
+      this.logger.log(
+        `${tpsPermit.permitNumber} uploaded successfully to ${s3Object.Location}`,
       );
       try {
         if (s3Object) {
@@ -200,9 +206,11 @@ export class TpsPermitService {
             permit.tpsPermitNumber,
           );
         }
-      } catch (err) {
-        console.log('TPS Permit Number',tpsPermit.permitNumber)
-        console.log(err);
+      } catch (error) {
+        this.logger.log(
+          `Error while processing permit# ${tpsPermit.permitNumber}`,
+        );
+        this.logger.error(error);
       }
     }
   }

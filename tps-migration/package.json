@@ -68,12 +68,13 @@
     "jwks-rsa": "^3.0.1",
     "mssql": "^9.1.1",
     "nest-aws-sdk": "^3.0.1",
-    "pg": "^8.11.0",
+    "nest-winston": "^1.9.4",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1",
     "swagger-ui-express": "^4.6.3",
     "typeorm": "^0.3.16",
-    "uuid": "^9.0.0"
+    "uuid": "^9.0.0",
+    "winston": "^3.11.0"
   },
   "devDependencies": {
     "@golevelup/ts-jest": "^0.3.7",

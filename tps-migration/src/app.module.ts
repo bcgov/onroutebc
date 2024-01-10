@@ -6,6 +6,8 @@ import { ConfigModule } from '@nestjs/config';
 import * as path from 'path';
 import { TpsPermitModule } from './modules/tps-permit/tps-permit.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { TypeormCustomLogger } from './logger/typeorm-logger.config';
+import { getTypeormLogLevel } from './helper/logger.helper';
 
 const envPath = path.resolve(process.cwd() + '/../');
 
@@ -14,32 +16,20 @@ const envPath = path.resolve(process.cwd() + '/../');
     ScheduleModule.forRoot(),
     ConfigModule.forRoot({ envFilePath: `${envPath}/.env` }),
     TypeOrmModule.forRoot({
-      type: process.env.DB_TYPE === 'mssql' ? 'mssql' : 'postgres',
-      useUTC: true,
-      host:
-        process.env.DB_TYPE === 'mssql'
-          ? process.env.MSSQL_HOST
-          : process.env.POSTGRESQL_HOST,
-      port:
-        process.env.DB_TYPE === 'mssql'
-          ? parseInt(process.env.MSSQL_PORT)
-          : 5432,
-      database:
-        process.env.DB_TYPE === 'mssql'
-          ? process.env.MSSQL_DB
-          : process.env.POSTGRESQL_DATABASE,
-      username:
-        process.env.DB_TYPE === 'mssql'
-          ? process.env.MSSQL_SA_USER
-          : process.env.POSTGRESQL_USER,
-      password:
-        process.env.DB_TYPE === 'mssql'
-          ? process.env.MSSQL_SA_PASSWORD
-          : process.env.POSTGRESQL_PASSWORD,
+      type: 'mssql',
+      host: process.env.MSSQL_HOST,
+      port: parseInt(process.env.MSSQL_PORT),
+      database: process.env.MSSQL_DB,
+      username: process.env.MSSQL_SA_USER,
+      password: process.env.MSSQL_SA_PASSWORD,
       options: { encrypt: process.env.MSSQL_ENCRYPT === 'true', useUTC: true },
       autoLoadEntities: true, // Auto load all entities regiestered by typeorm forFeature method.
       synchronize: false, // This changes the DB schema to match changes to entities, which we might not want.
-      logging: false,
+      maxQueryExecutionTime:
+        +process.env.TPS_API_MAX_QUERY_EXECUTION_TIME_MS || 5000, //5 seconds by default
+      logger: new TypeormCustomLogger(
+        getTypeormLogLevel(process.env.TPS_API_TYPEORM_LOG_LEVEL),
+      ),
     }),
     TpsPermitModule,
   ],
