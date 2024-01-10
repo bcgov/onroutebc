@@ -5,9 +5,10 @@ import {
   Inject,
   Injectable,
   Logger,
+  Query,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, Repository, Like } from 'typeorm';
 import { UserAuthGroup } from '../../../common/enum/user-auth-group.enum';
 import { ReadUserDto } from '../users/dto/response/read-user.dto';
 import { CreateCompanyDto } from './dto/request/create-company.dto';
@@ -34,6 +35,9 @@ import { AccountSource } from '../../../common/enum/account-source.enum';
 import { PendingUser } from '../pending-users/entities/pending-user.entity';
 import * as crypto from 'crypto';
 import { LogAsyncMethodExecution } from '../../../common/decorator/log-async-method-execution.decorator';
+import { PageOptionsDto } from 'src/common/dto/paginate/page-options';
+import { PaginationDto } from 'src/common/dto/paginate/pagination';
+import { PageMetaDto } from 'src/common/dto/paginate/page-meta';
 
 @Injectable()
 export class CompanyService {
@@ -281,6 +285,46 @@ export class CompanyService {
 
     return companyMetadata;
   }
+
+    /**
+   * The findCompanyMetadataPaginated() method returns a ReadCompanyMetadataDto object corresponding to the given
+   * company legal name or client number. It retrieves the entity from the database using the
+   * Repository, maps it to a DTO object using the Mapper, and returns it.
+   *
+   * @param legalName The company legal name.
+   * @param clientNumber The company's client number
+   * @returns The company list as a promise of type {@link ReadCompanyMetadataDto}
+   */
+  @LogAsyncMethodExecution()
+  async findCompanyMetadataPaginated(
+    @Query() pageOptionsDto: PageOptionsDto,
+    @Query() legalName: string,
+    @Query() clientNumber: string,
+  ):Promise<PaginationDto<ReadCompanyMetadataDto>> {
+    console.log("Legal Name received:", legalName);
+    const companies = await this.companyRepository
+      .createQueryBuilder('company')
+      .innerJoinAndSelect('company.mailingAddress', 'mailingAddress')
+      .innerJoinAndSelect('company.primaryContact', 'primaryContact')
+      .where('company.legalName LIKE :legalName', {
+        legalName: `%${legalName}%`,
+      })
+      .orWhere('company.clientNumber LIKE :clientNumber', {
+        clientNumber: `%${clientNumber}%`,
+      })
+      .getMany();
+
+    const companyMetadata = await this.classMapper.mapArrayAsync(
+      companies,
+      Company,
+      ReadCompanyMetadataDto,
+    );
+
+    const totalItems = companyMetadata.length;
+    const pageMetaDto = new PageMetaDto({ totalItems, pageOptionsDto });
+    return new PaginationDto(companyMetadata, pageMetaDto);
+  }
+
 
   /**
    * The findOne() method returns a ReadCompanyMetadataDto object corresponding to the
