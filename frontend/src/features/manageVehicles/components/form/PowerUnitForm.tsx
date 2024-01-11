@@ -51,22 +51,20 @@ export const PowerUnitForm = ({ powerUnit, companyId }: PowerUnitFormProps) => {
   // Default values to register with React Hook Forms
   // If data was passed to this component, then use that data, otherwise use empty or undefined values
   const powerUnitDefaultValues = {
-    provinceCode: getDefaultRequiredVal("BC", powerUnit?.provinceCode),
-    countryCode: getDefaultRequiredVal("CA", powerUnit?.countryCode),
-    unitNumber: getDefaultRequiredVal("Unit 744", powerUnit?.unitNumber),
-    licensedGvw: getDefaultNullableVal(2000),
-    make: getDefaultRequiredVal("BMW", powerUnit?.make),
-    plate: getDefaultRequiredVal("PLATE2", powerUnit?.plate),
+    provinceCode: getDefaultRequiredVal("", powerUnit?.provinceCode),
+    countryCode: getDefaultRequiredVal("", powerUnit?.countryCode),
+    unitNumber: getDefaultRequiredVal("", powerUnit?.unitNumber),
+    licensedGvw: getDefaultNullableVal(),
+    make: getDefaultRequiredVal("", powerUnit?.make),
+    plate: getDefaultRequiredVal("", powerUnit?.plate),
     powerUnitTypeCode: getDefaultRequiredVal(
-      "CONCRET",
+      "",
       powerUnit?.powerUnitTypeCode,
     ),
     steerAxleTireSize: getDefaultNullableVal(powerUnit?.steerAxleTireSize),
-    vin: getDefaultRequiredVal("838322", powerUnit?.vin),
-    year: getDefaultNullableVal(2022),
+    vin: getDefaultRequiredVal("", powerUnit?.vin),
+    year: getDefaultNullableVal(),
   };
-
-  console.log("powerUnitDefaultValues::", powerUnitDefaultValues);
 
   const formMethods = useForm<PowerUnit>({
     defaultValues: powerUnitDefaultValues,
