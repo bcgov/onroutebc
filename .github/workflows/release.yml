@@ -1,9 +1,8 @@
 name: Release
 
 on:
-  deployment_review:
-    types: [accepted]
-  push:
+  deployment:
+  workflow_call:
 
 jobs:
   vars:
