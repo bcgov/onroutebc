@@ -131,7 +131,7 @@ export const AmendPermit = () => {
   };
   const fullSearchRoute = `${searchRoute}${getBasePermitNumber()}`;
 
-  const goHome = () => navigate(-1);
+  const goHome = () => navigate(searchRoute);
   const goHomeSuccess = () => navigate(fullSearchRoute);
 
   const allLinks = [

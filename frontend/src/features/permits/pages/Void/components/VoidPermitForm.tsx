@@ -74,7 +74,7 @@ export const VoidPermitForm = ({
   } = formMethods;
 
   const handleCancel = () => {
-    navigate(-1);
+    navigate(searchRoute);
   };
 
   const handleContinue = () => {
