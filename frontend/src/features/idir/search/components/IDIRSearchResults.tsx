@@ -91,7 +91,8 @@ export const IDIRSearchResults = memo(
         retry: 1, // retry once.
         enabled: true,
         refetchInterval: false,
-        staleTime: TEN_MINUTES,
+        refetchOnWindowFocus: false,
+        // staleTime: TEN_MINUTES,
         keepPreviousData: true,
       },
     );

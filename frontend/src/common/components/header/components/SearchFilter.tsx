@@ -132,6 +132,7 @@ export const SearchFilter = () => {
   };
 
   const onSubmit = (data: FieldValues) => {
+    console.log('data::', )
     const searchFields = Object.entries(data)
       .map(([key, value]) => `${key}=${value}`)
       .join("&");
