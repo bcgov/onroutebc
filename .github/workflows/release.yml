@@ -1,9 +1,23 @@
 name: Release
 
 on:
-  workflow_call:
+  deployment_review:
+    types: [accepted]
+  push:
 
 jobs:
+  vars:
+    name: Set Variables
+    outputs:
+      pr: ${{ steps.pr.outputs.pr }}
+    runs-on: ubuntu-22.04
+    timeout-minutes: 1
+    steps:
+      # Get PR number for squash merges to main
+      - name: PR Number
+        id: pr
+        uses: bcgov-nr/action-get-pr@v0.0.1
+
   GitVersion:
     name: Mainline Versioning - GitVersion
     runs-on: ubuntu-22.04
@@ -77,3 +91,18 @@ jobs:
           draft: false
           prerelease: false
 
+  promote-images-release:
+    name: Tag images with Release Version
+    needs: [create-release, vars]
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        package: [dops, vehicles, frontend, tps-migration]
+    timeout-minutes: 2
+    steps:
+      - uses: shrink/actions-docker-registry-tag@v3
+        with:
+          registry: ghcr.io
+          repository: ${{ github.repository }}/${{ matrix.package }}
+          target: ${{ needs.vars.outputs.pr }}
+          tags: ${{ needs.GitVersion.outputs.fullSemVer }}
