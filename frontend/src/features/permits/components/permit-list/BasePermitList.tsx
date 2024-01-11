@@ -51,6 +51,7 @@ export const BasePermitList = ({
     queryKey: [
       "permits",
       isExpired,
+      globalFilter,
       pagination.pageIndex,
       pagination.pageSize,
       sorting,
