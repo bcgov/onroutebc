@@ -14,7 +14,7 @@ import {
 
 import { SnackBarContext } from "../../../../App";
 import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
-import { FIVE_MINUTES } from "../../../../common/constants/constants";
+import { ONE_MINUTE } from "../../../../common/constants/constants";
 import { getPermits } from "../../apiManager/permitsAPI";
 import { Permit } from "../../types/permit";
 import { PermitsColumnDefinition } from "./Columns";
@@ -51,7 +51,6 @@ export const BasePermitList = ({
     queryKey: [
       "permits",
       isExpired,
-      globalFilter,
       pagination.pageIndex,
       pagination.pageSize,
       sorting,
@@ -75,7 +74,7 @@ export const BasePermitList = ({
         },
       ),
     keepPreviousData: true,
-    staleTime: FIVE_MINUTES,
+    staleTime: ONE_MINUTE,
     retry: 1,
   });
 
