@@ -10,7 +10,10 @@ import { useNavigate } from "react-router";
 import { LoadBCeIDUserRolesByCompany } from "../../../../common/authentication/LoadBCeIDUserRolesByCompany";
 import { Banner } from "../../../../common/components/dashboard/Banner";
 import "../../../../common/components/dashboard/Dashboard.scss";
-import { getDefaultRequiredVal, getSHA256HexValue } from "../../../../common/helpers/util";
+import {
+  getDefaultRequiredVal,
+  getSHA256HexValue,
+} from "../../../../common/helpers/util";
 import { Nullable } from "../../../../common/types/common";
 import { ERROR_ROUTES } from "../../../../routes/constants";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
