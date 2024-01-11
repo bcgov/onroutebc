@@ -6,18 +6,6 @@ on:
   workflow_call:
 
 jobs:
-  vars:
-    name: Set Variables
-    outputs:
-      pr: ${{ steps.pr.outputs.pr }}
-    runs-on: ubuntu-22.04
-    timeout-minutes: 1
-    steps:
-      # Get PR number for squash merges to main
-      - name: PR Number
-        id: pr
-        uses: bcgov-nr/action-get-pr@v0.0.1
-
   GitVersion:
     name: Mainline Versioning - GitVersion
     runs-on: ubuntu-22.04
@@ -104,5 +92,5 @@ jobs:
         with:
           registry: ghcr.io
           repository: ${{ github.repository }}/${{ matrix.package }}
-          target: ${{ needs.vars.outputs.pr }}
+          target: test
           tags: ${{ needs.GitVersion.outputs.fullSemVer }}
