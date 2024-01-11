@@ -14,7 +14,6 @@ import {
 
 import { SnackBarContext } from "../../../../App";
 import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
-import { ONE_MINUTE } from "../../../../common/constants/constants";
 import { getPermits } from "../../apiManager/permitsAPI";
 import { Permit } from "../../types/permit";
 import { PermitsColumnDefinition } from "./Columns";
@@ -75,7 +74,6 @@ export const BasePermitList = ({
         },
       ),
     keepPreviousData: true,
-    staleTime: ONE_MINUTE,
     retry: 1,
   });
 
