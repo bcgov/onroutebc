@@ -2,7 +2,7 @@ name: Merge
 
 on:
   push:
-    branches: [fix/create_release]
+    branches: [main]
     paths-ignore:
       - '*.md'
       - '.github/**'
