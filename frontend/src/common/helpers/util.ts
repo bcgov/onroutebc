@@ -186,3 +186,22 @@ export const streamDownloadFile = async (response: Response) => {
   const blobObj = await newRes.blob();
   return { blobObj, filename };
 };
+
+/**
+ * Encrypts a string and returns its hex value.
+ * @param message The message to be
+ * @returns The hashvalue from SHA256 encryption.
+ *
+ * Code copied from:
+ * @see https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/digest#converting_a_digest_to_a_hex_string
+ */
+export async function getSHA256HexValue(message: string) {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(message);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer)); // convert buffer to byte array
+  const hashHex = hashArray
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join(""); // convert bytes to hex string
+  return hashHex;
+}
