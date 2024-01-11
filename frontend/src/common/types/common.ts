@@ -5,6 +5,7 @@ import {
   CompanyAndUserRequest,
   CompanyProfile,
   UserInformation,
+  VerifyMigratedClientRequest,
 } from "../../features/manageProfile/types/manageProfile";
 
 import {
@@ -28,7 +29,8 @@ export type ORBC_FormTypes =
   | UserInformation
   | CompanyAndUserRequest
   | BCeIDAddUserRequest
-  | SearchFields;
+  | SearchFields
+  | VerifyMigratedClientRequest;
 
 /**
  * The options for pagination.

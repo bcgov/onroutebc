@@ -50,17 +50,22 @@ export const PowerUnitForm = ({ powerUnit, companyId }: PowerUnitFormProps) => {
   // Default values to register with React Hook Forms
   // If data was passed to this component, then use that data, otherwise use empty or undefined values
   const powerUnitDefaultValues = {
-    provinceCode: getDefaultRequiredVal("", powerUnit?.provinceCode),
-    countryCode: getDefaultRequiredVal("", powerUnit?.countryCode),
-    unitNumber: getDefaultRequiredVal("", powerUnit?.unitNumber),
-    licensedGvw: getDefaultNullableVal(powerUnit?.licensedGvw),
-    make: getDefaultRequiredVal("", powerUnit?.make),
-    plate: getDefaultRequiredVal("", powerUnit?.plate),
-    powerUnitTypeCode: getDefaultRequiredVal("", powerUnit?.powerUnitTypeCode),
+    provinceCode: getDefaultRequiredVal("BC", powerUnit?.provinceCode),
+    countryCode: getDefaultRequiredVal("CA", powerUnit?.countryCode),
+    unitNumber: getDefaultRequiredVal("Unit 744", powerUnit?.unitNumber),
+    licensedGvw: getDefaultNullableVal(2000),
+    make: getDefaultRequiredVal("BMW", powerUnit?.make),
+    plate: getDefaultRequiredVal("PLATE2", powerUnit?.plate),
+    powerUnitTypeCode: getDefaultRequiredVal(
+      "CONCRET",
+      powerUnit?.powerUnitTypeCode,
+    ),
     steerAxleTireSize: getDefaultNullableVal(powerUnit?.steerAxleTireSize),
-    vin: getDefaultRequiredVal("", powerUnit?.vin),
-    year: getDefaultNullableVal(powerUnit?.year),
+    vin: getDefaultRequiredVal("838322", powerUnit?.vin),
+    year: getDefaultNullableVal(2022),
   };
+
+  console.log('powerUnitDefaultValues::', powerUnitDefaultValues);
 
   const formMethods = useForm<PowerUnit>({
     defaultValues: powerUnitDefaultValues,
@@ -128,31 +133,45 @@ export const PowerUnitForm = ({ powerUnit, companyId }: PowerUnitFormProps) => {
       }
     } else {
       const powerUnitToBeAdded = data as PowerUnit;
-      const result = await addPowerUnitMutation.mutateAsync({
-        powerUnit: {
-          ...powerUnitToBeAdded,
-          // need to explicitly convert form values to number here (since we can't use valueAsNumber prop)
-          year: !isNaN(Number(data.year)) ? Number(data.year) : data.year,
-          licensedGvw:
-            data.licensedGvw != null &&
-            data.licensedGvw !== "" &&
-            !isNaN(Number(data.licensedGvw))
-              ? Number(data.licensedGvw)
-              : data.licensedGvw,
-        },
-        companyId,
-      });
+      console.log('data.steerAxleTireSize::', data.steerAxleTireSize.length);
+      console.log("powerUnitToBeAdded:::", {
+        ...powerUnitToBeAdded,
+        // need to explicitly convert form values to number here (since we can't use valueAsNumber prop)
+        year: !isNaN(Number(data.year)) ? Number(data.year) : data.year,
+        licensedGvw:
+          data.licensedGvw != null &&
+          data.licensedGvw !== "" &&
+          !isNaN(Number(data.licensedGvw))
+            ? Number(data.licensedGvw)
+            : data.licensedGvw,
+        steerAxleTireSize: convertToNumberIfValid(data.steerAxleTireSize, undefined),
+      },);
+      // const result = await addPowerUnitMutation.mutateAsync({
+      //   powerUnit: {
+      //     ...powerUnitToBeAdded,
+      //     // need to explicitly convert form values to number here (since we can't use valueAsNumber prop)
+      //     year: !isNaN(Number(data.year)) ? Number(data.year) : data.year,
+      //     licensedGvw:
+      //       data.licensedGvw != null &&
+      //       data.licensedGvw !== "" &&
+      //       !isNaN(Number(data.licensedGvw))
+      //         ? Number(data.licensedGvw)
+      //         : data.licensedGvw,
+      //     steerAxleTireSize: data.steerAxleTireSize ?? undefined,
+      //   },
+      //   companyId,
+      // });
 
-      if (result.status === 200 || result.status === 201) {
-        snackBar.setSnackBar({
-          showSnackbar: true,
-          setShowSnackbar: () => true,
-          message: "Power unit has been added successfully",
-          alertType: "success",
-        });
+      // if (result.status === 200 || result.status === 201) {
+      //   snackBar.setSnackBar({
+      //     showSnackbar: true,
+      //     setShowSnackbar: () => true,
+      //     message: "Power unit has been added successfully",
+      //     alertType: "success",
+      //   });
 
-        navigate(VEHICLES_ROUTES.MANAGE);
-      }
+      //   navigate(VEHICLES_ROUTES.MANAGE);
+      // }
     }
   };
 
