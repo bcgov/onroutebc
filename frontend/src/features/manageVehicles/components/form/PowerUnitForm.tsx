@@ -13,7 +13,6 @@ import { Nullable } from "../../../../common/types/common";
 import {
   getDefaultRequiredVal,
   getDefaultNullableVal,
-  convertToNumberIfValid,
 } from "../../../../common/helpers/util";
 
 import {
@@ -54,16 +53,13 @@ export const PowerUnitForm = ({ powerUnit, companyId }: PowerUnitFormProps) => {
     provinceCode: getDefaultRequiredVal("", powerUnit?.provinceCode),
     countryCode: getDefaultRequiredVal("", powerUnit?.countryCode),
     unitNumber: getDefaultRequiredVal("", powerUnit?.unitNumber),
-    licensedGvw: getDefaultNullableVal(),
+    licensedGvw: getDefaultNullableVal(powerUnit?.licensedGvw),
     make: getDefaultRequiredVal("", powerUnit?.make),
     plate: getDefaultRequiredVal("", powerUnit?.plate),
-    powerUnitTypeCode: getDefaultRequiredVal(
-      "",
-      powerUnit?.powerUnitTypeCode,
-    ),
+    powerUnitTypeCode: getDefaultRequiredVal("", powerUnit?.powerUnitTypeCode),
     steerAxleTireSize: getDefaultNullableVal(powerUnit?.steerAxleTireSize),
     vin: getDefaultRequiredVal("", powerUnit?.vin),
-    year: getDefaultNullableVal(),
+    year: getDefaultNullableVal(powerUnit?.year),
   };
 
   const formMethods = useForm<PowerUnit>({
@@ -92,6 +88,16 @@ export const PowerUnitForm = ({ powerUnit, companyId }: PowerUnitFormProps) => {
    * Adds a vehicle.
    */
   const onAddOrUpdateVehicle = async (data: FieldValues) => {
+    // return input as a number if it's a valid number value, or original value if invalid number
+    const convertToNumberIfValid = (
+      str?: Nullable<string>,
+      valueToReturnWhenInvalid?: 0 | Nullable<string>,
+    ) => {
+      return str != null && str !== "" && !isNaN(Number(str))
+        ? Number(str)
+        : valueToReturnWhenInvalid;
+    };
+
     if (powerUnit?.powerUnitId) {
       const powerUnitToBeUpdated = data as PowerUnit;
       const result = await updatePowerUnitMutation.mutateAsync({
@@ -133,10 +139,6 @@ export const PowerUnitForm = ({ powerUnit, companyId }: PowerUnitFormProps) => {
             !isNaN(Number(data.licensedGvw))
               ? Number(data.licensedGvw)
               : data.licensedGvw,
-          steerAxleTireSize: convertToNumberIfValid(
-            data.steerAxleTireSize,
-            null,
-          ) as Nullable<number>,
         },
         companyId,
       });
