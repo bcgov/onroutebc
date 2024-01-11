@@ -20,8 +20,9 @@ export type FeatureNamesType =
  */
 export const isFeatureEnabled = (featureName: string): boolean => {
   const featureFlags =
-    import.meta.env.VITE_FEATURE_FLAGS || envConfig.VITE_FEATURE_FLAGS;
-  const featureFlagObject = JSON.parse(featureFlags);
+    import.meta.env.ONROUTEBC_FEATURE_FLAGS || envConfig.ONROUTEBC_FEATURE_FLAGS;
+  const featureFlagObject = JSON.parse(featureFlags.replaceAll("\n", ""));
+  console.log(featureFlagObject);
   return featureFlagObject[featureName] === "ENABLED";
 };
 

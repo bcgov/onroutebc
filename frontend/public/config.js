@@ -21,6 +21,6 @@ const envConfig = (() => {
     VITE_KEYCLOAK_ISSUER_URL: "",
     VITE_KEYCLOAK_AUDIENCE: "",
     VITE_SITEMINDER_LOG_OFF_URL: "",
-    VITE_FEATURE_FLAGS: "",
+    ONROUTEBC_FEATURE_FLAGS: "",
   };
 })();

@@ -10,6 +10,7 @@ import path from "path";
 // https://vitejs.dev/config/
 export default defineConfig({
   envDir: path.resolve(process.cwd() + "/../"),
+  envPrefix: ["VITE", "ONROUTEBC"],
   server: {
     port: 3000,
     open: true,
