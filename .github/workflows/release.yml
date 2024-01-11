@@ -3,10 +3,10 @@ name: Release
 on:
   push:
   deployment:
-  workflow_call:
 
 jobs:
   GitVersion:
+    if: ${{github.event.deploy.environment == 'prod'}}
     name: Mainline Versioning - GitVersion
     runs-on: ubuntu-22.04
     steps:
@@ -81,7 +81,7 @@ jobs:
 
   promote-images-release:
     name: Tag images with Release Version
-    needs: [create-release, vars]
+    needs: [create-release]
     runs-on: ubuntu-22.04
     strategy:
       matrix:
