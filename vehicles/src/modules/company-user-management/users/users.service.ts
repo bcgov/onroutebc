@@ -401,8 +401,8 @@ export class UsersService {
       foundPermit: false,
       migratedClient: undefined,
     };
-    const company = await this.companyService.findOneByMigratedClientNumber(
-      verifyMigratedClientDto.clientNumber,
+    const company = await this.companyService.findOneByMigratedClientHash(
+      verifyMigratedClientDto.clientNumberHash,
     );
     if (company) {
       verifyMigratedClient.foundClient = true;
