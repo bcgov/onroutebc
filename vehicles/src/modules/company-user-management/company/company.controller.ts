@@ -94,7 +94,7 @@ export class CompanyController {
    */
   @ApiOkResponse({
     description: 'The Company Metadata Resource',
-    type: ReadCompanyMetadataDto,
+    type: ReadCompanyDto,
     isArray: true,
   })
   @ApiQuery({ name: 'legalName', required: false })
@@ -105,9 +105,9 @@ export class CompanyController {
     @Query() pageOptionsDto: PageOptionsDto,
     @Query('legalName') legalName: string,
     @Query('clientNumber') clientNumber: string,
-  ): Promise<PaginationDto<ReadCompanyMetadataDto>> {
+  ): Promise<PaginationDto<ReadCompanyDto>> {
     console.log("Legal Name passed in:", legalName);
-    const companies: PaginationDto<ReadCompanyMetadataDto> =
+    const companies: PaginationDto<ReadCompanyDto> =
       await this.companyService.findCompanyMetadataPaginated(pageOptionsDto, legalName, clientNumber);
 
     if (!companies?.items.length) {

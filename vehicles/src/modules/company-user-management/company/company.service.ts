@@ -300,7 +300,7 @@ export class CompanyService {
     @Query() pageOptionsDto: PageOptionsDto,
     @Query() legalName: string,
     @Query() clientNumber: string,
-  ):Promise<PaginationDto<ReadCompanyMetadataDto>> {
+  ):Promise<PaginationDto<ReadCompanyDto>> {
     console.log("Legal Name received:", legalName);
     const companies = await this.companyRepository
       .createQueryBuilder('company')
@@ -317,7 +317,7 @@ export class CompanyService {
     const companyMetadata = await this.classMapper.mapArrayAsync(
       companies,
       Company,
-      ReadCompanyMetadataDto,
+      ReadCompanyDto,
     );
 
     const totalItems = companyMetadata.length;
