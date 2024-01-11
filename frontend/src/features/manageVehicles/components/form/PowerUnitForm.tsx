@@ -28,6 +28,7 @@ import {
   invalidYearMin,
   requiredMessage,
 } from "../../../../common/helpers/validationMessages";
+import { Nullable } from "../../../../common/types/common";
 
 /**
  * Props used by the power unit form.
@@ -102,6 +103,10 @@ export const PowerUnitForm = ({ powerUnit, companyId }: PowerUnitFormProps) => {
             data.licensedGvw,
             data.licensedGvw as string,
           ) as any,
+          steerAxleTireSize: convertToNumberIfValid(
+            data.steerAxleTireSize,
+            null,
+          ) as Nullable<number>,
         },
         companyId,
       });
@@ -129,6 +134,10 @@ export const PowerUnitForm = ({ powerUnit, companyId }: PowerUnitFormProps) => {
             !isNaN(Number(data.licensedGvw))
               ? Number(data.licensedGvw)
               : data.licensedGvw,
+          steerAxleTireSize: convertToNumberIfValid(
+            data.steerAxleTireSize,
+            null,
+          ) as Nullable<number>,
         },
         companyId,
       });

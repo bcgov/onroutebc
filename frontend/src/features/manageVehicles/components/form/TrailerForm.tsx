@@ -28,7 +28,7 @@ import {
   requiredMessage,
 } from "../../../../common/helpers/validationMessages";
 import { VEHICLES_ROUTES } from "../../../../routes/constants";
-import { Nullable } from "vitest";
+import { Nullable } from "../../../../common/types/common";
 
 /**
  * Props used by the power unit form.
