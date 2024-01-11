@@ -12,7 +12,6 @@ import {
   useMaterialReactTable,
 } from "material-react-table";
 
-import { SnackBarContext } from "../../../../App";
 import { NoRecordsFound } from "../../../../common/components/table/NoRecordsFound";
 import { getPermits } from "../../apiManager/permitsAPI";
 import { Permit } from "../../types/permit";
@@ -21,8 +20,10 @@ import { PermitRowOptions } from "./PermitRowOptions";
 import {
   defaultTableInitialStateOptions,
   defaultTableOptions,
-  defaultTableStateOptions
+  defaultTableStateOptions,
 } from "../../../../common/helpers/tableHelper";
+import { useNavigate } from "react-router-dom";
+import { ERROR_ROUTES } from "../../../../routes/constants";
 
 /**
  * A permit list component with common functionalities that can be shared by
@@ -33,7 +34,7 @@ export const BasePermitList = ({
 }: {
   isExpired?: boolean;
 }) => {
-  const snackBar = useContext(SnackBarContext);
+  const navigate = useNavigate();
   const [pagination, setPagination] = useState<MRT_PaginationState>({
     pageIndex: 0,
     pageSize: 10,
@@ -74,6 +75,7 @@ export const BasePermitList = ({
         },
       ),
     keepPreviousData: true,
+    refetchOnWindowFocus: false,
     retry: 1,
   });
 
@@ -143,12 +145,7 @@ export const BasePermitList = ({
 
   useEffect(() => {
     if (isError) {
-      snackBar.setSnackBar({
-        message: "An unexpected error occurred.",
-        showSnackbar: true,
-        setShowSnackbar: () => true,
-        alertType: "error",
-      });
+      navigate(ERROR_ROUTES.UNEXPECTED);
     }
   }, [isError]);
 
