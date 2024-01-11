@@ -13,6 +13,7 @@ import { Nullable } from "../../../../common/types/common";
 import {
   getDefaultRequiredVal,
   getDefaultNullableVal,
+  convertToNumberIfValid,
 } from "../../../../common/helpers/util";
 
 import {
@@ -65,7 +66,7 @@ export const PowerUnitForm = ({ powerUnit, companyId }: PowerUnitFormProps) => {
     year: getDefaultNullableVal(2022),
   };
 
-  console.log('powerUnitDefaultValues::', powerUnitDefaultValues);
+  console.log("powerUnitDefaultValues::", powerUnitDefaultValues);
 
   const formMethods = useForm<PowerUnit>({
     defaultValues: powerUnitDefaultValues,
@@ -93,16 +94,6 @@ export const PowerUnitForm = ({ powerUnit, companyId }: PowerUnitFormProps) => {
    * Adds a vehicle.
    */
   const onAddOrUpdateVehicle = async (data: FieldValues) => {
-    // return input as a number if it's a valid number value, or original value if invalid number
-    const convertToNumberIfValid = (
-      str?: Nullable<string>,
-      valueToReturnWhenInvalid?: 0 | Nullable<string>,
-    ) => {
-      return str != null && str !== "" && !isNaN(Number(str))
-        ? Number(str)
-        : valueToReturnWhenInvalid;
-    };
-
     if (powerUnit?.powerUnitId) {
       const powerUnitToBeUpdated = data as PowerUnit;
       const result = await updatePowerUnitMutation.mutateAsync({
@@ -133,45 +124,35 @@ export const PowerUnitForm = ({ powerUnit, companyId }: PowerUnitFormProps) => {
       }
     } else {
       const powerUnitToBeAdded = data as PowerUnit;
-      console.log('data.steerAxleTireSize::', data.steerAxleTireSize.length);
-      console.log("powerUnitToBeAdded:::", {
-        ...powerUnitToBeAdded,
-        // need to explicitly convert form values to number here (since we can't use valueAsNumber prop)
-        year: !isNaN(Number(data.year)) ? Number(data.year) : data.year,
-        licensedGvw:
-          data.licensedGvw != null &&
-          data.licensedGvw !== "" &&
-          !isNaN(Number(data.licensedGvw))
-            ? Number(data.licensedGvw)
-            : data.licensedGvw,
-        steerAxleTireSize: convertToNumberIfValid(data.steerAxleTireSize, undefined),
-      },);
-      // const result = await addPowerUnitMutation.mutateAsync({
-      //   powerUnit: {
-      //     ...powerUnitToBeAdded,
-      //     // need to explicitly convert form values to number here (since we can't use valueAsNumber prop)
-      //     year: !isNaN(Number(data.year)) ? Number(data.year) : data.year,
-      //     licensedGvw:
-      //       data.licensedGvw != null &&
-      //       data.licensedGvw !== "" &&
-      //       !isNaN(Number(data.licensedGvw))
-      //         ? Number(data.licensedGvw)
-      //         : data.licensedGvw,
-      //     steerAxleTireSize: data.steerAxleTireSize ?? undefined,
-      //   },
-      //   companyId,
-      // });
+      const result = await addPowerUnitMutation.mutateAsync({
+        powerUnit: {
+          ...powerUnitToBeAdded,
+          // need to explicitly convert form values to number here (since we can't use valueAsNumber prop)
+          year: !isNaN(Number(data.year)) ? Number(data.year) : data.year,
+          licensedGvw:
+            data.licensedGvw != null &&
+            data.licensedGvw !== "" &&
+            !isNaN(Number(data.licensedGvw))
+              ? Number(data.licensedGvw)
+              : data.licensedGvw,
+          steerAxleTireSize: convertToNumberIfValid(
+            data.steerAxleTireSize,
+            null,
+          ) as Nullable<number>,
+        },
+        companyId,
+      });
 
-      // if (result.status === 200 || result.status === 201) {
-      //   snackBar.setSnackBar({
-      //     showSnackbar: true,
-      //     setShowSnackbar: () => true,
-      //     message: "Power unit has been added successfully",
-      //     alertType: "success",
-      //   });
+      if (result.status === 200 || result.status === 201) {
+        snackBar.setSnackBar({
+          showSnackbar: true,
+          setShowSnackbar: () => true,
+          message: "Power unit has been added successfully",
+          alertType: "success",
+        });
 
-      //   navigate(VEHICLES_ROUTES.MANAGE);
-      // }
+        navigate(VEHICLES_ROUTES.MANAGE);
+      }
     }
   };
 
