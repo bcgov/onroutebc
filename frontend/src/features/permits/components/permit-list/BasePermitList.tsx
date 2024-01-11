@@ -1,6 +1,6 @@
 import { Box } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import {
   MRT_GlobalFilterTextField,
