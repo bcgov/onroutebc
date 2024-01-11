@@ -153,6 +153,9 @@ objects:
             "VITE_KEYCLOAK_ISSUER_URL":"${KEYCLOAK_ISSUER_URL}",
             "VITE_KEYCLOAK_AUDIENCE":"${KEYCLOAK_AUDIENCE}",
             "VITE_SITEMINDER_LOG_OFF_URL": "${SITEMINDER_LOG_OFF_URL}",
+            "VITE_FEATURE_FLAGS": "{
+              \"COMPANY_SEARCH\": \"ENABLED\",
+            }"
           };
         })();
   - apiVersion: v1

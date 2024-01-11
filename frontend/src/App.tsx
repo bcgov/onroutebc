@@ -23,6 +23,7 @@ import OnRouteBCContext, {
   IDIRUserDetailContext,
 } from "./common/authentication/OnRouteBCContext";
 import { MigratedClient, UserRolesType } from "./common/authentication/types";
+import { FEATURE_NAMES, isFeatureEnabled } from "./common/feature-config/FeatureFlagContext";
 
 const authority =
   import.meta.env.VITE_KEYCLOAK_ISSUER_URL ||
@@ -52,6 +53,8 @@ export const SnackBarContext = createContext({
 
 const App = () => {
   const queryClient = new QueryClient();
+
+  console.log('isFeatureEnabled::', isFeatureEnabled(FEATURE_NAMES.COMPANY_SEARCH));
 
   // Globally used SnackBar component
   const [snackBar, setSnackBar] = useState<SnackBarOptions>({

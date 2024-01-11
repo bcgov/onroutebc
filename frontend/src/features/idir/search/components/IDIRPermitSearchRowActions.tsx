@@ -132,6 +132,7 @@ export const IDIRPermitSearchRowActions = ({
     } else if (selectedOption === PERMIT_ACTION_TYPES.VIEW_RECEIPT) {
       viewReceiptPdf(permitId.toString());
     } else if (selectedOption === PERMIT_ACTION_TYPES.VOID_REVOKE) {
+      console.log('nvagiate::', `${routes.PERMITS_ROUTES.VOID(permitIdStr)}`)
       navigate(`${routes.PERMITS_ROUTES.VOID(permitIdStr)}`);
     } else if (selectedOption === PERMIT_ACTION_TYPES.AMEND) {
       navigate(`${routes.PERMITS_ROUTES.AMEND(permitIdStr)}`);

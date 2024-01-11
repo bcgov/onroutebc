@@ -189,7 +189,7 @@ export const streamDownloadFile = async (response: Response) => {
 
 /**
  * Encrypts a string and returns its hex value.
- * @param message The message to be
+ * @param message The message to be encrypted.
  * @returns The hashvalue from SHA256 encryption.
  *
  * Code copied from:
