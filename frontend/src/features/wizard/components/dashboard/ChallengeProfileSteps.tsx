@@ -10,7 +10,10 @@ import { useNavigate } from "react-router";
 import { LoadBCeIDUserRolesByCompany } from "../../../../common/authentication/LoadBCeIDUserRolesByCompany";
 import { Banner } from "../../../../common/components/dashboard/Banner";
 import "../../../../common/components/dashboard/Dashboard.scss";
-import { getDefaultRequiredVal } from "../../../../common/helpers/util";
+import {
+  getDefaultRequiredVal,
+  getSHA256HexValue,
+} from "../../../../common/helpers/util";
 import { Nullable } from "../../../../common/types/common";
 import { ERROR_ROUTES } from "../../../../routes/constants";
 import { BC_COLOURS } from "../../../../themes/bcGovStyles";
@@ -74,7 +77,7 @@ export const ChallengeProfileSteps = React.memo(() => {
 
   const verifyMigratedClientFormMethods = useForm<VerifyMigratedClientRequest>({
     defaultValues: {
-      clientNumber: "",
+      clientNumberHash: "",
       permitNumber: "",
     },
   });
@@ -144,7 +147,7 @@ export const ChallengeProfileSteps = React.memo(() => {
         });
       } else {
         if (!foundClient) {
-          setVerifyClientError("clientNumber", {
+          setVerifyClientError("clientNumberHash", {
             message: "Client No. not found",
           });
         }
@@ -164,8 +167,14 @@ export const ChallengeProfileSteps = React.memo(() => {
    * Onclick handler for Next button at Verify Profile stage.
    * @param data The form data.
    */
-  const handleNextVerifyClientStep = (data: VerifyMigratedClientRequest) => {
-    verifyMigratedClientMutation.mutate(data);
+  const handleNextVerifyClientStep = async (
+    data: VerifyMigratedClientRequest,
+  ) => {
+    const hashHex = await getSHA256HexValue(data.clientNumberHash);
+    verifyMigratedClientMutation.mutate({
+      ...data,
+      clientNumberHash: hashHex,
+    });
   };
 
   if (clientNumber) {
