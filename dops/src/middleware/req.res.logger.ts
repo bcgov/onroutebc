@@ -13,19 +13,18 @@ export class HTTPLoggerMiddleware implements NestMiddleware {
     if (process.env.NODE_ENV === 'production' && headersObj.authorization) {
       headersObj.authorization = undefined;
     }
-
+    const bodyJson = JSON.stringify(body);
     // Log when a request is received
     this.logger.log(
       `Request: ${method} ${originalUrl} \nHeader: ${JSON.stringify(
         headersObj,
-      )} \nPayload: ${JSON.stringify(body)}`,
+      )}` + (bodyJson !== '{}' ? ` \nPayload: ${bodyJson}` : ''),
     );
 
     response.on('finish', () => {
       const { statusCode } = response;
       const contentLength = response.get('content-length');
       const responseTime = response.get('X-Response-Time');
-      console.log(`Response Time: ${responseTime} ms`);
       const hostedHttpLogFormat = `Response: ${method} ${originalUrl} StatusCode: ${statusCode} ContentLength: ${contentLength} ResponseTime: ${responseTime}ms`;
       this.logger.log(hostedHttpLogFormat);
     });
