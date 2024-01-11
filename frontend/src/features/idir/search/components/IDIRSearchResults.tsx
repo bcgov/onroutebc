@@ -11,7 +11,6 @@ import {
 } from "material-react-table";
 
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
-import { TEN_MINUTES } from "../../../../common/constants/constants";
 import { Optional } from "../../../../common/types/common";
 import { USER_AUTH_GROUP } from "../../../../common/authentication/types";
 import { hasPermitExpired } from "../../../permits/helpers/permitState";
@@ -90,8 +89,7 @@ export const IDIRSearchResults = memo(
       {
         retry: 1, // retry once.
         enabled: true,
-        refetchInterval: false,
-        staleTime: TEN_MINUTES,
+        refetchOnWindowFocus: false,
         keepPreviousData: true,
       },
     );

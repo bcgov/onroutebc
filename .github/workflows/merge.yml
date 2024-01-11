@@ -62,7 +62,6 @@ jobs:
           repository: ${{ github.repository }}/${{ matrix.package }}
           target: ${{ needs.vars.outputs.pr }}
           tags: test  #Promote images AFTER successful deploy
- 
       
   deploys-prod:
     name: Deploys (prod)
