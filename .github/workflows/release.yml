@@ -1,10 +1,11 @@
 name: Release
 
 on:
-  workflow_call:
+  deployment:
 
 jobs:
   GitVersion:
+    if: ${{github.event.deploy.environment == 'prod'}}
     name: Mainline Versioning - GitVersion
     runs-on: ubuntu-22.04
     steps:
@@ -76,4 +77,19 @@ jobs:
           release_name: Release ${{ needs.GitVersion.outputs.fullSemVer }}
           draft: false
           prerelease: false
-
+          
+  promote-images-release:
+    name: Tag images with Release Version
+    needs: [create-release, GitVersion]
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        package: [dops, vehicles, frontend, tps-migration]
+    timeout-minutes: 2
+    steps:
+      - uses: shrink/actions-docker-registry-tag@v3
+        with:
+          registry: ghcr.io
+          repository: ${{ github.repository }}/${{ matrix.package }}
+          target: test
+          tags: ${{ needs.GitVersion.outputs.fullSemVer }}
