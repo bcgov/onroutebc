@@ -205,3 +205,22 @@ export async function getSHA256HexValue(message: string) {
     .join(""); // convert bytes to hex string
   return hashHex;
 }
+
+/**
+ * Convers a string to a number.
+ * (Applicable for number fields in forms).
+ *
+ * @param str The string value.
+ * @param valueToReturnWhenInvalid The value to return if invalid.
+ * @returns A number or valueToReturnWhenInvalid.
+ */
+export const convertToNumberIfValid = (
+  str?: Nullable<string>,
+  valueToReturnWhenInvalid?: 0 | Nullable<number> | Nullable<string>,
+) => {
+  // return input as a number if it's a valid number value,
+  // or original value if invalid number
+  return str != null && str !== "" && !isNaN(Number(str))
+    ? Number(str)
+    : valueToReturnWhenInvalid;
+};
