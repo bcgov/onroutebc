@@ -177,7 +177,7 @@ describe('CompanyController', () => {
 
     it('should throw a DataNotFoundException if company is not found', async () => {
       const pageOptionsDto: PageOptionsDto = {page: 1, take: 10};
-      companyService.findCompanyMetadataPaginated.mockResolvedValue(undefined);
+      companyService.findCompanyPaginated.mockResolvedValue(undefined);
       await expect(async () => {
         await controller.getCompanyMetadataPaginated(
           pageOptionsDto,

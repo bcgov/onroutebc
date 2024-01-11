@@ -239,7 +239,7 @@ describe('CompanyService', () => {
       
       const pageOptionsDto = {page: 1, take: 10}
 
-      const retCompanies = await service.findCompanyMetadataPaginated(
+      const retCompanies = await service.findCompanyPaginated(
         pageOptionsDto,
         constants.RED_COMPANY_LEGAL_NAME,
         constants.RED_COMPANY_CLIENT_NUMBER,
