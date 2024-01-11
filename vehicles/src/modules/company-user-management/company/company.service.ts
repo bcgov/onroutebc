@@ -296,7 +296,7 @@ export class CompanyService {
    * @returns The company list as a promise of type {@link ReadCompanyMetadataDto}
    */
   @LogAsyncMethodExecution()
-  async findCompanyMetadataPaginated(
+  async findCompanyPaginated(
     @Query() pageOptionsDto: PageOptionsDto,
     @Query() legalName: string,
     @Query() clientNumber: string,
@@ -306,6 +306,8 @@ export class CompanyService {
       .createQueryBuilder('company')
       .innerJoinAndSelect('company.mailingAddress', 'mailingAddress')
       .innerJoinAndSelect('company.primaryContact', 'primaryContact')
+      .innerJoinAndSelect('primaryContact.province', 'province')
+      .innerJoinAndSelect('mailingAddress.province', 'provinceType')
       .where('company.legalName LIKE :legalName', {
         legalName: `%${legalName}%`,
       })

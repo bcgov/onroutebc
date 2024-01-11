@@ -90,7 +90,7 @@ export class CompanyController {
    *
    * @param legalName The legal name of the company.
    * @param clientNumber The client number of the company.
-   * @returns The companies with response object {@link ReadCompanyMetadataDto}.
+   * @returns The companies with response object {@link ReadCompanyDto}.
    */
   @ApiOkResponse({
     description: 'The Company Metadata Resource',
@@ -108,7 +108,7 @@ export class CompanyController {
   ): Promise<PaginationDto<ReadCompanyDto>> {
     console.log("Legal Name passed in:", legalName);
     const companies: PaginationDto<ReadCompanyDto> =
-      await this.companyService.findCompanyMetadataPaginated(pageOptionsDto, legalName, clientNumber);
+      await this.companyService.findCompanyPaginated(pageOptionsDto, legalName, clientNumber);
 
     if (!companies?.items.length) {
       throw new DataNotFoundException();

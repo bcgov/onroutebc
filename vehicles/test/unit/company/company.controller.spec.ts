@@ -172,7 +172,6 @@ describe('CompanyController', () => {
       }
       const retCompanyMetadata = await controller.getCompanyMetadataPaginated(pageOptionsDto, 'He', 'R');
       expect(typeof retCompanyMetadata).toBe('object');
-      console.log("Retrieved records: " + retCompanyMetadata.items.length.toString());
       expect(retCompanyMetadata.items.length).toBeGreaterThan(0);
     });
 
