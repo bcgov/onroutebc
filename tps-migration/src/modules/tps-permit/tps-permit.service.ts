@@ -11,11 +11,6 @@ import { S3Service } from './s3.service';
 import { Document } from './entities/document.entity';
 import { CompleteMultipartUploadCommandOutput } from '@aws-sdk/client-s3';
 import { Permit } from './entities/permit.entity';
-import {
-  ERROR_POLLING_INTERVAL,
-  LIMIT,
-  PENDING_POLLING_INTERVAL,
-} from '../common/constants/tps-migration.constant';
 import { v4 as uuidv4 } from 'uuid';
 import { Cron } from '@nestjs/schedule';
 import { LogAsyncMethodExecution } from '../../decorator/log-async-method-execution.decorator';
@@ -34,17 +29,18 @@ export class TpsPermitService {
   ) {}
 
   /**
-   * Scheduled method to run every 5 minute. To upload PENDING TPS permits pdf to S3, update ORBC_DOCUMENT and ORBC_PERMIT table. and delete migrated permit and pdf from TPS_MIGRATED_PERMIT table.
+   * To upload PENDING TPS permits pdf to S3, update ORBC_DOCUMENT and ORBC_PERMIT table. and delete migrated permit and pdf from TPS_MIGRATED_PERMIT table.
    * If records are stuck in PROCESSING status then something must have gone wrong and needs attention.
    *
    */
-  @Cron(`0 */${PENDING_POLLING_INTERVAL} * * * *`)
+
+  @Cron(`${process.env.TPS_PENDING_POLLING_INTERVAL}`)
   @LogAsyncMethodExecution()
   async uploadTpsPermit() {
     const tpsPermits: TpsPermit[] = await this.tpsPermitRepository.find({
       where: { s3UploadStatus: S3uploadStatus.Pending },
       select: { migrationId: true },
-      take: LIMIT,
+      take: parseInt(process.env.TPS_POLL_LIMIT),
     });
     const ids = tpsPermits.map((tpsPermit) => tpsPermit.migrationId);
     // create query builder fails if array is empty. hence the length check.
@@ -62,17 +58,17 @@ export class TpsPermitService {
   }
 
   /**
-   * Scheduled method to run every 5 minute. To upload ERROR TPS permits pdf to S3, update ORBC_DOCUMENT and ORBC_PERMIT table. and delete migrated permit and pdf from TPS_MIGRATED_PERMIT table.
+   * To upload ERROR TPS permits pdf to S3, update ORBC_DOCUMENT and ORBC_PERMIT table, and delete migrated permit and pdf from TPS_MIGRATED_PERMIT table.
    * If records are stuck in PROCESSING status then something must have gone wrong and needs attention.
    *
    */
-  @Cron(`0 0 */${ERROR_POLLING_INTERVAL} * * *`)
+  @Cron(`${process.env.TPS_ERROR_POLLING_INTERVAL}`)
   @LogAsyncMethodExecution()
   async reprocessTpsPermit() {
     const tpsPermits: TpsPermit[] = await this.tpsPermitRepository.find({
       where: { s3UploadStatus: S3uploadStatus.Error, retryCount: LessThan(3) },
       select: { migrationId: true },
-      take: LIMIT,
+      take: parseInt(process.env.TPS_POLL_LIMIT),
     });
 
     const ids = tpsPermits.map((tpsPermit) => tpsPermit.migrationId);
