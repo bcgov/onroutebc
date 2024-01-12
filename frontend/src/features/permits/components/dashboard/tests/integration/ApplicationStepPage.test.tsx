@@ -300,7 +300,7 @@ describe("Vehicle Details", () => {
     } = getVehicleDetails("create", true);
 
     // Act
-    await fillVehicleInfo(user, formDetails);
+    await fillVehicleInfo(user, formDetails, "create");
 
     // Assert
     await waitFor(() => {
@@ -319,7 +319,7 @@ describe("Vehicle Details", () => {
     } = getVehicleDetails("create", false);
 
     // Act
-    await fillVehicleInfo(user, formDetails);
+    await fillVehicleInfo(user, formDetails, "create");
 
     // Assert
     await waitFor(() => {
@@ -334,20 +334,43 @@ describe("Vehicle Details", () => {
   it("should update vehicle in inventory if user chooses to", async () => {
     // Arrange
     const { user } = renderTestComponent(defaultUserDetails);
+    const powerUnits = getAllPowerUnits();
+    const powerUnit = powerUnits[0];
+    const unitNumber = powerUnit.unitNumber;
     const {
       formDetails,
       additionalInfo: {
         updatedProvinceAbbr,
-        vehicleUsed: { vin },
       },
     } = getVehicleDetails("update", true);
 
     // Act
-    await fillVehicleInfo(user, formDetails);
+    const unitNumberOrPlate = await unitNumberOrPlateSelect();
+    await chooseOption(user, unitNumberOrPlate, "Unit Number");
+    await openVehicleSelect(user);
+
+    const powerUnitOptions = await vehicleOptions(VEHICLE_TYPES.POWER_UNIT);
+    const powerUnitToChoose = powerUnitOptions.find(option => option.textContent === unitNumber);
+
+    expect(powerUnitToChoose).not.toBeUndefined();
+    if (powerUnitToChoose) {
+      await user.click(powerUnitToChoose);
+    }
+
+    await fillVehicleInfo(
+      user,
+      formDetails,
+      "update",
+      {
+        vin: formDetails.vin,
+        plate: formDetails.plate,
+        make: formDetails.make,
+      }
+    );
 
     // Assert
     await waitFor(() => {
-      const updatedVehicle = findPowerUnit(vin);
+      const updatedVehicle = findPowerUnit(formDetails.vehicleId);
       expect(updatedVehicle?.provinceCode).toBe(updatedProvinceAbbr);
     });
   });
@@ -355,20 +378,43 @@ describe("Vehicle Details", () => {
   it("should not update vehicle in inventory if user chooses not to", async () => {
     // Arrange
     const { user } = renderTestComponent(defaultUserDetails);
+    const powerUnits = getAllPowerUnits();
+    const powerUnit = powerUnits[0];
+    const unitNumber = powerUnit.unitNumber;
     const {
       formDetails,
       additionalInfo: {
         updatedProvinceAbbr,
-        vehicleUsed: { vin },
       },
     } = getVehicleDetails("update", false);
 
     // Act
-    await fillVehicleInfo(user, formDetails);
+    const unitNumberOrPlate = await unitNumberOrPlateSelect();
+    await chooseOption(user, unitNumberOrPlate, "Unit Number");
+    await openVehicleSelect(user);
+
+    const powerUnitOptions = await vehicleOptions(VEHICLE_TYPES.POWER_UNIT);
+    const powerUnitToChoose = powerUnitOptions.find(option => option.textContent === unitNumber);
+
+    expect(powerUnitToChoose).not.toBeUndefined();
+    if (powerUnitToChoose) {
+      await user.click(powerUnitToChoose);
+    }
+
+    await fillVehicleInfo(
+      user,
+      formDetails,
+      "update",
+      {
+        vin: formDetails.vin,
+        plate: formDetails.plate,
+        make: formDetails.make,
+      }
+    );
 
     // Assert
     await waitFor(() => {
-      const updatedVehicle = findPowerUnit(vin);
+      const updatedVehicle = findPowerUnit(formDetails.vehicleId);
       expect(updatedVehicle?.provinceCode).toBe(updatedProvinceAbbr);
     }).catch((err) => {
       expect(err).not.toBeUndefined();

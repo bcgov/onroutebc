@@ -61,7 +61,6 @@ const vehicleSourceDef = factory({
 
 export const getDefaultPowerUnits = () => [
   {
-    powerUnitId: "1",
     companyId: 74,
     unitNumber: "61",
     plate: "ABCDEF",
@@ -80,7 +79,6 @@ export const getDefaultPowerUnits = () => [
 
 export const getDefaultTrailers = () => [
   {
-    trailerId: "1",
     companyId: 74,
     unitNumber: "3",
     plate: "A1B23C",
@@ -157,11 +155,11 @@ export const updatePowerUnit = (powerUnitId: string, powerUnit: PowerUnit) => {
     console.error(e);
   }
 };
-export const findPowerUnit = (vin: string) => {
+export const findPowerUnit = (id: string) => {
   return vehicleSourceDef.powerUnit.findFirst({
     where: {
-      vin: {
-        equals: vin,
+      powerUnitId: {
+        equals: id,
       },
     },
   });
@@ -189,11 +187,11 @@ export const updateTrailer = (trailerId: string, trailer: Trailer) => {
     console.error(e);
   }
 };
-export const findTrailer = (vin: string) => {
+export const findTrailer = (id: string) => {
   return vehicleSourceDef.trailer.findFirst({
     where: {
-      vin: {
-        equals: vin,
+      trailerId: {
+        equals: id,
       },
     },
   });

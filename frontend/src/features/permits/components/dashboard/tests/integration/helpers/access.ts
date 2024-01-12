@@ -246,6 +246,12 @@ type VehicleDetail = {
 export const fillVehicleInfo = async (
   user: UserEvent,
   vehicle: VehicleDetail,
+  editMode: "create" | "update",
+  populatedVehicle?: {
+    vin: string;
+    plate: string;
+    make: string;
+  },
 ) => {
   const vinTextField = await vinInput();
   const plateTextField = await plateInput();
@@ -257,14 +263,25 @@ export const fillVehicleInfo = async (
   const subtypeSelect = await vehicleSubtypeSelect();
 
   // Act
-  await replaceValueForInput(user, vinTextField, 0, vehicle.vin);
-  await replaceValueForInput(user, plateTextField, 0, vehicle.plate);
-  await replaceValueForInput(user, makeTextField, 0, vehicle.make);
-  await replaceValueForInput(user, yearTextField, 1, `${vehicle.year}`);
+  if (populatedVehicle) {
+    await replaceValueForInput(user, vinTextField, populatedVehicle.vin.length, vehicle.vin);
+    await replaceValueForInput(user, plateTextField, populatedVehicle.plate.length, vehicle.plate);
+    await replaceValueForInput(user, makeTextField, populatedVehicle.make.length, vehicle.make);
+    await replaceValueForInput(user, yearTextField, 4, `${vehicle.year}`);
+  } else {
+    await replaceValueForInput(user, vinTextField, 0, vehicle.vin);
+    await replaceValueForInput(user, plateTextField, 0, vehicle.plate);
+    await replaceValueForInput(user, makeTextField, 0, vehicle.make);
+    await replaceValueForInput(user, yearTextField, 1, `${vehicle.year}`);
+  }
+  
   await chooseOption(user, countrySelect, vehicle.country);
   await chooseOption(user, provinceSelect, vehicle.province);
-  await chooseOption(user, typeSelect, vehicle.vehicleType);
+  if (editMode === "create") {
+    await chooseOption(user, typeSelect, vehicle.vehicleType);
+  }
   await chooseOption(user, subtypeSelect, vehicle.vehicleSubtype);
+  
   await chooseSaveVehicleToInventory(user, vehicle.saveVehicle);
   await continueApplication(user);
 };
