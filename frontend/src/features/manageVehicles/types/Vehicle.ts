@@ -1,12 +1,18 @@
 import { Nullable } from "../../../common/types/common";
 
-export type VehicleTypes = PowerUnit | Trailer;
-export type VehicleTypesAsString = "powerUnit" | "trailer";
+export type Vehicle = PowerUnit | Trailer;
+
+export const VEHICLE_TYPES = {
+  POWER_UNIT: "powerUnit",
+  TRAILER: "trailer",
+} as const;
+
+export type VehicleType = typeof VEHICLE_TYPES[keyof typeof VEHICLE_TYPES];
 
 /**
  * A base vehicle type. This is an incomplete object and meant to be extended for use.
  */
-interface Vehicle {
+export interface BaseVehicle {
   unitNumber?: string;
   plate: string;
   provinceCode: string;
@@ -16,26 +22,26 @@ interface Vehicle {
   year: Nullable<number>;
   createdDateTime?: Nullable<string>;
   updatedDateTime?: Nullable<string>;
-  vehicleType?: VehicleTypesAsString;
+  vehicleType?: VehicleType;
 }
 
-export interface PowerUnit extends Vehicle {
+export interface PowerUnit extends BaseVehicle {
   powerUnitId?: string;
   licensedGvw?: number;
   steerAxleTireSize?: Nullable<number>;
   powerUnitTypeCode: string;
 }
 
-export interface Trailer extends Vehicle {
+export interface Trailer extends BaseVehicle {
   trailerId?: string;
   trailerTypeCode: string;
   emptyTrailerWidth?: Nullable<number>;
 }
 
 /**
- * Object type for power unit and trailer types.
+ * Object type for power unit and trailer subtypes.
  */
-export interface VehicleType {
+export interface VehicleSubType {
   typeCode: string;
   type: string;
   description: string;

@@ -10,18 +10,18 @@ import { ReviewPermitDetails } from "./ReviewPermitDetails";
 import { ReviewVehicleInfo } from "./ReviewVehicleInfo";
 import { ReviewFeeSummary } from "./ReviewFeeSummary";
 import { ReviewActions } from "./ReviewActions";
+import { CompanyProfile } from "../../../../../manageProfile/types/manageProfile";
+import { VehicleSubType } from "../../../../../manageVehicles/types/Vehicle";
+import { PermitType } from "../../../../types/PermitType";
+import { calculateFeeByDuration } from "../../../../helpers/feeSummary";
+import { getDefaultRequiredVal } from "../../../../../../common/helpers/util";
+import { Nullable } from "../../../../../../common/types/common";
 import {
   Application,
   Commodities,
   ContactDetails,
   VehicleDetails,
 } from "../../../../types/application";
-import { CompanyProfile } from "../../../../../manageProfile/types/manageProfile";
-import { VehicleType } from "../../../../../manageVehicles/types/managevehicles";
-import { PermitType } from "../../../../types/PermitType";
-import { calculateFeeByDuration } from "../../../../helpers/feeSummary";
-import { getDefaultRequiredVal } from "../../../../../../common/helpers/util";
-import { Nullable } from "../../../../../../common/types/common";
 
 interface PermitReviewProps {
   permitType?: PermitType;
@@ -41,8 +41,8 @@ interface PermitReviewProps {
   hasAttemptedCheckboxes: boolean;
   allChecked: boolean;
   setAllChecked: Dispatch<SetStateAction<boolean>>;
-  powerUnitTypes?: VehicleType[];
-  trailerTypes?: VehicleType[];
+  powerUnitSubTypes?: VehicleSubType[];
+  trailerSubTypes?: VehicleSubType[];
   vehicleDetails?: VehicleDetails;
   vehicleWasSaved?: boolean;
   onEdit: () => void;
@@ -92,8 +92,8 @@ export const PermitReview = (props: PermitReviewProps) => {
         />
 
         <ReviewVehicleInfo
-          powerUnitTypes={props.powerUnitTypes}
-          trailerTypes={props.trailerTypes}
+          powerUnitSubTypes={props.powerUnitSubTypes}
+          trailerSubTypes={props.trailerSubTypes}
           vehicleDetails={props.vehicleDetails}
           vehicleWasSaved={props.vehicleWasSaved}
           showChangedFields={props.showChangedFields}

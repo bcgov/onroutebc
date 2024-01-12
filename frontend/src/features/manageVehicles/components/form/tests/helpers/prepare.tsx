@@ -1,11 +1,12 @@
 import { rest } from "msw";
 import { setupServer } from "msw/node";
+import userEvent from "@testing-library/user-event";
+
 import { VEHICLES_URL } from "../../../../../../common/apiManager/endpoints/endpoints";
 import { VEHICLES_API } from "../../../../apiManager/endpoints/endpoints";
-import userEvent from "@testing-library/user-event";
 import { renderWithClient } from "../../../../../../common/helpers/testHelper";
 import { PowerUnitForm } from "../../PowerUnitForm";
-import { PowerUnit, Trailer } from "../../../../types/managevehicles";
+import { PowerUnit, Trailer } from "../../../../types/Vehicle";
 import { TrailerForm } from "../../TrailerForm";
 
 export const defaultPowerUnitSubtypes = [

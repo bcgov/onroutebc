@@ -110,7 +110,8 @@ export interface VehicleDetails {
   vehicleType: string;
   vehicleSubType: string;
   saveVehicle?: boolean;
-  unitNumber?: string;
+  unitNumber?: Nullable<string>;
+  vehicleId: Nullable<string>; // either powerUnitId or trailerId, depending on vehicleType
 }
 
 export interface Commodities {

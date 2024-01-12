@@ -12,6 +12,7 @@ import { ROLES } from "../../../../common/authentication/types";
 import { getCompanyIdFromSession } from "../../../../common/apiManager/httpRequestHandler";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import { VEHICLES_DASHBOARD_TABS } from "../../../../routes/constants";
+import { VEHICLE_TYPES } from "../../types/Vehicle";
 
 /**
  * Returns the selected tab index (if there is one)
@@ -57,7 +58,7 @@ export const ManageVehiclesDashboard = memo(() => {
       label: "Power Unit",
       component: (
         <List
-          vehicleType="powerUnit"
+          vehicleType={VEHICLE_TYPES.POWER_UNIT}
           query={powerUnitQuery}
           companyId={companyId}
         />
@@ -67,7 +68,7 @@ export const ManageVehiclesDashboard = memo(() => {
       label: "Trailer",
       component: (
         <List
-          vehicleType="trailer"
+          vehicleType={VEHICLE_TYPES.TRAILER}
           query={trailerQuery}
           companyId={companyId}
         />

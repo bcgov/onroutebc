@@ -1,6 +1,7 @@
 import { screen } from "@testing-library/react";
 import { UserEvent } from "@testing-library/user-event/dist/types/setup/setup";
-import { VehicleTypesAsString } from "../../../../types/managevehicles";
+
+import { VEHICLE_TYPES, VehicleType } from "../../../../types/Vehicle";
 
 export const clickSubmit = async (user: UserEvent) => {
   const submitButton = await screen.findByRole("button", {
@@ -139,7 +140,7 @@ export interface PowerUnitDetail extends VehicleFormDetail {
 
 export const submitVehicleForm = async (
   user: UserEvent,
-  vehicleType: VehicleTypesAsString,
+  vehicleType: VehicleType,
   details: VehicleFormDetail,
 ) => {
   const unitNumber = await unitNumberInput();
@@ -155,7 +156,8 @@ export const submitVehicleForm = async (
   await replaceValueForInput(user, year, 1, `${details.newYear}`);
   await replaceValueForInput(user, vin, 0, details.newVin);
   await replaceValueForInput(user, plate, 0, details.newPlate);
-  if (vehicleType === "powerUnit") {
+
+  if (vehicleType === VEHICLE_TYPES.POWER_UNIT) {
     const powerUnitDetails = details as PowerUnitDetail;
     const licensedGvw = await licensedGvwInput();
     const steerAxleTireSize = await steerAxleTireSizeInput();
