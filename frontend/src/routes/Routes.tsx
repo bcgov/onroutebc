@@ -95,6 +95,24 @@ export const AppRoutes = () => {
         />
       </Route>
 
+      <Route
+        element={
+          <IDIRAuthWall
+            requiredRole={ROLES.STAFF}
+            allowedAuthGroups={[IDIR_USER_AUTH_GROUP.PPC_CLERK]}
+          />
+        }
+      >
+        <Route
+          path={`${routes.PERMITS_ROUTES.VOID()}`}
+          element={<VoidPermit />}
+        />
+        <Route
+          path={`${routes.PERMITS_ROUTES.AMEND()}`}
+          element={<AmendPermit />}
+        />
+      </Route>
+
       {/* IDIR System Admin Routes */}
       <Route element={<IDIRAuthWall requiredRole={ROLES.STAFF_ADMIN} />}>
         {/* Only IDIR System Admins can access the reports page */}
@@ -203,14 +221,6 @@ export const AppRoutes = () => {
       </Route>
 
       <Route element={<BCeIDAuthWall requiredRole={ROLES.WRITE_PERMIT} />}>
-        <Route
-          path={`${routes.PERMITS_ROUTES.VOID()}`}
-          element={<VoidPermit />}
-        />
-        <Route
-          path={`${routes.PERMITS_ROUTES.AMEND()}`}
-          element={<AmendPermit />}
-        />
         <Route
           path={`${routes.PERMITS_ROUTES.SUCCESS()}`}
           element={<SuccessPage />}
