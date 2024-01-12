@@ -29,7 +29,7 @@ export class TpsPermitService {
   ) {}
 
   /**
-   * Scheduled method to run every TPS_PENDING_POLLING_INTERVAL. To upload PENDING TPS permits pdf to S3, update ORBC_DOCUMENT and ORBC_PERMIT table. and delete migrated permit and pdf from TPS_MIGRATED_PERMIT table.
+   * To upload PENDING TPS permits pdf to S3, update ORBC_DOCUMENT and ORBC_PERMIT table. and delete migrated permit and pdf from TPS_MIGRATED_PERMIT table.
    * If records are stuck in PROCESSING status then something must have gone wrong and needs attention.
    *
    */
@@ -58,7 +58,7 @@ export class TpsPermitService {
   }
 
   /**
-   * Scheduled method to run every 5 minute. To upload ERROR TPS permits pdf to S3, update ORBC_DOCUMENT and ORBC_PERMIT table. and delete migrated permit and pdf from TPS_MIGRATED_PERMIT table.
+   * To upload ERROR TPS permits pdf to S3, update ORBC_DOCUMENT and ORBC_PERMIT table, and delete migrated permit and pdf from TPS_MIGRATED_PERMIT table.
    * If records are stuck in PROCESSING status then something must have gone wrong and needs attention.
    *
    */
