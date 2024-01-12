@@ -38,6 +38,10 @@ frontend:
             "VITE_KEYCLOAK_ISSUER_URL":"https://{{ternary ("") (printf "%s." .Values.global.zone) (contains "prod" .Values.global.zone)}}loginproxy.gov.bc.ca/auth/realms/standard",
             "VITE_KEYCLOAK_AUDIENCE":"on-route-bc-direct-4598",
             "VITE_SITEMINDER_LOG_OFF_URL": "https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi",
+            "ONROUTEBC_FEATURE_FLAGS": "{
+              \"COMPANY_SEARCH\": \"ENABLED\",
+              \"VEHICLE_SEARCH\": \"DISABLED\"
+            }",
           };
         })();
   containers:
