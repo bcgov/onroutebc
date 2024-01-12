@@ -12,7 +12,7 @@ import { Document } from './entities/document.entity';
 import { CompleteMultipartUploadCommandOutput } from '@aws-sdk/client-s3';
 import { Permit } from './entities/permit.entity';
 import { v4 as uuidv4 } from 'uuid';
-import { Cron, SchedulerRegistry } from '@nestjs/schedule';
+import { Cron } from '@nestjs/schedule';
 import { LogAsyncMethodExecution } from '../../decorator/log-async-method-execution.decorator';
 
 @Injectable()
@@ -26,7 +26,6 @@ export class TpsPermitService {
     @InjectRepository(Document)
     private documentRepository: Repository<Document>,
     private readonly s3Service: S3Service,
-    private schedulerRegistry: SchedulerRegistry,
   ) {}
 
   /**
