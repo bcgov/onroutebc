@@ -4,6 +4,7 @@ import { useSearchParams } from "react-router-dom";
 import { Banner } from "../../../../common/components/dashboard/Banner";
 import {
   SEARCH_BY_FILTERS,
+  SEARCH_ENTITIES,
   SearchByFilter,
   SearchEntity,
   SearchFields,
@@ -53,8 +54,8 @@ export const IDIRSearchResultsDashboard = memo(() => {
         id={`layout-tabpanel-search-results`}
         aria-labelledby={`layout-tab-search-results`}
       >
-        {searchFields?.searchEntity === 'companies' && <IDIRCompanySearchResults searchParams={searchFields} />}
-        {searchFields?.searchEntity === 'permits' && <IDIRPermitSearchResults searchParams={searchFields} />}
+        {searchFields?.searchEntity === SEARCH_ENTITIES.COMPANY && <IDIRCompanySearchResults searchParams={searchFields} />}
+        {searchFields?.searchEntity === SEARCH_ENTITIES.PERMIT && <IDIRPermitSearchResults searchParams={searchFields} />}
       </div>
     </>
   );
