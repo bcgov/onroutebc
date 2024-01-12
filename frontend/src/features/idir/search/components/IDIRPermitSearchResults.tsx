@@ -17,7 +17,7 @@ import { hasPermitExpired } from "../../../permits/helpers/permitState";
 import { isPermitInactive } from "../../../permits/types/PermitStatus";
 import { Permit } from "../../../permits/types/permit";
 import { getDataBySearch } from "../api/idirSearch";
-import { PermitSearchResultColumnDef } from "../table/Columns";
+import { PermitSearchResultColumnDef } from "../table/PermitSearchResultColumnDef";
 import { SearchFields } from "../types/types";
 import { IDIRPermitSearchRowActions } from "./IDIRPermitSearchRowActions";
 import {
@@ -25,7 +25,7 @@ import {
   defaultTableOptions,
   defaultTableStateOptions,
 } from "../../../../common/helpers/tableHelper";
-import "./IDIRSearchResults.scss";
+import "./IDIRPermitSearchResults.scss";
 
 /**
  * Function to decide whether to show row actions icon or not.
@@ -51,7 +51,7 @@ const shouldShowRowActions = (userAuthGroup: Optional<string>): boolean => {
  *
  *
  */
-export const IDIRSearchResults = memo(
+export const IDIRPermitSearchResults = memo(
   ({
     searchParams,
   }: {
@@ -203,4 +203,4 @@ export const IDIRSearchResults = memo(
   },
 );
 
-IDIRSearchResults.displayName = "SearchResults";
+IDIRPermitSearchResults.displayName = "SearchResults";
