@@ -1,10 +1,10 @@
 import {
   PowerUnit,
   Trailer,
-  BaseVehicle,
   VehicleSubType,
   VehicleType,
   VEHICLE_TYPES,
+  Vehicle,
 } from "../../manageVehicles/types/Vehicle";
 
 /**
@@ -42,7 +42,7 @@ export const removeIneligibleVehicleSubTypes = (
  * @returns An array of eligible vehicles
  */
 export const removeIneligibleVehicles = (
-  vehicles: BaseVehicle[],
+  vehicles: Vehicle[],
   ineligiblePowerUnitSubtypes: VehicleSubType[],
   ineligibleTrailerSubtypes: VehicleSubType[],
 ) => {

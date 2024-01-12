@@ -2,6 +2,7 @@ import { Optional } from "../../../common/types/common";
 import {
   VehicleSubType,
   BaseVehicle,
+  Vehicle,
 } from "../../manageVehicles/types/Vehicle";
 
 /**
@@ -64,7 +65,7 @@ const sortByVehicleType = (a: BaseVehicle, b: BaseVehicle) => {
  */
 export const sortVehicles = (
   chooseFrom: string,
-  options: Optional<BaseVehicle[]>,
+  options: Optional<Vehicle[]>,
 ) => {
   if (!chooseFrom || !options) return [];
 

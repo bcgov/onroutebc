@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import {
   Autocomplete,
   FormControl,
@@ -13,11 +14,12 @@ import { getDefaultRequiredVal } from "../../../../../../../../common/helpers/ut
 import { SELECT_FIELD_STYLE } from "../../../../../../../../themes/orbcStyles";
 import { sortVehicles } from "../../../../../../helpers/sorter";
 import { removeIneligibleVehicles } from "../../../../../../helpers/removeIneligibleVehicles";
-import { Nullable } from "../../../../../../../../common/types/common";
+import { Nullable, Optional } from "../../../../../../../../common/types/common";
+import { VehicleDetails } from "../../../../../../types/application";
+import { VEHICLE_CHOOSE_FROM } from "../../../../../../constants/constants";
 import {
   PowerUnit,
   Trailer,
-  BaseVehicle,
   VEHICLE_TYPES,
   Vehicle,
 } from "../../../../../../../manageVehicles/types/Vehicle";
@@ -49,6 +51,7 @@ const GroupItems = styled("ul")({
  */
 export const SelectVehicleDropdown = ({
   chooseFrom,
+  selectedVehicle,
   label,
   width,
   vehicleOptions,
@@ -56,10 +59,11 @@ export const SelectVehicleDropdown = ({
   handleClearVehicle,
 }: {
   chooseFrom: string;
+  selectedVehicle: Optional<VehicleDetails>;
   label: string;
   width: string;
   vehicleOptions: (Vehicle)[];
-  handleSelectVehicle: (vehicle: BaseVehicle) => void;
+  handleSelectVehicle: (vehicle: Vehicle) => void;
   handleClearVehicle: () => void;
 }) => {
   const sortedVehicles = sortVehicles(chooseFrom, vehicleOptions);
@@ -71,18 +75,38 @@ export const SelectVehicleDropdown = ({
     TROS_INELIGIBLE_TRAILERS,
   );
 
+  const selectedOption = selectedVehicle ?
+    getDefaultRequiredVal(null, eligibleVehicles.find(vehicle =>
+      selectedVehicle.vehicleType === VEHICLE_TYPES.TRAILER ?
+      vehicle.vehicleType === VEHICLE_TYPES.TRAILER && (vehicle as Trailer).trailerId === selectedVehicle.vehicleId :
+      vehicle.vehicleType === VEHICLE_TYPES.POWER_UNIT && (vehicle as PowerUnit).powerUnitId === selectedVehicle.vehicleId,
+    )) : null;
+
+  const [vehicleTextValue, setVehicleTextValue] = useState<string>("");
+
+  useEffect(() => {
+    setVehicleTextValue(
+      chooseFrom === VEHICLE_CHOOSE_FROM.PLATE ?
+      getDefaultRequiredVal("", selectedOption?.plate) :
+      getDefaultRequiredVal("", selectedOption?.unitNumber),
+    );
+  }, [selectedOption]);
+
   return (
     <FormControl margin="normal">
       <FormLabel className="select-field-form-label">{label}</FormLabel>
       <Autocomplete
         id="tros-select-vehicle"
-        onChange={(_, value: Nullable<BaseVehicle>, reason) => {
+        onChange={(_, value: Nullable<Vehicle>, reason) => {
           if (!value || reason === "clear") {
             handleClearVehicle();
           } else {
             handleSelectVehicle(value);
           }
         }}
+        value={selectedOption}
+        inputValue={vehicleTextValue}
+        onInputChange={(_, value) => setVehicleTextValue(value)}
         options={eligibleVehicles}
         groupBy={(option) => getDefaultRequiredVal("", option?.vehicleType)}
         getOptionLabel={(option) => {

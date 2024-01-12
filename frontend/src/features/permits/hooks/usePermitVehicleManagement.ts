@@ -1,6 +1,8 @@
 import { getDefaultRequiredVal } from "../../../common/helpers/util";
 import { VehicleDetails } from "../types/application.d";
 import { mapToVehicleObjectById } from "../helpers/mappers";
+import { Nullable } from "../../../common/types/common";
+import { getDefaultVehicleDetails } from "../helpers/getDefaultApplicationFormData";
 import {
   PowerUnit,
   Trailer,
@@ -39,9 +41,9 @@ export const usePermitVehicleManagement = (companyId: string) => {
   );
   const fetchedTrailerSubTypes = getDefaultRequiredVal([], trailerSubTypesQuery.data);
 
-  const handleSaveVehicle = (vehicleData?: VehicleDetails) => {
+  const handleSaveVehicle = async (vehicleData?: VehicleDetails): Promise<Nullable<VehicleDetails>> => {
     // Check if the "add/update vehicle" checkbox was checked by the user
-    if (!vehicleData?.saveVehicle) return;
+    if (!vehicleData?.saveVehicle) return undefined;
 
     // Get the vehicle info from the form
     const vehicle = vehicleData;
@@ -115,6 +117,9 @@ export const usePermitVehicleManagement = (companyId: string) => {
       }
     };
 
+    const modifyVehicleSuccess = (status: number) =>
+      status === 201 || status === 200;
+
     // If the vehicle type is a power unit then create a power unit object
     if (vehicle.vehicleType === VEHICLE_TYPES.POWER_UNIT) {
       const powerUnit = transformByVehicleType(
@@ -122,44 +127,63 @@ export const usePermitVehicleManagement = (companyId: string) => {
         existingVehicle,
       ) as PowerUnit;
 
-      // Either send a PUT or POST request based on powerUnitID
-      if (powerUnit.powerUnitId) {
-        updatePowerUnitMutation.mutate({
+      // Either send a PUT or POST request based on powerUnitId
+      const res = powerUnit.powerUnitId ?
+        await updatePowerUnitMutation.mutateAsync({
           powerUnit,
           powerUnitId: powerUnit.powerUnitId,
           companyId,
-        });
-      } else {
-        addPowerUnitMutation.mutate({
+        }) : await addPowerUnitMutation.mutateAsync({
           powerUnit: {
             ...powerUnit,
             powerUnitId: getDefaultRequiredVal("", vehicle.vehicleId),
           },
           companyId,
         });
-      }
-    } else if (vehicle.vehicleType === VEHICLE_TYPES.TRAILER) {
+
+      if (!modifyVehicleSuccess(res.status)) return null;
+
+      const { powerUnitId, powerUnitTypeCode, ...restOfPowerUnit } = res.data;
+      return getDefaultVehicleDetails({
+        ...restOfPowerUnit,
+        vehicleId: powerUnitId,
+        vehicleSubType: powerUnitTypeCode,
+        vehicleType: VEHICLE_TYPES.POWER_UNIT,
+      });
+    }
+    
+    if (vehicle.vehicleType === VEHICLE_TYPES.TRAILER) {
       const trailer = transformByVehicleType(
         vehicle,
         existingVehicle,
       ) as Trailer;
 
-      if (trailer.trailerId) {
-        updateTrailerMutation.mutate({
+      // Either send a PUT or POST request based on trailerId
+      const res = trailer.trailerId ?
+        await updateTrailerMutation.mutateAsync({
           trailer,
           trailerId: trailer.trailerId,
           companyId,
-        });
-      } else {
-        addTrailerMutation.mutate({
+        }) : await addTrailerMutation.mutateAsync({
           trailer: {
             ...trailer,
             trailerId: getDefaultRequiredVal("", vehicle.vehicleId),
           },
           companyId,
         });
-      }
+
+        if (!modifyVehicleSuccess(res.status)) return null;
+
+        const { trailerId, trailerTypeCode, ...restOfTrailer } = res.data;
+        return getDefaultRequiredVal({
+          ...restOfTrailer,
+          vehicleId: trailerId,
+          vehicleSubType: trailerTypeCode,
+          vehicleType: VEHICLE_TYPES.TRAILER,
+        });
     }
+
+    return undefined;
   };
 
   return {

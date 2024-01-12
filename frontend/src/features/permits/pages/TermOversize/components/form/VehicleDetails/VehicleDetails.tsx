@@ -43,7 +43,9 @@ import {
 
 import {
   CHOOSE_FROM_OPTIONS,
+  VEHICLE_CHOOSE_FROM,
   VEHICLE_TYPE_OPTIONS,
+  VehicleChooseFrom,
 } from "../../../../../constants/constants";
 
 import {
@@ -92,12 +94,26 @@ export const VehicleDetails = ({
 
   const DEFAULT_VEHICLE_TYPE = VEHICLE_TYPES.POWER_UNIT;
 
-  const { setValue, resetField, watch } = useFormContext();
+  const emptyVehicleDetails = {
+    vehicleId: "",
+    unitNumber: "",
+    vin: "",
+    plate: "",
+    make: "",
+    year: undefined,
+    countryCode: "",
+    provinceCode: "",
+    vehicleType: DEFAULT_VEHICLE_TYPE,
+    vehicleSubType: "",
+  };
+
+  const { setValue, watch } = useFormContext();
 
   const typeValue = watch("permitData.vehicleDetails.vehicleType");
 
   // Choose vehicle based on either Unit Number or Plate
-  const [chooseFrom, setChooseFrom] = useState("");
+  const [chooseFrom, setChooseFrom] = useState<VehicleChooseFrom>(VEHICLE_CHOOSE_FROM.UNIT_NUMBER);
+
   // Radio button value to decide if the user wants to save the vehicle in inventory
   const [saveVehicle, setSaveVehicle] = useState(false);
 
@@ -109,6 +125,7 @@ export const VehicleDetails = ({
   const [subtypeOptions, setSubtypeOptions] = useState<VehicleSubType[]>([
     emptyVehicleSubtype,
   ]);
+
   const [selectedVehicle, setSelectedVehicle] =
     useState<Optional<VehicleDetailsType>>();
 
@@ -125,7 +142,7 @@ export const VehicleDetails = ({
 
   useEffect(() => {
     if (!selectedVehicle?.vin) {
-      clearVehicle();
+      clearVehicleForm();
     } else {
       setNewVehicle(selectedVehicle);
     }
@@ -183,22 +200,18 @@ export const VehicleDetails = ({
   };
 
   // Clears vehicle details fields
-  const clearVehicle = () => {
+  const clearVehicleForm = () => {
     // Must reset each specific field this way
-    resetField("permitData.vehicleDetails.vehicleId", { defaultValue: "" });
-    resetField("permitData.vehicleDetails.unitNumber", { defaultValue: "" });
-    resetField("permitData.vehicleDetails.vin", { defaultValue: "" });
-    resetField("permitData.vehicleDetails.plate", { defaultValue: "" });
-    resetField("permitData.vehicleDetails.make", { defaultValue: "" });
-    resetField("permitData.vehicleDetails.year", { defaultValue: "" });
-    resetField("permitData.vehicleDetails.countryCode", { defaultValue: "" });
-    resetField("permitData.vehicleDetails.provinceCode", { defaultValue: "" });
-    resetField("permitData.vehicleDetails.vehicleType", {
-      defaultValue: DEFAULT_VEHICLE_TYPE,
-    });
-    resetField("permitData.vehicleDetails.vehicleSubType", {
-      defaultValue: "",
-    });
+    setValue("permitData.vehicleDetails.vehicleId", emptyVehicleDetails.vehicleId);
+    setValue("permitData.vehicleDetails.unitNumber", emptyVehicleDetails.unitNumber);
+    setValue("permitData.vehicleDetails.vin", emptyVehicleDetails.vin);
+    setValue("permitData.vehicleDetails.plate", emptyVehicleDetails.plate);
+    setValue("permitData.vehicleDetails.make", emptyVehicleDetails.make);
+    setValue("permitData.vehicleDetails.year", getDefaultRequiredVal("", emptyVehicleDetails.year));
+    setValue("permitData.vehicleDetails.countryCode", emptyVehicleDetails.countryCode);
+    setValue("permitData.vehicleDetails.provinceCode", emptyVehicleDetails.provinceCode);
+    setValue("permitData.vehicleDetails.vehicleType", DEFAULT_VEHICLE_TYPE);
+    setValue("permitData.vehicleDetails.vehicleSubType", emptyVehicleDetails.vehicleSubType);
     setDisableVehicleTypeSelect(false); // enable vehicle type selection
   };
 
@@ -220,8 +233,13 @@ export const VehicleDetails = ({
     setDisableVehicleTypeSelect(true); // disable vehicle type selection
   };
 
+  // Whenever the vehicle selection is cleared
+  const onClearVehicle = () => {
+    setSelectedVehicle(emptyVehicleDetails as VehicleDetailsType);
+  };
+
   // Whenever a new vehicle is selected
-  const onSelectVehicle = (selectedVehicle: BaseVehicle) => {
+  const onSelectVehicle = (selectedVehicle: Vehicle) => {
     const vehicleType = selectedVehicle.vehicleType === VEHICLE_TYPES.TRAILER ?
       VEHICLE_TYPES.TRAILER : VEHICLE_TYPES.POWER_UNIT;
     
@@ -264,7 +282,7 @@ export const VehicleDetails = ({
   }, [saveVehicle]);
 
   const handleChooseFrom = (event: SelectChangeEvent) => {
-    setChooseFrom(event.target.value);
+    setChooseFrom(event.target.value as VehicleChooseFrom);
   };
 
   const handleSaveVehicleRadioBtns = (isSave: string) => {
@@ -324,8 +342,9 @@ export const VehicleDetails = ({
                 label={"Select vehicle"}
                 width={"268px"}
                 chooseFrom={chooseFrom}
+                selectedVehicle={selectedVehicle}
                 vehicleOptions={vehicleOptions}
-                handleClearVehicle={clearVehicle}
+                handleClearVehicle={onClearVehicle}
                 handleSelectVehicle={onSelectVehicle}
               />
             </Box>
