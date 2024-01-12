@@ -14,12 +14,6 @@ import { CompanyProfile } from "../../../manageProfile/types/manageProfile";
  */
 export const CompanySearchResultColumnDef: MRT_ColumnDef<CompanyProfile>[] = [
   {
-    accessorKey: "companyId",
-    header: "Company Id",
-    enableSorting: true,
-    sortingFn: "alphanumeric",
-  },
-  {
     accessorKey: "legalName",
     header: "Company Name",
     enableSorting: true,
