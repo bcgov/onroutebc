@@ -52,6 +52,7 @@ import {
   saveApplication,
   sendPermitToEmailMsg,
   unitNumberOrPlateSelect,
+  updateVehicleDetails,
   vehicleCountrySelect,
   vehicleOptions,
   vehicleProvinceSelect,
@@ -345,28 +346,7 @@ describe("Vehicle Details", () => {
     } = getVehicleDetails("update", true);
 
     // Act
-    const unitNumberOrPlate = await unitNumberOrPlateSelect();
-    await chooseOption(user, unitNumberOrPlate, "Unit Number");
-    await openVehicleSelect(user);
-
-    const powerUnitOptions = await vehicleOptions(VEHICLE_TYPES.POWER_UNIT);
-    const powerUnitToChoose = powerUnitOptions.find(option => option.textContent === unitNumber);
-
-    expect(powerUnitToChoose).not.toBeUndefined();
-    if (powerUnitToChoose) {
-      await user.click(powerUnitToChoose);
-    }
-
-    await fillVehicleInfo(
-      user,
-      formDetails,
-      "update",
-      {
-        vin: formDetails.vin,
-        plate: formDetails.plate,
-        make: formDetails.make,
-      }
-    );
+    await updateVehicleDetails(user, VEHICLE_TYPES.POWER_UNIT, formDetails, unitNumber);
 
     // Assert
     await waitFor(() => {
@@ -389,28 +369,7 @@ describe("Vehicle Details", () => {
     } = getVehicleDetails("update", false);
 
     // Act
-    const unitNumberOrPlate = await unitNumberOrPlateSelect();
-    await chooseOption(user, unitNumberOrPlate, "Unit Number");
-    await openVehicleSelect(user);
-
-    const powerUnitOptions = await vehicleOptions(VEHICLE_TYPES.POWER_UNIT);
-    const powerUnitToChoose = powerUnitOptions.find(option => option.textContent === unitNumber);
-
-    expect(powerUnitToChoose).not.toBeUndefined();
-    if (powerUnitToChoose) {
-      await user.click(powerUnitToChoose);
-    }
-
-    await fillVehicleInfo(
-      user,
-      formDetails,
-      "update",
-      {
-        vin: formDetails.vin,
-        plate: formDetails.plate,
-        make: formDetails.make,
-      }
-    );
+    await updateVehicleDetails(user, VEHICLE_TYPES.POWER_UNIT, formDetails, unitNumber);
 
     // Assert
     await waitFor(() => {

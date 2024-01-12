@@ -3,6 +3,7 @@ import { UserEvent } from "@testing-library/user-event/dist/types/setup/setup";
 
 import { getApplication } from "../fixtures/getActiveApplication";
 import { VehicleType } from "../../../../../../manageVehicles/types/Vehicle";
+import { Nullable } from "../../../../../../../common/types/common";
 
 export const inputWithValue = async (val: string) => {
   return await screen.findByDisplayValue(val);
@@ -284,4 +285,34 @@ export const fillVehicleInfo = async (
   
   await chooseSaveVehicleToInventory(user, vehicle.saveVehicle);
   await continueApplication(user);
+};
+
+export const updateVehicleDetails = async (
+  user: UserEvent,
+  vehicleType: VehicleType,
+  formDetails: VehicleDetail,
+  unitNumber: Nullable<string>,
+) => {
+  const unitNumberOrPlate = await unitNumberOrPlateSelect();
+  await chooseOption(user, unitNumberOrPlate, "Unit Number");
+  await openVehicleSelect(user);
+
+  const powerUnitOptions = await vehicleOptions(vehicleType);
+  const powerUnitToChoose = powerUnitOptions.find(option => option.textContent === unitNumber);
+
+  expect(powerUnitToChoose).not.toBeUndefined();
+  if (powerUnitToChoose) {
+    await user.click(powerUnitToChoose);
+  }
+
+  await fillVehicleInfo(
+    user,
+    formDetails,
+    "update",
+    {
+      vin: formDetails.vin,
+      plate: formDetails.plate,
+      make: formDetails.make,
+    }
+  );
 };
