@@ -20,6 +20,18 @@ export const CompanySearchResultColumnDef: MRT_ColumnDef<CompanyProfile>[] = [
     sortingFn: "alphanumeric",
   },
   {
+    accessorKey: "alternateName",
+    header: "Doing Business As (DBA)",
+    enableSorting: true,
+    sortingFn: "alphanumeric",
+  },
+  {
+    accessorKey: "migratedClientHash",
+    header: "Client Number",
+    enableSorting: true,
+    sortingFn: "alphanumeric",
+  },
+  {
     accessorKey: "mailingAddress",
     header: "Company Address",
     enableSorting: true,
