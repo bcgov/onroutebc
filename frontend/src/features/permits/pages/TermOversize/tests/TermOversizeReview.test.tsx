@@ -3,7 +3,7 @@ import { waitFor } from "@testing-library/react";
 
 import { VehicleDetails } from "../../../types/application";
 import { vehicleTypeDisplayText } from "../../../helpers/mappers";
-import { VehicleTypesAsString } from "../../../../manageVehicles/types/managevehicles";
+import { VehicleType } from "../../../../manageVehicles/types/Vehicle";
 import { getDefaultRequiredVal } from "../../../../../common/helpers/util";
 import { calculateFeeByDuration } from "../../../helpers/feeSummary";
 import { permitTypeDisplayText } from "../../../types/PermitType";
@@ -335,7 +335,7 @@ describe("Review and Confirm Application Details", () => {
       const country = formatCountry(countryCode);
       const province = formatProvince(countryCode, provinceCode);
       const vehicleTypeStr = vehicleTypeDisplayText(
-        vehicleType as VehicleTypesAsString,
+        vehicleType as VehicleType,
       );
       const vehicleSubtypeStr = getDefaultRequiredVal(
         "",

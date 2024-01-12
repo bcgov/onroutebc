@@ -5,13 +5,6 @@ import userEvent from "@testing-library/user-event";
 import { ThemeProvider } from "@mui/material/styles";
 
 import { APPLICATIONS_API_ROUTES } from "../../../../../apiManager/endpoints/endpoints";
-import {
-  dayjsToUtcStr,
-  getEndOfDate,
-  getStartOfDate,
-  now,
-  toLocalDayjs,
-} from "../../../../../../../common/helpers/formatDate";
 import { renderWithClient } from "../../../../../../../common/helpers/testHelper";
 import { Application } from "../../../../../types/application";
 import { bcGovTheme } from "../../../../../../../themes/bcGovTheme";
@@ -21,11 +14,19 @@ import { getDefaultApplication } from "../../../../../components/dashboard/tests
 import { MANAGE_PROFILE_API } from "../../../../../../manageProfile/apiManager/endpoints/endpoints";
 import { getDefaultCompanyInfo } from "../../../../../components/dashboard/tests/integration/fixtures/getCompanyInfo";
 import { VEHICLES_API } from "../../../../../../manageVehicles/apiManager/endpoints/endpoints";
-import {
-  getDefaultPowerUnitTypes,
-  getDefaultTrailerTypes,
-} from "../../../../../components/dashboard/tests/integration/fixtures/getVehicleInfo";
 import { Nullable } from "../../../../../../../common/types/common";
+import {
+  dayjsToUtcStr,
+  getEndOfDate,
+  getStartOfDate,
+  now,
+  toLocalDayjs,
+} from "../../../../../../../common/helpers/formatDate";
+
+import {
+  getDefaultPowerUnitSubTypes,
+  getDefaultTrailerSubTypes,
+} from "../../../../../components/dashboard/tests/integration/fixtures/getVehicleInfo";
 
 export const newApplicationNumber = "A1-00000001-800-R01";
 const { permitData, ...otherDetails } = getDefaultApplication();
@@ -49,8 +50,8 @@ export const companyInfoDescription =
 export const companyMailAddrTitle = "Company Mailing Address";
 export const contactInfoTitle = "Contact Information";
 export const vehicleSubtypes = [
-  ...getDefaultPowerUnitTypes(),
-  ...getDefaultTrailerTypes(),
+  ...getDefaultPowerUnitSubTypes(),
+  ...getDefaultTrailerSubTypes(),
 ];
 
 const server = setupServer(
@@ -95,14 +96,14 @@ const server = setupServer(
   rest.get(VEHICLES_API.POWER_UNIT_TYPES, async (_, res, ctx) => {
     return res(
       ctx.json([
-        ...getDefaultPowerUnitTypes(), // get power unit types from mock vehicle store
+        ...getDefaultPowerUnitSubTypes(), // get power unit subtypes from mock vehicle store
       ]),
     );
   }),
   rest.get(VEHICLES_API.TRAILER_TYPES, async (_, res, ctx) => {
     return res(
       ctx.json([
-        ...getDefaultTrailerTypes(), // get trailer types from mock vehicle store
+        ...getDefaultTrailerSubTypes(), // get trailer subtypes from mock vehicle store
       ]),
     );
   }),

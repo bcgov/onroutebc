@@ -16,8 +16,8 @@ import {
 } from "../../../../routes/constants";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 import {
-  usePowerUnitTypesQuery,
-  useTrailerTypesQuery,
+  usePowerUnitSubTypesQuery,
+  useTrailerSubTypesQuery,
 } from "../../../manageVehicles/apiManager/hooks";
 
 export const TermOversizeReview = () => {
@@ -30,8 +30,8 @@ export const TermOversizeReview = () => {
   const navigate = useNavigate();
 
   const companyQuery = useCompanyInfoQuery();
-  const powerUnitTypesQuery = usePowerUnitTypesQuery();
-  const trailerTypesQuery = useTrailerTypesQuery();
+  const powerUnitSubTypesQuery = usePowerUnitSubTypesQuery();
+  const trailerSubTypesQuery = useTrailerSubTypesQuery();
   const methods = useForm<Application>();
 
   // For the confirmation checkboxes
@@ -108,8 +108,8 @@ export const TermOversizeReview = () => {
           allChecked={isChecked}
           setAllChecked={setIsChecked}
           hasAttemptedCheckboxes={isSubmitted}
-          powerUnitTypes={powerUnitTypesQuery.data}
-          trailerTypes={trailerTypesQuery.data}
+          powerUnitSubTypes={powerUnitSubTypesQuery.data}
+          trailerSubTypes={trailerSubTypesQuery.data}
           vehicleDetails={applicationData?.permitData?.vehicleDetails}
           vehicleWasSaved={
             applicationData?.permitData?.vehicleDetails?.saveVehicle

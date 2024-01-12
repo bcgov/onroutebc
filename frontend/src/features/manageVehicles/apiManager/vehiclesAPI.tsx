@@ -1,17 +1,18 @@
 import { VEHICLES_API } from "./endpoints/endpoints";
-import {
-  PowerUnit,
-  UpdatePowerUnit,
-  VehicleType,
-  Trailer,
-  UpdateTrailer,
-  VehicleTypesAsString,
-  Vehicle,
-} from "../types/managevehicles";
-
 import { replaceEmptyValuesWithNull } from "../../../common/helpers/util";
 import { VEHICLES_URL } from "../../../common/apiManager/endpoints/endpoints";
 import { RequiredOrNull } from "../../../common/types/common";
+import {
+  PowerUnit,
+  UpdatePowerUnit,
+  VehicleSubType,
+  Trailer,
+  UpdateTrailer,
+  VehicleType,
+  BaseVehicle,
+  VEHICLE_TYPES,
+} from "../types/Vehicle";
+
 import {
   httpPOSTRequest,
   httpPUTRequest,
@@ -30,11 +31,11 @@ export const getAllVehicles = async (
   const trailers = await getAllTrailers(companyId);
 
   powerUnits.forEach((p: PowerUnit) => {
-    p.vehicleType = "powerUnit";
+    p.vehicleType = VEHICLE_TYPES.POWER_UNIT;
   });
 
   trailers.forEach((t: Trailer) => {
-    t.vehicleType = "trailer";
+    t.vehicleType = VEHICLE_TYPES.TRAILER;
   });
 
   const allVehicles: (PowerUnit | Trailer)[] = [...powerUnits, ...trailers];
@@ -68,10 +69,10 @@ export const getPowerUnit = async (
 };
 
 /**
- * Gets the power unit types.
- * @returns Array<PowerUnitType>
+ * Gets the power unit vehicle subtypes.
+ * @returns List of vehicle subtypes for power units.
  */
-export const getPowerUnitTypes = async (): Promise<Array<VehicleType>> => {
+export const getPowerUnitSubTypes = async (): Promise<Array<VehicleSubType>> => {
   const url = new URL(VEHICLES_API.POWER_UNIT_TYPES);
   return httpGETRequest(url.toString()).then((response) => response.data);
 };
@@ -139,13 +140,13 @@ export const getTrailer = async (
  */
 export const getVehicleById = async (
   companyId: string,
-  vehicleType: VehicleTypesAsString,
+  vehicleType: VehicleType,
   vehicleId?: string,
-): Promise<RequiredOrNull<Vehicle>> => {
+): Promise<RequiredOrNull<BaseVehicle>> => {
   if (!vehicleId) return null;
 
   let url = `${VEHICLES_URL}/companies/${companyId}/vehicles`;
-  if (vehicleType === "powerUnit") {
+  if (vehicleType === VEHICLE_TYPES.POWER_UNIT) {
     url += `/powerUnits/${vehicleId}`;
   } else {
     url += `/trailers/${vehicleId}`;
@@ -161,10 +162,10 @@ export const getVehicleById = async (
 };
 
 /**
- * Gets the trailer types.
- * @returns Array<VehicleType>
+ * Gets the trailer vehicle subtypes.
+ * @returns List of vehicle subtypes for trailers.
  */
-export const getTrailerTypes = async (): Promise<Array<VehicleType>> => {
+export const getTrailerSubTypes = async (): Promise<Array<VehicleSubType>> => {
   const url = new URL(VEHICLES_API.TRAILER_TYPES);
   return httpGETRequest(url.toString()).then((response) => response.data);
 };
@@ -207,17 +208,17 @@ export const updateTrailer = async ({
 /**
  * Delete one or more vehicles.
  * @param vehicleIds Array of vehicle ids to be deleted.
- * @param vehicleType The {@link VehicleTypesAsString} to be deleted.
+ * @param vehicleType The type of the vehicle to be deleted.
  * @returns A Promise with the API response.
  */
 export const deleteVehicles = async (
   vehicleIds: Array<string>,
-  vehicleType: VehicleTypesAsString,
+  vehicleType: VehicleType,
   companyId: string,
 ) => {
   let url: RequiredOrNull<string> = null;
   let requestBody: { powerUnits: Array<string> } | { trailers: Array<string> };
-  if (vehicleType === "powerUnit") {
+  if (vehicleType === VEHICLE_TYPES.POWER_UNIT) {
     url = `${VEHICLES_URL}/companies/${companyId}/vehicles/powerUnits/delete-requests`;
     requestBody = { powerUnits: vehicleIds };
   } else {

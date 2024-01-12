@@ -4,16 +4,18 @@ import { faCircleCheck } from "@fortawesome/free-regular-svg-icons";
 
 import "./ReviewVehicleInfo.scss";
 import { VehicleDetails } from "../../../../types/application";
+import { DiffChip } from "./DiffChip";
+import { areValuesDifferent } from "../../../../../../common/helpers/util";
 import {
   mapTypeCodeToObject,
   vehicleTypeDisplayText,
 } from "../../../../helpers/mappers";
+
 import {
+  VehicleSubType,
   VehicleType,
-  VehicleTypesAsString,
-} from "../../../../../manageVehicles/types/managevehicles";
-import { DiffChip } from "./DiffChip";
-import { areValuesDifferent } from "../../../../../../common/helpers/util";
+} from "../../../../../manageVehicles/types/Vehicle";
+
 import {
   formatCountry,
   formatProvince,
@@ -22,22 +24,22 @@ import {
 export const ReviewVehicleInfo = ({
   vehicleDetails,
   vehicleWasSaved,
-  powerUnitTypes,
-  trailerTypes,
+  powerUnitSubTypes,
+  trailerSubTypes,
   showChangedFields = false,
   oldFields,
 }: {
   vehicleDetails?: VehicleDetails;
   vehicleWasSaved?: boolean;
-  powerUnitTypes?: VehicleType[];
-  trailerTypes?: VehicleType[];
+  powerUnitSubTypes?: VehicleSubType[];
+  trailerSubTypes?: VehicleSubType[];
   showChangedFields?: boolean;
   oldFields?: VehicleDetails;
 }) => {
   const DisplayVehicleType = () => {
     const vehicleTypeCode = vehicleDetails?.vehicleType;
     if (!vehicleTypeCode) return "";
-    return vehicleTypeDisplayText(vehicleTypeCode as VehicleTypesAsString);
+    return vehicleTypeDisplayText(vehicleTypeCode as VehicleType);
   };
 
   const DisplayVehicleSubType = () => {
@@ -49,8 +51,8 @@ export const ReviewVehicleInfo = ({
     const typeObject = mapTypeCodeToObject(
       code,
       vehicleTypeCode,
-      powerUnitTypes,
-      trailerTypes,
+      powerUnitSubTypes,
+      trailerSubTypes,
     );
 
     return typeObject?.type;

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useContext, useState } from "react";
 
 import "./TermOversizeForm.scss";
-import { Application } from "../../types/application.d";
+import { Application, VehicleDetails } from "../../types/application.d";
 import { ApplicationContext } from "../../context/ApplicationContext";
 import { ApplicationBreadcrumb } from "../../components/application-breadcrumb/ApplicationBreadcrumb";
 import { useSaveTermOversizeMutation } from "../../hooks/hooks";
@@ -15,14 +15,17 @@ import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext
 import { PermitForm } from "./components/form/PermitForm";
 import { usePermitVehicleManagement } from "../../hooks/usePermitVehicleManagement";
 import { useCompanyInfoQuery } from "../../../manageProfile/apiManager/hooks";
+import { TROS_PERMIT_DURATIONS } from "../../constants/termOversizeConstants";
+import { Nullable } from "../../../../common/types/common";
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
 } from "../../../../common/helpers/util";
-import { TROS_PERMIT_DURATIONS } from "../../constants/termOversizeConstants";
+
 import {
   APPLICATIONS_ROUTES,
   APPLICATION_STEPS,
+  ERROR_ROUTES,
 } from "../../../../routes/constants";
 
 /**
@@ -61,7 +64,7 @@ export const TermOversizeForm = () => {
   const { companyLegalName, onRouteBCClientNumber } =
     useContext(OnRouteBCContext);
 
-  const { handleSaveVehicle, vehicleOptions, powerUnitTypes, trailerTypes } =
+  const { handleSaveVehicle, vehicleOptions, powerUnitSubTypes, trailerSubTypes } =
     usePermitVehicleManagement(
       applyWhenNotNullable((companyIdNum) => `${companyIdNum}`, companyId, "0"),
     );
@@ -111,11 +114,12 @@ export const TermOversizeForm = () => {
   const onContinue = async (data: FieldValues) => {
     const termOverSizeToBeAdded = applicationFormData(data);
     const vehicleData = termOverSizeToBeAdded.permitData.vehicleDetails;
-    handleSaveVehicle(vehicleData);
+    const savedVehicleDetails = await handleSaveVehicle(vehicleData);
 
     // Save application before continuing
     await onSaveApplication((permitId) =>
       navigate(APPLICATIONS_ROUTES.REVIEW(permitId)),
+      savedVehicleDetails,
     );
   };
 
@@ -137,19 +141,35 @@ export const TermOversizeForm = () => {
   };
 
   const onSaveFailure = () => {
-    snackBar.setSnackBar({
-      showSnackbar: true,
-      setShowSnackbar: () => true,
-      message: `An unexpected error occured`,
-      alertType: "error",
-    });
+    navigate(ERROR_ROUTES.UNEXPECTED);
   };
 
   // Whenever application is to be saved (either through "Save" or "Continue")
   const onSaveApplication = async (
     additionalSuccessAction?: (permitId: string) => void,
+    savedVehicleInventoryDetails?: Nullable<VehicleDetails>,
   ) => {
-    const termOverSizeToBeAdded = applicationFormData(getValues());
+    if (!savedVehicleInventoryDetails && typeof savedVehicleInventoryDetails !== "undefined") {
+      // save vehicle to inventory failed (result is null), go to unexpected error page
+      return onSaveFailure();
+    }
+
+    const formValues = getValues();
+    const termOverSizeToBeAdded = applicationFormData(
+      !savedVehicleInventoryDetails ?
+      formValues :
+      {
+        ...formValues,
+        permitData: {
+          ...formValues.permitData,
+          vehicleDetails: {
+            ...savedVehicleInventoryDetails,
+            saveVehicle: true,
+          }
+        },
+      }
+    );
+
     const response = await submitTermOversizeMutation.mutateAsync(
       termOverSizeToBeAdded,
     );
@@ -210,8 +230,8 @@ export const TermOversizeForm = () => {
           permitCommodities={termOversizeDefaultValues.permitData.commodities}
           vehicleDetails={termOversizeDefaultValues.permitData.vehicleDetails}
           vehicleOptions={vehicleOptions}
-          powerUnitTypes={powerUnitTypes}
-          trailerTypes={trailerTypes}
+          powerUnitSubTypes={powerUnitSubTypes}
+          trailerSubTypes={trailerSubTypes}
           companyInfo={companyInfo}
           durationOptions={TROS_PERMIT_DURATIONS}
         />

@@ -1,5 +1,6 @@
 import { useContext } from "react";
 import { FieldValues, FormProvider } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 
 import "./AmendPermitForm.scss";
 import { TROS_PERMIT_DURATIONS } from "../../../constants/termOversizeConstants";
@@ -11,16 +12,21 @@ import { PermitForm } from "../../TermOversize/components/form/PermitForm";
 import { Permit } from "../../../types/permit";
 import { useCompanyInfoDetailsQuery } from "../../../../manageProfile/apiManager/hooks";
 import { Breadcrumb } from "../../../../../common/components/breadcrumb/Breadcrumb";
+import { AmendRevisionHistory } from "./form/AmendRevisionHistory";
+import { AmendReason } from "./form/AmendReason";
+import { Nullable } from "../../../../../common/types/common";
+import { VehicleDetails } from "../../../types/application";
+import { ERROR_ROUTES } from "../../../../../routes/constants";
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
 } from "../../../../../common/helpers/util";
+
 import {
   dayjsToUtcStr,
   nowUtc,
 } from "../../../../../common/helpers/formatDate";
-import { AmendRevisionHistory } from "./form/AmendRevisionHistory";
-import { AmendReason } from "./form/AmendReason";
+
 import {
   AmendPermitFormData,
   mapFormDataToPermit,
@@ -44,6 +50,8 @@ export const AmendPermitForm = () => {
     getLinks,
   } = useContext(AmendPermitContext);
 
+  const navigate = useNavigate();
+
   const { formData, formMethods } = useAmendPermit(
     currentStepIndex === 0,
     permitFormData,
@@ -56,7 +64,7 @@ export const AmendPermitForm = () => {
   const modifyAmendmentMutation = useModifyAmendmentApplication();
   const snackBar = useContext(SnackBarContext);
 
-  const { handleSaveVehicle, vehicleOptions, powerUnitTypes, trailerTypes } =
+  const { handleSaveVehicle, vehicleOptions, powerUnitSubTypes, trailerSubTypes } =
     usePermitVehicleManagement(`${formData.companyId}`);
 
   const { handleSubmit, getValues } = formMethods;
@@ -85,10 +93,13 @@ export const AmendPermitForm = () => {
   const onContinue = async (data: FieldValues) => {
     const permitToBeAmended = transformPermitFormData(data);
     const vehicleData = permitToBeAmended.permitData.vehicleDetails;
-    handleSaveVehicle(vehicleData);
+    const savedVehicle = await handleSaveVehicle(vehicleData);
 
     // Save application before continuing
-    await onSaveApplication(() => next());
+    await onSaveApplication(
+      () => next(),
+      savedVehicle,
+    );
   };
 
   const isSavePermitSuccessful = (status: number) =>
@@ -106,18 +117,37 @@ export const AmendPermitForm = () => {
   };
 
   const onSaveFailure = () => {
-    snackBar.setSnackBar({
-      showSnackbar: true,
-      setShowSnackbar: () => true,
-      message: `An unexpected error occured`,
-      alertType: "error",
-    });
+    navigate(ERROR_ROUTES.UNEXPECTED);
   };
 
-  const onSaveApplication = async (additionalSuccessAction?: () => void) => {
-    const permitToBeAmended = transformPermitFormData(getValues());
+  const onSaveApplication = async (
+    additionalSuccessAction?: () => void,
+    savedVehicleInventoryDetails?: Nullable<VehicleDetails>,
+  ) => {
+    if (!savedVehicleInventoryDetails && typeof savedVehicleInventoryDetails !== "undefined") {
+      // save vehicle to inventory failed (result is null), go to unexpected error page
+      return onSaveFailure();
+    }
+
+    const formValues = getValues();
+    const permitToBeAmended = transformPermitFormData(
+      !savedVehicleInventoryDetails ?
+      formValues :
+      {
+        ...formValues,
+        permitData: {
+          ...formValues.permitData,
+          vehicleDetails: {
+            ...savedVehicleInventoryDetails,
+            saveVehicle: true,
+          }
+        },
+      }
+    );
+
     const shouldUpdateApplication =
       permitToBeAmended.permitId !== permit?.permitId;
+    
     const response = shouldUpdateApplication
       ? await modifyAmendmentMutation.mutateAsync({
           applicationNumber: getDefaultRequiredVal(
@@ -197,8 +227,8 @@ export const AmendPermitForm = () => {
           permitCommodities={formData.permitData.commodities}
           vehicleDetails={formData.permitData.vehicleDetails}
           vehicleOptions={vehicleOptions}
-          powerUnitTypes={powerUnitTypes}
-          trailerTypes={trailerTypes}
+          powerUnitSubTypes={powerUnitSubTypes}
+          trailerSubTypes={trailerSubTypes}
           companyInfo={companyInfo}
           durationOptions={durationOptions}
         >
