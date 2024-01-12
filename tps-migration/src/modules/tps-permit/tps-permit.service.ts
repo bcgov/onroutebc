@@ -40,7 +40,7 @@ export class TpsPermitService {
     const tpsPermits: TpsPermit[] = await this.tpsPermitRepository.find({
       where: { s3UploadStatus: S3uploadStatus.Pending },
       select: { migrationId: true },
-      take: parseInt(process.env.TPS_LIMIT),
+      take: parseInt(process.env.TPS_POLL_LIMIT),
     });
     const ids = tpsPermits.map((tpsPermit) => tpsPermit.migrationId);
     // create query builder fails if array is empty. hence the length check.
@@ -68,7 +68,7 @@ export class TpsPermitService {
     const tpsPermits: TpsPermit[] = await this.tpsPermitRepository.find({
       where: { s3UploadStatus: S3uploadStatus.Error, retryCount: LessThan(3) },
       select: { migrationId: true },
-      take: parseInt(process.env.TPS_LIMIT),
+      take: parseInt(process.env.TPS_POLL_LIMIT),
     });
 
     const ids = tpsPermits.map((tpsPermit) => tpsPermit.migrationId);
