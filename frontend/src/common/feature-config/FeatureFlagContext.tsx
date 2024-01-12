@@ -28,6 +28,7 @@ export const isFeatureEnabled = (featureName: string): boolean => {
     return featureFlagObject[featureName] === "ENABLED";
   } catch (error) {
     console.log("Error parsing json::", error);
+    // Adding a comment
   }
   return false;
 };
