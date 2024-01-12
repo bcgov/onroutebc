@@ -190,6 +190,9 @@ services:
       OCIO_S3_ENDPOINT: ${OCIO_S3_ENDPOINT}
       OCIO_S3_KEY: ${OCIO_S3_KEY}
       OCIO_S3_SECRETACCESSKEY: ${OCIO_S3_SECRETACCESSKEY}
+      TPS_LIMIT: ${TPS_LIMIT}
+      TPS_PENDING_POLLING_INTERVAL: ${TPS_PENDING_POLLING_INTERVAL}
+      TPS_ERROR_POLLING_INTERVAL: ${TPS_ERROR_POLLING_INTERVAL}
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5050/"]
       interval: 1m30s
