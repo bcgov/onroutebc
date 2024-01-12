@@ -1,32 +1,8 @@
 name: Notifications
 on:
-  workflow_run: 
-    workflows: [PR,Merge]
-    types:
-      - completed
+  deployment_status:
 jobs:
-  notify-teams-pr:
-    if: ${{github.event.workflow_run.event == 'pull_request'}}
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: simbo/msteams-message-card-action@latest
-        with:
-          webhook: ${{ vars.MS_TEAMS_WEBHOOK_URI }}
-          title: "${{github.event.workflow_run.head_commit.message}}" 
-          message: "${{github.event.workflow_run.head_commit.message}}" 
-          color: 'dodger blue'
-          buttons: |
-            Pull Request ${{github.event.workflow_run.pull_requests[0].number}} ${{github.event.workflow_run.repository.html_url}}/pull/${{github.event.workflow_run.pull_requests[0].number}}
-            Diff ${{github.event.workflow_run.repository.html_url}}/pull/${{github.event.workflow_run.pull_requests[0].number}}/files
-          sections: |
-            - 
-              activity:
-                title: ${{github.event.workflow_run.head_commit.committer.name}}
-                subtitle: ${{github.event.workflow_run.head_commit.timestamp}}
-                image: ${{github.event.workflow_run.head_repository.owner.avatar_url}}
-                text: PR Opened
-  notify-teams-merged:
-    if: ${{github.event.workflow_run.event == 'push'}}
+  notify-teams:
     runs-on: ubuntu-22.04
     steps:
       - name: PR Number
@@ -49,7 +25,7 @@ jobs:
         with:
           webhook: ${{ vars.MS_TEAMS_WEBHOOK_URI }}
           title: "${{github.event.workflow_run.head_commit.message}}" 
-          message: "${{github.event.workflow_run.head_commit.message}}" 
+          message: "echo '${{toJSON(github.event.deployment_status)}}'" 
           color: 'dark orange'
           summary: "${{github.event.workflow_run.event}}-${{github.event.workflow_run.status}}"
           buttons: |

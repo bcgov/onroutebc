@@ -5,7 +5,7 @@ on:
 
 jobs:
   GitVersion:
-    if: ${{github.event.deployment.environment == 'prod'}}
+    if: ${{github.event.deployment_status.environment == 'prod'}}
     name: Mainline Versioning - GitVersion
     runs-on: ubuntu-22.04
     steps:
