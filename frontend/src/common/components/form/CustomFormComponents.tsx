@@ -118,6 +118,8 @@ export const CustomFormComponent = <T extends ORBC_FormTypes>({
             name={name}
             rules={rules}
             menuOptions={menuOptions}
+            disabled={disabled}
+            readOnly={readOnly}
           />
         );
       case "phone":

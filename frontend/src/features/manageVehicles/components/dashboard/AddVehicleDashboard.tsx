@@ -9,18 +9,18 @@ import { Banner } from "../../../../common/components/dashboard/Banner";
 import { InfoBcGovBanner } from "../../../../common/components/banners/InfoBcGovBanner";
 import { getCompanyIdFromSession } from "../../../../common/apiManager/httpRequestHandler";
 import { getDefaultRequiredVal } from "../../../../common/helpers/util";
-import { VEHICLE_TYPES_ENUM } from "../form/constants";
 import { PowerUnitForm } from "../form/PowerUnitForm";
 import { TrailerForm } from "../form/TrailerForm";
 import { VEHICLES_ROUTES } from "../../../../routes/constants";
 import { BANNER_MESSAGES } from "../../../../common/constants/bannerMessages";
+import { VEHICLE_TYPES, VehicleType } from "../../types/Vehicle";
 
 export const AddVehicleDashboard = React.memo(
-  ({ addVehicleMode }: { addVehicleMode: VEHICLE_TYPES_ENUM }) => {
+  ({ addVehicleMode }: { addVehicleMode: VehicleType }) => {
     const navigate = useNavigate();
 
     const backToVehicleInventory = () => {
-      if (addVehicleMode === VEHICLE_TYPES_ENUM.TRAILER) {
+      if (addVehicleMode === VEHICLE_TYPES.TRAILER) {
         navigate(VEHICLES_ROUTES.TRAILER_TAB);
       } else {
         navigate(VEHICLES_ROUTES.MANAGE);
@@ -32,10 +32,10 @@ export const AddVehicleDashboard = React.memo(
     return (
       <div className="dashboard-page">
         <Box className="dashboard-page__banner layout-box">
-          {addVehicleMode === VEHICLE_TYPES_ENUM.POWER_UNIT && (
+          {addVehicleMode === VEHICLE_TYPES.POWER_UNIT && (
             <Banner bannerText="Add Power Unit" />
           )}
-          {addVehicleMode === VEHICLE_TYPES_ENUM.TRAILER && (
+          {addVehicleMode === VEHICLE_TYPES.TRAILER && (
             <Banner bannerText="Add Trailer" />
           )}
         </Box>
@@ -54,16 +54,16 @@ export const AddVehicleDashboard = React.memo(
             className="breadcrumb-link breadcrumb-link--parent"
             onClick={backToVehicleInventory}
           >
-            {addVehicleMode === VEHICLE_TYPES_ENUM.POWER_UNIT && "Power Unit"}
-            {addVehicleMode === VEHICLE_TYPES_ENUM.TRAILER && "Trailer"}
+            {addVehicleMode === VEHICLE_TYPES.POWER_UNIT && "Power Unit"}
+            {addVehicleMode === VEHICLE_TYPES.TRAILER && "Trailer"}
           </Typography>
 
           <FontAwesomeIcon className="breadcrumb-icon" icon={faChevronRight} />
 
           <Typography>
-            {addVehicleMode === VEHICLE_TYPES_ENUM.POWER_UNIT &&
+            {addVehicleMode === VEHICLE_TYPES.POWER_UNIT &&
               "Add Power Unit"}
-            {addVehicleMode === VEHICLE_TYPES_ENUM.TRAILER && "Add Trailer"}
+            {addVehicleMode === VEHICLE_TYPES.TRAILER && "Add Trailer"}
           </Typography>
         </Box>
 
@@ -73,14 +73,14 @@ export const AddVehicleDashboard = React.memo(
 
         <Box className="dashboard-page__form layout-box">
           <Typography variant={"h2"}>
-            {addVehicleMode === VEHICLE_TYPES_ENUM.POWER_UNIT &&
+            {addVehicleMode === VEHICLE_TYPES.POWER_UNIT &&
               "Power Unit Details"}
-            {addVehicleMode === VEHICLE_TYPES_ENUM.TRAILER && "Trailer Details"}
+            {addVehicleMode === VEHICLE_TYPES.TRAILER && "Trailer Details"}
           </Typography>
-          {addVehicleMode === VEHICLE_TYPES_ENUM.POWER_UNIT && (
+          {addVehicleMode === VEHICLE_TYPES.POWER_UNIT && (
             <PowerUnitForm companyId={companyId} />
           )}
-          {addVehicleMode === VEHICLE_TYPES_ENUM.TRAILER && (
+          {addVehicleMode === VEHICLE_TYPES.TRAILER && (
             <TrailerForm companyId={companyId} />
           )}
         </Box>

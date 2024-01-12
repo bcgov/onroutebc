@@ -13,8 +13,8 @@ import { Nullable } from "../../../../../../common/types/common";
 import {
   PowerUnit,
   Trailer,
-  VehicleType,
-} from "../../../../../manageVehicles/types/managevehicles.d";
+  VehicleSubType,
+} from "../../../../../manageVehicles/types/Vehicle";
 
 import {
   Commodities,
@@ -38,8 +38,8 @@ interface PermitFormProps {
   permitCommodities: Commodities[];
   vehicleDetails?: VehicleDetailsType;
   vehicleOptions: (PowerUnit | Trailer)[];
-  powerUnitTypes: VehicleType[];
-  trailerTypes: VehicleType[];
+  powerUnitSubTypes: VehicleSubType[];
+  trailerSubTypes: VehicleSubType[];
   children?: React.ReactNode;
   companyInfo?: Nullable<CompanyProfile>;
   durationOptions: {
@@ -77,8 +77,8 @@ export const PermitForm = (props: PermitFormProps) => {
           feature={props.feature}
           vehicleData={props.vehicleDetails}
           vehicleOptions={props.vehicleOptions}
-          powerUnitTypes={props.powerUnitTypes}
-          trailerTypes={props.trailerTypes}
+          powerUnitSubTypes={props.powerUnitSubTypes}
+          trailerSubTypes={props.trailerSubTypes}
         />
         {props.children}
       </Box>

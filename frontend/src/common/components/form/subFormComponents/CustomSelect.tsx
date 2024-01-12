@@ -5,6 +5,8 @@ import {
   RegisterOptions,
   useFormContext,
 } from "react-hook-form";
+
+import "./CustomSelect.scss";
 import { ORBC_FormTypes } from "../../../types/common";
 import { SELECT_FIELD_STYLE } from "../../../../themes/orbcStyles";
 import { CustomSelectDisplayProps } from "../../../types/formElements";
@@ -17,6 +19,8 @@ interface CustomSelectProps<T extends FieldValues> {
   name: FieldPath<T>;
   rules: RegisterOptions;
   menuOptions?: JSX.Element[];
+  disabled?: boolean;
+  readOnly?: boolean;
 }
 
 /**
@@ -28,6 +32,8 @@ export const CustomSelect = <T extends ORBC_FormTypes>({
   name,
   rules,
   menuOptions,
+  disabled,
+  readOnly,
 }: CustomSelectProps<T>): JSX.Element => {
   const {
     register,
@@ -40,6 +46,9 @@ export const CustomSelect = <T extends ORBC_FormTypes>({
   return (
     <Select
       aria-labelledby={`${feature}-${name}-label`}
+      className={`custom-select ${disabled ? "custom-select--disabled" : ""}`}
+      disabled={disabled}
+      readOnly={readOnly}
       inputProps={{
         "aria-label": name,
       }}
@@ -61,6 +70,7 @@ export const CustomSelect = <T extends ORBC_FormTypes>({
       SelectDisplayProps={
         {
           "data-testid": `select-${name}`,
+          className: "custom-select__input-container",
         } as CustomSelectDisplayProps
       }
     >
