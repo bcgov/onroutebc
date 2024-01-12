@@ -57,6 +57,8 @@ export const SnackBarContext = createContext({
 const App = () => {
   const queryClient = new QueryClient();
 
+  console.log('YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY');
+
   console.log(
     "isFeatureEnabled::",
     isFeatureEnabled(FEATURE_NAMES.COMPANY_SEARCH),
