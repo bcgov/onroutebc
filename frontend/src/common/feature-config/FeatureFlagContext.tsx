@@ -20,10 +20,16 @@ export type FeatureNamesType =
  */
 export const isFeatureEnabled = (featureName: string): boolean => {
   const featureFlags =
-    import.meta.env.ONROUTEBC_FEATURE_FLAGS || envConfig.ONROUTEBC_FEATURE_FLAGS;
-  const featureFlagObject = JSON.parse(featureFlags.replaceAll("\n", ""));
-  console.log(featureFlagObject);
-  return featureFlagObject[featureName] === "ENABLED";
+    import.meta.env.ONROUTEBC_FEATURE_FLAGS ||
+    envConfig.ONROUTEBC_FEATURE_FLAGS;
+  try {
+    const featureFlagObject = JSON.parse(featureFlags.replaceAll("\n", ""));
+    console.log(featureFlagObject);
+    return featureFlagObject[featureName] === "ENABLED";
+  } catch (error) {
+    console.log("Error parsing json::", error);
+  }
+  return false;
 };
 
 export const FeatureFlagContext = React.createContext({});

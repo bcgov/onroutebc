@@ -28,6 +28,10 @@ import {
   SearchEntity,
   SearchFields,
 } from "../../../../features/idir/search/types/types";
+import {
+  FEATURE_NAMES,
+  isFeatureEnabled,
+} from "../../../feature-config/FeatureFlagContext";
 
 const SEARCH_BY_PERMIT_OPTIONS = [
   { label: "Permit Number", value: "permitNumber" },
@@ -160,11 +164,13 @@ export const SearchFilter = () => {
                     value="permits"
                     control={<Radio key="find-by-permit" />}
                   />
-                  <FormControlLabel
-                    label="Company"
-                    value="companies"
-                    control={<Radio key="find-by-company" />}
-                  />
+                  {isFeatureEnabled(FEATURE_NAMES.COMPANY_SEARCH) && (
+                    <FormControlLabel
+                      label="Company"
+                      value="companies"
+                      control={<Radio key="find-by-company" />}
+                    />
+                  )}
                   <FormControlLabel
                     label="Application"
                     value="applications"
