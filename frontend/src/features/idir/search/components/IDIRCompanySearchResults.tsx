@@ -1,4 +1,3 @@
-import { Box, FormControlLabel, Switch } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import { memo, useCallback, useContext, useMemo, useState } from "react";
 
@@ -13,19 +12,16 @@ import {
 import OnRouteBCContext from "../../../../common/authentication/OnRouteBCContext";
 import { Optional } from "../../../../common/types/common";
 import { USER_AUTH_GROUP } from "../../../../common/authentication/types";
-import { hasPermitExpired } from "../../../permits/helpers/permitState";
-import { isPermitInactive } from "../../../permits/types/PermitStatus";
-import { Permit } from "../../../permits/types/permit";
 import { getDataBySearch } from "../api/idirSearch";
-import { PermitSearchResultColumnDef } from "../table/Columns";
 import { SearchFields } from "../types/types";
-import { IDIRPermitSearchRowActions } from "./IDIRPermitSearchRowActions";
 import {
   defaultTableInitialStateOptions,
   defaultTableOptions,
   defaultTableStateOptions,
 } from "../../../../common/helpers/tableHelper";
-import "./IDIRSearchResults.scss";
+import "./IDIRCompanySearchResults.scss";
+import { CompanyProfile } from "../../../manageProfile/types/manageProfile";
+import { CompanySearchResultColumnDef } from "../table/CompanySearchResultColumnDef";
 
 /**
  * Function to decide whether to show row actions icon or not.
@@ -51,7 +47,7 @@ const shouldShowRowActions = (userAuthGroup: Optional<string>): boolean => {
  *
  *
  */
-export const IDIRSearchResults = memo(
+export const IDIRCompanySearchResults = memo(
   ({
     searchParams,
   }: {
@@ -68,6 +64,9 @@ export const IDIRSearchResults = memo(
       pageIndex: 0,
       pageSize: 10,
     });
+    // TODO: if data is [] AND current_user is PPC_ADMIN then (eventually)
+    //  display the UX to allow the creation of a new Company Profile
+    const canCreateCompany = false;
     const searchResultsQuery = useQuery(
       [
         "search-entity",
@@ -97,35 +96,18 @@ export const IDIRSearchResults = memo(
     const { data, isLoading, isError } = searchResultsQuery;
 
     // Column definitions for the table
-    const columns = useMemo<MRT_ColumnDef<Permit>[]>(
-      () => PermitSearchResultColumnDef,
+    const columns = useMemo<MRT_ColumnDef<CompanyProfile>[]>(
+      () => CompanySearchResultColumnDef,
       [],
     );
 
-    /**
-     *
-     * @param initialData The initial data to filter by the active data toggle.
-     * @returns Permit[] containing the data to be displayed in table.
-     */
-    const getFilteredData = (initialData: Permit[]): Permit[] => {
-      if (!initialData.length) return [];
-      if (isActiveRecordsOnly) {
-        // Returns unexpired permits
-        return initialData.filter(
-          ({ permitStatus, permitData: { expiryDate } }) =>
-            !hasPermitExpired(expiryDate) && !isPermitInactive(permitStatus),
-        );
-      }
-      return initialData;
-    };
-
     const table = useMaterialReactTable({
       ...defaultTableOptions,
-      data: getFilteredData(data?.items ?? []),
+      data: data?.items ?? [],
       columns: columns,
       initialState: {
         ...defaultTableInitialStateOptions,
-        sorting: [{ id: "permitIssueDateTime", desc: true }],
+        sorting: [],
       },
       state: {
         ...defaultTableStateOptions,
@@ -147,46 +129,6 @@ export const IDIRSearchResults = memo(
       renderToolbarInternalActions: () => (
         <div className="toolbar-internal"></div>
       ),
-      renderTopToolbarCustomActions: () => {
-        return (
-          <Box sx={{ display: "flex", gap: "1rem", p: "4px" }}>
-            <FormControlLabel
-              value="end"
-              control={
-                <Switch
-                  color="primary"
-                  checked={isActiveRecordsOnly}
-                  onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                    setIsActiveRecordsOnly(() => event.target.checked);
-                  }}
-                />
-              }
-              label="Active Permits Only"
-              labelPlacement="end"
-            />
-          </Box>
-        );
-      },
-      renderRowActions: useCallback(({ row }: { row: MRT_Row<Permit> }) => {
-        const isInactive =
-          hasPermitExpired(row.original.permitData.expiryDate) ||
-          isPermitInactive(row.original.permitStatus);
-
-        if (shouldShowRowActions(idirUserDetails?.userAuthGroup)) {
-          return (
-            <Box className="idir-search-results__row-actions">
-              <IDIRPermitSearchRowActions
-                isPermitInactive={isInactive}
-                permitNumber={row.original.permitNumber}
-                permitId={row.original.permitId}
-                userAuthGroup={idirUserDetails?.userAuthGroup}
-              />
-            </Box>
-          );
-        } else {
-          return <></>;
-        }
-      }, []),
       muiToolbarAlertBannerProps: isError
         ? {
             color: "error",
@@ -203,4 +145,4 @@ export const IDIRSearchResults = memo(
   },
 );
 
-IDIRSearchResults.displayName = "SearchResults";
+IDIRCompanySearchResults.displayName = "SearchResults";
