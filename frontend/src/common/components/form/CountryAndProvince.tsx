@@ -1,5 +1,5 @@
 import { useFormContext, FieldPath } from "react-hook-form";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { SelectChangeEvent } from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import { COUNTRIES_THAT_SUPPORT_PROVINCE } from "../../constants/countries";
@@ -7,7 +7,7 @@ import { COUNTRIES_THAT_SUPPORT_PROVINCE } from "../../constants/countries";
 import CountriesAndStates from "../../constants/countries_and_states.json";
 import { DEFAULT_WIDTH } from "../../../themes/bcGovStyles";
 import { CustomFormComponent } from "./CustomFormComponents";
-import { ORBC_FormTypes } from "../../types/common";
+import { Nullable, ORBC_FormTypes } from "../../types/common";
 import {
   invalidCountryCode,
   invalidProvinceCode,
@@ -63,31 +63,46 @@ export const CountryAndProvince = <T extends ORBC_FormTypes>({
   countryClassName,
   provinceClassName,
 }: CountryAndProvinceProps): JSX.Element => {
-  const { resetField, watch } = useFormContext();
+  const { resetField, watch, setValue } = useFormContext();
 
   const countrySupportsProvinces = (country: string) =>
     COUNTRIES_THAT_SUPPORT_PROVINCE.includes(country);
 
   const countrySelected = watch(countryField);
+  const provinceSelected = watch(provinceField);
 
   const [shouldDisplayProvince, setShouldDisplayProvince] =
     useState<boolean>(true);
+
+  useEffect(() => {
+    handleDisplayProvince(countrySelected, provinceSelected);
+  }, [countrySelected, provinceSelected]);
 
   /**
    * When the selected country supports provinces, provinces are displayed.
    * Otherwise, the province field is hidden.
    * @param country string
+   * @param province optional string
    */
-  const handleDisplayProvince = (country: string) => {
-    if (!countrySupportsProvinces(country)) {
+  const handleDisplayProvince = (country: string, province: Nullable<string>) => {
+    if (!country) {
+      // If country is not selected (empty)
+      setShouldDisplayProvince(() => true);
+      resetField(provinceField, { defaultValue: "" });
+    } else if (!countrySupportsProvinces(country)) {
       // If country does not support province, as per API spec, set country to province too
       // even though the field is hidden.
       setShouldDisplayProvince(() => false);
       resetField(provinceField, { defaultValue: "" });
     } else {
       setShouldDisplayProvince(() => true);
-      // Should always reset province once country changes
-      resetField(provinceField, { defaultValue: "" });
+      const provincesOfCountry = getProvinces(country);
+      if (province && provincesOfCountry.find(prov => prov.code === province)) {
+        setValue(provinceField, province);
+      } else {
+        // Reset province once country changes
+        resetField(provinceField, { defaultValue: "" });
+      }
     }
   };
 
@@ -97,7 +112,7 @@ export const CountryAndProvince = <T extends ORBC_FormTypes>({
    */
   const onChangeCountry = useCallback(function (event: SelectChangeEvent) {
     const country = String(event.target.value);
-    handleDisplayProvince(country);
+    handleDisplayProvince(country, undefined);
   }, []);
 
   /**
