@@ -1,13 +1,13 @@
 import { PermitHistory } from "../types/PermitHistory";
 import { TRANSACTION_TYPES, TransactionType } from "../types/payment.d";
 import { Permit } from "../types/permit";
-import {
-  PERMIT_STATES,
-  daysLeftBeforeExpiry,
-  getPermitState,
-} from "./permitState";
 import { isValidTransaction } from "./payment";
 import { Nullable } from "../../../common/types/common";
+import {
+  PERMIT_STATES,
+  getPermitState,
+} from "./permitState";
+
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
@@ -111,14 +111,10 @@ export const calculateAmountForVoid = (
 ) => {
   const permitState = getPermitState(permit);
   if (
-    permitState === PERMIT_STATES.EXPIRES_IN_30 ||
     permitState === PERMIT_STATES.EXPIRED
   ) {
     return 0;
   }
 
-  const netPaid = calculateNetAmount(permitHistory);
-  const daysBeforeExpiry = daysLeftBeforeExpiry(permit);
-  const incrementsOf30DaysLeft = Math.floor(daysBeforeExpiry / 30);
-  return Math.min(incrementsOf30DaysLeft * 30, netPaid);
+  return calculateNetAmount(permitHistory);
 };
