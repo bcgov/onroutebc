@@ -85,23 +85,23 @@ export class CompanyController {
   }
 
   /**
-   * A GET method defined with the @Get() decorator and a route of /companies/staff/paginated
-   * that retrieves companies metadata by company's legal name or client number. 
+   * A GET method defined with the @Get() decorator and a route of /companies/paginated
+   * that retrieves companies data by company's legal name or client number. 
    *
    * @param legalName The legal name of the company.
    * @param clientNumber The client number of the company.
    * @returns The companies with response object {@link ReadCompanyDto}.
    */
   @ApiOkResponse({
-    description: 'The Company Metadata Resource',
+    description: 'The Company Resource',
     type: ReadCompanyDto,
     isArray: true,
   })
   @ApiQuery({ name: 'legalName', required: false })
   @ApiQuery({ name: 'clientNumber', required: false })
-  @Roles(Role.READ_ORG)
+  @Roles(Role.STAFF)
   @Get('paginated')
-  async getCompanyMetadataPaginated(
+  async getCompanyPaginated(
     @Query() pageOptionsDto: PageOptionsDto,
     @Query('legalName') legalName: string,
     @Query('clientNumber') clientNumber: string,

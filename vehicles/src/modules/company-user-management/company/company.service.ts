@@ -298,8 +298,8 @@ export class CompanyService {
   @LogAsyncMethodExecution()
   async findCompanyPaginated(
     @Query() pageOptionsDto: PageOptionsDto,
-    @Query() legalName: string,
-    @Query() clientNumber: string,
+    @Query() legalName?: string,
+    @Query() clientNumber?: string,
   ):Promise<PaginationDto<ReadCompanyDto>> {
     console.log("Legal Name received:", legalName);
     const companies = await this.companyRepository

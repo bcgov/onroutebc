@@ -162,15 +162,39 @@ describe('CompanyController', () => {
     });
   });
 
-  describe('Company controller getCompanyMetadataPaginated function', () => {
-    it('should return the company metadata when company legal name or client id are provided', async () => {
+  describe('Company controller getCompanyPaginated function', () => {
+    it('should return the company data when company legal name or client id are provided', async () => {
       const request = createMock<Request>();
       request.user = redCompanyAdminUserJWTMock;
       const pageOptionsDto = {
         page: 1,
         take: 10,
       }
-      const retCompanyMetadata = await controller.getCompanyMetadataPaginated(pageOptionsDto, 'He', 'R');
+      const retCompanyMetadata = await controller.getCompanyPaginated(pageOptionsDto, 'He', 'R');
+      expect(typeof retCompanyMetadata).toBe('object');
+      expect(retCompanyMetadata.items.length).toBeGreaterThan(0);
+    });
+
+    it('should return the company data when company legal name is provided while client id is not provided', async () => {
+      const request = createMock<Request>();
+      request.user = redCompanyAdminUserJWTMock;
+      const pageOptionsDto = {
+        page: 1,
+        take: 10,
+      }
+      const retCompanyMetadata = await controller.getCompanyPaginated(pageOptionsDto, 'He', undefined);
+      expect(typeof retCompanyMetadata).toBe('object');
+      expect(retCompanyMetadata.items.length).toBeGreaterThan(0);
+    });
+
+    it('should return the company data when company legal name is not provided while client id is provided', async () => {
+      const request = createMock<Request>();
+      request.user = redCompanyAdminUserJWTMock;
+      const pageOptionsDto = {
+        page: 1,
+        take: 10,
+      }
+      const retCompanyMetadata = await controller.getCompanyPaginated(pageOptionsDto, undefined, 'R');
       expect(typeof retCompanyMetadata).toBe('object');
       expect(retCompanyMetadata.items.length).toBeGreaterThan(0);
     });
@@ -179,7 +203,7 @@ describe('CompanyController', () => {
       const pageOptionsDto: PageOptionsDto = {page: 1, take: 10};
       companyService.findCompanyPaginated.mockResolvedValue(undefined);
       await expect(async () => {
-        await controller.getCompanyMetadataPaginated(
+        await controller.getCompanyPaginated(
           pageOptionsDto,
           'aaaaaaaa',
           'bbbbbbbb',
