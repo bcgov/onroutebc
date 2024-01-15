@@ -147,11 +147,11 @@ vehicles:
         timeoutSeconds: 5
       resources: # this is optional
         limits:
-          cpu: 75m
-          memory: 150Mi
+          cpu: 300m
+          memory: 500Mi
         requests:
-          cpu: 25m
-          memory: 50Mi
+          cpu: 200m
+          memory: 300Mi
   ingress:
     annotations: 
       route.openshift.io/termination: "edge"
@@ -248,11 +248,11 @@ dops:
         timeoutSeconds: 5
       resources: # this is optional
         limits:
-          cpu: 200m
-          memory: 600Mi
+          cpu: 2000m
+          memory: 4000Mi
         requests:
-          cpu: 100m
-          memory: 200Mi
+          cpu: 1000m
+          memory: 2000Mi
   ingress:
     annotations: 
       route.openshift.io/termination: "edge"
