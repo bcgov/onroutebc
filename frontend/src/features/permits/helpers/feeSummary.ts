@@ -116,6 +116,5 @@ export const calculateAmountForVoid = (
     return 0;
   }
 
-  const netPaid = calculateNetAmount(permitHistory);
-  return netPaid;
+  return calculateNetAmount(permitHistory);
 };
