@@ -66,7 +66,7 @@ async function bootstrap() {
       validationError: { target: false },
     }),
   );
-  app.useBodyParser('json', { limit: '2mb' });
+  app.useBodyParser('json', { limit: '20mb' });
 
   app.use(responseTime());
 
