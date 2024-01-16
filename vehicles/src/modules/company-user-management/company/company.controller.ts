@@ -34,6 +34,9 @@ import { Role } from '../../../common/enum/roles.enum';
 import { IUserJWT } from '../../../common/interface/user-jwt.interface';
 import { AuthOnly } from '../../../common/decorator/auth-only.decorator';
 import { IDP } from '../../../common/enum/idp.enum';
+import { PaginationDto } from 'src/common/dto/paginate/pagination';
+import { PageOptionsDto } from 'src/common/dto/paginate/page-options';
+
 
 @ApiTags('Company and User Management - Company')
 @ApiBadRequestResponse({
@@ -79,6 +82,38 @@ export class CompanyController {
   ) {
     const currentUser = request.user as IUserJWT;
     return await this.companyService.create(createCompanyDto, currentUser);
+  }
+
+  /**
+   * A GET method defined with the @Get() decorator and a route of /companies/paginated
+   * that retrieves companies data by company's legal name or client number. 
+   *
+   * @param legalName The legal name of the company.
+   * @param clientNumber The client number of the company.
+   * @returns The companies with response object {@link ReadCompanyDto}.
+   */
+  @ApiOkResponse({
+    description: 'The Company Resource',
+    type: ReadCompanyDto,
+    isArray: true,
+  })
+  @ApiQuery({ name: 'legalName', required: false })
+  @ApiQuery({ name: 'clientNumber', required: false })
+  @Roles(Role.STAFF)
+  @Get('paginated')
+  async getCompanyPaginated(
+    @Query() pageOptionsDto: PageOptionsDto,
+    @Query('legalName') legalName: string,
+    @Query('clientNumber') clientNumber: string,
+  ): Promise<PaginationDto<ReadCompanyDto>> {
+    const companies: PaginationDto<ReadCompanyDto> =
+      await this.companyService.findCompanyPaginated(pageOptionsDto, legalName, clientNumber);
+
+    if (!companies?.items?.length) {
+      throw new DataNotFoundException();
+    }
+
+    return companies;
   }
 
   /**
@@ -175,4 +210,9 @@ export class CompanyController {
     }
     return retCompany;
   }
+
+  
 }
+
+
+
