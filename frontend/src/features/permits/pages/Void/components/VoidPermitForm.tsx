@@ -1,23 +1,12 @@
 import { Controller, FormProvider } from "react-hook-form";
 import isEmail from "validator/lib/isEmail";
-import { useNavigate } from "react-router-dom";
 import { Button, FormControl, FormHelperText } from "@mui/material";
 import { useEffect, useState } from "react";
 
 import "./VoidPermitForm.scss";
-import {
-  CustomFormComponent,
-  getErrorMessage,
-} from "../../../../../common/components/form/CustomFormComponents";
-import {
-  invalidEmail,
-  invalidPhoneLength,
-  requiredMessage,
-} from "../../../../../common/helpers/validationMessages";
 import { useVoidPermitForm } from "../hooks/useVoidPermitForm";
 import { VoidPermitHeader } from "./VoidPermitHeader";
 import { Permit } from "../../../types/permit";
-import { IDIR_ROUTES } from "../../../../../routes/constants";
 import { RevokeDialog } from "./RevokeDialog";
 import { usePermitHistoryQuery } from "../../../hooks/hooks";
 import { calculateAmountForVoid } from "../../../helpers/feeSummary";
@@ -27,18 +16,28 @@ import { useVoidPermit } from "../hooks/useVoidPermit";
 import { mapToRevokeRequestData } from "../helpers/mapper";
 import { isValidTransaction } from "../../../helpers/payment";
 import { Nullable } from "../../../../../common/types/common";
+import {
+  CustomFormComponent,
+  getErrorMessage,
+} from "../../../../../common/components/form/CustomFormComponents";
+
+import {
+  invalidEmail,
+  invalidPhoneLength,
+  requiredMessage,
+} from "../../../../../common/helpers/validationMessages";
 
 const FEATURE = "void-permit";
-const searchRoute = `${IDIR_ROUTES.SEARCH_RESULTS}?searchEntity=permits`;
 
 export const VoidPermitForm = ({
   permit,
   onRevokeSuccess,
+  onCancel,
 }: {
   permit: Nullable<Permit>;
   onRevokeSuccess: () => void;
+  onCancel: () => void;
 }) => {
-  const navigate = useNavigate();
   const [openRevokeDialog, setOpenRevokeDialog] = useState<boolean>(false);
   const { formMethods, permitId, setVoidPermitData, next } =
     useVoidPermitForm();
@@ -72,10 +71,6 @@ export const VoidPermitForm = ({
     register,
     formState: { errors },
   } = formMethods;
-
-  const handleCancel = () => {
-    navigate(searchRoute);
-  };
 
   const handleContinue = () => {
     const formValues = getValues();
@@ -220,7 +215,7 @@ export const VoidPermitForm = ({
               variant="contained"
               color="tertiary"
               className="void-permit-button void-permit-button--cancel"
-              onClick={handleCancel}
+              onClick={onCancel}
               data-testid="cancel-void-permit-button"
             >
               Cancel

@@ -68,14 +68,17 @@ export const VoidPermit = () => {
     if (!permit?.permitNumber) return "";
     return permit.permitNumber.substring(0, 11);
   };
+
   const fullSearchRoute = `${searchRoute}&searchValue=${getBasePermitNumber()}`;
+  const goHome = () => navigate(-1);
+  const goHomeSuccess = () => navigate(fullSearchRoute);
 
   const getLinks = () =>
     currentLink === 0
       ? [
           {
             text: "Search",
-            onClick: () => navigate(fullSearchRoute),
+            onClick: goHome,
           },
           {
             text: "Void Permit",
@@ -84,7 +87,7 @@ export const VoidPermit = () => {
       : [
           {
             text: "Search",
-            onClick: () => navigate(fullSearchRoute),
+            onClick: goHome,
           },
           {
             text: "Void Permit",
@@ -128,12 +131,13 @@ export const VoidPermit = () => {
     <VoidPermitForm
       key="void-permit"
       permit={permit}
-      onRevokeSuccess={() => navigate(fullSearchRoute)}
+      onRevokeSuccess={goHomeSuccess}
+      onCancel={goHome}
     />,
     <FinishVoid
       key="finish-void"
       permit={permit}
-      onSuccess={() => navigate(fullSearchRoute)}
+      onSuccess={goHomeSuccess}
     />,
   ];
 
