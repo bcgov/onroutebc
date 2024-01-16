@@ -301,7 +301,6 @@ export class CompanyService {
     @Query() legalName?: string,
     @Query() clientNumber?: string,
   ):Promise<PaginationDto<ReadCompanyDto>> {
-    console.log("Legal Name received:", legalName);
     const companies = await this.companyRepository
       .createQueryBuilder('company')
       .innerJoinAndSelect('company.mailingAddress', 'mailingAddress')
@@ -316,15 +315,15 @@ export class CompanyService {
       })
       .getMany();
 
-    const companyMetadata = await this.classMapper.mapArrayAsync(
+    const companyData = await this.classMapper.mapArrayAsync(
       companies,
       Company,
       ReadCompanyDto,
     );
 
-    const totalItems = companyMetadata.length;
+    const totalItems = companyData?.length;
     const pageMetaDto = new PageMetaDto({ totalItems, pageOptionsDto });
-    return new PaginationDto(companyMetadata, pageMetaDto);
+    return new PaginationDto(companyData, pageMetaDto);
   }
 
 

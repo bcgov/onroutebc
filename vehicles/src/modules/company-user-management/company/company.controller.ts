@@ -106,11 +106,10 @@ export class CompanyController {
     @Query('legalName') legalName: string,
     @Query('clientNumber') clientNumber: string,
   ): Promise<PaginationDto<ReadCompanyDto>> {
-    console.log("Legal Name passed in:", legalName);
     const companies: PaginationDto<ReadCompanyDto> =
       await this.companyService.findCompanyPaginated(pageOptionsDto, legalName, clientNumber);
 
-    if (!companies?.items.length) {
+    if (!companies?.items?.length) {
       throw new DataNotFoundException();
     }
 
