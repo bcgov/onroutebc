@@ -1,6 +1,7 @@
 import { vi } from "vitest";
 
 import { assertSuccessfulSubmit } from "./helpers/assert";
+import { VEHICLE_TYPES } from "../../../types/Vehicle";
 import {
   actionButtons,
   chooseOption,
@@ -151,9 +152,9 @@ describe("Power Unit Form Submission", () => {
     const { user } = renderTestPowerUnitForm();
 
     // Act
-    await submitVehicleForm(user, "powerUnit", powerUnitDetails);
+    await submitVehicleForm(user, VEHICLE_TYPES.POWER_UNIT, powerUnitDetails);
 
     // Assert
-    await assertSuccessfulSubmit("powerUnit", powerUnitDetails);
+    await assertSuccessfulSubmit(VEHICLE_TYPES.POWER_UNIT, powerUnitDetails);
   });
 });

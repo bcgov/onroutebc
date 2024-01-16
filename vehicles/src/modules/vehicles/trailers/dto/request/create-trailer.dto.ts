@@ -3,7 +3,6 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   IsAlphanumeric,
   IsNumber,
-  IsNumberString,
   IsOptional,
   IsPositive,
   IsString,
@@ -103,9 +102,7 @@ export class CreateTrailerDto {
     required: false,
   })
   @IsOptional()
-  // TODO: Temporary solution for a frontend issue with sending an optional number value through React Hook Forms
-  // Ideally, this should be @IsNumber()
-  @IsNumberString()
+  @IsNumber()
   emptyTrailerWidth?: number;
 
   @AutoMap()

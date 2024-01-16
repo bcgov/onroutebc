@@ -11,6 +11,7 @@
   padding: 2rem 8.551vw;
   justify-content: space-between;
   border-top: 1px solid $bc-text-box-border-grey;
+  z-index: 2;
 
   & &__section {
     display: flex;

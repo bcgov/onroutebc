@@ -33,7 +33,6 @@ import { getFromCache } from '../../../common/helper/cache.helper';
 import { CacheKey } from '../../../common/enum/cache-key.enum';
 import { AccountSource } from '../../../common/enum/account-source.enum';
 import { PendingUser } from '../pending-users/entities/pending-user.entity';
-import * as crypto from 'crypto';
 import { LogAsyncMethodExecution } from '../../../common/decorator/log-async-method-execution.decorator';
 import { PageOptionsDto } from 'src/common/dto/paginate/page-options';
 import { PaginationDto } from 'src/common/dto/paginate/pagination';
@@ -368,26 +367,6 @@ export class CompanyService {
         companyUsers: true,
       },
     });
-  }
-
-  /**
-   * The findOneByMigratedClientNumber() method returns a Company Entity object corresponding to the
-   * company with that migrated client number. It retrieves the entity from the database using the
-   * Repository
-   *
-   * @param migratedClientNumber The migrated client Number.
-   *
-   * @returns The company details as a promise of type {@link Company}
-   */
-  @LogAsyncMethodExecution()
-  async findOneByMigratedClientNumber(
-    migratedClientNumber: string,
-  ): Promise<Company> {
-    const migratedClientHash = crypto
-      .createHash('sha256')
-      .update(migratedClientNumber?.replace(/-/g, ''))
-      .digest('hex');
-    return await this.findOneByMigratedClientHash(migratedClientHash);
   }
 
   /**

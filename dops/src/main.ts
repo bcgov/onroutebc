@@ -27,7 +27,8 @@ async function bootstrap() {
     origin: function (origin, callback) {
       if (
         (origin && allowedOrigins.includes(origin)) ||
-        process.env.NODE_ENV !== 'production'
+        process.env.NODE_ENV !== 'production' ||
+        !origin
       ) {
         callback(null, true);
       } else {
@@ -66,7 +67,7 @@ async function bootstrap() {
       validationError: { target: false },
     }),
   );
-  app.useBodyParser('json', { limit: '2mb' });
+  app.useBodyParser('json', { limit: '20mb' });
 
   app.use(responseTime());
 

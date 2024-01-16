@@ -1,8 +1,9 @@
 import { Optional } from "../../../common/types/common";
 import {
-  VehicleType,
+  VehicleSubType,
+  BaseVehicle,
   Vehicle,
-} from "../../manageVehicles/types/managevehicles";
+} from "../../manageVehicles/types/Vehicle";
 
 /**
  * Sort Power Unit or Trailer Types alphabetically and immutably
@@ -12,7 +13,7 @@ import {
  */
 export const sortVehicleSubTypes = (
   vehicleType: string,
-  options: Optional<VehicleType[]>,
+  options: Optional<VehicleSubType[]>,
 ) => {
   if (!vehicleType || !options) return [];
   const sorted = [...options]; // make copy of original array (original shouldn't be changed)
@@ -31,7 +32,7 @@ export const sortVehicleSubTypes = (
  * @param b Vehicle b
  * @returns 1 or -1 depending on whether a's plate > b's plate
  */
-const sortByPlate = (a: Vehicle, b: Vehicle) => {
+const sortByPlate = (a: BaseVehicle, b: BaseVehicle) => {
   return a.plate > b.plate ? 1 : -1;
 };
 
@@ -40,7 +41,7 @@ const sortByPlate = (a: Vehicle, b: Vehicle) => {
  * @param b Vehicle b
  * @returns 1 or -1 depending on whether a's unitNumber > b's unitNumber
  */
-const sortByUnitNumber = (a: Vehicle, b: Vehicle) => {
+const sortByUnitNumber = (a: BaseVehicle, b: BaseVehicle) => {
   return (a.unitNumber || -1) > (b.unitNumber || -1) ? 1 : -1;
 };
 
@@ -49,7 +50,7 @@ const sortByUnitNumber = (a: Vehicle, b: Vehicle) => {
  * @param b Vehicle b
  * @returns 1 or -1 depending on whether a's vehicleType > b's vehicleType
  */
-const sortByVehicleType = (a: Vehicle, b: Vehicle) => {
+const sortByVehicleType = (a: BaseVehicle, b: BaseVehicle) => {
   if (a.vehicleType && b.vehicleType) {
     return a.vehicleType > b.vehicleType ? 1 : -1;
   }

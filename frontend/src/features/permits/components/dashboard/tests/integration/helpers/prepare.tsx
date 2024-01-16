@@ -7,27 +7,30 @@ import { renderWithClient } from "../../../../../../../common/helpers/testHelper
 import { bcGovTheme } from "../../../../../../../themes/bcGovTheme";
 import { ApplicationStepPage } from "../../../ApplicationStepPage";
 import { APPLICATIONS_API_ROUTES } from "../../../../../apiManager/endpoints/endpoints";
-import {
-  dayjsToUtcStr,
-  now,
-} from "../../../../../../../common/helpers/formatDate";
-import {
-  createApplication,
-  getApplication,
-  updateApplication,
-} from "../fixtures/getActiveApplication";
 import { VEHICLES_API } from "../../../../../../manageVehicles/apiManager/endpoints/endpoints";
 import { VEHICLES_URL } from "../../../../../../../common/apiManager/endpoints/endpoints";
 import { MANAGE_PROFILE_API } from "../../../../../../manageProfile/apiManager/endpoints/endpoints";
 import { getDefaultCompanyInfo } from "../fixtures/getCompanyInfo";
 import { getDefaultUserDetails } from "../fixtures/getUserDetails";
 import { getDefaultRequiredVal } from "../../../../../../../common/helpers/util";
+import { APPLICATION_STEPS } from "../../../../../../../routes/constants";
+import { Nullable, Optional } from "../../../../../../../common/types/common";
+import {
+  dayjsToUtcStr,
+  now,
+} from "../../../../../../../common/helpers/formatDate";
+
+import {
+  createApplication,
+  getApplication,
+  updateApplication,
+} from "../fixtures/getActiveApplication";
+
 import {
   formatCountry,
   formatProvince,
 } from "../../../../../../../common/helpers/formatCountryProvince";
-import { APPLICATION_STEPS } from "../../../../../../../routes/constants";
-import { Nullable, Optional } from "../../../../../../../common/types/common";
+
 import OnRouteBCContext, {
   OnRouteBCContextType,
 } from "../../../../../../../common/authentication/OnRouteBCContext";
@@ -37,8 +40,8 @@ import {
   createTrailer,
   getAllPowerUnits,
   getAllTrailers,
-  getDefaultPowerUnitTypes,
-  getDefaultTrailerTypes,
+  getDefaultPowerUnitSubTypes,
+  getDefaultTrailerSubTypes,
   updatePowerUnit,
 } from "../fixtures/getVehicleInfo";
 
@@ -106,7 +109,7 @@ const server = setupServer(
   rest.get(VEHICLES_API.POWER_UNIT_TYPES, async (_, res, ctx) => {
     return res(
       ctx.json([
-        ...getDefaultPowerUnitTypes(), // get power unit types from mock vehicle store
+        ...getDefaultPowerUnitSubTypes(), // get power unit types from mock vehicle store
       ]),
     );
   }),
@@ -114,7 +117,7 @@ const server = setupServer(
   rest.get(VEHICLES_API.TRAILER_TYPES, async (_, res, ctx) => {
     return res(
       ctx.json([
-        ...getDefaultTrailerTypes(), // get trailer types from mock vehicle store
+        ...getDefaultTrailerSubTypes(), // get trailer types from mock vehicle store
       ]),
     );
   }),
@@ -249,21 +252,25 @@ export const getVehicleDetails = (
     "",
     existingVehicle.vin as Nullable<string>,
   );
+
   const vehicle = {
     ...existingVehicle,
+    powerUnitId: usage === "create" ? "" : existingVehicle.powerUnitId,
     vin: usage === "create" ? `${vin.slice(1)}1` : existingVehicle.vin,
     provinceCode:
-      usage === "update" ? updatedProvinceAbbr : existingVehicle.provinceCode,
+      usage === "create" ? existingVehicle.provinceCode : updatedProvinceAbbr,
   };
+
   const vehicleSubtype = getDefaultRequiredVal(
     "",
-    getDefaultPowerUnitTypes().find(
+    getDefaultPowerUnitSubTypes().find(
       (subtype) => subtype.typeCode === vehicle.powerUnitTypeCode,
     )?.type,
   );
 
   return {
     formDetails: {
+      vehicleId: vehicle.powerUnitId,
       vin: vehicle.vin,
       plate: vehicle.plate,
       make: vehicle.make,

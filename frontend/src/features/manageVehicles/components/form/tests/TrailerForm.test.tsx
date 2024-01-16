@@ -28,6 +28,7 @@ import {
   resetMockServer,
   trailerDetails,
 } from "./helpers/prepare";
+import { VEHICLE_TYPES } from "../../../types/Vehicle";
 
 beforeAll(() => {
   listenToMockServer();
@@ -104,9 +105,9 @@ describe("Trailer Form Submission", () => {
     const { user } = renderTestTrailerForm();
 
     // Act
-    await submitVehicleForm(user, "trailer", trailerDetails);
+    await submitVehicleForm(user, VEHICLE_TYPES.TRAILER, trailerDetails);
 
     // Assert
-    await assertSuccessfulSubmit("trailer", trailerDetails);
+    await assertSuccessfulSubmit(VEHICLE_TYPES.TRAILER, trailerDetails);
   });
 });
