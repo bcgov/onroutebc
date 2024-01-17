@@ -72,6 +72,7 @@ export const VoidPermit = () => {
   const fullSearchRoute = `${searchRoute}&searchValue=${getBasePermitNumber()}`;
   const goHome = () => navigate(-1);
   const goHomeSuccess = () => navigate(fullSearchRoute);
+  const handleFail = () => navigate(ERROR_ROUTES.UNEXPECTED);
 
   const getLinks = () =>
     currentLink === 0
@@ -133,11 +134,13 @@ export const VoidPermit = () => {
       permit={permit}
       onRevokeSuccess={goHomeSuccess}
       onCancel={goHome}
+      onFail={handleFail}
     />,
     <FinishVoid
       key="finish-void"
       permit={permit}
       onSuccess={goHomeSuccess}
+      onFail={handleFail}
     />,
   ];
 

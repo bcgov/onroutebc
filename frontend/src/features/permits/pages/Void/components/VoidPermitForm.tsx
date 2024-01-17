@@ -16,6 +16,7 @@ import { useVoidPermit } from "../hooks/useVoidPermit";
 import { mapToRevokeRequestData } from "../helpers/mapper";
 import { isValidTransaction } from "../../../helpers/payment";
 import { Nullable } from "../../../../../common/types/common";
+import { hasPermitsActionFailed } from "../../../helpers/permitState";
 import {
   CustomFormComponent,
   getErrorMessage,
@@ -33,10 +34,12 @@ export const VoidPermitForm = ({
   permit,
   onRevokeSuccess,
   onCancel,
+  onFail,
 }: {
   permit: Nullable<Permit>;
   onRevokeSuccess: () => void;
   onCancel: () => void;
+  onFail: () => void;
 }) => {
   const [openRevokeDialog, setOpenRevokeDialog] = useState<boolean>(false);
   const { formMethods, permitId, setVoidPermitData, next } =
@@ -53,7 +56,11 @@ export const VoidPermitForm = ({
   const { mutation: revokePermitMutation, voidResults } = useVoidPermit();
 
   useEffect(() => {
-    if (voidResults && voidResults.success.length > 0) {
+    const revokeFailed = hasPermitsActionFailed(voidResults);
+    if (revokeFailed) {
+      onFail();
+    } else if (voidResults && voidResults.success.length > 0) {
+      // Revoke action was successful and has results
       setOpenRevokeDialog(false);
       onRevokeSuccess();
     }

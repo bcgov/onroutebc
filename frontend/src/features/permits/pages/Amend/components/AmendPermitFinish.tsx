@@ -1,4 +1,5 @@
 import { useContext, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 import "./AmendPermitFinish.scss";
 import { AmendPermitContext } from "../context/AmendPermitContext";
@@ -9,12 +10,15 @@ import { Breadcrumb } from "../../../../../common/components/breadcrumb/Breadcru
 import { mapToAmendRequestData } from "./helpers/mapper";
 import { useIssuePermits, useStartTransaction } from "../../../hooks/hooks";
 import { isValidTransaction } from "../../../helpers/payment";
+import { hasPermitsActionFailed } from "../../../helpers/permitState";
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
 } from "../../../../../common/helpers/util";
+import { ERROR_ROUTES } from "../../../../../routes/constants";
 
 export const AmendPermitFinish = () => {
+  const navigate = useNavigate();
   const { permit, permitFormData, permitHistory, getLinks, afterFinishAmend } =
     useContext(AmendPermitContext);
 
@@ -40,21 +44,13 @@ export const AmendPermitFinish = () => {
 
   const { mutation: issuePermitMutation, issueResults } = useIssuePermits();
 
-  const issueFailed = () => {
-    if (!issueResults) return false; // since issue results might not be ready yet
-    return (
-      issueResults.success.length === 0 ||
-      (issueResults.success.length === 1 && issueResults.success[0] === "") ||
-      (issueResults.failure.length > 0 && issueResults.failure[0] !== "")
-    );
-  };
-
   useEffect(() => {
     if (typeof transaction !== "undefined") {
       // refund transaction response received
       if (!transaction) {
         // refund transaction failed
         console.error("Refund failed.");
+        navigate(ERROR_ROUTES.UNEXPECTED);
       } else {
         // refund transaction successful, proceed to issue permit
         issuePermitMutation.mutate([permitId]);
@@ -63,15 +59,13 @@ export const AmendPermitFinish = () => {
   }, [transaction]);
 
   useEffect(() => {
-    if (typeof issueResults !== "undefined") {
-      // issue permit response received
-      if (!issueFailed()) {
-        // Navigate back to search page upon issue success
-        afterFinishAmend();
-      } else {
-        // Issue failed
-        console.error("Permit issuance failed.");
-      }
+    const issueFailed = hasPermitsActionFailed(issueResults);
+    if (issueFailed) {
+      console.error("Permit issuance failed.");
+      navigate(ERROR_ROUTES.UNEXPECTED);
+    } else if (issueResults && issueResults.success.length > 0) {
+      // Navigate back to search page upon issue success
+      afterFinishAmend();
     }
   }, [issueResults]);
 

@@ -9,6 +9,7 @@ import { PermitHistory } from "../types/PermitHistory";
 import { StartTransactionResponseData } from "../types/payment";
 import { FIVE_MINUTES } from "../../../common/constants/constants";
 import { APPLICATION_STEPS, ApplicationStep } from "../../../routes/constants";
+import { Nullable, Optional } from "../../../common/types/common";
 import {
   getApplicationByPermitId,
   getPermit,
@@ -23,7 +24,6 @@ import {
   modifyAmendmentApplication,
   getApplicationsInProgress,
 } from "../apiManager/permitsAPI";
-import { Nullable, Optional } from "../../../common/types/common";
 
 /**
  * A custom react query mutation hook that saves the application data to the backend API
@@ -269,7 +269,8 @@ export const usePermitHistoryQuery = (originalPermitId?: string) => {
  */
 export const useIssuePermits = () => {
   const [issueResults, setIssueResults] =
-    useState<Optional<IssuePermitsResponse>>(undefined);
+    useState<Nullable<IssuePermitsResponse>>(undefined);
+  
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
@@ -281,7 +282,7 @@ export const useIssuePermits = () => {
     },
     onError: (err: unknown) => {
       console.error(err);
-      setIssueResults(undefined);
+      setIssueResults(null);
     },
   });
 
