@@ -10,6 +10,7 @@ import { SEARCH_ENTITIES, SearchEntity, SearchFields } from "../types/types";
 const getSearchURLbyEntity = (searchEntity: SearchEntity): string | URL => {
   let url = "";
   switch(searchEntity) {
+    case SEARCH_ENTITIES.APPLICATION:
     case SEARCH_ENTITIES.PERMIT:
       url = `${VEHICLES_URL}/${searchEntity}/ppc/search`;
     break;
@@ -29,7 +30,6 @@ export const getDataBySearch = (
   { searchEntity, searchByFilter, searchValue }: SearchFields,
   { page = 0, take = 10 }: PaginationOptions,
 ): Promise<PaginatedResponse<Permit>> => {
-  //const searchURL = new URL(`${VEHICLES_URL}/${searchEntity}/ppc/search`);
   const searchURL = new URL(getSearchURLbyEntity(searchEntity));
   searchURL.searchParams.set("searchColumn", searchByFilter);
   searchURL.searchParams.set("searchString", searchValue);
