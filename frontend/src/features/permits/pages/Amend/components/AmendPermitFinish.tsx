@@ -11,11 +11,11 @@ import { mapToAmendRequestData } from "./helpers/mapper";
 import { useIssuePermits, useStartTransaction } from "../../../hooks/hooks";
 import { isValidTransaction } from "../../../helpers/payment";
 import { hasPermitsActionFailed } from "../../../helpers/permitState";
+import { ERROR_ROUTES } from "../../../../../routes/constants";
 import {
   applyWhenNotNullable,
   getDefaultRequiredVal,
 } from "../../../../../common/helpers/util";
-import { ERROR_ROUTES } from "../../../../../routes/constants";
 
 export const AmendPermitFinish = () => {
   const navigate = useNavigate();
@@ -63,7 +63,7 @@ export const AmendPermitFinish = () => {
     if (issueFailed) {
       console.error("Permit issuance failed.");
       navigate(ERROR_ROUTES.UNEXPECTED);
-    } else if (issueResults && issueResults.success.length > 0) {
+    } else if (getDefaultRequiredVal(0, issueResults?.success?.length) > 0) {
       // Navigate back to search page upon issue success
       afterFinishAmend();
     }

@@ -120,11 +120,13 @@ export const PaymentRedirect = () => {
     return <Navigate to={`${ERROR_ROUTES.UNEXPECTED}`} replace={true} />;
   }
   
-  const hasValidIssueResults = issueResults && issueResults.success.length > 0;
+  const successIds = getDefaultRequiredVal([], issueResults?.success);
+  const hasValidIssueResults = successIds.length > 0;
+  
   if (hasValidIssueResults) {
     return (
       <Navigate
-        to={`${PERMITS_ROUTES.SUCCESS(issueResults.success[0])}`}
+        to={`${PERMITS_ROUTES.SUCCESS(successIds[0])}`}
         replace={true}
       />
     );

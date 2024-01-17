@@ -17,6 +17,7 @@ import { mapToRevokeRequestData } from "../helpers/mapper";
 import { isValidTransaction } from "../../../helpers/payment";
 import { Nullable } from "../../../../../common/types/common";
 import { hasPermitsActionFailed } from "../../../helpers/permitState";
+import { getDefaultRequiredVal } from "../../../../../common/helpers/util";
 import {
   CustomFormComponent,
   getErrorMessage,
@@ -59,7 +60,7 @@ export const VoidPermitForm = ({
     const revokeFailed = hasPermitsActionFailed(voidResults);
     if (revokeFailed) {
       onFail();
-    } else if (voidResults && voidResults.success.length > 0) {
+    } else if (getDefaultRequiredVal(0, voidResults?.success?.length) > 0) {
       // Revoke action was successful and has results
       setOpenRevokeDialog(false);
       onRevokeSuccess();
