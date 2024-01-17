@@ -1,4 +1,3 @@
-import { PaginationDto } from 'src/common/dto/paginate/pagination';
 import { CreateCompanyDto } from '../../../../src/modules/company-user-management/company/dto/request/create-company.dto';
 import { UpdateCompanyDto } from '../../../../src/modules/company-user-management/company/dto/request/update-company.dto';
 import { ReadCompanyMetadataDto } from '../../../../src/modules/company-user-management/company/dto/response/read-company-metadata.dto';
