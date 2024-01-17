@@ -298,8 +298,8 @@ export const transformApplicationToPermit = (
 export const removeEmptyIdsFromPermitsActionResponse = (
   res: PermitsActionResponse,
 ): PermitsActionResponse => {
-  const successIds = getDefaultRequiredVal([], res.success).filter(id => !!id);
-  const failedIds = getDefaultRequiredVal([], res.failure).filter(id => !!id);
+  const successIds = getDefaultRequiredVal([], res.success).filter(id => Boolean(id));
+  const failedIds = getDefaultRequiredVal([], res.failure).filter(id => Boolean(id));
   return {
     success: successIds,
     failure: failedIds,
