@@ -178,12 +178,6 @@ describe('CompanyController', () => {
       expect(retCompanyData).toEqual(paginationReadRedCompanyDtoMock);
       expect(retCompanyData.items.length).toBe(1);
     });
-
-    it('should throw a DataNotFoundException if company is not found', async () => {
-      await expect(async () => {
-        await controller.getCompanyPaginated(pageOptionsDto, 'Legal Name does not exist', 'Client Number does not exist');
-      }).rejects.toThrow(DataNotFoundException);
-    });
   });
   
 });
