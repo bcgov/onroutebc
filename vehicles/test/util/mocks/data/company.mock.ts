@@ -38,6 +38,7 @@ import {
   readBlueCompanyAdminUserDtoMock,
   readRedCompanyAdminUserDtoMock,
 } from './user.mock';
+import { PaginationDto } from 'src/common/dto/paginate/pagination';
 
 export const redCompanyEntityMock: Company = {
   companyId: constants.RED_COMPANY_ID,
@@ -96,6 +97,18 @@ export const readRedCompanyDtoMock: ReadCompanyDto = {
   fax: constants.RED_COMPANY_FAX,
   email: constants.RED_COMPANY_EMAIL,
   primaryContact: { ...readRedCompanyContactDtoMock },
+};
+
+export const paginationReadRedCompanyDtoMock: PaginationDto<ReadCompanyDto> = {
+  items: [readRedCompanyDtoMock],
+  meta: {
+    page: 1,
+    take: 10,
+    totalItems: 1,
+    pageCount: 1,
+    hasNextPage: false,
+    hasPreviousPage: false,
+  },
 };
 
 export const readRedCompanyUserDtoMock: ReadCompanyUserDto = {
