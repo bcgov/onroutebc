@@ -288,7 +288,7 @@ export class CompanyService {
   }
 
   /**
-   * The findCompanyMetadataPaginated() method returns a ReadCompanyMetadataDto object corresponding to the given
+   * The findCompanyPaginated() method returns a ReadCompanyDto object corresponding to the given
    * company legal name or client number. It retrieves the entity from the database using the
    * Repository, maps it to a DTO object using the Mapper, and returns it.
    *
