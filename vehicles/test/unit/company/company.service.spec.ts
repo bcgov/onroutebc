@@ -223,8 +223,8 @@ describe('CompanyService', () => {
     });
   });
 
-  describe('Company service findCompanyMetadataPaginated function', () => {
-    it('should return the Company Metadata List', async () => {
+  describe('Company service findCompanyPaginated function', () => {
+    it('should return the Paginated Company List', async () => {
       const PARAMS = {
         pageOptionsDto: { page: 1, take: 10 },
         legalName: constants.RED_COMPANY_LEGAL_NAME,
