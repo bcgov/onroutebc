@@ -8,7 +8,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository, Like } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { UserAuthGroup } from '../../../common/enum/user-auth-group.enum';
 import { ReadUserDto } from '../users/dto/response/read-user.dto';
 import { CreateCompanyDto } from './dto/request/create-company.dto';
@@ -285,7 +285,7 @@ export class CompanyService {
     return companyMetadata;
   }
 
-    /**
+  /**
    * The findCompanyMetadataPaginated() method returns a ReadCompanyMetadataDto object corresponding to the given
    * company legal name or client number. It retrieves the entity from the database using the
    * Repository, maps it to a DTO object using the Mapper, and returns it.
@@ -299,7 +299,7 @@ export class CompanyService {
     @Query() pageOptionsDto: PageOptionsDto,
     @Query() legalName?: string,
     @Query() clientNumber?: string,
-  ):Promise<PaginationDto<ReadCompanyDto>> {
+  ): Promise<PaginationDto<ReadCompanyDto>> {
     const companies = await this.companyRepository
       .createQueryBuilder('company')
       .innerJoinAndSelect('company.mailingAddress', 'mailingAddress')
@@ -324,7 +324,6 @@ export class CompanyService {
     const pageMetaDto = new PageMetaDto({ totalItems, pageOptionsDto });
     return new PaginationDto(companyData, pageMetaDto);
   }
-
 
   /**
    * The findOne() method returns a ReadCompanyMetadataDto object corresponding to the
