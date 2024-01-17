@@ -24,7 +24,7 @@ export const BCeIDAuthWall = ({
     user: userFromToken,
   } = useAuth();
 
-  const { userRoles, companyId } = useContext(OnRouteBCContext);
+  const { userRoles, companyId, isNewBCeIDUser } = useContext(OnRouteBCContext);
 
   const userIDP = userFromToken?.profile?.identity_provider as string;
 
@@ -82,7 +82,7 @@ export const BCeIDAuthWall = ({
       }
     }
 
-    if (!DoesUserHaveRole(userRoles, requiredRole)) {
+    if (!DoesUserHaveRole(userRoles, requiredRole) && !isNewBCeIDUser) {
       return (
         <Navigate
           to={ERROR_ROUTES.UNAUTHORIZED}
@@ -90,6 +90,14 @@ export const BCeIDAuthWall = ({
           replace
         />
       );
+    }
+
+    /**
+     * Redirect the user to the home page who'll then be redirected appropriately
+     * to a profile wizard.
+     */
+    if (isNewBCeIDUser) {
+      return <Navigate to={HOME} state={{ from: location }} replace />;
     }
     return <Outlet />;
   } else {
