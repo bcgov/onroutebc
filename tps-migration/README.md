@@ -59,7 +59,7 @@ Install all frontend dependencies
 Runs the app in the development mode.
 
 ### Swagger API
-Open [http://localhost:5000/api](http://localhost:5000/api) to view the swagger api definitions in the browser.
+Open [http://localhost:5050/api/](http://localhost:5050/api) to view the swagger api definitions in the browser.
 
 ### `npm run test`
 
