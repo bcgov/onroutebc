@@ -48,6 +48,4 @@ export class ReadCompanyMetadataDto {
     example: 'Miltie',
   })
   primaryContact?: Contact;
-
-
 }

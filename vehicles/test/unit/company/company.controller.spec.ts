@@ -169,8 +169,12 @@ describe('CompanyController', () => {
       const pageOptionsDto = {
         page: 1,
         take: 10,
-      }
-      const retCompanyMetadata = await controller.getCompanyPaginated(pageOptionsDto, 'He', 'R');
+      };
+      const retCompanyMetadata = await controller.getCompanyPaginated(
+        pageOptionsDto,
+        'He',
+        'R',
+      );
       expect(typeof retCompanyMetadata).toBe('object');
       expect(retCompanyMetadata.items.length).toBeGreaterThan(0);
     });
@@ -181,8 +185,12 @@ describe('CompanyController', () => {
       const pageOptionsDto = {
         page: 1,
         take: 10,
-      }
-      const retCompanyMetadata = await controller.getCompanyPaginated(pageOptionsDto, 'He', undefined);
+      };
+      const retCompanyMetadata = await controller.getCompanyPaginated(
+        pageOptionsDto,
+        'He',
+        undefined,
+      );
       expect(typeof retCompanyMetadata).toBe('object');
       expect(retCompanyMetadata.items.length).toBeGreaterThan(0);
     });
@@ -193,14 +201,18 @@ describe('CompanyController', () => {
       const pageOptionsDto = {
         page: 1,
         take: 10,
-      }
-      const retCompanyMetadata = await controller.getCompanyPaginated(pageOptionsDto, undefined, 'R');
+      };
+      const retCompanyMetadata = await controller.getCompanyPaginated(
+        pageOptionsDto,
+        undefined,
+        'R',
+      );
       expect(typeof retCompanyMetadata).toBe('object');
       expect(retCompanyMetadata.items.length).toBeGreaterThan(0);
     });
 
     it('should throw a DataNotFoundException if company is not found', async () => {
-      const pageOptionsDto: PageOptionsDto = {page: 1, take: 10};
+      const pageOptionsDto: PageOptionsDto = { page: 1, take: 10 };
       companyService.findCompanyPaginated.mockResolvedValue(undefined);
       await expect(async () => {
         await controller.getCompanyPaginated(

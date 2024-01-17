@@ -37,7 +37,6 @@ import * as databaseHelper from 'src/common/helper/database.helper';
 import { EmailService } from '../../../src/modules/email/email.service';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
-import { PageOptionsDto } from 'src/common/dto/paginate/page-options';
 
 const COMPANY_ID_99 = 99;
 let repo: DeepMocked<Repository<Company>>;
@@ -226,18 +225,20 @@ describe('CompanyService', () => {
 
   describe('Company service findCompanyMetadataPaginated function', () => {
     it('should return the Company Metadata List', async () => {
-      const PARAMS = {pageOptionsDto: {page: 1, take: 10}, legalName: constants.RED_COMPANY_LEGAL_NAME, clientNumber: constants.RED_COMPANY_CLIENT_NUMBER };
+      const PARAMS = {
+        pageOptionsDto: { page: 1, take: 10 },
+        legalName: constants.RED_COMPANY_LEGAL_NAME,
+        clientNumber: constants.RED_COMPANY_CLIENT_NUMBER,
+      };
       const FILTERED_LIST = COMPANY_LIST.filter(
         (r) => r.legalName === PARAMS.legalName,
-      ).filter(
-        (r) => r.clientNumber === PARAMS.clientNumber,
-      );
+      ).filter((r) => r.clientNumber === PARAMS.clientNumber);
 
       jest
         .spyOn(repo, 'createQueryBuilder')
         .mockImplementation(() => createQueryBuilderMock(FILTERED_LIST));
-      
-      const pageOptionsDto = {page: 1, take: 10}
+
+      const pageOptionsDto = { page: 1, take: 10 };
 
       const retCompanies = await service.findCompanyPaginated(
         pageOptionsDto,
