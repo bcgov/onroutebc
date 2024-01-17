@@ -1,4 +1,3 @@
-import { ReadAddressDto } from 'src/modules/common/dto/response/read-address.dto';
 import { CreateCompanyDto } from '../../../../src/modules/company-user-management/company/dto/request/create-company.dto';
 import { UpdateCompanyDto } from '../../../../src/modules/company-user-management/company/dto/request/update-company.dto';
 import { ReadCompanyMetadataDto } from '../../../../src/modules/company-user-management/company/dto/response/read-company-metadata.dto';
@@ -102,7 +101,14 @@ export const readRedCompanyDtoMock: ReadCompanyDto = {
 
 export const paginationReadRedCompanyDtoMock: PaginationDto<ReadCompanyDto> = {
   items: [readRedCompanyDtoMock],
-  meta: { page: 1, take: 10, totalItems: 1, pageCount: 1, hasNextPage: false, hasPreviousPage: false},
+  meta: {
+    page: 1,
+    take: 10,
+    totalItems: 1,
+    pageCount: 1,
+    hasNextPage: false,
+    hasPreviousPage: false,
+  },
 };
 
 export const readRedCompanyUserDtoMock: ReadCompanyUserDto = {
@@ -116,7 +122,6 @@ export const readRedCompanyMetadataDtoMock: ReadCompanyMetadataDto = {
   alternateName: constants.RED_COMPANY_ALTERNATE_NAME,
   clientNumber: constants.RED_COMPANY_CLIENT_NUMBER,
 };
-
 
 /**
  *

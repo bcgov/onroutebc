@@ -172,12 +172,15 @@ describe('CompanyController', () => {
       companyService.findCompanyPaginated.mockResolvedValue(
         paginationReadRedCompanyDtoMock,
       );
-      
-      const retCompanyData = await controller.getCompanyPaginated(pageOptionsDto, 'Red Truck Inc', 'B3-000005-722');
+
+      const retCompanyData = await controller.getCompanyPaginated(
+        pageOptionsDto,
+        'Red Truck Inc',
+        'B3-000005-722',
+      );
       expect(typeof retCompanyData).toBe('object');
       expect(retCompanyData).toEqual(paginationReadRedCompanyDtoMock);
       expect(retCompanyData.items.length).toBe(1);
     });
   });
-  
 });
