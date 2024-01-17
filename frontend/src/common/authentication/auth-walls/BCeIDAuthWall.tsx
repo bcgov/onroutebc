@@ -50,7 +50,7 @@ export const BCeIDAuthWall = ({
    * is not a new BCeID user, we can allow them into the BCeID page
    * provided they do have a matching role.
    */
-  const isEstablishedUser = Boolean(companyId || !isNewBCeIDUser);
+  const isEstablishedUser = Boolean(companyId) ?? !isNewBCeIDUser;
 
   if (isAuthenticated && isEstablishedUser) {
     if (isIDIR(userIDP)) {
