@@ -1,7 +1,7 @@
 import { Dayjs } from "dayjs";
 
-import { Permit } from "../types/permit";
-import { applyWhenNotNullable } from "../../../common/helpers/util";
+import { Permit, PermitsActionResponse } from "../types/permit";
+import { applyWhenNotNullable, getDefaultRequiredVal } from "../../../common/helpers/util";
 import { Nullable, Optional } from "../../../common/types/common";
 import { getDurationOrDefault } from "./getDefaultApplicationFormData";
 import { getExpiryDate } from "./permitState";
@@ -287,5 +287,21 @@ export const transformApplicationToPermit = (
         DATE_FORMATS.DATEONLY,
       ),
     },
+  };
+};
+
+/**
+ * Remove empty values from permits action response
+ * @param res Permits action response received from backend
+ * @returns Permits action response having empty values removed
+ */
+export const removeEmptyIdsFromPermitsActionResponse = (
+  res: PermitsActionResponse,
+): PermitsActionResponse => {
+  const successIds = getDefaultRequiredVal([], res.success).filter(id => Boolean(id));
+  const failedIds = getDefaultRequiredVal([], res.failure).filter(id => Boolean(id));
+  return {
+    success: successIds,
+    failure: failedIds,
   };
 };

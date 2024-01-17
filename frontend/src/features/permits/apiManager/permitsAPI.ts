@@ -1,14 +1,19 @@
 import { DATE_FORMATS, toLocal } from "../../../common/helpers/formatDate";
-import { mapApplicationToApplicationRequestData } from "../helpers/mappers";
 import { IssuePermitsResponse, Permit } from "../types/permit";
+import { PERMIT_STATUSES } from "../types/PermitStatus";
+import { PermitHistory } from "../types/PermitHistory";
+import { getPermitTypeName } from "../types/PermitType";
 import {
   PaginatedResponse,
   PaginationAndFilters,
   RequiredOrNull,
 } from "../../../common/types/common";
-import { PERMIT_STATUSES } from "../types/PermitStatus";
-import { PermitHistory } from "../types/PermitHistory";
-import { getPermitTypeName } from "../types/PermitType";
+
+import {
+  mapApplicationToApplicationRequestData,
+  removeEmptyIdsFromPermitsActionResponse,
+} from "../helpers/mappers";
+
 import {
   CompleteTransactionRequestData,
   CompleteTransactionResponseData,
@@ -271,19 +276,22 @@ export const issuePermits = async (
       }),
     );
 
-    if (response.status !== 201) {
-      return {
+    if (response.status !== 201 || !response.data) {
+      return removeEmptyIdsFromPermitsActionResponse({
         success: [],
         failure: [...ids],
-      };
+      });
     }
-    return response.data as IssuePermitsResponse;
+
+    return removeEmptyIdsFromPermitsActionResponse(
+      response.data as IssuePermitsResponse,
+    );
   } catch (err) {
     console.error(err);
-    return {
+    return removeEmptyIdsFromPermitsActionResponse({
       success: [],
       failure: [...ids],
-    };
+    });
   }
 };
 
@@ -443,19 +451,22 @@ export const voidPermit = async (voidPermitParams: {
       replaceEmptyValuesWithNull(voidData),
     );
 
-    if (response.status === 201) {
-      return response.data as VoidPermitResponseData;
+    if (response.status === 201 && response.data) {
+      return removeEmptyIdsFromPermitsActionResponse(
+        response.data as VoidPermitResponseData,
+      );
     }
-    return {
+
+    return removeEmptyIdsFromPermitsActionResponse({
       success: [],
       failure: [permitId],
-    };
+    });
   } catch (err) {
     console.error(err);
-    return {
+    return removeEmptyIdsFromPermitsActionResponse({
       success: [],
       failure: [permitId],
-    };
+    });
   }
 };
 
