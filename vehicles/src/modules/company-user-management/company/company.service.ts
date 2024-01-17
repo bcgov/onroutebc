@@ -105,7 +105,9 @@ export class CompanyService {
           extraArgs: () => ({
             directory: currentUser.orbcUserDirectory,
             companyGUID: currentUser.bceid_business_guid,
-            accountSource: currentUser.accountSource,
+            accountSource: migratedClient
+              ? AccountSource.TpsAccount
+              : currentUser.accountSource,
             userName: currentUser.userName,
             userGUID: currentUser.userGUID,
             timestamp: new Date(),
