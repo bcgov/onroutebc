@@ -10,13 +10,17 @@ import { mapToVoidRequestData } from "./helpers/mapper";
 import { useVoidPermit } from "./hooks/useVoidPermit";
 import { isValidTransaction } from "../../helpers/payment";
 import { Nullable } from "../../../../common/types/common";
+import { hasPermitsActionFailed } from "../../helpers/permitState";
+import { getDefaultRequiredVal } from "../../../../common/helpers/util";
 
 export const FinishVoid = ({
   permit,
   onSuccess,
+  onFail,
 }: {
   permit: Nullable<Permit>;
   onSuccess: () => void;
+  onFail: () => void;
 }) => {
   const { voidPermitData } = useContext(VoidPermitContext);
 
@@ -39,8 +43,11 @@ export const FinishVoid = ({
   const { mutation: voidPermitMutation, voidResults } = useVoidPermit();
 
   useEffect(() => {
-    if (voidResults && voidResults.success.length > 0) {
-      // Navigate back to search page
+    const voidFailed = hasPermitsActionFailed(voidResults);
+    if (voidFailed) {
+      onFail();
+    } else if (getDefaultRequiredVal(0, voidResults?.success?.length) > 0) {
+      // Void action was triggered, and has results (was successful)
       onSuccess();
     }
   }, [voidResults]);
