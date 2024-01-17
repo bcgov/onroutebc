@@ -14,6 +14,7 @@ export type SearchEntity =
  * The search by filter.
  */
 export const SEARCH_BY_FILTERS = {
+  LEGACY_NUMBER: "legacyNumber",
   PERMIT_NUMBER: "permitNumber",
   PLATE_NUMBER: "plate",
   COMPANY_NAME: "companyName",

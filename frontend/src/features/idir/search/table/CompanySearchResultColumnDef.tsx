@@ -26,8 +26,8 @@ export const CompanySearchResultColumnDef: MRT_ColumnDef<CompanyProfile>[] = [
     sortingFn: "alphanumeric",
   },
   {
-    accessorKey: "migratedClientHash",
-    header: "Client Number",
+    accessorKey: "clientNumber",
+    header: "onRouteBC Client Number",
     enableSorting: true,
     sortingFn: "alphanumeric",
   },
