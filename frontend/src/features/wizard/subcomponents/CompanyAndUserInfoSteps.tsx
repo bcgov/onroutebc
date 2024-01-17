@@ -41,7 +41,6 @@ export const CompanyAndUserInfoSteps = ({
     setCompanyLegalName,
     setOnRouteBCClientNumber,
     setMigratedClient,
-    setIsNewBCeIDUser,
   } = useContext(OnRouteBCContext);
   const { user } = useAuth();
   const queryClient = useQueryClient();
@@ -74,9 +73,6 @@ export const CompanyAndUserInfoSteps = ({
         // Clear any state in migrated client. We no longer need this
         // once the user has successfully created/claimed their company.
         setMigratedClient?.(() => undefined);
-
-        // The user is not a new BCeID user anymore. They are in the system now.
-        setIsNewBCeIDUser?.(() => undefined);
 
         // Setting the companyId in the sessionStorage so that it can be used
         // used outside of react components;

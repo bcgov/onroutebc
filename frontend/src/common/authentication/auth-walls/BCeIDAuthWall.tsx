@@ -24,7 +24,7 @@ export const BCeIDAuthWall = ({
     user: userFromToken,
   } = useAuth();
 
-  const { userRoles, companyId, isNewBCeIDUser } = useContext(OnRouteBCContext);
+  const { userRoles, companyId } = useContext(OnRouteBCContext);
 
   const userIDP = userFromToken?.profile?.identity_provider as string;
 
@@ -45,7 +45,7 @@ export const BCeIDAuthWall = ({
     return <Loading />;
   }
 
-  if (isAuthenticated && !isNewBCeIDUser) {
+  if (isAuthenticated) {
     if (isIDIR(userIDP)) {
       /**
        * This is a placeholder to navigate an IDIR user to an unauthorized page
