@@ -1,3 +1,4 @@
+import { ReadAddressDto } from 'src/modules/common/dto/response/read-address.dto';
 import { CreateCompanyDto } from '../../../../src/modules/company-user-management/company/dto/request/create-company.dto';
 import { UpdateCompanyDto } from '../../../../src/modules/company-user-management/company/dto/request/update-company.dto';
 import { ReadCompanyMetadataDto } from '../../../../src/modules/company-user-management/company/dto/response/read-company-metadata.dto';
@@ -38,6 +39,7 @@ import {
   readBlueCompanyAdminUserDtoMock,
   readRedCompanyAdminUserDtoMock,
 } from './user.mock';
+import { PaginationDto } from 'src/common/dto/paginate/pagination';
 
 export const redCompanyEntityMock: Company = {
   companyId: constants.RED_COMPANY_ID,
@@ -98,6 +100,11 @@ export const readRedCompanyDtoMock: ReadCompanyDto = {
   primaryContact: { ...readRedCompanyContactDtoMock },
 };
 
+export const paginationReadRedCompanyDtoMock: PaginationDto<ReadCompanyDto> = {
+  items: [readRedCompanyDtoMock],
+  meta: { page: 1, take: 10, totalItems: 1, pageCount: 1, hasNextPage: false, hasPreviousPage: false},
+};
+
 export const readRedCompanyUserDtoMock: ReadCompanyUserDto = {
   adminUser: { ...readRedCompanyAdminUserDtoMock },
   ...readRedCompanyDtoMock,
@@ -109,6 +116,7 @@ export const readRedCompanyMetadataDtoMock: ReadCompanyMetadataDto = {
   alternateName: constants.RED_COMPANY_ALTERNATE_NAME,
   clientNumber: constants.RED_COMPANY_CLIENT_NUMBER,
 };
+
 
 /**
  *
