@@ -1,6 +1,6 @@
 #  onRouteBC TPS Migration
 
-This a [NestJs](https://nestjs.com/) project. 
+This a [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
 ## Technologies Used
 - [NestJS](https://nestjs.com/)
