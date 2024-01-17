@@ -45,7 +45,14 @@ export const BCeIDAuthWall = ({
     return <Loading />;
   }
 
-  if (isAuthenticated) {
+  /**
+   * If companyId is present or if we know that the user
+   * is not a new BCeID user, we can allow them into the BCeID page
+   * provided they do have a matching role.
+   */
+  const isEstablishedUser = companyId || !isNewBCeIDUser;
+
+  if (isAuthenticated && isEstablishedUser) {
     if (isIDIR(userIDP)) {
       /**
        * This is a placeholder to navigate an IDIR user to an unauthorized page
@@ -82,7 +89,7 @@ export const BCeIDAuthWall = ({
       }
     }
 
-    if (!DoesUserHaveRole(userRoles, requiredRole) && !isNewBCeIDUser) {
+    if (!DoesUserHaveRole(userRoles, requiredRole)) {
       return (
         <Navigate
           to={ERROR_ROUTES.UNAUTHORIZED}
@@ -90,14 +97,6 @@ export const BCeIDAuthWall = ({
           replace
         />
       );
-    }
-
-    /**
-     * Redirect the user to the home page who'll then be redirected appropriately
-     * to a profile wizard.
-     */
-    if (isNewBCeIDUser) {
-      return <Navigate to={HOME} state={{ from: location }} replace />;
     }
     return <Outlet />;
   } else {
