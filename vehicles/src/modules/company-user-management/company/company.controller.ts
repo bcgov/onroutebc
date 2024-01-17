@@ -112,10 +112,6 @@ export class CompanyController {
         clientNumber,
       );
 
-    if (!companies?.items?.length) {
-      throw new DataNotFoundException();
-    }
-
     return companies;
   }
 
